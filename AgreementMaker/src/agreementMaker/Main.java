@@ -1,12 +1,7 @@
 package agreementMaker;
 
 import agreementMaker.userInterface.UI;
-<<<<<<< Main.java
-//
-//adasdasd
-=======
-//ciao
->>>>>>> 1.3
+
 /**
  * Main class -
  *
@@ -31,3 +26,4 @@ public class Main
 		new UI();
 	}
 }
+//End of Main
