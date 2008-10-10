@@ -235,6 +235,7 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 					// and save the file used to the recent file list, and also what syntax and language it is
 					prefs.saveOpenDialogListSelection(syntaxList.getSelectedIndex() , langList.getSelectedIndex());
 					prefs.saveRecentFile(filePath.getText(), ontoType, syntaxList.getSelectedIndex(), langList.getSelectedIndex());
+					ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
 				
 					
 				}catch(Exception ex){
