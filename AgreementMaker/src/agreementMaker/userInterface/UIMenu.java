@@ -87,6 +87,43 @@ public class UIMenu implements ActionListener, ItemListener {
 		}
 	}
 	
+	public void refreshRecentMenus() {
+		refreshRecentMenus( menuRecentSource, menuRecentTarget);
+	}
+	
+	/**
+	 * This function will update the Recent File Menus with the most up to date recent files
+	 * @param recentsource
+	 * @param recenttarget
+	 */
+	private void refreshRecentMenus( JMenu recentsource, JMenu recenttarget ) {
+		
+		AppPreferences prefs = new AppPreferences();
+		
+		// first we start by removing all sub menus
+		recentsource.removeAll();
+		recenttarget.removeAll();
+		
+		// then populate the menus again.
+		for( int i = 0; i < prefs.countRecentSources(); i++) {
+			JMenuItem menuitem = new JMenuItem(i + ".  " + prefs.getRecentSourceFileName(i));
+			menuitem.setActionCommand("source" + i);
+			menuitem.setMnemonic( 48 + i);
+			menuitem.addActionListener(this);
+			menuRecentSource.add(menuitem);
+		}
+		
+		for( int i = 0; i < prefs.countRecentTargets(); i++) {
+			JMenuItem menuitem = new JMenuItem(i + ".  " + prefs.getRecentTargetFileName(i));
+			menuitem.setActionCommand("target" + i);
+			menuitem.setMnemonic( 48 + i);
+			menuitem.addActionListener(this);
+			menuRecentTarget.add(menuitem);
+		}
+		
+	}
+	
+	
 	
 	public void actionPerformed (ActionEvent ae){
 		Object obj = ae.getSource();
@@ -157,8 +194,6 @@ public class UIMenu implements ActionListener, ItemListener {
 	}
 	public void init(){
 		
-		AppPreferences prefs = new AppPreferences();
-		
 		//Creating the menu bar
 		myMenuBar = new JMenuBar();
 		ui.getUIFrame().setJMenuBar(myMenuBar);
@@ -192,21 +227,8 @@ public class UIMenu implements ActionListener, ItemListener {
 		menuRecentTarget = new JMenu("Recent Targets...");
 		menuRecentTarget.setMnemonic('a');
 		
-		for( int i = 0; i < prefs.countRecentSources(); i++) {
-			JMenuItem menuitem = new JMenuItem(i + ".  " + prefs.getRecentSourceFileName(i));
-			menuitem.setActionCommand("source" + i);
-			menuitem.setMnemonic( 48 + i);
-			menuitem.addActionListener(this);
-			menuRecentSource.add(menuitem);
-		}
+		refreshRecentMenus(menuRecentSource, menuRecentTarget);
 		
-		for( int i = 0; i < prefs.countRecentTargets(); i++) {
-			JMenuItem menuitem = new JMenuItem(i + ".  " + prefs.getRecentTargetFileName(i));
-			menuitem.setActionCommand("target" + i);
-			menuitem.setMnemonic( 48 + i);
-			menuitem.addActionListener(this);
-			menuRecentTarget.add(menuitem);
-		}
 /*		
 		menuRecentSourceList = new JMenuItem[10];
 		Preferences prefs = Preferences.userRoot().node("/com/advis/agreementMaker");
