@@ -35,9 +35,6 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 	/**
 	 * @param args
 	 */
-	public static void main (String args[]){
-		//new OpenAndReadFileForMappingDialog();
-	}
 	
 	private JButton browse, cancel, proceed;
 	private JTextField filePath;
@@ -46,14 +43,6 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 	private int ontoType;
 	private JList syntaxList, langList;	
 	private UI ui;
-	
-	// preferences key for storing the last directory used by the dialog
-	private static final String PREF_LASTDIR = "pref_lastdirectoryused";
-	
-	// what syntax and language were last used for the files.
-	private static final String PREF_LASTSYNT = "pref_lastsyntaxused";
-	private static final String PREF_LASTLANG = "pref_lastlanguageused";
-	
 	
 	
 	/**
@@ -70,6 +59,8 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		//typeOfFile = fileType;  
 		ui = userInterface;
 		this.ontoType = ontoType;
+		
+		AppPreferences prefs = new AppPreferences(); // Class interface to Application Preferences
 		
 		frame = new JDialog();
 		if(ontoType == GSM.SOURCENODE)
@@ -104,15 +95,6 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		String[] ts_list = {"RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE", "N3", "TURTLE"};
 		String[] l_list = {"RDFS", "OWL", "XML"};
 		
-		// here, we would like to select the last syntax and the last language that was used by the user
-		// we do this by retrieving the stored settings
-		Preferences prefs = Preferences.userRoot().node("/com/advis/agreementMaker");
-		int lastsynt = prefs.getInt(PREF_LASTSYNT, 0);
-		int lastlang = prefs.getInt(PREF_LASTLANG, 1);
-		
-		// do some sanity checks on the information, and set them equal to default value is not sane
-		if( lastsynt >= ts_list.length ) lastsynt = 0;
-		if( lastlang >= l_list.length ) lastlang = 0;
 		
 		syntaxList = new JList(ts_list);
 		syntaxList.setPrototypeCellValue("01234567890123456789"); // this string sets the width of the list
@@ -121,7 +103,7 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		syntaxList.setVisibleRowCount(5);
 		//syntaxList.setSize(300,100); // this function does not seem to make a difference
 		syntaxList.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Syntax Language"));
-		syntaxList.setSelectedIndex(lastsynt);
+		syntaxList.setSelectedIndex(prefs.getSyntaxListSelection());  // select the last thing selected
 		
 		langList = new JList(l_list);
 		langList.addListSelectionListener(this);
@@ -130,7 +112,7 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		langList.setVisibleRowCount(5);
 		//langList.setSize(300,100);  // this function does not seem to make a difference
 		langList.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Ontology Language"));
-		langList.setSelectedIndex(lastlang);
+		langList.setSelectedIndex(prefs.getLanguageListSelection());  // select the last thing selected
 
 		
 		//Make the GroupLayout for this dialog (somewhat complicated, but very flexible)
@@ -203,20 +185,18 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 	public void actionPerformed (ActionEvent ae){
 		Object obj = ae.getSource();
 		JFileChooser fc;
-		Preferences prefs = Preferences.userRoot().node("/com/advis/agreementMaker"); // preferences interface
+		AppPreferences prefs = new AppPreferences(); // Class interface to Application Preferences
 		
 		if(obj == cancel){
 			frame.dispose();
 		}else if(obj == browse){
 			
 			
-			// get the last directory used by the FileChooser
-			File lastdir = new File( prefs.get(PREF_LASTDIR, "~"));
 			
 			// if the directory we received from our preferences exists, use that as the 
 			// starting directory for the chooser
-			if( lastdir.exists() ) {
-				fc = new JFileChooser(lastdir);
+			if( prefs.getLastDir().exists() ) {
+				fc = new JFileChooser(prefs.getLastDir());
 			} else { fc = new JFileChooser(); } 
 			
 			int returnVal = fc.showOpenDialog(frame);
@@ -225,9 +205,9 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 				File selectedfile = fc.getSelectedFile();
 				
 				// ok, now that we know what file the user selected
-				// let's save it for future use.
-				prefs.put(PREF_LASTDIR, selectedfile.getPath()); 
-				
+				// let's save it for future use (for the chooser)
+				prefs.saveLastDir(selectedfile); 
+								
 				ui.setOntoFileName(selectedfile.getPath(), ontoType);
 				filePath.setText(ui.getOntoFileName(ontoType));
 				
@@ -252,8 +232,10 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 					ui.buildOntology(ontoType, langList.getSelectedIndex(), syntaxList.getSelectedIndex());
 					
 					// once we are done, let's save the syntax and language selection that was made by the user
-					prefs.putInt(PREF_LASTSYNT, syntaxList.getSelectedIndex());
-					prefs.putInt(PREF_LASTLANG, langList.getSelectedIndex());
+					// and save the file used to the recent file list, and also what syntax and language it is
+					prefs.saveOpenDialogListSelection(syntaxList.getSelectedIndex() , langList.getSelectedIndex());
+					prefs.saveRecentFile(filePath.getText(), ontoType, syntaxList.getSelectedIndex(), langList.getSelectedIndex());
+				
 					
 				}catch(Exception ex){
 					JOptionPane.showConfirmDialog(null,"Can not parse the file '" + ui.getOntoFileName(ontoType) + "'. Please check the policy.","Parser Error",JOptionPane.PLAIN_MESSAGE);
