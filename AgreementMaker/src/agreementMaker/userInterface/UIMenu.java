@@ -176,10 +176,16 @@ public class UIMenu implements ActionListener, ItemListener {
 				case 's':
 					OpenFile( prefs.getRecentSourceFileName(position), GSM.SOURCENODE, 
 							prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position));
+					prefs.saveRecentFile(prefs.getRecentSourceFileName(position), GSM.SOURCENODE, 
+							prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position));
+					ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
 					break;
 				case 't':
 					OpenFile( prefs.getRecentTargetFileName(position), GSM.TARGETNODE, 
 							prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position));
+					prefs.saveRecentFile(prefs.getRecentTargetFileName(position), GSM.TARGETNODE, 
+							prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position));
+					ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
 					break;
 				default:
 					break;
