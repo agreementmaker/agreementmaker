@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.util.prefs.Preferences;
 
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
@@ -14,9 +15,11 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import agreementMaker.GSM;
+import agreementMaker.userInterface.vertex.VertexDescriptionPane;
 
 
 public class UIMenu implements ActionListener, ItemListener {
@@ -41,12 +44,49 @@ public class UIMenu implements ActionListener, ItemListener {
 	private JMenuItem undo, redo;
 	// menu itmes for fileMenu
 	private JMenuItem xit, openSource, openTarget;
+	
+	private JMenu menuRecentSource, menuRecentTarget;
+	private JMenuItem menuRecentSourceList[], menuRecentTargetList[]; // the list of recent files
+	
 
 	public UIMenu(UI ui){
 		this.ui=ui;
 		init();
 		
 	}
+
+	/** This function will open a file
+	 * 
+	 * @param ontoType the type of ontology, source or target
+	 * 
+	 * */
+	public void OpenFile( String filename, int ontoType, int syntax, int language) {
+		try{
+			JPanel jPanel = null;
+			
+			if(language == 0)//RDFS
+				jPanel = new VertexDescriptionPane(GSM.RDFSFILE);//takes care of fields for XML files as well
+			else if(language == 1)//OWL
+				jPanel = new VertexDescriptionPane(GSM.ONTFILE);//takes care of fields for XML files as well
+			else if(language == 2)//XML
+				jPanel = new VertexDescriptionPane(GSM.XMLFILE);//takes care of fields for XML files as well 
+			
+			
+			ui.setOntoFileName( filename, ontoType);
+			
+			ui.getUISplitPane().setRightComponent(jPanel);
+			ui.setDescriptionPanel(jPanel);
+			ui.buildOntology(ontoType, language, syntax);
+		
+			
+		}catch(Exception ex){
+			JOptionPane.showConfirmDialog(null,"Can not parse the file '" + ui.getOntoFileName(ontoType) + "'. Please check the policy.","Parser Error",JOptionPane.PLAIN_MESSAGE);
+			System.out.println("STACK TRACE:");
+			ex.printStackTrace();
+			ui.setOntoFileName(null, ontoType);
+		}
+	}
+	
 	
 	public void actionPerformed (ActionEvent ae){
 		Object obj = ae.getSource();
@@ -75,12 +115,50 @@ public class UIMenu implements ActionListener, ItemListener {
 		}else if (obj == redo){
 			displayOptionPane("Redo Clicked","Redo");
 		}
+		
+		
+		// TODO: find a Better way to do this
+		
+		String command = ae.getActionCommand();  // get the command string we set
+		if( command.length() == 7 ) { // the only menus that set an action command  are the recent menus, so we're ok.
+			
+			AppPreferences prefs = new AppPreferences();
+			
+			char index[] = new char[1];  // '0' - '9'
+			char ontotype[] = new char[1]; // 's' or 't' (source or target)
+			
+			command.getChars(0, 1 , ontotype, 0);  // get the first character of the sting
+			command.getChars(command.length() - 1, command.length(), index, 0); // get the last character of the string
+			
+			// based on the first and last characters of the action command, we can tell which menu was clicked.
+			// the rest is easy
+			
+			int position = index[0] - 48; // 0 - 9
+			switch( ontotype[0] ) {
+				
+				case 's':
+					OpenFile( prefs.getRecentSourceFileName(position), GSM.SOURCENODE, 
+							prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position));
+					break;
+				case 't':
+					OpenFile( prefs.getRecentTargetFileName(position), GSM.TARGETNODE, 
+							prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position));
+					break;
+				default:
+					break;
+			}
+		}
+		
+		
 	}
 	
 	public void displayOptionPane(String desc, String title){
 			JOptionPane.showMessageDialog(null,desc,title, JOptionPane.PLAIN_MESSAGE);					
 	}
 	public void init(){
+		
+		AppPreferences prefs = new AppPreferences();
+		
 		//Creating the menu bar
 		myMenuBar = new JMenuBar();
 		ui.getUIFrame().setJMenuBar(myMenuBar);
@@ -106,6 +184,43 @@ public class UIMenu implements ActionListener, ItemListener {
 
 		// add separator
 		fileMenu.addSeparator();
+		
+		// Construct the recent files menu.
+		menuRecentSource = new JMenu("Recent Sources...");
+		menuRecentSource.setMnemonic('u');
+		
+		menuRecentTarget = new JMenu("Recent Targets...");
+		menuRecentTarget.setMnemonic('a');
+		
+		for( int i = 0; i < prefs.countRecentSources(); i++) {
+			JMenuItem menuitem = new JMenuItem(i + ".  " + prefs.getRecentSourceFileName(i));
+			menuitem.setActionCommand("source" + i);
+			menuitem.setMnemonic( 48 + i);
+			menuitem.addActionListener(this);
+			menuRecentSource.add(menuitem);
+		}
+		
+		for( int i = 0; i < prefs.countRecentTargets(); i++) {
+			JMenuItem menuitem = new JMenuItem(i + ".  " + prefs.getRecentTargetFileName(i));
+			menuitem.setActionCommand("target" + i);
+			menuitem.setMnemonic( 48 + i);
+			menuitem.addActionListener(this);
+			menuRecentTarget.add(menuitem);
+		}
+/*		
+		menuRecentSourceList = new JMenuItem[10];
+		Preferences prefs = Preferences.userRoot().node("/com/advis/agreementMaker");
+		int lastsynt = prefs.getInt(PREF_LASTSYNT, 0);
+		int lastlang = prefs.getInt(PREF_LASTLANG, 1);
+		*/
+		//menuRecentSource.add( new JMenu());
+		
+		fileMenu.add(menuRecentSource);
+		fileMenu.add(menuRecentTarget);
+		
+		fileMenu.addSeparator();
+		//private JMenuItem menuRecentSource, menuRecentTarget;
+		//private JMenuItem menuRecentSourceList[], menuRecentTargetList[]; // the list of recent files
 
 		// add exit menu item to file menu
 		xit = new JMenuItem("Exit", KeyEvent.VK_X);
@@ -190,6 +305,8 @@ public class UIMenu implements ActionListener, ItemListener {
 		helpMenu.add(aboutItem);
 
 	}
+	
+	
 	public void itemStateChanged (ItemEvent e){
 		Object obj = e.getItemSelectable();
 		if (obj == mapByUser)
