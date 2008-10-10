@@ -96,6 +96,10 @@ public class UI {
 		else
 			return null;
 	}
+	
+	public UIMenu getUIMenu(){
+		return this.uiMenu;
+	}
 	/**
 	 * @return
 	 */
