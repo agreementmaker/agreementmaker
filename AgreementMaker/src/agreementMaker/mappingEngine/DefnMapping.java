@@ -92,7 +92,7 @@ public class DefnMapping implements Serializable
 	}
 	
 	/**
-	 * 
+	 * QUESTION: Does this implement a bubble sort on the similarities vector? - Cosmin.
 	 */
 	public void reSort(){
 		int i, j;
