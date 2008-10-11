@@ -3285,6 +3285,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		// diaplay tree here 
 	}
 	/**
+	 * This function recursively calls  setIsMappedByDef() of every node under the initial root
 	 * @param node
 	 */
 	public void performShowAll(Vertex node)
@@ -3299,6 +3300,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			
 		}
 	}	
+	
 	/**
 	 * This function recursivly sets the Vertex and its desendents to be visible or invisible
 	 * based on the int; If int is 0 the node will collapse, else it will expand
