@@ -33,7 +33,7 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 	private int arcHeight;			// arc height of the rectangular node
 	private int arcWidth;			// arc width of the rectangular node
 	protected ContextMapping contextMapping;	// context mapping 
-	protected DefnMapping defnMapping;
+	protected DefnMapping defnMapping = null;
 	private String description;		// description of the vertex
 	private int height;				// height of the node/vertex
 	private int id;					// assign the unique number here
@@ -628,6 +628,19 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 	public DefnMapping getDefnMapping() {
 		return defnMapping;
 	}
+	
+	/**
+	 * @author cosmin 
+	 * @date Oct 12, 2008
+	 */
+	public void clearDefnMapping() {
+		// set defnMapping = null, which will remove any references to the
+		// definition that was there before, and garbage collection will destroy it
+		// (hopefully (if there's no other references to it in the program))
+		defnMapping = null;
+		isMappedByDef = false; // this vertex is no longer mapped by definition
+	}
+	
 	/**
 	 * @param defnMapping The defnMapping to set.
 	 */
