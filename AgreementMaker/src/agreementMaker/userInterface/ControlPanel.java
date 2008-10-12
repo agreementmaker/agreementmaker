@@ -40,13 +40,16 @@ public class ControlPanel extends JPanel implements ActionListener,
 	private JLabel thre = new JLabel("Similarity Threshold Value             ");
 	private JLabel lines = new JLabel("Maximum Relations per Concept ");
 	private JButton mappingByConsolidationButton;
+	private JButton clearmappingByConsolidationButton;
 	private JCheckBox mappingByConsolidationCheckBox;
 	private JButton mappingByContextButton;
+	private JButton clearmappingByContextButton;
 	private JCheckBox mappingByContextCheckBox;
 	private JButton mappingByDefinitionButton;
 	private JButton clearmappingByDefinitionButton;
 	private JCheckBox mappingByDefinitionCheckBox;
 	private JButton mappingByUserButton;
+	private JButton clearmappingByUserButton;
 	private JCheckBox mappingByUserCheckBox;
 	private JComboBox thresholdList;
 	private UIMenu uiMenu;
@@ -192,9 +195,15 @@ public class ControlPanel extends JPanel implements ActionListener,
 		clearmappingByDefinitionButton = new JButton("Clear"); // clear button next to "run mapping by definition" button
 		clearmappingByDefinitionButton.setEnabled(false); // when the program starts, we have not computed any definition, so there is nothing to clear
 		mappingByUserButton =       new JButton("Show Mapping by User         ");
+		clearmappingByUserButton = new JButton("Clear");
+		clearmappingByUserButton.setEnabled(false); // when the program starts, we have not computed any definition, so there is nothing to clear
 		mappingByContextButton =  new JButton("Run Mapping by Context           ");
+		clearmappingByContextButton = new JButton("Clear");
+		clearmappingByContextButton.setEnabled(false); // when the program starts, we have not computed any definition, so there is nothing to clear
 		mappingByConsolidationButton = new JButton(
 				"Run Mapping by Consolidation");
+		clearmappingByConsolidationButton = new JButton("Clear");
+		clearmappingByConsolidationButton.setEnabled(false);
 		generateAgreementDocument = new JButton("View Agreement Document");
 
 		userLabel = new JLabel("       Manual Mapping Layer   ");
@@ -269,6 +278,7 @@ public class ControlPanel extends JPanel implements ActionListener,
 		//panelUserSet.add(mappingByUserButton);
 		panelUserSet.add(userLabel);
 		panelUserSet.add(showUserMap);
+		panelUserSet.add(clearmappingByUserButton);
 		
 		
 		
@@ -277,12 +287,14 @@ public class ControlPanel extends JPanel implements ActionListener,
 		//panelContextSet.add(mappingByContextCheckBox);
 		panelContextSet.add(mappingByContextButton);
 		panelContextSet.add(showContextMap);
+		panelContextSet.add(clearmappingByContextButton);
 		
 		JPanel panelConsolidateSet = new JPanel();
 		panelConsolidateSet.setLayout(new FlowLayout());
 		//panelConsolidateSet.add(mappingByConsolidationCheckBox);
 		panelConsolidateSet.add(mappingByConsolidationButton);
 		panelConsolidateSet.add(showConsMap);
+		panelConsolidateSet.add(clearmappingByConsolidationButton);
 
 		JPanel panelMappingLayers = new JPanel(new GridLayout(4, 1));
 		panelMappingLayers.add(panelDefSet);
