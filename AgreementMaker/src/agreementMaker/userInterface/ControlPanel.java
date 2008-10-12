@@ -116,7 +116,7 @@ public class ControlPanel extends JPanel implements ActionListener,
 			// Refresh the Canvas with the results, if the user wants to see them.
 			if(showDefMap.getSelectedIndex() == 0) { // the user has selected "Show Results"
 				canvas.selectedDefnMapping();
-				canvas.repaint();
+				// canvas.repaint(); this is called by the selectedDefnMapping() function
 			}
 			
 			
