@@ -100,11 +100,11 @@ public class ControlPanel extends JPanel implements ActionListener,
 			
 			String timeElapsed = new String("");
 			if(hours >= 1){
-				timeElapsed += Math.floor(hours) + " hour(s) ";
-				timeElapsed += Math.floor(minutes) % 60 + " minute(s) ";
+				timeElapsed += (int)(Math.floor(hours)) + " hour(s) ";
+				timeElapsed += (int)(Math.floor(minutes) % 60) + " minute(s) ";
 				timeElapsed += Math.floor(seconds) % 60 + " second(s)";
 			} else if( minutes >= 1 ) {
-				timeElapsed += Math.floor(minutes) + " minute(s) ";
+				timeElapsed += (int)(Math.floor(minutes) % 60) + " minute(s) ";
 				timeElapsed += Math.floor(seconds) % 60 + " second(s) ";
 			} else {
 				timeElapsed += seconds + " second(s) ";
@@ -119,7 +119,16 @@ public class ControlPanel extends JPanel implements ActionListener,
 				// canvas.repaint(); this is called by the selectedDefnMapping() function
 			}
 			
+			// enable the clear button since we have run a mapping by definition
+			clearmappingByDefinitionButton.setEnabled(true);
 			
+			
+			
+		} else if( obj == clearmappingByDefinitionButton ) {
+			// user clicked the clear by definition button
+			canvas.clearDefinitionMapping();
+			clearmappingByDefinitionButton.setEnabled(false);
+			canvas.repaint();
 			
 		} else if (obj == mappingByContextButton) {
 			if (mappingByContextButton.getText() == "Show Mapping by Context") {
@@ -180,6 +189,8 @@ public class ControlPanel extends JPanel implements ActionListener,
 		mappingByConsolidationCheckBox = new JCheckBox("");
 		useOfDict = new JCheckBox("Consult Dictionary                                         ");//ends here
 		mappingByDefinitionButton = new JButton("Run Mapping by Definition         ");
+		clearmappingByDefinitionButton = new JButton("Clear"); // clear button next to "run mapping by definition" button
+		clearmappingByDefinitionButton.setEnabled(false); // when the program starts, we have not computed any definition, so there is nothing to clear
 		mappingByUserButton =       new JButton("Show Mapping by User         ");
 		mappingByContextButton =  new JButton("Run Mapping by Context           ");
 		mappingByConsolidationButton = new JButton(
@@ -222,6 +233,7 @@ public class ControlPanel extends JPanel implements ActionListener,
 		mappingByConsolidationCheckBox.addItemListener(this);
 
 		mappingByDefinitionButton.addActionListener(this);
+		clearmappingByDefinitionButton.addActionListener(this);
 		mappingByUserButton.addActionListener(this);
 		mappingByContextButton.addActionListener(this);
 		mappingByConsolidationButton.addActionListener(this);
@@ -247,6 +259,7 @@ public class ControlPanel extends JPanel implements ActionListener,
 		//panelDefSet.add(mappingByDefinitionCheckBox);
 		panelDefSet.add(mappingByDefinitionButton);
 		panelDefSet.add(showDefMap);
+		panelDefSet.add(clearmappingByDefinitionButton);
 		
 		
 		

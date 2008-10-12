@@ -3476,5 +3476,45 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		performShowAll(root);
 		
 	}
+	
+	
+	/**
+	 * This function will clear any definition mapping that was previously calculated
+	 */
+	public void clearDefinitionMapping() {
+		
+		// start at the global root
+		clearDefinitionMapping(globalTreeRoot);
+		clearDefinitionMapping(localTreeRoot);
+		
+		
+		
+	}
+
+	/**
+	 * This function will clear the definition mapping of the parent
+	 * and recursively, the definition of its childen
+	 * @param parent
+	 * @author cosmin
+	 * @date Oct 12, 2008
+	 */
+	private void clearDefinitionMapping( Vertex parent ) {
+
+		// we have some sort of definition mapping here
+		parent.clearDefnMapping();
+		
+		
+		if( parent.isLeaf() ) {
+			return;
+		}
+		
+		Vertex child = null;
+		for( Enumeration<Vertex> e = parent.children(); e.hasMoreElements(); ) {
+			// iterate through this node's children
+			child = e.nextElement();
+			clearDefinitionMapping( child ); // clear the definition of the child
+		}
+		
+	}
 }
 
