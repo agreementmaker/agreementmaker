@@ -25,7 +25,7 @@ import agreementMaker.userInterface.vertex.VertexDescriptionPane;
 public class UIMenu implements ActionListener, ItemListener {
 	
 	// create 4 menus
-	private JMenu fileMenu, editMenu, viewMenu, helpMenu;
+	private JMenu fileMenu, editMenu, viewMenu, helpMenu,developmentMenu;
 	
 	// menu items for helpMenu
 	private JMenuItem howToUse, aboutItem;		
@@ -44,6 +44,8 @@ public class UIMenu implements ActionListener, ItemListener {
 	private JMenuItem undo, redo;
 	// menu itmes for fileMenu
 	private JMenuItem xit, openSource, openTarget;
+	// menu itmes for developmentMenu
+	private JMenuItem evaluateReferenceItem;
 	
 	private JMenu menuRecentSource, menuRecentTarget;
 	private JMenuItem menuRecentSourceList[], menuRecentTargetList[]; // the list of recent files
@@ -151,6 +153,9 @@ public class UIMenu implements ActionListener, ItemListener {
 			displayOptionPane("Undo Clicked","Undo");
 		}else if (obj == redo){
 			displayOptionPane("Redo Clicked","Redo");
+		}
+		else if(obj == evaluateReferenceItem) {
+			openReferenceFileDialog();
 		}
 		
 		
@@ -331,7 +336,15 @@ public class UIMenu implements ActionListener, ItemListener {
 		aboutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));                
 		aboutItem.addActionListener(this);
 		helpMenu.add(aboutItem);
-
+		
+		// building the development menu
+		developmentMenu = new JMenu("Development");
+		developmentMenu.setMnemonic(KeyEvent.VK_D);
+		myMenuBar.add(developmentMenu);	
+		//item to run the reference evaluation
+		evaluateReferenceItem = new JMenuItem("Evaluate reference");
+		evaluateReferenceItem.addActionListener(this);
+		developmentMenu.add(evaluateReferenceItem);
 	}
 	
 	
@@ -427,6 +440,13 @@ public class UIMenu implements ActionListener, ItemListener {
 	 */	
 	 public void openAndReadFilesForMapping(int fileType){
 		new OpenOntologyFileDialog(fileType, ui);
+	 }
+	 
+	/**
+	 * This method open the ReferenceFileDialog frame which allow the user to select the reference and agrrementdocument files to run the evaluation
+	 */	
+	 public void openReferenceFileDialog(){
+		new ReferenceFileDialog(ui);
 	 }
 	
 }

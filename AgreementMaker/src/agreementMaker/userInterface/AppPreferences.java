@@ -32,8 +32,12 @@ public class AppPreferences {
 	/** the prefix for the 10 entries for the recent source file */
 	private static final String PREF_RECENTSOURCE = "recentsource_";
 	private static final String PREF_RECENTTARGET = "recenttarget_";
-															 
-
+	
+	/** key for storing the last directory used to open the reference file in the Evaluate Reference function */
+	private static final String 	PREF_LASTDIRREFERENCE = "pref_lastdirectoryreference";													 
+	/** format of the last reference file opened in the Evaluate Reference function */
+	private static final String PREF_LASTFORMATREFERENCE = "pref_lastformatreference";
+	
 	/**
 	 * Constructor
 	 */
@@ -289,7 +293,7 @@ public class AppPreferences {
 		return appPrefs.getInt(prefix + "language" + position, 0);
 	}
 
-	
+
 	/**
 	 * This function will clean up the recent file entries
 	 * If the files on the list no longer exist, it will remove them from the list,
@@ -344,6 +348,50 @@ public class AppPreferences {
 		}
 		
 	}
+	
+	/*
+	 * Functions used by the ReferenceFileDialog
+	 * 
+	 */
+	/** 
+	 *
+	 * @return the last directory selected by the user in the file chooser in ReferenceFileDialog task
+	 */
+	public File getLastDirReference() {
+		
+		File lastdirref = new File( appPrefs.get(PREF_LASTDIRREFERENCE, "~"));
+		return lastdirref;
+	}
+	
+	/**
+	 * This will save the location of the directory that was used by the user to open a reference file in Evaluate Reference function
+	 * for use next time the user opens the dialog
+	 * @param selectedfile - the file that was selected by the user
+	 */
+	public void saveLastDirReference(File selectedfile) {
+		appPrefs.put(PREF_LASTDIRREFERENCE, selectedfile.getPath());
+	}
+	
+	/** 
+	 *
+	 * @return the format of the last reference file opened by the user in the file chooser in ReferenceFileDialog task
+	 */
+	public int getFileFormatReference() {
+		return appPrefs.getInt(PREF_LASTFORMATREFERENCE, 0);
+	}
+	
+	/**
+	 * 
+	 * This will save the index of the format of the file that was used by the user to open a reference file in Evaluate Reference function
+	 * for use next time the user opens the dialog
+	 * @param selectedfile - the file that was selected by the user
+	 */
+	public void saveLastFormatReference(int indexformat) {
+		appPrefs.put(PREF_LASTFORMATREFERENCE, indexformat+"");
+	}
+	
+	
+	
 	
 	
 }
