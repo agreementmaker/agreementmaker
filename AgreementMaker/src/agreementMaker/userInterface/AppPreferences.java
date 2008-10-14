@@ -34,9 +34,13 @@ public class AppPreferences {
 	private static final String PREF_RECENTTARGET = "recenttarget_";
 	
 	/** key for storing the last directory used to open the reference file in the Evaluate Reference function */
-	private static final String 	PREF_LASTDIRREFERENCE = "pref_lastdirectoryreference";													 
+	private static final String 	PREF_LASTDIRREFERENCE = "pref_lastdirreference";													 
 	/** format of the last reference file opened in the Evaluate Reference function */
 	private static final String PREF_LASTFORMATREFERENCE = "pref_lastformatreference";
+	/** key for storing the last directory used to save the output of the evaluation with the reference file in the Evaluate Reference function */
+	private static final String 	PREF_LASTDIRREFOUTPUT = "pref_lastdirrefoutput";		
+	/** key for storing the last name of the file used to save the output of the evaluation with the reference file in the Evaluate Reference function */
+	private static final String 	PREF_LASTNAMEREFOUTPUT = "pref_lastnamerefoutput";		
 	
 	/**
 	 * Constructor
@@ -359,7 +363,7 @@ public class AppPreferences {
 	 */
 	public File getLastDirReference() {
 		
-		File lastdirref = new File( appPrefs.get(PREF_LASTDIRREFERENCE, "~"));
+		File lastdirref = new File( appPrefs.get(PREF_LASTDIRREFERENCE, ""));
 		return lastdirref;
 	}
 	
@@ -390,6 +394,44 @@ public class AppPreferences {
 		appPrefs.put(PREF_LASTFORMATREFERENCE, indexformat+"");
 	}
 	
+	/** 
+	 *
+	 * @return the last directory selected by the user in the file chooser in ReferenceFileDialog task
+	 */
+	public File getLastDirRefOutput() {
+		File lastdirrefoutput = new File( appPrefs.get(PREF_LASTDIRREFOUTPUT, ""));
+		return lastdirrefoutput;
+		
+	}
+	
+	/**
+	 * This will save the location of the directory that was used by the user to save the output of the Evaluate Reference function
+	 * for use next time the user opens the dialog
+	 * @param selectedfile - the file that was selected by the user
+	 */
+	public void saveLastDirRefOutput(File selecteddir) {
+		appPrefs.put(PREF_LASTDIRREFOUTPUT, selecteddir.getPath());
+	}
+	
+	/** 
+	 *
+	 * @return the last directory selected by the user in the file chooser in ReferenceFileDialog task
+	 */
+	public String getLastNameRefOutput() {
+		String name = appPrefs.get(PREF_LASTNAMEREFOUTPUT,"");
+		return name;
+		
+	}
+	
+	/**
+	 * This will save the name of the output file of the Evaluate Reference function
+	 * for use next time the user opens the dialog
+	 * @param selectedfile - the file that was selected by the user
+	 */
+	public void saveLastNameRefOutput(String name) {
+		appPrefs.put(PREF_LASTNAMEREFOUTPUT, name);
+	}
+	//THE LAST FORMAT FOR THE OUTPUT FILE OF THE REFERENCE EVALUATION HAS NOT BEEN IMPLEMENTED YET BECAUSE THERE IS ONLY ONE FORMAT NOW
 	
 	
 	

@@ -21,6 +21,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileFilter;
 
 import agreementMaker.GSM;
 import agreementMaker.development.ReferenceEvaluation;
@@ -31,47 +32,54 @@ import agreementMaker.userInterface.vertex.VertexDescriptionPane;
  * @author Nalin
  *
  */
-public class ReferenceFileDialog implements ActionListener{
+public class ReferenceOutputFileDialog implements ActionListener{
 	
 	/**
 	 * @param args
 	 */
-	
-	private JButton browse, cancel, next;
-	public JTextField filePath;
 	private JLabel fileType;
+	private JTextField fileName;
+	private JButton browse, cancel, evaluate, previous;
+	
+	private JLabel fileDir;
+	private JTextField filePath;
+	
 	public JDialog frame;
-	public JList formatList;
-	private UI ui;
-	private ReferenceOutputFileDialog nextDialog;
+	private JList formatList;
+	private ReferenceFileDialog prevDialog;
 	
 	
 	/**
 	 * @param ontoType
 	 * @param userInterface
 	 */
-	public ReferenceFileDialog(UI userInterface) {
+	public ReferenceOutputFileDialog(ReferenceFileDialog prev) {
 		  
-		ui = userInterface;
+		prevDialog = prev;
 		AppPreferences prefs = new AppPreferences(); // Class interface to Application Preferences
 		frame = new JDialog();
-		frame.setTitle("Evaluate reference - reference file ");
-		fileType = new JLabel("Reference file");
+		frame.setTitle("Evaluate reference - Output file ");
+		fileType = new JLabel("Output file name");
+		fileName = new JTextField(0);
+		fileDir = new JLabel("Output file directory");
 		filePath = new JTextField(0);
+		
 		//the system suggests the last file opened
-		if( prefs.getLastDirReference().exists() ) {
-			filePath.setText(prefs.getLastDirReference().getPath());
+		if( prefs.getLastDirRefOutput().exists() ) {
+			filePath.setText(prefs.getLastDirRefOutput().getPath());
 		}
+		fileName.setText(prefs.getLastNameRefOutput());
 		
 		browse = new JButton("Browse...");
 		cancel = new JButton("Cancel");
-		next = new JButton("Next");
+		previous = new JButton("Previous");
+		evaluate = new JButton("Evaluate");
 		browse.addActionListener(this);
 		cancel.addActionListener(this);
-		next.addActionListener(this);
+		evaluate.addActionListener(this);
+		previous.addActionListener(this);
 		
-		//Formats are fixed, the development.ReferenceEvaluation class contains definitions.
-		String[] format_list = {ReferenceEvaluation.REF1,ReferenceEvaluation.REF2};
+		String[] format_list = {ReferenceEvaluation.OUTF1};
 		
 		
 		formatList = new JList(format_list);
@@ -79,8 +87,8 @@ public class ReferenceFileDialog implements ActionListener{
 		formatList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		formatList.setVisibleRowCount(3);
 		formatList.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "File format"));
-		formatList.setSelectedIndex(prefs.getFileFormatReference());  // select the last thing selected
-
+		formatList.setSelectedIndex(0);  // if more then one format will be implemented could be useful to add the lastformatRefOutput to the preferences
+		
 		
 		//Make the GroupLayout for this dialog (somewhat complicated, but very flexible)
 		// This Group layout lays the items in relation with eachother.  The horizontal
@@ -95,36 +103,41 @@ public class ReferenceFileDialog implements ActionListener{
 		// Both definitions are required for the GroupLayout to be complete.
 		layout.setHorizontalGroup(
 				layout.createSequentialGroup()
-					.addComponent(fileType) 					// fileType label
+					.addGroup(layout.createParallelGroup()
+							.addComponent(fileDir) //the label Output File directory
+							.addComponent(fileType) //the label output file name
+					)
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 							.addComponent(filePath) 			// filepath text
+							.addComponent(fileName) 	        //filename text
 							.addComponent(formatList) 	
 							.addGroup(layout.createSequentialGroup()
-									.addComponent(cancel)		// the buttons are also part of their own groups
-									.addComponent(next)
-									)
+									.addComponent(cancel)		
+									.addComponent(previous)
+									.addComponent(evaluate)
 							)
-					.addGroup(layout.createParallelGroup()
-							.addComponent(browse)
-							)
+					)		
+					.addComponent(browse)
 		);
 		// the Vertical group is the same structure as the horizontal group
 		// but Sequential and Parallel definition are exchanged
 		layout.setVerticalGroup(
 				layout.createParallelGroup()
-					.addComponent(fileType)
 					.addGroup(layout.createSequentialGroup()
-							.addComponent(filePath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-							          GroupLayout.PREFERRED_SIZE)
-							.addComponent(formatList)
-							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-									.addComponent(cancel)
-									.addComponent(next)
-									)
+							.addComponent(fileDir) //the label Output File directory
+							.addComponent(fileType) //the label output file name
+					)
+					.addGroup(layout.createSequentialGroup()
+							.addComponent(filePath) 			// filepath text
+							.addComponent(fileName) 	        //filename text
+							.addComponent(formatList) 	
+							.addGroup(layout.createParallelGroup()
+									.addComponent(cancel)		
+									.addComponent(previous)
+									.addComponent(evaluate)
 							)
-					.addGroup(layout.createSequentialGroup() 
-							.addComponent(browse, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-							          GroupLayout.PREFERRED_SIZE))
+					)		
+					.addComponent(browse)
 		);
 
 		// end of Layout Code
@@ -146,64 +159,89 @@ public class ReferenceFileDialog implements ActionListener{
 	public void actionPerformed (ActionEvent ae){
 		
 		Object obj = ae.getSource();
-		JFileChooser fc;
+		
 		AppPreferences prefs = new AppPreferences(); // Class interface to Application Preferences
 		
 		if(obj == cancel){
-			if(nextDialog != null) {
-				nextDialog.frame.dispose();
-				nextDialog = null;
-			}
+			prevDialog.frame.dispose();	
+			prevDialog = null;
 			frame.setModal(false);
 			frame.dispose();
-		}else if(obj == browse){
-			
+		}
+		else if(obj == browse){
+			JFileChooser fc;
 			
 			File lastFile;
-			//If the user has opened a reference file already the system will use the last reference file dir to start the chooser,
+			//If the user has select an output file already the system will use the last ouput file dir to start the chooser,
 			//if he didn't the system will try to use the last dir used to open the ontologies, maybe is the same one of the reference or it's closer
 			//if not even that one exists, the chooser starts normally
-			if( prefs.getLastDirReference().exists() ) {
-				fc = new JFileChooser(prefs.getLastDirReference());
-			}
+			
+			if(prefs.getLastDirRefOutput().exists()) {
+				fc = new JFileChooser(prefs.getLastDirRefOutput());
+			}	
 			else if( prefs.getLastDir().exists() ) {
 				fc = new JFileChooser(prefs.getLastDir());
 			} else { fc = new JFileChooser(); } 
+
 			
+			//This lines are needed to set the filechooser as directory chooser, we are creating a file filter class here which has to implements all needed methods.
+			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			fc.setFileFilter(new FileFilter() {
+	            public boolean accept(File f) {
+	                if (f.isDirectory()) {
+	                    return true;
+	                }
+	                else if (f.getName().endsWith(".zip")) {
+	                    return true;
+	                }
+	                return false;
+	            }
+	 
+	            public String getDescription() {
+	                return "";
+	            }
+	        });
+
 			int returnVal = fc.showOpenDialog(frame);
 
 			if( returnVal == JFileChooser.APPROVE_OPTION ) {
-				File selectedfile = fc.getSelectedFile();
-				
+				File selectedfile = fc.getSelectedFile();	
 				// ok, now that we know what file the user selected
 				// let's save it for future use (for the chooser)
-				prefs.saveLastDirReference(selectedfile); 
+				prefs.saveLastDirRefOutput(selectedfile); 
 				filePath.setText(selectedfile.getPath());
-				
-
 			}
 		}
-		else if(obj == next){
-			if(filePath.getText().equals("")){
-				JOptionPane.showMessageDialog(frame, "Load a reference file to proceed.");
+		else if(obj == previous){
+			frame.setModal(false);
+			frame.setVisible(false);
+			prevDialog.frame.setModal(true);
+			prevDialog.frame.setVisible(true);
+		}//end of obj previous
+		else if(obj == evaluate){
+			String refN = prevDialog.filePath.getText();
+			String refF = prevDialog.formatList.getSelectedValue().toString();
+			String outPath = filePath.getText();
+			String outName = fileName.getText();
+			String outN = outPath+outName;
+			String outF = formatList.getSelectedValue().toString();
+			if(outPath.equals("")){
+				JOptionPane.showMessageDialog(frame, "Select the directory for the output file to proceed.");
 			}
-			else if(!new File(filePath.getText()).exists()) {
-				JOptionPane.showMessageDialog(frame, "The reference file selected does not exist");
+			else if(outName.equals("")){
+				JOptionPane.showMessageDialog(frame, "Select a name for the output file to proceed");
 			}
 			else{
-				prefs.saveLastFormatReference(formatList.getSelectedIndex());	
-				
+				prefs.saveLastNameRefOutput(fileName.getText());
+				//The referenceEvaluation class keeps the control methods of this task
+				ReferenceEvaluation refEva = new ReferenceEvaluation(refN, refF, outN, outF);
+				JOptionPane.showMessageDialog(frame, "Evaluation complete");
+				prevDialog.frame.dispose();
+				prevDialog = null;
 				frame.setModal(false);
-				frame.setVisible(false);
-				if(nextDialog == null || nextDialog.frame == null) {
-					ReferenceOutputFileDialog nextDialog = new ReferenceOutputFileDialog(this);
-				}
-				else {
-					nextDialog.frame.setModal(true);
-					nextDialog.frame.setVisible(true);	
-				}			
+				frame.dispose();
 			}
-		}// end of obj == next
+		}// end of obj == evaluate
 	}
 	/* (non-Javadoc)
 	 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
