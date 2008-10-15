@@ -2916,7 +2916,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			if(f>=50) 	countStat++;
 			
 			System.out.print(fl); 
-			if ( f > threshold )
+			if ( f >= threshold )
 			{ 	
 				node.setIsMappedByDef(true);
 				child.setIsMappedByDef(true);

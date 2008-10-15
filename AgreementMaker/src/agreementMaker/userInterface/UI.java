@@ -14,6 +14,7 @@ import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 
 import agreementMaker.GSM;
+import agreementMaker.development.OntologyController;
 
 
 /**
@@ -30,6 +31,7 @@ public class UI {
 	static final long serialVersionUID = 1;
 	
 	private Canvas canvas;
+	private OntologyController ontologyController;
 	
 	private JFrame frame;
 	// variables to store the global and local filenames
@@ -72,6 +74,14 @@ public class UI {
 	public Canvas getCanvas(){
 		return this.canvas;
 	}
+	
+	/**
+	 * @return the ontologyController, a class containing some methods to work with canvas and ontologies
+	 */
+	public OntologyController getOntologyController(){
+		return this.ontologyController;
+	}
+	
 	/**
 	 * @return
 	 */
@@ -148,10 +158,11 @@ public class UI {
 		
 		//add canvas to panel
 		panelCanvas.add(canvas);
+		//Added by Flavio: this class is needed to modularize the big canvas class, basically it contains some methods which could be in canvas class which works with the ontologies
+	    ontologyController = new OntologyController(canvas);
 		
-		//panelDesc = new VertexDescriptionPane(this); 
+	    //panelDesc = new VertexDescriptionPane(this); 
 		//TODO: Add tabbed panes here for displaying the properties and descriptions		
-		
 		scrollPane = new JScrollPane(panelCanvas);
 		scrollPane.setWheelScrollingEnabled(true);
 		//scrollPane.setPreferredSize(new Dimension((int)scrollPane.getSize().getHeight(), 5));

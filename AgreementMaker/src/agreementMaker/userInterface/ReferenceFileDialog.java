@@ -42,7 +42,7 @@ public class ReferenceFileDialog implements ActionListener{
 	private JLabel fileType;
 	public JDialog frame;
 	public JList formatList;
-	private UI ui;
+	public UI ui;
 	private ReferenceOutputFileDialog nextDialog;
 	
 	

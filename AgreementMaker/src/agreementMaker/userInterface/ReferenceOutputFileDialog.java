@@ -23,6 +23,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 
+import agreementMaker.AMException;
 import agreementMaker.GSM;
 import agreementMaker.development.ReferenceEvaluation;
 import agreementMaker.userInterface.vertex.VertexDescriptionPane;
@@ -59,7 +60,7 @@ public class ReferenceOutputFileDialog implements ActionListener{
 		AppPreferences prefs = new AppPreferences(); // Class interface to Application Preferences
 		frame = new JDialog();
 		frame.setTitle("Evaluate reference - Output file ");
-		fileType = new JLabel("Output file name");
+		fileType = new JLabel("File name (NO EXT)");
 		fileName = new JTextField(0);
 		fileDir = new JLabel("Output file directory");
 		filePath = new JTextField(0);
@@ -155,12 +156,8 @@ public class ReferenceOutputFileDialog implements ActionListener{
 	/* (non-Javadoc)
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
-
 	public void actionPerformed (ActionEvent ae){
-		
 		Object obj = ae.getSource();
-		
-		AppPreferences prefs = new AppPreferences(); // Class interface to Application Preferences
 		
 		if(obj == cancel){
 			prevDialog.frame.dispose();	
@@ -169,85 +166,99 @@ public class ReferenceOutputFileDialog implements ActionListener{
 			frame.dispose();
 		}
 		else if(obj == browse){
-			JFileChooser fc;
-			
-			File lastFile;
-			//If the user has select an output file already the system will use the last ouput file dir to start the chooser,
-			//if he didn't the system will try to use the last dir used to open the ontologies, maybe is the same one of the reference or it's closer
-			//if not even that one exists, the chooser starts normally
-			
-			if(prefs.getLastDirRefOutput().exists()) {
-				fc = new JFileChooser(prefs.getLastDirRefOutput());
-			}	
-			else if( prefs.getLastDir().exists() ) {
-				fc = new JFileChooser(prefs.getLastDir());
-			} else { fc = new JFileChooser(); } 
-
-			
-			//This lines are needed to set the filechooser as directory chooser, we are creating a file filter class here which has to implements all needed methods.
-			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			fc.setFileFilter(new FileFilter() {
-	            public boolean accept(File f) {
-	                if (f.isDirectory()) {
-	                    return true;
-	                }
-	                else if (f.getName().endsWith(".zip")) {
-	                    return true;
-	                }
-	                return false;
-	            }
-	 
-	            public String getDescription() {
-	                return "";
-	            }
-	        });
-
-			int returnVal = fc.showOpenDialog(frame);
-
-			if( returnVal == JFileChooser.APPROVE_OPTION ) {
-				File selectedfile = fc.getSelectedFile();	
-				// ok, now that we know what file the user selected
-				// let's save it for future use (for the chooser)
-				prefs.saveLastDirRefOutput(selectedfile); 
-				filePath.setText(selectedfile.getPath());
-			}
+			browse();
 		}
 		else if(obj == previous){
 			frame.setModal(false);
 			frame.setVisible(false);
 			prevDialog.frame.setModal(true);
 			prevDialog.frame.setVisible(true);
-		}//end of obj previous
+		}
 		else if(obj == evaluate){
-			String refN = prevDialog.filePath.getText();
-			String refF = prevDialog.formatList.getSelectedValue().toString();
-			String outPath = filePath.getText();
-			String outName = fileName.getText();
-			String outN = outPath+outName;
-			String outF = formatList.getSelectedValue().toString();
-			if(outPath.equals("")){
-				JOptionPane.showMessageDialog(frame, "Select the directory for the output file to proceed.");
-			}
-			else if(outName.equals("")){
-				JOptionPane.showMessageDialog(frame, "Select a name for the output file to proceed");
-			}
-			else{
-				prefs.saveLastNameRefOutput(fileName.getText());
-				//The referenceEvaluation class keeps the control methods of this task
-				ReferenceEvaluation refEva = new ReferenceEvaluation(refN, refF, outN, outF);
-				JOptionPane.showMessageDialog(frame, "Evaluation complete");
-				prevDialog.frame.dispose();
-				prevDialog = null;
-				frame.setModal(false);
-				frame.dispose();
-			}
-		}// end of obj == evaluate
+			evaluate();
+		}
 	}
-	/* (non-Javadoc)
-	 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
-	 */
 	
+	private void evaluate() {
+		AppPreferences prefs = new AppPreferences(); // Class interface to Application Preferences
+		String refN = prevDialog.filePath.getText();
+		String refF = prevDialog.formatList.getSelectedValue().toString();
+		String outPath = filePath.getText();
+		String outName = fileName.getText();
+		String outN = outPath+"\\"+outName+".txt";//right now only one extension is admitted
+		String outF = formatList.getSelectedValue().toString();
+		if(outPath.equals("")){
+			JOptionPane.showMessageDialog(frame, "Select the directory for the output file to proceed.");
+		}
+		else if(outName.equals("")){
+			JOptionPane.showMessageDialog(frame, "Inser a name for the output file to proceed");
+		}
+		else if(outName.indexOf(".")!=-1) {
+			JOptionPane.showMessageDialog(frame, "Insert a file name without Extension");
+		}
+		else{
+			prefs.saveLastNameRefOutput(fileName.getText());
+			try {
+				//The referenceEvaluation class keeps the control methods of this task
+				ReferenceEvaluation refEva = new ReferenceEvaluation(prevDialog.ui.getOntologyController(),refN, refF, outN, outF);
+				refEva.evaluate();
+				JOptionPane.showMessageDialog(frame, "Evaluation complete");
+			}
+			catch(AMException ame) {
+				JOptionPane.showMessageDialog(frame, ame.getMessage());
+				//no need to print in console because it's just a user error;
+			}
+			catch(Exception e) {
+				//for developer users, when the tool released there should be a standard message like Unexpected Exception, for us it's useful to keep it full now
+				JOptionPane.showMessageDialog(frame, e.getMessage());
+				e.printStackTrace();
+			}
+			
+			prevDialog.frame.dispose();
+			prevDialog = null;
+			frame.setModal(false);
+			frame.dispose();
+		}
+	}
 
+	private void browse() {
+		AppPreferences prefs = new AppPreferences(); // Class interface to Application Preferences 
+		JFileChooser fc; 
+		
+		//If the user has select an output file already the system will use the last ouput file dir to start the chooser, 
+		//if he didn't the system will try to use the last dir used to open the ontologies, maybe is the same one of the reference or it's closer 
+		//if not even that one exists, the chooser starts normally 
+		if(prefs.getLastDirRefOutput().exists()) {  
+			fc = new JFileChooser(prefs.getLastDirRefOutput()); 
+		} 	 
+		else if( prefs.getLastDir().exists() ) { 
+			fc = new JFileChooser(prefs.getLastDir()); 
+		} else { fc = new JFileChooser(); } 
 
+		//This lines are needed to set the filechooser as directory chooser, we are creating a file filter class here which has to implements all needed methods.
+		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); 
+		fc.setFileFilter(new FileFilter() {  
+            public boolean accept(File f) {  
+                if (f.isDirectory()) { 
+                    return true;   
+                } 
+                return false;  
+            }
+ 
+            public String getDescription() { 
+                return "";
+            }
+        });
+
+		int returnVal = fc.showOpenDialog(frame);
+
+		if( returnVal == JFileChooser.APPROVE_OPTION ) {
+			File selectedfile = fc.getSelectedFile();	
+			// ok, now that we know what file the user selected
+			// let's save it for future use (for the chooser)
+			prefs.saveLastDirRefOutput(selectedfile); 
+			filePath.setText(selectedfile.getPath());
+		}
+	}
 	
 }
