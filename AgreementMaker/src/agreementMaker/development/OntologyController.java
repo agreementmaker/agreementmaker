@@ -33,18 +33,31 @@ public class OntologyController {
 		Vertex targetnode;
 		DefnMapping dmsource;	
 		MatchingPair mp;
+		int myLines;
 		//preorderEnum is the same order visualized on the AM display.
 		for (Enumeration e = sourceRoot.preorderEnumeration(); e.hasMoreElements(); ) {
 			sourcenode = (Vertex) e.nextElement();
 			dmsource = sourcenode.getDefnMapping();
 			if(dmsource!=null && dmsource.getLocalVertices() != null) {//if this source node has some mappings
 				Iterator it = dmsource.getLocalVertices().iterator();
+				myLines = 0;
+				while(it.hasNext() && myLines < canvas.getDefnLines()) {
+					targetnode = (Vertex) it.next();
+					mp = new MatchingPair(sourcenode.getName(),targetnode.getName());
+					//System.out.println(mp.getTabString()+" "+dmsource.getMappingValue1(targetnode));
+					matchList.add(mp);
+					myLines++;
+				}
+				//DEBUGGING OF OTHER RELATIONS FOUND BUT AFTER MINIMUMNUMBER OF REL
+				/*
 				while(it.hasNext()) {
 					targetnode = (Vertex) it.next();
 					//System.out.println(sourcenode.getName()+" "+v.getName());
 					mp = new MatchingPair(sourcenode.getName(),targetnode.getName());
-					matchList.add(mp);
+					System.out.println(mp.getTabString()+" "+dmsource.getMappingValue1(targetnode));
 				}
+				*/ 
+				//END OF DEBUGGING
 			}
 		}
 		return matchList;

@@ -1,5 +1,7 @@
 package agreementMaker;
 
+import java.text.NumberFormat;
+
 import agreementMaker.userInterface.UI;
 
 /**

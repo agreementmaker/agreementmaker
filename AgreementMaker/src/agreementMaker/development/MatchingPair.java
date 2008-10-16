@@ -30,6 +30,10 @@ public class MatchingPair {
 		else return false;
 	}
 	
+	public String getTabString() {
+		return sourcename+"\t"+targetname;
+	}
+	
 	public boolean equals(Object o) { 
 		if(o instanceof MatchingPair) {
 			MatchingPair mp = (MatchingPair)o;

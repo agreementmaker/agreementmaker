@@ -1926,6 +1926,13 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		return null;
 	}
 	/**
+	 * RIGHT NOW DISPLAYED LINES AND NUMBER OF RELATIONS IS THE SAME, THEY SHOULD BE SEPARATED.
+	 * @return the number of relation to be found for each source node. When a method scans node.getDefnMapping.getGlobalVertices() it has to look only at the first getDfnLines. 
+	 */
+	public int getDefnLines() {
+		return noOfLines;
+	}
+/**
 	 * This function returns the old node's y coordinate
 	 * @return oldY previous y location
 	 */

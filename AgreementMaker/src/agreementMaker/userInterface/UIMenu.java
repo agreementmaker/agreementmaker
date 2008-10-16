@@ -259,7 +259,8 @@ public class UIMenu implements ActionListener, ItemListener {
 		xit = new JMenuItem("Exit", KeyEvent.VK_X);
 		xit.addActionListener(this);
 		fileMenu.add(xit);
-
+		
+		/*EDIT BUTTON IS DISABLED RIGHT NOW
 		// Build edit menu in the menu bar.
 		editMenu = new JMenu("Edit");
 		editMenu.setMnemonic(KeyEvent.VK_E);
@@ -278,7 +279,8 @@ public class UIMenu implements ActionListener, ItemListener {
 		redo.addActionListener(this);
 		redo.setEnabled(false);
 		editMenu.add(redo);
-
+		*/
+		
 		// Build view menu in the menu bar.
 		viewMenu = new JMenu("View");
 		viewMenu.setMnemonic(KeyEvent.VK_V);
@@ -316,7 +318,15 @@ public class UIMenu implements ActionListener, ItemListener {
 		keyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, ActionEvent.CTRL_MASK)); 	                
 		keyItem.addActionListener(this);
 		viewMenu.add(keyItem);
-
+		
+		// Build  the development menu
+		developmentMenu = new JMenu("Development");
+		developmentMenu.setMnemonic(KeyEvent.VK_D);
+		myMenuBar.add(developmentMenu);	
+		//add item to run the reference evaluation
+		evaluateReferenceItem = new JMenuItem("Evaluate reference");
+		evaluateReferenceItem.addActionListener(this);
+		developmentMenu.add(evaluateReferenceItem);
 
 		// Build help menu in the menu bar.
 		helpMenu = new JMenu("Help");
@@ -337,14 +347,7 @@ public class UIMenu implements ActionListener, ItemListener {
 		aboutItem.addActionListener(this);
 		helpMenu.add(aboutItem);
 		
-		// building the development menu
-		developmentMenu = new JMenu("Development");
-		developmentMenu.setMnemonic(KeyEvent.VK_D);
-		myMenuBar.add(developmentMenu);	
-		//item to run the reference evaluation
-		evaluateReferenceItem = new JMenuItem("Evaluate reference");
-		evaluateReferenceItem.addActionListener(this);
-		developmentMenu.add(evaluateReferenceItem);
+
 	}
 	
 	

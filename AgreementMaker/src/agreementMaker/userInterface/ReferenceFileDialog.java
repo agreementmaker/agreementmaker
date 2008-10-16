@@ -71,11 +71,11 @@ public class ReferenceFileDialog implements ActionListener{
 		next.addActionListener(this);
 		
 		//Formats are fixed, the development.ReferenceEvaluation class contains definitions.
-		String[] format_list = {ReferenceEvaluation.REF1,ReferenceEvaluation.REF2};
+		String[] format_list = {ReferenceEvaluation.REF1,ReferenceEvaluation.REF2, ReferenceEvaluation.REF3};
 		
 		
 		formatList = new JList(format_list);
-		formatList.setPrototypeCellValue("01234567890123456789"); // this string sets the width of the list
+		formatList.setPrototypeCellValue("012345678901234567890123456789012345678901234567890123456789"); // this string sets the width of the list
 		formatList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		formatList.setVisibleRowCount(3);
 		formatList.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "File format"));

@@ -202,7 +202,7 @@ public class ReferenceOutputFileDialog implements ActionListener{
 				//The referenceEvaluation class keeps the control methods of this task
 				ReferenceEvaluation refEva = new ReferenceEvaluation(prevDialog.ui.getOntologyController(),refN, refF, outN, outF);
 				refEva.evaluate();
-				JOptionPane.showMessageDialog(frame, "Evaluation complete");
+				JOptionPane.showMessageDialog(frame,refEva.getReport()+"\n\nA more detailed report can be found in the Output file:\n"+outN+"\nYou can open the file with Excel also.");
 			}
 			catch(AMException ame) {
 				JOptionPane.showMessageDialog(frame, ame.getMessage());

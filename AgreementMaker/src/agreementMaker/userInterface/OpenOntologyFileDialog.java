@@ -214,7 +214,7 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 
 			}
 		}else if(obj == proceed){
-			if(filePath.equals("")){
+			if(filePath.getText().equals("")){
 				JOptionPane.showMessageDialog(frame, "Load an ontology file to proceed.");
 			}else{
 				try{
