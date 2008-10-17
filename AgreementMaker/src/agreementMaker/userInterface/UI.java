@@ -228,6 +228,7 @@ class WindowEventHandler extends WindowAdapter
 	 */
 	public void windowClosing(WindowEvent e)
 	{
-		System.exit(0);   
+		e.getWindow().dispose();
+		//System.exit(0);   
 	}
 }    
