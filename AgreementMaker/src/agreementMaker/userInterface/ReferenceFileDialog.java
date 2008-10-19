@@ -54,6 +54,7 @@ public class ReferenceFileDialog implements ActionListener{
 		  
 		ui = userInterface;
 		AppPreferences prefs = new AppPreferences(); // Class interface to Application Preferences
+		//frame = new JDialog();
 		frame = new JDialog();
 		frame.setTitle("Evaluate reference - reference file ");
 		fileType = new JLabel("Reference file");
@@ -133,7 +134,6 @@ public class ReferenceFileDialog implements ActionListener{
 		frame.pack(); // automatically set the frame size
 		frame.setLocationRelativeTo(null); 	// center the window on the screen
 		frame.setModal(true);
-		
 		frame.setVisible(true);
 		
 	}

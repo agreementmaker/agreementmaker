@@ -15,6 +15,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Line2D;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -29,6 +30,7 @@ import agreementMaker.GSM;
 import agreementMaker.mappingEngine.ContextMapping;
 import agreementMaker.mappingEngine.DefComparator;
 import agreementMaker.mappingEngine.DefnMapping;
+import agreementMaker.mappingEngine.DefnMappingOptions;
 import agreementMaker.mappingEngine.UserMapping;
 import agreementMaker.ontologyParser.OntoTreeBuilder;
 import agreementMaker.ontologyParser.RdfsTreeBuilder;
@@ -71,7 +73,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private JMenuItem 	comparativeSuperset;		// comparativeSuperset mappingByUser
 	private int 				countStat = 0;
 	private JMenuItem 	desc;						// desc JMenuItem
-	private boolean 	dict ;
 	private boolean 	didNotLoadFiles;			// boolean variable to see if files are loaded
 	private JMenuItem 	exact;               		// exact mappingByUser
 	private String 			globalFileName = null;		// global file name
@@ -88,7 +89,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private JPopupMenu mappingPopup;			// mappingByUser popup menu
 	private JMenu 		mappingType;          		// mappingByUser type menu
 	private UI 				myUI;                       		// UI variable
-	private int 				noOfLines ;
+	private int 				noOfLines = 100 ;				//Lines to be displayed, initial value = all = 100 (different from numRelations to be found by the algortithm that are contained in DefnMappingOptions
+	private int 				displayedSimilarity = 5; //minimum Value of similarity value to be displayed (not calculated, that one is defined in defnOptions)
 	private int 				oldY;							// the previous y location of left clicked node
 	private	JPopupMenu popup;					// popup menu
 	//private boolean previouslyMappedByContext = false;
@@ -97,7 +99,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private JMenuItem 	subsetComplete;			// subset complete mappingByUser
 	private JMenuItem 	superset;            		// superset mappingByUser
 	private JMenuItem 	supersetComplete;		// superset complete mappingByUser
-	private int 		threshold ;
+	
+	private DefnMappingOptions defnOptions; 
 	
 	/*******************************************************************************************
 	 * Default constructor for myCanvas class.
@@ -737,7 +740,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	 */	
 	public void displayDefnMappingLines(Graphics graphic, Vertex root)
 	{
-		System.out.println(" display defntion mappingByUser line ");
 		Vertex node;
 		Vertex global, local;
 		int x1,y1,x2,y2;
@@ -758,11 +760,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			
 			if (node.getDefnMapping() != null && node.getDefnMapping().getLocalVertices().size() > 0 ) // node.defnMapping != null)
 			{
-				System.out.print("    PRINT  " + node.getDefnMapping().getLocalVertices().size()  ); 
 				boolean localNodesVisible = areDefnLocalNodesVisible(node);
 				if ((node.isVisible() == true) && (localNodesVisible == true))
 				{	
-					System.out.print(" ALL VISIBLE DRAW LINE  " +  node.getDefnMapping().getMappingCategory());
 					if (node.getDefnMapping().getMappingCategory().equals("1-to-M") )
 					{
 						
@@ -771,14 +771,17 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 						x1 = global.getX2();
 						y1 = (global.getY()+global.getY2())/2;
 						
-						for (int j=0;j<node.getDefnMapping().getLocalVertices().size() && j < noOfLines ;j++)
+						
+						Vector sim = node.getDefnMapping().getSimilarities();
+						for (int j=0;j<node.getDefnMapping().getLocalVertices().size() && (Float)sim.elementAt(j) >= displayedSimilarity  && j < noOfLines && j<defnOptions.numRel ;j++)
 						{
 							local  = (Vertex)node.getDefnMapping().getLocalVertices().elementAt(j);
+							
 							x2 = local.getX();
 							y2 = (local.getY()+local.getY2())/2;
 							graphic.drawLine(x1,y1,x2,y2);
 							//graphic.drawString(node.getDefnMapping().getMappingValue(),(x1+x2)/2,((y1+y2)/2) -5);
-							graphic.drawString(node.getDefnMapping().getMappingValue1(local),(x1+x2)/2,((y1+y2)/2) -5);
+							graphic.drawString(node.getDefnMapping().getMappingValue1(local),(x1+x2)/2,((y1+y2)/2) -5);		
 						}
 						
 					}
@@ -786,21 +789,20 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 					
 					if (node.getDefnMapping().getMappingCategory().equals("1-to-1") )
 					{
-						System.out.println(" 1 - 1 " ) ;
 						global = (Vertex)node.getDefnMapping().getGlobalVertices().elementAt(0);
 						local  = (Vertex)node.getDefnMapping().getLocalVertices().elementAt(0);
-						
-						// get their location on canvas
-						x1 = global.getX2();
-						y1 = (global.getY()+global.getY2())/2;
-						x2 = local.getX();
-						y2 = (local.getY()+local.getY2())/2;
-						
-						// draw the line which connects the two vertices
-						graphic.drawLine(x1,y1,x2,y2);
-						graphic.drawString(node.getDefnMapping().getMappingValue1(local),(x1+x2)/2,((y1+y2)/2) -5);
-						
-						
+						float sim = (Float) node.getDefnMapping().getSimilarities().elementAt(0);
+						if(sim >= displayedSimilarity) {
+							// get their location on canvas
+							x1 = global.getX2();
+							y1 = (global.getY()+global.getY2())/2;
+							x2 = local.getX();
+							y2 = (local.getY()+local.getY2())/2;
+							
+							// draw the line which connects the two vertices
+							graphic.drawLine(x1,y1,x2,y2);
+							graphic.drawString(node.getDefnMapping().getMappingValue1(local),(x1+x2)/2,((y1+y2)/2) -5);
+						}
 					}
 				}
 				
@@ -1137,18 +1139,17 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 					//graphic2d.setColor(Colors.mappedByDefnLineColor);
 					//graphic2d.setColor(Colors.mappedByUserLineColor);
 					
-					System.out.print("    PRINT  " + node.getDefnMapping().getLocalVertices().size()  ); 
 					boolean localNodesVisible = areDefnLocalNodesVisible(node);
 					if ((node.isVisible() == true) && (localNodesVisible == true)){	
-						System.out.print(" ALL VISIBLE DRAW LINE  " +  node.getDefnMapping().getMappingCategory());
 						if (node.getDefnMapping().getMappingCategory().equals("1-to-M") )	{
 							global = (Vertex)node.getDefnMapping().getGlobalVertices().elementAt(0);
 							global = (Vertex)node.getDefnMapping().getGlobalVertices().elementAt(0);
 							x1 = global.getX2();
 							y1 = (global.getY()+global.getY2())/2;
-							
-							for (int j=0;j<node.getDefnMapping().getLocalVertices().size() && j < noOfLines ;j++){
+							Vector sim = node.getDefnMapping().getSimilarities();
+							for (int j=0;j<node.getDefnMapping().getLocalVertices().size() && (Float)sim.elementAt(j) >= displayedSimilarity &&  j < noOfLines && j<defnOptions.numRel ;j++){
 								local  = (Vertex)node.getDefnMapping().getLocalVertices().elementAt(j);
+								
 								x2 = local.getX();
 								y2 = (local.getY()+local.getY2())/2;
 								graphic2d.draw(new Line2D.Double(x1,y1,x2,y2));
@@ -1159,19 +1160,20 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 						}
 						
 						if (node.getDefnMapping().getMappingCategory().equals("1-to-1") ){
-							System.out.println(" 1 - 1 " ) ;
 							global = (Vertex)node.getDefnMapping().getGlobalVertices().elementAt(0);
 							local  = (Vertex)node.getDefnMapping().getLocalVertices().elementAt(0);
-							
-							// get their location on canvas
-							x1 = global.getX2();
-							y1 = (global.getY()+global.getY2())/2;
-							x2 = local.getX();
-							y2 = (local.getY()+local.getY2())/2;
-							
-							// draw the line which connects the two vertices
-							graphic2d.draw(new Line2D.Double(x1,y1,x2,y2));
-							graphic2d.drawString(node.getDefnMapping().getMappingValue1(local),(x1+x2)/2,((y1+y2)/2) -5);
+							float sim = (Float) node.getDefnMapping().getSimilarities().elementAt(0);
+							if(sim >= displayedSimilarity) {
+								// get their location on canvas
+								x1 = global.getX2();
+								y1 = (global.getY()+global.getY2())/2;
+								x2 = local.getX();
+								y2 = (local.getY()+local.getY2())/2;
+								
+								// draw the line which connects the two vertices
+								graphic2d.draw(new Line2D.Double(x1,y1,x2,y2));
+								graphic2d.drawString(node.getDefnMapping().getMappingValue1(local),(x1+x2)/2,((y1+y2)/2) -5);
+							}
 						}
 					}
 				}
@@ -1815,9 +1817,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		// if the mouseclick is to the left of some node
 		if (expandOrContractNode != null)
 		{
-			System.out.println("*********************************************************************");
-			System.out.println("Node to expand or constrast: " + expandOrContractNode.getName());
-			System.out.println("*********************************************************************");
+
 			
 			// If the children are visible then contrast the tree
 			Vertex child;
@@ -1906,7 +1906,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		if (root != null)
 		{
 			Vertex node;
-			//System.out.println("Target x: "+x+"   y: "+y);
 			for (Enumeration e = root.preorderEnumeration(); e.hasMoreElements() ;)
 			{
 				// get the node
@@ -1925,12 +1924,13 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		}
 		return null;
 	}
+	
 	/**
-	 * RIGHT NOW DISPLAYED LINES AND NUMBER OF RELATIONS IS THE SAME, THEY SHOULD BE SEPARATED.
+	 * 
 	 * @return the number of relation to be found for each source node. When a method scans node.getDefnMapping.getGlobalVertices() it has to look only at the first getDfnLines. 
 	 */
-	public int getDefnLines() {
-		return noOfLines;
+	public DefnMappingOptions getDefnOptions() {
+		return defnOptions;
 	}
 /**
 	 * This function returns the old node's y coordinate
@@ -1967,7 +1967,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	public void mapByContext()
 	{
 		Vertex root;
-		System.out.println("****************Inside mapByContext() 10492048203480********************");
 		if (mapByContext == false)
 		{
 			
@@ -1981,10 +1980,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			{
 				performContextMapping(root);
 			}
-			System.out.println("****************BEFORE REPAINT**********************");
 			//repaint the canvas
 			repaint();
-			System.out.println("****************AFTER REPAINT**********************");
 			//previouslyMappedByContext = true;
 			
 			
@@ -1997,10 +1994,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	 * This function performs mappingByUser by Defn
 	 * This is done by mappingByUser parents of the nodes based on the mappings of their children.
 	 */	
-	public int mapByDefn(int threshold , int line , boolean dict) //throws Exception
+	public int mapByDefn(DefnMappingOptions dmo) //throws Exception
 	{
-		noOfLines = line ;
-		
+		defnOptions = dmo;
 		Vertex localRoot = getLocalTreeRoot();
 		if (localRoot == null)
 		{
@@ -2008,45 +2004,13 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		}
 		showAll(localRoot);
 		
-		Vertex globalRoot = getGlobalTreeRoot();
-		if (globalRoot == null)
-		{
-			return countStat;
-		}
-		showAll(globalRoot) ;
-		
-		
-		
-		
-		
-		
-		
-		
-		this.threshold = threshold ;
-		
-		
-		// this.threshold = 10 ;
-		this.dict = dict ;
-		
-		Vertex root;
-		root = getGlobalTreeRoot();
-		
-		
+		Vertex root = getGlobalTreeRoot();
 		if (root == null)
 		{
-			//performDefnMapping(root);
 			return countStat;
 		}
-		
-		System.out.println("****************Inside mapByDefn() 10492048203480********************");
-		//if (mapByDefn == false)
-		//{
-		
+		showAll(root) ;
 		mapByDefn = true;	
-		
-		// get the root of the tree based on the mouseclick
-		//root = getGlobalTreeRoot();
-		
 		
 		if (root != null)
 		{
@@ -2067,16 +2031,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			p2.close();
 		}
 		
-		
-		System.out.println("****************BEFORE Defn REPAINT**********************");
 		//repaint the canvas
 		repaint();
-		System.out.println("****************AFTER Defn REPAINT**********************");
-		//previouslyMappedByContext = true;
-		
-		
-		//}
-		
 		return countStat;
 		
 	}
@@ -2493,10 +2449,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		}
 		
 		if (e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3){
-			System.out.println("Right Mouse Clicked");
 			
 			if (e.isPopupTrigger()) {
-				System.out.println("Inside e.isPopupTrigger()");
 				
 				node = getNodeClicked(e.getX(), e.getY());
 				
@@ -2536,7 +2490,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		
 		if (e.isPopupTrigger()) 
 		{
-			System.out.println("Inside e.isPopupTrigger()");
 			
 			node = getNodeClicked(e.getX(), e.getY());
 			
@@ -2558,7 +2511,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		Vertex node;
 		if (e.isPopupTrigger()) 
 		{
-			System.out.println("Inside e.isPopupTrigger()");
 			
 			node = getNodeClicked(e.getX(), e.getY());
 			
@@ -2664,8 +2616,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		{
 			// get the first child mappingByUser
 			prevChildMapping = (String) childrenMappings.elementAt(0);
-			System.out.println("in contextMap method");
-			System.out.println("No. Children" + childrenMappings.size());
 			for (int index = 1;index < childrenMappings.size();index++ )
 			{
 				// get the next child mappings
@@ -2706,12 +2656,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			if (childrenMappings.size() == 0)
 			{
 				// ???????????????????????????//
-				System.out.println("childrenMappings.size() == 0");
 				return "Null";
 			}
 			else
 			{
-				System.out.println("childrenMappings.size() == 1");
 				return (String) childrenMappings.elementAt(0);
 				
 			}
@@ -2725,7 +2673,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private float DSI(float MCP, String S, String T) {
 
 		
-		int n = 0;
+		float n = 0;
 		DefComparator d = new DefComparator() ; 		
 		 char pattern = '|';
 		 int occurs_s = 0;
@@ -2746,18 +2694,20 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			
 			n = occurs_t < occurs_s ? occurs_t : occurs_s;
 			float result=0f;
-			float factor = (2*MCP)/(n*(n+1));
-			
-			 StringTokenizer ts = new StringTokenizer(S,"| ");
-			 StringTokenizer tt = new StringTokenizer(T,"| ");
-			
-			for(int i=0; i<n; i++) {
-
-				  // JOptionPane.showMessageDialog(null, "Factor: " + (factor *  (n-i)) + "\nS: " + S + "\nS1: " + ts.nextToken() + "\nT: " + T + "\nT1: " + tt.nextToken());
-				   	
-				result += factor *  (n -i) * d.compare(ts.nextToken(),tt.nextToken());
+			if(n == 0) {
+				result = MCP;
 			}
-			
+			else {
+				float factor = (2*MCP)/(n*(n+1));
+				
+				 StringTokenizer ts = new StringTokenizer(S,"| ");
+				 StringTokenizer tt = new StringTokenizer(T,"| ");
+				 
+
+				for(float i=0; i<n; i++) {
+					result += factor *  (n -i) * d.compare(ts.nextToken(),tt.nextToken());
+				}				
+			}
 			return result;
 			
 			
@@ -2861,7 +2811,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			//	float names=0f, descriptions =0f; 
 			float names=0f, ND = 0f, NVn=0f, NVd=0f, NHn=0f, NHd=0f,NDVn=0f, NDVd=0f, NDHn=0f, NDHd=0f;
 			
-			if(dict){
+			if(defnOptions.consultDict){
 					names = d.getDictSimilarity(SNodeName, TNodeName); 
 			   //  	names = 0.75f*names +(0.25f * d.getDictSimilarity(SNodeName +SNodeVN, TNodeName + TNodeVN));
 				//	names = 0.75f*names +(0.25f * d.getDictSimilarity(SNodeName + SNodeHN, TNodeName + TNodeHN)); 
@@ -2875,34 +2825,14 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				//	NDVd = d.getDictSimilarity(SNodeName + SNodeDesc + SNodeVD, TNodeName + TNodeDesc + TNodeVD);   
 				//	NDHn = d.getDictSimilarity(SNodeName + SNodeDesc + SNodeHN, TNodeName + TNodeDesc + TNodeHN);   
 				//	NDHd = d.getDictSimilarity(SNodeName + SNodeDesc + SNodeHD, TNodeName + TNodeDesc + TNodeHD);   
-				
-				
 			}else{
-				
-				//Base
+				//Base 
 				names = d.compare(SNodeName, TNodeName);
 				
-				//DSI
-				names = 0.75f*names + DSI(0.25f, SNodeName + "| "+ SNodeVN,  TNodeName + "| "  + TNodeVN );
-				
-				//SSC
-				//names = 0.75f*names + SSC(0.25f,  SNodeHN,   TNodeHN);
-				    
-                
 				// Base special
 				//names = d.compare(SNodeDesc, TNodeDesc);
-				
-				//DSI Special
-				//names = 0.75f*names +(0.25f * d.compare(SNodeDesc + " " + SNodeVD, TNodeDesc + " " + TNodeVD));
-				
-				//SSC Special
-				//names = 0.75f*names +(0.25f * d.compare(SNodeDesc + " " + SNodeHD, TNodeDesc + " " + TNodeHD));
-               
-				
-				
-				
 				//names = 0.75f*names +(0.25f * d.compare(SNodeName + " " + SNodeHN, TNodeName + " " + TNodeHN));
-//				names = 0.75f*names +(0.25f * d.compare( SNodeVN, TNodeVN));
+				//names = 0.75f*names +(0.25f * d.compare( SNodeVN, TNodeVN));
 				
 				//descriptions = d.compare(SNodeDesc, TNodeDesc);
 				//ND = d.compare( SNodeName + " " + SNodeDesc, TNodeName + " " + TNodeDesc);
@@ -2914,16 +2844,30 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				//NDVd = d.compare(SNodeName + " " + SNodeDesc + " " + SNodeVD, TNodeName + " " + TNodeDesc + " " + TNodeVD);
 				//NDHn = d.compare(SNodeName + " " + SNodeDesc + " " + SNodeHN, TNodeName + " " + TNodeDesc + " " + TNodeHN);
 				//NDHd = d.compare(SNodeName + " " + SNodeDesc + " " + SNodeHD, TNodeName + " " + TNodeDesc + " " + TNodeHD);
+			}
+			if(defnOptions.algorithm.equals(defnOptions.DSI)) {
+				//DSI
+				//William version, i think is incorrect
+				//names = 0.75f*names + DSI(0.25f, SNodeName + "| "+ SNodeVN,  TNodeName + "| "  + TNodeVN );
+				names = defnOptions.mcp*names + DSI(1-defnOptions.mcp, SNodeVN,  TNodeVN );
 				
+				//DSI Special
+				//names = 0.75f*names +(0.25f * d.compare(SNodeDesc + " " + SNodeVD, TNodeDesc + " " + TNodeVD));
+			}
+			else if(defnOptions.algorithm.equals(defnOptions.SSC)) {
+				//SSC
+				names = defnOptions.mcp*names + SSC(1-defnOptions.mcp,  SNodeHN,   TNodeHN);
+				
+				//SSC Special
+				//names = 0.75f*names +(0.25f * d.compare(SNodeDesc + " " + SNodeHD, TNodeDesc + " " + TNodeHD));
 			}
 			
 			fl = names;
 			
 			int f = (int) (fl * 100) ;
-			if(f>=50) 	countStat++;
+			if(f>=50) 	countStat++; //What is this for?
 			
-			System.out.print(fl); 
-			if ( f >= threshold )
+			if ( f >= defnOptions.threshold )
 			{ 	
 				node.setIsMappedByDef(true);
 				child.setIsMappedByDef(true);
@@ -2932,25 +2876,15 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				dm.reSort();
 				dm.putIntoMap(child , new Float(f) ) ; 
 				dm.setMappingValue(f);
-				System.out.println("yes"); 
-
 			}
-			else
-				System.out.println(""); 
-			
-			//System.out.println(node.getName() + "  "  +  child.getName() );
-			// call function here .... if above then threshol
-			// put in defnVEctor of node
 		
 			
 			if (child.isLeaf() == false)
 				perform(dm , node , child);
-			    node.setDefnMapping(dm);
+		    node.setDefnMapping(dm);
 			
 		}
-		
-		
-		
+
 		
 	}
 	/**
@@ -2959,7 +2893,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	 */	
 	public void performContextMapping(Vertex node)
 	{
-		System.out.println("**INSIDE_RECURSIVE_PERFORM_CONTEXT_MAPPING**");
 		Vertex child,localChild = null, localParent = null;
 		boolean globalChildNotMapped = false;
 		boolean partiallyMapped = false;
@@ -3100,7 +3033,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			return;
 		
 		//repaint();
-		System.out.println("*** END OF RECURSIVE PERFORM CONTEXT MAPPING METHOD ***");
+
 	}
 	/**
 	 * recursive method which performs the mappingByUser on a particular node/vertex
@@ -3222,18 +3155,13 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	
 	public void performDefnMapping(Vertex node)
 	{
-		//System.out.print("**INSIDE_RECURSIVE_PERFORM_DEFN_MAPPING**");
-		//System.out.println(node.getName() + node.getDesc());
-		//printToFileSourceTarget();
 		Vertex localRoot = getLocalTreeRoot();
 		
 		if (localRoot == null)
 		{
 			return ;
 		}
-		
-		//	if (node.isLeaf() == false)
-		//{
+	
 		for (Enumeration children = node.children();   children.hasMoreElements() ; )
 		{
 			Vertex child = (Vertex) children.nextElement();
@@ -3259,14 +3187,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			}
 			
 			
-			System.out.println("");
 			
 			//WGS DEBUGGING START HERE
 			try {
 		    
-		    System.out.println("corresponding pair");
-			System.out.println("WGS  " + child.getName() +"---> " + child.getDefnMapping().getLocalVertices().get(0));
-			System.out.println("");
 			p.println(child.getName() +"---> " + child.getDefnMapping().getLocalVertices().get(0));
 			
 			for(int j=0; j< child.getDefnMapping().getLocalVertices().size() ; j++ ) {
@@ -3280,16 +3204,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				performDefnMapping(child);
 			
 		}
-		//}
-		
-		
-		/*	Vertex child,localChild = null, localParent = null;
-		 boolean globalChildNotMapped = false;
-		 boolean partiallyMapped = false;
-		 Vector childrenMappings;
-		 childrenMappings = new Vector(); */
-		
-		// diaplay tree here 
 	}
 	/**
 	 * This function recursively calls  setIsMappedByDef() of every node under the initial root
@@ -3323,7 +3237,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		for (Enumeration e =targetNode.children(); e.hasMoreElements(); )
 		{
 			node = (Vertex) e.nextElement();
-			System.out.println("Name: " + node.getName());
 			
 			if (expandOrCollapse == 0)
 			{
@@ -3399,6 +3312,19 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			}
 		}
 	}		
+	
+	public void setDisplayedLines(int lines) {
+		noOfLines = lines;
+	}
+	
+	/**
+	 * Set the minimum value of similarity to be displayed different from the calculated one (threshold).
+	 * @param val minimum value
+	 */
+	public void setDisplayedSimilarity(int val) {
+		displayedSimilarity = val;
+	}
+	
 	/**
 	 * This function sets the global tree root
 	 *
@@ -3508,19 +3434,22 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private void clearDefinitionMapping( Vertex parent ) {
 
 		// we have some sort of definition mapping here
-		parent.clearDefnMapping();
-		
-		
-		if( parent.isLeaf() ) {
-			return;
+		if(parent != null) {
+			parent.clearDefnMapping();
+			
+			
+			if( parent.isLeaf() ) {
+				return;
+			}
+			
+			Vertex child = null;
+			for( Enumeration<Vertex> e = parent.children(); e.hasMoreElements(); ) {
+				// iterate through this node's children
+				child = e.nextElement();
+				clearDefinitionMapping( child ); // clear the definition of the child
+			}
 		}
-		
-		Vertex child = null;
-		for( Enumeration<Vertex> e = parent.children(); e.hasMoreElements(); ) {
-			// iterate through this node's children
-			child = e.nextElement();
-			clearDefinitionMapping( child ); // clear the definition of the child
-		}
+
 		
 	}
 }

@@ -41,7 +41,7 @@ public class OntologyController {
 			if(dmsource!=null && dmsource.getLocalVertices() != null) {//if this source node has some mappings
 				Iterator it = dmsource.getLocalVertices().iterator();
 				myLines = 0;
-				while(it.hasNext() && myLines < canvas.getDefnLines()) {
+				while(it.hasNext() && myLines < canvas.getDefnOptions().numRel) {
 					targetnode = (Vertex) it.next();
 					mp = new MatchingPair(sourcenode.getName(),targetnode.getName());
 					//System.out.println(mp.getTabString()+" "+dmsource.getMappingValue1(targetnode));

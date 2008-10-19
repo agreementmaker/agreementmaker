@@ -37,8 +37,8 @@ public class ControlPanel extends JPanel implements ActionListener,
 	private Canvas canvas;
 	private JComboBox displayLines;
 	private JButton generateAgreementDocument;
-	private JLabel thre = new JLabel("Similarity Threshold Value             ");
-	private JLabel lines = new JLabel("Maximum Relations per Concept ");
+	private JLabel thre = new JLabel("Display similirity values >= than:  ");
+	private JLabel lines = new JLabel("Relations per source node to be displayed: ");
 	private JButton mappingByConsolidationButton;
 	private JButton clearmappingByConsolidationButton;
 	private JCheckBox mappingByConsolidationCheckBox;
@@ -53,7 +53,7 @@ public class ControlPanel extends JPanel implements ActionListener,
 	private JCheckBox mappingByUserCheckBox;
 	private JComboBox thresholdList;
 	private UIMenu uiMenu;
-	private JCheckBox useOfDict;
+	private UI ui;
 	private JLabel userLabel; 
 	
 	private JComboBox showDefMap;
@@ -62,9 +62,10 @@ public class ControlPanel extends JPanel implements ActionListener,
 	private JComboBox showUserMap;
 	
 	
-	ControlPanel(UIMenu uiMenu, Canvas canvas) {
+	ControlPanel(UI ui, UIMenu uiMenu, Canvas canvas) {
 		this.uiMenu = uiMenu;
 		this.canvas = canvas;
+		this.ui = ui;
 		init();
 	}
 
@@ -85,22 +86,22 @@ public class ControlPanel extends JPanel implements ActionListener,
 			}
 		} else if (obj == mappingByDefinitionButton) {
 			// run mapping by definition
-			int th = (thresholdList.getSelectedIndex() + 1) * 5;
-			int line = displayLines.getSelectedIndex() + 1;
-			boolean dictUse = useOfDict.isSelected();
 
+			/* TIME INIT
 			Date myDate = new Date();
 			long start = myDate.getTime();
-			canvas.mapByDefn(th, line, dictUse);
+			*/
+			
+			DefnMappingOptionsDialog dmod = new DefnMappingOptionsDialog(ui);
+			
+			/* TO MEASURE RUNNING TIME
 			myDate = new Date();
 			long end = myDate.getTime();
 			long timeTaken = end - start;
-			
 			// Let's format the time to make it look readable.
 			double seconds = (double) timeTaken / 1000.00;
 			double minutes = seconds / 60.0;
 			double hours = minutes / 60.0;
-			
 			String timeElapsed = new String("");
 			if(hours >= 1){
 				timeElapsed += (int)(Math.floor(hours)) + " hour(s) ";
@@ -112,20 +113,19 @@ public class ControlPanel extends JPanel implements ActionListener,
 			} else {
 				timeElapsed += seconds + " second(s) ";
 			}
-			
-
 			JOptionPane.showMessageDialog(null, "Time: " + timeElapsed);
-			
-			// Refresh the Canvas with the results, if the user wants to see them.
-			if(showDefMap.getSelectedIndex() == 0) { // the user has selected "Show Results"
-				canvas.selectedDefnMapping();
-				// canvas.repaint(); this is called by the selectedDefnMapping() function
+			*/
+			if(dmod.mappingSuccessed()) {
+				// Refresh the Canvas with the results, if the user wants to see them.
+				if(showDefMap.getSelectedIndex() == 0) { // the user has selected "Show Results"
+					canvas.selectedDefnMapping();
+					// canvas.repaint(); this is called by the selectedDefnMapping() function
+				}
+				JOptionPane.showMessageDialog(ui.getUIFrame(), "Mapping by definition completed");
+				// enable the clear button since we have run a mapping by definition
+				clearmappingByDefinitionButton.setEnabled(true);
 			}
-			
-			// enable the clear button since we have run a mapping by definition
-			clearmappingByDefinitionButton.setEnabled(true);
-			
-			
+
 			
 		} else if( obj == clearmappingByDefinitionButton ) {
 			// user clicked the clear by definition button
@@ -190,7 +190,6 @@ public class ControlPanel extends JPanel implements ActionListener,
 		mappingByUserCheckBox = new JCheckBox("");
 		mappingByContextCheckBox = new JCheckBox("");
 		mappingByConsolidationCheckBox = new JCheckBox("");
-		useOfDict = new JCheckBox("Consult Dictionary                                         ");//ends here
 		mappingByDefinitionButton = new JButton("Run Mapping by Definition         ");
 		clearmappingByDefinitionButton = new JButton("Clear"); // clear button next to "run mapping by definition" button
 		clearmappingByDefinitionButton.setEnabled(false); // when the program starts, we have not computed any definition, so there is nothing to clear
@@ -211,12 +210,15 @@ public class ControlPanel extends JPanel implements ActionListener,
 		for (int ii = 1; ii <= 20; ii++)
 			thresholdStrings[ii - 1] = ii * 5 + "";
 		thresholdList = new JComboBox(thresholdStrings);
+		thresholdList.addItemListener(this);
 
 		String[] disLines = new String[100];
 		for (int ii = 1; ii <= 100; ii++)
 			disLines[ii - 1] = ii + "";
 		displayLines = new JComboBox(disLines);
-
+		displayLines.setSelectedIndex(disLines.length-1);
+		displayLines.addItemListener(this);
+		
 		String[] showHideDetails = new String[2];
 		showHideDetails[0] = "Show Details";
 		showHideDetails[1] = "Hide Details";
@@ -319,7 +321,6 @@ public class ControlPanel extends JPanel implements ActionListener,
 
 		JPanel panel9 = new JPanel();
 		panel9.setLayout(new FlowLayout());
-		panel9.add(useOfDict);
 
 		JPanel panelDefSettings = new JPanel();
 		panelDefSettings.setLayout(new BoxLayout(panelDefSettings, BoxLayout.Y_AXIS));
@@ -327,7 +328,7 @@ public class ControlPanel extends JPanel implements ActionListener,
 		panelDefSettings.add(panel8);
 		panelDefSettings.add(panel9);
 		panelDefSettings.setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Definition Layer Settings"));
+				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Display Settings"));
 		
 		JPanel panelAgreementDoc = new JPanel(new FlowLayout());
 		panelAgreementDoc.add(generateAgreementDocument);
@@ -458,6 +459,14 @@ public class ControlPanel extends JPanel implements ActionListener,
 				uiMenu.mapByDefinitionSetSelected(false);
 				canvas.deselectedDefnMapping();
 			}
+		}
+		else if(obj == displayLines) {
+			canvas.setDisplayedLines(Integer.parseInt(displayLines.getSelectedItem().toString()));
+			canvas.repaint();
+		}
+		else if(obj == thresholdList) {
+			canvas.setDisplayedSimilarity(Integer.parseInt(thresholdList.getSelectedItem().toString()));
+			canvas.repaint();
 		}
 		
 		
