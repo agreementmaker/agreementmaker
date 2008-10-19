@@ -506,16 +506,14 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 		String[] descs;
 		parents = new String[pathToRoot.length];
 		descs = new String[pathToRoot.length];
-		for(int i=0; i<pathToRoot.length; i++){
-			if(i>2 ){	
-				parents[i] = ((Vertex) pathToRoot[i]).getName();
-				descs[i] = ((Vertex) pathToRoot[i]).getDesc();
-				
-				if(getName() != parents[i] && parents[i] != null){
-					parentsName += parents[i] + " | ";
-					parentsDesc += descs[i] + " | ";
-					//JOptionPane.showMessageDialog(null, "Node name: " + getName() + "\n parentsName: " + parentsName);
-				}
+		for(int i=pathToRoot.length-1; i>1; i--){ // from this node to the root, the node itself name is not added, and also the ontology name and the word "Source/Target ontology" are not considered
+			parents[i] = ((Vertex) pathToRoot[i]).getName();
+			descs[i] = ((Vertex) pathToRoot[i]).getDesc();
+			
+			if(parents[i] != null && !getName().equals(parents[i])){
+				parentsName += parents[i] + " | ";
+				parentsDesc += descs[i] + " | ";
+				//JOptionPane.showMessageDialog(null, "Node name: " + getName() + "\n parentsName: " + parentsName);
 			}
 		}
 		

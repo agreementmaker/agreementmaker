@@ -177,7 +177,7 @@ public class UI {
 		frame.getContentPane().add(splitPane, BorderLayout.CENTER);
 
 		
-		panelControlPanel = new ControlPanel(uiMenu, canvas);
+		panelControlPanel = new ControlPanel(this, uiMenu, canvas);
 		frame.getContentPane().add(panelControlPanel, BorderLayout.PAGE_END);		
 		
 		//Add the listener to close the frame.
