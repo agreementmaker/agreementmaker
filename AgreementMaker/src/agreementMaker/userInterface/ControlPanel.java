@@ -132,19 +132,19 @@ public class ControlPanel extends JPanel implements ActionListener,
 			canvas.clearDefinitionMapping();
 			clearmappingByDefinitionButton.setEnabled(false);
 			canvas.repaint();
-			
+		} else if( obj == clearmappingByContextButton ) {
+			// user clicked the clear button for context mappings
+			canvas.clearContextMapping();
+			clearmappingByContextButton.setEnabled(false);
+			canvas.repaint();
 		} else if (obj == mappingByContextButton) {
-			if (mappingByContextButton.getText() == "Show Mapping by Context") {
-				mappingByContextButton.setText("Hide Mapping by Context");
-				uiMenu.mapByContextSetSelected(true);
-				mappingByContextCheckBox.setSelected(true);
-				canvas.mapByContext();
-			} else if (mappingByContextButton.getText() == "Hide Mapping by Context") {
-				mappingByContextButton.setText("Show Mapping by Context");
-				uiMenu.mapByContextSetSelected(false);
-				mappingByContextCheckBox.setSelected(false);
-				canvas.deselectedContextMapping();
-			}
+			// the user has clicked mappingByContextButton, to run the mapping by context
+			// run the mapping
+			showContextMap.setSelectedIndex(0); // we will automatically show the result
+			uiMenu.mapByContextSetSelected(true); // update the checkbox on the file menu
+			mappingByContextCheckBox.setSelected(true);
+			canvas.mapByContext();
+			clearmappingByContextButton.setEnabled(true);
 
 		} else if (obj == mappingByConsolidationButton) {
 			if (mappingByConsolidationButton.getText() == "Show Mapping by Consolidation") {
@@ -245,6 +245,7 @@ public class ControlPanel extends JPanel implements ActionListener,
 
 		mappingByDefinitionButton.addActionListener(this);
 		clearmappingByDefinitionButton.addActionListener(this);
+		clearmappingByContextButton.addActionListener(this);
 		mappingByUserButton.addActionListener(this);
 		mappingByContextButton.addActionListener(this);
 		mappingByConsolidationButton.addActionListener(this);
@@ -417,6 +418,7 @@ public class ControlPanel extends JPanel implements ActionListener,
 			if(selection ==0) {
 				mappingByContextCheckBox.setSelected(true);
 				uiMenu.mapByContextSetSelected(true);
+				canvas.selectedContextMapping();
 			}
 			else {
 				mappingByContextCheckBox.setSelected(false);
