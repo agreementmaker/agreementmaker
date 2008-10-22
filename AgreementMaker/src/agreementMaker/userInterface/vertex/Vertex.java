@@ -640,6 +640,15 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 	}
 	
 	/**
+	 * @author cosmin
+	 * @date Oct 17, 2008
+	 */
+	public void clearContextMapping() {
+		contextMapping = null;
+		isMappedByContext = false;
+	}
+	
+	/**
 	 * @param defnMapping The defnMapping to set.
 	 */
 	public void setDefnMapping(DefnMapping defnMapping) {
