@@ -665,6 +665,12 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				localNodesSelected.clear();
 		}
 	}
+	
+	public void selectedContextMapping() {
+		mapByContext = true;
+		repaint();
+	}
+	
 	/**
 	 * This function changes the mapByContext variable to false and calls the repaint method
 	 */	
@@ -3409,6 +3415,24 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		performShowAll(root);
 		
 	}
+
+	
+	public void clearContextMapping() {
+		// do a preorder transversal, and clear the context mapping for each node
+		// on the globalroot first, then the localroot
+		
+		globalTreeRoot.clearContextMapping();
+		for( Enumeration<Vertex> e = globalTreeRoot.preorderEnumeration(); e.hasMoreElements();) {
+			e.nextElement().clearContextMapping();
+		}
+		
+		
+		localTreeRoot.clearContextMapping();
+		for( Enumeration<Vertex> e = localTreeRoot.preorderEnumeration(); e.hasMoreElements();) {
+			e.nextElement().clearContextMapping();
+		}
+		
+	}
 	
 	
 	/**
@@ -3419,9 +3443,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		// start at the global root
 		clearDefinitionMapping(globalTreeRoot);
 		clearDefinitionMapping(localTreeRoot);
-		
-		
-		
+
 	}
 
 	/**
@@ -3450,7 +3472,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			}
 		}
 
+
 		
 	}
+
 }
 
