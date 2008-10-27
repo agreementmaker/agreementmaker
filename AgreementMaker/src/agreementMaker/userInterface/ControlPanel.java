@@ -61,6 +61,9 @@ public class ControlPanel extends JPanel implements ActionListener,
 	private JComboBox showConsMap;
 	private JComboBox showUserMap;
 	
+	public final static int SHOW = 0;
+	public final static int HIDE = 1;
+	
 	
 	ControlPanel(UI ui, UIMenu uiMenu, Canvas canvas) {
 		this.uiMenu = uiMenu;
@@ -199,8 +202,7 @@ public class ControlPanel extends JPanel implements ActionListener,
 		mappingByContextButton =  new JButton("Run Mapping by Context           ");
 		clearmappingByContextButton = new JButton("Clear");
 		clearmappingByContextButton.setEnabled(false); // when the program starts, we have not computed any definition, so there is nothing to clear
-		mappingByConsolidationButton = new JButton(
-				"Run Mapping by Consolidation");
+		mappingByConsolidationButton = new JButton("Run Mapping by Consolidation");
 		clearmappingByConsolidationButton = new JButton("Clear");
 		clearmappingByConsolidationButton.setEnabled(false);
 		generateAgreementDocument = new JButton("View Agreement Document");
@@ -220,8 +222,8 @@ public class ControlPanel extends JPanel implements ActionListener,
 		displayLines.addItemListener(this);
 		
 		String[] showHideDetails = new String[2];
-		showHideDetails[0] = "Show Details";
-		showHideDetails[1] = "Hide Details";
+		showHideDetails[SHOW] = "Show Details";
+		showHideDetails[HIDE] = "Hide Details";
 		
 		showDefMap = new JComboBox(showHideDetails);
 		showContextMap = new JComboBox(showHideDetails);
@@ -366,6 +368,7 @@ public class ControlPanel extends JPanel implements ActionListener,
 				uiMenu.mapByConsolidationSetSelected(false);
 				displayOptionPane("Mapping by Consolidation DESELECTEDs",
 						"Mapping by Consolidation");
+			
 			} else {
 				mappingByConsolidationCheckBox.setSelected(true);
 				uiMenu.mapByConsolidationSetSelected(true);
@@ -383,20 +386,25 @@ public class ControlPanel extends JPanel implements ActionListener,
 				canvas.setMapByUser(true);
 			}
 		}
-
+		/*
 		else if (obj == mappingByContextCheckBox) {
 			if (e.getStateChange() == ItemEvent.DESELECTED) {
 				mappingByContextCheckBox.setSelected(false);
 				uiMenu.mapByContextSetSelected(false);
 				canvas.deselectedContextMapping();
+				
+				showContextMap.setSelectedIndex(HIDE);
 			} else {
 				mappingByContextCheckBox.setSelected(true);
 				uiMenu.mapByContextSetSelected(true);
 				// perform mapping by context by calling method in myCanvas class
-				canvas.mapByContext();
-
+				//canvas.mapByContext();This was a mystake because the checkbox is just the same of show/hide shouldn't run the algorithm
+				canvas.selectedContextMapping();
+				showContextMap.setSelectedIndex(SHOW)
 			}
-		} else if (obj == mappingByDefinitionCheckBox) {
+			
+		} */
+		else if (obj == mappingByDefinitionCheckBox) {
 			if (e.getStateChange() == ItemEvent.DESELECTED) ///hide lines
 			{
 				mappingByDefinitionCheckBox.setSelected(false);
@@ -413,6 +421,7 @@ public class ControlPanel extends JPanel implements ActionListener,
 		}
 		
 		else if(obj==showContextMap) {
+			System.out.println("in show context map");
 			int selection;
 			selection = showContextMap.getSelectedIndex();
 			if(selection ==0) {
@@ -425,7 +434,6 @@ public class ControlPanel extends JPanel implements ActionListener,
 				uiMenu.mapByContextSetSelected(false);
 				canvas.deselectedContextMapping();
 			}
-			
 		}
 		
 		else if(obj == showUserMap) {
