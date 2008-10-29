@@ -11,7 +11,7 @@ import java.util.prefs.Preferences;
 
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
-import javax.swing.JButton;
+import javax.swing.JButton; 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -28,7 +28,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.hp.hpl.jena.query.extension.library.group;
+//import com.hp.hpl.jena.query.extension.library.group;
 import com.ibm.icu.lang.UCharacter.JoiningGroup;
 
 import agreementMaker.GSM;
