@@ -108,7 +108,6 @@ public class OntoTreeBuilder extends TreeBuilder{
 			// add nothing as a child node to owl:Thing
 			treeRoot.add(nothing);
 		}
-		
 	}
 	
 	/**
