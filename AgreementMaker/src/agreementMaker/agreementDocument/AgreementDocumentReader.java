@@ -10,9 +10,9 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
-import agreementMaker.mappingEngine.ContextMapping;
-import agreementMaker.mappingEngine.DefnMapping;
-import agreementMaker.mappingEngine.UserMapping;
+import agreementMaker.application.mappingEngine.ContextMapping;
+import agreementMaker.application.mappingEngine.DefnMapping;
+import agreementMaker.application.mappingEngine.UserMapping;
 import agreementMaker.userInterface.vertex.Vertex;
 
 

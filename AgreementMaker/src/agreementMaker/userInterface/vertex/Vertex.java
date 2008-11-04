@@ -11,9 +11,10 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 import agreementMaker.GSM;
-import agreementMaker.mappingEngine.ContextMapping;
-import agreementMaker.mappingEngine.DefnMapping;
-import agreementMaker.mappingEngine.UserMapping;
+import agreementMaker.application.mappingEngine.ContextMapping;
+import agreementMaker.application.mappingEngine.DefnMapping;
+import agreementMaker.application.mappingEngine.UserMapping;
+import agreementMaker.application.ontology.Node;
 
 import com.hp.hpl.jena.ontology.OntModel;
 
@@ -33,7 +34,7 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 	private int arcHeight;			// arc height of the rectangular node
 	private int arcWidth;			// arc width of the rectangular node
 	protected ContextMapping contextMapping;	// context mapping 
-	protected DefnMapping defnMapping = null;
+	protected DefnMapping defnMapping = null; 
 	private String description;		// description of the vertex
 	private int height;				// height of the node/vertex
 	private int id;					// assign the unique number here
@@ -65,6 +66,8 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 	private int x2; 				// coordinate x2 = x+width location on canvas
 	private int y;					// coordinate y location on canvas
 	private int y2; 				// coordinate y2 = y+width location on canvas	    
+	
+	private Node node;    //the node containing the ontology information of this vertex, there is a double link from the node to the vertex and from the vertex to the node.
 	
 	/*******************************************************************************************
 	 /**
@@ -671,6 +674,12 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 	 */
 	public String getUri() {
 		return this.uri;
+	}
+	public Node getNode() {
+		return node;
+	}
+	public void setNode(Node node) {
+		this.node = node;
 	}
 	
 }

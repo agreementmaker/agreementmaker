@@ -1,10 +1,10 @@
-package agreementMaker.development;
+package agreementMaker.application.evaluationEngine;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-import agreementMaker.mappingEngine.DefnMapping;
+import agreementMaker.application.mappingEngine.DefnMapping;
 import agreementMaker.userInterface.Canvas;
 import agreementMaker.userInterface.vertex.Vertex;
 

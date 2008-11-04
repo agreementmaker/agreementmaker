@@ -1,4 +1,4 @@
-package agreementMaker.mappingEngine;
+package agreementMaker.application.mappingEngine;
 
 
 import java.io.Serializable;

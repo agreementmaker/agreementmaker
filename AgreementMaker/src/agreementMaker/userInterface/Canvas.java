@@ -27,14 +27,15 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import agreementMaker.GSM;
-import agreementMaker.mappingEngine.ContextMapping;
-import agreementMaker.mappingEngine.DefComparator;
-import agreementMaker.mappingEngine.DefnMapping;
-import agreementMaker.mappingEngine.DefnMappingOptions;
-import agreementMaker.mappingEngine.UserMapping;
-import agreementMaker.ontologyParser.OntoTreeBuilder;
-import agreementMaker.ontologyParser.RdfsTreeBuilder;
-import agreementMaker.ontologyParser.XmlTreeBuilder;
+import agreementMaker.application.mappingEngine.ContextMapping;
+import agreementMaker.application.mappingEngine.DefComparator;
+import agreementMaker.application.mappingEngine.DefnMapping;
+import agreementMaker.application.mappingEngine.DefnMappingOptions;
+import agreementMaker.application.mappingEngine.UserMapping;
+import agreementMaker.application.ontology.ontologyParser.OntoTreeBuilder;
+import agreementMaker.application.ontology.ontologyParser.RdfsTreeBuilder;
+import agreementMaker.application.ontology.ontologyParser.TreeBuilder;
+import agreementMaker.application.ontology.ontologyParser.XmlTreeBuilder;
 import agreementMaker.userInterface.vertex.Vertex;
 import agreementMaker.userInterface.vertex.VertexDescriptionPane;
 import java.util.Date;
@@ -364,22 +365,22 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		Vertex treeRoot;
 		int nodeType, treeNodeCount;
 		String fileName = getOntoFileName(ontoType);
+		TreeBuilder treeBuilder;
 		if(langIndex == 2){// 2 is the selection index of XML in langList in OpenOntologyFIleDialog.java
 			//TODO: fix the above if stmt... I am sure 3 will cause some problem later on
 			//Handles the old XML files
 			
-			XmlTreeBuilder treeBuilder;
 			if ( ontoType == GSM.SOURCENODE)//Builds Onto tree
 			{
-				treeBuilder = new XmlTreeBuilder(fileName, GSM.ONTOTITLE);
-				treeRoot = treeBuilder.getTreeRoot();			
+				treeBuilder = new XmlTreeBuilder(fileName, ontoType);
+				treeRoot = treeBuilder.getTreeRoot();			 
 				// set the global tree root
 				setGlobalTreeRoot(treeRoot);			
 				nodeType = GSM.SOURCENODE;
 			}
 			else//builds Local tree
 			{
-				treeBuilder = new XmlTreeBuilder(fileName, GSM.LOCALTITLE);
+				treeBuilder = new XmlTreeBuilder(fileName, ontoType);
 				treeRoot = treeBuilder.getTreeRoot();		
 				// set the local tree root
 				setLocalTreeRoot(treeRoot);
@@ -407,13 +408,13 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			String str;
 			
 			if(langIndex == 0){
-				RdfsTreeBuilder rdfsTreeBuilder = new RdfsTreeBuilder(fileName, syntaxIndex);
-				treeRoot = rdfsTreeBuilder.getTreeRoot();
-				treeNodeCount = rdfsTreeBuilder.getTreeCount();
+				treeBuilder = new RdfsTreeBuilder(fileName, syntaxIndex, ontoType);
+				treeRoot = treeBuilder.getTreeRoot();
+				treeNodeCount = treeBuilder.getTreeCount();
 			}else {
-				OntoTreeBuilder ontTreeBuilder = new OntoTreeBuilder(fileName, syntaxIndex);
-				treeRoot = ontTreeBuilder.getTreeRoot();
-				treeNodeCount = ontTreeBuilder.getTreeCount();
+				treeBuilder = new OntoTreeBuilder(fileName, syntaxIndex, ontoType);
+				treeRoot = treeBuilder.getTreeRoot();
+				treeNodeCount = treeBuilder.getTreeCount();
 			}
 			
 			if (ontoType == GSM.SOURCENODE)//Builds Onto tree
@@ -441,7 +442,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				//JOptionPane.showMessageDialog(null,"The onto type:" + ontoType);
 				node.setVerticalHorizontal();
 			}
-			
+			System.out.println("Total number of nodes in the tree hierarchy: "+treeBuilder.getTreeCount());
+			System.out.println("Total number of classes to be aligned: "+treeBuilder.getOntology().getClassesList().size());
+			System.out.println("Total number of properties to be aligned: "+treeBuilder.getOntology().getPropertiesList().size());
 			return treeNodeCount;
 		}
 	}

@@ -1,4 +1,4 @@
-package agreementMaker.stemmer;
+package agreementMaker.application.mappingEngine.stemmer;
 
 /****************************************************************
     PorterStemmer.java

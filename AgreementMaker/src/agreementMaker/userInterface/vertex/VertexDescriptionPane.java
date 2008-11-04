@@ -208,7 +208,6 @@ public class VertexDescriptionPane extends JPanel{
 	}
 	
 	public void fillDescription (Vertex node){
-		
 		OntModel ontModel;
 		int nodeType;
 		
@@ -221,68 +220,73 @@ public class VertexDescriptionPane extends JPanel{
 		    	   lt1.setText(node.getDesc());
 		    }
 		}else if(typeOfFile == GSM.ONTFILE){
-			ontModel=node.getOntModel();
-			OntClass cls = ontModel.getOntClass(node.getUri());
-				
-		    //work on Annotations            
-	        String temp;
-	        annotations="";
-	        for(Iterator i = cls.listComments(null); i.hasNext();){
-	            temp = ((Literal)i.next()).toString();
-	            if(temp.compareTo("")!=0) annotations = annotations + "rdfs:comment\t\"" + temp + "\"\n";
-	        }
-	        
-	        for(Iterator i = cls.listIsDefinedBy(); i.hasNext();){
-				temp = ((Resource)i.next()).getLocalName();
-	            if(temp.compareTo("")!=0) annotations = annotations + "rdfs:isDefinedBy\t\"" + temp + "\"\n";
-	        }
-	        
-	        for(Iterator i = cls.listLabels(null); i.hasNext();){
-				temp = ((Literal)i.next()).toString();
-				if(temp.compareTo("")!=0) annotations = annotations + "rdfs:label\t\"" + temp + "\"\n";
-	        }
-	        
-	        for(Iterator i = cls.listSeeAlso(); i.hasNext();){
-				temp = ((Resource)i.next()).getLocalName();
-				if(temp.compareTo("")!=0) annotations = annotations + "rdfs:SeeAlso\t\"" + temp + "\"\n";
-	        }
-	        
-	        if(ontModel.getSpecification() == OntModelSpec.RDFS_MEM_RDFS_INF)
-		        for(Iterator i = cls.listVersionInfo(); i.hasNext();){
-					temp = (String)i.next();
-					if(temp.compareTo("")!=0) annotations = annotations + "rdfs:VersionInfo\t\"" + temp + "\"\n";
+			try {
+				ontModel=node.getOntModel();
+				OntClass cls = ontModel.getOntClass(node.getUri());
+					
+			    //work on Annotations            
+		        String temp;
+		        annotations="";
+		        for(Iterator i = cls.listComments(null); i.hasNext();){
+		            temp = ((Literal)i.next()).toString();
+		            if(temp.compareTo("")!=0) annotations = annotations + "rdfs:comment\t\"" + temp + "\"\n";
 		        }
-	        
-	       /*//Work on Restrictions/* 
-	       Collection collRestrictions = cls.getRestrictions(true);
-	       Iterator itr1 = collRestrictions.iterator();
-	       restrictions = "";
-	       while (itr1.hasNext()) 
-	          restrictions = restrictions + ((OWLRestriction)itr1.next()).getBrowserText() + " \n";
-	       */
-	       //work on Properties
-	        properties="";
-	        for(Iterator i = cls.listDeclaredProperties(); i.hasNext();)//true
-				properties = properties + ((OntProperty)i.next()).getLocalName() + " \n";
-	       
-	       //Work on Disjoint Classes
-	        disjointClasses="";
-			for(Iterator i = cls.listDisjointWith(); i.hasNext();){
-				OntClass sub = (OntClass)i.next();
-				disjointClasses = disjointClasses + sub.getLocalName() + " \n";
-			} 
-	    
-	       if(nodeType == GSM.SOURCENODE){
-	    	   st1.setText(annotations);
-	    	   st2.setText(restrictions);
-	    	   st3.setText(properties);
-	    	   st4.setText(disjointClasses);
-	       }else if(nodeType == GSM.TARGETNODE){
-	    	   lt1.setText(annotations);
-	    	   lt2.setText(restrictions);
-	    	   lt3.setText(properties);
-	    	   lt4.setText(disjointClasses);
-	       }
+		        
+		        for(Iterator i = cls.listIsDefinedBy(); i.hasNext();){
+					temp = ((Resource)i.next()).getLocalName();
+		            if(temp.compareTo("")!=0) annotations = annotations + "rdfs:isDefinedBy\t\"" + temp + "\"\n";
+		        }
+		        
+		        for(Iterator i = cls.listLabels(null); i.hasNext();){
+					temp = ((Literal)i.next()).toString();
+					if(temp.compareTo("")!=0) annotations = annotations + "rdfs:label\t\"" + temp + "\"\n";
+		        }
+		        
+		        for(Iterator i = cls.listSeeAlso(); i.hasNext();){
+					temp = ((Resource)i.next()).getLocalName();
+					if(temp.compareTo("")!=0) annotations = annotations + "rdfs:SeeAlso\t\"" + temp + "\"\n";
+		        }
+		        
+		        if(ontModel.getSpecification() == OntModelSpec.RDFS_MEM_RDFS_INF)
+			        for(Iterator i = cls.listVersionInfo(); i.hasNext();){
+						temp = (String)i.next();
+						if(temp.compareTo("")!=0) annotations = annotations + "rdfs:VersionInfo\t\"" + temp + "\"\n";
+			        }
+		        
+		       /*//Work on Restrictions/* 
+		       Collection collRestrictions = cls.getRestrictions(true);
+		       Iterator itr1 = collRestrictions.iterator();
+		       restrictions = "";
+		       while (itr1.hasNext()) 
+		          restrictions = restrictions + ((OWLRestriction)itr1.next()).getBrowserText() + " \n";
+		       */
+		       //work on Properties
+		        properties="";
+		        for(Iterator i = cls.listDeclaredProperties(); i.hasNext();)//true
+					properties = properties + ((OntProperty)i.next()).getLocalName() + " \n";
+		       
+		       //Work on Disjoint Classes
+		        disjointClasses="";
+				for(Iterator i = cls.listDisjointWith(); i.hasNext();){
+					OntClass sub = (OntClass)i.next();
+					disjointClasses = disjointClasses + sub.getLocalName() + " \n";
+				} 
+		    
+		       if(nodeType == GSM.SOURCENODE){
+		    	   st1.setText(annotations);
+		    	   st2.setText(restrictions);
+		    	   st3.setText(properties);
+		    	   st4.setText(disjointClasses);
+		       }else if(nodeType == GSM.TARGETNODE){
+		    	   lt1.setText(annotations);
+		    	   lt2.setText(restrictions);
+		    	   lt3.setText(properties);
+		    	   lt4.setText(disjointClasses);
+		       }
+			}
+			catch(Exception e) {
+				//To be fixed
+			}	
 		}else if(typeOfFile == GSM.RDFSFILE){
 			//TODO: WORK here for RDFS
 		}

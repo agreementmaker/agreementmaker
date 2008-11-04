@@ -1,4 +1,4 @@
-package agreementMaker.mappingEngine;
+package agreementMaker.application.mappingEngine;
 
 /**
  * this class is a container for input parameters to any Defn Mapping algorithm, everything is public because it must be easy accessible.

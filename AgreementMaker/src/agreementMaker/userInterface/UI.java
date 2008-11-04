@@ -14,7 +14,7 @@ import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 
 import agreementMaker.GSM;
-import agreementMaker.development.OntologyController;
+import agreementMaker.application.evaluationEngine.OntologyController;
 
 
 /**

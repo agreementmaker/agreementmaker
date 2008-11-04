@@ -1,4 +1,4 @@
-package agreementMaker.development;
+package agreementMaker.application.evaluationEngine;
 
 import java.io.*;
 import java.text.NumberFormat;

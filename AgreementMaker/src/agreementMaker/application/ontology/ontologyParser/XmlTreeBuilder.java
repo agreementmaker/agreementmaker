@@ -1,20 +1,23 @@
-package agreementMaker.ontologyParser;
+package agreementMaker.application.ontology.ontologyParser;
 
 // JAXP Packages
 
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import agreementMaker.application.ontology.Node;
+import agreementMaker.application.ontology.Ontology;
 import agreementMaker.userInterface.vertex.Vertex;
 
 /**
@@ -30,22 +33,26 @@ public class XmlTreeBuilder extends TreeBuilder
 {
 	// instance variables
 	private Document documentRoot;
-	//private int treeCount = 0;
-	//private Vertex treeRoot = null;
+	
+	final static String XMLHIERARCHY = "XML Hierarchy";
 	
 	/**
 	 * Constructor for objects of class XmlTreeBuilder
 	 * @param xmlFilename filename 
 	 * @param title title of node
 	 */
-	public XmlTreeBuilder(String xmlFilename, String title)
+	public XmlTreeBuilder(String xmlFilename, int sourceOrTarget)
 	{
+		super(xmlFilename, Ontology.XML, sourceOrTarget);
 		// create a new tree root
-		treeRoot = new Vertex(title);
-		treeCount=1;
+		treeRoot = new Vertex(ontology.getTitle());
+		Vertex ClassRoot = new Vertex(XMLHIERARCHY);
+		treeRoot.add(ClassRoot);
+		treeCount=2;
+		ontology.setClassesTree( ClassRoot);
 		// read an XML file and generate a DOM document object from it
 		if(parse(xmlFilename))
-			buildTree(treeRoot, (Node)documentRoot);
+			buildTree(ClassRoot, (org.w3c.dom.Node)documentRoot);
 	}
 	/**
 	 * This function builds the tree and returns the number of vertices created.
@@ -54,7 +61,7 @@ public class XmlTreeBuilder extends TreeBuilder
 	 * @param  document				document root
 	 * @return treeCount			number of vertices created
 	 */
-	private int buildTree(Vertex currentTreeNode, Node document)
+	private int buildTree(Vertex currentTreeNode, org.w3c.dom.Node document)
 	{
 		// get the node list from the document
 		NodeList nodeList = getNodeList(document);
@@ -67,18 +74,22 @@ public class XmlTreeBuilder extends TreeBuilder
 				// get the node name (database, table, tuple, attrname, attrvalue,...)
 				//String nodeName = nodeList.item(i).getNodeName();
 				//String nodeName = this.getNodeName(nodeList.item(i));
-				Node currentNode = nodeList.item(i);
+				org.w3c.dom.Node currentNode = nodeList.item(i);
 				//String currentName = currentNode.getNodeName();//TODO: What is this used for ? FIX IT
-				String currentID = getAttr(currentNode, "id");
+				String name = getAttr(currentNode, "id");
 				String des = getDes(currentNode, "exp");
 
-				Vertex childNode = new Vertex(currentID);
-
+				Vertex childNode = new Vertex(name);
+				childNode.setDesc(des);
+				Node node = new Node(uniqueKey,name, des, Node.XMLNODE);
+				node.addVertex(childNode);
+				childNode.setNode(node);
+				ontology.getClassesList().add(node); //THE XML FILES ONLY CONTAINS CLASSES IN OUR SEMPLIFICATION
 				// increment the number of nodes created
 				treeCount++;
 
 				// set the description of the node
-				childNode.setDesc(des);
+				
 
 				// add the node created to the previous node
 				currentTreeNode.add(childNode);
@@ -97,7 +108,7 @@ public class XmlTreeBuilder extends TreeBuilder
 	 * @param node	the node or vertex
 	 * @return NodeList the node list
 	 */
-	private NodeList getNodeList(Node node)
+	private NodeList getNodeList(org.w3c.dom.Node node)
 	{
 		try
 		{
@@ -179,5 +190,53 @@ public class XmlTreeBuilder extends TreeBuilder
 		
 		return true;
 	}
-
+	//abstract public int buildTree(Vertex currentTreeNode, Node document);
+	/**
+	 * This function displays the JOptionPane with title and descritpion
+	 * @param desc the description to display in the option pane
+	 * @param title the title to display on the option pane
+	 */
+	public void displayOptionPaneAndExit(String desc, String title)
+	{
+		JOptionPane.showMessageDialog(null,desc+"\nFatal Error: Application will be closed.",title, JOptionPane.PLAIN_MESSAGE);					
+	}	
+	/**
+	 * This function returns the attribute name of the node
+	 *
+	 * @param  node   	node which you want the attribute name
+	 * @param attrName	the atrribute name
+	 * @return attribute name the attribute name
+	 */
+	public String getAttr(org.w3c.dom.Node node, String attrName)
+	{
+		return ((Element)node).getAttribute(attrName);
+	}
+	/**
+	 * This function returns the description
+	 *
+	 * @param node	node which you want the description from
+	 * @param des attribute name
+	 */
+	public String getDes(org.w3c.dom.Node node, String des)
+	{
+		return ((Element)node).getAttribute(des);
+	}
+	/**
+	 * This function returns the document root 
+	 * @return documentRoot	the document root
+	 */
+	public Document getDocumentRoot()
+	{
+		return documentRoot;
+	}
+	
+	/**
+	 * This function sets the document root
+	 *
+	 * @param root root of the document
+	 */
+	public void setDocumentRoot(Document root)
+	{
+		documentRoot = root;
+	}
 }

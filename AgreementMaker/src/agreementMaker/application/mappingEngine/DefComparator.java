@@ -1,4 +1,4 @@
-package agreementMaker.mappingEngine;
+package agreementMaker.application.mappingEngine;
 
 /**
  * Write a description of class DefComparator here.
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
-import agreementMaker.stemmer.PorterStemmer;
+import agreementMaker.application.mappingEngine.stemmer.PorterStemmer;
 import edu.gwu.wordnet.DictionaryDatabase;
 import edu.gwu.wordnet.FileBackedDictionary;
 import edu.gwu.wordnet.IndexWord;

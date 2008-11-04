@@ -1,4 +1,4 @@
-package agreementMaker.development;
+package agreementMaker.application.evaluationEngine;
 
 public class MatchingPairDesc extends MatchingPair {
 	/**the description of the label of the source node*/
