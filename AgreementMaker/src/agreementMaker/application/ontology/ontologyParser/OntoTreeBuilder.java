@@ -60,7 +60,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 	 * In the N3 format can't be true because the namespace organization is different 
 	 * ATTENTION: we skip from loading the referenced classes but their sons in the hierarchy may be valid classes. 
 	 */
-	private boolean skipOtherNamespaces = false;
+	private boolean skipOtherNamespaces = true;
 	/* To get the namespace of the loaded ontologies we use the method model.getNsPrefixMapping.get("")
 	 * This method cannot be used with "" input for N3
 	 */
@@ -72,31 +72,16 @@ public class OntoTreeBuilder extends TreeBuilder{
 	 * @param syntaxIndex
 	 * @param sourceOrTarget
 	 */
-	public OntoTreeBuilder(String fileName, int syntaxIndex, int sourceOrTarget) {
-		super(fileName, Ontology.OWL, sourceOrTarget); 
+	public OntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format) {
+		super(fileName, sourceOrTarget, language, format); 
 		treeCount = 0;
 		
-		
-		String fileExt = "RDF/XML";
-		if(syntaxIndex == 0){
-			fileExt = "RDF/XML";
-			skipOtherNamespaces = true;//view comments on the variable declaration
-		}else if(syntaxIndex == 1){
-			fileExt = "RDF/XML-ABBREV";
-		}else if(syntaxIndex == 2){
-			fileExt = "N-TRIPLE";
-		}else if(syntaxIndex == 3){
-			fileExt = "N3";
-		}else if(syntaxIndex == 4){
-			fileExt = "N3";
-		}
-
 		System.out.print("Reading Model...");
 		model = ModelFactory.createOntologyModel( PelletReasonerFactory.THE_SPEC );
 		
 		
 		//TODO: Figure out if the 2nd arg in next fn call should be null or someother URI
-		model.read( "file:"+fileName, null, fileExt );
+		model.read( "file:"+fileName, null, ontology.getFormat() );
 		System.out.println("done");
 		
 		if(skipOtherNamespaces) { //we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
@@ -119,7 +104,6 @@ public class OntoTreeBuilder extends TreeBuilder{
 		//reasoner.classify();
 		System.out.println("done");
 
-		ontology.setFormat(fileExt);
 		ontology.setModel(model);
 		buildTree();
 		

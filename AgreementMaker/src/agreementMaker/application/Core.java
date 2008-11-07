@@ -12,8 +12,8 @@ import agreementMaker.application.ontology.Ontology;
  *
  */
 public class Core {
-	private Ontology sourceOntology;
-	private Ontology targetOntology;
+	private Ontology sourceOntology;//Null if it's not loaded yet
+	private Ontology targetOntology;//Null if it's not loaded yet
 	/**
 	 * Singleton pattern: unique instance
 	 */
@@ -31,6 +31,25 @@ public class Core {
 	private Core() {
 	}
 	
+	public Ontology getSourceOntology() {
+		return sourceOntology;
+	}
+	public void setSourceOntology(Ontology sourceOntology) {
+		this.sourceOntology = sourceOntology;
+	}
+	public Ontology getTargetOntology() {
+		return targetOntology;
+	}
+	public void setTargetOntology(Ontology targetOntology) {
+		this.targetOntology = targetOntology;
+	}
 	
-
+	public boolean sourceIsLoaded() {
+		return sourceOntology != null;
+	}
+	
+	public boolean targetIsLoaded() {
+		return targetOntology != null;
+	}
+	
 }

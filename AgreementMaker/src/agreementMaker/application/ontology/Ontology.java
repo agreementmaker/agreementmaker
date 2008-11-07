@@ -3,6 +3,7 @@ package agreementMaker.application.ontology;
 import java.util.ArrayList;
 
 import com.hp.hpl.jena.rdf.model.Model;
+
 import agreementMaker.GSM;
 import agreementMaker.userInterface.vertex.Vertex;
 
@@ -12,10 +13,6 @@ import agreementMaker.userInterface.vertex.Vertex;
  *
  */
 public class Ontology {
-	
-	public final static String OWL = "owl";
-	public final static String RDF = "rdf";
-	public final static String XML  = "xml";
 		
 	/**It may be SOURCE or TARGET use the final static int values in GSM to set this*/
 	private int sourceOrTarget;

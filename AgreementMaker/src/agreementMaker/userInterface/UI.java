@@ -8,13 +8,18 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 
 import agreementMaker.GSM;
+import agreementMaker.application.Core;
 import agreementMaker.application.evaluationEngine.OntologyController;
+import agreementMaker.application.ontology.Ontology;
+import agreementMaker.application.ontology.ontologyParser.TreeBuilder;
+import agreementMaker.userInterface.vertex.VertexDescriptionPane;
 
 
 /**
@@ -31,11 +36,10 @@ public class UI {
 	static final long serialVersionUID = 1;
 	
 	private Canvas canvas;
+	/** This class is going to be replaced later*/
 	private OntologyController ontologyController;
 	
 	private JFrame frame;
-	// variables to store the global and local filenames
-	private String globalFileName, localFileName;
 	
 	
 	private JPanel panelCanvas, panelDesc;
@@ -51,25 +55,10 @@ public class UI {
 	{
 		init();
 	}
-	
-	/**
-	 * @param ontoType
-	 * @param langIndex
-	 * @param syntaxIndex
-	 */
-	public void buildOntology(int ontoType, int langIndex, int syntaxIndex) {
-		canvas.buildOntology(ontoType, langIndex, syntaxIndex);
-	}
-	/** 
-	 * This method disables opening local and global files
-	 */
-	public void disableLoadFiles()
-	{
-		//TODO: Decide what to put in here.....
-	}
+
 	 
 	/**
-	 * @return
+	 * @return canvas
 	 */
 	public Canvas getCanvas(){
 		return this.canvas;
@@ -94,18 +83,7 @@ public class UI {
 	public JPanel getDescriptionPanel(){
 		return this.panelDesc;
 	}
-	/**
-	 * @param ontoType
-	 * @return
-	 */
-	public String getOntoFileName(int ontoType){
-		if(ontoType == GSM.SOURCENODE)
-			return globalFileName;
-		else if(ontoType == GSM.TARGETNODE)
-			return localFileName;
-		else
-			return null;
-	}
+
 	
 	public UIMenu getUIMenu(){
 		return this.uiMenu;
@@ -159,6 +137,7 @@ public class UI {
 		//add canvas to panel
 		panelCanvas.add(canvas);
 		//Added by Flavio: this class is needed to modularize the big canvas class, basically it contains some methods which could be in canvas class which works with the ontologies
+		//it will be replaced later adding structures and methods inside the Core
 	    ontologyController = new OntologyController(canvas);
 		
 	    //panelDesc = new VertexDescriptionPane(this); 
@@ -200,35 +179,63 @@ public class UI {
 		this.panelDesc = jPanel;
 	}
 
-	/**
-	 * @param name
-	 * @param ontoType
-	 */
-	public void setOntoFileName(String name, int ontoType){
-		if(ontoType == GSM.SOURCENODE)
-			globalFileName = name;
-		else if(ontoType == GSM.TARGETNODE)
-			localFileName = name;
-	}
 
 	public ControlPanel getPanelControlPanel() {
 		return panelControlPanel;
 	}
 
-}
 
-/**
- * Class to close the frame and exit the application
- */
-class WindowEventHandler extends WindowAdapter
-{
+	/** This function will open a file
+	 *  Attention syntax and language are placed differently from other functions.
+	 * @param ontoType the type of ontology, source or target
+	 * 
+	 * */
+
+	public void openFile( String filename, int ontoType, int syntax, int language) {
+		try{
+			JPanel jPanel = null;
+			
+			if(language == GSM.RDFSFILE)//RDFS
+				jPanel = new VertexDescriptionPane(GSM.RDFSFILE);//takes care of fields for XML files as well
+			else if(language == GSM.ONTFILE)//OWL
+				jPanel = new VertexDescriptionPane(GSM.ONTFILE);//takes care of fields for XML files as well
+			else if(language == GSM.XMLFILE)//XML
+				jPanel = new VertexDescriptionPane(GSM.XMLFILE);//takes care of fields for XML files as well 
+	
+			getUISplitPane().setRightComponent(jPanel);
+			setDescriptionPanel(jPanel);
+			
+			//This function manage the whole process of loading, parsing the ontology and building data structures: Ontology to be set in the Core and Tree and to be set in the canvas
+			TreeBuilder t = TreeBuilder.buildTreeBuilder(filename, ontoType, language, syntax);
+			//Set ontology in the Core
+			Ontology ont = t.getOntology();
+			if(ontoType == GSM.SOURCENODE) {
+				Core.getInstance().setSourceOntology(ont);
+			}
+			else Core.getInstance().setTargetOntology(ont);
+			//Set the tree in the canvas
+			getCanvas().setTree(t);
+		
+		}catch(Exception ex){
+			JOptionPane.showConfirmDialog(null,"Can not parse the file '" + filename + "'. Please check the policy.","Parser Error",JOptionPane.PLAIN_MESSAGE);
+			ex.printStackTrace();
+		}
+	}
+
 	/**
-	 * Function which closes the window
-	 * @param e WindowEvent Object
+	 * Class to close the frame and exit the application
 	 */
-	public void windowClosing(WindowEvent e)
+	public class WindowEventHandler extends WindowAdapter
+	{
+		/**
+		 * Function which closes the window
+		 * @param e WindowEvent Object
+		 */
+		public void windowClosing(WindowEvent e)
 	{
 		e.getWindow().dispose();
 		//System.exit(0);   
 	}
-}    
+	}    
+
+}

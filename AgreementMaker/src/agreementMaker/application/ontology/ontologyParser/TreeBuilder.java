@@ -1,6 +1,7 @@
 package agreementMaker.application.ontology.ontologyParser;
 
 import java.io.File;
+import java.util.Enumeration;
 
 import javax.swing.JOptionPane;
 
@@ -8,6 +9,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import agreementMaker.GSM;
 import agreementMaker.application.ontology.Ontology;
 import agreementMaker.userInterface.vertex.Vertex;
 
@@ -20,12 +22,43 @@ public abstract class TreeBuilder {
 	protected Ontology ontology;  
 	protected int uniqueKey = 0;
 	
-	public TreeBuilder(String filename, String language, int sourceOrTarget) {
+	public TreeBuilder(String filename,  int sourceOrTarget, String language, String format) {
 		ontology = new Ontology();
 		ontology.setFilename(filename);
 		ontology.setSourceOrTarget(sourceOrTarget);
+		ontology.setLanguage(language);
+		ontology.setFormat(format);
         File f = new File(ontology.getFilename());
         ontology.setTitle(f.getName()); 
+	}
+	
+	public static TreeBuilder buildTreeBuilder(String fileName, int ontoType, int langIndex, int syntaxIndex){
+		
+		
+		String languageS = GSM.getLanguageString(langIndex);
+		String syntaxS = GSM.getSyntaxString(syntaxIndex);
+		TreeBuilder treeBuilder;
+		if(langIndex == GSM.XMLFILE){
+			treeBuilder = new XmlTreeBuilder(fileName, ontoType, languageS, syntaxS);
+		}
+		else if(langIndex == GSM.RDFSFILE)
+			treeBuilder = new RdfsTreeBuilder(fileName, ontoType, languageS, syntaxS);
+		else treeBuilder = new OntoTreeBuilder(fileName, ontoType, languageS, syntaxS);
+		
+		//TO BE CHANGED IN THE FUTURE
+		for (Enumeration e = treeBuilder.getTreeRoot().preorderEnumeration(); e.hasMoreElements() ;) 
+		{
+			Vertex node = (Vertex) e.nextElement();
+			node.setName(node.toString());
+			node.setNodeType(ontoType);
+			node.setVerticalHorizontal();
+		}
+		
+		System.out.println("Total number of nodes in the tree hierarchy: "+treeBuilder.getTreeCount());
+		System.out.println("Total number of classes to be aligned: "+treeBuilder.getOntology().getClassesList().size());
+		System.out.println("Total number of properties to be aligned: "+treeBuilder.getOntology().getPropertiesList().size());
+		
+		return treeBuilder;
 	}
 
 	/**

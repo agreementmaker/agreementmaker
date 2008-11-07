@@ -44,35 +44,19 @@ public class RdfsTreeBuilder extends TreeBuilder{
 	 * In the N3 format can't be true because the namespace organization is different 
 	 * ATTENTION: we skip from loading the referenced classes but their sons in the hierarchy may be valid classes. 
 	 */
-	private boolean skipOtherNamespaces = false;
+	private boolean skipOtherNamespaces = true;
 	/* To get the namespace of the loaded ontologies we use the method model.getNsPrefixMapping.get("")
 	 * This method cannot be used with "" input for N3
 	 */
 	private String ns = null;
 	
-	public RdfsTreeBuilder(String fileName, int syntaxIndex, int sourceOrTarget) {
-		super(fileName,Ontology.RDF, sourceOrTarget);
-		
-		
-		String fileExt = "RDF/XML";
-		if(syntaxIndex == 0){
-			fileExt = "RDF/XML";
-			skipOtherNamespaces = true;
-		}else if(syntaxIndex == 1){
-			fileExt = "RDF/XML-ABBREV";
-			skipOtherNamespaces = true;
-		}else if(syntaxIndex == 2){
-			fileExt = "N-TRIPLE";
-		}else if(syntaxIndex == 3){
-			fileExt = "N3";
-		}else if(syntaxIndex == 4){
-			fileExt = "N3";
-		}
+	public RdfsTreeBuilder(String fileName, int sourceOrTarget, String language, String format) {
+		super(fileName, sourceOrTarget, language, format);
 		
 		System.out.print("Reading Model...");
 		ontModel = ModelFactory.createOntologyModel(OntModelSpec.RDFS_MEM_RDFS_INF, null);
 		//TODO: Figure out if the 2nd arg in next fn call should be null or someother URI
-		ontModel.read( "file:"+fileName, "", fileExt );
+		ontModel.read( "file:"+fileName, "", ontology.getFormat() );
 		System.out.println("done");
 		
 		if(skipOtherNamespaces) { //we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
@@ -83,10 +67,6 @@ public class RdfsTreeBuilder extends TreeBuilder{
 				skipOtherNamespaces = false;
 			}
 		}
-		/*TODO: If we have local copies we can add them using m.getDocumentManager().addAltEntry("xxx")
-		 * This will help if there is no internet connection
-		 */
-		ontology.setFormat(fileExt);
 		ontology.setModel(ontModel);
 		treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(),ontModel);//Creates the root of type Vertex for the tree, is a fake vertex with no corresponding node
 		Vertex classRoot = new Vertex(RDFCLASSROOTNAME,RDFCLASSROOTNAME,ontModel);

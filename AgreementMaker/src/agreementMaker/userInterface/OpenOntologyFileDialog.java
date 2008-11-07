@@ -4,6 +4,8 @@ package agreementMaker.userInterface;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.prefs.Preferences;
 
@@ -72,16 +74,12 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		
 		//Container contentPane = frame.getContentPane();
 		//frame.setResizable(false);
-		
-		//TODO: work out a better layout method for this dialog
-		//DONE: By Cosmin (Oct 5th, 2008)
-		//frame.setSize(new Dimension(600,250));
 
 		
 		if(ontoType == GSM.SOURCENODE)
-			fileType = new JLabel("Source Ontology");
+			fileType = new JLabel(GSM.SOURCETITILE);
 		else if(ontoType == GSM.TARGETNODE)
-			fileType = new JLabel("Target Ontology");
+			fileType = new JLabel(GSM.TARGETTITLE);
 		
 		filePath = new JTextField(0);
 		
@@ -92,11 +90,10 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		cancel.addActionListener(this);
 		proceed.addActionListener(this);
 		
-		String[] ts_list = {"RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE", "N3", "TURTLE"};
-		String[] l_list = {"RDFS", "OWL", "XML"};
+		String[] languageStrings = GSM.languageStrings;
+		String[] syntaxStrings = GSM.syntaxStrings;
 		
-		
-		syntaxList = new JList(ts_list);
+		syntaxList = new JList(syntaxStrings);
 		syntaxList.setPrototypeCellValue("01234567890123456789"); // this string sets the width of the list
 		syntaxList.addListSelectionListener(this);
 		syntaxList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -105,7 +102,7 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		syntaxList.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Syntax Language"));
 		syntaxList.setSelectedIndex(prefs.getSyntaxListSelection());  // select the last thing selected
 		
-		langList = new JList(l_list);
+		langList = new JList(languageStrings);
 		langList.addListSelectionListener(this);
 		langList.setPrototypeCellValue("01234567890123456789"); // this string sets the width of the list
 		langList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -170,7 +167,7 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 
 		// end of Layout Code
 		
-		frame.addWindowListener(new WindowEventHandler());
+		frame.addWindowListener(ui.new WindowEventHandler());
 		frame.pack(); // automatically set the frame size
 		frame.setLocationRelativeTo(null); 	// center the window on the screen
 		frame.setModal(true);
@@ -207,42 +204,25 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 				// ok, now that we know what file the user selected
 				// let's save it for future use (for the chooser)
 				prefs.saveLastDir(selectedfile); 
-								
-				ui.setOntoFileName(selectedfile.getPath(), ontoType);
-				filePath.setText(ui.getOntoFileName(ontoType));
+				filePath.setText(selectedfile.getPath());
 				
-
 			}
 		}else if(obj == proceed){
-			if(filePath.getText().equals("")){
+			String filename = filePath.getText();
+			if(filename.equals("")){
 				JOptionPane.showMessageDialog(frame, "Load an ontology file to proceed.");
 			}else{
 				try{
-					JPanel jPanel = new JPanel();
-					
-					if(langList.getSelectedIndex() == 0)//RDFS
-						jPanel = new VertexDescriptionPane(GSM.RDFSFILE);//takes care of fields for XML files as well
-					else if(langList.getSelectedIndex() == 1)//OWL
-						jPanel = new VertexDescriptionPane(GSM.ONTFILE);//takes care of fields for XML files as well
-					else if(langList.getSelectedIndex() == 2)//XML
-						jPanel = new VertexDescriptionPane(GSM.XMLFILE);//takes care of fields for XML files as well 
-					
-					ui.getUISplitPane().setRightComponent(jPanel);
-					ui.setDescriptionPanel(jPanel);
-					ui.buildOntology(ontoType, langList.getSelectedIndex(), syntaxList.getSelectedIndex());
-					
+					ui.openFile(filename, ontoType, syntaxList.getSelectedIndex(), langList.getSelectedIndex());
 					// once we are done, let's save the syntax and language selection that was made by the user
 					// and save the file used to the recent file list, and also what syntax and language it is
 					prefs.saveOpenDialogListSelection(syntaxList.getSelectedIndex() , langList.getSelectedIndex());
 					prefs.saveRecentFile(filePath.getText(), ontoType, syntaxList.getSelectedIndex(), langList.getSelectedIndex());
 					ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
 				
-					
 				}catch(Exception ex){
-					JOptionPane.showConfirmDialog(null,"Can not parse the file '" + ui.getOntoFileName(ontoType) + "'. Please check the policy.","Parser Error",JOptionPane.PLAIN_MESSAGE);
-					System.out.println("STACK TRACE:");
+					JOptionPane.showConfirmDialog(null,"Can not parse the file '" + filename + "'. Please check the policy.","Parser Error",JOptionPane.PLAIN_MESSAGE);
 					ex.printStackTrace();
-					ui.setOntoFileName(null, ontoType);
 				}
 
 				frame.dispose();
@@ -262,4 +242,5 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		}
 	}
 	
+
 }

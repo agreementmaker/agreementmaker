@@ -27,11 +27,13 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import agreementMaker.GSM;
+import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.ContextMapping;
 import agreementMaker.application.mappingEngine.DefComparator;
 import agreementMaker.application.mappingEngine.DefnMapping;
 import agreementMaker.application.mappingEngine.DefnMappingOptions;
 import agreementMaker.application.mappingEngine.UserMapping;
+import agreementMaker.application.ontology.Ontology;
 import agreementMaker.application.ontology.ontologyParser.OntoTreeBuilder;
 import agreementMaker.application.ontology.ontologyParser.RdfsTreeBuilder;
 import agreementMaker.application.ontology.ontologyParser.TreeBuilder;
@@ -63,7 +65,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	PrintStream p; // declare a print stream object
 	PrintStream p2; // declare a print stream object
 	
-	static final long 	serialVersionUID = 1;
 	private JMenuItem 	cancel;               	// cancel the mappingByUser
 	private JMenuItem 	cancelPopup;				// cancel the right click pop up
 	private double 		canvasHeight;				// height of the canvas
@@ -74,12 +75,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private JMenuItem 	comparativeSuperset;		// comparativeSuperset mappingByUser
 	private int 				countStat = 0;
 	private JMenuItem 	desc;						// desc JMenuItem
-	private boolean 	didNotLoadFiles;			// boolean variable to see if files are loaded
 	private JMenuItem 	exact;               		// exact mappingByUser
-	private String 			globalFileName = null;		// global file name
 	private Vector 		globalNodesSelected;			// the global nodes which are selected
 	private Vertex 		globalTreeRoot;				// root of global tree
-	private String 			localFileName=null;			// local file name
 	private Vector 		localNodesSelected;      	// the local nodes which are selected
 	private Vertex 		localTreeRoot;				// root of local tree
 	private boolean		mapByContext;				// boolean indicating the mappingByUser is done by context
@@ -102,6 +100,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private JMenuItem 	supersetComplete;		// superset complete mappingByUser
 	
 	private DefnMappingOptions defnOptions; 
+	/**Reference to the core istance, it's set in the canvas constructor, we could also avoid to keep it, but then we should always get it via Core.getIstance();*/
+	private Core core;
 	
 	/*******************************************************************************************
 	 * Default constructor for myCanvas class.
@@ -120,8 +120,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		globalNodesSelected = new Vector();
 		localNodesSelected = new Vector();                
 		
-		// initalize the variable
-		didNotLoadFiles = true;
 		
 		// add the mouse listener
 		addMouseListener(this);
@@ -138,6 +136,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		// initialize mapByDefnUser variable to be false
 		mapByDefn = false;  // Muhammad
 		
+		core = Core.getInstance();
 		// repaint the canvas
 		//repaint();
 	}
@@ -183,10 +182,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				(obj == comparativeExact) || (obj == comparativeSubset) || (obj == comparativeSuperset))	{
 			//JOptionPane.showMessageDialog(null,"Hello1","Khan1", JOptionPane.PLAIN_MESSAGE);			
 			// signal the JMenuItem openOntologyFile and openLocalFile to be disabled
-			myUI.disableLoadFiles();
+			//myUI.disableLoadFiles();
 			
-			// check the mapByUser and mappingByUser checkboxes in the UI class
-			myUI.getPanelControlPanel().setMappingByUser(true);
 			
 			// create a UserMapping class variable and create a mappingByUser between local and global nodes selected
 			UserMapping map = new UserMapping();
@@ -302,29 +299,37 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		}
 		return true;
 	}
-	/**
-	 * @param ontoType
-	 * @param langIndex
-	 * @param syntaxIndex
-	 */
-	public void buildOntology(int ontoType, int langIndex, int syntaxIndex) {
-		//JOptionPane.showMessageDialog(null, "The onto type is: " + ontoType);
-		int totalNodes;	// number of nodes created in global tree
+
+	public void setTree(TreeBuilder tb) {
+		
+		Vertex treeRoot = tb.getTreeRoot();
+		Ontology o = tb.getOntology();
+		int nodeType;
+		if(o.isSource()) {
+			setGlobalTreeRoot(treeRoot);
+			nodeType = GSM.SOURCENODE;
+		}
+		else {
+			setLocalTreeRoot(treeRoot);
+			nodeType = GSM.TARGETNODE;
+		}
+		
+		//TO BE CHANGED IN THE FUTURE
+		for (Enumeration e = tb.getTreeRoot().preorderEnumeration(); e.hasMoreElements() ;) 
+		{
+			Vertex node = (Vertex) e.nextElement();
+			node.setName(node.toString());
+			node.setNodeType(nodeType);
+			node.setVerticalHorizontal();
+		}
+
+		int totalNodes = tb.getTreeCount();	// number of nodes created in global tree
 		Dimension dim;		// dimension of the panel
 		double height;		// height of the canvas
-		String ontoFileName = myUI.getOntoFileName(ontoType);
-		// set the did not load files flag to false
-		didNotLoadFiles = false;
 		
 		// setOldY to negative number indicating that node was not clicked
 		setOldY(-1);
-		
-		// set the global filename
-		setOntoFileName(ontoFileName, ontoType);
-		
-		// build the global tree and get number of nodes created
-		totalNodes = buildTree(ontoType, langIndex, syntaxIndex);	
-		
+
 		// get the dimension of the panel
 		JPanel canvasPanel = myUI.getCanvasPanel();
 		dim = canvasPanel.getPreferredSize();
@@ -360,94 +365,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	 * @param syntaxIndex
 	 * @return
 	 */
-	public int buildTree(int ontoType, int langIndex, int syntaxIndex){
-		
-		Vertex treeRoot;
-		int nodeType, treeNodeCount;
-		String fileName = getOntoFileName(ontoType);
-		TreeBuilder treeBuilder;
-		if(langIndex == 2){// 2 is the selection index of XML in langList in OpenOntologyFIleDialog.java
-			//TODO: fix the above if stmt... I am sure 3 will cause some problem later on
-			//Handles the old XML files
-			
-			if ( ontoType == GSM.SOURCENODE)//Builds Onto tree
-			{
-				treeBuilder = new XmlTreeBuilder(fileName, ontoType);
-				treeRoot = treeBuilder.getTreeRoot();			 
-				// set the global tree root
-				setGlobalTreeRoot(treeRoot);			
-				nodeType = GSM.SOURCENODE;
-			}
-			else//builds Local tree
-			{
-				treeBuilder = new XmlTreeBuilder(fileName, ontoType);
-				treeRoot = treeBuilder.getTreeRoot();		
-				// set the local tree root
-				setLocalTreeRoot(treeRoot);
-				nodeType = GSM.TARGETNODE;
-			}
-			
-			Vertex node;
-			// initializing the vertex for the file
-			for (Enumeration e = treeRoot.preorderEnumeration(); e.hasMoreElements() ;) 
-			{
-				node = (Vertex) e.nextElement();
-				node.setName(node.toString());
-				node.setNodeType(nodeType);
-			    //JOptionPane.showMessageDialog(null,"The onto type:" + ontoType);
-				node.setVerticalHorizontal();
-			}
-			
-			treeNodeCount = treeBuilder.getTreeCount();
-			treeBuilder = null;
-			return treeNodeCount;
-			
-		}else{
-			//Handles OWL, RDFS
-			
-			String str;
-			
-			if(langIndex == 0){
-				treeBuilder = new RdfsTreeBuilder(fileName, syntaxIndex, ontoType);
-				treeRoot = treeBuilder.getTreeRoot();
-				treeNodeCount = treeBuilder.getTreeCount();
-			}else {
-				treeBuilder = new OntoTreeBuilder(fileName, syntaxIndex, ontoType);
-				treeRoot = treeBuilder.getTreeRoot();
-				treeNodeCount = treeBuilder.getTreeCount();
-			}
-			
-			if (ontoType == GSM.SOURCENODE)//Builds Onto tree
-			{
-				// set the global tree root
-				setGlobalTreeRoot(treeRoot);			
-				nodeType = GSM.SOURCENODE;
-			}
-			else//builds Local tree
-			{
-				// set the local tree root
-				setLocalTreeRoot(treeRoot);
-				nodeType = GSM.TARGETNODE;
-			}
-			
-			Vertex node;
-			
-			// initializing the vertex for the file
-			for (Enumeration e = treeRoot.preorderEnumeration(); e.hasMoreElements() ;) 
-			{
-				node = (Vertex) e.nextElement();
-				str = node.toString();
-				node.setName(str); //Name for Class is set in the constructor itself
-				node.setNodeType(nodeType);//nodeType is 1 for Onto and 2 for Local
-				//JOptionPane.showMessageDialog(null,"The onto type:" + ontoType);
-				node.setVerticalHorizontal();
-			}
-			System.out.println("Total number of nodes in the tree hierarchy: "+treeBuilder.getTreeCount());
-			System.out.println("Total number of classes to be aligned: "+treeBuilder.getOntology().getClassesList().size());
-			System.out.println("Total number of properties to be aligned: "+treeBuilder.getOntology().getPropertiesList().size());
-			return treeNodeCount;
-		}
-	}
+	
 	/**
 	 * @param ontoType
 	 */
@@ -1949,18 +1867,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	{
 		return oldY;
 	}
-	/**
-	 * @param ontoType
-	 * @return
-	 */
-	public String getOntoFileName(int ontoType){
-		if(ontoType == GSM.SOURCENODE)
-			return globalFileName;
-		else if(ontoType == GSM.TARGETNODE)
-			return localFileName;
-		else
-			return null;
-	}
+
 	/**
 	 * This function returns the rightClickedNode
 	 * @return rightClickedNode the node which was right clicked
@@ -2540,7 +2447,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	{
 		
 		super.paint(graphic);
-		
 		Dimension dim;		// dimension of the canvas
 		
 		// get the dimension of the canvas
@@ -2559,7 +2465,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		// Fill the whole screen (rectangle)
 		graphic.fillRect(0,0,(int)canvasWidth,(int)canvasHeight);
 		
-		if (didNotLoadFiles == true)
+		if (!core.sourceIsLoaded()  && !core.targetIsLoaded())
 		{
 			graphic.setColor(Colors.dividers);
 			
@@ -2577,34 +2483,18 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			graphic.drawString("Global (Source) Ontology", 10,15);
 			graphic.drawString("Local (Target) Ontology",(int)(canvasWidth/2)+10, 15);
 		}
-		
-		//int n;
-		if (globalFileName != null)
-			displayTree(graphic, true);
-		/*else{
-		 graphic.setFont(new Font("Arial", Font.BOLD, 30));
-		 graphic.drawString("Please Load Ontology File",50,100);
-		 graphic.setFont(new Font("Arial", Font.BOLD,12));
-		 graphic.drawString("Press Ctrl-O", (int)(middle/3)+15, 130);
-		 graphic.drawString("OR", (int)(middle/3)+35, 145);
-		 graphic.drawString("Go to \"File\" menu and choose \"Open Ontology File\"", 80, 160);
-		 }*/
-		
-		if (localFileName != null)
-			displayTree(graphic, false);
-		/*else{
-		 graphic.setFont(new Font("Arial", Font.BOLD, 30));
-		 graphic.drawString("Please Load Local File",middle+75,100);
-		 graphic.setFont(new Font("Arial", Font.BOLD,12));
-		 graphic.drawString("Press Ctrl-L", middle+(int)(middle/3)+20, 130);
-		 graphic.drawString("OR", middle+(int)(middle/3)+40, 145);
-		 graphic.drawString("Go to \"File\" menu and choose \"Open Local File\"", middle+95, 160);
-		 }*/
-		
-		if ((globalFileName != null ) && (localFileName != null)){
-			displayMappingLines(graphic);
-			Graphics2D graphic2d = (Graphics2D) graphic;
-			displayHighlightedMappingLines(graphic2d, getGlobalTreeRoot());
+		else {
+			if (core.sourceIsLoaded())
+				displayTree(graphic, true);
+			
+			if (core.targetIsLoaded())
+				displayTree(graphic, false);
+			
+			if ((core.sourceIsLoaded() ) && (core.targetIsLoaded() )){
+				displayMappingLines(graphic);
+				Graphics2D graphic2d = (Graphics2D) graphic;
+				displayHighlightedMappingLines(graphic2d, getGlobalTreeRoot());
+			}
 		}
 		
 		this.revalidate();
@@ -3389,18 +3279,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	{
 		oldY = y;
 	}
-	/**
-	 * This function sets the Global and Local Ontology filename
-	 *
-	 * @param filename
-	 */
-	public void setOntoFileName(String fileName, int ontoType)
-	{
-		if(ontoType == GSM.SOURCENODE)
-			globalFileName = fileName;
-		else if(ontoType == GSM.TARGETNODE)
-			localFileName = fileName;
-	}
+
 	/**
 	 * This function sets the rightClickedNode
 	 *

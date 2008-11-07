@@ -29,30 +29,21 @@ import agreementMaker.agreementDocument.DocumentProducer;
 public class ControlPanel extends JPanel implements ActionListener,
 		ItemListener {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -2258009700001283026L;
 	
-	private Canvas canvas;
 	private JComboBox displayLines;
 	private JButton generateAgreementDocument;
-	private JLabel thre = new JLabel("Display similirity values >= than:  ");
+	private JLabel thre = new JLabel("Display similarity values >= than:  ");
 	private JLabel lines = new JLabel("Relations per source node to be displayed: ");
 	private JButton mappingByConsolidationButton;
 	private JButton clearmappingByConsolidationButton;
-	private JCheckBox mappingByConsolidationCheckBox;
 	private JButton mappingByContextButton;
 	private JButton clearmappingByContextButton;
-	private JCheckBox mappingByContextCheckBox;
 	private JButton mappingByDefinitionButton;
 	private JButton clearmappingByDefinitionButton;
-	private JCheckBox mappingByDefinitionCheckBox;
 	private JButton mappingByUserButton;
 	private JButton clearmappingByUserButton;
-	private JCheckBox mappingByUserCheckBox;
 	private JComboBox thresholdList;
-	private UIMenu uiMenu;
 	private UI ui;
 	private JLabel userLabel; 
 	
@@ -66,8 +57,6 @@ public class ControlPanel extends JPanel implements ActionListener,
 	
 	
 	ControlPanel(UI ui, UIMenu uiMenu, Canvas canvas) {
-		this.uiMenu = uiMenu;
-		this.canvas = canvas;
 		this.ui = ui;
 		init();
 	}
@@ -77,15 +66,10 @@ public class ControlPanel extends JPanel implements ActionListener,
 		if (obj == mappingByUserButton) {
 			if (mappingByUserButton.getText() == "Show Mapping by User") {
 				mappingByUserButton.setText("Hide Mapping by User");
-				uiMenu.mapByUserSetSelected(true);
-				mappingByUserCheckBox.setSelected(true);
-				canvas.setMapByUser(true);
+				ui.getCanvas().setMapByUser(true);
 			} else if (mappingByUserButton.getText() == "Hide Mapping by User") {
 				mappingByUserButton.setText("Show Mapping by User");
-				uiMenu.mapByUserSetSelected(false);
-				mappingByUserCheckBox.setSelected(false);
-				canvas.setMapByUser(false);
-
+				ui.getCanvas().setMapByUser(false);
 			}
 		} else if (obj == mappingByDefinitionButton) {
 			// run mapping by definition
@@ -94,9 +78,9 @@ public class ControlPanel extends JPanel implements ActionListener,
 			Date myDate = new Date();
 			long start = myDate.getTime();
 			*/
-			
+			System.out.println("before");
 			DefnMappingOptionsDialog dmod = new DefnMappingOptionsDialog(ui);
-			
+			System.out.println("after");
 			/* TO MEASURE RUNNING TIME
 			myDate = new Date();
 			long end = myDate.getTime();
@@ -121,7 +105,7 @@ public class ControlPanel extends JPanel implements ActionListener,
 			if(dmod.mappingSuccessed()) {
 				// Refresh the Canvas with the results, if the user wants to see them.
 				if(showDefMap.getSelectedIndex() == 0) { // the user has selected "Show Results"
-					canvas.selectedDefnMapping();
+					ui.getCanvas().selectedDefnMapping();
 					// canvas.repaint(); this is called by the selectedDefnMapping() function
 				}
 				JOptionPane.showMessageDialog(ui.getUIFrame(), "Mapping by definition completed");
@@ -132,39 +116,33 @@ public class ControlPanel extends JPanel implements ActionListener,
 			
 		} else if( obj == clearmappingByDefinitionButton ) {
 			// user clicked the clear by definition button
-			canvas.clearDefinitionMapping();
+			ui.getCanvas().clearDefinitionMapping();
 			clearmappingByDefinitionButton.setEnabled(false);
-			canvas.repaint();
+			ui.getCanvas().repaint();
 		} else if( obj == clearmappingByContextButton ) {
 			// user clicked the clear button for context mappings
-			canvas.clearContextMapping();
+			ui.getCanvas().clearContextMapping();
 			clearmappingByContextButton.setEnabled(false);
-			canvas.repaint();
+			ui.getCanvas().repaint();
 		} else if (obj == mappingByContextButton) {
 			// the user has clicked mappingByContextButton, to run the mapping by context
 			// run the mapping
 			showContextMap.setSelectedIndex(0); // we will automatically show the result
-			uiMenu.mapByContextSetSelected(true); // update the checkbox on the file menu
-			mappingByContextCheckBox.setSelected(true);
-			canvas.mapByContext();
+			ui.getCanvas().mapByContext();
 			clearmappingByContextButton.setEnabled(true);
 
 		} else if (obj == mappingByConsolidationButton) {
 			if (mappingByConsolidationButton.getText() == "Show Mapping by Consolidation") {
 				mappingByConsolidationButton
 						.setText("Hide Mapping by Consolidation");
-				uiMenu.mapByConsolidationSetSelected(true);
-				mappingByConsolidationCheckBox.setSelected(true);
 			} else if (mappingByConsolidationButton.getText() == "Hide Mapping by Consolidation") {
-				uiMenu.mapByConsolidationSetSelected(false);
-				mappingByConsolidationCheckBox.setSelected(false);
 				mappingByConsolidationButton
 						.setText("Show Mapping by Consolidation");
 			}
 		} else if (obj == generateAgreementDocument) {
 			String fileName = JOptionPane
 					.showInputDialog("Please enter a file name to save\nthe agreement document to: ");
-			new DocumentProducer(canvas.getGlobalTreeRoot(), fileName);
+			new DocumentProducer(ui.getCanvas().getGlobalTreeRoot(), fileName);
 		}
 	}
 
@@ -189,10 +167,6 @@ public class ControlPanel extends JPanel implements ActionListener,
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 
-		mappingByDefinitionCheckBox = new JCheckBox("");
-		mappingByUserCheckBox = new JCheckBox("");
-		mappingByContextCheckBox = new JCheckBox("");
-		mappingByConsolidationCheckBox = new JCheckBox("");
 		mappingByDefinitionButton = new JButton("Run Mapping by Definition         ");
 		clearmappingByDefinitionButton = new JButton("Clear"); // clear button next to "run mapping by definition" button
 		clearmappingByDefinitionButton.setEnabled(false); // when the program starts, we have not computed any definition, so there is nothing to clear
@@ -240,10 +214,6 @@ public class ControlPanel extends JPanel implements ActionListener,
 		showUserMap.addItemListener(this);
 		
 		
-		mappingByDefinitionCheckBox.addItemListener(this);
-		mappingByUserCheckBox.addItemListener(this);
-		mappingByContextCheckBox.addItemListener(this);
-		mappingByConsolidationCheckBox.addItemListener(this);
 
 		mappingByDefinitionButton.addActionListener(this);
 		clearmappingByDefinitionButton.addActionListener(this);
@@ -360,79 +330,15 @@ public class ControlPanel extends JPanel implements ActionListener,
 	 * @param e ActionEvent object
 	 */
 	public void itemStateChanged(ItemEvent e) {
-		//		displayOptionPane("action genated","action");
 		Object obj = e.getItemSelectable();
-		if (obj == mappingByConsolidationCheckBox) {
-			if (e.getStateChange() == ItemEvent.DESELECTED) {
-				mappingByConsolidationCheckBox.setSelected(false);
-				uiMenu.mapByConsolidationSetSelected(false);
-				displayOptionPane("Mapping by Consolidation DESELECTEDs",
-						"Mapping by Consolidation");
-			
-			} else {
-				mappingByConsolidationCheckBox.setSelected(true);
-				uiMenu.mapByConsolidationSetSelected(true);
-				displayOptionPane("Mapping by Consolidation SELECTEDs",
-						"Mapping by Consolidation");
-			}
-		} else if (obj == mappingByUserCheckBox) {
-			if (e.getStateChange() == ItemEvent.DESELECTED) {
-				mappingByUserCheckBox.setSelected(false);
-				uiMenu.mapByUserSetSelected(false);
-				canvas.setMapByUser(false);
-			} else {
-				mappingByUserCheckBox.setSelected(true);
-				uiMenu.mapByUserSetSelected(true);
-				canvas.setMapByUser(true);
-			}
-		}
-		/*
-		else if (obj == mappingByContextCheckBox) {
-			if (e.getStateChange() == ItemEvent.DESELECTED) {
-				mappingByContextCheckBox.setSelected(false);
-				uiMenu.mapByContextSetSelected(false);
-				canvas.deselectedContextMapping();
-				
-				showContextMap.setSelectedIndex(HIDE);
-			} else {
-				mappingByContextCheckBox.setSelected(true);
-				uiMenu.mapByContextSetSelected(true);
-				// perform mapping by context by calling method in myCanvas class
-				//canvas.mapByContext();This was a mystake because the checkbox is just the same of show/hide shouldn't run the algorithm
-				canvas.selectedContextMapping();
-				showContextMap.setSelectedIndex(SHOW)
-			}
-			
-		} */
-		else if (obj == mappingByDefinitionCheckBox) {
-			if (e.getStateChange() == ItemEvent.DESELECTED) ///hide lines
-			{
-				mappingByDefinitionCheckBox.setSelected(false);
-				uiMenu.mapByDefinitionSetSelected(false);
-				canvas.deselectedDefnMapping();
-
-				
-			} else {
-				mappingByDefinitionCheckBox.setSelected(true);
-				uiMenu.mapByDefinitionSetSelected(true);
-				canvas.selectedDefnMapping();
-
-			}
-		}
-		
-		else if(obj==showContextMap) {
-			System.out.println("in show context map");
+		if(obj==showContextMap) {
 			int selection;
 			selection = showContextMap.getSelectedIndex();
 			if(selection ==0) {
-				mappingByContextCheckBox.setSelected(true);
-				uiMenu.mapByContextSetSelected(true);
-				canvas.selectedContextMapping();
+				ui.getCanvas().selectedContextMapping();
 			}
 			else {
-				mappingByContextCheckBox.setSelected(false);
-				uiMenu.mapByContextSetSelected(false);
-				canvas.deselectedContextMapping();
+				ui.getCanvas().deselectedContextMapping();
 			}
 		}
 		
@@ -440,16 +346,10 @@ public class ControlPanel extends JPanel implements ActionListener,
 			int selection;
 			selection = showUserMap.getSelectedIndex();
 			if(selection == 0) {
-				mappingByUserCheckBox.setSelected(true);
-				uiMenu.mapByUserSetSelected(true);
-				canvas.setMapByUser(true);
-				
+				ui.getCanvas().setMapByUser(true);
 			}
 			else {
-				mappingByUserCheckBox.setSelected(false);
-				uiMenu.mapByUserSetSelected(false);
-				canvas.setMapByUser(false);
-				
+				ui.getCanvas().setMapByUser(false);
 			}
 		}
 		
@@ -457,67 +357,19 @@ public class ControlPanel extends JPanel implements ActionListener,
 			int selection;
 			selection = showDefMap.getSelectedIndex();
 			if(selection==0) {
-				
-				mappingByDefinitionCheckBox.setSelected(true);
-				uiMenu.mapByDefinitionSetSelected(true);
-				canvas.selectedDefnMapping();
-
-				
+				ui.getCanvas().selectedDefnMapping();		
 			}
 			else { 
-				mappingByDefinitionCheckBox.setSelected(false);
-				uiMenu.mapByDefinitionSetSelected(false);
-				canvas.deselectedDefnMapping();
+				ui.getCanvas().deselectedDefnMapping();
 			}
 		}
 		else if(obj == displayLines) {
-			canvas.setDisplayedLines(Integer.parseInt(displayLines.getSelectedItem().toString()));
-			canvas.repaint();
+			ui.getCanvas().setDisplayedLines(Integer.parseInt(displayLines.getSelectedItem().toString()));
+			ui.getCanvas().repaint();
 		}
 		else if(obj == thresholdList) {
-			canvas.setDisplayedSimilarity(Integer.parseInt(thresholdList.getSelectedItem().toString()));
-			canvas.repaint();
+			ui.getCanvas().setDisplayedSimilarity(Integer.parseInt(thresholdList.getSelectedItem().toString()));
+			ui.getCanvas().repaint();
 		}
-		
-		
 	}
-
-	/**
-	 * @param consolidationMapping
-	 */
-	public void mappingByConsolidationCheckBoxSetSelected(
-			boolean consolidationMapping) {
-		mappingByConsolidationCheckBox.setSelected(consolidationMapping);
-	}
-
-	/**
-	 * @param contextMapping
-	 */
-	public void mappingByContextCheckBoxSetSelected(boolean contextMapping) {
-		mappingByContextCheckBox.setSelected(contextMapping);
-	}
-
-	/**
-	 * @param definitionMapping
-	 */
-	public void mappingByDefinitionCheckBoxSetSelected(boolean definitionMapping) {
-		mappingByDefinitionCheckBox.setSelected(definitionMapping);
-	}
-
-	/**
-	 * @param userMapping
-	 */
-	public void mappingByUserCheckBoxSetSelected(boolean userMapping) {
-		mappingByUserCheckBox.setSelected(userMapping);
-	}
-
-	/** 
-	 * This method checks/unchecks the mapping by user checkbox based on the arugment
-	 * @param userMapping boolean indicating if the mapping is done by the user
-	 */
-	public void setMappingByUser(boolean userMapping) {
-		mappingByUserCheckBox.setSelected(userMapping);
-		uiMenu.mapByUserSetSelected(userMapping);
-	}
-	
 }

@@ -41,9 +41,9 @@ public class XmlTreeBuilder extends TreeBuilder
 	 * @param xmlFilename filename 
 	 * @param title title of node
 	 */
-	public XmlTreeBuilder(String xmlFilename, int sourceOrTarget)
+	public XmlTreeBuilder(String xmlFilename, int sourceOrTarget, String language, String format)
 	{
-		super(xmlFilename, Ontology.XML, sourceOrTarget);
+		super(xmlFilename, sourceOrTarget, language, format);
 		// create a new tree root
 		treeRoot = new Vertex(ontology.getTitle());
 		Vertex ClassRoot = new Vertex(XMLHIERARCHY);

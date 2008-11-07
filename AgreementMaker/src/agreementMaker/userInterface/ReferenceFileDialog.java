@@ -130,7 +130,7 @@ public class ReferenceFileDialog implements ActionListener{
 
 		// end of Layout Code
 		
-		frame.addWindowListener(new WindowEventHandler());//THIS SHOULD BE CHANGED THE PROGRAM SHOULD NOT CLOSE
+		frame.addWindowListener(ui.new WindowEventHandler());//THIS SHOULD BE CHANGED THE PROGRAM SHOULD NOT CLOSE
 		frame.pack(); // automatically set the frame size
 		frame.setLocationRelativeTo(null); 	// center the window on the screen
 		frame.setModal(true);

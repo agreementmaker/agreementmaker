@@ -78,7 +78,6 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 	{
 		
 		super(name);
-		
 		// initialize instance variables
 		setID(key++);
 		setName(name);
@@ -111,7 +110,6 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 		setID(key++);
 		setName(name);
 		setDesc("");
-		this.ontModel = m;
 		this.uri = uri;
 		setIsMapped(false);
 		setIsMappedByContext(false);
