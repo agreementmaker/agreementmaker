@@ -10,6 +10,8 @@ public class Alignment
     private Node entity2 = null;
     private double similarity = 0;
     private String relation = null;
+    
+    public final static String EQUIVALENCE = "=";
 
     public Alignment(Node e1, Node e2, double sim, String r)
     {
@@ -35,7 +37,11 @@ public class Alignment
         relation = "=";
     }
 
-    public Node getEntity1()
+    public Alignment() {
+		//This is a fake contructor to use an alignment as a container for sim and relation, to move both values between methods
+	}
+
+	public Node getEntity1()
     {
         return entity1;
     }

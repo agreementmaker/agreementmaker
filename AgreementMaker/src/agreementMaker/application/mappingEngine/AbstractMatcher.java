@@ -29,7 +29,7 @@ public abstract class AbstractMatcher implements Matcher{
 	private double threshold;
 	
 	/**ANY means any numer of relations for source or target*/
-	public final static int ANY = -1;
+	public final static int ANY = Integer.MAX_VALUE;
 	private int maxSourceAlign;
 	private int maxTargetAlign;
 	
@@ -40,9 +40,9 @@ public abstract class AbstractMatcher implements Matcher{
 	/**Structure containing similarity values between classes nodes, matrix[source][target]
 	 * should not be accessible outside of this class, the system should only be able to access alignments sets
 	 * */
-	private MatrixWithRelations classesMatrix;
+	private AlignmentMatrix classesMatrix;
 	/**Structure containing similarity values between classes nodes, matrix[source][target]*/
-	private MatrixWithRelations propertiesMatrix;
+	private AlignmentMatrix propertiesMatrix;
 	
 	/**Reference to the Core istances*/
 	private Ontology sourceOntology;
@@ -52,6 +52,14 @@ public abstract class AbstractMatcher implements Matcher{
 	public boolean alignProp;
 	/**If the algo calculates prop alignments*/
 	public boolean alignClass;
+	/***Some algorithms may need other algorithms as input*/
+	private ArrayList<AbstractMatcher> inputMatchers;
+	/**Minum and maximum number of input matchers
+	 * a generic matcher which doesn't need any inputs should have 0, 0
+	 * */
+	private int minInputMatchers;
+	private int maxInputMatchers;
+	
 	
 	public AbstractMatcher(int key, String n) {
 		index = key;
@@ -64,82 +72,158 @@ public abstract class AbstractMatcher implements Matcher{
 		maxTargetAlign = 1;
 		alignClass = true;
 		alignProp = true;
+		minInputMatchers = 0;
+		maxInputMatchers = 0;
 		//ALIGNMENTS LIST MUST BE NULL UNTIL THEY ARE CALCULATED
 		sourceOntology = Core.getInstance().getSourceOntology();
 		targetOntology = Core.getInstance().getTargetOntology();
+		inputMatchers = new ArrayList<AbstractMatcher>();
 	}
 	
     public void match() {
-    	initMatrix();
+    	if(maxInputMatchers > 0 && inputMatchers.size() > 0) {
+    		analyzeInputMatchers();
+    	}
     	align();
-    	selectAndSetAlignments();
+    	selectAndSetAlignments();						
     }
 
-    private void initMatrix() {
-    	if(alignClass) {
-    		classesMatrix = new MatrixWithRelations(sourceOntology.getClassesList().size(),targetOntology.getClassesList().size());
-    	}
-		if(alignProp) {
-			propertiesMatrix = new MatrixWithRelations(sourceOntology.getPropertiesList().size(),targetOntology.getPropertiesList().size());
-		}
-	}
-
-	private void selectAndSetAlignments() {
-		//CAN BE IMPLEMENTED IN THE SUBCLASSES
-		
+    private void analyzeInputMatchers() {
+    	//TO BE OVERRIDDEN IN THE MATCHER IF IT HAS maxInputMatchers > 0
 	}
 
 	private void align() {
-		//TO BE IMPLEMENTED IN THE SUBCLASSES BY OVERRIDING
-		//IF YOU ARE GOING TO DO A Node BY Node ALIGNMENT YOU CAN AVOID TO OVERRIDE THIS
-		//AND OVERRIDE ONLY THE CLASS BY CLASS or Prop by Prop method
 		if(alignClass) {
 			ArrayList<Node> sourceClassList = sourceOntology.getClassesList();
 			ArrayList<Node> targetClassList = targetOntology.getClassesList();
-			alignClasses(sourceClassList,targetClassList );			
+			classesMatrix = alignClasses(sourceClassList,targetClassList );			
 		}
 		if(alignProp) {
 			ArrayList<Node> sourcePropList = sourceOntology.getPropertiesList();
 			ArrayList<Node> targetPropList = targetOntology.getPropertiesList();
-			alignProperties(sourcePropList, targetPropList );					
+			propertiesMatrix = alignProperties(sourcePropList, targetPropList );					
 		}
 
 	}
 	
 
 
-	private void alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) {
-		alignNodesOneByOne(sourcePropList, targetPropList);
+	private AlignmentMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) {
+		return alignNodesOneByOne(sourcePropList, targetPropList);
 	}
 
-	private void alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList) {
-		alignNodesOneByOne(sourceClassList, targetClassList);
+	private AlignmentMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList) {
+		return alignNodesOneByOne(sourceClassList, targetClassList);
 	}
 	
-	private void alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList) {
-		Iterator<Node> itsource = sourceList.iterator();
-		Iterator<Node> ittarget;
+	private AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList) {
+		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size());
 		Node source;
 		Node target;
-		while(itsource.hasNext()) {
-			source = itsource.next();
-			ittarget = targetList.iterator();
-			while(ittarget.hasNext()) {
-				target = ittarget.next();
-				alignTwoNodes(source, target);
+		Alignment alignment; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
+		for(int i = 0; i < sourceList.size(); i++) {
+			source = sourceList.get(i);
+			for(int j = 0; j < targetList.size(); j++) {
+				target = targetList.get(j);
+				alignment = alignTwoNodes(source, target);
+				matrix.set(i,j,alignment);
 			}
 		}
-		
+		return matrix;
 	}
 
-	private void alignTwoNodes(Node source, Node target) {
+	private Alignment alignTwoNodes(Node source, Node target) {
 		//TO BE IMPLEMENTED BY THE ALGORITHM, THIS IS JUST A FAKE ABSTRACT METHOD
-		if(source.equals(target)) {
-			classesMatrix.set(source.getIndex(), target.getIndex(), 1);
-			classesMatrix.setRelation(source.getIndex(), target.getIndex(), MatrixWithRelations.EQUIVALENCE);
+		double sim;
+		String rel = Alignment.EQUIVALENCE;
+		if(source.getLocalName().equals(target.getLocalName())) {
+			sim = 1;
 		}
-			
-		
+		else {
+			sim = 0;
+		}
+		return new Alignment(source, target, sim, rel);
+	}
+	
+	private void selectAndSetAlignments() {
+		if(maxSourceAlign == 1 && maxTargetAlign == 1) {
+			//TO BE DEVELOPED USING MAX WEIGHTED MATCHING ON BIPARTITE GRAPH, SOLVED USING DAJKSTRA
+			scanForMaxValues();//TO BE CHANGED
+		}
+		else if(maxSourceAlign != ANY && maxTargetAlign != ANY) {
+			//TO BE DEVELOPED: I DON'T KNOW YET HOW TO DO THIS
+			scanForMaxValues();//TO BE CHANGED
+		}
+		else {//ONE OF THE TWO CONSTRAINTs IS ANY, SO WE JUST HAVE TO PICK ENOUGH MAX VALUES TO SATISFY OTHER CONSTRAINT 
+			scanForMaxValues();
+		}
+	}
+
+	private void scanForMaxValues() {
+		if(maxTargetAlign >= maxSourceAlign) {//Scan rows and then columns
+			int numMaxValues = maxSourceAlign;
+			if(alignClass)
+				classesAlignmentSet = scanForMaxValuesRowColumn(classesMatrix, numMaxValues);
+			if(alignProp)
+				propertiesAlignmentSet = scanForMaxValuesRowColumn(propertiesMatrix, numMaxValues);
+		}
+		else {//scan columns and then rows
+			int numMaxValues = maxTargetAlign;
+			if(alignClass)
+				classesAlignmentSet = scanForMaxValuesColumnRow(classesMatrix, numMaxValues);
+			if(alignProp)
+				propertiesAlignmentSet = scanForMaxValuesColumnRow(propertiesMatrix, numMaxValues);
+		}
+	}
+
+	private AlignmentSet scanForMaxValuesRowColumn(AlignmentMatrix matrix, int numMaxValues) {
+		AlignmentSet aset = new AlignmentSet();
+		Alignment currentValue;
+		Alignment currentMax;
+		Alignment[] maxAlignments = new Alignment[numMaxValues];//temp structure to keep the first numMaxValues best alignments for each source
+		for(int i = 0; i<matrix.getRows();i++) {
+			for(int j = 0; j<matrix.getColumns();i++) {
+				currentValue = matrix.get(i,j);
+				int k = 0;
+				currentMax = maxAlignments[k];
+				for(k = 1; currentValue.getSimilarity() > currentMax.getSimilarity() && k < maxAlignments.length; k++) {
+					maxAlignments[k-1] = currentValue;
+					currentValue = currentMax;
+					currentMax = maxAlignments[k];
+				}
+			}
+			currentValue = maxAlignments[0];
+			for(int e = 0;currentValue.getSimilarity() >= threshold && e < maxAlignments.length; e++) {
+				currentValue = maxAlignments[e];
+				aset.addAlignment(currentValue);
+			}
+		}
+		return aset;
+	}
+
+	private AlignmentSet scanForMaxValuesColumnRow(AlignmentMatrix matrix,int numMaxValues) {
+		AlignmentSet aset = new AlignmentSet();
+		Alignment currentValue;
+		Alignment currentMax;
+		Alignment[] maxAlignments = new Alignment[numMaxValues];//temp structure to keep the first numMaxValues best alignments for each source
+		for (int j = 0; j<matrix.getColumns();j++){
+			for (int i = 0; i<matrix.getRows();i++){
+				currentValue = matrix.get(i,j);
+				int k = 0;
+				currentMax = maxAlignments[k];
+				for(k = 1; currentValue.getSimilarity() > currentMax.getSimilarity() && k < maxAlignments.length; k++) {
+					maxAlignments[k-1] = currentValue;
+					currentValue = currentMax;
+					currentMax = maxAlignments[k];
+				}
+			}
+			currentValue = maxAlignments[0];
+			for(int e = 0;currentValue.getSimilarity() >= threshold && e < maxAlignments.length; e++) {
+				currentValue = maxAlignments[e];
+				aset.addAlignment(currentValue);
+			}
+		}
+		return aset;
 	}
 
 	public AlignmentSet getAlignmentSet() {
@@ -245,7 +329,29 @@ public abstract class AbstractMatcher implements Matcher{
 	public void setMaxTargetAlign(int maxTargetAlign) {
 		this.maxTargetAlign = maxTargetAlign;
 	}
+
+	public int getMinInputMatchers() {
+		return minInputMatchers;
+	}
+
+	public void setMinInputMatchers(int minInputMatchers) {
+		this.minInputMatchers = minInputMatchers;
+	}
+
+	public int getMaxInputMatchers() {
+		return maxInputMatchers;
+	}
+
+	public void setMaxInputMatchers(int maxInputMatchers) {
+		this.maxInputMatchers = maxInputMatchers;
+	}
+
+	public ArrayList<AbstractMatcher> getInputMatchers() {
+		return inputMatchers;
+	}
     
-	
+	public void addInputMatcher(AbstractMatcher a) {
+		inputMatchers.add(a);
+	}
 	
 }
