@@ -168,7 +168,7 @@ public class OntoTreeBuilder extends TreeBuilder{
     	Vertex root;
     	if(cls.equals(owlThing))//fake vertex with written "OWL Class hierarchy"
     		root = new Vertex(CLASSROOTNAME, CLASSROOTNAME, model);
-    	else root = createNodeAndVertex(cls);//normal vertex 
+    	else root = createNodeAndVertex(cls);//normal vertex and node creation
 		treeCount++;
 		
        // If one of the sons of this class is a classes with different namespace

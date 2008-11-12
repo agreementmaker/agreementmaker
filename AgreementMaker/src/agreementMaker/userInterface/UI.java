@@ -44,6 +44,7 @@ public class UI {
 	
 	private JPanel panelCanvas, panelDesc;
 	private ControlPanel panelControlPanel;
+	private ControlPanelTry panelControlPaneltry;
 	private JScrollPane scrollPane;
 	
 	private JSplitPane splitPane;
@@ -156,8 +157,9 @@ public class UI {
 		frame.getContentPane().add(splitPane, BorderLayout.CENTER);
 
 		
-		panelControlPanel = new ControlPanel(this, uiMenu, canvas);
-		frame.getContentPane().add(panelControlPanel, BorderLayout.PAGE_END);		
+		//panelControlPanel = new ControlPanel(this, uiMenu, canvas);
+		panelControlPaneltry = new ControlPanelTry(this, uiMenu, canvas);
+		frame.getContentPane().add(panelControlPaneltry, BorderLayout.PAGE_END);		
 		
 		//Add the listener to close the frame.
 		frame.addWindowListener(new WindowEventHandler());

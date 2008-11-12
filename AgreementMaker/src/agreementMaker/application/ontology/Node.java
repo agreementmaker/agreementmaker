@@ -40,11 +40,11 @@ public class Node {
 	 */
 	private String comment;
 	/**
-	 * A Class or Property in a OWL hierarchy may have more than one father. In this case the node will be represented twice in the hierarchy tree
+	 * A Class or Property in a OWL hierarchy may have more than one father. In this case all nodes in the subtree of the node with more fathes will be represented with duplicates in the hierarchy tree
 	 * but it will be aligned only once. We won't be able to access the vertex of this node with getVertex(), because this node is represetend by more than one vertex
-	 * so we will have to scan a the list of vertex of this node.
+	 * so we will have to scan a the list of vertex of this node, unless we want to access any of his vertex.
 	 *List of vertex representing the node in the graphical tree hierarchy
-	 * Usually each node is represeted only by one vertex, but if the node hasMoreFathers, it's represented more times
+	 * Usually each node is represeted only by one vertex, but if the node hasDuplicate, it's represented more times
 	 */
 	private ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
 	/**RDF-node, OWL-classnode, OWL-propnode, OWL-unsatconcept, XML-node*/
@@ -99,7 +99,7 @@ public class Node {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	public boolean hasMoreFathers() {
+	public boolean hasDuplicates() {
 		return vertexList.size() > 1;
 	}
 
@@ -112,8 +112,8 @@ public class Node {
 	}
 	
 	public Vertex getVertex() {
-		if(hasMoreFathers()) {
-			System.out.println("WARNING: you are this node contains more than one fathers, so it's represented by more than one vertex");
+		if(hasDuplicates()) {
+			System.out.println("WARNING:it's represented by more than one vertex, use this method only if need informations that are the same in each Vertex");
 		}
 		return vertexList.get(0);
 	}
