@@ -17,8 +17,10 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import agreementMaker.Utility;
+import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.EqualsMatcher;
+import agreementMaker.application.mappingEngine.fakeMatchers.UserManualMatcher;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -30,15 +32,19 @@ import java.awt.event.HierarchyListener;
 public class MatchersTablePanel extends JPanel {
     private boolean DEBUG = false;
     
-    private MatcherTable table;
+    private MatchersTable table;
 
     public MatchersTablePanel() {
         super(new GridLayout(1,0));
         
         MyTableModel mt = new MyTableModel();
-        table = new  MatcherTable(mt);
+        table = new  MatchersTable(mt);
         table.setPreferredScrollableViewportSize(new Dimension(500, 70));
         table.setFillsViewportHeight(true);
+        //We need autoresize because when the table is fullscreen it's useful to use all the space
+        //at the same time with autoresize set to ON there is not anymore horizontal scrolling
+        //while we need it when the screen is smaller because we don't want columns to disappear
+        //this is a famous problem that it is fixed with class MatcherTable
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         //Create the scroll pane and add the table to it.
@@ -66,25 +72,14 @@ public class MatchersTablePanel extends JPanel {
         MyCellEditor mc = new MyCellEditor();
         inputColumn.setCellEditor(mc);
         inputColumn.setCellRenderer(renderer);
-        AbstractMatcher basic = new EqualsMatcher(0);
-        basic.addInputMatcher(basic);
-        basic.addInputMatcher(basic);
-        basic.addInputMatcher(basic);
-        basic.addInputMatcher(basic);
-        mt.addRow(basic);
-        mc.addEditor(basic);
-        mt.addRow(basic);
-        mc.addEditor(basic);
-        mt.addRow(basic);
-        mc.addEditor(basic);
-        mt.addRow(basic);
-        mc.addEditor(basic);
-        mt.addRow(basic);
-        mc.addEditor(basic);
-        mt.addRow(basic);
-        mc.addEditor(basic);
         
+        //STATICALLY ADD THE FIRST MATCHER THAT IS THE USER MANUAL MATCHER
+        //is important to add this here so that initColumns can assign the best width to columns
+        //This matcher cannot be deleted
+        UserManualMatcher userMatcher = new UserManualMatcher(0);
+        addMatcher(userMatcher);
         
+        setOpaque(true); //content panes must be opaque
         //Set up column sizes.
         initColumnSizes(table);
         
@@ -136,8 +131,17 @@ public class MatchersTablePanel extends JPanel {
         }
     }
 
-
-
+    
+	public MatchersTable getTable() {
+		return table;
+	}
+    
+    public void addMatcher(AbstractMatcher a) {
+    	Core.getInstance().addMatcherInstance(a);
+    	TableColumn inputColumn = table.getColumnModel().getColumn(MyTableModel.INPUTMATCHERS);
+    	MyCellEditor mc = (MyCellEditor)inputColumn.getCellEditor();
+    	mc.addEditor(a);
+    }
  
     /**
      * Create the GUI and show it.  For thread safety,
@@ -152,7 +156,7 @@ public class MatchersTablePanel extends JPanel {
         //Create and set up the content pane.
         MatchersTablePanel alignTable = new MatchersTablePanel();
         
-        alignTable.setOpaque(true); //content panes must be opaque
+        
         frame.setContentPane(alignTable);
 
         //Display the window.
@@ -169,4 +173,6 @@ public class MatchersTablePanel extends JPanel {
             }
         });
     }
+
+
 }

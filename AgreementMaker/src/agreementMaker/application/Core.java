@@ -1,5 +1,8 @@
 package agreementMaker.application;
 
+import java.util.ArrayList;
+
+import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.ontology.Ontology;
 
 /**
@@ -12,6 +15,12 @@ import agreementMaker.application.ontology.Ontology;
  *
  */
 public class Core {
+	/**List of matchers instances run by the user
+	 * Data of the tableModel of the matcherTable is taken from this structure
+	 * Can't be null;
+	 */
+	private ArrayList<AbstractMatcher> MatcherInstances = new ArrayList<AbstractMatcher>();
+	
 	private Ontology sourceOntology;//Null if it's not loaded yet
 	private Ontology targetOntology;//Null if it's not loaded yet
 	/**
@@ -50,6 +59,14 @@ public class Core {
 	
 	public boolean targetIsLoaded() {
 		return targetOntology != null;
+	}
+	public ArrayList<AbstractMatcher> getMatcherInstances() {
+		return MatcherInstances;
+	}
+	
+	public void addMatcherInstance(AbstractMatcher a) {
+		MatcherInstances.add(a);
+		
 	}
 	
 }

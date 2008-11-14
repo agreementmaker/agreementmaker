@@ -5,7 +5,7 @@ import agreementMaker.application.mappingEngine.fakeMatchers.AllZeroMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.EqualsMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.RandomMatcher;
 
-public class AbstractMatcherRepository {
+public class MatcherFactory {
 	
 	/**List of indexes of matchers methods, each matcher has his own index different from all the others
 	 * Indexes must be between 0 and numMatcher -1

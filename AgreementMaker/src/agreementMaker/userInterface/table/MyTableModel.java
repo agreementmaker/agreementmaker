@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
 import agreementMaker.Utility;
+import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 
 public class MyTableModel extends AbstractTableModel {
@@ -47,7 +48,7 @@ public class MyTableModel extends AbstractTableModel {
 					                                        "F-Measure"
 					                                        };
         
-	public ArrayList<AbstractMatcher> data =  new ArrayList<AbstractMatcher>();
+	public ArrayList<AbstractMatcher> data =  Core.getInstance().getMatcherInstances();
 
 	public final Object[] longValues = {
         		new Integer(99), 
@@ -94,13 +95,9 @@ public class MyTableModel extends AbstractTableModel {
             	else if(col == THRESHOLD) 
             		return Utility.getPercentFromDouble(a.getThreshold());
             	else if(col == SRELATIONS)
-            		if(a.getMaxSourceAlign() == AbstractMatcher.ANY)
-            			return ANY;
-            		else return a.getMaxSourceAlign();
+            		return Utility.getStringFromNumRelInt(a.getMaxSourceAlign());
             	else if(col == TRELATIONS)
-            		if(a.getMaxTargetAlign() == AbstractMatcher.ANY)
-            			return ANY;
-            		else return a.getMaxTargetAlign();
+            		return Utility.getStringFromNumRelInt(a.getMaxTargetAlign());
             	else if(col == INPUTMATCHERS) {
             		if(a.getInputMatchers()!= null && a.getInputMatchers().size() >0)
             			return a.getInputMatchers().get(0).getName();
@@ -112,28 +109,27 @@ public class MyTableModel extends AbstractTableModel {
             		return a.isAlignClass();
             	else if (col == ALIGNPROPERTIES)
             		return a.isAlignProp();
-            	else if(col == FOUND )
-            		if(a.getRefEvaluation() ==  null)
-            			return NONE;
-            		else return a.getRefEvaluation().getFound();
+            	else if(col == FOUND ) {
+            		return a.getTotalNumberAlignments();
+            	}
             	else if (col == CORRECT )
-            		if(a.getRefEvaluation() == null)
+            		if(!a.isRefEvaluated())
             			return NONE;
             		else return a.getRefEvaluation().getCorrect();
             	else if(col == REFERENCE )
-            		if(a.getRefEvaluation() == null)
+            		if(!a.isRefEvaluated())
             			return NONE;
             		else return a.getRefEvaluation().getExist();
             	else if(col == RECALL)
-            		if(a.getRefEvaluation() == null)
+            		if(!a.isRefEvaluated())
             			return NONE;
             		else return a.getRefEvaluation().getRecall();
             	else if(col == PRECISION )
-            		if(a.getRefEvaluation() == null)
+            		if(!a.isRefEvaluated())
             			return NONE;
             		else return a.getRefEvaluation().getPrecision();
             	else if(col == FMEASURE )
-            		if(a.getRefEvaluation() == null)
+            		if(!a.isRefEvaluated())
             			return NONE;
             		else return a.getRefEvaluation().getFmeasure();
             	else return NONE;
@@ -226,26 +222,10 @@ public class MyTableModel extends AbstractTableModel {
             			a.setThreshold(Utility.getDoubleFromPercent((String)value));
             	}
             	else if(col == SRELATIONS) {
-            		if(value instanceof String) {
-            			String s = (String)value;
-            			if(s.equals(ANY))
-            				a.setMaxSourceAlign(AbstractMatcher.ANY);
-            		}
-            		else if(value instanceof Integer) {
-            			int v = ((Integer)value).intValue();
-            			a.setMaxSourceAlign(v);
-            		}
+            		a.setMaxSourceAlign(Utility.getIntFromNumRelString((String)value));
             	}
             	else if(col == TRELATIONS) {
-            		if(value instanceof String) {
-            			String s = (String)value;
-            			if(s.equals(ANY))
-            				a.setMaxTargetAlign(AbstractMatcher.ANY);
-            		}
-            		else if(value instanceof Integer) {
-            			int v = ((Integer)value).intValue();
-            			a.setMaxTargetAlign(v);
-            		}
+            		a.setMaxTargetAlign(Utility.getIntFromNumRelString((String)value));
             	}
             	else if(col == ALIGNCLASSES) {
             		a.setAlignClass((Boolean)value);
@@ -258,10 +238,6 @@ public class MyTableModel extends AbstractTableModel {
         		e.printStackTrace();
         		System.out.println("There is a development error in the table data management, the Exception get catched to keep the system running, check the error");
         	}
-		}
-        
-		public void addRow(AbstractMatcher a) {
-			data.add(a);
 		}
 
 		private void printDebugData() {

@@ -14,9 +14,9 @@ import javax.swing.JViewport;
  * ATTENTION this is not the best solution. Right now it's working but couldn't always be working if something change.
  *
  */
-public class MatcherTable extends JTable {
+public class MatchersTable extends JTable {
 	
-	public MatcherTable(MyTableModel mt) {
+	public MatchersTable(MyTableModel mt) {
 		super(mt);
 	}
 	// when the viewport shrinks below the preferred size, stop tracking the viewport width
