@@ -2,10 +2,14 @@ package agreementMaker.application.mappingEngine;
 
 import agreementMaker.application.mappingEngine.fakeMatchers.AllOneMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.AllZeroMatcher;
+import agreementMaker.application.mappingEngine.fakeMatchers.CopyMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.EqualsMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.RandomMatcher;
+import agreementMaker.application.mappingEngine.fakeMatchers.UserManualMatcher;
 
 public class MatcherFactory {
+	
+	
 	
 	/**List of indexes of matchers methods, each matcher has his own index different from all the others
 	 * Indexes must be between 0 and numMatcher -1
@@ -25,10 +29,11 @@ public class MatcherFactory {
 	public final static int RANDOMMATCHER = EQUALSMATCHER+1;
 	public final static int ALLUNOMATCHER = RANDOMMATCHER+1;
 	public final static int ALLZEROMATCHER = ALLUNOMATCHER+1;
+	public final static int COPYMATCHER = ALLZEROMATCHER+1;
 	/**Total number of matching algorithm that will be visualized in the agreememtmaker
 	 * Remember to modify this value when adding and removing an algorithm
 	 * */
-	public final static int numMatchers = 4;
+	public final static int numMatchers = 5;
 	
 	/**
 	 * When adding a matcher add the line names[NEWINDEX] = "My name"; Name shouldn't be too long but at the same time should be a user clear name;
@@ -40,6 +45,7 @@ public class MatcherFactory {
 		names[RANDOMMATCHER] = "Random Similarity matcher";
 		names [ALLUNOMATCHER] = "All ONE similarities";
 		names[ALLZEROMATCHER] = "All ZERO similarities";
+		names[COPYMATCHER] = "Copy Matcher";
 		return names;
 	}
 	
@@ -48,22 +54,31 @@ public class MatcherFactory {
 	 * */
 	public static AbstractMatcher getMatcherInstance(int nameIndex, int instanceIndex) {
 		AbstractMatcher a = null;
+		String[] names = getMatcherNames();
+		String name = names[nameIndex];
 		if(nameIndex == EQUALSMATCHER) {
-			a = new EqualsMatcher(instanceIndex);
+			a = new EqualsMatcher(instanceIndex, name);
 		}
-		if(nameIndex == RANDOMMATCHER) {
-			a = new RandomMatcher(instanceIndex);
+		else if(nameIndex == RANDOMMATCHER) {
+			a = new RandomMatcher(instanceIndex,name);
 		}
-		if(nameIndex == ALLUNOMATCHER) {
-			a = new AllOneMatcher(instanceIndex);
+		else if(nameIndex == ALLUNOMATCHER) {
+			a = new AllOneMatcher(instanceIndex,name);
 		}
-		if(nameIndex == ALLZEROMATCHER) {
-			a = new AllZeroMatcher(instanceIndex);
+		else if(nameIndex == ALLZEROMATCHER) {
+			a = new AllZeroMatcher(instanceIndex,name);
 		}
-		if(a == null) {
+		else if(nameIndex == COPYMATCHER) {
+			a = new CopyMatcher(instanceIndex,name);
+		}
+		else {
 			throw new RuntimeException("DEVELOPMENT ERROR: there is a matcher in the list with no corrisponding index in getMatcherInstance");
 		}
 		return a;
+	}
+
+	public static boolean isTheUserMatcher(AbstractMatcher toBeDeleted) {
+		return toBeDeleted.getName().equals(UserManualMatcher.USERMANUALMATCHINGNAME);
 	}
 	
 	

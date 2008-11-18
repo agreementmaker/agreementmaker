@@ -2,6 +2,7 @@ package agreementMaker;
 
 import java.text.NumberFormat;
 
+import agreementMaker.application.Core;
 import agreementMaker.userInterface.UI;
 
 /**
@@ -24,7 +25,8 @@ public class Main
 	public static void main(String args[])
 	{
 		//UI ui;
-		new UI();
+		UI ui = new UI();
+		Core.getInstance().setUI(ui);
 	}
 }
 

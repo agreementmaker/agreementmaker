@@ -7,11 +7,16 @@ import javax.swing.table.AbstractTableModel;
 import agreementMaker.Utility;
 import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
+import agreementMaker.userInterface.UI;
 
 public class MyTableModel extends AbstractTableModel {
 		
 	public final static String NONE = "N/A";
 	public final static String ANY = "ANY";
+	
+	public final static int CELLUPDATE = 0;
+	public final static int ROWUPDATE = 1;
+	public final static int ALLROWUPDATE = 2;
 	
 	public final static int INDEX = 0;
 	public final static int NAME = 1;
@@ -49,7 +54,7 @@ public class MyTableModel extends AbstractTableModel {
 					                                        };
         
 	public ArrayList<AbstractMatcher> data =  Core.getInstance().getMatcherInstances();
-
+	
 	public final Object[] longValues = {
         		new Integer(99), 
         		"0123456789012345678912345",
@@ -69,7 +74,11 @@ public class MyTableModel extends AbstractTableModel {
                 new Double(100),
                 };
 
-        public int getColumnCount() {
+        public MyTableModel() {
+        	super();
+	    }
+
+		public int getColumnCount() {
             return columnNames.length;
         }
 
@@ -205,39 +214,68 @@ public class MyTableModel extends AbstractTableModel {
                                        + " to " + value
                                        + " (an instance of "
                                        + value.getClass() + ")");
+                 
 
-
-                setValueOnMatcher(value, row, col);
-                fireTableCellUpdated(row, col);
+                int whatToUpdate = setValueOnMatcher(value, row, col);
+                if(whatToUpdate == CELLUPDATE)
+                	fireTableCellUpdated(row, col);
+                else if(whatToUpdate == ROWUPDATE)
+                	fireTableRowsUpdated(row, row);
+                else if(whatToUpdate == ALLROWUPDATE)
+                	fireTableRowsUpdated(0, getRowCount()-1);
         	}
 
         }
 
-        public void setValueOnMatcher(Object value, int row, int col) {
+        public int setValueOnMatcher(Object value, int row, int col) {
+        	int update = CELLUPDATE;
         	try {
+        		Core core = Core.getInstance();
+        		UI ui = core.getUI();
         		AbstractMatcher a = data.get(row);
-            	if(col == SHOWHIDE)
+            	if(col == SHOWHIDE) {
             		a.setShown((Boolean)value);
+            		ui.redisplayCanvas();
+            		update = CELLUPDATE;
+            	}
+
             	else if(col == THRESHOLD) {
             			a.setThreshold(Utility.getDoubleFromPercent((String)value));
+            			core.selectAndUpdateMatchers(a);
+            			update = ALLROWUPDATE;
+            			ui.redisplayCanvas();
+            			
             	}
             	else if(col == SRELATIONS) {
             		a.setMaxSourceAlign(Utility.getIntFromNumRelString((String)value));
+            		core.selectAndUpdateMatchers(a);
+            		update = ALLROWUPDATE;
+            		ui.redisplayCanvas();
             	}
             	else if(col == TRELATIONS) {
             		a.setMaxTargetAlign(Utility.getIntFromNumRelString((String)value));
+            		core.selectAndUpdateMatchers(a);
+            		update = ALLROWUPDATE;
+            		ui.redisplayCanvas();
             	}
             	else if(col == ALIGNCLASSES) {
             		a.setAlignClass((Boolean)value);
+            		core.matchAndUpdateMatchers(a);
+            		update = ALLROWUPDATE;
+            		ui.redisplayCanvas();
             	}
             	else if(col == ALIGNPROPERTIES) {
             		a.setAlignProp((Boolean)value);
+            		core.matchAndUpdateMatchers(a);
+            		update = ALLROWUPDATE;
+            		ui.redisplayCanvas();
             	}
         	}
         	catch(Exception e) {
         		e.printStackTrace();
         		System.out.println("There is a development error in the table data management, the Exception get catched to keep the system running, check the error");
         	}
+        	return update;
 		}
 
 		private void printDebugData() {

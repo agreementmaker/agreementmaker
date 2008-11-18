@@ -4,6 +4,10 @@ import java.util.ArrayList;
 
 import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
+import agreementMaker.application.mappingEngine.Alignment;
+import agreementMaker.application.mappingEngine.AlignmentMatrix;
+import agreementMaker.application.ontology.Node;
+import agreementMaker.application.ontology.Ontology;
 
 /**This class is used to represent the user manual matching
  * this matching will not be part of the matcher list in the combo box
@@ -15,20 +19,40 @@ import agreementMaker.application.mappingEngine.AbstractMatcher;
  */
 public class UserManualMatcher extends AbstractMatcher {
 	
-	public UserManualMatcher(int n) {
-		super(n);
-		name = "User Manual Matching";
+	/**For all other matchers the name is plugged into the MatcherFactory class, this matcher cannot be created that way, when invoking the constructor use the final static string name and code*/
+	public static final String USERMANUALMATCHINGNAME = "User Manual Matching"; 
+	public static final int THEFIRST = 0; //USER MATCHING IS ALWAYS THE FIRST IN THE LIST
+	
+	public UserManualMatcher() {
+		super(THEFIRST, USERMANUALMATCHINGNAME);
 		isAutomatic = false;
 		needsParam = false;
 		isShown = true;
 		modifiedByUser = false;
-		threshold = 0;
+		threshold = 0.05; //the minimum value != 0 in the threshold list;
 		maxSourceAlign = ANY_INT;
 		maxTargetAlign = ANY_INT;
 		alignClass = true;
 		alignProp = true;
 		minInputMatchers = 0;
 		maxInputMatchers = 0;
+	}
+	
+	/**Set all alignment sim to 0*/
+	public Alignment alignTwoNodes(Node source, Node target) {
+		double sim = 0;
+		String rel = Alignment.EQUIVALENCE;
+		return new Alignment(source, target, sim, rel);
+	}
+	
+	/**This method is only needed for usermatching because is the only one who gets initialized before the creation of ontologies*/
+	public void setSourceOntology(Ontology o) {
+		sourceOntology = o;
+	}
+	
+	/**This method is only needed for usermatching because is the only one who gets initialized before the creation of ontologies*/
+	public void setTargetOntology(Ontology o) {
+		targetOntology = o;
 	}
 
 }

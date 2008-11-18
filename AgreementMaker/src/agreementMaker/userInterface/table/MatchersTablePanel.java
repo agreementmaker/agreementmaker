@@ -21,6 +21,7 @@ import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.EqualsMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.UserManualMatcher;
+import agreementMaker.userInterface.UI;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -30,11 +31,11 @@ import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
 
 public class MatchersTablePanel extends JPanel {
-    private boolean DEBUG = false;
+    
     
     private MatchersTable table;
 
-    public MatchersTablePanel() {
+    public MatchersTablePanel(UI ui) {
         super(new GridLayout(1,0));
         
         MyTableModel mt = new MyTableModel();
@@ -76,7 +77,7 @@ public class MatchersTablePanel extends JPanel {
         //STATICALLY ADD THE FIRST MATCHER THAT IS THE USER MANUAL MATCHER
         //is important to add this here so that initColumns can assign the best width to columns
         //This matcher cannot be deleted
-        UserManualMatcher userMatcher = new UserManualMatcher(0);
+        UserManualMatcher userMatcher = new UserManualMatcher();
         addMatcher(userMatcher);
         
         setOpaque(true); //content panes must be opaque
@@ -114,14 +115,12 @@ public class MatchersTablePanel extends JPanel {
                     table, longValues[i],
                     false, false, 0, i);
 				cellWidth = comp.getPreferredSize().width;
-				
-				if (DEBUG) {
+				/*
 				   System.out.println("Initializing width of column "
 				                      + i + ". "
 				                      + "headerWidth = " + headerWidth
 				                      + "; cellWidth = " + cellWidth);
-				}
-				
+				*/
 				column.setPreferredWidth(Math.max(headerWidth, cellWidth));
 				column.setMinWidth(Math.max(headerWidth, cellWidth));
             }
@@ -141,12 +140,19 @@ public class MatchersTablePanel extends JPanel {
     	TableColumn inputColumn = table.getColumnModel().getColumn(MyTableModel.INPUTMATCHERS);
     	MyCellEditor mc = (MyCellEditor)inputColumn.getCellEditor();
     	mc.addEditor(a);
+    	((AbstractTableModel)table.getModel()).fireTableRowsInserted(a.getIndex(), a.getIndex());
+    }
+    
+    public void removeMatcher(AbstractMatcher a) {
+    	Core.getInstance().removeMatcher(a);
+    	TableColumn inputColumn = table.getColumnModel().getColumn(MyTableModel.INPUTMATCHERS);
+    	MyCellEditor mc = (MyCellEditor)inputColumn.getCellEditor();
+    	mc.removeEditor(a);
+    	((AbstractTableModel)table.getModel()).fireTableRowsDeleted(a.getIndex(), a.getIndex());
     }
  
     /**
-     * Create the GUI and show it.  For thread safety,
-     * this method should be invoked from the
-     * event-dispatching thread.
+     * Create the GUI and show it.  It s just a debugging method
      */
     private static void createAndShowGUI() {
         //Create and set up the window.
@@ -154,7 +160,7 @@ public class MatchersTablePanel extends JPanel {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Create and set up the content pane.
-        MatchersTablePanel alignTable = new MatchersTablePanel();
+        MatchersTablePanel alignTable = new MatchersTablePanel(null);
         
         
         frame.setContentPane(alignTable);

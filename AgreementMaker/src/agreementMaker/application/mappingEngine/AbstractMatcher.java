@@ -64,9 +64,9 @@ public abstract class AbstractMatcher implements Matcher{
 	protected ResultData refEvaluation;
 	
 	
-	public AbstractMatcher(int key) {
+	public AbstractMatcher(int key, String theName) {
 		index = key;
-		name = "Empty Algorithm";
+		name = theName;
 		isAutomatic = true;
 		needsParam = false;
 		isShown = true;
@@ -85,23 +85,72 @@ public abstract class AbstractMatcher implements Matcher{
 	}
 	
 	//***************************ALL METHODS TO PERFORM THE ALIGNMENT**********************************
+	/**
+	 * Match() and select() are the only two public methods to be accessed by the system other then get and set methods
+	 * All other methods must be protected so that only subclasses may access them (can't be private because subclasses wouldn't be able to use them)
+	 * match method is the one which perform the alignment. It also invokes the select() to scan and select matchings
+	 * the system sometimes may need to invoke only the select method for example when the user changes threshold of an algorithm, it's not needed to invoke the whole matching process but only select
+	 * so at least those two methods must be implemented and public
+	 * both methods contains some empty methods to allow developers to add other code if needed
+	 * In all cases a developer can override the whole match method or use this one and override the methods inside, or use all methods except for alignTwoNodes() which is the one which perform the real aligment evaluation
+	 * and it has to be different
+	 * 
+	 */
     public void match() {
-    	if(maxInputMatchers > 0 && inputMatchers.size() > 0) {
-    		analyzeInputMatchers();
-    	}
+    	beforeAlignOperations();//Template method to allow next developer to add code before align
     	align();
-    	selectAndSetAlignments();						
+    	afterAlignOperations();//Template method to allow next developer to add code after align
+    	select();	
+    	//System.out.println("Classes alignments found: "+classesAlignmentSet.size());
+    	//System.out.println("Properties alignments found: "+propertiesAlignmentSet.size());
     }
+    
+	/**
+	 * Match() and select() are the only two public methods to be accessed by the system other then get and set methods
+	 * All other methods must be protected so that only subclasses may access them (can't be private because subclasses wouldn't be able to use them)
+	 * match method is the one which perform the alignment. It also invokes the select() to scan and select matchings
+	 * the system sometimes may need to invoke only the select method for example when the user changes threshold of an algorithm, it's not needed to invoke the whole matching process but only select
+	 * so at least those two methods must be implemented and public
+	 * both methods contains some empty methods to allow developers to add other code if needed
+	 * In all cases a developer can override the whole match method or use this one and override the methods inside, or use all methods except for alignTwoNodes() which is the one which perform the real aligment evaluation
+	 * and it has to be different
+	 * It should not be needed often to override the select(), in all cases remember to consider all selection parameters threshold, num relations per source and target.
+	 */
+    public void select() {
+    	beforeSelectionOperations();//Template method to allow next developer to add code after selection
+    	selectAndSetAlignments();	
+    	afterSelectionOperations();//Template method to allow next developer to add code after selection
+    }
+    
+    //***************EMPTY TEMPLATE METHODS TO ALLOW USER TO ADD HIS OWN CODE****************************************
 
-    private void analyzeInputMatchers() {
-    	//TO BE OVERRIDDEN IN THE MATCHER IF IT HAS maxInputMatchers > 0
+    //reset structures, this is important because anytime we invoke the match() for the secondtime (when we change some values in the table for example)
+    //we have to reset all structures. It's the first method that is invoked, when overriding call super.beforeAlignOperations()
+	protected void beforeAlignOperations() {
+    	classesMatrix = null;
+    	propertiesMatrix = null;
 	}
+    //DO NOTHING FOR NOW
+    protected void afterAlignOperations() {}
+    //RESET ALIGNMENT STRUCTURES
+    protected void beforeSelectionOperations() {
+    	classesAlignmentSet = null;
+    	propertiesAlignmentSet = null;
+    	refEvaluation = null;
+    }
+    //DO nothing for now
+    protected void afterSelectionOperations() {}
+    
+    
+    //***************INTERNAL METHODS THAT CAN BE USED BY ANY ABSTRACTMATCHER******************************************
 
-	private void align() {
+    protected void align() {
+
 		if(alignClass) {
 			ArrayList<Node> sourceClassList = sourceOntology.getClassesList();
 			ArrayList<Node> targetClassList = targetOntology.getClassesList();
-			classesMatrix = alignClasses(sourceClassList,targetClassList );			
+			classesMatrix = alignClasses(sourceClassList,targetClassList );	
+			//classesMatrix.show();
 		}
 		if(alignProp) {
 			ArrayList<Node> sourcePropList = sourceOntology.getPropertiesList();
@@ -111,15 +160,15 @@ public abstract class AbstractMatcher implements Matcher{
 
 	}
 
-	private AlignmentMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) {
+    protected AlignmentMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) {
 		return alignNodesOneByOne(sourcePropList, targetPropList);
 	}
 
-	private AlignmentMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList) {
+    protected AlignmentMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList) {
 		return alignNodesOneByOne(sourceClassList, targetClassList);
 	}
 	
-	private AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList) {
+    protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList) {
 		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size());
 		Node source;
 		Node target;
@@ -135,7 +184,7 @@ public abstract class AbstractMatcher implements Matcher{
 		return matrix;
 	}
 
-	private Alignment alignTwoNodes(Node source, Node target) {
+    protected Alignment alignTwoNodes(Node source, Node target) {
 		//TO BE IMPLEMENTED BY THE ALGORITHM, THIS IS JUST A FAKE ABSTRACT METHOD
 		double sim;
 		String rel = Alignment.EQUIVALENCE;
@@ -148,7 +197,7 @@ public abstract class AbstractMatcher implements Matcher{
 		return new Alignment(source, target, sim, rel);
 	}
 	
-	private void selectAndSetAlignments() {
+    protected void selectAndSetAlignments() {
 		if(maxSourceAlign == 1 && maxTargetAlign == 1) {
 			//TO BE DEVELOPED USING MAX WEIGHTED MATCHING ON BIPARTITE GRAPH, SOLVED USING DAJKSTRA
 			scanForMaxValues();//TO BE CHANGED
@@ -162,7 +211,7 @@ public abstract class AbstractMatcher implements Matcher{
 		}
 	}
 
-	private void scanForMaxValues() {
+    protected void scanForMaxValues() {
 		if(alignClass) {
 			classesAlignmentSet = scanForMaxValuesMatrix(classesMatrix);
 		}
@@ -171,80 +220,125 @@ public abstract class AbstractMatcher implements Matcher{
 		}
 	}
 	
-	private AlignmentSet scanForMaxValuesMatrix(AlignmentMatrix matrix){
+    protected AlignmentSet scanForMaxValuesMatrix(AlignmentMatrix matrix){
 		AlignmentSet aset;
+		int tempMaxSource = maxSourceAlign; //I could have used MaxSourceAlign directly but i modify them in this method while i will need them again later
+		int tempMaxTarget = maxTargetAlign;
 		int numMaxValues;
 		//IF both values are ANY we can have at most maxSourceRelations equals to the target nodes and maxTargetRelations equal to source node
 		if(maxTargetAlign == ANY_INT  && maxSourceAlign == ANY_INT) {
-			maxTargetAlign = matrix.getRows();
-			maxSourceAlign = matrix.getColumns();
+			aset = getThemAll(matrix);
 		}
-		if(maxTargetAlign >= maxSourceAlign) {//Scan rows and then columns
-			numMaxValues = maxSourceAlign;
+		else if(tempMaxTarget >= tempMaxSource) {//Scan rows and then columns
+			numMaxValues = tempMaxSource;
 			aset = scanForMaxValuesRowColumn(matrix, numMaxValues);
 		}
 		else {//scan column and then row
-			numMaxValues = maxTargetAlign;
+			numMaxValues = tempMaxTarget;
 			aset = scanForMaxValuesColumnRow(matrix, numMaxValues);
 		}
 		return aset;
 	}
 
-	private AlignmentSet scanForMaxValuesRowColumn(AlignmentMatrix matrix, int numMaxValues) {
+    protected AlignmentSet scanForMaxValuesRowColumn(AlignmentMatrix matrix, int numMaxValues) {
 		AlignmentSet aset = new AlignmentSet();
 		Alignment currentValue;
 		Alignment currentMax;
 		//temp structure to keep the first numMaxValues best alignments for each source
 		//when maxRelations are both ANY we could have this structure too big that's why we have checked this case in the previous method
-		Alignment[] maxAlignments = new Alignment[numMaxValues];
+		Alignment[] maxAlignments;
 		for(int i = 0; i<matrix.getRows();i++) {
-			for(int j = 0; j<matrix.getColumns();i++) {
+			maxAlignments = new Alignment[numMaxValues];
+			for(int h = 0; h<maxAlignments.length;h++) {
+				maxAlignments[h] = new Alignment(-1); //intial max alignments have sim equals to 0
+			}
+			for(int j = 0; j<matrix.getColumns();j++) {
 				currentValue = matrix.get(i,j);
-				int k = 0;
-				currentMax = maxAlignments[k];
-				for(k = 1; currentValue.getSimilarity() > currentMax.getSimilarity() && k < maxAlignments.length; k++) {
-					maxAlignments[k-1] = currentValue;
+				currentMax = maxAlignments[0];
+				for(int k = 0;currentValue.getSimilarity() >= currentMax.getSimilarity() ; k++) {
+					maxAlignments[k] = currentValue;
 					currentValue = currentMax;
-					currentMax = maxAlignments[k];
+					if(k+1 < maxAlignments.length) {
+						currentMax = maxAlignments[k+1];
+					}
+					else break;
 				}
 			}
 			currentValue = maxAlignments[0];
-			for(int e = 0;currentValue.getSimilarity() >= threshold && e < maxAlignments.length; e++) {
-				currentValue = maxAlignments[e];
+			for(int e = 0;currentValue.getSimilarity() >= threshold; e++) {
 				aset.addAlignment(currentValue);
+				if(e+1 < maxAlignments.length)
+					currentValue = maxAlignments[e+1];
+				else break;
+				//System.out.println(currentValue);
 			}
 		}
 		return aset;
 	}
 
-	private AlignmentSet scanForMaxValuesColumnRow(AlignmentMatrix matrix,int numMaxValues) {
+    protected AlignmentSet scanForMaxValuesColumnRow(AlignmentMatrix matrix,int numMaxValues) {
 		AlignmentSet aset = new AlignmentSet();
 		Alignment currentValue;
 		Alignment currentMax;
-		Alignment[] maxAlignments = new Alignment[numMaxValues];//temp structure to keep the first numMaxValues best alignments for each source
-		//Build the array with numMaxValues max alignment
-		for (int j = 0; j<matrix.getColumns();j++){
-			for (int i = 0; i<matrix.getRows();i++){
-				currentValue = matrix.get(i,j);
-				int k = 0;
-				currentMax = maxAlignments[k];
-				for(k = 1; currentValue.getSimilarity() > currentMax.getSimilarity() && k < maxAlignments.length; k++) {
-					maxAlignments[k-1] = currentValue;
+		//temp structure to keep the first numMaxValues best alignments for each source
+		//when maxRelations are both ANY we could have this structure too big that's why we have checked this case in the previous method
+		Alignment[] maxAlignments;
+		for(int i = 0; i<matrix.getColumns();i++) {
+			maxAlignments = new Alignment[numMaxValues];
+			for(int h = 0; h<maxAlignments.length;h++) {
+				maxAlignments[h] = new Alignment(-1); //intial max alignments have sim equals to 0
+			}
+			for(int j = 0; j<matrix.getRows();j++) {
+				currentValue = matrix.get(j,i);
+				currentMax = maxAlignments[0];
+				for(int k = 0;currentValue.getSimilarity() >= currentMax.getSimilarity() ; k++) {
+					maxAlignments[k] = currentValue;
 					currentValue = currentMax;
-					currentMax = maxAlignments[k];
+					if(k+1 < maxAlignments.length) {
+						currentMax = maxAlignments[k+1];
+					}
+					else break;
 				}
 			}
-			//build an alignmentSet from the array with max alignments
 			currentValue = maxAlignments[0];
-			for(int e = 0;currentValue.getSimilarity() >= threshold && e < maxAlignments.length; e++) {
-				currentValue = maxAlignments[e];
+			for(int e = 0;currentValue.getSimilarity() >= threshold; e++) {
 				aset.addAlignment(currentValue);
+				if(e+1 < maxAlignments.length)
+					currentValue = maxAlignments[e+1];
+				else break;
+				//System.out.println(currentValue);
+			}
+		}
+		return aset;
+	}
+    
+    protected AlignmentSet getThemAll(AlignmentMatrix matrix) {
+		AlignmentSet aset = new AlignmentSet();
+		Alignment currentValue;
+		for(int i = 0; i<matrix.getColumns();i++) {
+			for(int j = 0; j<matrix.getRows();j++) {		
+				currentValue = matrix.get(j,i);
+				if(currentValue.getSimilarity() >= threshold)
+					aset.addAlignment(currentValue);
 			}
 		}
 		return aset;
 	}
 
-	//*****************Other methods ******************************************
+    //*****************USER ALIGN METHOD*****************************
+    public void addClassAlignment(Alignment a) {
+    	//before calling this method the system must check if the alignments is between two classes then 
+    	//the algorithm should alignClass and isClass = true same for properties
+    	//if the alignment is between a class and a prop, shouldn't be aloud to add it
+    }
+    
+    public void addPropAlignment(Alignment a) {
+    	//before calling this method the system must check if the alignments is between two classes then 
+    	//the algorithm should alignClass and isClass = true same for properties
+    	//if the alignment is between a class and a prop, shouldn't be aloud to add it
+    }
+    
+	//*****************SET AND GET methods ******************************************
 	public AbstractMatcherParametersPanel getParametersPanel() {
 		throw new RuntimeException("To be implemented in the real matcher subclass");
 		//This method must create and return the AbstractMatcherParameter subclass so that the user can select additional parameters needed by the matcher
@@ -437,7 +531,14 @@ public abstract class AbstractMatcher implements Matcher{
 	public void setAlignClass(boolean alignClass) {
 		this.alignClass = alignClass;
 	}
+	
+	public AlignmentMatrix getClassesMatrix() {
+		return classesMatrix;
+	}
 
+	public AlignmentMatrix getPropertiesMatrix() {
+		return propertiesMatrix;
+	}
 	
 	/**
 	 * Matcher details you can override this method to add or change you matcher details if needed, it is only invoked clicking on the button view details in the control panel
@@ -454,5 +555,19 @@ public abstract class AbstractMatcher implements Matcher{
 		s+= "Performs Properties alignment: "+Utility.getYesNo(isAlignProp())+"\n";
 		return s;
 	}
+
+//*************************UTILITY METHODS**************************************
+	public boolean equals(Object o) {
+		if(o instanceof AbstractMatcher) {
+			AbstractMatcher a = (AbstractMatcher)o;
+			return a.getIndex() == this.getIndex();
+		}
+		return false;
+	}
 	
+	public int hashCode() {
+		return index;
+	}
+
+
 }

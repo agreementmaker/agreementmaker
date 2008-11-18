@@ -146,5 +146,8 @@ public class Node {
 		return index;
 	}
 	
+	public String toString() {
+		return index+" "+localName;
+	}
 
 }

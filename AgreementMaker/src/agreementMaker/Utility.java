@@ -31,6 +31,11 @@ public class Utility {
 		return p+"%";
 	}
 	
+	public static String getNoFloatPercentFromDouble(double d) {
+		int i = (int)(d*100);
+		return i+"%";
+	}
+	
 	public static String[] getNumRelList() {
 		int min = 1;
 		int max = 100;
@@ -89,13 +94,15 @@ public class Utility {
 	}
 	
 	
-	public static int displayConfirmPane(String desc, String title) {
+	public static boolean displayConfirmPane(String desc, String title) {
 		if(title == null)
 			title = "Confirmation required";
-		return  JOptionPane.showConfirmDialog(null,
+		int res =  JOptionPane.showConfirmDialog(null,
 			    desc,
 			    title,
 			    JOptionPane.YES_NO_OPTION);	
+		if(res == JOptionPane.YES_OPTION)
+			return true;
+		else return false;
 		}
-
 }

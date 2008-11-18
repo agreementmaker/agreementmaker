@@ -10,7 +10,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -23,17 +26,24 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
+import javax.swing.table.AbstractTableModel;
+
+import org.apache.lucene.analysis.LengthFilter;
+import org.omg.PortableInterceptor.USER_EXCEPTION;
+
+import sun.awt.windows.ThemeReader;
 
 import agreementMaker.Utility;
 import agreementMaker.agreementDocument.DocumentProducer;
 import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.MatcherFactory;
+import agreementMaker.application.mappingEngine.fakeMatchers.UserManualMatcher;
 import agreementMaker.userInterface.table.MatchersTable;
 import agreementMaker.userInterface.table.MatchersTablePanel;
 import agreementMaker.userInterface.table.MyTableModel;
 
-public class ControlPanelTry extends JPanel implements ActionListener,
+public class MatchersControlPanel extends JPanel implements ActionListener,
 		ItemListener {
 
 	private static final long serialVersionUID = -2258009700001283026L;
@@ -48,7 +58,7 @@ public class ControlPanelTry extends JPanel implements ActionListener,
 	private JComboBox tRelationCombo;
 	private JButton matchButton;
 	private JButton viewDetails;
-	private JButton button2;
+	private JButton delete;
 	private JButton button3;
 	private UI ui;
 	private MatchersTablePanel matchersTablePanel;
@@ -57,7 +67,7 @@ public class ControlPanelTry extends JPanel implements ActionListener,
 	public final static int HIDE = 1;
 	
 	
-	ControlPanelTry(UI ui, UIMenu uiMenu, Canvas canvas) {
+	MatchersControlPanel(UI ui, UIMenu uiMenu, Canvas canvas) {
 		this.ui = ui;
 		init();
 	}
@@ -111,15 +121,16 @@ public class ControlPanelTry extends JPanel implements ActionListener,
 		matcherSelectionPanel.add(tRelLabel);
 		matcherSelectionPanel.add(tRelationCombo);
 		
-		button2 = new JButton("Button2");
+		delete = new JButton("Delete");
+		delete.addActionListener(this);
 		button3 = new JButton("Button3");
 
-		matchersTablePanel = new MatchersTablePanel();
+		matchersTablePanel = new MatchersTablePanel(ui);
 		
 		JPanel panel3 = new JPanel();
 		panel3.setLayout(new FlowLayout(FlowLayout.LEADING));
 		//panel3.setAlignmentX(LEFT_ALIGNMENT);
-		panel3.add(button2);
+		panel3.add(delete);
 		panel3.add(button3);
 		add(matcherSelectionPanel);
 		add(matchersTablePanel);
@@ -137,6 +148,31 @@ public class ControlPanelTry extends JPanel implements ActionListener,
 		else if(obj == matchButton) {
 			match();
 		}
+		else if(obj == delete) {
+			int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
+			if(rowsIndex.length == 0) {
+				Utility.dysplayErrorPane("No matchers selected", null);
+			}
+			else if(Utility.displayConfirmPane(rowsIndex.length+" matchers will be deleted.\n Do you want to continue?", null)) {
+				AbstractMatcher toBeDeleted;
+				Core core = Core.getInstance();
+				LinkedList<AbstractMatcher> deleteList = new LinkedList<AbstractMatcher>();
+				for(int i = 0; i < rowsIndex.length; i++) {// I need to build a list because indexes will be modified so i can't access them using the rowsindex structures
+					deleteList.add(core.getMatcherInstances().get(rowsIndex[i]));
+				}
+				for(int i = 0; i< deleteList.size(); i++) {
+					toBeDeleted = deleteList.get(i);
+					if(MatcherFactory.isTheUserMatcher(toBeDeleted)) {
+						//DO NOTHING YOU CAN'T DELETE THE USER MATCHING
+						Utility.dysplayErrorPane(UserManualMatcher.USERMANUALMATCHINGNAME+" can't be deleted.\nUse the clear button to delete manual alignments.", null);
+					}
+					else {
+						matchersTablePanel.removeMatcher(toBeDeleted);
+						ui.redisplayCanvas();
+					}
+				}
+			}
+		}
 	}
 	
 	public void match() {
@@ -146,37 +182,48 @@ public class ControlPanelTry extends JPanel implements ActionListener,
 		AbstractMatcher currentMatcher = MatcherFactory.getMatcherInstance(nameIndex, lastIndex);
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows(); //indexes in the table correspond to the indexes of the matchers in the matcherInstances list in core class
 		int selectedMatchers = rowsIndex.length;
-		if(currentMatcher.getMinInputMatchers() > selectedMatchers ) {
+		if(!Core.getInstance().ontologiesLoaded() ) {
+			Utility.dysplayErrorPane("You have to load a Source and Target ontologies before running any matcher\nClick on File Menu and select Open Ontology functions ", null);
+		}
+		else if(currentMatcher.getMinInputMatchers() > selectedMatchers ) {
 			Utility.dysplayErrorPane("Select at least "+currentMatcher.getMinInputMatchers()+" matchings from the table to run this matcher.", null);
 		}
+		/* Warning to alert that user has selected more inputMatcher than necessary, I had to remove this because it happens all the time and it's boring
 		else if(currentMatcher.getMaxInputMatchers() < selectedMatchers) {
-			Utility.displayConfirmPane("More matchers are selected as input than required.\n The matcher will consider only the first.\nDo you want to continue? "+currentMatcher.getMaxInputMatchers(), null);
+			int answer = Utility.displayConfirmPane("More matchers are selected as input than required.\n The matcher will consider only the first.\nDo you want to continue? "+currentMatcher.getMaxInputMatchers(), null);
+			if(answer == JOptionPane.NO_OPTION) {
+				everythingOk = false;
+			}
 		}
+		if(everythingOk) {
+		*/
 		else {
+			boolean everythingOk = true;
 			//Asking parameters before setting input matcher list, just because the user can still cancel the operation
-			boolean matcherReady = true; //a matcher which doesn't need parameters is ready
 			if(currentMatcher.needsParam()) {
-				matcherReady = false;
+				everythingOk = false;
 				AbstractMatcherParametersDialog dialog = new AbstractMatcherParametersDialog(currentMatcher);
 				if(dialog.parametersSet()) {
 					currentMatcher.setParam(dialog.getParameters());
-					matcherReady = true;
+					everythingOk = true;
 				}
 				dialog.dispose();
 			}
-			if(matcherReady) {
+			if(everythingOk) {
+				currentMatcher.setThreshold(Utility.getDoubleFromPercent((String)thresholdCombo.getSelectedItem()));
+				currentMatcher.setMaxSourceAlign(Utility.getIntFromNumRelString((String)sRelationCombo.getSelectedItem()));
+				currentMatcher.setMaxTargetAlign(Utility.getIntFromNumRelString((String)tRelationCombo.getSelectedItem()));
 				//parameters are set if they were needed, now we need to set the list of input matchers
-				for(int i = 0; i<rowsIndex.length; i++) {
-					AbstractMatcher input = Core.getInstance().getMatcherInstances().get(i);
+				for(int i = 0; i<rowsIndex.length && i< currentMatcher.getMaxInputMatchers(); i++) {
+					AbstractMatcher input = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
 					currentMatcher.addInputMatcher(input);
 				}
 				currentMatcher.match();
 				matchersTablePanel.addMatcher(currentMatcher);
-				//REDISPLAY EVERYTHING
+				ui.redisplayCanvas();
 				System.out.println("yeeei");
 			}
 		}
-		
 	}
 
 	/**
@@ -191,5 +238,29 @@ public class ControlPanelTry extends JPanel implements ActionListener,
 			//so that the system auto select threshold and numrelations depending on algorithm selected
 			//but this feature could be boring if you have to run many different algorithms with the same parameters
 		}
+	}
+
+	
+	public void resetMatchings() {
+		// TODO Auto-generated method stub
+		Core core = Core.getInstance();
+		ArrayList<AbstractMatcher> matchers = core.getMatcherInstances();
+		Iterator<AbstractMatcher> it = matchers.iterator();
+		//Take the UserManualMatcher and run it for the first time to create empty matrix and alignmentSet
+		UserManualMatcher userMatcher =(UserManualMatcher) it.next();
+		userMatcher.setSourceOntology(core.getSourceOntology());
+		userMatcher.setTargetOntology(core.getTargetOntology());
+		userMatcher.match();
+		//Delete all other matchers if there are any
+		// I'm not using the controlPanel removeMatcher because is not needed we just remove them so we don't need to update index and we update table all together
+		int firstRow = 1;
+		int lastRow = matchers.size() -1;
+		while(it.hasNext()) {
+			it.next();
+			it.remove();
+		}
+		//update the table
+		((AbstractTableModel)matchersTablePanel.getTable().getModel()).fireTableRowsDeleted(firstRow, lastRow);
+		ui.redisplayCanvas();
 	}
 }

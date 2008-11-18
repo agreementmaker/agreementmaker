@@ -20,6 +20,11 @@ public class MyCellEditor extends AbstractCellEditor implements TableCellEditor{
 		rowEditors = new HashMap<Integer, DefaultCellEditor>();
 	}
 	
+	public void removeEditor(AbstractMatcher a) {
+		// TODO Auto-generated method stub
+		rowEditors.remove(a.getIndex());
+	}
+	
 	public void addEditor(AbstractMatcher a) {
 		JComboBox jc;
 		String s[];
@@ -48,5 +53,8 @@ public class MyCellEditor extends AbstractCellEditor implements TableCellEditor{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	
+
 
 }

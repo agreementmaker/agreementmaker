@@ -17,6 +17,8 @@ import javax.swing.UIManager;
 import agreementMaker.GSM;
 import agreementMaker.application.Core;
 import agreementMaker.application.evaluationEngine.OntologyController;
+import agreementMaker.application.mappingEngine.AbstractMatcher;
+import agreementMaker.application.mappingEngine.fakeMatchers.UserManualMatcher;
 import agreementMaker.application.ontology.Ontology;
 import agreementMaker.application.ontology.ontologyParser.TreeBuilder;
 import agreementMaker.userInterface.vertex.VertexDescriptionPane;
@@ -43,8 +45,7 @@ public class UI {
 	
 	
 	private JPanel panelCanvas, panelDesc;
-	private ControlPanel panelControlPanel;
-	private ControlPanelTry panelControlPaneltry;
+	private MatchersControlPanel matcherControlPanel;
 	private JScrollPane scrollPane;
 	
 	private JSplitPane splitPane;
@@ -158,8 +159,8 @@ public class UI {
 
 		
 		//panelControlPanel = new ControlPanel(this, uiMenu, canvas);
-		panelControlPaneltry = new ControlPanelTry(this, uiMenu, canvas);
-		frame.getContentPane().add(panelControlPaneltry, BorderLayout.PAGE_END);		
+		matcherControlPanel = new MatchersControlPanel(this, uiMenu, canvas);
+		frame.getContentPane().add(matcherControlPanel, BorderLayout.PAGE_END);		
 		
 		//Add the listener to close the frame.
 		frame.addWindowListener(new WindowEventHandler());
@@ -181,10 +182,6 @@ public class UI {
 		this.panelDesc = jPanel;
 	}
 
-
-	public ControlPanel getPanelControlPanel() {
-		return panelControlPanel;
-	}
 
 
 	/** This function will open a file
@@ -217,7 +214,10 @@ public class UI {
 			else Core.getInstance().setTargetOntology(ont);
 			//Set the tree in the canvas
 			getCanvas().setTree(t);
-		
+			if(Core.getInstance().ontologiesLoaded()) {
+				//Ogni volta che ho caricato un ontologia e le ho entrambe, devo resettare o settare se è la prima volta, tutto lo schema dei matchings
+				matcherControlPanel.resetMatchings();
+			}
 		}catch(Exception ex){
 			JOptionPane.showConfirmDialog(null,"Can not parse the file '" + filename + "'. Please check the policy.","Parser Error",JOptionPane.PLAIN_MESSAGE);
 			ex.printStackTrace();
@@ -238,6 +238,10 @@ public class UI {
 		e.getWindow().dispose();
 		//System.exit(0);   
 	}
+	}
+	
+	public void redisplayCanvas() {
+		canvas.repaint();
 	}    
 
 }

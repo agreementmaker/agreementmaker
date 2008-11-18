@@ -17,6 +17,7 @@ import java.awt.event.MouseListener;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -27,7 +28,11 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import agreementMaker.GSM;
+import agreementMaker.Utility;
 import agreementMaker.application.Core;
+import agreementMaker.application.mappingEngine.AbstractMatcher;
+import agreementMaker.application.mappingEngine.Alignment;
+import agreementMaker.application.mappingEngine.AlignmentSet;
 import agreementMaker.application.mappingEngine.ContextMapping;
 import agreementMaker.application.mappingEngine.DefComparator;
 import agreementMaker.application.mappingEngine.DefnMapping;
@@ -359,12 +364,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		// repaint the canvas
 		repaint();
 	}
-	/**
-	 * @param ontoType
-	 * @param langIndex
-	 * @param syntaxIndex
-	 * @return
-	 */
+
 	
 	/**
 	 * @param ontoType
@@ -392,89 +392,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		if(x*2 > canvasWidth) canvasWidth=x*2;
 		
 	}	
-	/*******************************************************************************************
-	 /**
-	  * This function figures out the mappingByUser for the parent based on the mappingByUser of the children
-	  * 
-	  * @param childrenMappings - vector of children mappingByUser types
-	  * @return the parent mappingByUser based on the children mappings
-	  */	
-	public String contextMap(Vector childrenMappings)
-	{
-		String prevChildMapping, currChildMapping;
-		String newMapping="Null";
-		
-		if(childrenMappings.size() > 1)
-		{
-			// get the first child mappingByUser
-			prevChildMapping = (String) childrenMappings.elementAt(0);
-			//System.out.println("in contextMap method");
-			//System.out.println("No. Children" + childrenMappings.size());
-			for (int index = 1;index < childrenMappings.size();index++ )
-			{
-				// get the next child mappings
-				currChildMapping = (String) childrenMappings.elementAt(index);
-				
-				// now compare the two childs (prev and curr) get a mappingByUser based onthe context mappingByUser table
-				// and set the resulting mappingByUser to "newMapping" variable
-				
-				
-				// if one of the child is exact the new mappingByUser is the same as the other child
-				if (prevChildMapping == "Exact")
-				{
-					newMapping = currChildMapping;
-				}
-				else if (currChildMapping == "Exact")
-				{
-					newMapping = prevChildMapping;
-				}
-				
-				// if the 2 childs have same mappingByUser then new mappingByUser is going to be same as well
-				else if (prevChildMapping == currChildMapping)
-				{
-					newMapping = prevChildMapping;
-				}
-				
-				// if child1 = "Superset" and child2 = "Null" newMapping = "Superset"
-				else if ((prevChildMapping == "Superset") && (currChildMapping == "Null"))
-				{
-					newMapping = prevChildMapping;
-				}
-				
-				// if child2 = "Superset" and child1 = "Null" newMapping = "Superset"
-				else if ((currChildMapping == "Superset") && (prevChildMapping == "Null"))
-				{
-					newMapping = currChildMapping;
-				}
-				else
-				{
-					newMapping = "Null";
-				}
-				
-				// update the previous mappingByUser to be the new mappingByUser for more than 2 children
-				prevChildMapping = newMapping;
-				
-			}
-			
-			// return the new mappingByUser based on the children mappings
-			return newMapping;
-		}
-		else
-		{
-			if (childrenMappings.size() == 0)
-			{
-				// ???????????????????????????//
-				//System.out.println("childrenMappings.size() == 0");
-				return "Null";
-			}
-			else
-			{
-				//System.out.println("childrenMappings.size() == 1");
-				return (String) childrenMappings.elementAt(0);
-				
-			}
-		}
-	}
+
 	/**
 	 * Creates a popupmenu when the user maps nodes
 	 */
@@ -587,157 +505,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		}
 	}
 	
-	public void selectedContextMapping() {
-		mapByContext = true;
-		repaint();
-	}
-	
-	/**
-	 * This function changes the mapByContext variable to false and calls the repaint method
-	 */	
-	public void deselectedContextMapping()
-	{
-		mapByContext = false;
-		repaint();
-	}
-	/**
-	 * This function changes the mapByDefn variable to false and calls the repaint method
-	 */	
-	public void deselectedDefnMapping()
-	{
-		//  JOptionPane.showMessageDialog(null,"hip hip desc","title", JOptionPane.PLAIN_MESSAGE);	
-		mapByDefnShow = false;
-		repaint();
-	}	
-	/**
-	 * This function draws in the mappingByUser lines between vertices for the context mappings
-	 *
-	 * @param graphic graphics
-	 * @root the root of the tree 
-	 */	
-	public void displayContextMappingLines(Graphics graphic, Vertex root)
-	{
-		//	 System.out.println(" display context mappingByUser line ");
-		Vertex node;
-		//	Vertex global, local;
-		int x1,y1,x2,y2;
-		
-		//	global = null;
-		//local = null;
-		graphic.setColor(Colors.mappedByContextLineColor);
-		
-		for (Enumeration e = root.preorderEnumeration(); e.hasMoreElements(); )
-		{
-			// get the node
-			node = (Vertex) e.nextElement();
-			
-			// make sure that this node has been mapped
-			if ((node.isLeaf() == false) && (node.getContextMapping() != null))
-			{
-				
-				// make sure that the global and local parent nodes are visible
-				// if they are then draw a mappingByUser line between these two nodes
-				
-				
-				if ((node.isVisible() == true) && (node.getContextMapping().getLocalVertex().isVisible() == true))
-				{
-					x1 = node.getX2();
-					y1 = (node.getY()+node.getY2())/2;
-					
-					x2 = node.getContextMapping().getLocalVertex().getX();
-					y2 = (node.getContextMapping().getLocalVertex().getY()+node.getContextMapping().getLocalVertex().getY2())/2;
-					
-					// draw the line which connects the two vertices
-					graphic.drawLine(x1,y1,x2,y2);
-					
-					// place the string (mappingByUser type) on top of the mappingByUser line						
-					graphic.drawString(node.getContextMapping().getMappingType(),(x1+x2)/2,((y1+y2)/2) -5);
-				}
-				
-			}
-		}
-		//repaint();
-	}
-	/**
-	 * This function draws in the mappingByUser lines between vertices for the Definition mappings
-	 *
-	 * @param graphic graphics
-	 * @root the root of the tree 
-	 * @author Muhammad	
-	 */	
-	public void displayDefnMappingLines(Graphics graphic, Vertex root)
-	{
-		Vertex node;
-		Vertex global, local;
-		int x1,y1,x2,y2;
-		
-		global = null;
-		local = null;
-		graphic.setColor(Colors.mappedByDefnLineColor);
-		//graphic.setColor(Colors.mappedByUserLineColor)
-		
-		for (Enumeration e = root.preorderEnumeration(); e.hasMoreElements(); )
-		{
-			// get the node
-			node = (Vertex) e.nextElement();
-			// System.out.print("noman" + node.getName()); 
-			
-			
-			
-			
-			if (node.getDefnMapping() != null && node.getDefnMapping().getLocalVertices().size() > 0 ) // node.defnMapping != null)
-			{
-				boolean localNodesVisible = areDefnLocalNodesVisible(node);
-				if ((node.isVisible() == true) && (localNodesVisible == true))
-				{	
-					if (node.getDefnMapping().getMappingCategory().equals("1-to-M") )
-					{
-						
-						global = (Vertex)node.getDefnMapping().getGlobalVertices().elementAt(0);
-						global = (Vertex)node.getDefnMapping().getGlobalVertices().elementAt(0);
-						x1 = global.getX2();
-						y1 = (global.getY()+global.getY2())/2;
-						
-						
-						Vector sim = node.getDefnMapping().getSimilarities();
-						for (int j=0;j<node.getDefnMapping().getLocalVertices().size() && (Float)sim.elementAt(j) >= displayedSimilarity  && j < noOfLines && j<defnOptions.numRel ;j++)
-						{
-							local  = (Vertex)node.getDefnMapping().getLocalVertices().elementAt(j);
-							
-							x2 = local.getX();
-							y2 = (local.getY()+local.getY2())/2;
-							graphic.drawLine(x1,y1,x2,y2);
-							//graphic.drawString(node.getDefnMapping().getMappingValue(),(x1+x2)/2,((y1+y2)/2) -5);
-							graphic.drawString(node.getDefnMapping().getMappingValue1(local),(x1+x2)/2,((y1+y2)/2) -5);		
-						}
-						
-					}
-					
-					
-					if (node.getDefnMapping().getMappingCategory().equals("1-to-1") )
-					{
-						global = (Vertex)node.getDefnMapping().getGlobalVertices().elementAt(0);
-						local  = (Vertex)node.getDefnMapping().getLocalVertices().elementAt(0);
-						float sim = (Float) node.getDefnMapping().getSimilarities().elementAt(0);
-						if(sim >= displayedSimilarity) {
-							// get their location on canvas
-							x1 = global.getX2();
-							y1 = (global.getY()+global.getY2())/2;
-							x2 = local.getX();
-							y2 = (local.getY()+local.getY2())/2;
-							
-							// draw the line which connects the two vertices
-							graphic.drawLine(x1,y1,x2,y2);
-							graphic.drawString(node.getDefnMapping().getMappingValue1(local),(x1+x2)/2,((y1+y2)/2) -5);
-						}
-					}
-				}
-				
-			}
-			
-		}
-		
-	}
+
 	/**
 	 * This function highlights the mapping lines for the selected node by changing the color
 	 */
@@ -1852,13 +1620,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		return null;
 	}
 	
-	/**
-	 * 
-	 * @return the number of relation to be found for each source node. When a method scans node.getDefnMapping.getGlobalVertices() it has to look only at the first getDfnLines. 
-	 */
-	public DefnMappingOptions getDefnOptions() {
-		return defnOptions;
-	}
+
 /**
 	 * This function returns the old node's y coordinate
 	 * @return oldY previous y location
@@ -1876,82 +1638,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	{
 		return rightClickedNode;
 	}
-	/**
-	 * This function performs mappingByUser by context
-	 * This is done by mappingByUser parents of the nodes based on the mappings of their children.
-	 */	
-	public void mapByContext()
-	{
-		Vertex root;
-		if (mapByContext == false)
-		{
-			
-			mapByContext = true;	
-			
-			// get the root of the tree based on the mouseclick
-			root = getGlobalTreeRoot();
-			
-			
-			if (root != null)
-			{
-				performContextMapping(root);
-			}
-			//repaint the canvas
-			repaint();
-			//previouslyMappedByContext = true;
-			
-			
-		}
-		
-		
-		
-	}
-	/**
-	 * This function performs mappingByUser by Defn
-	 * This is done by mappingByUser parents of the nodes based on the mappings of their children.
-	 */	
-	public int mapByDefn(DefnMappingOptions dmo) //throws Exception
-	{
-		defnOptions = dmo;
-		Vertex localRoot = getLocalTreeRoot();
-		if (localRoot == null)
-		{
-			return countStat;
-		}
-		showAll(localRoot);
-		
-		Vertex root = getGlobalTreeRoot();
-		if (root == null)
-		{
-			return countStat;
-		}
-		showAll(root) ;
-		mapByDefn = true;	
-		
-		if (root != null)
-		{
-			//WGS CODE HERE
-			try{
-				out = new FileOutputStream("outputAM.dat");
-				out2 = new FileOutputStream("initial_sim.txt");
-			}catch(IOException ioe) {}
-			p = new PrintStream( out );
-			p2 = new PrintStream( out2 );
-			
-			performDefnMapping(root );
-			printToFileSourceTarget();
-			//This method has been developed for the wisconsin testcase, it creates the "sourceDesc.txt" and target files, it's not needed in the user version.
-			printToFileSourceTargetDesc();
-		
-			p.close();
-			p2.close();
-		}
-		
-		//repaint the canvas
-		repaint();
-		return countStat;
-		
-	}
+
+
 	/**
 	 * This function maps the global nodes with local nodes
 	 * 
@@ -2439,7 +2127,11 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		}
 	}
 	/**
-	 * This function paints the background and displays global and local trees
+	 * This function paints the background and displays global and local trees and mappings
+	 * This function is fundamental, everytime there is change in the graphics
+	 * the system has to invoke canvas.redisplay() (inerhited by component)
+	 * which invokes canvas.update() which invokes paint(Graphic g)
+	 * In the system only use repaint() which invoke this method
 	 *
 	 * @param graphic of type Graphics
 	 */
@@ -2491,15 +2183,688 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				displayTree(graphic, false);
 			
 			if ((core.sourceIsLoaded() ) && (core.targetIsLoaded() )){
-				displayMappingLines(graphic);
-				Graphics2D graphic2d = (Graphics2D) graphic;
-				displayHighlightedMappingLines(graphic2d, getGlobalTreeRoot());
+				displayAllMatchings(graphic);
+				//Graphics2D graphic2d = (Graphics2D) graphic;
+				//displayHighlightedMappingLines(graphic2d, getGlobalTreeRoot());
 			}
 		}
 		
 		this.revalidate();
 		
 	}	
+	
+	/**
+	 * recursive method which performs the mappingByUser on a particular node/vertex
+	 * @param node - vertex
+	 */	
+	//######################################################
+	public void printToFileSourceTarget() {
+		
+
+		Vertex localRoot = getLocalTreeRoot();
+		Vertex globalRoot = getGlobalTreeRoot();
+		
+		if (localRoot == null || globalRoot == null)
+		{
+			return ;
+		}
+		
+
+
+		FileOutputStream out = null; // declare a file output object
+	    PrintStream p; // declare a print stream object
+		
+	    
+	    try{
+			out = new FileOutputStream("target.txt");
+		}catch(IOException ioe) {}
+		p = new PrintStream( out );
+	    
+		printVertexTree(localRoot, p);
+		p.close();
+		
+		 try{
+				out = new FileOutputStream("source.txt");
+			}catch(IOException ioe) {}
+			p = new PrintStream( out );
+		    
+			printVertexTree(globalRoot, p);
+			p.close();
+		
+		
+		
+	}
+	//######################################################
+	public void printVertexTree(Vertex v, PrintStream p) {
+		
+		if(v == null) return;
+		for (Enumeration e = v.children() ; e.hasMoreElements(); ) {
+		  Vertex temp = (Vertex)e.nextElement();
+		  printVertexTree(temp,p);
+	     //System.out.println("faisaly " + v.getName() + "--->" + temp.getName());
+	     p.println(v.getName());
+	     p.println(temp.getName());
+		}
+		
+		
+	
+	
+	}
+	//######################################################
+	/**
+	 * This method and printVertexTreeDesc() below have been created to print the source and target ontology in the sourceDesc.txt and targetDesc.txt files
+	 * The difference with the printToFileSourceTarget method is that this one print nodes in this format "desc/tname" /t = tab
+	 * the description is taken from node with getDesc() method, in the XML ontology description is equals to "exp" attribute
+	 * this method has been developed to study the wisconsin (madison dane) case only.
+	 */
+	public void printToFileSourceTargetDesc() {
+		
+
+		Vertex localRoot = getLocalTreeRoot();
+		Vertex globalRoot = getGlobalTreeRoot();
+		
+		if (localRoot == null || globalRoot == null)
+		{
+			return ;
+		}
+		
+
+
+		FileOutputStream out = null; // declare a file output object
+	    PrintStream p; // declare a print stream object
+		
+	    
+	    try{
+			out = new FileOutputStream("targetDesc.txt");
+		}catch(IOException ioe) {}
+		p = new PrintStream( out );
+	    
+		printVertexTreeDesc(localRoot, p);
+		p.close();
+		
+		 try{
+				out = new FileOutputStream("sourceDesc.txt");
+			}catch(IOException ioe) {}
+			p = new PrintStream( out );
+		    
+			printVertexTreeDesc(globalRoot, p);
+			p.close();
+		
+		
+		
+	}
+	
+	/**
+	 * See printToFileSourceTargetDesc comments, print nodes in "desc/tname" format, if desc is empty puts "9999999"
+	 */
+    public void printVertexTreeDesc(Vertex v, PrintStream p) {
+		
+		if(v == null) return;
+		String desc = v.getDesc();
+		if(desc == null || desc.equals(""))
+			  desc = "9999999";
+		p.println(desc+"\t"+v.getName());
+		for (Enumeration e = v.children() ; e.hasMoreElements(); ) {
+		  Vertex temp = (Vertex)e.nextElement();
+		  printVertexTreeDesc(temp,p);
+		}
+	}
+	//#####################################################
+	
+
+	/**
+	 * This function recursively calls  setIsMappedByDef() of every node under the initial root
+	 * @param node
+	 */
+	public void performShowAll(Vertex node)
+	{
+		
+		for (Enumeration children = node.children();   children.hasMoreElements() ; )
+		{
+			Vertex child = (Vertex) children.nextElement();
+			child.setIsMappedByDef(false);
+			if (child.isLeaf() == false)
+				performShowAll(child);
+			
+		}
+	}	
+	
+	/**
+	 * This function recursivly sets the Vertex and its desendents to be visible or invisible
+	 * based on the int; If int is 0 the node will collapse, else it will expand
+	 *
+	 * @param targetNode node to collapse or expand
+	 * @param expandOrCollapse value indicating to expand or collapse the node
+	 */	
+	public void recurseOnNode(Vertex targetNode, int expandOrCollapse)
+	{
+		Vertex node;
+		
+		// Hide the children of expandOrContractNode children
+		for (Enumeration e =targetNode.children(); e.hasMoreElements(); )
+		{
+			node = (Vertex) e.nextElement();
+			
+			if (expandOrCollapse == 0)
+			{
+				//set the child to be invisible
+				node.setIsVisible(false);
+			} 
+			else if (expandOrCollapse == 1)
+			{
+				// set the child to be visible
+				node.setIsVisible(true);
+			}
+			if (node.getShouldCollapse() == false)
+			{
+				// if the child has its own children
+				if (!node.isLeaf())
+				{
+					// recursively set the child's child to be invisible
+					recurseOnNode(node, expandOrCollapse);
+				}
+			}
+			
+		}
+	}
+
+	/**
+	 * This function selects all the nodes between the first and second argument
+	 *
+	 * @param y1	the first y location of the mouseclick
+	 * @param y2	the second y location of the mouseclick
+	 * @param x 	the x location of the mousclick (used to determine if we should use global or local)
+	 */
+	public void selectNodes(int y1, int y2, int x)
+	{
+		int temp;
+		Vertex root, node;
+		
+		// if the user clicked on the left half of the screen then get the global root,
+		// get the local root
+		if (x < (canvasWidth/2)) root = getGlobalTreeRoot();
+		else root = getLocalTreeRoot();
+		
+		if (root == null) return;
+		
+		if (y1 > y2){
+			// swap y1 and y2
+			temp = y1;
+			y1 = y2-25;//25 has to be subtracted, to allow it to select the node 
+			y2 = temp;
+		}
+		
+		globalNodesSelected.clear();
+		localNodesSelected.clear();
+		
+		for (Enumeration e = root.preorderEnumeration(); e.hasMoreElements() ;){
+			// get the node
+			node = (Vertex) e.nextElement();
+			//TODO: decide if node.isVisible() should be used or not here... i have removed it from the 
+			//if condition given below
+			if (node.getY() >= y1 && node.getY() <= y2){
+				setNodeSelected(node,true);
+				if ((node.getNodeType() == GSM.SOURCENODE))
+					globalNodesSelected.addElement(node);
+				else if ((node.getNodeType() == GSM.TARGETNODE))
+					localNodesSelected.addElement(node);
+			}
+		}
+	}		
+
+	
+	/**
+	 * This function sets the global tree root
+	 *
+	 * @param node global tree root of type Vertex
+	 */
+	public void setGlobalTreeRoot(Vertex node)
+	{
+		globalTreeRoot = node;
+	}
+	/**
+	 * This function sets the local tree root
+	 *
+	 * @param node local tree root of type Vertex
+	 */
+	public void setLocalTreeRoot(Vertex node)
+	{
+		localTreeRoot = node;
+	}
+
+
+	/**
+	 * @param node
+	 * @param selected
+	 */
+	public void setNodeSelected(Vertex node, boolean selected){
+		node.setIsSelected(selected);
+		if(selected){
+			((VertexDescriptionPane)(myUI.getDescriptionPanel())).fillDescription(node);
+		}else{
+			((VertexDescriptionPane)(myUI.getDescriptionPanel())).clearDescription(node);
+		}
+	}
+	/**
+	 * This function sets the oldY
+	 *
+	 * @param y 	previous y location on canvas
+	 */
+	public void setOldY(int y)
+	{
+		oldY = y;
+	}
+
+	/**
+	 * This function sets the rightClickedNode
+	 *
+	 * @param node 	right clicked vertex
+	 */
+	public void setRightClickedNode(Vertex node)
+	{
+		rightClickedNode = node;
+	}
+	//METHODS ADDED BY FLAVIO
+	
+	/**
+	 * Scan the Matchers Instances to display all classes and properties alignmentSet
+	 * dysplay a matcher only if it's isShown();
+	 */
+	public void displayAllMatchings(Graphics g) {
+		ArrayList<AbstractMatcher> alist = core.getMatcherInstances();
+		g.setColor(Colors.mappedByDefnLineColor); //TODO we could have each algo with his own color
+		if(alist != null) {
+			Iterator<AbstractMatcher> it = alist.iterator();
+			AbstractMatcher a = null;
+			while(it.hasNext()) {
+				a = it.next();
+				if(a.isShown()) {
+					if(a.areClassesAligned()) {
+						displayAlignmentSet(g, a.getClassAlignmentSet());
+						//a.getClassAlignmentSet().show();
+					}
+					if(a.arePropertiesAligned()) {
+						displayAlignmentSet(g, a.getPropertyAlignmentSet());
+					}
+				}
+			}
+		}
+	}
+	
+	private void displayAlignmentSet(Graphics g, AlignmentSet aset) {
+		if(aset != null) {
+			Alignment a = null;
+			for(int i = 0; i < aset.size(); i++) {
+				a = aset.getAlignment(i); 
+				displayAlignment(g,a);
+			}
+		}
+		
+	}
+	
+	private void displayAlignment(Graphics graphic, Alignment a) {
+		Vertex source, target;
+		ArrayList<Vertex> sourceVertexes = a.getEntity1().getVertexList();
+		ArrayList<Vertex> targetVertexes = a.getEntity2().getVertexList();
+		Iterator<Vertex> itsource = sourceVertexes.iterator();
+		Iterator<Vertex> ittarget;
+		while(itsource.hasNext()) {
+			source = itsource.next();
+			if(source.isVisible()) {
+				ittarget = targetVertexes.iterator();
+				while(ittarget.hasNext()) {
+					target = ittarget.next();
+					if(target.isVisible()) {
+						displayLine(graphic, a, source, target);	
+					}
+				}
+			}
+
+		}
+	}
+	
+	private void displayLine(Graphics graphic, Alignment a, Vertex source, Vertex target) {
+		
+		int x1 = source.getX2(); //starting point of the line is the end of the left vertex
+		int y1 = (source.getY()+source.getY2())/2; //from the middle of the left vertex
+		int x2 = target.getX(); //ending point of the line is the beginning of the right vertex
+		int y2 = (target.getY()+target.getY2())/2;//to the middle of the right vertex
+		graphic.drawLine(x1,y1,x2,y2);
+		//System.out.println("Printing a line "+x1+" "+y1+" "+x2+" "+y2);
+		//graphic.drawString(node.getDefnMapping().getMappingValue(),(x1+x2)/2,((y1+y2)/2) -5);
+		graphic.drawString(a.getRelation()+" "+Utility.getNoFloatPercentFromDouble(a.getSimilarity()),(x1+x2)/2,((y1+y2)/2) -5);	
+	}
+	
+	//****************************************IN  THE FUTURE WE WILL CANCEL THIS METHODS FOR SURE ALSO SOME OTHERS****************************
+	
+
+
+	
+	
+	
+	
+	
+	
+	
+
+	public DefnMappingOptions getDefnOptions() {
+		return defnOptions;
+	}
+	
+	/**
+	 * This function changes the mapByContext variable to false and calls the repaint method
+	 */	
+	public void deselectedContextMapping()
+	{
+		mapByContext = false;
+		repaint();
+	}
+	/**
+	 * This function changes the mapByDefn variable to false and calls the repaint method
+	 */	
+	public void deselectedDefnMapping()
+	{
+		//  JOptionPane.showMessageDialog(null,"hip hip desc","title", JOptionPane.PLAIN_MESSAGE);	
+		mapByDefnShow = false;
+		repaint();
+	}	
+	/**
+	 * This function draws in the mappingByUser lines between vertices for the context mappings
+	 *
+	 * @param graphic graphics
+	 * @root the root of the tree 
+	 */	
+	public void displayContextMappingLines(Graphics graphic, Vertex root)
+	{
+		//	 System.out.println(" display context mappingByUser line ");
+		Vertex node;
+		//	Vertex global, local;
+		int x1,y1,x2,y2;
+		
+		//	global = null;
+		//local = null;
+		graphic.setColor(Colors.mappedByContextLineColor);
+		
+		for (Enumeration e = root.preorderEnumeration(); e.hasMoreElements(); )
+		{
+			// get the node
+			node = (Vertex) e.nextElement();
+			
+			// make sure that this node has been mapped
+			if ((node.isLeaf() == false) && (node.getContextMapping() != null))
+			{
+				
+				// make sure that the global and local parent nodes are visible
+				// if they are then draw a mappingByUser line between these two nodes
+				
+				
+				if ((node.isVisible() == true) && (node.getContextMapping().getLocalVertex().isVisible() == true))
+				{
+					x1 = node.getX2();
+					y1 = (node.getY()+node.getY2())/2;
+					
+					x2 = node.getContextMapping().getLocalVertex().getX();
+					y2 = (node.getContextMapping().getLocalVertex().getY()+node.getContextMapping().getLocalVertex().getY2())/2;
+					
+					// draw the line which connects the two vertices
+					graphic.drawLine(x1,y1,x2,y2);
+					
+					// place the string (mappingByUser type) on top of the mappingByUser line						
+					graphic.drawString(node.getContextMapping().getMappingType(),(x1+x2)/2,((y1+y2)/2) -5);
+				}
+				
+			}
+		}
+		//repaint();
+	}
+	/**
+	 * This function draws in the mappingByUser lines between vertices for the Definition mappings
+	 *
+	 * @param graphic graphics
+	 * @root the root of the tree 
+	 * @author Muhammad	
+	 */	
+	public void displayDefnMappingLines(Graphics graphic, Vertex root)
+	{
+		Vertex node;
+		Vertex global, local;
+		int x1,y1,x2,y2;
+		
+		global = null;
+		local = null;
+		graphic.setColor(Colors.mappedByDefnLineColor);
+		//graphic.setColor(Colors.mappedByUserLineColor)
+		
+		for (Enumeration e = root.preorderEnumeration(); e.hasMoreElements(); )
+		{
+			// get the node
+			node = (Vertex) e.nextElement();
+			// System.out.print("noman" + node.getName()); 
+			
+			
+			
+			
+			if (node.getDefnMapping() != null && node.getDefnMapping().getLocalVertices().size() > 0 ) // node.defnMapping != null)
+			{
+				boolean localNodesVisible = areDefnLocalNodesVisible(node);
+				if ((node.isVisible() == true) && (localNodesVisible == true))
+				{	
+					if (node.getDefnMapping().getMappingCategory().equals("1-to-M") )
+					{
+						
+						global = (Vertex)node.getDefnMapping().getGlobalVertices().elementAt(0);
+						global = (Vertex)node.getDefnMapping().getGlobalVertices().elementAt(0);
+						x1 = global.getX2();
+						y1 = (global.getY()+global.getY2())/2;
+						
+						
+						Vector sim = node.getDefnMapping().getSimilarities();
+						for (int j=0;j<node.getDefnMapping().getLocalVertices().size() && (Float)sim.elementAt(j) >= displayedSimilarity  && j < noOfLines && j<defnOptions.numRel ;j++)
+						{
+							local  = (Vertex)node.getDefnMapping().getLocalVertices().elementAt(j);
+							
+							x2 = local.getX();
+							y2 = (local.getY()+local.getY2())/2;
+							graphic.drawLine(x1,y1,x2,y2);
+							//graphic.drawString(node.getDefnMapping().getMappingValue(),(x1+x2)/2,((y1+y2)/2) -5);
+							graphic.drawString(node.getDefnMapping().getMappingValue1(local),(x1+x2)/2,((y1+y2)/2) -5);		
+						}
+						
+					}
+					
+					
+					if (node.getDefnMapping().getMappingCategory().equals("1-to-1") )
+					{
+						global = (Vertex)node.getDefnMapping().getGlobalVertices().elementAt(0);
+						local  = (Vertex)node.getDefnMapping().getLocalVertices().elementAt(0);
+						float sim = (Float) node.getDefnMapping().getSimilarities().elementAt(0);
+						if(sim >= displayedSimilarity) {
+							// get their location on canvas
+							x1 = global.getX2();
+							y1 = (global.getY()+global.getY2())/2;
+							x2 = local.getX();
+							y2 = (local.getY()+local.getY2())/2;
+							
+							// draw the line which connects the two vertices
+							graphic.drawLine(x1,y1,x2,y2);
+							graphic.drawString(node.getDefnMapping().getMappingValue1(local),(x1+x2)/2,((y1+y2)/2) -5);
+						}
+					}
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	public void selectedContextMapping() {
+		mapByContext = true;
+		repaint();
+	}
+	
+	/**
+	 * This function performs mappingByUser by context
+	 * This is done by mappingByUser parents of the nodes based on the mappings of their children.
+	 */	
+	public void mapByContext()
+	{
+		Vertex root;
+		if (mapByContext == false)
+		{
+			
+			mapByContext = true;	
+			
+			// get the root of the tree based on the mouseclick
+			root = getGlobalTreeRoot();
+			
+			
+			if (root != null)
+			{
+				performContextMapping(root);
+			}
+			//repaint the canvas
+			repaint();
+			//previouslyMappedByContext = true;
+			
+			
+		}
+		
+		
+		
+	}
+	/*******************************************************************************************
+	 /**
+	  * This function figures out the mappingByUser for the parent based on the mappingByUser of the children
+	  * 
+	  * @param childrenMappings - vector of children mappingByUser types
+	  * @return the parent mappingByUser based on the children mappings
+	  */	
+	public String contextMap(Vector childrenMappings)
+	{
+		String prevChildMapping, currChildMapping;
+		String newMapping="Null";
+		
+		if(childrenMappings.size() > 1)
+		{
+			// get the first child mappingByUser
+			prevChildMapping = (String) childrenMappings.elementAt(0);
+			//System.out.println("in contextMap method");
+			//System.out.println("No. Children" + childrenMappings.size());
+			for (int index = 1;index < childrenMappings.size();index++ )
+			{
+				// get the next child mappings
+				currChildMapping = (String) childrenMappings.elementAt(index);
+				
+				// now compare the two childs (prev and curr) get a mappingByUser based onthe context mappingByUser table
+				// and set the resulting mappingByUser to "newMapping" variable
+				
+				
+				// if one of the child is exact the new mappingByUser is the same as the other child
+				if (prevChildMapping == "Exact")
+				{
+					newMapping = currChildMapping;
+				}
+				else if (currChildMapping == "Exact")
+				{
+					newMapping = prevChildMapping;
+				}
+				
+				// if the 2 childs have same mappingByUser then new mappingByUser is going to be same as well
+				else if (prevChildMapping == currChildMapping)
+				{
+					newMapping = prevChildMapping;
+				}
+				
+				// if child1 = "Superset" and child2 = "Null" newMapping = "Superset"
+				else if ((prevChildMapping == "Superset") && (currChildMapping == "Null"))
+				{
+					newMapping = prevChildMapping;
+				}
+				
+				// if child2 = "Superset" and child1 = "Null" newMapping = "Superset"
+				else if ((currChildMapping == "Superset") && (prevChildMapping == "Null"))
+				{
+					newMapping = currChildMapping;
+				}
+				else
+				{
+					newMapping = "Null";
+				}
+				
+				// update the previous mappingByUser to be the new mappingByUser for more than 2 children
+				prevChildMapping = newMapping;
+				
+			}
+			
+			// return the new mappingByUser based on the children mappings
+			return newMapping;
+		}
+		else
+		{
+			if (childrenMappings.size() == 0)
+			{
+				// ???????????????????????????//
+				//System.out.println("childrenMappings.size() == 0");
+				return "Null";
+			}
+			else
+			{
+				//System.out.println("childrenMappings.size() == 1");
+				return (String) childrenMappings.elementAt(0);
+				
+			}
+		}
+	}
+	
+	/**
+	 * This function performs mappingByUser by Defn
+	 * This is done by mappingByUser parents of the nodes based on the mappings of their children.
+	 */	
+	public int mapByDefn(DefnMappingOptions dmo) //throws Exception
+	{
+		defnOptions = dmo;
+		Vertex localRoot = getLocalTreeRoot();
+		if (localRoot == null)
+		{
+			return countStat;
+		}
+		showAll(localRoot);
+		
+		Vertex root = getGlobalTreeRoot();
+		if (root == null)
+		{
+			return countStat;
+		}
+		showAll(root) ;
+		mapByDefn = true;	
+		
+		if (root != null)
+		{
+			//WGS CODE HERE
+			try{
+				out = new FileOutputStream("outputAM.dat");
+				out2 = new FileOutputStream("initial_sim.txt");
+			}catch(IOException ioe) {}
+			p = new PrintStream( out );
+			p2 = new PrintStream( out2 );
+			
+			performDefnMapping(root );
+			printToFileSourceTarget();
+			//This method has been developed for the wisconsin testcase, it creates the "sourceDesc.txt" and target files, it's not needed in the user version.
+			printToFileSourceTargetDesc();
+		
+			p.close();
+			p2.close();
+		}
+		
+		//repaint the canvas
+		repaint();
+		return countStat;
+		
+	}
+	
+	
 	/**
 	 * This function figures out the mappingByUser for the parent based on the mappingByUser of the children
 	 * using partial mappingByUser table
@@ -2934,123 +3299,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		//repaint();
 
 	}
-	/**
-	 * recursive method which performs the mappingByUser on a particular node/vertex
-	 * @param node - vertex
-	 */	
-	//######################################################
-	public void printToFileSourceTarget() {
-		
-
-		Vertex localRoot = getLocalTreeRoot();
-		Vertex globalRoot = getGlobalTreeRoot();
-		
-		if (localRoot == null || globalRoot == null)
-		{
-			return ;
-		}
-		
-
-
-		FileOutputStream out = null; // declare a file output object
-	    PrintStream p; // declare a print stream object
-		
-	    
-	    try{
-			out = new FileOutputStream("target.txt");
-		}catch(IOException ioe) {}
-		p = new PrintStream( out );
-	    
-		printVertexTree(localRoot, p);
-		p.close();
-		
-		 try{
-				out = new FileOutputStream("source.txt");
-			}catch(IOException ioe) {}
-			p = new PrintStream( out );
-		    
-			printVertexTree(globalRoot, p);
-			p.close();
-		
-		
-		
-	}
-	//######################################################
-	public void printVertexTree(Vertex v, PrintStream p) {
-		
-		if(v == null) return;
-		for (Enumeration e = v.children() ; e.hasMoreElements(); ) {
-		  Vertex temp = (Vertex)e.nextElement();
-		  printVertexTree(temp,p);
-	     //System.out.println("faisaly " + v.getName() + "--->" + temp.getName());
-	     p.println(v.getName());
-	     p.println(temp.getName());
-		}
-		
-		
 	
-	
-	}
-	//######################################################
-	/**
-	 * This method and printVertexTreeDesc() below have been created to print the source and target ontology in the sourceDesc.txt and targetDesc.txt files
-	 * The difference with the printToFileSourceTarget method is that this one print nodes in this format "desc/tname" /t = tab
-	 * the description is taken from node with getDesc() method, in the XML ontology description is equals to "exp" attribute
-	 * this method has been developed to study the wisconsin (madison dane) case only.
-	 */
-	public void printToFileSourceTargetDesc() {
-		
-
-		Vertex localRoot = getLocalTreeRoot();
-		Vertex globalRoot = getGlobalTreeRoot();
-		
-		if (localRoot == null || globalRoot == null)
-		{
-			return ;
-		}
-		
-
-
-		FileOutputStream out = null; // declare a file output object
-	    PrintStream p; // declare a print stream object
-		
-	    
-	    try{
-			out = new FileOutputStream("targetDesc.txt");
-		}catch(IOException ioe) {}
-		p = new PrintStream( out );
-	    
-		printVertexTreeDesc(localRoot, p);
-		p.close();
-		
-		 try{
-				out = new FileOutputStream("sourceDesc.txt");
-			}catch(IOException ioe) {}
-			p = new PrintStream( out );
-		    
-			printVertexTreeDesc(globalRoot, p);
-			p.close();
-		
-		
-		
-	}
-	
-	/**
-	 * See printToFileSourceTargetDesc comments, print nodes in "desc/tname" format, if desc is empty puts "9999999"
-	 */
-    public void printVertexTreeDesc(Vertex v, PrintStream p) {
-		
-		if(v == null) return;
-		String desc = v.getDesc();
-		if(desc == null || desc.equals(""))
-			  desc = "9999999";
-		p.println(desc+"\t"+v.getName());
-		for (Enumeration e = v.children() ; e.hasMoreElements(); ) {
-		  Vertex temp = (Vertex)e.nextElement();
-		  printVertexTreeDesc(temp,p);
-		}
-	}
-	//#####################################################
 	
 	public void performDefnMapping(Vertex node)
 	{
@@ -3104,61 +3353,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			
 		}
 	}
-	/**
-	 * This function recursively calls  setIsMappedByDef() of every node under the initial root
-	 * @param node
-	 */
-	public void performShowAll(Vertex node)
-	{
-		
-		for (Enumeration children = node.children();   children.hasMoreElements() ; )
-		{
-			Vertex child = (Vertex) children.nextElement();
-			child.setIsMappedByDef(false);
-			if (child.isLeaf() == false)
-				performShowAll(child);
-			
-		}
-	}	
 	
-	/**
-	 * This function recursivly sets the Vertex and its desendents to be visible or invisible
-	 * based on the int; If int is 0 the node will collapse, else it will expand
-	 *
-	 * @param targetNode node to collapse or expand
-	 * @param expandOrCollapse value indicating to expand or collapse the node
-	 */	
-	public void recurseOnNode(Vertex targetNode, int expandOrCollapse)
-	{
-		Vertex node;
-		
-		// Hide the children of expandOrContractNode children
-		for (Enumeration e =targetNode.children(); e.hasMoreElements(); )
-		{
-			node = (Vertex) e.nextElement();
-			
-			if (expandOrCollapse == 0)
-			{
-				//set the child to be invisible
-				node.setIsVisible(false);
-			} 
-			else if (expandOrCollapse == 1)
-			{
-				// set the child to be visible
-				node.setIsVisible(true);
-			}
-			if (node.getShouldCollapse() == false)
-			{
-				// if the child has its own children
-				if (!node.isLeaf())
-				{
-					// recursively set the child's child to be invisible
-					recurseOnNode(node, expandOrCollapse);
-				}
-			}
-			
-		}
-	}
 	/**
 	 * This function changes the mapByDefn variable to false and calls the repaint method
 	 */	
@@ -3167,49 +3362,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		//	JOptionPane.showMessageDialog(null,"hirra hurrah","title", JOptionPane.PLAIN_MESSAGE);	
 		mapByDefnShow = true;
 		repaint();
-	}		
-	/**
-	 * This function selects all the nodes between the first and second argument
-	 *
-	 * @param y1	the first y location of the mouseclick
-	 * @param y2	the second y location of the mouseclick
-	 * @param x 	the x location of the mousclick (used to determine if we should use global or local)
-	 */
-	public void selectNodes(int y1, int y2, int x)
-	{
-		int temp;
-		Vertex root, node;
-		
-		// if the user clicked on the left half of the screen then get the global root,
-		// get the local root
-		if (x < (canvasWidth/2)) root = getGlobalTreeRoot();
-		else root = getLocalTreeRoot();
-		
-		if (root == null) return;
-		
-		if (y1 > y2){
-			// swap y1 and y2
-			temp = y1;
-			y1 = y2-25;//25 has to be subtracted, to allow it to select the node 
-			y2 = temp;
-		}
-		
-		globalNodesSelected.clear();
-		localNodesSelected.clear();
-		
-		for (Enumeration e = root.preorderEnumeration(); e.hasMoreElements() ;){
-			// get the node
-			node = (Vertex) e.nextElement();
-			//TODO: decide if node.isVisible() should be used or not here... i have removed it from the 
-			//if condition given below
-			if (node.getY() >= y1 && node.getY() <= y2){
-				setNodeSelected(node,true);
-				if ((node.getNodeType() == GSM.SOURCENODE))
-					globalNodesSelected.addElement(node);
-				else if ((node.getNodeType() == GSM.TARGETNODE))
-					localNodesSelected.addElement(node);
-			}
-		}
 	}		
 	
 	public void setDisplayedLines(int lines) {
@@ -3224,24 +3376,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		displayedSimilarity = val;
 	}
 	
-	/**
-	 * This function sets the global tree root
-	 *
-	 * @param node global tree root of type Vertex
-	 */
-	public void setGlobalTreeRoot(Vertex node)
-	{
-		globalTreeRoot = node;
-	}
-	/**
-	 * This function sets the local tree root
-	 *
-	 * @param node local tree root of type Vertex
-	 */
-	public void setLocalTreeRoot(Vertex node)
-	{
-		localTreeRoot = node;
-	}
+	
 	public void setMapByDefn(boolean flag)
 	{
 		mapByDefn = flag ;
@@ -3258,37 +3393,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		// repaint the canvas based on the mapByUser
 		repaint();
 	}
-	/**
-	 * @param node
-	 * @param selected
-	 */
-	public void setNodeSelected(Vertex node, boolean selected){
-		node.setIsSelected(selected);
-		if(selected){
-			((VertexDescriptionPane)(myUI.getDescriptionPanel())).fillDescription(node);
-		}else{
-			((VertexDescriptionPane)(myUI.getDescriptionPanel())).clearDescription(node);
-		}
-	}
-	/**
-	 * This function sets the oldY
-	 *
-	 * @param y 	previous y location on canvas
-	 */
-	public void setOldY(int y)
-	{
-		oldY = y;
-	}
-
-	/**
-	 * This function sets the rightClickedNode
-	 *
-	 * @param node 	right clicked vertex
-	 */
-	public void setRightClickedNode(Vertex node)
-	{
-		rightClickedNode = node;
-	}
+	
+	
 	/**
 	 * @param root
 	 */

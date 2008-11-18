@@ -37,8 +37,10 @@ public class Alignment
         relation = "=";
     }
 
-    public Alignment() {
+    public Alignment(double s) {
 		//This is a fake contructor to use an alignment as a container for sim and relation, to move both values between methods
+    	similarity = s;
+    	relation = EQUIVALENCE;
 	}
 
 	public Node getEntity1()
@@ -108,5 +110,9 @@ public class Alignment
                 }
             }
         }
+    }
+    
+    public String toString() {
+    	return "("+entity1+" "+entity2+" "+similarity+")";
     }
 }

@@ -22,9 +22,16 @@ public class Colors
 	//public static Color dividers = new Color(187,187,187);
 	public static Color dividers = new Color(0,0,0);
 	
-	
 	// vertex selection color
 	public static Color selected = new Color (153,153,255); 
+	
+	public static Color mapped = new Color(240,128,128);
+	
+	// mapping line color
+	public static Color lineColor = new Color (255,0,0);
+	
+	//OLD COLORS 
+	
 	
 	// vertex mapped color
 	public static Color mappedByUser = new Color (153,0,255); // manual map
@@ -41,8 +48,7 @@ public class Colors
 	// vertex mapped by context and selected color
 	public static Color mappedByContextAndSelected = new Color(25,25,25);
 
-	// mapping line color
-	public static Color lineColor = new Color (255,0,0);
+
 	
 	// mapped line color (after mapping is done)
 	public static Color mappedByUserLineColor = new Color(255,255,0);

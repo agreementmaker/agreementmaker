@@ -41,11 +41,21 @@ public class AlignmentMatrix {
     	return columns;
     }
    
-
+    public Object clone() {
+    	
+    		AlignmentMatrix m = this;
+    		AlignmentMatrix n = new AlignmentMatrix(m.getRows(), m.getColumns());
+    		for(int i=0; i< m.getRows(); i++) {
+    			for(int j = 0; j < m.getColumns(); j++) {
+    				n.set(i,j,m.get(i,j));
+    			}
+    		}
+    		return n;
+    }
     
     
     /**GENERAL FUNCTIONS FOR MATRIX NOT NEEDED NOW BUT MAY BE USEFUL IN THE FUTUR*/
-
+    
     // swap rows i and j
     private void swap(int i, int j) {
     	Alignment[] temp = data[i];
@@ -62,7 +72,7 @@ public class AlignmentMatrix {
         return A;
     }
 
-    // return C = A + B
+    // return C = A + B;
     public AlignmentMatrix plus(AlignmentMatrix B) {
         AlignmentMatrix A = this;
         if (B.rows != A.rows || B.columns != A.columns) throw new RuntimeException("Illegal matrix dimensions.");
@@ -106,12 +116,20 @@ public class AlignmentMatrix {
                 	C.data[i][j].setSimilarity(A.data[i][j].getSimilarity()  * B.data[i][j].getSimilarity()) ;
         return C;
     }
-
+    
     // print matrix to standard output
     public void show() {
         for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) 
-                System.out.printf("%9.4f ", data[i][j]);
+        	System.out.println("**********************ROW "+i+" ************************");
+            for (int j = 0; j < columns; j++) {
+            	Alignment a = get(i,j);
+            	if(a == null) {
+            		System.out.println("Break for null alignment"+a);
+            		break;
+            	}
+            	System.out.println(j+": "+get(i,j));
+            }
+            	
             System.out.println();
         }
     }
