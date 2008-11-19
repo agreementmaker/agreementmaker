@@ -70,9 +70,15 @@ public class MatchersTablePanel extends JPanel {
         TRelColumn.setCellRenderer(renderer);
         
         TableColumn inputColumn = table.getColumnModel().getColumn(MyTableModel.INPUTMATCHERS);
-        MyCellEditor mc = new MyCellEditor();
+        InputMatchersEditor mc = new InputMatchersEditor();
         inputColumn.setCellEditor(mc);
         inputColumn.setCellRenderer(renderer);
+        
+        ColorRenderer cr = new ColorRenderer(true);
+        ColorEditor ce = new ColorEditor();
+        TableColumn colorColumn = table.getColumnModel().getColumn(MyTableModel.COLOR);
+        colorColumn.setCellEditor(ce);
+        colorColumn.setCellRenderer(cr);
         
         //STATICALLY ADD THE FIRST MATCHER THAT IS THE USER MANUAL MATCHER
         //is important to add this here so that initColumns can assign the best width to columns
@@ -138,7 +144,7 @@ public class MatchersTablePanel extends JPanel {
     public void addMatcher(AbstractMatcher a) {
     	Core.getInstance().addMatcherInstance(a);
     	TableColumn inputColumn = table.getColumnModel().getColumn(MyTableModel.INPUTMATCHERS);
-    	MyCellEditor mc = (MyCellEditor)inputColumn.getCellEditor();
+    	InputMatchersEditor mc = (InputMatchersEditor)inputColumn.getCellEditor();
     	mc.addEditor(a);
     	((AbstractTableModel)table.getModel()).fireTableRowsInserted(a.getIndex(), a.getIndex());
     }
@@ -146,7 +152,7 @@ public class MatchersTablePanel extends JPanel {
     public void removeMatcher(AbstractMatcher a) {
     	Core.getInstance().removeMatcher(a);
     	TableColumn inputColumn = table.getColumnModel().getColumn(MyTableModel.INPUTMATCHERS);
-    	MyCellEditor mc = (MyCellEditor)inputColumn.getCellEditor();
+    	InputMatchersEditor mc = (InputMatchersEditor)inputColumn.getCellEditor();
     	mc.removeEditor(a);
     	((AbstractTableModel)table.getModel()).fireTableRowsDeleted(a.getIndex(), a.getIndex());
     }

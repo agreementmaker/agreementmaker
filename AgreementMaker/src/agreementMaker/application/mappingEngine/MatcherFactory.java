@@ -1,11 +1,14 @@
 package agreementMaker.application.mappingEngine;
 
+import java.awt.Color;
+
 import agreementMaker.application.mappingEngine.fakeMatchers.AllOneMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.AllZeroMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.CopyMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.EqualsMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.RandomMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.UserManualMatcher;
+import agreementMaker.userInterface.Colors;
 
 public class MatcherFactory {
 	
@@ -74,7 +77,15 @@ public class MatcherFactory {
 		else {
 			throw new RuntimeException("DEVELOPMENT ERROR: there is a matcher in the list with no corrisponding index in getMatcherInstance");
 		}
+		Color color = getColorFromIndex(instanceIndex);
+		a.setColor(color);
 		return a;
+	}
+
+	private static Color getColorFromIndex(int instanceIndex) {
+		// TODO there should be an array of predefined colors
+		int arrayIndex = (int) (instanceIndex % Colors.matchersColors.length); //this is the module operation, we need to do this because we may have more matchers then the possible colors in the array
+		return Colors.matchersColors[arrayIndex];
 	}
 
 	public static boolean isTheUserMatcher(AbstractMatcher toBeDeleted) {

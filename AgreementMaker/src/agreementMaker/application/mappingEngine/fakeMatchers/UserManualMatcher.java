@@ -1,5 +1,6 @@
 package agreementMaker.application.mappingEngine.fakeMatchers;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import agreementMaker.application.Core;
@@ -8,6 +9,7 @@ import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.AlignmentMatrix;
 import agreementMaker.application.ontology.Node;
 import agreementMaker.application.ontology.Ontology;
+import agreementMaker.userInterface.Colors;
 
 /**This class is used to represent the user manual matching
  * this matching will not be part of the matcher list in the combo box
@@ -25,6 +27,7 @@ public class UserManualMatcher extends AbstractMatcher {
 	
 	public UserManualMatcher() {
 		super(THEFIRST, USERMANUALMATCHINGNAME);
+		color = Colors.matchersColors[THEFIRST];
 		isAutomatic = false;
 		needsParam = false;
 		isShown = true;
@@ -36,6 +39,7 @@ public class UserManualMatcher extends AbstractMatcher {
 		alignProp = true;
 		minInputMatchers = 0;
 		maxInputMatchers = 0;
+		
 	}
 	
 	/**Set all alignment sim to 0*/

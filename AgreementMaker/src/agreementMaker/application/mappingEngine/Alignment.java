@@ -11,7 +11,12 @@ public class Alignment
     private double similarity = 0;
     private String relation = null;
     
+    //THE FONT USED IN THE CANVAS MUST BE A UNICODE FONT TO VIEW THIS SPECIAL CHARS
     public final static String EQUIVALENCE = "=";
+    public final static String SUBSET = "\u2282";
+    public final static String SUPERSET = "\u2283";
+    public final static String SUBSETEQUAL = "\u2286";
+    public final static String SUPERSETEQUAL = "\u2287";
 
     public Alignment(Node e1, Node e2, double sim, String r)
     {

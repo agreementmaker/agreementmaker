@@ -6,10 +6,12 @@ package agreementMaker.userInterface;
 
 import java.io.*;
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -81,9 +83,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private int 				countStat = 0;
 	private JMenuItem 	desc;						// desc JMenuItem
 	private JMenuItem 	exact;               		// exact mappingByUser
-	private Vector 		globalNodesSelected;			// the global nodes which are selected
+
 	private Vertex 		globalTreeRoot;				// root of global tree
-	private Vector 		localNodesSelected;      	// the local nodes which are selected
 	private Vertex 		localTreeRoot;				// root of local tree
 	private boolean		mapByContext;				// boolean indicating the mappingByUser is done by context
 	private boolean 	mapByDefn;				// boolean indicating the mappingByUser is done by defn Muhamamd
@@ -107,6 +108,11 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private DefnMappingOptions defnOptions; 
 	/**Reference to the core istance, it's set in the canvas constructor, we could also avoid to keep it, but then we should always get it via Core.getIstance();*/
 	private Core core;
+	
+	//Structures to manage selection and highlighting
+	private Vector 		localNodesSelected;      	// the local nodes which are selected
+	private Vector 		globalNodesSelected;			// the global nodes which are selected
+	private Vector		highlightedNodes; //All global and local nodes to be highlighted, that means that are matched with any selected nodes
 	
 	/*******************************************************************************************
 	 * Default constructor for myCanvas class.
@@ -1287,30 +1293,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			} // end of if the node is mapped
 		} // end of enumeration of all nodes
 	}		
-	/**
-	 * This function draws in the mappingByUser lines between vertices
-	 *
-	 * @param graphic
-	 */	
-	public void displayMappingLines(Graphics graphic)
-	{
-		Vertex root = getGlobalTreeRoot();
-		
-		if ((root != null) && (mapByUser == true))
-		{
-			displayManualMappingLines(graphic,root);
-		}
-		if ((root != null) && (mapByContext == true))
-		{
-			displayContextMappingLines(graphic,root);
-		}
-		if ((root != null) && (mapByDefn == true) && (mapByDefnShow == true) )
-		{
-			//JOptionPane.showMessageDialog(null,"desc","title", JOptionPane.PLAIN_MESSAGE);	
-			displayDefnMappingLines(graphic,root);
-		}
-		//Muhammad
-	}
+
 	/**
 	 * This function displays the tree. This function is called from paint method.
 	 *
@@ -1347,7 +1330,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		graphic.drawString("Local (Target) Ontology",(int)(canvasWidth/2)+10, 15);
 		
 		graphic.setColor(Colors.foreground);
-		graphic.setFont(new Font("Arial",Font.PLAIN,12));
+		graphic.setFont(new Font("Lucida S",Font.PLAIN,12));
 		
 		
 		if (isGlobal == true)
@@ -1379,10 +1362,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			node = (Vertex) e.nextElement();
 			//System.out.println("Name: " +node.getName()+".");
 			//System.out.println("Key: " + node.getID());
-			if (node.getDesc() == "" || node.getDesc() == " ")
-			{
-				//System.out.println("Desc: NONE");
-			}
 			//else
 			//System.out.println("Desc: " +node.getDesc()+".");
 			name = node.getName();
@@ -1406,36 +1385,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			if (node.isVisible() == true)
 			{
 				//System.out.println(	node.getIsMappedByDef() + "  "  + mapByDefn );
-				if ((node.getIsMapped() == true) && (mapByUser == true))
-				{
-					//System.out.println("*****************8IS MAPPED****************8888888");
-					// change the color to node mapped color
-					graphic.setColor(Colors.mappedByUser);
-					graphic.fillRoundRect(node.getX(),node.getY(),node.getWidth(),node.getHeight(), node.getArcWidth(),node.getArcHeight());
-				}
-				if ((node.getIsSelected() == true) && (node.getIsMappedByContext() == true) && (mapByContext == true))
-				{
-					// change the color to node selection color
-					graphic.setColor(Colors.mappedByContextAndSelected);
-					graphic.fillRoundRect(node.getX(),node.getY(),node.getWidth(),node.getHeight(), node.getArcWidth(),node.getArcHeight());                                                                
-				} 
-				else if ((node.getIsMappedByContext() == true) && (mapByContext == true))
-				{
-					graphic.setColor(Colors.mappedByContext);
-					graphic.fillRoundRect(node.getX(),node.getY(),node.getWidth(),node.getHeight(), node.getArcWidth(),node.getArcHeight());
-				}
-				else if ((node.getIsMappedByDef() == true) && (mapByDefn == true) && mapByDefnShow == true )
-				{
-					graphic.setColor(Colors.mappedByDefn);
-					graphic.fillRoundRect(node.getX(),node.getY(),node.getWidth(),node.getHeight(), node.getArcWidth(),node.getArcHeight());
-				}
-				if ((node.getIsSelected() == true) && (node.getIsMapped() == true) && (mapByUser == true))
-				{
-					// change the color to node selection color
-					graphic.setColor(Colors.mappedByUserAndSelected);
-					graphic.fillRoundRect(node.getX(),node.getY(),node.getWidth(),node.getHeight(), node.getArcWidth(),node.getArcHeight());                                                                
-				}
-				else if ((node.getIsSelected() == true) && ((node.getIsMappedByContext() == false) || (mapByContext == false)) && (node.getIsMapped() == false))
+				if (node.getIsSelected() == true) 
 				{
 					// change the color to node selection color
 					graphic.setColor(Colors.selected);
@@ -1450,6 +1400,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				graphic.drawRoundRect(x,y,width,height, arcWidth, arcHeight);
 				
 				// display the node name inside the round rectangle
+				graphic.setFont(new Font("Lucida Sans Regular", Font.PLAIN, 12));
 				graphic.drawString(node.getName(),x+5,y+15);
 				
 				// keep track of the previous y to display the next obj
@@ -2183,7 +2134,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				displayTree(graphic, false);
 			
 			if ((core.sourceIsLoaded() ) && (core.targetIsLoaded() )){
-				displayAllMatchings(graphic);
+				highlightedNodes = new Vector();
+				displayAllMatchings(graphic);//it fills up highlightedNodes
+				displayHighlightedVertex(graphic);
 				//Graphics2D graphic2d = (Graphics2D) graphic;
 				//displayHighlightedMappingLines(graphic2d, getGlobalTreeRoot());
 			}
@@ -2464,15 +2417,15 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	{
 		rightClickedNode = node;
 	}
-	//METHODS ADDED BY FLAVIO
+//********************************************METHODS ADDED BY FLAVIO****************************************************************************
 	
 	/**
 	 * Scan the Matchers Instances to display all classes and properties alignmentSet
 	 * dysplay a matcher only if it's isShown();
 	 */
 	public void displayAllMatchings(Graphics g) {
+
 		ArrayList<AbstractMatcher> alist = core.getMatcherInstances();
-		g.setColor(Colors.mappedByDefnLineColor); //TODO we could have each algo with his own color
 		if(alist != null) {
 			Iterator<AbstractMatcher> it = alist.iterator();
 			AbstractMatcher a = null;
@@ -2480,29 +2433,29 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				a = it.next();
 				if(a.isShown()) {
 					if(a.areClassesAligned()) {
-						displayAlignmentSet(g, a.getClassAlignmentSet());
+						displayAlignmentSet(g, a, a.getClassAlignmentSet());
 						//a.getClassAlignmentSet().show();
 					}
 					if(a.arePropertiesAligned()) {
-						displayAlignmentSet(g, a.getPropertyAlignmentSet());
+						displayAlignmentSet(g, a, a.getPropertyAlignmentSet());
 					}
 				}
 			}
 		}
 	}
 	
-	private void displayAlignmentSet(Graphics g, AlignmentSet aset) {
+	private void displayAlignmentSet(Graphics g, AbstractMatcher matcher, AlignmentSet aset) {
 		if(aset != null) {
 			Alignment a = null;
 			for(int i = 0; i < aset.size(); i++) {
 				a = aset.getAlignment(i); 
-				displayAlignment(g,a);
+				displayAlignment(g, matcher, a);
 			}
 		}
 		
 	}
 	
-	private void displayAlignment(Graphics graphic, Alignment a) {
+	private void displayAlignment(Graphics graphic, AbstractMatcher m, Alignment a) {
 		Vertex source, target;
 		ArrayList<Vertex> sourceVertexes = a.getEntity1().getVertexList();
 		ArrayList<Vertex> targetVertexes = a.getEntity2().getVertexList();
@@ -2515,7 +2468,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				while(ittarget.hasNext()) {
 					target = ittarget.next();
 					if(target.isVisible()) {
-						displayLine(graphic, a, source, target);	
+						displayLine(graphic,m, a, source, target);	
 					}
 				}
 			}
@@ -2523,16 +2476,56 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		}
 	}
 	
-	private void displayLine(Graphics graphic, Alignment a, Vertex source, Vertex target) {
-		
+	private void displayLine(Graphics graphic, AbstractMatcher m, Alignment a, Vertex source, Vertex target) {
+		//DRAW THE MAPPING
+		Color color = m.getColor();
+		if(source.getIsSelected()) {
+			highlightedNodes.add(target);
+			color = Colors.selected;
+		}
+		else if(target.getIsSelected()) {
+			highlightedNodes.add(source);
+			color = Colors.selected;
+		}
+			
+		graphic.setColor(color);
 		int x1 = source.getX2(); //starting point of the line is the end of the left vertex
 		int y1 = (source.getY()+source.getY2())/2; //from the middle of the left vertex
 		int x2 = target.getX(); //ending point of the line is the beginning of the right vertex
 		int y2 = (target.getY()+target.getY2())/2;//to the middle of the right vertex
 		graphic.drawLine(x1,y1,x2,y2);
-		//System.out.println("Printing a line "+x1+" "+y1+" "+x2+" "+y2);
-		//graphic.drawString(node.getDefnMapping().getMappingValue(),(x1+x2)/2,((y1+y2)/2) -5);
+
+
+		graphic.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		graphic.drawString(a.getRelation()+" "+Utility.getNoFloatPercentFromDouble(a.getSimilarity()),(x1+x2)/2,((y1+y2)/2) -5);	
+		//FILL THE VERTEX NODE TO HIGHLIGHT IT, this will cancel the name of the vertex and the shape so we have to rewrite both
+		//Same color of the line
+		graphic.fillRoundRect(source.getX(),source.getY(),source.getWidth(),source.getHeight(), source.getArcWidth(),source.getArcHeight());
+		graphic.fillRoundRect(target.getX(),target.getY(),target.getWidth(),target.getHeight(), target.getArcWidth(),target.getArcHeight());
+		
+		// change the color to foreground color to
+		graphic.setColor(Colors.foreground);
+		//Draw shape
+		graphic.drawRoundRect(source.getX(),source.getY(),source.getWidth(),source.getHeight(), source.getArcWidth(),source.getArcHeight());
+		graphic.drawRoundRect(target.getX(),target.getY(),target.getWidth(),target.getHeight(), target.getArcWidth(),target.getArcHeight());
+		// display the node name inside the round rectangle
+		
+		graphic.drawString(source.getName(),source.getX()+5,source.getY()+15);
+		graphic.drawString(target.getName(),target.getX()+5,target.getY()+15);
+	}
+	
+	public void displayHighlightedVertex(Graphics graphic) {
+		Vertex node;
+		for(int i = 0; i < highlightedNodes.size(); i++) {
+			node = (Vertex)highlightedNodes.get(i);
+			graphic.setColor(Colors.selected);
+			graphic.fillRoundRect(node.getX(),node.getY(),node.getWidth(),node.getHeight(), node.getArcWidth(),node.getArcHeight());
+			graphic.setColor(Colors.foreground);
+			graphic.drawRoundRect(node.getX(),node.getY(),node.getWidth(),node.getHeight(), node.getArcWidth(),node.getArcHeight());
+			graphic.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+			graphic.drawString(node.getName(),node.getX()+5,node.getY()+15);
+		}
+		
 	}
 	
 	//****************************************IN  THE FUTURE WE WILL CANCEL THIS METHODS FOR SURE ALSO SOME OTHERS****************************

@@ -11,11 +11,11 @@ import javax.swing.table.TableCellEditor;
 
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 
-public class MyCellEditor extends AbstractCellEditor implements TableCellEditor{
+public class InputMatchersEditor extends AbstractCellEditor implements TableCellEditor{
 	
 	private HashMap<Integer, DefaultCellEditor> rowEditors;
 	
-	public MyCellEditor() {
+	public InputMatchersEditor() {
 		super();
 		rowEditors = new HashMap<Integer, DefaultCellEditor>();
 	}

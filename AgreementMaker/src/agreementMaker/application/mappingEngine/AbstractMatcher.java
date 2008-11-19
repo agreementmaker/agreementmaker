@@ -7,6 +7,7 @@ import agreementMaker.Utility;
 import agreementMaker.application.Core;
 import agreementMaker.application.ontology.Node;
 import agreementMaker.application.ontology.Ontology;
+import java.awt.Color;
 
 public abstract class AbstractMatcher implements Matcher{
 	
@@ -62,6 +63,8 @@ public abstract class AbstractMatcher implements Matcher{
 	protected int maxInputMatchers;
 	/**Keeps info about reference evaluation of the matcher. is null until the algorithm gets evaluated*/
 	protected ResultData refEvaluation;
+	/**Graphical color for nodes mapped by this matcher and alignments, this value is set by the MatcherFactory and modified  by the table so a developer just have to pass it as aparameter for the constructor*/
+	protected Color color; 
 	
 	
 	public AbstractMatcher(int key, String theName) {
@@ -567,6 +570,16 @@ public abstract class AbstractMatcher implements Matcher{
 	
 	public int hashCode() {
 		return index;
+	}
+
+	
+	public Color getColor() {
+		return color;
+	}
+	
+
+	public void setColor(Color color) {
+		this.color = color;
 	}
 
 

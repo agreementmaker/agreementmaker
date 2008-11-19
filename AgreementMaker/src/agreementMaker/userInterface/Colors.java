@@ -30,6 +30,17 @@ public class Colors
 	// mapping line color
 	public static Color lineColor = new Color (255,0,0);
 	
+	public static Color[] matchersColors = {
+		Color.GREEN,
+		Color.MAGENTA,
+		Color.ORANGE,
+		Color.PINK,
+		Color.YELLOW,
+		Color.CYAN,
+	};
+	
+	
+	
 	//OLD COLORS 
 	
 	

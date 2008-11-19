@@ -8,6 +8,7 @@ import agreementMaker.Utility;
 import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.userInterface.UI;
+import java.awt.Color;
 
 public class MyTableModel extends AbstractTableModel {
 		
@@ -34,6 +35,7 @@ public class MyTableModel extends AbstractTableModel {
 	public final static int PRECISION = 13;
 	public final static int RECALL = 14;
 	public final static int FMEASURE = 15;	
+	public final static int COLOR = 16;	
 	
 	public String[] columnNames = {"Index",
 					                                        "Name",
@@ -50,7 +52,8 @@ public class MyTableModel extends AbstractTableModel {
 					                                        "Reference",
 					                                        "Precision",
 					                                        "Recall",
-					                                        "F-Measure"
+					                                        "F-Measure",
+					                                        "Color"
 					                                        };
         
 	public ArrayList<AbstractMatcher> data =  Core.getInstance().getMatcherInstances();
@@ -72,6 +75,7 @@ public class MyTableModel extends AbstractTableModel {
                 new Double(100),
                 new Double(100),
                 new Double(100),
+                Color.pink
                 };
 
         public MyTableModel() {
@@ -141,6 +145,8 @@ public class MyTableModel extends AbstractTableModel {
             		if(!a.isRefEvaluated())
             			return NONE;
             		else return a.getRefEvaluation().getFmeasure();
+            	else if(col == COLOR )
+            		return a.getColor();
             	else return NONE;
         	}
         	catch(Exception e) {
@@ -200,6 +206,8 @@ public class MyTableModel extends AbstractTableModel {
         		return false;
         	else if(col == FMEASURE)
         		return false;
+        	else if(col == COLOR)
+        		return true;
         	else return false;
         }
 
@@ -268,6 +276,11 @@ public class MyTableModel extends AbstractTableModel {
             		a.setAlignProp((Boolean)value);
             		core.matchAndUpdateMatchers(a);
             		update = ALLROWUPDATE;
+            		ui.redisplayCanvas();
+            	}
+            	else if(col == COLOR) {
+            		a.setColor((Color)value);
+            		update = ROWUPDATE;
             		ui.redisplayCanvas();
             	}
         	}
