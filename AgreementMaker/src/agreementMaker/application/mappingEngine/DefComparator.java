@@ -23,7 +23,8 @@ public class DefComparator
     
     //*************************************
     // removes non-char from the string
-    private String clean(String s){
+/*
+	private String clean(String s){
         
        String result = "";
      for(int i=0; i<s.length(); i++)
@@ -32,9 +33,11 @@ public class DefComparator
             
      return result;   
     }
+    
+  */
     //  *************************************
     // Seperates the following strings (s-s to s s, or s_s to s s, or helloWorld to hello World)
-    
+/*    
     private String treatString(String s) {
     	String s2 = s.replace("_"," ");
     	s2 = s2.replace("-"," ");
@@ -49,7 +52,9 @@ public class DefComparator
     	
     	return s2;
     }
+ */
     //***************************************
+	/*
     public float compare(String d1, String d2){
     
     if(d1.equalsIgnoreCase(d2)) return 1;
@@ -88,8 +93,8 @@ public class DefComparator
         
      for(int i=0; i< d2Tokens.size(); i++)
         System.out.println(d2Tokens.get(i));
-
-     */
+	 * /
+     
     
     String [] def1 = new String[ d1Tokens.size()];
     String [] def2 = new String[d2Tokens.size()];
@@ -120,6 +125,8 @@ public class DefComparator
     return ((float)counter /((float) (def1.length + def2.length )/2.0f));
      
     }
+   */
+   /*
     //**********************
     private boolean isNonContent(String s){
     
@@ -140,6 +147,7 @@ public class DefComparator
       return false;
        
     }
+  */
     //*******************
    public float getDictSimilarity(String w1, String w2){
         
@@ -149,20 +157,22 @@ public class DefComparator
 		return 0 ; 
 		}
 */
-	    w1 = treatString(w1);
-	    w2 = treatString(w2);
+		// TODO: Comment this function out.
+	    //w1 = treatString(w1);
+	   // w2 = treatString(w2);
 	    
         if(w1.equalsIgnoreCase(w2)) return 1;
         
-        float nounSimilarity = wordnetNouns(w1,w2);
-        float verbSimilarity = wordnetVerbs(w1,w2);
+        //float nounSimilarity = wordnetNouns(w1,w2);
+        //float verbSimilarity = wordnetVerbs(w1,w2);
         
-        return nounSimilarity > verbSimilarity ? nounSimilarity : verbSimilarity; 
-        
+        //return nounSimilarity > verbSimilarity ? nounSimilarity : verbSimilarity; 
+        return 0f;
         //return compare(clean(wordnet(w1)),clean(wordnet(w2)));
         
     }
    //***************************************
+  /*
    private float getSensesComparison(IndexWord word1, IndexWord word2){
      Synset[] senses1;
       Synset[] senses2;
@@ -206,6 +216,7 @@ public class DefComparator
     //return result;    
     return results[senses1.length * senses2.length-1];
     }
+  */
     //*******************
    /* private int min(int x, int y){
     
@@ -213,7 +224,8 @@ public class DefComparator
     
     }*/
     //*********************
-    private boolean notRepeated(String word,ArrayList sentence){
+  /*
+  private boolean notRepeated(String word,ArrayList sentence){
         
      for(int i=0; i<sentence.size(); i++)
               if(word.equalsIgnoreCase((String)sentence.get(i)))
@@ -222,7 +234,9 @@ public class DefComparator
      
      return true;
     }
+   */
 	//*********************
+  /*
     private void printStringArray(String[] s){
         
    //    System.out.println("");
@@ -231,7 +245,9 @@ public class DefComparator
 	   //System.out.print(s[i] + " " );
             
     }
+    */
     //**********************
+  /*
     public float wordnetNouns(String theWord, String theWord2){
         
       
@@ -257,6 +273,6 @@ public class DefComparator
      
      return getSensesComparison(word1, word2);
     }    
-    
+    */
     
 }
