@@ -2962,7 +2962,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				 
 
 				for(float i=0; i<n; i++) {
-					result += factor *  (n -i) * d.compare(ts.nextToken(),tt.nextToken());
+					//TODO: uncomment the next line in order to finish cleaning up code (Cosmin nov20,08)
+					//result += factor *  (n -i) * d.compare(ts.nextToken(),tt.nextToken());
 				}				
 			}
 			return result;
@@ -3007,7 +3008,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				 tt = new StringTokenizer(T,"| ");					
 				 float max=0;
 				 for(int j=0; j<occurs_t; j++) {
-					 float measure = d.compare( st1, tt.nextToken()  );
+					//TODO: uncomment the next line in order to finish cleaning up code (Cosmin nov20,08)
+					 //float measure = d.compare( st1, tt.nextToken()  );
+					 float measure = 0f;
 				     if (measure > max) max = measure;
 				 }
 						
@@ -3083,8 +3086,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				//	NDHn = d.getDictSimilarity(SNodeName + SNodeDesc + SNodeHN, TNodeName + TNodeDesc + TNodeHN);   
 				//	NDHd = d.getDictSimilarity(SNodeName + SNodeDesc + SNodeHD, TNodeName + TNodeDesc + TNodeHD);   
 			}else{
-				//Base 
-				names = d.compare(SNodeName, TNodeName);
+				//Base
+				
+				//TODO: uncomment the next line in order to finish cleaning up code (Cosmin nov20,08)
+				//names = d.compare(SNodeName, TNodeName);
 				
 				// Base special
 				//names = d.compare(SNodeDesc, TNodeDesc);
