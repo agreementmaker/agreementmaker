@@ -146,6 +146,7 @@ public class UI {
 		//TODO: Add tabbed panes here for displaying the properties and descriptions		
 		scrollPane = new JScrollPane(panelCanvas);
 		scrollPane.setWheelScrollingEnabled(true);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(20);
 		//scrollPane.setPreferredSize(new Dimension((int)scrollPane.getSize().getHeight(), 5));
 		
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, null);
@@ -215,7 +216,7 @@ public class UI {
 			//Set the tree in the canvas
 			getCanvas().setTree(t);
 			if(Core.getInstance().ontologiesLoaded()) {
-				//Ogni volta che ho caricato un ontologia e le ho entrambe, devo resettare o settare se è la prima volta, tutto lo schema dei matchings
+				//Ogni volta che ho caricato un ontologia e le ho entrambe, devo resettare o settare se ï¿½ la prima volta, tutto lo schema dei matchings
 				matcherControlPanel.resetMatchings();
 			}
 		}catch(Exception ex){
