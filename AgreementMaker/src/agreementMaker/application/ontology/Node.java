@@ -2,6 +2,8 @@ package agreementMaker.application.ontology;
 
 import java.util.ArrayList;
 
+import org.json.XML;
+
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Resource;
 import agreementMaker.userInterface.vertex.*;
@@ -133,6 +135,14 @@ public class Node {
 	public void setIndex(int index) {
 		this.index = index;
 	}
+	/**Owl classes or all rdf nodes or all xml nodes their are considered classes, so nodes in the first of the two trees*/
+	public boolean isClass() {
+		return type.equals(OWLCLASS) || type.equals(RDFNODE) ||  type.equals(XMLNODE);
+	}
+	
+	public boolean isProp() {
+		return type.equals(OWLPROPERTY);
+	}
 	
 	public boolean equals(Object o) {
 		if(o instanceof Node) {
@@ -145,6 +155,7 @@ public class Node {
 	public int hashCode() {
 		return index;
 	}
+	
 	
 	public String toString() {
 		return index+" "+localName;

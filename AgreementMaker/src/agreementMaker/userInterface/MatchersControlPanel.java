@@ -12,6 +12,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -37,6 +38,7 @@ import agreementMaker.Utility;
 import agreementMaker.agreementDocument.DocumentProducer;
 import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
+import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.MatcherFactory;
 import agreementMaker.application.mappingEngine.fakeMatchers.UserManualMatcher;
 import agreementMaker.userInterface.table.MatchersTable;
@@ -163,13 +165,14 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				for(int i = 0; i< deleteList.size(); i++) {
 					toBeDeleted = deleteList.get(i);
 					if(MatcherFactory.isTheUserMatcher(toBeDeleted)) {
-						//DO NOTHING YOU CAN'T DELETE THE USER MATCHING
-						Utility.dysplayErrorPane(UserManualMatcher.USERMANUALMATCHINGNAME+" can't be deleted.\nUse the clear button to delete manual alignments.", null);
+						//YOU CAN'T DELETE THE USER MATCHING just clear the matchings previusly created
+						Utility.displayMessagePane(UserManualMatcher.USERMANUALMATCHINGNAME+" can't be deleted.\nOnly alignments will be cleared.", null);
+						toBeDeleted.match();//reinitialize the user matching as an empty one
 					}
 					else {
 						matchersTablePanel.removeMatcher(toBeDeleted);
-						ui.redisplayCanvas();
 					}
+					ui.redisplayCanvas();
 				}
 			}
 		}
@@ -222,6 +225,26 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				matchersTablePanel.addMatcher(currentMatcher);
 				ui.redisplayCanvas();
 				System.out.println("yeeei");
+			}
+		}
+	}
+	
+	public MatchersTablePanel getTablePanel() {
+		return matchersTablePanel;
+	}
+	
+	public void userMatching(HashSet<Alignment> alignments) {
+		if(alignments.size()>0) {
+			int[] rows = matchersTablePanel.getTable().getSelectedRows();
+			if(rows == null || rows.length == 0) {
+				Utility.dysplayErrorPane("You have to select at least one of the matchers in the table below in the control panel to add alignments to it manually.\nYou can always select the default User Manual Matcher.",null );
+			}
+			else {
+				for(int i=0; i < rows.length;i++) {
+					Core.getInstance().performUserMatching(rows[i], alignments);
+					
+				}
+				ui.redisplayCanvas();
 			}
 		}
 	}

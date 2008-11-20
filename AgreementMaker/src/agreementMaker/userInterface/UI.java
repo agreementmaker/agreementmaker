@@ -183,7 +183,9 @@ public class UI {
 		this.panelDesc = jPanel;
 	}
 
-
+	public MatchersControlPanel getControlPanel() {
+		return matcherControlPanel;
+	}
 
 	/** This function will open a file
 	 *  Attention syntax and language are placed differently from other functions.

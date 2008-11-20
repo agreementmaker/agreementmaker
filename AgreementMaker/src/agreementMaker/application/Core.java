@@ -1,8 +1,11 @@
 package agreementMaker.application;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import agreementMaker.application.mappingEngine.AbstractMatcher;
+import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.ontology.Ontology;
 import agreementMaker.userInterface.UI;
 
@@ -137,6 +140,14 @@ public class Core {
 				}
 			}
 		}
+	}
+	/**
+	 * add or update the alignments selected by the user in all the matchers selected in the table
+	 * @param alignments selected by the user
+	 */
+	public void performUserMatching(int index, HashSet<Alignment> alignments) {
+		AbstractMatcher matcher = matcherInstances.get(index);
+		matcher.addManualAlignments(alignments);
 	}
 
 }

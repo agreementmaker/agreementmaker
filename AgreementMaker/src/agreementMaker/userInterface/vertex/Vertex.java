@@ -680,4 +680,7 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 		this.node = node;
 	}
 	
+	public boolean isFake() {
+		return node == null;
+	}
 }

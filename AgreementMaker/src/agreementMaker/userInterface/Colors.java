@@ -23,7 +23,7 @@ public class Colors
 	public static Color dividers = new Color(0,0,0);
 	
 	// vertex selection color
-	public static Color selected = new Color (153,153,255); 
+	public static Color selected = new Color (53,53,222); 
 	
 	public static Color mapped = new Color(240,128,128);
 	

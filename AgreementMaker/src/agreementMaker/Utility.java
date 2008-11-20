@@ -10,7 +10,7 @@ public class Utility {
 	public static String[] getPercentStringList() {
 		int min = 0;
 		int max = 100;
-		int spin = 5;
+		int spin = 1;
 		String[] s = new String[(max/spin) +1];
 		String current;
 		for(int i =min, j =0; i <= max && j<s.length; i+=spin, j++) {

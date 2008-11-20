@@ -15,8 +15,8 @@ public class Alignment
     public final static String EQUIVALENCE = "=";
     public final static String SUBSET = "\u2282";
     public final static String SUPERSET = "\u2283";
-    public final static String SUBSETEQUAL = "\u2286";
-    public final static String SUPERSETEQUAL = "\u2287";
+    public final static String SUBSETCOMPLETE = "\u2286";
+    public final static String SUPERSETCOMPLETE = "\u2287";
 
     public Alignment(Node e1, Node e2, double sim, String r)
     {
@@ -78,15 +78,7 @@ public class Alignment
         return similarity;
     }
 
-    public boolean equals(Alignment alignment)
-    {
-        if (entity1.equals(alignment.getEntity1()) 
-                && entity2.equals(alignment.getEntity2())) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+
 
     public String getRelation()
     {
@@ -115,6 +107,20 @@ public class Alignment
                 }
             }
         }
+    }
+    
+    public boolean equals(Alignment alignment)
+    {
+        if (entity1.equals(alignment.getEntity1()) 
+                && entity2.equals(alignment.getEntity2())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public int hashCode() {//Tipically hashcode of a pair is the xor of the hashcodes, i don't know if the hashcode of the single node is good calculated like this
+    	return entity1.hashCode() ^ entity2.hashCode();
     }
     
     public String toString() {

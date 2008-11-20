@@ -1,6 +1,7 @@
 package agreementMaker.application.mappingEngine;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import agreementMaker.Utility;
@@ -329,16 +330,36 @@ public abstract class AbstractMatcher implements Matcher{
 	}
 
     //*****************USER ALIGN METHOD*****************************
-    public void addClassAlignment(Alignment a) {
-    	//before calling this method the system must check if the alignments is between two classes then 
-    	//the algorithm should alignClass and isClass = true same for properties
-    	//if the alignment is between a class and a prop, shouldn't be aloud to add it
+    
+	public void addManualAlignments(HashSet<Alignment> alignments) {
+		Iterator<Alignment> it = alignments.iterator();
+		Alignment al;
+		while(it.hasNext()) {
+			al = it.next();
+			if(al.getEntity1().isClass() && al.getEntity2().isClass()) {
+				if(alignClass) {
+					addManualClassAlignment(al) ;
+				}
+			}
+			else if(al.getEntity1().isProp() && al.getEntity2().isProp()) {
+				if(alignProp) {
+					addManualPropAlignment(al) ;
+				}
+			}
+		}
+		select();
+	}
+		
+    public void addManualClassAlignment(Alignment a) {
+    	addManualAlignment(a, classesMatrix);
+    }
+
+    public void addManualPropAlignment(Alignment a) {
+    	addManualAlignment(a, propertiesMatrix);
     }
     
-    public void addPropAlignment(Alignment a) {
-    	//before calling this method the system must check if the alignments is between two classes then 
-    	//the algorithm should alignClass and isClass = true same for properties
-    	//if the alignment is between a class and a prop, shouldn't be aloud to add it
+    public void addManualAlignment(Alignment a, AlignmentMatrix matrix) {
+    	matrix.set(a.getEntity1().getIndex(), a.getEntity2().getIndex(), a);
     }
     
 	//*****************SET AND GET methods ******************************************
@@ -581,6 +602,8 @@ public abstract class AbstractMatcher implements Matcher{
 	public void setColor(Color color) {
 		this.color = color;
 	}
+
+
 
 
 }
