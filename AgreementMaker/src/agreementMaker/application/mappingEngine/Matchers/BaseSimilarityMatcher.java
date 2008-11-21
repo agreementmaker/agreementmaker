@@ -10,6 +10,7 @@ import edu.gwu.wordnet.IndexWord;
 import edu.gwu.wordnet.POS;
 import edu.gwu.wordnet.Synset;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
+import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.stemmer.PorterStemmer;
 import agreementMaker.application.ontology.Node;
@@ -20,13 +21,16 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	
 	public BaseSimilarityMatcher(int n, String s) {
 		super(n, s);
+		needsParam = false;
 	}
+
+
 	
 	/**Set all alignment sim to a random value between 0 and 1*/
 	public Alignment alignTwoNodes(Node source, Node target) {
 		
-		String sourceLabel = source.getLabel();
-		String targetLabel = source.getLabel();
+		String sourceLabel = source.getLocalName();
+		String targetLabel = target.getLocalName();
 		
 		sourceLabel = treatString(sourceLabel);
 		targetLabel = treatString(targetLabel);
@@ -38,14 +42,22 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		}
 		
 		
+		// TODO: wordnetNouns and wordnetVerbs do too much stuff, they need to be broken down (Cosmin nov20,08)
+		// 
+		// calculate base similarity 
 		float nounSimilarity = wordnetNouns(sourceLabel, targetLabel);
         float verbSimilarity = wordnetVerbs(sourceLabel, targetLabel);
 		
-		
-		
-		double sim = Math.random();
 		String rel = Alignment.EQUIVALENCE;
-		return new Alignment(source, target, sim, rel);
+        
+		// select the best similarity found.
+        if( nounSimilarity > verbSimilarity ) {
+        	return new Alignment(source, target, nounSimilarity, rel);
+        }
+        else {
+        	return new Alignment(source, target, verbSimilarity, rel);
+        }
+		
 	}
 	
 	
@@ -57,6 +69,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	 */
 	
 	 private String treatString(String s) {
+		 
 		 
 		 String s2 = s.replace("_"," ");
 		 s2 = s2.replace("-"," ");
@@ -89,7 +102,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		IndexWord word1 = dictionary.lookupIndexWord(POS.NOUN, theWord);
 		IndexWord word2 = dictionary.lookupIndexWord(POS.NOUN, theWord2);
 	        
-		return getSensesComparison(word1, word2);
+		return getSensesComparison(word1, word2);  // stem, lookup words, compare similar words, return similarity
 	                
 	 }    
 
@@ -103,10 +116,10 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		DictionaryDatabase dictionary = new FileBackedDictionary("wordnetdata");
 
 		// Look up words relating to each word		
-		IndexWord word1 = dictionary.lookupIndexWord(POS.VERB, theWord);
-		IndexWord word2 = dictionary.lookupIndexWord(POS.VERB, theWord2);
+		IndexWord verb1 = dictionary.lookupIndexWord(POS.VERB, theWord);
+		IndexWord verb2 = dictionary.lookupIndexWord(POS.VERB, theWord2);
 		
-		return getSensesComparison(word1, word2);
+		return getSensesComparison(verb1, verb2); // stem, lookup words, compare similar words, return similarity
 	}    
 
 	
@@ -128,29 +141,29 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		}
 	    	        
 	    	       
-	    	String s1="", s2="";
+		String s1="", s2="";
 	    	
-	    	float[] results = new float[senses1.length * senses2.length];
+		float[] results = new float[senses1.length * senses2.length];
 	    	
-	    	// Explore related words. 
-	    	for (int i=0; i < senses1.length; i++) {   
-	    		Synset sense1 = senses1[i];
+	    // Explore related words. 
+		for (int i=0; i < senses1.length; i++) {   
+			Synset sense1 = senses1[i];
 
-	    	    // Print Synset Description 
-	    	    //   System.out.println((i+1) + ". " + sense1.getLongDescription());
-	    	    s1 += sense1.getLongDescription();
+			// Print Synset Description 
+			//   System.out.println((i+1) + ". " + sense1.getLongDescription());
+			s1 += sense1.getLongDescription();
+			   
+			for(int j=0; j< senses2.length; j++){
+				Synset sense2 = senses2[j];   
+				//     System.out.println((j+1) + ". " + sense2.getLongDescription());  
+			    s2 += sense2.getLongDescription();
+			    
+			    results[i+j] = calculateBaseSimilarity(removeNonChar(s1),removeNonChar(s2));
+			}
 	    	       
-	    	    for(int j=0; j< senses2.length; j++){
-	    	    	Synset sense2 = senses2[j];   
-	    	    	//     System.out.println((j+1) + ". " + sense2.getLongDescription());  
-	    	        s2 += sense2.getLongDescription();
-	    	        
-	    	        results[i+j] = compare(removeNonChar(s1),removeNonChar(s2));
-	    	    }
+		} // end-outer-for 
 	    	       
-	    	} // end-outer-for 
-	    	       
-	    	Arrays.sort(results);
+		Arrays.sort(results);
 	    	
 	    	/*
 	    	for(int k=0; k<results.length; k++)
@@ -176,106 +189,126 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	}
 	
 	
-	   public float compare(String d1, String d2){
+	/*
+	 * This function takes two word DEFINITIONS, stems them, 
+	 * removes non-content and repeated words, then determines how many words
+	 * are in common between the definitions, and calculates a similarity 
+	 * based on the number of common words found.
+	 * 
+	 */
+	public float calculateBaseSimilarity(String d1, String d2){
 		    
-		    if(d1.equalsIgnoreCase(d2)) return 1;
+		if(d1.equalsIgnoreCase(d2)) return 1;
 		    
-		    d1 = treatString(d1);
-		    d2 = treatString(d2);
+		// treat the long descriptions
+		d1 = treatString(d1); 
+		d2 = treatString(d2);
 		    
-		    if(d1.equalsIgnoreCase(d2)) return 1;
+		if(d1.equalsIgnoreCase(d2)) return 1; // the definitions are exactly equal
 		    
-		     ArrayList d1Tokens = new ArrayList(); 
-		     ArrayList d2Tokens = new ArrayList();
-		     PorterStemmer ps = new PorterStemmer();
-		    
-		     StringTokenizer st = new StringTokenizer(d1);
-		     String word;
-		     
-		     while(st.hasMoreTokens()){
-		       word = st.nextToken();
-		        word = ps.stem(word);
-		        if(!isNonContent(word) && notRepeated(word,d1Tokens) && !word.equalsIgnoreCase("Invalid term"))
-		         d1Tokens.add(word);
-		     }
-		     
-		     st = new StringTokenizer(d2);
+		ArrayList<String> d1Tokens = new ArrayList<String>(); 
+		ArrayList<String> d2Tokens = new ArrayList<String>();
+		PorterStemmer ps = new PorterStemmer();
 
-		     while(st.hasMoreTokens()){
-		       word = st.nextToken();
-		       word = ps.stem(word);
-		        if(!isNonContent(word) && notRepeated(word,d2Tokens) && !word.equalsIgnoreCase("Invalid term"))
-		         d2Tokens.add(word);
-		     }
+		String word;
+		
+		// Tokenize the first description, using space as the token separator
+		// then remove non-content and repeated words.
+		StringTokenizer st = new StringTokenizer(d1);
+		
+		while(st.hasMoreTokens()){
+		  word = st.nextToken();
+		   word = ps.stem(word);
+		   if(!isNonContent(word) && notRepeated(word,d1Tokens) && !word.equalsIgnoreCase("Invalid term"))
+		    d1Tokens.add(word);
+		}
+		 
+		st = new StringTokenizer(d2);
+		
+		while(st.hasMoreTokens()){
+		  word = st.nextToken();
+		  word = ps.stem(word);
+		   if(!isNonContent(word) && notRepeated(word,d2Tokens) && !word.equalsIgnoreCase("Invalid term"))
+		    d2Tokens.add(word);
+		}
 
-		    /*
-		     for(int i=0; i< d1Tokens.size(); i++)
-		        System.out.println(d1Tokens.get(i));
-		        
-		     for(int i=0; i< d2Tokens.size(); i++)
-		        System.out.println(d2Tokens.get(i));
-
-		     */
+		/*
+		 for(int i=0; i< d1Tokens.size(); i++)
+		    System.out.println(d1Tokens.get(i));
 		    
-		    String [] def1 = new String[ d1Tokens.size()];
-		    String [] def2 = new String[d2Tokens.size()];
+		 for(int i=0; i< d2Tokens.size(); i++)
+		    System.out.println(d2Tokens.get(i));
+		
+		 */
+		
+		String [] def1 = new String[ d1Tokens.size()];
+		String [] def2 = new String[d2Tokens.size()];
+		
+		for(int i=0; i<d1Tokens.size(); i++)
+		    def1[i] = d1Tokens.get(i);
+		   
+		   
+		
+		for(int i=0; i<d2Tokens.size(); i++)
+		    def2[i] = d2Tokens.get(i);
 		    
-		    for(int i=0; i<d1Tokens.size(); i++)
-		        def1[i] = (String)d1Tokens.get(i);
-		       
-		       
+		if(def1.length == 0 || def2.length == 0)
+		    return 0;
+		
+		
+		int counter =0;
+		
+		// count how many words the lists has in common
+		for(int i=0; i<def1.length; i++)
+		    for(int j=0; j<def2.length; j++)
+		        if(def1[i].equalsIgnoreCase(def2[j]) )
+		            counter++;
 		    
-		    for(int i=0; i<d2Tokens.size(); i++)
-		        def2[i] = (String)d2Tokens.get(i);
-		        
-		    if(def1.length == 0 || def2.length == 0)
-		        return 0;
-		    
-		    
-		    int counter =0;
-
-		    for(int i=0; i<def1.length; i++)
-		        for(int j=0; j<def2.length; j++)
-		            if(def1[i].equalsIgnoreCase(def2[j]) )
-		                counter++;
-		        
-		    //printStringArray(def1);
-		    //printStringArray(def2);
-		     
-		    
-		    return ((float)counter /((float) (def1.length + def2.length )/2.0f));
-		     
-		    }
-	   
-	    private boolean isNonContent(String s){
-	        
-	        if(s.equalsIgnoreCase("the") || 
-	           s.equalsIgnoreCase("is") || 
-	           s.equalsIgnoreCase("this") || 
-	           s.equalsIgnoreCase("are") || 
-	           s.equalsIgnoreCase("to") || 
-	           s.equalsIgnoreCase("a") || 
-	           s.equalsIgnoreCase("in") ||
-	           s.equalsIgnoreCase("or") ||
-	           s.equalsIgnoreCase("and") || 
-	           s.equalsIgnoreCase("for") || 
-	           s.equalsIgnoreCase("that") ) 
-	          
-	          return true;
-	          
-	          return false;
-	           
-	        }
+		//printStringArray(def1);
+		//printStringArray(def2);
+		 
+		
+		// return the computed similarity (based on the common words)
+		return ((float)counter /((float) (def1.length + def2.length )/2.0f));
+		 
+	}
+	
+	/*
+	 * Determine whether this is a non-content word
+	 */
+	private boolean isNonContent(String s){
 	    
-	    private boolean notRepeated(String word,ArrayList sentence){
-	        
-	        for(int i=0; i<sentence.size(); i++)
-	                 if(word.equalsIgnoreCase((String)sentence.get(i)))
-	                   return false;
-	         
-	        
-	        return true;
-	       }
+	if(s.equalsIgnoreCase("the") || 
+	   s.equalsIgnoreCase("is") || 
+	   s.equalsIgnoreCase("this") || 
+	   s.equalsIgnoreCase("are") || 
+	   s.equalsIgnoreCase("to") || 
+	   s.equalsIgnoreCase("a") || 
+	   s.equalsIgnoreCase("in") ||
+	   s.equalsIgnoreCase("or") ||
+	   s.equalsIgnoreCase("and") || 
+	   s.equalsIgnoreCase("for") || 
+	   s.equalsIgnoreCase("that") ) 
+	{
+		return true;
+	}
+		
+	return false;
+	       
+	}
+
+	/*
+	 * Determine if this word is already in the sentence array.
+	 */
+	private boolean notRepeated(String word,ArrayList<String> sentence){
+	    
+		for(int i=0; i<sentence.size(); i++)
+			if(word.equalsIgnoreCase( sentence.get(i) ))
+				return false;
+		 
+		
+		return true;
+	}
 	      
 }
 
