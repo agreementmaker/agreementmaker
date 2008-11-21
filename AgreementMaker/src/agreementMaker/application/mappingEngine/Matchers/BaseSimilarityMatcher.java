@@ -94,7 +94,8 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	 */
 	public float wordnetNouns(String theWord, String theWord2){
 	
-	        
+	
+		System.out.println(theWord + " " + theWord2);
 		// Load Dictionary 
 		DictionaryDatabase dictionary = new FileBackedDictionary("wordnetdata");
 
@@ -112,6 +113,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	 */
 	public float wordnetVerbs(String theWord, String theWord2){
 	          
+		
 		// Load Dictionary 
 		DictionaryDatabase dictionary = new FileBackedDictionary("wordnetdata");
 
@@ -132,12 +134,17 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		Synset[] senses1;
 		Synset[] senses2;
 	    	      
+		
+		System.out.println(word1 + " <-> " + word2);
 		try {
 			senses1 = word1.getSenses();
 			senses2 = word2.getSenses();
 		}
-		catch(NullPointerException e) {
+		catch(NullPointerException e ) {
 			return 0f;   
+		}
+		catch(NumberFormatException ne) {
+			return 0f;
 		}
 	    	        
 	    	       
