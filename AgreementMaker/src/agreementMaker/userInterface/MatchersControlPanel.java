@@ -237,7 +237,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		if(alignments.size()>0) {
 			int[] rows = matchersTablePanel.getTable().getSelectedRows();
 			if(rows == null || rows.length == 0) {
-				Utility.dysplayErrorPane("You have to select at least one of the matchers in the table below in the control panel to add alignments to it manually.\nYou can always select the default User Manual Matcher.",null );
+				//lf no rows are selected it adds it to the UserMatching
+				Core.getInstance().performUserMatching(0, alignments);
 			}
 			else {
 				for(int i=0; i < rows.length;i++) {

@@ -211,6 +211,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		if (	(obj == standardAlignment) || (obj == deleteAlignment) || (obj == exact) || (obj == subset) || (obj == subsetComplete) || 
 				(obj == superset) || (obj == supersetComplete) || 
 				(obj == comparativeExact) || (obj == comparativeSubset) || (obj == comparativeSuperset))	{
+			
+			new DefnMappingOptionsDialog(myUI);
 			createManualAlignment(obj);
 		}
 		
@@ -246,6 +248,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			boolean correct = false;
 			boolean abort = false;
 			while(!correct &&  !abort) {
+			//mappingPopup.setVisible(false);
+				
 				String x = JOptionPane.showInputDialog(null, "Insert the similarity value.\nInsert a number between 0 and 100 using only numeric digits.");
 				try {
 					if(x == null)
@@ -577,7 +581,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			node.setArcWidth(arcWidth);
 			node.setArcHeight(arcHeight);	
 			//nodeType = node.getNodeType();
-			//TODO: something wrong here in this section????????????????????????????????
 			if (node.isVisible() == true)
 			{
 				//System.out.println(	node.getIsMappedByDef() + "  "  + mapByDefn );
@@ -609,7 +612,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		
 		// if there is at least one global node selected AND at least one local node selected
 		// then call the function called mapNodess
-		if ((globalNodesSelected.size() != 0) && (localNodesSelected.size() != 0))
+		if ((globalNodesSelected.size() != 0) && (localNodesSelected.size() != 0));
 			mapNodes(graphic);
 	}
 	
@@ -793,7 +796,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		Vertex node;
 		for(int i = 0; i < highlightedNodes.size(); i++) {
 			node = (Vertex)highlightedNodes.get(i);
-			graphic.setColor(Colors.selected);
+			graphic.setColor(Colors.highlighted);
 			graphic.fillRoundRect(node.getX(),node.getY(),node.getWidth(),node.getHeight(), node.getArcWidth(),node.getArcHeight());
 			graphic.setColor(Colors.foreground);
 			graphic.drawRoundRect(node.getX(),node.getY(),node.getWidth(),node.getHeight(), node.getArcWidth(),node.getArcHeight());
@@ -1192,19 +1195,16 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				}else if(!e.isControlDown() && !e.isShiftDown()){//NEITHER SHIFT NOR CTRL button pressed down
 					// checks to see if the node clicked is selected
 					boolean nodeSelected = node.getIsSelected();
-					
-					//deselects all nodes
-					deselectAllNodes(e.getX());
-					
-					// change the isSelected of node clicked according to previous check
 					if(!nodeSelected){
+						deselectAllNodes(e.getX());
 						setNodeSelected(node,true);
 						setOldY(node.getY());
 						if ((node.getNodeType() == GSM.SOURCENODE))
 							globalNodesSelected.addElement(node);
 						else if ((node.getNodeType() == GSM.TARGETNODE))
 							localNodesSelected.addElement(node);
-					}else{
+					}
+					else{
 						setNodeSelected(node,false);
 						setOldY(-1);
 						if ((node.getNodeType() == GSM.SOURCENODE))
@@ -1256,6 +1256,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	 */	
 	public void mousePressed( MouseEvent e)
 	{
+		/*
 		Vertex node;
 		
 		if (e.isPopupTrigger()) 
@@ -1270,6 +1271,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				popup.show(e.getComponent(),e.getX(), e.getY());
 			}
 		}
+		*/
 	}
 	/**
 	 * This function implements the mouse released method
@@ -1278,7 +1280,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	 */	
 	public void mouseReleased( MouseEvent e)
 	{
-		Vertex node;
+		/* Vertex node;
 		if (e.isPopupTrigger()) 
 		{
 			
@@ -1291,6 +1293,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				popup.show(e.getComponent(),e.getX(), e.getY());
 			}
 		}
+		*/
 	}
 	
 	/**
@@ -1637,26 +1640,22 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		
 		// if the user clicked on the left half of the screen then get the global root,
 		// get the local root
-		if (x < (canvasWidth/2))
+		if (x < (canvasWidth/2)) {
 			root = getGlobalTreeRoot();
-		else
+			globalNodesSelected.clear();
+		}
+		else {
 			root = getLocalTreeRoot();
-		
+			localNodesSelected.clear();
+		}
 		if (root == null)
 			return;
-		
 		for (Enumeration e = root.preorderEnumeration(); e.hasMoreElements() ;)
 		{
 			// get the node
 			node = (Vertex) e.nextElement();
-			
 			// change the isSelected node to false
-			setNodeSelected(node,false);
-			
-			if ((node.getNodeType() == GSM.SOURCENODE))
-				globalNodesSelected.clear();
-			else if ((node.getNodeType() == GSM.TARGETNODE))
-				localNodesSelected.clear();
+			setNodeSelected(node,false);				
 		}
 	}
 	
