@@ -48,6 +48,10 @@ import agreementMaker.userInterface.vertex.VertexDescriptionPane;
 public class AbstractMatcherParametersDialog extends JDialog implements ActionListener{
 	
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7150332604304262664L;
+	/**
 	 * @param args
 	 */
 	
@@ -103,13 +107,15 @@ public class AbstractMatcherParametersDialog extends JDialog implements ActionLi
 		
 		if(obj == cancel){
 			success = false;
-			setModal(false);
+			//setModal(false);
+			setVisible(false);  // required
 		}
 		else if(obj == run){
 			String check = parametersPanel.checkParameters();
 			if(check == null || check.equals("")) {
 				success = true;
-				setModal(false);
+				//setModal(false);
+				setVisible(false);  // required
 			}
 			else Utility.dysplayErrorPane(check, "Illegal Parameters" );
 		}
