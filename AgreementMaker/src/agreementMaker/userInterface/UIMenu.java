@@ -120,7 +120,8 @@ public class UIMenu implements ActionListener, ItemListener {
 		}else if (obj == openTarget){
 			openAndReadFilesForMapping(GSM.TARGETNODE);
 		}else if (obj == aboutItem){
-			displayOptionPane("Agreement Maker 3.0\nAdvis research group\nThe University of Illinois at Chicago 2004","About Agreement Maker");
+			new AboutDialog();
+			//displayOptionPane("Agreement Maker 3.0\nAdvis research group\nThe University of Illinois at Chicago 2004","About Agreement Maker");
 		}else if (obj == undo){
 			displayOptionPane("Undo Clicked","Undo");
 		}else if (obj == redo){
@@ -175,6 +176,7 @@ public class UIMenu implements ActionListener, ItemListener {
 	public void displayOptionPane(String desc, String title){
 			JOptionPane.showMessageDialog(null,desc,title, JOptionPane.PLAIN_MESSAGE);					
 	}
+	
 	
 	public void init(){
 		
