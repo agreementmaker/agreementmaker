@@ -35,6 +35,10 @@ package agreementMaker;
  */
 public class AMException extends Exception {
  
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7869591038480687754L;
 	public static final String FILE_NOT_FOUND = "The system couldn't find the selected file";
 	
 	
