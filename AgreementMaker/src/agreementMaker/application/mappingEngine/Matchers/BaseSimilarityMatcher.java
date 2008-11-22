@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
-import edu.gwu.wordnet.DictionaryDatabase;
-import edu.gwu.wordnet.FileBackedDictionary;
-import edu.gwu.wordnet.IndexWord;
-import edu.gwu.wordnet.POS;
-import edu.gwu.wordnet.Synset;
+
+import edu.smu.tspell.wordnet.Synset;
+import edu.smu.tspell.wordnet.SynsetType;
+import edu.smu.tspell.wordnet.WordNetDatabase;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
-import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.stemmer.PorterStemmer;
 import agreementMaker.application.ontology.Node;
@@ -18,47 +16,121 @@ import agreementMaker.application.ontology.Node;
 
 public class BaseSimilarityMatcher extends AbstractMatcher { 
 
+	private BaseSimilarityMatcherParametersPanel bsimPanel;
+
+	// JAWS WordNet interface
+	private WordNetDatabase wordnet  = null;
+	
 	
 	public BaseSimilarityMatcher(int n, String s) {
+		// warning, param is not available at the time of the constructor
+		
 		super(n, s);
-		needsParam = false;
+		needsParam = true;
+		
+		bsimPanel = new BaseSimilarityMatcherParametersPanel();
+		
 	}
 
 
+	public BaseSimilarityMatcherParametersPanel getParametersPanel() {
+		return bsimPanel;
+	}
 	
-	/**Set all alignment sim to a random value between 0 and 1*/
+	
+	
+	
+	
+	/* *******************************************************************************************************
+	 * Algorithm functions beyond this point
+	 * **********************************************************************************************************
+	 */
+	
+	
+	
+	/*
+	 * This function does the main base similarity algorithm.
+	 */
 	public Alignment alignTwoNodes(Node source, Node target) {
 		
-		String sourceLabel = source.getLocalName();
-		String targetLabel = target.getLocalName();
+		String sourceName= source.getLocalName();
+		String targetName = target.getLocalName();
 		
-		sourceLabel = treatString(sourceLabel);
-		targetLabel = treatString(targetLabel);
+		/*
+		 * Ok, Here is the bird's eye view of this algorithm.
+		 *
+		 * 	Input: 		sourceName, targetName: these are the names of the nodes 
+		 * 				(either the class name or the property name)
+		 *
+		 * 	Step 1:		run treatString on each name to clean it up
+		 * 
+		 *  Step 2:  	Check right away if the strings are equal (ignoring case).  
+		 *  			If they're equal, return a similarity of 1.0.
+		 *  
+		 *  Step 3a:	If the user wants to use a dictionary, lookup the related nouns
+		 *  			and verbs and compare the words shared by the definitions
+		 *  
+		 *  			Return a similarity based on that.
+		 *  
+		 *  Step 3b:	The user does not want to use a dictionary, perform a basic
+		 *  			string matching algorithm.	
+		 */
 		
-		// if the labels are equal, then return a similarity of 1
-		if( sourceLabel.equalsIgnoreCase(targetLabel) ) {
+		
+		// Step 1:		run treatString on each name to clean it up
+		sourceName = treatString(sourceName);
+		targetName = treatString(targetName);
+		
+		
+		// Step 2:	If the labels are equal, then return a similarity of 1
+		if( sourceName.equalsIgnoreCase(targetName) ) {
 			String relation = Alignment.EQUIVALENCE;
 			return new Alignment(source, target, 1.0d, relation);
 		}
 		
 		
-		// TODO: wordnetNouns and wordnetVerbs do too much stuff, they need to be broken down (Cosmin nov20,08)
-		// 
-		// calculate base similarity 
-		float nounSimilarity = wordnetNouns(sourceLabel, targetLabel);
-        float verbSimilarity = wordnetVerbs(sourceLabel, targetLabel);
 		
-		String rel = Alignment.EQUIVALENCE;
-        
-		// select the best similarity found.
-        if( nounSimilarity > verbSimilarity ) {
-        	return new Alignment(source, target, nounSimilarity, rel);
-        }
-        else {
-        	return new Alignment(source, target, verbSimilarity, rel);
-        }
+		if( ((BaseSimilarityParameters) param).useDictionary ) {  // Step 3a
+			
+			// if we haven't initialized our wordnet database, do it
+			if( wordnet == null )
+				wordnet = WordNetDatabase.getFileInstance();
+			
+			// The user wants us to use a dictionary to find related words
+			
+			Synset[] sourceNouns = wordnet.getSynsets(sourceName, SynsetType.NOUN );
+			Synset[] targetNouns = wordnet.getSynsets(targetName, SynsetType.NOUN );
+			
+			float nounSimilarity = getSensesComparison(sourceNouns, targetNouns);
+			
+			Synset[] sourceVerbs = wordnet.getSynsets(sourceName, SynsetType.VERB);
+			Synset[] targetVerbs = wordnet.getSynsets(targetName, SynsetType.VERB);
+			
+			float verbSimilarity = getSensesComparison(sourceVerbs, targetVerbs);
+			
+			String rel = Alignment.EQUIVALENCE;
+	        
+			// select the best similarity found. (either verb or noun)
+	        if( nounSimilarity > verbSimilarity ) {
+	        	return new Alignment(source, target, nounSimilarity, rel);
+	        }
+	        else {
+	        	return new Alignment(source, target, verbSimilarity, rel);
+	        }
+			
+		}
+		else {  // Step 3b
+			// the user does not want to use the dictionary
+			// TODO: Work out this part of the algorithm.
+			
+			return new Alignment( source, target, 0.0f, Alignment.EQUIVALENCE);
+		}
+		
 		
 	}
+	
+	
+	
 	
 	
 	
@@ -86,67 +158,26 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	    return s2;
 	 }
 	 
-	 
-	/*
-	 * This function looks up the words in the WordNet dictionary looking for a noun,
-	 * then gets the Definition of the noun, stems each word of the definition, 
-	 * and then one by one compares how many words are shared by both word Definitions    
-	 */
-	public float wordnetNouns(String theWord, String theWord2){
 	
-	
-		System.out.println(theWord + " " + theWord2);
-		// Load Dictionary 
-		DictionaryDatabase dictionary = new FileBackedDictionary("wordnetdata");
 
-		// Look up words relating to each word 
-		IndexWord word1 = dictionary.lookupIndexWord(POS.NOUN, theWord);
-		IndexWord word2 = dictionary.lookupIndexWord(POS.NOUN, theWord2);
-	        
-		return getSensesComparison(word1, word2);  // stem, lookup words, compare similar words, return similarity
-	                
-	 }    
-
-	
-	/*
-	 * This function does the same thing as wordnetNouns, but looks for a verb instead of a noun
-	 */
-	public float wordnetVerbs(String theWord, String theWord2){
-	          
-		
-		// Load Dictionary 
-		DictionaryDatabase dictionary = new FileBackedDictionary("wordnetdata");
-
-		// Look up words relating to each word		
-		IndexWord verb1 = dictionary.lookupIndexWord(POS.VERB, theWord);
-		IndexWord verb2 = dictionary.lookupIndexWord(POS.VERB, theWord2);
-		
-		return getSensesComparison(verb1, verb2); // stem, lookup words, compare similar words, return similarity
-	}    
+  
 
 	
 	      
 	/*
-	 * This function gets the senses of each word, then 
-	 */
+	 * Input: Two synsets of words.
+	 * 
+	 * This function calculates the similarity between both synsets
+	 *     
+	 */   
 
-	private float getSensesComparison(IndexWord word1, IndexWord word2){
-		Synset[] senses1;
-		Synset[] senses2;
-	    	      
+	private float getSensesComparison(Synset[] senses1, Synset[] senses2){
 		
-		System.out.println(word1 + " <-> " + word2);
-		try {
-			senses1 = word1.getSenses();
-			senses2 = word2.getSenses();
+
+		if( senses1.length == 0 || senses2.length == 0 ) {
+			// one of the words had no definition
+			return 0.0f;
 		}
-		catch(NullPointerException e ) {
-			return 0f;   
-		}
-		catch(NumberFormatException ne) {
-			return 0f;
-		}
-	    	        
 	    	       
 		String s1="", s2="";
 	    	
@@ -158,12 +189,12 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 
 			// Print Synset Description 
 			//   System.out.println((i+1) + ". " + sense1.getLongDescription());
-			s1 += sense1.getLongDescription();
+			s1 += sense1.getDefinition();
 			   
 			for(int j=0; j< senses2.length; j++){
 				Synset sense2 = senses2[j];   
 				//     System.out.println((j+1) + ". " + sense2.getLongDescription());  
-			    s2 += sense2.getLongDescription();
+			    s2 += sense2.getDefinition();
 			    
 			    results[i+j] = calculateBaseSimilarity(removeNonChar(s1),removeNonChar(s2));
 			}
