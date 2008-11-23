@@ -100,6 +100,8 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		 * @author Cosmin Stroe
 		 * @date Nov 23, 2008
 		 * 
+		 * Definition: input_sim(node1, node2) = the similarity between node1 and node2, calculated from the previous algorithm (the input algorithm)
+		 * 
 		 * Definition:  path_len_root(node) = number of edges between node and root of the tree
 		 * 
 		 * Definition: parent_i(node) = the i-th parent of node ( i=1 is the father, i=2 is the grandfather, etc..)
@@ -115,7 +117,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		 *                                                         /____|
 		 *                                                           i=1
 		 *                                                           
-		 *  Where n = min( path_len_root(source), path_len_root(target) )  ( also represents the number of ancestors the node has)
+		 *  Where n = min( path_len_root(source), path_len_root(target) )  ( also represents the number of ancestors the node with the least ancestors has)
 		 */
 		
 		Vertex vsource = source.getVertex();
@@ -124,24 +126,24 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		TreeNode[] sourcePath = vsource.getPath();  // get the path to root from source vertex
 		TreeNode[] targetPath = vtarget.getPath();  // get the path to root from target vertex
 		
-		int n = 0;
+		int n = 0;  // n = number of ancestors of the node with the least ancestors
 		
 		
 		if( sourcePath.length > targetPath.length ) {
-			// the target node is closer to its root
-			n = targetPath.length - 2 - 1;  // minus 2 because the first two levels of the Vertex hierarchy are not real nodes, and minus 1 because the last entry is the node itself and not a parent
+			// the target node is closer to its root (fewer ancestors)
+			n = targetPath.length - 2 - 1;  // minus 2 because the first two levels of the Vertex hierarchy are not real nodes, and minus 1 because the last entry of the Path array is the node itself and not a parent
 		} else {
-			// the source node is closer to its root
-			n = sourcePath.length - 2 - 1;  // minus 2 because the first two levels of the Vertex hierarchy are not real nodes, and minus 1 because the last entry is the node itself and not a parent
+			// the source node is closer to its root (fewer ancestors)
+			n = sourcePath.length - 2 - 1;  // minus 2 because the first two levels of the Vertex hierarchy are not real nodes, and minus 1 because the last entry of the Path array is the node itself and not a parent
 		}
 		
 		
-		// calculate Summation: sum(i=1 to n, (n + 1 - i) * input_sim( parent_i(source), parent_i(target) );
+		// calculate Summation: sum(i=1 to n: (n + 1 - i) * input_sim( parent_i(source), parent_i(target) );
 		
 		double summation = 0.0d;
 		
 		
-		for( int i = 1; i < n; i++ ) {
+		for( int i = 1; i <= n; i++ ) {
 			
 			// Here we are using the Vertex array returned by getPath();
 			// The last entry of the array is the node,
