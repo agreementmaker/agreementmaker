@@ -221,7 +221,6 @@ public class OntoTreeBuilder extends TreeBuilder{
          	node = processedSubs.get(entity); //reuse of the previous Node information for this class, but we need a new Vertex
          }
          else {
-         	uniqueKey++;
          	if(entity.canAs(OntProperty.class)) {//depending if it's a class or property, ATTENTION THERE IS A JENA BUG AVOIDED HERE, ONTPROPERTY.CANAS(ONTCLASS.CLASS) RETURN TRUE, IS IMPORTANT TO CHECK CANAS WITH PROPERTY IN THE IF 
          		node = new Node(uniqueKey,entity, Node.OWLPROPERTY); //new node with a new key, with the link to the graphical Vertex representation
                 ontology.getPropertiesList().add(node);
@@ -231,6 +230,7 @@ public class OntoTreeBuilder extends TreeBuilder{
                 ontology.getClassesList().add(node);
          	}
             processedSubs.put(entity, node);
+            uniqueKey++;  // uniqueKey starts from 0, then gets incremented.
          }
          Vertex vert = new Vertex(node.getLocalName(), entity.getURI(), model);
          node.addVertex(vert);
