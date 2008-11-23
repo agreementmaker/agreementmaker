@@ -196,7 +196,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 				//     System.out.println((j+1) + ". " + sense2.getLongDescription());  
 			    s2 += sense2.getDefinition();
 			    
-			    results[i+j] = calculateBaseSimilarity(removeNonChar(s1),removeNonChar(s2));
+			    results[i+j] = calculateWordSimilarity(removeNonChar(s1),removeNonChar(s2));
 			}
 	    	       
 		} // end-outer-for 
@@ -234,7 +234,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	 * based on the number of common words found.
 	 * 
 	 */
-	public float calculateBaseSimilarity(String d1, String d2){
+	private float calculateWordSimilarity(String d1, String d2){
 		    
 		if(d1.equalsIgnoreCase(d2)) return 1;
 		    
@@ -257,7 +257,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		while(st.hasMoreTokens()){
 		  word = st.nextToken();
 		   word = ps.stem(word);
-		   if(!isNonContent(word) && notRepeated(word,d1Tokens) && !word.equalsIgnoreCase("Invalid term"))
+		   if(!isNonContent(word) && isNotRepeated(word,d1Tokens) && !word.equalsIgnoreCase("Invalid term"))
 		    d1Tokens.add(word);
 		}
 		 
@@ -266,7 +266,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		while(st.hasMoreTokens()){
 		  word = st.nextToken();
 		  word = ps.stem(word);
-		   if(!isNonContent(word) && notRepeated(word,d2Tokens) && !word.equalsIgnoreCase("Invalid term"))
+		   if(!isNonContent(word) && isNotRepeated(word,d2Tokens) && !word.equalsIgnoreCase("Invalid term"))
 		    d2Tokens.add(word);
 		}
 
@@ -338,7 +338,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	/*
 	 * Determine if this word is already in the sentence array.
 	 */
-	private boolean notRepeated(String word,ArrayList<String> sentence){
+	private boolean isNotRepeated(String word,ArrayList<String> sentence){
 	    
 		for(int i=0; i<sentence.size(); i++)
 			if(word.equalsIgnoreCase( sentence.get(i) ))
