@@ -3,6 +3,7 @@ package agreementMaker.application.mappingEngine;
 import java.awt.Color;
 
 import agreementMaker.application.mappingEngine.Matchers.BaseSimilarityMatcher;
+import agreementMaker.application.mappingEngine.Matchers.DescendantsSimilarityInheritanceMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.AllOneMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.AllZeroMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.CopyMatcher;
@@ -29,16 +30,18 @@ public class MatcherFactory {
 	 *  remove it from the getInstance() method
 	 * ALWAYS CHECK that numMatchers, the list of indexes and MatcherNames are consistent when applying a change
 	 */
+	
 	public final static int EQUALSMATCHER = 0;
 	public final static int RANDOMMATCHER = EQUALSMATCHER+1;
 	public final static int ALLUNOMATCHER = RANDOMMATCHER+1;
 	public final static int ALLZEROMATCHER = ALLUNOMATCHER+1;
 	public final static int COPYMATCHER = ALLZEROMATCHER+1;
-	public final static int BASESIMILARITYMATCHER = COPYMATCHER+1; 
+	public final static int BASESIMILARITYMATCHER = COPYMATCHER+1;
+	public final static int DSIMATCHER = BASESIMILARITYMATCHER+1; 
 	/**Total number of matching algorithm that will be visualized in the agreememtmaker
 	 * Remember to modify this value when adding and removing an algorithm
 	 * */
-	public final static int numMatchers = 6;
+	public final static int numMatchers = 7;
 	
 	/**
 	 * When adding a matcher add the line names[NEWINDEX] = "My name"; Name shouldn't be too long but at the same time should be a user clear name;
@@ -52,6 +55,7 @@ public class MatcherFactory {
 		names[ALLZEROMATCHER] = "All ZERO similarities";
 		names[COPYMATCHER] = "Copy Matcher";
 		names[BASESIMILARITYMATCHER] = "Base Similarity";
+		names[DSIMATCHER] = "Descendant's Similarity Inheritance (DSI)";
 		return names;
 	}
 	
@@ -79,6 +83,9 @@ public class MatcherFactory {
 		}
 		else if(nameIndex == BASESIMILARITYMATCHER) {
 			a = new BaseSimilarityMatcher(instanceIndex, name);
+		}
+		else if( nameIndex == DSIMATCHER ) {
+			a = new DescendantsSimilarityInheritanceMatcher(instanceIndex, name);
 		}
 		else {
 			throw new RuntimeException("DEVELOPMENT ERROR: there is a matcher in the list with no corrisponding index in getMatcherInstance");
