@@ -115,24 +115,24 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		 *                                                         /____|
 		 *                                                           i=1
 		 *                                                           
-		 *  Where n = min( path_len_root(source), path_len_root(target) )
+		 *  Where n = min( path_len_root(source), path_len_root(target) )  ( also represents the number of ancestors the node has)
 		 */
 		
 		Vertex vsource = source.getVertex();
 		Vertex vtarget = source.getVertex();
 		
-		TreeNode[] sourcePath = vsource.getPath();
-		TreeNode[] targetPath = vtarget.getPath();
+		TreeNode[] sourcePath = vsource.getPath();  // get the path to root from source vertex
+		TreeNode[] targetPath = vtarget.getPath();  // get the path to root from target vertex
 		
 		int n = 0;
 		
 		
 		if( sourcePath.length > targetPath.length ) {
 			// the target node is closer to its root
-			n = targetPath.length - 2 - 1;  // minus 2 because the first two levels of the Vertex hierarchy are not real nodes
+			n = targetPath.length - 2 - 1;  // minus 2 because the first two levels of the Vertex hierarchy are not real nodes, and minus 1 because the last entry is the node itself and not a parent
 		} else {
 			// the source node is closer to its root
-			n = sourcePath.length - 2 - 1;  // minus 2 because the first two levels of the Vertex hierarchy are not real nodes
+			n = sourcePath.length - 2 - 1;  // minus 2 because the first two levels of the Vertex hierarchy are not real nodes, and minus 1 because the last entry is the node itself and not a parent
 		}
 		
 		
