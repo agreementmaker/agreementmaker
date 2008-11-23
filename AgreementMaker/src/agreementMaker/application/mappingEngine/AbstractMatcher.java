@@ -67,6 +67,11 @@ public abstract class AbstractMatcher implements Matcher{
 	/**Graphical color for nodes mapped by this matcher and alignments, this value is set by the MatcherFactory and modified  by the table so a developer just have to pass it as aparameter for the constructor*/
 	protected Color color; 
 	
+	/**This enum is for the matching functions that take nodes as an input.  Because we are comparing two kinds of nodes (classes and properties), we need to know the kind of nodes we are comparing in order to lookup up the input similarities in the corrent matrix */
+	protected enum alignType {
+		aligningClasses,
+		aligningProperties
+	}
 	
 	public AbstractMatcher(int key, String theName) {
 		index = key;
