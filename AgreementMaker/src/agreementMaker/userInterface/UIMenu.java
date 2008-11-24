@@ -33,11 +33,9 @@ public class UIMenu implements ActionListener {
 	// menu items for helpMenu
 	private JMenuItem howToUse, aboutItem;		
 
+	// menu items for the View Menu
 	private JMenuItem keyItem;
 	private JCheckBoxMenuItem smoMenuItem;  // Menu item for toggling "Selected Matchings Only" view mode.
-
-	// checkbox menu items and for view menu
-	private JCheckBoxMenuItem mapByDefinition, mapByUser, mapByContext, mapByConsolidation;
 	
 	//creates a menu bar
 	private JMenuBar myMenuBar;
@@ -105,12 +103,7 @@ public class UIMenu implements ActionListener {
 		
 		if (obj == xit){
 			// confirm exit
-			int n = JOptionPane.showConfirmDialog(null,"Are you sure you want to exit ?","Exit Agreement Maker",JOptionPane.YES_NO_OPTION);
-			if (n == JOptionPane.YES_OPTION)
-			{
-				System.out.println("Exiting the program.\n");
-				System.exit(0);   
-			}
+			confirmExit();
 			// if it is no, then do nothing		
 		}else if (obj == keyItem){
 			new Legend(ui);	
@@ -336,4 +329,16 @@ public class UIMenu implements ActionListener {
 		new ReferenceFileDialog(ui);
 	 }
 	
+	 
+	 /**
+	  * Function that is called when to user wants to close the program. 
+	  */
+	 public void confirmExit() {
+		int n = JOptionPane.showConfirmDialog(null,"Are you sure you want to exit ?","Exit Agreement Maker",JOptionPane.YES_NO_OPTION);
+		if (n == JOptionPane.YES_OPTION)
+		{
+			System.out.println("Exiting the program.\n");
+			System.exit(0);   
+		}
+	 }
 }
