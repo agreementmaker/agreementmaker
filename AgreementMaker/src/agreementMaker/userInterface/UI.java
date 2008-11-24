@@ -51,6 +51,9 @@ public class UI {
 	private JSplitPane splitPane;
 	private UIMenu uiMenu;
 	
+	/** Application Wide preferences, that are saved to a configuration file, and can be restored at any time. */
+	private AppPreferences prefs;
+	
 	/**	 * Default constructor for UI class
 	 */
 	public UI()
@@ -59,6 +62,10 @@ public class UI {
 	}
 
 	 
+	
+	/** Return the AppPreferences instance */
+	public AppPreferences getAppPreferences() { return prefs; }
+	
 	/**
 	 * @return canvas
 	 */
@@ -115,6 +122,9 @@ public class UI {
 		//	Setting the Look and Feel of the application to that of Windows
 		//try { javax.swing.UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); }
 		//catch (Exception e) { System.out.println(e); }
+		
+		// initialize the application preferences
+		prefs = new AppPreferences();
 		
 
 		// Create a swing frame
