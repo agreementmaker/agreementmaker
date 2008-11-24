@@ -121,7 +121,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		 */
 		
 		Vertex vsource = source.getVertex();
-		Vertex vtarget = source.getVertex();
+		Vertex vtarget = target.getVertex();
 		
 		TreeNode[] sourcePath = vsource.getPath();  // get the path to root from source vertex
 		TreeNode[] targetPath = vtarget.getPath();  // get the path to root from target vertex
@@ -207,7 +207,13 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		
 		
 		// the final DSI similarity computed between the current two nodes
-		double DSI_similarity = MCP * baseSimilarity.getSimilarity() + ((2*(1 - MCP))/(n*(n+1)))* summation;
+		double DSI_similarity = 0.0d;
+		if( n == 0 ) {
+			// if n == 0, then no summation component.
+			DSI_similarity = MCP * baseSimilarity.getSimilarity();
+		} else {
+			DSI_similarity = MCP * baseSimilarity.getSimilarity() + ((2*(1 - MCP))/(n*(n+1)))* summation;
+		}
 		
 		// return the result
 		return new Alignment(source, target, DSI_similarity, Alignment.EQUIVALENCE);
