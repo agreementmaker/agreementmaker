@@ -62,7 +62,7 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		ui = userInterface;
 		this.ontoType = ontoType;
 		
-		AppPreferences prefs = new AppPreferences(); // Class interface to Application Preferences
+		AppPreferences prefs = ui.getAppPreferences(); // Class interface to Application Preferences
 		
 		frame = new JDialog();
 		if(ontoType == GSM.SOURCENODE)
@@ -182,7 +182,7 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 	public void actionPerformed (ActionEvent ae){
 		Object obj = ae.getSource();
 		JFileChooser fc;
-		AppPreferences prefs = new AppPreferences(); // Class interface to Application Preferences
+		AppPreferences prefs = ui.getAppPreferences(); // Class interface to Application Preferences
 		
 		if(obj == cancel){
 			frame.dispose();
