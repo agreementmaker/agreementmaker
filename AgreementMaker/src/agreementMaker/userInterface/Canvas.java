@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -30,6 +31,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.xml.bind.JAXBElement.GlobalScope;
 
 import agreementMaker.GSM;
 import agreementMaker.Utility;
@@ -99,11 +101,13 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private JMenuItem 	comparativeSuperset;		// comparativeSuperset mappingByUser RIGHT NOW I'm NOT CONSIDERING THIS
 	
 	//Structures to manage selection and highlighting
-	//private boolean previouslyMappedByContext = false;
+	private ArrayList<Vertex>		localClickedNodeList; //this list do not contains the whole list of local selected nodes, but the ordered list of clickedNodes
+	private ArrayList<Vertex>		globalClickedNodeList;  //this list do not contains the whole list of global selected nodes, but the ordered list of clickedNodes
+	private ArrayList<Vertex>		localNodesSelected;      	// the local nodes which are selected (so all clicked and also others selected via shifting)
+	private ArrayList<Vertex>		globalNodesSelected;			// the global nodes which are selected (so all cliecked and also others selected via shifting)
 	private Vertex 		rightClickedNode;			// right clicked node
-	private Vector 		localNodesSelected;      	// the local nodes which are selected
-	private Vector 		globalNodesSelected;			// the global nodes which are selected
-	private Vector		highlightedNodes; //All global and local nodes to be highlighted, that means that are matched with any selected nodes
+	private Vertex 		displayedNode;		//the last vertex selected //one of the clicked node but is last one clicked in fact is displayed
+	private Vector<Vertex>		highlightedNodes; //All global and local nodes to be highlighted, that means that are matched with any selected nodes, this set gets created and calculated only during matchings display
 	private int 				oldY;							// the previous y location of left clicked node	
 	
 	//TO BE DELETED IN THE FUTURE DELETING ALL FUNCTIONS CONTAINING THEM
@@ -135,8 +139,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	  */
 	public Canvas(UI ui){
 		// initialize the global and local selected nodes vector
-		globalNodesSelected = new Vector();
-		localNodesSelected = new Vector();                
+		globalNodesSelected = new ArrayList<Vertex>();
+		localNodesSelected = new ArrayList<Vertex>(); 
+		localClickedNodeList = new ArrayList<Vertex>();
+		globalClickedNodeList = new ArrayList<Vertex>();
 		// add the mouse listener
 		addMouseListener(this);
 		
@@ -219,11 +225,11 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		if ((obj == cancel) || (obj == cancelPopup)){
 			// set the node selection to false in global tree
 			for (int i=0; i < globalNodesSelected.size(); i++)
-				setNodeSelected(((Vertex)globalNodesSelected.elementAt(i)),false);
+				setNodeSelected(((Vertex)globalNodesSelected.get(i)),false);
 			
 			// set the node selection to false in local tree
 			for (int i=0; i < localNodesSelected.size(); i++)
-				setNodeSelected(((Vertex)localNodesSelected.elementAt(i)),false);
+				setNodeSelected(((Vertex)localNodesSelected.get(i)),false);
 			
 			// clear the node selection for global and local
 			globalNodesSelected.clear();
@@ -289,10 +295,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		HashSet<Alignment> alignments = new HashSet<Alignment>();
 		Alignment align;
 		for (int i =0; i < globalNodesSelected.size(); i++){
-			global = (Vertex)globalNodesSelected.elementAt(i);
+			global = (Vertex)globalNodesSelected.get(i);
 			if(!global.isFake()) {
 				for(int j= 0; j < localNodesSelected.size();j++) {
-					local = (Vertex)localNodesSelected.elementAt(i);
+					local = (Vertex)localNodesSelected.get(i);
 					if(!local.isFake()) {
 						setNodeSelected(local,false);// I don't know if this is really needed
 						align = new Alignment(global.getNode(), local.getNode(), sim, relation);
@@ -612,8 +618,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		
 		// if there is at least one global node selected AND at least one local node selected
 		// then call the function called mapNodess
+		/*
 		if ((globalNodesSelected.size() != 0) && (localNodesSelected.size() != 0));
 			mapNodes(graphic);
+			*/
 	}
 	
 	/**
@@ -830,8 +838,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			// ONE-TO-ONE MAPPING   
 			
 			// get the local and global node selected
-			global = (Vertex)globalNodesSelected.elementAt(0);
-			local = (Vertex)localNodesSelected.elementAt(0);
+			global = (Vertex)globalNodesSelected.get(0);
+			local = (Vertex)localNodesSelected.get(0);
 			
 			// get their location on their canvas
 			x1 = global.getX2();
@@ -875,7 +883,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			for (int i =0; i< globalNodesSelected.size(); i++)
 			{
 				// get the global node
-				global = (Vertex)globalNodesSelected.elementAt(i);
+				global = (Vertex)globalNodesSelected.get(i);
 				
 				// get the location of the global node
 				x1 = global.getX2();
@@ -905,7 +913,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			for (int i =0; i<localNodesSelected.size(); i++)
 			{
 				// get the local node
-				local = (Vertex)localNodesSelected.elementAt(i);
+				local = (Vertex)localNodesSelected.get(i);
 				
 				// get the location of the local node
 				x2 = local.getX();
@@ -973,7 +981,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			y = new int[globalNodesSelected.size()];
 			
 			// first get the local one node
-			local = (Vertex)localNodesSelected.elementAt(0);
+			local = (Vertex)localNodesSelected.get(0);
 			
 			// get the location of the local node
 			x2 = local.getX();
@@ -983,7 +991,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			for (int i =0; i< globalNodesSelected.size(); i++)
 			{
 				// get the global node
-				global = (Vertex)globalNodesSelected.elementAt(i);
+				global = (Vertex)globalNodesSelected.get(i);
 				
 				// get the location of the global node
 				x1 = global.getX2();
@@ -1046,7 +1054,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			y = new int[localNodesSelected.size()];
 			
 			// first get the global one node
-			global = (Vertex)globalNodesSelected.elementAt(0);
+			global = (Vertex)globalNodesSelected.get(0);
 			
 			// get the location of the global node
 			x1 = global.getX2();
@@ -1056,7 +1064,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			for (int i =0; i<localNodesSelected.size(); i++)
 			{
 				// get the local node
-				local = (Vertex)localNodesSelected.elementAt(i);
+				local = (Vertex)localNodesSelected.get(i);
 				
 				// get the location of the local node
 				x2 = local.getX();
@@ -1108,6 +1116,170 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		repaint();
 	}	
 	
+	
+	public void mouseClicked( MouseEvent e ) {
+		Vertex node;
+		node = null;
+		if (e.getButton() == MouseEvent.BUTTON1)
+		{
+			// figure out which node was clicked
+			// it the node was not clicked it will return null
+			node = getNodeClicked(e.getX(), e.getY());
+			if (node == null)	{
+				// check to see if the user wants to exapand or close the tree
+				expandOrContract(e.getX(),e.getY());
+			}
+			else if(node !=null){ //a node has been clicked
+				if(e.isShiftDown() && e.isControlDown() ) {
+					//SHIFT+CLICK you can only select nodes not deselct
+					shiftAndCtrlClick(node);
+				}
+				else if(e.isShiftDown()) {
+					shiftClick(node);
+				}
+			}
+			repaint();
+		}
+	}
+	
+	/**Manage the selection of nodes, it may be one or more nodes of source or target*/
+	private void shiftAndCtrlClick(Vertex node) {
+		ArrayList<Vertex> clickedlist;
+		ArrayList<Vertex> selectedSet;
+		Vertex root;
+		if(node.isSourceOrGlobal()) {
+			root = globalTreeRoot;
+			clickedlist = globalClickedNodeList;
+			selectedSet = globalNodesSelected;
+		}
+		else {
+			root = localTreeRoot;
+			clickedlist = localClickedNodeList;
+			selectedSet = localNodesSelected;
+		}
+		if(node.getIsSelected()) {
+			//DO NOTHING U CAN'T UNSELECT WHILE SHIFTING AND CTRLING
+		}
+		else {
+			if(clickedlist.size()>0) { //WHEN SHIFT AND CLICK THE VERTEX WHO LEAD IS THE LAST SELECTED
+				Vertex last = clickedlist.get(clickedlist.size()-1);
+				if(last.getY() > node.getY2()) { //IF the selected one is higher or lower than the last selected and select nodes in the middle
+					selectMoreNodes(node.getY2(), last.getY(),  root); //i need to select also last so Y
+				}
+				else if(last.getY2() < node.getY()) {
+					selectMoreNodes(last.getY2(), node.getY(),  root); // this time Y2
+				}
+			}
+			clickANode(node);
+		}
+	}
+	
+	public void shiftClick(Vertex node) {
+		ArrayList<Vertex> clickedlist;
+		ArrayList<Vertex> selectedSet;
+		Vertex root;
+		if(node.isSourceOrGlobal()) {
+			root = globalTreeRoot;
+			clickedlist = globalClickedNodeList;
+			selectedSet = globalNodesSelected;
+		}
+		else {
+			root = localTreeRoot;
+			clickedlist = localClickedNodeList;
+			selectedSet = localNodesSelected;
+		}
+		//WHEN ONLY SHIFT CLICKING the Fist clicked leads
+		//any time deselect all and unclick all
+		//the only clicked will be the first selecting de
+		//and select those in the middle
+		if(clickedlist.size() > 0) {
+			Vertex firstClick = clickedlist.get(0);
+			clickedlist.clear();
+			/*
+			for(int i=0; i< clickedlist.size(); i++) {
+				clickedlist.remove(i);
+			}
+			*/
+			for(int i=0; i < clickedlist.size();i++) {
+				unClickANode(clickedlist.get(i));
+			}
+			for(int i=0; i < selectedSet.size();i++) {aaa
+				unSelectANode(selectedSet.get(i));
+			}
+			if(globalNodesSelected.size() == 0)
+				System.out.println("ok");
+			else System.out.println("not ok");
+			if(globalClickedNodeList.size() == 0)
+				System.out.println("click ok");
+			else System.out.println("click not ok");
+			clickANode(firstClick);
+			if(firstClick.getY() > node.getY2()) { //IF the selected one is higher or lower than the last selected and select nodes in the middle
+				selectMoreNodes(node.getY2(), firstClick.getY(),  root); //i need to select also last so Y to include node and not include firstclick
+			}
+			else if(firstClick.getY2() < node.getY()) {
+				selectMoreNodes(firstClick.getY2(), node.getY(),  root); // this time Y2 to include node and not include firstclick
+			}
+		}
+		clickANode(node);//the only two node clicked will be node and firstclick or only node if is the first node clicked
+	}
+
+	/**Select all nodes with height between min and max in the selected root*/
+	private void selectMoreNodes(int min, int max, Vertex root) {
+		Vertex node;
+		for (Enumeration e = root.preorderEnumeration(); e.hasMoreElements() ;){
+			// get the node
+			node = (Vertex) e.nextElement();
+			if (node.getY() >= min && node.getY() <= max){
+				selectANode(node);
+			}
+		}
+	}
+	
+	/**single node clicking invoked in mouseclick during a single click or ctrl click*/
+	public void clickANode(Vertex node) {
+		selectANode(node); //select it 
+		if(node.isSourceOrGlobal()) { //add to the list of clicked node this is needed to have a reference to the last nodes clicked for the shifting op
+			globalClickedNodeList.add(node);
+		}
+		else {
+			localClickedNodeList.add(node);
+		}
+		displayedNode = node; //we need to display nodes information int the right panel
+		((VertexDescriptionPane)(myUI.getDescriptionPanel())).fillDescription(node);
+	}
+	
+	/**single node clicking invoked in mouseclick during a single click or ctrl click but also a shift click in this case*/
+	public void unClickANode(Vertex node) {
+		unSelectANode(node);//unselect it and then unclick it
+		if(node.isSourceOrGlobal()) { //We have to remove the node from the clicked nodes list if it is in there
+			globalClickedNodeList.remove(node);
+		}
+		else {
+			globalClickedNodeList.remove(node);
+		}
+		if(node.equals(displayedNode)) { //clear the description panel on the right
+			((VertexDescriptionPane)(myUI.getDescriptionPanel())).clearDescription(node);
+			displayedNode = null;
+		}
+	}
+	
+	/**Select and unselect functions are the basic function to select or deselect any nodes used in the mouse clicked funct and manageSelection, is used for single click but also shift*/
+	public void selectANode(Vertex node) {
+		node.setIsSelected(true);
+		if(node.isSourceOrGlobal() && !globalNodesSelected.contains(node)) //is important to check if node is already there cos of the shifting operations
+			globalNodesSelected.add(node);
+		else if(!localNodesSelected.contains(node))
+			localNodesSelected.add(node);
+	}
+	/**Select and unselect functions are the basic function to select or deselect any nodes used in the mouse clicked funct and manageSelection*/
+	public void unSelectANode(Vertex node) {
+		node.setIsSelected(false);
+		if(node.isSourceOrGlobal())
+			globalNodesSelected.remove(node);
+		else 
+			localNodesSelected.remove(node);
+	}
+	
 	/**
 	 * This function imeplments the mouseClicked. 
 	 * When the user clicks on a node, this function hightlights the node.
@@ -1117,7 +1289,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	 *
 	 * @param e MouseEvent
 	 */
-	public void mouseClicked( MouseEvent e )
+	/*
+	public void mouseClicked2( MouseEvent e )
 	{
 		Vertex node;
 		node = null;
@@ -1128,12 +1301,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			// figure out which node was clicked
 			// it the node was not clicked it will return null
 			node = getNodeClicked(e.getX(), e.getY());
-			
 			if (node == null)	{
 				// check to see if the user wants to exapand or close the tree
 				expandOrContract(e.getX(),e.getY());
 			}else if(node !=null){ //a node has been clicked
-				//System.out.println("Clicked on node "+node.getName());
 				// check to see if the shift button and ctrl buttons are pressed down when clicking
 				if (e.isShiftDown() && e.isControlDown()){//BOTH SHIFT & CTRL are pressed down
 					if (getOldY() != -1)// select all the nodes from the previous location to current location
@@ -1232,6 +1403,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			}
 		}
 	}
+	*/
 	/**
 	 * This function does nothing.
 	 * @param e MouseEvent
@@ -1440,9 +1612,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			if (node.getY() >= y1 && node.getY() <= y2){
 				setNodeSelected(node,true);
 				if ((node.getNodeType() == GSM.SOURCENODE))
-					globalNodesSelected.addElement(node);
+					globalNodesSelected.add(node);
 				else if ((node.getNodeType() == GSM.TARGETNODE))
-					localNodesSelected.addElement(node);
+					localNodesSelected.add(node);
 			}
 		}
 	}		
@@ -1473,11 +1645,11 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	 */
 	public void setNodeSelected(Vertex node, boolean selected){
 		node.setIsSelected(selected);
-		if(selected){
-			((VertexDescriptionPane)(myUI.getDescriptionPanel())).fillDescription(node);
-		}else{
-			((VertexDescriptionPane)(myUI.getDescriptionPanel())).clearDescription(node);
-		}
+			if(selected){
+				((VertexDescriptionPane)(myUI.getDescriptionPanel())).fillDescription(node);
+			}else{
+				((VertexDescriptionPane)(myUI.getDescriptionPanel())).clearDescription(node);
+			}
 	}
 	
 	/**

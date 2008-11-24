@@ -683,4 +683,25 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 	public boolean isFake() {
 		return node == null;
 	}
+	
+	public boolean isSourceOrGlobal() {
+		return this.getNodeType() == GSM.SOURCENODE;
+	}
+	
+	public boolean isTargetOrLocal() {
+		return this.getNodeType() == GSM.TARGETNODE;
+	}
+	
+	/**Attention we are checking if they are part of the same tree, so if one is source and one is target the may be equals even if they shouldn't be*/
+	/*
+	public boolean equals(Object o) {
+		if(o instanceof Vertex) {
+			Vertex v = (Vertex)o;
+			if(v.getX() == x && v.getX2() == x2 && v.getY() == y && v.getY2() == y2) {
+				return true;
+			}
+		}
+		return false;
+	}
+	*/
 }
