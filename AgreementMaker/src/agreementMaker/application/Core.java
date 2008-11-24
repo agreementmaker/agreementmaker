@@ -1,8 +1,7 @@
 package agreementMaker.application;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
+
 
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
