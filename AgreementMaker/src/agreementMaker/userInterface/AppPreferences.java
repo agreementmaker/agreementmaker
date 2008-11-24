@@ -42,6 +42,9 @@ public class AppPreferences {
 	/** key for storing the last name of the file used to save the output of the evaluation with the reference file in the Evaluate Reference function */
 	private static final String 	PREF_LASTNAMEREFOUTPUT = "pref_lastnamerefoutput";		
 	
+	/** key for storing if the user is viewing the canvas in "selected matchings only" mode. */
+	private static final String		PREF_SELECTEDMATCHINGSONLY = "pref_selectedmatchingsonly";
+	
 	/**
 	 * Constructor
 	 */
@@ -432,8 +435,21 @@ public class AppPreferences {
 		appPrefs.put(PREF_LASTNAMEREFOUTPUT, name);
 	}
 	//THE LAST FORMAT FOR THE OUTPUT FILE OF THE REFERENCE EVALUATION HAS NOT BEEN IMPLEMENTED YET BECAUSE THERE IS ONLY ONE FORMAT NOW
+
+
 	
 	
+	/**
+	 * Support for "Selected Matchings Only" view mode
+	 */
+	public boolean getSelectedMatchingsOnly() {
+		return appPrefs.getBoolean(PREF_SELECTEDMATCHINGSONLY, false);
+	}
+	
+	public void saveSelectedMatchingsOnly(boolean value) {
+		appPrefs.putBoolean(PREF_SELECTEDMATCHINGSONLY, value);
+	}
+
 	
 	
 }
