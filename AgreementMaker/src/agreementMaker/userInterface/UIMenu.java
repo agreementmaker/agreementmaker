@@ -73,7 +73,7 @@ public class UIMenu implements ActionListener {
 	 */
 	private void refreshRecentMenus( JMenu recentsource, JMenu recenttarget ) {
 		
-		AppPreferences prefs = new AppPreferences();
+		AppPreferences prefs = ui.getAppPreferences();
 		
 		// first we start by removing all sub menus
 		recentsource.removeAll();
@@ -133,7 +133,7 @@ public class UIMenu implements ActionListener {
 		}
 		else if( obj == smoMenuItem ) {
 			// Save the SMO setting that has been changed
-			AppPreferences prefs = new AppPreferences();
+			AppPreferences prefs = ui.getAppPreferences();
 			boolean smoStatus = smoMenuItem.isSelected();
 			prefs.saveSelectedMatchingsOnly(smoStatus);
 			ui.getCanvas().setSMO(smoStatus);
