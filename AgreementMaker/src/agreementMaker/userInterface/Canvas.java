@@ -1203,7 +1203,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			for(int i=0; i < clickedlist.size();i++) {
 				unClickANode(clickedlist.get(i));
 			}
-			for(int i=0; i < selectedSet.size();i++) {aaa
+			for(int i=0; i < selectedSet.size();i++) {
 				unSelectANode(selectedSet.get(i));
 			}
 			if(globalNodesSelected.size() == 0)
