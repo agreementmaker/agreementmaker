@@ -109,6 +109,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private Vertex 		displayedNode;		//the last vertex selected //one of the clicked node but is last one clicked in fact is displayed
 	private Vector<Vertex>		highlightedNodes; //All global and local nodes to be highlighted, that means that are matched with any selected nodes, this set gets created and calculated only during matchings display
 	private int 				oldY;							// the previous y location of left clicked node	
+	private boolean				smoMode;  		// true or false, depending whether the user is viewing the canvas in Selected Matchings Only mode.
 	
 	//TO BE DELETED IN THE FUTURE DELETING ALL FUNCTIONS CONTAINING THEM
 	private int 				noOfLines = 100 ;				//Lines to be displayed, initial value = all = 100 (different from numRelations to be found by the algortithm that are contained in DefnMappingOptions
@@ -138,6 +139,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	  * @param tempUI 	UI class
 	  */
 	public Canvas(UI ui){
+		
 		// initialize the global and local selected nodes vector
 		globalNodesSelected = new ArrayList<Vertex>();
 		localNodesSelected = new ArrayList<Vertex>(); 
@@ -157,6 +159,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		
 		//Init Core
 		core = Core.getInstance();
+		
+		
+		// get whether the user had SMO enabled
+		smoMode = ui.getAppPreferences().getSelectedMatchingsOnly();
 		
 		
 		//NOT NEEDED ANYMORE
@@ -344,6 +350,12 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	public void setLocalTreeRoot(Vertex node)	{
 		localTreeRoot = node;
 	}
+	
+	/** Change whether we are in "Selected Matchings Only" (SMO) view mode. */
+	public void setSMO ( boolean smoEnabled ) {
+		smoMode = smoEnabled;
+	}
+	
 	public void setTree(TreeBuilder tb) {		
 		Vertex treeRoot = tb.getTreeRoot();
 		Ontology o = tb.getOntology();
@@ -477,12 +489,31 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			
 			if ((core.sourceIsLoaded() ) && (core.targetIsLoaded() )){
 				highlightedNodes = new Vector();
-				displayAllMatchings(graphic);//it fills up highlightedNodes also
-				//IF i the user has selected some nodes in both three display redlines of manual mappings to be created else
-				//if(globalNodesSelected.size()>0 && localNodesSelected.size()>0) {
-					drawManualRedLines(graphic);
-				//}else 
-					displayHighlightedVertex(graphic);
+				
+				if( !smoMode ) {  // we are not in SMO mode, just display the tree normally
+					displayAllMatchings(graphic);//it fills up highlightedNodes also
+					//IF i the user has selected some nodes in both three display redlines of manual mappings to be created else
+					//if(globalNodesSelected.size()>0 && localNodesSelected.size()>0) {
+						drawManualRedLines(graphic);
+					//}else 
+						displayHighlightedVertex(graphic);
+				}
+				else {
+					// we are in smoMode, check if the user has selected any source nodes
+					if( globalNodesSelected.size() == 0 && localNodesSelected.size() == 0 ) {
+						// the user has not selected any nodes, just display all the matchings
+						displayAllMatchings(graphic);
+						drawManualRedLines(graphic);
+						displayHighlightedVertex(graphic);						
+					}
+					else {
+						// the user has selected some nodes, and because we are in smoMode, we will only display the matchings for the selected nodes.
+						displaySelectedMatchings(graphic);
+						drawManualRedLines(graphic);
+						displayHighlightedVertex(graphic);
+					
+					}
+				}
 			}
 		}
 		
@@ -722,6 +753,82 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		}
 		
 	}
+	
+	
+	/*
+	 * "Selected Matchings Only" View Mode Functions  
+	 */
+	
+	/**
+	 * This function only displays the lines associated with a selected node.
+	 * Scan the Matchers Instances to display all classes and properties alignmentSet
+	 * dysplay a matcher only if it's isShown();
+	 * 
+	 *  @author cosmin @date Nov 24, 2008
+	 */
+	public void displaySelectedMatchings(Graphics g) {
+
+		ArrayList<AbstractMatcher> alist = core.getMatcherInstances();
+		if(alist != null) {
+			Iterator<AbstractMatcher> it = alist.iterator();
+			AbstractMatcher a = null;
+			while(it.hasNext()) {
+				a = it.next();
+				if(a.isShown()) {
+					if(a.areClassesAligned()) {
+						displaySelectedAlignmentSet(g, a, a.getClassAlignmentSet());
+						//a.getClassAlignmentSet().show();
+					}
+					if(a.arePropertiesAligned()) {
+						displaySelectedAlignmentSet(g, a, a.getPropertyAlignmentSet());
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Only for selected alignments.  
+	 */
+	private void displaySelectedAlignmentSet(Graphics g, AbstractMatcher matcher, AlignmentSet aset) {
+		if(aset != null) {
+			Alignment a = null;
+			for(int i = 0; i < aset.size(); i++) {
+				a = aset.getAlignment(i); 
+				displaySelectedAlignment(g, matcher, a);
+			}
+		}
+		
+	}
+
+	/**
+	 * Only for selected alignments.
+	 *
+	 */
+	private void displaySelectedAlignment(Graphics graphic, AbstractMatcher m, Alignment a) {
+		Vertex source, target;
+		ArrayList<Vertex> sourceVertexes = a.getEntity1().getVertexList();
+		ArrayList<Vertex> targetVertexes = a.getEntity2().getVertexList();
+		Iterator<Vertex> itsource = sourceVertexes.iterator();
+		Iterator<Vertex> ittarget;
+		while(itsource.hasNext()) {
+			source = itsource.next();
+			if(source.isVisible()) {
+				ittarget = targetVertexes.iterator();
+				while(ittarget.hasNext()) {
+					target = ittarget.next();
+					if(target.isVisible()) {
+						if( source.getIsSelected() || target.getIsSelected() )
+						displayLine(graphic,m, a, source, target);	
+					}
+				}
+			}
+
+		}
+	}
+	
+	/* End of SMO functions */
+	
 	
 	private void displayAlignment(Graphics graphic, AbstractMatcher m, Alignment a) {
 		Vertex source, target;
