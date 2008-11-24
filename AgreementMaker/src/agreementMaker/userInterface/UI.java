@@ -129,7 +129,9 @@ public class UI {
 
 		// Create a swing frame
 		frame = new JFrame("Agreement Maker");
-		frame.getContentPane().setLayout(new BorderLayout());	
+		frame.getContentPane().setLayout(new BorderLayout());
+		// TODO: Maybe ask the user if he wants to exit the program.  But that might be annoying.
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // if the user closes the window from the window manager, close the application.
 		
 		// Create the Menu Bar and Menu Items
 		uiMenu = new UIMenu(this);	
