@@ -233,7 +233,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		return matchersTablePanel;
 	}
 	
-	public void userMatching(HashSet<Alignment> alignments) {
+	public void userMatching(ArrayList<Alignment> alignments) {
 		if(alignments.size()>0) {
 			int[] rows = matchersTablePanel.getTable().getSelectedRows();
 			if(rows == null || rows.length == 0) {

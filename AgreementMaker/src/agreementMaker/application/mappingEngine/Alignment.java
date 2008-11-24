@@ -119,9 +119,7 @@ public class Alignment
         }
     }
     
-    public int hashCode() {//Tipically hashcode of a pair is the xor of the hashcodes, i don't know if the hashcode of the single node is good calculated like this
-    	return entity1.hashCode() ^ entity2.hashCode();
-    }
+
     
     public String toString() {
     	return "("+entity1+" "+entity2+" "+similarity+")";

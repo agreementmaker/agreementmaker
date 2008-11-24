@@ -336,7 +336,7 @@ public abstract class AbstractMatcher implements Matcher{
 
     //*****************USER ALIGN METHOD*****************************
     
-	public void addManualAlignments(HashSet<Alignment> alignments) {
+	public void addManualAlignments(ArrayList<Alignment> alignments) {
 		Iterator<Alignment> it = alignments.iterator();
 		Alignment al;
 		while(it.hasNext()) {

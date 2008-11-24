@@ -145,7 +145,7 @@ public class Core {
 	 * add or update the alignments selected by the user in all the matchers selected in the table
 	 * @param alignments selected by the user
 	 */
-	public void performUserMatching(int index, HashSet<Alignment> alignments) {
+	public void performUserMatching(int index, ArrayList<Alignment> alignments) {
 		AbstractMatcher matcher = matcherInstances.get(index);
 		matcher.addManualAlignments(alignments);
 	}
