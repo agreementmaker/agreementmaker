@@ -25,7 +25,7 @@ import agreementMaker.application.ontology.ontologyParser.TreeBuilder;
 import agreementMaker.userInterface.vertex.VertexDescriptionPane;
 
 
-public class UIMenu implements ActionListener, ItemListener {
+public class UIMenu implements ActionListener {
 	
 	// create 4 menus
 	private JMenu fileMenu, editMenu, viewMenu, helpMenu,developmentMenu;
@@ -34,6 +34,7 @@ public class UIMenu implements ActionListener, ItemListener {
 	private JMenuItem howToUse, aboutItem;		
 
 	private JMenuItem keyItem;
+	private JCheckBoxMenuItem smoMenuItem;  // Menu item for toggling "Selected Matchings Only" view mode.
 
 	// checkbox menu items and for view menu
 	private JCheckBoxMenuItem mapByDefinition, mapByUser, mapByContext, mapByConsolidation;
@@ -130,6 +131,13 @@ public class UIMenu implements ActionListener, ItemListener {
 		else if(obj == evaluateReferenceItem) {
 			openReferenceFileDialog();
 		}
+		else if( obj == smoMenuItem ) {
+			// Save the SMO setting that has been changed
+			AppPreferences prefs = new AppPreferences();
+			boolean smoStatus = smoMenuItem.isSelected();
+			prefs.saveSelectedMatchingsOnly(smoStatus);
+			ui.getCanvas().setSMO(smoStatus);
+		}
 		
 		
 		// TODO: find a Better way to do this
@@ -179,6 +187,9 @@ public class UIMenu implements ActionListener, ItemListener {
 	
 	
 	public void init(){
+		
+		// need AppPreferences for smoItem, to get if is checked or not.
+		AppPreferences prefs = new AppPreferences();
 		
 		//Creating the menu bar
 		myMenuBar = new JMenuBar();
@@ -271,6 +282,14 @@ public class UIMenu implements ActionListener, ItemListener {
 		keyItem.addActionListener(this);
 		viewMenu.add(keyItem);
 		
+		viewMenu.addSeparator();
+		
+		// add "Selected Matchings Only" option to the view menu
+		smoMenuItem = new JCheckBoxMenuItem("Selected Matchings Only");
+		smoMenuItem.addActionListener(this);
+		smoMenuItem.setSelected(prefs.getSelectedMatchingsOnly());
+		viewMenu.add(smoMenuItem);
+		
 		// Build  the development menu
 		developmentMenu = new JMenu("Development");
 		developmentMenu.setMnemonic(KeyEvent.VK_D);
@@ -302,12 +321,6 @@ public class UIMenu implements ActionListener, ItemListener {
 
 	}
 	
-	
-	public void itemStateChanged (ItemEvent e){
-		Object obj = e.getItemSelectable();
-		//TODO
-
-	}
 
 	/**
 	 * This method reads the XML or OWL files and creates trees for mapping
