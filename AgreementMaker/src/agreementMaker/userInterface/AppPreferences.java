@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.prefs.Preferences;
 
 import agreementMaker.GSM;
+import agreementMaker.application.mappingEngine.MatcherSetting;
 
 /** 
  * @author cosmin
@@ -450,6 +451,19 @@ public class AppPreferences {
 		appPrefs.putBoolean(PREF_SELECTEDMATCHINGSONLY, value);
 	}
 
+	
+	
+	/**
+	 * Support for various settings saved by the Matcher Panels
+	 * Used in conjuction with the MatcherSetting enum.
+	 */
+	public void savePanelSetting( MatcherSetting setting, float value ) {
+		appPrefs.putFloat( "PREF_" + setting.prefKey , value );		
+	}
+	public float getPanelSetting( MatcherSetting setting ) {
+		return appPrefs.getFloat( "PREF_" + setting.prefKey, setting.defFloat );
+		
+	}
 	
 	
 }
