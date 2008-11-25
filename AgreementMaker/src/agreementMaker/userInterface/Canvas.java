@@ -862,17 +862,22 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		if(source.getIsSelected() && target.getIsSelected()) {
 			scolor = Colors.selected;
 			tcolor = Colors.selected;
-			linecolor = Colors.selected;
+			if(!(globalNodesSelected.size()>0 && localNodesSelected.size()>0)) //highlight mapping only if user is not creating a user mapping
+				linecolor = Colors.selected;
 		}
 		else if(source.getIsSelected()) {
-			highlightedNodes.add(target);
+			if(!(globalNodesSelected.size()>0 && localNodesSelected.size()>0)) {
+				highlightedNodes.add(target);
+				linecolor = Colors.selected;
+			}
 			scolor = Colors.selected;
-			linecolor = Colors.selected;
 		}
 		else if(target.getIsSelected()) {
-			highlightedNodes.add(source);
+			if(!(globalNodesSelected.size()>0 && localNodesSelected.size()>0)) {
+				linecolor = Colors.selected;
+				highlightedNodes.add(source);
+			}
 			 tcolor = Colors.selected;
-			linecolor = Colors.selected;
 		}
 			
 		graphic.setColor(linecolor);
