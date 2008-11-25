@@ -37,6 +37,8 @@ public class BaseSimilarityMatcherParametersPanel extends AbstractMatcherParamet
 	 * 
 	 */
 	public BaseSimilarityMatcherParametersPanel() {
+		super();
+		
 		
 		this.setPreferredSize(new Dimension(350, 175) );
 		
