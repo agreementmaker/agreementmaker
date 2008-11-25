@@ -213,7 +213,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		double DSI_similarity = 0.0d;
 		if( n == 0 ) {
 			// if n == 0, then no summation component.
-			DSI_similarity = MCP * baseSimilarity.getSimilarity();
+			DSI_similarity = baseSimilarity.getSimilarity();
 		} else {
 			DSI_similarity = MCP * baseSimilarity.getSimilarity() + ((2*(1 - MCP))/(n*(n+1)))* summation;
 		}
