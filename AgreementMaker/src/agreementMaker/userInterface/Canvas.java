@@ -52,6 +52,8 @@ import agreementMaker.application.ontology.ontologyParser.TreeBuilder;
 import agreementMaker.application.ontology.ontologyParser.XmlTreeBuilder;
 import agreementMaker.userInterface.vertex.Vertex;
 import agreementMaker.userInterface.vertex.VertexDescriptionPane;
+import agreementMaker.userInterface.vertex.VertexLine;
+
 import java.util.Date;
 
 
@@ -107,7 +109,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private ArrayList<Vertex>		globalNodesSelected;			// the global nodes which are selected (so all cliecked and also others selected via shifting)
 	private Vertex 		rightClickedNode;			// right clicked node
 	private Vertex 		displayedNode;		//the last vertex selected //one of the clicked node but is last one clicked in fact is displayed
-	private Vector<Vertex>		highlightedNodes; //All global and local nodes to be highlighted, that means that are matched with any selected nodes, this set gets created and calculated only during matchings display
+	private Vector<VertexLine>		selectedLines; //All global and local nodes to be highlighted, that means that are matched with any selected nodes, this set gets created and calculated only during matchings display
 	private int 				oldY;							// the previous y location of left clicked node	
 	private boolean				smoMode;  		// true or false, depending whether the user is viewing the canvas in Selected Matchings Only mode.
 	
@@ -488,37 +490,17 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				displayTree(graphic, false);//local
 			
 			if ((core.sourceIsLoaded() ) && (core.targetIsLoaded() )){
-				highlightedNodes = new Vector();
-				
-				if( !smoMode ) {  // we are not in SMO mode, just display the tree normally
-					displayAllMatchings(graphic);//it fills up highlightedNodes also
-					//IF i the user has selected some nodes in both three display redlines of manual mappings to be created else
-					//if(globalNodesSelected.size()>0 && localNodesSelected.size()>0) {
-						drawManualRedLines(graphic);
-					//}else 
-						displayHighlightedVertex(graphic);
-				}
-				else {
-					// we are in smoMode, check if the user has selected any source nodes
-					if( globalNodesSelected.size() == 0 && localNodesSelected.size() == 0 ) {
-						// the user has not selected any nodes, just display all the matchings
-						displayAllMatchings(graphic);
-						drawManualRedLines(graphic);
-						displayHighlightedVertex(graphic);						
-					}
-					else {
-						// the user has selected some nodes, and because we are in smoMode, we will only display the matchings for the selected nodes.
-						displaySelectedMatchings(graphic);
-						drawManualRedLines(graphic);
-						displayHighlightedVertex(graphic);
-					
-					}
+				selectedLines = new Vector<VertexLine>();//lines to be highlighted if user is not creating a manual matching
+				displayAllMatchings(graphic);//it fills up selectedLines, thats why we have to invoke this method olso in SMO mode
+				//IF i the user has selected some nodes in both three display redlines of manual mappings to be created
+				if(globalNodesSelected.size()>0 && localNodesSelected.size()>0) {
+					drawManualRedLines(graphic);
+				}else { 
+					displayHighlightedVertex(graphic);
 				}
 			}
 		}
-		
-		this.revalidate();
-		
+		this.revalidate();	
 	}
 	
 	/**
@@ -852,74 +834,88 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	}
 	
 	private void displayLine(Graphics graphic, AbstractMatcher m, Alignment a, Vertex source, Vertex target) {
-		//DRAW THE MAPPING
-		Color scolor = m.getColor();
-		Color tcolor = m.getColor();
-		Color linecolor = m.getColor();
-		//selected node has color
-		//all nodes aligned with it are highlighted with a different color
-		//but I can't color highlighted in here, because they could be overcolored by the next matcher alignments  so highlighted gets colored in the displayHilightedVertex
-		if(source.getIsSelected() && target.getIsSelected()) {
-			scolor = Colors.selected;
-			tcolor = Colors.selected;
-			if(!(globalNodesSelected.size()>0 && localNodesSelected.size()>0)) //highlight mapping only if user is not creating a user mapping
-				linecolor = Colors.selected;
+		//if needed add the line to selected lines, we must do this both in SMO mode and normal mode
+		VertexLine line = new VertexLine();
+		line.source = source;
+		line.target = target;
+		line.alignment = a;
+		if( (source.getIsSelected() && !target.getIsSelected()) || (!source.getIsSelected() && target.getIsSelected()) ) {
+			selectedLines.add(line);
 		}
-		else if(source.getIsSelected()) {
-			if(!(globalNodesSelected.size()>0 && localNodesSelected.size()>0)) {
-				highlightedNodes.add(target);
-				linecolor = Colors.selected;
+		//DRAW VERTEX AND MAPPING LINES, IF VERTEX ARE SELECTED (NOT HIGHLIGHTED) COLOR THEM AS SELECTED,
+		//highlighted lines and vertex are not colored as selected here will done later scanning selectedLines
+		if( !smoMode || (globalNodesSelected.size() ==0 && localNodesSelected.size() == 0)){ 
+			Color linecolor = m.getColor();
+			Color scolor = m.getColor();
+			Color tcolor = m.getColor();
+			if(target.getIsSelected()) {
+				tcolor = Colors.selected;
 			}
-			scolor = Colors.selected;
-		}
-		else if(target.getIsSelected()) {
-			if(!(globalNodesSelected.size()>0 && localNodesSelected.size()>0)) {
-				linecolor = Colors.selected;
-				highlightedNodes.add(source);
+			if(source.getIsSelected()) {
+				scolor = Colors.selected;
 			}
-			 tcolor = Colors.selected;
-		}
+			//DRAW LINE
+			graphic.setColor(linecolor);
+			int x1 = source.getX2(); //starting point of the line is the end of the left vertex
+			int y1 = (source.getY()+source.getY2())/2; //from the middle of the left vertex
+			int x2 = target.getX(); //ending point of the line is the beginning of the right vertex
+			int y2 = (target.getY()+target.getY2())/2;//to the middle of the right vertex
+			graphic.drawLine(x1,y1,x2,y2);
+			//DRAW STRING ON LINE
+			graphic.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+			graphic.drawString(a.getRelation()+" "+Utility.getNoFloatPercentFromDouble(a.getSimilarity()),(x1+x2)/2,((y1+y2)/2) -5);	
 			
-		graphic.setColor(linecolor);
-		int x1 = source.getX2(); //starting point of the line is the end of the left vertex
-		int y1 = (source.getY()+source.getY2())/2; //from the middle of the left vertex
-		int x2 = target.getX(); //ending point of the line is the beginning of the right vertex
-		int y2 = (target.getY()+target.getY2())/2;//to the middle of the right vertex
-		graphic.drawLine(x1,y1,x2,y2);
-
-		
-		graphic.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
-		graphic.drawString(a.getRelation()+" "+Utility.getNoFloatPercentFromDouble(a.getSimilarity()),(x1+x2)/2,((y1+y2)/2) -5);	
-		//FILL THE VERTEX NODE TO HIGHLIGHT IT, this will cancel the name of the vertex and the shape so we have to rewrite both
-		//Same color of the line
-		graphic.setColor(scolor);
-		graphic.fillRoundRect(source.getX(),source.getY(),source.getWidth(),source.getHeight(), source.getArcWidth(),source.getArcHeight());
-		graphic.setColor(tcolor);
-		graphic.fillRoundRect(target.getX(),target.getY(),target.getWidth(),target.getHeight(), target.getArcWidth(),target.getArcHeight());
-		
-		// change the color to foreground color to
-		graphic.setColor(Colors.foreground);
-		//Draw shape
-		graphic.drawRoundRect(source.getX(),source.getY(),source.getWidth(),source.getHeight(), source.getArcWidth(),source.getArcHeight());
-		graphic.drawRoundRect(target.getX(),target.getY(),target.getWidth(),target.getHeight(), target.getArcWidth(),target.getArcHeight());
-		// display the node name inside the round rectangle
-		
-		graphic.drawString(source.getName(),source.getX()+5,source.getY()+15);
-		graphic.drawString(target.getName(),target.getX()+5,target.getY()+15);
+			//FILL THE VERTEX NODE, this will cancel the name of the vertex and the shape so we have to rewrite both
+			//this color the node if it's selected but it doesn't color it if it's highlighted
+			graphic.setColor(scolor);
+			graphic.fillRoundRect(source.getX(),source.getY(),source.getWidth(),source.getHeight(), source.getArcWidth(),source.getArcHeight());
+			graphic.setColor(tcolor);
+			graphic.fillRoundRect(target.getX(),target.getY(),target.getWidth(),target.getHeight(), target.getArcWidth(),target.getArcHeight());
+			
+			// change the color to foreground color to
+			graphic.setColor(Colors.foreground);
+			//Draw shape
+			graphic.drawRoundRect(source.getX(),source.getY(),source.getWidth(),source.getHeight(), source.getArcWidth(),source.getArcHeight());
+			graphic.drawRoundRect(target.getX(),target.getY(),target.getWidth(),target.getHeight(), target.getArcWidth(),target.getArcHeight());
+			// display the node name inside the round rectangle
+			graphic.drawString(source.getName(),source.getX()+5,source.getY()+15);
+			graphic.drawString(target.getName(),target.getX()+5,target.getY()+15);
+		}
 	}
 	
 	public void displayHighlightedVertex(Graphics graphic) {
-		Vertex node;
-		for(int i = 0; i < highlightedNodes.size(); i++) {
-			node = (Vertex)highlightedNodes.get(i);
+		//it colors the line and not selected node between the two
+		VertexLine line;
+		Vertex highlightedNode;
+		Vertex source;
+		Vertex target;
+		Alignment a;
+		for(int i = 0; i < selectedLines.size(); i++) {
+			line = selectedLines.get(i);
+			highlightedNode = line.getHighlightedNode();
+			source = line.source;
+			target = line.target;
+			a = line.alignment;
+			
+			//HIGHLIGHT LINE
 			graphic.setColor(Colors.highlighted);
-			graphic.fillRoundRect(node.getX(),node.getY(),node.getWidth(),node.getHeight(), node.getArcWidth(),node.getArcHeight());
-			graphic.setColor(Colors.foreground);
-			graphic.drawRoundRect(node.getX(),node.getY(),node.getWidth(),node.getHeight(), node.getArcWidth(),node.getArcHeight());
+			//DRAW LINE
+			int x1 = source.getX2(); //starting point of the line is the end of the left vertex
+			int y1 = (source.getY()+source.getY2())/2; //from the middle of the left vertex
+			int x2 = target.getX(); //ending point of the line is the beginning of the right vertex
+			int y2 = (target.getY()+target.getY2())/2;//to the middle of the right vertex
+			graphic.drawLine(x1,y1,x2,y2);
+			//DRAW STRING ON LINE
 			graphic.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
-			graphic.drawString(node.getName(),node.getX()+5,node.getY()+15);
+			graphic.drawString(a.getRelation()+" "+Utility.getNoFloatPercentFromDouble(a.getSimilarity()),(x1+x2)/2,((y1+y2)/2) -5);	
+			
+			//COLOR HIGHLIGHT VERTEX
+			graphic.fillRoundRect(highlightedNode.getX(),highlightedNode.getY(),highlightedNode.getWidth(),highlightedNode.getHeight(), highlightedNode.getArcWidth(),highlightedNode.getArcHeight());
+			graphic.setColor(Colors.foreground);
+			graphic.drawRoundRect(highlightedNode.getX(),highlightedNode.getY(),highlightedNode.getWidth(),highlightedNode.getHeight(), highlightedNode.getArcWidth(),highlightedNode.getArcHeight());
+			graphic.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+			graphic.drawString(highlightedNode.getName(),highlightedNode.getX()+5,highlightedNode.getY()+15);
 		}
-		
 	}
 	
 	/**

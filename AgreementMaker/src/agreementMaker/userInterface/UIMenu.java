@@ -130,6 +130,7 @@ public class UIMenu implements ActionListener {
 			boolean smoStatus = smoMenuItem.isSelected();
 			prefs.saveSelectedMatchingsOnly(smoStatus);
 			ui.getCanvas().setSMO(smoStatus);
+			ui.redisplayCanvas();
 		}
 		
 		
