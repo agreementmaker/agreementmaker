@@ -133,7 +133,6 @@ public class UIMenu implements ActionListener {
 			ui.redisplayCanvas();
 		}
 		
-		
 		// TODO: find a Better way to do this
 		
 		String command = ae.getActionCommand();  // get the command string we set
