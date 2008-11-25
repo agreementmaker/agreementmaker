@@ -457,13 +457,19 @@ public class AppPreferences {
 	 * Support for various settings saved by the Matcher Panels
 	 * Used in conjuction with the MatcherSetting enum.
 	 */
-	public void savePanelSetting( MatcherSetting setting, float value ) {
+	public void savePanelFloat( MatcherSetting setting, float value ) {
 		appPrefs.putFloat( "PREF_" + setting.prefKey , value );		
 	}
-	public float getPanelSetting( MatcherSetting setting ) {
+	public void savePanelBool( MatcherSetting setting, boolean value ) {
+		appPrefs.putBoolean( "PREF_" + setting.prefKey , value );
+	}
+	public float getPanelFloat( MatcherSetting setting ) {
 		return appPrefs.getFloat( "PREF_" + setting.prefKey, setting.defFloat );
 		
 	}
-	
+	public boolean getPanelBool( MatcherSetting setting ) {
+		return appPrefs.getBoolean( "PREF_" + setting.prefKey, setting.defBool );
+		
+	}
 	
 }
