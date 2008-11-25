@@ -1,16 +1,13 @@
 package agreementMaker.application.mappingEngine.Matchers;
 
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 import javax.swing.tree.TreeNode;
 
-import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
+import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.AlignmentMatrix;
-import agreementMaker.application.mappingEngine.DefComparator;
-import agreementMaker.application.mappingEngine.stemmer.PorterStemmer;
 import agreementMaker.application.ontology.Node;
 import agreementMaker.userInterface.vertex.Vertex;
 
@@ -20,27 +17,30 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 	private AlignmentMatrix inputClassesMatrix = null;
 	private AlignmentMatrix inputPropertiesMatrix = null;
 	
-	
-	// This enum is required for the align methods.  Because DSI uses the input similarity,
-	// it needs to know which kind of nodes we are aligning (classes or properties) in order to lookup
-	// the similarity in the corresponding matrix (classesMatrix or propertiesMatrix) 
-	//private enum alignType { aligningClasses, aligningProperties };
+
+	private DescendantsSimilarityInheritanceParametersPanel dsiPanel;
 	
 	private double MCP;
 	
 	public DescendantsSimilarityInheritanceMatcher(int key, String theName) {
 		super(key, theName);
-		// TODO Auto-generated constructor stub
+		
+
+		dsiPanel = new DescendantsSimilarityInheritanceParametersPanel();
+		needsParam = true; // we need to set the MCP before runing DSI
 		
 		
 		// requires base similarity result (but can work on any alignment result) 
 		minInputMatchers = 1;
 		maxInputMatchers = 1;
-		MCP = 0.75d;
+		
 	}
 	
+	public DescendantsSimilarityInheritanceParametersPanel getParametersPanel() { return dsiPanel; }  // return the options panel for this matcher.
+	
 	/*
-	 * Before the align process, have a reference to the classes
+	 * Before the align process, have a reference to the classes Matrix, and the properties Matrix of the input Matcher
+	 * Also, get our MCP value, which is set by the user 
 	 * @see agreementMaker.application.mappingEngine.AbstractMatcher#beforeAlignOperations()
 	 */
 	protected void beforeAlignOperations() {
@@ -55,6 +55,9 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
     	
     	inputClassesMatrix = input.getClassesMatrix();
     	inputPropertiesMatrix = input.getPropertiesMatrix();
+    	
+    	// set our MCP
+    	MCP = dsiPanel.getParameters().MCP;
     	
 	}
 	
@@ -145,7 +148,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		
 		for( int i = 1; i <= n; i++ ) {
 			
-			// Here we are using the Vertex array returned by getPath();
+			// Here we are using the TreeNode array returned by getPath();
 			// The last entry of the array is the node,
 			// the previous to last is the parent of the node, and so on
 			
