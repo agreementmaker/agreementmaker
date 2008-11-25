@@ -12,8 +12,11 @@ import javax.swing.JLabel;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
+import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
 import agreementMaker.application.mappingEngine.AbstractParameters;
+import agreementMaker.application.mappingEngine.MatcherSetting;
+import agreementMaker.userInterface.AppPreferences;
 
 public class BaseSimilarityMatcherParametersPanel extends AbstractMatcherParametersPanel implements ItemListener {
 
@@ -31,6 +34,8 @@ public class BaseSimilarityMatcherParametersPanel extends AbstractMatcherParamet
 	private JLabel warningLabel;
 	private JCheckBox useDictionaryCheckbox;
 	
+	private AppPreferences prefs;
+	
 	/*
 	 * The constructor creates the GUI elements and adds 
 	 * them to this panel.  It also creates the parameters object.
@@ -42,6 +47,9 @@ public class BaseSimilarityMatcherParametersPanel extends AbstractMatcherParamet
 		
 		this.setPreferredSize(new Dimension(350, 175) );
 		
+		prefs = Core.getInstance().getUI().getAppPreferences();
+		parameters = new BaseSimilarityParameters();
+		
 		useDictionaryLabel = new JLabel("<html>Would you like to consult a dictionary while performing the Base Similarity Matching ?</html>");
 		useDictionaryLabel.setAlignmentX((float) 0.5);
 		
@@ -50,8 +58,10 @@ public class BaseSimilarityMatcherParametersPanel extends AbstractMatcherParamet
 		
 				
 		useDictionaryCheckbox = new JCheckBox("Use Dictionary");
+		parameters.useDictionary = prefs.getPanelBool( MatcherSetting.BSIM_USEDICT );  // get the saved setting
+		useDictionaryCheckbox.setSelected( parameters.useDictionary ); // update the checkbox
 		useDictionaryCheckbox.addItemListener(this);  // when the checkbox toggles, we update our parameters.
-		parameters = new BaseSimilarityParameters();
+		
 		
 		
 		// The GUI layout - a pain in the butt to get right
@@ -89,10 +99,9 @@ public class BaseSimilarityMatcherParametersPanel extends AbstractMatcherParamet
 	}
 	
 	public String checkParameters() {
-		//If there are any constraints to be satisfied by matcher params
-		//check them overriding this method
-		//if there are no errors in parameters selected then return null or "", 
-		//else return the message to be shown to the user to correct errors
+		
+		prefs.savePanelBool( MatcherSetting.BSIM_USEDICT, parameters.useDictionary );
+		
 		return null;
 	}
 
