@@ -92,6 +92,7 @@ public class AbstractMatcherParametersDialog extends JDialog implements ActionLi
 		int width = fm.stringWidth(getTitle()) + 100;
 		width = Math.max(width, getPreferredSize().width);
 		setSize(new Dimension(width, getPreferredSize().height));
+		pack();  // make it smaller.
 		setLocationRelativeTo(null); 	// center the window on the screen
 		setModal(true);
 		setVisible(true);
