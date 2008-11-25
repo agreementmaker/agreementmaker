@@ -58,7 +58,7 @@ public class DescendantsSimilarityInheritanceParametersPanel extends AbstractMat
 		constraintsLabel = new JLabel("<html>( 0.0 ≤ MCP ≤ 1.0 )</html>");
 				
 		mcpField = new JTextField(6);
-		mcpField.setText(    Float.toString(prefs.getPanelSetting( MatcherSetting.DSI_MCP ))    ); // get the saved MCP value (usually the last one the user entered)
+		mcpField.setText(    Float.toString(prefs.getPanelFloat( MatcherSetting.DSI_MCP ))    ); // get the saved MCP value (usually the last one the user entered)
 		//mcpField.setPreferredSize(new Dimension(200, 40));
 		
 		parameters = new DescendantsSimilarityInheritanceParameters();
@@ -102,7 +102,7 @@ public class DescendantsSimilarityInheritanceParametersPanel extends AbstractMat
 		}
 
 		// we are going to save the value the user enters, so they don't have to keep entering it.		
-		Core.getInstance().getUI().getAppPreferences().savePanelSetting( MatcherSetting.DSI_MCP , inputMCP);
+		Core.getInstance().getUI().getAppPreferences().savePanelFloat( MatcherSetting.DSI_MCP , inputMCP);
 		parameters.MCP = inputMCP;  // save our MCP to the parameters.
 		
 		return null;
