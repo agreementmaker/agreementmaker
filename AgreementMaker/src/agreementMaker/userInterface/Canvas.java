@@ -1262,17 +1262,17 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	}
 	
 		
-	private void clearLocalSelections() {
+	public void clearLocalSelections() {
 		unClickAllNode(false);
 		unSelectAllNode(false);
 		
 	}
-	private void clearGlobalSelections() {
+	public void clearGlobalSelections() {
 		unClickAllNode(true);
 		unSelectAllNode(true);
 		
 	}
-	private void clearAllSelections() {
+	public void clearAllSelections() {
 		clearGlobalSelections();
 		clearLocalSelections();
 	}

@@ -269,6 +269,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		}
 		//update the table
 		((AbstractTableModel)matchersTablePanel.getTable().getModel()).fireTableRowsDeleted(firstRow, lastRow);
+		ui.getCanvas().clearAllSelections();
 		ui.redisplayCanvas();
 	}
 }
