@@ -210,17 +210,17 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 		}
 		
 		
-		// the final DSI similarity computed between the current two nodes
-		double DSI_similarity = 0.0d;
+		// the final SSC similarity computed between the current two nodes
+		double SSC_similarity = 0.0d;
 		if( n == 0 || m == 0 ) {
 			// if n == 0 || m == 0, then there is no summation component.
-			DSI_similarity = baseSimilarity.getSimilarity();
+			SSC_similarity = baseSimilarity.getSimilarity();
 		} else {
-			DSI_similarity = MCP * baseSimilarity.getSimilarity() + ((1 - MCP)/n)* summation;  // the SSC formula
+			SSC_similarity = MCP * baseSimilarity.getSimilarity() + ((1 - MCP)/n)* summation;  // the SSC formula
 		}
 		
 		// return the result
-		return new Alignment(source, target, DSI_similarity, Alignment.EQUIVALENCE);
+		return new Alignment(source, target, SSC_similarity, Alignment.EQUIVALENCE);
 		
 	}
 	
