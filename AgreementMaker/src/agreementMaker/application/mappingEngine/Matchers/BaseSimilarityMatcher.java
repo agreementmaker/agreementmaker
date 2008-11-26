@@ -16,7 +16,6 @@ import agreementMaker.application.ontology.Node;
 
 public class BaseSimilarityMatcher extends AbstractMatcher { 
 
-	private BaseSimilarityMatcherParametersPanel bsimPanel;
 
 	// JAWS WordNet interface
 	private WordNetDatabase wordnet  = null;
@@ -28,13 +27,14 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		super(n, s);
 		needsParam = true;
 		
-		bsimPanel = new BaseSimilarityMatcherParametersPanel();
+		
+		parametersPanel = new BaseSimilarityMatcherParametersPanel();
 		
 	}
 
 
 	public BaseSimilarityMatcherParametersPanel getParametersPanel() {
-		return bsimPanel;
+		return (BaseSimilarityMatcherParametersPanel) parametersPanel;
 	}
 	
 	
