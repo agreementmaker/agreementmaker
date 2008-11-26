@@ -9,6 +9,9 @@ import java.io.PrintStream;
  */
 public class GSM
 {
+	// AgreementMaker Version!
+	public static final String AgreementMakerVersion = "v0.2";
+	
 	// local title
 	public static final String TARGETTITLE = "Target Ontology";
 	// ontology title
