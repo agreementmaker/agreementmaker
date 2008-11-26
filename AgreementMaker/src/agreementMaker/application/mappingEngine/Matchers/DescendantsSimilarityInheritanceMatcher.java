@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import javax.swing.tree.TreeNode;
 
 import agreementMaker.application.mappingEngine.AbstractMatcher;
-import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.AlignmentMatrix;
 import agreementMaker.application.ontology.Node;
@@ -26,7 +25,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		
 
 		parametersPanel = new DescendantsSimilarityInheritanceParametersPanel();
-		needsParam = true; // we need to set the MCP before runing DSI
+		needsParam = true; // we need to set the MCP before running DSI
 		
 		
 		// requires base similarity result (but can work on any alignment result) 
@@ -36,7 +35,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 	}
 	
 	
-	/*
+	/**
 	 * Before the align process, have a reference to the classes Matrix, and the properties Matrix of the input Matcher
 	 * Also, get our MCP value, which is set by the user 
 	 * @see agreementMaker.application.mappingEngine.AbstractMatcher#beforeAlignOperations()
