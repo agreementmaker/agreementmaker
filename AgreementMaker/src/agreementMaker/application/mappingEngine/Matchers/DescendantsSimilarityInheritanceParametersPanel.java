@@ -55,7 +55,8 @@ public class DescendantsSimilarityInheritanceParametersPanel extends AbstractMat
 		instructionsLabel.setAlignmentX((float) 0.5);
 		
 		mcpLabel = new JLabel("<html>MCP: </html>");
-		constraintsLabel = new JLabel("<html>( 0.0 ≤ MCP ≤ 1.0 )</html>");
+		
+		constraintsLabel = new JLabel("<html>( 0.0 \u2264 MCP \u2264 1.0 )</html>");
 				
 		mcpField = new JTextField(6);
 		mcpField.setText(    Float.toString(prefs.getPanelFloat( MatcherSetting.DSI_MCP ))    ); // get the saved MCP value (usually the last one the user entered)
