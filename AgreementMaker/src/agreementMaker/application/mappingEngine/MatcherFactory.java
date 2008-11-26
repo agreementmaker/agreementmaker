@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import agreementMaker.application.mappingEngine.Matchers.BaseSimilarityMatcher;
 import agreementMaker.application.mappingEngine.Matchers.DescendantsSimilarityInheritanceMatcher;
+import agreementMaker.application.mappingEngine.Matchers.SiblingsSimilarityContributionMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.AllOneMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.AllZeroMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.CopyMatcher;
@@ -31,19 +32,20 @@ public class MatcherFactory {
 	 *  remove it from the getInstance() method
 	 * ALWAYS CHECK that numMatchers, the list of indexes and MatcherNames are consistent when applying a change
 	 */
-	
-	public final static int EQUALSMATCHER = 0;
-	public final static int RANDOMMATCHER = EQUALSMATCHER+1;
-	public final static int ALLUNOMATCHER = RANDOMMATCHER+1;
-	public final static int ALLZEROMATCHER = ALLUNOMATCHER+1;
-	public final static int COPYMATCHER = ALLZEROMATCHER+1;
-	public final static int BASESIMILARITYMATCHER = COPYMATCHER+1;
-	public final static int DSIMATCHER = BASESIMILARITYMATCHER+1;
-	public final static int REFERENCEMATCHER = DSIMATCHER+1; 
+	// TODO: ENUM! Look below to the next todo.								// COUNT
+	public final static int EQUALSMATCHER = 0;								// 1
+	public final static int RANDOMMATCHER = EQUALSMATCHER+1;				// 2
+	public final static int ALLUNOMATCHER = RANDOMMATCHER+1;				// 3
+	public final static int ALLZEROMATCHER = ALLUNOMATCHER+1;				// 4
+	public final static int COPYMATCHER = ALLZEROMATCHER+1;					// 5
+	public final static int BASESIMILARITYMATCHER = COPYMATCHER+1;			// 6
+	public final static int DSIMATCHER = BASESIMILARITYMATCHER+1;			// 7
+	public final static int SSCMATCHER = DSIMATCHER+1;						// 8
+	public final static int REFERENCEMATCHER = SSCMATCHER+1; 				// 9
 	/**Total number of matching algorithm that will be visualized in the agreememtmaker
 	 * Remember to modify this value when adding and removing an algorithm
 	 * */
-	public final static int numMatchers = 8;
+	public final static int numMatchers = 9;  // look at COUNT above
 	
 	/**
 	 * When adding a matcher add the line names[NEWINDEX] = "My name"; Name shouldn't be too long but at the same time should be a user clear name;
@@ -58,9 +60,17 @@ public class MatcherFactory {
 		names[COPYMATCHER] = "Copy Matcher";
 		names[BASESIMILARITYMATCHER] = "Base Similarity";
 		names[DSIMATCHER] = "Descendant's Similarity Inheritance (DSI)";
+		names[SSCMATCHER] = "Sibling's Similarity Contribution (SSC)";
 		names[REFERENCEMATCHER] = "Reference Alignment";
 		return names;
 	}
+	
+	/**
+	 * Enum for keeping the current list of matchers in the system.
+	 */
+	/** TODO: I will start this sometime .... @author cosmin @date Nov 26, 2008 */
+	
+	
 	
 	/**Return the real istance of the matcher given the selected nameindex
 	 * the instanceIndex is the unique identifier of this algorithm, is the unique parameter of the constructor and is the identifier of the matcher instance in the run matchers list (the table of the AM)
@@ -89,6 +99,9 @@ public class MatcherFactory {
 		}
 		else if( nameIndex == DSIMATCHER ) {
 			a = new DescendantsSimilarityInheritanceMatcher(instanceIndex, name);
+		}
+		else if( nameIndex == SSCMATCHER ) {
+			a = new SiblingsSimilarityContributionMatcher(instanceIndex, name);
 		}
 		else if( nameIndex == REFERENCEMATCHER ) {
 			a = new ReferenceAlignmentMatcher(instanceIndex, name);
