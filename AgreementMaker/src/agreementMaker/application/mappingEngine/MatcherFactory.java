@@ -9,6 +9,7 @@ import agreementMaker.application.mappingEngine.fakeMatchers.AllZeroMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.CopyMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.EqualsMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.RandomMatcher;
+import agreementMaker.application.mappingEngine.fakeMatchers.ReferenceAlignmentMatcher;
 import agreementMaker.application.mappingEngine.fakeMatchers.UserManualMatcher;
 import agreementMaker.userInterface.Colors;
 
@@ -37,11 +38,12 @@ public class MatcherFactory {
 	public final static int ALLZEROMATCHER = ALLUNOMATCHER+1;
 	public final static int COPYMATCHER = ALLZEROMATCHER+1;
 	public final static int BASESIMILARITYMATCHER = COPYMATCHER+1;
-	public final static int DSIMATCHER = BASESIMILARITYMATCHER+1; 
+	public final static int DSIMATCHER = BASESIMILARITYMATCHER+1;
+	public final static int REFERENCEMATCHER = DSIMATCHER+1; 
 	/**Total number of matching algorithm that will be visualized in the agreememtmaker
 	 * Remember to modify this value when adding and removing an algorithm
 	 * */
-	public final static int numMatchers = 7;
+	public final static int numMatchers = 8;
 	
 	/**
 	 * When adding a matcher add the line names[NEWINDEX] = "My name"; Name shouldn't be too long but at the same time should be a user clear name;
@@ -56,6 +58,7 @@ public class MatcherFactory {
 		names[COPYMATCHER] = "Copy Matcher";
 		names[BASESIMILARITYMATCHER] = "Base Similarity";
 		names[DSIMATCHER] = "Descendant's Similarity Inheritance (DSI)";
+		names[REFERENCEMATCHER] = "Reference Alignment";
 		return names;
 	}
 	
@@ -86,6 +89,9 @@ public class MatcherFactory {
 		}
 		else if( nameIndex == DSIMATCHER ) {
 			a = new DescendantsSimilarityInheritanceMatcher(instanceIndex, name);
+		}
+		else if( nameIndex == REFERENCEMATCHER ) {
+			a = new ReferenceAlignmentMatcher(instanceIndex, name);
 		}
 		else {
 			throw new RuntimeException("DEVELOPMENT ERROR: there is a matcher in the list with no corrisponding index in getMatcherInstance");

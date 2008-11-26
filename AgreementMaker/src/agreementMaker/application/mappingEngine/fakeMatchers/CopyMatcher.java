@@ -18,6 +18,7 @@ public class CopyMatcher extends AbstractMatcher {
 	protected void beforeAlignOperations() {
     	super.beforeAlignOperations();
     	AbstractMatcher a = inputMatchers.get(0);
+    	modifiedByUser = false;
 		alignClass = a.isAlignClass();
 		alignProp = a.isAlignProp();
 	}

@@ -18,7 +18,6 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 	private AlignmentMatrix inputPropertiesMatrix = null;
 	
 
-	private DescendantsSimilarityInheritanceParametersPanel dsiPanel;
 	
 	private double MCP;
 	
@@ -26,7 +25,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		super(key, theName);
 		
 
-		dsiPanel = new DescendantsSimilarityInheritanceParametersPanel();
+		parametersPanel = new DescendantsSimilarityInheritanceParametersPanel();
 		needsParam = true; // we need to set the MCP before runing DSI
 		
 		
@@ -36,7 +35,6 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		
 	}
 	
-	public DescendantsSimilarityInheritanceParametersPanel getParametersPanel() { return dsiPanel; }  // return the options panel for this matcher.
 	
 	/*
 	 * Before the align process, have a reference to the classes Matrix, and the properties Matrix of the input Matcher
@@ -46,7 +44,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 	protected void beforeAlignOperations() {
     	classesMatrix = null;
     	propertiesMatrix = null;
-
+    	modifiedByUser = false;
     	if( inputMatchers.size() != 1 ) {
     		throw new RuntimeException("DSI Algorithm needs to have one input matcher.");
     	}
@@ -57,7 +55,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
     	inputPropertiesMatrix = input.getPropertiesMatrix();
     	
     	// set our MCP
-    	MCP = dsiPanel.getParameters().MCP;
+    	MCP = ((DescendantsSimilarityInheritanceParameters)this.param).MCP;
     	
 	}
 	

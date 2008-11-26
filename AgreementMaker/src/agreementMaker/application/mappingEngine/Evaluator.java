@@ -2,6 +2,15 @@ package agreementMaker.application.mappingEngine;
 
 public class Evaluator
 {
+	//Constants
+	/**Formats for reference files*/
+	public final static String REF0 = "OAEI-2008-testcase";
+	public final static String REF1 = "OAEI-2007 i.e. weapons, wetlands...";
+	public final static String REF2 = "TXT: sourcename(tab)targetname";
+	public final static String REF3= "TXT: sourceDesc(tab)sourceName(tab)targetName(tab)targetDesc(tab)";
+
+	/**Formats for output files*/
+	public final static String OUTF1 = "TXT-1";
 	
 	final static double ALPHA = 1;
 	

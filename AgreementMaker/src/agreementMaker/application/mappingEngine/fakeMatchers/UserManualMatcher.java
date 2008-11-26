@@ -32,7 +32,7 @@ public class UserManualMatcher extends AbstractMatcher {
 		needsParam = false;
 		isShown = true;
 		modifiedByUser = false;
-		threshold = 0.05; //the minimum value != 0 in the threshold list;
+		threshold = 0.01; //the minimum value != 0 in the threshold list;
 		maxSourceAlign = ANY_INT;
 		maxTargetAlign = ANY_INT;
 		alignClass = true;
