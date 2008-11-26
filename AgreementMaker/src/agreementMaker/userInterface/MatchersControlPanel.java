@@ -25,7 +25,7 @@ import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.MatcherFactory;
-import agreementMaker.application.mappingEngine.fakeMatchers.UserManualMatcher;
+import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
 import agreementMaker.userInterface.table.MatchersTablePanel;
 import agreementMaker.userInterface.table.MyTableModel;
 

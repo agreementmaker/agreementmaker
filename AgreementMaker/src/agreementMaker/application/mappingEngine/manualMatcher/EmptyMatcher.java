@@ -1,18 +1,18 @@
-package agreementMaker.application.mappingEngine.fakeMatchers;
+package agreementMaker.application.mappingEngine.manualMatcher;
 
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.ontology.Node;
 
-public class AllOneMatcher extends AbstractMatcher {
+public class EmptyMatcher extends AbstractMatcher {
 	
-	public AllOneMatcher(int n, String s) {
-		super(n,s);
+	public EmptyMatcher(int n, String s) {
+		super(n, s);
 	}
 	
-	/**Set all alignment sim to 1*/
+	/**Set all alignment sim to 0*/
 	public Alignment alignTwoNodes(Node source, Node target) {
-		double sim = 1;
+		double sim = 0;
 		String rel = Alignment.EQUIVALENCE;
 		return new Alignment(source, target, sim, rel);
 	}

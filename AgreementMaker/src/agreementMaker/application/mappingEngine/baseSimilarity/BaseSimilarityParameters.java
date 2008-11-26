@@ -1,4 +1,4 @@
-package agreementMaker.application.mappingEngine.Matchers;
+package agreementMaker.application.mappingEngine.baseSimilarity;
 
 import agreementMaker.application.mappingEngine.AbstractParameters;
 

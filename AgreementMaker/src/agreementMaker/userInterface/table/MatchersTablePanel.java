@@ -19,8 +19,8 @@ import javax.swing.table.TableColumn;
 import agreementMaker.Utility;
 import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
-import agreementMaker.application.mappingEngine.fakeMatchers.EqualsMatcher;
-import agreementMaker.application.mappingEngine.fakeMatchers.UserManualMatcher;
+import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
+import agreementMaker.application.mappingEngine.testMatchers.EqualsMatcher;
 import agreementMaker.userInterface.UI;
 
 import java.awt.Component;

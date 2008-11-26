@@ -18,7 +18,7 @@ import agreementMaker.GSM;
 import agreementMaker.application.Core;
 import agreementMaker.application.evaluationEngine.OntologyController;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
-import agreementMaker.application.mappingEngine.fakeMatchers.UserManualMatcher;
+import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
 import agreementMaker.application.ontology.Ontology;
 import agreementMaker.application.ontology.ontologyParser.TreeBuilder;
 import agreementMaker.userInterface.vertex.VertexDescriptionPane;

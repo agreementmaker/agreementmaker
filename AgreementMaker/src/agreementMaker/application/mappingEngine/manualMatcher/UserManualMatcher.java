@@ -1,4 +1,4 @@
-package agreementMaker.application.mappingEngine.fakeMatchers;
+package agreementMaker.application.mappingEngine.manualMatcher;
 
 import java.awt.Color;
 import java.util.ArrayList;

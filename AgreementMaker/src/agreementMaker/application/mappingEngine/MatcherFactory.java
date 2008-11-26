@@ -2,16 +2,16 @@ package agreementMaker.application.mappingEngine;
 
 import java.awt.Color;
 
-import agreementMaker.application.mappingEngine.Matchers.BaseSimilarityMatcher;
-import agreementMaker.application.mappingEngine.Matchers.DescendantsSimilarityInheritanceMatcher;
-import agreementMaker.application.mappingEngine.Matchers.SiblingsSimilarityContributionMatcher;
-import agreementMaker.application.mappingEngine.fakeMatchers.AllOneMatcher;
-import agreementMaker.application.mappingEngine.fakeMatchers.AllZeroMatcher;
-import agreementMaker.application.mappingEngine.fakeMatchers.CopyMatcher;
-import agreementMaker.application.mappingEngine.fakeMatchers.EqualsMatcher;
-import agreementMaker.application.mappingEngine.fakeMatchers.RandomMatcher;
-import agreementMaker.application.mappingEngine.fakeMatchers.ReferenceAlignmentMatcher;
-import agreementMaker.application.mappingEngine.fakeMatchers.UserManualMatcher;
+import agreementMaker.application.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
+import agreementMaker.application.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
+import agreementMaker.application.mappingEngine.manualMatcher.EmptyMatcher;
+import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
+import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import agreementMaker.application.mappingEngine.ssc.SiblingsSimilarityContributionMatcher;
+import agreementMaker.application.mappingEngine.testMatchers.AllOneMatcher;
+import agreementMaker.application.mappingEngine.testMatchers.CopyMatcher;
+import agreementMaker.application.mappingEngine.testMatchers.EqualsMatcher;
+import agreementMaker.application.mappingEngine.testMatchers.RandomMatcher;
 import agreementMaker.userInterface.Colors;
 
 public class MatcherFactory {
@@ -36,8 +36,8 @@ public class MatcherFactory {
 	public final static int EQUALSMATCHER = 0;								// 1
 	public final static int RANDOMMATCHER = EQUALSMATCHER+1;				// 2
 	public final static int ALLUNOMATCHER = RANDOMMATCHER+1;				// 3
-	public final static int ALLZEROMATCHER = ALLUNOMATCHER+1;				// 4
-	public final static int COPYMATCHER = ALLZEROMATCHER+1;					// 5
+	public final static int EMPTYMATCHER = ALLUNOMATCHER+1;				// 4
+	public final static int COPYMATCHER = EMPTYMATCHER+1;					// 5
 	public final static int BASESIMILARITYMATCHER = COPYMATCHER+1;			// 6
 	public final static int DSIMATCHER = BASESIMILARITYMATCHER+1;			// 7
 	public final static int SSCMATCHER = DSIMATCHER+1;						// 8
@@ -56,7 +56,7 @@ public class MatcherFactory {
 		names[EQUALSMATCHER] = "Local Name equivalence comparison";
 		names[RANDOMMATCHER] = "Random Similarity matcher";
 		names [ALLUNOMATCHER] = "All ONE similarities";
-		names[ALLZEROMATCHER] = "All ZERO similarities";
+		names[EMPTYMATCHER] = "Empty Matching";
 		names[COPYMATCHER] = "Copy Matcher";
 		names[BASESIMILARITYMATCHER] = "Base Similarity";
 		names[DSIMATCHER] = "Descendant's Similarity Inheritance (DSI)";
@@ -88,8 +88,8 @@ public class MatcherFactory {
 		else if(nameIndex == ALLUNOMATCHER) {
 			a = new AllOneMatcher(instanceIndex,name);
 		}
-		else if(nameIndex == ALLZEROMATCHER) {
-			a = new AllZeroMatcher(instanceIndex,name);
+		else if(nameIndex == EMPTYMATCHER) {
+			a = new EmptyMatcher(instanceIndex,name);
 		}
 		else if(nameIndex == COPYMATCHER) {
 			a = new CopyMatcher(instanceIndex,name);

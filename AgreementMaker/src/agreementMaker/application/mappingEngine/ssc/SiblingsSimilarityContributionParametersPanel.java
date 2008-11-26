@@ -1,12 +1,9 @@
-package agreementMaker.application.mappingEngine.Matchers;
+package agreementMaker.application.mappingEngine.ssc;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -14,26 +11,18 @@ import javax.swing.border.EmptyBorder;
 
 import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
-import agreementMaker.application.mappingEngine.AbstractParameters;
 import agreementMaker.application.mappingEngine.MatcherSetting;
 import agreementMaker.userInterface.AppPreferences;
 
-
-/**
- * This is the preferences panel for the DSI algorithm.
- * The user can set the MCP from this panel.
- * @author cosmin
- * @date Nov 25, 2008
- *
- */
-public class DescendantsSimilarityInheritanceParametersPanel extends AbstractMatcherParametersPanel {
+public class SiblingsSimilarityContributionParametersPanel extends AbstractMatcherParametersPanel {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -3220525418599504107L;
-
-	private DescendantsSimilarityInheritanceParameters parameters;
+	private static final long serialVersionUID = -1493894247209728294L;
+	
+	
+	private SiblingsSimilarityContributionParameters parameters;
 	
 	private JLabel instructionsLabel;
 	private JLabel mcpLabel;
@@ -44,14 +33,15 @@ public class DescendantsSimilarityInheritanceParametersPanel extends AbstractMat
 	AppPreferences prefs;
 	
 	
-	public DescendantsSimilarityInheritanceParametersPanel() {
+	public SiblingsSimilarityContributionParametersPanel() {
+		// TODO Auto-generated constructor stub
 		super();
 	
 		prefs = Core.getInstance().getUI().getAppPreferences();  // get a reference to our application preferences
 		
 		this.setPreferredSize(new Dimension(350, 175) );
 		
-		instructionsLabel = new JLabel("<html>Please set the initial parameteres for DSI:</html>");
+		instructionsLabel = new JLabel("<html>Please set the initial parameteres for SSC:</html>");
 		instructionsLabel.setAlignmentX((float) 0.5);
 		
 		mcpLabel = new JLabel("<html>MCP: </html>");
@@ -59,10 +49,10 @@ public class DescendantsSimilarityInheritanceParametersPanel extends AbstractMat
 		constraintsLabel = new JLabel("<html>( 0.0 \u2264 MCP \u2264 1.0 )</html>");
 				
 		mcpField = new JTextField(6);
-		mcpField.setText(    Float.toString(prefs.getPanelFloat( MatcherSetting.DSI_MCP ))    ); // get the saved MCP value (usually the last one the user entered)
+		mcpField.setText(    Float.toString(prefs.getPanelFloat( MatcherSetting.SSC_MCP ))    ); // get the saved MCP value (usually the last one the user entered)
 		//mcpField.setPreferredSize(new Dimension(200, 40));
 		
-		parameters = new DescendantsSimilarityInheritanceParameters();
+		parameters = new SiblingsSimilarityContributionParameters();
 		
 		
 		// The GUI layout - a pain in the butt to get right
@@ -87,7 +77,7 @@ public class DescendantsSimilarityInheritanceParametersPanel extends AbstractMat
 		this.setSize(300, 100);		
 	}
 	
-	public DescendantsSimilarityInheritanceParameters getParameters() {
+	public SiblingsSimilarityContributionParameters getParameters() {
 		
 		return parameters;
 		
@@ -103,12 +93,12 @@ public class DescendantsSimilarityInheritanceParametersPanel extends AbstractMat
 		}
 
 		// we are going to save the value the user enters, so they don't have to keep entering it.		
-		Core.getInstance().getUI().getAppPreferences().savePanelFloat( MatcherSetting.DSI_MCP , inputMCP);
+		Core.getInstance().getUI().getAppPreferences().savePanelFloat( MatcherSetting.SSC_MCP , inputMCP);
 		parameters.MCP = inputMCP;  // save our MCP to the parameters.
 		
 		return null;
 	}
 	
 	
-	
+
 }

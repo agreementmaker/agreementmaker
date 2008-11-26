@@ -1,4 +1,4 @@
-package agreementMaker.application.mappingEngine.Matchers;
+package agreementMaker.application.mappingEngine.dsi;
 
 import agreementMaker.application.mappingEngine.AbstractParameters;
 

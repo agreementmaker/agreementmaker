@@ -44,7 +44,7 @@ import agreementMaker.application.mappingEngine.DefComparator;
 import agreementMaker.application.mappingEngine.DefnMapping;
 import agreementMaker.application.mappingEngine.DefnMappingOptions;
 import agreementMaker.application.mappingEngine.UserMapping;
-import agreementMaker.application.mappingEngine.fakeMatchers.UserManualMatcher;
+import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
 import agreementMaker.application.ontology.Ontology;
 import agreementMaker.application.ontology.ontologyParser.OntoTreeBuilder;
 import agreementMaker.application.ontology.ontologyParser.RdfsTreeBuilder;

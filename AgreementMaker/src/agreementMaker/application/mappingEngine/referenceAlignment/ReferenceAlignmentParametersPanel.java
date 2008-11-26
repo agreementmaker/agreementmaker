@@ -1,4 +1,4 @@
-package agreementMaker.application.mappingEngine.fakeMatchers;
+package agreementMaker.application.mappingEngine.referenceAlignment;
 
 import java.awt.Component;
 import java.awt.Dimension;
