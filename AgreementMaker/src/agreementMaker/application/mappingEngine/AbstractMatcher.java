@@ -19,7 +19,7 @@ public abstract class AbstractMatcher implements Matcher{
 	/**Name of the algorithm, there should be also a final static String in the instance class
 	 * in the constructor of the non-abstract class should happen "name = FINALNAME"
 	 * */
-	protected String name;
+	protected MatchersRegistry name;
 	/**User mapping should be the only one with this variable equal to false*/
 	protected boolean isAutomatic;
 	/**True if the algorithm needs additional parameter other than threshold, in this case the developer must develop a JFrame to let the user define them*/
@@ -75,9 +75,11 @@ public abstract class AbstractMatcher implements Matcher{
 		aligningProperties
 	}
 	
-	public AbstractMatcher(int key, String theName) {
-		index = key;
-		name = theName;
+	
+	/**
+	 * The constructor must be a Nullary Constructor
+	 */
+	public AbstractMatcher() {  // index and name will be set by the Matcher Factory
 		isAutomatic = true;
 		needsParam = false;
 		isShown = true;
@@ -93,6 +95,13 @@ public abstract class AbstractMatcher implements Matcher{
 		sourceOntology = Core.getInstance().getSourceOntology();
 		targetOntology = Core.getInstance().getTargetOntology();
 		inputMatchers = new ArrayList<AbstractMatcher>();
+	}
+	
+	/**
+	 * Create - used by the matcher factory
+	 */
+	public AbstractMatcher create( int key, MatchersRegistry theName ) {
+		throw new RuntimeException("DEVELOPER:  You must implement a create() function for your Matcher.");
 	}
 	
 	//***************************ALL METHODS TO PERFORM THE ALIGNMENT**********************************
@@ -442,11 +451,11 @@ public abstract class AbstractMatcher implements Matcher{
 		this.index = index;
 	}
 
-	public String getName() {
+	public MatchersRegistry getName() {
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(MatchersRegistry name) {
 		this.name = name;
 	}
 
@@ -581,7 +590,7 @@ public abstract class AbstractMatcher implements Matcher{
 	public String getDetails() {
 		// TODO Auto-generated method stub
 		String s = "";
-		s+= "Matcher: "+getName()+"\n\n";
+		s+= "Matcher: "+getName().getMatcherName()+"\n\n";
 		s+= "Additional parameters required: "+Utility.getYesNo(needsParam())+"\n";
 		s+= "Min number of matchers in input: "+getMinInputMatchers()+"\n";
 		s+= "Max number of matchers in input: "+getMaxInputMatchers()+"\n";
