@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import agreementMaker.AMException;
 import agreementMaker.Utility;
 import agreementMaker.application.Core;
 import agreementMaker.application.ontology.Node;
@@ -97,7 +98,6 @@ public abstract class AbstractMatcher implements Matcher{
 		inputMatchers = new ArrayList<AbstractMatcher>();
 	}
 	
-	
 	//***************************ALL METHODS TO PERFORM THE ALIGNMENT**********************************
 	/**
 	 * Match() and select() are the only two public methods to be accessed by the system other then get and set methods
@@ -110,7 +110,7 @@ public abstract class AbstractMatcher implements Matcher{
 	 * and it has to be different
 	 * 
 	 */
-    public void match() {
+    public void match() throws AMException {
     	beforeAlignOperations();//Template method to allow next developer to add code before align
     	align();
     	afterAlignOperations();//Template method to allow next developer to add code after align

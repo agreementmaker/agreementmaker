@@ -25,7 +25,7 @@ import javax.swing.filechooser.FileFilter;
 
 import agreementMaker.AMException;
 import agreementMaker.GSM;
-import agreementMaker.application.evaluationEngine.ReferenceEvaluation;
+import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluation;
 import agreementMaker.userInterface.vertex.VertexDescriptionPane;
 
 

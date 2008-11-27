@@ -1,4 +1,4 @@
-package agreementMaker.application.evaluationEngine;
+package agreementMaker.application.mappingEngine.referenceAlignment;
 
 import java.io.*;
 import java.text.NumberFormat;
@@ -187,8 +187,8 @@ public class ReferenceEvaluation {
 	    while(itref.hasNext()) {
 	    	isCorrect = false;
 	    	mref = itref.next();
-	    	correctS = mref.getTabString();
-	    	missedS = mref.getTabString()+"\tNOTHING FOUND";
+	    	correctS = mref.getNameTabName();
+	    	missedS = mref.getNameTabName()+"\tNOTHING FOUND";
 	    	itmatch = matchingsFound.iterator();
 	    	while(itmatch.hasNext()&& !isCorrect) {
 	    		mmatch = itmatch.next();
@@ -198,7 +198,7 @@ public class ReferenceEvaluation {
 	    			isCorrect = true;
 	    		}
 	    		else if(mref.sameSource(mmatch)) {//only the source is the same, i keep track of the wrong target found by AM at the end if i don't find any correct rel for this one i will add it to missed rel 
-	    			missedS = mref.getTabString()+"\t"+mmatch.targetname;
+	    			missedS = mref.getNameTabName()+"\t"+mmatch.targetname;
 	    		}
 	    	}
 	    	if(!isCorrect) {//if i didn't find a relation in the matchings equals to the reference one i add this ref relations to the missed ones
@@ -213,7 +213,7 @@ public class ReferenceEvaluation {
 	    while(itmatch.hasNext()) {
 	    	isCorrect = false;
 	    	mmatch = itmatch.next();
-	    	wrongs = mmatch.getTabString()+"\tNOT IN REFERENCE";
+	    	wrongs = mmatch.getNameTabName()+"\tNOT IN REFERENCE";
 	    	itref = refPairsList.iterator();
 	    	while(itref.hasNext() && !isCorrect) {
 	    		mref = itref.next();
@@ -221,7 +221,7 @@ public class ReferenceEvaluation {
 	    			isCorrect = true;
 	    		}
 	    		else if(mref.sameSource(mmatch)) {//only the source is the same, i keep track of the different target in the ref
-	    			wrongs = mmatch.getTabString()+"\t"+mref.targetname;
+	    			wrongs = mmatch.getNameTabName()+"\t"+mref.targetname;
 	    		}
 	    	}
 	    	if(!isCorrect) {//if i didn't find a relation in the matchings equals to the reference one i add this ref relations to the wrong ones
@@ -296,15 +296,7 @@ public class ReferenceEvaluation {
 	}
 
 	
-	/**
-	 * 
-	 * @param the double value to be translated into a percent string a value between 0 and 1 should be
-	 * @return the string in percent format, the value is approx 
-	 */
-	public String getPercent(Double percent) {
-		NumberFormat percentFormatter = NumberFormat.getPercentInstance();
-		return percentFormatter.format(percent)	;
-	}
+
 	
 	/**
 	 * must be invoked after the evaluation process

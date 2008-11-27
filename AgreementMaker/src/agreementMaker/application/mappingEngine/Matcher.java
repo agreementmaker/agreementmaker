@@ -1,8 +1,10 @@
 package agreementMaker.application.mappingEngine;
 
+import agreementMaker.AMException;
+
 public interface Matcher {
 	
-	public void match();
+	public void match() throws AMException;
 
     public AlignmentSet getAlignmentSet();
 

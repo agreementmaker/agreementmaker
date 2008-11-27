@@ -1,5 +1,7 @@
 package agreementMaker;
 
+import java.text.NumberFormat;
+
 import javax.swing.JOptionPane;
 
 import agreementMaker.application.mappingEngine.AbstractMatcher;
@@ -27,7 +29,10 @@ public class Utility {
 	}
 	
 	public static String getPercentFromDouble(double d) {
-		double p = d * 100;
+		double p;
+		if(0 <= d && d<= 1)
+			p = d * 100;
+		else throw new RuntimeException("Developer Error, the value passed to getPercentFromDouble(dobule d) should be between 0 and 1");
 		return p+"%";
 	}
 	

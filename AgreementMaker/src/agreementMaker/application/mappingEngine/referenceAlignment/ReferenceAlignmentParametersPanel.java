@@ -24,7 +24,6 @@ import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 
 import agreementMaker.application.Core;
-import agreementMaker.application.evaluationEngine.ReferenceEvaluation;
 import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
 import agreementMaker.application.mappingEngine.AbstractParameters;
 import agreementMaker.application.mappingEngine.Evaluator;
@@ -74,7 +73,7 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 		browse.addActionListener(this);
 		
 		//Formats are fixed, the development.ReferenceEvaluation class contains definitions.
-		String[] format_list = {Evaluator.REF0,Evaluator.REF1,Evaluator.REF2, Evaluator.REF3};
+		String[] format_list = {ReferenceAlignmentMatcher.REF0,ReferenceAlignmentMatcher.REF1,ReferenceAlignmentMatcher.REF2, ReferenceAlignmentMatcher.REF3};
 		formatList = new JList(format_list);
 		formatList.setPrototypeCellValue("012345678901234567890123456789012345678901234567890123456789"); // this string sets the width of the list
 		formatList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -158,7 +157,7 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 
 	
 	
-	public ReferenceAlignmentParameters getParameters() {
+	public AbstractParameters getParameters() {
 		
 		parameters = new ReferenceAlignmentParameters();
 		parameters.fileName = filePath.getText();

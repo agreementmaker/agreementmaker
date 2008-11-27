@@ -32,8 +32,8 @@ import javax.swing.event.ListSelectionListener;
 import com.ibm.icu.lang.UCharacter.JoiningGroup;
 
 import agreementMaker.GSM;
-import agreementMaker.application.evaluationEngine.ReferenceEvaluation;
 import agreementMaker.application.mappingEngine.DefnMappingOptions;
+import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluation;
 import agreementMaker.userInterface.vertex.VertexDescriptionPane;
 
 

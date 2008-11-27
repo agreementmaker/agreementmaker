@@ -16,7 +16,6 @@ import javax.swing.UIManager;
 
 import agreementMaker.GSM;
 import agreementMaker.application.Core;
-import agreementMaker.application.evaluationEngine.OntologyController;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
 import agreementMaker.application.ontology.Ontology;
@@ -38,8 +37,6 @@ public class UI {
 	static final long serialVersionUID = 1;
 	
 	private Canvas canvas;
-	/** This class is going to be replaced later*/
-	private OntologyController ontologyController;
 	
 	private JFrame frame;
 	
@@ -72,13 +69,7 @@ public class UI {
 	public Canvas getCanvas(){
 		return this.canvas;
 	}
-	
-	/**
-	 * @return the ontologyController, a class containing some methods to work with canvas and ontologies
-	 */
-	public OntologyController getOntologyController(){
-		return this.ontologyController;
-	}
+
 	
 	/**
 	 * @return
@@ -150,9 +141,7 @@ public class UI {
 		
 		//add canvas to panel
 		panelCanvas.add(canvas);
-		//Added by Flavio: this class is needed to modularize the big canvas class, basically it contains some methods which could be in canvas class which works with the ontologies
-		//it will be replaced later adding structures and methods inside the Core
-	    ontologyController = new OntologyController(canvas);
+
 		
 	    //panelDesc = new VertexDescriptionPane(this); 
 		//TODO: Add tabbed panes here for displaying the properties and descriptions		

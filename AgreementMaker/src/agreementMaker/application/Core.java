@@ -3,6 +3,7 @@ package agreementMaker.application;
 import java.util.ArrayList;
 
 
+import agreementMaker.AMException;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.ontology.Ontology;
@@ -106,19 +107,20 @@ public class Core {
 	 * anytime we find another matcher a2 with a as input we have to invoke a2.match() and we have to add a2 to the modifiedmatchings
 	 * so that all other matchers with a and/or a2 as input will be updated to and so on.
 	 * @param a the matcher that has been modified and generates a chain reaction on other matchings
+	 * @throws AMException 
 	 */
-	public void selectAndUpdateMatchers(AbstractMatcher a) {
+	public void selectAndUpdateMatchers(AbstractMatcher a) throws AMException{
 		a.select();
 		updateMatchers(a);
 
 	}
 	
-	public void matchAndUpdateMatchers(AbstractMatcher a) {
+	public void matchAndUpdateMatchers(AbstractMatcher a) throws AMException{
 		a.match();
 		updateMatchers(a);
 	}
 	
-	private void updateMatchers(AbstractMatcher a) {
+	private void updateMatchers(AbstractMatcher a)throws AMException {
 		//Chain update of all matchers after a
 		int startingIndex =  a.getIndex()+1;
 		ArrayList<AbstractMatcher> modifiedMatchers = new ArrayList<AbstractMatcher>();

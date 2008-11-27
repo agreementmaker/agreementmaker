@@ -23,7 +23,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import agreementMaker.GSM;
-import agreementMaker.application.evaluationEngine.ReferenceEvaluation;
+import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluation;
 import agreementMaker.userInterface.vertex.VertexDescriptionPane;
 
 

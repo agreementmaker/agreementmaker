@@ -1,4 +1,4 @@
-package agreementMaker.application.evaluationEngine;
+package agreementMaker.application.mappingEngine.referenceAlignment;
 
 public class MatchingPairDesc extends MatchingPair {
 	/**the description of the label of the source node*/
