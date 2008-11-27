@@ -10,7 +10,6 @@ import agreementMaker.application.ontology.Node;
 public class CopyMatcher extends AbstractMatcher {
 	
 	public CopyMatcher(int n, String s) {
-		super(n, s);
 		maxInputMatchers = 1;
 		minInputMatchers = 1;
 	}

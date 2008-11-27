@@ -6,10 +6,6 @@ import agreementMaker.application.ontology.Node;
 
 public class RandomMatcher extends AbstractMatcher {
 	
-	public RandomMatcher(int n, String s) {
-		super(n, s);
-	}
-	
 	/**Set all alignment sim to a random value between 0 and 1*/
 	public Alignment alignTwoNodes(Node source, Node target) {
 		double sim = Math.random();

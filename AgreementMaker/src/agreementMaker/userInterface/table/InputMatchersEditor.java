@@ -31,7 +31,7 @@ public class InputMatchersEditor extends AbstractCellEditor implements TableCell
 		if(a!=null && a.getInputMatchers()!= null && a.getInputMatchers().size() > 0) {
 			s = new String[a.getInputMatchers().size()];
 			for(int i = 0; i < a.getInputMatchers().size(); i++) {
-				s[i] = a.getInputMatchers().get(i).getName();
+				s[i] = a.getInputMatchers().get(i).getName().getMatcherName();
 			}
 		}
 		else {

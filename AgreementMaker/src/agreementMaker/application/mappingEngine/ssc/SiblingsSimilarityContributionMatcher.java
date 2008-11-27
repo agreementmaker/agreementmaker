@@ -18,9 +18,8 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 	
 	private double MCP;
 	
-	public SiblingsSimilarityContributionMatcher(int key, String theName) {
-		super(key, theName);
-		// TODO Auto-generated constructor stub
+	public SiblingsSimilarityContributionMatcher() {
+		super();
 		
 		parametersPanel = new SiblingsSimilarityContributionParametersPanel(); 
 

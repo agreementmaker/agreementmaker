@@ -19,8 +19,9 @@ import javax.swing.table.TableColumn;
 import agreementMaker.Utility;
 import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
+import agreementMaker.application.mappingEngine.MatcherFactory;
+import agreementMaker.application.mappingEngine.MatchersRegistry;
 import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
-import agreementMaker.application.mappingEngine.testMatchers.EqualsMatcher;
 import agreementMaker.userInterface.UI;
 
 import java.awt.Component;
@@ -83,7 +84,7 @@ public class MatchersTablePanel extends JPanel {
         //STATICALLY ADD THE FIRST MATCHER THAT IS THE USER MANUAL MATCHER
         //is important to add this here so that initColumns can assign the best width to columns
         //This matcher cannot be deleted
-        UserManualMatcher userMatcher = new UserManualMatcher();
+        UserManualMatcher userMatcher = (UserManualMatcher) MatcherFactory.getMatcherInstance(MatchersRegistry.UserManual, 0);
         addMatcher(userMatcher);
         
         setOpaque(true); //content panes must be opaque
@@ -117,8 +118,7 @@ public class MatchersTablePanel extends JPanel {
             headerWidth = comp.getPreferredSize().width;
             if(model.getRowCount() > 0) {//consider also the dimension of the elements rendered in the first row, and then take the max between header and row cells
             	comp = table.getDefaultRenderer(model.getColumnClass(i)).
-                getTableCellRendererComponent(
-                    table, longValues[i],
+                getTableCellRendererComponent( table, longValues[i],
                     false, false, 0, i);
 				cellWidth = comp.getPreferredSize().width;
 				/*

@@ -20,8 +20,8 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 	
 	private double MCP;
 	
-	public DescendantsSimilarityInheritanceMatcher(int key, String theName) {
-		super(key, theName);
+	public DescendantsSimilarityInheritanceMatcher() {
+		super();
 		
 
 		parametersPanel = new DescendantsSimilarityInheritanceParametersPanel();

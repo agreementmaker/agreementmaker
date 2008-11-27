@@ -21,10 +21,10 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	private WordNetDatabase wordnet  = null;
 	
 	
-	public BaseSimilarityMatcher(int n, String s) {
+	public BaseSimilarityMatcher() {
 		// warning, param is not available at the time of the constructor
 		
-		super(n, s);
+		super();
 		needsParam = true;
 		
 		

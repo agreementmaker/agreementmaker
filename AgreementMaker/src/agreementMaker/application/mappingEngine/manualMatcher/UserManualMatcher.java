@@ -7,6 +7,7 @@ import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.AlignmentMatrix;
+import agreementMaker.application.mappingEngine.MatchersRegistry;
 import agreementMaker.application.ontology.Node;
 import agreementMaker.application.ontology.Ontology;
 import agreementMaker.userInterface.Colors;
@@ -21,12 +22,12 @@ import agreementMaker.userInterface.Colors;
  */
 public class UserManualMatcher extends AbstractMatcher {
 	
-	/**For all other matchers the name is plugged into the MatcherFactory class, this matcher cannot be created that way, when invoking the constructor use the final static string name and code*/
-	public static final String USERMANUALMATCHINGNAME = "User Manual Matching"; 
+	/**For all other matchers the name is plugged into the MatcherFactory class, this matcher cannot be created that way, when invoking the constructor use the final static string name and code*/ 
 	public static final int THEFIRST = 0; //USER MATCHING IS ALWAYS THE FIRST IN THE LIST
 	
 	public UserManualMatcher() {
-		super(THEFIRST, USERMANUALMATCHINGNAME);
+		index = THEFIRST;
+		name = MatchersRegistry.UserManual;
 		color = Colors.matchersColors[THEFIRST];
 		isAutomatic = false;
 		needsParam = false;

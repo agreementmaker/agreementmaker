@@ -64,7 +64,7 @@ public class AbstractMatcherParametersDialog extends JDialog implements ActionLi
 	 * @param userInterface
 	 */
 	public AbstractMatcherParametersDialog(AbstractMatcher a) {
-		String name = a.getName();
+		String name = a.getName().getMatcherName();
 		setTitle(name+": additional parameters");
 		//This is the specific panel defined by the developer to set additional parameters to the specific matcher implemented
 		parametersPanel = a.getParametersPanel();

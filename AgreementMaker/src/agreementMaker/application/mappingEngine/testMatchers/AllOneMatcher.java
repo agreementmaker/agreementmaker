@@ -6,9 +6,6 @@ import agreementMaker.application.ontology.Node;
 
 public class AllOneMatcher extends AbstractMatcher {
 	
-	public AllOneMatcher(int n, String s) {
-		super(n,s);
-	}
 	
 	/**Set all alignment sim to 1*/
 	public Alignment alignTwoNodes(Node source, Node target) {

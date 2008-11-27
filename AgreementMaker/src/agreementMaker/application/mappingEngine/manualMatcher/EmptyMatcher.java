@@ -6,10 +6,6 @@ import agreementMaker.application.ontology.Node;
 
 public class EmptyMatcher extends AbstractMatcher {
 	
-	public EmptyMatcher(int n, String s) {
-		super(n, s);
-	}
-	
 	/**Set all alignment sim to 0*/
 	public Alignment alignTwoNodes(Node source, Node target) {
 		double sim = 0;
