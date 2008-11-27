@@ -9,12 +9,12 @@ import agreementMaker.application.ontology.Node;
 
 public class CopyMatcher extends AbstractMatcher {
 	
-	public CopyMatcher(int n, String s) {
+	public CopyMatcher() {
 		maxInputMatchers = 1;
 		minInputMatchers = 1;
 	}
 	
-	protected void beforeAlignOperations() {
+	protected void beforeAlignOperations() throws Exception{
     	super.beforeAlignOperations();
     	AbstractMatcher a = inputMatchers.get(0);
     	modifiedByUser = false;

@@ -109,18 +109,18 @@ public class Core {
 	 * @param a the matcher that has been modified and generates a chain reaction on other matchings
 	 * @throws AMException 
 	 */
-	public void selectAndUpdateMatchers(AbstractMatcher a) throws AMException{
+	public void selectAndUpdateMatchers(AbstractMatcher a) throws Exception{
 		a.select();
 		updateMatchers(a);
 
 	}
 	
-	public void matchAndUpdateMatchers(AbstractMatcher a) throws AMException{
+	public void matchAndUpdateMatchers(AbstractMatcher a) throws Exception{
 		a.match();
 		updateMatchers(a);
 	}
 	
-	private void updateMatchers(AbstractMatcher a)throws AMException {
+	private void updateMatchers(AbstractMatcher a) throws Exception {
 		//Chain update of all matchers after a
 		int startingIndex =  a.getIndex()+1;
 		ArrayList<AbstractMatcher> modifiedMatchers = new ArrayList<AbstractMatcher>();

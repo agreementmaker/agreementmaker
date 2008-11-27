@@ -86,8 +86,8 @@ public abstract class AbstractMatcher implements Matcher{
 		isShown = true;
 		modifiedByUser = false;
 		threshold = 0.75;
-		maxSourceAlign = ANY_INT;
-		maxTargetAlign = 1;
+		maxSourceAlign = 1;
+		maxTargetAlign = ANY_INT;
 		alignClass = true;
 		alignProp = true;
 		minInputMatchers = 0;
@@ -110,7 +110,7 @@ public abstract class AbstractMatcher implements Matcher{
 	 * and it has to be different
 	 * 
 	 */
-    public void match() throws AMException {
+    public void match() throws Exception {
     	beforeAlignOperations();//Template method to allow next developer to add code before align
     	align();
     	afterAlignOperations();//Template method to allow next developer to add code after align
@@ -140,13 +140,13 @@ public abstract class AbstractMatcher implements Matcher{
 
     //reset structures, this is important because anytime we invoke the match() for the secondtime (when we change some values in the table for example)
     //we have to reset all structures. It's the first method that is invoked, when overriding call super.beforeAlignOperations()
-	protected void beforeAlignOperations() {
+	protected void beforeAlignOperations()  throws Exception{
     	classesMatrix = null;
     	propertiesMatrix = null;
     	modifiedByUser = false;
 	}
     //DO NOTHING FOR NOW
-    protected void afterAlignOperations() {}
+    protected void afterAlignOperations()  {}
     //RESET ALIGNMENT STRUCTURES
     protected void beforeSelectionOperations() {
     	classesAlignmentSet = null;
@@ -159,7 +159,7 @@ public abstract class AbstractMatcher implements Matcher{
     
     //***************INTERNAL METHODS THAT CAN BE USED BY ANY ABSTRACTMATCHER******************************************
 
-    protected void align() {
+    protected void align() throws Exception {
 
 		if(alignClass) {
 			ArrayList<Node> sourceClassList = sourceOntology.getClassesList();
@@ -175,15 +175,15 @@ public abstract class AbstractMatcher implements Matcher{
 
 	}
 
-    protected AlignmentMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) {
+    protected AlignmentMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) throws Exception {
 		return alignNodesOneByOne(sourcePropList, targetPropList);
 	}
 
-    protected AlignmentMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList) {
+    protected AlignmentMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList)  throws Exception{
 		return alignNodesOneByOne(sourceClassList, targetClassList);
 	}
 	
-    protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList) {
+    protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList) throws Exception {
 		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size());
 		Node source;
 		Node target;
@@ -199,7 +199,7 @@ public abstract class AbstractMatcher implements Matcher{
 		return matrix;
 	}
 
-    protected Alignment alignTwoNodes(Node source, Node target) {
+    protected Alignment alignTwoNodes(Node source, Node target) throws Exception {
 		//TO BE IMPLEMENTED BY THE ALGORITHM, THIS IS JUST A FAKE ABSTRACT METHOD
 		double sim;
 		String rel = Alignment.EQUIVALENCE;
@@ -614,6 +614,25 @@ public abstract class AbstractMatcher implements Matcher{
 
 	public void setColor(Color color) {
 		this.color = color;
+	}
+
+	
+	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
+	public double getDefaultThreshold() {
+		// TODO Auto-generated method stub
+		return 0.75;
+	}
+	
+	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
+	public int getDefaultMaxSourceRelations() {
+		// TODO Auto-generated method stub
+		return 1;
+	}
+
+	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
+	public int getDefaultMaxTargetRelations() {
+		// TODO Auto-generated method stub
+		return ANY_INT;
 	}
 
 

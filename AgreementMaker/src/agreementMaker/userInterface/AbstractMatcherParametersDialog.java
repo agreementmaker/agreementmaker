@@ -118,7 +118,7 @@ public class AbstractMatcherParametersDialog extends JDialog implements ActionLi
 				//setModal(false);
 				setVisible(false);  // required
 			}
-			else Utility.dysplayErrorPane(check, "Illegal Parameters" );
+			else Utility.displayErrorPane(check, "Illegal Parameters" );
 		}
 		
 	}

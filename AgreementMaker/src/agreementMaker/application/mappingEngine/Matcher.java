@@ -4,7 +4,9 @@ import agreementMaker.AMException;
 
 public interface Matcher {
 	
-	public void match() throws AMException;
+	public void match() throws Exception;
+	
+	public void select();
 
     public AlignmentSet getAlignmentSet();
 

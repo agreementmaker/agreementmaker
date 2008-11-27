@@ -22,6 +22,8 @@ public class Node {
 	 *  Right now we don't need this information but we may use it in the future to access any other information in the ontology connected to this one
 	 *   */
 	private Resource resource;
+	/**The OWL/RDF uri identifier, that is namespace#localname, all these informations are kept into the resource attribute but we keep them separate to access them easily*/
+	private String uri;
 	/**
 	 * One of the string which can be used to compare two nodes
 	 * In general the URI = namespace#localname, in the OWL ontology, often the localname is the same of label	
@@ -57,7 +59,13 @@ public class Node {
     public final static String XMLNODE = "xml-node";
 	/**UNIQUE KEY IN THE RANGE OF TYPE to be used as index to retrieve this node from the list and from the matrix*/
 	int index;
-	
+	/**
+	 * XML constructor
+	 * @param key
+	 * @param name
+	 * @param desc
+	 * @param type
+	 */
 	public Node(int key, String name, String desc, String type) {
 		localName = name;
 		this.type = type;
@@ -65,8 +73,10 @@ public class Node {
 		index = key;
 	}
 	
+	/**RDF OWL Constructor*/
 	public Node(int key, Resource r, String type) {
 		resource = r;
+		uri = r.getURI();
 		localName = r.getLocalName();
 		this.type = type;
 		if(r.canAs(OntResource.class)) {
@@ -159,6 +169,14 @@ public class Node {
 	
 	public String toString() {
 		return index+" "+localName;
+	}
+
+	public String getUri() {
+		return uri;
+	}
+
+	public void setUri(String uri) {
+		this.uri = uri;
 	}
 
 }

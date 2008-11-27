@@ -13,18 +13,26 @@ public class MatchingPair {
 	/**the name of the label of the target node */
 	public String targetname;
 	
+	/**the description of the source node*/
+	public String sourcedesc;
+	/**the description of the target node*/
+	public String targetdesc;
+	
 	public double similarity;
 	
 	public String relation;
 
 	public MatchingPair() {
-		similarity = 1;
-		relation = Alignment.EQUIVALENCE;
 	}
 	
 	public MatchingPair(String s, String t) {
-		similarity = 1;
-		relation = Alignment.EQUIVALENCE;
+		sourcename = s;
+		targetname = t;
+	}
+	
+	public MatchingPair(String s, String t, double sim, String rel) {
+		similarity = sim;
+		relation = rel;
 		sourcename = s;
 		targetname = t;
 	}

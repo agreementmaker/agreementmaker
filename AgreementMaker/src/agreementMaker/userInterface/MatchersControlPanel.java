@@ -127,49 +127,53 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		Object obj = e.getSource();
-		if(obj == viewDetails) {
-			//int nameIndex = matcherCombo.getSelectedIndex();
-			String matcherName = (String) matcherCombo.getSelectedItem();
-			
-			AbstractMatcher a = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), 0); //i'm just using a fake instance so the algorithm code is not important i put 0 but maybe anything
-			Utility.displayMessagePane(a.getDetails(), "Matcher details");
-		}
-		else if(obj == matchButton) {
-			match();
-		}
-		else if(obj == delete) {
-			int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
-			if(rowsIndex.length == 0) {
-				Utility.dysplayErrorPane("No matchers selected", null);
+		try {
+			Object obj = e.getSource();
+			if(obj == viewDetails) {
+				//int nameIndex = matcherCombo.getSelectedIndex();
+				String matcherName = (String) matcherCombo.getSelectedItem();
+				AbstractMatcher a = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), 0); //i'm just using a fake instance so the algorithm code is not important i put 0 but maybe anything
+				Utility.displayMessagePane(a.getDetails(), "Matcher details");
 			}
-			else if(Utility.displayConfirmPane(rowsIndex.length+" matchers will be deleted.\n Do you want to continue?", null)) {
-				AbstractMatcher toBeDeleted;
-				Core core = Core.getInstance();
-				LinkedList<AbstractMatcher> deleteList = new LinkedList<AbstractMatcher>();
-				for(int i = 0; i < rowsIndex.length; i++) {// I need to build a list because indexes will be modified so i can't access them using the rowsindex structures
-					deleteList.add(core.getMatcherInstances().get(rowsIndex[i]));
+			else if(obj == matchButton) {
+				match();
+			}
+			else if(obj == delete) {
+				int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
+				if(rowsIndex.length == 0) {
+					Utility.displayErrorPane("No matchers selected", null);
 				}
-				for(int i = 0; i< deleteList.size(); i++) {
-					toBeDeleted = deleteList.get(i);
-					if(MatcherFactory.isTheUserMatcher(toBeDeleted)) {
-						//YOU CAN'T DELETE THE USER MATCHING just clear the matchings previusly created
-						Utility.displayMessagePane(MatchersRegistry.UserManual + " can't be deleted.\nOnly alignments will be cleared.", null);
-						try {
-							toBeDeleted.match();//reinitialize the user matching as an empty one
+				else if(Utility.displayConfirmPane(rowsIndex.length+" matchers will be deleted.\n Do you want to continue?", null)) {
+					AbstractMatcher toBeDeleted;
+					Core core = Core.getInstance();
+					LinkedList<AbstractMatcher> deleteList = new LinkedList<AbstractMatcher>();
+					for(int i = 0; i < rowsIndex.length; i++) {// I need to build a list because indexes will be modified so i can't access them using the rowsindex structures
+						deleteList.add(core.getMatcherInstances().get(rowsIndex[i]));
+					}
+					for(int i = 0; i< deleteList.size(); i++) {
+						toBeDeleted = deleteList.get(i);
+						if(MatcherFactory.isTheUserMatcher(toBeDeleted)) {
+							//YOU CAN'T DELETE THE USER MATCHING just clear the matchings previusly created
+							Utility.displayMessagePane(MatchersRegistry.UserManual + " can't be deleted.\nOnly alignments will be cleared.", null);
+							try {
+								toBeDeleted.match();//reinitialize the user matching as an empty one
+							}
+							catch(AMException ex) {Utility.displayErrorPane(ex.getMessage(), null);}
 						}
-						catch(AMException ex) {Utility.dysplayErrorPane(ex.getMessage(), null);}
+						else {
+							matchersTablePanel.removeMatcher(toBeDeleted);
+						}
+						ui.redisplayCanvas();
 					}
-					else {
-						matchersTablePanel.removeMatcher(toBeDeleted);
-					}
-					ui.redisplayCanvas();
 				}
 			}
+		}
+		catch(Exception ex) {
+			Utility.displayErrorPane("Unexepcted System Error.\nTry to reset the system and repeat the operation.\nContact developers if the error persists.", null);
 		}
 	}
 	
-	public void match() {
+	public void match() throws Exception{
 		String matcherName = (String) matcherCombo.getSelectedItem();
 		//the new matcher will put at the end of the list so at the end of the table so the index will be:
 		int lastIndex = Core.getInstance().getMatcherInstances().size();
@@ -177,10 +181,10 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows(); //indexes in the table correspond to the indexes of the matchers in the matcherInstances list in core class
 		int selectedMatchers = rowsIndex.length;
 		if(!Core.getInstance().ontologiesLoaded() ) {
-			Utility.dysplayErrorPane("You have to load a Source and Target ontologies before running any matcher\nClick on File Menu and select Open Ontology functions ", null);
+			Utility.displayErrorPane("You have to load a Source and Target ontologies before running any matcher\nClick on File Menu and select Open Ontology functions ", null);
 		}
 		else if(currentMatcher.getMinInputMatchers() > selectedMatchers ) {
-			Utility.dysplayErrorPane("Select at least "+currentMatcher.getMinInputMatchers()+" matchings from the table to run this matcher.", null);
+			Utility.displayErrorPane("Select at least "+currentMatcher.getMinInputMatchers()+" matchings from the table to run this matcher.", null);
 		}
 		/* Warning to alert that user has selected more inputMatcher than necessary, I had to remove this because it happens all the time and it's boring
 		else if(currentMatcher.getMaxInputMatchers() < selectedMatchers) {
@@ -255,40 +259,47 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	public void itemStateChanged(ItemEvent e) {
 		Object obj = e.getItemSelectable();
 		if(obj == matcherCombo) {
-			//TODO we could add the method getDefaultThreshold and getDefaultNumRelations in the abstractMatcher class
-			//so that the system auto select threshold and numrelations depending on algorithm selected
-			//but this feature could be boring if you have to run many different algorithms with the same parameters
+			String matcherName = (String) matcherCombo.getSelectedItem();
+			AbstractMatcher a = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), 0); //i'm just using a fake instance so the algorithm code is not important i put 0 but maybe anything
+			thresholdCombo.setSelectedItem(Utility.getPercentFromDouble(a.getDefaultThreshold()));
+			sRelationCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxSourceRelations()));
+			tRelationCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxTargetRelations()));
 		}
 	}
 
 	
 	public void resetMatchings() {
-		// TODO Auto-generated method stub
-		Core core = Core.getInstance();
-		ArrayList<AbstractMatcher> matchers = core.getMatcherInstances();
-		Iterator<AbstractMatcher> it = matchers.iterator();
-		//Take the UserManualMatcher and run it for the first time to create empty matrix and alignmentSet
-		UserManualMatcher userMatcher =(UserManualMatcher) it.next();
-		userMatcher.setSourceOntology(core.getSourceOntology());
-		userMatcher.setTargetOntology(core.getTargetOntology());
 		try {
-			userMatcher.match();
+			// TODO Auto-generated method stub
+			Core core = Core.getInstance();
+			ArrayList<AbstractMatcher> matchers = core.getMatcherInstances();
+			Iterator<AbstractMatcher> it = matchers.iterator();
+			//Take the UserManualMatcher and run it for the first time to create empty matrix and alignmentSet
+			UserManualMatcher userMatcher =(UserManualMatcher) it.next();
+			userMatcher.setSourceOntology(core.getSourceOntology());
+			userMatcher.setTargetOntology(core.getTargetOntology());
+			try {
+				userMatcher.match();
+			}
+			catch(AMException ex){
+				Utility.displayMessagePane(ex.getMessage(), null);
+			}
+			
+			//Delete all other matchers if there are any
+			// I'm not using the controlPanel removeMatcher because is not needed we just remove them so we don't need to update index and we update table all together
+			int firstRow = 1;
+			int lastRow = matchers.size() -1;
+			while(it.hasNext()) {
+				it.next();
+				it.remove();
+			}
+			//update the table
+			((AbstractTableModel)matchersTablePanel.getTable().getModel()).fireTableRowsDeleted(firstRow, lastRow);
+			ui.getCanvas().clearAllSelections();
+			ui.redisplayCanvas();
 		}
-		catch(AMException ex){
-			Utility.displayMessagePane(ex.getMessage(), null);
+		catch(Exception ex) {
+			Utility.displayErrorPane("Unexepcted System Error.\nTry to reset the system and repeat the operation.\nContact developers if the error persists.", null);
 		}
-		
-		//Delete all other matchers if there are any
-		// I'm not using the controlPanel removeMatcher because is not needed we just remove them so we don't need to update index and we update table all together
-		int firstRow = 1;
-		int lastRow = matchers.size() -1;
-		while(it.hasNext()) {
-			it.next();
-			it.remove();
-		}
-		//update the table
-		((AbstractTableModel)matchersTablePanel.getTable().getModel()).fireTableRowsDeleted(firstRow, lastRow);
-		ui.getCanvas().clearAllSelections();
-		ui.redisplayCanvas();
 	}
 }

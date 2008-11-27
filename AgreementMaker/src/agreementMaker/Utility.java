@@ -92,7 +92,7 @@ public class Utility {
 		JOptionPane.showMessageDialog(null, desc, title, JOptionPane.PLAIN_MESSAGE);
 	}
 	
-	public static void dysplayErrorPane(String desc, String title) {
+	public static void displayErrorPane(String desc, String title) {
 		if(title == null)
 			title = "Error";
 		JOptionPane.showMessageDialog(null, desc,title, JOptionPane.ERROR_MESSAGE);

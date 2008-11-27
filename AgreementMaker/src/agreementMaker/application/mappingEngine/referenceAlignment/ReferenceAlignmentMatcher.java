@@ -1,9 +1,17 @@
 package agreementMaker.application.mappingEngine.referenceAlignment;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.dom4j.io.SAXReader;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
 
 import agreementMaker.AMException;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
@@ -23,6 +31,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		/**Formats for output files*/
 		public final static String OUTF1 = "TXT-1";
 		
+		private ArrayList<MatchingPair> referenceListOfPairs;
 		
 	public ReferenceAlignmentMatcher() {
 		super();
@@ -36,9 +45,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	
 	
 	protected void beforeAlignOperations() {
-		ReferenceAlignmentParameters param = (ReferenceAlignmentParameters)this.param;
-		System.out.println(param.fileName+" "+param.format);
-		
+		referenceListOfPairs = readReferenceFile();
 	}
 	
 	/**
@@ -47,37 +54,202 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	 * @param filename
 	 * @return ArrayList of refpairs
 	 */
-	public ArrayList<MatchingPair> readReferenceFile() throws AMException, Exception{
-		ArrayList<MatchingPair> result = null;
+	public ArrayList<MatchingPair> readReferenceFile(){
+		ArrayList<MatchingPair> result = new ArrayList<MatchingPair>();
 		ReferenceAlignmentParameters parameters = (ReferenceAlignmentParameters)param;
-	    //Open the reference file
-		BufferedReader input;
 		try {
+		    //Open the reference file
+			BufferedReader input;
 			input = new BufferedReader(new FileReader(parameters.fileName));
+			//depending on file format a different parser is invoked
+			if(parameters.format.equals(REF0)) {
+				result = parseRefFormat0();
+			}
+			else if(parameters.format.equals(REF1)) {
+				result = parseRefFormat1(input);
+			}
+			else if(parameters.format.equals(REF2)) {
+				result = parseRefFormat2(input);
+			}
+			else if(parameters.format.equals(REF3)) {
+				result = parseRefFormat3(input);
+			}
+			else {
+				//development error, this exception can also be printed only in the console because is for developer users.
+				//if the method is not developed the user shouldn't be able to select that format in the formatlist menu.
+				throw new RuntimeException("No parsing method has been developed for this reference file format");
+			}
 		}
-		catch(FileNotFoundException e) {
-			//exception that has to be catched in the user interface class to print a message to the user
-			throw new AMException(AMException.FILE_NOT_FOUND+"\n"+parameters.fileName);
+		catch(IOException e) {
+			e.printStackTrace();
 		}
-		//depending on file format a different parser is invoked
-		if(parameters.format.equals(REF0)) {
-			//result = parseRefFormat0(input);
-		}
-		else if(parameters.format.equals(REF1)) {
-			//result = parseRefFormat1(input);
-		}
-		else if(parameters.format.equals(REF2)) {
-			//result = parseRefFormat2(input);
-		}
-		else if(parameters.format.equals(REF3)) {
-			//result = parseRefFormat3(input);
-		}
-		else {
-			//development error, this exception can also be printed only in the console because is for developer users.
-			//if the method is not developed the user shouldn't be able to select that format in the formatlist menu.
-			throw new RuntimeException("No parsing method has been developed for this reference file format");
+		catch (DocumentException e) {
+			e.printStackTrace();
 		}
 		return result;
+	}
+	
+	//Parsing reference file methods
+	
+	/**
+	 * Parsing OAEI 2008 Ontology testcase onto101.rdf and so on
+	 * @throws DocumentException 
+	 */
+	public ArrayList<MatchingPair> parseRefFormat0() throws IOException, DocumentException{
+		ArrayList<MatchingPair> result = new ArrayList<MatchingPair>();
+		File file = new File(((ReferenceAlignmentParameters)param).fileName);
+        SAXReader reader = new SAXReader();
+        Document doc = reader.read(file);
+        Element root = doc.getRootElement();
+        Element align = root.element("Alignment");
+        Iterator map = align.elementIterator("map");
+        while (map.hasNext()) {
+            Element e = ((Element)map.next()).element("Cell");
+            if (e == null) {
+                continue;
+            }
+            String s1 = e.element("entity1").attributeValue("resource");
+            String s2 = e.element("entity2").attributeValue("resource");
+            String measure = e.elementText("measure");
+            double mes=-1;
+            String relation =  e.elementText("relation");
+            String sourceid = null;
+            String targetid = null;
+            String split[];
+            if(s1!=null) {
+            	split = s1.split("#");
+            	if(split.length==2) {
+            		sourceid = split[1];
+            	}
+            }
+            if(s2!=null) {
+            	split = s2.split("#");
+            	if(split.length==2) {
+            		targetid = split[1];
+            	}
+            }
+            if(measure != null) {
+            	try {
+            		mes = Double.parseDouble(measure);
+            	}
+            	catch(Exception ex) {};
+            }
+            if(sourceid != null && targetid != null) {
+            	MatchingPair mp = new MatchingPair(sourceid, targetid, mes, relation);
+            	result.add(mp);
+            }
+        }
+
+	    return result;
+	}
+	
+	/**
+	 * This method is taken from the Read_Compare tool developed by William Sunna
+	 * This method parse a reference file in OAEI format like weapons, networks, russia...
+	 * The lines containing ao:elementA contain the source name
+	 * Each lines after that one contains the target name.
+	 * EXAMPLE
+	 * :Alignment27
+	 *a ao:Alignment;
+	 *ao:elementA a:NodeA ;
+	 * ao:elementB b:NodeA ;
+	 *ao:alignmentConfidence "1". 
+	 *
+	 */
+	public ArrayList<MatchingPair> parseRefFormat1(BufferedReader br) throws IOException{
+		ArrayList<MatchingPair> result = new ArrayList<MatchingPair>();
+	    
+	    String line;
+	    while((line = br.readLine()) !=null){
+	    	if(line.indexOf("ao:elementA") != -1) {
+	        	String source = line.substring(15);
+	        	source = source.substring(0,source.length()-2);
+	            line = br.readLine();
+	            String target = line.substring(15);
+	            target = target.substring(0,target.length()-2);
+	            MatchingPair r = new MatchingPair(source,target);
+	            result.add(r);
+	    	}
+	    }
+	    
+	    return result;
+	}
+		
+		/**
+		 * Format used for the simplest txt format.
+		 * This method parse a reference  file in the format sourceName(tab)--->(tab)targetName or sourceName(tab)targetName
+		 */
+		public ArrayList<MatchingPair> parseRefFormat2(BufferedReader br) throws IOException{
+			ArrayList<MatchingPair> result = new ArrayList<MatchingPair>();
+		    
+		    String line;
+		    String source;
+		    String target;
+		    while((line = br.readLine()) !=null){
+		    	String[] split = line.split("\t");
+		    	if(split.length == 2) {
+		        	source = split[0];
+		        	target = split[1];
+		            MatchingPair r = new MatchingPair(source,target);
+		            result.add(r);
+		    	}
+		    	else if(split.length == 3) {
+		        	source = split[0];
+		        	target = split[2];
+		            MatchingPair r = new MatchingPair(source,target);
+		            result.add(r);
+		    	}
+		    	//else System.out.println("Some lines in the reference are not in the correct format. Check result please");
+		    }
+		    return result;
+		}
+	
+	/**
+	 * Format used for Madison Dane test case.
+	 * This method parse a reference txt file in the format sourceDesc(tab)sourceName(tab)--->(tab)targetName(tab)targetDesc(tab) or sourceDesc(tab)sourceName(tab)targetName(tab)targetDesc(tab)
+	 * for for the first comparison method only source name and target name are needed.
+	 */
+	public ArrayList<MatchingPair> parseRefFormat3(BufferedReader br) throws IOException{
+		ArrayList<MatchingPair> result = new ArrayList<MatchingPair>();
+	    
+	    String line;
+	    String source;
+	    String target;
+	    while((line = br.readLine()) !=null){
+	    	String[] split = line.split("\t");
+	    	if(split.length == 5) {
+	        	source = split[1];
+	        	target = split[3];
+	            MatchingPair r = new MatchingPair(source,target);
+	            result.add(r);
+	    	}
+	    	else if(split.length == 4) {
+	        	source = split[1];
+	        	target = split[2];
+	            MatchingPair r = new MatchingPair(source,target);
+	            result.add(r);
+	    	}
+	    	//else System.out.println("Some lines in the reference are not in the correct format. Check result please");
+	    }
+	    return result;
+	}
+	
+	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
+	public double getDefaultThreshold() {
+		// TODO Auto-generated method stub
+		return 0.1;
+	}
+	
+	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
+	public int getDefaultMaxSourceRelations() {
+		// TODO Auto-generated method stub
+		return ANY_INT;
+	}
+
+	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
+	public int getDefaultMaxTargetRelations() {
+		// TODO Auto-generated method stub
+		return ANY_INT;
 	}
 	
 }
