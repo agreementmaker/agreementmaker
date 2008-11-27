@@ -26,6 +26,7 @@ import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.MatcherFactory;
+import agreementMaker.application.mappingEngine.MatchersRegistry;
 import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
 import agreementMaker.userInterface.table.MatchersTablePanel;
 import agreementMaker.userInterface.table.MyTableModel;
@@ -71,7 +72,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		//JPANEL MATCHER SELECTION (first top of the three panels)
 		//label
 		matcherLabel = new JLabel("Matcher selection: ");
-		String[] matcherList = MatcherFactory.getMatcherNames();
+		String[] matcherList = MatcherFactory.getMatcherComboList();
 		//matcher combo list
 		matcherCombo = new JComboBox(matcherList);
 		matcherCombo.addItemListener(this);
@@ -128,8 +129,10 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	public void actionPerformed(ActionEvent e) {
 		Object obj = e.getSource();
 		if(obj == viewDetails) {
-			int nameIndex = matcherCombo.getSelectedIndex();
-			AbstractMatcher a = MatcherFactory.getMatcherInstance(nameIndex, 0); //i'm just using a fake istance so the algorithm code is not important i put 0 but maybe anything
+			//int nameIndex = matcherCombo.getSelectedIndex();
+			String matcherName = (String) matcherCombo.getSelectedItem();
+			
+			AbstractMatcher a = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), 0); //i'm just using a fake instance so the algorithm code is not important i put 0 but maybe anything
 			Utility.displayMessagePane(a.getDetails(), "Matcher details");
 		}
 		else if(obj == matchButton) {
@@ -151,7 +154,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 					toBeDeleted = deleteList.get(i);
 					if(MatcherFactory.isTheUserMatcher(toBeDeleted)) {
 						//YOU CAN'T DELETE THE USER MATCHING just clear the matchings previusly created
-						Utility.displayMessagePane(UserManualMatcher.USERMANUALMATCHINGNAME+" can't be deleted.\nOnly alignments will be cleared.", null);
+						Utility.displayMessagePane(MatchersRegistry.UserManual + " can't be deleted.\nOnly alignments will be cleared.", null);
 						try {
 							toBeDeleted.match();//reinitialize the user matching as an empty one
 						}
@@ -167,10 +170,10 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	}
 	
 	public void match() {
-		int nameIndex = matcherCombo.getSelectedIndex();
+		String matcherName = (String) matcherCombo.getSelectedItem();
 		//the new matcher will put at the end of the list so at the end of the table so the index will be:
 		int lastIndex = Core.getInstance().getMatcherInstances().size();
-		AbstractMatcher currentMatcher = MatcherFactory.getMatcherInstance(nameIndex, lastIndex);
+		AbstractMatcher currentMatcher = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), lastIndex);
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows(); //indexes in the table correspond to the indexes of the matchers in the matcherInstances list in core class
 		int selectedMatchers = rowsIndex.length;
 		if(!Core.getInstance().ontologiesLoaded() ) {
