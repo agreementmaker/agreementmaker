@@ -97,12 +97,6 @@ public abstract class AbstractMatcher implements Matcher{
 		inputMatchers = new ArrayList<AbstractMatcher>();
 	}
 	
-	/**
-	 * Create - used by the matcher factory
-	 */
-	public AbstractMatcher create( int key, MatchersRegistry theName ) {
-		throw new RuntimeException("DEVELOPER:  You must implement a create() function for your Matcher.");
-	}
 	
 	//***************************ALL METHODS TO PERFORM THE ALIGNMENT**********************************
 	/**
