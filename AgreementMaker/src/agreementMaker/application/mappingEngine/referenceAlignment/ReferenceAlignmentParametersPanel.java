@@ -158,7 +158,7 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 
 	
 	
-	public AbstractParameters getParameters() {
+	public ReferenceAlignmentParameters getParameters() {
 		
 		parameters = new ReferenceAlignmentParameters();
 		parameters.fileName = filePath.getText();

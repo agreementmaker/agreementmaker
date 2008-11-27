@@ -25,8 +25,6 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	public final static String OUTF1 = "TXT-1";
 	
 	/** End of Taken */
-	
-	ReferenceAlignmentParameters param;
 		
 	public ReferenceAlignmentMatcher() {
 		super();
@@ -38,7 +36,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	}
 	
 	protected void beforeAlignOperations() {
-		ReferenceAlignmentParameters param = (ReferenceAlignmentParameters)this.param;
+		ReferenceAlignmentParameters param = (ReferenceAlignmentParameters) parametersPanel.getParameters();
 		System.out.println(param.fileName+" "+param.format);
 		
 	}
@@ -51,7 +49,8 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	 */
 	public ArrayList<MatchingPair> readReferenceFile() throws AMException, Exception{
 		ArrayList<MatchingPair> result = null;
-	    	    
+
+		ReferenceAlignmentParameters param = (ReferenceAlignmentParameters) parametersPanel.getParameters();
 	    //Open the reference file
 		BufferedReader input;
 		try {
