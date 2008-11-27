@@ -26,8 +26,8 @@ public class ReferenceEvaluation {
 	private String outFileName;
 	/**Format of the output file*/
 	private String outFormat;
-	/**OntologyController to access the structures, mappings and so on, it contains a reference to canvas*/
-	private OntologyController ontologyController;
+
+	
 	
 	//Evaluation measures
 	/**number of total relations discovered by AM*/
@@ -66,7 +66,7 @@ public class ReferenceEvaluation {
      * @param outN output file name
      * @param outF output file format
      */
-	public ReferenceEvaluation(OntologyController oc, String refN,String refF, String outN, String outF) {
+	public ReferenceEvaluation(String refN,String refF, String outN, String outF) {
 		refFileName = refN;
 		refFormat = refF;
 		outFileName = outN;
@@ -75,7 +75,6 @@ public class ReferenceEvaluation {
 		System.out.println("refFormat: "+refFormat);
 		System.out.println("outFileName: "+outFileName);
 		System.out.println("outFormat: "+outFormat);
-		ontologyController = oc;
 	}
 	
 	/**
@@ -97,8 +96,8 @@ public class ReferenceEvaluation {
 		}
 		//EnD DEBUGGING
 		 */
-		ArrayList<MatchingPair> matchingsFound = ontologyController.getDefnMatchingsList(); 
-		comparison(refPairsList,matchingsFound);
+		//ArrayList<MatchingPair> matchingsFound = ontologyController.getDefnMatchingsList(); 
+		//comparison(refPairsList,matchingsFound);
 		printOutputFile();
 	}
 	
@@ -111,9 +110,9 @@ public class ReferenceEvaluation {
 	    p.println("RELATIONS DISCOVERED BY THE AGREEMENTMAKER\t"+discovered);
 	    p.println("RELATIONS IN REFERENCE\t"+ref);
 	    p.println("CORRECT RELATIONS\t"+correct);
-	    p.println("PRECISION\t"+getPercent(precision));
-	    p.println("RECALL\t"+getPercent(recall));
-	    p.println("FMEASURE\t"+getPercent(Fmeasure));
+	    //p.println("PRECISION\t"+getPercent(precision));
+	    //p.println("RECALL\t"+getPercent(recall));
+	    //p.println("FMEASURE\t"+getPercent(Fmeasure));
 	    p.println("");
 	    p.println("");
 	    
@@ -307,9 +306,9 @@ public class ReferenceEvaluation {
 		result+="Matchings discovered: "+discovered+"\n";
 		result+="Matchings in Reference: "+ref+"\n";
 		result+="Matchings correct: "+correct+"\n\n";
-		result+="Precision = Correct/Discovered: "+getPercent(precision)+"\n";
-		result+="Recall = Correct/Reference: "+getPercent(recall)+"\n";
-		result+="Fmeasure = 2(precision*recall)/(precision+recall): "+getPercent(Fmeasure)+"\n";
+		//result+="Precision = Correct/Discovered: "+getPercent(precision)+"\n";
+		//result+="Recall = Correct/Reference: "+getPercent(recall)+"\n";
+		//result+="Fmeasure = 2(precision*recall)/(precision+recall): "+getPercent(Fmeasure)+"\n";
 		return result;
 	}
 	

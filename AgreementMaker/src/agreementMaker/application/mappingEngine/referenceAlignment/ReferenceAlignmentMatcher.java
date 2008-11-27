@@ -24,8 +24,8 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		public final static String OUTF1 = "TXT-1";
 		
 		
-	public ReferenceAlignmentMatcher(int n, String s) {
-		super(n, s);
+	public ReferenceAlignmentMatcher() {
+		super();
 		needsParam = true;
 		maxSourceAlign = ANY_INT;
 		maxTargetAlign = ANY_INT;
@@ -61,16 +61,16 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		}
 		//depending on file format a different parser is invoked
 		if(parameters.format.equals(REF0)) {
-			result = parseRefFormat0(input);
+			//result = parseRefFormat0(input);
 		}
 		else if(parameters.format.equals(REF1)) {
-			result = parseRefFormat1(input);
+			//result = parseRefFormat1(input);
 		}
 		else if(parameters.format.equals(REF2)) {
-			result = parseRefFormat2(input);
+			//result = parseRefFormat2(input);
 		}
 		else if(parameters.format.equals(REF3)) {
-			result = parseRefFormat3(input);
+			//result = parseRefFormat3(input);
 		}
 		else {
 			//development error, this exception can also be printed only in the console because is for developer users.
