@@ -4,6 +4,7 @@ import agreementMaker.application.mappingEngine.baseSimilarity.BaseSimilarityMat
 import agreementMaker.application.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
 import agreementMaker.application.mappingEngine.manualMatcher.EmptyMatcher;
 import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
+import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import agreementMaker.application.mappingEngine.ssc.SiblingsSimilarityContributionMatcher;
 import agreementMaker.application.mappingEngine.testMatchers.AllOneMatcher;
 import agreementMaker.application.mappingEngine.testMatchers.CopyMatcher;
@@ -29,15 +30,16 @@ public enum MatchersRegistry {
 	 * And so, if your matcher is has no code errors, it will be incorporated into the AgreementMaker.  - Cosmin
 	 */
 	
-	UserManual		( "User Manual Matching", UserManualMatcher.class, false),
-	Equals 			( "Local Name Equivalence Comparison", EqualsMatcher.class ),
-	Random 			( "Random Similarity Matcher", RandomMatcher.class ),
-	AllOne 			( "All ONE Similarities", AllOneMatcher.class ),
-	EmptyMatcher	( "Empty Matcher", EmptyMatcher.class ),
-	Copy			( "Copy Matcher", CopyMatcher.class ),
-	BaseSimilarity	( "Base Similarity", BaseSimilarityMatcher.class ),
-	DSI				( "Descendant's Similarity Inheritance (DSI)", DescendantsSimilarityInheritanceMatcher.class ),
-	SSC				( "Sibling's Similarity Contribution (SSC)", SiblingsSimilarityContributionMatcher.class );
+	UserManual			( "User Manual Matching", UserManualMatcher.class, false),
+	Equals 				( "Local Name Equivalence Comparison", EqualsMatcher.class ),
+	Random 				( "Random Similarity Matcher", RandomMatcher.class ),
+	AllOne 				( "All ONE Similarities", AllOneMatcher.class ),
+	EmptyMatcher		( "Empty Matcher", EmptyMatcher.class ),
+	Copy				( "Copy Matcher", CopyMatcher.class ),
+	BaseSimilarity		( "Base Similarity", BaseSimilarityMatcher.class ),
+	DSI					( "Descendant's Similarity Inheritance (DSI)", DescendantsSimilarityInheritanceMatcher.class ),
+	SSC					( "Sibling's Similarity Contribution (SSC)", SiblingsSimilarityContributionMatcher.class ),
+	ReferenceAlignment	( "Reference Alignment", ReferenceAlignmentMatcher.class );
 	
 	
 	/* Don't change anything below this line .. unless you intend to. */
