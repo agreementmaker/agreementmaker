@@ -260,8 +260,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		Object obj = e.getItemSelectable();
 		if(obj == matcherCombo) {
 			String matcherName = (String) matcherCombo.getSelectedItem();
-			AbstractMatcher a = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), 0); //i'm just using a fake instance so the algorithm code is not important i put 0 but maybe anything
-			thresholdCombo.setSelectedItem(Utility.getPercentFromDouble(a.getDefaultThreshold()));
+			AbstractMatcher a = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), 0); //i'm just using a fake instance so the algorithm code is not important i put 0 but maybe anythings
+			thresholdCombo.setSelectedItem(Utility.getNoFloatPercentFromDouble(a.getDefaultThreshold()));
 			sRelationCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxSourceRelations()));
 			tRelationCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxTargetRelations()));
 		}

@@ -106,7 +106,7 @@ public class MyTableModel extends AbstractTableModel {
             	else if(col == SHOWHIDE)
             		return a.isShown();
             	else if(col == THRESHOLD) 
-            		return Utility.getPercentFromDouble(a.getThreshold());
+            		return Utility.getNoFloatPercentFromDouble(a.getThreshold());
             	else if(col == SRELATIONS)
             		return Utility.getStringFromNumRelInt(a.getMaxSourceAlign());
             	else if(col == TRELATIONS)

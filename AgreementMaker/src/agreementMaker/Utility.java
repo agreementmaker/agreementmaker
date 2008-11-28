@@ -27,14 +27,16 @@ public class Utility {
 		double d = Double.parseDouble(s2);
 		return d/100;
 	}
-	
+	/*
 	public static String getPercentFromDouble(double d) {
 		double p;
-		if(0 <= d && d<= 1)
+		if(0 <= d && d<= 1) {
 			p = d * 100;
+		}
 		else throw new RuntimeException("Developer Error, the value passed to getPercentFromDouble(dobule d) should be between 0 and 1");
 		return p+"%";
 	}
+	*/
 	
 	public static String getNoFloatPercentFromDouble(double d) {
 		int i = (int)(d*100);

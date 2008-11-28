@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.management.relation.Relation;
+
 import org.dom4j.io.SAXReader;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -44,9 +46,28 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	
 	
 	
-	protected void beforeAlignOperations() {
+	protected void beforeAlignOperations()throws Exception{
+		super.beforeAlignOperations();
 		referenceListOfPairs = readReferenceFile();
 	}
+	
+    protected Alignment alignTwoNodes(Node source, Node target) {
+    	String sname = source.getLocalName();
+    	String tname = target.getLocalName();
+    	Alignment a = new Alignment(source, target, 0);//if I don't find any alignment in the reference about this 2 nodes i will create an alignment with 0 similarity
+    	MatchingPair mp = null;
+    	if(referenceListOfPairs != null) {
+    		Iterator<MatchingPair> it = referenceListOfPairs.iterator();
+    		while(it.hasNext()) {
+    			mp = it.next();
+    			if(mp.sourcename.equalsIgnoreCase(sname)&& mp.targetname.equalsIgnoreCase(tname)) {
+    				a = new Alignment(source, target, mp.similarity);
+    			}
+    		}
+    	}
+		return a;
+	}
+	
 	
 	/**
 	 * Parse the reference file: the file gets opened, depending on fileformat the file gets parsed differently, invoking a specific parse for that format
@@ -110,8 +131,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
             }
             String s1 = e.element("entity1").attributeValue("resource");
             String s2 = e.element("entity2").attributeValue("resource");
-            String measure = e.elementText("measure");
-            double mes=-1;
+           
             String relation =  e.elementText("relation");
             String sourceid = null;
             String targetid = null;
@@ -128,12 +148,19 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
             		targetid = split[1];
             	}
             }
+            //Take the measure, if i can't find a valid measure i'll suppose 1
+            String measure = e.elementText("measure");
+            double mes=-1;
             if(measure != null) {
             	try {
             		mes = Double.parseDouble(measure);
             	}
             	catch(Exception ex) {};
             }
+            if(mes < 0 || mes > 1) mes = 1;
+            
+            String correctRelation = getRelationFromFileFormat(relation);
+            
             if(sourceid != null && targetid != null) {
             	MatchingPair mp = new MatchingPair(sourceid, targetid, mes, relation);
             	result.add(mp);
@@ -143,6 +170,21 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	    return result;
 	}
 	
+	private String getRelationFromFileFormat(String relation) {
+		String result = Alignment.EQUIVALENCE;
+		String format = ((ReferenceAlignmentParameters)param).format;
+		if(format.equals(REF0)){//Right now only this format has the relation string
+			//TODO i don't actually know symbols different from equivalence used in this format, so i will put the symbol itself as relation
+			if(relation == null || relation.equals("") || relation.equals(Alignment.EQUIVALENCE)) {
+				result = Alignment.EQUIVALENCE;
+			}
+			else result = relation; //if it is another symbol i'll put it directly in the alignment so that is displayed on the AM we can actually see it, and maybe use it to represent those relations in our Alignment class
+		}
+		return result;
+	}
+
+
+
 	/**
 	 * This method is taken from the Read_Compare tool developed by William Sunna
 	 * This method parse a reference file in OAEI format like weapons, networks, russia...
@@ -168,6 +210,8 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	            String target = line.substring(15);
 	            target = target.substring(0,target.length()-2);
 	            MatchingPair r = new MatchingPair(source,target);
+	            r.similarity = 1;
+	            r.relation = Alignment.EQUIVALENCE;
 	            result.add(r);
 	    	}
 	    }
@@ -191,12 +235,16 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		        	source = split[0];
 		        	target = split[1];
 		            MatchingPair r = new MatchingPair(source,target);
+		            r.similarity = 1;
+		            r.relation = Alignment.EQUIVALENCE;
 		            result.add(r);
 		    	}
 		    	else if(split.length == 3) {
 		        	source = split[0];
 		        	target = split[2];
 		            MatchingPair r = new MatchingPair(source,target);
+		            r.similarity = 1;
+		            r.relation = Alignment.EQUIVALENCE;
 		            result.add(r);
 		    	}
 		    	//else System.out.println("Some lines in the reference are not in the correct format. Check result please");
@@ -221,12 +269,16 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	        	source = split[1];
 	        	target = split[3];
 	            MatchingPair r = new MatchingPair(source,target);
+	            r.similarity = 1;
+	            r.relation = Alignment.EQUIVALENCE;
 	            result.add(r);
 	    	}
 	    	else if(split.length == 4) {
 	        	source = split[1];
 	        	target = split[2];
 	            MatchingPair r = new MatchingPair(source,target);
+	            r.similarity = 1;
+	            r.relation = Alignment.EQUIVALENCE;
 	            result.add(r);
 	    	}
 	    	//else System.out.println("Some lines in the reference are not in the correct format. Check result please");
@@ -236,8 +288,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	
 	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
 	public double getDefaultThreshold() {
-		// TODO Auto-generated method stub
-		return 0.1;
+		return 0.01;
 	}
 	
 	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
