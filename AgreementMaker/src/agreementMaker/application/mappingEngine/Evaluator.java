@@ -5,18 +5,17 @@ public class Evaluator{
 	
 	final static double ALPHA = 1;
 	
-    public ResultData compare(AlignmentSet as1, AlignmentSet as2)
+    public static ResultData compare(AlignmentSet as1, AlignmentSet as2)
     {
-        if (as1 == null || as2 == null) {
-            return null;
+        int found = 0; 
+        int exist = 0;
+        if(as1 != null) {
+        	found = as1.size();
         }
-        int found = as1.size();
-        int exist = as2.size();
+        if (as2 != null) {
+            exist = as2.size();
+        }
         int correct = 0;
-
-        if (found == 0 || exist == 0) {
-            return null;
-        }
         ResultData result = new ResultData();
         AlignmentSet errorAlignments = new AlignmentSet();
         AlignmentSet correctAlignments = new AlignmentSet();
@@ -52,12 +51,24 @@ public class Evaluator{
             }
         }
         System.out.println("Found: " + found + ", Exist: " + exist + ", Correct: " + correct);
-
-        double prec = (double) correct / found;
-        double rec = (double) correct / exist;
+        double prec;
+        if(found == 0) {
+        	prec = 1;
+        }
+        else prec = (double) correct / found;
+        
+        double rec;
+        if(exist == 0) {
+        	rec = 1;
+        }
+        else rec = (double) correct / exist;
         System.out.println("Precision: " + prec + ", Recall: " + rec);
         // F-measure
-        double fm = (1 + ALPHA) * (prec * rec) / (ALPHA * prec + rec);
+        double fm;
+        if(prec + rec == 0) {
+        	fm = 0;
+        }
+        else  fm = (1 + ALPHA) * (prec * rec) / (ALPHA * prec + rec);
         System.out.println("F-Measure: " + fm);
 
         result.setFound(found);

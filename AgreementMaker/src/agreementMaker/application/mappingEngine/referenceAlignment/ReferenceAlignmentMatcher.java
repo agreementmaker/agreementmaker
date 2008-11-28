@@ -16,6 +16,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 
 import agreementMaker.AMException;
+import agreementMaker.Utility;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.ontology.Node;
@@ -49,6 +50,9 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	protected void beforeAlignOperations()throws Exception{
 		super.beforeAlignOperations();
 		referenceListOfPairs = readReferenceFile();
+		if(referenceListOfPairs == null || referenceListOfPairs.size() == 0) {
+			Utility.displayMessagePane("The reference file selected doen not contain any alignment.\nPlease check the format.", null);
+		}
 	}
 	
     protected Alignment alignTwoNodes(Node source, Node target) {
@@ -182,7 +186,6 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		}
 		return result;
 	}
-
 
 
 	/**

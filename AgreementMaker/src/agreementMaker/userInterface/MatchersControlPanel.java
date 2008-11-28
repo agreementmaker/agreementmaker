@@ -25,9 +25,13 @@ import agreementMaker.Utility;
 import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
+import agreementMaker.application.mappingEngine.AlignmentSet;
+import agreementMaker.application.mappingEngine.Evaluator;
 import agreementMaker.application.mappingEngine.MatcherFactory;
 import agreementMaker.application.mappingEngine.MatchersRegistry;
+import agreementMaker.application.mappingEngine.ResultData;
 import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
+import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import agreementMaker.userInterface.table.MatchersTablePanel;
 import agreementMaker.userInterface.table.MyTableModel;
 
@@ -47,7 +51,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	private JButton matchButton;
 	private JButton viewDetails;
 	private JButton delete;
-	private JButton button3;
+	private JButton refEvaluate;
 	private UI ui;
 	private MatchersTablePanel matchersTablePanel;
 	
@@ -111,15 +115,15 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		
 		delete = new JButton("Delete");
 		delete.addActionListener(this);
-		button3 = new JButton("Button3");
-
+		refEvaluate = new JButton("Reference Evaluation");
+		refEvaluate.addActionListener(this);
 		matchersTablePanel = new MatchersTablePanel(ui);
 		
 		JPanel panel3 = new JPanel();
 		panel3.setLayout(new FlowLayout(FlowLayout.LEADING));
 		//panel3.setAlignmentX(LEFT_ALIGNMENT);
 		panel3.add(delete);
-		panel3.add(button3);
+		panel3.add(refEvaluate);
 		add(matcherSelectionPanel);
 		add(matchersTablePanel);
 		add(panel3);
@@ -167,12 +171,49 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 					}
 				}
 			}
+			else if(obj == refEvaluate) {
+				evaluate();
+			}
 		}
 		catch(Exception ex) {
-			Utility.displayErrorPane("Unexepcted System Error.\nTry to reset the system and repeat the operation.\nContact developers if the error persists.", null);
+			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR, null);
 		}
 	}
 	
+	private void evaluate() throws Exception{
+		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
+		if(rowsIndex.length == 0) {
+			Utility.displayErrorPane("No matchers selected", null);
+		}
+		else {
+			//Run the reference alignment matcher to get the list of alignments in reference file, we are not going to add it in the table list
+			ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance(MatchersRegistry.ReferenceAlignment,0);
+			AbstractMatcherParametersDialog dialog = new AbstractMatcherParametersDialog(refMatcher);
+			if(dialog.parametersSet()) {
+				refMatcher.setParam(dialog.getParameters());
+				refMatcher.setThreshold(refMatcher.getDefaultThreshold());
+				refMatcher.setMaxSourceAlign(refMatcher.getDefaultMaxSourceRelations());
+				refMatcher.setMaxTargetAlign(refMatcher.getDefaultMaxTargetRelations());
+				refMatcher.match();
+				AlignmentSet referenceSet = refMatcher.getAlignmentSet(); //class + properties
+				AbstractMatcher toBeEvaluated;
+				AlignmentSet evaluateSet;
+				ResultData rd;
+				for(int i = 0; i < rowsIndex.length; i++) {
+					toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
+					evaluateSet = toBeEvaluated.getAlignmentSet();
+					rd = Evaluator.compare(evaluateSet, referenceSet);
+					toBeEvaluated.setRefEvaluation(rd);
+					AbstractTableModel model = (AbstractTableModel)matchersTablePanel.getTable().getModel();
+					model.fireTableRowsUpdated(toBeEvaluated.getIndex(), toBeEvaluated.getIndex());
+				}
+			}
+			dialog.dispose();
+			ui.redisplayCanvas();
+		}
+		
+	}
+
 	public void match() throws Exception{
 		String matcherName = (String) matcherCombo.getSelectedItem();
 		//the new matcher will put at the end of the list so at the end of the table so the index will be:
@@ -224,8 +265,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				catch(AMException ex){
 					Utility.displayMessagePane(ex.getMessage(), null);
 				}
-
-				System.out.println("yeeei");
+				System.out.println("Matching Process Complete");
 			}
 		}
 	}

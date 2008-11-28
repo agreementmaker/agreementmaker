@@ -8,6 +8,7 @@ import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.userInterface.table.MyTableModel;
 
 public class Utility {
+	public final static String UNEXPECTED_ERROR = "Unexepcted System Error.\nTry to reset the system and repeat the operation.\nContact developers if the error persists.";
 	
 	public static String[] getPercentStringList() {
 		int min = 0;
