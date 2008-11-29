@@ -28,7 +28,7 @@ import agreementMaker.userInterface.vertex.VertexDescriptionPane;
 public class UIMenu implements ActionListener {
 	
 	// create 4 menus
-	private JMenu fileMenu, editMenu, viewMenu, helpMenu,developmentMenu;
+	private JMenu fileMenu, editMenu, viewMenu, helpMenu;
 	
 	// menu items for helpMenu
 	private JMenuItem howToUse, aboutItem;		
@@ -46,8 +46,6 @@ public class UIMenu implements ActionListener {
 	private JMenuItem undo, redo;
 	// menu itmes for fileMenu
 	private JMenuItem xit, openSource, openTarget;
-	// menu itmes for developmentMenu
-	private JMenuItem evaluateReferenceItem;
 	
 	private JMenu menuRecentSource, menuRecentTarget;
 	private JMenuItem menuRecentSourceList[], menuRecentTargetList[]; // the list of recent files
@@ -120,9 +118,6 @@ public class UIMenu implements ActionListener {
 			displayOptionPane("Undo Clicked","Undo");
 		}else if (obj == redo){
 			displayOptionPane("Redo Clicked","Redo");
-		}
-		else if(obj == evaluateReferenceItem) {
-			openReferenceFileDialog();
 		}
 		else if( obj == smoMenuItem ) {
 			// Save the SMO setting that has been changed
@@ -283,14 +278,7 @@ public class UIMenu implements ActionListener {
 		smoMenuItem.setSelected(prefs.getSelectedMatchingsOnly());
 		viewMenu.add(smoMenuItem);
 		
-		// Build  the development menu
-		developmentMenu = new JMenu("Development");
-		developmentMenu.setMnemonic(KeyEvent.VK_D);
-		myMenuBar.add(developmentMenu);	
-		//add item to run the reference evaluation
-		evaluateReferenceItem = new JMenuItem("Evaluate reference");
-		evaluateReferenceItem.addActionListener(this);
-		developmentMenu.add(evaluateReferenceItem);
+
 
 		// Build help menu in the menu bar.
 		helpMenu = new JMenu("Help");
@@ -321,13 +309,7 @@ public class UIMenu implements ActionListener {
 	 public void openAndReadFilesForMapping(int fileType){
 		new OpenOntologyFileDialog(fileType, ui);
 	 }
-	 
-	/**
-	 * This method open the ReferenceFileDialog frame which allow the user to select the reference and agrrementdocument files to run the evaluation
-	 */	
-	 public void openReferenceFileDialog(){
-		new ReferenceFileDialog(ui);
-	 }
+
 	
 	 
 	 /**

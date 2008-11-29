@@ -20,22 +20,23 @@ public class MyTableModel extends AbstractTableModel {
 	public final static int ALLROWUPDATE = 2;
 	
 	public final static int INDEX = 0;
-	public final static int NAME = 1;
-	public final static int SHOWHIDE = 2;
-	public final static int THRESHOLD = 3;
-	public final static int SRELATIONS = 4;
-	public final static int TRELATIONS = 5;
-	public final static int INPUTMATCHERS  = 6;
-	public final static int MODIFIED = 7;
-	public final static int ALIGNCLASSES = 8;
-	public final static int ALIGNPROPERTIES  = 9;
-	public final static int FOUND = 10;
-	public final static int CORRECT = 11;
-	public final static int REFERENCE = 12;
-	public final static int PRECISION = 13;
-	public final static int RECALL = 14;
-	public final static int FMEASURE = 15;	
-	public final static int COLOR = 16;	
+	public final static int NAME = INDEX+1;
+	public final static int SHOWHIDE =NAME+1;
+	public final static int THRESHOLD = SHOWHIDE+1;
+	public final static int SRELATIONS = THRESHOLD+1;
+	public final static int TRELATIONS = SRELATIONS+1;
+	public final static int INPUTMATCHERS  = TRELATIONS+1;
+	public final static int MODIFIED = INPUTMATCHERS+1;
+	public final static int ALIGNCLASSES = MODIFIED+1;
+	public final static int ALIGNPROPERTIES  = ALIGNCLASSES+1;
+	public final static int PERFORMANCE = ALIGNPROPERTIES+1;
+	public final static int FOUND = PERFORMANCE+1;
+	public final static int CORRECT = FOUND+1;
+	public final static int REFERENCE = CORRECT+1;
+	public final static int PRECISION = REFERENCE+1;
+	public final static int RECALL = PRECISION+1;
+	public final static int FMEASURE = RECALL+1;	
+	public final static int COLOR = FMEASURE+1;	
 	
 	public String[] columnNames = {"Index",
 					                                        "Name",
@@ -47,6 +48,7 @@ public class MyTableModel extends AbstractTableModel {
 					                                        "Modified",
 					                                        "Align Classes",
 					                                        "Align Properties",
+					                                        "Performance(ms)",
 					                                        "Found",
 					                                        "Correct",
 					                                        "Reference",
@@ -58,23 +60,24 @@ public class MyTableModel extends AbstractTableModel {
         
 	public ArrayList<AbstractMatcher> data =  Core.getInstance().getMatcherInstances();
 	
-	public final Object[] longValues = {
+	public final Object[] defaultValues = {
         		new Integer(99), 
         		"0123456789012345678912345",
         		Boolean.TRUE,
-                new Double(100),
-                new Integer(10),
-                new Integer(10),
+                "100%",
+                "ANY",
+                "ANY",
                 "0123456789012345678912345",
                 Boolean.TRUE,
                 Boolean.TRUE,
                 Boolean.TRUE,
+                new Long(999999),
                 new Integer(999999), 
                 new Integer(999999), 
                 new Integer(999999), 
-                new Double(100),
-                new Double(100),
-                new Double(100),
+                "100%",
+                "100%",
+                "100%",
                 Color.pink
                 };
 
@@ -125,6 +128,11 @@ public class MyTableModel extends AbstractTableModel {
             	else if(col == FOUND ) {
             		return a.getTotalNumberAlignments();
             	}
+            	else if(col == PERFORMANCE ) {
+            		if(a.getExecutionTime() == 0)
+            			return NONE;
+            		else return a.getExecutionTime();
+            	}
             	else if (col == CORRECT )
             		if(!a.isRefEvaluated())
             			return NONE;
@@ -136,15 +144,15 @@ public class MyTableModel extends AbstractTableModel {
             	else if(col == RECALL)
             		if(!a.isRefEvaluated())
             			return NONE;
-            		else return a.getRefEvaluation().getRecall();
+            		else return  Utility.getNoFloatPercentFromDouble(a.getRefEvaluation().getRecall());
             	else if(col == PRECISION )
             		if(!a.isRefEvaluated())
             			return NONE;
-            		else return a.getRefEvaluation().getPrecision();
+            		else return  Utility.getNoFloatPercentFromDouble(a.getRefEvaluation().getPrecision());
             	else if(col == FMEASURE )
             		if(!a.isRefEvaluated())
             			return NONE;
-            		else return a.getRefEvaluation().getFmeasure();
+            		else return Utility.getNoFloatPercentFromDouble(a.getRefEvaluation().getFmeasure());
             	else if(col == COLOR )
             		return a.getColor();
             	else return NONE;

@@ -37,10 +37,8 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 	 * Also, get our MCP value, which is set by the user 
 	 * @see agreementMaker.application.mappingEngine.AbstractMatcher#beforeAlignOperations()
 	 */
-	protected void beforeAlignOperations() {
-    	classesMatrix = null;
-    	propertiesMatrix = null;
-    	modifiedByUser = false;
+	protected void beforeAlignOperations() throws Exception{
+		super.beforeAlignOperations();
     	
     	if( inputMatchers.size() != 1 ) {
     		throw new RuntimeException("SSC Algorithm needs to have one input matcher.");

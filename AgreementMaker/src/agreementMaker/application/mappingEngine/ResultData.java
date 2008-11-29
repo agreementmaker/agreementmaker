@@ -1,4 +1,5 @@
 package agreementMaker.application.mappingEngine;
+import agreementMaker.Utility;
 
 public class ResultData
 {
@@ -101,4 +102,20 @@ public class ResultData
     {
         recall = rec;
     }
+
+	/**
+	 * must be invoked after the evaluation process
+	 * @return a user message reporting all calculated measures
+	 */
+	public String getReport() {
+		String result  = "";
+		result+="Matchings discovered: "+getFound()+"\n";
+		result+="Matchings in Reference: "+getExist()+"\n";
+		result+="Matchings correct: "+getCorrect()+"\n";
+		result+="Precision = Correct/Discovered: "+Utility.getNoFloatPercentFromDouble(getPrecision())+"\n";
+		result+="Recall = Correct/Reference: "+Utility.getNoFloatPercentFromDouble(getRecall())+"\n";
+		result+="Fmeasure = 2(precision*recall)/(precision+recall): "+Utility.getNoFloatPercentFromDouble(getFmeasure())+"\n";
+		return result;
+	}
+    
 }

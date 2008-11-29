@@ -106,7 +106,7 @@ public class MatchersTablePanel extends JPanel {
         Component comp = null;
         int headerWidth = 0;
         int cellWidth = 0;
-        Object[] longValues = model.longValues;
+        Object[] longValues = model.defaultValues;
         TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
         
         for (int i = 0; i < model.getColumnCount(); i++) {

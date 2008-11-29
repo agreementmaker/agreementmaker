@@ -65,6 +65,10 @@ public abstract class AbstractMatcher implements Matcher{
 	 * */
 	protected int minInputMatchers;
 	protected int maxInputMatchers;
+	/**Variables needed to calculate execution time, executionTime = (end - start)/ unitMeasure, start has to be init in beforeAlign() and end in aferSelect()*/
+	protected long start;
+	protected long end;
+	protected long executionTime;
 	/**Keeps info about reference evaluation of the matcher. is null until the algorithm gets evaluated*/
 	protected ResultData refEvaluation;
 	/**Graphical color for nodes mapped by this matcher and alignments, this value is set by the MatcherFactory and modified  by the table so a developer just have to pass it as aparameter for the constructor*/
@@ -139,11 +143,13 @@ public abstract class AbstractMatcher implements Matcher{
     //***************EMPTY TEMPLATE METHODS TO ALLOW USER TO ADD HIS OWN CODE****************************************
 
     //reset structures, this is important because anytime we invoke the match() for the secondtime (when we change some values in the table for example)
-    //we have to reset all structures. It's the first method that is invoked, when overriding call super.beforeAlignOperations()
+    //we have to reset all structures. It's the first method that is invoked, when overriding call super.beforeAlignOperations(),
+    //IMPORTANT it also takes care of initializing time
 	protected void beforeAlignOperations()  throws Exception{
     	classesMatrix = null;
     	propertiesMatrix = null;
     	modifiedByUser = false;
+    	start = System.nanoTime();
 	}
     //DO NOTHING FOR NOW
     protected void afterAlignOperations()  {}
@@ -153,8 +159,11 @@ public abstract class AbstractMatcher implements Matcher{
     	propertiesAlignmentSet = null;
     	refEvaluation = null;
     }
-    //DO nothing for now
-    protected void afterSelectionOperations() {}
+    //Time calculation, if you override this method remember to call super.afterSelectionOperations()
+    protected void afterSelectionOperations() {
+    	end = System.nanoTime();
+    	executionTime = (end-start)/1000000; // this time is in milliseconds.
+    }
     
     
     //***************INTERNAL METHODS THAT CAN BE USED BY ANY ABSTRACTMATCHER******************************************
@@ -577,6 +586,16 @@ public abstract class AbstractMatcher implements Matcher{
 		return propertiesMatrix;
 	}
 	
+	public long getExecutionTime() {
+		return executionTime;
+	}
+
+	public void setExecutionTime(long executionTime) {
+		this.executionTime = executionTime;
+	}
+	
+	//***********************MEthods used by the interface for some small tasks**************************
+	
 	/**
 	 * Matcher details you can override this method to add or change you matcher details if needed, it is only invoked clicking on the button view details in the control panel
 	 * @return a string with details of the matchers
@@ -593,6 +612,24 @@ public abstract class AbstractMatcher implements Matcher{
 		return s;
 	}
 
+	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
+	public double getDefaultThreshold() {
+		// TODO Auto-generated method stub
+		return 0.75;
+	}
+	
+	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
+	public int getDefaultMaxSourceRelations() {
+		// TODO Auto-generated method stub
+		return 1;
+	}
+
+	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
+	public int getDefaultMaxTargetRelations() {
+		// TODO Auto-generated method stub
+		return ANY_INT;
+	}
+	
 //*************************UTILITY METHODS**************************************
 	public boolean equals(Object o) {
 		if(o instanceof AbstractMatcher) {
@@ -617,23 +654,9 @@ public abstract class AbstractMatcher implements Matcher{
 	}
 
 	
-	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
-	public double getDefaultThreshold() {
-		// TODO Auto-generated method stub
-		return 0.75;
-	}
-	
-	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
-	public int getDefaultMaxSourceRelations() {
-		// TODO Auto-generated method stub
-		return 1;
-	}
 
-	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
-	public int getDefaultMaxTargetRelations() {
-		// TODO Auto-generated method stub
-		return ANY_INT;
-	}
+
+
 
 
 

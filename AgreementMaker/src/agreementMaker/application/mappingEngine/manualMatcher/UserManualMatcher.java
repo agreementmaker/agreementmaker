@@ -50,6 +50,15 @@ public class UserManualMatcher extends AbstractMatcher {
 		return new Alignment(source, target, sim, rel);
 	}
 	
+    protected void afterSelectionOperations() {
+    	super.afterAlignOperations();
+    	start = 0;
+    	end = 0;
+    	executionTime = 0;
+    }
+    
+	
+	
 	/**This method is only needed for usermatching because is the only one who gets initialized before the creation of ontologies*/
 	public void setSourceOntology(Ontology o) {
 		sourceOntology = o;
@@ -74,4 +83,7 @@ public class UserManualMatcher extends AbstractMatcher {
 	public int getDefaultMaxTargetRelations() {
 		return ANY_INT;
 	}
+
+
 }
+

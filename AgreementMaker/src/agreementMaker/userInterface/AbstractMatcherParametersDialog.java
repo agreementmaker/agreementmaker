@@ -39,7 +39,6 @@ import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
 import agreementMaker.application.mappingEngine.AbstractParameters;
 import agreementMaker.application.mappingEngine.DefnMappingOptions;
-import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluation;
 import agreementMaker.userInterface.vertex.VertexDescriptionPane;
 
 

@@ -29,7 +29,6 @@ import agreementMaker.application.mappingEngine.AbstractParameters;
 import agreementMaker.application.mappingEngine.Evaluator;
 import agreementMaker.application.mappingEngine.MatcherSetting;
 import agreementMaker.userInterface.AppPreferences;
-import agreementMaker.userInterface.ReferenceOutputFileDialog;
 import agreementMaker.userInterface.UI;
 import agreementMaker.userInterface.UI.WindowEventHandler;
 

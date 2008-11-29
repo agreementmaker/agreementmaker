@@ -52,6 +52,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	private JButton viewDetails;
 	private JButton delete;
 	private JButton refEvaluate;
+	private JButton clearMatchings;
 	private UI ui;
 	private MatchersTablePanel matchersTablePanel;
 	
@@ -117,6 +118,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		delete.addActionListener(this);
 		refEvaluate = new JButton("Reference Evaluation");
 		refEvaluate.addActionListener(this);
+		clearMatchings = new JButton("Clear All");
+		clearMatchings.addActionListener(this);
 		matchersTablePanel = new MatchersTablePanel(ui);
 		
 		JPanel panel3 = new JPanel();
@@ -124,6 +127,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		//panel3.setAlignmentX(LEFT_ALIGNMENT);
 		panel3.add(delete);
 		panel3.add(refEvaluate);
+		panel3.add(clearMatchings);
 		add(matcherSelectionPanel);
 		add(matchersTablePanel);
 		add(panel3);
@@ -132,6 +136,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	
 	public void actionPerformed(ActionEvent e) {
 		try {
+			int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
 			Object obj = e.getSource();
 			if(obj == viewDetails) {
 				//int nameIndex = matcherCombo.getSelectedIndex();
@@ -143,7 +148,6 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				match();
 			}
 			else if(obj == delete) {
-				int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
 				if(rowsIndex.length == 0) {
 					Utility.displayErrorPane("No matchers selected", null);
 				}
@@ -174,6 +178,12 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 			else if(obj == refEvaluate) {
 				evaluate();
 			}
+			else if(obj == clearMatchings) {
+				boolean ok = Utility.displayConfirmPane("This operation will clear all the matchings prevously calculated.\nDo you want to continue?", null);
+				if(ok) {
+					resetMatchings();
+				}
+			}
 		}
 		catch(Exception ex) {
 			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR, null);
@@ -199,14 +209,18 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				AbstractMatcher toBeEvaluated;
 				AlignmentSet evaluateSet;
 				ResultData rd;
+				String report="\t\tReference Evaluation Complete\n\n";
 				for(int i = 0; i < rowsIndex.length; i++) {
 					toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
 					evaluateSet = toBeEvaluated.getAlignmentSet();
 					rd = Evaluator.compare(evaluateSet, referenceSet);
 					toBeEvaluated.setRefEvaluation(rd);
+					report+=toBeEvaluated.getName()+"\n\n";
+					report +=rd.getReport()+"\n";
 					AbstractTableModel model = (AbstractTableModel)matchersTablePanel.getTable().getModel();
 					model.fireTableRowsUpdated(toBeEvaluated.getIndex(), toBeEvaluated.getIndex());
 				}
+				Utility.displayMessagePane(report,"Reference Evaluation Report");
 			}
 			dialog.dispose();
 			ui.redisplayCanvas();
@@ -310,7 +324,6 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	
 	public void resetMatchings() {
 		try {
-			// TODO Auto-generated method stub
 			Core core = Core.getInstance();
 			ArrayList<AbstractMatcher> matchers = core.getMatcherInstances();
 			Iterator<AbstractMatcher> it = matchers.iterator();
