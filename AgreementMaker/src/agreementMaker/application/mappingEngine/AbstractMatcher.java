@@ -385,9 +385,11 @@ public abstract class AbstractMatcher implements Matcher{
     
 	//*****************SET AND GET methods ******************************************
 	public AbstractMatcherParametersPanel getParametersPanel() {
-		return parametersPanel;
 		//This method must create and return the AbstractMatcherParameter subclass so that the user can select additional parameters needed by the matcher
 		//if the matcher doesn't need any parameter then the attribute needsParameters must be false and this method won't be invoked.
+		return parametersPanel;
+		//You may need to override this method to pass some more information to the panel, in that case instead of initializing the panel in the constructor 
+		//you will have to override this method this way: "return new MyParameterPanel(with some more parameters); (see manualCombinationMatcher structure
 	}
 	
 	public AlignmentSet getAlignmentSet() {

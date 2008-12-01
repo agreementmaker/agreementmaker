@@ -78,7 +78,7 @@ public class SiblingsSimilarityContributionParametersPanel extends AbstractMatch
 	}
 	
 	public SiblingsSimilarityContributionParameters getParameters() {
-		
+		parameters.MCP = Double.parseDouble(mcpField.getText());
 		return parameters;
 		
 	}

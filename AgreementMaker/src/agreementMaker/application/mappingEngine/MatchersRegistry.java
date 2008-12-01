@@ -2,6 +2,7 @@ package agreementMaker.application.mappingEngine;
 
 import agreementMaker.application.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import agreementMaker.application.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
+import agreementMaker.application.mappingEngine.manualCombination.ManualCombinationMatcher;
 import agreementMaker.application.mappingEngine.manualMatcher.EmptyMatcher;
 import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -39,7 +40,8 @@ public enum MatchersRegistry {
 	BaseSimilarity		( "Base Similarity", BaseSimilarityMatcher.class ),
 	DSI					( "Descendant's Similarity Inheritance (DSI)", DescendantsSimilarityInheritanceMatcher.class ),
 	SSC					( "Sibling's Similarity Contribution (SSC)", SiblingsSimilarityContributionMatcher.class ),
-	ReferenceAlignment	( "Reference Alignment", ReferenceAlignmentMatcher.class );
+	ReferenceAlignment	( "Reference Alignment", ReferenceAlignmentMatcher.class ),
+	ManualCombination	( "Manual Combination", ManualCombinationMatcher.class );
 	
 	
 	/* Don't change anything below this line .. unless you intend to. */

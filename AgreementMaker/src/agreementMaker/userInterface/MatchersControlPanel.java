@@ -56,9 +56,6 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	private UI ui;
 	private MatchersTablePanel matchersTablePanel;
 	
-	public final static int SHOW = 0;
-	public final static int HIDE = 1;
-	
 	
 	MatchersControlPanel(UI ui, UIMenu uiMenu, Canvas canvas) {
 		this.ui = ui;
@@ -186,6 +183,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 			}
 		}
 		catch(Exception ex) {
+			ex.printStackTrace();
 			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR, null);
 		}
 	}
@@ -251,6 +249,11 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		if(everythingOk) {
 		*/
 		else {
+			//Set matchers into the abstractmatcher VERY IMPORTANT to set them before invoking the parameter panel, infact the parameter panel may need to work on inputMatchers also.
+			for(int i = 0; i<rowsIndex.length && i< currentMatcher.getMaxInputMatchers(); i++) {
+				AbstractMatcher input = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
+				currentMatcher.addInputMatcher(input);
+			}
 			boolean everythingOk = true;
 			//Asking parameters before setting input matcher list, just because the user can still cancel the operation
 			if(currentMatcher.needsParam()) {
@@ -267,10 +270,6 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				currentMatcher.setMaxSourceAlign(Utility.getIntFromNumRelString((String)sRelationCombo.getSelectedItem()));
 				currentMatcher.setMaxTargetAlign(Utility.getIntFromNumRelString((String)tRelationCombo.getSelectedItem()));
 				//parameters are set if they were needed, now we need to set the list of input matchers
-				for(int i = 0; i<rowsIndex.length && i< currentMatcher.getMaxInputMatchers(); i++) {
-					AbstractMatcher input = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
-					currentMatcher.addInputMatcher(input);
-				}
 				try {
 					currentMatcher.match();
 					matchersTablePanel.addMatcher(currentMatcher);
@@ -352,6 +351,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 			ui.redisplayCanvas();
 		}
 		catch(Exception ex) {
+			ex.printStackTrace();
 			Utility.displayErrorPane("Unexepcted System Error.\nTry to reset the system and repeat the operation.\nContact developers if the error persists.", null);
 		}
 	}

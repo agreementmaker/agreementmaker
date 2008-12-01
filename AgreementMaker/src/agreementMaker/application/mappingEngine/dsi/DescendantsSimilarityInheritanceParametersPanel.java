@@ -88,7 +88,7 @@ public class DescendantsSimilarityInheritanceParametersPanel extends AbstractMat
 	}
 	
 	public DescendantsSimilarityInheritanceParameters getParameters() {
-		
+		parameters.MCP = Double.parseDouble(mcpField.getText());
 		return parameters;
 		
 	}

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javax.swing.tree.TreeNode;
 
 import agreementMaker.application.mappingEngine.AbstractMatcher;
+import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.AlignmentMatrix;
 import agreementMaker.application.ontology.Node;
@@ -17,7 +18,6 @@ public class ManualCombinationMatcher extends AbstractMatcher {
 		super();
 		
 
-		parametersPanel = new ManualCombinationParametersPanel();
 		needsParam = true; // we need to set the MCP before running DSI
 		
 		
@@ -25,6 +25,7 @@ public class ManualCombinationMatcher extends AbstractMatcher {
 		minInputMatchers = 2;
 		maxInputMatchers = ANY_INT;
 		
+		//I can't initialize the parametersPanel in here because i need to pass the inputmatchers as parameters but the input matchers will be set later so I will initialize the panel in the getParametersPanerl() method
 	}
 	
 	
@@ -127,5 +128,8 @@ public class ManualCombinationMatcher extends AbstractMatcher {
 		return new Alignment(source, target, sim, Alignment.EQUIVALENCE);
 	}
 
+	public AbstractMatcherParametersPanel getParametersPanel() {
+		return new ManualCombinationParametersPanel(inputMatchers);
+	}
 	
 }

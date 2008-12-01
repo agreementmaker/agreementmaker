@@ -3,16 +3,20 @@ package agreementMaker.application.mappingEngine.manualCombination;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.util.ArrayList;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.GroupLayout;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import agreementMaker.application.Core;
+import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
 import agreementMaker.application.mappingEngine.AbstractParameters;
 import agreementMaker.application.mappingEngine.MatcherSetting;
@@ -34,61 +38,57 @@ public class ManualCombinationParametersPanel extends AbstractMatcherParametersP
 	private static final long serialVersionUID = -3220525418599504107L;
 
 	private ManualCombinationParameters parameters;
-	
-	private JLabel instructionsLabel;
-	private JLabel mcpLabel;
-	private JTextField mcpField;
-	private JLabel constraintsLabel;
-	
-	// Application Wide Preferences
-	AppPreferences prefs;
+	private ArrayList<AbstractMatcher> inputMatchers;
+	private JLabel topLabel;
+	private JLabel combinationTypeL;
+	private JComboBox combOperationsCombo;
+	private JLabel[] inputMatchersL;
+
 	
 	
-	public ManualCombinationParametersPanel() {
+	public ManualCombinationParametersPanel(ArrayList<AbstractMatcher> matchers) {
 		super();
-	
-		prefs = Core.getInstance().getUI().getAppPreferences();  // get a reference to our application preferences
+		inputMatchers = matchers;
+		topLabel = new JLabel("Select the operation that will be used to combine alignments for each pair (Source Node, Target Node).");
+		combinationTypeL = new JLabel("Combining operation: ");
+		String[] operations = {ManualCombinationParameters.AVERAGECOMB,ManualCombinationParameters.WEIGHTAVERAGE, ManualCombinationParameters.MAXCOMB, ManualCombinationParameters.MINCOMB};
+		combOperationsCombo = new JComboBox(operations);
 		
-		this.setPreferredSize(new Dimension(350, 175) );
+		GroupLayout layout = new GroupLayout(this);
+		this.setLayout(layout);
 		
-		instructionsLabel = new JLabel("<html>Please set the initial parameteres for DSI:</html>");
-		instructionsLabel.setAlignmentX((float) 0.5);
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
 		
-		mcpLabel = new JLabel("<html>MCP: </html>");
-		
-		constraintsLabel = new JLabel("<html>( 0.0 \u2264 MCP \u2264 1.0 )</html>");
-				
-		mcpField = new JTextField(6);
-		mcpField.setText(    Float.toString(prefs.getPanelFloat( MatcherSetting.DSI_MCP ))    ); // get the saved MCP value (usually the last one the user entered)
-		//mcpField.setPreferredSize(new Dimension(200, 40));
-		
-		parameters = new ManualCombinationParameters();
-		
-		
-		// The GUI layout - a pain in the butt to get right
-		
-		this.setLayout(new BorderLayout(30, 30));
-	
-		JPanel a = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		a.add(mcpLabel);
-		a.add(mcpField);
-		a.add(constraintsLabel);
-		a.setSize(300, 50);
-		
-		instructionsLabel.setBorder(new EmptyBorder(20, 10, 10, 10));
-		JPanel b = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		b.add(instructionsLabel);
-		b.setSize(300,50);
-		
-	
-		this.add(b, BorderLayout.NORTH);
-		this.add(a, BorderLayout.CENTER);
-		
-		this.setSize(300, 100);		
+		// Here we define the horizontal and vertical groups for the layout.
+		// Both definitions are required for the GroupLayout to be complete.
+		layout.setHorizontalGroup(
+				layout.createParallelGroup()
+					.addComponent(topLabel) 					// fileType label
+					.addGroup(layout.createSequentialGroup()
+							.addComponent(combinationTypeL) 			// filepath text
+							.addComponent(combOperationsCombo) 	
+							)
+		);
+		// the Vertical group is the same structure as the horizontal group
+		// but Sequential and Parallel definition are exchanged
+		layout.setVerticalGroup(
+				layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addGroup(layout.createSequentialGroup()
+					.addComponent(topLabel)
+					.addGroup(layout.createParallelGroup()
+							.addComponent(combinationTypeL)
+							.addComponent(combOperationsCombo)
+							)
+				)
+		);
 	}
 	
 	public ManualCombinationParameters getParameters() {
-		
+		parameters = new ManualCombinationParameters();
+		parameters.combinationType = (String)combOperationsCombo.getSelectedItem();
+		double[] weights = new double[inputMatchers.size()];
+		parameters.weights = weights;
 		return parameters;
 		
 	}
