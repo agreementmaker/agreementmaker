@@ -16,7 +16,7 @@ public class EmptyMatcher extends AbstractMatcher {
 
 	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
 	public double getDefaultThreshold() {
-		return 0.1;
+		return 0.01;
 	}
 	
 	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/

@@ -21,23 +21,12 @@ public class ManualCombinationMatcher extends AbstractMatcher {
 		needsParam = true; // we need to set the MCP before running DSI
 		
 		
-		// requires base similarity result (but can work on any alignment result) 
 		minInputMatchers = 2;
 		maxInputMatchers = ANY_INT;
 		
 		//I can't initialize the parametersPanel in here because i need to pass the inputmatchers as parameters but the input matchers will be set later so I will initialize the panel in the getParametersPanerl() method
 	}
-	
-	
-	/**
-	 * Before the align process, have a reference to the classes Matrix, and the properties Matrix of the input Matcher
-	 * Also, get our MCP value, which is set by the user 
-	 * @see agreementMaker.application.mappingEngine.AbstractMatcher#beforeAlignOperations()
-	 */
-	protected void beforeAlignOperations()throws Exception {
-		super.beforeAlignOperations();
-    	
-	}
+
 	
 	
 	// overriding the abstract method in order to keep track of what kind of nodes we are aligning

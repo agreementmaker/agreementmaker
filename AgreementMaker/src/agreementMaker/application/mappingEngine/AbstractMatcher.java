@@ -119,10 +119,13 @@ public abstract class AbstractMatcher implements Matcher{
     	align();
     	afterAlignOperations();//Template method to allow next developer to add code after align
     	select();	
+    	matchComplete();
     	//System.out.println("Classes alignments found: "+classesAlignmentSet.size());
     	//System.out.println("Properties alignments found: "+propertiesAlignmentSet.size());
     }
     
+
+
 	/**
 	 * Match() and select() are the only two public methods to be accessed by the system other then get and set methods
 	 * All other methods must be protected so that only subclasses may access them (can't be private because subclasses wouldn't be able to use them)
@@ -135,6 +138,7 @@ public abstract class AbstractMatcher implements Matcher{
 	 * It should not be needed often to override the select(), in all cases remember to consider all selection parameters threshold, num relations per source and target.
 	 */
     public void select() {
+    	//this method is also invoked everytime the user change threshold or num relation in the table
     	beforeSelectionOperations();//Template method to allow next developer to add code after selection
     	selectAndSetAlignments();	
     	afterSelectionOperations();//Template method to allow next developer to add code after selection
@@ -159,13 +163,16 @@ public abstract class AbstractMatcher implements Matcher{
     	propertiesAlignmentSet = null;
     	refEvaluation = null;
     }
-    //Time calculation, if you override this method remember to call super.afterSelectionOperations()
+    
     protected void afterSelectionOperations() {
+
+    } 
+    
+    //Time calculation, if you override this method remember to call super.afterSelectionOperations()
+	private void matchComplete() {
     	end = System.nanoTime();
     	executionTime = (end-start)/1000000; // this time is in milliseconds.
-    }
-    
-    
+	}
     //***************INTERNAL METHODS THAT CAN BE USED BY ANY ABSTRACTMATCHER******************************************
 
     protected void align() throws Exception {
