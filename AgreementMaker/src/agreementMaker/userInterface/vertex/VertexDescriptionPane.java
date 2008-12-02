@@ -12,18 +12,33 @@ import javax.swing.JTextArea;
 
 import agreementMaker.GSM;
 
+import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.ontology.impl.OntologyImpl;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 
 public class VertexDescriptionPane extends JPanel{
-
+	
+	final static String TABLABEL = "Label";
+	final static String TABCOMMENTS = "Comments";
+	final static String TABPROP = "Properties";
+	final static String TABINDIVIDUALS = "Individuals";
+	
+	final static String TIPLABEL = "A human-readable version of the selected node's local-name. In OWL is the tag rdfs:label";
+	final static String TIPCOMMENTS = "A longer description for the selected node. In OWL is the tag rdfs:comment";
+	final static String TIPPROP = "List of properties which involve the selected node";
+	final static String TIPINDIVIDUALS = "List of instances of the selected class node. In OWL rdf:type";
+	
+	final static String EMPTY = "The list is empty for the selected node";
+	
+	
 	static final long serialVersionUID = 1;
-	private JTabbedPane sourcePane, localPane;
+	private JTabbedPane sourcePane, targetPane;
 	
 	private JPanel sp1,sp2,sp3,sp4,sp5,lp1,lp2,lp3,lp4,lp5;
 	private JScrollPane ss1,ss2,ss3,ss4,ss5,ls1,ls2,ls3,ls4,ls5;
@@ -45,10 +60,10 @@ public class VertexDescriptionPane extends JPanel{
 		setLayout(new GridLayout(2,1));
 		
 		sourcePane = new JTabbedPane();
-		localPane = new JTabbedPane();
+		targetPane = new JTabbedPane();
 		
 		add(sourcePane);
-		add(localPane);
+		add(targetPane);
 		
 		st1 = new JTextArea();
 		lt1 = new JTextArea();
@@ -95,9 +110,9 @@ public class VertexDescriptionPane extends JPanel{
 	        lp5.add(ls5);
 	        
 	        sourcePane.addTab("Description", null, sp1, "Description of the node");
-	        localPane.addTab("Description", null, lp1, "Description of the node");
+	        targetPane.addTab("Description", null, lp1, "Description of the node");
 	        sourcePane.addTab("Mapping Information", null, sp1, "Description of the node");
-	        localPane.addTab("Mapping Information", null, lp1, "Description of the node");
+	        targetPane.addTab("Mapping Information", null, lp1, "Description of the node");
 		}else if(typeOfFile == GSM.ONTFILE){
 			st2 = new JTextArea();
 			st3 = new JTextArea();
@@ -125,28 +140,28 @@ public class VertexDescriptionPane extends JPanel{
 	        st1.setFont(new java.awt.Font("Lucida Sans Unicode", 0, 12));
 	        st1.setLineWrap(true);
 	        ss1 = new JScrollPane(st1);
-	        ss1.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Annotations"));
+	        ss1.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), TABLABEL));
 	        sp1.add(ss1);
 	
 	        st2.setEditable(false);
 	        st2.setFont(new java.awt.Font("Lucida Sans Unicode", 0, 12));
 	        st2.setLineWrap(true);
 	        ss2 = new JScrollPane(st2);
-	        ss2.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Asserted Conditions"));
+	        ss2.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), TABCOMMENTS));
 	        sp2.add(ss2);
 	
 	        st3.setEditable(false);
 	        st3.setFont(new java.awt.Font("Lucida Sans Unicode", 0, 12));
 	        st3.setLineWrap(true);
 	        ss3 = new JScrollPane(st3);
-	        ss3.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Properties"));
+	        ss3.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), TABPROP));
 	        sp3.add(ss3);
 	
 	        st4.setEditable(false);
 	        st4.setFont(new java.awt.Font("Lucida Sans Unicode", 0, 12));
 	        st4.setLineWrap(true);
 	        ss4 = new JScrollPane(st4);
-	        ss4.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Disjoint Classes"));
+	        ss4.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), TABINDIVIDUALS));
 	        sp4.add(ss4);
 	        
 	        //localPane
@@ -154,39 +169,39 @@ public class VertexDescriptionPane extends JPanel{
 	        lt1.setFont(new java.awt.Font("Lucida Sans Unicode", 0, 12));
 	        lt1.setLineWrap(true);
 	        ls1 = new JScrollPane(lt1);
-	        ls1.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Annotations"));
+	        ls1.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), TABLABEL));
 	        lp1.add(ls1);
 	
 	        lt2.setEditable(false);
 	        lt2.setFont(new java.awt.Font("Lucida Sans Unicode", 0, 12));
 	        lt2.setLineWrap(true);
 	        ls2 = new JScrollPane(lt2);
-	        ls2.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Asserted Conditions"));
+	        ls2.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), TABCOMMENTS));
 	        lp2.add(ls2);
 	
 	        lt3.setEditable(false);
 	        lt3.setFont(new java.awt.Font("Lucida Sans Unicode", 0, 12));
 	        lt3.setLineWrap(true);
 	        ls3 = new JScrollPane(lt3);
-	        ls3.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Properties"));
+	        ls3.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), TABPROP));
 	        lp3.add(ls3);
 	
 	        lt4.setEditable(false);
 	        lt4.setFont(new java.awt.Font("Lucida Sans Unicode", 0, 12));
 	        lt4.setLineWrap(true);
 	        ls4 = new JScrollPane(lt4);
-	        ls4.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Disjoints"));
+	        ls4.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), TABINDIVIDUALS));
 	        lp4.add(ls4);
 			
-			sourcePane.addTab("Annotations", null, sp1, "Annotations for current node");
-			sourcePane.addTab("Asserted Conditions", null, sp2, "Asserted Conditions for current node");
-			sourcePane.addTab("Properties", null, sp3, "Properties of current node");
-			sourcePane.addTab("Disjoint Classes", null, sp4, "Disjoint Classes for current node");
+			sourcePane.addTab(TABLABEL, null, sp1, TIPLABEL);
+			sourcePane.addTab(TABCOMMENTS, null, sp2,TIPCOMMENTS);
+			sourcePane.addTab(TABPROP, null, sp3, TIPPROP);
+			sourcePane.addTab(TABINDIVIDUALS, null, sp4, TIPINDIVIDUALS);
 			
-			localPane.addTab("Annotations", null, lp1, "Annotations for current node");
-			localPane.addTab("Asserted Conditions", null, lp2, "Asserted Conditions for current node");
-			localPane.addTab("Properties", null, lp3, "Properties of current node");
-			localPane.addTab("Disjoint Classes", null, lp4, "Disjoint Classes for current node");
+			targetPane.addTab(TABLABEL, null, lp1, TIPLABEL);
+			targetPane.addTab(TABCOMMENTS, null, lp2, TIPCOMMENTS);
+			targetPane.addTab(TABPROP, null, lp3, TIPPROP);
+			targetPane.addTab(TABINDIVIDUALS, null, lp4, TIPINDIVIDUALS);
 		}
 		
 	}
@@ -210,6 +225,26 @@ public class VertexDescriptionPane extends JPanel{
 	public void fillDescription (Vertex node){
 		OntModel ontModel;
 		int nodeType;
+		
+		
+		OntClass cls2 = (OntClass)node.getNode().getResource();
+		System.out.println("ciao");
+		/*
+		Iterator it = cls2.listInstances();
+		while(it.hasNext()) {
+			Individual cl = (Individual)it.next();
+			System.out.println("*************"+cl.getURI());
+			System.out.println(cl.getLocalName());
+			System.out.println(cl.getLabel(null));
+			System.out.println(cl.getComment(null));
+		}
+		*/
+		
+		Iterator it = cls2.listComments(null);
+		while(it.hasNext()) {
+			Literal c = (Literal)it.next();
+			System.out.println("*************"+c);
+		}
 		
 		nodeType=node.getNodeType();
 		clearDescription(node);
@@ -284,7 +319,7 @@ public class VertexDescriptionPane extends JPanel{
 		    	   lt4.setText(disjointClasses);
 		       }
 			}
-			catch(Exception e) {
+			catch(Exception exception) {
 				//To be fixed
 			}	
 		}else if(typeOfFile == GSM.RDFSFILE){

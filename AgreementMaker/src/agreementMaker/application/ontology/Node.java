@@ -2,10 +2,18 @@ package agreementMaker.application.ontology;
 
 import java.util.ArrayList;
 
+import javax.swing.text.html.HTMLDocument.Iterator;
+
 import org.json.XML;
 
+import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+
 import agreementMaker.userInterface.vertex.*;
 /**
  * This class represents an element of the ontology to be aligned.
@@ -43,6 +51,13 @@ public class Node {
 	 * rdfs:comment
 	 */
 	private String comment;
+	//SOME MORE INFORMATIONS THAT MY BE USED
+	private String isDefinedBy;
+	private String seeAlso;
+	private ArrayList<String> propertiesLocalNames = new ArrayList<String>();
+	private ArrayList<String> individuals = new ArrayList<String>();
+	
+	
 	/**
 	 * A Class or Property in a OWL hierarchy may have more than one father. In this case all nodes in the subtree of the node with more fathes will be represented with duplicates in the hierarchy tree
 	 * but it will be aligned only once. We won't be able to access the vertex of this node with getVertex(), because this node is represetend by more than one vertex
@@ -82,7 +97,50 @@ public class Node {
 		if(r.canAs(OntResource.class)) {
 			OntResource or = (OntResource)r.as(OntResource.class);
 			label = or.getLabel(null);//null because i don't know if it should be "EN" or "FR"
-			comment = or.getComment(null);
+			if(label == null)
+				label = "";
+			//COmments
+			ExtendedIterator it = or.listComments(null);
+			comment = "";
+			Literal l = null;
+			while(it.hasNext()) {
+				l = (Literal)it.next();
+				if(l!=null) comment+= l+" ";
+			}
+			//ANNOTATIONS: isDefBy and seeAlso I'm not considering "sameAs" "differentFrom" "disjointWith"
+			it = or.listIsDefinedBy();
+			isDefinedBy = "";
+			l = null;
+			while(it.hasNext()) {
+				l = (Literal)it.next();
+				if(l!=null) isDefinedBy+= l+" ";
+			}
+
+			it = or.listSeeAlso();
+			seeAlso = "";
+			l = null;
+			while(it.hasNext()) {
+				l = (Literal)it.next();
+				if(l!=null) seeAlso+= l+" ";
+			}
+			//properties and invidviduals lists only for classes
+			if(!or.canAs(OntProperty.class)) {//remember is important to check on prop instead of class to avoid a jena bug that a prop canAs ontClass
+				OntClass cls = (OntClass)or.as(OntClass.class);
+				it = cls.listDeclaredProperties(true);
+				String localname;
+				while(it.hasNext()) {
+					OntProperty op = (OntProperty)it.next();
+					localname = op.getLocalName();
+					propertiesLocalNames.add(localname);
+				}
+				it = cls.listInstances(true);
+				while(it.hasNext()) {
+					Individual ind = (Individual)it.next();
+					localname = ind.getLabel(null);
+					if(localname != null && !localname.equals(""))
+						individuals.add(localname);
+				}
+			}
 		}
 		index = key;
 	}

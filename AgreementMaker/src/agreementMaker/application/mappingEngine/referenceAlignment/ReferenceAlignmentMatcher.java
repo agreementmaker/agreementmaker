@@ -20,7 +20,7 @@ import agreementMaker.Utility;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.ontology.Node;
-import agreementMaker.userInterface.AbstractMatcherParametersDialog;
+import agreementMaker.userInterface.MatcherParametersDialog;
 
 public class ReferenceAlignmentMatcher extends AbstractMatcher {
 

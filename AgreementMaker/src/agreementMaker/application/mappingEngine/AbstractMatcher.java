@@ -11,6 +11,8 @@ import agreementMaker.application.ontology.Node;
 import agreementMaker.application.ontology.Ontology;
 import java.awt.Color;
 
+import javax.swing.ProgressMonitor;
+
 public abstract class AbstractMatcher implements Matcher{
 	
 	/**Unique identifier of the algorithm used in the JTable list as index
@@ -80,6 +82,7 @@ public abstract class AbstractMatcher implements Matcher{
 		aligningProperties
 	}
 	
+	protected ProgressMonitor progressMonitor;
 	
 	/**
 	 * The constructor must be a Nullary Constructor
@@ -119,7 +122,6 @@ public abstract class AbstractMatcher implements Matcher{
     	align();
     	afterAlignOperations();//Template method to allow next developer to add code after align
     	select();	
-    	matchComplete();
     	//System.out.println("Classes alignments found: "+classesAlignmentSet.size());
     	//System.out.println("Properties alignments found: "+propertiesAlignmentSet.size());
     }

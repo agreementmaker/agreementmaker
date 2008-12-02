@@ -44,7 +44,7 @@ import agreementMaker.userInterface.vertex.VertexDescriptionPane;
 
 
 
-public class AbstractMatcherParametersDialog extends JDialog implements ActionListener{
+public class MatcherParametersDialog extends JDialog implements ActionListener{
 	
 	/**
 	 * 
@@ -62,7 +62,7 @@ public class AbstractMatcherParametersDialog extends JDialog implements ActionLi
 	 * @param ontoType
 	 * @param userInterface
 	 */
-	public AbstractMatcherParametersDialog(AbstractMatcher a) {
+	public MatcherParametersDialog(AbstractMatcher a) {
 		String name = a.getName().getMatcherName();
 		setTitle(name+": additional parameters");
 		//This is the specific panel defined by the developer to set additional parameters to the specific matcher implemented

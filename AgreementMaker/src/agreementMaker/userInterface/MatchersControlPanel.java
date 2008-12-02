@@ -16,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.AbstractTableModel;
 
@@ -123,8 +124,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		panel3.setLayout(new FlowLayout(FlowLayout.LEADING));
 		//panel3.setAlignmentX(LEFT_ALIGNMENT);
 		panel3.add(delete);
-		panel3.add(refEvaluate);
 		panel3.add(clearMatchings);
+		panel3.add(refEvaluate);
 		add(matcherSelectionPanel);
 		add(matchersTablePanel);
 		add(panel3);
@@ -196,7 +197,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		else {
 			//Run the reference alignment matcher to get the list of alignments in reference file, we are not going to add it in the table list
 			ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance(MatchersRegistry.ReferenceAlignment,0);
-			AbstractMatcherParametersDialog dialog = new AbstractMatcherParametersDialog(refMatcher);
+			MatcherParametersDialog dialog = new MatcherParametersDialog(refMatcher);
 			if(dialog.parametersSet()) {
 				refMatcher.setParam(dialog.getParameters());
 				refMatcher.setThreshold(refMatcher.getDefaultThreshold());
@@ -258,7 +259,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 			//Asking parameters before setting input matcher list, just because the user can still cancel the operation
 			if(currentMatcher.needsParam()) {
 				everythingOk = false;
-				AbstractMatcherParametersDialog dialog = new AbstractMatcherParametersDialog(currentMatcher);
+				MatcherParametersDialog dialog = new MatcherParametersDialog(currentMatcher);
 				if(dialog.parametersSet()) {
 					currentMatcher.setParam(dialog.getParameters());
 					everythingOk = true;
