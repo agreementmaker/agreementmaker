@@ -29,6 +29,8 @@ public class UIMenu implements ActionListener {
 	
 	// create 4 menus
 	private JMenu fileMenu, editMenu, viewMenu, helpMenu;
+	//fake menus
+	private JMenu ontologyMenu, matchingMenu, evaluationMenu;
 	
 	// menu items for helpMenu
 	private JMenuItem howToUse, aboutItem;		
@@ -278,7 +280,13 @@ public class UIMenu implements ActionListener {
 		smoMenuItem.setSelected(prefs.getSelectedMatchingsOnly());
 		viewMenu.add(smoMenuItem);
 		
-
+		//Fake menus..********************************.
+		ontologyMenu = new JMenu("Ontology");
+		matchingMenu = new JMenu("Matching");
+		evaluationMenu = new JMenu("Evaluation");
+		myMenuBar.add(ontologyMenu);
+		myMenuBar.add(matchingMenu);
+		myMenuBar.add(evaluationMenu);
 
 		// Build help menu in the menu bar.
 		helpMenu = new JMenu("Help");

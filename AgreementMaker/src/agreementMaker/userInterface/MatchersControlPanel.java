@@ -33,6 +33,7 @@ import agreementMaker.application.mappingEngine.MatchersRegistry;
 import agreementMaker.application.mappingEngine.ResultData;
 import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import agreementMaker.application.mappingEngine.testMatchers.CopyMatcher;
 import agreementMaker.userInterface.table.MatchersTablePanel;
 import agreementMaker.userInterface.table.MyTableModel;
 
@@ -41,6 +42,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 
 	private static final long serialVersionUID = -2258009700001283026L;
 	
+	
+	private UI ui;
+	//SELECTION MATCHER PANEL, the one in the top
 	private JLabel matcherLabel;
 	private JLabel thresholdLabel;
 	private JLabel sRelLabel;
@@ -51,11 +55,22 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	private JComboBox tRelationCombo;
 	private JButton matchButton;
 	private JButton viewDetails;
-	private JButton delete;
-	private JButton refEvaluate;
-	private JButton clearMatchings;
-	private UI ui;
+	private JButton defaultValButton;
+	//TABLE PANEL
 	private MatchersTablePanel matchersTablePanel;
+	//EDIT MATCHINGS PANEL
+	private JButton delete;
+	private JButton clearMatchings;
+	private JButton copyButton;
+	private JButton editMatrixButton;
+	private JButton refEvaluate;
+	private JButton qualityEvaluationButton;
+	private JButton saveToFileButton;
+	private JButton exportMatchingsButton;
+	private JButton importMatchingsButton;
+
+	
+	
 	
 	
 	MatchersControlPanel(UI ui, UIMenu uiMenu, Canvas canvas) {
@@ -98,6 +113,10 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		tRelLabel = new JLabel("Target relations");
 		tRelationCombo = new JComboBox(numRelList);
 		tRelationCombo.setSelectedItem(MyTableModel.ANY);
+		defaultValButton = new JButton("Default");
+		defaultValButton.addActionListener(this);
+
+
 		//matcher selection panel
 		JPanel matcherSelectionPanel = new JPanel();
 		matcherSelectionPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
@@ -111,21 +130,45 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		matcherSelectionPanel.add(sRelationCombo);
 		matcherSelectionPanel.add(tRelLabel);
 		matcherSelectionPanel.add(tRelationCombo);
+		matcherSelectionPanel.add(defaultValButton);
 		
+		
+		//TABLE PANEL:center panel
+		matchersTablePanel = new MatchersTablePanel(ui);
+		
+		//JPANEL EDIT MATCHINGS: lower panel
 		delete = new JButton("Delete");
 		delete.addActionListener(this);
 		refEvaluate = new JButton("Reference Evaluation");
 		refEvaluate.addActionListener(this);
 		clearMatchings = new JButton("Clear All");
 		clearMatchings.addActionListener(this);
-		matchersTablePanel = new MatchersTablePanel(ui);
+		copyButton = new JButton("Copy");
+		copyButton.addActionListener(this);
+		editMatrixButton = new JButton("Edit Similarity Matrix");
+		editMatrixButton.addActionListener(this);
+		saveToFileButton = new JButton("Save");
+		saveToFileButton.addActionListener(this);
+		exportMatchingsButton = new JButton("Export");
+		exportMatchingsButton.addActionListener(this);
+		importMatchingsButton = new JButton("Import");
+		importMatchingsButton.addActionListener(this);
+		qualityEvaluationButton = new JButton("Quality Evaluation");
+		qualityEvaluationButton.addActionListener(this);
 		
 		JPanel panel3 = new JPanel();
 		panel3.setLayout(new FlowLayout(FlowLayout.LEADING));
-		//panel3.setAlignmentX(LEFT_ALIGNMENT);
 		panel3.add(delete);
 		panel3.add(clearMatchings);
+		panel3.add(copyButton);
+		panel3.add(editMatrixButton);
 		panel3.add(refEvaluate);
+		panel3.add(qualityEvaluationButton);
+		panel3.add(saveToFileButton);
+		panel3.add(importMatchingsButton);
+		panel3.add(exportMatchingsButton);
+		
+		// WHOLE CONTROL PANEL
 		add(matcherSelectionPanel);
 		add(matchersTablePanel);
 		add(panel3);
@@ -180,6 +223,29 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				boolean ok = Utility.displayConfirmPane("This operation will clear all the matchings prevously calculated.\nDo you want to continue?", null);
 				if(ok) {
 					resetMatchings();
+				}
+			}
+			else if(obj == defaultValButton) {
+				setDefaultCommonParameters();
+			}
+			else if (obj == copyButton) {
+				//TO BE CORRECTED, IT SHOULD BE A REAL COPY OF THE MATCHER, like a clone; shoulnd't invoke copymatcher while matcher.clone();
+				if(rowsIndex.length == 0) {
+					Utility.displayErrorPane("No matchers selected", null);
+				}
+				else {
+					CopyMatcher matcher = (CopyMatcher)MatcherFactory.getMatcherInstance(MatchersRegistry.Copy,Core.getInstance().getMatcherInstances().size());
+					AbstractMatcher input = Core.getInstance().getMatcherInstances().get(rowsIndex[0]);
+					matcher.addInputMatcher(input);
+					matcher.setParam(input.getParam());
+					matcher.setThreshold(input.getThreshold());
+					matcher.setMaxSourceAlign(input.getMaxSourceAlign());
+					matcher.setMinInputMatchers(input.getMinInputMatchers());
+					matcher.setAlignClass(input.isAlignClass());
+					matcher.setAlignProp(input.isAlignProp());
+					matcher.match();
+					matchersTablePanel.addMatcher(matcher);
+					ui.redisplayCanvas();
 				}
 			}
 		}
@@ -313,15 +379,20 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	public void itemStateChanged(ItemEvent e) {
 		Object obj = e.getItemSelectable();
 		if(obj == matcherCombo) {
-			String matcherName = (String) matcherCombo.getSelectedItem();
-			AbstractMatcher a = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), 0); //i'm just using a fake instance so the algorithm code is not important i put 0 but maybe anythings
-			thresholdCombo.setSelectedItem(Utility.getNoFloatPercentFromDouble(a.getDefaultThreshold()));
-			sRelationCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxSourceRelations()));
-			tRelationCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxTargetRelations()));
+			setDefaultCommonParameters();
+			
 		}
 	}
 
 	
+	public void setDefaultCommonParameters() {
+		String matcherName = (String) matcherCombo.getSelectedItem();
+		AbstractMatcher a = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), 0); //i'm just using a fake instance so the algorithm code is not important i put 0 but maybe anythings
+		thresholdCombo.setSelectedItem(Utility.getNoFloatPercentFromDouble(a.getDefaultThreshold()));
+		sRelationCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxSourceRelations()));
+		tRelationCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxTargetRelations()));
+	}
+
 	public void resetMatchings() {
 		try {
 			Core core = Core.getInstance();

@@ -1,4 +1,4 @@
-package agreementMaker.application.mappingEngine.manualCombination;
+package agreementMaker.application.mappingEngine.qualityCombination;
 
 import java.util.ArrayList;
 
@@ -11,10 +11,10 @@ import agreementMaker.application.mappingEngine.AlignmentMatrix;
 import agreementMaker.application.ontology.Node;
 import agreementMaker.userInterface.vertex.Vertex;
 
-public class ManualCombinationMatcher extends AbstractMatcher {
+public class QualityCombinationMatcher extends AbstractMatcher {
 
 	
-	public ManualCombinationMatcher() {
+	public QualityCombinationMatcher() {
 		super();
 		
 
@@ -23,8 +23,8 @@ public class ManualCombinationMatcher extends AbstractMatcher {
 		
 		minInputMatchers = 2;
 		maxInputMatchers = ANY_INT;
+		//parametersPanel = new QualityCombinationParametersPanel();
 		
-		//I can't initialize the parametersPanel in here because i need to pass the inputmatchers as parameters but the input matchers will be set later so I will initialize the panel in the getParametersPanerl() method
 	}
 
 	
@@ -58,7 +58,7 @@ public class ManualCombinationMatcher extends AbstractMatcher {
     
 
 	protected Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
-		ManualCombinationParameters parameters = (ManualCombinationParameters)param;
+		QualityCombinationParameters parameters = (QualityCombinationParameters)param;
 		int sourceindex = source.getIndex();
 		int targetindex = target.getIndex();
 		double max = 0;// keep the max sim between all input matrix for the cell (sourceindex, targetindex)
@@ -111,8 +111,5 @@ public class ManualCombinationMatcher extends AbstractMatcher {
 		return new Alignment(source, target, sim, Alignment.EQUIVALENCE);
 	}
 
-	public AbstractMatcherParametersPanel getParametersPanel() {
-		return new ManualCombinationParametersPanel(inputMatchers);
-	}
 	
 }

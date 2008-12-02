@@ -5,6 +5,7 @@ import agreementMaker.application.mappingEngine.dsi.DescendantsSimilarityInherit
 import agreementMaker.application.mappingEngine.manualCombination.ManualCombinationMatcher;
 import agreementMaker.application.mappingEngine.manualMatcher.EmptyMatcher;
 import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
+import agreementMaker.application.mappingEngine.qualityCombination.QualityCombinationMatcher;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import agreementMaker.application.mappingEngine.ssc.SiblingsSimilarityContributionMatcher;
 import agreementMaker.application.mappingEngine.testMatchers.AllOneMatcher;
@@ -30,19 +31,24 @@ public enum MatchersRegistry {
 	 * 
 	 * And so, if your matcher is has no code errors, it will be incorporated into the AgreementMaker.  - Cosmin
 	 */
-	
-	UserManual			( "User Manual Matching", UserManualMatcher.class, false),
-	Equals 				( "Local Name Equivalence Comparison", EqualsMatcher.class ),
-	Random 				( "Random Similarity Matcher", RandomMatcher.class ),
-	AllOne 				( "All ONE Similarities", AllOneMatcher.class ),
-	EmptyMatcher		( "Empty Matcher", EmptyMatcher.class ),
-	Copy				( "Copy Matcher", CopyMatcher.class ),
+
 	BaseSimilarity		( "Base Similarity", BaseSimilarityMatcher.class ),
+	Random 				( "RSM", RandomMatcher.class ),
 	DSI					( "Descendant's Similarity Inheritance (DSI)", DescendantsSimilarityInheritanceMatcher.class ),
 	SSC					( "Sibling's Similarity Contribution (SSC)", SiblingsSimilarityContributionMatcher.class ),
+	ManualCombination	( "Manual Combination", ManualCombinationMatcher.class ),
+	QualityCombination ("Quality Weighted Combination",QualityCombinationMatcher.class),
 	ReferenceAlignment	( "Reference Alignment", ReferenceAlignmentMatcher.class ),
-	ManualCombination	( "Manual Combination", ManualCombinationMatcher.class );
-	
+	EmptyMatcher		( "Empty Matcher", EmptyMatcher.class ),
+	//FAKE MATCHERS (to be deleted) there isn't a real class implementing these matchers
+	Instances ("Instance Based", EqualsMatcher.class),
+	Structural ("Structural improvement", EqualsMatcher.class),
+	AICA ("AICA: Automatic iterative combination", EqualsMatcher.class),
+	//NOT SHOWN MATCHERS
+	UserManual			( "User Manual Matching", UserManualMatcher.class, false),
+	Equals 				( "Local Name Equivalence Comparison", EqualsMatcher.class , false),
+	AllOne 				( "All ONE Similarities", AllOneMatcher.class, false ),
+	Copy				( "Copy Matcher", CopyMatcher.class,false );
 	
 	/* Don't change anything below this line .. unless you intend to. */
 	private boolean showInControlPanel;

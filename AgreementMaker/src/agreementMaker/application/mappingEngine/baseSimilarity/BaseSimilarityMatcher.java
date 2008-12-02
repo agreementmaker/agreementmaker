@@ -38,12 +38,19 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	}
 	
 	
+	public String getDescriptionString() {
+		return "Performs a local matching using a String Based technique.\n" +
+				"Nodes' local-names are considered in the process.\n" +
+				"String are preprocessed with cleaning, stemming, stop-words removing, and tokenization techniques.\n" +
+				"A similarity matrix contains the similarity between each pair (sourceNode, targetNode).\n" +
+				"A selection algorithm select valid alignments considering threshold and number of relations per node.\n"; 
+	}
 	
 	
 	
 	/* *******************************************************************************************************
-	 * Algorithm functions beyond this point
-	 * **********************************************************************************************************
+	 ************************ Algorithm functions beyond this point*************************************
+	 * *******************************************************************************************************
 	 */
 	
 	

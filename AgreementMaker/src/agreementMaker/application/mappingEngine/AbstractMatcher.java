@@ -612,15 +612,35 @@ public abstract class AbstractMatcher implements Matcher{
 	 * @return a string with details of the matchers
 	 */
 	public String getDetails() {
-		// TODO Auto-generated method stub
 		String s = "";
 		s+= "Matcher: "+getName().getMatcherName()+"\n\n";
+		s+= "Brief Description:\n\n";
+		s += getDescriptionString()+"\n";
+		s += "Characteristics\n\n";
+		s += getAttributesString()+"\n";
+		s += "References\n\n";
+		s += getReferenceString()+"\n";
+		return s;
+	}
+	
+	public String getAttributesString() {
+		String s = "";
 		s+= "Additional parameters required: "+Utility.getYesNo(needsParam())+"\n";
 		s+= "Min number of matchers in input: "+getMinInputMatchers()+"\n";
 		s+= "Max number of matchers in input: "+getMaxInputMatchers()+"\n";
 		s+= "Performs Classes alignment: "+Utility.getYesNo(isAlignClass())+"\n";
 		s+= "Performs Properties alignment: "+Utility.getYesNo(isAlignProp())+"\n";
 		return s;
+	}
+	/**
+	 * All matchers should implement this method to return a description of the algorithm used, the String should finish with \n;
+	 * @return
+	 */
+	public String getDescriptionString() {
+		return "No description available for this matcher\n";
+	}
+	public String getReferenceString() {
+		return "No references available for this matcher\n";
 	}
 
 	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
