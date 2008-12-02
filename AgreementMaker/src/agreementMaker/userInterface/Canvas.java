@@ -231,7 +231,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		}
 		
 		if ((obj == cancel) || (obj == cancelPopup)){
-			clearAllSelections();
+			//clearAllSelections();
 		}
 		
 		repaint();

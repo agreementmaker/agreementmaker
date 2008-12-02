@@ -148,7 +148,6 @@ public class UI {
 		scrollPane = new JScrollPane(panelCanvas);
 		scrollPane.setWheelScrollingEnabled(true);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(20);
-		//scrollPane.setPreferredSize(new Dimension((int)scrollPane.getSize().getHeight(), 5));
 		
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, null);
 		splitPane.setOneTouchExpandable(true);
@@ -204,7 +203,7 @@ public class UI {
 				jPanel = new VertexDescriptionPane(GSM.ONTFILE);//takes care of fields for XML files as well
 			else if(language == GSM.XMLFILE)//XML
 				jPanel = new VertexDescriptionPane(GSM.XMLFILE);//takes care of fields for XML files as well 
-	
+		    jPanel.setMinimumSize(new Dimension(200,480));
 			getUISplitPane().setRightComponent(jPanel);
 			setDescriptionPanel(jPanel);
 			

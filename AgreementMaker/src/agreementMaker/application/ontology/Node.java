@@ -31,29 +31,29 @@ public class Node {
 	 *   */
 	private Resource resource;
 	/**The OWL/RDF uri identifier, that is namespace#localname, all these informations are kept into the resource attribute but we keep them separate to access them easily*/
-	private String uri;
+	private String uri = "";
 	/**
 	 * One of the string which can be used to compare two nodes
 	 * In general the URI = namespace#localname, in the OWL ontology, often the localname is the same of label	
 	 * usually is defined with rdf: ID */
-	private String localName;
+	private String localName = "";
 	/**
 	 * Another string which can be used to compare nodes
 	 * This should be a human readable version of localname. In a RDF or XML ontologies there are no labels
 	 * In OWL ontology we can have a label, even though often is the same of name.
 	 * rdfs:label
 	 */
-	private String label;
+	private String label = "";
 	/**
 	 * Another string which can be used to compare nodes
 	 * This is a longer description (more than one word) for this resource.In a RDF or XML ontologies there are no comments
 	 * In OWL ontology we can have a comment.
 	 * rdfs:comment
 	 */
-	private String comment;
+	private String comment = "";
 	//SOME MORE INFORMATIONS THAT MY BE USED
-	private String isDefinedBy;
-	private String seeAlso;
+	private String isDefinedBy = "";
+	private String seeAlso = "";
 	private ArrayList<String> propertiesLocalNames = new ArrayList<String>();
 	private ArrayList<String> individuals = new ArrayList<String>();
 	
@@ -236,5 +236,80 @@ public class Node {
 	public void setUri(String uri) {
 		this.uri = uri;
 	}
+
+	public String getIsDefinedBy() {
+		return isDefinedBy;
+	}
+
+	public void setIsDefinedBy(String isDefinedBy) {
+		this.isDefinedBy = isDefinedBy;
+	}
+
+	public String getSeeAlso() {
+		return seeAlso;
+	}
+
+	public void setSeeAlso(String seeAlso) {
+		this.seeAlso = seeAlso;
+	}
+
+	public ArrayList<String> getPropertiesLocalNames() {
+		return propertiesLocalNames;
+	}
+
+	public ArrayList<String> getIndividuals() {
+		return individuals;
+	}
+
+	public String getDescriptionsString() {
+		String result = "";
+		result+= "URI identifier: (namespace#localname)\n";
+		result += uri+"\n\n";
+		
+		result += "Label: (rdfs:label)\n";
+		result += label+"\n\n";
+		
+		return result;
+	}
+
+	public String getPropertiesString() {
+		String result = "List of properties:\n\n";
+		if(propertiesLocalNames.size() == 0) {
+			result+="No property relations found for this class";
+		}
+		for(int i = 0; i < propertiesLocalNames.size(); i++) {
+			result+= propertiesLocalNames.get(i)+"\n";
+		}
+		return result;
+	}
+	
+
+	public String getAnnotationsString() {
+		String result = "";
+		result+= "Comments: (rdfs:comment)\n";
+		result += comment+"\n\n";
+		
+		result += "SeeAlso: (owl:seeAlso)\n";
+		result += seeAlso+"\n\n";
+		
+		result += "IsDefinedBy: (owl:isDefinedBy)\n";
+		result += isDefinedBy+"\n\n";
+		return result;
+	}
+
+	public String getIndividualsString() {
+		String result = "List of individuals:\n\n";
+		if(individuals.size() == 0) {
+			result+="No instances found for this class";
+		}
+		for(int i = 0; i < individuals.size(); i++) {
+			result+= individuals.get(i)+"\n";
+		}
+		return result;
+	}
+	
+	//**********************Methods for printing*************************
+	
+	
 
 }
