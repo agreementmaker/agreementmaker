@@ -6,13 +6,12 @@ import agreementMaker.application.mappingEngine.AbstractParameters;
 
 public class QualityCombinationParameters extends AbstractParameters {
 
-	final static String MAXCOMB = "Max similarity";
-	final static String MINCOMB = "Min similarity";
-	final static String AVERAGECOMB = "Average of similarities";
-	final static String WEIGHTAVERAGE = "Weighted Average of similarities";
+	final static String  LOCAL = "Local Quality";
+	final static String  GLOBAL = "Global Quality";
+	final static String STRUCTURAL  = "Structural Quality";
+	final static String COMBINED = "Combined Quality";
 	
-	public String combinationType;
-	public double[] weights; 
+	public String qualityMeasure;
 		
 
 }

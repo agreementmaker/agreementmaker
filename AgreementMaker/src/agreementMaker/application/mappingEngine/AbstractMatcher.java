@@ -7,6 +7,7 @@ import java.util.Iterator;
 import agreementMaker.AMException;
 import agreementMaker.Utility;
 import agreementMaker.application.Core;
+import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import agreementMaker.application.ontology.Node;
 import agreementMaker.application.ontology.Ontology;
 import java.awt.Color;
@@ -72,7 +73,7 @@ public abstract class AbstractMatcher implements Matcher{
 	protected long end;
 	protected long executionTime;
 	/**Keeps info about reference evaluation of the matcher. is null until the algorithm gets evaluated*/
-	protected ResultData refEvaluation;
+	protected ReferenceEvaluationData refEvaluation;
 	/**Graphical color for nodes mapped by this matcher and alignments, this value is set by the MatcherFactory and modified  by the table so a developer just have to pass it as aparameter for the constructor*/
 	protected Color color; 
 	
@@ -122,6 +123,7 @@ public abstract class AbstractMatcher implements Matcher{
     	align();
     	afterAlignOperations();//Template method to allow next developer to add code after align
     	select();	
+    	matchComplete();
     	//System.out.println("Classes alignments found: "+classesAlignmentSet.size());
     	//System.out.println("Properties alignments found: "+propertiesAlignmentSet.size());
     }
@@ -167,11 +169,11 @@ public abstract class AbstractMatcher implements Matcher{
     }
     
     protected void afterSelectionOperations() {
-
+    	
     } 
     
     //Time calculation, if you override this method remember to call super.afterSelectionOperations()
-	private void matchComplete() {
+	protected void matchComplete() {
     	end = System.nanoTime();
     	executionTime = (end-start)/1000000; // this time is in milliseconds.
 	}
@@ -561,11 +563,11 @@ public abstract class AbstractMatcher implements Matcher{
 		this.modifiedByUser = modifiedByUser;
 	}
 
-	public ResultData getRefEvaluation() {
+	public ReferenceEvaluationData getRefEvaluation() {
 		return refEvaluation;
 	}
 
-	public void setRefEvaluation(ResultData evaluation) {
+	public void setRefEvaluation(ReferenceEvaluationData evaluation) {
 		this.refEvaluation = evaluation;
 	}
 	

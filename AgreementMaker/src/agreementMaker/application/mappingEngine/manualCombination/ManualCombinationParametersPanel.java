@@ -39,7 +39,6 @@ import agreementMaker.userInterface.AppPreferences;
  *
  */
 public class ManualCombinationParametersPanel extends AbstractMatcherParametersPanel implements ItemListener {
-  // TO BE DONE YET
 	/**
 	 * 
 	 */

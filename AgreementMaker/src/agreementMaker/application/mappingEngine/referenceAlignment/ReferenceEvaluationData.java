@@ -1,7 +1,8 @@
-package agreementMaker.application.mappingEngine;
+package agreementMaker.application.mappingEngine.referenceAlignment;
 import agreementMaker.Utility;
+import agreementMaker.application.mappingEngine.AlignmentSet;
 
-public class ResultData
+public class ReferenceEvaluationData
 {
     private int found = 0;
     private int exist = 0;

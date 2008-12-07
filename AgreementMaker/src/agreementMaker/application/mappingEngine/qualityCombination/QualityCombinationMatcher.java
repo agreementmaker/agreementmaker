@@ -23,7 +23,7 @@ public class QualityCombinationMatcher extends AbstractMatcher {
 		
 		minInputMatchers = 2;
 		maxInputMatchers = ANY_INT;
-		//parametersPanel = new QualityCombinationParametersPanel();
+		parametersPanel = new QualityCombinationParametersPanel();
 		
 	}
 
@@ -58,57 +58,7 @@ public class QualityCombinationMatcher extends AbstractMatcher {
     
 
 	protected Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
-		QualityCombinationParameters parameters = (QualityCombinationParameters)param;
-		int sourceindex = source.getIndex();
-		int targetindex = target.getIndex();
-		double max = 0;// keep the max sim between all input matrix for the cell (sourceindex, targetindex)
-		double min = 1;// keep the min sim between all input matrix for the cell (sourceindex, targetindex)
-		double sum = 0;// keep the sum of sims between all input matrix for the cell (sourceindex, targetindex)
-		double weight;   
-		double weightedSum = 0;// keep the weighted sum of sims between all input matrix for the cell (sourceindex, targetindex)
-		double sumOfWeights = 0; //sum of weights
-		double sim; 
-		AbstractMatcher a;
-		for(int i = 0; i < inputMatchers.size();i++) {
-			//for each input matcher...
-			a = inputMatchers.get(i);
-			//get the sim for this two nodes in the input matcher matrix
-			if(typeOfNodes == alignType.aligningClasses && a.areClassesAligned())
-				sim = a.getClassesMatrix().get(sourceindex, targetindex).getSimilarity();
-			else if(typeOfNodes == alignType.aligningProperties && a.arePropertiesAligned()) {
-				sim = a.getPropertiesMatrix().get(sourceindex, targetindex).getSimilarity();
-			}
-			else sim = 0;
-			//calculate sum for average combination
-			sum += sim;
-			//calculate max for max combination
-			if(sim > max)
-				max = sim;
-			//calculate min for min evaluation
-			if(sim < min)
-				min = sim;
-			//calculate weighted sum
-			weight = parameters.weights[i];
-			sumOfWeights+= weight;
-			weightedSum += (weight * sim); 
-		}
-		//select the final similarity combined value depending on the user selected combination type.
-		if(parameters.combinationType.equals(parameters.MAXCOMB)) {
-			sim = max;
-		}
-		else if(parameters.combinationType.equals(parameters.MINCOMB)) {
-			sim = min;
-		}
-		else if(parameters.combinationType.equals(parameters.AVERAGECOMB)) {
-			sim = (double) sum/ inputMatchers.size();
-		}
-		else if(parameters.combinationType.equals(parameters.WEIGHTAVERAGE)) {
-			if(sumOfWeights != 0)
-				sim = (double) weightedSum/sumOfWeights;
-			else sim = 0;
-		}
-		else throw new RuntimeException("DEVELOPMENT ERROR: combination type selected is not implemented");
-		return new Alignment(source, target, sim, Alignment.EQUIVALENCE);
+		return null;
 	}
 
 	

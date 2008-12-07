@@ -23,7 +23,7 @@ public class Colors
 	public static Color dividers = new Color(0,0,0);
 	
 	// vertex selection color
-	public static Color selected  = new Color (53,53,222); 
+	public static Color selected  = new Color (172,205,249); 
 	public static Color highlighted  = selected;
 	//public static Color highlighted = new Color(52, 85, 119);
 	public static Color mapped = new Color(240,128,128);
@@ -33,7 +33,7 @@ public class Colors
 	
 	public static Color[] matchersColors = {
 		Color.GREEN,
-		Color.MAGENTA,
+		new  Color(153,153,255),
 		Color.ORANGE,
 		Color.PINK,
 		Color.YELLOW,

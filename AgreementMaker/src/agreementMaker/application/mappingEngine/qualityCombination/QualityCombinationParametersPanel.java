@@ -38,35 +38,28 @@ import agreementMaker.userInterface.AppPreferences;
  * @date Nov 25, 2008
  *
  */
-public class QualityCombinationParametersPanel extends AbstractMatcherParametersPanel implements ItemListener {
-  // TO BE DONE YET
+public class QualityCombinationParametersPanel extends AbstractMatcherParametersPanel {
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -3220525418599504107L;
 
 	private QualityCombinationParameters parameters;
-	private ArrayList<AbstractMatcher> inputMatchers;
 	private JLabel topLabel;
-	private JLabel combinationTypeL;
+	private JLabel qualityMeasureLabel;
 
-	private JComboBox combOperationsCombo;
-	
-	private JLabel weightsLabel;
-	private JComboBox[] inputMatchersCombo;
+	private JComboBox qualityMeasureCombo;
 
 	
 	
-	public QualityCombinationParametersPanel(ArrayList<AbstractMatcher> matchers) {
+	public QualityCombinationParametersPanel() {
 		super();
 		//init components
-		inputMatchers = matchers;
-		topLabel = new JLabel("Select the operation that will be used to combine alignments for each pair (Source Node, Target Node).");
-		combinationTypeL = new JLabel("Combining operation: ");
-		String[] operations = {QualityCombinationParameters.AVERAGECOMB,QualityCombinationParameters.WEIGHTAVERAGE, QualityCombinationParameters.MAXCOMB, QualityCombinationParameters.MINCOMB};
-		combOperationsCombo = new JComboBox(operations);
-		combOperationsCombo.addItemListener(this);
-		weightsLabel = new JLabel("Select weights to assign to each matcher in input if you have selected Weighted Average Operation.");
+		topLabel = new JLabel("The matcher will perform a Weighted Average Combination of input similarity matrices.\n Weights are assigned evaluating matchers' quality.");
+		qualityMeasureLabel = new JLabel("Select quality measure: ");
+		String[] measures = {QualityCombinationParameters.LOCAL,QualityCombinationParameters.STRUCTURAL, QualityCombinationParameters.GLOBAL, QualityCombinationParameters.COMBINED};
+		qualityMeasureCombo = new JComboBox(measures);
 
 		//LAYOUT: grouplayout is already complicated but very flexible, plus in this case the matchers list is dynamic so it's even more complicated
 		GroupLayout layout = new GroupLayout(this);
@@ -75,85 +68,32 @@ public class QualityCombinationParametersPanel extends AbstractMatcherParameters
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 		
-		//Creation of groups for the matchers list. for each input matcher name and weight , we always need horizontal and vertical groups
-		ParallelGroup matchersHorizGroup = layout.createParallelGroup();
-		SequentialGroup matcherVertGroup = layout.createSequentialGroup();
-		inputMatchersCombo = new JComboBox[matchers.size()];
-		String[] percents = Utility.getPercentStringList();
-		JLabel nameLabel;
-		JComboBox weightCombo;
-		AbstractMatcher a;
-		for(int i = 0; i< matchers.size();i++) {
-			a = matchers.get(i);
-			String name =( (MatchersRegistry)a.getName()).getMatcherName();
-			nameLabel = new JLabel(a.getIndex()+". "+name);
-			weightCombo = new JComboBox(percents);
-			weightCombo.setSelectedIndex(percents.length-1);
-			weightCombo.setEnabled(false);
-			inputMatchersCombo[i] = weightCombo;
-			matchersHorizGroup.addGroup(layout.createSequentialGroup()
-					.addComponent(nameLabel)
-					.addComponent(weightCombo,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE)
-			);
-			matcherVertGroup.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-					.addComponent(nameLabel)
-					.addComponent(weightCombo)
-			);
-		}
-		
-		
 		// Here we define the horizontal and vertical groups for the layout.
 		// Both definitions are required for the GroupLayout to be complete.
 		layout.setHorizontalGroup(
 				layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 					.addComponent(topLabel) 
 					.addGroup(layout.createSequentialGroup()
-							.addComponent(combinationTypeL) 			
-							.addComponent(combOperationsCombo,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
+							.addComponent(qualityMeasureLabel) 			
+							.addComponent(qualityMeasureCombo,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
 							)
-					.addComponent(weightsLabel)
-					.addGroup(matchersHorizGroup)
 		);
+		
 		// the Vertical group is the same structure as the horizontal group
 		// but Sequential and Parallel definition are exchanged
-		layout.setVerticalGroup(layout.createSequentialGroup()
+		layout.setVerticalGroup(
+			 layout.createSequentialGroup()
 			.addComponent(topLabel)
 			.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-					.addComponent(combinationTypeL)
-					.addComponent(combOperationsCombo)
+					.addComponent(qualityMeasureLabel)
+					.addComponent(qualityMeasureCombo)
 			)
-			.addGap(20)
-			.addComponent(weightsLabel)
-			.addGroup(matcherVertGroup)
 		);
 	}
 	
 	public QualityCombinationParameters getParameters() {
 		parameters = new QualityCombinationParameters();
-		parameters.combinationType = (String)combOperationsCombo.getSelectedItem();
-		double[] weights = new double[inputMatchers.size()];
-		for(int i= 0; i<weights.length; i++) {
-			weights[i] = Utility.getDoubleFromPercent((String)inputMatchersCombo[i].getSelectedItem());
-		}
-		parameters.weights = weights;
-		return parameters;
-		
+		parameters.qualityMeasure = (String)qualityMeasureCombo.getSelectedItem();
+		return parameters;	
 	}
-
-	public void itemStateChanged(ItemEvent e) {
-		Object obj = e.getItemSelectable();
-		if(obj == combOperationsCombo) {
-			boolean enable = false;
-			if(combOperationsCombo.getSelectedItem().equals(QualityCombinationParameters.WEIGHTAVERAGE)) 
-				enable = true;
-			for(int i = 0; i < inputMatchersCombo.length;i++ ) {
-				inputMatchersCombo[i].setEnabled(enable);
-			}
-		}
-		
-	}
-
-	
-	
-	
 }

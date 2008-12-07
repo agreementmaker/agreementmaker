@@ -27,12 +27,12 @@ import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.AlignmentSet;
-import agreementMaker.application.mappingEngine.Evaluator;
 import agreementMaker.application.mappingEngine.MatcherFactory;
 import agreementMaker.application.mappingEngine.MatchersRegistry;
-import agreementMaker.application.mappingEngine.ResultData;
 import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluationData;
+import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import agreementMaker.application.mappingEngine.testMatchers.CopyMatcher;
 import agreementMaker.userInterface.table.MatchersTablePanel;
 import agreementMaker.userInterface.table.MyTableModel;
@@ -273,12 +273,12 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				AlignmentSet referenceSet = refMatcher.getAlignmentSet(); //class + properties
 				AbstractMatcher toBeEvaluated;
 				AlignmentSet evaluateSet;
-				ResultData rd;
+				ReferenceEvaluationData rd;
 				String report="\t\tReference Evaluation Complete\n\n";
 				for(int i = 0; i < rowsIndex.length; i++) {
 					toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
 					evaluateSet = toBeEvaluated.getAlignmentSet();
-					rd = Evaluator.compare(evaluateSet, referenceSet);
+					rd = ReferenceEvaluator.compare(evaluateSet, referenceSet);
 					toBeEvaluated.setRefEvaluation(rd);
 					report+=toBeEvaluated.getName()+"\n\n";
 					report +=rd.getReport()+"\n";

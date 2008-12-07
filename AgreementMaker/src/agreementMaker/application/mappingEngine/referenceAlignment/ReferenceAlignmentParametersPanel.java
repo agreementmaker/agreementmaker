@@ -26,7 +26,6 @@ import javax.swing.border.LineBorder;
 import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
 import agreementMaker.application.mappingEngine.AbstractParameters;
-import agreementMaker.application.mappingEngine.Evaluator;
 import agreementMaker.application.mappingEngine.MatcherSetting;
 import agreementMaker.userInterface.AppPreferences;
 import agreementMaker.userInterface.UI;

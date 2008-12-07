@@ -1,11 +1,14 @@
-package agreementMaker.application.mappingEngine;
+package agreementMaker.application.mappingEngine.referenceAlignment;
 
-public class Evaluator{
+import agreementMaker.application.mappingEngine.Alignment;
+import agreementMaker.application.mappingEngine.AlignmentSet;
+
+public class ReferenceEvaluator{
 
 	
 	final static double ALPHA = 1;
 	
-    public static ResultData compare(AlignmentSet as1, AlignmentSet as2)
+    public static ReferenceEvaluationData compare(AlignmentSet as1, AlignmentSet as2)
     {
         int found = 0; 
         int exist = 0;
@@ -16,7 +19,7 @@ public class Evaluator{
             exist = as2.size();
         }
         int correct = 0;
-        ResultData result = new ResultData();
+        ReferenceEvaluationData result = new ReferenceEvaluationData();
         AlignmentSet errorAlignments = new AlignmentSet();
         AlignmentSet correctAlignments = new AlignmentSet();
         AlignmentSet lostAlignments = new AlignmentSet();

@@ -150,18 +150,19 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	 private String treatString(String s) {
 		 
 		 
-		 String s2 = s.replace("_"," ");
-		 s2 = s2.replace("-"," ");
-	    	
+		 String s2 = s.replace("_","");
+		 s2 = s2.replace("-","");
+		 s2 = s2.replace(".","");	
 	    int len = s2.length();
 	    
+	    /*
 	    for(int i=0;i<len-1; i++){
 	    	if( Character.isLowerCase(s2.charAt(i)) &&  Character.isUpperCase(s2.charAt(i+1)) ){
 		    
 	    		s2 = s2.substring(0,i+1) + " " + s2.substring(i+1); len++;}
 
 		}
-	    	
+	    */	
 	    return s2;
 	 }
 	 
