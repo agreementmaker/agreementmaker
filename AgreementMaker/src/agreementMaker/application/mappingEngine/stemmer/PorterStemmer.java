@@ -16,25 +16,23 @@ package agreementMaker.application.mappingEngine.stemmer;
 public class PorterStemmer {
 
     public String stem(String str) {
-        // check for zero length
-        if (str.length() > 0) {
+        // stemming is meaningfull on string longer then 3 char at least
+        if (str.length() > 3) {
             // all characters must be letters
             char[] c = str.toCharArray();
             for (int i = 0; i < c.length; i++) {
                 if (!Character.isLetter(c[i]))
-                    return "Invalid term";
+                    return str;
             }
-        } else {
-            return "No term entered";
+            str = step1a(str);
+            str = step1b(str);
+            str = step1c(str);
+            str = step2(str);
+            str = step3(str);
+            str = step4(str);
+            str = step5a(str);
+            str = step5b(str);
         }
-        str = step1a(str);
-        str = step1b(str);
-        str = step1c(str);
-        str = step2(str);
-        str = step3(str);
-        str = step4(str);
-        str = step5a(str);
-        str = step5b(str);
         return str;
     } // end stem
 

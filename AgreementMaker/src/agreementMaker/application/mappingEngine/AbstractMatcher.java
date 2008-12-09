@@ -108,7 +108,7 @@ public abstract class AbstractMatcher implements Matcher{
 	
 	//***************************ALL METHODS TO PERFORM THE ALIGNMENT**********************************
 	/**
-	 * Match() and select() are the only two public methods to be accessed by the system other then get and set methods
+	 * Match(), buildSimilarityMatrix() and select() are the only 3 public methods to be accessed by the system other then get and set methods
 	 * All other methods must be protected so that only subclasses may access them (can't be private because subclasses wouldn't be able to use them)
 	 * match method is the one which perform the alignment. It also invokes the select() to scan and select matchings
 	 * the system sometimes may need to invoke only the select method for example when the user changes threshold of an algorithm, it's not needed to invoke the whole matching process but only select
@@ -119,19 +119,36 @@ public abstract class AbstractMatcher implements Matcher{
 	 * 
 	 */
     public void match() throws Exception {
-    	beforeAlignOperations();//Template method to allow next developer to add code before align
-    	align();
-    	afterAlignOperations();//Template method to allow next developer to add code after align
+    	matchStart();
+    	buildSimilarityMatrices();
     	select();	
-    	matchComplete();
+    	matchEnd();
     	//System.out.println("Classes alignments found: "+classesAlignmentSet.size());
     	//System.out.println("Properties alignments found: "+propertiesAlignmentSet.size());
     }
     
+	/**
+	 * Match(), buildSimilarityMatrix() and select() are the only 3 public methods to be accessed by the system other then get and set methods
+	 * All other methods must be protected so that only subclasses may access them (can't be private because subclasses wouldn't be able to use them)
+	 * match method is the one which perform the alignment. It also invokes the select() to scan and select matchings
+	 * the system sometimes may need to invoke only the select method for example when the user changes threshold of an algorithm, it's not needed to invoke the whole matching process but only select
+	 * so at least those two methods must be implemented and public
+	 * both methods contains some empty methods to allow developers to add other code if needed
+	 * In all cases a developer can override the whole match method or use this one and override the methods inside, or use all methods except for alignTwoNodes() which is the one which perform the real aligment evaluation
+	 * and it has to be different
+	 * It should not be needed often to override the buildSimilarityMatrix(), if you do remember to reinitialize structures everytime at the beginning, and at the end matrices should be filled completely in all cells
+	 * It useful to invoke this method instead of the whole matching process while developing a composed matcher which uses other matchers matrices but which doesn't need the alignments sets.
+	 * Instead of invoking the whole match() method of each matcher, it can only invoke this one, to avoid the selection process delay.
+	 */
+	public void buildSimilarityMatrices()throws Exception{
+    	beforeAlignOperations();//Template method to allow next developer to add code before align
+    	align();
+    	afterAlignOperations();//Template method to allow next developer to add code after align
+    }
 
 
 	/**
-	 * Match() and select() are the only two public methods to be accessed by the system other then get and set methods
+	 * Match(), buildSimilarityMatrix() and select() are the only 3 public methods to be accessed by the system other then get and set methods
 	 * All other methods must be protected so that only subclasses may access them (can't be private because subclasses wouldn't be able to use them)
 	 * match method is the one which perform the alignment. It also invokes the select() to scan and select matchings
 	 * the system sometimes may need to invoke only the select method for example when the user changes threshold of an algorithm, it's not needed to invoke the whole matching process but only select
@@ -157,23 +174,26 @@ public abstract class AbstractMatcher implements Matcher{
     	classesMatrix = null;
     	propertiesMatrix = null;
     	modifiedByUser = false;
-    	start = System.nanoTime();
 	}
-    //DO NOTHING FOR NOW
+    //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
     protected void afterAlignOperations()  {}
-    //RESET ALIGNMENT STRUCTURES
+    //RESET ALIGNMENT STRUCTURES,     //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
     protected void beforeSelectionOperations() {
     	classesAlignmentSet = null;
     	propertiesAlignmentSet = null;
     	refEvaluation = null;
     }
-    
+    //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
     protected void afterSelectionOperations() {
     	
     } 
     
     //Time calculation, if you override this method remember to call super.afterSelectionOperations()
-	protected void matchComplete() {
+    protected void matchStart() {
+    	start = System.nanoTime();
+	}
+    //Time calculation, if you override this method remember to call super.afterSelectionOperations()
+	protected void matchEnd() {
     	end = System.nanoTime();
     	executionTime = (end-start)/1000000; // this time is in milliseconds.
 	}
@@ -663,6 +683,23 @@ public abstract class AbstractMatcher implements Matcher{
 		return ANY_INT;
 	}
 	
+	/**This method is invoked at the end of the matching process if the process successed, to give a feedback to the user. Developers can ovveride it to add additional informations.
+	 * Developers can also add a global variable like message that is set dinamically during the matching process to have different type of feedback.
+	 * **/
+	
+	public String getMatchReport() {
+		String result =  "Matching Process Complete Succesfully!\n\n";
+		if(areClassesAligned()) {
+			result+= "Classes alignments found: "+classesAlignmentSet.size()+"\n";
+		}
+		if(arePropertiesAligned()) {
+			result+= "Properties alignments found: "+propertiesAlignmentSet.size()+"\n";
+		}
+		if(executionTime != 0) {
+			result += "Total execution time (ms): "+executionTime+"\n";
+		}
+		return result;
+	}
 //*************************UTILITY METHODS**************************************
 	public boolean equals(Object o) {
 		if(o instanceof AbstractMatcher) {

@@ -32,10 +32,6 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		
 	}
 
-
-	public BaseSimilarityMatcherParametersPanel getParametersPanel() {
-		return (BaseSimilarityMatcherParametersPanel) parametersPanel;
-	}
 	
 	
 	public String getDescriptionString() {

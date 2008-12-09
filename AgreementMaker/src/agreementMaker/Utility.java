@@ -83,6 +83,10 @@ public class Utility {
 		else return "no";
 	}
 	
+	public static boolean isIrrelevant(String s) {
+		return s == null || s.equals("");
+	}
+	
 	/**
 	 * This function displays the JOptionPane with title and descritpion
 	 *

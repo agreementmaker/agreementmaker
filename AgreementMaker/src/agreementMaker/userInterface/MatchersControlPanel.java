@@ -341,6 +341,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 					currentMatcher.match();
 					matchersTablePanel.addMatcher(currentMatcher);
 					ui.redisplayCanvas();
+					Utility.displayMessagePane(currentMatcher.getMatchReport(), "Matching Process Report");
 				}
 				catch(AMException ex){
 					Utility.displayMessagePane(ex.getMessage(), null);
