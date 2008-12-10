@@ -39,9 +39,9 @@ public class AppPreferences {
 	/** format of the last reference file opened in the Evaluate Reference function */
 	private static final String PREF_LASTFORMATREFERENCE = "pref_lastformatreference";
 	/** key for storing the last directory used to save the output of the evaluation with the reference file in the Evaluate Reference function */
-	private static final String 	PREF_LASTDIRREFOUTPUT = "pref_lastdirrefoutput";		
+	private static final String 	PREF_LASTDIROUTPUT = "pref_lastdiroutput";		
 	/** key for storing the last name of the file used to save the output of the evaluation with the reference file in the Evaluate Reference function */
-	private static final String 	PREF_LASTNAMEREFOUTPUT = "pref_lastnamerefoutput";		
+	private static final String 	PREF_LASTNAMEOUTPUT = "pref_lastnameoutput";		
 	
 	/** key for storing if the user is viewing the canvas in "selected matchings only" mode. */
 	private static final String		PREF_SELECTEDMATCHINGSONLY = "pref_selectedmatchingsonly";
@@ -402,8 +402,8 @@ public class AppPreferences {
 	 *
 	 * @return the last directory selected by the user in the file chooser in ReferenceFileDialog task
 	 */
-	public File getLastDirRefOutput() {
-		File lastdirrefoutput = new File( appPrefs.get(PREF_LASTDIRREFOUTPUT, ""));
+	public File getLastDirOutput() {
+		File lastdirrefoutput = new File( appPrefs.get(PREF_LASTDIROUTPUT, ""));
 		return lastdirrefoutput;
 		
 	}
@@ -413,16 +413,16 @@ public class AppPreferences {
 	 * for use next time the user opens the dialog
 	 * @param selectedfile - the file that was selected by the user
 	 */
-	public void saveLastDirRefOutput(File selecteddir) {
-		appPrefs.put(PREF_LASTDIRREFOUTPUT, selecteddir.getPath());
+	public void saveLastDirOutput(File selecteddir) {
+		appPrefs.put(PREF_LASTDIROUTPUT, selecteddir.getPath());
 	}
 	
 	/** 
 	 *
 	 * @return the last directory selected by the user in the file chooser in ReferenceFileDialog task
 	 */
-	public String getLastNameRefOutput() {
-		String name = appPrefs.get(PREF_LASTNAMEREFOUTPUT,"");
+	public String getLastNameOutput() {
+		String name = appPrefs.get(PREF_LASTNAMEOUTPUT,"");
 		return name;
 		
 	}
@@ -432,8 +432,8 @@ public class AppPreferences {
 	 * for use next time the user opens the dialog
 	 * @param selectedfile - the file that was selected by the user
 	 */
-	public void saveLastNameRefOutput(String name) {
-		appPrefs.put(PREF_LASTNAMEREFOUTPUT, name);
+	public void saveLastNameOutput(String name) {
+		appPrefs.put(PREF_LASTNAMEOUTPUT, name);
 	}
 	//THE LAST FORMAT FOR THE OUTPUT FILE OF THE REFERENCE EVALUATION HAS NOT BEEN IMPLEMENTED YET BECAUSE THERE IS ONLY ONE FORMAT NOW
 

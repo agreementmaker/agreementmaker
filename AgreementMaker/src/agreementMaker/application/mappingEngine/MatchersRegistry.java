@@ -32,9 +32,8 @@ public enum MatchersRegistry {
 	 * 
 	 * And so, if your matcher is has no code errors, it will be incorporated into the AgreementMaker.  - Cosmin
 	 */
-	
-	 ParametricString ( "Parametric String Matcher", ParametricStringMatcher.class ),
 	BaseSimilarity		( "Base Similarity", BaseSimilarityMatcher.class ),
+	 ParametricString ( "Parametric String Matcher", ParametricStringMatcher.class ),
 	DSI					( "Descendant's Similarity Inheritance (DSI)", DescendantsSimilarityInheritanceMatcher.class ),
 	SSC					( "Sibling's Similarity Contribution (SSC)", SiblingsSimilarityContributionMatcher.class ),
 	ManualCombination	( "Manual Combination", ManualCombinationMatcher.class ),

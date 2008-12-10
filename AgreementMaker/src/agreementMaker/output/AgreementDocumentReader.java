@@ -1,4 +1,4 @@
-package agreementMaker.agreementDocument;
+package agreementMaker.output;
 
 
 

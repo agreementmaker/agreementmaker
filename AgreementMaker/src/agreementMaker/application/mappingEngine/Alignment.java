@@ -124,4 +124,9 @@ public class Alignment
     public String toString() {
     	return "("+entity1+" "+entity2+" "+similarity+")";
     }
+    
+
+	public String getString() {
+		return entity1.getLocalName()+"\t--->\t"+entity2.getLocalName()+"\t"+getSimilarity()+"\t"+getRelation()+"\n";
+	}
 }

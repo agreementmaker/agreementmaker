@@ -134,4 +134,17 @@ public class AlignmentSet
             System.out.println("relation=" + align.getRelation() + "\n");
         }
     }
+
+	
+    public String getStringList() {
+		String result = "";
+		Alignment a;
+		for(int i = 0; i < collection.size(); i++) {
+			a = collection.get(i);
+			result += a.getString();
+			if(i == collection.size()-1)
+				result+= "\n";
+		}
+		return result;
+	}
 }

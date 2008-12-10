@@ -9,6 +9,8 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Date;
+
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -34,6 +36,7 @@ import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceAlig
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import agreementMaker.application.mappingEngine.testMatchers.CopyMatcher;
+import agreementMaker.output.OutputController;
 import agreementMaker.userInterface.table.MatchersTablePanel;
 import agreementMaker.userInterface.table.MyTableModel;
 
@@ -161,12 +164,12 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		panel3.add(delete);
 		panel3.add(clearMatchings);
 		panel3.add(copyButton);
-		panel3.add(editMatrixButton);
-		panel3.add(refEvaluate);
+		//panel3.add(editMatrixButton);
+		//panel3.add(refEvaluate);
 		panel3.add(qualityEvaluationButton);
 		panel3.add(saveToFileButton);
-		panel3.add(importMatchingsButton);
-		panel3.add(exportMatchingsButton);
+		//panel3.add(importMatchingsButton);
+		//panel3.add(exportMatchingsButton);
 		
 		// WHOLE CONTROL PANEL
 		add(matcherSelectionPanel);
@@ -229,7 +232,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				setDefaultCommonParameters();
 			}
 			else if (obj == copyButton) {
-				//TO BE CORRECTED, IT SHOULD BE A REAL COPY OF THE MATCHER, like a clone; shoulnd't invoke copymatcher while matcher.clone();
+				//TODO TO BE CORRECTED, IT SHOULD BE A REAL COPY OF THE MATCHER, like a clone; shoulnd't invoke copymatcher while matcher.clone();
 				if(rowsIndex.length == 0) {
 					Utility.displayErrorPane("No matchers selected", null);
 				}
@@ -248,6 +251,15 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 					ui.redisplayCanvas();
 				}
 			}
+			else if(obj == saveToFileButton) {
+				if(rowsIndex.length == 0) {
+					Utility.displayErrorPane("No matchers selected", null);
+				}
+				else 	new SaveFileDialog(); //demand control to the savefile dialog which since is modal will take care of everything
+			}
+		}
+		catch(AMException ex2) {
+			Utility.displayMessagePane(ex2.getMessage(), null);
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
@@ -350,6 +362,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 			}
 		}
 	}
+
+	
 	
 	public MatchersTablePanel getTablePanel() {
 		return matchersTablePanel;

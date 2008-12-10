@@ -267,7 +267,7 @@ public class UIMenu implements ActionListener {
 		//viewMenu.addSeparator();
 
 		// add keyItem 
-		keyItem = new JMenuItem("Key",KeyEvent.VK_K);
+		keyItem = new JMenuItem("Colors",KeyEvent.VK_K);
 		keyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, ActionEvent.CTRL_MASK)); 	                
 		keyItem.addActionListener(this);
 		viewMenu.add(keyItem);
@@ -281,12 +281,14 @@ public class UIMenu implements ActionListener {
 		viewMenu.add(smoMenuItem);
 		
 		//Fake menus..********************************.
+		/*
 		ontologyMenu = new JMenu("Ontology");
 		matchingMenu = new JMenu("Matching");
 		evaluationMenu = new JMenu("Evaluation");
 		myMenuBar.add(ontologyMenu);
 		myMenuBar.add(matchingMenu);
 		myMenuBar.add(evaluationMenu);
+		*/
 
 		// Build help menu in the menu bar.
 		helpMenu = new JMenu("Help");

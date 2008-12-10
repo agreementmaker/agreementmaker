@@ -700,7 +700,19 @@ public abstract class AbstractMatcher implements Matcher{
 		}
 		return result;
 	}
-//*************************UTILITY METHODS**************************************
+
+	public String getAlignmentsStrings() {
+		String result = "";
+		result+= "Class Alignments: "+classesAlignmentSet.size()+"\n";
+		result += "Source Concept\t--->\tTarget Concept\tSimilarity\tRelation\n\n";
+		result += classesAlignmentSet.getStringList();
+		result+= "Property Alignments: "+propertiesAlignmentSet.size()+"\n";
+		result += "Source Concept\t--->\tTarget Concept\tSimilarity\tRelation\n\n";
+		result += propertiesAlignmentSet.getStringList();
+		return result;
+	}
+	
+	//*************************UTILITY METHODS**************************************
 	public boolean equals(Object o) {
 		if(o instanceof AbstractMatcher) {
 			AbstractMatcher a = (AbstractMatcher)o;
@@ -722,6 +734,8 @@ public abstract class AbstractMatcher implements Matcher{
 	public void setColor(Color color) {
 		this.color = color;
 	}
+
+
 
 	
 
