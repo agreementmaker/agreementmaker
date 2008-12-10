@@ -11,7 +11,7 @@ public class ManualCombinationParameters extends AbstractParameters {
 	final static String AVERAGECOMB = "Average of similarities";
 	final static String WEIGHTAVERAGE = "Weighted Average of similarities";
 	
-	public String combinationType;
+	public String combinationType = AVERAGECOMB;
 	public double[] weights; 
 		
 

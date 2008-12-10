@@ -93,18 +93,18 @@ public class ManualCombinationMatcher extends AbstractMatcher {
 			weightedSum += (weight * sim); 
 		}
 		//select the final similarity combined value depending on the user selected combination type.
-		if(parameters.combinationType.equals(parameters.MAXCOMB)) {
+		if(parameters.combinationType.equals(ManualCombinationParameters.MAXCOMB)) {
 			sim = max;
 		}
-		else if(parameters.combinationType.equals(parameters.MINCOMB)) {
+		else if(parameters.combinationType.equals(ManualCombinationParameters.MINCOMB)) {
 			sim = min;
 		}
-		else if(parameters.combinationType.equals(parameters.AVERAGECOMB)) {
-			sim = (double) sum/ inputMatchers.size();
+		else if(parameters.combinationType.equals(ManualCombinationParameters.AVERAGECOMB)) {
+			sim =  sum/ (double)inputMatchers.size();
 		}
-		else if(parameters.combinationType.equals(parameters.WEIGHTAVERAGE)) {
+		else if(parameters.combinationType.equals(ManualCombinationParameters.WEIGHTAVERAGE)) {
 			if(sumOfWeights != 0)
-				sim = (double) weightedSum/sumOfWeights;
+				sim = weightedSum/ sumOfWeights;
 			else sim = 0;
 		}
 		else throw new RuntimeException("DEVELOPMENT ERROR: combination type selected is not implemented");

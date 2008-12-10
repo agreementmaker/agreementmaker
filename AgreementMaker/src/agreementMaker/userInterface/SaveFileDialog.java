@@ -58,6 +58,7 @@ public class SaveFileDialog implements ActionListener{
 		AppPreferences prefs = new AppPreferences(); // Class interface to Application Preferences
 		frame = new JDialog();
 		frame.setTitle("Output File Dialog");
+		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		fileNameLabel = new JLabel("File name (no extension): ");
 		fileName = new JTextField(0);
 		fileDir = new JLabel("Output file directory");

@@ -53,7 +53,7 @@ public class ManualCombinationParametersPanel extends AbstractMatcherParametersP
 	
 	private JLabel weightsLabel;
 	private JComboBox[] inputMatchersCombo;
-
+	
 	
 	
 	public ManualCombinationParametersPanel(ArrayList<AbstractMatcher> matchers) {

@@ -89,7 +89,7 @@ public class AboutDialog implements ActionListener {
 		l[1] = new JLabel("Advances in Information Systems Laboratory");
 		l[2] = new JLabel("University of Illinois at Chicago");
 		l[3] = new JLabel("Afsheen Rajendran, Anjli Chaudhry, Cosmin Stroe,");
-		l[4] = new JLabel("Flavio Antonelli, Nalin Makar, Sarang Kapadia,");
+		l[4] = new JLabel("Flavio Palandri Antonelli, Nalin Makar, Sarang Kapadia,");
 		l[5] = new JLabel("Sujan Bathala, Ulas Keles, William Sunna.");
 		
 		for(int i=0; i<l.length; i++ ) { l[i].setAlignmentX(Component.CENTER_ALIGNMENT); }

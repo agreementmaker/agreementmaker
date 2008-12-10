@@ -4,6 +4,7 @@ package agreementMaker.application.ontology.ontologyParser;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
@@ -15,6 +16,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import com.hp.hpl.jena.ontology.OntResource;
 
 import agreementMaker.application.ontology.Node;
 import agreementMaker.application.ontology.Ontology;
@@ -33,7 +36,7 @@ public class XmlTreeBuilder extends TreeBuilder
 {
 	// instance variables
 	private Document documentRoot;
-	
+	private HashMap<String,Node> processedNodes;
 	final static String XMLHIERARCHY = "XML Hierarchy";
 	
 	/**
@@ -50,6 +53,7 @@ public class XmlTreeBuilder extends TreeBuilder
 		treeRoot.add(ClassRoot);
 		treeCount=2;
 		ontology.setClassesTree( ClassRoot);
+		processedNodes = new HashMap<String, Node>();
 		// read an XML file and generate a DOM document object from it
 		if(parse(xmlFilename))
 			buildTree(ClassRoot, (org.w3c.dom.Node)documentRoot);
@@ -65,7 +69,7 @@ public class XmlTreeBuilder extends TreeBuilder
 	{
 		// get the node list from the document
 		NodeList nodeList = getNodeList(document);
-
+		
 		if (nodeList != null)
 		{
 			//System.out.println("Length: " + nodeList.getLength());
@@ -78,22 +82,23 @@ public class XmlTreeBuilder extends TreeBuilder
 				//String currentName = currentNode.getNodeName();//TODO: What is this used for ? FIX IT
 				String name = getAttr(currentNode, "id");
 				String des = getDes(currentNode, "exp");
-
 				Vertex childNode = new Vertex(name);
 				childNode.setDesc(des);
-				Node node = new Node(uniqueKey,name, des, Node.XMLNODE);
+				//We have to check if it is a new node or a previous processed node in a different position
+				Node node = processedNodes.get(name);
+				if(node == null) {
+					//if it's new create the node, add it to the class list and incr uniqueKey
+					node = new Node(uniqueKey,name, des, Node.XMLNODE);
+					ontology.getClassesList().add(node); //THE XML FILES ONLY CONTAINS CLASSES IN OUR SEMPLIFICATION
+					uniqueKey++;
+					processedNodes.put(name, node);
+				}
 				node.addVertex(childNode);
 				childNode.setNode(node);
-				ontology.getClassesList().add(node); //THE XML FILES ONLY CONTAINS CLASSES IN OUR SEMPLIFICATION
 				// increment the number of nodes created
 				treeCount++;
-
-				// set the description of the node
-				
-
 				// add the node created to the previous node
 				currentTreeNode.add(childNode);
-
 				// recursively create the whole tree
 				buildTree(childNode, nodeList.item(i));
 			} // end of for loop
