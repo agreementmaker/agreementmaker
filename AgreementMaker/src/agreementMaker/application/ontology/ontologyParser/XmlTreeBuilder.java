@@ -17,10 +17,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.hp.hpl.jena.ontology.OntResource;
 
 import agreementMaker.application.ontology.Node;
-import agreementMaker.application.ontology.Ontology;
 import agreementMaker.userInterface.vertex.Vertex;
 
 /**

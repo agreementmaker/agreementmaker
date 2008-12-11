@@ -10,21 +10,16 @@ import java.util.Set;
 
 import org.mindswap.pellet.jena.PelletInfGraph;
 import org.mindswap.pellet.jena.PelletReasonerFactory;
-import org.mindswap.pellet.utils.QNameProvider;
 
 
 import agreementMaker.application.ontology.Node;
-import agreementMaker.application.ontology.Ontology;
 import agreementMaker.userInterface.vertex.Vertex;
 
 import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.sparql.function.library.namespace;
 import com.hp.hpl.jena.vocabulary.OWL;
 
 /**
@@ -98,7 +93,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 		//Preparing model
 		model.prepare();
 		
-		// compute the classification tree
+		// compute the classification tree 
 		System.out.print("Classifying...");
 		((PelletInfGraph) model.getGraph()).getKB().classify();
 		//reasoner.classify();

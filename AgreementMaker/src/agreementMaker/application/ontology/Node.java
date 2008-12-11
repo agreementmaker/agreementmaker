@@ -2,9 +2,6 @@ package agreementMaker.application.ontology;
 
 import java.util.ArrayList;
 
-import javax.swing.text.html.HTMLDocument.Iterator;
-
-import org.json.XML;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
