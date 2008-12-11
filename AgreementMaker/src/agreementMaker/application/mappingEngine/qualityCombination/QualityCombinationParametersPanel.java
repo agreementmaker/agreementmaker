@@ -28,6 +28,7 @@ import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
 import agreementMaker.application.mappingEngine.AbstractParameters;
 import agreementMaker.application.mappingEngine.MatcherSetting;
 import agreementMaker.application.mappingEngine.MatchersRegistry;
+import agreementMaker.application.mappingEngine.qualityEvaluation.QualityEvaluator;
 import agreementMaker.userInterface.AppPreferences;
 
 
@@ -58,7 +59,7 @@ public class QualityCombinationParametersPanel extends AbstractMatcherParameters
 		//init components
 		topLabel = new JLabel("The matcher will perform a Weighted Average Combination of input similarity matrices.\n Weights are assigned evaluating matchers' quality.");
 		qualityMeasureLabel = new JLabel("Select quality measure: ");
-		String[] measures = {QualityCombinationParameters.LOCAL,QualityCombinationParameters.STRUCTURAL, QualityCombinationParameters.GLOBAL, QualityCombinationParameters.COMBINED};
+		String[] measures = {QualityEvaluator.LOCAL,QualityEvaluator.GLOBAL, QualityEvaluator.COMBINED};
 		qualityMeasureCombo = new JComboBox(measures);
 
 		//LAYOUT: grouplayout is already complicated but very flexible, plus in this case the matchers list is dynamic so it's even more complicated

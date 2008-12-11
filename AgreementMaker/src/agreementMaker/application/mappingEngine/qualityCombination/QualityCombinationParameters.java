@@ -3,15 +3,12 @@ package agreementMaker.application.mappingEngine.qualityCombination;
 import java.util.ArrayList;
 
 import agreementMaker.application.mappingEngine.AbstractParameters;
+import agreementMaker.application.mappingEngine.qualityEvaluation.QualityEvaluator;
 
 public class QualityCombinationParameters extends AbstractParameters {
 
-	final static String  LOCAL = "Local Quality";
-	final static String  GLOBAL = "Global Quality";
-	final static String STRUCTURAL  = "Structural Quality";
-	final static String COMBINED = "Combined Quality";
+
 	
-	public String qualityMeasure;
-		
+	public String qualityMeasure = QualityEvaluator.LOCAL;
 
 }
