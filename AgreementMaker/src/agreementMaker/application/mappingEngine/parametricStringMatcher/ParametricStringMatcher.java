@@ -172,45 +172,50 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		double seeAlsoSim = 0;
 		double isDefBySim = 0;
 		double sim = 0;
-		
 		ParametricStringParameters parameters  = (ParametricStringParameters)param;
+		double localWeight = parameters.localWeight;
+		double labelWeight = parameters.labelWeight;
+		double commentWeight = parameters.commentWeight; 
+		double seeAlsoWeight = parameters.seeAlsoWeight; 
+		double isDefinedByWeight = parameters.isDefinedByWeight; 
+		
 		//The redistrubution is implicit in the weighted average mathematical formula
 		//i just need to put the weight equal to 0
 		if(parameters.redistributeWeights) {
 			//if parameters.weight == 0 is needed to speed up the if, in fact often many weights are already 0 and is useless to check other boolean value
 			if(parameters.localWeight == 0 || Utility.isIrrelevant(source.getLocalName()) || Utility.isIrrelevant(target.getLocalName()))
-				parameters.localWeight = 0;
+				localWeight = 0;
 			if(parameters.labelWeight == 0 || Utility.isIrrelevant(source.getLabel()) || Utility.isIrrelevant(target.getLabel()))
-				parameters.labelWeight = 0;
+				labelWeight = 0;
 			if(parameters.commentWeight == 0 || Utility.isIrrelevant(source.getComment()) || Utility.isIrrelevant(target.getComment()))
-				parameters.commentWeight = 0;
+				commentWeight = 0;
 			if(parameters.seeAlsoWeight == 0 || Utility.isIrrelevant(source.getSeeAlso()) || Utility.isIrrelevant(target.getSeeAlso()))
-				parameters.seeAlsoWeight = 0;
+				seeAlsoWeight = 0;
 			if(parameters.isDefinedByWeight == 0 || Utility.isIrrelevant(source.getIsDefinedBy()) || Utility.isIrrelevant(target.getIsDefinedBy()))
-				parameters.isDefinedByWeight = 0;			
+				isDefinedByWeight = 0;			
 		}
 		
 		double totWeight = parameters.getTotWeight(); //important to get total after the redistribution
 		if(totWeight > 0) {
 			if(parameters.localWeight > 0) {
 				localSim =  performStringSimilarity(source.getLocalName(), target.getLocalName());
-				localSim *= parameters.localWeight;
+				localSim *= localWeight;
 			}
 			if(parameters.labelWeight > 0) {
 				labelSim =  performStringSimilarity(source.getLabel(), target.getLabel());
-				labelSim *= parameters.labelWeight;
+				labelSim *= labelWeight;
 			}
 			if(parameters.commentWeight > 0) {
 				commentSim = performStringSimilarity(source.getComment(), target.getComment());
-				commentSim *= parameters.commentWeight;
+				commentSim *= commentWeight;
 			}
 			if(parameters.seeAlsoWeight > 0) {
 				seeAlsoSim = performStringSimilarity(source.getSeeAlso(), target.getSeeAlso());
-				seeAlsoSim *= parameters.seeAlsoWeight;
+				seeAlsoSim *= seeAlsoWeight;
 			}
 			if(parameters.isDefinedByWeight > 0) {
 				isDefBySim = performStringSimilarity(source.getIsDefinedBy(), target.getIsDefinedBy());
-				isDefBySim *= parameters.isDefinedByWeight;
+				isDefBySim *= isDefinedByWeight;
 			}
 			
 			sim = localSim + labelSim + commentSim + seeAlsoSim + isDefBySim;
