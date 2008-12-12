@@ -219,4 +219,15 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 	}
 
 	
+	public String getDescriptionString() {
+		String description;
+		
+		
+		description = "Descendant's Similarity Inheritance (DSI for short) is a matching method that considers the parent concepts of \nthe nodes being compared.  The idea is that, if the parents of two nodes are very similar to eachother, \nthat should mean that the children of those parents should be related to some degree.\n\n";
+		description += "The DSI method is a refining method (we call it a Second Layer Matcher), meaning that it \nrequires another Matcher to create the initial similarity values between the nodes (called the Base Similarity), \nand then operates using the already computed similarities.\n\n";
+		description += "The only parameter required by the DSI is the Main Contribution Percentage (MCP).  \nThe MCP controls how much of the computed DSI similarity should come from the previous \nMatcher, and how much should come from the current DSI Matcher.  \n\nFor example, if MCP=0.75, the output of the DSI will be 75% from the previous Matcher, and 25% from the DSI.\nIf you set the MCP close to 0%, the alignment that will be computed \nby the DSI will be almost completely based on the parents of every node, ignoring how similar \nthe actual nodes are to eachother.\n\n";
+		description += "Therefore, the MCP cannot be too low, or the relations between the actual nodes \nwill be ignored, while it cannot be to high, because the contribution from the DSI will be negligible.  \nThe MCP value is subject to experimentation, as there is no automatic way of choosing the MCP (yet).\n\n";
+		return description;
+	}
+	
 }
