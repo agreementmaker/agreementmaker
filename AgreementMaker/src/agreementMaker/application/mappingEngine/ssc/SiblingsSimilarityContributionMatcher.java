@@ -222,4 +222,16 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 	}
 	
 	
+	public String getDescriptionString() {
+		String description;
+		
+	
+		description = "Sibling's Similarity Contribution (SSC for short) is a matching method that considers how similar the sibblings \nof a node are, as compared to the sibblings of another node.  Therefore, if the \"brothers\" of \na node are very similar to the \"brothers\" of a second node, then maybe those \nnodes themselves should be similar.\n\n"; 
+		description += "The SSC method is a refining method (we call it a Second Layer Matcher), meaning that it \nrequires another Matcher to create the initial similarity values between the nodes (called the Base Similarity), \nand then operates using the already computed similarities.\n\n";
+		
+		description += "The only parameter required by the SSC is the Main Contribution Percentage (MCP).  \nThe MCP controls how much of the computed SSC similarity should come from the previous \nMatcher, and how much should come from the current SSC Matcher.  \n\nFor example, if MCP=0.75, the output of the SSC will be 75% from the previous Matcher, and 25% from the SSC.\nIf you set the MCP close to 0%, the alignment that will be computed \nby the SSC will be almost completely based on the children of every node, ignoring how similar \nthe actual nodes are to eachother.\n\n";
+		description += "Therefore, the MCP cannot be too low, or the relations between the actual nodes \nwill be ignored, while it cannot be to high, because the contribution from the SSC will be negligible.  \nThe MCP value is subject to experimentation, as there is no automatic way of choosing the MCP (yet).\n\n";
+		return description;
+	}
+	
 }
