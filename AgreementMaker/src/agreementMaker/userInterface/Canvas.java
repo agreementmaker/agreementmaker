@@ -59,6 +59,7 @@ import java.util.Date;
 
 
 
+
 /**
  * Canvas class is responsible for all the contents inside the canvas such as
  * displaying the tree, connecting the lines, mappingByUser nodes, highlighting the nodes.
@@ -306,10 +307,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				}
 			}
 		}
-		System.out.println(alignments.size());
-		System.out.println(alignments.size());
 		myUI.getControlPanel().userMatching(alignments);
-		Core.getInstance().getMatcherInstances().get(0).getClassesMatrix().show();
 	}
 	
 	/**
@@ -1153,10 +1151,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			if (node == null)	{
 				// check to see if the user wants to exapand or close the tree
 				if(!expandOrContract(e.getX(),e.getY())) {// if i haven't expanded i have to desel and declick all
-					if (e.getX() < (canvasWidth/2))
-						clearGlobalSelections();
-					else
-						clearLocalSelections();					
+						clearAllSelections();
 				}
 			}
 			else if(node !=null){ //a node has been clicked

@@ -30,10 +30,7 @@ import agreementMaker.output.OutputController;
 import agreementMaker.userInterface.vertex.VertexDescriptionPane;
 
 
-/**
- * @author Nalin
- *
- */
+
 public class SaveFileDialog implements ActionListener{
 	
 	/**

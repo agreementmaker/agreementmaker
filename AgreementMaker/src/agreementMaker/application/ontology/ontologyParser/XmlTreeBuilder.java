@@ -79,14 +79,21 @@ public class XmlTreeBuilder extends TreeBuilder
 				org.w3c.dom.Node currentNode = nodeList.item(i);
 				//String currentName = currentNode.getNodeName();//TODO: What is this used for ? FIX IT
 				String name = getAttr(currentNode, "id");
-				String des = getDes(currentNode, "exp");
+				String des = getAttr(currentNode, "exp");
+				String label = getAttr(currentNode, "label");
+				String seeAlso = getAttr(currentNode,"seeAlso");
+				String isDefBy = getAttr(currentNode,"isDefinedBy");
 				Vertex childNode = new Vertex(name);
-				childNode.setDesc(des);
+				childNode.setDesc(label);
 				//We have to check if it is a new node or a previous processed node in a different position
 				Node node = processedNodes.get(name);
 				if(node == null) {
 					//if it's new create the node, add it to the class list and incr uniqueKey
-					node = new Node(uniqueKey,name, des, Node.XMLNODE);
+					node = new Node(uniqueKey,name, Node.XMLNODE);
+					node.setLabel(label);
+					node.setComment(des);
+					node.setSeeAlso(seeAlso);
+					node.setIsDefinedBy(isDefBy);
 					ontology.getClassesList().add(node); //THE XML FILES ONLY CONTAINS CLASSES IN OUR SEMPLIFICATION
 					uniqueKey++;
 					processedNodes.put(name, node);
@@ -213,16 +220,6 @@ public class XmlTreeBuilder extends TreeBuilder
 	public String getAttr(org.w3c.dom.Node node, String attrName)
 	{
 		return ((Element)node).getAttribute(attrName);
-	}
-	/**
-	 * This function returns the description
-	 *
-	 * @param node	node which you want the description from
-	 * @param des attribute name
-	 */
-	public String getDes(org.w3c.dom.Node node, String des)
-	{
-		return ((Element)node).getAttribute(des);
 	}
 	/**
 	 * This function returns the document root 

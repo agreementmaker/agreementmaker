@@ -78,10 +78,9 @@ public class Node {
 	 * @param desc
 	 * @param type
 	 */
-	public Node(int key, String name, String desc, String type) {
+	public Node(int key, String name, String type) {
 		localName = name;
 		this.type = type;
-		comment = desc;
 		index = key;
 	}
 	

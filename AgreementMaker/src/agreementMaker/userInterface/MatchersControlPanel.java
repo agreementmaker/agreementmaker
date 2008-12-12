@@ -165,8 +165,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		panel3.add(clearMatchings);
 		panel3.add(copyButton);
 		//panel3.add(editMatrixButton);
-		//panel3.add(refEvaluate);
-		panel3.add(qualityEvaluationButton);
+		panel3.add(refEvaluate);
+		//panel3.add(qualityEvaluationButton);
 		panel3.add(saveToFileButton);
 		//panel3.add(importMatchingsButton);
 		//panel3.add(exportMatchingsButton);
@@ -215,6 +215,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 						else {
 							matchersTablePanel.removeMatcher(toBeDeleted);
 						}
+				    	((AbstractTableModel)matchersTablePanel.getTable().getModel()).fireTableRowsDeleted(rowsIndex[0], rowsIndex[rowsIndex.length-1]);
 						ui.redisplayCanvas();
 					}
 				}
@@ -297,7 +298,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 					AbstractTableModel model = (AbstractTableModel)matchersTablePanel.getTable().getModel();
 					model.fireTableRowsUpdated(toBeEvaluated.getIndex(), toBeEvaluated.getIndex());
 				}
-				Utility.displayMessagePane(report,"Reference Evaluation Report");
+				Utility.displayTextAreaPane(report,"Reference Evaluation Report");
 			}
 			dialog.dispose();
 			ui.redisplayCanvas();

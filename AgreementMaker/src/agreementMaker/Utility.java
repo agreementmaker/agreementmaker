@@ -1,8 +1,11 @@
 package agreementMaker;
 
+import java.awt.Dimension;
 import java.text.NumberFormat;
 
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.userInterface.table.MyTableModel;
@@ -97,6 +100,26 @@ public class Utility {
 		if(title == null)
 			title = "Message Dialog";
 		JOptionPane.showMessageDialog(null, desc, title, JOptionPane.PLAIN_MESSAGE);
+	}
+	
+	public static void displayTextAreaPane(String desc, String title) {
+		if(title == null)
+			title = "Message Dialog";
+		String[] split = desc.split("\n");
+		int rows = Math.min(30, split.length+5);
+		int columns = 0;
+		for(int i = 0; i<split.length; i++) {
+			if(columns < split[i].length())
+				columns = split[i].length();
+		}
+		columns = Math.min(80, columns/2 +5); //columns/2 because each character is longer then a column so at the end it fits doing this
+		
+		JTextArea ta = new JTextArea(desc,rows,columns);
+		ta.setLineWrap(true);
+		ta.setWrapStyleWord(true);
+		//ta.setEditable(false);
+		JScrollPane sp = new JScrollPane(ta);
+		JOptionPane.showMessageDialog(null, sp, title, JOptionPane.PLAIN_MESSAGE);
 	}
 	
 	public static void displayErrorPane(String desc, String title) {

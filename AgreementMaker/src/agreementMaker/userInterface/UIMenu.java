@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import agreementMaker.GSM;
+import agreementMaker.Utility;
 import agreementMaker.application.Core;
 import agreementMaker.application.ontology.Ontology;
 import agreementMaker.application.ontology.ontologyParser.TreeBuilder;
@@ -108,7 +109,7 @@ public class UIMenu implements ActionListener {
 		}else if (obj == keyItem){
 			new Legend(ui);	
 		}else if (obj == howToUse){
-			displayOptionPane("How to use Agreement Maker","Work in progress...");
+			Utility.displayTextAreaPane(Help.getHelpMenuString(), "Help");
 		}else if (obj == openSource){
 			openAndReadFilesForMapping(GSM.SOURCENODE);
 		}else if (obj == openTarget){
