@@ -49,9 +49,29 @@ public class Help {
 		result += "Is it also possible to create an empty matcher to allow the user to have different set of manual mappings.\n";
 		result += "\n";
 		
+		result += "5) Combine matchings.\n\n";
 		
+		result += "Matchings can be combined with the 'Manual Combination Matcher'. Select serveral matchings from the matchers table and run the matcher.\n";
+		result += "A new similarity matrix will be built from the matrices of the matchers in input.Different operations are available to calculate a new similarity for each pair of source and target nodes.\n";
+		result += "Maximum, Minimun, average or weighted average of the similarity of each matcher in input for each source and target node.\n";
+		result += "An automatic quality based combination technique is being studied, but is not ready yet.\n";
+		result+= "\n";
 		
+		result += "6) Evaluate matchings with a reference file.\n\n";
 		
+		result += "A reference file is a set of mappings given by a domain expert which includes all correct alignments for a source and target ontology.\n";
+		result += "All sample ontologies in the distribution have a reference file (e.g. WeaponsA and WeaponsB have the reference file WeaponsAB),\n";
+		result += "Evaluating a matching means comparing the sets of alignments found with perfect set of alignments of the reference.Different measure are given.\n";
+		result += "Recall = #correct / #found . Precision = #correct/#reference_mappings, F-Measure = (2*Precision+recall) / Precision * Recall\n";
+		result += "Changing threshold will affect these measures significantly, increasing it increases precision and decreases recall and vice-versa.\n";
+		result += "To evaluate a matcher select it, run reference evaluation selecting the reference file with the corresponding format.If the reference file contains 0 alignments it probably means that the wrong format has been chosen.\n";
+		result += "Is it also possible to visualize reference alignments in the canvas running the reference alignment matcher.\n";
+		result += "\n";
+		
+		result += "7) Save alignments into a file.\n\n";
+		
+		result += "It is possible to save the alignments into an XML, DOC or TXT file. XLS it the better for visualizing them.\n";
+		result += "Just select matchings to be saved, click save and select filename, destionation and extension. Remember to not put any dot or wrong characters in the name.\n";
 		
 		return result;
 		
