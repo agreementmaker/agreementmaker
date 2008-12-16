@@ -18,6 +18,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import agreementMaker.AMException;
 import agreementMaker.GSM;
 import agreementMaker.Utility;
 import agreementMaker.application.Core;
@@ -35,6 +36,8 @@ public class UIMenu implements ActionListener {
 	
 	// menu items for helpMenu
 	private JMenuItem howToUse, aboutItem;		
+	//menu items for matching menu
+	private JMenuItem manualMapping, newMatching, runMatching, copyMatching, deleteMatching, saveMatching, refEvaluateMatching, clearAll;
 
 	// menu items for the View Menu
 	private JMenuItem keyItem;
@@ -100,75 +103,104 @@ public class UIMenu implements ActionListener {
 	
 	
 	public void actionPerformed (ActionEvent ae){
-		Object obj = ae.getSource();
-		
-		if (obj == xit){
-			// confirm exit
-			confirmExit();
-			// if it is no, then do nothing		
-		}else if (obj == keyItem){
-			new Legend(ui);	
-		}else if (obj == howToUse){
-			Utility.displayTextAreaPane(Help.getHelpMenuString(), "Help");
-		}else if (obj == openSource){
-			openAndReadFilesForMapping(GSM.SOURCENODE);
-		}else if (obj == openTarget){
-			openAndReadFilesForMapping(GSM.TARGETNODE);
-		}else if (obj == aboutItem){
-			new AboutDialog();
-			//displayOptionPane("Agreement Maker 3.0\nAdvis research group\nThe University of Illinois at Chicago 2004","About Agreement Maker");
-		}else if (obj == undo){
-			displayOptionPane("Undo Clicked","Undo");
-		}else if (obj == redo){
-			displayOptionPane("Redo Clicked","Redo");
-		}
-		else if( obj == smoMenuItem ) {
-			// Save the SMO setting that has been changed
-			AppPreferences prefs = ui.getAppPreferences();
-			boolean smoStatus = smoMenuItem.isSelected();
-			prefs.saveSelectedMatchingsOnly(smoStatus);
-			ui.getCanvas().setSMO(smoStatus);
-			ui.redisplayCanvas();
-		}
-		
-		// TODO: find a Better way to do this
-		
-		String command = ae.getActionCommand();  // get the command string we set
-		if( command.length() == 7 ) { // the only menus that set an action command  are the recent menus, so we're ok.
+		try {
+			Object obj = ae.getSource();
+			MatchersControlPanel controlPanel = ui.getControlPanel();
+			if (obj == xit){
+				// confirm exit
+				confirmExit();
+				// if it is no, then do nothing		
+			}else if (obj == keyItem){
+				new Legend(ui);	
+			}else if (obj == howToUse){
+				Utility.displayTextAreaPane(Help.getHelpMenuString(), "Help");
+			}else if (obj == openSource){
+				openAndReadFilesForMapping(GSM.SOURCENODE);
+			}else if (obj == openTarget){
+				openAndReadFilesForMapping(GSM.TARGETNODE);
+			}else if (obj == aboutItem){
+				new AboutDialog();
+				//displayOptionPane("Agreement Maker 3.0\nAdvis research group\nThe University of Illinois at Chicago 2004","About Agreement Maker");
+			}
+			else if( obj == smoMenuItem ) {
+				// Save the SMO setting that has been changed
+				AppPreferences prefs = ui.getAppPreferences();
+				boolean smoStatus = smoMenuItem.isSelected();
+				prefs.saveSelectedMatchingsOnly(smoStatus);
+				ui.getCanvas().setSMO(smoStatus);
+				ui.redisplayCanvas();
+			}
+			else if( obj == manualMapping) {
+				Utility.displayMessagePane("To edit or create a manual mapping select any number of source and target nodes.\nLeft click on a node to select it, use Ctrl and/or Shift for multiple selections.", "Manual Mapping");
+			}
+			else if(obj == newMatching) {
+				controlPanel.newManual();
+			}
+			else if(obj == runMatching) {
+				controlPanel.matchSelected();
+			}
+			else if(obj == copyMatching) {
+				controlPanel.copy();
+			}
+			else if(obj == deleteMatching) {
+				controlPanel.delete();
+			}
+			else if(obj == saveMatching) {
+				controlPanel.save();
+			}
+			else if(obj == refEvaluateMatching) {
+				controlPanel.evaluate();
+			}
+			else if(obj == clearAll) {
+				controlPanel.clearAll();
+			}
 			
-			AppPreferences prefs = new AppPreferences();
 			
-			char index[] = new char[1];  // '0' - '9'
-			char ontotype[] = new char[1]; // 's' or 't' (source or target)
+			// TODO: find a Better way to do this
 			
-			command.getChars(0, 1 , ontotype, 0);  // get the first character of the sting
-			command.getChars(command.length() - 1, command.length(), index, 0); // get the last character of the string
-			
-			// based on the first and last characters of the action command, we can tell which menu was clicked.
-			// the rest is easy
-			
-			int position = index[0] - 48; // 0 - 9
-			switch( ontotype[0] ) {
+			String command = ae.getActionCommand();  // get the command string we set
+			if( command.length() == 7 ) { // the only menus that set an action command  are the recent menus, so we're ok.
 				
-				case 's':
-					ui.openFile( prefs.getRecentSourceFileName(position), GSM.SOURCENODE, 
-							prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position));
-					prefs.saveRecentFile(prefs.getRecentSourceFileName(position), GSM.SOURCENODE, 
-							prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position));
-					ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
-					break;
-				case 't':
-					ui.openFile( prefs.getRecentTargetFileName(position), GSM.TARGETNODE, 
-							prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position));
-					prefs.saveRecentFile(prefs.getRecentTargetFileName(position), GSM.TARGETNODE, 
-							prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position));
-					ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
-					break;
-				default:
-					break;
+				AppPreferences prefs = new AppPreferences();
+				
+				char index[] = new char[1];  // '0' - '9'
+				char ontotype[] = new char[1]; // 's' or 't' (source or target)
+				
+				command.getChars(0, 1 , ontotype, 0);  // get the first character of the sting
+				command.getChars(command.length() - 1, command.length(), index, 0); // get the last character of the string
+				
+				// based on the first and last characters of the action command, we can tell which menu was clicked.
+				// the rest is easy
+				
+				int position = index[0] - 48; // 0 - 9
+				switch( ontotype[0] ) {
+					
+					case 's':
+						ui.openFile( prefs.getRecentSourceFileName(position), GSM.SOURCENODE, 
+								prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position));
+						prefs.saveRecentFile(prefs.getRecentSourceFileName(position), GSM.SOURCENODE, 
+								prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position));
+						ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
+						break;
+					case 't':
+						ui.openFile( prefs.getRecentTargetFileName(position), GSM.TARGETNODE, 
+								prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position));
+						prefs.saveRecentFile(prefs.getRecentTargetFileName(position), GSM.TARGETNODE, 
+								prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position));
+						ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
+						break;
+					default:
+						break;
+				}
 			}
 		}
-		
+		catch(AMException ex2) {
+			Utility.displayMessagePane(ex2.getMessage(), null);
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR, null);
+		}
 		
 	}
 	
@@ -237,26 +269,6 @@ public class UIMenu implements ActionListener {
 		xit.addActionListener(this);
 		fileMenu.add(xit);
 		
-		/*EDIT BUTTON IS DISABLED RIGHT NOW: TODO
-		// Build edit menu in the menu bar.
-		editMenu = new JMenu("Edit");
-		editMenu.setMnemonic(KeyEvent.VK_E);
-		myMenuBar.add(editMenu);
-
-		// add undo menu item to edit menu
-		undo = new JMenuItem("Undo", KeyEvent.VK_U);
-		undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
-		undo.addActionListener(this);
-		undo.setEnabled(false);
-		editMenu.add(undo);
-
-		// add redo menu item to edit menu
-		redo = new JMenuItem("Redo", KeyEvent.VK_R);
-		redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK)); 		
-		redo.addActionListener(this);
-		redo.setEnabled(false);
-		editMenu.add(redo);
-		*/
 		
 		// Build view menu in the menu bar: TODO
 		viewMenu = new JMenu("View");
@@ -284,13 +296,44 @@ public class UIMenu implements ActionListener {
 		//Fake menus..********************************.
 		/*
 		ontologyMenu = new JMenu("Ontology");
-		matchingMenu = new JMenu("Matching");
+
 		evaluationMenu = new JMenu("Evaluation");
 		myMenuBar.add(ontologyMenu);
-		myMenuBar.add(matchingMenu);
-		myMenuBar.add(evaluationMenu);
-		*/
 
+
+		*/
+		
+		matchingMenu = new JMenu("Matching");
+		manualMapping = new JMenuItem("Manual Mapping"); 
+		manualMapping.addActionListener(this);
+		matchingMenu.add(manualMapping);
+		matchingMenu.addSeparator();
+		newMatching = new JMenuItem("New empty matching");
+		newMatching.addActionListener(this);
+		matchingMenu.add(newMatching);
+		runMatching = new JMenuItem("Run selected matcher");
+		runMatching.addActionListener(this);
+		matchingMenu.add(runMatching);
+		copyMatching = new JMenuItem("Copy selected matchings");
+		copyMatching.addActionListener(this);
+		matchingMenu.add(copyMatching);
+		deleteMatching = new JMenuItem("Delete selected matchings");
+		deleteMatching.addActionListener(this);
+		matchingMenu.add(deleteMatching);
+		clearAll = new JMenuItem("Clear All");
+		clearAll.addActionListener(this);
+		matchingMenu.add(clearAll);
+		matchingMenu.addSeparator();
+		saveMatching = new JMenuItem("Save selected matchings into a file");
+		saveMatching.addActionListener(this);
+		matchingMenu.add(saveMatching);
+		matchingMenu.addSeparator();
+		refEvaluateMatching = new JMenuItem("Evaluate with reference file");
+		refEvaluateMatching.addActionListener(this);
+		matchingMenu.add(refEvaluateMatching);
+		myMenuBar.add(matchingMenu);
+		
+		
 		// Build help menu in the menu bar.
 		helpMenu = new JMenu("Help");
 		helpMenu.setMnemonic(KeyEvent.VK_H);

@@ -173,6 +173,7 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		double isDefBySim = 0;
 		double sim = 0;
 		ParametricStringParameters parameters  = (ParametricStringParameters)param;
+		//i need to use local varables for weights  to modify them in case of weights redistribution but without modifying global parameters
 		double localWeight = parameters.localWeight;
 		double labelWeight = parameters.labelWeight;
 		double commentWeight = parameters.commentWeight; 
@@ -195,25 +196,25 @@ public class ParametricStringMatcher extends AbstractMatcher {
 				isDefinedByWeight = 0;			
 		}
 		
-		double totWeight = parameters.getTotWeight(); //important to get total after the redistribution
+		double totWeight = localWeight + labelWeight + commentWeight + seeAlsoWeight + isDefinedByWeight; //important to get total after the redistribution
 		if(totWeight > 0) {
-			if(parameters.localWeight > 0) {
+			if(localWeight > 0) {
 				localSim =  performStringSimilarity(source.getLocalName(), target.getLocalName());
 				localSim *= localWeight;
 			}
-			if(parameters.labelWeight > 0) {
+			if(labelWeight > 0) {
 				labelSim =  performStringSimilarity(source.getLabel(), target.getLabel());
 				labelSim *= labelWeight;
 			}
-			if(parameters.commentWeight > 0) {
+			if(commentWeight > 0) {
 				commentSim = performStringSimilarity(source.getComment(), target.getComment());
 				commentSim *= commentWeight;
 			}
-			if(parameters.seeAlsoWeight > 0) {
+			if(seeAlsoWeight > 0) {
 				seeAlsoSim = performStringSimilarity(source.getSeeAlso(), target.getSeeAlso());
 				seeAlsoSim *= seeAlsoWeight;
 			}
-			if(parameters.isDefinedByWeight > 0) {
+			if(isDefinedByWeight > 0) {
 				isDefBySim = performStringSimilarity(source.getIsDefinedBy(), target.getIsDefinedBy());
 				isDefBySim *= isDefinedByWeight;
 			}

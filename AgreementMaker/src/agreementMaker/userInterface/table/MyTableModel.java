@@ -12,6 +12,8 @@ import java.awt.Color;
 
 public class MyTableModel extends AbstractTableModel {
 		
+
+	private static final long serialVersionUID = 1L;
 	public final static String NONE = "N/A";
 	public final static String ANY = "ANY";
 	
@@ -242,6 +244,8 @@ public class MyTableModel extends AbstractTableModel {
         	}
 
         }
+        
+        
 
         public int setValueOnMatcher(Object value, int row, int col) {
         	int update = CELLUPDATE;

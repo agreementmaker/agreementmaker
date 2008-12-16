@@ -35,8 +35,10 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	
 	
 	public String getDescriptionString() {
-		return "Performs a local matching using a String Based technique.\n" +
-				"Nodes' local-names are considered in the process.\n" +
+		return "Performs a local matching using a String Based technique. To be used as first matcher.\n" +
+				"If used without dictionary is very simple and fast. Will give good results on simple ontologies.\n" +
+				"If used with dictionary can be very slow. Can give better result on different words with similar meaning.\n" +
+				"Only Nodes' local-names (XML id) are considered in the process.\n" +
 				"String are preprocessed with cleaning, stemming, stop-words removing, and tokenization techniques.\n" +
 				"A similarity matrix contains the similarity between each pair (sourceNode, targetNode).\n" +
 				"A selection algorithm select valid alignments considering threshold and number of relations per node.\n"; 

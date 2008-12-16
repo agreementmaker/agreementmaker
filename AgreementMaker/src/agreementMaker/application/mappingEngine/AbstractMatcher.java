@@ -198,6 +198,8 @@ public abstract class AbstractMatcher implements Matcher{
     	executionTime = (end-start)/1000000; // this time is in milliseconds.
 	}
     //***************INTERNAL METHODS THAT CAN BE USED BY ANY ABSTRACTMATCHER******************************************
+	
+	//***************ALIGNING PHASE*****************//
 
     protected void align() throws Exception {
 
@@ -252,50 +254,55 @@ public abstract class AbstractMatcher implements Matcher{
 		return new Alignment(source, target, sim, rel);
 	}
 	
+	//***************SELECTION PHASE*****************//
+    
     protected void selectAndSetAlignments() {
-		if(maxSourceAlign == 1 && maxTargetAlign == 1) {
-			//TO BE DEVELOPED USING MAX WEIGHTED MATCHING ON BIPARTITE GRAPH, SOLVED USING DAJKSTRA
-			scanForMaxValues();//TO BE CHANGED
+    	if(alignClass) {
+    		classesAlignmentSet = scanMatrix(classesMatrix);
+    	}
+    	if(alignProp) {
+    		propertiesAlignmentSet = scanMatrix(propertiesMatrix);
+    	}
+	}
+
+    private AlignmentSet scanMatrix(AlignmentMatrix matrix) {
+    	int columns = matrix.getColumns();
+    	int rows = matrix.getRows();
+    	// at most each source can be aligned with all targets (columns) it's the same of selecting ANY for source
+		int realSourceRelations = Math.min(maxSourceAlign, columns);
+		// at most each target can be aligned with all sources (rows) it's the same of selecting ANY for target
+		int realTargetRelations = Math.min(maxTargetAlign, rows);
+		
+		
+		if(realSourceRelations == columns && realTargetRelations == rows) { //ANY TO ANY
+			return getThemAll(matrix);
 		}
-		else if(maxSourceAlign != ANY_INT && maxTargetAlign != ANY_INT) {
-			//TO BE DEVELOPED: I DON'T KNOW YET HOW TO DO THIS
-			scanForMaxValues();//TO BE CHANGED
+		else if(realSourceRelations != columns && realTargetRelations == rows) { //N - ANY that includes also 1-ANY
+			//AT LEAST ONE OF THE TWO CONSTRAINTs IS ANY, SO WE JUST HAVE TO PICK ENOUGH MAX VALUES TO SATISFY OTHER CONSTRAINT 
+			return scanForMaxValuesRows(matrix, realSourceRelations);
 		}
-		else {//AT LEAST ONE OF THE TWO CONSTRAINTs IS ANY, SO WE JUST HAVE TO PICK ENOUGH MAX VALUES TO SATISFY OTHER CONSTRAINT 
-			scanForMaxValues();
+		else if( realSourceRelations == columns && realTargetRelations != rows) {//ANY-N that includes also ANY-1
+			//AT LEAST ONE OF THE TWO CONSTRAINTs IS ANY, SO WE JUST HAVE TO PICK ENOUGH MAX VALUES TO SATISFY OTHER CONSTRAINT 
+			return scanForMaxValuesColumns(matrix, realTargetRelations);
+    	}
+    	else {
+			//Both constraints are different from ANY
+			if(realSourceRelations == 1 && realTargetRelations == 1) {//1-1 mapping
+				//TO BE DEVELOPED USING MAX WEIGHTED MATCHING ON BIPARTITE GRAPH, SOLVED USING DAJKSTRA
+				//right now we use a non optimal greedy algorithm
+				return scanWithBothConstraints(matrix, realSourceRelations,realTargetRelations);
+			}
+			else { //all cases like 1-3 or 5-4 or 30-6
+				return scanWithBothConstraints(matrix, realSourceRelations,realTargetRelations);
+			}
 		}
 	}
 
-    protected void scanForMaxValues() {
-		if(alignClass) {
-			classesAlignmentSet = scanForMaxValuesMatrix(classesMatrix);
-		}
-		if(alignProp) {
-			propertiesAlignmentSet = scanForMaxValuesMatrix(propertiesMatrix);
-		}
-	}
+
 	
-    protected AlignmentSet scanForMaxValuesMatrix(AlignmentMatrix matrix){
-		AlignmentSet aset;
-		int tempMaxSource = maxSourceAlign; //I could have used MaxSourceAlign directly but i modify them in this method while i will need them again later
-		int tempMaxTarget = maxTargetAlign;
-		int numMaxValues;
-		//IF both values are ANY we can have at most maxSourceRelations equals to the target nodes and maxTargetRelations equal to source node
-		if(maxTargetAlign == ANY_INT  && maxSourceAlign == ANY_INT) {
-			aset = getThemAll(matrix);
-		}
-		else if(tempMaxTarget >= tempMaxSource) {//Scan rows and then columns
-			numMaxValues = tempMaxSource;
-			aset = scanForMaxValuesRowColumn(matrix, numMaxValues);
-		}
-		else {//scan column and then row
-			numMaxValues = tempMaxTarget;
-			aset = scanForMaxValuesColumnRow(matrix, numMaxValues);
-		}
-		return aset;
-	}
 
-    protected AlignmentSet scanForMaxValuesRowColumn(AlignmentMatrix matrix, int numMaxValues) {
+
+    protected AlignmentSet scanForMaxValuesRows(AlignmentMatrix matrix, int numMaxValues) {
 		AlignmentSet aset = new AlignmentSet();
 		Alignment currentValue;
 		Alignment currentMax;
@@ -331,7 +338,8 @@ public abstract class AbstractMatcher implements Matcher{
 		return aset;
 	}
 
-    protected AlignmentSet scanForMaxValuesColumnRow(AlignmentMatrix matrix,int numMaxValues) {
+    
+    protected AlignmentSet scanForMaxValuesColumns(AlignmentMatrix matrix,int numMaxValues) {
 		AlignmentSet aset = new AlignmentSet();
 		Alignment currentValue;
 		Alignment currentMax;
@@ -367,6 +375,7 @@ public abstract class AbstractMatcher implements Matcher{
 		return aset;
 	}
     
+    
     protected AlignmentSet getThemAll(AlignmentMatrix matrix) {
 		AlignmentSet aset = new AlignmentSet();
 		Alignment currentValue;
@@ -380,6 +389,16 @@ public abstract class AbstractMatcher implements Matcher{
 		return aset;
 	}
 
+    protected AlignmentSet scanWithBothConstraints(AlignmentMatrix matrix, int sourceConstraint,int targetConstraint) {
+    	//TODO: TO BE DONE
+    	if(sourceConstraint >= targetConstraint) {
+    		return scanForMaxValuesColumns(matrix, targetConstraint);
+    	}
+    	else {
+    		return scanForMaxValuesRows(matrix, sourceConstraint);
+    	}
+    }
+    
     //*****************USER ALIGN METHOD*****************************
     
 	public void addManualAlignments(ArrayList<Alignment> alignments) {
@@ -551,6 +570,8 @@ public abstract class AbstractMatcher implements Matcher{
 		this.maxTargetAlign = maxTargetAlign;
 	}
 
+	
+	
 	public int getMinInputMatchers() {
 		return minInputMatchers;
 	}
@@ -627,6 +648,9 @@ public abstract class AbstractMatcher implements Matcher{
 		this.executionTime = executionTime;
 	}
 	
+	public void setInputMatchers(ArrayList<AbstractMatcher> inputMatchers) {
+		this.inputMatchers = inputMatchers;
+	}
 	//***********************MEthods used by the interface for some small tasks**************************
 	
 	/**
@@ -648,8 +672,8 @@ public abstract class AbstractMatcher implements Matcher{
 	public String getAttributesString() {
 		String s = "";
 		s+= "Additional parameters required: "+Utility.getYesNo(needsParam())+"\n";
-		s+= "Min number of matchers in input: "+getMinInputMatchers()+"\n";
-		s+= "Max number of matchers in input: "+getMaxInputMatchers()+"\n";
+		s+= "Min number of matchers in input: "+Utility.getStringFromNumRelInt(getMinInputMatchers())+"\n";
+		s+= "Max number of matchers in input: "+Utility.getStringFromNumRelInt(getMaxInputMatchers())+"\n";
 		s+= "Performs Classes alignment: "+Utility.getYesNo(isAlignClass())+"\n";
 		s+= "Performs Properties alignment: "+Utility.getYesNo(isAlignProp())+"\n";
 		return s;
@@ -702,6 +726,7 @@ public abstract class AbstractMatcher implements Matcher{
 	}
 
 	public String getAlignmentsStrings() {
+		
 		String result = "";
 		result+= "Class Alignments: "+classesAlignmentSet.size()+"\n";
 		result += "Source Concept\t--->\tTarget Concept\tSimilarity\tRelation\n\n";
@@ -710,6 +735,20 @@ public abstract class AbstractMatcher implements Matcher{
 		result += "Source Concept\t--->\tTarget Concept\tSimilarity\tRelation\n\n";
 		result += propertiesAlignmentSet.getStringList();
 		return result;
+	}
+	
+	public AbstractMatcher copy() throws Exception {
+		AbstractMatcher cloned = MatcherFactory.getMatcherInstance(getName(), Core.getInstance().getMatcherInstances().size());
+		cloned.setInputMatchers(getInputMatchers());
+		cloned.setParam(getParam());
+		cloned.setThreshold(getThreshold());
+		cloned.setMaxSourceAlign(getMaxSourceAlign());
+		cloned.setMaxTargetAlign(getMaxTargetAlign());
+		cloned.setAlignClass(isAlignClass());
+		cloned.setAlignProp(isAlignProp());
+		cloned.match();
+		return cloned;
+		
 	}
 	
 	//*************************UTILITY METHODS**************************************
@@ -734,6 +773,10 @@ public abstract class AbstractMatcher implements Matcher{
 	public void setColor(Color color) {
 		this.color = color;
 	}
+  
+	
+
+
 
 
 

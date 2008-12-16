@@ -115,4 +115,15 @@ public class ManualCombinationMatcher extends AbstractMatcher {
 		return new ManualCombinationParametersPanel(inputMatchers);
 	}
 	
+	public String getDescriptionString() {
+		String result = "Allows user to combine different matchings through different operations to be selected as parameters.\n";
+		result += "For each pair (sourcenode, targetnode) a new similarity value is calculated with selected operation.\n";
+		result += "Maximum value between similarity values for that pair in all input matchings.\n";
+		result += "Minimum value between similarity values for that pair in all input matchings.\n";
+		result += "Average of similarity values for that pair in all input matchings.\n";
+		result += "Weighted average of similarity values for that pair in all input matchings. In this case user manually defines weights.\n";
+		result += "When the similarity matrix is built mapping are choosen with the same selection process \n";
+		result += "which considers threshold and maximum number of relations for each concept.\n";
+		return result;
+	}
 }

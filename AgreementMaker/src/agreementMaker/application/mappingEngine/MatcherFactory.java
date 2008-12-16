@@ -3,16 +3,6 @@ package agreementMaker.application.mappingEngine;
 import java.awt.Color;
 import java.util.EnumSet;
 
-import agreementMaker.application.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
-import agreementMaker.application.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
-import agreementMaker.application.mappingEngine.manualMatcher.EmptyMatcher;
-import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
-import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
-import agreementMaker.application.mappingEngine.ssc.SiblingsSimilarityContributionMatcher;
-import agreementMaker.application.mappingEngine.testMatchers.AllOneMatcher;
-import agreementMaker.application.mappingEngine.testMatchers.CopyMatcher;
-import agreementMaker.application.mappingEngine.testMatchers.EqualsMatcher;
-import agreementMaker.application.mappingEngine.testMatchers.RandomMatcher;
 import agreementMaker.userInterface.Colors;
 
 public class MatcherFactory {

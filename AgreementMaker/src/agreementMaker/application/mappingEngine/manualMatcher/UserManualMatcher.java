@@ -22,13 +22,16 @@ import agreementMaker.userInterface.Colors;
  */
 public class UserManualMatcher extends AbstractMatcher {
 	
-	/**For all other matchers the name is plugged into the MatcherFactory class, this matcher cannot be created that way, when invoking the constructor use the final static string name and code*/ 
-	public static final int THEFIRST = 0; //USER MATCHING IS ALWAYS THE FIRST IN THE LIST
 	
 	public UserManualMatcher() {
-		index = THEFIRST;
+		//super(); VERY IMPORTANT NOT CALL SUPER FROM THIS MATCHER BECAUSE THIS MATCHER IS INVOKED BEFORE THE ONTOLOGY LOADING
+		
+		//maybe this first 3 lines are not needed anymore after the matcherregistry change
+		index = 0;
 		name = MatchersRegistry.UserManual;
-		color = Colors.matchersColors[THEFIRST];
+		color = Colors.matchersColors[0];
+		
+		
 		isAutomatic = false;
 		needsParam = false;
 		isShown = true;
@@ -52,11 +55,13 @@ public class UserManualMatcher extends AbstractMatcher {
 	
     protected void afterSelectionOperations() {
     	super.afterAlignOperations();
-    	start = 0;
-    	end = 0;
-    	executionTime = 0;
     }
     
+    //Time calculation, if you override this method remember to call super.afterSelectionOperations()
+	protected void matchEnd() {
+    	end = System.nanoTime();
+    	executionTime = 0; //force it to 0
+	}
 	
 	
 	/**This method is only needed for usermatching because is the only one who gets initialized before the creation of ontologies*/
@@ -71,7 +76,7 @@ public class UserManualMatcher extends AbstractMatcher {
 
 	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
 	public double getDefaultThreshold() {
-		return 0.1;
+		return 0.01;
 	}
 	
 	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
@@ -84,6 +89,10 @@ public class UserManualMatcher extends AbstractMatcher {
 		return ANY_INT;
 	}
 
-
+	public String getMatchReport() {
+		String result =  "An empty matching has been created!\n";
+		result += "Select the matching in the table before adding manual mappings to it.\n";
+		return result;
+	}
 }
 

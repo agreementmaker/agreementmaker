@@ -146,7 +146,23 @@ public class MatchersTablePanel extends JPanel {
     	TableColumn inputColumn = table.getColumnModel().getColumn(MyTableModel.INPUTMATCHERS);
     	InputMatchersEditor mc = (InputMatchersEditor)inputColumn.getCellEditor();
     	mc.addEditor(a);
-    	((AbstractTableModel)table.getModel()).fireTableRowsInserted(a.getIndex(), a.getIndex());
+    	insertedRows(a.getIndex(), a.getIndex());
+    }
+    
+    public void insertedRows(int firstrow, int lastrow) {
+    	((AbstractTableModel)table.getModel()).fireTableRowsInserted(firstrow, lastrow);
+    }
+    
+    public void updatedRows(int firstrow, int lastrow) {
+    	((AbstractTableModel)table.getModel()).fireTableRowsUpdated(firstrow, lastrow);
+    }
+    
+    public void updatedCell(int row, int col) {
+    	((AbstractTableModel)table.getModel()).fireTableCellUpdated(row, col);
+    }
+    
+    public void deletedRows(int firstrow, int lastrow) {
+    	((AbstractTableModel)table.getModel()).fireTableRowsDeleted(firstrow, lastrow);
     }
     
     public void removeMatcher(AbstractMatcher a) {
@@ -154,7 +170,7 @@ public class MatchersTablePanel extends JPanel {
     	TableColumn inputColumn = table.getColumnModel().getColumn(MyTableModel.INPUTMATCHERS);
     	InputMatchersEditor mc = (InputMatchersEditor)inputColumn.getCellEditor();
     	mc.removeEditor(a);
-    	((AbstractTableModel)table.getModel()).fireTableRowsDeleted(a.getIndex(), a.getIndex());
+    	deletedRows(a.getIndex(), a.getIndex());
     }
  
     /**

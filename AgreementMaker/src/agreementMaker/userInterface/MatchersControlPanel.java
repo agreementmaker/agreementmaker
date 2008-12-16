@@ -62,6 +62,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	//TABLE PANEL
 	private MatchersTablePanel matchersTablePanel;
 	//EDIT MATCHINGS PANEL
+	private JButton newMatching;
 	private JButton delete;
 	private JButton clearMatchings;
 	private JButton copyButton;
@@ -140,6 +141,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		matchersTablePanel = new MatchersTablePanel(ui);
 		
 		//JPANEL EDIT MATCHINGS: lower panel
+		newMatching = new JButton("New");
+		newMatching.addActionListener(this);
 		delete = new JButton("Delete");
 		delete.addActionListener(this);
 		refEvaluate = new JButton("Reference Evaluation");
@@ -161,13 +164,16 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		
 		JPanel panel3 = new JPanel();
 		panel3.setLayout(new FlowLayout(FlowLayout.LEADING));
+		panel3.add(newMatching);
+		panel3.add(copyButton);
 		panel3.add(delete);
 		panel3.add(clearMatchings);
-		panel3.add(copyButton);
-		//panel3.add(editMatrixButton);
-		panel3.add(refEvaluate);
-		//panel3.add(qualityEvaluationButton);
 		panel3.add(saveToFileButton);
+		panel3.add(refEvaluate);
+		//panel3.add(editMatrixButton);
+
+		//panel3.add(qualityEvaluationButton);
+
 		//panel3.add(importMatchingsButton);
 		//panel3.add(exportMatchingsButton);
 		
@@ -180,83 +186,35 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	
 	public void actionPerformed(ActionEvent e) {
 		try {
-			int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
 			Object obj = e.getSource();
 			if(obj == viewDetails) {
-				//int nameIndex = matcherCombo.getSelectedIndex();
 				String matcherName = (String) matcherCombo.getSelectedItem();
 				AbstractMatcher a = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), 0); //i'm just using a fake instance so the algorithm code is not important i put 0 but maybe anything
 				Utility.displayMessagePane(a.getDetails(), "Matcher details");
 			}
 			else if(obj == matchButton) {
-				match();
+				matchSelected();
 			}
 			else if(obj == delete) {
-				if(rowsIndex.length == 0) {
-					Utility.displayErrorPane("No matchers selected", null);
-				}
-				else if(Utility.displayConfirmPane(rowsIndex.length+" matchers will be deleted.\n Do you want to continue?", null)) {
-					AbstractMatcher toBeDeleted;
-					Core core = Core.getInstance();
-					LinkedList<AbstractMatcher> deleteList = new LinkedList<AbstractMatcher>();
-					for(int i = 0; i < rowsIndex.length; i++) {// I need to build a list because indexes will be modified so i can't access them using the rowsindex structures
-						deleteList.add(core.getMatcherInstances().get(rowsIndex[i]));
-					}
-					for(int i = 0; i< deleteList.size(); i++) {
-						toBeDeleted = deleteList.get(i);
-						if(MatcherFactory.isTheUserMatcher(toBeDeleted)) {
-							//YOU CAN'T DELETE THE USER MATCHING just clear the matchings previusly created
-							Utility.displayMessagePane(MatchersRegistry.UserManual + " can't be deleted.\nOnly alignments will be cleared.", null);
-							try {
-								toBeDeleted.match();//reinitialize the user matching as an empty one
-							}
-							catch(AMException ex) {Utility.displayErrorPane(ex.getMessage(), null);}
-						}
-						else {
-							matchersTablePanel.removeMatcher(toBeDeleted);
-						}
-				    	((AbstractTableModel)matchersTablePanel.getTable().getModel()).fireTableRowsDeleted(rowsIndex[0], rowsIndex[rowsIndex.length-1]);
-						ui.redisplayCanvas();
-					}
-				}
+				delete();
 			}
 			else if(obj == refEvaluate) {
 				evaluate();
 			}
 			else if(obj == clearMatchings) {
-				boolean ok = Utility.displayConfirmPane("This operation will clear all the matchings prevously calculated.\nDo you want to continue?", null);
-				if(ok) {
-					resetMatchings();
-				}
+				clearAll();
 			}
 			else if(obj == defaultValButton) {
 				setDefaultCommonParameters();
 			}
 			else if (obj == copyButton) {
-				//TODO TO BE CORRECTED, IT SHOULD BE A REAL COPY OF THE MATCHER, like a clone; shoulnd't invoke copymatcher while matcher.clone();
-				if(rowsIndex.length == 0) {
-					Utility.displayErrorPane("No matchers selected", null);
-				}
-				else {
-					CopyMatcher matcher = (CopyMatcher)MatcherFactory.getMatcherInstance(MatchersRegistry.Copy,Core.getInstance().getMatcherInstances().size());
-					AbstractMatcher input = Core.getInstance().getMatcherInstances().get(rowsIndex[0]);
-					matcher.addInputMatcher(input);
-					matcher.setParam(input.getParam());
-					matcher.setThreshold(input.getThreshold());
-					matcher.setMaxSourceAlign(input.getMaxSourceAlign());
-					matcher.setMinInputMatchers(input.getMinInputMatchers());
-					matcher.setAlignClass(input.isAlignClass());
-					matcher.setAlignProp(input.isAlignProp());
-					matcher.match();
-					matchersTablePanel.addMatcher(matcher);
-					ui.redisplayCanvas();
-				}
+				copy();
 			}
 			else if(obj == saveToFileButton) {
-				if(rowsIndex.length == 0) {
-					Utility.displayErrorPane("No matchers selected", null);
-				}
-				else 	new SaveFileDialog(); //demand control to the savefile dialog which since is modal will take care of everything
+				save();
+			}
+			else if(obj == newMatching) {
+				newManual();
 			}
 		}
 		catch(AMException ex2) {
@@ -268,7 +226,71 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		}
 	}
 	
-	private void evaluate() throws Exception{
+	public void newManual() throws Exception {
+		int lastIndex = Core.getInstance().getMatcherInstances().size();
+		AbstractMatcher manualMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.UserManual, lastIndex);
+		match(manualMatcher , true);
+	}
+	
+	public void delete() throws Exception {
+		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
+		if(rowsIndex.length == 0) {
+			Utility.displayErrorPane("No matchers selected", null);
+		}
+		else if(Utility.displayConfirmPane(rowsIndex.length+" matchers will be deleted.\n Do you want to continue?", null)) {
+			AbstractMatcher toBeDeleted;
+			Core core = Core.getInstance();
+			LinkedList<AbstractMatcher> deleteList = new LinkedList<AbstractMatcher>();
+			for(int i = 0; i < rowsIndex.length; i++) {// I need to build a list because indexes will be modified so i can't access them using the rowsindex structures
+				deleteList.add(core.getMatcherInstances().get(rowsIndex[i]));
+			}
+			for(int i = 0; i< deleteList.size(); i++) {
+				toBeDeleted = deleteList.get(i);
+				if(i == 0 && MatcherFactory.isTheUserMatcher(toBeDeleted)) {
+					//YOU CAN'T DELETE THE FIRST USER MATCHING just clear the matchings previusly created
+					Utility.displayMessagePane("The default "+MatchersRegistry.UserManual + " can't be deleted.\nOnly alignments will be cleared.", null);
+					try {
+						toBeDeleted.match();//reinitialize the user matching as an empty one
+						matchersTablePanel.updatedRows(0, 0);
+					}
+					catch(AMException ex) {Utility.displayErrorPane(ex.getMessage(), null);}
+				}
+				else {
+					matchersTablePanel.removeMatcher(toBeDeleted);
+				}
+				matchersTablePanel.deletedRows(rowsIndex[0], rowsIndex[rowsIndex.length-1]);
+				ui.redisplayCanvas();
+			}
+		}
+	}
+
+	public void save() {
+		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
+		if(rowsIndex.length == 0) {
+			Utility.displayErrorPane("No matchers selected", null);
+		}
+		else 	new SaveFileDialog(); //demand control to the savefile dialog which since is modal will take care of everything
+	}
+	
+	public void copy() throws Exception{
+		//TODO TO BE CORRECTED, IT SHOULD BE A REAL COPY OF THE MATCHER, like a clone; shoulnd't invoke copymatcher while matcher.clone();
+		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
+		if(rowsIndex.length == 0) {
+			Utility.displayErrorPane("No matchers selected", null);
+		}
+		else {
+			AbstractMatcher toBeCopied;
+			for(int i = 0; i < rowsIndex.length; i++) {
+				toBeCopied = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
+				AbstractMatcher aCopy = toBeCopied.copy(); //it does everything also setting the last index and matching
+				matchersTablePanel.addMatcher(aCopy);
+			}
+			Utility.displayMessagePane(rowsIndex.length+" matchers have been copied.\n",null);
+			ui.redisplayCanvas();
+		}
+	}
+	
+	public void evaluate() throws Exception{
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
 		if(rowsIndex.length == 0) {
 			Utility.displayErrorPane("No matchers selected", null);
@@ -305,12 +327,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		}
 		
 	}
-
-	public void match() throws Exception{
-		String matcherName = (String) matcherCombo.getSelectedItem();
-		//the new matcher will put at the end of the list so at the end of the table so the index will be:
-		int lastIndex = Core.getInstance().getMatcherInstances().size();
-		AbstractMatcher currentMatcher = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), lastIndex);
+	
+	//WARNING THIS METHOD IS INVOKED BY matchSelected(), but by newManual(), basically this method should be invoked anytime we want to invoke a specific matcher, like if we selected it and clicked match button.
+	public void match(AbstractMatcher currentMatcher, boolean defaultParam) throws Exception{
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows(); //indexes in the table correspond to the indexes of the matchers in the matcherInstances list in core class
 		int selectedMatchers = rowsIndex.length;
 		if(!Core.getInstance().ontologiesLoaded() ) {
@@ -319,15 +338,6 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		else if(currentMatcher.getMinInputMatchers() > selectedMatchers ) {
 			Utility.displayErrorPane("Select at least "+currentMatcher.getMinInputMatchers()+" matchings from the table to run this matcher.", null);
 		}
-		/* Warning to alert that user has selected more inputMatcher than necessary, I had to remove this because it happens all the time and it's boring
-		else if(currentMatcher.getMaxInputMatchers() < selectedMatchers) {
-			int answer = Utility.displayConfirmPane("More matchers are selected as input than required.\n The matcher will consider only the first.\nDo you want to continue? "+currentMatcher.getMaxInputMatchers(), null);
-			if(answer == JOptionPane.NO_OPTION) {
-				everythingOk = false;
-			}
-		}
-		if(everythingOk) {
-		*/
 		else {
 			//Set matchers into the abstractmatcher VERY IMPORTANT to set them before invoking the parameter panel, infact the parameter panel may need to work on inputMatchers also.
 			for(int i = 0; i<rowsIndex.length && i< currentMatcher.getMaxInputMatchers(); i++) {
@@ -346,10 +356,16 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				dialog.dispose();
 			}
 			if(everythingOk) {
-				currentMatcher.setThreshold(Utility.getDoubleFromPercent((String)thresholdCombo.getSelectedItem()));
-				currentMatcher.setMaxSourceAlign(Utility.getIntFromNumRelString((String)sRelationCombo.getSelectedItem()));
-				currentMatcher.setMaxTargetAlign(Utility.getIntFromNumRelString((String)tRelationCombo.getSelectedItem()));
-				//parameters are set if they were needed, now we need to set the list of input matchers
+				if(defaultParam) {
+					currentMatcher.setThreshold(currentMatcher.getDefaultThreshold());
+					currentMatcher.setMaxSourceAlign(currentMatcher.getDefaultMaxSourceRelations());
+					currentMatcher.setMaxTargetAlign(currentMatcher.getDefaultMaxTargetRelations());
+				}
+				else {
+					currentMatcher.setThreshold(Utility.getDoubleFromPercent((String)thresholdCombo.getSelectedItem()));
+					currentMatcher.setMaxSourceAlign(Utility.getIntFromNumRelString((String)sRelationCombo.getSelectedItem()));
+					currentMatcher.setMaxTargetAlign(Utility.getIntFromNumRelString((String)tRelationCombo.getSelectedItem()));
+				}
 				try {
 					currentMatcher.match();
 					matchersTablePanel.addMatcher(currentMatcher);
@@ -363,6 +379,14 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 			}
 		}
 	}
+	
+	public void matchSelected() throws Exception{
+		String matcherName = (String) matcherCombo.getSelectedItem();
+		//the new matcher will put at the end of the list so at the end of the table so the index will be:
+		int lastIndex = Core.getInstance().getMatcherInstances().size();
+		AbstractMatcher currentMatcher = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), lastIndex);
+		match(currentMatcher , false);
+	}
 
 	
 	
@@ -373,19 +397,25 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	public void userMatching(ArrayList<Alignment> alignments) {
 		if(alignments.size()>0) {
 			int[] rows = matchersTablePanel.getTable().getSelectedRows();
-			if(rows == null || rows.length == 0) {
-				//lf no rows are selected it adds it to the UserMatching
-				Core.getInstance().performUserMatching(0, alignments);
-			}
-			else {
-				for(int i=0; i < rows.length;i++) {
-					Core.getInstance().performUserMatching(rows[i], alignments);
-					
+			if(rows != null) {
+				if(rows.length == 0) {
+					//lf no rows are selected it adds it to the UserMatching
+					Core.getInstance().performUserMatching(0, alignments);
+					matchersTablePanel.updatedRows(0,0);
+				}
+				else {
+					for(int i=0; i < rows.length;i++) {
+						Core.getInstance().performUserMatching(rows[i], alignments);
+						
+					}
+					matchersTablePanel.updatedRows(rows[0], rows[rows.length-1]);
 				}
 				ui.redisplayCanvas();
+				
 			}
 		}
 	}
+	
 
 	/**
 	 * This method takes care of the action perfromed by one of the check boxes
@@ -408,7 +438,15 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		sRelationCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxSourceRelations()));
 		tRelationCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxTargetRelations()));
 	}
-
+	
+	public void clearAll() {
+		//don't put this code into resetMatchings because resetMatching is used by the system also in other situation when the confirmation is not required by the user.
+		boolean ok = Utility.displayConfirmPane("This operation will clear all the matchings prevously calculated.\nDo you want to continue?", null);
+		if(ok) {
+			resetMatchings();
+		}
+	}
+	
 	public void resetMatchings() {
 		try {
 			Core core = Core.getInstance();
@@ -434,7 +472,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				it.remove();
 			}
 			//update the table
-			((AbstractTableModel)matchersTablePanel.getTable().getModel()).fireTableRowsDeleted(firstRow, lastRow);
+			matchersTablePanel.deletedRows(firstRow, lastRow);
 			ui.getCanvas().clearAllSelections();
 			ui.redisplayCanvas();
 		}

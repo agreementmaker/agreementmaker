@@ -306,4 +306,13 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		return ANY_INT;
 	}
 	
+	public String getDescriptionString() {
+		String result = "Allows user to display a reference alignment, which is a set of mappings that has been determined by domain experts.\n";
+		result += "It's used to determine the quality, in terms of precision and recall, of a matching method.\n";
+		result += "When available reference alignments are contained in a reference file.\n";
+		result += "The most simple format read by the AgreementMaker is a txt file which contains alignments in the form: sourceLocalName(TAB)targetLocalName\n";
+		result += "While using sample ontologies, each testcase has a different reference file, read the readme.txt file to find the location of the reference file of each testcase.\n";
+		return result;
+	}
+	
 }

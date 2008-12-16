@@ -3,7 +3,6 @@ package agreementMaker.application.mappingEngine;
 import agreementMaker.application.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import agreementMaker.application.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
 import agreementMaker.application.mappingEngine.manualCombination.ManualCombinationMatcher;
-import agreementMaker.application.mappingEngine.manualMatcher.EmptyMatcher;
 import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
 import agreementMaker.application.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import agreementMaker.application.mappingEngine.qualityCombination.QualityCombinationMatcher;
@@ -32,21 +31,26 @@ public enum MatchersRegistry {
 	 * 
 	 * And so, if your matcher is has no code errors, it will be incorporated into the AgreementMaker.  - Cosmin
 	 */
+	
+	//OFFICIAL MATCHERS
 	BaseSimilarity		( "Base Similarity", BaseSimilarityMatcher.class ),
 	 ParametricString ( "Parametric String Matcher", ParametricStringMatcher.class ),
 	DSI					( "Descendant's Similarity Inheritance (DSI)", DescendantsSimilarityInheritanceMatcher.class ),
 	SSC					( "Sibling's Similarity Contribution (SSC)", SiblingsSimilarityContributionMatcher.class ),
 	ManualCombination	( "Manual Combination", ManualCombinationMatcher.class ),
-	QualityCombination ("Quality Weighted Combination",QualityCombinationMatcher.class),
 	ReferenceAlignment	( "Reference Alignment", ReferenceAlignmentMatcher.class ),
-	EmptyMatcher		( "Empty Matcher", EmptyMatcher.class ),
 
-	//THESE SHOULDN't BE SHOWN 
+	//WORK IN PROGRESS
+	QualityCombination ("Quality Weighted Combination",QualityCombinationMatcher.class, false),
+	
+	//MATCHERS USED BY THE SYSTEM BUT NOT SHOWN
 	UserManual			( "User Manual Matching", UserManualMatcher.class, false),
+	
+	//TEST MATCHERS 
 	Equals 				( "Local Name Equivalence Comparison", EqualsMatcher.class , false),
 	AllOne 				( "All ONE Similarities", AllOneMatcher.class, false ),
 	Copy				( "Copy Matcher", CopyMatcher.class,false ),
-	Random 				( "RSM", RandomMatcher.class, true );
+	Random 				( "RSM", RandomMatcher.class, false );
 	
 	/* Don't change anything below this line .. unless you intend to. */
 	private boolean showInControlPanel;
