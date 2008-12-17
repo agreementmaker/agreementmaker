@@ -151,7 +151,6 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		 String s2 = s.replace("_","");
 		 s2 = s2.replace("-","");
 		 s2 = s2.replace(".","");	
-	    int len = s2.length();
 	    
 	    /*
 	    for(int i=0;i<len-1; i++){
