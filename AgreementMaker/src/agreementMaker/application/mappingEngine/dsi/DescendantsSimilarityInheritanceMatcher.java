@@ -80,9 +80,9 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 				target = targetList.get(j);
 				alignment = alignTwoNodes(source, target, typeOfNodes);
 				matrix.set(i,j,alignment);
-				if( GlobalStaticVariables.USE_PROGRESS_DIALOG ) stepDone();  // Progress Dialog
+				if( GlobalStaticVariables.USE_PROGRESS_BAR ) stepDone();  // Progress Dialog
 			}
-			if( GlobalStaticVariables.USE_PROGRESS_DIALOG ) updateProgress();  // Progress Dialog
+			if( GlobalStaticVariables.USE_PROGRESS_BAR ) updateProgress();  // Progress Dialog
 		}
 		return matrix;
 	}

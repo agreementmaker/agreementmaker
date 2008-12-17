@@ -363,28 +363,17 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 					currentMatcher.setMaxSourceAlign(Utility.getIntFromNumRelString((String)sRelationCombo.getSelectedItem()));
 					currentMatcher.setMaxTargetAlign(Utility.getIntFromNumRelString((String)tRelationCombo.getSelectedItem()));
 				}
-				try {
-					// TODO: Progress Dialog here.
-					if( GlobalStaticVariables.USE_PROGRESS_DIALOG ) {
-						// We are using the progress dialog.
-						ProgressDialog progress = new ProgressDialog(currentMatcher);	
-						if(!currentMatcher.isAborted()) {
-							matchersTablePanel.addMatcher(currentMatcher);
-							ui.redisplayCanvas();
-						}
-					} else {
-						// we're not using the progress dialog, just do the match()
-						//I think we can put the progress dialog always on.
-						currentMatcher.match();
-						matchersTablePanel.addMatcher(currentMatcher);
-						ui.redisplayCanvas();
-						Utility.displayMessagePane(currentMatcher.getMatchReport(), "Matching Process Report");
-					}
-					System.out.println("Matching Process Complete");
-				}
-				catch(AMException ex){
-					Utility.displayMessagePane(ex.getMessage(), null);
-				}
+				
+				
+				// The dialog will start the matcher in a background thread, show progress as the matcher is running, and show the report at the end.
+				ProgressDialog progress = new ProgressDialog(currentMatcher);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
+				
+				if(!currentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
+					matchersTablePanel.addMatcher(currentMatcher);
+					ui.redisplayCanvas();
+				}	
+
+				System.out.println("Matching Process Complete");
 			}
 		}
 	}

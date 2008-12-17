@@ -14,9 +14,13 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
+import agreementMaker.GlobalStaticVariables;
 import agreementMaker.Utility;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
+import agreementMaker.application.mappingEngine.Matcher;
 
 public class ProgressDialog extends JDialog implements PropertyChangeListener, ActionListener {
 
@@ -27,22 +31,31 @@ public class ProgressDialog extends JDialog implements PropertyChangeListener, A
 	private static final long serialVersionUID = 2113641985534214381L;
 	
 	private JPanel progressPanel;
+	private JPanel textPanel;
 	
 	private JProgressBar progressBar;
-    private AbstractMatcher matcher;
+    private AbstractMatcher matcher; // the matcher that is associated with this dialog, needed in order for cancel() to work.
     
     private JButton okButton = new JButton("Ok");
     private JButton cancelButton = new JButton("Cancel");
+    private JTextArea matcherReport;
+    private JScrollPane scrollingArea;
     
-	// constructor
+	/**
+	 * Constructor. 
+	 * @param m
+	 */
 	public ProgressDialog (AbstractMatcher m) {
 	    super();
 	
-		setTitle("Agreement Maker is Running ...");
+	    matcherReport = new JTextArea(8, 35);
+	    
+		setTitle("Agreement Maker is Running ...");  // you'd better go catch it!
 		//setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setResizable(false);
 	    
 	    progressPanel = new JPanel(new BorderLayout());
+	    textPanel = new JPanel(new BorderLayout());
 	    
 	    progressBar = new JProgressBar(0, 100);
 	    progressBar.setValue(0);
@@ -57,17 +70,28 @@ public class ProgressDialog extends JDialog implements PropertyChangeListener, A
 	    cancelButton.addActionListener(this);
 	    buttonPanel.add(okButton);
 	    buttonPanel.add(cancelButton);
+	    
+	    scrollingArea = new JScrollPane(matcherReport);
+	    textPanel.add(scrollingArea);
+	    textPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+	    
+	    progressPanel.add(textPanel);
 	    progressPanel.add(buttonPanel, BorderLayout.PAGE_END);
 	    
 	    this.add(progressPanel);
 	    
 	    matcher = m;
 	    
-	    matcher.setProgressDialog(this);
-	    matcher.addPropertyChangeListener(this);
-	    
 		//setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
+		if( !GlobalStaticVariables.USE_PROGRESS_BAR )
+			progressBar.setIndeterminate(true); // we are not updating the progress bar.
+		else {
+		    matcher.addPropertyChangeListener(this);  // we are receiving updates from the matcher.
+		}
+		
+	    matcher.setProgressDialog(this);
+		
 		matcher.execute();
 		
 		pack();
@@ -76,6 +100,7 @@ public class ProgressDialog extends JDialog implements PropertyChangeListener, A
 		setVisible(true);   
 	    
 	}
+	
 	
 	/**
 	 * This function is called from the AbstractMatcher everytime setProgress() is called from inside the matcher.
@@ -97,17 +122,22 @@ public class ProgressDialog extends JDialog implements PropertyChangeListener, A
 			this.dispose();
 		}
 		else if(obj == cancelButton) {
-			matcher.setAborted(true);
+			matcher.cancel(true);
 			this.dispose();
 		}
 		
 	}
 
 	public void matchingComplete() {
-		// TODO
-		//set into the text area matcher.getReport() right now is in the Joptionpane
-		Utility.displayMessagePane(matcher.getMatchReport(), "Matching Process Report");
+		//  The algorithm has been completed, update the report text area.
+		if( !GlobalStaticVariables.USE_PROGRESS_BAR ) {
+			progressBar.setIndeterminate(false);
+			progressBar.setValue(100);
+		}
+		matcherReport.setText( matcher.getMatchReport() );
+		cancelButton.setEnabled(false);
 		okButton.setEnabled(true);
+		
 	}
 	
 

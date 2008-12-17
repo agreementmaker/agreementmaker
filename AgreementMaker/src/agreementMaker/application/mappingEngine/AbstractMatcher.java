@@ -3,7 +3,6 @@ package agreementMaker.application.mappingEngine;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import agreementMaker.GlobalStaticVariables;
 import agreementMaker.Utility;
 import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluationData;
@@ -13,7 +12,6 @@ import agreementMaker.userInterface.ProgressDialog;
 
 import java.awt.Color;
 
-import javax.swing.JOptionPane;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingWorker;
 
@@ -87,13 +85,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		aligningProperties
 	}
 	
-	private ProgressDialog progressDialog;  // need to keep track of the dialog in order to close it when we're done.  (there could be a better way to do this, but that's for later)
+	private ProgressDialog progressDialog = null;  // need to keep track of the dialog in order to close it when we're done.  (there could be a better way to do this, but that's for later)
 	protected int stepsTotal; // Used by the ProgressDialog.  This is a rough estimate of the number of steps to be done before we finish the matching.
 	protected int stepsDone;  // Used by the ProgressDialog.  This is how many of the total steps we have completed.
 	
 	protected ProgressMonitor progressMonitor;
 	
-	protected boolean aborted = false;
+	//protected boolean aborted = false;
 	
 	/**
 	 * The constructor must be a Nullary Constructor
@@ -207,7 +205,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     //Time calculation, if you override this method remember to call super.afterSelectionOperations()
 	protected void matchEnd() {
 		// TODO: Need to make sure this timing is correct.  - Cosmin ( Dec 17th, 2008 )
-		JOptionPane.showInputDialog(null);
 		if( isProgressDisplayed() ) allStepsDone();
     	end = System.nanoTime();
     	executionTime = (end-start)/1000000; // this time is in milliseconds.
@@ -815,7 +812,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
      * Function called by the worker thread when the matcher finishes the algorithm.
      */
     public void done() {
-    	progressDialog.matchingComplete();  // when we're done, close the progress dialog
+    	if( isProgressDisplayed() ) progressDialog.matchingComplete();  // when we're done, close the progress dialog
     }
 	
     /**
@@ -885,7 +882,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 */
 	
 	protected void allStepsDone() {
-		if(stepsDone < stepsTotal) {
+		if( stepsTotal <= 0 ) stepsTotal = 1; // avoid division by 0;
+		if(stepsDone != stepsTotal) {
 			stepsDone = stepsTotal;
 			updateProgress();
 		}
@@ -896,18 +894,20 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 * won't have the progressDialog, and the globalstaticvariable may be still true
 	 * so we have to check both conditions
 	 */
-	protected boolean isProgressDisplayed() {
-		return progressDialog != null && GlobalStaticVariables.USE_PROGRESS_DIALOG;
+	public boolean isProgressDisplayed() {
+		return progressDialog != null;  // don't need to check for the global static variable, since if it's false, we should never have to call this function
 	}
 
+	/*
 	public boolean isAborted() {
 		return aborted;
 	}
-
+	*/
+	/*
 	public void setAborted(boolean aborted) {
 		this.aborted = aborted;
 	}
-
+	*/
 
 
 }
