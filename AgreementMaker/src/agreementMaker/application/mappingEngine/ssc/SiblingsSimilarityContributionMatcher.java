@@ -77,7 +77,9 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 				target = targetList.get(j);
 				alignment = alignTwoNodes(source, target, typeOfNodes);
 				matrix.set(i,j,alignment);
+				stepDone(); // progress dialog
 			}
+			updateProgress(); // progress dialog
 		}
 		return matrix;
 	}
