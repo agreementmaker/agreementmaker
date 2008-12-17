@@ -368,14 +368,18 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 					if( GlobalStaticVariables.USE_PROGRESS_DIALOG ) {
 						// We are using the progress dialog.
 						ProgressDialog progress = new ProgressDialog(currentMatcher);	
+						if(!currentMatcher.isAborted()) {
+							matchersTablePanel.addMatcher(currentMatcher);
+							ui.redisplayCanvas();
+						}
 					} else {
 						// we're not using the progress dialog, just do the match()
+						//I think we can put the progress dialog always on.
 						currentMatcher.match();
-						
+						matchersTablePanel.addMatcher(currentMatcher);
+						ui.redisplayCanvas();
+						Utility.displayMessagePane(currentMatcher.getMatchReport(), "Matching Process Report");
 					}
-					matchersTablePanel.addMatcher(currentMatcher);
-					ui.redisplayCanvas();
-					Utility.displayMessagePane(currentMatcher.getMatchReport(), "Matching Process Report");
 					System.out.println("Matching Process Complete");
 				}
 				catch(AMException ex){

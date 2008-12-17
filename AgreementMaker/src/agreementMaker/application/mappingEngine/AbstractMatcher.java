@@ -13,6 +13,7 @@ import agreementMaker.userInterface.ProgressDialog;
 
 import java.awt.Color;
 
+import javax.swing.JOptionPane;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingWorker;
 
@@ -91,6 +92,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected int stepsDone;  // Used by the ProgressDialog.  This is how many of the total steps we have completed.
 	
 	protected ProgressMonitor progressMonitor;
+	
+	protected boolean aborted = false;
 	
 	/**
 	 * The constructor must be a Nullary Constructor
@@ -198,11 +201,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     
     //Time calculation, if you override this method remember to call super.afterSelectionOperations()
     protected void matchStart() {
+    	if( isProgressDisplayed() ) setupProgress();  // if we are using the progress dialog, setup the variables
     	start = System.nanoTime();
 	}
     //Time calculation, if you override this method remember to call super.afterSelectionOperations()
 	protected void matchEnd() {
 		// TODO: Need to make sure this timing is correct.  - Cosmin ( Dec 17th, 2008 )
+		JOptionPane.showInputDialog(null);
+		if( isProgressDisplayed() ) allStepsDone();
     	end = System.nanoTime();
     	executionTime = (end-start)/1000000; // this time is in milliseconds.
 	}
@@ -211,8 +217,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	//***************ALIGNING PHASE*****************//
 
     protected void align() throws Exception {
-    	
-    	if( GlobalStaticVariables.USE_PROGRESS_DIALOG ) setupProgress();  // if we are using the progress dialog, setup the variables
     	
 		if(alignClass) {
 			ArrayList<Node> sourceClassList = sourceOntology.getClassesList();
@@ -247,9 +251,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 				target = targetList.get(j);
 				alignment = alignTwoNodes(source, target);
 				matrix.set(i,j,alignment);
-				if( GlobalStaticVariables.USE_PROGRESS_DIALOG ) stepDone(); // we have completed one step
+				if( isProgressDisplayed() ) stepDone(); // we have completed one step
 			}
-			if( GlobalStaticVariables.USE_PROGRESS_DIALOG ) updateProgress(); // update the progress dialog, to keep the user informed.
+			if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
 		}
 		return matrix;
 	}
@@ -811,7 +815,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
      * Function called by the worker thread when the matcher finishes the algorithm.
      */
     public void done() {
-    	progressDialog.dispose();  // when we're done, close the progress dialog
+    	progressDialog.matchingComplete();  // when we're done, close the progress dialog
     }
 	
     /**
@@ -871,6 +875,38 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		
 	}
 	
+	/**
+	 * If the matcher implemented by a developer doesn't take care of the progress
+	 * for example it overrides the align method and doesn't write any code to increase steps
+	 * in that case we have to force the progress to be 100% at the end
+	 * It is used into matchEnd() method.
+	 * For the same reason setupProgress is inside matchStart();
+	 * Assuming that a developer shouldn't change match() or matchStart() or matchEnd()
+	 */
+	
+	protected void allStepsDone() {
+		if(stepsDone < stepsTotal) {
+			stepsDone = stepsTotal;
+			updateProgress();
+		}
+	}
+	
+	/**
+	 * If a matcher invokes the match() method of another matcher internally, the internal matcher 
+	 * won't have the progressDialog, and the globalstaticvariable may be still true
+	 * so we have to check both conditions
+	 */
+	protected boolean isProgressDisplayed() {
+		return progressDialog != null && GlobalStaticVariables.USE_PROGRESS_DIALOG;
+	}
+
+	public boolean isAborted() {
+		return aborted;
+	}
+
+	public void setAborted(boolean aborted) {
+		this.aborted = aborted;
+	}
 
 
 
