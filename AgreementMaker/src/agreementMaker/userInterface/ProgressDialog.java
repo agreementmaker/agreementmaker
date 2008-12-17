@@ -65,7 +65,6 @@ public class ProgressDialog extends JDialog implements PropertyChangeListener {
 	 * This function is called from the AbstractMatcher everytime setProgress() is called from inside the matcher.
 	 * @author Cosmin Stroe @date Dec 17, 2008
 	 */
-	@Override
 	public void propertyChange(PropertyChangeEvent evt) {		
 		
         if ("progress" == evt.getPropertyName()) {
