@@ -1,6 +1,5 @@
 package agreementMaker.application.mappingEngine.baseSimilarity;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -9,8 +8,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 
 import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
