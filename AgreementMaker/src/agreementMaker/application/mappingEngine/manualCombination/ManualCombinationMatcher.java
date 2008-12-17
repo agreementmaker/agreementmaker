@@ -2,14 +2,12 @@ package agreementMaker.application.mappingEngine.manualCombination;
 
 import java.util.ArrayList;
 
-import javax.swing.tree.TreeNode;
 
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.AlignmentMatrix;
 import agreementMaker.application.ontology.Node;
-import agreementMaker.userInterface.vertex.Vertex;
 
 public class ManualCombinationMatcher extends AbstractMatcher {
 

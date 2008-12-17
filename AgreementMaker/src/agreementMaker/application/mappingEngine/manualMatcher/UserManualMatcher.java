@@ -1,12 +1,8 @@
 package agreementMaker.application.mappingEngine.manualMatcher;
 
-import java.awt.Color;
-import java.util.ArrayList;
 
-import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
-import agreementMaker.application.mappingEngine.AlignmentMatrix;
 import agreementMaker.application.mappingEngine.MatchersRegistry;
 import agreementMaker.application.ontology.Node;
 import agreementMaker.application.ontology.Ontology;

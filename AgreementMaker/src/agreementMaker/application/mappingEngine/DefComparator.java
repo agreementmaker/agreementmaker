@@ -7,18 +7,7 @@ package agreementMaker.application.mappingEngine;
  * @version (01-17-05)
  */
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.StringTokenizer;
 
-import agreementMaker.application.mappingEngine.stemmer.PorterStemmer;
-/*  // commented out by Cosmin, moving to Jaws instead of JWordNet
-import edu.gwu.wordnet.DictionaryDatabase;
-import edu.gwu.wordnet.FileBackedDictionary;
-import edu.gwu.wordnet.IndexWord;
-import edu.gwu.wordnet.POS;
-import edu.gwu.wordnet.Synset;
-*/
 public class DefComparator
 {
     

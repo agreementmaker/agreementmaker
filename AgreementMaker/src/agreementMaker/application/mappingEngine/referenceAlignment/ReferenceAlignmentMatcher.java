@@ -2,25 +2,20 @@ package agreementMaker.application.mappingEngine.referenceAlignment;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import javax.management.relation.Relation;
 
 import org.dom4j.io.SAXReader;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 
-import agreementMaker.AMException;
 import agreementMaker.Utility;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.ontology.Node;
-import agreementMaker.userInterface.MatcherParametersDialog;
 
 public class ReferenceAlignmentMatcher extends AbstractMatcher {
 
@@ -163,7 +158,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
             }
             if(mes < 0 || mes > 1) mes = 1;
             
-            String correctRelation = getRelationFromFileFormat(relation);
+            // String correctRelation = getRelationFromFileFormat(relation);
             
             if(sourceid != null && targetid != null) {
             	MatchingPair mp = new MatchingPair(sourceid, targetid, mes, relation);

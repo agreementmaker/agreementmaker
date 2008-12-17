@@ -1,42 +1,27 @@
 package agreementMaker.application.mappingEngine.referenceAlignment;
 
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.File;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 
 import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
 import agreementMaker.application.mappingEngine.AbstractParameters;
-import agreementMaker.application.mappingEngine.MatcherSetting;
 import agreementMaker.userInterface.AppPreferences;
-import agreementMaker.userInterface.UI;
-import agreementMaker.userInterface.UI.WindowEventHandler;
 
 public class ReferenceAlignmentParametersPanel extends AbstractMatcherParametersPanel implements ActionListener {
 
 	/**
-	 * Base Similarity Matcher - The Parameters Panel
-	 * @author Cosmin Stroe
-	 * @date Nov 22, 2008
+	 * The Parameters Panel
+	 * @author Flavio
 	 * ADVIS @ UIC
 	 */
 	private static final long serialVersionUID = -7652636660460034435L;
@@ -127,7 +112,8 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 		if(obj == browse){
 			
 			
-			File lastFile;
+			//File lastFile;
+			
 			//If the user has opened a reference file already the system will use the last reference file dir to start the chooser,
 			//if he didn't the system will try to use the last dir used to open the ontologies, maybe is the same one of the reference or it's closer
 			//if not even that one exists, the chooser starts normally

@@ -7,10 +7,15 @@ import java.io.PrintStream;
  * @author ADVIS Research Laboratory
  * @version 11/27/2004
  */
-public class GSM
+public class GlobalStaticVariables
 {
 	// AgreementMaker Version!
 	public static final String AgreementMakerVersion = "v0.2";
+	
+	/*
+	 * IMPORTANT!:  USE_PROGRESS_DIALOG enables or diables the progress dialog for the application.  
+	 */
+	public static final boolean USE_PROGRESS_DIALOG = true;
 	
 	// local title
 	public static final String TARGETTITLE = "Target Ontology";

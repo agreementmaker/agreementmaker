@@ -3,7 +3,7 @@ package agreementMaker.userInterface;
 import java.io.File;
 import java.util.prefs.Preferences;
 
-import agreementMaker.GSM;
+import agreementMaker.GlobalStaticVariables;
 import agreementMaker.application.mappingEngine.MatcherSetting;
 
 /** 
@@ -180,8 +180,8 @@ public class AppPreferences {
 	 * @param onthologyType what type of ontology (source or target ontology)
 	 */
 	public void saveRecentFile( String filename, int ontoType, int syntax, int language ) {		
-		if(ontoType == GSM.SOURCENODE) saveRecentFile(PREF_RECENTSOURCE, filename, syntax, language);
-		else if(ontoType == GSM.TARGETNODE) saveRecentFile(PREF_RECENTTARGET, filename, syntax, language);
+		if(ontoType == GlobalStaticVariables.SOURCENODE) saveRecentFile(PREF_RECENTSOURCE, filename, syntax, language);
+		else if(ontoType == GlobalStaticVariables.TARGETNODE) saveRecentFile(PREF_RECENTTARGET, filename, syntax, language);
 	}
 	
 	

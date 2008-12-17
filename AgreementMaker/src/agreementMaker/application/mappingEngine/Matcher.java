@@ -1,6 +1,5 @@
 package agreementMaker.application.mappingEngine;
 
-import agreementMaker.AMException;
 
 public interface Matcher {
 	

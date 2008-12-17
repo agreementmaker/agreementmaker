@@ -1,30 +1,14 @@
 package agreementMaker.application.mappingEngine.parametricStringMatcher;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.GroupLayout.ParallelGroup;
-import javax.swing.GroupLayout.SequentialGroup;
-import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 
 import agreementMaker.Utility;
-import agreementMaker.application.Core;
-import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
 import agreementMaker.application.mappingEngine.AbstractParameters;
-import agreementMaker.application.mappingEngine.MatcherSetting;
-import agreementMaker.application.mappingEngine.MatchersRegistry;
-import agreementMaker.application.mappingEngine.manualCombination.ManualCombinationParameters;
-import agreementMaker.userInterface.AppPreferences;
 
 public class ParametricStringParametersPanel extends AbstractMatcherParametersPanel {
 
@@ -64,7 +48,7 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 	private JCheckBox blankCheck;
 	private JLabel punctLabel = new JLabel("Punctuation normalization (replacing . , ; : ' ! ?).") ;
 	private JCheckBox  punctCheck;
-	private JLabel diacLabel = new JLabel("Diacritics normalization (e.g. 'à --> a' or 'ò --> o' ).");
+	private JLabel diacLabel = new JLabel("Diacritics normalization (e.g. 'ï¿½ --> a' or 'ï¿½ --> o' ).");
 	private JCheckBox diacCheck;
 	private JLabel digitLabel = new JLabel("Digit suppression (removing any number from the strings).");
 	private JCheckBox digitCheck;

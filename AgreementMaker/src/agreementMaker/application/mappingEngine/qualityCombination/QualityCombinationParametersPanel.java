@@ -1,42 +1,16 @@
 package agreementMaker.application.mappingEngine.qualityCombination;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.security.acl.Group;
-import java.util.ArrayList;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.GroupLayout.ParallelGroup;
-import javax.swing.GroupLayout.SequentialGroup;
-import javax.swing.border.EmptyBorder;
 
-import agreementMaker.Utility;
-import agreementMaker.application.Core;
-import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
-import agreementMaker.application.mappingEngine.AbstractParameters;
-import agreementMaker.application.mappingEngine.MatcherSetting;
-import agreementMaker.application.mappingEngine.MatchersRegistry;
 import agreementMaker.application.mappingEngine.qualityEvaluation.QualityEvaluator;
-import agreementMaker.userInterface.AppPreferences;
 
 
 /**
- * This is the preferences panel for the DSI algorithm.
- * The user can set the MCP from this panel.
- * @author cosmin
- * @date Nov 25, 2008
+ * This is the preferences panel for the Quality Combination Matcher.
+ * @author Flavio
  *
  */
 public class QualityCombinationParametersPanel extends AbstractMatcherParametersPanel {

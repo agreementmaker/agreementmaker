@@ -3,25 +3,14 @@ package agreementMaker.userInterface.vertex;
 
 
 import java.awt.GridLayout;
-import java.util.Iterator;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
-import agreementMaker.GSM;
+import agreementMaker.GlobalStaticVariables;
 import agreementMaker.application.ontology.Node;
-
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.ontology.impl.OntologyImpl;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Resource;
-
 
 public class VertexDescriptionPane extends JPanel{
 	
@@ -79,7 +68,7 @@ public class VertexDescriptionPane extends JPanel{
 		sp5.setLayout(new GridLayout(1,1));
 		lp5.setLayout(new GridLayout(1,1));
 		
-		if(typeOfFile == GSM.XMLFILE){
+		if(typeOfFile == GlobalStaticVariables.XMLFILE){
 			//sourcePane
 			st1.setEditable(false);
 	        st1.setFont(new java.awt.Font("Lucida Sans Unicode", 0, 12));
@@ -114,7 +103,7 @@ public class VertexDescriptionPane extends JPanel{
 	        targetPane.addTab("Description", null, lp1, "Description of the node");
 	        sourcePane.addTab("Mapping Information", null, sp1, "Description of the node");
 	        targetPane.addTab("Mapping Information", null, lp1, "Description of the node");
-		}else if(typeOfFile == GSM.ONTFILE){
+		}else if(typeOfFile == GlobalStaticVariables.ONTFILE){
 			st2 = new JTextArea();
 			st3 = new JTextArea();
 			st4 = new JTextArea();
@@ -225,14 +214,14 @@ public class VertexDescriptionPane extends JPanel{
 	public void fillDescription (Vertex v){
 		clearDescription(v);
 		Node node = v.getNode();
-		if(typeOfFile == GSM.XMLFILE){			
+		if(typeOfFile == GlobalStaticVariables.XMLFILE){			
 			if(v.isSourceOrGlobal()){
 		    	   st1.setText(node.getLabel());
 		    }else {
 		    	   lt1.setText(node.getLabel());
 		    }
 		}
-		else if(typeOfFile == GSM.ONTFILE){		
+		else if(typeOfFile == GlobalStaticVariables.ONTFILE){		
 	       if(v.isSourceOrGlobal()){
 	    	   st1.setText(node.getDescriptionsString());
 	    	   st2.setText(node.getAnnotationsString());
@@ -244,19 +233,19 @@ public class VertexDescriptionPane extends JPanel{
 	    	   lt3.setText(node.getPropertiesString());
 	    	   lt4.setText(node.getIndividualsString());
 	       }
-		}else if(typeOfFile == GSM.RDFSFILE){
+		}else if(typeOfFile == GlobalStaticVariables.RDFSFILE){
 			//TODO: WORK here for RDFS
 		}
 	}
 	
 	public void clearDescription (Vertex node){
-		if(typeOfFile == GSM.XMLFILE){
+		if(typeOfFile == GlobalStaticVariables.XMLFILE){
 			if(node.isSourceOrGlobal()){
 		    	   st1.setText("");
 		       }else {
 		    	   lt1.setText("");
 		       }
-		}else if(typeOfFile == GSM.ONTFILE){
+		}else if(typeOfFile == GlobalStaticVariables.ONTFILE){
 			if(node.isSourceOrGlobal()){
 		    	   st1.setText("");
 		    	   st2.setText("");

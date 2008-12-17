@@ -16,6 +16,11 @@ import javax.swing.JViewport;
  */
 public class MatchersTable extends JTable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3268258464854514945L;
+
 	public MatchersTable(MyTableModel mt) {
 		super(mt);
 	}

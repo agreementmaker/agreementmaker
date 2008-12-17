@@ -1,7 +1,5 @@
 package agreementMaker.application.mappingEngine.manualCombination;
 
-import java.util.ArrayList;
-
 import agreementMaker.application.mappingEngine.AbstractParameters;
 
 public class ManualCombinationParameters extends AbstractParameters {

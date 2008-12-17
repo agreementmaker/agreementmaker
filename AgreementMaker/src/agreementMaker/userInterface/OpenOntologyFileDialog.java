@@ -4,28 +4,22 @@ package agreementMaker.userInterface;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
-import java.util.prefs.Preferences;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import agreementMaker.GSM;
-import agreementMaker.userInterface.vertex.VertexDescriptionPane;
+import agreementMaker.GlobalStaticVariables;
 
 
 /**
@@ -65,9 +59,9 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		AppPreferences prefs = ui.getAppPreferences(); // Class interface to Application Preferences
 		
 		frame = new JDialog();
-		if(ontoType == GSM.SOURCENODE)
+		if(ontoType == GlobalStaticVariables.SOURCENODE)
 			frame.setTitle("Open Source Ontology File...");
-		else if(ontoType == GSM.TARGETNODE)
+		else if(ontoType == GlobalStaticVariables.TARGETNODE)
 			frame.setTitle("Open Target Ontology File...");
 		
 
@@ -76,10 +70,10 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		//frame.setResizable(false);
 
 		
-		if(ontoType == GSM.SOURCENODE)
-			fileType = new JLabel(GSM.SOURCETITILE);
-		else if(ontoType == GSM.TARGETNODE)
-			fileType = new JLabel(GSM.TARGETTITLE);
+		if(ontoType == GlobalStaticVariables.SOURCENODE)
+			fileType = new JLabel(GlobalStaticVariables.SOURCETITILE);
+		else if(ontoType == GlobalStaticVariables.TARGETNODE)
+			fileType = new JLabel(GlobalStaticVariables.TARGETTITLE);
 		
 		filePath = new JTextField(0);
 		
@@ -90,8 +84,8 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		cancel.addActionListener(this);
 		proceed.addActionListener(this);
 		
-		String[] languageStrings = GSM.languageStrings;
-		String[] syntaxStrings = GSM.syntaxStrings;
+		String[] languageStrings = GlobalStaticVariables.languageStrings;
+		String[] syntaxStrings = GlobalStaticVariables.syntaxStrings;
 		
 		syntaxList = new JList(syntaxStrings);
 		syntaxList.setPrototypeCellValue("01234567890123456789"); // this string sets the width of the list

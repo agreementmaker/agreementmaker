@@ -1,22 +1,16 @@
 package agreementMaker.application.ontology.ontologyParser;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-
 
 import agreementMaker.application.ontology.Node;
-import agreementMaker.application.ontology.Ontology;
 import agreementMaker.userInterface.vertex.Vertex;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * <p>Title: </p>

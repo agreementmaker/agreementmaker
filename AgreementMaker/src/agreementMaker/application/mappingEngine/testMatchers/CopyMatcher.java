@@ -1,11 +1,8 @@
 package agreementMaker.application.mappingEngine.testMatchers;
 
-import java.util.ArrayList;
 
 import agreementMaker.application.mappingEngine.AbstractMatcher;
-import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.AlignmentMatrix;
-import agreementMaker.application.ontology.Node;
 
 public class CopyMatcher extends AbstractMatcher {
 	

@@ -5,12 +5,11 @@ package agreementMaker.userInterface.vertex;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import javax.swing.JOptionPane;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
-import agreementMaker.GSM;
+import agreementMaker.GlobalStaticVariables;
 import agreementMaker.application.mappingEngine.ContextMapping;
 import agreementMaker.application.mappingEngine.DefnMapping;
 import agreementMaker.application.mappingEngine.UserMapping;
@@ -97,7 +96,7 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 		setIsVisible(true);
 		isSelected = false;
 		setNodeType(-1);
-		setOntNode(GSM.XMLFILE);
+		setOntNode(GlobalStaticVariables.XMLFILE);
 		setShouldCollapse(false);
 		userMapping = new UserMapping();
 		//vertexDescription = (VertexDescriptionPane)jDescriptionPanel;
@@ -125,7 +124,7 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 		setIsVisible(true);
 		isSelected = false;
 		setNodeType(-1);
-		setOntNode(GSM.ONTFILE);
+		setOntNode(GlobalStaticVariables.ONTFILE);
 		setShouldCollapse(false);
 		userMapping = new UserMapping();
 		//vertexDescription = (VertexDescriptionPane)jDescriptionPanel;
@@ -685,11 +684,11 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 	}
 	
 	public boolean isSourceOrGlobal() {
-		return this.getNodeType() == GSM.SOURCENODE;
+		return this.getNodeType() == GlobalStaticVariables.SOURCENODE;
 	}
 	
 	public boolean isTargetOrLocal() {
-		return this.getNodeType() == GSM.TARGETNODE;
+		return this.getNodeType() == GlobalStaticVariables.TARGETNODE;
 	}
 	
 	/**Attention we are checking if they are part of the same tree, so if one is source and one is target the may be equals even if they shouldn't be*/

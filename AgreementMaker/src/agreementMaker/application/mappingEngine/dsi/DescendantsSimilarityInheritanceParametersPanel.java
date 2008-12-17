@@ -4,9 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -14,7 +11,6 @@ import javax.swing.border.EmptyBorder;
 
 import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
-import agreementMaker.application.mappingEngine.AbstractParameters;
 import agreementMaker.application.mappingEngine.MatcherSetting;
 import agreementMaker.userInterface.AppPreferences;
 

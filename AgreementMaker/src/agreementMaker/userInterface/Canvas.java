@@ -1,28 +1,17 @@
 package agreementMaker.userInterface;
 
-
-
-
-
 import java.io.*;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -31,33 +20,20 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.xml.bind.JAXBElement.GlobalScope;
 
-import agreementMaker.GSM;
+import agreementMaker.GlobalStaticVariables;
 import agreementMaker.Utility;
 import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.AlignmentSet;
-import agreementMaker.application.mappingEngine.ContextMapping;
-import agreementMaker.application.mappingEngine.DefComparator;
-import agreementMaker.application.mappingEngine.DefnMapping;
-import agreementMaker.application.mappingEngine.DefnMappingOptions;
-import agreementMaker.application.mappingEngine.UserMapping;
-import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
 import agreementMaker.application.ontology.Ontology;
-import agreementMaker.application.ontology.ontologyParser.OntoTreeBuilder;
-import agreementMaker.application.ontology.ontologyParser.RdfsTreeBuilder;
 import agreementMaker.application.ontology.ontologyParser.TreeBuilder;
-import agreementMaker.application.ontology.ontologyParser.XmlTreeBuilder;
 import agreementMaker.userInterface.vertex.Vertex;
 import agreementMaker.userInterface.vertex.VertexDescriptionPane;
 import agreementMaker.userInterface.vertex.VertexLine;
 
 import java.util.Date;
-
-
-
 
 
 /**
@@ -72,10 +48,16 @@ import java.util.Date;
 public class Canvas extends JPanel implements MouseListener, ActionListener
 {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7531606228579063838L;
+	
+	
 	//Main variables and Tree structure
 	private double 		canvasHeight;				// height of the canvas
 	private double 		canvasWidth;				// width of the canvas
-	private int 				countStat = 0;
+	//private int 				countStat = 0;
 	private Vertex 		globalTreeRoot;				// root of global tree
 	private Vertex 		localTreeRoot;				// root of local tree
 	private UI 				myUI;                       		// UI variable
@@ -87,7 +69,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private	JPopupMenu popup;					// popup menu
 	private JMenuItem 	cancelPopup;				// cancel the right click pop up
 	private JMenuItem 	desc;						// desc JMenuItem
-	private JMenuItem 	mappingInfo;				// mappingByUser information of the node
+	//private JMenuItem 	mappingInfo;				// mappingByUser information of the node
 	//mapping popup
 	private JPopupMenu mappingPopup;			// mappingByUser popup menu
 	private JMenuItem 		standardAlignment;          		// mappingByUser create an exact 100% alignment
@@ -111,17 +93,17 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private Vertex 		rightClickedNode;			// right clicked node
 	private Vertex 		displayedNode;		//the last vertex selected //one of the clicked node but is last one clicked in fact is displayed
 	private Vector<VertexLine>		selectedLines; //All global and local nodes to be highlighted, that means that are matched with any selected nodes, this set gets created and calculated only during matchings display
-	private int 				oldY;							// the previous y location of left clicked node	
+	//private int 				oldY;							// the previous y location of left clicked node	
 	private boolean				smoMode;  		// true or false, depending whether the user is viewing the canvas in Selected Matchings Only mode.
 	
 	//TO BE DELETED IN THE FUTURE DELETING ALL FUNCTIONS CONTAINING THEM
-	private int 				noOfLines = 100 ;				//Lines to be displayed, initial value = all = 100 (different from numRelations to be found by the algortithm that are contained in DefnMappingOptions
-	private int 				displayedSimilarity = 5; //minimum Value of similarity value to be displayed (not calculated, that one is defined in defnOptions)
-	private boolean		mapByContext;				// boolean indicating the mappingByUser is done by context
-	private boolean 	mapByDefn;				// boolean indicating the mappingByUser is done by defn Muhamamd
-	private boolean		mapByDefnShow ;
-	private boolean 	mapByUser;					// boolean indicating the mappingByUser is done by user
-	private DefnMappingOptions defnOptions; 
+	//private int 				noOfLines = 100 ;				//Lines to be displayed, initial value = all = 100 (different from numRelations to be found by the algortithm that are contained in DefnMappingOptions
+	//private int 				displayedSimilarity = 5; //minimum Value of similarity value to be displayed (not calculated, that one is defined in defnOptions)
+	//private boolean		mapByContext;				// boolean indicating the mappingByUser is done by context
+	//private boolean 	mapByDefn;				// boolean indicating the mappingByUser is done by defn Muhamamd
+	//private boolean		mapByDefnShow ;
+	//private boolean 	mapByUser;					// boolean indicating the mappingByUser is done by user
+	//private DefnMappingOptions defnOptions; 
 	Date start = new Date();
 	Date end = new Date();
 	FileOutputStream out; // declare a file output object
@@ -170,13 +152,13 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		
 		//NOT NEEDED ANYMORE
 		// initialize mapByUser variable to be false
-		mapByUser = false;
+		//mapByUser = false;
 		
 		// initialize mapByUser variable to be false
-		mapByContext = false;
+		//mapByContext = false;
 		
 		// initialize mapByDefnUser variable to be false
-		mapByDefn = false;  // Muhammad
+		//mapByDefn = false;  // Muhammad
 		
 		
 		// repaint the canvas
@@ -200,7 +182,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			Vertex node;
 			node = getRightClickedNode();
 			
-			if(node.getOntNode()==GSM.XMLFILE){// this means XML file
+			if(node.getOntNode()==GlobalStaticVariables.XMLFILE){// this means XML file
 				StringTokenizer st = new StringTokenizer(node.getDesc());
 				String descript="";
 				int maxChar = 50;
@@ -364,11 +346,11 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		int nodeType;
 		if(o.isSource()) {
 			setGlobalTreeRoot(treeRoot);
-			nodeType = GSM.SOURCENODE;
+			nodeType = GlobalStaticVariables.SOURCENODE;
 		}
 		else {
 			setLocalTreeRoot(treeRoot);
-			nodeType = GSM.TARGETNODE;
+			nodeType = GlobalStaticVariables.TARGETNODE;
 		}
 		
 		//TO BE CHANGED IN THE FUTURE
@@ -406,32 +388,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		// repaint the canvas
 		repaint();
 	}
-	/**
-	 * @param ontoType
-	 */
-	private void computeCanvasWidth(int ontoType) {
-		Vertex node = new Vertex(null);
-		int x=0;//initial value
-		int y=0;
-		
-		if(ontoType == GSM.SOURCENODE)
-			node = getGlobalTreeRoot();
-		else if(ontoType == GSM.TARGETNODE)
-			node = getLocalTreeRoot();
-		
-		if(node != null)
-			for (Enumeration e = node.preorderEnumeration(); e.hasMoreElements() ;) 
-			{
-				// get the node
-				node = (Vertex) e.nextElement();
-				y = node.getLevel()*20 + node.getName().length()*7;
-				if(y>x) x=y;
-			}
-		
-		x+=30;
-		if(x*2 > canvasWidth) canvasWidth=x*2;
-		
-	}	
+
+	
+
 //*******************************************Paint() and Tree displaying methods
 	/**
 	 * This function paints the background and displays global and local trees and mappings
@@ -1652,7 +1611,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	//****************************************THESE ARE THE OLD METHODS****************************
 	//Most likely they will have to be deleted. We need to check if some other needs them checking on openCall hierarchy. 
 
-	
+	/* **** This is the old code, from before Nov, 2008.
+	** After the refactoring done by Flavio and Cosmin in Nov 2008 to Dec, 2008, this code is no longer used.
+	*	
 	//######################################################
 	public void printToFileSourceTarget() {
 		
@@ -1706,13 +1667,50 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	
 	
 	}
+	
+
+
+	
+	/**
+	 * @param ontoType
+	 * /
+	/*
+	private void computeCanvasWidth(int ontoType) {
+		Vertex node = new Vertex(null);
+		int x=0;//initial value
+		int y=0;
+		
+		if(ontoType == GSM.SOURCENODE)
+			node = getGlobalTreeRoot();
+		else if(ontoType == GSM.TARGETNODE)
+			node = getLocalTreeRoot();
+		
+		if(node != null)
+			for (Enumeration e = node.preorderEnumeration(); e.hasMoreElements() ;) 
+			{
+				// get the node
+				node = (Vertex) e.nextElement();
+				y = node.getLevel()*20 + node.getName().length()*7;
+				if(y>x) x=y;
+			}
+		
+		x+=30;
+		if(x*2 > canvasWidth) canvasWidth=x*2;
+		
+	}	
+	*/
+	
+
+	/* **** This is the old code, from before Nov, 2008.
+	** After the refactoring done by Flavio and Cosmin in Nov 2008 to Dec, 2008, this code is no longer used.
+	
 	//######################################################
 	/**
 	 * This method and printVertexTreeDesc() below have been created to print the source and target ontology in the sourceDesc.txt and targetDesc.txt files
 	 * The difference with the printToFileSourceTarget method is that this one print nodes in this format "desc/tname" /t = tab
 	 * the description is taken from node with getDesc() method, in the XML ontology description is equals to "exp" attribute
 	 * this method has been developed to study the wisconsin (madison dane) case only.
-	 */
+	 * /
 	public void printToFileSourceTargetDesc() {
 		
 
@@ -1752,7 +1750,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	
 	/**
 	 * See printToFileSourceTargetDesc comments, print nodes in "desc/tname" format, if desc is empty puts "9999999"
-	 */
+	 * /
     public void printVertexTreeDesc(Vertex v, PrintStream p) {
 		
 		if(v == null) return;
@@ -1771,7 +1769,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	/**
 	 * This function recursively calls  setIsMappedByDef() of every node under the initial root
 	 * @param node
-	 */
+	 * /
 	public void performShowAll(Vertex node)
 	{
 		
@@ -1787,6 +1785,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 
 
 
+	
 
 	/*******************************************************************************************
 	 /**
@@ -1794,7 +1793,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	  * 
 	  * @param childrenMappings - vector of children mappingByUser types
 	  * @return the parent mappingByUser based on the children mappings
-	  */	
+	  * /	
 	public String contextMap(Vector childrenMappings)
 	{
 		String prevChildMapping, currChildMapping;
@@ -1879,7 +1878,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	 * using partial mappingByUser table
 	 * @param childrenMappings - vector of children mappingByUser types
 	 * @return the parent mappingByUser based on the children mappings
-	 */	
+	 * /	
 	public String partialContextMap(Vector childrenMappings)
 	{
 		String prevChildMapping, currChildMapping;
@@ -1938,11 +1937,14 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			}
 		}
 	}
+
+
+
 	/**
 	 * @param dm
 	 * @param node
 	 * @param localnode
-	 */
+	 * /
 	private float DSI(float MCP, String S, String T) {
 
 		
@@ -1989,6 +1991,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	}
 	
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
 	private float SSC(float MCP, String S, String T) {
 
 		
@@ -2041,19 +2044,23 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			
 
 	}
+	
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
 
 	
 	
 	/**
 	 * @param root
-	 */
+	 * /
 	public void showAll(Vertex root)
 	{
 		performShowAll(root);
 		
 	}
 
+	*/
+	
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
 		

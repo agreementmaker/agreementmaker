@@ -4,10 +4,7 @@ package agreementMaker.userInterface;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
-import java.util.prefs.Preferences;
 
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
@@ -15,24 +12,20 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import agreementMaker.AMException;
-import agreementMaker.GSM;
+import agreementMaker.GlobalStaticVariables;
 import agreementMaker.Utility;
-import agreementMaker.application.Core;
-import agreementMaker.application.ontology.Ontology;
-import agreementMaker.application.ontology.ontologyParser.TreeBuilder;
-import agreementMaker.userInterface.vertex.VertexDescriptionPane;
 
 
 public class UIMenu implements ActionListener {
 	
 	// create 4 menus
-	private JMenu fileMenu, editMenu, viewMenu, helpMenu;
+	private JMenu fileMenu, viewMenu, helpMenu;
+	// private JMenu editMenu; // not used yet
 	//fake menus
-	private JMenu ontologyMenu, matchingMenu, evaluationMenu;
+	private JMenu matchingMenu;
 	
 	// menu items for helpMenu
 	private JMenuItem howToUse, aboutItem;		
@@ -49,12 +42,12 @@ public class UIMenu implements ActionListener {
 	private UI ui;
 	
 	// menu items for edit menu
-	private JMenuItem undo, redo;
+	//private JMenuItem undo, redo;
 	// menu itmes for fileMenu
 	private JMenuItem xit, openSource, openTarget;
 	
 	private JMenu menuRecentSource, menuRecentTarget;
-	private JMenuItem menuRecentSourceList[], menuRecentTargetList[]; // the list of recent files
+	//private JMenuItem menuRecentSourceList[], menuRecentTargetList[]; // the list of recent files
 	
 
 	public UIMenu(UI ui){
@@ -115,9 +108,9 @@ public class UIMenu implements ActionListener {
 			}else if (obj == howToUse){
 				Utility.displayTextAreaPane(Help.getHelpMenuString(), "Help");
 			}else if (obj == openSource){
-				openAndReadFilesForMapping(GSM.SOURCENODE);
+				openAndReadFilesForMapping(GlobalStaticVariables.SOURCENODE);
 			}else if (obj == openTarget){
-				openAndReadFilesForMapping(GSM.TARGETNODE);
+				openAndReadFilesForMapping(GlobalStaticVariables.TARGETNODE);
 			}else if (obj == aboutItem){
 				new AboutDialog();
 				//displayOptionPane("Agreement Maker 3.0\nAdvis research group\nThe University of Illinois at Chicago 2004","About Agreement Maker");
@@ -176,16 +169,16 @@ public class UIMenu implements ActionListener {
 				switch( ontotype[0] ) {
 					
 					case 's':
-						ui.openFile( prefs.getRecentSourceFileName(position), GSM.SOURCENODE, 
+						ui.openFile( prefs.getRecentSourceFileName(position), GlobalStaticVariables.SOURCENODE, 
 								prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position));
-						prefs.saveRecentFile(prefs.getRecentSourceFileName(position), GSM.SOURCENODE, 
+						prefs.saveRecentFile(prefs.getRecentSourceFileName(position), GlobalStaticVariables.SOURCENODE, 
 								prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position));
 						ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
 						break;
 					case 't':
-						ui.openFile( prefs.getRecentTargetFileName(position), GSM.TARGETNODE, 
+						ui.openFile( prefs.getRecentTargetFileName(position), GlobalStaticVariables.TARGETNODE, 
 								prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position));
-						prefs.saveRecentFile(prefs.getRecentTargetFileName(position), GSM.TARGETNODE, 
+						prefs.saveRecentFile(prefs.getRecentTargetFileName(position), GlobalStaticVariables.TARGETNODE, 
 								prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position));
 						ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
 						break;

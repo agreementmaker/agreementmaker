@@ -12,12 +12,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.UIManager;
 
-import agreementMaker.GSM;
+import agreementMaker.GlobalStaticVariables;
 import agreementMaker.application.Core;
-import agreementMaker.application.mappingEngine.AbstractMatcher;
-import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
 import agreementMaker.application.ontology.Ontology;
 import agreementMaker.application.ontology.ontologyParser.TreeBuilder;
 import agreementMaker.userInterface.vertex.VertexDescriptionPane;
@@ -197,12 +194,12 @@ public class UI {
 		try{
 			JPanel jPanel = null;
 			
-			if(language == GSM.RDFSFILE)//RDFS
-				jPanel = new VertexDescriptionPane(GSM.RDFSFILE);//takes care of fields for XML files as well
-			else if(language == GSM.ONTFILE)//OWL
-				jPanel = new VertexDescriptionPane(GSM.ONTFILE);//takes care of fields for XML files as well
-			else if(language == GSM.XMLFILE)//XML
-				jPanel = new VertexDescriptionPane(GSM.XMLFILE);//takes care of fields for XML files as well 
+			if(language == GlobalStaticVariables.RDFSFILE)//RDFS
+				jPanel = new VertexDescriptionPane(GlobalStaticVariables.RDFSFILE);//takes care of fields for XML files as well
+			else if(language == GlobalStaticVariables.ONTFILE)//OWL
+				jPanel = new VertexDescriptionPane(GlobalStaticVariables.ONTFILE);//takes care of fields for XML files as well
+			else if(language == GlobalStaticVariables.XMLFILE)//XML
+				jPanel = new VertexDescriptionPane(GlobalStaticVariables.XMLFILE);//takes care of fields for XML files as well 
 		    jPanel.setMinimumSize(new Dimension(200,480));
 			getUISplitPane().setRightComponent(jPanel);
 			setDescriptionPanel(jPanel);
@@ -211,7 +208,7 @@ public class UI {
 			TreeBuilder t = TreeBuilder.buildTreeBuilder(filename, ontoType, language, syntax);
 			//Set ontology in the Core
 			Ontology ont = t.getOntology();
-			if(ontoType == GSM.SOURCENODE) {
+			if(ontoType == GlobalStaticVariables.SOURCENODE) {
 				Core.getInstance().setSourceOntology(ont);
 			}
 			else Core.getInstance().setTargetOntology(ont);

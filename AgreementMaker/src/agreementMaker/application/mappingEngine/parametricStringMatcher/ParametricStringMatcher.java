@@ -1,15 +1,8 @@
 package agreementMaker.application.mappingEngine.parametricStringMatcher;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.StringTokenizer;
 
-
-import edu.smu.tspell.wordnet.Synset;
-import edu.smu.tspell.wordnet.SynsetType;
-import edu.smu.tspell.wordnet.WordNetDatabase;
 import agreementMaker.Utility;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
@@ -291,7 +284,6 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		String currentWord = ""; //the newString will filled word by word. each processed word will be added if valid (no stopwords and so on)
 		char c;
 		PorterStemmer ps = new PorterStemmer();
-		String stemmed;
 		boolean endOfWord;
 		
 		for(int i = 0 ; i < chars.length; i++) {	

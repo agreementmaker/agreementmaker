@@ -3,13 +3,7 @@ package agreementMaker.application.ontology.ontologyParser;
 import java.io.File;
 import java.util.Enumeration;
 
-import javax.swing.JOptionPane;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
-import agreementMaker.GSM;
+import agreementMaker.GlobalStaticVariables;
 import agreementMaker.application.ontology.Ontology;
 import agreementMaker.userInterface.vertex.Vertex;
 
@@ -35,13 +29,13 @@ public abstract class TreeBuilder {
 	public static TreeBuilder buildTreeBuilder(String fileName, int ontoType, int langIndex, int syntaxIndex){
 		
 		
-		String languageS = GSM.getLanguageString(langIndex);
-		String syntaxS = GSM.getSyntaxString(syntaxIndex);
+		String languageS = GlobalStaticVariables.getLanguageString(langIndex);
+		String syntaxS = GlobalStaticVariables.getSyntaxString(syntaxIndex);
 		TreeBuilder treeBuilder;
-		if(langIndex == GSM.XMLFILE){
+		if(langIndex == GlobalStaticVariables.XMLFILE){
 			treeBuilder = new XmlTreeBuilder(fileName, ontoType, languageS, syntaxS);
 		}
-		else if(langIndex == GSM.RDFSFILE)
+		else if(langIndex == GlobalStaticVariables.RDFSFILE)
 			treeBuilder = new RdfsTreeBuilder(fileName, ontoType, languageS, syntaxS);
 		else treeBuilder = new OntoTreeBuilder(fileName, ontoType, languageS, syntaxS);
 		

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
-import agreementMaker.GSM;
+import agreementMaker.GlobalStaticVariables;
 import agreementMaker.userInterface.vertex.Vertex;
 
 /**
@@ -74,11 +74,11 @@ public class Ontology {
 
 	
 	public boolean isSource() {
-		return sourceOrTarget == GSM.SOURCENODE;
+		return sourceOrTarget == GlobalStaticVariables.SOURCENODE;
 	}
 	
 	public boolean isTarget() {
-		return sourceOrTarget == GSM.TARGETNODE;
+		return sourceOrTarget == GlobalStaticVariables.TARGETNODE;
 	}
 	
 	public void setSourceOrTarget(int s) {

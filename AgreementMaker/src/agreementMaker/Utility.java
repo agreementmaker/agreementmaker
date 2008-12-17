@@ -1,8 +1,5 @@
 package agreementMaker;
 
-import java.awt.Dimension;
-import java.text.NumberFormat;
-
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;

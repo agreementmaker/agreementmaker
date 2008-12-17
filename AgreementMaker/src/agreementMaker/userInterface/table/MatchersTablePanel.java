@@ -10,7 +10,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JViewport;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
@@ -25,16 +24,18 @@ import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
 import agreementMaker.userInterface.UI;
 
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
 
 public class MatchersTablePanel extends JPanel {
     
     
-    private MatchersTable table;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -5579979645883093290L;
+	
+	private MatchersTable table;
 
     public MatchersTablePanel(UI ui) {
         super(new GridLayout(1,0));

@@ -13,6 +13,11 @@ import agreementMaker.application.mappingEngine.AbstractMatcher;
 
 public class InputMatchersEditor extends AbstractCellEditor implements TableCellEditor{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1514627921533089776L;
+	
 	private HashMap<Integer, DefaultCellEditor> rowEditors;
 	
 	public InputMatchersEditor() {

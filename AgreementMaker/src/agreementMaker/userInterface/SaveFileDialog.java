@@ -5,29 +5,20 @@ package agreementMaker.userInterface;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.prefs.Preferences;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.LayoutStyle;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 
-import agreementMaker.AMException;
-import agreementMaker.GSM;
 import agreementMaker.Utility;
 import agreementMaker.output.OutputController;
-import agreementMaker.userInterface.vertex.VertexDescriptionPane;
 
 
 
@@ -177,9 +168,9 @@ public class SaveFileDialog implements ActionListener{
 				JOptionPane.showMessageDialog(frame, "Insert a file name without Extension");
 			}
 			else{
-				boolean ok = true;
+				//boolean ok = true;
 				try {
-					File f = new File(fullName);
+					//File f = new File(fullName);
 					prefs.saveLastNameOutput(outName);
 					OutputController.printDocument(fullName);
 					Utility.displayMessagePane("File saved successfully.\nLocation: "+fullName+"\n", null);
@@ -188,7 +179,7 @@ public class SaveFileDialog implements ActionListener{
 				}
 				catch(Exception e) {
 					e.printStackTrace();
-					ok = false;
+					//ok = false;
 					JOptionPane.showMessageDialog(frame, "Error while saving the file\nTry to change filename or location.");
 				}
 			}

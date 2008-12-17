@@ -4,6 +4,11 @@ import javax.swing.JPanel;
 
 public abstract class AbstractMatcherParametersPanel extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -127558550285920273L;
+
 	public AbstractMatcherParametersPanel() {
 		super();
 	}

@@ -1,6 +1,5 @@
 package agreementMaker.application.mappingEngine.referenceAlignment;
 
-import agreementMaker.application.mappingEngine.Alignment;
 
 /**
  * This class represents a mapping pair between to nodes in the reference file

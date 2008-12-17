@@ -1,6 +1,5 @@
 package agreementMaker.application.ontology.ontologyParser;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
