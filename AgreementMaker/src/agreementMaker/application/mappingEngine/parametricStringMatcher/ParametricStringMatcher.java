@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.StringTokenizer;
 
-import com.sun.xml.internal.ws.transport.local.server.LocalWSContextImpl;
-
 
 import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.SynsetType;
@@ -75,12 +73,12 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		}
 		
 		if(parameters.normalizeDiacritics) {
-			normalizeMap.put("ò", "o");
-			normalizeMap.put("à", "a");
-			normalizeMap.put("ù", "u");
-			normalizeMap.put("è", "e");
-			normalizeMap.put("é", "e");
-			normalizeMap.put("ì", "i");
+			normalizeMap.put("ï¿½", "o");
+			normalizeMap.put("ï¿½", "a");
+			normalizeMap.put("ï¿½", "u");
+			normalizeMap.put("ï¿½", "e");
+			normalizeMap.put("ï¿½", "e");
+			normalizeMap.put("ï¿½", "i");
 		}
 		
 		if(parameters.normalizePunctuation) {
@@ -106,7 +104,7 @@ public class ParametricStringMatcher extends AbstractMatcher {
 			normalizeMap.put("0", emptyString);
 		}
 		
-		//i don't care about \ / | & ( )[] {}  > < = + *  #  ^ °  ç  §
+		//i don't care about \ / | & ( )[] {}  > < = + *  #  ^ ï¿½  ï¿½  ï¿½
 		
 		
 	}
