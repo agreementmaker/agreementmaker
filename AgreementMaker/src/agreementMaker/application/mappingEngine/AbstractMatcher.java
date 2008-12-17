@@ -16,6 +16,7 @@ import java.awt.Color;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingWorker;
 
+
 public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements Matcher {
 	
 	/**Unique identifier of the algorithm used in the JTable list as index
@@ -402,16 +403,23 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 
     protected AlignmentSet scanWithBothConstraints(AlignmentMatrix matrix, int sourceConstraint,int targetConstraint) {
-    	//TODO: TO BE DONE
-    	if(sourceConstraint >= targetConstraint) {
-    		return scanForMaxValuesColumns(matrix, targetConstraint);
+    	if(sourceConstraint == 1 && targetConstraint == 1) {
+    		//TODO
+         	return scanForMaxValuesRows(matrix, sourceConstraint);
     	}
     	else {
-    		return scanForMaxValuesRows(matrix, sourceConstraint);
+    		//TODO
+        	if(sourceConstraint >= targetConstraint) {
+        		return scanForMaxValuesColumns(matrix, targetConstraint);
+        	}
+        	else {
+        		return scanForMaxValuesRows(matrix, sourceConstraint);
+        	}
     	}
     }
-    
-    //*****************USER ALIGN METHOD*****************************
+   
+
+	//*****************USER ALIGN METHOD*****************************
     
 	public void addManualAlignments(ArrayList<Alignment> alignments) {
 		Iterator<Alignment> it = alignments.iterator();
@@ -837,7 +845,57 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     		int m = targetOntology.getPropertiesList().size();
     		stepsTotal += n*m; // total number of comparisons between the properties nodes
     	}
+	//****************** PROGRESS DIALOG METHODS *************************8
+	
+	
+    /**
+     * This function is used by the Progress Dialog, in order to invoke the matcher.
+     * It's just a wrapper for match(). 
+     */
+    @Override
+	public Void doInBackground() throws Exception {
+		match();
+		return null;
+	}
+    
+    /**
+     * Function called by the worker thread when the matcher finishes the algorithm.
+     */
+    @Override
+    public void done() {
+    	progressDialog.dispose();  // when we're done, close the progress dialog
+    }
+	
+    /**
+     * Need to keep track of the progress dialog we have because right now, there is no button to close it, so we must make it close automatically.
+     * @param p
+     */
+	public void setProgressDialog( ProgressDialog p ) {
+		progressDialog = p;
+	}
+	
+	/**
+	 * This method sets up stepsDone and stepsTotal.  Override this method if you have a special way of computing the values.
+	 * ( If you override this method, it's likely that you will also need to override alignNodesOneByOne(), because it calls stepDone() and updateProgress() ).
+	 * @author Cosmin Stroe @date Dec 17, 2008
+	 */
+	protected void setupProgress() {
+    	stepsDone = 0;
+    	stepsTotal = 0;  // total number
+    	if( alignClass ) {
+    		int n = sourceOntology.getClassesList().size();
+    		int m = targetOntology.getClassesList().size();
+    		stepsTotal += n*m;  // total number of comparisons between the class nodes 
+    	}
+    	
+    	if( alignProp ) {
+    		int n = sourceOntology.getPropertiesList().size();
+    		int m = targetOntology.getPropertiesList().size();
+    		stepsTotal += n*m; // total number of comparisons between the properties nodes
+    	}
 
+    	// we have computed stepsTotal, and initialized stepsDone to 0.
+	}
     	// we have computed stepsTotal, and initialized stepsDone to 0.
 	}
 
@@ -852,7 +910,30 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected void stepDone() {
 		stepsDone++;
 	}
+	/**
+	 * We have just completed one step of the total number of steps.
+	 * 
+	 * Remember, stepsDone is used in conjunction with stepsTotal, in order to get 
+	 * an idea of how much of the total task we have done ( % done = stepsDone / stepsTotal * 100 ).
+	 * 
+	 *  @author Cosmin Stroe @date Dec 17, 2008
+	 */
+	protected void stepDone() {
+		stepsDone++;
+	}
 
+	/**
+	 * Update the Progress Dialog with the current progress.
+	 * 
+	 *  @author Cosmin Stroe @date Dec 17, 2008
+	 */
+	protected void updateProgress() {
+	
+		float percent = ((float)stepsDone / (float)stepsTotal);
+		int p = (int) (percent * 100);
+		setProgress(p);  // this function does the actual work ( via the PropertyChangeListener )
+		
+	}
 	/**
 	 * Update the Progress Dialog with the current progress.
 	 * 
