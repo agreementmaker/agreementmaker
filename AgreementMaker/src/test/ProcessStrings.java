@@ -1,7 +1,5 @@
 package test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
 
 import javax.swing.JOptionPane;
 

@@ -50,7 +50,12 @@ import java.awt.GridLayout;
  * uses a custom TableModel.
  */
 public class TableDemo extends JPanel {
-    private boolean DEBUG = false;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7111369649421593782L;
+	
+	private boolean DEBUG = false;
 
     public TableDemo() {
         super(new GridLayout(1,0));

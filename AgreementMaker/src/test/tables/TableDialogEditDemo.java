@@ -38,7 +38,6 @@ package test.tables;
  */
 
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -49,9 +48,6 @@ import javax.swing.table.AbstractTableModel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 
 /**
  * This is like TableDemo, except that it substitutes a
@@ -59,7 +55,12 @@ import java.awt.event.MouseEvent;
  * a custom cell renderer and editor for the color data.
  */
 public class TableDialogEditDemo extends JPanel {
-    private boolean DEBUG = false;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5765355269248874801L;
+	
+	private boolean DEBUG = false;
 
     
     public TableDialogEditDemo() {
