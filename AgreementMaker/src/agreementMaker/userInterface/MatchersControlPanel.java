@@ -9,7 +9,6 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Date;
 
 
 import javax.swing.BorderFactory;
@@ -18,12 +17,12 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.AbstractTableModel;
 
 
 import agreementMaker.AMException;
+import agreementMaker.GlobalStaticVariables;
 import agreementMaker.Utility;
 import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
@@ -35,8 +34,6 @@ import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluator;
-import agreementMaker.application.mappingEngine.testMatchers.CopyMatcher;
-import agreementMaker.output.OutputController;
 import agreementMaker.userInterface.table.MatchersTablePanel;
 import agreementMaker.userInterface.table.MyTableModel;
 
@@ -367,15 +364,23 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 					currentMatcher.setMaxTargetAlign(Utility.getIntFromNumRelString((String)tRelationCombo.getSelectedItem()));
 				}
 				try {
-					currentMatcher.match();
+					// TODO: Progress Dialog here.
+					if( GlobalStaticVariables.USE_PROGRESS_DIALOG ) {
+						// We are using the progress dialog.
+						ProgressDialog progress = new ProgressDialog(currentMatcher);	
+					} else {
+						// we're not using the progress dialog, just do the match()
+						currentMatcher.match();
+						
+					}
 					matchersTablePanel.addMatcher(currentMatcher);
 					ui.redisplayCanvas();
 					Utility.displayMessagePane(currentMatcher.getMatchReport(), "Matching Process Report");
+					System.out.println("Matching Process Complete");
 				}
 				catch(AMException ex){
 					Utility.displayMessagePane(ex.getMessage(), null);
 				}
-				System.out.println("Matching Process Complete");
 			}
 		}
 	}
