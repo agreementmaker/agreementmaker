@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import javax.swing.tree.TreeNode;
 
+import agreementMaker.GlobalStaticVariables;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.AlignmentMatrix;
@@ -79,9 +80,9 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 				target = targetList.get(j);
 				alignment = alignTwoNodes(source, target, typeOfNodes);
 				matrix.set(i,j,alignment);
-				stepDone();  // Progress Dialog
+				if( GlobalStaticVariables.USE_PROGRESS_DIALOG ) stepDone();  // Progress Dialog
 			}
-			updateProgress();  // Progress Dialog
+			if( GlobalStaticVariables.USE_PROGRESS_DIALOG ) updateProgress();  // Progress Dialog
 		}
 		return matrix;
 	}
