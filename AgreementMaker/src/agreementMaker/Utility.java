@@ -4,7 +4,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import sun.net.www.protocol.http.InMemoryCookieStore;
+
 import agreementMaker.application.mappingEngine.AbstractMatcher;
+import agreementMaker.application.mappingEngine.IntDoublePair;
 import agreementMaker.userInterface.table.MyTableModel;
 
 public class Utility {
@@ -149,4 +152,18 @@ public class Utility {
 		sum = sum / (double) array.length;
 		return sum;
 	}
+	
+	public static IntDoublePair getMaxOfRow(double[][] matrix, int row) {
+		IntDoublePair max = new IntDoublePair(-1, -1);
+		for(int i = 0; i < matrix[row].length; i++) {
+			if(matrix[row][i] > max.value) {
+				max.value = matrix[row][i];
+				max.index = i;
+			}
+		}
+		return max;
+	}
+	
+
+	
 }

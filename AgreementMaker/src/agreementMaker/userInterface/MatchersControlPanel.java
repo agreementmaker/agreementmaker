@@ -306,7 +306,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				AbstractMatcher toBeEvaluated;
 				AlignmentSet evaluateSet;
 				ReferenceEvaluationData rd;
-				String report="\t\tReference Evaluation Complete\n\n";
+				String report="Reference Evaluation Complete\n\n";
 				for(int i = 0; i < rowsIndex.length; i++) {
 					toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
 					evaluateSet = toBeEvaluated.getAlignmentSet();

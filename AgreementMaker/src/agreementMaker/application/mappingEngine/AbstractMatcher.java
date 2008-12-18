@@ -404,19 +404,100 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 
     protected AlignmentSet scanWithBothConstraints(AlignmentMatrix matrix, int sourceConstraint,int targetConstraint) {
-    	if(sourceConstraint == 1 && targetConstraint == 1) {
-    		//TODO
-         	return scanForMaxValuesRows(matrix, sourceConstraint);
+    	return scanForMaxValuesRows(matrix, sourceConstraint);
+    	/*
+    	int fakeValue = IntDoublePair.fake;
+    	int rows = matrix.getRows();
+    	int cols = matrix.getColumns();
+    	
+    	AlignmentSet aset = new AlignmentSet();
+
+    	//I need to build a copy of the similarity matrix to work on it, i just need the similarity values
+    	//TODO remove threshold values
+    	double[][] workingMatrix = new double[rows][cols];
+    	for(int i = 0; i < rows; i++) {
+    		for(int j = 0; j < cols; i++) {
+    			workingMatrix[i][j] = matrix.get(i,j).getSimilarity();
+    		}
     	}
-    	else {
-    		//TODO
-        	if(sourceConstraint >= targetConstraint) {
-        		return scanForMaxValuesColumns(matrix, targetConstraint);
-        	}
-        	else {
-        		return scanForMaxValuesRows(matrix, sourceConstraint);
+    	
+    	//for each source (row) i need to find the SourceConstraint best values
+    	//for each maxvalue i need to remember the similarity value and the index of the correspondent column
+    	//we init it all to (-1,-1)
+    	IntDoublePair fakePair = new IntDoublePair(fakeValue,fakeValue);
+    	
+    	IntDoublePair[][] rowsMaxValues = new IntDoublePair[matrix.getRows()][sourceConstraint];
+    	for(int i= 0; i < rows; i++) {
+    		for(int j = 0 ; j < sourceConstraint; j++) {
+    			rowsMaxValues[i][j] = fakePair;
+    		}
+    	}
+    	
+    	//for each target (column) i need to find the SourceConstraint best values
+    	//for each maxvalue i need to remember the similarity value and the index of the correspondent column
+    	//we init it all to (-1,-1)
+    	IntDoublePair[][] colsMaxValues = new IntDoublePair[matrix.getColumns()][targetConstraint];
+    	for(int i= 0; i < cols; i++) {
+    		for(int j = 0 ; j < targetConstraint; j++) {
+    			colsMaxValues[i][j] = fakePair;
+    		}
+    	}
+    	
+    	IntDoublePair maxPairOfRow;
+    	IntDoublePair prevMaxPairOfCol;
+    	IntDoublePair newMaxPairOfCol;
+    	boolean somethingChanged = true;
+    	
+    	//we must continue until the situation is stable
+    	//if is a 3-4 mapping it means that we can find at most three alignments for each source and 4 for each target, but not always
+    	while(somethingChanged) {
+    		somethingChanged = false;
+    		
+        	for(int i = 0; i < rows; i++) {
+        		//if I haven't found all best alignments for this row
+        		if(!rowsMaxValues[i][0].isFake()) {
+        			
+            		//get the max value for this row and the associated column index
+            		maxPairOfRow = Utility.getMaxOfRow(workingMatrix, i);
+            		if(!maxPairOfRow.isFake()) {
+                		//the minimum of the best values for the column corrisponding to this max
+                		prevMaxPairOfCol = colsMaxValues[maxPairOfRow.index][0];
+                		
+                		//if my value is higher than than the minimum of the best values for this column
+                		//this value becomes one of the best values and the minimum one is discarded
+                		if(maxPairOfRow.value > prevMaxPairOfCol.value) {
+                			somethingChanged = true;
+                			
+                			//this value will be one of the best for this column and row, i had to them and update order.
+                			//prevMaxPairOfCol is not anymore one of the best values for this column
+                			//i'll switch it with the new one, but i also have to remove it from the best values of his row putting a fake one in it.
+                			//i also have to modify the matrix so that that row won't select that max again.
+                			newMaxPairOfCol = new IntDoublePair(i,maxPairOfRow.value);
+                			colsMaxValues[maxPairOfRow.index][0] = newMaxPairOfCol;
+                			
+                			//DEVO METTERE QUELLO MAX NUOVO NELLA RIGA E AGGIORNARE L ORDINE
+                			//E SCRIVERE IL PREORDER ARRAY PER RIGA E COL E AGGIUSTARE THRESHOLD ALL'INIZIO
+                			
+                			//reorder that array of best values of this column to have minimum at the beginning
+                			Utility.orderPairArray(colsMaxValues[maxPairOfRow.index]);
+                			
+                			if(!prevMaxPairOfCol.isFake()) {
+                    			//the prev best values has to be removed also from that row best values
+                    			//and i have to set that matrix value to fake so that that row won't select again that value
+                    			rowsMaxValues[prevMaxPairOfCol.index][0] = fakePair;
+                    			workingMatrix[prevMaxPairOfCol.index][maxPairOfRow.index] = fakeValue;
+                			}
+                		}
+            		}
+        		}
         	}
     	}
+
+    	
+    	
+  
+    	return aset;
+    	*/
     }
    
 
