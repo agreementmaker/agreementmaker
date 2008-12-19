@@ -154,7 +154,7 @@ public class Utility {
 	}
 	
 	public static IntDoublePair getMaxOfRow(double[][] matrix, int row) {
-		IntDoublePair max = new IntDoublePair(-1, -1);
+		IntDoublePair max = IntDoublePair.createFakePair();
 		for(int i = 0; i < matrix[row].length; i++) {
 			if(matrix[row][i] > max.value) {
 				max.value = matrix[row][i];
@@ -162,6 +162,32 @@ public class Utility {
 			}
 		}
 		return max;
+	}
+	
+	//order the array of IntDoublePair so that the minimum is at the beginning
+	//the only element in the wrong position is the key element that to be moved before or later or staeid there
+	public static void adjustOrderPairArray(IntDoublePair[] intDoublePairs, int k) {
+		IntDoublePair currentPair;
+		IntDoublePair nextPair;
+		//THE TWO CASES ARE EXCLUSIVE 
+		
+		
+		//if is higher the the next val i need to move the element to the right
+		for(int i = k; i < intDoublePairs.length -1 && intDoublePairs[i].value > intDoublePairs[i+1].value; i++) {
+			currentPair = intDoublePairs[i];
+			nextPair = intDoublePairs[i+1];
+			intDoublePairs[i] = nextPair;
+			intDoublePairs[i+1] = currentPair;
+		}
+		
+		//if is lower the the prev val i need to move the element to the left
+		for(int i = k; i > 0 && intDoublePairs[i].value < intDoublePairs[i-1].value; i--) {
+			currentPair = intDoublePairs[i];
+			nextPair = intDoublePairs[i-1];
+			intDoublePairs[i] = nextPair;
+			intDoublePairs[i-1] = currentPair;
+		}
+		
 	}
 	
 
