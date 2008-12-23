@@ -6,15 +6,18 @@ import agreementMaker.application.mappingEngine.AlignmentMatrix;
 
 public class QualityEvaluator {
 	
+		
 	public final static String  LOCAL = "AM Local Quality";
 	public final static String  GLOBAL = "AM Global Quality";
 	public final static String COMBINED = "Combined Quality: average between Global and Local";
 	
-	public static QualityEvaluationData evaluate(AbstractMatcher matcher, String quality, int maxSourceRelations, int maxTargetRelations) {
+	public final static String[] QUALITIES = {LOCAL,GLOBAL,COMBINED};
+	
+	public static QualityEvaluationData evaluate(AbstractMatcher matcher, String quality) {
 		QualityEvaluationData qData = null;
 		if(quality.equals(LOCAL) || quality.equals(GLOBAL)  || quality.equals(COMBINED) ){
 			//in all tree cases i have to calculate local first
-			qData = localQuality(matcher,maxSourceRelations,maxTargetRelations);
+			qData = AMLocalQuality.getQuality(matcher);
 			//then global is the average of locals
 			//combined is the average of global and each local 
 			if(quality.equals(GLOBAL) || quality.equals(COMBINED)) {
@@ -56,51 +59,5 @@ public class QualityEvaluator {
 		return qData;
 	}
 
-	protected static QualityEvaluationData localQuality(AbstractMatcher matcher, int maxSourceRelations, int maxTargetRelations) {
-		QualityEvaluationData q = new QualityEvaluationData();
-		int numOfRelations = maxSourceRelations;
-		q.setLocalForSource(true);
-		if( maxSourceRelations > maxTargetRelations) {
-			q.setLocalForSource(false);
-			numOfRelations = maxTargetRelations;
-		}
-		if(matcher.areClassesAligned()) {
-			double[] measures = evaluateMatrix(matcher.getClassesMatrix(), q.isLocalForSource(),numOfRelations );
-			q.setLocalClassMeasures(measures);
-		}
-		else {
-			double[] measures = evaluateMatrix(matcher.getPropertiesMatrix(), q.isLocalForSource(),numOfRelations);
-			q.setLocalPropMeasures(measures);
-		}
-		return q;
-	}
-	
-
-	private static double[] evaluateMatrix(AlignmentMatrix matrix, boolean localForSource, int numRelations) {
-		//if sourcerelations are less then targetrelation the matrix will be scanned for row or column.
-		//for each node (row or column) the quality will be calculated with this formula:
-		// avg(numRelations best similarities of that nodes) - avg(similarities not choosen for that node) 
-		/*
-		double[] localMeasure;
-		int size;
-		if(localForSource) {
-			size = matrix.getRows();
-			localMeasure = new double[size];
-		}
-		else {
-			size = matrix.getColumns();
-			localMeasure = new double[size];
-		}
-		if(numRelations == AbstractMatcher.ANY_INT)
-			numRelations = size;
-		double[][] matrix2 = new double[10][10];
-		double[] bo = matrix2[0];
-		double[] bo = matrix[][0];
-		for(int i = 0; i < res.length; i++) {
-			res[i] = Math.random();
-		}
-		*/
-		return null;
-	}
 }
 	

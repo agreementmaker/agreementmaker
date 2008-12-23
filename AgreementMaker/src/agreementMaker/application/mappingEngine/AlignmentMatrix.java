@@ -133,4 +133,80 @@ public class AlignmentMatrix {
             System.out.println();
         }
     }
+
+	
+    
+    //********************* METHODS ADDED FOR SOME AM CALCULATIONS**********************************************
+    
+    /**
+     * Return the array of numMaxValues max alignments in order from the worst to the best between the max values
+     * this method is used both in selection process but also the AMlocalQuality algorithm
+     */
+    public Alignment[] getRowMaxValues(int row, int numMaxValues) {
+		//remember to check to have numMaxValues lower than matrix columns before
+    	Alignment[] maxAlignments = new Alignment[numMaxValues];
+    	
+		for(int h = 0; h<maxAlignments.length;h++) {
+			maxAlignments[h] = new Alignment(-1); //intial max alignments have sim equals to -1
+		}
+		
+		Alignment currentValue;
+		Alignment currentMax;
+		for(int j = 0; j<getColumns();j++) {
+			currentValue = get(row,j);
+			currentMax = maxAlignments[0];
+			for(int k = 0;currentValue.getSimilarity() >= currentMax.getSimilarity() ; k++) {
+				maxAlignments[k] = currentValue;
+				currentValue = currentMax;
+				if(k+1 < maxAlignments.length) {
+					currentMax = maxAlignments[k+1];
+				}
+				else break;
+			}
+		}
+
+		return maxAlignments;
+	}
+
+	public double getRowSum(int row) {
+		double sum = 0;
+		for(int j = 0; j < getColumns(); j++) {
+			sum += get(row, j).getSimilarity();
+		}
+		return sum;
+	}
+
+	public Alignment[] getColMaxValues(int col, int numMaxValues) {
+		//remember to check to have numMaxValues lower than matrix rows before
+    	Alignment[] maxAlignments = new Alignment[numMaxValues];
+    	
+		for(int h = 0; h<maxAlignments.length;h++) {
+			maxAlignments[h] = new Alignment(-1); //intial max alignments have sim equals to -1
+		}
+		
+		Alignment currentValue;
+		Alignment currentMax;
+		for(int j = 0; j<getRows();j++) {
+			currentValue = get(j, col);
+			currentMax = maxAlignments[0];
+			for(int k = 0;currentValue.getSimilarity() >= currentMax.getSimilarity() ; k++) {
+				maxAlignments[k] = currentValue;
+				currentValue = currentMax;
+				if(k+1 < maxAlignments.length) {
+					currentMax = maxAlignments[k+1];
+				}
+				else break;
+			}
+		}
+
+		return maxAlignments;
+	}
+
+	public double getColSum(int col) {
+		double sum = 0;
+		for(int i = 0; i < getColumns(); i++) {
+			sum += get(i, col).getSimilarity();
+		}
+		return sum;
+	}
 }

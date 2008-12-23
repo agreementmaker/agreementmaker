@@ -117,9 +117,9 @@ public class ParametricStringMatcher extends AbstractMatcher {
 			stopWords.add("as");
 			stopWords.add("for");
 			stopWords.add("from");
-			stopWords.add("in"); //this is risky because of in out meaning in ontology words
+//			stopWords.add("in"); //this is risky because of in out meaning in ontology words
 			stopWords.add("of");
-			stopWords.add("on"); // this is also risky for on/off meaning like onCampus offCampus
+//			stopWords.add("on"); // this is also risky for on/off meaning like onCampus offCampus
 			stopWords.add("or");
 			stopWords.add("and");
 			stopWords.add("&");

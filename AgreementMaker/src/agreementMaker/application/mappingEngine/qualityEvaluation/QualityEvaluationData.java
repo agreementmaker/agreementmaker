@@ -6,7 +6,7 @@ public class QualityEvaluationData {
 	private double[] localPropMeasures;
 	
 	private boolean localForSource;//this is true if those are the local measure for each source node, (each row) it will be false if those are localQuality for each target (each column)
-    
+    private boolean local; //this is true if the quality is local, false if is global and in this case localForSource doesn't matter
 
 	public double[] getLocalClassMeasures() {
 		return localClassMeasures;
@@ -44,4 +44,13 @@ public class QualityEvaluationData {
 		return 0;
 	}
 
+	public boolean isLocal() {
+		return local;
+	}
+
+	public void setLocal(boolean local) {
+		this.local = local;
+	}
+	
+	
 }

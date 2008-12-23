@@ -81,8 +81,9 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		cancel = new JButton("Cancel");
 		proceed = new JButton("Proceed");
 		browse.addActionListener(this);
-		cancel.addActionListener(this);
 		proceed.addActionListener(this);
+		cancel.addActionListener(this);
+
 		
 		String[] languageStrings = GlobalStaticVariables.languageStrings;
 		String[] syntaxStrings = GlobalStaticVariables.syntaxStrings;

@@ -16,6 +16,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.AbstractTableModel;
@@ -31,6 +32,8 @@ import agreementMaker.application.mappingEngine.AlignmentSet;
 import agreementMaker.application.mappingEngine.MatcherFactory;
 import agreementMaker.application.mappingEngine.MatchersRegistry;
 import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
+import agreementMaker.application.mappingEngine.qualityEvaluation.QualityEvaluationData;
+import agreementMaker.application.mappingEngine.qualityEvaluation.QualityEvaluator;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluator;
@@ -167,9 +170,10 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		panel3.add(clearMatchings);
 		panel3.add(saveToFileButton);
 		panel3.add(refEvaluate);
+		panel3.add(qualityEvaluationButton);
 		//panel3.add(editMatrixButton);
 
-		//panel3.add(qualityEvaluationButton);
+		//
 
 		//panel3.add(importMatchingsButton);
 		//panel3.add(exportMatchingsButton);
@@ -213,6 +217,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 			else if(obj == newMatching) {
 				newManual();
 			}
+			else if(obj == qualityEvaluationButton) {
+				qualityEvaluation();
+			}
 		}
 		catch(AMException ex2) {
 			Utility.displayMessagePane(ex2.getMessage(), null);
@@ -223,6 +230,45 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		}
 	}
 	
+	private void qualityEvaluation() {
+		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
+		if(rowsIndex.length == 0) {
+			Utility.displayErrorPane("No matchers selected", null);
+		}
+		else {
+			AbstractMatcher toBeEvaluated;
+			String report="Quality Evaluation Complete\n\n";
+			QualityEvaluationData q;
+			for(int i = 0; i < rowsIndex.length; i++) {
+				toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
+				report+=i+" "+toBeEvaluated.getName().getMatcherName()+"\n\n";
+				Utility.displayErrorPane("Work in Progress!\nThis feature is not ready to be used yet.", "Work in Progress");
+				/*
+				for(int j = 0; j < QualityEvaluator.QUALITIES.length; i++) {
+					if(!q.isLocal()) {
+						
+						q = QualityEvaluator.evaluate(toBeEvaluated, QualityEvaluator.QUALITIES[j]);
+						report+= QualityEvaluator.QUALITIES[j]+"\n";
+						report+= "Classes Quality;
+						report+= QualityEvaluator.QUALITIES[j]+"\n";
+					}
+					
+					
+					
+				}
+				rd = ReferenceEvaluator.compare(evaluateSet, referenceSet);
+				toBeEvaluated.setRefEvaluation(rd);
+				
+				report +=rd.getReport()+"\n";
+				AbstractTableModel model = (AbstractTableModel)matchersTablePanel.getTable().getModel();
+				model.fireTableRowsUpdated(toBeEvaluated.getIndex(), toBeEvaluated.getIndex());
+				*/
+			}
+			//Utility.displayTextAreaPane(report,"Reference Evaluation Report");
+		}
+		
+	}
+
 	public void newManual() throws Exception {
 		int lastIndex = Core.getInstance().getMatcherInstances().size();
 		AbstractMatcher manualMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.UserManual, lastIndex);
@@ -312,7 +358,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 					evaluateSet = toBeEvaluated.getAlignmentSet();
 					rd = ReferenceEvaluator.compare(evaluateSet, referenceSet);
 					toBeEvaluated.setRefEvaluation(rd);
-					report+=toBeEvaluated.getName()+"\n\n";
+					report+=i+" "+toBeEvaluated.getName().getMatcherName()+"\n\n";
 					report +=rd.getReport()+"\n";
 					AbstractTableModel model = (AbstractTableModel)matchersTablePanel.getTable().getModel();
 					model.fireTableRowsUpdated(toBeEvaluated.getIndex(), toBeEvaluated.getIndex());

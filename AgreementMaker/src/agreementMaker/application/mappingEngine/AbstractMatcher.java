@@ -322,72 +322,39 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
     protected AlignmentSet scanForMaxValuesRows(AlignmentMatrix matrix, int numMaxValues) {
 		AlignmentSet aset = new AlignmentSet();
-		Alignment currentValue;
-		Alignment currentMax;
+		Alignment toBeAdded;
 		//temp structure to keep the first numMaxValues best alignments for each source
 		//when maxRelations are both ANY we could have this structure too big that's why we have checked this case in the previous method
 		Alignment[] maxAlignments;
 		for(int i = 0; i<matrix.getRows();i++) {
-			maxAlignments = new Alignment[numMaxValues];
-			for(int h = 0; h<maxAlignments.length;h++) {
-				maxAlignments[h] = new Alignment(-1); //intial max alignments have sim equals to 0
-			}
-			for(int j = 0; j<matrix.getColumns();j++) {
-				currentValue = matrix.get(i,j);
-				currentMax = maxAlignments[0];
-				for(int k = 0;currentValue.getSimilarity() >= currentMax.getSimilarity() ; k++) {
-					maxAlignments[k] = currentValue;
-					currentValue = currentMax;
-					if(k+1 < maxAlignments.length) {
-						currentMax = maxAlignments[k+1];
-					}
-					else break;
+			maxAlignments = matrix.getRowMaxValues(i, numMaxValues);
+			//get only the alignments over the threshold
+			for(int e = 0;e < maxAlignments.length; e++) { 
+				toBeAdded = maxAlignments[e];
+				if(toBeAdded.getSimilarity() >= threshold) {
+					aset.addAlignment(toBeAdded);
 				}
-			}
-			currentValue = maxAlignments[0];
-			for(int e = 0;currentValue.getSimilarity() >= threshold; e++) {
-				aset.addAlignment(currentValue);
-				if(e+1 < maxAlignments.length)
-					currentValue = maxAlignments[e+1];
-				else break;
-				//System.out.println(currentValue);
 			}
 		}
 		return aset;
 	}
+    
 
     
     protected AlignmentSet scanForMaxValuesColumns(AlignmentMatrix matrix,int numMaxValues) {
 		AlignmentSet aset = new AlignmentSet();
-		Alignment currentValue;
-		Alignment currentMax;
+		Alignment toBeAdded;
 		//temp structure to keep the first numMaxValues best alignments for each source
 		//when maxRelations are both ANY we could have this structure too big that's why we have checked this case in the previous method
 		Alignment[] maxAlignments;
 		for(int i = 0; i<matrix.getColumns();i++) {
-			maxAlignments = new Alignment[numMaxValues];
-			for(int h = 0; h<maxAlignments.length;h++) {
-				maxAlignments[h] = new Alignment(-1); //intial max alignments have sim equals to 0
-			}
-			for(int j = 0; j<matrix.getRows();j++) {
-				currentValue = matrix.get(j,i);
-				currentMax = maxAlignments[0];
-				for(int k = 0;currentValue.getSimilarity() >= currentMax.getSimilarity() ; k++) {
-					maxAlignments[k] = currentValue;
-					currentValue = currentMax;
-					if(k+1 < maxAlignments.length) {
-						currentMax = maxAlignments[k+1];
-					}
-					else break;
+			maxAlignments = matrix.getColMaxValues(i, numMaxValues);
+			//get only the alignments over the threshold
+			for(int e = 0;e < maxAlignments.length; e++) { 
+				toBeAdded = maxAlignments[e];
+				if(toBeAdded.getSimilarity() >= threshold) {
+					aset.addAlignment(toBeAdded);
 				}
-			}
-			currentValue = maxAlignments[0];
-			for(int e = 0;currentValue.getSimilarity() >= threshold; e++) {
-				aset.addAlignment(currentValue);
-				if(e+1 < maxAlignments.length)
-					currentValue = maxAlignments[e+1];
-				else break;
-				//System.out.println(currentValue);
 			}
 		}
 		return aset;
@@ -408,10 +375,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 
     protected AlignmentSet scanWithBothConstraints(AlignmentMatrix matrix, int sourceConstraint,int targetConstraint) {
-    	//return scanForMaxValuesRows(matrix, sourceConstraint);
+    	
     	
     	IntDoublePair fakePair = IntDoublePair.createFakePair();
-    	System.out.println(fakePair.value+" "+fakePair.index);
     	int rows = matrix.getRows();
     	int cols = matrix.getColumns();
     	
@@ -526,12 +492,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
         	}
     	}
     	
+    	/*FOR DEBUGGING
     	for(int i = 0; i < rows; i++) {
     		for(int j = 0; j < cols; j++) {
     			System.out.print(workingMatrix[i][j]+" ");
     		}
     		System.out.println("");
     	}
+    	*/
     	
     	//now we have the alignments into rowMaxValues
     	IntDoublePair toBeAdded;
