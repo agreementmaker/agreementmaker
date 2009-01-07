@@ -139,7 +139,7 @@ public class AlignmentMatrix {
     //********************* METHODS ADDED FOR SOME AM CALCULATIONS**********************************************
     
     /**
-     * Return the array of numMaxValues max alignments in order from the worst to the best between the max values
+     * Return the array of numMaxValues max alignments, THE ARRAY IS ORDERED FROM THE BEST MAX VALUE TO THE WORST
      * this method is used both in selection process but also the AMlocalQuality algorithm
      */
     public Alignment[] getRowMaxValues(int row, int numMaxValues) {
@@ -147,21 +147,21 @@ public class AlignmentMatrix {
     	Alignment[] maxAlignments = new Alignment[numMaxValues];
     	
 		for(int h = 0; h<maxAlignments.length;h++) {
-			maxAlignments[h] = new Alignment(-1); //intial max alignments have sim equals to -1
+			maxAlignments[h] = new Alignment(-1); //intial max alignments have sim equals to -1, don't put 0 could create problem in the next for
 		}
 		
 		Alignment currentValue;
 		Alignment currentMax;
 		for(int j = 0; j<getColumns();j++) {
 			currentValue = get(row,j);
-			currentMax = maxAlignments[0];
-			for(int k = 0;currentValue.getSimilarity() >= currentMax.getSimilarity() ; k++) {
-				maxAlignments[k] = currentValue;
-				currentValue = currentMax;
-				if(k+1 < maxAlignments.length) {
-					currentMax = maxAlignments[k+1];
+			
+			//maxAlignments contains the ordered list of max alignments, the first is the best max value
+			for(int k = 0;k<maxAlignments.length; k++) {
+				currentMax = maxAlignments[k];
+				if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value
+					maxAlignments[k] = currentValue;
+					currentValue = currentMax;
 				}
-				else break;
 			}
 		}
 
@@ -188,14 +188,14 @@ public class AlignmentMatrix {
 		Alignment currentMax;
 		for(int j = 0; j<getRows();j++) {
 			currentValue = get(j, col);
-			currentMax = maxAlignments[0];
-			for(int k = 0;currentValue.getSimilarity() >= currentMax.getSimilarity() ; k++) {
-				maxAlignments[k] = currentValue;
-				currentValue = currentMax;
-				if(k+1 < maxAlignments.length) {
-					currentMax = maxAlignments[k+1];
+			
+			//maxAlignments contains the ordered list of max alignments, the first is the best max value
+			for(int k = 0;k<maxAlignments.length; k++) {
+				currentMax = maxAlignments[k];
+				if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value
+					maxAlignments[k] = currentValue;
+					currentValue = currentMax;
 				}
-				else break;
 			}
 		}
 
@@ -204,7 +204,7 @@ public class AlignmentMatrix {
 
 	public double getColSum(int col) {
 		double sum = 0;
-		for(int i = 0; i < getColumns(); i++) {
+		for(int i = 0; i < getRows(); i++) {
 			sum += get(i, col).getSimilarity();
 		}
 		return sum;

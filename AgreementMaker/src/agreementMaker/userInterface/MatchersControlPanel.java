@@ -240,31 +240,27 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 			String report="Quality Evaluation Complete\n\n";
 			QualityEvaluationData q;
 			for(int i = 0; i < rowsIndex.length; i++) {
+				
 				toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
 				report+=i+" "+toBeEvaluated.getName().getMatcherName()+"\n\n";
-				Utility.displayErrorPane("Work in Progress!\nThis feature is not ready to be used yet.", "Work in Progress");
-				/*
-				for(int j = 0; j < QualityEvaluator.QUALITIES.length; i++) {
+				for(int j = 0; j < QualityEvaluator.QUALITIES.length; j++) {
+					q = QualityEvaluator.evaluate(toBeEvaluated, QualityEvaluator.QUALITIES[j]);
 					if(!q.isLocal()) {
-						
+						report+= QualityEvaluator.QUALITIES[j]+"\n";
+						report+= "Global Classes Quality: "+q.getGlobalClassQuality()+"\n" ;
+						report+= "Global Properties Quality: "+q.getGlobalPropQuality()+"\n" ;
+						report+= "\n";
+					}
+					else {
 						q = QualityEvaluator.evaluate(toBeEvaluated, QualityEvaluator.QUALITIES[j]);
 						report+= QualityEvaluator.QUALITIES[j]+"\n";
-						report+= "Classes Quality;
-						report+= QualityEvaluator.QUALITIES[j]+"\n";
+						report+= "Average of local Classes Quality: "+Utility.getAverageOfArray(q.getLocalClassMeasures())+"\n" ;
+						report+= "Average of local Properties Quality: "+Utility.getAverageOfArray(q.getLocalPropMeasures())+"\n" ;
+						report+= "\n";
 					}
-					
-					
-					
 				}
-				rd = ReferenceEvaluator.compare(evaluateSet, referenceSet);
-				toBeEvaluated.setRefEvaluation(rd);
-				
-				report +=rd.getReport()+"\n";
-				AbstractTableModel model = (AbstractTableModel)matchersTablePanel.getTable().getModel();
-				model.fireTableRowsUpdated(toBeEvaluated.getIndex(), toBeEvaluated.getIndex());
-				*/
 			}
-			//Utility.displayTextAreaPane(report,"Reference Evaluation Report");
+			Utility.displayTextAreaPane(report,"Quality Evaluation Report");
 		}
 		
 	}

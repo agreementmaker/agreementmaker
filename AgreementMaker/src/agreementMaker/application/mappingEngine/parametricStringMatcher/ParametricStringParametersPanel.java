@@ -52,7 +52,7 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 	private JCheckBox diacCheck;
 	private JLabel digitLabel = new JLabel("Digit suppression (removing any number from the strings).");
 	private JCheckBox digitCheck;
-	private JLabel stopLabel = new JLabel("Stop-words removing (e.g. 'a' 'to' 'in' 'for'...)");
+	private JLabel stopLabel = new JLabel("Stop-words removing (e.g. 'a' 'to' 'for'...)");
 	private JCheckBox stopCheck;
 	private JLabel stemLabel = new JLabel("Apply stemming ( 'dogs' --> 'dog' or 'saying' --> 'say' ) ");
 	private JCheckBox stemCheck;

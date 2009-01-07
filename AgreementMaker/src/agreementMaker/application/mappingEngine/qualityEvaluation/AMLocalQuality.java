@@ -31,11 +31,12 @@ public class AMLocalQuality {
 		return q;
 	}
 	
-	private static double[] evaluateMatrix(AlignmentMatrix matrix, boolean localForSource, int numRelations, double threshold) {
+	private static double[] evaluateMatrix(AlignmentMatrix matrix, boolean localForSource, int numRel, double threshold) {
 		//if sourcerelations are less then targetrelation the matrix will be scanned for row or column.
 		//for each node (row or column) the quality will be calculated with this formula:
 		// avg(numRelations selected similarities of that nodes) - avg(similarities not choosen for that node) 
 		double[] localMeasure;
+		int numRelations = numRel; //avoiding to modify the input param
 		
 		//Iocal for source, means that we will have a quality value for each source node
 		//local for target means that we will have a quality value for each target node
@@ -56,10 +57,12 @@ public class AMLocalQuality {
 		double sumOfSelected;
 		int numberOfNonSelected;
 		int numberOfSelected;
-		double avgOfNonSelected = 0;
-		double avgOfSelected = 0;
+
 		Alignment[] maxValues;
 		for(int i=0; i < localMeasure.length; i++) {
+			double avgOfNonSelected = 0;
+			double avgOfSelected = 0;
+			double finalAvg = 0;
 			
 			//get the numRelations max values for this row or column
 			if(localForSource) {
@@ -75,7 +78,7 @@ public class AMLocalQuality {
 			sumOfNonSelected = totalSum;
 			numberOfNonSelected = localMeasure.length; 
 			for(int j = 0; j < maxValues.length; j++) {
-				if(maxValues[j].getSimilarity() >= threshold) {//this is a selected value
+				if(maxValues[j].getSimilarity() >= threshold) {//this is a selected value, I'm not using the fact that maxValues is ordered because the order may change later so i don't want to risk
 					sumOfNonSelected -= maxValues[j].getSimilarity();
 					numberOfNonSelected--;
 				}
@@ -90,8 +93,13 @@ public class AMLocalQuality {
 				avgOfSelected =  sumOfSelected /(double)numberOfSelected; //else is 0
 			}
 			
-			localMeasure[i] = avgOfSelected - avgOfNonSelected;
+			finalAvg = avgOfSelected - avgOfNonSelected;
+			 //if i haven't selected anything the diffenrce would be negative
+			if(finalAvg >= 0) {
+				localMeasure[i] = finalAvg;
+			}//else is 0
 			
+			System.out.println("case i: totsum: "+totalSum+" sumSel: "+sumOfSelected+" sumNonSel: "+sumOfNonSelected+" numOfSel: "+numberOfSelected+" numOfNonSel: "+numberOfNonSelected+" avgSel: "+avgOfSelected+" avgNonSel: "+avgOfNonSelected+" final: "+localMeasure[i]);
 		}
 		
 		return localMeasure;
