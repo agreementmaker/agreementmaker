@@ -1,8 +1,8 @@
 package agreementMaker.application.mappingEngine;
 
+import agreementMaker.application.mappingEngine.Combination.CombinationMatcher;
 import agreementMaker.application.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import agreementMaker.application.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
-import agreementMaker.application.mappingEngine.manualCombination.ManualCombinationMatcher;
 import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
 import agreementMaker.application.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import agreementMaker.application.mappingEngine.qualityCombination.QualityCombinationMatcher;
@@ -37,7 +37,7 @@ public enum MatchersRegistry {
 	 ParametricString ( "Parametric String Matcher", ParametricStringMatcher.class ),
 	DSI					( "Descendant's Similarity Inheritance (DSI)", DescendantsSimilarityInheritanceMatcher.class ),
 	SSC					( "Sibling's Similarity Contribution (SSC)", SiblingsSimilarityContributionMatcher.class ),
-	ManualCombination	( "Manual Combination", ManualCombinationMatcher.class ),
+	Combination	( "Mathematical Weighted Combination", CombinationMatcher.class ),
 	ReferenceAlignment	( "Reference Alignment", ReferenceAlignmentMatcher.class ),
 
 	//WORK IN PROGRESS

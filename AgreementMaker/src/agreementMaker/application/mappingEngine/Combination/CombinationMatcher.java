@@ -1,4 +1,4 @@
-package agreementMaker.application.mappingEngine.manualCombination;
+package agreementMaker.application.mappingEngine.Combination;
 
 import java.util.ArrayList;
 
@@ -7,12 +7,14 @@ import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.AlignmentMatrix;
+import agreementMaker.application.mappingEngine.qualityEvaluation.QualityEvaluationData;
+import agreementMaker.application.mappingEngine.qualityEvaluation.QualityEvaluator;
 import agreementMaker.application.ontology.Node;
 
-public class ManualCombinationMatcher extends AbstractMatcher {
+public class CombinationMatcher extends AbstractMatcher {
 
 	
-	public ManualCombinationMatcher() {
+	public CombinationMatcher() {
 		super();
 		
 
@@ -25,6 +27,24 @@ public class ManualCombinationMatcher extends AbstractMatcher {
 		//I can't initialize the parametersPanel in here because i need to pass the inputmatchers as parameters but the input matchers will be set later so I will initialize the panel in the getParametersPanerl() method
 	}
 
+	
+	protected void beforeAlignOperations()  throws Exception{
+		super.beforeAlignOperations();
+		CombinationParameters cp = (CombinationParameters)param;
+		
+		//if weights are manually assigned then they are already created in the parameters
+		//if not, we have to run the quality evaluation
+		if(cp.qualityEvaluation) {
+			AbstractMatcher a;
+			String quality = cp.quality;
+			QualityEvaluationData q;
+			for(int i = 0; i < inputMatchers.size(); i++) {
+				a = inputMatchers.get(i);
+				q = QualityEvaluator.evaluate(matcher, quality);
+				cp.matchersWeights.add(q);
+			}
+		}
+	}
 	
 	
 	// overriding the abstract method in order to keep track of what kind of nodes we are aligning
@@ -56,7 +76,9 @@ public class ManualCombinationMatcher extends AbstractMatcher {
     
 
 	protected Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
-		ManualCombinationParameters parameters = (ManualCombinationParameters)param;
+		return null;
+		/*
+		CombinationParameters parameters = (CombinationParameters)param;
 		int sourceindex = source.getIndex();
 		int targetindex = target.getIndex();
 		double max = 0;// keep the max sim between all input matrix for the cell (sourceindex, targetindex)
@@ -86,31 +108,32 @@ public class ManualCombinationMatcher extends AbstractMatcher {
 			if(sim < min)
 				min = sim;
 			//calculate weighted sum
-			weight = parameters.weights[i];
+			weight = parameters.matchersWeights[i];
 			sumOfWeights+= weight;
 			weightedSum += (weight * sim); 
 		}
 		//select the final similarity combined value depending on the user selected combination type.
-		if(parameters.combinationType.equals(ManualCombinationParameters.MAXCOMB)) {
+		if(parameters.combinationType.equals(CombinationParameters.MAXCOMB)) {
 			sim = max;
 		}
-		else if(parameters.combinationType.equals(ManualCombinationParameters.MINCOMB)) {
+		else if(parameters.combinationType.equals(CombinationParameters.MINCOMB)) {
 			sim = min;
 		}
-		else if(parameters.combinationType.equals(ManualCombinationParameters.AVERAGECOMB)) {
+		else if(parameters.combinationType.equals(CombinationParameters.AVERAGECOMB)) {
 			sim =  sum/ (double)inputMatchers.size();
 		}
-		else if(parameters.combinationType.equals(ManualCombinationParameters.WEIGHTAVERAGE)) {
+		else if(parameters.combinationType.equals(ManualCombinationParameters.CombinationParameters)) {
 			if(sumOfWeights != 0)
 				sim = weightedSum/ sumOfWeights;
 			else sim = 0;
 		}
 		else throw new RuntimeException("DEVELOPMENT ERROR: combination type selected is not implemented");
 		return new Alignment(source, target, sim, Alignment.EQUIVALENCE);
+		*/
 	}
 
 	public AbstractMatcherParametersPanel getParametersPanel() {
-		return new ManualCombinationParametersPanel(inputMatchers);
+		return new CombinationParametersPanel(inputMatchers);
 	}
 	
 	public String getDescriptionString() {

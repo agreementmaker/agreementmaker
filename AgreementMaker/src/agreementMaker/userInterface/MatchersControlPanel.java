@@ -247,8 +247,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 					q = QualityEvaluator.evaluate(toBeEvaluated, QualityEvaluator.QUALITIES[j]);
 					if(!q.isLocal()) {
 						report+= QualityEvaluator.QUALITIES[j]+"\n";
-						report+= "Global Classes Quality: "+q.getGlobalClassQuality()+"\n" ;
-						report+= "Global Properties Quality: "+q.getGlobalPropQuality()+"\n" ;
+						report+= "Global Classes Quality: "+q.getGlobalClassMeasure()+"\n" ;
+						report+= "Global Properties Quality: "+q.getGlobalPropMeasure()+"\n" ;
 						report+= "\n";
 					}
 					else {
@@ -256,6 +256,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 						report+= QualityEvaluator.QUALITIES[j]+"\n";
 						report+= "Average of local Classes Quality: "+Utility.getAverageOfArray(q.getLocalClassMeasures())+"\n" ;
 						report+= "Average of local Properties Quality: "+Utility.getAverageOfArray(q.getLocalPropMeasures())+"\n" ;
+						//Add the list of local qualities here
 						report+= "\n";
 					}
 				}
