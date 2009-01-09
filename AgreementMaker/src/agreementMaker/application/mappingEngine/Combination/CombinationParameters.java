@@ -22,7 +22,7 @@ public class CombinationParameters extends AbstractParameters {
 	
 	//for each matcher there is an array of local weights for each node
 	//when weights are manually assigned, each matcher as an array with the same value for all nodes. like if it is a global weight not local
-	public ArrayList<QualityEvaluationData> matchersWeights; 
+	public double[] matchersWeights; 
 		
 
 }

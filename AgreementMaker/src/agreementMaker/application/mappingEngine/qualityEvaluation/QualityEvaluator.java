@@ -15,6 +15,8 @@ public class QualityEvaluator {
 	
 	public static QualityEvaluationData evaluate(AbstractMatcher matcher, String quality) {
 		QualityEvaluationData qData = null;
+		
+		//LOCAL GLOBAL AND COMBINED
 		if(quality.equals(LOCAL) || quality.equals(GLOBAL)  || quality.equals(COMBINED) ){
 			//in all tree cases i have to calculate local first
 			qData = AMLocalQuality.getQuality(matcher);
@@ -28,19 +30,17 @@ public class QualityEvaluator {
 				double propAverage = Utility.getAverageOfArray(localPropQualities);
 				//then global is the average of locals
 				if(quality.equals(GLOBAL)) {
+					qData.setLocal(false);
 					if(matcher.areClassesAligned()) {
-						for(int i = 0; i < localClassQualities.length; i++) {
-							localClassQualities[i] = classAverage;
-						}
+						qData.setGlobalClassMeasure(classAverage);
 					}
 					if(matcher.arePropertiesAligned()) {
-						for(int i = 0; i < localPropQualities.length; i++) {
-							localPropQualities[i] = propAverage;
-						}
+						qData.setGlobalPropMeasure(propAverage);
 					}
 				}
 				//combined is the average of global and each local 
 				else if(quality.equals(COMBINED)) {
+					qData.setLocal(true);
 					if(matcher.areClassesAligned()) {
 						for(int i = 0; i < localClassQualities.length; i++) {
 							localClassQualities[i] = ( localClassQualities[i] + classAverage ) /2;
@@ -55,6 +55,8 @@ public class QualityEvaluator {
 				qData.setLocalClassMeasures(localClassQualities);
 				qData.setLocalPropMeasures(localPropQualities);
 			}
+			
+			//OTHER QUALITIES TO BE ADDED
 		}
 		return qData;
 	}

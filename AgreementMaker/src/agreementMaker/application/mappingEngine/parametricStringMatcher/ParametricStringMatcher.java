@@ -245,8 +245,7 @@ public class ParametricStringMatcher extends AbstractMatcher {
 			
 			//this could be done with registry enumeration techinque but is not worth it
 			if(parameters.measure.equals(ParametricStringParameters.AMSUB)) {
-				//TODO this should be our string metric
-				throw new RuntimeException("Not implemented yet");
+				sim = AMStringMetrics.AMsubstringScore(processedSource,processedTarget);
 			}
 			else if(parameters.measure.equals(ParametricStringParameters.EDIT)) {
 				Levenshtein lv = new Levenshtein();
@@ -263,11 +262,6 @@ public class ParametricStringMatcher extends AbstractMatcher {
 			else if(parameters.measure.equals(ParametricStringParameters.SUB)) {
 				sim = AMStringMetrics.substringScore(processedSource,processedTarget);
 			}
-			else if(parameters.measure.equals(ParametricStringParameters.COMBINED)){
-				//TODO this should be an average between some of the above, maybe edit and AMSUB when is ready.
-				throw new RuntimeException("Not implemented yet");
-			}
-			
 		}
 		return sim;
 	}

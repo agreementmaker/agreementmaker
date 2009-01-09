@@ -194,9 +194,10 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 		parameters.combinationType = (String)combOperationsCombo.getSelectedItem();
 		
 
-		ArrayList<QualityEvaluationData> weights = new ArrayList<QualityEvaluationData>();
+
 		//in the non-weighted case and manually weigthed case, weights are assigned here staticcaly,
 		//in the quality evaluation case weights will be assigned later by the algorithm
+		parameters.matchersWeights = new double[size];
 		if(qualityWeightsRadio.isSelected()) {
 			parameters.qualityEvaluation = true;
 			parameters.quality = (String)qualityCombo.getSelectedItem();
@@ -206,20 +207,16 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 			//both in the non weighted and weighted case weights are assigned,but in the first case they are all 1.
 			//so the quality evaluation data is statically created here without requiring a real quality evaluation
 			parameters.qualityEvaluation = false;
+			
 			for(int i = 0; i < size; i++) {
-				QualityEvaluationData q = new QualityEvaluationData();
-				q.setLocal(false);//this quality is global because same weight for all nodes
-				
+
 				double measure = 1;
 				if(manualWeightsRadio.isSelected()) {
 					measure = Utility.getDoubleFromPercent((String)inputMatchersCombo[i].getSelectedItem());
 				}//else No-weighted is selected so it's correct to have a weight equal to 1 for all matchers.
-				q.setGlobalClassMeasure(measure);
-				q.setGlobalPropMeasure(measure);
-				weights.add(q);
+				parameters.matchersWeights[i] = measure;
 			}
 		}
-		parameters.matchersWeights = weights;
 		
 		return parameters;
 	}

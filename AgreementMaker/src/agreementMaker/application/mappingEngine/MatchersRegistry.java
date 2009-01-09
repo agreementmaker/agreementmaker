@@ -5,10 +5,10 @@ import agreementMaker.application.mappingEngine.baseSimilarity.BaseSimilarityMat
 import agreementMaker.application.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
 import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
 import agreementMaker.application.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
-import agreementMaker.application.mappingEngine.qualityCombination.QualityCombinationMatcher;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import agreementMaker.application.mappingEngine.ssc.SiblingsSimilarityContributionMatcher;
 import agreementMaker.application.mappingEngine.testMatchers.AllOneMatcher;
+import agreementMaker.application.mappingEngine.testMatchers.AllZeroMatcher;
 import agreementMaker.application.mappingEngine.testMatchers.CopyMatcher;
 import agreementMaker.application.mappingEngine.testMatchers.EqualsMatcher;
 import agreementMaker.application.mappingEngine.testMatchers.RandomMatcher;
@@ -41,14 +41,14 @@ public enum MatchersRegistry {
 	ReferenceAlignment	( "Reference Alignment", ReferenceAlignmentMatcher.class ),
 
 	//WORK IN PROGRESS
-	QualityCombination ("Quality Weighted Combination",QualityCombinationMatcher.class, false),
 	
 	//MATCHERS USED BY THE SYSTEM BUT NOT SHOWN
 	UserManual			( "User Manual Matching", UserManualMatcher.class, false),
 	
 	//TEST MATCHERS 
 	Equals 				( "Local Name Equivalence Comparison", EqualsMatcher.class , false),
-	AllOne 				( "All ONE Similarities", AllOneMatcher.class, false ),
+	AllOne 				( "All ONE Similarities", AllOneMatcher.class, true ),
+	AllZero			( "All Zero Similarities", AllZeroMatcher.class, true ),
 	Copy				( "Copy Matcher", CopyMatcher.class,false ),
 	Random 				( "RSM", RandomMatcher.class, false );
 	

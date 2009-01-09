@@ -3,6 +3,7 @@ package agreementMaker.application.mappingEngine.Combination;
 import java.util.ArrayList;
 
 
+import agreementMaker.Utility;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
 import agreementMaker.application.mappingEngine.Alignment;
@@ -12,7 +13,8 @@ import agreementMaker.application.mappingEngine.qualityEvaluation.QualityEvaluat
 import agreementMaker.application.ontology.Node;
 
 public class CombinationMatcher extends AbstractMatcher {
-
+	
+	private QualityEvaluationData[] qualityWeights;
 	
 	public CombinationMatcher() {
 		super();
@@ -30,19 +32,29 @@ public class CombinationMatcher extends AbstractMatcher {
 	
 	protected void beforeAlignOperations()  throws Exception{
 		super.beforeAlignOperations();
-		CombinationParameters cp = (CombinationParameters)param;
 		
-		//if weights are manually assigned then they are already created in the parameters
-		//if not, we have to run the quality evaluation
-		if(cp.qualityEvaluation) {
-			AbstractMatcher a;
-			String quality = cp.quality;
-			QualityEvaluationData q;
-			for(int i = 0; i < inputMatchers.size(); i++) {
+		int size = inputMatchers.size();
+		CombinationParameters cp = (CombinationParameters)param;
+		AbstractMatcher a;
+		QualityEvaluationData q;
+		qualityWeights = new QualityEvaluationData[size];
+		
+		//if weights are manually assigned then they are already created in the parameters we just have to create a fake quality evaluation with that weight
+		//if not, we have to run the quality evaluation for each matcher
+		for(int i = 0; i < size; i++) {
+			if(cp.qualityEvaluation) {
 				a = inputMatchers.get(i);
-				q = QualityEvaluator.evaluate(matcher, quality);
-				cp.matchersWeights.add(q);
+				q = QualityEvaluator.evaluate(a, cp.quality);
 			}
+			else {
+				//we are in the non-weighted or manual case
+				//we have to create fake qualities
+				q = new QualityEvaluationData();
+				q.setLocal(false);//this quality is global because same weight for all nodes
+				q.setGlobalClassMeasure(cp.matchersWeights[i]);
+				q.setGlobalPropMeasure(cp.matchersWeights[i]);
+			}
+			qualityWeights[i] = q;
 		}
 	}
 	
@@ -76,8 +88,7 @@ public class CombinationMatcher extends AbstractMatcher {
     
 
 	protected Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
-		return null;
-		/*
+		
 		CombinationParameters parameters = (CombinationParameters)param;
 		int sourceindex = source.getIndex();
 		int targetindex = target.getIndex();
@@ -85,32 +96,37 @@ public class CombinationMatcher extends AbstractMatcher {
 		double min = 1;// keep the min sim between all input matrix for the cell (sourceindex, targetindex)
 		double sum = 0;// keep the sum of sims between all input matrix for the cell (sourceindex, targetindex)
 		double weight;   
-		double weightedSum = 0;// keep the weighted sum of sims between all input matrix for the cell (sourceindex, targetindex)
 		double sumOfWeights = 0; //sum of weights
-		double sim; 
+		double sim;
+		double weightedSim;
 		AbstractMatcher a;
 		for(int i = 0; i < inputMatchers.size();i++) {
 			//for each input matcher...
 			a = inputMatchers.get(i);
+			
 			//get the sim for this two nodes in the input matcher matrix
-			if(typeOfNodes == alignType.aligningClasses && a.areClassesAligned())
+			if(typeOfNodes == alignType.aligningClasses && a.areClassesAligned()) {
 				sim = a.getClassesMatrix().get(sourceindex, targetindex).getSimilarity();
+				weight = qualityWeights[i].getClassQuality(sourceindex, targetindex);
+			}
 			else if(typeOfNodes == alignType.aligningProperties && a.arePropertiesAligned()) {
 				sim = a.getPropertiesMatrix().get(sourceindex, targetindex).getSimilarity();
+				weight = qualityWeights[i].getPropQuality(sourceindex, targetindex);
 			}
-			else sim = 0;
+			else throw new RuntimeException("DEVELOPER ERROR: the alignType of node is not prop or class");
+			
+			//all operations are weighted, if the user has selected non-weighted then all weights are 1
+			weightedSim = weight * sim;
 			//calculate sum for average combination
-			sum += sim;
+			sum += weightedSim;
+			sumOfWeights+= weight;
 			//calculate max for max combination
-			if(sim > max)
+			if(weightedSim > max)
 				max = sim;
 			//calculate min for min evaluation
-			if(sim < min)
+			if(weightedSim < min)
 				min = sim;
-			//calculate weighted sum
-			weight = parameters.matchersWeights[i];
-			sumOfWeights+= weight;
-			weightedSum += (weight * sim); 
+			
 		}
 		//select the final similarity combined value depending on the user selected combination type.
 		if(parameters.combinationType.equals(CombinationParameters.MAXCOMB)) {
@@ -120,16 +136,12 @@ public class CombinationMatcher extends AbstractMatcher {
 			sim = min;
 		}
 		else if(parameters.combinationType.equals(CombinationParameters.AVERAGECOMB)) {
-			sim =  sum/ (double)inputMatchers.size();
-		}
-		else if(parameters.combinationType.equals(ManualCombinationParameters.CombinationParameters)) {
 			if(sumOfWeights != 0)
-				sim = weightedSum/ sumOfWeights;
+				sim = sum/ sumOfWeights;
 			else sim = 0;
 		}
 		else throw new RuntimeException("DEVELOPMENT ERROR: combination type selected is not implemented");
 		return new Alignment(source, target, sim, Alignment.EQUIVALENCE);
-		*/
 	}
 
 	public AbstractMatcherParametersPanel getParametersPanel() {

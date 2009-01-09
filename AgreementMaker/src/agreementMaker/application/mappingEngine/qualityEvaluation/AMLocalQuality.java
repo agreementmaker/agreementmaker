@@ -53,6 +53,7 @@ public class AMLocalQuality {
 
 		
 		double totalSum;
+		int totalSelectable;
 		double sumOfNonSelected;
 		double sumOfSelected;
 		int numberOfNonSelected;
@@ -67,23 +68,27 @@ public class AMLocalQuality {
 			//get the numRelations max values for this row or column
 			if(localForSource) {
 				maxValues = matrix.getRowMaxValues(i, numRelations);
-				totalSum = matrix.getRowSum(i);
+				totalSum = matrix.getRowSum(i);			
+				totalSelectable = matrix.getColumns(); 
+
 			}
 			else {
 				maxValues = matrix.getColMaxValues(i, numRelations);
 				totalSum = matrix.getColSum(i);
+				totalSelectable = matrix.getRows(); 
 			}
 			
+			
 			 //let's start with all of them not selected
+			numberOfNonSelected = totalSelectable;
 			sumOfNonSelected = totalSum;
-			numberOfNonSelected = localMeasure.length; 
 			for(int j = 0; j < maxValues.length; j++) {
 				if(maxValues[j].getSimilarity() >= threshold) {//this is a selected value, I'm not using the fact that maxValues is ordered because the order may change later so i don't want to risk
 					sumOfNonSelected -= maxValues[j].getSimilarity();
 					numberOfNonSelected--;
 				}
 			}
-			numberOfSelected = localMeasure.length - numberOfNonSelected;
+			numberOfSelected = totalSelectable - numberOfNonSelected;
 			sumOfSelected = totalSum - sumOfNonSelected;
 			
 			if(numberOfNonSelected != 0)

@@ -9,7 +9,6 @@ public class ParametricStringParameters extends AbstractParameters {
 	public final static String QGRAM = "Q-Gram";
 	public final static String SUB = "Substring metric";
 	public final static String AMSUB = "AM Substring metric";
-	public final static String COMBINED = "Combined Edit & AM Substring similarity";
 	
 	public String measure = EDIT;
 	
