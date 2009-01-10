@@ -10,6 +10,7 @@ import edu.smu.tspell.wordnet.SynsetType;
 import edu.smu.tspell.wordnet.WordNetDatabase;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
+import agreementMaker.application.mappingEngine.AbstractMatcher.alignType;
 import agreementMaker.application.mappingEngine.StringUtil.PorterStemmer;
 import agreementMaker.application.ontology.Node;
 
@@ -56,7 +57,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	/*
 	 * This function does the main base similarity algorithm.
 	 */
-	public Alignment alignTwoNodes(Node source, Node target) {
+	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
 		
 		String sourceName= source.getLocalName();
 		String targetName = target.getLocalName();

@@ -11,6 +11,7 @@ import agreementMaker.Utility;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.AlignmentMatrix;
+import agreementMaker.application.mappingEngine.AbstractMatcher.alignType;
 import agreementMaker.application.mappingEngine.StringUtil.AMStringWrapper;
 import agreementMaker.application.mappingEngine.StringUtil.Normalizer;
 import agreementMaker.application.ontology.Node;
@@ -64,8 +65,8 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		
 		if(alignClass) {
 			//Class corpus is the list of documents from source and target. Each node consists of one document containing many terms: localname, label, all terms from comment and so on...
-			sourceClassDocuments = createDocumentsFromNodeList(sourceOntology.getClassesList());
-			targetClassDocuments = createDocumentsFromNodeList(targetOntology.getClassesList());
+			sourceClassDocuments = createDocumentsFromNodeList(sourceOntology.getClassesList(), alignType.aligningClasses);
+			targetClassDocuments = createDocumentsFromNodeList(targetOntology.getClassesList(), alignType.aligningClasses);
 			classCorpus = new ArrayList<StringWrapper>();
 		
 			//Create the corpus of documents
@@ -87,8 +88,8 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		}
 		
 		if(alignProp) {
-			sourcePropDocuments = createDocumentsFromNodeList(sourceOntology.getPropertiesList());
-			targetPropDocuments = createDocumentsFromNodeList(targetOntology.getPropertiesList());
+			sourcePropDocuments = createDocumentsFromNodeList(sourceOntology.getPropertiesList(),alignType.aligningProperties);
+			targetPropDocuments = createDocumentsFromNodeList(targetOntology.getPropertiesList(),alignType.aligningProperties);
 			propCorpus = new ArrayList<StringWrapper>();
 			
 			//Create the corpus of documents
@@ -113,33 +114,34 @@ public class MultiWordsMatcher extends AbstractMatcher {
 
 	}
 	
-	private ArrayList<String> createDocumentsFromNodeList(ArrayList<Node> nodeList) {
+	private ArrayList<String> createDocumentsFromNodeList(ArrayList<Node> nodeList, alignType typeOfNodes) {
 		ArrayList<String> documents = new ArrayList<String>();
 		Iterator<Node> it = nodeList.iterator();
 		while(it.hasNext()) {
 			Node node = it.next();
-			String document = createMultiWordsString(node) ;
+			String document = createMultiWordsString(node,typeOfNodes) ;
 			String normDocument = normalizer.normalize(document);
 			documents.add(normDocument);
 		}
 		return documents;
 	}
 	
-	private String createMultiWordsString(Node node) {
+	private String createMultiWordsString(Node node, alignType typeOfNodes) {
 		
 		String multiWordsString = "";
 		MultiWordsParameters mp = (MultiWordsParameters)param;
 		
 		//Add concept strings to the multiwordsstring
-		multiWordsString = Utility.smartConcat(multiWordsString, getLabelAndOrNameString(node));
-		multiWordsString = Utility.smartConcat(multiWordsString, node.getComment());
-		multiWordsString = Utility.smartConcat(multiWordsString, node.getSeeAlso());
-		multiWordsString = Utility.smartConcat(multiWordsString, node.getIsDefinedBy());
-		
+		if(mp.considerConcept) {
+			multiWordsString = Utility.smartConcat(multiWordsString, getLabelAndOrNameString(node));
+			multiWordsString = Utility.smartConcat(multiWordsString, node.getComment());
+			multiWordsString = Utility.smartConcat(multiWordsString, node.getSeeAlso());
+			multiWordsString = Utility.smartConcat(multiWordsString, node.getIsDefinedBy());
+		}
+
 		//add neighbors strings
 		if(mp.considerNeighbors) {
 			ArrayList<Vertex> duplicateList = node.getVertexList();
-			
 			//add child strings
 			Vertex mainVertex = duplicateList.get(0);
 			String childstring = "";
@@ -189,7 +191,7 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		}
 		
 		//add instances strings
-		if(mp.considerInstances) {
+		if(mp.considerInstances && typeOfNodes == alignType.aligningClasses) {
 			String instancesString = "";
 			Iterator<String> it = node.getIndividuals().iterator();
 			while(it.hasNext()) {
@@ -197,9 +199,32 @@ public class MultiWordsMatcher extends AbstractMatcher {
 				instancesString = Utility.smartConcat(instancesString, ind);
 			}
 			multiWordsString = Utility.smartConcat(multiWordsString, instancesString);
-			
 		}
+		
+		//add properties declared by this class or classes declaring this properties
+		if(mp.considerProperties && typeOfNodes == alignType.aligningClasses) {
+			String propString = "";
+			Iterator<String> it = node.getpropOrClassNeighbours().iterator();
+			while(it.hasNext()) {
+				String s = it.next();
+				propString = Utility.smartConcat(propString, s);
+			}
+			multiWordsString = Utility.smartConcat(multiWordsString, propString);
+		}
+			
+	    //add classes declaring this properties
+		if(mp.considerClasses && typeOfNodes == alignType.aligningProperties) {
+			String classString = "";
+			Iterator<String> it = node.getpropOrClassNeighbours().iterator();
+			while(it.hasNext()) {
+				String s = it.next();
+				classString = Utility.smartConcat(classString, s);
+			}
+			multiWordsString = Utility.smartConcat(multiWordsString, classString);
+		}
+		
 		return multiWordsString;
+		
 	}
 
 	private String getLabelAndOrNameString(Node node) {
@@ -222,37 +247,6 @@ public class MultiWordsMatcher extends AbstractMatcher {
 	 ************************ Algorithm functions beyond this point*************************************
 	 * *******************************************************************************************************
 	 */
-
-	// overriding the abstract method in order to keep track of what kind of nodes we are aligning
-    protected AlignmentMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) {
-		return alignNodesOneByOne(sourcePropList, targetPropList, alignType.aligningProperties );
-	}
-
-	// overriding the abstract method in order to keep track of what kind of nodes we are aligning
-    protected AlignmentMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList) {
-		return alignNodesOneByOne(sourceClassList, targetClassList, alignType.aligningClasses);
-	}
-	
-	// this method is exactly similar to the abstract method, except we pass one extra parameters to the alignTwoNodes function
-    protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) {
-		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size());
-		Node source;
-		Node target;
-		Alignment alignment; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
-		for(int i = 0; i < sourceList.size(); i++) {
-			source = sourceList.get(i);
-			for(int j = 0; j < targetList.size(); j++) {
-				target = targetList.get(j);
-				alignment = alignTwoNodes(source, target, typeOfNodes);
-				matrix.set(i,j,alignment);
-			}
-		}
-		return matrix;
-	}
-
-
-
-
 
 	public Alignment alignTwoNodes(Node source, Node target,alignType typeOfNodes) {
 		MultiWordsParameters mp = (MultiWordsParameters)param;

@@ -50,7 +50,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		}
 	}
 	
-    protected Alignment alignTwoNodes(Node source, Node target) {
+    protected Alignment alignTwoNodes(Node source, Node target , alignType typeOfNodes) {
     	String sname = source.getLocalName();
     	String tname = target.getLocalName();
     	Alignment a = new Alignment(source, target, 0);//if I don't find any alignment in the reference about this 2 nodes i will create an alignment with 0 similarity

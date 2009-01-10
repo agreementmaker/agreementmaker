@@ -82,7 +82,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 	
 	/**This enum is for the matching functions that take nodes as an input.  Because we are comparing two kinds of nodes (classes and properties), we need to know the kind of nodes we are comparing in order to lookup up the input similarities in the corrent matrix */
-	protected enum alignType {
+	public enum alignType {
 		aligningClasses,
 		aligningProperties
 	}
@@ -236,14 +236,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 
     protected AlignmentMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) throws Exception {
-		return alignNodesOneByOne(sourcePropList, targetPropList);
+		return alignNodesOneByOne(sourcePropList, targetPropList, alignType.aligningProperties);
 	}
 
     protected AlignmentMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList)  throws Exception{
-		return alignNodesOneByOne(sourceClassList, targetClassList);
+		return alignNodesOneByOne(sourceClassList, targetClassList, alignType.aligningClasses);
 	}
 	
-    protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList) throws Exception {
+    protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
 		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size());
 		Node source;
 		Node target;
@@ -252,7 +252,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			source = sourceList.get(i);
 			for(int j = 0; j < targetList.size(); j++) {
 				target = targetList.get(j);
-				alignment = alignTwoNodes(source, target);
+				alignment = alignTwoNodes(source, target, typeOfNodes);
 				matrix.set(i,j,alignment);
 				if( isProgressDisplayed() ) stepDone(); // we have completed one step
 			}
@@ -260,8 +260,15 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		}
 		return matrix;
 	}
-
-    protected Alignment alignTwoNodes(Node source, Node target) throws Exception {
+    
+    /**This is the main method that will be always ovverriden by the algorithm which perform the similarity between two generic nodes
+     * @param source the source concept
+     * @param target the target concept
+     * @param typeOfNodes can be alignType.alignClasses or alignType.aligningProperties, and it tells you if you in the alignProperties or classes function
+     * @return the alignment between the two nodes (a, b, sim, relation)
+     * @throws Exception are managed in the doInBackground() method, to interrupt the process to send a message to the user thow new AMException(MESSAGE)
+     */
+    protected Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
 		//TO BE IMPLEMENTED BY THE ALGORITHM, THIS IS JUST A FAKE ABSTRACT METHOD
 		double sim;
 		String rel = Alignment.EQUIVALENCE;
@@ -816,7 +823,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
 	public double getDefaultThreshold() {
 		// TODO Auto-generated method stub
-		return 0.75;
+		return 0.5;
 	}
 	
 	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
@@ -828,7 +835,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
 	public int getDefaultMaxTargetRelations() {
 		// TODO Auto-generated method stub
-		return ANY_INT;
+		return 1;
 	}
 	
 	/**This method is invoked at the end of the matching process if the process successed, to give a feedback to the user. Developers can ovveride it to add additional informations.
@@ -882,7 +889,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		
 	}
 	
+	public Color getColor() {
+		return color;
+	}
 	
+
+	public void setColor(Color color) {
+		this.color = color;
+	}
 	//*************************UTILITY METHODS**************************************
 	public boolean equals(Object o) {
 		if(o instanceof AbstractMatcher) {
@@ -895,17 +909,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	public int hashCode() {
 		return index;
 	}
-
-	
-	public Color getColor() {
-		return color;
-	}
-	
-
-	public void setColor(Color color) {
-		this.color = color;
-	}
-  
 
 	
 	//****************** PROGRESS DIALOG METHODS *************************8

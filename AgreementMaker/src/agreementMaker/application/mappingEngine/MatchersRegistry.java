@@ -52,7 +52,7 @@ public enum MatchersRegistry {
 	AllOne 				( "All ONE Similarities", AllOneMatcher.class, true ),
 	AllZero			( "All Zero Similarities", AllZeroMatcher.class, true ),
 	Copy				( "Copy Matcher", CopyMatcher.class,false ),
-	Random 				( "RSM", RandomMatcher.class, false );
+	Random 				( "RSM", RandomMatcher.class, true );
 	
 	/* Don't change anything below this line .. unless you intend to. */
 	private boolean showInControlPanel;

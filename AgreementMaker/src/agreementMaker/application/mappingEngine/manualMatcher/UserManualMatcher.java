@@ -4,6 +4,7 @@ package agreementMaker.application.mappingEngine.manualMatcher;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.MatchersRegistry;
+import agreementMaker.application.mappingEngine.AbstractMatcher.alignType;
 import agreementMaker.application.ontology.Node;
 import agreementMaker.application.ontology.Ontology;
 import agreementMaker.userInterface.Colors;
@@ -43,7 +44,7 @@ public class UserManualMatcher extends AbstractMatcher {
 	}
 	
 	/**Set all alignment sim to 0*/
-	public Alignment alignTwoNodes(Node source, Node target) {
+	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
 		double sim = 0;
 		String rel = Alignment.EQUIVALENCE;
 		return new Alignment(source, target, sim, rel);

@@ -58,7 +58,7 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	 * *******************************************************************************************************
 	 */
 
-	public Alignment alignTwoNodes(Node source, Node target) {
+	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
 		double localSim = 0;
 		double labelSim = 0;
 		double commentSim = 0;

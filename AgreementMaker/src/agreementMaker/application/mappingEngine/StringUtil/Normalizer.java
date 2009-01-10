@@ -167,6 +167,7 @@ public class Normalizer {
 			stopWords.add("&");
 			stopWords.add("the");
 			stopWords.add("to");
+			stopWords.add("@en"); //this is in any comment
 			
 			/* Other stopwords commnly eliminated in web searching, not very useful here. TODO a detailed check should be done
 			stopWords.add("I");

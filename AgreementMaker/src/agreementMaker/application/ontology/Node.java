@@ -51,7 +51,9 @@ public class Node {
 	//SOME MORE INFORMATIONS THAT MY BE USED
 	private String isDefinedBy = "";
 	private String seeAlso = "";
-	private ArrayList<String> propertiesLocalNames = new ArrayList<String>();
+	//if the node is a prop node then it this list contains the list of classes localnames which declare this prop
+	//if the node is a class node then this list contains the list of properties declared by this class
+	private ArrayList<String> propOrClassNeighbours = new ArrayList<String>();
 	private ArrayList<String> individuals = new ArrayList<String>();
 	
 	
@@ -126,8 +128,11 @@ public class Node {
 				String localname;
 				while(it.hasNext()) {
 					OntProperty op = (OntProperty)it.next();
-					localname = op.getLocalName();
-					propertiesLocalNames.add(localname);
+					if(!op.isAnon()) {
+						localname = op.getLocalName();
+						propOrClassNeighbours.add(localname);
+					}
+
 				}
 				it = cls.listInstances(true);
 				while(it.hasNext()) {
@@ -135,6 +140,18 @@ public class Node {
 					localname = ind.getLabel(null);
 					if(localname != null && !localname.equals(""))
 						individuals.add(localname);
+				}
+			}
+			else {
+				OntProperty prop = (OntProperty)or.as(OntProperty.class);
+				it = prop.listDeclaringClasses(true);
+				String localname;
+				while(it.hasNext()) {
+					OntClass op = (OntClass)it.next();
+					if(!op.isAnon()) {
+						localname = op.getLocalName();
+						propOrClassNeighbours.add(localname);
+					}
 				}
 			}
 		}
@@ -249,8 +266,8 @@ public class Node {
 		this.seeAlso = seeAlso;
 	}
 
-	public ArrayList<String> getPropertiesLocalNames() {
-		return propertiesLocalNames;
+	public ArrayList<String> getpropOrClassNeighbours() {
+		return propOrClassNeighbours;
 	}
 
 	public ArrayList<String> getIndividuals() {
@@ -270,11 +287,11 @@ public class Node {
 
 	public String getPropertiesString() {
 		String result = "List of properties:\n\n";
-		if(propertiesLocalNames.size() == 0) {
+		if(propOrClassNeighbours.size() == 0) {
 			result+="No property relations found for this class";
 		}
-		for(int i = 0; i < propertiesLocalNames.size(); i++) {
-			result+= propertiesLocalNames.get(i)+"\n";
+		for(int i = 0; i < propOrClassNeighbours.size(); i++) {
+			result+= propOrClassNeighbours.get(i)+"\n";
 		}
 		return result;
 	}

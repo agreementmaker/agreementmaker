@@ -34,7 +34,11 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 	private JCheckBox  neighbourCheck;
 	private JLabel indLabel = new JLabel("Consider individuals.");
 	private JCheckBox indCheck;
-	private JLabel localLabel = new JLabel("Do not consider localnames. To be selected when they are just meaningless codes.");
+	private JLabel propLabel = new JLabel("If the concept is a class consider localnames of properties declared by this class");
+	private JCheckBox propCheck;
+	private JLabel classLabel = new JLabel("if the concept is a property consider localnames of classes declaring this property");
+	private JCheckBox classCheck;
+	private JLabel localLabel = new JLabel("Do not consider localnames (to be selected when they are just meaningless codes. It will affect all sources).");
 	private JCheckBox localCheck;
 
 	
@@ -55,9 +59,13 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 		conceptCheck = new JCheckBox();
 		conceptCheck.setSelected(true);
 		neighbourCheck = new JCheckBox();
-		neighbourCheck.setSelected(true);
+		neighbourCheck.setSelected(false);
 		indCheck = new JCheckBox();
 		indCheck.setSelected(true);
+		propCheck = new JCheckBox();
+		propCheck.setSelected(false);
+		classCheck = new JCheckBox();
+		classCheck.setSelected(false);
 		localCheck = new JCheckBox();
 		localCheck.setSelected(false);
 		
@@ -85,12 +93,16 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 						.addComponent(conceptCheck)
 						.addComponent(neighbourCheck) 
 						.addComponent(indCheck) 		
+						.addComponent(propCheck) 
+						.addComponent(classCheck) 
 						.addComponent(localCheck) 
 					)
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 						.addComponent(conceptLabel) 	
 						.addComponent(neighbourLabel) 	
-						.addComponent(indLabel) 	
+						.addComponent(indLabel) 
+						.addComponent(propLabel) 
+						.addComponent(classLabel) 
 						.addComponent(localLabel) 	
 					)
 			)
@@ -120,9 +132,19 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 						.addComponent(indLabel)
 						)
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+						.addComponent(propCheck) 			
+						.addComponent(propLabel)
+						)
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+						.addComponent(classCheck) 			
+						.addComponent(classLabel)
+						)
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(localCheck) 			
 						.addComponent(localLabel)
 						)
+						
+						
 				.addGap(30)
 			);
 	}
@@ -135,13 +157,17 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 		parameters.considerInstances = indCheck.isSelected();
 		parameters.ignoreLocalNames = localCheck.isSelected();
 		parameters.considerNeighbors  = neighbourCheck.isSelected();
+		parameters.considerProperties     = propCheck.isSelected();
+		parameters.considerClasses   = classCheck.isSelected();
 		parameters.considerConcept = conceptCheck.isSelected();
+		
+		//normalization parameters are set in the MultiWordsParameters() because are not user input;
 		return parameters;
 		
 	}
 	
 	public String checkParameters() {
-		if(!(indCheck.isSelected() || neighbourCheck.isSelected() || conceptCheck.isSelected())) {
+		if(!(indCheck.isSelected() || neighbourCheck.isSelected() || conceptCheck.isSelected() || propCheck.isSelected() || classCheck.isSelected())) {
 			return "At least one of the three terms sources must be selected.\n Select concept's or neighbours or individuals terms.";
 		}
 		return null;

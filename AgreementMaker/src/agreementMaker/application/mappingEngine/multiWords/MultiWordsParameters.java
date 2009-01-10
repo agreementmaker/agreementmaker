@@ -21,6 +21,12 @@ public class MultiWordsParameters extends AbstractParameters {
 	//localname and label of individual will be added to multiword string
 	public boolean considerInstances;
 	
+	//TODO: it could be good to add also this.
+	//consider properties (only for classes)
+	public boolean considerProperties;
+	//consider classes (only for properties
+	public boolean considerClasses;
+	
 
 	//Normalization operations
 	//in the multi words methods normalization is always needed almost
@@ -39,14 +45,19 @@ public class MultiWordsParameters extends AbstractParameters {
 	//and because it has some parameters that are not in input by user.
 	public MultiWordsParameters() {
 		super();
-		measure = COSINE;
+		measure = TFIDF;
 		considerInstances = true;
-		considerNeighbors = true;
-		ignoreLocalNames = true;
+		considerNeighbors = false;
+		considerConcept = true;
+		considerClasses = false;
+		considerProperties = false;
+		ignoreLocalNames = false
+		
+		;
 		normParameter = new NormalizerParameter();
 		normParameter.normalizeBlank = true;
 		normParameter.normalizeDiacritics = true;
-		normParameter.normalizeDigit = true;
+		normParameter.normalizeDigit = false;
 		normParameter.normalizePunctuation = true;
 		normParameter.removeStopWords = true;
 		normParameter.stem = true;
