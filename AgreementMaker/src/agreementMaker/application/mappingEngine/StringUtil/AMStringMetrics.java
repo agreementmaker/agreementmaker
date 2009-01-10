@@ -1,4 +1,4 @@
-package agreementMaker.application.mappingEngine.parametricStringMatcher;
+package agreementMaker.application.mappingEngine.StringUtil;
 
 /**
  * This class contains some of the string metrics used by the AM not found in library

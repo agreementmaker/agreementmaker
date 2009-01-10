@@ -87,7 +87,40 @@ public class Utility {
 	}
 	
 	public static boolean isIrrelevant(String s) {
-		return s == null || s.equals("");
+		return s == null || s.equals("") ;
+	}
+	
+	public static boolean startsWithSpace(String s) {
+		if(s!=null && s.length() >0) {
+			char first = s.charAt(0);
+			if(first == ' ')
+				return true;
+		}
+		return false;
+	}
+	
+	public static boolean endsWithSpace(String s) {
+		if(s!=null && s.length() >0) {
+			char last = s.charAt(s.length()-1);
+			if(last == ' ')
+				return true;
+		}
+		return false;
+	}
+	
+	//I need to add the string only if it's relevant
+	//and i need to put a space only if there is not already one
+	public static String smartConcat(String first, String second) {
+		//Attention: first can be irrelevant in fact the first time i start concatenating is often empty the first string.
+		//it may happen that there will be 2 space between the two words, but is not important
+		String result = first;
+		if(!isIrrelevant(second)) {
+			if(!(endsWithSpace(first) || startsWithSpace(second) || first.equals(""))) {
+				result += " ";
+			}
+			result += second;
+		}
+		return result;
 	}
 	
 	/**

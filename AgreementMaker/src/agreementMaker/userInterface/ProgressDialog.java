@@ -134,7 +134,7 @@ public class ProgressDialog extends JDialog implements PropertyChangeListener, A
 			progressBar.setIndeterminate(false);
 			progressBar.setValue(100);
 		}
-		matcherReport.append( matcher.getMatchReport() );
+		matcherReport.append( matcher.getReport() );
 		cancelButton.setEnabled(false);
 		okButton.setEnabled(true);
 		

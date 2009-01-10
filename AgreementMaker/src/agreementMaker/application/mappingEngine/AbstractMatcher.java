@@ -3,6 +3,7 @@ package agreementMaker.application.mappingEngine;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import agreementMaker.AMException;
 import agreementMaker.Utility;
 import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluationData;
@@ -78,6 +79,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected ReferenceEvaluationData refEvaluation;
 	/**Graphical color for nodes mapped by this matcher and alignments, this value is set by the MatcherFactory and modified  by the table so a developer just have to pass it as aparameter for the constructor*/
 	protected Color color; 
+
 	
 	/**This enum is for the matching functions that take nodes as an input.  Because we are comparing two kinds of nodes (classes and properties), we need to know the kind of nodes we are comparing in order to lookup up the input similarities in the corrent matrix */
 	protected enum alignType {
@@ -85,9 +87,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		aligningProperties
 	}
 	
-	private ProgressDialog progressDialog = null;  // need to keep track of the dialog in order to close it when we're done.  (there could be a better way to do this, but that's for later)
+	protected ProgressDialog progressDialog = null;  // need to keep track of the dialog in order to close it when we're done.  (there could be a better way to do this, but that's for later)
 	protected int stepsTotal; // Used by the ProgressDialog.  This is a rough estimate of the number of steps to be done before we finish the matching.
 	protected int stepsDone;  // Used by the ProgressDialog.  This is how many of the total steps we have completed.
+	
+	protected String report = "";
 	
 	protected ProgressMonitor progressMonitor;
 	
@@ -205,9 +209,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     //Time calculation, if you override this method remember to call super.afterSelectionOperations()
 	protected void matchEnd() {
 		// TODO: Need to make sure this timing is correct.  - Cosmin ( Dec 17th, 2008 )
-		if( isProgressDisplayed() ) allStepsDone();
-    	end = System.nanoTime();
+		end = System.nanoTime();
     	executionTime = (end-start)/1000000; // this time is in milliseconds.
+	    setSuccesfullReport();	
+		if( isProgressDisplayed() ) allStepsDone();
+    	
 	}
     //***************INTERNAL METHODS THAT CAN BE USED BY ANY ABSTRACTMATCHER******************************************
 	
@@ -829,20 +835,27 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 * Developers can also add a global variable like message that is set dinamically during the matching process to have different type of feedback.
 	 * **/
 	
-	public String getMatchReport() {
-		String result =  "Matching Process Complete Succesfully!\n\n";
+	public void setSuccesfullReport() {
+		report =  "Matching Process Complete Succesfully!\n\n";
 		if(areClassesAligned()) {
-			result+= "Classes alignments found: "+classesAlignmentSet.size()+"\n";
+			report+= "Classes alignments found: "+classesAlignmentSet.size()+"\n";
 		}
 		if(arePropertiesAligned()) {
-			result+= "Properties alignments found: "+propertiesAlignmentSet.size()+"\n";
+			report+= "Properties alignments found: "+propertiesAlignmentSet.size()+"\n";
 		}
 		if(executionTime != 0) {
-			result += "Total execution time (ms): "+executionTime+"\n";
+			report += "Total execution time (ms): "+executionTime+"\n";
 		}
-		return result;
+	}
+	
+	public String getReport() {
+		return report;
 	}
 
+	public void setReport(String report) {
+		this.report = report;
+	}
+	
 	public String getAlignmentsStrings() {
 		
 		String result = "";
@@ -869,6 +882,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		
 	}
 	
+	
 	//*************************UTILITY METHODS**************************************
 	public boolean equals(Object o) {
 		if(o instanceof AbstractMatcher) {
@@ -892,6 +906,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		this.color = color;
 	}
   
+
 	
 	//****************** PROGRESS DIALOG METHODS *************************8
 	
@@ -901,7 +916,19 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
      * It's just a wrapper for match(). 
      */
 	public Void doInBackground() throws Exception {
-		match();
+		try {
+			//without the try catch, the exception got lost in this thread, and we can't debug
+			match();
+		}
+		catch(AMException ex2) {
+			report = ex2.getMessage();
+			this.cancel(true);
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+			report = Utility.UNEXPECTED_ERROR;
+			this.cancel(true);
+		}
 		return null;
 	}
     
@@ -995,16 +1022,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return progressDialog != null;  // don't need to check for the global static variable, since if it's false, we should never have to call this function
 	}
 
-	/*
-	public boolean isAborted() {
-		return aborted;
-	}
-	*/
-	/*
-	public void setAborted(boolean aborted) {
-		this.aborted = aborted;
-	}
-	*/
+
+
 
 
 }

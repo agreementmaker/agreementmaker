@@ -221,6 +221,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				qualityEvaluation();
 			}
 		}
+		//ATTENTION: the exception of the match() method of a matcher is not catched here because it runs in a separated thread
 		catch(AMException ex2) {
 			Utility.displayMessagePane(ex2.getMessage(), null);
 		}
@@ -300,6 +301,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				}
 				matchersTablePanel.deletedRows(rowsIndex[0], rowsIndex[rowsIndex.length-1]);
 				ui.redisplayCanvas();
+				
 			}
 		}
 	}
@@ -368,7 +370,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		
 	}
 	
-	//WARNING THIS METHOD IS INVOKED BY matchSelected(), but by newManual(), basically this method should be invoked anytime we want to invoke a specific matcher, like if we selected it and clicked match button.
+	//WARNING THIS METHOD IS INVOKED BY matchSelected(), and by newManual(), basically this method should be invoked anytime we want to invoke a specific matcher, like if we selected it and clicked match button.
 	public void match(AbstractMatcher currentMatcher, boolean defaultParam) throws Exception{
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows(); //indexes in the table correspond to the indexes of the matchers in the matcherInstances list in core class
 		int selectedMatchers = rowsIndex.length;
@@ -410,7 +412,6 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				
 				// The dialog will start the matcher in a background thread, show progress as the matcher is running, and show the report at the end.
 				ProgressDialog progress = new ProgressDialog(currentMatcher);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
-				
 				if(!currentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
 					matchersTablePanel.addMatcher(currentMatcher);
 					ui.redisplayCanvas();

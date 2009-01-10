@@ -1,4 +1,4 @@
-package agreementMaker.application.mappingEngine.stemmer;
+package agreementMaker.application.mappingEngine.StringUtil;
 
 
 /*

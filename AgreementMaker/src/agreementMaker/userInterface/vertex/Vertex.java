@@ -10,9 +10,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 import agreementMaker.GlobalStaticVariables;
-import agreementMaker.application.mappingEngine.ContextMapping;
-import agreementMaker.application.mappingEngine.DefnMapping;
-import agreementMaker.application.mappingEngine.UserMapping;
 import agreementMaker.application.ontology.Node;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -32,8 +29,6 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 	static final long serialVersionUID = 1;
 	private int arcHeight;			// arc height of the rectangular node
 	private int arcWidth;			// arc width of the rectangular node
-	protected ContextMapping contextMapping;	// context mapping 
-	protected DefnMapping defnMapping = null; 
 	private String description;		// description of the vertex
 	private int height;				// height of the node/vertex
 	private int id;					// assign the unique number here
@@ -58,7 +53,6 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 	private boolean shouldCollapse;	// keeps track if the node or vertex should collapse or not. 
 	private String siblingsDesc = "";// String the stores the siblingsDescList
 	private String siblingsName ="";	// String the stores the siblingsNameList
-	protected UserMapping userMapping;			// user mapping class of this vertex
 	private int width;				// width of the node/vertex
 	private int x;					// coordinate x location on canvas
 	
@@ -98,7 +92,6 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 		setNodeType(-1);
 		setOntNode(GlobalStaticVariables.XMLFILE);
 		setShouldCollapse(false);
-		userMapping = new UserMapping();
 		//vertexDescription = (VertexDescriptionPane)jDescriptionPanel;
 	}
 	public Vertex(String name, String uri, OntModel m) {
@@ -126,7 +119,6 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 		setNodeType(-1);
 		setOntNode(GlobalStaticVariables.ONTFILE);
 		setShouldCollapse(false);
-		userMapping = new UserMapping();
 		//vertexDescription = (VertexDescriptionPane)jDescriptionPanel;
 	}
 	/*******************************************************************************************
@@ -608,64 +600,7 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 	{
 		y2 = y2value;
 	}
-	/**
-	 * @return Returns the contextMapping.
-	 */
-	public ContextMapping getContextMapping() {
-		return contextMapping;
-	}
-	/**
-	 * @param contextMapping The contextMapping to set.
-	 */
-	public void setContextMapping(ContextMapping contextMapping) {
-		this.contextMapping = contextMapping;
-	}
-	/**
-	 * @return Returns the defnMapping.
-	 */
-	public DefnMapping getDefnMapping() {
-		return defnMapping;
-	}
-	
-	/**
-	 * @author cosmin 
-	 * @date Oct 12, 2008
-	 */
-	public void clearDefnMapping() {
-		// set defnMapping = null, which will remove any references to the
-		// definition that was there before, and garbage collection will destroy it
-		// (hopefully (if there's no other references to it in the program))
-		defnMapping = null;
-		isMappedByDef = false; // this vertex is no longer mapped by definition
-	}
-	
-	/**
-	 * @author cosmin
-	 * @date Oct 17, 2008
-	 */
-	public void clearContextMapping() {
-		contextMapping = null;
-		isMappedByContext = false;
-	}
-	
-	/**
-	 * @param defnMapping The defnMapping to set.
-	 */
-	public void setDefnMapping(DefnMapping defnMapping) {
-		this.defnMapping = defnMapping;
-	}
-	/**
-	 * @return Returns the userMapping.
-	 */
-	public UserMapping getUserMapping() {
-		return userMapping;
-	}
-	/**
-	 * @param userMapping The userMapping to set.
-	 */
-	public void setUserMapping(UserMapping userMapping) {
-		this.userMapping = userMapping;
-	}
+
 	/**
 	 * @return Returns the uri.
 	 */

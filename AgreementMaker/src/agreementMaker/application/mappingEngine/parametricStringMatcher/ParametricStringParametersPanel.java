@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 import agreementMaker.Utility;
 import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
 import agreementMaker.application.mappingEngine.AbstractParameters;
+import agreementMaker.application.mappingEngine.StringUtil.NormalizerParameter;
 
 public class ParametricStringParametersPanel extends AbstractMatcherParametersPanel {
 
@@ -242,12 +243,13 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 		parameters.seeAlsoWeight = Utility.getDoubleFromPercent((String)seeAlsoCombo.getSelectedItem());
 		parameters.isDefinedByWeight = Utility.getDoubleFromPercent((String)isDefnedByCombo.getSelectedItem());
 		
-		parameters.normalizeBlank = blankCheck.isSelected();
-		parameters.normalizePunctuation = punctCheck.isSelected();
-		parameters.normalizeDiacritics = diacCheck.isSelected();
-		parameters.normalizeDigit = digitCheck.isSelected();
-		parameters.removeStopWords = stopCheck.isSelected();
-		parameters.stem = stemCheck.isSelected();
+		parameters.normParameter = new NormalizerParameter();
+		parameters.normParameter.normalizeBlank = blankCheck.isSelected();
+		parameters.normParameter.normalizePunctuation = punctCheck.isSelected();
+		parameters.normParameter.normalizeDiacritics = diacCheck.isSelected();
+		parameters.normParameter.normalizeDigit = digitCheck.isSelected();
+		parameters.normParameter.removeStopWords = stopCheck.isSelected();
+		parameters.normParameter.stem = stemCheck.isSelected();
 		
 		return parameters;
 		

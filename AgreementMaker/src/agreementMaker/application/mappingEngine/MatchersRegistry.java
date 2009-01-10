@@ -4,6 +4,7 @@ import agreementMaker.application.mappingEngine.Combination.CombinationMatcher;
 import agreementMaker.application.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import agreementMaker.application.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
 import agreementMaker.application.mappingEngine.manualMatcher.UserManualMatcher;
+import agreementMaker.application.mappingEngine.multiWords.MultiWordsMatcher;
 import agreementMaker.application.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import agreementMaker.application.mappingEngine.ssc.SiblingsSimilarityContributionMatcher;
@@ -35,6 +36,7 @@ public enum MatchersRegistry {
 	//OFFICIAL MATCHERS
 	BaseSimilarity		( "Base Similarity", BaseSimilarityMatcher.class ),
 	 ParametricString ( "Parametric String Matcher", ParametricStringMatcher.class ),
+	 MultiWords       ("Multi Words Matcher", MultiWordsMatcher.class),
 	DSI					( "Descendant's Similarity Inheritance (DSI)", DescendantsSimilarityInheritanceMatcher.class ),
 	SSC					( "Sibling's Similarity Contribution (SSC)", SiblingsSimilarityContributionMatcher.class ),
 	Combination	( "Mathematical Weighted Combination", CombinationMatcher.class ),

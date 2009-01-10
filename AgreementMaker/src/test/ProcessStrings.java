@@ -3,6 +3,8 @@ package test;
 
 import javax.swing.JOptionPane;
 
+import agreementMaker.application.mappingEngine.StringUtil.Normalizer;
+import agreementMaker.application.mappingEngine.StringUtil.NormalizerParameter;
 import agreementMaker.application.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import agreementMaker.application.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 
@@ -24,20 +26,19 @@ public class ProcessStrings {
 		
 		//YOU HAVE TO MAKE PUBLIC beforeAlignmentOperations() & preProcessString
 		ParametricStringMatcher p = new ParametricStringMatcher();
-		ParametricStringParameters par = new ParametricStringParameters();
+		NormalizerParameter par = new NormalizerParameter();
 		par.normalizeBlank = true;
 		par.normalizeDiacritics = true;
 		par.normalizePunctuation = true;
 		par.normalizeDigit = true;
 		par.removeStopWords = true;
 		par.stem = true;
-		p.setParam(par);
-		p.beforeAlignOperations();
+		Normalizer n = new Normalizer(par);
 		
 		String input = JOptionPane.showInputDialog("Insert string to be processed");
 		String process;
 		while(input != null) {
-			process = p.preProcessString(input);
+			process = n.normalize(input);
 			JOptionPane.showMessageDialog(null, process);
 			System.out.println(process);
 			input = JOptionPane.showInputDialog("Insert string to be processed");

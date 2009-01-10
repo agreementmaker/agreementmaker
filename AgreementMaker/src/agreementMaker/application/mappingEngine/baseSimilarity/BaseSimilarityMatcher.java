@@ -10,7 +10,7 @@ import edu.smu.tspell.wordnet.SynsetType;
 import edu.smu.tspell.wordnet.WordNetDatabase;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
-import agreementMaker.application.mappingEngine.stemmer.PorterStemmer;
+import agreementMaker.application.mappingEngine.StringUtil.PorterStemmer;
 import agreementMaker.application.ontology.Node;
 
 
