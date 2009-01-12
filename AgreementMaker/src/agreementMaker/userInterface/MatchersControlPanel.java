@@ -108,7 +108,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		thresholdLabel = new JLabel("Threshold");
 		String[] thresholdList = Utility.getPercentStringList();
 		thresholdCombo = new JComboBox(thresholdList);
-		thresholdCombo.setSelectedItem("75%");
+		thresholdCombo.setSelectedItem("50%");
 		//Relations combo
 		Object[] numRelList = Utility.getNumRelList();
 		sRelLabel = new JLabel("Source relations");
@@ -116,7 +116,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		sRelationCombo.setSelectedItem(1);
 		tRelLabel = new JLabel("Target relations");
 		tRelationCombo = new JComboBox(numRelList);
-		tRelationCombo.setSelectedItem(MyTableModel.ANY);
+		tRelationCombo.setSelectedItem(1);
 		defaultValButton = new JButton("Default");
 		defaultValButton.addActionListener(this);
 
@@ -245,20 +245,23 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
 				report+=i+" "+toBeEvaluated.getName().getMatcherName()+"\n\n";
 				for(int j = 0; j < QualityEvaluator.QUALITIES.length; j++) {
-					q = QualityEvaluator.evaluate(toBeEvaluated, QualityEvaluator.QUALITIES[j]);
-					if(!q.isLocal()) {
-						report+= QualityEvaluator.QUALITIES[j]+"\n";
-						report+= "Global Classes Quality: "+q.getGlobalClassMeasure()+"\n" ;
-						report+= "Global Properties Quality: "+q.getGlobalPropMeasure()+"\n" ;
-						report+= "\n";
-					}
-					else {
+					//THIS IF HAS TO BE REMOVED
+					if(QualityEvaluator.QUALITIES[j] == QualityEvaluator.DISTANCE) {
 						q = QualityEvaluator.evaluate(toBeEvaluated, QualityEvaluator.QUALITIES[j]);
-						report+= QualityEvaluator.QUALITIES[j]+"\n";
-						report+= "Average of local Classes Quality: "+Utility.getAverageOfArray(q.getLocalClassMeasures())+"\n" ;
-						report+= "Average of local Properties Quality: "+Utility.getAverageOfArray(q.getLocalPropMeasures())+"\n" ;
-						//Add the list of local qualities here
-						report+= "\n";
+						if(!q.isLocal()) {
+							report+= QualityEvaluator.QUALITIES[j]+"\n";
+							report+= "Global Classes Quality: "+q.getGlobalClassMeasure()+"\n" ;
+							report+= "Global Properties Quality: "+q.getGlobalPropMeasure()+"\n" ;
+							report+= "\n";
+						}
+						else {
+							q = QualityEvaluator.evaluate(toBeEvaluated, QualityEvaluator.QUALITIES[j]);
+							report+= QualityEvaluator.QUALITIES[j]+"\n";
+							report+= "Average of local Classes Quality: "+Utility.getAverageOfArray(q.getLocalClassMeasures())+"\n" ;
+							report+= "Average of local Properties Quality: "+Utility.getAverageOfArray(q.getLocalPropMeasures())+"\n" ;
+							//Add the list of local qualities here
+							report+= "\n";
+						}
 					}
 				}
 			}

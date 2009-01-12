@@ -4,9 +4,9 @@ import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.mappingEngine.AlignmentMatrix;
 
-public class AMLocalQuality {
+public class LocalConfidenceQuality {
 	
-	protected static QualityEvaluationData getQuality(AbstractMatcher matcher) {
+	protected static QualityEvaluationData getQuality(AbstractMatcher matcher, boolean considerThreshold) {
 		QualityEvaluationData q = new QualityEvaluationData();
 		q.setLocal(true);
 		
@@ -19,22 +19,30 @@ public class AMLocalQuality {
 			numOfRelations = maxTargetRelations;
 		}
 		
+		double threshold = 0.01; //could be 0 and should be the same
+		if(considerThreshold) {
+			threshold = matcher.getThreshold();
+		}
 		if(matcher.areClassesAligned()) {
-			double[] measures = evaluateMatrix(matcher.getClassesMatrix(), q.isLocalForSource(),numOfRelations, matcher.getThreshold() );
+			double[] measures = evaluateMatrix(matcher.getClassesMatrix(), q.isLocalForSource(),numOfRelations, threshold );
 			q.setLocalClassMeasures(measures);
 		}
 		if(matcher.arePropertiesAligned()) {
-			double[] measures = evaluateMatrix(matcher.getPropertiesMatrix(), q.isLocalForSource(),numOfRelations,matcher.getThreshold());
+			double[] measures = evaluateMatrix(matcher.getPropertiesMatrix(), q.isLocalForSource(),numOfRelations,threshold);
 			q.setLocalPropMeasures(measures);
 		}
 		
 		return q;
 	}
 	
-	private static double[] evaluateMatrix(AlignmentMatrix matrix, boolean localForSource, int numRel, double threshold) {
+	private static double[] evaluateMatrix(AlignmentMatrix matrix, boolean localForSource, int numRel, double th) {
+		//double threshold = th;
+		double threshold = 0.01;
+		
 		//if sourcerelations are less then targetrelation the matrix will be scanned for row or column.
 		//for each node (row or column) the quality will be calculated with this formula:
 		// avg(numRelations selected similarities of that nodes) - avg(similarities not choosen for that node) 
+		
 		double[] localMeasure;
 		int numRelations = numRel; //avoiding to modify the input param
 		

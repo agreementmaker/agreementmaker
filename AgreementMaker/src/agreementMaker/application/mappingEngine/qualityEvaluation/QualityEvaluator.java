@@ -7,57 +7,69 @@ import agreementMaker.application.mappingEngine.AlignmentMatrix;
 public class QualityEvaluator {
 	
 		
-	public final static String  LOCAL = "AM Local Quality";
-	public final static String  GLOBAL = "AM Global Quality";
-	public final static String COMBINED = "Combined Quality: average between Global and Local";
+	public final static String  LOCALCONFIDENCE = "Local confidence";
+	public final static String LOCALTHRESHOLDCONFIDENCE = "Local confidence considering threshold";
+	public final static String  GLOBALCONFIDENCE = "Global confidence";
+	public final static String GLOBALTHRESHOLDCONFIDENCE = "Global confidence considering threshold";
+	public final static String DISTANCE = "Global Distance Preservation";
+	public final static String ORDER = "Global Order Preservation";
 	
-	public final static String[] QUALITIES = {LOCAL,GLOBAL,COMBINED};
+	public final static String[] QUALITIES = {LOCALCONFIDENCE, LOCALTHRESHOLDCONFIDENCE, GLOBALCONFIDENCE,GLOBALTHRESHOLDCONFIDENCE, DISTANCE,ORDER};
 	
 	public static QualityEvaluationData evaluate(AbstractMatcher matcher, String quality) {
 		QualityEvaluationData qData = null;
 		
-		//LOCAL GLOBAL AND COMBINED
-		if(quality.equals(LOCAL) || quality.equals(GLOBAL)  || quality.equals(COMBINED) ){
-			//in all tree cases i have to calculate local first
-			qData = AMLocalQuality.getQuality(matcher);
+		//LOCAL GLOBAL confidence without considering theshold
+		if(quality.equals(LOCALCONFIDENCE) || quality.equals(GLOBALCONFIDENCE)){
+			//in all 2 cases i have to calculate local first
+			qData = LocalConfidenceQuality.getQuality(matcher, false);
 			//then global is the average of locals
-			//combined is the average of global and each local 
-			if(quality.equals(GLOBAL) || quality.equals(COMBINED)) {
+			if(quality.equals(GLOBALCONFIDENCE)) {
 				
 				double[] localClassQualities = qData.getLocalClassMeasures();
 				double[] localPropQualities = qData.getLocalPropMeasures();
 				double classAverage = Utility.getAverageOfArray(localClassQualities);
 				double propAverage = Utility.getAverageOfArray(localPropQualities);
 				//then global is the average of locals
-				if(quality.equals(GLOBAL)) {
-					qData.setLocal(false);
-					if(matcher.areClassesAligned()) {
-						qData.setGlobalClassMeasure(classAverage);
-					}
-					if(matcher.arePropertiesAligned()) {
-						qData.setGlobalPropMeasure(propAverage);
-					}
+				qData.setLocal(false);
+				if(matcher.areClassesAligned()) {
+					qData.setGlobalClassMeasure(classAverage);
 				}
-				//combined is the average of global and each local 
-				else if(quality.equals(COMBINED)) {
-					qData.setLocal(true);
-					if(matcher.areClassesAligned()) {
-						for(int i = 0; i < localClassQualities.length; i++) {
-							localClassQualities[i] = ( localClassQualities[i] + classAverage ) /2;
-						}
-					}
-					if(matcher.arePropertiesAligned()) {
-						for(int i = 0; i < localPropQualities.length; i++) {
-							localPropQualities[i] =  ( localPropQualities[i] + propAverage ) /2;
-						}
-					}
+				if(matcher.arePropertiesAligned()) {
+					qData.setGlobalPropMeasure(propAverage);
 				}
-				qData.setLocalClassMeasures(localClassQualities);
-				qData.setLocalPropMeasures(localPropQualities);
 			}
+		}
+			
+		//LOCAL GLOBAL confidence considering th
+		if(quality.equals(LOCALTHRESHOLDCONFIDENCE) || quality.equals(GLOBALTHRESHOLDCONFIDENCE)){
+			//in all 2 cases i have to calculate local first
+			qData = LocalConfidenceQuality.getQuality(matcher, true);
+			//then global is the average of locals
+			if(quality.equals(GLOBALTHRESHOLDCONFIDENCE)) {
+				
+				double[] localClassQualities = qData.getLocalClassMeasures();
+				double[] localPropQualities = qData.getLocalPropMeasures();
+				double classAverage = Utility.getAverageOfArray(localClassQualities);
+				double propAverage = Utility.getAverageOfArray(localPropQualities);
+				//then global is the average of locals
+				qData.setLocal(false);
+				if(matcher.areClassesAligned()) {
+					qData.setGlobalClassMeasure(classAverage);
+				}
+				if(matcher.arePropertiesAligned()) {
+					qData.setGlobalPropMeasure(propAverage);
+				}
+			}
+		}
+		
+		//JOslyn structural qualities
+		if(quality.equals(DISTANCE) || quality.equals(ORDER)) {
+			JoslynStructuralQuality evaluator = new JoslynStructuralQuality(matcher, quality);
+			qData = evaluator.getQuality();
+		}
 			
 			//OTHER QUALITIES TO BE ADDED
-		}
 		return qData;
 	}
 

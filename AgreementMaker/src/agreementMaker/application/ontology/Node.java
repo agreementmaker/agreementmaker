@@ -1,6 +1,8 @@
 package agreementMaker.application.ontology;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
 
 
 import com.hp.hpl.jena.ontology.Individual;
@@ -195,9 +197,6 @@ public class Node {
 	}
 	
 	public Vertex getVertex() {
-		if(hasDuplicates()) {
-			System.out.println("WARNING:it's represented by more than one vertex, use this method only if need informations that are the same in each Vertex");
-		}
 		return vertexList.get(0);
 	}
 
@@ -324,5 +323,49 @@ public class Node {
 	//**********************Methods for printing*************************
 	
 	
+	//**********************Methods for managing the node as a DAG node see also TreeToDagConverter********************************************
+	//TO BE DONE isRoot, getSiblings, getParents, getAllDescendants, getAllAncestors, getSiblingsOfAParent(Node parent
+	public int getLevel() {
+		return getVertex().getLevel() - TreeToDagConverter.REALROOTSLEVEL;
+	}
+	
+	public boolean isLeaf() {
+		boolean result = false;
+		Vertex v = getVertex();
+		if(v.isLeaf())
+			return true;
+		return false;
+	}
+	
+	public ArrayList<Node> getChildren(){
+		ArrayList<Node> result = new ArrayList<Node>();
+		Vertex v = getVertex();
+		if(!v.isLeaf()) {
+			Enumeration c = v.children();
+			while(c.hasMoreElements()) {
+				Vertex child = (Vertex)c.nextElement();
+				if(!child.isFake()) {
+					result.add(child.getNode());
+				}
+			}
+		}
+		return result;
+	}
+	
+	/**n is a descendant of this? same as vertex.isNodeDescendant*/
+	public boolean isNodeDescendant(Node n){
+		Vertex ancestor = getVertex();
+		Iterator<Vertex> it = n.getVertexList().iterator();
+		while(it.hasNext()) {
+			Vertex v = it.next();
+			if(ancestor.isNodeDescendant(v)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+
 
 }

@@ -13,6 +13,9 @@ import agreementMaker.userInterface.table.MyTableModel;
 public class Utility {
 	public final static String UNEXPECTED_ERROR = "Unexepcted System Error.\nTry to reset the system and repeat the operation.\nContact developers if the error persists.";
 	
+	
+	//**************************************************USER INTERFACE UTILITIES***********************************************************
+	
 	public static String[] getPercentStringList() {
 		int min = 0;
 		int max = 100;
@@ -86,42 +89,7 @@ public class Utility {
 		else return "no";
 	}
 	
-	public static boolean isIrrelevant(String s) {
-		return s == null || s.equals("") ;
-	}
-	
-	public static boolean startsWithSpace(String s) {
-		if(s!=null && s.length() >0) {
-			char first = s.charAt(0);
-			if(first == ' ')
-				return true;
-		}
-		return false;
-	}
-	
-	public static boolean endsWithSpace(String s) {
-		if(s!=null && s.length() >0) {
-			char last = s.charAt(s.length()-1);
-			if(last == ' ')
-				return true;
-		}
-		return false;
-	}
-	
-	//I need to add the string only if it's relevant
-	//and i need to put a space only if there is not already one
-	public static String smartConcat(String first, String second) {
-		//Attention: first can be irrelevant in fact the first time i start concatenating is often empty the first string.
-		//it may happen that there will be 2 space between the two words, but is not important
-		String result = first;
-		if(!isIrrelevant(second)) {
-			if(!(endsWithSpace(first) || startsWithSpace(second) || first.equals(""))) {
-				result += " ";
-			}
-			result += second;
-		}
-		return result;
-	}
+
 	
 	/**
 	 * This function displays the JOptionPane with title and descritpion
@@ -173,7 +141,21 @@ public class Utility {
 			return true;
 		else return false;
 		}
-
+	
+	
+	//********************************************MATH UTILITIES**************************************************************
+	
+	//return f(x) = 1 / ( 1 + exp( -5 (x - k) ) )
+	//sigmoid function used by rimom in the weighted average of similarities
+	public static double getSigmoidFunction(double d) {
+		double k = 0.5;
+		double numerator = 1;
+		double exponent = (-5) * (d - k);
+		double exp = Math.exp(exponent);
+		double denominator = 1 + exp;
+		return numerator / denominator;
+	}
+	
 	public static double getAverageOfArray(double[] array) {
 		if(array.length == 0) {
 			return 0;
@@ -198,7 +180,7 @@ public class Utility {
 	}
 	
 	//order the array of IntDoublePair so that the minimum is at the beginning
-	//the only element in the wrong position is the key element that to be moved before or later or staeid there
+	//the only element in the wrong position is the key element that has to be moved before or later or staeid there
 	public static void adjustOrderPairArray(IntDoublePair[] intDoublePairs, int k) {
 		IntDoublePair currentPair;
 		IntDoublePair nextPair;
@@ -223,6 +205,55 @@ public class Utility {
 		
 	}
 	
+	public static int getMaxOfIntMatrix(int[][] matrix) {
+		int max = Integer.MIN_VALUE;
+		for(int i = 0; i < matrix.length; i++) {
+			for(int j = 0; j < matrix[i].length; j++) {
+				int current = matrix[i][j];
+				if(current > max)
+					max = current;
+			}
+		}
+		return max;
+	}
 
+	//*******************************************STRING UTILITIES********************************************************
+	public static boolean isIrrelevant(String s) {
+		return s == null || s.equals("") ;
+	}
+	
+	public static boolean startsWithSpace(String s) {
+		if(s!=null && s.length() >0) {
+			char first = s.charAt(0);
+			if(first == ' ')
+				return true;
+		}
+		return false;
+	}
+	
+	public static boolean endsWithSpace(String s) {
+		if(s!=null && s.length() >0) {
+			char last = s.charAt(s.length()-1);
+			if(last == ' ')
+				return true;
+		}
+		return false;
+	}
+	
+	//I need to add the string only if it's relevant
+	//and i need to put a space only if there is not already one
+	public static String smartConcat(String first, String second) {
+		//Attention: first can be irrelevant in fact the first time i start concatenating is often empty the first string.
+		//it may happen that there will be 2 space between the two words, but is not important
+		String result = first;
+		if(!isIrrelevant(second)) {
+			if(!(endsWithSpace(first) || startsWithSpace(second) || first.equals(""))) {
+				result += " ";
+			}
+			result += second;
+		}
+		return result;
+	}
+	//**********************************************************************
 	
 }

@@ -51,6 +51,7 @@ public class ProgressDialog extends JDialog implements PropertyChangeListener, A
 	    matcherReport = new JTextArea(8, 35);
 	    
 		setTitle("Agreement Maker is Running ...");  // you'd better go catch it!
+		matcherReport.setText("Running...");
 		//setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setResizable(false);
 	    
@@ -134,7 +135,7 @@ public class ProgressDialog extends JDialog implements PropertyChangeListener, A
 			progressBar.setIndeterminate(false);
 			progressBar.setValue(100);
 		}
-		matcherReport.append( matcher.getReport() );
+		matcherReport.setText( matcher.getReport() );
 		cancelButton.setEnabled(false);
 		okButton.setEnabled(true);
 		

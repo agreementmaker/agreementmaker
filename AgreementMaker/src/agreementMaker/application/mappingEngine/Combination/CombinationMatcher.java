@@ -73,6 +73,10 @@ public class CombinationMatcher extends AbstractMatcher {
 		double sumOfWeights = 0; //sum of weights
 		double sim;
 		double weightedSim;
+		//to perform sigmoid average
+		double sigmoidSim;
+		double weightedSigmoidSim;
+		double sigmoidSum = 0;
 		AbstractMatcher a;
 		for(int i = 0; i < inputMatchers.size();i++) {
 			//for each input matcher...
@@ -89,7 +93,11 @@ public class CombinationMatcher extends AbstractMatcher {
 			}
 			else throw new RuntimeException("DEVELOPER ERROR: the alignType of node is not prop or class");
 			
-			//all operations are weighted, if the user has selected non-weighted then all weights are 1
+			//sigmoid average
+			sigmoidSim = Utility.getSigmoidFunction(sim);
+			weightedSigmoidSim = weight * sigmoidSim;
+			sigmoidSum += weightedSigmoidSim;
+			//all other operations are simply weighted, if the user has selected non-weighted then all weights are 1
 			weightedSim = weight * sim;
 			//calculate sum for average combination
 			sum += weightedSim;
@@ -112,6 +120,11 @@ public class CombinationMatcher extends AbstractMatcher {
 		else if(parameters.combinationType.equals(CombinationParameters.AVERAGECOMB)) {
 			if(sumOfWeights != 0)
 				sim = sum/ sumOfWeights;
+			else sim = 0;
+		}
+		else if(parameters.combinationType.equals(CombinationParameters.SIGMOIDAVERAGECOMB)) {
+			if(sumOfWeights != 0)
+				sim = sigmoidSum/ sumOfWeights;
 			else sim = 0;
 		}
 		else throw new RuntimeException("DEVELOPMENT ERROR: combination type selected is not implemented");

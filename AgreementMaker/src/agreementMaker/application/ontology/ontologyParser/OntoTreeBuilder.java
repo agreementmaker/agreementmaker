@@ -133,7 +133,7 @@ public class OntoTreeBuilder extends TreeBuilder{
         ontology.setClassesTree( classRoot);
         Vertex propertyRoot = createPropertyTree();
         treeRoot.add(propertyRoot);
-        ontology.setClassesTree( propertyRoot);
+        ontology.setPropertiesTree( propertyRoot);
 	}
 	
     public Set collect( Iterator i ) {

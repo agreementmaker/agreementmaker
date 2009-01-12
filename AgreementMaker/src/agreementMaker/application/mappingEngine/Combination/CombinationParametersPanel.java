@@ -66,7 +66,7 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 		inputMatchers = matchers;
 		topLabel = new JLabel("Select the operation that will be used to combine alignments for each pair (Source Node, Target Node).");
 		combinationTypeL = new JLabel("Combining operation: ");
-		String[] operations = {CombinationParameters.AVERAGECOMB, CombinationParameters.MAXCOMB, CombinationParameters.MINCOMB};
+		String[] operations = {CombinationParameters.SIGMOIDAVERAGECOMB, CombinationParameters.AVERAGECOMB, CombinationParameters.MAXCOMB, CombinationParameters.MINCOMB};
 		combOperationsCombo = new JComboBox(operations);
 		
 		radioLabel = new JLabel("Operations can be weighted or not. Select weights assignment method if needed.");
