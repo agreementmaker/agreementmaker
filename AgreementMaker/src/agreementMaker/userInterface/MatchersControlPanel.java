@@ -246,7 +246,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				report+=i+" "+toBeEvaluated.getName().getMatcherName()+"\n\n";
 				for(int j = 0; j < QualityEvaluator.QUALITIES.length; j++) {
 					//THIS IF HAS TO BE REMOVED
-					if(QualityEvaluator.QUALITIES[j] == QualityEvaluator.DISTANCE) {
+					if(QualityEvaluator.QUALITIES[j] == QualityEvaluator.ORDER) {
 						q = QualityEvaluator.evaluate(toBeEvaluated, QualityEvaluator.QUALITIES[j]);
 						if(!q.isLocal()) {
 							report+= QualityEvaluator.QUALITIES[j]+"\n";

@@ -28,8 +28,10 @@ public class QualityEvaluator {
 				
 				double[] localClassQualities = qData.getLocalClassMeasures();
 				double[] localPropQualities = qData.getLocalPropMeasures();
-				double classAverage = Utility.getAverageOfArray(localClassQualities);
-				double propAverage = Utility.getAverageOfArray(localPropQualities);
+				
+				//When we use the this quality as weight, when is 0 it doesn't count
+				double classAverage = Utility.getAverageOfArrayNonZeroValues(localClassQualities);
+				double propAverage = Utility.getAverageOfArrayNonZeroValues(localPropQualities);
 				//then global is the average of locals
 				qData.setLocal(false);
 				if(matcher.areClassesAligned()) {

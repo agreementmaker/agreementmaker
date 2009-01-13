@@ -156,15 +156,30 @@ public class Utility {
 		return numerator / denominator;
 	}
 	
-	public static double getAverageOfArray(double[] array) {
-		if(array.length == 0) {
-			return 0;
-		}
+	public static double getSumOfArray(double[] array) {
 		double sum = 0;
 		for(int i = 0; i < array.length; i++) {
 			sum += array[i];
 		}
+		return sum;
+	}
+	
+	public static double getAverageOfArray(double[] array) {
+		double sum = getSumOfArray(array);
 		sum = sum / (double) array.length;
+		return sum;
+	}
+	
+	public static double getAverageOfArrayNonZeroValues(double[] array) {
+		double sum=0;
+		double tot = 0;
+		for(int i = 0; i< array.length; i++) {
+			if(array[i] != 0) {
+				tot++;
+				sum+=array[i];
+			}
+		}
+		sum = sum / tot;
 		return sum;
 	}
 	
@@ -185,8 +200,6 @@ public class Utility {
 		IntDoublePair currentPair;
 		IntDoublePair nextPair;
 		//THE TWO CASES ARE EXCLUSIVE 
-		
-		
 		//if is higher the the next val i need to move the element to the right
 		for(int i = k; i < intDoublePairs.length -1 && intDoublePairs[i].value > intDoublePairs[i+1].value; i++) {
 			currentPair = intDoublePairs[i];
@@ -205,17 +218,36 @@ public class Utility {
 		
 	}
 	
-	public static int getMaxOfIntMatrix(int[][] matrix) {
-		int max = Integer.MIN_VALUE;
+	public static double getMaxOfMatrix(double[][] matrix) {
+		double max = Double.MIN_VALUE;
 		for(int i = 0; i < matrix.length; i++) {
 			for(int j = 0; j < matrix[i].length; j++) {
-				int current = matrix[i][j];
+				double current = matrix[i][j];
 				if(current > max)
 					max = current;
 			}
 		}
 		return max;
 	}
+	
+	public static double getSumOfMatrix(double[][] matrix) {
+		double sum = 0;
+		for(int i = 0; i < matrix.length; i++) {
+			sum += getSumOfArray(matrix[i]);
+		}
+		return sum;
+	}
+	
+	public static int getSumOfIntMatrix(int[][] matrix) {
+		int sum = 0;
+		for(int i = 0; i < matrix.length; i++) {
+			for(int j = 0; j < matrix[i].length; j++) {
+				sum += matrix[i][j];
+			}
+		}
+		return sum;
+	}
+	
 
 	//*******************************************STRING UTILITIES********************************************************
 	public static boolean isIrrelevant(String s) {
