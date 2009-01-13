@@ -47,9 +47,11 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 	private JRadioButton noWeightsRadio;
 	private JRadioButton manualWeightsRadio;
 	private JRadioButton qualityWeightsRadio;
+	private JRadioButton bothWeightsRadio;
 	private JLabel noWeightsLabel;
 	private JLabel manualWeightsLabel;
 	private JLabel qualityWeightsLabel;
+	private JLabel bothWeightsLabel;
 	
 	
 	private JLabel weightsLabel;
@@ -80,10 +82,14 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 	    qualityWeightsRadio = new JRadioButton();
 	    qualityWeightsRadio.addItemListener(this);
 	    qualityWeightsLabel = new JLabel("Quality evaluation assignment");
+	    bothWeightsRadio = new JRadioButton();
+	    bothWeightsRadio.addItemListener(this);
+	    bothWeightsLabel = new JLabel("Manual & Quality");
 		radioGroupButton = new ButtonGroup();
 		radioGroupButton.add(noWeightsRadio);
 		radioGroupButton.add(manualWeightsRadio);
 		radioGroupButton.add(qualityWeightsRadio);
+		radioGroupButton.add(bothWeightsRadio);
 		
 		weightsLabel = new JLabel("Select weights to assign to each matcher in input.");
 		weightsLabel.setEnabled(false);
@@ -150,6 +156,9 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 						.addGap(10)
 						.addComponent(qualityWeightsRadio) 			
 						.addComponent(qualityWeightsLabel)
+						.addGap(10)
+						.addComponent(bothWeightsRadio) 			
+						.addComponent(bothWeightsLabel)
 					 )
 					.addComponent(weightsLabel)
 					.addGroup(matchersHorizGroup)
@@ -175,6 +184,8 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 				.addComponent(manualWeightsLabel)
 				.addComponent(qualityWeightsRadio) 			
 				.addComponent(qualityWeightsLabel)
+				.addComponent(bothWeightsRadio) 			
+				.addComponent(bothWeightsLabel)
 			 )
 			.addGap(30)
 			.addComponent(weightsLabel)
@@ -194,22 +205,21 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 		parameters.combinationType = (String)combOperationsCombo.getSelectedItem();
 		
 
-
+		parameters.manualWeighted = false;
+		parameters.qualityEvaluation = false;
 		//in the non-weighted case and manually weigthed case, weights are assigned here staticcaly,
 		//in the quality evaluation case weights will be assigned later by the algorithm
 		parameters.matchersWeights = new double[size];
-		if(qualityWeightsRadio.isSelected()) {
+		if(qualityWeightsRadio.isSelected() || bothWeightsRadio.isSelected()) {
 			parameters.qualityEvaluation = true;
 			parameters.quality = (String)qualityCombo.getSelectedItem();
 			//weights will be assigned later by the matcher in this case, which will invoke the qualityEvaluation
 		}
-		else {
+		if (noWeightsRadio.isSelected() || manualWeightsRadio.isSelected() || bothWeightsRadio.isSelected()) {
 			//both in the non weighted and weighted case weights are assigned,but in the first case they are all 1.
-			//so the quality evaluation data is statically created here without requiring a real quality evaluation
-			parameters.qualityEvaluation = false;
-			
+			//so is not strange that manual weighte is true even in the non weighted case
+			parameters.manualWeighted = true;
 			for(int i = 0; i < size; i++) {
-
 				double measure = 1;
 				if(manualWeightsRadio.isSelected()) {
 					measure = Utility.getDoubleFromPercent((String)inputMatchersCombo[i].getSelectedItem());
@@ -217,7 +227,6 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 				parameters.matchersWeights[i] = measure;
 			}
 		}
-		
 		return parameters;
 	}
 
@@ -226,13 +235,17 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 			setEnableQuality(false);
 			setEnableManual(false);
 		}
-		else if(manualWeightsRadio.isSelected()) {
+		if(manualWeightsRadio.isSelected()) {
 			setEnableQuality(false);
 			setEnableManual(true);
 		}
-		else if(qualityWeightsRadio.isSelected()) {
+		if(qualityWeightsRadio.isSelected()) {
 			setEnableQuality(true);
 			setEnableManual(false);
+		}
+		if(bothWeightsRadio.isSelected()) {
+			setEnableManual(true);
+			setEnableQuality(true);
 		}
 		
 	}

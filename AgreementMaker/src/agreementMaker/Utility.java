@@ -248,6 +248,50 @@ public class Utility {
 		return sum;
 	}
 	
+	
+	
+	//these two methods have to be used only on square matrix
+	//they return the sum of values in the first half of the array
+	public static double getSumOfHalfMatrix(double[][] matrix) {
+		double sum = 0;
+		for(int i = 0; i < matrix.length; i++) {
+			for(int j = 0; j < i; j++) {
+				sum += matrix[i][j];
+			}
+		}
+		return sum;
+	}
+	
+	public static int getSumOfHalfIntMatrix(int[][] matrix) {
+		int sum = 0;
+		for(int i = 0; i < matrix.length; i++) {
+			for(int j = 0; j < i; j++) {
+				sum += matrix[i][j];
+			}
+		}
+		return sum;
+	}
+	
+	//an array avg of the two, they must have same size
+	public static double[] avgArrays(double[] array1, double[] array2) {
+		double[] result = new double[array1.length];
+		for(int i = 0; i < array1.length; i++) {
+			result[i] = (array1[i] + array2[i] ) / 2;
+		}
+		return result;
+	}
+	
+	//divide the array with the divisor
+	public static double[] avgArrayAndDouble(double[] array,
+			double doublevalue) {
+		
+		double[] result = new double[array.length];
+		for(int i = 0; i < array.length; i++) {
+			result[i] =  (array[i] + doublevalue ) / 2;
+		}
+		
+		return result;
+	}
 
 	//*******************************************STRING UTILITIES********************************************************
 	public static boolean isIrrelevant(String s) {
@@ -287,5 +331,7 @@ public class Utility {
 		return result;
 	}
 	//**********************************************************************
+
+
 	
 }

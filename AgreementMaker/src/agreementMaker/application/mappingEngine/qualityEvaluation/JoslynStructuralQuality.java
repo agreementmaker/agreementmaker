@@ -134,13 +134,13 @@ public class JoslynStructuralQuality {
 		double binom = ( size * (size -1) ) / (double) 2;
 		
 		//calculate the sum
-		int sum = Utility.getSumOfIntMatrix(orderDescrepancies);
+		int sum = Utility.getSumOfHalfIntMatrix(orderDescrepancies);
 		double totalDescrepancy = (double)sum / binom;
 		
 		//the discrepancy is a measure of dissimilarity, between 1 and 0. so the quality should be 1 - totalDescrepancy
 		double quality = 1 - totalDescrepancy;
 		
-		System.out.println("quality: "+quality+" discrepancy: "+totalDescrepancy+" sum: "+sum+" binom: "+binom+" size: "+size);
+		//System.out.println("quality: "+quality+" discrepancy: "+totalDescrepancy+" sum: "+sum+" binom: "+binom+" size: "+size);
 		return quality;
 	}
 	
@@ -177,7 +177,8 @@ public class JoslynStructuralQuality {
 				if(sourceOrder != targetOrder) {
 					result[i][j] = 1;
 				}
-				
+				/*
+				//DEBUG
 				if(first.getEntity1().getLocalName().equalsIgnoreCase("BOOK")) {
 					if(second.getEntity1().getLocalName().equalsIgnoreCase("PROCEEDINGS")) {
 						System.out.println("book proc: "+result[i][j]);
@@ -324,13 +325,13 @@ public class JoslynStructuralQuality {
 		double binom = ( size * (size -1) ) / (double) 2;
 		
 		//calculate the sum
-		double sum = Utility.getSumOfMatrix(linkDistanceDiscrepancies);
+		double sum = Utility.getSumOfHalfMatrix(linkDistanceDiscrepancies);
 		double totalDescrepancy = sum / binom;
 		
 		//the discrepancy is a measure of dissimilarity, between 1 and 0. so the quality should be 1 - totalDescrepancy
 		double quality = 1 - totalDescrepancy;
 		
-		//System.out.println("quality: "+quality+" discrepancy: "+totalDescrepancy+" sum: "+sum+" binom: "+binom+" size: "+size);
+		System.out.println("quality: "+quality+" discrepancy: "+totalDescrepancy+" sum: "+sum+" binom: "+binom+" size: "+size);
 		return quality;
 	}
 	
@@ -366,11 +367,12 @@ public class JoslynStructuralQuality {
 				if(result[i][j] < 0) {
 					result[i][j] *= -1;
 				}
-				
+
 				//DEBUG
 				/*
 				if(first.getEntity1().getLocalName().equalsIgnoreCase("WEAPON")) {
 					if(second.getEntity1().getLocalName().equalsIgnoreCase("PROJECTILE-WEAPON")) {
+					
 						System.out.println("*** "+i+" "+j);
 						System.out.println("sources: "+first.getEntity1().getLocalName()+" "+second.getEntity1().getLocalName()+" "+sourceDistance);
 						System.out.println("target: "+first.getEntity2().getLocalName()+" "+second.getEntity2().getLocalName()+" "+targetDistance);

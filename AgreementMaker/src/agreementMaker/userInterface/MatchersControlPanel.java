@@ -237,35 +237,37 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 			Utility.displayErrorPane("No matchers selected", null);
 		}
 		else {
-			AbstractMatcher toBeEvaluated;
-			String report="Quality Evaluation Complete\n\n";
-			QualityEvaluationData q;
-			for(int i = 0; i < rowsIndex.length; i++) {
-				
-				toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
-				report+=i+" "+toBeEvaluated.getName().getMatcherName()+"\n\n";
-				for(int j = 0; j < QualityEvaluator.QUALITIES.length; j++) {
-					//THIS IF HAS TO BE REMOVED
-					if(QualityEvaluator.QUALITIES[j] == QualityEvaluator.ORDER) {
-						q = QualityEvaluator.evaluate(toBeEvaluated, QualityEvaluator.QUALITIES[j]);
-						if(!q.isLocal()) {
-							report+= QualityEvaluator.QUALITIES[j]+"\n";
-							report+= "Global Classes Quality: "+q.getGlobalClassMeasure()+"\n" ;
-							report+= "Global Properties Quality: "+q.getGlobalPropMeasure()+"\n" ;
-							report+= "\n";
-						}
-						else {
-							q = QualityEvaluator.evaluate(toBeEvaluated, QualityEvaluator.QUALITIES[j]);
-							report+= QualityEvaluator.QUALITIES[j]+"\n";
-							report+= "Average of local Classes Quality: "+Utility.getAverageOfArray(q.getLocalClassMeasures())+"\n" ;
-							report+= "Average of local Properties Quality: "+Utility.getAverageOfArray(q.getLocalPropMeasures())+"\n" ;
-							//Add the list of local qualities here
-							report+= "\n";
-						}
+			QualityEvaluationDialog qDialog = new QualityEvaluationDialog();
+			if(qDialog.isSuccess()) {
+				String quality = (String) qDialog.qualCombo.getSelectedItem();
+				AbstractMatcher toBeEvaluated;
+				String report= "Quality Evaluation Complete\n\n";
+				QualityEvaluationData q;
+				for(int i = 0; i < rowsIndex.length; i++) {
+					
+					toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
+					report+=(i+1)+" "+toBeEvaluated.getName().getMatcherName()+"\n\n";
+					q = QualityEvaluator.evaluate(toBeEvaluated, quality);
+					if(!q.isLocal()) {
+						report+= quality+"\n";
+						report+= "Class Alignments Quality: "+Utility.getNoFloatPercentFromDouble(q.getGlobalClassMeasure())+"\n" ;
+						report+= "Property Alignments Quality: "+Utility.getNoFloatPercentFromDouble(q.getGlobalPropMeasure())+"\n" ;
+						report+= "\n";
 					}
+					/*
+					else {
+						q = QualityEvaluator.evaluate(toBeEvaluated, QualityEvaluator.QUALITIES[j]);
+						report+= QualityEvaluator.QUALITIES[j]+"\n";
+						report+= "Average of local Classes Quality: "+Utility.getAverageOfArray(q.getLocalClassMeasures())+"\n" ;
+						report+= "Average of local Properties Quality: "+Utility.getAverageOfArray(q.getLocalPropMeasures())+"\n" ;
+						//Add the list of local qualities here
+						report+= "\n";
+					}
+					*/
 				}
+				Utility.displayTextAreaPane(report,"Quality Evaluation Report");
 			}
-			Utility.displayTextAreaPane(report,"Quality Evaluation Report");
+			qDialog.dispose();
 		}
 		
 	}

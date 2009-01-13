@@ -284,10 +284,10 @@ public class Node {
 		return result;
 	}
 
-	public String getPropertiesString() {
-		String result = "List of properties:\n\n";
+	public String getPropOrClassString() {
+		String result = "Properties or Classes declared by this concept:\n\n";
 		if(propOrClassNeighbours.size() == 0) {
-			result+="No property relations found for this class";
+			result+="The list is empty";
 		}
 		for(int i = 0; i < propOrClassNeighbours.size(); i++) {
 			result+= propOrClassNeighbours.get(i)+"\n";

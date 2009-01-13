@@ -20,6 +20,8 @@ public class CombinationParameters extends AbstractParameters {
 	 * else if it's true weights are defined thorugh quality evaluation
 	 */
 	public boolean qualityEvaluation  = true;
+	public boolean manualWeighted = false;
+	
 	public String quality = QualityEvaluator.LOCALCONFIDENCE; //selected quality measure to be used to define weights
 	
 	//for each matcher there is an array of local weights for each node

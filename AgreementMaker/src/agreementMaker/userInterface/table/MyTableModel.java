@@ -69,7 +69,7 @@ public class MyTableModel extends AbstractTableModel {
                 "100%",
                 "ANY",
                 "ANY",
-                "0123456789012345678912345",
+                "012345678901",
                 Boolean.TRUE,
                 Boolean.TRUE,
                 Boolean.TRUE,

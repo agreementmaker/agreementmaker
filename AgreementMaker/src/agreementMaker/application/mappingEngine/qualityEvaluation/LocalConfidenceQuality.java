@@ -112,7 +112,7 @@ public class LocalConfidenceQuality {
 				localMeasure[i] = finalAvg;
 			}//else is 0
 			
-			System.out.println("case i: totsum: "+totalSum+" sumSel: "+sumOfSelected+" sumNonSel: "+sumOfNonSelected+" numOfSel: "+numberOfSelected+" numOfNonSel: "+numberOfNonSelected+" avgSel: "+avgOfSelected+" avgNonSel: "+avgOfNonSelected+" final: "+localMeasure[i]);
+			//System.out.println("case i: totsum: "+totalSum+" sumSel: "+sumOfSelected+" sumNonSel: "+sumOfNonSelected+" numOfSel: "+numberOfSelected+" numOfNonSel: "+numberOfNonSelected+" avgSel: "+avgOfSelected+" avgNonSel: "+avgOfNonSelected+" final: "+localMeasure[i]);
 		}
 		
 		return localMeasure;

@@ -16,7 +16,7 @@ public class VertexDescriptionPane extends JPanel{
 	
 	final static String TABDESC = "Descriptions";
 	final static String TABANNOTATIONS = "Annotations";
-	final static String TABPROP = "Properties";
+	final static String TABPROP = "Class/Property";
 	final static String TABINDIVIDUALS = "Individuals";
 	
 	final static String TIPDESC = "Basic information of the current node";
@@ -37,7 +37,7 @@ public class VertexDescriptionPane extends JPanel{
 
 	private String annotations;
 	private String disjointClasses;
-	private String properties;
+	private String propertyOrClasses;
 	private String restrictions;
 	
 	public VertexDescriptionPane(int fileType){
@@ -204,7 +204,7 @@ public class VertexDescriptionPane extends JPanel{
 	}
 	
 	public String getProperties(){
-		return properties;
+		return propertyOrClasses;
 	}
 	
 	public String getRestrictions(){
@@ -225,12 +225,12 @@ public class VertexDescriptionPane extends JPanel{
 	       if(v.isSourceOrGlobal()){
 	    	   st1.setText(node.getDescriptionsString());
 	    	   st2.setText(node.getAnnotationsString());
-	    	   st3.setText(node.getPropertiesString());
+	    	   st3.setText(node.getPropOrClassString());
 	    	   st4.setText(node.getIndividualsString());
 	       }else {
 	    	   lt1.setText(node.getDescriptionsString());
 	    	   lt2.setText(node.getAnnotationsString());
-	    	   lt3.setText(node.getPropertiesString());
+	    	   lt3.setText(node.getPropOrClassString());
 	    	   lt4.setText(node.getIndividualsString());
 	       }
 		}else if(typeOfFile == GlobalStaticVariables.RDFSFILE){

@@ -37,25 +37,41 @@ public class CombinationMatcher extends AbstractMatcher {
 		int size = inputMatchers.size();
 		CombinationParameters cp = (CombinationParameters)param;
 		AbstractMatcher a;
-		QualityEvaluationData q;
 		qualityWeights = new QualityEvaluationData[size];
+		
 		
 		//if weights are manually assigned then they are already created in the parameters we just have to create a fake quality evaluation with that weight
 		//if not, we have to run the quality evaluation for each matcher
 		for(int i = 0; i < size; i++) {
+			QualityEvaluationData manual = null;
+			QualityEvaluationData automatic = null;
+			QualityEvaluationData finalQuality = null;
+			//is important to be if if if without else
 			if(cp.qualityEvaluation) {
 				a = inputMatchers.get(i);
-				q = QualityEvaluator.evaluate(a, cp.quality);
+				automatic = QualityEvaluator.evaluate(a, cp.quality);
+				finalQuality = automatic; //if it's only manual q will be equal to it else it will be the average of manual and automatics
 			}
-			else {
+			if(cp.manualWeighted) {
 				//we are in the non-weighted or manual case
 				//we have to create fake qualities
-				q = new QualityEvaluationData();
-				q.setLocal(false);//this quality is global because same weight for all nodes
-				q.setGlobalClassMeasure(cp.matchersWeights[i]);
-				q.setGlobalPropMeasure(cp.matchersWeights[i]);
+				manual = new QualityEvaluationData();
+				manual.setLocal(false);//this quality is global because same weight for all nodes
+				manual.setGlobalClassMeasure(cp.matchersWeights[i]);
+				manual.setGlobalPropMeasure(cp.matchersWeights[i]);
+				finalQuality = manual;
 			}
-			qualityWeights[i] = q;
+			
+			if(cp.manualWeighted && cp.qualityEvaluation) {
+				System.out.println("here");
+				System.out.println("auto"+automatic.getClassQuality(1, 1));
+				System.out.println("manual"+manual.getClassQuality(1, 1));
+				finalQuality = QualityEvaluator.mergeQualities(manual, automatic);
+				System.out.println("final"+finalQuality.getClassQuality(1, 1));
+			}
+				
+			
+			qualityWeights[i] = finalQuality;
 		}
 	}
 
