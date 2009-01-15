@@ -113,10 +113,14 @@ public class ReferenceEvaluationData
 		result+="Matchings discovered: "+getFound()+"\n";
 		result+="Matchings in Reference: "+getExist()+"\n";
 		result+="Matchings correct: "+getCorrect()+"\n";
-		result+="Precision = Correct/Discovered: "+Utility.getNoFloatPercentFromDouble(getPrecision())+"\n";
-		result+="Recall = Correct/Reference: "+Utility.getNoFloatPercentFromDouble(getRecall())+"\n";
-		result+="Fmeasure = 2(precision*recall)/(precision+recall): "+Utility.getNoFloatPercentFromDouble(getFmeasure())+"\n";
+		result+="Precision = Correct/Discovered: "+Utility.getOneDecimalPercentFromDouble(getPrecision())+"\n";
+		result+="Recall = Correct/Reference: "+Utility.getOneDecimalPercentFromDouble(getRecall())+"\n";
+		result+="Fmeasure = 2(precision*recall)/(precision+recall): "+Utility.getOneDecimalPercentFromDouble(getFmeasure())+"\n";
 		return result;
+	}
+	
+	public String getMeasuresLine() {
+		return found+"\t"+correct+"\t"+exist+"\t"+Utility.getOneDecimalPercentFromDouble(precision)+"\t"+Utility.getOneDecimalPercentFromDouble(recall)+"\t"+Utility.getOneDecimalPercentFromDouble(fmeasure)+"\n";
 	}
     
 }

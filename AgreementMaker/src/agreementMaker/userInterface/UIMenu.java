@@ -139,7 +139,7 @@ public class UIMenu implements ActionListener {
 				controlPanel.delete();
 			}
 			else if(obj == saveMatching) {
-				controlPanel.save();
+				controlPanel.export();
 			}
 			else if(obj == refEvaluateMatching) {
 				controlPanel.evaluate();

@@ -61,7 +61,7 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 		neighbourCheck = new JCheckBox();
 		neighbourCheck.setSelected(false);
 		indCheck = new JCheckBox();
-		indCheck.setSelected(true);
+		indCheck.setSelected(false);
 		propCheck = new JCheckBox();
 		propCheck.setSelected(false);
 		classCheck = new JCheckBox();

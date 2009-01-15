@@ -15,74 +15,94 @@ public class QualityEvaluator {
 	public final static String  GLOBALCONFIDENCE = "Global confidence";
 	public final static String DISTANCE = "Distance Preservation";
 	public final static String ORDER = "Order Preservation";
-	
+	public final static String CONF_ORDER_DIST = "Confidence & distance & order (Avg)";
 	//TEST QUALITIES
 	//it's a try to see the difference
 	public final static String GLOBALTHRESHOLDCONFIDENCE = "Global confidence considering threshold";
 	public final static String LOCALTHRESHOLDCONFIDENCE = "Local confidence considering threshold";
 	
 	//LIST USED IN THE QUALITY COMBINATION MATCHER 
-	public final static String[] QUALITIES = {LOCALCONFIDENCE, GLOBALCONFIDENCE, DISTANCE,ORDER};
-	//LIST USED IN THE QUALITY EVALUATION
-	public final static String[] ONLYGLOBAL = {GLOBALCONFIDENCE, DISTANCE, ORDER};
+	public final static String[] QUALITIES = {LOCALCONFIDENCE, GLOBALCONFIDENCE, DISTANCE,ORDER, CONF_ORDER_DIST};
 	
 	public static QualityEvaluationData evaluate(AbstractMatcher matcher, String quality) {
-		QualityEvaluationData qData = null;
-		
+		QualityEvaluationData finalData = null;
+		QualityEvaluationData localConfData  = null;
+		QualityEvaluationData globalConfData = null;
+		QualityEvaluationData orderData = null;
+		QualityEvaluationData distData = null;
 		//LOCAL GLOBAL confidence without considering theshold
-		if(quality.equals(LOCALCONFIDENCE) || quality.equals(GLOBALCONFIDENCE)){
+		if(quality.equals(LOCALCONFIDENCE) || quality.equals(GLOBALCONFIDENCE) || quality.equals(QualityEvaluator.CONF_ORDER_DIST)){
 			//in all 2 cases i have to calculate local first
-			qData = LocalConfidenceQuality.getQuality(matcher, false);
+			localConfData = LocalConfidenceQuality.getQuality(matcher, false);
+			finalData = localConfData;
 			//then global is the average of locals
-			if(quality.equals(GLOBALCONFIDENCE)) {
-				
-				double[] localClassQualities = qData.getLocalClassMeasures();
-				double[] localPropQualities = qData.getLocalPropMeasures();
+			if(quality.equals(GLOBALCONFIDENCE) || quality.equals(QualityEvaluator.CONF_ORDER_DIST) ){
+				globalConfData = new QualityEvaluationData();
+				double[] localClassQualities = localConfData.getLocalClassMeasures();
+				double[] localPropQualities = localConfData.getLocalPropMeasures();
 				
 				//When we use the this quality as weight, when is 0 it doesn't count
 				double classAverage = Utility.getAverageOfArrayNonZeroValues(localClassQualities);
 				double propAverage = Utility.getAverageOfArrayNonZeroValues(localPropQualities);
 				//then global is the average of locals
-				qData.setLocal(false);
+				globalConfData.setLocal(false);
 				if(matcher.areClassesAligned()) {
-					qData.setGlobalClassMeasure(classAverage);
+					globalConfData.setGlobalClassMeasure(classAverage);
 				}
 				if(matcher.arePropertiesAligned()) {
-					qData.setGlobalPropMeasure(propAverage);
+					globalConfData.setGlobalPropMeasure(propAverage);
 				}
+				finalData = globalConfData;
 			}
 		}
 			
-		//LOCAL GLOBAL confidence considering th
-		if(quality.equals(LOCALTHRESHOLDCONFIDENCE) || quality.equals(GLOBALTHRESHOLDCONFIDENCE)){
+		//LOCAL GLOBAL confidence considering th NOT USED BY THE SYSTEM NOW
+		if(quality.equals(LOCALTHRESHOLDCONFIDENCE) || quality.equals(GLOBALTHRESHOLDCONFIDENCE) ){
 			//in all 2 cases i have to calculate local first
-			qData = LocalConfidenceQuality.getQuality(matcher, true);
+			localConfData = LocalConfidenceQuality.getQuality(matcher, true);
+			finalData = localConfData;
 			//then global is the average of locals
 			if(quality.equals(GLOBALTHRESHOLDCONFIDENCE)) {
-				
-				double[] localClassQualities = qData.getLocalClassMeasures();
-				double[] localPropQualities = qData.getLocalPropMeasures();
+				globalConfData = new QualityEvaluationData();
+				double[] localClassQualities = localConfData.getLocalClassMeasures();
+				double[] localPropQualities = localConfData.getLocalPropMeasures();
 				double classAverage = Utility.getAverageOfArrayNonZeroValues(localClassQualities);
 				double propAverage = Utility.getAverageOfArrayNonZeroValues(localPropQualities);
 				//then global is the average of locals
-				qData.setLocal(false);
+				globalConfData.setLocal(false);
 				if(matcher.areClassesAligned()) {
-					qData.setGlobalClassMeasure(classAverage);
+					globalConfData.setGlobalClassMeasure(classAverage);
 				}
 				if(matcher.arePropertiesAligned()) {
-					qData.setGlobalPropMeasure(propAverage);
+					globalConfData.setGlobalPropMeasure(propAverage);
 				}
+				finalData = globalConfData;
 			}
 		}
 		
 		//JOslyn structural qualities
-		if(quality.equals(DISTANCE) || quality.equals(ORDER)) {
-			JoslynStructuralQuality evaluator = new JoslynStructuralQuality(matcher, quality);
-			qData = evaluator.getQuality();
+		if(quality.equals(DISTANCE) || quality.equals(QualityEvaluator.CONF_ORDER_DIST)) {
+			JoslynStructuralQuality evaluator = new JoslynStructuralQuality(matcher);
+			distData = evaluator.getDistanceQuality();
+			finalData = distData;
+		}
+		//JOslyn structural qualities
+		if(quality.equals(ORDER) || quality.equals(QualityEvaluator.CONF_ORDER_DIST)) {
+			JoslynStructuralQuality evaluator = new JoslynStructuralQuality(matcher);
+			orderData = evaluator.getOrderQuality();
+			finalData = orderData;
+		}
+		
+		if(quality.equals(QualityEvaluator.CONF_ORDER_DIST)) {
+			finalData = new QualityEvaluationData();
+			finalData.setLocal(false);
+			System.out.println(globalConfData.getGlobalClassMeasure() +" "+ distData.getGlobalClassMeasure()  +" "+ orderData.getGlobalClassMeasure());
+			finalData.setGlobalClassMeasure((globalConfData.getGlobalClassMeasure() + distData.getGlobalClassMeasure() + orderData.getGlobalClassMeasure())  / (double)3);
+			finalData.setGlobalPropMeasure((globalConfData.getGlobalPropMeasure() + distData.getGlobalPropMeasure() + orderData.getGlobalPropMeasure() ) / (double)3 );
 		}
 			
-			//OTHER QUALITIES TO BE ADDED
-		return qData;
+		//OTHER QUALITIES TO BE ADDED
+		return finalData;
 	}
 
 	

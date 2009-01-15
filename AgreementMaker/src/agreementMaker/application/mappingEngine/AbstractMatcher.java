@@ -6,6 +6,7 @@ import java.util.Iterator;
 import agreementMaker.AMException;
 import agreementMaker.Utility;
 import agreementMaker.application.Core;
+import agreementMaker.application.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import agreementMaker.application.ontology.Node;
 import agreementMaker.application.ontology.Ontology;
@@ -77,6 +78,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected long executionTime;
 	/**Keeps info about reference evaluation of the matcher. is null until the algorithm gets evaluated*/
 	protected ReferenceEvaluationData refEvaluation;
+	/**Keeps info about the quality eval of the matcher. null if the algo is not evaluated*/
+	protected QualityEvaluationData qualEvaluation;
 	/**Graphical color for nodes mapped by this matcher and alignments, this value is set by the MatcherFactory and modified  by the table so a developer just have to pass it as aparameter for the constructor*/
 	protected Color color; 
 
@@ -187,6 +190,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	classesMatrix = null;
     	propertiesMatrix = null;
     	modifiedByUser = false;
+    	qualEvaluation = null;
+    	refEvaluation = null;
 	}
     //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
     protected void afterAlignOperations()  {}
@@ -194,12 +199,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     protected void beforeSelectionOperations() {
     	classesAlignmentSet = null;
     	propertiesAlignmentSet = null;
+    	qualEvaluation = null;
     	refEvaluation = null;
     }
     //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
-    protected void afterSelectionOperations() {
-    	
-    } 
+    protected void afterSelectionOperations() {} 
     
     //Time calculation, if you override this method remember to call super.afterSelectionOperations()
     protected void matchStart() {
@@ -746,7 +750,20 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	public boolean isRefEvaluated() {
 		return refEvaluation != null;
 	}
+	
+	public QualityEvaluationData getQualEvaluation() {
+		return qualEvaluation;
+	}
 
+	public void setQualEvaluation(QualityEvaluationData qualEvaluation) {
+		this.qualEvaluation = qualEvaluation;
+	}
+	
+	public boolean isQualEvaluated() {
+		return qualEvaluation != null;
+	}
+	
+	
 	public boolean isAlignProp() {
 		return alignProp;
 	}
@@ -864,13 +881,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 	
 	public String getAlignmentsStrings() {
-		
+		//The small arrow must be different from the bigger used in the alignments or the parseReference will identify these lines as alignments
 		String result = "";
 		result+= "Class Alignments: "+classesAlignmentSet.size()+"\n";
-		result += "Source Concept\t--->\tTarget Concept\tSimilarity\tRelation\n\n";
+		result += "Source Concept\t ->\tTarget Concept\tSimilarity\tRelation\n\n";
 		result += classesAlignmentSet.getStringList();
 		result+= "Property Alignments: "+propertiesAlignmentSet.size()+"\n";
-		result += "Source Concept\t--->\tTarget Concept\tSimilarity\tRelation\n\n";
+		result += "Source Concept\t->\tTarget Concept\tSimilarity\tRelation\n\n";
 		result += propertiesAlignmentSet.getStringList();
 		return result;
 	}
@@ -1024,6 +1041,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	public boolean isProgressDisplayed() {
 		return progressDialog != null;  // don't need to check for the global static variable, since if it's false, we should never have to call this function
 	}
+
+
 
 
 

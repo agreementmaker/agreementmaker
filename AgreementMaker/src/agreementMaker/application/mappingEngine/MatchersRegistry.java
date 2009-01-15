@@ -40,12 +40,13 @@ public enum MatchersRegistry {
 	DSI					( "Descendant's Similarity Inheritance (DSI)", DescendantsSimilarityInheritanceMatcher.class ),
 	SSC					( "Sibling's Similarity Contribution (SSC)", SiblingsSimilarityContributionMatcher.class ),
 	Combination	( "Mathematical Weighted Combination", CombinationMatcher.class ),
-	ReferenceAlignment	( "Reference Alignment", ReferenceAlignmentMatcher.class ),
+	
 
 	//WORK IN PROGRESS
 	
-	//MATCHERS USED BY THE SYSTEM BUT NOT SHOWN
+	//MATCHERS USED BY THE SYSTEM, usually not shown
 	UserManual			( "User Manual Matching", UserManualMatcher.class, false),
+	ImportAlignment	( "Import Alignments", ReferenceAlignmentMatcher.class, false),
 	
 	//TEST MATCHERS 
 	Equals 				( "Local Name Equivalence Comparison", EqualsMatcher.class , false),

@@ -45,7 +45,7 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 	public ReferenceAlignmentParametersPanel() {
 		super();
 		prefs = Core.getInstance().getUI().getAppPreferences(); // Class interface to Application Preferences
-		fileType = new JLabel("Reference file");
+		fileType = new JLabel("Select File");
 		filePath = new JTextField(0);
 		//the system suggests the last file opened
 		if( prefs.getLastDirReference().exists() ) {
@@ -56,7 +56,7 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 		browse.addActionListener(this);
 		
 		//Formats are fixed, the development.ReferenceEvaluation class contains definitions.
-		String[] format_list = {ReferenceAlignmentMatcher.REF0,ReferenceAlignmentMatcher.REF1,ReferenceAlignmentMatcher.REF2, ReferenceAlignmentMatcher.REF3};
+		String[] format_list = {ReferenceAlignmentMatcher.REF5, ReferenceAlignmentMatcher.REF0,ReferenceAlignmentMatcher.REF1,ReferenceAlignmentMatcher.REF2, ReferenceAlignmentMatcher.REF3};
 		formatList = new JList(format_list);
 		formatList.setPrototypeCellValue("012345678901234567890123456789012345678901234567890123456789"); // this string sets the width of the list
 		formatList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

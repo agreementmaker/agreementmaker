@@ -48,7 +48,7 @@ public class MultiWordsParameters extends AbstractParameters {
 		measure = TFIDF;
 		considerInstances = true;
 		considerNeighbors = false;
-		considerConcept = true;
+		considerConcept = false;
 		considerClasses = false;
 		considerProperties = false;
 		ignoreLocalNames = false

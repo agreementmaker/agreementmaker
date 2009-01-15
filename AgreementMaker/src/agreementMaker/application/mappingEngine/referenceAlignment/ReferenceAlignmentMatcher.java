@@ -16,11 +16,13 @@ import agreementMaker.Utility;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
 import agreementMaker.application.ontology.Node;
+import agreementMaker.output.OutputController;
 
 public class ReferenceAlignmentMatcher extends AbstractMatcher {
 
 		//Constants
 		/**Formats for reference files*/
+	    public final static String REF5 = "AM exported file format";
 		public final static String REF0 = "OAEI-2008-testcase";
 		public final static String REF1 = "OAEI-2007 i.e. weapons, wetlands...";
 		public final static String REF2 = "TXT: sourcename(tab)targetname";
@@ -93,6 +95,9 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 			}
 			else if(parameters.format.equals(REF3)) {
 				result = parseRefFormat3(input);
+			}
+			else if(parameters.format.equals(REF5)) {
+				result = parseRefFormat4(input);
 			}
 			else {
 				//development error, this exception can also be printed only in the console because is for developer users.
@@ -223,11 +228,10 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		 */
 		public ArrayList<MatchingPair> parseRefFormat2(BufferedReader br) throws IOException{
 			ArrayList<MatchingPair> result = new ArrayList<MatchingPair>();
-		    
 		    String line;
 		    String source;
 		    String target;
-		    while((line = br.readLine()) !=null){
+		    while((line = br.readLine()) !=null){	
 		    	String[] split = line.split("\t");
 		    	if(split.length == 2) {
 		        	source = split[0];
@@ -246,6 +250,8 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		            result.add(r);
 		    	}
 		    	//else System.out.println("Some lines in the reference are not in the correct format. Check result please");
+		    	 
+		    	 
 		    }
 		    return result;
 		}
@@ -283,6 +289,38 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	    }
 	    return result;
 	}
+
+	public ArrayList<MatchingPair> parseRefFormat4(BufferedReader br) throws IOException{
+		ArrayList<MatchingPair> result = new ArrayList<MatchingPair>();
+	    
+	    String line;
+	    String source;
+	    String target;
+	    double similarity;
+	    String relation;
+	    while((line = br.readLine()) !=null){
+	    	String[] split = line.split("\t");
+	    	if(split.length == 5 && split[1].equals(OutputController.arrow)) {
+	        	source = split[0];
+	        	target = split[2];
+	        	try {
+	        		similarity = Double.parseDouble(split[3]);
+	        	}
+	        	catch(Exception e) {
+	        		similarity = 1;
+	        	}
+	        	relation = split[4];
+	        	if(relation == null || relation.equals("")) {
+	        		relation = Alignment.EQUIVALENCE;
+	        	}
+	            MatchingPair r = new MatchingPair(source,target);
+	            r.similarity = similarity;
+	            r.relation = relation;
+	            result.add(r);
+	    	}
+	    }
+	    return result;
+	}
 	
 	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
 	public double getDefaultThreshold() {
@@ -309,5 +347,6 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		result += "While using sample ontologies, each testcase has a different reference file, read the readme.txt file to find the location of the reference file of each testcase.\n";
 		return result;
 	}
+	
 	
 }

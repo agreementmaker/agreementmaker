@@ -5,10 +5,10 @@ package agreementMaker.application.mappingEngine.StringUtil;
  * @author marco
  *
  */
-public class AMStringMetrics {
+public class StringMetrics {
 	
 	//Derived from FALCON AO return the sum of common characters in all substrings of the two words normalized by the number of total chars
-	//So this is only the commonality part is not the whole I-Sub method.
+	//So this is only the commonality part is not the whole I-Sub method
 	public static double substringScore(String s1, String s2)
     {
 		
@@ -156,5 +156,10 @@ public class AMStringMetrics {
         else return commonality; //only when no substrings are found the fragmentation is negative
 		
     }
+	
+	
+	
+
+
 	
 }

@@ -746,7 +746,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			graphic.drawLine(x1,y1,x2,y2);
 			//DRAW STRING ON LINE
 			graphic.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
-			graphic.drawString(a.getRelation()+" "+Utility.getNoFloatPercentFromDouble(a.getSimilarity()),(x1+x2)/2,((y1+y2)/2) -5);	
+			graphic.drawString(a.getRelation()+" "+Utility.getNoDecimalPercentFromDouble(a.getSimilarity()),(x1+x2)/2,((y1+y2)/2) -5);	
 			
 			//FILL THE VERTEX NODE, this will cancel the name of the vertex and the shape so we have to rewrite both
 			//this color the node if it's selected but it doesn't color it if it's highlighted
@@ -790,7 +790,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			graphic.drawLine(x1,y1,x2,y2);
 			//DRAW STRING ON LINE
 			graphic.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
-			graphic.drawString(a.getRelation()+" "+Utility.getNoFloatPercentFromDouble(a.getSimilarity()),(x1+x2)/2,((y1+y2)/2) -5);	
+			graphic.drawString(a.getRelation()+" "+Utility.getNoDecimalPercentFromDouble(a.getSimilarity()),(x1+x2)/2,((y1+y2)/2) -5);	
 			
 			//COLOR HIGHLIGHT VERTEX
 			graphic.setColor(Colors.highlighted);

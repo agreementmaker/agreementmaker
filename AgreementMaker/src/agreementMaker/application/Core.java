@@ -1,11 +1,13 @@
 package agreementMaker.application;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 
 import agreementMaker.AMException;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
+import agreementMaker.application.ontology.Node;
 import agreementMaker.application.ontology.Ontology;
 import agreementMaker.userInterface.UI;
 
@@ -150,5 +152,32 @@ public class Core {
 		AbstractMatcher matcher = matcherInstances.get(index);
 		matcher.addManualAlignments(alignments);
 	}
-
+	
+	
+	
+	
+	
+	public Node getNode(String localname, boolean fromSource, boolean fromClasses) {
+		Ontology o = sourceOntology;
+		Node result = null;;
+		if(!fromSource) {
+			o = targetOntology;
+		}
+		ArrayList<Node> list = o.getClassesList();
+		if(!fromClasses) {
+			list = o.getPropertiesList();
+		}
+		Iterator<Node> it = list.iterator();
+		while(it.hasNext()) {
+			Node n = it.next();
+			String ln = n.getLocalName();
+			if(ln.equalsIgnoreCase(localname)) {
+				result = n;
+				break;
+			}
+		}
+		return result;
+	}
+	
+	
 }

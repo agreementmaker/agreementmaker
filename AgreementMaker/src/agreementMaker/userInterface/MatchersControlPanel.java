@@ -21,6 +21,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.AbstractTableModel;
 
+import sun.awt.windows.ThemeReader;
+
 
 import agreementMaker.AMException;
 import agreementMaker.GlobalStaticVariables;
@@ -37,6 +39,7 @@ import agreementMaker.application.mappingEngine.qualityEvaluation.QualityEvaluat
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluator;
+import agreementMaker.application.ontology.Node;
 import agreementMaker.userInterface.table.MatchersTablePanel;
 import agreementMaker.userInterface.table.MyTableModel;
 
@@ -69,9 +72,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	private JButton editMatrixButton;
 	private JButton refEvaluate;
 	private JButton qualityEvaluationButton;
-	private JButton saveToFileButton;
-	private JButton exportMatchingsButton;
-	private JButton importMatchingsButton;
+	private JButton exportAlignmentsButton;
+	private JButton importAlignmentsButton;
+	private JButton thresholdTuning;
 
 	
 	
@@ -120,7 +123,6 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		defaultValButton = new JButton("Default");
 		defaultValButton.addActionListener(this);
 
-
 		//matcher selection panel
 		JPanel matcherSelectionPanel = new JPanel();
 		matcherSelectionPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
@@ -153,14 +155,15 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		copyButton.addActionListener(this);
 		editMatrixButton = new JButton("Edit Similarity Matrix");
 		editMatrixButton.addActionListener(this);
-		saveToFileButton = new JButton("Save");
-		saveToFileButton.addActionListener(this);
-		exportMatchingsButton = new JButton("Export");
-		exportMatchingsButton.addActionListener(this);
-		importMatchingsButton = new JButton("Import");
-		importMatchingsButton.addActionListener(this);
 		qualityEvaluationButton = new JButton("Quality Evaluation");
 		qualityEvaluationButton.addActionListener(this);
+		exportAlignmentsButton = new JButton("Export");
+		exportAlignmentsButton.addActionListener(this);
+		importAlignmentsButton = new JButton("Import");
+		importAlignmentsButton.addActionListener(this);
+		thresholdTuning = new JButton("Tuning");
+		thresholdTuning.addActionListener(this);
+		
 		
 		JPanel panel3 = new JPanel();
 		panel3.setLayout(new FlowLayout(FlowLayout.LEADING));
@@ -168,9 +171,12 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		panel3.add(copyButton);
 		panel3.add(delete);
 		panel3.add(clearMatchings);
-		panel3.add(saveToFileButton);
+		panel3.add(exportAlignmentsButton);
 		panel3.add(refEvaluate);
 		panel3.add(qualityEvaluationButton);
+		panel3.add(exportAlignmentsButton);
+		panel3.add(importAlignmentsButton);
+		panel3.add(thresholdTuning);
 		//panel3.add(editMatrixButton);
 
 		//
@@ -211,14 +217,20 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 			else if (obj == copyButton) {
 				copy();
 			}
-			else if(obj == saveToFileButton) {
-				save();
+			else if(obj == exportAlignmentsButton) {
+				export();
+			}
+			else if(obj == importAlignmentsButton) {
+				importa();
 			}
 			else if(obj == newMatching) {
 				newManual();
 			}
 			else if(obj == qualityEvaluationButton) {
 				qualityEvaluation();
+			}
+			else if(obj == thresholdTuning) {
+				tuning();
 			}
 		}
 		//ATTENTION: the exception of the match() method of a matcher is not catched here because it runs in a separated thread
@@ -250,10 +262,41 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 					q = QualityEvaluator.evaluate(toBeEvaluated, quality);
 					if(!q.isLocal()) {
 						report+= quality+"\n";
-						report+= "Class Alignments Quality: "+Utility.getNoFloatPercentFromDouble(q.getGlobalClassMeasure())+"\n" ;
-						report+= "Property Alignments Quality: "+Utility.getNoFloatPercentFromDouble(q.getGlobalPropMeasure())+"\n" ;
+						report+= "Class Alignments Quality: "+Utility.getOneDecimalPercentFromDouble(q.getGlobalClassMeasure())+"\n" ;
+						report+= "Property Alignments Quality: "+Utility.getOneDecimalPercentFromDouble(q.getGlobalPropMeasure())+"\n" ;
 						report+= "\n";
+						
 					}
+					else {
+						ArrayList<Node> classList;
+						ArrayList<Node> propList; 
+						report+= quality+"\n";
+						if(q.isLocalForSource()) {
+							report+= "This quality is local in respect to source concepts: \n\n";
+							classList = Core.getInstance().getSourceOntology().getClassesList();
+							propList = Core.getInstance().getSourceOntology().getPropertiesList();
+						}
+						else {
+							report+= "This quality is local in respect to target concepts: \n\n";
+							classList = Core.getInstance().getTargetOntology().getClassesList();
+							propList = Core.getInstance().getTargetOntology().getPropertiesList();
+						}
+						report+= "Class Alignments Quality:\n";
+						for(int k = 0; k < q.getLocalClassMeasures().length; k++) {
+							Node n = classList.get(k);
+							report+= (k+1)+" "+n.getLocalName()+": "+Utility.getOneDecimalPercentFromDouble(q.getLocalClassMeasures()[k])+"\n" ;
+						}
+						report+= "\n";
+						report+= "Property Alignments Quality:\n";
+						for(int k = 0; k < q.getLocalPropMeasures().length; k++) {
+							Node n = propList.get(k);
+							report+= (k+1)+" "+n.getLocalName()+": "+Utility.getOneDecimalPercentFromDouble(q.getLocalPropMeasures()[k])+"\n" ;
+						}
+						report+= "\n";	
+					}
+					toBeEvaluated.setQualEvaluation(q);
+					AbstractTableModel model = (AbstractTableModel)matchersTablePanel.getTable().getModel();
+					model.fireTableRowsUpdated(toBeEvaluated.getIndex(), toBeEvaluated.getIndex());
 					/*
 					else {
 						q = QualityEvaluator.evaluate(toBeEvaluated, QualityEvaluator.QUALITIES[j]);
@@ -266,6 +309,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 					*/
 				}
 				Utility.displayTextAreaPane(report,"Quality Evaluation Report");
+
 			}
 			qDialog.dispose();
 		}
@@ -311,12 +355,18 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		}
 	}
 
-	public void save() {
+	public void export() {
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
 		if(rowsIndex.length == 0) {
 			Utility.displayErrorPane("No matchers selected", null);
 		}
 		else 	new SaveFileDialog(); //demand control to the savefile dialog which since is modal will take care of everything
+	}
+	
+	public void importa() throws Exception {
+		int lastIndex = Core.getInstance().getMatcherInstances().size();
+		AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, lastIndex);
+		match(referenceAlignmentMatcher , false);
 	}
 	
 	public void copy() throws Exception{
@@ -344,7 +394,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		}
 		else {
 			//Run the reference alignment matcher to get the list of alignments in reference file, we are not going to add it in the table list
-			ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance(MatchersRegistry.ReferenceAlignment,0);
+			ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment,0);
 			MatcherParametersDialog dialog = new MatcherParametersDialog(refMatcher);
 			if(dialog.parametersSet()) {
 				refMatcher.setParam(dialog.getParameters());
@@ -435,7 +485,87 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		match(currentMatcher , false);
 	}
 
+	public void tuning() throws Exception{
+		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
+		if(rowsIndex.length == 0) {
+			Utility.displayErrorPane("No matchers selected", null);
+		}
+		else {
+			//Run the reference alignment matcher to get the list of alignments in reference file, we are not going to add it in the table list
+			ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment,0);
+			MatcherParametersDialog dialog = new MatcherParametersDialog(refMatcher);
+			if(dialog.parametersSet()) {
+				refMatcher.setParam(dialog.getParameters());
+				refMatcher.setThreshold(refMatcher.getDefaultThreshold());
+				refMatcher.setMaxSourceAlign(refMatcher.getDefaultMaxSourceRelations());
+				refMatcher.setMaxTargetAlign(refMatcher.getDefaultMaxTargetRelations());
+				refMatcher.match();
+				AlignmentSet referenceSet = refMatcher.getAlignmentSet(); //class + properties
+				AbstractMatcher toBeEvaluated;
+				AlignmentSet evaluateSet;
+				ReferenceEvaluationData rd;
+				
+				double step = 0.05;
+				String report="Tuning Complete\n\n";
+				report +="Measure are displayed in this order:\nThreshold: value - Measures: precision, recall, Fmeasure\n\n";
+				
+				//You have to use this array instead 
+				double[] thresholds = Utility.STEPFIVE;
+				for(int i = 0; i < rowsIndex.length; i++) {
+					
+					ReferenceEvaluationData maxrd = null;
+					double maxTh = step;
+					double sumPrecision = 0;
+					double sumRecall = 0;
+					double sumFmeasure = 0;
+					int sumFound = 0;
+					int sumCorrect = 0;
+					toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
+					report+=i+" "+toBeEvaluated.getName().getMatcherName()+"\n\n";
+					double th;
+					report+="Threshold:\tFound\tCorrect\tReference\tPrecision\tRecall\tF-Measure\n";
+					for(int t = 0; t < thresholds.length; t++) {
+						th = thresholds[t];
+						toBeEvaluated.setThreshold(th);
+						toBeEvaluated.select();
+						evaluateSet = toBeEvaluated.getAlignmentSet();
+						rd = ReferenceEvaluator.compare(evaluateSet, referenceSet);
+						report += Utility.getNoDecimalPercentFromDouble(th)+"\t"+rd.getMeasuresLine();
+						sumPrecision += rd.getPrecision();
+						sumRecall += rd.getRecall();
+						sumFmeasure += rd.getFmeasure();
+						sumFound += rd.getFound();
+						sumCorrect += rd.getCorrect();
+						if(maxrd == null || maxrd.getFmeasure() < rd.getFmeasure()) {
+							maxrd = rd;
+							maxTh = th;
+						}
+					}
+					toBeEvaluated.setThreshold(maxTh);
+					toBeEvaluated.select();
+					toBeEvaluated.setRefEvaluation(maxrd);
+					report += "Best Run:\n";
+					report += Utility.getNoDecimalPercentFromDouble(maxTh)+"\t"+maxrd.getMeasuresLine();
+					sumPrecision /= thresholds.length;
+					sumRecall /= thresholds.length;
+					sumFmeasure /= thresholds.length;
+					sumFound /= thresholds.length;
+					sumCorrect /= thresholds.length;
+					report += "Average:\t"+sumFound+"\t"+sumCorrect+"\t"+maxrd.getExist()+"\t"+Utility.getOneDecimalPercentFromDouble(sumPrecision)+"\t"+Utility.getOneDecimalPercentFromDouble(sumRecall)+"\t"+Utility.getOneDecimalPercentFromDouble(sumFmeasure)+"\n\n";
+					AbstractTableModel model = (AbstractTableModel)matchersTablePanel.getTable().getModel();
+					model.fireTableRowsUpdated(toBeEvaluated.getIndex(), toBeEvaluated.getIndex());
+				}
+				Utility.displayTextAreaWithDim(report,"Reference Evaluation Report", 35, 60);
+			}
+			dialog.dispose();
+			ui.redisplayCanvas();
+		}
+		
+	}
 	
+	
+	
+	/////////////////////////////////////////////////PANEL METHODS
 	
 	public MatchersTablePanel getTablePanel() {
 		return matchersTablePanel;
@@ -481,7 +611,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	public void setDefaultCommonParameters() {
 		String matcherName = (String) matcherCombo.getSelectedItem();
 		AbstractMatcher a = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), 0); //i'm just using a fake instance so the algorithm code is not important i put 0 but maybe anythings
-		thresholdCombo.setSelectedItem(Utility.getNoFloatPercentFromDouble(a.getDefaultThreshold()));
+		thresholdCombo.setSelectedItem(Utility.getNoDecimalPercentFromDouble(a.getDefaultThreshold()));
 		sRelationCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxSourceRelations()));
 		tRelationCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxTargetRelations()));
 	}

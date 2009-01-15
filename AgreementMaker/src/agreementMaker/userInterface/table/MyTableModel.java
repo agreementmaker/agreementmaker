@@ -7,6 +7,7 @@ import javax.swing.table.AbstractTableModel;
 import agreementMaker.Utility;
 import agreementMaker.application.Core;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
+import agreementMaker.application.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import agreementMaker.userInterface.UI;
 import java.awt.Color;
 
@@ -37,8 +38,10 @@ public class MyTableModel extends AbstractTableModel {
 	public final static int REFERENCE = CORRECT+1;
 	public final static int PRECISION = REFERENCE+1;
 	public final static int RECALL = PRECISION+1;
-	public final static int FMEASURE = RECALL+1;	
-	public final static int COLOR = FMEASURE+1;	
+	public final static int FMEASURE = RECALL+1;
+	public final static int CQUAL = FMEASURE+1;
+	public final static int PQUAL = CQUAL+1;
+	public final static int COLOR = PQUAL+1;	
 	
 	public String[] columnNames = {"Index",
 					                                        "Name",
@@ -48,8 +51,8 @@ public class MyTableModel extends AbstractTableModel {
 					                                        "T-Relations",
 					                                        "Input Matchers",
 					                                        "Modified",
-					                                        "Align Classes",
-					                                        "Align Properties",
+					                                        "Align Class",
+					                                        "Align Prop",
 					                                        "Performance(ms)",
 					                                        "Found",
 					                                        "Correct",
@@ -57,6 +60,8 @@ public class MyTableModel extends AbstractTableModel {
 					                                        "Precision",
 					                                        "Recall",
 					                                        "F-Measure",
+					                                        "Class Quality",
+					                                        "Prop Quality",
 					                                        "Color"
 					                                        };
         
@@ -77,9 +82,11 @@ public class MyTableModel extends AbstractTableModel {
                 new Integer(999999), 
                 new Integer(999999), 
                 new Integer(999999), 
-                "100%",
-                "100%",
-                "100%",
+                "100.0%",
+                "100.0%",
+                "100.0%",
+                "100.0%",
+                "100.0%",
                 Color.pink
                 };
 
@@ -111,7 +118,7 @@ public class MyTableModel extends AbstractTableModel {
             	else if(col == SHOWHIDE)
             		return a.isShown();
             	else if(col == THRESHOLD) 
-            		return Utility.getNoFloatPercentFromDouble(a.getThreshold());
+            		return Utility.getNoDecimalPercentFromDouble(a.getThreshold());
             	else if(col == SRELATIONS)
             		return Utility.getStringFromNumRelInt(a.getMaxSourceAlign());
             	else if(col == TRELATIONS)
@@ -146,15 +153,38 @@ public class MyTableModel extends AbstractTableModel {
             	else if(col == RECALL)
             		if(!a.isRefEvaluated())
             			return NONE;
-            		else return  Utility.getNoFloatPercentFromDouble(a.getRefEvaluation().getRecall());
+            		else return  Utility.getOneDecimalPercentFromDouble(a.getRefEvaluation().getRecall());
             	else if(col == PRECISION )
             		if(!a.isRefEvaluated())
             			return NONE;
-            		else return  Utility.getNoFloatPercentFromDouble(a.getRefEvaluation().getPrecision());
+            		else return  Utility.getOneDecimalPercentFromDouble(a.getRefEvaluation().getPrecision());
             	else if(col == FMEASURE )
             		if(!a.isRefEvaluated())
             			return NONE;
-            		else return Utility.getNoFloatPercentFromDouble(a.getRefEvaluation().getFmeasure());
+            		else return Utility.getOneDecimalPercentFromDouble(a.getRefEvaluation().getFmeasure());
+            	else if(col == CQUAL ) {
+            		if(!a.isQualEvaluated())
+            			return NONE;
+            		else {
+            			QualityEvaluationData q = a.getQualEvaluation();
+            			if(!q.isLocal()) {
+            				return Utility.getOneDecimalPercentFromDouble(q.getGlobalClassMeasure());
+            			}
+            			else return NONE;
+            		}
+            	}
+            	else if(col == PQUAL ) {
+            		if(!a.isQualEvaluated())
+            			return NONE;
+            		else {
+            			QualityEvaluationData q = a.getQualEvaluation();
+            			if(!q.isLocal()) {
+            				return Utility.getOneDecimalPercentFromDouble(q.getGlobalPropMeasure());
+            			}
+            			else return NONE;
+            		}
+            	}
+            			
             	else if(col == COLOR )
             		return a.getColor();
             	else return NONE;

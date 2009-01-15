@@ -13,7 +13,10 @@ public class OutputController {
 	public final static String TXT = "txt";
 	public final static String DOC = "doc";
 	public final static String XLS = "xls";
+	
 
+	public final static String arrow = "--->";
+	
 	public static void printDocument(String name) throws Exception{
 		
 		int [] rowsIndex = Core.getInstance().getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();

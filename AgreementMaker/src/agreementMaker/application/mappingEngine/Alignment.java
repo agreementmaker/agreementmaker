@@ -2,6 +2,7 @@
 package agreementMaker.application.mappingEngine;
 
 import agreementMaker.application.ontology.*;
+import agreementMaker.output.OutputController;
 
 
 public class Alignment
@@ -127,6 +128,6 @@ public class Alignment
     
 
 	public String getString() {
-		return entity1.getLocalName()+"\t--->\t"+entity2.getLocalName()+"\t"+getSimilarity()+"\t"+getRelation()+"\n";
+		return entity1.getLocalName()+"\t"+OutputController.arrow+"\t"+entity2.getLocalName()+"\t"+getSimilarity()+"\t"+getRelation()+"\n";
 	}
 }

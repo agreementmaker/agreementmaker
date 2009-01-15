@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 import agreementMaker.Utility;
 import agreementMaker.application.mappingEngine.AbstractMatcherParametersPanel;
 import agreementMaker.application.mappingEngine.AbstractParameters;
+import agreementMaker.application.mappingEngine.StringUtil.ISub;
 import agreementMaker.application.mappingEngine.StringUtil.NormalizerParameter;
 
 public class ParametricStringParametersPanel extends AbstractMatcherParametersPanel {
@@ -68,7 +69,7 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 		
 		super();
 		//init components
-		String[] metricsList = {ParametricStringParameters.EDIT, ParametricStringParameters.AMSUB, ParametricStringParameters.SUB, ParametricStringParameters.JARO, ParametricStringParameters.QGRAM};
+		String[] metricsList = {ParametricStringParameters.EDIT, ParametricStringParameters.AMSUB, ParametricStringParameters.SUB, ParametricStringParameters.JARO, ParametricStringParameters.QGRAM, ParametricStringParameters.ISUB};
 		metricsCombo = new JComboBox(metricsList);
 		
 		String[] percents = Utility.getPercentStringList();

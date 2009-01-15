@@ -28,8 +28,6 @@ import agreementMaker.userInterface.vertex.Vertex;
 	 */
 public class JoslynStructuralQuality {
 	
-	//CAN ONLY BE DISTANCE OR ORDER
-	private String quality;
 	private AbstractMatcher matcher;
 	
 	public final static int HIGHER = 1;
@@ -48,12 +46,12 @@ public class JoslynStructuralQuality {
 	int[] tempDescendants;
 	int[][] tempOrder;
 	
-	public JoslynStructuralQuality(AbstractMatcher m, String q) {
-		quality = q;
+	public JoslynStructuralQuality(AbstractMatcher m) {
 		matcher = m;
 	}
-
-	public QualityEvaluationData getQuality() {
+	
+	
+	public QualityEvaluationData getOrderQuality() {
 		Ontology sourceOntology = Core.getInstance().getSourceOntology();
 		Ontology targetOntology = Core.getInstance().getTargetOntology();
 		
@@ -64,20 +62,37 @@ public class JoslynStructuralQuality {
 		double classQuality = 0;
 		double propQuality = 0;
 		if(matcher.areClassesAligned()) {
-			if(quality.equals(QualityEvaluator.DISTANCE)) {
-				classQuality = distancePreservation(matcher.getClassAlignmentSet(),sourceOntology.getClassesList(),targetOntology.getClassesList(), sourceOntology.getClassesTree(), targetOntology.getClassesTree());
-			}
-			else if(quality.equals(QualityEvaluator.ORDER)){
+			
 				classQuality = orderPreservation(matcher.getClassAlignmentSet(),sourceOntology.getClassesList(),targetOntology.getClassesList(), sourceOntology.getClassesTree(), targetOntology.getClassesTree());
-			}
 		}
 		if(matcher.arePropertiesAligned()) {
-			if(quality.equals(QualityEvaluator.DISTANCE)) {
-				propQuality = distancePreservation(matcher.getPropertyAlignmentSet(),sourceOntology.getPropertiesList(),targetOntology.getPropertiesList(), sourceOntology.getPropertiesTree(), targetOntology.getPropertiesTree());			
-			}
-			else if(quality.equals(QualityEvaluator.ORDER)){
 				propQuality = orderPreservation(matcher.getPropertyAlignmentSet(),sourceOntology.getPropertiesList(),targetOntology.getPropertiesList(), sourceOntology.getPropertiesTree(), targetOntology.getPropertiesTree());			
-			}
+		}
+		q.setGlobalClassMeasure(classQuality);
+		q.setGlobalPropMeasure(propQuality);
+		
+		return q;
+	}
+	
+	public QualityEvaluationData getDistanceQuality() {
+		Ontology sourceOntology = Core.getInstance().getSourceOntology();
+		Ontology targetOntology = Core.getInstance().getTargetOntology();
+		
+		QualityEvaluationData q = new QualityEvaluationData();
+		q.setLocal(false);
+		q.setLocalForSource(true); //It doesn't matter because is global
+		
+		double classQuality = 0;
+		double propQuality = 0;
+		if(matcher.areClassesAligned()) {
+		
+				classQuality = distancePreservation(matcher.getClassAlignmentSet(),sourceOntology.getClassesList(),targetOntology.getClassesList(), sourceOntology.getClassesTree(), targetOntology.getClassesTree());
+			
+		}
+		if(matcher.arePropertiesAligned()) {
+		
+				propQuality = distancePreservation(matcher.getPropertyAlignmentSet(),sourceOntology.getPropertiesList(),targetOntology.getPropertiesList(), sourceOntology.getPropertiesTree(), targetOntology.getPropertiesTree());			
+			
 		}
 		q.setGlobalClassMeasure(classQuality);
 		q.setGlobalPropMeasure(propQuality);
@@ -305,6 +320,7 @@ public class JoslynStructuralQuality {
 		*/
 		targetDescendants = createDescendantsArray(targetList,targetDag );
 		
+		
 		//I need to calculate which is the distance between each pair of node
 		sourceDistances = createDistances(sourceList, sourceDescendants);
 		targetDistances = createDistances(targetList, targetDescendants);
@@ -331,7 +347,27 @@ public class JoslynStructuralQuality {
 		//the discrepancy is a measure of dissimilarity, between 1 and 0. so the quality should be 1 - totalDescrepancy
 		double quality = 1 - totalDescrepancy;
 		
+		//DEBUG
+		/*
+		try{
+		
+		int sourceIndex1 = Core.getInstance().getNode("Reference", true, true).getIndex();
+		int sourceIndex2 = Core.getInstance().getNode("MastersThesis", true, true).getIndex();
+		int targetIndex1 = Core.getInstance().getNode("PhdThesis", false, true).getIndex();
+		int targetIndex2 = Core.getInstance().getNode("MastersThesis", false, true).getIndex();
+		
+		System.out.println("source descendants: "+sourceDescendants[sourceIndex1]+" "+sourceDescendants[sourceIndex2]);
+		System.out.println("source descendants: "+targetDescendants[targetIndex1]+" "+targetDescendants[targetIndex2]);
+		System.out.println("sourcedistance "+sourceDistances[sourceIndex1][sourceIndex2]);
+		System.out.println("target distance "+targetDistances[targetIndex1][targetIndex2]);
+		System.out.println("linkDistanceDiscrepancies  "+ linkDistanceDiscrepancies[0][1]);
 		System.out.println("quality: "+quality+" discrepancy: "+totalDescrepancy+" sum: "+sum+" binom: "+binom+" size: "+size);
+		}
+		catch(Exception e){
+			System.out.println("exception");
+		}
+		*/
+	
 		return quality;
 	}
 	
@@ -372,12 +408,15 @@ public class JoslynStructuralQuality {
 				/*
 				if(first.getEntity1().getLocalName().equalsIgnoreCase("WEAPON")) {
 					if(second.getEntity1().getLocalName().equalsIgnoreCase("PROJECTILE-WEAPON")) {
-					
+				*/
+				/*
 						System.out.println("*** "+i+" "+j);
 						System.out.println("sources: "+first.getEntity1().getLocalName()+" "+second.getEntity1().getLocalName()+" "+sourceDistance);
 						System.out.println("target: "+first.getEntity2().getLocalName()+" "+second.getEntity2().getLocalName()+" "+targetDistance);
 						System.out.println("discrepancy: "+result[i][j]);
-					}
+						*/
+			/*	
+			}
 				}
 				*/
 				

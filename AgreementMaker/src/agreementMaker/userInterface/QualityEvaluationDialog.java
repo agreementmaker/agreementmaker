@@ -54,7 +54,7 @@ public class QualityEvaluationDialog extends JDialog implements ActionListener{
 		
 		JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		qualLabel = new JLabel("Quality measure: ");
-		qualCombo = new JComboBox(QualityEvaluator.ONLYGLOBAL);
+		qualCombo = new JComboBox(QualityEvaluator.QUALITIES);
 		centerPanel.add(qualLabel);
 		centerPanel.add(qualCombo);
 		

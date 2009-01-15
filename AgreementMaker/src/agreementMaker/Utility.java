@@ -9,13 +9,23 @@ import sun.net.www.protocol.http.InMemoryCookieStore;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.IntDoublePair;
 import agreementMaker.userInterface.table.MyTableModel;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
+
 
 public class Utility {
 	public final static String UNEXPECTED_ERROR = "Unexepcted System Error.\nTry to reset the system and repeat the operation.\nContact developers if the error persists.";
 	
+	//USED by the tuning alg.
+	//we can't generate this array with a for because the 0.35 + 0.05 = 0.39 in java because of double representations, exclude <10 and >90
+	public final static double[] STEPFIVE = {0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90};
 	
 	//**************************************************USER INTERFACE UTILITIES***********************************************************
 	
+	
+	//methods to convert a double into a percent string with only 1 decimanl value
 	public static String[] getPercentStringList() {
 		int min = 0;
 		int max = 100;
@@ -34,20 +44,30 @@ public class Utility {
 		double d = Double.parseDouble(s2);
 		return d/100;
 	}
-	/*
-	public static String getPercentFromDouble(double d) {
-		double p;
-		if(0 <= d && d<= 1) {
-			p = d * 100;
-		}
-		else throw new RuntimeException("Developer Error, the value passed to getPercentFromDouble(dobule d) should be between 0 and 1");
-		return p+"%";
-	}
-	*/
 	
-	public static String getNoFloatPercentFromDouble(double d) {
+	/**
+	 * Return a percent value with 0 decimal value and the % at the end. used in display alignments function in the canvas
+	 * Used also to manage the threshold value
+	 * @param inValue a double value between 0 & 1
+	 * @return
+	 */
+	public static String getNoDecimalPercentFromDouble(double d) {
 		int i = (int)(d*100);
 		return i+"%";
+	}
+	
+	/**
+	 * Return a percent value with 1 decimal value and the % at the end: 98.7% 
+	 * used everywhere for example to show quality and reference evaluation values in the table
+	 * @param inValue a double value between 0 & 1
+	 * @return
+	 */
+	public static String getOneDecimalPercentFromDouble(double inValue){
+		double d = inValue * 100;
+		String shortString = "";
+		DecimalFormat oneDec = new DecimalFormat("0.0", new DecimalFormatSymbols(Locale.US));
+		shortString = (oneDec.format(d));
+		return shortString+"%";
 	}
 	
 	public static String[] getNumRelList() {
@@ -89,7 +109,7 @@ public class Utility {
 		else return "no";
 	}
 	
-
+	
 	
 	/**
 	 * This function displays the JOptionPane with title and descritpion
@@ -115,6 +135,17 @@ public class Utility {
 		}
 		columns = Math.min(80, columns/2 +5); //columns/2 because each character is longer then a column so at the end it fits doing this
 		
+		JTextArea ta = new JTextArea(desc,rows,columns);
+		ta.setLineWrap(true);
+		ta.setWrapStyleWord(true);
+		//ta.setEditable(false);
+		JScrollPane sp = new JScrollPane(ta);
+		JOptionPane.showMessageDialog(null, sp, title, JOptionPane.PLAIN_MESSAGE);
+	}
+	
+	public static void displayTextAreaWithDim(String desc, String title, int rows, int columns ) {
+		if(title == null)
+			title = "Message Dialog";	
 		JTextArea ta = new JTextArea(desc,rows,columns);
 		ta.setLineWrap(true);
 		ta.setWrapStyleWord(true);

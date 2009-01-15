@@ -1,5 +1,7 @@
 package agreementMaker.application.mappingEngine.qualityEvaluation;
 
+import agreementMaker.Utility;
+
 public class QualityEvaluationData {
 	
 	private boolean localForSource;//this is true if those are the local measure for each source node, (each row) it will be false if those are localQuality for each target (each column)
@@ -95,5 +97,13 @@ public class QualityEvaluationData {
 		}
 	}
 	
+	
+	public double getAvgLocalClassQuality() {
+		return Utility.getAverageOfArray(localClassMeasures);
+	}
+	
+	public double getAvgLocalPropQuality() {
+		return Utility.getAverageOfArray(localPropMeasures);
+	}
 	
 }

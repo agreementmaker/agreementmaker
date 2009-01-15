@@ -6,10 +6,9 @@ import java.util.HashSet;
 import agreementMaker.Utility;
 import agreementMaker.application.mappingEngine.AbstractMatcher;
 import agreementMaker.application.mappingEngine.Alignment;
-import agreementMaker.application.mappingEngine.StringUtil.AMStringMetrics;
+import agreementMaker.application.mappingEngine.StringUtil.ISub;
+import agreementMaker.application.mappingEngine.StringUtil.StringMetrics;
 import agreementMaker.application.mappingEngine.StringUtil.Normalizer;
-import agreementMaker.application.mappingEngine.StringUtil.NormalizerParameter;
-import agreementMaker.application.mappingEngine.StringUtil.PorterStemmer;
 import agreementMaker.application.ontology.Node;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.*; //all sim metrics are in here
@@ -147,7 +146,7 @@ public class ParametricStringMatcher extends AbstractMatcher {
 			
 			//this could be done with registry enumeration techinque but is not worth it
 			if(parameters.measure.equals(ParametricStringParameters.AMSUB)) {
-				sim = AMStringMetrics.AMsubstringScore(processedSource,processedTarget);
+				sim = StringMetrics.AMsubstringScore(processedSource,processedTarget);
 			}
 			else if(parameters.measure.equals(ParametricStringParameters.EDIT)) {
 				Levenshtein lv = new Levenshtein();
@@ -162,7 +161,10 @@ public class ParametricStringMatcher extends AbstractMatcher {
 				sim = q.getSimilarity(processedSource, processedTarget);
 			}
 			else if(parameters.measure.equals(ParametricStringParameters.SUB)) {
-				sim = AMStringMetrics.substringScore(processedSource,processedTarget);
+				sim = StringMetrics.substringScore(processedSource,processedTarget);
+			}
+			else if(parameters.measure.equals(ParametricStringParameters.ISUB)) {
+				sim = ISub.getSimilarity(processedSource,processedTarget);
 			}
 		}
 		return sim;

@@ -15,7 +15,6 @@ import agreementMaker.application.ontology.Node;
 
 public class CombinationMatcher extends AbstractMatcher {
 	
-	private QualityEvaluationData[] qualityWeights;
 	
 	public CombinationMatcher() {
 		super();
@@ -37,7 +36,6 @@ public class CombinationMatcher extends AbstractMatcher {
 		int size = inputMatchers.size();
 		CombinationParameters cp = (CombinationParameters)param;
 		AbstractMatcher a;
-		qualityWeights = new QualityEvaluationData[size];
 		
 		
 		//if weights are manually assigned then they are already created in the parameters we just have to create a fake quality evaluation with that weight
@@ -46,9 +44,9 @@ public class CombinationMatcher extends AbstractMatcher {
 			QualityEvaluationData manual = null;
 			QualityEvaluationData automatic = null;
 			QualityEvaluationData finalQuality = null;
+			a = inputMatchers.get(i);
 			//is important to be if if if without else
 			if(cp.qualityEvaluation) {
-				a = inputMatchers.get(i);
 				automatic = QualityEvaluator.evaluate(a, cp.quality);
 				finalQuality = automatic; //if it's only manual q will be equal to it else it will be the average of manual and automatics
 			}
@@ -63,15 +61,10 @@ public class CombinationMatcher extends AbstractMatcher {
 			}
 			
 			if(cp.manualWeighted && cp.qualityEvaluation) {
-				System.out.println("here");
-				System.out.println("auto"+automatic.getClassQuality(1, 1));
-				System.out.println("manual"+manual.getClassQuality(1, 1));
 				finalQuality = QualityEvaluator.mergeQualities(manual, automatic);
-				System.out.println("final"+finalQuality.getClassQuality(1, 1));
 			}
-				
-			
-			qualityWeights[i] = finalQuality;
+
+			a.setQualEvaluation(finalQuality);
 		}
 	}
 
@@ -94,18 +87,19 @@ public class CombinationMatcher extends AbstractMatcher {
 		double weightedSigmoidSim;
 		double sigmoidSum = 0;
 		AbstractMatcher a;
+		QualityEvaluationData q;
 		for(int i = 0; i < inputMatchers.size();i++) {
 			//for each input matcher...
 			a = inputMatchers.get(i);
-			
+			q = a.getQualEvaluation();
 			//get the sim for this two nodes in the input matcher matrix
 			if(typeOfNodes == alignType.aligningClasses && a.areClassesAligned()) {
 				sim = a.getClassesMatrix().get(sourceindex, targetindex).getSimilarity();
-				weight = qualityWeights[i].getClassQuality(sourceindex, targetindex);
+				weight = q.getClassQuality(sourceindex, targetindex);
 			}
 			else if(typeOfNodes == alignType.aligningProperties && a.arePropertiesAligned()) {
 				sim = a.getPropertiesMatrix().get(sourceindex, targetindex).getSimilarity();
-				weight = qualityWeights[i].getPropQuality(sourceindex, targetindex);
+				weight = q.getPropQuality(sourceindex, targetindex);
 			}
 			else throw new RuntimeException("DEVELOPER ERROR: the alignType of node is not prop or class");
 			
