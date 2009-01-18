@@ -114,12 +114,32 @@ prefs = Core.getInstance().getUI().getAppPreferences();  // get a reference to o
 	
 	
 	public AbstractParameters getParameters() {
-		
+		parameters.AncestorSetWeight = Double.parseDouble(ancField.getText());
+		parameters.DescendantSetWeight = Double.parseDouble(descField.getText());
+		parameters.TextSimilarityWeight = Double.parseDouble(textField.getText());
 		return parameters;
-		
 	}
 	
 	public String checkParameters() {
+		
+		float inputDesc = Float.parseFloat(descField.getText());
+		float inputAnc = Float.parseFloat(ancField.getText());
+		float inputText = Float.parseFloat(textField.getText());
+		
+		if( inputDesc < 0.0 || inputDesc > 1.0 )
+			return "Descendant Set should be a value between 0.0 and 1.0 (inclusive).  Please change the value to match the constraints."; 
+		if (inputAnc < 0.0 || inputAnc > 1.0)
+			return "Ancestor Set should be a value between 0.0 and 1.0 (inclusive).  Please change the value to match the constraints."; 
+		if (inputText < 0.0 || inputText > 1.0)
+			return "Text Similarity should be a value between 0.0 and 1.0 (inclusive).  Please change the value to match the constraints."; 
+
+		// we are going to save the value the user enters, so they don't have to keep entering it.		
+		Core.getInstance().getUI().getAppPreferences().savePanelFloat( MatcherSetting.CON_DES , inputDesc);
+		Core.getInstance().getUI().getAppPreferences().savePanelFloat( MatcherSetting.CON_ANC , inputAnc);
+		Core.getInstance().getUI().getAppPreferences().savePanelFloat( MatcherSetting.CON_TXT , inputText);
+		parameters.DescendantSetWeight = inputDesc;
+		parameters.AncestorSetWeight = inputAnc;
+		parameters.TextSimilarityWeight = inputText;
 		
 		return null;
 	}
