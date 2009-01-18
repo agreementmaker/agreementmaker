@@ -21,9 +21,6 @@ public class ConceptMatcher extends AbstractMatcher {
 	// JAWS WordNet interface
 	private WordNetDatabase wordnet  = null;
 	public LexicalizedParser parser = null;
-	// the Alignment Matrices from the Input Matching algorithm.
-	private AlignmentMatrix inputClassesMatrix = null;
-	private AlignmentMatrix inputPropertiesMatrix = null;
 	Hashtable<String, String> htConcepts = null;
 	
 	
@@ -62,15 +59,6 @@ public class ConceptMatcher extends AbstractMatcher {
 		super.beforeAlignOperations();
 		
 		parser = new LexicalizedParser("englishPCFG.ser.gz");
-    	
-    	//if( inputMatchers.size() != 1 ) {
-    	//	throw new RuntimeException("SSC Algorithm needs to have one input matcher.");
-    	//}
-    	
-    	//AbstractMatcher input = inputMatchers.get(0);
-    	
-    	//inputClassesMatrix = input.getClassesMatrix();
-    	//inputPropertiesMatrix = input.getPropertiesMatrix();
 	}
 	
 	
