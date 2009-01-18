@@ -6,6 +6,9 @@ package agreementMaker.application.mappingEngine;
 public enum MatcherSetting {
 	DSI_MCP ( "DSI_MCP", 0.75f),  // Descendant's Similarity Inheritance ( MCP value, 0.75 is the default )
 	SSC_MCP ( "SSC_MCP", 0.75f),  // Sibling Similarity Inheritance ( MCP Value )
+	CON_ANC ( "CON_ANC", 0.75f),
+	CON_DES ( "CON_DES", 0.75f),
+	CON_TXT ( "CON_TXT", 0.75f),
 	BSIM_USEDICT ( "BSIM_USEDICT", false ); // Base Similarity  ( Whether to use the dictionary or not, default is not to use the dictionary)
 	
 

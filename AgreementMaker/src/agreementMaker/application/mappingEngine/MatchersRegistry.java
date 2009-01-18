@@ -13,6 +13,7 @@ import agreementMaker.application.mappingEngine.testMatchers.AllZeroMatcher;
 import agreementMaker.application.mappingEngine.testMatchers.CopyMatcher;
 import agreementMaker.application.mappingEngine.testMatchers.EqualsMatcher;
 import agreementMaker.application.mappingEngine.testMatchers.RandomMatcher;
+import agreementMaker.application.mappingEngine.conceptMatcher.ConceptMatcher;
 
 /**
  * Enum for keeping the current list of matchers in the system, and their class references
@@ -40,6 +41,7 @@ public enum MatchersRegistry {
 	DSI					( "Descendant's Similarity Inheritance (DSI)", DescendantsSimilarityInheritanceMatcher.class ),
 	SSC					( "Sibling's Similarity Contribution (SSC)", SiblingsSimilarityContributionMatcher.class ),
 	Combination	( "Mathematical Weighted Combination", CombinationMatcher.class ),
+	ConceptSimilarity   ( "Concept Similarity", ConceptMatcher.class, true),
 	
 
 	//WORK IN PROGRESS
