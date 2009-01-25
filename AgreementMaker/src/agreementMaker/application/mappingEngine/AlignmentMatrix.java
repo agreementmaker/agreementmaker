@@ -134,7 +134,15 @@ public class AlignmentMatrix {
         }
     }
 
-	
+	public double[][] getSimilarityMatrix(){
+		double[][] result = new double[rows][columns];
+		for(int i = 0; i < rows; i++) {
+			for(int j = 0 ; j < columns; j++) {
+				result[i][j] = data[i][j].getSimilarity();
+			}
+		}
+		return result;
+	}
     
     //********************* METHODS ADDED FOR SOME AM CALCULATIONS**********************************************
     

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import agreementMaker.AMException;
 import agreementMaker.Utility;
 import agreementMaker.application.Core;
+import agreementMaker.application.mappingEngine.oneToOneSelection.HungarianAlgorithm;
 import agreementMaker.application.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import agreementMaker.application.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import agreementMaker.application.ontology.Node;
@@ -318,23 +319,46 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	}
     	else {
 			//Both constraints are different from ANY //all cases like 1-1 1-3 or 5-4 or 30-6
-    		return scanWithBothConstraints(matrix, realSourceRelations,realTargetRelations);
-    		
-    		/*
 			if(realSourceRelations == 1 && realTargetRelations == 1) {//1-1 mapping
-				//TO BE DEVELOPED USING MAX WEIGHTED MATCHING ON BIPARTITE GRAPH, SOLVED USING DAJKSTRA
-				//right now we use a non optimal greedy algorithm
+				//we can use the hungarian algorithm which provide the optimal solution in polynomial time
+				return oneToOneMatching(matrix);
+			}
+			else { //all cases like 2-2 or 1-3 or 5-4 or 30-6
+				//an extension of the stable marriage problem, this is not necesserly optimal but is already more than enough
 				return scanWithBothConstraints(matrix, realSourceRelations,realTargetRelations);
 			}
-			else { //all cases like 1-3 or 5-4 or 30-6
-				return scanWithBothConstraints(matrix, realSourceRelations,realTargetRelations);
-			}
-			*/
 		}
 	}
 
 
-	
+	protected AlignmentSet oneToOneMatching(AlignmentMatrix matrix) {
+		AlignmentSet aset = new AlignmentSet();
+		//we can use the hungarian algorithm which provide the optimal solution in polynomial tyme
+		//the hungarian can be used to compute the maxim 1-1 matching or the minimum one, and ofc we need the maximum
+		
+		double[][] similarityMatrix = matrix.getSimilarityMatrix(); //hungarian alg needs a double matrix
+		
+		int[][] assignments = HungarianAlgorithm.hgAlgorithm(similarityMatrix, HungarianAlgorithm.MAX_SUM_TYPE);
+		
+		//the array keeps the assignments
+		//if the rows are <= cols assignments are [row][col] else they are [col][row]
+		for(int i = 0; i < assignments.length; i++) {
+			int row = assignments[i][0];
+			int col = assignments[i][1];
+			if(matrix.getRows() > matrix.getColumns()) {
+				row = assignments[i][1];
+				col = assignments[i][0];
+			}
+			if(row != -1 && col != -1) { //if the node was matched
+				Alignment a = matrix.get(row, col);
+				if(a.getSimilarity() >= threshold) {
+					aset.addAlignment(a);
+				}
+			}
+		}
+		
+		return aset;
+	}
 
 
     protected AlignmentSet scanForMaxValuesRows(AlignmentMatrix matrix, int numMaxValues) {

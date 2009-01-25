@@ -34,9 +34,9 @@ public class Colors
 	public static Color[] matchersColors = {
 		Color.GREEN,
 		Color.PINK,
-		Color.ORANGE,
 		Color.YELLOW,
 		Color.CYAN,
+		Color.ORANGE,
 		new  Color(153,153,255),
 	};
 	

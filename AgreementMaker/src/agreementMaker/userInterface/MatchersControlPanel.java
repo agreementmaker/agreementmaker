@@ -366,7 +366,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	public void importa() throws Exception {
 		int lastIndex = Core.getInstance().getMatcherInstances().size();
 		AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, lastIndex);
-		match(referenceAlignmentMatcher , false);
+		match(referenceAlignmentMatcher , true);
 	}
 	
 	public void copy() throws Exception{
