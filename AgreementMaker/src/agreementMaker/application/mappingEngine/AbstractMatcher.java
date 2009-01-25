@@ -333,12 +333,12 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 	protected AlignmentSet oneToOneMatching(AlignmentMatrix matrix) {
 		AlignmentSet aset = new AlignmentSet();
-		//we can use the hungarian algorithm which provide the optimal solution in polynomial tyme
+		//we can use the hungarian algorithm which provide the optimal solution in polynomial time
 		//the hungarian can be used to compute the maxim 1-1 matching or the minimum one, and ofc we need the maximum
 		
 		double[][] similarityMatrix = matrix.getSimilarityMatrix(); //hungarian alg needs a double matrix
-		
-		int[][] assignments = HungarianAlgorithm.hgAlgorithm(similarityMatrix, HungarianAlgorithm.MAX_SUM_TYPE);
+		double[][] cuttedMatrix = Utility.cutMatrix(similarityMatrix, threshold); //those similarity values lower than the threshold cannot be selected so we remove them from the matrix setting them to 0
+		int[][] assignments = HungarianAlgorithm.hgAlgorithm(cuttedMatrix, HungarianAlgorithm.MAX_SUM_TYPE);
 		
 		//the array keeps the assignments
 		//if the rows are <= cols assignments are [row][col] else they are [col][row]
@@ -351,9 +351,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			}
 			if(row != -1 && col != -1) { //if the node was matched
 				Alignment a = matrix.get(row, col);
-				if(a.getSimilarity() >= threshold) {
+				//i still need to check this even if similarity values have been cutted because the hungarian algorithm can select also values equals to 0 if there is nothing else
+				if(a.getSimilarity() >= threshold)
 					aset.addAlignment(a);
-				}
 			}
 		}
 		

@@ -323,7 +323,22 @@ public class Utility {
 		
 		return result;
 	}
-
+	
+	//return a new matrix with only values higher than the threshold
+	public static double[][] cutMatrix(double[][] similarityMatrix,
+			double threshold) {
+		double[][] result = new double[similarityMatrix.length][similarityMatrix[0].length];
+		for(int i= 0; i < similarityMatrix.length; i++) {
+			for(int j = 0; j < similarityMatrix[0].length; j++) {
+				result[i][j] = 0;
+				if(similarityMatrix[i][j] >= threshold) {
+					result[i][j] = similarityMatrix[i][j] ;
+				}
+			}
+		}
+		return result;
+	}
+	
 	//*******************************************STRING UTILITIES********************************************************
 	public static boolean isIrrelevant(String s) {
 		return s == null || s.equals("") ;
@@ -362,6 +377,8 @@ public class Utility {
 		return result;
 	}
 	//**********************************************************************
+
+
 
 
 	
