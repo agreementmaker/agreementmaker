@@ -105,6 +105,34 @@ public class MatchersTablePanel extends JPanel {
         MyTableModel model = (MyTableModel)table.getModel();
         TableColumn column = null;
         Component comp = null;
+        TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
+        int width = 0;
+        
+        for (int i = 0; i < model.getColumnCount(); i++) {
+            column = table.getColumnModel().getColumn(i);
+            comp = headerRenderer.getTableCellRendererComponent(
+                    null, column.getHeaderValue(),
+                    false, false, 0, 0);
+            width = 0;
+        	if(i == MyTableModel.INPUTMATCHERS || i == MyTableModel.NAME){
+        		width = 175;
+        	}
+        	else{
+                column = table.getColumnModel().getColumn(i);
+                comp = headerRenderer.getTableCellRendererComponent(
+                        null, column.getHeaderValue(),
+                        false, false, 0, 0);
+                width = comp.getPreferredSize().width;
+        	}
+        	column.setPreferredWidth(width);
+        	column.setMinWidth(width);
+        	column.setMaxWidth(width);
+        }
+    	/* THIS WAS MADE TO SET THE WIDTH AUTOMATICALLY BUT THERE WAS A BUG
+    	 * 
+        MyTableModel model = (MyTableModel)table.getModel();
+        TableColumn column = null;
+        Component comp = null;
         int headerWidth = 0;
         int cellWidth = 0;
         Object[] longValues = model.defaultValues;
@@ -122,19 +150,26 @@ public class MatchersTablePanel extends JPanel {
                 getTableCellRendererComponent( table, longValues[i],
                     false, false, 0, i);
 				cellWidth = comp.getPreferredSize().width;
-				/*
+
 				   System.out.println("Initializing width of column "
 				                      + i + ". "
 				                      + "headerWidth = " + headerWidth
 				                      + "; cellWidth = " + cellWidth);
-				*/
+			
+				
+				
 				column.setPreferredWidth(Math.max(headerWidth, cellWidth));
 				column.setMinWidth(Math.max(headerWidth, cellWidth));
+				column.setMaxWidth(Math.max(headerWidth, cellWidth));
             }
             else {//Else just consider the header width
             	column.setPreferredWidth(headerWidth);
+            	column.setMinWidth(headerWidth);
+            	column.setMaxWidth(headerWidth);
+            	
             }
         }
+        */
     }
 
     

@@ -45,6 +45,9 @@ public class AppPreferences {
 	
 	/** key for storing if the user is viewing the canvas in "selected matchings only" mode. */
 	private static final String		PREF_SELECTEDMATCHINGSONLY = "pref_selectedmatchingsonly";
+	/** key for storing if the user is viewing labels and or localnames in the canvas. */
+	private static final String		PREF_SHOWLOCALNAME = "pref_SHOWLOCALNAME";
+	private static final String		PREF_SHOWLABEL = "pref_SHOWLABEL";
 	
 	/**
 	 * Constructor
@@ -449,6 +452,28 @@ public class AppPreferences {
 	
 	public void saveSelectedMatchingsOnly(boolean value) {
 		appPrefs.putBoolean(PREF_SELECTEDMATCHINGSONLY, value);
+	}
+	
+	/**
+	 * Support for showing localnames into vertex
+	 */
+	public boolean getShowLocalname() {
+		return appPrefs.getBoolean(PREF_SHOWLOCALNAME, true);
+	}
+	
+	public void saveShowLocalname(boolean value) {
+		appPrefs.putBoolean(PREF_SHOWLOCALNAME, value);
+	}
+	
+	/**
+	 * Support for showing labels into vertex
+	 */
+	public boolean getShowLabel() {
+		return appPrefs.getBoolean(PREF_SHOWLABEL, false);
+	}
+	
+	public void saveShowLabel(boolean value) {
+		appPrefs.putBoolean(PREF_SHOWLABEL, value);
 	}
 
 	

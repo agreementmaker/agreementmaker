@@ -27,6 +27,7 @@ import am.application.Core;
 import am.application.mappingEngine.AbstractMatcher;
 import am.application.mappingEngine.Alignment;
 import am.application.mappingEngine.AlignmentSet;
+import am.application.ontology.Node;
 import am.application.ontology.Ontology;
 import am.application.ontology.ontologyParser.TreeBuilder;
 import am.userInterface.vertex.Vertex;
@@ -95,6 +96,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private Vector<VertexLine>		selectedLines; //All global and local nodes to be highlighted, that means that are matched with any selected nodes, this set gets created and calculated only during matchings display
 	//private int 				oldY;							// the previous y location of left clicked node	
 	private boolean				smoMode;  		// true or false, depending whether the user is viewing the canvas in Selected Matchings Only mode.
+	private boolean showLabel;
+	private boolean showLocalName;
 	
 	//TO BE DELETED IN THE FUTURE DELETING ALL FUNCTIONS CONTAINING THEM
 	//private int 				noOfLines = 100 ;				//Lines to be displayed, initial value = all = 100 (different from numRelations to be found by the algortithm that are contained in DefnMappingOptions
@@ -148,6 +151,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		
 		// get whether the user had SMO enabled
 		smoMode = ui.getAppPreferences().getSelectedMatchingsOnly();
+		showLocalName = ui.getAppPreferences().getShowLocalname();
+		showLabel = ui.getAppPreferences().getShowLabel();
 		
 		
 		//NOT NEEDED ANYMORE
@@ -338,6 +343,37 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	/** Change whether we are in "Selected Matchings Only" (SMO) view mode. */
 	public void setSMO ( boolean smoEnabled ) {
 		smoMode = smoEnabled;
+	}
+	/** Change whether we are showing labels and/or localnames. */
+	public boolean isShowLabel() {
+		return showLabel;
+	}
+	public void setShowLabel(boolean showLabel) {
+		this.showLabel = showLabel;
+	}
+	public boolean isShowLocalName() {
+		return showLocalName;
+	}
+	public void setShowLocalName(boolean showLocalName) {
+		this.showLocalName = showLocalName;
+	}
+
+	
+	public String getVertexLabelAndOrName(Vertex v){
+		if(!v.isFake()){
+			Node n = v.getNode();
+			String middle = " || ";;
+			if(showLabel && showLocalName)
+				return n.getLocalName()+middle+n.getLabel();
+			else if(showLabel)
+				return n.getLabel();
+			else if(showLocalName) return n.getLocalName(); 
+			else return "";
+		}
+		else{
+			return v.getName();
+		}
+
 	}
 	
 	public void setTree(TreeBuilder tb) {		
@@ -532,7 +568,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			//System.out.println("Key: " + node.getID());
 			//else
 			//System.out.println("Desc: " +node.getDesc()+".");
-			name = node.getName();
+			name = getVertexLabelAndOrName(node);
 			
 			x = starting_X_Value+(node.getLevel())*20;
 			y = oldY +25; 						
@@ -567,7 +603,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				
 				// display the node name inside the round rectangle
 				graphic.setFont(new Font("Lucida Sans Regular", Font.PLAIN, 12));
-				graphic.drawString(node.getName(),x+5,y+15);
+				graphic.drawString(getVertexLabelAndOrName(node),x+5,y+15);
 				
 				// keep track of the previous y to display the next obj
 				oldY = y;
@@ -761,8 +797,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			graphic.drawRoundRect(source.getX(),source.getY(),source.getWidth(),source.getHeight(), source.getArcWidth(),source.getArcHeight());
 			graphic.drawRoundRect(target.getX(),target.getY(),target.getWidth(),target.getHeight(), target.getArcWidth(),target.getArcHeight());
 			// display the node name inside the round rectangle
-			graphic.drawString(source.getName(),source.getX()+5,source.getY()+15);
-			graphic.drawString(target.getName(),target.getX()+5,target.getY()+15);
+			graphic.drawString(getVertexLabelAndOrName(source),source.getX()+5,source.getY()+15);
+			graphic.drawString(getVertexLabelAndOrName(target),target.getX()+5,target.getY()+15);
 		}
 	}
 	
@@ -798,7 +834,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			graphic.setColor(Colors.foreground);
 			graphic.drawRoundRect(highlightedNode.getX(),highlightedNode.getY(),highlightedNode.getWidth(),highlightedNode.getHeight(), highlightedNode.getArcWidth(),highlightedNode.getArcHeight());
 			graphic.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
-			graphic.drawString(highlightedNode.getName(),highlightedNode.getX()+5,highlightedNode.getY()+15);
+			graphic.drawString(getVertexLabelAndOrName(highlightedNode),highlightedNode.getX()+5,highlightedNode.getY()+15);
 		}
 	}
 	

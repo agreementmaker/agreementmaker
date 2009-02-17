@@ -12,6 +12,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 
 import am.AMException;
@@ -47,7 +48,9 @@ public class UIMenu implements ActionListener {
 	private JMenuItem xit, openSource, openTarget;
 	
 	private JMenu menuRecentSource, menuRecentTarget;
+	private JCheckBoxMenuItem showLocalNameItem;
 	//private JMenuItem menuRecentSourceList[], menuRecentTargetList[]; // the list of recent files
+	private JCheckBoxMenuItem showLabelItem;
 	
 
 	public UIMenu(UI ui){
@@ -121,6 +124,17 @@ public class UIMenu implements ActionListener {
 				boolean smoStatus = smoMenuItem.isSelected();
 				prefs.saveSelectedMatchingsOnly(smoStatus);
 				ui.getCanvas().setSMO(smoStatus);
+				ui.redisplayCanvas();
+			}
+			else if( obj == showLabelItem || obj == showLocalNameItem ) {
+				// Save the setting that has been changed
+				AppPreferences prefs = ui.getAppPreferences();
+				boolean showLabel = showLabelItem.isSelected();
+				prefs.saveShowLabel(showLabel);
+				ui.getCanvas().setShowLabel(showLabel);
+				boolean showLocalname = showLocalNameItem.isSelected();
+				prefs.saveShowLocalname(showLocalname);
+				ui.getCanvas().setShowLocalName(showLocalname);
 				ui.redisplayCanvas();
 			}
 			else if( obj == manualMapping) {
@@ -206,7 +220,7 @@ public class UIMenu implements ActionListener {
 		
 		// need AppPreferences for smoItem, to get if is checked or not.
 		AppPreferences prefs = new AppPreferences();
-		
+
 		//Creating the menu bar
 		myMenuBar = new JMenuBar();
 		ui.getUIFrame().setJMenuBar(myMenuBar);
@@ -217,14 +231,15 @@ public class UIMenu implements ActionListener {
 		myMenuBar.add(fileMenu);	
 
 		//add openGFile menu item to file menu
-		openSource = new JMenuItem("Open Source Ontology...",new ImageIcon("../images/fileImage.gif"));
+		openSource = new JMenuItem("Open Source Ontology...");
 		//openSource.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));                		
 		//openSource.setMnemonic(KeyEvent.VK_O);
 		openSource.addActionListener(this);
+		openSource.setOpaque(true);
 		fileMenu.add(openSource);
 		
 		//add openGFile menu item to file menu
-		openTarget = new JMenuItem("Open Target Ontology...",new ImageIcon("../images/fileImage.gif"));
+		openTarget = new JMenuItem("Open Target Ontology...");
 		//openTarget.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));                		
 		//openTarget.setMnemonic(KeyEvent.VK_O);
 		openTarget.addActionListener(this);
@@ -285,6 +300,18 @@ public class UIMenu implements ActionListener {
 		smoMenuItem.addActionListener(this);
 		smoMenuItem.setSelected(prefs.getSelectedMatchingsOnly());
 		viewMenu.add(smoMenuItem);
+		
+		viewMenu.addSeparator();
+		
+		showLocalNameItem = new JCheckBoxMenuItem("Show localnames");
+		showLocalNameItem.addActionListener(this);
+		showLocalNameItem.setSelected(prefs.getShowLocalname());
+		viewMenu.add(showLocalNameItem);
+		
+		showLabelItem = new JCheckBoxMenuItem("Show labels");
+		showLabelItem.addActionListener(this);
+		showLabelItem.setSelected(prefs.getShowLabel());
+		viewMenu.add(showLabelItem);
 		
 		//Fake menus..********************************.
 		/*
