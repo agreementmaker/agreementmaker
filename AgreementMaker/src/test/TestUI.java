@@ -8,8 +8,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import agreementMaker.userInterface.MatchersControlPanel;
-import agreementMaker.userInterface.UI.WindowEventHandler;
+import am.userInterface.MatchersControlPanel;
+import am.userInterface.UI.WindowEventHandler;
 
 public class TestUI {
 	private JFrame frame;

@@ -2,7 +2,7 @@ package test;
 
 import javax.swing.JOptionPane;
 
-import agreementMaker.Utility;
+import am.Utility;
 
 public class sigmoidTest {
 
