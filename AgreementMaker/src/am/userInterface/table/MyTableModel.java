@@ -80,9 +80,9 @@ public class MyTableModel extends AbstractTableModel {
                 Boolean.TRUE,
                 Boolean.TRUE,
                 new Long(999999),
-                new Integer(99999), 
-                new Integer(99999), 
-                new Integer(99999), 
+                new Integer(999999), 
+                new Integer(999999), 
+                new Integer(999999), 
                 "100.0%",
                 "100.0%",
                 "100.0%",
@@ -258,12 +258,12 @@ public class MyTableModel extends AbstractTableModel {
          */
         public void setValueAt(Object value, int row, int col) {
         	if(!(data == null || data.size() == 0 || value == null)) {
-
+        		/*
                     System.out.println("Setting value at " + row + "," + col
                                        + " to " + value
                                        + " (an instance of "
                                        + value.getClass() + ")");
-                 
+                 */
 
                 int whatToUpdate = setValueOnMatcher(value, row, col);
                 if(whatToUpdate == CELLUPDATE)

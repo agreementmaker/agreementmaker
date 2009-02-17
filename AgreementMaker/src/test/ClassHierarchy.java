@@ -8,10 +8,10 @@ package test;
  * Web                http://sourceforge.net/projects/jena/
  * Created            27-Mar-2003
  * Filename           $RCSfile: ClassHierarchy.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
  *
- * Last modified on   $Date: 2008-10-09 22:27:51 $
+ * Last modified on   $Date: 2009-02-17 18:36:56 $
  *               by   $Author: flav $
  *
  * (c) Copyright 2002, 2003, 2004, 2005 Hewlett-Packard Development Company, LP
@@ -48,7 +48,7 @@ import com.hp.hpl.jena.shared.PrefixMapping;
  *
  * @author Ian Dickinson, HP Labs
  *         (<a  href="mailto:Ian.Dickinson@hp.com" >email</a>)
- * @version CVS $Id: ClassHierarchy.java,v 1.1 2008-10-09 22:27:51 flav Exp $
+ * @version CVS $Id: ClassHierarchy.java,v 1.2 2009-02-17 18:36:56 flav Exp $
  */
 public class ClassHierarchy {
     

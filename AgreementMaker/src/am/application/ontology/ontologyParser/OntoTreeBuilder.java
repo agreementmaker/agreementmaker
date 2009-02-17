@@ -54,7 +54,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 	 * In the N3 format can't be true because the namespace organization is different 
 	 * ATTENTION: we skip from loading the referenced classes but their sons in the hierarchy may be valid classes. 
 	 */
-	private boolean skipOtherNamespaces = true;
+	private boolean skipOtherNamespaces;
 	/* To get the namespace of the loaded ontologies we use the method model.getNsPrefixMapping.get("")
 	 * This method cannot be used with "" input for N3
 	 */
@@ -66,7 +66,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 	 * @param syntaxIndex
 	 * @param sourceOrTarget
 	 */
-	public OntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format) {
+	public OntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip) {
 		super(fileName, sourceOrTarget, language, format); 
 		treeCount = 0;
 		
@@ -78,6 +78,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 		model.read( "file:"+fileName, null, ontology.getFormat() );
 		System.out.println("done");
 		
+		skipOtherNamespaces = skip;
 		if(skipOtherNamespaces) { //we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 			try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
 				ns = model.getNsPrefixMap().get("").toString();
@@ -86,6 +87,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 				skipOtherNamespaces = false;
 			}
 		}
+		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
 
 		
 		
@@ -157,8 +159,10 @@ public class OntoTreeBuilder extends TreeBuilder{
      * @return
      */
     public Vertex createClassTree( OntClass cls ) {
-    	if( unsatConcepts.contains( cls ) )
-            return null;
+    	if( unsatConcepts.contains( cls ) ) {
+    		return null;
+    	}
+            
     	Vertex root;
     	if(cls.equals(owlThing))//fake vertex with written "OWL Class hierarchy"
     		root = new Vertex(CLASSROOTNAME, CLASSROOTNAME, model);
@@ -172,14 +176,19 @@ public class OntoTreeBuilder extends TreeBuilder{
         ArrayList<Iterator> iterators = new ArrayList<Iterator>();
         // get only direct subclasses (true)
         Iterator firstSubs = cls.listSubClasses( true );
+ 
+    
+        	
         iterators.add(firstSubs);
         for(int i = 0; i<iterators.size(); i++) {
         	Iterator subs = iterators.get(i);
             while( subs.hasNext() ) {
                 OntClass sub = (OntClass) subs.next();
 
-                if( sub.isAnon() )
-                    continue;
+                if( sub.isAnon() ) {
+                	continue;
+                }
+                    
                 //skip non valid classes with different namespace but consider sons
                 if(skipOtherNamespaces && !sub.getNameSpace().toString().equals(ns)) {
              	   // get only direct subclasses (true)

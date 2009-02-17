@@ -26,7 +26,7 @@ import com.hp.hpl.jena.shared.PrefixMapping;
  *
  * @author Ian Dickinson, HP Labs
  *         (<a  href="mailto:Ian.Dickinson@hp.com" >email</a>)
- * @version CVS $Id: DescribeClass.java,v 1.1 2008-10-09 22:27:51 flav Exp $
+ * @version CVS $Id: DescribeClass.java,v 1.2 2009-02-17 18:36:55 flav Exp $
  */
 public class DescribeClass {
 

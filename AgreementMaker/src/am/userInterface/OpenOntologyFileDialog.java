@@ -8,6 +8,7 @@ import java.io.File;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -38,6 +39,8 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 	private JDialog frame;
 	private int ontoType;
 	private JList syntaxList, langList;	
+	private JCheckBox skipCheck;
+	private JLabel skipLabel;
 	private UI ui;
 	
 	
@@ -106,6 +109,9 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		langList.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Ontology Language"));
 		langList.setSelectedIndex(prefs.getLanguageListSelection());  // select the last thing selected
 
+		skipCheck = new JCheckBox();
+		skipCheck.setSelected(prefs.getLastSkipNamespace());
+		skipLabel = new JLabel("Skip concepts with different namespace");
 		
 		//Make the GroupLayout for this dialog (somewhat complicated, but very flexible)
 		// This Group layout lays the items in relation with eachother.  The horizontal
@@ -129,6 +135,9 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 											 GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 									.addComponent(syntaxList))
 							.addGroup(layout.createSequentialGroup()
+									.addComponent(skipCheck) 
+									.addComponent(skipLabel))
+							.addGroup(layout.createSequentialGroup()
 									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED,
 						                     GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 									.addComponent(cancel)		// the buttons are also part of their own groups
@@ -150,6 +159,9 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 							.addGroup(layout.createParallelGroup()
 									.addComponent(langList)
 									.addComponent(syntaxList))
+							.addGroup(layout.createParallelGroup()
+									.addComponent(skipCheck) 
+									.addComponent(skipLabel))
 							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 									.addComponent(cancel)
 									.addComponent(proceed)
@@ -208,11 +220,11 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 				JOptionPane.showMessageDialog(frame, "Load an ontology file to proceed.");
 			}else{
 				try{
-					ui.openFile(filename, ontoType, syntaxList.getSelectedIndex(), langList.getSelectedIndex());
+					ui.openFile(filename, ontoType, syntaxList.getSelectedIndex(), langList.getSelectedIndex(), skipCheck.isSelected());
 					// once we are done, let's save the syntax and language selection that was made by the user
 					// and save the file used to the recent file list, and also what syntax and language it is
-					prefs.saveOpenDialogListSelection(syntaxList.getSelectedIndex() , langList.getSelectedIndex());
-					prefs.saveRecentFile(filePath.getText(), ontoType, syntaxList.getSelectedIndex(), langList.getSelectedIndex());
+					prefs.saveOpenDialogListSelection(syntaxList.getSelectedIndex() , langList.getSelectedIndex(), skipCheck.isSelected());
+					prefs.saveRecentFile(filePath.getText(), ontoType, syntaxList.getSelectedIndex(), langList.getSelectedIndex(), skipCheck.isSelected());
 					ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
 				
 				}catch(Exception ex){

@@ -41,7 +41,7 @@ public enum MatchersRegistry {
 	DSI					( "Descendant's Similarity Inheritance (DSI)", DescendantsSimilarityInheritanceMatcher.class ),
 	SSC					( "Sibling's Similarity Contribution (SSC)", SiblingsSimilarityContributionMatcher.class ),
 	Combination	( "Mathematical Weighted Combination", CombinationMatcher.class ),
-	ConceptSimilarity   ( "Concept Similarity", ConceptMatcher.class, true),
+	ConceptSimilarity   ( "Concept Similarity", ConceptMatcher.class, false),
 	
 
 	//WORK IN PROGRESS
@@ -52,10 +52,10 @@ public enum MatchersRegistry {
 	
 	//TEST MATCHERS 
 	Equals 				( "Local Name Equivalence Comparison", EqualsMatcher.class , false),
-	AllOne 				( "All ONE Similarities", AllOneMatcher.class, true ),
-	AllZero			( "All Zero Similarities", AllZeroMatcher.class, true ),
+	AllOne 				( "(Test) All One Similarities", AllOneMatcher.class, true ),
+	AllZero			( "(Test) All Zero Similarities", AllZeroMatcher.class, true ),
 	Copy				( "Copy Matcher", CopyMatcher.class,false ),
-	Random 				( "RSM", RandomMatcher.class, true );
+	Random 				( "(Test) Random Similarities", RandomMatcher.class, true );
 	
 	/* Don't change anything below this line .. unless you intend to. */
 	private boolean showInControlPanel;

@@ -26,7 +26,7 @@ public abstract class TreeBuilder {
         ontology.setTitle(f.getName()); 
 	}
 	
-	public static TreeBuilder buildTreeBuilder(String fileName, int ontoType, int langIndex, int syntaxIndex){
+	public static TreeBuilder buildTreeBuilder(String fileName, int ontoType, int langIndex, int syntaxIndex, boolean skip){
 		
 		
 		String languageS = GlobalStaticVariables.getLanguageString(langIndex);
@@ -36,8 +36,8 @@ public abstract class TreeBuilder {
 			treeBuilder = new XmlTreeBuilder(fileName, ontoType, languageS, syntaxS);
 		}
 		else if(langIndex == GlobalStaticVariables.RDFSFILE)
-			treeBuilder = new RdfsTreeBuilder(fileName, ontoType, languageS, syntaxS);
-		else treeBuilder = new OntoTreeBuilder(fileName, ontoType, languageS, syntaxS);
+			treeBuilder = new RdfsTreeBuilder(fileName, ontoType, languageS, syntaxS, skip);
+		else treeBuilder = new OntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip);
 		
 		//TO BE CHANGED IN THE FUTURE
 		for (Enumeration e = treeBuilder.getTreeRoot().preorderEnumeration(); e.hasMoreElements() ;) 

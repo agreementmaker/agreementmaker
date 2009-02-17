@@ -190,7 +190,7 @@ public class UI {
 	 * 
 	 * */
 
-	public void openFile( String filename, int ontoType, int syntax, int language) {
+	public void openFile( String filename, int ontoType, int syntax, int language, boolean skip) {
 		try{
 			JPanel jPanel = null;
 			
@@ -205,7 +205,7 @@ public class UI {
 			setDescriptionPanel(jPanel);
 			
 			//This function manage the whole process of loading, parsing the ontology and building data structures: Ontology to be set in the Core and Tree and to be set in the canvas
-			TreeBuilder t = TreeBuilder.buildTreeBuilder(filename, ontoType, language, syntax);
+			TreeBuilder t = TreeBuilder.buildTreeBuilder(filename, ontoType, language, syntax, skip);
 			//Set ontology in the Core
 			Ontology ont = t.getOntology();
 			if(ontoType == GlobalStaticVariables.SOURCENODE) {

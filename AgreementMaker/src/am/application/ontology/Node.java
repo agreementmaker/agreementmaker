@@ -9,6 +9,7 @@ import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.ontology.impl.OntResourceImpl;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -90,19 +91,21 @@ public class Node {
 	
 	/**RDF OWL Constructor*/
 	public Node(int key, Resource r, String type) {
+		String language = "EN";
 		resource = r;
 		uri = r.getURI();
 		localName = r.getLocalName();
 		this.type = type;
 		if(r.canAs(OntResource.class)) {
 			OntResource or = (OntResource)r.as(OntResource.class);
-			label = or.getLabel(null);//null because i don't know if it should be "EN" or "FR"
+			label = or.getLabel(language);//null because i don't know if it should be "EN" or "FR"
 			if(label == null)
 				label = "";
 			//COmments
-			ExtendedIterator it = or.listComments(null);
+			ExtendedIterator it = or.listComments(language);
 			comment = "";
 			Literal l = null;
+			OntResourceImpl ol = null;
 			while(it.hasNext()) {
 				l = (Literal)it.next();
 				if(l!=null) comment+= l+" ";
@@ -112,16 +115,16 @@ public class Node {
 			isDefinedBy = "";
 			l = null;
 			while(it.hasNext()) {
-				l = (Literal)it.next();
-				if(l!=null) isDefinedBy+= l+" ";
+				ol = (OntResourceImpl)it.next();
+				if(ol!=null) isDefinedBy+= ol+" ";
 			}
 
 			it = or.listSeeAlso();
 			seeAlso = "";
 			l = null;
 			while(it.hasNext()) {
-				l = (Literal)it.next();
-				if(l!=null) seeAlso+= l+" ";
+				ol = (OntResourceImpl)it.next();
+				if(ol!=null) seeAlso+= ol+" ";
 			}
 			//properties and invidviduals lists only for classes
 			if(!or.canAs(OntProperty.class)) {//remember is important to check on prop instead of class to avoid a jena bug that a prop canAs ontClass

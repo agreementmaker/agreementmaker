@@ -22,7 +22,7 @@ public class QualityEvaluator {
 	public final static String LOCALTHRESHOLDCONFIDENCE = "Local confidence considering threshold";
 	
 	//LIST USED IN THE QUALITY COMBINATION MATCHER 
-	public final static String[] QUALITIES = {LOCALCONFIDENCE, GLOBALCONFIDENCE, DISTANCE,ORDER, CONF_ORDER_DIST};
+	public final static String[] QUALITIES = {LOCALCONFIDENCE, GLOBALCONFIDENCE, DISTANCE,ORDER};
 	
 	public static QualityEvaluationData evaluate(AbstractMatcher matcher, String quality) {
 		QualityEvaluationData finalData = null;
@@ -96,7 +96,7 @@ public class QualityEvaluator {
 		if(quality.equals(QualityEvaluator.CONF_ORDER_DIST)) {
 			finalData = new QualityEvaluationData();
 			finalData.setLocal(false);
-			System.out.println(globalConfData.getGlobalClassMeasure() +" "+ distData.getGlobalClassMeasure()  +" "+ orderData.getGlobalClassMeasure());
+			//System.out.println(globalConfData.getGlobalClassMeasure() +" "+ distData.getGlobalClassMeasure()  +" "+ orderData.getGlobalClassMeasure());
 			finalData.setGlobalClassMeasure((globalConfData.getGlobalClassMeasure() + distData.getGlobalClassMeasure() + orderData.getGlobalClassMeasure())  / (double)3);
 			finalData.setGlobalPropMeasure((globalConfData.getGlobalPropMeasure() + distData.getGlobalPropMeasure() + orderData.getGlobalPropMeasure() ) / (double)3 );
 		}

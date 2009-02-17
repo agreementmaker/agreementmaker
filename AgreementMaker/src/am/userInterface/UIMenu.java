@@ -12,18 +12,19 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 
 import am.AMException;
 import am.GlobalStaticVariables;
 import am.Utility;
+import am.application.Core;
+import am.application.ontology.Ontology;
 
 
 public class UIMenu implements ActionListener {
 	
 	// create 4 menus
-	private JMenu fileMenu, viewMenu, helpMenu;
+	private JMenu fileMenu, viewMenu, helpMenu, ontologyMenu;
 	// private JMenu editMenu; // not used yet
 	//fake menus
 	private JMenu matchingMenu;
@@ -37,6 +38,9 @@ public class UIMenu implements ActionListener {
 	private JMenuItem keyItem;
 	private JCheckBoxMenuItem smoMenuItem;  // Menu item for toggling "Selected Matchings Only" view mode.
 	
+	// menu items for the Ontology Menu
+	private JMenuItem ontologyDetails;
+	
 	//creates a menu bar
 	private JMenuBar myMenuBar;
 	
@@ -48,11 +52,10 @@ public class UIMenu implements ActionListener {
 	private JMenuItem xit, openSource, openTarget;
 	
 	private JMenu menuRecentSource, menuRecentTarget;
-	private JCheckBoxMenuItem showLocalNameItem;
 	//private JMenuItem menuRecentSourceList[], menuRecentTargetList[]; // the list of recent files
 	private JCheckBoxMenuItem showLabelItem;
+	private JCheckBoxMenuItem showLocalNameItem;
 	
-
 	public UIMenu(UI ui){
 		this.ui=ui;
 		init();
@@ -161,6 +164,10 @@ public class UIMenu implements ActionListener {
 			else if(obj == clearAll) {
 				controlPanel.clearAll();
 			}
+			else if(obj == ontologyDetails) {
+				ontologyDetails();
+			}
+			
 			
 			
 			// TODO: find a Better way to do this
@@ -184,21 +191,22 @@ public class UIMenu implements ActionListener {
 					
 					case 's':
 						ui.openFile( prefs.getRecentSourceFileName(position), GlobalStaticVariables.SOURCENODE, 
-								prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position));
+								prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position), prefs.getRecentSourceSkipNamespace(position));
 						prefs.saveRecentFile(prefs.getRecentSourceFileName(position), GlobalStaticVariables.SOURCENODE, 
-								prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position));
+								prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position), prefs.getRecentSourceSkipNamespace(position));
 						ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
 						break;
 					case 't':
 						ui.openFile( prefs.getRecentTargetFileName(position), GlobalStaticVariables.TARGETNODE, 
-								prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position));
+								prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position), prefs.getRecentTargetSkipNamespace(position));
 						prefs.saveRecentFile(prefs.getRecentTargetFileName(position), GlobalStaticVariables.TARGETNODE, 
-								prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position));
+								prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position), prefs.getRecentTargetSkipNamespace(position));
 						ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
 						break;
 					default:
 						break;
 				}
+				
 			}
 		}
 		catch(AMException ex2) {
@@ -211,6 +219,32 @@ public class UIMenu implements ActionListener {
 		
 	}
 	
+	public void ontologyDetails() {
+		Core c = Core.getInstance();
+		Ontology sourceO = c.getSourceOntology();
+		Ontology targetO = c.getTargetOntology();
+		String sourceClassString = "Not loaded\n";
+		String sourcePropString = "Not loaded\n";
+		String targetClassString = "Not loaded\n";
+		String targetPropString = "Not loaded\n";
+		if(c.sourceIsLoaded()) {
+			sourceClassString = sourceO.getClassDetails();
+			sourcePropString = sourceO.getPropDetails();
+		}
+		if(c.targetIsLoaded()) {
+			targetClassString = targetO.getClassDetails();
+			targetPropString = targetO.getPropDetails();
+		}
+		String report = "Ontology details\n\n";
+		report+= "Hierarchies             \t#concepts\tdepth\tLC-diameter\t#roots\t#leaves\n";
+		report+= "Source Classes:\t"+sourceClassString;
+		report+= "Target Classes:\t"+targetClassString;
+		report+= "Source Properties:\t"+sourcePropString;
+		report+= "Target Properties:\t"+targetPropString;
+		Utility.displayTextAreaWithDim(report,"Reference Evaluation Report", 10, 60);
+	}
+
+
 	public void displayOptionPane(String desc, String title){
 			JOptionPane.showMessageDialog(null,desc,title, JOptionPane.PLAIN_MESSAGE);					
 	}
@@ -220,7 +254,7 @@ public class UIMenu implements ActionListener {
 		
 		// need AppPreferences for smoItem, to get if is checked or not.
 		AppPreferences prefs = new AppPreferences();
-
+		
 		//Creating the menu bar
 		myMenuBar = new JMenuBar();
 		ui.getUIFrame().setJMenuBar(myMenuBar);
@@ -231,15 +265,14 @@ public class UIMenu implements ActionListener {
 		myMenuBar.add(fileMenu);	
 
 		//add openGFile menu item to file menu
-		openSource = new JMenuItem("Open Source Ontology...");
+		openSource = new JMenuItem("Open Source Ontology...",new ImageIcon("../images/fileImage.gif"));
 		//openSource.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));                		
 		//openSource.setMnemonic(KeyEvent.VK_O);
 		openSource.addActionListener(this);
-		openSource.setOpaque(true);
 		fileMenu.add(openSource);
 		
 		//add openGFile menu item to file menu
-		openTarget = new JMenuItem("Open Target Ontology...");
+		openTarget = new JMenuItem("Open Target Ontology...",new ImageIcon("../images/fileImage.gif"));
 		//openTarget.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));                		
 		//openTarget.setMnemonic(KeyEvent.VK_O);
 		openTarget.addActionListener(this);
@@ -300,7 +333,6 @@ public class UIMenu implements ActionListener {
 		smoMenuItem.addActionListener(this);
 		smoMenuItem.setSelected(prefs.getSelectedMatchingsOnly());
 		viewMenu.add(smoMenuItem);
-		
 		viewMenu.addSeparator();
 		
 		showLocalNameItem = new JCheckBoxMenuItem("Show localnames");
@@ -312,7 +344,6 @@ public class UIMenu implements ActionListener {
 		showLabelItem.addActionListener(this);
 		showLabelItem.setSelected(prefs.getShowLabel());
 		viewMenu.add(showLabelItem);
-		
 		//Fake menus..********************************.
 		/*
 		ontologyMenu = new JMenu("Ontology");
@@ -322,6 +353,13 @@ public class UIMenu implements ActionListener {
 
 
 		*/
+		
+		//ontology menu
+		ontologyMenu = new JMenu("Ontology");
+		ontologyDetails = new JMenuItem("Ontology details");
+		ontologyDetails.addActionListener(this); 
+		ontologyMenu.add(ontologyDetails);
+		myMenuBar.add(ontologyMenu);
 		
 		matchingMenu = new JMenu("Matching");
 		manualMapping = new JMenuItem("Manual Mapping"); 

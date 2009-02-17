@@ -53,7 +53,7 @@ public class ReferenceEvaluator{
                 lostAlignments.addAlignment(alignment1);
             }
         }
-        System.out.println("Found: " + found + ", Exist: " + exist + ", Correct: " + correct);
+        //System.out.println("Found: " + found + ", Exist: " + exist + ", Correct: " + correct);
         double prec;
         if(found == 0) {
         	prec = 1;
@@ -65,14 +65,14 @@ public class ReferenceEvaluator{
         	rec = 1;
         }
         else rec = (double) correct / exist;
-        System.out.println("Precision: " + prec + ", Recall: " + rec);
+        //System.out.println("Precision: " + prec + ", Recall: " + rec);
         // F-measure
         double fm;
         if(prec + rec == 0) {
         	fm = 0;
         }
         else  fm = (1 + ALPHA) * (prec * rec) / (ALPHA * prec + rec);
-        System.out.println("F-Measure: " + fm);
+        //System.out.println("F-Measure: " + fm);
 
         result.setFound(found);
         result.setExist(exist);

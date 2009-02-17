@@ -4,7 +4,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-//import sun.net.www.protocol.http.InMemoryCookieStore;
+import sun.net.www.protocol.http.InMemoryCookieStore;
 
 import am.application.mappingEngine.AbstractMatcher;
 import am.application.mappingEngine.IntDoublePair;
@@ -64,11 +64,16 @@ public class Utility {
 	 * @return
 	 */
 	public static String getOneDecimalPercentFromDouble(double inValue){
-		double d = inValue * 100;
 		String shortString = "";
-		DecimalFormat oneDec = new DecimalFormat("0.0", new DecimalFormatSymbols(Locale.US));
-		shortString = (oneDec.format(d));
-		return shortString+"%";
+		if(!(new Double(inValue)).isNaN()) {
+			double d = inValue * 100;
+			DecimalFormat oneDec = new DecimalFormat("0.0", new DecimalFormatSymbols(Locale.US));
+			shortString = (oneDec.format(d));
+			shortString+="%";
+		}
+		else shortString = "0.0%";
+		return shortString;
+
 	}
 	
 	public static String[] getNumRelList() {
@@ -342,7 +347,7 @@ public class Utility {
 	
 	//*******************************************STRING UTILITIES********************************************************
 	public static boolean isIrrelevant(String s) {
-		return s == null || s.equals("") ;
+		return s == null || s.equals("") || s.equals(" ");
 	}
 	
 	public static boolean startsWithSpace(String s) {

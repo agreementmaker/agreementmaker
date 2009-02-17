@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.hp.hpl.jena.rdf.model.Model;
 
 import am.GlobalStaticVariables;
+import am.application.mappingEngine.qualityEvaluation.JoslynStructuralQuality;
 import am.userInterface.vertex.Vertex;
 
 /**
@@ -34,7 +35,9 @@ public class Ontology {
 	private Vertex classesTree;//in a XML or RDF ontology this will be the only tree
 	/**The root of the properties hierarchy, is not the root of the whole tree but is the third node, the root vertex itself is fake doesn't refers to any node to be aligned, all sons of this node are classes to be aligned*/
 	private Vertex propertiesTree;//in a XML or RDF ontology this will be null, while in a OWL ontology it contains at least the fake root "prop hierarchy"
-
+	
+	private boolean skipOtherNamespaces;
+	
 	public String getFilename() {
 		return filename;
 	}
@@ -102,4 +105,35 @@ public class Ontology {
 	public void setTitle(String title) {
 		this.title = title;
 	}
+	
+	//used in UImenu.ontologyDetails()
+	public String getClassDetails() {	
+		return getDetails(classesList, classesTree);
+	}
+	
+	//used in getClassDetails and getPropDetails
+	private String getDetails(ArrayList<Node> list, Vertex tree) {
+		TreeToDagConverter conv = new TreeToDagConverter(tree);
+		
+		int concepts = list.size();
+		int depth = tree.getDepth()-1;
+		int roots = conv.getRoots().size();
+		int leaves = conv.getLeaves().size();
+		JoslynStructuralQuality q = new JoslynStructuralQuality();
+		double LCdiameter = q.getLCDiameter(list, conv);
+		
+		return concepts+"\t"+depth+"\t"+LCdiameter+"\t"+roots+"\t"+leaves+"\n";
+	}
+	
+	//used in UImenu.ontologyDetails()
+	public String getPropDetails() {
+		return getDetails(propertiesList, propertiesTree);
+	}
+	public boolean isSkipOtherNamespaces() {
+		return skipOtherNamespaces;
+	}
+	public void setSkipOtherNamespaces(boolean skipOtherNamespaces) {
+		this.skipOtherNamespaces = skipOtherNamespaces;
+	}
+	
 }

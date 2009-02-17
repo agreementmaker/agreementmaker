@@ -38,13 +38,13 @@ public class RdfsTreeBuilder extends TreeBuilder{
 	 * In the N3 format can't be true because the namespace organization is different 
 	 * ATTENTION: we skip from loading the referenced classes but their sons in the hierarchy may be valid classes. 
 	 */
-	private boolean skipOtherNamespaces = true;
+	private boolean skipOtherNamespaces;
 	/* To get the namespace of the loaded ontologies we use the method model.getNsPrefixMapping.get("")
 	 * This method cannot be used with "" input for N3
 	 */
 	private String ns = null;
 	
-	public RdfsTreeBuilder(String fileName, int sourceOrTarget, String language, String format) {
+	public RdfsTreeBuilder(String fileName, int sourceOrTarget, String language, String format,boolean skip) {
 		super(fileName, sourceOrTarget, language, format);
 		
 		System.out.print("Reading Model...");
@@ -53,6 +53,7 @@ public class RdfsTreeBuilder extends TreeBuilder{
 		ontModel.read( "file:"+fileName, "", ontology.getFormat() );
 		System.out.println("done");
 		
+		skipOtherNamespaces = skip;
 		if(skipOtherNamespaces) { //we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 			try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
 				ns = ontModel.getNsPrefixMap().get("").toString();
@@ -61,6 +62,7 @@ public class RdfsTreeBuilder extends TreeBuilder{
 				skipOtherNamespaces = false;
 			}
 		}
+		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
 		ontology.setModel(ontModel);
 		treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(),ontModel);//Creates the root of type Vertex for the tree, is a fake vertex with no corresponding node
 		Vertex classRoot = new Vertex(RDFCLASSROOTNAME,RDFCLASSROOTNAME,ontModel);

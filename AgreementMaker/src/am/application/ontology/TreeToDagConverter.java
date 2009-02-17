@@ -41,15 +41,20 @@ public class TreeToDagConverter {
 	//RETURN THE LIST OF ROOTS Of this dag, it WORKS ONLY IF WE KEEP THE STRUCTURE LIKE THIS WITH ROOTS AT SECOND LEVEL
 	//0 LEVEL ontology name, 1 level class and prop hierachy fake root node, 2 level real roots 
 	public ArrayList<Node> getRoots(){
+		
 		ArrayList<Node> result = new ArrayList<Node>();
 		Enumeration<Vertex> allVertex = root.breadthFirstEnumeration();
-		Vertex v = allVertex.nextElement();
-		while(v.getLevel() <= REALROOTSLEVEL && allVertex.hasMoreElements()) {
+		
+		Vertex v;
+		while(allVertex.hasMoreElements()) {
 			v = allVertex.nextElement();
-			if(!v.isFake()) {
-				result.add(v.getNode());
-				//System.out.println(v.getNode().getLocalName());
+			if(v.getLevel() <= REALROOTSLEVEL) {
+				if(!v.isFake()) {
+					result.add(v.getNode());
+
+				}
 			}
+			else {break;}
 		}
 		return result;
 	}

@@ -10,8 +10,8 @@ public class QualityEvaluationData {
 	private double[] localClassMeasures;
 	private double[] localPropMeasures;
 	
-	private double globalClassMeasure;
-	private double globalPropMeasure;
+	private double globalClassMeasure = 0.0;
+	private double globalPropMeasure = 0.0;
 	
 	
 

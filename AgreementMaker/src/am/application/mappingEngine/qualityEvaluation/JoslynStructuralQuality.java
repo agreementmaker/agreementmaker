@@ -50,6 +50,10 @@ public class JoslynStructuralQuality {
 		matcher = m;
 	}
 	
+	//used to get only the diameter
+	public JoslynStructuralQuality() {
+	}
+	
 	
 	public QualityEvaluationData getOrderQuality() {
 		Ontology sourceOntology = Core.getInstance().getSourceOntology();
@@ -323,7 +327,9 @@ public class JoslynStructuralQuality {
 		
 		//I need to calculate which is the distance between each pair of node
 		sourceDistances = createDistances(sourceList, sourceDescendants);
+		sourceDistances = normalizeDistances(sourceList, sourceDistances);
 		targetDistances = createDistances(targetList, targetDescendants);
+		targetDistances = normalizeDistances(targetList, targetDistances);
 		
 		//calculate the link distance discrepancy, look at the example on the paper to understand it
 		//given two alignments  a1( a, a') & a2(b, b')
@@ -469,6 +475,7 @@ public class JoslynStructuralQuality {
 			}
 		}
 		
+		/*Moved into its own method normalizeDistances
 		//the diameter is the max distance
 		double diameter = Utility.getMaxOfMatrix(distances);
 		//System.out.println("diameter: "+diameter);
@@ -478,6 +485,24 @@ public class JoslynStructuralQuality {
 			for(int j = 0; j < nodesList.size(); j++) {
 				distances[i][j] /= diameter;
 				//System.out.println(nodesList.get(i).getLocalName()+" "+nodesList.get(j).getLocalName()+" "+distances[i][j]);
+			}
+		}
+		*/
+		return distances;
+	}
+	
+	private double[][] normalizeDistances(ArrayList<Node> nodesList, double[][] dist) {
+		double[][] distances = new double[nodesList.size()][nodesList.size()];
+		//the diameter is the max distance
+		double diameter = Utility.getMaxOfMatrix(dist);
+		//System.out.println("diameter: "+diameter);
+		if(diameter != 0) {
+			//normalize distances
+			for(int i = 0; i < nodesList.size(); i++) {
+				for(int j = 0; j < nodesList.size(); j++) {
+					distances[i][j] = dist[i][j] / diameter;
+					//System.out.println(nodesList.get(i).getLocalName()+" "+nodesList.get(j).getLocalName()+" "+distances[i][j]);
+				}
 			}
 		}
 		return distances;
@@ -516,5 +541,29 @@ public class JoslynStructuralQuality {
 		
 	}
 	
+	public double getLCDiameter(ArrayList<Node> list,
+			TreeToDagConverter dag) {
 
+		//an array num of descendants of each node. sourceDescendants[node.getIndex()] = num of  descendants of node
+		int[] descendants; 
+		//the normalized distance between each pair of nodes
+		double[][] distances;
+		
+		
+		
+		//create the array for target and source with the numver of descendants of each node
+		descendants = createDescendantsArray(list,dag );
+		/* DEBUG
+		System.out.println("\nsoruce descendants");
+		for(int i = 0; i < sourceDescendants.length; i++) {
+			System.out.println(sourceList.get(i).getLocalName()+" "+sourceDescendants[i]);
+		}
+		*/
+		
+		
+		//I need to calculate which is the distance between each pair of node
+		distances = createDistances(list, descendants);
+		return Utility.getMaxOfMatrix(distances);
+		
+	}
 }
