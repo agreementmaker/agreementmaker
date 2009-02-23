@@ -53,6 +53,7 @@ public class UIMenu implements ActionListener {
 	
 	private JMenu menuRecentSource, menuRecentTarget;
 	//private JMenuItem menuRecentSourceList[], menuRecentTargetList[]; // the list of recent files
+	private JCheckBoxMenuItem disableVisualizationItem;
 	private JCheckBoxMenuItem showLabelItem;
 	private JCheckBoxMenuItem showLocalNameItem;
 	
@@ -120,6 +121,14 @@ public class UIMenu implements ActionListener {
 			}else if (obj == aboutItem){
 				new AboutDialog();
 				//displayOptionPane("Agreement Maker 3.0\nAdvis research group\nThe University of Illinois at Chicago 2004","About Agreement Maker");
+			}
+			else if( obj == disableVisualizationItem ) {
+				// Save the SMO setting that has been changed
+				AppPreferences prefs = ui.getAppPreferences();
+				boolean disableVis = disableVisualizationItem.isSelected();
+				prefs.saveSelectedMatchingsOnly(disableVis);
+				ui.getCanvas().setDisableVisualization(disableVis);
+				ui.redisplayCanvas();
 			}
 			else if( obj == smoMenuItem ) {
 				// Save the SMO setting that has been changed
@@ -326,6 +335,13 @@ public class UIMenu implements ActionListener {
 		keyItem.addActionListener(this);
 		viewMenu.add(keyItem);
 		
+		viewMenu.addSeparator();
+		
+		// add "Disable Visualization" option to the view menu
+		disableVisualizationItem = new JCheckBoxMenuItem("Disable hierarchies visualization");
+		disableVisualizationItem.addActionListener(this);
+		disableVisualizationItem.setSelected(prefs.getDisableVisualization());
+		viewMenu.add(disableVisualizationItem);
 		viewMenu.addSeparator();
 		
 		// add "Selected Matchings Only" option to the view menu

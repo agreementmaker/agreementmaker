@@ -135,5 +135,9 @@ public class Ontology {
 	public void setSkipOtherNamespaces(boolean skipOtherNamespaces) {
 		this.skipOtherNamespaces = skipOtherNamespaces;
 	}
+	public int getSourceOrTarget() {
+		
+		return sourceOrTarget;
+	}
 	
 }

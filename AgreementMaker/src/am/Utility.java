@@ -18,6 +18,10 @@ import java.util.Locale;
 
 public class Utility {
 	public final static String UNEXPECTED_ERROR = "Unexepcted System Error.\nTry to reset the system and repeat the operation.\nContact developers if the error persists.";
+	public final static String OUT_OF_MEMORY = "Operation aborted\n\n" +
+											   "The system run out of memory.\n" +
+											   "Try to run the system with more heap space\n" +
+											   "(e.g., java -Xms64m -Xmx2048m -jar AgreementMaker.jar).";
 	
 	//USED by the tuning alg.
 	//we can't generate this array with a for because the 0.35 + 0.05 = 0.39 in java because of double representations, exclude <10 and >90

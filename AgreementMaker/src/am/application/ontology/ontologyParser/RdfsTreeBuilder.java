@@ -46,14 +46,18 @@ public class RdfsTreeBuilder extends TreeBuilder{
 	
 	public RdfsTreeBuilder(String fileName, int sourceOrTarget, String language, String format,boolean skip) {
 		super(fileName, sourceOrTarget, language, format);
+		skipOtherNamespaces = skip;
 		
+	}
+	
+	protected void buildTree() {
 		System.out.print("Reading Model...");
 		ontModel = ModelFactory.createOntologyModel(OntModelSpec.RDFS_MEM_RDFS_INF, null);
 		//TODO: Figure out if the 2nd arg in next fn call should be null or someother URI
-		ontModel.read( "file:"+fileName, "", ontology.getFormat() );
+		ontModel.read( "file:"+ontology.getFilename(), "", ontology.getFormat() );
 		System.out.println("done");
 		
-		skipOtherNamespaces = skip;
+		
 		if(skipOtherNamespaces) { //we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 			try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
 				ns = ontModel.getNsPrefixMap().get("").toString();
@@ -64,29 +68,30 @@ public class RdfsTreeBuilder extends TreeBuilder{
 		}
 		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
 		ontology.setModel(ontModel);
-		treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(),ontModel);//Creates the root of type Vertex for the tree, is a fake vertex with no corresponding node
-		Vertex classRoot = new Vertex(RDFCLASSROOTNAME,RDFCLASSROOTNAME,ontModel);
+		treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(),ontModel,  ontology.getSourceOrTarget());//Creates the root of type Vertex for the tree, is a fake vertex with no corresponding node
+		Vertex classRoot = new Vertex(RDFCLASSROOTNAME,RDFCLASSROOTNAME,ontModel,  ontology.getSourceOrTarget());
 		treeRoot.add(classRoot);
 		treeCount = 2;
 		processedSubs = new HashMap<OntResource, Node>();
 		Iterator i = ontModel.listHierarchyRootClasses();
-		classRoot = buildTree(classRoot, i);//should add all valid classes and subclasses in the iterator to the classRoot	
+		classRoot = createTree(classRoot, i);//should add all valid classes and subclasses in the iterator to the classRoot
 		ontology.setClassesTree(classRoot);
+		
 	}
 	
-	private Vertex buildTree(Vertex root, Iterator i) {
+	protected Vertex createTree(Vertex root, Iterator i){
 		while (i.hasNext()) {
 			OntClass cls = (OntClass)i.next();
 			if(cls.isAnon()) ;//skip
 		    else if(skipOtherNamespaces && !cls.getNameSpace().toString().equals(ns)) {
           	   //If a node has a different namespace must be jumped , so sons of that node must be added to the grandfather
           	   Iterator moreSubs = cls.listSubClasses( true );
-          	   root = buildTree(root, moreSubs);       	   
+          	   root = createTree(root, moreSubs);       	   
             }
 		    else {
-				Vertex newVertex = createNodeAndVertex(cls);
+				Vertex newVertex = createNodeAndVertex(cls, root.getNodeType());
 				Iterator subs = cls.listSubClasses( true );
-				newVertex = buildTree(newVertex, subs);
+				newVertex = createTree(newVertex, subs);
 				root.add(newVertex);
 				treeCount++;
 			}
@@ -105,7 +110,7 @@ public class RdfsTreeBuilder extends TreeBuilder{
 	 * @param entity
 	 * @return
 	 */
-	public Vertex createNodeAndVertex(OntResource entity) {
+	public Vertex createNodeAndVertex(OntResource entity, int sourceOrTarget) {
 		 
 		 Node node;
          if( processedSubs.containsKey( entity ) ) {//the node has been already created, but we need only to create a new vertex;
@@ -118,7 +123,7 @@ public class RdfsTreeBuilder extends TreeBuilder{
             processedSubs.put(entity, node);
             uniqueKey++;  // here is where we increment the uniqueKey.
          }
-         Vertex vert = new Vertex(node.getLocalName(), entity.getURI(), ontModel);
+         Vertex vert = new Vertex(node.getLocalName(), entity.getURI(), ontModel, sourceOrTarget);
          node.addVertex(vert);
          vert.setNode(node);
 		 return vert;

@@ -23,7 +23,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		//Constants
 		/**Formats for reference files*/
 	    public final static String REF5 = "AM exported file format";
-		public final static String REF0 = "OAEI-2008-testcase";
+		public final static String REF0 = "OAEI standard format";
 		public final static String REF1 = "OAEI-2007 i.e. weapons, wetlands...";
 		public final static String REF2 = "TXT: sourcename(tab)targetname";
 		public final static String REF3= "TXT: sourceDesc(tab)sourceName(tab)targetName(tab)targetDesc(tab)";
@@ -63,6 +63,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
     			mp = it.next();
     			if(mp.sourcename.equalsIgnoreCase(sname)&& mp.targetname.equalsIgnoreCase(tname)) {
     				a = new Alignment(source, target, mp.similarity);
+    				it.remove();
     			}
     		}
     	}

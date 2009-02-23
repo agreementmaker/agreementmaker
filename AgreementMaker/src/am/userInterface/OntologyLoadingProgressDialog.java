@@ -16,13 +16,15 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
 
 import am.GlobalStaticVariables;
 import am.Utility;
 import am.application.mappingEngine.AbstractMatcher;
 import am.application.mappingEngine.Matcher;
+import am.application.ontology.ontologyParser.TreeBuilder;
 
-public class ProgressDialog extends JDialog implements PropertyChangeListener, ActionListener {
+public class OntologyLoadingProgressDialog extends JDialog implements PropertyChangeListener, ActionListener {
 
     /**
 	 * This is the Progress Dialog class.
@@ -34,24 +36,24 @@ public class ProgressDialog extends JDialog implements PropertyChangeListener, A
 	private JPanel textPanel;
 	
 	private JProgressBar progressBar;
-    private AbstractMatcher matcher; // the matcher that is associated with this dialog, needed in order for cancel() to work.
+    private TreeBuilder treeBuilder; // the matcher that is associated with this dialog, needed in order for cancel() to work.
     
     private JButton okButton = new JButton("Ok");
     private JButton cancelButton = new JButton("Cancel");
-    private JTextArea matcherReport;
+    private JTextArea report;
     private JScrollPane scrollingArea;
     
 	/**
 	 * Constructor. 
 	 * @param m
 	 */
-	public ProgressDialog (AbstractMatcher m) {
+	public OntologyLoadingProgressDialog (TreeBuilder t) {
 	    super();
 	
-	    matcherReport = new JTextArea(8, 35);
+	    report = new JTextArea(10, 38);
 	    
 		setTitle("Agreement Maker is Running ...");  // you'd better go catch it!
-		matcherReport.setText("Running...");
+		report.setText("Loading...\nIf the ontology contains several thousands of concepts,\nthis operation may take some minutes.");
 		//setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setResizable(false);
 	    
@@ -72,7 +74,7 @@ public class ProgressDialog extends JDialog implements PropertyChangeListener, A
 	    buttonPanel.add(okButton);
 	    buttonPanel.add(cancelButton);
 	    
-	    scrollingArea = new JScrollPane(matcherReport);
+	    scrollingArea = new JScrollPane(report);
 	    textPanel.add(scrollingArea);
 	    textPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 	    
@@ -81,19 +83,16 @@ public class ProgressDialog extends JDialog implements PropertyChangeListener, A
 	    
 	    this.add(progressPanel);
 	    
-	    matcher = m;
+	    treeBuilder = t;
 	    
 		//setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-		if( !GlobalStaticVariables.USE_PROGRESS_BAR )
-			progressBar.setIndeterminate(true); // we are not updating the progress bar.
-		else {
-		    matcher.addPropertyChangeListener(this);  // we are receiving updates from the matcher.
-		}
+		progressBar.setIndeterminate(true); // we are not updating the progress bar.
+	    treeBuilder.addPropertyChangeListener(this);  // we are receiving updates from the matcher.
 		
-	    matcher.setProgressDialog(this);
+	    treeBuilder.setProgressDialog(this);
 		
-		matcher.execute();
+		treeBuilder.execute();
 		
 		pack();
 		setLocationRelativeTo(null);
@@ -123,19 +122,18 @@ public class ProgressDialog extends JDialog implements PropertyChangeListener, A
 			this.dispose();
 		}
 		else if(obj == cancelButton) {
-			matcher.cancel(true);
+			treeBuilder.cancel(true);
 			this.dispose();
 		}
 		
 	}
 
-	public void matchingComplete() {
+	public void loadingComplete() {
 		//  The algorithm has been completed, update the report text area.
-		if( !GlobalStaticVariables.USE_PROGRESS_BAR ) {
-			progressBar.setIndeterminate(false);
-			progressBar.setValue(100);
-		}
-		matcherReport.setText( matcher.getReport() );
+	
+		progressBar.setIndeterminate(false);
+		progressBar.setValue(100);
+		report.setText(treeBuilder.getReport());
 		cancelButton.setEnabled(false);
 		okButton.setEnabled(true);
 		

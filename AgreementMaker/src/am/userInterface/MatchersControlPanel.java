@@ -111,7 +111,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		thresholdLabel = new JLabel("Threshold");
 		String[] thresholdList = Utility.getPercentStringList();
 		thresholdCombo = new JComboBox(thresholdList);
-		thresholdCombo.setSelectedItem("50%");
+		thresholdCombo.setSelectedItem("60%");
 		//Relations combo
 		Object[] numRelList = Utility.getNumRelList();
 		sRelLabel = new JLabel("Source relations");
@@ -119,7 +119,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		sRelationCombo.setSelectedItem(1);
 		tRelLabel = new JLabel("Target relations");
 		tRelationCombo = new JComboBox(numRelList);
-		tRelationCombo.setSelectedItem(1);
+		tRelationCombo.setSelectedItem(MyTableModel.ANY);
 		defaultValButton = new JButton("Default");
 		defaultValButton.addActionListener(this);
 
@@ -466,7 +466,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				
 				
 				// The dialog will start the matcher in a background thread, show progress as the matcher is running, and show the report at the end.
-				ProgressDialog progress = new ProgressDialog(currentMatcher);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
+				MatcherProgressDialog progress = new MatcherProgressDialog(currentMatcher);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
 				if(!currentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
 					matchersTablePanel.addMatcher(currentMatcher);
 					ui.redisplayCanvas();

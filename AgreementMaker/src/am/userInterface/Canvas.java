@@ -95,18 +95,15 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private Vertex 		displayedNode;		//the last vertex selected //one of the clicked node but is last one clicked in fact is displayed
 	private Vector<VertexLine>		selectedLines; //All global and local nodes to be highlighted, that means that are matched with any selected nodes, this set gets created and calculated only during matchings display
 	//private int 				oldY;							// the previous y location of left clicked node	
+	
+	/*******************VISUALIZATION PARAMETERS**********************************/
+	private boolean disableVisualization;
 	private boolean				smoMode;  		// true or false, depending whether the user is viewing the canvas in Selected Matchings Only mode.
 	private boolean showLabel;
 	private boolean showLocalName;
 	
+	
 	//TO BE DELETED IN THE FUTURE DELETING ALL FUNCTIONS CONTAINING THEM
-	//private int 				noOfLines = 100 ;				//Lines to be displayed, initial value = all = 100 (different from numRelations to be found by the algortithm that are contained in DefnMappingOptions
-	//private int 				displayedSimilarity = 5; //minimum Value of similarity value to be displayed (not calculated, that one is defined in defnOptions)
-	//private boolean		mapByContext;				// boolean indicating the mappingByUser is done by context
-	//private boolean 	mapByDefn;				// boolean indicating the mappingByUser is done by defn Muhamamd
-	//private boolean		mapByDefnShow ;
-	//private boolean 	mapByUser;					// boolean indicating the mappingByUser is done by user
-	//private DefnMappingOptions defnOptions; 
 	Date start = new Date();
 	Date end = new Date();
 	FileOutputStream out; // declare a file output object
@@ -150,21 +147,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		
 		
 		// get whether the user had SMO enabled
+		disableVisualization = ui.getAppPreferences().getDisableVisualization();
 		smoMode = ui.getAppPreferences().getSelectedMatchingsOnly();
 		showLocalName = ui.getAppPreferences().getShowLocalname();
 		showLabel = ui.getAppPreferences().getShowLabel();
-		
-		
-		//NOT NEEDED ANYMORE
-		// initialize mapByUser variable to be false
-		//mapByUser = false;
-		
-		// initialize mapByUser variable to be false
-		//mapByContext = false;
-		
-		// initialize mapByDefnUser variable to be false
-		//mapByDefn = false;  // Muhammad
-		
 		
 		// repaint the canvas
 		//repaint();
@@ -340,6 +326,12 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		localTreeRoot = node;
 	}
 	
+	
+	/** Set the visualization option */
+	public void setDisableVisualization( boolean disable ) {
+		disableVisualization = disable;
+	}
+	
 	/** Change whether we are in "Selected Matchings Only" (SMO) view mode. */
 	public void setSMO ( boolean smoEnabled ) {
 		smoMode = smoEnabled;
@@ -387,15 +379,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		else {
 			setLocalTreeRoot(treeRoot);
 			nodeType = GlobalStaticVariables.TARGETNODE;
-		}
-		
-		//TO BE CHANGED IN THE FUTURE
-		for (Enumeration e = tb.getTreeRoot().preorderEnumeration(); e.hasMoreElements() ;) 
-		{
-			Vertex node = (Vertex) e.nextElement();
-			node.setName(node.toString());
-			node.setNodeType(nodeType);
-			node.setVerticalHorizontal();
 		}
 
 		int totalNodes = tb.getTreeCount();	// number of nodes created in global tree
@@ -459,7 +442,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		// Fill the whole screen (rectangle)
 		graphic.fillRect(0,0,(int)canvasWidth,(int)canvasHeight);
 		
-		if (!core.sourceIsLoaded()  && !core.targetIsLoaded())
+		if ((!core.sourceIsLoaded()  && !core.targetIsLoaded()) || disableVisualization)
 		{
 			graphic.setColor(Colors.dividers);
 			

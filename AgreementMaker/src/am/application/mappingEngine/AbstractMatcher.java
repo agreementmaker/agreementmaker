@@ -11,7 +11,7 @@ import am.application.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.application.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.application.ontology.Node;
 import am.application.ontology.Ontology;
-import am.userInterface.ProgressDialog;
+import am.userInterface.MatcherProgressDialog;
 
 import java.awt.Color;
 
@@ -91,15 +91,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		aligningProperties
 	}
 	
-	protected ProgressDialog progressDialog = null;  // need to keep track of the dialog in order to close it when we're done.  (there could be a better way to do this, but that's for later)
+	protected MatcherProgressDialog progressDialog = null;  // need to keep track of the dialog in order to close it when we're done.  (there could be a better way to do this, but that's for later)
 	protected int stepsTotal; // Used by the ProgressDialog.  This is a rough estimate of the number of steps to be done before we finish the matching.
 	protected int stepsDone;  // Used by the ProgressDialog.  This is how many of the total steps we have completed.
 	
 	protected String report = "";
-	
-	protected ProgressMonitor progressMonitor;
-	
-	//protected boolean aborted = false;
 	
 	/**
 	 * The constructor must be a Nullary Constructor
@@ -876,7 +872,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
 	public int getDefaultMaxTargetRelations() {
 		// TODO Auto-generated method stub
-		return 1;
+		return ANY_INT;
 	}
 	
 	/**This method is invoked at the end of the matching process if the process successed, to give a feedback to the user. Developers can ovveride it to add additional informations.
@@ -987,7 +983,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
      * Need to keep track of the progress dialog we have because right now, there is no button to close it, so we must make it close automatically.
      * @param p
      */
-	public void setProgressDialog( ProgressDialog p ) {
+	public void setProgressDialog( MatcherProgressDialog p ) {
 		progressDialog = p;
 	}
 	

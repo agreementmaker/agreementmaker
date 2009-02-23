@@ -68,17 +68,28 @@ public class OntoTreeBuilder extends TreeBuilder{
 	 */
 	public OntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip) {
 		super(fileName, sourceOrTarget, language, format); 
+		skipOtherNamespaces = skip;
 		treeCount = 0;
-		
+	}
+	
+	
+	
+	/**
+	 * Create a root node for the given concepts and add child nodes for
+	 * the subclasses. Return null for owl:Nothing 
+	 * 
+	 * @param concepts
+	 * @return
+	 */
+	protected void buildTree() {
 		System.out.print("Reading Model...");
 		model = ModelFactory.createOntologyModel( PelletReasonerFactory.THE_SPEC );
 		
 		
 		//TODO: Figure out if the 2nd arg in next fn call should be null or someother URI
-		model.read( "file:"+fileName, null, ontology.getFormat() );
+		model.read( "file:"+ontology.getFilename(), null, ontology.getFormat() );
 		System.out.println("done");
 		
-		skipOtherNamespaces = skip;
 		if(skipOtherNamespaces) { //we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 			try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
 				ns = model.getNsPrefixMap().get("").toString();
@@ -98,28 +109,17 @@ public class OntoTreeBuilder extends TreeBuilder{
 		System.out.print("Classifying...");
 		((PelletInfGraph) model.getGraph()).getKB().classify();
 		//reasoner.classify();
-		System.out.println("done");
 
 		ontology.setModel(model);
-		buildTree();
-		
-	}
-	
-	/**
-	 * Create a root node for the given concepts and add child nodes for
-	 * the subclasses. Return null for owl:Nothing 
-	 * 
-	 * @param concepts
-	 * @return
-	 */
-	void buildTree() {
 		// Use OntClass for convenience
+		
         owlThing = model.getOntClass( OWL.Thing.getURI() );
         OntClass owlNothing = model.getOntClass( OWL.Nothing.getURI() );
-
+       
         // Find all unsatisfiable concepts, i.e classes equivalent
         // to owl:Nothing. we are not considering this nodes for the alignment so we are not keeping this
         unsatConcepts = collect( owlNothing.listEquivalentClasses() );
+        
         // create a tree starting with owl:Thing node as the root
         //if a node has two fathers (is possible in OWL hierarchy) it would be processed twice
         //but we don't want to add two times the node to the hierarchy, so processedSubs won't be processed again.
@@ -127,12 +127,15 @@ public class OntoTreeBuilder extends TreeBuilder{
         
 
         //The root of the tree is a fake vertex node, just containing the name of the ontology,
-        treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(), model );
+        treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(), model, ontology.getSourceOrTarget() );
         treeCount++;
         //the root has 2 fake sons Classes and Properties
-        Vertex classRoot = createClassTree(owlThing);
+        System.out.println("Building class hierarchy");
+        Vertex classRoot = createClassTree(owlThing, true);
+        System.out.println("after the first create class tree");
         treeRoot.add(classRoot);
         ontology.setClassesTree( classRoot);
+        System.out.println("Building Property hierarchy");
         Vertex propertyRoot = createPropertyTree();
         treeRoot.add(propertyRoot);
         ontology.setPropertiesTree( propertyRoot);
@@ -158,15 +161,16 @@ public class OntoTreeBuilder extends TreeBuilder{
      * @param concepts
      * @return
      */
-    public Vertex createClassTree( OntClass cls ) {
+    public Vertex createClassTree( OntClass cls, boolean isFirst) {
+    	
+    	
     	if( unsatConcepts.contains( cls ) ) {
     		return null;
     	}
-            
     	Vertex root;
-    	if(cls.equals(owlThing))//fake vertex with written "OWL Class hierarchy"
-    		root = new Vertex(CLASSROOTNAME, CLASSROOTNAME, model);
-    	else root = createNodeAndVertex(cls);//normal vertex and node creation
+    	if(isFirst)//fake vertex with written "OWL Class hierarchy"
+    		root = new Vertex(CLASSROOTNAME, CLASSROOTNAME, model, ontology.getSourceOrTarget());
+    	else root = createNodeAndVertex(cls, true, ontology.getSourceOrTarget());//normal vertex and node creation of a class concept (true)
 		treeCount++;
 		
        // If one of the sons of this class is a classes with different namespace
@@ -196,7 +200,7 @@ public class OntoTreeBuilder extends TreeBuilder{
              	   iterators.add(moreSubs);
              	   continue;
                 }
-                Vertex vert = createClassTree(sub);
+                Vertex vert = createClassTree(sub, false);
                 if( vert != null ) {
                     root.add( vert );
             	}
@@ -217,25 +221,25 @@ public class OntoTreeBuilder extends TreeBuilder{
 	 * @param entity
 	 * @return
 	 */
-	public Vertex createNodeAndVertex(OntResource entity) {
+	public Vertex createNodeAndVertex(OntResource entity, boolean isClass,int sourceOrTarget) {
 		 
 		 Node node;
          if( processedSubs.containsKey( entity ) ) {//the node has been already created, but we need only to create a new vertex;
          	node = processedSubs.get(entity); //reuse of the previous Node information for this class, but we need a new Vertex
          }
          else {
-         	if(entity.canAs(OntProperty.class)) {//depending if it's a class or property, ATTENTION THERE IS A JENA BUG AVOIDED HERE, ONTPROPERTY.CANAS(ONTCLASS.CLASS) RETURN TRUE, IS IMPORTANT TO CHECK CANAS WITH PROPERTY IN THE IF 
+         	if(isClass) {
+                node = new Node(uniqueKey,entity, Node.OWLCLASS); //new node with a new key, with the link to the graphical Vertex representation
+                ontology.getClassesList().add(node);
+         	}
+         	else {//it has to be a prop
          		node = new Node(uniqueKey,entity, Node.OWLPROPERTY); //new node with a new key, with the link to the graphical Vertex representation
                 ontology.getPropertiesList().add(node);
-         	}
-         	else {//it has to be a class
-         		node = new Node(uniqueKey,entity, Node.OWLCLASS); //new node with a new key, with the link to the graphical Vertex representation
-                ontology.getClassesList().add(node);
          	}
             processedSubs.put(entity, node);
             uniqueKey++;  // uniqueKey starts from 0, then gets incremented.
          }
-         Vertex vert = new Vertex(node.getLocalName(), entity.getURI(), model);
+         Vertex vert = new Vertex(node.getLocalName(), entity.getURI(), model, sourceOrTarget);
          node.addVertex(vert);
          vert.setNode(node);
 		 return vert;
@@ -244,7 +248,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 
     public Vertex createPropertyTree() {
     	
-    	Vertex root = new Vertex(PROPERTYROOTNAME, PROPERTYROOTNAME, model);
+    	Vertex root = new Vertex(PROPERTYROOTNAME, PROPERTYROOTNAME, model, ontology.getSourceOrTarget());
     	treeCount++;
         uniqueKey = 0; //restart the key because properties are kept in a differnt structure with different index
         processedSubs = new HashMap();
@@ -287,7 +291,7 @@ public class OntoTreeBuilder extends TreeBuilder{
     }
     
     public Vertex createPropertySubTree( OntProperty p ) {
-    	Vertex root = createNodeAndVertex(p);
+    	Vertex root = createNodeAndVertex(p, false, ontology.getSourceOrTarget());
 		treeCount++;
 		
        // If one of the sons of this prop is a prop with different namespace

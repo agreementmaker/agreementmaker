@@ -45,16 +45,10 @@ public class XmlTreeBuilder extends TreeBuilder
 	public XmlTreeBuilder(String xmlFilename, int sourceOrTarget, String language, String format)
 	{
 		super(xmlFilename, sourceOrTarget, language, format);
-		// create a new tree root
-		treeRoot = new Vertex(ontology.getTitle());
-		Vertex ClassRoot = new Vertex(XMLHIERARCHY);
-		treeRoot.add(ClassRoot);
-		treeCount=2;
-		ontology.setClassesTree( ClassRoot);
-		processedNodes = new HashMap<String, Node>();
+
+		
 		// read an XML file and generate a DOM document object from it
-		if(parse(xmlFilename))
-			buildTree(ClassRoot, (org.w3c.dom.Node)documentRoot);
+
 	}
 	/**
 	 * This function builds the tree and returns the number of vertices created.
@@ -63,8 +57,23 @@ public class XmlTreeBuilder extends TreeBuilder
 	 * @param  document				document root
 	 * @return treeCount			number of vertices created
 	 */
-	private int buildTree(Vertex currentTreeNode, org.w3c.dom.Node document)
+	protected void buildTree()
 	{
+		// create a new tree root
+		treeRoot = new Vertex(ontology.getTitle(), ontology.getSourceOrTarget());
+		Vertex ClassRoot = new Vertex(XMLHIERARCHY, ontology.getSourceOrTarget());
+		
+
+		treeCount=2;
+		processedNodes = new HashMap<String, Node>();
+		if(parse(ontology.getFilename())){
+			createTree(ClassRoot, documentRoot);
+		}
+		treeRoot.add(ClassRoot);
+		ontology.setClassesTree( ClassRoot);
+	}
+	
+	protected void createTree(Vertex currentTreeNode, org.w3c.dom.Node document){
 		// get the node list from the document
 		NodeList nodeList = getNodeList(document);
 		
@@ -83,7 +92,7 @@ public class XmlTreeBuilder extends TreeBuilder
 				String label = getAttr(currentNode, "label");
 				String seeAlso = getAttr(currentNode,"seeAlso");
 				String isDefBy = getAttr(currentNode,"isDefinedBy");
-				Vertex childNode = new Vertex(name);
+				Vertex childNode = new Vertex(name,ontology.getSourceOrTarget());
 				childNode.setDesc(label);
 				//We have to check if it is a new node or a previous processed node in a different position
 				Node node = processedNodes.get(name);
@@ -105,11 +114,9 @@ public class XmlTreeBuilder extends TreeBuilder
 				// add the node created to the previous node
 				currentTreeNode.add(childNode);
 				// recursively create the whole tree
-				buildTree(childNode, nodeList.item(i));
+				createTree(childNode, nodeList.item(i));
 			} // end of for loop
 		} // end of if nodeList ! = null
-
-		return getTreeCount();
 	}
 
 	

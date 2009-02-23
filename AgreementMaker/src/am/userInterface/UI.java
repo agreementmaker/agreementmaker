@@ -193,7 +193,7 @@ public class UI {
 	public void openFile( String filename, int ontoType, int syntax, int language, boolean skip) {
 		try{
 			JPanel jPanel = null;
-			
+			System.out.println("opening file");
 			if(language == GlobalStaticVariables.RDFSFILE)//RDFS
 				jPanel = new VertexDescriptionPane(GlobalStaticVariables.RDFSFILE);//takes care of fields for XML files as well
 			else if(language == GlobalStaticVariables.ONTFILE)//OWL
@@ -203,20 +203,28 @@ public class UI {
 		    jPanel.setMinimumSize(new Dimension(200,480));
 			getUISplitPane().setRightComponent(jPanel);
 			setDescriptionPanel(jPanel);
-			
 			//This function manage the whole process of loading, parsing the ontology and building data structures: Ontology to be set in the Core and Tree and to be set in the canvas
 			TreeBuilder t = TreeBuilder.buildTreeBuilder(filename, ontoType, language, syntax, skip);
-			//Set ontology in the Core
-			Ontology ont = t.getOntology();
-			if(ontoType == GlobalStaticVariables.SOURCENODE) {
-				Core.getInstance().setSourceOntology(ont);
-			}
-			else Core.getInstance().setTargetOntology(ont);
-			//Set the tree in the canvas
-			getCanvas().setTree(t);
-			if(Core.getInstance().ontologiesLoaded()) {
-				//Ogni volta che ho caricato un ontologia e le ho entrambe, devo resettare o settare se � la prima volta, tutto lo schema dei matchings
-				matcherControlPanel.resetMatchings();
+			
+			//the treebuilder is initialized now we have to execute it in a separate thread.
+			// The dialog will start the treebuilder in a background thread, 
+			OntologyLoadingProgressDialog progress = new OntologyLoadingProgressDialog(t);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
+			if(!t.isCancelled()) {
+				//Set ontology in the Core
+				Ontology ont = t.getOntology();
+				if(ontoType == GlobalStaticVariables.SOURCENODE) {
+					Core.getInstance().setSourceOntology(ont);
+				}
+				else Core.getInstance().setTargetOntology(ont);
+				//Set the tree in the canvas
+				System.out.println("Displaying the hierarchies in the canvas");
+				getCanvas().setTree(t);
+				if(Core.getInstance().ontologiesLoaded()) {
+					//Ogni volta che ho caricato un ontologia e le ho entrambe, devo resettare o settare se � la prima volta, tutto lo schema dei matchings
+					System.out.println("Init matchings table");
+					matcherControlPanel.resetMatchings();
+				}
+				System.out.println("Ontologies loaded succesfully");
 			}
 		}catch(Exception ex){
 			JOptionPane.showConfirmDialog(null,"Can not parse the file '" + filename + "'. Please check the policy.","Parser Error",JOptionPane.PLAIN_MESSAGE);

@@ -44,12 +44,16 @@ public class AppPreferences {
 	/** key for storing the last name of the file used to save the output of the evaluation with the reference file in the Evaluate Reference function */
 	private static final String 	PREF_LASTNAMEOUTPUT = "pref_lastnameoutput";		
 	
+	/** key for storying the VisualizationDisabledMode = When true hierarchies and mappings are not displayed in the canvas */
+	private static final String		PREF_DISABLEVISUALIZATION = "PREF_DISABLEVISUALIZATION";
+	
 	/** key for storing if the user is viewing the canvas in "selected matchings only" mode. */
 	private static final String		PREF_SELECTEDMATCHINGSONLY = "pref_selectedmatchingsonly";
 	
 	/** key for storing if the user is viewing labels and or localnames in the canvas. */
 	private static final String		PREF_SHOWLOCALNAME = "pref_SHOWLOCALNAME";
 	private static final String		PREF_SHOWLABEL = "pref_SHOWLABEL";
+	
 	/**
 	 * Constructor
 	 */
@@ -466,6 +470,17 @@ public class AppPreferences {
 	
 	public boolean getRecentTargetSkipNamespace( int position) {
 		return appPrefs.getBoolean(PREF_RECENTTARGET + "skip" + position, false);
+	}
+	
+	/**
+	 * Support for "Selected Matchings Only" view mode
+	 */
+	public boolean getDisableVisualization() {
+		return appPrefs.getBoolean(PREF_DISABLEVISUALIZATION, false);
+	}
+	
+	public void saveDisableVisualization(boolean value) {
+		appPrefs.putBoolean(PREF_DISABLEVISUALIZATION, value);
 	}
 	
 	

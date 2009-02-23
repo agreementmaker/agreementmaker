@@ -67,8 +67,7 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 	  * Constructor for objects of class Vertex
 	  * @param name 	name of the vertex
 	  */
-	public Vertex(String name)
-	{
+	public Vertex(String name, int sourceOrTarget)	{
 		
 		super(name);
 		// initialize instance variables
@@ -89,12 +88,12 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 		setArcHeight(-1);
 		setIsVisible(true);
 		isSelected = false;
-		setNodeType(-1);
+		setNodeType(sourceOrTarget);
 		setOntNode(GlobalStaticVariables.XMLFILE);
 		setShouldCollapse(false);
 		//vertexDescription = (VertexDescriptionPane)jDescriptionPanel;
 	}
-	public Vertex(String name, String uri, OntModel m) {
+	public Vertex(String name, String uri, OntModel m,int sourceOrTarget) {
 		
 		super(name);
 		
@@ -116,7 +115,7 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 		setArcHeight(-1);
 		setIsVisible(true);
 		isSelected = false;
-		setNodeType(-1);
+		setNodeType(sourceOrTarget);
 		setOntNode(GlobalStaticVariables.ONTFILE);
 		setShouldCollapse(false);
 		//vertexDescription = (VertexDescriptionPane)jDescriptionPanel;
@@ -160,12 +159,7 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 	{
 		return height;
 	}
-	public String getHorizontalDescs(){
-		return siblingsDesc;
-	}
-	public String getHorizontalNames(){
-		return siblingsName;
-	}
+
 	/*******************************************************************************************
 	 /**
 	  * Accessor method which returns key
@@ -262,12 +256,6 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 	public boolean getShouldCollapse()
 	{
 		return shouldCollapse;
-	}
-	public String getVerticalDescs(){
-		return parentsDesc;
-	}
-	public String getVerticalNames(){
-		return parentsName;
 	}
 	/*******************************************************************************************
 	 /**
@@ -485,71 +473,7 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 		shouldCollapse = collapse;
 	}
 	/********************************************************************************************
-	 /**
-	  * Sets the parents and siblings variables
-	  * 
-	  * @param  num  unique identifier
-	  */
-	public void setVerticalHorizontal()
-	{
-		
-		TreeNode[] pathToRoot = this.getPath();
-		String[] parents;
-		String[] descs;
-		parents = new String[pathToRoot.length];
-		descs = new String[pathToRoot.length];
-		for(int i=pathToRoot.length-1; i>1; i--){ // from this node to the root, the node itself name is not added, and also the ontology name and the word "Source/Target ontology" are not considered
-			parents[i] = ((Vertex) pathToRoot[i]).getName();
-			descs[i] = ((Vertex) pathToRoot[i]).getDesc();
-			
-			if(parents[i] != null && !getName().equals(parents[i])){
-				parentsName += parents[i] + " | ";
-				parentsDesc += descs[i] + " | ";
-				//JOptionPane.showMessageDialog(null, "Node name: " + getName() + "\n parentsName: " + parentsName);
-			}
-		}
-		
-//		JOptionPane.showMessageDialog(null,parentsName + " \nDISC: " + parentsDesc);
-//		WGS
-		Vertex parent = (Vertex) getParent();
-		Vertex temp;
-		if(parent != null){
-			if(parent.getChildCount() != 0){
-				
-				for (Enumeration e = parent.children() ; e.hasMoreElements(); ) {
-					temp = (Vertex)e.nextElement();
-					if(temp.getName() != getName()){
-						siblingsName += temp.getName() + " | ";
-						siblingsDesc += temp.getDesc() + " | ";
-					}
-				}
-				
-				
-			}
-		}
-		//JOptionPane.showMessageDialog(null,siblingsName + " \nDISC: " + siblingsDesc);
-		
-		/*
-		 parentsNameList = new ArrayList();
-		 parentsDescList = new ArrayList();
-		 
-		 
-		 Vertex temp = this;
-		 do{
-		 if(temp.getParent() == null ) break;
-		 parentsNameList.add( (String) ((Vertex)(temp.getParent())).getName() );
-		 parentsDescList.add( (String) ((Vertex)(temp.getParent())).getDesc() );
-		 temp = (Vertex) temp.getParent();
-		 } while (temp != null);
-		 
-		 for(int i=0; i<parentsNameList.size();i++){
-		 parentsName += (String)parentsNameList.get(i) +" ";
-		 parentsDesc += (String)parentsDescList.get(i) +" ";
-		 }
-		 
-		 JOptionPane.showMessageDialog(null,parentsName + " \nDISC: " + parentsDesc);
-		 */
-	}
+	
 	/********************************************************************************************
 	 /**
 	  * Modifier method which sets width

@@ -98,14 +98,18 @@ public class Node {
 		this.type = type;
 		if(r.canAs(OntResource.class)) {
 			OntResource or = (OntResource)r.as(OntResource.class);
-			label = or.getLabel(language);//null because i don't know if it should be "EN" or "FR"
-			if(label == null)
-				label = "";
+			label = or.getLabel(language);
+			if(label == null || label == "")
+				label = or.getLabel(null);
+				if(label == null)
+					label = "";
 			//COmments
-			ExtendedIterator it = or.listComments(language);
 			comment = "";
 			Literal l = null;
 			OntResourceImpl ol = null;
+			ExtendedIterator it = or.listComments(language);
+			if(!it.hasNext())
+				it = or.listComments(null);
 			while(it.hasNext()) {
 				l = (Literal)it.next();
 				if(l!=null) comment+= l+" ";
