@@ -119,10 +119,12 @@ public class Ontology {
 		int depth = tree.getDepth()-1;
 		int roots = conv.getRoots().size();
 		int leaves = conv.getLeaves().size();
-		JoslynStructuralQuality q = new JoslynStructuralQuality();
+		JoslynStructuralQuality q = new JoslynStructuralQuality(false);
 		double LCdiameter = q.getLCDiameter(list, conv);
+		JoslynStructuralQuality q2 = new JoslynStructuralQuality(true);
+		double UCdiameter = q2.getUCDiameter(list, conv);
 		
-		return concepts+"\t"+depth+"\t"+LCdiameter+"\t"+roots+"\t"+leaves+"\n";
+		return concepts+"\t"+depth+"\t"+UCdiameter+"\t"+LCdiameter+"\t"+roots+"\t"+leaves+"\n";
 	}
 	
 	//used in UImenu.ontologyDetails()

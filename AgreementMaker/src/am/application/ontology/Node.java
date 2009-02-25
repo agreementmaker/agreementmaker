@@ -2,6 +2,7 @@ package am.application.ontology;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 
 
@@ -337,9 +338,15 @@ public class Node {
 	}
 	
 	public boolean isLeaf() {
-		boolean result = false;
 		Vertex v = getVertex();
 		if(v.isLeaf())
+			return true;
+		return false;
+	}
+	
+	public boolean isRoot() {
+		Vertex v = getVertex();
+		if(v.getLevel() == TreeToDagConverter.REALROOTSLEVEL)
 			return true;
 		return false;
 	}
@@ -349,12 +356,39 @@ public class Node {
 		Vertex v = getVertex();
 		if(!v.isLeaf()) {
 			Enumeration c = v.children();
+			Vertex child;
 			while(c.hasMoreElements()) {
-				Vertex child = (Vertex)c.nextElement();
-				if(!child.isFake()) {
-					result.add(child.getNode());
+				//no need to check duplicates because the same vertex can't have two duplicates as sons
+				child = (Vertex)c.nextElement();
+				result.add(child.getNode());
+			}
+		}
+		return result;
+	}
+	
+	public ArrayList<Node> getParents(){
+		ArrayList<Node> result = new ArrayList<Node>();
+		if(!isRoot()){
+			ArrayList<Vertex> list = getVertexList();
+			if(list.size() == 1) //I'm not a duplicate therefore I just have one original father
+				result.add(((Vertex)list.get(0).getParent()).getNode());
+			else{
+				//Being a duplicate means having more parents OR being the son of an ancestor with more fathers
+				Vertex v;
+				Vertex parent;
+				Node parentNode;
+				HashSet<Node> processed = new HashSet<Node>();
+				for(int i = 0; i < list.size(); i++){
+					v = list.get(i);
+					parent = (Vertex)v.getParent();
+					parentNode = parent.getNode();
+					if(!processed.contains(parentNode)){
+						result.add(parentNode);
+						processed.add(parentNode);
+					}
 				}
 			}
+			
 		}
 		return result;
 	}

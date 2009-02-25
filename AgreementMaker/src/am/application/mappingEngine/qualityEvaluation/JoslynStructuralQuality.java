@@ -29,6 +29,8 @@ import am.userInterface.vertex.Vertex;
 public class JoslynStructuralQuality {
 	
 	private AbstractMatcher matcher;
+	/**True if the upper distance is used, false for the lower distance**/
+	private boolean useUpperDistance; //used only of the distance preservation measure
 	
 	public final static int HIGHER = 1;
 	public final static int NONCOMPARABLE = 0;
@@ -43,15 +45,17 @@ public class JoslynStructuralQuality {
 
 	
 	//TEMP STRUCTURES USED BY RECURSIVE METHODS
-	int[] tempDescendants;
+	int[] tempRecursiveNum;
 	int[][] tempOrder;
 	
-	public JoslynStructuralQuality(AbstractMatcher m) {
+	public JoslynStructuralQuality(AbstractMatcher m, boolean upper) {
 		matcher = m;
+		useUpperDistance = upper;
 	}
 	
 	//used to get only the diameter
-	public JoslynStructuralQuality() {
+	public JoslynStructuralQuality(boolean upper) {
+		useUpperDistance = upper;
 	}
 	
 	
@@ -301,7 +305,8 @@ public class JoslynStructuralQuality {
 			Vertex sourceTree, Vertex targetTree) {
 		
 		//SOURCE ONTOLOGY STRUCTURES
-		//an array num of descendants of each node. sourceDescendants[node.getIndex()] = num of  descendants of node
+		//LOWER DISTANCE: an array num of descendants of each node. sourceDescendants[node.getIndex()] = num of  descendants of node
+		//UPPER DISTANCE: an array num of ancestors of each node. sourceDescendants[node.getIndex()] = num of  ancestors of node
 		int[] sourceDescendants; 
 		//the normalized distance between each pair of nodes
 		double[][] sourceDistances;
@@ -314,21 +319,34 @@ public class JoslynStructuralQuality {
 		TreeToDagConverter sourceDag = new TreeToDagConverter(sourceTree);
 		TreeToDagConverter targetDag = new TreeToDagConverter(targetTree);
 		
+		if(useUpperDistance){
+			sourceDescendants = createAncestorsArray(sourceList,sourceDag );
+			targetDescendants = createAncestorsArray(targetList,targetDag );
+		}
+		else{
+			sourceDescendants = createDescendantsArray(sourceList,sourceDag );
+			targetDescendants = createDescendantsArray(targetList,targetDag );
+		}
 		//create the array for target and source with the numver of descendants of each node
-		sourceDescendants = createDescendantsArray(sourceList,sourceDag );
 		/* DEBUG
 		System.out.println("\nsoruce descendants");
 		for(int i = 0; i < sourceDescendants.length; i++) {
 			System.out.println(sourceList.get(i).getLocalName()+" "+sourceDescendants[i]);
 		}
 		*/
-		targetDescendants = createDescendantsArray(targetList,targetDag );
+		
 		
 		
 		//I need to calculate which is the distance between each pair of node
-		sourceDistances = createDistances(sourceList, sourceDescendants);
+		if(useUpperDistance){
+			sourceDistances = createLCDistances(sourceList, sourceDescendants);
+			targetDistances = createLCDistances(targetList, targetDescendants);
+		}
+		else{
+			sourceDistances = createUCDistances(sourceList, sourceDescendants);
+			targetDistances = createUCDistances(targetList, targetDescendants);
+		}
 		sourceDistances = normalizeDistances(sourceList, sourceDistances);
-		targetDistances = createDistances(targetList, targetDescendants);
 		targetDistances = normalizeDistances(targetList, targetDistances);
 		
 		//calculate the link distance discrepancy, look at the example on the paper to understand it
@@ -437,7 +455,7 @@ public class JoslynStructuralQuality {
 	 * The max commonDescendats is the commonDescendants between a and b, which has highest num of descendants itself
 	 * The highest commonDescendants are all at the same level in the hierarchy. I was thinking of using the total num of common descendants but is not exatly the same.
 	 */
-	private double[][] createDistances(ArrayList<Node> nodesList, int[] descendants) {
+	private double[][] createLCDistances(ArrayList<Node> nodesList, int[] descendants) {
 		double[][] distances = new double[nodesList.size()][nodesList.size()];
 		
 		for(int i = 0; i < nodesList.size(); i++) {
@@ -491,6 +509,65 @@ public class JoslynStructuralQuality {
 		return distances;
 	}
 	
+	/**The formula is d(a,b) = numOfAncestors(a) + numOfancestors(b) - 2 numOfAncestors(minCommonAncestors(a,b))
+	 * then it has to be normalized dividing it for the diameter that is the max distance
+	 * The max commonAncestors is the commonAncestors between a and b, which has highest num of ancestors
+	 * The possible highest commonAncestors are all at the same level in the hierarchy, that is the lowest level of the ancestors.
+	 */
+	private double[][] createUCDistances(ArrayList<Node> nodesList, int[] ancestors) {
+		double[][] distances = new double[nodesList.size()][nodesList.size()];
+		
+		for(int i = 0; i < nodesList.size(); i++) {
+			for(int j = 0; j < nodesList.size(); j++) {
+				
+				int ancestorsA = ancestors[i];
+				int ancestorsB = ancestors[j];
+				int maxCommonAncestors = 0;
+				ArrayList<Node> commonAncestors = TreeToDagConverter.getOrderedCommonAncestors(nodesList.get(i), nodesList.get(j));
+				if(commonAncestors.size() > 0) {
+					//I need to find which is the common with highest num of anc
+					//so it can only be one of the common anc in the lowest level
+					//since the commonAnc list is ordered, i just need stop scanning when i finish to scan the lowest level that is also the first
+					//remember that the level goes from 0, the root is 0 for example, so the highest level is the lowest number in real
+					int lowestLevel = commonAncestors.get(0).getLevel();
+					for(int k = 0; k < commonAncestors.size(); k++) {
+						Node common = commonAncestors.get(k);
+						if(common.getLevel() != lowestLevel) {
+							//i've finished the highest level so it's useless to look in the lower descendants
+							break;
+						}
+						else {
+							//find the max
+							int toBeCompared = ancestors[common.getIndex()];
+							if(maxCommonAncestors < toBeCompared) {
+								maxCommonAncestors = toBeCompared;
+							}
+						}
+					}
+				}
+				
+				//finally the distance formula
+				distances[i][j] = (double)(ancestorsA + ancestorsB - ( 2 * maxCommonAncestors));
+				//System.out.println(nodesList.get(i).getLocalName()+" "+nodesList.get(j).getLocalName()+" "+distances[i][j]);
+			}
+		}
+		
+		/*Moved into its own method normalizeDistances
+		//the diameter is the max distance
+		double diameter = Utility.getMaxOfMatrix(distances);
+		System.out.println("diameter: "+diameter);
+		
+		//normalize distances
+		for(int i = 0; i < nodesList.size(); i++) {
+			for(int j = 0; j < nodesList.size(); j++) {
+				distances[i][j] /= diameter;
+				//System.out.println(nodesList.get(i).getLocalName()+" "+nodesList.get(j).getLocalName()+" "+distances[i][j]);
+			}
+		}
+		*/
+		return distances;
+	}
+	
 	private double[][] normalizeDistances(ArrayList<Node> nodesList, double[][] dist) {
 		double[][] distances = new double[nodesList.size()][nodesList.size()];
 		//the diameter is the max distance
@@ -507,19 +584,68 @@ public class JoslynStructuralQuality {
 		}
 		return distances;
 	}
-
+	
+	/**
+	 * Create the array containing the num of descendants of each node. In order to do that it invokes a recursive method
+	 * @param sourceList
+	 * @param sourceTree
+	 * @return
+	 */
 	private int[] createDescendantsArray(ArrayList<Node> sourceList, TreeToDagConverter sourceTree) {
-		//for each node we will have a list of descendants
-		tempDescendants = new int[sourceList.size()]; //to be used only by recursive descendants
+		//LOWER DISTANCE: for each node we will have the num of descendants
+		tempRecursiveNum = new int[sourceList.size()]; //to be used only by recursive descendants
 		ArrayList<Node> roots = sourceTree.getRoots();
 		Iterator<Node> it = roots.iterator();
 		while(it.hasNext()) {
 			Node n = it.next();
 			recursiveDescendantsCount(n, sourceTree);
 		}
-		int[] result = tempDescendants;
-		tempDescendants = null;
+		int[] result = tempRecursiveNum;
+		tempRecursiveNum = null;
 		return result;
+	}
+	
+	/**
+	 * Create the array containing the num of ancestors of each node. In order to do that it invokes a recursive method
+	 * @param sourceList
+	 * @param sourceTree
+	 * @return
+	 */
+	private int[] createAncestorsArray(ArrayList<Node> sourceList, TreeToDagConverter sourceTree) {
+		//UPPER DISTANCE: for each node we will have the num of ancestors
+		tempRecursiveNum = new int[sourceList.size()]; //to be used only by recursive method
+		ArrayList<Node> leaves = sourceTree.getLeaves();
+		Iterator<Node> it = leaves.iterator();
+		while(it.hasNext()) {
+			Node n = it.next();
+			recursiveAncestorsCount(n, sourceTree);
+		}
+		int[] result = tempRecursiveNum;
+		tempRecursiveNum = null;
+		return result;
+	}
+
+	
+	private void recursiveAncestorsCount(Node n,  TreeToDagConverter tree) {
+		//I'm one of my ancestors by definition
+		int val = 1;
+		ArrayList<Node> parents = n.getParents();
+		//if(n.getLocalName().equalsIgnoreCase("PersonList"))
+			//System.out.println(parents.size());
+		if(parents.size() != 0){
+			Iterator<Node> it = parents.iterator();
+			Node parent;
+			while(it.hasNext()) {
+				//my number of ancestors: me + the ancestors of my parents
+				parent = it.next();
+				if(tempRecursiveNum[parent.getIndex()] == 0) {// if a node is the father of two nodes then it could be already being processed so we don't need to process it again
+					recursiveAncestorsCount(parent, tree); //this set the number of descendants of my son
+				}
+				val += tempRecursiveNum[parent.getIndex()];
+			}
+		}
+
+		tempRecursiveNum[n.getIndex()] = val;
 	}
 
 	private void recursiveDescendantsCount(Node n,  TreeToDagConverter tree) {
@@ -531,14 +657,13 @@ public class JoslynStructuralQuality {
 			while(it.hasNext()) {
 				//my number of descendants: me + the descendants of my son
 				Node child = it.next();
-				if(tempDescendants[child.getIndex()] == 0) {// if a node is the child of two node then it could be already being processes so we don't need to process it again
+				if(tempRecursiveNum[child.getIndex()] == 0) {// if a node is the child of two node then it could be already being processes so we don't need to process it again
 					recursiveDescendantsCount(child, tree); //this set the number of descendants of my son
 				}
-				val += tempDescendants[child.getIndex()];
+				val += tempRecursiveNum[child.getIndex()];
 			}
 		}
-		tempDescendants[n.getIndex()] = val;
-		
+		tempRecursiveNum[n.getIndex()] = val;
 	}
 	
 	public double getLCDiameter(ArrayList<Node> list,
@@ -562,7 +687,32 @@ public class JoslynStructuralQuality {
 		
 		
 		//I need to calculate which is the distance between each pair of node
-		distances = createDistances(list, descendants);
+		distances = createLCDistances(list, descendants);
+		return Utility.getMaxOfMatrix(distances);
+		
+	}
+	
+	public double getUCDiameter(ArrayList<Node> list, TreeToDagConverter dag) {
+
+		//an array num of descendants of each node. sourceDescendants[node.getIndex()] = num of  descendants of node
+		int[] ancestors; 
+		//the normalized distance between each pair of nodes
+		double[][] distances;
+		
+		
+		
+		//create the array for target and source with the number of descendants of each node
+		ancestors = createAncestorsArray(list,dag );
+		/* DEBUG
+		System.out.println("\n ancestors");
+		for(int i = 0; i < ancestors.length; i++) {
+			System.out.println(list.get(i).getLocalName()+" "+ancestors[i]);
+		}
+		*/
+		
+		
+		//I need to calculate which is the distance between each pair of node
+		distances = createUCDistances(list, ancestors);
 		return Utility.getMaxOfMatrix(distances);
 		
 	}

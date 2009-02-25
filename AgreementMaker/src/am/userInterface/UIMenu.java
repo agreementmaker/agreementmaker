@@ -245,7 +245,7 @@ public class UIMenu implements ActionListener {
 			targetPropString = targetO.getPropDetails();
 		}
 		String report = "Ontology details\n\n";
-		report+= "Hierarchies             \t#concepts\tdepth\tLC-diameter\t#roots\t#leaves\n";
+		report+= "Hierarchies             \t#concepts\tdepth\tUC-diameter\tLC-diameter\t#roots\t#leaves\n";
 		report+= "Source Classes:\t"+sourceClassString;
 		report+= "Target Classes:\t"+targetClassString;
 		report+= "Source Properties:\t"+sourcePropString;
