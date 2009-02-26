@@ -74,9 +74,9 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 		
 		String[] percents = Utility.getPercentStringList();
 		localnameCombo = new JComboBox(percents);
-		localnameCombo.setSelectedItem("70%");
+		localnameCombo.setSelectedItem("0%");
 		labelCombo = new JComboBox(percents);
-		labelCombo.setSelectedItem("0%");
+		labelCombo.setSelectedItem("70%");
 		commentCombo = new JComboBox(percents);
 		commentCombo.setSelectedItem("20%");
 		seeAlsoCombo = new JComboBox(percents);

@@ -14,8 +14,8 @@ public class ParametricStringParameters extends AbstractParameters {
 	
 	public String measure = EDIT;
 	
-	public double localWeight = 0.7;
-	public double labelWeight = 0;
+	public double localWeight = 0;
+	public double labelWeight = 0.7;
 	public double commentWeight = 0.2;
 	public double seeAlsoWeight = 0.05;
 	public double isDefinedByWeight = 0.05;

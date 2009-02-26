@@ -339,12 +339,12 @@ public class JoslynStructuralQuality {
 		
 		//I need to calculate which is the distance between each pair of node
 		if(useUpperDistance){
-			sourceDistances = createLCDistances(sourceList, sourceDescendants);
-			targetDistances = createLCDistances(targetList, targetDescendants);
-		}
-		else{
 			sourceDistances = createUCDistances(sourceList, sourceDescendants);
 			targetDistances = createUCDistances(targetList, targetDescendants);
+		}
+		else{
+			sourceDistances = createLCDistances(sourceList, sourceDescendants);
+			targetDistances = createLCDistances(targetList, targetDescendants);
 		}
 		sourceDistances = normalizeDistances(sourceList, sourceDistances);
 		targetDistances = normalizeDistances(targetList, targetDistances);
@@ -438,7 +438,7 @@ public class JoslynStructuralQuality {
 						System.out.println("sources: "+first.getEntity1().getLocalName()+" "+second.getEntity1().getLocalName()+" "+sourceDistance);
 						System.out.println("target: "+first.getEntity2().getLocalName()+" "+second.getEntity2().getLocalName()+" "+targetDistance);
 						System.out.println("discrepancy: "+result[i][j]);
-						*/
+				*/		
 			/*	
 			}
 				}
@@ -489,7 +489,8 @@ public class JoslynStructuralQuality {
 				
 				//finally the distance formula
 				distances[i][j] = (double)(descendantsA + descendantsB - ( 2 * maxCommonDescendants));
-				//System.out.println(nodesList.get(i).getLocalName()+" "+nodesList.get(j).getLocalName()+" "+distances[i][j]);
+				//if(nodesList.get(i).getLocalName().equalsIgnoreCase("school"))
+				//System.out.println(nodesList.get(i).getLocalName()+" "+nodesList.get(j).getLocalName()+" dist: "+distances[i][j]+" descA: "+descendantsA+" B: "+descendantsB+" AB: "+maxCommonDescendants);
 			}
 		}
 		
@@ -666,53 +667,47 @@ public class JoslynStructuralQuality {
 		tempRecursiveNum[n.getIndex()] = val;
 	}
 	
-	public double getLCDiameter(ArrayList<Node> list,
+	public double getDiameter(ArrayList<Node> list,
 			TreeToDagConverter dag) {
 
-		//an array num of descendants of each node. sourceDescendants[node.getIndex()] = num of  descendants of node
-		int[] descendants; 
+		//LOWER DISTANCE: an array num of descendants of each node. sourceDescendants[node.getIndex()] = num of  descendants of node
+		int[] descOrAncestors; 
 		//the normalized distance between each pair of nodes
 		double[][] distances;
 		
-		
-		
-		//create the array for target and source with the numver of descendants of each node
-		descendants = createDescendantsArray(list,dag );
-		/* DEBUG
-		System.out.println("\nsoruce descendants");
-		for(int i = 0; i < sourceDescendants.length; i++) {
-			System.out.println(sourceList.get(i).getLocalName()+" "+sourceDescendants[i]);
+		if(!useUpperDistance){
+			//create the array for target and source with the numver of descendants of each node
+			descOrAncestors = createDescendantsArray(list,dag );
+			/* DEBUG
+			System.out.println("\nsoruce descendants");
+			for(int i = 0; i < descOrAncestors.length; i++) {
+				System.out.println(sourceList.get(i).getLocalName()+" "+descOrAncestors[i]);
+			}
+			*/
+			//I need to calculate the distance between each pair of node
+			distances = createLCDistances(list, descOrAncestors);
 		}
-		*/
-		
-		
-		//I need to calculate which is the distance between each pair of node
-		distances = createLCDistances(list, descendants);
-		return Utility.getMaxOfMatrix(distances);
-		
-	}
-	
-	public double getUCDiameter(ArrayList<Node> list, TreeToDagConverter dag) {
+		else{
+			//create the array for target and source with the number of ancestors of each node
+			descOrAncestors = createAncestorsArray(list,dag );
+			/* DEBUG
+			System.out.println("\n ancestors");
+			for(int i = 0; i < descOrAncestors.length; i++) {
+				System.out.println(list.get(i).getLocalName()+" "+descOrAncestors[i]);
+			}
+			*/
+			//I need to calculate which is the distance between each pair of node
+			distances = createUCDistances(list, descOrAncestors);
+			/*
+			System.out.println("Distances in diameter function with useUpper = "+useUpperDistance);
+			for(int i = 0; i < distances.length; i++){
+				for(int j = 0; j < distances[i].length; j++){
+					System.out.println(list.get(i).getLocalName()+" "+list.get(j).getLocalName()+" "+distances[i][j]);
+				}	
+			}
+			*/
+		}
 
-		//an array num of descendants of each node. sourceDescendants[node.getIndex()] = num of  descendants of node
-		int[] ancestors; 
-		//the normalized distance between each pair of nodes
-		double[][] distances;
-		
-		
-		
-		//create the array for target and source with the number of descendants of each node
-		ancestors = createAncestorsArray(list,dag );
-		/* DEBUG
-		System.out.println("\n ancestors");
-		for(int i = 0; i < ancestors.length; i++) {
-			System.out.println(list.get(i).getLocalName()+" "+ancestors[i]);
-		}
-		*/
-		
-		
-		//I need to calculate which is the distance between each pair of node
-		distances = createUCDistances(list, ancestors);
 		return Utility.getMaxOfMatrix(distances);
 		
 	}

@@ -120,9 +120,9 @@ public class Ontology {
 		int roots = conv.getRoots().size();
 		int leaves = conv.getLeaves().size();
 		JoslynStructuralQuality q = new JoslynStructuralQuality(false);
-		double LCdiameter = q.getLCDiameter(list, conv);
+		double LCdiameter = q.getDiameter(list, conv);
 		JoslynStructuralQuality q2 = new JoslynStructuralQuality(true);
-		double UCdiameter = q2.getUCDiameter(list, conv);
+		double UCdiameter = q2.getDiameter(list, conv);
 		
 		return concepts+"\t"+depth+"\t"+UCdiameter+"\t"+LCdiameter+"\t"+roots+"\t"+leaves+"\n";
 	}

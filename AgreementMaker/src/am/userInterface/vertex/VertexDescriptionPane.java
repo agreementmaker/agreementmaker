@@ -213,28 +213,30 @@ public class VertexDescriptionPane extends JPanel{
 	
 	public void fillDescription (Vertex v){
 		clearDescription(v);
-		Node node = v.getNode();
-		if(typeOfFile == GlobalStaticVariables.XMLFILE){			
-			if(v.isSourceOrGlobal()){
-		    	   st1.setText(node.getLabel());
-		    }else {
-		    	   lt1.setText(node.getLabel());
-		    }
-		}
-		else if(typeOfFile == GlobalStaticVariables.ONTFILE){		
-	       if(v.isSourceOrGlobal()){
-	    	   st1.setText(node.getDescriptionsString());
-	    	   st2.setText(node.getAnnotationsString());
-	    	   st3.setText(node.getPropOrClassString());
-	    	   st4.setText(node.getIndividualsString());
-	       }else {
-	    	   lt1.setText(node.getDescriptionsString());
-	    	   lt2.setText(node.getAnnotationsString());
-	    	   lt3.setText(node.getPropOrClassString());
-	    	   lt4.setText(node.getIndividualsString());
-	       }
-		}else if(typeOfFile == GlobalStaticVariables.RDFSFILE){
-			//TODO: WORK here for RDFS
+		if(!v.isFake()){
+			Node node = v.getNode();
+			if(typeOfFile == GlobalStaticVariables.XMLFILE){			
+				if(v.isSourceOrGlobal()){
+			    	   st1.setText(node.getLabel());
+			    }else {
+			    	   lt1.setText(node.getLabel());
+			    }
+			}
+			else if(typeOfFile == GlobalStaticVariables.ONTFILE){
+		       if(v.isSourceOrGlobal()){
+		    	   st1.setText(node.getDescriptionsString());
+		    	   st2.setText(node.getAnnotationsString());
+		    	   st3.setText(node.getPropOrClassString());
+		    	   st4.setText(node.getIndividualsString());
+		       }else {
+		    	   lt1.setText(node.getDescriptionsString());
+		    	   lt2.setText(node.getAnnotationsString());
+		    	   lt3.setText(node.getPropOrClassString());
+		    	   lt4.setText(node.getIndividualsString());
+		       }
+			}else if(typeOfFile == GlobalStaticVariables.RDFSFILE){
+				//TODO: WORK here for RDFS
+			}
 		}
 	}
 	
