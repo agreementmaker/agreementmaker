@@ -119,9 +119,9 @@ public class Ontology {
 		int depth = tree.getDepth()-1;
 		int roots = conv.getRoots().size();
 		int leaves = conv.getLeaves().size();
-		JoslynStructuralQuality q = new JoslynStructuralQuality(false);
+		JoslynStructuralQuality q = new JoslynStructuralQuality(true, true, false); //the first two boolean dont matter here
 		double LCdiameter = q.getDiameter(list, conv);
-		JoslynStructuralQuality q2 = new JoslynStructuralQuality(true);
+		JoslynStructuralQuality q2 = new JoslynStructuralQuality(true, true, true); //the first two boolean dont matter here
 		double UCdiameter = q2.getDiameter(list, conv);
 		
 		return concepts+"\t"+depth+"\t"+UCdiameter+"\t"+LCdiameter+"\t"+roots+"\t"+leaves+"\n";

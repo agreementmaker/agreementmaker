@@ -29,8 +29,17 @@ import am.userInterface.vertex.Vertex;
 public class JoslynStructuralQuality {
 	
 	private AbstractMatcher matcher;
+	
+	/**True if a upper or lower distance or discrepancy is required,
+	 * false if the order ones are required
+	 * **/
+	private boolean useDistance;
+	
 	/**True if the upper distance is used, false for the lower distance**/
 	private boolean useUpperDistance; //used only of the distance preservation measure
+	
+	/**True if the preservation = 1 - discrepancy measure is used**/
+	private boolean usePreservation; 
 	
 	public final static int HIGHER = 1;
 	public final static int NONCOMPARABLE = 0;
@@ -48,16 +57,25 @@ public class JoslynStructuralQuality {
 	int[] tempRecursiveNum;
 	int[][] tempOrder;
 	
-	public JoslynStructuralQuality(AbstractMatcher m, boolean upper) {
+	public JoslynStructuralQuality(AbstractMatcher m,boolean distance,boolean preservation, boolean upper ) {
 		matcher = m;
+		useDistance = distance;
 		useUpperDistance = upper;
+		usePreservation =preservation;
 	}
 	
 	//used to get only the diameter
-	public JoslynStructuralQuality(boolean upper) {
+	public JoslynStructuralQuality(boolean distance,boolean preservation, boolean upper) {
+		useDistance = distance;
 		useUpperDistance = upper;
+		usePreservation = preservation;
 	}
 	
+	public QualityEvaluationData getQuality() {
+		if(useDistance)
+			return getDistanceQuality();
+		else return getOrderQuality();
+	}
 	
 	public QualityEvaluationData getOrderQuality() {
 		Ontology sourceOntology = Core.getInstance().getSourceOntology();
@@ -95,12 +113,13 @@ public class JoslynStructuralQuality {
 		if(matcher.areClassesAligned()) {
 		
 				classQuality = distancePreservation(matcher.getClassAlignmentSet(),sourceOntology.getClassesList(),targetOntology.getClassesList(), sourceOntology.getClassesTree(), targetOntology.getClassesTree());
-			
+				System.out.println("Class alignment quality: "+classQuality);
+				
 		}
 		if(matcher.arePropertiesAligned()) {
 		
 				propQuality = distancePreservation(matcher.getPropertyAlignmentSet(),sourceOntology.getPropertiesList(),targetOntology.getPropertiesList(), sourceOntology.getPropertiesTree(), targetOntology.getPropertiesTree());			
-			
+				System.out.println("Property alignment quality: "+propQuality);
 		}
 		q.setGlobalClassMeasure(classQuality);
 		q.setGlobalPropMeasure(propQuality);
@@ -161,7 +180,9 @@ public class JoslynStructuralQuality {
 		double totalDescrepancy = (double)sum / binom;
 		
 		//the discrepancy is a measure of dissimilarity, between 1 and 0. so the quality should be 1 - totalDescrepancy
-		double quality = 1 - totalDescrepancy;
+		double quality = totalDescrepancy;
+		if(usePreservation)
+			quality = 1 - totalDescrepancy;
 		
 		//System.out.println("quality: "+quality+" discrepancy: "+totalDescrepancy+" sum: "+sum+" binom: "+binom+" size: "+size);
 		return quality;
@@ -346,6 +367,8 @@ public class JoslynStructuralQuality {
 			sourceDistances = createLCDistances(sourceList, sourceDescendants);
 			targetDistances = createLCDistances(targetList, targetDescendants);
 		}
+		//double sourceDiameter = calculateTopBottomDiameter(sourceList, sourceDag);
+		//double targetDiameter = calculateTopBottomDiameter(targetList, targetDag);
 		sourceDistances = normalizeDistances(sourceList, sourceDistances);
 		targetDistances = normalizeDistances(targetList, targetDistances);
 		
@@ -369,8 +392,12 @@ public class JoslynStructuralQuality {
 		double totalDescrepancy = sum / binom;
 		
 		//the discrepancy is a measure of dissimilarity, between 1 and 0. so the quality should be 1 - totalDescrepancy
-		double quality = 1 - totalDescrepancy;
 		
+		double quality = totalDescrepancy;
+		if(usePreservation)
+			quality = 1 - totalDescrepancy;
+		//System.out.println("discrepancy: "+totalDescrepancy);
+		//System.out.println("quality: "+quality);
 		//DEBUG
 		/*
 		try{
@@ -395,6 +422,16 @@ public class JoslynStructuralQuality {
 		return quality;
 	}
 	
+	private double calculateTopBottomDiameter(ArrayList<Node> sourceList, TreeToDagConverter sourceTree) {
+		
+		double diameter = sourceList.size();
+		if(sourceTree.getRoots().size() != 1)
+			diameter+=1 ;
+		if(sourceTree.getLeaves().size() != 1)
+			diameter +=1 ;
+		return diameter - 1;
+	}
+
 	private double[][] calculateDistanceDiscrepancies(AlignmentSet set, double[][] sourceDistances, double[][] targetDistances) {
 		//calculate the link distance discrepancy, look at the example on the paper to understand it
 		//given two alignments  a1( a, a') & a2(b, b')
@@ -618,7 +655,9 @@ public class JoslynStructuralQuality {
 		ArrayList<Node> leaves = sourceTree.getLeaves();
 		Iterator<Node> it = leaves.iterator();
 		while(it.hasNext()) {
+			
 			Node n = it.next();
+			//System.out.println("leaf: "+n.getLocalName());
 			recursiveAncestorsCount(n, sourceTree);
 		}
 		int[] result = tempRecursiveNum;
@@ -627,49 +666,72 @@ public class JoslynStructuralQuality {
 	}
 
 	
-	private void recursiveAncestorsCount(Node n,  TreeToDagConverter tree) {
-		//I'm one of my ancestors by definition
-		int val = 1;
+	private HashSet<Node> recursiveAncestorsCount(Node n,  TreeToDagConverter tree) {
+		
+		HashSet<Node> ancestors = new HashSet<Node>();
 		ArrayList<Node> parents = n.getParents();
 		//if(n.getLocalName().equalsIgnoreCase("PersonList"))
-			//System.out.println(parents.size());
+			//System.out.println(n.getLocalName()+" parents: "+parents.size());
 		if(parents.size() != 0){
 			Iterator<Node> it = parents.iterator();
 			Node parent;
+			HashSet<Node> parentAncestors;
+			Iterator<Node> parentAncIterator;
+			Node parentParent; 
 			while(it.hasNext()) {
 				//my number of ancestors: me + the ancestors of my parents
 				parent = it.next();
-				if(tempRecursiveNum[parent.getIndex()] == 0) {// if a node is the father of two nodes then it could be already being processed so we don't need to process it again
-					recursiveAncestorsCount(parent, tree); //this set the number of descendants of my son
+				parentAncestors =	recursiveAncestorsCount(parent, tree); //this is the set of ancestors of my parent and it also set the number of them
+				parentAncIterator = parentAncestors.iterator();
+				//i have to add to my set of ancestors all the ancestors of my parents, to do this i need an hashset to avoid
+				//adding the same ancestor of two different parents twice...the add function of the hashset adds the element only if it's not there already.
+				while(parentAncIterator.hasNext()){
+					parentParent = parentAncIterator.next();
+					ancestors.add(parentParent);
 				}
-				val += tempRecursiveNum[parent.getIndex()];
 			}
 		}
-
-		tempRecursiveNum[n.getIndex()] = val;
+		ancestors.add(n); //I'm one of my ancestors by definition
+		tempRecursiveNum[n.getIndex()] = ancestors.size();
+		return ancestors;
 	}
 
-	private void recursiveDescendantsCount(Node n,  TreeToDagConverter tree) {
-		//I'm one of my descendants by definition
-		int val = 1;
-		if(!n.isLeaf()) {
-			ArrayList<Node> parents = n.getChildren();
-			Iterator<Node> it = parents.iterator();
+	private HashSet<Node> recursiveDescendantsCount(Node n,  TreeToDagConverter tree) {
+		HashSet<Node> descendants = new HashSet<Node>();
+		ArrayList<Node> children = n.getChildren();
+		//if(n.getLocalName().equalsIgnoreCase("PersonList"))
+			//System.out.println(n.getLocalName()+" children: "+parents.size());
+		if(children.size() != 0){
+			Iterator<Node> it = children.iterator();
+			Node child;
+			HashSet<Node> childDescendants;
+			Iterator<Node> childDescIterator;
+			Node childChild; 
 			while(it.hasNext()) {
-				//my number of descendants: me + the descendants of my son
-				Node child = it.next();
-				if(tempRecursiveNum[child.getIndex()] == 0) {// if a node is the child of two node then it could be already being processes so we don't need to process it again
-					recursiveDescendantsCount(child, tree); //this set the number of descendants of my son
+				//my number of desc: me + the desc of my sons
+				child = it.next();
+				childDescendants =	recursiveDescendantsCount(child, tree); //this is the set of descendants of my sons and it also set the number of them
+				childDescIterator = childDescendants.iterator();
+				//i have to add to my set of ancestors all the ancestors of my parents, to do this i need an hashset to avoid
+				//adding the same ancestor of two different parents twice...the add function of the hashset adds the element only if it's not there already.
+				while(childDescIterator.hasNext()){
+					childChild = childDescIterator.next();
+					descendants.add(childChild);
 				}
-				val += tempRecursiveNum[child.getIndex()];
 			}
 		}
-		tempRecursiveNum[n.getIndex()] = val;
+		descendants.add(n); //I'm one of my descendants by definition
+		tempRecursiveNum[n.getIndex()] = descendants.size();
+		return descendants;
 	}
 	
 	public double getDiameter(ArrayList<Node> list,
 			TreeToDagConverter dag) {
-
+		
+		
+		//the diameter is now forced to be always N - 1 where N = nodes + top + bottom if they are not already included.
+		//return calculateTopBottomDiameter(list, dag);
+		
 		//LOWER DISTANCE: an array num of descendants of each node. sourceDescendants[node.getIndex()] = num of  descendants of node
 		int[] descOrAncestors; 
 		//the normalized distance between each pair of nodes
@@ -679,12 +741,13 @@ public class JoslynStructuralQuality {
 			//create the array for target and source with the numver of descendants of each node
 			descOrAncestors = createDescendantsArray(list,dag );
 			/* DEBUG
-			System.out.println("\nsoruce descendants");
+			System.out.println("\n descendants");
 			for(int i = 0; i < descOrAncestors.length; i++) {
-				System.out.println(sourceList.get(i).getLocalName()+" "+descOrAncestors[i]);
+				System.out.println(list.get(i).getLocalName()+" "+descOrAncestors[i]);
 			}
-			*/
+			//*/
 			//I need to calculate the distance between each pair of node
+		
 			distances = createLCDistances(list, descOrAncestors);
 		}
 		else{
@@ -697,6 +760,7 @@ public class JoslynStructuralQuality {
 			}
 			*/
 			//I need to calculate which is the distance between each pair of node
+		
 			distances = createUCDistances(list, descOrAncestors);
 			/*
 			System.out.println("Distances in diameter function with useUpper = "+useUpperDistance);
@@ -707,8 +771,9 @@ public class JoslynStructuralQuality {
 			}
 			*/
 		}
-
+		
 		return Utility.getMaxOfMatrix(distances);
 		
 	}
+	
 }

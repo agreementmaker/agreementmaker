@@ -14,31 +14,32 @@ public class QualityEvaluator {
 	//GLOBAL QUALITIES
 	public final static String  GLOBALCONFIDENCE = "Global confidence";
 	public final static String LOWER_DISTANCE = "Lower Distance Preservation";
+	public final static String LOWER_DISTANCE_DISCREPANCY = "Lower Distance discrepancy";
 	public final static String UPPER_DISTANCE = "Upper Distance Preservation";
+	public final static String UPPER_DISTANCE_DISCREPANCY = "Upper Distance discrepancy";
 	public final static String ORDER = "Order Preservation";
-	public final static String CONF_ORDER_DIST = "Confidence & lower distance & upper distance & order (Avg)";
+	public final static String ORDER_DISCREPANCY = "Order Discrepancy";
 	//TEST QUALITIES
 	//it's a try to see the difference
 	public final static String GLOBALTHRESHOLDCONFIDENCE = "Global confidence considering threshold";
 	public final static String LOCALTHRESHOLDCONFIDENCE = "Local confidence considering threshold";
 	
 	//LIST USED IN THE QUALITY COMBINATION MATCHER 
-	public final static String[] QUALITIES = {LOCALCONFIDENCE, GLOBALCONFIDENCE, UPPER_DISTANCE, LOWER_DISTANCE,ORDER};
+	public final static String[] QUALITIES = {LOCALCONFIDENCE, GLOBALCONFIDENCE, UPPER_DISTANCE, LOWER_DISTANCE,ORDER, UPPER_DISTANCE_DISCREPANCY, LOWER_DISTANCE_DISCREPANCY, ORDER_DISCREPANCY};
 	
 	public static QualityEvaluationData evaluate(AbstractMatcher matcher, String quality) {
 		QualityEvaluationData finalData = null;
 		QualityEvaluationData localConfData  = null;
 		QualityEvaluationData globalConfData = null;
-		QualityEvaluationData orderData = null;
-		QualityEvaluationData LdistData = null;
-		QualityEvaluationData UdistData = null;
+		QualityEvaluationData distData = null;
+
 		//LOCAL GLOBAL confidence without considering theshold
-		if(quality.equals(LOCALCONFIDENCE) || quality.equals(GLOBALCONFIDENCE) || quality.equals(QualityEvaluator.CONF_ORDER_DIST)){
+		if(quality.equals(LOCALCONFIDENCE) || quality.equals(GLOBALCONFIDENCE)){
 			//in all 2 cases i have to calculate local first
 			localConfData = LocalConfidenceQuality.getQuality(matcher, false);
 			finalData = localConfData;
 			//then global is the average of locals
-			if(quality.equals(GLOBALCONFIDENCE) || quality.equals(QualityEvaluator.CONF_ORDER_DIST) ){
+			if(quality.equals(GLOBALCONFIDENCE) ){
 				globalConfData = new QualityEvaluationData();
 				double[] localClassQualities = localConfData.getLocalClassMeasures();
 				double[] localPropQualities = localConfData.getLocalPropMeasures();
@@ -83,30 +84,25 @@ public class QualityEvaluator {
 		}
 		
 		//JOslyn structural qualities
-		if(quality.equals(LOWER_DISTANCE) || quality.equals(QualityEvaluator.CONF_ORDER_DIST)) {
-			JoslynStructuralQuality evaluator = new JoslynStructuralQuality(matcher, false);
-			LdistData = evaluator.getDistanceQuality();
-			finalData = LdistData;
-		}
-		//JOslyn structural qualities
-		if(quality.equals(UPPER_DISTANCE) || quality.equals(QualityEvaluator.CONF_ORDER_DIST)) {
-			JoslynStructuralQuality evaluator = new JoslynStructuralQuality(matcher, true);
-			UdistData = evaluator.getDistanceQuality();
-			finalData = UdistData;
-		}
-		//JOslyn structural qualities
-		if(quality.equals(ORDER) || quality.equals(QualityEvaluator.CONF_ORDER_DIST)) {
-			JoslynStructuralQuality evaluator = new JoslynStructuralQuality(matcher, false); //the boolean doesn't matter here
-			orderData = evaluator.getOrderQuality();
-			finalData = orderData;
-		}
-		
-		if(quality.equals(QualityEvaluator.CONF_ORDER_DIST)) {
-			finalData = new QualityEvaluationData();
-			finalData.setLocal(false);
-			//System.out.println(globalConfData.getGlobalClassMeasure() +" "+ distData.getGlobalClassMeasure()  +" "+ orderData.getGlobalClassMeasure());
-			finalData.setGlobalClassMeasure((globalConfData.getGlobalClassMeasure() + LdistData.getGlobalClassMeasure() + orderData.getGlobalClassMeasure())  / (double)3);
-			finalData.setGlobalPropMeasure((globalConfData.getGlobalPropMeasure() + LdistData.getGlobalPropMeasure() + orderData.getGlobalPropMeasure() ) / (double)3 );
+		if(quality.equals(LOWER_DISTANCE) || 
+		   quality.equals(UPPER_DISTANCE) || 
+		   quality.equals(LOWER_DISTANCE_DISCREPANCY) || 
+		   quality.equals(UPPER_DISTANCE_DISCREPANCY) ||
+		   quality.equals(ORDER) ||
+		   quality.equals(ORDER_DISCREPANCY)) {
+			
+			boolean distance = true;
+			if(quality.equals(ORDER) || quality.equals(ORDER_DISCREPANCY))
+				distance = false;
+			boolean preservation = true;
+			if(quality.equals(LOWER_DISTANCE_DISCREPANCY) || quality.equals(UPPER_DISTANCE_DISCREPANCY) || quality.equals(ORDER_DISCREPANCY))
+				preservation = false;
+			boolean upper = true;
+			if(quality.equals(LOWER_DISTANCE) || quality.equals(LOWER_DISTANCE_DISCREPANCY))
+				upper = false;
+			JoslynStructuralQuality evaluator = new JoslynStructuralQuality(matcher, distance, preservation, upper);
+			distData = evaluator.getQuality();
+			finalData = distData;
 		}
 			
 		//OTHER QUALITIES TO BE ADDED
