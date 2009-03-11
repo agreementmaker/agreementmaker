@@ -369,8 +369,8 @@ public class JoslynStructuralQuality {
 		}
 		//double sourceDiameter = calculateTopBottomDiameter(sourceList, sourceDag);
 		//double targetDiameter = calculateTopBottomDiameter(targetList, targetDag);
-		sourceDistances = normalizeDistances(sourceList, sourceDistances);
-		targetDistances = normalizeDistances(targetList, targetDistances);
+		sourceDistances = normalizeDistances(sourceList, sourceDistances, sourceDag);
+		targetDistances = normalizeDistances(targetList, targetDistances, sourceDag);
 		
 		//calculate the link distance discrepancy, look at the example on the paper to understand it
 		//given two alignments  a1( a, a') & a2(b, b')
@@ -424,12 +424,12 @@ public class JoslynStructuralQuality {
 	
 	private double calculateTopBottomDiameter(ArrayList<Node> sourceList, TreeToDagConverter sourceTree) {
 		
-		double diameter = sourceList.size();
+		double diameter = sourceList.size() - 1;
 		if(sourceTree.getRoots().size() != 1)
 			diameter+=1 ;
 		if(sourceTree.getLeaves().size() != 1)
 			diameter +=1 ;
-		return diameter - 1;
+		return diameter;
 	}
 
 	private double[][] calculateDistanceDiscrepancies(AlignmentSet set, double[][] sourceDistances, double[][] targetDistances) {
@@ -606,10 +606,11 @@ public class JoslynStructuralQuality {
 		return distances;
 	}
 	
-	private double[][] normalizeDistances(ArrayList<Node> nodesList, double[][] dist) {
+	private double[][] normalizeDistances(ArrayList<Node> nodesList, double[][] dist, TreeToDagConverter dag) {
 		double[][] distances = new double[nodesList.size()][nodesList.size()];
-		//the diameter is the max distance
-		double diameter = Utility.getMaxOfMatrix(dist);
+		//the diameter is the max distance, but we consider that there is always a top and bottom node, so the distance is always distance(top,bpttom)
+		double diameter = calculateTopBottomDiameter(nodesList, dag); 
+		//double diameter = Utility.getMaxOfMatrix(dist);
 		//System.out.println("diameter: "+diameter);
 		if(diameter != 0) {
 			//normalize distances
@@ -730,8 +731,9 @@ public class JoslynStructuralQuality {
 		
 		
 		//the diameter is now forced to be always N - 1 where N = nodes + top + bottom if they are not already included.
-		//return calculateTopBottomDiameter(list, dag);
+		return calculateTopBottomDiameter(list, dag);
 		
+		/*
 		//LOWER DISTANCE: an array num of descendants of each node. sourceDescendants[node.getIndex()] = num of  descendants of node
 		int[] descOrAncestors; 
 		//the normalized distance between each pair of nodes
@@ -747,7 +749,7 @@ public class JoslynStructuralQuality {
 			}
 			//*/
 			//I need to calculate the distance between each pair of node
-		
+			/*
 			distances = createLCDistances(list, descOrAncestors);
 		}
 		else{
@@ -760,7 +762,7 @@ public class JoslynStructuralQuality {
 			}
 			*/
 			//I need to calculate which is the distance between each pair of node
-		
+			/*
 			distances = createUCDistances(list, descOrAncestors);
 			/*
 			System.out.println("Distances in diameter function with useUpper = "+useUpperDistance);
@@ -770,10 +772,11 @@ public class JoslynStructuralQuality {
 				}	
 			}
 			*/
+		/*
 		}
 		
 		return Utility.getMaxOfMatrix(distances);
-		
+		*/
 	}
 	
 }
