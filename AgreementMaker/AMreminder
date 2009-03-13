@@ -190,9 +190,6 @@ If the window is small and buttons doesn't fit in it they just disappear, while 
 
 2) sometime the exec time is not correct. Probably on very slow matchers like base_withdict.
 
-3)After opening a very big source ontology. If we open a small one, the canvas is still very big, so the scroll bar is very small
-and it is impossible to scroll on the small ontology.
-
 4)The xls file saved with the save funct on a computer in the lab couldn't get opened. maybe is just an old excel. 
 
 ***************************REFERENCES**************************
