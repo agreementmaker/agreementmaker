@@ -58,6 +58,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	//Main variables and Tree structure
 	private double 		canvasHeight;				// height of the canvas
 	private double 		canvasWidth;				// width of the canvas
+	private double		sourcePaneHeight;
+	private double		targetPaneHeight;
 	//private int 				countStat = 0;
 	private Vertex 		globalTreeRoot;				// root of global tree
 	private Vertex 		localTreeRoot;				// root of local tree
@@ -393,16 +395,56 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		// figure out what the canvas height should be
 		height = 70+25*totalNodes;
 		
-		// if the current tree height is greater than the panel's height
-		// set the new height to be height of the tree
-		if(dim.getHeight() > height)
-			height = dim.getHeight();
+		//Assign height to source or target to keep track
+		if(o.isSource()){
+			sourcePaneHeight = height;
+		}
+		else{
+			targetPaneHeight = height;
+		}
+		
+		// if the current tree height is smaller than the panel's height
+		// set the new height to be height of the tree depending on the ontologies loaded
+		if(dim.getHeight() > height){
+			//if none of the ontologies loaded
+			if(core.getSourceOntology() == null && core.getTargetOntology() == null){
+				canvasPanel.setPreferredSize(new Dimension((int)canvasWidth,(int)height));
+			}
+			//if only source is loaded
+			if(core.getSourceOntology() != null && core.getTargetOntology() == null){
+				if(o.isSource()){
+					canvasPanel.setPreferredSize(new Dimension((int)canvasWidth,(int)height));
+				}
+				else {}
+					
+			}
+			//if only target is loaded
+			if(core.getSourceOntology() == null && core.getTargetOntology() != null){
+				if(o.isTarget()){
+					canvasPanel.setPreferredSize(new Dimension((int)canvasWidth,(int)height));
+				}
+				else{}
+			}
+			//if both loaded, then max of two is the height
+			if(core.getSourceOntology() != null && core.getTargetOntology() != null){
+				if(sourcePaneHeight > targetPaneHeight){
+					canvasPanel.setPreferredSize(new Dimension((int)canvasWidth,(int)sourcePaneHeight));
+				}
+				else{
+					canvasPanel.setPreferredSize(new Dimension((int)canvasWidth,(int)targetPaneHeight));
+				}
+			}
+		}
+		else
+		{
+			canvasPanel.setPreferredSize(new Dimension((int)canvasWidth,(int)height));
+		}		
 		
 		//	set the width of canvas properly
 		//computeCanvasWidth(ontoType);
 		
 		// set the panel preferred size		
-		canvasPanel.setPreferredSize(new Dimension((int)canvasWidth,(int)height));  // take max of the length of the two trees
+		//canvasPanel.setPreferredSize(new Dimension((int)canvasWidth,(int)height));  // take max of the length of the two trees
 		
 		// repaint the canvas
 		repaint();
