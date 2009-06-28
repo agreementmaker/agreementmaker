@@ -888,7 +888,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
 	public int getDefaultMaxTargetRelations() {
 		// TODO Auto-generated method stub
-		return ANY_INT;
+		return 1;
 	}
 	
 	/**This method is invoked at the end of the matching process if the process successed, to give a feedback to the user. Developers can ovveride it to add additional informations.
