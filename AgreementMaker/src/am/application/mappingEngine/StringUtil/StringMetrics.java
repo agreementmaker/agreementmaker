@@ -70,7 +70,7 @@ public class StringMetrics {
         double commonality = 0;
         double scaledCommon = (double) (2 * common) / (L1 + L2);
         commonality = scaledCommon;
-		
+
 		return commonality;
     }
 	
@@ -150,11 +150,26 @@ public class StringMetrics {
         double fragmentation = (numOfSubstring - 1); //if we find only one substring there is no fragmentantion, in fact when 2 strings are the same the final measure must be 1, commonality is one so fragmentation must be 0.
         double scaledFragmentation = fragmentation / maxNumberOfSubstrings;
         double weightedFragmentation = fragmentationWeight * scaledFragmentation;
+        double winklerImprovement = winklerImprovement(s1, s2, commonality);
+        //double winklerImprovement = 0; //RIGHT NOW WE FORCE THIS TO 0
         if(weightedFragmentation > 0) {
-        	return commonality - weightedFragmentation;
+        	return commonality - weightedFragmentation + winklerImprovement;
         }
-        else return commonality; //only when no substrings are found the fragmentation is negative
+        else return commonality + winklerImprovement; //only when no substrings are found the fragmentation is negative
 		
+    }
+	
+    private static double winklerImprovement(String s1, String s2, double commonality)
+    {
+        int i, n = Math.min(s1.length(), s2.length());
+        for (i = 0; i < n; i++) {
+            if (s1.charAt(i) != s2.charAt(i)) {
+                break;
+            }
+        }
+        double commonPrefixLength = Math.min(4, i);
+        double winkler = commonPrefixLength * 0.1 * (1 - commonality);
+        return winkler;
     }
 	
 	

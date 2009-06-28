@@ -119,7 +119,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		sRelationCombo.setSelectedItem(1);
 		tRelLabel = new JLabel("Target relations");
 		tRelationCombo = new JComboBox(numRelList);
-		tRelationCombo.setSelectedItem(MyTableModel.ANY);
+		tRelationCombo.setSelectedItem(1);
 		defaultValButton = new JButton("Default");
 		defaultValButton.addActionListener(this);
 

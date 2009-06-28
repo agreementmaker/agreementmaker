@@ -1,12 +1,15 @@
 package am.application.mappingEngine;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 import am.AMException;
 import am.Utility;
 import am.application.Core;
 import am.application.mappingEngine.oneToOneSelection.HungarianAlgorithm;
+import am.application.mappingEngine.oneToOneSelection.MappingMWBM;
+import am.application.mappingEngine.oneToOneSelection.MaxWeightBipartiteMatching;
 import am.application.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.application.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.application.ontology.Node;
@@ -329,9 +332,21 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 	protected AlignmentSet oneToOneMatching(AlignmentMatrix matrix) {
 		AlignmentSet aset = new AlignmentSet();
-		//we can use the hungarian algorithm which provide the optimal solution in polynomial time
-		//the hungarian can be used to compute the maxim 1-1 matching or the minimum one, and ofc we need the maximum
+		double[][] similarityMatrix = matrix.getSimilarityMatrix();
+		MaxWeightBipartiteMatching<Integer> mwbm = new MaxWeightBipartiteMatching<Integer>(similarityMatrix, threshold);
+		Collection<MappingMWBM<Integer>> mappings = mwbm.execute();
+		Iterator<MappingMWBM<Integer>> it = mappings.iterator();
+		Alignment a;
+		MappingMWBM<Integer>  m;
+		while(it.hasNext()){
+			m = it.next();
+			a = matrix.get(m.getSourceNode(), m.getTargetNode());
+			aset.addAlignment(a);
+		}
 		
+		/* CODE FOR THE HUNGARIAN
+		 * 		//we can use the hungarian algorithm which provide the optimal solution in polynomial time
+		//the hungarian can be used to compute the maxim 1-1 matching or the minimum one, and ofc we need the maximum
 		double[][] similarityMatrix = matrix.getSimilarityMatrix(); //hungarian alg needs a double matrix
 		double[][] cuttedMatrix = Utility.cutMatrix(similarityMatrix, threshold); //those similarity values lower than the threshold cannot be selected so we remove them from the matrix setting them to 0
 		int[][] assignments = HungarianAlgorithm.hgAlgorithm(cuttedMatrix, HungarianAlgorithm.MAX_SUM_TYPE);
@@ -352,6 +367,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 					aset.addAlignment(a);
 			}
 		}
+		*/
 		
 		return aset;
 	}
