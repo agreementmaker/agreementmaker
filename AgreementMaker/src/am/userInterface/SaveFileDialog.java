@@ -18,6 +18,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.filechooser.FileFilter;
 
 import am.Utility;
+import am.output.AlignmentOutput;
 import am.output.OutputController;
 
 
@@ -65,7 +66,7 @@ public class SaveFileDialog implements ActionListener{
 		cancel.addActionListener(this);
 		save.addActionListener(this);
 		
-		String[] format_list = {OutputController.XLS, OutputController.TXT, OutputController.DOC};
+		String[] format_list = {OutputController.XLS, OutputController.TXT, OutputController.DOC, OutputController.RDF};
 		
 		
 		formatList = new JList(format_list);
@@ -171,11 +172,20 @@ public class SaveFileDialog implements ActionListener{
 				//boolean ok = true;
 				try {
 					//File f = new File(fullName);
-					prefs.saveLastNameOutput(outName);
-					OutputController.printDocument(fullName);
-					Utility.displayMessagePane("File saved successfully.\nLocation: "+fullName+"\n", null);
-					frame.setModal(false);
-					frame.dispose();
+					if(outF.equals(OutputController.RDF)){
+						prefs.saveLastNameOutput(outName);
+						OutputController.printDocumentOAEI(fullName);
+						Utility.displayMessagePane("File saved successfully.\nLocation: "+fullName+"\n", null);
+						frame.setModal(false);
+						frame.dispose();
+					}
+					else{
+						prefs.saveLastNameOutput(outName);
+						OutputController.printDocument(fullName);
+						Utility.displayMessagePane("File saved successfully.\nLocation: "+fullName+"\n", null);
+						frame.setModal(false);
+						frame.dispose();
+					}
 				}
 				catch(Exception e) {
 					e.printStackTrace();
