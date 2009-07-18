@@ -13,9 +13,20 @@ public class OutputController {
 	public final static String TXT = "txt";
 	public final static String DOC = "doc";
 	public final static String XLS = "xls";
-	
+	public final static String RDF = "rdf";
 
 	public final static String arrow = "--->";
+	
+	public static void printDocumentOAEI(String name) throws Exception{
+		ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
+		AbstractMatcher matcher;
+		//TO DO:
+		//May be multiple matchers.
+		int [] rowsIndex = Core.getInstance().getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
+		matcher = list.get(rowsIndex[0]);
+		AlignmentOutput output = new AlignmentOutput(matcher.getAlignmentSet(), name);
+		output.write("onto1", "onto2", "uri1", "uri2");
+	}
 	
 	public static void printDocument(String name) throws Exception{
 		
