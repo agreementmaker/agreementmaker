@@ -7,6 +7,7 @@ import java.util.Iterator;
 import am.AMException;
 import am.Utility;
 import am.application.Core;
+import am.application.mappingEngine.Combination.CombinationParametersPanel;
 import am.application.mappingEngine.oneToOneSelection.HungarianAlgorithm;
 import am.application.mappingEngine.oneToOneSelection.MappingMWBM;
 import am.application.mappingEngine.oneToOneSelection.MaxWeightBipartiteMatching;
@@ -86,8 +87,15 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected QualityEvaluationData qualEvaluation;
 	/**Graphical color for nodes mapped by this matcher and alignments, this value is set by the MatcherFactory and modified  by the table so a developer just have to pass it as aparameter for the constructor*/
 	protected Color color; 
+	/**
+	 * the matchers combined for example in the LWC matcher can have this set to false, because the partial matchings are not needed. 
+	   this parameter is mainly used in batchmode. For the UI has to be set to TRUE. Therefore, the paramter can be set to false, but should always be init to true.
+	 *  **/
+	protected boolean performSelection;
+	public void setPerformSelection(boolean performSelection) {
+		this.performSelection = performSelection;
+	}
 
-	
 	/**This enum is for the matching functions that take nodes as an input.  Because we are comparing two kinds of nodes (classes and properties), we need to know the kind of nodes we are comparing in order to lookup up the input similarities in the corrent matrix */
 	public enum alignType {
 		aligningClasses,
@@ -108,6 +116,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		needsParam = false;
 		isShown = true;
 		modifiedByUser = false;
+		performSelection = true;//only in batchmode can be set to false in the internal matchers.
 		threshold = 0.75;
 		maxSourceAlign = 1;
 		maxTargetAlign = ANY_INT;
@@ -115,6 +124,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		alignProp = true;
 		minInputMatchers = 0;
 		maxInputMatchers = 0;
+		 
 		//ALIGNMENTS LIST MUST BE NULL UNTIL THEY ARE CALCULATED
 		sourceOntology = Core.getInstance().getSourceOntology();
 		targetOntology = Core.getInstance().getTargetOntology();
@@ -137,7 +147,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     public void match() throws Exception {
     	matchStart();
     	buildSimilarityMatrices();
-    	select();	
+    	if(performSelection){
+        	select();	
+    	}
     	matchEnd();
     	//System.out.println("Classes alignments found: "+classesAlignmentSet.size());
     	//System.out.println("Properties alignments found: "+propertiesAlignmentSet.size());
@@ -608,7 +620,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	public AbstractMatcherParametersPanel getParametersPanel() {
 		//This method must create and return the AbstractMatcherParameter subclass so that the user can select additional parameters needed by the matcher
 		//if the matcher doesn't need any parameter then the attribute needsParameters must be false and this method won't be invoked.
-		return parametersPanel;
+		//REMEMBER to instantiate the panel in this method. Don't initiate the panel in the constructor because the method runs in batch mode the panel is not needed.
+		throw new RuntimeException("The method getParametersPanel has to be implemented in the implementing class");
 		//You may need to override this method to pass some more information to the panel, in that case instead of initializing the panel in the constructor 
 		//you will have to override this method this way: "return new MyParameterPanel(with some more parameters); (see manualCombinationMatcher structure
 	}

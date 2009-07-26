@@ -14,7 +14,9 @@ import org.dom4j.Element;
 
 import am.Utility;
 import am.application.mappingEngine.AbstractMatcher;
+import am.application.mappingEngine.AbstractMatcherParametersPanel;
 import am.application.mappingEngine.Alignment;
+import am.application.mappingEngine.baseSimilarity.BaseSimilarityMatcherParametersPanel;
 import am.application.ontology.Node;
 import am.output.OutputController;
 
@@ -39,7 +41,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		maxSourceAlign = ANY_INT;
 		maxTargetAlign = ANY_INT;
 		threshold = 0.01;
-		parametersPanel = new ReferenceAlignmentParametersPanel();
+		
 	}
 	
 	
@@ -61,7 +63,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
     		Iterator<MatchingPair> it = referenceListOfPairs.iterator();
     		while(it.hasNext()) {
     			mp = it.next();
-    			if(mp.sourcename.equalsIgnoreCase(sname)&& mp.targetname.equalsIgnoreCase(tname)) {
+    			if(mp.sourcename.equals(sname)&& mp.targetname.equals(tname)) {
     				a = new Alignment(source, target, mp.similarity);
     				it.remove();
     			}
@@ -349,5 +351,11 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		return result;
 	}
 	
+	public AbstractMatcherParametersPanel getParametersPanel() {
+		if(parametersPanel == null){
+			parametersPanel = new ReferenceAlignmentParametersPanel();
+		}
+		return parametersPanel;
+	}
 	
 }

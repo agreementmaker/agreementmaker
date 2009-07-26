@@ -1,6 +1,7 @@
 package am;
 
 import am.application.Core;
+import am.batchMode.TrackDispatcher;
 import am.userInterface.UI;
 
 /**
@@ -13,6 +14,7 @@ import am.userInterface.UI;
  */
 public class Main
 {
+	
 	/*******************************************************************************************/
 	/**
 	 * This is the main function
@@ -22,9 +24,19 @@ public class Main
 	 */
 	public static void main(String args[])
 	{
-		//UI ui;
-		UI ui = new UI();
-		Core.getInstance().setUI(ui);
+		if(args.length == 0){
+			//UI ui;
+			UI ui = new UI();
+			Core.getInstance().setUI(ui);
+		}
+		else{
+			String track = args[0];
+			String subTrack = "";
+			if(args.length > 1){
+				subTrack = args[1];
+			}
+			TrackDispatcher.dispatchTrack(track, subTrack);
+		}
 	}
 }
 

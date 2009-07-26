@@ -6,8 +6,10 @@ import javax.swing.tree.TreeNode;
 
 import am.GlobalStaticVariables;
 import am.application.mappingEngine.AbstractMatcher;
+import am.application.mappingEngine.AbstractMatcherParametersPanel;
 import am.application.mappingEngine.Alignment;
 import am.application.mappingEngine.AlignmentMatrix;
+import am.application.mappingEngine.baseSimilarity.BaseSimilarityMatcherParametersPanel;
 import am.application.ontology.Node;
 import am.userInterface.vertex.Vertex;
 
@@ -21,8 +23,6 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 	
 	public SiblingsSimilarityContributionMatcher() {
 		super();
-		
-		parametersPanel = new SiblingsSimilarityContributionParametersPanel(); 
 
 		needsParam = true; // we need to set the MCP before running SSC
 		
@@ -235,6 +235,13 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 		description += "The only parameter required by the SSC is the Main Contribution Percentage (MCP).  \nThe MCP controls how much of the computed SSC similarity should come from the previous \nMatcher, and how much should come from the current SSC Matcher.  \n\nFor example, if MCP=0.75, the output of the SSC will be 75% from the previous Matcher, and 25% from the SSC.\nIf you set the MCP close to 0%, the alignment that will be computed \nby the SSC will be almost completely based on the children of every node, ignoring how similar \nthe actual nodes are to eachother.\n\n";
 		description += "Therefore, the MCP cannot be too low, or the relations between the actual nodes \nwill be ignored, while it cannot be to high, because the contribution from the SSC will be negligible.  \nThe MCP value is subject to experimentation, as there is no automatic way of choosing the MCP (yet).\n\n";
 		return description;
+	}
+	
+	public AbstractMatcherParametersPanel getParametersPanel() {
+		if(parametersPanel == null){
+			parametersPanel = new SiblingsSimilarityContributionParametersPanel();
+		}
+		return parametersPanel;
 	}
 	
 }

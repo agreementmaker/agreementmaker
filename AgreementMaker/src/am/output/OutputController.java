@@ -25,7 +25,9 @@ public class OutputController {
 		int [] rowsIndex = Core.getInstance().getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
 		matcher = list.get(rowsIndex[0]);
 		AlignmentOutput output = new AlignmentOutput(matcher.getAlignmentSet(), name);
-		output.write("onto1", "onto2", "uri1", "uri2");
+		String sourceUri = Core.getInstance().getSourceOntology().getURI();
+		String targetUri = Core.getInstance().getTargetOntology().getURI();
+		output.write(sourceUri, targetUri, sourceUri, targetUri);
 	}
 	
 	public static void printDocument(String name) throws Exception{

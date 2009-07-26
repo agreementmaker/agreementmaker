@@ -38,8 +38,8 @@ public class AlignmentOutput
         writeStart("yes", "0", "11", onto1, onto2, uri1, uri2);
         for (int i = 0, n = alignmentSet.size(); i < n; i++) {
             Alignment alignment = (Alignment) alignmentSet.getAlignment(i);
-            String e1 = alignment.getEntity1().toString();
-            String e2 = alignment.getEntity2().toString();
+            String e1 = alignment.getEntity1().getUri();
+            String e2 = alignment.getEntity2().getUri();
             String measure = Double.toString(alignment.getSimilarity());
             writeElement(e1, e2, measure);
 

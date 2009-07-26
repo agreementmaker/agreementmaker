@@ -84,19 +84,18 @@ public class OntoTreeBuilder extends TreeBuilder{
 	protected void buildTree() {
 		System.out.print("Reading Model...");
 		model = ModelFactory.createOntologyModel( PelletReasonerFactory.THE_SPEC );
-		
-		
 		//TODO: Figure out if the 2nd arg in next fn call should be null or someother URI
 		model.read( "file:"+ontology.getFilename(), null, ontology.getFormat() );
 		System.out.println("done");
 		
-		if(skipOtherNamespaces) { //we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
-			try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
-				ns = model.getNsPrefixMap().get("").toString();
-			}
-			catch(Exception e) {
-				skipOtherNamespaces = false;
-			}
+		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
+		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
+			ns = model.getNsPrefixMap().get("").toString();
+			ontology.setURI(ns);
+		}
+		catch(Exception e) {
+			skipOtherNamespaces = false;
+			ontology.setURI("");
 		}
 		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
 
@@ -109,10 +108,10 @@ public class OntoTreeBuilder extends TreeBuilder{
 		System.out.print("Classifying...");
 		((PelletInfGraph) model.getGraph()).getKB().classify();
 		//reasoner.classify();
-
-		ontology.setModel(model);
-		// Use OntClass for convenience
 		
+		ontology.setModel(model);
+		
+		// Use OntClass for convenience
         owlThing = model.getOntClass( OWL.Thing.getURI() );
         OntClass owlNothing = model.getOntClass( OWL.Nothing.getURI() );
        
@@ -132,7 +131,7 @@ public class OntoTreeBuilder extends TreeBuilder{
         //the root has 2 fake sons Classes and Properties
         System.out.println("Building class hierarchy");
         Vertex classRoot = createClassTree(owlThing, true);
-        System.out.println("after the first create class tree");
+        //System.out.println("after the first create class tree");
         treeRoot.add(classRoot);
         ontology.setClassesTree( classRoot);
         System.out.println("Building Property hierarchy");

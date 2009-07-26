@@ -7,8 +7,10 @@ import edu.smu.tspell.wordnet.WordNetDatabase;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import am.GlobalStaticVariables;
 import am.application.mappingEngine.AbstractMatcher;
+import am.application.mappingEngine.AbstractMatcherParametersPanel;
 import am.application.mappingEngine.Alignment;
 import am.application.mappingEngine.AlignmentMatrix;
+import am.application.mappingEngine.baseSimilarity.BaseSimilarityMatcherParametersPanel;
 import am.application.ontology.Node;
 import am.userInterface.vertex.Vertex;
 
@@ -29,9 +31,6 @@ public class ConceptMatcher extends AbstractMatcher {
 		
 		super();
 		needsParam = true;
-		
-		
-		parametersPanel = new ConceptMatcherParametersPanel();
 	}
 
 	
@@ -349,4 +348,11 @@ public class ConceptMatcher extends AbstractMatcher {
 		}
 	    return s2;
 	 }
+	 
+		public AbstractMatcherParametersPanel getParametersPanel() {
+			if(parametersPanel == null){
+				parametersPanel = new ConceptMatcherParametersPanel();
+			}
+			return parametersPanel;
+		}
 }

@@ -40,9 +40,18 @@ public class GlobalStaticVariables
 	public static final int N3  = 3;
 	public static final int TURTLE = 4;
 	
+	public final static String SYNTAX_RDFXML = "RDF/XML";
+	public final static String SYNTAX_RDFXMLABBREV = "RDF/XML-ABBREV";
+	public final static String SYNTAX_NTRIPLE = "N-TRIPLE";
+	public final static String SYNTAX_N3 = "N3";
+	public final static String SYNTAX_TURTLE = "TURTLE";
+	public final static String[] syntaxStrings  = {SYNTAX_RDFXML, SYNTAX_RDFXMLABBREV, SYNTAX_NTRIPLE, SYNTAX_N3, SYNTAX_TURTLE};
+	public final static String LANG_RDFS = "RDFS";
+	public final static String LANG_OWL = "OWL";
+	public final static String LANG_XML = "XML";
+	public static final String[] languageStrings = {LANG_RDFS, LANG_OWL, LANG_XML};
+
 	
-	public final static String[] syntaxStrings  = {"RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE", "N3", "TURTLE"};
-	public static final String[] languageStrings = {"RDFS", "OWL", "XML"};
 	
 	public static final PrintStream out = new PrintStream(System.out, true);
 	

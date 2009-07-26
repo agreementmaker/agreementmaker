@@ -5,10 +5,12 @@ import java.util.HashSet;
 
 import am.Utility;
 import am.application.mappingEngine.AbstractMatcher;
+import am.application.mappingEngine.AbstractMatcherParametersPanel;
 import am.application.mappingEngine.Alignment;
 import am.application.mappingEngine.StringUtil.ISub;
 import am.application.mappingEngine.StringUtil.Normalizer;
 import am.application.mappingEngine.StringUtil.StringMetrics;
+import am.application.mappingEngine.baseSimilarity.BaseSimilarityMatcherParametersPanel;
 import am.application.ontology.Node;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.*; //all sim metrics are in here
@@ -22,7 +24,6 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		// warning, param is not available at the time of the constructor
 		super();
 		needsParam = true;
-		parametersPanel = new ParametricStringParametersPanel();
 	}
 	
 	
@@ -168,6 +169,13 @@ public class ParametricStringMatcher extends AbstractMatcher {
 			}
 		}
 		return sim;
+	}
+	
+	public AbstractMatcherParametersPanel getParametersPanel() {
+		if(parametersPanel == null){
+			parametersPanel = new ParametricStringParametersPanel();
+		}
+		return parametersPanel;
 	}
 	      
 }

@@ -142,7 +142,10 @@ public class CombinationMatcher extends AbstractMatcher {
 	}
 
 	public AbstractMatcherParametersPanel getParametersPanel() {
-		return new CombinationParametersPanel(inputMatchers);
+		if(parametersPanel == null){
+			parametersPanel = new CombinationParametersPanel(inputMatchers);
+		}
+		return parametersPanel;
 	}
 	
 	public String getDescriptionString() {

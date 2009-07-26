@@ -38,6 +38,14 @@ public class Ontology {
 	
 	private boolean skipOtherNamespaces;
 	
+	public String URI;
+	
+	public String getURI() {
+		return URI;
+	}
+	public void setURI(String uri) {
+		URI = uri;
+	}
 	public String getFilename() {
 		return filename;
 	}

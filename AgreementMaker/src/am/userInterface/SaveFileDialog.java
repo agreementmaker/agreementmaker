@@ -18,8 +18,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.filechooser.FileFilter;
 
 import am.Utility;
+import am.application.Core;
 import am.output.AlignmentOutput;
 import am.output.OutputController;
+import am.userInterface.UI.WindowEventHandler;
 
 
 
@@ -124,12 +126,13 @@ public class SaveFileDialog implements ActionListener{
 					)		
 					.addComponent(browse)
 		);
-
 		// end of Layout Code
+		frame.addWindowListener(Core.getInstance().getUI().new WindowEventHandler());
 		frame.pack(); // automatically set the frame size
 		frame.setLocationRelativeTo(null); 	// center the window on the screen
-		frame.setVisible(true);
 		frame.setModal(true);
+		frame.setVisible(true);
+		//the order of modal and visible must be exactly this one!
 	}
 	
 
@@ -157,7 +160,7 @@ public class SaveFileDialog implements ActionListener{
 			String outPath = filePath.getText();
 			String outName = fileName.getText();
 			String outF = formatList.getSelectedValue().toString();
-			String fullName = outPath+"\\"+outName+"."+outF;
+			String fullName = outPath+"/"+outName+"."+outF;
 
 			if(outPath.equals("")){
 				JOptionPane.showMessageDialog(frame, "Select the directory for the output file to proceed.");

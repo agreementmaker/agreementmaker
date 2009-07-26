@@ -9,8 +9,10 @@ import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.SynsetType;
 import edu.smu.tspell.wordnet.WordNetDatabase;
 import am.application.mappingEngine.AbstractMatcher;
+import am.application.mappingEngine.AbstractMatcherParametersPanel;
 import am.application.mappingEngine.Alignment;
 import am.application.mappingEngine.AbstractMatcher.alignType;
+import am.application.mappingEngine.Combination.CombinationParametersPanel;
 import am.application.mappingEngine.StringUtil.PorterStemmer;
 import am.application.ontology.Node;
 
@@ -27,9 +29,6 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		
 		super();
 		needsParam = true;
-		
-		
-		parametersPanel = new BaseSimilarityMatcherParametersPanel();
 		
 	}
 
@@ -352,6 +351,13 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		 
 		
 		return true;
+	}
+	
+	public AbstractMatcherParametersPanel getParametersPanel() {
+		if(parametersPanel == null){
+			parametersPanel = new BaseSimilarityMatcherParametersPanel();
+		}
+		return parametersPanel;
 	}
 	      
 }

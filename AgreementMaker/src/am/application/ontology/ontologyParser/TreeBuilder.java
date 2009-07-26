@@ -36,6 +36,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		ontology.setFormat(format);
         File f = new File(ontology.getFilename());
         ontology.setTitle(f.getName()); 
+        System.out.println(filename);
 	}
 	
 	public static TreeBuilder buildTreeBuilder(String fileName, int ontoType, int langIndex, int syntaxIndex, boolean skip){
@@ -54,7 +55,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		return treeBuilder;
 	}
 	
-	private void build(){
+	public void build(){
 		buildTree();//Instantiated in the subclasses
 		report = "Ontology loaded succesfully\n\n";
         report += "Total number of classes: "+ontology.getClassesList().size()+"\n";

@@ -9,11 +9,13 @@ import com.wcohen.ss.api.StringWrapper;
 
 import am.Utility;
 import am.application.mappingEngine.AbstractMatcher;
+import am.application.mappingEngine.AbstractMatcherParametersPanel;
 import am.application.mappingEngine.Alignment;
 import am.application.mappingEngine.AlignmentMatrix;
 import am.application.mappingEngine.AbstractMatcher.alignType;
 import am.application.mappingEngine.StringUtil.AMStringWrapper;
 import am.application.mappingEngine.StringUtil.Normalizer;
+import am.application.mappingEngine.baseSimilarity.BaseSimilarityMatcherParametersPanel;
 import am.application.ontology.Node;
 import am.userInterface.vertex.Vertex;
 
@@ -36,7 +38,6 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		// warning, param is not available at the time of the constructor
 		super();
 		needsParam = true;
-		parametersPanel = new MultiWordsParametersPanel();
 	}
 	
 	
@@ -294,6 +295,13 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		//System.out.println("***** sim: "+sim+"\nmultisource: "+multiWordsSource+"\n"+processedSource+"\n"+multiWordsTarget+"\n"+processedTarget );
 		return new Alignment(source, target, sim);
 		
+	}
+	
+	public AbstractMatcherParametersPanel getParametersPanel() {
+		if(parametersPanel == null){
+			parametersPanel = new MultiWordsParametersPanel();
+		}
+		return parametersPanel;
 	}
 	
 	
