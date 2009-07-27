@@ -20,7 +20,8 @@ public class TrackDispatcher {
 				bt.launch();
 			}
 			else if(track.equalsIgnoreCase(ANATOMY)){
-				//TODO
+				AnatomyTrack at = new AnatomyTrack(subTrack);
+				at.launch();
 			}
 			else if(track.equalsIgnoreCase(CONFERENCE)){
 				//TODO
