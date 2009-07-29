@@ -129,7 +129,7 @@ public class BenchmarkTrack extends Track{
 		for(int i = 0; i< whichTracks.length; i++){
 			currentTarget = whichTracks[i];
 			targetOntology = TRACK_INPUT_DIR+currentTarget+"/"+ONTO_NAME;
-			//all ontologies are OWL - RDF/XML and the TRUE value is because in the benchmark the concepts with different namespace have to be skipped
+			//all ontologies are RDF/XML and the TRUE value is because in the benchmark the concepts with different namespace have to be skipped
 			//matcher and threshold have to be defined yet
 			//the last object are the parameters specific for the choosen matcher, however it may not be needed. Right now as example, I put the base similarity parameters.
 			as = computeAlignment(SOURCE_ONTOLOGY, targetOntology, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, true, matcher, threshold, sourceCardinality, targetCardinality, new BaseSimilarityParameters());
