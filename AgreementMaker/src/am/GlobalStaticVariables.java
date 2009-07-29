@@ -39,7 +39,7 @@ public class GlobalStaticVariables
 	public static final int NTRIPLE = 2;
 	public static final int N3  = 3;
 	public static final int TURTLE = 4;
-	
+	//ass
 	public final static String SYNTAX_RDFXML = "RDF/XML";
 	public final static String SYNTAX_RDFXMLABBREV = "RDF/XML-ABBREV";
 	public final static String SYNTAX_NTRIPLE = "N-TRIPLE";
