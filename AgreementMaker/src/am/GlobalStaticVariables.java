@@ -47,7 +47,7 @@ public class GlobalStaticVariables
 	public final static String SYNTAX_TURTLE = "TURTLE";
 	public final static String[] syntaxStrings  = {SYNTAX_RDFXML, SYNTAX_RDFXMLABBREV, SYNTAX_NTRIPLE, SYNTAX_N3, SYNTAX_TURTLE};
 	public final static String LANG_RDFS = "RDFS";
-	public final static String LANG_OWL = "aaa";
+	public final static String LANG_OWL = "OWL";
 	public final static String LANG_XML = "XML";
 	public static final String[] languageStrings = {LANG_RDFS, LANG_OWL, LANG_XML};
 
