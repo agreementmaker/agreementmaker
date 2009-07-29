@@ -19,7 +19,7 @@ public class Main
 	/**
 	 * This is the main function
 	 * It creates a new instance of UI class
-	 * hhh
+	 * 
 	 * @param  args array of strings
 	 */
 	public static void main(String args[])
