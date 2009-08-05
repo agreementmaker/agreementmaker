@@ -46,14 +46,12 @@ public class MultiWordsParameters extends AbstractParameters {
 	public MultiWordsParameters() {
 		super();
 		measure = TFIDF;
-		considerInstances = true;
+		considerInstances = false;
 		considerNeighbors = false;
-		considerConcept = false;
+		considerConcept = true;
 		considerClasses = false;
 		considerProperties = false;
-		ignoreLocalNames = false
-		
-		;
+		ignoreLocalNames = true;
 		normParameter = new NormalizerParameter();
 		normParameter.normalizeBlank = true;
 		normParameter.normalizeDiacritics = true;
@@ -61,5 +59,20 @@ public class MultiWordsParameters extends AbstractParameters {
 		normParameter.normalizePunctuation = true;
 		normParameter.removeStopWords = true;
 		normParameter.stem = true;
+	}
+
+
+	public void initForOAEI2009() {
+		measure = TFIDF;
+		//only on concepts right now because it should be weighted differently
+		considerInstances = false;
+		considerNeighbors = false;
+		considerConcept = true;
+		considerClasses = false;
+		considerProperties = false;
+		ignoreLocalNames = true;
+		normParameter = new NormalizerParameter();
+		normParameter.setForOAEI2009();
+		
 	}
 }

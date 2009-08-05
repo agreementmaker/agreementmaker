@@ -32,7 +32,7 @@ public class ProcessStrings {
 		par.normalizePunctuation = true;
 		par.normalizeDigit = true;
 		par.removeStopWords = true;
-		par.stem = true;
+		par.stem = false;
 		Normalizer n = new Normalizer(par);
 		
 		String input = JOptionPane.showInputDialog("Insert string to be processed");
@@ -40,7 +40,8 @@ public class ProcessStrings {
 		while(input != null) {
 			process = n.normalize(input);
 			JOptionPane.showMessageDialog(null, process);
-			System.out.println(process);
+			System.out.println("Original String was:"+input);
+			System.out.println("Processed String is:"+process);
 			input = JOptionPane.showInputDialog("Insert string to be processed");
 		}
 	}

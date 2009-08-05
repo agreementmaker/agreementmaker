@@ -13,6 +13,8 @@ import am.application.mappingEngine.AbstractMatcherParametersPanel;
 import am.application.mappingEngine.Alignment;
 import am.application.mappingEngine.AbstractMatcher.alignType;
 import am.application.mappingEngine.Combination.CombinationParametersPanel;
+import am.application.mappingEngine.StringUtil.Normalizer;
+import am.application.mappingEngine.StringUtil.NormalizerParameter;
 import am.application.mappingEngine.StringUtil.PorterStemmer;
 import am.application.ontology.Node;
 
@@ -58,11 +60,23 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	 */
 	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
 		
-		String sourceName= source.getLocalName();
-		String targetName = target.getLocalName();
+
 		
 		/*
 		 * Ok, Here is the bird's eye view of this algorithm.
+		 * NON DICTIONARY
+		 *  
+		 *  check if labels are equivalent if so return 1
+		 *  check if localnames are equivalent, if so return 1
+		 *  normalize (without stemming) labels if they are equivalent return 0.95
+		 *  normalize (without stemming) localnames if they are equivalent return 0.95
+		 *  apply also stemming labels if they are equivalent return 0.9
+		 *  apply also stemming localnames if they are equivalent return 0.9
+		 *  remove digits and return 0.8
+		 *  else return 0
+		 * 
+		 * 
+		 *  USE DICTIONARY PART
 		 *
 		 * 	Input: 		sourceName, targetName: these are the names of the nodes 
 		 * 				(either the class name or the property name)
@@ -72,7 +86,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		 *  Step 2:  	Check right away if the strings are equal (ignoring case).  
 		 *  			If they're equal, return a similarity of 1.0.
 		 *  
-		 *  Step 3a:	If the user wants to use a dictionary, lookup the related nouns
+		 *  Step 3a:	lookup the related nouns
 		 *  			and verbs and compare the words shared by the definitions
 		 *  
 		 *  			Return a similarity based on that.
@@ -82,21 +96,25 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		 */
 		
 		
-		// Step 1:		run treatString on each name to clean it up
-		sourceName = treatString(sourceName);
-		targetName = treatString(targetName);
-		
-		
-		// Step 2:	If the labels are equal, then return a similarity of 1
-		if( sourceName.equalsIgnoreCase(targetName) ) {
-			String relation = Alignment.EQUIVALENCE;
-			return new Alignment(source, target, 1.0d, relation);
-		}
+
 		
 		
 		
 		if( ((BaseSimilarityParameters) param).useDictionary ) {  // Step 3a
+			//this is the same as the one of William Sunan
+			String sourceName = source.getLocalName();
+			String targetName = target.getLocalName();
 			
+			// Step 1:		run treatString on each name to clean it up
+			sourceName = treatString(sourceName);
+			targetName = treatString(targetName);
+			
+			
+			// Step 2:	If the labels are equal, then return a similarity of 1
+			if( sourceName.equalsIgnoreCase(targetName) ) {
+				String relation = Alignment.EQUIVALENCE;
+				return new Alignment(source, target, 1.0d, relation);
+			}
 			// if we haven't initialized our wordnet database, do it
 			if( wordnet == null )
 				wordnet = WordNetDatabase.getFileInstance();
@@ -124,11 +142,82 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	        }
 			
 		}
-		else {  // Step 3b
+		else {  // Step no dictionary
 			// the user does not want to use the dictionary
-			// TODO: Work out this part of the algorithm.
+			// Changed from the one of Sunna
 			
-			return new Alignment( source, target, 0.0f, Alignment.EQUIVALENCE);
+			//FOCUS ON LOCALNAMES
+			//equivalence return 1
+			String sLocalname = source.getLocalName();
+			String tLocalname = target.getLocalName();
+			if(sLocalname.equalsIgnoreCase(tLocalname))
+				return new Alignment( source, target, 1d, Alignment.EQUIVALENCE);
+			//all normalization without stemming and digits return 0.95
+			NormalizerParameter param = new NormalizerParameter();
+			param.setAllTrue();
+			param.normalizeDigit = false;
+			param.stem = false;
+			Normalizer norm = new Normalizer(param);
+			String sProcessedLocalnames = norm.normalize(sLocalname);
+			String tProcessedLocalnames = norm.normalize(tLocalname);
+			if(sProcessedLocalnames.equals(tProcessedLocalnames))
+				return new Alignment( source, target, 0.95d, Alignment.EQUIVALENCE);
+			//all normalization without digits return 0.90
+			param = new NormalizerParameter();
+			param.setAllfalse();
+			param.stem = true;
+			norm = new Normalizer(param);
+			sProcessedLocalnames = norm.normalize(sLocalname);
+			tProcessedLocalnames = norm.normalize(tLocalname);
+			if(sProcessedLocalnames.equals(tProcessedLocalnames))
+				return new Alignment( source, target, 0.9d, Alignment.EQUIVALENCE);
+			//all normalization return 0.8
+			param = new NormalizerParameter();
+			param.setAllfalse();
+			param.normalizeDigit = true;
+			sProcessedLocalnames = norm.normalize(sLocalname);
+			tProcessedLocalnames = norm.normalize(tLocalname);
+			if(sProcessedLocalnames.equals(tProcessedLocalnames))
+				return new Alignment( source, target, 0.8d, Alignment.EQUIVALENCE);
+			
+			//FOCUS ON LABELS
+			//equivalence return 1
+			String sLabel = source.getLabel();
+			String tLabel = target.getLabel();
+			if(!(sLabel.equals("") || tLabel.equals(""))){
+				if(sLabel.equalsIgnoreCase(tLabel))
+					return new Alignment( source, target, 1, Alignment.EQUIVALENCE);
+				//all normalization without stemming and digits return 0.95
+				 param = new NormalizerParameter();
+				param.setAllTrue();
+				param.normalizeDigit = false;
+				param.stem = false;
+				 norm = new Normalizer(param);
+				String sProcessedLabel = norm.normalize(sLabel);
+				String tProcessedLabel = norm.normalize(tLabel);
+				if(sProcessedLabel.equals(tProcessedLabel))
+					return new Alignment( source, target, 0.95d, Alignment.EQUIVALENCE);
+				//apply stem return 0.90 
+				param = new NormalizerParameter();
+				param.setAllfalse();
+				param.stem = true;
+				norm = new Normalizer(param);
+				sProcessedLabel = norm.normalize(sLabel);
+				tProcessedLabel = norm.normalize(tLabel);
+				if(sProcessedLabel.equals(tProcessedLabel))
+					return new Alignment( source, target, 0.9d, Alignment.EQUIVALENCE);
+				//apply normDigits return 0.8
+				param = new NormalizerParameter();
+				param.setAllfalse();
+				param.normalizeDigit = true;
+				norm = new Normalizer(param);
+				sProcessedLabel = norm.normalize(sLabel);
+				tProcessedLabel = norm.normalize(tLabel);
+				if(sProcessedLabel.equals(tProcessedLabel))
+					return new Alignment( source, target, 0.8d, Alignment.EQUIVALENCE);
+			}
+			//node of the above
+			return new Alignment( source, target, 0d, Alignment.EQUIVALENCE);
 		}
 		
 		

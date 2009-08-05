@@ -11,6 +11,7 @@ public class ParametricStringParameters extends AbstractParameters {
 	public final static String SUB = "Substring metric";
 	public final static String AMSUB = "AM Substring metric";
 	public final static String ISUB = "I-SUB";
+	public final static String AMSUB_AND_EDIT = "AMsubstring + editDistance"; //0.6*amsub + 0.4*editdistance
 	
 	public String measure = EDIT;
 	
@@ -39,6 +40,18 @@ public class ParametricStringParameters extends AbstractParameters {
 	
 	public double getTotWeight() {
 		return localWeight+labelWeight+commentWeight+seeAlsoWeight+isDefinedByWeight;
+	}
+
+	public void initForOAEI2009() {
+		localWeight = 0;
+		labelWeight = 0.7;
+		commentWeight = 0.30;
+		seeAlsoWeight = 0;
+		isDefinedByWeight = 0;
+		measure = AMSUB+EDIT;
+		normParameter = new NormalizerParameter();
+		normParameter.setForOAEI2009();
+		redistributeWeights = true;
 	}
 	
 }

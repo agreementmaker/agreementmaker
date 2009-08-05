@@ -119,7 +119,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		performSelection = true;//only in batchmode can be set to false in the internal matchers.
 		threshold = 0.75;
 		maxSourceAlign = 1;
-		maxTargetAlign = ANY_INT;
+		maxTargetAlign = 1;
 		alignClass = true;
 		alignProp = true;
 		minInputMatchers = 0;
@@ -889,7 +889,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
 	public double getDefaultThreshold() {
 		// TODO Auto-generated method stub
-		return 0.5;
+		return 0.6;
 	}
 	
 	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/

@@ -5,6 +5,18 @@ Fell free to take care of any of these problems or to add anything new to these 
 
 This is the structure, feel free to add infos to it:
 
+****OAEI 2009
+some benchmarks testcases don't work because the AM is not able to load the ontologies
+The DSI method should be changed to work on non-tree structure (mcp sim + (1 -MCP) (sum(maxdsi(eachparent)/numparents)
+The VMM should consider vectors differently
+Ulas noticed a problem with the normalizer
+Find a way to merge diff results in Conference track
+Make the distrib directory and the Jar available online
+Find a way to make use of the partial reference alignment to have a better result in Anatomy 4.
+In psm and VMM seeAlso and isDefined by are not set with a reference to the concept 
+Only the matcher before the lexical one and the final matcher need to perform the selection all other can skip it by just creating the matrix
+
+
 ****TODO
 
 --Matchings

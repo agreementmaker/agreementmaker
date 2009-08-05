@@ -6,6 +6,7 @@ import am.application.mappingEngine.conceptMatcher.ConceptMatcher;
 import am.application.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
 import am.application.mappingEngine.manualMatcher.UserManualMatcher;
 import am.application.mappingEngine.multiWords.MultiWordsMatcher;
+import am.application.mappingEngine.oaei2009.OAEI2009matcher;
 import am.application.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.application.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.application.mappingEngine.ssc.SiblingsSimilarityContributionMatcher;
@@ -42,6 +43,7 @@ public enum MatchersRegistry {
 	SSC					( "Sibling's Similarity Contribution (SSC)", SiblingsSimilarityContributionMatcher.class ),
 	Combination	( "Mathematical Weighted Combination", CombinationMatcher.class ),
 	ConceptSimilarity   ( "Concept Similarity", ConceptMatcher.class, false),
+	OAEI2009   ( "OAEI2009 mmatcher", OAEI2009matcher.class),
 	
 
 	//WORK IN PROGRESS

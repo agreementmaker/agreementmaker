@@ -26,7 +26,15 @@ public class CombinationParameters extends AbstractParameters {
 	
 	//for each matcher there is an array of local weights for each node
 	//when weights are manually assigned, each matcher as an array with the same value for all nodes. like if it is a global weight not local
-	public double[] matchersWeights; 
+	public double[] matchersWeights;
+
+	public void initForOAEI2009() {
+		combinationType = AVERAGECOMB;
+		qualityEvaluation = true;
+		manualWeighted = false;
+		quality = QualityEvaluator.LOCALCONFIDENCE;
+		
+	} 
 		
 
 }

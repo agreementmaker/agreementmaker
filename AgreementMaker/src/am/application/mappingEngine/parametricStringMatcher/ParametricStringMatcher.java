@@ -149,6 +149,12 @@ public class ParametricStringMatcher extends AbstractMatcher {
 			if(parameters.measure.equals(ParametricStringParameters.AMSUB)) {
 				sim = StringMetrics.AMsubstringScore(processedSource,processedTarget);
 			}
+			else if(parameters.measure.equals(ParametricStringParameters.AMSUB_AND_EDIT)) {
+				Levenshtein lv = new Levenshtein();
+				double lsim = lv.getSimilarity(processedSource, processedTarget);
+				double AMsim = StringMetrics.AMsubstringScore(processedSource,processedTarget);
+				sim = (0.65*AMsim)+(0.35*lsim); 
+			}
 			else if(parameters.measure.equals(ParametricStringParameters.EDIT)) {
 				Levenshtein lv = new Levenshtein();
 				sim = lv.getSimilarity(processedSource, processedTarget);

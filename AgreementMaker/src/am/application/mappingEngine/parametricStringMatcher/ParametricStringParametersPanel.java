@@ -69,7 +69,7 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 		
 		super();
 		//init components
-		String[] metricsList = {ParametricStringParameters.EDIT, ParametricStringParameters.AMSUB, ParametricStringParameters.SUB, ParametricStringParameters.JARO, ParametricStringParameters.QGRAM, ParametricStringParameters.ISUB};
+		String[] metricsList = {ParametricStringParameters.EDIT, ParametricStringParameters.AMSUB, ParametricStringParameters.AMSUB_AND_EDIT, ParametricStringParameters.SUB, ParametricStringParameters.JARO, ParametricStringParameters.QGRAM, ParametricStringParameters.ISUB};
 		metricsCombo = new JComboBox(metricsList);
 		
 		String[] percents = Utility.getPercentStringList();
