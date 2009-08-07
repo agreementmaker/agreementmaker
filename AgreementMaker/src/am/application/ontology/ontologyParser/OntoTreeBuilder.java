@@ -201,7 +201,13 @@ public class OntoTreeBuilder extends TreeBuilder{
                 }
                 Vertex vert = createClassTree(sub, false);
                 if( vert != null ) {
-                    root.add( vert );
+                   	//I add this other control because of a bug in OAEI benchmark 102
+                	//A concept was both a son of OWL thing (so it was a root) and also a son of another concept
+                	if(root.getNode() == null && vert.getNode().getVertexList().size() > 1){
+                       vert.getNode().getVertexList().remove(vert);
+                	}
+                	else{ root.add( vert ); }
+
             	}
             }
         }

@@ -8,6 +8,7 @@ import am.application.Core;
 import am.application.mappingEngine.AlignmentSet;
 import am.application.mappingEngine.MatchersRegistry;
 import am.application.mappingEngine.baseSimilarity.BaseSimilarityParameters;
+import am.application.mappingEngine.oaei2009.OAEI2009parameters;
 import am.output.AlignmentOutput;
 
 public class BenchmarkTrack extends Track{
@@ -51,7 +52,7 @@ public class BenchmarkTrack extends Track{
 		"221",
 		"222",
 		"223",
-		//"224", I don't know why but it doesn't want to open this
+		//"224",TO CHECK I don't know why but it doesn't want to open this
 		"225",
 		//"226",  doesn't exist in the track yet
 		//"227",  doesn't exist in the track yet
@@ -59,26 +60,26 @@ public class BenchmarkTrack extends Track{
 		//"229",  //doesn't exist in the track yet
 		"230",
 		"231",  //in the website it's written that it doesn't exist, but it does in the zip file.
-		//"232", I don't why but it doesn't want to open this
+		//"232",TO CHECK I don't why but it doesn't want to open this
 		"233",
 		"236",
-		//"237", I don't know why but it doesn't want to open this
-		//"238", I don't know why but it doesn't want to open this
+		//"237",TO CHECK I don't know why but it doesn't want to open this
+		//"238",TO CHECK I don't know why but it doesn't want to open this
 		"239",
 		"240",
 		"241",
 		"246",
 		"247",
 		"248",
-		//"249", I don't know why but it doesn't want to open this
+		//"249",TO CHECK I don't know why but it doesn't want to open this
 		"250",
 		"251",
 		"252",
-		//"253", I don't know why but it doesn't want to open this
+		//"253",TO CHECK I don't know why but it doesn't want to open this
 		"254",
 		"257",
-		//"258", I don't know why but it doesn't want to open this
-		//"259",  I don't know why but it doesn't want to open this
+		//"258",TO CHECK I don't know why but it doesn't want to open this
+		//"259",TO CHECK  I don't know why but it doesn't want to open this
 		"260",
 		"261",
 		"262",
@@ -103,8 +104,11 @@ public class BenchmarkTrack extends Track{
 	//remember to invoke launch() to invoke this method
 	protected void execute() throws Exception{
 		//TRACK PARAMETERS
-		MatchersRegistry matcher = MatchersRegistry.BaseSimilarity;
-		double threshold = 0.7;
+		//TH and cardinality have to  be set later for each track
+		MatchersRegistry matcher = MatchersRegistry.OAEI2009;
+		//the parameters are only used in the forth subtrck of the anatomy to keep the name of the partial reference file
+		OAEI2009parameters param = new OAEI2009parameters();
+		double threshold = 0.6;
 		int sourceCardinality = 1;
 		int targetCardinality = 1;
 		
@@ -132,7 +136,7 @@ public class BenchmarkTrack extends Track{
 			//all ontologies are RDF/XML and the TRUE value is because in the benchmark the concepts with different namespace have to be skipped
 			//matcher and threshold have to be defined yet
 			//the last object are the parameters specific for the choosen matcher, however it may not be needed. Right now as example, I put the base similarity parameters.
-			as = computeAlignment(SOURCE_ONTOLOGY, targetOntology, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, true, matcher, threshold, sourceCardinality, targetCardinality, new BaseSimilarityParameters());
+			as = computeAlignment(SOURCE_ONTOLOGY, targetOntology, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, true, matcher, threshold, sourceCardinality, targetCardinality, param);
 			sourceUri = Core.getInstance().getSourceOntology().getURI();
 			targetUri = Core.getInstance().getTargetOntology().getURI();
 			

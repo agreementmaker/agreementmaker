@@ -417,6 +417,13 @@ public class Node {
 				for(int i = 0; i < list.size(); i++){
 					v = list.get(i);
 					parent = (Vertex)v.getParent();
+					
+					if(index == 11){
+						System.out.println("getParents "+this);
+						System.out.println("vertexlist "+list.size()+" indexOnList "+i);
+						System.out.println("parentVertex "+parent);
+						//System.out.println("parentNode "+parentNode);
+					}
 					parentNode = parent.getNode();
 					if(!processed.contains(parentNode)){
 						result.add(parentNode);
