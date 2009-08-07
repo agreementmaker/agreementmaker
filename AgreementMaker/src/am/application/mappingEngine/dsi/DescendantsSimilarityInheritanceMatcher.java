@@ -1,16 +1,21 @@
 package am.application.mappingEngine.dsi;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.tree.TreeNode;
+
+import com.sun.tools.example.debug.gui.ClassManager;
 
 import am.GlobalStaticVariables;
 import am.application.mappingEngine.AbstractMatcher;
 import am.application.mappingEngine.AbstractMatcherParametersPanel;
 import am.application.mappingEngine.Alignment;
 import am.application.mappingEngine.AlignmentMatrix;
+import am.application.mappingEngine.AbstractMatcher.alignType;
 import am.application.mappingEngine.baseSimilarity.BaseSimilarityMatcherParametersPanel;
 import am.application.ontology.Node;
+import am.application.ontology.TreeToDagConverter;
 import am.userInterface.vertex.Vertex;
 
 public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
@@ -59,144 +64,116 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
     	
 	}
 	
+	//Used only in the recursive algorithm
+	private AlignmentMatrix matrix;
 	
+    protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
+    	//this the structure used in the recursive algorithms to keep track of the DSI computed for the parents of each node
+    	//at the end it is returned and becomes the class or property matrix of the case
+    	matrix = new AlignmentMatrix(sourceList.size(), targetList.size());
+		
+    	//we need to work on a DAG not on the vertex
+		TreeToDagConverter sourceDag;
+		TreeToDagConverter targetDag;
+		AlignmentMatrix input;
 
-    
-
-	/**
-	 * @author Cosmin Stroe
-	 * @date Nov 23, 2008
-	 * Align Two nodes using DSI algorithm.
-	 * @see am.application.mappingEngine.AbstractMatcher#alignTwoNodes(am.application.ontology.Node, am.application.ontology.Node)
-	 */
-	protected Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
-
-		
-		/**
-		 * @author Cosmin Stroe
-		 * @date Nov 23, 2008
-		 * 
-		 * Definition: input_sim(node1, node2) = the similarity between node1 and node2, calculated from the previous algorithm (the input algorithm)
-		 * 
-		 * Definition:  path_len_root(node) = number of edges between node and root of the tree
-		 * 
-		 * Definition: parent_i(node) = the i-th parent of node ( i=1 is the father, i=2 is the grandfather, etc..)
-		 * 
-		 * Definition: MCP = a fractional constant which is tuned to give the similarity result  ( 0.75 is the default MCP )
-		 * 
-		 * DSI Algorithm:
-		 *                                                           n
-		 *                                                         _____ 
-		 *                                              2(1 - MCP) \    |
-		 * DSI_sim = MCP * input_sim(source,target) +   ----------  \     (n + 1 - i) * input_sim( parent_i(source), parent_i(target) )
-		 * 												  n(n+1)    /  
-		 *                                                         /____|
-		 *                                                           i=1
-		 *                                                           
-		 *  Where n = min( path_len_root(source), path_len_root(target) )  ( also represents the number of ancestors the node with the least ancestors has)
-		 */
-		
-		Vertex vsource = source.getVertex();
-		Vertex vtarget = target.getVertex();
-		
-		TreeNode[] sourcePath = vsource.getPath();  // get the path to root from source vertex
-		TreeNode[] targetPath = vtarget.getPath();  // get the path to root from target vertex
-		
-		int n = 0;  // n = number of ancestors of the node with the least ancestors
-		
-		
-		if( sourcePath.length > targetPath.length ) {
-			// the target node is closer to its root (fewer ancestors)
-			n = targetPath.length - 2 - 1;  // minus 2 because the first two levels of the Vertex hierarchy are not real nodes, and minus 1 because the last entry of the Path array is the node itself and not a parent
-		} else {
-			// the source node is closer to its root (fewer ancestors)
-			n = sourcePath.length - 2 - 1;  // minus 2 because the first two levels of the Vertex hierarchy are not real nodes, and minus 1 because the last entry of the Path array is the node itself and not a parent
-		}
-		
-		
-		// calculate Summation: sum(i=1 to n: (n + 1 - i) * input_sim( parent_i(source), parent_i(target) );
-		
-		double summation = 0.0d;
-		
-		
-		for( int i = 1; i <= n; i++ ) {
-			
-			// Here we are using the TreeNode array returned by getPath();
-			// The last entry of the array is the node,
-			// the previous to last is the parent of the node, and so on
-			
-			// sourcePath.length - 1 gives the index to the last element of the matrix (which is the current node);
-			// we then subtract i, to get the index of the i-th parent of the current node 
-			int sourceIndex = sourcePath.length - 1 - i; 
-			int targetIndex = targetPath.length - 1 - i;
-			
-			// now that we have the index or the i-th parent, retrieve that parent
-			Vertex sourceParent_i = (Vertex) sourcePath[sourceIndex];
-			Vertex targetParent_i = (Vertex) targetPath[targetIndex];
-			
-			// get the index of the source and target nodes in the AlignmentMatrix
-			int sourceMatrixIndex = sourceParent_i.getNode().getIndex();
-			int targetMatrixIndex = targetParent_i.getNode().getIndex();
-			
-			// now, we need to get the similarity of the parents to eachother, which is stored in the AlignmentMatrix
-			Alignment parentSimilarity = null;
-			switch( typeOfNodes ) {
-			case aligningClasses:
-				// we are aligning class nodes, so lookup the similarity in the classes matrix
-				parentSimilarity = inputClassesMatrix.get(sourceMatrixIndex, targetMatrixIndex);
-				break;
-			case aligningProperties:
-				// we are aligning property nodes, so lookup the similarity in the properties matrix
-				parentSimilarity = inputPropertiesMatrix.get(sourceMatrixIndex, targetMatrixIndex);
-				break;	 
-			}
-			
-			// we got the similarity between the parents, now we can finally calculate the current term of the summation
-			
-			double currentTerm = (n + 1 - i) * parentSimilarity.getSimilarity();
-			
-			
-			// add the current term to the summation result
-			summation += currentTerm;
-			
-			
-		}
-		
-		
-		// so, at this point, we have computed the summation, 
-		// next let's finish up the formula
-		
-		// we need to get the input similarity between the two nodes we are comparing, so get that now 
-		
-		int sourceIndex = source.getIndex();
-		int targetIndex = target.getIndex();
-		
-		Alignment baseSimilarity = null;
-		switch( typeOfNodes ) {
-		case aligningClasses:
-			baseSimilarity = inputClassesMatrix.get(sourceIndex, targetIndex);
-			break;
-		case aligningProperties:
-			baseSimilarity = inputPropertiesMatrix.get(sourceIndex, targetIndex);
-			break;
-		}
-		
-		
-		// the final DSI similarity computed between the current two nodes
-		double DSI_similarity = 0.0d;
-		if( n == 0 ) {
-			// if n == 0, then no summation component.
-			DSI_similarity = baseSimilarity.getSimilarity();
-		} else {
-			DSI_similarity = MCP * baseSimilarity.getSimilarity() + ((2*(1 - MCP))/(n*(n+1)))* summation;
-		}
-		
-		// return the result
-		return new Alignment(source, target, DSI_similarity, Alignment.EQUIVALENCE);
-		
+    	if(typeOfNodes.equals(alignType.aligningClasses)){
+    		sourceDag = new TreeToDagConverter(sourceOntology.getClassesTree());
+    		targetDag = new TreeToDagConverter(targetOntology.getClassesTree());
+    		input = inputClassesMatrix;
+    	}
+    	else{
+    		sourceDag = new TreeToDagConverter(sourceOntology.getPropertiesTree());
+    		targetDag = new TreeToDagConverter(targetOntology.getPropertiesTree());
+    		input = inputPropertiesMatrix;
+    	}
+    	
+    	ArrayList<Node> sourceConcepts = sourceList;
+    	ArrayList<Node> targetConcepts = targetList;
+    	Iterator<Node> itSource = sourceConcepts.iterator();
+    	Iterator<Node> itTarget;
+    	Node sourceNode;
+    	Node targetNode;
+    	while(itSource.hasNext()){
+    		sourceNode = itSource.next();
+    		itTarget = targetConcepts.iterator();
+    		while(itTarget.hasNext()){
+    			targetNode = itTarget.next();
+    			//this method compute the dsi alignment between the two nodes and also between all of their parents
+    			recursiveDSI(sourceNode, targetNode, input, sourceDag, targetDag);
+    		}
+    	}
+    	return matrix;
 	}
 
 	
+	private Alignment recursiveDSI(Node sourceNode, Node targetNode, AlignmentMatrix input, TreeToDagConverter sourceDag, TreeToDagConverter targetDag) {
+		int sourceIndex = sourceNode.getIndex();
+		int targetIndex = targetNode.getIndex();
+		double mySim = input.get(sourceIndex, targetIndex).getSimilarity();
+		ArrayList<Node> sourceParents = sourceNode.getParents();
+		ArrayList<Node> targetParents = targetNode.getParents();
+		Iterator<Node> itSource = sourceParents.iterator();
+		Iterator<Node> itTarget = targetParents.iterator();
+		Node sourceParent;
+		Node targetParent;
+		int sourceParentIndex;
+		int targetParentIndex;
+		Alignment alignParents;
+		Alignment maxAlignParents;
+		//sumOfMaxParents will keep the information related to the parents similarity (the 1-MCP part)
+		double sumOfMaxParents;
+		if(itSource.hasNext() && itTarget.hasNext()){
+			//if both nodes have at least one parent
+			//for each source parent I find the most similar target parent
+			//then I take the average of all similarities of the most similar parents
+			//that is the parents contribution
+			sumOfMaxParents = 0;
+			while(itSource.hasNext()){
+				sourceParent = itSource.next();
+				sourceParentIndex = sourceParent.getIndex();
+				itTarget = targetParents.iterator();
+				maxAlignParents = null;
+				while(itTarget.hasNext()){
+					targetParent = itTarget.next();
+					targetParentIndex = targetParent.getIndex();
+					alignParents = matrix.get(sourceParentIndex,targetParentIndex);
+					//if there is already an alignment it means that I have already processed the DSI of these two nodes
+					if(alignParents == null){
+						//if it's not processed I run the recusive method to process it and to set it in the matrix
+						alignParents = recursiveDSI(sourceParent, targetParent, input, sourceDag, targetDag);
+					}
+					if(maxAlignParents == null || maxAlignParents.getSimilarity() < alignParents.getSimilarity()){
+						maxAlignParents = alignParents;
+					}
+				}
+				sumOfMaxParents += maxAlignParents.getSimilarity();
+			}
+			sumOfMaxParents/=sourceParents.size();
+		}
+		else if(itSource.hasNext() || itTarget.hasNext()){
+			//only one of the two nodes has parents. 
+			//this case is in the middle between the previous one in which this case would have been 0 and the next one in which is 1.
+			//there is some sort of dissimilarity but it may also be that the nodes are the same but the fathers of one of the two nodes have not been considered in this ontology.
+			//given this doubt we set the parents contribution to 0.5 which penalizes it a little but not too much
+			sumOfMaxParents = 0.5d;
+		}
+		else{
+			//none of them have a parent so their parents contribution is identical
+			sumOfMaxParents = 1;
+		}
+
+		double mcp = ((DescendantsSimilarityInheritanceParameters)param).MCP;
+		double finalSim = (mcp*mySim) + ((1 - mcp) * sumOfMaxParents);
+		Alignment result = new Alignment(sourceNode, targetNode, finalSim, Alignment.EQUIVALENCE);
+		matrix.set(sourceIndex, targetIndex, result);
+		
+		return result;
+		
+		
+	}
+
+
 	public String getDescriptionString() {
 		String description;
 		

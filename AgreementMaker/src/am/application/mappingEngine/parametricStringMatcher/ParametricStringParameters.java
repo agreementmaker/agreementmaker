@@ -44,11 +44,11 @@ public class ParametricStringParameters extends AbstractParameters {
 
 	public void initForOAEI2009() {
 		localWeight = 0;
-		labelWeight = 0.7;
-		commentWeight = 0.30;
-		seeAlsoWeight = 0;
-		isDefinedByWeight = 0;
-		measure = AMSUB+EDIT;
+		labelWeight = 0.65d;
+		commentWeight = 0.25d;
+		seeAlsoWeight = 0.5d;
+		isDefinedByWeight = 0.5d;
+		measure = AMSUB_AND_EDIT;
 		normParameter = new NormalizerParameter();
 		normParameter.setForOAEI2009();
 		redistributeWeights = true;

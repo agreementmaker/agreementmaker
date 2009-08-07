@@ -67,7 +67,7 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 		classCheck = new JCheckBox();
 		classCheck.setSelected(false);
 		localCheck = new JCheckBox();
-		localCheck.setSelected(false);
+		localCheck.setSelected(true);
 		
 
 		//LAYOUT: grouplayout is already complicated but very flexible, plus in this case the matchers list is dynamic so it's even more complicated

@@ -4,6 +4,7 @@ import am.application.mappingEngine.Combination.CombinationMatcher;
 import am.application.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import am.application.mappingEngine.conceptMatcher.ConceptMatcher;
 import am.application.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
+import am.application.mappingEngine.dsi.OldDescendantsSimilarityInheritanceMatcher;
 import am.application.mappingEngine.manualMatcher.UserManualMatcher;
 import am.application.mappingEngine.multiWords.MultiWordsMatcher;
 import am.application.mappingEngine.oaei2009.OAEI2009matcher;
@@ -36,14 +37,15 @@ public enum MatchersRegistry {
 	 */
 	
 	//OFFICIAL MATCHERS
-	BaseSimilarity		( "Base Similarity", BaseSimilarityMatcher.class ),
-	 ParametricString ( "Parametric String Matcher", ParametricStringMatcher.class ),
-	 MultiWords       ("Multi Words Matcher", MultiWordsMatcher.class),
+	BaseSimilarity		( "Base Similarity Matcher (BSM)", BaseSimilarityMatcher.class ),
+	 ParametricString ( "Parametric String Matcher (PSM)", ParametricStringMatcher.class ),
+	 MultiWords       ("Vector-based Multi-Words Matcher (VMM)", MultiWordsMatcher.class),
 	DSI					( "Descendant's Similarity Inheritance (DSI)", DescendantsSimilarityInheritanceMatcher.class ),
 	SSC					( "Sibling's Similarity Contribution (SSC)", SiblingsSimilarityContributionMatcher.class ),
-	Combination	( "Mathematical Weighted Combination", CombinationMatcher.class ),
+	Combination	( "Linear Weighted Combination (LWC)", CombinationMatcher.class ),
 	ConceptSimilarity   ( "Concept Similarity", ConceptMatcher.class, false),
-	OAEI2009   ( "OAEI2009 mmatcher", OAEI2009matcher.class),
+	DSI2					( "OLD Descendant's Similarity Inheritance (DSI)", OldDescendantsSimilarityInheritanceMatcher.class, false ),
+	OAEI2009   ( "OAEI2009 Matcher", OAEI2009matcher.class),
 	
 
 	//WORK IN PROGRESS

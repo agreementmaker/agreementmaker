@@ -48,10 +48,12 @@ public abstract class Track {
 		//LOADING ONTOLOGIES
 		//Source Ontology
 		//Ontotype = GlobalstaticVariable.SOURCENODE is irrelevant
+		System.out.println("Loading source ontology");
 		OntoTreeBuilder sourceBuilder = new OntoTreeBuilder(sourcePath, GlobalStaticVariables.SOURCENODE, languageS, syntaxS, skip);
 		sourceBuilder.build();
 		//System.out.println(sourceBuilder.getReport());
 		//Target Ontology
+		System.out.println("Loading target ontology");
 		OntoTreeBuilder targetBuilder = new OntoTreeBuilder(targetPath, GlobalStaticVariables.TARGETNODE, languageS, syntaxS, skip);
 		targetBuilder.build();
 		//System.out.println(sourceBuilder.getReport());
@@ -61,6 +63,7 @@ public abstract class Track {
 		Core.getInstance().setTargetOntology(targetBuilder.getOntology());
 		
 		//Invoke the matcher, any index is fine
+		System.out.println("Running the matching method: "+matcher.getMatcherName());
 		AbstractMatcher currentMatcher = MatcherFactory.getMatcherInstance(matcher, 0);
 		currentMatcher.setThreshold(threshold);
 		currentMatcher.setMaxSourceAlign(sourceRel);
@@ -69,7 +72,9 @@ public abstract class Track {
 			currentMatcher.setParam(parameters);
 		}
 		currentMatcher.match();
+		System.out.println("Matching method completed in "+currentMatcher.getExecutionTime());
 		return currentMatcher.getAlignmentSet();
+		
 	}
 
 }

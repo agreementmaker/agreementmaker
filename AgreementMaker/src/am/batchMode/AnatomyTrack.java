@@ -8,6 +8,7 @@ import am.application.Core;
 import am.application.mappingEngine.AlignmentSet;
 import am.application.mappingEngine.MatchersRegistry;
 import am.application.mappingEngine.baseSimilarity.BaseSimilarityParameters;
+import am.application.mappingEngine.oaei2009.OAEI2009parameters;
 import am.output.AlignmentOutput;
 
 public class AnatomyTrack extends Track{
@@ -46,7 +47,9 @@ public class AnatomyTrack extends Track{
 	protected void execute() throws Exception{
 		//TRACK PARAMETERS
 		//TH and cardinality have to  be set later for each track
-		MatchersRegistry matcher = MatchersRegistry.BaseSimilarity;
+		MatchersRegistry matcher = MatchersRegistry.OAEI2009;
+		//the parameters are only used in the forth subtrck to keep the name of the partial reference file
+		OAEI2009parameters param = new OAEI2009parameters();
 		
 		//decide if running only on one subtracks or all of them
 		boolean doAll = false;
@@ -58,7 +61,7 @@ public class AnatomyTrack extends Track{
 			double threshold = 0.60;
 			int sourceCardinality = 1;
 			int targetCardinality = 1;
-			AlignmentSet as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, new BaseSimilarityParameters());
+			AlignmentSet as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param);
 			String sourceUri = Core.getInstance().getSourceOntology().getURI();
 			String targetUri = Core.getInstance().getTargetOntology().getURI();
 			//we need to create the directory first
@@ -72,7 +75,7 @@ public class AnatomyTrack extends Track{
 			double threshold = 0.75;
 			int sourceCardinality = 1;
 			int targetCardinality = 1;
-			AlignmentSet as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, new BaseSimilarityParameters());
+			AlignmentSet as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param);
 			String sourceUri = Core.getInstance().getSourceOntology().getURI();
 			String targetUri = Core.getInstance().getTargetOntology().getURI();
 			//we need to create the directory first
@@ -83,10 +86,10 @@ public class AnatomyTrack extends Track{
 		}
 		if(doAll||subTrack.equals(TRACK_3)){
 			//subtrack 3 improve Recall
-			double threshold = 0.40;
+			double threshold = 0.35;
 			int sourceCardinality = 1;
 			int targetCardinality = 1;
-			AlignmentSet as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, new BaseSimilarityParameters());
+			AlignmentSet as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param);
 			String sourceUri = Core.getInstance().getSourceOntology().getURI();
 			String targetUri = Core.getInstance().getTargetOntology().getURI();
 			//we need to create the directory first
@@ -97,11 +100,12 @@ public class AnatomyTrack extends Track{
 		}
 		if(doAll||subTrack.equals(TRACK_4)){
 			//subtrack 1 using partial reference
+			param.partialReferenceFile = PARTIAL_REFERENCE;
 			double threshold = 0.60;
 			int sourceCardinality = 1;
 			int targetCardinality = 1;
 			//the partial reference filename has to be set in the method parameters
-			AlignmentSet as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, new BaseSimilarityParameters());
+			AlignmentSet as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param);
 			String sourceUri = Core.getInstance().getSourceOntology().getURI();
 			String targetUri = Core.getInstance().getTargetOntology().getURI();
 			//we need to create the directory first

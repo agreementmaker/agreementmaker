@@ -83,9 +83,9 @@ public class ParametricStringMatcher extends AbstractMatcher {
 				labelWeight = 0;
 			if(parameters.commentWeight == 0 || Utility.isIrrelevant(source.getComment()) || Utility.isIrrelevant(target.getComment()))
 				commentWeight = 0;
-			if(parameters.seeAlsoWeight == 0 || Utility.isIrrelevant(source.getSeeAlso()) || Utility.isIrrelevant(target.getSeeAlso()))
+			if(parameters.seeAlsoWeight == 0 || Utility.isIrrelevant(source.getSeeAlsoLabel()) || Utility.isIrrelevant(target.getSeeAlsoLabel()))
 				seeAlsoWeight = 0;
-			if(parameters.isDefinedByWeight == 0 || Utility.isIrrelevant(source.getIsDefinedBy()) || Utility.isIrrelevant(target.getIsDefinedBy()))
+			if(parameters.isDefinedByWeight == 0 || Utility.isIrrelevant(source.getIsDefinedByLabel()) || Utility.isIrrelevant(target.getIsDefinedByLabel()))
 				isDefinedByWeight = 0;			
 		}
 		
@@ -104,11 +104,11 @@ public class ParametricStringMatcher extends AbstractMatcher {
 				commentSim *= commentWeight;
 			}
 			if(seeAlsoWeight > 0) {
-				seeAlsoSim = performStringSimilarity(source.getSeeAlso(), target.getSeeAlso());
+				seeAlsoSim = performStringSimilarity(source.getSeeAlsoLabel(), target.getSeeAlsoLabel());
 				seeAlsoSim *= seeAlsoWeight;
 			}
 			if(isDefinedByWeight > 0) {
-				isDefBySim = performStringSimilarity(source.getIsDefinedBy(), target.getIsDefinedBy());
+				isDefBySim = performStringSimilarity(source.getIsDefinedByLabel(), target.getIsDefinedByLabel());
 				isDefBySim *= isDefinedByWeight;
 			}
 			

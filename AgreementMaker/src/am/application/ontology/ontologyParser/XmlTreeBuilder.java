@@ -101,8 +101,8 @@ public class XmlTreeBuilder extends TreeBuilder
 					node = new Node(uniqueKey,name, Node.XMLNODE);
 					node.setLabel(label);
 					node.setComment(des);
-					node.setSeeAlso(seeAlso);
-					node.setIsDefinedBy(isDefBy);
+					node.setSeeAlsoLabel(seeAlso);
+					node.setIsDefinedByLabel(isDefBy);
 					ontology.getClassesList().add(node); //THE XML FILES ONLY CONTAINS CLASSES IN OUR SEMPLIFICATION
 					uniqueKey++;
 					processedNodes.put(name, node);

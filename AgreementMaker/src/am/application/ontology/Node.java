@@ -53,8 +53,13 @@ public class Node {
 	 */
 	private String comment = "";
 	//SOME MORE INFORMATIONS THAT MY BE USED
-	private String isDefinedBy = "";
-	private String seeAlso = "";
+	private String isDefinedByLabel = "";
+	private String isDefinedByURI = "";
+	private String isDefinedByComment = "";
+	private String seeAlsoLabel = "";
+	private String seeAlsoURI = "";
+	private String seeAlsoComment = "";
+	
 	//if the node is a prop node then it this list contains the list of classes localnames which declare this prop
 	//if the node is a class node then this list contains the list of properties declared by this class
 	private ArrayList<String> propOrClassNeighbours = new ArrayList<String>();
@@ -117,19 +122,50 @@ public class Node {
 			}
 			//ANNOTATIONS: isDefBy and seeAlso I'm not considering "sameAs" "differentFrom" "disjointWith"
 			it = or.listIsDefinedBy();
-			isDefinedBy = "";
+			isDefinedByLabel = "";
+			isDefinedByURI = "";
+			isDefinedByComment = "";
 			l = null;
-			while(it.hasNext()) {
+			OntResource or2;
+			if(it.hasNext()) {
 				ol = (OntResourceImpl)it.next();
-				if(ol!=null) isDefinedBy+= ol+" ";
+				if(ol!= null && ol.canAs(OntResource.class)){
+					or2 = (OntResource)ol.as(OntResource.class);
+					isDefinedByLabel = or2.getLabel(language);
+					if(isDefinedByLabel == null || isDefinedByLabel == "")
+						isDefinedByLabel = or2.getLabel(null);
+						if(isDefinedByLabel == null)
+							isDefinedByLabel = "";
+					isDefinedByComment = or2.getComment(language);
+					if(isDefinedByComment == null || isDefinedByComment == "")
+						isDefinedByComment = or2.getLabel(null);
+						if(isDefinedByComment == null)
+							isDefinedByComment = "";
+					isDefinedByURI = ol.getURI();
+				}
 			}
 
 			it = or.listSeeAlso();
-			seeAlso = "";
+			seeAlsoLabel = "";
+			seeAlsoComment = "";
+			seeAlsoURI = "";
 			l = null;
-			while(it.hasNext()) {
+			if(it.hasNext()) {
 				ol = (OntResourceImpl)it.next();
-				if(ol!=null) seeAlso+= ol+" ";
+				if(ol!= null && ol.canAs(OntResource.class)){
+					or2 = (OntResource)ol.as(OntResource.class);
+					seeAlsoLabel = or2.getLabel(language);
+					if(seeAlsoLabel == null || seeAlsoLabel == "")
+						seeAlsoLabel = or2.getLabel(null);
+						if(seeAlsoLabel == null)
+							seeAlsoLabel = "";
+					seeAlsoComment = or2.getComment(language);
+					if(seeAlsoComment == null || seeAlsoComment == "")
+						seeAlsoComment = or2.getLabel(null);
+						if(seeAlsoComment == null)
+							seeAlsoComment = "";
+						seeAlsoURI = ol.getURI();
+				}
 			}
 			//properties and invidviduals lists only for classes
 			if(!or.canAs(OntProperty.class)) {//remember is important to check on prop instead of class to avoid a jena bug that a prop canAs ontClass
@@ -257,20 +293,20 @@ public class Node {
 		this.uri = uri;
 	}
 
-	public String getIsDefinedBy() {
-		return isDefinedBy;
+	public String getIsDefinedByLabel() {
+		return isDefinedByLabel;
 	}
 
-	public void setIsDefinedBy(String isDefinedBy) {
-		this.isDefinedBy = isDefinedBy;
+	public void setIsDefinedByLabel(String isDefinedBy) {
+		this.isDefinedByLabel = isDefinedBy;
 	}
 
-	public String getSeeAlso() {
-		return seeAlso;
+	public String getSeeAlsoLabel() {
+		return seeAlsoLabel;
 	}
 
-	public void setSeeAlso(String seeAlso) {
-		this.seeAlso = seeAlso;
+	public void setSeeAlsoLabel(String seeAlso) {
+		this.seeAlsoLabel = seeAlso;
 	}
 
 	public ArrayList<String> getpropOrClassNeighbours() {
@@ -310,10 +346,10 @@ public class Node {
 		result += comment+"\n\n";
 		
 		result += "SeeAlso: (owl:seeAlso)\n";
-		result += seeAlso+"\n\n";
+		result += seeAlsoLabel+"\n\n";
 		
 		result += "IsDefinedBy: (owl:isDefinedBy)\n";
-		result += isDefinedBy+"\n\n";
+		result += isDefinedByLabel+"\n\n";
 		return result;
 	}
 
@@ -404,6 +440,22 @@ public class Node {
 			}
 		}
 		return false;
+	}
+
+	public String getIsDefinedByURI() {
+		return isDefinedByURI;
+	}
+
+	public void setIsDefinedByURI(String isDefinedByURI) {
+		this.isDefinedByURI = isDefinedByURI;
+	}
+
+	public String getIsDefinedByComment() {
+		return isDefinedByComment;
+	}
+
+	public void setIsDefinedByComment(String isDefinedByComment) {
+		this.isDefinedByComment = isDefinedByComment;
 	}
 	
 	

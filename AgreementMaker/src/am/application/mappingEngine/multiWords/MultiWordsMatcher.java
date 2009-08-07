@@ -136,8 +136,8 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		if(mp.considerConcept) {
 			multiWordsString = Utility.smartConcat(multiWordsString, getLabelAndOrNameString(node));
 			multiWordsString = Utility.smartConcat(multiWordsString, node.getComment());
-			multiWordsString = Utility.smartConcat(multiWordsString, node.getSeeAlso());
-			multiWordsString = Utility.smartConcat(multiWordsString, node.getIsDefinedBy());
+			multiWordsString = Utility.smartConcat(multiWordsString, node.getSeeAlsoLabel());
+			multiWordsString = Utility.smartConcat(multiWordsString, node.getIsDefinedByLabel());
 		}
 
 		//add neighbors strings
