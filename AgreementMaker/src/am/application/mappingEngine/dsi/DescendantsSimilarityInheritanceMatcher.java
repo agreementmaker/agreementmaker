@@ -5,7 +5,6 @@ import java.util.Iterator;
 
 import javax.swing.tree.TreeNode;
 
-import com.sun.tools.example.debug.gui.ClassManager;
 
 import am.GlobalStaticVariables;
 import am.application.mappingEngine.AbstractMatcher;
