@@ -147,7 +147,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     public void match() throws Exception {
     	matchStart();
     	buildSimilarityMatrices();
-    	if(performSelection){
+    	if(performSelection && !this.isCancelled() ){
         	select();	
     	}
     	matchEnd();
@@ -237,13 +237,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
     protected void align() throws Exception {
     	
-		if(alignClass) {
+		if(alignClass && !this.isCancelled() ) {
 			ArrayList<Node> sourceClassList = sourceOntology.getClassesList();
 			ArrayList<Node> targetClassList = targetOntology.getClassesList();
 			classesMatrix = alignClasses(sourceClassList,targetClassList );	
 			//classesMatrix.show();
 		}
-		if(alignProp) {
+		if(alignProp && !this.isCancelled() ) {
 			ArrayList<Node> sourcePropList = sourceOntology.getPropertiesList();
 			ArrayList<Node> targetPropList = targetOntology.getPropertiesList();
 			propertiesMatrix = alignProperties(sourcePropList, targetPropList );					
@@ -268,7 +268,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			source = sourceList.get(i);
 			for(int j = 0; j < targetList.size(); j++) {
 				target = targetList.get(j);
-				alignment = alignTwoNodes(source, target, typeOfNodes);
+				
+				if( !this.isCancelled() ) { alignment = alignTwoNodes(source, target, typeOfNodes); }
+				else { return matrix; }
+				
 				matrix.set(i,j,alignment);
 				if( isProgressDisplayed() ) stepDone(); // we have completed one step
 			}
@@ -351,6 +354,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		Alignment a;
 		MappingMWBM<Integer>  m;
 		while(it.hasNext()){
+			if( this.isCancelled() ) { return null; }
 			m = it.next();
 			a = matrix.get(m.getSourceNode(), m.getTargetNode());
 			aset.addAlignment(a);
