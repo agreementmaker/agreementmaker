@@ -5,6 +5,7 @@ package am.userInterface;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.LinkedList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
@@ -18,7 +19,12 @@ import am.AMException;
 import am.GlobalStaticVariables;
 import am.Utility;
 import am.application.Core;
+import am.application.mappingEngine.AbstractMatcher;
+import am.application.mappingEngine.Alignment;
+import am.application.mappingEngine.AlignmentSet;
+import am.application.mappingEngine.manualMatcher.UserManualMatcher;
 import am.application.ontology.Ontology;
+import am.userInterface.table.MatchersTablePanel;
 
 
 public class UIMenu implements ActionListener {
@@ -32,7 +38,7 @@ public class UIMenu implements ActionListener {
 	// menu items for helpMenu
 	private JMenuItem howToUse, aboutItem;		
 	//menu items for matching menu
-	private JMenuItem manualMapping, newMatching, runMatching, copyMatching, deleteMatching, saveMatching, refEvaluateMatching, clearAll;
+	private JMenuItem manualMapping, newMatching, runMatching, copyMatching, deleteMatching, saveMatching, refEvaluateMatching, clearAll, doRemoveDuplicates;
 
 	// menu items for the View Menu
 	private JMenuItem keyItem;
@@ -175,6 +181,78 @@ public class UIMenu implements ActionListener {
 			}
 			else if(obj == ontologyDetails) {
 				ontologyDetails();
+			}
+			else if( obj == doRemoveDuplicates ) {
+				MatchersTablePanel m = controlPanel.getTablePanel();
+				
+				int[] selectedRows =  m.getTable().getSelectedRows();
+				
+				if(selectedRows.length != 2) {
+					Utility.displayErrorPane("You must select two matchers.", null);
+				}
+				else {
+					
+					int i, j;
+					
+					Core core = Core.getInstance();
+					LinkedList<AbstractMatcher> selectedMatchers = new LinkedList<AbstractMatcher>();
+					
+					AbstractMatcher firstMatcher = core.getMatcherInstances().get(selectedRows[0]);
+					AbstractMatcher secondMatcher = core.getMatcherInstances().get(selectedRows[1]);
+					
+					AlignmentSet firstSet = firstMatcher.getAlignmentSet();
+					AlignmentSet secondSet = secondMatcher.getAlignmentSet();
+					
+					AlignmentSet combinedSet = new AlignmentSet();
+					
+					for( i = 0; i < firstSet.size(); i++ ) {
+						combinedSet.addAlignment(firstSet.getAlignment(i));
+					}
+					
+					for( i = 0; i < firstSet.size(); i++ ) {
+						combinedSet.addAlignment(secondSet.getAlignment(i));
+					}
+					
+					
+					// remove duplicates from combinedSet
+					int currentCandidate = 0;
+					while( currentCandidate < combinedSet.size() ) {
+						Alignment candidate = combinedSet.getAlignment(currentCandidate);
+						for(i = currentCandidate; i < combinedSet.size(); i++ ) {
+							Alignment test = combinedSet.getAlignment(i);
+							
+							int sourceNode1 = candidate.getEntity1().getIndex();
+							int targetNode1 = candidate.getEntity2().getIndex();
+							
+							int sourceNode2 = test.getEntity1().getIndex();
+							int targetNode2 = test.getEntity2().getIndex();
+							
+							if(sourceNode1 == sourceNode2 && targetNode1 == targetNode2 ) {
+								// we found a duplicate
+								combinedSet.removeAlignment(i);
+								break;
+							}
+						}
+						
+						// no more duplicates for the currentCandidate, next
+						currentCandidate++;
+						
+					}
+					
+					
+					AbstractMatcher newMatcher = new UserManualMatcher();
+					for( i = 0; i < combinedSet.size(); i++ ) {
+						newMatcher.addManualClassAlignment(combinedSet.getAlignment(i));
+					}
+					
+					m.addMatcher(newMatcher);
+					
+					
+					
+				}
+				
+				
+				
 			}
 			
 			
@@ -398,6 +476,12 @@ public class UIMenu implements ActionListener {
 		clearAll.addActionListener(this);
 		matchingMenu.add(clearAll);
 		matchingMenu.addSeparator();
+		
+		doRemoveDuplicates = new JMenuItem("Remove Duplicate Alignments");
+		doRemoveDuplicates.addActionListener(this);
+		matchingMenu.add(doRemoveDuplicates);
+		matchingMenu.addSeparator();
+		
 		saveMatching = new JMenuItem("Save selected matchings into a file");
 		saveMatching.addActionListener(this);
 		matchingMenu.add(saveMatching);
