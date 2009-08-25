@@ -2,6 +2,7 @@ package am.application.mappingEngine;
 
 import am.application.mappingEngine.Combination.CombinationMatcher;
 import am.application.mappingEngine.LexicalMatcherJWNL.LexicalMatcherJWNL;
+import am.application.mappingEngine.PRAMatcher.PRAMatcher;
 //import am.application.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
 import am.application.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import am.application.mappingEngine.conceptMatcher.ConceptMatcher;
@@ -49,6 +50,7 @@ public enum MatchersRegistry {
 	DSI2					( "OLD Descendant's Similarity Inheritance (DSI)", OldDescendantsSimilarityInheritanceMatcher.class, false ),
 	OAEI2009   ( "OAEI2009 Matcher", OAEI2009matcher.class),
 	WordNetLexical		("Lexical Matcher: WordNet", LexicalMatcherJWNL.class),
+	PRAMatcher			("PRA Matcher", PRAMatcher.class),
 	//UMLSKSLexical		("Lexical Matcher: UMLSKS", LexicalMatcherUMLS.class),
 
 	//WORK IN PROGRESS
