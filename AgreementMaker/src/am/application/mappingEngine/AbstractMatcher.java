@@ -117,7 +117,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		isShown = true;
 		modifiedByUser = false;
 		performSelection = true;//only in batchmode can be set to false in the internal matchers.
-		threshold = 0.75;
+		threshold = 0.6;
 		maxSourceAlign = 1;
 		maxTargetAlign = 1;
 		alignClass = true;
