@@ -45,7 +45,6 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	}
 	
 	
-	
 	protected void beforeAlignOperations()throws Exception{
 		super.beforeAlignOperations();
 		referenceListOfPairs = readReferenceFile();
@@ -54,17 +53,35 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		}
 	}
 	
+
+	protected void setupProgress() {
+		stepsDone = 0;
+		stepsTotal = referenceListOfPairs.size() * 2;  // twice, once for classes, once for properties;
+		
+		return;
+	}
+	
 	
 	/**
-	 * The transversal will be based on the referenceListOfPairs
+	 * The traversal will be based on the referenceListOfPairs, instead of traversing the ontologies.
+	 * 
+	 * First, we pick a pair from the list of pairs.  Then we look through the onotologies for that pair,
+	 * looking in the source ontology first, then in the target.  If we find a match, we add it to the matrix.
+	 * 
+	 * The run time will be proportional to the number of pairs in the file, 
+	 * instead of being proportional to the multiplicative size of both ontologies like it was before.
+	 *
+	 * Like before, equivalence is tested based on the name of the node.
+	 *
+	 * -- cosmin 20090826
+	 *
 	 */
 	
 	protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
 		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size());
 		Node source;
 		Node target;
-		Alignment alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
-		
+		Alignment alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok		
 		
 		MatchingPair mp = null;
 		if( referenceListOfPairs != null ) {
@@ -73,8 +90,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 			// Iterate over the list of pairs from the file
 			while( it.hasNext() ) {
 				mp = it.next(); // get the first matching pair from the list
-				
-				
+								
 				// find the source node in the source ontology
 				for( int i = 0; i < sourceList.size(); i++ ) {
 					source = sourceList.get(i);
@@ -86,16 +102,16 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 							target = targetList.get(j);
 							String tname = target.getLocalName();
 							
-							if( mp.targetname.equals(tname) ) {
+							if( !this.isCancelled() && mp.targetname.equals(tname) ) {
 								// we have found a match for the target node, it means a valid alignment
 								
-								if( !this.isCancelled() ) alignment = new Alignment( source, target, mp.similarity );
-								matrix.set(i, j, alignment);
-								
+								alignment = new Alignment( source, target, mp.similarity );
+								matrix.set(i, j, alignment);																
 							}
-							
+							else { 
+								return matrix; 
+							}							
 						}
-						
 					}
 				}
 				
