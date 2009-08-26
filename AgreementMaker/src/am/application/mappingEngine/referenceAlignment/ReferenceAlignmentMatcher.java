@@ -81,7 +81,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		if( referenceListOfPairs != null ) {
 			
 			stepsDone = 0;
-			stepsTotal = referenceListOfPairs.size() * 2;  // twice, once for classes, once for properties;
+			stepsTotal = referenceListOfPairs.size();
 			
 			Iterator<MatchingPair> it = referenceListOfPairs.iterator();
 			
@@ -100,15 +100,13 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 							target = targetList.get(j);
 							String tname = target.getLocalName();
 							
-							if( !this.isCancelled() && mp.targetname.equals(tname) ) {
+							if( this.isCancelled() ) { return matrix; }
+							
+							if( mp.targetname.equals(tname) ) {
 								// we have found a match for the target node, it means a valid alignment
-								
 								alignment = new Alignment( source, target, mp.similarity );
 								matrix.set(i, j, alignment);																
 							}
-							else { 
-								return matrix; 
-							}							
 						}
 					}
 				}
