@@ -32,12 +32,12 @@ public class Colors
 	public static Color lineColor = new Color (255,0,0);
 	
 	public static Color[] matchersColors = {
+		Color.magenta,
 		Color.GREEN,
 		Color.PINK,
-		Color.YELLOW,
+		new  Color(153,153,255),
 		Color.CYAN,
 		Color.ORANGE,
-		new  Color(153,153,255),
 	};
 	
 }
