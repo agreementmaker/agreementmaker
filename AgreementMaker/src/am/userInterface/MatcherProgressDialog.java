@@ -117,6 +117,14 @@ public class MatcherProgressDialog extends JDialog implements PropertyChangeList
         
 	}
 
+	/**
+	 * Add text to the report text box.
+	 */
+	public void appendToReport( String report ) {
+		matcherReport.append( report );
+		return;
+	}
+	
 	public void actionPerformed(ActionEvent e) {
 		Object obj = e.getSource();
 		if(obj == okButton) {
