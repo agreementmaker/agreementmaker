@@ -53,14 +53,6 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		}
 	}
 	
-
-	protected void setupProgress() {
-		stepsDone = 0;
-		stepsTotal = referenceListOfPairs.size() * 2;  // twice, once for classes, once for properties;
-		
-		return;
-	}
-	
 	
 	/**
 	 * The traversal will be based on the referenceListOfPairs, instead of traversing the ontologies.
@@ -82,9 +74,15 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		Node source;
 		Node target;
 		Alignment alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok		
+	
+
 		
 		MatchingPair mp = null;
 		if( referenceListOfPairs != null ) {
+			
+			stepsDone = 0;
+			stepsTotal = referenceListOfPairs.size() * 2;  // twice, once for classes, once for properties;
+			
 			Iterator<MatchingPair> it = referenceListOfPairs.iterator();
 			
 			// Iterate over the list of pairs from the file
