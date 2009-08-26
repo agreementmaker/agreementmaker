@@ -3,18 +3,18 @@ package am.application.mappingEngine.StringUtil;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import am.application.mappingEngine.parametricStringMatcher.ParametricStringParameters;
-
 public class Normalizer {
 	
 	private HashMap<String, String> normalizeMap;
 	private HashSet<String> stopWords;
 	private NormalizerParameter param;
+	private PorterStemmer ps;
 	
 	public Normalizer(NormalizerParameter np) {
 		param = np;
 		initNormalizeMap();
 		initStopWordsSet();
+		ps = new PorterStemmer();
 	}
 	
 	
@@ -26,10 +26,10 @@ public class Normalizer {
 		NormalizerParameter parameters = (NormalizerParameter)param;
 		char[] chars = s.toCharArray();
 		String newString = ""; //the processed string to be returned at the end
-		String currentChar; //the real char in the string
+		String currentChar = null; //the real char in the string
 		String currentWord = ""; //the newString will filled word by word. each processed word will be added if valid (no stopwords and so on)
 		char c;
-		PorterStemmer ps = new PorterStemmer();
+		
 		boolean endOfWord;
 		
 		for(int i = 0 ; i < chars.length; i++) {	
