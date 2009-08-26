@@ -51,6 +51,11 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		if(referenceListOfPairs == null || referenceListOfPairs.size() == 0) {
 			Utility.displayMessagePane("The reference file selected doen not contain any alignment.\nPlease check the format.", null);
 		}
+		else {
+			stepsDone = 0;
+			stepsTotal = referenceListOfPairs.size() * 2; // twice, once for classes, and another for properties
+		}
+		
 	}
 	
 	
@@ -79,9 +84,6 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		
 		MatchingPair mp = null;
 		if( referenceListOfPairs != null ) {
-			
-			stepsDone = 0;
-			stepsTotal = referenceListOfPairs.size();
 			
 			Iterator<MatchingPair> it = referenceListOfPairs.iterator();
 			
