@@ -107,13 +107,14 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 							if( mp.targetname.equals(tname) ) {
 								// we have found a match for the target node, it means a valid alignment
 								alignment = new Alignment( source, target, mp.similarity );
-								matrix.set(i, j, alignment);																
+								matrix.set(i, j, alignment);
+								it.remove();
 							}
 						}
 					}
 				}
 				
-				it.remove();
+				
 				
 				if( isProgressDisplayed() ) {
 					stepDone();
