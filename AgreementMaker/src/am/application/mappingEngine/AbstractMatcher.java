@@ -103,8 +103,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 	
 	protected MatcherProgressDialog progressDialog = null;  // need to keep track of the dialog in order to close it when we're done.  (there could be a better way to do this, but that's for later)
-	protected int stepsTotal; // Used by the ProgressDialog.  This is a rough estimate of the number of steps to be done before we finish the matching.
-	protected int stepsDone;  // Used by the ProgressDialog.  This is how many of the total steps we have completed.
+	protected long stepsTotal; // Used by the ProgressDialog.  This is a rough estimate of the number of steps to be done before we finish the matching.
+	protected long stepsDone;  // Used by the ProgressDialog.  This is how many of the total steps we have completed.
 	
 	protected String report = "";
 	
