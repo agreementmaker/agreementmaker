@@ -25,6 +25,12 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	// JAWS WordNet interface
 	private WordNetDatabase wordnet  = null;
 	
+	private NormalizerParameter param1;
+	private NormalizerParameter param2;
+	private NormalizerParameter param3;
+	private Normalizer norm1;
+	private Normalizer norm2;
+	private Normalizer norm3;
 	
 	public BaseSimilarityMatcher() {
 		// warning, param is not available at the time of the constructor
@@ -32,6 +38,24 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		super();
 		needsParam = true;
 		
+		// setup the different normalizers
+		param1 = new NormalizerParameter();
+		param1.setAllTrue();
+		param1.normalizeDigit = false;
+		param1.stem = false;
+		norm1 = new Normalizer(param1);
+		
+		
+		param2 = new NormalizerParameter();
+		param2.setAllfalse();
+		param2.stem = true;
+		norm2 = new Normalizer(param2);
+		
+		param3 = new NormalizerParameter();
+		param3.setAllfalse();
+		param3.normalizeDigit = true;
+		norm3 = new Normalizer(param3);
+
 	}
 
 	
@@ -58,7 +82,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	/*
 	 * This function does the main base similarity algorithm.
 	 */
-	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
 		
 
 		
@@ -153,70 +177,56 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			if(sLocalname.equalsIgnoreCase(tLocalname))
 				return new Alignment( source, target, 1d, Alignment.EQUIVALENCE);
 			//all normalization without stemming and digits return 0.95
-			NormalizerParameter param = new NormalizerParameter();
-			param.setAllTrue();
-			param.normalizeDigit = false;
-			param.stem = false;
-			Normalizer norm = new Normalizer(param);
-			String sProcessedLocalnames = norm.normalize(sLocalname);
-			String tProcessedLocalnames = norm.normalize(tLocalname);
+			
+			String sProcessedLocalnames = norm1.normalize(sLocalname);
+			String tProcessedLocalnames = norm1.normalize(tLocalname);
 			if(sProcessedLocalnames.equals(tProcessedLocalnames))
 				return new Alignment( source, target, 0.95d, Alignment.EQUIVALENCE);
 			//all normalization without digits return 0.90
-			param = new NormalizerParameter();
-			param.setAllfalse();
-			param.stem = true;
-			norm = new Normalizer(param);
-			sProcessedLocalnames = norm.normalize(sLocalname);
-			tProcessedLocalnames = norm.normalize(tLocalname);
+
+			sProcessedLocalnames = norm2.normalize(sLocalname);
+			tProcessedLocalnames = norm2.normalize(tLocalname);
 			if(sProcessedLocalnames.equals(tProcessedLocalnames))
 				return new Alignment( source, target, 0.9d, Alignment.EQUIVALENCE);
 			//all normalization return 0.8
-			param = new NormalizerParameter();
-			param.setAllfalse();
-			param.normalizeDigit = true;
-			sProcessedLocalnames = norm.normalize(sLocalname);
-			tProcessedLocalnames = norm.normalize(tLocalname);
+
+			sProcessedLocalnames = norm3.normalize(sLocalname);
+			tProcessedLocalnames = norm3.normalize(tLocalname);
 			if(sProcessedLocalnames.equals(tProcessedLocalnames))
 				return new Alignment( source, target, 0.8d, Alignment.EQUIVALENCE);
-			
+	
 			//FOCUS ON LABELS
 			//equivalence return 1
 			String sLabel = source.getLabel();
 			String tLabel = target.getLabel();
-			if(!(sLabel.equals("") || tLabel.equals(""))){
+			if( !(sLabel.equals("") || tLabel.equals("")) ){
 				if(sLabel.equalsIgnoreCase(tLabel))
 					return new Alignment( source, target, 1, Alignment.EQUIVALENCE);
 				//all normalization without stemming and digits return 0.95
-				 param = new NormalizerParameter();
-				param.setAllTrue();
-				param.normalizeDigit = false;
-				param.stem = false;
-				 norm = new Normalizer(param);
-				String sProcessedLabel = norm.normalize(sLabel);
-				String tProcessedLabel = norm.normalize(tLabel);
+				
+				
+				
+				String sProcessedLabel = norm1.normalize(sLabel);
+				String tProcessedLabel = norm1.normalize(tLabel);
 				if(sProcessedLabel.equals(tProcessedLabel))
 					return new Alignment( source, target, 0.95d, Alignment.EQUIVALENCE);
 				//apply stem return 0.90 
-				param = new NormalizerParameter();
-				param.setAllfalse();
-				param.stem = true;
-				norm = new Normalizer(param);
-				sProcessedLabel = norm.normalize(sLabel);
-				tProcessedLabel = norm.normalize(tLabel);
+				
+				
+				
+				sProcessedLabel = norm2.normalize(sLabel);
+				tProcessedLabel = norm2.normalize(tLabel);
 				if(sProcessedLabel.equals(tProcessedLabel))
 					return new Alignment( source, target, 0.9d, Alignment.EQUIVALENCE);
 				//apply normDigits return 0.8
-				param = new NormalizerParameter();
-				param.setAllfalse();
-				param.normalizeDigit = true;
-				norm = new Normalizer(param);
-				sProcessedLabel = norm.normalize(sLabel);
-				tProcessedLabel = norm.normalize(tLabel);
+				
+
+				sProcessedLabel = norm3.normalize(sLabel);
+				tProcessedLabel = norm3.normalize(tLabel);
 				if(sProcessedLabel.equals(tProcessedLabel))
 					return new Alignment( source, target, 0.8d, Alignment.EQUIVALENCE);
 			}
-			//node of the above
+			//none of the above
 			return new Alignment( source, target, 0d, Alignment.EQUIVALENCE);
 		}
 		
