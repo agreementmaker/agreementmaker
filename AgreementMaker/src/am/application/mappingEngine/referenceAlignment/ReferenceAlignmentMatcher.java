@@ -16,7 +16,7 @@ import am.Utility;
 import am.application.mappingEngine.AbstractMatcher;
 import am.application.mappingEngine.AbstractMatcherParametersPanel;
 import am.application.mappingEngine.Alignment;
-import am.application.mappingEngine.baseSimilarity.BaseSimilarityMatcherParametersPanel;
+import am.application.mappingEngine.AlignmentMatrix;
 import am.application.ontology.Node;
 import am.output.OutputController;
 
@@ -54,22 +54,63 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		}
 	}
 	
-    protected Alignment alignTwoNodes(Node source, Node target , alignType typeOfNodes) {
-    	String sname = source.getLocalName();
-    	String tname = target.getLocalName();
-    	Alignment a = new Alignment(source, target, 0);//if I don't find any alignment in the reference about this 2 nodes i will create an alignment with 0 similarity
-    	MatchingPair mp = null;
-    	if(referenceListOfPairs != null) {
-    		Iterator<MatchingPair> it = referenceListOfPairs.iterator();
-    		while(it.hasNext()) {
-    			mp = it.next();
-    			if(mp.sourcename.equals(sname)&& mp.targetname.equals(tname)) {
-    				a = new Alignment(source, target, mp.similarity);
-    				it.remove();
-    			}
-    		}
-    	}
-		return a;
+	
+	/**
+	 * The transversal will be based on the referenceListOfPairs
+	 */
+	
+	protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
+		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size());
+		Node source;
+		Node target;
+		Alignment alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
+		
+		
+		MatchingPair mp = null;
+		if( referenceListOfPairs != null ) {
+			Iterator<MatchingPair> it = referenceListOfPairs.iterator();
+			
+			// Iterate over the list of pairs from the file
+			while( it.hasNext() ) {
+				mp = it.next(); // get the first matching pair from the list
+				
+				
+				// find the source node in the source ontology
+				for( int i = 0; i < sourceList.size(); i++ ) {
+					source = sourceList.get(i);
+			    	String sname = source.getLocalName();
+					if( mp.sourcename.equals(sname) ) {
+						// we have found a match for the source node
+						
+						for( int j = 0; j < targetList.size(); j++ ) {
+							target = targetList.get(j);
+							String tname = target.getLocalName();
+							
+							if( mp.targetname.equals(tname) ) {
+								// we have found a match for the target node, it means a valid alignment
+								
+								if( !this.isCancelled() ) alignment = new Alignment( source, target, mp.similarity );
+								matrix.set(i, j, alignment);
+								
+							}
+							
+						}
+						
+					}
+				}
+				
+				it.remove();
+				
+				if( isProgressDisplayed() ) {
+					stepDone();
+					updateProgress();
+				}
+				
+				
+			}
+		}
+		
+		return matrix;
 	}
 	
 	
