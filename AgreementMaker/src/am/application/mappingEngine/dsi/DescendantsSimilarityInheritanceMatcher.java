@@ -99,7 +99,9 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
     		while(itTarget.hasNext()){
     			targetNode = itTarget.next();
     			//this method compute the dsi alignment between the two nodes and also between all of their parents
-    			recursiveDSI(sourceNode, targetNode, input, sourceDag, targetDag);
+    			if( !this.isCancelled() ) { recursiveDSI(sourceNode, targetNode, input, sourceDag, targetDag); }
+				else { return matrix; }
+    			
     		}
     	}
     	return matrix;
@@ -122,6 +124,9 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		Alignment maxAlignParents;
 		//sumOfMaxParents will keep the information related to the parents similarity (the 1-MCP part)
 		double sumOfMaxParents;
+		
+		if( this.isCancelled() ) { return null; }
+		
 		if(itSource.hasNext() && itTarget.hasNext()){
 			//if both nodes have at least one parent
 			//for each source parent I find the most similar target parent
