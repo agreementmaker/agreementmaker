@@ -79,7 +79,10 @@ public class AlignmentMatrix {
         AlignmentMatrix C = new AlignmentMatrix(rows, columns);
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++)
-                C.data[i][j].setSimilarity(A.data[i][j].getSimilarity()  + B.data[i][j].getSimilarity()) ;
+            	if( A.data[i][j] != null && B.data[i][j] != null )
+            		C.data[i][j].setSimilarity(A.data[i][j].getSimilarity()  + B.data[i][j].getSimilarity()) ;
+            	else
+            		C.data[i][j] = null;
         return C;
     }
 
@@ -91,7 +94,10 @@ public class AlignmentMatrix {
         AlignmentMatrix C = new AlignmentMatrix(rows, columns);
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++)
-            	 C.data[i][j].setSimilarity(A.data[i][j].getSimilarity()  - B.data[i][j].getSimilarity()) ;
+            	if( A.data[i][j] != null && B.data[i][j] != null )
+            		C.data[i][j].setSimilarity(A.data[i][j].getSimilarity()  - B.data[i][j].getSimilarity()) ;
+            	else
+            		C.data[i][j] = null;
         return C;
     }
 
@@ -113,7 +119,10 @@ public class AlignmentMatrix {
         for (int i = 0; i < C.rows; i++)
             for (int j = 0; j < C.columns; j++)
                 for (int k = 0; k < A.columns; k++)
-                	C.data[i][j].setSimilarity(A.data[i][j].getSimilarity()  * B.data[i][j].getSimilarity()) ;
+                	if( A.data[i][j] != null && B.data[i][j] != null )
+                		C.data[i][j].setSimilarity(A.data[i][j].getSimilarity()  * B.data[i][j].getSimilarity()) ;
+                	else
+                		C.data[i][j] = null;
         return C;
     }
     
@@ -138,7 +147,8 @@ public class AlignmentMatrix {
 		double[][] result = new double[rows][columns];
 		for(int i = 0; i < rows; i++) {
 			for(int j = 0 ; j < columns; j++) {
-				result[i][j] = data[i][j].getSimilarity();
+				if( data[i][j] != null ) result[i][j] = data[i][j].getSimilarity();
+				else result[i][j] = 0;
 			}
 		}
 		return result;
@@ -162,7 +172,7 @@ public class AlignmentMatrix {
 		Alignment currentMax;
 		for(int j = 0; j<getColumns();j++) {
 			currentValue = get(row,j);
-			
+			if( currentValue == null ) continue;
 			//maxAlignments contains the ordered list of max alignments, the first is the best max value
 			for(int k = 0;k<maxAlignments.length; k++) {
 				currentMax = maxAlignments[k];
@@ -179,7 +189,9 @@ public class AlignmentMatrix {
 	public double getRowSum(int row) {
 		double sum = 0;
 		for(int j = 0; j < getColumns(); j++) {
-			sum += get(row, j).getSimilarity();
+			if( get(row, j ) != null ) {
+				sum += get(row, j).getSimilarity();
+			}
 		}
 		return sum;
 	}
@@ -196,7 +208,7 @@ public class AlignmentMatrix {
 		Alignment currentMax;
 		for(int j = 0; j<getRows();j++) {
 			currentValue = get(j, col);
-			
+			if( currentValue == null ) continue;
 			//maxAlignments contains the ordered list of max alignments, the first is the best max value
 			for(int k = 0;k<maxAlignments.length; k++) {
 				currentMax = maxAlignments[k];
@@ -213,7 +225,9 @@ public class AlignmentMatrix {
 	public double getColSum(int col) {
 		double sum = 0;
 		for(int i = 0; i < getRows(); i++) {
-			sum += get(i, col).getSimilarity();
+			if( get( i, col ) != null ) {
+				sum += get(i, col).getSimilarity();
+			}
 		}
 		return sum;
 	}
