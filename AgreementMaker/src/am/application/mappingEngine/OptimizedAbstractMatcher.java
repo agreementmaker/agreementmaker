@@ -62,10 +62,18 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
 						alignment = alignTwoNodes(source, target, typeOfNodes); 
 					}
 					//else we take the alignment that was computed from the previous matcher
-					else{
+					else if (mappedNodes.isSourceMapped(source) && mappedNodes.isTargetMapped(target)){
 						inputAlignment = inputMatrix.get(i, j);
-						alignment = new Alignment(inputAlignment.getEntity1(), inputAlignment.getEntity2(), inputAlignment.getSimilarity(), inputAlignment.getRelation());
+						if(inputAlignment == null)
+							alignment = null;
+						else
+							alignment = new Alignment(inputAlignment.getEntity1(), inputAlignment.getEntity2(), inputAlignment.getSimilarity(), inputAlignment.getRelation());
 					}
+					else{
+						alignment = null;
+					}
+					if(alignment == null)
+						alignment = new Alignment(source, target, 0.0d, Alignment.SUBSET);
 					matrix.set(i,j,alignment);
 					if( isProgressDisplayed() ) stepDone(); // we have completed one step
 				}
