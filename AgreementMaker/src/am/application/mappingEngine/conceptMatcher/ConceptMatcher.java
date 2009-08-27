@@ -73,7 +73,7 @@ public class ConceptMatcher extends AbstractMatcher {
 	
 	// this method is exactly similar to the abstract method, except we pass one extra parameters to the alignTwoNodes function
     protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) {
-		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size());
+		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		Node source;
 		Node target;
 		//first go through and extract the longest defined concept for each node

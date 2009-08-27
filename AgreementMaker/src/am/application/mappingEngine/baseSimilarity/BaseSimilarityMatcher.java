@@ -227,7 +227,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 					return new Alignment( source, target, 0.8d, Alignment.EQUIVALENCE);
 			}
 			//none of the above
-			return null;
+			return new  Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
 		}
 		
 		

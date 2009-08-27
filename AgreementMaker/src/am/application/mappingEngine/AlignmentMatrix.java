@@ -1,35 +1,80 @@
 package am.application.mappingEngine;
 
+import java.util.ArrayList;
+
+import am.application.Core;
+import am.application.mappingEngine.AbstractMatcher.alignType;
+import am.application.ontology.Node;
+import am.application.ontology.Ontology;
+
 public class AlignmentMatrix {
+	
+	//not used at the moment. At the moment indetermined similarity are set with 0.
+	//if we want to start using it is important to keep it similar to 0, to allow compatibility with non-updated methods.
+	final static double INDETERMINED = Double.MIN_NORMAL;
+	
+	private String relation;
+	private alignType typeOfMatrix;
     private final int rows;             // number of rows
     private final int columns;             // number of columns
-    private final Alignment[][] data;   // M-by-N array
+    private final double[][] data;   // M-by-N array
 
     // create M-by-N matrix of 0's
-    public AlignmentMatrix(int M, int N) {
+    public AlignmentMatrix(int M, int N, alignType type) {
+    	relation = Alignment.EQUIVALENCE;
+    	typeOfMatrix = type;
         this.rows = M;
         this.columns = N;
-        data = new Alignment[M][N];
+        data = new double[M][N];
+    }
+    
+    // create M-by-N matrix of 0's
+    public AlignmentMatrix(int M, int N, alignType type, String rel) {
+    	relation = rel;
+    	typeOfMatrix = type;
+        this.rows = M;
+        this.columns = N;
+        data = new double[M][N];
     }
 
     // create matrix based on 2d array
-    public AlignmentMatrix(Alignment[][] data) {
+    public AlignmentMatrix(double[][] data, alignType type) {
+    	relation = Alignment.EQUIVALENCE;
+    	typeOfMatrix = type;
         rows = data.length;
         columns = data[0].length;
-        this.data = new Alignment[rows][columns];
+        this.data = new double[rows][columns];
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++)
                     this.data[i][j] = data[i][j];
     }
-
-    // copy constructor not used right now
-    private AlignmentMatrix(AlignmentMatrix A) { this(A.data); }
     
     public Alignment get(int i, int j) {
-    	return data[i][j];
+    	Core core = Core.getInstance();
+    	Ontology sourceOntology = core.getSourceOntology();
+    	Ontology targetOntology = core.getTargetOntology();
+    	ArrayList<Node> sourceList;
+    	ArrayList<Node> targetList;
+    	if(typeOfMatrix.equals(alignType.aligningClasses)){
+    		sourceList = sourceOntology.getClassesList();
+    		targetList = targetOntology.getClassesList();
+    	}
+    	else{
+    		sourceList = sourceOntology.getPropertiesList();
+    		targetList = targetOntology.getPropertiesList();
+    	}
+    	return new Alignment(sourceList.get(i), targetList.get(j), data[i][j], relation);
     }
     
     public void set(int i, int j, Alignment d) {
+    	data[d.getEntity1().getIndex()][d.getEntity2().getIndex()] = d.getSimilarity();
+    }
+    
+    public double getSimilarity(int i, int j){
+    	return data[i][j];
+    }
+    
+    public void setSimilarity(int i, int j, double d){
     	data[i][j] = d;
     }
     
@@ -44,10 +89,10 @@ public class AlignmentMatrix {
     public Object clone() {
     	
     		AlignmentMatrix m = this;
-    		AlignmentMatrix n = new AlignmentMatrix(m.getRows(), m.getColumns());
+    		AlignmentMatrix n = new AlignmentMatrix(m.getRows(), m.getColumns(), m.typeOfMatrix, m.relation);
     		for(int i=0; i< m.getRows(); i++) {
     			for(int j = 0; j < m.getColumns(); j++) {
-    				n.set(i,j,m.get(i,j));
+    				n.setSimilarity(i,j,m.getSimilarity(i,j));
     			}
     		}
     		return n;
@@ -58,14 +103,14 @@ public class AlignmentMatrix {
     
     // swap rows i and j
     private void swap(int i, int j) {
-    	Alignment[] temp = data[i];
+    	double[] temp = data[i];
         data[i] = data[j];
         data[j] = temp;
     }
 
     // create and return the transpose of the invoking matrix
     public AlignmentMatrix transpose() {
-        AlignmentMatrix A = new AlignmentMatrix(columns, rows);
+        AlignmentMatrix A = new AlignmentMatrix(columns, rows, typeOfMatrix, relation);
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++)
                 A.data[j][i] = this.data[i][j];
@@ -76,13 +121,10 @@ public class AlignmentMatrix {
     public AlignmentMatrix plus(AlignmentMatrix B) {
         AlignmentMatrix A = this;
         if (B.rows != A.rows || B.columns != A.columns) throw new RuntimeException("Illegal matrix dimensions.");
-        AlignmentMatrix C = new AlignmentMatrix(rows, columns);
+        AlignmentMatrix C = new AlignmentMatrix(rows, columns, typeOfMatrix, relation);
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++)
-            	if( A.data[i][j] != null && B.data[i][j] != null )
-            		C.data[i][j].setSimilarity(A.data[i][j].getSimilarity()  + B.data[i][j].getSimilarity()) ;
-            	else
-            		C.data[i][j] = null;
+            		C.data[i][j] = A.data[i][j]  + B.data[i][j];
         return C;
     }
 
@@ -91,13 +133,10 @@ public class AlignmentMatrix {
     public AlignmentMatrix minus(AlignmentMatrix B) {
         AlignmentMatrix A = this;
         if (B.rows != A.rows || B.columns != A.columns) throw new RuntimeException("Illegal matrix dimensions.");
-        AlignmentMatrix C = new AlignmentMatrix(rows, columns);
+        AlignmentMatrix C = new AlignmentMatrix(rows, columns, typeOfMatrix, relation);
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++)
-            	if( A.data[i][j] != null && B.data[i][j] != null )
-            		C.data[i][j].setSimilarity(A.data[i][j].getSimilarity()  - B.data[i][j].getSimilarity()) ;
-            	else
-            		C.data[i][j] = null;
+            	C.data[i][j] = A.data[i][j]  - B.data[i][j]; 
         return C;
     }
 
@@ -107,7 +146,7 @@ public class AlignmentMatrix {
         if (B.rows != A.rows || B.columns != A.columns) throw new RuntimeException("Illegal matrix dimensions.");
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++)
-                if (!A.data[i][j].equals(B.data[i][j])) return false;
+                if (!(A.data[i][j] == B.data[i][j])) return false;
         return true;
     }
 
@@ -115,14 +154,11 @@ public class AlignmentMatrix {
     public AlignmentMatrix times(AlignmentMatrix B) {
         AlignmentMatrix A = this;
         if (A.columns != B.rows) throw new RuntimeException("Illegal matrix dimensions.");
-        AlignmentMatrix C = new AlignmentMatrix(A.rows, B.columns);
+        AlignmentMatrix C = new AlignmentMatrix(A.rows, B.columns, typeOfMatrix, relation);
         for (int i = 0; i < C.rows; i++)
             for (int j = 0; j < C.columns; j++)
                 for (int k = 0; k < A.columns; k++)
-                	if( A.data[i][j] != null && B.data[i][j] != null )
-                		C.data[i][j].setSimilarity(A.data[i][j].getSimilarity()  * B.data[i][j].getSimilarity()) ;
-                	else
-                		C.data[i][j] = null;
+                	C.data[i][j] = A.data[i][j]  * B.data[i][j]; 
         return C;
     }
     
@@ -143,19 +179,17 @@ public class AlignmentMatrix {
         }
     }
 
-	public double[][] getSimilarityMatrix(){
+	public double[][] getCopiedSimilarityMatrix(){
 		double[][] result = new double[rows][columns];
 		for(int i = 0; i < rows; i++) {
 			for(int j = 0 ; j < columns; j++) {
-				if( data[i][j] != null ) result[i][j] = data[i][j].getSimilarity();
-				else result[i][j] = 0;
+				result[i][j] = data[i][j];
 			}
 		}
 		return result;
 	}
     
     //********************* METHODS ADDED FOR SOME AM CALCULATIONS**********************************************
-    
     /**
      * Return the array of numMaxValues max alignments, THE ARRAY IS ORDERED FROM THE BEST MAX VALUE TO THE WORST
      * this method is used both in selection process but also the AMlocalQuality algorithm

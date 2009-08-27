@@ -75,7 +75,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	 */
 	
 	protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
-		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size());
+		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		Node source;
 		Node target;
 		Alignment alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok		
@@ -108,7 +108,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 								// we have found a match for the target node, it means a valid alignment
 								alignment = new Alignment( source, target, mp.similarity );
 								matrix.set(i, j, alignment);
-								it.remove();
+								//it.remove();
 							}
 						}
 					}

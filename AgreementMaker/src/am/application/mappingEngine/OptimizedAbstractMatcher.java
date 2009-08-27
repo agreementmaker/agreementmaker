@@ -45,7 +45,7 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
 			AlignmentSet inputAlignmentSet, alignType typeOfNodes) throws Exception {
     	
     	MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, maxSourceAlign, maxTargetAlign);
-    	AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size());
+    	AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		Node source;
 		Node target;
 		Alignment alignment; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok

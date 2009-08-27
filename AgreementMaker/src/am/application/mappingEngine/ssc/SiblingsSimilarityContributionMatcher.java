@@ -68,7 +68,7 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 	
 	// this method is exactly similar to the abstract method, except we pass one extra parameters to the alignTwoNodes function
     protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) {
-		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size());
+		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		Node source;
 		Node target;
 		Alignment alignment; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok

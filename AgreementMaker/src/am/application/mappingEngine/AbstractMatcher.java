@@ -109,9 +109,23 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected String report = "";
 	
 	/**
+	 * Right now matchers, only produce equivalence relations
+	 * If a matcher computes another type of relation, the relation has to be added to the Alignment class a static variable
+	 * and it has to be set as a default relation in the constructor of that matcher.
+	 * at the moment a matcher is not aloud to compute different relations for different concepts
+	 * in that case a matrix of relation has to be kept within the matcher and the situation has to be managed properly
+	 */
+	protected String relation;
+
+	/**
 	 * The constructor must be a Nullary Constructor
 	 */
 	public AbstractMatcher() {  // index and name will be set by the Matcher Factory
+		//ALL MATCHERS HAVE TO INVOKE THIS METHOD THROUGH super() EXCEPT UserManualMatcher
+		//therefore by modifying something in this method you may also have to modify the UserManualMatcher
+		//while all other matchers will automatically inherit the changes
+		
+		
 		isAutomatic = true;
 		needsParam = false;
 		isShown = true;
@@ -124,6 +138,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		alignProp = true;
 		minInputMatchers = 0;
 		maxInputMatchers = 0;
+		relation = Alignment.EQUIVALENCE;
 		 
 		//ALIGNMENTS LIST MUST BE NULL UNTIL THEY ARE CALCULATED
 		sourceOntology = Core.getInstance().getSourceOntology();
@@ -260,7 +275,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 	
     protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
-		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size());
+		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		Node source;
 		Node target;
 		Alignment alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
@@ -347,7 +362,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 	protected AlignmentSet oneToOneMatching(AlignmentMatrix matrix) {
 		AlignmentSet aset = new AlignmentSet();
-		double[][] similarityMatrix = matrix.getSimilarityMatrix();
+		double[][] similarityMatrix = matrix.getCopiedSimilarityMatrix();
 		MaxWeightBipartiteMatching<Integer> mwbm = new MaxWeightBipartiteMatching<Integer>(similarityMatrix, threshold);
 		Collection<MappingMWBM<Integer>> mappings = mwbm.execute();
 		Iterator<MappingMWBM<Integer>> it = mappings.iterator();
@@ -936,6 +951,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	public void setReport(String report) {
 		this.report = report;
 	}
+	
+	public String getRelation() {
+		return relation;
+	}
+
+	public void setRelation(String relation) {
+		this.relation = relation;
+	}     
 	
 	public String getAlignmentsStrings() {
 		//The small arrow must be different from the bigger used in the alignments or the parseReference will identify these lines as alignments

@@ -69,7 +69,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
     protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
     	//this the structure used in the recursive algorithms to keep track of the DSI computed for the parents of each node
     	//at the end it is returned and becomes the class or property matrix of the case
-    	matrix = new AlignmentMatrix(sourceList.size(), targetList.size());
+    	matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		
     	//we need to work on a DAG not on the vertex
 		TreeToDagConverter sourceDag;

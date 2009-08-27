@@ -40,20 +40,16 @@ public class UserManualMatcher extends AbstractMatcher {
 		alignProp = true;
 		minInputMatchers = 0;
 		maxInputMatchers = 0;
-		
+		relation = Alignment.EQUIVALENCE;
 	}
 	
 	/**Set all alignment sim to 0*/
 	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
 		
-		//  it is not necessary to create zero value similarity alignments
-		//  we can just set the entry to null;
-		/*
+
 		double sim = 0;
 		String rel = Alignment.EQUIVALENCE;
 		return new Alignment(source, target, sim, rel);
-		*/
-		return null;
 	}
 	
     protected void afterSelectionOperations() {
