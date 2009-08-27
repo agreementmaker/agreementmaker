@@ -263,7 +263,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size());
 		Node source;
 		Node target;
-		Alignment alignment; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
+		Alignment alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
 		for(int i = 0; i < sourceList.size(); i++) {
 			source = sourceList.get(i);
 			for(int j = 0; j < targetList.size(); j++) {
@@ -295,7 +295,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			sim = 1;
 		}
 		else {
-			sim = 0;
+			return null;
 		}
 		return new Alignment(source, target, sim, rel);
 	}
@@ -357,7 +357,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			if( this.isCancelled() ) { return null; }
 			m = it.next();
 			a = matrix.get(m.getSourceNode(), m.getTargetNode());
-			aset.addAlignment(a);
+			if( a != null ) aset.addAlignment(a);
 		}
 		
 		/* CODE FOR THE HUNGARIAN
@@ -400,7 +400,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			//get only the alignments over the threshold
 			for(int e = 0;e < maxAlignments.length; e++) { 
 				toBeAdded = maxAlignments[e];
-				if(toBeAdded.getSimilarity() >= threshold) {
+				if(toBeAdded != null && toBeAdded.getSimilarity() >= threshold) {
 					aset.addAlignment(toBeAdded);
 				}
 			}
@@ -421,7 +421,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			//get only the alignments over the threshold
 			for(int e = 0;e < maxAlignments.length; e++) { 
 				toBeAdded = maxAlignments[e];
-				if(toBeAdded.getSimilarity() >= threshold) {
+				if(toBeAdded != null && toBeAdded.getSimilarity() >= threshold) {
 					aset.addAlignment(toBeAdded);
 				}
 			}
@@ -436,7 +436,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		for(int i = 0; i<matrix.getColumns();i++) {
 			for(int j = 0; j<matrix.getRows();j++) {		
 				currentValue = matrix.get(j,i);
-				if(currentValue.getSimilarity() >= threshold)
+				if(currentValue != null && currentValue.getSimilarity() >= threshold)
 					aset.addAlignment(currentValue);
 			}
 		}
@@ -458,7 +458,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	double sim;
     	for(int i = 0; i < rows; i++) {
     		for(int j = 0; j < cols; j++) {
-    			sim = matrix.get(i,j).getSimilarity();
+    			if( matrix.get(i,j) != null ) {
+    				sim = matrix.get(i,j).getSimilarity();
+    			} else {
+    				sim = 0;
+    			}
     			if(sim >= threshold)
     				workingMatrix[i][j] = sim;
     			else workingMatrix[i][j] = IntDoublePair.fake;
