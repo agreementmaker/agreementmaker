@@ -16,7 +16,7 @@ public class AlignmentSet
 
     public void addAlignment(Alignment alignment)
     {
-        collection.add(alignment);
+        if( alignment != null ) collection.add(alignment);
     }
     
     public void addAll(AlignmentSet a)
