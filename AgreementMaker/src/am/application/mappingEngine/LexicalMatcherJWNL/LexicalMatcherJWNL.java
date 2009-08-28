@@ -1,16 +1,12 @@
 package am.application.mappingEngine.LexicalMatcherJWNL;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 
 import am.application.mappingEngine.AbstractMatcher;
-import am.application.mappingEngine.AbstractMatcherParametersPanel;
 import am.application.mappingEngine.Alignment;
-import am.application.mappingEngine.StringUtil.Normalizer;
+import am.application.mappingEngine.OptimizedAbstractMatcher;
 
 import am.application.ontology.Node;
 
@@ -22,14 +18,12 @@ import net.didion.jwnl.data.IndexWord;
 import net.didion.jwnl.data.POS;
 import net.didion.jwnl.data.Synset;
 import net.didion.jwnl.data.PointerUtils;
-import net.didion.jwnl.data.PointerTarget;
-import net.didion.jwnl.data.PointerType;
+
 import net.didion.jwnl.data.list.PointerTargetNode;
 import net.didion.jwnl.data.list.PointerTargetNodeList;
 
-public class LexicalMatcherJWNL extends AbstractMatcher{
+public class LexicalMatcherJWNL extends OptimizedAbstractMatcher{
 	
-	private Normalizer normalizer;
 	private Dictionary dictionary;
 	
 	//Constructor
