@@ -152,12 +152,27 @@ public class OAEI2009matcherOptimized extends AbstractMatcher {
 		*/
 		
 		
+		//Run UMLS matcher on unmapped nodes.
+		System.out.println("Running UMLS");
+    	startime = System.nanoTime()/measure;
+    	AbstractMatcher umls = MatcherFactory.getMatcherInstance(MatchersRegistry.UMLSKSLexical, 4);
+    	umls.getInputMatchers().add(lwc);
+    	umls.setThreshold(threshold);
+    	umls.setMaxSourceAlign(maxSourceAlign);
+    	umls.setMaxTargetAlign(maxTargetAlign);
+    	//umls.initForOAEI2009();
+    	umls.match();
+    	time = (endtime-startime);
+		System.out.println("UMLS completed in (h.m.s.ms) "+Utility.getFormattedTime(time));	
+		
+		
+		
 		//Forth or fifth layer: DSI
 		//DSI
     	System.out.println("Running DSI");
     	startime = System.nanoTime()/measure;
     	AbstractMatcher dsi = MatcherFactory.getMatcherInstance(MatchersRegistry.DSI, 0);
-    	dsi.getInputMatchers().add(lwc);
+    	dsi.getInputMatchers().add(umls);
     	dsi.setThreshold(threshold);
     	dsi.setMaxSourceAlign(maxSourceAlign);
     	dsi.setMaxTargetAlign(maxTargetAlign);
@@ -168,10 +183,10 @@ public class OAEI2009matcherOptimized extends AbstractMatcher {
 		dsi.match();
         endtime = System.nanoTime()/measure;
     	time = (endtime-startime);
-		System.out.println("DSI completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
-
-		//ULAS: when the lexical method is ready change these two lines
-		//the final alignmentset must be the one of the last layer
+		System.out.println("DSI completed in (h.m.s.ms) "+Utility.getFormattedTime(time));	
+		
+		
+		
 		AbstractMatcher lastLayer = dsi;
 		classesMatrix = lastLayer.getClassesMatrix();
 		propertiesMatrix = lastLayer.getPropertiesMatrix();
@@ -179,7 +194,7 @@ public class OAEI2009matcherOptimized extends AbstractMatcher {
 		propertiesAlignmentSet = lastLayer.getPropertyAlignmentSet();
 		
 		
-    	
+		
     	matchEnd();
     	System.out.println("OAEI2009 matcher completed in (h.m.s.ms) "+Utility.getFormattedTime(executionTime));
     	//System.out.println("Classes alignments found: "+classesAlignmentSet.size());
