@@ -11,6 +11,7 @@ import am.application.mappingEngine.dsi.OldDescendantsSimilarityInheritanceMatch
 import am.application.mappingEngine.manualMatcher.UserManualMatcher;
 import am.application.mappingEngine.multiWords.MultiWordsMatcher;
 import am.application.mappingEngine.oaei2009.OAEI2009matcher;
+import am.application.mappingEngine.oaei2009.OAEI2009matcherOptimized;
 import am.application.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.application.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.application.mappingEngine.ssc.SiblingsSimilarityContributionMatcher;
@@ -48,7 +49,8 @@ public enum MatchersRegistry {
 	Combination	( "Linear Weighted Combination (LWC)", CombinationMatcher.class ),
 	ConceptSimilarity   ( "Concept Similarity", ConceptMatcher.class, false),
 	DSI2					( "OLD Descendant's Similarity Inheritance (DSI)", OldDescendantsSimilarityInheritanceMatcher.class, false ),
-	OAEI2009   ( "OAEI2009 Matcher", OAEI2009matcher.class),
+	OAEI2009   ( "OAEI2009 Matcher optimized", OAEI2009matcherOptimized.class),
+	OAEI2009slow   ( "OAEI2009 Matcher non-optimized", OAEI2009matcher.class),
 	WordNetLexical		("Lexical Matcher: WordNet", LexicalMatcherJWNL.class),
 	PRAMatcher			("PRA Matcher", PRAMatcher.class),
 	//UMLSKSLexical		("Lexical Matcher: UMLSKS", LexicalMatcherUMLS.class),

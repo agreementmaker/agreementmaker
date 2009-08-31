@@ -34,6 +34,9 @@ public class MultiWordsMatcher extends AbstractMatcher {
 	private ArrayList<StringWrapper> classCorpus = new ArrayList<StringWrapper>();
 	private ArrayList<StringWrapper> propCorpus = new ArrayList<StringWrapper>();
 	
+	private StringTFIDF tfidfClasses;
+	private StringTFIDF tfidfProperties;
+	
 	public MultiWordsMatcher() {
 		// warning, param is not available at the time of the constructor
 		super();
@@ -86,6 +89,9 @@ public class MultiWordsMatcher extends AbstractMatcher {
 				 AMStringWrapper sw = new AMStringWrapper(s);
 				 classCorpus.add(sw);
 			 }
+			 if(((MultiWordsParameters)param).measure.equals(MultiWordsParameters.TFIDF)){
+				 tfidfClasses = new StringTFIDF(classCorpus);
+			 }
 		}
 		
 		if(alignProp) {
@@ -108,6 +114,9 @@ public class MultiWordsMatcher extends AbstractMatcher {
 				 String s = it.next();
 				 AMStringWrapper sw = new AMStringWrapper(s);
 				 propCorpus.add(sw);
+			 }
+			 if(((MultiWordsParameters)param).measure.equals(MultiWordsParameters.TFIDF)){
+				 tfidfProperties = new StringTFIDF(propCorpus);
 			 }
 		}
 		
@@ -284,9 +293,9 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		else 	if(mp.measure.equals(MultiWordsParameters.TFIDF)) {
 			 StringTFIDF tfidf;
 			 if(typeOfNodes == alignType.aligningClasses) {
-				 tfidf = new StringTFIDF(classCorpus);
+				 tfidf = tfidfClasses;
 			 }
-			 else tfidf = new StringTFIDF(propCorpus);
+			 else tfidf = tfidfProperties;
 			 
 			 //calculate similarity
 			 sim = tfidf.getSimilarity(sourceString, targetString);
