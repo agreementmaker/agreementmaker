@@ -68,9 +68,7 @@ public abstract class Track {
 		currentMatcher.setThreshold(threshold);
 		currentMatcher.setMaxSourceAlign(sourceRel);
 		currentMatcher.setMaxTargetAlign(targetRel);
-		if(currentMatcher.needsParam()){
-			currentMatcher.setParam(parameters);
-		}
+		currentMatcher.setParam(parameters);
 		currentMatcher.match();
 		System.out.println("Matching method completed in "+currentMatcher.getExecutionTime());
 		return currentMatcher.getAlignmentSet();

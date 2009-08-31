@@ -1,5 +1,11 @@
 package am.batchMode;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+
+import am.Utility;
+
 public class TrackDispatcher {
 	
 	public final static String BENCHMARK = "benchmarks";
@@ -33,8 +39,15 @@ public class TrackDispatcher {
 		catch(Exception ex){
 			ex.printStackTrace();
 		}
-		
-
+	}
+	
+	public static void printExecutionTime(long time, String fileName) throws Exception{
+		System.out.println("Total execution time in h:m:s:ms: "+Utility.getFormattedTime(time));
+		File timeFile = new File(fileName);
+		PrintWriter ptime = new PrintWriter(timeFile);
+		ptime.println("Total execution time in ms: "+time);
+		ptime.println("Total execution time in h:m:s:ms: "+Utility.getFormattedTime(time));
+		ptime.close();
 		
 	}
 }

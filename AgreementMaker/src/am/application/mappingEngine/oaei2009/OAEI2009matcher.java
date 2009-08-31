@@ -1,5 +1,6 @@
 package am.application.mappingEngine.oaei2009;
 
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -11,6 +12,7 @@ import am.application.mappingEngine.MatcherFactory;
 import am.application.mappingEngine.MatchersRegistry;
 import am.application.mappingEngine.Combination.CombinationMatcher;
 import am.application.mappingEngine.Combination.CombinationParameters;
+import am.application.mappingEngine.Combination.CombinationParametersPanel;
 import am.application.mappingEngine.StringUtil.ISub;
 import am.application.mappingEngine.StringUtil.Normalizer;
 import am.application.mappingEngine.StringUtil.StringMetrics;
@@ -28,13 +30,14 @@ import uk.ac.shef.wit.simmetrics.similaritymetrics.*; //all sim metrics are in h
 
 public class OAEI2009matcher extends AbstractMatcher { 
 
-
+	
 	private Normalizer normalizer;
 	
 	public OAEI2009matcher() {
 		// warning, param is not available at the time of the constructor
 		super();
-		needsParam = false;
+		needsParam = true;
+		param = new OAEI2009parameters();
 	}
 	
 	
@@ -62,11 +65,14 @@ public class OAEI2009matcher extends AbstractMatcher {
 
     public void match() throws Exception {
     	matchStart();
+    	long measure = 1000000;
+		AbstractMatcher lastLayer;
+		OAEI2009parameters parameters = (OAEI2009parameters)param;
     	
-    	//FIRST LAYER: BSM + PSM + VMM
+    	//FIRST LAYER: BSM PSM and VMM
     	//BSM
     	System.out.println("Running BSM");
-    	long startime = System.nanoTime()/1000000000;
+    	long startime = System.nanoTime()/measure;
     	AbstractMatcher bsm = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity, 0);
     	bsm.setThreshold(threshold);
     	bsm.setMaxSourceAlign(maxSourceAlign);
@@ -76,15 +82,13 @@ public class OAEI2009matcher extends AbstractMatcher {
     	bsm.setParam(bsmp);
     	//bsm.setPerformSelection(false);
 		bsm.match();
-    	long endtime = System.nanoTime()/1000000000;
+    	long endtime = System.nanoTime()/measure;
     	long time = (endtime-startime);
-		System.out.println("BSM completed in "+time);
+		System.out.println("BSM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
     	
-		
-		
 		//PSM
     	System.out.println("Running PSM");
-    	startime = System.nanoTime()/1000000000;
+    	startime = System.nanoTime()/measure;
     	AbstractMatcher psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 1);
     	psm.setThreshold(threshold);
     	psm.setMaxSourceAlign(maxSourceAlign);
@@ -94,13 +98,13 @@ public class OAEI2009matcher extends AbstractMatcher {
     	psm.setParam(psmp);
     	//psm.setPerformSelection(false);
 		psm.match();
-        endtime = System.nanoTime()/1000000000;
+        endtime = System.nanoTime()/measure;
     	time = (endtime-startime);
-		System.out.println("PSM completed in "+time);
+		System.out.println("PSM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		
 		//vmm
     	System.out.println("Running VMM");
-    	startime = System.nanoTime()/1000000000;
+    	startime = System.nanoTime()/measure;
     	AbstractMatcher vmm = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 2);
     	vmm.setThreshold(threshold);
     	vmm.setMaxSourceAlign(maxSourceAlign);
@@ -110,20 +114,20 @@ public class OAEI2009matcher extends AbstractMatcher {
     	vmm.setParam(vmmp);
     	//vmm.setPerformSelection(false);
 		vmm.match();
-        endtime = System.nanoTime()/1000000000;
+        endtime = System.nanoTime()/measure;
     	time = (endtime-startime);
-		System.out.println("VMM completed in "+time);
+		System.out.println("VMM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		
 		
 		
-		//Second layer: LWC
+		//Second layer: LWC(VMM, PSM, BSM)
 		//LWC matcher
     	System.out.println("Running LWC");
-    	startime = System.nanoTime()/1000000000;
+    	startime = System.nanoTime()/measure;
     	AbstractMatcher lwc = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 3);
-    	lwc.getInputMatchers().add(bsm);
     	lwc.getInputMatchers().add(psm);
     	lwc.getInputMatchers().add(vmm);
+    	lwc.getInputMatchers().add(bsm);
     	lwc.setThreshold(threshold);
     	lwc.setMaxSourceAlign(maxSourceAlign);
     	lwc.setMaxTargetAlign(maxTargetAlign);
@@ -132,17 +136,59 @@ public class OAEI2009matcher extends AbstractMatcher {
     	lwc.setParam(lwcp);
     	//lwc.setPerformSelection(false);
 		lwc.match();
-        endtime = System.nanoTime()/1000000000;
+        endtime = System.nanoTime()/measure;
     	time = (endtime-startime);
-		System.out.println("LWC completed in "+time);
+		System.out.println("LWC completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
+		lastLayer = lwc;
 		
+		if(parameters.useWordNet){
+			//third layer wnl on input LWC (optimized mode)
+	    	System.out.println("Running LexicalWordnet");
+	    	startime = System.nanoTime()/measure;
+	    	AbstractMatcher wnl = MatcherFactory.getMatcherInstance(MatchersRegistry.WordNetLexical, 2);
+	    	wnl.setOptimized(true);
+	    	wnl.addInputMatcher(lastLayer);
+	    	wnl.setThreshold(threshold);
+	    	wnl.setMaxSourceAlign(maxSourceAlign);
+	    	wnl.setMaxTargetAlign(maxTargetAlign);
+	    	wnl.match();
+	        endtime = System.nanoTime()/measure;
+	    	time = (endtime-startime);
+			System.out.println("WNL completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
+			lastLayer = wnl;
+		}
 		
-		//Third layer: DSI
+		if(parameters.useUMLS){
+			//Run UMLS matcher on unmapped nodes.
+			
+			System.out.println("Running UMLS");
+			try{
+		    	startime = System.nanoTime()/measure;
+		    	AbstractMatcher umls = MatcherFactory.getMatcherInstance(MatchersRegistry.UMLSKSLexical, 4);
+		    	umls.setOptimized(true);
+		    	umls.getInputMatchers().add(lastLayer);
+		    	umls.setThreshold(threshold);
+		    	umls.setMaxSourceAlign(maxSourceAlign);
+		    	umls.setMaxTargetAlign(maxTargetAlign);
+		    	//umls.initForOAEI2009();
+		    	umls.match();
+		    	time = (endtime-startime);
+				System.out.println("UMLS completed in (h.m.s.ms) "+Utility.getFormattedTime(time));	
+				lastLayer = umls;
+			}
+			catch(RemoteException e){
+				e.printStackTrace();
+				System.out.println("Impossible to connect to the UMLS server. The ip address has to be registered at http://kscas-lhc.nlm.nih.gov/UMLSKS");
+			}
+
+		}
+
+		//Forth or fifth layer: DSI
 		//DSI
     	System.out.println("Running DSI");
-    	startime = System.nanoTime()/1000000000;
+    	startime = System.nanoTime()/measure;
     	AbstractMatcher dsi = MatcherFactory.getMatcherInstance(MatchersRegistry.DSI, 0);
-    	dsi.getInputMatchers().add(lwc);
+    	dsi.getInputMatchers().add(lastLayer);
     	dsi.setThreshold(threshold);
     	dsi.setMaxSourceAlign(maxSourceAlign);
     	dsi.setMaxTargetAlign(maxTargetAlign);
@@ -151,33 +197,28 @@ public class OAEI2009matcher extends AbstractMatcher {
     	dsi.setParam(dsip);
     	//dsi.setPerformSelection(true);
 		dsi.match();
-        endtime = System.nanoTime()/1000000000;
+        endtime = System.nanoTime()/measure;
     	time = (endtime-startime);
-		System.out.println("DSI completed in "+time);
+		System.out.println("DSI completed in (h.m.s.ms) "+Utility.getFormattedTime(time));	
+		lastLayer = dsi;
 		
-		
-		//forth and fifth can also be only a unique layer I don't know
-		//Forth layer: Lexical with wordnet
-		//
-		
-		//Fifth layer: lexical with UMLS
-		//
-
-		//ULAS: when the lexical method is ready change these two lines
-		//the final alignmentset must be the one of the last layer
-		AbstractMatcher lastLayer = dsi;
 		classesMatrix = lastLayer.getClassesMatrix();
 		propertiesMatrix = lastLayer.getPropertiesMatrix();
 		classesAlignmentSet = lastLayer.getClassAlignmentSet();
 		propertiesAlignmentSet = lastLayer.getPropertyAlignmentSet();
 		
-		
-    	
     	matchEnd();
+    	System.out.println("OAEI2009 matcher completed in (h.m.s.ms) "+Utility.getFormattedTime(executionTime));
     	//System.out.println("Classes alignments found: "+classesAlignmentSet.size());
     	//System.out.println("Properties alignments found: "+propertiesAlignmentSet.size());
     }
-
+    
+	public AbstractMatcherParametersPanel getParametersPanel() {
+		if(parametersPanel == null){
+			parametersPanel = new OAEI2009parametersPanel();
+		}
+		return parametersPanel;
+	}
 	      
 }
 

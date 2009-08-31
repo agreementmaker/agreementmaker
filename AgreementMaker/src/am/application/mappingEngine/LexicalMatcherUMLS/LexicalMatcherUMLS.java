@@ -42,8 +42,9 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 	//http://kscas-lhc.nlm.nih.gov/UMLSKS/servlet/Turbine/template/admin,user,KSS_login.vm
 	//Use ulaskeles as login name and password if you don't have a license.
 	public void connectToServer()  throws Exception{
-		try {
+		//try {
 	    	retriever = (KSSRetrieverV5_0)Naming.lookup(hostName);
+		/*
 		} catch (RemoteException rex) {
 			System.err.println("RemoteException: " + rex.getMessage());
 		} catch (NotBoundException nbex) {
@@ -51,6 +52,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 		} catch (MalformedURLException mfurl) {
 			System.err.println("MalformedURLException: " + mfurl.getMessage());
 		}
+		*/
 	}
 	
 	//
@@ -222,9 +224,9 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 	
 	
 	//e.g. "Acquired Immunodeficiency Syndrome" returns C0001175
-	public String getCUIfromName(String def){
+	public String getCUIfromName(String def) throws RemoteException, DatabaseException, XMLException{
 		ArrayList <String> matches = new ArrayList <String>();
-		try {
+		//try {
 			char[] result;
 			Vector SABS = null;
 			result = retriever.findCUI(DBYEAR, def, SABS, LAT, KSSRetriever.NormalizeString);
@@ -234,7 +236,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 				ConceptId nextId = (ConceptId) i.next();
 				matches.add(nextId.getCUI());
 			}
-
+		/*
 		} catch (DatabaseException e) {
 			System.out.println(e.getMessage());
 		} catch (RemoteException e) {
@@ -242,7 +244,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 		} catch (XMLException e) {
 			System.out.println(e.getMessage());
 		}
-
+		*/
 		if (matches == null || matches.isEmpty()) {
 			System.out.println("No results for " + def);
 			return null;

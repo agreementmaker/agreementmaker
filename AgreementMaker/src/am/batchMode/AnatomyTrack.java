@@ -49,7 +49,7 @@ public class AnatomyTrack extends Track{
 		//TH and cardinality have to  be set later for each track
 		MatchersRegistry matcher = MatchersRegistry.OAEI2009;
 		//the parameters are only used in the forth subtrck to keep the name of the partial reference file
-		OAEI2009parameters param = new OAEI2009parameters();
+		OAEI2009parameters param;
 		
 		//decide if running only on one subtracks or all of them
 		boolean doAll = false;
@@ -61,12 +61,17 @@ public class AnatomyTrack extends Track{
 			double threshold = 0.60;
 			int sourceCardinality = 1;
 			int targetCardinality = 1;
+			param = new OAEI2009parameters(OAEI2009parameters.ANATOMY);
+			long startTime = System.nanoTime()/1000000;
 			AlignmentSet as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param);
 			String sourceUri = Core.getInstance().getSourceOntology().getURI();
 			String targetUri = Core.getInstance().getTargetOntology().getURI();
+			long endTime = System.nanoTime()/1000000;
+			long totTime = endTime - startTime;
 			//we need to create the directory first
 			String outputFileDir = TRACK_OUTPUT_DIR+"TRACK_1";//the last / is not needed for mkdirs but is needed later
 			(new File(outputFileDir)).mkdirs();//create directories
+			TrackDispatcher.printExecutionTime(totTime, outputFileDir+"/"+"ExecutionTime.txt");
 			AlignmentOutput ao = new AlignmentOutput(as, outputFileDir+"/"+AM_NAME+".rdf");
 			ao.write(sourceUri, targetUri, sourceUri, targetUri);
 		}
@@ -75,12 +80,17 @@ public class AnatomyTrack extends Track{
 			double threshold = 0.75;
 			int sourceCardinality = 1;
 			int targetCardinality = 1;
+			param = new OAEI2009parameters(OAEI2009parameters.ANATOMY);
+			long startTime = System.nanoTime()/1000000;
 			AlignmentSet as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param);
+			long endTime = System.nanoTime()/1000000;
+			long totTime = endTime - startTime;
 			String sourceUri = Core.getInstance().getSourceOntology().getURI();
 			String targetUri = Core.getInstance().getTargetOntology().getURI();
 			//we need to create the directory first
 			String outputFileDir = TRACK_OUTPUT_DIR+"TRACK_2";//the last / is not needed for mkdirs but is needed later
 			(new File(outputFileDir)).mkdirs();//create directories
+			TrackDispatcher.printExecutionTime(totTime, outputFileDir+"/"+"ExecutionTime.txt");
 			AlignmentOutput ao = new AlignmentOutput(as, outputFileDir+"/"+AM_NAME+".rdf");
 			ao.write(sourceUri, targetUri, sourceUri, targetUri);
 		}
@@ -89,28 +99,37 @@ public class AnatomyTrack extends Track{
 			double threshold = 0.35;
 			int sourceCardinality = 1;
 			int targetCardinality = 1;
+			param = new OAEI2009parameters(OAEI2009parameters.ANATOMY);
+			long startTime = System.nanoTime()/1000000;
 			AlignmentSet as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param);
+			long endTime = System.nanoTime()/1000000;
+			long totTime = endTime - startTime;
 			String sourceUri = Core.getInstance().getSourceOntology().getURI();
 			String targetUri = Core.getInstance().getTargetOntology().getURI();
 			//we need to create the directory first
 			String outputFileDir = TRACK_OUTPUT_DIR+"TRACK_3";//the last / is not needed for mkdirs but is needed later
 			(new File(outputFileDir)).mkdirs();//create directories
+			TrackDispatcher.printExecutionTime(totTime, outputFileDir+"/"+"ExecutionTime.txt");
 			AlignmentOutput ao = new AlignmentOutput(as, outputFileDir+"/"+AM_NAME+".rdf");
 			ao.write(sourceUri, targetUri, sourceUri, targetUri);
 		}
 		if(doAll||subTrack.equals(TRACK_4)){
 			//subtrack 1 using partial reference
-			param.partialReferenceFile = PARTIAL_REFERENCE;
+			param = new OAEI2009parameters(OAEI2009parameters.ANATOMY_PRA);
 			double threshold = 0.60;
 			int sourceCardinality = 1;
 			int targetCardinality = 1;
+			long startTime = System.nanoTime()/1000000;
 			//the partial reference filename has to be set in the method parameters
 			AlignmentSet as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param);
+			long endTime = System.nanoTime()/1000000;
+			long totTime = endTime - startTime;
 			String sourceUri = Core.getInstance().getSourceOntology().getURI();
 			String targetUri = Core.getInstance().getTargetOntology().getURI();
 			//we need to create the directory first
 			String outputFileDir = TRACK_OUTPUT_DIR+"TRACK_4";//the last / is not needed for mkdirs but is needed later
 			(new File(outputFileDir)).mkdirs();//create directories
+			TrackDispatcher.printExecutionTime(totTime, outputFileDir+"/"+"ExecutionTime.txt");
 			AlignmentOutput ao = new AlignmentOutput(as, outputFileDir+"/"+AM_NAME+".rdf");
 			ao.write(sourceUri, targetUri, sourceUri, targetUri);
 		}
