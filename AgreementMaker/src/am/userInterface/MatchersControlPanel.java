@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -62,6 +63,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	private JButton matchButton;
 	private JButton viewDetails;
 	private JButton defaultValButton;
+	private JCheckBox optimizedCheck;
+	private JLabel optimizedLabel;
 	//TABLE PANEL
 	private MatchersTablePanel matchersTablePanel;
 	//EDIT MATCHINGS PANEL
@@ -96,13 +99,13 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		
 		//JPANEL MATCHER SELECTION (first top of the three panels)
 		//label
-		matcherLabel = new JLabel("Matcher selection: ");
+		matcherLabel = new JLabel("Matcher: ");
 		String[] matcherList = MatcherFactory.getMatcherComboList();
 		//matcher combo list
 		matcherCombo = new JComboBox(matcherList);
 		matcherCombo.addItemListener(this);
 		//button to view matcher details
-		viewDetails = new JButton("View details");
+		viewDetails = new JButton("Details");
 		viewDetails.addActionListener(this);
 		//button to run match
 		matchButton = new JButton("Match!");
@@ -122,6 +125,10 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		tRelationCombo.setSelectedItem(1);
 		defaultValButton = new JButton("Default");
 		defaultValButton.addActionListener(this);
+		optimizedCheck = new JCheckBox();
+		optimizedCheck.setSelected(false);
+		optimizedLabel = new JLabel("Optimized");
+		
 
 		//matcher selection panel
 		JPanel matcherSelectionPanel = new JPanel();
@@ -136,6 +143,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		matcherSelectionPanel.add(sRelationCombo);
 		matcherSelectionPanel.add(tRelLabel);
 		matcherSelectionPanel.add(tRelationCombo);
+		matcherSelectionPanel.add(optimizedCheck);
+		matcherSelectionPanel.add(optimizedLabel);
 		matcherSelectionPanel.add(defaultValButton);
 		
 		
@@ -436,7 +445,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 			Utility.displayErrorPane("Select at least "+currentMatcher.getMinInputMatchers()+" matchings from the table to run this matcher.", null);
 		}
 		else {
-			//Set matchers into the abstractmatcher VERY IMPORTANT to set them before invoking the parameter panel, infact the parameter panel may need to work on inputMatchers also.
+			//Set input matchers into the abstractmatcher VERY IMPORTANT to set them before invoking the parameter panel, in fact the parameter panel may need to work on inputMatchers also.
+			currentMatcher.setOptimized(optimizedCheck.isSelected());//this method set maxInputMatcher to 1
 			for(int i = 0; i<rowsIndex.length && i< currentMatcher.getMaxInputMatchers(); i++) {
 				AbstractMatcher input = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
 				currentMatcher.addInputMatcher(input);

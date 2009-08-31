@@ -41,6 +41,7 @@ public class UserManualMatcher extends AbstractMatcher {
 		minInputMatchers = 0;
 		maxInputMatchers = 0;
 		relation = Alignment.EQUIVALENCE;
+		optimized = false;
 	}
 	
 	/**Set all alignment sim to 0*/

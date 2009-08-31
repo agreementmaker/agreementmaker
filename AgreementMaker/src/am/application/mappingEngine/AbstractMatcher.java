@@ -109,13 +109,22 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected String report = "";
 	
 	/**
-	 * Right now matchers, only produce equivalence relations
-	 * If a matcher computes another type of relation, the relation has to be added to the Alignment class a static variable
+	 * Right now, matchers only produce equivalence relations
+	 * If a matcher computes another type of relation, the relation has to be added to the Alignment class as a static variable
 	 * and it has to be set as a default relation in the constructor of that matcher.
-	 * at the moment a matcher is not aloud to compute different relations for different concepts
+	 * at the moment a matcher is not allowed to compute different relations for different concepts
 	 * in that case a matrix of relation has to be kept within the matcher and the situation has to be managed properly
 	 */
 	protected String relation;
+	
+	
+	/**
+	 * If this value is set to true, the matcher will run in optimized mode
+	 * by matching only the concepts that have not been mapped by the matcher in input
+	 * For this reason, if this value is set to true another matcher has to be provided in input to this matcher.
+	 * When this value is set to true, the maxNumberInputMatcher is also automatically set to 1 in the setOptimized() method.
+	 */
+	protected boolean optimized;
 
 	/**
 	 * The constructor must be a Nullary Constructor
@@ -139,7 +148,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		minInputMatchers = 0;
 		maxInputMatchers = 0;
 		relation = Alignment.EQUIVALENCE;
-		 
+		optimized = false;
 		//ALIGNMENTS LIST MUST BE NULL UNTIL THEY ARE CALCULATED
 		sourceOntology = Core.getInstance().getSourceOntology();
 		targetOntology = Core.getInstance().getTargetOntology();
@@ -267,28 +276,77 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 
     protected AlignmentMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) throws Exception {
-		return alignNodesOneByOne(sourcePropList, targetPropList, alignType.aligningProperties);
+    		return alignNodesOneByOne(sourcePropList, targetPropList, alignType.aligningProperties);
 	}
 
     protected AlignmentMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList)  throws Exception{
-		return alignNodesOneByOne(sourceClassList, targetClassList, alignType.aligningClasses);
+			return alignNodesOneByOne(sourceClassList, targetClassList, alignType.aligningClasses);
 	}
 	
     protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
-		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
+    	
+    	if(optimized && inputMatchers.size() > 0){ 
+    		//run in optimized mode by mapping only concepts that have not been mapped in the input matcher
+    		if(typeOfNodes.equals(alignType.aligningClasses)){
+    			return alignUnmappedNodes(sourceList, targetList, inputMatchers.get(0).getClassesMatrix(), inputMatchers.get(0).getClassAlignmentSet(), alignType.aligningClasses);
+    		}
+    		else{
+    			return alignUnmappedNodes(sourceList, targetList, inputMatchers.get(0).getPropertiesMatrix(), inputMatchers.get(0).getPropertyAlignmentSet(), alignType.aligningProperties);
+    		}
+		}
+    	
+    	else{
+    		//run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
+	    	AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
+			Node source;
+			Node target;
+			Alignment alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
+			for(int i = 0; i < sourceList.size(); i++) {
+				source = sourceList.get(i);
+				for(int j = 0; j < targetList.size(); j++) {
+					target = targetList.get(j);
+					
+					if( !this.isCancelled() ) { alignment = alignTwoNodes(source, target, typeOfNodes); }
+					else { return matrix; }
+					
+					matrix.set(i,j,alignment);
+					if( isProgressDisplayed() ) stepDone(); // we have completed one step
+				}
+				if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
+			}
+			return matrix;
+    	}
+	}
+    
+    protected AlignmentMatrix alignUnmappedNodes(ArrayList<Node> sourceList, ArrayList<Node> targetList, AlignmentMatrix inputMatrix,
+			AlignmentSet inputAlignmentSet, alignType typeOfNodes) throws Exception {
+    	
+    	MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, maxSourceAlign, maxTargetAlign);
+    	AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		Node source;
 		Node target;
-		Alignment alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
+		Alignment alignment; 
+		Alignment inputAlignment;
 		for(int i = 0; i < sourceList.size(); i++) {
 			source = sourceList.get(i);
 			for(int j = 0; j < targetList.size(); j++) {
 				target = targetList.get(j);
 				
-				if( !this.isCancelled() ) { alignment = alignTwoNodes(source, target, typeOfNodes); }
+				if( !this.isCancelled() ) {
+					//if both nodes have not been mapped yet enough times
+					//we map them regularly
+					if(!mappedNodes.isSourceMapped(source) && !mappedNodes.isTargetMapped(target)){
+						alignment = alignTwoNodes(source, target, typeOfNodes); 
+					}
+					//else we take the alignment that was computed from the previous matcher
+					else{
+						inputAlignment = inputMatrix.get(i, j);
+						alignment = new Alignment(inputAlignment.getEntity1(), inputAlignment.getEntity2(), inputAlignment.getSimilarity(), inputAlignment.getRelation());
+					}
+					matrix.set(i,j,alignment);
+					if( isProgressDisplayed() ) stepDone(); // we have completed one step
+				}
 				else { return matrix; }
-				
-				matrix.set(i,j,alignment);
-				if( isProgressDisplayed() ) stepDone(); // we have completed one step
 			}
 			if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
 		}
@@ -959,6 +1017,17 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	public void setRelation(String relation) {
 		this.relation = relation;
 	}     
+	
+	public boolean isOptimized() {
+		return optimized;
+	}
+
+	public void setOptimized(boolean optimized) {
+		this.optimized = optimized;
+		if(maxInputMatchers < 1){
+			maxInputMatchers = 1;
+		}
+	}
 	
 	public String getAlignmentsStrings() {
 		//The small arrow must be different from the bigger used in the alignments or the parseReference will identify these lines as alignments
