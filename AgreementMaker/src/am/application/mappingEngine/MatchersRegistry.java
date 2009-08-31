@@ -2,6 +2,7 @@ package am.application.mappingEngine;
 
 import am.application.mappingEngine.Combination.CombinationMatcher;
 import am.application.mappingEngine.LexicalMatcherJWNL.LexicalMatcherJWNL;
+import am.application.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
 import am.application.mappingEngine.PRAMatcher.PRAMatcher;
 //import am.application.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
 import am.application.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
@@ -53,7 +54,7 @@ public enum MatchersRegistry {
 	OAEI2009slow   ( "OAEI2009 Matcher non-optimized", OAEI2009matcher.class),
 	WordNetLexical		("Lexical Matcher: WordNet", LexicalMatcherJWNL.class),
 	PRAMatcher			("PRA Matcher", PRAMatcher.class),
-	//UMLSKSLexical		("Lexical Matcher: UMLSKS", LexicalMatcherUMLS.class),
+	UMLSKSLexical		("Lexical Matcher: UMLSKS", LexicalMatcherUMLS.class),
 
 	//WORK IN PROGRESS
 	
