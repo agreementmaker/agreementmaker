@@ -11,7 +11,6 @@ import am.application.mappingEngine.MatcherFactory;
 import am.application.mappingEngine.MatchersRegistry;
 import am.application.mappingEngine.Combination.CombinationMatcher;
 import am.application.mappingEngine.Combination.CombinationParameters;
-import am.application.mappingEngine.LexicalMatcher.LexicalMatcherParameters;
 import am.application.mappingEngine.StringUtil.ISub;
 import am.application.mappingEngine.StringUtil.Normalizer;
 import am.application.mappingEngine.StringUtil.StringMetrics;
@@ -65,7 +64,7 @@ public class OAEI2009matcherOptimized extends AbstractMatcher {
     	matchStart();
     	long measure = 1000000;
     	
-    	//FIRST LAYER: only BSM
+    	//FIRST LAYER: BSM PSM and VMM
     	//BSM
     	System.out.println("Running BSM");
     	long startime = System.nanoTime()/measure;
@@ -82,14 +81,10 @@ public class OAEI2009matcherOptimized extends AbstractMatcher {
     	long time = (endtime-startime);
 		System.out.println("BSM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
     	
-		
-		//Second layer: PSM || VMM || WordNet all in optimized mode with BSM as input
 		//PSM
     	System.out.println("Running PSM");
     	startime = System.nanoTime()/measure;
     	AbstractMatcher psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 1);
-    	psm.setOptimized(true);
-    	psm.addInputMatcher(bsm);
     	psm.setThreshold(threshold);
     	psm.setMaxSourceAlign(maxSourceAlign);
     	psm.setMaxTargetAlign(maxTargetAlign);
@@ -106,8 +101,6 @@ public class OAEI2009matcherOptimized extends AbstractMatcher {
     	System.out.println("Running VMM");
     	startime = System.nanoTime()/measure;
     	AbstractMatcher vmm = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 2);
-    	vmm.setOptimized(true);
-    	vmm.addInputMatcher(bsm);
     	vmm.setThreshold(threshold);
     	vmm.setMaxSourceAlign(maxSourceAlign);
     	vmm.setMaxTargetAlign(maxTargetAlign);
@@ -120,35 +113,16 @@ public class OAEI2009matcherOptimized extends AbstractMatcher {
     	time = (endtime-startime);
 		System.out.println("VMM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		
-		//vmm
-		/*
-    	System.out.println("Running LexicalWordnet");
-    	startime = System.nanoTime()/measure;
-    	AbstractMatcher wnl = MatcherFactory.getMatcherInstance(MatchersRegistry.WordNetLexical, 2);
-    	wnl.setOptimized(true);
-    	wnl.addInputMatcher(bsm);
-    	wnl.setThreshold(threshold);
-    	wnl.setMaxSourceAlign(maxSourceAlign);
-    	wnl.setMaxTargetAlign(maxTargetAlign);
-    	LexicalMatcherParameters wnlp = new LexicalMatcherParameters();
-    	//wnlp.initForOAEI2009();
-    	wnl.setParam(wnlp);
-    	//vmm.setPerformSelection(false);
-    	wnl.match();
-        endtime = System.nanoTime()/measure;
-    	time = (endtime-startime);
-		System.out.println("WNL completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
-		*/
 		
-		//Third layer: LWC(VMM, PSM, WNL)
+		
+		//Second layer: LWC(VMM, PSM, BSM)
 		//LWC matcher
     	System.out.println("Running LWC");
     	startime = System.nanoTime()/measure;
     	AbstractMatcher lwc = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 3);
-    	
     	lwc.getInputMatchers().add(psm);
     	lwc.getInputMatchers().add(vmm);
-    	//lwc.getInputMatchers().add(wnl);
+    	lwc.getInputMatchers().add(bsm);
     	lwc.setThreshold(threshold);
     	lwc.setMaxSourceAlign(maxSourceAlign);
     	lwc.setMaxTargetAlign(maxTargetAlign);
@@ -160,6 +134,22 @@ public class OAEI2009matcherOptimized extends AbstractMatcher {
         endtime = System.nanoTime()/measure;
     	time = (endtime-startime);
 		System.out.println("LWC completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
+		
+		//third layer wnl on input LWC (optimized mode)
+		/*
+    	System.out.println("Running LexicalWordnet");
+    	startime = System.nanoTime()/measure;
+    	AbstractMatcher wnl = MatcherFactory.getMatcherInstance(MatchersRegistry.WordNetLexical, 2);
+    	wnl.setOptimized(true);
+    	wnl.addInputMatcher(lwc);
+    	wnl.setThreshold(threshold);
+    	wnl.setMaxSourceAlign(maxSourceAlign);
+    	wnl.setMaxTargetAlign(maxTargetAlign);
+    	wnl.match();
+        endtime = System.nanoTime()/measure;
+    	time = (endtime-startime);
+		System.out.println("WNL completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
+		*/
 		
 		
 		//Forth or fifth layer: DSI
@@ -179,14 +169,6 @@ public class OAEI2009matcherOptimized extends AbstractMatcher {
         endtime = System.nanoTime()/measure;
     	time = (endtime-startime);
 		System.out.println("DSI completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
-		
-		
-		//forth and fifth can also be only a unique layer I don't know
-		//Forth layer: Lexical with wordnet
-		//
-		
-		//Fifth layer: lexical with UMLS
-		//
 
 		//ULAS: when the lexical method is ready change these two lines
 		//the final alignmentset must be the one of the last layer

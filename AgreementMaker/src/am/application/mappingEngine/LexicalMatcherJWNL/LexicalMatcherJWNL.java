@@ -1,6 +1,7 @@
 package am.application.mappingEngine.LexicalMatcherJWNL;
 
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,9 +23,26 @@ import net.didion.jwnl.data.PointerUtils;
 import net.didion.jwnl.data.list.PointerTargetNode;
 import net.didion.jwnl.data.list.PointerTargetNodeList;
 
-public class LexicalMatcherJWNL extends OptimizedAbstractMatcher{
+public class LexicalMatcherJWNL extends AbstractMatcher{
 	
 	private Dictionary dictionary;
+	private ArrayList<String>  sourceClassTreatedStrings;
+	private ArrayList<String>  targetClassTreatedStrings;
+	private ArrayList<String>  sourcePropTreatedStrings;
+	private ArrayList<String>  targetPropTreatedStrings;
+	
+	private ArrayList<IndexWord> sourceClassNounWords;
+	private ArrayList<IndexWord> sourceClassVerbWords;
+	private ArrayList<IndexWord> sourcePropNounWords;
+	private ArrayList<IndexWord> sourcePropVerbWords;
+	
+	private ArrayList<IndexWord> targetClassNounWords;
+	private ArrayList<IndexWord> targetClassVerbWords;
+	private ArrayList<IndexWord> targetPropNounWords;
+	private ArrayList<IndexWord> targetPropVerbWords;
+	
+
+	
 	
 	//Constructor
 	public LexicalMatcherJWNL() throws Exception {
@@ -45,6 +63,67 @@ public class LexicalMatcherJWNL extends OptimizedAbstractMatcher{
 		return "A lexical matcher using WordNet.\n"; 
 	}
 	
+	protected void beforeAlignOperations()  throws Exception{
+		super.beforeAlignOperations();
+		
+		//for each concept compute the treated string
+		sourceClassTreatedStrings = computeStrings(sourceOntology.getClassesList());
+		targetClassTreatedStrings = computeStrings(targetOntology.getClassesList());
+		sourcePropTreatedStrings = computeStrings(sourceOntology.getPropertiesList());
+		targetPropTreatedStrings = computeStrings(targetOntology.getPropertiesList());
+		//for each concept builds the list of lookedUp strings from wordnet
+		
+		//source nouns and verbs words
+		//classes
+		sourceClassNounWords = computeWords(sourceClassTreatedStrings, POS.NOUN);
+		sourceClassVerbWords = computeWords(sourceClassTreatedStrings, POS.VERB);
+		//properties
+		sourcePropNounWords = computeWords(sourcePropTreatedStrings, POS.NOUN);
+		sourcePropVerbWords = computeWords(sourcePropTreatedStrings, POS.VERB);
+		
+		//target nouns and verbs words
+		//classes
+		targetClassNounWords = computeWords(targetClassTreatedStrings, POS.NOUN);
+		targetClassVerbWords = computeWords(targetClassTreatedStrings, POS.VERB);
+		//properties
+		targetPropNounWords = computeWords(targetPropTreatedStrings, POS.NOUN);
+		targetPropVerbWords = computeWords(targetPropTreatedStrings, POS.VERB);
+	}
+	
+	private ArrayList<String> computeStrings(ArrayList<Node> list) {
+		ArrayList<String> result = new ArrayList<String>();
+		Iterator<Node> it = list.iterator();
+		Node n;
+		String nodeString;
+		String processedString;
+		while(it.hasNext()){
+			//for each concept we get the indexWord from the label
+			//if the concept has no label we consider the localname
+			n = it.next();
+			nodeString = n.getLabel();
+			if(nodeString == null || nodeString.equals(""))
+				nodeString = n.getLocalName();
+			//Run treatString() on each name to clean it up
+			processedString = treatString(nodeString);
+			result.add(processedString);
+		}
+		return result;
+	}
+
+	private ArrayList<IndexWord> computeWords(ArrayList<String> list, POS pos) throws Exception {
+		ArrayList<IndexWord> result = new ArrayList<IndexWord>();
+		Iterator<String> it = list.iterator();
+		String processedString;
+		IndexWord iWord;
+		while(it.hasNext()){
+			processedString = it.next();
+			iWord = dictionary.lookupIndexWord(pos, processedString);
+			result.add(iWord);//it may also be null, but we have to keep it in the list to mantain the order with concept index
+		}
+		return result;
+	}
+
+
 	
 	/* Algorithm functions beyond this point */
 	
@@ -53,31 +132,34 @@ public class LexicalMatcherJWNL extends OptimizedAbstractMatcher{
 	 */
 	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
 		
-		//Get local name		
-		String sourceName= source.getLocalName();
-		String targetName = target.getLocalName();
-		
-		//Run treatString() on each name to clean it up
-		//Normalizer has already been used in another method.
-		sourceName = treatString(sourceName);
-		targetName = treatString(targetName);
-		
-		// I ASSUME STRING EQUALITY IS ALREADY CHECKED BEFORE BY ANOTHER MATCHER
-		/*
-		//If the labels are equal, then return a similarity of 1
-		if( sourceName.equalsIgnoreCase(targetName) ) {
-			//return new Alignment(source, target, 1.0d, Alignment.EQUIVALENCE);
-		}
-		*/
-		
 		double sHyperNoun = 0.0d;
 		double sHyperVerb = 0.0d;
 		double sSynoNoun = 0.0d;
 		double sSynoVerb = 0.0d;
+		IndexWord word1;
+		IndexWord word2;
+		IndexWord word3;
+		IndexWord word4;
+		String sourceName;
+		String targetName;
 		
 		try {
-			IndexWord word1 = dictionary.lookupIndexWord(POS.NOUN, sourceName);
-			IndexWord word2 = dictionary.lookupIndexWord(POS.NOUN, targetName);
+			if(typeOfNodes.equals(alignType.aligningClasses)){
+				word1 = sourceClassNounWords.get(source.getIndex());
+				word2 = targetClassNounWords.get(target.getIndex());
+				word3 = sourceClassVerbWords.get(source.getIndex());
+				word4 = targetClassVerbWords.get(target.getIndex());
+				sourceName = sourceClassTreatedStrings.get(source.getIndex());
+				targetName = targetClassTreatedStrings.get(target.getIndex());
+			}
+			else{
+				word1 = sourcePropNounWords.get(source.getIndex());
+				word2 = targetPropNounWords.get(target.getIndex());
+				word3 = sourcePropVerbWords.get(source.getIndex());
+				word4 = targetPropVerbWords.get(target.getIndex());
+				sourceName = sourcePropTreatedStrings.get(source.getIndex());
+				targetName = targetPropTreatedStrings.get(target.getIndex());
+			}
 			
 			if(word1 != null && word2 != null){
 				sHyperNoun = hypernymSimilarity(word1, word2);
@@ -85,9 +167,6 @@ public class LexicalMatcherJWNL extends OptimizedAbstractMatcher{
                 Synset[] Synset2 = word2.getSenses();
                 sSynoNoun = synonymSimilarity(Synset1, Synset2, sourceName, targetName);
 			}
-
-			IndexWord word3 = dictionary.lookupIndexWord(POS.VERB, sourceName);
-			IndexWord word4 = dictionary.lookupIndexWord(POS.VERB, targetName);
 			
 			if(word3 != null && word4 != null){
 				sHyperVerb = hypernymSimilarity(word3, word4);
