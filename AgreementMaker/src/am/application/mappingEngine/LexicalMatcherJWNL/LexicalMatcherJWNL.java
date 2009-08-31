@@ -90,7 +90,7 @@ public class LexicalMatcherJWNL extends AbstractMatcher{
 		targetPropVerbWords = computeWords(targetPropTreatedStrings, POS.VERB);
 	}
 	
-	private ArrayList<String> computeStrings(ArrayList<Node> list) {
+	private ArrayList<String> computeStrings(ArrayList<Node> list) throws Exception {
 		ArrayList<String> result = new ArrayList<String>();
 		Iterator<Node> it = list.iterator();
 		Node n;
@@ -130,7 +130,7 @@ public class LexicalMatcherJWNL extends AbstractMatcher{
 	/**
 	 * Function aligns 2 nodes using WordNet:
 	 */
-	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
 		
 		double sHyperNoun = 0.0d;
 		double sHyperVerb = 0.0d;
@@ -211,7 +211,7 @@ public class LexicalMatcherJWNL extends AbstractMatcher{
 	/**
 	 * Function calculates the similarity using hypernyms of the concepts
 	 */
-    public double hypernymSimilarity(IndexWord index1, IndexWord index2) {
+    public double hypernymSimilarity(IndexWord index1, IndexWord index2) throws Exception {
         // the max number of common concepts between the two tokens
         double commonMax = 0;
 
@@ -297,7 +297,7 @@ public class LexicalMatcherJWNL extends AbstractMatcher{
 	  * 2)  if target is in the synonyms of source
 	  * 3)  if synonyms of source is in the synonyms of target
 	  */ 
-	 float synonymSimilarity(Synset[] senses1, Synset[] senses2, String s1, String s2){
+	 float synonymSimilarity(Synset[] senses1, Synset[] senses2, String s1, String s2) throws Exception {
 		 
 		 //Check target in synonyms of source
 		 if(! (senses1.length == 0) ){
@@ -344,7 +344,7 @@ public class LexicalMatcherJWNL extends AbstractMatcher{
 		 * 2) Removes non-content words.
 		 * 3) Separates capitalized words, ( "BaseSimilarity" -> "Base Similarity" )
 		 */
-		 private String treatString(String label) {
+		 private String treatString(String label) throws Exception {
 			 
 			 //Remove anything from a string that isn't a Character or a space
 		     //e.g. numbers, punctuation etc.
