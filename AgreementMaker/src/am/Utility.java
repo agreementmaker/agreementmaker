@@ -387,7 +387,28 @@ public class Utility {
 		return result;
 	}
 	//TIME OPERATIONS**********************************************************************
+	public static String getFormattedTime(long totMS){
+		
+		//return the time in hh:mm:ss:msmsms starting from the total time in ms
+		
+        //msmsms
+		long msmsms = totMS % 1000;
+		//ss
+		long totS = totMS/1000;
+		long ss = totS % 60;
+		//mm
+		long totM = totS/60;
+		long mm = totM % 60;
+		//hh
+		long totH = totM/60;
+		long hh = totH % 60;
+		
 
+		return hh+":"+mm+":"+ss+":"+msmsms;
+		
+		
+		
+	}
 
 
 	

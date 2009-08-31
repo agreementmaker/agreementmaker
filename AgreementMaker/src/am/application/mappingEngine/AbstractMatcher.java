@@ -940,7 +940,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			report+= "Properties alignments found: "+propertiesAlignmentSet.size()+"\n";
 		}
 		if(executionTime != 0) {
-			report += "Total execution time (ms): "+executionTime+"\n";
+			report += "Total execution time (h:m:s:ms): "+Utility.getFormattedTime(executionTime)+"\n";
 		}
 	}
 	
