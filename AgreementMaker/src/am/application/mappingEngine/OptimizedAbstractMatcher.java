@@ -34,7 +34,7 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
 
 	protected AlignmentMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList)  throws Exception{
     	if(inputMatchers.size() == 0){ //run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
-			return super.alignProperties(sourceClassList, targetClassList);
+			return super.alignClasses(sourceClassList, targetClassList);
 		}
     	else{
     		return alignUnmappedNodes(sourceClassList, targetClassList, inputMatchers.get(0).getClassesMatrix(), inputMatchers.get(0).getClassAlignmentSet(), alignType.aligningClasses);
