@@ -14,7 +14,7 @@ import am.output.AlignmentOutput;
 public class AnatomyTrack extends Track{
 	
 	//DIRECTORIES
-	public final static String AM_NAME = "AgreementMaker";
+	public final static String AM_NAME = "amaker";
 	public final static String OAEI_DIR = "./OAEI09/";
 	public final static String OAEI_OUTPUT_DIR = OAEI_DIR+AM_NAME+"/";
 	public final static String TRACK_DIR = "anatomy/";
