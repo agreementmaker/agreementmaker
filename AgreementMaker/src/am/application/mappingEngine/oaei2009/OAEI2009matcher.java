@@ -140,6 +140,25 @@ public class OAEI2009matcher extends AbstractMatcher {
     	time = (endtime-startime);
 		System.out.println("LWC completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		lastLayer = lwc;
+
+		//Forth or fifth layer: DSI
+		//DSI
+    	System.out.println("Running DSI");
+    	startime = System.nanoTime()/measure;
+    	AbstractMatcher dsi = MatcherFactory.getMatcherInstance(MatchersRegistry.DSI, 0);
+    	dsi.getInputMatchers().add(lastLayer);
+    	dsi.setThreshold(threshold);
+    	dsi.setMaxSourceAlign(maxSourceAlign);
+    	dsi.setMaxTargetAlign(maxTargetAlign);
+    	DescendantsSimilarityInheritanceParameters dsip = new DescendantsSimilarityInheritanceParameters();
+    	dsip.initForOAEI2009();
+    	dsi.setParam(dsip);
+    	//dsi.setPerformSelection(true);
+		dsi.match();
+        endtime = System.nanoTime()/measure;
+    	time = (endtime-startime);
+		System.out.println("DSI completed in (h.m.s.ms) "+Utility.getFormattedTime(time));	
+		lastLayer = dsi;
 		
 		if(parameters.useWordNet){
 			//third layer wnl on input LWC (optimized mode)
@@ -160,7 +179,6 @@ public class OAEI2009matcher extends AbstractMatcher {
 		
 		if(parameters.useUMLS){
 			//Run UMLS matcher on unmapped nodes.
-			
 			System.out.println("Running UMLS");
 			try{
 		    	startime = System.nanoTime()/measure;
@@ -180,27 +198,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 				e.printStackTrace();
 				System.out.println("Impossible to connect to the UMLS server. The ip address has to be registered at http://kscas-lhc.nlm.nih.gov/UMLSKS");
 			}
-
 		}
-
-		//Forth or fifth layer: DSI
-		//DSI
-    	System.out.println("Running DSI");
-    	startime = System.nanoTime()/measure;
-    	AbstractMatcher dsi = MatcherFactory.getMatcherInstance(MatchersRegistry.DSI, 0);
-    	dsi.getInputMatchers().add(lastLayer);
-    	dsi.setThreshold(threshold);
-    	dsi.setMaxSourceAlign(maxSourceAlign);
-    	dsi.setMaxTargetAlign(maxTargetAlign);
-    	DescendantsSimilarityInheritanceParameters dsip = new DescendantsSimilarityInheritanceParameters();
-    	dsip.initForOAEI2009();
-    	dsi.setParam(dsip);
-    	//dsi.setPerformSelection(true);
-		dsi.match();
-        endtime = System.nanoTime()/measure;
-    	time = (endtime-startime);
-		System.out.println("DSI completed in (h.m.s.ms) "+Utility.getFormattedTime(time));	
-		lastLayer = dsi;
 		
 		classesMatrix = lastLayer.getClassesMatrix();
 		propertiesMatrix = lastLayer.getPropertiesMatrix();
