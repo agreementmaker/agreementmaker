@@ -34,7 +34,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 	public LexicalMatcherUMLS() {
 		super();
 		needsParam = false;		
-		alignProp = false;
+		//alignProp = false;
 	}
 	
 	//Connect to UMLS database 
