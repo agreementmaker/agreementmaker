@@ -16,7 +16,8 @@ import am.output.AlignmentOutput;
 public class BenchmarkTrack extends Track{
 	
 	//DIRECTORIES
-	public final static String AM_NAME = "AgreementMaker";
+	public final static String AM_NAME = "amaker";	//Needs to be at most 8 digit lower case
+													//For Anatomy, it is 6 digits
 	public final static String OAEI_DIR = "./OAEI09/";
 	public final static String OAEI_OUTPUT_DIR = OAEI_DIR+AM_NAME+"/";
 	public final static String TRACK_DIR = "benchmarks/";
