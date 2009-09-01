@@ -1,13 +1,16 @@
-package am.application.mappingEngine.LexicalMatcherJWNL;
+package am.application.mappingEngine.testMatchers;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 
 import am.application.mappingEngine.AbstractMatcher;
+import am.application.mappingEngine.AbstractMatcherParametersPanel;
 import am.application.mappingEngine.Alignment;
-import am.application.mappingEngine.OptimizedAbstractMatcher;
+import am.application.mappingEngine.StringUtil.Normalizer;
 
 import am.application.ontology.Node;
 
@@ -19,33 +22,18 @@ import net.didion.jwnl.data.IndexWord;
 import net.didion.jwnl.data.POS;
 import net.didion.jwnl.data.Synset;
 import net.didion.jwnl.data.PointerUtils;
-
+import net.didion.jwnl.data.PointerTarget;
+import net.didion.jwnl.data.PointerType;
 import net.didion.jwnl.data.list.PointerTargetNode;
 import net.didion.jwnl.data.list.PointerTargetNodeList;
 
-public class LexicalMatcherJWNL extends AbstractMatcher{
+public class LexicalMatcherJWNLOLD extends AbstractMatcher{
 	
+	private Normalizer normalizer;
 	private Dictionary dictionary;
-	private ArrayList<String>  sourceClassTreatedStrings;
-	private ArrayList<String>  targetClassTreatedStrings;
-	private ArrayList<String>  sourcePropTreatedStrings;
-	private ArrayList<String>  targetPropTreatedStrings;
-	
-	private ArrayList<IndexWord> sourceClassNounWords;
-	private ArrayList<IndexWord> sourceClassVerbWords;
-	private ArrayList<IndexWord> sourcePropNounWords;
-	private ArrayList<IndexWord> sourcePropVerbWords;
-	
-	private ArrayList<IndexWord> targetClassNounWords;
-	private ArrayList<IndexWord> targetClassVerbWords;
-	private ArrayList<IndexWord> targetPropNounWords;
-	private ArrayList<IndexWord> targetPropVerbWords;
-	
-
-	
 	
 	//Constructor
-	public LexicalMatcherJWNL() throws Exception {
+	public LexicalMatcherJWNLOLD() throws Exception {
 		// warning, param is not available at the time of the constructor
 		super();
 		needsParam = false;
@@ -63,99 +51,39 @@ public class LexicalMatcherJWNL extends AbstractMatcher{
 		return "A lexical matcher using WordNet.\n"; 
 	}
 	
-	protected void beforeAlignOperations()  throws Exception{
-		super.beforeAlignOperations();
-		
-		//for each concept compute the treated string
-		sourceClassTreatedStrings = computeStrings(sourceOntology.getClassesList());
-		targetClassTreatedStrings = computeStrings(targetOntology.getClassesList());
-		sourcePropTreatedStrings = computeStrings(sourceOntology.getPropertiesList());
-		targetPropTreatedStrings = computeStrings(targetOntology.getPropertiesList());
-		//for each concept builds the list of lookedUp strings from wordnet
-		
-		//source nouns and verbs words
-		//classes
-		sourceClassNounWords = computeWords(sourceClassTreatedStrings, POS.NOUN);
-		sourceClassVerbWords = computeWords(sourceClassTreatedStrings, POS.VERB);
-		//properties
-		sourcePropNounWords = computeWords(sourcePropTreatedStrings, POS.NOUN);
-		sourcePropVerbWords = computeWords(sourcePropTreatedStrings, POS.VERB);
-		
-		//target nouns and verbs words
-		//classes
-		targetClassNounWords = computeWords(targetClassTreatedStrings, POS.NOUN);
-		targetClassVerbWords = computeWords(targetClassTreatedStrings, POS.VERB);
-		//properties
-		targetPropNounWords = computeWords(targetPropTreatedStrings, POS.NOUN);
-		targetPropVerbWords = computeWords(targetPropTreatedStrings, POS.VERB);
-	}
-	
-	private ArrayList<String> computeStrings(ArrayList<Node> list) throws Exception {
-		ArrayList<String> result = new ArrayList<String>();
-		Iterator<Node> it = list.iterator();
-		while(it.hasNext()){
-			//for each concept we get the indexWord from the label
-			//if the concept has no label we consider the localname
-			Node n = it.next();
-			String nodeString = n.getLabel();
-			if(nodeString == null || nodeString.equals(""))
-				nodeString = n.getLocalName();
-			//Run treatString() on each name to clean it up
-			String processedString = treatString(nodeString);
-			result.add(processedString);
-		}
-		return result;
-	}
-
-	private ArrayList<IndexWord> computeWords(ArrayList<String> list, POS pos) throws Exception {
-		ArrayList<IndexWord> result = new ArrayList<IndexWord>();
-		Iterator<String> it = list.iterator();
-		String processedString;
-		while(it.hasNext()){
-			processedString = it.next();
-			IndexWord iWord = dictionary.lookupIndexWord(pos, processedString);
-			result.add(iWord);//it may also be null, but we have to keep it in the list to mantain the order with concept index
-		}
-		return result;
-	}
-
-
 	
 	/* Algorithm functions beyond this point */
 	
 	/**
 	 * Function aligns 2 nodes using WordNet:
 	 */
-	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
+	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+		
+		//Get local name		
+		String sourceName= source.getLocalName();
+		String targetName = target.getLocalName();
+		
+		//Run treatString() on each name to clean it up
+		//Normalizer has already been used in another method.
+		sourceName = treatString(sourceName);
+		targetName = treatString(targetName);
+		
+		// I ASSUME STRING EQUALITY IS ALREADY CHECKED BEFORE BY ANOTHER MATCHER
+		/*
+		//If the labels are equal, then return a similarity of 1
+		if( sourceName.equalsIgnoreCase(targetName) ) {
+			//return new Alignment(source, target, 1.0d, Alignment.EQUIVALENCE);
+		}
+		*/
 		
 		double sHyperNoun = 0.0d;
 		double sHyperVerb = 0.0d;
 		double sSynoNoun = 0.0d;
 		double sSynoVerb = 0.0d;
-		IndexWord word1;
-		IndexWord word2;
-		IndexWord word3;
-		IndexWord word4;
-		String sourceName;
-		String targetName;
 		
 		try {
-			if(typeOfNodes.equals(alignType.aligningClasses)){
-				word1 = sourceClassNounWords.get(source.getIndex());
-				word2 = targetClassNounWords.get(target.getIndex());
-				word3 = sourceClassVerbWords.get(source.getIndex());
-				word4 = targetClassVerbWords.get(target.getIndex());
-				sourceName = sourceClassTreatedStrings.get(source.getIndex());
-				targetName = targetClassTreatedStrings.get(target.getIndex());
-			}
-			else{
-				word1 = sourcePropNounWords.get(source.getIndex());
-				word2 = targetPropNounWords.get(target.getIndex());
-				word3 = sourcePropVerbWords.get(source.getIndex());
-				word4 = targetPropVerbWords.get(target.getIndex());
-				sourceName = sourcePropTreatedStrings.get(source.getIndex());
-				targetName = targetPropTreatedStrings.get(target.getIndex());
-			}
+			IndexWord word1 = dictionary.lookupIndexWord(POS.NOUN, sourceName);
+			IndexWord word2 = dictionary.lookupIndexWord(POS.NOUN, targetName);
 			
 			if(word1 != null && word2 != null){
 				sHyperNoun = hypernymSimilarity(word1, word2);
@@ -163,6 +91,9 @@ public class LexicalMatcherJWNL extends AbstractMatcher{
                 Synset[] Synset2 = word2.getSenses();
                 sSynoNoun = synonymSimilarity(Synset1, Synset2, sourceName, targetName);
 			}
+
+			IndexWord word3 = dictionary.lookupIndexWord(POS.VERB, sourceName);
+			IndexWord word4 = dictionary.lookupIndexWord(POS.VERB, targetName);
 			
 			if(word3 != null && word4 != null){
 				sHyperVerb = hypernymSimilarity(word3, word4);
@@ -207,7 +138,7 @@ public class LexicalMatcherJWNL extends AbstractMatcher{
 	/**
 	 * Function calculates the similarity using hypernyms of the concepts
 	 */
-    public double hypernymSimilarity(IndexWord index1, IndexWord index2) throws Exception {
+    public double hypernymSimilarity(IndexWord index1, IndexWord index2) {
         // the max number of common concepts between the two tokens
         double commonMax = 0;
 
@@ -293,7 +224,7 @@ public class LexicalMatcherJWNL extends AbstractMatcher{
 	  * 2)  if target is in the synonyms of source
 	  * 3)  if synonyms of source is in the synonyms of target
 	  */ 
-	 float synonymSimilarity(Synset[] senses1, Synset[] senses2, String s1, String s2) throws Exception {
+	 float synonymSimilarity(Synset[] senses1, Synset[] senses2, String s1, String s2){
 		 
 		 //Check target in synonyms of source
 		 if(! (senses1.length == 0) ){
@@ -340,7 +271,7 @@ public class LexicalMatcherJWNL extends AbstractMatcher{
 		 * 2) Removes non-content words.
 		 * 3) Separates capitalized words, ( "BaseSimilarity" -> "Base Similarity" )
 		 */
-		 private String treatString(String label) throws Exception {
+		 private String treatString(String label) {
 			 
 			 //Remove anything from a string that isn't a Character or a space
 		     //e.g. numbers, punctuation etc.

@@ -130,4 +130,24 @@ public class Alignment
 	public String getString() {
 		return entity1.getLocalName()+"\t"+OutputController.arrow+"\t"+entity2.getLocalName()+"\t"+getSimilarity()+"\t"+getRelation()+"\n";
 	}
+	
+	public int hashCode(){
+		//relation may be added to this definition 
+		//map can be replaced with string except empty string
+		//this method is used in the PRAintegrationMatcher
+		return (entity1.getIndex()+"map"+entity2.getIndex()).hashCode();
+	}
+	
+	public boolean equals(Object o){
+		if(o instanceof Alignment){
+			Alignment alignment = (Alignment)o;
+	        if (entity1.equals(alignment.getEntity1()) 
+	                && entity2.equals(alignment.getEntity2())) {
+	            return true;
+	        } else {
+	            return false;
+	        }
+		}
+		return false;
+	}
 }

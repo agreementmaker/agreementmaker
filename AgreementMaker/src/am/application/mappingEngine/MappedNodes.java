@@ -6,30 +6,26 @@ import am.application.ontology.Node;
 
 public class MappedNodes {
 	//true if the node is mapped at least the minimum number of times expressed in the cardinality
-	protected boolean[] mappedSources;
-	protected boolean[] mappedTargets;
+	protected int[] mappedSources;
+	protected int[] mappedTargets;
+	protected int sourceCardinality;
+	protected int targetCardinality;
 	
-	public boolean[] getMappedSources() {
+	public int[] getMappedSources() {
 		return mappedSources;
 	}
-	public void setMappedSources(boolean[] mappedSources) {
-		this.mappedSources = mappedSources;
-	}
-	public boolean[] getMappedTargets() {
+
+	public int[] getMappedTargets() {
 		return mappedTargets;
-	}
-	public void setMappedTargets(boolean[] mappedTargets) {
-		this.mappedTargets = mappedTargets;
 	}
 	
 	public MappedNodes(ArrayList<Node> sources, ArrayList<Node> targets, AlignmentSet alignment, int sourceCardinality, int targetCardinality){
 		//assumption is that java init an array of boolean to false
 		//if not we should set all values to false
-		mappedSources = new boolean[sources.size()];
-		mappedTargets = new boolean[targets.size()];
-		
-		int[] numOfSourceMappings = new int[mappedSources.length];
-		int[] numOfTargetMappings = new int[mappedTargets.length];
+		mappedSources = new int[sources.size()];
+		mappedTargets = new int[targets.size()];
+		this.sourceCardinality = sourceCardinality;
+		this.targetCardinality = targetCardinality;
 		
 		Alignment mapping;
 		Node source;
@@ -38,26 +34,32 @@ public class MappedNodes {
 			mapping = alignment.getAlignment(i);
 			source = mapping.getEntity1();
 			target = mapping.getEntity2();
-			numOfSourceMappings[source.getIndex()] += 1;
-			if(numOfSourceMappings[source.getIndex()] >= sourceCardinality){
-				mappedSources[source.getIndex()] = true;
-			}
-			numOfTargetMappings[target.getIndex()] += 1;
-			if(numOfTargetMappings[target.getIndex()] >= targetCardinality){
-				mappedTargets[target.getIndex()] = true;
-			}
+			mappedSources[source.getIndex()] += 1;
+			mappedTargets[target.getIndex()] += 1;
 		}
 		
-		numOfSourceMappings = null;
-		numOfTargetMappings = null;
 	}
 	
 	public boolean isSourceMapped(Node source){
-		return mappedSources[source.getIndex()];
+		return mappedSources[source.getIndex()] >= sourceCardinality;
 	}
 	
 	public boolean isTargetMapped(Node target){
+		return mappedTargets[target.getIndex()] >= targetCardinality;
+	}
+	
+	public int getNumSourceMappings(Node source){
+		return mappedSources[source.getIndex()];
+	}
+	
+	public int getNumTargetMappings(Node target){
 		return mappedTargets[target.getIndex()];
+	}
+
+	public void addAlignment(Alignment alignment) {
+		mappedSources[alignment.getEntity1().getIndex()]+=1;
+		mappedTargets[alignment.getEntity2().getIndex()]+=1;
+		
 	}
 
 }

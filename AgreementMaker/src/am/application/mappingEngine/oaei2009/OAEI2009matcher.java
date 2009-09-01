@@ -24,6 +24,7 @@ import am.application.mappingEngine.multiWords.MultiWordsParameters;
 import am.application.mappingEngine.multiWords.MultiWordsParametersPanel;
 import am.application.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.application.mappingEngine.parametricStringMatcher.ParametricStringParametersPanel;
+import am.application.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.application.ontology.Node;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.*; //all sim metrics are in here
@@ -198,6 +199,27 @@ public class OAEI2009matcher extends AbstractMatcher {
 				e.printStackTrace();
 				System.out.println("Impossible to connect to the UMLS server. The ip address has to be registered at http://kscas-lhc.nlm.nih.gov/UMLSKS");
 			}
+		}
+		
+		System.out.println("name: "+parameters.partialReferenceFile);
+		System.out.println("format: "+parameters.format);
+		if(!(parameters.partialReferenceFile.equals("")) && !(parameters.format.equals(""))){
+	    	startime = System.nanoTime()/measure;
+	    	AbstractMatcher praIntegration = MatcherFactory.getMatcherInstance(MatchersRegistry.PRAintegration, 0);
+	    	praIntegration.getInputMatchers().add(lastLayer);
+	    	praIntegration.setThreshold(threshold);
+	    	praIntegration.setMaxSourceAlign(maxSourceAlign);
+	    	praIntegration.setMaxTargetAlign(maxTargetAlign);
+	    	//praIntegration uses the same parameters of ReferenceAlignmentMatcher
+	    	ReferenceAlignmentParameters par = new ReferenceAlignmentParameters();
+	    	par.fileName = parameters.partialReferenceFile;
+	    	par.format = parameters.format;
+	    	praIntegration.setParam(par);
+	    	//umls.initForOAEI2009();
+	    	praIntegration.match();
+	    	time = (endtime-startime);
+			System.out.println("PRA integration completed in (h.m.s.ms) "+Utility.getFormattedTime(time));	
+			lastLayer = praIntegration;
 		}
 		
 		classesMatrix = lastLayer.getClassesMatrix();
