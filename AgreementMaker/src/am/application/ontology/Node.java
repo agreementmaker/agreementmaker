@@ -82,6 +82,13 @@ public class Node {
     public final static String XMLNODE = "xml-node";
 	/**UNIQUE KEY IN THE RANGE OF TYPE to be used as index to retrieve this node from the list and from the matrix*/
 	int index;
+	
+	//These fields are for the PRAMatching technique
+	private Node matchedTo;
+	private boolean matched;
+	private int color;
+	private Node parent;
+	private int depth;
 	/**
 	 * XML constructor
 	 * @param key
@@ -457,8 +464,78 @@ public class Node {
 	public void setIsDefinedByComment(String isDefinedByComment) {
 		this.isDefinedByComment = isDefinedByComment;
 	}
-	
-	
+
+	/**
+	 * @param matchedTo the matchedTo to set
+	 */
+	public void setMatchedTo(Node matchedTo) {
+		this.matchedTo = matchedTo;
+	}
+
+	/**
+	 * @return the matchedTo
+	 */
+	public Node getMatchedTo() {
+		return matchedTo;
+	}
+
+	/**
+	 * @param matched the matched to set
+	 */
+	public void setMatched(boolean matched) {
+		this.matched = matched;
+	}
+
+	/**
+	 * @return the matched
+	 */
+	public boolean isMatched() {
+		return matched;
+	}
+
+	/**
+	 * @param color the color to set
+	 */
+	public void setColor(int color) {
+		this.color = color;
+	}
+
+	/**
+	 * @return the color
+	 */
+	public int getColor() {
+		return color;
+	}
+
+	/**
+	 * @param parent the parent to set
+	 */
+	public void setParent(Node parent) {
+		this.parent = parent;
+	}
+
+	/**
+	 * @return the parent
+	 */
+	public Node getParent() {
+		return parent;
+	}
+
+	/**
+	 * @param depth the depth to set
+	 */
+	public void setDepth(int depth) {
+		this.depth = depth;
+	}
+
+	/**
+	 * @return the depth
+	 */
+	public int getDepth() {
+		return depth;
+	}
+
+
 
 
 }
