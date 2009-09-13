@@ -1,5 +1,11 @@
 package am.application.mappingEngine.LexicalMatcherUMLS;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -24,12 +30,27 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
     private static String LAT = "";
     private static String DBYEAR = "2009AA";
     private static int classListSize = 0;
-    private static boolean firstExec = true;
+    private static boolean firstExec = false;
     private static ArrayList<String> targetNodeName;
     private static ArrayList synsLists [];
     private static ArrayList<String> cuis ;
     private int curr = 0;
     
+    //For source data
+    private static int classListSizeS = 0;
+    private static ArrayList synsListsS [];
+    private static ArrayList<String> sourceNodeName;
+    private static ArrayList<String> cuisS ;
+    private int currS = 0;
+    
+	private static String [][] conceptPartsS;	//0:name, 1:cui, 2:synonyms
+	private static String [][] synonymsS;		//synonyms
+	private static String [] conceptInfoS;	//(name|cui|synonyms) array
+	private static String [][] conceptPartsT;
+	private static String [][] synonymsT;
+	private static String [] conceptInfoT;
+	
+	
 	//Constructor
 	public LexicalMatcherUMLS() {
 		super();
@@ -42,9 +63,9 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 	//http://kscas-lhc.nlm.nih.gov/UMLSKS/servlet/Turbine/template/admin,user,KSS_login.vm
 	//Use ulaskeles as login name and password if you don't have a license.
 	public void connectToServer()  throws Exception{
-		//try {
+		try {
 	    	retriever = (KSSRetrieverV5_0)Naming.lookup(hostName);
-		/*
+		
 		} catch (RemoteException rex) {
 			System.err.println("RemoteException: " + rex.getMessage());
 		} catch (NotBoundException nbex) {
@@ -52,16 +73,78 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 		} catch (MalformedURLException mfurl) {
 			System.err.println("MalformedURLException: " + mfurl.getMessage());
 		}
-		*/
+		
 	}
 	
 	//
-	public void getDataFromServer()  throws Exception{
+	public void getSourceDataFromServer()  throws Exception{
+		classListSizeS = sourceOntology.getClassesList().size();
+		System.out.println("Number of classes in Source Ontology: " + classListSizeS);
+		
+		//Get synonyms. Took ?? mins for MA ontology(2700 concepts).
+		System.out.println("Retrieving Source List synonyms for each concept...");
+		long startime = System.nanoTime()/1000000000;
+		ArrayList<Node> sourceClassList = sourceOntology.getClassesList();
+		synsListsS = new ArrayList[classListSizeS]; 
+		
+		sourceNodeName = new ArrayList<String>();
+		cuisS = new ArrayList<String>();		
+
+		for(int j = 0; j < sourceClassList.size(); j++) {
+			String sourceName = sourceClassList.get(j).getLabel();
+			if(sourceName.equals(""))
+				continue;
+			sourceName = treatString(sourceName);
+			sourceNodeName.add(sourceName);
+			String cui = null;
+			cui = getCUIfromName(sourceName);
+			if(cui != null){
+				cuisS.add(cui);
+				synsListsS[currS] = new ArrayList();
+				synsListsS[currS].add(getSynonyms(cui));
+				currS++;
+			}
+			else{
+				cuisS.add("fakecui");
+				ArrayList<String> a = new ArrayList<String>();
+				a.add("fakelist");
+				synsListsS[currS] = new ArrayList();
+				synsListsS[currS].add(a);
+				currS++;
+			}
+		}
+		long endtime = System.nanoTime()/1000000000;
+    	long time = (endtime-startime);
+		System.out.println("Source List Synonyms retrieved... in " + time);
+		System.out.println("Writing Source List into file...");
+		try {
+	        BufferedWriter out = new BufferedWriter(new FileWriter("sourceConcepts.txt"));
+	        for(int k = 0; k < sourceNodeName.size(); k++)
+	        {
+	        	out.write(sourceNodeName.get(k));
+	        	out.write("|");
+	        	out.write(cuisS.get(k));
+	        	out.write("|");
+	        	for(int m = 0; m < synsListsS[k].size(); m++){
+	        		out.write(synsListsS[k].get(m).toString().replace("[", "").replace("]", ""));
+	        		
+	        	}
+	        	out.write(":::");
+	        }
+	        out.close();
+	    } catch (IOException e) {
+	    	e.printStackTrace();
+	    }
+	    System.out.println("Writing Source List into file... Finished...");
+	}
+	
+	//
+	public void getTargetDataFromServer()  throws Exception{
 		classListSize = targetOntology.getClassesList().size();
 		System.out.println("Number of classes: " + classListSize);
 		
 		//Get synonyms. Took 45 mins for NCI ontology(3304 concepts).
-		System.out.println("Retrieving synonyms for each concept...");
+		System.out.println("Retrieving Target List synonyms for each concept...");
 		long startime = System.nanoTime()/1000000000;
 		ArrayList<Node> targetClassList = targetOntology.getClassesList();
 		synsLists = new ArrayList[classListSize]; 
@@ -94,9 +177,93 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 		}
 		long endtime = System.nanoTime()/1000000000;
     	long time = (endtime-startime);
-    	firstExec = false;
-		System.out.println("Synonyms retrieved... in " + time);
+		System.out.println("Target List Synonyms retrieved... in " + time);
+		System.out.println("Writing Target List into file...");
+		try {
+	        BufferedWriter out = new BufferedWriter(new FileWriter("targetConcepts.txt"));
+	        for(int k = 0; k < targetNodeName.size(); k++)
+	        {
+	        	out.write(targetNodeName.get(k));
+	        	out.write("|");
+	        	out.write(cuis.get(k));
+	        	out.write("|");
+	        	for(int m = 0; m < synsLists[k].size(); m++){
+	        		out.write(synsLists[k].get(m).toString().replace("[", "").replace("]", ""));
+	        	}
+	        	out.write(":::");
+	        }
+	        out.close();
+	    } catch (IOException e) {
+	    	e.printStackTrace();
+	    }
+	    System.out.println("Writing Target List into file... Finished...");
 	}
+	
+	//
+	private void readConceptInfo(String filename)
+	{
+	    StringBuilder contents = new StringBuilder();
+	    File aFile = new File(filename);
+	    try {
+	      BufferedReader input =  new BufferedReader(new FileReader(aFile));
+	      try {
+	        String line = null; //not declared within while loop
+
+	        while (( line = input.readLine()) != null){
+	          contents.append(line);
+	          contents.append(System.getProperty("line.separator"));
+	        }
+	        if(filename.equalsIgnoreCase("sourceConcepts.txt")){
+	        	conceptPartsS = new String [2738][3];
+	        	synonymsS = new String [2738][30];
+		        conceptInfoS = contents.toString().split(":::");
+		        
+		        for(int j = 0; j < conceptInfoS.length; j++){
+		        	//System.out.println(conceptInfoS[j]);
+		        	String s = conceptInfoS[j];
+		        	//STUPID FUNCTIONS DOES NOT WORK. asdiasodhaodbao
+		        	int i1 = s.indexOf("|");
+		        	int i2 = s.lastIndexOf("|");
+		        	int i3 = s.length();
+		        	conceptPartsS[j][0] = s.substring(0, i1);
+		        	conceptPartsS[j][1] = s.substring(i1+1, i2);
+		        	conceptPartsS[j][2] = s.substring(i2+1, i3);
+		        	//String splitted[] = s.split("|",3);
+		        	//conceptPartsS[j][0] = splitted[0];
+		        	//System.out.println(conceptPartsS[j][0] + " -- " + conceptPartsS[j][1] + " -- " + conceptPartsS[j][2]);
+		        	synonymsS[j] = conceptPartsS[j][2].split(", ");
+		        }
+	        }
+	        else if(filename.equalsIgnoreCase("targetConcepts.txt")){
+	        	conceptPartsT = new String [3304][3];
+	        	synonymsT = new String [3304][30];
+	        	conceptInfoT = contents.toString().split(":::");
+		        for(int j = 0; j < conceptInfoT.length; j++){
+		        	//System.out.println(conceptInfoT[j]);
+		        	String s = conceptInfoT[j];
+		        	//STUPID FUNCTIONS DOES NOT WORK. asdiasodhaodbao
+		        	int i1 = s.indexOf("|");
+		        	int i2 = s.lastIndexOf("|");
+		        	int i3 = s.length();
+		        	conceptPartsT[j][0] = s.substring(0, i1);
+		        	conceptPartsT[j][1] = s.substring(i1+1, i2);
+		        	conceptPartsT[j][2] = s.substring(i2+1, i3);
+		        	//String splitted[] = s.split("|",3);
+		        	//conceptPartsS[j][0] = splitted[0];
+		        	//System.out.println(conceptPartsT[j][0] + " -- " + conceptPartsT[j][1] + " -- " + conceptPartsT[j][2]);
+		        	synonymsT[j] = conceptPartsT[j][2].split(", ");
+		        }
+	        }
+	      }
+	      finally {
+	        input.close();
+	      }
+	    }
+	    catch (IOException ex){
+	      ex.printStackTrace();
+	    }
+	}
+	
 	
 	//Function executed before aligning operation
 	//Involves connecting to database, getting versions
@@ -104,11 +271,18 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 	//After 1st execution of the matcher it does not need to do it again.
 	//WARNING: if you load other ontologies and try to match with this matcher, code needs to be changed.
 	//Coming...
-	public void beforeAlignOperations()  throws Exception{
+	
+public void beforeAlignOperations()  throws Exception{
 		super.beforeAlignOperations();
 		if(firstExec){
 			connectToServer();
-			getDataFromServer();
+			getSourceDataFromServer();
+			getTargetDataFromServer();
+			firstExec = false;
+		}
+		else{
+			readConceptInfo("sourceConcepts.txt");
+			readConceptInfo("targetConcepts.txt");
 		}
 	}
 	
@@ -126,33 +300,95 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 		//if(sourceName.equalsIgnoreCase("Brunner's gland"))
 			//System.out.println( sourceName + " : " + targetName);
 		
-		//Run treatString() on target name to remove underscores
-		targetName = treatString(targetName);
+		
 		
 		if(typeOfNodes.equals(alignType.aligningClasses) )
 		{
-			try {
-				int index = targetNodeName.indexOf(targetName);
-				if(index == -1){
-					//System.out.println(targetName + " is not in the list");
-					return new Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
-				}
-				
-				String synArr[] = synsLists[index].get(0).toString().replace("[", "").replace("]", "").split(", ");
-				int size = synArr.length;
-				
-				for (int i = 0; i < size; i++){
-					if(sourceName.equalsIgnoreCase(synArr[i]))
-					{
-						//System.out.println(sourceName + " && " + targetName + " MATCHED FROM SYNONYMS LIST...");
-						return new Alignment( source, target, 0.99d, Alignment.EQUIVALENCE);
+			if(!firstExec){
+				//System.out.println("Check1");
+				int indT = -1;
+				for(int i = 0; i < conceptPartsT.length; i++){
+					if(conceptPartsT[i][0] != null && conceptPartsT[i][2] != null && conceptPartsT[i][1] != null && conceptPartsT[i][0].equalsIgnoreCase(targetName)){
+						indT = i;
 					}
 				}
-			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
-				System.out.println("index = " + index + " target name = " + targetName);
-				e.printStackTrace();
+				
+				int indS = -1;
+				for(int i = 0; i < conceptPartsS.length; i++){
+					if(conceptPartsS[i][0] != null && conceptPartsT[i][2] != null && conceptPartsT[i][1] != null && conceptPartsS[i][0].equalsIgnoreCase(sourceName)){
+						indS = i;
+					}
+				}
+				
+				//System.out.println(sourceName + " :: " + targetName + " : " + indS + " : " + indT);
+				if(indS == -1 || indT == -1)
+					return new Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
+				
+				if(synonymsT[indT].length == 0 || synonymsS[indS].length == 0){
+					return new Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
+				}
+					
+				for(int i = 0; i < synonymsT[indT].length; i++){
+					String s = synonymsT[indT][i];
+					for(int j = 0; j < synonymsS[indS].length; j++){
+						if(s.equalsIgnoreCase(synonymsS[indS][j]) && !s.equalsIgnoreCase("unspecified")){
+							return new Alignment( source, target, 0.99d, Alignment.EQUIVALENCE);
+						}
+					}
+				}
+				/*
+				for(int i = 0; i < conceptPartsT.length; i++){
+					System.out.println(conceptPartsT[i][0]);
+					if(conceptPartsT[i][0] != null && conceptPartsT[i][0].equalsIgnoreCase(sourceName)){
+						for(int j = 0; j < synonymsT[i].length; j++){
+							if(sourceName.equalsIgnoreCase(synonymsT[i][j])){
+								return new Alignment( source, target, 0.99d, Alignment.EQUIVALENCE);
+							}
+						}
+					}
+				}
+				System.out.println("Check2");
+				for(int i = 0; i < conceptPartsS.length; i++){
+					System.out.println(conceptPartsT[i][0]);
+					if(conceptPartsS[i][0] != null && conceptPartsS[i][0].equalsIgnoreCase(sourceName)){
+						for(int j = 0; j < synonymsS[i].length; j++){
+							if(targetName.equalsIgnoreCase(synonymsS[i][j])){
+								return new Alignment( source, target, 0.99d, Alignment.EQUIVALENCE);
+							}
+						}
+					}
+				}
+				*/
+				return new Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
 			}
-			return new Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
+			else
+			{
+				//Run treatString() on target name to remove underscores
+				targetName = treatString(targetName);
+				
+				try {
+					int index = targetNodeName.indexOf(targetName);
+					if(index == -1){
+						//System.out.println(targetName + " is not in the list");
+						return new Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
+					}
+					
+					String synArr[] = synsLists[index].get(0).toString().replace("[", "").replace("]", "").split(", ");
+					int size = synArr.length;
+					
+					for (int i = 0; i < size; i++){
+						if(sourceName.equalsIgnoreCase(synArr[i]))
+						{
+							//System.out.println(sourceName + " && " + targetName + " MATCHED FROM SYNONYMS LIST...");
+							return new Alignment( source, target, 0.99d, Alignment.EQUIVALENCE);
+						}
+					}
+				} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+					System.out.println("index = " + index + " target name = " + targetName);
+					e.printStackTrace();
+				}
+				return new Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
+			}
 		}
 		else{
 			//properties are not matched in this matcher
@@ -232,7 +468,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 	//e.g. "Acquired Immunodeficiency Syndrome" returns C0001175
 	public String getCUIfromName(String def) throws RemoteException, DatabaseException, XMLException{
 		ArrayList <String> matches = new ArrayList <String>();
-		//try {
+		try {
 			char[] result;
 			Vector SABS = null;
 			result = retriever.findCUI(DBYEAR, def, SABS, LAT, KSSRetriever.NormalizeString);
@@ -242,7 +478,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 				ConceptId nextId = (ConceptId) i.next();
 				matches.add(nextId.getCUI());
 			}
-		/*
+		
 		} catch (DatabaseException e) {
 			System.out.println(e.getMessage());
 		} catch (RemoteException e) {
@@ -250,7 +486,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 		} catch (XMLException e) {
 			System.out.println(e.getMessage());
 		}
-		*/
+		
 		if (matches == null || matches.isEmpty()) {
 			System.out.println("No results for " + def);
 			return null;
@@ -284,4 +520,17 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 			label = label.replace(" s ", "'s ");
 		return label;
 	}
+	
+	/*
+	//
+	private void writeConceptToFile(){
+		try {
+	        BufferedWriter out = new BufferedWriter(new FileWriter("outfilename"));
+	        out.write("aString");
+	        out.close();
+	    } catch (IOException e) {
+	    	e.printStackTrace();
+	    }
+	}
+	*/
 }
