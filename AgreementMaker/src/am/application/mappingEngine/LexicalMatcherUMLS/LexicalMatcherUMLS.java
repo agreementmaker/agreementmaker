@@ -272,7 +272,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 	//WARNING: if you load other ontologies and try to match with this matcher, code needs to be changed.
 	//Coming...
 	
-public void beforeAlignOperations()  throws Exception{
+	public void beforeAlignOperations()  throws Exception{
 		super.beforeAlignOperations();
 		if(firstExec){
 			connectToServer();
@@ -288,7 +288,7 @@ public void beforeAlignOperations()  throws Exception{
 	
 	
 	//Function aligns 2 nodes using UMLS.
-	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
 		
 		//Get labels		
 		String sourceName= source.getLabel();
@@ -299,8 +299,6 @@ public void beforeAlignOperations()  throws Exception{
 		
 		//if(sourceName.equalsIgnoreCase("Brunner's gland"))
 			//System.out.println( sourceName + " : " + targetName);
-		
-		
 		
 		if(typeOfNodes.equals(alignType.aligningClasses) )
 		{
@@ -327,38 +325,40 @@ public void beforeAlignOperations()  throws Exception{
 				if(synonymsT[indT].length == 0 || synonymsS[indS].length == 0){
 					return new Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
 				}
+				
+				if(		(synonymsT[indT].length == 1 && synonymsT[indT][0].equals("") ) 
+						|| ( synonymsS[indS].length == 1 && synonymsS[indS][0].equals("") )
+						){
+					return new Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
+				}
 					
 				for(int i = 0; i < synonymsT[indT].length; i++){
 					String s = synonymsT[indT][i];
 					for(int j = 0; j < synonymsS[indS].length; j++){
-						if(s.equalsIgnoreCase(synonymsS[indS][j]) && !s.equalsIgnoreCase("unspecified")){
+						
+						if(s.equalsIgnoreCase(synonymsS[indS][j]) && !s.equalsIgnoreCase("unspecified") 
+								&& !s.equalsIgnoreCase("SAI") && !s.equalsIgnoreCase("NOS") ){
 							return new Alignment( source, target, 0.99d, Alignment.EQUIVALENCE);
 						}
+						
+						/*
+						BaseSimilarityMatcher bsm = new BaseSimilarityMatcher();
+						bsm.setThreshold(threshold);
+				    	bsm.setMaxSourceAlign(maxSourceAlign);
+				    	bsm.setMaxTargetAlign(maxTargetAlign);
+				    	BaseSimilarityParameters bsmp = new BaseSimilarityParameters();
+				    	bsmp.initForOAEI2009();
+				    	bsm.setParam(bsmp);
+				    	am.application.ontology.Node sourceN = new Node(1, synonymsS[indS][j], "OWL-classnode");
+				    	am.application.ontology.Node targetN = new Node(1, synonymsT[indT][j], "OWL-classnode");
+						Alignment alnmt = bsm.alignTwoNodes(sourceN, targetN, alignType.aligningClasses);
+						
+						if(alnmt.getSimilarity() >= 0.8)
+							return alnmt;
+						*/
 					}
 				}
-				/*
-				for(int i = 0; i < conceptPartsT.length; i++){
-					System.out.println(conceptPartsT[i][0]);
-					if(conceptPartsT[i][0] != null && conceptPartsT[i][0].equalsIgnoreCase(sourceName)){
-						for(int j = 0; j < synonymsT[i].length; j++){
-							if(sourceName.equalsIgnoreCase(synonymsT[i][j])){
-								return new Alignment( source, target, 0.99d, Alignment.EQUIVALENCE);
-							}
-						}
-					}
-				}
-				System.out.println("Check2");
-				for(int i = 0; i < conceptPartsS.length; i++){
-					System.out.println(conceptPartsT[i][0]);
-					if(conceptPartsS[i][0] != null && conceptPartsS[i][0].equalsIgnoreCase(sourceName)){
-						for(int j = 0; j < synonymsS[i].length; j++){
-							if(targetName.equalsIgnoreCase(synonymsS[i][j])){
-								return new Alignment( source, target, 0.99d, Alignment.EQUIVALENCE);
-							}
-						}
-					}
-				}
-				*/
+				
 				return new Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
 			}
 			else
