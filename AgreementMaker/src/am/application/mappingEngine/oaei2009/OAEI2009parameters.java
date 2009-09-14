@@ -17,7 +17,7 @@ public class OAEI2009parameters extends AbstractParameters {
 	public final static String BENCHMARKS_303_PRA = "Benchmarks 303 with PRA";
 	
 	public boolean useWordNet = false;
-	public boolean useUMLS = false;
+	public boolean useUMLS = true;
 	public String partialReferenceFile = "";
 	public String format = "";
 	
