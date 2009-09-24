@@ -69,7 +69,7 @@ public class AnatomyTrack extends Track{
 			long endTime = System.nanoTime()/1000000;
 			long totTime = endTime - startTime;
 			//we need to create the directory first
-			String outputFileDir = TRACK_OUTPUT_DIR+"TRACK_1";//the last / is not needed for mkdirs but is needed later
+			String outputFileDir = TRACK_OUTPUT_DIR+TRACK_1;//the last / is not needed for mkdirs but is needed later
 			(new File(outputFileDir)).mkdirs();//create directories
 			TrackDispatcher.printExecutionTime(totTime, outputFileDir+"/"+"ExecutionTime.txt");
 			AlignmentOutput ao = new AlignmentOutput(as, outputFileDir+"/"+AM_NAME+".rdf");
@@ -88,7 +88,7 @@ public class AnatomyTrack extends Track{
 			String sourceUri = Core.getInstance().getSourceOntology().getURI();
 			String targetUri = Core.getInstance().getTargetOntology().getURI();
 			//we need to create the directory first
-			String outputFileDir = TRACK_OUTPUT_DIR+"TRACK_2";//the last / is not needed for mkdirs but is needed later
+			String outputFileDir = TRACK_OUTPUT_DIR+TRACK_2;//the last / is not needed for mkdirs but is needed later
 			(new File(outputFileDir)).mkdirs();//create directories
 			TrackDispatcher.printExecutionTime(totTime, outputFileDir+"/"+"ExecutionTime.txt");
 			AlignmentOutput ao = new AlignmentOutput(as, outputFileDir+"/"+AM_NAME+".rdf");
@@ -107,7 +107,7 @@ public class AnatomyTrack extends Track{
 			String sourceUri = Core.getInstance().getSourceOntology().getURI();
 			String targetUri = Core.getInstance().getTargetOntology().getURI();
 			//we need to create the directory first
-			String outputFileDir = TRACK_OUTPUT_DIR+"TRACK_3";//the last / is not needed for mkdirs but is needed later
+			String outputFileDir = TRACK_OUTPUT_DIR+TRACK_3;//the last / is not needed for mkdirs but is needed later
 			(new File(outputFileDir)).mkdirs();//create directories
 			TrackDispatcher.printExecutionTime(totTime, outputFileDir+"/"+"ExecutionTime.txt");
 			AlignmentOutput ao = new AlignmentOutput(as, outputFileDir+"/"+AM_NAME+".rdf");
@@ -127,7 +127,7 @@ public class AnatomyTrack extends Track{
 			String sourceUri = Core.getInstance().getSourceOntology().getURI();
 			String targetUri = Core.getInstance().getTargetOntology().getURI();
 			//we need to create the directory first
-			String outputFileDir = TRACK_OUTPUT_DIR+"TRACK_4";//the last / is not needed for mkdirs but is needed later
+			String outputFileDir = TRACK_OUTPUT_DIR+TRACK_4;//the last / is not needed for mkdirs but is needed later
 			(new File(outputFileDir)).mkdirs();//create directories
 			TrackDispatcher.printExecutionTime(totTime, outputFileDir+"/"+"ExecutionTime.txt");
 			AlignmentOutput ao = new AlignmentOutput(as, outputFileDir+"/"+AM_NAME+".rdf");
