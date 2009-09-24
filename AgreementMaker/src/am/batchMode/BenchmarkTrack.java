@@ -26,18 +26,11 @@ public class BenchmarkTrack extends Track{
 	
 	//ONTOLOGIES
 	public final static String ONTO_NAME = "onto.rdf";
-	public final static String SOURCE_ONTOLOGY = TRACK_INPUT_DIR+"101/"+ONTO_NAME;
-	
-	/*
-	public final static String[] TARGET_ONTOLOGIES = {
-		"101",
-		"102"
-	};
-	*/
-	
+	public final static String SOURCE_ONTOLOGY = TRACK_INPUT_DIR+"101/"+ONTO_NAME;	
 	
 	public final static String[] TARGET_ONTOLOGIES = {
-		//I DOWNLOADED this from the zip file in the OAEI2009 benchmarks website
+		//DOWNLOADED from the ZIP file in the OAEI2009 benchmarks web site
+		//Some cases opened and saved as in Protege, so that they can be loaded.
 		"101",
 		"102",
 		"103",
@@ -63,7 +56,7 @@ public class BenchmarkTrack extends Track{
 		"221",
 		"222",
 		"223",
-		//"224",TO CHECK I don't know why but it doesn't want to open this
+		"224",//TO CHECK I don't know why but it doesn't want to open this
 		"225",
 		//"226",  doesn't exist in the track yet
 		//"227",  doesn't exist in the track yet
@@ -71,11 +64,11 @@ public class BenchmarkTrack extends Track{
 		//"229",  //doesn't exist in the track yet
 		"230",
 		"231",  //in the website it's written that it doesn't exist, but it does in the zip file.
-		//"232",TO CHECK I don't why but it doesn't want to open this
+		"232",//TO CHECK I don't why but it doesn't want to open this
 		"233",
 		"236",
-		//"237",TO CHECK I don't know why but it doesn't want to open this
-		//"238",TO CHECK I don't know why but it doesn't want to open this
+		"237",//TO CHECK I don't know why but it doesn't want to open this
+		"238",//TO CHECK I don't know why but it doesn't want to open this
 		"239",
 		"240",
 		"241",
@@ -86,19 +79,31 @@ public class BenchmarkTrack extends Track{
 		"248-4",
 		"248-6",
 		"248-8",
-		//"249",TO CHECK I don't know why but it doesn't want to open this
+		"249",//TO CHECK I don't know why but it doesn't want to open this
+		"249-2",//
+		"249-4",//
+		"249-6",//
+		"249-8",//
 		"250",
 		"250-2",
 		"250-4",
 		"250-6",
 		"250-8",
 		"251",
+		"251-2",
+		"251-4",
+		"251-6",
+		"251-8",
 		"252",
 		"252-2",
 		"252-4",
 		"252-6",
 		"252-8",
-		//"253",TO CHECK I don't know why but it doesn't want to open this
+		"253",//TO CHECK I don't know why but it doesn't want to open this
+		"253-2",//
+		"253-4",//
+		"253-6",//
+		"253-8",//
 		"254",
 		"254-2",
 		"254-4",
@@ -109,8 +114,16 @@ public class BenchmarkTrack extends Track{
 		"257-4",
 		"257-6",
 		"257-8",
-		//"258",TO CHECK I don't know why but it doesn't want to open this
-		//"259",TO CHECK  I don't know why but it doesn't want to open this
+		"258",//TO CHECK I don't know why but it doesn't want to open this
+		"258-2",//
+		"258-4",//
+		"258-6",//
+		"258-8",//
+		"259",//TO CHECK  I don't know why but it doesn't want to open this
+		"259-2",//
+		"259-4",//
+		"259-6",//
+		"259-8",//
 		"260",
 		"260-2",
 		"260-4",
