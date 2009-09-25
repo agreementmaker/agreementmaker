@@ -2,15 +2,18 @@ package am.application.mappingEngine.PRAMatcher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import am.application.Core;
 import am.application.mappingEngine.AbstractMatcher;
 import am.application.mappingEngine.Alignment;
 import am.application.mappingEngine.AlignmentMatrix;
 import am.application.mappingEngine.AlignmentSet;
+import am.application.mappingEngine.MappedNodes;
 import am.application.mappingEngine.MatchersRegistry;
 import am.application.ontology.Node;
 import am.application.mappingEngine.PRAMatcher.PRAMatcher;
+import am.application.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 
 public class PRAMatcher2 extends AbstractMatcher
 {
@@ -20,6 +23,10 @@ public class PRAMatcher2 extends AbstractMatcher
 	private AlignmentSet praClassesAlignmentSet;
 	private AlignmentSet praPropertiesAlignmentSet;
 	private HashMap<Node, TreeNode> nodeToTreeNode;
+	private HashMap<Integer, Node> srcClassesIdToNode;
+	private HashMap<Integer, Node> targetClassesIdToNode;
+	private HashMap<Integer, Node> srcPropertiesIdToNode;
+	private HashMap<Integer, Node> targetPropertiesIdToNode;
 
 	
 	//the structure that holds the roots of subtrees which are matched nodes in the ontology
@@ -46,8 +53,8 @@ public class PRAMatcher2 extends AbstractMatcher
 		super.beforeAlignOperations();
 		//This is for accessing the PRAMatcher instance that already exists in the control panel.
 		//PRAMatcher myMatcher = (PRAMatcher) Core.getInstance().getMatcherInstance( MatchersRegistry.PRAMatcher );
-		PRAMatcher myMatcher = null;
-		AbstractMatcher aMatcher = null, nMatcher = null;
+		AbstractMatcher aMatcher = null, abMatcher = null;
+		PRAMatcher praMatcher = null;
 		for(int i = 0; i < inputMatchers.size(); i++)
 		{
 			aMatcher = inputMatchers.get(i);
@@ -55,32 +62,37 @@ public class PRAMatcher2 extends AbstractMatcher
 			if(aMatcher.getClass().getName().equals("am.application.mappingEngine.PRAMatcher.PRAMatcher"))
 			{
 				//System.out.println("Found PRAMatcher at index "+i);
-				myMatcher = (PRAMatcher)aMatcher;
+				praMatcher = (PRAMatcher)aMatcher;
 				if(i == 0)
-					nMatcher = inputMatchers.get(1);
+					abMatcher = inputMatchers.get(1);
 				else
-					nMatcher = inputMatchers.get(0);
+					abMatcher = inputMatchers.get(0);
 			}
 		}
 		
-		inputClassesAlignmentSet = nMatcher.getClassAlignmentSet();
-		inputPropertiesAlignmentSet = nMatcher.getPropertyAlignmentSet();
-		
-		nodeToTreeNode = myMatcher.getNodeToTreeNode();
-		praClassesAlignmentSet = myMatcher.getInputClassesAlignmentSet();
-		praPropertiesAlignmentSet = myMatcher.getInputPropertiesAlignmentSet();
-		matchedClassSourceRootNodes = myMatcher.getMatchedClassSourceRootNodes();
-		matchedPropertySourceRootNodes = myMatcher.getMatchedPropertySourceRootNodes();
-		unMatchedClassSourceRootNodes = myMatcher.getUnMatchedClassSourceRootNodes();
-		unMatchedPropertySourceRootNodes = myMatcher.getUnMatchedPropertySourceRootNodes();
-		matchedClassTargetRootNodes = myMatcher.getMatchedClassTargetRootNodes();
-		matchedPropertyTargetRootNodes = myMatcher.getMatchedPropertyTargetRootNodes();
-		unMatchedClassTargetRootNodes = myMatcher.getUnMatchedClassTargetRootNodes();
-		unMatchedPropertyTargetRootNodes = myMatcher.getUnMatchedPropertyTargetRootNodes();
+		inputClassesAlignmentSet = abMatcher.getClassAlignmentSet();
+		inputPropertiesAlignmentSet = abMatcher.getPropertyAlignmentSet();
+			
+		nodeToTreeNode = praMatcher.getNodeToTreeNode();
+		praClassesAlignmentSet = praMatcher.getInputClassesAlignmentSet();
+		praPropertiesAlignmentSet = praMatcher.getInputPropertiesAlignmentSet();
+		matchedClassSourceRootNodes = praMatcher.getMatchedClassSourceRootNodes();
+		matchedPropertySourceRootNodes = praMatcher.getMatchedPropertySourceRootNodes();
+		unMatchedClassSourceRootNodes = praMatcher.getUnMatchedClassSourceRootNodes();
+		unMatchedPropertySourceRootNodes = praMatcher.getUnMatchedPropertySourceRootNodes();
+		matchedClassTargetRootNodes = praMatcher.getMatchedClassTargetRootNodes();
+		matchedPropertyTargetRootNodes = praMatcher.getMatchedPropertyTargetRootNodes();
+		unMatchedClassTargetRootNodes = praMatcher.getUnMatchedClassTargetRootNodes();
+		unMatchedPropertyTargetRootNodes = praMatcher.getUnMatchedPropertyTargetRootNodes();
+		srcClassesIdToNode = praMatcher.getSrcClassesIdToNode();
+		targetClassesIdToNode = praMatcher.getTargetClassesIdToNode();
+		srcPropertiesIdToNode = praMatcher.getSrcPropertiesIdToNode();
+		targetPropertiesIdToNode = praMatcher.getTargetPropertiesIdToNode();
 		
 		removeIncorrectMappings(alignType.aligningClasses);
 		removeIncorrectMappings(alignType.aligningProperties);
-		addUndiscoveredMatchings();
+		addUndiscoveredMappings(alignType.aligningClasses);
+		addUndiscoveredMappings(alignType.aligningProperties);
 		
 		matchEnd();
 	}
@@ -94,45 +106,61 @@ public class PRAMatcher2 extends AbstractMatcher
 		AlignmentSet resultSet = new AlignmentSet();
 		AlignmentMatrix resultMatrix = null;
 		Alignment anAlignment = null;
-		Node aNode = null, src = null, target = null;
+		HashSet<Alignment> mappedNodes = new HashSet<Alignment>();
+		Node praSrc = null, praTarget = null, inputSrc = null, inputTarget = null;
 		TreeNode aTreeNode = null, matchedNode = null;
+
+		Integer anInt= null, nextInt = null;
 		
 		if(typeOfNodes.equals(alignType.aligningClasses))
-		{
+		{	
 			numSources = sourceOntology.getClassesList().size();
 			numTargets = targetOntology.getClassesList().size();
 			resultMatrix = new AlignmentMatrix(numSources, numTargets, alignType.aligningClasses);
 
-			for(int i = 0; i < praClassesAlignmentSet.size(); i++)
+			System.out.println("Num of entries in input class alignment set is " + inputClassesAlignmentSet.size());
+			for(int i = 0; i < inputClassesAlignmentSet.size(); i++)
 			{
-				anAlignment = praClassesAlignmentSet.getAlignment(i);
-				src = anAlignment.getEntity1();
-				target = anAlignment.getEntity2();
-				//System.out.println("The node to treeNode hashmap has size "+nodeToTreeNode.size());
-				aTreeNode = nodeToTreeNode.get(src);
-				//matchedNode = aTreeNode.getMatchedTo();
+				anAlignment = inputClassesAlignmentSet.getAlignment(i);
+				inputSrc = anAlignment.getEntity1();
+				inputTarget = anAlignment.getEntity2();
+				anInt = new Integer(inputSrc.getIndex());
+				nextInt = new Integer(inputTarget.getIndex());
+				praSrc = srcClassesIdToNode.get(anInt);
+				praTarget = targetClassesIdToNode.get(nextInt);
+				aTreeNode = nodeToTreeNode.get(praSrc);	
+				matchedNode = nodeToTreeNode.get(praTarget);
+				
+				//System.out.println("Src node depth is "+aTreeNode.getDepth()+" and dest node depth is "+matchedNode.getDepth());
+				if(aTreeNode.getDepth() == matchedNode.getDepth())
+				{
+					//System.out.println("Adding a result from the input classes alignmentSet");
+					resultMatrix.set(inputSrc.getIndex(), inputTarget.getIndex(), anAlignment);
+					resultSet.addAlignment(anAlignment);
+					mappedNodes.add(anAlignment);
+				}
+				//else
+					//System.out.println("\nNot adding, src and dest are at different depths\n");
 				//System.out.println("Found src "+aTreeNode.getNode().getLocalName()+" and target "+ matchedNode.getNode().getLocalName());
 				//System.out.println("Found src "+src.getLocalName()+" and target "+ target.getLocalName());
 			}
 			
-			//Now look at the alignments in the input alignment and see if there is any that has to be removed
-			//or any that is not in the partial reference alignment that has to be added
-			for(int i = 0; i < matchedClassSourceRootNodes.size(); i++)
-			{
-				aTreeNode = matchedClassSourceRootNodes.get(i);
-				matchedNode = aTreeNode.getMatchedTo();
-				checkMatchings(aTreeNode, matchedNode);
-			}
-			//add everything in the partial reference alignment in the alignmentSet
+			//add every other alignment in the partial reference alignment not yet in the result
 			for(int i = 0; i < praClassesAlignmentSet.size(); i++)
 			{
 				anAlignment = praClassesAlignmentSet.getAlignment(i);
-				resultSet.addAlignment(anAlignment);
-				src = anAlignment.getEntity1();
-				target = anAlignment.getEntity2();
-				//mappings.add(anAlignment);
-				resultMatrix.set(src.getIndex(), target.getIndex(), anAlignment);
+				if(!mappedNodes.contains(anAlignment))
+				{
+					//System.out.println("Adding a result from the pra classes alignment set");
+					resultSet.addAlignment(anAlignment);
+					praSrc = anAlignment.getEntity1();
+					praTarget = anAlignment.getEntity2();
+					mappedNodes.add(anAlignment);
+					resultMatrix.set(praSrc.getIndex(), praTarget.getIndex(), anAlignment);
+				}
 			}
+			classesAlignmentSet = resultSet;
+			classesMatrix = resultMatrix;
 		}
 		else if(typeOfNodes.equals(alignType.aligningProperties))
 		{
@@ -141,28 +169,56 @@ public class PRAMatcher2 extends AbstractMatcher
 			resultMatrix = new AlignmentMatrix(numSources, numTargets, alignType.aligningProperties);
 		
 			//add everything in the partial reference alignment in the alignmentSet
+			for(int i = 0; i < inputPropertiesAlignmentSet.size(); i++)
+			{
+				anAlignment = inputPropertiesAlignmentSet.getAlignment(i); 
+				inputSrc = anAlignment.getEntity1();
+				inputTarget = anAlignment.getEntity2();
+				anInt = new Integer(inputSrc.getIndex());
+				nextInt = new Integer(inputTarget.getIndex());
+				praSrc = srcPropertiesIdToNode.get(anInt);
+				praTarget = targetPropertiesIdToNode.get(nextInt);
+				aTreeNode = nodeToTreeNode.get(praSrc);			
+				matchedNode = nodeToTreeNode.get(praTarget);
+				
+				if(aTreeNode.getDepth() == matchedNode.getDepth())
+				{
+					resultMatrix.set(inputSrc.getIndex(), inputTarget.getIndex(), anAlignment);
+					resultSet.addAlignment(anAlignment);
+					mappedNodes.add(anAlignment);
+				}
+			}
+			
+			//add every other alignment in the partial reference alignment not yet in the result
 			for(int i = 0; i < praPropertiesAlignmentSet.size(); i++)
 			{
 				anAlignment = praPropertiesAlignmentSet.getAlignment(i);
-				resultSet.addAlignment(anAlignment);
-				src = anAlignment.getEntity1();
-				target = anAlignment.getEntity2();
-				//mappings.add(anAlignment);
-				resultMatrix.set(src.getIndex(), target.getIndex(), anAlignment);
+				if(!mappedNodes.contains(anAlignment))
+				{
+					resultSet.addAlignment(anAlignment);
+					praSrc = anAlignment.getEntity1();
+					praTarget = anAlignment.getEntity2();
+					mappedNodes.add(anAlignment);
+					resultMatrix.set(praSrc.getIndex(), praTarget.getIndex(), anAlignment);
+				}
 			}
+			propertiesAlignmentSet = resultSet;
+			propertiesMatrix = resultMatrix;
 		}
 	}
 	
-	
-	private void checkMatchings(TreeNode aTreeNode, TreeNode matchedNode)
-	{
-		aTreeNode.resetNodeColors();
-		matchedNode.resetNodeColors();
-	}
 
-	private void addUndiscoveredMatchings()
+
+	private void addUndiscoveredMappings(alignType typeOfNodes)
 	{
-		
+		if(typeOfNodes.equals(alignType.aligningClasses))
+		{
+			
+		}
+		else if(typeOfNodes.equals(alignType.aligningProperties))
+		{
+			
+		}
 	}
 	
 }

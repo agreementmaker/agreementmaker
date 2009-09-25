@@ -106,7 +106,7 @@ public class OldPRAMatcher extends AbstractMatcher
 		
 		//Now we align nodes by considering only nodes in the subtrees of matched nodes
 		//Initialize matrix before aligning nodes, cos this method will access matrix
-		matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), alignType.aligningClasses);
+		matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes);
 		alignNodes(typeOfNodes);
 		
 		
@@ -504,6 +504,8 @@ public class OldPRAMatcher extends AbstractMatcher
 		ArrayList<Node> childrenNodes;
 		//adjacency = new HashMap<OldTreeNode, ArrayList<OldTreeNode>>();
 		//ArrayList<OldTreeNode> anAdj;
+		
+		
 		
 		for(int i = 0; i < OldTreeNodes.size(); i++)
 		{

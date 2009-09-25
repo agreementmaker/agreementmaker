@@ -18,9 +18,10 @@ public class TreeNode
 	private Node node;
 	private boolean matched;
 	private TreeNode matchedTo;
-	public ArrayList<Node> children;
+	private ArrayList<TreeNode> children;
 	private TreeNode parent;
 	private int color;
+	private int depth;
 	
 	public TreeNode(Node aNode)
 	{
@@ -28,7 +29,7 @@ public class TreeNode
 		setColor(0);
 	}
 	
-	/*
+	
 	public void resetNodeColors()
 	{
 		TreeNode aChild = null;
@@ -43,7 +44,7 @@ public class TreeNode
 			}
 		}
 	}
-	*/
+	
 	
 	/**
 	 * @param matched the matched to set
@@ -97,7 +98,7 @@ public class TreeNode
 	 * @param children the children to set
 	 */
 	
-	public void setChildren(ArrayList<Node> children) 
+	public void setChildren(ArrayList<TreeNode> children) 
 	{
 		this.children = children;
 	}
@@ -106,7 +107,7 @@ public class TreeNode
 	 * @return the children
 	 */
 	
-	public ArrayList<Node> getChildren() 
+	public ArrayList<TreeNode> getChildren() 
 	{
 		return children;
 	}
@@ -142,6 +143,22 @@ public class TreeNode
 	public TreeNode getParent() 
 	{
 		return parent;
+	}
+
+
+	/**
+	 * @param depth the depth to set
+	 */
+	public void setDepth(int depth) {
+		this.depth = depth;
+	}
+
+
+	/**
+	 * @return the depth
+	 */
+	public int getDepth() {
+		return depth;
 	}
 	
 	

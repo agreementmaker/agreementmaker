@@ -13,6 +13,7 @@ import am.application.mappingEngine.MatchersRegistry;
 import am.application.mappingEngine.Combination.CombinationMatcher;
 import am.application.mappingEngine.Combination.CombinationParameters;
 import am.application.mappingEngine.Combination.CombinationParametersPanel;
+import am.application.mappingEngine.PRAMatcher.PRAMatcher;
 import am.application.mappingEngine.StringUtil.ISub;
 import am.application.mappingEngine.StringUtil.Normalizer;
 import am.application.mappingEngine.StringUtil.StringMetrics;
@@ -74,18 +75,19 @@ public class OAEI2009matcher extends AbstractMatcher {
     	//BSM
     	System.out.println("Running BSM");
     	long startime = System.nanoTime()/measure;
-    	AbstractMatcher bsm = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity, 0);
-    	bsm.setThreshold(threshold);
-    	bsm.setMaxSourceAlign(maxSourceAlign);
-    	bsm.setMaxTargetAlign(maxTargetAlign);
+    	//AbstractMatcher bsm = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity, 0);
+    	AbstractMatcher pra = MatcherFactory.getMatcherInstance(MatchersRegistry.PRAMatcher, 0);
+    	pra.setThreshold(threshold);
+    	pra.setMaxSourceAlign(maxSourceAlign);
+    	pra.setMaxTargetAlign(maxTargetAlign);
     	BaseSimilarityParameters bsmp = new BaseSimilarityParameters();
     	bsmp.initForOAEI2009();
-    	bsm.setParam(bsmp);
+    	pra.setParam(bsmp);
     	//bsm.setPerformSelection(false);
-		bsm.match();
+		pra.match();
     	long endtime = System.nanoTime()/measure;
     	long time = (endtime-startime);
-		System.out.println("BSM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
+		System.out.println("PRAMatcher completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
     	
 		//PSM
     	System.out.println("Running PSM");
@@ -128,7 +130,7 @@ public class OAEI2009matcher extends AbstractMatcher {
     	AbstractMatcher lwc = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 3);
     	lwc.getInputMatchers().add(psm);
     	lwc.getInputMatchers().add(vmm);
-    	lwc.getInputMatchers().add(bsm);
+    	lwc.getInputMatchers().add(pra);
     	lwc.setThreshold(threshold);
     	lwc.setMaxSourceAlign(maxSourceAlign);
     	lwc.setMaxTargetAlign(maxTargetAlign);

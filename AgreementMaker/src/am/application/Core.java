@@ -7,6 +7,7 @@ import java.util.Iterator;
 import am.AMException;
 import am.application.mappingEngine.AbstractMatcher;
 import am.application.mappingEngine.Alignment;
+import am.application.mappingEngine.MatchersRegistry;
 import am.application.ontology.Node;
 import am.application.ontology.Ontology;
 import am.userInterface.UI;
@@ -74,6 +75,25 @@ public class Core {
 	public boolean ontologiesLoaded() {
 		return sourceIsLoaded() &&  targetIsLoaded();
 	}
+	
+	
+	/*
+	 * This function will return the first Matcher instance of type "matcher" in the AM (ordered by its index).
+	 */
+	public AbstractMatcher getMatcherInstance( MatchersRegistry matcher ) {
+	
+		for( int i = 0; i < matcherInstances.size(); i++ ) {
+			
+			if( matcherInstances.get(i).getClass().equals( matcher.getClass() ) ) {
+				return matcherInstances.get(i);
+			}
+			
+		}
+		
+		return null;
+		
+	}
+	
 	public ArrayList<AbstractMatcher> getMatcherInstances() {
 		return matcherInstances;
 	}

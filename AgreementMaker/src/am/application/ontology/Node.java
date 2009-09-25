@@ -282,11 +282,11 @@ public class Node {
 		}
 		return false;
 	}
-	
+	/*
 	public int hashCode() {
 		return index;
 	}
-	
+	*/
 	
 	public String toString() {
 		return index+" "+localName;

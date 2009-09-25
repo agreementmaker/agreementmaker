@@ -1,33 +1,45 @@
 package am.application.mappingEngine.PRAMatcher;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
+import am.application.Core;
 import am.application.mappingEngine.AbstractMatcher;
 import am.application.mappingEngine.AbstractMatcherParametersPanel;
 import am.application.mappingEngine.Alignment;
 import am.application.mappingEngine.AlignmentMatrix;
+import am.application.mappingEngine.AlignmentSet;
+import am.application.mappingEngine.MatchersRegistry;
 import am.application.mappingEngine.StringUtil.Normalizer;
 import am.application.mappingEngine.StringUtil.NormalizerParameter;
+import am.application.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import am.application.mappingEngine.referenceAlignment.ReferenceAlignmentParametersPanel;
 import am.application.ontology.Node;
 
-public class PRAMatcher extends AbstractMatcher 
+public class PRAMatcher extends BaseSimilarityMatcher 
 {
 	// the Alignment Matrices from the Input Matching algorithm.
-	private AlignmentMatrix inputClassesMatrix = null;
-	private AlignmentMatrix inputPropertiesMatrix = null;
-	private AlignmentMatrix matrix = null;
+	private AlignmentMatrix inputClassesMatrix;
+	private AlignmentMatrix inputPropertiesMatrix;
+	private AlignmentSet inputClassesAlignmentSet;
+	private AlignmentSet inputPropertiesAlignmentSet;
+	private HashMap<Node, TreeNode> nodeToTreeNode;
+	private HashMap<Integer, Node> srcClassesIdToNode;
+	private HashMap<Integer, Node> targetClassesIdToNode;
+	private HashMap<Integer, Node> srcPropertiesIdToNode;
+	private HashMap<Integer, Node> targetPropertiesIdToNode;
+	private AlignmentMatrix matrix;
 	
 	//the structure that holds the roots of subtrees which are matched nodes in the ontology
-	private ArrayList<Node> matchedClassSourceRootNodes = null;
-	private ArrayList<Node> matchedPropertySourceRootNodes = null;
-	private ArrayList<Node> unMatchedClassSourceRootNodes = null;
-	private ArrayList<Node> unMatchedPropertySourceRootNodes = null;
-	private ArrayList<Node> matchedClassTargetRootNodes = null;
-	private ArrayList<Node> matchedPropertyTargetRootNodes = null;
-	private ArrayList<Node> unMatchedClassTargetRootNodes = null;
-	private ArrayList<Node> unMatchedPropertyTargetRootNodes = null;
+	private ArrayList<TreeNode> matchedClassSourceRootNodes;
+	private ArrayList<TreeNode> matchedPropertySourceRootNodes;
+	private ArrayList<TreeNode> unMatchedClassSourceRootNodes;
+	private ArrayList<TreeNode> unMatchedPropertySourceRootNodes;
+	private ArrayList<TreeNode> matchedClassTargetRootNodes;
+	private ArrayList<TreeNode> matchedPropertyTargetRootNodes;
+	private ArrayList<TreeNode> unMatchedClassTargetRootNodes;
+	private ArrayList<TreeNode> unMatchedPropertyTargetRootNodes;
 	
 	//Constructor
 	public PRAMatcher()
@@ -50,12 +62,17 @@ public class PRAMatcher extends AbstractMatcher
     	AbstractMatcher input = inputMatchers.get(0);
     	
     	inputClassesMatrix = input.getClassesMatrix();
-    	inputPropertiesMatrix = input.getPropertiesMatrix();  	   	
+    	inputPropertiesMatrix = input.getPropertiesMatrix();  	   
+    	inputClassesAlignmentSet = input.getClassAlignmentSet();
+    	inputPropertiesAlignmentSet = input.getPropertyAlignmentSet();
+    	nodeToTreeNode = new HashMap<Node, TreeNode>();
 	}	
 	
-	/*
+	
 	protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception 
     {
+		ArrayList<TreeNode> srcTreeNodes = createTreeNode(sourceList);
+		ArrayList<TreeNode> targetTreeNodes = createTreeNode(targetList);
 		Node src = null, target = null;
 		//First set matched nodes as matched, to help identifying them as roots when traversing the ontology tree
 		//Also, set the nodes to which they are matched in the other ontology. This is for easy access to such nodes
@@ -64,14 +81,40 @@ public class PRAMatcher extends AbstractMatcher
 		
 		if(typeOfNodes == alignType.aligningClasses)
 		{
-			setMatchingPairs(inputClassesMatrix, sourceList, targetList);
+			setMatchingPairs(inputClassesMatrix, srcTreeNodes, targetTreeNodes);
+			srcClassesIdToNode = new HashMap<Integer, Node>();
+			targetClassesIdToNode = new HashMap<Integer, Node>();
+			for(int i = 0; i < sourceList.size(); i++)
+			{
+				src = sourceList.get(i);
+				srcClassesIdToNode.put(new Integer(src.getIndex()), src);
+			}
+			for(int i = 0; i < targetList.size(); i++)
+			{
+				target = targetList.get(i);
+				targetClassesIdToNode.put(new Integer(target.getIndex()), target);				
+			}
 		}
 		else if(typeOfNodes == alignType.aligningProperties)
 		{
-			setMatchingPairs(inputPropertiesMatrix, sourceList, targetList);
+			setMatchingPairs(inputPropertiesMatrix, srcTreeNodes, targetTreeNodes);
+			srcPropertiesIdToNode = new HashMap<Integer, Node>();
+			targetPropertiesIdToNode = new HashMap<Integer, Node>();
+			for(int i = 0; i < sourceList.size(); i++)
+			{
+				src = sourceList.get(i);
+				srcPropertiesIdToNode.put(new Integer(src.getIndex()), src);
+			}
+			for(int i = 0; i < targetList.size(); i++)
+			{
+				target = targetList.get(i);
+				targetPropertiesIdToNode.put(new Integer(target.getIndex()), target);				
+			}
 		}
 
-		createPRATrees(sourceList, targetList, typeOfNodes);
+		createAdjacency(srcTreeNodes);
+		createAdjacency(targetTreeNodes);
+		createPRATrees(srcTreeNodes, targetTreeNodes, typeOfNodes);
 
 		//Now we align nodes by considering only nodes in the subtrees of matched nodes
 		//Initialize matrix before aligning nodes, cos this method will access matrix
@@ -95,8 +138,7 @@ public class PRAMatcher extends AbstractMatcher
 		
     }
 	
-	
-	
+	/*
 	//Set all alignment sim to a random value between 0 and 1
 	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) 
 	{
@@ -181,18 +223,33 @@ public class PRAMatcher extends AbstractMatcher
 				return new Alignment( source, target, 0.8d, Alignment.EQUIVALENCE);
 				
 		
-			return new Alignment(source, target, 0.0d, Alignment.EQUIVALENCE);
-			
+			return new Alignment(source, target, 0.0d, Alignment.EQUIVALENCE);	
 	}
-*/
+	*/
 	
 	
-	private void setMatchingPairs(AlignmentMatrix inputMatrix, ArrayList<Node> sourceList, ArrayList<Node> targetList) throws Exception
+	private ArrayList<TreeNode> createTreeNode(ArrayList<Node> listOfNodes) 
+	{
+		ArrayList<TreeNode> treeNodes = new ArrayList<TreeNode>();
+		TreeNode aTreeNode = null, treeNodeInMap = null;
+		Node aNode = null;
+	
+		for(int i = 0; i < listOfNodes.size(); i++)
+		{
+			aNode = listOfNodes.get(i);
+			aTreeNode = new TreeNode(aNode);
+			treeNodeInMap = nodeToTreeNode.put(aNode, aTreeNode); //recall that there are source and target lists
+			treeNodes.add(aTreeNode);
+		}
+		return treeNodes;
+	}
+	
+	private void setMatchingPairs(AlignmentMatrix inputMatrix, ArrayList<TreeNode> sourceList, ArrayList<TreeNode> targetList) throws Exception
 	{
 		Alignment alignment = null;
 		int numRows = sourceList.size();
 		int numCols = targetList.size();
-		Node src = null, target = null;
+		TreeNode src = null, target = null;
 		//int numSet = 0;
 		
 		for(int i = 0; i <  numRows; i++)
@@ -201,9 +258,9 @@ public class PRAMatcher extends AbstractMatcher
 			for (int j = 0; j < numCols; j++)
 			{
 				target = targetList.get(j);
-				if(inputMatrix.get(src.getIndex(), target.getIndex()) != null)
+				if(inputMatrix.get(src.getNode().getIndex(), target.getNode().getIndex()) != null)
 				{
-					alignment = inputMatrix.get(src.getIndex(), target.getIndex());
+					alignment = inputMatrix.get(src.getNode().getIndex(), target.getNode().getIndex());
 					//System.out.println("Found a match on " + src.getNode().getLocalName() +" with similarity "+alignment.getSimilarity());
 					if(alignment.getSimilarity() != 0.0d)
 					{
@@ -223,11 +280,11 @@ public class PRAMatcher extends AbstractMatcher
 	
 
 	
-	private void printAdjacency(ArrayList<Node> nodes)
+	private void printAdjacency(ArrayList<TreeNode> nodes)
 	{
-		Node aNode;
-		Node nNode;
-		ArrayList<Node> neighbours;
+		TreeNode aNode;
+		TreeNode nNode;
+		ArrayList<TreeNode> neighbours;
 		
 		for(int i = 0; i < nodes.size(); i++)
 		{
@@ -238,7 +295,7 @@ public class PRAMatcher extends AbstractMatcher
 				for(int j = 0; j < neighbours.size(); j++)
 				{
 					nNode = neighbours.get(j);
-					System.out.println("Node " +aNode.getLocalName() +" has neighbour " + nNode.getLocalName());
+					System.out.println("Node " +aNode.getNode().getLocalName() +" has neighbour " + nNode.getNode().getLocalName());
 					//System.out.println("Node " +aNode +" has neighbour " + nNode);		
 				}
 				System.out.println();
@@ -247,34 +304,34 @@ public class PRAMatcher extends AbstractMatcher
 	}
 	
 	
-	private void createPRATrees(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception
+	private void createPRATrees(ArrayList<TreeNode> sourceList, ArrayList<TreeNode> targetList, alignType typeOfNodes) throws Exception
 	{
 		//Need to access the inputMatrices to find which nodes are matched
 		//Start with inputClassesMatrix
-		ArrayList<Node> srcRootNodes = getRootNodes(sourceList);
+		ArrayList<TreeNode> srcRootNodes = getRootNodes(sourceList);
 		//System.out.println("The size of the srcRootNodes is "+srcRootNodes.size());
 		
-		ArrayList<Node> targetRootNodes = getRootNodes(targetList);
+		ArrayList<TreeNode> targetRootNodes = getRootNodes(targetList);
 		//System.out.println("The size of the targetRootNodes is "+targetRootNodes.size());
 		
 		//initialize class and property root nodes
-		matchedClassSourceRootNodes = new ArrayList<Node>();
-		matchedPropertySourceRootNodes = new ArrayList<Node>();
-		unMatchedClassSourceRootNodes = new ArrayList<Node>();
-		unMatchedPropertySourceRootNodes = new ArrayList<Node>();
-		matchedClassTargetRootNodes = new ArrayList<Node>();
-		matchedPropertyTargetRootNodes = new ArrayList<Node>();
-		unMatchedClassTargetRootNodes = new ArrayList<Node>();
-		unMatchedPropertyTargetRootNodes = new ArrayList<Node>();
+		matchedClassSourceRootNodes = new ArrayList<TreeNode>();
+		matchedPropertySourceRootNodes = new ArrayList<TreeNode>();
+		unMatchedClassSourceRootNodes = new ArrayList<TreeNode>();
+		unMatchedPropertySourceRootNodes = new ArrayList<TreeNode>();
+		matchedClassTargetRootNodes = new ArrayList<TreeNode>();
+		matchedPropertyTargetRootNodes = new ArrayList<TreeNode>();
+		unMatchedClassTargetRootNodes = new ArrayList<TreeNode>();
+		unMatchedPropertyTargetRootNodes = new ArrayList<TreeNode>();
 		createPRATrees(srcRootNodes, typeOfNodes, true);
 		createPRATrees(targetRootNodes, typeOfNodes, false);
 		
 	}
 	
 	
-	private void createPRATrees(ArrayList<Node> rootNodes, alignType typeOfNodes, boolean source)
+	private void createPRATrees(ArrayList<TreeNode> rootNodes, alignType typeOfNodes, boolean source)
 	{
-		Node aRootNode = null;
+		TreeNode aRootNode = null;
 		int treeDepth = 0;
 		
 		for(int i = 0; i < rootNodes.size(); i++)
@@ -348,11 +405,11 @@ public class PRAMatcher extends AbstractMatcher
 	}
 	
 	
-	private void createPRATrees(Node aNode, alignType typeOfNodes, boolean source, int treeDepth)
+	private void createPRATrees(TreeNode aNode, alignType typeOfNodes, boolean source, int treeDepth)
 	{
-		ArrayList<Node> myChildren = aNode.getChildren();
+		ArrayList<TreeNode> myChildren = aNode.getChildren();
 		//ArrayList<TreeNode> myChildren = adjacency.get(aNode);
-		Node myChild = null;
+		TreeNode myChild = null;
 		
 		aNode.setColor(1);
 		aNode.setDepth(treeDepth);
@@ -421,14 +478,14 @@ public class PRAMatcher extends AbstractMatcher
 			//System.out.println("After recursing, node " +aNode.getLocalName() +" has no children");
 	}
 	
-	/*
+	
 	private void alignNodes(alignType typeOfNodes)
 	{
 		//Now go through the matched subtrees and align nodes in it.
 		//Remember that nodes in src or target rootnodes may not be matched
 		//but may yet still need to be matched
-		Node sourceNode = null, targetNode = null;
-		ArrayList<Node> matchedRootNodes = null;
+		TreeNode sourceNode = null, targetNode = null;
+		ArrayList<TreeNode> matchedRootNodes = null;
 		
 		if(typeOfNodes == alignType.aligningClasses)
 		{
@@ -447,7 +504,7 @@ public class PRAMatcher extends AbstractMatcher
 			sourceNode = matchedRootNodes.get(i);
 			targetNode = sourceNode.getMatchedTo();
 			//sourceNode.resetNodeColors();
-			resetColors(sourceNode);
+			sourceNode.resetNodeColors();
 			alignNodes(sourceNode, targetNode, typeOfNodes);			
 		}
 		
@@ -479,13 +536,13 @@ public class PRAMatcher extends AbstractMatcher
 		}
 		
 	}
-	*/
 	
-	private void resetColors(Node aNode)
+	
+	private void resetColors(TreeNode aNode)
 	{
 		aNode.setColor(0);
-		ArrayList<Node> anAdj = aNode.getChildren();
-		Node cNode;
+		ArrayList<TreeNode> anAdj = aNode.getChildren();
+		TreeNode cNode;
 		
 		if(anAdj != null)
 		{
@@ -497,12 +554,12 @@ public class PRAMatcher extends AbstractMatcher
 		}
 	}
 	
-	/*
-	private void alignNodes(Node sourceNode, Node targetNode, alignType typeOfNodes)
+	
+	private void alignNodes(TreeNode sourceNode, TreeNode targetNode, alignType typeOfNodes)
 	{
-		ArrayList<Node> myChildren = sourceNode.getChildren();
+		ArrayList<TreeNode> myChildren = sourceNode.getChildren();
 		//ArrayList<TreeNode> myChildren = adjacency.get(aNode);
-		Node childNode = null;
+		TreeNode childNode = null;
 				
 		sourceNode.setColor(1);
 		if(myChildren != null)
@@ -520,16 +577,16 @@ public class PRAMatcher extends AbstractMatcher
 		
 		sourceNode.setColor(2);
 		//targetNode.resetNodeColors();
-		resetColors(targetNode);
+		targetNode.resetNodeColors();
 		alignNodeWithTargets(sourceNode, targetNode, typeOfNodes);
 		
 	}
 	
-	private void alignNodeWithTargets(Node srcNode, Node targetNode, alignType typeOfNodes)
+	private void alignNodeWithTargets(TreeNode srcNode, TreeNode targetNode, alignType typeOfNodes)
 	{
-		ArrayList<Node> myChildren = targetNode.getChildren();
+		ArrayList<TreeNode> myChildren = targetNode.getChildren();
 		//ArrayList<TreeNode> myChildren = adjacency.get(targetNode);
-		Node childNode = null;
+		TreeNode childNode = null;
 		Alignment alignment = null;
 		
 		targetNode.setColor(1);
@@ -547,24 +604,62 @@ public class PRAMatcher extends AbstractMatcher
 		
 		targetNode.setColor(2);
 		//Now align the source and targetNodes
-		alignment = alignTwoNodes(srcNode, targetNode, typeOfNodes);
-		matrix.set(srcNode.getIndex(), targetNode.getIndex(), alignment);
+		try {
+			alignment = alignTwoNodes(srcNode.getNode(), targetNode.getNode(), typeOfNodes);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		matrix.set(srcNode.getNode().getIndex(), targetNode.getNode().getIndex(), alignment);
 	}
-	*/
 	
 	
-	
-	private ArrayList<Node> getRootNodes(ArrayList<Node> targetList)
+	private void createAdjacency(ArrayList<TreeNode> treeNodes)
 	{
-		ArrayList<Node> rootNodes = new ArrayList<Node>();
-		Node aNode = null;
+		Node aNode, cNode;
+		TreeNode parentNode, childNode;
+		ArrayList<Node> childrenNodes;
+		ArrayList<TreeNode> anAdj;
+		
+		
+		
+		for(int i = 0; i < treeNodes.size(); i++)
+		{
+			parentNode = treeNodes.get(i);
+			aNode = parentNode.getNode();
+			childrenNodes = aNode.getChildren();
+			if(childrenNodes != null && childrenNodes.size() > 0)
+			{
+				//parentNode.children = new ArrayList<TreeNode>();
+				anAdj = new ArrayList<TreeNode>();
+				for(int j = 0; j < childrenNodes.size(); j++)
+				{					
+					cNode = childrenNodes.get(j);
+					childNode = nodeToTreeNode.get(cNode);
+					anAdj.add(childNode);
+					//parentNode.children.add(childNode);
+					//System.out.println("Adding "+ cNode.getLocalName()+ " as a child of " + aNode.getLocalName());
+					//System.out.println("Adding "+ childNode+ " as a child of " + parentNode);
+				}
+				parentNode.setChildren(anAdj);
+				System.out.println();
+				//System.out.println(aNode.getLocalName() +" has numchildren " + parentNode.children.size());
+			}
+		}
+	}
+	
+	
+	private ArrayList<TreeNode> getRootNodes(ArrayList<TreeNode> targetList)
+	{
+		ArrayList<TreeNode> rootNodes = new ArrayList<TreeNode>();
+		TreeNode aNode = null;
 		
 		for(int i = 0; i < targetList.size(); i++)
 		{
 			aNode = targetList.get(i);
 			
 			//System.out.println("Examining node "+ aNode.getNode().getLocalName());
-			if(aNode.getParents() == null || aNode.getParents().size() == 0)
+			if(aNode.getNode().getParents() == null || aNode.getNode().getParents().size() == 0)
 			{
 				rootNodes.add(aNode);
 				//System.out.println("Found a root node " + aNode.getNode().getLocalName());
@@ -613,10 +708,65 @@ public class PRAMatcher extends AbstractMatcher
 
 
 	/**
+	 * @param inputClassesAlignmentSet the inputClassesAlignmentSet to set
+	 */
+	public void setInputClassesAlignmentSet(AlignmentSet inputClassesAlignmentSet) {
+		this.inputClassesAlignmentSet = inputClassesAlignmentSet;
+	}
+
+
+
+	/**
+	 * @return the inputClassesAlignmentSet
+	 */
+	public AlignmentSet getInputClassesAlignmentSet() {
+		return inputClassesAlignmentSet;
+	}
+
+
+
+	/**
+	 * @param inputPropertiesAlignmentSet the inputPropertiesAlignmentSet to set
+	 */
+	public void setInputPropertiesAlignmentSet(
+			AlignmentSet inputPropertiesAlignmentSet) {
+		this.inputPropertiesAlignmentSet = inputPropertiesAlignmentSet;
+	}
+
+
+
+	/**
+	 * @return the inputPropertiesAlignmentSet
+	 */
+	public AlignmentSet getInputPropertiesAlignmentSet() {
+		return inputPropertiesAlignmentSet;
+	}
+
+
+
+	/**
+	 * @param nodeToTreeNod the nodeToTreeNod to set
+	 */
+	public void setNodeToTreeNode(HashMap<Node, TreeNode> nodeToTreeNode) {
+		this.nodeToTreeNode = nodeToTreeNode;
+	}
+
+
+
+	/**
+	 * @return the nodeToTreeNod
+	 */
+	public HashMap<Node, TreeNode> getNodeToTreeNode() {
+		return nodeToTreeNode;
+	}
+
+
+
+	/**
 	 * @param matchedClassSourceRootNodes the matchedClassSourceRootNodes to set
 	 */
 	public void setMatchedClassSourceRootNodes(
-			ArrayList<Node> matchedClassSourceRootNodes) {
+			ArrayList<TreeNode> matchedClassSourceRootNodes) {
 		this.matchedClassSourceRootNodes = matchedClassSourceRootNodes;
 	}
 
@@ -625,7 +775,7 @@ public class PRAMatcher extends AbstractMatcher
 	/**
 	 * @return the matchedClassSourceRootNodes
 	 */
-	public ArrayList<Node> getMatchedClassSourceRootNodes() {
+	public ArrayList<TreeNode> getMatchedClassSourceRootNodes() {
 		return matchedClassSourceRootNodes;
 	}
 
@@ -635,7 +785,7 @@ public class PRAMatcher extends AbstractMatcher
 	 * @param matchedPropertySourceRootNodes the matchedPropertySourceRootNodes to set
 	 */
 	public void setMatchedPropertySourceRootNodes(
-			ArrayList<Node> matchedPropertySourceRootNodes) {
+			ArrayList<TreeNode> matchedPropertySourceRootNodes) {
 		this.matchedPropertySourceRootNodes = matchedPropertySourceRootNodes;
 	}
 
@@ -644,7 +794,7 @@ public class PRAMatcher extends AbstractMatcher
 	/**
 	 * @return the matchedPropertySourceRootNodes
 	 */
-	public ArrayList<Node> getMatchedPropertySourceRootNodes() {
+	public ArrayList<TreeNode> getMatchedPropertySourceRootNodes() {
 		return matchedPropertySourceRootNodes;
 	}
 
@@ -654,7 +804,7 @@ public class PRAMatcher extends AbstractMatcher
 	 * @param unMatchedClassSourceRootNodes the unMatchedClassSourceRootNodes to set
 	 */
 	public void setUnMatchedClassSourceRootNodes(
-			ArrayList<Node> unMatchedClassSourceRootNodes) {
+			ArrayList<TreeNode> unMatchedClassSourceRootNodes) {
 		this.unMatchedClassSourceRootNodes = unMatchedClassSourceRootNodes;
 	}
 
@@ -663,7 +813,7 @@ public class PRAMatcher extends AbstractMatcher
 	/**
 	 * @return the unMatchedClassSourceRootNodes
 	 */
-	public ArrayList<Node> getUnMatchedClassSourceRootNodes() {
+	public ArrayList<TreeNode> getUnMatchedClassSourceRootNodes() {
 		return unMatchedClassSourceRootNodes;
 	}
 
@@ -673,7 +823,7 @@ public class PRAMatcher extends AbstractMatcher
 	 * @param unMatchedPropertySourceRootNodes the unMatchedPropertySourceRootNodes to set
 	 */
 	public void setUnMatchedPropertySourceRootNodes(
-			ArrayList<Node> unMatchedPropertySourceRootNodes) {
+			ArrayList<TreeNode> unMatchedPropertySourceRootNodes) {
 		this.unMatchedPropertySourceRootNodes = unMatchedPropertySourceRootNodes;
 	}
 
@@ -682,7 +832,7 @@ public class PRAMatcher extends AbstractMatcher
 	/**
 	 * @return the unMatchedPropertySourceRootNodes
 	 */
-	public ArrayList<Node> getUnMatchedPropertySourceRootNodes() {
+	public ArrayList<TreeNode> getUnMatchedPropertySourceRootNodes() {
 		return unMatchedPropertySourceRootNodes;
 	}
 
@@ -692,7 +842,7 @@ public class PRAMatcher extends AbstractMatcher
 	 * @param matchedClassTargetRootNodes the matchedClassTargetRootNodes to set
 	 */
 	public void setMatchedClassTargetRootNodes(
-			ArrayList<Node> matchedClassTargetRootNodes) {
+			ArrayList<TreeNode> matchedClassTargetRootNodes) {
 		this.matchedClassTargetRootNodes = matchedClassTargetRootNodes;
 	}
 
@@ -701,7 +851,7 @@ public class PRAMatcher extends AbstractMatcher
 	/**
 	 * @return the matchedClassTargetRootNodes
 	 */
-	public ArrayList<Node> getMatchedClassTargetRootNodes() {
+	public ArrayList<TreeNode> getMatchedClassTargetRootNodes() {
 		return matchedClassTargetRootNodes;
 	}
 
@@ -711,7 +861,7 @@ public class PRAMatcher extends AbstractMatcher
 	 * @param matchedPropertyTargetRootNodes the matchedPropertyTargetRootNodes to set
 	 */
 	public void setMatchedPropertyTargetRootNodes(
-			ArrayList<Node> matchedPropertyTargetRootNodes) {
+			ArrayList<TreeNode> matchedPropertyTargetRootNodes) {
 		this.matchedPropertyTargetRootNodes = matchedPropertyTargetRootNodes;
 	}
 
@@ -720,7 +870,7 @@ public class PRAMatcher extends AbstractMatcher
 	/**
 	 * @return the matchedPropertyTargetRootNodes
 	 */
-	public ArrayList<Node> getMatchedPropertyTargetRootNodes() {
+	public ArrayList<TreeNode> getMatchedPropertyTargetRootNodes() {
 		return matchedPropertyTargetRootNodes;
 	}
 
@@ -730,7 +880,7 @@ public class PRAMatcher extends AbstractMatcher
 	 * @param unMatchedClassTargetRootNodes the unMatchedClassTargetRootNodes to set
 	 */
 	public void setUnMatchedClassTargetRootNodes(
-			ArrayList<Node> unMatchedClassTargetRootNodes) {
+			ArrayList<TreeNode> unMatchedClassTargetRootNodes) {
 		this.unMatchedClassTargetRootNodes = unMatchedClassTargetRootNodes;
 	}
 
@@ -739,7 +889,7 @@ public class PRAMatcher extends AbstractMatcher
 	/**
 	 * @return the unMatchedClassTargetRootNodes
 	 */
-	public ArrayList<Node> getUnMatchedClassTargetRootNodes() {
+	public ArrayList<TreeNode> getUnMatchedClassTargetRootNodes() {
 		return unMatchedClassTargetRootNodes;
 	}
 
@@ -749,7 +899,7 @@ public class PRAMatcher extends AbstractMatcher
 	 * @param unMatchedPropertyTargetRootNodes the unMatchedPropertyTargetRootNodes to set
 	 */
 	public void setUnMatchedPropertyTargetRootNodes(
-			ArrayList<Node> unMatchedPropertyTargetRootNodes) {
+			ArrayList<TreeNode> unMatchedPropertyTargetRootNodes) {
 		this.unMatchedPropertyTargetRootNodes = unMatchedPropertyTargetRootNodes;
 	}
 
@@ -758,8 +908,80 @@ public class PRAMatcher extends AbstractMatcher
 	/**
 	 * @return the unMatchedPropertyTargetRootNodes
 	 */
-	public ArrayList<Node> getUnMatchedPropertyTargetRootNodes() {
+	public ArrayList<TreeNode> getUnMatchedPropertyTargetRootNodes() {
 		return unMatchedPropertyTargetRootNodes;
+	}
+
+
+
+	/**
+	 * @param srcClassesIdToNode the srcClassesIdToNode to set
+	 */
+	public void setSrcClassesIdToNode(HashMap<Integer, Node> srcClassesIdToNode) {
+		this.srcClassesIdToNode = srcClassesIdToNode;
+	}
+
+
+
+	/**
+	 * @return the srcClassesIdToNode
+	 */
+	public HashMap<Integer, Node> getSrcClassesIdToNode() {
+		return srcClassesIdToNode;
+	}
+
+
+
+	/**
+	 * @param targetClassesIdToNode the targetClassesIdToNode to set
+	 */
+	public void setTargetClassesIdToNode(HashMap<Integer, Node> targetClassesIdToNode) {
+		this.targetClassesIdToNode = targetClassesIdToNode;
+	}
+
+
+
+	/**
+	 * @return the targetClassesIdToNode
+	 */
+	public HashMap<Integer, Node> getTargetClassesIdToNode() {
+		return targetClassesIdToNode;
+	}
+
+
+
+	/**
+	 * @param srcPropertiesIdToNode the srcPropertiesIdToNode to set
+	 */
+	public void setSrcPropertiesIdToNode(HashMap<Integer, Node> srcPropertiesIdToNode) {
+		this.srcPropertiesIdToNode = srcPropertiesIdToNode;
+	}
+
+
+
+	/**
+	 * @return the srcPropertiesIdToNode
+	 */
+	public HashMap<Integer, Node> getSrcPropertiesIdToNode() {
+		return srcPropertiesIdToNode;
+	}
+
+
+
+	/**
+	 * @param targetPropertiesIdToNode the targetPropertiesIdToNode to set
+	 */
+	public void setTargetPropertiesIdToNode(HashMap<Integer, Node> targetPropertiesIdToNode) {
+		this.targetPropertiesIdToNode = targetPropertiesIdToNode;
+	}
+
+
+
+	/**
+	 * @return the targetPropertiesIdToNode
+	 */
+	public HashMap<Integer, Node> getTargetPropertiesIdToNode() {
+		return targetPropertiesIdToNode;
 	}
 
 
