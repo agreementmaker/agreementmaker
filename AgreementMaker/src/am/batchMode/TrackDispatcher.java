@@ -31,6 +31,8 @@ public class TrackDispatcher {
 			}
 			else if(track.equalsIgnoreCase(CONFERENCE)){
 				//TODO
+				ConferenceTrack ct = new ConferenceTrack(subTrack);
+				ct.launch();
 			}
 			else{
 				System.out.println("The selected track doesn't exist.\nTo run the UI remove the string argument from the running parameters.");
