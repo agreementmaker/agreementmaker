@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
+import com.hp.hpl.jena.rdf.model.Resource;
+
 import am.application.mappingEngine.Alignment;
 import am.application.mappingEngine.AlignmentSet;
 
@@ -65,6 +67,22 @@ public class AlignmentOutput
     public void writeStart(String xml, String level, String type, String onto1,
             String onto2, String uri1, String uri2)
     {
+    	//Below two if statement is only for OAEI 09 test case 303 
+    	//where uri is not mentioned in the ontology by xlmns=base:
+    	if(uri1.equals("")){
+    		Resource r = alignmentSet.getAlignment(0).getEntity1().getResource();
+    		uri1 = r.getURI();
+    		uri1 = uri1.substring(0, uri1.indexOf("#"));
+    	}
+    	if(uri2.equals("")){
+    		Resource r = alignmentSet.getAlignment(0).getEntity2().getResource();
+    		uri2 = r.getURI();
+    		uri2 = uri2.substring(0, uri2.indexOf("#"));
+    		if(uri2.equalsIgnoreCase("http://www.aifb.uni-karlsruhe.de/ontology"))
+    		{
+    			onto2 = "http://oaei.ontologymatching.org/2009/benchmarks/303/onto.rdf";
+    		}
+    	}
         String temp = "<Alignment>\n" 
                 + "  <xml>" + xml + "</xml>\n" 
                 + "  <level>" + level + "</level>\n"
