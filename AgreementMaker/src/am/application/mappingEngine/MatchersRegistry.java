@@ -5,6 +5,7 @@ import am.application.mappingEngine.LexicalMatcherJWNL.LexicalMatcherJWNL;
 import am.application.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
 import am.application.mappingEngine.PRAMatcher.OldPRAMatcher;
 import am.application.mappingEngine.PRAMatcher.PRAMatcher;
+import am.application.mappingEngine.PRAMatcher.PRAMatcher2;
 import am.application.mappingEngine.PRAintegration.PRAintegrationMatcher;
 //import am.application.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
 import am.application.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
@@ -56,6 +57,7 @@ public enum MatchersRegistry {
 	PRAintegration   ( "PRA Integration", PRAintegrationMatcher.class),
 	WordNetLexical		("Lexical Matcher: WordNet", LexicalMatcherJWNL.class),
 	PRAMatcher			("PRA Matcher", PRAMatcher.class),
+	PRAMatcher2			("PRA Matcher2", PRAMatcher2.class),
 	OldPRAMAtcher		("Old PRA Matcher", OldPRAMatcher.class),
 	UMLSKSLexical		("Lexical Matcher: UMLSKS", LexicalMatcherUMLS.class),
 	//WordNetLexicalOLD		("OLD Lexical Matcher: WordNet ", LexicalMatcherJWNLOLD.class),
