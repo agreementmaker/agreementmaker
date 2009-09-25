@@ -43,7 +43,7 @@ public class OAEI2009parameters extends AbstractParameters {
 			format = "";
 		}
 		else if(track.equals(CONFERENCE)){
-			useWordNet = true;
+			useWordNet = false;
 			useUMLS = false;
 			partialReferenceFile = "";
 			format = "";
