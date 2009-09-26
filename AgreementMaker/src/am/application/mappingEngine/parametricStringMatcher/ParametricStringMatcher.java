@@ -75,12 +75,29 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		
 		//The redistrubution is implicit in the weighted average mathematical formula
 		//i just need to put the weight equal to 0
+		//but labels should be first redistributed to localnames and vice-versa
+		//we set the weight of a feature to 0 if any of the two value is irrelevant
 		if(parameters.redistributeWeights) {
-			//if parameters.weight == 0 is needed to speed up the if, in fact often many weights are already 0 and is useless to check other boolean value
-			if(parameters.localWeight == 0 || Utility.isIrrelevant(source.getLocalName()) || Utility.isIrrelevant(target.getLocalName()))
-				localWeight = 0;
-			if(parameters.labelWeight == 0 || Utility.isIrrelevant(source.getLabel()) || Utility.isIrrelevant(target.getLabel()))
-				labelWeight = 0;
+			if(parameters.localWeight!=0){
+				if(Utility.isIrrelevant(source.getLocalName()) || Utility.isIrrelevant(target.getLocalName())){
+					//we should redistribute localname to label if label is relevant
+					if(!Utility.isIrrelevant(source.getLabel()) && !Utility.isIrrelevant(target.getLabel())){
+						labelWeight += localWeight;
+					}
+					localWeight = 0;
+				}	
+			}
+			
+			if(parameters.labelWeight!=0){
+				if(Utility.isIrrelevant(source.getLabel()) || Utility.isIrrelevant(target.getLabel())){
+					//we should redistribute label to localname if localname is relevant
+					if(!Utility.isIrrelevant(source.getLocalName()) && !Utility.isIrrelevant(target.getLocalName())){
+						localWeight+= labelWeight;
+					}
+					labelWeight = 0;
+				}
+			}
+
 			if(parameters.commentWeight == 0 || Utility.isIrrelevant(source.getComment()) || Utility.isIrrelevant(target.getComment()))
 				commentWeight = 0;
 			if(parameters.seeAlsoWeight == 0 || Utility.isIrrelevant(source.getSeeAlsoLabel()) || Utility.isIrrelevant(target.getSeeAlsoLabel()))
