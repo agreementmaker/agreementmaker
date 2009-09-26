@@ -42,12 +42,20 @@ public class ConferenceTrack extends Track {
 			System.exit(1); 
 		}
 		
+		long startTime = System.nanoTime()/1000000;
+		
 		// compare each ontology to every other ontology
 		for( int i = 0; i < ontologyFiles.length - 1; i++ ) {		
 			for( int j = i+1; j < ontologyFiles.length; j++ ) {
 				computeMatching( i, j );
 			}
 		}
+		
+		long endTime = System.nanoTime()/1000000;
+		long totTime = endTime - startTime;
+		System.out.println("Total execution time in h.m.s.ms: "+Utility.getFormattedTime(totTime));
+		String timeFileName = TRACK_OUTPUT_DIR+"executionTime.txt";
+		TrackDispatcher.printExecutionTime(totTime, timeFileName);
 		
 	}
 	
@@ -71,7 +79,6 @@ public class ConferenceTrack extends Track {
 		AlignmentSet as;
 		AlignmentOutput ao;
 		String outputFileDir;
-		long startTime = System.nanoTime()/1000000;
 		
 		sourceOntology = ontologyFiles[sourceIndex].getAbsolutePath();
 		targetOntology = ontologyFiles[targetIndex].getAbsolutePath();
@@ -87,11 +94,6 @@ public class ConferenceTrack extends Track {
 		ao = new AlignmentOutput(as, outputFileDir+"/" + removeFileExtension(ontologyFiles[sourceIndex].getName()) + "-"+ removeFileExtension(ontologyFiles[targetIndex].getName()) +".rdf");
 		ao.write(sourceUri, targetUri, sourceUri, targetUri);
 		
-		long endTime = System.nanoTime()/1000000;
-		long totTime = endTime - startTime;
-		System.out.println("Total execution time in h.m.s.ms: "+Utility.getFormattedTime(totTime));
-		String timeFileName = TRACK_OUTPUT_DIR+"executionTime.txt";
-		TrackDispatcher.printExecutionTime(totTime, timeFileName);
 	}
 	
 	/**
