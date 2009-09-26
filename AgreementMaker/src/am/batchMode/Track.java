@@ -107,8 +107,14 @@ public abstract class Track {
 		return currentMatcher;
 	}
 	
+	
+	// wrapper function
+	protected ArrayList<AbstractMatcher> computeMultipleAlignment(File[] ontologyFiles, String languageS, String syntaxS, boolean skip, MatchersRegistry matcher, double threshold, int sourceRel, int targetRel, AbstractParameters parameters  ) throws Exception{
+		return computeMultipleAlignment( ontologyFiles, languageS, syntaxS, skip, matcher, threshold, sourceRel, targetRel, parameters, OntoTreeBuilder.Profile.defaultProfile );  // if no profile is specified, it uses the default profile
+	}
+	
 	//compute the alignment between any two ontologies, given their filepath using the specified matcher
-	protected ArrayList<AbstractMatcher> computeMultipleAlignment(File[] ontologyFiles, String languageS, String syntaxS, boolean skip, MatchersRegistry matcher, double threshold, int sourceRel, int targetRel, AbstractParameters parameters) throws Exception{
+	protected ArrayList<AbstractMatcher> computeMultipleAlignment(File[] ontologyFiles, String languageS, String syntaxS, boolean skip, MatchersRegistry matcher, double threshold, int sourceRel, int targetRel, AbstractParameters parameters, OntoTreeBuilder.Profile loadingProfile) throws Exception{
 		int numOntologies = ontologyFiles.length;
 		int numAlignments = (numOntologies * (numOntologies - 1))/2;
 		System.out.println("The matching process is started between "+numOntologies+" ontologies.\nExpected "+numAlignments+" different sets of mappings.");
@@ -119,7 +125,7 @@ public abstract class Track {
 		for(int i= 0; i< numOntologies; i++){
 			File f = ontologyFiles[i];
 			OntoTreeBuilder builder = new OntoTreeBuilder(f.getAbsolutePath(), GlobalStaticVariables.SOURCENODE, languageS, syntaxS, skip);
-			builder.build();
+			builder.build( loadingProfile );
 			Ontology o = builder.getOntology();
 			o.setIndex(i);//used to identify the ontology to print the alignment file
 			ontologies[i] = o;
