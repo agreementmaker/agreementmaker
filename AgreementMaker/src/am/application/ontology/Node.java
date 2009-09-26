@@ -413,8 +413,16 @@ public class Node {
 		ArrayList<Node> result = new ArrayList<Node>();
 		if(!isRoot()){
 			ArrayList<Vertex> list = getVertexList();
-			if(list.size() == 1) //I'm not a duplicate therefore I just have one original father
-				result.add(((Vertex)list.get(0).getParent()).getNode());
+			
+			if(list.size() == 1) { //I'm not a duplicate therefore I just have one original father
+				
+				Vertex tempVertex = list.get(0);
+				Vertex parentVertex = (Vertex) tempVertex.getParent();
+				if( parentVertex != null ) {  // we are not at the root
+					Node parentNode = parentVertex.getNode();
+					result.add(parentNode);
+				}
+			}
 			else{
 				//Being a duplicate means having more parents OR being the son of an ancestor with more fathers
 				Vertex v;
