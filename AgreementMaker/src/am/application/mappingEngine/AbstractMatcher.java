@@ -64,6 +64,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	
 	/**Reference to the Core istances*/
 	protected Ontology sourceOntology;
+	public Ontology getSourceOntology() {
+		return sourceOntology;
+	}
+
+	public Ontology getTargetOntology() {
+		return targetOntology;
+	}
+
 	protected Ontology targetOntology;
 	
 	/**If the algo calculates prop alignments*/

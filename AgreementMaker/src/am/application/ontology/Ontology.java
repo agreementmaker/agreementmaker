@@ -38,8 +38,19 @@ public class Ontology {
 	
 	private boolean skipOtherNamespaces;
 	
-	public String URI;
+	private String URI;
 	
+	/**
+	 * This value is not used in the AM system right now, it is only used in the Conference Track when more than two ontologies are involved in the process.
+	 */
+	private int Index = 0;
+	
+	public int getIndex() {
+		return Index;
+	}
+	public void setIndex(int index) {
+		Index = index;
+	}
 	public String getURI() {
 		return URI;
 	}

@@ -1,5 +1,8 @@
 package am.batchMode;
 
+import java.io.File;
+import java.util.ArrayList;
+
 import am.GlobalStaticVariables;
 import am.application.Core;
 import am.application.mappingEngine.AbstractMatcher;
@@ -7,6 +10,7 @@ import am.application.mappingEngine.AbstractParameters;
 import am.application.mappingEngine.AlignmentSet;
 import am.application.mappingEngine.MatcherFactory;
 import am.application.mappingEngine.MatchersRegistry;
+import am.application.ontology.Ontology;
 import am.application.ontology.ontologyParser.OntoTreeBuilder;
 import am.application.ontology.ontologyParser.TreeBuilder;
 import am.userInterface.OntologyLoadingProgressDialog;
@@ -58,6 +62,10 @@ public abstract class Track {
 		targetBuilder.build();
 		//System.out.println(sourceBuilder.getReport());
 		
+		AbstractMatcher result = matchTwoOntologies(sourceBuilder.getOntology(), targetBuilder.getOntology(), matcher, threshold, sourceRel, targetRel, parameters);
+		return result.getAlignmentSet();
+		
+		/*Modified so in order to have this part of the code in a separate method: matchTwoOntologies()
 		//Set the ontologies in the Core structure which is common to all matchers
 		Core.getInstance().setSourceOntology(sourceBuilder.getOntology());
 		Core.getInstance().setTargetOntology(targetBuilder.getOntology());
@@ -71,8 +79,68 @@ public abstract class Track {
 		currentMatcher.setParam(parameters);
 		currentMatcher.match();
 		System.out.println("Matching method completed in "+currentMatcher.getExecutionTime());
+		
 		return currentMatcher.getAlignmentSet();
+		*/
 		
 	}
+
+	private AbstractMatcher matchTwoOntologies(Ontology sourceOntology,
+			Ontology targetOntology, MatchersRegistry matcher,
+			double threshold, int sourceRel, int targetRel,
+			AbstractParameters parameters) throws Exception {
+		
+		//Set the ontologies in the Core structure which is common to all matchers
+		Core.getInstance().setSourceOntology(sourceOntology);
+		Core.getInstance().setTargetOntology(targetOntology);
+		
+		//Invoke the matcher, any index is fine
+		System.out.println("Running the matching method: "+matcher.getMatcherName());
+		AbstractMatcher currentMatcher = MatcherFactory.getMatcherInstance(matcher, 0);
+		currentMatcher.setThreshold(threshold);
+		currentMatcher.setMaxSourceAlign(sourceRel);
+		currentMatcher.setMaxTargetAlign(targetRel);
+		currentMatcher.setParam(parameters);
+		currentMatcher.match();
+		System.out.println("Matching method completed in "+currentMatcher.getExecutionTime());
+		
+		return currentMatcher;
+	}
+	
+	//compute the alignment between any two ontologies, given their filepath using the specified matcher
+	protected ArrayList<AbstractMatcher> computeMultipleAlignment(File[] ontologyFiles, String languageS, String syntaxS, boolean skip, MatchersRegistry matcher, double threshold, int sourceRel, int targetRel, AbstractParameters parameters) throws Exception{
+		int numOntologies = ontologyFiles.length;
+		int numAlignments = (numOntologies * (numOntologies - 1))/2;
+		System.out.println("The matching process is started between "+numOntologies+" ontologies.\nExpected "+numAlignments+" different sets of mappings.");
+		
+		//LOADING ONTOLOGIES
+		//Ontologies will be both source and target so Ontotype = GlobalstaticVariable.SOURCENODE is irrelevant
+		Ontology[] ontologies = new Ontology[numOntologies];
+		for(int i= 0; i< numOntologies; i++){
+			File f = ontologyFiles[i];
+			OntoTreeBuilder builder = new OntoTreeBuilder(f.getAbsolutePath(), GlobalStaticVariables.SOURCENODE, languageS, syntaxS, skip);
+			builder.build();
+			Ontology o = builder.getOntology();
+			o.setIndex(i);//used to identify the ontology to print the alignment file
+			ontologies[i] = o;
+			//System.out.println(sourceBuilder.getReport());
+		}
+		
+		
+		// compare each ontology to every other ontology
+		ArrayList<AbstractMatcher> finalMatchers = new ArrayList<AbstractMatcher>(numAlignments);
+		for( int i = 0; i < numOntologies - 1; i++ ) {		
+			for( int j = i+1; j < numOntologies; j++ ) {
+				AbstractMatcher a = matchTwoOntologies(ontologies[i], ontologies[j], matcher, threshold, sourceRel, targetRel, parameters);
+				finalMatchers.add(a);
+			}
+		}
+		
+		return finalMatchers;
+	}
+	
+	
+	
+	
 
 }
