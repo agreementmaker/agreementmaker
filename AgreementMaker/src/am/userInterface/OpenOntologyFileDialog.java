@@ -41,6 +41,8 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 	private JList syntaxList, langList;	
 	private JCheckBox skipCheck;
 	private JLabel skipLabel;
+	private JCheckBox noReasonerCheck;
+	private JLabel noReasonerLabel;
 	private UI ui;
 	
 	
@@ -113,6 +115,10 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		skipCheck.setSelected(prefs.getLastSkipNamespace());
 		skipLabel = new JLabel("Skip concepts with different namespace");
 		
+		noReasonerCheck = new JCheckBox();
+		noReasonerCheck.setSelected( prefs.getLastNoReasoner() );
+		noReasonerLabel = new JLabel("Do not use a reasoner");
+		
 		//Make the GroupLayout for this dialog (somewhat complicated, but very flexible)
 		// This Group layout lays the items in relation with eachother.  The horizontal
 		// and vertical groups decide the relation between UI elements.
@@ -138,6 +144,9 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 									.addComponent(skipCheck) 
 									.addComponent(skipLabel))
 							.addGroup(layout.createSequentialGroup()
+									.addComponent(noReasonerCheck) 
+									.addComponent(noReasonerLabel))
+							.addGroup(layout.createSequentialGroup()
 									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED,
 						                     GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 									.addComponent(cancel)		// the buttons are also part of their own groups
@@ -162,6 +171,9 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 							.addGroup(layout.createParallelGroup()
 									.addComponent(skipCheck) 
 									.addComponent(skipLabel))
+							.addGroup(layout.createParallelGroup()
+									.addComponent(noReasonerCheck) 
+									.addComponent(noReasonerLabel))
 							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 									.addComponent(cancel)
 									.addComponent(proceed)
@@ -220,11 +232,11 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 				JOptionPane.showMessageDialog(frame, "Load an ontology file to proceed.");
 			}else{
 				try{
-					ui.openFile(filename, ontoType, syntaxList.getSelectedIndex(), langList.getSelectedIndex(), skipCheck.isSelected());
+					ui.openFile(filename, ontoType, syntaxList.getSelectedIndex(), langList.getSelectedIndex(), skipCheck.isSelected(), noReasonerCheck.isSelected());
 					// once we are done, let's save the syntax and language selection that was made by the user
 					// and save the file used to the recent file list, and also what syntax and language it is
-					prefs.saveOpenDialogListSelection(syntaxList.getSelectedIndex() , langList.getSelectedIndex(), skipCheck.isSelected());
-					prefs.saveRecentFile(filePath.getText(), ontoType, syntaxList.getSelectedIndex(), langList.getSelectedIndex(), skipCheck.isSelected());
+					prefs.saveOpenDialogListSelection(syntaxList.getSelectedIndex() , langList.getSelectedIndex(), skipCheck.isSelected(), noReasonerCheck.isSelected());
+					prefs.saveRecentFile(filePath.getText(), ontoType, syntaxList.getSelectedIndex(), langList.getSelectedIndex(), skipCheck.isSelected(), noReasonerCheck.isSelected());
 					ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
 				
 				}catch(Exception ex){

@@ -30,6 +30,7 @@ public class AppPreferences {
 	private static final String PREF_LASTSYNT = "pref_lastsyntaxused";
 	private static final String PREF_LASTLANG = "pref_lastlanguageused";
 	private static final String PREF_LAST_SKIP_NAMESPACE = "pref_skipnamespace";
+	private static final String PREF_LAST_NO_REASONER = "pref_lastnoreasoner";
 	
 	/** the prefix for the 10 entries for the recent source file */
 	private static final String PREF_RECENTSOURCE = "recentsource_";
@@ -53,6 +54,8 @@ public class AppPreferences {
 	/** key for storing if the user is viewing labels and or localnames in the canvas. */
 	private static final String		PREF_SHOWLOCALNAME = "pref_SHOWLOCALNAME";
 	private static final String		PREF_SHOWLABEL = "pref_SHOWLABEL";
+	
+
 	
 	/**
 	 * Constructor
@@ -177,10 +180,11 @@ public class AppPreferences {
 	 * @param syntaxlist index of selection from the syntax listbox
 	 * @param languagelist index of selection from the language listbox
 	 */
-	public void saveOpenDialogListSelection( int syntaxlist, int languagelist, boolean skip) {
+	public void saveOpenDialogListSelection( int syntaxlist, int languagelist, boolean skip, boolean noReasoner) {
 		appPrefs.putInt(PREF_LASTSYNT, syntaxlist);
 		appPrefs.putInt(PREF_LASTLANG, languagelist);
 		appPrefs.putBoolean(PREF_LAST_SKIP_NAMESPACE, skip);
+		appPrefs.putBoolean(PREF_LAST_NO_REASONER, noReasoner);
 	}
 	
 	/**
@@ -188,9 +192,9 @@ public class AppPreferences {
 	 * @param selectedfile the file selected by the user
 	 * @param onthologyType what type of ontology (source or target ontology)
 	 */
-	public void saveRecentFile( String filename, int ontoType, int syntax, int language, boolean skip ) {		
-		if(ontoType == GlobalStaticVariables.SOURCENODE) saveRecentFile(PREF_RECENTSOURCE, filename, syntax, language,skip);
-		else if(ontoType == GlobalStaticVariables.TARGETNODE) saveRecentFile(PREF_RECENTTARGET, filename, syntax, language, skip);
+	public void saveRecentFile( String filename, int ontoType, int syntax, int language, boolean skip, boolean noReasoner ) {		
+		if(ontoType == GlobalStaticVariables.SOURCENODE) saveRecentFile(PREF_RECENTSOURCE, filename, syntax, language,skip, noReasoner);
+		else if(ontoType == GlobalStaticVariables.TARGETNODE) saveRecentFile(PREF_RECENTTARGET, filename, syntax, language, skip, noReasoner);
 	}
 	
 	
@@ -199,7 +203,7 @@ public class AppPreferences {
 	 * @param keyValues These are the names of the keys under which the file names are saved
 	 * @param selectedfile
 	 */
-	private void saveRecentFile( String keyPrefix,  String filename, int syntax, int language, boolean skip) {
+	private void saveRecentFile( String keyPrefix,  String filename, int syntax, int language, boolean skip, boolean noReasoner) {
 		
 		// we have 10 entries available for saving recent files.
 		// the file that is passed to us, automatically put it at the top of the list.
@@ -214,6 +218,7 @@ public class AppPreferences {
 		int previousSyntax = 0;
 		int previousLanguage = 0;
 		boolean previousSkip = false;
+		boolean previousNoReasoner = false;
 		
 		String currentName;
 		int currentSyntax;
@@ -230,15 +235,16 @@ public class AppPreferences {
 				previousSyntax = getFileSyntax( keyPrefix, i);
 				previousLanguage = getFileLanguage( keyPrefix, i);
 				previousSkip = getSkipNamespace(keyPrefix, i);
+				previousNoReasoner = getNoReasoner( keyPrefix, i);
 				
 				if( previousName.equals(filename) ) { // when comparing strings, use the equals() function
 					// the current file is already at the top of the list
 					// no need to do anything
-					saveFileEntry( keyPrefix, i, filename, syntax, language, skip);
+					saveFileEntry( keyPrefix, i, filename, syntax, language, skip, noReasoner);
 					break;
 				}
 				
-				saveFileEntry( keyPrefix, i, filename, syntax, language, skip);
+				saveFileEntry( keyPrefix, i, filename, syntax, language, skip, noReasoner);
 				
 				continue; // we are done changing the top entry, go on to the next
 				
@@ -253,7 +259,7 @@ public class AppPreferences {
 			if ( currentName.equals("") ) {
 				// we have reached an empty entry, so no need to go any further
 				// save the entry we are bumping down to this empty slot
-				saveFileEntry( keyPrefix, i, previousName, previousSyntax, previousLanguage, previousSkip);
+				saveFileEntry( keyPrefix, i, previousName, previousSyntax, previousLanguage, previousSkip, previousNoReasoner);
 				break;
 			}
 			
@@ -261,14 +267,14 @@ public class AppPreferences {
 				// the file that we put on the top is found at this location
 				// that means we bumped it to the top from this location
 				// just replace this entry with the file we are bumping down, and that's it
-				saveFileEntry( keyPrefix, i, previousName, previousSyntax, previousLanguage, previousSkip);
+				saveFileEntry( keyPrefix, i, previousName, previousSyntax, previousLanguage, previousSkip, previousNoReasoner);
 				break;	
 			}
 			
 			// if we get here, we are still bumping down entries
 			// so let's bump
 			
-			saveFileEntry( keyPrefix, i, previousName, previousSyntax, previousLanguage, previousSkip);
+			saveFileEntry( keyPrefix, i, previousName, previousSyntax, previousLanguage, previousSkip, previousNoReasoner);
 			
 			previousName = currentName;
 			previousSyntax = currentSyntax;
@@ -291,12 +297,14 @@ public class AppPreferences {
 	 * @param filename
 	 * @param syntax
 	 * @param language
+	 * @param noReasoner
 	 */
-	private void saveFileEntry( String prefix, int position, String filename, int syntax, int language, boolean skip) {
+	private void saveFileEntry( String prefix, int position, String filename, int syntax, int language, boolean skip, boolean noReasoner) {
 		appPrefs.put( prefix + "name" + position, filename); 
 		appPrefs.putInt( prefix + "syntax" + position , syntax); 
 		appPrefs.putInt( prefix + "language" + position, language); 
-		appPrefs.putBoolean( prefix + "skip" + position, skip); 
+		appPrefs.putBoolean( prefix + "skip" + position, skip);
+		appPrefs.putBoolean( prefix + "noreasoner" + position, noReasoner);
 	}
 	
 	/**
@@ -343,19 +351,20 @@ public class AppPreferences {
 			int syntax = getFileSyntax(prefix, i); // get the syntax of the current file
 			int language = getFileLanguage(prefix, i); // get the language of the current file
 			boolean skip = getSkipNamespace(prefix, i); // get the language of the current file
+			boolean noReasoner = getNoReasoner(prefix, i); // get whether we want to use a reasoner or not
 			File testfile = new File(filename);
 			
 			if( !testfile.exists() ) {
 				// the file does not exist, so clear this entry
-				saveFileEntry(prefix, i, "", 0, 0, false);
+				saveFileEntry(prefix, i, "", 0, 0, false, false);
 			} 
 			else if( j < i ) {
 				// the file exists
 				
 				// j is less than i, which means we have removed a file previously
 				// move the current entry up to where j is pointing
-				saveFileEntry(prefix, j, filename, syntax, language, skip);
-				saveFileEntry(prefix, i, "", 0, 0, false); // clear the entry we moved up
+				saveFileEntry(prefix, j, filename, syntax, language, skip, noReasoner);
+				saveFileEntry(prefix, i, "", 0, 0, false, false); // clear the entry we moved up
 				
 				j++;
 				
@@ -368,7 +377,7 @@ public class AppPreferences {
 		
 		// clear any entries that are beyond j
 		for( ; j <= 9; j++) {
-			saveFileEntry(prefix, j, "", 0, 0, false);
+			saveFileEntry(prefix, j, "", 0, 0, false, false);
 		}
 		
 	}
@@ -464,12 +473,28 @@ public class AppPreferences {
 		return appPrefs.getBoolean(prefix + "skip" + position, false);
 	}
 	
+	public boolean getLastNoReasoner() {
+		boolean last = appPrefs.getBoolean(PREF_LAST_NO_REASONER, false);
+		return last;
+	}
+	public boolean getNoReasoner( String prefix, int position ) {
+		return appPrefs.getBoolean(prefix + "noreasoner" + position, false);
+	}
+	
 	public boolean getRecentSourceSkipNamespace( int position) {
 		return appPrefs.getBoolean(PREF_RECENTSOURCE + "skip" + position, false);
 	}
 	
+	public boolean getRecentSourceNoReasoner( int position) {
+		return appPrefs.getBoolean(PREF_RECENTSOURCE + "noreasoner" + position, false);
+	}
+	
 	public boolean getRecentTargetSkipNamespace( int position) {
 		return appPrefs.getBoolean(PREF_RECENTTARGET + "skip" + position, false);
+	}
+	
+	public boolean getRecentTargetNoReasoner( int position) {
+		return appPrefs.getBoolean(PREF_RECENTTARGET + "noreasoner" + position, false);
 	}
 	
 	/**
@@ -537,5 +562,6 @@ public class AppPreferences {
 		return appPrefs.getBoolean( "PREF_" + setting.prefKey, setting.defBool );
 		
 	}
+
 	
 }

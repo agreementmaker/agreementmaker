@@ -190,7 +190,7 @@ public class UI {
 	 * 
 	 * */
 
-	public void openFile( String filename, int ontoType, int syntax, int language, boolean skip) {
+	public void openFile( String filename, int ontoType, int syntax, int language, boolean skip, boolean noReasoner) {
 		try{
 			JPanel jPanel = null;
 			System.out.println("opening file");
@@ -204,7 +204,7 @@ public class UI {
 			getUISplitPane().setRightComponent(jPanel);
 			setDescriptionPanel(jPanel);
 			//This function manage the whole process of loading, parsing the ontology and building data structures: Ontology to be set in the Core and Tree and to be set in the canvas
-			TreeBuilder t = TreeBuilder.buildTreeBuilder(filename, ontoType, language, syntax, skip);
+			TreeBuilder t = TreeBuilder.buildTreeBuilder(filename, ontoType, language, syntax, skip, noReasoner);
 			
 			//the treebuilder is initialized now we have to execute it in a separate thread.
 			// The dialog will start the treebuilder in a background thread, 
