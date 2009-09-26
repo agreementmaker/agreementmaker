@@ -11,7 +11,6 @@ public class TrackDispatcher {
 	public final static String BENCHMARK = "benchmarks";
 	public final static String ANATOMY = "anatomy";
 	public final static String CONFERENCE = "conference";
-	public final static String CONFERENCE_FAKE = "conferenceFake";
 	
 	//decides which track has to be launched
 	public static void dispatchTrack(String track, String subTrack){
@@ -33,11 +32,6 @@ public class TrackDispatcher {
 			else if(track.equalsIgnoreCase(CONFERENCE)){
 				//TODO
 				ConferenceTrack ct = new ConferenceTrack(subTrack);
-				ct.launch();
-			}
-			else if(track.equalsIgnoreCase(CONFERENCE_FAKE)){
-				//TODO
-				FakeConferenceTrack ct = new FakeConferenceTrack(subTrack);
 				ct.launch();
 			}
 			else{
