@@ -20,7 +20,8 @@ import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.vocabulary.OWL;
-
+import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 /**
  * <p>Title: </p>
  *
@@ -36,6 +37,12 @@ import com.hp.hpl.jena.vocabulary.OWL;
 public class OntoTreeBuilder extends TreeBuilder{
 	
 	
+	// Profile definitions. Used in loading ontologies in different ways
+	public enum Profile {
+		defaultProfile,  // Pellet reasoner
+		noReasoner  // no reasoner at all.
+	}
+
 	//instance variables
 
 	private OntModel model;
@@ -74,6 +81,16 @@ public class OntoTreeBuilder extends TreeBuilder{
 	
 	
 	
+	public void build( OntoTreeBuilder.Profile prof ){
+		buildTree( prof );//Instantiated in the subclasses
+		report = "Ontology loaded succesfully\n\n";
+        report += "Total number of classes: "+ontology.getClassesList().size()+"\n";
+        report += "Total number of properties: "+ontology.getPropertiesList().size()+"\n\n";
+        report += "Select the 'Ontology Details' function in the 'Ontology' menu\nfor additional informations.\n";
+        report += "The 'Hierarchy Visualization' can be disabled from the 'View' menu\nto improve system performances.";
+	}
+	
+	
 	/**
 	 * Create a root node for the given concepts and add child nodes for
 	 * the subclasses. Return null for owl:Nothing 
@@ -82,6 +99,29 @@ public class OntoTreeBuilder extends TreeBuilder{
 	 * @return
 	 */
 	protected void buildTree() {
+		buildTree( OntoTreeBuilder.Profile.defaultProfile );
+	}
+	
+	// this function dispatches functions depending on the ontology loading profile selected.
+	protected void buildTree( OntoTreeBuilder.Profile prof ) {
+		
+		switch ( prof ) {
+		
+		case defaultProfile:
+			buildTreeDefault();
+			break;
+		case noReasoner:
+			buildTreeNoReasoner();
+			break;
+		default:
+			buildTreeDefault();
+			break;
+		}		
+
+	}
+	
+	
+	protected void buildTreeDefault() {
 		System.out.print("Reading Model...");
 		model = ModelFactory.createOntologyModel( PelletReasonerFactory.THE_SPEC );
 		//TODO: Figure out if the 2nd arg in next fn call should be null or someother URI
@@ -138,6 +178,205 @@ public class OntoTreeBuilder extends TreeBuilder{
         Vertex propertyRoot = createPropertyTree();
         treeRoot.add(propertyRoot);
         ontology.setPropertiesTree( propertyRoot);
+	}
+	
+	protected void buildTreeNoReasoner() {
+		System.out.print("OntoTreeBuilder: Reading Model...");
+		
+		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM );
+		model.read( "file:"+ontology.getFilename(), null, ontology.getFormat() );
+		
+		System.out.println(" done.");
+		
+		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
+		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
+			ns = model.getNsPrefixMap().get("").toString();
+			ontology.setURI(ns);
+		}
+		catch(Exception e) {
+			skipOtherNamespaces = false;
+			ontology.setURI("");
+		}
+		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
+
+		
+		
+		//Preparing model
+		model.prepare();		
+		
+		ontology.setModel(model);
+		
+		// Use OntClass for convenience
+        owlThing = model.getOntClass( OWL.Thing.getURI() );
+        OntClass owlNothing = model.getOntClass( OWL.Nothing.getURI() );
+       
+        // Find all unsatisfiable concepts, i.e classes equivalent
+        // to owl:Nothing. we are not considering this nodes for the alignment so we are not keeping this
+        unsatConcepts = collect( owlNothing.listEquivalentClasses() );
+        
+        // create a tree starting with owl:Thing node as the root
+        //if a node has two fathers (is possible in OWL hierarchy) it would be processed twice
+        //but we don't want to add two times the node to the hierarchy, so processedSubs won't be processed again.
+        processedSubs = new HashMap<OntResource, Node>();
+        
+
+        Vertex classRoot = buildClassTree();
+        Vertex propertyRoot = createPropertyTree();
+        
+        //The root of the tree is a fake vertex node, just containing the name of the ontology,
+        treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(), model, ontology.getSourceOrTarget() );
+        treeCount++;
+
+        treeRoot.add(classRoot);
+        ontology.setClassesTree( classRoot);
+        
+        treeRoot.add(propertyRoot);
+        ontology.setPropertiesTree( propertyRoot);
+	}
+	
+	/**
+	 * This method will build the class tree by iterating through all the classes in the ontology and
+	 * filling in their parents.
+	 * 
+	 * 
+	 * 
+	 * If a class has no parents, then the root of the tree will be its parent.
+	 * 
+	 * (This method may be hard to understand. -cos)
+	 * @return
+	 */
+	protected Vertex buildClassTree() {
+		
+		HashMap<OntClass, Vertex> classesMap = new HashMap<OntClass, Vertex>();  // this maps between ontology classes and Vertices created for the each class
+		ExtendedIterator orphansItr = model.listClasses();  // right now the classes have no parents, so they are orphans.
+		
+		while( orphansItr.hasNext() ) { // iterate through all the classes
+			
+			OntClass currentOrphan = (OntClass) orphansItr.next();  // the current class we are looking at
+			
+			if( !currentOrphan.isAnon() ) {  // make sure this is a real class  (anoynymous classes are not real classes)
+				createFosterHome( currentOrphan, classesMap );  // assign orphan classes to parent parent classes
+			}
+		}
+		
+		// this is the root node of the class tree (think of it like owl:Thing)
+		Vertex root = new Vertex(CLASSROOTNAME, CLASSROOTNAME, model, ontology.getSourceOrTarget());		
+		treeCount++;  // we created a new vertex, increment treeCount
+
+		// we may have classes that still don't have a parent. these orphans will be adopted by root.
+		
+		adoptRemainingOrphans( root, classesMap );
+		
+		return root;
+	}
+	
+
+	private void adoptRemainingOrphans(Vertex root, HashMap<OntClass, Vertex> classesMap) {
+
+		/*  // Alternative way of iterating through the classes (via the classesMap that was created).
+		 *   
+		Set< Entry<OntClass, Vertex>> classesSet = classesMap.entrySet();
+		Iterator<Entry<OntClass, Vertex>> classesItr = classesSet.iterator();
+		
+		while( classesItr.hasNext() ) {
+			
+		}
+		*/
+		
+		// We will just iterate through the classes again, and find any remaining orphans
+		ExtendedIterator classesItr = model.listClasses();
+		
+		while( classesItr.hasNext() ) {
+			OntClass currentClass = (OntClass) classesItr.next();
+			if( !currentClass.isAnon() ) {
+				if( classesMap.containsKey(currentClass) ) {
+					Vertex currentVertex = classesMap.get(currentClass);
+					
+					if( currentVertex.getParent() == null ) {
+						// this vertex has no parent, that means root needs to adopt it
+						root.add( currentVertex );
+						System.out.println( "root: " + root.getName() + " <-- " + currentVertex.getName() );
+					}
+					
+				}
+				else {
+					// we should never get here
+					// if we do, it means we _somehow_ missed a class during our first iteration in buildClassTree();
+					System.err.println("Assertion failed: listClasses() returning different classes between calls.");
+				}
+				 
+			}
+			
+		}
+		
+	}
+
+
+
+	private void createFosterHome( OntClass currentOrphan, HashMap<OntClass, Vertex> classesMap ) {
+		
+		Vertex currentVertex = getVertexFromClass( classesMap, currentOrphan );
+		
+		ExtendedIterator parentsItr = currentOrphan.listSuperClasses( true );  // iterator of the current class' parents
+		
+		while( parentsItr.hasNext() ) {
+			
+			OntClass parentClass = (OntClass) parentsItr.next();
+
+			if( !parentClass.isAnon() && !parentClass.equals(owlThing) ) {
+
+				Vertex parentVertex = getVertexFromClass(classesMap, parentClass);  // create a new Vertex object or use an existing one.
+				parentVertex.insert( currentVertex, parentVertex.getChildCount() );  // create the parent link between the parent and the child
+				System.out.println( "fH: " + parentVertex.getName() + " <-- " + currentVertex.getName() );
+
+			} 
+/*			else {
+				// the parent of this class is anonymous
+				// we have to look at the parent of the anonymous class
+				OntClass ancestorClass = parentClass.getSuperClass();
+				if( ancestorClass == null ) {
+					// current has has no real parents
+					break;
+				} else if( ancestorClass.isAnon() ) {
+					// the ancestor is anonymous, look at the parent of the ancestor
+					parentClass = ancestorClass;
+					System.out.println("--- Going UP: "+ parentClass.getURI());
+					continue; 
+				} else if( ancestorClass.isDifferentFrom( owlThing )){
+					// the ancestor is REAL
+					
+					parentVertex = getVertexFromClass(classesMap, ancestorClass);
+					parentVertex.add( currentVertex  );
+					System.out.println( parentVertex.getName() + " <-- " + currentVertex.getName() );
+					break;
+				}
+				
+			}
+		*/
+		}
+		
+	}
+
+	/**
+	 * helper Function for buildClassesTree()
+	 * @param classesMap
+	 * @param currentClass
+	 * @return
+	 */
+	private Vertex getVertexFromClass( HashMap<OntClass, Vertex> classesMap, OntClass currentClass ) {
+		Vertex currentVertex = null;
+		
+		if( classesMap.containsKey( currentClass ) ) {
+			// we already have a Vertex for the currentClass (because it is the parent of some node)
+			currentVertex = classesMap.get( currentClass );
+		} else {
+			// we don't have a Vertex for the current class, create one;
+			currentVertex = createNodeAndVertex( currentClass, true, ontology.getSourceOrTarget());
+			treeCount++;  // we created a new vertex, increment treeCount
+			classesMap.put(currentClass, currentVertex);
+		}
+		
+		return currentVertex;
 	}
 	
     public Set collect( Iterator i ) {
