@@ -17,7 +17,7 @@ import am.userInterface.vertex.Vertex;
 public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 
 	// instance variables 
-	protected int treeCount;
+	protected int treeCount;  // this variable is used in the Canvas visualization.  ( it is the total number of Vertices in the Classes and Properties trees )
 	protected Vertex treeRoot;
 	protected Ontology ontology;  
 	protected int uniqueKey = 0;
