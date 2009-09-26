@@ -295,7 +295,6 @@ public class OntoTreeBuilder extends TreeBuilder{
 					if( currentVertex.getParent() == null ) {
 						// this vertex has no parent, that means root needs to adopt it
 						root.add( currentVertex );
-						System.out.println( "root: " + root.getName() + " <-- " + currentVertex.getName() );
 					}
 					
 				}
@@ -327,32 +326,8 @@ public class OntoTreeBuilder extends TreeBuilder{
 
 				Vertex parentVertex = getVertexFromClass(classesMap, parentClass);  // create a new Vertex object or use an existing one.
 				parentVertex.insert( currentVertex, parentVertex.getChildCount() );  // create the parent link between the parent and the child
-				System.out.println( "fH: " + parentVertex.getName() + " <-- " + currentVertex.getName() );
 
 			} 
-/*			else {
-				// the parent of this class is anonymous
-				// we have to look at the parent of the anonymous class
-				OntClass ancestorClass = parentClass.getSuperClass();
-				if( ancestorClass == null ) {
-					// current has has no real parents
-					break;
-				} else if( ancestorClass.isAnon() ) {
-					// the ancestor is anonymous, look at the parent of the ancestor
-					parentClass = ancestorClass;
-					System.out.println("--- Going UP: "+ parentClass.getURI());
-					continue; 
-				} else if( ancestorClass.isDifferentFrom( owlThing )){
-					// the ancestor is REAL
-					
-					parentVertex = getVertexFromClass(classesMap, ancestorClass);
-					parentVertex.add( currentVertex  );
-					System.out.println( parentVertex.getName() + " <-- " + currentVertex.getName() );
-					break;
-				}
-				
-			}
-		*/
 		}
 		
 	}
