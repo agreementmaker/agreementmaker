@@ -60,7 +60,7 @@ public class ConferenceTrack extends Track {
 		String outputFileDir;
 		long startTime = System.nanoTime()/1000000;
 
-		matcherList = computeMultipleAlignment(ontologyFiles, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param);
+		matcherList = computeMultipleAlignment(ontologyFiles, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param, OntoTreeBuilder.Profile.noReasoner);
 		long endTime = System.nanoTime()/1000000;
 		long totTime = endTime - startTime;
 		System.out.println("Total execution time in h.m.s.ms: "+Utility.getFormattedTime(totTime));
