@@ -37,11 +37,11 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 public class OntoTreeBuilder extends TreeBuilder{
 	
 	
-	// Profile definitions. Used in loading ontologies in different ways
-	public enum Profile {
-		defaultProfile,  // Pellet reasoner
-		noReasoner  // no reasoner at all.
-	}
+		// Profile definitions. Used in loading ontologies in different ways
+		public enum Profile {
+			defaultProfile,  // Pellet reasoner
+			noReasoner  // no reasoner at all.
+		}
 
 	//instance variables
 	private boolean noReasoner = false;
@@ -338,7 +338,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 			if( !parentClass.isAnon() && !parentClass.equals(owlThing) ) {
 
 				Vertex parentVertex = getVertexFromClass(classesMap, parentClass);  // create a new Vertex object or use an existing one.
-				parentVertex.insert( currentVertex, parentVertex.getChildCount() );  // create the parent link between the parent and the child
+				parentVertex.add( currentVertex );  // create the parent link between the parent and the child
 
 			} 
 		}
