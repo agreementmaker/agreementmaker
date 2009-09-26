@@ -39,7 +39,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
         System.out.println(filename);
 	}
 	
-	public static TreeBuilder buildTreeBuilder(String fileName, int ontoType, int langIndex, int syntaxIndex, boolean skip){
+	public static TreeBuilder buildTreeBuilder(String fileName, int ontoType, int langIndex, int syntaxIndex, boolean skip, boolean noReasoner){
 		
 		
 		String languageS = GlobalStaticVariables.getLanguageString(langIndex);
@@ -50,7 +50,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		}
 		else if(langIndex == GlobalStaticVariables.RDFSFILE)
 			treeBuilder = new RdfsTreeBuilder(fileName, ontoType, languageS, syntaxS, skip);
-		else treeBuilder = new OntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip);
+		else treeBuilder = new OntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip, noReasoner);
 		
 		return treeBuilder;
 	}

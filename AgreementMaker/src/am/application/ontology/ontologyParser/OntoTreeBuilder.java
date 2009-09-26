@@ -44,7 +44,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 	}
 
 	//instance variables
-
+	private boolean noReasoner = false;
 	private OntModel model;
 	private Set unsatConcepts;  
 	private HashMap<OntResource,Node> processedSubs;
@@ -73,12 +73,20 @@ public class OntoTreeBuilder extends TreeBuilder{
 	 * @param syntaxIndex
 	 * @param sourceOrTarget
 	 */
-	public OntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip) {
+	public OntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip, boolean reas) {
 		super(fileName, sourceOrTarget, language, format); 
 		skipOtherNamespaces = skip;
+		noReasoner = reas;
 		treeCount = 0;
 	}
 	
+	// this function is here for legacy purposes, needs to be removed
+	public OntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip ) {
+		super(fileName, sourceOrTarget, language, format); 
+		skipOtherNamespaces = skip;
+		noReasoner = false;
+		treeCount = 0;
+	}
 	
 	
 	public void build( OntoTreeBuilder.Profile prof ){
@@ -99,7 +107,12 @@ public class OntoTreeBuilder extends TreeBuilder{
 	 * @return
 	 */
 	protected void buildTree() {
-		buildTree( OntoTreeBuilder.Profile.defaultProfile );
+		if( noReasoner ) {
+			buildTree( OntoTreeBuilder.Profile.noReasoner );
+		} else {
+			buildTree( OntoTreeBuilder.Profile.defaultProfile );
+		}
+		
 	}
 	
 	// this function dispatches functions depending on the ontology loading profile selected.
