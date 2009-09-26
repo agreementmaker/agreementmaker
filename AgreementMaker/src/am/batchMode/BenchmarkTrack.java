@@ -15,9 +15,13 @@ import am.output.AlignmentOutput;
 
 public class BenchmarkTrack extends Track{
 	
+	
+	//Needs to be at most 8 digit lower case
+	//For Anatomy, it is 6 digits
+	//We went for "amaker" in our submission.
+	public final static String AM_NAME = "amaker";
+	
 	//DIRECTORIES
-	public final static String AM_NAME = "amaker";	//Needs to be at most 8 digit lower case
-													//For Anatomy, it is 6 digits
 	public final static String OAEI_DIR = "./OAEI09/";
 	public final static String OAEI_OUTPUT_DIR = OAEI_DIR+AM_NAME+"/";
 	public final static String TRACK_DIR = "benchmarks/";
@@ -29,8 +33,9 @@ public class BenchmarkTrack extends Track{
 	public final static String SOURCE_ONTOLOGY = TRACK_INPUT_DIR+"101/"+ONTO_NAME;	
 	
 	public final static String[] TARGET_ONTOLOGIES = {
-		//DOWNLOADED from the ZIP file in the OAEI2009 benchmarks web site
-		//Some cases opened and saved as in Protege, so that they can be loaded.
+		//DOWNLOADED in a ZIP file in the OAEI2009 benchmarks web site
+		//Some cases opened and "saved as" in Protege, so that they can be loaded without Pellet error.
+		//Those cases marked with (*).
 		"101",
 		"102",
 		"103",
@@ -45,7 +50,7 @@ public class BenchmarkTrack extends Track{
 		"202-4",
 		"202-6",
 		"202-8",
-		"203",//in the website it's written that it doesn't exist, but it does in the zip file.
+		"203",//On the web site it's written that it doesn't exist, but it does in the zip file.
 		"204",
 		"205",
 		"206",
@@ -56,19 +61,19 @@ public class BenchmarkTrack extends Track{
 		"221",
 		"222",
 		"223",
-		"224",//TO CHECK I don't know why but it doesn't want to open this
+		"224",//*
 		"225",
-		//"226",  doesn't exist in the track yet
-		//"227",  doesn't exist in the track yet
+		//"226",//Doesn't exist in the track yet
+		//"227",//Doesn't exist in the track yet
 		"228",
-		//"229",  //doesn't exist in the track yet
+		//"229",//Doesn't exist in the track yet
 		"230",
-		"231",  //in the website it's written that it doesn't exist, but it does in the zip file.
-		"232",//TO CHECK I don't why but it doesn't want to open this
+		"231",//In the web site it's written that it doesn't exist, but it does in the zip file.
+		"232",//*
 		"233",
 		"236",
-		"237",//TO CHECK I don't know why but it doesn't want to open this
-		"238",//TO CHECK I don't know why but it doesn't want to open this
+		"237",//*
+		"238",//*
 		"239",
 		"240",
 		"241",
@@ -79,11 +84,11 @@ public class BenchmarkTrack extends Track{
 		"248-4",
 		"248-6",
 		"248-8",
-		"249",//TO CHECK I don't know why but it doesn't want to open this
-		"249-2",//
-		"249-4",//
-		"249-6",//
-		"249-8",//
+		"249",//*
+		"249-2",//*
+		"249-4",//*
+		"249-6",//*
+		"249-8",//*
 		"250",
 		"250-2",
 		"250-4",
@@ -99,11 +104,11 @@ public class BenchmarkTrack extends Track{
 		"252-4",
 		"252-6",
 		"252-8",
-		"253",//TO CHECK I don't know why but it doesn't want to open this
-		"253-2",//
-		"253-4",//
-		"253-6",//
-		"253-8",//
+		"253",	//*
+		"253-2",//*
+		"253-4",//*
+		"253-6",//*
+		"253-8",//*
 		"254",
 		"254-2",
 		"254-4",
@@ -114,16 +119,16 @@ public class BenchmarkTrack extends Track{
 		"257-4",
 		"257-6",
 		"257-8",
-		"258",//TO CHECK I don't know why but it doesn't want to open this
-		"258-2",//
-		"258-4",//
-		"258-6",//
-		"258-8",//
-		"259",//TO CHECK  I don't know why but it doesn't want to open this
-		"259-2",//
-		"259-4",//
-		"259-6",//
-		"259-8",//
+		"258",	//*
+		"258-2",//*
+		"258-4",//*
+		"258-6",//*
+		"258-8",//*
+		"259",	//*
+		"259-2",//*
+		"259-4",//*
+		"259-6",//*
+		"259-8",//*
 		"260",
 		"260-2",
 		"260-4",

@@ -72,15 +72,15 @@ public class AlignmentOutput
     	if(uri1.equals("")){
     		Resource r = alignmentSet.getAlignment(0).getEntity1().getResource();
     		uri1 = r.getURI();
-    		uri1 = uri1.substring(0, uri1.indexOf("#"));
+    		uri1 = uri1.substring(0, uri1.indexOf("#")+1);
     	}
     	if(uri2.equals("")){
     		Resource r = alignmentSet.getAlignment(0).getEntity2().getResource();
     		uri2 = r.getURI();
-    		uri2 = uri2.substring(0, uri2.indexOf("#"));
-    		if(uri2.equalsIgnoreCase("http://www.aifb.uni-karlsruhe.de/ontology"))
+    		uri2 = uri2.substring(0, uri2.indexOf("#")+1);
+    		if(uri2.equalsIgnoreCase("http://www.aifb.uni-karlsruhe.de/ontology#"))
     		{
-    			onto2 = "http://oaei.ontologymatching.org/2009/benchmarks/303/onto.rdf";
+    			onto2 = "http://oaei.ontologymatching.org/2009/benchmarks/303/onto.rdf#";
     		}
     	}
         String temp = "<Alignment>\n" 
