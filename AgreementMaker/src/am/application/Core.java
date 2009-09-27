@@ -83,8 +83,14 @@ public class Core {
 	public AbstractMatcher getMatcherInstance( MatchersRegistry matcher ) {
 	
 		for( int i = 0; i < matcherInstances.size(); i++ ) {
+			String m1 = matcherInstances.get(i).getName().getMatcherClass();
+			String m2 = matcher.getMatcherClass();
+			System.out.println("m1: " + m1);
+			System.out.println("m2: " + m2);
+			System.out.println( m1.equals(m2) );
+			System.out.println( m1 == m2 );
 			
-			if( matcherInstances.get(i).getClass().equals( matcher.getClass() ) ) {
+			if( m1.equals(m2)  ) {
 				return matcherInstances.get(i);
 			}
 			

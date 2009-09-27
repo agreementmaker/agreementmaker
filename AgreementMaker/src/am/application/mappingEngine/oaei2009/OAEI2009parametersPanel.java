@@ -45,7 +45,7 @@ public class OAEI2009parametersPanel extends AbstractMatcherParametersPanel {
 		
 		this.setPreferredSize(new Dimension(350, 175) );
 		
-		String[] tracks = {OAEI2009parameters.BENCHMARKS, OAEI2009parameters.ANATOMY, OAEI2009parameters.ANATOMY_PRA, OAEI2009parameters.CONFERENCE, OAEI2009parameters.WordnetNoUMLS, OAEI2009parameters.BENCHMARKS_303_PRA};
+		String[] tracks = {OAEI2009parameters.BENCHMARKS, OAEI2009parameters.ANATOMY, OAEI2009parameters.ANATOMY_PRA, OAEI2009parameters.ANATOMY_PRI, OAEI2009parameters.CONFERENCE, OAEI2009parameters.WordnetNoUMLS, OAEI2009parameters.BENCHMARKS_303_PRA};
 		trackCombo = new JComboBox(tracks);		
 		trackCombo.setAlignmentX((float) 0.5);
 		
