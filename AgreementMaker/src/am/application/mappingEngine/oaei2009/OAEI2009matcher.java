@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import am.Utility;
+import am.application.Core;
 import am.application.mappingEngine.AbstractMatcher;
 import am.application.mappingEngine.AbstractMatcherParametersPanel;
 import am.application.mappingEngine.Alignment;
@@ -13,6 +14,8 @@ import am.application.mappingEngine.MatchersRegistry;
 import am.application.mappingEngine.Combination.CombinationMatcher;
 import am.application.mappingEngine.Combination.CombinationParameters;
 import am.application.mappingEngine.Combination.CombinationParametersPanel;
+import am.application.mappingEngine.PRAMatcher.PRAMatcher;
+import am.application.mappingEngine.PRAMatcher.PRAMatcher2;
 import am.application.mappingEngine.StringUtil.ISub;
 import am.application.mappingEngine.StringUtil.Normalizer;
 import am.application.mappingEngine.StringUtil.StringMetrics;
@@ -24,6 +27,7 @@ import am.application.mappingEngine.multiWords.MultiWordsParameters;
 import am.application.mappingEngine.multiWords.MultiWordsParametersPanel;
 import am.application.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.application.mappingEngine.parametricStringMatcher.ParametricStringParametersPanel;
+import am.application.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.application.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.application.ontology.Node;
 
@@ -72,21 +76,70 @@ public class OAEI2009matcher extends AbstractMatcher {
     	
     	//FIRST LAYER: BSM PSM and VMM
     	//BSM
-    	System.out.println("Running BSM");
-    	long startime = System.nanoTime()/measure;
-    	AbstractMatcher bsm = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity, 0);
-    	bsm.setThreshold(threshold);
-    	bsm.setMaxSourceAlign(maxSourceAlign);
-    	bsm.setMaxTargetAlign(maxTargetAlign);
-    	BaseSimilarityParameters bsmp = new BaseSimilarityParameters();
-    	bsmp.initForOAEI2009();
-    	bsm.setParam(bsmp);
-    	//bsm.setPerformSelection(false);
-		bsm.match();
-    	long endtime = System.nanoTime()/measure;
-    	long time = (endtime-startime);
-		System.out.println("BSM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
-    	
+		
+		long startime = 0, endtime = 0, time = 0;
+		AbstractMatcher pra = null;
+		
+		
+		if( parameters.trackName == OAEI2009parameters.ANATOMY_PRA ) {
+			// We are running anatomy with PRA.  Run PRA instead of BSM.
+			//AbstractMatcher refAlign = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			Core core = Core.getInstance();
+			ReferenceAlignmentMatcher myMatcher = (ReferenceAlignmentMatcher)core.getMatcherInstance( MatchersRegistry.ImportAlignment );
+			if( myMatcher == null ) {
+				// we are running from the command line, we have to load the partial reference file.
+				
+				ReferenceAlignmentParameters par = new ReferenceAlignmentParameters();
+		    	par.fileName = parameters.partialReferenceFile;
+		    	par.format = parameters.format;
+		    	
+		    	
+				ReferenceAlignmentMatcher refAlign = (ReferenceAlignmentMatcher) MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+				refAlign.setParam(par);
+				refAlign.match();
+				
+				myMatcher = refAlign;
+			}
+			
+	    	System.out.println("Running PRA.");
+	    	startime = System.nanoTime()/measure;
+	    	//AbstractMatcher pra = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity, 0);
+	    	pra = MatcherFactory.getMatcherInstance(MatchersRegistry.PRAMatcher, 0);
+	    	pra.getInputMatchers().add(myMatcher);
+	    	pra.setThreshold(threshold);
+	    	pra.setMaxSourceAlign(maxSourceAlign);
+	    	pra.setMaxTargetAlign(maxTargetAlign);
+	    	BaseSimilarityParameters bsmp = new BaseSimilarityParameters();
+	    	bsmp.initForOAEI2009();
+	    	pra.setParam(bsmp);
+	    	//bsm.setPerformSelection(false);
+			pra.match();
+	    	endtime = System.nanoTime()/measure;
+	    	time = (endtime-startime);
+			System.out.println("PRAMatcher completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
+	    	
+
+		} else {
+			// We are NOT running Anatomy with PRA.  Run BSM.
+	
+			System.out.println("Running BSM");
+	    	startime = System.nanoTime()/measure;
+	    	pra = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity, 0);
+	    	pra.setThreshold(threshold);
+	    	pra.setMaxSourceAlign(maxSourceAlign);
+	    	pra.setMaxTargetAlign(maxTargetAlign);
+	    	BaseSimilarityParameters bsmp = new BaseSimilarityParameters();
+	    	bsmp.initForOAEI2009();
+	    	pra.setParam(bsmp);
+	    	//bsm.setPerformSelection(false);
+			pra.match();
+	    	endtime = System.nanoTime()/measure;
+	    	time = (endtime-startime);
+			System.out.println("BSM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
+	    	
+
+		}
+		
 		//PSM
     	System.out.println("Running PSM");
     	startime = System.nanoTime()/measure;
@@ -128,7 +181,7 @@ public class OAEI2009matcher extends AbstractMatcher {
     	AbstractMatcher lwc = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 3);
     	lwc.getInputMatchers().add(psm);
     	lwc.getInputMatchers().add(vmm);
-    	lwc.getInputMatchers().add(bsm);
+    	lwc.getInputMatchers().add(pra);
     	lwc.setThreshold(threshold);
     	lwc.setMaxSourceAlign(maxSourceAlign);
     	lwc.setMaxTargetAlign(maxTargetAlign);
@@ -201,10 +254,9 @@ public class OAEI2009matcher extends AbstractMatcher {
 			}
 		}
 		
-		
-		if(!(parameters.partialReferenceFile.equals("")) && !(parameters.format.equals(""))){
-			System.out.println("Partial reference file name: "+parameters.partialReferenceFile);
-			System.out.println("format: "+parameters.format);
+		System.out.println("name: "+parameters.partialReferenceFile);
+		System.out.println("format: "+parameters.format);
+		if( parameters.trackName == OAEI2009parameters.ANATOMY_PRI ){
 	    	startime = System.nanoTime()/measure;
 	    	AbstractMatcher praIntegration = MatcherFactory.getMatcherInstance(MatchersRegistry.PRAintegration, 0);
 	    	praIntegration.getInputMatchers().add(lastLayer);
@@ -221,6 +273,20 @@ public class OAEI2009matcher extends AbstractMatcher {
 	    	time = (endtime-startime);
 			System.out.println("PRA integration completed in (h.m.s.ms) "+Utility.getFormattedTime(time));	
 			lastLayer = praIntegration;
+		}
+		else if( parameters.trackName == OAEI2009parameters.ANATOMY_PRA ) {
+			PRAMatcher2 pra2 = (PRAMatcher2) MatcherFactory.getMatcherInstance(MatchersRegistry.PRAMatcher2, 0);
+			pra2.addInputMatcher(lastLayer);
+			pra2.addInputMatcher(pra);
+			
+			pra2.setThreshold(threshold);
+			pra2.setMaxSourceAlign(maxSourceAlign);
+			pra2.setMaxTargetAlign(maxTargetAlign);
+			
+			pra2.match();
+			
+			lastLayer = pra2;
+			
 		}
 		
 		classesMatrix = lastLayer.getClassesMatrix();
