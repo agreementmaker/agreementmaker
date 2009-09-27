@@ -135,6 +135,7 @@ public class Alignment
 		//relation may be added to this definition 
 		//map can be replaced with string except empty string
 		//this method is used in the PRAintegrationMatcher
+		//and in the conference conflict resolution.
 		return (entity1.getIndex()+"map"+entity2.getIndex()).hashCode();
 	}
 	
@@ -149,5 +150,11 @@ public class Alignment
 	        }
 		}
 		return false;
+	}
+	
+	public int getSourceKey(){
+		//used in the Conflict resulotion method of the conference track
+		//it is based on the idea that in a 1-1 matching a mapping is identified by the sourcenode
+		return getEntity1().getIndex();
 	}
 }
