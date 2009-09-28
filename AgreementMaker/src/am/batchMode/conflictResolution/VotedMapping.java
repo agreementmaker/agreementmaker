@@ -37,5 +37,10 @@ public class VotedMapping {
 		return "VotedMapping: f= "+getFinalVote()+", p= "+positiveVote+", n = "+negativeVote+", added "+added+", val "+validated+", map"+mapping;
 	}
 	
+	public int hashCode(){
+		//shouldn't be needed
+		return mapping.getSourceKey();
+	}
+	
 
 }

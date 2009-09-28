@@ -13,6 +13,7 @@ import am.application.mappingEngine.AbstractMatcher;
 import am.application.mappingEngine.Alignment;
 import am.application.ontology.Node;
 import am.application.ontology.Ontology;
+import java.util.Stack;
 
 public class ConflictsResolution {
 	
@@ -123,9 +124,9 @@ public class ConflictsResolution {
 					//just to speed up the processing later, but if pos = 1 and neg = 0, it means that
 					//the mapping has no conflicts, and no related mappings, so it is only going to be validated later
 					//therefore i set it to validate now
-					if(currentMapping.positiveVote == 1 && currentMapping.negativeVote == 0){
-						currentMapping.validated = true;
-					}
+					//if(currentMapping.positiveVote == 1 && currentMapping.negativeVote == 0){
+					//	currentMapping.validated = true;
+					//}
 				}
 			}
 		}
@@ -174,7 +175,7 @@ public class ConflictsResolution {
 					}
 				}
 			}
-			
+			itCurrentMappingSet = null;
 			//found the overall maximum
 			//we set as validated and we solve conflicts consequently
 			Node c1 = null;
@@ -185,14 +186,15 @@ public class ConflictsResolution {
 			VotedMapping toBeDeleted2 = null;
 			if(maxMapping!= null){
 				System.out.println("maxMapping diff from null: "+maxMapping);  
-				Queue<VotedMapping> queue = new LinkedList<VotedMapping>();
+				//Queue<VotedMapping> queue = new LinkedList<VotedMapping>();
+				Stack<VotedMapping> queue = new Stack<VotedMapping>();
 				maxMapping.validated = true;
 				queue.add(maxMapping);
 				while(!queue.isEmpty()){
 					
 					//currentMapping is (a-b)
-					currentMapping = queue.poll();//get first element, by construction it must heuristically be a validated mapping
-					
+					//currentMapping = queue.poll();//get first element, by construction it must heuristically be a validated mapping
+					currentMapping = queue.pop();
 					int currentSource = currentMapping.mappingSet.sourceOntologyIndex;
 					int currentTarget = currentMapping.mappingSet.targetOntologyIndex;
 					System.out.println("qsize: "+queue.size()+", extracted from "+currentSource+"-"+currentTarget+", mapping :"+currentMapping);
@@ -300,7 +302,7 @@ public class ConflictsResolution {
 								}
 								bVSc2mapping.added = true;
 								BvsCset.putVotedMapping(bVSc2mapping);
-								System.out.println("case 3 b is null, new a is"+bVSc2mapping);
+								System.out.println("case 3 b is null, new b is"+bVSc2mapping);
 							}
 							//case 4: they are mapped to the same concept
 							//no conflict
@@ -317,10 +319,10 @@ public class ConflictsResolution {
 								//5a
 								System.out.println("case 5");
 								if(aVSc1mapping.validated && bVSc2mapping.validated){
-									//throw new RuntimeException("Development error in conflict resolution: both mappings are validated but in conflict");
+									throw new RuntimeException("Development error in conflict resolution: both mappings are validated but in conflict");
 									//BvsCset.delVotedMapping(bVSc2mapping);
 									//AvsCset.delVotedMapping(aVSc1mapping);
-									break;
+									//break;
 								}
 								//5b1: a-c1 is correct
 								else if(aVSc1mapping.validated){
@@ -345,7 +347,7 @@ public class ConflictsResolution {
 									}
 									aVSc1mapping.added = true;
 									AvsCset.putVotedMapping(aVSc1mapping);
-									System.out.println("case 5b2 a valid change a in "+aVSc1mapping);
+									System.out.println("case 5b2 b valid change a in "+aVSc1mapping);
 								}
 								//5c: both are not valid yet we have to pick one
 								else{
@@ -382,14 +384,49 @@ public class ConflictsResolution {
 								queue.add(aVSc1mapping);
 								System.out.println("validated a "+aVSc1mapping);
 								if(aVSc1mapping.added){
-									if(aVSc1mapping.mappingSet.sourceOntologyIndex == 0 && aVSc1mapping.mappingSet.targetOntologyIndex == 5){
-										if(aVSc1mapping.mapping.getEntity1().getIndex() == 35 && aVSc1mapping.mapping.getEntity2().getIndex() == 0){
-											System.out.println("STRANGE");
+									if(aVSc1mapping.mappingSet.sourceOntologyIndex == 0 && aVSc1mapping.mappingSet.targetOntologyIndex == 2){
+										if(aVSc1mapping.mapping.getEntity1().getIndex() == 49 && aVSc1mapping.mapping.getEntity2().getIndex() == 35){
+											System.out.println("STRANGE 0-2");
 											System.out.println("toBeDeleted1 "+toBeDeleted1);
-											System.out.println(AvsCset.getSourceVotedMapping(35));
-											//JOptionPane.showInputDialog("blabla");
+											System.out.println("toBeDeleted2 "+toBeDeleted2);
+											System.out.println(AvsCset.getSourceVotedMapping(49));
+											System.out.println(AvsCset.getTargetVotedMapping(35));
+											JOptionPane.showInputDialog("blabla");
 											
 										}
+									}
+									if(aVSc1mapping.mappingSet.sourceOntologyIndex == 2 && aVSc1mapping.mappingSet.targetOntologyIndex == 5){
+										if(aVSc1mapping.mapping.getEntity1().getIndex() == 35 && aVSc1mapping.mapping.getEntity2().getIndex() == 11){
+											System.out.println("STRANGE 2-5");
+											System.out.println("toBeDeleted1 "+toBeDeleted1);
+											System.out.println("toBeDeleted2 "+toBeDeleted2);
+											System.out.println(AvsCset.getSourceVotedMapping(35));
+											System.out.println(AvsCset.getTargetVotedMapping(11));
+											JOptionPane.showInputDialog("blabla");
+											
+										}
+									}
+								}
+								if(aVSc1mapping.mappingSet.sourceOntologyIndex == 0 && aVSc1mapping.mappingSet.targetOntologyIndex == 5){
+									if(aVSc1mapping.mapping.getEntity1().getIndex() == 10 && aVSc1mapping.mapping.getEntity2().getIndex() == 11){
+										System.out.println("STRANGE 0-5");
+										System.out.println("toBeDeleted1 "+toBeDeleted1);
+										System.out.println("toBeDeleted2 "+toBeDeleted2);
+										System.out.println(AvsCset.getSourceVotedMapping(10));
+										System.out.println(AvsCset.getTargetVotedMapping(11));
+										JOptionPane.showInputDialog("blabla");
+										
+									}
+								}
+								if(aVSc1mapping.mappingSet.sourceOntologyIndex == 2 && aVSc1mapping.mappingSet.targetOntologyIndex == 10){
+									if(aVSc1mapping.mapping.getEntity1().getIndex() == 35 && aVSc1mapping.mapping.getEntity2().getIndex() == 42){
+										System.out.println("STRANGE 2-10");
+										System.out.println("toBeDeleted1 "+toBeDeleted1);
+										System.out.println("toBeDeleted2 "+toBeDeleted2);
+										System.out.println(AvsCset.getSourceVotedMapping(35));
+										System.out.println(AvsCset.getTargetVotedMapping(42));
+										JOptionPane.showInputDialog("blabla");
+										
 									}
 								}
 								
@@ -399,12 +436,51 @@ public class ConflictsResolution {
 								queue.add(bVSc2mapping);
 								System.out.println("validated b "+bVSc2mapping);
 								if(bVSc2mapping.added){
-									if(bVSc2mapping.mappingSet.sourceOntologyIndex == 0 && bVSc2mapping.mappingSet.targetOntologyIndex == 5){
-										if(bVSc2mapping.mapping.getEntity1().getIndex() == 35 && bVSc2mapping.mapping.getEntity2().getIndex() == 0){
-											System.out.println("STRANGE");
+									if(bVSc2mapping.mappingSet.sourceOntologyIndex == 0 && bVSc2mapping.mappingSet.targetOntologyIndex == 2){
+										if(bVSc2mapping.mapping.getEntity1().getIndex() == 49 && bVSc2mapping.mapping.getEntity2().getIndex() == 35){
+											System.out.println("STRANGE 0-2");
+											System.out.println("toBeDeleted2 "+toBeDeleted2);
 											System.out.println("toBeDeleted1 "+toBeDeleted1);
-											//JOptionPane.showInputDialog("blabla");
+											//System.out.println("get source 18 "+BvsCset.getSourceVotedMapping(18));
+											System.out.println(BvsCset.getSourceVotedMapping(49));
+											System.out.println(BvsCset.getTargetVotedMapping(35));
+											
+											JOptionPane.showInputDialog("blabla");
 										}
+									}
+									if(bVSc2mapping.mappingSet.sourceOntologyIndex == 2 && bVSc2mapping.mappingSet.targetOntologyIndex == 5){
+										if(bVSc2mapping.mapping.getEntity1().getIndex() == 35 && bVSc2mapping.mapping.getEntity2().getIndex() == 11){
+											System.out.println("STRANGE 2-5");
+											System.out.println("toBeDeleted2 "+toBeDeleted2);
+											System.out.println("toBeDeleted1 "+toBeDeleted1);
+											//System.out.println("get source 18 "+BvsCset.getSourceVotedMapping(18));
+											System.out.println(BvsCset.getSourceVotedMapping(35));
+											System.out.println(BvsCset.getTargetVotedMapping(11));
+											
+											JOptionPane.showInputDialog("blabla");
+										}
+									}
+								}
+								if(bVSc2mapping.mappingSet.sourceOntologyIndex == 0 && bVSc2mapping.mappingSet.targetOntologyIndex == 5){
+									if(bVSc2mapping.mapping.getEntity1().getIndex() == 10  && bVSc2mapping.mapping.getEntity2().getIndex() == 11){
+										System.out.println("STRANGE 0-5");
+										System.out.println("toBeDeleted1 "+toBeDeleted1);
+										System.out.println("toBeDeleted2 "+toBeDeleted2);
+										System.out.println(BvsCset.getSourceVotedMapping(10));
+										System.out.println(BvsCset.getTargetVotedMapping(11));
+										JOptionPane.showInputDialog("blabla");
+										
+									}
+								}
+								if(bVSc2mapping.mappingSet.sourceOntologyIndex == 2 && bVSc2mapping.mappingSet.targetOntologyIndex == 10){
+									if(bVSc2mapping.mapping.getEntity1().getIndex() == 35  && bVSc2mapping.mapping.getEntity2().getIndex() == 42){
+										System.out.println("STRANGE 2-10");
+										System.out.println("toBeDeleted1 "+toBeDeleted1);
+										System.out.println("toBeDeleted2 "+toBeDeleted2);
+										System.out.println(BvsCset.getSourceVotedMapping(35));
+										System.out.println(BvsCset.getTargetVotedMapping(42));
+										JOptionPane.showInputDialog("blabla");
+										
 									}
 								}
 							}	

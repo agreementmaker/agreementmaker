@@ -151,7 +151,9 @@ public abstract class Track {
 		if(solveConflicts){
 			ConflictsResolution conf = new ConflictsResolution();
 			//First solve on classes then on properties
+			System.out.println("Solving conflicts on classes");
 			finalMatchers = conf.solveConflicts(finalMatchers, ontologies, true);//classes
+			System.out.println("Solving conflicts on properties");
 			finalMatchers = conf.solveConflicts(finalMatchers, ontologies, false);//properties
 		}
 		return finalMatchers;

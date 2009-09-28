@@ -29,7 +29,7 @@ public class ConferenceTrack extends Track {
 
 	private File[] ontologyFiles;
 	public boolean solveConflicts = false;
-	
+	public boolean loadRDFinstead = false;
 
 	
 	public ConferenceTrack(String directory) {
@@ -61,8 +61,11 @@ public class ConferenceTrack extends Track {
 		AlignmentOutput ao;
 		String outputFileDir;
 		long startTime = System.nanoTime()/1000000;
-
-		matcherList = computeMultipleAlignment(solveConflicts, ontologyFiles, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param, OntoTreeBuilder.Profile.noReasoner);
+		OntoTreeBuilder.Profile reasoner = OntoTreeBuilder.Profile.noReasoner;
+		if(loadRDFinstead){
+			reasoner = OntoTreeBuilder.Profile.defaultProfile;
+		}
+		matcherList = computeMultipleAlignment(solveConflicts, ontologyFiles, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param, reasoner);
 		long endTime = System.nanoTime()/1000000;
 		long totTime = endTime - startTime;
 		System.out.println("Total execution time in h.m.s.ms: "+Utility.getFormattedTime(totTime));
@@ -110,8 +113,13 @@ public class ConferenceTrack extends Track {
 		
 		FilenameFilter owlFileFilter = new FilenameFilter() {
 			public boolean accept( File dir, String name) {
-				return name.endsWith(".owl");
-				//return name.endsWith(".rdf");
+				if(loadRDFinstead){
+					return name.endsWith(".rdf");
+				}
+				else{
+					return name.endsWith(".owl");
+				}
+
 			}
 		};
 		
