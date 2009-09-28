@@ -89,7 +89,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 	}
 	
 	
-	public void build( OntoTreeBuilder.Profile prof ){
+	public void build( OntoTreeBuilder.Profile prof ) {
 		buildTree( prof );//Instantiated in the subclasses
 		report = "Ontology loaded succesfully\n\n";
         report += "Total number of classes: "+ontology.getClassesList().size()+"\n";
@@ -155,7 +155,16 @@ public class OntoTreeBuilder extends TreeBuilder{
 		
 		
 		//Preparing model
-		model.prepare();
+		try {
+			model.prepare();
+		}
+		catch ( Exception e ) {
+			// there is something wrong with the ontology.
+			// try without a reasoner
+			System.out.println("Trying without a reasoner.");
+			buildTreeNoReasoner();
+			return;
+		}
 		
 		// compute the classification tree 
 		System.out.print("Classifying...");
