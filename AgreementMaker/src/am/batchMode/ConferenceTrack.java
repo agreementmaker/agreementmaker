@@ -23,10 +23,13 @@ public class ConferenceTrack extends Track {
 	public final static String TRACK_DIR = "conference";
 	public final static String TRACK_INPUT_DIR = OAEI_DIR+TRACK_DIR+"/";
 	public final static String TRACK_OUTPUT_DIR = OAEI_OUTPUT_DIR+TRACK_DIR+"/";
+	public final static String TRACK_EXTENDED_OUTPUT = OAEI_OUTPUT_DIR+"conference_ext"+"/";
 	
 	private String ontodir; // ontology files directory
 
 	private File[] ontologyFiles;
+	public boolean solveConflicts = false;
+	
 
 	
 	public ConferenceTrack(String directory) {
@@ -51,8 +54,7 @@ public class ConferenceTrack extends Track {
 		double threshold = 0.6;
 		int sourceCardinality = 1;
 		int targetCardinality = 1;
-		
-		
+ 
 		String sourceUri;
 		String targetUri;
 		ArrayList<AbstractMatcher> matcherList;
@@ -60,12 +62,16 @@ public class ConferenceTrack extends Track {
 		String outputFileDir;
 		long startTime = System.nanoTime()/1000000;
 
-		matcherList = computeMultipleAlignment(ontologyFiles, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param, OntoTreeBuilder.Profile.noReasoner);
+		matcherList = computeMultipleAlignment(solveConflicts, ontologyFiles, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param, OntoTreeBuilder.Profile.noReasoner);
 		long endTime = System.nanoTime()/1000000;
 		long totTime = endTime - startTime;
 		System.out.println("Total execution time in h.m.s.ms: "+Utility.getFormattedTime(totTime));
-		String timeFileName = TRACK_OUTPUT_DIR+"executionTime.txt";
+		
 		outputFileDir = TRACK_OUTPUT_DIR;//the last / is not needed for mkdirs but is needed later
+		if(solveConflicts){
+			outputFileDir = TRACK_EXTENDED_OUTPUT;
+		}
+		String timeFileName = outputFileDir+"executionTime.txt";
 		(new File(outputFileDir)).mkdirs(); //create directories
 		TrackDispatcher.printExecutionTime(totTime, timeFileName);
 		for(int i=0; i<matcherList.size();i++){
@@ -105,6 +111,7 @@ public class ConferenceTrack extends Track {
 		FilenameFilter owlFileFilter = new FilenameFilter() {
 			public boolean accept( File dir, String name) {
 				return name.endsWith(".owl");
+				//return name.endsWith(".rdf");
 			}
 		};
 		

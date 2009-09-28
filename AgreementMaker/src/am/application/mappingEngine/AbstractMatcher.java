@@ -1199,6 +1199,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return progressDialog != null;  // don't need to check for the global static variable, since if it's false, we should never have to call this function
 	}
 
+	public void setPropertiesAlignmentSet(AlignmentSet propertiesAlignmentSet) {
+		this.propertiesAlignmentSet = propertiesAlignmentSet;
+	}
+
+	public void setClassesAlignmentSet(AlignmentSet classesAlignmentSet) {
+		this.classesAlignmentSet = classesAlignmentSet;
+	}
+
 
 
 

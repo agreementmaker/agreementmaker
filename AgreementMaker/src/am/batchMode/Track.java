@@ -2,17 +2,23 @@ package am.batchMode;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 import am.GlobalStaticVariables;
 import am.application.Core;
 import am.application.mappingEngine.AbstractMatcher;
 import am.application.mappingEngine.AbstractParameters;
+import am.application.mappingEngine.Alignment;
 import am.application.mappingEngine.AlignmentSet;
 import am.application.mappingEngine.MatcherFactory;
 import am.application.mappingEngine.MatchersRegistry;
 import am.application.ontology.Ontology;
 import am.application.ontology.ontologyParser.OntoTreeBuilder;
 import am.application.ontology.ontologyParser.TreeBuilder;
+import am.batchMode.conflictResolution.ConflictsResolution;
+import am.batchMode.conflictResolution.VotedMapping;
+import am.batchMode.conflictResolution.VotedMappingSet;
 import am.userInterface.OntologyLoadingProgressDialog;
 
 public abstract class Track {
@@ -109,12 +115,12 @@ public abstract class Track {
 	
 	
 	// wrapper function
-	protected ArrayList<AbstractMatcher> computeMultipleAlignment(File[] ontologyFiles, String languageS, String syntaxS, boolean skip, MatchersRegistry matcher, double threshold, int sourceRel, int targetRel, AbstractParameters parameters  ) throws Exception{
-		return computeMultipleAlignment( ontologyFiles, languageS, syntaxS, skip, matcher, threshold, sourceRel, targetRel, parameters, OntoTreeBuilder.Profile.defaultProfile );  // if no profile is specified, it uses the default profile
+	protected ArrayList<AbstractMatcher> computeMultipleAlignment(boolean solveConflicts, File[] ontologyFiles, String languageS, String syntaxS, boolean skip, MatchersRegistry matcher, double threshold, int sourceRel, int targetRel, AbstractParameters parameters  ) throws Exception{
+		return computeMultipleAlignment(solveConflicts, ontologyFiles, languageS, syntaxS, skip, matcher, threshold, sourceRel, targetRel, parameters, OntoTreeBuilder.Profile.defaultProfile );  // if no profile is specified, it uses the default profile
 	}
 	
 	//compute the alignment between any two ontologies, given their filepath using the specified matcher
-	protected ArrayList<AbstractMatcher> computeMultipleAlignment(File[] ontologyFiles, String languageS, String syntaxS, boolean skip, MatchersRegistry matcher, double threshold, int sourceRel, int targetRel, AbstractParameters parameters, OntoTreeBuilder.Profile loadingProfile) throws Exception{
+	protected ArrayList<AbstractMatcher> computeMultipleAlignment(boolean solveConflicts, File[] ontologyFiles, String languageS, String syntaxS, boolean skip, MatchersRegistry matcher, double threshold, int sourceRel, int targetRel, AbstractParameters parameters, OntoTreeBuilder.Profile loadingProfile) throws Exception{
 		int numOntologies = ontologyFiles.length;
 		int numAlignments = (numOntologies * (numOntologies - 1))/2;
 		System.out.println("The matching process is started between "+numOntologies+" ontologies.\nExpected "+numAlignments+" different sets of mappings.");
@@ -142,8 +148,16 @@ public abstract class Track {
 			}
 		}
 		
+		if(solveConflicts){
+			ConflictsResolution conf = new ConflictsResolution();
+			//First solve on classes then on properties
+			finalMatchers = conf.solveConflicts(finalMatchers, ontologies, true);//classes
+			finalMatchers = conf.solveConflicts(finalMatchers, ontologies, false);//properties
+		}
 		return finalMatchers;
 	}
+
+	
 	
 	
 	

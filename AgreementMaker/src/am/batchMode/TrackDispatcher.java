@@ -11,6 +11,7 @@ public class TrackDispatcher {
 	public final static String BENCHMARK = "benchmarks";
 	public final static String ANATOMY = "anatomy";
 	public final static String CONFERENCE = "conference";
+	public final static String CONFERENCE_EXTENDED = "conference_extended";
 	
 	//decides which track has to be launched
 	public static void dispatchTrack(String track, String subTrack){
@@ -32,8 +33,13 @@ public class TrackDispatcher {
 				//TODO
 				ConferenceTrack ct = new ConferenceTrack(subTrack);
 				ct.launch();
+			}			
+			else if(track.equalsIgnoreCase(CONFERENCE_EXTENDED)){
+				//TODO
+				ConferenceTrack ct = new ConferenceTrack(subTrack);
+				ct.solveConflicts = true;
+				ct.launch();
 			}
-			
 			else{
 				System.out.println("The selected track doesn't exist.\nTo run the UI remove the string argument from the running parameters.");
 			}

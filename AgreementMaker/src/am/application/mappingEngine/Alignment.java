@@ -157,4 +157,10 @@ public class Alignment
 		//it is based on the idea that in a 1-1 matching a mapping is identified by the sourcenode
 		return getEntity1().getIndex();
 	}
+	
+	public int getTargetKey(){
+		//used in the Conflict resulotion method of the conference track
+		//it is based on the idea that in a 1-1 matching a mapping is identified by the sourcenode
+		return getEntity2().getIndex();
+	}
 }
