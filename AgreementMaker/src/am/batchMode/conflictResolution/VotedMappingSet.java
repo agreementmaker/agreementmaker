@@ -76,31 +76,8 @@ public class VotedMappingSet {
 	}
 	//DEL
 	public void delVotedMapping(Alignment a){
-		//while(sourceMappings.containsKey(a.getSourceKey()))
 			sourceMappings.remove(a.getSourceKey());
-			boolean joption = false;
-			if(sourceMappings.containsKey(a.getSourceKey())){
-				System.out.println("Wrong deletion sources still contains "+a);
-				joption = true;
-				
-			}
-			 if(sourceMappings.get(a.getSourceKey()) != null){
-				joption = true;
-				System.out.println("Wrong deletion sources still get "+sourceMappings.get(a.getSourceKey())+" get "+a);
-			}
-		//while(targetMappings.containsKey(a.getTargetKey()))
 			targetMappings.remove(a.getTargetKey());
-			if(targetMappings.containsKey(a.getTargetKey())){
-				System.out.println("Wrong deletion targets still contains "+a);
-				joption = true;
-			}
-			if(targetMappings.get(a.getTargetKey()) != null){
-				 joption = true;
-				System.out.println("Wrong deletion targets still get "+targetMappings.get(a.getTargetKey())+" get "+a);
-			}
-			if(joption){
-				JOptionPane.showInputDialog("");
-			}
 	}
 	
 	public void delVotedMapping(VotedMapping v){
