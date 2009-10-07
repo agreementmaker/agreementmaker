@@ -22,6 +22,7 @@ import am.application.Core;
 import am.application.mappingEngine.AbstractMatcher;
 import am.application.mappingEngine.Alignment;
 import am.application.mappingEngine.AlignmentSet;
+import am.application.mappingEngine.MatchersRegistry;
 import am.application.mappingEngine.manualMatcher.UserManualMatcher;
 import am.application.ontology.Ontology;
 import am.userInterface.table.MatchersTablePanel;
@@ -315,6 +316,7 @@ public class UIMenu implements ActionListener {
 					
 					newMatcher.setClassesAlignmentSet(combinedClassSet);
 					newMatcher.setPropertiesAlignmentSet(combinedClassSet);
+					newMatcher.setName(MatchersRegistry.UniqueMatchings);
 					
 					m.addMatcher(newMatcher);
 					
