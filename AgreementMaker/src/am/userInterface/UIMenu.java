@@ -200,50 +200,121 @@ public class UIMenu implements ActionListener {
 					AbstractMatcher firstMatcher = core.getMatcherInstances().get(selectedRows[0]);
 					AbstractMatcher secondMatcher = core.getMatcherInstances().get(selectedRows[1]);
 					
-					AlignmentSet firstSet = firstMatcher.getAlignmentSet();
-					AlignmentSet secondSet = secondMatcher.getAlignmentSet();
+					AlignmentSet firstClassSet = firstMatcher.getClassAlignmentSet();
+					AlignmentSet secondClassSet = secondMatcher.getClassAlignmentSet();
 					
-					AlignmentSet combinedSet = new AlignmentSet();
+					AlignmentSet firstPropertiesSet = firstMatcher.getPropertyAlignmentSet();
+					AlignmentSet secondPropertiesSet = secondMatcher.getPropertyAlignmentSet();
 					
-					for( i = 0; i < firstSet.size(); i++ ) {
-						combinedSet.addAlignment(firstSet.getAlignment(i));
-					}
-					
-					for( i = 0; i < firstSet.size(); i++ ) {
-						combinedSet.addAlignment(secondSet.getAlignment(i));
-					}
-					
-					
-					// remove duplicates from combinedSet
-					int currentCandidate = 0;
-					while( currentCandidate < combinedSet.size() ) {
-						Alignment candidate = combinedSet.getAlignment(currentCandidate);
-						for(i = currentCandidate; i < combinedSet.size(); i++ ) {
-							Alignment test = combinedSet.getAlignment(i);
-							
+					AlignmentSet combinedClassSet = new AlignmentSet();
+					AlignmentSet combinedPropertiesSet = new AlignmentSet();
+
+					// double nested loop, later I will write a better algorithm -cos
+					for( i = 0; i < firstClassSet.size(); i++ ) {
+						Alignment candidate = firstClassSet.getAlignment(i);
+						boolean foundDuplicate = false;
+						for( j = 0; j < secondClassSet.size(); j++ ) {
+							Alignment test = secondClassSet.getAlignment(j);							
+						
+						
 							int sourceNode1 = candidate.getEntity1().getIndex();
 							int targetNode1 = candidate.getEntity2().getIndex();
-							
+						
 							int sourceNode2 = test.getEntity1().getIndex();
 							int targetNode2 = test.getEntity2().getIndex();
-							
+						
 							if(sourceNode1 == sourceNode2 && targetNode1 == targetNode2 ) {
 								// we found a duplicate
-								combinedSet.removeAlignment(i);
-								break;
+								foundDuplicate = true;
+								break;	
 							}
 						}
 						
-						// no more duplicates for the currentCandidate, next
-						currentCandidate++;
+						if( !foundDuplicate ) combinedClassSet.addAlignment(candidate);
+						
+					}
+
+					for( i = 0; i < secondClassSet.size(); i++ ) {
+						Alignment candidate = secondClassSet.getAlignment(i);
+						boolean foundDuplicate = false;
+						for( j = 0; j < firstClassSet.size(); j++ ) {
+							Alignment test = firstClassSet.getAlignment(j);							
+						
+						
+							int sourceNode1 = candidate.getEntity1().getIndex();
+							int targetNode1 = candidate.getEntity2().getIndex();
+						
+							int sourceNode2 = test.getEntity1().getIndex();
+							int targetNode2 = test.getEntity2().getIndex();
+						
+							if(sourceNode1 == sourceNode2 && targetNode1 == targetNode2 ) {
+								// we found a duplicate
+								foundDuplicate = true;
+								break;	
+							}
+						}
+						
+						if( !foundDuplicate ) combinedClassSet.addAlignment(candidate);
+						
+					}
+					
+					
+					// now the properties.
+					
+					// double nested loop, later I will write a better algorithm -cos
+					for( i = 0; i < firstPropertiesSet.size(); i++ ) {
+						Alignment candidate = firstPropertiesSet.getAlignment(i);
+						boolean foundDuplicate = false;
+						for( j = 0; j < secondPropertiesSet.size(); j++ ) {
+							Alignment test = secondPropertiesSet.getAlignment(j);							
+						
+						
+							int sourceNode1 = candidate.getEntity1().getIndex();
+							int targetNode1 = candidate.getEntity2().getIndex();
+						
+							int sourceNode2 = test.getEntity1().getIndex();
+							int targetNode2 = test.getEntity2().getIndex();
+						
+							if(sourceNode1 == sourceNode2 && targetNode1 == targetNode2 ) {
+								// we found a duplicate
+								foundDuplicate = true;
+								break;	
+							}
+						}
+						
+						if( !foundDuplicate ) combinedPropertiesSet.addAlignment(candidate);
+						
+					}
+
+					for( i = 0; i < secondPropertiesSet.size(); i++ ) {
+						Alignment candidate = secondPropertiesSet.getAlignment(i);
+						boolean foundDuplicate = false;
+						for( j = 0; j < firstPropertiesSet.size(); j++ ) {
+							Alignment test = firstPropertiesSet.getAlignment(j);							
+						
+						
+							int sourceNode1 = candidate.getEntity1().getIndex();
+							int targetNode1 = candidate.getEntity2().getIndex();
+						
+							int sourceNode2 = test.getEntity1().getIndex();
+							int targetNode2 = test.getEntity2().getIndex();
+						
+							if(sourceNode1 == sourceNode2 && targetNode1 == targetNode2 ) {
+								// we found a duplicate
+								foundDuplicate = true;
+								break;	
+							}
+						}
+						
+						if( !foundDuplicate ) combinedPropertiesSet.addAlignment(candidate);
 						
 					}
 					
 					
 					AbstractMatcher newMatcher = new UserManualMatcher();
-					for( i = 0; i < combinedSet.size(); i++ ) {
-						newMatcher.addManualClassAlignment(combinedSet.getAlignment(i));
-					}
+					
+					newMatcher.setClassesAlignmentSet(combinedClassSet);
+					newMatcher.setPropertiesAlignmentSet(combinedClassSet);
 					
 					m.addMatcher(newMatcher);
 					
