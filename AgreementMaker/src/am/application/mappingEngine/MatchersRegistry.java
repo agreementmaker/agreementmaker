@@ -66,6 +66,7 @@ public enum MatchersRegistry {
 	
 	//MATCHERS USED BY THE SYSTEM, usually not shown
 	UserManual			( "User Manual Matching", UserManualMatcher.class, false),
+	UniqueMatchings		( "Unique Matchings", ReferenceAlignmentMatcher.class, false), // this is used by the "Remove Duplicate Alignments" UIMenu entry
 	ImportAlignment	( "Import Alignments", ReferenceAlignmentMatcher.class, false),
 	
 	//TEST MATCHERS 
