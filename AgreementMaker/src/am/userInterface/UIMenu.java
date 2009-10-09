@@ -5,8 +5,6 @@ package am.userInterface;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.LinkedList;
-
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -196,7 +194,6 @@ public class UIMenu implements ActionListener {
 					int i, j;
 					
 					Core core = Core.getInstance();
-					LinkedList<AbstractMatcher> selectedMatchers = new LinkedList<AbstractMatcher>();
 					
 					AbstractMatcher firstMatcher = core.getMatcherInstances().get(selectedRows[0]);
 					AbstractMatcher secondMatcher = core.getMatcherInstances().get(selectedRows[1]);
