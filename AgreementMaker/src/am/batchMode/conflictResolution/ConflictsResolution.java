@@ -1,14 +1,8 @@
 package am.batchMode.conflictResolution;
 
-import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
-
-import javax.swing.JOptionPane;
-
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.ontology.Node;

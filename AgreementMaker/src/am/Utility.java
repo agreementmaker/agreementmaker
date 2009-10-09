@@ -3,13 +3,9 @@ package am;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-
-import sun.net.www.protocol.http.InMemoryCookieStore;
-
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.IntDoublePair;
 import am.userInterface.table.MyTableModel;
-
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;

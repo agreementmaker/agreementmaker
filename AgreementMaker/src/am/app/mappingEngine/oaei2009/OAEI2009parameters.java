@@ -1,7 +1,6 @@
 package am.app.mappingEngine.oaei2009;
 
 import am.app.mappingEngine.AbstractParameters;
-import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.batchMode.AnatomyTrack;
 import am.batchMode.BenchmarkTrack;

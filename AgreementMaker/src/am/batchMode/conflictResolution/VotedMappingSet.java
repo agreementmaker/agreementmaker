@@ -3,10 +3,6 @@ package am.batchMode.conflictResolution;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-
-import javax.swing.JOptionPane;
-
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
 import am.app.ontology.Node;

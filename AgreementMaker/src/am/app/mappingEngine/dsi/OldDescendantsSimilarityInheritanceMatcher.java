@@ -1,15 +1,10 @@
 package am.app.mappingEngine.dsi;
 
-import java.util.ArrayList;
-
 import javax.swing.tree.TreeNode;
-
-import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentMatrix;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcherParametersPanel;
 import am.app.ontology.Node;
 import am.userInterface.vertex.Vertex;
 

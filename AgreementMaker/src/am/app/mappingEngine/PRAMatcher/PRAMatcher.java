@@ -2,19 +2,11 @@ package am.app.mappingEngine.PRAMatcher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentMatrix;
 import am.app.mappingEngine.AlignmentSet;
-import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.StringUtil.Normalizer;
-import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParametersPanel;
 import am.app.ontology.Node;
 
 public class PRAMatcher extends BaseSimilarityMatcher 

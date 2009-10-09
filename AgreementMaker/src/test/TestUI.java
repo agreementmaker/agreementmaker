@@ -3,13 +3,10 @@ package test;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Frame;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import am.userInterface.MatchersControlPanel;
-import am.userInterface.UI.WindowEventHandler;
 
 public class TestUI {
 	private JFrame frame;

@@ -10,7 +10,6 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.Stack;
 
-import javax.swing.JOptionPane;
 
 public class MaxWeightBipartiteMatching<E> {
 	

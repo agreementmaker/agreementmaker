@@ -1,42 +1,28 @@
 package am.app.mappingEngine.oaei2009;
 
 import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.HashSet;
-
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.Combination.CombinationParameters;
-import am.app.mappingEngine.Combination.CombinationParametersPanel;
-import am.app.mappingEngine.PRAMatcher.PRAMatcher;
 import am.app.mappingEngine.PRAMatcher.PRAMatcher2;
-import am.app.mappingEngine.StringUtil.ISub;
-import am.app.mappingEngine.StringUtil.Normalizer;
-import am.app.mappingEngine.StringUtil.StringMetrics;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcherParametersPanel;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
 import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceParameters;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
-import am.app.mappingEngine.multiWords.MultiWordsParametersPanel;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
-import am.app.mappingEngine.parametricStringMatcher.ParametricStringParametersPanel;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
-import am.app.ontology.Node;
 
-import uk.ac.shef.wit.simmetrics.similaritymetrics.*; //all sim metrics are in here
+
+//import uk.ac.shef.wit.simmetrics.similaritymetrics.*; //all sim metrics are in here
 
 public class OAEI2009matcher extends AbstractMatcher { 
 
 	
-	private Normalizer normalizer;
+	//private Normalizer normalizer;
 	
 	public OAEI2009matcher() {
 		// warning, param is not available at the time of the constructor
@@ -60,7 +46,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 	
 	public void beforeAlignOperations()  throws Exception{
 		super.beforeAlignOperations();
-		OAEI2009parameters parameters =(OAEI2009parameters)param;
+		//OAEI2009parameters parameters =(OAEI2009parameters)param;
 	}
 
 	/* *******************************************************************************************************

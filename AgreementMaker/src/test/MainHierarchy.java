@@ -7,11 +7,11 @@
  * Web                http://sourceforge.net/projects/jena/
  * Created            22-Aug-2003
  * Filename           $RCSfile: MainHierarchy.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
  *
- * Last modified on   $Date: 2009-08-07 00:24:27 $
- *               by   $Author: flav $
+ * Last modified on   $Date: 2009-10-09 12:34:27 $
+ *               by   $Author: cstroe1 $
  *
  * (c) Copyright 2002, 2003, 2004, 2005 Hewlett-Packard Development Company, LP
  * (see footer for full conditions)
@@ -24,9 +24,6 @@ package test;
 
 // Imports
 ///////////////
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 
 /**
@@ -36,7 +33,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
  *
  * @author Ian Dickinson, HP Labs
  *         (<a  href="mailto:Ian.Dickinson@hp.com" >email</a>)
- * @version CVS $Id: MainHierarchy.java,v 1.3 2009-08-07 00:24:27 flav Exp $
+ * @version CVS $Id: MainHierarchy.java,v 1.4 2009-10-09 12:34:27 cstroe1 Exp $
  */
 public class MainHierarchy {
 	

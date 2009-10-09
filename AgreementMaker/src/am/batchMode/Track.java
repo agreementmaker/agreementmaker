@@ -2,24 +2,17 @@ package am.batchMode;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
 import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractParameters;
-import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
-import am.app.ontology.ontologyParser.TreeBuilder;
 import am.batchMode.conflictResolution.ConflictsResolution;
-import am.batchMode.conflictResolution.VotedMapping;
-import am.batchMode.conflictResolution.VotedMappingSet;
-import am.userInterface.OntologyLoadingProgressDialog;
+
 
 public abstract class Track {
 	

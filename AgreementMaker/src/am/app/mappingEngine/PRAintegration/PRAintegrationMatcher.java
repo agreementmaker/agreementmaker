@@ -2,8 +2,6 @@ package am.app.mappingEngine.PRAintegration;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
-
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Alignment;
@@ -12,9 +10,6 @@ import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.MappedNodes;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParametersPanel;
 import am.app.ontology.Node;
 

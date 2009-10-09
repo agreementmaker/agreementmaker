@@ -15,11 +15,6 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import am.Utility;
-import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
-import am.app.mappingEngine.Combination.CombinationParameters;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
 
 

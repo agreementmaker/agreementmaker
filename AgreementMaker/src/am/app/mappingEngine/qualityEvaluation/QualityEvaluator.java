@@ -1,10 +1,7 @@
 package am.app.mappingEngine.qualityEvaluation;
 
-import java.util.ArrayList;
-
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AlignmentMatrix;
 
 public class QualityEvaluator {
 	

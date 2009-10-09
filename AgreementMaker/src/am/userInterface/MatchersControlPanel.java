@@ -9,24 +9,16 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
-
-
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.AbstractTableModel;
-
-import sun.awt.windows.ThemeReader;
-
-
 import am.AMException;
-import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
@@ -42,7 +34,6 @@ import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
 import am.userInterface.table.MatchersTablePanel;
-import am.userInterface.table.MyTableModel;
 
 public class MatchersControlPanel extends JPanel implements ActionListener,
 		ItemListener {

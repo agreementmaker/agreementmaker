@@ -2,7 +2,6 @@ package am.app.mappingEngine.testMatchers;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 
 public class AllOneMatcher extends AbstractMatcher {

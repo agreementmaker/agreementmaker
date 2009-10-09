@@ -3,11 +3,6 @@ package am.app.mappingEngine.qualityEvaluation;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-
-import javax.swing.JOptionPane;
-
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
-
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;

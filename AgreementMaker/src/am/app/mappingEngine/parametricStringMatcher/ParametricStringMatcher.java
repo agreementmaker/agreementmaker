@@ -1,8 +1,5 @@
 package am.app.mappingEngine.parametricStringMatcher;
 
-import java.util.HashMap;
-import java.util.HashSet;
-
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
@@ -10,7 +7,6 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.StringUtil.ISub;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.StringMetrics;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcherParametersPanel;
 import am.app.ontology.Node;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.*; //all sim metrics are in here

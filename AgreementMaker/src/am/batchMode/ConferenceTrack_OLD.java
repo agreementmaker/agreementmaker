@@ -6,11 +6,8 @@ import am.app.Core;
 import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.oaei2009.OAEI2009parameters;
-import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.output.AlignmentOutput;
-
 import java.io.*;
-import java.util.Vector;
 
 public class ConferenceTrack_OLD extends Track {
 
