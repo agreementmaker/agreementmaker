@@ -3,17 +3,11 @@ package am.app.ontology.ontologyParser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
-
-
 import org.mindswap.pellet.jena.PelletInfGraph;
 import org.mindswap.pellet.jena.PelletReasonerFactory;
-
-
 import am.app.ontology.Node;
 import am.userInterface.vertex.Vertex;
-
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
@@ -46,7 +40,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 	//instance variables
 	private boolean noReasoner = false;
 	private OntModel model;
-	private Set unsatConcepts;  
+	private Set<OntResource> unsatConcepts;  
 	private HashMap<OntResource,Node> processedSubs;
 	OntClass owlThing;
 	
@@ -376,8 +370,8 @@ public class OntoTreeBuilder extends TreeBuilder{
 		return currentVertex;
 	}
 	
-    public Set collect( Iterator i ) {
-        Set set = new HashSet();
+    public Set<OntResource> collect( ExtendedIterator i ) {
+        Set<OntResource> set = new HashSet<OntResource>();
         while( i.hasNext() ) {
             OntResource res = (OntResource) i.next();
             if( res.isAnon() )
@@ -412,15 +406,15 @@ public class OntoTreeBuilder extends TreeBuilder{
 	   // we have to skip it, but we may still have to load his sons.
 		// in that case we won't have only one iterator but more then one.
 		//in all other cases iterators list will contain only the iterator on sons of this class
-        ArrayList<Iterator> iterators = new ArrayList<Iterator>();
+        ArrayList<ExtendedIterator> iterators = new ArrayList<ExtendedIterator>();
         // get only direct subclasses (true)
-        Iterator firstSubs = cls.listSubClasses( true );
+        ExtendedIterator firstSubs = cls.listSubClasses( true );
  
     
         	
         iterators.add(firstSubs);
         for(int i = 0; i<iterators.size(); i++) {
-        	Iterator subs = iterators.get(i);
+        	ExtendedIterator subs = iterators.get(i);
             while( subs.hasNext() ) {
                 OntClass sub = (OntClass) subs.next();
 
@@ -431,7 +425,7 @@ public class OntoTreeBuilder extends TreeBuilder{
                 //skip non valid classes with different namespace but consider sons
                 if(skipOtherNamespaces && !sub.getNameSpace().toString().equals(ns)) {
              	   // get only direct subclasses (true)
-             	   Iterator moreSubs = sub.listSubClasses( true );
+             	   ExtendedIterator moreSubs = sub.listSubClasses( true );
              	   iterators.add(moreSubs);
              	   continue;
                 }
@@ -492,9 +486,9 @@ public class OntoTreeBuilder extends TreeBuilder{
     	Vertex root = new Vertex(PROPERTYROOTNAME, PROPERTYROOTNAME, model, ontology.getSourceOrTarget());
     	treeCount++;
         uniqueKey = 0; //restart the key because properties are kept in a differnt structure with different index
-        processedSubs = new HashMap();
-    	Iterator itobj = model.listObjectProperties();
-    	Iterator itdata = model.listDatatypeProperties();
+        processedSubs = new HashMap<OntResource, Node>();
+    	ExtendedIterator itobj = model.listObjectProperties();
+    	ExtendedIterator itdata = model.listDatatypeProperties();
     	while (itobj.hasNext() || itdata.hasNext() ) {//scan objprop first and then dataprop
     		OntProperty p;
     		if(itobj.hasNext()) {
@@ -514,7 +508,7 @@ public class OntoTreeBuilder extends TreeBuilder{
     			skip = true;
     		}
     		//check if there is any valid property between the superproperties, i need to check all superproperties hierarchy so i can't use listProp(true), doing this there will always be a the property itself in the list
-    		Iterator it2 = p.listSuperProperties();
+    		ExtendedIterator it2 = p.listSuperProperties();
     		while(it2.hasNext()) {
     			OntProperty superp = (OntProperty)it2.next();
     			if(!p.equals(superp) && !superp.isAnon() && !(skipOtherNamespaces && !superp.getNameSpace().toString().equals(ns))){//if we find a valid father in the superclass hierarchy we skip this property because is not a root
@@ -539,12 +533,12 @@ public class OntoTreeBuilder extends TreeBuilder{
 	   // we have to skip it, but we may still have to load his sons.
 		// in that case we won't have only one iterator but more then one.
 		//in all other cases iterators list will contain only the iterator on sons of this prop
-        ArrayList<Iterator> iterators = new ArrayList<Iterator>();
+        ArrayList<ExtendedIterator> iterators = new ArrayList<ExtendedIterator>();
         // get only direct subproperties (direct = true)
-        Iterator firstSubs = p.listSubProperties( true );
+        ExtendedIterator firstSubs = p.listSubProperties( true );
         iterators.add(firstSubs);
         for(int i = 0; i<iterators.size(); i++) {
-        	Iterator subs = iterators.get(i);
+        	ExtendedIterator subs = iterators.get(i);
             while( subs.hasNext() ) {
                 OntProperty sub = (OntProperty) subs.next();
 
@@ -553,7 +547,7 @@ public class OntoTreeBuilder extends TreeBuilder{
                 //skip non valid classes with different namespace but consider sons
                 if(skipOtherNamespaces && !sub.getNameSpace().toString().equals(ns)) {
              	   // get only direct subclasses (true)
-             	   Iterator moreSubs = sub.listSubProperties( true );
+             	   ExtendedIterator moreSubs = sub.listSubProperties( true );
              	   iterators.add(moreSubs);
              	   continue;
                 }
