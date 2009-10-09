@@ -16,9 +16,9 @@ public class TestUI {
 		frame.getContentPane().setLayout(new BorderLayout());
 		// TODO: Maybe ask the user if he wants to exit the program.  But that might be annoying.
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // if the user closes the window from the window manager, close the application.
-	    JPanel p0 = new JPanel(new BorderLayout());
+	    //JPanel p0 = new JPanel(new BorderLayout());
 		JPanel p1 = new JPanel(new FlowLayout());
-		JPanel p2 = new JPanel(new FlowLayout());
+		//JPanel p2 = new JPanel(new FlowLayout());
 		
 		JButton button1 = new JButton("Ciaooooooooo");
 		JButton button2 = new JButton("Ciaooooooooo");

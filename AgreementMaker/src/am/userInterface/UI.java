@@ -208,7 +208,7 @@ public class UI {
 			
 			//the treebuilder is initialized now we have to execute it in a separate thread.
 			// The dialog will start the treebuilder in a background thread, 
-			OntologyLoadingProgressDialog progress = new OntologyLoadingProgressDialog(t);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
+			new OntologyLoadingProgressDialog(t);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
 			if(!t.isCancelled()) {
 				//Set ontology in the Core
 				Ontology ont = t.getOntology();

@@ -2,7 +2,6 @@ package test;
 
 import java.io.PrintStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import com.hp.hpl.jena.ontology.BooleanClassDescription;
@@ -28,7 +27,7 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
  *
  * @author Ian Dickinson, HP Labs
  *         (<a  href="mailto:Ian.Dickinson@hp.com" >email</a>)
- * @version CVS $Id: DescribeClass.java,v 1.3 2009-10-09 12:57:14 cstroe1 Exp $
+ * @version CVS $Id: DescribeClass.java,v 1.4 2009-10-09 13:18:29 cstroe1 Exp $
  */
 public class DescribeClass {
 
@@ -166,7 +165,7 @@ public class DescribeClass {
         out.print( op );
         out.println( " of {" );
 
-        for (Iterator i = boolClass.listOperands(); i.hasNext(); ) {
+        for (ExtendedIterator i = boolClass.listOperands(); i.hasNext(); ) {
             out.print( "      " );
             renderClassDescription( out, (OntClass) i.next() );
             out.println();

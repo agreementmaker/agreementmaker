@@ -1,16 +1,14 @@
 package am.app.ontology.ontologyParser;
 
 import java.util.HashMap;
-import java.util.Iterator;
-
 import am.app.ontology.Node;
 import am.userInterface.vertex.Vertex;
-
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 /**
  * <p>Title: </p>
@@ -73,24 +71,24 @@ public class RdfsTreeBuilder extends TreeBuilder{
 		treeRoot.add(classRoot);
 		treeCount = 2;
 		processedSubs = new HashMap<OntResource, Node>();
-		Iterator i = ontModel.listHierarchyRootClasses();
+		ExtendedIterator i = ontModel.listHierarchyRootClasses();
 		classRoot = createTree(classRoot, i);//should add all valid classes and subclasses in the iterator to the classRoot
 		ontology.setClassesTree(classRoot);
 		
 	}
 	
-	protected Vertex createTree(Vertex root, Iterator i){
+	protected Vertex createTree(Vertex root, ExtendedIterator i){
 		while (i.hasNext()) {
 			OntClass cls = (OntClass)i.next();
 			if(cls.isAnon()) ;//skip
 		    else if(skipOtherNamespaces && !cls.getNameSpace().toString().equals(ns)) {
           	   //If a node has a different namespace must be jumped , so sons of that node must be added to the grandfather
-          	   Iterator moreSubs = cls.listSubClasses( true );
+          	   ExtendedIterator moreSubs = cls.listSubClasses( true );
           	   root = createTree(root, moreSubs);       	   
             }
 		    else {
 				Vertex newVertex = createNodeAndVertex(cls, root.getNodeType());
-				Iterator subs = cls.listSubClasses( true );
+				ExtendedIterator subs = cls.listSubClasses( true );
 				newVertex = createTree(newVertex, subs);
 				root.add(newVertex);
 				treeCount++;
