@@ -270,10 +270,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			ArrayList<Alignment> alignments = new ArrayList<Alignment>();
 			Alignment align;
 			for (int i =0; i < globalNodesSelected.size(); i++){
-				global = (Vertex)globalNodesSelected.get(i);
+				global = globalNodesSelected.get(i);
 				if(!global.isFake()) {
 					for(int j= 0; j < localNodesSelected.size();j++) {
-						local = (Vertex)localNodesSelected.get(j);
+						local = localNodesSelected.get(j);
 						if(!local.isFake()) {
 							align = new Alignment(global.getNode(), local.getNode(), sim, relation);
 							if(!alignments.contains(align)) {
@@ -373,14 +373,12 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	public void setTree(TreeBuilder tb) {		
 		Vertex treeRoot = tb.getTreeRoot();
 		Ontology o = tb.getOntology();
-		int nodeType;
+	
 		if(o.isSource()) {
 			setGlobalTreeRoot(treeRoot);
-			nodeType = GlobalStaticVariables.SOURCENODE;
 		}
 		else {
 			setLocalTreeRoot(treeRoot);
-			nodeType = GlobalStaticVariables.TARGETNODE;
 		}
 
 		int totalNodes = tb.getTreeCount();	// number of nodes created in global tree
@@ -585,10 +583,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		
 		// displaying the tree as text
 		Vertex node;	
-		for (Enumeration e = treeRoot.preorderEnumeration(); e.hasMoreElements() ;) 
+		for (Enumeration<Vertex> e = treeRoot.preorderEnumeration(); e.hasMoreElements() ;) 
 		{
 			// get the node
-			node = (Vertex) e.nextElement();
+			node = e.nextElement();
 			//System.out.println("Name: " +node.getName()+".");
 			//System.out.println("Key: " + node.getID());
 			//else
@@ -657,10 +655,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		else
 			root = getLocalTreeRoot();
 		
-		for (Enumeration e = root.preorderEnumeration(); e.hasMoreElements() ;)
+		for (Enumeration<Vertex> e = root.preorderEnumeration(); e.hasMoreElements() ;)
 		{
 			// get the node
-			node = (Vertex) e.nextElement();
+			node = e.nextElement();
 			
 			
 			// if the node is visible then draw the lines
@@ -886,8 +884,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			// ONE-TO-ONE MAPPING   
 			
 			// get the local and global node selected
-			global = (Vertex)globalNodesSelected.get(0);
-			local = (Vertex)localNodesSelected.get(0);
+			global = globalNodesSelected.get(0);
+			local = localNodesSelected.get(0);
 			
 			// get their location on their canvas
 			x1 = global.getX2();
@@ -929,7 +927,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			for (int i =0; i< globalNodesSelected.size(); i++)
 			{
 				// get the global node
-				global = (Vertex)globalNodesSelected.get(i);
+				global = globalNodesSelected.get(i);
 				
 				// get the location of the global node
 				x1 = global.getX2();
@@ -959,7 +957,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			for (int i =0; i<localNodesSelected.size(); i++)
 			{
 				// get the local node
-				local = (Vertex)localNodesSelected.get(i);
+				local = localNodesSelected.get(i);
 				
 				// get the location of the local node
 				x2 = local.getX();
@@ -1027,7 +1025,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			y = new int[globalNodesSelected.size()];
 			
 			// first get the local one node
-			local = (Vertex)localNodesSelected.get(0);
+			local = localNodesSelected.get(0);
 			
 			// get the location of the local node
 			x2 = local.getX();
@@ -1037,7 +1035,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			for (int i =0; i< globalNodesSelected.size(); i++)
 			{
 				// get the global node
-				global = (Vertex)globalNodesSelected.get(i);
+				global = globalNodesSelected.get(i);
 				
 				// get the location of the global node
 				x1 = global.getX2();
@@ -1100,7 +1098,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			y = new int[localNodesSelected.size()];
 			
 			// first get the global one node
-			global = (Vertex)globalNodesSelected.get(0);
+			global = globalNodesSelected.get(0);
 			
 			// get the location of the global node
 			x1 = global.getX2();
@@ -1110,7 +1108,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			for (int i =0; i<localNodesSelected.size(); i++)
 			{
 				// get the local node
-				local = (Vertex)localNodesSelected.get(i);
+				local = localNodesSelected.get(i);
 				
 				// get the location of the local node
 				x2 = local.getX();
@@ -1316,9 +1314,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	/**Select all nodes with height between min and max in the selected root*/
 	private void selectMoreNodes(int min, int max, Vertex root) {
 		Vertex node;
-		for (Enumeration e = root.preorderEnumeration(); e.hasMoreElements() ;){
+		for (Enumeration<Vertex> e = root.preorderEnumeration(); e.hasMoreElements() ;){
 			// get the node
-			node = (Vertex) e.nextElement();
+			node = e.nextElement();
 			if (node.getY() >= min && node.getY() <= max){
 				selectANode(node);
 			}
@@ -1362,7 +1360,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			it = localClickedNodeList.iterator();
 		}
 		while(it.hasNext()) {
-			Vertex node = (Vertex)it.next();
+			Vertex node = it.next();
 			if(node.equals(displayedNode)) { //clear the description panel on the right
 				((VertexDescriptionPane)(myUI.getDescriptionPanel())).clearDescription(node);
 				displayedNode = null;
@@ -1381,7 +1379,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			it = localNodesSelected.iterator();
 		}
 		while(it.hasNext()) {
-			Vertex node = (Vertex)it.next();
+			Vertex node = it.next();
 			node.setIsSelected(false);
 			it.remove();
 		}
@@ -1428,10 +1426,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		
 		if (root != null)
 		{
-			for (Enumeration e = root.preorderEnumeration(); e.hasMoreElements() ;)
+			for (Enumeration<Vertex> e = root.preorderEnumeration(); e.hasMoreElements() ;)
 			{
 				// get the node
-				node = (Vertex) e.nextElement();
+				node = e.nextElement();
 				
 				// get the location of the node 
 				// and set a area left of node which is indicates to expand or contrast
@@ -1489,7 +1487,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		Vertex node;
 		
 		// Hide the children of expandOrContractNode children
-		for (Enumeration e =targetNode.children(); e.hasMoreElements(); )
+		for (Enumeration<Vertex> e = targetNode.children(); e.hasMoreElements(); )
 		{
 			node = (Vertex) e.nextElement();
 			
@@ -1567,10 +1565,10 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		if (root != null)
 		{
 			Vertex node;
-			for (Enumeration e = root.preorderEnumeration(); e.hasMoreElements() ;)
+			for (Enumeration<Vertex> e = root.preorderEnumeration(); e.hasMoreElements() ;)
 			{
 				// get the node
-				node = (Vertex) e.nextElement();
+				node = e.nextElement();
 				if (node.isVisible() == true)
 				{
 					if ((x <= node.getX2()) && (x >= node.getX()))
