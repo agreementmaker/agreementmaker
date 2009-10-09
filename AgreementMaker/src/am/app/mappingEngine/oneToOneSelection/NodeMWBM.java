@@ -11,7 +11,7 @@ public class NodeMWBM<E> implements Comparable<NodeMWBM<E>> {
 	/**
 	 * Riferimento al grafo contenente il nodo
 	 */
-	public Graph graph;
+	public Graph<E> graph;
 	
 	/**
 	 * Indice del nodo nel grafo
@@ -46,7 +46,7 @@ public class NodeMWBM<E> implements Comparable<NodeMWBM<E>> {
 		graphIndex = e.hashCode();
 	}
 		
-	public NodeMWBM(E e, LinkMWBM<E> a, Graph g, int graIndex){
+	public NodeMWBM(E e, LinkMWBM<E> a, Graph<E> g, int graIndex){
 		element = e;
 		firstEdge = a; 
 		graph = g;
@@ -117,7 +117,7 @@ public class NodeMWBM<E> implements Comparable<NodeMWBM<E>> {
 		return graphIndex;
 	}
 
-	public void setGraph(Graph graph) {
+	public void setGraph(Graph<E> graph) {
 		this.graph = graph;
 	}
 
