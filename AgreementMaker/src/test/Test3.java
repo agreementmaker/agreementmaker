@@ -10,6 +10,7 @@ import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -25,7 +26,7 @@ public class Test3 {
 
    	  	ontModel.read( ontResourceURL);
    	  	//Iterator it = getTopLevelClasses((Model)ontModel).iterator();
-    	Iterator it = ontModel.listHierarchyRootClasses();
+    	ExtendedIterator it = ontModel.listHierarchyRootClasses();
    	  	while(it .hasNext()){
     		OntClass c = (OntClass)it .next();
     		if(!c.isAnon()){
@@ -37,18 +38,18 @@ public class Test3 {
     	}
     }
  
-	public static Set getTopLevelClasses(Model model) {
+	public static Set<Resource> getTopLevelClasses(Model model) {
 		
-		Set metaclasses = new HashSet();
+		Set<Resource> metaclasses = new HashSet<Resource>();
 		//metaclasses.add(RDFS.Class);
 		metaclasses.add(OWL.Class);
 		// TODO: Add other user-defined metaclasses...
 		
-		Set results = new HashSet();
-		Iterator it = metaclasses.iterator();
+		Set<Resource> results = new HashSet<Resource>();
+		Iterator<Resource> it = metaclasses.iterator();
 		while(it.hasNext()) {
-			Resource metaclass = (Resource) it.next();
-			Iterator classes = model.listSubjectsWithProperty(RDF.type, metaclass);
+			Resource metaclass = it.next();
+			ExtendedIterator classes = model.listSubjectsWithProperty(RDF.type, metaclass);
 			while(classes.hasNext()) {
 				Resource clazz = (Resource) classes.next();
 				if(clazz.isURIResource()) {
