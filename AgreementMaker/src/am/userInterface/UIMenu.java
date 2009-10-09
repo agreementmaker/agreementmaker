@@ -18,13 +18,13 @@ import javax.swing.KeyStroke;
 import am.AMException;
 import am.GlobalStaticVariables;
 import am.Utility;
-import am.application.Core;
-import am.application.mappingEngine.AbstractMatcher;
-import am.application.mappingEngine.Alignment;
-import am.application.mappingEngine.AlignmentSet;
-import am.application.mappingEngine.MatchersRegistry;
-import am.application.mappingEngine.manualMatcher.UserManualMatcher;
-import am.application.ontology.Ontology;
+import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.AlignmentSet;
+import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.manualMatcher.UserManualMatcher;
+import am.app.ontology.Ontology;
 import am.userInterface.table.MatchersTablePanel;
 
 

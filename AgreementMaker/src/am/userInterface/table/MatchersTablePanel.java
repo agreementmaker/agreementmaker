@@ -16,11 +16,11 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import am.Utility;
-import am.application.Core;
-import am.application.mappingEngine.AbstractMatcher;
-import am.application.mappingEngine.MatcherFactory;
-import am.application.mappingEngine.MatchersRegistry;
-import am.application.mappingEngine.manualMatcher.UserManualMatcher;
+import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.userInterface.UI;
 
 import java.awt.Component;

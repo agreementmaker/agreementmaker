@@ -1,6 +1,6 @@
 package am;
 
-import am.application.Core;
+import am.app.Core;
 import am.batchMode.TrackDispatcher;
 import am.userInterface.UI;
 

@@ -10,7 +10,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
 import am.GlobalStaticVariables;
-import am.application.ontology.Node;
+import am.app.ontology.Node;
 
 public class VertexDescriptionPane extends JPanel{
 	

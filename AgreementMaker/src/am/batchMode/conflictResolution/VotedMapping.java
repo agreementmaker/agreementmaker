@@ -1,6 +1,6 @@
 package am.batchMode.conflictResolution;
 
-import am.application.mappingEngine.Alignment;
+import am.app.mappingEngine.Alignment;
 
 public class VotedMapping {
 	

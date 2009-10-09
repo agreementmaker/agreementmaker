@@ -9,7 +9,7 @@ import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 
-import am.application.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher;
 
 public class InputMatchersEditor extends AbstractCellEditor implements TableCellEditor{
 	

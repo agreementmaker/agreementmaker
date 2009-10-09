@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.prefs.Preferences;
 
 import am.GlobalStaticVariables;
-import am.application.mappingEngine.MatcherSetting;
+import am.app.mappingEngine.MatcherSetting;
 
 /** 
  * @author cosmin

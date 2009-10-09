@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
 import am.Utility;
-import am.application.Core;
-import am.application.mappingEngine.AbstractMatcher;
-import am.application.mappingEngine.qualityEvaluation.QualityEvaluationData;
+import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.userInterface.UI;
 
 import java.awt.Color;

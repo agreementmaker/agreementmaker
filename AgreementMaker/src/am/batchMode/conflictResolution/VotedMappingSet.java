@@ -6,10 +6,10 @@ import java.util.Iterator;
 
 import javax.swing.JOptionPane;
 
-import am.application.mappingEngine.AbstractMatcher;
-import am.application.mappingEngine.Alignment;
-import am.application.mappingEngine.AlignmentSet;
-import am.application.ontology.Node;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.AlignmentSet;
+import am.app.ontology.Node;
 
 public class VotedMappingSet {
 	

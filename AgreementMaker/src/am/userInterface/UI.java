@@ -14,9 +14,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 import am.GlobalStaticVariables;
-import am.application.Core;
-import am.application.ontology.Ontology;
-import am.application.ontology.ontologyParser.TreeBuilder;
+import am.app.Core;
+import am.app.ontology.Ontology;
+import am.app.ontology.ontologyParser.TreeBuilder;
 import am.userInterface.vertex.VertexDescriptionPane;
 
 

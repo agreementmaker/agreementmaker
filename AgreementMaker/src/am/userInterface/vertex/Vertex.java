@@ -10,7 +10,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 import am.GlobalStaticVariables;
-import am.application.ontology.Node;
+import am.app.ontology.Node;
 
 import com.hp.hpl.jena.ontology.OntModel;
 

@@ -6,11 +6,11 @@ import java.io.PrintWriter;
 import sun.awt.windows.ThemeReader;
 import am.GlobalStaticVariables;
 import am.Utility;
-import am.application.Core;
-import am.application.mappingEngine.AlignmentSet;
-import am.application.mappingEngine.MatchersRegistry;
-import am.application.mappingEngine.baseSimilarity.BaseSimilarityParameters;
-import am.application.mappingEngine.oaei2009.OAEI2009parameters;
+import am.app.Core;
+import am.app.mappingEngine.AlignmentSet;
+import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
+import am.app.mappingEngine.oaei2009.OAEI2009parameters;
 import am.output.AlignmentOutput;
 
 public class BenchmarkTrack extends Track{

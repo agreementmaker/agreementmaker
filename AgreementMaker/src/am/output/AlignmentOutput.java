@@ -8,8 +8,8 @@ import java.util.ArrayList;
 
 import com.hp.hpl.jena.rdf.model.Resource;
 
-import am.application.mappingEngine.Alignment;
-import am.application.mappingEngine.AlignmentSet;
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.AlignmentSet;
 
 public class AlignmentOutput
 {

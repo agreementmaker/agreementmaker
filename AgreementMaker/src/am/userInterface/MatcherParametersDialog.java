@@ -14,9 +14,9 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import am.Utility;
-import am.application.mappingEngine.AbstractMatcher;
-import am.application.mappingEngine.AbstractMatcherParametersPanel;
-import am.application.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.AbstractParameters;
 
 
 

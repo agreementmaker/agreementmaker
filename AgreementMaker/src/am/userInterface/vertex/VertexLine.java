@@ -1,6 +1,6 @@
 package am.userInterface.vertex;
 
-import am.application.mappingEngine.Alignment;
+import am.app.mappingEngine.Alignment;
 
 /**
  * This is just a structure used to keep the structures needed to show a line

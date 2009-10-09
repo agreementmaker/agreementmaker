@@ -20,9 +20,9 @@ import javax.swing.SwingWorker;
 
 import am.GlobalStaticVariables;
 import am.Utility;
-import am.application.mappingEngine.AbstractMatcher;
-import am.application.mappingEngine.Matcher;
-import am.application.ontology.ontologyParser.TreeBuilder;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Matcher;
+import am.app.ontology.ontologyParser.TreeBuilder;
 
 public class OntologyLoadingProgressDialog extends JDialog implements PropertyChangeListener, ActionListener {
 

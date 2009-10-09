@@ -9,10 +9,12 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.reasoner.ReasonerRegistry;
 import com.hp.hpl.jena.reasoner.dig.DIGReasoner;
 import com.hp.hpl.jena.reasoner.dig.DIGReasonerFactory;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -50,7 +52,7 @@ public class DIGExample
         System.out.println( "Class " + i.nextStatement().getSubject() + " is unsatisfiable" );
     }*/
   
-      	Iterator it = ontModel.listHierarchyRootClasses();
+      	ExtendedIterator it = ontModel.listHierarchyRootClasses();
      	  	//Iterator it = findHierarchyRootClasses(ontModel);
       	//it = getTopLevelClasses(it);
       	System.out.println("*** Inside main ***");
@@ -60,11 +62,11 @@ public class DIGExample
       	}
       }
   	
-  	public static Iterator getTopLevelClasses2 (Iterator i){
-  		Set named;
+  	public static Iterator<OntClass> getTopLevelClasses2 (ExtendedIterator i){
+  		Set<OntClass> named;
   		OntClass c;
   		boolean hasNamedSuperClass;
-  		named = new HashSet();
+  		named = new HashSet<OntClass>();
   		
   		while(i.hasNext()){
   			c = (OntClass)i.next();
@@ -72,10 +74,10 @@ public class DIGExample
       			named.add(c);
       	    }
       	    else if(c.isRestriction()){
-      	        Iterator ii = c.listSubClasses(true);
+      	        ExtendedIterator ii = c.listSubClasses(true);
       	        while(ii.hasNext()){
       	        	OntClass cc = (OntClass)ii.next();
-      	        	Iterator iii = cc.listSuperClasses(true);
+      	        	ExtendedIterator iii = cc.listSuperClasses(true);
       	        	hasNamedSuperClass = false;
       	        	while(iii.hasNext()){
       	        		if(!((OntClass)iii.next()).isAnon())
@@ -91,15 +93,15 @@ public class DIGExample
   		return named.iterator();
   	}
   	
-  	public static Iterator getTopLevelClasses (Iterator i){
-  		Set anon, named;
+  	public static Iterator<OntClass> getTopLevelClasses (Iterator<OntClass> i){
+  		Set<OntClass> anon, named;
   		OntClass c;
   		boolean hasNamedSuperClass;
-  		anon = new HashSet();
-  		named = new HashSet();
+  		anon = new HashSet<OntClass>();
+  		named = new HashSet<OntClass>();
   		
   		while(i.hasNext()){
-  			c = (OntClass)i.next();
+  			c = i.next();
       		if(c.isAnon()){
       			anon.add(c);
       	    }
@@ -111,11 +113,11 @@ public class DIGExample
   		if(!named.isEmpty()){
   			System.out.println("*** Inside named ***");
   			anon.clear();
-  			i = named.iterator();
-  			while(i.hasNext()){
-  				c = (OntClass)i.next();
+  			Iterator<OntClass> i1 = named.iterator();
+  			while(i1.hasNext()){
+  				c = i1.next();
   				printClass(c);
-  				Iterator ii = c.listSuperClasses(true);
+  				ExtendedIterator ii = c.listSuperClasses(true);
   				hasNamedSuperClass = false;
   				while(ii.hasNext()){
   					OntClass ccc = (OntClass)ii.next();
@@ -134,11 +136,11 @@ public class DIGExample
   		}else{
   			System.out.println("*** Repeating getTopLevelClasses ***");
   			named.clear();
-  			i = anon.iterator();
-  			while(i.hasNext()){
-  				c = (OntClass)i.next();
+  			Iterator<OntClass> i2 = anon.iterator();
+  			while(i2.hasNext()){
+  				c = i2.next();
   				printClass(c);
-  				Iterator ii = c.listSubClasses(true);
+  				ExtendedIterator ii = c.listSubClasses(true);
   				while(ii.hasNext())
   					//named is being reused here to avoid creating another HashSet element
   					named.add((OntClass)ii.next());	
@@ -148,18 +150,18 @@ public class DIGExample
   		
   	}
    
-  	public static Set getTopLevelClasses(Model model) {
+  	public static Set<Resource> getTopLevelClasses(Model model) {
   		
-  		Set metaclasses = new HashSet();
+  		Set<Resource> metaclasses = new HashSet<Resource>();
   		//metaclasses.add(RDFS.Class);
   		metaclasses.add(OWL.Class);
   		// TODO: Add other user-defined metaclasses...
   		
-  		Set results = new HashSet();
-  		Iterator it = metaclasses.iterator();
+  		Set<Resource> results = new HashSet<Resource>();
+  		Iterator<Resource> it = metaclasses.iterator();
   		while(it.hasNext()) {
-  			Resource metaclass = (Resource) it.next();
-  			Iterator classes = model.listSubjectsWithProperty(RDF.type, metaclass);
+  			Resource metaclass = it.next();
+  			ResIterator classes = model.listSubjectsWithProperty(RDF.type, metaclass);
   			while(classes.hasNext()) {
   				Resource clazz = (Resource) classes.next();
   				if(clazz.isURIResource()) {
@@ -176,8 +178,8 @@ public class DIGExample
   	  /**
        * Find the root classes, skipping any anonymous union/intersections.
        */
-      public static Iterator findHierarchyRootClasses(OntModel om) {
-          Set roots = new HashSet();
+      public static Iterator<OntClass> findHierarchyRootClasses(OntModel om) {
+          Set<OntClass> roots = new HashSet<OntClass>();
           expandAnonIterator(om.listHierarchyRootClasses(), roots);
           return roots.iterator();
       }
@@ -189,18 +191,18 @@ public class DIGExample
   level named
        * classes.
        */
-      private static void expandAnonIterator(Iterator oci, Set accumulator) {
+      private static void expandAnonIterator(ExtendedIterator oci, Set<OntClass> accumulator) {
          while (oci.hasNext()) {
              OntClass oc = (OntClass)oci.next();
              if (oc.isAnon()) {
-                 Iterator i = oc.isUnionClass()
+            	 ExtendedIterator i = oc.isUnionClass()
                    ? oc.asUnionClass().listOperands()
                    : oc.listSubClasses(true);
                  expandAnonIterator(i, accumulator);
              } else {
                  // Filter classes which have non-anon, non thing parents
                  boolean ok = true;
-                 for (Iterator i = oc.listSuperClasses(); i.hasNext(); ) {
+                 for (ExtendedIterator i = oc.listSuperClasses(); i.hasNext(); ) {
                      OntClass soc = (OntClass)i.next();
                      if ( ! soc.isAnon() && ! soc.equals(RDFS.Resource)
                                    && ! soc.equals(OWL.Thing)) {

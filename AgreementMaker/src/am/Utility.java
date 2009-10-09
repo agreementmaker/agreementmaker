@@ -6,8 +6,8 @@ import javax.swing.JTextArea;
 
 import sun.net.www.protocol.http.InMemoryCookieStore;
 
-import am.application.mappingEngine.AbstractMatcher;
-import am.application.mappingEngine.IntDoublePair;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.IntDoublePair;
 import am.userInterface.table.MyTableModel;
 
 import java.text.DecimalFormat;

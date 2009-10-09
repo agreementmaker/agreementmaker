@@ -3,10 +3,10 @@ package test;
 
 import javax.swing.JOptionPane;
 
-import am.application.mappingEngine.StringUtil.Normalizer;
-import am.application.mappingEngine.StringUtil.NormalizerParameter;
-import am.application.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
-import am.application.mappingEngine.parametricStringMatcher.ParametricStringParameters;
+import am.app.mappingEngine.StringUtil.Normalizer;
+import am.app.mappingEngine.StringUtil.NormalizerParameter;
+import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
+import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 
 public class ProcessStrings {
 

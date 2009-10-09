@@ -2,13 +2,13 @@ package am.batchMode;
 
 import am.GlobalStaticVariables;
 import am.Utility;
-import am.application.Core;
-import am.application.mappingEngine.AbstractMatcher;
-import am.application.mappingEngine.AlignmentSet;
-import am.application.mappingEngine.MatchersRegistry;
-import am.application.mappingEngine.oaei2009.OAEI2009parameters;
-import am.application.ontology.Ontology;
-import am.application.ontology.ontologyParser.OntoTreeBuilder;
+import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AlignmentSet;
+import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.oaei2009.OAEI2009parameters;
+import am.app.ontology.Ontology;
+import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.output.AlignmentOutput;
 
 import java.io.*;

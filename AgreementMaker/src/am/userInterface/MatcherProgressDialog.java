@@ -19,8 +19,8 @@ import javax.swing.JTextArea;
 
 import am.GlobalStaticVariables;
 import am.Utility;
-import am.application.mappingEngine.AbstractMatcher;
-import am.application.mappingEngine.Matcher;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Matcher;
 
 public class MatcherProgressDialog extends JDialog implements PropertyChangeListener, ActionListener {
 

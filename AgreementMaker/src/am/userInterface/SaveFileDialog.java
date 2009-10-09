@@ -18,7 +18,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.filechooser.FileFilter;
 
 import am.Utility;
-import am.application.Core;
+import am.app.Core;
 import am.output.AlignmentOutput;
 import am.output.OutputController;
 import am.userInterface.UI.WindowEventHandler;

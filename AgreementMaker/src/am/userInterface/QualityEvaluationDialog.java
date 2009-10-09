@@ -16,11 +16,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import am.Utility;
-import am.application.mappingEngine.AbstractMatcher;
-import am.application.mappingEngine.AbstractMatcherParametersPanel;
-import am.application.mappingEngine.AbstractParameters;
-import am.application.mappingEngine.Combination.CombinationParameters;
-import am.application.mappingEngine.qualityEvaluation.QualityEvaluator;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.Combination.CombinationParameters;
+import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
 
 
 

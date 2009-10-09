@@ -8,11 +8,11 @@ package test;
  * Web                http://sourceforge.net/projects/jena/
  * Created            27-Mar-2003
  * Filename           $RCSfile: ClassHierarchy.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
  *
- * Last modified on   $Date: 2009-05-20 12:50:10 $
- *               by   $Author: flav $
+ * Last modified on   $Date: 2009-10-09 11:34:12 $
+ *               by   $Author: cstroe1 $
  *
  * (c) Copyright 2002, 2003, 2004, 2005 Hewlett-Packard Development Company, LP
  * (see footer for full conditions)
@@ -37,6 +37,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Restriction;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 
 /**
@@ -48,7 +49,7 @@ import com.hp.hpl.jena.shared.PrefixMapping;
  *
  * @author Ian Dickinson, HP Labs
  *         (<a  href="mailto:Ian.Dickinson@hp.com" >email</a>)
- * @version CVS $Id: ClassHierarchy.java,v 1.3 2009-05-20 12:50:10 flav Exp $
+ * @version CVS $Id: ClassHierarchy.java,v 1.4 2009-10-09 11:34:12 cstroe1 Exp $
  */
 public class ClassHierarchy {
     
@@ -61,7 +62,7 @@ public class ClassHierarchy {
     public void showHierarchy( PrintStream out, OntModel m ) {
         // create an iterator over the root classes that are not anonymous class expressions
     	
-        Iterator i =  m.listHierarchyRootClasses();
+        ExtendedIterator i =  m.listHierarchyRootClasses();
     	//Iterator i =  m.listNamedClasses()
          /*.filterDrop( new Filter() {
                                     public boolean accept( Object o ) {
@@ -81,7 +82,7 @@ public class ClassHierarchy {
 
         // recurse to the next level down
         if (cls.canAs( OntClass.class )  &&  !occurs.contains( cls )) {
-            for (Iterator i = cls.listSubClasses( true );  i.hasNext(); ) {
+            for (ExtendedIterator i = cls.listSubClasses( true );  i.hasNext(); ) {
                 OntClass sub = (OntClass) i.next();
 
                 // we push this expression on the occurs list before we recurse

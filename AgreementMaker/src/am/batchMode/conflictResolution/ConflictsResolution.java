@@ -9,10 +9,11 @@ import java.util.Queue;
 
 import javax.swing.JOptionPane;
 
-import am.application.mappingEngine.AbstractMatcher;
-import am.application.mappingEngine.Alignment;
-import am.application.ontology.Node;
-import am.application.ontology.Ontology;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Alignment;
+import am.app.ontology.Node;
+import am.app.ontology.Ontology;
+
 import java.util.Stack;
 
 public class ConflictsResolution {

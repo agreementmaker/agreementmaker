@@ -5,8 +5,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Date;
 
-import am.application.Core;
-import am.application.mappingEngine.AbstractMatcher;
+import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher;
 
 public class OutputController {
 
