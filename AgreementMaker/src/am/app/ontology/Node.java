@@ -398,7 +398,7 @@ public class Node {
 		ArrayList<Node> result = new ArrayList<Node>();
 		Vertex v = getVertex();
 		if(!v.isLeaf()) {
-			Enumeration c = v.children();
+			Enumeration<Vertex> c = v.children();
 			Vertex child;
 			while(c.hasMoreElements()) {
 				//no need to check duplicates because the same vertex can't have two duplicates as sons
