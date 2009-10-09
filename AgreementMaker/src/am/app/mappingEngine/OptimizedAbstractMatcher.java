@@ -1,8 +1,6 @@
 package am.app.mappingEngine;
 
 import java.util.ArrayList;
-
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 
 //If a matcher is provided as input to this type of matcher
