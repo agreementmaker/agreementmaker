@@ -16,7 +16,7 @@ public class AlignmentOutput
     private AlignmentSet alignmentSet = null;
     private RandomAccessFile raf = null;
     private String filepath = null;
-    private ArrayList writeList = null;
+    private ArrayList<String> writeList = null;
 
     public AlignmentOutput(AlignmentSet as, String fp)
     {
@@ -28,7 +28,7 @@ public class AlignmentOutput
                 file.delete();
             }
             raf = new RandomAccessFile(filepath, "rw");
-            writeList = new ArrayList();
+            writeList = new ArrayList<String>();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

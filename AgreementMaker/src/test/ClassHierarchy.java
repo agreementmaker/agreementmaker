@@ -8,10 +8,10 @@ package test;
  * Web                http://sourceforge.net/projects/jena/
  * Created            27-Mar-2003
  * Filename           $RCSfile: ClassHierarchy.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
  *
- * Last modified on   $Date: 2009-10-09 11:34:12 $
+ * Last modified on   $Date: 2009-10-09 11:43:20 $
  *               by   $Author: cstroe1 $
  *
  * (c) Copyright 2002, 2003, 2004, 2005 Hewlett-Packard Development Company, LP
@@ -28,13 +28,13 @@ package test;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.Restriction;
+import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -49,12 +49,12 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
  *
  * @author Ian Dickinson, HP Labs
  *         (<a  href="mailto:Ian.Dickinson@hp.com" >email</a>)
- * @version CVS $Id: ClassHierarchy.java,v 1.4 2009-10-09 11:34:12 cstroe1 Exp $
+ * @version CVS $Id: ClassHierarchy.java,v 1.5 2009-10-09 11:43:20 cstroe1 Exp $
  */
 public class ClassHierarchy {
     
     protected OntModel m_model;
-    private Map m_anonIDs = new HashMap();
+    private Map<AnonId,String> m_anonIDs = new HashMap<AnonId,String>();
     private int m_anonCount = 0;
     int prova = 0;
 
@@ -70,13 +70,13 @@ public class ClassHierarchy {
                                     }} );*/
 
         while (i.hasNext()) {
-            showClass( out, (OntClass) i.next(), new ArrayList(), 0 );
+            showClass( out, (OntClass) i.next(), new ArrayList<OntClass>(), 0 );
         }
     }
     /** Present a class, then recurse down to the sub-classes.
      *  Use occurs check to prevent getting stuck in a loop
      */
-    protected void showClass( PrintStream out, OntClass cls, List occurs, int depth ) {
+    protected void showClass( PrintStream out, OntClass cls, List<OntClass> occurs, int depth ) {
         renderClassDescription( out, cls, depth );
         out.println();
 
