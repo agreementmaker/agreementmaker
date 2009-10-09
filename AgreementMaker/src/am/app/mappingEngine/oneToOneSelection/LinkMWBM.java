@@ -105,8 +105,8 @@ public class LinkMWBM<E> {
 	}
 	
 	public boolean equals(Object o){
-		if(o instanceof LinkMWBM){
-			LinkMWBM l = (LinkMWBM)o;
+		if(o instanceof LinkMWBM<?>){
+			LinkMWBM<?> l = (LinkMWBM<?>)o;
 			return l.source.equals(source) && l.dest.equals(dest);
 		}
 		return false;
