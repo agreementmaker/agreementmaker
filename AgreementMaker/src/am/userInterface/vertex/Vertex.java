@@ -3,15 +3,9 @@ package am.userInterface.vertex;
 
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Enumeration;
-
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
-
 import am.GlobalStaticVariables;
 import am.app.ontology.Node;
-
 import com.hp.hpl.jena.ontology.OntModel;
 
 /**
@@ -44,15 +38,7 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 	private int nodeType;			// the type of node (global or local)
 	//private VertexDescriptionPane vertexDescription; //stores the description of the OWL classes
 	private int ontNode;		//the type of vertex; XML or OWL -> 0 for XML and 1 for OWL
-	private String parentsDesc="";		// String the stores the parentsDesList
-	private ArrayList parentsNameList;		// stores the names of the parents and grand parents of the vertex
-	private ArrayList siblingsNameList;		// stores the names of siblings of the vertex
-	private ArrayList parentsDescList;		// stores the Discriptions of the parents and grand parents of the vertex
-	private ArrayList siblingsDescList;		// stores the Discriptions of siblings of the vertex
-	private String parentsName= "";		// String the stores the parentsNameList
 	private boolean shouldCollapse;	// keeps track if the node or vertex should collapse or not. 
-	private String siblingsDesc = "";// String the stores the siblingsDescList
-	private String siblingsName ="";	// String the stores the siblingsNameList
 	private int width;				// width of the node/vertex
 	private int x;					// coordinate x location on canvas
 	
