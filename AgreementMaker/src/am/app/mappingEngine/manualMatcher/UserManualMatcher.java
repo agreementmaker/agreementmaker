@@ -4,7 +4,6 @@ package am.app.mappingEngine.manualMatcher;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.Colors;

@@ -4,18 +4,13 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
-
 import com.wcohen.ss.api.StringWrapper;
-
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.StringUtil.AMStringWrapper;
 import am.app.mappingEngine.StringUtil.Normalizer;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcherParametersPanel;
 import am.app.ontology.Node;
 import am.userInterface.vertex.Vertex;
 

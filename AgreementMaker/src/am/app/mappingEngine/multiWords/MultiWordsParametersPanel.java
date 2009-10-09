@@ -5,11 +5,9 @@ import javax.swing.GroupLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-
-import am.Utility;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.AbstractParameters;
-import am.app.mappingEngine.StringUtil.NormalizerParameter;
+
 
 public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 
