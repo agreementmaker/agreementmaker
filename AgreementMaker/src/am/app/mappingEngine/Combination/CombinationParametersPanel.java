@@ -2,9 +2,7 @@ package am.app.mappingEngine.Combination;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-
 import java.util.ArrayList;
-
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.JComboBox;
@@ -12,14 +10,10 @@ import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
-
-import com.ibm.icu.lang.UCharacter.JoiningGroup;
-
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
 
 

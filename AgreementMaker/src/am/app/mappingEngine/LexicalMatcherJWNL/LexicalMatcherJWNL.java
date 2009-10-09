@@ -4,10 +4,8 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.OptimizedAbstractMatcher;
 import am.app.ontology.Node;
 
 
@@ -207,7 +205,8 @@ public class LexicalMatcherJWNL extends AbstractMatcher{
 	/**
 	 * Function calculates the similarity using hypernyms of the concepts
 	 */
-    public double hypernymSimilarity(IndexWord index1, IndexWord index2) throws Exception {
+ 
+	public double hypernymSimilarity(IndexWord index1, IndexWord index2) throws Exception {
         // the max number of common concepts between the two tokens
         double commonMax = 0;
 
@@ -234,16 +233,16 @@ public class LexicalMatcherJWNL extends AbstractMatcher{
                         Synset synset2 = Synset2[k];
                         
                         //Get hypernyms of the current synonym
-                        List hypernymList1 = PointerUtils.getInstance().getHypernymTree(synset1).toList();
-                        List hypernymList2 = PointerUtils.getInstance().getHypernymTree(synset2).toList();
+                        List<PointerTargetNodeList> hypernymList1 = PointerUtils.getInstance().getHypernymTree(synset1).toList();
+                        List<PointerTargetNodeList> hypernymList2 = PointerUtils.getInstance().getHypernymTree(synset2).toList();
 
-                        Iterator hList1iter = hypernymList1.iterator();
+                        Iterator<PointerTargetNodeList> hList1iter = hypernymList1.iterator();
 
                         while (hList1iter.hasNext()) {
-                            ptnl1 = (PointerTargetNodeList) hList1iter.next();
-                            Iterator hList2iter = hypernymList2.iterator();
+                            ptnl1 = hList1iter.next();
+                            Iterator<PointerTargetNodeList> hList2iter = hypernymList2.iterator();
                             while (hList2iter.hasNext()) {
-                                ptnl2 = (PointerTargetNodeList) hList2iter.next();
+                                ptnl2 = hList2iter.next();
 
                                 int commonNum = getCommonConcepts(ptnl1, ptnl2);
                                 if (commonNum > maxOfLists) {

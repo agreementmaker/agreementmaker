@@ -5,24 +5,17 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-
-import java.util.*;
-
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.MatcherSetting;
 import am.userInterface.AppPreferences;
 
-import edu.stanford.nlp.trees.*;
-import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
+
 
 public class ConceptMatcherParametersPanel extends AbstractMatcherParametersPanel implements ItemListener {
 
@@ -147,7 +140,7 @@ prefs = Core.getInstance().getUI().getAppPreferences();  // get a reference to o
 
 	public void itemStateChanged(ItemEvent e) {
 		
-		Object source = e.getItemSelectable();
+		//Object source = e.getItemSelectable();
 		
 		/*if( source == useDictionaryCheckbox ) {
 			if( e.getStateChange() == ItemEvent.SELECTED ) {

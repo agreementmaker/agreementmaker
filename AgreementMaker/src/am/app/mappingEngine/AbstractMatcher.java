@@ -3,12 +3,9 @@ package am.app.mappingEngine;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-
 import am.AMException;
 import am.Utility;
 import am.app.Core;
-import am.app.mappingEngine.Combination.CombinationParametersPanel;
-import am.app.mappingEngine.oneToOneSelection.HungarianAlgorithm;
 import am.app.mappingEngine.oneToOneSelection.MappingMWBM;
 import am.app.mappingEngine.oneToOneSelection.MaxWeightBipartiteMatching;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
@@ -16,10 +13,7 @@ import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.MatcherProgressDialog;
-
 import java.awt.Color;
-
-import javax.swing.ProgressMonitor;
 import javax.swing.SwingWorker;
 
 

@@ -2,20 +2,12 @@ package am.app.mappingEngine.dsi;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import javax.swing.tree.TreeNode;
-
-
-import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentMatrix;
-import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcherParametersPanel;
 import am.app.ontology.Node;
 import am.app.ontology.TreeToDagConverter;
-import am.userInterface.vertex.Vertex;
 
 public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 
@@ -167,7 +159,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 			sumOfMaxParents = 1;
 		}
 
-		double mcp = ((DescendantsSimilarityInheritanceParameters)param).MCP;
+		double mcp = MCP;
 		double finalSim = (mcp*mySim) + ((1 - mcp) * sumOfMaxParents);
 		Alignment result = new Alignment(sourceNode, targetNode, finalSim, Alignment.EQUIVALENCE);
 		matrix.set(sourceIndex, targetIndex, result);

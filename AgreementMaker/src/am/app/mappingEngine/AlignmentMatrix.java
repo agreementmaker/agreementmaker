@@ -102,7 +102,8 @@ public class AlignmentMatrix {
     /**GENERAL FUNCTIONS FOR MATRIX NOT NEEDED NOW BUT MAY BE USEFUL IN THE FUTUR*/
     
     // swap rows i and j
-    private void swap(int i, int j) {
+    @SuppressWarnings("unused")
+	private void swap(int i, int j) {
     	double[] temp = data[i];
         data[i] = data[j];
         data[j] = temp;

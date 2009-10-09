@@ -1,9 +1,6 @@
 package am.app.mappingEngine.Combination;
 
-import java.util.ArrayList;
-
 import am.app.mappingEngine.AbstractParameters;
-import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
 
 public class CombinationParameters extends AbstractParameters {
