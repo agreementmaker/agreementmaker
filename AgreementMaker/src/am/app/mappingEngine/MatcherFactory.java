@@ -59,7 +59,7 @@ public class MatcherFactory {
 	 * */
 	public static AbstractMatcher getMatcherInstance(MatchersRegistry name, int instanceIndex) {
 		
-		Class matcherClass = null;
+		Class<?> matcherClass = null;
 		try {
 			matcherClass = Class.forName( name.getMatcherClass() );
 		} catch (ClassNotFoundException e) {
