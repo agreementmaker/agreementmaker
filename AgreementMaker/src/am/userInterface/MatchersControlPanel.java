@@ -467,7 +467,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				
 				
 				// The dialog will start the matcher in a background thread, show progress as the matcher is running, and show the report at the end.
-				MatcherProgressDialog progress = new MatcherProgressDialog(currentMatcher);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
+				new MatcherProgressDialog(currentMatcher);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
 				if(!currentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
 					matchersTablePanel.addMatcher(currentMatcher);
 					ui.redisplayCanvas();
