@@ -8,10 +8,12 @@ import java.util.Map;
 import com.hp.hpl.jena.ontology.BooleanClassDescription;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.Restriction;
+import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 
 
@@ -26,11 +28,11 @@ import com.hp.hpl.jena.shared.PrefixMapping;
  *
  * @author Ian Dickinson, HP Labs
  *         (<a  href="mailto:Ian.Dickinson@hp.com" >email</a>)
- * @version CVS $Id: DescribeClass.java,v 1.2 2009-02-17 18:36:55 flav Exp $
+ * @version CVS $Id: DescribeClass.java,v 1.3 2009-10-09 12:57:14 cstroe1 Exp $
  */
 public class DescribeClass {
 
-    private Map m_anonIDs = new HashMap();
+    private Map<AnonId, String> m_anonIDs = new HashMap<AnonId, String>();
     private int m_anonCount = 0;
 
 
@@ -52,14 +54,14 @@ public class DescribeClass {
         out.println();
 
         // sub-classes
-        for (Iterator i = cls.listSuperClasses( true ); i.hasNext(); ) {
+        for (ExtendedIterator i = cls.listSuperClasses( true ); i.hasNext(); ) {
             out.print( "  is a sub-class of " );
             renderClassDescription( out, (OntClass) i.next() );
             out.println();
         }
 
         // super-classes
-        for (Iterator i = cls.listSubClasses( true ); i.hasNext(); ) {
+        for (ExtendedIterator i = cls.listSubClasses( true ); i.hasNext(); ) {
             out.print( "  is a super-class of " );
             renderClassDescription( out, (OntClass) i.next() );
             out.println();

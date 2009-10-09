@@ -31,7 +31,7 @@ public class ConflictsResolution {
 		System.out.println(ontologies[0].getURI());
 		//JOptionPane.showInputDialog("asda");
 		int numOntologies = ontologies.length;
-		int numAlignments = (numOntologies * (numOntologies - 1))/2;
+		//int numAlignments = (numOntologies * (numOntologies - 1))/2;
 		VotedMappingSet[][] votedMatrix = new VotedMappingSet[numOntologies][numOntologies];
 		Iterator<AbstractMatcher> itMatchers = finalMatchers.iterator();
 		AbstractMatcher am;
@@ -143,10 +143,10 @@ public class ConflictsResolution {
 		
 		//the algorithm continues until all mappings are validated
 		//if all matchings are scanned without defining a maximum it means that all are validated
-		VotedMappingSet maxSet = null;
+		//VotedMappingSet maxSet = null;
 		VotedMapping maxMapping = null;
 		do{
-			maxSet = null;
+			//maxSet = null;
 			maxMapping = null;
 			//1) get the mapping not yet validated with highest vote
 			for( int i = 0; i < numOntologies - 1; i++ ) {		
@@ -163,7 +163,7 @@ public class ConflictsResolution {
 							if(maxMapping == null || maxMapping.getFinalVote() < currentMapping.getFinalVote() || (maxMapping.getFinalVote() == currentMapping.getFinalVote() && maxMapping.mapping.getSimilarity() < currentMapping.mapping.getSimilarity())){
 								//Found a new maximum
 								maxMapping = currentMapping;
-								maxSet = currentSet;
+								//maxSet = currentSet;
 							}
 						}
 
