@@ -1,16 +1,10 @@
 package am.app.ontology.ontologyParser;
 
 import java.io.File;
-import java.util.Enumeration;
-
-import javax.swing.ProgressMonitor;
 import javax.swing.SwingWorker;
-
-import am.AMException;
 import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.ontology.Ontology;
-import am.userInterface.MatcherProgressDialog;
 import am.userInterface.OntologyLoadingProgressDialog;
 import am.userInterface.vertex.Vertex;
 

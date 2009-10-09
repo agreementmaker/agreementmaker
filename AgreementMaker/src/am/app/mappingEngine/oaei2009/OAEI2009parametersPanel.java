@@ -1,21 +1,13 @@
 package am.app.mappingEngine.oaei2009;
 
 import java.awt.Dimension;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.AbstractParameters;
-import am.app.mappingEngine.MatcherSetting;
-import am.app.mappingEngine.Combination.CombinationParameters;
-import am.batchMode.TrackDispatcher;
 import am.userInterface.AppPreferences;
 
 public class OAEI2009parametersPanel extends AbstractMatcherParametersPanel {
@@ -28,10 +20,12 @@ public class OAEI2009parametersPanel extends AbstractMatcherParametersPanel {
 	 */
 	private static final long serialVersionUID = -7652636660460034435L;
 
+	@SuppressWarnings("unused")
 	private OAEI2009parameters parameters;
 	
 	private JComboBox trackCombo;
 	
+	@SuppressWarnings("unused")
 	private AppPreferences prefs;
 	
 	/*

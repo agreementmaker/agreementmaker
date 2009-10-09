@@ -3,16 +3,11 @@ package am.app.mappingEngine.PRAMatcher;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentMatrix;
 import am.app.mappingEngine.AlignmentSet;
-import am.app.mappingEngine.MappedNodes;
-import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.PRAMatcher.PRAMatcher;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.ontology.Node;
 
 public class PRAMatcher2 extends AbstractMatcher

@@ -1,26 +1,20 @@
 package am.userInterface;
 
 import java.awt.BorderLayout;
-import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-
 import am.GlobalStaticVariables;
-import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Matcher;
 
 public class MatcherProgressDialog extends JDialog implements PropertyChangeListener, ActionListener {
 

@@ -21,7 +21,6 @@ import am.app.mappingEngine.testMatchers.AllOneMatcher;
 import am.app.mappingEngine.testMatchers.AllZeroMatcher;
 import am.app.mappingEngine.testMatchers.CopyMatcher;
 import am.app.mappingEngine.testMatchers.EqualsMatcher;
-import am.app.mappingEngine.testMatchers.LexicalMatcherJWNLOLD;
 import am.app.mappingEngine.testMatchers.RandomMatcher;
 //import am.app.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
 
@@ -81,8 +80,8 @@ public enum MatchersRegistry {
 	private String name;
 	private String className;
 	
-	MatchersRegistry( String n, Class matcherClass ) { name = n; className = matcherClass.getName(); showInControlPanel = true;}
-	MatchersRegistry( String n, Class matcherClass, boolean shown) { name = n; className = matcherClass.getName(); showInControlPanel = shown; }
+	MatchersRegistry( String n, Class<?> matcherClass ) { name = n; className = matcherClass.getName(); showInControlPanel = true;}
+	MatchersRegistry( String n, Class<?> matcherClass, boolean shown) { name = n; className = matcherClass.getName(); showInControlPanel = shown; }
 	public String getMatcherName() { return name; }
 	public String getMatcherClass() { return className; }
 	public boolean isShown() { return showInControlPanel; }
