@@ -131,6 +131,7 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		return documents;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private String createMultiWordsString(Node node, alignType typeOfNodes) {
 		
 		String multiWordsString = "";
@@ -150,7 +151,7 @@ public class MultiWordsMatcher extends AbstractMatcher {
 			//add child strings
 			Vertex mainVertex = duplicateList.get(0);
 			String childstring = "";
-			Enumeration children = mainVertex.children();
+			Enumeration<Vertex> children = mainVertex.children();
 			while(children.hasMoreElements()) {
 				Vertex childVertex = (Vertex) children.nextElement();
 				Node childNode = childVertex.getNode();
@@ -172,7 +173,7 @@ public class MultiWordsMatcher extends AbstractMatcher {
 					String neighbourString = getLabelAndOrNameString(parentNode);;
 					parentsString = Utility.smartConcat(parentsString, neighbourString);
 					//create hashSet
-					Enumeration siblings = parentVertex.children();
+					Enumeration<Vertex> siblings = parentVertex.children();
 					while(siblings.hasMoreElements()) {
 						Vertex sibVertex = (Vertex) siblings.nextElement();
 						Node sibNode = sibVertex.getNode();
@@ -185,10 +186,10 @@ public class MultiWordsMatcher extends AbstractMatcher {
 			multiWordsString = Utility.smartConcat(multiWordsString, parentsString);
 			
 			//add sibling string from the hashSet, i need to use hashset to avoid adding duplicates.
-			Iterator it = siblingNodes.iterator();
+			Iterator<Node> it = siblingNodes.iterator();
 			String siblingsString = "";
 			while(it.hasNext()) {
-				Node sibNode = (Node)it.next();
+				Node sibNode = it.next();
 				String neighbourString = getLabelAndOrNameString(sibNode);
 				siblingsString = Utility.smartConcat(siblingsString, neighbourString);
 			}

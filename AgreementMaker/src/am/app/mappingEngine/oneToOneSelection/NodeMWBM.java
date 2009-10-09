@@ -102,8 +102,8 @@ public class NodeMWBM<E> implements Comparable<NodeMWBM<E>> {
 	}
 	
 	public boolean equals(Object o){
-		if(o instanceof NodeMWBM){
-			NodeMWBM n = (NodeMWBM)o;
+		if(o instanceof NodeMWBM<?>){
+			NodeMWBM<?> n = (NodeMWBM<?>)o;
 			return identifier() == n.identifier(); 
 		}
 		return false;

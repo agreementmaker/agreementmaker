@@ -528,6 +528,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	 * @param graphic Graphics
 	 * @param isGlobal boolean value indicating if the tree is global
 	 */	
+	@SuppressWarnings("unchecked")
 	public void displayTree(Graphics graphic, boolean isGlobal)
 	{
 		Vertex treeRoot;
@@ -643,6 +644,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	 * @param graphic of type Graphics
 	 * @param isGlobal boolean value indicating if it is global
 	 */	
+	@SuppressWarnings("unchecked")
 	public void displayLines(Graphics graphic, boolean isGlobal)	
 	{
 		Vertex root, node;
@@ -1312,6 +1314,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	}
 
 	/**Select all nodes with height between min and max in the selected root*/
+	@SuppressWarnings("unchecked")
 	private void selectMoreNodes(int min, int max, Vertex root) {
 		Vertex node;
 		for (Enumeration<Vertex> e = root.preorderEnumeration(); e.hasMoreElements() ;){
@@ -1410,6 +1413,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	 * @param x	the x location of mouseclick
 	 * @param y	the y location of mouseclick
 	 */	
+	@SuppressWarnings("unchecked")
 	public boolean expandOrContract(int x, int y)
 	{
 		Vertex root,node, expandOrContractNode=null;
@@ -1482,6 +1486,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	 * @param targetNode node to collapse or expand
 	 * @param expandOrCollapse value indicating to expand or collapse the node
 	 */	
+	@SuppressWarnings("unchecked")
 	public void recurseOnNode(Vertex targetNode, int expandOrCollapse)
 	{
 		Vertex node;
@@ -1541,6 +1546,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	 * @param y	the y location of mouse click
 	 * @return Vertex the node which was clicked on
 	 */
+	@SuppressWarnings("unchecked")
 	public Vertex getNodeClicked(int x,int y)
 	{
 		// figure out which type of node was clicked (global or local)

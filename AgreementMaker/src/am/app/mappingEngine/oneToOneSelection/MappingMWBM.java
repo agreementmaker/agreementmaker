@@ -25,8 +25,8 @@ public class MappingMWBM<E> {
 	}
 	
 	public boolean equals(Object o){
-		if(o instanceof MappingMWBM){
-			MappingMWBM m = (MappingMWBM)o;
+		if(o instanceof MappingMWBM<?>){
+			MappingMWBM<?> m = (MappingMWBM<?>)o;
 			return m.getSourceNode().equals(this.getSourceNode()) && m.getTargetNode().equals(this.getTargetNode());
 		}
 		return false;
