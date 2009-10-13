@@ -1,39 +1,40 @@
 package am.app.mappingEngine;
 
-import am.app.ontology.*;
+
 
 import java.util.ArrayList;
+import am.app.ontology.Node;
 
 
-public class AlignmentSet
+public class AlignmentSet<E extends Alignment>
 {
-    private ArrayList<Alignment> collection = null;
+    protected ArrayList<E> collection = null;
 
     public AlignmentSet()
     {
-        collection = new ArrayList<Alignment>();
+        collection = new ArrayList<E>();
     }
 
-    public void addAlignment(Alignment alignment)
+    public void addAlignment(E alignment)
     {
         if( alignment != null ) collection.add(alignment);
     }
     
-    public void addAll(AlignmentSet a)
+    public void addAll(AlignmentSet<E> a)
     {
     	if(a != null) {
     		for(int i= 0; i<a.size();i++) {
-    			Alignment alignment = a.getAlignment(i);
+    			E alignment = a.getAlignment(i);
     			collection.add(alignment);
     		}
     	}
         
     }
 
-    public Alignment getAlignment(int index)
+    public E getAlignment(int index)
     {
         if (index >= 0 && index < size()) {
-            return (Alignment) collection.get(index);
+            return collection.get(index);
         } else {
             System.err.println("getAlignmentError: Index is out of bound.");
             return null;
@@ -42,7 +43,7 @@ public class AlignmentSet
 
     public double getSimilarity(Node left, Node right)
     {
-        Alignment align = contains(left, right);
+        E align = contains(left, right);
         if (align == null) {
             return 0;
         } else {
@@ -52,7 +53,7 @@ public class AlignmentSet
 
     public void setSimilarity(Node left, Node right, double sim)
     {
-        Alignment align = contains(left, right);
+        E align = contains(left, right);
         if (align == null) {
             System.err.println("setSimilarityError: Cannot find such alignment.");
         } else {
@@ -84,10 +85,10 @@ public class AlignmentSet
         return false;
     }
 
-    public Alignment contains(Node left, Node right)
+    public E contains(Node left, Node right)
     {
         for (int i = 0, n = size(); i < n; i++) {
-            Alignment align = (Alignment) collection.get(i);
+            E align = collection.get(i);
             if (align.getEntity1().equals(left) && align.getEntity2().equals(right)) {
                 return align;
             }
@@ -95,10 +96,10 @@ public class AlignmentSet
         return null;
     }
 
-    public AlignmentSet cut(double threshold)
+    public AlignmentSet<E> cut(double threshold)
     {
         for (int i = 0; i < size(); i++) {
-            Alignment align = (Alignment) collection.get(i);
+            E align = collection.get(i);
             if (align.getSimilarity() <= threshold) {
                 removeAlignment(i);
                 i--;
@@ -116,7 +117,7 @@ public class AlignmentSet
     {
         int count = 0;
         for (int i = 0, n = size(); i < n; i++) {
-            Alignment align = (Alignment) collection.get(i);
+            E align = collection.get(i);
             if (align.getSimilarity() > threshold) {
                 count++;
             }
@@ -127,7 +128,7 @@ public class AlignmentSet
     public void show()
     {
         for (int i = 0, n = size(); i < n; i++) {
-            Alignment align = (Alignment) collection.get(i);
+            E align = collection.get(i);
             System.out.println("entity1=" + align.getEntity1().toString());
             System.out.println("entity2=" + align.getEntity2().toString());
             System.out.println("similarity=" + align.getSimilarity());
@@ -138,7 +139,7 @@ public class AlignmentSet
 	
     public String getStringList() {
 		String result = "";
-		Alignment a;
+		E a;
 		for(int i = 0; i < collection.size(); i++) {
 			a = collection.get(i);
 			result += a.getString();
