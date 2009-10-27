@@ -35,14 +35,13 @@ public class FeedbackLoop {
 			FilterSelectedMappings fsm = new FilterSelectedMappings();
 			fsm.runFilter(im);
 			
-			// run the extrapolating/expanding matchers
-			// TODO: Write this part.
-			
-			
-			// Select candidate mappings to be selected to the user.
+			// Select candidate mappings to be selected to the user using a relevance ranking approach.
 			// TODO: Write this part.
 			
 			// Show the user the interface, and candidate mappings, and have her validate them.
+			// TODO: Write this part.
+
+			// run the extrapolating/expanding matchers
 			// TODO: Write this part.
 			
 		} while( true );  // TODO: Change the while condition to reflect the user's choice to stop or keep going.
