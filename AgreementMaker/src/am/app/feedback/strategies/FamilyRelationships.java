@@ -1,6 +1,6 @@
 package am.app.feedback.strategies;
 
-import am.app.feedback.CandidateAlignment;
+import am.app.feedback.CandidateMapping;
 import am.app.feedback.CandidateSelection;
 import am.app.feedback.ExtendedAlignment;
 import am.app.feedback.ExtrapolationStrategy;
@@ -16,9 +16,9 @@ public class FamilyRelationships extends ExtrapolationStrategy {
 		// TODO Auto-generated constructor stub
 	}
 
-	public AlignmentSet<CandidateAlignment> getCandidates() {
+	public AlignmentSet<CandidateMapping> getCandidates() {
 		
-		AlignmentSet<CandidateAlignment> candidates = new AlignmentSet<CandidateAlignment>();
+		AlignmentSet<CandidateMapping> candidates = new AlignmentSet<CandidateMapping>();
 		
 		candidates.addAll(computeStep1Relevances());
 		
@@ -32,8 +32,8 @@ public class FamilyRelationships extends ExtrapolationStrategy {
 	 * Computes step1 relevances.
 	 * @return
 	 */
-	private AlignmentSet<CandidateAlignment> computeStep1Relevances() {
-		AlignmentSet<CandidateAlignment> step1Candidates = new AlignmentSet<CandidateAlignment>();
+	private AlignmentSet<CandidateMapping> computeStep1Relevances() {
+		AlignmentSet<CandidateMapping> step1Candidates = new AlignmentSet<CandidateMapping>();
 		
 		AlignmentSet<ExtendedAlignment> currentAlignments = cs.getCurrentAlignments();
 		
@@ -49,7 +49,7 @@ public class FamilyRelationships extends ExtrapolationStrategy {
 			
 			double relevance = (n + m) * STEP1_MULTIPLIER;
 			
-			CandidateAlignment q = new CandidateAlignment( p, relevance);
+			CandidateMapping q = new CandidateMapping( p, relevance);
 			
 			step1Candidates.addAlignment(q);
 			
