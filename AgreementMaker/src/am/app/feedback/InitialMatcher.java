@@ -1,5 +1,6 @@
 package am.app.feedback;
 
+import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentMatrix;
 import am.app.mappingEngine.AlignmentSet;
@@ -12,7 +13,7 @@ import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 
-public class InitialMatchers {
+public class InitialMatcher extends AbstractMatcher {
 
 	/******* PARAMETERS ************/
 	private BaseSimilarityParameters    param_bsm = null;  // the parameters that will be used for the BSM
@@ -30,7 +31,8 @@ public class InitialMatchers {
 	private CombinationMatcher			m_lwc = null;
 	
 	
-	public InitialMatchers() {
+	public InitialMatcher( double th ) {
+		super();
 		// Initialize the parameters for all the matchers that will be used
 		
 		param_bsm = new BaseSimilarityParameters();
@@ -43,29 +45,48 @@ public class InitialMatchers {
 		// BSM
 		param_bsm.useDictionary = false;
 		m_bsm = new BaseSimilarityMatcher(param_bsm);
-		m_bsm.setPerformSelection(false);
+		m_bsm.setThreshold( th );
+		m_bsm.setMaxSourceAlign(1);
+		m_bsm.setMaxTargetAlign(1);		
 		
 		// PSM
 		param_psm.initForOAEI2009();  // use the OAEI 2009 settings
 		m_psm = new ParametricStringMatcher( param_psm );
-		m_psm.setPerformSelection(false);
+		m_psm.setThreshold( th );
+		m_psm.setMaxSourceAlign(1);
+		m_psm.setMaxTargetAlign(1);
 		
 		// VMM
 		param_vmm.initForOAEI2009();  // use the OAEI 2009 settings for this also.
 		m_vmm = new MultiWordsMatcher( param_vmm );
-		m_vmm.setPerformSelection(false);
+		m_vmm.setThreshold( th );
+		m_vmm.setMaxSourceAlign(1);
+		m_vmm.setMaxTargetAlign(1);
 		
 		// LWC
 		param_lwc.initForOAEI2009();  // use the OAEI 2009 settings for this also (Quality Evaluation = Local Confidence)
 		m_lwc = new CombinationMatcher( param_lwc );
 		m_lwc.setPerformSelection(true);
+		m_lwc.setThreshold( th );
+		m_lwc.setMaxSourceAlign(1);
+		m_lwc.setMaxTargetAlign(1);
+
+		setThreshold(th);
+		setMaxSourceAlign(1);
+		setMaxTargetAlign(1);
+		
+		// TODO: Move to be done right before we add this matcher to the control panel.
+		//int lastIndex = Core.getInstance().getMatcherInstances().size();
+		//m_lwc.setIndex(lastIIndex);
 		
 	}
 	
-	public void run() {
-		
-		
-		// the ontologies should be loaded by the user through the User Interface
+	public String getDescriptionString() {
+		return "This is the Initial Matchers block for the User Feedback Loop."; 
+	}
+	
+	public void match() throws Exception {
+		matchStart();
 		
 		// run the matcher stack
 		try {
@@ -82,13 +103,22 @@ public class InitialMatchers {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}		
 		
 		
+		classesMatrix = m_lwc.getClassesMatrix();
+		propertiesMatrix = m_lwc.getPropertiesMatrix();
+		classesAlignmentSet = m_lwc.getClassAlignmentSet();
+		propertiesAlignmentSet = m_lwc.getPropertyAlignmentSet();
 		
+		m_bsm = null; 
+		m_psm = null;
+		m_vmm = null;
+		m_lwc = null;
 		
-		
+		matchEnd();
 	}
+
 
 	public AlignmentMatrix getClassesAlignmentMatrix() {	
 		return m_lwc.getClassesMatrix();

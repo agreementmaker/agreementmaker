@@ -30,25 +30,18 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	
 	public BaseSimilarityMatcher() {
 		// warning, param is not available at the time of the constructor (when creating a matcher from the User Interface)
-		
 		super();
 		needsParam = true;
-		setupNormalizers();
-
-
 	}
 	
 	// Constructor used when the parameters are available at the time of matcher initialization
-	public BaseSimilarityMatcher( BaseSimilarityParameters param_new ) {
-		super();
-		
-		param = param_new;
-		needsParam = false;
-		
-		setupNormalizers();
+	public BaseSimilarityMatcher( BaseSimilarityParameters param_new ) {  
+		super(param_new);	
 	}
 	
-	private void setupNormalizers() {
+	protected void initializeVariables() {
+		super.initializeVariables();
+
 		// setup the different normalizers
 		param1 = new NormalizerParameter();
 		param1.setAllTrue();
@@ -66,8 +59,8 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		param3.setAllfalse();
 		param3.normalizeDigit = true;
 		norm3 = new Normalizer(param3);
-	}
 
+	}
 	
 	
 	public String getDescriptionString() {

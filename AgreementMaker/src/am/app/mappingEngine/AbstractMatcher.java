@@ -135,8 +135,15 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		//ALL MATCHERS HAVE TO INVOKE THIS METHOD THROUGH super() EXCEPT UserManualMatcher
 		//therefore by modifying something in this method you may also have to modify the UserManualMatcher
 		//while all other matchers will automatically inherit the changes
-		
-		
+		initializeVariables();
+	}
+	
+	public AbstractMatcher( AbstractParameters params_new ) {
+		initializeVariables();
+		param = params_new;
+	}
+	
+	protected void initializeVariables() {
 		isAutomatic = true;
 		needsParam = false;
 		isShown = true;
@@ -156,6 +163,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		targetOntology = Core.getInstance().getTargetOntology();
 		inputMatchers = new ArrayList<AbstractMatcher>();
 	}
+	
+	
+	
+	
 	
 	//***************************ALL METHODS TO PERFORM THE ALIGNMENT**********************************
 	/**

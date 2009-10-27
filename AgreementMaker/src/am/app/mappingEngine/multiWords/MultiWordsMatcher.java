@@ -39,9 +39,7 @@ public class MultiWordsMatcher extends AbstractMatcher {
 	}
 	
 	public MultiWordsMatcher( MultiWordsParameters param_new ) {
-		super();
-		param = param_new;
-		needsParam = false;
+		super(param_new);
 	}
 	
 	

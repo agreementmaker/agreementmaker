@@ -17,6 +17,7 @@ import am.AMException;
 import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
+import am.app.feedback.FeedbackLoop;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
@@ -61,6 +62,8 @@ public class UIMenu implements ActionListener {
 	private JCheckBoxMenuItem disableVisualizationItem;
 	private JCheckBoxMenuItem showLabelItem;
 	private JCheckBoxMenuItem showLocalNameItem;
+	
+	private JMenuItem userFeedBack;
 	
 	public UIMenu(UI ui){
 		this.ui=ui;
@@ -153,6 +156,9 @@ public class UIMenu implements ActionListener {
 				prefs.saveShowLocalname(showLocalname);
 				ui.getCanvas().setShowLocalName(showLocalname);
 				ui.redisplayCanvas();
+			}
+			else if( obj == userFeedBack ) {
+				new FeedbackLoop();  // initialize the user feedback loop interface (i.e. add a new tab)
 			}
 			else if( obj == manualMapping) {
 				Utility.displayMessagePane("To edit or create a manual mapping select any number of source and target nodes.\nLeft click on a node to select it, use Ctrl and/or Shift for multiple selections.", "Manual Mapping");
@@ -532,7 +538,7 @@ public class UIMenu implements ActionListener {
 		manualMapping.addActionListener(this);
 		matchingMenu.add(manualMapping);
 		
-		JMenuItem userFeedBack = new JMenuItem("User Feedback Loop");
+		userFeedBack = new JMenuItem("User Feedback Loop");
 		userFeedBack.addActionListener(this);
 		matchingMenu.add(userFeedBack);
 		

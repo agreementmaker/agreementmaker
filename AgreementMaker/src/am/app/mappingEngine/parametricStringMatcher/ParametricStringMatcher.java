@@ -23,9 +23,7 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	}
 	
 	public ParametricStringMatcher( ParametricStringParameters param_new ) {
-		super();
-		param = param_new;
-		needsParam = false;
+		super(param_new);
 	}
 	
 	

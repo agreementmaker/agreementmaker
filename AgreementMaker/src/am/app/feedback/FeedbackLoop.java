@@ -1,5 +1,12 @@
 package am.app.feedback;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import am.app.Core;
+import am.app.feedback.ui.SelectionPanel;
+import am.userInterface.UI;
+
 /**
  * This class is implemented to run the user feedback loop.
  * 
@@ -17,15 +24,24 @@ package am.app.feedback;
  *
  */
 
-public class FeedbackLoop {
+public class FeedbackLoop implements ActionListener {
+	
+	
+	SelectionPanel sp = null;
+	
+	private double threshold = 0.7d;
 	
 	public FeedbackLoop() {
-		
-		
+	
+		initializeUserInterface();
+	
+	};
+	
+	public void startLoop() {
 		// the user has to load the ontologies.
 		
 		// run the initial matchers.
-		InitialMatchers im = new InitialMatchers();
+		InitialMatcher im = new InitialMatcher( threshold );
 		im.run();
 		
 		
@@ -49,6 +65,24 @@ public class FeedbackLoop {
 		
 		// Prepare final alignment.
 		// TODO: Write this part.
+		
+	}
+
+	private void initializeUserInterface() {
+		
+		sp = new SelectionPanel();
+		sp.showScreen_Start();
+		
+		UI ui = Core.getInstance().getUI();
+		
+		ui.addTab("User Feedback Loop", null, sp, "User Feedback Loop");
+		
+		
+		
+	}
+
+	public void actionPerformed(ActionEvent arg0) {
+		// TODO Auto-generated method stub
 		
 	}
 

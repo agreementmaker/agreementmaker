@@ -7,14 +7,14 @@ import am.app.mappingEngine.AlignmentSet;
 public class CandidateSelection {
 
 	
-	InitialMatchers imStack;  // initial matchers stack
+	InitialMatcher imStack;  // initial matchers stack
 	
 	
 	/**
 	 * Constructor
 	 * @param matched - The AlignmentSet of currently matched concepts
 	 */
-	CandidateSelection( InitialMatchers im ) {
+	CandidateSelection( InitialMatcher im ) {
 		
 		imStack = im;
 	}

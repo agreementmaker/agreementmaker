@@ -13,25 +13,17 @@ public class CombinationMatcher extends AbstractMatcher {
 	
 	public CombinationMatcher() {
 		super();
-		
-
 		needsParam = true; // need the parameters
-		
-		
-		minInputMatchers = 2;
-		maxInputMatchers = ANY_INT;
-		
 		//I can't initialize the parametersPanel in here because i need to pass the inputmatchers as parameters 
 		// but the input matchers will be set later so I will initialize the panel in the getParametersPanel() method
 	}
 	
 	public CombinationMatcher( CombinationParameters param_new ) {
-		super();
-		
-		param = param_new;
-		
-		needsParam = false;
-		
+		super(param_new);
+	}
+	
+	protected void initializeVariables() {
+		super.initializeVariables();
 		minInputMatchers = 2;
 		maxInputMatchers = ANY_INT;
 	}

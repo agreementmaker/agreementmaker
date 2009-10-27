@@ -30,7 +30,7 @@ public class FilterSelectedMappings {
 	}
 	
 	
-	public void runFilter( InitialMatchers im ) {
+	public void runFilter( InitialMatcher im ) {
 		
 		
 		// run one time for the Classes similarity matrix  ...

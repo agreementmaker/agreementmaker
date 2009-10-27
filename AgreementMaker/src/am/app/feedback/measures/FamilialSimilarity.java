@@ -3,16 +3,15 @@ package am.app.feedback.measures;
 import am.app.feedback.CandidateMapping;
 import am.app.feedback.CandidateSelection;
 import am.app.feedback.ExtendedAlignment;
-import am.app.feedback.ExtrapolationStrategy;
 import am.app.mappingEngine.AlignmentSet;
 import am.app.ontology.Node;
 
-public class FamilialSimilarity extends ExtrapolationStrategy {
+public class FamilialSimilarity extends AbstractRMeasure {
 
 	double STEP1_MULTIPLIER = 1.00d;
 	
 	public FamilialSimilarity(CandidateSelection cs) {
-		super(cs);
+		super();
 		// TODO Auto-generated constructor stub
 	}
 
@@ -35,7 +34,7 @@ public class FamilialSimilarity extends ExtrapolationStrategy {
 	private AlignmentSet<CandidateMapping> computeStep1Relevances() {
 		AlignmentSet<CandidateMapping> step1Candidates = new AlignmentSet<CandidateMapping>();
 		
-		AlignmentSet<ExtendedAlignment> currentAlignments = cs.getCurrentAlignments();
+		AlignmentSet<ExtendedAlignment> currentAlignments = null;
 		
 				
 		for( int i = 0; i < currentAlignments.size(); i++ ) {
