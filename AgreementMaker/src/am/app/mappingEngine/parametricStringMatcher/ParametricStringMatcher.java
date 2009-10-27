@@ -22,6 +22,12 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		needsParam = true;
 	}
 	
+	public ParametricStringMatcher( ParametricStringParameters param_new ) {
+		super();
+		param = param_new;
+		needsParam = false;
+	}
+	
 	
 	public String getDescriptionString() {
 		return "Performs a local matching using a String Based technique.\n" +

@@ -15,13 +15,25 @@ public class CombinationMatcher extends AbstractMatcher {
 		super();
 		
 
-		needsParam = true; // we need to set the MCP before running DSI
+		needsParam = true; // need the parameters
 		
 		
 		minInputMatchers = 2;
 		maxInputMatchers = ANY_INT;
 		
-		//I can't initialize the parametersPanel in here because i need to pass the inputmatchers as parameters but the input matchers will be set later so I will initialize the panel in the getParametersPanerl() method
+		//I can't initialize the parametersPanel in here because i need to pass the inputmatchers as parameters 
+		// but the input matchers will be set later so I will initialize the panel in the getParametersPanel() method
+	}
+	
+	public CombinationMatcher( CombinationParameters param_new ) {
+		super();
+		
+		param = param_new;
+		
+		needsParam = false;
+		
+		minInputMatchers = 2;
+		maxInputMatchers = ANY_INT;
 	}
 
 	

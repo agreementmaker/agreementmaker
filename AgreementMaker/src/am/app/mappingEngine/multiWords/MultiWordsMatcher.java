@@ -38,6 +38,12 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		needsParam = true;
 	}
 	
+	public MultiWordsMatcher( MultiWordsParameters param_new ) {
+		super();
+		param = param_new;
+		needsParam = false;
+	}
+	
 	
 	public String getDescriptionString() {
 		return "Performs a local matching using a Multi words String Based technique.\n" +
