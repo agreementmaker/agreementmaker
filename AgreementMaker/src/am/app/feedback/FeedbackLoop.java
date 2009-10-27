@@ -28,12 +28,28 @@ public class FeedbackLoop {
 		InitialMatchers im = new InitialMatchers();
 		im.run();
 		
-		// filter out the unnecessary alignments
-		FilterSelectedMappings fsm = new FilterSelectedMappings();
-		fsm.runFilter(im);
+		
+		do {
+
+			// filter out the unnecessary alignments
+			FilterSelectedMappings fsm = new FilterSelectedMappings();
+			fsm.runFilter(im);
+			
+			// run the extrapolating/expanding matchers
+			// TODO: Write this part.
+			
+			
+			// Select candidate mappings to be selected to the user.
+			// TODO: Write this part.
+			
+			// Show the user the interface, and candidate mappings, and have her validate them.
+			// TODO: Write this part.
+			
+		} while( true );  // TODO: Change the while condition to reflect the user's choice to stop or keep going.
 		
 		
-		
+		// Prepare final alignment.
+		// TODO: Write this part.
 		
 	}
 
