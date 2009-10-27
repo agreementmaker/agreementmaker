@@ -14,7 +14,7 @@ public class ExtrapolationStrategy {
 	
 	
 	
-	public AlignmentSet<CandidateAlignment> getCandidates() {
+	public AlignmentSet<CandidateMapping> getCandidates() {
 		
 		return null;
 		

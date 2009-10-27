@@ -21,7 +21,7 @@ public class CandidateSelection {
 	
 	public AlignmentSet<Alignment> getTopCandidates() {
 		
-		AlignmentSet<CandidateAlignment> candidateSet = new AlignmentSet<CandidateAlignment>();
+		AlignmentSet<CandidateMapping> candidateSet = new AlignmentSet<CandidateMapping>();
 		AlignmentSet<Alignment> topCandidates = new AlignmentSet<Alignment>();
 		
 		FamilyRelationships fr = new FamilyRelationships(this);

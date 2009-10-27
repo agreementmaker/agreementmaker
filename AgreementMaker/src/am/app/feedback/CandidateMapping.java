@@ -9,16 +9,16 @@ import am.app.mappingEngine.Alignment;
  *
  */
 
-public class CandidateAlignment extends Alignment {
+public class CandidateMapping extends Alignment {
 
 	double relevance = 0.00;
 	
-	public CandidateAlignment(double s) {
+	public CandidateMapping(double s) {
 		super(s);
 		// TODO Auto-generated constructor stub
 	}
 	
-	public CandidateAlignment( Alignment a, double relev ) {
+	public CandidateMapping( Alignment a, double relev ) {
 		super(a.getEntity1(), a.getEntity2(), a.getSimilarity(), a.getRelation() );
 		relevance = relev;
 	}
