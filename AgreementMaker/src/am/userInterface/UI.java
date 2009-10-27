@@ -7,11 +7,14 @@ import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 
 import am.GlobalStaticVariables;
 import am.app.Core;
@@ -44,6 +47,8 @@ public class UI {
 	
 	private JSplitPane splitPane;
 	private UIMenu uiMenu;
+	
+	private JTabbedPane tabbedPane;
 	
 	/** Application Wide preferences, that are saved to a configuration file, and can be restored at any time. */
 	private AppPreferences prefs;
@@ -118,8 +123,15 @@ public class UI {
 		// Create a swing frame
 		frame = new JFrame("Agreement Maker");
 		frame.getContentPane().setLayout(new BorderLayout());
-		// TODO: Maybe ask the user if he wants to exit the program.  But that might be annoying.
+		// TODO: Ask the user if he wants to exit the program.  But that might be annoying. (Or they might lose unsaved data!)
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // if the user closes the window from the window manager, close the application.
+		
+		
+		// created the tabbed pane.
+		JPanel agreementMaker_classic = new JPanel();
+		agreementMaker_classic.setLayout(new BorderLayout());
+		tabbedPane = new JTabbedPane();
+		
 		
 		// Create the Menu Bar and Menu Items
 		uiMenu = new UIMenu(this);	
@@ -153,12 +165,19 @@ public class UI {
 		splitPane.setPreferredSize(new Dimension(640,480));
 		splitPane.getLeftComponent().setPreferredSize(new Dimension(640,480));
 		// add scrollpane to the panel and add the panel to the frame's content pane
-		frame.getContentPane().add(splitPane, BorderLayout.CENTER);
+		
+		agreementMaker_classic.add(splitPane, BorderLayout.CENTER);
+		//frame.getContentPane().add(splitPane, BorderLayout.CENTER);
 
 		
 		//panelControlPanel = new ControlPanel(this, uiMenu, canvas);
 		matcherControlPanel = new MatchersControlPanel(this, uiMenu, canvas);
-		frame.getContentPane().add(matcherControlPanel, BorderLayout.PAGE_END);		
+		agreementMaker_classic.add(matcherControlPanel, BorderLayout.PAGE_END);
+		//frame.getContentPane().add(matcherControlPanel, BorderLayout.PAGE_END);
+		
+		
+		tabbedPane.addTab("AgreementMaker", null, agreementMaker_classic, "AgreementMaker");
+		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		
 		//Add the listener to close the frame.
 		frame.addWindowListener(new WindowEventHandler());
@@ -251,5 +270,13 @@ public class UI {
 	public void redisplayCanvas() {
 		canvas.repaint();
 	}    
+	
+	
+	/**
+	 * Tabbed Interface
+	 */
 
+	public void addTab( String tabName, ImageIcon icon, JComponent panel, String toolTip ) {
+		tabbedPane.addTab( tabName, icon, panel, toolTip);
+	}
 }

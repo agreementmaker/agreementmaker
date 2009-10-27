@@ -520,15 +520,22 @@ public class UIMenu implements ActionListener {
 		
 		//ontology menu
 		ontologyMenu = new JMenu("Ontology");
+		ontologyMenu.setMnemonic('O');
 		ontologyDetails = new JMenuItem("Ontology details");
 		ontologyDetails.addActionListener(this); 
 		ontologyMenu.add(ontologyDetails);
 		myMenuBar.add(ontologyMenu);
 		
 		matchingMenu = new JMenu("Matching");
+		matchingMenu.setMnemonic('M');
 		manualMapping = new JMenuItem("Manual Mapping"); 
 		manualMapping.addActionListener(this);
 		matchingMenu.add(manualMapping);
+		
+		JMenuItem userFeedBack = new JMenuItem("User Feedback Loop");
+		userFeedBack.addActionListener(this);
+		matchingMenu.add(userFeedBack);
+		
 		matchingMenu.addSeparator();
 		newMatching = new JMenuItem("New empty matching");
 		newMatching.addActionListener(this);
