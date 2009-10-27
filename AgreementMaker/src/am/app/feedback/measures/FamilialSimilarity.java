@@ -1,4 +1,4 @@
-package am.app.feedback.strategies;
+package am.app.feedback.measures;
 
 import am.app.feedback.CandidateMapping;
 import am.app.feedback.CandidateSelection;
@@ -7,11 +7,11 @@ import am.app.feedback.ExtrapolationStrategy;
 import am.app.mappingEngine.AlignmentSet;
 import am.app.ontology.Node;
 
-public class FamilyRelationships extends ExtrapolationStrategy {
+public class FamilialSimilarity extends ExtrapolationStrategy {
 
 	double STEP1_MULTIPLIER = 1.00d;
 	
-	public FamilyRelationships(CandidateSelection cs) {
+	public FamilialSimilarity(CandidateSelection cs) {
 		super(cs);
 		// TODO Auto-generated constructor stub
 	}

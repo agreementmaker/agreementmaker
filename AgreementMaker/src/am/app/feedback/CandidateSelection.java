@@ -1,6 +1,6 @@
 package am.app.feedback;
 
-import am.app.feedback.measures.FamilyRelationships;
+import am.app.feedback.measures.FamilialSimilarity;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
 
@@ -24,7 +24,7 @@ public class CandidateSelection {
 		AlignmentSet<CandidateMapping> candidateSet = new AlignmentSet<CandidateMapping>();
 		AlignmentSet<Alignment> topCandidates = new AlignmentSet<Alignment>();
 		
-		FamilyRelationships fr = new FamilyRelationships(this);
+		FamilialSimilarity fr = new FamilialSimilarity(this);
 		
 		
 		
