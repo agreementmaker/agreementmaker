@@ -1,6 +1,6 @@
 package am.app.feedback;
 
-import am.app.feedback.strategies.FamilyRelationships;
+import am.app.feedback.measures.FamilyRelationships;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
 
