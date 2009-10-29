@@ -12,12 +12,12 @@ import am.app.ontology.TreeToDagConverter;
 public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 
 	// the Alignment Matrices from the Input Matching algorithm.
-	private AlignmentMatrix inputClassesMatrix = null;
-	private AlignmentMatrix inputPropertiesMatrix = null;
+	protected AlignmentMatrix inputClassesMatrix = null;
+	protected AlignmentMatrix inputPropertiesMatrix = null;
 	
 
 	
-	private double MCP;
+	protected double MCP;
 	
 	public DescendantsSimilarityInheritanceMatcher() {
 		super();
@@ -56,7 +56,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 	}
 	
 	//Used only in the recursive algorithm
-	private AlignmentMatrix matrix;
+	protected AlignmentMatrix matrix;
 	
     protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
     	//this the structure used in the recursive algorithms to keep track of the DSI computed for the parents of each node
@@ -100,7 +100,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 	}
 
 	
-	private Alignment recursiveDSI(Node sourceNode, Node targetNode, AlignmentMatrix input, TreeToDagConverter sourceDag, TreeToDagConverter targetDag) {
+	protected Alignment recursiveDSI(Node sourceNode, Node targetNode, AlignmentMatrix input, TreeToDagConverter sourceDag, TreeToDagConverter targetDag) {
 		int sourceIndex = sourceNode.getIndex();
 		int targetIndex = targetNode.getIndex();
 		double mySim = input.get(sourceIndex, targetIndex).getSimilarity();
@@ -133,9 +133,9 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 				while(itTarget.hasNext()){
 					targetParent = itTarget.next();
 					targetParentIndex = targetParent.getIndex();
-					alignParents = matrix.get(sourceParentIndex,targetParentIndex);
+					alignParents = matrix.get(sourceParentIndex,targetParentIndex); // TODO: the get() function no longer returns null! (cos,10-29-09)
 					//if there is already an alignment it means that I have already processed the DSI of these two nodes
-					if(alignParents == null){
+					if( matrix.isCellEmpty( sourceParentIndex, targetParentIndex) ){
 						//if it's not processed I run the recusive method to process it and to set it in the matrix
 						alignParents = recursiveDSI(sourceParent, targetParent, input, sourceDag, targetDag);
 					}
