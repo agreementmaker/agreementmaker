@@ -17,7 +17,7 @@ public class AlignmentMatrix {
 	protected alignType typeOfMatrix;
     protected final int rows;             // number of rows
     protected final int columns;             // number of columns
-    protected final double[][] data;   // M-by-N array
+    protected final Alignment[][] data;   // M-by-N array
 
     
     // cloning constructor
@@ -28,7 +28,7 @@ public class AlignmentMatrix {
     	rows = cloneme.getRows();
     	columns = cloneme.getColumns();
     	
-    	data = new double[rows][columns];
+    	data = new Alignment[rows][columns];
     	
    		for(int i=0; i< cloneme.getRows(); i++) {
    			for(int j = 0; j < cloneme.getColumns(); j++) {
@@ -44,7 +44,7 @@ public class AlignmentMatrix {
     	typeOfMatrix = type;
         this.rows = M;
         this.columns = N;
-        data = new double[M][N];
+        data = new Alignment[M][N];
     }
     
     // create M-by-N matrix of 0's
@@ -53,22 +53,22 @@ public class AlignmentMatrix {
     	typeOfMatrix = type;
         this.rows = M;
         this.columns = N;
-        data = new double[M][N];
+        data = new Alignment[M][N];
     }
 
     // create matrix based on 2d array
-    public AlignmentMatrix(double[][] data, alignType type) {
+    public AlignmentMatrix(double[][] data, alignType type) {  // TODO: Does this really have a use? No source-target relationships are created. (cos,10-29-09)
     	relation = Alignment.EQUIVALENCE;
     	typeOfMatrix = type;
         rows = data.length;
         columns = data[0].length;
-        this.data = new double[rows][columns];
+        this.data = new Alignment[rows][columns];
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++)
-                    this.data[i][j] = data[i][j];
+                    this.data[i][j] = new Alignment(data[i][j]);
     }
     
-    public Alignment get(int i, int j) {
+    public Alignment get(int i, int j) {  // TODO: This function does not return null.  It should return null. (cos,10-29-09)
     	Core core = Core.getInstance();
     	Ontology sourceOntology = core.getSourceOntology();
     	Ontology targetOntology = core.getTargetOntology();
@@ -82,19 +82,32 @@ public class AlignmentMatrix {
     		sourceList = sourceOntology.getPropertiesList();
     		targetList = targetOntology.getPropertiesList();
     	}
-    	return new Alignment(sourceList.get(i), targetList.get(j), data[i][j], relation);
+    	
+    	if( data[i][j] == null )
+    		return new Alignment(sourceList.get(i), targetList.get(j), 0.00d, relation);
+    	else 
+    		return data[i][j];
     }
     
     public void set(int i, int j, Alignment d) {
-    	data[d.getEntity1().getIndex()][d.getEntity2().getIndex()] = d.getSimilarity();
+    	//data[d.getEntity1().getIndex()][d.getEntity2().getIndex()] = d.getSimilarity();
+    	data[i][j] = d;
     }
     
     public double getSimilarity(int i, int j){
-    	return data[i][j];
+    	if( data[i][j] == null ) {
+    		return 0.00d;
+    	}
+    	return data[i][j].getSimilarity();
     }
     
     public void setSimilarity(int i, int j, double d){
-    	data[i][j] = d;
+    	if( data[i][j] == null ) {
+    		data[i][j] = new Alignment( d );
+    	}
+    	else {
+    		data[i][j].setSimilarity(d);
+    	}
     }
     
     public int getRows() {
@@ -105,7 +118,7 @@ public class AlignmentMatrix {
     	return columns;
     }
    
-    public Object clone() {
+    public Object clone() {  // TODO: Make this work the right way (create new Alignment objects)
     	
     		AlignmentMatrix m = this;
     		AlignmentMatrix n = new AlignmentMatrix(m.getRows(), m.getColumns(), m.typeOfMatrix, m.relation);
@@ -122,8 +135,8 @@ public class AlignmentMatrix {
     
     // swap rows i and j
     @SuppressWarnings("unused")
-	private void swap(int i, int j) {
-    	double[] temp = data[i];
+	private void swap(int i, int j) {  // TODO: This function makes no sense.
+    	Alignment[] temp = data[i];
         data[i] = data[j];
         data[j] = temp;
     }
@@ -143,8 +156,10 @@ public class AlignmentMatrix {
         if (B.rows != A.rows || B.columns != A.columns) throw new RuntimeException("Illegal matrix dimensions.");
         AlignmentMatrix C = new AlignmentMatrix(rows, columns, typeOfMatrix, relation);
         for (int i = 0; i < rows; i++)
-            for (int j = 0; j < columns; j++)
-            		C.data[i][j] = A.data[i][j]  + B.data[i][j];
+            for (int j = 0; j < columns; j++) {
+            		C.data[i][j].setSimilarity(A.data[i][j].getSimilarity()  + B.data[i][j].getSimilarity());
+        			if( C.data[i][j].getSimilarity() > 1.00d ) C.data[i][j].setSimilarity(1.00d);
+            }
         return C;
     }
 
@@ -155,8 +170,10 @@ public class AlignmentMatrix {
         if (B.rows != A.rows || B.columns != A.columns) throw new RuntimeException("Illegal matrix dimensions.");
         AlignmentMatrix C = new AlignmentMatrix(rows, columns, typeOfMatrix, relation);
         for (int i = 0; i < rows; i++)
-            for (int j = 0; j < columns; j++)
-            	C.data[i][j] = A.data[i][j]  - B.data[i][j]; 
+            for (int j = 0; j < columns; j++) {
+            	C.data[i][j].setSimilarity( A.data[i][j].getSimilarity() - B.data[i][j].getSimilarity());
+            	if( C.data[i][j].getSimilarity() < 0.00d ) C.data[i][j].setSimilarity(0.00d);
+            }
         return C;
     }
 
@@ -178,7 +195,7 @@ public class AlignmentMatrix {
         for (int i = 0; i < C.rows; i++)
             for (int j = 0; j < C.columns; j++)
                 for (int k = 0; k < A.columns; k++)
-                	C.data[i][j] = A.data[i][j]  * B.data[i][j]; 
+                	C.data[i][j].setSimilarity( A.data[i][j].getSimilarity()  * B.data[i][j].getSimilarity()); 
         return C;
     }
     
@@ -203,7 +220,7 @@ public class AlignmentMatrix {
 		double[][] result = new double[rows][columns];
 		for(int i = 0; i < rows; i++) {
 			for(int j = 0 ; j < columns; j++) {
-				result[i][j] = data[i][j];
+				result[i][j] = data[i][j].getSimilarity();
 			}
 		}
 		return result;
@@ -289,5 +306,12 @@ public class AlignmentMatrix {
 	
 	public String getRelation() { return relation; }
 	public alignType getAlignType() { return typeOfMatrix; }
+	
+	public boolean isCellEmpty( int i, int j) {
+		if( data[i][j] == null ) {
+			return true;
+		}
+		return false;
+	}
 	
 }
