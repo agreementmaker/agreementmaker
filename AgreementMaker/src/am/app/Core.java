@@ -104,7 +104,9 @@ public class Core {
 		return matcherInstances;
 	}
 	
+	// this method adds a matcher to the end of the matchers list.
 	public void addMatcherInstance(AbstractMatcher a) {
+		a.setIndex( matcherInstances.size() );
 		matcherInstances.add(a);
 		
 	}

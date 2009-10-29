@@ -13,12 +13,31 @@ public class AlignmentMatrix {
 	//if we want to start using it is important to keep it similar to 0, to allow compatibility with non-updated methods.
 	final static double INDETERMINED = Double.MIN_NORMAL;
 	
-	private String relation;
-	private alignType typeOfMatrix;
-    private final int rows;             // number of rows
-    private final int columns;             // number of columns
-    private final double[][] data;   // M-by-N array
+	protected String relation;
+	protected alignType typeOfMatrix;
+    protected final int rows;             // number of rows
+    protected final int columns;             // number of columns
+    protected final double[][] data;   // M-by-N array
 
+    
+    // cloning constructor
+    public AlignmentMatrix( AlignmentMatrix cloneme ) {
+    	relation = cloneme.getRelation();
+    	typeOfMatrix = cloneme.getAlignType();
+    	
+    	rows = cloneme.getRows();
+    	columns = cloneme.getColumns();
+    	
+    	data = new double[rows][columns];
+    	
+   		for(int i=0; i< cloneme.getRows(); i++) {
+   			for(int j = 0; j < cloneme.getColumns(); j++) {
+   				setSimilarity(i,j, cloneme.getSimilarity(i,j));
+   			}
+   		}
+   	
+    }
+    
     // create M-by-N matrix of 0's
     public AlignmentMatrix(int M, int N, alignType type) {
     	relation = Alignment.EQUIVALENCE;
@@ -266,4 +285,9 @@ public class AlignmentMatrix {
 		}
 		return sum;
 	}
+	
+	
+	public String getRelation() { return relation; }
+	public alignType getAlignType() { return typeOfMatrix; }
+	
 }

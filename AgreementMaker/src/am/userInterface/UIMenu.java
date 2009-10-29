@@ -158,7 +158,9 @@ public class UIMenu implements ActionListener {
 				ui.redisplayCanvas();
 			}
 			else if( obj == userFeedBack ) {
-				new FeedbackLoop();  // initialize the user feedback loop interface (i.e. add a new tab)
+				FeedbackLoop ufl = new FeedbackLoop();  // initialize the user feedback loop interface (i.e. add a new tab)
+				Core.getInstance().addMatcherInstance(ufl);
+				
 			}
 			else if( obj == manualMapping) {
 				Utility.displayMessagePane("To edit or create a manual mapping select any number of source and target nodes.\nLeft click on a node to select it, use Ctrl and/or Shift for multiple selections.", "Manual Mapping");

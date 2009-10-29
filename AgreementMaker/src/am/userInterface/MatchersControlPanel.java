@@ -568,6 +568,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	
 	/////////////////////////////////////////////////PANEL METHODS
 	
+	// TODO: Need to implement methods so we don't have to expose the matchers table panel if we need to get which matchers are selected
 	public MatchersTablePanel getTablePanel() {
 		return matchersTablePanel;
 	}
@@ -658,5 +659,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 			ex.printStackTrace();
 			Utility.displayErrorPane("Unexepcted System Error.\nTry to reset the system and repeat the operation.\nContact developers if the error persists.", null);
 		}
+	}
+	
+	public void addMatcher( AbstractMatcher a ) {
+		matchersTablePanel.addMatcher(a);
 	}
 }

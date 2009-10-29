@@ -5,7 +5,6 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -16,7 +15,7 @@ import javax.swing.JTextArea;
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher;
 
-public class MatcherProgressDialog extends JDialog implements PropertyChangeListener, ActionListener {
+public class MatcherProgressDialog extends JDialog implements MatchingProgressDisplay, ActionListener {
 
     /**
 	 * This is the Progress Dialog class.
@@ -85,7 +84,7 @@ public class MatcherProgressDialog extends JDialog implements PropertyChangeList
 		    matcher.addPropertyChangeListener(this);  // we are receiving updates from the matcher.
 		}
 		
-	    matcher.setProgressDialog(this);
+	    matcher.setProgressDisplay(this);
 		
 		matcher.execute();
 		

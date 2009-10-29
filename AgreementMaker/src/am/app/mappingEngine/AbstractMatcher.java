@@ -12,7 +12,8 @@ import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.userInterface.MatcherProgressDialog;
+import am.userInterface.MatchingProgressDisplay;
+
 import java.awt.Color;
 import javax.swing.SwingWorker;
 
@@ -46,8 +47,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected int maxTargetAlign;
 	
 	/**Contain alignments, NULL if alignment has not been calculated*/
-	protected AlignmentSet propertiesAlignmentSet;
-	protected AlignmentSet classesAlignmentSet;
+	protected AlignmentSet<Alignment> propertiesAlignmentSet;
+	protected AlignmentSet<Alignment> classesAlignmentSet;
 	
 	/**Structure containing similarity values between classes nodes, matrix[source][target]
 	 * should not be accessible outside of this class, the system should only be able to access alignments sets
@@ -104,7 +105,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		aligningProperties
 	}
 	
-	protected MatcherProgressDialog progressDialog = null;  // need to keep track of the dialog in order to close it when we're done.  (there could be a better way to do this, but that's for later)
+	protected MatchingProgressDisplay progressDisplay = null;  // need to keep track of the dialog in order to close it when we're done.  (there could be a better way to do this, but that's for later)
 	protected long stepsTotal; // Used by the ProgressDialog.  This is a rough estimate of the number of steps to be done before we finish the matching.
 	protected long stepsDone;  // Used by the ProgressDialog.  This is how many of the total steps we have completed.
 	
@@ -143,6 +144,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		param = params_new;
 	}
 	
+	/**
+	 * This function is very important.  It is used by all the constructors to initialize variables when the object is first created.
+	 * 
+	 * Any matchers that extend AbstractMatcher should override this function with their own if they need to do specific things during the
+	 * constructor, but DON'T FORGET TO CALL super.initializeVariables() from their method.
+	 * 
+	 */
 	protected void initializeVariables() {
 		isAutomatic = true;
 		needsParam = false;
@@ -720,8 +728,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		//you will have to override this method this way: "return new MyParameterPanel(with some more parameters); (see manualCombinationMatcher structure
 	}
 	
-	public AlignmentSet getAlignmentSet() {
-    	AlignmentSet aligns = new AlignmentSet();
+	public AlignmentSet<Alignment> getAlignmentSet() {
+    	AlignmentSet<Alignment> aligns = new AlignmentSet<Alignment>();
     	if(areClassesAligned()) {
     		aligns.addAll(classesAlignmentSet);
     	}
@@ -731,15 +739,15 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	return aligns;
     }
 
-    public AlignmentSet getClassAlignmentSet() {
+    public AlignmentSet<Alignment> getClassAlignmentSet() {
     	return classesAlignmentSet;
     }
 
-    public AlignmentSet getPropertyAlignmentSet() {
+    public AlignmentSet<Alignment> getPropertyAlignmentSet() {
     	return propertiesAlignmentSet;
     }
     /**AgreementMaker doesn't calculate instances matching, if you add this you should also modify getAlignmenSet*/
-    public AlignmentSet getInstanceAlignmentSet() {
+    public AlignmentSet<Alignment> getInstanceAlignmentSet() {
     	throw new RuntimeException("trying to invoking a function not implemented yet");
     }
     
@@ -1118,15 +1126,15 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
      * Function called by the worker thread when the matcher finishes the algorithm.
      */
     public void done() {
-    	if( isProgressDisplayed() ) progressDialog.matchingComplete();  // when we're done, close the progress dialog
+    	if( isProgressDisplayed() ) progressDisplay.matchingComplete();  // when we're done, close the progress dialog
     }
 	
     /**
      * Need to keep track of the progress dialog we have because right now, there is no button to close it, so we must make it close automatically.
      * @param p
      */
-	public void setProgressDialog( MatcherProgressDialog p ) {
-		progressDialog = p;
+	public void setProgressDisplay( MatchingProgressDisplay p ) {
+		progressDisplay = p;
 	}
 	
 	/**
@@ -1197,11 +1205,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	
 	/**
 	 * If a matcher invokes the match() method of another matcher internally, the internal matcher 
-	 * won't have the progressDialog, and the globalstaticvariable may be still true
+	 * won't have the progressDisplay, and the globalstaticvariable may be still true
 	 * so we have to check both conditions
 	 */
 	public boolean isProgressDisplayed() {
-		return progressDialog != null;  // don't need to check for the global static variable, since if it's false, we should never have to call this function
+		return progressDisplay != null;  // don't need to check for the global static variable, since if it's false, we should never have to call this function
 	}
 
 	public void setPropertiesAlignmentSet(AlignmentSet propertiesAlignmentSet) {

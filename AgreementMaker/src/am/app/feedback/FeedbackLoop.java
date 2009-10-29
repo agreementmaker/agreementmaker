@@ -1,10 +1,9 @@
 package am.app.feedback;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
+import am.Utility;
 import am.app.Core;
 import am.app.feedback.ui.SelectionPanel;
+import am.app.mappingEngine.AbstractMatcher;
 import am.userInterface.UI;
 
 /**
@@ -24,66 +23,151 @@ import am.userInterface.UI;
  *
  */
 
-public class FeedbackLoop implements ActionListener {
+/**
+ * This feedback loop also makes use of a filter that filters out mappings from the mapping space.  
+ * 
+ * The idea behind the filter is that once a mapping (or more in the m-n case) is selected to be in the final alignment for a source-target pair,
+ * we want to penalize all the other mappings, as they will not be part of the alignment (this is why their similarity values are set to 0),
+ * and since the mapping is selected and it will be in the final alignment, we can give the mapping the highest similarity (1.0) in hopes that
+ * this will help find more mappings (because some other mapping's sim. value may depend on the sim. value of this mapping, so if we increase this
+ * sim. then the other sim. will improve).
+ * 
+ * This filter is best for the user feedback loop, since the user is treated as God, therefore, God's word is absolute.
+ * 
+ * @author Cosmin Stroe
+ * @date 10/27/09
+ *
+ * TODO: Cardinality is assumed to be 1-1 (very important limitation)! Support must be added for all cardinalities.
+ * 
+ */
+
+public class FeedbackLoop extends AbstractMatcher  {
 	
+	public enum executionStage {
+		notStarted,
+		
+		runningInitialMatchers,
+		afterInitialMatchers,
+		
+		runningFilter,
+		afterFilter,
+		
+		runningExtrapolatingMatchers,
+		afterExtrapolatingMatchers,
+		
+		runningCandidateSelection,
+		afterCandidateSelection,
+		
+		runningUserInterface,
+		afterUserInterface,
+		
+	}
 	
-	SelectionPanel sp = null;
+	private executionStage currentStage;
 	
-	private double threshold = 0.7d;
+	/**
+	 * These variables are overridden.
+	 */
+	SelectionPanel progressDisplay = null;
+	
+	FilteredAlignmentMatrix classesMatrix;
+	FilteredAlignmentMatrix propertiesMatrix;
 	
 	public FeedbackLoop() {
 	
 		initializeUserInterface();
+		currentStage = executionStage.notStarted;
 	
 	};
 	
-	public void startLoop() {
+	public void match() {
+		
+
 		// the user has to load the ontologies.
+		if( Core.getInstance().getSourceOntology() == null || Core.getInstance().getTargetOntology() == null ) {
+			Utility.displayErrorPane("Two ontologies must be loaded into AgreementMaker before the matching can begin.", "Ontologies not loaded." );
+			return;
+		}
 		
-		// run the initial matchers.
-		InitialMatcher im = new InitialMatcher( threshold );
-		im.run();
 		
+		//************** INITIAL MATCHERS ********************///
+		InitialMatchers im = new InitialMatchers();
+		
+		im.setThreshold( progressDisplay.getHighThreshold() );
+		im.setMaxSourceAlign(1);
+		im.setMaxTargetAlign(1);
+		
+		currentStage = executionStage.runningInitialMatchers;
+		im.setProgressDisplay(progressDisplay);
+
+		try {
+			im.match();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+				
+		classesMatrix = new FilteredAlignmentMatrix( im.getClassesMatrix() );
+		propertiesMatrix = new FilteredAlignmentMatrix( im.getPropertiesMatrix() );
+		
+		classesAlignmentSet = im.getClassAlignmentSet();
+		propertiesAlignmentSet = im.getPropertyAlignmentSet();
+
+		im = null;
+		currentStage = executionStage.afterInitialMatchers;
 		
 		do {
-
-			// filter out the unnecessary alignments
-			FilterSelectedMappings fsm = new FilterSelectedMappings();
-			fsm.runFilter(im);
-			
-			// Select candidate mappings to be selected to the user using a relevance ranking approach.
-			// TODO: Write this part.
-			
-			// Show the user the interface, and candidate mappings, and have her validate them.
-			// TODO: Write this part.
-
-			// run the extrapolating/expanding matchers
-			// TODO: Write this part.
-			
-		} while( true );  // TODO: Change the while condition to reflect the user's choice to stop or keep going.
 		
+			//********************** FILTER STAGE *********************///
 		
-		// Prepare final alignment.
-		// TODO: Write this part.
+			currentStage = executionStage.runningFilter;
+			classesMatrix.filter(classesAlignmentSet);
+			propertiesMatrix.filter(propertiesAlignmentSet);
+			currentStage = executionStage.afterFilter;
+			
+			
+			//**********************  EXTRAPOLATIING MATCHERS ********/////
+			currentStage = executionStage.runningExtrapolatingMatchers;
+			
+			// TODO: run the extrapolating matchers here
+			
+			currentStage = executionStage.afterExtrapolatingMatchers;
+			
+			//**********************  CANDIDATE SELECTION ***********///
+			currentStage = executionStage.runningCandidateSelection;
+			
+			// TODO: run the candidate selection here
+			
+			currentStage = executionStage.afterCandidateSelection;
+			
+			//********************* USER FEEDBACK INTERFACE **********//
+			currentStage = executionStage.runningUserInterface;
+			
+			// TODO: run the user interface here
+			
+			// TODO: check if the user said STOP!
+			
+			currentStage = executionStage.afterUserInterface;
+		
+		} while( true );
 		
 	}
+
 
 	private void initializeUserInterface() {
 		
-		sp = new SelectionPanel();
-		sp.showScreen_Start();
+		progressDisplay = new SelectionPanel(this);
+		progressDisplay.showScreen_Start();
 		
 		UI ui = Core.getInstance().getUI();
 		
-		ui.addTab("User Feedback Loop", null, sp, "User Feedback Loop");
+		ui.addTab("User Feedback Loop", null, progressDisplay, "User Feedback Loop");
 		
 		
 		
 	}
 
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public executionStage getStage() { return currentStage; }
+	public void setStage(executionStage stage) { currentStage = stage; }
+
 
 }

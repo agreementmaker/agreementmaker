@@ -13,9 +13,7 @@ public class AbstractRMeasure {
 	
 	
 	public AbstractRMeasure( ) {
-	
 		candidateList = new LinkedList<CandidateMapping>();
-		
 	}
 	
 	
@@ -31,7 +29,7 @@ public class AbstractRMeasure {
 	}
 	
 	
-	public AlignmentSet<CandidateMapping> getCandidates() {
+	public AlignmentSet<CandidateMapping> getCandidateMappings() {
 		
 		return null;
 		
