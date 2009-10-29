@@ -1,62 +1,121 @@
 package am.app.feedback.measures;
 
-import am.app.feedback.CandidateMapping;
-import am.app.feedback.CandidateSelection;
-import am.app.feedback.ExtendedAlignment;
-import am.app.mappingEngine.AlignmentSet;
-import am.app.ontology.Node;
+import java.util.ArrayList;
 
-public class FamilialSimilarity extends AbstractRMeasure {
+import am.app.Core;
+import am.app.feedback.CandidateConcept;
+import am.app.feedback.InitialMatchers;
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.ontology.Ontology;
+import am.userInterface.vertex.Vertex;
 
-	double STEP1_MULTIPLIER = 1.00d;
+
+public class FamilialSimilarity extends RelevanceMeasure {
+
 	
-	public FamilialSimilarity(CandidateSelection cs) {
-		super();
-		// TODO Auto-generated constructor stub
+	
+	CandidateConcept.ontology whichOntology;
+	alignType whichType;
+	
+	InitialMatchers im;
+	
+	public void calculateRelevances() {
+		
+		im = new InitialMatchers();
+		
+		Ontology sourceOntology = Core.getInstance().getSourceOntology();
+		whichOntology = CandidateConcept.ontology.source;
+		
+		// source classes
+		whichType     = alignType.aligningClasses;
+		try {
+			visitNode( sourceOntology.getClassesTree() );
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		// source properties
+		whichType     = alignType.aligningProperties;
+		try {
+			visitNode( sourceOntology.getPropertiesTree() );
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		Ontology targetOntology = Core.getInstance().getTargetOntology();
+		whichOntology = CandidateConcept.ontology.target;
+		
+		// target classes
+		whichType     = alignType.aligningClasses;
+		try {
+			visitNode( targetOntology.getClassesTree() );
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		// target properties
+		whichType     = alignType.aligningProperties;
+		try {
+			visitNode( targetOntology.getPropertiesTree() );
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
-
-	public AlignmentSet<CandidateMapping> getCandidates() {
+	
+	
+	// makes a list of the children and compares each child to every other
+	protected void visitNode( Vertex concept ) throws Exception {
 		
-		AlignmentSet<CandidateMapping> candidates = new AlignmentSet<CandidateMapping>();
+		ArrayList<Vertex> childrenList = new ArrayList<Vertex>();
+		int numChildren = concept.getChildCount();
 		
-		candidates.addAll(computeStep1Relevances());
+		for( int i = 0; i < numChildren; i++ ) {
+			childrenList.add((Vertex) concept.getChildAt(i));
+		}
 		
-		//candidates.sort();
+		if( childrenList.size() > 1 ) {
+			// two or more children
+			for( int i = 0; i < childrenList.size(); i++ ) {
+				int sim = simAboveThreshold( childrenList, i);
+				if( sim > 0 ) {
+					candidateList.add( new CandidateConcept( childrenList.get(i).getNode(), sim, whichOntology, whichType ));
+				}
+			}
+		}
 		
-		return null;
-		
-	}
-
-	/**
-	 * Computes step1 relevances.
-	 * @return
-	 */
-	private AlignmentSet<CandidateMapping> computeStep1Relevances() {
-		AlignmentSet<CandidateMapping> step1Candidates = new AlignmentSet<CandidateMapping>();
-		
-		AlignmentSet<ExtendedAlignment> currentAlignments = null;
-		
-				
-		for( int i = 0; i < currentAlignments.size(); i++ ) {
-			ExtendedAlignment p = currentAlignments.getAlignment(i);
-			
-			Node sourceNode = p.getEntity1();
-			Node targetNode = p.getEntity2();
-			
-			int n = sourceNode.getChildren().size();
-			int m = targetNode.getChildren().size();
-			
-			double relevance = (n + m) * STEP1_MULTIPLIER;
-			
-			CandidateMapping q = new CandidateMapping( p, relevance);
-			
-			step1Candidates.addAlignment(q);
-			
+		// visit the children
+		for( int i = 0; i < childrenList.size(); i++ ) {
+			visitNode( childrenList.get(i));
 		}
 		
 		
-		
-		return null;
 	}
+	
+	
+	// compares each child to every other using the initial matchers, and returns the number of similarities above the threshold
+	private int simAboveThreshold( ArrayList<Vertex> childrenList, int indexofC1 ) throws Exception {
+		
+		int simAbove = 0;
+		Vertex C1;
+		Vertex C2;
+		for( int j = 0; j < childrenList.size(); j++ ) {
+			if( indexofC1 == j ) continue;
+			
+			C1 = childrenList.get(indexofC1);
+			C2 = childrenList.get(j);
+			
+			Alignment ali = im.alignTwoNodes(C1.getNode(), C2.getNode(), whichType );
+			if ( ali.getSimilarity() >= threshold ) {
+				simAbove++;
+			}
+			
+		}
+		
+		return simAbove;
+		
+	}
+	
 	
 }

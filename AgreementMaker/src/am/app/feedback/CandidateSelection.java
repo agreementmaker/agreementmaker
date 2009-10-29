@@ -1,6 +1,7 @@
 package am.app.feedback;
 
-import am.app.feedback.measures.FamilialSimilarity;
+import java.util.ArrayList;
+
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
 
@@ -19,17 +20,11 @@ public class CandidateSelection {
 		imStack = im;
 	}
 	
-	public AlignmentSet<Alignment> getTopCandidates() {
-		
-		AlignmentSet<CandidateMapping> candidateSet = new AlignmentSet<CandidateMapping>();
-		AlignmentSet<Alignment> topCandidates = new AlignmentSet<Alignment>();
-		
-		FamilialSimilarity fr = new FamilialSimilarity(this);
+	public ArrayList<Alignment> getTopCandidates() {
 		
 		
 		
-		
-		return topCandidates;
+		return null;
 		
 	}
 

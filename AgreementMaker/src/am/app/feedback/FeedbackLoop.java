@@ -130,7 +130,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 			//**********************  EXTRAPOLATIING MATCHERS ********/////
 			currentStage = executionStage.runningExtrapolatingMatchers;
 			
-			// TODO: run the extrapolating matchers here
 			ExtrapolatingDSI eDSI = new ExtrapolatingDSI();
 			DescendantsSimilarityInheritanceParameters params = new DescendantsSimilarityInheritanceParameters();
 			params.MCP = 0.75;
@@ -162,6 +161,9 @@ public class FeedbackLoop extends AbstractMatcher  {
 			currentStage = executionStage.runningCandidateSelection;
 			
 			// TODO: run the candidate selection here
+			
+			
+			
 			
 			currentStage = executionStage.afterCandidateSelection;
 			
