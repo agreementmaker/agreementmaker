@@ -1,12 +1,17 @@
 package am.app.feedback;
 
+import java.util.Iterator;
 import java.util.TreeSet;
 
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentMatrix;
 import am.app.mappingEngine.AlignmentSet;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 
+
+// TODO: This FilteredAlignmentMatrix only works for 1-1 alignments.  To extend this, there requires some work.
 public class FilteredAlignmentMatrix extends AlignmentMatrix {
+	// TODO: Add intializeVariables() method for the constructors to use (added to AlignmentMatrix)
 
 	protected TreeSet<Integer> filteredRows;  // a sorted list (TreeSet) of the row numbers that have been filtered from this matrix
 	protected TreeSet<Integer> filteredCols;  // a TreeSet of the column numbers that have been filtered from this matrix
@@ -21,6 +26,15 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 	}
 	
 	
+	public FilteredAlignmentMatrix(int size, int size2, alignType typeOfNodes, String relation) {
+		super( size, size2, typeOfNodes, relation);
+		
+		// initialize list of filtered rows and columns
+		filteredRows = new TreeSet<Integer>();
+		filteredCols = new TreeSet<Integer>();
+	}
+
+
 	public boolean isRowFiltered( int row ) {
 		return filteredRows.contains( new Integer(row) );
 	}
@@ -31,6 +45,13 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 	
 	public boolean isCellFiltered( int row, int col ) {
 		return filteredRows.contains( new Integer(row)) || filteredCols.contains( new Integer(col));
+	}
+	
+	public TreeSet<Integer> getFilteredRows() {
+		return filteredRows;
+	}
+	public TreeSet<Integer> getFilteredCols() {
+		return filteredCols;
 	}
 
 	
@@ -74,6 +95,34 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 			
 			// set the alignment similarity to 1
 			setSimilarity(row, col, 1.00d);
+		}
+	}
+
+
+	// Copies the filtered rows/columns from another matrix
+	// TODO: Only works for 1-1 alignments.
+	public void filter(FilteredAlignmentMatrix fam) {
+		
+		// copy rows
+		TreeSet<Integer> frows = fam.getFilteredRows();
+		Iterator<Integer> iRows = frows.iterator();
+		while( iRows.hasNext() ) {
+			Integer i = iRows.next();
+			if( !filteredRows.contains(i) ) filteredRows.add(i);
+			for( int j = 0; j < fam.getColumns(); j++ ) {
+				data[i][j] = fam.get(i, j);
+			}
+		}
+		
+		// copy columns
+		TreeSet<Integer> fcols = fam.getFilteredCols();
+		Iterator<Integer> iCols = fcols.iterator();
+		while( iCols.hasNext() ) {
+			Integer i = iCols.next();
+			if( !filteredCols.contains(i) ) filteredCols.add(i);
+			for( int h = 0; h < fam.getRows(); h++ ) {
+				data[h][i] = fam.get(h, i);
+			}
 		}
 	}
 	
