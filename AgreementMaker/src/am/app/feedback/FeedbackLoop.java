@@ -2,8 +2,10 @@ package am.app.feedback;
 
 import am.Utility;
 import am.app.Core;
+import am.app.feedback.matchers.ExtrapolatingDSI;
 import am.app.feedback.ui.SelectionPanel;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceParameters;
 import am.userInterface.UI;
 
 /**
@@ -129,8 +131,32 @@ public class FeedbackLoop extends AbstractMatcher  {
 			currentStage = executionStage.runningExtrapolatingMatchers;
 			
 			// TODO: run the extrapolating matchers here
+			ExtrapolatingDSI eDSI = new ExtrapolatingDSI();
+			DescendantsSimilarityInheritanceParameters params = new DescendantsSimilarityInheritanceParameters();
+			params.MCP = 0.75;
+			eDSI.setParam(params);
+			eDSI.setThreshold(threshold);
+			eDSI.setMaxSourceAlign(maxSourceAlign);
+			eDSI.setMaxTargetAlign(maxTargetAlign);
+			eDSI.addInputMatcher(this);
+			
+			try {
+				eDSI.match();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			classesMatrix = (FilteredAlignmentMatrix) eDSI.getClassesMatrix();
+			propertiesMatrix = (FilteredAlignmentMatrix) eDSI.getPropertiesMatrix();
+			
 			
 			currentStage = executionStage.afterExtrapolatingMatchers;
+			
+			
+			
+			
+			
 			
 			//**********************  CANDIDATE SELECTION ***********///
 			currentStage = executionStage.runningCandidateSelection;
