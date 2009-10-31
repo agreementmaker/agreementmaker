@@ -2,6 +2,7 @@ package am.userInterface;
 
 
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -21,6 +22,7 @@ import am.app.feedback.FeedbackLoop;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
+import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.ontology.Ontology;
@@ -158,8 +160,9 @@ public class UIMenu implements ActionListener {
 				ui.redisplayCanvas();
 			}
 			else if( obj == userFeedBack ) {
-				FeedbackLoop ufl = new FeedbackLoop();  // initialize the user feedback loop interface (i.e. add a new tab)
-				Core.getInstance().addMatcherInstance(ufl);
+				AbstractMatcher ufl = MatcherFactory.getMatcherInstance( MatchersRegistry.UserFeedBackLoop , Core.getInstance().getMatcherInstances().size() );  // initialize the user feedback loop interface (i.e. add a new tab)
+				ui.getControlPanel().getTablePanel().addMatcher(ufl);
+				ui.redisplayCanvas();
 				
 			}
 			else if( obj == manualMapping) {

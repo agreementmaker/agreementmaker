@@ -1,5 +1,6 @@
 package am.app.mappingEngine;
 
+import am.app.feedback.FeedbackLoop;
 import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.LexicalMatcherJWNL.LexicalMatcherJWNL;
 import am.app.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
@@ -73,7 +74,8 @@ public enum MatchersRegistry {
 	AllOne 				( "(Test) All One Similarities", AllOneMatcher.class, true ),
 	AllZero			( "(Test) All Zero Similarities", AllZeroMatcher.class, true ),
 	Copy				( "Copy Matcher", CopyMatcher.class,false ),
-	Random 				( "(Test) Random Similarities", RandomMatcher.class, true );
+	Random 				( "(Test) Random Similarities", RandomMatcher.class, true ),
+	UserFeedBackLoop ("User Feedback Loop", FeedbackLoop.class );
 	
 	/* Don't change anything below this line .. unless you intend to. */
 	private boolean showInControlPanel;
