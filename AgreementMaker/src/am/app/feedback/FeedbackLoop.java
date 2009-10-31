@@ -117,6 +117,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		im.setProgressDisplay(progressDisplay);
 
 		try {
+			System.out.println("Before Initial Matchers");
 			im.match();
 		} catch (Exception e) {
 			e.printStackTrace();

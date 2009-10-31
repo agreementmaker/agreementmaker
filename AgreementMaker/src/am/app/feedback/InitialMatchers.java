@@ -51,17 +51,17 @@ public class InitialMatchers extends AbstractMatcher {
 		// BSM
 		param_bsm.useDictionary = false;
 		m_bsm = new BaseSimilarityMatcher(param_bsm);		
-		m_bsm.setPerformSelection(false);
+		m_bsm.setPerformSelection(true);
 		
 		// PSM
 		param_psm.initForOAEI2009();  // use the OAEI 2009 settings
 		m_psm = new ParametricStringMatcher( param_psm );
-		m_psm.setPerformSelection(false);
+		m_psm.setPerformSelection(true);
 		
 		// VMM
 		param_vmm.initForOAEI2009();  // use the OAEI 2009 settings for this also.
 		m_vmm = new MultiWordsMatcher( param_vmm );
-		m_vmm.setPerformSelection(false);
+		m_vmm.setPerformSelection(true);
 		
 		// LWC
 		param_lwc.initForOAEI2009();  // use the OAEI 2009 settings for this also (Quality Evaluation = Local Confidence)

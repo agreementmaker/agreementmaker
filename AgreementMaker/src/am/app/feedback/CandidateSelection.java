@@ -22,7 +22,8 @@ public class CandidateSelection {
 	// relevance measures
 	public enum MeasuresRegistry {
 		FamilialSimilarity ( FamilialSimilarity.class ),
-		Specificity	( Specificity.class );
+		//Specificity	( Specificity.class )
+		;
 		
 		
 		private String measure;
@@ -115,7 +116,13 @@ public class CandidateSelection {
 		Collections.sort( masterList );
 		
 		ArrayList<CandidateConcept> topK = new ArrayList<CandidateConcept>();
-		topK.addAll( masterList.subList(0, k - 1) );
+		if(masterList.size() < k){
+			topK.addAll( masterList);
+		}
+		else{
+			topK.addAll( masterList.subList(0, k - 1) );
+		}
+		
 		
 		Collections.sort(topK);
 		
