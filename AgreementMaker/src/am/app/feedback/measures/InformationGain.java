@@ -51,7 +51,7 @@ public class InformationGain extends RelevanceMeasure {
 	}
 	
 	private void visitNode(ArrayList<Node> classesList, int i) {
-		// TODO Auto-generated method stub
+		// TODO: WRITE THIS !
 		
 	}
 

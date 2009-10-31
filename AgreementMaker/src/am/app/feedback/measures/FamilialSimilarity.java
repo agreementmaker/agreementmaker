@@ -23,6 +23,13 @@ public class FamilialSimilarity extends RelevanceMeasure {
 	
 	InitialMatchers im;
 	
+	private double[][] similarityRepository;
+
+	
+	public FamilialSimilarity() {
+		super();
+	}
+	
 	public FamilialSimilarity(double th) {
 		super(th);
 	}
@@ -34,6 +41,9 @@ public class FamilialSimilarity extends RelevanceMeasure {
 		
 		Ontology sourceOntology = Core.getInstance().getSourceOntology();
 		whichOntology = CandidateConcept.ontology.source;
+		
+		
+		
 		
 		// source classes
 		whichType     = alignType.aligningClasses;
@@ -145,6 +155,10 @@ public class FamilialSimilarity extends RelevanceMeasure {
 		return vl;
 		
 	}
-	
-	
+
+	private double SimilarityRepository( Node c1, Node c2 ) {
+		
+		return 0.0d;
+	}
+
 }

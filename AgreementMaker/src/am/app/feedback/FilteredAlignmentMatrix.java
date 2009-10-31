@@ -1,12 +1,15 @@
 package am.app.feedback;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import am.app.Core;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentMatrix;
 import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.ontology.Node;
 
 
 // TODO: This FilteredAlignmentMatrix only works for 1-1 alignments.  To extend this, there requires some work.
@@ -129,25 +132,51 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 	
 	// made this method work with the filtered matrix
     public Alignment[] getRowMaxValues(int row, int numMaxValues) {
-    	
+    	// WARNING! The alignments returned by this method are IMPROPER (entity1 and entity2 are not set);
     	if( isRowFiltered(row) ) { return null; } // this row is filtered
     	
 		//remember to check to have numMaxValues lower than matrix columns before
     	Alignment[] maxAlignments = new Alignment[numMaxValues];
     	
+    	Node entity1 = null;
+    	Node entity2 = null;
 		for(int h = 0; h<maxAlignments.length;h++) {
-			maxAlignments[h] = new Alignment(-1); //intial max alignments have sim equals to -1, don't put 0 could create problem in the next for
+			Alignment currentAlignment = new Alignment(-1);
+			
+			//
+			
+			switch ( typeOfMatrix ) {			
+			case aligningClasses:
+				entity1 = Core.getInstance().getSourceOntology().getClassesList().get(row);
+				break;
+			case aligningProperties:
+				entity1 = Core.getInstance().getSourceOntology().getPropertiesList().get(row);
+				break;
+			}
+			currentAlignment.setEntity1( entity1 );
+			
+			maxAlignments[h] = currentAlignment; //intial max alignments have sim equals to -1, don't put 0 could create problem in the next for
 		}
 		
 		Alignment currentValue;
 		Alignment currentMax;
 		for(int j = 0; j<getColumns();j++) {
+			switch( typeOfMatrix ) {
+			case aligningClasses:
+				entity2 = Core.getInstance().getTargetOntology().getClassesList().get(j);
+				break;
+			case aligningProperties:
+				entity2 = Core.getInstance().getTargetOntology().getPropertiesList().get(j);
+				break;
+			}
 			currentValue = get(row,j);
+			currentValue.setEntity1( entity1 );
+			currentValue.setEntity2( entity2 );
 			if( currentValue == null ) continue;
 			//maxAlignments contains the ordered list of max alignments, the first is the best max value
 			for(int k = 0;k<maxAlignments.length; k++) {
 				currentMax = maxAlignments[k];
-				if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value
+				if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value	
 					maxAlignments[k] = currentValue;
 					currentValue = currentMax;
 				}

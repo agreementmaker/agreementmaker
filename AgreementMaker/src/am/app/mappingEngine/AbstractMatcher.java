@@ -253,7 +253,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
     protected void afterAlignOperations()  {}
     //RESET ALIGNMENT STRUCTURES,     //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
-    protected void beforeSelectionOperations() {
+    public void beforeSelectionOperations() {
     	classesAlignmentSet = null;
     	propertiesAlignmentSet = null;
     	qualEvaluation = null;

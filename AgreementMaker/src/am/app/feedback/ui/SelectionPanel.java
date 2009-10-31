@@ -21,6 +21,7 @@ import am.app.feedback.FeedbackLoop;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.ontology.Node;
 import am.userInterface.MatchingProgressDisplay;
 
 public class SelectionPanel extends JPanel implements MatchingProgressDisplay, ActionListener {
@@ -209,6 +210,16 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 
 		for( int i = 0; i < mappings.size(); i++ ) {
 			Alignment cA = mappings.getAlignment(i);
+			if( cA == null ) {
+				System.out.println(" Null entries in the mappings matrix (the ones to display to the user)! SelectionPanel.java line 213");
+				continue;
+			}
+			Node s = cA.getEntity1();
+			Node t = cA.getEntity2();
+			if( s == null || t == null ) {
+				System.out.println("Bad alignments added to the list of candidate alignments.");
+				continue;
+			}
 			JRadioButton jB = new JRadioButton( cA.getEntity1().toString() + " -> " + cA.getEntity2().toString() );
 			jB.setActionCommand( Integer.toString(i) );
 			mappingsRadios.add( jB );

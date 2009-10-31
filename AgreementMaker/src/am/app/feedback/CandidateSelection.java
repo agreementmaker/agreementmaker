@@ -62,6 +62,7 @@ public class CandidateSelection {
 			}
 		}
 		
+		return;
 	}
 	
 	
@@ -120,7 +121,7 @@ public class CandidateSelection {
 			topK.addAll( masterList);
 		}
 		else{
-			topK.addAll( masterList.subList(0, k - 1) );
+			topK.addAll( masterList.subList(0, k) );
 		}
 		
 		

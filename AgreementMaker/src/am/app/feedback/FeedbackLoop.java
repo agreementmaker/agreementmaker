@@ -153,8 +153,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			AlignmentSet<Alignment> topAlignments = cs.getCandidateAlignments( K, M);
 			
-			
-			
 			currentStage = executionStage.afterCandidateSelection;
 			
 			//********************* USER FEEDBACK INTERFACE **********//

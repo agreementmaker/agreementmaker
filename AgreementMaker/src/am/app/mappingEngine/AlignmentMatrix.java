@@ -19,6 +19,7 @@ public class AlignmentMatrix {
     protected final int columns;             // number of columns
     protected final Alignment[][] data;   // M-by-N array
 
+
     
     // cloning constructor
     public AlignmentMatrix( AlignmentMatrix cloneme ) {
