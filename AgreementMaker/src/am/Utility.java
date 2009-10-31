@@ -40,6 +40,20 @@ public class Utility {
 		return s;
 	}
 	
+	public static String[] getPercentDecimalsList() {
+		int min = 0;
+		int max = 100;
+		int spin = 1;
+		String[] s = new String[(max/spin) +1];
+		String current;
+		for(int i =min, j =0; i <= max && j<s.length; i+=spin, j++) {
+			Double k = new Double( Double.parseDouble(Integer.toString(i)) / 100 );
+			current =  k.toString() ;
+			s[j] = current;
+		}
+		return s;
+	}
+	
 	public static double getDoubleFromPercent(String s) {
 		String s2 = s.substring(0,s.length()-1);//remove last char %
 		double d = Double.parseDouble(s2);

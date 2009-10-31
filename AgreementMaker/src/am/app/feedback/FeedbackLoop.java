@@ -3,8 +3,12 @@ package am.app.feedback;
 import am.Utility;
 import am.app.Core;
 import am.app.feedback.matchers.ExtrapolatingDSI;
+import am.app.feedback.matchers.ExtrapolatingFS;
 import am.app.feedback.ui.SelectionPanel;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.AlignmentMatrix;
+import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceParameters;
 import am.userInterface.UI;
 
@@ -45,6 +49,10 @@ import am.userInterface.UI;
 
 public class FeedbackLoop extends AbstractMatcher  {
 	
+	private int K = 4;
+	private int M = 2;
+	
+	
 	public enum executionStage {
 		notStarted,
 		
@@ -62,6 +70,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 		
 		runningUserInterface,
 		afterUserInterface,
+		
+		presentFinalMappings
 		
 	}
 	
@@ -81,6 +91,10 @@ public class FeedbackLoop extends AbstractMatcher  {
 		currentStage = executionStage.notStarted;
 	
 	};
+	
+	public void setExectionStage( executionStage st ) {
+		currentStage = st;
+	}
 	
 	public void match() {
 		
@@ -127,8 +141,67 @@ public class FeedbackLoop extends AbstractMatcher  {
 			currentStage = executionStage.afterFilter;
 			
 			
+			
+			//**********************  CANDIDATE SELECTION ***********///
+			currentStage = executionStage.runningCandidateSelection;
+			
+			// TODO: run the candidate selection here
+			CandidateSelection cs = new CandidateSelection(this);
+			
+			cs.runMeasures();
+			
+			AlignmentSet<Alignment> topAlignments = cs.getCandidateAlignments( K, M);
+			
+			
+			
+			currentStage = executionStage.afterCandidateSelection;
+			
+			//********************* USER FEEDBACK INTERFACE **********//
+			currentStage = executionStage.runningUserInterface;
+			
+			progressDisplay.displayMappings(topAlignments);
+			
+			while( currentStage == executionStage.runningUserInterface ) {
+				// sleep while the user is using the interface
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
+			}
+			
+			if( currentStage == executionStage.presentFinalMappings ) break;
+			currentStage = executionStage.afterUserInterface;
+
+			
+			Alignment userMapping = progressDisplay.getUserMapping();
+			
+			if( userMapping != null ) {
+				AlignmentSet<Alignment> userSet = new AlignmentSet<Alignment>();
+				
+				userSet.addAlignment( userMapping );
+				
+				if( progressDisplay.isUserMappingClass() ) {
+					classesMatrix.filter( userSet );
+					classesAlignmentSet.addAlignment(userMapping);
+				} else {
+					propertiesMatrix.filter( userSet );
+					propertiesAlignmentSet.addAlignment(userMapping);
+				}
+
+				
+			}
+			
+			
+			
+			
+			
+			
 			//**********************  EXTRAPOLATIING MATCHERS ********/////
 			currentStage = executionStage.runningExtrapolatingMatchers;
+			
+		// EXTRAPOLATING DSI
 			
 			ExtrapolatingDSI eDSI = new ExtrapolatingDSI();
 			DescendantsSimilarityInheritanceParameters params = new DescendantsSimilarityInheritanceParameters();
@@ -149,6 +222,28 @@ public class FeedbackLoop extends AbstractMatcher  {
 			classesMatrix = (FilteredAlignmentMatrix) eDSI.getClassesMatrix();
 			propertiesMatrix = (FilteredAlignmentMatrix) eDSI.getPropertiesMatrix();
 			
+		
+			
+			
+			
+			
+			
+			
+			ExtrapolatingFS eFS = new ExtrapolatingFS();
+			
+			AlignmentSet<Alignment> userMappings = new AlignmentSet<Alignment>();
+			userMappings.addAlignment(userMapping);
+			
+			try {
+				eFS.match(userMappings);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			classesMatrix.filter( eFS.getClassAlignmentSet() );
+			propertiesMatrix.filter( eFS.getPropertyAlignmentSet() );
+			
 			
 			currentStage = executionStage.afterExtrapolatingMatchers;
 			
@@ -157,26 +252,12 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			
 			
-			//**********************  CANDIDATE SELECTION ***********///
-			currentStage = executionStage.runningCandidateSelection;
 			
-			// TODO: run the candidate selection here
-			
-			
-			
-			
-			currentStage = executionStage.afterCandidateSelection;
-			
-			//********************* USER FEEDBACK INTERFACE **********//
-			currentStage = executionStage.runningUserInterface;
-			
-			// TODO: run the user interface here
-			
-			// TODO: check if the user said STOP!
-			
-			currentStage = executionStage.afterUserInterface;
+
 		
 		} while( true );
+		
+		// present the final mappings here
 		
 	}
 
@@ -196,6 +277,14 @@ public class FeedbackLoop extends AbstractMatcher  {
 
 	public executionStage getStage() { return currentStage; }
 	public void setStage(executionStage stage) { currentStage = stage; }
+	
+	public FilteredAlignmentMatrix getClassesMatrix() {
+		return classesMatrix;
+	}
+
+	public FilteredAlignmentMatrix getPropertiesMatrix() {
+		return propertiesMatrix;
+	}
 
 
 }

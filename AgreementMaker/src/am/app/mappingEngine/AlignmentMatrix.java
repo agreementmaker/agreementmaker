@@ -22,20 +22,22 @@ public class AlignmentMatrix {
     
     // cloning constructor
     public AlignmentMatrix( AlignmentMatrix cloneme ) {
-    	relation = cloneme.getRelation();
-    	typeOfMatrix = cloneme.getAlignType();
     	
-    	rows = cloneme.getRows();
-    	columns = cloneme.getColumns();
-    	
-    	data = new Alignment[rows][columns];
-    	
-   		for(int i=0; i< cloneme.getRows(); i++) {
-   			for(int j = 0; j < cloneme.getColumns(); j++) {
-   				setSimilarity(i,j, cloneme.getSimilarity(i,j));
-   			}
-   		}
+	    	relation = cloneme.getRelation();
+	    	typeOfMatrix = cloneme.getAlignType();
+	    	
+	    	rows = cloneme.getRows();
+	    	columns = cloneme.getColumns();
+	    	
+	    	data = new Alignment[rows][columns];
+	    	
+	   		for(int i=0; i< cloneme.getRows(); i++) {
+	   			for(int j = 0; j < cloneme.getColumns(); j++) {
+	   				setSimilarity(i,j, cloneme.getSimilarity(i,j));
+	   			}
+	   		}
    	
+    	
     }
     
     // create M-by-N matrix of 0's

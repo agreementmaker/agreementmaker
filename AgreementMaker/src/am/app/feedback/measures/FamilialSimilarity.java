@@ -4,9 +4,12 @@ import java.util.ArrayList;
 
 import am.app.Core;
 import am.app.feedback.CandidateConcept;
+import am.app.feedback.ConceptList;
 import am.app.feedback.InitialMatchers;
+import java.util.HashMap;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.vertex.Vertex;
 
@@ -20,6 +23,11 @@ public class FamilialSimilarity extends RelevanceMeasure {
 	
 	InitialMatchers im;
 	
+	public FamilialSimilarity(double th) {
+		super(th);
+	}
+
+
 	public void calculateRelevances() {
 		
 		im = new InitialMatchers();
@@ -114,6 +122,27 @@ public class FamilialSimilarity extends RelevanceMeasure {
 		}
 		
 		return simAbove;
+		
+	}
+	
+	// compares each child to every other using the initial matchers, and returns the number of similarities above the threshold
+	public HashMap<Node, Double> simSetAboveThreshold( ArrayList<Vertex> childrenList, Vertex C1 ) throws Exception {
+		
+		HashMap<Node, Double> vl = new HashMap<Node, Double>();
+		
+		Vertex C2;
+		for( int j = 0; j < childrenList.size(); j++ ) {
+
+			C2 = childrenList.get(j);
+			
+			Alignment ali = im.alignTwoNodes(C1.getNode(), C2.getNode(), whichType );
+			if ( ali.getSimilarity() >= threshold ) {
+				vl.put(C2.getNode(), ali.getSimilarity());
+			}
+			
+		}
+		
+		return vl;
 		
 	}
 	

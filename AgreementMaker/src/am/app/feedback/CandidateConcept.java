@@ -10,9 +10,10 @@ import am.app.ontology.Node;
  *
  */
 
-public class CandidateConcept extends Node {
+public class CandidateConcept extends Node implements Comparable<CandidateConcept>{
 
-	double relevance = 0.00;
+	protected double relevance = 0.00;
+	protected boolean patternRepeats = false;
 	
 	public enum ontology {
 		source,
@@ -21,12 +22,59 @@ public class CandidateConcept extends Node {
 	
 	protected ontology whichOntology;
 	protected alignType whichType;
+	protected Node originalNode;
 	
 	public CandidateConcept(Node n, double r, ontology o, alignType t ) {
 		super(n.getIndex(), n.getResource(), n.getType());
 		relevance = r;
 		whichOntology = o;
 		whichType = t;
+		originalNode = n;
+	}
+
+	public double getRelevance() {
+		return relevance;
+	}
+	
+	
+	// to allow candidate concepts to be sorted (required by the Comparable)
+	public int compareTo(CandidateConcept cc) {
+		if( cc.getClass() != CandidateConcept.class ) {
+			return 0;
+		}
+		if( cc.getRelevance() == relevance ) {
+			return 0;  // equal
+		}else if( relevance > cc.getRelevance() ) {
+			return 1; // greater
+		}else {
+			return -1;
+		}
+	}
+	
+	public boolean isOntology( ontology o ) {
+		if( whichOntology == o ) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isType( alignType t ) {
+		if( whichType == t ) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean equals( Node n ) {
+		return super.equals( n );
+	}
+	
+	public void setPatternRepeats( boolean p ) {
+		patternRepeats = p;
+	}
+	
+	public boolean getPatternRepeats(){
+		return patternRepeats;
 	}
 	
 }

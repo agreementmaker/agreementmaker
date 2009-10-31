@@ -1,26 +1,26 @@
 package am.app.feedback.measures;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-
-import am.app.feedback.CandidateConcept;
-import am.app.feedback.CandidateSelection;
-import am.app.mappingEngine.AlignmentSet;
+import am.app.feedback.ConceptList;
+import am.app.feedback.CandidateSelection.MeasuresRegistry;
 
 public class RelevanceMeasure {
 
-	
-	ArrayList<CandidateConcept> candidateList;
+	MeasuresRegistry name;
+	ConceptList candidateList;
 	
 	protected double threshold;
 	
+	public void setName( MeasuresRegistry m ) {
+		name = m;
+	}
+	
 	public RelevanceMeasure() {
-		candidateList = new ArrayList<CandidateConcept>();
+		candidateList = new ConceptList();
 		threshold = 0.7d;
 	}
 	
 	public RelevanceMeasure( double th ) {
-		candidateList = new ArrayList<CandidateConcept>();
+		candidateList = new ConceptList();
 		threshold = th;
 	}
 	
@@ -32,7 +32,7 @@ public class RelevanceMeasure {
 	
 	
 
-	public ArrayList<CandidateConcept> getRelevances() {
+	public ConceptList getRelevances() {
 		return candidateList;
 	}
 	

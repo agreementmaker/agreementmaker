@@ -1,6 +1,7 @@
 
 package am.app.mappingEngine;
 
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.*;
 import am.output.OutputController;
 
@@ -11,6 +12,8 @@ public class Alignment
     private Node entity2 = null;
     private double similarity = 0;
     private String relation = null;
+    
+    private alignType typeOfConcepts = null;
     
     //THE FONT USED IN THE CANVAS MUST BE A UNICODE FONT TO VIEW THIS SPECIAL CHARS
     public final static String EQUIVALENCE = "=";
@@ -162,5 +165,13 @@ public class Alignment
 		//used in the Conflict resulotion method of the conference track
 		//it is based on the idea that in a 1-1 matching a mapping is identified by the sourcenode
 		return getEntity2().getIndex();
+	}
+	
+	public void setAlignmentType( alignType t ) {
+		typeOfConcepts = t;
+	}
+	
+	public alignType getAlignmentType() {
+		return typeOfConcepts;
 	}
 }

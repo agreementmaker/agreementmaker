@@ -65,6 +65,7 @@ public class MatcherFactory {
 		} catch (ClassNotFoundException e) {
 			System.out.println("DEVELOPER: You have entered a wrong class name in the MatcherRegistry");
 			e.printStackTrace();
+			return null;
 		}
 		
 		AbstractMatcher a = null;
@@ -73,9 +74,11 @@ public class MatcherFactory {
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return null;
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return null;
 		}
 		
 		

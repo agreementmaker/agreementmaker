@@ -32,10 +32,13 @@ public class InitialMatchers extends AbstractMatcher {
 	
 	private CombinationMatcher			m_lwc = null;
 	
+	public InitialMatchers() {
+		super();
+		initializeVariables();
+	}
 	
 	protected void initializeVariables() {
-		super.initializeVariables();
-		
+	
 		// Initialize the parameters for all the matchers that will be used
 		
 		param_bsm = new BaseSimilarityParameters();
