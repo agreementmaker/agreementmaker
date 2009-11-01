@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import am.app.Core;
 import am.app.feedback.CandidateConcept;
 import am.app.feedback.ConceptList;
+import am.app.feedback.FilteredAlignmentMatrix;
 import am.app.feedback.InitialMatchers;
 import java.util.HashMap;
 import am.app.mappingEngine.Alignment;
@@ -48,7 +49,7 @@ public class FamilialSimilarity extends RelevanceMeasure {
 		// source classes
 		whichType     = alignType.aligningClasses;
 		try {
-			visitNode( sourceOntology.getClassesTree() );
+			visitNode( sourceOntology.getClassesTree() , fbl.getClassesMatrix(), true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -56,7 +57,7 @@ public class FamilialSimilarity extends RelevanceMeasure {
 		// source properties
 		whichType     = alignType.aligningProperties;
 		try {
-			visitNode( sourceOntology.getPropertiesTree() );
+			visitNode( sourceOntology.getPropertiesTree() , fbl.getPropertiesMatrix(), true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -67,7 +68,7 @@ public class FamilialSimilarity extends RelevanceMeasure {
 		// target classes
 		whichType     = alignType.aligningClasses;
 		try {
-			visitNode( targetOntology.getClassesTree() );
+			visitNode( targetOntology.getClassesTree(),fbl.getClassesMatrix(), false );
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -75,7 +76,7 @@ public class FamilialSimilarity extends RelevanceMeasure {
 		// target properties
 		whichType     = alignType.aligningProperties;
 		try {
-			visitNode( targetOntology.getPropertiesTree() );
+			visitNode( targetOntology.getPropertiesTree(), fbl.getPropertiesMatrix(), false );
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -84,7 +85,7 @@ public class FamilialSimilarity extends RelevanceMeasure {
 	
 	
 	// makes a list of the children and compares each child to every other
-	protected void visitNode( Vertex concept ) throws Exception {
+	protected void visitNode( Vertex concept, FilteredAlignmentMatrix matrix, boolean isSource) throws Exception {
 		
 		ArrayList<Vertex> childrenList = new ArrayList<Vertex>();
 		int numChildren = concept.getChildCount();
@@ -96,16 +97,23 @@ public class FamilialSimilarity extends RelevanceMeasure {
 		if( childrenList.size() > 1 ) {
 			// two or more children
 			for( int i = 0; i < childrenList.size(); i++ ) {
-				int sim = simAboveThreshold( childrenList, i);
-				if( sim > 0 ) {
-					candidateList.add( new CandidateConcept( childrenList.get(i).getNode(), sim, whichOntology, whichType ));
+				if(isSource && matrix.isRowFiltered(childrenList.get(i).getNode().getIndex())){
+					//skip the node because it has been mapped and validated already
+				}
+				else if(!isSource && matrix.isColFiltered(childrenList.get(i).getNode().getIndex())){
+					//skip the node because it has been mapped and validated already
+				}
+				else{
+					int sim = simAboveThreshold( childrenList, i);
+					if( sim > 0 ) {
+						candidateList.add( new CandidateConcept( childrenList.get(i).getNode(), sim, whichOntology, whichType ));
+					}
 				}
 			}
 		}
-		
 		// visit the children
 		for( int i = 0; i < childrenList.size(); i++ ) {
-			visitNode( childrenList.get(i));
+			visitNode( childrenList.get(i), matrix, isSource);
 		}
 		
 		

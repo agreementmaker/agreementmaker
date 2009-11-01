@@ -263,6 +263,7 @@ public class CandidateSelection {
 		}
 		
 		a.setName(name);
+		a.setFeedbackLoop(fbL);
 		return a;
 	}
 	

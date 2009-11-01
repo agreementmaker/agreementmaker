@@ -1,12 +1,14 @@
 package am.app.feedback.measures;
 
 import am.app.feedback.ConceptList;
+import am.app.feedback.FeedbackLoop;
 import am.app.feedback.CandidateSelection.MeasuresRegistry;
 
 public class RelevanceMeasure {
 
-	MeasuresRegistry name;
-	ConceptList candidateList;
+	protected MeasuresRegistry name;
+	protected ConceptList candidateList;
+	protected FeedbackLoop fbl;
 	
 	protected double threshold;
 	
@@ -27,13 +29,16 @@ public class RelevanceMeasure {
 	
 	
 	public void calculateRelevances() {
-		
 	}
 	
 	
 
 	public ConceptList getRelevances() {
 		return candidateList;
+	}
+	
+	public void setFeedbackLoop(FeedbackLoop FBL){
+		fbl = FBL;
 	}
 	
 }
