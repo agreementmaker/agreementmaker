@@ -133,6 +133,10 @@ public class FeedbackLoop extends AbstractMatcher  {
 		currentStage = executionStage.afterInitialMatchers;
 		
 		do {
+			
+			
+			
+			
 		
 			//********************** FILTER STAGE *********************///
 		
@@ -140,6 +144,60 @@ public class FeedbackLoop extends AbstractMatcher  {
 			classesMatrix.filter(classesAlignmentSet);
 			propertiesMatrix.filter(propertiesAlignmentSet);
 			currentStage = executionStage.afterFilter;
+			
+			
+			
+			
+			
+			
+			
+			
+			//**********************  EXTRAPOLATIING MATCHERS ********/////
+			currentStage = executionStage.runningExtrapolatingMatchers;
+			
+		// EXTRAPOLATING DSI
+			
+			ExtrapolatingDSI eDSI = new ExtrapolatingDSI();
+			DescendantsSimilarityInheritanceParameters params = new DescendantsSimilarityInheritanceParameters();
+			params.MCP = 0.75;
+			eDSI.setParam(params);
+			eDSI.setThreshold(threshold);
+			eDSI.setMaxSourceAlign(maxSourceAlign);
+			eDSI.setMaxTargetAlign(maxTargetAlign);
+			eDSI.addInputMatcher(this);
+			
+			try {
+				eDSI.match();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			classesMatrix = (FilteredAlignmentMatrix) eDSI.getClassesMatrix();
+			propertiesMatrix = (FilteredAlignmentMatrix) eDSI.getPropertiesMatrix();
+			
+		
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			
 			
 			
@@ -196,32 +254,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			
 			
-			
-			//**********************  EXTRAPOLATIING MATCHERS ********/////
-			currentStage = executionStage.runningExtrapolatingMatchers;
-			
-		// EXTRAPOLATING DSI
-			
-			ExtrapolatingDSI eDSI = new ExtrapolatingDSI();
-			DescendantsSimilarityInheritanceParameters params = new DescendantsSimilarityInheritanceParameters();
-			params.MCP = 0.75;
-			eDSI.setParam(params);
-			eDSI.setThreshold(threshold);
-			eDSI.setMaxSourceAlign(maxSourceAlign);
-			eDSI.setMaxTargetAlign(maxTargetAlign);
-			eDSI.addInputMatcher(this);
-			
-			try {
-				eDSI.match();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			classesMatrix = (FilteredAlignmentMatrix) eDSI.getClassesMatrix();
-			propertiesMatrix = (FilteredAlignmentMatrix) eDSI.getPropertiesMatrix();
-			
-		
+
 			
 			
 			
@@ -231,7 +264,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			ExtrapolatingFS eFS = new ExtrapolatingFS();
 			
 			AlignmentSet<Alignment> userMappings = new AlignmentSet<Alignment>();
-			userMappings.addAlignment(userMapping);
+			//userMappings.addAlignment(userMapping);
 			
 			try {
 				eFS.match(userMappings);
@@ -246,9 +279,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			currentStage = executionStage.afterExtrapolatingMatchers;
 			
-			
-			
-			
+
 			
 			
 			

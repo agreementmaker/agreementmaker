@@ -28,16 +28,16 @@ public class FamilialSimilarity extends RelevanceMeasure {
 	
 	public FamilialSimilarity() {
 		super();
+		im = new InitialMatchers();
 	}
 	
 	public FamilialSimilarity(double th) {
 		super(th);
+		im = new InitialMatchers();
 	}
 
 
 	public void calculateRelevances() {
-		
-		im = new InitialMatchers();
 		
 		Ontology sourceOntology = Core.getInstance().getSourceOntology();
 		whichOntology = CandidateConcept.ontology.source;

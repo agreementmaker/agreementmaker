@@ -56,7 +56,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 	}
 	
 	//Used only in the recursive algorithm
-	protected AlignmentMatrix matrix;
+	private AlignmentMatrix matrix;
 	
     protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
     	//this the structure used in the recursive algorithms to keep track of the DSI computed for the parents of each node

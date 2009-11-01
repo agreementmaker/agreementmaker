@@ -115,6 +115,8 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 			String selectedAlignment = radios.getSelection().getActionCommand();
 			selectedMapping = candidateMappings.getAlignment( Integer.parseInt(selectedAlignment));
 			ufl.setExectionStage( FeedbackLoop.executionStage.afterUserInterface );
+			removeAll();
+			repaint();
 		} else if( arg0.getActionCommand() == "btn_incorrect" ) {
 			// the user cannot find any correct mappings
 			selectedMapping = null;
@@ -239,6 +241,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 			add( mappingsRadios.get(i) );
 		}
 		
+		repaint( 500 );
 	}
 
 
