@@ -126,7 +126,7 @@ public class Alignment
 
     
     public String toString() {
-    	return "("+entity1+" "+entity2+" "+similarity+")";
+    	return "("+entity1.toString()+" -> "+entity2.toString()+": "+similarity+")";
     }
     
 
