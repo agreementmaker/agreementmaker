@@ -249,9 +249,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 
 					if( userMapping == null ) {
 						System.out.println( "Automatic User Validation: None of the mappings presented to the user were in the reference alignment.");
-						System.out.println( "We are filtering out these mappings by setting them to 0 similarity in the matrix.");
-						
-						
 					} else {
 						System.out.println( "Automatic User Validation: CORRECT mapping: " + 
 								userMapping.getEntity1().toString() + " -> " +
@@ -373,22 +370,20 @@ public class FeedbackLoop extends AbstractMatcher  {
 				
 			}
 			else{ //All mappings are wrong
+				
+				System.out.println( "All candidate mappings are wrong, filtering out these mappings in the similarity matrix.");
+				
+				// when all the mappings are wrong they should be filtered from the similarity matrix (on a cell by cell basis)
 				for(int i=0; i < topAlignments.size(); i++){
 					Alignment a = topAlignments.getAlignment(i);
 					if(a.getEntity1().isProp()){
 						//This should work for OWL ontologies at least, I think however that classes and properties should have different loops.
-						propertiesMatrix.setSimilarity(a.getSourceKey(), a.getTargetKey(), 0);
+						propertiesMatrix.filterCell(a.getSourceKey(), a.getTargetKey());
 					}
 					else{
-						classesMatrix.setSimilarity(a.getSourceKey(), a.getTargetKey(), 0);
+						classesMatrix.filterCell(a.getSourceKey(), a.getTargetKey());
 					}
 				}
-				
-				// DO THE FILTERING HERE
-				
-				//set these to empty because nothing has to be filtered in the next iteration (Removed this, I do this above)
-				//classesToBeFiltered = new AlignmentSet<Alignment>();
-				//propertiesToBeFiltered = new AlignmentSet<Alignment>();
 			}
 			currentStage = executionStage.afterExtrapolatingMatchers;	
 
