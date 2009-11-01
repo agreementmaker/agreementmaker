@@ -22,12 +22,14 @@ public class Specificity extends RelevanceMeasure {
 		// source classes
 		whichType     = alignType.aligningClasses;
 		visitNode( sourceOntology.getClassesTree(), 1 );
-		candidateList.add( new CandidateConcept( sourceOntology.getClassesTree().getNode(), 1.0d, whichOntology, whichType ));
+		if( sourceOntology.getClassesTree().getNode() != null )
+			candidateList.add( new CandidateConcept( sourceOntology.getClassesTree().getNode(), 1.0d, whichOntology, whichType ));
 
 		// source properties
 		whichType     = alignType.aligningProperties;
 		visitNode( sourceOntology.getPropertiesTree(), 1 );
-		candidateList.add( new CandidateConcept( sourceOntology.getPropertiesTree().getNode(), 1.0d, whichOntology, whichType ));
+		if( sourceOntology.getPropertiesTree().getNode() != null )		
+			candidateList.add( new CandidateConcept( sourceOntology.getPropertiesTree().getNode(), 1.0d, whichOntology, whichType ));
 
 		
 		
@@ -37,13 +39,15 @@ public class Specificity extends RelevanceMeasure {
 		// target classes
 		whichType     = alignType.aligningClasses;
 		visitNode( targetOntology.getClassesTree(), 1 );
-		candidateList.add( new CandidateConcept( targetOntology.getClassesTree().getNode(), 1.0d, whichOntology, whichType ));
+		if( targetOntology.getClassesTree().getNode() != null )
+			candidateList.add( new CandidateConcept( targetOntology.getClassesTree().getNode(), 1.0d, whichOntology, whichType ));
 
 		
 		// target properties
 		whichType     = alignType.aligningProperties;
 		visitNode( targetOntology.getPropertiesTree(), 1 );
-		candidateList.add( new CandidateConcept( targetOntology.getPropertiesTree().getNode(), 1.0d, whichOntology, whichType ));
+		if( targetOntology.getPropertiesTree().getNode() != null )
+			candidateList.add( new CandidateConcept( targetOntology.getPropertiesTree().getNode(), 1.0d, whichOntology, whichType ));
 
 		
 		
