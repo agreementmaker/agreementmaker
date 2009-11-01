@@ -6,9 +6,6 @@ import am.app.ontology.Node;
 
 public class NodeComparator implements Comparator<Node>{
 
-	
-	
-	@Override
 	public int compare(Node o1, Node o2) {
 		if(o1.getIndex() < o2.getIndex())
 			return -1;
@@ -17,5 +14,4 @@ public class NodeComparator implements Comparator<Node>{
 		else
 			return 0;
 	}
-
 }

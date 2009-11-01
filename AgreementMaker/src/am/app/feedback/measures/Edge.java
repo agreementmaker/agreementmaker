@@ -47,7 +47,6 @@ public class Edge implements Comparable<Edge>{
 		return targetNode;
 	}
 
-	@Override
 	public int compareTo(Edge o) {
 		if(this.sourceVisit < o.sourceVisit)
 			return -1;
