@@ -77,7 +77,8 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		cmbCardinality.addItem("1-1");
 		
 		cmbConfigurations = new JComboBox();
-		cmbConfigurations.addItem("Default");
+		cmbConfigurations.addItem("Manual");
+		cmbConfigurations.addItem("Auto 101-303");
 		
 		
 		
@@ -95,7 +96,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		add(cmbLowThreshold);
 		add(lblCardinality);
 		add(cmbCardinality);
-		
+		repaint();
 		
 	}
 
@@ -106,24 +107,30 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		// when a button on the user feedback loop java pane is pressed this is the action listener.
 		if( arg0.getActionCommand() == "btn_start" ) {
 			ufl.setProgressDisplay(this);
+			displayProgressScreen();
 			ufl.execute();
 		} else if( arg0.getActionCommand() == "screen2_cancel" ) {
 			ufl.cancel(true);
 			showScreen_Start();
 		} else if( arg0.getActionCommand() == "btn_correct" ) {
 			// the user has selected a correct mapping
-			String selectedAlignment = radios.getSelection().getActionCommand();
-			selectedMapping = candidateMappings.getAlignment( Integer.parseInt(selectedAlignment));
-			ufl.setExectionStage( FeedbackLoop.executionStage.afterUserInterface );
-			removeAll();
-			repaint();
+			if(radios.getSelection() != null){
+				String selectedAlignment = radios.getSelection().getActionCommand();
+				selectedMapping = candidateMappings.getAlignment( Integer.parseInt(selectedAlignment));
+				displayProgressScreen();
+				ufl.setExectionStage( FeedbackLoop.executionStage.afterUserInterface );
+			}
 		} else if( arg0.getActionCommand() == "btn_incorrect" ) {
 			// the user cannot find any correct mappings
 			selectedMapping = null;
+			displayProgressScreen();
 			ufl.setExectionStage( FeedbackLoop.executionStage.afterUserInterface );
+
 		} else if( arg0.getActionCommand() == "btn_stop") {
 			// the user has selected to stop the loop
 			selectedMapping = null;
+			removeAll();
+			repaint();
 			ufl.setExectionStage( FeedbackLoop.executionStage.presentFinalMappings );
 		}
 	}
@@ -132,15 +139,21 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 
 	private void displayProgressScreen() {
 		// TODO Auto-generated method stub
+		removeAll();
 		
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.setActionCommand("screen2_cancel");
-		
-		JLabel lblim = new JLabel("Initial Matchers:");
+		btnCancel.addActionListener(this);
+		JLabel lblim = new JLabel("Running:");
 		
 		progressBar = new JProgressBar();
+		progressBar.setIndeterminate(true);
 		
-		
+		setLayout( new FlowLayout() );
+		add(lblim);
+		add(progressBar);
+		add(btnCancel);
+		repaint();
 	}
 
 
@@ -241,7 +254,8 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 			add( mappingsRadios.get(i) );
 		}
 		
-		repaint( 500 );
+		//repaint( 500 );
+		repaint();
 	}
 
 

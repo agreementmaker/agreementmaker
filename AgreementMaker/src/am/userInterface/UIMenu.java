@@ -57,7 +57,7 @@ public class UIMenu implements ActionListener {
 	// menu items for edit menu
 	//private JMenuItem undo, redo;
 	// menu itmes for fileMenu
-	private JMenuItem xit, openSource, openTarget;
+	private JMenuItem xit, openSource, openTarget, openMostRecentPair;
 	
 	private JMenu menuRecentSource, menuRecentTarget;
 	//private JMenuItem menuRecentSourceList[], menuRecentTargetList[]; // the list of recent files
@@ -128,6 +128,13 @@ public class UIMenu implements ActionListener {
 				openAndReadFilesForMapping(GlobalStaticVariables.SOURCENODE);
 			}else if (obj == openTarget){
 				openAndReadFilesForMapping(GlobalStaticVariables.TARGETNODE);
+			}else if (obj == openMostRecentPair){
+				AppPreferences prefs = new AppPreferences();
+				int position = 0;
+				ui.openFile( prefs.getRecentSourceFileName(position), GlobalStaticVariables.SOURCENODE, 
+						prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position), prefs.getRecentSourceSkipNamespace(position), prefs.getRecentSourceNoReasoner(position));
+				ui.openFile( prefs.getRecentTargetFileName(position), GlobalStaticVariables.TARGETNODE, 
+						prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position), prefs.getRecentTargetSkipNamespace(position), prefs.getRecentTargetNoReasoner(position));
 			}else if (obj == aboutItem){
 				new AboutDialog();
 				//displayOptionPane("Agreement Maker 3.0\nAdvis research group\nThe University of Illinois at Chicago 2004","About Agreement Maker");
@@ -461,6 +468,7 @@ public class UIMenu implements ActionListener {
 		menuRecentTarget = new JMenu("Recent Targets...");
 		menuRecentTarget.setMnemonic('a');
 		
+		
 		refreshRecentMenus(menuRecentSource, menuRecentTarget);
 		
 /*		
@@ -473,7 +481,9 @@ public class UIMenu implements ActionListener {
 		
 		fileMenu.add(menuRecentSource);
 		fileMenu.add(menuRecentTarget);
-		
+		openMostRecentPair = new JMenuItem("Open most recent pair");
+		openMostRecentPair.addActionListener(this);
+		fileMenu.add(openMostRecentPair);
 		fileMenu.addSeparator();
 		//private JMenuItem menuRecentSource, menuRecentTarget;
 		//private JMenuItem menuRecentSourceList[], menuRecentTargetList[]; // the list of recent files

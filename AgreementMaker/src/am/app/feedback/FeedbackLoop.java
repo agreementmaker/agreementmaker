@@ -51,6 +51,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 	
 	private int K = 4;
 	private int M = 2;
+	private boolean automatic;
+	private String reference;
 	
 	
 	public enum executionStage {
@@ -117,7 +119,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		im.setProgressDisplay(progressDisplay);
 
 		try {
-			System.out.println("Before Initial Matchers");
+			//System.out.println("Before Initial Matchers");
 			im.match();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -132,30 +134,24 @@ public class FeedbackLoop extends AbstractMatcher  {
 		im = null;
 		currentStage = executionStage.afterInitialMatchers;
 		
+		
+		boolean stop = false;//when this is set to true it means that the user has clicked the stop button
+		AlignmentSet<Alignment> classesToBeFiltered = classesAlignmentSet;
+		AlignmentSet<Alignment> propertiesToBeFiltered = propertiesAlignmentSet;
 		do {
 			
-			
-			
-			
-		
 			//********************** FILTER STAGE *********************///
 		
 			currentStage = executionStage.runningFilter;
-			classesMatrix.filter(classesAlignmentSet);
-			propertiesMatrix.filter(propertiesAlignmentSet);
+			classesMatrix.filter(classesToBeFiltered);
+			propertiesMatrix.filter(propertiesToBeFiltered);
 			currentStage = executionStage.afterFilter;
-			
-			
-			
-			
-			
-			
 			
 			
 			//**********************  EXTRAPOLATIING MATCHERS ********/////
 			currentStage = executionStage.runningExtrapolatingMatchers;
 			
-		// EXTRAPOLATING DSI
+		    // EXTRAPOLATING DSI
 			
 			ExtrapolatingDSI eDSI = new ExtrapolatingDSI();
 			DescendantsSimilarityInheritanceParameters params = new DescendantsSimilarityInheritanceParameters();
@@ -174,32 +170,10 @@ public class FeedbackLoop extends AbstractMatcher  {
 			}
 			
 			classesMatrix = (FilteredAlignmentMatrix) eDSI.getClassesMatrix();
-			propertiesMatrix = (FilteredAlignmentMatrix) eDSI.getPropertiesMatrix();
-			
-		
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
+			propertiesMatrix = (FilteredAlignmentMatrix) eDSI.getPropertiesMatrix();	
+			//classesAlignmentSet = eDSI.getClassAlignmentSet();
+			//propertiesAlignmentSet = eDSI.getPropertyAlignmentSet();
+	
 			
 			//**********************  CANDIDATE SELECTION ***********///
 			currentStage = executionStage.runningCandidateSelection;
@@ -228,64 +202,54 @@ public class FeedbackLoop extends AbstractMatcher  {
 				} 
 			}
 			
-			if( currentStage == executionStage.presentFinalMappings ) break;
-			currentStage = executionStage.afterUserInterface;
+			if( currentStage == executionStage.presentFinalMappings ){
+				stop = true;
+			}
+			else{
+				currentStage = executionStage.afterUserInterface;
+				
+				Alignment userMapping = progressDisplay.getUserMapping();
+				
+				if( userMapping != null ) {
+					AlignmentSet<Alignment> userSet = new AlignmentSet<Alignment>();
+					
+					userSet.addAlignment( userMapping );
+					
+					if( progressDisplay.isUserMappingClass() ) {
+						classesMatrix.filter( userSet );
+						classesAlignmentSet.addAlignment(userMapping);
+					} else {
+						propertiesMatrix.filter( userSet );
+						propertiesAlignmentSet.addAlignment(userMapping);
+					}
 
-			
-			Alignment userMapping = progressDisplay.getUserMapping();
-			
-			if( userMapping != null ) {
-				AlignmentSet<Alignment> userSet = new AlignmentSet<Alignment>();
-				
-				userSet.addAlignment( userMapping );
-				
-				if( progressDisplay.isUserMappingClass() ) {
-					classesMatrix.filter( userSet );
-					classesAlignmentSet.addAlignment(userMapping);
-				} else {
-					propertiesMatrix.filter( userSet );
-					propertiesAlignmentSet.addAlignment(userMapping);
+					ExtrapolatingFS eFS = new ExtrapolatingFS();
+					
+					//AlignmentSet<Alignment> userMappings = new AlignmentSet<Alignment>();
+					//userMappings.addAlignment(userMapping);
+					
+					try {
+						eFS.match(userSet);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					//I Removed the filtering from here because mappings will be filtered at the beginning
+					//of the next iteration in the next filtering phase.
+					//classesMatrix.filter( eFS.getClassAlignmentSet() );
+					//propertiesMatrix.filter( eFS.getPropertyAlignmentSet() );
+					classesToBeFiltered = eFS.getClassAlignmentSet();
+					propertiesToBeFiltered = eFS.getPropertyAlignmentSet();
 				}
-
-				
+				else{
+					classesToBeFiltered = new AlignmentSet<Alignment>();
+					propertiesToBeFiltered = new AlignmentSet<Alignment>();
+				}
+				currentStage = executionStage.afterExtrapolatingMatchers;	
 			}
 			
-			
-			
-			
-			
-
-			
-			
-			
-			
-			
-			
-			ExtrapolatingFS eFS = new ExtrapolatingFS();
-			
-			AlignmentSet<Alignment> userMappings = new AlignmentSet<Alignment>();
-			//userMappings.addAlignment(userMapping);
-			
-			try {
-				eFS.match(userMappings);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			classesMatrix.filter( eFS.getClassAlignmentSet() );
-			propertiesMatrix.filter( eFS.getPropertyAlignmentSet() );
-			
-			
-			currentStage = executionStage.afterExtrapolatingMatchers;
-			
-
-			
-			
-			
-
-		
-		} while( true );
+		} while( !stop );
 		
 		// present the final mappings here
 		
