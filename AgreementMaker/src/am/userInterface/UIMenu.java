@@ -160,10 +160,15 @@ public class UIMenu implements ActionListener {
 				ui.redisplayCanvas();
 			}
 			else if( obj == userFeedBack ) {
-				AbstractMatcher ufl = MatcherFactory.getMatcherInstance( MatchersRegistry.UserFeedBackLoop , Core.getInstance().getMatcherInstances().size() );  // initialize the user feedback loop interface (i.e. add a new tab)
-				ui.getControlPanel().getTablePanel().addMatcher(ufl);
-				ui.redisplayCanvas();
-				
+				// the user has to load the ontologies.
+				if( Core.getInstance().getSourceOntology() == null || Core.getInstance().getTargetOntology() == null ) {
+					Utility.displayErrorPane("Two ontologies must be loaded into AgreementMaker before the matching can begin.", "Ontologies not loaded." );
+				}
+				else{
+					AbstractMatcher ufl = MatcherFactory.getMatcherInstance( MatchersRegistry.UserFeedBackLoop , Core.getInstance().getMatcherInstances().size() );  // initialize the user feedback loop interface (i.e. add a new tab)
+					ui.getControlPanel().getTablePanel().addMatcher(ufl);
+					ui.redisplayCanvas();
+				}			
 			}
 			else if( obj == manualMapping) {
 				Utility.displayMessagePane("To edit or create a manual mapping select any number of source and target nodes.\nLeft click on a node to select it, use Ctrl and/or Shift for multiple selections.", "Manual Mapping");
