@@ -1,5 +1,7 @@
 package am.app.feedback;
 
+import java.util.Iterator;
+
 import am.Utility;
 import am.app.Core;
 import am.app.feedback.matchers.ExtrapolatingDSI;
@@ -98,8 +100,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 	
 	public FeedbackLoop() {
 	
-		initializeUserInterface();
-		currentStage = executionStage.notStarted;
+		initializeUserInterface();  // add a new tab, and display the parameters screen to the user
+		setStage( executionStage.notStarted );
 	
 	}
 	
@@ -120,7 +122,12 @@ public class FeedbackLoop extends AbstractMatcher  {
 		//the reference name is built-in the code right now.
 		AbstractMatcher referenceAlignmentMatcher = null;
 		String conf = progressDisplay.getConfiguration();
+		
+		K = progressDisplay.getK();
+		M = progressDisplay.getM();
+		
 		if(conf.equals(AUTO_101_303)){
+			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
 			automatic = true;
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.fileName = "./OAEI09/benchmarks/303/refalign.rdf";
@@ -138,13 +145,12 @@ public class FeedbackLoop extends AbstractMatcher  {
 		}
 		
 		//************** INITIAL MATCHERS ********************///
+		setStage(executionStage.afterUserInterface);
 		InitialMatchers im = new InitialMatchers();
 		
 		im.setThreshold( progressDisplay.getHighThreshold() );
 		im.setMaxSourceAlign(1);
 		im.setMaxTargetAlign(1);
-		
-		currentStage = executionStage.runningInitialMatchers;
 		im.setProgressDisplay(progressDisplay);
 
 		try {
@@ -161,10 +167,10 @@ public class FeedbackLoop extends AbstractMatcher  {
 		propertiesAlignmentSet = im.getPropertyAlignmentSet();
 
 		im = null;
-		currentStage = executionStage.afterInitialMatchers;
+		setStage( executionStage.afterInitialMatchers );
 		
 		
-		boolean stop = false;//when this is set to true it means that the user has clicked the stop button
+		boolean stop = false; //when this is set to true it means that the user has clicked the stop button
 		AlignmentSet<Alignment> classesToBeFiltered = classesAlignmentSet;
 		AlignmentSet<Alignment> propertiesToBeFiltered = propertiesAlignmentSet;
 		int iteration = 0;
@@ -172,43 +178,23 @@ public class FeedbackLoop extends AbstractMatcher  {
 		do {
 			iteration++;
 			System.out.println("Current iteration: "+iteration+" - Mappings found: "+(classesToBeFiltered.size() + propertiesToBeFiltered.size()));
+
 			//********************** FILTER STAGE *********************///
 		
-			currentStage = executionStage.runningFilter;
+			setStage( executionStage.runningFilter );
+			
 			classesMatrix.filter(classesToBeFiltered);
 			propertiesMatrix.filter(propertiesToBeFiltered);
-			currentStage = executionStage.afterFilter;
+			
+			classesToBeFiltered = new AlignmentSet<Alignment>(); // create a new, empty set
+			propertiesToBeFiltered = new AlignmentSet<Alignment>(); // create a new, empty set
+			
+			setStage( executionStage.afterFilter );
 			
 			
-			//**********************  EXTRAPOLATIING MATCHERS ********/////
-			currentStage = executionStage.runningExtrapolatingMatchers;
-			
-		    // EXTRAPOLATING DSI
-			
-			ExtrapolatingDSI eDSI = new ExtrapolatingDSI();
-			DescendantsSimilarityInheritanceParameters params = new DescendantsSimilarityInheritanceParameters();
-			params.MCP = 0.75;
-			eDSI.setParam(params);
-			eDSI.setThreshold(threshold);
-			eDSI.setMaxSourceAlign(maxSourceAlign);
-			eDSI.setMaxTargetAlign(maxTargetAlign);
-			eDSI.addInputMatcher(this);
-			
-			try {
-				eDSI.match();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			classesMatrix = (FilteredAlignmentMatrix) eDSI.getClassesMatrix();
-			propertiesMatrix = (FilteredAlignmentMatrix) eDSI.getPropertiesMatrix();	
-			//classesAlignmentSet = eDSI.getClassAlignmentSet();
-			//propertiesAlignmentSet = eDSI.getPropertyAlignmentSet();
-	
 			
 			//**********************  CANDIDATE SELECTION ***********///
-			currentStage = executionStage.runningCandidateSelection;
+			setStage( executionStage.runningCandidateSelection );
 			
 			// TODO: run the candidate selection here
 			CandidateSelection cs = new CandidateSelection(this);
@@ -217,119 +203,192 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			AlignmentSet<Alignment> topAlignments = cs.getCandidateAlignments( K, M);
 			
-			currentStage = executionStage.afterCandidateSelection;
+			System.out.println( "Candidate Selection: Found " + Integer.toString(topAlignments.size()) + " candidate alignments.");
 			
-			//********************* USER FEEDBACK INTERFACE OR AUTOMATIC VALIDATIO**********//
-			currentStage = executionStage.runningUserInterface;
-			Alignment userMapping = null;
+			setStage( executionStage.afterCandidateSelection );
+		
 			
-			if(automatic){//check with the reference if a mapping is correct
+			
+			
+			//********************* USER FEEDBACK INTERFACE OR AUTOMATIC VALIDATION **********//
+
+			setStage( executionStage.runningUserInterface );
+			
+			Alignment userMapping = null;  // this is the correct mapping chosen by the user
+			
+			if(automatic){  // AUTOMATIC USER VALIDATION: check with the reference if a mapping is correct
 				//no more candidates --> we stop
 				if(topAlignments.size() == 0){
 					stop = true;
-					currentStage = executionStage.presentFinalMappings;
+					setStage( executionStage.presentFinalMappings );
+					break;  // break out of the feedback loop
 				}
-				else{//validate mappings against the reference, only one mapping can be validated therefore we take the first correct
+				else{  //validate mappings against the reference, only one mapping can be validated therefore we take the first correct
 					for(int i=0; i < topAlignments.size(); i++){
 						Alignment a = topAlignments.getAlignment(i);
 						if(a.getEntity1().isProp()){
-							if(referenceAlignmentMatcher.getPropertyAlignmentSet().contains(a.getEntity1(), a.getEntity2()) == null){
+							// we are looking at a property alignment
+							if(referenceAlignmentMatcher.getPropertyAlignmentSet().contains(a.getEntity1(), a.getEntity2()) != null){
 								userMapping = a;
 								break;
 							}
 						}
 						else{
-							if(referenceAlignmentMatcher.getClassAlignmentSet().contains(a.getEntity1(), a.getEntity2()) == null){
+							// we are looking at a class alignment
+							if(referenceAlignmentMatcher.getClassAlignmentSet().contains(a.getEntity1(), a.getEntity2()) != null){
 								userMapping = a;
 								break;
 							}
 							
 						}
 					}
+
+					if( userMapping == null ) {
+						System.out.println( "Automatic User Validation: None of the mappings presented to the user were in the reference alignment.");
+					} else {
+						System.out.println( "Automatic User Validation: CORRECT mapping: " + 
+								userMapping.getEntity1().toString() + " -> " +
+								userMapping.getEntity2().toString() );
+					}
 				}
 			}
 			
-			else{//MANUAL: Display the mappings in the User Interface
+			else{  //MANUAL: Display the mappings in the User Interface
+				
 				progressDisplay.displayMappings(topAlignments);
 				
-				while( currentStage == executionStage.runningUserInterface ) {
+				while( isStage(executionStage.runningUserInterface) ) {
 					// sleep while the user is using the interface
 					try {
-						Thread.sleep(500);
+						Thread.sleep(500);  // sleep for .5 seconds at a time 
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						// our sleep was interrupted, so just continue
+						//e.printStackTrace();
+						break;
 					} 
 				}
-			}
-
-			
-			//************************* AFTER USER VALIDATION ***********************
-			if( currentStage == executionStage.presentFinalMappings ){
-				stop = true;
-			}
-			else{
-				currentStage = executionStage.afterUserInterface;
 				
 				userMapping = progressDisplay.getUserMapping();
-				
-				if( userMapping != null ) {
-					AlignmentSet<Alignment> userSet = new AlignmentSet<Alignment>();
-					
-					userSet.addAlignment( userMapping );
-					
-					if( progressDisplay.isUserMappingClass() ) {
-						classesMatrix.filter( userSet );
-						classesAlignmentSet.addAlignment(userMapping);
-					} else {
-						propertiesMatrix.filter( userSet );
-						propertiesAlignmentSet.addAlignment(userMapping);
-					}
-
-					ExtrapolatingFS eFS = new ExtrapolatingFS();
-					
-					//AlignmentSet<Alignment> userMappings = new AlignmentSet<Alignment>();
-					//userMappings.addAlignment(userMapping);
-					
-					try {
-						eFS.match(userSet);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-					//I Removed the filtering from here because mappings will be filtered at the beginning
-					//of the next iteration in the next filtering phase.
-					//classesMatrix.filter( eFS.getClassAlignmentSet() );
-					//propertiesMatrix.filter( eFS.getPropertyAlignmentSet() );
-					classesToBeFiltered = eFS.getClassAlignmentSet();
-					propertiesToBeFiltered = eFS.getPropertyAlignmentSet();
-				}
-				else{ //All mappings are wrong
-					for(int i=0; i < topAlignments.size(); i++){
-						Alignment a = topAlignments.getAlignment(i);
-						if(a.getEntity1().isProp()){
-							//This should work for OWL ontologies at least, I think however that classes and properties should have different loops.
-							propertiesMatrix.setSimilarity(a.getSourceKey(), a.getTargetKey(), 0);
-						}
-						else{
-							classesMatrix.setSimilarity(a.getSourceKey(), a.getTargetKey(), 0);
-						}
-					}
-					
-					//set these to empty because nothing has to be filtered in the next iteration
-					classesToBeFiltered = new AlignmentSet<Alignment>();
-					propertiesToBeFiltered = new AlignmentSet<Alignment>();
-				}
-				currentStage = executionStage.afterExtrapolatingMatchers;	
 			}
+
+			if( isStage(executionStage.presentFinalMappings) ) {
+				// the user clicked the stop button.
+				stop = true;
+				break;  // break out of this while loop
+			}
+			
+			
+			//************************* AFTER USER VALIDATION ***********************			
+			
+			setStage(executionStage.afterUserInterface);
+			
+			//**********************  EXTRAPOLATIING MATCHERS ********/////
+			setStage(executionStage.runningExtrapolatingMatchers);				
+				
+			
+			if( userMapping != null ) {
+				AlignmentSet<Alignment> userSet = new AlignmentSet<Alignment>();
+				
+				userSet.addAlignment( userMapping );
+				
+				if( progressDisplay.isUserMappingClass() ) {
+					classesMatrix.filter( userSet );
+					classesAlignmentSet.addAlignment(userMapping);
+				} else {
+					propertiesMatrix.filter( userSet );
+					propertiesAlignmentSet.addAlignment(userMapping);
+				}
+
+				ExtrapolatingFS eFS = new ExtrapolatingFS();
+				
+				//AlignmentSet<Alignment> userMappings = new AlignmentSet<Alignment>();
+				//userMappings.addAlignment(userMapping);
+				
+				try {
+					eFS.match(userSet);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+
+				eFS.select(); // will contain values that already filtered.
+
+				// choose only alignments that are not filtered
+				AlignmentSet<Alignment> newClassAlignments_eFS = getNewClassAlignments( eFS );
+				AlignmentSet<Alignment> newPropertyAlignments_eFS = getNewPropertyAlignments( eFS );
+			
+				// report on the eDSI
+				System.out.print( "Extrapolating Matcher: eDSI, found " + Integer.toString(newClassAlignments_eFS.size()) + " new class alignments, and " +
+						Integer.toString( newPropertyAlignments_eFS.size() ) + " new property alignments.");
+
+				// add any new mappings
+				classesToBeFiltered.addAll( newClassAlignments_eFS );
+				propertiesToBeFiltered.addAll( newPropertyAlignments_eFS );
+				
+				
+				
+				
+				
+			    // EXTRAPOLATING DSI
+				
+				ExtrapolatingDSI eDSI = new ExtrapolatingDSI();
+				DescendantsSimilarityInheritanceParameters params = new DescendantsSimilarityInheritanceParameters();
+				params.MCP = 0.75;
+				eDSI.setParam(params);
+				eDSI.setThreshold(threshold);
+				eDSI.setMaxSourceAlign(maxSourceAlign);
+				eDSI.setMaxTargetAlign(maxTargetAlign);
+				eDSI.addInputMatcher(this);
+				
+				try {
+					eDSI.match();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+
+				eDSI.select(); // will contain values that already filtered.
+
+				// choose only alignments that are not filtered
+				AlignmentSet<Alignment> newClassAlignments_eDSI = getNewClassAlignments( eDSI );
+				AlignmentSet<Alignment> newPropertyAlignments_eDSI = getNewPropertyAlignments( eDSI );
+			
+				// report on the eDSI
+				System.out.print( "Extrapolating Matcher: eDSI, found " + Integer.toString(newClassAlignments_eDSI.size()) + " new class alignments, and " +
+						Integer.toString( newPropertyAlignments_eDSI.size() ) + " new property alignments.");
+
+				// add any new mappings
+				classesToBeFiltered.addAll( newClassAlignments_eDSI );
+				propertiesToBeFiltered.addAll( newPropertyAlignments_eDSI );	
+				
+				
+			}
+			else{ //All mappings are wrong
+				for(int i=0; i < topAlignments.size(); i++){
+					Alignment a = topAlignments.getAlignment(i);
+					if(a.getEntity1().isProp()){
+						//This should work for OWL ontologies at least, I think however that classes and properties should have different loops.
+						propertiesMatrix.setSimilarity(a.getSourceKey(), a.getTargetKey(), 0);
+					}
+					else{
+						classesMatrix.setSimilarity(a.getSourceKey(), a.getTargetKey(), 0);
+					}
+				}
+				
+				//set these to empty because nothing has to be filtered in the next iteration (Removed this, I do this above)
+				//classesToBeFiltered = new AlignmentSet<Alignment>();
+				//propertiesToBeFiltered = new AlignmentSet<Alignment>();
+			}
+			currentStage = executionStage.afterExtrapolatingMatchers;	
+
 			
 		} while( !stop );
 		
 		// present the final mappings here
 		
 	}
-
 
 	private void initializeUserInterface() {
 		
@@ -345,7 +404,11 @@ public class FeedbackLoop extends AbstractMatcher  {
 	}
 
 	public executionStage getStage() { return currentStage; }
-	public void setStage(executionStage stage) { currentStage = stage; }
+	public boolean isStage( executionStage s ) { return s == currentStage; }
+	public void setStage(executionStage stage) {
+		currentStage = stage;
+		System.out.println(">> Changing execution stage to: " + currentStage.name() );
+	}
 	
 	public FilteredAlignmentMatrix getClassesMatrix() {
 		return classesMatrix;
@@ -355,5 +418,31 @@ public class FeedbackLoop extends AbstractMatcher  {
 		return propertiesMatrix;
 	}
 
+	
+	
+	private AlignmentSet<Alignment> getNewClassAlignments( AbstractMatcher a ) {
+		return getNewMappings( a.getClassAlignmentSet(), classesMatrix );
+	}
+	
+	private AlignmentSet<Alignment> getNewPropertyAlignments( AbstractMatcher a ) {
+		return getNewMappings( a.getPropertyAlignmentSet(), propertiesMatrix );
+	}
 
+	// look through all the alignments found by the matcher and choose only those that are not already filtered, this way
+	// we are choosing only the new alignments to be filtered
+	private AlignmentSet<Alignment> getNewMappings( AlignmentSet<Alignment> extrapolatedMatchings, FilteredAlignmentMatrix matrix ) {
+				
+		AlignmentSet<Alignment> newAlignments = new AlignmentSet<Alignment>();	
+		
+		Iterator<Alignment> clsIter = extrapolatedMatchings.iterator();
+		while( clsIter.hasNext() ) {
+			Alignment extrapolatedAlignment = clsIter.next();
+			if( !matrix.isCellFiltered( extrapolatedAlignment.getEntity1().getIndex(), extrapolatedAlignment.getEntity2().getIndex() ) ) {
+				// the extrapolated alignment is a new alignment
+				newAlignments.addAlignment( extrapolatedAlignment );
+			}
+		}
+		return newAlignments;
+	}
+	
 }

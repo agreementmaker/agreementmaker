@@ -3,6 +3,8 @@ package am.app.mappingEngine;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
+
 import am.app.ontology.Node;
 
 
@@ -148,4 +150,8 @@ public class AlignmentSet<E extends Alignment>
 		}
 		return result;
 	}
+    
+    public Iterator<E> iterator() {
+    	return collection.iterator();
+    }
 }

@@ -40,6 +40,8 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 	JComboBox cmbLowThreshold;
 	JComboBox cmbCardinality;
 	JComboBox cmbConfigurations;
+	JComboBox cmbK;
+	JComboBox cmbM;
 	
 	// Automatic Progress screen.
 	JProgressBar progressBar;
@@ -68,10 +70,19 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		JLabel lblCardinality = new JLabel("Cardinality:");
 		JLabel lblConfiguration = new JLabel("Run configuration:");
 		
+		JLabel lblK = new JLabel("K:");
+		JLabel lblM = new JLabel("M:");
+		
 		
 		cmbHighThreshold = new JComboBox( Utility.getPercentDecimalsList() );
 		cmbHighThreshold.setSelectedItem("0.7");
 		cmbLowThreshold = new JComboBox( Utility.getPercentDecimalsList() );
+
+		String[] integers = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+		cmbK = new JComboBox( integers );
+		cmbK.setSelectedItem("4");
+		cmbM = new JComboBox( integers );
+		cmbM.setSelectedItem("2");
 		
 		cmbCardinality = new JComboBox();
 		cmbCardinality.addItem("1-1");
@@ -96,6 +107,10 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		add(cmbLowThreshold);
 		add(lblCardinality);
 		add(cmbCardinality);
+		add(lblK);
+		add(cmbK);
+		add(lblM);
+		add(cmbM);
 		repaint();
 		
 	}
@@ -178,16 +193,12 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 
 
 
+	// gets called when a matcher finishes
 	public void matchingComplete() {
-		// TODO Auto-generated method stub
 		
-		/*
-		if( ufl.getStage() == FeedbackLoop.executionStage.runningInitialMatchers ) {
-			// this means that the initial matchers have finished, advance the stage, and run the filters
-			ufl.setStage(FeedbackLoop.executionStage.afterInitialMatchers);
-			ufl.execute();
+		if( ufl.isStage( FeedbackLoop.executionStage.runningInitialMatchers ) ) {
+			appendToReport( "Initial Matchers finished...");
 		}
-		*/
 		
 	}
 
@@ -276,6 +287,15 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		return false;
 	}
 
+
+
+	public int getK() {
+		return Integer.parseInt( (String) cmbK.getSelectedItem() );
+	}
+
+	public int getM() {
+		return Integer.parseInt( (String) cmbM.getSelectedItem() );
+	}
 
 
 	
