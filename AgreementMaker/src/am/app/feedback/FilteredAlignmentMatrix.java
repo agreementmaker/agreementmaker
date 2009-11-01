@@ -191,24 +191,27 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 		Alignment currentValue;
 		Alignment currentMax;
 		for(int j = 0; j<getColumns();j++) {
-			switch( typeOfMatrix ) {
-			case aligningClasses:
-				entity2 = Core.getInstance().getTargetOntology().getClassesList().get(j);
-				break;
-			case aligningProperties:
-				entity2 = Core.getInstance().getTargetOntology().getPropertiesList().get(j);
-				break;
-			}
-			currentValue = get(row,j);
-			currentValue.setEntity1( entity1 );
-			currentValue.setEntity2( entity2 );
-			if( currentValue == null ) continue;
-			//maxAlignments contains the ordered list of max alignments, the first is the best max value
-			for(int k = 0;k<maxAlignments.length; k++) {
-				currentMax = maxAlignments[k];
-				if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value	
-					maxAlignments[k] = currentValue;
-					currentValue = currentMax;
+			if(!isCellFiltered(row, j)){
+				switch( typeOfMatrix ) {
+				case aligningClasses:
+					entity2 = Core.getInstance().getTargetOntology().getClassesList().get(j);
+					break;
+				case aligningProperties:
+					entity2 = Core.getInstance().getTargetOntology().getPropertiesList().get(j);
+					break;
+				}
+				currentValue = get(row,j);
+				currentValue.setEntity1( entity1 );
+				currentValue.setEntity2( entity2 );
+				if( currentValue == null ) continue;
+				//maxAlignments contains the ordered list of max alignments, the first is the best max value
+				for(int k = 0;k<maxAlignments.length; k++) {
+					currentMax = maxAlignments[k];
+					if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value	
+						
+						maxAlignments[k] = currentValue;
+						currentValue = currentMax;
+					}
 				}
 			}
 		}
@@ -250,27 +253,28 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 		Alignment currentValue;
 		Alignment currentMax;
 		for(int j = 0; j<getRows();j++) {
-			
-			switch ( typeOfMatrix ) {			
-			case aligningClasses:
-				entity1 = Core.getInstance().getSourceOntology().getClassesList().get(j);
-				break;
-			case aligningProperties:
-				entity1 = Core.getInstance().getSourceOntology().getPropertiesList().get(j);
-				break;
-			}
-						
-			currentValue = get(j, col);
-			currentValue.setEntity1( entity1 );
-			currentValue.setEntity2( entity2 );
-			
-			if( currentValue == null ) continue;
-			//maxAlignments contains the ordered list of max alignments, the first is the best max value
-			for(int k = 0;k<maxAlignments.length; k++) {
-				currentMax = maxAlignments[k];
-				if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value
-					maxAlignments[k] = currentValue;
-					currentValue = currentMax;
+			if(!isCellFiltered(j, col)){
+				switch ( typeOfMatrix ) {			
+				case aligningClasses:
+					entity1 = Core.getInstance().getSourceOntology().getClassesList().get(j);
+					break;
+				case aligningProperties:
+					entity1 = Core.getInstance().getSourceOntology().getPropertiesList().get(j);
+					break;
+				}
+							
+				currentValue = get(j, col);
+				currentValue.setEntity1( entity1 );
+				currentValue.setEntity2( entity2 );
+				
+				if( currentValue == null ) continue;
+				//maxAlignments contains the ordered list of max alignments, the first is the best max value
+				for(int k = 0;k<maxAlignments.length; k++) {
+					currentMax = maxAlignments[k];
+					if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value
+						maxAlignments[k] = currentValue;
+						currentValue = currentMax;
+					}
 				}
 			}
 		}

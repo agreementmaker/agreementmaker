@@ -185,7 +185,7 @@ public class CandidateSelection {
 			
 			if( topM != null ) {
 				for( int i1 = 0; i1 < m; i1++ ) {
-					if( topM[i1] != null )	topMappings.addAlignment( topM[i1]);
+					if( topM[i1] != null && topM[i1].getSimilarity() != -1 )	topMappings.addAlignment( topM[i1]);
 				}
 			};
 			
