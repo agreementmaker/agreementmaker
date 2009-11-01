@@ -9,7 +9,12 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentMatrix;
 import am.app.mappingEngine.AlignmentSet;
+import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceParameters;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParametersPanel;
 import am.userInterface.UI;
 
 /**
@@ -51,8 +56,12 @@ public class FeedbackLoop extends AbstractMatcher  {
 	
 	private int K = 4;
 	private int M = 2;
+	
+	
 	private boolean automatic;
-	private String reference;
+	//configurations
+	public final static String MANUAL = "Manual";
+	public final static String AUTO_101_303 = "Auto 101-303";
 	
 	
 	public enum executionStage {
@@ -92,7 +101,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		initializeUserInterface();
 		currentStage = executionStage.notStarted;
 	
-	};
+	}
 	
 	public void setExectionStage( executionStage st ) {
 		currentStage = st;
@@ -107,6 +116,26 @@ public class FeedbackLoop extends AbstractMatcher  {
 			return;
 		}
 		
+		//Just for the Experiment Purpose, if the user selects the automatic configuration we need to import the reference
+		//the reference name is built-in the code right now.
+		AbstractMatcher referenceAlignmentMatcher = null;
+		String conf = progressDisplay.getConfiguration();
+		if(conf.equals(AUTO_101_303)){
+			automatic = true;
+			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.fileName = "./OAEI09/benchmarks/303/refalign.rdf";
+			refParam.format = ReferenceAlignmentMatcher.REF0;
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher.setParam(refParam);
+			try {
+				referenceAlignmentMatcher.match();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		}
+		else{//MANUAL
+			automatic = false;
+		}
 		
 		//************** INITIAL MATCHERS ********************///
 		InitialMatchers im = new InitialMatchers();
@@ -138,8 +167,11 @@ public class FeedbackLoop extends AbstractMatcher  {
 		boolean stop = false;//when this is set to true it means that the user has clicked the stop button
 		AlignmentSet<Alignment> classesToBeFiltered = classesAlignmentSet;
 		AlignmentSet<Alignment> propertiesToBeFiltered = propertiesAlignmentSet;
+		int iteration = 0;
+
 		do {
-			
+			iteration++;
+			System.out.println("Current iteration: "+iteration+" - Mappings found: "+(classesToBeFiltered.size() + propertiesToBeFiltered.size()));
 			//********************** FILTER STAGE *********************///
 		
 			currentStage = executionStage.runningFilter;
@@ -187,28 +219,59 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			currentStage = executionStage.afterCandidateSelection;
 			
-			//********************* USER FEEDBACK INTERFACE **********//
+			//********************* USER FEEDBACK INTERFACE OR AUTOMATIC VALIDATIO**********//
 			currentStage = executionStage.runningUserInterface;
+			Alignment userMapping = null;
 			
-			progressDisplay.displayMappings(topAlignments);
-			
-			while( currentStage == executionStage.runningUserInterface ) {
-				// sleep while the user is using the interface
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
+			if(automatic){//check with the reference if a mapping is correct
+				//no more candidates --> we stop
+				if(topAlignments.size() == 0){
+					stop = true;
+					currentStage = executionStage.presentFinalMappings;
+				}
+				else{//validate mappings against the reference, only one mapping can be validated therefore we take the first correct
+					for(int i=0; i < topAlignments.size(); i++){
+						Alignment a = topAlignments.getAlignment(i);
+						if(a.getEntity1().isProp()){
+							if(referenceAlignmentMatcher.getPropertyAlignmentSet().contains(a.getEntity1(), a.getEntity2()) == null){
+								userMapping = a;
+								break;
+							}
+						}
+						else{
+							if(referenceAlignmentMatcher.getClassAlignmentSet().contains(a.getEntity1(), a.getEntity2()) == null){
+								userMapping = a;
+								break;
+							}
+							
+						}
+					}
+				}
 			}
 			
+			else{//MANUAL: Display the mappings in the User Interface
+				progressDisplay.displayMappings(topAlignments);
+				
+				while( currentStage == executionStage.runningUserInterface ) {
+					// sleep while the user is using the interface
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} 
+				}
+			}
+
+			
+			//************************* AFTER USER VALIDATION ***********************
 			if( currentStage == executionStage.presentFinalMappings ){
 				stop = true;
 			}
 			else{
 				currentStage = executionStage.afterUserInterface;
 				
-				Alignment userMapping = progressDisplay.getUserMapping();
+				userMapping = progressDisplay.getUserMapping();
 				
 				if( userMapping != null ) {
 					AlignmentSet<Alignment> userSet = new AlignmentSet<Alignment>();
@@ -242,7 +305,19 @@ public class FeedbackLoop extends AbstractMatcher  {
 					classesToBeFiltered = eFS.getClassAlignmentSet();
 					propertiesToBeFiltered = eFS.getPropertyAlignmentSet();
 				}
-				else{
+				else{ //All mappings are wrong
+					for(int i=0; i < topAlignments.size(); i++){
+						Alignment a = topAlignments.getAlignment(i);
+						if(a.getEntity1().isProp()){
+							//This should work for OWL ontologies at least, I think however that classes and properties should have different loops.
+							propertiesMatrix.setSimilarity(a.getSourceKey(), a.getTargetKey(), 0);
+						}
+						else{
+							classesMatrix.setSimilarity(a.getSourceKey(), a.getTargetKey(), 0);
+						}
+					}
+					
+					//set these to empty because nothing has to be filtered in the next iteration
 					classesToBeFiltered = new AlignmentSet<Alignment>();
 					propertiesToBeFiltered = new AlignmentSet<Alignment>();
 				}

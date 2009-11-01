@@ -216,6 +216,15 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 
 		return maxAlignments;
 	}
+
+
+	public void filterCells(AlignmentSet<Alignment> topAlignments) {
+		for(int i=0; i<topAlignments.size(); i++){
+			Alignment a = topAlignments.getAlignment(i);
+			data[a.getSourceKey()][a.getTargetKey()].setSimilarity(0);
+		}
+		
+	}
     
     
 	

@@ -77,8 +77,8 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		cmbCardinality.addItem("1-1");
 		
 		cmbConfigurations = new JComboBox();
-		cmbConfigurations.addItem("Manual");
-		cmbConfigurations.addItem("Auto 101-303");
+		cmbConfigurations.addItem(FeedbackLoop.MANUAL);
+		cmbConfigurations.addItem(FeedbackLoop.AUTO_101_303);
 		
 		
 		
@@ -164,6 +164,10 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 	
 	public double getLowThreshold() {
 		return Double.parseDouble( cmbLowThreshold.getSelectedItem().toString() );
+	}
+	
+	public String getConfiguration(){
+		return cmbConfigurations.getSelectedItem().toString();
 	}
 
 
