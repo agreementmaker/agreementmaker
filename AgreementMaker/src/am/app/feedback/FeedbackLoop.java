@@ -185,6 +185,10 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			classesMatrix.validateAlignments(classesToBeFiltered);
 			propertiesMatrix.validateAlignments(propertiesToBeFiltered);
+
+			classesAlignmentSet.addAllNoDuplicate( classesToBeFiltered );
+			propertiesAlignmentSet.addAllNoDuplicate( propertiesToBeFiltered);
+			
 			
 			classesToBeFiltered = new AlignmentSet<Alignment>(); // create a new, empty set
 			propertiesToBeFiltered = new AlignmentSet<Alignment>(); // create a new, empty set
@@ -246,8 +250,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 					if( userMapping == null ) {
 						System.out.println( "Automatic User Validation: None of the mappings presented to the user were in the reference alignment.");
 						System.out.println( "We are filtering out these mappings by setting them to 0 similarity in the matrix.");
-						
-											
 						
 						
 					} else {
@@ -381,6 +383,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 						classesMatrix.setSimilarity(a.getSourceKey(), a.getTargetKey(), 0);
 					}
 				}
+				
+				// DO THE FILTERING HERE
 				
 				//set these to empty because nothing has to be filtered in the next iteration (Removed this, I do this above)
 				//classesToBeFiltered = new AlignmentSet<Alignment>();

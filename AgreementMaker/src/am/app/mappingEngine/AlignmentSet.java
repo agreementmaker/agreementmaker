@@ -33,6 +33,18 @@ public class AlignmentSet<E extends Alignment>
         
     }
 
+    // adds all the alignments in the set a, but checking for duplicates, making sure it doesn't add duplicate alignments
+    public void addAllNoDuplicate(AlignmentSet<E> a)
+    {
+    	if(a != null) {
+    		for(int i= 0; i<a.size();i++) {
+    			E alignment = a.getAlignment(i);
+    			if( !contains( alignment ) ) addAlignment(alignment);
+    		}
+    	}
+        
+    }    
+    
     public E getAlignment(int index)
     {
         if (index >= 0 && index < size()) {
@@ -97,6 +109,19 @@ public class AlignmentSet<E extends Alignment>
         }
         return null;
     }
+    
+    public boolean contains( E alignment ) {
+        for (int i = 0, n = size(); i < n; i++) {
+            E align = collection.get(i);
+            Node left = alignment.getEntity1();
+            Node right = alignment.getEntity2();
+            if (align.getEntity1().equals(left) && align.getEntity2().equals(right)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
 
     public AlignmentSet<E> cut(double threshold)
     {
