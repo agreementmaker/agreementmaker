@@ -36,6 +36,13 @@ public class CandidateConcept extends Node implements Comparable<CandidateConcep
 		return relevance;
 	}
 	
+	public void setRelevance(double r){
+		relevance = r;
+	}
+	
+	public Node getNode(){
+		return originalNode;
+	}
 	
 	// to allow candidate concepts to be sorted (required by the Comparable)
 	public int compareTo(CandidateConcept cc) {

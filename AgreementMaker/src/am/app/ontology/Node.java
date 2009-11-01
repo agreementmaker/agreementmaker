@@ -102,6 +102,16 @@ public class Node {
 		index = key;
 	}
 	
+	public Node(Node a){
+		localName = a.localName;
+		type = a.type;
+		index = a.index;
+		String language = "EN";
+		resource = a.resource;
+		uri = a.getUri();
+		localName = a.getLocalName();
+	}
+	
 	/**RDF OWL Constructor*/
 	public Node(int key, Resource r, String type) {
 		String language = "EN";
