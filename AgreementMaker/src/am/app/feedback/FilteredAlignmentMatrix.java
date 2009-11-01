@@ -19,22 +19,49 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 	protected TreeSet<Integer> filteredRows;  // a sorted list (TreeSet) of the row numbers that have been filtered from this matrix
 	protected TreeSet<Integer> filteredCols;  // a TreeSet of the column numbers that have been filtered from this matrix
 	
+	private boolean[][] isFiltered;
+	
 	public FilteredAlignmentMatrix( AlignmentMatrix am_new ) {
 		super( am_new );
 
-		// initialize list of filtered rows and columns
 		filteredRows = new TreeSet<Integer>();
 		filteredCols = new TreeSet<Integer>();
+		
+		int numRows = am_new.getRows();
+		int numCols = am_new.getColumns();
+
+		// matrix of filtered cells
+		isFiltered = new boolean[numRows][numCols];
+		
+		// initialize the isFiltered matrix to false (at the beginning, nothing is filtered)
+		for( int i = 0; i < numRows; i++ ) {
+			for( int j = 0; j < numCols; j++ ) {
+				isFiltered[i][j] = false;
+			}
+		}
+		
 		
 	}
 	
 	
-	public FilteredAlignmentMatrix(int size, int size2, alignType typeOfNodes, String relation) {
-		super( size, size2, typeOfNodes, relation);
+	public FilteredAlignmentMatrix(int numRows, int numCols, alignType typeOfNodes, String relation) {
+		super( numRows, numCols, typeOfNodes, relation);
 		
 		// initialize list of filtered rows and columns
 		filteredRows = new TreeSet<Integer>();
 		filteredCols = new TreeSet<Integer>();
+		
+		
+		// matrix of filtered cells
+		isFiltered = new boolean[numRows][numCols];
+		
+		// initialize the isFiltered matrix to false (at the beginning, nothing is filtered)
+		for( int i = 0; i < numRows; i++ ) {
+			for( int j = 0; j < numCols; j++ ) {
+				isFiltered[i][j] = false;
+			}
+		}
+		
 	}
 
 
@@ -47,7 +74,7 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 	}
 	
 	public boolean isCellFiltered( int row, int col ) {
-		return filteredRows.contains( new Integer(row)) || filteredCols.contains( new Integer(col));
+		return isFiltered[row][col];		
 	}
 	
 	public TreeSet<Integer> getFilteredRows() {
@@ -64,7 +91,7 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 	 * @param selectedAlignments - the mappings which will be in the final alignment (sim will be set to 1.0)
 	 */
 	
-	public void filter( AlignmentSet<Alignment> selectedAlignments ) throws IndexOutOfBoundsException {
+	public void validateAlignments( AlignmentSet<Alignment> selectedAlignments ) throws IndexOutOfBoundsException {
 		
 		// for every alignment that was selected, zero out the row and the columns, and set the alignment similarity to 1
 		for( int i = 0; i < selectedAlignments.size(); i++ ) {
@@ -85,6 +112,7 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 			for( int j = 0; j < columns; j++ ) {
 				if( j == col ) continue;  // do no zero out if it is the column of the alignment
 				setSimilarity(row, j, 0.00d);
+				isFiltered[row][j] = true;
 			}
 			filteredRows.add(row);
 			
@@ -92,19 +120,21 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 			for( int h = 0; h < rows; h++ ) {
 				if( h == row ) continue; // do not zero out if it is the row of the alignment
 				setSimilarity( h, col, 0.00d);
+				isFiltered[h][col] = true;
 			}
 			filteredCols.add(col);
 			
 			
 			// set the alignment similarity to 1
 			setSimilarity(row, col, 1.00d);
+			isFiltered[row][col] = true;
 		}
 	}
 
 
 	// Copies the filtered rows/columns from another matrix
 	// TODO: Only works for 1-1 alignments.
-	public void filter(FilteredAlignmentMatrix fam) {
+	public void validateAlignments(FilteredAlignmentMatrix fam) {
 		
 		// copy rows
 		TreeSet<Integer> frows = fam.getFilteredRows();
@@ -132,7 +162,7 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 	
 	// made this method work with the filtered matrix
     public Alignment[] getRowMaxValues(int row, int numMaxValues) {
-    	// WARNING! The alignments returned by this method are IMPROPER (entity1 and entity2 are not set);
+    	
     	if( isRowFiltered(row) ) { return null; } // this row is filtered
     	
 		//remember to check to have numMaxValues lower than matrix columns before
@@ -195,14 +225,45 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 		//remember to check to have numMaxValues lower than matrix rows before
     	Alignment[] maxAlignments = new Alignment[numMaxValues];
     	
+    	Node entity1 = null;
+    	Node entity2 = null;
+
+    	
 		for(int h = 0; h<maxAlignments.length;h++) {
-			maxAlignments[h] = new Alignment(-1); //intial max alignments have sim equals to -1
+			Alignment currentAlignment = new Alignment(-1); //intial max alignments have sim equals to -1
+			
+			switch( typeOfMatrix ) {
+			case aligningClasses:
+				entity2 = Core.getInstance().getTargetOntology().getClassesList().get(col);
+				break;
+			case aligningProperties:
+				entity2 = Core.getInstance().getTargetOntology().getPropertiesList().get(col);
+				break;
+			}
+			
+
+			currentAlignment.setEntity1( entity1 );
+			
+			maxAlignments[h] = currentAlignment;
 		}
 		
 		Alignment currentValue;
 		Alignment currentMax;
 		for(int j = 0; j<getRows();j++) {
+			
+			switch ( typeOfMatrix ) {			
+			case aligningClasses:
+				entity1 = Core.getInstance().getSourceOntology().getClassesList().get(j);
+				break;
+			case aligningProperties:
+				entity1 = Core.getInstance().getSourceOntology().getPropertiesList().get(j);
+				break;
+			}
+						
 			currentValue = get(j, col);
+			currentValue.setEntity1( entity1 );
+			currentValue.setEntity2( entity2 );
+			
 			if( currentValue == null ) continue;
 			//maxAlignments contains the ordered list of max alignments, the first is the best max value
 			for(int k = 0;k<maxAlignments.length; k++) {
@@ -219,11 +280,34 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 
 
 	public void filterCells(AlignmentSet<Alignment> topAlignments) {
+		
 		for(int i=0; i<topAlignments.size(); i++){
 			Alignment a = topAlignments.getAlignment(i);
-			data[a.getSourceKey()][a.getTargetKey()].setSimilarity(0);
+			
+			int row = a.getSourceKey();
+			int col = a.getTargetKey();
+			
+			data[row][col].setSimilarity(0);
+			isFiltered[row][col] = true;
+			
 		}
 		
+	}
+	
+	public void filterCell( int row, int col ) throws IndexOutOfBoundsException {
+		
+		if( row < 0 || row > rows ) {
+			throw new IndexOutOfBoundsException("Row Index is " + Integer.toString(row));
+		}
+		if( col < 0 || col > columns ) {
+			throw new IndexOutOfBoundsException("Column Index is " + Integer.toString(col));
+		}
+		
+		isFiltered[row][col] = true;
+		
+		if( data[row][col] != null ) {
+			data[row][col].setSimilarity(0.0d);
+		}
 	}
     
     

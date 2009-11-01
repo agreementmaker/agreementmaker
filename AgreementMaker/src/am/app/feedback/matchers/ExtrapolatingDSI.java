@@ -52,10 +52,10 @@ public class ExtrapolatingDSI extends DescendantsSimilarityInheritanceMatcher {
     	// copy the filtered rows/cols, so they can be skipped
     	switch( typeOfNodes ) {
     	case aligningClasses:
-    		matrix.filter( inputClassesMatrix );
+    		matrix.validateAlignments( inputClassesMatrix );
     		break;
     	case aligningProperties:
-    		matrix.filter( inputPropertiesMatrix );
+    		matrix.validateAlignments( inputPropertiesMatrix );
     		break;
     	}
     	

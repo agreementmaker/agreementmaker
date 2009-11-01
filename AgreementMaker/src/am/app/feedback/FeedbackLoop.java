@@ -183,8 +183,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 		
 			setStage( executionStage.runningFilter );
 			
-			classesMatrix.filter(classesToBeFiltered);
-			propertiesMatrix.filter(propertiesToBeFiltered);
+			classesMatrix.validateAlignments(classesToBeFiltered);
+			propertiesMatrix.validateAlignments(propertiesToBeFiltered);
 			
 			classesToBeFiltered = new AlignmentSet<Alignment>(); // create a new, empty set
 			propertiesToBeFiltered = new AlignmentSet<Alignment>(); // create a new, empty set
@@ -245,6 +245,11 @@ public class FeedbackLoop extends AbstractMatcher  {
 
 					if( userMapping == null ) {
 						System.out.println( "Automatic User Validation: None of the mappings presented to the user were in the reference alignment.");
+						System.out.println( "We are filtering out these mappings by setting them to 0 similarity in the matrix.");
+						
+											
+						
+						
 					} else {
 						System.out.println( "Automatic User Validation: CORRECT mapping: " + 
 								userMapping.getEntity1().toString() + " -> " +
@@ -292,10 +297,10 @@ public class FeedbackLoop extends AbstractMatcher  {
 				userSet.addAlignment( userMapping );
 				
 				if( progressDisplay.isUserMappingClass() ) {
-					classesMatrix.filter( userSet );
+					classesMatrix.validateAlignments( userSet );
 					classesAlignmentSet.addAlignment(userMapping);
 				} else {
-					propertiesMatrix.filter( userSet );
+					propertiesMatrix.validateAlignments( userSet );
 					propertiesAlignmentSet.addAlignment(userMapping);
 				}
 
