@@ -209,6 +209,12 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			System.out.println( "Candidate Selection: Found " + Integer.toString(topAlignments.size()) + " candidate alignments.");
 			
+			for( int aCandidate = 0; aCandidate < topAlignments.size(); aCandidate++ ) {
+				Alignment candidateAlignment = topAlignments.getAlignment(aCandidate);
+				System.out.println( "  " + Integer.toString(aCandidate) + ". " + candidateAlignment.toString() );
+						
+			}
+			
 			setStage( executionStage.afterCandidateSelection );
 		
 			
