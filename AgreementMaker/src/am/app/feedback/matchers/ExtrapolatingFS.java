@@ -157,5 +157,23 @@ public class ExtrapolatingFS extends AbstractMatcher {
 		if( j <= i+delta && j >= i-delta ) return true;
 		return false;
 	}
+	
+	
+   public void select() {
+    	//this method is also invoked everytime the user change threshold or num relation in the table
+    	beforeSelectionOperations();//Template method to allow next developer to add code after selection
+    	selectAndSetAlignments();	
+    	afterSelectionOperations();//Template method to allow next developer to add code after selection
+    }
 
+   
+   protected void selectAndSetAlignments() {
+   	if(alignClass) {
+   		classesAlignmentSet = scanMatrix(classesMatrix);
+   	}
+   	if(alignProp) {
+   		propertiesAlignmentSet = scanMatrix(propertiesMatrix);
+   	}
+	}
+   
 }

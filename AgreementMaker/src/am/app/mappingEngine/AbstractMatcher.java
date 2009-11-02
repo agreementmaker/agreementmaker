@@ -405,7 +405,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	}
 	}
 
-    private AlignmentSet<Alignment> scanMatrix(AlignmentMatrix matrix) {
+    protected AlignmentSet<Alignment> scanMatrix(AlignmentMatrix matrix) {
     	int columns = matrix.getColumns();
     	int rows = matrix.getRows();
     	// at most each source can be aligned with all targets (columns) it's the same of selecting ANY for source

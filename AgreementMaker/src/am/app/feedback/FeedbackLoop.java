@@ -184,7 +184,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		AlignmentSet<Alignment> classesToBeFiltered = classesAlignmentSet;
 		AlignmentSet<Alignment> propertiesToBeFiltered = propertiesAlignmentSet;
 		int iteration = 0;
-		int total_new = 0;
+		int total_new = 0 - (classesToBeFiltered.size() + propertiesToBeFiltered.size());
 
 		do {
 			System.out.println("");
@@ -351,7 +351,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 				AlignmentSet<Alignment> newPropertyAlignments_eFS = getNewPropertyAlignments( eFS );
 			
 				// report on the eDSI
-				System.out.print( "Extrapolating Matcher: eDSI, found " + Integer.toString(newClassAlignments_eFS.size()) + " new class alignments, and " +
+				System.out.println( "Extrapolating Matcher: eFS, found " + Integer.toString(newClassAlignments_eFS.size()) + " new class alignments, and " +
 						Integer.toString( newPropertyAlignments_eFS.size() ) + " new property alignments.");
 
 				// add any new mappings
@@ -388,7 +388,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 				AlignmentSet<Alignment> newPropertyAlignments_eDSI = getNewPropertyAlignments( eDSI );
 			
 				// report on the eDSI
-				System.out.print( "Extrapolating Matcher: eDSI, found " + Integer.toString(newClassAlignments_eDSI.size()) + " new class alignments, and " +
+				System.out.println( "Extrapolating Matcher: eDSI, found " + Integer.toString(newClassAlignments_eDSI.size()) + " new class alignments, and " +
 						Integer.toString( newPropertyAlignments_eDSI.size() ) + " new property alignments.");
 
 				// add any new mappings
