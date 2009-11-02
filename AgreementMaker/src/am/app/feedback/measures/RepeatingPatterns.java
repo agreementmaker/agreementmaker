@@ -178,7 +178,7 @@ public class RepeatingPatterns extends RelevanceMeasure{
 			Edge passInRecursion = new Edge(nodeToGrow, removed);
 			
 			//Lastvisit is the variable to keep track of the number
-			for(int i = 0; i < p.getLength(); i++){
+			for(int i = 0; i < p.getEdgeSequence().size(); i++){
 				Edge temp = p.getEdgeAtIndex(i);
 				if(temp.getSourceNode().getIndex() == nodeToGrow.getIndex())
 				{

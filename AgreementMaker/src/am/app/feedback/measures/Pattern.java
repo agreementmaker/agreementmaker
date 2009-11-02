@@ -17,6 +17,7 @@ public class Pattern  {
 		}
 		length = len;
 		edgeSequence.add( edgeSeq.get(0) );
+		length++;
 	}
 	
 	public Pattern(Pattern p){
