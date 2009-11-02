@@ -11,6 +11,7 @@ import am.app.feedback.measures.FamilialSimilarity;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
+import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceParameters;
 import am.app.ontology.Node;
 import am.userInterface.vertex.Vertex;
 
@@ -18,6 +19,8 @@ public class ExtrapolatingFS extends AbstractMatcher {
 	
 	InitialMatchers im = new InitialMatchers();
 	
+	protected FilteredAlignmentMatrix classesMatrix;
+	protected FilteredAlignmentMatrix propertiesMatrix;
 	
 	protected FilteredAlignmentMatrix inputClassesMatrix = null;
 	protected FilteredAlignmentMatrix inputPropertiesMatrix = null;
@@ -25,8 +28,31 @@ public class ExtrapolatingFS extends AbstractMatcher {
 	protected FilteredAlignmentMatrix matrix;
 	
 	
+	
+	protected void beforeAlignOperations()throws Exception {
+		matchStart();
+		super.beforeAlignOperations();
+    	if( inputMatchers.size() != 1 ) {
+    		throw new RuntimeException("eFS Algorithm needs to have one input matcher.");
+    	}
+    	
+    	AbstractMatcher input = inputMatchers.get(0);
+    	
+    	inputClassesMatrix = (FilteredAlignmentMatrix) input.getClassesMatrix();
+    	inputPropertiesMatrix = (FilteredAlignmentMatrix) input.getPropertiesMatrix();
+    	
+    	matchEnd();
+    	
+	}
+	
+	
 	public void match( AlignmentSet<Alignment> userMappings ) throws Exception {
 	
+		beforeAlignOperations();
+		
+		classesMatrix = new FilteredAlignmentMatrix(inputClassesMatrix);
+		propertiesMatrix = new FilteredAlignmentMatrix(inputPropertiesMatrix);
+		
 		FamilialSimilarity fs_measure = new FamilialSimilarity( threshold );
 		AlignmentSet<Alignment> newMappings = new AlignmentSet<Alignment>();
 		
@@ -71,7 +97,7 @@ public class ExtrapolatingFS extends AbstractMatcher {
 			
 			
 			
-			newMappings.addAll( compare_sets( e1_simAboveThreshold , e2_simAboveThreshold ) );
+			newMappings.addAll( compare_sets( e1_simAboveThreshold , e2_simAboveThreshold, e1e2.getAlignmentType() ) );
 
 			
 			
@@ -90,11 +116,14 @@ public class ExtrapolatingFS extends AbstractMatcher {
 				propertiesAlignmentSet.addAlignment(j);
 			}
 		}
+		
+		classesMatrix.validateAlignments( classesAlignmentSet );
+		propertiesMatrix.validateAlignments( propertiesAlignmentSet );
 	
 	}
 
 
-	private AlignmentSet<Alignment> compare_sets( HashMap<Node, Double> e1SimAboveThreshold, HashMap<Node, Double> e2SimAboveThreshold) {
+	private AlignmentSet<Alignment> compare_sets( HashMap<Node, Double> e1SimAboveThreshold, HashMap<Node, Double> e2SimAboveThreshold, alignType tyoc ) {
 		
 		AlignmentSet<Alignment> newMappings = new AlignmentSet<Alignment>();
 		
@@ -110,7 +139,7 @@ public class ExtrapolatingFS extends AbstractMatcher {
 				Node e2n = e2i.next();
 				
 				if( approx( e1SimAboveThreshold.get(e1n) , e2SimAboveThreshold.get(e2n) , 0.01 ) ) {
-					Alignment newmapping = new Alignment(e1n, e2n, 1.00d );
+					Alignment newmapping = new Alignment(e1n, e2n, 1.00d, Alignment.EQUIVALENCE, tyoc  );
 					newMappings.addAlignment( newmapping );
 				}
 				

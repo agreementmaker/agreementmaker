@@ -22,6 +22,15 @@ public class Alignment
     public final static String SUBSETCOMPLETE = "\u2286";
     public final static String SUPERSETCOMPLETE = "\u2287";
 
+    public Alignment(Node e1, Node e2, double sim, String r, alignType tyoc)
+    {
+        entity1 = e1;
+        entity2 = e2;
+        similarity = sim;
+        relation = r;
+        typeOfConcepts = tyoc;
+    }
+    
     public Alignment(Node e1, Node e2, double sim, String r)
     {
         entity1 = e1;

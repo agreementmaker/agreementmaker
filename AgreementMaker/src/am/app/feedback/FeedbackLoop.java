@@ -184,12 +184,16 @@ public class FeedbackLoop extends AbstractMatcher  {
 		AlignmentSet<Alignment> classesToBeFiltered = classesAlignmentSet;
 		AlignmentSet<Alignment> propertiesToBeFiltered = propertiesAlignmentSet;
 		int iteration = 0;
+		int total_new = 0;
 
 		do {
 			System.out.println("");
 			
 			iteration++;
-			System.out.println("Current iteration: "+iteration+" - Mappings found: "+(classesToBeFiltered.size() + propertiesToBeFiltered.size()));
+			total_new += (classesToBeFiltered.size() + propertiesToBeFiltered.size());
+			System.out.println("Current iteration: "+iteration+" - Mappings found: "+
+					(classesToBeFiltered.size() + propertiesToBeFiltered.size()) +
+					"   Total new mappings found: " + Integer.toString(total_new)	);
 
 			//********************** FILTER STAGE *********************///
 		
@@ -324,6 +328,10 @@ public class FeedbackLoop extends AbstractMatcher  {
 				}
 
 				ExtrapolatingFS eFS = new ExtrapolatingFS();
+				eFS.setThreshold( param.highThreshold );
+				eFS.setMaxSourceAlign( param.sourceNumMappings );
+				eFS.setMaxTargetAlign( param.targetNumMappings );
+				eFS.addInputMatcher(this);
 				
 				//AlignmentSet<Alignment> userMappings = new AlignmentSet<Alignment>();
 				//userMappings.addAlignment(userMapping);
