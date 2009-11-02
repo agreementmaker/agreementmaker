@@ -5,19 +5,21 @@ import java.util.ArrayList;
 public class Pattern  {
 	private int length;
 	private ArrayList<Edge> edgeSequence;
+	private int lastAssignedVisit;
 	private static int lastVisit;
 
-	public Pattern(int len, ArrayList<Edge> edgeSeq, Pattern p){
+	public Pattern(ArrayList<Edge> edgeSeq, Pattern p){
 		
 		edgeSequence = new ArrayList<Edge>();
 		if(p != null){
 			for(Edge e: p.edgeSequence){
 				edgeSequence.add(e);
+				length++;
 			}
 		}
-		length = len;
 		edgeSequence.add( edgeSeq.get(0) );
 		length++;
+		
 	}
 	
 	public Pattern(Pattern p){
@@ -94,6 +96,14 @@ public class Pattern  {
 
 	public int getLastVisit() {
 		return lastVisit;
+	}
+
+	public void setLastAssignedVisit(int lastAssignedVisit) {
+		this.lastAssignedVisit = lastAssignedVisit;
+	}
+
+	public int getLastAssignedVisit() {
+		return lastAssignedVisit;
 	}
 }
 

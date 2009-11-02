@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-import edu.stanford.nlp.parser.lexparser.GermanUnknownWordModel;
-
 import am.app.Core;
 import am.app.feedback.CandidateConcept;
-import am.app.feedback.CandidateSelection;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -117,7 +114,7 @@ public class RepeatingPatterns extends RelevanceMeasure{
 			a.setSourceVisit(1);
 			a.setTargetVisit(2);
 			edgeSeq.add(a);
-			Pattern p = new Pattern(1, edgeSeq, null);
+			Pattern p = new Pattern(edgeSeq, null);
 			p.setLastVisit(2);
 			
 			if(patterns.containsKey(p)){
@@ -195,7 +192,7 @@ public class RepeatingPatterns extends RelevanceMeasure{
 				}
 			}
 			
-			p.setLastVisit(p.getLastVisit()+1);
+			//p.setLastVisit(p.getLastVisit()+1);
 			passInRecursion.setSourceVisit(p.getLastVisit());
 			p.setLastVisit(p.getLastVisit()+1);
 			passInRecursion.setTargetVisit(p.getLastVisit());
@@ -204,7 +201,7 @@ public class RepeatingPatterns extends RelevanceMeasure{
 			ArrayList<Edge> edgSeq = new ArrayList<Edge>();
 			edgSeq.add(passInRecursion);
 			
-			Pattern nextPattern = new Pattern(p.getLength()+1, edgSeq, p);
+			Pattern nextPattern = new Pattern(edgSeq, p);
 			Pattern copyOfPattern = new Pattern(nextPattern);//push ...
 						
 			pats.add(nextPattern);
