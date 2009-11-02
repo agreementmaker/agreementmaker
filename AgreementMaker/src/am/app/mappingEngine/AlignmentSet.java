@@ -110,6 +110,18 @@ public class AlignmentSet<E extends Alignment>
         return null;
     }
     
+    public E contains(Node nod)
+    {
+        for (int i = 0, n = size(); i < n; i++) {
+            E align = collection.get(i);
+            if (align.getEntity1().equals(nod) || align.getEntity2().equals(nod)) {
+                return align;
+            }
+        }
+        return null;
+    }
+    
+    
     public boolean contains( E alignment ) {
         for (int i = 0, n = size(); i < n; i++) {
             E align = collection.get(i);
