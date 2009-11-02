@@ -125,12 +125,12 @@ public class CandidateSelection {
 		}
 		
 		
-		System.out.println("Candidate Selection:  Top K CandidateConcepts:");
+		System.out.println("Candidate Selection:  Top K=" + Integer.toString(k) + " CandidateConcepts:");
 		for( int ii = 0; ii < topK.size(); ii++ ) {
-			System.out.println( "   " + Integer.toString(ii) + topK.get(ii).toString() );
+			CandidateConcept cc = topK.get(ii);
+			boolean isinref = fbL.isInReferenceAlignment( cc.getNode() );
+			System.out.println( "   " + Integer.toString(ii) + topK.get(ii).toString() + "  inref: " + Boolean.toString(isinref));
 		}
-		
-		Collections.sort(topK);
 		
 		
 		

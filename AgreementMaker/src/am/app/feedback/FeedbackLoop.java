@@ -17,6 +17,7 @@ import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParametersPanel;
+import am.app.ontology.Node;
 import am.userInterface.UI;
 
 /**
@@ -98,6 +99,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 	FilteredAlignmentMatrix classesMatrix;
 	FilteredAlignmentMatrix propertiesMatrix;
 	
+	AbstractMatcher referenceAlignmentMatcher;
+	
 	public FeedbackLoop() {
 	
 		initializeUserInterface();  // add a new tab, and display the parameters screen to the user
@@ -110,7 +113,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 	}
 	
 	public void match() {
-		
+	
 
 		// the user has to load the ontologies.
 		if( Core.getInstance().getSourceOntology() == null || Core.getInstance().getTargetOntology() == null ) {
@@ -120,7 +123,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		
 		//Just for the Experiment Purpose, if the user selects the automatic configuration we need to import the reference
 		//the reference name is built-in the code right now.
-		AbstractMatcher referenceAlignmentMatcher = null;
+		referenceAlignmentMatcher = null;
 		String conf = progressDisplay.getConfiguration();
 		
 		K = progressDisplay.getK();
@@ -176,6 +179,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 		int iteration = 0;
 
 		do {
+			System.out.println("");
+			
 			iteration++;
 			System.out.println("Current iteration: "+iteration+" - Mappings found: "+(classesToBeFiltered.size() + propertiesToBeFiltered.size()));
 
@@ -453,6 +458,21 @@ public class FeedbackLoop extends AbstractMatcher  {
 			}
 		}
 		return newAlignments;
+	}
+	
+	// check to see if a Node concept is in the reference alignment  
+	public boolean isInReferenceAlignment( Node nc ) {
+		if( referenceAlignmentMatcher == null ) { return false; } // we cannot check the reference alignment if it not loaded
+		AlignmentSet<Alignment> cset = referenceAlignmentMatcher.getClassAlignmentSet();
+		AlignmentSet<Alignment> pset = referenceAlignmentMatcher.getPropertyAlignmentSet();
+		
+		if( cset.contains(nc) != null ) {
+			return true;
+		}
+		
+		
+		return false;
+		
 	}
 	
 }
