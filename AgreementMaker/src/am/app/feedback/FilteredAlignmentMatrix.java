@@ -167,13 +167,15 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
     	
 		//remember to check to have numMaxValues lower than matrix columns before
     	Alignment[] maxAlignments = new Alignment[numMaxValues];
-    	
+
+    	/*
     	Node entity1 = null;
     	Node entity2 = null;
 		for(int h = 0; h<maxAlignments.length;h++) {	
 			maxAlignments[h] = new Alignment(-1); //intial max alignments have sim equals to -1, don't put 0 could create problem in the next for
 		}
 		
+		*/
 		Alignment currentValue;
 		Alignment currentMax;
 		for(int j = 0; j<getColumns();j++) {
@@ -183,8 +185,9 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 				//maxAlignments contains the ordered list of max alignments, the first is the best max value
 				for(int k = 0;k<maxAlignments.length; k++) {
 					currentMax = maxAlignments[k];
-					if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value	
-						
+					if( currentMax == null ) {
+						maxAlignments[k] = currentValue;
+					} else if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value							
 						maxAlignments[k] = currentValue;
 						currentValue = currentMax;
 					}
@@ -203,15 +206,12 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 		
 		//remember to check to have numMaxValues lower than matrix rows before
     	Alignment[] maxAlignments = new Alignment[numMaxValues];
-    	
-    	Node entity1 = null;
-    	Node entity2 = null;
-
-    	
+    
+/*    	
 		for(int h = 0; h<maxAlignments.length;h++) {			
 			maxAlignments[h] = new Alignment(-1);
 		}
-		
+*/		
 		Alignment currentValue;
 		Alignment currentMax;
 		for(int j = 0; j<getRows();j++) {
@@ -222,7 +222,9 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 				//maxAlignments contains the ordered list of max alignments, the first is the best max value
 				for(int k = 0;k<maxAlignments.length; k++) {
 					currentMax = maxAlignments[k];
-					if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value
+					if(currentMax == null) {
+						maxAlignments[k] = currentValue;
+					} else if( currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value)
 						maxAlignments[k] = currentValue;
 						currentValue = currentMax;
 					}

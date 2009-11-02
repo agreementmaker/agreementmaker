@@ -72,28 +72,32 @@ public class AlignmentMatrix {
     }
     
     public Alignment get(int i, int j) {  // TODO: This function does not return null.  It should return null. (cos,10-29-09)
-    	Core core = Core.getInstance();
-    	Ontology sourceOntology = core.getSourceOntology();
-    	Ontology targetOntology = core.getTargetOntology();
-    	ArrayList<Node> sourceList;
-    	ArrayList<Node> targetList;
-    	if(typeOfMatrix.equals(alignType.aligningClasses)){
-    		sourceList = sourceOntology.getClassesList();
-    		targetList = targetOntology.getClassesList();
-    	}
-    	else{
-    		sourceList = sourceOntology.getPropertiesList();
-    		targetList = targetOntology.getPropertiesList();
-    	}
     	
-    	if( data[i][j] == null )
+    	if( data[i][j] == null ) {
+    		
+        	Core core = Core.getInstance();
+			Ontology sourceOntology = core.getSourceOntology();
+			Ontology targetOntology = core.getTargetOntology();
+			ArrayList<Node> sourceList;
+			ArrayList<Node> targetList;
+			if(typeOfMatrix.equals(alignType.aligningClasses)){
+				sourceList = sourceOntology.getClassesList();
+				targetList = targetOntology.getClassesList();
+			}
+			else{
+				sourceList = sourceOntology.getPropertiesList();
+				targetList = targetOntology.getPropertiesList();
+			}
+    		
     		return new Alignment(sourceList.get(i), targetList.get(j), 0.00d, relation);
+    	}
     	else 
     		return data[i][j];
     }
     
     public void set(int i, int j, Alignment d) {
     	//data[d.getEntity1().getIndex()][d.getEntity2().getIndex()] = d.getSimilarity();
+    	
     	if( data == null ) {
     		System.out.println("Something is terribly wrong here!");
     	}
@@ -109,7 +113,23 @@ public class AlignmentMatrix {
     
     public void setSimilarity(int i, int j, double d){
     	if( data[i][j] == null ) {
-    		data[i][j] = new Alignment( d );
+    		
+        	Core core = Core.getInstance();
+			Ontology sourceOntology = core.getSourceOntology();
+			Ontology targetOntology = core.getTargetOntology();
+			ArrayList<Node> sourceList;
+			ArrayList<Node> targetList;
+			if(typeOfMatrix.equals(alignType.aligningClasses)){
+				sourceList = sourceOntology.getClassesList();
+				targetList = targetOntology.getClassesList();
+			}
+			else{
+				sourceList = sourceOntology.getPropertiesList();
+				targetList = targetOntology.getPropertiesList();
+			}
+    		
+    		
+    		data[i][j] = new Alignment( sourceList.get(i), targetList.get(j), d );
     	}
     	else {
     		data[i][j].setSimilarity(d);
