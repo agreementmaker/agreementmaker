@@ -531,6 +531,7 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 		return node == null;
 	}
 	
+	// returns true if the vertex it in the source ontology, false in the target
 	public boolean isSourceOrGlobal() {
 		return this.getNodeType() == GlobalStaticVariables.SOURCENODE;
 	}

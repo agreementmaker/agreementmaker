@@ -25,11 +25,13 @@ public class CandidateConcept extends Node implements Comparable<CandidateConcep
 	protected Node originalNode;
 	
 	public CandidateConcept(Node n, double r, ontology o, alignType t ) {
-		super(n.getIndex(), n.getResource(), n.getType());
+		super(n);
 		relevance = r;
 		whichOntology = o;
 		whichType = t;
 		originalNode = n;
+		
+		
 	}
 
 	public double getRelevance() {
@@ -72,7 +74,9 @@ public class CandidateConcept extends Node implements Comparable<CandidateConcep
 		return false;
 	}
 	
+	
 	public boolean equals( Node n ) {
+		
 		return super.equals( n );
 	}
 	
@@ -84,4 +88,9 @@ public class CandidateConcept extends Node implements Comparable<CandidateConcep
 		return patternRepeats;
 	}
 	
+	public String toString() {
+		return super.toString() + "\t" + Double.toString(relevance);
+	}
+	
+
 }

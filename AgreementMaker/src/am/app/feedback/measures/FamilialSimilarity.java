@@ -1,10 +1,12 @@
 package am.app.feedback.measures;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import am.app.Core;
 import am.app.feedback.CandidateConcept;
 import am.app.feedback.ConceptList;
+import am.app.feedback.FeedbackLoop;
 import am.app.feedback.FilteredAlignmentMatrix;
 import am.app.feedback.InitialMatchers;
 import java.util.HashMap;
@@ -22,19 +24,19 @@ public class FamilialSimilarity extends RelevanceMeasure {
 	CandidateConcept.ontology whichOntology;
 	alignType whichType;
 	
-	InitialMatchers im;
 	
-	private double[][] similarityRepository;
-
+	InitialMatchers im;
 	
 	public FamilialSimilarity() {
 		super();
 		im = new InitialMatchers();
+		myClass = FamilialSimilarity.class;
 	}
 	
 	public FamilialSimilarity(double th) {
 		super(th);
 		im = new InitialMatchers();
+		myClass = FamilialSimilarity.class;
 	}
 
 
@@ -42,8 +44,6 @@ public class FamilialSimilarity extends RelevanceMeasure {
 		
 		Ontology sourceOntology = Core.getInstance().getSourceOntology();
 		whichOntology = CandidateConcept.ontology.source;
-		
-		
 		
 		
 		// source classes
@@ -87,21 +87,27 @@ public class FamilialSimilarity extends RelevanceMeasure {
 	// makes a list of the children and compares each child to every other
 	protected void visitNode( Vertex concept, FilteredAlignmentMatrix matrix, boolean isSource) throws Exception {
 		
-		ArrayList<Vertex> childrenList = new ArrayList<Vertex>();
-		int numChildren = concept.getChildCount();
 		
+
+		ArrayList<Vertex> childrenList = new ArrayList<Vertex>();
+
+		// construct the childrenList
+		int numChildren = concept.getChildCount();
 		for( int i = 0; i < numChildren; i++ ) {
 			childrenList.add((Vertex) concept.getChildAt(i));
 		}
+		
 		
 		if( childrenList.size() > 1 ) {
 			// two or more children
 			for( int i = 0; i < childrenList.size(); i++ ) {
 				if(isSource && matrix.isRowFiltered(childrenList.get(i).getNode().getIndex())){
 					//skip the node because it has been mapped and validated already
+					continue;
 				}
 				else if(!isSource && matrix.isColFiltered(childrenList.get(i).getNode().getIndex())){
 					//skip the node because it has been mapped and validated already
+					continue;
 				}
 				else{
 					int sim = simAboveThreshold( childrenList, i);
@@ -111,6 +117,7 @@ public class FamilialSimilarity extends RelevanceMeasure {
 				}
 			}
 		}
+
 		// visit the children
 		for( int i = 0; i < childrenList.size(); i++ ) {
 			visitNode( childrenList.get(i), matrix, isSource);
@@ -168,5 +175,5 @@ public class FamilialSimilarity extends RelevanceMeasure {
 		
 		return 0.0d;
 	}
-
+	
 }

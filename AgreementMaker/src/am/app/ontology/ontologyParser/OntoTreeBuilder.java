@@ -464,11 +464,11 @@ public class OntoTreeBuilder extends TreeBuilder{
          }
          else {
          	if(isClass) {
-                node = new Node(uniqueKey,entity, Node.OWLCLASS); //new node with a new key, with the link to the graphical Vertex representation
+                node = new Node(uniqueKey,entity, Node.OWLCLASS, ontology.getIndex()); //new node with a new key, with the link to the graphical Vertex representation
                 ontology.getClassesList().add(node);
          	}
          	else {//it has to be a prop
-         		node = new Node(uniqueKey,entity, Node.OWLPROPERTY); //new node with a new key, with the link to the graphical Vertex representation
+         		node = new Node(uniqueKey,entity, Node.OWLPROPERTY, ontology.getIndex()); //new node with a new key, with the link to the graphical Vertex representation
                 ontology.getPropertiesList().add(node);
          	}
             processedSubs.put(entity, node);

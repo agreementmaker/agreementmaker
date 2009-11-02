@@ -37,7 +37,7 @@ public class Node {
 	 * One of the string which can be used to compare two nodes
 	 * In general the URI = namespace#localname, in the OWL ontology, often the localname is the same of label	
 	 * usually is defined with rdf: ID */
-	private String localName = "";
+	protected String localName = "";
 	/**
 	 * Another string which can be used to compare nodes
 	 * This should be a human readable version of localname. In a RDF or XML ontologies there are no labels
@@ -81,7 +81,8 @@ public class Node {
 	public final static String OWLPROPERTY = "owl-propertynode";
     public final static String XMLNODE = "xml-node";
 	/**UNIQUE KEY IN THE RANGE OF TYPE to be used as index to retrieve this node from the list and from the matrix*/
-	int index;
+	protected int index;
+	protected int ontindex;  // the index of the ONTOLOGY to which this node belongs
 	
 	//These fields are for the PRAMatching technique
 	private Node matchedTo;
@@ -96,10 +97,11 @@ public class Node {
 	 * @param desc
 	 * @param type
 	 */
-	public Node(int key, String name, String type) {
+	public Node(int key, String name, String type, int oindex) {
 		localName = name;
 		this.type = type;
 		index = key;
+		ontindex = oindex;
 	}
 	
 	public Node(Node a){
@@ -110,14 +112,17 @@ public class Node {
 		resource = a.resource;
 		uri = a.getUri();
 		localName = a.getLocalName();
+		vertexList.addAll(a.getVertexList());
+		ontindex = a.ontindex;
 	}
 	
 	/**RDF OWL Constructor*/
-	public Node(int key, Resource r, String type) {
+	public Node(int key, Resource r, String type, int oindex ) {
 		String language = "EN";
 		resource = r;
 		uri = r.getURI();
 		localName = r.getLocalName();
+		ontindex = oindex;
 		this.type = type;
 		if(r.canAs(OntResource.class)) {
 			OntResource or = (OntResource)r.as(OntResource.class);
@@ -258,7 +263,10 @@ public class Node {
 	}
 	
 	public Vertex getVertex() {
-		return vertexList.get(0);
+		if( vertexList != null && !vertexList.isEmpty() )
+			return vertexList.get(0);
+		else
+			return null;
 	}
 
 	public String getType() {
@@ -285,12 +293,31 @@ public class Node {
 		return type.equals(OWLPROPERTY);
 	}
 	
-	public boolean equals(Object o) {
-		if(o instanceof Node) {
-			Node n = (Node)o;
-			return n.getIndex() == index;
-		}
-		return false;
+	// equality checker --- VERY IMPORTANT
+	public boolean equals( Node o) {
+
+		/**
+		 *  For a node to be equal to a second node
+		 *  they must both be
+		 *  1. of equal type (classes, properties, individuals )
+		 *  2. of equal ontology ( source ontology nodes can only be equal with source ontology nodes, and the same for target ontology)
+		 *  3. of equal index  ( the index is unique, and if the other two points are equal, equality of indices will indicate equality )
+		 */
+ 
+
+		// 1. Equal Type
+		if( o.isProp() != isProp() ) return false;
+		if( o.isClass() != isClass() ) return false;
+		
+		// 2. equal ontology
+		// we use ontology indices here, if the indices are equal, the nodes are from the same ontology
+		if( o.ontindex != ontindex ) return false;
+		
+		// 3. equal index
+		// because the nodes we are comparing are from the same ontology, we can now check for index equality
+		if( o.index != index ) return false;
+		
+		return true;
 	}
 	/*
 	public int hashCode() {

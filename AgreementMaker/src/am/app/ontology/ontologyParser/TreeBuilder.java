@@ -4,6 +4,7 @@ import java.io.File;
 import javax.swing.SwingWorker;
 import am.GlobalStaticVariables;
 import am.Utility;
+import am.app.Core;
 import am.app.ontology.Ontology;
 import am.userInterface.OntologyLoadingProgressDialog;
 import am.userInterface.vertex.Vertex;
@@ -24,6 +25,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 	
 	public TreeBuilder(String filename,  int sourceOrTarget, String language, String format) {
 		ontology = new Ontology();
+		ontology.setIndex( Core.getInstance().getNextOntIndex() );  // get an unique index for this ontology
 		ontology.setFilename(filename);
 		ontology.setSourceOrTarget(sourceOrTarget);
 		ontology.setLanguage(language);

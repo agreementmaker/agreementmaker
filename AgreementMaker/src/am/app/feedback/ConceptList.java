@@ -61,8 +61,9 @@ public class ConceptList extends ArrayList<CandidateConcept> {
 		Iterator<CandidateConcept> i = iterator();
 		while( i.hasNext() ) {
 			CandidateConcept cc = i.next();
-			if( cc.isFromOntology(o) && cc.isType(t) && cc.equals(n) ) {
+			if( cc.isFromOntology(o) && cc.isType(t) && cc.getNode().equals(n) ) {
 				// this is a match
+				//System.out.println( "++ " + cc.toString() + "==" + n.toString() ); 
 				return cc.getRelevance();
 			}
 		}

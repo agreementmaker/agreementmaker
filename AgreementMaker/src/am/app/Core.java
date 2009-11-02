@@ -28,6 +28,8 @@ public class Core {
 	 */
 	private ArrayList<AbstractMatcher> matcherInstances = new ArrayList<AbstractMatcher>();
 	
+	private int ontIndex = 0;
+	
 	private Ontology sourceOntology;//Null if it's not loaded yet
 	private Ontology targetOntology;//Null if it's not loaded yet
 	
@@ -205,6 +207,12 @@ public class Core {
 			}
 		}
 		return result;
+	}
+	
+	// this function gives a unique index to every ontology ( TODO: perhaps have an order for the indices )
+	public int getNextOntIndex() {
+		ontIndex++;
+		return ontIndex;
 	}
 	
 	

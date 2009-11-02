@@ -61,6 +61,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 	private int M = 2;
 	
 	
+	FeedbackLoopParameters param;
+	
 	private boolean automatic;
 	//configurations
 	public final static String MANUAL = "Manual";
@@ -105,6 +107,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 	
 		initializeUserInterface();  // add a new tab, and display the parameters screen to the user
 		setStage( executionStage.notStarted );
+		needsParam = true;
 	
 	}
 	
@@ -113,11 +116,15 @@ public class FeedbackLoop extends AbstractMatcher  {
 	}
 	
 	public void match() {
-	
 
 		// the user has to load the ontologies.
 		if( Core.getInstance().getSourceOntology() == null || Core.getInstance().getTargetOntology() == null ) {
 			Utility.displayErrorPane("Two ontologies must be loaded into AgreementMaker before the matching can begin.", "Ontologies not loaded." );
+			return;
+		}
+		
+		if( param == null ) {
+			Utility.displayErrorPane("Feedbackloop parameters are not set.", "Parameters not set." );
 			return;
 		}
 		
@@ -466,12 +473,23 @@ public class FeedbackLoop extends AbstractMatcher  {
 		AlignmentSet<Alignment> cset = referenceAlignmentMatcher.getClassAlignmentSet();
 		AlignmentSet<Alignment> pset = referenceAlignmentMatcher.getPropertyAlignmentSet();
 		
-		if( cset.contains(nc) != null ) {
-			return true;
+		if( !nc.isProp() ) {
+			return cset.contains(nc) != null;
+		} else {
+			return pset.contains(nc) != null;
 		}
 		
-		
-		return false;
+	}
+	
+	// an alignment with this node has been validated by the user
+	public boolean isValidated( Node nc ) {
+		if( referenceAlignmentMatcher == null ) { return false; } // we cannot check the reference alignment if it is not loaded
+	
+		if( !nc.isProp() ) {
+			return classesAlignmentSet.contains(nc) != null;
+		} else { 
+			return propertiesAlignmentSet.contains(nc) != null;
+		}
 		
 	}
 	

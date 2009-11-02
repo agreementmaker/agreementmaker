@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import am.app.Core;
 import am.app.feedback.CandidateConcept;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.vertex.Vertex;
 
@@ -13,6 +14,10 @@ public class Specificity extends RelevanceMeasure {
 	CandidateConcept.ontology whichOntology;
 	alignType whichType;
 
+	public Specificity() {
+		super();
+		myClass = Specificity.class;
+	}
 	
 	public void calculateRelevances() {
 		
@@ -63,15 +68,21 @@ public class Specificity extends RelevanceMeasure {
 			childrenList.add((Vertex) concept.getChildAt(i));
 		}
 		
-		depth = depth + 1;
 		int fanout = childrenList.size();
 		
 		
 		// visit the children
+		double Depth = new Double(depth);
+		double Fanout = new Double(fanout);
 		for( int i = 0; i < childrenList.size(); i++ ) {
-			double specificity = (1 / depth) * ( 1 / fanout);
-			candidateList.add( new CandidateConcept( childrenList.get(i).getNode(), specificity, whichOntology, whichType ));
-			visitNode( childrenList.get(i), depth );
+			
+			Node curr = childrenList.get(i).getNode();
+			
+			if( !fbl.isValidated(curr) ) {
+				double specificity = (1 / Depth) * ( 1 / Fanout);
+				candidateList.add( new CandidateConcept( childrenList.get(i).getNode(), specificity, whichOntology, whichType ));
+			}	
+			visitNode( childrenList.get(i), depth + 1 );
 		}
 		
 	}

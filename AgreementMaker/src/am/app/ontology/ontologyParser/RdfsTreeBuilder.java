@@ -116,7 +116,7 @@ public class RdfsTreeBuilder extends TreeBuilder{
          }
          else {
         	// uniqueKey == 0 here, no need to increment it.
-     		node = new Node(uniqueKey,entity, Node.OWLCLASS); //new node with a new key, with the link to the graphical Vertex representation
+     		node = new Node(uniqueKey,entity, Node.OWLCLASS, ontology.getIndex()); //new node with a new key, with the link to the graphical Vertex representation
             ontology.getClassesList().add(node);
             processedSubs.put(entity, node);
             uniqueKey++;  // here is where we increment the uniqueKey.

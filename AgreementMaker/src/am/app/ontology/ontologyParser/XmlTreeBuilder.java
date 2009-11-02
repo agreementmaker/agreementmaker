@@ -98,7 +98,7 @@ public class XmlTreeBuilder extends TreeBuilder
 				Node node = processedNodes.get(name);
 				if(node == null) {
 					//if it's new create the node, add it to the class list and incr uniqueKey
-					node = new Node(uniqueKey,name, Node.XMLNODE);
+					node = new Node(uniqueKey,name, Node.XMLNODE, ontology.getIndex());
 					node.setLabel(label);
 					node.setComment(des);
 					node.setSeeAlsoLabel(seeAlso);

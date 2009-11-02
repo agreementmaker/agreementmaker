@@ -58,6 +58,7 @@ public class CandidateSelection {
 			RelevanceMeasure m = getMeasureInstance( mi.next() );
 			if( m != null ) {
 				m.calculateRelevances();
+				m.printCandidates();
 				measures.add(m);
 			}
 		}
@@ -95,7 +96,7 @@ public class CandidateSelection {
 		// now, do a linear combination of all the measures for each element in the ontologies
 		
 		Ontology s = Core.getInstance().getSourceOntology();
-		Ontology t = Core.getInstance().getSourceOntology();
+		Ontology t = Core.getInstance().getTargetOntology();
 		
 		ArrayList<CandidateConcept> masterList = new ArrayList<CandidateConcept>();
 		
@@ -114,14 +115,22 @@ public class CandidateSelection {
 		
 		
 		// we now have the masterList, sort it.
-		Collections.sort( masterList );
+		Collections.sort( masterList );  // ASCENDING ORDER --- TOP VALUES AT END OF LIST
+		
+		System.out.println("***** The MASTER list:");
+		Iterator<CandidateConcept> ccitr = masterList.iterator();
+		while( ccitr.hasNext() ) {
+			System.out.println( "     * " + ccitr.next().toString() );
+		}
+		
+		
 		
 		ArrayList<CandidateConcept> topK = new ArrayList<CandidateConcept>();
 		if(masterList.size() < k){
 			topK.addAll( masterList);
 		}
 		else{
-			topK.addAll( masterList.subList(0, k) );
+			topK.addAll( masterList.subList( masterList.size() - k, masterList.size()) );  // choose bottom k entries
 		}
 		
 		
@@ -129,7 +138,7 @@ public class CandidateSelection {
 		for( int ii = 0; ii < topK.size(); ii++ ) {
 			CandidateConcept cc = topK.get(ii);
 			boolean isinref = fbL.isInReferenceAlignment( cc.getNode() );
-			System.out.println( "   " + Integer.toString(ii) + topK.get(ii).toString() + "  inref: " + Boolean.toString(isinref));
+			System.out.println( "   " + Integer.toString(ii)+ ". " + topK.get(ii).toString() + "  inref: " + Boolean.toString(isinref));
 		}
 		
 		
@@ -214,17 +223,18 @@ public class CandidateSelection {
 		ArrayList<CandidateConcept> subList = new ArrayList<CandidateConcept>();
 		Iterator<Node> nodeItr = list.iterator();
 		
-		double combinedRelevance = 0.00d;
+		
 		
 		while( nodeItr.hasNext() ) {
 			Node currentNode = nodeItr.next();
 			Iterator<ConceptList> cl = relevanceLists.iterator();
+			double combinedRelevance = 0.00d;
 			while( cl.hasNext() ) {
 				ConceptList currentList = cl.next();
 				combinedRelevance += currentList.getWeight() * currentList.getRelevance( currentNode, source, type );
 			}
 			
-			if( combinedRelevance > 0.00d ) {
+			if( combinedRelevance > 0.0 ) {
 				subList.add( new CandidateConcept( currentNode, combinedRelevance, source, type));
 			}
 		}
