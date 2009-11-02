@@ -8,6 +8,7 @@ import java.util.Iterator;
 import am.app.Core;
 import am.app.feedback.CandidateConcept.ontology;
 import am.app.feedback.measures.FamilialSimilarity;
+import am.app.feedback.measures.InformationGain;
 import am.app.feedback.measures.RelevanceMeasure;
 import am.app.feedback.measures.Specificity;
 import am.app.mappingEngine.Alignment;
@@ -22,8 +23,8 @@ public class CandidateSelection {
 	// relevance measures
 	public enum MeasuresRegistry {
 		FamilialSimilarity ( FamilialSimilarity.class ),
-		Specificity	( Specificity.class )
-		;
+		Specificity	( Specificity.class ),
+		InformationGain ( InformationGain.class );
 		
 		
 		private String measure;
@@ -55,8 +56,10 @@ public class CandidateSelection {
 		Iterator<MeasuresRegistry> mi = mrs.iterator();
 		
 		while( mi.hasNext() ) {
-			RelevanceMeasure m = getMeasureInstance( mi.next() );
+			MeasuresRegistry name = mi.next();
+			RelevanceMeasure m = getMeasureInstance( name );
 			if( m != null ) {
+				m.setName(name);
 				m.calculateRelevances();
 				m.printCandidates();
 				measures.add(m);
@@ -117,10 +120,11 @@ public class CandidateSelection {
 		// we now have the masterList, sort it.
 		Collections.sort( masterList );  // ASCENDING ORDER --- TOP VALUES AT END OF LIST
 		
+		System.out.println("");
 		System.out.println("***** The MASTER list:");
 		Iterator<CandidateConcept> ccitr = masterList.iterator();
 		while( ccitr.hasNext() ) {
-			System.out.println( "     * " + ccitr.next().toString() );
+			System.out.println( "\t* " + ccitr.next().toString() );
 		}
 		
 		
@@ -134,7 +138,7 @@ public class CandidateSelection {
 		}
 		
 		
-		System.out.println("Candidate Selection:  Top K=" + Integer.toString(k) + " CandidateConcepts:");
+		System.out.println("\nCandidate Selection:  Top K=" + Integer.toString(k) + " CandidateConcepts:");
 		for( int ii = 0; ii < topK.size(); ii++ ) {
 			CandidateConcept cc = topK.get(ii);
 			boolean isinref = fbL.isInReferenceAlignment( cc.getNode() );
@@ -154,9 +158,9 @@ public class CandidateSelection {
 			
 			Alignment[] topM = null;
 
-			System.out.println("Candidate Selection: ConceptCandidate -> Alignment Translation, working with \"" + top1.toString() + "\"." );
+			System.out.println("\nCandidate Selection: ConceptCandidate -> Alignment Translation, working with \"" + top1.toString() + "\"." );
 			
-			System.out.print("  - concept is ");
+			System.out.print("\t# concept is ");
 			if( top1.isType( alignType.aligningClasses ) ) {
 				System.out.print(" a class, in ");
 				// we're looking in the classes matrix
@@ -204,8 +208,10 @@ public class CandidateSelection {
 			
 			if( topM != null ) {
 				for( int i1 = 0; i1 < m; i1++ ) {
-					if( topM[i1] != null && topM[i1].getSimilarity() != -1 )	topMappings.addAlignment( topM[i1]);
-					System.out.println( "  mapping "+Integer.toString(i1)+": "+ topM[i1].toString() );
+					if( topM[i1] != null && topM[i1].getSimilarity() != -1 ) {	
+						topMappings.addAlignment( topM[i1]);
+						System.out.println( "\t\tmapping "+Integer.toString(i1)+": "+ topM[i1].toString() );
+					}
 				}
 			};
 			

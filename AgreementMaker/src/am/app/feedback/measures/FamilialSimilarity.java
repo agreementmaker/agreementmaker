@@ -30,13 +30,11 @@ public class FamilialSimilarity extends RelevanceMeasure {
 	public FamilialSimilarity() {
 		super();
 		im = new InitialMatchers();
-		myClass = FamilialSimilarity.class;
 	}
 	
 	public FamilialSimilarity(double th) {
 		super(th);
 		im = new InitialMatchers();
-		myClass = FamilialSimilarity.class;
 	}
 
 
@@ -169,11 +167,6 @@ public class FamilialSimilarity extends RelevanceMeasure {
 		
 		return vl;
 		
-	}
-
-	private double SimilarityRepository( Node c1, Node c2 ) {
-		
-		return 0.0d;
 	}
 	
 }

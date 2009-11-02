@@ -18,5 +18,20 @@ public class FeedbackLoopParameters extends AbstractParameters {
 	
 	public int sourceNumMappings = 1;
 	public int targetNumMappings = 1;
+	public int iterations = 15;
+	
+	
+	public void print() {
+		System.out.println( "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		System.out.println( "Feedback Loop PARAMETERS: ");
+		System.out.println( "\tConfiguration: \t"+ configuration );
+		System.out.println( "\tIterations:    \t"+ iterations );
+		System.out.println( "\tHigh Threshold:\t" + Double.toString(highThreshold) );
+		System.out.println( "\tLow Threshold: \t" + Double.toString(lowThreshold) );
+		System.out.println( "\tK:             \t" + Integer.toString(K) );
+		System.out.println( "\tM:             \t" + Integer.toString(M) );
+		System.out.println( "\tCardinality:   \t" + cardinality );
+		System.out.println( "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+	}
 	
 }

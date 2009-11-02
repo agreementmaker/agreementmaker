@@ -268,19 +268,53 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 	}
 
 
-	public void filterCellsBelowThreshold(double lowThreshold) {
+	public int filterCellsBelowThreshold(double lowThreshold) {
 		
 		int numRows = getRows();
 		int numCols = getColumns();
 		
+		int numCells = 0;
+		
 		for( int row = 0; row < numRows; row++ ) {
 			for( int col = 0; col < numCols; col++ ) {
-				
+				if( getSimilarity(row, col) < lowThreshold ) {
+					filterCell(row, col);
+					numCells++;
+				}
 			}
 		}
+		return numCells;
 		
 	}
+
+
+	public double getRowMinValue_notZero(int row) {
+		double min = 1.0d;
+		for( int col = 0; col < getColumns(); col++ ) {
+			if( getSimilarity(row, col) < min && getSimilarity(row, col) != 0.0d ) min = getSimilarity(row, col);
+		}
+		return min;
+	}
     
+	public double getColMinValue_notZero(int col) {
+		double min = 1.0d;
+		for( int row = 0; row < getRows(); row++ ) {
+			if( getSimilarity(row, col) < min && getSimilarity(row, col) != 0.0d ) min = getSimilarity(row, col);
+		}
+		return min;
+	}
+	
+	
+	public int getFrequency( double sim ) {
+		int occurs = 0;
+		for( int row = 0; row < getRows(); row++ ) {
+			for( int col = 0; col < getColumns(); col++ ) {
+				if( getSimilarity(row, col) == sim ) occurs++;
+			}
+		}
+		return occurs;
+	}
+	
     
 	
 }

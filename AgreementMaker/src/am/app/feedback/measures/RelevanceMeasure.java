@@ -13,13 +13,11 @@ public class RelevanceMeasure {
 	protected MeasuresRegistry name;
 	protected ConceptList candidateList;
 	protected FeedbackLoop fbl;
-	Class myClass = null;
 	
 	protected double threshold;
 	
-	public void setName( MeasuresRegistry m ) {
-		name = m;
-	}
+	public void setName( MeasuresRegistry m ) {	name = m; }
+	public MeasuresRegistry getName() {	return name; }
 	
 	public RelevanceMeasure() {
 		candidateList = new ConceptList();
@@ -50,17 +48,13 @@ public class RelevanceMeasure {
 
 	public void printCandidates() {
 		System.out.println("");
-		if( myClass != null ) {
-			System.out.println( myClass.toString() + ": Candidate list:");
-		} else {
-			System.out.println("-----: Candidate List:");
-		}
+		System.out.println( "<" + name.toString() + "> candidate list:");
 		
 		Collections.sort(candidateList); // SORTS IN ASCENDING ORDER!
 		
 		Iterator<CandidateConcept> ccitr = candidateList.iterator();
 		while( ccitr.hasNext() ) {
-			System.out.println( "     * " + ccitr.next().toString() );
+			System.out.println( "\t* " + ccitr.next().toString() );
 		}
 		
 	}

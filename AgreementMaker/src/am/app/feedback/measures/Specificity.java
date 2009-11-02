@@ -14,11 +14,6 @@ public class Specificity extends RelevanceMeasure {
 	CandidateConcept.ontology whichOntology;
 	alignType whichType;
 
-	public Specificity() {
-		super();
-		myClass = Specificity.class;
-	}
-	
 	public void calculateRelevances() {
 		
 		Ontology sourceOntology = Core.getInstance().getSourceOntology();

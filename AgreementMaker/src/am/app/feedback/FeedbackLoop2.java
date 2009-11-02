@@ -58,7 +58,7 @@ import am.userInterface.UI;
  * 
  */
 
-public class FeedbackLoop extends AbstractMatcher  {
+public class FeedbackLoop2 extends FeedbackLoop  {
 	
 	private int K = 4;
 	private int M = 2;
@@ -68,28 +68,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 	public final static String MANUAL = "Manual";
 	public final static String AUTO_101_303 = "Auto 101-303";
 	
-	
-	public enum executionStage {
-		notStarted,
-		
-		runningInitialMatchers,
-		afterInitialMatchers,
-		
-		runningFilter,
-		afterFilter,
-		
-		runningExtrapolatingMatchers,
-		afterExtrapolatingMatchers,
-		
-		runningCandidateSelection,
-		afterCandidateSelection,
-		
-		runningUserInterface,
-		afterUserInterface,
-		
-		presentFinalMappings
-		
-	}
 	
 	private executionStage currentStage;
 	
@@ -105,7 +83,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 	
 	AbstractMatcher referenceAlignmentMatcher;
 	
-	public FeedbackLoop() {
+	public FeedbackLoop2() {
 	
 		initializeUserInterface();  // add a new tab, and display the parameters screen to the user
 		setStage( executionStage.notStarted );
@@ -204,14 +182,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		do {
 			System.out.println("");
 			
-			
 			iteration++;
-			
-			if( iteration > param.iterations ) {
-				System.out.println( ">>> Stopping loop after " + Integer.toString(param.iterations) + " iterations." );
-				break;
-			}
-			
 			total_new += (classesToBeFiltered.size() + propertiesToBeFiltered.size());
 			System.out.println("Current iteration: "+iteration+" - Mappings found this iteration: "+
 					(classesToBeFiltered.size() + propertiesToBeFiltered.size()) +
@@ -261,7 +232,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			setStage( executionStage.afterCandidateSelection );
 		
-			if( isCancelled() ) break;
+			
 			
 			
 			//********************* USER FEEDBACK INTERFACE OR AUTOMATIC VALIDATION **********//
@@ -380,9 +351,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 				System.out.println( "Extrapolating Matcher: eFS, found " + Integer.toString(newClassAlignments_eFS.size()) + " new class alignments, and " +
 						Integer.toString( newPropertyAlignments_eFS.size() ) + " new property alignments.");
 
-				printAlignments( newClassAlignments_eFS, alignType.aligningClasses );
-				printAlignments( newPropertyAlignments_eFS, alignType.aligningProperties );
-				
 				// add any new mappings
 				classesToBeFiltered.addAll( newClassAlignments_eFS );
 				propertiesToBeFiltered.addAll( newPropertyAlignments_eFS );
@@ -420,10 +388,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 				System.out.println( "Extrapolating Matcher: eDSI, found " + Integer.toString(newClassAlignments_eDSI.size()) + " new class alignments, and " +
 						Integer.toString( newPropertyAlignments_eDSI.size() ) + " new property alignments.");
 
-				printAlignments( newClassAlignments_eDSI, alignType.aligningClasses );
-				printAlignments( newPropertyAlignments_eDSI, alignType.aligningProperties );
-
-				
 				// add any new mappings
 				classesToBeFiltered.addAll( newClassAlignments_eDSI );
 				propertiesToBeFiltered.addAll( newPropertyAlignments_eDSI );	
@@ -448,8 +412,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			}
 			currentStage = executionStage.afterExtrapolatingMatchers;	
 
-		
-			if( isCancelled() ) break;
+			
 		} while( !stop );
 		
 		// present the final mappings here
@@ -458,43 +421,13 @@ public class FeedbackLoop extends AbstractMatcher  {
 		
 		ReferenceEvaluationData rd_end = ReferenceEvaluator.compare(fblextrapolationSet, referenceSet);
 		
-		System.out.println( "///////////////////////////////////////////////////////////////");
-		System.out.println( "Inital Matchers:"	);
-		System.out.println( rd.getReport() );
-		System.out.println( "" );
-		System.out.println( "Feedback Loop + Extrapolating Matchers: ");
-		System.out.println( rd_end.getReport() );
+		System.out.println( "////////////////////////////////////////////////////////////////");
+		System.out.println( "Feedback Loop + Extrapolating Matchers: PRECISION: " + Double.toString(rd_end.getPrecision()) +
+									         " RECALL: " + Double.toString( rd_end.getRecall() ) +
+									         " F-MEASURE: " + Double.toString( rd_end.getFmeasure() )		);
 		System.out.println( "////////////////////////////////////////////////////////////////");
 
-		progressDisplay.showScreen_Start();
 		
-	}
-
-	private void printAlignments(AlignmentSet<Alignment> mappings, alignType atype) {
-		
-		Iterator<Alignment> iter = mappings.iterator();
-		while( iter.hasNext() ) {
-			Alignment itha = iter.next();
-			
-			if( referenceAlignmentMatcher != null ) {
-				if( atype == alignType.aligningClasses ) {
-					if( referenceAlignmentMatcher.getClassAlignmentSet().contains(itha)) {
-						System.out.println( "\t% " + itha.toString() + " (correct!)");
-					} else {
-						System.out.println( "\t% " + itha.toString() + " (wrong!)");
-					}
-				} else {
-					if( referenceAlignmentMatcher.getPropertyAlignmentSet().contains(itha)) {
-						System.out.println( "\t% " + itha.toString() + " (correct!)");
-					} else {
-						System.out.println( "\t% " + itha.toString() + " (wrong!)");
-					}
-
-				}
-			} else {
-				System.out.println( "\t% " + itha.toString());
-			}		
-		}
 		
 	}
 

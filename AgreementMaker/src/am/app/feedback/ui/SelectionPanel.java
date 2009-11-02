@@ -38,6 +38,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 	
 	// Start Screen
 	JButton btn_start;
+	JComboBox cmbIterations;
 	JComboBox cmbHighThreshold;
 	JComboBox cmbLowThreshold;
 	JComboBox cmbCardinality;
@@ -71,11 +72,13 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		JLabel lblLowThreshold = new JLabel("Low threshold:");
 		JLabel lblCardinality = new JLabel("Cardinality:");
 		JLabel lblConfiguration = new JLabel("Run configuration:");
+		JLabel lblIterations = new JLabel("Iterations:");
 		
 		JLabel lblK = new JLabel("K:");
 		JLabel lblM = new JLabel("M:");
 		
-		
+		cmbIterations = new JComboBox( Utility.STEPFIVE_INT );
+		cmbIterations.setSelectedIndex(3);
 		cmbHighThreshold = new JComboBox( Utility.getPercentDecimalsList() );
 		cmbHighThreshold.setSelectedItem("0.7");
 		cmbLowThreshold = new JComboBox( Utility.getPercentDecimalsList() );
@@ -103,6 +106,8 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		add(lblParameters);
 		add(lblConfiguration);
 		add(cmbConfigurations);
+		add(lblIterations);
+		add(cmbIterations);
 		add(lblHighThreshold);
 		add(cmbHighThreshold);
 		add(lblLowThreshold);
@@ -321,6 +326,8 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		
 		fblp.K = Integer.parseInt(cmbK.getSelectedItem().toString());
 		fblp.M = Integer.parseInt(cmbM.getSelectedItem().toString());
+		
+		fblp.iterations = Integer.parseInt(cmbIterations.getSelectedItem().toString());
 		
 		return fblp;
 	}
