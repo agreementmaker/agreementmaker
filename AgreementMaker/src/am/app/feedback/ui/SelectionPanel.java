@@ -18,6 +18,8 @@ import com.ibm.icu.lang.UCharacter.JoiningGroup;
 
 import am.Utility;
 import am.app.feedback.FeedbackLoop;
+import am.app.feedback.FeedbackLoopParameters;
+import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.AbstractMatcher.alignType;
@@ -122,6 +124,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		// when a button on the user feedback loop java pane is pressed this is the action listener.
 		if( arg0.getActionCommand() == "btn_start" ) {
 			ufl.setProgressDisplay(this);
+			ufl.setParam( getParameters() );
 			displayProgressScreen();
 			ufl.execute();
 		} else if( arg0.getActionCommand() == "screen2_cancel" ) {
@@ -295,6 +298,30 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 
 	public int getM() {
 		return Integer.parseInt( (String) cmbM.getSelectedItem() );
+	}
+
+
+
+	public FeedbackLoopParameters getParameters() {
+		
+		FeedbackLoopParameters fblp = new FeedbackLoopParameters();
+		
+		fblp.highThreshold = Double.parseDouble( cmbHighThreshold.getSelectedItem().toString() );
+		fblp.lowThreshold = Double.parseDouble( cmbLowThreshold.getSelectedItem().toString() );
+		
+		fblp.cardinality = cmbCardinality.getSelectedItem().toString();
+		
+		if( cmbCardinality.getSelectedItem().equals("1-1") ) {
+			fblp.sourceNumMappings = 1;
+			fblp.targetNumMappings = 1;
+		}
+		
+		fblp.configuration = cmbConfigurations.getSelectedItem().toString();
+		
+		fblp.K = Integer.parseInt(cmbK.getSelectedItem().toString());
+		fblp.M = Integer.parseInt(cmbM.getSelectedItem().toString());
+		
+		return fblp;
 	}
 
 

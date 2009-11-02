@@ -60,9 +60,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 	private int K = 4;
 	private int M = 2;
 	
-	
-	FeedbackLoopParameters param;
-	
 	private boolean automatic;
 	//configurations
 	public final static String MANUAL = "Manual";
@@ -101,6 +98,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 	FilteredAlignmentMatrix classesMatrix;
 	FilteredAlignmentMatrix propertiesMatrix;
 	
+	FeedbackLoopParameters param = null;
+	
 	AbstractMatcher referenceAlignmentMatcher;
 	
 	public FeedbackLoop() {
@@ -116,7 +115,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 	}
 	
 	public void match() {
-
+		
 		// the user has to load the ontologies.
 		if( Core.getInstance().getSourceOntology() == null || Core.getInstance().getTargetOntology() == null ) {
 			Utility.displayErrorPane("Two ontologies must be loaded into AgreementMaker before the matching can begin.", "Ontologies not loaded." );
@@ -131,10 +130,10 @@ public class FeedbackLoop extends AbstractMatcher  {
 		//Just for the Experiment Purpose, if the user selects the automatic configuration we need to import the reference
 		//the reference name is built-in the code right now.
 		referenceAlignmentMatcher = null;
-		String conf = progressDisplay.getConfiguration();
+		String conf = param.configuration;
 		
-		K = progressDisplay.getK();
-		M = progressDisplay.getM();
+		K = param.K;
+		M = param.M;
 		
 		if(conf.equals(AUTO_101_303)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
@@ -158,7 +157,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		setStage(executionStage.afterUserInterface);
 		InitialMatchers im = new InitialMatchers();
 		
-		im.setThreshold( progressDisplay.getHighThreshold() );
+		im.setThreshold( param.highThreshold );
 		im.setMaxSourceAlign(1);
 		im.setMaxTargetAlign(1);
 		im.setProgressDisplay(progressDisplay);
@@ -493,4 +492,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		
 	}
 	
+	public void setParam( FeedbackLoopParameters p ) {
+		this.param = p;
+	}
 }
