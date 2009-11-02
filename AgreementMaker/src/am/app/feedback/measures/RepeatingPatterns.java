@@ -175,6 +175,7 @@ public class RepeatingPatterns extends RelevanceMeasure{
 		//ArrayList<Edge> ntgEdges = createEdgesFromNodeList(ntgADJ);
 		
 		while(!ntgADJ.isEmpty()){
+			//Create new edge with removed node to create a new pattern 
 			Node removed = ntgADJ.get(0);
 			Edge passInRecursion = new Edge(nodeToGrow, removed);
 			
@@ -203,20 +204,35 @@ public class RepeatingPatterns extends RelevanceMeasure{
 			Pattern nextPattern = new Pattern(edgSeq, p);
 			Pattern copyOfPattern = new Pattern(nextPattern);//push ...
 						
+			//Add created new pattern to the list of patterns
 			pats.add(nextPattern);
+			
 			//increment freq
-			//...
+			if(patterns.containsKey(nextPattern)){
+				Integer aVal = patterns.get(nextPattern);
+				int val = aVal.intValue() + 1;
+				aVal = new Integer(val);
+				patterns.put(nextPattern, aVal);
+			}
+			else{
+				Integer freq = new Integer(1);
+				patterns.put(p, freq);
+			}
 			
 			//check max len pattern size is reached
 			//first recursion
 			//if less than k do recursions
 			ArrayList<Pattern> pats2 = new ArrayList<Pattern>();
 			
+			//If pattern length is less than k than grow it
 			if(copyOfPattern.getLength() < k)
 				growEdge(copyOfPattern, passInRecursion, k, pats2, st);
 			
+			//Add found patterns into list
 			pats.addAll(pats2);
 			
+			//Recurse again on the pattern collected from the first recursion
+			//using the siblings(children) of the current edge. (if size is less than k)
 			for(int i = 0; i < pats2.size(); i++)
 			{
 				Pattern p2 = pats2.get(i);
@@ -235,6 +251,7 @@ public class RepeatingPatterns extends RelevanceMeasure{
 			
 		}
 		
+		/*
 		if(patterns.containsKey(p)){
 			Integer aVal = patterns.get(p);
 			int val = aVal.intValue() + 1;
@@ -245,7 +262,7 @@ public class RepeatingPatterns extends RelevanceMeasure{
 			Integer freq = new Integer(1);
 			patterns.put(p, freq);
 		}
-		
+		*/
 	}
 	
 	//Print patterns in the list
