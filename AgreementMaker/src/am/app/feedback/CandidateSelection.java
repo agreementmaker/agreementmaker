@@ -10,6 +10,7 @@ import am.app.feedback.CandidateConcept.ontology;
 import am.app.feedback.measures.FamilialSimilarity;
 import am.app.feedback.measures.InformationGain;
 import am.app.feedback.measures.RelevanceMeasure;
+import am.app.feedback.measures.RepeatingPatterns;
 import am.app.feedback.measures.Specificity;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
@@ -24,7 +25,8 @@ public class CandidateSelection {
 	public enum MeasuresRegistry {
 		FamilialSimilarity ( FamilialSimilarity.class ),
 		Specificity	( Specificity.class ),
-		InformationGain ( InformationGain.class );
+		InformationGain ( InformationGain.class ),
+		RepeatingPatterns( RepeatingPatterns.class);
 		
 		
 		private String measure;
