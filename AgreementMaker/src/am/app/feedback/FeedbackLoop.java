@@ -1,5 +1,6 @@
 package am.app.feedback;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import am.Utility;
@@ -66,7 +67,12 @@ public class FeedbackLoop extends AbstractMatcher  {
 	private boolean automatic;
 	//configurations
 	public final static String MANUAL = "Manual";
+	
+	public final static String  AUTO_101_301 = "Auto 101-301";
+	public final static String  AUTO_101_302 = "Auto 101-302";
 	public final static String AUTO_101_303 = "Auto 101-303";
+	public final static String  AUTO_101_304 = "Auto 101-304";
+	public final static String  AUTO_animals = "Auto animals";
 	
 	
 	public enum executionStage {
@@ -140,12 +146,69 @@ public class FeedbackLoop extends AbstractMatcher  {
 		K = param.K;
 		M = param.M;
 		
-		if(conf.equals(AUTO_101_303)){
+		
+		if(conf.equals(AUTO_101_301)){
+			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
+			automatic = true;
+			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.fileName = "./OAEI09/benchmarks/301/refalign.rdf";
+			refParam.format = ReferenceAlignmentMatcher.REF0;
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher.setParam(refParam);
+			try {
+				referenceAlignmentMatcher.match();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		}
+		else if(conf.equals(AUTO_101_302)){
+			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
+			automatic = true;
+			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.fileName = "./OAEI09/benchmarks/302/refalign.rdf";
+			refParam.format = ReferenceAlignmentMatcher.REF0;
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher.setParam(refParam);
+			try {
+				referenceAlignmentMatcher.match();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		}
+		else if(conf.equals(AUTO_101_303)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
 			automatic = true;
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.fileName = "./OAEI09/benchmarks/303/refalign.rdf";
 			refParam.format = ReferenceAlignmentMatcher.REF0;
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher.setParam(refParam);
+			try {
+				referenceAlignmentMatcher.match();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		}
+		else if(conf.equals(AUTO_101_304)){
+			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
+			automatic = true;
+			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.fileName = "./OAEI09/benchmarks/304/refalign.rdf";
+			refParam.format = ReferenceAlignmentMatcher.REF0;
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher.setParam(refParam);
+			try {
+				referenceAlignmentMatcher.match();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		}
+		else if(conf.equals(AUTO_animals)){
+			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
+			automatic = true;
+			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.fileName = "./I3CON2004/animals/animalsAB.n3.txt";
+			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 			referenceAlignmentMatcher.setParam(refParam);
 			try {
@@ -189,23 +252,48 @@ public class FeedbackLoop extends AbstractMatcher  {
 		AlignmentSet<Alignment> propertiesToBeFiltered = propertiesAlignmentSet;
 		int iteration = 0;
 		int total_new = 0 - (classesToBeFiltered.size() + propertiesToBeFiltered.size());
-
-
-		AlignmentSet<Alignment> referenceSet = referenceAlignmentMatcher.getAlignmentSet();
-		AlignmentSet<Alignment> fblSet = getAlignmentSet();
 		
-		ReferenceEvaluationData rd = ReferenceEvaluator.compare(fblSet, referenceSet);
-		
-		System.out.println( "///////////////////////////////////////////////////////////////");
-		System.out.println( "Inital Matchers: PRECISION: " + Double.toString(rd.getPrecision()) +
-									         " RECALL: " + Double.toString( rd.getRecall() ) +
-									         " F-MEASURE: " + Double.toString( rd.getFmeasure() )		);
-		System.out.println( "///////////////////////////////////////////////////////////////");
+		AlignmentSet<Alignment> referenceSet = null;
+		AlignmentSet<Alignment> fblSet = null;
+		ReferenceEvaluationData rd = null;
+		if(automatic){
+			referenceSet = referenceAlignmentMatcher.getAlignmentSet();
+			fblSet = getAlignmentSet();
+			rd = ReferenceEvaluator.compare(fblSet, referenceSet);
+			System.out.println( "///////////////////////////////////////////////////////////////");
+			System.out.println( "Inital Matchers: PRECISION: " + Double.toString(rd.getPrecision()) +
+										         " RECALL: " + Double.toString( rd.getRecall() ) +
+										         " F-MEASURE: " + Double.toString( rd.getFmeasure() )		);
+			System.out.println( "///////////////////////////////////////////////////////////////");
+			
+		}
+
+		//these structures are used to keep track of partial evaluations
+		// with spin equal to 5 it means that measure the performances of the alignment every 5 iterations
+		ArrayList<ReferenceEvaluationData> partialEvaluations = new ArrayList<ReferenceEvaluationData>();
+	    int evaluationSpin = 5;	
 		do {
 			System.out.println("");
 			
 			
 			iteration++;
+			if(automatic){
+				if(iteration % evaluationSpin == 0){
+					AlignmentSet<Alignment> partialSet = getAlignmentSet();
+					ReferenceEvaluationData partialRD = ReferenceEvaluator.compare(partialSet, referenceSet);
+					partialEvaluations.add(partialRD);
+					System.out.println("Iteration: "+iteration);
+					System.out.println( "///////////////////////////////////////////////////////////////");
+					System.out.println( "Inital Matchers:"	);
+					System.out.println( rd.getReport() );
+					System.out.println( "" );
+					System.out.println( "Feedback Loop + Extrapolating Matchers: ");
+					System.out.println( partialRD.getReport() );
+					System.out.println("Improvement F-measure from initial: "+Utility.getOneDecimalPercentFromDouble(partialRD.getFmeasure()-rd.getFmeasure()));
+					System.out.println( "////////////////////////////////////////////////////////////////");
+				}
+			}
+
 			
 			if( iteration > param.iterations ) {
 				System.out.println( ">>> Stopping loop after " + Integer.toString(param.iterations) + " iterations." );
@@ -452,19 +540,43 @@ public class FeedbackLoop extends AbstractMatcher  {
 			if( isCancelled() ) break;
 		} while( !stop );
 		
-		// present the final mappings here
-		
-		AlignmentSet<Alignment> fblextrapolationSet = getAlignmentSet();
-		
-		ReferenceEvaluationData rd_end = ReferenceEvaluator.compare(fblextrapolationSet, referenceSet);
-		
-		System.out.println( "///////////////////////////////////////////////////////////////");
-		System.out.println( "Inital Matchers:"	);
-		System.out.println( rd.getReport() );
-		System.out.println( "" );
-		System.out.println( "Feedback Loop + Extrapolating Matchers: ");
-		System.out.println( rd_end.getReport() );
-		System.out.println( "////////////////////////////////////////////////////////////////");
+		if(automatic){
+			System.out.println("////////Parameters////////////");
+			System.out.println("Configuration: "+param.configuration);
+			System.out.println("Max iteration: "+param.iterations);
+			System.out.println("Hth: "+param.highThreshold);
+			System.out.println("Lth: "+param.lowThreshold);
+			System.out.println("K: "+param.K);
+			System.out.println("M: "+param.M);
+			//Present the partial evaluations
+			System.out.println( "////////PARTIAL EVALUATIONS///////////////////////////////////////////////////////");
+			System.out.println( "Inital Matchers:"	);
+			System.out.println( rd.getReport() );
+			for(int i = 0; i < partialEvaluations.size(); i++){
+				int partialIter = (i+1)*evaluationSpin;
+				ReferenceEvaluationData partialData = partialEvaluations.get(i);
+				System.out.println( "" );
+				System.out.println("Iteration: "+partialIter);
+				System.out.println( "Feedback Loop + Extrapolating Matchers: ");
+				System.out.println( partialData.getReport() );
+				System.out.println("Improvement F-measure from initial: "+Utility.getOneDecimalPercentFromDouble(partialData.getFmeasure()-rd.getFmeasure()));
+			}
+			// present the final mappings here
+			
+			AlignmentSet<Alignment> fblextrapolationSet = getAlignmentSet();
+			
+			ReferenceEvaluationData rd_end = ReferenceEvaluator.compare(fblextrapolationSet, referenceSet);
+			System.out.println( "/////////FINAL EVALUATION//////////////////////////////////////////////////////");
+			System.out.println("Final Iteration: "+iteration);
+			System.out.println( "Inital Matchers:"	);
+			System.out.println( rd.getReport() );
+			System.out.println( "" );
+			System.out.println( "Feedback Loop + Extrapolating Matchers: ");
+			System.out.println( rd_end.getReport() );
+			System.out.println("Improvement F-measure from initial: "+Utility.getOneDecimalPercentFromDouble(rd_end.getFmeasure()-rd.getFmeasure()));
+			System.out.println( "////////////////////////////////////////////////////////////////");
+			
+		}
 
 		progressDisplay.showScreen_Start();
 		

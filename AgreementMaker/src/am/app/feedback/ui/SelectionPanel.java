@@ -78,24 +78,28 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		JLabel lblM = new JLabel("M:");
 		
 		cmbIterations = new JComboBox( Utility.STEPFIVE_INT );
-		cmbIterations.setSelectedIndex(3);
+		cmbIterations.setSelectedIndex(Utility.STEPFIVE_INT.length -1 );
 		cmbHighThreshold = new JComboBox( Utility.getPercentDecimalsList() );
 		cmbHighThreshold.setSelectedItem("0.7");
 		cmbLowThreshold = new JComboBox( Utility.getPercentDecimalsList() );
-
+		cmbLowThreshold.setSelectedItem("0.05");
+		
 		String[] integers = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 		cmbK = new JComboBox( integers );
 		cmbK.setSelectedItem("4");
 		cmbM = new JComboBox( integers );
-		cmbM.setSelectedItem("2");
+		cmbM.setSelectedItem("6");
 		
 		cmbCardinality = new JComboBox();
 		cmbCardinality.addItem("1-1");
 		
 		cmbConfigurations = new JComboBox();
 		cmbConfigurations.addItem(FeedbackLoop.MANUAL);
+		cmbConfigurations.addItem(FeedbackLoop.AUTO_101_301);
+		cmbConfigurations.addItem(FeedbackLoop.AUTO_101_302);
 		cmbConfigurations.addItem(FeedbackLoop.AUTO_101_303);
-		
+		cmbConfigurations.addItem(FeedbackLoop.AUTO_101_304);
+		cmbConfigurations.addItem(FeedbackLoop.AUTO_animals);
 		
 		
 
