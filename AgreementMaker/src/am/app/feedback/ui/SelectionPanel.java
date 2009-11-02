@@ -285,6 +285,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 
 
 	public boolean isUserMappingClass() {
+		if( selectedMapping == null ) { return false; }
 		if( selectedMapping.getAlignmentType() != null && selectedMapping.getAlignmentType() == alignType.aligningClasses ) return true;
 		if( selectedMapping.getAlignmentType() == null ) System.out.println("Assertion Failed: isUserMappingClass().");
 		return false;

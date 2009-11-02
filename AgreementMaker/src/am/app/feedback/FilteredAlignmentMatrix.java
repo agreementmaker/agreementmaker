@@ -266,6 +266,20 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 			data[row][col].setSimilarity(0.0d);
 		}
 	}
+
+
+	public void filterCellsBelowThreshold(double lowThreshold) {
+		
+		int numRows = getRows();
+		int numCols = getColumns();
+		
+		for( int row = 0; row < numRows; row++ ) {
+			for( int col = 0; col < numCols; col++ ) {
+				
+			}
+		}
+		
+	}
     
     
 	

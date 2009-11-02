@@ -13,6 +13,7 @@ import am.app.mappingEngine.AlignmentMatrix;
 import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
@@ -200,6 +201,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 			classesAlignmentSet.addAllNoDuplicate( classesToBeFiltered );
 			propertiesAlignmentSet.addAllNoDuplicate( propertiesToBeFiltered);
 			
+			classesMatrix.filterCellsBelowThreshold( param.lowThreshold );
+			propertiesMatrix.filterCellsBelowThreshold( param.lowThreshold );
 			
 			classesToBeFiltered = new AlignmentSet<Alignment>(); // create a new, empty set
 			propertiesToBeFiltered = new AlignmentSet<Alignment>(); // create a new, empty set
@@ -312,7 +315,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 				
 				userSet.addAlignment( userMapping );
 				
-				if( progressDisplay.isUserMappingClass() ) {
+				if( userMapping.getAlignmentType() != null && userMapping.getAlignmentType() == alignType.aligningClasses ) {
 					classesMatrix.validateAlignments( userSet );
 					classesAlignmentSet.addAlignment(userMapping);
 				} else {
