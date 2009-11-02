@@ -3,9 +3,11 @@ package am.app.feedback.measures;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import am.app.Core;
 import am.app.feedback.CandidateConcept;
+import am.app.feedback.CandidateConcept.ontology;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -46,6 +48,57 @@ public class RepeatingPatterns extends RelevanceMeasure{
     	patternFreqs = new ArrayList<Integer>();
     	repetitiveMeasure = new ArrayList<Double>();
     	patterns = new HashMap<Pattern, Integer>();
+	}
+	
+	 
+	public void calculateRelevances() {
+		run(4,4);
+	}
+	
+	public void run(int k, int edgeSize){
+		whichType = alignType.aligningClasses;
+		whichOntology = CandidateConcept.ontology.source;
+		computeRelevances(k, edgeSize, sClasses, whichOntology, whichType);
+		whichOntology = CandidateConcept.ontology.target;
+		computeRelevances(k, edgeSize, tClasses, whichOntology, whichType);
+		whichType = alignType.aligningProperties;
+		whichOntology = CandidateConcept.ontology.source;
+		computeRelevances(k, edgeSize, sProps, whichOntology, whichType);
+		whichOntology = CandidateConcept.ontology.target;
+		computeRelevances(k, edgeSize, tProps, whichOntology, whichType);
+		
+		//printPatterns(finalPatterns);
+	}
+	
+	private void computeRelevances(int k, int edgeSize, ArrayList<Node> list, ontology whichOntology, alignType whichType) {
+		ArrayList<Node> newList = new ArrayList<Node>();
+		newList.addAll(list);
+		Collections.sort(newList, nc);
+		ArrayList<Edge> start = createEdgesFromNodeList(newList);
+		ArrayList<Pattern> finalPatterns = getPatternsGivenLength(start, k, edgeSize);
+		double[] relevances = new double[list.size()];
+		Iterator<Pattern> it = finalPatterns.iterator();
+		while(it.hasNext()){
+			Pattern p = it.next();
+			int size = p.getEdgeSequence().size();
+			int frequency = patterns.get(p);
+			double relevance = (double)frequency/size;
+			Iterator<Edge> itEdge = p.getEdgeSequence().iterator();
+			while(itEdge.hasNext()){
+				Edge e = itEdge.next();
+				int source = e.getSourceNode().getIndex();
+				if(relevances[source] < relevance){
+					relevances[source] = relevance;
+				}
+				int target = e.getTargetNode().getIndex();
+				if(relevances[target] < relevance){
+					relevances[target] = relevance;
+				}	
+			}
+		}
+		for(int i = 0; i < relevances.length; i++){
+			candidateList.add(new CandidateConcept(list.get(i),relevances[i],whichOntology, whichType));
+		}
 	}
 	
 	//Returns Lex sorted children of a node
@@ -90,14 +143,7 @@ public class RepeatingPatterns extends RelevanceMeasure{
 		}
 		return edges;
 	}
-	
-	//
-	public void run(int k, int edgeSize){
-		sClasses = sortNodesLex(sClasses);
-		ArrayList<Edge> start = createEdgesFromNodeList(sClasses);
-		ArrayList<Pattern> finalPatterns = getPatternsGivenLength(start, k, edgeSize);
-		printPatterns(finalPatterns);
-	}
+
 	
 	//Generate patterns of length k
 	public ArrayList<Pattern> getPatternsGivenLength(ArrayList<Edge> list, int k, int edgeSize){
@@ -285,8 +331,8 @@ public class RepeatingPatterns extends RelevanceMeasure{
 	}
 	
 	//Returns length of given pattern
-	public double patternLen(ArrayList<Node> pattern){
-		return pattern.size();
+	public double patternLen(Pattern p){
+	 return p.getEdgeSequence().size();
 	}
 	
 	//Calculate repetitive measure for each pattern in the list
