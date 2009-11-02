@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Pattern  {
 	private int length;
 	private ArrayList<Edge> edgeSequence;
-	private int lastVisit;
+	private static int lastVisit;
 
 	public Pattern(int len, ArrayList<Edge> edgeSeq, Pattern p){
 		

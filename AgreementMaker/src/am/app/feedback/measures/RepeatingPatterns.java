@@ -62,7 +62,6 @@ public class RepeatingPatterns extends RelevanceMeasure{
 		else{
 			return null;
 		}
-		
 	}
 	
 	//Sorts given list in Lexicographical order
@@ -77,72 +76,10 @@ public class RepeatingPatterns extends RelevanceMeasure{
 		return edgeList;
 	}
 	
-	/*
 	//
-	public void calculateRelevances(int k) {
+	public void createCandidateList(){
 
-		whichOntology = CandidateConcept.ontology.source;
-		whichType     = alignType.aligningClasses;
-		getPatternsGivenLength(sClasses, k);
-		
-		int i = 0;
-		for( i = 0 ; i < patterns.size(); i++){
-			createCandidateList(patterns.get(i));
-		}
-		
-		whichOntology = CandidateConcept.ontology.target;
-		getPatternsGivenLength(tClasses, k);
-		
-		int j = 0;
-		for( j = i ; j < patterns.size(); j++){
-			createCandidateList(patterns.get(j));
-		}
-		
-		whichOntology = CandidateConcept.ontology.source;
-		whichType     = alignType.aligningProperties;
-		getPatternsGivenLength(sProps, k);
-		
-		int m = 0;
-		for( m = j ; m < patterns.size(); m++){
-			createCandidateList(patterns.get(m));
-		}
-		
-		whichOntology = CandidateConcept.ontology.target;
-		getPatternsGivenLength(tProps, k);
-		
-		int n = 0;
-		for( n = m ; n < patterns.size(); n++){
-			createCandidateList(patterns.get(n));
-		}
 	}
-	*/
-	
-	//
-	public void createCandidateList(ArrayList<Node> ar){
-		if(ar.size() == 0 || ar == null)
-			return;
-		for(int i = 0; i < ar.size(); i++){
-			if(!candidateList.contains( ar.get(i) ) )
-					candidateList.add( new CandidateConcept( ar.get(i), 1.0d, whichOntology, whichType ));
-		}
-	}
-	
-	/*
-	//update the relevance measure of candidates in the list
-	public void updateCandidateList(){
-		for(CandidateConcept cc: candidateList){
-
-			for(int i = 0; i < patterns.size(); i++){
-				if(patterns.get(i).contains(cc.getNode())){
-					double r = repetitiveMeasure.get(i);
-					cc.setRelevance(r);
-					if(patternFreqs.get(i) > 1)
-						cc.setPatternRepeats(true);
-				}
-			}
-		}
-	}
-	*/
 	
 	//
 	public ArrayList<Edge> createEdgesFromNodeList(ArrayList<Node> list){
@@ -175,15 +112,7 @@ public class RepeatingPatterns extends RelevanceMeasure{
 		ArrayList<Edge> edgeSeq = new ArrayList<Edge>();
 		
 		for(Edge a : edges){
-			srcNode = a.getSourceNode();
-			ArrayList<Node> srcNodeChildren = getChildrenSorted(srcNode);
-			
-			ArrayList<Edge> asd = createEdgesFromNodeList(srcNodeChildren);
-			if(asd.contains(a)){
-				asd.remove(a);
-			}
-			
-			
+						
 			a.setSourceVisit(1);
 			a.setTargetVisit(2);
 			edgeSeq.add(a);
@@ -201,9 +130,18 @@ public class RepeatingPatterns extends RelevanceMeasure{
 				patterns.put(p, freq);
 			}
 			//get the siblings of the edge passed in, and recurse again on them
+						
 			growEdge(p, a, k, pats, false);
 			//create edgelist of that list
 			//
+			srcNode = a.getSourceNode();
+			ArrayList<Node> srcNodeChildren = getChildrenSorted(srcNode);
+			
+			ArrayList<Edge> asd = createEdgesFromNodeList(srcNodeChildren);
+			if(asd.contains(a)){
+				asd.remove(a);
+			}
+			//bu yeni pattern gerekli mi?
 			ArrayList<Pattern> pp = new ArrayList<Pattern>();
 			for(Edge b: asd){
 				growEdge(p, b, k, pp, true);
@@ -238,6 +176,25 @@ public class RepeatingPatterns extends RelevanceMeasure{
 		while(!ntgADJ.isEmpty()){
 			Node removed = ntgADJ.get(0);
 			Edge passInRecursion = new Edge(nodeToGrow, removed);
+			
+			//Lastvisit is the variable to keep track of the number
+			for(int i = 0; i < p.getLength(); i++){
+				Edge temp = p.getEdgeAtIndex(i);
+				if(temp.getSourceNode().getIndex() == nodeToGrow.getIndex())
+				{
+					p.setLastVisit(temp.getSourceVisit());
+				}
+				else if(temp.getTargetNode().getIndex() == nodeToGrow.getIndex())
+				{
+					p.setLastVisit(temp.getTargetVisit());
+				}
+			}
+			
+			p.setLastVisit(p.getLastVisit()+1);
+			passInRecursion.setSourceVisit(p.getLastVisit());
+			p.setLastVisit(p.getLastVisit()+1);
+			passInRecursion.setTargetVisit(p.getLastVisit());
+			
 			ntgADJ.remove(ntgADJ.get(0));
 			ArrayList<Edge> edgSeq = new ArrayList<Edge>();
 			edgSeq.add(passInRecursion);
@@ -296,78 +253,73 @@ public class RepeatingPatterns extends RelevanceMeasure{
 		}
 	}
 	
-	/*
 	//Calculates frequencies for all patterns
 	public double patternFreq(){
-		for(int i = 0; i < patterns.size(); i++){
-			int freq = 0;
-		for(ArrayList<Node> ar1: patterns){
-				if(ar1.equals(patterns.get(i))){
-					freq++;
-				}
-			}
-			patternFreqs.add(new Integer(freq));
-		}
 		return 0.0;
 	}
-	*/
 	
 	//Returns length of given pattern
 	public double patternLen(ArrayList<Node> pattern){
 		return pattern.size();
 	}
 	
-	/* 
 	//Calculate repetitive measure for each pattern in the list
 	public void repetitiveMeasure(){
-		for(int i = 0; i < patterns.size(); i++){
-			double repM = patternFreqs.get(i)/patternLen(patterns.get(i));
-			repetitiveMeasure.add(repM);
-		}
+		
 	}
-	*/
-	
-	/*
-	//Returns a pattern with highest repetitive measure for a given node
-	public ArrayList<Node> getRepeatingPattern(Node a){
-		ArrayList<Node> maxRepMlist = new ArrayList<Node>();
-		int maxRep = -1;
-		for(int i = 0; i < patterns.size(); i++){
-			if(patterns.get(i).contains(a) && patternFreqs.get(i) > maxRep){
-				maxRepMlist = patterns.get(i);
-			}
-		}
-		return maxRepMlist;
-	}
-	*/
 	
 	//Returns frequency of given pattern
-	public int getFreqOfPattern(ArrayList<Node> ar){
-		for(int i = 0; i < patterns.size(); i++){
-			if(ar.equals(patterns.get(i)))
-			{
-				return patternFreqs.get(i);
-			}
-		}
+	public int getFreqOfPattern(){
 		return -1;
 	}
 	
-	/*
 	//Returns true if a given node is in a repeating pattern
 	public boolean repeats(Node n){
-		int i = 0;
-		for(ArrayList<Node> ar: patterns){
-			if(ar.contains(n) && patternFreqs.get(i)>1)
-				return true;
-			i++;
-		}
 		return false;
-		
 	}
-	*/
 	
 	//
 	public double averageRelevance(){
 		return 0.0;
 	}
+	
+	/*
+	//
+	public void calculateRelevances(int k) {
+
+		whichOntology = CandidateConcept.ontology.source;
+		whichType     = alignType.aligningClasses;
+		getPatternsGivenLength(sClasses, k);
+		
+		int i = 0;
+		for( i = 0 ; i < patterns.size(); i++){
+			createCandidateList(patterns.get(i));
+		}
+		
+		whichOntology = CandidateConcept.ontology.target;
+		getPatternsGivenLength(tClasses, k);
+		
+		int j = 0;
+		for( j = i ; j < patterns.size(); j++){
+			createCandidateList(patterns.get(j));
+		}
+		
+		whichOntology = CandidateConcept.ontology.source;
+		whichType     = alignType.aligningProperties;
+		getPatternsGivenLength(sProps, k);
+		
+		int m = 0;
+		for( m = j ; m < patterns.size(); m++){
+			createCandidateList(patterns.get(m));
+		}
+		
+		whichOntology = CandidateConcept.ontology.target;
+		getPatternsGivenLength(tProps, k);
+		
+		int n = 0;
+		for( n = m ; n < patterns.size(); n++){
+			createCandidateList(patterns.get(n));
+		}
+	}
+	*/
 }
