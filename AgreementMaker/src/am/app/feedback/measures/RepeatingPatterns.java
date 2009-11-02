@@ -95,19 +95,20 @@ public class RepeatingPatterns extends RelevanceMeasure{
 	}
 	
 	//
-	public void run(int k){
+	public void run(int k, int edgeSize){
 		sClasses = sortNodesLex(sClasses);
 		ArrayList<Edge> start = createEdgesFromNodeList(sClasses);
-		ArrayList<Pattern> finalPatterns = getPatternsGivenLength(start, k);
+		ArrayList<Pattern> finalPatterns = getPatternsGivenLength(start, k, edgeSize);
 		printPatterns(finalPatterns);
 	}
 	
 	//Generate patterns of length k
-	public ArrayList<Pattern> getPatternsGivenLength(ArrayList<Edge> list, int k){
+	public ArrayList<Pattern> getPatternsGivenLength(ArrayList<Edge> list, int k, int edgeSize){
 		
 		ArrayList<Pattern> pats = new ArrayList<Pattern>();
 		ArrayList<Edge> edges = sortEdgesLex(list);
 		Node srcNode = null;
+		Pattern aPat = null;
 		
 		ArrayList<Edge> edgeSeq = new ArrayList<Edge>();
 		
@@ -144,7 +145,11 @@ public class RepeatingPatterns extends RelevanceMeasure{
 			//bu yeni pattern gerekli mi?
 			ArrayList<Pattern> pp = new ArrayList<Pattern>();
 			for(Edge b: asd){
-				growEdge(p, b, k, pp, true);
+				for(int i = 0; i < pats.size(); i++)
+				{
+					aPat = pats.get(i);
+					growEdge(aPat, b, k, pp, true);
+				}
 			}
 		}
 		
