@@ -58,7 +58,7 @@ public class CandidateConcept extends Node implements Comparable<CandidateConcep
 		}
 	}
 	
-	public boolean isOntology( ontology o ) {
+	public boolean isFromOntology( ontology o ) {
 		if( whichOntology == o ) {
 			return true;
 		}

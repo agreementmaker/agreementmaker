@@ -144,15 +144,21 @@ public class CandidateSelection {
 			CandidateConcept top1 = itr1.next();
 			
 			Alignment[] topM = null;
+
+			System.out.println("Candidate Selection: ConceptCandidate -> Alignment Translation, working with \"" + top1.toString() + "\"." );
 			
+			System.out.print("  - concept is ");
 			if( top1.isType( alignType.aligningClasses ) ) {
+				System.out.print(" a class, in ");
 				// we're looking in the classes matrix
-				if( top1.isOntology(  CandidateConcept.ontology.source ) ) {
+				if( top1.isFromOntology(  CandidateConcept.ontology.source ) ) {
 					// source concept
+					System.out.println("source ontology");
 					topM = fbL.getClassesMatrix().getRowMaxValues( top1.getIndex(), m);
 				} 
 				else {
 					// target concept
+					System.out.println("target ontology");
 					topM = fbL.getClassesMatrix().getColMaxValues( top1.getIndex(), m);
 				}
 				
@@ -162,20 +168,18 @@ public class CandidateSelection {
 					}
 				}
 				
-			} 
-				
-				
-				
-				
-				
+			} 	
 			else {
 				// we're looking in the properties matrix
-				if( top1.isOntology( CandidateConcept.ontology.source ) ) {
+				System.out.print(" a property, in ");
+				if( top1.isFromOntology( CandidateConcept.ontology.source ) ) {
 					// source concept
+					System.out.println("source ontology");
 					topM = fbL.getPropertiesMatrix().getRowMaxValues( top1.getIndex(), m);
 				} 
 				else {
 					// target concept
+					System.out.println("target ontology");
 					topM = fbL.getPropertiesMatrix().getColMaxValues( top1.getIndex(), m);
 				}
 				
@@ -184,13 +188,15 @@ public class CandidateSelection {
 						if( topM[i1] != null ) topM[i1].setAlignmentType( alignType.aligningProperties );
 					}
 				}
-
-				
+	
 			};
+			
+
 			
 			if( topM != null ) {
 				for( int i1 = 0; i1 < m; i1++ ) {
 					if( topM[i1] != null && topM[i1].getSimilarity() != -1 )	topMappings.addAlignment( topM[i1]);
+					System.out.println( "  mapping "+Integer.toString(i1)+": "+ topM[i1].toString() );
 				}
 			};
 			

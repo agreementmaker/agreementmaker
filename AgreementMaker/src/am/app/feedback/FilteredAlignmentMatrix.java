@@ -170,39 +170,15 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
     	
     	Node entity1 = null;
     	Node entity2 = null;
-		for(int h = 0; h<maxAlignments.length;h++) {
-			Alignment currentAlignment = new Alignment(-1);
-			
-			//
-			
-			switch ( typeOfMatrix ) {			
-			case aligningClasses:
-				entity1 = Core.getInstance().getSourceOntology().getClassesList().get(row);
-				break;
-			case aligningProperties:
-				entity1 = Core.getInstance().getSourceOntology().getPropertiesList().get(row);
-				break;
-			}
-			currentAlignment.setEntity1( entity1 );
-			
-			maxAlignments[h] = currentAlignment; //intial max alignments have sim equals to -1, don't put 0 could create problem in the next for
+		for(int h = 0; h<maxAlignments.length;h++) {	
+			maxAlignments[h] = new Alignment(-1); //intial max alignments have sim equals to -1, don't put 0 could create problem in the next for
 		}
 		
 		Alignment currentValue;
 		Alignment currentMax;
 		for(int j = 0; j<getColumns();j++) {
 			if(!isCellFiltered(row, j)){
-				switch( typeOfMatrix ) {
-				case aligningClasses:
-					entity2 = Core.getInstance().getTargetOntology().getClassesList().get(j);
-					break;
-				case aligningProperties:
-					entity2 = Core.getInstance().getTargetOntology().getPropertiesList().get(j);
-					break;
-				}
 				currentValue = get(row,j);
-				currentValue.setEntity1( entity1 );
-				currentValue.setEntity2( entity2 );
 				if( currentValue == null ) continue;
 				//maxAlignments contains the ordered list of max alignments, the first is the best max value
 				for(int k = 0;k<maxAlignments.length; k++) {
@@ -232,40 +208,15 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
     	Node entity2 = null;
 
     	
-		for(int h = 0; h<maxAlignments.length;h++) {
-			Alignment currentAlignment = new Alignment(-1); //intial max alignments have sim equals to -1
-			
-			switch( typeOfMatrix ) {
-			case aligningClasses:
-				entity2 = Core.getInstance().getTargetOntology().getClassesList().get(col);
-				break;
-			case aligningProperties:
-				entity2 = Core.getInstance().getTargetOntology().getPropertiesList().get(col);
-				break;
-			}
-			
-
-			currentAlignment.setEntity1( entity1 );
-			
-			maxAlignments[h] = currentAlignment;
+		for(int h = 0; h<maxAlignments.length;h++) {			
+			maxAlignments[h] = new Alignment(-1);
 		}
 		
 		Alignment currentValue;
 		Alignment currentMax;
 		for(int j = 0; j<getRows();j++) {
 			if(!isCellFiltered(j, col)){
-				switch ( typeOfMatrix ) {			
-				case aligningClasses:
-					entity1 = Core.getInstance().getSourceOntology().getClassesList().get(j);
-					break;
-				case aligningProperties:
-					entity1 = Core.getInstance().getSourceOntology().getPropertiesList().get(j);
-					break;
-				}
-							
 				currentValue = get(j, col);
-				currentValue.setEntity1( entity1 );
-				currentValue.setEntity2( entity2 );
 				
 				if( currentValue == null ) continue;
 				//maxAlignments contains the ordered list of max alignments, the first is the best max value
