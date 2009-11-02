@@ -167,7 +167,6 @@ public class RepeatingPatterns extends RelevanceMeasure{
 			nodeToGrow = a.getTargetNode();
 		}
 		
-		ArrayList<Pattern> pats2 = new ArrayList<Pattern>();
 		
 		//Nodes are sorted lex
 		ArrayList<Node> ntgADJ = nodeToGrow.getChildren();
@@ -211,19 +210,27 @@ public class RepeatingPatterns extends RelevanceMeasure{
 			//check max len pattern size is reached
 			//first recursion
 			//if less than k do recursions
+			ArrayList<Pattern> pats2 = new ArrayList<Pattern>();
+			
 			if(copyOfPattern.getLength() < k)
 				growEdge(copyOfPattern, passInRecursion, k, pats2, st);
+			
+			pats.addAll(pats2);
 			
 			for(int i = 0; i < pats2.size(); i++)
 			{
 				Pattern p2 = pats2.get(i);
-				pats.add(pats2.get(i));
+				//pats.add(pats2.get(i));
 				
-				//Node curr = passInRecursion.getTargetNode();
-				//ArrayList<Node> currN = getChildrenSorted(curr);
-				//ArrayList
+				Node curr = passInRecursion.getTargetNode();
+				ArrayList<Node> currChildren = getChildrenSorted(curr);
+				ArrayList<Edge> currEdge = createEdgesFromNodeList(currChildren);
 				
-				growEdge(p2, passInRecursion, k, pats, st); //grow also on pats2.get(i)
+				for(Edge ed: currEdge)
+				{
+					if(p2.getLength() < k)
+						growEdge(p2, ed, k, pats, st); //grow also on pats2.get(i)
+				}
 			}
 			
 		}
