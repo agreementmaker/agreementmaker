@@ -104,8 +104,10 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		cmbConfigurations.addItem(FeedbackLoop.AUTO_comsci);
 		cmbConfigurations.addItem(FeedbackLoop.AUTO_hotel);
 		cmbConfigurations.addItem(FeedbackLoop.AUTO_network);
-		
-
+		cmbConfigurations.addItem(FeedbackLoop.AUTO_people_pets);
+		cmbConfigurations.addItem(FeedbackLoop.AUTO_russia);
+		cmbConfigurations.addItem(FeedbackLoop.AUTO_weapons);
+		cmbConfigurations.addItem(FeedbackLoop.AUTO_wine);
 		
 		setLayout( new FlowLayout() );
 		

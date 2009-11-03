@@ -5,8 +5,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import javax.swing.JOptionPane;
+
 import am.app.Core;
 import am.app.feedback.CandidateConcept;
+import am.app.feedback.InitialMatchers;
 import am.app.feedback.CandidateConcept.ontology;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
@@ -33,9 +36,12 @@ public class RepeatingPatterns extends RelevanceMeasure{
 	alignType whichType;
 	
 	HashMap<Pattern, Integer> patterns;
+	public RepeatingPatterns() {
+		super();
+		init();
+	}
 	
-	public RepeatingPatterns(double th) {
-		super(th);
+	private void init() {
 		nc = new NodeComparator();
 		Core core = Core.getInstance();
     	sourceOntology = core.getSourceOntology();
@@ -50,27 +56,34 @@ public class RepeatingPatterns extends RelevanceMeasure{
     	patterns = new HashMap<Pattern, Integer>();
 	}
 	
+	public RepeatingPatterns(double th) {
+		super(th);
+		init();
+	}
+	
 	 
 	public void calculateRelevances() {
 		run(4,4);
+		System.out.println("I m inside the calculate relevances of Repeating Patterns");
 	}
 	
 	public void run(int k, int edgeSize){
+		
 		whichType = alignType.aligningClasses;
 		whichOntology = CandidateConcept.ontology.source;
-		computeRelevances(k, edgeSize, sClasses, whichOntology, whichType);
+		computeRelevances(k, edgeSize, sClasses);
 		whichOntology = CandidateConcept.ontology.target;
-		computeRelevances(k, edgeSize, tClasses, whichOntology, whichType);
+		computeRelevances(k, edgeSize, tClasses);
 		whichType = alignType.aligningProperties;
 		whichOntology = CandidateConcept.ontology.source;
-		computeRelevances(k, edgeSize, sProps, whichOntology, whichType);
+		computeRelevances(k, edgeSize, sProps);
 		whichOntology = CandidateConcept.ontology.target;
-		computeRelevances(k, edgeSize, tProps, whichOntology, whichType);
+		computeRelevances(k, edgeSize, tProps);
 		
 		//printPatterns(finalPatterns);
 	}
 	
-	private void computeRelevances(int k, int edgeSize, ArrayList<Node> list, ontology whichOntology, alignType whichType) {
+	private void computeRelevances(int k, int edgeSize, ArrayList<Node> list) {
 		ArrayList<Node> newList = new ArrayList<Node>();
 		newList.addAll(list);
 		Collections.sort(newList, nc);
@@ -82,7 +95,7 @@ public class RepeatingPatterns extends RelevanceMeasure{
 			Pattern p = it.next();
 			int size = p.getEdgeSequence().size();
 			int frequency = patterns.get(p);
-			double relevance = (double)frequency/size;
+			double relevance = (double)frequency/(double)size;
 			Iterator<Edge> itEdge = p.getEdgeSequence().iterator();
 			while(itEdge.hasNext()){
 				Edge e = itEdge.next();

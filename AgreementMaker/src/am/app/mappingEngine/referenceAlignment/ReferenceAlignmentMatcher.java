@@ -90,7 +90,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 			// Iterate over the list of pairs from the file
 			while( it.hasNext() ) {
 				mp = it.next(); // get the first matching pair from the list
-								
+				//System.out.println("A:"+mp.sourcename+"- B:"+mp.targetname+".");
 				// find the source node in the source ontology
 				for( int i = 0; i < sourceList.size(); i++ ) {
 					source = sourceList.get(i);
@@ -268,6 +268,13 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	    	if(line.indexOf("ao:elementA") != -1) {
 	        	String source = line.substring(15);
 	        	source = source.substring(0,source.length()-2);
+	        	//this further control has been introduced for the Wine ontologies
+	        	if((source.charAt(source.length()-1)+"").equals(";")){
+	        		source = source.substring(0,source.length()-1);
+	        	}
+	        	if((source.charAt(source.length()-1)+"").equals(" ")){
+	        		source = source.substring(0,source.length()-1);
+	        	}
 	            line = br.readLine();
 	            String target = line.substring(15);
 	            target = target.substring(0,target.length()-2);

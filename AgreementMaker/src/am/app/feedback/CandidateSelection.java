@@ -25,8 +25,8 @@ public class CandidateSelection {
 	public enum MeasuresRegistry {
 		FamilialSimilarity ( FamilialSimilarity.class ),
 		Specificity	( Specificity.class ),
-		InformationGain ( InformationGain.class ),
-		RepeatingPatterns( RepeatingPatterns.class);
+		InformationGain ( InformationGain.class );
+		//RepeatingPatterns( RepeatingPatterns.class)
 		
 		
 		private String measure;

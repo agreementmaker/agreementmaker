@@ -70,13 +70,17 @@ public class FeedbackLoop extends AbstractMatcher  {
 	
 	public final static String  AUTO_101_301 = "Auto 101-301";
 	public final static String  AUTO_101_302 = "Auto 101-302";
-	public final static String AUTO_101_303 = "Auto 101-303";
+	public final static String  AUTO_101_303 = "Auto 101-303";
 	public final static String  AUTO_101_304 = "Auto 101-304";
 	public final static String  AUTO_animals = "Auto animals";
 	public final static String  AUTO_basketball_soccer = "Auto basketball_soccer";
 	public final static String  AUTO_comsci = "Auto comsci";
 	public final static String  AUTO_hotel = "Auto hotel";
 	public final static String  AUTO_network = "Auto network";
+	public final static String  AUTO_people_pets = "Auto people+pets";
+	public final static String  AUTO_russia = "Auto russia";
+	public final static String  AUTO_weapons = "Auto weapons";
+	public final static String  AUTO_wine = "Auto wine";
 	
 	public enum executionStage {
 		notStarted,
@@ -267,6 +271,62 @@ public class FeedbackLoop extends AbstractMatcher  {
 			automatic = true;
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.fileName = "./I3CON2004/network/networkAB.n3.txt";
+			refParam.format = ReferenceAlignmentMatcher.REF1;
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher.setParam(refParam);
+			try {
+				referenceAlignmentMatcher.match();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		}
+		else if(conf.equals(AUTO_people_pets)){
+			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
+			automatic = true;
+			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.fileName = "./I3CON2004/people+pets/people+petsAB.n3.txt";
+			refParam.format = ReferenceAlignmentMatcher.REF1;
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher.setParam(refParam);
+			try {
+				referenceAlignmentMatcher.match();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		}
+		else if(conf.equals(AUTO_russia)){
+			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
+			automatic = true;
+			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.fileName = "./I3CON2004/russia/russiaAB.n3.txt";
+			refParam.format = ReferenceAlignmentMatcher.REF1;
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher.setParam(refParam);
+			try {
+				referenceAlignmentMatcher.match();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		}
+		else if(conf.equals(AUTO_weapons)){
+			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
+			automatic = true;
+			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.fileName = "./I3CON2004/Weapons/WeaponsAB.n3.txt";
+			refParam.format = ReferenceAlignmentMatcher.REF1;
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher.setParam(refParam);
+			try {
+				referenceAlignmentMatcher.match();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		}
+		else if(conf.equals(AUTO_wine)){
+			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
+			automatic = true;
+			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.fileName = "./I3CON2004/Wine/WineAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 			referenceAlignmentMatcher.setParam(refParam);
