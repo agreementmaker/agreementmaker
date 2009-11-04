@@ -105,14 +105,6 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private boolean showLocalName;
 	
 	
-	//TO BE DELETED IN THE FUTURE DELETING ALL FUNCTIONS CONTAINING THEM
-	Date start = new Date();
-	Date end = new Date();
-	FileOutputStream out; // declare a file output object
-	FileOutputStream out2; // declare a file output object
-	PrintStream p; // declare a print stream object
-	PrintStream p2; // declare a print stream object
-	
 	/*******************************************************************************************
 	 * Default constructor for myCanvas class.
 	 */
@@ -155,7 +147,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		showLabel = ui.getAppPreferences().getShowLabel();
 		
 		// repaint the canvas
-		//repaint();
+		repaint();
 	}
 
 	
