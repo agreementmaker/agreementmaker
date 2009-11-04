@@ -511,7 +511,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				report +="Measure are displayed in this order:\nThreshold: value - Measures: precision, recall, Fmeasure\n\n";
 				
 				//You have to use this array instead 
-				double[] thresholds = Utility.STEPFIVE;
+				//double[] thresholds = Utility.STEPFIVE;  // TODO: Make it so the user can select this from the UI.
+				double[] thresholds = Utility.getDoubleArray(0.0d, 0.01d, 101);
 				for(int i = 0; i < rowsIndex.length; i++) {
 					
 					ReferenceEvaluationData maxrd = null;
@@ -525,6 +526,12 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 					report+=i+" "+toBeEvaluated.getName().getMatcherName()+"\n\n";
 					double th;
 					report+="Threshold:\tFound\tCorrect\tReference\tPrecision\tRecall\tF-Measure\n";
+					
+					// output the info to the console for easy copy/pasting
+					System.out.println("Threshold, " +
+							   "Precision, " +
+							   "Recall, " +
+							   "F-Measure" );
 					for(int t = 0; t < thresholds.length; t++) {
 						th = thresholds[t];
 						toBeEvaluated.setThreshold(th);
@@ -537,6 +544,13 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 						sumFmeasure += rd.getFmeasure();
 						sumFound += rd.getFound();
 						sumCorrect += rd.getCorrect();
+						
+						// output this information to the console for easy copy/pasting  // TODO: make a button to be able to copy/paste this info
+						System.out.println(Double.toString(th) + ", " +
+								   Double.toString(rd.getPrecision()) + ", " +
+								   Double.toString(rd.getRecall()) + ", " +
+								   Double.toString(rd.getFmeasure()) );
+						
 						if(maxrd == null || maxrd.getFmeasure() < rd.getFmeasure()) {
 							maxrd = rd;
 							maxTh = th;
