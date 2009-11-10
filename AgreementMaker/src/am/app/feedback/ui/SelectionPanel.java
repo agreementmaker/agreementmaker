@@ -14,12 +14,9 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 
-import com.ibm.icu.lang.UCharacter.JoiningGroup;
-
 import am.Utility;
 import am.app.feedback.FeedbackLoop;
 import am.app.feedback.FeedbackLoopParameters;
-import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.AbstractMatcher.alignType;
