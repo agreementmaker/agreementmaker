@@ -575,7 +575,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		height = 20;
 		
 		// displaying the tree as text
-		Vertex node;	
+		Vertex node;
+		if( treeRoot != null )
 		for (Enumeration<Vertex> e = treeRoot.preorderEnumeration(); e.hasMoreElements() ;) 
 		{
 			// get the node
@@ -649,6 +650,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		else
 			root = getLocalTreeRoot();
 		
+		if( root != null )
 		for (Enumeration<Vertex> e = root.preorderEnumeration(); e.hasMoreElements() ;)
 		{
 			// get the node
