@@ -1,5 +1,7 @@
 package am.app.mappingEngine.conceptMatcher;
 
+// TODO: Remove the Stanford Parser before distribution, GPL Licensed.
+
 import java.util.ArrayList;
 import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.SynsetType;
