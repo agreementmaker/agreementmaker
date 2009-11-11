@@ -237,7 +237,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				}
 				catch(Exception ex) {//WRONG INPUT, ASK INPUT AGAIN
 				}
-			}System.out.println("i'm here");
+			}
 			if(obj == other){
 				correct = false;
 				while(!correct &&  !abort) {
