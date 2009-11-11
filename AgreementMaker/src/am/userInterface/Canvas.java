@@ -81,6 +81,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private JMenuItem 		deleteAlignment;          		// mappingByUser type menu
 	private JMenuItem 	cancel;               	// cancel the mappingByUser
 	private JMenuItem 	exact;               		// exact mappingByUser
+	private JMenuItem 	other;  
 	private JMenuItem 	subset;              		// subset mappingByUser
 	private JMenuItem 	subsetComplete;			// subset complete mappingByUser
 	private JMenuItem 	superset;            		// superset mappingByUser
@@ -193,7 +194,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		// if the user clicked on any of the mappingByUser types
 		if (	(obj == standardAlignment) || (obj == deleteAlignment) || (obj == exact) || (obj == subset) || (obj == subsetComplete) || 
 				(obj == superset) || (obj == supersetComplete) || 
-				(obj == comparativeExact) || (obj == comparativeSubset) || (obj == comparativeSuperset))	{
+				(obj == comparativeExact) || (obj == comparativeSubset) || (obj == comparativeSuperset) || (obj == other))	{
 			
 			createManualAlignment(obj);
 			clearAllSelections();
@@ -236,9 +237,24 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 				}
 				catch(Exception ex) {//WRONG INPUT, ASK INPUT AGAIN
 				}
+			}System.out.println("i'm here");
+			if(obj == other){
+				correct = false;
+				while(!correct &&  !abort) {
+					String x = JOptionPane.showInputDialog(null, "Insert the relation type:");
+					try {
+						if(x == null)
+							abort = true;//USER SELECTED CANCEL
+						else {
+							relation = x;
+							correct = true;
+						}
+					}
+					catch(Exception ex) {//WRONG INPUT, ASK INPUT AGAIN
+					}
+				}
 			}
-			// set the mappingByUser type
-			if (obj == exact)
+			else if (obj == exact)
 				relation = Alignment.EQUIVALENCE;
 			else if (obj == subset)
 				relation = Alignment.SUBSET;
@@ -1194,22 +1210,22 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		}
 		if(e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3 ) {
 			//do nothing right now
-			JPopupMenu fakePopup = new JPopupMenu();
+			//JPopupMenu fakePopup = new JPopupMenu();
+			
+			//JMenuItem validate = new JMenuItem("Validate mapping");
+			//JMenuItem delete = new JMenuItem("No valid mappings");
+			//JMenuItem cancel = new JMenuItem("Cancel");
+			//fakePopup.add(validate);
+			//fakePopup.addSeparator();
+			//fakePopup.add(delete);
+			//fakePopup.addSeparator();
+			//fakePopup.add(cancel);
+			//fakePopup.show(this, e.getX(), e.getY());
 			//First popup: 4 rows, manualAlignment open a submenu
-			JMenuItem validate = new JMenuItem("Validate mapping");
-			JMenuItem delete = new JMenuItem("No valid mappings");
-			JMenuItem cancel = new JMenuItem("Cancel");
-			fakePopup.add(validate);
-			fakePopup.addSeparator();
-			fakePopup.add(delete);
-			fakePopup.addSeparator();
-			fakePopup.add(cancel);
-			fakePopup.show(this, e.getX(), e.getY());
-			/*
 			if(globalNodesSelected.size()>0 && localNodesSelected.size()>0) {
 				mappingPopup.show(this, e.getX(), e.getY());
 			}
-			*/
+			
 		}
 	}
 	
@@ -1608,7 +1624,8 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		deleteAlignment = new JMenuItem("Delete alignment");
 		cancel = new JMenuItem("Cancel");		
 		//submenu manual alignment
-		exact = new JMenuItem("Exact");
+		exact = new JMenuItem("Equivalence");
+		other = new JMenuItem("Other");
 		subset = new JMenuItem("Subset");
 		subsetComplete = new JMenuItem("Subset Complete");
 		superset = new JMenuItem("Superset");
@@ -1621,14 +1638,15 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		// add exact, subset, subsetComplete, superset, 
 		// supersetComplete, comparitive menu items to mappingType menu
 		manualAlignment.add(exact);
-		manualAlignment.add(subset);
-		manualAlignment.add(superset);
+	    manualAlignment.add(superset);
 		manualAlignment.add(subsetComplete);
 		manualAlignment.add(supersetComplete);
+	    manualAlignment.add(other);
 		/*
 		manualAlignment.add(comparativeExact);
 		manualAlignment.add(comparativeSubset);
 		manualAlignment.add(comparativeSuperset);
+		
 		*/
 
 		
@@ -1644,6 +1662,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		//manual alignment needs listeners only on submenu items
 		cancel.addActionListener(this);
 		exact.addActionListener(this);
+		other.addActionListener(this);
 		subset.addActionListener(this);
 		subsetComplete.addActionListener(this);
 		superset.addActionListener(this);
