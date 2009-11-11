@@ -20,6 +20,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 
 import am.GlobalStaticVariables;
 import am.Utility;
@@ -1193,6 +1194,17 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		}
 		if(e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3 ) {
 			//do nothing right now
+			JPopupMenu fakePopup = new JPopupMenu();
+			//First popup: 4 rows, manualAlignment open a submenu
+			JMenuItem validate = new JMenuItem("Validate mapping");
+			JMenuItem delete = new JMenuItem("No valid mappings");
+			JMenuItem cancel = new JMenuItem("Cancel");
+			fakePopup.add(validate);
+			fakePopup.addSeparator();
+			fakePopup.add(delete);
+			fakePopup.addSeparator();
+			fakePopup.add(cancel);
+			fakePopup.show(this, e.getX(), e.getY());
 			/*
 			if(globalNodesSelected.size()>0 && localNodesSelected.size()>0) {
 				mappingPopup.show(this, e.getX(), e.getY());
