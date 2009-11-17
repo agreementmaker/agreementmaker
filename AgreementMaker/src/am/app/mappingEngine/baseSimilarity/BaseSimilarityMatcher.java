@@ -86,7 +86,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	 * This function does the main base similarity algorithm.
 	 */
 	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
-		
+
 
 		
 		/*

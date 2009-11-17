@@ -433,7 +433,7 @@ public class FeedbackLoop2 extends FeedbackLoop  {
 
 	private void initializeUserInterface() {
 		
-		progressDisplay = new SelectionPanel(this);
+//		progressDisplay = new SelectionPanel(this);
 		progressDisplay.showScreen_Start();
 		
 		UI ui = Core.getInstance().getUI();

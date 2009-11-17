@@ -278,6 +278,7 @@ public class UI {
 
 	public void addTab( String tabName, ImageIcon icon, JComponent panel, String toolTip ) {
 		tabbedPane.addTab( tabName, icon, panel, toolTip);
+		tabbedPane.setTabComponentAt(tabbedPane.getTabCount() - 1 , new ButtonTabComponent(tabbedPane));
 		tabbedPane.setSelectedIndex( tabbedPane.getTabCount() - 1 );
 	}
 }

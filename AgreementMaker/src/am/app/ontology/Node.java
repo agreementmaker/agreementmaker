@@ -579,6 +579,21 @@ public class Node {
 	public int getDepth() {
 		return depth;
 	}
+	
+	/**
+	 * method created for the Mappings Candidate Selection in the User Feedback Loop
+	 * @return index + label, if label is meaningful else index + localname
+	 */
+	public String getCandidateString() {
+		String result = index+"";
+		if(label != null && label.length() > 0){
+			result+= " "+label;
+		}
+		else{
+			result += " "+localName;
+		}
+		return result;
+	}
 
 
 

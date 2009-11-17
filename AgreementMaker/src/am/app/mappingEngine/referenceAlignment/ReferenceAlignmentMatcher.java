@@ -135,10 +135,9 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	 * @param filename
 	 * @return ArrayList of refpairs
 	 */
-	public ArrayList<MatchingPair> readReferenceFile(){
+	public ArrayList<MatchingPair> readReferenceFile() throws Exception{
 		ArrayList<MatchingPair> result = new ArrayList<MatchingPair>();
 		ReferenceAlignmentParameters parameters = (ReferenceAlignmentParameters)param;
-		try {
 		    //Open the reference file
 			BufferedReader input;
 			input = new BufferedReader(new FileReader(parameters.fileName));
@@ -163,13 +162,6 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 				//if the method is not developed the user shouldn't be able to select that format in the formatlist menu.
 				throw new RuntimeException("No parsing method has been developed for this reference file format");
 			}
-		}
-		catch(IOException e) {
-			e.printStackTrace();
-		}
-		catch (DocumentException e) {
-			e.printStackTrace();
-		}
 		return result;
 	}
 	

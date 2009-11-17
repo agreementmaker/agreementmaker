@@ -1,6 +1,7 @@
 package am.app.mappingEngine;
 
 import am.app.feedback.FeedbackLoop;
+import am.app.feedback.InitialMatchers;
 import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.LexicalMatcherJWNL.LexicalMatcherJWNL;
 import am.app.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
@@ -60,6 +61,7 @@ public enum MatchersRegistry {
 	PRAMatcher2			("PRA Matcher2", PRAMatcher2.class),
 	OldPRAMAtcher		("Old PRA Matcher", OldPRAMatcher.class),
 	UMLSKSLexical		("Lexical Matcher: UMLSKS", LexicalMatcherUMLS.class),
+	InitialMatcher      ("Initial Matcher: LWC (PSM+VMM+BSM)", InitialMatchers.class),
 	//WordNetLexicalOLD		("OLD Lexical Matcher: WordNet ", LexicalMatcherJWNLOLD.class),
 
 	//WORK IN PROGRESS
@@ -67,7 +69,7 @@ public enum MatchersRegistry {
 	//MATCHERS USED BY THE SYSTEM, usually not shown
 	UserManual			( "User Manual Matching", UserManualMatcher.class, false),
 	UniqueMatchings		( "Unique Matchings", ReferenceAlignmentMatcher.class, false), // this is used by the "Remove Duplicate Alignments" UIMenu entry
-	ImportAlignment	( "Import Alignments", ReferenceAlignmentMatcher.class, false),
+	ImportAlignment	( "Import Alignments", ReferenceAlignmentMatcher.class, true),
 	
 	//TEST MATCHERS 
 	Equals 				( "Local Name Equivalence Comparison", EqualsMatcher.class , false),
@@ -75,7 +77,7 @@ public enum MatchersRegistry {
 	AllZero			( "(Test) All Zero Similarities", AllZeroMatcher.class, true ),
 	Copy				( "Copy Matcher", CopyMatcher.class,false ),
 	Random 				( "(Test) Random Similarities", RandomMatcher.class, true ),
-	UserFeedBackLoop ("User Feedback Loop", FeedbackLoop.class );
+	UserFeedBackLoop ("User Feedback Loop", FeedbackLoop.class, false );
 	
 	/* Don't change anything below this line .. unless you intend to. */
 	private boolean showInControlPanel;

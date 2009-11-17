@@ -246,7 +246,10 @@ public class AlignmentMatrix {
 		double[][] result = new double[rows][columns];
 		for(int i = 0; i < rows; i++) {
 			for(int j = 0 ; j < columns; j++) {
-				result[i][j] = data[i][j].getSimilarity();
+				if(data[i][j] == null){
+					result[i][j] = 0;
+				}
+				else result[i][j] = data[i][j].getSimilarity();
 			}
 		}
 		return result;

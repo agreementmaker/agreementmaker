@@ -3,6 +3,8 @@ package am.app.feedback;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.sun.tools.javac.model.FilteredMemberList;
+
 import am.Utility;
 import am.app.Core;
 import am.app.feedback.matchers.ExtrapolatingDSI;
@@ -105,32 +107,32 @@ public class FeedbackLoop extends AbstractMatcher  {
 	}
 	
 	private executionStage currentStage;
-	
-	/**
-	 * These variables are overridden.
-	 */
-	SelectionPanel progressDisplay = null;
-	
-	FilteredAlignmentMatrix classesMatrix;
-	FilteredAlignmentMatrix propertiesMatrix;
-	
-	FeedbackLoopParameters param = null;
-	
 	AbstractMatcher referenceAlignmentMatcher;
 	
-	public FeedbackLoop() {
+	/**
+	 * These variables are overridden. (Java doesn't allow for variable overriding) 
+	 */
+	//protected SelectionPanel progressDisplay;
 	
-		initializeUserInterface();  // add a new tab, and display the parameters screen to the user
+	//protected FilteredAlignmentMatrix classesMatrix;
+	//protected FilteredAlignmentMatrix propertiesMatrix;
+	
+	//protected FeedbackLoopParameters param;
+	
+	
+	public FeedbackLoop() {
 		setStage( executionStage.notStarted );
 		needsParam = true;
-	
 	}
 	
 	public void setExectionStage( executionStage st ) {
 		currentStage = st;
 	}
 	
-	public void match() {
+	public void match() throws Exception{
+		matchStart();
+		FeedbackLoopParameters param = (FeedbackLoopParameters)this.param;
+		SelectionPanel progressDisplay = (SelectionPanel)this.progressDisplay;
 		
 		// the user has to load the ontologies.
 		if( Core.getInstance().getSourceOntology() == null || Core.getInstance().getTargetOntology() == null ) {
@@ -162,11 +164,9 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.format = ReferenceAlignmentMatcher.REF0;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 			referenceAlignmentMatcher.setParam(refParam);
-			try {
-				referenceAlignmentMatcher.match();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
+			referenceAlignmentMatcher.match();
+			
+			
 		}
 		else if(conf.equals(AUTO_101_302)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
@@ -175,12 +175,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.fileName = "./OAEI09/benchmarks/302/refalign.rdf";
 			refParam.format = ReferenceAlignmentMatcher.REF0;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
-			referenceAlignmentMatcher.setParam(refParam);
-			try {
+			referenceAlignmentMatcher.setParam(refParam);			
 				referenceAlignmentMatcher.match();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
 		}
 		else if(conf.equals(AUTO_101_303)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
@@ -190,11 +186,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.format = ReferenceAlignmentMatcher.REF0;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 			referenceAlignmentMatcher.setParam(refParam);
-			try {
 				referenceAlignmentMatcher.match();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
+
 		}
 		else if(conf.equals(AUTO_101_304)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
@@ -204,11 +197,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.format = ReferenceAlignmentMatcher.REF0;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 			referenceAlignmentMatcher.setParam(refParam);
-			try {
-				referenceAlignmentMatcher.match();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
+				referenceAlignmentMatcher.match();	
 		}
 		else if(conf.equals(AUTO_animals)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
@@ -218,11 +207,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 			referenceAlignmentMatcher.setParam(refParam);
-			try {
 				referenceAlignmentMatcher.match();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
 		}
 		else if(conf.equals(AUTO_basketball_soccer)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
@@ -232,11 +217,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 			referenceAlignmentMatcher.setParam(refParam);
-			try {
 				referenceAlignmentMatcher.match();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
 		}
 		else if(conf.equals(AUTO_comsci)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
@@ -246,11 +227,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 			referenceAlignmentMatcher.setParam(refParam);
-			try {
 				referenceAlignmentMatcher.match();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
 		}
 		else if(conf.equals(AUTO_hotel)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
@@ -260,11 +237,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 			referenceAlignmentMatcher.setParam(refParam);
-			try {
 				referenceAlignmentMatcher.match();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
 		}
 		else if(conf.equals(AUTO_network)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
@@ -274,11 +247,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 			referenceAlignmentMatcher.setParam(refParam);
-			try {
 				referenceAlignmentMatcher.match();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
 		}
 		else if(conf.equals(AUTO_people_pets)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
@@ -288,11 +257,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 			referenceAlignmentMatcher.setParam(refParam);
-			try {
 				referenceAlignmentMatcher.match();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
 		}
 		else if(conf.equals(AUTO_russia)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
@@ -302,11 +267,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 			referenceAlignmentMatcher.setParam(refParam);
-			try {
 				referenceAlignmentMatcher.match();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
 		}
 		else if(conf.equals(AUTO_weapons)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
@@ -316,11 +277,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 			referenceAlignmentMatcher.setParam(refParam);
-			try {
 				referenceAlignmentMatcher.match();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
 		}
 		else if(conf.equals(AUTO_wine)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
@@ -330,34 +287,25 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 			referenceAlignmentMatcher.setParam(refParam);
-			try {
-				referenceAlignmentMatcher.match();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}	
+				referenceAlignmentMatcher.match();	
 		}
 		else{//MANUAL
 			automatic = false;
 		}
 		
-		//************** INITIAL MATCHERS ********************///
+		//************** INITIAL MATCHER********************///
+		//Initial Matcher is initialized in the SelectionPanel.getParameters()
+		//we just have to make it run here
 		setStage(executionStage.afterUserInterface);
-		InitialMatchers im = new InitialMatchers();
+		AbstractMatcher im = param.matcher;
+		//parameters are set in the SelectionPanel.getParameters()
+		//im.setProgressDisplay(progressDisplay);
+		im.match();
 		
-		im.setThreshold( param.highThreshold );
-		im.setMaxSourceAlign(1);
-		im.setMaxTargetAlign(1);
-		im.setProgressDisplay(progressDisplay);
-
-		try {
-			//System.out.println("Before Initial Matchers");
-			im.match();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-				
 		classesMatrix = new FilteredAlignmentMatrix( im.getClassesMatrix() );
 		propertiesMatrix = new FilteredAlignmentMatrix( im.getPropertiesMatrix() );
+		FilteredAlignmentMatrix classesMatrix = (FilteredAlignmentMatrix)this.classesMatrix;
+		FilteredAlignmentMatrix propertiesMatrix = (FilteredAlignmentMatrix)this.propertiesMatrix;
 		
 		classesAlignmentSet = im.getClassAlignmentSet();
 		propertiesAlignmentSet = im.getPropertyAlignmentSet();
@@ -397,7 +345,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			iteration++;
 			if(automatic){
-				if(iteration % evaluationSpin == 0){
+				if(iteration % evaluationSpin == 0){//This is to print results every evaluationSpin iterations
 					AlignmentSet<Alignment> partialSet = getAlignmentSet();
 					ReferenceEvaluationData partialRD = ReferenceEvaluator.compare(partialSet, referenceSet);
 					partialEvaluations.add(partialRD);
@@ -515,7 +463,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 			}
 			
 			else{  //MANUAL: Display the mappings in the User Interface
-				
 				progressDisplay.displayMappings(topAlignments);
 				
 				while( isStage(executionStage.runningUserInterface) ) {
@@ -569,12 +516,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 				//AlignmentSet<Alignment> userMappings = new AlignmentSet<Alignment>();
 				//userMappings.addAlignment(userMapping);
 				
-				try {
-					eFS.match(userSet);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+
+				eFS.match(userSet);
 				
 
 				eFS.select(); // will contain values that already filtered.
@@ -609,12 +552,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 				eDSI.setMaxTargetAlign(maxTargetAlign);
 				eDSI.addInputMatcher(this);
 				
-				try {
-					eDSI.match();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				eDSI.match();
+
 				
 
 				eDSI.select(); // will contain values that already filtered.
@@ -696,9 +635,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			System.out.println( "////////////////////////////////////////////////////////////////");
 			
 		}
-
-		progressDisplay.showScreen_Start();
-		
+		matchEnd();
 	}
 
 	private void printAlignments(AlignmentSet<Alignment> mappings, alignType atype) {
@@ -728,20 +665,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		}
 		
 	}
-
-	private void initializeUserInterface() {
-		
-		progressDisplay = new SelectionPanel(this);
-		progressDisplay.showScreen_Start();
-		
-		UI ui = Core.getInstance().getUI();
-		
-		ui.addTab("User Feedback Loop", null, progressDisplay, "User Feedback Loop");
-		
-		
-		
-	}
-
+	
 	public executionStage getStage() { return currentStage; }
 	public boolean isStage( executionStage s ) { return s == currentStage; }
 	public void setStage(executionStage stage) {
@@ -749,22 +673,23 @@ public class FeedbackLoop extends AbstractMatcher  {
 		System.out.println(">> Changing execution stage to: " + currentStage.name() );
 	}
 	
+	
 	public FilteredAlignmentMatrix getClassesMatrix() {
-		return classesMatrix;
+		return (FilteredAlignmentMatrix)classesMatrix;
 	}
 
 	public FilteredAlignmentMatrix getPropertiesMatrix() {
-		return propertiesMatrix;
+		return (FilteredAlignmentMatrix)propertiesMatrix;
 	}
-
+    
 	
 	
 	private AlignmentSet<Alignment> getNewClassAlignments( AbstractMatcher a ) {
-		return getNewMappings( a.getClassAlignmentSet(), classesMatrix );
+		return getNewMappings( a.getClassAlignmentSet(), (FilteredAlignmentMatrix)classesMatrix );
 	}
 	
 	private AlignmentSet<Alignment> getNewPropertyAlignments( AbstractMatcher a ) {
-		return getNewMappings( a.getPropertyAlignmentSet(), propertiesMatrix );
+		return getNewMappings( a.getPropertyAlignmentSet(), (FilteredAlignmentMatrix)propertiesMatrix );
 	}
 
 	// look through all the alignments found by the matcher and choose only those that are not already filtered, this way

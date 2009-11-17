@@ -38,7 +38,7 @@ public class MatchersTablePanel extends JPanel {
 	private MatchersTable table;
 
     public MatchersTablePanel(UI ui) {
-        super(new GridLayout(1,0));
+        super(new GridLayout(1,1));
         
         MyTableModel mt = new MyTableModel();
         table = new  MatchersTable(mt);

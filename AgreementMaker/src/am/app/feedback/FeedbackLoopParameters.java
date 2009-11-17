@@ -1,5 +1,6 @@
 package am.app.feedback;
 
+import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractParameters;
 
 public class FeedbackLoopParameters extends AbstractParameters {
@@ -12,7 +13,7 @@ public class FeedbackLoopParameters extends AbstractParameters {
 	public double highThreshold = 0.7d;
 	public double lowThreshold = 0.0d;
 	
-	public String configuration = "Default";
+	public String configuration = FeedbackLoop.MANUAL;
 	
 	public String cardinality = "1-1";
 	
@@ -20,10 +21,13 @@ public class FeedbackLoopParameters extends AbstractParameters {
 	public int targetNumMappings = 1;
 	public int iterations = 15;
 	
+	public AbstractMatcher matcher;
+	
 	
 	public void print() {
 		System.out.println( "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		System.out.println( "Feedback Loop PARAMETERS: ");
+		System.out.println( "\tMatcher: \t"+ matcher.getName().getMatcherName());
 		System.out.println( "\tConfiguration: \t"+ configuration );
 		System.out.println( "\tIterations:    \t"+ iterations );
 		System.out.println( "\tHigh Threshold:\t" + Double.toString(highThreshold) );

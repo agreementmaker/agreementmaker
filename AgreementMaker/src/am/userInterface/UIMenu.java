@@ -12,6 +12,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 
 import am.AMException;
@@ -19,6 +20,7 @@ import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.feedback.FeedbackLoop;
+import am.app.feedback.ui.SelectionPanel;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
@@ -167,15 +169,9 @@ public class UIMenu implements ActionListener {
 				ui.redisplayCanvas();
 			}
 			else if( obj == userFeedBack ) {
-				// the user has to load the ontologies.
-				if( Core.getInstance().getSourceOntology() == null || Core.getInstance().getTargetOntology() == null ) {
-					Utility.displayErrorPane("Two ontologies must be loaded into AgreementMaker before the matching can begin.", "Ontologies not loaded." );
-				}
-				else{
-					AbstractMatcher ufl = MatcherFactory.getMatcherInstance( MatchersRegistry.UserFeedBackLoop , Core.getInstance().getMatcherInstances().size() );  // initialize the user feedback loop interface (i.e. add a new tab)
-					ui.getControlPanel().getTablePanel().addMatcher(ufl);
-					ui.redisplayCanvas();
-				}			
+				SelectionPanel sp = new SelectionPanel(ui);
+				sp.showScreen_Start();
+				ui.addTab("User Feedback Loop", null, sp, "User Feedback Loop");	
 			}
 			else if( obj == manualMapping) {
 				Utility.displayMessagePane("To edit or create a manual mapping select any number of source and target nodes.\nLeft click on a node to select it, use Ctrl and/or Shift for multiple selections.", "Manual Mapping");

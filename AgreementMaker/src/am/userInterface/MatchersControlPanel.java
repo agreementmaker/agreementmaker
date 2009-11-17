@@ -430,7 +430,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows(); //indexes in the table correspond to the indexes of the matchers in the matcherInstances list in core class
 		int selectedMatchers = rowsIndex.length;
 		if(!Core.getInstance().ontologiesLoaded() ) {
-			Utility.displayErrorPane("You have to load a Source and Target ontologies before running any matcher\nClick on File Menu and select Open Ontology functions ", null);
+			Utility.displayErrorPane("You have to load Source and Target ontologies before running any matcher\nClick on File Menu and select Open Ontology functions ", null);
 		}
 		else if(currentMatcher.getMinInputMatchers() > selectedMatchers ) {
 			Utility.displayErrorPane("Select at least "+currentMatcher.getMinInputMatchers()+" matchings from the table to run this matcher.", null);

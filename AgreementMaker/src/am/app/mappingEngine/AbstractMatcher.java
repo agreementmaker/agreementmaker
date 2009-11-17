@@ -1137,6 +1137,15 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		progressDisplay = p;
 	}
 	
+	
+    /**
+     * getProgressDisplay
+     * @param p
+     */
+	public MatchingProgressDisplay getProgressDisplay() {
+		return progressDisplay;
+	}
+	
 	/**
 	 * This method sets up stepsDone and stepsTotal.  Override this method if you have a special way of computing the values.
 	 * ( If you override this method, it's likely that you will also need to override alignNodesOneByOne(), because it calls stepDone() and updateProgress() ).
