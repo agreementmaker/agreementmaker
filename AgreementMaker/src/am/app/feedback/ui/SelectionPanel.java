@@ -95,7 +95,9 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 	public SelectionPanel(UI u) {
 		
 		ui = u;
-		
+		//Initialized here so that we don't reset the report text at each iteration
+		matcherReport = new JTextArea(8, 35);
+		matcherReport.setText("User Feedback Loop is started.");
 	}
 	
 	
@@ -231,10 +233,10 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		//}
 		progressBar.setIndeterminate(false);
 		progressBar.setValue(100);
-		matcherReport.setText( ufl.getReport() );
+		matcherReport.append( ufl.getReport() );
 		cancelButton.setEnabled(false);
 		okButton.setEnabled(true);
-		
+		revalidate();
 	}
 
 
@@ -456,11 +458,6 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 	private void displayProgressScreen() {
 		
 		removeAll();
-		
-		matcherReport = new JTextArea(8, 35);
-	    
-		matcherReport.setText("Running...");
-		//setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 	    
 	    this.setLayout(new BorderLayout());
 	    JPanel textPanel = new JPanel(new BorderLayout());
@@ -746,6 +743,25 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		
 	}
 
-
+	public void displayReportText(String report){
+		if(matcherReport!= null){
+			matcherReport.setText(report);
+			revalidate();
+		}
+	}
+	
+	public void concatReportText(String report){
+		if(matcherReport!= null){
+			matcherReport.append(report);
+			revalidate();
+		}
+	}
+	
+	public void appendNewLineReportText(String report){
+		if(matcherReport!= null){
+			matcherReport.append("\n"+report);
+			revalidate();
+		}
+	}
 	
 }

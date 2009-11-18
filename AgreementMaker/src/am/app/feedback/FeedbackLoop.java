@@ -84,6 +84,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 	public final static String  AUTO_weapons = "Auto weapons";
 	public final static String  AUTO_wine = "Auto wine";
 	
+	public final static String PRINT_LINE = "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=";
+	
 	public enum executionStage {
 		notStarted,
 		
@@ -145,6 +147,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			return;
 		} else {
 			param.print();
+			progressDisplay.appendNewLineReportText(param.getParameterString());
 		}
 		
 		//Just for the Experiment Purpose, if the user selects the automatic configuration we need to import the reference
@@ -297,10 +300,15 @@ public class FeedbackLoop extends AbstractMatcher  {
 		//Initial Matcher is initialized in the SelectionPanel.getParameters()
 		//we just have to make it run here
 		setStage(executionStage.afterUserInterface);
+		
 		AbstractMatcher im = param.matcher;
+		progressDisplay.appendNewLineReportText("Running the initial automatic matcher: "+im.getName().getMatcherName());
 		//parameters are set in the SelectionPanel.getParameters()
 		//im.setProgressDisplay(progressDisplay);
 		im.match();
+		progressDisplay.appendNewLineReportText("The initial matcher completed the matching process successfully. ");
+		progressDisplay.appendNewLineReportText("\tClasses alignments found: "+im.getClassAlignmentSet().size());
+		progressDisplay.appendNewLineReportText("\tProperties alignments found: "+im.getPropertyAlignmentSet().size());
 		
 		classesMatrix = new FilteredAlignmentMatrix( im.getClassesMatrix() );
 		propertiesMatrix = new FilteredAlignmentMatrix( im.getPropertiesMatrix() );
@@ -344,6 +352,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			
 			iteration++;
+			progressDisplay.appendNewLineReportText(PRINT_LINE+"\nStarting iteration "+iteration);
 			if(automatic){
 				if(iteration % evaluationSpin == 0){//This is to print results every evaluationSpin iterations
 					AlignmentSet<Alignment> partialSet = getAlignmentSet();
@@ -363,6 +372,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 
 			
 			if( iteration > param.iterations ) {
+				progressDisplay.appendNewLineReportText("Stopping the process because the maximum iteration is reached.");
 				System.out.println( ">>> Stopping loop after " + Integer.toString(param.iterations) + " iterations." );
 				break;
 			}
@@ -373,9 +383,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 					"   Total new mappings found: " + Integer.toString(total_new)	);
 
 			//********************** FILTER STAGE *********************///
-		
 			setStage( executionStage.runningFilter );
-			
+			progressDisplay.appendNewLineReportText("Mappings filtering:");
 			classesMatrix.validateAlignments(classesToBeFiltered);
 			propertiesMatrix.validateAlignments(propertiesToBeFiltered);
 
@@ -388,6 +397,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			System.out.println( "Double Threshold Filtering: filtered " + Integer.toString(classesBelowTh) + " classes.");
 			System.out.println( "Double Threshold Filtering: filtered " + Integer.toString(propertiesBelowTh) + " properties.");
+			progressDisplay.appendNewLineReportText("\tFiltered "+Integer.toString(classesBelowTh) + " classes.");
+			progressDisplay.appendNewLineReportText("\tFiltered "+Integer.toString(propertiesBelowTh) + " properties.");
 			
 			classesToBeFiltered = new AlignmentSet<Alignment>(); // create a new, empty set
 			propertiesToBeFiltered = new AlignmentSet<Alignment>(); // create a new, empty set
@@ -398,14 +409,14 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			//**********************  CANDIDATE SELECTION ***********///
 			setStage( executionStage.runningCandidateSelection );
-			
+			progressDisplay.appendNewLineReportText("Candidates Selection:");
 			// TODO: run the candidate selection here
 			CandidateSelection cs = new CandidateSelection(this);
 			
 			cs.runMeasures();
 			
 			AlignmentSet<Alignment> topAlignments = cs.getCandidateAlignments( K, M);
-			
+			progressDisplay.appendNewLineReportText("Found "+Integer.toString(topAlignments.size()) + " candidate alignments.");
 			System.out.println( "Candidate Selection: Found " + Integer.toString(topAlignments.size()) + " candidate alignments.");
 			
 			for( int aCandidate = 0; aCandidate < topAlignments.size(); aCandidate++ ) {
@@ -495,6 +506,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 				
 			
 			if( userMapping != null ) {
+				progressDisplay.appendNewLineReportText("1 mapping validated by the user: "+userMapping);
+				
 				AlignmentSet<Alignment> userSet = new AlignmentSet<Alignment>();
 				
 				userSet.addAlignment( userMapping );
@@ -506,7 +519,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 					propertiesMatrix.validateAlignments( userSet );
 					propertiesAlignmentSet.addAlignment(userMapping);
 				}
-
+				progressDisplay.appendNewLineReportText("Running extrapolation matchers: ");
 				ExtrapolatingFS eFS = new ExtrapolatingFS();
 				eFS.setThreshold( param.highThreshold );
 				eFS.setMaxSourceAlign( param.sourceNumMappings );
@@ -525,7 +538,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 				// choose only alignments that are not filtered
 				AlignmentSet<Alignment> newClassAlignments_eFS = getNewClassAlignments( eFS );
 				AlignmentSet<Alignment> newPropertyAlignments_eFS = getNewPropertyAlignments( eFS );
-			
+				progressDisplay.appendNewLineReportText("\tFamilial Similarity method found "+newClassAlignments_eFS.size()+" class mappings.");
+				progressDisplay.appendNewLineReportText("\tFamilial Similarity method found "+newPropertyAlignments_eFS.size()+" property mappings.");
 				// report on the eDSI
 				System.out.println( "Extrapolating Matcher: eFS, found " + Integer.toString(newClassAlignments_eFS.size()) + " new class alignments, and " +
 						Integer.toString( newPropertyAlignments_eFS.size() ) + " new property alignments.");
@@ -561,7 +575,9 @@ public class FeedbackLoop extends AbstractMatcher  {
 				// choose only alignments that are not filtered
 				AlignmentSet<Alignment> newClassAlignments_eDSI = getNewClassAlignments( eDSI );
 				AlignmentSet<Alignment> newPropertyAlignments_eDSI = getNewPropertyAlignments( eDSI );
-			
+				progressDisplay.appendNewLineReportText("\tDSI found "+newClassAlignments_eDSI.size()+" class mappings.");
+				progressDisplay.appendNewLineReportText("\tDSI found "+newPropertyAlignments_eDSI.size()+" property mappings.");
+				
 				// report on the eDSI
 				System.out.println( "Extrapolating Matcher: eDSI, found " + Integer.toString(newClassAlignments_eDSI.size()) + " new class alignments, and " +
 						Integer.toString( newPropertyAlignments_eDSI.size() ) + " new property alignments.");
@@ -577,7 +593,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 				
 			}
 			else{ //All mappings are wrong
-				
+				progressDisplay.appendNewLineReportText("\tAll candidate mappings are incorrect and filtered out.");
 				System.out.println( "All candidate mappings are wrong, filtering out these mappings in the similarity matrix.");
 				
 				// when all the mappings are wrong they should be filtered from the similarity matrix (on a cell by cell basis)
@@ -597,6 +613,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		
 			if( isCancelled() ) break;
 		} while( !stop );
+		progressDisplay.appendNewLineReportText(PRINT_LINE+"The Feedback Loop is terminated.");
 		
 		if(automatic){
 			System.out.println("////////Parameters////////////");

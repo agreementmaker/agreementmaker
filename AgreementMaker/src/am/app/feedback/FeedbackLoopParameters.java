@@ -23,19 +23,23 @@ public class FeedbackLoopParameters extends AbstractParameters {
 	
 	public AbstractMatcher matcher;
 	
+	public String getParameterString(){
+		String result = "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=";
+		result += "\nFeedback Loop parameters:";
+		result += "\n\tMatcher:       \t"+ matcher.getName().getMatcherName();
+		result += "\n\tConfiguration: \t"+ configuration ;
+		result += "\n\tIterations:    \t"+ iterations ;
+		result += "\n\tHigh Threshold:\t" + Double.toString(highThreshold) ;
+		result += "\n\tLow Threshold: \t" + Double.toString(lowThreshold) ;
+		result += "\n\tK:             \t" + Integer.toString(K) ;
+		result += "\n\tM:             \t" + Integer.toString(M) ;
+		result += "\n\tCardinality:   \t" + cardinality ;
+		result += "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=";
+		return result;
+	}
 	
 	public void print() {
-		System.out.println( "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-		System.out.println( "Feedback Loop PARAMETERS: ");
-		System.out.println( "\tMatcher: \t"+ matcher.getName().getMatcherName());
-		System.out.println( "\tConfiguration: \t"+ configuration );
-		System.out.println( "\tIterations:    \t"+ iterations );
-		System.out.println( "\tHigh Threshold:\t" + Double.toString(highThreshold) );
-		System.out.println( "\tLow Threshold: \t" + Double.toString(lowThreshold) );
-		System.out.println( "\tK:             \t" + Integer.toString(K) );
-		System.out.println( "\tM:             \t" + Integer.toString(M) );
-		System.out.println( "\tCardinality:   \t" + cardinality );
-		System.out.println( "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+		System.out.println( "\n"+getParameterString()+"\n");
 	}
 	
 }
