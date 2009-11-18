@@ -320,14 +320,14 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		btn_start.setActionCommand("btn_start");
 		
 		JLabel lblParameters = new JLabel("Parameters:");
-		JLabel lblMatcher = new JLabel("Automatic Matcher:");
+		JLabel lblMatcher = new JLabel("Automatic Initial Matcher:");
 		JLabel lblHighThreshold = new JLabel("High threshold:");
 		JLabel lblLowThreshold = new JLabel("Low threshold:");
 		JLabel lblCardinality = new JLabel("Cardinality:");
 		JLabel lblConfiguration = new JLabel("Run configuration:");
-		JLabel lblIterations = new JLabel("Iterations:");
-		JLabel lblK = new JLabel("K:");
-		JLabel lblM = new JLabel("M:");
+		JLabel lblIterations = new JLabel("Maximum iteration:");
+		JLabel lblK = new JLabel("Num candidate concepts K:");
+		JLabel lblM = new JLabel("Num candidate mappings M:");
 		
 		
 		//matcher combo list
