@@ -47,6 +47,9 @@ public class Canvas2Vertex extends DirectedGraphVertex<GraphicalData> {  // we h
 	
 	public void recalculateWidth() { /* implemented in subclass */  }  // used when the width of a node changes
 	
+	public void updateBounds( int x, int y, int width, int height ) { d.x = x; d.y = y; d.width = width; d.height = height; };
+	
+	
 	public void setVisible(boolean vis ) { d.visible = vis; }
 	public boolean isVisible(Rectangle bounds) {
 		

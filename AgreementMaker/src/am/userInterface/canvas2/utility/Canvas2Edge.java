@@ -44,4 +44,6 @@ public class Canvas2Edge extends DirectedGraphEdge<GraphicalData> {
 		d.x += xoffset;
 		d.y += yoffset;
 	}
+	
+	public void updateBounds( int x, int y, int width, int height ) { d.x = x; d.y = y; d.width = width; d.height = height; };
 }
