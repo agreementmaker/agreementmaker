@@ -24,6 +24,7 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
+import am.app.mappingEngine.MatcherChangeEvent;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
@@ -74,7 +75,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	
 	
 	
-	MatchersControlPanel(UI ui, UIMenu uiMenu, Canvas canvas) {
+	MatchersControlPanel(UI ui, UIMenu uiMenu) {
 		this.ui = ui;
 		init();
 	}
@@ -668,6 +669,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 			matchersTablePanel.deletedRows(firstRow, lastRow);
 			ui.getCanvas().clearAllSelections();
 			ui.redisplayCanvas();
+			MatcherChangeEvent evt = new MatcherChangeEvent(this, MatcherChangeEvent.EventType.REMOVE_ALL, Core.ID_NONE);
+			Core.getInstance().fireEvent(evt);
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();

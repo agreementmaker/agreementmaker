@@ -3,8 +3,6 @@ package am.app.feedback;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.sun.tools.javac.model.FilteredMemberList;
-
 import am.Utility;
 import am.app.Core;
 import am.app.feedback.matchers.ExtrapolatingDSI;

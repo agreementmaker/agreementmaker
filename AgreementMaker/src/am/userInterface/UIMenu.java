@@ -2,7 +2,8 @@ package am.userInterface;
 
 
 
-import java.awt.Color;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -12,23 +13,24 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JTabbedPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 
 import am.AMException;
 import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
-import am.app.feedback.FeedbackLoop;
 import am.app.feedback.ui.SelectionPanel;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
-import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.ontology.Ontology;
 import am.userInterface.table.MatchersTablePanel;
+import am.userInterface.vertex.VertexDescriptionPane;
 
 
 public class UIMenu implements ActionListener {
@@ -47,6 +49,9 @@ public class UIMenu implements ActionListener {
 	// menu items for the View Menu
 	private JMenuItem keyItem;
 	private JCheckBoxMenuItem smoMenuItem;  // Menu item for toggling "Selected Matchings Only" view mode.
+	private JMenu menuViews;
+	private JMenuItem itemViewsCanvas;
+	private JMenuItem itemViewsCanvas2;
 	
 	// menu items for the Ontology Menu
 	private JMenuItem ontologyDetails;
@@ -200,7 +205,50 @@ public class UIMenu implements ActionListener {
 			else if(obj == ontologyDetails) {
 				ontologyDetails();
 			}
+			else if( obj == itemViewsCanvas ) {
+
+				JPanel CanvasPanel = new JPanel();
+				CanvasPanel.setLayout(new BorderLayout());
+				
+				Canvas goodOldCanvas = new Canvas(ui);
+				goodOldCanvas.setFocusable(true);
+				
+				JScrollPane scrollPane = new JScrollPane();
+				scrollPane.setWheelScrollingEnabled(true);
+				scrollPane.getVerticalScrollBar().setUnitIncrement(20);
+				
+				scrollPane.setViewportView(goodOldCanvas);
+				goodOldCanvas.setScrollPane(scrollPane);
+				
+				JPanel jPanel = null;
+				System.out.println("opening file");
+				jPanel = new VertexDescriptionPane(GlobalStaticVariables.ONTFILE);//takes care of fields for XML files as well
+			    jPanel.setMinimumSize(new Dimension(200,480));
+		
+				JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, jPanel);
+				splitPane.setOneTouchExpandable(true);
+				splitPane.setResizeWeight(1.0);
+				splitPane.setMinimumSize(new Dimension(640,480));
+				splitPane.setPreferredSize(new Dimension(640,480));
+				splitPane.getLeftComponent().setPreferredSize(new Dimension(640,480));
+				// add scrollpane to the panel and add the panel to the frame's content pane
+				
+				CanvasPanel.add(splitPane, BorderLayout.CENTER);
+				//frame.getContentPane().add(splitPane, BorderLayout.CENTER);
+
+				
+				//panelControlPanel = new ControlPanel(this, uiMenu, canvas);
+				MatchersControlPanel matcherControlPanel = new MatchersControlPanel(ui, this);
+				CanvasPanel.add(matcherControlPanel, BorderLayout.PAGE_END);
+				//frame.getContentPane().add(matcherControlPanel, BorderLayout.PAGE_END);
+				
+				
+				ui.addTab("Canvas View", null, CanvasPanel, "Canvas View");
+				
+			}
 			else if( obj == doRemoveDuplicates ) {
+				// TODO: Get rid of this from here.
+				
 				MatchersTablePanel m = controlPanel.getTablePanel();
 				
 				int[] selectedRows =  m.getTable().getSelectedRows();
@@ -209,7 +257,7 @@ public class UIMenu implements ActionListener {
 					Utility.displayErrorPane("You must select two matchers.", null);
 				}
 				else {
-					
+
 					int i, j;
 					
 					Core core = Core.getInstance();
@@ -512,14 +560,12 @@ public class UIMenu implements ActionListener {
 		disableVisualizationItem.addActionListener(this);
 		disableVisualizationItem.setSelected(prefs.getDisableVisualization());
 		viewMenu.add(disableVisualizationItem);
-		viewMenu.addSeparator();
 		
 		// add "Selected Matchings Only" option to the view menu
 		smoMenuItem = new JCheckBoxMenuItem("Selected Matchings Only");
 		smoMenuItem.addActionListener(this);
 		smoMenuItem.setSelected(prefs.getSelectedMatchingsOnly());
 		viewMenu.add(smoMenuItem);
-		viewMenu.addSeparator();
 		
 		showLocalNameItem = new JCheckBoxMenuItem("Show localnames");
 		showLocalNameItem.addActionListener(this);
@@ -530,9 +576,19 @@ public class UIMenu implements ActionListener {
 		showLabelItem.addActionListener(this);
 		showLabelItem.setSelected(prefs.getShowLabel());
 		viewMenu.add(showLabelItem);
+		
+		viewMenu.addSeparator();
+		
+		menuViews = new JMenu("New view");
+		itemViewsCanvas = new JMenuItem("Canvas");
+		itemViewsCanvas.addActionListener(this);
+		//itemViewsCanvas2 = new JMenuItem("Canvas2");
+		//itemViewsCanvas2.addActionListener(this);
+		menuViews.add(itemViewsCanvas);
+		//menuViews.add(itemViewsCanvas2);
+		viewMenu.add(menuViews);
 		//Fake menus..********************************.
 		/*
-		ontologyMenu = new JMenu("Ontology");
 
 		evaluationMenu = new JMenu("Evaluation");
 		myMenuBar.add(ontologyMenu);

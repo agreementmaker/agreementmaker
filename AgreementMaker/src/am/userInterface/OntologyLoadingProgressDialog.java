@@ -124,10 +124,19 @@ public class OntologyLoadingProgressDialog extends JDialog implements PropertyCh
 	
 		progressBar.setIndeterminate(false);
 		progressBar.setValue(100);
-		report.setText(treeBuilder.getReport());
+		report.append(treeBuilder.getReport());
 		cancelButton.setEnabled(false);
 		okButton.setEnabled(true);
 		
+	}
+	
+	public void clearMessage() { report.setText(""); }
+	
+	public void append(String message) {
+		report.append(message);
+	}
+	public void appendLine(String message) {
+		report.append(message +  "\n");
 	}
 	
 

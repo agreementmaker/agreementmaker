@@ -18,8 +18,8 @@ import java.util.Vector;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 
 import am.GlobalStaticVariables;
@@ -37,7 +37,6 @@ import am.userInterface.vertex.VertexLine;
 
 import java.util.Date;
 
-
 /**
  * Canvas class is responsible for all the contents inside the canvas such as
  * displaying the tree, connecting the lines, mappingByUser nodes, highlighting the nodes.
@@ -47,7 +46,7 @@ import java.util.Date;
  * @author ADVIS Laboratory
  * @version 12/5/2004
  */
-public class Canvas extends JPanel implements MouseListener, ActionListener
+public class Canvas extends VisualizationPanel implements MouseListener, ActionListener
 {
 	
 	/**
@@ -80,7 +79,7 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	private JMenu 		manualAlignment;          		//
 	private JMenuItem 		deleteAlignment;          		// mappingByUser type menu
 	private JMenuItem 	cancel;               	// cancel the mappingByUser
-	private JMenuItem 	exact;               		// exact mappingByUser
+	private JMenuItem 	exact;               		// exact mappingByUser 
 	private JMenuItem 	other;  
 	private JMenuItem 	subset;              		// subset mappingByUser
 	private JMenuItem 	subsetComplete;			// subset complete mappingByUser
@@ -110,8 +109,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	/*******************************************************************************************
 	 * Default constructor for myCanvas class.
 	 */
-	public Canvas()
+	public Canvas(JScrollPane s)
 	{
+		super(s);
 		// do nothing
 	}
 	/*******************************************************************************************
@@ -119,7 +119,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 	  * one argument constructor for myCanvas class.
 	  * @param tempUI 	UI class
 	  */
+	@Deprecated
 	public Canvas(UI ui){
+		super(new JScrollPane());
 		
 		// initialize the global and local selected nodes vector
 		globalNodesSelected = new ArrayList<Vertex>();
@@ -141,6 +143,9 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		//Init Core
 		core = Core.getInstance();
 		
+		// Now that we have more than one visualization system in the AgreementMaker, we need to check if the ontologies are loaded beforehand.
+		if( core.sourceIsLoaded() ) setTree( core.getSourceOntology().getDeepRoot(), core.getSourceOntology(), core.getSourceOntology().getTreeCount() );
+		if( core.targetIsLoaded() ) setTree( core.getTargetOntology().getDeepRoot(), core.getTargetOntology(), core.getTargetOntology().getTreeCount() );
 		
 		// get whether the user had SMO enabled
 		disableVisualization = ui.getAppPreferences().getDisableVisualization();
@@ -379,10 +384,16 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 
 	}
 	
+	/* Wrapper method. */
 	public void setTree(TreeBuilder tb) {		
 		Vertex treeRoot = tb.getTreeRoot();
 		Ontology o = tb.getOntology();
+		setTree( treeRoot, o, tb.getTreeCount() );
+	}
 	
+		
+	public void setTree( Vertex treeRoot, Ontology o, int totalNodes ) {
+		
 		if(o.isSource()) {
 			setGlobalTreeRoot(treeRoot);
 		}
@@ -390,14 +401,18 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 			setLocalTreeRoot(treeRoot);
 		}
 
-		int totalNodes = tb.getTreeCount();	// number of nodes created in global tree
+		updateSize( treeRoot, o, totalNodes);
+		
+		repaint();
+	}
+
+	private void updateSize( Vertex treeRoot, Ontology o, int totalNodes ) {
+		//int totalNodes = tb.getTreeCount();	// number of nodes created in global tree
 		Dimension dim;		// dimension of the panel
 		double height;		// height of the canvas
 		
-
 		// get the dimension of the panel
-		JPanel canvasPanel = myUI.getCanvasPanel();
-		dim = canvasPanel.getPreferredSize();
+		dim = getPreferredSize();
 		
 		// figure out what the canvas height should be
 		height = 70+25*totalNodes;
@@ -415,48 +430,32 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		if(dim.getHeight() > height){
 			//if none of the ontologies loaded
 			if(core.getSourceOntology() == null && core.getTargetOntology() == null){
-				canvasPanel.setPreferredSize(new Dimension((int)canvasWidth,(int)height));
+				setPreferredSize(new Dimension((int)canvasWidth,(int)height));
 			}
 			//if only source is loaded
-			if(core.getSourceOntology() != null && core.getTargetOntology() == null){
-				if(o.isSource()){
-					canvasPanel.setPreferredSize(new Dimension((int)canvasWidth,(int)height));
-				}
-				else {}
-					
+			if(core.getSourceOntology() != null && core.getTargetOntology() == null ) {
+					setPreferredSize(new Dimension((int)canvasWidth,(int)height));
 			}
 			//if only target is loaded
-			if(core.getSourceOntology() == null && core.getTargetOntology() != null){
-				if(o.isTarget()){
-					canvasPanel.setPreferredSize(new Dimension((int)canvasWidth,(int)height));
-				}
-				else{}
+			if(core.getSourceOntology() == null && core.getTargetOntology() != null ){
+					setPreferredSize(new Dimension((int)canvasWidth,(int)height));
 			}
 			//if both loaded, then max of two is the height
 			if(core.getSourceOntology() != null && core.getTargetOntology() != null){
 				if(sourcePaneHeight > targetPaneHeight){
-					canvasPanel.setPreferredSize(new Dimension((int)canvasWidth,(int)sourcePaneHeight));
+					setPreferredSize(new Dimension((int)canvasWidth,(int)sourcePaneHeight));
 				}
 				else{
-					canvasPanel.setPreferredSize(new Dimension((int)canvasWidth,(int)targetPaneHeight));
+					setPreferredSize(new Dimension((int)canvasWidth,(int)targetPaneHeight));
 				}
 			}
 		}
 		else
 		{
-			canvasPanel.setPreferredSize(new Dimension((int)canvasWidth,(int)height));
+			setPreferredSize(new Dimension((int)canvasWidth,(int)height));
 		}		
-		
-		//	set the width of canvas properly
-		//computeCanvasWidth(ontoType);
-		
-		// set the panel preferred size		
-		//canvasPanel.setPreferredSize(new Dimension((int)canvasWidth,(int)height));  // take max of the length of the two trees
-		
-		// repaint the canvas
-		repaint();
-	}
 
+	}
 	
 
 //*******************************************Paint() and Tree displaying methods
@@ -1638,15 +1637,15 @@ public class Canvas extends JPanel implements MouseListener, ActionListener
 		// add exact, subset, subsetComplete, superset, 
 		// supersetComplete, comparitive menu items to mappingType menu
 		manualAlignment.add(exact);
-	    manualAlignment.add(superset);
+		manualAlignment.add(superset);
 		manualAlignment.add(subsetComplete);
 		manualAlignment.add(supersetComplete);
-	    manualAlignment.add(other);
+		manualAlignment.add(other);
 		/*
 		manualAlignment.add(comparativeExact);
 		manualAlignment.add(comparativeSubset);
 		manualAlignment.add(comparativeSuperset);
-		
+
 		*/
 
 		

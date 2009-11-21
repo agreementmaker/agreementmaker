@@ -28,6 +28,9 @@ public class Colors
 	//public static Color highlighted = new Color(52, 85, 119);
 	public static Color mapped = new Color(240,128,128);
 	
+	// vertex hover color
+	public static Color hover = new Color(232,232,232);
+	
 	// mapping line color
 	public static Color lineColor = new Color (255,0,0);
 	

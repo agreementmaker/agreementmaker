@@ -15,11 +15,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JViewport;
 
 import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.TreeBuilder;
+import am.userInterface.canvas2.Canvas2;
 import am.userInterface.vertex.VertexDescriptionPane;
 
 
@@ -36,12 +38,11 @@ public class UI {
 	
 	static final long serialVersionUID = 1;
 	
-	private Canvas canvas;
+	private VisualizationPanel canvas;
 	
 	private JFrame frame;
 	
-	
-	private JPanel panelCanvas, panelDesc;
+	private JPanel panelDesc;
 	private MatchersControlPanel matcherControlPanel;
 	private JScrollPane scrollPane;
 	
@@ -58,6 +59,7 @@ public class UI {
 	public UI()
 	{
 		init();
+		
 	}
 
 	 
@@ -68,17 +70,10 @@ public class UI {
 	/**
 	 * @return canvas
 	 */
-	public Canvas getCanvas(){
+	public VisualizationPanel getCanvas(){
 		return this.canvas;
 	}
 
-	
-	/**
-	 * @return
-	 */
-	public JPanel getCanvasPanel(){
-		return this.panelCanvas;
-	}
 	/**
 	 * @return
 	 */
@@ -111,7 +106,7 @@ public class UI {
 		//Setting the Look and Feel of the application to that of Windows
 		//try { UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"); }
 		//catch (Exception e) { System.out.println(e); }
-
+			
 		//	Setting the Look and Feel of the application to that of Windows
 		//try { javax.swing.UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); }
 		//catch (Exception e) { System.out.println(e); }
@@ -137,26 +132,33 @@ public class UI {
 		uiMenu = new UIMenu(this);	
 		
 		// create a new panel for the canvas 
-		panelCanvas = new JPanel();
+		//panelCanvas = new JPanel();
 		
 		// set the layout of the panel to be grid labyout of 1x1 grid
-		panelCanvas.setLayout(new BorderLayout());
-		
-		// create a canvas class
-		canvas = new Canvas(this);
-		canvas.setFocusable(true);
+		//panelCanvas.setLayout(new BorderLayout());
+
+	
 		//canvas.setMinimumSize(new Dimension(0,0));
 		//canvas.setPreferredSize(new Dimension(480,320));
 		
 		//add canvas to panel
-		panelCanvas.add(canvas);
+		//panelCanvas.add(canvas);
 
 		
 	    //panelDesc = new VertexDescriptionPane(this); 
 		//TODO: Add tabbed panes here for displaying the properties and descriptions		
-		scrollPane = new JScrollPane(panelCanvas);
+		scrollPane = new JScrollPane();
 		scrollPane.setWheelScrollingEnabled(true);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(20);
+
+		// create a VisualizationPanel
+		canvas = new Canvas2(scrollPane);
+		canvas.setFocusable(true);
+
+		scrollPane.setViewportView(canvas);
+		
+		canvas.setScrollPane(scrollPane);
+		
 		
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, null);
 		splitPane.setOneTouchExpandable(true);
@@ -171,7 +173,7 @@ public class UI {
 
 		
 		//panelControlPanel = new ControlPanel(this, uiMenu, canvas);
-		matcherControlPanel = new MatchersControlPanel(this, uiMenu, canvas);
+		matcherControlPanel = new MatchersControlPanel(this, uiMenu);
 		agreementMaker_classic.add(matcherControlPanel, BorderLayout.PAGE_END);
 		//frame.getContentPane().add(matcherControlPanel, BorderLayout.PAGE_END);
 		
@@ -237,6 +239,8 @@ public class UI {
 				else Core.getInstance().setTargetOntology(ont);
 				//Set the tree in the canvas
 				System.out.println("Displaying the hierarchies in the canvas");
+				ont.setDeepRoot(t.getTreeRoot());
+				ont.setTreeCount(t.getTreeCount());
 				getCanvas().setTree(t);
 				if(Core.getInstance().ontologiesLoaded()) {
 					//Ogni volta che ho caricato un ontologia e le ho entrambe, devo resettare o settare se � la prima volta, tutto lo schema dei matchings
@@ -281,4 +285,10 @@ public class UI {
 		tabbedPane.setTabComponentAt(tabbedPane.getTabCount() - 1 , new ButtonTabComponent(tabbedPane));
 		tabbedPane.setSelectedIndex( tabbedPane.getTabCount() - 1 );
 	}
+	
+	@Deprecated
+	public JViewport getViewport() { // don't need this, it should be passed on the constructor of the VisualzationPanel
+		return scrollPane.getViewport();
+	}
+	
 }
