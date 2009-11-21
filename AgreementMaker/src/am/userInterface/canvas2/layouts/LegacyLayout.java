@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.JViewport;
 import javax.swing.event.ChangeEvent;
 
 import org.apache.log4j.Level;
@@ -31,7 +30,6 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
 import am.app.ontology.Ontology;
-import am.userInterface.Colors;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.GraphicalData;
 import am.userInterface.canvas2.graphical.RectangleElement;
@@ -67,15 +65,15 @@ public class LegacyLayout extends Canvas2Layout {
 									     // It's done in order to avoid unnecessary draws() and speed up the paint() function. 
 	private Rectangle pixelColumnViewport;  // required to know the correct index in the pixelColumnDrawn array.
 
-	private HashMap<OntResource,Canvas2Vertex> hashMap; // used in the graph building to avoid visiting the same nodes twice 
-	private Canvas2Vertex anonymousNode;
+	private HashMap<OntResource,LegacyNode> hashMap; // used in the graph building to avoid visiting the same nodes twice 
+	private LegacyNode anonymousNode;
 	
 	private Dimension oldViewportDimensions;  // this variable is used in the stateChanged handler.
 
 	
 	public LegacyLayout(Canvas2 vp) {
 		super(vp);
-		hashMap = new HashMap<OntResource, Canvas2Vertex>();
+		hashMap = new HashMap<OntResource, LegacyNode>();
 		oldViewportDimensions = new Dimension(0,0);
 		
 		layoutArtifactGraph = buildArtifactGraph();  // build the artifact graph
@@ -104,6 +102,7 @@ public class LegacyLayout extends Canvas2Layout {
 	private GraphicalNode topDivider;
 	private GraphicalNode sourceOntologyText;
 	private GraphicalNode targetOntologyText;
+	private OntClass owlThing;
 	
 	private boolean leftSideLoaded = false; 
 	private boolean rightSideLoaded = false;
@@ -212,6 +211,7 @@ public class LegacyLayout extends Canvas2Layout {
 		
 		ArrayList<CanvasGraph> ontologyGraphs = new ArrayList<CanvasGraph>();
 		
+		
 		if( !leftSideLoaded )	// source goes on the left.
 			leftSide = true;
 		else if( !rightSideLoaded )
@@ -230,6 +230,9 @@ public class LegacyLayout extends Canvas2Layout {
 		
 		
 		OntModel m = ont.getModel();
+		
+		owlThing = m.getOntClass( OWL.Thing.getURI() );
+		
 		CanvasGraph classesGraph = new CanvasGraph( GraphLocator.GraphType.CLASSES_GRAPH, ont.getID() );
 		anonymousNode = new LegacyNode( new GraphicalData(0, 0, 0, 0, GraphicalData.NodeType.FAKE_NODE, this, Core.getInstance().getOntologyIDbyModel(m) ));
 		
@@ -388,6 +391,16 @@ public class LegacyLayout extends Canvas2Layout {
 		return globalGraph;
 	}
 	
+	
+	
+
+
+
+	
+	
+	
+	
+	
 
 	/**
 	 * This function and the recursive version build the class graph.
@@ -402,7 +415,9 @@ public class LegacyLayout extends Canvas2Layout {
 	 */
 	@SuppressWarnings("unchecked")   // this comes from OntTools.namedHierarchyRoots()
 	private LegacyNode buildClassGraph( OntModel m, CanvasGraph graph ) {
-					
+
+		Logger log = Logger.getLogger(this.getClass());
+		log.setLevel(Level.DEBUG);
 		
 		int depth = 0;
 		
@@ -423,10 +438,17 @@ public class LegacyLayout extends Canvas2Layout {
 			OntClass cls = clsIter.next();  // get the current child
 			if( cls.isAnon() ) {  // if it is anonymous, don't add it, but we still need to recurse on its children
 				hashMap.put(cls, anonymousNode);  // avoid cycles between anonymous nodes
+				log.debug(">> Inserted " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
 				recursiveBuildClassGraph(root, cls, depth, graph);
 				continue; 
 			} else if( cls.equals(OWL.Nothing) )   // if it's OWL.Nothing (i.e. we recursed to the bottom of the heirarchy) skip it.
 				continue;
+			
+			// cycle check at the root
+			if( hashMap.containsKey(cls) ) { // we have seen this node before, do NOT recurse again
+				log.debug("Cycle detected.  OntClass:" + cls );
+				continue;
+			}
 			
 			// so the child class is not anonymous or OWL.Nothing, add it to the graph, with the correct relationships
 			GraphicalData gr1 = new GraphicalData( depth*depthIndent + subgraphXoffset, 
@@ -439,6 +461,7 @@ public class LegacyLayout extends Canvas2Layout {
 			graph.insertEdge( edge );
 			
 			hashMap.put( cls, node);
+			log.debug(">> Inserted " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
 			recursiveBuildClassGraph( node, cls, depth+1, graph );
 			
 		}
@@ -464,6 +487,7 @@ public class LegacyLayout extends Canvas2Layout {
 			OntClass cls = (OntClass) clsIter.next();
 			if( cls.isAnon() ) {
 				hashMap.put(cls, anonymousNode);  // avoid cycles between anonymous nodes
+				log.debug(">> Inserted anonymous node " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
 				recursiveBuildClassGraph( parentNode, cls, depth, graph );
 				continue;
 			} else if( cls.equals( OWL.Nothing ) ) 
@@ -485,10 +509,155 @@ public class LegacyLayout extends Canvas2Layout {
 			graph.insertEdge( edge );
 			
 			hashMap.put(cls, node);
+			log.debug(">> Inserted " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
 			recursiveBuildClassGraph( node, cls, depth+1, graph );
 		}
 	
 	}
+
+
+/*
+
+	/**
+	 * buildClassTree(), createFosterHome() and adoptRemainingOrphans(), and getVertexFromClass() are ported from OntoTree builder
+	 * 
+	 * fixDepthDFS() is written because the depthIndent information cannot be passed with these functions, so it has to be set
+	 * after the heirarchy has been finished.
+	 * @return
+	 /
+	protected LegacyNode buildClassTree( OntModel m, CanvasGraph graph) {
+		
+		//HashMap<OntClass, Vertex> classesMap = new HashMap<OntClass, Vertex>();  // this maps between ontology classes and Vertices created for the each class
+		ExtendedIterator orphansItr = m.listClasses();  // right now the classes have no parents, so they are orphans.
+		
+		while( orphansItr.hasNext() ) { // iterate through all the classes
+			
+			OntClass currentOrphan = (OntClass) orphansItr.next();  // the current class we are looking at
+			
+			if( !currentOrphan.isAnon() ) {  // make sure this is a real class  (anoynymous classes are not real classes)
+				createFosterHome( currentOrphan, graph );  // assign orphan classes to parent parent classes
+			}
+		}
+		
+		// this is the root node of the class tree (think of it like owl:Thing)
+		// create the root node;
+		TextElement gr = new TextElement(0,	 0,	 0, nodeHeight, this, Core.getInstance().getOntologyIDbyModel(m));
+		gr.setText("OWL Classes Hierarchy");
+		LegacyNode root = new LegacyNode( gr );
+
+		// we may have classes that still don't have a parent. these orphans will be adopted by root.
+		
+		adoptRemainingOrphans( root, graph );
+		
+		fixDepthHeightDFS( root, 0, 0);  // because the heirarchy was not built in any order, the height and depth must be fixed after it is built (not during).
+		
+		return root;
+	}
+
+	private void createFosterHome( OntClass currentOrphan, CanvasGraph graph ) {
+		
+		LegacyNode currentVertex = getVertexFromClass( currentOrphan );
+		
+		ExtendedIterator parentsItr = currentOrphan.listSuperClasses( true );  // iterator of the current class' parents
+		
+		while( parentsItr.hasNext() ) {
+			
+			OntClass parentClass = (OntClass) parentsItr.next();
+
+			
+			if( !parentClass.isAnon() && !parentClass.equals(owlThing) ) {
+
+				LegacyNode parentVertex = getVertexFromClass(parentClass);  // create a new Vertex object or use an existing one.
+				
+				//parentVertex.add( currentVertex );  // create the parent link between the parent and the child
+
+			} 
+		}
+		
+	}	
+
+	private void adoptRemainingOrphans(LegacyNode root, CanvasGraph graph) {
+
+		/*  // Alternative way of iterating through the classes (via the classesMap that was created).
+		 *   
+		Set< Entry<OntClass, Vertex>> classesSet = classesMap.entrySet();
+		Iterator<Entry<OntClass, Vertex>> classesItr = classesSet.iterator();
+		
+		while( classesItr.hasNext() ) {
+			
+		}
+		/
+		
+		// We will just iterate through the classes again, and find any remaining orphans
+		ExtendedIterator classesItr = model.listClasses();
+		
+		while( classesItr.hasNext() ) {
+			OntClass currentClass = (OntClass) classesItr.next();
+			if( !currentClass.isAnon() ) {
+				if( classesMap.containsKey(currentClass) ) {
+					Vertex currentVertex = classesMap.get(currentClass);
+					
+					if( currentVertex.getParent() == null ) {
+						// this vertex has no parent, that means root needs to adopt it
+						root.add( currentVertex );
+					}
+					
+				}
+				else {
+					// we should never get here
+					// if we do, it means we _somehow_ missed a class during our first iteration in buildClassTree();
+					System.err.println("Assertion failed: listClasses() returning different classes between calls.");
+				}
+				 
+			}
+			
+		}
+		
+	}	
+	
+	
+	/**
+	 * helper Function for buildClassesTree()
+	 * @param classesMap
+	 * @param currentClass
+	 * @return
+	 /
+	private LegacyNode getVertexFromClass( OntClass currentClass ) {
+		LegacyNode currentVertex = null;
+		
+		if( hashMap.containsKey( currentClass ) ) { // we already have a Vertex for the currentClass (because it is the parent of some node)
+			currentVertex = hashMap.get( currentClass );
+		} else {
+			// we don't have a Vertex for the current class, create one;
+			//currentVertex = createNodeAndVertex( currentClass, true, ontology.getSourceOrTarget());
+			
+			GraphicalData gr = new GraphicalData( depth*depthIndent + subgraphXoffset, 
+					   graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
+					   100 , nodeHeight, cls, GraphicalData.NodeType.CLASS_NODE, this ); 
+			LegacyNode node = new LegacyNode( gr); 
+			
+			
+			hashMap.put(currentClass, currentVertex);
+		}
+		
+		return currentVertex;
+	}
+
+	// fix the positions of all the nodes linked to this graph
+	private int fixDepthHeightDFS( DirectedGraphVertex<GraphicalData> root, int depth, int height ) {
+		
+		root.getObject().x = depth*depthIndent + subgraphXoffset;
+		root.getObject().y = height * (nodeHeight+marginBottom) + subgraphYoffset;
+		height = height+1;
+		
+		Iterator<DirectedGraphEdge<GraphicalData>> edgeIter = root.edgesOut();
+		while( edgeIter.hasNext() ) { height = fixDepthHeightDFS( edgeIter.next().getDestination(), depth+1, height );	} // DFS call
+		return height;
+	}
+	
+(((((((((((((((((((((((((((((((((((((((((((())))))))))))))))))))))))))))))))))))))))))))
+*/
+	
 	
 	/**
 	 * This function, and the recursive version build the properties graph.  It's a copy of the Class building methods
@@ -825,21 +994,61 @@ public class LegacyLayout extends Canvas2Layout {
 		}
 		*/
 		
+		Logger log = Logger.getLogger(this.getClass());
+		log.setLevel(Level.DEBUG);
 		
-		showLabel = false;
-		showLocalName = true;
-		// update the sizes of all the nodes
-		Iterator<CanvasGraph> graphIter = vizpanel.getGraphs().iterator();
-		while( graphIter.hasNext() ) {
-			CanvasGraph graph = graphIter.next();
-			Iterator<Canvas2Vertex> vertIter = graph.vertices();
-			while( vertIter.hasNext() ) {
-				vertIter.next().recalculateWidth();
+		switch( e.getButton() ) {
+		
+		// because of the way Java (and most any interface) handles the difference between single and double clicks,
+		// the single click action must be "complementary" to the double click action, as when you double click a 
+		// single click is always fired just before the double click is detected.  
+		// There is no way around this.  A single click event will *always* be fired just before a double click.
+		
+		// So then:
+		//		- LEFT button SINGLE click = select NODE (or deselect if clicking empty space)
+		//		- LEFT button DOUBLE click = line up two nodes by their mapping (do nothing if it's empty space)<- TODO  
+		case MouseEvent.BUTTON1:
+			if( e.getClickCount() == 2 ) {
+				// double click with the left mouse button.
+				log.debug("Double click with the LEFT mouse button detected.");
+				//do stuff
+			} else if( e.getClickCount() == 1 ) {
+				// singleclick
+				log.debug("Single click with the LEFT mouse button detected.");
 			}
+			break;
+			
+		case MouseEvent.BUTTON2:
+			if( e.getClickCount() == 2 ) {
+				// double click with the middle mouse button.
+				log.debug("Double click with the MIDDLE mouse button detected.");
+				//do stuff
+			} else if( e.getClickCount() == 1 ) {
+				// middle click, print out debugging info
+				if( hoveringOver != null ) { // relying on the hover code in MouseMove
+					log.debug("\nResource: " + hoveringOver.getObject().r + 
+							"\nHashCode: " + hoveringOver.getObject().r.hashCode());
+					
+				}
+				//log.debug("Single click with the MIDDLE mouse button detected.");
+			}
+			break;
+		
+		
+		case MouseEvent.BUTTON3:
+			if( e.getClickCount() == 2 ) {
+				// double click with the right mouse button.
+				log.debug("Double click with the RIGHT mouse button detected.");
+				//do stuff
+			} else if( e.getClickCount() == 1 ) {
+				// singleclick
+				log.debug("Single click with the RIGHT mouse button detected.");
+			}
+			break;
 		}
-		vizpanel.repaint();
 		
 	}
+		
 
 	
 	private Canvas2Vertex hoveringOver;
