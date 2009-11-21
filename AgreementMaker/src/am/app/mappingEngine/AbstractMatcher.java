@@ -283,6 +283,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
     protected void align() throws Exception {
     	
+    	if( sourceOntology == null || targetOntology == null ) return;  // cannot align just one ontology 
+    	
 		if(alignClass && !this.isCancelled() ) {
 			ArrayList<Node> sourceClassList = sourceOntology.getClassesList();
 			ArrayList<Node> targetClassList = targetOntology.getClassesList();
@@ -407,6 +409,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 
     protected AlignmentSet<Alignment> scanMatrix(AlignmentMatrix matrix) {
+    	if( matrix == null ) { // there is no matrix, return empty set
+    		return new AlignmentSet<Alignment>();
+    	}
     	int columns = matrix.getColumns();
     	int rows = matrix.getRows();
     	// at most each source can be aligned with all targets (columns) it's the same of selecting ANY for source
