@@ -128,6 +128,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 * When this value is set to true, the maxNumberInputMatcher is also automatically set to 1 in the setOptimized() method.
 	 */
 	protected boolean optimized;
+	private int matcherID;
 
 	/**
 	 * The constructor must be a Nullary Constructor
@@ -830,7 +831,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 	public void setShown(boolean isShown) {
 		this.isShown = isShown;
+		
+		// fire an event to let all the listeners know that the visibility of this abstract matcher
+		MatcherChangeEvent evt = new MatcherChangeEvent(this, MatcherChangeEvent.EventType.MATCHER_VISIBILITY_CHANGED, getID());
+		Core.getInstance().fireEvent(evt);
 	}
+	
+	public boolean getShown() { return isShown; }
+	
 
 	public double getThreshold() {
 		return threshold;
@@ -1228,6 +1236,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	public void setClassesAlignmentSet(AlignmentSet classesAlignmentSet) {
 		this.classesAlignmentSet = classesAlignmentSet;
 	}
+
+	public void setID(int nextMatcherID) { matcherID = nextMatcherID; }
+	public int  getID()                  { return matcherID; }
 
 
 

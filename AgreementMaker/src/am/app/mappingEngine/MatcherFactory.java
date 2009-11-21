@@ -3,6 +3,7 @@ package am.app.mappingEngine;
 import java.awt.Color;
 import java.util.EnumSet;
 
+import am.app.Core;
 import am.userInterface.Colors;
 
 public class MatcherFactory {
@@ -84,6 +85,7 @@ public class MatcherFactory {
 		
 		// Set the Index in the Control Panel
 		a.setIndex(instanceIndex);
+		a.setID( Core.getInstance().getNextMatcherID() );  // used globally
 		a.setName(name);
 		
 		// Set the color of the matcher

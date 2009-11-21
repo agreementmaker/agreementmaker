@@ -25,7 +25,8 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 	
 	public TreeBuilder(String filename,  int sourceOrTarget, String language, String format) {
 		ontology = new Ontology();
-		ontology.setIndex( Core.getInstance().getNextOntIndex() );  // get an unique index for this ontology
+		ontology.setIndex( Core.getInstance().numOntologies() );
+		ontology.setID( Core.getInstance().getNextOntologyID() );  // get an unique ID for this ontology
 		ontology.setFilename(filename);
 		ontology.setSourceOrTarget(sourceOrTarget);
 		ontology.setLanguage(language);

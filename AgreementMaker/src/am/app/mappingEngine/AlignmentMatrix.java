@@ -99,7 +99,8 @@ public class AlignmentMatrix {
     	//data[d.getEntity1().getIndex()][d.getEntity2().getIndex()] = d.getSimilarity();
     	
     	if( data == null ) {
-    		System.out.println("Something is terribly wrong here!");
+    		//System.out.println("Something is terribly wrong here!");
+    		return;
     	}
     	data[i][j] = d;
     }

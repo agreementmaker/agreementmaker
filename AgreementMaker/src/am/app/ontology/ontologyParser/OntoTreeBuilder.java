@@ -6,8 +6,13 @@ import java.util.HashSet;
 import java.util.Set;
 import org.mindswap.pellet.jena.PelletInfGraph;
 import org.mindswap.pellet.jena.PelletReasonerFactory;
+
+import am.Utility;
+import am.app.Core;
 import am.app.ontology.Node;
 import am.userInterface.vertex.Vertex;
+import am.utility.RunTimer;
+
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
@@ -112,6 +117,15 @@ public class OntoTreeBuilder extends TreeBuilder{
 	// this function dispatches functions depending on the ontology loading profile selected.
 	protected void buildTree( OntoTreeBuilder.Profile prof ) {
 		
+		// TODO: Find a better way to check if we're running with a UI or not.
+		
+		if( progressDialog != null ) progressDialog.appendLine("");
+		
+		RunTimer timer = new RunTimer();
+		if( progressDialog != null ) progressDialog.appendLine("Reading the ontology...");
+		
+		timer.start();
+		
 		switch ( prof ) {
 		
 		case defaultProfile:
@@ -124,6 +138,17 @@ public class OntoTreeBuilder extends TreeBuilder{
 			buildTreeDefault();
 			break;
 		}		
+		
+		timer.stop();
+		if( progressDialog != null ) progressDialog.appendLine("Done. " + timer.getFormattedRunTime());
+		
+		// now, the visualization panel needs to build its own graph.
+		timer.resetAndStart();
+		if( progressDialog != null ) progressDialog.appendLine("Building visualization graphs.");
+		
+		if( progressDialog != null ) Core.getInstance().getUI().getCanvas().buildLayoutGraphs(ontology);
+		
+		if( progressDialog != null ) progressDialog.appendLine("Done. " + timer.getFormattedRunTime());
 
 	}
 	
@@ -248,6 +273,8 @@ public class OntoTreeBuilder extends TreeBuilder{
         
         treeRoot.add(propertyRoot);
         ontology.setPropertiesTree( propertyRoot);
+        
+        ontology.setTreeCount(treeCount);
 	}
 	
 	/**
@@ -513,6 +540,7 @@ public class OntoTreeBuilder extends TreeBuilder{
     			OntProperty superp = (OntProperty)it2.next();
     			if(!p.equals(superp) && !superp.isAnon() && !(skipOtherNamespaces && !superp.getNameSpace().toString().equals(ns))){//if we find a valid father in the superclass hierarchy we skip this property because is not a root
     				skip = true;
+    				it2.close();  // iterators must be closed if they are not iterated until the end.
     				break;
     			}
     		}
@@ -535,7 +563,14 @@ public class OntoTreeBuilder extends TreeBuilder{
 		//in all other cases iterators list will contain only the iterator on sons of this prop
         ArrayList<ExtendedIterator> iterators = new ArrayList<ExtendedIterator>();
         // get only direct subproperties (direct = true)
-        ExtendedIterator firstSubs = p.listSubProperties( true );
+        ExtendedIterator firstSubs;
+        try {
+        	firstSubs = p.listSubProperties( true );
+        } catch ( Exception e ) {
+        	e.printStackTrace();
+        	return root;
+        }
+        
         iterators.add(firstSubs);
         for(int i = 0; i<iterators.size(); i++) {
         	ExtendedIterator subs = iterators.get(i);

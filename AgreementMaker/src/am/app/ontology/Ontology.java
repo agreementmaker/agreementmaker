@@ -2,7 +2,7 @@ package am.app.ontology;
 
 import java.util.ArrayList;
 
-import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.ontology.OntModel;
 
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.qualityEvaluation.JoslynStructuralQuality;
@@ -14,7 +14,9 @@ import am.userInterface.vertex.Vertex;
  *
  */
 public class Ontology {
-		
+	
+	public static final int ID_NONE = -1;  // used when there is no ontology id.
+	
 	/**It may be SOURCE or TARGET use the final static int values in GSM to set this*/
 	private int sourceOrTarget;
 	private String filename;//file name with all the path
@@ -24,7 +26,7 @@ public class Ontology {
 	/**For example RDF/XML for OWL language, in XML lanaguage is null*/
 	private String format;
 	/**reference to the Jena model class, for an OWL ontology it may be an OntModel, right now we don't use this element,  in XML lanaguage is null*/
-	private Model model;
+	private OntModel model;
 	
 	/**List of class nodes to be aligned, IN THE CASE OF AN XML OR RDF ONTOLOGY ALL NODES ARE KEPT IN THIS STRUCTURE, so there will be only classes and no properties*/
 	private ArrayList<Node> classesList = new ArrayList<Node>();
@@ -36,6 +38,8 @@ public class Ontology {
 	/**The root of the properties hierarchy, is not the root of the whole tree but is the third node, the root vertex itself is fake doesn't refers to any node to be aligned, all sons of this node are classes to be aligned*/
 	private Vertex propertiesTree;//in a XML or RDF ontology this will be null, while in a OWL ontology it contains at least the fake root "prop hierarchy"
 	
+	private Vertex deepRoot; // for the Canvas
+	
 	private boolean skipOtherNamespaces;
 	
 	private String URI;
@@ -43,14 +47,15 @@ public class Ontology {
 	/**
 	 * This value is not used in the AM system right now, it is only used in the Conference Track when more than two ontologies are involved in the process.
 	 */
-	private int Index = 0;
+	private int Index = 0;  // TODO: Maybe get rid of index, and work only with ID?
+	private int ontID = 0;  // Index is used in the conference track, ID is used system wide.
+	private int treeCount;
 	
-	public int getIndex() {
-		return Index;
-	}
-	public void setIndex(int index) {
-		Index = index;
-	}
+	public int  getIndex()          { return Index;  }
+	public void setIndex(int index) { Index = index; }
+	public int  getID()             { return ontID;     }
+	public void setID(int id)       { ontID = id;       }
+	
 	public String getURI() {
 		return URI;
 	}
@@ -75,10 +80,10 @@ public class Ontology {
 	public void setFormat(String format) {
 		this.format = format;
 	}
-	public Model getModel() {
+	public OntModel getModel() {
 		return model;
 	}
-	public void setModel(Model model) {
+	public void setModel(OntModel model) {
 		this.model = model;
 	}
 	public ArrayList<Node> getClassesList() {
@@ -106,12 +111,11 @@ public class Ontology {
 	public void setSourceOrTarget(int s) {
 		sourceOrTarget = s;
 	}
-	public Vertex getClassesTree() {
-		return classesTree;
-	}
-	public void setClassesTree(Vertex classesTree) {
-		this.classesTree = classesTree;
-	}
+	public Vertex getClassesTree()                   { return classesTree; }
+	public void   setClassesTree(Vertex classesTree) { this.classesTree = classesTree; }
+	public Vertex getDeepRoot()                      { return deepRoot; }
+	public void   setDeepRoot(Vertex root)           { this.deepRoot = root; }
+	
 	public Vertex getPropertiesTree() {
 		return propertiesTree;
 	}
@@ -160,5 +164,7 @@ public class Ontology {
 		
 		return sourceOrTarget;
 	}
+	public void setTreeCount(int treeCount) { this.treeCount = treeCount; }
+	public int  getTreeCount()              { return treeCount; }
 	
 }
