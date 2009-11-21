@@ -70,18 +70,8 @@ public class LegacyLayout extends Canvas2Layout {
 	
 	private Dimension oldViewportDimensions;  // this variable is used in the stateChanged handler.
 
-	
-	public LegacyLayout(Canvas2 vp) {
-		super(vp);
-		hashMap = new HashMap<OntResource, LegacyNode>();
-		oldViewportDimensions = new Dimension(0,0);
-		
-		layoutArtifactGraph = buildArtifactGraph();  // build the artifact graph
-	}
-	
-		
 	/**
-	 * Graph Building Method.
+	 * Graph Building Variables.
 	 */
 	
 	private int subgraphXoffset = 20;
@@ -111,6 +101,23 @@ public class LegacyLayout extends Canvas2Layout {
 	private int leftOntologyID = Ontology.ID_NONE;  // the ontology ID of the graphs on the left side of the canvas layout
 	private int rightOntologyID = Ontology.ID_NONE; // the ontology ID of the graphs on the right side of the canvas layout 
 
+	
+	/** Mouse Event handlers Variables */
+	
+	private ArrayList<LegacyNode> selectedNodes;  // the list of currently selected nodes
+
+	
+	
+	
+	public LegacyLayout(Canvas2 vp) {
+		super(vp);
+		hashMap = new HashMap<OntResource, LegacyNode>();
+		oldViewportDimensions = new Dimension(0,0);
+		
+		layoutArtifactGraph = buildArtifactGraph();  // build the artifact graph
+		selectedNodes = new ArrayList<LegacyNode>(); 
+	}		
+	
 	/**
 	 * This function sets up the pixel column array.
 	 */
@@ -990,39 +997,79 @@ public class LegacyLayout extends Canvas2Layout {
 	 */
 	@Override
 	public void mouseClicked( MouseEvent e ) {
-		// BUTTON1 = Left Click Button
-		// BUTTON2 = Middle Click Button
-		// BOTTON3 = Right Click Button
+		// BUTTON1 = Left Click Button, BUTTON2 = Middle Click Button, BUTTON3 = Right Click Button
 
-		/*
-		if( e.getButton() == MouseEvent.BUTTON1 ) {
-			viewport.getGraphics().clearRect(0, 0, e.getX(), e.getY());
-		} else if ( e.getButton() == MouseEvent.BUTTON3 ) {
-			viewport.repaint();
-		}
-		*/
+		Graphics g = vizpanel.getGraphics();   // used for any redrawing of nodes
+		ArrayList<Canvas2Vertex> visibleVertices = vizpanel.getVisibleVertices();
 		
 		Logger log = Logger.getLogger(this.getClass());
 		log.setLevel(Level.DEBUG);
 		
 		switch( e.getButton() ) {
 		
-		// because of the way Java (and most any interface) handles the difference between single and double clicks,
-		// the single click action must be "complementary" to the double click action, as when you double click a 
-		// single click is always fired just before the double click is detected.  
-		// There is no way around this.  A single click event will *always* be fired just before a double click.
-		
-		// So then:
-		//		- LEFT button SINGLE click = select NODE (or deselect if clicking empty space)
-		//		- LEFT button DOUBLE click = line up two nodes by their mapping (do nothing if it's empty space)<- TODO  
+			// because of the way Java (and most any platform) handles the difference between single and double clicks,
+			// the single click action must be "complementary" to the double click action, as when you double click a 
+			// single click is always fired just before the double click is detected.  
+			// There is no way around this.  A single click event will *always* be fired just before a double click.
+			
+			// So then:
+			//		- LEFT button SINGLE click = select NODE (or deselect if clicking empty space)
+			//		- LEFT button DOUBLE click = line up two nodes by their mapping (do nothing if it's empty space)<- TODO  
+
 		case MouseEvent.BUTTON1:
-			if( e.getClickCount() == 2 ) {
-				// double click with the left mouse button.
+			if( e.getClickCount() == 2 ) {  // double click with the left mouse button
 				log.debug("Double click with the LEFT mouse button detected.");
 				//do stuff
-			} else if( e.getClickCount() == 1 ) {
-				// singleclick
-				log.debug("Single click with the LEFT mouse button detected.");
+			} else if( e.getClickCount() == 1 ) {  // single click with left mouse button
+				if( hoveringOver == null ) {
+					// we have clicked in an empty area, clear all the selected nodes
+					Iterator<LegacyNode> nodeIter = selectedNodes.iterator();
+					while( nodeIter.hasNext() ) {
+						LegacyNode selectedNode = nodeIter.next();
+						selectedNode.setSelected(false); // deselect the node
+						if( visibleVertices.contains( (Canvas2Vertex) selectedNode ) ) {
+							// redraw only if it's currently visible
+							selectedNode.clearDrawArea(g);
+							selectedNode.draw(g);
+						}
+					}
+					selectedNodes.clear();
+				} else {
+					// user clicked over a node.
+					if( e.isControlDown() ) {
+						// if the user control clicked (CTRL+LEFTCLICK), we have to add this node to the list of selected nodes.
+						if( selectedNodes.contains(hoveringOver) ) { // if it already is in the list, remove it
+							selectedNodes.remove(hoveringOver);
+							hoveringOver.setSelected(false);
+						} else { // it's not in the list already, add it
+							hoveringOver.setSelected(true);
+							selectedNodes.add((LegacyNode) hoveringOver);
+						}
+						
+						hoveringOver.clearDrawArea(g);
+						hoveringOver.draw(g);
+					} else { // control is not pressed, clear any selections that there may be, and select single node
+						
+						Iterator<LegacyNode> nodeIter = selectedNodes.iterator();
+						while( nodeIter.hasNext() ) {
+							LegacyNode selectedNode = nodeIter.next();
+							selectedNode.setSelected(false); // deselect the node
+							if( visibleVertices.contains( (Canvas2Vertex) selectedNode ) ) {
+								// redraw only if it's currently visible
+								selectedNode.clearDrawArea(g);
+								selectedNode.draw(g);
+							}
+						}
+						selectedNodes.clear();
+						
+						// select single node
+						hoveringOver.setSelected(true);
+						selectedNodes.add( (LegacyNode)hoveringOver);
+						hoveringOver.clearDrawArea(g);
+						hoveringOver.draw(g);
+					}
+				}
+				
 			}
 			break;
 			
@@ -1054,7 +1101,8 @@ public class LegacyLayout extends Canvas2Layout {
 			}
 			break;
 		}
-		
+
+		g.dispose(); // dispose of this graphics element, we don't need it anymore
 	}
 		
 
