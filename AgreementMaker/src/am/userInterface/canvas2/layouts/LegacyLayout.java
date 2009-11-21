@@ -671,7 +671,9 @@ public class LegacyLayout extends Canvas2Layout {
 	 * 
 	 */
 	private LegacyNode buildPropertiesGraph( OntModel m, CanvasGraph graph ) {
-					
+
+		Logger log = Logger.getLogger(this.getClass());
+		log.setLevel(Level.DEBUG);
 		
 		int depth = 0;
 		
@@ -702,6 +704,12 @@ public class LegacyLayout extends Canvas2Layout {
 				continue; 
 			} else if( prop.equals(OWL.Nothing) )   // if it's OWL.Nothing (i.e. we recursed to the bottom of the heirarchy) skip it.
 				continue;
+			
+			// this is the cycle check
+			if( hashMap.containsKey(prop) ) { // we have seen this node before, do NOT recurse again
+				log.debug("Cycle detected.  OntProperty:" + prop );
+				continue;
+			}
 			
 			// so the child property is not anonymous or OWL.Nothing, add it to the graph, with the correct relationships
 			GraphicalData gr1 = new GraphicalData( depth*depthIndent + subgraphXoffset, 
