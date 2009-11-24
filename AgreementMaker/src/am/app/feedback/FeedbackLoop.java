@@ -151,10 +151,11 @@ public class FeedbackLoop extends AbstractMatcher  {
 		//Just for the Experiment Purpose, if the user selects the automatic configuration we need to import the reference
 		//the reference name is built-in the code right now.
 		referenceAlignmentMatcher = null;
-		String conf = param.configuration;
-		
 		K = param.K;
 		M = param.M;
+		String conf = param.configuration;
+		
+
 		
 		
 		if(conf.equals(AUTO_101_301)){
@@ -565,9 +566,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 				eDSI.addInputMatcher(this);
 				
 				eDSI.match();
-
-				
-
 				eDSI.select(); // will contain values that already filtered.
 
 				// choose only alignments that are not filtered
@@ -724,20 +722,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 		return newAlignments;
 	}
 	
-	// check to see if a Node concept is in the reference alignment  
-	public boolean isInReferenceAlignment( Node nc ) {
-		if( referenceAlignmentMatcher == null ) { return false; } // we cannot check the reference alignment if it not loaded
-		AlignmentSet<Alignment> cset = referenceAlignmentMatcher.getClassAlignmentSet();
-		AlignmentSet<Alignment> pset = referenceAlignmentMatcher.getPropertyAlignmentSet();
-		
-		if( !nc.isProp() ) {
-			return cset.contains(nc) != null;
-		} else {
-			return pset.contains(nc) != null;
-		}
-		
-	}
-	
 	// an alignment with this node has been validated by the user
 	public boolean isValidated( Node nc ) {
 		if( referenceAlignmentMatcher == null ) { return false; } // we cannot check the reference alignment if it is not loaded
@@ -753,4 +737,20 @@ public class FeedbackLoop extends AbstractMatcher  {
 	public void setParam( FeedbackLoopParameters p ) {
 		this.param = p;
 	}
+	
+	// check to see if a Node concept is in the reference alignment  
+	public boolean isInReferenceAlignment( Node nc ) {
+		if( referenceAlignmentMatcher == null ) { return false; } // we cannot check the reference alignment if it not loaded
+		AlignmentSet<Alignment> cset = referenceAlignmentMatcher.getClassAlignmentSet();
+		AlignmentSet<Alignment> pset = referenceAlignmentMatcher.getPropertyAlignmentSet();
+		
+		if( !nc.isProp() ) {
+			return cset.contains(nc) != null;
+		} else {
+			return pset.contains(nc) != null;
+		}
+		
+	}
+	
+
 }

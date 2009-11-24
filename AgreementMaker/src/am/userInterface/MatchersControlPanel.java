@@ -109,6 +109,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		thresholdCombo.setSelectedItem("60%");
 		//Relations combo
 		Object[] numRelList = Utility.getNumRelList();
+		
+		
 		sRelLabel = new JLabel("Source relations");
 		sRelationCombo = new JComboBox(numRelList);
 		sRelationCombo.setSelectedItem(1);
@@ -164,8 +166,6 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		importAlignmentsButton.addActionListener(this);
 		thresholdTuning = new JButton("Tuning");
 		thresholdTuning.addActionListener(this);
-		
-		
 		JPanel panel3 = new JPanel();
 		panel3.setLayout(new FlowLayout(FlowLayout.LEADING));
 		panel3.add(newMatching);

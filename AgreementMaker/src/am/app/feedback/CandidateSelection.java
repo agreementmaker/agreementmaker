@@ -251,7 +251,6 @@ public class CandidateSelection {
 		
 		return subList;
 		
-		
 	}
 
 
@@ -259,13 +258,7 @@ public class CandidateSelection {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
-	
-	
-	
-	
-	
+
 	// get a new measure instance given the MeasuresRegistry
 	private RelevanceMeasure getMeasureInstance(MeasuresRegistry name ) {
 		

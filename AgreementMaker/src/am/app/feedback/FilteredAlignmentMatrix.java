@@ -185,8 +185,12 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 				//maxAlignments contains the ordered list of max alignments, the first is the best max value
 				for(int k = 0;k<maxAlignments.length; k++) {
 					currentMax = maxAlignments[k];
-					if( currentMax == null ) {
-						maxAlignments[k] = currentValue;
+					if(currentMax == null) {
+						if(k>0 && currentValue.equals(maxAlignments[k-1]))
+							break;
+						else{
+							maxAlignments[k] = currentValue;
+						}
 					} else if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value							
 						maxAlignments[k] = currentValue;
 						currentValue = currentMax;

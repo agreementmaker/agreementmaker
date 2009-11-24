@@ -317,10 +317,6 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 	public void showScreen_Start() {
 		
 		removeAll();
-		btn_start = new JButton("Start");
-		btn_start.addActionListener(this);
-		btn_start.setActionCommand("btn_start");
-		
 		JLabel lblParameters = new JLabel("Parameters:");
 		JLabel lblMatcher = new JLabel("Automatic Initial Matcher:");
 		JLabel lblHighThreshold = new JLabel("High threshold:");
@@ -330,6 +326,16 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		JLabel lblIterations = new JLabel("Maximum iteration:");
 		JLabel lblK = new JLabel("Num candidate concepts K:");
 		JLabel lblM = new JLabel("Num candidate mappings M:");
+		btn_start = new JButton("Start");
+		btn_start.addActionListener(this);
+		btn_start.setActionCommand("btn_start");
+	
+		
+		
+		
+		
+		
+
 		
 		
 		//matcher combo list
@@ -342,7 +348,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		cmbHighThreshold = new JComboBox( Utility.getPercentDecimalsList() );
 		cmbHighThreshold.setSelectedItem("0.7");
 		cmbLowThreshold = new JComboBox( Utility.getPercentDecimalsList() );
-		cmbLowThreshold.setSelectedItem("0.05");
+		cmbLowThreshold.setSelectedItem("0.0");
 		
 		String[] integers = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 		cmbK = new JComboBox( integers );
@@ -521,12 +527,6 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		btn_stop.setActionCommand("btn_stop");
 		btn_stop.addActionListener(this);
 		
-		
-		//JLabel lbl_candidate = new JLabel("Candidate Mappings:");
-		
-
-		
-		
 		//Division of mappings into groups
 		//the first two arraylists were only needed for the GroupLayout,
 		//instead using the JTable we only need the list of CandidadatesTableRows
@@ -625,86 +625,10 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		//repaint();
 		revalidate();
 		
-		
-		/*GROUP LAYOUT HAS BEEN CHANGED TO INTRODUCE THE TABLE
-		JPanel centralContainer  = new JPanel();
-		GroupLayout groupLayout = new GroupLayout(centralContainer);
-		groupLayout.setAutoCreateGaps(true);
-		groupLayout.setAutoCreateContainerGaps(true);
-		
-		
-		//Creation of groups for the candidate lists.
-		ParallelGroup candidateHorizGroups = groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
-		SequentialGroup candidateVertGroups = groupLayout.createSequentialGroup();
-		int radioIndex = 0;
-		for(int i=0; i< groups.size(); i++){
-			ArrayList<Alignment> group = groups.get(i);
-			JLabel groupLabel = new JLabel("Group "+(i+1));
-			JSeparator groupSep = new JSeparator();
-			//Hotizontal stuff
-			SequentialGroup horizSingleGroup = groupLayout.createSequentialGroup();
-			ParallelGroup horizCandidatesGroup = groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
-			//vertical stuff
-			ParallelGroup vertSingleGroup = groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER);
-			SequentialGroup vertCandidatesGroup = groupLayout.createSequentialGroup();
-			//add mappings to candidate groups
-			Iterator<Alignment> it = group.iterator();
-			while(it.hasNext()){
-				it.next();
-				JRadioButton radio = mappingsRadios.get(radioIndex);
-				radioIndex+=1;
-				horizCandidatesGroup.addComponent(radio);
-				vertCandidatesGroup.addComponent(radio);
-			}
-			
-			//add all items to the horizontal group
-			horizSingleGroup.addGap(50);
-			horizSingleGroup.addComponent(groupLabel)
-							.addGroup(horizCandidatesGroup);
-			candidateHorizGroups.addGroup(horizSingleGroup);
-			candidateHorizGroups.addComponent(groupSep);
-			//add all items to the vertical group
-			vertSingleGroup.addComponent(groupLabel)
-						   .addGroup(vertCandidatesGroup);
-			candidateVertGroups.addGroup(vertSingleGroup);
-			candidateVertGroups.addComponent(groupSep);
-			
-		}
-		
-		//create groups of candidates.
-		
-		// Here we define the horizontal and vertical groups for the layout.
-		// Both definitions are required for the GroupLayout to be complete.
-		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						//.addComponent(topLabel) 
-						.addGroup(groupLayout.createSequentialGroup()
-								.addComponent(btn_correct) 			
-						//.addComponent(combOperationsCombo,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
-								.addComponent(btn_incorrect)
-								.addComponent(btn_stop)
-						)
-						//.addComponent(topCandLabel)
-						.addGroup(candidateHorizGroups)
-		);
-		// the Vertical group is the same structure as the horizontal group
-		// but Sequential and Parallel definition are exchanged
-		groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
-						//.addComponent(topLabel)
-						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-								.addComponent(btn_correct) 	
-								.addComponent(btn_incorrect)
-								.addComponent(btn_stop)
-						)
-						//.addGap(20)
-						//.addComponent(topCandLabel)
-						.addGroup(candidateVertGroups)
-		);
-		
-		
-
+		//THIS layout has been changed
 		//the grouplayout contains all the item,but without the horizBox, the group is placed on the left of the screen.
 		//this is needed to put the Group in the center.
-		 * 		//centralContainer.setLayout(groupLayout);
+			//centralContainer.setLayout(groupLayout);
 		//Box horizontalBox = Box.createHorizontalBox();
 		//horizontalBox.add(Box.createHorizontalGlue());
 		//horizontalBox.add(centralContainer);
@@ -713,7 +637,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		//this.setLayout(new GridLayout(1,1));
 		//this.setLayout(new FlowLayout());
 		//this.add(horizontalBox);
-		*/
+		
 	}
 
 
