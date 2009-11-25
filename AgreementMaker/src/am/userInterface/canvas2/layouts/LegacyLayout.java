@@ -1029,7 +1029,7 @@ public class LegacyLayout extends Canvas2Layout {
 						selectedNode.setSelected(false); // deselect the node
 						if( visibleVertices.contains( (Canvas2Vertex) selectedNode ) ) {
 							// redraw only if it's currently visible
-							selectedNode.clearDrawArea(g);
+							//selectedNode.clearDrawArea(g);
 							selectedNode.draw(g);
 						}
 					}
@@ -1046,7 +1046,7 @@ public class LegacyLayout extends Canvas2Layout {
 							selectedNodes.add((LegacyNode) hoveringOver);
 						}
 						
-						hoveringOver.clearDrawArea(g);
+						//hoveringOver.clearDrawArea(g);
 						hoveringOver.draw(g);
 					} else { // control is not pressed, clear any selections that there may be, and select single node
 						
@@ -1056,7 +1056,7 @@ public class LegacyLayout extends Canvas2Layout {
 							selectedNode.setSelected(false); // deselect the node
 							if( visibleVertices.contains( (Canvas2Vertex) selectedNode ) ) {
 								// redraw only if it's currently visible
-								selectedNode.clearDrawArea(g);
+								//selectedNode.clearDrawArea(g);
 								selectedNode.draw(g);
 							}
 						}
@@ -1065,7 +1065,7 @@ public class LegacyLayout extends Canvas2Layout {
 						// select single node
 						hoveringOver.setSelected(true);
 						selectedNodes.add( (LegacyNode)hoveringOver);
-						hoveringOver.clearDrawArea(g);
+						//hoveringOver.clearDrawArea(g);
 						hoveringOver.draw(g);
 					}
 				}
@@ -1127,13 +1127,13 @@ public class LegacyLayout extends Canvas2Layout {
 				} else if( hoveringOver != null ) {
 					// we had been hovering over something, but now we're not
 					hoveringOver.setHover(false);
-					hoveringOver.clearDrawArea(g);
+					//hoveringOver.clearDrawArea(g);
 					hoveringOver.draw(g);
 				}
 				
 				hoveringOver = vertex;
 				hoveringOver.setHover(true);
-				hoveringOver.clearDrawArea(g);
+				//hoveringOver.clearDrawArea(g);
 				hoveringOver.draw(g);
 				break;
 				
@@ -1143,7 +1143,7 @@ public class LegacyLayout extends Canvas2Layout {
 		if( hoveringOverEmptySpace && hoveringOver != null) {
 			// clear the hover
 			hoveringOver.setHover(false);
-			hoveringOver.clearDrawArea(g);
+			//hoveringOver.clearDrawArea(g);
 			hoveringOver.draw(g);
 			hoveringOver = null;
 		}
