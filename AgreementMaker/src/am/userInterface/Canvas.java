@@ -1,6 +1,5 @@
 package am.userInterface;
 
-import java.io.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -20,7 +19,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 
 import am.GlobalStaticVariables;
 import am.Utility;
@@ -34,8 +32,6 @@ import am.app.ontology.ontologyParser.TreeBuilder;
 import am.userInterface.vertex.Vertex;
 import am.userInterface.vertex.VertexDescriptionPane;
 import am.userInterface.vertex.VertexLine;
-
-import java.util.Date;
 
 /**
  * Canvas class is responsible for all the contents inside the canvas such as
@@ -755,7 +751,7 @@ public class Canvas extends VisualizationPanel implements MouseListener, ActionL
 		}
 	}
 	
-	private void displayAlignmentSet(Graphics g, AbstractMatcher matcher, AlignmentSet aset) {
+	private void displayAlignmentSet(Graphics g, AbstractMatcher matcher, AlignmentSet<Alignment> aset) {
 		if(aset != null) {
 			Alignment a = null;
 			for(int i = 0; i < aset.size(); i++) {
@@ -1501,7 +1497,7 @@ public class Canvas extends VisualizationPanel implements MouseListener, ActionL
 	}
 	
 	/**
-	 * This function recursivly sets the Vertex and its desendents to be visible or invisible
+	 * This function recursively sets the Vertex and its descendants to be visible or invisible
 	 * based on the int; If int is 0 the node will collapse, else it will expand
 	 *
 	 * @param targetNode node to collapse or expand
