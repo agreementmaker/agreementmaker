@@ -131,9 +131,11 @@ public class FeedbackLoop extends AbstractMatcher  {
 	
 	public void match() throws Exception{
 		matchStart();
+		
 		FeedbackLoopParameters param = (FeedbackLoopParameters)this.param;
 		SelectionPanel progressDisplay = (SelectionPanel)this.progressDisplay;
-		
+		//the first time we write in the report we use the DISPLAY method, the other times we use the APPEND method
+		progressDisplay.displayReportText("User Feedback Loop is started.");
 		// the user has to load the ontologies.
 		if( Core.getInstance().getSourceOntology() == null || Core.getInstance().getTargetOntology() == null ) {
 			Utility.displayErrorPane("Two ontologies must be loaded into AgreementMaker before the matching can begin.", "Ontologies not loaded." );

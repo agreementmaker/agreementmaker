@@ -97,7 +97,6 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		ui = u;
 		//Initialized here so that we don't reset the report text at each iteration
 		matcherReport = new JTextArea(8, 35);
-		matcherReport.setText("User Feedback Loop is started.");
 	}
 	
 	

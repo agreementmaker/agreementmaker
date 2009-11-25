@@ -10,11 +10,16 @@ public class CandidatesTableRow {
 	public JRadioButton radio;//maybe this is not needed;
 	public Alignment mapping;
 	public int group;
+	String type;
 
 	public CandidatesTableRow(int ind, Alignment map, int g, JRadioButton jr){
 		index = ind;
 		mapping = map;
 		group = g;
 		radio = jr;
+		if(map.getEntity1().isProp()){
+			type = "Property";
+		}
+		else type = "Class";
 	}
 }

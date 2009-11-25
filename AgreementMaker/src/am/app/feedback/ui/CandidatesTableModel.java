@@ -25,6 +25,7 @@ public class CandidatesTableModel extends AbstractTableModel {
 	public final static int C3_TARGET =C2_SOURCE+1;
 	public final static int C4_SIMILARITY = C3_TARGET+1;
 	public final static int C5_GROUP = C4_SIMILARITY+1;
+	public final static int C6_TYPE = C5_GROUP+1;
 	
 	public String[] columnNames = {	
 									"Selection",
@@ -32,6 +33,7 @@ public class CandidatesTableModel extends AbstractTableModel {
 	                                "Target Concept",
 	                                "Similarity",
 	                                "Group",
+	                                "Mapping Type",
                                 };
         
 	public ArrayList<CandidatesTableRow> data;
@@ -41,7 +43,8 @@ public class CandidatesTableModel extends AbstractTableModel {
         		"0123456789012345678912345",
         		"0123456789012345678912345",
         		 "100%",
-        		 "Group 99"
+        		 "Group 99",
+        		 "Property"
                 };
 
         public CandidatesTableModel(ArrayList<CandidatesTableRow> rows) {
@@ -78,6 +81,8 @@ public class CandidatesTableModel extends AbstractTableModel {
                 		return Utility.getNoDecimalPercentFromDouble(a.mapping.getSimilarity());
                 	else if(col == C5_GROUP)
                 		return "Group "+a.group;
+                	else if(col == C6_TYPE)
+                		return a.type;
                 	else return null;
             	}
             	catch(Exception e) {
