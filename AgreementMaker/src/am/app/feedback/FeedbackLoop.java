@@ -353,7 +353,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			
 			iteration++;
-			progressDisplay.appendNewLineReportText(PRINT_LINE+"\nStarting iteration "+iteration);
+			
 			if(automatic){
 				if(iteration % evaluationSpin == 0){//This is to print results every evaluationSpin iterations
 					AlignmentSet<Alignment> partialSet = getAlignmentSet();
@@ -377,6 +377,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 				System.out.println( ">>> Stopping loop after " + Integer.toString(param.iterations) + " iterations." );
 				break;
 			}
+			progressDisplay.appendNewLineReportText(PRINT_LINE+"\nStarting iteration "+iteration);
 			
 			total_new += (classesToBeFiltered.size() + propertiesToBeFiltered.size());
 			System.out.println("Current iteration: "+iteration+" - Mappings found this iteration: "+
