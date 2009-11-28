@@ -39,6 +39,7 @@ import am.AMException;
 import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
+import am.app.feedback.CandidateConcept;
 import am.app.feedback.FeedbackLoop;
 import am.app.feedback.FeedbackLoopParameters;
 import am.app.mappingEngine.AbstractMatcher;
@@ -80,6 +81,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
     private JScrollPane scrollingArea;
     private JButton okButton;
     private JButton cancelButton;
+
 	
     
     //TaBLE
@@ -87,7 +89,8 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
     ButtonGroup radios;
 	
 	Alignment selectedMapping;
-	AlignmentSet<Alignment> candidateMappings;
+	CandidateConcept selectedConcept;
+	ArrayList<CandidateConcept> candidateMappings;
 	
 	UI ui;
 	
@@ -125,19 +128,26 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 			    }
 			} else if( arg0.getActionCommand() == "screen2_cancel" ) {
 			 	ufl.cancel(true);
-				selectedMapping = null;
 				showScreen_Start();
 			} else if( arg0.getActionCommand() == "btn_correct" ) {
 				// the user has selected a correct mapping
 				if(radios.getSelection() != null){
 					String selectedAlignment = radios.getSelection().getActionCommand();
-					selectedMapping = candidateMappings.getAlignment( Integer.parseInt(selectedAlignment));
+					//actionCommand is "candidateConcept-candidateMapping"
+					String[] indexes = selectedAlignment.split("-");
+					int concept = Integer.parseInt(indexes[0]);
+					int mapping = Integer.parseInt(indexes[1]);
+					selectedConcept = candidateMappings.get(concept);
+					selectedMapping = selectedConcept.getCandidateMappings().get(mapping);
 					displayProgressScreen();
 					ufl.setExectionStage( FeedbackLoop.executionStage.afterUserInterface );
 				}
+				else{
+					Utility.displayErrorPane("Select a candidate mapping.", null);
+				}
 			} else if( arg0.getActionCommand() == "btn_incorrect" ) {
 				// the user cannot find any correct mappings
-				selectedMapping = null;
+				//the selectedMapping is set null at the beginning of the displayMappings() and remains null
 				displayProgressScreen();
 				ufl.setExectionStage( FeedbackLoop.executionStage.afterUserInterface );
 
@@ -148,21 +158,46 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 				ufl.setExectionStage( FeedbackLoop.executionStage.presentFinalMappings );
 			}
 			 else if( arg0.getActionCommand() == "btn_ok") {
-					// the user has selected to stop the loop
-				 	ufl.cancel(true);
-					selectedMapping = null;
+				 	//ufl.cancel(true);
 					showScreen_Start();
 					//ufl.setExectionStage( FeedbackLoop.executionStage.presentFinalMappings );
 			 }
-			 else if( arg0.getActionCommand() == "btn_display") {
+			 else if( arg0.getActionCommand() == "btn_display_m") {
 					// the user has selected to display a single candidate mapping
 					if(radios.getSelection() != null){
 						String selectedAlignment = radios.getSelection().getActionCommand();
-						selectedMapping = candidateMappings.getAlignment( Integer.parseInt(selectedAlignment));
+						//actionCommand is candidateConcept-candidateMapping
+						String[] indexes = selectedAlignment.split("-");
+						int concept = Integer.parseInt(indexes[0]);
+						int mapping = Integer.parseInt(indexes[1]);
+						selectedConcept = candidateMappings.get(concept);
+						selectedMapping = selectedConcept.getCandidateMappings().get(mapping);
 						//TO DO
 						//INVOKE UI.displayMapping(m)
 						//change TAB, find the mapping and color it
 					}
+					else{
+						Utility.displayErrorPane("Select a candidate mapping.", null);
+					}
+			 }
+			 else if( arg0.getActionCommand() == "btn_display_c") {
+				// the user has selected to display a candidate mappings for a single candidate concept
+				if(radios.getSelection() != null){
+					String selectedAlignment = radios.getSelection().getActionCommand();
+					//actionCommand is candidateConcept-candidateMapping
+					String[] indexes = selectedAlignment.split("-");
+					int concept = Integer.parseInt(indexes[0]);
+					int mapping = Integer.parseInt(indexes[1]);
+					selectedConcept = candidateMappings.get(concept);
+					selectedMapping = selectedConcept.getCandidateMappings().get(mapping);
+					//TO DO
+					//INVOKE UI.displayMapping(selectedConcept.getCandidateMappings())
+					//change TAB, find the mappings and color them
+					//use selectedConcept.isType(alignType) to understand if it's source or target concept
+				}
+				else{
+					Utility.displayErrorPane("Select a candidate concept.", null);
+				}
 			 }
 		}
 		//catch(AMException ex2) {
@@ -232,7 +267,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		//}
 		progressBar.setIndeterminate(false);
 		progressBar.setValue(100);
-		matcherReport.append( ufl.getReport() );
+		matcherReport.append("\n"+ ufl.getReport() );
 		cancelButton.setEnabled(false);
 		okButton.setEnabled(true);
 		revalidate();
@@ -255,6 +290,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 
 	public Alignment getUserMapping() {
 		return selectedMapping;
+		
 	}
 
 
@@ -501,93 +537,55 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 	}
 	
 	
-	public void displayMappings( AlignmentSet<Alignment> mappings) {
+	public void displayMappings( ArrayList<CandidateConcept> topConceptsAndAlignments) {
 		
 		removeAll();
-
-		candidateMappings = mappings;
+		selectedMapping = null;
+		selectedConcept = null;
+		candidateMappings = topConceptsAndAlignments;
 	
 		//JLabel topLabel = new JLabel("Validation of candidate mappings");
 		//JLabel topCandLabel = new JLabel("Select at most one candidate mapping");
-		JButton btn_display = new JButton("View selected mapping");
-		btn_display.setActionCommand("btn_display");
-		btn_display.addActionListener(this);
-		JButton btn_correct = new JButton("Selected mapping is correct");
+		JButton btn_display_m = new JButton("Display mapping");
+		btn_display_m.setActionCommand("btn_display_m");
+		btn_display_m.addActionListener(this);
+		
+		JButton btn_display_c = new JButton("Display concept's mappings");
+		btn_display_c.setActionCommand("btn_display_c");
+		btn_display_c.addActionListener(this);
+		
+		JButton btn_correct = new JButton("Mapping correct");
 		btn_correct.setActionCommand("btn_correct");
 		btn_correct.addActionListener(this);
 		
 		
 		
-		JButton btn_incorrect = new JButton("All the mappings are incorrect");
+		JButton btn_incorrect = new JButton("Mappings incorrect");
 		btn_incorrect.setActionCommand("btn_incorrect");
 		btn_incorrect.addActionListener(this);
 		
-		JButton btn_stop = new JButton("Stop the user feedback loop");
+		JButton btn_stop = new JButton("Stop");
 		btn_stop.setActionCommand("btn_stop");
 		btn_stop.addActionListener(this);
 		
-		//Division of mappings into groups
+
+		
+		//Division of mappings into groups and rows, each group contains multiple rows
 		//the first two arraylists were only needed for the GroupLayout,
 		//instead using the JTable we only need the list of CandidadatesTableRows
 		radios = new ButtonGroup();
-		ArrayList<ArrayList<Alignment>> groups = new ArrayList<ArrayList<Alignment>>();//NOT USED ANYMORE
-		ArrayList<Alignment> currentGroup = new ArrayList<Alignment>();//NOT USED ANYMORE
 		ArrayList<CandidatesTableRow> rows = new ArrayList<CandidatesTableRow>();
-		int groupNumber = 1;
-		groups.add(currentGroup);
-		boolean sourceOrTarget = false;
-		for(int i=0; i< mappings.size(); i++){
-			Alignment m = mappings.getAlignment(i);
-			boolean newGroup = false;
-			if(currentGroup.size() == 0){
-				//first mapping of the group, just add it
-			}
-			else if(currentGroup.size() == 1){
-				//second mapping, I have to check if it's part of the same group.
-				//I have to understand if the group is equal on source or target
-				Alignment previous = currentGroup.get(0);
-				if(previous.getEntity1().equals(m.getEntity1())){
-					sourceOrTarget = true;
-				}
-				else if(previous.getEntity2().equals(m.getEntity2())){
-					sourceOrTarget = false;
-				}
-				else{
-					//different nodes, just create a new group
-					newGroup = true;
-				}
-			}
-			else{
-				//currentGroup.size() >1
-				Alignment previous = currentGroup.get(1);//any mapping of the group is fine
-				if(sourceOrTarget){//they must have the same source
-					if(previous.getEntity1().equals(m.getEntity1())){
-						//add the mapping to the same group
-					}
-					else{
-						//different nodes, just create a new group
-						newGroup = true;
-					}
-				}
-				else{//they must have the same target
-					if(previous.getEntity2().equals(m.getEntity2())){
-						//do nothing
-					}
-					else{
-						//different nodes, just create a new group
-						newGroup = true;
-					}
+		for(int i=0; i< topConceptsAndAlignments.size(); i++){
+			CandidateConcept c = topConceptsAndAlignments.get(i);
+			ArrayList<Alignment> candidateMappings = c.getCandidateMappings();
+			if(candidateMappings!= null){
+				for(int j = 0; j < candidateMappings.size(); j++){
+					Alignment m = candidateMappings.get(j);
+					rows.add(createTableRow(c,m, i, j));
 				}
 			}
 			
-			if(newGroup){
-				//different nodes, just create a new group
-				currentGroup = new ArrayList<Alignment>();
-				groups.add(currentGroup);
-				groupNumber+=1;
-			}
-			currentGroup.add(m);
-			rows.add(createTableRow(i, m, groupNumber));
+			
 		}
 
 		//Table of candidates
@@ -605,7 +603,8 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		FlowLayout topPanelLayout = new FlowLayout();
 		topPanelLayout.setAlignment(FlowLayout.CENTER);
 		topPanel.setLayout(topPanelLayout);
-		topPanel.add(btn_display);
+		topPanel.add(btn_display_m);
+		topPanel.add(btn_display_c);
 		topPanel.add(btn_correct);
 		topPanel.add(btn_incorrect);
 		topPanel.add(btn_stop);
@@ -645,7 +644,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 
 
 
-	private CandidatesTableRow createTableRow(int i, Alignment m, int groupNumber) {
+	private CandidatesTableRow createTableRow(CandidateConcept c, Alignment m, int groupNumber, int indexWithinTheGroup) {
 		//controls made by Cosmin
 		Alignment cA = m;
 		if( cA == null ) {
@@ -660,10 +659,10 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		}
 			
 		JRadioButton button = new JRadioButton();
-		button.setActionCommand(Integer.toString(i));
+		//each button is identified by "indexOfTheGroup-indexInTheGroup
+		button.setActionCommand(groupNumber+"-"+indexWithinTheGroup);
 		radios.add(button);
-		return new CandidatesTableRow(i, m, groupNumber, button);
-		
+		return new CandidatesTableRow(c, groupNumber,indexWithinTheGroup, button);
 	}
 
 	public void displayReportText(String report){

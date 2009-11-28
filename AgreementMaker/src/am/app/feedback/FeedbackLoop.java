@@ -3,8 +3,11 @@ package am.app.feedback;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import sun.awt.CausedFocusEvent.Cause;
+
 import am.Utility;
 import am.app.Core;
+import am.app.feedback.CandidateConcept.ontology;
 import am.app.feedback.matchers.ExtrapolatingDSI;
 import am.app.feedback.matchers.ExtrapolatingFS;
 import am.app.feedback.ui.SelectionPanel;
@@ -65,6 +68,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 	private int M = 2;
 	
 	private boolean automatic;
+	
+	private CandidateSelection candidateSelection; 
 	//configurations
 	public final static String MANUAL = "Manual";
 	
@@ -123,6 +128,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 	public FeedbackLoop() {
 		setStage( executionStage.notStarted );
 		needsParam = true;
+		candidateSelection = new CandidateSelection(this);
 	}
 	
 	public void setExectionStage( executionStage st ) {
@@ -413,19 +419,30 @@ public class FeedbackLoop extends AbstractMatcher  {
 			setStage( executionStage.runningCandidateSelection );
 			progressDisplay.appendNewLineReportText("Candidates Selection:");
 			// TODO: run the candidate selection here
-			CandidateSelection cs = new CandidateSelection(this);
+			//the candidateSelection is now initialized in the UFL constructor
+			//because we want to keep track of the relevance evaluations to avoid computing them at each itearation
+			candidateSelection.runMeasures();
 			
-			cs.runMeasures();
+			ArrayList<CandidateConcept> topConceptsAndAlignments = candidateSelection.getCandidateAlignments( K, M);
 			
-			AlignmentSet<Alignment> topAlignments = cs.getCandidateAlignments( K, M);
-			progressDisplay.appendNewLineReportText("Found "+Integer.toString(topAlignments.size()) + " candidate alignments.");
-			System.out.println( "Candidate Selection: Found " + Integer.toString(topAlignments.size()) + " candidate alignments.");
-			
-			for( int aCandidate = 0; aCandidate < topAlignments.size(); aCandidate++ ) {
-				Alignment candidateAlignment = topAlignments.getAlignment(aCandidate);
-				System.out.println( "  " + Integer.toString(aCandidate) + ". " + candidateAlignment.toString() );
-						
+			//PRINTING
+			System.out.println("Printing Candidate Mappings: ");	
+			int numCandidateMappings = 0;//this value is not only used for printing
+			for(int i= 0; i<topConceptsAndAlignments.size(); i++){
+				CandidateConcept c = topConceptsAndAlignments.get(i);
+				ArrayList<Alignment> candidateMappings = c.getCandidateMappings();
+				if(candidateMappings!= null){
+					numCandidateMappings += candidateMappings.size();
+					for( int aCandidate = 0; aCandidate < candidateMappings.size(); aCandidate++ ) {
+						Alignment candidateAlignment = candidateMappings.get(aCandidate);
+						System.out.println( " Candidate Concept: "+i+" "+c.getNode()+ ", Candidate Mapping: " + Integer.toString(aCandidate) + ". " + candidateAlignment.toString() );	
+					}
+				}
 			}
+			progressDisplay.appendNewLineReportText("Found "+ numCandidateMappings + " candidate alignments.");
+			System.out.println( "Candidate Selection: Found " + numCandidateMappings + " candidate alignments.");
+			
+			
 			
 			setStage( executionStage.afterCandidateSelection );
 		
@@ -440,28 +457,34 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			if(automatic){  // AUTOMATIC USER VALIDATION: check with the reference if a mapping is correct
 				//no more candidates --> we stop
-				if(topAlignments.size() == 0){
+				if(numCandidateMappings == 0){
 					stop = true;
 					setStage( executionStage.presentFinalMappings );
 					break;  // break out of the feedback loop
 				}
 				else{  //validate mappings against the reference, only one mapping can be validated therefore we take the first correct
-					for(int i=0; i < topAlignments.size(); i++){
-						Alignment a = topAlignments.getAlignment(i);
-						if(a.getEntity1().isProp()){
-							// we are looking at a property alignment
-							if(referenceAlignmentMatcher.getPropertyAlignmentSet().contains(a.getEntity1(), a.getEntity2()) != null){
-								userMapping = a;
-								break;
+					for(int i=0; i < topConceptsAndAlignments.size(); i++){
+						CandidateConcept c = topConceptsAndAlignments.get(i);
+						ArrayList<Alignment> candidateMappings = c.getCandidateMappings();
+						if(candidateMappings!= null){
+							for(int j = 0; j < candidateMappings.size(); j++){
+								Alignment a = candidateMappings.get(j);
+								if(c.whichType.equals(alignType.aligningProperties)){
+									// we are looking at a property alignment
+									if(referenceAlignmentMatcher.getPropertyAlignmentSet().contains(a.getEntity1(), a.getEntity2()) != null){
+										userMapping = a;
+										break;
+									}
+								}
+								else{
+									// we are looking at a class alignment
+									if(referenceAlignmentMatcher.getClassAlignmentSet().contains(a.getEntity1(), a.getEntity2()) != null){
+										userMapping = a;
+										break;
+									}
+									
+								}
 							}
-						}
-						else{
-							// we are looking at a class alignment
-							if(referenceAlignmentMatcher.getClassAlignmentSet().contains(a.getEntity1(), a.getEntity2()) != null){
-								userMapping = a;
-								break;
-							}
-							
 						}
 					}
 
@@ -476,7 +499,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			}
 			
 			else{  //MANUAL: Display the mappings in the User Interface
-				progressDisplay.displayMappings(topAlignments);
+				progressDisplay.displayMappings(topConceptsAndAlignments);
 				
 				while( isStage(executionStage.runningUserInterface) ) {
 					// sleep while the user is using the interface
@@ -596,14 +619,19 @@ public class FeedbackLoop extends AbstractMatcher  {
 				System.out.println( "All candidate mappings are wrong, filtering out these mappings in the similarity matrix.");
 				
 				// when all the mappings are wrong they should be filtered from the similarity matrix (on a cell by cell basis)
-				for(int i=0; i < topAlignments.size(); i++){
-					Alignment a = topAlignments.getAlignment(i);
-					if(a.getEntity1().isProp()){
-						//This should work for OWL ontologies at least, I think however that classes and properties should have different loops.
-						propertiesMatrix.filterCell(a.getSourceKey(), a.getTargetKey());
-					}
-					else{
-						classesMatrix.filterCell(a.getSourceKey(), a.getTargetKey());
+				for(int i=0; i < topConceptsAndAlignments.size(); i++){
+					CandidateConcept c = topConceptsAndAlignments.get(i);
+					ArrayList<Alignment> candidateMappings = c.getCandidateMappings();
+					if(candidateMappings!= null){
+						for(int j = 0; j < candidateMappings.size(); j++){
+							Alignment a = candidateMappings.get(j);
+							if(c.whichType.equals(alignType.aligningProperties)){
+								propertiesMatrix.filterCell(a.getSourceKey(), a.getTargetKey());
+							}
+							else{
+								classesMatrix.filterCell(a.getSourceKey(), a.getTargetKey());
+							}
+						}
 					}
 				}
 			}
@@ -612,7 +640,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		
 			if( isCancelled() ) break;
 		} while( !stop );
-		progressDisplay.appendNewLineReportText(PRINT_LINE+"The Feedback Loop is terminated.");
+		progressDisplay.appendNewLineReportText(PRINT_LINE+"\nThe Feedback Loop is terminated.");
 		
 		if(automatic){
 			System.out.println("////////Parameters////////////");
@@ -725,17 +753,32 @@ public class FeedbackLoop extends AbstractMatcher  {
 		return newAlignments;
 	}
 	
-	// an alignment with this node has been validated by the user
-	public boolean isValidated( Node nc ) {
-		if( referenceAlignmentMatcher == null ) { return false; } // we cannot check the reference alignment if it is not loaded
-	
-		if( !nc.isProp() ) {
-			return classesAlignmentSet.contains(nc) != null;
-		} else { 
-			return propertiesAlignmentSet.contains(nc) != null;
-		}
-		
+	public boolean isCandidateConceptValidated(CandidateConcept c){
+		return isNodeValidated(c.getNode(), c.whichType, c.whichOntology);
 	}
+	
+	public boolean isNodeValidated(Node n, alignType align, ontology ontType){
+		FilteredAlignmentMatrix classesMatrix = (FilteredAlignmentMatrix)this.classesMatrix;
+		FilteredAlignmentMatrix propertiesMatrix = (FilteredAlignmentMatrix)this.propertiesMatrix;
+		
+		if(align.equals(alignType.aligningClasses)){
+			if(ontType.equals(ontology.source)){
+				return classesMatrix.isRowFiltered(n.getIndex());
+			}
+			else{
+				return classesMatrix.isColFiltered(n.getIndex());
+			}
+		}
+		else{
+			if(ontType.equals(ontology.source)){
+				return propertiesMatrix.isRowFiltered(n.getIndex());
+			}
+			else{
+				return propertiesMatrix.isColFiltered(n.getIndex());
+			}
+		}
+	}
+
 	
 	public void setParam( FeedbackLoopParameters p ) {
 		this.param = p;

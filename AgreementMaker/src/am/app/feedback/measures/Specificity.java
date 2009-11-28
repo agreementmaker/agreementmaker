@@ -73,10 +73,10 @@ public class Specificity extends RelevanceMeasure {
 			
 			Node curr = childrenList.get(i).getNode();
 			
-			if( !fbl.isValidated(curr) ) {
+			//if( !fbl.isValidated(curr) ) {
 				double specificity = (1 / Depth) * ( 1 / Fanout);
 				candidateList.add( new CandidateConcept( childrenList.get(i).getNode(), specificity, whichOntology, whichType ));
-			}	
+			//}	
 			visitNode( childrenList.get(i), depth + 1 );
 		}
 		

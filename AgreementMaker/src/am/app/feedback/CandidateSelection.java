@@ -23,63 +23,68 @@ public class CandidateSelection {
 	
 	// relevance measures
 	public enum MeasuresRegistry {
-		FamilialSimilarity ( FamilialSimilarity.class ),
-		Specificity	( Specificity.class ),
-		InformationGain ( InformationGain.class );
-		//RepeatingPatterns( RepeatingPatterns.class)
+		FamilialSimilarity ( FamilialSimilarity.class, false ),
+		Specificity	( Specificity.class, false ),
+		InformationGain ( InformationGain.class, true );
+		//RepeatingPatterns( RepeatingPatterns.class, false)
 		
 		
 		private String measure;
+		private boolean dynamic;//if true means that this relevance has to be computed at each iteration because it can change
 		
-		MeasuresRegistry( Class<?> classname ) { measure = classname.getName(); }
+		MeasuresRegistry( Class<?> classname, boolean dyn ) { 
+			measure = classname.getName(); 
+			dynamic = dyn;
+		}
 		public String getMeasureClass() { return measure; }
+		
+		public boolean isDynamic(){
+			return dynamic;
+		}
 		
 	}
 	
 	
 	
-	ArrayList<RelevanceMeasure> measures;
-	ArrayList<ConceptList> relevanceLists;
+	RelevanceMeasure[] measures;
 	FeedbackLoop fbL;
 	
 	
 	public CandidateSelection(FeedbackLoop feedbackLoop) {
 		fbL = feedbackLoop;
+		measures = new RelevanceMeasure[MeasuresRegistry.values().length];
 	}
 
 
 	// create and run all the relevance measures
 	public void runMeasures() {
-	
-		measures = new ArrayList<RelevanceMeasure>();
-
-		EnumSet<MeasuresRegistry> mrs = EnumSet.allOf(MeasuresRegistry.class);
+		MeasuresRegistry[] mrs = MeasuresRegistry.values();
 		
-		Iterator<MeasuresRegistry> mi = mrs.iterator();
-		
-		while( mi.hasNext() ) {
-			MeasuresRegistry name = mi.next();
-			RelevanceMeasure m = getMeasureInstance( name );
-			if( m != null ) {
-				m.setName(name);
-				m.calculateRelevances();
-				m.printCandidates();
-				measures.add(m);
+		//THe first UFL iteration all measures are initialized
+		//in the next iterations, only dynamic measures are reinitialized while for the others we keep using the same
+		for(int i = 0; i < mrs.length; i++){
+			MeasuresRegistry name = mrs[i];
+			RelevanceMeasure measure = measures[i];
+			if(measure == null || name.isDynamic()){//First iterations for all, or only dynamic in the others
+				measure = getMeasureInstance( name );
+				if( measure != null ) {
+					measure.setName(name);
+					measure.calculateRelevances();
+					measure.printCandidates();
+					measures[i] = measure;
+				}
 			}
 		}
-		
-		return;
 	}
 	
 	
-	public AlignmentSet<Alignment> getCandidateAlignments( int k, int m ) {
+	public ArrayList<CandidateConcept> getCandidateAlignments( int k, int m ) {
 
-		relevanceLists = new ArrayList<ConceptList>();
+		ArrayList<ConceptList> relevanceLists = new ArrayList<ConceptList>();
 		
 		// get the ConceptList from each relevance measure
-		Iterator<RelevanceMeasure> m1 = measures.iterator();
-		while( m1.hasNext() ) {
-			relevanceLists.add( m1.next().getRelevances() );
+		for(int i = 0; i < measures.length; i++){
+			relevanceLists.add( measures[i].getRelevances());
 		}
 
 		double totalSpread = 0.00d;
@@ -106,21 +111,21 @@ public class CandidateSelection {
 		ArrayList<CandidateConcept> masterList = new ArrayList<CandidateConcept>();
 		
 		ArrayList<Node> list = s.getClassesList();
-		masterList.addAll( getCombinedRelevances( list, CandidateConcept.ontology.source, alignType.aligningClasses ) );
+		masterList.addAll( getCombinedRelevances( relevanceLists, list, CandidateConcept.ontology.source, alignType.aligningClasses ) );
 
 		list = s.getPropertiesList();
-		masterList.addAll( getCombinedRelevances(list, CandidateConcept.ontology.source, alignType.aligningProperties));
+		masterList.addAll( getCombinedRelevances(relevanceLists, list, CandidateConcept.ontology.source, alignType.aligningProperties));
 		
 		list = t.getClassesList();
-		masterList.addAll( getCombinedRelevances( list, CandidateConcept.ontology.target, alignType.aligningClasses ) );
+		masterList.addAll( getCombinedRelevances(relevanceLists,  list, CandidateConcept.ontology.target, alignType.aligningClasses ) );
 		
 		list = t.getPropertiesList();
-		masterList.addAll( getCombinedRelevances(list, CandidateConcept.ontology.target, alignType.aligningProperties) );
+		masterList.addAll( getCombinedRelevances(relevanceLists, list, CandidateConcept.ontology.target, alignType.aligningProperties) );
 		
 		
 		
 		// we now have the masterList, sort it.
-		Collections.sort( masterList );  // ASCENDING ORDER --- TOP VALUES AT END OF LIST
+		Collections.sort( masterList, Collections.reverseOrder() );  //NOT ANYMORE ASCENDING ORDER --- TOP VALUES AT END OF LIST
 		
 		System.out.println("");
 		System.out.println("***** The MASTER list:");
@@ -130,16 +135,78 @@ public class CandidateSelection {
 		}
 		
 		
-		
+		//we are considering the first K non validated concepts with at least one candidate mapping
 		ArrayList<CandidateConcept> topK = new ArrayList<CandidateConcept>();
-		if(masterList.size() < k){
-			topK.addAll( masterList);
+		Iterator<CandidateConcept> it = masterList.iterator();
+		while(it.hasNext() && topK.size() < k){
+			CandidateConcept top1 = it.next();
+			if(!fbL.isCandidateConceptValidated(top1)){
+				//topMappings contains the top M mappings for top1 candidate concept
+				ArrayList<Alignment> topMappings = new ArrayList<Alignment>();
+				Alignment[] topM;
+
+				System.out.println("\nCandidate Selection: ConceptCandidate -> Alignment Translation, working with \"" + top1.toString() + "\"." );
+				
+				System.out.print("\t# concept is ");
+				if( top1.isType( alignType.aligningClasses ) ) {
+					System.out.print(" a class, in ");
+					// we're looking in the classes matrix
+					if( top1.isFromOntology(  CandidateConcept.ontology.source ) ) {
+						// source concept
+						System.out.println("source ontology");
+						topM = fbL.getClassesMatrix().getRowMaxValues( top1.getIndex(), m);
+					} 
+					else {
+						// target concept
+						System.out.println("target ontology");
+						topM = fbL.getClassesMatrix().getColMaxValues( top1.getIndex(), m);
+					}
+					
+					if( topM != null ) {
+						for( int i1 = 0; i1 < topM.length; i1++ ) {
+							if( topM[i1] != null ) topM[i1].setAlignmentType( alignType.aligningClasses );
+						}
+					}
+					
+				} 	
+				else {
+					// we're looking in the properties matrix
+					System.out.print(" a property, in ");
+					if( top1.isFromOntology( CandidateConcept.ontology.source ) ) {
+						// source concept
+						System.out.println("source ontology");
+						topM = fbL.getPropertiesMatrix().getRowMaxValues( top1.getIndex(), m);
+					} 
+					else {
+						// target concept
+						System.out.println("target ontology");
+						topM = fbL.getPropertiesMatrix().getColMaxValues( top1.getIndex(), m);
+					}
+					
+					if( topM != null ) {
+						for( int i1 = 0; i1 < topM.length; i1++ ) {
+							if( topM[i1] != null ) topM[i1].setAlignmentType( alignType.aligningProperties );
+						}
+					}
+					
+				}
+				
+				if( topM != null ) {
+					for( int i1 = 0; i1 < m; i1++ ) {
+						if( topM[i1] != null && topM[i1].getSimilarity() != -1 ) {	
+							topMappings.add( topM[i1]);
+							System.out.println( "\t\tmapping "+Integer.toString(i1)+": "+ topM[i1].toString() );
+						}
+					}
+				}
+				
+				if(topMappings != null && topMappings.size() > 0){
+					top1.setCandidateMappings(topMappings);
+					topK.add(top1);
+				}
+			}
 		}
-		else{
-			topK.addAll( masterList.subList( masterList.size() - k, masterList.size()) );  // choose bottom k entries
-		}
-		
-		
+
 		System.out.println("\nCandidate Selection:  Top K=" + Integer.toString(k) + " CandidateConcepts:");
 		for( int ii = 0; ii < topK.size(); ii++ ) {
 			CandidateConcept cc = topK.get(ii);
@@ -147,86 +214,13 @@ public class CandidateSelection {
 			System.out.println( "   " + Integer.toString(ii)+ ". " + topK.get(ii).toString() + "  inref: " + Boolean.toString(isinref));
 		}
 		
-		
-		
-		// we have the topK, now convert the concepts to mappings
-		
-		AlignmentSet<Alignment> topMappings = new AlignmentSet<Alignment>();
-		
-		
-		Iterator<CandidateConcept> itr1 = topK.iterator();
-		while( itr1.hasNext() ) {
-			CandidateConcept top1 = itr1.next();
-			
-			Alignment[] topM = null;
-
-			System.out.println("\nCandidate Selection: ConceptCandidate -> Alignment Translation, working with \"" + top1.toString() + "\"." );
-			
-			System.out.print("\t# concept is ");
-			if( top1.isType( alignType.aligningClasses ) ) {
-				System.out.print(" a class, in ");
-				// we're looking in the classes matrix
-				if( top1.isFromOntology(  CandidateConcept.ontology.source ) ) {
-					// source concept
-					System.out.println("source ontology");
-					topM = fbL.getClassesMatrix().getRowMaxValues( top1.getIndex(), m);
-				} 
-				else {
-					// target concept
-					System.out.println("target ontology");
-					topM = fbL.getClassesMatrix().getColMaxValues( top1.getIndex(), m);
-				}
-				
-				if( topM != null ) {
-					for( int i1 = 0; i1 < topM.length; i1++ ) {
-						if( topM[i1] != null ) topM[i1].setAlignmentType( alignType.aligningClasses );
-					}
-				}
-				
-			} 	
-			else {
-				// we're looking in the properties matrix
-				System.out.print(" a property, in ");
-				if( top1.isFromOntology( CandidateConcept.ontology.source ) ) {
-					// source concept
-					System.out.println("source ontology");
-					topM = fbL.getPropertiesMatrix().getRowMaxValues( top1.getIndex(), m);
-				} 
-				else {
-					// target concept
-					System.out.println("target ontology");
-					topM = fbL.getPropertiesMatrix().getColMaxValues( top1.getIndex(), m);
-				}
-				
-				if( topM != null ) {
-					for( int i1 = 0; i1 < topM.length; i1++ ) {
-						if( topM[i1] != null ) topM[i1].setAlignmentType( alignType.aligningProperties );
-					}
-				}
-	
-			};
-			
-
-			
-			if( topM != null ) {
-				for( int i1 = 0; i1 < m; i1++ ) {
-					if( topM[i1] != null && topM[i1].getSimilarity() != -1 ) {	
-						topMappings.addAlignment( topM[i1]);
-						System.out.println( "\t\tmapping "+Integer.toString(i1)+": "+ topM[i1].toString() );
-					}
-				}
-			};
-			
-			
-		}; 
-		
-		return topMappings;
+		return topK;
 		
 	}
 
 	
 	
-	private ArrayList<CandidateConcept> getCombinedRelevances(ArrayList<Node> list, ontology source, alignType type) {
+	private ArrayList<CandidateConcept> getCombinedRelevances(ArrayList<ConceptList> relevanceLists, ArrayList<Node> list, ontology source, alignType type) {
 	
 		ArrayList<CandidateConcept> subList = new ArrayList<CandidateConcept>();
 		Iterator<Node> nodeItr = list.iterator();
@@ -241,7 +235,7 @@ public class CandidateSelection {
 				ConceptList currentList = cl.next();
 				combinedRelevance += currentList.getWeight() * currentList.getRelevance( currentNode, source, type );
 			}
-			
+			//WHY?
 			if( combinedRelevance > 0.0 ) {
 				subList.add( new CandidateConcept( currentNode, combinedRelevance, source, type));
 			}

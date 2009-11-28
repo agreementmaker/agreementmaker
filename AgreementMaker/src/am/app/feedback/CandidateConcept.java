@@ -1,5 +1,8 @@
 package am.app.feedback;
 
+import java.util.ArrayList;
+
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 
@@ -24,14 +27,17 @@ public class CandidateConcept extends Node implements Comparable<CandidateConcep
 	protected alignType whichType;
 	protected Node originalNode;
 	
+	//Contains the Top M candidate mappings for this candidate concept
+	//it is remains null, until the getCandidateAlignments is called;
+	protected ArrayList<Alignment> candidateMappings;
+
+
 	public CandidateConcept(Node n, double r, ontology o, alignType t ) {
 		super(n);
 		relevance = r;
 		whichOntology = o;
 		whichType = t;
 		originalNode = n;
-		
-		
 	}
 
 	public double getRelevance() {
@@ -92,5 +98,12 @@ public class CandidateConcept extends Node implements Comparable<CandidateConcep
 		return super.toString() + "\t" + Double.toString(relevance);
 	}
 	
+	public ArrayList<Alignment> getCandidateMappings() {
+		return candidateMappings;
+	}
+
+	public void setCandidateMappings(ArrayList<Alignment> candidateMappings) {
+		this.candidateMappings = candidateMappings;
+	}
 
 }

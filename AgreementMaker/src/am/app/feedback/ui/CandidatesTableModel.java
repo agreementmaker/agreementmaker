@@ -26,6 +26,7 @@ public class CandidatesTableModel extends AbstractTableModel {
 	public final static int C4_SIMILARITY = C3_TARGET+1;
 	public final static int C5_GROUP = C4_SIMILARITY+1;
 	public final static int C6_TYPE = C5_GROUP+1;
+	public final static int C7_CONCEPT = C6_TYPE+1;
 	
 	public String[] columnNames = {	
 									"Selection",
@@ -34,6 +35,7 @@ public class CandidatesTableModel extends AbstractTableModel {
 	                                "Similarity",
 	                                "Group",
 	                                "Mapping Type",
+	                                "Candidate Concept",
                                 };
         
 	public ArrayList<CandidatesTableRow> data;
@@ -44,7 +46,8 @@ public class CandidatesTableModel extends AbstractTableModel {
         		"0123456789012345678912345",
         		 "100%",
         		 "Group 99",
-        		 "Property"
+        		 "Property",
+        		 "0123456789012345678912345"
                 };
 
         public CandidatesTableModel(ArrayList<CandidatesTableRow> rows) {
@@ -74,15 +77,17 @@ public class CandidatesTableModel extends AbstractTableModel {
                 		return a.radio;
                 	}
                 	else if(col == C2_SOURCE)
-                		return a.mapping.getEntity1().getCandidateString();
+                		return a.getMapping().getEntity1().getCandidateString();
                 	else if(col == C3_TARGET)
-                		return a.mapping.getEntity2().getCandidateString();
+                		return a.getMapping().getEntity2().getCandidateString();
                 	else if(col == C4_SIMILARITY) 
-                		return Utility.getNoDecimalPercentFromDouble(a.mapping.getSimilarity());
+                		return Utility.getNoDecimalPercentFromDouble(a.getMapping().getSimilarity());
                 	else if(col == C5_GROUP)
-                		return "Group "+a.group;
+                		return a.getGroupString();
                 	else if(col == C6_TYPE)
-                		return a.type;
+                		return a.getTypeString();
+                	else if(col == C7_CONCEPT)
+                		return a.candidateConcept.getNode().getCandidateString();
                 	else return null;
             	}
             	catch(Exception e) {
