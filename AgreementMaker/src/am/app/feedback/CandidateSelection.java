@@ -226,7 +226,6 @@ public class CandidateSelection {
 		Iterator<Node> nodeItr = list.iterator();
 		
 		
-		
 		while( nodeItr.hasNext() ) {
 			Node currentNode = nodeItr.next();
 			Iterator<ConceptList> cl = relevanceLists.iterator();
@@ -236,12 +235,10 @@ public class CandidateSelection {
 				combinedRelevance += currentList.getWeight() * currentList.getRelevance( currentNode, source, type );
 			}
 			//WHY?
-			if( combinedRelevance > 0.0 ) {
+			//if( combinedRelevance > 0.0 ) {
 				subList.add( new CandidateConcept( currentNode, combinedRelevance, source, type));
-			}
+			//}
 		}
-		
-		
 		
 		return subList;
 		

@@ -446,15 +446,16 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			setStage( executionStage.afterCandidateSelection );
 		
-			if( isCancelled() ) break;
+			if( isCancelled() || isStage(executionStage.presentFinalMappings)  ) break;
 			
 			
 			//********************* USER FEEDBACK INTERFACE OR AUTOMATIC VALIDATION **********//
 
 			setStage( executionStage.runningUserInterface );
-			
+			//User variables
 			Alignment userMapping = null;  // this is the correct mapping chosen by the user
-			
+			CandidateConcept userConcept = null;
+			String userAction = null;
 			if(automatic){  // AUTOMATIC USER VALIDATION: check with the reference if a mapping is correct
 				//no more candidates --> we stop
 				if(numCandidateMappings == 0){
@@ -489,8 +490,10 @@ public class FeedbackLoop extends AbstractMatcher  {
 					}
 
 					if( userMapping == null ) {
+						userAction = SelectionPanel.A_ALL_MAPPING_WRONG;
 						System.out.println( "Automatic User Validation: None of the mappings presented to the user were in the reference alignment.");
 					} else {
+						userAction = SelectionPanel.A_MAPPING_CORRECT;
 						System.out.println( "Automatic User Validation: CORRECT mapping: " + 
 								userMapping.getEntity1().toString() + " -> " +
 								userMapping.getEntity2().toString() );
@@ -513,6 +516,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 				}
 				
 				userMapping = progressDisplay.getUserMapping();
+				userConcept = progressDisplay.getUserConcept();
+				userAction = progressDisplay.getUserAction();
 			}
 
 			if( isStage(executionStage.presentFinalMappings) ) {
@@ -523,14 +528,12 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			
 			//************************* AFTER USER VALIDATION ***********************			
-			
+			//The user pressed the continue button
 			setStage(executionStage.afterUserInterface);
-			
-			//**********************  EXTRAPOLATIING MATCHERS ********/////
-			setStage(executionStage.runningExtrapolatingMatchers);				
+			if(userAction.equals(SelectionPanel.A_MAPPING_CORRECT)){
 				
-			
-			if( userMapping != null ) {
+				//**********************  EXTRAPOLATIING MATCHERS ********/////
+				setStage(executionStage.runningExtrapolatingMatchers);				
 				progressDisplay.appendNewLineReportText("1 mapping validated by the user: "+userMapping);
 				
 				AlignmentSet<Alignment> userSet = new AlignmentSet<Alignment>();
@@ -577,9 +580,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 				propertiesToBeFiltered.addAll( newPropertyAlignments_eFS );
 				
 				
-				
-				
-				
 			    // EXTRAPOLATING DSI
 				
 				ExtrapolatingDSI eDSI = new ExtrapolatingDSI();
@@ -614,7 +614,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 				
 				
 			}
-			else{ //All mappings are wrong
+			else if(userAction.equals(SelectionPanel.A_ALL_MAPPING_WRONG)){ //All mappings are wrong
 				progressDisplay.appendNewLineReportText("\tAll candidate mappings are incorrect and filtered out.");
 				System.out.println( "All candidate mappings are wrong, filtering out these mappings in the similarity matrix.");
 				
@@ -635,10 +635,18 @@ public class FeedbackLoop extends AbstractMatcher  {
 					}
 				}
 			}
+			else if(userAction.equals(SelectionPanel.A_CONCEPT_WRONG)){
+				progressDisplay.appendNewLineReportText("\tSelected candidate concept "+userConcept.getCandidateString()+" has not to be mapped and is filterd out.");
+				System.out.println("User selected to "+SelectionPanel.A_CONCEPT_WRONG);
+			}
+			else if(userAction.equals(SelectionPanel.A_ALL_CONCEPT_WRONG)){
+				progressDisplay.appendNewLineReportText("\tAll candidate concepts has not to be mapped and are filterd out.");
+				System.out.println("User selected to "+SelectionPanel.A_ALL_CONCEPT_WRONG);
+			}
 			currentStage = executionStage.afterExtrapolatingMatchers;	
 
 		
-			if( isCancelled() ) break;
+			if( isCancelled() || isStage(executionStage.presentFinalMappings) ) break;
 		} while( !stop );
 		progressDisplay.appendNewLineReportText(PRINT_LINE+"\nThe Feedback Loop is terminated.");
 		
@@ -713,8 +721,10 @@ public class FeedbackLoop extends AbstractMatcher  {
 	public executionStage getStage() { return currentStage; }
 	public boolean isStage( executionStage s ) { return s == currentStage; }
 	public void setStage(executionStage stage) {
-		currentStage = stage;
-		System.out.println(">> Changing execution stage to: " + currentStage.name() );
+		if(!isStage(executionStage.presentFinalMappings) ){
+			currentStage = stage;
+			System.out.println(">> Changing execution stage to: " + currentStage.name() );
+		}
 	}
 	
 	

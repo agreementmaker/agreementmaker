@@ -61,7 +61,12 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 	private static final long serialVersionUID = -967696425990716259L;
 	private FeedbackLoop ufl = null; // pointer to the user feedback loop
 	
-	
+	final static String UNLIMITED = "Unlimited";
+	public final static String A_MAPPING_CORRECT = "Validate selected candidate mapping";
+	public final static String A_ALL_MAPPING_WRONG = "Unvalidate all candidate mappings";
+	public final static String A_CONCEPT_WRONG = "Unvalidate selected candidate concept";
+	public final static String A_ALL_CONCEPT_WRONG = "Unvalidate all candidate concepts";
+	JComboBox cmbActions;
 	
 	// Start Screen
 	JButton btn_start;
@@ -81,6 +86,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
     private JScrollPane scrollingArea;
     private JButton okButton;
     private JButton cancelButton;
+    private JButton stopButton;
 
 	
     
@@ -90,8 +96,9 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 	
 	Alignment selectedMapping;
 	CandidateConcept selectedConcept;
+	String selectedAction;
 	ArrayList<CandidateConcept> candidateMappings;
-	
+
 	UI ui;
 	
 	
@@ -100,13 +107,8 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		ui = u;
 		//Initialized here so that we don't reset the report text at each iteration
 		matcherReport = new JTextArea(8, 35);
+		initScreenStartComponents();
 	}
-	
-	
-	
-	
-
-
 
 	public void actionPerformed(ActionEvent arg0) {
 		try{
@@ -129,31 +131,34 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 			} else if( arg0.getActionCommand() == "screen2_cancel" ) {
 			 	ufl.cancel(true);
 				showScreen_Start();
-			} else if( arg0.getActionCommand() == "btn_correct" ) {
-				// the user has selected a correct mapping
-				if(radios.getSelection() != null){
-					String selectedAlignment = radios.getSelection().getActionCommand();
-					//actionCommand is "candidateConcept-candidateMapping"
-					String[] indexes = selectedAlignment.split("-");
-					int concept = Integer.parseInt(indexes[0]);
-					int mapping = Integer.parseInt(indexes[1]);
-					selectedConcept = candidateMappings.get(concept);
-					selectedMapping = selectedConcept.getCandidateMappings().get(mapping);
+			} 
+			else if( arg0.getActionCommand() == "btn_continue" ) {
+				selectedAction = cmbActions.getSelectedItem().toString();
+				if(selectedAction.equals(A_MAPPING_CORRECT) || selectedAction.equals(A_CONCEPT_WRONG)){
+					if(radios.getSelection() == null){
+						Utility.displayErrorPane("Select a candidate mapping.", null);
+					}
+					else{
+						String selectedAlignment = radios.getSelection().getActionCommand();
+						//actionCommand is "candidateConcept-candidateMapping"
+						String[] indexes = selectedAlignment.split("-");
+						int concept = Integer.parseInt(indexes[0]);
+						int mapping = Integer.parseInt(indexes[1]);
+						selectedConcept = candidateMappings.get(concept);
+						selectedMapping = selectedConcept.getCandidateMappings().get(mapping);
+						displayProgressScreen();
+						ufl.setExectionStage( FeedbackLoop.executionStage.afterUserInterface );
+					}
+				}
+				else if(selectedAction.equals(A_ALL_MAPPING_WRONG) || selectedAction.equals(A_ALL_CONCEPT_WRONG)){
 					displayProgressScreen();
 					ufl.setExectionStage( FeedbackLoop.executionStage.afterUserInterface );
 				}
-				else{
-					Utility.displayErrorPane("Select a candidate mapping.", null);
-				}
-			} else if( arg0.getActionCommand() == "btn_incorrect" ) {
-				// the user cannot find any correct mappings
-				//the selectedMapping is set null at the beginning of the displayMappings() and remains null
-				displayProgressScreen();
-				ufl.setExectionStage( FeedbackLoop.executionStage.afterUserInterface );
-
-			} else if( arg0.getActionCommand() == "btn_stop") {
+			}
+			else if( arg0.getActionCommand() == "btn_stop") {
 				// the user has selected to stop the loop
 				selectedMapping = null;
+				selectedConcept = null;
 				displayProgressScreen();
 				ufl.setExectionStage( FeedbackLoop.executionStage.presentFinalMappings );
 			}
@@ -200,9 +205,6 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 				}
 			 }
 		}
-		//catch(AMException ex2) {
-			//Utility.displayMessagePane(ex2.getMessage(), null);
-		//}
 		catch(Exception ex) {
 			ex.printStackTrace();
 			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR, null);
@@ -232,12 +234,6 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		}
 		return result;
 	}
-
-
-
-
-
-
 
 	public double getHighThreshold() {
 		return Double.parseDouble( cmbHighThreshold.getSelectedItem().toString() );
@@ -269,6 +265,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		progressBar.setValue(100);
 		matcherReport.append("\n"+ ufl.getReport() );
 		cancelButton.setEnabled(false);
+		stopButton.setEnabled(false);
 		okButton.setEnabled(true);
 		revalidate();
 	}
@@ -332,8 +329,13 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		
 		fblp.K = Integer.parseInt(cmbK.getSelectedItem().toString());
 		fblp.M = Integer.parseInt(cmbM.getSelectedItem().toString());
-		
-		fblp.iterations = Integer.parseInt(cmbIterations.getSelectedItem().toString());
+		try{
+			fblp.iterations = Integer.parseInt(cmbIterations.getSelectedItem().toString());
+		}
+		catch(Exception e){
+			fblp.iterations = Integer.MAX_VALUE;
+		}
+
 		
 		//get the automatic inital matcher
 		String matcherName = (String) cmbMatcher.getSelectedItem();
@@ -348,30 +350,11 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 	
 	
 	//****************UI Functions************************
-	
-	public void showScreen_Start() {
-		
-		removeAll();
-		JLabel lblParameters = new JLabel("Parameters:");
-		JLabel lblMatcher = new JLabel("Automatic Initial Matcher:");
-		JLabel lblHighThreshold = new JLabel("High threshold:");
-		JLabel lblLowThreshold = new JLabel("Low threshold:");
-		JLabel lblCardinality = new JLabel("Cardinality:");
-		JLabel lblConfiguration = new JLabel("Run configuration:");
-		JLabel lblIterations = new JLabel("Maximum iteration:");
-		JLabel lblK = new JLabel("Num candidate concepts K:");
-		JLabel lblM = new JLabel("Num candidate mappings M:");
+	public void initScreenStartComponents(){
+
 		btn_start = new JButton("Start");
 		btn_start.addActionListener(this);
 		btn_start.setActionCommand("btn_start");
-	
-		
-		
-		
-		
-		
-
-		
 		
 		//matcher combo list
 		String[] matcherList = MatcherFactory.getMatcherComboList();
@@ -379,7 +362,8 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		cmbMatcher.setSelectedItem(MatchersRegistry.InitialMatcher.getMatcherName());
 		
 		cmbIterations = new JComboBox( Utility.STEPFIVE_INT );
-		cmbIterations.setSelectedIndex(Utility.STEPFIVE_INT.length -1 );
+		cmbIterations.addItem(UNLIMITED);
+		cmbIterations.setSelectedItem(UNLIMITED);
 		cmbHighThreshold = new JComboBox( Utility.getPercentDecimalsList() );
 		cmbHighThreshold.setSelectedItem("0.7");
 		cmbLowThreshold = new JComboBox( Utility.getPercentDecimalsList() );
@@ -409,7 +393,22 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		cmbConfigurations.addItem(FeedbackLoop.AUTO_russia);
 		cmbConfigurations.addItem(FeedbackLoop.AUTO_weapons);
 		cmbConfigurations.addItem(FeedbackLoop.AUTO_wine);
+	}
+	
+	public void showScreen_Start() {
 		
+		removeAll();
+		//all other component are initialized in the initScreenStartComponents() method
+		//because we want to init them in the constructor only once.
+		//this way the parameters remains set when the user click cancel
+		JLabel lblMatcher = new JLabel("Automatic Initial Matcher:");
+		JLabel lblHighThreshold = new JLabel("High threshold:");
+		JLabel lblLowThreshold = new JLabel("Low threshold:");
+		JLabel lblCardinality = new JLabel("Cardinality:");
+		JLabel lblConfiguration = new JLabel("Run configuration:");
+		JLabel lblIterations = new JLabel("Maximum iteration:");
+		JLabel lblK = new JLabel("Num candidate concepts K:");
+		JLabel lblM = new JLabel("Num candidate mappings M:");
 		//LAYOUT
 
 		JPanel centralContainer  = new JPanel();
@@ -520,7 +519,11 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		cancelButton = new JButton("Cancel");
 		cancelButton.setActionCommand("screen2_cancel");
 		cancelButton.addActionListener(this);
+		stopButton = new JButton("Stop");
+		stopButton.setActionCommand("btn_stop");
+		stopButton.addActionListener(this);
 	    buttonPanel.add(okButton);
+	    buttonPanel.add(stopButton);
 	    buttonPanel.add(cancelButton);
 	    
 	    scrollingArea = new JScrollPane(matcherReport);
@@ -543,30 +546,24 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		selectedMapping = null;
 		selectedConcept = null;
 		candidateMappings = topConceptsAndAlignments;
-	
-		//JLabel topLabel = new JLabel("Validation of candidate mappings");
-		//JLabel topCandLabel = new JLabel("Select at most one candidate mapping");
-		JButton btn_display_m = new JButton("Display mapping");
+		
+		cmbActions = new JComboBox(new String[]{A_MAPPING_CORRECT,A_ALL_MAPPING_WRONG, A_CONCEPT_WRONG, A_ALL_CONCEPT_WRONG});
+		
+		JButton btn_continue = new JButton("Continue");
+		btn_continue.setActionCommand("btn_continue");
+		btn_continue.addActionListener(this);
+		
+		stopButton = new JButton("Stop");
+		stopButton.setActionCommand("btn_stop");
+		stopButton.addActionListener(this);
+		
+		JButton btn_display_m = new JButton("Display selected candidate mapping");
 		btn_display_m.setActionCommand("btn_display_m");
 		btn_display_m.addActionListener(this);
 		
-		JButton btn_display_c = new JButton("Display concept's mappings");
+		JButton btn_display_c = new JButton("Display selected candidate concept's mappings");
 		btn_display_c.setActionCommand("btn_display_c");
 		btn_display_c.addActionListener(this);
-		
-		JButton btn_correct = new JButton("Mapping correct");
-		btn_correct.setActionCommand("btn_correct");
-		btn_correct.addActionListener(this);
-		
-		
-		
-		JButton btn_incorrect = new JButton("Mappings incorrect");
-		btn_incorrect.setActionCommand("btn_incorrect");
-		btn_incorrect.addActionListener(this);
-		
-		JButton btn_stop = new JButton("Stop");
-		btn_stop.setActionCommand("btn_stop");
-		btn_stop.addActionListener(this);
 		
 
 		
@@ -603,22 +600,31 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		FlowLayout topPanelLayout = new FlowLayout();
 		topPanelLayout.setAlignment(FlowLayout.CENTER);
 		topPanel.setLayout(topPanelLayout);
-		topPanel.add(btn_display_m);
-		topPanel.add(btn_display_c);
-		topPanel.add(btn_correct);
-		topPanel.add(btn_incorrect);
-		topPanel.add(btn_stop);
+		topPanel.add(new JLabel("Action: "));
+		topPanel.add(cmbActions);
+		topPanel.add(btn_continue);
+		topPanel.add(stopButton);
+		
+		JPanel bottomPanel = new JPanel();
+		FlowLayout bottomPanelLayout = new FlowLayout();
+		bottomPanelLayout.setAlignment(FlowLayout.CENTER);
+		bottomPanel.setLayout(bottomPanelLayout);
+		bottomPanel.add(new JLabel("Visualization: "));
+		bottomPanel.add(btn_display_m);
+		bottomPanel.add(btn_display_c);
 		
 		JPanel centralPanel = new JPanel();
 		//centralPanel.setLayout(new GridLayout());
 		centralPanel.setOpaque(true); //content panes must be opaque
         centralPanel.add(scrollPane);
+        centralPanel.add(bottomPanel);
+        
+
         
 		BorderLayout thisLayout = new BorderLayout();
 		this.setLayout(thisLayout);
 		this.add(topPanel, BorderLayout.PAGE_START);
 		this.add(centralPanel, BorderLayout.CENTER);
-		
 		//REPAINT DOESN'T WORK WELL HERE I DON'T KNOW WHY
 		//repaint();
 		revalidate();
@@ -684,6 +690,14 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 			matcherReport.append("\n"+report);
 			revalidate();
 		}
+	}
+
+	public CandidateConcept getUserConcept() {
+		return selectedConcept;
+	}
+
+	public String getUserAction() {
+		return selectedAction;
 	}
 	
 }
