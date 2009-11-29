@@ -47,15 +47,13 @@ public class ExtrapolatingDSI extends DescendantsSimilarityInheritanceMatcher {
     protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
     	//this the structure used in the recursive algorithms to keep track of the DSI computed for the parents of each node
     	//at the end it is returned and becomes the class or property matrix of the case
-    	matrix = new FilteredAlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
-		
     	// copy the filtered rows/cols, so they can be skipped
     	switch( typeOfNodes ) {
     	case aligningClasses:
-    		matrix.validateAlignments( inputClassesMatrix );
+    		matrix = new FilteredAlignmentMatrix(inputClassesMatrix);
     		break;
     	case aligningProperties:
-    		matrix.validateAlignments( inputPropertiesMatrix );
+    		matrix = new FilteredAlignmentMatrix(inputPropertiesMatrix);
     		break;
     	}
     	

@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.TreeSet;
 
 import am.app.Core;
+import am.app.feedback.CandidateConcept.ontology;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentMatrix;
 import am.app.mappingEngine.AlignmentSet;
@@ -15,21 +16,29 @@ import am.app.ontology.Node;
 // TODO: This FilteredAlignmentMatrix only works for 1-1 alignments.  To extend this, there requires some work.
 public class FilteredAlignmentMatrix extends AlignmentMatrix {
 	// TODO: Add intializeVariables() method for the constructors to use (added to AlignmentMatrix)
-
-	protected TreeSet<Integer> filteredRows;  // a sorted list (TreeSet) of the row numbers that have been filtered from this matrix
-	protected TreeSet<Integer> filteredCols;  // a TreeSet of the column numbers that have been filtered from this matrix
 	
+
+	
+	
+	//The treeSet filteredRows and filteredColumns has been replaced with this arrays
+	//each value of the array keeps the number of cells of the correspondent row (column) that have been filtered
+	//if this number is equals to the total number of columns (rows) than it means that the row (column) is filtered completely
+	//we need this type of structure because when we filter cells singularly, we may indirectly filter an entire row (column)
+	//this way both filtering and checking for filtering costs O(1)
+	public int[] numCellsFilteredPerRow;
+	public int[] numCellsFilteredPerColumn;
 	private boolean[][] isFiltered;
 	
 	public FilteredAlignmentMatrix( AlignmentMatrix am_new ) {
 		super( am_new );
 
-		filteredRows = new TreeSet<Integer>();
-		filteredCols = new TreeSet<Integer>();
+
 		
 		int numRows = am_new.getRows();
 		int numCols = am_new.getColumns();
-
+		numCellsFilteredPerRow = new int[numRows];//all 0 initially
+		numCellsFilteredPerColumn = new int[numCols];//all 0 initially
+		
 		// matrix of filtered cells
 		isFiltered = new boolean[numRows][numCols];
 		
@@ -39,8 +48,28 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 				isFiltered[i][j] = false;
 			}
 		}
-		
-		
+	}
+	
+	//Cloning constructur
+	public FilteredAlignmentMatrix( FilteredAlignmentMatrix am_new ) {
+		super( am_new );
+
+		int numRows = am_new.getRows();
+		int numCols = am_new.getColumns();
+		numCellsFilteredPerRow = new int[numRows];//all 0 initially
+		numCellsFilteredPerColumn = new int[numCols];//all 0 initially
+		// matrix of filtered cells
+		isFiltered = new boolean[numRows][numCols];
+		// initialize the isFiltered matrix to false (at the beginning, nothing is filtered)
+		for( int i = 0; i < numRows; i++ ) {
+			numCellsFilteredPerRow[i] = am_new.numCellsFilteredPerRow[i];
+			for( int j = 0; j < numCols; j++ ) {
+				isFiltered[i][j] = am_new.isFiltered[i][j];
+				if(i == 0){
+					numCellsFilteredPerColumn[j] = am_new.numCellsFilteredPerColumn[j];
+				}
+			}
+		}
 	}
 	
 	
@@ -48,8 +77,8 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 		super( numRows, numCols, typeOfNodes, relation);
 		
 		// initialize list of filtered rows and columns
-		filteredRows = new TreeSet<Integer>();
-		filteredCols = new TreeSet<Integer>();
+		numCellsFilteredPerRow = new int[numRows];//all 0 initially
+		numCellsFilteredPerColumn = new int[numCols];//all 0 initially
 		
 		
 		// matrix of filtered cells
@@ -66,22 +95,15 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 
 
 	public boolean isRowFiltered( int row ) {
-		return filteredRows.contains( new Integer(row) );
+		return numCellsFilteredPerRow[row] == getColumns(); 
 	}
 	
 	public boolean isColFiltered( int col ) {
-		return filteredCols.contains( new Integer(col) );
+		return numCellsFilteredPerColumn[col] == getRows(); 
 	}
 	
 	public boolean isCellFiltered( int row, int col ) {
 		return isFiltered[row][col];		
-	}
-	
-	public TreeSet<Integer> getFilteredRows() {
-		return filteredRows;
-	}
-	public TreeSet<Integer> getFilteredCols() {
-		return filteredCols;
 	}
 
 	
@@ -111,51 +133,21 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 			// zero out the row.
 			for( int j = 0; j < columns; j++ ) {
 				if( j == col ) continue;  // do no zero out if it is the column of the alignment
-				setSimilarity(row, j, 0.00d);
-				isFiltered[row][j] = true;
+				filterCell(row, j);
 			}
-			filteredRows.add(row);
 			
 			// zero out the column.
 			for( int h = 0; h < rows; h++ ) {
 				if( h == row ) continue; // do not zero out if it is the row of the alignment
-				setSimilarity( h, col, 0.00d);
-				isFiltered[h][col] = true;
+				filterCell(h, col);
 			}
-			filteredCols.add(col);
-			
 			
 			// set the alignment similarity to 1
+			//and validate the cell
 			setSimilarity(row, col, 1.00d);
 			isFiltered[row][col] = true;
-		}
-	}
-
-
-	// Copies the filtered rows/columns from another matrix
-	// TODO: Only works for 1-1 alignments.
-	public void validateAlignments(FilteredAlignmentMatrix fam) {
-		
-		// copy rows
-		TreeSet<Integer> frows = fam.getFilteredRows();
-		Iterator<Integer> iRows = frows.iterator();
-		while( iRows.hasNext() ) {
-			Integer i = iRows.next();
-			if( !filteredRows.contains(i) ) filteredRows.add(i);
-			for( int j = 0; j < fam.getColumns(); j++ ) {
-				data[i][j] = fam.get(i, j);
-			}
-		}
-		
-		// copy columns
-		TreeSet<Integer> fcols = fam.getFilteredCols();
-		Iterator<Integer> iCols = fcols.iterator();
-		while( iCols.hasNext() ) {
-			Integer i = iCols.next();
-			if( !filteredCols.contains(i) ) filteredCols.add(i);
-			for( int h = 0; h < fam.getRows(); h++ ) {
-				data[h][i] = fam.get(h, i);
-			}
+			numCellsFilteredPerColumn[col]++;
+			numCellsFilteredPerRow[row]++;
 		}
 	}
 	
@@ -238,6 +230,13 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 
 		return maxAlignments;
 	}
+	
+	// return a copy of the matrix
+	public Object clone(){
+		
+		FilteredAlignmentMatrix matrix = new FilteredAlignmentMatrix(this);
+		return matrix;
+	}
 
 
 	public void filterCells(AlignmentSet<Alignment> topAlignments) {
@@ -247,10 +246,7 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 			
 			int row = a.getSourceKey();
 			int col = a.getTargetKey();
-			
-			data[row][col].setSimilarity(0);
-			isFiltered[row][col] = true;
-			
+			filterCell(row, col);
 		}
 		
 	}
@@ -263,9 +259,10 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 		if( col < 0 || col > columns ) {
 			throw new IndexOutOfBoundsException("Column Index is " + Integer.toString(col));
 		}
-		
+	
 		isFiltered[row][col] = true;
-		
+		numCellsFilteredPerColumn[col]++;
+		numCellsFilteredPerRow[row]++;
 		if( data[row][col] != null ) {
 			data[row][col].setSimilarity(0.0d);
 		}
@@ -318,7 +315,31 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 		}
 		return occurs;
 	}
-	
-    
+
+
+	public void filterConcept(CandidateConcept c) {
+		if(c.whichOntology.equals(ontology.source)){
+			filterRow(c.getIndex());
+		}
+		else{
+			filterCol(c.getIndex());
+		}
+	}
+
+
+	private void filterCol(int col) {
+		for(int i = 0; i < getRows(); i++){
+			filterCell(i, col);
+		}
+		
+	}
+
+
+	private void filterRow(int row) {
+		for(int j = 0; j < getColumns(); j++){
+			filterCell(row, j);
+		}
+	}
+
 	
 }

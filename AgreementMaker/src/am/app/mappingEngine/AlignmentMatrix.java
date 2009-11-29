@@ -37,7 +37,6 @@ public class AlignmentMatrix {
 	   				setSimilarity(i,j, cloneme.getSimilarity(i,j));
 	   			}
 	   		}
-   	
     	
     }
     
@@ -143,18 +142,6 @@ public class AlignmentMatrix {
     
     public int getColumns() {
     	return columns;
-    }
-   
-    public Object clone() {  // TODO: Make this work the right way (create new Alignment objects)
-    	
-    		AlignmentMatrix m = this;
-    		AlignmentMatrix n = new AlignmentMatrix(m.getRows(), m.getColumns(), m.typeOfMatrix, m.relation);
-    		for(int i=0; i< m.getRows(); i++) {
-    			for(int j = 0; j < m.getColumns(); j++) {
-    				n.setSimilarity(i,j,m.getSimilarity(i,j));
-    			}
-    		}
-    		return n;
     }
     
     
@@ -342,6 +329,11 @@ public class AlignmentMatrix {
 			return true;
 		}
 		return false;
+	}
+	
+	public Object clone(){
+		AlignmentMatrix matrix = new AlignmentMatrix(this);
+		return matrix;
 	}
 	
 }

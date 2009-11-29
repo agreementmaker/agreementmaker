@@ -400,13 +400,13 @@ public class FeedbackLoop extends AbstractMatcher  {
 			propertiesAlignmentSet.addAllNoDuplicate( propertiesToBeFiltered);
 
 			// double threshold filtering (dtf)
-			int classesBelowTh = classesMatrix.filterCellsBelowThreshold( param.lowThreshold );
-			int propertiesBelowTh = propertiesMatrix.filterCellsBelowThreshold( param.lowThreshold );
+			//int classesBelowTh = classesMatrix.filterCellsBelowThreshold( param.lowThreshold );
+			//int propertiesBelowTh = propertiesMatrix.filterCellsBelowThreshold( param.lowThreshold );
 			
-			System.out.println( "Double Threshold Filtering: filtered " + Integer.toString(classesBelowTh) + " classes.");
-			System.out.println( "Double Threshold Filtering: filtered " + Integer.toString(propertiesBelowTh) + " properties.");
-			progressDisplay.appendNewLineReportText("\tFiltered "+Integer.toString(classesBelowTh) + " classes.");
-			progressDisplay.appendNewLineReportText("\tFiltered "+Integer.toString(propertiesBelowTh) + " properties.");
+			//System.out.println( "Double Threshold Filtering: filtered " + Integer.toString(classesBelowTh) + " classes.");
+			//System.out.println( "Double Threshold Filtering: filtered " + Integer.toString(propertiesBelowTh) + " properties.");
+			//progressDisplay.appendNewLineReportText("\tFiltered "+Integer.toString(classesBelowTh) + " classes.");
+			//progressDisplay.appendNewLineReportText("\tFiltered "+Integer.toString(propertiesBelowTh) + " properties.");
 			
 			classesToBeFiltered = new AlignmentSet<Alignment>(); // create a new, empty set
 			propertiesToBeFiltered = new AlignmentSet<Alignment>(); // create a new, empty set
@@ -579,40 +579,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 				classesToBeFiltered.addAll( newClassAlignments_eFS );
 				propertiesToBeFiltered.addAll( newPropertyAlignments_eFS );
 				
-				
-			    // EXTRAPOLATING DSI
-				
-				ExtrapolatingDSI eDSI = new ExtrapolatingDSI();
-				DescendantsSimilarityInheritanceParameters params = new DescendantsSimilarityInheritanceParameters();
-				params.MCP = 0.75;
-				eDSI.setParam(params);
-				eDSI.setThreshold(threshold);
-				eDSI.setMaxSourceAlign(maxSourceAlign);
-				eDSI.setMaxTargetAlign(maxTargetAlign);
-				eDSI.addInputMatcher(this);
-				
-				eDSI.match();
-				eDSI.select(); // will contain values that already filtered.
-
-				// choose only alignments that are not filtered
-				AlignmentSet<Alignment> newClassAlignments_eDSI = getNewClassAlignments( eDSI );
-				AlignmentSet<Alignment> newPropertyAlignments_eDSI = getNewPropertyAlignments( eDSI );
-				progressDisplay.appendNewLineReportText("\tDSI found "+newClassAlignments_eDSI.size()+" class mappings.");
-				progressDisplay.appendNewLineReportText("\tDSI found "+newPropertyAlignments_eDSI.size()+" property mappings.");
-				
-				// report on the eDSI
-				System.out.println( "Extrapolating Matcher: eDSI, found " + Integer.toString(newClassAlignments_eDSI.size()) + " new class alignments, and " +
-						Integer.toString( newPropertyAlignments_eDSI.size() ) + " new property alignments.");
-
-				printAlignments( newClassAlignments_eDSI, alignType.aligningClasses );
-				printAlignments( newPropertyAlignments_eDSI, alignType.aligningProperties );
-
-				
-				// add any new mappings
-				classesToBeFiltered.addAll( newClassAlignments_eDSI );
-				propertiesToBeFiltered.addAll( newPropertyAlignments_eDSI );	
-				
-				
 			}
 			else if(userAction.equals(SelectionPanel.A_ALL_MAPPING_WRONG)){ //All mappings are wrong
 				progressDisplay.appendNewLineReportText("\tAll candidate mappings are incorrect and filtered out.");
@@ -638,11 +604,47 @@ public class FeedbackLoop extends AbstractMatcher  {
 			else if(userAction.equals(SelectionPanel.A_CONCEPT_WRONG)){
 				progressDisplay.appendNewLineReportText("\tSelected candidate concept "+userConcept.getCandidateString()+" has not to be mapped and is filterd out.");
 				System.out.println("User selected to "+SelectionPanel.A_CONCEPT_WRONG);
+				ArrayList<CandidateConcept> toBeFiltered = new ArrayList<CandidateConcept>(1);
+				toBeFiltered.add(userConcept);
+				filterCandidateConcepts(toBeFiltered);
 			}
 			else if(userAction.equals(SelectionPanel.A_ALL_CONCEPT_WRONG)){
 				progressDisplay.appendNewLineReportText("\tAll candidate concepts has not to be mapped and are filterd out.");
 				System.out.println("User selected to "+SelectionPanel.A_ALL_CONCEPT_WRONG);
+				filterCandidateConcepts(topConceptsAndAlignments);
 			}
+			
+		    // EXTRAPOLATING DSI
+			//DSI should be executed at each iteration for each user action
+			ExtrapolatingDSI eDSI = new ExtrapolatingDSI();
+			DescendantsSimilarityInheritanceParameters params = new DescendantsSimilarityInheritanceParameters();
+			params.MCP = 0.75;
+			eDSI.setParam(params);
+			eDSI.setThreshold(threshold);
+			eDSI.setMaxSourceAlign(maxSourceAlign);
+			eDSI.setMaxTargetAlign(maxTargetAlign);
+			eDSI.addInputMatcher(this);
+			
+			eDSI.match();
+			eDSI.select(); // will contain values that already filtered.
+
+			// choose only alignments that are not filtered
+			AlignmentSet<Alignment> newClassAlignments_eDSI = getNewClassAlignments( eDSI );
+			AlignmentSet<Alignment> newPropertyAlignments_eDSI = getNewPropertyAlignments( eDSI );
+			progressDisplay.appendNewLineReportText("\tDSI found "+newClassAlignments_eDSI.size()+" class mappings.");
+			progressDisplay.appendNewLineReportText("\tDSI found "+newPropertyAlignments_eDSI.size()+" property mappings.");
+			
+			// report on the eDSI
+			System.out.println( "Extrapolating Matcher: eDSI, found " + Integer.toString(newClassAlignments_eDSI.size()) + " new class alignments, and " +
+					Integer.toString( newPropertyAlignments_eDSI.size() ) + " new property alignments.");
+
+			printAlignments( newClassAlignments_eDSI, alignType.aligningClasses );
+			printAlignments( newPropertyAlignments_eDSI, alignType.aligningProperties );
+
+			
+			// add any new mappings
+			classesToBeFiltered.addAll( newClassAlignments_eDSI );
+			propertiesToBeFiltered.addAll( newPropertyAlignments_eDSI );	
 			currentStage = executionStage.afterExtrapolatingMatchers;	
 
 		
@@ -688,6 +690,22 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 		}
 		matchEnd();
+	}
+
+	private void filterCandidateConcepts(ArrayList<CandidateConcept> toBeFiltered) {
+		Iterator<CandidateConcept> it = toBeFiltered.iterator();
+		FilteredAlignmentMatrix workingMatrix;
+		CandidateConcept c;
+		while(it.hasNext()){
+			c = it.next();
+			if(c.whichType.equals(alignType.aligningClasses)){
+				workingMatrix = (FilteredAlignmentMatrix)classesMatrix;
+			}
+			else{
+				workingMatrix = (FilteredAlignmentMatrix)propertiesMatrix;
+			}
+			workingMatrix.filterConcept(c);
+		}
 	}
 
 	private void printAlignments(AlignmentSet<Alignment> mappings, alignType atype) {
