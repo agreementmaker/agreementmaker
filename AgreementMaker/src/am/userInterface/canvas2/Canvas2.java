@@ -231,7 +231,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		
 	}
 
-	@Override
+	
 	public void matcherChanged(MatcherChangeEvent e) {
 
 		switch( e.getEvent() ) {
