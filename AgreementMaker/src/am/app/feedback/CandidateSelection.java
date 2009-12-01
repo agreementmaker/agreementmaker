@@ -210,7 +210,7 @@ public class CandidateSelection {
 		System.out.println("\nCandidate Selection:  Top K=" + Integer.toString(k) + " CandidateConcepts:");
 		for( int ii = 0; ii < topK.size(); ii++ ) {
 			CandidateConcept cc = topK.get(ii);
-			boolean isinref = fbL.isInReferenceAlignment( cc.getNode() );
+			boolean isinref = fbL.isInReferenceAlignment( cc );
 			System.out.println( "   " + Integer.toString(ii)+ ". " + topK.get(ii).toString() + "  inref: " + Boolean.toString(isinref));
 		}
 		

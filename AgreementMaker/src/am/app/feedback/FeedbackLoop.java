@@ -474,6 +474,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 									// we are looking at a property alignment
 									if(referenceAlignmentMatcher.getPropertyAlignmentSet().contains(a.getEntity1(), a.getEntity2()) != null){
 										userMapping = a;
+										userConcept = c;
 										break;
 									}
 								}
@@ -481,6 +482,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 									// we are looking at a class alignment
 									if(referenceAlignmentMatcher.getClassAlignmentSet().contains(a.getEntity1(), a.getEntity2()) != null){
 										userMapping = a;
+										userConcept = c;
 										break;
 									}
 									
@@ -488,11 +490,36 @@ public class FeedbackLoop extends AbstractMatcher  {
 							}
 						}
 					}
-
+					
 					if( userMapping == null ) {
-						userAction = SelectionPanel.A_ALL_MAPPING_WRONG;
-						System.out.println( "Automatic User Validation: None of the mappings presented to the user were in the reference alignment.");
-					} else {
+						//None of the candidate mapping is correct
+						//we need to see if the all of any of the candidate concepts is not in the reference
+						//3 cases:
+						//a) All candidate concepts are not in the reference (filter them all)
+						//b) at least one candidate concept is not in the reference (filter one)
+						//c) all candidate concepts are in the reference, but the mappings are all wrong (filter all mappings)
+						ArrayList<CandidateConcept> wrongConcepts = new ArrayList<CandidateConcept>();
+						for(int i=0; i < topConceptsAndAlignments.size(); i++){
+							CandidateConcept c = topConceptsAndAlignments.get(i);
+							if(!isInReferenceAlignment(c)){
+								wrongConcepts.add(c);
+							}
+						}
+						if(wrongConcepts.size() == topConceptsAndAlignments.size()){
+							userAction = SelectionPanel.A_ALL_CONCEPT_WRONG;
+							System.out.println( "Automatic User Validation: all candidate concepts are not in the reference.");
+						}
+						else if(wrongConcepts.size() > 0){
+							userAction = SelectionPanel.A_CONCEPT_WRONG;
+							userConcept = wrongConcepts.get(0);
+							System.out.println( "Automatic User Validation: wrong candidate concept: "+userConcept.getCandidateString());
+						}
+						else{//all candidate concepts are in the reference, but all of their candidate mappings are wrong
+							userAction = SelectionPanel.A_ALL_MAPPING_WRONG;
+							System.out.println( "Automatic User Validation: None of the mappings presented to the user were in the reference alignment.");
+						}
+					}
+					else { //user selected a single mapping correct
 						userAction = SelectionPanel.A_MAPPING_CORRECT;
 						System.out.println( "Automatic User Validation: CORRECT mapping: " + 
 								userMapping.getEntity1().toString() + " -> " +
@@ -812,16 +839,16 @@ public class FeedbackLoop extends AbstractMatcher  {
 		this.param = p;
 	}
 	
-	// check to see if a Node concept is in the reference alignment  
-	public boolean isInReferenceAlignment( Node nc ) {
+	// check to see if a Candidate concept is in the reference alignment  
+	public boolean isInReferenceAlignment( CandidateConcept nc ) {
 		if( referenceAlignmentMatcher == null ) { return false; } // we cannot check the reference alignment if it not loaded
 		AlignmentSet<Alignment> cset = referenceAlignmentMatcher.getClassAlignmentSet();
 		AlignmentSet<Alignment> pset = referenceAlignmentMatcher.getPropertyAlignmentSet();
 		
-		if( !nc.isProp() ) {
-			return cset.contains(nc) != null;
+		if( nc.whichType == alignType.aligningClasses) {
+			return cset.contains(nc.getNode(), nc.whichOntology) != null;
 		} else {
-			return pset.contains(nc) != null;
+			return pset.contains(nc.getNode(), nc.whichOntology) != null;
 		}
 		
 	}

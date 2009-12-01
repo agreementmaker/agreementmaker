@@ -5,6 +5,8 @@ package am.app.mappingEngine;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import am.app.feedback.CandidateConcept.ontology;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 
 
@@ -110,12 +112,17 @@ public class AlignmentSet<E extends Alignment>
         return null;
     }
     
-    public E contains(Node nod)
+    public E contains(Node nod, ontology o)
     {
         for (int i = 0, n = size(); i < n; i++) {
             E align = collection.get(i);
-            if (align.getEntity1().equals(nod) || align.getEntity2().equals(nod)) {
-                return align;
+            if(o == ontology.source){
+            	if(align.getEntity1().equals(nod))
+            		return align;
+            }
+            else{
+            	if(align.getEntity2().equals(nod))
+            		return align;
             }
         }
         return null;
