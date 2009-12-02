@@ -64,15 +64,32 @@ import am.userInterface.UI;
 
 public class FeedbackLoop extends AbstractMatcher  {
 	
-	private int K = 4;
-	private int M = 2;
+
+	//FeedBackLoop private variables used in the iterations
+	private CandidateSelection candidateSelection;
+	ArrayList<CandidateConcept> topConceptsAndAlignments;
+	private executionStage currentStage;
+	private AbstractMatcher referenceAlignmentMatcher;
+	private AlignmentSet<Alignment> classesToBeFiltered;
+	private AlignmentSet<Alignment> propertiesToBeFiltered;
+	private int iteration;
+	private boolean stop;//when this is set to true it means that the user has clicked the stop button
+	private boolean userContinued;//this is set to false during user validation until the user performs an actions
+	private int new_mapping;
+	int lastFirstPhaseIteration;
+	//User variables
+	Alignment userMapping;  // this is the correct mapping chosen by the user
+	CandidateConcept userConcept; //this is either the concept of the validated mapping, or the unvalidated concept
+	String userAction; 
+	//these structures are used to keep track of partial evaluations
+	// with spin equal to 5 it means that measure the performances of the alignment every 5 iterations
+	private ArrayList<ReferenceEvaluationData> partialEvaluations;
+	private ReferenceEvaluationData initialEvaluation;//the initial matcher evaluation to be used for comparison of performances
+	private int evaluationSpin;
 	
-	private boolean automatic;
 	
-	private CandidateSelection candidateSelection; 
 	//configurations
-	public final static String MANUAL = "Manual";
-	
+	public final static String MANUAL = "Manual";	
 	public final static String  AUTO_101_301 = "Auto 101-301";
 	public final static String  AUTO_101_302 = "Auto 101-302";
 	public final static String  AUTO_101_303 = "Auto 101-303";
@@ -98,37 +115,33 @@ public class FeedbackLoop extends AbstractMatcher  {
 		runningFilter,
 		afterFilter,
 		
-		runningExtrapolatingMatchers,
-		afterExtrapolatingMatchers,
-		
 		runningCandidateSelection,
 		afterCandidateSelection,
 		
 		runningUserInterface,
 		afterUserInterface,
 		
+		runningAutomaticValidation,
+		afterAutomaticValidation,
+		
+		runningExtrapolatingMatchers,
+	    afterExtrapolatingMatchers,
+	    
 		presentFinalMappings
 		
 	}
 	
-	private executionStage currentStage;
-	AbstractMatcher referenceAlignmentMatcher;
-	
-	/**
-	 * These variables are overridden. (Java doesn't allow for variable overriding) 
-	 */
-	//protected SelectionPanel progressDisplay;
-	
-	//protected FilteredAlignmentMatrix classesMatrix;
-	//protected FilteredAlignmentMatrix propertiesMatrix;
-	
-	//protected FeedbackLoopParameters param;
-	
+
 	
 	public FeedbackLoop() {
-		setStage( executionStage.notStarted );
 		needsParam = true;
+		currentStage = executionStage.notStarted;
 		candidateSelection = new CandidateSelection(this);
+		iteration = 0;
+		evaluationSpin = 5;
+		stop = false;
+		new_mapping = 0;
+		partialEvaluations = new ArrayList<ReferenceEvaluationData>();
 	}
 	
 	public void setExectionStage( executionStage st ) {
@@ -137,38 +150,459 @@ public class FeedbackLoop extends AbstractMatcher  {
 	
 	public void match() throws Exception{
 		matchStart();
-		
 		FeedbackLoopParameters param = (FeedbackLoopParameters)this.param;
 		SelectionPanel progressDisplay = (SelectionPanel)this.progressDisplay;
 		//the first time we write in the report we use the DISPLAY method, the other times we use the APPEND method
 		progressDisplay.displayReportText("User Feedback Loop is started.");
-		// the user has to load the ontologies.
-		if( Core.getInstance().getSourceOntology() == null || Core.getInstance().getTargetOntology() == null ) {
-			Utility.displayErrorPane("Two ontologies must be loaded into AgreementMaker before the matching can begin.", "Ontologies not loaded." );
-			return;
-		}
-		
-		if( param == null ) {
-			Utility.displayErrorPane("Feedbackloop parameters are not set.", "Parameters not set." );
-			return;
-		} else {
-			param.print();
-			progressDisplay.appendNewLineReportText(param.getParameterString());
-		}
+		param.print();
+		progressDisplay.appendNewLineReportText(param.getParameterString());
 		
 		//Just for the Experiment Purpose, if the user selects the automatic configuration we need to import the reference
 		//the reference name is built-in the code right now.
-		referenceAlignmentMatcher = null;
-		K = param.K;
-		M = param.M;
-		String conf = param.configuration;
+		initAutomaticConfiguration();
 		
+		//************** INITIAL MATCHER********************///
+		runInitialMatcher();
+
+		//**************************LOOP*******************************
+		new_mapping = 0 - (classesToBeFiltered.size() + propertiesToBeFiltered.size());
+		boolean firstPhase = true;
+		do {
+			System.out.println("");
+			iteration++;
+			progressDisplay.appendNewLineReportText(PRINT_LINE+"\nStarting iteration "+iteration);
+
+			//********************** FILTER STAGE *********************///
+			filtering();
+			
+			//**********************  CANDIDATE SELECTION ***********///
+			if( isCancelled() || stop  ) break;
+			candidateSelection(firstPhase);
+			
+			//********************* USER FEEDBACK INTERFACE OR AUTOMATIC VALIDATION **********//
+			if(topConceptsAndAlignments.size() == 0){//no more candidates
+				if(firstPhase){
+					//no more candidates for the first phase, switch to the second
+					firstPhase = false;
+					lastFirstPhaseIteration = iteration;
+					System.out.println("Switch to second phase: No more candidates in first phase");
+					progressDisplay.appendNewLineReportText("No more candidates in first phase (similarity-based)");
+					continue;
+				}
+				else{
+					//stop
+					progressDisplay.appendNewLineReportText("Stop: no more candidates in second phase (relevance-based)");
+					System.out.println("Stop: No more candidates in second phase");
+					break;
+				}
+			}
+
+			if( isCancelled() || stop  ) break;
+			if(isInAutomaticMode()){
+				automaticValidation();
+			}
+			else{
+				userValidation();
+			}
+			
+			//************************* AFTER USER VALIDATION ***********************
+			if( isCancelled() || stop  ) break;	
+			//The user pressed the continue button
+			extrapolatingMatchers();
+						
+			//****************************END OF THE ITERATION*****************************
+			evaluate();
+			
+			if( iteration+1 > param.iterations ) {
+				progressDisplay.appendNewLineReportText("Stopping the process because the maximum iteration is reached.");
+				System.out.println( ">>> Stopping loop after " + Integer.toString(param.iterations) + " iterations." );
+				break;
+			}
+			if( isCancelled() || stop ) break;
+			
+		} while( !stop );
+		//****************************AFTER THE LOOP*****************************
+		setStage(executionStage.presentFinalMappings);
+		progressDisplay.appendNewLineReportText(PRINT_LINE+"\nThe Feedback Loop is terminated.");
+		printEvaluation();
+		matchEnd();
+	}
+
+	private void printEvaluation() {
+		if(isInAutomaticMode()){
+			FeedbackLoopParameters param = (FeedbackLoopParameters)this.param;
+			System.out.println("////////Parameters////////////");
+			System.out.println("Configuration: "+param.configuration);
+			System.out.println("Max iteration: "+param.iterations);
+			System.out.println("Hth: "+param.highThreshold);
+			System.out.println("Lth: "+param.lowThreshold);
+			System.out.println("K: "+param.K);
+			System.out.println("M: "+param.M);
+			//Present the partial evaluations
+			System.out.println( "////////PARTIAL EVALUATIONS///////////////////////////////////////////////////////");
+			System.out.println( "Inital Matchers:"	);
+			System.out.println( initialEvaluation.getReport() );
+			for(int i = 0; i < partialEvaluations.size(); i++){
+				int partialIter = (i+1)*evaluationSpin;
+				ReferenceEvaluationData partialData = partialEvaluations.get(i);
+				System.out.println( "" );
+				System.out.println("Iteration: "+partialIter);
+				System.out.println( "Feedback Loop + Extrapolating Matchers: ");
+				System.out.println( partialData.getReport() );
+				System.out.println("Improvement F-measure from initial: "+Utility.getOneDecimalPercentFromDouble(partialData.getFmeasure()-initialEvaluation.getFmeasure()));
+			}
+			// present the final mappings here
+			
+			AlignmentSet<Alignment> fblextrapolationSet = getAlignmentSet();
+			
+			ReferenceEvaluationData rd_end = ReferenceEvaluator.compare(fblextrapolationSet, referenceAlignmentMatcher.getAlignmentSet());
+			System.out.println( "/////////FINAL EVALUATION//////////////////////////////////////////////////////");
+			System.out.println("Final Iteration: "+iteration);
+			System.out.println( "Inital Matchers:"	);
+			System.out.println( initialEvaluation.getReport() );
+			System.out.println( "" );
+			System.out.println( "Feedback Loop + Extrapolating Matchers: ");
+			System.out.println( rd_end.getReport() );
+			System.out.println("Improvement F-measure from initial: "+Utility.getOneDecimalPercentFromDouble(rd_end.getFmeasure()-initialEvaluation.getFmeasure()));
+			System.out.println( "////////////////////////////////////////////////////////////////");	
+		}	
+	}
+
+	private void extrapolatingMatchers() throws Exception {
+		//**********************  EXTRAPOLATIING MATCHERS ********/////
+		FeedbackLoopParameters param = (FeedbackLoopParameters)this.param;
+		FilteredAlignmentMatrix classesMatrix = (FilteredAlignmentMatrix)this.classesMatrix;
+		FilteredAlignmentMatrix propertiesMatrix = (FilteredAlignmentMatrix)this.propertiesMatrix;
+		SelectionPanel progressDisplay = (SelectionPanel)this.progressDisplay;
+		
+		if(userAction.equals(SelectionPanel.A_MAPPING_CORRECT)){		
+			setStage(executionStage.runningExtrapolatingMatchers);				
+			progressDisplay.appendNewLineReportText("1 mapping validated by the user: "+userMapping);
+			
+			AlignmentSet<Alignment> userSet = new AlignmentSet<Alignment>();
+			
+			userSet.addAlignment( userMapping );
+			
+			if(userConcept.whichType == alignType.aligningClasses ) {
+				classesMatrix.validateAlignments( userSet );
+				classesAlignmentSet.addAlignment(userMapping);
+			} else {
+				propertiesMatrix.validateAlignments( userSet );
+				propertiesAlignmentSet.addAlignment(userMapping);
+			}
+			progressDisplay.appendNewLineReportText("Running extrapolation matchers: ");
+			ExtrapolatingFS eFS = new ExtrapolatingFS();
+			eFS.setThreshold( param.highThreshold );
+			eFS.setMaxSourceAlign( param.sourceNumMappings );
+			eFS.setMaxTargetAlign( param.targetNumMappings );
+			eFS.addInputMatcher(this);
+			
+			//AlignmentSet<Alignment> userMappings = new AlignmentSet<Alignment>();
+			//userMappings.addAlignment(userMapping);
+			
+
+			eFS.match(userSet);
+			
+
+			eFS.select(); // will contain values that already filtered.
+
+			// choose only alignments that are not filtered
+			AlignmentSet<Alignment> newClassAlignments_eFS = getNewClassAlignments( eFS );
+			AlignmentSet<Alignment> newPropertyAlignments_eFS = getNewPropertyAlignments( eFS );
+			progressDisplay.appendNewLineReportText("\tFamilial Similarity method found "+newClassAlignments_eFS.size()+" class mappings.");
+			progressDisplay.appendNewLineReportText("\tFamilial Similarity method found "+newPropertyAlignments_eFS.size()+" property mappings.");
+			// report on the eDSI
+			System.out.println( "Extrapolating Matcher: eFS, found " + Integer.toString(newClassAlignments_eFS.size()) + " new class alignments, and " +
+					Integer.toString( newPropertyAlignments_eFS.size() ) + " new property alignments.");
+
+			printAlignments( newClassAlignments_eFS, alignType.aligningClasses );
+			printAlignments( newPropertyAlignments_eFS, alignType.aligningProperties );
+			
+			// add any new mappings
+			classesToBeFiltered.addAll( newClassAlignments_eFS );
+			propertiesToBeFiltered.addAll( newPropertyAlignments_eFS );
+			
+		}
+		else if(userAction.equals(SelectionPanel.A_ALL_MAPPING_WRONG)){ //All mappings are wrong
+			progressDisplay.appendNewLineReportText("\tAll candidate mappings are incorrect and filtered out.");
+			System.out.println( "All candidate mappings are wrong, filtering out these mappings in the similarity matrix.");
+			
+			// when all the mappings are wrong they should be filtered from the similarity matrix (on a cell by cell basis)
+			for(int i=0; i < topConceptsAndAlignments.size(); i++){
+				CandidateConcept c = topConceptsAndAlignments.get(i);
+				ArrayList<Alignment> candidateMappings = c.getCandidateMappings();
+				if(candidateMappings!= null){
+					for(int j = 0; j < candidateMappings.size(); j++){
+						Alignment a = candidateMappings.get(j);
+						if(c.whichType.equals(alignType.aligningProperties)){
+							propertiesMatrix.filterCell(a.getSourceKey(), a.getTargetKey());
+						}
+						else{
+							classesMatrix.filterCell(a.getSourceKey(), a.getTargetKey());
+						}
+					}
+				}
+			}
+		}
+		else if(userAction.equals(SelectionPanel.A_CONCEPT_WRONG)){
+			progressDisplay.appendNewLineReportText("\tSelected candidate concept "+userConcept.getCandidateString()+" has not to be mapped and is filterd out.");
+			System.out.println("User selected to "+SelectionPanel.A_CONCEPT_WRONG);
+			ArrayList<CandidateConcept> toBeFiltered = new ArrayList<CandidateConcept>(1);
+			toBeFiltered.add(userConcept);
+			filterCandidateConcepts(toBeFiltered);
+		}
+		else if(userAction.equals(SelectionPanel.A_ALL_CONCEPT_WRONG)){
+			progressDisplay.appendNewLineReportText("\tAll candidate concepts has not to be mapped and are filterd out.");
+			System.out.println("User selected to "+SelectionPanel.A_ALL_CONCEPT_WRONG);
+			filterCandidateConcepts(topConceptsAndAlignments);
+		}
+		
+	    // EXTRAPOLATING DSI
+		//DSI should be executed at each iteration for each user action
+		ExtrapolatingDSI eDSI = new ExtrapolatingDSI();
+		DescendantsSimilarityInheritanceParameters params = new DescendantsSimilarityInheritanceParameters();
+		params.MCP = 0.75;
+		eDSI.setParam(params);
+		eDSI.setThreshold(threshold);
+		eDSI.setMaxSourceAlign(maxSourceAlign);
+		eDSI.setMaxTargetAlign(maxTargetAlign);
+		eDSI.addInputMatcher(this);
+		
+		eDSI.match();
+		eDSI.select(); // will contain values that already filtered.
+
+		// choose only alignments that are not filtered
+		AlignmentSet<Alignment> newClassAlignments_eDSI = getNewClassAlignments( eDSI );
+		AlignmentSet<Alignment> newPropertyAlignments_eDSI = getNewPropertyAlignments( eDSI );
+		progressDisplay.appendNewLineReportText("\tDSI found "+newClassAlignments_eDSI.size()+" class mappings.");
+		progressDisplay.appendNewLineReportText("\tDSI found "+newPropertyAlignments_eDSI.size()+" property mappings.");
+		
+		// report on the eDSI
+		System.out.println( "Extrapolating Matcher: eDSI, found " + Integer.toString(newClassAlignments_eDSI.size()) + " new class alignments, and " +
+				Integer.toString( newPropertyAlignments_eDSI.size() ) + " new property alignments.");
+
+		printAlignments( newClassAlignments_eDSI, alignType.aligningClasses );
+		printAlignments( newPropertyAlignments_eDSI, alignType.aligningProperties );
 
 		
+		// add any new mappings
+		classesToBeFiltered.addAll( newClassAlignments_eDSI );
+		propertiesToBeFiltered.addAll( newPropertyAlignments_eDSI );	
+		currentStage = executionStage.afterExtrapolatingMatchers;	
 		
+	}
+
+	private void userValidation() {
+		SelectionPanel progressDisplay = (SelectionPanel)this.progressDisplay;
+		setStage( executionStage.runningUserInterface );
+		//MANUAL: Display the mappings in the User Interface
+		progressDisplay.displayMappings(topConceptsAndAlignments);
+		userContinued = false;
+		while(!userContinued && !stop) {
+			// sleep while the user is using the interface
+			try {
+				Thread.sleep(500);  // sleep for .5 seconds at a time 
+			} catch (InterruptedException e) {
+				// our sleep was interrupted, so just continue
+				//e.printStackTrace();
+				break;
+			} 
+		}
+		userMapping = progressDisplay.getUserMapping();
+		userConcept = progressDisplay.getUserConcept();
+		userAction = progressDisplay.getUserAction();
+		setStage( executionStage.afterUserInterface );
+		
+	}
+
+	private void automaticValidation() {
+		userMapping = null;
+		userConcept = null;
+		userAction= null;
+		setStage(executionStage.runningAutomaticValidation);
+		if(isInAutomaticMode()){  // AUTOMATIC USER VALIDATION: check with the reference if a mapping is correct
+			//no more candidates --> we stop
+			//validate mappings against the reference, only one mapping can be validated therefore we take the first correct
+			for(int i=0; i < topConceptsAndAlignments.size(); i++){
+				CandidateConcept c = topConceptsAndAlignments.get(i);
+				ArrayList<Alignment> candidateMappings = c.getCandidateMappings();
+				if(candidateMappings!= null){
+					for(int j = 0; j < candidateMappings.size(); j++){
+						Alignment a = candidateMappings.get(j);
+						if(c.whichType.equals(alignType.aligningProperties)){
+							// we are looking at a property alignment
+							if(referenceAlignmentMatcher.getPropertyAlignmentSet().contains(a.getEntity1(), a.getEntity2()) != null){
+								userMapping = a;
+								userConcept = c;
+								break;
+							}
+						}
+						else{
+							// we are looking at a class alignment
+							if(referenceAlignmentMatcher.getClassAlignmentSet().contains(a.getEntity1(), a.getEntity2()) != null){
+								userMapping = a;
+								userConcept = c;
+								break;
+							}
+							
+						}
+					}
+				}
+			}
+			
+			if( userMapping == null ) {
+				//None of the candidate mapping is correct
+				//we need to see if the all of any of the candidate concepts is not in the reference
+				//3 cases:
+				//a) All candidate concepts are not in the reference (filter them all)
+				//b) at least one candidate concept is not in the reference (filter one)
+				//c) all candidate concepts are in the reference, but the mappings are all wrong (filter all mappings)
+				ArrayList<CandidateConcept> wrongConcepts = new ArrayList<CandidateConcept>();
+				for(int i=0; i < topConceptsAndAlignments.size(); i++){
+					CandidateConcept c = topConceptsAndAlignments.get(i);
+					if(!isInReferenceAlignment(c)){
+						wrongConcepts.add(c);
+					}
+				}
+				if(wrongConcepts.size() == topConceptsAndAlignments.size()){
+					userAction = SelectionPanel.A_ALL_CONCEPT_WRONG;
+					System.out.println( "Automatic User Validation: all candidate concepts are not in the reference.");
+				}
+				else if(wrongConcepts.size() > 0){
+					userAction = SelectionPanel.A_CONCEPT_WRONG;
+					userConcept = wrongConcepts.get(0);
+					System.out.println( "Automatic User Validation: wrong candidate concept: "+userConcept.getCandidateString());
+				}
+				else{//all candidate concepts are in the reference, but all of their candidate mappings are wrong
+					userAction = SelectionPanel.A_ALL_MAPPING_WRONG;
+					System.out.println( "Automatic User Validation: None of the mappings presented to the user were in the reference alignment.");
+				}
+			}
+			else { //user selected a single mapping correct
+				userAction = SelectionPanel.A_MAPPING_CORRECT;
+				System.out.println( "Automatic User Validation: CORRECT mapping: " + 
+						userMapping.getEntity1().toString() + " -> " +
+						userMapping.getEntity2().toString() );
+			}
+			setStage(executionStage.afterAutomaticValidation);
+		}
+	}
+
+	private void candidateSelection(boolean firstPhase) {
+		SelectionPanel progressDisplay = (SelectionPanel)this.progressDisplay;
+		FeedbackLoopParameters param = (FeedbackLoopParameters)this.param;
+		setStage( executionStage.runningCandidateSelection );
+		if(firstPhase){
+			progressDisplay.appendNewLineReportText("Similarity-Based Candidates Selection:");
+			SimilarityBasedCandidateSelection simBasedCandidateSelection = new SimilarityBasedCandidateSelection(this);
+			topConceptsAndAlignments = simBasedCandidateSelection.getCandidateAlignments(param.K, param.M);
+		}
+		else{
+			progressDisplay.appendNewLineReportText("Relevance-Based Candidates Selection:");
+			//the candidateSelection is now initialized in the UFL constructor
+			//because we want to keep track of the relevance evaluations to avoid computing them at each itearation
+			//but candidateSelection variable is not the similarityBasedCandidateSelection because that one has to be computed at each iteration
+			candidateSelection.runMeasures();
+			topConceptsAndAlignments = candidateSelection.getCandidateAlignments( param.K, param.M);
+
+		}
+
+		
+		//PRINTING
+		System.out.println("Printing Candidate Mappings: ");	
+		int numCandidateMappings = 0;//this value is not only used for printing
+		for(int i= 0; i<topConceptsAndAlignments.size(); i++){
+			CandidateConcept c = topConceptsAndAlignments.get(i);
+			ArrayList<Alignment> candidateMappings = c.getCandidateMappings();
+			if(candidateMappings!= null){
+				numCandidateMappings += candidateMappings.size();
+				for( int aCandidate = 0; aCandidate < candidateMappings.size(); aCandidate++ ) {
+					Alignment candidateAlignment = candidateMappings.get(aCandidate);
+					System.out.println( " Candidate Concept: "+i+" "+c.getNode()+ ", Candidate Mapping: " + Integer.toString(aCandidate) + ". " + candidateAlignment.toString() );	
+				}
+			}
+		}
+		progressDisplay.appendNewLineReportText("Found "+ numCandidateMappings + " candidate alignments.");
+		System.out.println( "Candidate Selection: Found " + numCandidateMappings + " candidate alignments.");
+		setStage( executionStage.afterCandidateSelection );
+	}
+
+	private void filtering() {
+		setStage( executionStage.runningFilter );
+		SelectionPanel progressDisplay = (SelectionPanel)this.progressDisplay;
+		FilteredAlignmentMatrix classesMatrix = (FilteredAlignmentMatrix)this.classesMatrix;
+		FilteredAlignmentMatrix propertiesMatrix = (FilteredAlignmentMatrix)this.propertiesMatrix;
+		progressDisplay.appendNewLineReportText("Mappings filtering:");
+		classesMatrix.validateAlignments(classesToBeFiltered);
+		propertiesMatrix.validateAlignments(propertiesToBeFiltered);
+		classesAlignmentSet.addAllNoDuplicate( classesToBeFiltered );
+		propertiesAlignmentSet.addAllNoDuplicate( propertiesToBeFiltered);
+		// double threshold filtering (dtf)
+		//int classesBelowTh = classesMatrix.filterCellsBelowThreshold( param.lowThreshold );
+		//int propertiesBelowTh = propertiesMatrix.filterCellsBelowThreshold( param.lowThreshold );
+		//System.out.println( "Double Threshold Filtering: filtered " + Integer.toString(classesBelowTh) + " classes.");
+		//System.out.println( "Double Threshold Filtering: filtered " + Integer.toString(propertiesBelowTh) + " properties.");
+		//progressDisplay.appendNewLineReportText("\tFiltered "+Integer.toString(classesBelowTh) + " classes.");
+		//progressDisplay.appendNewLineReportText("\tFiltered "+Integer.toString(propertiesBelowTh) + " properties.");
+		classesToBeFiltered = new AlignmentSet<Alignment>(); // create a new, empty set
+		propertiesToBeFiltered = new AlignmentSet<Alignment>(); // create a new, empty set
+		setStage( executionStage.afterFilter );
+	}
+
+	private void evaluate() {
+		if(isInAutomaticMode()){
+			if(iteration % evaluationSpin == 0){//This is to print results every evaluationSpin iterations
+				AlignmentSet<Alignment> partialSet = getAlignmentSet();
+				ReferenceEvaluationData partialRD = ReferenceEvaluator.compare(partialSet, referenceAlignmentMatcher.getAlignmentSet());
+				partialEvaluations.add(partialRD);
+				System.out.println("Iteration: "+iteration);
+				System.out.println( "///////////////////////////////////////////////////////////////");
+				System.out.println( "Inital Matchers:"	);
+				System.out.println( initialEvaluation.getReport() );
+				System.out.println( "" );
+				System.out.println( "Feedback Loop + Extrapolating Matchers: ");
+				System.out.println( partialRD.getReport() );
+				System.out.println("Improvement F-measure from initial: "+Utility.getOneDecimalPercentFromDouble(partialRD.getFmeasure()-initialEvaluation.getFmeasure()));
+				System.out.println( "////////////////////////////////////////////////////////////////");
+			}
+		}
+		new_mapping += (classesToBeFiltered.size() + propertiesToBeFiltered.size());
+		System.out.println("Current iteration: "+iteration+" - Mappings found this iteration: "+
+				(classesToBeFiltered.size() + propertiesToBeFiltered.size()) +
+				"   Total new mappings found: " + Integer.toString(new_mapping)	);
+		
+	}
+
+	private void runInitialMatcher() throws Exception {
+		FeedbackLoopParameters param = (FeedbackLoopParameters)this.param;
+		SelectionPanel progressDisplay = (SelectionPanel)this.progressDisplay;
+		//Initial Matcher is initialized in the SelectionPanel.getParameters()
+		//we just have to make it run here
+		setStage(executionStage.runningInitialMatchers);
+		AbstractMatcher im = param.matcher;
+		progressDisplay.appendNewLineReportText("Running the initial automatic matcher: "+im.getName().getMatcherName());
+		//parameters are set in the SelectionPanel.getParameters()
+		//im.setProgressDisplay(progressDisplay);
+		im.match();
+		progressDisplay.appendNewLineReportText("The initial matcher completed the matching process successfully. ");
+		progressDisplay.appendNewLineReportText("\tClasses alignments found: "+im.getClassAlignmentSet().size());
+		progressDisplay.appendNewLineReportText("\tProperties alignments found: "+im.getPropertyAlignmentSet().size());
+		classesMatrix = new FilteredAlignmentMatrix( im.getClassesMatrix() );
+		propertiesMatrix = new FilteredAlignmentMatrix( im.getPropertiesMatrix() );
+		classesAlignmentSet = im.getClassAlignmentSet();
+		propertiesAlignmentSet = im.getPropertyAlignmentSet();
+		classesToBeFiltered = classesAlignmentSet;
+		propertiesToBeFiltered = propertiesAlignmentSet;
+		if(isInAutomaticMode()){
+			initialEvaluation = ReferenceEvaluator.compare(im.getAlignmentSet(), referenceAlignmentMatcher.getAlignmentSet());
+		}
+		setStage( executionStage.afterInitialMatchers );		
+	}
+
+	private void initAutomaticConfiguration() throws Exception {
+		String conf = ((FeedbackLoopParameters)param).configuration;
 		if(conf.equals(AUTO_101_301)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
-			automatic = true;
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.fileName = "./OAEI09/benchmarks/301/refalign.rdf";
 			refParam.format = ReferenceAlignmentMatcher.REF0;
@@ -180,7 +614,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 		}
 		else if(conf.equals(AUTO_101_302)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
-			automatic = true;
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.fileName = "./OAEI09/benchmarks/302/refalign.rdf";
 			refParam.format = ReferenceAlignmentMatcher.REF0;
@@ -190,7 +623,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 		}
 		else if(conf.equals(AUTO_101_303)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
-			automatic = true;
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.fileName = "./OAEI09/benchmarks/303/refalign.rdf";
 			refParam.format = ReferenceAlignmentMatcher.REF0;
@@ -201,7 +633,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 		}
 		else if(conf.equals(AUTO_101_304)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
-			automatic = true;
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.fileName = "./OAEI09/benchmarks/304/refalign.rdf";
 			refParam.format = ReferenceAlignmentMatcher.REF0;
@@ -211,7 +642,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 		}
 		else if(conf.equals(AUTO_animals)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
-			automatic = true;
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.fileName = "./I3CON2004/animals/animalsAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
@@ -221,7 +651,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 		}
 		else if(conf.equals(AUTO_basketball_soccer)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
-			automatic = true;
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.fileName = "./I3CON2004/basketball_soccer/basketball_soccer.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
@@ -231,7 +660,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 		}
 		else if(conf.equals(AUTO_comsci)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
-			automatic = true;
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.fileName = "./I3CON2004/comsci/csAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
@@ -241,7 +669,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 		}
 		else if(conf.equals(AUTO_hotel)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
-			automatic = true;
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.fileName = "./I3CON2004/hotel/hotelAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
@@ -251,7 +678,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 		}
 		else if(conf.equals(AUTO_network)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
-			automatic = true;
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.fileName = "./I3CON2004/network/networkAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
@@ -261,7 +687,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 		}
 		else if(conf.equals(AUTO_people_pets)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
-			automatic = true;
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.fileName = "./I3CON2004/people+pets/people+petsAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
@@ -271,7 +696,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 		}
 		else if(conf.equals(AUTO_russia)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
-			automatic = true;
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.fileName = "./I3CON2004/russia/russiaAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
@@ -281,7 +705,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 		}
 		else if(conf.equals(AUTO_weapons)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
-			automatic = true;
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.fileName = "./I3CON2004/Weapons/WeaponsAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
@@ -291,7 +714,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 		}
 		else if(conf.equals(AUTO_wine)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
-			automatic = true;
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.fileName = "./I3CON2004/Wine/WineAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
@@ -300,423 +722,10 @@ public class FeedbackLoop extends AbstractMatcher  {
 				referenceAlignmentMatcher.match();	
 		}
 		else{//MANUAL
-			automatic = false;
+			//isAutomaticMode() returns false because referenceAlignmentMatcher is null
+			System.out.println("Running manually.");
 		}
 		
-		//************** INITIAL MATCHER********************///
-		//Initial Matcher is initialized in the SelectionPanel.getParameters()
-		//we just have to make it run here
-		setStage(executionStage.afterUserInterface);
-		
-		AbstractMatcher im = param.matcher;
-		progressDisplay.appendNewLineReportText("Running the initial automatic matcher: "+im.getName().getMatcherName());
-		//parameters are set in the SelectionPanel.getParameters()
-		//im.setProgressDisplay(progressDisplay);
-		im.match();
-		progressDisplay.appendNewLineReportText("The initial matcher completed the matching process successfully. ");
-		progressDisplay.appendNewLineReportText("\tClasses alignments found: "+im.getClassAlignmentSet().size());
-		progressDisplay.appendNewLineReportText("\tProperties alignments found: "+im.getPropertyAlignmentSet().size());
-		
-		classesMatrix = new FilteredAlignmentMatrix( im.getClassesMatrix() );
-		propertiesMatrix = new FilteredAlignmentMatrix( im.getPropertiesMatrix() );
-		FilteredAlignmentMatrix classesMatrix = (FilteredAlignmentMatrix)this.classesMatrix;
-		FilteredAlignmentMatrix propertiesMatrix = (FilteredAlignmentMatrix)this.propertiesMatrix;
-		
-		classesAlignmentSet = im.getClassAlignmentSet();
-		propertiesAlignmentSet = im.getPropertyAlignmentSet();
-
-		im = null;
-		setStage( executionStage.afterInitialMatchers );
-		
-		
-		boolean stop = false; //when this is set to true it means that the user has clicked the stop button
-		AlignmentSet<Alignment> classesToBeFiltered = classesAlignmentSet;
-		AlignmentSet<Alignment> propertiesToBeFiltered = propertiesAlignmentSet;
-		int iteration = 0;
-		int total_new = 0 - (classesToBeFiltered.size() + propertiesToBeFiltered.size());
-		
-		AlignmentSet<Alignment> referenceSet = null;
-		AlignmentSet<Alignment> fblSet = null;
-		ReferenceEvaluationData rd = null;
-		if(automatic){
-			referenceSet = referenceAlignmentMatcher.getAlignmentSet();
-			fblSet = getAlignmentSet();
-			rd = ReferenceEvaluator.compare(fblSet, referenceSet);
-			System.out.println( "///////////////////////////////////////////////////////////////");
-			System.out.println( "Inital Matchers: PRECISION: " + Double.toString(rd.getPrecision()) +
-										         " RECALL: " + Double.toString( rd.getRecall() ) +
-										         " F-MEASURE: " + Double.toString( rd.getFmeasure() )		);
-			System.out.println( "///////////////////////////////////////////////////////////////");
-			
-		}
-
-		//these structures are used to keep track of partial evaluations
-		// with spin equal to 5 it means that measure the performances of the alignment every 5 iterations
-		ArrayList<ReferenceEvaluationData> partialEvaluations = new ArrayList<ReferenceEvaluationData>();
-	    int evaluationSpin = 5;	
-		do {
-			System.out.println("");
-			
-			
-			iteration++;
-			
-			if(automatic){
-				if(iteration % evaluationSpin == 0){//This is to print results every evaluationSpin iterations
-					AlignmentSet<Alignment> partialSet = getAlignmentSet();
-					ReferenceEvaluationData partialRD = ReferenceEvaluator.compare(partialSet, referenceSet);
-					partialEvaluations.add(partialRD);
-					System.out.println("Iteration: "+iteration);
-					System.out.println( "///////////////////////////////////////////////////////////////");
-					System.out.println( "Inital Matchers:"	);
-					System.out.println( rd.getReport() );
-					System.out.println( "" );
-					System.out.println( "Feedback Loop + Extrapolating Matchers: ");
-					System.out.println( partialRD.getReport() );
-					System.out.println("Improvement F-measure from initial: "+Utility.getOneDecimalPercentFromDouble(partialRD.getFmeasure()-rd.getFmeasure()));
-					System.out.println( "////////////////////////////////////////////////////////////////");
-				}
-			}
-
-			
-			if( iteration > param.iterations ) {
-				progressDisplay.appendNewLineReportText("Stopping the process because the maximum iteration is reached.");
-				System.out.println( ">>> Stopping loop after " + Integer.toString(param.iterations) + " iterations." );
-				break;
-			}
-			progressDisplay.appendNewLineReportText(PRINT_LINE+"\nStarting iteration "+iteration);
-			
-			total_new += (classesToBeFiltered.size() + propertiesToBeFiltered.size());
-			System.out.println("Current iteration: "+iteration+" - Mappings found this iteration: "+
-					(classesToBeFiltered.size() + propertiesToBeFiltered.size()) +
-					"   Total new mappings found: " + Integer.toString(total_new)	);
-
-			//********************** FILTER STAGE *********************///
-			setStage( executionStage.runningFilter );
-			progressDisplay.appendNewLineReportText("Mappings filtering:");
-			classesMatrix.validateAlignments(classesToBeFiltered);
-			propertiesMatrix.validateAlignments(propertiesToBeFiltered);
-
-			classesAlignmentSet.addAllNoDuplicate( classesToBeFiltered );
-			propertiesAlignmentSet.addAllNoDuplicate( propertiesToBeFiltered);
-
-			// double threshold filtering (dtf)
-			//int classesBelowTh = classesMatrix.filterCellsBelowThreshold( param.lowThreshold );
-			//int propertiesBelowTh = propertiesMatrix.filterCellsBelowThreshold( param.lowThreshold );
-			
-			//System.out.println( "Double Threshold Filtering: filtered " + Integer.toString(classesBelowTh) + " classes.");
-			//System.out.println( "Double Threshold Filtering: filtered " + Integer.toString(propertiesBelowTh) + " properties.");
-			//progressDisplay.appendNewLineReportText("\tFiltered "+Integer.toString(classesBelowTh) + " classes.");
-			//progressDisplay.appendNewLineReportText("\tFiltered "+Integer.toString(propertiesBelowTh) + " properties.");
-			
-			classesToBeFiltered = new AlignmentSet<Alignment>(); // create a new, empty set
-			propertiesToBeFiltered = new AlignmentSet<Alignment>(); // create a new, empty set
-			
-			setStage( executionStage.afterFilter );
-			
-			
-			
-			//**********************  CANDIDATE SELECTION ***********///
-			setStage( executionStage.runningCandidateSelection );
-			progressDisplay.appendNewLineReportText("Candidates Selection:");
-			// TODO: run the candidate selection here
-			//the candidateSelection is now initialized in the UFL constructor
-			//because we want to keep track of the relevance evaluations to avoid computing them at each itearation
-			candidateSelection.runMeasures();
-			
-			ArrayList<CandidateConcept> topConceptsAndAlignments = candidateSelection.getCandidateAlignments( K, M);
-			
-			//PRINTING
-			System.out.println("Printing Candidate Mappings: ");	
-			int numCandidateMappings = 0;//this value is not only used for printing
-			for(int i= 0; i<topConceptsAndAlignments.size(); i++){
-				CandidateConcept c = topConceptsAndAlignments.get(i);
-				ArrayList<Alignment> candidateMappings = c.getCandidateMappings();
-				if(candidateMappings!= null){
-					numCandidateMappings += candidateMappings.size();
-					for( int aCandidate = 0; aCandidate < candidateMappings.size(); aCandidate++ ) {
-						Alignment candidateAlignment = candidateMappings.get(aCandidate);
-						System.out.println( " Candidate Concept: "+i+" "+c.getNode()+ ", Candidate Mapping: " + Integer.toString(aCandidate) + ". " + candidateAlignment.toString() );	
-					}
-				}
-			}
-			progressDisplay.appendNewLineReportText("Found "+ numCandidateMappings + " candidate alignments.");
-			System.out.println( "Candidate Selection: Found " + numCandidateMappings + " candidate alignments.");
-			
-			
-			
-			setStage( executionStage.afterCandidateSelection );
-		
-			if( isCancelled() || isStage(executionStage.presentFinalMappings)  ) break;
-			
-			
-			//********************* USER FEEDBACK INTERFACE OR AUTOMATIC VALIDATION **********//
-
-			setStage( executionStage.runningUserInterface );
-			//User variables
-			Alignment userMapping = null;  // this is the correct mapping chosen by the user
-			CandidateConcept userConcept = null;
-			String userAction = null;
-			if(automatic){  // AUTOMATIC USER VALIDATION: check with the reference if a mapping is correct
-				//no more candidates --> we stop
-				if(numCandidateMappings == 0){
-					stop = true;
-					setStage( executionStage.presentFinalMappings );
-					break;  // break out of the feedback loop
-				}
-				else{  //validate mappings against the reference, only one mapping can be validated therefore we take the first correct
-					for(int i=0; i < topConceptsAndAlignments.size(); i++){
-						CandidateConcept c = topConceptsAndAlignments.get(i);
-						ArrayList<Alignment> candidateMappings = c.getCandidateMappings();
-						if(candidateMappings!= null){
-							for(int j = 0; j < candidateMappings.size(); j++){
-								Alignment a = candidateMappings.get(j);
-								if(c.whichType.equals(alignType.aligningProperties)){
-									// we are looking at a property alignment
-									if(referenceAlignmentMatcher.getPropertyAlignmentSet().contains(a.getEntity1(), a.getEntity2()) != null){
-										userMapping = a;
-										userConcept = c;
-										break;
-									}
-								}
-								else{
-									// we are looking at a class alignment
-									if(referenceAlignmentMatcher.getClassAlignmentSet().contains(a.getEntity1(), a.getEntity2()) != null){
-										userMapping = a;
-										userConcept = c;
-										break;
-									}
-									
-								}
-							}
-						}
-					}
-					
-					if( userMapping == null ) {
-						//None of the candidate mapping is correct
-						//we need to see if the all of any of the candidate concepts is not in the reference
-						//3 cases:
-						//a) All candidate concepts are not in the reference (filter them all)
-						//b) at least one candidate concept is not in the reference (filter one)
-						//c) all candidate concepts are in the reference, but the mappings are all wrong (filter all mappings)
-						ArrayList<CandidateConcept> wrongConcepts = new ArrayList<CandidateConcept>();
-						for(int i=0; i < topConceptsAndAlignments.size(); i++){
-							CandidateConcept c = topConceptsAndAlignments.get(i);
-							if(!isInReferenceAlignment(c)){
-								wrongConcepts.add(c);
-							}
-						}
-						if(wrongConcepts.size() == topConceptsAndAlignments.size()){
-							userAction = SelectionPanel.A_ALL_CONCEPT_WRONG;
-							System.out.println( "Automatic User Validation: all candidate concepts are not in the reference.");
-						}
-						else if(wrongConcepts.size() > 0){
-							userAction = SelectionPanel.A_CONCEPT_WRONG;
-							userConcept = wrongConcepts.get(0);
-							System.out.println( "Automatic User Validation: wrong candidate concept: "+userConcept.getCandidateString());
-						}
-						else{//all candidate concepts are in the reference, but all of their candidate mappings are wrong
-							userAction = SelectionPanel.A_ALL_MAPPING_WRONG;
-							System.out.println( "Automatic User Validation: None of the mappings presented to the user were in the reference alignment.");
-						}
-					}
-					else { //user selected a single mapping correct
-						userAction = SelectionPanel.A_MAPPING_CORRECT;
-						System.out.println( "Automatic User Validation: CORRECT mapping: " + 
-								userMapping.getEntity1().toString() + " -> " +
-								userMapping.getEntity2().toString() );
-					}
-				}
-			}
-			
-			else{  //MANUAL: Display the mappings in the User Interface
-				progressDisplay.displayMappings(topConceptsAndAlignments);
-				
-				while( isStage(executionStage.runningUserInterface) ) {
-					// sleep while the user is using the interface
-					try {
-						Thread.sleep(500);  // sleep for .5 seconds at a time 
-					} catch (InterruptedException e) {
-						// our sleep was interrupted, so just continue
-						//e.printStackTrace();
-						break;
-					} 
-				}
-				
-				userMapping = progressDisplay.getUserMapping();
-				userConcept = progressDisplay.getUserConcept();
-				userAction = progressDisplay.getUserAction();
-			}
-
-			if( isStage(executionStage.presentFinalMappings) ) {
-				// the user clicked the stop button.
-				stop = true;
-				break;  // break out of this while loop
-			}
-			
-			
-			//************************* AFTER USER VALIDATION ***********************			
-			//The user pressed the continue button
-			setStage(executionStage.afterUserInterface);
-			if(userAction.equals(SelectionPanel.A_MAPPING_CORRECT)){
-				
-				//**********************  EXTRAPOLATIING MATCHERS ********/////
-				setStage(executionStage.runningExtrapolatingMatchers);				
-				progressDisplay.appendNewLineReportText("1 mapping validated by the user: "+userMapping);
-				
-				AlignmentSet<Alignment> userSet = new AlignmentSet<Alignment>();
-				
-				userSet.addAlignment( userMapping );
-				
-				if( userMapping.getAlignmentType() != null && userMapping.getAlignmentType() == alignType.aligningClasses ) {
-					classesMatrix.validateAlignments( userSet );
-					classesAlignmentSet.addAlignment(userMapping);
-				} else {
-					propertiesMatrix.validateAlignments( userSet );
-					propertiesAlignmentSet.addAlignment(userMapping);
-				}
-				progressDisplay.appendNewLineReportText("Running extrapolation matchers: ");
-				ExtrapolatingFS eFS = new ExtrapolatingFS();
-				eFS.setThreshold( param.highThreshold );
-				eFS.setMaxSourceAlign( param.sourceNumMappings );
-				eFS.setMaxTargetAlign( param.targetNumMappings );
-				eFS.addInputMatcher(this);
-				
-				//AlignmentSet<Alignment> userMappings = new AlignmentSet<Alignment>();
-				//userMappings.addAlignment(userMapping);
-				
-
-				eFS.match(userSet);
-				
-
-				eFS.select(); // will contain values that already filtered.
-
-				// choose only alignments that are not filtered
-				AlignmentSet<Alignment> newClassAlignments_eFS = getNewClassAlignments( eFS );
-				AlignmentSet<Alignment> newPropertyAlignments_eFS = getNewPropertyAlignments( eFS );
-				progressDisplay.appendNewLineReportText("\tFamilial Similarity method found "+newClassAlignments_eFS.size()+" class mappings.");
-				progressDisplay.appendNewLineReportText("\tFamilial Similarity method found "+newPropertyAlignments_eFS.size()+" property mappings.");
-				// report on the eDSI
-				System.out.println( "Extrapolating Matcher: eFS, found " + Integer.toString(newClassAlignments_eFS.size()) + " new class alignments, and " +
-						Integer.toString( newPropertyAlignments_eFS.size() ) + " new property alignments.");
-
-				printAlignments( newClassAlignments_eFS, alignType.aligningClasses );
-				printAlignments( newPropertyAlignments_eFS, alignType.aligningProperties );
-				
-				// add any new mappings
-				classesToBeFiltered.addAll( newClassAlignments_eFS );
-				propertiesToBeFiltered.addAll( newPropertyAlignments_eFS );
-				
-			}
-			else if(userAction.equals(SelectionPanel.A_ALL_MAPPING_WRONG)){ //All mappings are wrong
-				progressDisplay.appendNewLineReportText("\tAll candidate mappings are incorrect and filtered out.");
-				System.out.println( "All candidate mappings are wrong, filtering out these mappings in the similarity matrix.");
-				
-				// when all the mappings are wrong they should be filtered from the similarity matrix (on a cell by cell basis)
-				for(int i=0; i < topConceptsAndAlignments.size(); i++){
-					CandidateConcept c = topConceptsAndAlignments.get(i);
-					ArrayList<Alignment> candidateMappings = c.getCandidateMappings();
-					if(candidateMappings!= null){
-						for(int j = 0; j < candidateMappings.size(); j++){
-							Alignment a = candidateMappings.get(j);
-							if(c.whichType.equals(alignType.aligningProperties)){
-								propertiesMatrix.filterCell(a.getSourceKey(), a.getTargetKey());
-							}
-							else{
-								classesMatrix.filterCell(a.getSourceKey(), a.getTargetKey());
-							}
-						}
-					}
-				}
-			}
-			else if(userAction.equals(SelectionPanel.A_CONCEPT_WRONG)){
-				progressDisplay.appendNewLineReportText("\tSelected candidate concept "+userConcept.getCandidateString()+" has not to be mapped and is filterd out.");
-				System.out.println("User selected to "+SelectionPanel.A_CONCEPT_WRONG);
-				ArrayList<CandidateConcept> toBeFiltered = new ArrayList<CandidateConcept>(1);
-				toBeFiltered.add(userConcept);
-				filterCandidateConcepts(toBeFiltered);
-			}
-			else if(userAction.equals(SelectionPanel.A_ALL_CONCEPT_WRONG)){
-				progressDisplay.appendNewLineReportText("\tAll candidate concepts has not to be mapped and are filterd out.");
-				System.out.println("User selected to "+SelectionPanel.A_ALL_CONCEPT_WRONG);
-				filterCandidateConcepts(topConceptsAndAlignments);
-			}
-			
-		    // EXTRAPOLATING DSI
-			//DSI should be executed at each iteration for each user action
-			ExtrapolatingDSI eDSI = new ExtrapolatingDSI();
-			DescendantsSimilarityInheritanceParameters params = new DescendantsSimilarityInheritanceParameters();
-			params.MCP = 0.75;
-			eDSI.setParam(params);
-			eDSI.setThreshold(threshold);
-			eDSI.setMaxSourceAlign(maxSourceAlign);
-			eDSI.setMaxTargetAlign(maxTargetAlign);
-			eDSI.addInputMatcher(this);
-			
-			eDSI.match();
-			eDSI.select(); // will contain values that already filtered.
-
-			// choose only alignments that are not filtered
-			AlignmentSet<Alignment> newClassAlignments_eDSI = getNewClassAlignments( eDSI );
-			AlignmentSet<Alignment> newPropertyAlignments_eDSI = getNewPropertyAlignments( eDSI );
-			progressDisplay.appendNewLineReportText("\tDSI found "+newClassAlignments_eDSI.size()+" class mappings.");
-			progressDisplay.appendNewLineReportText("\tDSI found "+newPropertyAlignments_eDSI.size()+" property mappings.");
-			
-			// report on the eDSI
-			System.out.println( "Extrapolating Matcher: eDSI, found " + Integer.toString(newClassAlignments_eDSI.size()) + " new class alignments, and " +
-					Integer.toString( newPropertyAlignments_eDSI.size() ) + " new property alignments.");
-
-			printAlignments( newClassAlignments_eDSI, alignType.aligningClasses );
-			printAlignments( newPropertyAlignments_eDSI, alignType.aligningProperties );
-
-			
-			// add any new mappings
-			classesToBeFiltered.addAll( newClassAlignments_eDSI );
-			propertiesToBeFiltered.addAll( newPropertyAlignments_eDSI );	
-			currentStage = executionStage.afterExtrapolatingMatchers;	
-
-		
-			if( isCancelled() || isStage(executionStage.presentFinalMappings) ) break;
-		} while( !stop );
-		progressDisplay.appendNewLineReportText(PRINT_LINE+"\nThe Feedback Loop is terminated.");
-		
-		if(automatic){
-			System.out.println("////////Parameters////////////");
-			System.out.println("Configuration: "+param.configuration);
-			System.out.println("Max iteration: "+param.iterations);
-			System.out.println("Hth: "+param.highThreshold);
-			System.out.println("Lth: "+param.lowThreshold);
-			System.out.println("K: "+param.K);
-			System.out.println("M: "+param.M);
-			//Present the partial evaluations
-			System.out.println( "////////PARTIAL EVALUATIONS///////////////////////////////////////////////////////");
-			System.out.println( "Inital Matchers:"	);
-			System.out.println( rd.getReport() );
-			for(int i = 0; i < partialEvaluations.size(); i++){
-				int partialIter = (i+1)*evaluationSpin;
-				ReferenceEvaluationData partialData = partialEvaluations.get(i);
-				System.out.println( "" );
-				System.out.println("Iteration: "+partialIter);
-				System.out.println( "Feedback Loop + Extrapolating Matchers: ");
-				System.out.println( partialData.getReport() );
-				System.out.println("Improvement F-measure from initial: "+Utility.getOneDecimalPercentFromDouble(partialData.getFmeasure()-rd.getFmeasure()));
-			}
-			// present the final mappings here
-			
-			AlignmentSet<Alignment> fblextrapolationSet = getAlignmentSet();
-			
-			ReferenceEvaluationData rd_end = ReferenceEvaluator.compare(fblextrapolationSet, referenceSet);
-			System.out.println( "/////////FINAL EVALUATION//////////////////////////////////////////////////////");
-			System.out.println("Final Iteration: "+iteration);
-			System.out.println( "Inital Matchers:"	);
-			System.out.println( rd.getReport() );
-			System.out.println( "" );
-			System.out.println( "Feedback Loop + Extrapolating Matchers: ");
-			System.out.println( rd_end.getReport() );
-			System.out.println("Improvement F-measure from initial: "+Utility.getOneDecimalPercentFromDouble(rd_end.getFmeasure()-rd.getFmeasure()));
-			System.out.println( "////////////////////////////////////////////////////////////////");
-			
-		}
-		matchEnd();
 	}
 
 	private void filterCandidateConcepts(ArrayList<CandidateConcept> toBeFiltered) {
@@ -853,5 +862,16 @@ public class FeedbackLoop extends AbstractMatcher  {
 		
 	}
 	
+	public boolean isInAutomaticMode(){
+		return referenceAlignmentMatcher != null;
+	}
+
+	public void stop() {
+		stop = true;
+	}
+	
+	public void userContinued(){
+		userContinued = true;
+	}
 
 }

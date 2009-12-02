@@ -219,7 +219,11 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 				for(int k = 0;k<maxAlignments.length; k++) {
 					currentMax = maxAlignments[k];
 					if(currentMax == null) {
-						maxAlignments[k] = currentValue;
+						if(k>0 && currentValue.equals(maxAlignments[k-1])) //we don't need to move currentMax further in maxAlignments because all other cells are still empty
+							break;
+						else{
+							maxAlignments[k] = currentValue;
+						}
 					} else if( currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value)
 						maxAlignments[k] = currentValue;
 						currentValue = currentMax;
@@ -259,12 +263,13 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 		if( col < 0 || col > columns ) {
 			throw new IndexOutOfBoundsException("Column Index is " + Integer.toString(col));
 		}
-	
-		isFiltered[row][col] = true;
-		numCellsFilteredPerColumn[col]++;
-		numCellsFilteredPerRow[row]++;
-		if( data[row][col] != null ) {
-			data[row][col].setSimilarity(0.0d);
+		if(!isFiltered[row][col]){
+			isFiltered[row][col] = true;
+			numCellsFilteredPerColumn[col]++;
+			numCellsFilteredPerRow[row]++;
+			if( data[row][col] != null ) {
+				data[row][col].setSimilarity(0.0d);
+			}
 		}
 	}
 

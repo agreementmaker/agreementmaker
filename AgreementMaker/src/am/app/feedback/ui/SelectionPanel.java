@@ -147,12 +147,12 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 						selectedConcept = candidateMappings.get(concept);
 						selectedMapping = selectedConcept.getCandidateMappings().get(mapping);
 						displayProgressScreen();
-						ufl.setExectionStage( FeedbackLoop.executionStage.afterUserInterface );
+						ufl.userContinued();
 					}
 				}
 				else if(selectedAction.equals(A_ALL_MAPPING_WRONG) || selectedAction.equals(A_ALL_CONCEPT_WRONG)){
 					displayProgressScreen();
-					ufl.setExectionStage( FeedbackLoop.executionStage.afterUserInterface );
+					ufl.userContinued();
 				}
 			}
 			else if( arg0.getActionCommand() == "btn_stop") {
@@ -160,7 +160,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 				selectedMapping = null;
 				selectedConcept = null;
 				displayProgressScreen();
-				ufl.setExectionStage( FeedbackLoop.executionStage.presentFinalMappings );
+				ufl.stop();
 			}
 			 else if( arg0.getActionCommand() == "btn_ok") {
 				 	//ufl.cancel(true);
@@ -365,9 +365,9 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		cmbIterations.addItem(UNLIMITED);
 		cmbIterations.setSelectedItem(UNLIMITED);
 		cmbHighThreshold = new JComboBox( Utility.getPercentDecimalsList() );
-		cmbHighThreshold.setSelectedItem("0.7");
+		cmbHighThreshold.setSelectedItem("0.8");
 		cmbLowThreshold = new JComboBox( Utility.getPercentDecimalsList() );
-		cmbLowThreshold.setSelectedItem("0.0");
+		cmbLowThreshold.setSelectedItem("0.5");
 		
 		String[] integers = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 		cmbK = new JComboBox( integers );
@@ -672,23 +672,29 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 	}
 
 	public void displayReportText(String report){
-		if(matcherReport!= null){
-			matcherReport.setText(report);
-			revalidate();
+		if(!ufl.isCancelled()){
+			if(matcherReport!= null){
+				matcherReport.setText(report);
+				revalidate();
+			}
 		}
 	}
 	
 	public void concatReportText(String report){
-		if(matcherReport!= null){
-			matcherReport.append(report);
-			revalidate();
+		if(!ufl.isCancelled()){
+			if(matcherReport!= null){
+				matcherReport.append(report);
+				revalidate();
+			}
 		}
 	}
 	
 	public void appendNewLineReportText(String report){
-		if(matcherReport!= null){
-			matcherReport.append("\n"+report);
-			revalidate();
+		if(!ufl.isCancelled()){
+			if(matcherReport!= null){
+				matcherReport.append("\n"+report);
+				revalidate();
+			}
 		}
 	}
 
