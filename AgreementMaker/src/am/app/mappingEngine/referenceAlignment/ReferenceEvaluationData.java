@@ -13,7 +13,7 @@ public class ReferenceEvaluationData
     private AlignmentSet errorAlignments = null;
     private AlignmentSet correctAlignments = null;
     private AlignmentSet lostAlignments = null;
-
+  
     public AlignmentSet getCorrectAlignments()
     {
         return correctAlignments;

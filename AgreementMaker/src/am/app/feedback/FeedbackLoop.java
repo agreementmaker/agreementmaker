@@ -83,9 +83,13 @@ public class FeedbackLoop extends AbstractMatcher  {
 	String userAction; 
 	//these structures are used to keep track of partial evaluations
 	// with spin equal to 5 it means that measure the performances of the alignment every 5 iterations
-	private ArrayList<ReferenceEvaluationData> partialEvaluations;
+	private ArrayList<FeedbackIteration> partialEvaluations;
 	private ReferenceEvaluationData initialEvaluation;//the initial matcher evaluation to be used for comparison of performances
 	private int evaluationSpin;
+	private int EDSIcorrect;
+	private int EDSIwrong;
+	private int EFScorrect;
+	private int EFSwrong;
 	
 	
 	//configurations
@@ -141,7 +145,11 @@ public class FeedbackLoop extends AbstractMatcher  {
 		evaluationSpin = 5;
 		stop = false;
 		new_mapping = 0;
-		partialEvaluations = new ArrayList<ReferenceEvaluationData>();
+		partialEvaluations = new ArrayList<FeedbackIteration>();
+		EDSIcorrect =0;
+		EDSIwrong=0;
+		EFScorrect=0;
+		EFSwrong=0;
 	}
 	
 	public void setExectionStage( executionStage st ) {
@@ -185,6 +193,9 @@ public class FeedbackLoop extends AbstractMatcher  {
 					//no more candidates for the first phase, switch to the second
 					firstPhase = false;
 					lastFirstPhaseIteration = iteration;
+					if(isInAutomaticMode()){
+						evaluate();
+					}
 					System.out.println("Switch to second phase: No more candidates in first phase");
 					progressDisplay.appendNewLineReportText("No more candidates in first phase (similarity-based)");
 					continue;
@@ -211,7 +222,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			extrapolatingMatchers();
 						
 			//****************************END OF THE ITERATION*****************************
-			evaluate();
+			iterationEnd();
 			
 			if( iteration+1 > param.iterations ) {
 				progressDisplay.appendNewLineReportText("Stopping the process because the maximum iteration is reached.");
@@ -223,8 +234,9 @@ public class FeedbackLoop extends AbstractMatcher  {
 		} while( !stop );
 		//****************************AFTER THE LOOP*****************************
 		setStage(executionStage.presentFinalMappings);
-		progressDisplay.appendNewLineReportText(PRINT_LINE+"\nThe Feedback Loop is terminated.");
 		printEvaluation();
+		System.out.println("The Feedback loop completed in "+iteration+" iterations, first phase completed in "+lastFirstPhaseIteration+" iterations.");
+		progressDisplay.appendNewLineReportText(PRINT_LINE+"\nThe Feedback loop completed in "+iteration+" iterations, first phase completed in "+lastFirstPhaseIteration+" iterations.");
 		matchEnd();
 	}
 
@@ -238,34 +250,78 @@ public class FeedbackLoop extends AbstractMatcher  {
 			System.out.println("Lth: "+param.lowThreshold);
 			System.out.println("K: "+param.K);
 			System.out.println("M: "+param.M);
-			//Present the partial evaluations
-			System.out.println( "////////PARTIAL EVALUATIONS///////////////////////////////////////////////////////");
-			System.out.println( "Inital Matchers:"	);
-			System.out.println( initialEvaluation.getReport() );
-			for(int i = 0; i < partialEvaluations.size(); i++){
-				int partialIter = (i+1)*evaluationSpin;
-				ReferenceEvaluationData partialData = partialEvaluations.get(i);
-				System.out.println( "" );
-				System.out.println("Iteration: "+partialIter);
-				System.out.println( "Feedback Loop + Extrapolating Matchers: ");
-				System.out.println( partialData.getReport() );
-				System.out.println("Improvement F-measure from initial: "+Utility.getOneDecimalPercentFromDouble(partialData.getFmeasure()-initialEvaluation.getFmeasure()));
-			}
-			// present the final mappings here
-			
+			//Present the evaluations
 			AlignmentSet<Alignment> fblextrapolationSet = getAlignmentSet();
 			
 			ReferenceEvaluationData rd_end = ReferenceEvaluator.compare(fblextrapolationSet, referenceAlignmentMatcher.getAlignmentSet());
-			System.out.println( "/////////FINAL EVALUATION//////////////////////////////////////////////////////");
-			System.out.println("Final Iteration: "+iteration);
-			System.out.println( "Inital Matchers:"	);
-			System.out.println( initialEvaluation.getReport() );
-			System.out.println( "" );
-			System.out.println( "Feedback Loop + Extrapolating Matchers: ");
-			System.out.println( rd_end.getReport() );
-			System.out.println("Improvement F-measure from initial: "+Utility.getOneDecimalPercentFromDouble(rd_end.getFmeasure()-initialEvaluation.getFmeasure()));
-			System.out.println( "////////////////////////////////////////////////////////////////");	
+			FeedbackIteration finalIteration = new FeedbackIteration(iteration);
+			finalIteration.evaluationData = rd_end;
+			finalIteration.EDSIcorrect = EDSIcorrect;
+			finalIteration.EDSIwrong = EDSIwrong;
+			finalIteration.EFScorrect = EFScorrect;
+			finalIteration.EFSwrong = EFSwrong;
+			
+			System.out.println( "/////////MEASURES TABLE//////////////////////////////////////////////////////");
+			if(partialEvaluations.size()*evaluationSpin!= iteration)
+				partialEvaluations.add(finalIteration);
+			double initialPrecision = initialEvaluation.getPrecision();
+			double initialRecall = initialEvaluation.getRecall();
+			double initialFmeasure = initialEvaluation.getFmeasure();
+			int initialFound = initialEvaluation.getFound();
+			int exist = initialEvaluation.getExist();
+			int initialCorrect = initialEvaluation.getCorrect();
+			int initialWrong = initialFound - initialCorrect;
+			int initialMissing = exist - initialCorrect;
+			System.out.println("Iteration\tPrecision\tRecall\tF-measure\tPrecision improvement\tRecall improvement\tF-measure improvement\tCorrect\tWrong\tMissing\tCorrect improvement\tWrong improvement\tMissing improvement\tEDSI correct\tEDSI wrong\tEFS correct\tEFS wrong\tCorrect extrapolating\tWrong extrapolating");
+			System.out.println( 0+"\t"+Utility.getOneDecimalPercentFromDouble(initialPrecision)+"\t"+Utility.getOneDecimalPercentFromDouble(initialRecall)+"\t"+Utility.getOneDecimalPercentFromDouble(initialFmeasure)+"\t0.00%\t0.00%\t0.00%\t"+initialCorrect+"\t"+initialWrong+"\t"+initialMissing+"\t"+0+"\t"+0+"\t"+0+"\t"+0+"\t"+0+"\t"+0+"\t"+0+"\t"+0+"\t"+0);
+			for(int i = 0; i < partialEvaluations.size(); i++){
+				FeedbackIteration partialIteration = partialEvaluations.get(i);
+				ReferenceEvaluationData partialData = partialIteration.evaluationData;
+				double p = partialData.getPrecision();
+				double impP = p - initialPrecision;
+				double r = partialData.getRecall();
+				double impR = r - initialRecall;
+				double f = partialData.getFmeasure();
+				double impF = f - initialFmeasure;
+				int found = partialData.getFound();
+				int correct = partialData.getCorrect();
+				int wrong = found - correct;
+				int missing = exist - correct;
+				int impCorrect = correct - initialCorrect;
+				int impWrong = wrong - initialWrong;
+				int impMissing = missing - initialMissing;
+				String precision = Utility.getOneDecimalPercentFromDouble(p);
+				String recall = Utility.getOneDecimalPercentFromDouble(r);
+				String fmeasure = Utility.getOneDecimalPercentFromDouble(f);
+				String impPrecision = Utility.getOneDecimalPercentFromDouble(impP);
+				String impRecall = Utility.getOneDecimalPercentFromDouble(impR);
+				String impFmeasure = Utility.getOneDecimalPercentFromDouble(impF);
+				System.out.println( partialIteration.iteration+"\t"+precision+"\t"+recall+"\t"+fmeasure+"\t"+impPrecision+"\t"+impRecall+"\t"+impFmeasure+"\t"+correct+"\t"+wrong+"\t"+missing+"\t"+impCorrect+"\t"+impWrong+"\t"+impMissing+"\t"+partialIteration.EDSIcorrect+"\t"+partialIteration.EDSIwrong+"\t"+partialIteration.EFScorrect+"\t"+partialIteration.EFSwrong+"\t"+(partialIteration.EDSIcorrect+partialIteration.EFScorrect)+"\t"+(partialIteration.EDSIwrong+partialIteration.EFSwrong));
+			}
+			//understanding why some mappings are not mapped
+			AlignmentSet losts = rd_end.getLostAlignments();
+			System.out.println("Missing are : "+losts.size()+" or "+(rd_end.getExist() - rd_end.getFound()));
+			for(int i = 0; i< losts.size(); i++){
+				Alignment lost = losts.getAlignment(i);
+				boolean isProp = lost.getEntity1().isProp();
+				System.out.println("---------Lost alignment "+i+": "+lost+" isProp? "+isProp);
+				FilteredAlignmentMatrix matrix = (FilteredAlignmentMatrix)classesMatrix;
+				AlignmentSet<Alignment> aset = classesAlignmentSet;
+				if(isProp){
+					matrix = (FilteredAlignmentMatrix)propertiesMatrix;
+					aset = propertiesAlignmentSet;
+				}
+				boolean isRow = matrix.isRowFiltered(lost.getEntity1().getIndex());
+				boolean isCol = matrix.isColFiltered(lost.getEntity2().getIndex());
+				boolean isCell = matrix.isCellFiltered(lost.getEntity1().getIndex(), lost.getEntity2().getIndex());
+				System.out.println("is Row: "+isRow+", is Col: "+isCol+", is Cell: "+isCell);
+				Alignment source = aset.contains(lost.getEntity1(), ontology.source);
+				Alignment target = aset.contains(lost.getEntity2(), ontology.target);
+				System.out.println("Alternative source: "+source);
+				System.out.println("Alternative target: "+target);
+			}
 		}	
+		
 	}
 
 	private void extrapolatingMatchers() throws Exception {
@@ -314,7 +370,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			// report on the eDSI
 			System.out.println( "Extrapolating Matcher: eFS, found " + Integer.toString(newClassAlignments_eFS.size()) + " new class alignments, and " +
 					Integer.toString( newPropertyAlignments_eFS.size() ) + " new property alignments.");
-
+			
 			printAlignments( newClassAlignments_eFS, alignType.aligningClasses );
 			printAlignments( newPropertyAlignments_eFS, alignType.aligningProperties );
 			
@@ -322,6 +378,13 @@ public class FeedbackLoop extends AbstractMatcher  {
 			classesToBeFiltered.addAll( newClassAlignments_eFS );
 			propertiesToBeFiltered.addAll( newPropertyAlignments_eFS );
 			
+			//evaluate EFS
+			AlignmentSet<Alignment> set = new AlignmentSet<Alignment>();
+			set.addAll(newClassAlignments_eFS);
+			set.addAll(newPropertyAlignments_eFS);
+			ReferenceEvaluationData EFSdata = ReferenceEvaluator.compare(set, referenceAlignmentMatcher.getAlignmentSet());
+			EFScorrect += EFSdata.getCorrect();
+			EFSwrong += (EFSdata.getFound() - EFSdata.getCorrect());
 		}
 		else if(userAction.equals(SelectionPanel.A_ALL_MAPPING_WRONG)){ //All mappings are wrong
 			progressDisplay.appendNewLineReportText("\tAll candidate mappings are incorrect and filtered out.");
@@ -350,6 +413,29 @@ public class FeedbackLoop extends AbstractMatcher  {
 			ArrayList<CandidateConcept> toBeFiltered = new ArrayList<CandidateConcept>(1);
 			toBeFiltered.add(userConcept);
 			filterCandidateConcepts(toBeFiltered);
+			
+			//In the automatic validation, if a candidate concepts is unvalidated it means that all other mappings have to be wrong, or else a correct mapping would have been found
+			//this can't be done in the user mode, because the user may select a candidate concept as wrong even if another of the candidate mappings is correct.
+			if(isInAutomaticMode()){
+				// when all the mappings are wrong they should be filtered from the similarity matrix (on a cell by cell basis)
+				for(int i=0; i < topConceptsAndAlignments.size(); i++){
+					CandidateConcept c = topConceptsAndAlignments.get(i);
+					if(!c.equals(userConcept)){
+						ArrayList<Alignment> candidateMappings = c.getCandidateMappings();
+						if(candidateMappings!= null){
+							for(int j = 0; j < candidateMappings.size(); j++){
+								Alignment a = candidateMappings.get(j);
+								if(c.whichType.equals(alignType.aligningProperties)){
+									propertiesMatrix.filterCell(a.getSourceKey(), a.getTargetKey());
+								}
+								else{
+									classesMatrix.filterCell(a.getSourceKey(), a.getTargetKey());
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		else if(userAction.equals(SelectionPanel.A_ALL_CONCEPT_WRONG)){
 			progressDisplay.appendNewLineReportText("\tAll candidate concepts has not to be mapped and are filterd out.");
@@ -388,6 +474,14 @@ public class FeedbackLoop extends AbstractMatcher  {
 		// add any new mappings
 		classesToBeFiltered.addAll( newClassAlignments_eDSI );
 		propertiesToBeFiltered.addAll( newPropertyAlignments_eDSI );	
+		
+		//evaluate EFS
+		AlignmentSet<Alignment> set = new AlignmentSet<Alignment>();
+		set.addAll(newClassAlignments_eDSI);
+		set.addAll(newPropertyAlignments_eDSI);
+		ReferenceEvaluationData EDSIdata = ReferenceEvaluator.compare(set, referenceAlignmentMatcher.getAlignmentSet());
+		EDSIcorrect += EDSIdata.getCorrect();
+		EDSIwrong += (EDSIdata.getFound() - EDSIdata.getCorrect());
 		currentStage = executionStage.afterExtrapolatingMatchers;	
 		
 	}
@@ -549,21 +643,10 @@ public class FeedbackLoop extends AbstractMatcher  {
 		setStage( executionStage.afterFilter );
 	}
 
-	private void evaluate() {
+	private void iterationEnd() {
 		if(isInAutomaticMode()){
 			if(iteration % evaluationSpin == 0){//This is to print results every evaluationSpin iterations
-				AlignmentSet<Alignment> partialSet = getAlignmentSet();
-				ReferenceEvaluationData partialRD = ReferenceEvaluator.compare(partialSet, referenceAlignmentMatcher.getAlignmentSet());
-				partialEvaluations.add(partialRD);
-				System.out.println("Iteration: "+iteration);
-				System.out.println( "///////////////////////////////////////////////////////////////");
-				System.out.println( "Inital Matchers:"	);
-				System.out.println( initialEvaluation.getReport() );
-				System.out.println( "" );
-				System.out.println( "Feedback Loop + Extrapolating Matchers: ");
-				System.out.println( partialRD.getReport() );
-				System.out.println("Improvement F-measure from initial: "+Utility.getOneDecimalPercentFromDouble(partialRD.getFmeasure()-initialEvaluation.getFmeasure()));
-				System.out.println( "////////////////////////////////////////////////////////////////");
+				evaluate();
 			}
 		}
 		new_mapping += (classesToBeFiltered.size() + propertiesToBeFiltered.size());
@@ -571,6 +654,28 @@ public class FeedbackLoop extends AbstractMatcher  {
 				(classesToBeFiltered.size() + propertiesToBeFiltered.size()) +
 				"   Total new mappings found: " + Integer.toString(new_mapping)	);
 		
+	}
+	
+	private void evaluate(){
+		FeedbackIteration partialIteration = new FeedbackIteration(iteration);
+		AlignmentSet<Alignment> partialSet = getAlignmentSet();
+		ReferenceEvaluationData partialRD = ReferenceEvaluator.compare(partialSet, referenceAlignmentMatcher.getAlignmentSet());
+		partialIteration.iteration = iteration;
+		partialIteration.evaluationData = partialRD;
+		partialIteration.EDSIcorrect = EDSIcorrect;
+		partialIteration.EDSIwrong = EDSIwrong;
+		partialIteration.EFScorrect = EFScorrect;
+		partialIteration.EFSwrong = EFSwrong;
+		partialEvaluations.add(partialIteration);
+		System.out.println("Iteration: "+iteration);
+		System.out.println( "///////////////////////////////////////////////////////////////");
+		System.out.println( "Inital Matchers:"	);
+		System.out.println( initialEvaluation.getReport() );
+		System.out.println( "" );
+		System.out.println( "Feedback Loop + Extrapolating Matchers: ");
+		System.out.println( partialRD.getReport() );
+		System.out.println("Improvement F-measure from initial: "+Utility.getOneDecimalPercentFromDouble(partialRD.getFmeasure()-initialEvaluation.getFmeasure()));
+		System.out.println( "////////////////////////////////////////////////////////////////");
 	}
 
 	private void runInitialMatcher() throws Exception {
@@ -604,6 +709,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		if(conf.equals(AUTO_101_301)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.onlyEquivalence = true;
 			refParam.fileName = "./OAEI09/benchmarks/301/refalign.rdf";
 			refParam.format = ReferenceAlignmentMatcher.REF0;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
@@ -615,6 +721,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		else if(conf.equals(AUTO_101_302)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.onlyEquivalence = true;
 			refParam.fileName = "./OAEI09/benchmarks/302/refalign.rdf";
 			refParam.format = ReferenceAlignmentMatcher.REF0;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
@@ -624,6 +731,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		else if(conf.equals(AUTO_101_303)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.onlyEquivalence = true;
 			refParam.fileName = "./OAEI09/benchmarks/303/refalign.rdf";
 			refParam.format = ReferenceAlignmentMatcher.REF0;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
@@ -634,6 +742,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		else if(conf.equals(AUTO_101_304)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.onlyEquivalence = true;
 			refParam.fileName = "./OAEI09/benchmarks/304/refalign.rdf";
 			refParam.format = ReferenceAlignmentMatcher.REF0;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
@@ -643,6 +752,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		else if(conf.equals(AUTO_animals)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.onlyEquivalence = true;
 			refParam.fileName = "./I3CON2004/animals/animalsAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
@@ -652,6 +762,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		else if(conf.equals(AUTO_basketball_soccer)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.onlyEquivalence = true;
 			refParam.fileName = "./I3CON2004/basketball_soccer/basketball_soccer.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
@@ -661,6 +772,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		else if(conf.equals(AUTO_comsci)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.onlyEquivalence = true;
 			refParam.fileName = "./I3CON2004/comsci/csAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
@@ -670,6 +782,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		else if(conf.equals(AUTO_hotel)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.onlyEquivalence = true;
 			refParam.fileName = "./I3CON2004/hotel/hotelAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
@@ -679,6 +792,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		else if(conf.equals(AUTO_network)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.onlyEquivalence = true;
 			refParam.fileName = "./I3CON2004/network/networkAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
@@ -688,6 +802,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		else if(conf.equals(AUTO_people_pets)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.onlyEquivalence = true;
 			refParam.fileName = "./I3CON2004/people+pets/people+petsAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
@@ -697,6 +812,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		else if(conf.equals(AUTO_russia)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.onlyEquivalence = true;
 			refParam.fileName = "./I3CON2004/russia/russiaAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
@@ -706,6 +822,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		else if(conf.equals(AUTO_weapons)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.onlyEquivalence = true;
 			refParam.fileName = "./I3CON2004/Weapons/WeaponsAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
@@ -715,6 +832,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		else if(conf.equals(AUTO_wine)){
 			System.out.println("Automatic User Validation:" + conf + ", Loading reference alignment.");
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.onlyEquivalence = true;
 			refParam.fileName = "./I3CON2004/Wine/WineAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.REF1;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);

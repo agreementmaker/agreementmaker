@@ -6,6 +6,7 @@ import java.io.File;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -32,6 +33,7 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 	public JTextField filePath;
 	private JLabel fileType;
 	public JList formatList;
+	public JCheckBox equivalenceCheck;
 
 
 	
@@ -64,7 +66,9 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 		formatList.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "File format"));
 		formatList.setSelectedIndex(prefs.getFileFormatReference());  // select the last thing selected
 
-		
+		equivalenceCheck = new JCheckBox();
+		equivalenceCheck.setSelected(true);
+		JLabel equivalenceLabel = new JLabel("Consider only mappings with EQUIVALENCE relations");
 		//Make the GroupLayout for this dialog (somewhat complicated, but very flexible)
 		// This Group layout lays the items in relation with eachother.  The horizontal
 		// and vertical groups decide the relation between UI elements.
@@ -76,8 +80,8 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 		
 		// Here we define the horizontal and vertical groups for the layout.
 		// Both definitions are required for the GroupLayout to be complete.
-		layout.setHorizontalGroup(
-				layout.createSequentialGroup()
+		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addGroup(layout.createSequentialGroup()
 					.addComponent(fileType) 					// fileType label
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 							.addComponent(filePath) 			// filepath text
@@ -86,11 +90,16 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 					.addGroup(layout.createParallelGroup()
 							.addComponent(browse)
 							)
+				)
+				.addGroup(layout.createSequentialGroup()
+						.addComponent(equivalenceCheck) 		
+						.addComponent(equivalenceLabel)
+				)
 		);
 		// the Vertical group is the same structure as the horizontal group
 		// but Sequential and Parallel definition are exchanged
-		layout.setVerticalGroup(
-				layout.createParallelGroup()
+		layout.setVerticalGroup(layout.createSequentialGroup()
+				.addGroup(layout.createParallelGroup()
 					.addComponent(fileType)
 					.addGroup(layout.createSequentialGroup()
 							.addComponent(filePath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
@@ -100,6 +109,11 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 					.addGroup(layout.createSequentialGroup() 
 							.addComponent(browse, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
 							          GroupLayout.PREFERRED_SIZE))
+	            )
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+						.addComponent(equivalenceCheck) 		
+						.addComponent(equivalenceLabel)
+				)
 		);
 	}
 	
@@ -146,6 +160,7 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 		parameters = new ReferenceAlignmentParameters();
 		parameters.fileName = filePath.getText();
 		parameters.format = (String)formatList.getSelectedValue();
+		parameters.onlyEquivalence = equivalenceCheck.isSelected();
 		return parameters;
 	}
 	

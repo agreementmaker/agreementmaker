@@ -13,7 +13,7 @@ public class AlignmentMatrix {
 	//if we want to start using it is important to keep it similar to 0, to allow compatibility with non-updated methods.
 	final static double INDETERMINED = Double.MIN_NORMAL;
 	
-	protected String relation;
+	protected String relation = Alignment.EQUIVALENCE; //this is a default relation used when no relation is specified for this matrix
 	protected alignType typeOfMatrix;
     protected final int rows;             // number of rows
     protected final int columns;             // number of columns
@@ -34,13 +34,14 @@ public class AlignmentMatrix {
 	    	
 	   		for(int i=0; i< cloneme.getRows(); i++) {
 	   			for(int j = 0; j < cloneme.getColumns(); j++) {
-	   				setSimilarity(i,j, cloneme.getSimilarity(i,j));
+	   				Alignment a = cloneme.get(i, j);
+	   				data[i][j] = new Alignment(a.getEntity1(), a.getEntity2(), a.getSimilarity(), a.getRelation(), a.getAlignmentType());
 	   			}
 	   		}
     	
     }
     
-    // create M-by-N matrix of 0's
+    // create M-by-N matrix of 0's with equivalence relation
     public AlignmentMatrix(int M, int N, alignType type) {
     	relation = Alignment.EQUIVALENCE;
     	typeOfMatrix = type;
@@ -58,19 +59,10 @@ public class AlignmentMatrix {
         data = new Alignment[M][N];
     }
 
-    // create matrix based on 2d array
-    public AlignmentMatrix(double[][] data, alignType type) {  // TODO: Does this really have a use? No source-target relationships are created. (cos,10-29-09)
-    	relation = Alignment.EQUIVALENCE;
-    	typeOfMatrix = type;
-        rows = data.length;
-        columns = data[0].length;
-        this.data = new Alignment[rows][columns];
-        for (int i = 0; i < rows; i++)
-            for (int j = 0; j < columns; j++)
-                    this.data[i][j] = new Alignment(data[i][j]);
-    }
+
     
     public Alignment get(int i, int j) {  // TODO: This function does not return null.  It should return null. (cos,10-29-09)
+    									  //why? aren't we keeping 0 similarity alignments as null alignments?	
     	
     	if( data[i][j] == null ) {
     		
@@ -95,12 +87,7 @@ public class AlignmentMatrix {
     }
     
     public void set(int i, int j, Alignment d) {
-    	//data[d.getEntity1().getIndex()][d.getEntity2().getIndex()] = d.getSimilarity();
-    	
-    	if( data == null ) {
-    		//System.out.println("Something is terribly wrong here!");
-    		return;
-    	}
+    
     	data[i][j] = d;
     }
     
@@ -129,7 +116,7 @@ public class AlignmentMatrix {
 			}
     		
     		
-    		data[i][j] = new Alignment( sourceList.get(i), targetList.get(j), d );
+    		data[i][j] = new Alignment( sourceList.get(i), targetList.get(j), d , relation);
     	}
     	else {
     		data[i][j].setSimilarity(d);
@@ -144,16 +131,102 @@ public class AlignmentMatrix {
     	return columns;
     }
     
+	public String getRelation() { return relation; }
+	public alignType getAlignType() { return typeOfMatrix; }
+    
+    //********************* METHODS ADDED FOR SOME AM CALCULATIONS**********************************************
+    /**
+     * Return the array of numMaxValues max alignments, THE ARRAY IS ORDERED FROM THE BEST MAX VALUE TO THE WORST
+     * this method is used both in selection process but also the AMlocalQuality algorithm
+     */
+    public Alignment[] getRowMaxValues(int row, int numMaxValues) {
+		//remember to check to have numMaxValues lower than matrix columns before
+    	Alignment[] maxAlignments = new Alignment[numMaxValues];
+    	
+		for(int h = 0; h<maxAlignments.length;h++) {
+			maxAlignments[h] = new Alignment(-1); //intial max alignments have sim equals to -1, don't put 0 could create problem in the next for
+		}
+		
+		Alignment currentValue;
+		Alignment currentMax;
+		for(int j = 0; j<getColumns();j++) {
+			currentValue = get(row,j);
+			if( currentValue == null ) continue;
+			//maxAlignments contains the ordered list of max alignments, the first is the best max value
+			for(int k = 0;k<maxAlignments.length; k++) {
+				currentMax = maxAlignments[k];
+				if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value
+					maxAlignments[k] = currentValue;
+					currentValue = currentMax;
+				}
+			}
+		}
+
+		return maxAlignments;
+	}
+
+	public double getRowSum(int row) {
+		double sum = 0;
+		for(int j = 0; j < getColumns(); j++) {
+			if( get(row, j ) != null ) {
+				sum += get(row, j).getSimilarity();
+			}
+		}
+		return sum;
+	}
+
+	public Alignment[] getColMaxValues(int col, int numMaxValues) {
+		//remember to check to have numMaxValues lower than matrix rows before
+    	Alignment[] maxAlignments = new Alignment[numMaxValues];
+    	
+		for(int h = 0; h<maxAlignments.length;h++) {
+			maxAlignments[h] = new Alignment(-1); //intial max alignments have sim equals to -1
+		}
+		
+		Alignment currentValue;
+		Alignment currentMax;
+		for(int j = 0; j<getRows();j++) {
+			currentValue = get(j, col);
+			if( currentValue == null ) continue;
+			//maxAlignments contains the ordered list of max alignments, the first is the best max value
+			for(int k = 0;k<maxAlignments.length; k++) {
+				currentMax = maxAlignments[k];
+				if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value
+					maxAlignments[k] = currentValue;
+					currentValue = currentMax;
+				}
+			}
+		}
+
+		return maxAlignments;
+	}
+
+	public double getColSum(int col) {
+		double sum = 0;
+		for(int i = 0; i < getRows(); i++) {
+			if( get( i, col ) != null ) {
+				sum += get(i, col).getSimilarity();
+			}
+		}
+		return sum;
+	}
+	
+	public boolean isCellEmpty( int i, int j) {
+		if( data[i][j] == null ) {
+			return true;
+		}
+		return false;
+	}
+	
+	public Object clone(){
+		AlignmentMatrix matrix = new AlignmentMatrix(this);
+		return matrix;
+	}
+    
+    
     
     /**GENERAL FUNCTIONS FOR MATRIX NOT NEEDED NOW BUT MAY BE USEFUL IN THE FUTUR*/
-    
-    // swap rows i and j
-    @SuppressWarnings("unused")
-	private void swap(int i, int j) {  // TODO: This function makes no sense.
-    	Alignment[] temp = data[i];
-        data[i] = data[j];
-        data[j] = temp;
-    }
+
 
     // create and return the transpose of the invoking matrix
     public AlignmentMatrix transpose() {
@@ -242,98 +315,6 @@ public class AlignmentMatrix {
 		}
 		return result;
 	}
-    
-    //********************* METHODS ADDED FOR SOME AM CALCULATIONS**********************************************
-    /**
-     * Return the array of numMaxValues max alignments, THE ARRAY IS ORDERED FROM THE BEST MAX VALUE TO THE WORST
-     * this method is used both in selection process but also the AMlocalQuality algorithm
-     */
-    public Alignment[] getRowMaxValues(int row, int numMaxValues) {
-		//remember to check to have numMaxValues lower than matrix columns before
-    	Alignment[] maxAlignments = new Alignment[numMaxValues];
-    	
-		for(int h = 0; h<maxAlignments.length;h++) {
-			maxAlignments[h] = new Alignment(-1); //intial max alignments have sim equals to -1, don't put 0 could create problem in the next for
-		}
-		
-		Alignment currentValue;
-		Alignment currentMax;
-		for(int j = 0; j<getColumns();j++) {
-			currentValue = get(row,j);
-			if( currentValue == null ) continue;
-			//maxAlignments contains the ordered list of max alignments, the first is the best max value
-			for(int k = 0;k<maxAlignments.length; k++) {
-				currentMax = maxAlignments[k];
-				if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value
-					maxAlignments[k] = currentValue;
-					currentValue = currentMax;
-				}
-			}
-		}
 
-		return maxAlignments;
-	}
-
-	public double getRowSum(int row) {
-		double sum = 0;
-		for(int j = 0; j < getColumns(); j++) {
-			if( get(row, j ) != null ) {
-				sum += get(row, j).getSimilarity();
-			}
-		}
-		return sum;
-	}
-
-	public Alignment[] getColMaxValues(int col, int numMaxValues) {
-		//remember to check to have numMaxValues lower than matrix rows before
-    	Alignment[] maxAlignments = new Alignment[numMaxValues];
-    	
-		for(int h = 0; h<maxAlignments.length;h++) {
-			maxAlignments[h] = new Alignment(-1); //intial max alignments have sim equals to -1
-		}
-		
-		Alignment currentValue;
-		Alignment currentMax;
-		for(int j = 0; j<getRows();j++) {
-			currentValue = get(j, col);
-			if( currentValue == null ) continue;
-			//maxAlignments contains the ordered list of max alignments, the first is the best max value
-			for(int k = 0;k<maxAlignments.length; k++) {
-				currentMax = maxAlignments[k];
-				if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value
-					maxAlignments[k] = currentValue;
-					currentValue = currentMax;
-				}
-			}
-		}
-
-		return maxAlignments;
-	}
-
-	public double getColSum(int col) {
-		double sum = 0;
-		for(int i = 0; i < getRows(); i++) {
-			if( get( i, col ) != null ) {
-				sum += get(i, col).getSimilarity();
-			}
-		}
-		return sum;
-	}
-	
-	
-	public String getRelation() { return relation; }
-	public alignType getAlignType() { return typeOfMatrix; }
-	
-	public boolean isCellEmpty( int i, int j) {
-		if( data[i][j] == null ) {
-			return true;
-		}
-		return false;
-	}
-	
-	public Object clone(){
-		AlignmentMatrix matrix = new AlignmentMatrix(this);
-		return matrix;
-	}
 	
 }

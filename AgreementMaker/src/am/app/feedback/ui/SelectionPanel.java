@@ -119,6 +119,9 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 			    if(control.equals("")){
 					ufl = (FeedbackLoop)MatcherFactory.getMatcherInstance( MatchersRegistry.UserFeedBackLoop , Core.getInstance().getMatcherInstances().size() );  // initialize the user feedback loop interface (i.e. add a new tab)
 					ufl.setParam( fblp );
+					ufl.setThreshold(fblp.highThreshold);
+					ufl.setMaxSourceAlign(fblp.sourceNumMappings);
+					ufl.setMaxSourceAlign(fblp.targetNumMappings);
 					displayProgressScreen();
 					ufl.setProgressDisplay(this);
 					ui.getControlPanel().getTablePanel().addMatcher(ufl);

@@ -18,6 +18,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 
 	
 	protected double MCP;
+	protected boolean[][] isComputedAlready;
 	
 	public DescendantsSimilarityInheritanceMatcher() {
 		super();
@@ -47,22 +48,17 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
     	
     	AbstractMatcher input = inputMatchers.get(0);
     	
-    	inputClassesMatrix = input.getClassesMatrix();
-    	inputPropertiesMatrix = input.getPropertiesMatrix();
+    	inputClassesMatrix = (AlignmentMatrix) input.getClassesMatrix().clone();
+    	inputPropertiesMatrix = (AlignmentMatrix)input.getPropertiesMatrix().clone();
     	
     	// set our MCP
     	MCP = ((DescendantsSimilarityInheritanceParameters)this.param).MCP;
     	
 	}
-	
-	//Used only in the recursive algorithm
-	private AlignmentMatrix matrix;
+
 	
     protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
-    	//this the structure used in the recursive algorithms to keep track of the DSI computed for the parents of each node
-    	//at the end it is returned and becomes the class or property matrix of the case
-    	matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
-		
+    	
     	//we need to work on a DAG not on the vertex
 		TreeToDagConverter sourceDag;
 		TreeToDagConverter targetDag;
@@ -78,7 +74,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
     		targetDag = new TreeToDagConverter(targetOntology.getPropertiesTree());
     		input = inputPropertiesMatrix;
     	}
-    	
+    	initBooleanMatrix(input);
     	ArrayList<Node> sourceConcepts = sourceList;
     	ArrayList<Node> targetConcepts = targetList;
     	Iterator<Node> itSource = sourceConcepts.iterator();
@@ -91,15 +87,23 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
     		while(itTarget.hasNext()){
     			targetNode = itTarget.next();
     			//this method compute the dsi alignment between the two nodes and also between all of their parents
-    			if( !this.isCancelled() ) { recursiveDSI(sourceNode, targetNode, input, sourceDag, targetDag); }
-				else { return matrix; }
-    			
+    			if( !this.isCancelled() ) {
+    				recursiveDSI(sourceNode, targetNode, input, sourceDag, targetDag); }
+				else {
+					return input; 
+				}
+
     		}
     	}
-    	return matrix;
+    	return input;
 	}
 
 	
+	protected void initBooleanMatrix(AlignmentMatrix input) {
+		isComputedAlready = new boolean[input.getRows()][input.getColumns()];
+	}
+
+
 	protected Alignment recursiveDSI(Node sourceNode, Node targetNode, AlignmentMatrix input, TreeToDagConverter sourceDag, TreeToDagConverter targetDag) {
 		int sourceIndex = sourceNode.getIndex();
 		int targetIndex = targetNode.getIndex();
@@ -116,57 +120,64 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		Alignment maxAlignParents;
 		//sumOfMaxParents will keep the information related to the parents similarity (the 1-MCP part)
 		double sumOfMaxParents;
-		
-		if( this.isCancelled() ) { return null; }
-		
-		if(itSource.hasNext() && itTarget.hasNext()){
-			//if both nodes have at least one parent
-			//for each source parent I find the most similar target parent
-			//then I take the average of all similarities of the most similar parents
-			//that is the parents contribution
-			sumOfMaxParents = 0;
-			while(itSource.hasNext()){
-				sourceParent = itSource.next();
-				sourceParentIndex = sourceParent.getIndex();
-				itTarget = targetParents.iterator();
-				maxAlignParents = null;
-				while(itTarget.hasNext()){
-					targetParent = itTarget.next();
-					targetParentIndex = targetParent.getIndex();
-					alignParents = matrix.get(sourceParentIndex,targetParentIndex); // TODO: the get() function no longer returns null! (cos,10-29-09)
-					//if there is already an alignment it means that I have already processed the DSI of these two nodes
-					if( matrix.isCellEmpty( sourceParentIndex, targetParentIndex) ){
-						//if it's not processed I run the recusive method to process it and to set it in the matrix
-						alignParents = recursiveDSI(sourceParent, targetParent, input, sourceDag, targetDag);
-					}
-					if(maxAlignParents == null || maxAlignParents.getSimilarity() < alignParents.getSimilarity()){
-						maxAlignParents = alignParents;
-					}
-				}
-				sumOfMaxParents += maxAlignParents.getSimilarity();
-			}
-			sumOfMaxParents/=sourceParents.size();
-		}
-		else if(itSource.hasNext() || itTarget.hasNext()){
-			//only one of the two nodes has parents. 
-			//this case is in the middle between the previous one in which this case would have been 0 and the next one in which is 1.
-			//there is some sort of dissimilarity but it may also be that the nodes are the same but the fathers of one of the two nodes have not been considered in this ontology.
-			//given this doubt we set the parents contribution to 0.5 which penalizes it a little but not too much
-			sumOfMaxParents = 0.5d;
+		Alignment result;
+		if(isComputedAlready[sourceIndex][targetIndex]){
+			//the DSI has already been computed and stored for this mapping and their parents
+			result = input.get(sourceIndex,targetIndex);
 		}
 		else{
-			//none of them have a parent so their parents contribution is identical
-			sumOfMaxParents = 1;
+			if(itSource.hasNext() && itTarget.hasNext()){
+				/*
+				//if both nodes have at least one parent
+				//for each source parent I find the most similar target parent
+				//then I take the average of all similarities of the most similar parents
+				//that is the parents contribution
+				sumOfMaxParents = 0;
+				while(itSource.hasNext()){
+					sourceParent = itSource.next();
+					sourceParentIndex = sourceParent.getIndex();
+					itTarget = targetParents.iterator();
+					maxAlignParents = null;
+					while(itTarget.hasNext()){
+						targetParent = itTarget.next();
+						targetParentIndex = targetParent.getIndex();
+						//if there is already an alignment it means that I have already processed the DSI of these two nodes
+						if( isComputedAlready[ sourceParentIndex][ targetParentIndex] ){
+							alignParents = input.get(sourceParentIndex,targetParentIndex); 
+						}
+						else{
+							//if it's not processed I run the recusive method to process it and to set it in the matrix
+							alignParents = recursiveDSI(sourceParent, targetParent, input, sourceDag, targetDag);
+						}
+						if(maxAlignParents == null || maxAlignParents.getSimilarity() < alignParents.getSimilarity()){
+							maxAlignParents = alignParents;
+						}
+					}
+					sumOfMaxParents += maxAlignParents.getSimilarity();
+				}
+				sumOfMaxParents/=sourceParents.size();
+				double mcp = MCP;
+				double finalSim = (mcp*mySim) + ((1 - mcp) * sumOfMaxParents);
+				result = new Alignment(sourceNode, targetNode, finalSim, Alignment.EQUIVALENCE);
+				input.set(sourceIndex, targetIndex, result);
+				*/
+				result = input.get(sourceIndex,targetIndex);
+			}
+			else if(itSource.hasNext() || itTarget.hasNext()){
+				//only one of the two nodes has parents. 
+				//this case is in the middle between the previous one in which this case would have been 0 and the next one in which is 1.
+				//there is some sort of dissimilarity but it may also be that the nodes are the same but the fathers of one of the two nodes have not been considered in this ontology.
+				//given the uncertainty we don't modify their similarity
+				result = input.get(sourceIndex,targetIndex);
+			}
+			else{
+				//none of them have a parent so their parents contribution is identical
+				//given the uncertainty we don't modify their similarity
+				result = input.get(sourceIndex,targetIndex);
+			}
+			isComputedAlready[sourceIndex][targetIndex] = true;
 		}
-
-		double mcp = MCP;
-		double finalSim = (mcp*mySim) + ((1 - mcp) * sumOfMaxParents);
-		Alignment result = new Alignment(sourceNode, targetNode, finalSim, Alignment.EQUIVALENCE);
-		matrix.set(sourceIndex, targetIndex, result);
-		
 		return result;
-		
-		
 	}
 
 

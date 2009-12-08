@@ -34,6 +34,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		public final static String OUTF1 = "TXT-1";
 		
 		private ArrayList<MatchingPair> referenceListOfPairs;
+		private ArrayList<MatchingPair> nonEquivalencePairs;
 		
 	public ReferenceAlignmentMatcher() {
 		super();
@@ -48,6 +49,17 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	protected void beforeAlignOperations()throws Exception{
 		super.beforeAlignOperations();
 		referenceListOfPairs = readReferenceFile();
+		nonEquivalencePairs = new ArrayList<MatchingPair>();
+		if(((ReferenceAlignmentParameters)param).onlyEquivalence){
+			Iterator<MatchingPair> it = referenceListOfPairs.iterator();
+			while (it.hasNext()){
+				MatchingPair mp = it.next();
+				if(!mp.relation.equals(Alignment.EQUIVALENCE)){//should be equals but sometimes they have spaces together with the =
+					nonEquivalencePairs.add(mp);
+					it.remove();
+				}
+			}
+		}
 		if(referenceListOfPairs == null || referenceListOfPairs.size() == 0) {
 			Utility.displayMessagePane("The reference file selected doen not contain any alignment.\nPlease check the format.", null);
 		}
