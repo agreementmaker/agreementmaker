@@ -86,6 +86,7 @@ public class Canvas2Layout implements MouseInputListener,
 	// TODO: Do we really need the method canDisplayMoreOntologies() ?  Everything can be taken care of by displayOntology()
 	public boolean canDisplayMoreOntologies() { return false; } /* must be implemented in the subclass */
 	public void displayOntology( ArrayList<CanvasGraph> graphs, int ontologyID) { } /* must be implemented in the subclass */
+	public void removeOntology( ArrayList<CanvasGraph> graphs, int ontologyID ) { } /* must be implemented in the subclass */
 
 	/* buildMatcherGraph must be implemented in the subclass */
 	public CanvasGraph buildMatcherGraph(AbstractMatcher m) { return new CanvasGraph(GraphType.MATCHER_GRAPH, m.getID()); }

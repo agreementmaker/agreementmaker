@@ -27,10 +27,16 @@ import am.userInterface.UI;
  *
  */
 public class Core {
+	
+	// Program wide DEBUG flag.
+	public static final boolean DEBUG = false;
+	
+	
 	/**List of matchers instances run by the user
 	 * Data of the tableModel of the matcherTable is taken from this structure
 	 * Can't be null;
 	 */
+	
 	private ArrayList<AbstractMatcher> matcherInstances = new ArrayList<AbstractMatcher>();
 	
 	private int IDcounter = 0;  // used in generating IDs for the ontologies and matchers
@@ -54,7 +60,7 @@ public class Core {
 	
 	
 	/**A reference to the userinterface instance, canvas and table can be accessed anytime. It used often to invoke the method redisplayCanvas()*/
-	private UI ui;
+	private static UI ui;
 	
 	/**
 	 * Singleton pattern: unique instance
@@ -83,8 +89,8 @@ public class Core {
     
     @Deprecated
 	public void setSourceOntology(Ontology sourceOntology) {  // deprecated by multi-ontology array
+    	this.sourceOntology = sourceOntology;
 		addOntology(sourceOntology); // support for more than 2 ontologies
-		this.sourceOntology = sourceOntology;
 	}
     
     @Deprecated
@@ -94,8 +100,8 @@ public class Core {
     
     @Deprecated
 	public void setTargetOntology(Ontology targetOntology) {  // deprecated by multi-ontology interface
-		addOntology(targetOntology); // support for more than 2 ontologies
 		this.targetOntology = targetOntology;
+		addOntology(targetOntology); // support for more than 2 ontologies
 	}
 	
 	
@@ -174,8 +180,8 @@ public class Core {
 		
 	}
 	
-	public UI   getUI()      { return ui;    }
-	public void setUI(UI ui) { this.ui = ui; }
+	public static UI   getUI()      { return ui;    }
+	public static void setUI(UI ui) { Core.ui = ui; }
 	
 	/**
 	 * Some selection parameters or some information in the alignMatrix of the matcher a are changed,
@@ -330,6 +336,8 @@ public class Core {
 	public void removeOntology( Ontology ont ) {
 		if( loadedOntologies.contains(ont) ) {
 			loadedOntologies.remove(ont);
+			if( sourceOntology == ont ) sourceOntology = null;
+			if( targetOntology == ont ) targetOntology = null;
 			// Notify all the listeners that an ontology was removed from the system
 			OntologyChangeEvent e = new OntologyChangeEvent(this, OntologyChangeEvent.EventType.ONTOLOGY_REMOVED, ont.getID() );
 			fireEvent(e);

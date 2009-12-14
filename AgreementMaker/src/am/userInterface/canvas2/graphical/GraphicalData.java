@@ -47,7 +47,17 @@ public class GraphicalData {
 	public Canvas2Layout layout;	// the layout that's using this graphical data.
 	public Font font = new Font("Lucida Sans Regular", Font.PLAIN, 12);
 	public boolean hover; // if the mouse is hovering over this element
-	
+
+	public GraphicalData( int x1, int y1, int width, int height, OntResource r1, NodeType t, Canvas2Layout l, int ontID ) {
+		x = x1;
+		y = y1;
+		this.width = width;
+		this.height = height;
+		r = r1;
+		type = t;
+		layout = l;
+		ontologyID = ontID;
+	}	
 	
 	public GraphicalData( int x1, int y1, int width, int height, OntResource r1, NodeType t, Canvas2Layout l ) {
 		x = x1;

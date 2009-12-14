@@ -108,6 +108,8 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			layout.displayOntology(graphs,  e.getOntologyID() );
 			updateSize();
 			repaint();
+		} else if( e.getEvent() == OntologyChangeEvent.EventType.ONTOLOGY_REMOVED ) {
+			layout.removeOntology( graphs, e.getOntologyID() );
 		}
 		
 	}
@@ -135,18 +137,23 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	 * Update the size of the Canvas after graphs were changed.
 	 */
 	private void updateSize() {
+		Logger log = null;  // used to display debugging messages
+		
+		
 		Iterator<CanvasGraph> graphsIter = graphs.iterator();
 		int width = 0;
 		int height = 0;
 		
-		Logger log = Logger.getLogger(this.getClass());
-		log.setLevel(Level.DEBUG);
+		if( Core.DEBUG ) {
+			log = Logger.getLogger(this.getClass());
+			log.setLevel(Level.DEBUG);
+		}
 		
 		while( graphsIter.hasNext() ) {
 			CanvasGraph gr = graphsIter.next();
 			if( gr.getGraphType() == GraphLocator.GraphType.LAYOUT_GRAPH_IGNORE_BOUNDS ) continue;  // ignoring this type of graph
 			Rectangle grBounds = gr.getBounds();
-			log.debug("updateSize: considering graph bounds: " + grBounds );
+			if( Core.DEBUG ) log.debug("updateSize: considering graph bounds: " + grBounds );
 			if( width < grBounds.x + grBounds.width ) 
 				width = grBounds.x + grBounds.width;
 			if( height < grBounds.y + grBounds.height ) 
@@ -156,7 +163,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		
 		setPreferredSize(new Dimension( width + Xpadding, height + Ypadding));
 		revalidate();
-		log.debug("New Canvas dimensions: w = " + Integer.toString(width) + ", h = " + Integer.toString(height));
+		if( Core.DEBUG ) log.debug("New Canvas dimensions: w = " + Integer.toString(width) + ", h = " + Integer.toString(height));
 		
 	}
 

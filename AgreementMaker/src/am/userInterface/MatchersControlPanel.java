@@ -633,11 +633,14 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		tRelationCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxTargetRelations()));
 	}
 	
-	public void clearAll() {
+	public boolean clearAll() {
 		//don't put this code into resetMatchings because resetMatching is used by the system also in other situation when the confirmation is not required by the user.
 		boolean ok = Utility.displayConfirmPane("This operation will clear all the matchings prevously calculated.\nDo you want to continue?", null);
 		if(ok) {
 			resetMatchings();
+			return true;
+		} else {
+			return false;
 		}
 	}
 	

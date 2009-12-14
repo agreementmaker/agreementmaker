@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import am.app.Core;
+
 /**
  * @author Nalin
  *
@@ -32,14 +34,14 @@ public class Legend implements ActionListener, ChangeListener{
 	
 	JLabel lineColorLabel, foregroundLabel, dividersLabel;
 	JPanel p;
-	UI ui;
+	//UI ui;
 	
 	/**
 	 * @param userInterface
 	 */
-	public Legend(UI userInterface){
+	public Legend(){
 		
-		ui = userInterface;
+		//ui = userInterface;
 		frame = new JFrame("Legend");
 		p = new JPanel(new GridLayout(11,11));
 		
@@ -206,6 +208,6 @@ public class Legend implements ActionListener, ChangeListener{
 			Colors.dividers = cc.getColor();
 			dividers.setBackground(Colors.dividers);
 		}
-		ui.getCanvas().repaint();
+		Core.getUI().redisplayCanvas();
 	}
 }

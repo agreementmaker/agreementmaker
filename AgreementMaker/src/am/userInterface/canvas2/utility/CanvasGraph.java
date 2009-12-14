@@ -7,6 +7,7 @@ import java.util.Iterator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import am.app.Core;
 import am.userInterface.canvas2.graphical.GraphicalData;
 import am.utility.DirectedGraph;
 
@@ -124,9 +125,12 @@ public class CanvasGraph extends DirectedGraph<Canvas2Edge, Canvas2Vertex> {
 	 * of the vertex or edge. 
 	 */
 	private void updateBounds( GraphicalData o ) {
+		Logger logger = null;
 		
-		Logger logger = Logger.getLogger(this.getClass());
-		logger.setLevel(Level.DEBUG);
+		if( Core.DEBUG ) {
+			logger = Logger.getLogger(this.getClass());
+			logger.setLevel(Level.DEBUG);
+		}
 		
 		if( o == null ) return;
 		Rectangle bounds = o.getBounds();
@@ -140,10 +144,10 @@ public class CanvasGraph extends DirectedGraph<Canvas2Edge, Canvas2Vertex> {
 		if( vertices.size() + edges.size() == 1 ) {
 			// we have only one element in the graph, the element is the bounds
 			x = x1; y = y1; w = w1; h = h1;
-			logger.debug("Graph bounds reset to: (x = " + Integer.toString(x) + ", " +
-					   "y = " + Integer.toString(y) + ", " +
-					   "w = " + Integer.toString(w) + ", " +
-					   "h = " + Integer.toString(h) + ")");
+			if( Core.DEBUG ) logger.debug("Graph bounds reset to: (x = " + Integer.toString(x) + ", " +
+					   											  "y = " + Integer.toString(y) + ", " +
+					   											  "w = " + Integer.toString(w) + ", " +
+					   											  "h = " + Integer.toString(h) + ")");
 			return;
 		}
 
@@ -173,7 +177,8 @@ public class CanvasGraph extends DirectedGraph<Canvas2Edge, Canvas2Vertex> {
 			mod=true; 
 		}  
 		
-		if(mod) logger.debug("Graph bounds updated to: (x = " + Integer.toString(x) + ", " +
+		if( Core.DEBUG )
+			if(mod) logger.debug("Graph bounds updated to: (x = " + Integer.toString(x) + ", " +
 											   "y = " + Integer.toString(y) + ", " +
 											   "w = " + Integer.toString(w) + ", " +
 											   "h = " + Integer.toString(h) + ")");

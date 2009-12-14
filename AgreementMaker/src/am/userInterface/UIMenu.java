@@ -35,44 +35,50 @@ import am.userInterface.vertex.VertexDescriptionPane;
 
 public class UIMenu implements ActionListener {
 	
-	// create 4 menus
-	private JMenu fileMenu, viewMenu, helpMenu, ontologyMenu;
-	// private JMenu editMenu; // not used yet
-	//fake menus
-	private JMenu matchingMenu;
+	// create Top Level menus
+	private JMenu fileMenu, viewMenu, helpMenu, matchingMenu, ontologyMenu;
 	
-	// menu items for helpMenu
-	private JMenuItem howToUse, aboutItem;		
-	//menu items for matching menu
-	private JMenuItem manualMapping, newMatching, runMatching, copyMatching, deleteMatching, saveMatching, refEvaluateMatching, clearAll, doRemoveDuplicates;
-
-	// menu items for the View Menu
-	private JMenuItem keyItem;
+	// File menu.
+	private JMenuItem xit, openSource, openTarget, openMostRecentPair,
+					  closeSource, closeTarget;
+	private JMenu menuRecentSource, menuRecentTarget;
+	
+	// Edit menu.
+	//private JMenuItem undo, redo;
+	
+	// View menu.
+	private JMenuItem colorsItem, itemViewsCanvas;
 	private JCheckBoxMenuItem smoMenuItem;  // Menu item for toggling "Selected Matchings Only" view mode.
-	private JMenu menuViews;
-	private JMenuItem itemViewsCanvas;
-	private JMenuItem itemViewsCanvas2;
+	private JMenu menuViews;  // Views submenu.  TODO: Rename this to something more descriptive.
 	
-	// menu items for the Ontology Menu
+	// Ontology menu.
 	private JMenuItem ontologyDetails;
 	
+	// Matching menu.
+	private JMenuItem manualMapping, userFeedBack, 
+					  newMatching, runMatching, copyMatching, deleteMatching, clearAll, 
+					  doRemoveDuplicates, 
+					  saveMatching, 
+					  refEvaluateMatching;
+	
+	
+	// Help menu.
+	private JMenuItem howToUse, aboutItem;		
+	
+	
+
 	//creates a menu bar
 	private JMenuBar myMenuBar;
 	
-	private UI ui;
+	private UI ui;  // reference to the main ui.
 	
-	// menu items for edit menu
-	//private JMenuItem undo, redo;
-	// menu itmes for fileMenu
-	private JMenuItem xit, openSource, openTarget, openMostRecentPair;
+
 	
-	private JMenu menuRecentSource, menuRecentTarget;
-	//private JMenuItem menuRecentSourceList[], menuRecentTargetList[]; // the list of recent files
+	
 	private JCheckBoxMenuItem disableVisualizationItem;
 	private JCheckBoxMenuItem showLabelItem;
 	private JCheckBoxMenuItem showLocalNameItem;
-	
-	private JMenuItem userFeedBack;
+
 	
 	public UIMenu(UI ui){
 		this.ui=ui;
@@ -127,14 +133,24 @@ public class UIMenu implements ActionListener {
 				// confirm exit
 				confirmExit();
 				// if it is no, then do nothing		
-			}else if (obj == keyItem){
-				new Legend(ui);	
+			}else if (obj == colorsItem){
+				new Legend();	
 			}else if (obj == howToUse){
 				Utility.displayTextAreaPane(Help.getHelpMenuString(), "Help");
 			}else if (obj == openSource){
 				openAndReadFilesForMapping(GlobalStaticVariables.SOURCENODE);
+				if( Core.getInstance().sourceIsLoaded() ) {
+					openSource.setEnabled(false);
+					menuRecentSource.setEnabled(false);
+					closeSource.setEnabled(true);
+				}
 			}else if (obj == openTarget){
 				openAndReadFilesForMapping(GlobalStaticVariables.TARGETNODE);
+				if( Core.getInstance().targetIsLoaded() ) {
+					openTarget.setEnabled(false);
+					menuRecentTarget.setEnabled(false);
+					closeTarget.setEnabled(true);
+				}
 			}else if (obj == openMostRecentPair){
 				AppPreferences prefs = new AppPreferences();
 				int position = 0;
@@ -142,6 +158,15 @@ public class UIMenu implements ActionListener {
 						prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position), prefs.getRecentSourceSkipNamespace(position), prefs.getRecentSourceNoReasoner(position));
 				ui.openFile( prefs.getRecentTargetFileName(position), GlobalStaticVariables.TARGETNODE, 
 						prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position), prefs.getRecentTargetSkipNamespace(position), prefs.getRecentTargetNoReasoner(position));
+				closeSource.setEnabled(true);
+				closeTarget.setEnabled(true);
+				
+				openSource.setEnabled(false);
+				openTarget.setEnabled(false);
+				menuRecentSource.setEnabled(false);
+				menuRecentTarget.setEnabled(false);
+				openMostRecentPair.setEnabled(false);
+				
 			}else if (obj == aboutItem){
 				new AboutDialog();
 				//displayOptionPane("Agreement Maker 3.0\nAdvis research group\nThe University of Illinois at Chicago 2004","About Agreement Maker");
@@ -265,14 +290,14 @@ public class UIMenu implements ActionListener {
 					AbstractMatcher firstMatcher = core.getMatcherInstances().get(selectedRows[0]);
 					AbstractMatcher secondMatcher = core.getMatcherInstances().get(selectedRows[1]);
 					
-					AlignmentSet firstClassSet = firstMatcher.getClassAlignmentSet();
-					AlignmentSet secondClassSet = secondMatcher.getClassAlignmentSet();
+					AlignmentSet<Alignment> firstClassSet = firstMatcher.getClassAlignmentSet();
+					AlignmentSet<Alignment> secondClassSet = secondMatcher.getClassAlignmentSet();
 					
-					AlignmentSet firstPropertiesSet = firstMatcher.getPropertyAlignmentSet();
-					AlignmentSet secondPropertiesSet = secondMatcher.getPropertyAlignmentSet();
+					AlignmentSet<Alignment> firstPropertiesSet = firstMatcher.getPropertyAlignmentSet();
+					AlignmentSet<Alignment> secondPropertiesSet = secondMatcher.getPropertyAlignmentSet();
 					
-					AlignmentSet combinedClassSet = new AlignmentSet();
-					AlignmentSet combinedPropertiesSet = new AlignmentSet();
+					AlignmentSet<Alignment> combinedClassSet = new AlignmentSet<Alignment>();
+					AlignmentSet<Alignment> combinedPropertiesSet = new AlignmentSet<Alignment>();
 
 					// double nested loop, later I will write a better algorithm -cos
 					for( i = 0; i < firstClassSet.size(); i++ ) {
@@ -390,6 +415,48 @@ public class UIMenu implements ActionListener {
 				
 				
 				
+			} else if( obj == closeSource ) {
+				if( Core.getInstance().targetIsLoaded() ) {
+					// confirm with the user that we should reset matchings
+					if( controlPanel.clearAll() ) {
+						Core.getInstance().removeOntology( Core.getInstance().getSourceOntology() );
+						closeSource.setEnabled(false); // the source ontology has been removed, grey out the menu entry
+						// and we need to enable the source ontology loading menu entries
+						openSource.setEnabled(true);
+						menuRecentSource.setEnabled(true);
+					}
+				} else {
+					// if there is no target loaded, we don't have to reset matchings.
+					//controlPanel.resetMatchings();
+					Core.getInstance().removeOntology( Core.getInstance().getSourceOntology() );
+					closeSource.setEnabled(false);  // the source ontology has been removed, grey out the menu entry
+					// and we need to enable the source ontology loading menu entries
+					openSource.setEnabled(true);
+					menuRecentSource.setEnabled(true);
+					ui.redisplayCanvas();
+				}
+				if( !Core.getInstance().sourceIsLoaded() && !Core.getInstance().targetIsLoaded() ) openMostRecentPair.setEnabled(true);
+			} else if( obj == closeTarget ) {
+				if( Core.getInstance().sourceIsLoaded() ) {
+					// confirm with the user that we should reset any matchings
+					if( controlPanel.clearAll() ) {
+						Core.getInstance().removeOntology( Core.getInstance().getTargetOntology() );
+						closeTarget.setEnabled(false); // the target ontology has been removed, grey out the menu entry
+						// and we need to enable the target ontology loading menu entries
+						openTarget.setEnabled(true);
+						menuRecentTarget.setEnabled(true);
+
+					}
+				} else {
+					// if there is no source ontology loaded, we don't have to ask the user
+					Core.getInstance().removeOntology( Core.getInstance().getTargetOntology() );
+					closeTarget.setEnabled(false);  // the target ontology has been removed, grey out the menu entrys
+					// and we need to enable the target ontology loading menu entries
+					openTarget.setEnabled(true);
+					menuRecentTarget.setEnabled(true);
+					ui.redisplayCanvas();
+				}
+				if( !Core.getInstance().sourceIsLoaded() && !Core.getInstance().targetIsLoaded() ) openMostRecentPair.setEnabled(true);
 			}
 			
 			
@@ -419,6 +486,14 @@ public class UIMenu implements ActionListener {
 						prefs.saveRecentFile(prefs.getRecentSourceFileName(position), GlobalStaticVariables.SOURCENODE, 
 								prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position), prefs.getRecentSourceSkipNamespace(position), prefs.getRecentSourceNoReasoner(position));
 						ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
+						
+						// Now that we have loaded a source ontology, disable all the source ontology loading menu entries ...
+						openSource.setEnabled(false);
+						menuRecentSource.setEnabled(false);
+						openMostRecentPair.setEnabled(false);
+						// ... and enable the close menu entry 
+						closeSource.setEnabled(true);
+						
 						break;
 					case 't':
 						ui.openFile( prefs.getRecentTargetFileName(position), GlobalStaticVariables.TARGETNODE, 
@@ -426,6 +501,15 @@ public class UIMenu implements ActionListener {
 						prefs.saveRecentFile(prefs.getRecentTargetFileName(position), GlobalStaticVariables.TARGETNODE, 
 								prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position), prefs.getRecentTargetSkipNamespace(position), prefs.getRecentTargetNoReasoner(position));
 						ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
+						
+						// Now that we have loaded a source ontology, disable all the source ontology loading menu entries ...
+						openTarget.setEnabled(false);
+						menuRecentTarget.setEnabled(false);
+						openMostRecentPair.setEnabled(false);
+						// ... and enable the close menu entry 
+						closeTarget.setEnabled(true);
+
+						
 						break;
 					default:
 						break;
@@ -531,7 +615,17 @@ public class UIMenu implements ActionListener {
 		fileMenu.addSeparator();
 		//private JMenuItem menuRecentSource, menuRecentTarget;
 		//private JMenuItem menuRecentSourceList[], menuRecentTargetList[]; // the list of recent files
-
+		closeSource = new JMenuItem("Close Source Ontology");
+		closeSource.addActionListener(this);
+		closeSource.setEnabled(false); // there is no source ontology loaded at the beginning
+		closeTarget = new JMenuItem("Close Target Ontology");
+		closeTarget.addActionListener(this);
+		closeTarget.setEnabled(false); // there is no target ontology loaded at the beginning
+		fileMenu.add(closeSource);
+		fileMenu.add(closeTarget);
+		
+		
+		fileMenu.addSeparator();
 		// add exit menu item to file menu
 		xit = new JMenuItem("Exit", KeyEvent.VK_X);
 		xit.addActionListener(this);
@@ -548,10 +642,10 @@ public class UIMenu implements ActionListener {
 		//viewMenu.addSeparator();
 
 		// add keyItem 
-		keyItem = new JMenuItem("Colors",KeyEvent.VK_K);
-		keyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, ActionEvent.CTRL_MASK)); 	                
-		keyItem.addActionListener(this);
-		viewMenu.add(keyItem);
+		colorsItem = new JMenuItem("Colors",KeyEvent.VK_K);
+		colorsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, ActionEvent.CTRL_MASK)); 	                
+		colorsItem.addActionListener(this);
+		viewMenu.add(colorsItem);
 		
 		viewMenu.addSeparator();
 		

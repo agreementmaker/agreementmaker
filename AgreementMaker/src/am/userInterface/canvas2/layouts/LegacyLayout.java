@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.swing.event.ChangeEvent;
 
@@ -193,6 +195,39 @@ public class LegacyLayout extends Canvas2Layout {
 			
 	}
 	
+	@Override
+	public void removeOntology(  ArrayList<CanvasGraph> graphs, int ontologyID ) {
+		
+		for( int i = graphs.size() - 1; i >= 0; i-- ) {
+			CanvasGraph gr = graphs.get(i);
+			if( gr.getGraphType() == GraphLocator.GraphType.MATCHER_GRAPH || gr.getID() == ontologyID ) {
+				gr.detachEdges();  // we must detach the graph from other visible graphs before removing. 
+				graphs.remove(i);
+			}
+			
+		}
+		
+		if( leftOntologyID == ontologyID ) { leftOntologyID = Core.ID_NONE; leftSideLoaded = false; }
+		if( rightOntologyID == ontologyID ) { rightOntologyID = Core.ID_NONE; rightSideLoaded = false; }
+		
+		// we must remove the ontology elements from the hashMap.
+		Set<Entry<OntResource,LegacyNode>> entries = hashMap.entrySet();
+		Iterator<Entry<OntResource,LegacyNode>> setIter = entries.iterator();
+		ArrayList<OntResource> toBeRemoved = new ArrayList<OntResource>();
+		while( setIter.hasNext() ) {  // make a list of things to be removed.  We must make a list, because we cannot remove entries as we are iterating over them.
+			Entry<OntResource,LegacyNode> currentEntry = setIter.next();
+			if( currentEntry.getValue().getObject().ontologyID == ontologyID ) {
+				toBeRemoved.add(currentEntry.getKey());
+			}
+		}
+		
+		Iterator<OntResource> tbrIter = toBeRemoved.iterator();
+		while( tbrIter.hasNext() ) {
+			hashMap.remove( tbrIter.next() );
+		}
+		
+	}
+	
 /*
  *********************************************************************************************************************************
  *********************************************************************************************************************************
@@ -241,7 +276,7 @@ public class LegacyLayout extends Canvas2Layout {
 		owlThing = m.getOntClass( OWL.Thing.getURI() );
 		
 		CanvasGraph classesGraph = new CanvasGraph( GraphLocator.GraphType.CLASSES_GRAPH, ont.getID() );
-		anonymousNode = new LegacyNode( new GraphicalData(0, 0, 0, 0, GraphicalData.NodeType.FAKE_NODE, this, Core.getInstance().getOntologyIDbyModel(m) ));
+		anonymousNode = new LegacyNode( new GraphicalData(0, 0, 0, 0, GraphicalData.NodeType.FAKE_NODE, this, ont.getID() ));
 		
 		LegacyNode classesRoot = buildClassGraph( m, classesGraph );  // build the class graph here
 		
@@ -431,7 +466,7 @@ public class LegacyLayout extends Canvas2Layout {
 		// create the root node;
 		TextElement gr = new TextElement(depth*depthIndent + subgraphXoffset, 
 										 graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
-										 0, nodeHeight, this, Core.getInstance().getOntologyIDbyModel(m));
+										 0, nodeHeight, this, graph.getID() );
 		gr.setText("OWL Classes Hierarchy");
 		LegacyNode root = new LegacyNode( gr );
 		
@@ -460,7 +495,7 @@ public class LegacyLayout extends Canvas2Layout {
 			// so the child class is not anonymous or OWL.Nothing, add it to the graph, with the correct relationships
 			GraphicalData gr1 = new GraphicalData( depth*depthIndent + subgraphXoffset, 
 										           graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
-										           100, nodeHeight, cls, GraphicalData.NodeType.CLASS_NODE, this );
+										           100, nodeHeight, cls, GraphicalData.NodeType.CLASS_NODE, this, graph.getID() );
 			LegacyNode node = new LegacyNode( gr1);
 			
 			graph.insertVertex( node );
@@ -508,7 +543,7 @@ public class LegacyLayout extends Canvas2Layout {
 			
 			GraphicalData gr = new GraphicalData( depth*depthIndent + subgraphXoffset, 
 												   graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
-												   100 , nodeHeight, cls, GraphicalData.NodeType.CLASS_NODE, this ); 
+												   100 , nodeHeight, cls, GraphicalData.NodeType.CLASS_NODE, this, graph.getID() ); 
 			LegacyNode node = new LegacyNode( gr); 
 			graph.insertVertex(node);
 				
@@ -693,7 +728,7 @@ public class LegacyLayout extends Canvas2Layout {
 		*/
 		TextElement gr = new TextElement(depth*depthIndent + subgraphXoffset, 
 				 		 graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
-				         0, nodeHeight, this, Core.getInstance().getOntologyIDbyModel(m));
+				         0, nodeHeight, this, graph.getID() );
 		gr.setText("OWL Properties Hierarchy"); 
 		LegacyNode root = new LegacyNode( gr );
 		
@@ -721,7 +756,7 @@ public class LegacyLayout extends Canvas2Layout {
 			// so the child property is not anonymous or OWL.Nothing, add it to the graph, with the correct relationships
 			GraphicalData gr1 = new GraphicalData( depth*depthIndent + subgraphXoffset, 
 										           graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
-										           0, nodeHeight, prop, GraphicalData.NodeType.PROPERTY_NODE, this );
+										           0, nodeHeight, prop, GraphicalData.NodeType.PROPERTY_NODE, this, graph.getID() );
 			LegacyNode node = new LegacyNode( gr1);
 			
 			graph.insertVertex( node );
@@ -742,11 +777,13 @@ public class LegacyLayout extends Canvas2Layout {
 			int depth, 
 			CanvasGraph graph) {
 
+		Logger log = null;
 		
-		
-		Logger log = Logger.getLogger(this.getClass());
-		log.setLevel(Level.DEBUG);
-		log.debug(parentProperty);
+		if( Core.DEBUG ) {
+			log = Logger.getLogger(this.getClass());
+			log.setLevel(Level.DEBUG);
+			log.debug(parentProperty);
+		}
 		
 		ExtendedIterator clsIter = null;
 		try { 
@@ -767,13 +804,13 @@ public class LegacyLayout extends Canvas2Layout {
 
 			// this is the cycle check
 			if( hashMap.containsKey(prop) ) { // we have seen this node before, do NOT recurse again
-				log.debug("Cycle detected.  OntProperty:" + prop );
+				if( Core.DEBUG ) log.debug("Cycle detected.  OntProperty:" + prop );
 				continue;
 			}
 			
 			GraphicalData gr = new GraphicalData( depth*depthIndent + subgraphXoffset, 
 												   graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
-												   100 , nodeHeight, prop, GraphicalData.NodeType.PROPERTY_NODE, this ); 
+												   100 , nodeHeight, prop, GraphicalData.NodeType.PROPERTY_NODE, this, graph.getID() ); 
 			LegacyNode node = new LegacyNode( gr); 
 			graph.insertVertex(node);
 				
