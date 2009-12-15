@@ -370,7 +370,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		cmbHighThreshold = new JComboBox( Utility.getPercentDecimalsList() );
 		cmbHighThreshold.setSelectedItem("0.8");
 		cmbLowThreshold = new JComboBox( Utility.getPercentDecimalsList() );
-		cmbLowThreshold.setSelectedItem("0.5");
+		cmbLowThreshold.setSelectedItem("0.6");
 		
 		String[] integers = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 		cmbK = new JComboBox( integers );

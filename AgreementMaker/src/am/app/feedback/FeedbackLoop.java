@@ -262,8 +262,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 			finalIteration.EFSwrong = EFSwrong;
 			
 			System.out.println( "/////////MEASURES TABLE//////////////////////////////////////////////////////");
-			if(partialEvaluations.size()*evaluationSpin!= iteration)
-				partialEvaluations.add(finalIteration);
+			if(partialEvaluations.size() >0 && partialEvaluations.get(partialEvaluations.size()-1).iteration != iteration)
+				partialEvaluations.add(finalIteration); //the final iteration could have been evaluated in the loop or not if the looped finished with an intermediate iteration
 			double initialPrecision = initialEvaluation.getPrecision();
 			double initialRecall = initialEvaluation.getRecall();
 			double initialFmeasure = initialEvaluation.getFmeasure();
@@ -300,7 +300,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			}
 			//understanding why some mappings are not mapped
 			AlignmentSet losts = rd_end.getLostAlignments();
-			System.out.println("Missing are : "+losts.size()+" or "+(rd_end.getExist() - rd_end.getFound()));
+			System.out.println("Missing are : "+losts.size()+" or "+(rd_end.getExist() - rd_end.getCorrect()));
 			for(int i = 0; i< losts.size(); i++){
 				Alignment lost = losts.getAlignment(i);
 				boolean isProp = lost.getEntity1().isProp();
