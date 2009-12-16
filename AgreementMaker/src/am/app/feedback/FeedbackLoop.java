@@ -140,7 +140,6 @@ public class FeedbackLoop extends AbstractMatcher  {
 	public FeedbackLoop() {
 		needsParam = true;
 		currentStage = executionStage.notStarted;
-		candidateSelection = new CandidateSelection(this);
 		iteration = 0;
 		evaluationSpin = 5;
 		stop = false;
@@ -173,6 +172,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		runInitialMatcher();
 
 		//**************************LOOP*******************************
+		candidateSelection = new CandidateSelection(this, param.measure);
 		new_mapping = 0 - (classesToBeFiltered.size() + propertiesToBeFiltered.size());
 		boolean firstPhase = true;
 		do {

@@ -15,7 +15,7 @@ import am.app.ontology.Ontology;
 public class SimilarityBasedCandidateSelection extends CandidateSelection {
 	
 	public SimilarityBasedCandidateSelection(FeedbackLoop ufl){
-		super(ufl);
+		super(ufl, ALLMEASURES);//the single measure string is irrelevant here
 	}
 	
 	public ArrayList<CandidateConcept> getCandidateAlignments( int k, int m ) {

@@ -22,6 +22,7 @@ public class FeedbackLoopParameters extends AbstractParameters {
 	public int iterations = 15;
 	
 	public AbstractMatcher matcher;
+	public String measure;
 	
 	public String getParameterString(){
 		String result = "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=";
@@ -34,6 +35,7 @@ public class FeedbackLoopParameters extends AbstractParameters {
 		result += "\n\tK:             \t" + Integer.toString(K) ;
 		result += "\n\tM:             \t" + Integer.toString(M) ;
 		result += "\n\tCardinality:   \t" + cardinality ;
+		result += "\n\tRelevance Measure\t" + measure ;
 		result += "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=";
 		return result;
 	}

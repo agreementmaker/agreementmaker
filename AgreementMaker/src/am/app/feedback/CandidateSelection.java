@@ -12,6 +12,7 @@ import am.app.feedback.measures.InformationGain;
 import am.app.feedback.measures.RelevanceMeasure;
 import am.app.feedback.measures.RepeatingPatterns;
 import am.app.feedback.measures.Specificity;
+import am.app.feedback.ui.SelectionPanel;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.AbstractMatcher.alignType;
@@ -22,56 +23,82 @@ public class CandidateSelection {
 
 	
 	// relevance measures
+	public final static String ALLMEASURES = "All measures";
 	public enum MeasuresRegistry {
-		FamilialSimilarity ( FamilialSimilarity.class, false ),
-		Specificity	( Specificity.class, false ),
-		InformationGain ( InformationGain.class, true );
+		FamilialSimilarity ( "Familial Similarity", FamilialSimilarity.class, false ),
+		Specificity	( "Specificity",Specificity.class, false ),
+		InformationGain ( "Information Gain", InformationGain.class, true );
 		//RepeatingPatterns( RepeatingPatterns.class, false)
 		
-		
+		private String name;
 		private String measure;
 		private boolean dynamic;//if true means that this relevance has to be computed at each iteration because it can change
 		
-		MeasuresRegistry( Class<?> classname, boolean dyn ) { 
+		MeasuresRegistry( String n, Class<?> classname, boolean dyn ) { 
+			name = n;
 			measure = classname.getName(); 
 			dynamic = dyn;
 		}
 		public String getMeasureClass() { return measure; }
-		
-		public boolean isDynamic(){
-			return dynamic;
-		}
+		public String getMeasureName(){ return name; }
+		public boolean isDynamic(){ return dynamic; }
+		public String toString(){ return getMeasureName(); }
 		
 	}
 	
 	
-	
+	String measureName;
 	RelevanceMeasure[] measures;
 	FeedbackLoop fbL;
 	
 	
-	public CandidateSelection(FeedbackLoop feedbackLoop) {
+	public CandidateSelection(FeedbackLoop feedbackLoop, String theMeasure) {
 		fbL = feedbackLoop;
-		measures = new RelevanceMeasure[MeasuresRegistry.values().length];
+		measureName = theMeasure;
+		if(measureName.equals(ALLMEASURES)){
+			measures = new RelevanceMeasure[MeasuresRegistry.values().length];
+		}
+		else{
+			measures = new RelevanceMeasure[1];
+		}
+		
 	}
 
 
 	// create and run all the relevance measures
 	public void runMeasures() {
 		MeasuresRegistry[] mrs = MeasuresRegistry.values();
-		
-		//THe first UFL iteration all measures are initialized
-		//in the next iterations, only dynamic measures are reinitialized while for the others we keep using the same
-		for(int i = 0; i < mrs.length; i++){
-			MeasuresRegistry name = mrs[i];
-			RelevanceMeasure measure = measures[i];
-			if(measure == null || name.isDynamic()){//First iterations for all, or only dynamic in the others
-				measure = getMeasureInstance( name );
-				if( measure != null ) {
-					measure.setName(name);
-					measure.calculateRelevances();
-					measure.printCandidates();
-					measures[i] = measure;
+		if(measureName.equals(ALLMEASURES)){
+			//THe first UFL iteration all measures are initialized
+			//in the next iterations, only dynamic measures are reinitialized while for the others we keep using the same
+			for(int i = 0; i < mrs.length; i++){
+				MeasuresRegistry name = mrs[i];
+				RelevanceMeasure measure = measures[i];
+				if(measure == null || name.isDynamic()){//First iterations for all, or only dynamic in the others
+					measure = getMeasureInstance( name );
+					if( measure != null ) {
+						measure.setName(name);
+						measure.calculateRelevances();
+						measure.printCandidates();
+						measures[i] = measure;
+					}
+				}
+			}
+		}
+		else{//the user has selected to use a single specific measure
+			for(int i = 0; i < mrs.length; i++){
+				MeasuresRegistry name = mrs[i];
+				if(name.getMeasureName().equals(measureName)){
+					RelevanceMeasure measure = measures[0];
+					if(measure == null || name.isDynamic()){//First iterations for all, or only dynamic in the others
+						measure = getMeasureInstance( name );
+						if( measure != null ) {
+							measure.setName(name);
+							measure.calculateRelevances();
+							measure.printCandidates();
+							measures[0] = measure;
+						}
+					}
 				}
 			}
 		}

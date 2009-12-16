@@ -40,8 +40,10 @@ import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.feedback.CandidateConcept;
+import am.app.feedback.CandidateSelection;
 import am.app.feedback.FeedbackLoop;
 import am.app.feedback.FeedbackLoopParameters;
+import am.app.feedback.CandidateSelection.MeasuresRegistry;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
@@ -78,6 +80,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 	JComboBox cmbK;
 	JComboBox cmbM;
 	JComboBox cmbMatcher;
+	JComboBox cmbMeasure;
 	
 	
 	// Automatic Progress screen.
@@ -338,6 +341,8 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		catch(Exception e){
 			fblp.iterations = Integer.MAX_VALUE;
 		}
+		
+		fblp.measure = cmbMeasure.getSelectedItem().toString();
 
 		
 		//get the automatic inital matcher
@@ -396,6 +401,14 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		cmbConfigurations.addItem(FeedbackLoop.AUTO_russia);
 		cmbConfigurations.addItem(FeedbackLoop.AUTO_weapons);
 		cmbConfigurations.addItem(FeedbackLoop.AUTO_wine);
+		
+		cmbMeasure = new JComboBox();
+		cmbMeasure.addItem(CandidateSelection.ALLMEASURES);
+		MeasuresRegistry[] mrs = MeasuresRegistry.values();
+		for(int i = 0; i < mrs.length; i++){
+			MeasuresRegistry name = mrs[i];
+			cmbMeasure.addItem(name.getMeasureName());
+		}
 	}
 	
 	public void showScreen_Start() {
@@ -412,6 +425,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		JLabel lblIterations = new JLabel("Maximum iteration:");
 		JLabel lblK = new JLabel("Num candidate concepts K:");
 		JLabel lblM = new JLabel("Num candidate mappings M:");
+		JLabel lblMeasure = new JLabel("Relevance measure");
 		//LAYOUT
 
 		JPanel centralContainer  = new JPanel();
@@ -437,6 +451,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 					.addComponent(lblK)
 					.addComponent(lblM)
 					.addComponent(lblCardinality)
+					.addComponent(lblMeasure)
 				)
 				//ALL COMPONENTS IN THE SECOND COLUMNS
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -448,6 +463,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 					.addComponent(cmbK,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 			
 					.addComponent(cmbM,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
 					.addComponent(cmbCardinality,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
+					.addComponent(cmbMeasure,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
 				)
 			)
 		);
@@ -487,6 +503,10 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(lblCardinality)
 						.addComponent(cmbCardinality,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
+				)
+				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+						.addComponent(lblMeasure)
+						.addComponent(cmbMeasure,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
 				)
 			);
 		
