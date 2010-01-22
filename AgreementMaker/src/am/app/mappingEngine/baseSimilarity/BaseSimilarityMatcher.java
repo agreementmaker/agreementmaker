@@ -31,7 +31,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	public BaseSimilarityMatcher() {
 		// warning, param is not available at the time of the constructor (when creating a matcher from the User Interface)
 		super();
-		needsParam = true;
+		needsParam = false;
 	}
 	
 	// Constructor used when the parameters are available at the time of matcher initialization
@@ -65,9 +65,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	
 	public String getDescriptionString() {
 		return "Performs a local matching using a String Based technique. To be used as first matcher.\n" +
-				"If used without dictionary is very simple and fast. Will give good results on simple ontologies.\n" +
-				"If used with dictionary can be very slow. Can give better result on different words with similar meaning.\n" +
-				"Only Nodes' local-names (XML id) are considered in the process.\n" +
+				"Only Nodes' local-names (XML id) and labels are considered in the process.\n" +
 				"String are preprocessed with cleaning, stemming, stop-words removing, and tokenization techniques.\n" +
 				"A similarity matrix contains the similarity between each pair (sourceNode, targetNode).\n" +
 				"A selection algorithm select valid alignments considering threshold and number of relations per node.\n"; 
@@ -127,7 +125,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		
 		
 		
-		if( ((BaseSimilarityParameters) param).useDictionary ) {  // Step 3a
+		if( param != null && ((BaseSimilarityParameters) param).useDictionary ) {  // Step 3a
 			//this is the same as the one of William Sunan
 			String sourceName = source.getLocalName();
 			String targetName = target.getLocalName();

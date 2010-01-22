@@ -58,7 +58,7 @@ public class LexicalMatcherJWNL extends AbstractMatcher{
 	
 	//Description of Algorithm
 	public String getDescriptionString() {
-		return "A lexical matcher using WordNet.\n"; 
+		return "A lexical matcher that takes advantage of WordNet to find similarities between concepts\n"; 
 	}
 	
 	protected void beforeAlignOperations()  throws Exception{

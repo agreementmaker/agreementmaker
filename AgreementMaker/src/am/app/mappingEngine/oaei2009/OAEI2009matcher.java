@@ -33,7 +33,9 @@ public class OAEI2009matcher extends AbstractMatcher {
 	
 	
 	public String getDescriptionString() {
-		return "The method adopted in the OAEI2009 competition."; 
+		return "The method adopted in the OAEI2009 competition." +
+				"For more details, please read OAEI2009 results for the AgreementMaker available at www.cs.uic.edu/Cruz/Publications#2009. "+
+				"The configurations for the difference tracks are selected in the parameters panel. ";
 	}
 	
 	

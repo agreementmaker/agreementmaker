@@ -706,7 +706,7 @@ public class UIMenu implements ActionListener {
 		
 		userFeedBack = new JMenuItem("User Feedback Loop");
 		userFeedBack.addActionListener(this);
-		matchingMenu.add(userFeedBack);
+		//matchingMenu.add(userFeedBack); Removed to distribute the AM
 		
 		matchingMenu.addSeparator();
 		newMatching = new JMenuItem("New empty matching");

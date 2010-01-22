@@ -47,23 +47,23 @@ public enum MatchersRegistry {
 	
 	//OFFICIAL MATCHERS
 	BaseSimilarity		( "Base Similarity Matcher (BSM)", BaseSimilarityMatcher.class ),
-	 ParametricString ( "Parametric String Matcher (PSM)", ParametricStringMatcher.class ),
-	 MultiWords       ("Vector-based Multi-Words Matcher (VMM)", MultiWordsMatcher.class),
+	ParametricString ( "Parametric String Matcher (PSM)", ParametricStringMatcher.class ),
+	MultiWords       ("Vector-based Multi-Words Matcher (VMM)", MultiWordsMatcher.class),
+	WordNetLexical		("Lexical Matcher: WordNet", LexicalMatcherJWNL.class),
 	DSI					( "Descendant's Similarity Inheritance (DSI)", DescendantsSimilarityInheritanceMatcher.class ),
 	SSC					( "Sibling's Similarity Contribution (SSC)", SiblingsSimilarityContributionMatcher.class ),
 	Combination	( "Linear Weighted Combination (LWC)", CombinationMatcher.class ),
 	ConceptSimilarity   ( "Concept Similarity", ConceptMatcher.class, false),
-	DSI2					( "OLD Descendant's Similarity Inheritance (DSI)", OldDescendantsSimilarityInheritanceMatcher.class, false ),
 	OAEI2009   ( "OAEI2009 Matcher", OAEI2009matcher.class),
-	PRAintegration   ( "PRA Integration", PRAintegrationMatcher.class),
-	WordNetLexical		("Lexical Matcher: WordNet", LexicalMatcherJWNL.class),
-	PRAMatcher			("PRA Matcher", PRAMatcher.class),
-	PRAMatcher2			("PRA Matcher2", PRAMatcher2.class),
-	OldPRAMAtcher		("Old PRA Matcher", OldPRAMatcher.class),
-	UMLSKSLexical		("Lexical Matcher: UMLSKS", LexicalMatcherUMLS.class),
-	InitialMatcher      ("Initial Matcher: LWC (PSM+VMM+BSM)", InitialMatchers.class),
-	//WordNetLexicalOLD		("OLD Lexical Matcher: WordNet ", LexicalMatcherJWNLOLD.class),
-
+	UMLSKSLexical		("Lexical Matcher: UMLSKS", LexicalMatcherUMLS.class, false), //it requires internet connection and the IP to be registered
+	
+	//Auxiliary matchers created for specific purposes
+	InitialMatcher      ("Initial Matcher: LWC (PSM+VMM+BSM)", InitialMatchers.class, false),
+	PRAintegration   ( "PRA Integration", PRAintegrationMatcher.class, false), //this works fine
+	PRAMatcher			("PRA Matcher", PRAMatcher.class, false),
+	PRAMatcher2			("PRA Matcher2", PRAMatcher2.class, false),
+	OldPRAMAtcher		("Old PRA Matcher", OldPRAMatcher.class, false),
+	
 	//WORK IN PROGRESS
 	
 	//MATCHERS USED BY THE SYSTEM, usually not shown
@@ -77,6 +77,7 @@ public enum MatchersRegistry {
 	AllZero			( "(Test) All Zero Similarities", AllZeroMatcher.class, true ),
 	Copy				( "Copy Matcher", CopyMatcher.class,false ),
 	Random 				( "(Test) Random Similarities", RandomMatcher.class, true ),
+	DSI2					( "OLD Descendant's Similarity Inheritance (DSI)", OldDescendantsSimilarityInheritanceMatcher.class, false ),
 	UserFeedBackLoop ("User Feedback Loop", FeedbackLoop.class, false );
 	
 	/* Don't change anything below this line .. unless you intend to. */

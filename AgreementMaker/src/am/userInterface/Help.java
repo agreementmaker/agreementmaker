@@ -6,7 +6,7 @@ public class Help {
 		String result = "";
 		result += "HELP\n\n";
 		
-		result+="This Help is just a brief introduction to the AgreementMaker. Can be useful to watch the video available on the distribution website.\n\n";
+		result+="This Help is just a brief introduction to the AgreementMaker. Can be useful to watch the video available on the distribution website. Additional details can be found at www.cs.uic.edu/Cruz/Publications#2009 .\n\n";
 		
 		result += "1) Load source and target ontologies.\n\n";
 		
