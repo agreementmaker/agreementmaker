@@ -11,8 +11,8 @@ public class Help {
 		result += "1) Load source and target ontologies.\n\n";
 		
 		result += "First open source and target ontologies by clicking on File->Open Source/Target Ontology, and selecting filepath and format.\n";
-		result += "OAEI-2007 example ontologies contained in the AM distribution are OWL-N3.\n";
-		result += "OAEI-2008 example ontologies contained in the AM distribution are OWL-RDF/XML.\n";
+		result += "I3CON2004 example ontologies contained in the AM distribution are OWL-N3.\n";
+		result += "OAEI-2009 example ontologies contained in the AM distribution are OWL-RDF/XML.\n";
 		result += "GEOSPATIAL are XML ontologies\n";
 		result += "\n";
 		
