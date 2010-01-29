@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 
 import org.apache.log4j.Level;
@@ -31,6 +33,8 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
+import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.GraphicalData;
@@ -41,6 +45,7 @@ import am.userInterface.canvas2.nodes.GraphicalNode;
 import am.userInterface.canvas2.nodes.LegacyEdge;
 import am.userInterface.canvas2.nodes.LegacyMapping;
 import am.userInterface.canvas2.nodes.LegacyNode;
+import am.userInterface.canvas2.popupmenus.CreateMappingMenu;
 import am.userInterface.canvas2.utility.Canvas2Layout;
 import am.userInterface.canvas2.utility.Canvas2Vertex;
 import am.userInterface.canvas2.utility.CanvasGraph;
@@ -107,6 +112,7 @@ public class LegacyLayout extends Canvas2Layout {
 	/** Mouse Event handlers Variables */
 	
 	private ArrayList<LegacyNode> selectedNodes;  // the list of currently selected nodes
+	private boolean PopupMenuActive = false;
 
 	
 	
@@ -434,15 +440,7 @@ public class LegacyLayout extends Canvas2Layout {
 	}
 	
 	
-	
 
-
-
-	
-	
-	
-	
-	
 
 	/**
 	 * This function and the recursive version build the class graph.
@@ -1035,58 +1033,46 @@ public class LegacyLayout extends Canvas2Layout {
 	@Override
 	public void mouseClicked( MouseEvent e ) {
 		// BUTTON1 = Left Click Button, BUTTON2 = Middle Click Button, BUTTON3 = Right Click Button
-
+		
 		Graphics g = vizpanel.getGraphics();   // used for any redrawing of nodes
 		ArrayList<Canvas2Vertex> visibleVertices = vizpanel.getVisibleVertices();
 		
 		Logger log = Logger.getLogger(this.getClass());
 		log.setLevel(Level.DEBUG);
 		
-		switch( e.getButton() ) {
-		
-			// because of the way Java (and most any platform) handles the difference between single and double clicks,
-			// the single click action must be "complementary" to the double click action, as when you double click a 
-			// single click is always fired just before the double click is detected.  
-			// There is no way around this.  A single click event will *always* be fired just before a double click.
+		if( PopupMenuActive ) {  // if we have an active popup menu, cancel it
+			PopupMenuActive = false;
+			hoveringOver.setHover(false);
+			hoveringOver.draw(g);
+			hoveringOver = null; // clear the hover target, since the click can be anywhere and we didn't check again what we're hovering over
+		} else {
+			// only process mouse clicks if there's not a popup menu active
+			switch( e.getButton() ) {
 			
-			// So then:
-			//		- LEFT button SINGLE click = select NODE (or deselect if clicking empty space)
-			//		- LEFT button DOUBLE click = line up two nodes by their mapping (do nothing if it's empty space)<- TODO  
-
-		case MouseEvent.BUTTON1:
-			if( e.getClickCount() == 2 ) {  // double click with the left mouse button
-				log.debug("Double click with the LEFT mouse button detected.");
-				//do stuff
-			} else if( e.getClickCount() == 1 ) {  // single click with left mouse button
-				if( hoveringOver == null ) {
-					// we have clicked in an empty area, clear all the selected nodes
-					Iterator<LegacyNode> nodeIter = selectedNodes.iterator();
-					while( nodeIter.hasNext() ) {
-						LegacyNode selectedNode = nodeIter.next();
-						selectedNode.setSelected(false); // deselect the node
-						if( visibleVertices.contains( (Canvas2Vertex) selectedNode ) ) {
-							// redraw only if it's currently visible
-							//selectedNode.clearDrawArea(g);
-							selectedNode.draw(g);
-						}
-					}
-					selectedNodes.clear();
-				} else {
-					// user clicked over a node.
-					if( e.isControlDown() ) {
-						// if the user control clicked (CTRL+LEFTCLICK), we have to add this node to the list of selected nodes.
-						if( selectedNodes.contains(hoveringOver) ) { // if it already is in the list, remove it
-							selectedNodes.remove(hoveringOver);
-							hoveringOver.setSelected(false);
-						} else { // it's not in the list already, add it
-							hoveringOver.setSelected(true);
-							selectedNodes.add((LegacyNode) hoveringOver);
-						}
-						
-						//hoveringOver.clearDrawArea(g);
-						hoveringOver.draw(g);
-					} else { // control is not pressed, clear any selections that there may be, and select single node
-						
+				// because of the way Java (and most any platform) handles the difference between single and double clicks,
+				// the single click action must be "complementary" to the double click action, as when you double click a 
+				// single click is always fired just before the double click is detected.  
+				// There is no way around this.  A single click event will *always* be fired just before a double click.
+				
+				// So then:
+				//		- LEFT button SINGLE click = select NODE (or deselect if clicking empty space)
+				//		- LEFT button DOUBLE click = line up two nodes by their mapping (do nothing if it's empty space)<- TODO  
+	
+				// Jan 29, 2010 - Cosmin
+				//   Ok now, we are adding menu support:
+				//      1. User must single left click to select a node in one ontology graph, in order to select that node.
+				//      2. User must single left click a node in the OTHER ontology graph in order to cause a menu to come up.
+				//         If the user clicks a node in the same ontology, this new node becomes the selected node.
+	
+				//      These actions should work with MULTIPLE selections (using the Control key).
+	
+			case MouseEvent.BUTTON1:
+				if( e.getClickCount() == 2 ) {  // double click with the left mouse button
+					log.debug("Double click with the LEFT mouse button detected.");
+					//do stuff
+				} else if( e.getClickCount() == 1 ) {  // single click with left mouse button
+					if( hoveringOver == null ) {
+						// we have clicked in an empty area, clear all the selected nodes
 						Iterator<LegacyNode> nodeIter = selectedNodes.iterator();
 						while( nodeIter.hasNext() ) {
 							LegacyNode selectedNode = nodeIter.next();
@@ -1098,47 +1084,86 @@ public class LegacyLayout extends Canvas2Layout {
 							}
 						}
 						selectedNodes.clear();
+					} else {
+						// user clicked over a node.
 						
-						// select single node
-						hoveringOver.setSelected(true);
-						selectedNodes.add( (LegacyNode)hoveringOver);
-						//hoveringOver.clearDrawArea(g);
-						hoveringOver.draw(g);
+						// is it a node in the OTHER ontology?
+						if( getSelectedNodesOntology() != Core.ID_NONE && getSelectedNodesOntology() != hoveringOver.getGraphicalData().ontologyID ) {
+							// yes it is in the other ontology
+							// bring up the Mapping Popup Menu, so the user can make a mapping
+							CreateMappingMenu menuCreate = new CreateMappingMenu( this );
+							menuCreate.show( vizpanel, e.getX(), e.getY());
+							PopupMenuActive = true;
+						} else {
+							// the nodes are in the same ontology
+							// we either add to the selection, or clear it and select the node that was just clicked
+							if( e.isControlDown() ) {
+								// if the user control clicked (CTRL+LEFTCLICK), we have to add this node to the list of selected nodes.
+								if( selectedNodes.contains(hoveringOver) ) { // if it already is in the list, remove it
+									selectedNodes.remove(hoveringOver);
+									hoveringOver.setSelected(false);
+								} else { // it's not in the list already, add it
+									hoveringOver.setSelected(true);
+									selectedNodes.add((LegacyNode) hoveringOver);
+								}
+								
+								//hoveringOver.clearDrawArea(g);
+								hoveringOver.draw(g);
+							} else { // control is not pressed, clear any selections that there may be, and select single node
+								
+								Iterator<LegacyNode> nodeIter = selectedNodes.iterator();
+								while( nodeIter.hasNext() ) {
+									LegacyNode selectedNode = nodeIter.next();
+									selectedNode.setSelected(false); // deselect the node
+									if( visibleVertices.contains( (Canvas2Vertex) selectedNode ) ) {
+										// redraw only if it's currently visible
+										//selectedNode.clearDrawArea(g);
+										selectedNode.draw(g);
+									}
+								}
+								selectedNodes.clear();
+								
+								// select single node
+								hoveringOver.setSelected(true);
+								selectedNodes.add( (LegacyNode)hoveringOver);
+								//hoveringOver.clearDrawArea(g);
+								hoveringOver.draw(g);
+							}
+						}
 					}
-				}
-				
-			}
-			break;
-			
-		case MouseEvent.BUTTON2:
-			if( e.getClickCount() == 2 ) {
-				// double click with the middle mouse button.
-				log.debug("Double click with the MIDDLE mouse button detected.");
-				//do stuff
-			} else if( e.getClickCount() == 1 ) {
-				// middle click, print out debugging info
-				if( hoveringOver != null ) { // relying on the hover code in MouseMove
-					log.debug("\nResource: " + hoveringOver.getObject().r + 
-							"\nHashCode: " + hoveringOver.getObject().r.hashCode());
 					
 				}
-				//log.debug("Single click with the MIDDLE mouse button detected.");
+				break;
+				
+			case MouseEvent.BUTTON2:
+				if( e.getClickCount() == 2 ) {
+					// double click with the middle mouse button.
+					log.debug("Double click with the MIDDLE mouse button detected.");
+					//do stuff
+				} else if( e.getClickCount() == 1 ) {
+					// middle click, print out debugging info
+					if( hoveringOver != null ) { // relying on the hover code in MouseMove
+						log.debug("\nResource: " + hoveringOver.getObject().r + 
+								"\nHashCode: " + hoveringOver.getObject().r.hashCode());
+						
+					}
+					//log.debug("Single click with the MIDDLE mouse button detected.");
+				}
+				break;
+			
+			
+			case MouseEvent.BUTTON3:
+				if( e.getClickCount() == 2 ) {
+					// double click with the right mouse button.
+					log.debug("Double click with the RIGHT mouse button detected.");
+					//do stuff
+				} else if( e.getClickCount() == 1 ) {
+					// singleclick
+					log.debug("Single click with the RIGHT mouse button detected.");
+				}
+				break;
 			}
-			break;
-		
-		
-		case MouseEvent.BUTTON3:
-			if( e.getClickCount() == 2 ) {
-				// double click with the right mouse button.
-				log.debug("Double click with the RIGHT mouse button detected.");
-				//do stuff
-			} else if( e.getClickCount() == 1 ) {
-				// singleclick
-				log.debug("Single click with the RIGHT mouse button detected.");
-			}
-			break;
 		}
-
 		g.dispose(); // dispose of this graphics element, we don't need it anymore
 	}
 		
@@ -1146,14 +1171,19 @@ public class LegacyLayout extends Canvas2Layout {
 	
 	private Canvas2Vertex hoveringOver;
 	
+	@Override
 	public void mouseMoved(MouseEvent e)    {
+		
+		// don't redraw over a popupmenu
+		if( PopupMenuActive ) { return; }
+		
 		Graphics g = vizpanel.getGraphics();
 		ArrayList<Canvas2Vertex> visibleVertices = vizpanel.getVisibleVertices();
 		Iterator<Canvas2Vertex> vertIter = visibleVertices.iterator();
 		boolean hoveringOverEmptySpace = true;
 		while( vertIter.hasNext() ) {
 			Canvas2Vertex vertex = vertIter.next();
-			if( vertex instanceof LegacyNode )    // we only care about legacy nodes
+			if( vertex instanceof LegacyNode )    // we only care about legacy nodes (for now)
 			if( vertex.contains(e.getPoint()) ) {
 				// we are hovering over vertex
 				hoveringOverEmptySpace = false;
@@ -1191,4 +1221,152 @@ public class LegacyLayout extends Canvas2Layout {
 	}
 		
 
+	@Override 
+	public void actionPerformed(ActionEvent e) {
+
+		String actionCommand = e.getActionCommand();
+		
+		// these commands are from the Create Mappings popup menu
+		if( actionCommand == "CREATE_DEFAULT"          ||
+			actionCommand == "CREATE_EQUIVALENCE"      ||
+			actionCommand == "CREATE_SUBSET"           || 
+			actionCommand == "CREATE_SUBSETCOMPLETE"    ||
+			actionCommand == "CREATE_SUPERSET"         || 
+			actionCommand == "CREATE_SUPERSETCOMPLETE" || 
+			actionCommand == "CREATE_OTHER" ) {
+		
+			String relation = Alignment.EQUIVALENCE;;
+			double sim = 0;
+			ArrayList<Alignment> userMappings = new ArrayList<Alignment>();
+			
+			
+			if( actionCommand == "CREATE_DEFAULT" ) {
+				relation = Alignment.EQUIVALENCE;
+				sim = 1.0d;
+			} else {
+				// ask the user for the similarity value
+				boolean correct = false;
+				boolean abort = false;
+				while(!correct &&  !abort) {
+					
+					String x = JOptionPane.showInputDialog(null, "Insert the similarity value.\nInsert a number between 0 and 100 using only numeric digits.\n Warning: the similarity should be higher than the threshold value.\nIf not, the similarity matrix will be modified but the alignment won't be selected and visualized.");
+					try {
+						if(x == null)
+							abort = true;//USER SELECTED CANCEL
+						else {
+							sim = Double.parseDouble(x);
+							if(sim >= 0 && sim <= 100) {
+								correct = true;
+								sim = sim/100;
+							}
+						}
+					}
+					catch(Exception ex) {//WRONG INPUT, ASK INPUT AGAIN
+					}
+				}
+			}
+
+			if( actionCommand == "CREATE_OTHER" ){
+				boolean correct = false;
+				boolean abort = false;
+				while(!correct &&  !abort) {
+					String x = JOptionPane.showInputDialog(null, "Insert the relation type:");
+					try {
+						if(x == null)
+							abort = true;//USER SELECTED CANCEL
+						else {
+							relation = x;
+							correct = true;
+						}
+					}
+					catch(Exception ex) {//WRONG INPUT, ASK INPUT AGAIN
+					}
+				}
+			}
+			
+			if( actionCommand == "CREATE_EQUIVALENCE" ) relation = Alignment.EQUIVALENCE;
+			if( actionCommand == "CREATE_SUBSET" ) relation = Alignment.SUBSET;
+			if( actionCommand == "CREATE_SUBSETCOMPLETE" ) relation = Alignment.SUBSETCOMPLETE;
+			if( actionCommand == "CREATE_SUPERSET" ) relation = Alignment.SUPERSET;
+			if( actionCommand == "CREATE_SUPERSETCOMPLETE") relation = Alignment.SUPERSETCOMPLETE;
+			
+
+			// **************** create the alignments
+				
+			Iterator<LegacyNode> nodeIter = selectedNodes.iterator();
+	
+			// what type of nodes are we mapping
+			alignType type = null;
+			if( hoveringOver.getGraphicalData().type == NodeType.CLASS_NODE ) {
+				type = AbstractMatcher.alignType.aligningClasses;
+			} else if( hoveringOver.getGraphicalData().type == NodeType.PROPERTY_NODE ) {
+				type = AbstractMatcher.alignType.aligningProperties;
+			}
+			
+			// this is a little bit of a mess, but we have to support legacy code (meaning the Alignment class)- 1/29/2010 Cosmin
+			Ontology o2 = Core.getInstance().getOntologyByID( hoveringOver.getGraphicalData().ontologyID );
+			Node n2 = null;
+			try {
+				n2 = o2.getNodefromOntResource( hoveringOver.getGraphicalData().r, type );
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			while( nodeIter.hasNext() ) {
+				
+				LegacyNode ln = nodeIter.next();
+				
+				// again, this is necessary in order to be compatible with the way the Alignment class is at the moment - 1/29/2010 Cosmin
+				Ontology o1 = Core.getInstance().getOntologyByID( ln.getGraphicalData().ontologyID );
+				Node n1 = null;
+				try {
+					n1 = o1.getNodefromOntResource( ln.getGraphicalData().r, type );
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				Alignment a;
+				if( ln.getGraphicalData().ontologyID == leftOntologyID ) { // this if statement fixes a small display bug
+					a = new Alignment( n1, n2, sim, relation, type);
+				} else {
+					a = new Alignment( n2, n1, sim, relation, type);
+				}
+				
+				userMappings.add(a);
+				
+			}
+
+			// add the mappings created to the user
+			Core.getUI().getControlPanel().userMatching(userMappings);
+			
+			PopupMenuActive = false;  // the popup menu goes away when something is clicked on it
+		}
+		
+	}
+	
+	private int getSelectedNodesOntology() {
+		int ontologyID = -1;
+		Iterator<LegacyNode> nodeIter = selectedNodes.iterator();
+
+		if( nodeIter.hasNext() ) {
+			// the first item in the list
+			ontologyID = nodeIter.next().getGraphicalData().ontologyID;
+		}
+		else { return Core.ID_NONE; } // empty list
+		
+		// the next items in the list
+		while( nodeIter.hasNext() ) {
+			if( nodeIter.next().getGraphicalData().ontologyID != ontologyID ) {
+				// we have nodes that are not from the same ontology,
+				// this should not happen (because if it happens, then the menu pops up, and the selectedNodes is cleared).
+				return Core.ID_NONE;
+			}
+		}
+		
+		// all the nodes in the selectedNodes list are from the ontology with id "ontologyID"
+		return ontologyID;
+	}
+	
 }

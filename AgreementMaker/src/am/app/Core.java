@@ -239,6 +239,10 @@ public class Core {
 	public void performUserMatching(int index, ArrayList<Alignment> alignments) {
 		AbstractMatcher matcher = matcherInstances.get(index);
 		matcher.addManualAlignments(alignments);
+		
+		// fire a matcher change event.
+		MatcherChangeEvent evt = new MatcherChangeEvent(this, MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, matcher.getID() );
+		fireEvent(evt);
 	}
 	
 	

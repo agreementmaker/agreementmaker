@@ -9,6 +9,7 @@ import org.mindswap.pellet.jena.PelletReasonerFactory;
 
 import am.Utility;
 import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.userInterface.vertex.Vertex;
 import am.utility.RunTimer;
@@ -262,6 +263,7 @@ public class OntoTreeBuilder extends TreeBuilder{
         
 
         Vertex classRoot = buildClassTree();
+        ontology.setOntResource2NodeMap( processedSubs, alignType.aligningClasses );
         Vertex propertyRoot = createPropertyTree();
         
         //The root of the tree is a fake vertex node, just containing the name of the ontology,
@@ -275,6 +277,7 @@ public class OntoTreeBuilder extends TreeBuilder{
         ontology.setPropertiesTree( propertyRoot);
         
         ontology.setTreeCount(treeCount);
+       
 	}
 	
 	/**

@@ -1,6 +1,8 @@
 package am.userInterface.canvas2.utility;
 
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -22,7 +24,8 @@ import am.userInterface.canvas2.utility.GraphLocator.GraphType;
 
 public class Canvas2Layout implements MouseInputListener, 
 									  MouseWheelListener,
-									  ChangeListener		// used to know when the viewport is resized
+									  ChangeListener,		// used to know when the viewport is resized
+									  ActionListener
 	{
 
 	
@@ -50,6 +53,8 @@ public class Canvas2Layout implements MouseInputListener,
 	public void mouseWheelMoved(MouseWheelEvent e) { 
 		//vizpanel.getS 
 	}
+	
+	public void actionPerformed(ActionEvent e)  { /* This function must be implemented in the subclass. */ }
 	
 	public void stateChanged(ChangeEvent e)        { /* This function must be implemented in the subclass. */ }
 	
@@ -92,5 +97,5 @@ public class Canvas2Layout implements MouseInputListener,
 	public CanvasGraph buildMatcherGraph(AbstractMatcher m) { return new CanvasGraph(GraphType.MATCHER_GRAPH, m.getID()); }
 
 	private CanvasGraph buildArtifactGraph() { return null; };  // builds the artifact graph and returns it to the constructor
-	public CanvasGraph getArtifactsGraph() { return layoutArtifactGraph; };  // getArtifactsGraph() returns null if there is no artifact graph for this layout  
+	public CanvasGraph getArtifactsGraph() { return layoutArtifactGraph; } // getArtifactsGraph() returns null if there is no artifact graph for this layout  
 }

@@ -1,10 +1,13 @@
 package am.app.ontology;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntResource;
 
 import am.GlobalStaticVariables;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.qualityEvaluation.JoslynStructuralQuality;
 import am.userInterface.vertex.Vertex;
 
@@ -166,5 +169,38 @@ public class Ontology {
 	}
 	public void setTreeCount(int treeCount) { this.treeCount = treeCount; }
 	public int  getTreeCount()              { return treeCount; }
+	
+	
+	// used for mapping from OntResource to Nodes
+	private HashMap<OntResource, Node> mapOntResource2Node_Classes = null;
+	private HashMap<OntResource, Node> mapOntResource2Node_Properties = null;
+	public void setOntResource2NodeMap(HashMap<OntResource, Node> processedSubs, alignType atype) {
+		if( atype == alignType.aligningClasses ) {
+			mapOntResource2Node_Classes = processedSubs;
+		} else if( atype == alignType.aligningProperties ) {
+			mapOntResource2Node_Properties = processedSubs;
+		}
+	}
+	public Node getNodefromOntResource( OntResource r, alignType nodeType ) throws Exception {
+		if( r == null ) {
+			throw new Exception("Cannot search for a NULL resource.");
+		}
+		if( nodeType == alignType.aligningClasses ) {
+			if( mapOntResource2Node_Classes.containsKey( r ) ){
+				return mapOntResource2Node_Classes.get(r);	
+			} else {
+				throw new Exception("OntResource (" + r.toString() + ") cannot be found in Ontology " + ontID);
+			}
+		} else if( nodeType == alignType.aligningProperties ) {
+			if( mapOntResource2Node_Properties.containsKey( r ) ){
+				return mapOntResource2Node_Properties.get(r);	
+			} else {
+				throw new Exception("OntResource (" + r.toString() + ") cannot be found in Ontology " + ontID);
+			}
+		}
+		
+		throw new Exception("Cannot search for nodeType == " + nodeType.toString() );
+
+	}
 	
 }
