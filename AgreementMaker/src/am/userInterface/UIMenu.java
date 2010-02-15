@@ -406,6 +406,7 @@ public class UIMenu implements ActionListener {
 					newMatcher.setClassesAlignmentSet(combinedClassSet);
 					newMatcher.setPropertiesAlignmentSet(combinedClassSet);
 					newMatcher.setName(MatchersRegistry.UniqueMatchings);
+					newMatcher.setID( Core.getInstance().getNextMatcherID());
 					
 					m.addMatcher(newMatcher);
 					

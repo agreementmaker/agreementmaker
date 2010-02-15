@@ -83,5 +83,12 @@ public class LegacyMapping extends Canvas2Edge {
 		
 	}
 	
+	@Override
+	public String toString() {
+		MappingData data = (MappingData)d;
+		String name1 = Integer.toString(data.ontologyID) + ":" + data.r.getLocalName();
+		String name2 = Integer.toString(data.ontologyID2) + ":" + data.r2.getLocalName();
+		return name1 + " - " + name2;
+	}
 
 }

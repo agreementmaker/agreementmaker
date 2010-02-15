@@ -46,6 +46,7 @@ import am.userInterface.canvas2.nodes.LegacyEdge;
 import am.userInterface.canvas2.nodes.LegacyMapping;
 import am.userInterface.canvas2.nodes.LegacyNode;
 import am.userInterface.canvas2.popupmenus.CreateMappingMenu;
+import am.userInterface.canvas2.popupmenus.DeleteMappingMenu;
 import am.userInterface.canvas2.utility.Canvas2Layout;
 import am.userInterface.canvas2.utility.Canvas2Vertex;
 import am.userInterface.canvas2.utility.CanvasGraph;
@@ -1042,9 +1043,12 @@ public class LegacyLayout extends Canvas2Layout {
 		
 		if( PopupMenuActive ) {  // if we have an active popup menu, cancel it
 			PopupMenuActive = false;
-			hoveringOver.setHover(false);
-			hoveringOver.draw(g);
-			hoveringOver = null; // clear the hover target, since the click can be anywhere and we didn't check again what we're hovering over
+			if( hoveringOver != null ) {
+				hoveringOver.setHover(false);
+				hoveringOver.draw(g);
+				hoveringOver = null; // clear the hover target, since the click can be anywhere and we didn't check again what we're hovering over
+			}
+
 		} else {
 			// only process mouse clicks if there's not a popup menu active
 			switch( e.getButton() ) {
@@ -1066,6 +1070,9 @@ public class LegacyLayout extends Canvas2Layout {
 	
 				//      These actions should work with MULTIPLE selections (using the Control key).
 	
+				// Feb 13th, 2010 - Cosmin
+				//   Adding rightclick menu for deleting mappings.
+			
 			case MouseEvent.BUTTON1:
 				if( e.getClickCount() == 2 ) {  // double click with the left mouse button
 					log.debug("Double click with the LEFT mouse button detected.");
@@ -1155,11 +1162,17 @@ public class LegacyLayout extends Canvas2Layout {
 			case MouseEvent.BUTTON3:
 				if( e.getClickCount() == 2 ) {
 					// double click with the right mouse button.
-					log.debug("Double click with the RIGHT mouse button detected.");
+					if( Core.DEBUG ) log.debug("Double click with the RIGHT mouse button detected.");
 					//do stuff
 				} else if( e.getClickCount() == 1 ) {
-					// singleclick
-					log.debug("Single click with the RIGHT mouse button detected.");
+					// single right click, bring up delete menu
+					if( hoveringOver != null ) {
+						DeleteMappingMenu menuDelete = new DeleteMappingMenu( this, hoveringOver.getMappings() );
+						menuDelete.show( vizpanel, e.getX(), e.getY());
+						PopupMenuActive = true;
+					}
+					
+					if( Core.DEBUG ) log.debug("Single click with the RIGHT mouse button detected.");
 				}
 				break;
 			}

@@ -3,11 +3,16 @@ package am.userInterface.canvas2.utility;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.hp.hpl.jena.rdf.model.Resource;
 
 import am.userInterface.Colors;
 import am.userInterface.canvas2.graphical.GraphicalData;
+import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
+import am.userInterface.canvas2.nodes.LegacyMapping;
+import am.utility.DirectedGraphEdge;
 import am.utility.DirectedGraphVertex;
 
 /**
@@ -29,6 +34,7 @@ public class Canvas2Vertex extends DirectedGraphVertex<GraphicalData> {  // we h
 
 	//protected GraphicalData d;  // all the (d)ata is stored in this class (the name is short because it is used ALOT)
 	//private CanvasGraph graph = null; // the graph that this vertex belongs to
+	
 	
 	public Canvas2Vertex( GraphicalData g ) {
 		super(g);
@@ -105,6 +111,44 @@ public class Canvas2Vertex extends DirectedGraphVertex<GraphicalData> {  // we h
 	public void clearDrawArea(Graphics g) {
 		g.setColor(Colors.background);
 		g.fillRect(d.x, d.y, d.width, d.height);
+	}
+	
+	@Deprecated
+	public boolean hasMappings() {
+		int mappings = 0;
+		Iterator<DirectedGraphEdge<GraphicalData>> edgeIter = edgesIn.iterator();
+		while( edgeIter.hasNext() ) {
+			Canvas2Edge edge = (Canvas2Edge) edgeIter.next();
+			if( edge.getObject().type == NodeType.MAPPING ) mappings++;
+		}
+		
+		edgeIter = edgesOut.iterator();
+		while( edgeIter.hasNext() ) {
+			Canvas2Edge edge = (Canvas2Edge) edgeIter.next();
+			if( edge.getObject().type == NodeType.MAPPING ) mappings++;
+		}
+		
+		if( mappings == 0 ) return false;
+		else return true;
+	}
+	
+	// return an ArrayList of all the edges that are MAPPINGs associated with this node
+	public ArrayList<LegacyMapping> getMappings() {
+		ArrayList<LegacyMapping> mappings = new ArrayList<LegacyMapping>();
+		
+		Iterator<DirectedGraphEdge<GraphicalData>> edgeIter = edgesIn.iterator();
+		while( edgeIter.hasNext() ) {
+			Canvas2Edge edge = (Canvas2Edge) edgeIter.next();
+			if( edge.getObject().type == NodeType.MAPPING ) mappings.add( (LegacyMapping) edge);
+		}
+		
+		edgeIter = edgesOut.iterator();
+		while( edgeIter.hasNext() ) {
+			Canvas2Edge edge = (Canvas2Edge) edgeIter.next();
+			if( edge.getObject().type == NodeType.MAPPING ) mappings.add( (LegacyMapping) edge);
+		}
+		
+		return mappings;
 	}
 	
 }

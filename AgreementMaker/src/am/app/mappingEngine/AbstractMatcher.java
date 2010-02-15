@@ -1245,6 +1245,60 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	public void setID(int nextMatcherID) { matcherID = nextMatcherID; }
 	public int  getID()                  { return matcherID; }
 
+	// this method removes any mappings between these two nodes
+	public void removeMapping(Node n1, Node n2, alignType type) {
+				
+		AlignmentSet<Alignment> workingSet = null;
+		AlignmentMatrix workingMatrix = null;
+		if( type == alignType.aligningClasses ) {
+			workingSet = classesAlignmentSet;
+			workingMatrix = classesMatrix;
+		} else {
+			workingSet = propertiesAlignmentSet;
+			workingMatrix = propertiesMatrix;
+		}
+		
+		Alignment a = workingSet.getAlignment(n1, n2);
+		if( a == null ) { a = workingSet.getAlignment(n2, n1); }
+		
+		assert (a != null);
+		
+		
+		// delete the alignment from the matrix
+		
+		int row = n1.getIndex();
+		int col = n2.getIndex();
+		
+		if( row < workingMatrix.rows && col < workingMatrix.columns ) {
+			Alignment a2 = workingMatrix.get( row, col );
+			if( a.equals(a2) ) {
+				// ding ding ding, we have a winner.
+				workingMatrix.set(row, col, null); // delete the alignment
+			}
+		} else {
+			// swap the row and col values
+			row = n2.getIndex();
+			col = n1.getIndex();
+			
+			if( row < workingMatrix.rows && col < workingMatrix.columns ) {
+				Alignment a2 = workingMatrix.get(row, col);
+				if( a.equals(a2) ) {
+					// ding ding ding, we have a winner.
+					workingMatrix.set(row,col, null); // delete the alignment
+				}
+			}
+		}
+		
+		// delete the alignment from the alignment set
+		// don't know if the order will be correct, so try both.
+		if( !workingSet.removeAlignment(n1, n2) ) {
+			if( !workingSet.removeAlignment(n2, n1) ) {
+				// should never get here
+			}
+		}
+		
+	}
+
 
 
 

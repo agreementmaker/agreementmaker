@@ -19,13 +19,23 @@ public class AlignmentMatrix {
     protected final int columns;             // number of columns
     protected final Alignment[][] data;   // M-by-N array
 
+    protected int sourceOntologyID;
+    protected int targetOntologyID;
 
     
-    // cloning constructor
+    public int getSourceOntologyID() { return sourceOntologyID; }
+	public void setSourceOntologyID(int sourceOntologyID) { this.sourceOntologyID = sourceOntologyID; }
+	public int getTargetOntologyID() { return targetOntologyID; }
+	public void setTargetOntologyID(int targetOntologyID) { this.targetOntologyID = targetOntologyID; }
+
+	// cloning constructor
     public AlignmentMatrix( AlignmentMatrix cloneme ) {
     	
 	    	relation = cloneme.getRelation();
 	    	typeOfMatrix = cloneme.getAlignType();
+	    	
+	    	sourceOntologyID = cloneme.getSourceOntologyID();
+	    	targetOntologyID = cloneme.getTargetOntologyID();
 	    	
 	    	rows = cloneme.getRows();
 	    	columns = cloneme.getColumns();

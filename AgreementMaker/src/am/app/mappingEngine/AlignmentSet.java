@@ -100,6 +100,18 @@ public class AlignmentSet<E extends Alignment>
         System.err.println("removeAlignmentError: Cannot find such alignment.");
         return false;
     }
+    
+    public Alignment getAlignment(Node left, Node right)
+    {
+        for (int i = 0, n = size(); i < n; i++) {
+            Alignment align = (Alignment) collection.get(i);
+            if (align.getEntity1().equals(left) && align.getEntity2().equals(right)) {
+                return align;
+            }
+        }
+        System.err.println("getAlignmentError: Cannot find such alignment.");
+        return null;
+    }    
 
     public E contains(Node left, Node right)
     {

@@ -15,6 +15,7 @@ import am.userInterface.canvas2.utility.Canvas2Layout;
 import am.userInterface.canvas2.utility.Canvas2Vertex;
 import am.userInterface.canvas2.utility.CanvasGraph;
 import am.userInterface.canvas2.utility.GraphLocator;
+import am.userInterface.canvas2.utility.GraphLocator.GraphType;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -132,6 +133,19 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	
 	
 	public ArrayList<CanvasGraph> getGraphs() { return graphs; }
+	
+	// return a matcher graph with the given id (used in deleting mappings)
+	public CanvasGraph getMatcherGraph( int matcherID ) {
+		Iterator<CanvasGraph> graphIter = graphs.iterator();
+		while( graphIter.hasNext() ) {
+			CanvasGraph gr = graphIter.next();
+			if( gr.getGraphType() == GraphType.MATCHER_GRAPH && gr.getID() == matcherID ) {
+				return gr;
+			}
+		}
+		
+		return null;
+	}
 	
 	/**
 	 * Update the size of the Canvas after graphs were changed.
