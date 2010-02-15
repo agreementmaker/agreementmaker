@@ -265,6 +265,7 @@ public class OntoTreeBuilder extends TreeBuilder{
         Vertex classRoot = buildClassTree();
         ontology.setOntResource2NodeMap( processedSubs, alignType.aligningClasses );
         Vertex propertyRoot = createPropertyTree();
+        ontology.setOntResource2NodeMap( processedSubs, alignType.aligningProperties );
         
         //The root of the tree is a fake vertex node, just containing the name of the ontology,
         treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(), model, ontology.getSourceOrTarget() );

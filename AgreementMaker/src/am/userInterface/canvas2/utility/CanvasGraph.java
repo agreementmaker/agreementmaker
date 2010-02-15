@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import am.app.Core;
 import am.userInterface.canvas2.graphical.GraphicalData;
+import am.userInterface.canvas2.utility.GraphLocator.GraphType;
 import am.utility.DirectedGraph;
 
 public class CanvasGraph extends DirectedGraph<Canvas2Edge, Canvas2Vertex> {
@@ -52,6 +53,8 @@ public class CanvasGraph extends DirectedGraph<Canvas2Edge, Canvas2Vertex> {
 	}
 	
 	public boolean isVisible(Rectangle bounds) {
+		
+		if( graphType == GraphType.MATCHER_GRAPH ) return true; // matcher graphs are always visible (fixes a display bug, with positive sloping mapping lines) - Cosmin 2/13/2010
 		
 		if( !visible ) return false;  // if our graph was set to be invisible, so no need to check bounds
 		

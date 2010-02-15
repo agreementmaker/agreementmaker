@@ -228,6 +228,9 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			
 		}
 		
+		
+		return;
+		
 		/*
 		Logger log = Logger.getLogger(this.getClass());
 		log.setLevel(Level.DEBUG);
