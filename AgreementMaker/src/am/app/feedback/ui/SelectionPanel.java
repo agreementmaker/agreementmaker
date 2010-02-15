@@ -31,7 +31,7 @@ import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 
-import org.mindswap.pellet.utils.intset.IntIterator;
+//import org.mindswap.pellet.utils.intset.IntIterator;
 
 import sun.awt.HorizBagLayout;
 

@@ -224,19 +224,23 @@ public class UI {
 		    jPanel.setMinimumSize(new Dimension(200,480));
 			getUISplitPane().setRightComponent(jPanel);
 			setDescriptionPanel(jPanel);
+			System.out.println("Before treebuilder.buildTreeBuilder in am.userinterface.ui.openFile()...");
 			//This function manage the whole process of loading, parsing the ontology and building data structures: Ontology to be set in the Core and Tree and to be set in the canvas
 			TreeBuilder t = TreeBuilder.buildTreeBuilder(filename, ontoType, language, syntax, skip, noReasoner);
-			
+			System.out.println("after treebuilder.buildTreeBuilder before progress dialog treebuilder.buildTreeBuilder in am.userinterface.ui.openFile()...");
 			//the treebuilder is initialized now we have to execute it in a separate thread.
 			// The dialog will start the treebuilder in a background thread, 
 			new OntologyLoadingProgressDialog(t);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
 			if(!t.isCancelled()) {
+				System.out.println("after t.isCancelled before Core.getInstancein am.userinterface.ui.openFile()...");
+				
 				//Set ontology in the Core
 				Ontology ont = t.getOntology();
 				if(ontoType == GlobalStaticVariables.SOURCENODE) {
 					Core.getInstance().setSourceOntology(ont);
 				}
 				else Core.getInstance().setTargetOntology(ont);
+				System.out.println("after after Core.getInstancein am.userinterface.ui.openFile()...");
 				//Set the tree in the canvas
 				System.out.println("Displaying the hierarchies in the canvas");
 				ont.setDeepRoot(t.getTreeRoot());

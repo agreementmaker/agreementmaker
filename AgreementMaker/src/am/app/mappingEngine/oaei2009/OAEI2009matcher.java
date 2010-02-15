@@ -220,6 +220,8 @@ public class OAEI2009matcher extends AbstractMatcher {
 		}
 		
 		if(parameters.useUMLS){
+			/*
+			 * COMMENTED OUT IN ORDER TO COMPUTE THE JAR FILE WITHOUT THE KSS LIBRARY
 			//Run UMLS matcher on unmapped nodes.
 			System.out.println("Running UMLS");
 			try{
@@ -240,6 +242,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 				e.printStackTrace();
 				System.out.println("Impossible to connect to the UMLS server. The ip address has to be registered at http://kscas-lhc.nlm.nih.gov/UMLSKS");
 			}
+			*/
 		}
 		
 		System.out.println("name: "+parameters.partialReferenceFile);

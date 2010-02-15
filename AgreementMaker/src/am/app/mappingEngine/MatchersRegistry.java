@@ -4,7 +4,7 @@ import am.app.feedback.FeedbackLoop;
 import am.app.feedback.InitialMatchers;
 import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.LexicalMatcherJWNL.LexicalMatcherJWNL;
-import am.app.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
+//import am.app.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
 import am.app.mappingEngine.PRAMatcher.OldPRAMatcher;
 import am.app.mappingEngine.PRAMatcher.PRAMatcher;
 import am.app.mappingEngine.PRAMatcher.PRAMatcher2;
@@ -55,7 +55,7 @@ public enum MatchersRegistry {
 	Combination	( "Linear Weighted Combination (LWC)", CombinationMatcher.class ),
 	ConceptSimilarity   ( "Concept Similarity", ConceptMatcher.class, false),
 	OAEI2009   ( "OAEI2009 Matcher", OAEI2009matcher.class),
-	UMLSKSLexical		("Lexical Matcher: UMLSKS", LexicalMatcherUMLS.class, false), //it requires internet connection and the IP to be registered
+	//UMLSKSLexical		("Lexical Matcher: UMLSKS", LexicalMatcherUMLS.class, false), //it requires internet connection and the IP to be registered
 	
 	//Auxiliary matchers created for specific purposes
 	InitialMatcher      ("Initial Matcher: LWC (PSM+VMM+BSM)", InitialMatchers.class, false),

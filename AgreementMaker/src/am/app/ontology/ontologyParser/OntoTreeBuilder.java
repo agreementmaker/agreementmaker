@@ -155,8 +155,10 @@ public class OntoTreeBuilder extends TreeBuilder{
 	
 	
 	protected void buildTreeDefault() {
-		System.out.print("Reading Model...");
+		System.out.print("Reading Model with default reasoner...");
+		//if(true) throw new RuntimeException("bla bla bla");
 		model = ModelFactory.createOntologyModel( PelletReasonerFactory.THE_SPEC );
+		System.out.println("Model created...but not read");
 		//TODO: Figure out if the 2nd arg in next fn call should be null or someother URI
 		model.read( "file:"+ontology.getFilename(), null, ontology.getFormat() );
 		System.out.println("done");
@@ -223,9 +225,10 @@ public class OntoTreeBuilder extends TreeBuilder{
 	}
 	
 	protected void buildTreeNoReasoner() {
-		System.out.print("OntoTreeBuilder: Reading Model...");
+		System.out.print("OntoTreeBuilder: Reading Model with no reasoner...");
 		
 		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM );
+		System.out.println("Model created...but not read");
 		model.read( "file:"+ontology.getFilename(), null, ontology.getFormat() );
 		
 		System.out.println(" done.");

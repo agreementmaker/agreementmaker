@@ -82,40 +82,38 @@ public class Core {
 		matcherListeners	= new ArrayList<MatcherChangeListener>(); // another list of listeners
 	}
 	
-    @Deprecated
+
 	public Ontology getSourceOntology() {  // deprecated by multiple-ontology interface
 		return sourceOntology;
 	}
-    
-    @Deprecated
+
 	public void setSourceOntology(Ontology sourceOntology) {  // deprecated by multi-ontology array
     	this.sourceOntology = sourceOntology;
 		addOntology(sourceOntology); // support for more than 2 ontologies
 	}
     
-    @Deprecated
+
 	public Ontology getTargetOntology() {   // deprecated by multi-ontology interface
 		return targetOntology;
 	}
     
-    @Deprecated
+
 	public void setTargetOntology(Ontology targetOntology) {  // deprecated by multi-ontology interface
 		this.targetOntology = targetOntology;
 		addOntology(targetOntology); // support for more than 2 ontologies
 	}
 	
 	
-	@Deprecated
+
 	public boolean sourceIsLoaded() {
 		return sourceOntology != null;
 	}
-	
-	@Deprecated
+
 	public boolean targetIsLoaded() {
 		return targetOntology != null;
 	}
 	
-	@Deprecated
+
 	public boolean ontologiesLoaded() {
 		return sourceIsLoaded() &&  targetIsLoaded();
 	}

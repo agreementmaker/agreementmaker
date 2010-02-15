@@ -5,6 +5,13 @@ Fell free to take care of any of these problems or to add anything new to these 
 
 This is the structure, feel free to add infos to it:
 
+
+****TO PREPARE THE JAR REMOVED KSS UMLS LIBRARY
+in order to compute the JAR the library KSS was removed from the referenced ones.
+It is not compatible for some reasons with the others, so the ontologies are not displayed when running a jar that way.
+To restore the UMLS algorithm rename the Java class from .txt to .java and add the library to the buildpath. The library 
+is still contained in the libraries directory.
+
 ****OAEI 2009
 some benchmarks testcases don't work because the AM is not able to load the ontologies
 The DSI method should be changed to work on non-tree structure (mcp sim + (1 -MCP) (sum(maxdsi(eachparent)/numparents)
