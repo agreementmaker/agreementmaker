@@ -5,6 +5,11 @@ Fell free to take care of any of these problems or to add anything new to these 
 
 This is the structure, feel free to add infos to it:
 
+***Problem to fix
+Delete individual mappings
+Selected matchings only and higlighting of selected mappings
+other functionalities in the view menu
+manual mapping only works when loading ontologies with no reasoner.
 
 ****TO PREPARE THE JAR REMOVED KSS UMLS LIBRARY
 in order to compute the JAR the library KSS was removed from the referenced ones.
