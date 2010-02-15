@@ -97,7 +97,6 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 
 	}
 
-	@Override
 	public void actionPerformed(ActionEvent e) {
 
 		String actionCommand = e.getActionCommand();
