@@ -325,5 +325,15 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		
 	}
 		
-
+	@Override
+	public void setShowLocalName(boolean showLocalname) {
+		layout.setShowLocalName(showLocalname);
+	}
+	
+	@Override
+	public void setShowLabel( boolean showLabel ) {
+		layout.setShowLabel(showLabel);
+	}
+	
+	
 }

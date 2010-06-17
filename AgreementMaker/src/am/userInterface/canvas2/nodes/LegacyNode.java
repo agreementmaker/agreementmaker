@@ -85,7 +85,7 @@ public class LegacyNode extends Canvas2Vertex {
 		g.setColor(Colors.foreground);
 		g.drawRoundRect(d.x+circlePadding,d.y,d.width-circlePadding,d.height, arcWidth, arcHeight);
 		g.setFont(d.font);
-		g.drawString( name ,d.x+circlePadding+fontMarginLeft,d.y+fontHeight);
+		if( name != null ) g.drawString( name ,d.x+circlePadding+fontMarginLeft,d.y+fontHeight);
 		
 		
 		

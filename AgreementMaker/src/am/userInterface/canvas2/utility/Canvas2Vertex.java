@@ -77,7 +77,6 @@ public class Canvas2Vertex extends DirectedGraphVertex<GraphicalData> {  // we h
 		
 		return true;
 	}
-
 	
 	
 	/**
@@ -151,4 +150,16 @@ public class Canvas2Vertex extends DirectedGraphVertex<GraphicalData> {  // we h
 		return mappings;
 	}
 	
+	
+	// STACK of Visibility
+	private boolean pushedVisibility; // pushedVisibility is used in order to save an old visibility value, and then use a new one.
+									  // the old value can then be popped back
+	
+	public void pushVisibility( boolean vis ) {
+		pushedVisibility = d.visible;
+		d.visible = vis;
+	}
+	public void popVisibility() {
+		d.visible = pushedVisibility;
+	}
 }

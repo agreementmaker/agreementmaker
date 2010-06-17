@@ -47,11 +47,13 @@ import am.userInterface.canvas2.nodes.LegacyMapping;
 import am.userInterface.canvas2.nodes.LegacyNode;
 import am.userInterface.canvas2.popupmenus.CreateMappingMenu;
 import am.userInterface.canvas2.popupmenus.DeleteMappingMenu;
+import am.userInterface.canvas2.utility.Canvas2Edge;
 import am.userInterface.canvas2.utility.Canvas2Layout;
 import am.userInterface.canvas2.utility.Canvas2Vertex;
 import am.userInterface.canvas2.utility.CanvasGraph;
 import am.userInterface.canvas2.utility.GraphLocator;
 import am.userInterface.canvas2.utility.GraphLocator.GraphType;
+import am.utility.DirectedGraphEdge;
 
 /**
  * This layout is resposible for placement of nodes and edges.
@@ -115,6 +117,8 @@ public class LegacyLayout extends Canvas2Layout {
 	private ArrayList<LegacyNode> selectedNodes;  // the list of currently selected nodes
 	private boolean PopupMenuActive = false;
 
+	private boolean SingleMappingView = false; 	// this is used when a mapping is doubleclicked with the left mouse button
+												// in order to show only that specific mapping
 	
 	
 	
@@ -124,7 +128,8 @@ public class LegacyLayout extends Canvas2Layout {
 		oldViewportDimensions = new Dimension(0,0);
 		
 		layoutArtifactGraph = buildArtifactGraph();  // build the artifact graph
-		selectedNodes = new ArrayList<LegacyNode>(); 
+		selectedNodes = new ArrayList<LegacyNode>(); 		
+
 	}		
 	
 	/**
@@ -153,6 +158,7 @@ public class LegacyLayout extends Canvas2Layout {
 	/**
 	 * Utility Function. This function is called by the LegacyNodes in order to set their text label correctly.
 	 */
+	@Override
 	public String getNodeLabel(GraphicalData d ) {
 		
 		if( d.r == null ) {
@@ -161,14 +167,16 @@ public class LegacyLayout extends Canvas2Layout {
 		}
 		
 		if(showLabel && showLocalName)
-			return d.r.getLocalName() + labelAndNameSeparator + d.r.getLabel(language);
+			return d.r.getLocalName() + labelAndNameSeparator + d.r.getLabel(null);
 		else if(showLabel)
-			return d.r.getLabel(language);
+			return d.r.getLabel(null);
 		else if(showLocalName) 
 			return d.r.getLocalName(); 
 		else 
 			return "";
 	}
+	@Override public void setShowLabel(boolean shL ) { showLabel = shL; }
+	@Override public void setShowLocalName( boolean shLN ) { showLocalName = shLN; }
 	
 	public int getDepthIndent() { return depthIndent; }  // * Getter.
 	
@@ -260,6 +268,9 @@ public class LegacyLayout extends Canvas2Layout {
 		
 		ArrayList<CanvasGraph> ontologyGraphs = new ArrayList<CanvasGraph>();
 		
+		// Before we build the graph, update the preferences.
+		showLabel = Core.getUI().getAppPreferences().getShowLabel();
+		showLocalName = Core.getUI().getAppPreferences().getShowLocalname();
 		
 		if( !leftSideLoaded )	// source goes on the left.
 			leftSide = true;
@@ -491,7 +502,7 @@ public class LegacyLayout extends Canvas2Layout {
 				continue;
 			}
 			
-			// so the child class is not anonymous or OWL.Nothing, add it to the graph, with the correct relationships
+			// the child class is not anonymous or OWL.Nothing, add it to the graph, with the correct relationships
 			GraphicalData gr1 = new GraphicalData( depth*depthIndent + subgraphXoffset, 
 										           graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
 										           100, nodeHeight, cls, GraphicalData.NodeType.CLASS_NODE, this, graph.getID() );
@@ -520,8 +531,10 @@ public class LegacyLayout extends Canvas2Layout {
 		
 		
 		Logger log = Logger.getLogger(this.getClass());
-		log.setLevel(Level.DEBUG);
-		log.debug(parentClass);
+		if( Core.DEBUG ) { 
+			log.setLevel(Level.DEBUG);
+			log.debug(parentClass);
+		}
 		
 		ExtendedIterator clsIter = parentClass.listSubClasses(true);
 		while( clsIter.hasNext() ) {
@@ -536,7 +549,7 @@ public class LegacyLayout extends Canvas2Layout {
 
 			// this is the cycle check
 			if( hashMap.containsKey(cls) ) { // we have seen this node before, do NOT recurse again
-				log.debug("Cycle detected.  OntClass:" + cls );
+				if( Core.DEBUG ) log.debug("Cycle detected.  OntClass:" + cls );
 				continue;
 			}
 			
@@ -551,6 +564,7 @@ public class LegacyLayout extends Canvas2Layout {
 			
 			hashMap.put(cls, node);
 			log.debug(">> Inserted " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
+			log.debug(">>   Label: " + cls.getLabel(null));
 			recursiveBuildClassGraph( node, cls, depth+1, graph );
 		}
 	
@@ -1077,7 +1091,88 @@ public class LegacyLayout extends Canvas2Layout {
 				if( e.getClickCount() == 2 ) {  // double click with the left mouse button
 					log.debug("Double click with the LEFT mouse button detected.");
 					//do stuff
+					
+					if( hoveringOver != null && SingleMappingView != true ) {
+						//Activate the SingleMappingView
+						SingleMappingView = true;
+						
+						// turn off the visibility of all the nodes and edges
+						Iterator<CanvasGraph> graphIter = vizpanel.getGraphs().iterator();
+						while( graphIter.hasNext() ) {
+							CanvasGraph graph = graphIter.next();
+							
+							// hide the vertices
+							Iterator<Canvas2Vertex> nodeIter = graph.vertices();
+							while( nodeIter.hasNext() ) {
+								Canvas2Vertex node = nodeIter.next();
+								node.pushVisibility(false); 
+							}
+							
+							// draw the edges
+							Iterator<Canvas2Edge> edgeIter = graph.edges();
+							while( edgeIter.hasNext() ) {
+								Canvas2Edge edge = edgeIter.next();
+								edge.pushVisibility(false);
+							}
+							
+						}
+						
+						
+						// now that all of the nodes and edges have been hidden, show only the ones we want to see
+						// we will show all edges connected to the selectedNodes, and all nodes connected to the edges of the selectedNodes
+						Iterator<LegacyNode> nodeIter = selectedNodes.iterator();
+						while( nodeIter.hasNext() ) {
+							LegacyNode selectedNode = nodeIter.next();
+							selectedNode.setVisible(true);
+							
+							Iterator<DirectedGraphEdge<GraphicalData>> edgeInIter = selectedNode.edgesIn();
+							while( edgeInIter.hasNext() ) {
+								Canvas2Edge connectedEdge = (Canvas2Edge) edgeInIter.next();
+								connectedEdge.setVisible(true);
+								if( selectedNode == connectedEdge.getOrigin() ) { ((Canvas2Vertex)connectedEdge.getDestination()).setVisible(true); }
+								else { ((Canvas2Vertex)connectedEdge.getOrigin()).setVisible(true); }
+							}
+							
+							Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = selectedNode.edgesOut();
+							while( edgeOutIter.hasNext() ) {
+								Canvas2Edge connectedEdge = (Canvas2Edge) edgeOutIter.next();
+								connectedEdge.setVisible(true);
+								if( selectedNode == connectedEdge.getOrigin() ) { ((Canvas2Vertex)connectedEdge.getDestination()).setVisible(true); }
+								else { ((Canvas2Vertex)connectedEdge.getOrigin()).setVisible(true); }
+							}
+							
+						}
+						vizpanel.repaint();
+					}
+					
 				} else if( e.getClickCount() == 1 ) {  // single click with left mouse button
+					
+					if( SingleMappingView == true ) {
+						// cancel the single mapping view
+						// restore the previous visibility of the nodes and edges
+						Iterator<CanvasGraph> graphIter = vizpanel.getGraphs().iterator();
+						while( graphIter.hasNext() ) {
+							CanvasGraph graph = graphIter.next();
+							
+							// restore the vertices
+							Iterator<Canvas2Vertex> nodeIter = graph.vertices();
+							while( nodeIter.hasNext() ) {
+								Canvas2Vertex node = nodeIter.next();
+								node.popVisibility(); 
+							}
+							
+							// restore the edges
+							Iterator<Canvas2Edge> edgeIter = graph.edges();
+							while( edgeIter.hasNext() ) {
+								Canvas2Edge edge = edgeIter.next();
+								edge.popVisibility();
+							}
+							
+						}
+						SingleMappingView = false; // turn off the singlemappingview
+						vizpanel.repaint();
+					}
+					
 					if( hoveringOver == null ) {
 						// we have clicked in an empty area, clear all the selected nodes
 						Iterator<LegacyNode> nodeIter = selectedNodes.iterator();
