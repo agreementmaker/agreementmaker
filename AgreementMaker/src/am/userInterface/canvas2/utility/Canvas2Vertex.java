@@ -162,4 +162,9 @@ public class Canvas2Vertex extends DirectedGraphVertex<GraphicalData> {  // we h
 	public void popVisibility() {
 		d.visible = pushedVisibility;
 	}
+	
+	// stack of position
+	private int pushedX, pushedY;
+	public void pushXY(int X, int Y) { pushedX = d.x; pushedY = d.y; d.x = X; d.y = Y; }
+	public void popXY() { d.x = pushedX; d.y = pushedY; }
 }

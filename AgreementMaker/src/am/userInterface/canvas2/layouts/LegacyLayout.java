@@ -119,7 +119,8 @@ public class LegacyLayout extends Canvas2Layout {
 
 	private boolean SingleMappingView = false; 	// this is used when a mapping is doubleclicked with the left mouse button
 												// in order to show only that specific mapping
-	
+	private ArrayList<LegacyMapping> SingleMappingMappings = new ArrayList<LegacyMapping>(); // we need to keep a list of the mappings we change for the SingleMappingView
+	private ArrayList<LegacyNode> SingleMappingMovedNodes = new ArrayList<LegacyNode>(); // we need to keep a list of the nodes we moved
 	
 	
 	public LegacyLayout(Canvas2 vp) {
@@ -1087,6 +1088,9 @@ public class LegacyLayout extends Canvas2Layout {
 				// Feb 13th, 2010 - Cosmin
 				//   Adding rightclick menu for deleting mappings.
 			
+				// June 17th, 2010 - Cosmin
+				//   Added the SingleMappingView to replace SMO.  Activated by doubleclicking a node.
+			
 			case MouseEvent.BUTTON1:
 				if( e.getClickCount() == 2 ) {  // double click with the left mouse button
 					log.debug("Double click with the LEFT mouse button detected.");
@@ -1108,7 +1112,7 @@ public class LegacyLayout extends Canvas2Layout {
 								node.pushVisibility(false); 
 							}
 							
-							// draw the edges
+							// hide the edges
 							Iterator<Canvas2Edge> edgeIter = graph.edges();
 							while( edgeIter.hasNext() ) {
 								Canvas2Edge edge = edgeIter.next();
@@ -1142,6 +1146,63 @@ public class LegacyLayout extends Canvas2Layout {
 							}
 							
 						}
+						
+						
+						// we need to move the opposite side up to the side we clicked
+						//ArrayList<LegacyMapping> mappingList = new ArrayList<LegacyMapping>(); // we have to keep a list of all the mappings to/from this node
+						int uppermostY = -1; // -1 is a dummy value.  Valid values are >= 0.
+						Iterator<LegacyNode> nodeIter2 = selectedNodes.iterator();
+						while( nodeIter2.hasNext() ) {
+							LegacyNode selectedNode = nodeIter2.next();
+							
+							// update the uppermostY
+							if( uppermostY < 0 || selectedNode.getObject().y < uppermostY ) {
+								uppermostY = selectedNode.getObject().y;
+							}
+							
+							// update the mappingList
+							Iterator<DirectedGraphEdge<GraphicalData>> edgeInIter = selectedNode.edgesIn();
+							while( edgeInIter.hasNext() ) {
+								DirectedGraphEdge<GraphicalData> connectedEdge = edgeInIter.next();
+								if( connectedEdge instanceof LegacyMapping ) {
+									SingleMappingMappings.add( (LegacyMapping) connectedEdge );
+								}
+							}
+							
+							Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = selectedNode.edgesOut();
+							while( edgeOutIter.hasNext() ) {
+								DirectedGraphEdge<GraphicalData> connectedEdge = edgeOutIter.next();
+								if( connectedEdge instanceof LegacyMapping) {
+									SingleMappingMappings.add( (LegacyMapping) connectedEdge );
+								}
+							}
+						}
+						// now we must move the mappings to the uppermostY.
+						for( int i = 0; i < SingleMappingMappings.size(); i++ ) {
+							// nodeheight marginbottom
+							LegacyMapping currentMapping = SingleMappingMappings.get(i);
+							
+							if( selectedNodes.contains( currentMapping.getOrigin()) ) {
+								// we doubleclicked on the origin of the mapping, so move the destination up.
+								LegacyNode destinationNode = (LegacyNode) currentMapping.getDestination();
+								destinationNode.pushXY( destinationNode.getGraphicalData().x , uppermostY + i*(nodeHeight+marginBottom) );
+								
+								SingleMappingMovedNodes.add(destinationNode);
+								vizpanel.getVisibleVertices().add(destinationNode);
+							} else {
+								// we doubleclicked on the destination of the mapping, therefore we move the origin up
+								LegacyNode originNode = (LegacyNode) currentMapping.getOrigin();
+								originNode.pushXY( originNode.getGraphicalData().x , uppermostY + i*(nodeHeight+marginBottom) );
+								
+								SingleMappingMovedNodes.add(originNode);
+								vizpanel.getVisibleVertices().add(originNode);
+							}
+							
+							currentMapping.updateBounds();
+							
+						}
+						
+						
 						vizpanel.repaint();
 					}
 					
@@ -1169,6 +1230,17 @@ public class LegacyLayout extends Canvas2Layout {
 							}
 							
 						}
+						
+						// move the nodes back to their places
+						Iterator<LegacyNode> movedNodesIter = SingleMappingMovedNodes.iterator();
+						while( movedNodesIter.hasNext() ) { movedNodesIter.next().popXY(); }
+						SingleMappingMovedNodes.clear();
+						
+						Iterator<LegacyMapping> movedMappingsIter = SingleMappingMappings.iterator();
+						while( movedMappingsIter.hasNext() ) { movedMappingsIter.next().updateBounds(); }
+						SingleMappingMappings.clear();
+						
+						
 						SingleMappingView = false; // turn off the singlemappingview
 						vizpanel.repaint();
 					}

@@ -62,6 +62,24 @@ public class LegacyMapping extends Canvas2Edge {
 		line = new Line2D.Double( startPoint, endPoint );
 	};
 	
+	// without any parameters, the bounds are updated from the source and target vertices
+	public void updateBounds() {
+		GraphicalData source = getOrigin().getObject();
+		GraphicalData target = getDestination().getObject();
+
+		int sourceX = source.x + source.width;
+		int sourceY = source.y + (source.height / 2);
+		
+		int targetX = target.x + LegacyNode.circlePadding;
+		int targetY = target.y + (target.height / 2); 
+		
+		int width = targetX - sourceX;
+		int height = targetY - sourceY;
+
+		updateBounds( sourceX, sourceY, width, height);
+		
+	}
+	
 	@Override
 	public void draw(Graphics g ) {
 		g.setColor( ((MappingData)d).color );
