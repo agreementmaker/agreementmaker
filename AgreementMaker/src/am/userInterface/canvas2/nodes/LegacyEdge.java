@@ -1,5 +1,6 @@
 package am.userInterface.canvas2.nodes;
 
+import am.userInterface.Colors;
 import am.userInterface.canvas2.graphical.GraphicalData;
 import am.userInterface.canvas2.layouts.LegacyLayout;
 import am.userInterface.canvas2.utility.Canvas2Edge;
@@ -88,6 +89,7 @@ public class LegacyEdge extends Canvas2Edge {
 		int childXend = child.x+LegacyNode.circlePadding;
 		int childYend = child.y+(child.height/2);
 
+		g.setColor(Colors.foreground); // TODO: This color should be separate from the foreground (maybe)
 		g.drawLine( parentXstart, parentYstart , cornerX , cornerY  );  // line from parent to the level of the child
 		g.drawLine( cornerX, cornerY, childXend, childYend);  // line going to the left to the child
 		
