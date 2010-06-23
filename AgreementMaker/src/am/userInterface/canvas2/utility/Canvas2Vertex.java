@@ -164,7 +164,10 @@ public class Canvas2Vertex extends DirectedGraphVertex<GraphicalData> {  // we h
 	}
 	
 	// stack of position
+	private boolean savePosition = false; // if we push an X,Y position, we don't want to overwrite it on subsequent push calls.
 	private int pushedX, pushedY;
-	public void pushXY(int X, int Y) { pushedX = d.x; pushedY = d.y; d.x = X; d.y = Y; }
-	public void popXY() { d.x = pushedX; d.y = pushedY; }
+	public void pushXY(int X, int Y) { 
+		if( !savePosition ) { pushedX = d.x; pushedY = d.y;  d.x = X; d.y = Y; savePosition = true;}
+	}
+	public void popXY() { d.x = pushedX; d.y = pushedY; savePosition = false; }
 }
