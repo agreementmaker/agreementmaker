@@ -21,7 +21,7 @@ import am.userInterface.UI;
  * SINGLETON JAVA PATTERN
  * There will be only one instance of this class in the whole application
  * All classes can access it without having any reference to it, just invoking the static method
- * Core.getIstance()
+ * Core.getInstance()
  * All model information of the system will be accessible from this class:
  * ontologies, matchings and so on.
  *
@@ -127,10 +127,13 @@ public class Core {
 		for( int i = 0; i < matcherInstances.size(); i++ ) {
 			String m1 = matcherInstances.get(i).getName().getMatcherClass();
 			String m2 = matcher.getMatcherClass();
-			System.out.println("m1: " + m1);
-			System.out.println("m2: " + m2);
-			System.out.println( m1.equals(m2) );
-			System.out.println( m1 == m2 );
+			
+			if( Core.DEBUG ) {
+				System.out.println("m1: " + m1);
+				System.out.println("m2: " + m2);
+				System.out.println( m1.equals(m2) );
+				System.out.println( m1 == m2 );
+			}
 			
 			if( m1.equals(m2)  ) {
 				return matcherInstances.get(i);
@@ -271,7 +274,7 @@ public class Core {
 	
 	
 	
-	public int getNextMatcherID() { return IDcounter++; }
+
 	
 	
 	/***********************************************************************************************
@@ -280,8 +283,9 @@ public class Core {
 	
 	// this function gives a unique ID to every ontology that's loaded
 	// this function is called in the TreeBuilder class, when the ID is set.
+	// Ontology and Matcher IDs must be unique, hence they both increment the same variable when a new id is required
 	public int getNextOntologyID() { return IDcounter++; }
-	
+	public int getNextMatcherID()  { return IDcounter++; }	
 	
 	
 	public int numOntologies() {
