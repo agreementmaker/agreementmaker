@@ -203,13 +203,43 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		int edgeNum = 0;
 		int graphsnotVis = 0;
 		int nodeNotVis = 0;
-		int edgeNotVis = 0; 
-		// Draw the graphs.
+		int edgeNotVis = 0;
+		
+		
+		
+		// draw the edges before we draw the vertices
+		// TODO: FIND A BETTER WAY TO DO THIS: CHANGE THE WAY THE ITERATOR ITERATES, -> GRAPH PRIORITY.  Currently TIME IS WASTED ITERATING TWICE THROUGH THE GRAPHS!!!!
 		Iterator<CanvasGraph> graphIter = graphs.iterator();
 		while( graphIter.hasNext() ) {
 			CanvasGraph graph = graphIter.next();
 			if( !graph.isVisible(currentView) ) { // if the whole graph is not visible, skip redrawing its elements 
 				graphsnotVis++; 
+				continue; } 
+			
+			
+			
+			// draw the edges before we draw the vertices
+			Iterator<Canvas2Edge> edgeIter = graph.edges();
+			while( edgeIter.hasNext() ) {
+				Canvas2Edge edge = edgeIter.next();
+				if( !edge.isVisible(currentView) ) {
+					edgeNotVis++;
+					continue;
+				} else {
+					edgeNum++;
+					edge.draw(g);
+					visibleEdges.add(edge);  // keep track of which edges are visible (used in the mouse handler in the layout class)
+				}
+			}
+		}
+		
+		
+		// Draw the graphs.
+		graphIter = graphs.iterator();
+		while( graphIter.hasNext() ) {
+			CanvasGraph graph = graphIter.next();
+			if( !graph.isVisible(currentView) ) { // if the whole graph is not visible, skip redrawing its elements 
+				//graphsnotVis++; 
 				continue; } 
 			
 			// draw the vertices
@@ -223,20 +253,6 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 					node.draw(g); 
 					nodeNum++; // used for debugging
 					visibleVertices.add(node); // keep track of which nodes are visible (used in the mouse handler in the layout class)
-				}
-			}
-			
-			// draw the edges
-			Iterator<Canvas2Edge> edgeIter = graph.edges();
-			while( edgeIter.hasNext() ) {
-				Canvas2Edge edge = edgeIter.next();
-				if( !edge.isVisible(currentView) ) {
-					edgeNotVis++;
-					continue;
-				} else {
-					edgeNum++;
-					edge.draw(g);
-					visibleEdges.add(edge);  // keep track of which edges are visible (used in the mouse handler in the layout class)
 				}
 			}
 			
@@ -325,15 +341,9 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		
 	}
 		
-	@Override
-	public void setShowLocalName(boolean showLocalname) {
-		layout.setShowLocalName(showLocalname);
-	}
-	
-	@Override
-	public void setShowLabel( boolean showLabel ) {
-		layout.setShowLabel(showLabel);
-	}
-	
-	
+	@Override public void setShowLocalName(boolean showLocalname) { layout.setShowLocalName(showLocalname); }
+	@Override public void setShowLabel( boolean showLabel ) { layout.setShowLabel(showLabel); }
+	@Override public boolean getShowLocalName() { return layout.getShowLocalName(); }
+	@Override public boolean getShowLabel() { return layout.getShowLabel(); }
+
 }
