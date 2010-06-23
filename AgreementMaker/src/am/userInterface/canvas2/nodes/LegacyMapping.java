@@ -1,15 +1,21 @@
 package am.userInterface.canvas2.nodes;
 
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.util.Iterator;
 
+import am.app.Core;
 import am.userInterface.canvas2.graphical.GraphicalData;
 import am.userInterface.canvas2.graphical.MappingData;
+import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
 import am.userInterface.canvas2.graphical.MappingData.MappingType;
+import am.userInterface.canvas2.layouts.LegacyLayout;
 import am.userInterface.canvas2.utility.Canvas2Edge;
 import am.userInterface.canvas2.utility.Canvas2Vertex;
+import am.utility.DirectedGraphEdge;
 
 public class LegacyMapping extends Canvas2Edge {
 
@@ -83,9 +89,65 @@ public class LegacyMapping extends Canvas2Edge {
 	@Override
 	public void draw(Graphics g ) {
 		g.setColor( ((MappingData)d).color );
-		g.drawLine(d.x , d.y, d.x+d.width, d.y+d.height);
+
+		// get the number of parallel mappings that are currently visible and drawn before this mapping
+		int numberOfPreviousMappings = 0;
+		Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = getOrigin().edgesOut();
+		while( edgeOutIter.hasNext() ) {
+			Canvas2Edge edge = (Canvas2Edge) edgeOutIter.next();
+			if( edge.getObject().type == NodeType.MAPPING ) {
+				// check to see if it's this mapping.  if it is this one, stop
+				if( this == edge ) { break; }
+
+				// we have a mapping, check to see if it's parallel to this one, but only if we're in the general view.
+				// if we're in the single mapping view, space out the mappings even if they're not parallel
+				if( ((LegacyLayout)d.layout).isSingleMappingView() ) {
+					numberOfPreviousMappings++;
+				} else {
+					if( this.getOrigin() == edge.getOrigin() && this.getDestination() == edge.getDestination() ) {
+						// we have another parallel mapping, and that mapping is iterated before this mapping
+						numberOfPreviousMappings++;
+					}
+				}
+	
+			}
+		}
+		
+		
+		Core.getInstance();
+		// ok, now draw the mapping correctly
+		FontMetrics fontMetrics = Core.getUI().getCanvas().getFontMetrics(d.font); // need this to calculate the width of the label
+		
+		// get the width of the label
+		int labelWidth = 0;
+		if( ((MappingData)d).label != null ) {
+			labelWidth = fontMetrics.stringWidth(((MappingData)d).label);
+		}
+		
+		// draw 3 lines  (like shown below)
+		/* 
+		 * 
+		 * ( Node1 ) 
+		 *          \
+		 *           \     label
+		 *            \.___________.< midpoint2
+		 *            ^             \
+		 *        midpoint1          \
+		 *                            \
+		 *                             ( Node2 )
+		 */
+		
+		int midpoint1_X, midpoint2_X, midpoint_Y;
+		midpoint1_X = d.x+(d.width/2)-(labelWidth/2);
+		midpoint2_X = d.x+(d.width/2)+(labelWidth/2);
+		midpoint_Y  = d.y+(d.height/2) + numberOfPreviousMappings*(fontMetrics.getHeight()); // this is where we take care not to overlap with parallel mappings
+		
+		g.drawLine( d.x, d.y, midpoint1_X, midpoint_Y);
+		g.drawLine( midpoint1_X, midpoint_Y, midpoint2_X, midpoint_Y);
+		g.drawLine( midpoint2_X, midpoint_Y, d.x+d.width, d.y+d.height);
+		
 		if( ((MappingData)d).label != null )
-			g.drawString( ((MappingData)d).label, d.x+d.width/2, d.y+d.height/2);
+			g.drawString( ((MappingData)d).label, midpoint1_X, midpoint_Y-1);
 	}
 	
 	@Override
