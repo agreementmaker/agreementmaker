@@ -55,7 +55,7 @@ public class AboutDialog implements ActionListener {
 		
 		/** Main window */
 		frameAbout = new JDialog();
-		frameAbout.setTitle("About Agreement Maker...");
+		frameAbout.setTitle("About AgreementMaker...");
 		frameAbout.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		frameAbout.setResizable(false);
 		
@@ -65,7 +65,7 @@ public class AboutDialog implements ActionListener {
 	
 		
 		
-		AgreementMaker = new JLabel("<html><h1>Agreement Maker" + " " + GlobalStaticVariables.AgreementMakerVersion + "</h1></html>");
+		AgreementMaker = new JLabel("<html><h1>AgreementMaker" + " " + GlobalStaticVariables.AgreementMakerVersion + "</h1></html>");
 		
 		JPanel title = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		title.add(AgreementMaker);		
@@ -89,10 +89,10 @@ public class AboutDialog implements ActionListener {
 		l[1] = new JLabel("Advances in Information Systems Laboratory");
 		l[2] = new JLabel("University of Illinois at Chicago");
 
-		l[3] = new JLabel("Agreement Maker v0.2 ( fall 2008 - 2009):");
+		l[3] = new JLabel("AgreementMaker v0.2 ( fall 2008 - 2009):");
 		l[4] = new JLabel("Flavio Palandri Antonelli, Cosmin Stroe, Ula\u0219 Kele\u0219.");
 		
-		l[5] = new JLabel("Agreement Maker v0.1 (2001 - 2008):");
+		l[5] = new JLabel("AgreementMaker v0.1 (2001 - 2008):");
 		l[6] = new JLabel("Afsheen Rajendran, Anjli Chaudhry, Nalin Makar,");
 		l[7] = new JLabel("Sarang Kapadia, Sujan Bathala, William Sunna.");
 		
