@@ -95,9 +95,12 @@ public class LegacyNode extends Canvas2Vertex {
 		
 		String name = d.layout.getNodeLabel(d);
 		
-		FontMetrics fontMetrics = Core.getInstance().getUI().getCanvas().getFontMetrics(d.font);
+		Core.getInstance();
+		FontMetrics fontMetrics = Core.getUI().getCanvas().getFontMetrics(d.font);
 	    
-        fontWidth = fontMetrics.stringWidth(name);
+		
+        if( name == null || name.length() <= 0 ) { fontWidth = 0; } 
+        else { fontWidth = fontMetrics.stringWidth(name); }
         fontHeight = fontMetrics.getHeight();
 
 		
