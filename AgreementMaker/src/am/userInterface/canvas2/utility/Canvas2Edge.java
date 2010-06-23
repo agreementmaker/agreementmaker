@@ -49,15 +49,18 @@ public class Canvas2Edge extends DirectedGraphEdge<GraphicalData> {
 	
 	
 	// STACK of Visibility
+	private boolean saveValue = false; // when a value is pushed, we do not want to overwrite it on subsequent push calls.  (i.e. our stack is only 1 value deep)
 	private boolean pushedVisibility; // pushedVisibility is used in order to save an old visibility value, and then use a new one.
 									  // the old value can then be popped back
 	
 	public void pushVisibility( boolean vis ) {
-		pushedVisibility = d.visible;
+		if( !saveValue ) pushedVisibility = d.visible;
 		d.visible = vis;
+		saveValue = true;
 	}
 	public void popVisibility() {
 		d.visible = pushedVisibility;
+		saveValue = false;
 	}
 	
 }
