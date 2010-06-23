@@ -92,8 +92,8 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 		}
 		
 		add(mDeleteMappings);        
-		addSeparator();
-		add(miDeleteAll);
+		// addSeparator();
+		// TODO: add(miDeleteAll);
 
 	}
 
