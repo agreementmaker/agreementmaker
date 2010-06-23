@@ -99,7 +99,9 @@ public class Canvas2Layout implements MouseInputListener,
 	private CanvasGraph buildArtifactGraph() { return null; };  // builds the artifact graph and returns it to the constructor
 	public CanvasGraph getArtifactsGraph() { return layoutArtifactGraph; } // getArtifactsGraph() returns null if there is no artifact graph for this layout
 	
-	/* find a better way to do these settings */
+	/* TODO: find a better way to do these settings */
 	public void setShowLabel( boolean s ) {}; // implemented in the subclass
 	public void setShowLocalName( boolean s ) {}; // implemented in the subclass
+	public boolean getShowLabel() { return true; }; // implemented in the subclass
+	public boolean getShowLocalName() { return true; }; // implemented in the subclass
 }
