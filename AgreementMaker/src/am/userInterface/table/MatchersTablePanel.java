@@ -37,7 +37,7 @@ public class MatchersTablePanel extends JPanel {
 	
 	private MatchersTable table;
 
-    public MatchersTablePanel(UI ui) {
+    public MatchersTablePanel() {
         super(new GridLayout(1,1));
         
         MyTableModel mt = new MyTableModel();
@@ -219,7 +219,7 @@ public class MatchersTablePanel extends JPanel {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Create and set up the content pane.
-        MatchersTablePanel alignTable = new MatchersTablePanel(null);
+        MatchersTablePanel alignTable = new MatchersTablePanel();
         
         
         frame.setContentPane(alignTable);
