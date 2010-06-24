@@ -3,6 +3,7 @@ package am.userInterface;
 
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,6 +30,8 @@ import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.ontology.Ontology;
+import am.userInterface.find.FindDialog;
+import am.userInterface.find.FindInterface;
 import am.userInterface.table.MatchersTablePanel;
 import am.userInterface.vertex.VertexDescriptionPane;
 
@@ -36,7 +39,7 @@ import am.userInterface.vertex.VertexDescriptionPane;
 public class UIMenu implements ActionListener {
 	
 	// create Top Level menus
-	private JMenu fileMenu, viewMenu, helpMenu, matchingMenu, ontologyMenu;
+	private JMenu fileMenu, editMenu, viewMenu, helpMenu, matchingMenu, ontologyMenu;
 	
 	// File menu.
 	private JMenuItem xit, openSource, openTarget, openMostRecentPair,
@@ -44,6 +47,7 @@ public class UIMenu implements ActionListener {
 	private JMenu menuRecentSource, menuRecentTarget;
 	
 	// Edit menu.
+	private JMenuItem itemFind;
 	//private JMenuItem undo, redo;
 	
 	// View menu.
@@ -132,7 +136,14 @@ public class UIMenu implements ActionListener {
 			if (obj == xit){
 				// confirm exit
 				confirmExit();
-				// if it is no, then do nothing		
+				// if it is no, then do nothing
+			} else if ( obj == itemFind ) {
+				// we are going to be searching throught the currently visible tab
+				Object visibleTab = Core.getUI().getCurrentTab();
+				if( visibleTab instanceof FindInterface ) {
+					FindDialog fd = new FindDialog( (FindInterface) visibleTab);
+					fd.setVisible(true);
+				}
 			}else if (obj == colorsItem){
 				new Legend();	
 			}else if (obj == howToUse){
@@ -263,7 +274,7 @@ public class UIMenu implements ActionListener {
 
 				
 				//panelControlPanel = new ControlPanel(this, uiMenu, canvas);
-				MatchersControlPanel matcherControlPanel = new MatchersControlPanel(ui, this);
+				MatchersControlPanel matcherControlPanel = new MatchersControlPanel();
 				CanvasPanel.add(matcherControlPanel, BorderLayout.PAGE_END);
 				//frame.getContentPane().add(matcherControlPanel, BorderLayout.PAGE_END);
 				
@@ -632,6 +643,18 @@ public class UIMenu implements ActionListener {
 		xit.addActionListener(this);
 		fileMenu.add(xit);
 		
+
+		// build the Edit menu
+		editMenu = new JMenu("Edit");
+		editMenu.setMnemonic(KeyEvent.VK_E);
+		myMenuBar.add(editMenu);
+		
+		itemFind = new JMenuItem("Find", KeyEvent.VK_F);
+		itemFind.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
+		itemFind.addActionListener(this);
+		editMenu.add(itemFind);
+		
+		
 		
 		// Build view menu in the menu bar: TODO
 		viewMenu = new JMenu("View");
@@ -755,9 +778,9 @@ public class UIMenu implements ActionListener {
 		helpMenu.add(howToUse);
 
 		// add about item to help menu
-		aboutItem = new JMenuItem("About Agreement Maker", new ImageIcon("images/aboutImage.gif"));
+		aboutItem = new JMenuItem("About AgreementMaker", new ImageIcon("images/aboutImage.gif"));
 		aboutItem.setMnemonic(KeyEvent.VK_A);
-		aboutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));                
+		//aboutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));                
 		aboutItem.addActionListener(this);
 		helpMenu.add(aboutItem);
 		

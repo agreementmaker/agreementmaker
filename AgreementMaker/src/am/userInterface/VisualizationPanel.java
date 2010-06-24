@@ -38,7 +38,6 @@ public class VisualizationPanel extends JPanel {
 	
 	public void buildLayoutGraphs(Ontology ontology) {};  // called from OntoTreeBuilder, when an ontology is loaded.
 	
-	
 	/**
 	 * Legacy Methods.
 	 * We may need these, or they may be taken out.
@@ -49,6 +48,8 @@ public class VisualizationPanel extends JPanel {
 	public void setSMO(boolean smoStatus) {};
 	public void setShowLabel(boolean showLabel) {};
 	public void setShowLocalName(boolean showLocalname) {};
+	public boolean getShowLabel() { return true; }
+	public boolean getShowLocalName() { return true; }
 
 	public void setScrollPane( JScrollPane jsp ) {
 		scrollpane 	= jsp;

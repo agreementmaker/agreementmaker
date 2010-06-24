@@ -2,6 +2,7 @@ package am.userInterface;
 
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
@@ -22,6 +23,7 @@ import am.app.Core;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.TreeBuilder;
 import am.userInterface.canvas2.Canvas2;
+import am.userInterface.classic.AgreementMakerClassic;
 import am.userInterface.vertex.VertexDescriptionPane;
 
 
@@ -38,15 +40,14 @@ public class UI {
 	
 	static final long serialVersionUID = 1;
 	
-	private VisualizationPanel canvas;
+	private AgreementMakerClassic classicAM;
 	
 	private JFrame frame;
 	
 	private JPanel panelDesc;
-	private MatchersControlPanel matcherControlPanel;
-	private JScrollPane scrollPane;
+
+	//private JScrollPane scrollPane;
 	
-	private JSplitPane splitPane;
 	private UIMenu uiMenu;
 	
 	private JTabbedPane tabbedPane;
@@ -71,7 +72,7 @@ public class UI {
 	 * @return canvas
 	 */
 	public VisualizationPanel getCanvas(){
-		return this.canvas;
+		return classicAM.getVisualizationPanel();
 	}
 
 	/**
@@ -94,9 +95,11 @@ public class UI {
 	/**
 	 * @return
 	 */
-	public JSplitPane getUISplitPane(){
-		return this.splitPane;
-	}
+	
+	// TODO: getUISplitPane shouldn't be part of the UI
+	//@Deprecated
+	public JSplitPane getUISplitPane(){ return classicAM.getSplitPane(); }
+	
 	/**     
 	 * Init method
 	 * This function creates menu, canvas, and checkboxes to be displayed on the screen
@@ -116,69 +119,24 @@ public class UI {
 		
 
 		// Create a swing frame
-		frame = new JFrame("Agreement Maker");
+		frame = new JFrame("AgreementMaker");
 		frame.getContentPane().setLayout(new BorderLayout());
+		
 		// TODO: Ask the user if he wants to exit the program.  But that might be annoying. (Or they might lose unsaved data!)
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // if the user closes the window from the window manager, close the application.
 		
 		
 		// created the tabbed pane.
-		JPanel agreementMaker_classic = new JPanel();
-		agreementMaker_classic.setLayout(new BorderLayout());
 		tabbedPane = new JTabbedPane();
 		
 		
 		// Create the Menu Bar and Menu Items
 		uiMenu = new UIMenu(this);	
 		
-		// create a new panel for the canvas 
-		//panelCanvas = new JPanel();
+		// The first view is the Classic AgreementMaker
+		classicAM = new AgreementMakerClassic();
 		
-		// set the layout of the panel to be grid labyout of 1x1 grid
-		//panelCanvas.setLayout(new BorderLayout());
-
-	
-		//canvas.setMinimumSize(new Dimension(0,0));
-		//canvas.setPreferredSize(new Dimension(480,320));
-		
-		//add canvas to panel
-		//panelCanvas.add(canvas);
-
-		
-	    //panelDesc = new VertexDescriptionPane(this); 
-		//TODO: Add tabbed panes here for displaying the properties and descriptions		
-		scrollPane = new JScrollPane();
-		scrollPane.setWheelScrollingEnabled(true);
-		scrollPane.getVerticalScrollBar().setUnitIncrement(20);
-
-		// create a VisualizationPanel
-		canvas = new Canvas2(scrollPane);
-		canvas.setFocusable(true);
-
-		scrollPane.setViewportView(canvas);
-		
-		canvas.setScrollPane(scrollPane);
-		
-		
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, null);
-		splitPane.setOneTouchExpandable(true);
-		splitPane.setResizeWeight(1.0);
-		splitPane.setMinimumSize(new Dimension(640,480));
-		splitPane.setPreferredSize(new Dimension(640,480));
-		splitPane.getLeftComponent().setPreferredSize(new Dimension(640,480));
-		// add scrollpane to the panel and add the panel to the frame's content pane
-		
-		agreementMaker_classic.add(splitPane, BorderLayout.CENTER);
-		//frame.getContentPane().add(splitPane, BorderLayout.CENTER);
-
-		
-		//panelControlPanel = new ControlPanel(this, uiMenu, canvas);
-		matcherControlPanel = new MatchersControlPanel(this, uiMenu);
-		agreementMaker_classic.add(matcherControlPanel, BorderLayout.PAGE_END);
-		//frame.getContentPane().add(matcherControlPanel, BorderLayout.PAGE_END);
-		
-		
-		tabbedPane.addTab("AgreementMaker", null, agreementMaker_classic, "AgreementMaker");
+		tabbedPane.addTab("AgreementMaker", null, classicAM, "AgreementMaker");
 		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		
 		//Add the listener to close the frame.
@@ -199,10 +157,6 @@ public class UI {
 	 */
 	public void setDescriptionPanel(JPanel jPanel){
 		this.panelDesc = jPanel;
-	}
-
-	public MatchersControlPanel getControlPanel() {
-		return matcherControlPanel;
 	}
 
 	/** This function will open a file
@@ -249,7 +203,8 @@ public class UI {
 				if(Core.getInstance().ontologiesLoaded()) {
 					//Ogni volta che ho caricato un ontologia e le ho entrambe, devo resettare o settare se � la prima volta, tutto lo schema dei matchings
 					System.out.println("Init matchings table");
-					matcherControlPanel.resetMatchings();
+					classicAM.getMatchersControlPanel().resetMatchings();
+					
 				}
 				System.out.println("Ontologies loaded succesfully");
 			}
@@ -275,9 +230,7 @@ public class UI {
 	}
 	}
 	
-	public void redisplayCanvas() {
-		canvas.repaint();
-	}    
+	public void redisplayCanvas() {	classicAM.getVisualizationPanel().repaint(); }    
 	
 	
 	/**
@@ -290,9 +243,17 @@ public class UI {
 		tabbedPane.setSelectedIndex( tabbedPane.getTabCount() - 1 );
 	}
 	
+	public Component getCurrentTab() {
+		return tabbedPane.getSelectedComponent();
+	}
+	
 	@Deprecated
 	public JViewport getViewport() { // don't need this, it should be passed on the constructor of the VisualzationPanel
-		return scrollPane.getViewport();
+		return classicAM.getScrollPane().getViewport();
+	}
+
+	public MatchersControlPanel getControlPanel() {
+		return classicAM.getMatchersControlPanel();
 	}
 	
 }

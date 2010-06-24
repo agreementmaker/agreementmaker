@@ -40,9 +40,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		ItemListener {
 
 	private static final long serialVersionUID = -2258009700001283026L;
-	
-	
-	private UI ui;
+
 	//SELECTION MATCHER PANEL, the one in the top
 	private JLabel matcherLabel;
 	private JLabel thresholdLabel;
@@ -75,8 +73,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	
 	
 	
-	MatchersControlPanel(UI ui, UIMenu uiMenu) {
-		this.ui = ui;
+	public MatchersControlPanel() {
 		init();
 	}
 
@@ -143,7 +140,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		
 		
 		//TABLE PANEL:center panel
-		matchersTablePanel = new MatchersTablePanel(ui);
+		matchersTablePanel = new MatchersTablePanel();
 		
 		//JPANEL EDIT MATCHINGS: lower panel
 		newMatching = new JButton("New");
@@ -350,7 +347,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 					matchersTablePanel.removeMatcher(toBeDeleted);
 				}
 				matchersTablePanel.deletedRows(rowsIndex[0], rowsIndex[rowsIndex.length-1]);
-				ui.redisplayCanvas();
+				Core.getUI().redisplayCanvas();
 				
 			}
 		}
@@ -384,7 +381,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				matchersTablePanel.addMatcher(aCopy);
 			}
 			Utility.displayMessagePane(rowsIndex.length+" matchers have been copied.\n",null);
-			ui.redisplayCanvas();
+			Core.getUI().redisplayCanvas();
 		}
 	}
 	
@@ -421,7 +418,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				Utility.displayTextAreaPane(report,"Reference Evaluation Report");
 			}
 			dialog.dispose();
-			ui.redisplayCanvas();
+			Core.getUI().redisplayCanvas();
 		}
 		
 	}
@@ -471,7 +468,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				new MatcherProgressDialog(currentMatcher);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
 				if(!currentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
 					matchersTablePanel.addMatcher(currentMatcher);
-					ui.redisplayCanvas();
+					Core.getUI().redisplayCanvas();
 				}	
 
 				System.out.println("Matching Process Complete");
@@ -574,7 +571,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				Utility.displayTextAreaWithDim(report,"Reference Evaluation Report", 35, 60);
 			}
 			dialog.dispose();
-			ui.redisplayCanvas();
+			Core.getUI().redisplayCanvas();
 		}
 		
 	}
@@ -604,7 +601,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 					}
 					matchersTablePanel.updatedRows(rows[0], rows[rows.length-1]);
 				}
-				ui.redisplayCanvas();
+				Core.getUI().redisplayCanvas();
 				
 			}
 		}
@@ -670,8 +667,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 			}
 			//update the table
 			matchersTablePanel.deletedRows(firstRow, lastRow);
-			ui.getCanvas().clearAllSelections();
-			ui.redisplayCanvas();
+			Core.getUI().getCanvas().clearAllSelections();
+			Core.getUI().redisplayCanvas();
 			MatcherChangeEvent evt = new MatcherChangeEvent(this, MatcherChangeEvent.EventType.REMOVE_ALL, Core.ID_NONE);
 			Core.getInstance().fireEvent(evt);
 		}
