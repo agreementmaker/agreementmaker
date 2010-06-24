@@ -2,6 +2,7 @@ package am.userInterface.canvas2.layouts;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -68,7 +69,7 @@ public class LegacyLayout extends Canvas2Layout {
 	/* FLAGS, and SETTINGS */
 	private boolean showLocalName = true;
 	private boolean showLabel     = false;
-	private String  language      = "EN";
+//	private String  language      = "EN";
 	private String  labelAndNameSeparator = " || ";
 
 	private boolean[] pixelColumnDrawn;  // used for a very special hack in LegacyEdge.draw();  Read about it in that method.
@@ -178,6 +179,8 @@ public class LegacyLayout extends Canvas2Layout {
 	}
 	@Override public void setShowLabel(boolean shL ) { showLabel = shL; }
 	@Override public void setShowLocalName( boolean shLN ) { showLocalName = shLN; }
+	@Override public boolean getShowLabel() { return showLabel; }
+	@Override public boolean getShowLocalName() { return showLocalName; }
 	
 	public int getDepthIndent() { return depthIndent; }  // * Getter.
 	
@@ -469,8 +472,11 @@ public class LegacyLayout extends Canvas2Layout {
 	@SuppressWarnings("unchecked")   // this comes from OntTools.namedHierarchyRoots()
 	private LegacyNode buildClassGraph( OntModel m, CanvasGraph graph ) {
 
-		Logger log = Logger.getLogger(this.getClass());
-		log.setLevel(Level.DEBUG);
+		Logger log = null;
+		if( Core.DEBUG ) {
+			log = Logger.getLogger(this.getClass());
+			log.setLevel(Level.DEBUG);
+		}
 		
 		int depth = 0;
 		
@@ -491,7 +497,7 @@ public class LegacyLayout extends Canvas2Layout {
 			OntClass cls = clsIter.next();  // get the current child
 			if( cls.isAnon() ) {  // if it is anonymous, don't add it, but we still need to recurse on its children
 				hashMap.put(cls, anonymousNode);  // avoid cycles between anonymous nodes
-				log.debug(">> Inserted " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
+				if( Core.DEBUG ) log.debug(">> Inserted " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
 				recursiveBuildClassGraph(root, cls, depth, graph);
 				continue; 
 			} else if( cls.equals(OWL.Nothing) )   // if it's OWL.Nothing (i.e. we recursed to the bottom of the heirarchy) skip it.
@@ -499,7 +505,7 @@ public class LegacyLayout extends Canvas2Layout {
 			
 			// cycle check at the root
 			if( hashMap.containsKey(cls) ) { // we have seen this node before, do NOT recurse again
-				log.debug("Cycle detected.  OntClass:" + cls );
+				if( Core.DEBUG ) log.debug("Cycle detected.  OntClass:" + cls );
 				continue;
 			}
 			
@@ -514,7 +520,7 @@ public class LegacyLayout extends Canvas2Layout {
 			graph.insertEdge( edge );
 			
 			hashMap.put( cls, node);
-			log.debug(">> Inserted " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
+			if( Core.DEBUG ) log.debug(">> Inserted " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
 			recursiveBuildClassGraph( node, cls, depth+1, graph );
 			
 		}
@@ -531,8 +537,9 @@ public class LegacyLayout extends Canvas2Layout {
 
 		
 		
-		Logger log = Logger.getLogger(this.getClass());
+		Logger log = null;
 		if( Core.DEBUG ) { 
+			log = Logger.getLogger(this.getClass());
 			log.setLevel(Level.DEBUG);
 			log.debug(parentClass);
 		}
@@ -542,7 +549,7 @@ public class LegacyLayout extends Canvas2Layout {
 			OntClass cls = (OntClass) clsIter.next();
 			if( cls.isAnon() ) {
 				hashMap.put(cls, anonymousNode);  // avoid cycles between anonymous nodes
-				log.debug(">> Inserted anonymous node " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
+				if( Core.DEBUG ) log.debug(">> Inserted anonymous node " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
 				recursiveBuildClassGraph( parentNode, cls, depth, graph );
 				continue;
 			} else if( cls.equals( OWL.Nothing ) ) 
@@ -564,8 +571,10 @@ public class LegacyLayout extends Canvas2Layout {
 			graph.insertEdge( edge );
 			
 			hashMap.put(cls, node);
-			log.debug(">> Inserted " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
-			log.debug(">>   Label: " + cls.getLabel(null));
+			if( Core.DEBUG ) {
+				log.debug(">> Inserted " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
+				log.debug(">>   Label: " + cls.getLabel(null));
+			}
 			recursiveBuildClassGraph( node, cls, depth+1, graph );
 		}
 	
@@ -1097,152 +1106,31 @@ public class LegacyLayout extends Canvas2Layout {
 					//do stuff
 					
 					if( hoveringOver != null && SingleMappingView != true ) {
-						//Activate the SingleMappingView
-						SingleMappingView = true;
-						
-						// turn off the visibility of all the nodes and edges
-						Iterator<CanvasGraph> graphIter = vizpanel.getGraphs().iterator();
-						while( graphIter.hasNext() ) {
-							CanvasGraph graph = graphIter.next();
-							
-							// hide the vertices
-							Iterator<Canvas2Vertex> nodeIter = graph.vertices();
-							while( nodeIter.hasNext() ) {
-								Canvas2Vertex node = nodeIter.next();
-								node.pushVisibility(false); 
-							}
-							
-							// hide the edges
-							Iterator<Canvas2Edge> edgeIter = graph.edges();
-							while( edgeIter.hasNext() ) {
-								Canvas2Edge edge = edgeIter.next();
-								edge.pushVisibility(false);
-							}
-							
-						}
-						
-						
-						// now that all of the nodes and edges have been hidden, show only the ones we want to see
-						// we will show all edges connected to the selectedNodes, and all nodes connected to the edges of the selectedNodes
-						Iterator<LegacyNode> nodeIter = selectedNodes.iterator();
-						while( nodeIter.hasNext() ) {
-							LegacyNode selectedNode = nodeIter.next();
-							selectedNode.setVisible(true);
-							
-							Iterator<DirectedGraphEdge<GraphicalData>> edgeInIter = selectedNode.edgesIn();
-							while( edgeInIter.hasNext() ) {
-								Canvas2Edge connectedEdge = (Canvas2Edge) edgeInIter.next();
-								connectedEdge.setVisible(true);
-								if( selectedNode == connectedEdge.getOrigin() ) { ((Canvas2Vertex)connectedEdge.getDestination()).setVisible(true); }
-								else { ((Canvas2Vertex)connectedEdge.getOrigin()).setVisible(true); }
-							}
-							
-							Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = selectedNode.edgesOut();
-							while( edgeOutIter.hasNext() ) {
-								Canvas2Edge connectedEdge = (Canvas2Edge) edgeOutIter.next();
-								connectedEdge.setVisible(true);
-								if( selectedNode == connectedEdge.getOrigin() ) { ((Canvas2Vertex)connectedEdge.getDestination()).setVisible(true); }
-								else { ((Canvas2Vertex)connectedEdge.getOrigin()).setVisible(true); }
-							}
-							
-						}
-						
-						
-						// we need to move the opposite side up to the side we clicked
-						//ArrayList<LegacyMapping> mappingList = new ArrayList<LegacyMapping>(); // we have to keep a list of all the mappings to/from this node
-						int uppermostY = -1; // -1 is a dummy value.  Valid values are >= 0.
-						Iterator<LegacyNode> nodeIter2 = selectedNodes.iterator();
-						while( nodeIter2.hasNext() ) {
-							LegacyNode selectedNode = nodeIter2.next();
-							
-							// update the uppermostY
-							if( uppermostY < 0 || selectedNode.getObject().y < uppermostY ) {
-								uppermostY = selectedNode.getObject().y;
-							}
-							
-							// update the mappingList
-							Iterator<DirectedGraphEdge<GraphicalData>> edgeInIter = selectedNode.edgesIn();
-							while( edgeInIter.hasNext() ) {
-								DirectedGraphEdge<GraphicalData> connectedEdge = edgeInIter.next();
-								if( connectedEdge instanceof LegacyMapping ) {
-									SingleMappingMappings.add( (LegacyMapping) connectedEdge );
-								}
-							}
-							
-							Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = selectedNode.edgesOut();
-							while( edgeOutIter.hasNext() ) {
-								DirectedGraphEdge<GraphicalData> connectedEdge = edgeOutIter.next();
-								if( connectedEdge instanceof LegacyMapping) {
-									SingleMappingMappings.add( (LegacyMapping) connectedEdge );
-								}
-							}
-						}
-						// now we must move the mappings to the uppermostY.
-						for( int i = 0; i < SingleMappingMappings.size(); i++ ) {
-							// nodeheight marginbottom
-							LegacyMapping currentMapping = SingleMappingMappings.get(i);
-							
-							if( selectedNodes.contains( currentMapping.getOrigin()) ) {
-								// we doubleclicked on the origin of the mapping, so move the destination up.
-								LegacyNode destinationNode = (LegacyNode) currentMapping.getDestination();
-								destinationNode.pushXY( destinationNode.getGraphicalData().x , uppermostY + i*(nodeHeight+marginBottom) );
-								
-								SingleMappingMovedNodes.add(destinationNode);
-								vizpanel.getVisibleVertices().add(destinationNode);
-							} else {
-								// we doubleclicked on the destination of the mapping, therefore we move the origin up
-								LegacyNode originNode = (LegacyNode) currentMapping.getOrigin();
-								originNode.pushXY( originNode.getGraphicalData().x , uppermostY + i*(nodeHeight+marginBottom) );
-								
-								SingleMappingMovedNodes.add(originNode);
-								vizpanel.getVisibleVertices().add(originNode);
-							}
-							
-							currentMapping.updateBounds();
-							
-						}
-						
-						
+						enableSingleMappingView();
 						vizpanel.repaint();
 					}
 					
 				} else if( e.getClickCount() == 1 ) {  // single click with left mouse button
 					
 					if( SingleMappingView == true ) {
-						// cancel the single mapping view
+						// if we don't click on anything, cancel the single mapping view
 						// restore the previous visibility of the nodes and edges
-						Iterator<CanvasGraph> graphIter = vizpanel.getGraphs().iterator();
-						while( graphIter.hasNext() ) {
-							CanvasGraph graph = graphIter.next();
+						
+						if( hoveringOver == null ) {
+							disableSingleMappingView();
+							vizpanel.repaint();
+						} else {
+							// we doubleclicked on another node.
+							disableSingleMappingView();
 							
-							// restore the vertices
-							Iterator<Canvas2Vertex> nodeIter = graph.vertices();
-							while( nodeIter.hasNext() ) {
-								Canvas2Vertex node = nodeIter.next();
-								node.popVisibility(); 
-							}
-							
-							// restore the edges
-							Iterator<Canvas2Edge> edgeIter = graph.edges();
-							while( edgeIter.hasNext() ) {
-								Canvas2Edge edge = edgeIter.next();
-								edge.popVisibility();
-							}
-							
+							// move the viewpane to the new node
+							//vizpanel.getScrollPane().scrollRectToVisible( new Rectangle(0, vizpanel.getScrollPane().getSize().height, 1, 1) );
+							vizpanel.getScrollPane().getViewport().setViewPosition( new Point(vizpanel.getScrollPane().getViewport().getLocation().x, 
+									hoveringOver.getBounds().y - vizpanel.getScrollPane().getViewport().getHeight()/2 ));
+							//System.out.print( "Moving viewport to: " + hoveringOver.getBounds().toString() );
+							hoveringOver = null;
+							vizpanel.repaint();
 						}
-						
-						// move the nodes back to their places
-						Iterator<LegacyNode> movedNodesIter = SingleMappingMovedNodes.iterator();
-						while( movedNodesIter.hasNext() ) { movedNodesIter.next().popXY(); }
-						SingleMappingMovedNodes.clear();
-						
-						Iterator<LegacyMapping> movedMappingsIter = SingleMappingMappings.iterator();
-						while( movedMappingsIter.hasNext() ) { movedMappingsIter.next().updateBounds(); }
-						SingleMappingMappings.clear();
-						
-						
-						SingleMappingView = false; // turn off the singlemappingview
-						vizpanel.repaint();
 					}
 					
 					if( hoveringOver == null ) {
@@ -1319,6 +1207,7 @@ public class LegacyLayout extends Canvas2Layout {
 					if( hoveringOver != null ) { // relying on the hover code in MouseMove
 						log.debug("\nResource: " + hoveringOver.getObject().r + 
 								"\nHashCode: " + hoveringOver.getObject().r.hashCode());
+						log.debug("\nPosition" + e.getPoint().toString() );
 						
 					}
 					//log.debug("Single click with the MIDDLE mouse button detected.");
@@ -1349,6 +1238,157 @@ public class LegacyLayout extends Canvas2Layout {
 		
 
 	
+	private void disableSingleMappingView() {
+		// TODO Auto-generated method stub
+		Iterator<CanvasGraph> graphIter = vizpanel.getGraphs().iterator();
+		while( graphIter.hasNext() ) {
+			CanvasGraph graph = graphIter.next();
+			
+			// restore the vertices
+			Iterator<Canvas2Vertex> nodeIter = graph.vertices();
+			while( nodeIter.hasNext() ) {
+				Canvas2Vertex node = nodeIter.next();
+				node.popVisibility(); 
+			}
+			
+			// restore the edges
+			Iterator<Canvas2Edge> edgeIter = graph.edges();
+			while( edgeIter.hasNext() ) {
+				Canvas2Edge edge = edgeIter.next();
+				edge.popVisibility();
+			}
+			
+		}
+		
+		// move the nodes back to their places
+		Iterator<LegacyNode> movedNodesIter = SingleMappingMovedNodes.iterator();
+		while( movedNodesIter.hasNext() ) { movedNodesIter.next().popXY(); }
+		SingleMappingMovedNodes.clear();
+		
+		Iterator<LegacyMapping> movedMappingsIter = SingleMappingMappings.iterator();
+		while( movedMappingsIter.hasNext() ) { movedMappingsIter.next().updateBounds(); }
+		SingleMappingMappings.clear();
+		
+		
+		SingleMappingView = false; // turn off the singlemappingview
+		
+	}
+
+	private void enableSingleMappingView() {
+		// TODO Auto-generated method stub
+		//Activate the SingleMappingView
+		SingleMappingView = true;
+		
+		// turn off the visibility of all the nodes and edges
+		Iterator<CanvasGraph> graphIter = vizpanel.getGraphs().iterator();
+		while( graphIter.hasNext() ) {
+			CanvasGraph graph = graphIter.next();
+			
+			// hide the vertices
+			Iterator<Canvas2Vertex> nodeIter = graph.vertices();
+			while( nodeIter.hasNext() ) {
+				Canvas2Vertex node = nodeIter.next();
+				node.pushVisibility(false); 
+			}
+			
+			// hide the edges
+			Iterator<Canvas2Edge> edgeIter = graph.edges();
+			while( edgeIter.hasNext() ) {
+				Canvas2Edge edge = edgeIter.next();
+				edge.pushVisibility(false);
+			}
+			
+		}
+		
+		
+		// now that all of the nodes and edges have been hidden, show only the ones we want to see
+		// we will show all edges connected to the selectedNodes, and all nodes connected to the edges of the selectedNodes
+		Iterator<LegacyNode> nodeIter = selectedNodes.iterator();
+		while( nodeIter.hasNext() ) {
+			LegacyNode selectedNode = nodeIter.next();
+			selectedNode.setVisible(true);
+			selectedNode.setSelected(false); // unselect the nodes
+			
+			
+			Iterator<DirectedGraphEdge<GraphicalData>> edgeInIter = selectedNode.edgesIn();
+			while( edgeInIter.hasNext() ) {
+				Canvas2Edge connectedEdge = (Canvas2Edge) edgeInIter.next();
+				connectedEdge.setVisible(true);
+				if( selectedNode == connectedEdge.getOrigin() ) { ((Canvas2Vertex)connectedEdge.getDestination()).setVisible(true); }
+				else { ((Canvas2Vertex)connectedEdge.getOrigin()).setVisible(true); }
+			}
+			
+			Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = selectedNode.edgesOut();
+			while( edgeOutIter.hasNext() ) {
+				Canvas2Edge connectedEdge = (Canvas2Edge) edgeOutIter.next();
+				connectedEdge.setVisible(true);
+				if( selectedNode == connectedEdge.getOrigin() ) { ((Canvas2Vertex)connectedEdge.getDestination()).setVisible(true); }
+				else { ((Canvas2Vertex)connectedEdge.getOrigin()).setVisible(true); }
+			}
+			
+		}
+		
+		
+		// we need to move the opposite side up to the side we clicked
+		//ArrayList<LegacyMapping> mappingList = new ArrayList<LegacyMapping>(); // we have to keep a list of all the mappings to/from this node
+		int uppermostY = -1; // -1 is a dummy value.  Valid values are >= 0.
+		Iterator<LegacyNode> nodeIter2 = selectedNodes.iterator();
+		while( nodeIter2.hasNext() ) {
+			LegacyNode selectedNode = nodeIter2.next();
+			
+			// update the uppermostY
+			if( uppermostY < 0 || selectedNode.getObject().y < uppermostY ) {
+				uppermostY = selectedNode.getObject().y;
+			}
+			
+			// update the mappingList
+			Iterator<DirectedGraphEdge<GraphicalData>> edgeInIter = selectedNode.edgesIn();
+			while( edgeInIter.hasNext() ) {
+				DirectedGraphEdge<GraphicalData> connectedEdge = edgeInIter.next();
+				if( connectedEdge instanceof LegacyMapping ) {
+					SingleMappingMappings.add( (LegacyMapping) connectedEdge );
+				}
+			}
+			
+			Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = selectedNode.edgesOut();
+			while( edgeOutIter.hasNext() ) {
+				DirectedGraphEdge<GraphicalData> connectedEdge = edgeOutIter.next();
+				if( connectedEdge instanceof LegacyMapping) {
+					SingleMappingMappings.add( (LegacyMapping) connectedEdge );
+				}
+			}
+		}
+		// now we must move the mappings to the uppermostY.
+		for( int i = 0; i < SingleMappingMappings.size(); i++ ) {
+			// nodeheight marginbottom
+			LegacyMapping currentMapping = SingleMappingMappings.get(i);
+			
+			if( selectedNodes.contains( currentMapping.getOrigin()) ) {
+				// we doubleclicked on the origin of the mapping, so move the destination up.
+				LegacyNode destinationNode = (LegacyNode) currentMapping.getDestination();
+				destinationNode.pushXY( destinationNode.getGraphicalData().x , uppermostY + i*(nodeHeight+marginBottom) );
+				
+				SingleMappingMovedNodes.add(destinationNode);
+				vizpanel.getVisibleVertices().add(destinationNode);
+			} else {
+				// we doubleclicked on the destination of the mapping, therefore we move the origin up
+				LegacyNode originNode = (LegacyNode) currentMapping.getOrigin();
+				originNode.pushXY( originNode.getGraphicalData().x , uppermostY + i*(nodeHeight+marginBottom) );
+				
+				SingleMappingMovedNodes.add(originNode);
+				vizpanel.getVisibleVertices().add(originNode);
+			}
+			
+			currentMapping.updateBounds();
+			
+		}
+		
+		selectedNodes.clear();
+		
+	}
+
+
+
 	private Canvas2Vertex hoveringOver;
 	
 	@Override
@@ -1549,4 +1589,5 @@ public class LegacyLayout extends Canvas2Layout {
 		return ontologyID;
 	}
 	
+	public boolean isSingleMappingView() { return SingleMappingView; }
 }
