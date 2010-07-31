@@ -24,7 +24,7 @@ public class Main
 	 */
 	public static void main(String args[])
 	{
-		if(args.length == 0){
+		if(args.length == 0 ){
 			//UI ui;
 			UI ui = new UI();
 			Core.getInstance().setUI(ui);

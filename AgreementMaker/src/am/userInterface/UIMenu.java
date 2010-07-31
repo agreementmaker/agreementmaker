@@ -30,6 +30,7 @@ import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.ontology.Ontology;
+import am.seals.SealsPanel;
 import am.userInterface.find.FindDialog;
 import am.userInterface.find.FindInterface;
 import am.userInterface.table.MatchersTablePanel;
@@ -39,7 +40,7 @@ import am.userInterface.vertex.VertexDescriptionPane;
 public class UIMenu implements ActionListener {
 	
 	// create Top Level menus
-	private JMenu fileMenu, editMenu, viewMenu, helpMenu, matchingMenu, ontologyMenu;
+	private JMenu fileMenu, editMenu, viewMenu, helpMenu, matchingMenu, toolsMenu, ontologyMenu;
 	
 	// File menu.
 	private JMenuItem xit, openSource, openTarget, openMostRecentPair,
@@ -57,6 +58,9 @@ public class UIMenu implements ActionListener {
 	
 	// Ontology menu.
 	private JMenuItem ontologyDetails;
+	
+	// Tools menu.
+	private JMenuItem wordnetLookupItem, sealsItem;
 	
 	// Matching menu.
 	private JMenuItem manualMapping, userFeedBack, 
@@ -208,6 +212,11 @@ public class UIMenu implements ActionListener {
 				prefs.saveShowLocalname(showLocalname);
 				ui.getCanvas().setShowLocalName(showLocalname);
 				ui.redisplayCanvas();
+			}
+			else if( obj == sealsItem ) {
+				// open up the SEALS Interface tab
+				SealsPanel sp = new SealsPanel();
+				ui.addTab("SEALS", null, sp, "SEALS Interface");
 			}
 			else if( obj == userFeedBack ) {
 				SelectionPanel sp = new SelectionPanel(ui);
@@ -677,13 +686,13 @@ public class UIMenu implements ActionListener {
 		disableVisualizationItem = new JCheckBoxMenuItem("Disable hierarchies visualization");
 		disableVisualizationItem.addActionListener(this);
 		disableVisualizationItem.setSelected(prefs.getDisableVisualization());
-		viewMenu.add(disableVisualizationItem);
+		// viewMenu.add(disableVisualizationItem);
 		
 		// add "Selected Matchings Only" option to the view menu
 		smoMenuItem = new JCheckBoxMenuItem("Selected Matchings Only");
 		smoMenuItem.addActionListener(this);
 		smoMenuItem.setSelected(prefs.getSelectedMatchingsOnly());
-		viewMenu.add(smoMenuItem);
+		//viewMenu.add(smoMenuItem);
 		
 		showLocalNameItem = new JCheckBoxMenuItem("Show localnames");
 		showLocalNameItem.addActionListener(this);
@@ -695,7 +704,7 @@ public class UIMenu implements ActionListener {
 		showLabelItem.setSelected(prefs.getShowLabel());
 		viewMenu.add(showLabelItem);
 		
-		viewMenu.addSeparator();
+		//viewMenu.addSeparator();
 		
 		menuViews = new JMenu("New view");
 		itemViewsCanvas = new JMenuItem("Canvas");
@@ -704,7 +713,7 @@ public class UIMenu implements ActionListener {
 		//itemViewsCanvas2.addActionListener(this);
 		menuViews.add(itemViewsCanvas);
 		//menuViews.add(itemViewsCanvas2);
-		viewMenu.add(menuViews);
+		//viewMenu.add(menuViews);
 		//Fake menus..********************************.
 		/*
 
@@ -752,8 +761,8 @@ public class UIMenu implements ActionListener {
 		
 		doRemoveDuplicates = new JMenuItem("Remove Duplicate Alignments");
 		doRemoveDuplicates.addActionListener(this);
-		matchingMenu.add(doRemoveDuplicates);
-		matchingMenu.addSeparator();
+		//matchingMenu.add(doRemoveDuplicates);
+		//matchingMenu.addSeparator();
 		
 		saveMatching = new JMenuItem("Save selected matchings into a file");
 		saveMatching.addActionListener(this);
@@ -763,6 +772,24 @@ public class UIMenu implements ActionListener {
 		refEvaluateMatching.addActionListener(this);
 		matchingMenu.add(refEvaluateMatching);
 		myMenuBar.add(matchingMenu);
+		
+		
+		// *************************** TOOLS MENU ****************************
+		toolsMenu = new JMenu("Tools");
+		toolsMenu.setMnemonic(KeyEvent.VK_H);
+		myMenuBar.add(toolsMenu);
+		
+		// Tools -> Wordnet lookup panel...
+		wordnetLookupItem = new JMenuItem("Wordnet lookup panel...");
+		wordnetLookupItem.setMnemonic(KeyEvent.VK_W);
+		wordnetLookupItem.addActionListener(this);
+		toolsMenu.add(wordnetLookupItem);
+		
+		// Tools -> SEALS Interface...
+		sealsItem = new JMenuItem("SEALS Interface...");
+		sealsItem.setMnemonic(KeyEvent.VK_S);
+		sealsItem.addActionListener(this);
+		toolsMenu.add(sealsItem);
 		
 		
 		// Build help menu in the menu bar.

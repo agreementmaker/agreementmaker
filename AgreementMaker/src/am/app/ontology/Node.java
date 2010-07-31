@@ -88,7 +88,7 @@ public class Node {
 	private Node matchedTo;
 	private boolean matched;
 	private int color;
-	private Node parent;
+	private ArrayList<Node> parent = new ArrayList<Node>();
 	private int depth;
 	/**
 	 * XML constructor
@@ -555,14 +555,14 @@ public class Node {
 	/**
 	 * @param parent the parent to set
 	 */
-	public void setParent(Node parent) {
-		this.parent = parent;
+	public void addParent(Node parent) {
+		if( this.parent != null ) this.parent.add(parent);
 	}
 
 	/**
 	 * @return the parent
 	 */
-	public Node getParent() {
+	public ArrayList<Node> getParent() {
 		return parent;
 	}
 

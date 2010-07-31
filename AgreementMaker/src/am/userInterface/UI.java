@@ -104,7 +104,7 @@ public class UI {
 	 * Init method
 	 * This function creates menu, canvas, and checkboxes to be displayed on the screen
 	 */
-	public void init()
+	private void init()
 	{
 		//Setting the Look and Feel of the application to that of Windows
 		//try { UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"); }
@@ -164,7 +164,6 @@ public class UI {
 	 * @param ontoType the type of ontology, source or target
 	 * 
 	 * */
-
 	public void openFile( String filename, int ontoType, int syntax, int language, boolean skip, boolean noReasoner) {
 		try{
 			JPanel jPanel = null;
@@ -232,17 +231,23 @@ public class UI {
 	
 	public void redisplayCanvas() {	classicAM.getVisualizationPanel().repaint(); }    
 	
-	
 	/**
-	 * Tabbed Interface
+	 * Adds a tab to the main AgreementMaker window and selects it.
+	 * @param tabName The displayed name of the tab.
+	 * @param icon An icon shown in the tab before the name.
+	 * @param panel The panel that the tab will contain.
+	 * @param toolTip The tooltip text for this tab.
 	 */
-
 	public void addTab( String tabName, ImageIcon icon, JComponent panel, String toolTip ) {
 		tabbedPane.addTab( tabName, icon, panel, toolTip);
 		tabbedPane.setTabComponentAt(tabbedPane.getTabCount() - 1 , new ButtonTabComponent(tabbedPane));
 		tabbedPane.setSelectedIndex( tabbedPane.getTabCount() - 1 );
 	}
 	
+	/** 
+	 * Returns the currently selected tab from the main AgreementMaker window.
+	 * @return Currently selected tab.
+	 */
 	public Component getCurrentTab() {
 		return tabbedPane.getSelectedComponent();
 	}
@@ -252,8 +257,6 @@ public class UI {
 		return classicAM.getScrollPane().getViewport();
 	}
 
-	public MatchersControlPanel getControlPanel() {
-		return classicAM.getMatchersControlPanel();
-	}
+	public MatchersControlPanel getControlPanel() {	return classicAM.getMatchersControlPanel();	}
 	
 }

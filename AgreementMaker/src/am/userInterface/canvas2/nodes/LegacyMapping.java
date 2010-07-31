@@ -1,5 +1,6 @@
 package am.userInterface.canvas2.nodes;
 
+import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -146,8 +147,10 @@ public class LegacyMapping extends Canvas2Edge {
 		g.drawLine( midpoint1_X, midpoint_Y, midpoint2_X, midpoint_Y);
 		g.drawLine( midpoint2_X, midpoint_Y, d.x+d.width, d.y+d.height);
 		
-		if( ((MappingData)d).label != null )
+		if( ((MappingData)d).label != null ) {
+			g.setColor(Color.BLACK);
 			g.drawString( ((MappingData)d).label, midpoint1_X, midpoint_Y-1);
+		}
 	}
 	
 	@Override

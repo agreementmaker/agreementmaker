@@ -31,7 +31,12 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	public BaseSimilarityMatcher() {
 		// warning, param is not available at the time of the constructor (when creating a matcher from the User Interface)
 		super();
-		needsParam = false;
+		needsParam = true;
+		
+		// Initialize the WordNet interface.
+		String cwd = System.getProperty("user.dir");
+		String wordnetdir = cwd + "/wordnet-3.0";
+		System.setProperty("wordnet.database.dir", wordnetdir);
 	}
 	
 	// Constructor used when the parameters are available at the time of matcher initialization
@@ -127,8 +132,11 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		
 		if( param != null && ((BaseSimilarityParameters) param).useDictionary ) {  // Step 3a
 			//this is the same as the one of William Sunan
-			String sourceName = source.getLocalName();
-			String targetName = target.getLocalName();
+			//String sourceName = source.getLocalName();
+			//String targetName = target.getLocalName();
+			
+			String sourceName = source.getLabel();
+			String targetName = target.getLabel();
 			
 			// Step 1:		run treatString on each name to clean it up
 			sourceName = treatString(sourceName);
@@ -175,6 +183,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			//equivalence return 1
 			String sLocalname = source.getLocalName();
 			String tLocalname = target.getLocalName();
+			
 			if(sLocalname.equalsIgnoreCase(tLocalname))
 				return new Alignment( source, target, 1d, Alignment.EQUIVALENCE);
 			//all normalization without stemming and digits return 0.95
@@ -248,9 +257,9 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	 private String treatString(String s) {
 		 
 		 
-		 String s2 = s.replace("_","");
-		 s2 = s2.replace("-","");
-		 s2 = s2.replace(".","");	
+		 String s2 = s.replace("_"," ");
+		 s2 = s2.replace("-"," ");
+		 s2 = s2.replace("."," ");	
 	    
 	    /*
 	    for(int i=0;i<len-1; i++){

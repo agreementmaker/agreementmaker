@@ -1,6 +1,13 @@
+/* Concept Matcher.
+ * 
+ * Written by William (not Sunna). 
+ * 
+ */
+
+
 package am.app.mappingEngine.conceptMatcher;
 
-// TODO: Remove the Stanford Parser before distribution, GPL Licensed.
+// TODO: Remove the Stanford Parser before distribution, GPL Licensed. - cosmin
 
 import java.util.ArrayList;
 import edu.smu.tspell.wordnet.Synset;

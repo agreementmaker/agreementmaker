@@ -376,6 +376,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 
 				Vertex parentVertex = getVertexFromClass(classesMap, parentClass);  // create a new Vertex object or use an existing one.
 				parentVertex.add( currentVertex );  // create the parent link between the parent and the child
+				currentVertex.getNode().addParent(parentVertex.getNode()); // TODO: GET RID OF OR FIX VERTEX!
 
 			} 
 		}

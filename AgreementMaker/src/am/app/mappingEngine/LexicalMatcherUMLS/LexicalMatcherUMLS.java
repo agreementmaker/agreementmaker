@@ -61,6 +61,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 	//Connect to UMLS database 
 	//You have to add your IP to the account profile from:
 	//http://kscas-lhc.nlm.nih.gov/UMLSKS/servlet/Turbine/template/admin,user,KSS_login.vm
+	//https://login.nlm.nih.gov/cas/login?service=http://umlsks.nlm.nih.gov/uPortal/Login  -- updated July 17th 2010, Cosmin.
 	//Use ulaskeles as login name and password if you don't have a license.
 	public void connectToServer()  throws Exception{
 		try {

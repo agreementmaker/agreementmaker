@@ -3,6 +3,7 @@ package am.app.mappingEngine;
 import am.app.feedback.FeedbackLoop;
 import am.app.feedback.InitialMatchers;
 import am.app.mappingEngine.Combination.CombinationMatcher;
+import am.app.mappingEngine.LexicalMatcherJAWS.LexicalMatcherJAWS;
 import am.app.mappingEngine.LexicalMatcherJWNL.LexicalMatcherJWNL;
 //import am.app.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
 import am.app.mappingEngine.PRAMatcher.OldPRAMatcher;
@@ -44,8 +45,10 @@ public enum MatchersRegistry {
 	 * 
 	 * And so, if your matcher is has no code errors, it will be incorporated into the AgreementMaker.  - Cosmin
 	 */
-	
+	//
+	MyMatcher			( "My Custom Matcher", am.extension.MyMatcher.class ),
 	//OFFICIAL MATCHERS
+	LexicalJAWS			( "Lexical Matcher: JAWS", LexicalMatcherJAWS.class ),
 	BaseSimilarity		( "Base Similarity Matcher (BSM)", BaseSimilarityMatcher.class ),
 	ParametricString ( "Parametric String Matcher (PSM)", ParametricStringMatcher.class ),
 	MultiWords       ("Vector-based Multi-Words Matcher (VMM)", MultiWordsMatcher.class),

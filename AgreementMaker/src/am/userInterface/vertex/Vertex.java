@@ -18,6 +18,7 @@ import com.hp.hpl.jena.ontology.OntModel;
  */
 
 // TODO: Vertex should not extend DefaultMutableTreeNode because it does not support multiple inheritance
+//       July 20, 2010 - THE ABOVE TODO SHOULD BE DONE ASAP! - Cosmin.
 
 public class Vertex extends DefaultMutableTreeNode implements Serializable
 {

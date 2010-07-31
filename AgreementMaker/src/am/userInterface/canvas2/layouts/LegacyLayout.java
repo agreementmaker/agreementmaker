@@ -1063,7 +1063,7 @@ public class LegacyLayout extends Canvas2Layout {
 		ArrayList<Canvas2Vertex> visibleVertices = vizpanel.getVisibleVertices();
 		
 		Logger log = Logger.getLogger(this.getClass());
-		log.setLevel(Level.DEBUG);
+		if( Core.DEBUG ) log.setLevel(Level.DEBUG);
 		
 		if( PopupMenuActive ) {  // if we have an active popup menu, cancel it
 			PopupMenuActive = false;
@@ -1102,7 +1102,7 @@ public class LegacyLayout extends Canvas2Layout {
 			
 			case MouseEvent.BUTTON1:
 				if( e.getClickCount() == 2 ) {  // double click with the left mouse button
-					log.debug("Double click with the LEFT mouse button detected.");
+					if( Core.DEBUG) log.debug("Double click with the LEFT mouse button detected.");
 					//do stuff
 					
 					if( hoveringOver != null && SingleMappingView != true ) {
@@ -1421,6 +1421,14 @@ public class LegacyLayout extends Canvas2Layout {
 				hoveringOver = vertex;
 				hoveringOver.setHover(true);
 				//hoveringOver.clearDrawArea(g);
+				
+				// redraw all the edges connected to this node.
+				Iterator<DirectedGraphEdge<GraphicalData>> edgeInIter = hoveringOver.edgesIn();
+				while( edgeInIter.hasNext() ) { ((Canvas2Edge)edgeInIter.next()).draw(g); }
+				Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = hoveringOver.edgesOut();
+				while( edgeOutIter.hasNext() ) { ((Canvas2Edge)edgeOutIter.next()).draw(g); }
+				
+				
 				hoveringOver.draw(g);
 				break;
 				
