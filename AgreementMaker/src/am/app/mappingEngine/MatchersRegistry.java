@@ -61,7 +61,7 @@ public enum MatchersRegistry {
 	//UMLSKSLexical		("Lexical Matcher: UMLSKS", LexicalMatcherUMLS.class, false), //it requires internet connection and the IP to be registered
 	
 	//Auxiliary matchers created for specific purposes
-	InitialMatcher      ("Initial Matcher: LWC (PSM+VMM+BSM)", InitialMatchers.class, false),
+	InitialMatcher      ("Initial Matcher: LWC (PSM+VMM+BSM)", InitialMatchers.class, true),
 	PRAintegration   ( "PRA Integration", PRAintegrationMatcher.class, false), //this works fine
 	PRAMatcher			("PRA Matcher", PRAMatcher.class, false),
 	PRAMatcher2			("PRA Matcher2", PRAMatcher2.class, false),

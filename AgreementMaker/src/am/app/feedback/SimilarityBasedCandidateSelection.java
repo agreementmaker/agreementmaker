@@ -33,12 +33,16 @@ public class SimilarityBasedCandidateSelection extends CandidateSelection {
 		
 		// we now have the masterList, sort it.
 		Collections.sort( allNonFilteredConcepts, Collections.reverseOrder() );  
+		//Collections.shuffle(allNonFilteredConcepts);
 		
 		System.out.println("");
 		System.out.println("***** The MASTER list:");
+		fbL.getProgressDisplay().appendToReport("***** The MASTER list (similarity based):");
 		Iterator<CandidateConcept> ccitr = allNonFilteredConcepts.iterator();
 		while( ccitr.hasNext() ) {
-			System.out.println( "\t* " + ccitr.next().toString() );
+			CandidateConcept currentCandidate = ccitr.next();
+			fbL.getProgressDisplay().appendToReport("\t* " + currentCandidate.toString());
+			System.out.println( "\t* " + currentCandidate.toString() );
 		}
 		
 		//add the topK with at least one mapping to the result
@@ -50,6 +54,12 @@ public class SimilarityBasedCandidateSelection extends CandidateSelection {
 				topK.add(top1);
 			}
 		}
+		
+		fbL.getProgressDisplay().appendToReport("***** topK (similarity based):");
+		for( int i = 0; i < topK.size(); i++ ) {
+			fbL.getProgressDisplay().appendToReport("\t"+ i + "." + topK.get(i).toString());
+		}
+		
 		return topK;
 	}
 

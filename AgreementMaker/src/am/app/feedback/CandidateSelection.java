@@ -153,9 +153,10 @@ public class CandidateSelection {
 		
 		// we now have the masterList, sort it.
 		Collections.sort( masterList, Collections.reverseOrder() );  //NOT ANYMORE ASCENDING ORDER --- TOP VALUES AT END OF LIST
+		//Collections.shuffle(masterList);
 		
 		System.out.println("");
-		System.out.println("***** The MASTER list:");
+		System.out.println("***** The MASTER list (relevance based):");
 		Iterator<CandidateConcept> ccitr = masterList.iterator();
 		while( ccitr.hasNext() ) {
 			System.out.println( "\t* " + ccitr.next().toString() );
@@ -232,15 +233,18 @@ public class CandidateSelection {
 					topK.add(top1);
 				}
 			}
+			
 		}
 
+		fbL.getProgressDisplay().appendToReport("\nCandidate Selection:  Top K=" + Integer.toString(k) + " CandidateConcepts:\n");
 		System.out.println("\nCandidate Selection:  Top K=" + Integer.toString(k) + " CandidateConcepts:");
 		for( int ii = 0; ii < topK.size(); ii++ ) {
 			CandidateConcept cc = topK.get(ii);
 			boolean isinref = fbL.isInReferenceAlignment( cc );
+			fbL.getProgressDisplay().appendToReport("   " + Integer.toString(ii)+ ". " + topK.get(ii).toString() + "  inref: " + Boolean.toString(isinref)+"\n");
 			System.out.println( "   " + Integer.toString(ii)+ ". " + topK.get(ii).toString() + "  inref: " + Boolean.toString(isinref));
 		}
-		
+
 		return topK;
 		
 	}

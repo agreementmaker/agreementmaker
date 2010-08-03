@@ -739,7 +739,7 @@ public class UIMenu implements ActionListener {
 		
 		userFeedBack = new JMenuItem("User Feedback Loop");
 		userFeedBack.addActionListener(this);
-		//matchingMenu.add(userFeedBack); Removed to distribute the AM
+		matchingMenu.add(userFeedBack);
 		
 		matchingMenu.addSeparator();
 		newMatching = new JMenuItem("New empty matching");

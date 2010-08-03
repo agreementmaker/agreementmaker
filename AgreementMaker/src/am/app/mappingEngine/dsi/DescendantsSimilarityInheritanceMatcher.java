@@ -127,7 +127,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		}
 		else{
 			if(itSource.hasNext() && itTarget.hasNext()){
-				/*
+				
 				//if both nodes have at least one parent
 				//for each source parent I find the most similar target parent
 				//then I take the average of all similarities of the most similar parents
@@ -160,7 +160,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 				double finalSim = (mcp*mySim) + ((1 - mcp) * sumOfMaxParents);
 				result = new Alignment(sourceNode, targetNode, finalSim, Alignment.EQUIVALENCE);
 				input.set(sourceIndex, targetIndex, result);
-				*/
+				
 				result = input.get(sourceIndex,targetIndex);
 			}
 			else if(itSource.hasNext() || itTarget.hasNext()){

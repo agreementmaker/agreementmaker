@@ -73,6 +73,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 	// Start Screen
 	JButton btn_start;
 	JComboBox cmbIterations;
+	JComboBox cmbInitialMatcherThreshold;
 	JComboBox cmbHighThreshold;
 	JComboBox cmbLowThreshold;
 	JComboBox cmbCardinality;
@@ -220,7 +221,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 
 	private String checkParameters(FeedbackLoopParameters feedbackLoopParameters) {
 		String result = "";
-		AbstractMatcher currentMatcher = feedbackLoopParameters.matcher;
+		AbstractMatcher currentMatcher = feedbackLoopParameters.initialMatcher;
 		if(!Core.getInstance().ontologiesLoaded() ) {
 			result = "You have to load Source and Target ontologies before running any matcher\nClick on File Menu and select Open Ontology functions ";
 		}
@@ -256,7 +257,12 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 
 
 	public void appendToReport(String report) {
-		// TODO: Add a report display in the panel.
+		if(!ufl.isCancelled()){
+			if(matcherReport!= null){
+				matcherReport.append("\n"+report);
+				revalidate();
+			}
+		}
 	}
 
 
@@ -321,6 +327,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		
 		FeedbackLoopParameters fblp = new FeedbackLoopParameters();
 		
+		fblp.initialMatchersThreshold = Double.parseDouble( cmbInitialMatcherThreshold.getSelectedItem().toString() );
 		fblp.highThreshold = Double.parseDouble( cmbHighThreshold.getSelectedItem().toString() );
 		fblp.lowThreshold = Double.parseDouble( cmbLowThreshold.getSelectedItem().toString() );
 		
@@ -347,10 +354,10 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		
 		//get the automatic inital matcher
 		String matcherName = (String) cmbMatcher.getSelectedItem();
-		fblp.matcher = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), 0); //index is not needed because this matcher is not set into the table
-		fblp.matcher.setThreshold(fblp.highThreshold );
-		fblp.matcher.setMaxSourceAlign(fblp.sourceNumMappings);
-		fblp.matcher.setMaxTargetAlign(fblp.targetNumMappings);
+		fblp.initialMatcher = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), 0); //index is not needed because this matcher is not set into the table
+		fblp.initialMatcher.setThreshold(fblp.highThreshold );
+		fblp.initialMatcher.setMaxSourceAlign(fblp.sourceNumMappings);
+		fblp.initialMatcher.setMaxTargetAlign(fblp.targetNumMappings);
 			
 		return fblp;
 	}
@@ -372,6 +379,8 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		cmbIterations = new JComboBox( Utility.STEPFIVE_INT );
 		cmbIterations.addItem(UNLIMITED);
 		cmbIterations.setSelectedItem(UNLIMITED);
+		cmbInitialMatcherThreshold = new JComboBox( Utility.getPercentDecimalsList() );
+		cmbInitialMatcherThreshold.setSelectedItem("0.6");
 		cmbHighThreshold = new JComboBox( Utility.getPercentDecimalsList() );
 		cmbHighThreshold.setSelectedItem("0.8");
 		cmbLowThreshold = new JComboBox( Utility.getPercentDecimalsList() );
@@ -418,6 +427,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		//because we want to init them in the constructor only once.
 		//this way the parameters remains set when the user click cancel
 		JLabel lblMatcher = new JLabel("Automatic Initial Matcher:");
+		JLabel lblInitialMatcherThreshold = new JLabel("Initial Matcher threshold:");
 		JLabel lblHighThreshold = new JLabel("High threshold:");
 		JLabel lblLowThreshold = new JLabel("Low threshold:");
 		JLabel lblCardinality = new JLabel("Cardinality:");
@@ -444,6 +454,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 				//ALL LABELS IN THE FIRST COLUMN
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
 					.addComponent(lblMatcher)
+					.addComponent(lblInitialMatcherThreshold)
 					.addComponent(lblConfiguration)
 					.addComponent(lblIterations)
 					.addComponent(lblHighThreshold)
@@ -455,7 +466,8 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 				)
 				//ALL COMPONENTS IN THE SECOND COLUMNS
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-					.addComponent(cmbMatcher,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
+					.addComponent(cmbMatcher,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE)
+					.addComponent(cmbInitialMatcherThreshold,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE)
 					.addComponent(cmbConfigurations,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE)
 					.addComponent(cmbIterations,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 
 					.addComponent(cmbHighThreshold,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
@@ -475,6 +487,10 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(lblMatcher)
 						.addComponent(cmbMatcher,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
+				)
+				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+						.addComponent(lblInitialMatcherThreshold)
+						.addComponent(cmbInitialMatcherThreshold,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
 				)
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(lblConfiguration)

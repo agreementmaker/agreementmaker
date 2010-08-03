@@ -141,7 +141,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		needsParam = true;
 		currentStage = executionStage.notStarted;
 		iteration = 0;
-		evaluationSpin = 5;
+		evaluationSpin = 1;
 		stop = false;
 		new_mapping = 0;
 		partialEvaluations = new ArrayList<FeedbackIteration>();
@@ -272,8 +272,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 			int initialCorrect = initialEvaluation.getCorrect();
 			int initialWrong = initialFound - initialCorrect;
 			int initialMissing = exist - initialCorrect;
-			System.out.println("Iteration\tPrecision\tRecall\tF-measure\tPrecision improvement\tRecall improvement\tF-measure improvement\tCorrect\tWrong\tMissing\tCorrect improvement\tWrong improvement\tMissing improvement\tEDSI correct\tEDSI wrong\tEFS correct\tEFS wrong\tCorrect extrapolating\tWrong extrapolating");
-			System.out.println( 0+"\t"+Utility.getOneDecimalPercentFromDouble(initialPrecision)+"\t"+Utility.getOneDecimalPercentFromDouble(initialRecall)+"\t"+Utility.getOneDecimalPercentFromDouble(initialFmeasure)+"\t0.00%\t0.00%\t0.00%\t"+initialCorrect+"\t"+initialWrong+"\t"+initialMissing+"\t"+0+"\t"+0+"\t"+0+"\t"+0+"\t"+0+"\t"+0+"\t"+0+"\t"+0+"\t"+0);
+			System.out.println("Iteration,\tPrecision,\tRecall,\tF-measure,\tPrecision improvement,\tRecall improvement,\tF-measure improvement,\tCorrect,\tWrong,\tMissing,\tCorrect improvement,\tWrong improvement,\tMissing improvement,\tEDSI correct,\tEDSI wrong,\tEFS correct,\tEFS wrong,\tCorrect extrapolating,\tWrong extrapolating");
+			System.out.println( 0+",\t"+Utility.getOneDecimalPercentFromDouble(initialPrecision)+",\t"+Utility.getOneDecimalPercentFromDouble(initialRecall)+",\t"+Utility.getOneDecimalPercentFromDouble(initialFmeasure)+",\t0.00%,\t0.00%,\t0.00%,\t"+initialCorrect+",\t"+initialWrong+",\t"+initialMissing+",\t"+0+",\t"+0+",\t"+0+",\t"+0+",\t"+0+",\t"+0+",\t"+0+",\t"+0+",\t"+0);
 			for(int i = 0; i < partialEvaluations.size(); i++){
 				FeedbackIteration partialIteration = partialEvaluations.get(i);
 				ReferenceEvaluationData partialData = partialIteration.evaluationData;
@@ -296,7 +296,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 				String impPrecision = Utility.getOneDecimalPercentFromDouble(impP);
 				String impRecall = Utility.getOneDecimalPercentFromDouble(impR);
 				String impFmeasure = Utility.getOneDecimalPercentFromDouble(impF);
-				System.out.println( partialIteration.iteration+"\t"+precision+"\t"+recall+"\t"+fmeasure+"\t"+impPrecision+"\t"+impRecall+"\t"+impFmeasure+"\t"+correct+"\t"+wrong+"\t"+missing+"\t"+impCorrect+"\t"+impWrong+"\t"+impMissing+"\t"+partialIteration.EDSIcorrect+"\t"+partialIteration.EDSIwrong+"\t"+partialIteration.EFScorrect+"\t"+partialIteration.EFSwrong+"\t"+(partialIteration.EDSIcorrect+partialIteration.EFScorrect)+"\t"+(partialIteration.EDSIwrong+partialIteration.EFSwrong));
+				System.out.println( partialIteration.iteration+",\t"+precision+",\t"+recall+",\t"+fmeasure+",\t"+impPrecision+",\t"+impRecall+",\t"+impFmeasure+",\t"+correct+",\t"+wrong+",\t"+missing+",\t"+impCorrect+",\t"+impWrong+",\t"+impMissing+",\t"+partialIteration.EDSIcorrect+",\t"+partialIteration.EDSIwrong+",\t"+partialIteration.EFScorrect+",\t"+partialIteration.EFSwrong+",\t"+(partialIteration.EDSIcorrect+partialIteration.EFScorrect)+",\t"+(partialIteration.EDSIwrong+partialIteration.EFSwrong));
 			}
 			//understanding why some mappings are not mapped
 			AlignmentSet losts = rd_end.getLostAlignments();
@@ -479,9 +479,11 @@ public class FeedbackLoop extends AbstractMatcher  {
 		AlignmentSet<Alignment> set = new AlignmentSet<Alignment>();
 		set.addAll(newClassAlignments_eDSI);
 		set.addAll(newPropertyAlignments_eDSI);
-		ReferenceEvaluationData EDSIdata = ReferenceEvaluator.compare(set, referenceAlignmentMatcher.getAlignmentSet());
-		EDSIcorrect += EDSIdata.getCorrect();
-		EDSIwrong += (EDSIdata.getFound() - EDSIdata.getCorrect());
+		if( referenceAlignmentMatcher != null ) {
+			ReferenceEvaluationData EDSIdata = ReferenceEvaluator.compare(set, referenceAlignmentMatcher.getAlignmentSet());
+			EDSIcorrect += EDSIdata.getCorrect();
+			EDSIwrong += (EDSIdata.getFound() - EDSIdata.getCorrect());
+		}
 		currentStage = executionStage.afterExtrapolatingMatchers;	
 		
 	}
@@ -603,7 +605,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 
 		
 		//PRINTING
-		System.out.println("Printing Candidate Mappings: ");	
+		System.out.println("Printing Candidate Mappings: ");
+		progressDisplay.appendToReport("Printing Candidate Mappings: ");
 		int numCandidateMappings = 0;//this value is not only used for printing
 		for(int i= 0; i<topConceptsAndAlignments.size(); i++){
 			CandidateConcept c = topConceptsAndAlignments.get(i);
@@ -612,6 +615,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 				numCandidateMappings += candidateMappings.size();
 				for( int aCandidate = 0; aCandidate < candidateMappings.size(); aCandidate++ ) {
 					Alignment candidateAlignment = candidateMappings.get(aCandidate);
+					progressDisplay.appendToReport(" Candidate Concept: "+i+" "+c.getNode()+ ", Candidate Mapping: " + Integer.toString(aCandidate) + ". " + candidateAlignment.toString() );
 					System.out.println( " Candidate Concept: "+i+" "+c.getNode()+ ", Candidate Mapping: " + Integer.toString(aCandidate) + ". " + candidateAlignment.toString() );	
 				}
 			}
@@ -684,7 +688,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 		//Initial Matcher is initialized in the SelectionPanel.getParameters()
 		//we just have to make it run here
 		setStage(executionStage.runningInitialMatchers);
-		AbstractMatcher im = param.matcher;
+		AbstractMatcher im = param.initialMatcher;
+		im.setThreshold( param.initialMatchersThreshold );
 		progressDisplay.appendNewLineReportText("Running the initial automatic matcher: "+im.getName().getMatcherName());
 		//parameters are set in the SelectionPanel.getParameters()
 		//im.setProgressDisplay(progressDisplay);
