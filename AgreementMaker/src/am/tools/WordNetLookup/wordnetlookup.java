@@ -1,4 +1,4 @@
-package am.utility.wordnet;
+package am.tools.WordNetLookup;
 
 public class wordnetlookup {
 

@@ -21,7 +21,7 @@
  *  
  */
 
-package am.seals;
+package am.tools.seals;
 
 import java.net.URI;
 import javax.jws.WebMethod;

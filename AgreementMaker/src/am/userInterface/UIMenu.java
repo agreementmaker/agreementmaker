@@ -30,7 +30,7 @@ import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.ontology.Ontology;
-import am.seals.SealsPanel;
+import am.tools.seals.SealsPanel;
 import am.userInterface.find.FindDialog;
 import am.userInterface.find.FindInterface;
 import am.userInterface.table.MatchersTablePanel;
