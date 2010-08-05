@@ -27,6 +27,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.regex.Matcher;
@@ -45,21 +46,32 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolTip;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.xml.ws.Endpoint;
 
 import am.Utility;
 import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
+import am.userInterface.MatcherParametersDialog;
+import am.userInterface.MatchingProgressDisplay;
 import am.utility.LinuxInetAddress;
 
-public class SealsPanel extends JPanel implements ActionListener {
+public class SealsPanel extends JPanel implements MatchingProgressDisplay, ActionListener {
 
 	private static final long serialVersionUID = 3284754599688612733L;
 
 	
 	private JButton btnPublish, btnDefaultName;
 	private JTextField txtHost, txtPort, txtEndpoint;
+	private JTextArea txtReport;
 	private JComboBox cmbMatcherList;
+	private JProgressBar barProgress;
+	
+	private AbstractMatcher matcherToPublish;
+	private Endpoint endpoint;
 	/**
 	 * Create the layout of the SEALS interface panel.
 	 */
@@ -103,6 +115,8 @@ public class SealsPanel extends JPanel implements ActionListener {
 		
 		btnPublish = new JButton("Publish!");
 		btnPublish.setToolTipText("Begin publishing.");
+		btnPublish.addActionListener(this);
+		btnPublish.setActionCommand("publish");
 		
 		
 		JLabel lblEndpoint = new JLabel("Name:");
@@ -176,11 +190,12 @@ public class SealsPanel extends JPanel implements ActionListener {
 		
 		// create all the elements for the matcher progress panel
 		
-		JProgressBar barProgress = new JProgressBar(0, 100);
+		barProgress = new JProgressBar(0, 100);
 		barProgress.setValue(0);
 		barProgress.setStringPainted(true);
+		barProgress.setEnabled(false);
 		
-		JTextArea txtReport = new JTextArea(8, 35);
+		txtReport = new JTextArea(8, 35);
 		JScrollPane sclReport = new JScrollPane(txtReport);
 
 		
@@ -255,8 +270,106 @@ public class SealsPanel extends JPanel implements ActionListener {
 				className = matcher.group();  // this is the matcher name
 			}
 			txtEndpoint.setText( className );	
+		} else if( actionEvent.getSource() == btnPublish ) {
+			
+			if( btnPublish.getActionCommand().equals("publish") ) {
+				// We are going to publish a new matcher.
+				
+				
+				// 1. Get the matcher instance.
+				MatchersRegistry mR = MatcherFactory.getMatchersRegistryEntry( cmbMatcherList.getSelectedItem().toString() );
+				matcherToPublish = MatcherFactory.getMatcherInstance(mR, Core.getInstance().getMatcherInstances().size());
+				
+				// 2. Make sure we are using a Layer I matcher.
+				if( matcherToPublish.getMinInputMatchers() > 0 ) {
+					Utility.displayErrorPane("Matcher must be a \"Layer I\" matcher.  A \"Layer I\" matcher does not require any input matchers.", "Cannot use this matcher.");
+					//throw new Exception("Matcher must be a \"Layer I\" matcher.");
+					return;
+				}
+				
+				// 3. If the matcher requires parameters, bring up the corresponding parameters panel and have the user set the parameters
+				if( matcherToPublish.needsParam() ) {
+					// bring up the matcherparametersdialog to have the users set the parameters for the algorithm
+					MatcherParametersDialog paramDialog = new MatcherParametersDialog( matcherToPublish );
+					matcherToPublish.setParam( paramDialog.getParameters() );
+				}
+
+			/*  // Ignore this. It was used to test if the parameters were trully set.
+				AbstractParameters param = matcherToPublish.getParam();
+				if( param instanceof BaseSimilarityParameters ) {
+					BaseSimilarityParameters bsmParam = (BaseSimilarityParameters)param;
+					txtReport.append("Use dictionary? " + bsmParam.useDictionary + "\n");
+				}
+			*/
+				
+				// 4. We want to see the display of the matcher in the SEALS panel.  Register this panel as a MatcherProgressDisplay.
+				matcherToPublish.setProgressDisplay( this );
+				
+				
+				// 5. Publish this matcher.
+				
+				SealsServer sealsServer = new SealsServer(matcherToPublish);
+				endpoint = Endpoint.create(sealsServer);
+				String endpointDescription = "http://" + txtHost.getText().trim() + ":" + txtPort.getText().trim() + "/" + txtEndpoint.getText().trim(); 
+				endpoint.publish(endpointDescription);
+				
+				appendToReport("Matcher published to " + endpointDescription + "\n");
+				
+				// 6. Update the Publish button to a Stop button.
+				btnPublish.setText("Stop!");
+				btnPublish.setActionCommand("stop");
+				
+			} else if( btnPublish.getActionCommand().equals("stop") ) {
+				
+				// the user wants to stop the publishing of the service.
+				
+				// 1. Stop the endpoint.
+				endpoint.stop();
+				
+				// 2. Stop the matcher.
+				matcherToPublish.cancel(true);
+				appendToReport("Publishing stopped. Matcher stopped.\n");
+				
+				// 3. Dereference anything we don't need anymore.
+				matcherToPublish = null;
+				endpoint = null;
+				
+				// 4. Update the Stop button to a Publish button.
+				btnPublish.setText("Publish!");
+				btnPublish.setActionCommand("publish");
+			}
+			
+			
 		}
 		
 	}
+
+	
+	/********************************* Matcher Progress Display Methods *************************************/
+	
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if ("progress" == evt.getPropertyName()) {
+            int progress = (Integer) evt.getNewValue();
+            barProgress.setValue(progress);
+        }		
+	}
+
+	@Override
+	public void appendToReport(String report) { txtReport.append(report); }
+
+	@Override
+	public void matchingStarted() { 
+		barProgress.setEnabled(true); 
+		barProgress.setValue(0); 
+		txtReport.append("Matcher has started to run.\n"); 
+	}
+	
+	@Override
+	public void matchingComplete() { 
+		barProgress.setEnabled(false); 
+		txtReport.append( matcherToPublish.getReport() ); 
+	}
+
 	
 }

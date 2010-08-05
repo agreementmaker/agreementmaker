@@ -110,14 +110,6 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
         
 	}
 
-	/**
-	 * Add text to the report text box.
-	 */
-	public void appendToReport( String report ) {
-		matcherReport.append( report );
-		return;
-	}
-	
 	public void actionPerformed(ActionEvent e) {
 		Object obj = e.getSource();
 		if(obj == okButton) {
@@ -130,6 +122,19 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 		
 	}
 
+	
+	/*********** Matching Progress Display Methods *****************************************/
+	
+	/**
+	 * Add text to the report text box.
+	 */
+	@Override
+	public void appendToReport( String report ) { matcherReport.append( report ); }
+	
+	@Override
+	public void matchingStarted() { progressBar.setEnabled(true); }
+	
+	@Override
 	public void matchingComplete() {
 		//  The algorithm has been completed, update the report text area.
 		if( !GlobalStaticVariables.USE_PROGRESS_BAR ) {
@@ -139,9 +144,7 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 		matcherReport.setText( matcher.getReport() );
 		cancelButton.setEnabled(false);
 		okButton.setEnabled(true);
-		
-	}
-	
+	}	
 
 	
 }

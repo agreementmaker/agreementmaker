@@ -255,6 +255,9 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 	}
 
 
+	
+	/*********** Matcher Progress Display Methods ***********************/
+	
 
 	public void appendToReport(String report) {
 		if(!ufl.isCancelled()){
@@ -267,6 +270,9 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 
 
 
+	@Override
+	public void matchingStarted() {	}
+	
 	// gets called when a matcher finishes
 	public void matchingComplete() {
 		

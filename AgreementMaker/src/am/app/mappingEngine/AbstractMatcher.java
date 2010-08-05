@@ -57,17 +57,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/**Structure containing similarity values between classes nodes, matrix[source][target]*/
 	protected AlignmentMatrix propertiesMatrix;
 	
-	/**Reference to the Core istances*/
+	/** The ontologies to be matched. */
 	protected Ontology sourceOntology;
-	public Ontology getSourceOntology() {
-		return sourceOntology;
-	}
-
-	public Ontology getTargetOntology() {
-		return targetOntology;
-	}
-
 	protected Ontology targetOntology;
+	
 	
 	/**If the algo calculates prop alignments*/
 	protected boolean alignProp;
@@ -168,8 +161,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		relation = Alignment.EQUIVALENCE;
 		optimized = false;
 		//ALIGNMENTS LIST MUST BE NULL UNTIL THEY ARE CALCULATED
-		sourceOntology = Core.getInstance().getSourceOntology();
-		targetOntology = Core.getInstance().getTargetOntology();
+		classesAlignmentSet = null;
+		propertiesAlignmentSet = null;
+		
+		//sourceOntology = Core.getInstance().getSourceOntology(); // moved initialization of sourceOntology to match().
+		//targetOntology = Core.getInstance().getTargetOntology(); // moved initialization of targetOntology to match().
 		inputMatchers = new ArrayList<AbstractMatcher>();
 	}
 	
@@ -191,8 +187,30 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 */
 	
     public void match() throws Exception {
+    	
+    	// setup the Ontologies
+    	if( sourceOntology == null ) {
+    		if( Core.getInstance().getSourceOntology() == null ) {
+    			// no source ontology defined or loaded
+    			return;
+    		} else {
+    			// the source Ontology is not defined, but a Source ontology is loaded in the Core. Use that.
+    			sourceOntology = Core.getInstance().getSourceOntology();
+    		}
+    	}
+    	
+    	if( targetOntology == null ) {
+    		if( Core.getInstance().getTargetOntology() == null ) {
+    			// no target ontology defined or loaded
+    			return;
+    		} else {
+    			// the target Ontology is not defined as part of this matcher, but a Target ontology is loaded in the Core.  Use that.
+    			targetOntology = Core.getInstance().getTargetOntology();
+    		}
+    	}
+    	
     	matchStart();
-    	buildSimilarityMatrices();
+    	buildSimilarityMatrices(); // align()
     	if(performSelection && !this.isCancelled() ){
         	select();	
     	}
@@ -265,8 +283,12 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     
     //Time calculation, if you override this method remember to call super.afterSelectionOperations()
     protected void matchStart() {
-    	if( isProgressDisplayed() ) setupProgress();  // if we are using the progress dialog, setup the variables
+    	if( isProgressDisplayed() ) {
+    		setupProgress();  // if we are using the progress dialog, setup the variables
+    		progressDisplay.matchingStarted();
+    	}
     	start = System.nanoTime();
+    	
 	}
     //Time calculation, if you override this method remember to call super.afterSelectionOperations()
 	protected void matchEnd() {
@@ -274,7 +296,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		end = System.nanoTime();
     	executionTime = (end-start)/1000000; // this time is in milliseconds.
 	    setSuccesfullReport();	
-		if( isProgressDisplayed() ) allStepsDone();
+		if( isProgressDisplayed() ) {
+			allStepsDone();
+			progressDisplay.matchingComplete();
+		}
     	
 	}
     //***************INTERNAL METHODS THAT CAN BE USED BY ANY ABSTRACTMATCHER******************************************
@@ -1204,7 +1229,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	
 		float percent = ((float)stepsDone / (float)stepsTotal);
 		int p = (int) (percent * 100);
-		setProgress(p);  // this function does the actual work ( via the PropertyChangeListener )
+		setProgress(p);  // this function does the actual work ( via Swingworker, which uses the PropertyChangeListener )
 		
 	}
 	
@@ -1299,6 +1324,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		
 	}
 
+	
+	/***************** Ontology methods **************************/
+	
+	public Ontology getSourceOntology() { return sourceOntology; }
+	public Ontology getTargetOntology() { return targetOntology; }
+	
+	public void setSourceOntology( Ontology s ) { sourceOntology = s; }
+	public void setTargetOntology( Ontology t ) { targetOntology = t; }
 
 
 
