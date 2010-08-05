@@ -95,19 +95,23 @@ public class MatcherFactory {
 		return a;
 	}
 
+	
+	/**
+	 * Returns the MatchersRegistry entry of the matcher with the given name.
+	 * @param name The String object representing the name of the matcher.
+	 * @return The MatchersRegistry entry for the matcher.  If no matchers are found to equal the name, it returns the first one in the list.
+	 */
 	public static MatchersRegistry getMatchersRegistryEntry( String name ) {
-		
-		
+
 		EnumSet<MatchersRegistry> matchers = EnumSet.allOf(MatchersRegistry.class);
 		
+		// Alternate suggestion: Do this with an iterator() instead of toArray and a for-loop.
 		Object[] matchersArray = matchers.toArray();
-
 		for( int i = 0; i < matchersArray.length; i++ ) {
-			if( ((MatchersRegistry) matchersArray[i]).getMatcherName() == name  ) {
+			if( ((MatchersRegistry) matchersArray[i]).getMatcherName().equals(name)  ) {
 				return (MatchersRegistry) matchersArray[i];
 			}
 		}
-		
 		return (MatchersRegistry) matchersArray[0];
 		
 	}

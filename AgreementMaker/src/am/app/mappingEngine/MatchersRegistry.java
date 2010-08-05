@@ -1,5 +1,9 @@
 package am.app.mappingEngine;
 
+import java.util.EnumSet;
+import java.util.Enumeration;
+import java.util.Iterator;
+
 import am.app.feedback.FeedbackLoop;
 import am.app.feedback.InitialMatchers;
 import am.app.mappingEngine.Combination.CombinationMatcher;
@@ -93,5 +97,26 @@ public enum MatchersRegistry {
 	public String getMatcherName() { return name; }
 	public String getMatcherClass() { return className; }
 	public boolean isShown() { return showInControlPanel; }
+	public String toString() { return name; }
+	
+	/**
+	 * Returns the matcher with the given name.
+	 * @param matcherName The name of the matcher.
+	 * @return The MatchersRegistry representation of the matcher (used with MatcherFactory).  
+	 */
+/*  // This method duplicates MatcherFactory.getMatchersRegistryEntry( matcherName )
+	public static MatchersRegistry getMatcherByName( String matcherName ) {
+		
+		EnumSet<MatchersRegistry> matchers = EnumSet.allOf(MatchersRegistry.class);
+		
+		Iterator<MatchersRegistry> entryIter = matchers.iterator();
+		while( entryIter.hasNext() ) {
+			MatchersRegistry currentEntry = entryIter.next();
+			if( currentEntry.getMatcherName().equals(matcherName) ) return currentEntry;
+		}
+		
+		return null;
+	}
+*/
 	
 }

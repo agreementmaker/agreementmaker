@@ -25,8 +25,12 @@ package am.tools.seals;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -39,16 +43,23 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JToolTip;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatchersRegistry;
+import am.utility.LinuxInetAddress;
 
-public class SealsPanel extends JPanel {
+public class SealsPanel extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 3284754599688612733L;
 
+	
+	private JButton btnPublish, btnDefaultName;
+	private JTextField txtHost, txtPort, txtEndpoint;
+	private JComboBox cmbMatcherList;
 	/**
 	 * Create the layout of the SEALS interface panel.
 	 */
@@ -59,7 +70,7 @@ public class SealsPanel extends JPanel {
 		String currentIP = null;
 		String underHostText = null; 
 		try {
-			InetAddress ip = InetAddress.getLocalHost();
+			InetAddress ip = LinuxInetAddress.getLocalHost4();
 			currentIP = ip.getHostAddress();
 		} catch (UnknownHostException e) {
 			//e.printStackTrace();
@@ -72,19 +83,37 @@ public class SealsPanel extends JPanel {
 		lblSealsLogo.setIcon(new ImageIcon("images/seals-logo.jpg"));
 		
 		JLabel lblHost = new JLabel("Host:");
-		JTextField txtHost = new JTextField(currentIP);
-
-		JLabel lblUnderHost = new JLabel("Your current ip seems to be " + currentIP);
+		txtHost = new JTextField(currentIP);
+		//lblHost.setToolTipText("IP address/hostname of the computer.");
+		txtHost.setToolTipText("IP address/hostname of the computer.");
+		
+		//JLabel lblUnderHost = new JLabel("Your current ip seems to be " + currentIP);
 		
 		JLabel lblPort = new JLabel("Port:");
-		JTextField txtPort = new JTextField("8081", 6);
+		txtPort = new JTextField("8081", 6);
+		//lblPort.setToolTipText("Any port that's free.");
+		txtPort.setToolTipText("Free port number.");
 		
 		JLabel lblMatcher = new JLabel("Matcher:");
+		//lblMatcher.setToolTipText("Matcher run to handle the align() requests.");
 		
 		String[] matcherList = MatcherFactory.getMatcherComboList();
-		JComboBox cmbMatcherList = new JComboBox(matcherList);
+		cmbMatcherList = new JComboBox(matcherList);
+		cmbMatcherList.setToolTipText("Matcher run to handle the align() requests.");
 		
-		JButton btnPublish = new JButton("Publish!");
+		btnPublish = new JButton("Publish!");
+		btnPublish.setToolTipText("Begin publishing.");
+		
+		
+		JLabel lblEndpoint = new JLabel("Name:");
+		txtEndpoint = new JTextField("matcherWS");
+		txtEndpoint.setToolTipText("Endpoint name.");
+		
+		btnDefaultName = new JButton("Default");
+		btnDefaultName.addActionListener(this);
+		btnDefaultName.setToolTipText("Use the default matcher name.");
+		
+		int buttonWidth = btnDefaultName.getPreferredSize().width > btnPublish.getPreferredSize().width ? btnDefaultName.getPreferredSize().width : btnPublish.getPreferredSize().width;  
 		
 		
 		// now create the settings panel
@@ -108,14 +137,17 @@ public class SealsPanel extends JPanel {
 						)
 				.addGroup( settingsLayout.createSequentialGroup()
 						.addComponent(lblMatcher)
-						.addGap(12)
-						.addComponent(lblUnderHost)
+						.addComponent(cmbMatcherList)
 						)
 				.addGroup( settingsLayout.createSequentialGroup()
-						.addComponent(lblMatcher)
-						.addComponent(cmbMatcherList)
-						.addComponent(btnPublish)
+						.addComponent(lblEndpoint, GroupLayout.PREFERRED_SIZE, lblMatcher.getPreferredSize().width, GroupLayout.PREFERRED_SIZE)
+						.addComponent(txtEndpoint)
+						.addGroup( settingsLayout.createParallelGroup()
+								.addComponent(btnPublish)
+								.addComponent(btnDefaultName, GroupLayout.PREFERRED_SIZE, buttonWidth, GroupLayout.PREFERRED_SIZE)
+								)
 						)
+				.addComponent(btnPublish, GroupLayout.PREFERRED_SIZE, buttonWidth, GroupLayout.PREFERRED_SIZE)
 				);
 		
 		settingsLayout.setVerticalGroup( settingsLayout.createSequentialGroup()
@@ -125,13 +157,17 @@ public class SealsPanel extends JPanel {
 						.addComponent(lblPort)
 						.addComponent(txtPort)
 						)
-				.addComponent(lblUnderHost)
-				.addGap(10)
 				.addGroup( settingsLayout.createParallelGroup()
 						.addComponent(lblMatcher)
 						.addComponent(cmbMatcherList)
-						.addComponent(btnPublish)
 						)
+				.addGroup( settingsLayout.createParallelGroup()
+						.addComponent(lblEndpoint)
+						.addComponent(txtEndpoint)
+						.addComponent(btnDefaultName)
+						)
+				.addGap(20)
+				.addComponent(btnPublish)
 				);
 		
 		pnlSettings.setLayout(settingsLayout);
@@ -201,6 +237,25 @@ public class SealsPanel extends JPanel {
 				);
 		
 		this.setLayout(sealsLayout);
+		
+		
+		txtReport.append("Your current IP address seems to be " + currentIP + ".\n");
+		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent actionEvent) {
+		
+		if( actionEvent.getSource() == btnDefaultName ) {
+			String className = MatcherFactory.getMatchersRegistryEntry( cmbMatcherList.getSelectedItem().toString() ).getMatcherClass();
+			
+			Pattern searchPattern = Pattern.compile( "\\w+$" );
+			Matcher matcher = searchPattern.matcher(className); // get only the class name of the class definition
+			if( matcher.find() ) {
+				className = matcher.group();  // this is the matcher name
+			}
+			txtEndpoint.setText( className );	
+		}
 		
 	}
 	

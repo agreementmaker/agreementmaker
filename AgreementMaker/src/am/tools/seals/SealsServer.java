@@ -23,6 +23,25 @@
 
 package am.tools.seals;
 
-public class SealsServer {
+import java.net.URI;
+
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.AbstractParameters;
+
+public class SealsServer implements WebAlignment {
+
+	private AbstractMatcher matcher;
+	
+	public SealsServer( AbstractMatcher m ) {
+		matcher = m;
+	}
+	
+	
+	@Override
+	public String align(URI source, URI target) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
