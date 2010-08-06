@@ -44,6 +44,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 		}
 
 	//instance variables
+	private String ontURI = null;
 	private boolean noReasoner = false;
 	private OntModel model;
 	private Set<OntResource> unsatConcepts;  
@@ -141,15 +142,16 @@ public class OntoTreeBuilder extends TreeBuilder{
 		}		
 		
 		timer.stop();
+		
 		if( progressDialog != null ) progressDialog.appendLine("Done. " + timer.getFormattedRunTime());
 		
-		// now, the visualization panel needs to build its own graph.
 		timer.resetAndStart();
-		if( progressDialog != null ) progressDialog.appendLine("Building visualization graphs.");
-		
-		if( progressDialog != null ) Core.getInstance().getUI().getCanvas().buildLayoutGraphs(ontology);
-		
-		if( progressDialog != null ) progressDialog.appendLine("Done. " + timer.getFormattedRunTime());
+		// now, the visualization panel needs to build its own graph.
+		if( progressDialog != null ) {
+			progressDialog.appendLine("Building visualization graphs.");
+			Core.getInstance().getUI().getCanvas().buildLayoutGraphs(ontology);
+			progressDialog.appendLine("Done. " + timer.getFormattedRunTime());
+		} 
 
 	}
 	
@@ -160,7 +162,10 @@ public class OntoTreeBuilder extends TreeBuilder{
 		model = ModelFactory.createOntologyModel( PelletReasonerFactory.THE_SPEC );
 		System.out.println("Model created...but not read");
 		//TODO: Figure out if the 2nd arg in next fn call should be null or someother URI
-		model.read( "file:"+ontology.getFilename(), null, ontology.getFormat() );
+		if( ontURI == null ) {
+			ontURI = "file:"+ontology.getFilename();
+		}
+		model.read( ontURI, null, ontology.getFormat() );
 		System.out.println("done");
 		
 		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
@@ -228,8 +233,12 @@ public class OntoTreeBuilder extends TreeBuilder{
 		System.out.print("OntoTreeBuilder: Reading Model with no reasoner...");
 		
 		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM );
-		System.out.println("Model created...but not read");
-		model.read( "file:"+ontology.getFilename(), null, ontology.getFormat() );
+		System.out.println("Model created...but not read yet.");
+		
+		if( ontURI == null ) {
+			ontURI = "file:"+ontology.getFilename();
+		}
+		model.read( ontURI, null, ontology.getFormat() );
 		
 		System.out.println(" done.");
 		
