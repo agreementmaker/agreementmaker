@@ -17,7 +17,103 @@ public class AlignmentOutput
     private RandomAccessFile raf = null;
     private String filepath = null;
     private ArrayList<String> writeList = null;
+    private StringBuilder buffer;
 
+    
+    /**
+     * This constructor is used for saving as a String, not to a file.  Use only with compileString().
+     * @param as The set of mappings between two ontologies.
+     */
+    public AlignmentOutput( AlignmentSet as ) {
+    	alignmentSet = as;
+    	filepath = "";
+    	buffer = new StringBuilder();
+    }
+    
+    /**
+     * This method saves the AlignmentSet in OAEI format in a string in memory, then returns the string.
+     * @param onto1 The URI of the source ontology. Can be empty.
+     * @param onto2 The URI of the target ontology. Can be empty.
+     * @param uri1 The URI of the source ontology.
+     * @param uri2 The URI of the target ontology.
+     * @return The OAEI formatted XML string.
+     */
+    public String compileString(String onto1, String onto2, String uri1, String uri2)
+    {
+        stringNS();
+        stringStart("yes", "0", "11", onto1, onto2, uri1, uri2);
+        for (int i = 0, n = alignmentSet.size(); i < n; i++) {
+            Alignment alignment = (Alignment) alignmentSet.getAlignment(i);
+            String e1 = alignment.getEntity1().getUri();
+            String e2 = alignment.getEntity2().getUri();
+            String measure = Double.toString(alignment.getSimilarity());
+            stringElement(e1, e2, measure);
+
+        }
+        stringEnd();
+        return buffer.toString();
+    }
+    
+    private void stringNS()
+    {
+        String temp = "<?xml version='1.0' encoding='utf-8'?>\n" 
+                + "<rdf:RDF xmlns='http://knowledgeweb.semanticweb.org/heterogeneity/alignment' \n" 
+                + "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' \n" 
+                + "xmlns:xsd='http://www.w3.org/2001/XMLSchema#'>\n";
+        buffer.append(temp);
+    }
+    
+    private void stringStart(String xml, String level, String type, String onto1,
+            String onto2, String uri1, String uri2)
+    {
+    	//Below two if statement is only for OAEI 09 test case 303 
+    	//where uri is not mentioned in the ontology by xlmns=base:
+    	if(uri1.equals("")){
+    		Resource r = alignmentSet.getAlignment(0).getEntity1().getResource();
+    		uri1 = r.getURI();
+    		uri1 = uri1.substring(0, uri1.indexOf("#")+1);
+    	}
+    	if(uri2.equals("")){
+    		Resource r = alignmentSet.getAlignment(0).getEntity2().getResource();
+    		uri2 = r.getURI();
+    		uri2 = uri2.substring(0, uri2.indexOf("#")+1);
+    		if(uri2.equalsIgnoreCase("http://www.aifb.uni-karlsruhe.de/ontology#"))
+    		{
+    			onto2 = "http://oaei.ontologymatching.org/2009/benchmarks/303/onto.rdf#";
+    		}
+    	}
+        String temp = "<Alignment>\n" 
+                + "  <xml>" + xml + "</xml>\n" 
+                + "  <level>" + level + "</level>\n"
+                + "  <type>" + type + "</type>\n" 
+                + "  <onto1>" + onto1 + "</onto1>\n" 
+                + "  <onto2>" + onto2 + "</onto2>\n" 
+                + "  <uri1>" + uri1 + "</uri1>\n" 
+                + "  <uri2>" + uri2 + "</uri2>";
+        buffer.append(temp);
+    }
+    
+    private void stringElement(String res1, String res2, String measure)
+    {
+        String temp = "    <map>\n" 
+                + "      <Cell>\n" 
+                + "        <entity1 rdf:resource=\"" + res1 + "\"/>\n" 
+                + "        <entity2 rdf:resource=\"" + res2 + "\"/>\n" 
+                + "        <measure rdf:datatype=\"http://www.w3.org/2001/XMLSchema#float\">" 
+                + measure + "</measure>\n" 
+                + "        <relation>=</relation>\n" 
+                + "      </Cell>\n" 
+                + "    </map>";
+        buffer.append(temp);
+    }
+    
+    public void stringEnd()
+    {
+        String temp = "  </Alignment>\n</rdf:RDF>";
+        buffer.append(temp);
+    }
+
+    
     public AlignmentOutput(AlignmentSet as, String fp)
     {
         alignmentSet = as;
@@ -34,6 +130,8 @@ public class AlignmentOutput
         }
     }
 
+    
+    
     public void write(String onto1, String onto2, String uri1, String uri2)
     {
         writeNS();

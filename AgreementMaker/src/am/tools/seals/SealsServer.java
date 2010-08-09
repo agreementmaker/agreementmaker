@@ -24,14 +24,23 @@
 package am.tools.seals;
 
 import java.net.URI;
+import java.util.ArrayList;
 
 import javax.jws.WebService;
+import javax.swing.SwingWorker.StateValue;
 
 import eu.sealsproject.omt.ws.matcher.AlignmentWS;
 
+import am.GlobalStaticVariables;
+import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatchersRegistry;
+import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.output.AlignmentOutput;
+import am.userInterface.MatchingProgressDisplay;
 
 /**
  * This class is in charge of publishing
@@ -41,37 +50,85 @@ import am.app.mappingEngine.AbstractParameters;
 @WebService(endpointInterface="eu.sealsproject.omt.ws.matcher.AlignmentWS")
 public class SealsServer implements AlignmentWS {
 
-	private AbstractMatcher matcher;
+//	private AbstractMatcher matcher;
 	
-	public SealsServer( AbstractMatcher m ) {
-		matcher = m;
+	private MatchersRegistry matcherRegistry;
+	private MatchingProgressDisplay progressDisplay;
+	
+	private double threshold;
+	private int sourceRelations;
+	private int targetRelations;
+	private AbstractParameters parameters;
+	
+	public SealsServer( MatchersRegistry mR, MatchingProgressDisplay pD, double th, int sourceR, int targetR, AbstractParameters params ) {
+		matcherRegistry = mR;
+		progressDisplay = pD;
+		threshold = th;
+		sourceRelations = sourceR;
+		targetRelations = targetR;
+		parameters = params;
 	}
 	
 	
 	@Override
 	public String align(URI source, URI target) {
+
+		// 0. Instantiate the matcher.
+		
+		AbstractMatcher m = MatcherFactory.getMatcherInstance(matcherRegistry, Core.getInstance().getMatcherInstances().size());
+		m.setProgressDisplay(progressDisplay);
+		m.setThreshold(threshold);
+		m.setMaxSourceAlign(sourceRelations);
+		m.setMaxTargetAlign(targetRelations);
 		
 		
 		// 1. Load ontologies.
-		matcher.getProgressDisplay().appendToReport("Source URI: " + source + "\n");
+		progressDisplay.appendToReport("Loading source ontology. URI: " + source + "\n");
 		
 		
-		matcher.getProgressDisplay().appendToReport("Target URI: " + target + "\n");
+		OntoTreeBuilder otb1 = new OntoTreeBuilder(".", GlobalStaticVariables.SOURCENODE, GlobalStaticVariables.LANG_OWL, "RDF/XML", true, false);
+		otb1.setURI(source.toString());
+		
+		progressDisplay.appendToReport("Building source Ontology().\n");
+		otb1.build( OntoTreeBuilder.Profile.noReasoner );
+		m.setSourceOntology( otb1.getOntology() );
+		progressDisplay.appendToReport("Sucessfully loaded source ontology.\n");
+		
+		
+		progressDisplay.appendToReport("Loading target ontology. URI: " + target + "\n");
+		
+		OntoTreeBuilder otb2 = new OntoTreeBuilder( ".", GlobalStaticVariables.SOURCENODE, GlobalStaticVariables.LANG_OWL, "RDF/XML", true, false);
+		otb2.setURI(target.toString());
+		
+		progressDisplay.appendToReport("Building target Ontology().\n");
+		otb2.build( OntoTreeBuilder.Profile.noReasoner );
+		m.setTargetOntology( otb2.getOntology() );
+		progressDisplay.appendToReport("Sucessfully loaded target ontology.\n");
 		
 		// 2. Run the matcher.
+		try {
+			m.match();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			progressDisplay.appendToReport( e.getMessage() + "\n");
+			progressDisplay.appendToReport("Exception has been thrown, stopping matcher.\n");
+			m.cancel(true);
+			return "";
+		}
 		
 		
 		// 3. Parse the alignment set into OAEI format.
+		AlignmentOutput output = new AlignmentOutput(m.getAlignmentSet());
+		String sourceUri = m.getSourceOntology().getURI();
+		String targetUri = m.getTargetOntology().getURI();
+		String alignment = output.compileString(sourceUri, targetUri, sourceUri, targetUri);
 		
+		
+		// debugging
+		progressDisplay.appendToReport(alignment + "\n");
 		// 3. Return the parsed alignment.
-		String emptyAlignment = new String();
-		emptyAlignment += "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
-		emptyAlignment += "<rdf:RDF xmlns=\"http://knowledgeweb.semanticweb.org/heterogeneity/alignment\"	 xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"	 xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\">";
-		
-		emptyAlignment += "<Alignment>	<xml>yes</xml>		<level>0</level>		<type>??</type>";
-		//emptyAlignment += "<map>	<Cell>			<entity1 rdf:resource=\"http://mouse.owl#MA_0001951\"/>			<entity2 rdf:resource=\"http://human.owl#NCI_C12715\"/>			<measure rdf:datatype=\"xsd:float\">0.9665265679359436</measure>			<relation>=</relation>		</Cell>	</map>";
-		emptyAlignment += "</Alignment></rdf:RDF>";
-		return emptyAlignment;
+		return alignment;
 	}
 
 }

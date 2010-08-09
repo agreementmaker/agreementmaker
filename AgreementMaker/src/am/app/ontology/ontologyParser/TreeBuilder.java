@@ -23,7 +23,9 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 	protected int stepsDone;  // Used by the ProgressDialog.  This is how many of the total steps we have completed.
 	protected String report = "";
 	
+	
 	public TreeBuilder(String filename,  int sourceOrTarget, String language, String format) {
+		// TODO: Streamline this.
 		ontology = new Ontology();
 		ontology.setIndex( Core.getInstance().numOntologies() );
 		ontology.setID( Core.getInstance().getNextOntologyID() );  // get an unique ID for this ontology
@@ -58,7 +60,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
         report += "Total number of classes: "+ontology.getClassesList().size()+"\n";
         report += "Total number of properties: "+ontology.getPropertiesList().size()+"\n\n";
         report += "Select the 'Ontology Details' function in the 'Ontology' menu\nfor additional informations.\n";
-        report += "The 'Hierarchy Visualization' can be disabled from the 'View' menu\nto improve system performances.";
+        report += "The 'Hierarchy Visualization' can be disabled from the 'View' menu\nto improve system performances.\n";
 	}
 	
 	protected void buildTree(){

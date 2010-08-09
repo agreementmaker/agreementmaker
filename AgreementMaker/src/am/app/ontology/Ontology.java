@@ -20,10 +20,19 @@ public class Ontology {
 	
 	public static final int ID_NONE = -1;  // used when there is no ontology id.
 	
-	/**It may be SOURCE or TARGET use the final static int values in GSM to set this*/
+	
+	/** 
+	 * <p>It may be SOURCE or TARGET.  Use the final static int values in GSV to set this. (GlobalStaticVariables.SOURCENODE or GlobalStaticVariables.TARGETNODE)</p>
+	 * <p>TODO: Change this to an enum.</p> 
+	 * */
 	private int sourceOrTarget;
+	
+	
 	private String filename;//file name with all the path
+	
+	
 	private String title;//usually is the name of the file without the path and is the name of the root vertex
+	
 	/**It may be XML, OWL, RDF*/
 	private String language;
 	/**For example RDF/XML for OWL language, in XML lanaguage is null*/

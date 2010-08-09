@@ -70,9 +70,12 @@ public class OntoTreeBuilder extends TreeBuilder{
 	
 	/**
 	 * Builds an ontology with list of classes, list of properties, classes tree and properties tree, all information are kept in the ontology istance
-	 * @param fileName
+	 * @param fileName 
 	 * @param syntaxIndex
-	 * @param sourceOrTarget
+	 * @param sourceOrTarget 
+	 * @param format 
+	 * @param skip Skip other namespaces, usually set to true.
+	 * @param reas Set to true in order to use a reasoner when loading the ontology, false to load without using a reasoner.
 	 */
 	public OntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip, boolean reas) {
 		super(fileName, sourceOrTarget, language, format); 
@@ -95,8 +98,8 @@ public class OntoTreeBuilder extends TreeBuilder{
 		report = "Ontology loaded succesfully\n\n";
         report += "Total number of classes: "+ontology.getClassesList().size()+"\n";
         report += "Total number of properties: "+ontology.getPropertiesList().size()+"\n\n";
-        report += "Select the 'Ontology Details' function in the 'Ontology' menu\nfor additional informations.\n";
-        report += "The 'Hierarchy Visualization' can be disabled from the 'View' menu\nto improve system performances.";
+        //report += "Select the 'Ontology Details' function in the 'Ontology' menu\nfor additional informations.\n";
+        //report += "The 'Hierarchy Visualization' can be disabled from the 'View' menu\nto improve system performances.";
 	}
 	
 	
@@ -609,4 +612,13 @@ public class OntoTreeBuilder extends TreeBuilder{
         }
         return root;
     }
+    
+    /**
+     * Upon creating an OntoTreeBuilder object, you can set the URI of the ontology you want to load.  If the URI is not set, it will be constructed from the fileName passed to the constructor.
+     * @param URI The URI of the ontology to load, whether it be a local file or an internet address.
+     */
+    public void setURI( String URI ) {
+    	ontURI = URI;
+    }
+    
 }

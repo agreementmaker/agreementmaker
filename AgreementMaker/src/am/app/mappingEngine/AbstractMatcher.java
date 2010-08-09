@@ -1229,6 +1229,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	
 		float percent = ((float)stepsDone / (float)stepsTotal);
 		int p = (int) (percent * 100);
+		
+		// some error checking
+		if( p > 100 && p > 0 ) { p = 100; }
+		if( p < 0 ) { p = 0; }
 		setProgress(p);  // this function does the actual work ( via Swingworker, which uses the PropertyChangeListener )
 		
 	}

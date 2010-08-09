@@ -67,7 +67,7 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 	private JButton btnPublish, btnDefaultName;
 	private JTextField txtHost, txtPort, txtEndpoint;
 	private JTextArea txtReport;
-	private JComboBox cmbMatcherList;
+	private JComboBox cmbMatcherList, cmbThreshold, cmbSource, cmbTarget;
 	private JProgressBar barProgress;
 	
 	private AbstractMatcher matcherToPublish;
@@ -113,6 +113,22 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 		cmbMatcherList = new JComboBox(matcherList);
 		cmbMatcherList.setToolTipText("Matcher run to handle the align() requests.");
 		
+		
+		
+		String[] thresholds = Utility.getPercentStringList();
+		String[] numRelations = Utility.getNumRelList();
+		
+		JLabel lblThreshold = new JLabel("Threshold:");
+		cmbThreshold = new JComboBox(thresholds);
+		cmbThreshold.setSelectedItem("60%");
+		
+		JLabel lblCardinality = new JLabel("Cardinality:");
+		cmbSource = new JComboBox(numRelations);
+		
+		JLabel lblTo = new JLabel("to");
+		cmbTarget = new JComboBox(numRelations);
+		
+		
 		btnPublish = new JButton("Publish!");
 		btnPublish.setToolTipText("Begin publishing.");
 		btnPublish.addActionListener(this);
@@ -123,11 +139,11 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 		txtEndpoint = new JTextField("matcherWS");
 		txtEndpoint.setToolTipText("Endpoint name.");
 		
-		btnDefaultName = new JButton("Default");
+		btnDefaultName = new JButton("Default Name");
 		btnDefaultName.addActionListener(this);
 		btnDefaultName.setToolTipText("Use the default matcher name.");
 		
-		int buttonWidth = btnDefaultName.getPreferredSize().width > btnPublish.getPreferredSize().width ? btnDefaultName.getPreferredSize().width : btnPublish.getPreferredSize().width;  
+		int buttonWidth = (btnDefaultName.getPreferredSize().width > btnPublish.getPreferredSize().width) ? btnDefaultName.getPreferredSize().width : btnPublish.getPreferredSize().width;  
 		
 		
 		// now create the settings panel
@@ -144,20 +160,28 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 		
 		settingsLayout.setHorizontalGroup( settingsLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup( settingsLayout.createSequentialGroup()
-						.addComponent(lblHost, GroupLayout.PREFERRED_SIZE, lblMatcher.getPreferredSize().width, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblHost, GroupLayout.PREFERRED_SIZE, lblThreshold.getPreferredSize().width, GroupLayout.PREFERRED_SIZE)
 						.addComponent(txtHost)
 						.addComponent(lblPort)
 						.addComponent(txtPort, GroupLayout.PREFERRED_SIZE, txtPort.getPreferredSize().width, GroupLayout.PREFERRED_SIZE)
 						)
 				.addGroup( settingsLayout.createSequentialGroup()
-						.addComponent(lblMatcher)
+						.addComponent(lblMatcher, GroupLayout.PREFERRED_SIZE, lblThreshold.getPreferredSize().width, GroupLayout.PREFERRED_SIZE)
 						.addComponent(cmbMatcherList)
 						)
 				.addGroup( settingsLayout.createSequentialGroup()
-						.addComponent(lblEndpoint, GroupLayout.PREFERRED_SIZE, lblMatcher.getPreferredSize().width, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblThreshold)
+						.addComponent(cmbThreshold)
+						.addComponent(lblCardinality)
+						.addComponent(cmbSource)
+						.addComponent(lblTo)
+						.addComponent(cmbTarget)
+						)
+				.addGroup( settingsLayout.createSequentialGroup()
+						.addComponent(lblEndpoint, GroupLayout.PREFERRED_SIZE, lblThreshold.getPreferredSize().width, GroupLayout.PREFERRED_SIZE)
 						.addComponent(txtEndpoint)
 						.addGroup( settingsLayout.createParallelGroup()
-								.addComponent(btnPublish)
+								.addComponent(btnPublish, GroupLayout.PREFERRED_SIZE, buttonWidth, GroupLayout.PREFERRED_SIZE)
 								.addComponent(btnDefaultName, GroupLayout.PREFERRED_SIZE, buttonWidth, GroupLayout.PREFERRED_SIZE)
 								)
 						)
@@ -165,17 +189,25 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 				);
 		
 		settingsLayout.setVerticalGroup( settingsLayout.createSequentialGroup()
-				.addGroup( settingsLayout.createParallelGroup()
+				.addGroup( settingsLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(lblHost)
 						.addComponent(txtHost)
 						.addComponent(lblPort)
 						.addComponent(txtPort)
 						)
-				.addGroup( settingsLayout.createParallelGroup()
+				.addGroup( settingsLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(lblMatcher)
 						.addComponent(cmbMatcherList)
 						)
-				.addGroup( settingsLayout.createParallelGroup()
+				.addGroup( settingsLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+						.addComponent(lblThreshold)
+						.addComponent(cmbThreshold)
+						.addComponent(lblCardinality)
+						.addComponent(cmbSource)
+						.addComponent(lblTo)
+						.addComponent(cmbTarget)
+						)
+				.addGroup( settingsLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(lblEndpoint)
 						.addComponent(txtEndpoint)
 						.addComponent(btnDefaultName)
@@ -194,6 +226,7 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 		barProgress.setValue(0);
 		barProgress.setStringPainted(true);
 		barProgress.setEnabled(false);
+		barProgress.setVisible(false);
 		
 		txtReport = new JTextArea(8, 35);
 		JScrollPane sclReport = new JScrollPane(txtReport);
@@ -303,19 +336,38 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 			*/
 				
 				// 4. We want to see the display of the matcher in the SEALS panel.  Register this panel as a MatcherProgressDisplay.
+				//    Also, set the threshold and the cardinality.
 				matcherToPublish.setProgressDisplay( this );
+				matcherToPublish.setThreshold(Utility.getDoubleFromPercent((String)cmbThreshold.getSelectedItem()));
+				matcherToPublish.setMaxSourceAlign(Utility.getIntFromNumRelString((String)cmbSource.getSelectedItem()));
+				matcherToPublish.setMaxTargetAlign(Utility.getIntFromNumRelString((String)cmbTarget.getSelectedItem()));
+				
 				
 				
 				// 5. Publish this matcher.
 				
-				SealsServer sealsServer = new SealsServer(matcherToPublish);
+				SealsServer sealsServer = new SealsServer(mR, this, Utility.getDoubleFromPercent((String)cmbThreshold.getSelectedItem()), 
+										Utility.getIntFromNumRelString((String)cmbSource.getSelectedItem()), 
+										Utility.getIntFromNumRelString((String)cmbTarget.getSelectedItem()), matcherToPublish.getParam());
+				
 				endpoint = Endpoint.create(sealsServer);
 				String endpointDescription = "http://" + txtHost.getText().trim() + ":" + txtPort.getText().trim() + "/" + txtEndpoint.getText().trim(); 
 				endpoint.publish(endpointDescription);
 				
+				appendToReport("Matcher service name: " + SealsServer.class.getName());
 				appendToReport("Matcher published to " + endpointDescription + "\n");
 				
+				
 				// 6. Update the Publish button to a Stop button.
+				txtHost.setEnabled(false);
+				txtPort.setEditable(false);
+				cmbMatcherList.setEnabled(false);
+				cmbThreshold.setEnabled(false);
+				cmbSource.setEnabled(false);
+				cmbTarget.setEnabled(false);
+				txtEndpoint.setEnabled(false);
+				btnDefaultName.setEnabled(false);
+				
 				btnPublish.setText("Stop!");
 				btnPublish.setActionCommand("stop");
 				
@@ -335,6 +387,15 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 				endpoint = null;
 				
 				// 4. Update the Stop button to a Publish button.
+				txtHost.setEnabled(true);
+				txtPort.setEditable(true);
+				cmbMatcherList.setEnabled(true);
+				cmbThreshold.setEnabled(true);
+				cmbSource.setEnabled(true);
+				cmbTarget.setEnabled(true);
+				txtEndpoint.setEnabled(true);
+				btnDefaultName.setEnabled(true);
+				
 				btnPublish.setText("Publish!");
 				btnPublish.setActionCommand("publish");
 			}
@@ -350,6 +411,8 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if ("progress" == evt.getPropertyName()) {
+			if( barProgress.isEnabled() == false ) { barProgress.setEnabled(true); }
+			
             int progress = (Integer) evt.getNewValue();
             barProgress.setValue(progress);
         }		
