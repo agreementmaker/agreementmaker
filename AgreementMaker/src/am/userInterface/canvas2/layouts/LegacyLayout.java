@@ -298,7 +298,7 @@ public class LegacyLayout extends Canvas2Layout {
 			subgraphYoffset = rightGraphY + nodeHeight + marginBottom;
 		}
 		
-		
+		/*
 		if( ont.getLanguage().equals("XML") ) {
 			// build the visualization from an XML ontology
 			// an XML ontology will only have classes.
@@ -321,60 +321,8 @@ public class LegacyLayout extends Canvas2Layout {
 			
 			
 			
-		} else if ( ont.getLanguage().equals("OWL") ) {
-			// build the visualization from an OWL ontology
-			
-			OntModel m = ont.getModel();
-			
-			if( m == null ) {
-				// this is an ontology that is not loaded by jena
-			} else {
-				owlThing = m.getOntClass( OWL.Thing.getURI() );
-			}
-			
-			
-			CanvasGraph classesGraph = new CanvasGraph( GraphLocator.GraphType.CLASSES_GRAPH, ont.getID() );
-			anonymousNode = new LegacyNode( new GraphicalData(0, 0, 0, 0, GraphicalData.NodeType.FAKE_NODE, this, ont.getID() ));
-			
-			LegacyNode classesRoot = buildClassGraph( m, classesGraph );  // build the class graph here
-			
-			// update the offsets to put the properties graph under the class graph.
-			if( leftSide ) {
-				subgraphYoffset = classesGraph.getBounds().y + classesGraph.getBounds().height + nodeHeight + marginBottom;
-			} else {
-				subgraphYoffset = classesGraph.getBounds().y + classesGraph.getBounds().height + nodeHeight + marginBottom;
-			}
-			
-			CanvasGraph propertiesGraph = new CanvasGraph( GraphLocator.GraphType.PROPERTIES_GRAPH, ont.getID() );
-			
-			LegacyNode propertiesRoot = buildPropertiesGraph(m, propertiesGraph);  // and the properties graph here
-		
-			CanvasGraph globalGraph = buildOntologyGraph(classesRoot, propertiesRoot, ont);  // and put them all under a global graph
-			
-			int deepestY = 0;
-			if( (classesGraph.getBounds().y + classesGraph.getBounds().height) > (propertiesGraph.getBounds().y+propertiesGraph.getBounds().height) )
-				deepestY = classesGraph.getBounds().y + classesGraph.getBounds().height;
-			else
-				deepestY = propertiesGraph.getBounds().y+propertiesGraph.getBounds().height;
-			
-			int rightmostX = 0;
-			if( (classesGraph.getBounds().x + classesGraph.getBounds().width) > (propertiesGraph.getBounds().x + propertiesGraph.getBounds().width) )
-				rightmostX = classesGraph.getBounds().x + classesGraph.getBounds().width;
-			else
-				rightmostX = propertiesGraph.getBounds().x + propertiesGraph.getBounds().width;
-
-			
-			updateArtifactGraph(deepestY, rightmostX , leftSide);
-			
-			// add all the graphs created to the ontologyGraphs in the Canvas2.
-			ontologyGraphs.add(classesGraph);
-			ontologyGraphs.add(propertiesGraph);
-			ontologyGraphs.add(globalGraph);
-
-			return ontologyGraphs;
-			
-		}
-		
+		} else */
+		// if ( ont.getLanguage().equals("OWL") || ont.getLanguage().endsWith("XML") ) {
 		OntModel m = ont.getModel();
 		
 		if( m == null ) {

@@ -17,6 +17,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.vocabulary.OWL;
+
 
 import am.app.Core;
 import am.app.ontology.Node;
@@ -37,6 +43,9 @@ public class XmlTreeBuilder extends TreeBuilder
 	private Document documentRoot;
 	private HashMap<String,Node> processedNodes;
 	final static String XMLHIERARCHY = "XML Hierarchy";
+	
+	OntModel m;
+	OntClass owlThing;
 	
 	/**
 	 * Constructor for objects of class XmlTreeBuilder
@@ -60,14 +69,39 @@ public class XmlTreeBuilder extends TreeBuilder
 	 */
 	protected void buildTree()
 	{
+		
+		// Read the XML file and create a Jena OWL Model from it.
+		
+		m = ModelFactory.createOntologyModel(OntModelSpec.OWL_LITE_MEM);
+		owlThing = m.getOntClass( OWL.Thing.getURI() );
+		
+		ontology.setModel(m);
+		
 		// create a new tree root
 		treeRoot = new Vertex(ontology.getTitle(), ontology.getSourceOrTarget());
 		Vertex ClassRoot = new Vertex(XMLHIERARCHY, ontology.getSourceOrTarget());
+		ClassRoot.setOntModel(m);
+		
+		Node rootNode = new Node(uniqueKey,"OWL:Thing", Node.XMLNODE, ontology.getIndex());
+		uniqueKey++;
+		rootNode.setResource(owlThing);
+		rootNode.setLabel("OWL:Thing");
+		ClassRoot.setNode(rootNode);
 		
 
 		treeCount=2;
 		processedNodes = new HashMap<String, Node>();
 		if(parse(ontology.getFilename())){
+			/*
+			OntClass currentClass = m.createClass( name );
+			currentClass.setLabel(label, null);
+			currentClass.setComment(des, null);
+			*/
+			
+			//OntClass owlThing = m.getOntClass( OWL.Thing.getURI() );
+			
+		
+			
 			createTree(ClassRoot, documentRoot);
 		}
 		treeRoot.add(ClassRoot);
@@ -82,7 +116,7 @@ public class XmlTreeBuilder extends TreeBuilder
 		
 	}
 	
-	protected void createTree(Vertex currentTreeNode, org.w3c.dom.Node document){
+	protected void createTree(Vertex parentVertex, org.w3c.dom.Node document){
 		// get the node list from the document
 		NodeList nodeList = getNodeList(document);
 		
@@ -94,36 +128,61 @@ public class XmlTreeBuilder extends TreeBuilder
 				// get the node name (database, table, tuple, attrname, attrvalue,...)
 				//String nodeName = nodeList.item(i).getNodeName();
 				//String nodeName = this.getNodeName(nodeList.item(i));
-				org.w3c.dom.Node currentNode = nodeList.item(i);
+				org.w3c.dom.Node currentXMLNode = nodeList.item(i);
 				//String currentName = currentNode.getNodeName();//TODO: What is this used for ? FIX IT
-				String name = getAttr(currentNode, "id");
-				String des = getAttr(currentNode, "exp");
-				String label = getAttr(currentNode, "label");
-				String seeAlso = getAttr(currentNode,"seeAlso");
-				String isDefBy = getAttr(currentNode,"isDefinedBy");
-				Vertex childNode = new Vertex(name,ontology.getSourceOrTarget());
-				childNode.setDesc(label);
+			
+				
+				String name = getAttr(currentXMLNode, "id");
+				System.out.println(name);
+				String des = getAttr(currentXMLNode, "exp");
+				String label = getAttr(currentXMLNode, "label");
+				String seeAlso = getAttr(currentXMLNode,"seeAlso");
+				String isDefBy = getAttr(currentXMLNode,"isDefinedBy");
+				
+				Vertex currentVertex = new Vertex(name,ontology.getSourceOrTarget());
+				currentVertex.setOntModel(m);
+				currentVertex.setDesc(des);
 				//We have to check if it is a new node or a previous processed node in a different position
-				Node node = processedNodes.get(name);
-				if(node == null) {
+				Node currentNode = processedNodes.get(name);
+				OntClass currentClass;
+				if(currentNode == null) {
 					//if it's new create the node, add it to the class list and incr uniqueKey
-					node = new Node(uniqueKey,name, Node.XMLNODE, ontology.getIndex());
-					node.setLabel(label);
-					node.setComment(des);
-					node.setSeeAlsoLabel(seeAlso);
-					node.setIsDefinedByLabel(isDefBy);
-					ontology.getClassesList().add(node); //THE XML FILES ONLY CONTAINS CLASSES IN OUR SEMPLIFICATION
+					if( des.equals("") ) {
+						currentClass = m.createClass( "#anon"+ currentVertex.getID());
+					} else {
+						currentClass = m.createClass( "#id" + des );
+					}
+					currentClass.setLabel(name, null);
+					
+					System.out.println("Localname: " +currentClass.getLocalName());
+					currentClass.setComment(label, null);
+					
+					currentNode = new Node(uniqueKey,name, Node.XMLNODE, ontology.getIndex());
+					
+					currentNode.setResource(currentClass);
+					currentNode.setLabel(des);
+					currentNode.setComment(label);
+					currentNode.setSeeAlsoLabel(seeAlso);
+					currentNode.setIsDefinedByLabel(isDefBy);
+					ontology.getClassesList().add(currentNode); //THE XML FILES ONLY CONTAINS CLASSES IN OUR SEMPLIFICATION
 					uniqueKey++;
-					processedNodes.put(name, node);
+					processedNodes.put(name, currentNode);
+				} else {
+					currentClass = (OntClass) currentNode.getResource();
 				}
-				node.addVertex(childNode);
-				childNode.setNode(node);
+				currentNode.addVertex(currentVertex);
+				currentVertex.setNode(currentNode);
 				// increment the number of nodes created
 				treeCount++;
 				// add the node created to the previous node
-				currentTreeNode.add(childNode);
+				parentVertex.add(currentVertex); // adds a child.
+				
+				Node parentNode = parentVertex.getNode();
+				OntClass parentClass = (OntClass) parentNode.getResource();
+				parentClass.addSubClass(currentClass);
+				
 				// recursively create the whole tree
-				createTree(childNode, nodeList.item(i));
+				createTree(currentVertex, nodeList.item(i));
 			} // end of for loop
 		} // end of if nodeList ! = null
 	}
