@@ -23,8 +23,6 @@
 
 package am.tools.seals;
 
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -41,20 +39,19 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JToolTip;
-import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingUtilities;
+import javax.swing.text.Document;
 import javax.xml.ws.Endpoint;
 
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
 import am.userInterface.MatcherParametersDialog;
 import am.userInterface.MatchingProgressDisplay;
 import am.utility.LinuxInetAddress;
@@ -73,9 +70,15 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 	private JTextArea txtReport;
 	private JComboBox cmbMatcherList, cmbThreshold, cmbSource, cmbTarget;
 	private JProgressBar barProgress;
+	private JScrollPane sclReport;
 	
 	private AbstractMatcher matcherToPublish;
 	private Endpoint endpoint;
+	
+	private int valueBeforeAppend;
+	private int maxValueBeforeAppend;
+	private int visibleAmountBeforeAppend;
+	
 	/**
 	 * Create the layout of the SEALS interface panel.
 	 */
@@ -84,7 +87,7 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 		
 		// find out the current ip of the computer
 		String currentIP = null;
-		String underHostText = null; 
+ 
 		try {
 			InetAddress ip = LinuxInetAddress.getLocalHost4();
 			currentIP = ip.getHostAddress();
@@ -233,7 +236,7 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 		barProgress.setVisible(false);
 		
 		txtReport = new JTextArea(8, 35);
-		JScrollPane sclReport = new JScrollPane(txtReport);
+		sclReport = new JScrollPane(txtReport);
 
 		
 		// create the matcher progress panel
@@ -306,12 +309,11 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 			if( matcher.find() ) {
 				className = matcher.group();  // this is the matcher name
 			}
-			txtEndpoint.setText( className );	
+			txtEndpoint.setText( className );
 		} else if( actionEvent.getSource() == btnPublish ) {
 			
 			if( btnPublish.getActionCommand().equals("publish") ) {
 				// We are going to publish a new matcher.
-				
 				
 				// 1. Get the matcher instance.
 				MatchersRegistry mR = MatcherFactory.getMatchersRegistryEntry( cmbMatcherList.getSelectedItem().toString() );
@@ -341,18 +343,22 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 				
 				// 4. We want to see the display of the matcher in the SEALS panel.  Register this panel as a MatcherProgressDisplay.
 				//    Also, set the threshold and the cardinality.
-				matcherToPublish.setProgressDisplay( this );
+				/* matcherToPublish.setProgressDisplay( this );
 				matcherToPublish.setThreshold(Utility.getDoubleFromPercent((String)cmbThreshold.getSelectedItem()));
 				matcherToPublish.setMaxSourceAlign(Utility.getIntFromNumRelString((String)cmbSource.getSelectedItem()));
 				matcherToPublish.setMaxTargetAlign(Utility.getIntFromNumRelString((String)cmbTarget.getSelectedItem()));
+				*/
 				
 				
+				// 5. Publish this matcher, in its own thread.
 				
-				// 5. Publish this matcher.
+				
 				
 				SealsServer sealsServer = new SealsServer(mR, this, Utility.getDoubleFromPercent((String)cmbThreshold.getSelectedItem()), 
 										Utility.getIntFromNumRelString((String)cmbSource.getSelectedItem()), 
 										Utility.getIntFromNumRelString((String)cmbTarget.getSelectedItem()), matcherToPublish.getParam());
+				
+				matcherToPublish = null; // don't need this object anymore.
 				
 				endpoint = Endpoint.create(sealsServer);
 				String endpointDescription = "http://" + txtHost.getText().trim() + ":" + txtPort.getText().trim() + "/" + txtEndpoint.getText().trim(); 
@@ -383,11 +389,9 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 				endpoint.stop();
 				
 				// 2. Stop the matcher.
-				matcherToPublish.cancel(true);
 				appendToReport("Publishing stopped. Matcher stopped.\n");
 				
 				// 3. Dereference anything we don't need anymore.
-				matcherToPublish = null;
 				endpoint = null;
 				
 				// 4. Update the Stop button to a Publish button.
@@ -423,7 +427,38 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 	}
 
 	@Override
-	public void appendToReport(String report) { txtReport.append(report); }
+	public void appendToReport(String report) {
+		
+		// if the JScrollBar is scrolled all the way to the maximum then
+		// valueBeforeAppend + visibleAmountBeforeAppend == maxValueBeforeAppend
+		valueBeforeAppend = sclReport.getVerticalScrollBar().getValue();
+		visibleAmountBeforeAppend = sclReport.getVerticalScrollBar().getVisibleAmount();
+		maxValueBeforeAppend = sclReport.getVerticalScrollBar().getMaximum();
+		
+		txtReport.append(report);
+		
+		SwingUtilities.invokeLater(new Runnable() {
+	        public void run() {
+	    		if( sclReport != null && txtReport != null ) {
+	    			JScrollBar barScroll = sclReport.getVerticalScrollBar();
+	    			if( barScroll == null ) {
+	    				scrollToEndOfReport();
+	    			}else {
+	    				// check to see if the scroll bar was scrolled to the end before more text was added.
+	    				if( valueBeforeAppend + visibleAmountBeforeAppend == maxValueBeforeAppend ) {
+	    					// if the scroll bar was scrolled to the end of the report, then scroll the 
+	    					// bar to the end of the report.
+	    					scrollToEndOfReport();
+	    				} else {
+	    					// otherwise, override the autoscroll feature of the JScrollPane (introduced in Java6), and make
+	    					// the scroll bar move back to the position before the append.
+	    					barScroll.setValue(valueBeforeAppend);
+	    				}
+	    			}
+	    		}
+	        }
+	      });
+	}
 
 	@Override
 	public void matchingStarted() { 
@@ -435,7 +470,20 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 	@Override
 	public void matchingComplete() { 
 		barProgress.setEnabled(false); 
-		txtReport.append( matcherToPublish.getReport() ); 
+		txtReport.append( "Matching complete.\n" ); 
+	}
+
+	@Override
+	public void scrollToEndOfReport() {
+		SwingUtilities.invokeLater(new Runnable() {
+	        public void run() {
+	        	if( sclReport != null && txtReport != null ) {
+	        		// a complete hack to make the JScrollPane move to the bottom of the JTextArea
+	        		Document d = txtReport.getDocument();
+	        		txtReport.setCaretPosition(d.getLength());
+	        	}
+	        }
+		});
 	}
 
 	
