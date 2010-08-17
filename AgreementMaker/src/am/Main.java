@@ -38,7 +38,7 @@ public class Main
 {
 	/**
 	 * This is the application entry point.
-	 * It creates instantiates.
+	 * It instantiates the UI.
 	 * 
 	 * @param args Command line arguments, used for operating AgreementMaker in automatic mode, without a UI.
 	 */
