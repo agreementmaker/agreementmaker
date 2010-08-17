@@ -43,7 +43,7 @@ import am.output.AlignmentOutput;
 import am.userInterface.MatchingProgressDisplay;
 
 /**
- * This class is in charge of publishing
+ * This class handles the align requests from the published Endpoint.
  * @author cosmin
  *
  */
@@ -97,7 +97,7 @@ public class SealsServer implements AlignmentWS {
 		
 		progressDisplay.appendToReport("Loading target ontology. URI: " + target + "\n");
 		
-		OntoTreeBuilder otb2 = new OntoTreeBuilder( ".", GlobalStaticVariables.SOURCENODE, GlobalStaticVariables.LANG_OWL, "RDF/XML", true, false);
+		OntoTreeBuilder otb2 = new OntoTreeBuilder( ".", GlobalStaticVariables.TARGETNODE, GlobalStaticVariables.LANG_OWL, "RDF/XML", true, false);
 		otb2.setURI(target.toString());
 		
 		progressDisplay.appendToReport("Building target Ontology().\n");
@@ -107,7 +107,7 @@ public class SealsServer implements AlignmentWS {
 		
 		// 2. Run the matcher.
 		try {
-			m.match(); // TODO: This should run in its own thread.  
+			m.match();  
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
