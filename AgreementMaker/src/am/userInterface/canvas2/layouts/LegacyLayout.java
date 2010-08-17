@@ -54,6 +54,7 @@ import am.userInterface.canvas2.utility.Canvas2Vertex;
 import am.userInterface.canvas2.utility.CanvasGraph;
 import am.userInterface.canvas2.utility.GraphLocator;
 import am.userInterface.canvas2.utility.GraphLocator.GraphType;
+import am.userInterface.vertex.Vertex;
 import am.utility.DirectedGraphEdge;
 
 /**
@@ -261,11 +262,16 @@ public class LegacyLayout extends Canvas2Layout {
 	
 	/**
 	 * This function will build the global graph for an ontology (classes graph, properties graph, all under one global graph).
+	 * It does different things for different types of ontologies (OWL,RDFS,XML), but in the end it should all be under the
+	 * main ontology graph, which is the return value. 
 	 * 
 	 * This includes
 	 * 		- build the Class graph.
 	 * 		- build the Properties graph.
 	 *		- Individuals? TODO
+	 *
+	 *	@param ont The Ontology that we are building the visualization graphs for.
+	 *
 	 */
 	@Override
 	public ArrayList<CanvasGraph> buildGlobalGraph( Ontology ont ) {
@@ -293,9 +299,90 @@ public class LegacyLayout extends Canvas2Layout {
 		}
 		
 		
+		if( ont.getLanguage().equals("XML") ) {
+			// build the visualization from an XML ontology
+			// an XML ontology will only have classes.
+			
+			CanvasGraph classesGraph = new CanvasGraph( GraphLocator.GraphType.CLASSES_GRAPH, ont.getID() );
+			
+			Vertex classRootVertex = ont.getClassesTree();
+			
+			// Create the root LegacyNode in order to call the recusive method correctly
+			TextElement gr = new TextElement(0*depthIndent + subgraphXoffset, 
+											 classesGraph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
+											 0, nodeHeight, this, classesGraph.getID() );
+			gr.setText("XML Classes Hierarchy");
+			LegacyNode classRootNode = new LegacyNode( gr );
+			classesGraph.insertVertex(classRootNode);
+						
+			recursiveBuildClassGraphXML( classRootVertex, classRootNode, classesGraph, 1 );
+			
+			
+			
+			
+			
+		} else if ( ont.getLanguage().equals("OWL") ) {
+			// build the visualization from an OWL ontology
+			
+			OntModel m = ont.getModel();
+			
+			if( m == null ) {
+				// this is an ontology that is not loaded by jena
+			} else {
+				owlThing = m.getOntClass( OWL.Thing.getURI() );
+			}
+			
+			
+			CanvasGraph classesGraph = new CanvasGraph( GraphLocator.GraphType.CLASSES_GRAPH, ont.getID() );
+			anonymousNode = new LegacyNode( new GraphicalData(0, 0, 0, 0, GraphicalData.NodeType.FAKE_NODE, this, ont.getID() ));
+			
+			LegacyNode classesRoot = buildClassGraph( m, classesGraph );  // build the class graph here
+			
+			// update the offsets to put the properties graph under the class graph.
+			if( leftSide ) {
+				subgraphYoffset = classesGraph.getBounds().y + classesGraph.getBounds().height + nodeHeight + marginBottom;
+			} else {
+				subgraphYoffset = classesGraph.getBounds().y + classesGraph.getBounds().height + nodeHeight + marginBottom;
+			}
+			
+			CanvasGraph propertiesGraph = new CanvasGraph( GraphLocator.GraphType.PROPERTIES_GRAPH, ont.getID() );
+			
+			LegacyNode propertiesRoot = buildPropertiesGraph(m, propertiesGraph);  // and the properties graph here
+		
+			CanvasGraph globalGraph = buildOntologyGraph(classesRoot, propertiesRoot, ont);  // and put them all under a global graph
+			
+			int deepestY = 0;
+			if( (classesGraph.getBounds().y + classesGraph.getBounds().height) > (propertiesGraph.getBounds().y+propertiesGraph.getBounds().height) )
+				deepestY = classesGraph.getBounds().y + classesGraph.getBounds().height;
+			else
+				deepestY = propertiesGraph.getBounds().y+propertiesGraph.getBounds().height;
+			
+			int rightmostX = 0;
+			if( (classesGraph.getBounds().x + classesGraph.getBounds().width) > (propertiesGraph.getBounds().x + propertiesGraph.getBounds().width) )
+				rightmostX = classesGraph.getBounds().x + classesGraph.getBounds().width;
+			else
+				rightmostX = propertiesGraph.getBounds().x + propertiesGraph.getBounds().width;
+
+			
+			updateArtifactGraph(deepestY, rightmostX , leftSide);
+			
+			// add all the graphs created to the ontologyGraphs in the Canvas2.
+			ontologyGraphs.add(classesGraph);
+			ontologyGraphs.add(propertiesGraph);
+			ontologyGraphs.add(globalGraph);
+
+			return ontologyGraphs;
+			
+		}
+		
 		OntModel m = ont.getModel();
 		
-		owlThing = m.getOntClass( OWL.Thing.getURI() );
+		if( m == null ) {
+			// this is an ontology that is not loaded by jena
+		} else {
+			owlThing = m.getOntClass( OWL.Thing.getURI() );
+		}
+		
 		
 		CanvasGraph classesGraph = new CanvasGraph( GraphLocator.GraphType.CLASSES_GRAPH, ont.getID() );
 		anonymousNode = new LegacyNode( new GraphicalData(0, 0, 0, 0, GraphicalData.NodeType.FAKE_NODE, this, ont.getID() ));
@@ -456,7 +543,39 @@ public class LegacyLayout extends Canvas2Layout {
 	}
 	
 	
+	/**
+	 * This recursive function builds the class tree for an XML ontology.
+	 * @param currentVertex
+	 * @param parentNode
+	 * @param graph
+	 * @param depth
+	 * @return
+	 */
+	private LegacyNode recursiveBuildClassGraphXML( Vertex currentVertex, LegacyNode parentNode,  CanvasGraph graph, int depth ) {
+		
+		// 1. Create the LegacyNode representation of the current vertex.
 
+		TextElement gr = new TextElement(depth*depthIndent + subgraphXoffset, 
+										 graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
+										 100, nodeHeight, this, graph.getID() );
+		gr.setText( currentVertex.getName() );
+		
+		LegacyNode currentNode = new LegacyNode( gr );
+			
+		graph.insertVertex(currentNode);
+		LegacyEdge edge = new LegacyEdge( parentNode, currentNode, null, this);
+		graph.insertEdge( edge ); 
+		
+		// 2. Look at the children of the current Vertex and do a recursive call
+		for( int i = 0; i < currentVertex.getChildCount(); i++ ) {
+			recursiveBuildClassGraphXML( (Vertex) currentVertex.getChildAt(i), currentNode, graph, depth+1);
+		}
+		
+			
+		// 3. Return the Root Node.
+		return currentNode;
+	}
+	
 
 	/**
 	 * This function and the recursive version build the class graph.

@@ -107,7 +107,7 @@ public class SealsServer implements AlignmentWS {
 		
 		// 2. Run the matcher.
 		try {
-			m.match();
+			m.match(); // TODO: This should run in its own thread.  
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

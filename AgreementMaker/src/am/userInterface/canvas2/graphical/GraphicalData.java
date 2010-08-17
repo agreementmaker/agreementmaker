@@ -9,7 +9,7 @@ import am.userInterface.canvas2.utility.Canvas2Layout;
 import com.hp.hpl.jena.ontology.OntResource;
 
 /*
- * This Class is a container class for graphical information about an element.
+ * This Class is a container class for graphical information about an OWL element.
  */
 
 public class GraphicalData {

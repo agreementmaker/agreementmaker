@@ -18,6 +18,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 
+import am.app.Core;
 import am.app.ontology.Node;
 import am.userInterface.vertex.Vertex;
 
@@ -71,6 +72,14 @@ public class XmlTreeBuilder extends TreeBuilder
 		}
 		treeRoot.add(ClassRoot);
 		ontology.setClassesTree( ClassRoot);
+		
+		// now, the visualization panel needs to build its own graph.
+		if( progressDialog != null ) {
+			progressDialog.appendLine("Building visualization graphs.");
+			Core.getInstance().getUI().getCanvas().buildLayoutGraphs(ontology);
+			progressDialog.appendLine("Done.");
+		} 
+		
 	}
 	
 	protected void createTree(Vertex currentTreeNode, org.w3c.dom.Node document){

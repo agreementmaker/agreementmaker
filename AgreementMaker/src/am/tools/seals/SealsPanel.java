@@ -58,7 +58,11 @@ import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
 import am.userInterface.MatcherParametersDialog;
 import am.userInterface.MatchingProgressDisplay;
 import am.utility.LinuxInetAddress;
-
+/**
+ * 
+ * @author cosmin
+ *
+ */
 public class SealsPanel extends JPanel implements MatchingProgressDisplay, ActionListener {
 
 	private static final long serialVersionUID = 3284754599688612733L;
@@ -354,7 +358,7 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 				String endpointDescription = "http://" + txtHost.getText().trim() + ":" + txtPort.getText().trim() + "/" + txtEndpoint.getText().trim(); 
 				endpoint.publish(endpointDescription);
 				
-				appendToReport("Matcher service name: " + SealsServer.class.getName());
+				appendToReport("Matcher service name: " + SealsServer.class.getName() + "\n");
 				appendToReport("Matcher published to " + endpointDescription + "\n");
 				
 				
