@@ -12,6 +12,9 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.text.Document;
+
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher;
 
@@ -144,6 +147,20 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 		matcherReport.setText( matcher.getReport() );
 		cancelButton.setEnabled(false);
 		okButton.setEnabled(true);
+	}
+
+
+	@Override
+	public void scrollToEndOfReport() {
+		SwingUtilities.invokeLater(new Runnable() {
+	        public void run() {
+	        	if( scrollingArea != null && matcherReport != null ) {
+	        		// a complete hack to make the JScrollPane move to the bottom of the JTextArea
+	        		Document d = matcherReport.getDocument();
+	        		matcherReport.setCaretPosition(d.getLength());
+	        	}
+	        }
+		});
 	}	
 
 	

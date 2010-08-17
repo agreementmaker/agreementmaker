@@ -3,40 +3,28 @@ package am.app.feedback.ui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.GroupLayout.ParallelGroup;
-import javax.swing.GroupLayout.SequentialGroup;
-import javax.swing.border.Border;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
+import javax.swing.text.Document;
 
 //import org.mindswap.pellet.utils.intset.IntIterator;
 
-import sun.awt.HorizBagLayout;
-
-import am.AMException;
-import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.feedback.CandidateConcept;
@@ -46,7 +34,6 @@ import am.app.feedback.FeedbackLoopParameters;
 import am.app.feedback.CandidateSelection.MeasuresRegistry;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.AbstractMatcher.alignType;
@@ -749,6 +736,20 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 
 	public String getUserAction() {
 		return selectedAction;
+	}
+
+	@Override
+	public void scrollToEndOfReport() {
+		SwingUtilities.invokeLater(new Runnable() {
+	        public void run() {
+	        	if( scrollingArea != null && matcherReport != null ) {
+	        		// a complete hack to make the JScrollPane move to the bottom of the JTextArea
+	        		Document d = matcherReport.getDocument();
+	        		matcherReport.setCaretPosition(d.getLength());
+	        	}
+	        }
+		});
+		
 	}
 	
 }
