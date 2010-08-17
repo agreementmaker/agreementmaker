@@ -1,4 +1,26 @@
+/**    ________________________________________
+ * ___/ Copyright Notice / Warranty Disclaimer \________________
+ *
+ * @copyright { Copyright (c) 2010
+ * Advances in Information Systems Laboratory at the
+ * University of Illinois at Chicago
+ * All Rights Reserved. }
+ * 
+ * @disclaimer {
+ * This work is distributed WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. }
+ * 
+ *     _____________________
+ * ___/ Authors / Changelog \___________________________________          
+ * 
+ *  
+ */
+
+
 package am;
+
+import javax.swing.SwingUtilities;
 
 import am.app.Core;
 import am.batchMode.TrackDispatcher;
@@ -14,20 +36,24 @@ import am.userInterface.UI;
  */
 public class Main
 {
-	
-	/*******************************************************************************************/
 	/**
-	 * This is the main function
-	 * It creates a new instance of UI class
+	 * This is the application entry point.
+	 * It creates instantiates.
 	 * 
-	 * @param  args array of strings
+	 * @param args Command line arguments, used for operating AgreementMaker in automatic mode, without a UI.
 	 */
 	public static void main(String args[])
 	{
 		if(args.length == 0 ){
-			//UI ui;
-			UI ui = new UI();
-			Core.getInstance().setUI(ui);
+			// Proper way of intializing the UI.
+			// Reference: http://java.sun.com/developer/technicalArticles/javase/swingworker/ (Starting off on the Right Thread)
+			SwingUtilities.invokeLater( 
+					new Runnable() {
+						public void run() {
+							Core.setUI( new UI() );
+						} 
+					}
+			);
 		}
 		else{
 			String track = args[0];
