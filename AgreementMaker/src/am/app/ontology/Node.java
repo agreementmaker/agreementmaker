@@ -12,6 +12,7 @@ import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.ontology.impl.OntResourceImpl;
 import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
@@ -134,7 +135,6 @@ public class Node {
 			//COmments
 			comment = "";
 			Literal l = null;
-			OntResourceImpl ol = null;
 			ExtendedIterator it = or.listComments(language);
 			if(!it.hasNext())
 				it = or.listComments(null);
@@ -150,7 +150,11 @@ public class Node {
 			l = null;
 			OntResource or2;
 			if(it.hasNext()) {
-				ol = (OntResourceImpl)it.next();
+				
+				RDFNode ol = (RDFNode) it.next();
+				
+				//OntResourceImpl ol = (OntResourceImpl)it.next();
+				
 				if(ol!= null && ol.canAs(OntResource.class)){
 					or2 = (OntResource)ol.as(OntResource.class);
 					isDefinedByLabel = or2.getLabel(language);
@@ -163,7 +167,10 @@ public class Node {
 						isDefinedByComment = or2.getLabel(null);
 						if(isDefinedByComment == null)
 							isDefinedByComment = "";
-					isDefinedByURI = ol.getURI();
+					isDefinedByURI = or2.getURI();
+				} else if( ol != null &&  ol.canAs(Literal.class) ) {
+					Literal l1 = (Literal) ol.as(Literal.class);
+					isDefinedByLabel = l1.toString();
 				}
 			}
 
@@ -173,7 +180,8 @@ public class Node {
 			seeAlsoURI = "";
 			l = null;
 			if(it.hasNext()) {
-				ol = (OntResourceImpl)it.next();
+				
+				RDFNode ol = (RDFNode)it.next();
 				if(ol!= null && ol.canAs(OntResource.class)){
 					or2 = (OntResource)ol.as(OntResource.class);
 					seeAlsoLabel = or2.getLabel(language);
@@ -186,7 +194,10 @@ public class Node {
 						seeAlsoComment = or2.getLabel(null);
 						if(seeAlsoComment == null)
 							seeAlsoComment = "";
-						seeAlsoURI = ol.getURI();
+						seeAlsoURI = or2.getURI();
+				} else if( ol != null &&  ol.canAs(Literal.class) ) {
+					Literal l1 = (Literal) ol.as(Literal.class);
+					seeAlsoLabel = l1.toString();
 				}
 			}
 			//properties and invidviduals lists only for classes
