@@ -26,8 +26,11 @@ package am.tools.seals;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.net.BindException;
 import java.net.InetAddress;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.util.concurrent.Executor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,6 +49,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.text.Document;
 import javax.xml.ws.Endpoint;
+
+import com.sun.xml.internal.ws.server.ServerRtException;
+import com.sun.xml.internal.ws.transport.http.server.EndpointImpl;
 
 import am.Utility;
 import am.app.Core;
@@ -361,8 +367,39 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 				matcherToPublish = null; // don't need this object anymore.
 				
 				endpoint = Endpoint.create(sealsServer);
-				String endpointDescription = "http://" + txtHost.getText().trim() + ":" + txtPort.getText().trim() + "/" + txtEndpoint.getText().trim(); 
-				endpoint.publish(endpointDescription);
+				String endpointDescription = "http://" + txtHost.getText().trim() + ":" + txtPort.getText().trim() + "/" + txtEndpoint.getText().trim();
+				try {
+					endpoint.publish(endpointDescription);
+				} catch ( ServerRtException e ) {
+					
+					if( e.getCause() instanceof BindException ) {
+						// bind exception.
+						BindException be = (BindException) e.getCause();
+						if ( be.getMessage().equals("Address already in use" ) ) {
+							Utility.displayErrorPane(e.getMessage() + "\nYou may have to close and restart AgreementMaker if this problem persists.", "Cannot Publish Endpoint");
+						} else if( be.getMessage().equals("Cannot assign requested address") ) {
+							Utility.displayErrorPane(e.getMessage() + "\nPlease check that the IP address "+ txtHost.getText() + " is the current IP address of the computer.", "Cannot Publish Endpoint");
+						} else {
+							Utility.displayErrorPane(e.getMessage(), "Cannot Publish Endpoint");
+						}
+						
+					} else if ( e.getCause() instanceof URISyntaxException ) {
+						Utility.displayErrorPane(e.getMessage() + "\nYour endpoint name contains invalid characters.", "Cannot Publish Endpoint");
+						if( endpoint instanceof EndpointImpl ) {
+							EndpointImpl eimpl = (EndpointImpl) endpoint;
+							eimpl.stop();
+						}
+						Executor exec = endpoint.getExecutor();
+						exec.getClass();
+					}else {
+						Utility.displayErrorPane(e.getMessage(), "Cannot Publish Endpoint");
+					}
+
+					return;
+					
+					
+					
+				}
 				
 				appendToReport("Matcher service name: " + SealsServer.class.getName() + "\n");
 				appendToReport("Matcher published to " + endpointDescription + "\n");
