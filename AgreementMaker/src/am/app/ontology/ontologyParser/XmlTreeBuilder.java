@@ -5,6 +5,7 @@ package am.app.ontology.ontologyParser;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
@@ -20,11 +21,13 @@ import org.xml.sax.SAXException;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.vocabulary.OWL;
 
 
 import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.userInterface.vertex.Vertex;
 
@@ -46,6 +49,7 @@ public class XmlTreeBuilder extends TreeBuilder
 	
 	OntModel m;
 	OntClass owlThing;
+	private HashMap<OntResource, Node> processedSubs;
 	
 	/**
 	 * Constructor for objects of class XmlTreeBuilder
@@ -91,6 +95,7 @@ public class XmlTreeBuilder extends TreeBuilder
 
 		treeCount=2;
 		processedNodes = new HashMap<String, Node>();
+		processedSubs = new HashMap<OntResource, Node>();
 		if(parse(ontology.getFilename())){
 			/*
 			OntClass currentClass = m.createClass( name );
@@ -106,6 +111,7 @@ public class XmlTreeBuilder extends TreeBuilder
 		}
 		treeRoot.add(ClassRoot);
 		ontology.setClassesTree( ClassRoot);
+		ontology.setOntResource2NodeMap(processedSubs, alignType.aligningClasses);
 		
 		// now, the visualization panel needs to build its own graph.
 		if( progressDialog != null ) {
@@ -160,6 +166,7 @@ public class XmlTreeBuilder extends TreeBuilder
 					currentNode = new Node(uniqueKey,name, Node.XMLNODE, ontology.getIndex());
 					
 					currentNode.setResource(currentClass);
+					processedSubs.put( ((OntResource)currentClass) ,currentNode);
 					currentNode.setLabel(des);
 					currentNode.setComment(label);
 					currentNode.setSeeAlsoLabel(seeAlso);

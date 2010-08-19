@@ -226,10 +226,12 @@ public class OntoTreeBuilder extends TreeBuilder{
         //System.out.println("after the first create class tree");
         treeRoot.add(classRoot);
         ontology.setClassesTree( classRoot);
+        ontology.setOntResource2NodeMap(processedSubs, alignType.aligningClasses);
         System.out.println("Building Property hierarchy");
         Vertex propertyRoot = createPropertyTree();
         treeRoot.add(propertyRoot);
         ontology.setPropertiesTree( propertyRoot);
+        ontology.setOntResource2NodeMap(processedSubs, alignType.aligningProperties);
 	}
 	
 	protected void buildTreeNoReasoner() {
