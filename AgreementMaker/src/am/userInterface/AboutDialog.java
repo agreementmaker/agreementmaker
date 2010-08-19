@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -46,12 +47,10 @@ public class AboutDialog implements ActionListener {
 	private JDialog isytcctssoaa;
 	private JButton OkBackToWork;
 	
-	
+	/**
+	 * This is the part of the program where the REAL fun stuff happens.
+	 */
 	public AboutDialog() {
-		
-		/**
-		 * This is the part of the program where the REAL fun stuff happens.
-		 */
 		
 		/** Main window */
 		frameAbout = new JDialog();
@@ -83,43 +82,46 @@ public class AboutDialog implements ActionListener {
 		JPanel credits = new JPanel();
 		credits.setLayout(new BoxLayout(credits, BoxLayout.Y_AXIS));
 		
-		JLabel[] l = new JLabel[8];
+		ArrayList<JLabel> l = new ArrayList<JLabel>();
+		l.add( new JLabel("Professor Isabel Cruz") );
 		
-		l[0] = new JLabel("Professor Isabel Cruz");
-		l[1] = new JLabel("Advances in Information Systems Laboratory");
-		l[2] = new JLabel("University of Illinois at Chicago");
+		l.add( new JLabel("Advances in Information Systems Laboratory") );
+		l.add( new JLabel("University of Illinois at Chicago") );
 
-		l[3] = new JLabel("AgreementMaker v0.2 ( fall 2008 - 2009):");
-		l[4] = new JLabel("Flavio Palandri Antonelli, Cosmin Stroe, Ula\u0219 Kele\u0219.");
+		l.add( new JLabel("AgreementMaker v0.21 ( Aug 19th 2010 )"));
 		
-		l[5] = new JLabel("AgreementMaker v0.1 (2001 - 2008):");
-		l[6] = new JLabel("Afsheen Rajendran, Anjli Chaudhry, Nalin Makar,");
-		l[7] = new JLabel("Sarang Kapadia, Sujan Bathala, William Sunna.");
+		l.add( new JLabel("AgreementMaker v0.2 ( fall 2008 - 2009):") );
+		l.add( new JLabel("Flavio Palandri Antonelli, Cosmin Stroe, Ula\u0219 Kele\u0219.") );
 		
-		for(int i=0; i<3; i++ ) { l[i].setAlignmentX(Component.CENTER_ALIGNMENT); }
-		for(int i=3; i<l.length; i++ ) { l[i].setAlignmentX(Component.CENTER_ALIGNMENT); }
+		l.add( new JLabel("AgreementMaker v0.1 (2001 - 2008):") );
+		l.add( new JLabel("Afsheen Rajendran, Anjli Chaudhry, Nalin Makar,") );
+		l.add( new JLabel("Sarang Kapadia, Sujan Bathala, William Sunna.") );
+		
+		for(int i=0; i<3; i++ ) { l.get(i).setAlignmentX(Component.CENTER_ALIGNMENT); }
+		for(int i=3; i<l.size(); i++ ) { l.get(i).setAlignmentX(Component.CENTER_ALIGNMENT); }
 
-		l[0].setFont(new Font("Helvetica", Font.PLAIN,  22));
-		l[1].setFont(new Font("Helvetica", Font.PLAIN,  18));
-		l[2].setFont(new Font("Helvetica", Font.PLAIN,  18));
+		l.get(0).setFont(new Font("Helvetica", Font.PLAIN,  22));
+		l.get(1).setFont(new Font("Helvetica", Font.PLAIN,  18));
+		l.get(2).setFont(new Font("Helvetica", Font.PLAIN,  18));
 		
-		l[3].setFont(new Font("Helvetica", Font.BOLD,   14));
-		l[4].setFont(new Font("Helvetica", Font.PLAIN,  14));
-		l[5].setFont(new Font("Helvetica", Font.BOLD,   14));
-		l[6].setFont(new Font("Helvetica", Font.PLAIN,  14));
-		l[7].setFont(new Font("Helvetica", Font.PLAIN,  14));
+		l.get(3).setFont(new Font("Helvetica", Font.BOLD,   14));
+		l.get(4).setFont(new Font("Helvetica", Font.BOLD,   14));
+		l.get(5).setFont(new Font("Helvetica", Font.PLAIN,  14));
+		l.get(6).setFont(new Font("Helvetica", Font.BOLD,   14));
+		l.get(7).setFont(new Font("Helvetica", Font.PLAIN,  14));
+		l.get(8).setFont(new Font("Helvetica", Font.PLAIN,  14));
 		
-		credits.add(l[0]);
+		credits.add(l.get(0));
 		credits.add(Box.createVerticalStrut(10));
-		credits.add(l[1]);
+		credits.add(l.get(1));
 		credits.add(Box.createVerticalStrut(10));
-		credits.add(l[2]);
+		credits.add(l.get(2));
 		credits.add(Box.createVerticalStrut(20));
 		
-		for( int i=3; i<l.length; i++) {
-			credits.add(l[i]);
+		for( int i=3; i<l.size(); i++) {
+			credits.add(l.get(i));
 			if( i == 3 || i == 5 ) credits.add(Box.createVerticalStrut(5));
-			if( i == 4 ) credits.add(Box.createVerticalStrut(10));
+			if( i == 3 ) credits.add(Box.createVerticalStrut(10));
 		}
 
 		credits.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
