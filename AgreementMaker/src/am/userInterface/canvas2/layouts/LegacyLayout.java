@@ -1339,11 +1339,23 @@ public class LegacyLayout extends Canvas2Layout {
 		
 		SingleMappingView = false; // turn off the singlemappingview
 		
+		// because we have moved nodes, the bounds of the graphs have changed.
+		// Update the bounds of all the graphs.
+		// TODO: This should not update ALL the graphs, but only the ones that contain the nodes that have moved.
+		ArrayList<CanvasGraph> graphs = vizpanel.getGraphs();
+		graphIter = graphs.iterator();
+		while( graphIter.hasNext() ) {
+			CanvasGraph g = graphIter.next();
+			g.recalculateBounds();
+		}
+		
 	}
 
+	/**
+	 * This method activates the SingleMappingView after the user doubleclicks a concept.s
+	 */
 	private void enableSingleMappingView() {
-		// TODO Auto-generated method stub
-		//Activate the SingleMappingView
+		// Activate the SingleMappingView
 		SingleMappingView = true;
 		
 		// turn off the visibility of all the nodes and edges
@@ -1446,11 +1458,23 @@ public class LegacyLayout extends Canvas2Layout {
 				vizpanel.getVisibleVertices().add(originNode);
 			}
 			
+			// update the bounds of the node.
 			currentMapping.updateBounds();
-			
+
 		}
 		
 		selectedNodes.clear();
+		
+		// because we have moved nodes, the bounds of the graphs have changed.
+		// Update the bounds of all the graphs.
+		// TODO: This should not update ALL the graphs, but only the ones that contain the nodes that have moved.
+		ArrayList<CanvasGraph> graphs = vizpanel.getGraphs();
+		graphIter = graphs.iterator();
+		while( graphIter.hasNext() ) {
+			CanvasGraph g = graphIter.next();
+			g.recalculateBounds();
+		}
+		
 		
 	}
 
