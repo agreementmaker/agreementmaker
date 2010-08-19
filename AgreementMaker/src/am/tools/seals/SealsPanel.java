@@ -56,7 +56,7 @@ import am.userInterface.MatcherParametersDialog;
 import am.userInterface.MatchingProgressDisplay;
 import am.utility.LinuxInetAddress;
 /**
- * 
+ * The SealsPanel contains all the UI components, used for changing the settings for, and publishing the SealsServer.
  * @author cosmin
  *
  */

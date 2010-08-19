@@ -40,11 +40,12 @@ public class UI {
 	
 	static final long serialVersionUID = 1;
 	
+	// this is the current UI Panel
 	private AgreementMakerClassic classicAM;
 	
 	private JFrame frame;
 	
-	private JPanel panelDesc;
+	private JPanel panelDesc;  // What does this do??? - Cosmin
 
 	//private JScrollPane scrollPane;
 	
@@ -75,26 +76,8 @@ public class UI {
 		return classicAM.getVisualizationPanel();
 	}
 
-	/**
-	 * @return
-	 */
-	public JPanel getDescriptionPanel(){
-		return this.panelDesc;
-	}
-
-	
-	public UIMenu getUIMenu(){
-		return this.uiMenu;
-	}
-	/**
-	 * @return
-	 */
-	public JFrame getUIFrame(){
-		return this.frame;
-	}
-	/**
-	 * @return
-	 */
+	public UIMenu getUIMenu(){ return this.uiMenu; }
+	public JFrame getUIFrame(){ return this.frame; }
 	
 	// TODO: getUISplitPane shouldn't be part of the UI
 	//@Deprecated
@@ -152,12 +135,11 @@ public class UI {
 		frame.setVisible(true); 
 	}
 
-	/**
-	 * @param jPanel
-	 */
-	public void setDescriptionPanel(JPanel jPanel){
-		this.panelDesc = jPanel;
-	}
+	@Deprecated
+	public JPanel getDescriptionPanel(){ return this.panelDesc; }
+	
+	@Deprecated
+	public void setDescriptionPanel(JPanel jPanel){ this.panelDesc = jPanel; }
 
 	/** This function will open a file
 	 *  Attention syntax and language are placed differently from other functions.

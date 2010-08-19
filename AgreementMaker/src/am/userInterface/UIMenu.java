@@ -30,6 +30,7 @@ import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.ontology.Ontology;
+import am.tools.WordNetLookup.WordNetLookupPanel;
 import am.tools.seals.SealsPanel;
 import am.userInterface.find.FindDialog;
 import am.userInterface.find.FindInterface;
@@ -217,6 +218,11 @@ public class UIMenu implements ActionListener {
 				// open up the SEALS Interface tab
 				SealsPanel sp = new SealsPanel();
 				ui.addTab("SEALS", null, sp, "SEALS Interface");
+			}
+			else if( obj == wordnetLookupItem ) {
+				// open up the WordNet lookup interface
+				WordNetLookupPanel wnlp = new WordNetLookupPanel();
+				ui.addTab("WordNet", null, wnlp, "Query the WordNet dictionary.");
 			}
 			else if( obj == userFeedBack ) {
 				SelectionPanel sp = new SelectionPanel(ui);
@@ -739,7 +745,7 @@ public class UIMenu implements ActionListener {
 		
 		userFeedBack = new JMenuItem("User Feedback Loop");
 		userFeedBack.addActionListener(this);
-		matchingMenu.add(userFeedBack);
+		//matchingMenu.add(userFeedBack);  // Remove UFL for distribution.
 		
 		matchingMenu.addSeparator();
 		newMatching = new JMenuItem("New empty matching");
@@ -776,14 +782,14 @@ public class UIMenu implements ActionListener {
 		
 		// *************************** TOOLS MENU ****************************
 		toolsMenu = new JMenu("Tools");
-		toolsMenu.setMnemonic(KeyEvent.VK_H);
+		toolsMenu.setMnemonic('T');
 		myMenuBar.add(toolsMenu);
 		
 		// Tools -> Wordnet lookup panel...
-		wordnetLookupItem = new JMenuItem("Wordnet lookup panel...");
+		wordnetLookupItem = new JMenuItem("Wordnet Lookup ...");
 		wordnetLookupItem.setMnemonic(KeyEvent.VK_W);
 		wordnetLookupItem.addActionListener(this);
-		toolsMenu.add(wordnetLookupItem);
+		toolsMenu.add(wordnetLookupItem);  // Wordnet lookup is not done yet.
 		
 		// Tools -> SEALS Interface...
 		sealsItem = new JMenuItem("SEALS Interface...");
