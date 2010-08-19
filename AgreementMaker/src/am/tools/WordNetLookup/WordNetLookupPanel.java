@@ -47,6 +47,8 @@ import javax.swing.text.Document;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.html.HTMLDocument;
 
+import am.Utility;
+
 import edu.smu.tspell.wordnet.NounSynset;
 import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.SynsetType;
@@ -120,13 +122,17 @@ public class WordNetLookupPanel extends JPanel implements ActionListener, KeyLis
 		// Initialize the WordNet Interface (JAWS)
 		// Initialize the WordNet interface.
 		String cwd = System.getProperty("user.dir");
-		String wordnetdir = cwd + "/../AgreementMaker/wordnet-3.0";
+		String wordnetdir = cwd + "/wordnet-3.0";
 
 		System.setProperty("wordnet.database.dir", wordnetdir);
 		
 		
 		// Instantiate wordnet.
-		WordNet = WordNetDatabase.getFileInstance();
+		try {
+			WordNet = WordNetDatabase.getFileInstance();
+		} catch( Exception e ) {
+			Utility.displayErrorPane(e.getMessage(), "Cannot open WordNet files");
+		}
 
 	}
 
