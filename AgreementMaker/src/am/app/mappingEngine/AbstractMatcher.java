@@ -41,7 +41,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected boolean modifiedByUser;
 	protected double threshold;
 	
-	/**ANY means any numer of relations for source or target*/
+	/**ANY means any number of relations for source or target*/
 	public final static int ANY_INT = Integer.MAX_VALUE;
 	protected int maxSourceAlign;
 	protected int maxTargetAlign;
