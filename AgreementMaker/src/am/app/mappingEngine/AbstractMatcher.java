@@ -164,8 +164,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		classesAlignmentSet = null;
 		propertiesAlignmentSet = null;
 		
-		//sourceOntology = Core.getInstance().getSourceOntology(); // moved initialization of sourceOntology to match().
-		//targetOntology = Core.getInstance().getTargetOntology(); // moved initialization of targetOntology to match().
+		sourceOntology = Core.getInstance().getSourceOntology(); // moved initialization of sourceOntology to match().
+		targetOntology = Core.getInstance().getTargetOntology(); // moved initialization of targetOntology to match().
 		inputMatchers = new ArrayList<AbstractMatcher>();
 	}
 	
