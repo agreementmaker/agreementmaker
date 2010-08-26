@@ -45,7 +45,7 @@ public class UI {
 	
 	private JFrame frame;
 	
-	private JPanel panelDesc;  // What does this do??? - Cosmin
+	private JPanel panelDesc;  // This variable is initialized by UI.openFile().  It instantiates a VertexDescriptionPane
 
 	//private JScrollPane scrollPane;
 	
@@ -135,9 +135,17 @@ public class UI {
 		frame.setVisible(true); 
 	}
 
+	/**
+	 * setDescriptionPanel is used in UI.openFile().
+	 * @return
+	 */
 	@Deprecated
 	public JPanel getDescriptionPanel(){ return this.panelDesc; }
 	
+	/**
+	 * Used in UI.openFile()
+	 * @param jPanel
+	 */
 	@Deprecated
 	public void setDescriptionPanel(JPanel jPanel){ this.panelDesc = jPanel; }
 

@@ -20,12 +20,18 @@ import javax.swing.event.ChangeEvent;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import com.hp.hpl.jena.ontology.AnnotationProperty;
 import com.hp.hpl.jena.ontology.ConversionException;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.ontology.OntTools;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 
@@ -55,6 +61,7 @@ import am.userInterface.canvas2.utility.CanvasGraph;
 import am.userInterface.canvas2.utility.GraphLocator;
 import am.userInterface.canvas2.utility.GraphLocator.GraphType;
 import am.userInterface.vertex.Vertex;
+import am.userInterface.vertex.VertexDescriptionPane;
 import am.utility.DirectedGraphEdge;
 
 /**
@@ -1151,7 +1158,7 @@ public class LegacyLayout extends Canvas2Layout {
 				
 				// So then:
 				//		- LEFT button SINGLE click = select NODE (or deselect if clicking empty space)
-				//		- LEFT button DOUBLE click = line up two nodes by their mapping (do nothing if it's empty space)<- TODO  
+				//		- LEFT button DOUBLE click = line up two nodes by their mapping (do nothing if it's empty space)
 	
 				// Jan 29, 2010 - Cosmin
 				//   Ok now, we are adding menu support:
@@ -1193,7 +1200,7 @@ public class LegacyLayout extends Canvas2Layout {
 							// move the viewpane to the new node
 							//vizpanel.getScrollPane().scrollRectToVisible( new Rectangle(0, vizpanel.getScrollPane().getSize().height, 1, 1) );
 							vizpanel.getScrollPane().getViewport().setViewPosition( new Point(vizpanel.getScrollPane().getViewport().getLocation().x, 
-									hoveringOver.getBounds().y - vizpanel.getScrollPane().getViewport().getHeight()/2 ));
+									hoveringOver.getBounds().y - vizpanel.getScrollPane().getViewport().getHeight()/2 ));  // TODO: Check canvas boundaries when moving view.
 							//System.out.print( "Moving viewport to: " + hoveringOver.getBounds().toString() );
 							hoveringOver = null;
 							vizpanel.repaint();
@@ -1257,6 +1264,34 @@ public class LegacyLayout extends Canvas2Layout {
 								selectedNodes.add( (LegacyNode)hoveringOver);
 								//hoveringOver.clearDrawArea(g);
 								hoveringOver.draw(g);
+							}
+							
+							// Populate the annotation box.
+							if( hoveringOver.getGraphicalData().r != null ) {
+								if( hoveringOver.getGraphicalData().r.canAs( OntClass.class ) ) {
+									OntClass currentClass = (OntClass) hoveringOver.getGraphicalData().r.as(OntClass.class);
+									StmtIterator i = currentClass.listProperties();
+									String annotationProperties = new String();
+									while( i.hasNext() ) {
+										Statement s = (Statement) i.next();
+										Property p = s.getPredicate();
+										
+										if( p.canAs( AnnotationProperty.class ) ) {
+											// this is an annotation property
+											RDFNode obj = s.getObject();
+											if( obj.canAs(Literal.class) ) {
+												Literal l = (Literal) obj.as(Literal.class);
+												annotationProperties += p.getLocalName() + ": " + l.getString() + "\n";
+												System.out.println("annotation");
+											} else {
+												annotationProperties += p.getLocalName() + ": " + obj.toString() + "\n";
+												System.out.println("generic");
+											}
+										}
+									}
+									VertexDescriptionPane vdp = (VertexDescriptionPane) Core.getUI().getUISplitPane().getRightComponent();
+									vdp.setSourceAnnotations(annotationProperties);
+								}
 							}
 						}
 					}
