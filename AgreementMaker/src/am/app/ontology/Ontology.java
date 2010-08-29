@@ -7,6 +7,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 
 import am.GlobalStaticVariables;
+import am.app.mapEngine.instance.InstanceList;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.qualityEvaluation.JoslynStructuralQuality;
 import am.userInterface.vertex.Vertex;
@@ -55,6 +56,17 @@ public class Ontology {
 	private boolean skipOtherNamespaces;
 	
 	private String URI;
+	
+	//BEGIN Instance related fields and functions
+	private InstanceList instanceList;
+	
+	public InstanceList getInstanceList() {
+		return instanceList;
+	}
+	public void setInstanceList(InstanceList instanceList) {
+		this.instanceList = instanceList;
+	}
+	//END Instance related fields and functions
 	
 	/**
 	 * This value is not used in the AM system right now, it is only used in the Conference Track when more than two ontologies are involved in the process.
