@@ -80,6 +80,7 @@ public class SealsServer implements AlignmentWS {
 		m.setThreshold(threshold);
 		m.setMaxSourceAlign(sourceRelations);
 		m.setMaxTargetAlign(targetRelations);
+		m.setParam(parameters);
 		
 		
 		// 1. Load ontologies.
