@@ -100,6 +100,8 @@ public class OAEI2009matcher extends AbstractMatcher {
 	    	BaseSimilarityParameters bsmp = new BaseSimilarityParameters();
 	    	bsmp.initForOAEI2009();
 	    	pra.setParam(bsmp);
+	    	pra.setSourceOntology(sourceOntology);
+	    	pra.setTargetOntology(targetOntology);
 	    	//bsm.setPerformSelection(false);
 			pra.match();
 	    	endtime = System.nanoTime()/measure;
@@ -119,6 +121,8 @@ public class OAEI2009matcher extends AbstractMatcher {
 	    	BaseSimilarityParameters bsmp = new BaseSimilarityParameters();
 	    	bsmp.initForOAEI2009();
 	    	pra.setParam(bsmp);
+	    	pra.setSourceOntology(sourceOntology);
+	    	pra.setTargetOntology(targetOntology);
 	    	//bsm.setPerformSelection(false);
 			pra.match();
 	    	endtime = System.nanoTime()/measure;
@@ -138,6 +142,8 @@ public class OAEI2009matcher extends AbstractMatcher {
     	ParametricStringParameters psmp = new ParametricStringParameters();
     	psmp.initForOAEI2009();
     	psm.setParam(psmp);
+    	psm.setSourceOntology(sourceOntology);
+    	psm.setSourceOntology(targetOntology);
     	//psm.setPerformSelection(false);
 		psm.match();
         endtime = System.nanoTime()/measure;
@@ -154,6 +160,8 @@ public class OAEI2009matcher extends AbstractMatcher {
     	MultiWordsParameters vmmp = new MultiWordsParameters();
     	vmmp.initForOAEI2009();
     	vmm.setParam(vmmp);
+    	vmm.setSourceOntology(sourceOntology);
+    	vmm.setTargetOntology(targetOntology);
     	//vmm.setPerformSelection(false);
 		vmm.match();
         endtime = System.nanoTime()/measure;
@@ -176,6 +184,8 @@ public class OAEI2009matcher extends AbstractMatcher {
         CombinationParameters   lwcp = new CombinationParameters();
     	lwcp.initForOAEI2009();
     	lwc.setParam(lwcp);
+    	lwc.setSourceOntology(sourceOntology);
+    	lwc.setTargetOntology(targetOntology);
     	//lwc.setPerformSelection(false);
 		lwc.match();
         endtime = System.nanoTime()/measure;
@@ -195,6 +205,8 @@ public class OAEI2009matcher extends AbstractMatcher {
     	DescendantsSimilarityInheritanceParameters dsip = new DescendantsSimilarityInheritanceParameters();
     	dsip.initForOAEI2009();
     	dsi.setParam(dsip);
+    	dsi.setSourceOntology(sourceOntology);
+    	dsi.setTargetOntology(targetOntology);
     	//dsi.setPerformSelection(true);
 		dsi.match();
         endtime = System.nanoTime()/measure;
@@ -212,6 +224,8 @@ public class OAEI2009matcher extends AbstractMatcher {
 	    	wnl.setThreshold(threshold);
 	    	wnl.setMaxSourceAlign(maxSourceAlign);
 	    	wnl.setMaxTargetAlign(maxTargetAlign);
+	    	wnl.setSourceOntology(sourceOntology);
+	    	wnl.setTargetOntology(targetOntology);
 	    	wnl.match();
 	        endtime = System.nanoTime()/measure;
 	    	time = (endtime-startime);
@@ -259,6 +273,8 @@ public class OAEI2009matcher extends AbstractMatcher {
 	    	par.fileName = parameters.partialReferenceFile;
 	    	par.format = parameters.format;
 	    	praIntegration.setParam(par);
+	    	praIntegration.setSourceOntology(sourceOntology);
+	    	praIntegration.setTargetOntology(targetOntology);
 	    	//umls.initForOAEI2009();
 	    	praIntegration.match();
 	    	time = (endtime-startime);
@@ -273,7 +289,8 @@ public class OAEI2009matcher extends AbstractMatcher {
 			pra2.setThreshold(threshold);
 			pra2.setMaxSourceAlign(maxSourceAlign);
 			pra2.setMaxTargetAlign(maxTargetAlign);
-			
+			pra2.setSourceOntology(sourceOntology);
+			pra2.setTargetOntology(targetOntology);
 			pra2.match();
 			
 			lastLayer = pra2;
