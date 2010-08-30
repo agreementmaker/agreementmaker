@@ -1268,7 +1268,9 @@ public class LegacyLayout extends Canvas2Layout {
 							
 							// Populate the annotation box.
 							if( hoveringOver.getGraphicalData().r != null ) {
+								
 								if( hoveringOver.getGraphicalData().r.canAs( OntClass.class ) ) {
+									// we clicked on a class
 									OntClass currentClass = (OntClass) hoveringOver.getGraphicalData().r.as(OntClass.class);
 									StmtIterator i = currentClass.listProperties();
 									String annotationProperties = new String();
@@ -1288,6 +1290,31 @@ public class LegacyLayout extends Canvas2Layout {
 										}
 									}
 									
+									VertexDescriptionPane vdp = (VertexDescriptionPane) Core.getUI().getUISplitPane().getRightComponent();
+									if( hoveringOver.getGraphicalData().ontologyID == leftOntologyID ) {
+										vdp.setSourceAnnotations(annotationProperties);
+									} else {
+										vdp.setTargetAnnotations(annotationProperties);
+									}
+								} else if( hoveringOver.getGraphicalData().r.canAs( OntProperty.class)) {
+									// we clicked on a property
+									OntProperty currentProperty = (OntProperty) hoveringOver.getGraphicalData().r.as(OntProperty.class);
+									StmtIterator i = currentProperty.listProperties();
+									String annotationProperties = new String();
+									while( i.hasNext() ) {
+										Statement s = (Statement) i.next();
+										Property p = s.getPredicate();
+										
+										if( p.canAs( AnnotationProperty.class) ) {
+											RDFNode obj = s.getObject();
+											if( obj.canAs( Literal.class)) {
+												Literal l = (Literal) obj.as(Literal.class);
+												annotationProperties += p.getLocalName() + ": " + l.getString() + "\n";
+											} else {
+												annotationProperties += p.getLocalName() + ": " + obj.toString() + "\n";
+											}
+										}
+									}
 									VertexDescriptionPane vdp = (VertexDescriptionPane) Core.getUI().getUISplitPane().getRightComponent();
 									if( hoveringOver.getGraphicalData().ontologyID == leftOntologyID ) {
 										vdp.setSourceAnnotations(annotationProperties);
