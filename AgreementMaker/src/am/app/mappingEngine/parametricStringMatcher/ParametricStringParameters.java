@@ -46,8 +46,8 @@ public class ParametricStringParameters extends AbstractParameters {
 		localWeight = 0;
 		labelWeight = 0.65d;
 		commentWeight = 0.25d;
-		seeAlsoWeight = 0.5d;
-		isDefinedByWeight = 0.5d;
+		seeAlsoWeight = 0.05d;
+		isDefinedByWeight = 0.05d;
 		measure = AMSUB_AND_EDIT;
 		normParameter = new NormalizerParameter();
 		normParameter.setForOAEI2009();
