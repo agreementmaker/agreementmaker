@@ -1282,17 +1282,22 @@ public class LegacyLayout extends Canvas2Layout {
 											if( obj.canAs(Literal.class) ) {
 												Literal l = (Literal) obj.as(Literal.class);
 												annotationProperties += p.getLocalName() + ": " + l.getString() + "\n";
-												System.out.println("annotation");
 											} else {
 												annotationProperties += p.getLocalName() + ": " + obj.toString() + "\n";
-												System.out.println("generic");
 											}
 										}
 									}
+									
 									VertexDescriptionPane vdp = (VertexDescriptionPane) Core.getUI().getUISplitPane().getRightComponent();
-									vdp.setSourceAnnotations(annotationProperties);
+									if( hoveringOver.getGraphicalData().ontologyID == leftOntologyID ) {
+										vdp.setSourceAnnotations(annotationProperties);
+									} else {
+										vdp.setTargetAnnotations(annotationProperties);
+									}
 								}
-							}
+							}  // end of populate the annotation box.
+							
+							
 						}
 					}
 					

@@ -32,7 +32,7 @@ public class VertexDescriptionPane extends JPanel{
 	
 	private JPanel pnlSourceDescription,pnlSourceAnnotations,pnlSourceProperties,pnlSourceIndividuals,sp5,pnlTargetDescription,pnlTargetAnnotations,pnlTargetProperties,pnlTargetIndividuals,lp5;
 	private JScrollPane sclSourceDescription,sclSourceAnnotations,ss3,ss4,sclMappingInformation,ls1,ls2,ls3,ls4,ls5;
-	private JTextArea txtSourceDescription,txtSourceAnnotations,txtSourceProperties,st4,txtMappingInformation,lt1,lt2,lt3,lt4,lt5;
+	private JTextArea txtSourceDescription,txtSourceAnnotations,txtSourceProperties,st4,txtMappingInformation,lt1,txtTargetAnnotations,lt3,lt4,lt5;
 	private int typeOfFile;
 
 	private String sourceAnnotations;
@@ -112,7 +112,7 @@ public class VertexDescriptionPane extends JPanel{
 			txtSourceAnnotations = new JTextArea();
 			txtSourceProperties = new JTextArea();
 			st4 = new JTextArea();
-			lt2 = new JTextArea();
+			txtTargetAnnotations = new JTextArea();
 			lt3 = new JTextArea();
 			lt4 = new JTextArea();
 			
@@ -167,10 +167,10 @@ public class VertexDescriptionPane extends JPanel{
 	        ls1.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), TABDESC));
 	        pnlTargetDescription.add(ls1);
 	
-	        lt2.setEditable(false);
-	        lt2.setFont(new java.awt.Font("Lucida Sans Unicode", 0, 12));
-	        lt2.setLineWrap(true);
-	        ls2 = new JScrollPane(lt2);
+	        txtTargetAnnotations.setEditable(false);
+	        txtTargetAnnotations.setFont(new java.awt.Font("Lucida Sans Unicode", 0, 12));
+	        txtTargetAnnotations.setLineWrap(true);
+	        ls2 = new JScrollPane(txtTargetAnnotations);
 	        ls2.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), TABANNOTATIONS));
 	        pnlTargetAnnotations.add(ls2);
 	
@@ -201,13 +201,18 @@ public class VertexDescriptionPane extends JPanel{
 	}
 	
 	public void setSourceAnnotations( String annotations ) {
-		txtSourceAnnotations.setText(annotations);
+		if( txtSourceAnnotations != null ) txtSourceAnnotations.setText(annotations);
 		this.sourceAnnotations = annotations;
 	}
 	
-	public String getSourceAnnotations(){
-		return sourceAnnotations;
+	public void setTargetAnnotations( String annotations ) {
+		if( txtTargetAnnotations != null ) txtTargetAnnotations.setText(annotations);
+		this.targetAnnotations = annotations;
 	}
+	
+	public String getSourceAnnotations() { return sourceAnnotations; }
+	public String getTargetAnnotations() { return targetAnnotations; }
+	
 	
 	public String getDisjointClasses (){
 		return disjointClasses;
@@ -240,7 +245,7 @@ public class VertexDescriptionPane extends JPanel{
 		    	   st4.setText(node.getIndividualsString());
 		       }else {
 		    	   lt1.setText(node.getDescriptionsString());
-		    	   lt2.setText(node.getAnnotationsString());
+		    	   txtTargetAnnotations.setText(node.getAnnotationsString());
 		    	   lt3.setText(node.getPropOrClassString());
 		    	   lt4.setText(node.getIndividualsString());
 		       }
@@ -265,7 +270,7 @@ public class VertexDescriptionPane extends JPanel{
 		    	   st4.setText("");
 		       }else{
 		    	   lt1.setText("");
-		    	   lt2.setText("");
+		    	   txtTargetAnnotations.setText("");
 		    	   lt3.setText("");
 		    	   lt4.setText("");
 		       }
