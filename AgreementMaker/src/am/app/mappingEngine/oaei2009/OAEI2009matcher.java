@@ -143,7 +143,7 @@ public class OAEI2009matcher extends AbstractMatcher {
     	psmp.initForOAEI2009();
     	psm.setParam(psmp);
     	psm.setSourceOntology(sourceOntology);
-    	psm.setSourceOntology(targetOntology);
+    	psm.setTargetOntology(targetOntology);
     	//psm.setPerformSelection(false);
 		psm.match();
         endtime = System.nanoTime()/measure;
