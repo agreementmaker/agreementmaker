@@ -193,6 +193,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 		System.out.println("LWC completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		lastLayer = lwc;
 
+		/* Original code
 		//Forth or fifth layer: DSI
 		//DSI
     	System.out.println("Running DSI");
@@ -213,7 +214,31 @@ public class OAEI2009matcher extends AbstractMatcher {
     	time = (endtime-startime);
 		System.out.println("DSI completed in (h.m.s.ms) "+Utility.getFormattedTime(time));	
 		lastLayer = dsi;
+		*/
 		
+		//Forth or fifth layer: BSS
+		//BSS
+    	System.out.println("Running BSS");
+    	startime = System.nanoTime()/measure;
+    	AbstractMatcher bss = MatcherFactory.getMatcherInstance(MatchersRegistry.BSS, 0);
+    	bss.getInputMatchers().add(lastLayer);
+    	bss.setThreshold(threshold);
+    	bss.setMaxSourceAlign(maxSourceAlign);
+    	bss.setMaxTargetAlign(maxTargetAlign);
+    	bss.setSourceOntology(sourceOntology);
+    	bss.setTargetOntology(targetOntology);
+    	/* to modify and create if ever BSS will need parameters
+    	DescendantsSimilarityInheritanceParameters dsip = new DescendantsSimilarityInheritanceParameters();
+    	dsip.initForOAEI2009();
+    	dsi.setParam(dsip);
+    	dsi.setPerformSelection(true);
+    	*/
+		bss.match();
+        endtime = System.nanoTime()/measure;
+    	time = (endtime-startime);
+		System.out.println("SSM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));	
+		lastLayer = bss;
+
 		if(parameters.useWordNet){
 			//third layer wnl on input LWC (optimized mode)
 	    	System.out.println("Running LexicalWordnet");
