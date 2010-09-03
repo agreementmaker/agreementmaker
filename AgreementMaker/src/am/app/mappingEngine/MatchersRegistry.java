@@ -16,6 +16,8 @@ import am.app.mappingEngine.PRAMatcher.PRAMatcher;
 import am.app.mappingEngine.PRAMatcher.PRAMatcher2;
 import am.app.mappingEngine.PRAintegration.PRAintegrationMatcher;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
+import am.app.mappingEngine.baseSimilarity.compoundWordSimilarity.CompoundWordSimilarityMatcher;
+import am.app.mappingEngine.basicStructureSelector.BasicStructuralSelectorMatcher;
 import am.app.mappingEngine.conceptMatcher.ConceptMatcher;
 import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
 import am.app.mappingEngine.dsi.OldDescendantsSimilarityInheritanceMatcher;
@@ -52,14 +54,16 @@ public enum MatchersRegistry {
 	 */
 	//
 	MyMatcher			( "My Custom Matcher", am.extension.MyMatcher.class ),
+	CompoundWordSim		( "Compound Word Similarity Matcher (CWSM)", CompoundWordSimilarityMatcher.class),
 	//OFFICIAL MATCHERS
 	LexicalJAWS			( "Lexical Matcher: JAWS", LexicalMatcherJAWS.class ),
 	BaseSimilarity		( "Base Similarity Matcher (BSM)", BaseSimilarityMatcher.class ),
+	ParametricString ( "Parametric String Matcher (PSM)",	 ParametricStringMatcher.class ),
 	InstanceMatcher		("Base Instance-based Matcher", BaseInstanceMatcher.class),
-	ParametricString ( "Parametric String Matcher (PSM)", ParametricStringMatcher.class ),
 	MultiWords       ("Vector-based Multi-Words Matcher (VMM)", MultiWordsMatcher.class),
 	WordNetLexical		("Lexical Matcher: WordNet", LexicalMatcherJWNL.class),
 	DSI					( "Descendant's Similarity Inheritance (DSI)", DescendantsSimilarityInheritanceMatcher.class ),
+	BSS					( "Basic Structure Selector Matcher (BSS)", BasicStructuralSelectorMatcher.class ),
 	SSC					( "Sibling's Similarity Contribution (SSC)", SiblingsSimilarityContributionMatcher.class ),
 	Combination	( "Linear Weighted Combination (LWC)", CombinationMatcher.class ),
 	ConceptSimilarity   ( "Concept Similarity", ConceptMatcher.class, false),

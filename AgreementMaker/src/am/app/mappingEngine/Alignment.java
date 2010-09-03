@@ -61,6 +61,15 @@ public class Alignment
     	relation = EQUIVALENCE;
 	}
 
+	public Alignment(Alignment old) {
+		this.entity1 = old.entity1;
+	    this.entity2 = old.entity2;
+	    this.similarity = old.similarity;
+	    this.relation = old.relation;
+	    
+	    this.typeOfConcepts = old.typeOfConcepts;
+	}
+
 	public Node getEntity1()
     {
         return entity1;

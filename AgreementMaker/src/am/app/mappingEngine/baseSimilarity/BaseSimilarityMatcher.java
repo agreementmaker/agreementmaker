@@ -254,7 +254,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	 * 2) Separates capitalized words, ( "BaseSimilarity" -> "Base Similarity" )
 	 */
 	
-	 private String treatString(String s) {
+	 protected String treatString(String s) {
 		 
 		 
 		 String s2 = s.replace("_"," ");
