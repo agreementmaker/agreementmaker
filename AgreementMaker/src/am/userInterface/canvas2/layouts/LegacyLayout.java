@@ -84,6 +84,12 @@ public class LegacyLayout extends Canvas2Layout {
 									     // It's done in order to avoid unnecessary draws() and speed up the paint() function. 
 	private Rectangle pixelColumnViewport;  // required to know the correct index in the pixelColumnDrawn array.
 
+	/**
+	 * An array of hashmaps that translate Jena OntResource object into AgreementMaker LegacyNode object for each individual ontology. 
+	 * Used in the graph building to avoid visiting the same nodes twice, and as a general purpose lookup to translate from Node to LegacyNode.
+	 */
+	//private ArrayList<HashMap<OntResource,LegacyNode>> ConceptMaps; 
+
 	private HashMap<OntResource,LegacyNode> hashMap; // used in the graph building to avoid visiting the same nodes twice 
 	private LegacyNode anonymousNode;
 	
@@ -134,6 +140,7 @@ public class LegacyLayout extends Canvas2Layout {
 	
 	public LegacyLayout(Canvas2 vp) {
 		super(vp);
+		//ConceptMaps = new ArrayList<HashMap<OntResource,LegacyNode>>();
 		hashMap = new HashMap<OntResource, LegacyNode>();
 		oldViewportDimensions = new Dimension(0,0);
 		
@@ -342,7 +349,7 @@ public class LegacyLayout extends Canvas2Layout {
 		CanvasGraph classesGraph = new CanvasGraph( GraphLocator.GraphType.CLASSES_GRAPH, ont.getID() );
 		anonymousNode = new LegacyNode( new GraphicalData(0, 0, 0, 0, GraphicalData.NodeType.FAKE_NODE, this, ont.getID() ));
 		
-		LegacyNode classesRoot = buildClassGraph( m, classesGraph );  // build the class graph here
+		LegacyNode classesRoot = buildClassGraph( m, classesGraph, ont );  // build the class graph here
 		
 		// update the offsets to put the properties graph under the class graph.
 		if( leftSide ) {
@@ -544,7 +551,7 @@ public class LegacyLayout extends Canvas2Layout {
 	 * 
 	 */
 	@SuppressWarnings("unchecked")   // this comes from OntTools.namedHierarchyRoots()
-	private LegacyNode buildClassGraph( OntModel m, CanvasGraph graph ) {
+	private LegacyNode buildClassGraph( OntModel m, CanvasGraph graph, Ontology ont ) {
 
 		Logger log = null;
 		if( Core.DEBUG ) {
@@ -1002,6 +1009,22 @@ public class LegacyLayout extends Canvas2Layout {
 					Canvas2Vertex n1 = hashMap.get(e1);
 					Canvas2Vertex n2 = hashMap.get(e2);
 					
+					if( n1.equals(n2) ) {
+						try {
+							throw new Exception("Source and target node should never be the same.");
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							System.err.println("******************* EXCEPTION *********************");
+							System.err.println("OntRes1 = " + e1 + ", Hashcode: " + e1.hashCode() );
+							System.err.println("OntRes1 = " + e1 + ", Hashcode: " + e1.hashCode() );
+							System.err.println("OntModel1 = " + e1.getModel() );
+							System.err.println("OntModel1 Hashcode = " + e1.getModel().hashCode() );
+							System.err.println("OntRes2 = " + e2 + ", Hashcode: " + e2.hashCode() );
+							System.err.println("OntModel2 = " + e2.getModel() );
+							System.err.println("OntModel2 Hashcode = " + e2.getModel().hashCode() );
+							e.printStackTrace();
+						}
+					}
 					
 					LegacyMapping edge = new LegacyMapping( n1, n2, null, m.getID(),  Utility.getNoDecimalPercentFromDouble(alignment.getSimilarity()) );
 					
