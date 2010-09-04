@@ -16,6 +16,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
+import am.userInterface.ontology.OntologyConceptGraphics;
 import am.userInterface.vertex.*;
 /**
  * This class represents an element of the ontology to be aligned.
@@ -25,35 +26,41 @@ import am.userInterface.vertex.*;
  */
 public class Node {
 	
-	/**This is the reference of the Resource in the ontology, this is a Jena class, when parsing an XML ontology there will be no resource	
-	 *  the node is built taking information from this resource
-	 *  if we have loaded an OWL ontology this resource will be instance of OntResource
-	 *  if this node is a ClassNode, the resource will be instance of OntClass
-	 *  Right now we don't need this information but we may use it in the future to access any other information in the ontology connected to this one
-	 *   */
+	/** This is the reference of the Resource in the ontology, this is a Jena class.
+	 *  When parsing an XML ontology, there will be a Jena OntModel built in order to provide this resource.	
+	 *  The Node object is built taking information from this Jena Resource.
+	 *  If we have loaded an OWL ontology this resource will be instance of OntResource.
+	 *  If this node is a ClassNode, the resource will be instance of OntClass.
+	 *  The Jena Resource is used to access all information in the ontology regarding this concept.
+	 */
 	private Resource resource;
-	/**The OWL/RDF uri identifier, that is namespace#localname, all these informations are kept into the resource attribute but we keep them separate to access them easily*/
+	
+	/** The OWL/RDF uri identifier, that is namespace#localname.
+	 * This info is kept in the resource variable but we keep them separate to access them easily. TODO - Should we really be duplicating this information? - Cosmin.
+	 */
 	private String uri = "";
+
 	/**
 	 * One of the string which can be used to compare two nodes
 	 * In general the URI = namespace#localname, in the OWL ontology, often the localname is the same of label	
 	 * usually is defined with rdf: ID */
-	protected String localName = "";
+	protected String localName = "";  // TODO - Avoid duplication of information.  The localname can be gotten from the Jena Resource. - Cosmin.
 	/**
 	 * Another string which can be used to compare nodes
 	 * This should be a human readable version of localname. In a RDF or XML ontologies there are no labels
 	 * In OWL ontology we can have a label, even though often is the same of name.
 	 * rdfs:label
 	 */
-	private String label = "";
+	private String label = ""; // TODO - Avoid duplication of information.  The label can be gotten from the Jena Resource. - Cosmin.
 	/**
 	 * Another string which can be used to compare nodes
 	 * This is a longer description (more than one word) for this resource.In a RDF or XML ontologies there are no comments
 	 * In OWL ontology we can have a comment.
 	 * rdfs:comment
 	 */
-	private String comment = "";
-	//SOME MORE INFORMATIONS THAT MY BE USED
+	private String comment = "";  // TODO - Avoid duplication of information.  The comment can be gotten from the Jena Resource. - Cosmin.
+	
+	//SOME MORE INFORMATIONS THAT MY BE USED -- // TODO - Avoid duplication of information.  All the info can be gotten from the Jena Resource. - Cosmin.
 	private String isDefinedByLabel = "";
 	private String isDefinedByURI = "";
 	private String isDefinedByComment = "";
@@ -61,9 +68,14 @@ public class Node {
 	private String seeAlsoURI = "";
 	private String seeAlsoComment = "";
 	
-	//if the node is a prop node then it this list contains the list of classes localnames which declare this prop
-	//if the node is a class node then this list contains the list of properties declared by this class
+	/** If the node is a prop node then it this list contains the list of classes localnames which declare this property.
+		If the node is a class node then this list contains the list of properties declared by this class.
+	*/
 	private ArrayList<String> propOrClassNeighbours = new ArrayList<String>();
+	
+	/**
+	 * A list of the individuals associated with this node.
+	 */
 	private ArrayList<String> individuals = new ArrayList<String>();
 	
 	
@@ -91,6 +103,17 @@ public class Node {
 	private int color;
 	private ArrayList<Node> parent = new ArrayList<Node>();
 	private int depth;
+	
+	/**
+	 * This is an arraylist all the graphical representations of this node.
+	 * This must be a list, as opposed to a single variable, because AgreementMaker 
+	 * can have multiple graphical representations of the same ontology.
+	 */
+	private ArrayList<OntologyConceptGraphics> graphicalRepresentations;
+	
+	
+	/***************************************** METHODS *************************************************/
+	
 	/**
 	 * XML constructor
 	 * @param key
@@ -606,7 +629,40 @@ public class Node {
 		return result;
 	}
 
-
+	
+	/******************************* GRAPHICAL REPRESENTATION METHODS ******************************/
+	
+	/**
+	 * Determine if a certain graphical representation has an object registered with this Node.
+	 * @param c
+	 * @return
+	 */
+	public boolean hasGraphicalRepresentation( Class<?> c ) {
+		Iterator<OntologyConceptGraphics> gr = graphicalRepresentations.iterator();
+		while( gr.hasNext() ) {
+			OntologyConceptGraphics g = gr.next();
+			if ( g.getImplementationClass().equals(c) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Return a graphical representation corresponding to the class that implements it.
+	 * @param c
+	 * @return
+	 */
+	public OntologyConceptGraphics getGraphicalRepresentation( Class<?> c ) {
+		Iterator<OntologyConceptGraphics> gr = graphicalRepresentations.iterator();
+		while( gr.hasNext() ) {
+			OntologyConceptGraphics g = gr.next();
+			if( g.getImplementationClass().equals(c) ) {
+				return g;
+			}
+		}
+		return null;
+	}
 
 
 }
