@@ -9,9 +9,11 @@ import java.util.Iterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 import am.userInterface.Colors;
+import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.GraphicalData;
 import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
 import am.userInterface.canvas2.nodes.LegacyMapping;
+import am.userInterface.ontology.OntologyConceptGraphics;
 import am.utility.DirectedGraphEdge;
 import am.utility.DirectedGraphVertex;
 
@@ -29,7 +31,7 @@ import am.utility.DirectedGraphVertex;
  *
  */
 
-public class Canvas2Vertex extends DirectedGraphVertex<GraphicalData> {  // we have to extend the DGVertex because we need access to the adjacency lists
+public class Canvas2Vertex extends DirectedGraphVertex<GraphicalData> implements OntologyConceptGraphics {  // we have to extend the DGVertex because we need access to the adjacency lists
 
 
 	//protected GraphicalData d;  // all the (d)ata is stored in this class (the name is short because it is used ALOT)
@@ -170,4 +172,7 @@ public class Canvas2Vertex extends DirectedGraphVertex<GraphicalData> {  // we h
 		if( !savePosition ) { pushedX = d.x; pushedY = d.y;  d.x = X; d.y = Y; savePosition = true;}
 	}
 	public void popXY() { d.x = pushedX; d.y = pushedY; savePosition = false; }
+
+	@Override
+	public Class<?> getImplementationClass() { return Canvas2.class; }
 }
