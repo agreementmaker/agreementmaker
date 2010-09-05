@@ -967,9 +967,7 @@ public class LegacyLayout extends Canvas2Layout {
 	private ArrayList<OntClass> getClassHierarchyRoots(OntModel m) {
 		
 		ArrayList<OntClass> roots = new ArrayList<OntClass>(); 
-		
-		// OBJECT PROPERTIES
-		
+
     	ExtendedIterator itcls = m.listClasses();
     	
     	while( itcls.hasNext() ) {  // look through all the object properties
@@ -980,7 +978,7 @@ public class LegacyLayout extends Canvas2Layout {
     		while( superClassItr.hasNext() ) {
     			OntClass superClass = (OntClass) superClassItr.next();
     			
-    			if( !oclass.equals(superClass) && !superClass.isAnon() ) {
+    			if( !oclass.equals(superClass) && !superClass.isAnon() && !superClass.equals(OWL.Thing) ) {
     				// this property has a valid superclass, therefore it is not a root property
     				superClassItr.close();
     				isRoot = false;
@@ -988,7 +986,8 @@ public class LegacyLayout extends Canvas2Layout {
     			}
     		}
     		
-    		if( isRoot ) roots.add(oclass);
+    		if( isRoot ) 
+    			roots.add(oclass);
     		
 		}    	
     	
