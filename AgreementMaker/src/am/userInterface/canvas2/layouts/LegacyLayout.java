@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.Map.Entry;
 
 import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
@@ -60,9 +58,9 @@ import am.userInterface.canvas2.utility.Canvas2Vertex;
 import am.userInterface.canvas2.utility.CanvasGraph;
 import am.userInterface.canvas2.utility.GraphLocator;
 import am.userInterface.canvas2.utility.GraphLocator.GraphType;
-import am.userInterface.vertex.Vertex;
 import am.userInterface.vertex.VertexDescriptionPane;
 import am.utility.DirectedGraphEdge;
+import am.utility.Pair;
 
 /**
  * This layout is resposible for placement of nodes and edges.
@@ -87,10 +85,14 @@ public class LegacyLayout extends Canvas2Layout {
 	/**
 	 * An array of hashmaps that translate Jena OntResource object into AgreementMaker LegacyNode object for each individual ontology. 
 	 * Used in the graph building to avoid visiting the same nodes twice, and as a general purpose lookup to translate from Node to LegacyNode.
+	 * 
+	 * We cannot use one hashmap for all ontologies because there can exist nodes in two separate ontologies that hash to the same key, therefore
+	 * they would be considered identical in the hashmap.  Therefore we are left with the hope that every OntResource in one ontology will 
+	 * hash to a unique key, even if this guarantee does not hold across multiple ontologies.
 	 */
-	//private ArrayList<HashMap<OntResource,LegacyNode>> ConceptMaps; 
+	private ArrayList<Pair<Integer,HashMap<OntResource,LegacyNode>>> ConceptHashMaps; 
 
-	private HashMap<OntResource,LegacyNode> hashMap; // used in the graph building to avoid visiting the same nodes twice 
+	//private HashMap<OntResource,LegacyNode> hashMap; // used in the graph building to avoid visiting the same nodes twice 
 	private LegacyNode anonymousNode;
 	
 	private Dimension oldViewportDimensions;  // this variable is used in the stateChanged handler.
@@ -140,8 +142,8 @@ public class LegacyLayout extends Canvas2Layout {
 	
 	public LegacyLayout(Canvas2 vp) {
 		super(vp);
-		//ConceptMaps = new ArrayList<HashMap<OntResource,LegacyNode>>();
-		hashMap = new HashMap<OntResource, LegacyNode>();
+		ConceptHashMaps = new ArrayList<Pair<Integer,HashMap<OntResource,LegacyNode>>>();
+		//hashMap = new HashMap<OntResource, LegacyNode>();
 		oldViewportDimensions = new Dimension(0,0);
 		
 		layoutArtifactGraph = buildArtifactGraph();  // build the artifact graph
@@ -244,20 +246,16 @@ public class LegacyLayout extends Canvas2Layout {
 		if( leftOntologyID == ontologyID ) { leftOntologyID = Core.ID_NONE; leftSideLoaded = false; }
 		if( rightOntologyID == ontologyID ) { rightOntologyID = Core.ID_NONE; rightSideLoaded = false; }
 		
-		// we must remove the ontology elements from the hashMap.
-		Set<Entry<OntResource,LegacyNode>> entries = hashMap.entrySet();
-		Iterator<Entry<OntResource,LegacyNode>> setIter = entries.iterator();
-		ArrayList<OntResource> toBeRemoved = new ArrayList<OntResource>();
-		while( setIter.hasNext() ) {  // make a list of things to be removed.  We must make a list, because we cannot remove entries as we are iterating over them.
-			Entry<OntResource,LegacyNode> currentEntry = setIter.next();
-			if( currentEntry.getValue().getObject().ontologyID == ontologyID ) {
-				toBeRemoved.add(currentEntry.getKey());
-			}
-		}
 		
-		Iterator<OntResource> tbrIter = toBeRemoved.iterator();
-		while( tbrIter.hasNext() ) {
-			hashMap.remove( tbrIter.next() );
+		// Remove the HashMap linked to the ontologyID
+		Iterator<Pair<Integer,HashMap<OntResource,LegacyNode>>> pairIter = ConceptHashMaps.iterator();
+		while( pairIter.hasNext() ) {
+			Pair<Integer,HashMap<OntResource,LegacyNode>> pair = pairIter.next();
+			if( pair.getLeft().intValue() == ontologyID ) {
+				// this Pair should be removed from the arraylist
+				ConceptHashMaps.remove(pair);
+				break;
+			}
 		}
 		
 	}
@@ -347,9 +345,15 @@ public class LegacyLayout extends Canvas2Layout {
 		
 		
 		CanvasGraph classesGraph = new CanvasGraph( GraphLocator.GraphType.CLASSES_GRAPH, ont.getID() );
-		anonymousNode = new LegacyNode( new GraphicalData(0, 0, 0, 0, GraphicalData.NodeType.FAKE_NODE, this, ont.getID() ));
+		anonymousNode = new LegacyNode( new GraphicalData(0, 0, 0, 0, GraphicalData.NodeType.FAKE_NODE, this, ont.getID() )); // TODO: Anonymous nodes should be displayed!
 		
-		LegacyNode classesRoot = buildClassGraph( m, classesGraph, ont );  // build the class graph here
+		// Create a new HashMap for the new Ontology
+		HashMap<OntResource,LegacyNode> newHashMap = new HashMap<OntResource,LegacyNode>();
+		Integer ontIntID = new Integer(ont.getID());
+		Pair<Integer, HashMap<OntResource,LegacyNode>> newPair = new Pair<Integer, HashMap<OntResource,LegacyNode>>(ontIntID,newHashMap);
+		ConceptHashMaps.add(newPair);
+		
+		LegacyNode classesRoot = buildClassGraph( m, classesGraph, ont, newHashMap );  // build the class graph here
 		
 		// update the offsets to put the properties graph under the class graph.
 		if( leftSide ) {
@@ -360,7 +364,7 @@ public class LegacyLayout extends Canvas2Layout {
 		
 		CanvasGraph propertiesGraph = new CanvasGraph( GraphLocator.GraphType.PROPERTIES_GRAPH, ont.getID() );
 		
-		LegacyNode propertiesRoot = buildPropertiesGraph(m, propertiesGraph);  // and the properties graph here
+		LegacyNode propertiesRoot = buildPropertiesGraph(m, propertiesGraph, ont, newHashMap);  // and the properties graph here
 	
 		CanvasGraph globalGraph = buildOntologyGraph(classesRoot, propertiesRoot, ont);  // and put them all under a global graph
 		
@@ -506,40 +510,6 @@ public class LegacyLayout extends Canvas2Layout {
 	
 	
 	/**
-	 * This recursive function builds the class tree for an XML ontology.
-	 * @param currentVertex
-	 * @param parentNode
-	 * @param graph
-	 * @param depth
-	 * @return
-	 */
-	private LegacyNode recursiveBuildClassGraphXML( Vertex currentVertex, LegacyNode parentNode,  CanvasGraph graph, int depth ) {
-		
-		// 1. Create the LegacyNode representation of the current vertex.
-
-		TextElement gr = new TextElement(depth*depthIndent + subgraphXoffset, 
-										 graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
-										 100, nodeHeight, this, graph.getID() );
-		gr.setText( currentVertex.getName() );
-		
-		LegacyNode currentNode = new LegacyNode( gr );
-			
-		graph.insertVertex(currentNode);
-		LegacyEdge edge = new LegacyEdge( parentNode, currentNode, null, this);
-		graph.insertEdge( edge ); 
-		
-		// 2. Look at the children of the current Vertex and do a recursive call
-		for( int i = 0; i < currentVertex.getChildCount(); i++ ) {
-			recursiveBuildClassGraphXML( (Vertex) currentVertex.getChildAt(i), currentNode, graph, depth+1);
-		}
-		
-			
-		// 3. Return the Root Node.
-		return currentNode;
-	}
-	
-
-	/**
 	 * This function and the recursive version build the class graph.
 	 * 
 	 * The reason I split it into two functions is because the first level of recursion has to call 
@@ -551,7 +521,7 @@ public class LegacyLayout extends Canvas2Layout {
 	 * 
 	 */
 	@SuppressWarnings("unchecked")   // this comes from OntTools.namedHierarchyRoots()
-	private LegacyNode buildClassGraph( OntModel m, CanvasGraph graph, Ontology ont ) {
+	private LegacyNode buildClassGraph( OntModel m, CanvasGraph graph, Ontology ont, HashMap<OntResource,LegacyNode> hashMap ) {
 
 		Logger log = null;
 		if( Core.DEBUG ) {
@@ -570,18 +540,20 @@ public class LegacyLayout extends Canvas2Layout {
 		
 		graph.insertVertex(root);
 		
-		List<OntClass> classesList = OntTools.namedHierarchyRoots(m);
+		//List<OntClass> classesList = OntTools.namedHierarchyRoots(m);
+		ArrayList<OntClass> classesList = getClassHierarchyRoots(m);
 		
 		depth++;
 		Iterator<OntClass> clsIter = classesList.iterator();
 		while( clsIter.hasNext() ) {
 			OntClass cls = clsIter.next();  // get the current child
+			
 			if( cls.isAnon() ) {  // if it is anonymous, don't add it, but we still need to recurse on its children
 				hashMap.put(cls, anonymousNode);  // avoid cycles between anonymous nodes
 				if( Core.DEBUG ) log.debug(">> Inserted " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
-				recursiveBuildClassGraph(root, cls, depth, graph);
+				recursiveBuildClassGraph(root, cls, depth, graph, ont, hashMap);
 				continue; 
-			} else if( cls.equals(OWL.Nothing) )   // if it's OWL.Nothing (i.e. we recursed to the bottom of the heirarchy) skip it.
+			} else if( cls.equals(OWL.Nothing) )   // if it's OWL.Nothing (i.e. we recursed to the bottom of the hierarchy) skip it.
 				continue;
 			
 			// cycle check at the root
@@ -596,15 +568,30 @@ public class LegacyLayout extends Canvas2Layout {
 										           100, nodeHeight, cls, GraphicalData.NodeType.CLASS_NODE, this, graph.getID() );
 			LegacyNode node = new LegacyNode( gr1);
 			
+			try {
+				// Try to connect this graphical represenation of an Ontology Class to the Node object that represents that class.
+				Node amnode = ont.getNodefromOntResource(cls, alignType.aligningClasses);
+				amnode.addGraphicalRepresentation(node);
+			} catch (Exception e) {
+				// An exception has been thrown by getNodefromOntResource().
+				// This means that the OntClass was not found, therefore we cannot connect this LegacyNode to a Node object.
+				if( Core.DEBUG ) {
+					System.err.println(e.getMessage());
+					e.printStackTrace();
+				}
+			}
+			
 			graph.insertVertex( node );
 			LegacyEdge edge = new LegacyEdge( root, node, null, this );
 			graph.insertEdge( edge );
 			
 			hashMap.put( cls, node);
 			if( Core.DEBUG ) log.debug(">> Inserted " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
-			recursiveBuildClassGraph( node, cls, depth+1, graph );
+			recursiveBuildClassGraph( node, cls, depth+1, graph, ont, hashMap );
 			
 		}
+	
+		
 		
 		return root;
 	}
@@ -614,7 +601,9 @@ public class LegacyLayout extends Canvas2Layout {
 			LegacyNode parentNode,
 			OntClass parentClass,  // this has to be passed because of anonymous classes and the special root node
 			int depth, 
-			CanvasGraph graph) {
+			CanvasGraph graph,
+			Ontology ont,
+			HashMap<OntResource, LegacyNode> hashMap) {
 
 		
 		
@@ -631,7 +620,7 @@ public class LegacyLayout extends Canvas2Layout {
 			if( cls.isAnon() ) {
 				hashMap.put(cls, anonymousNode);  // avoid cycles between anonymous nodes
 				if( Core.DEBUG ) log.debug(">> Inserted anonymous node " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
-				recursiveBuildClassGraph( parentNode, cls, depth, graph );
+				recursiveBuildClassGraph( parentNode, cls, depth, graph, ont, hashMap );
 				continue;
 			} else if( cls.equals( OWL.Nothing ) ) 
 				continue;
@@ -645,7 +634,21 @@ public class LegacyLayout extends Canvas2Layout {
 			GraphicalData gr = new GraphicalData( depth*depthIndent + subgraphXoffset, 
 												   graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
 												   100 , nodeHeight, cls, GraphicalData.NodeType.CLASS_NODE, this, graph.getID() ); 
-			LegacyNode node = new LegacyNode( gr); 
+			LegacyNode node = new LegacyNode( gr);
+			
+			try {
+				// Try to connect this graphical represenation of an Ontology Class to the Node object that represents that class.
+				Node amnode = ont.getNodefromOntResource(cls, alignType.aligningClasses);
+				amnode.addGraphicalRepresentation(node);
+			} catch (Exception e) {
+				// An exception has been thrown by getNodefromOntResource().
+				// This means that the OntClass was not found, therefore we cannot connect this LegacyNode to a Node object.
+				if( Core.DEBUG ) {
+					System.err.println(e.getMessage());
+					e.printStackTrace();
+				}
+			}
+			
 			graph.insertVertex(node);
 				
 			LegacyEdge edge = new LegacyEdge( parentNode, node, null, this );
@@ -656,7 +659,7 @@ public class LegacyLayout extends Canvas2Layout {
 				log.debug(">> Inserted " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
 				log.debug(">>   Label: " + cls.getLabel(null));
 			}
-			recursiveBuildClassGraph( node, cls, depth+1, graph );
+			recursiveBuildClassGraph( node, cls, depth+1, graph, ont, hashMap );
 		}
 	
 	}
@@ -816,7 +819,7 @@ public class LegacyLayout extends Canvas2Layout {
 	 * They both add to the graph, and build it up.
 	 * 
 	 */
-	private LegacyNode buildPropertiesGraph( OntModel m, CanvasGraph graph ) {
+	private LegacyNode buildPropertiesGraph( OntModel m, CanvasGraph graph, Ontology ont, HashMap<OntResource, LegacyNode> hashMap ) {
 
 		Logger log = Logger.getLogger(this.getClass());
 		log.setLevel(Level.DEBUG);
@@ -838,7 +841,7 @@ public class LegacyLayout extends Canvas2Layout {
 		
 		graph.insertVertex(root);
 		
-		List<OntProperty> propertiesList = getPropertyHeirarchyRoots(m);
+		List<OntProperty> propertiesList = getPropertyHierarchyRoots(m);
 		
 		depth++;
 		Iterator<OntProperty> propIter = propertiesList.iterator();
@@ -846,7 +849,7 @@ public class LegacyLayout extends Canvas2Layout {
 			OntProperty prop = propIter.next();  // get the current child
 			if( prop.isAnon() ) {  // if it is anonymous, don't add it, but we still need to recurse on its children
 				hashMap.put(prop, anonymousNode);  // avoid cycles between anonymous nodes
-				recursiveBuildPropertiesGraph(root, prop, depth, graph);
+				recursiveBuildPropertiesGraph(root, prop, depth, graph, ont, hashMap);
 				continue; 
 			} else if( prop.equals(OWL.Nothing) )   // if it's OWL.Nothing (i.e. we recursed to the bottom of the heirarchy) skip it.
 				continue;
@@ -863,12 +866,25 @@ public class LegacyLayout extends Canvas2Layout {
 										           0, nodeHeight, prop, GraphicalData.NodeType.PROPERTY_NODE, this, graph.getID() );
 			LegacyNode node = new LegacyNode( gr1);
 			
+			try {
+				// Try to connect this graphical represenation of an Ontology Class to the Node object that represents that class.
+				Node amnode = ont.getNodefromOntResource(prop, alignType.aligningProperties);
+				amnode.addGraphicalRepresentation(node);
+			} catch (Exception e) {
+				// An exception has been thrown by getNodefromOntResource().
+				// This means that the OntClass was not found, therefore we cannot connect this LegacyNode to a Node object.
+				if( Core.DEBUG ) {
+					System.err.println(e.getMessage());
+					e.printStackTrace();
+				}
+			}
+			
 			graph.insertVertex( node );
 			LegacyEdge edge = new LegacyEdge( root, node, null, this );
 			graph.insertEdge( edge );
 			
 			hashMap.put( prop, node);
-			recursiveBuildPropertiesGraph( node, prop, depth+1, graph );
+			recursiveBuildPropertiesGraph( node, prop, depth+1, graph, ont, hashMap );
 			
 		}
 		
@@ -879,7 +895,9 @@ public class LegacyLayout extends Canvas2Layout {
 			LegacyNode parentNode,
 			OntProperty parentProperty,  // this has to be passed because of anonymous classes and the special root node
 			int depth, 
-			CanvasGraph graph) {
+			CanvasGraph graph,
+			Ontology ont,
+			HashMap<OntResource, LegacyNode> hashMap) {
 
 		Logger log = null;
 		
@@ -901,7 +919,7 @@ public class LegacyLayout extends Canvas2Layout {
 			OntProperty prop = (OntProperty) clsIter.next();
 			if( prop.isAnon() ) {
 				hashMap.put(prop, anonymousNode);  // avoid cycles between anonymous nodes
-				recursiveBuildPropertiesGraph( parentNode, prop, depth, graph );
+				recursiveBuildPropertiesGraph( parentNode, prop, depth, graph, ont, hashMap );
 				continue;
 			} else if( prop.equals( OWL.Nothing ) ) 
 				continue;
@@ -915,23 +933,73 @@ public class LegacyLayout extends Canvas2Layout {
 			GraphicalData gr = new GraphicalData( depth*depthIndent + subgraphXoffset, 
 												   graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
 												   100 , nodeHeight, prop, GraphicalData.NodeType.PROPERTY_NODE, this, graph.getID() ); 
-			LegacyNode node = new LegacyNode( gr); 
+			LegacyNode node = new LegacyNode( gr);
+			
+			try {
+				// Try to connect this graphical represenation of an Ontology Class to the Node object that represents that class.
+				Node amnode = ont.getNodefromOntResource(prop, alignType.aligningProperties);
+				amnode.addGraphicalRepresentation(node);
+			} catch (Exception e) {
+				// An exception has been thrown by getNodefromOntResource().
+				// This means that the OntClass was not found, therefore we cannot connect this LegacyNode to a Node object.
+				if( Core.DEBUG ) {
+					System.err.println(e.getMessage());
+					e.printStackTrace();
+				}
+			}
+			
 			graph.insertVertex(node);
 				
 			LegacyEdge edge = new LegacyEdge( parentNode, node, null, this );
 			graph.insertEdge( edge );
 			
 			hashMap.put(prop, node);
-			recursiveBuildPropertiesGraph( node, prop, depth+1, graph );
+			recursiveBuildPropertiesGraph( node, prop, depth+1, graph, ont, hashMap );
 		}
 	
+	}
+
+	
+	/**
+	 * This function tries to identify the root nodes of the Class hierarchy of the ontology by 
+	 * searching for properties that do no have any super properties. 
+	 */
+	private ArrayList<OntClass> getClassHierarchyRoots(OntModel m) {
+		
+		ArrayList<OntClass> roots = new ArrayList<OntClass>(); 
+		
+		// OBJECT PROPERTIES
+		
+    	ExtendedIterator itcls = m.listClasses();
+    	
+    	while( itcls.hasNext() ) {  // look through all the object properties
+    		OntClass oclass = (OntClass) itcls.next();
+    		boolean isRoot = true;
+    		
+    		ExtendedIterator superClassItr = oclass.listSuperClasses();
+    		while( superClassItr.hasNext() ) {
+    			OntClass superClass = (OntClass) superClassItr.next();
+    			
+    			if( !oclass.equals(superClass) && !superClass.isAnon() ) {
+    				// this property has a valid superclass, therefore it is not a root property
+    				superClassItr.close();
+    				isRoot = false;
+    				break;
+    			}
+    		}
+    		
+    		if( isRoot ) roots.add(oclass);
+    		
+		}    	
+    	
+    	return roots;  // all the heirarchy roots
 	}
 	
 	/**
 	 * This function tries to identify the root nodes of the Property hierarchy of the ontology by 
 	 * searching for properties that do no have any super properties. 
 	 */
-	private ArrayList<OntProperty> getPropertyHeirarchyRoots(OntModel m) {
+	private ArrayList<OntProperty> getPropertyHierarchyRoots(OntModel m) {
 		
 		ArrayList<OntProperty> roots = new ArrayList<OntProperty>(); 
 		
@@ -1001,48 +1069,40 @@ public class LegacyLayout extends Canvas2Layout {
 			Iterator<Alignment> alignmentIter = classesMatchings.iterator();
 			while( alignmentIter.hasNext() ) {
 				Alignment alignment = alignmentIter.next();
-				// TODO: Make AbstractMatchers work on Resource instead of Node.
-				OntResource e1 = (OntResource) alignment.getEntity1().getResource().as(OntResource.class);  // translate from Node to OntResource
-				OntResource e2 = (OntResource) alignment.getEntity2().getResource().as(OntResource.class);  // translate from Node to OntResource
-				if( hashMap.containsKey(e1) && hashMap.containsKey(e2) ) {
-					// great, our hashmap contains both entities
-					Canvas2Vertex n1 = hashMap.get(e1);
-					Canvas2Vertex n2 = hashMap.get(e2);
-					
-					if( n1.equals(n2) ) {
-						try {
-							throw new Exception("Source and target node should never be the same.");
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							System.err.println("******************* EXCEPTION *********************");
-							System.err.println("OntRes1 = " + e1 + ", Hashcode: " + e1.hashCode() );
-							System.err.println("OntRes1 = " + e1 + ", Hashcode: " + e1.hashCode() );
-							System.err.println("OntModel1 = " + e1.getModel() );
-							System.err.println("OntModel1 Hashcode = " + e1.getModel().hashCode() );
-							System.err.println("OntRes2 = " + e2 + ", Hashcode: " + e2.hashCode() );
-							System.err.println("OntModel2 = " + e2.getModel() );
-							System.err.println("OntModel2 Hashcode = " + e2.getModel().hashCode() );
-							e.printStackTrace();
-						}
+
+				Node e1 = alignment.getEntity1();
+				Node e2 = alignment.getEntity2();
+				
+				Canvas2Vertex n1 = (Canvas2Vertex) e1.getGraphicalRepresentation( Canvas2.class );
+				Canvas2Vertex n2 = (Canvas2Vertex) e2.getGraphicalRepresentation( Canvas2.class );
+				
+				if( n1 == null || n2 == null ) {
+					if( n1 == null ) {
+						System.out.println("LegacyLayout.buildMatcherGraph(), line 1041: Concept1 \"" + e1 + "\" does not have a graphical representation." );
 					}
-					
-					LegacyMapping edge = new LegacyMapping( n1, n2, null, m.getID(),  Utility.getNoDecimalPercentFromDouble(alignment.getSimilarity()) );
-					
-					matcherGraph.insertEdge(edge);
-					
-					
-				} else {
-					// the hashMap doesn't contain the source or the target node.
-					// something is wrong.
-					// no idea how to fix this problem.
-					
-					// log it
-					Logger log = Logger.getLogger(this.getClass());
-					log.setLevel(Level.WARN);
-					if( !hashMap.containsKey(e1) ) log.warn("Cannot find OntResource: " + e1.toString() + ".  Node container is: " + alignment.getEntity1().toString() );
-					if( !hashMap.containsKey(e2) ) log.warn("Cannot find OntResource: " + e2.toString() + ".  Node container is: " + alignment.getEntity2().toString() );
-					
+					if( n2 == null ) {
+						System.out.println("LegacyLayout.buildMatcherGraph(), line 1044: Concept2 \"" + e1 + "\" does not have a graphical representation." );
+					}
+					continue;
 				}
+				
+				if( n1.equals(n2) ) {
+					try {
+						throw new Exception("Source and target node should never be the same.");
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						System.err.println("******************* EXCEPTION *********************");
+						System.err.println("OntNode1 = " + e1 + ", Hashcode: " + e1.hashCode() );
+						System.err.println("OntNode2 = " + e2 + ", Hashcode: " + e2.hashCode() );
+						e.printStackTrace();
+					}
+				}
+				
+					
+				LegacyMapping edge = new LegacyMapping( n1, n2, null, m.getID(),  Utility.getNoDecimalPercentFromDouble(alignment.getSimilarity()) );
+					
+				matcherGraph.insertEdge(edge);
+				
 			}
 		}
 
@@ -1053,32 +1113,17 @@ public class LegacyLayout extends Canvas2Layout {
 			Iterator<Alignment> alignmentIter = propertiesMatchings.iterator();
 			while( alignmentIter.hasNext() ) {
 				Alignment alignment = alignmentIter.next();
-				// TODO: Make AbstractMatchers work on Resource instead of Node.
-				OntResource e1 = (OntResource) alignment.getEntity1().getResource().as(OntResource.class);  // translate from Node to OntResource
-				OntResource e2 = (OntResource) alignment.getEntity2().getResource().as(OntResource.class);  // translate from Node to OntResource
-				if( hashMap.containsKey(e1) && hashMap.containsKey(e2) ) {
-					// great, our hashmap contains both entities
-					Canvas2Vertex n1 = hashMap.get(e1);
-					Canvas2Vertex n2 = hashMap.get(e2);
+				
+				Node e1 = alignment.getEntity1();
+				Node e2 = alignment.getEntity2();
+				
+				Canvas2Vertex n1 = (Canvas2Vertex) e1.getGraphicalRepresentation( Canvas2.class );
+				Canvas2Vertex n2 = (Canvas2Vertex) e2.getGraphicalRepresentation( Canvas2.class );
+				
+				LegacyMapping edge = new LegacyMapping( n1, n2, null, m.getID(), Utility.getNoDecimalPercentFromDouble(alignment.getSimilarity()) );
 					
-					
-					LegacyMapping edge = new LegacyMapping( n1, n2, null, m.getID(), Utility.getNoDecimalPercentFromDouble(alignment.getSimilarity()) );
-					
-					matcherGraph.insertEdge(edge);
-					
-					
-				} else {
-					// the hashMap doesn't contain the source or the target node.
-					// something is wrong.
-					// no idea how to fix this problem.
-					
-					// log it
-					Logger log = Logger.getLogger(this.getClass());
-					log.setLevel(Level.WARN);
-					if( !hashMap.containsKey(e1) ) log.warn("Cannot find OntResource: " + e1.toString() + ".  Node container is: " + alignment.getEntity1().toString() );
-					if( !hashMap.containsKey(e2) ) log.warn("Cannot find OntResource: " + e2.toString() + ".  Node container is: " + alignment.getEntity2().toString() );
-					
-				}
+				matcherGraph.insertEdge(edge);
+
 			}
 		}
 
@@ -1603,11 +1648,21 @@ public class LegacyLayout extends Canvas2Layout {
 				hoveringOver.setHover(true);
 				//hoveringOver.clearDrawArea(g);
 				
-				// redraw all the edges connected to this node.
+				// redraw all the edges connected to this node. (only if they are visible)
 				Iterator<DirectedGraphEdge<GraphicalData>> edgeInIter = hoveringOver.edgesIn();
-				while( edgeInIter.hasNext() ) { ((Canvas2Edge)edgeInIter.next()).draw(g); }
+				while( edgeInIter.hasNext() ) { 
+					Canvas2Edge currentEdge = (Canvas2Edge) edgeInIter.next();
+					Canvas2Vertex originNode = (Canvas2Vertex) currentEdge.getOrigin();
+					if( originNode.getObject().visible )
+						currentEdge.draw(g); 
+				}
 				Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = hoveringOver.edgesOut();
-				while( edgeOutIter.hasNext() ) { ((Canvas2Edge)edgeOutIter.next()).draw(g); }
+				while( edgeOutIter.hasNext() ) {
+					Canvas2Edge currentEdge = (Canvas2Edge) edgeOutIter.next();
+					Canvas2Vertex destinationNode = (Canvas2Vertex) currentEdge.getDestination();
+					if( destinationNode.getObject().visible )
+						currentEdge.draw(g);
+				}
 				
 				
 				hoveringOver.draw(g);
