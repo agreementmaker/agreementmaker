@@ -188,14 +188,14 @@ public class VertexDescriptionPane extends JPanel{
 	        ls4.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), TABINDIVIDUALS));
 	        pnlTargetIndividuals.add(ls4);
 			
-			sourcePane.addTab(TABDESC, null, pnlSourceDescription, TIPDESC);
+			//sourcePane.addTab(TABDESC, null, pnlSourceDescription, TIPDESC);
 			sourcePane.addTab(TABANNOTATIONS, null, pnlSourceAnnotations, TIPANNOTATIONS);
-			sourcePane.addTab(TABPROP, null, pnlSourceProperties, TIPPROP);
-			sourcePane.addTab(TABINDIVIDUALS, null, pnlSourceIndividuals, TIPINDIVIDUALS);
-			targetPane.addTab(TABDESC, null, pnlTargetDescription, TIPDESC);
+			//sourcePane.addTab(TABPROP, null, pnlSourceProperties, TIPPROP);
+			//sourcePane.addTab(TABINDIVIDUALS, null, pnlSourceIndividuals, TIPINDIVIDUALS);
+			//targetPane.addTab(TABDESC, null, pnlTargetDescription, TIPDESC);
 			targetPane.addTab(TABANNOTATIONS, null, pnlTargetAnnotations, TIPANNOTATIONS);
-			targetPane.addTab(TABPROP, null, pnlTargetProperties, TIPPROP);
-			targetPane.addTab(TABINDIVIDUALS, null, pnlTargetIndividuals, TIPINDIVIDUALS);
+			//targetPane.addTab(TABPROP, null, pnlTargetProperties, TIPPROP);
+			//targetPane.addTab(TABINDIVIDUALS, null, pnlTargetIndividuals, TIPINDIVIDUALS);
 		}
 		
 	}
