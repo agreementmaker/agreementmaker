@@ -87,7 +87,7 @@ public class SealsServer implements AlignmentWS {
 		progressDisplay.appendToReport("Loading source ontology. URI: " + source + "\n");
 		
 		
-		OntoTreeBuilder otb1 = new OntoTreeBuilder(".", GlobalStaticVariables.SOURCENODE, GlobalStaticVariables.LANG_OWL, "RDF/XML", true, false);
+		OntoTreeBuilder otb1 = new OntoTreeBuilder(".", GlobalStaticVariables.SOURCENODE, GlobalStaticVariables.LANG_OWL, "RDF/XML", false, false);
 		otb1.setURI(source.toString());
 		
 		progressDisplay.appendToReport("Building source Ontology().\n");
