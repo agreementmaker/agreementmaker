@@ -109,7 +109,7 @@ public class Node {
 	 * This must be a list, as opposed to a single variable, because AgreementMaker 
 	 * can have multiple graphical representations of the same ontology.
 	 */
-	private ArrayList<OntologyConceptGraphics> graphicalRepresentations;
+	private ArrayList<OntologyConceptGraphics> graphicalRepresentations = new ArrayList<OntologyConceptGraphics>();
 	
 	
 	/***************************************** METHODS *************************************************/
@@ -663,6 +663,21 @@ public class Node {
 		}
 		return null;
 	}
-
+	
+	/**
+	 * A new graphical representation of this concept has been constructed.
+	 * Add it to the list of graphical representations for this concept.
+	 * @param ocg
+	 */
+	public void addGraphicalRepresentation( OntologyConceptGraphics ocg ) {	graphicalRepresentations.add(ocg); }
+	
+	/**
+	 * A graphical representation is no longer displayed, remove it from this concept.
+	 * @param ocg
+	 */
+	public void removeGraphicalRepresentation( OntologyConceptGraphics ocg ) { 
+		if( graphicalRepresentations.contains(ocg) )
+			graphicalRepresentations.remove(ocg); 
+	}
 
 }
