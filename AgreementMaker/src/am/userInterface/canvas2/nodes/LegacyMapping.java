@@ -162,6 +162,11 @@ public class LegacyMapping extends Canvas2Edge {
 		
 		if( bounds.getBounds2D().intersectsLine(line) ) return true; // if the line formed by the mapping intersects the viewport rectangle
 		
+		if( getOrigin() != null && getDestination() != null ) {
+			if( getOrigin().getObject() != null && getDestination().getObject() != null )
+				if( getOrigin().getObject().visible || getDestination().getObject().visible ) return true;
+		}
+		
 		return false;
 		
 	}
