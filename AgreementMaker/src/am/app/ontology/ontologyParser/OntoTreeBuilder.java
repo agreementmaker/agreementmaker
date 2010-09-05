@@ -241,17 +241,17 @@ public class OntoTreeBuilder extends TreeBuilder{
 	}
 	
 	protected void buildTreeNoReasoner() {
-		System.out.print("OntoTreeBuilder: Reading Model with no reasoner...");
+		if( Core.DEBUG ) System.out.print("OntoTreeBuilder: Reading Model with no reasoner...");
 		
 		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM );
-		System.out.println("Model created...but not read yet.");
+		if( Core.DEBUG ) System.out.println("Model created...but not read yet.");
 		
 		if( ontURI == null ) {
 			ontURI = "file:"+ontology.getFilename();
 		}
 		model.read( ontURI, null, ontology.getFormat() );
 		
-		System.out.println(" done.");
+		if( Core.DEBUG ) System.out.println(" done.");
 		
 		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
@@ -646,7 +646,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 		    
 	      OntClass thisClass = (OntClass) classes.next();
 	      
-	      System.out.println("Found class: " + thisClass.toString());
+	      if( Core.DEBUG ) System.out.println("Found class: " + thisClass.toString());
 	
 	      ExtendedIterator instances = thisClass.listInstances();
 	
@@ -655,7 +655,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 	        Individual thisInstance = (Individual) instances.next();
 	        
 	        Instance anInstance = new Instance();	//This is not Jena individual.
-	        System.out.println("  Found instance: " + thisInstance.toString());
+	        if( Core.DEBUG ) System.out.println("  Found instance: " + thisInstance.toString());
 	        
 	        //Go through the properties of current individual.
 	        for (Iterator<Statement> ipp = thisInstance.listProperties(); ipp.hasNext();) {
@@ -705,7 +705,7 @@ public class OntoTreeBuilder extends TreeBuilder{
             	ip.setObject(object);
             	anInstance.getIP().add(ip);                
                 
-                System.out.println("    a: " + subject + " , " + predicate + " , " + object);
+            	if( Core.DEBUG ) System.out.println("    a: " + subject + " , " + predicate + " , " + object);
 
                 
             }
