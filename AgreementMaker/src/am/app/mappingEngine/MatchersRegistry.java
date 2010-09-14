@@ -7,6 +7,7 @@ import java.util.Iterator;
 import am.app.feedback.FeedbackLoop;
 import am.app.feedback.InitialMatchers;
 import am.app.mapEngine.instance.BaseInstanceMatcher;
+import am.app.mapEngine.instance.InstanceBasedPropMatcher;
 import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.LexicalMatcherJAWS.LexicalMatcherJAWS;
 import am.app.mappingEngine.LexicalMatcherJWNL.LexicalMatcherJWNL;
@@ -59,7 +60,7 @@ public enum MatchersRegistry {
 	LexicalJAWS			( "Lexical Matcher: JAWS", LexicalMatcherJAWS.class ),
 	BaseSimilarity		( "Base Similarity Matcher (BSM)", BaseSimilarityMatcher.class ),
 	ParametricString ( "Parametric String Matcher (PSM)",	 ParametricStringMatcher.class ),
-	InstanceMatcher		("Base Instance-based Matcher", BaseInstanceMatcher.class),
+	InstanceMatcher		("Base Instance-based Matcher (BIM)", BaseInstanceMatcher.class),
 	MultiWords       ("Vector-based Multi-Words Matcher (VMM)", MultiWordsMatcher.class),
 	WordNetLexical		("Lexical Matcher: WordNet", LexicalMatcherJWNL.class),
 	DSI					( "Descendant's Similarity Inheritance (DSI)", DescendantsSimilarityInheritanceMatcher.class ),
@@ -78,8 +79,8 @@ public enum MatchersRegistry {
 	OldPRAMAtcher		("Old PRA Matcher", OldPRAMatcher.class, false),
 	
 	//WORK IN PROGRESS
-	//InstanceMatcherProp	("Instance Matcher::Properties", InstanceMatcherProp.class),
-	
+	InstanceBasedProp	("Instance-based Property Matcher (IPM)", InstanceBasedPropMatcher.class),
+		
 	//MATCHERS USED BY THE SYSTEM, usually not shown
 	UserManual			( "User Manual Matching", UserManualMatcher.class, false),
 	UniqueMatchings		( "Unique Matchings", ReferenceAlignmentMatcher.class, false), // this is used by the "Remove Duplicate Alignments" UIMenu entry
