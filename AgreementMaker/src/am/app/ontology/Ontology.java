@@ -3,11 +3,14 @@ package am.app.ontology;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.hp.hpl.jena.ontology.DatatypeProperty;
+import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 
 import am.GlobalStaticVariables;
 import am.app.mapEngine.instance.InstanceList;
+import am.app.mapEngine.instance.InstanceProperty;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.qualityEvaluation.JoslynStructuralQuality;
 import am.userInterface.vertex.Vertex;
@@ -66,6 +69,31 @@ public class Ontology {
 	public void setInstanceList(InstanceList instanceList) {
 		this.instanceList = instanceList;
 	}
+	
+	private ArrayList<InstanceProperty> instanceProperties;
+	public ArrayList<InstanceProperty> getInstanceProperties() {
+		return instanceProperties;
+	}
+	public void setInstanceProperties(ArrayList<InstanceProperty> ips) {
+		instanceProperties = ips;
+	}
+	
+	private ArrayList<DatatypeProperty> dataProperties;
+	public ArrayList<DatatypeProperty> getDataProperties() {
+		return dataProperties;
+	}
+	public void setDataProperties(ArrayList<DatatypeProperty> dtps) {
+		dataProperties = dtps;
+	}
+	
+	private ArrayList<ObjectProperty> objectProperties;
+	public ArrayList<ObjectProperty> getObjectProperties() {
+		return objectProperties;
+	}
+	public void setObjectProperties(ArrayList<ObjectProperty> ops) {
+		objectProperties = ops;
+	}	
+	
 	//END Instance related fields and functions
 	
 	/**
