@@ -8,23 +8,26 @@ import java.util.Set;
 import org.mindswap.pellet.jena.PelletInfGraph;
 import org.mindswap.pellet.jena.PelletReasonerFactory;
 
-import am.Utility;
 import am.app.Core;
 import am.app.mapEngine.instance.Instance;
 import am.app.mapEngine.instance.InstanceList;
 import am.app.mapEngine.instance.InstanceProperty;
+import am.app.mapEngine.instance.PropType;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.userInterface.vertex.Vertex;
 import am.utility.RunTimer;
 
+import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual; 
+import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -303,14 +306,12 @@ public class OntoTreeBuilder extends TreeBuilder{
         ontology.setTreeCount(treeCount);
         
         buildInstanceList();
-       
+        getInstancesFromModel();       
 	}
 	
 	/**
 	 * This method will build the class tree by iterating through all the classes in the ontology and
 	 * filling in their parents.
-	 * 
-	 * 
 	 * 
 	 * If a class has no parents, then the root of the tree will be its parent.
 	 * 
@@ -631,11 +632,11 @@ public class OntoTreeBuilder extends TreeBuilder{
     	ontURI = URI;
     }
     
+    //
     protected void buildInstanceList() {
     	InstanceList instanceList = new InstanceList();
     	
 	    ExtendedIterator classes = model.listClasses();
-	    
 	    
 	    while (classes.hasNext())
 	    {
@@ -696,9 +697,6 @@ public class OntoTreeBuilder extends TreeBuilder{
                 	}
                 }
                 
-                
-                
-                
                 InstanceProperty ip = new InstanceProperty();
             	ip.setSubject(subject);
             	ip.setPredicate(predicate);
@@ -707,20 +705,78 @@ public class OntoTreeBuilder extends TreeBuilder{
                 
             	if( Core.DEBUG ) System.out.println("    a: " + subject + " , " + predicate + " , " + object);
 
-                
             }
-	        
 	        //Add current instance to the list of instances.
 	        instanceList.getInstanceList().add(anInstance);
-			
 	      }
 	    }
 	    
 	    ontology.setInstanceList(instanceList);
     }
 
-    //using built in classes
-    protected void buildInstanceList2(){
+    //Get Instance data from Jena
+    protected void getInstancesFromModel(){
+    	/*
+    	ExtendedIterator dataprops = model.listDatatypeProperties();
+    	ArrayList<DatatypeProperty> dtps = new ArrayList<DatatypeProperty>(5);
     	
+    	while(dataprops.hasNext()){
+    		dtps.add((DatatypeProperty)dataprops.next());
+    	}
+    	
+    	ontology.setDataProperties(dtps);
+    	
+    	ExtendedIterator objectprops = model.listObjectProperties();
+    	ArrayList<ObjectProperty> ops = new ArrayList<ObjectProperty>(5);
+    	
+    	while(objectprops.hasNext()){
+    		ops.add((ObjectProperty)objectprops.next());
+    	}
+    	
+    	ontology.setObjectProperties(ops);
+    	*/
+    	
+    	ArrayList<InstanceProperty> instancePropList = new ArrayList<InstanceProperty>();
+    	
+    	ExtendedIterator instances = model.listIndividuals();
+    	
+    	while (instances.hasNext())
+	    {
+	    	Individual thisInstance = (Individual) instances.next();
+	    	StmtIterator statements = thisInstance.listProperties();
+	    	
+	    	while (statements.hasNext())
+		    {
+	    		Statement stmt = statements.nextStatement();
+	    		String o = stmt.getObject().toString();
+	    		String s = stmt.getSubject().toString();
+	    		String p = stmt.getPredicate().toString();
+	    		
+	    		DatatypeProperty dtp = null;
+	    		ObjectProperty otp = null;
+	    		PropType pt;
+	    		
+	    		dtp = model.getDatatypeProperty(p);
+	    		
+	    		if(dtp != null){
+	    			pt = PropType.Data;
+	    		}
+	    		else {
+	    			otp = model.getObjectProperty(p);
+	    			if(otp != null){
+	    				pt = PropType.Object;
+	    			}
+	    			else{
+	    				pt = PropType.Unknown;
+	    			}
+	    		}
+	    		
+	    		InstanceProperty ip = new InstanceProperty(s, p, o, pt);
+	    		
+	    		instancePropList.add(ip);
+	    		System.out.println(ip);
+		    }
+	    }
+    	ontology.setInstanceProperties(instancePropList);
     }
 }
