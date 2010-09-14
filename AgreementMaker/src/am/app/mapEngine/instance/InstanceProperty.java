@@ -4,19 +4,26 @@ public class InstanceProperty {
 	String subject = null;
 	String predicate = null;
 	String object = null;
-	boolean objectType = true; //True if Object Property, false otherwise.
+	PropType propType = PropType.Unknown;
 	
 	public InstanceProperty(){
 		subject = "";
 		predicate = "";
 		object = "";
-		objectType = true;
+		propType = PropType.Unknown;
 	}
 
+	public InstanceProperty(String s, String p, String o, PropType pt){
+		subject = s;
+		predicate = p;
+		object = o;
+		propType = pt;
+	}
+	
 	@Override
 	public String toString() {
-		return "InstanceProperty [object=" + object + ", objectType="
-				+ objectType + ", predicate=" + predicate + ", subject="
+		return "InstanceProperty [object=" + object + ", propType="
+				+ propType + ", predicate=" + predicate + ", subject="
 				+ subject + "]";
 	}
 
@@ -45,12 +52,12 @@ public class InstanceProperty {
 		this.object = object;
 	}
 	
-	public boolean isObjectType() {
-		return objectType;
+	public PropType propType() {
+		return propType;
 	}
 
-	public void setObjectType(boolean objectType) {
-		this.objectType = objectType;
+	public void setPropType(PropType propType) {
+		this.propType = propType;
 	}
 	//END OF SETTERS & GETTERS
 	
