@@ -7,7 +7,6 @@ import java.util.Iterator;
 import am.app.feedback.FeedbackLoop;
 import am.app.feedback.InitialMatchers;
 import am.app.mapEngine.instance.BaseInstanceMatcher;
-import am.app.mapEngine.instance.InstanceBasedPropMatcher;
 import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.LexicalMatcherJAWS.LexicalMatcherJAWS;
 import am.app.mappingEngine.LexicalMatcherJWNL.LexicalMatcherJWNL;
@@ -54,7 +53,6 @@ public enum MatchersRegistry {
 	 * And so, if your matcher is has no code errors, it will be incorporated into the AgreementMaker.  - Cosmin
 	 */
 	//
-	MyMatcher			( "My Custom Matcher", am.extension.MyMatcher.class ),
 	CompoundWordSim		( "Compound Word Similarity Matcher (CWSM)", CompoundWordSimilarityMatcher.class),
 	//OFFICIAL MATCHERS
 	LexicalJAWS			( "Lexical Matcher: JAWS", LexicalMatcherJAWS.class ),
@@ -79,7 +77,7 @@ public enum MatchersRegistry {
 	OldPRAMAtcher		("Old PRA Matcher", OldPRAMatcher.class, false),
 	
 	//WORK IN PROGRESS
-	InstanceBasedProp	("Instance-based Property Matcher (IPM)", InstanceBasedPropMatcher.class),
+	InstanceBasedProp	("Instance-based Property Matcher (IPM)", BaseInstanceMatcher.class),
 		
 	//MATCHERS USED BY THE SYSTEM, usually not shown
 	UserManual			( "User Manual Matching", UserManualMatcher.class, false),
