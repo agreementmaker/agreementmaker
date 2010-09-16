@@ -234,7 +234,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		}
 		
 		
-		// Draw the graphs.
+		// Draw the vertices.
 		graphIter = graphs.iterator();
 		while( graphIter.hasNext() ) {
 			CanvasGraph graph = graphIter.next();
