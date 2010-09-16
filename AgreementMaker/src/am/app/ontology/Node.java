@@ -96,10 +96,7 @@ public class Node {
 	/**UNIQUE KEY IN THE RANGE OF TYPE to be used as index to retrieve this node from the list and from the matrix*/
 	protected int index;
 	protected int ontindex;  // the index of the ONTOLOGY to which this node belongs
-	
-	//These fields are for the PRAMatching technique
-	private Node matchedTo;
-	private boolean matched;
+
 	private int color;
 	private ArrayList<Node> parent = new ArrayList<Node>();
 	private int depth;
@@ -150,11 +147,14 @@ public class Node {
 		this.type = type;
 		if(r.canAs(OntResource.class)) {
 			OntResource or = (OntResource)r.as(OntResource.class);
+			
+			// Set the label. (Why are we duplicating this information?)
 			label = or.getLabel(language);
 			if(label == null || label == "")
 				label = or.getLabel(null);
-				if(label == null)
-					label = "";
+			if(label == null)
+				label = "";
+
 			//COmments
 			comment = "";
 			Literal l = null;
@@ -165,6 +165,7 @@ public class Node {
 				l = (Literal)it.next();
 				if(l!=null) comment+= l+" ";
 			}
+
 			//ANNOTATIONS: isDefBy and seeAlso I'm not considering "sameAs" "differentFrom" "disjointWith"
 			it = or.listIsDefinedBy();
 			isDefinedByLabel = "";
@@ -284,6 +285,9 @@ public class Node {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
+	
+	
+	@Deprecated
 	public boolean hasDuplicates() {
 		return vertexList.size() > 1;
 	}
@@ -544,33 +548,6 @@ public class Node {
 		this.isDefinedByComment = isDefinedByComment;
 	}
 
-	/**
-	 * @param matchedTo the matchedTo to set
-	 */
-	public void setMatchedTo(Node matchedTo) {
-		this.matchedTo = matchedTo;
-	}
-
-	/**
-	 * @return the matchedTo
-	 */
-	public Node getMatchedTo() {
-		return matchedTo;
-	}
-
-	/**
-	 * @param matched the matched to set
-	 */
-	public void setMatched(boolean matched) {
-		this.matched = matched;
-	}
-
-	/**
-	 * @return the matched
-	 */
-	public boolean isMatched() {
-		return matched;
-	}
 
 	/**
 	 * @param color the color to set
@@ -650,7 +627,9 @@ public class Node {
 	
 	/**
 	 * Return a graphical representation corresponding to the class that implements it.
-	 * @param c
+	 * Multiple visualizations can be active in AgreementMaker, each representing 
+	 * the same ontologies and concepts.
+	 * @param c The class that implements the visual representation of this node. 
 	 * @return
 	 */
 	public OntologyConceptGraphics getGraphicalRepresentation( Class<?> c ) {
