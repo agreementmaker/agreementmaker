@@ -7,6 +7,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentMatrix;
+import am.app.mappingEngine.AlignmentSet;
 import am.app.ontology.Node;
 
 /**
@@ -22,7 +23,7 @@ public class BasicStructuralSelectorMatcher extends AbstractMatcher {
 	protected AlignmentMatrix inputClassesMatrix = null;
 	protected AlignmentMatrix inputPropertiesMatrix = null;
 	
-	// Increase bonus depending on the level
+	// Increase bonus depending on the level (can be modified in order to have different results)
 	private final double level0Bouns = 1.15; // 0.86 -> 1 (0.86 is the min similarity value to reach 1)
 	private final double level1Bouns = 1.25; // 0.8 -> 1
 	private final double levelNBouns = 1.4; // 0.71 -> 1
@@ -44,6 +45,10 @@ public class BasicStructuralSelectorMatcher extends AbstractMatcher {
 	 */
 	public BasicStructuralSelectorMatcher(AbstractParameters params_new) {
 		super(params_new);
+		
+		// requires one (and only one) alignment 
+		minInputMatchers = 1;
+		maxInputMatchers = 1;
 	}
 	
 	/**
@@ -92,7 +97,7 @@ public class BasicStructuralSelectorMatcher extends AbstractMatcher {
     	target = groupElementsByLevel(target).get(currentLevel);
     	ArrayList<Integer> rows = createIntList(source);
     	ArrayList<Integer> cols = createIntList(target);
-    	ArrayList<Alignment> best = chooseBestN(input, rows, cols); // best-matching concepts selection here
+    	ArrayList<Alignment> best = input.chooseBestN(rows, cols); // best-matching concepts selection here
     	// ...and increasing slightly their similarity value (depending on "currentLevel" now being 0)
 		computeNewValues(input, best, currentLevel);
 		currentLevel++;
@@ -119,7 +124,7 @@ public class BasicStructuralSelectorMatcher extends AbstractMatcher {
 		ArrayList<Node> targetChildren = currentMapping.getEntity2().getChildren(); // children of the target concept (both from the alignment)
 		ArrayList<Integer> rowsChildren = createIntList(sourceChildren);	// matrix rows corresponding to sourceChildren
 		ArrayList<Integer> colsChildren = createIntList(targetChildren);	// matrix columns corresponding to targetChildren
-		ArrayList<Alignment> best = chooseBestN(input, rowsChildren, colsChildren); // best mappings within these children
+		ArrayList<Alignment> best = input.chooseBestN(rowsChildren, colsChildren); // best mappings within these children
 		
 		/* DEBUG INFORMATION
 		 System.out.println(currentMapping.getString() + " " + best.size() + " " + hasOnlyLeaves(currentMapping.getEntity1()) + " " + hasOnlyLeaves(currentMapping.getEntity2()));
@@ -149,6 +154,24 @@ public class BasicStructuralSelectorMatcher extends AbstractMatcher {
 				recursiveSSM(input, best.get(i), currentLevel + 1);
 	    	}
 		}
+	}
+	
+	/**
+	 * Overridden method
+	 * @see am.app.mappingEngine.BaseSimilarityMatcher#oneToOneMatching(AlignmentMatrix matrix)
+	 * @author michele
+	 */
+	protected AlignmentSet<Alignment> oneToOneMatching(AlignmentMatrix matrix){
+		ArrayList<Alignment> list = matrix.chooseBestN();
+		AlignmentSet<Alignment> result = new AlignmentSet<Alignment>();
+		for(int i = 0; i < list.size(); i++){
+			if(list.get(i).getSimilarity() < threshold){
+				break;
+			}
+			result.addAlignment(list.get(i));
+		}
+		return result;
+		
 	}
 	
 	public String getDescriptionString() {
@@ -225,60 +248,6 @@ public class BasicStructuralSelectorMatcher extends AbstractMatcher {
 	}
 
 	/**
-	 * chooseBestN: takes an AlignmentMatrix (can be generalized with a finite matrix with finite values)
-	 * and looks for the top n elements (n is min(#row, #column)) within the considered rows and columns.
-	 * Takes O(m^2) with m being max(#row, #column)
-	 * @param inputMatrix the AlignmentMatrix where to get the n elements with highest similarity from
-	 * @param rowsIncludedList subset of the rows we want to consider in the matrix (each row represents a concept in the source) 
-	 * @param colsIncludedList subset of the columns we want to consider in the matrix (each column represents a concept in the target) 
-	 * @author michele 
-	 */
-	protected ArrayList<Alignment> chooseBestN(AlignmentMatrix inputMatrix, ArrayList<Integer> rowsIncludedList, ArrayList<Integer> colsIncludedList) {
-
-		// Creation of the output ArrayList and a copy of the inputMatrix
-		int arraySize = Math.min(rowsIncludedList.size(), colsIncludedList.size());
-		ArrayList<Alignment> chosenMappings = new ArrayList<Alignment>(arraySize);
-		AlignmentMatrix input = new AlignmentMatrix(inputMatrix);
-
-		ArrayList<Integer> rowsIncluded = rowsIncludedList;
-		ArrayList<Integer> colsIncluded = colsIncludedList;
-		
-		// matrix scan starts here
-		while(rowsIncluded.size() > 0 && colsIncluded.size() > 0 ) // until we can look no more at concepts either in the source or in the target ontology
-		{
-			double simValue = 0;
-			Alignment currentChoose = null;
-			Integer r = new Integer(0);
-			Integer c = new Integer(0);;
-			for(int i = 0; i < input.getRows(); i++) {
-				for(int j = 0; j < input.getColumns(); j++) {
-					
-					// within this loop we choose the couple of concepts with the highest similarity value
-					if(simValue <= input.getSimilarity(i, j) && rowsIncluded.contains(i) && colsIncluded.contains(j)) {
-						
-						simValue = input.getSimilarity(i, j);
-						currentChoose = input.get(i, j);
-						r = i;
-						c = j;
-					}
-				}
-			}
-			// then we exclude from the matrix the chosen concepts for further computation
-			rowsIncluded.remove((Object) r);
-			colsIncluded.remove((Object) c);
-			// and we add the chosen mapping to the final list
-			chosenMappings.add(currentChoose);
-			
-			/*/ DEBUG INFORMATION
-			System.out.println(r + " " + c + " " + currentChoose.getSimilarity());
-			*/	
-		}
-		
-		return chosenMappings;
-		
-	}
-	
-	/**
 	 * createIntList: creates an ArrayList of integers with the concepts of the ontology provided 
 	 * Takes O(n)
 	 * @param inputNodes list of nodes we want to get the value of the rows/columns  
@@ -322,22 +291,6 @@ public class BasicStructuralSelectorMatcher extends AbstractMatcher {
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		for(int i = 0; i < inputNodes.size(); i++){
 			list.add(inputNodes.get(i).getIndex());
-		}
-		return list;		
-	}
-	
-	/**
-	 * createIntListToN: creates an ArrayList of n integers from 0 to n-1
-	 * useful to create a list for considering all the values of the rows or columns of the alignment matrix
-	 * Takes O(n)
-	 * @param n size of the ArrayList (n-1 is the last value) 
-	 * @author michele 
-	 */
-	@SuppressWarnings("unused")
-	private ArrayList<Integer> createIntListToN(int n){
-		ArrayList<Integer> list = new ArrayList<Integer>();
-		for(int i = 0; i < n; i++){
-			list.add(i);
 		}
 		return list;		
 	}
