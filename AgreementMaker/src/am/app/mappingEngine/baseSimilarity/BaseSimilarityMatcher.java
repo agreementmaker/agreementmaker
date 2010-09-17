@@ -261,14 +261,13 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		 s2 = s2.replace("-"," ");
 		 s2 = s2.replace("."," ");	
 	    
-	    /*
-	    for(int i=0;i<len-1; i++){
+	    
+	    for(int i=0;i<s2.length()-1; i++){
 	    	if( Character.isLowerCase(s2.charAt(i)) &&  Character.isUpperCase(s2.charAt(i+1)) ){
-		    
-	    		s2 = s2.substring(0,i+1) + " " + s2.substring(i+1); len++;}
-
+	    		s2 = s2.substring(0, i + 1) + " " + s2.substring(i + 1);
+	    	}
 		}
-	    */	
+	    
 	    return s2;
 	 }
 	 
@@ -348,7 +347,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	 * based on the number of common words found.
 	 * 
 	 */
-	private float calculateWordSimilarity(String d1, String d2){
+	protected float calculateWordSimilarity(String d1, String d2){
 		    
 		if(d1.equalsIgnoreCase(d2)) return 1;
 		    
@@ -428,14 +427,16 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	/*
 	 * Determine whether this is a non-content word
 	 */
-	private boolean isNonContent(String s){
+	protected boolean isNonContent(String s){
 	    
 	if(s.equalsIgnoreCase("the") || 
 	   s.equalsIgnoreCase("is") || 
 	   s.equalsIgnoreCase("this") || 
 	   s.equalsIgnoreCase("are") || 
 	   s.equalsIgnoreCase("to") || 
-	   s.equalsIgnoreCase("a") || 
+	   s.equalsIgnoreCase("a") ||
+	   s.equalsIgnoreCase("e") ||
+	   s.equalsIgnoreCase("an") || 
 	   s.equalsIgnoreCase("in") ||
 	   s.equalsIgnoreCase("or") ||
 	   s.equalsIgnoreCase("and") || 
