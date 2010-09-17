@@ -326,5 +326,99 @@ public class AlignmentMatrix {
 		return result;
 	}
 
+	/**
+	 * chooseBestN(ArrayList<Integer> rowsIncludedList, ArrayList<Integer> colsIncludedList, boolean considerThreshold, double threshold)
+ 	 * takes an AlignmentMatrix (can be generalized with a finite matrix with finite values)
+	 * and looks for the top n elements (n is min(#row, #column)) within the considered rows and columns.
+	 * Takes O(m^2) with m being max(#row, #column)
+	 * @param rowsIncludedList subset of the rows we want to consider in the matrix (each row represents a concept in the source) 
+	 * @param colsIncludedList subset of the columns we want to consider in the matrix (each column represents a concept in the target)
+	 * @param considerThreshold if true, the list will contain only mappings whose similarity value is above the threshold, otherwise it will contain every mapping found   
+	 * @author michele 
+	 */
+	public ArrayList<Alignment> chooseBestN(ArrayList<Integer> rowsIncludedList, ArrayList<Integer> colsIncludedList, boolean considerThreshold, double threshold) {
+
+		// Creation of the output ArrayList and a copy of the matrix
+		int arraySize = Math.min(rowsIncludedList.size(), colsIncludedList.size());
+		ArrayList<Alignment> chosenMappings = new ArrayList<Alignment>(arraySize);
+		AlignmentMatrix input = new AlignmentMatrix(this);
+
+		ArrayList<Integer> rowsIncluded = rowsIncludedList;
+		ArrayList<Integer> colsIncluded = colsIncludedList;
+		
+		// matrix scan starts here
+		while(rowsIncluded.size() > 0 && colsIncluded.size() > 0 ) // until we can look no more at concepts either in the source or in the target ontology
+		{
+			double simValue = 0;
+			Alignment currentChoose = null;
+			Integer r = new Integer(0);
+			Integer c = new Integer(0);;
+			for(int i = 0; i < input.getRows(); i++) {
+				for(int j = 0; j < input.getColumns(); j++) {
+					
+					// within this loop we choose the couple of concepts with the highest similarity value
+					if(simValue <= input.getSimilarity(i, j) && rowsIncluded.contains(i) && colsIncluded.contains(j)) {
+						
+						simValue = input.getSimilarity(i, j);
+						currentChoose = input.get(i, j);
+						r = i;
+						c = j;
+					}
+				}
+			}
+			if(considerThreshold && simValue < threshold){
+				return chosenMappings;
+			}
+			else{
+				// then we exclude from the matrix the chosen concepts for further computation
+				rowsIncluded.remove((Object) r);
+				colsIncluded.remove((Object) c);
+				// and we add the chosen mapping to the final list
+				chosenMappings.add(currentChoose);
+			}
+			
+			/*/ DEBUG INFORMATION
+			System.out.println(currentChoose.toString());
+			System.out.println(currentChoose.getEntity1().getChildren().toString());
+			//System.out.println(r + " " + c + " " + currentChoose.getSimilarity());
+			System.out.println();
+			//*/	
+		}
+		return chosenMappings;
+	}
 	
+	/**
+	 * chooseBestN(ArrayList<Integer> rowsIncludedList, ArrayList<Integer> colsIncludedList):
+	 * overridden with two parameters
+	 * @param rowsIncludedList subset of the rows we want to consider in the matrix (each row represents a concept in the source) 
+	 * @param colsIncludedList subset of the columns we want to consider in the matrix (each column represents a concept in the target)
+	 * @author michele 
+	 */
+	public ArrayList<Alignment> chooseBestN(ArrayList<Integer> rowsIncludedList, ArrayList<Integer> colsIncludedList) {
+		return this.chooseBestN(rowsIncludedList, colsIncludedList, false, 0.0);
+	}
+	
+	/**
+	 * chooseBestN(): overridden with no parameters
+	 * @author michele 
+	 */
+	public ArrayList<Alignment> chooseBestN() {
+		return this.chooseBestN(createIntListToN(this.getRows()), createIntListToN(this.getColumns()), false, 0.0);
+	}
+	
+	/**
+	 * createIntListToN: creates an ArrayList of n integers from 0 to n-1
+	 * useful to create a list for considering all the values of the rows or columns of the alignment matrix
+	 * Takes O(n)
+	 * @param n size of the ArrayList (n-1 is the last value)
+	 * @return arrayList of integer values from 0 to n-1 
+	 * @author michele 
+	 */
+	private static ArrayList<Integer> createIntListToN(int n){
+		ArrayList<Integer> list = new ArrayList<Integer>();
+		for(int i = 0; i < n; i++){
+			list.add(i);
+		}
+		return list;		
+	}
 }
