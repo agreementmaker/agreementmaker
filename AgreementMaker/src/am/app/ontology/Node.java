@@ -519,6 +519,89 @@ public class Node {
 		return result;
 	}
 	
+	/**
+	 * getRoot: takes the root of the specified node
+	 * @return the root node
+	 * @author michele 
+	 */
+	public Node getRoot(){
+		ArrayList<Node> list = this.getSupernodes();
+		if(list.isEmpty()){
+			return this;
+		}
+		else{
+			return list.get(list.size() - 1);
+		}
+	}
+	
+	/**
+	 * getSupernodes: builds a list of supernodes of the node
+	 * @return list of supernodes
+	 * @author michele
+	 */
+	public ArrayList<Node> getSupernodes(){
+		ArrayList<Node> result = new ArrayList<Node>();
+		Node currentNode = this;
+		while(!currentNode.isRoot()){
+			
+			if(this.getParents().size() > 1) { //I'm not a duplicate therefore I just have one original father
+				// not usable if more than one parent
+				return result;
+			}
+			else{
+				//Being a duplicate means having more parents OR being the son of an ancestor with more fathers
+				currentNode = currentNode.getParents().get(0);
+				result.add(currentNode);
+			}
+			
+		}
+		return result;
+	}
+	
+	/**
+	 * getSiblings: builds a list of sibling of the node
+	 * @return list of siblings
+	 * @author michele
+	 */
+	public ArrayList<Node> getSiblings(){
+		ArrayList<Node> result = new ArrayList<Node>();
+			
+		if(this.getParents().size() > 1) { //I'm not a duplicate therefore I just have one original father
+			// not usable if more than one parent
+			return result;
+		}
+		else{
+			//Being a duplicate means having more parents OR being the son of an ancestor with more fathers
+			result = this.getParents().get(0).getChildren();
+			result.remove(this);
+		}
+			
+		return result;
+	}
+	
+	/**
+	 * getDescendants: builds a list of all the descendants nodes
+	 * @return list of descendants
+	 * @author michele 
+	 */
+	public ArrayList<Node> getDescendants(){ // dfs search
+		ArrayList<Node> result = new ArrayList<Node>();
+		Node current = this, currChild = null;
+		//result.add(current);
+		
+		for(int i = 0; i < current.getChildren().size(); i++){
+			currChild = current.getChildren().get(i);
+			result.add(currChild);
+			if(!currChild.isLeaf()){
+				result.addAll(currChild.getDescendants());
+			}
+			else{
+			}
+		}
+			
+		return result;
+	}
+	
 	/**n is a descendant of this? same as vertex.isNodeDescendant*/
 	public boolean isNodeDescendant(Node n){
 		Vertex ancestor = getVertex();
@@ -605,7 +688,6 @@ public class Node {
 		}
 		return result;
 	}
-
 	
 	/******************************* GRAPHICAL REPRESENTATION METHODS ******************************/
 	
