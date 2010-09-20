@@ -119,7 +119,7 @@ public class CompoundWordSimilarityMatcher extends BaseSimilarityMatcher {
 	 * @see am.app.mappingEngine.BaseSimilarityMatcher#isNonContent()
 	 * @author michele
 	 */
-	private boolean isNonContent(String s){
+	protected boolean isNonContent(String s){
 	    
 		if(s.equalsIgnoreCase("the") || 
 		   s.equalsIgnoreCase("this") || 
