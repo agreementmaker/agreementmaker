@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import org.mindswap.pellet.jena.PelletInfGraph;
-import org.mindswap.pellet.jena.PelletReasonerFactory;
 
 import am.app.Core;
 import am.app.mapEngine.instance.Instance;
@@ -169,84 +167,13 @@ public class OntoTreeBuilder extends TreeBuilder{
 	
 	
 	protected void buildTreeDefault() {
-		System.out.print("Reading Model with default reasoner...");
-		//if(true) throw new RuntimeException("bla bla bla");
-		model = ModelFactory.createOntologyModel( PelletReasonerFactory.THE_SPEC );
-		System.out.println("Model created...but not read");
-		//TODO: Figure out if the 2nd arg in next fn call should be null or someother URI
-		if( ontURI == null ) {
-			ontURI = "file:"+ontology.getFilename();
-		}
-		model.read( ontURI, null, ontology.getFormat() );
-		System.out.println("done");
-		
-		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
-		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
-			ns = model.getNsPrefixMap().get("").toString();
-			ontology.setURI(ns);
-		}
-		catch(Exception e) {
-			skipOtherNamespaces = false;
-			ontology.setURI("");
-		}
-		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
-
-		
-		
-		//Preparing model
-		try {
-			model.prepare();
-		}
-		catch ( Exception e ) {
-			// there is something wrong with the ontology.
-			// try without a reasoner
-			System.out.println("Trying without a reasoner.");
-			buildTreeNoReasoner();
-			return;
-		}
-		
-		// compute the classification tree 
-		System.out.print("Classifying...");
-		((PelletInfGraph) model.getGraph()).getKB().classify();
-		//reasoner.classify();
-		
-		ontology.setModel(model);
-		
-		// Use OntClass for convenience
-        owlThing = model.getOntClass( OWL.Thing.getURI() );
-        OntClass owlNothing = model.getOntClass( OWL.Nothing.getURI() );
-       
-        // Find all unsatisfiable concepts, i.e classes equivalent
-        // to owl:Nothing. we are not considering this nodes for the alignment so we are not keeping this
-        unsatConcepts = collect( owlNothing.listEquivalentClasses() );
-        
-        // create a tree starting with owl:Thing node as the root
-        //if a node has two fathers (is possible in OWL hierarchy) it would be processed twice
-        //but we don't want to add two times the node to the hierarchy, so processedSubs won't be processed again.
-        processedSubs = new HashMap<OntResource, Node>();
-        
-
-        //The root of the tree is a fake vertex node, just containing the name of the ontology,
-        treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(), model, ontology.getSourceOrTarget() );
-        treeCount++;
-        //the root has 2 fake sons Classes and Properties
-        System.out.println("Building class hierarchy");
-        Vertex classRoot = createClassTree(owlThing, true);
-        //System.out.println("after the first create class tree");
-        treeRoot.add(classRoot);
-        ontology.setClassesTree( classRoot);
-        ontology.setOntResource2NodeMap(processedSubs, alignType.aligningClasses);
-        System.out.println("Building Property hierarchy");
-        Vertex propertyRoot = createPropertyTree();
-        treeRoot.add(propertyRoot);
-        ontology.setPropertiesTree( propertyRoot);
-        ontology.setOntResource2NodeMap(processedSubs, alignType.aligningProperties);
+		buildTreeNoReasoner();
 	}
 	
 	protected void buildTreeNoReasoner() {
 		if( Core.DEBUG ) System.out.print("OntoTreeBuilder: Reading Model with no reasoner...");
 		
-		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM );
+		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, null );
 		if( Core.DEBUG ) System.out.println("Model created...but not read yet.");
 		
 		if( ontURI == null ) {
