@@ -6,18 +6,30 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 
+import com.hp.hpl.jena.ontology.AnnotationProperty;
+import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.ontology.impl.OntResourceImpl;
 import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.sun.xml.internal.bind.v2.runtime.output.Pcdata;
 
+import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.userInterface.ontology.OntologyConceptGraphics;
 import am.userInterface.vertex.*;
+import am.utility.Pair;
 /**
  * This class represents an element of the ontology to be aligned.
  * we could use the Resource class of Jena directly, but accessing information would be slower
@@ -307,14 +319,6 @@ public class Node {
 			return null;
 	}
 
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
 	public int getIndex() {
 		return index;
 	}
@@ -324,11 +328,13 @@ public class Node {
 	}
 	/**Owl classes or all rdf nodes or all xml nodes their are considered classes, so nodes in the first of the two trees*/
 	public boolean isClass() {
-		return type.equals(OWLCLASS) || type.equals(RDFNODE) ||  type.equals(XMLNODE);
+		if( resource.canAs(OntClass.class)) return true;
+		return false;
 	}
 	
 	public boolean isProp() {
-		return type.equals(OWLPROPERTY);
+		if( resource.canAs(OntProperty.class) ) return true;
+		return false;
 	}
 	
 	// equality checker --- VERY IMPORTANT
@@ -391,6 +397,125 @@ public class Node {
 		this.seeAlsoLabel = seeAlso;
 	}
 
+	
+	/**
+	 * Return the domain of a property as an OntResource. As per the Jena specifications, if there are more than one domains, return an arbitrary domain out of them.
+	 * @return OntResource representation of the domain, or null if none exists.  
+	 */
+	public OntResource getPropertyDomain() {
+		if( isProp() ) {
+			try {
+				if( resource.canAs(ObjectProperty.class) ) {
+					ObjectProperty p = (ObjectProperty) resource.as(ObjectProperty.class);
+					OntResource dom = p.getDomain();
+					return dom;
+				}
+				
+				if( resource.canAs(DatatypeProperty.class) ) {					
+					DatatypeProperty p = (DatatypeProperty) resource.as(DatatypeProperty.class);
+					OntResource dom = p.getDomain();
+					return dom;
+				}
+				
+				if( resource.canAs(AnnotationProperty.class) ) {
+					AnnotationProperty p = (AnnotationProperty) resource.as(AnnotationProperty.class);
+					OntResource dom = p.getDomain();
+					return dom;
+				}
+			} catch( Exception e ) {
+				// cannot find the domain of this property.
+				//e.printStackTrace();
+				return null;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Return the domain of a property as an OntResource. As per the Jena specifications, if there are more than one domains, return an arbitrary domain out of them.
+	 * @return OntResource representation of the domain, or null if none exists.  
+	 */
+	public OntResource getPropertyRange() {
+		if( isProp() ) {
+			try {
+				if( resource.canAs(ObjectProperty.class) ) {
+					ObjectProperty p = (ObjectProperty) resource.as(ObjectProperty.class);
+					OntResource dom = p.getRange();
+					return dom;
+				}
+				
+				if( resource.canAs(DatatypeProperty.class) ) {					
+					DatatypeProperty p = (DatatypeProperty) resource.as(DatatypeProperty.class);
+					OntResource dom = p.getRange();
+					return dom;
+				}
+				
+				if( resource.canAs(AnnotationProperty.class) ) {
+					AnnotationProperty p = (AnnotationProperty) resource.as(AnnotationProperty.class);
+					OntResource dom = p.getRange();
+					return dom;
+				}
+			} catch( Exception e ) {
+				// cannot find the domain of this property.
+				//e.printStackTrace();
+				return null;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Return the properties of a class.
+	 * TODO: This method should throw and exception if called on a property Node.
+	 * @return
+	 */
+	public ArrayList<Node> getClassProperties() {
+
+		if (isClass()) {
+			ArrayList<Node> returnList = new ArrayList<Node>();
+
+			Ontology currentOntology = Core.getInstance().getOntologyByIndex(
+					ontindex);
+			OntClass thisclass = (OntClass) resource.as(OntClass.class);
+			StmtIterator sIter = thisclass.listProperties();
+
+			while (sIter.hasNext()) {
+				Statement currentStatement = sIter.nextStatement();
+				//System.out.println("getClassProperties: " + currentStatement+"\n");
+
+				Property property = (Property) currentStatement.getPredicate()
+						.as(Property.class);
+			
+				if (property.isAnon())
+					continue; // skip anonymous property values (for now)
+
+				if (property.isLiteral())
+					continue; // skip literal values (since there is no Node
+								// representation for them)
+
+				if (property.canAs(OntResource.class)) { // need OntResource to map to Node.
+					OntResource c = (OntResource) property.as(OntResource.class);
+					Node n = null;
+					try {
+						n = currentOntology.getNodefromOntResource(c, alignType.aligningClasses);
+					} catch (Exception e) {
+						// if this OntResource does not have a Node
+						// representation, go on to the next one.
+						//e.printStackTrace();
+						continue;
+					}
+					
+					returnList.add(n);
+						
+					
+				}
+			}
+
+			return returnList;
+		}
+		return null;
+	}
+	
 	public ArrayList<String> getpropOrClassNeighbours() {
 		return propOrClassNeighbours;
 	}
@@ -519,89 +644,6 @@ public class Node {
 		return result;
 	}
 	
-	/**
-	 * getRoot: takes the root of the specified node
-	 * @return the root node
-	 * @author michele 
-	 */
-	public Node getRoot(){
-		ArrayList<Node> list = this.getSupernodes();
-		if(list.isEmpty()){
-			return this;
-		}
-		else{
-			return list.get(list.size() - 1);
-		}
-	}
-	
-	/**
-	 * getSupernodes: builds a list of supernodes of the node
-	 * @return list of supernodes
-	 * @author michele
-	 */
-	public ArrayList<Node> getSupernodes(){
-		ArrayList<Node> result = new ArrayList<Node>();
-		Node currentNode = this;
-		while(!currentNode.isRoot()){
-			
-			if(this.getParents().size() > 1) { //I'm not a duplicate therefore I just have one original father
-				// not usable if more than one parent
-				return result;
-			}
-			else{
-				//Being a duplicate means having more parents OR being the son of an ancestor with more fathers
-				currentNode = currentNode.getParents().get(0);
-				result.add(currentNode);
-			}
-			
-		}
-		return result;
-	}
-	
-	/**
-	 * getSiblings: builds a list of sibling of the node
-	 * @return list of siblings
-	 * @author michele
-	 */
-	public ArrayList<Node> getSiblings(){
-		ArrayList<Node> result = new ArrayList<Node>();
-			
-		if(this.getParents().size() > 1) { //I'm not a duplicate therefore I just have one original father
-			// not usable if more than one parent
-			return result;
-		}
-		else{
-			//Being a duplicate means having more parents OR being the son of an ancestor with more fathers
-			result = this.getParents().get(0).getChildren();
-			result.remove(this);
-		}
-			
-		return result;
-	}
-	
-	/**
-	 * getDescendants: builds a list of all the descendants nodes
-	 * @return list of descendants
-	 * @author michele 
-	 */
-	public ArrayList<Node> getDescendants(){ // dfs search
-		ArrayList<Node> result = new ArrayList<Node>();
-		Node current = this, currChild = null;
-		//result.add(current);
-		
-		for(int i = 0; i < current.getChildren().size(); i++){
-			currChild = current.getChildren().get(i);
-			result.add(currChild);
-			if(!currChild.isLeaf()){
-				result.addAll(currChild.getDescendants());
-			}
-			else{
-			}
-		}
-			
-		return result;
-	}
-	
 	/**n is a descendant of this? same as vertex.isNodeDescendant*/
 	public boolean isNodeDescendant(Node n){
 		Vertex ancestor = getVertex();
@@ -688,6 +730,7 @@ public class Node {
 		}
 		return result;
 	}
+
 	
 	/******************************* GRAPHICAL REPRESENTATION METHODS ******************************/
 	
