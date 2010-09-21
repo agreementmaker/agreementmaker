@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.ontology.AnnotationProperty;
 import com.hp.hpl.jena.ontology.ConversionException;
+import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
@@ -1356,14 +1357,69 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 									}
 								}
 
+								
+								String propString = new String();
+								// get a list of the properties.  TODO: Make this easier to work with.
+								try {
+									// we need the Ontology to map from OntResource to Node
+									Ontology o = Core.getInstance().getOntologyByID(hoveringOver.getGraphicalData().ontologyID);
+									// map from the OntResource we are hoveringOver to the Node that it represents
+									Node classNode = o.getNodefromOntResource(hoveringOver.getGraphicalData().r, alignType.aligningClasses);
+									// get a list of the properties that are declared for this class
+									ArrayList<Node> properties = classNode.getClassProperties();
+									// iterate over the property list and build a string representation.
+									Iterator<Node> propIter = properties.iterator();
+									while( propIter.hasNext() ) {
+										Node currentProperty = propIter.next();
+										propString += currentProperty.getLocalName() + "\n";
+									}
+								} catch (Exception e1) {
+									// Could not convert from OntResource to Node, give up.
+									//e1.printStackTrace();
+								}
+								
+								// if we have listed some properties, add them to the main string
+								if( !propString.equals("") ) {
+									annotationProperties += "\n\nProperties:\n\n" + propString;
+								}
+								
+								
+								
+								
+								// update the text box.
 								VertexDescriptionPane vdp = (VertexDescriptionPane) Core.getUI().getUISplitPane().getRightComponent();
 								if( hoveringOver.getGraphicalData().ontologyID == leftOntologyID ) {
 									vdp.setSourceAnnotations(annotationProperties);
 								} else {
 									vdp.setTargetAnnotations(annotationProperties);
 								}
+								
+								
+								
+								// populate the individuals list
+								String individuals = new String();
+								ExtendedIterator indiIter = currentClass.listInstances(true);
+								int indicount = 1;
+								while( indiIter.hasNext() ) {
+									Individual indi = (Individual) indiIter.next();
+									if( indi.isAnon() ) {
+										individuals += indicount + ". Anonymous Individual (" + indi.getId() + ")\n";
+										indicount++;
+									} else {
+										individuals += indicount + ". " + indi.getLocalName() + "\n";
+										indicount++;
+									}
+								}
+								
+								if( hoveringOver.getGraphicalData().ontologyID == leftOntologyID ) {
+									vdp.setSourceIndividuals(individuals);
+								} else {
+									vdp.setTargetIndividuals(individuals);
+								}
+								
 							} else if( hoveringOver.getGraphicalData().r.canAs( OntProperty.class)) {
 								// we clicked on a property
+								
 								OntProperty currentProperty = (OntProperty) hoveringOver.getGraphicalData().r.as(OntProperty.class);
 								StmtIterator i = currentProperty.listProperties();
 								String annotationProperties = new String();
@@ -1381,6 +1437,57 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 										}
 									}
 								}
+								
+								// The domain of a property
+								String domString = new String();
+								// get a list of the properties.  TODO: Make this easier to work with.
+								try {
+									// we need the Ontology to map from OntResource to Node
+									Ontology o = Core.getInstance().getOntologyByID(hoveringOver.getGraphicalData().ontologyID);
+									// map from the OntResource we are hoveringOver to the Node that it represents
+									Node propertyNode = o.getNodefromOntResource(hoveringOver.getGraphicalData().r, alignType.aligningProperties);
+									// get a list of the properties that are declared for this class
+									OntResource domNode = propertyNode.getPropertyDomain();
+									// iterate over the property list and build a string representation.
+									
+									domString += domNode.getLocalName() + "\n";
+									
+								} catch (Exception e1) {
+									// Could not convert from OntResource to Node, give up.
+									//e1.printStackTrace();
+								}
+								
+								// if we have listed some properties, add them to the main string
+								if( !domString.equals("") ) {
+									annotationProperties += "Property Domain: " + domString;
+								}
+								
+								
+								// The range of a property
+								String rangeString = new String();
+								// get a list of the properties.  TODO: Make this easier to work with.
+								try {
+									// we need the Ontology to map from OntResource to Node
+									Ontology o = Core.getInstance().getOntologyByID(hoveringOver.getGraphicalData().ontologyID);
+									// map from the OntResource we are hoveringOver to the Node that it represents
+									Node propertyNode = o.getNodefromOntResource(hoveringOver.getGraphicalData().r, alignType.aligningProperties);
+									// get a list of the properties that are declared for this class
+									OntResource domNode = propertyNode.getPropertyRange();
+									// iterate over the property list and build a string representation.
+									
+									rangeString += domNode.getLocalName() + "\n";
+									
+								} catch (Exception e1) {
+									// Could not convert from OntResource to Node, give up.
+									//e1.printStackTrace();
+								}
+								
+								// if we have listed some properties, add them to the main string
+								if( !domString.equals("") ) {
+									annotationProperties += "Property Range: " + rangeString;
+								}
+								
+								
 								VertexDescriptionPane vdp = (VertexDescriptionPane) Core.getUI().getUISplitPane().getRightComponent();
 								if( hoveringOver.getGraphicalData().ontologyID == leftOntologyID ) {
 									vdp.setSourceAnnotations(annotationProperties);
@@ -1444,11 +1551,11 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	 */
 	private void cancelPopupMenu(Graphics g) {
 		PopupMenuActive = false;
-		if( hoveringOver != null ) {
-			hoveringOver.setHover(false);
-			hoveringOver.draw(g);
-			hoveringOver = null; // clear the hover target, since the click can be anywhere and we didn't check again what we're hovering over
-		}
+		//if( hoveringOver != null ) {
+		//	hoveringOver.setHover(false);
+		//	hoveringOver.draw(g);
+		//	hoveringOver = null; // clear the hover target, since the click can be anywhere and we didn't check again what we're hovering over
+		//}
 	}
 
 	private void disableSingleMappingView() {
