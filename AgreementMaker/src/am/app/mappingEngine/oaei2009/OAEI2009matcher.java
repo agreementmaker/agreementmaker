@@ -193,7 +193,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 		System.out.println("LWC completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		lastLayer = lwc;
 
-		/* Original code
+		// Original code
 		//Forth or fifth layer: DSI
 		//DSI
     	System.out.println("Running DSI");
@@ -214,10 +214,10 @@ public class OAEI2009matcher extends AbstractMatcher {
     	time = (endtime-startime);
 		System.out.println("DSI completed in (h.m.s.ms) "+Utility.getFormattedTime(time));	
 		lastLayer = dsi;
-		*/
+		
 		
 		//Forth or fifth layer: BSS
-		//BSS
+		/*/BSS
     	System.out.println("Running BSS");
     	startime = System.nanoTime()/measure;
     	AbstractMatcher bss = MatcherFactory.getMatcherInstance(MatchersRegistry.BSS, 0);
@@ -232,13 +232,13 @@ public class OAEI2009matcher extends AbstractMatcher {
     	dsip.initForOAEI2009();
     	dsi.setParam(dsip);
     	dsi.setPerformSelection(true);
-    	*/
+    	
 		bss.match();
         endtime = System.nanoTime()/measure;
     	time = (endtime-startime);
 		System.out.println("SSM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));	
 		lastLayer = bss;
-
+*/
 		if(parameters.useWordNet){
 			//third layer wnl on input LWC (optimized mode)
 	    	System.out.println("Running LexicalWordnet");
