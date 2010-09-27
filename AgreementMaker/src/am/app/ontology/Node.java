@@ -667,8 +667,9 @@ public class Node {
 	 * @author michele
 	 */
 	public Node getRoot(){
+		//System.out.println(this + " " + this.isRoot());
 		if(!this.isRoot()){
-			return this.getParent().get(0).getRoot();
+			return this.getParents().get(0).getRoot();
 		}
 		return this;
 	}

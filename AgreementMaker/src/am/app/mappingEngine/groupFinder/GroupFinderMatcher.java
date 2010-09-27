@@ -191,14 +191,24 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	    	
 	    	for(int k = 0; k < localList.size(); k++){
 	    		a = localList.get(k);
+	    		//System.out.println();
+	    		//System.out.println("start:");
 	    		sourceRoot = a.getEntity1().getRoot();
+	    		//System.out.println("source root " + sourceRoot.getLocalName());
+	    		//System.out.println("target " + a.getEntity2());
+	    		//System.out.println("target root " + a.getEntity2().getRoot().getLocalName());
 	    		targetRoot = a.getEntity2().getRoot();
+	    		//System.out.println("target root " + targetRoot.getLocalName());
 	    		int sourceInd = source_root_list.indexOf(sourceRoot);
+	    		//System.out.println("sourceIndex " + sourceInd);
 	    		int targetInd = target_root_list.indexOf(targetRoot);
-
+	    		//System.out.println("targetIndex " + targetInd);
 	    		newSim = a.getSimilarity() + localMatrix.getSimilarity(sourceInd, targetInd);
+	    		//System.out.println("newSim " + newSim);
 	    		localMatrix.setSimilarity(sourceInd, targetInd, newSim);
+	    		//System.out.println("localMatrix updated ");
 	    		localCount.set(targetInd, localCount.get(targetInd) + 1);
+	    		//System.out.println("localCount updated ");
 	    	}
 	    	/*/ computing similarity average
 	    	for(int j = 0; j < localCount.size(); j++){
@@ -222,9 +232,12 @@ public class GroupFinderMatcher extends AbstractMatcher {
   		targetSet.add(targetRoot);
 		targetSet.addAll(targetRoot.getDescendants());
     	
+		/** DEBUG INFO
 		System.out.println("sourceSet " + sourceSet.toString());
 		System.out.println("targetSet " + targetSet.toString());
 		System.out.println();
+		*/
+		
     	computeNewValues(input, sourceSet, targetSet);
 	}
 	
