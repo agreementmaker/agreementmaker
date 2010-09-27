@@ -103,19 +103,12 @@ public class GroupFinderMatcher extends AbstractMatcher {
     	ArrayList<Alignment> localList = new ArrayList<Alignment>();
 	    localList = selectGroups(groupElementsByLevel(source).get(0), groupElementsByLevel(target).get(0), input, typeOfNodes);
 	    
-	    System.out.println(localList.toString());
-	    
 	    for(int i = 0; i < localList.size(); i++){
 	    	Node sourceRoot = localList.get(i).getEntity1();
 	    	Node targetRoot = localList.get(i).getEntity2();
+	    	// step 2: match within groups
 	    	matchGroups(input, sourceRoot, targetRoot, typeOfNodes);
 	    }
-    	
-    	// step 2: match within groups
-	    
-	    // take source group
-	    // take target group
-    	
 		return input;
 	}
 	
@@ -174,6 +167,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
     	for(int i = 0; i < target_root_list.size(); i++){
     		localCount.add(new Integer(0));
     	}
+    	
     	ArrayList<Node> sourceSet, targetSet;
     	boolean targetSetFlag;
     	for(int i = 0; i < source_root_list.size(); i++){
@@ -181,26 +175,26 @@ public class GroupFinderMatcher extends AbstractMatcher {
         	targetSet = new ArrayList<Node>(); // contains target nodes to be used for selecting target group
         	
         	targetSetFlag = false;
-    		// setting source current group. target node set it to be set only once in the i-forCycle
+    		// setting source current group and target node set
 	    	sourceSet.add(source_root_list.get(i));
 	    	sourceSet.addAll(source_root_list.get(i).getDescendants());
-	    	if(!targetSetFlag){
-		    	for(int j = 0; j < target_root_list.size(); j++){
-		    		targetSet.add(target_root_list.get(j));
-			    	targetSet.addAll(target_root_list.get(j).getDescendants());
-	    		}
-		    	targetSetFlag = true;
+	    	for(int j = 0; j < target_root_list.size(); j++){
+	    		targetSet.add(target_root_list.get(j));
+		    	targetSet.addAll(target_root_list.get(j).getDescendants());
 	    	}
-	    	
+
 	    	// computing best root
 	    	localList = input.chooseBestN(createIntList(sourceSet), createIntList(targetSet));
 	    	Alignment a = null;
 	    	double newSim = 0.0;
-    		
+    		Node sourceRoot, targetRoot;
+	    	
 	    	for(int k = 0; k < localList.size(); k++){
 	    		a = localList.get(k);
-	    		int sourceInd = source_root_list.indexOf(a.getEntity1().getRoot());
-	    		int targetInd = target_root_list.indexOf(a.getEntity2().getRoot());
+	    		sourceRoot = a.getEntity1().getRoot();
+	    		targetRoot = a.getEntity2().getRoot();
+	    		int sourceInd = source_root_list.indexOf(sourceRoot);
+	    		int targetInd = target_root_list.indexOf(targetRoot);
 
 	    		newSim = a.getSimilarity() + localMatrix.getSimilarity(sourceInd, targetInd);
 	    		localMatrix.setSimilarity(sourceInd, targetInd, newSim);
@@ -211,10 +205,8 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	    		newSim = localMatrix.getSimilarity(i, j);
 	    		localMatrix.setSimilarity(i, j, newSim / localCount.get(j));
 	    		localCount.set(j, 0);
-    		}/*/
+    		}*/
     	}
-    	
-	    //localMatrix.show();
     	
 		return localMatrix.chooseBestN();
 	}
@@ -230,13 +222,10 @@ public class GroupFinderMatcher extends AbstractMatcher {
   		targetSet.add(targetRoot);
 		targetSet.addAll(targetRoot.getDescendants());
     	
-    	ArrayList<Alignment> alignList = input.chooseBestN(createIntList(sourceSet), createIntList(targetSet), true, threshold);
-    	
-    	computeNewValues(input, alignList, sourceSet, targetSet);
-    	
-    	/*System.out.println("sourceSet: " + sourceSet.toString());
-    	System.out.println("targetSet: " + targetSet.toString());
-    	System.out.println("alignList: " + alignList.toString());*/
+		System.out.println("sourceSet " + sourceSet.toString());
+		System.out.println("targetSet " + targetSet.toString());
+		System.out.println();
+    	computeNewValues(input, sourceSet, targetSet);
 	}
 	
 	/**
@@ -304,27 +293,22 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 * computeNewValues: modifies matrix by looking checking if every alignment has the source concept contained in the source list and
 	 * the target concept contained in its one 
 	 * @param inputMatrix the AlignmentMatrix where to get the n elements with highest similarity from
-	 * @param aList list of alignments we are checking for eventual similarity values modification
 	 * @param sourceList list of source nodes 
 	 * @param targetList list of target nodes
 	 * @author michele 
 	 */
-	private void computeNewValues(AlignmentMatrix inputMatrix, ArrayList<Alignment> aList, ArrayList<Node> sourceList, ArrayList<Node> targetList){
+	private void computeNewValues(AlignmentMatrix inputMatrix, ArrayList<Node> sourceList, ArrayList<Node> targetList){
 		ArrayList<Integer> sList = createIntList(sourceList);
 		ArrayList<Integer> tList = createIntList(targetList);
 		
-		ArrayList<Alignment> list = aList;
 		for(int i = 0; i < inputMatrix.getRows(); i++){
 			for(int j = 0; j < inputMatrix.getColumns(); j++){
-				if((sList.contains(i) && !tList.contains(j)) || (!sList.contains(i) && tList.contains(j))){
+				if((sList.contains(i) && !tList.contains(j)) || (!sList.contains(i) && tList.contains(j)))
+				{
 					inputMatrix.setSimilarity(i, j, inputMatrix.getSimilarity(i, j) * scaling_factor);
 				}
 			}
 		}
-		
-		
-		
-		//System.out.println();
 	}
 	
 	/**

@@ -644,6 +644,35 @@ public class Node {
 		return result;
 	}
 	
+	/**
+	 * getDescendants(): creates a list of descendant nodes starting using dfs search
+	 * @author michele
+	 * @return list of all descendant nodes
+	 */
+	public ArrayList<Node> getDescendants(){
+		Node root = this, currentChild;
+		ArrayList<Node> dList = new ArrayList<Node>();
+		//System.out.println("root: " + root.getLocalName() + " " + root.getChildren().size());
+		for(int i = 0; i < root.getChildren().size(); i++){
+			currentChild = root.getChildren().get(i);
+			//System.out.println("root: " + root.getChildren().get(i).getLocalName());
+			dList.add(currentChild);
+			dList.addAll(currentChild.getDescendants());
+		}
+		return dList;
+	}
+	
+	/**
+	 * getRoot(): return the root node of the calling Node
+	 * @author michele
+	 */
+	public Node getRoot(){
+		if(!this.isRoot()){
+			return this.getParent().get(0).getRoot();
+		}
+		return this;
+	}
+	
 	/**n is a descendant of this? same as vertex.isNodeDescendant*/
 	public boolean isNodeDescendant(Node n){
 		Vertex ancestor = getVertex();
