@@ -327,13 +327,29 @@ public class AlignmentMatrix {
 	}
 
 	/**
+	 * initFromNodeList(ArrayList<Node> sourceList, ArrayList<Node> targetList)
+	 * creates an alignmentMatrix from the two node lists we provide
+	 * @param sourceList subset of the rows we want to consider in the matrix (each row represents a concept in the source) 
+	 * @param targetList subset of the columns we want to consider in the matrix (each column represents a concept in the target)
+	 * @author michele 
+	 */
+	public void initFromNodeList(ArrayList<Node> sourceList, ArrayList<Node> targetList) {
+		for(int i = 0; i < sourceList.size(); i++){
+			for(int j = 0; j < targetList.size(); j++){
+				data[i][j] = new Alignment(sourceList.get(i), targetList.get(j), 0.0);
+			}
+		}
+	}
+	
+	/**
 	 * chooseBestN(ArrayList<Integer> rowsIncludedList, ArrayList<Integer> colsIncludedList, boolean considerThreshold, double threshold)
  	 * takes an AlignmentMatrix (can be generalized with a finite matrix with finite values)
 	 * and looks for the top n elements (n is min(#row, #column)) within the considered rows and columns.
 	 * Takes O(m^2) with m being max(#row, #column)
 	 * @param rowsIncludedList subset of the rows we want to consider in the matrix (each row represents a concept in the source) 
 	 * @param colsIncludedList subset of the columns we want to consider in the matrix (each column represents a concept in the target)
-	 * @param considerThreshold if true, the list will contain only mappings whose similarity value is above the threshold, otherwise it will contain every mapping found   
+	 * @param considerThreshold if true, the list will contain only mappings whose similarity value is above the threshold, otherwise it will contain every mapping found
+	 * @param threshold the threshold value   
 	 * @author michele 
 	 */
 	public ArrayList<Alignment> chooseBestN(ArrayList<Integer> rowsIncludedList, ArrayList<Integer> colsIncludedList, boolean considerThreshold, double threshold) {
@@ -385,6 +401,17 @@ public class AlignmentMatrix {
 			//*/	
 		}
 		return chosenMappings;
+	}
+	
+	/**
+	 * chooseBestN(ArrayList<Integer> rowsIncludedList, ArrayList<Integer> colsIncludedList):
+	 * overridden with two parameters
+	 * @param considerThreshold if true, the list will contain only mappings whose similarity value is above the threshold, otherwise it will contain every mapping found
+	 * @param threshold the threshold value
+	 * @author michele 
+	 */
+	public ArrayList<Alignment> chooseBestN(boolean considerThreshold, double threshold) {
+		return this.chooseBestN(createIntListToN(this.getRows()), createIntListToN(this.getColumns()), considerThreshold, threshold);
 	}
 	
 	/**
