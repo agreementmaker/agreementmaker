@@ -1411,6 +1411,30 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 									}
 								}
 								
+								// try to deal with improperly declared individuals.
+								if( individuals.equals("") ) {
+									OntModel mod = (OntModel) currentClass.getModel();
+								
+								
+									List<Statement> ls = mod.listStatements(null , mod.getProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), mod.getResource(currentClass.getLocalName())).toList();
+									
+									Iterator<Statement> lsiter = ls.iterator();
+									int k = 1;
+									while( lsiter.hasNext() ) {
+										Statement s = lsiter.next();
+										OntResource indi = s.getSubject().as(OntResource.class);
+										if( indi.isAnon() ) {
+											individuals += k + ". Anonymous Individual (" + indi.getId() + ")\n";
+											k++;
+										} else {
+											individuals += k + ". " + indi.getLocalName() + "\n";
+											k++;
+										}
+										
+									}
+								}
+								
+								
 								if( hoveringOver.getGraphicalData().ontologyID == leftOntologyID ) {
 									vdp.setSourceIndividuals(individuals);
 								} else {
