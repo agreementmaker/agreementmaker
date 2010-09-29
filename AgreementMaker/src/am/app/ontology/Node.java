@@ -547,6 +547,10 @@ public class Node {
 	}
 	
 
+	/**
+	 * Do not use this for matching.  More used for display.
+	 * @return
+	 */
 	public String getAnnotationsString() {
 		String result = "";
 		result+= "Comments: (rdfs:comment)\n";
