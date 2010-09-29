@@ -523,5 +523,10 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 		});
 	}
 
+	@Override
+	public void clearReport() {
+		txtReport.setText("");		
+	}
+
 	
 }

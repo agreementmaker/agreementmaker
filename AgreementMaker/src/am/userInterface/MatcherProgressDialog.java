@@ -161,6 +161,12 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 	        	}
 	        }
 		});
+	}
+
+
+	@Override
+	public void clearReport() {
+		matcherReport.setText("");		
 	}	
 
 	

@@ -7,6 +7,7 @@ public interface MatchingProgressDisplay extends PropertyChangeListener {
 	// please NOTE that this class extends PropertyChangeListener
 	// Every AbstractMatcher sends a PropertyChangeEvent (via Swingworker!) whenever the "progress" variable is changed.
 	
+	public void clearReport();
 	public void appendToReport( String report );
 	public void scrollToEndOfReport(); // used to scroll to the end of the report text area after appending text.
 	public void matchingStarted(); // used to let the MatchingProgressDisplay know that the matcher has started working.
