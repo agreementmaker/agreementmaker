@@ -7,7 +7,12 @@ public class ReferenceEvaluator{
 
 	
 	final static double ALPHA = 1;
-	
+	/**
+	 * Perform a reference evaluation.
+	 * @param as1 The alignment set of the matcher that must be evaluated.
+	 * @param as2 The reference alignment.
+	 * @return
+	 */
     public static ReferenceEvaluationData compare(AlignmentSet as1, AlignmentSet as2)
     {
         int found = 0; 
