@@ -140,7 +140,7 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	}
 	
 	
-	private double performStringSimilarity(String sourceString, String targetString) {
+	public double performStringSimilarity(String sourceString, String targetString) {
 
 		double sim = 0;
 		if(sourceString == null || targetString == null )

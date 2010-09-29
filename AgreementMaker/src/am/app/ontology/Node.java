@@ -814,4 +814,12 @@ public class Node {
 			graphicalRepresentations.remove(ocg); 
 	}
 
+	private Node matchedTo;
+	public void setMatchedTo(Node target) {	matchedTo = target; }
+	public Node getMatchedTo() { return matchedTo; }
+
+	private boolean matched;
+	public void setMatched(boolean b) { matched = b; }
+	public boolean isMatched() { return matched; }
+
 }
