@@ -6,6 +6,8 @@ import javax.swing.JTextArea;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.IntDoublePair;
 import am.userInterface.table.MyTableModel;
+
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -379,6 +381,16 @@ public class Utility {
 		}
 		return result;
 	}
+	
+	/* from: http://www.rgagnon.com/javadetails/java-0016.html */
+	public static double roundDouble(double d, int decimalPlace){
+	    // see the Javadoc about why we use a String in the constructor
+	    // http://java.sun.com/j2se/1.5.0/docs/api/java/math/BigDecimal.html#BigDecimal(double)
+	    BigDecimal bd = new BigDecimal(Double.toString(d));
+	    bd = bd.setScale(decimalPlace,BigDecimal.ROUND_HALF_UP);
+	    return bd.doubleValue();
+	}
+
 	
 	//*******************************************STRING UTILITIES********************************************************
 	public static boolean isIrrelevant(String s) {

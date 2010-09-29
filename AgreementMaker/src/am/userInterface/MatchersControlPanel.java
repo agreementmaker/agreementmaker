@@ -681,4 +681,6 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	public void addMatcher( AbstractMatcher a ) {
 		matchersTablePanel.addMatcher(a);
 	}
+	
+	public String getComboboxSelectedItem() { return (String) matcherCombo.getSelectedItem(); }
 }

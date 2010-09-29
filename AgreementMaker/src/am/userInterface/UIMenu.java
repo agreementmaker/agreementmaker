@@ -27,9 +27,11 @@ import am.app.feedback.ui.SelectionPanel;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
+import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.ontology.Ontology;
+import am.tools.ThresholdAnalysis.ThresholdAnalysis;
 import am.tools.WordNetLookup.WordNetLookupPanel;
 import am.tools.seals.SealsPanel;
 import am.userInterface.find.FindDialog;
@@ -68,7 +70,8 @@ public class UIMenu implements ActionListener {
 					  newMatching, runMatching, copyMatching, deleteMatching, clearAll, 
 					  doRemoveDuplicates, 
 					  saveMatching, 
-					  refEvaluateMatching;
+					  refEvaluateMatching,
+					  thresholdAnalysis;
 	
 	
 	// Help menu.
@@ -484,6 +487,17 @@ public class UIMenu implements ActionListener {
 					ui.redisplayCanvas();
 				}
 				if( !Core.getInstance().sourceIsLoaded() && !Core.getInstance().targetIsLoaded() ) openMostRecentPair.setEnabled(true);
+			} else if( obj == thresholdAnalysis ) {
+				String batchFile = JOptionPane.showInputDialog(null, "Batch File? (leave empty for no batch mode)");
+				String outputDirectory = JOptionPane.showInputDialog(null, "Output Directory?");
+				String matcherName = Core.getUI().getControlPanel().getComboboxSelectedItem();
+				MatchersRegistry matcher = MatcherFactory.getMatchersRegistryEntry(matcherName);
+				if( Utility.displayConfirmPane("Using matcher: " + matcherName, "Ok?") ) {
+					ThresholdAnalysis than = new ThresholdAnalysis(matcher);
+					than.setBatchFile(batchFile);
+					than.setOutputDirectory(outputDirectory);
+					than.execute();
+				}
 			}
 			
 			
@@ -777,7 +791,13 @@ public class UIMenu implements ActionListener {
 		refEvaluateMatching = new JMenuItem("Evaluate with reference file");
 		refEvaluateMatching.addActionListener(this);
 		matchingMenu.add(refEvaluateMatching);
+		
+		thresholdAnalysis = new JMenuItem("Threshold Analysis");
+		thresholdAnalysis.addActionListener(this);
+		matchingMenu.add(thresholdAnalysis);
+		
 		myMenuBar.add(matchingMenu);
+		
 		
 		
 		// *************************** TOOLS MENU ****************************
