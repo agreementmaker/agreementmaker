@@ -391,6 +391,14 @@ public class Utility {
 	    return bd.doubleValue();
 	}
 
+	/* from: http://www.rgagnon.com/javadetails/java-0016.html */
+	public static float roundFloat(float d, int decimalPlace){
+	    // see the Javadoc about why we use a String in the constructor
+	    // http://java.sun.com/j2se/1.5.0/docs/api/java/math/BigDecimal.html#BigDecimal(double)
+	    BigDecimal bd = new BigDecimal(Float.toString(d));
+	    bd = bd.setScale(decimalPlace,BigDecimal.ROUND_HALF_UP);
+	    return bd.floatValue();
+	}
 	
 	//*******************************************STRING UTILITIES********************************************************
 	public static boolean isIrrelevant(String s) {
