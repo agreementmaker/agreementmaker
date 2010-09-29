@@ -751,5 +751,10 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		});
 		
 	}
+
+	@Override
+	public void clearReport() {
+		matcherReport.setText("");
+	}
 	
 }
