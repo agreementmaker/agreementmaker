@@ -263,9 +263,9 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 				avg_word_number_contribution = 0.0;
 				break;
 			case 1:
-				start_value_contribution = 0.70;
+				start_value_contribution = 0.75;
 				word_distance_contribution = 0.0;
-				avg_word_number_contribution = 0.30;
+				avg_word_number_contribution = 0.25;
 				break;
 			case 2:
 				start_value_contribution = 0.65;
@@ -273,9 +273,9 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 				avg_word_number_contribution = 0.35;
 				break;
 			default:
-				start_value_contribution = 0.55;
+				start_value_contribution = 0.60;
 				word_distance_contribution = 0.15;
-				avg_word_number_contribution = 0.30;
+				avg_word_number_contribution = 0.25;
 				break;
 		}
 		
