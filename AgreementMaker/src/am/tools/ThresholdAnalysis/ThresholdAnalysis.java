@@ -15,6 +15,7 @@ import org.w3c.dom.NodeList;
 
 import am.GlobalStaticVariables;
 import am.Utility;
+import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.AbstractParameters;
@@ -62,7 +63,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 	private boolean prefBatchMode = false; // are we running a batch mode?
 	private String prefBatchFile = ""; // if running in batch mode, we need to have a batch file
 	
-	private MatchersRegistry matcherToAnalyze = null; // which matcher are we analyzing
+	private AbstractMatcher matcherToAnalyze = null; // which matcher are we analyzing
 	
 	private String outputDirectory = ""; // the directory we are outputting to
 	private String outputPrefix = ""; // the prefix for the output files
@@ -75,9 +76,31 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 	private float prefThresholdIncrement = 0.01f;
 	private float prefEndThreshold = 1.0f;
 	
+	public void setStartTh( float startTh ) { prefStartThreshold = startTh; }
+	public void setEndTh( float endTh ) { prefEndThreshold = endTh; }
+	public void setThIncrement( float incTh ) { prefThresholdIncrement = incTh; }
+	
+	// single run params
+	private String singleRunReferenceAlignment = "";
+	
+	/**
+	 * This is the batchMode constructor
+	 * @param matcher
+	 */
 	public ThresholdAnalysis( MatchersRegistry matcher ) {
 		super();
+		matcherToAnalyze = MatcherFactory.getMatcherInstance(matcher, 0);;
+		prefBatchMode = true;
+	}
+	
+	/**
+	 * This is the single matcher mode constructor
+	 * @param matcher
+	 */
+	public ThresholdAnalysis( AbstractMatcher matcher ) {
+		super();
 		matcherToAnalyze = matcher;
+		prefBatchMode = false;
 	}
 	
 	
@@ -93,10 +116,9 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 	public void runAnalysis() {
 		
 		// get the parameters for the matcher
-		AbstractMatcher m = MatcherFactory.getMatcherInstance(matcherToAnalyze, 0);
 	
-		if( m.needsParam() ) {
-			MatcherParametersDialog dialog = new MatcherParametersDialog(m);
+		if( prefBatchMode ) {
+			MatcherParametersDialog dialog = new MatcherParametersDialog(matcherToAnalyze);
 			
 			if( dialog.parametersSet() ) {
 				// user clicked run
@@ -109,12 +131,99 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 
 		
 		if( prefBatchMode ) { runBatchAnalysis(); }
+		else { runSingleAnalysis(); }
 		
 		// don't do anything for nonbatch mode (TODO)
 		
 	}
 	
-	
+	/**
+	 * This is a single matcher mode.  The matcher should have been already executed. 
+	 */
+	private void runSingleAnalysis() {
+
+		
+		// load the reference file
+		ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+		refParam.onlyEquivalence = true;
+		refParam.fileName = singleRunReferenceAlignment;
+		refParam.format = ReferenceAlignmentMatcher.REF0;
+		AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+		referenceAlignmentMatcher.setParam(refParam);
+		try {
+			referenceAlignmentMatcher.match();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Analysis aborted.");
+			return;
+		}
+		
+		String sourceOntologyName = Core.getInstance().getSourceOntology().getTitle();
+		String targetOntologyName = Core.getInstance().getTargetOntology().getTitle();
+		
+		// open the output files
+		File outputPrecision = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + Core.getInstance().getTargetOntology().getTitle() + "-precision.txt");
+		File outputRecall = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-recall.txt");
+		File outputFMeasure = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-fmeasure.txt");
+		File outputMaxFM = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-max-fmeasure.txt");
+		
+		
+		try {
+			
+			BufferedWriter writerPrecision = new BufferedWriter( new FileWriter(outputPrecision) );
+			BufferedWriter writerRecall = new BufferedWriter( new FileWriter(outputRecall) );
+			BufferedWriter writerFMeasure = new BufferedWriter( new FileWriter(outputFMeasure) );
+			BufferedWriter writerMaxFM = new BufferedWriter( new FileWriter(outputMaxFM) );
+			
+			
+			// ok, we ran the matcher, now do the threshold analysis
+			
+			double maxFMeasure = 0.0;
+			double maxFMTh = 0.0;
+			
+			for( float currentThreshold = prefStartThreshold; currentThreshold < prefEndThreshold; currentThreshold += prefThresholdIncrement) {
+
+				currentThreshold = Utility.roundFloat(currentThreshold, 4);
+				System.out.println("Selecting with threshold = " + currentThreshold );
+				matcherToAnalyze.setThreshold(currentThreshold);
+				matcherToAnalyze.select();
+							
+				ReferenceEvaluationData currentEvaluation = ReferenceEvaluator.compare(matcherToAnalyze.getAlignmentSet(), referenceAlignmentMatcher.getAlignmentSet());
+				
+				float th = Utility.roundFloat(currentThreshold*100f, 4);
+				writerPrecision.write(th + "," + Utility.roundDouble( currentEvaluation.getPrecision() * 100.0d, 2) + "\n");
+				writerRecall.write(th + "," + Utility.roundDouble( currentEvaluation.getRecall() * 100.0d, 2) + "\n");
+				writerFMeasure.write(th + "," + Utility.roundDouble( currentEvaluation.getFmeasure()* 100.0d, 2) + "\n");
+				
+				writerPrecision.flush();
+				writerRecall.flush();
+				writerFMeasure.flush();
+				
+				if( maxFMeasure < currentEvaluation.getFmeasure() ) {
+					maxFMeasure = currentEvaluation.getFmeasure();
+					maxFMTh = currentThreshold;
+				}
+				
+			}
+			
+			writerMaxFM.write( maxFMTh + ", " + Utility.roundDouble( maxFMeasure * 100.0d, 2) );
+			
+			writerPrecision.close();
+			writerRecall.close();
+			writerFMeasure.close();
+			writerMaxFM.close();
+			
+		} catch (IOException e) {
+			// cannot create files
+			e.printStackTrace();
+			return;
+		}
+		
+	}
+
+	/**
+	 * This is batch mode analysis using an XML file for the settings
+	 */
 	private void runBatchAnalysis() {
 		
 		// open and parse the benchmark XML file
@@ -208,26 +317,24 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		sourceBuilder.build();
 		
 		Ontology targetOntology = sourceBuilder.getOntology();
-		
-		// instantiate the matcher
-		AbstractMatcher m = MatcherFactory.getMatcherInstance(matcherToAnalyze, 0);
-		
-		m.setSourceOntology(sourceOntology);
-		m.setTargetOntology(targetOntology);
-		m.setPerformSelection(false);
-		m.setParam(prefParams);
-		m.setMaxSourceAlign(prefSourceCardinality);
-		m.setMaxTargetAlign(prefTargetCardinality);
-		
-		// run the matcher
+				
+
+		// set the settings for the matcher			
+		matcherToAnalyze.setSourceOntology(sourceOntology);
+		matcherToAnalyze.setTargetOntology(targetOntology);
+		matcherToAnalyze.setPerformSelection(false);
+		matcherToAnalyze.setParam(prefParams);
+		matcherToAnalyze.setMaxSourceAlign(prefSourceCardinality);
+		matcherToAnalyze.setMaxTargetAlign(prefTargetCardinality);
+
+			
 		try {
-			m.match();
+			matcherToAnalyze.match();
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Analysis aborted.");
 			return;
 		}
-		
 		
 		// load the reference file
 		ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
@@ -266,10 +373,10 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 			
 			for( float currentThreshold = prefStartThreshold; currentThreshold < prefEndThreshold; currentThreshold += prefThresholdIncrement) {
 				
-				m.setThreshold(currentThreshold);
-				m.select();
+				matcherToAnalyze.setThreshold(currentThreshold);
+				matcherToAnalyze.select();
 							
-				ReferenceEvaluationData currentEvaluation = ReferenceEvaluator.compare(m.getAlignmentSet(), referenceAlignmentMatcher.getAlignmentSet());
+				ReferenceEvaluationData currentEvaluation = ReferenceEvaluator.compare(matcherToAnalyze.getAlignmentSet(), referenceAlignmentMatcher.getAlignmentSet());
 				
 				writerPrecision.write(currentThreshold + "," + Utility.roundDouble( currentEvaluation.getPrecision(), 2) + "\n");
 				writerRecall.write(currentThreshold + "," + Utility.roundDouble( currentEvaluation.getRecall(), 2) + "\n");
@@ -305,8 +412,15 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 
 	@Override
 	protected Void doInBackground() throws Exception {
-		// TODO Auto-generated method stub
+		runAnalysis();
 		return null;
+	}
+	public void setOutputPrefix(String matcherClass) {
+		outputPrefix = matcherClass;
+	}
+	public void setReferenceAlignment(String referenceAlignment) {
+		singleRunReferenceAlignment = referenceAlignment;
+		
 	}
 
 	

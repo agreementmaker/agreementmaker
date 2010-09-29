@@ -488,15 +488,32 @@ public class UIMenu implements ActionListener {
 				}
 				if( !Core.getInstance().sourceIsLoaded() && !Core.getInstance().targetIsLoaded() ) openMostRecentPair.setEnabled(true);
 			} else if( obj == thresholdAnalysis ) {
-				String batchFile = JOptionPane.showInputDialog(null, "Batch File? (leave empty for no batch mode)");
-				String outputDirectory = JOptionPane.showInputDialog(null, "Output Directory?");
-				String matcherName = Core.getUI().getControlPanel().getComboboxSelectedItem();
-				MatchersRegistry matcher = MatcherFactory.getMatchersRegistryEntry(matcherName);
-				if( Utility.displayConfirmPane("Using matcher: " + matcherName, "Ok?") ) {
-					ThresholdAnalysis than = new ThresholdAnalysis(matcher);
-					than.setBatchFile(batchFile);
-					than.setOutputDirectory(outputDirectory);
-					than.execute();
+				// decide if we are running in a single mode or batch mode
+				if( Utility.displayConfirmPane("Are you running a batch mode?", "Batch mode?") ) {
+					String batchFile = JOptionPane.showInputDialog(null, "Batch File? (leave empty for no batch mode)");
+					String outputDirectory = JOptionPane.showInputDialog(null, "Output Directory?");
+					String matcherName = Core.getUI().getControlPanel().getComboboxSelectedItem();
+					MatchersRegistry matcher = MatcherFactory.getMatchersRegistryEntry(matcherName);
+					if( Utility.displayConfirmPane("Using matcher: " + matcherName, "Ok?") ) {
+						ThresholdAnalysis than = new ThresholdAnalysis(matcher);
+						than.setBatchFile(batchFile);
+						than.setOutputDirectory(outputDirectory);
+						than.execute();
+					}
+				} else {
+					// single mode
+					String referenceAlignment = JOptionPane.showInputDialog(null, "Reference Alignment?");
+					String outputDirectory = JOptionPane.showInputDialog(null, "Output Directory?");
+					int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
+					if( rowsIndex.length == 0 ) { Utility.displayErrorPane("You must select a matcher from the control panel when running in single mode.", "Error"); return; }
+					AbstractMatcher matcherToBeAnalyzed = Core.getInstance().getMatcherInstances().get(rowsIndex[0]);
+					if( Utility.displayConfirmPane("Using matcher: " + matcherToBeAnalyzed.getName().getMatcherName(), "Ok?") ) {
+						ThresholdAnalysis than = new ThresholdAnalysis(matcherToBeAnalyzed);
+						than.setReferenceAlignment(referenceAlignment);
+						than.setOutputDirectory(outputDirectory);
+						than.setOutputPrefix(matcherToBeAnalyzed.getName().getMatcherClass());
+						than.execute();
+					}
 				}
 			}
 			
