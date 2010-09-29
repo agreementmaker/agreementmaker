@@ -140,7 +140,7 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	}
 	
 	
-	public double performStringSimilarity(String sourceString, String targetString) {
+	private double performStringSimilarity(String sourceString, String targetString) {
 
 		double sim = 0;
 		if(sourceString == null || targetString == null )
@@ -150,11 +150,8 @@ public class ParametricStringMatcher extends AbstractMatcher {
 			ParametricStringParameters parameters  = (ParametricStringParameters)param;
 			
 			//PREPROCESSING
-			// commented out because of NullPointerException (while using it with ASM)
-			//String processedSource = normalizer.normalize(sourceString);
-			//String processedTarget = normalizer.normalize(targetString);
-			String processedSource = sourceString;
-			String processedTarget = targetString;
+			String processedSource = normalizer.normalize(sourceString);
+			String processedTarget = normalizer.normalize(targetString);
 			
 			//usually empty strings shouldn't be compared, but if redistrubute weights is not selected 
 			//in the redistribute weights case this can't happen because the code won't arrive till here
