@@ -106,7 +106,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 * @return similarity value between source and target
 	 * @author michele
 	 */
-	private double contentWordCheck(ArrayList<String> source, ArrayList<String> target, alignType typeOfNodes){
+	private double contentWordCheck(ArrayList<String> source, ArrayList<String> target, alignType typeOfNodes) throws Exception {
 		// initializing local variables
 		int sSize = source.size(), tSize = target.size();
 		String s = null, t = null;
@@ -115,6 +115,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		ParametricStringParameters localMatcherParams = new ParametricStringParameters();
 		localMatcherParams.initForOAEI2009();
 		AbstractMatcher localMatcher = new ParametricStringMatcher(localMatcherParams);
+		((ParametricStringMatcher)localMatcher).initializeNormalizer();
 		AlignmentMatrix localMatrix = new AlignmentMatrix(source.size(), target.size(), typeOfNodes);
 		
 		/* ------------- BEGIN FOR #1 --------------- */
