@@ -174,7 +174,8 @@ public class OAEI2009matcher extends AbstractMatcher {
 		//LWC matcher
     	System.out.println("Running LWC");
     	startime = System.nanoTime()/measure;
-    	AbstractMatcher lwc = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 3);
+    	int nextID = Core.getInstance().getMatcherInstances().size();
+    	AbstractMatcher lwc = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, nextID);
     	lwc.getInputMatchers().add(psm);
     	lwc.getInputMatchers().add(vmm);
     	lwc.getInputMatchers().add(pra);
