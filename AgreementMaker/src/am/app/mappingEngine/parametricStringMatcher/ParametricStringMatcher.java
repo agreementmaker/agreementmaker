@@ -48,7 +48,11 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	
 	public void beforeAlignOperations()  throws Exception{
 		super.beforeAlignOperations();
-		ParametricStringParameters parameters =(ParametricStringParameters)param;
+		initializeNormalizer();
+	}
+	
+	public void initializeNormalizer() throws Exception {
+		ParametricStringParameters parameters = (ParametricStringParameters) param;
 		//prepare the normalizer to preprocess strings
 		normalizer = new Normalizer(parameters.normParameter);
 	}
@@ -150,8 +154,11 @@ public class ParametricStringMatcher extends AbstractMatcher {
 			ParametricStringParameters parameters  = (ParametricStringParameters)param;
 			
 			//PREPROCESSING
+			// commented out because of NullPointerException (while using it with ASM)
 			String processedSource = normalizer.normalize(sourceString);
 			String processedTarget = normalizer.normalize(targetString);
+			//String processedSource = sourceString;
+			//String processedTarget = targetString;
 			
 			//usually empty strings shouldn't be compared, but if redistrubute weights is not selected 
 			//in the redistribute weights case this can't happen because the code won't arrive till here
