@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.SwingWorker;
 import javax.xml.parsers.DocumentBuilder;
@@ -118,19 +119,19 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		// get the parameters for the matcher
 	
 		if( prefBatchMode ) {
-			MatcherParametersDialog dialog = new MatcherParametersDialog(matcherToAnalyze);
+			if( matcherToAnalyze.needsParam() ) {
+				MatcherParametersDialog dialog = new MatcherParametersDialog(matcherToAnalyze);
 			
-			if( dialog.parametersSet() ) {
-				// user clicked run
-				prefParams = dialog.getParameters();
+				if( dialog.parametersSet() ) {
+					// user clicked run
+					prefParams = dialog.getParameters();
+				}
+				else { dialog.dispose(); return; }  // user canceled
+			
+				dialog.dispose();
 			}
-			else { dialog.dispose(); return; }  // user canceled
-			
-			dialog.dispose();
+			runBatchAnalysis();
 		}
-
-		
-		if( prefBatchMode ) { runBatchAnalysis(); }
 		else { runSingleAnalysis(); }
 		
 		// don't do anything for nonbatch mode (TODO)
@@ -258,11 +259,14 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 			String thEnd = threshold.getAttribute("end");
 			prefEndThreshold = Float.parseFloat(thEnd);
 			
+			
 			// parse the Runs
 			NodeList runList = doc.getElementsByTagName("run");
 			for( int i = 0; i < runList.getLength(); i++ ) {
 				
 				Element currentRun = (Element) runList.item(i);
+				
+				String currentRunName = currentRun.getAttribute("name");
 				
 				Element sourceOntology = (Element) currentRun.getElementsByTagName("sourceOntology").item(0);
 				
@@ -282,7 +286,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 				
 				System.out.println("Running analysis for " + sourceOntologyName + " to " + targetOntologyName);
 				
-				runAnalysis( sourceOntologyFile, sourceOntologyName, targetOntologyFile, targetOntologyName, referenceAlignmentFile );
+				runAnalysis( sourceOntologyFile, sourceOntologyName, targetOntologyFile, targetOntologyName, referenceAlignmentFile, currentRunName );
 				
 			}
 			
@@ -297,7 +301,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 	
 	private void runAnalysis(String sourceOntologyFile,
 			String sourceOntologyName, String targetOntologyFile,
-			String targetOntologyName, String referenceAlignmentFile) {
+			String targetOntologyName, String referenceAlignmentFile, String runName) {
 
 		
 		// load source ontology
@@ -314,10 +318,14 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 															GlobalStaticVariables.SOURCENODE, 
 															GlobalStaticVariables.LANG_OWL,
 															GlobalStaticVariables.SYNTAX_RDFXML, false);
-		sourceBuilder.build();
+		targetBuilder.build();
 		
-		Ontology targetOntology = sourceBuilder.getOntology();
-				
+		Ontology targetOntology = targetBuilder.getOntology();
+	
+		
+		// update the code with the two ontologies (needed because of AlignmentMatrix.setSimilarity()
+		Core.getInstance().setSourceOntology(sourceOntology);
+		Core.getInstance().setTargetOntology(targetOntology);
 
 		// set the settings for the matcher			
 		matcherToAnalyze.setSourceOntology(sourceOntology);
@@ -352,10 +360,10 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		}
 		
 		// open the output files
-		File outputPrecision = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-precision.txt");
-		File outputRecall = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-recall.txt");
-		File outputFMeasure = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-fmeasure.txt");
-		File outputMaxFM = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-max-fmeasure.txt");
+		File outputPrecision = new File( outputDirectory + "/" + outputPrefix + "-" + runName + "-precision.txt");
+		File outputRecall = new File( outputDirectory + "/" + outputPrefix + "-" + runName + "-recall.txt");
+		File outputFMeasure = new File( outputDirectory + "/" + outputPrefix + "-" + runName + "-fmeasure.txt");
+		File outputMaxFM = new File( outputDirectory + "/" + outputPrefix + "-" + runName + "-max-fmeasure.txt");
 		
 		
 		try {
