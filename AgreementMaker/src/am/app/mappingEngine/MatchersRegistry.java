@@ -8,16 +8,17 @@ import am.app.feedback.FeedbackLoop;
 import am.app.feedback.InitialMatchers;
 import am.app.mapEngine.instance.BaseInstanceMatcher;
 import am.app.mapEngine.instance.InstanceBasedPropMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.LexicalMatcherJAWS.LexicalMatcherJAWS;
 import am.app.mappingEngine.LexicalMatcherJWNL.LexicalMatcherJWNL;
+import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcher;
 //import am.app.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
 import am.app.mappingEngine.PRAMatcher.OldPRAMatcher;
 import am.app.mappingEngine.PRAMatcher.PRAMatcher;
 import am.app.mappingEngine.PRAMatcher.PRAMatcher2;
 import am.app.mappingEngine.PRAintegration.PRAintegrationMatcher;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
-import am.app.mappingEngine.baseSimilarity.compoundWordSimilarity.CompoundWordSimilarityMatcher;
 import am.app.mappingEngine.basicStructureSelector.BasicStructuralSelectorMatcher;
 import am.app.mappingEngine.conceptMatcher.ConceptMatcher;
 import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
@@ -34,6 +35,8 @@ import am.app.mappingEngine.testMatchers.CopyMatcher;
 import am.app.mappingEngine.testMatchers.EqualsMatcher;
 import am.app.mappingEngine.testMatchers.RandomMatcher;
 //import am.app.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
+import am.extension.AnatomySynonymExtractor;
+import am.extension.IndividualLister;
 
 /**
  * Enum for keeping the current list of matchers in the system, and their class references
@@ -54,7 +57,13 @@ public enum MatchersRegistry {
 	 * And so, if your matcher is has no code errors, it will be incorporated into the AgreementMaker.  - Cosmin
 	 */
 	//
-	CompoundWordSim		( "Compound Word Similarity Matcher (CWSM)", CompoundWordSimilarityMatcher.class),
+	AdvancedSimilarity  ( "Advances Similarity Matcher", am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher.class),
+	GroupFinder			( "GroupFinder", am.app.mappingEngine.groupFinder.GroupFinderMatcher.class),
+	FCM					( "Federico Caimi Matcher", am.app.mappingEngine.FedericoCaimiMatcher.FedericoMatcher.class),
+	LSM					( "Lexical Synonym Matcher", LexicalSynonymMatcher.class ),
+	//ShashiMatcher		( "Shashi Matcher", am.extension.shashi.ShashiMatcher.class),
+	IndiLister 			( "Individual Lister", IndividualLister.class ),
+	AnatomySyn 			( "Anatomy Synonym Extractor", AnatomySynonymExtractor.class ),
 	//OFFICIAL MATCHERS
 	LexicalJAWS			( "Lexical Matcher: JAWS", LexicalMatcherJAWS.class ),
 	BaseSimilarity		( "Base Similarity Matcher (BSM)", BaseSimilarityMatcher.class ),
