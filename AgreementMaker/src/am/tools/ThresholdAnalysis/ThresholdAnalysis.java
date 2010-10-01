@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.swing.SwingWorker;
 import javax.xml.parsers.DocumentBuilder;
@@ -54,7 +53,7 @@ import am.userInterface.MatcherParametersDialog;
  * 
  * 
  * @author cosmin
- *
+ * TODO: REMOVE ALL THE ROUNDING IN THE SINGLE AND BATCH RUNNING METHODS. !!!!!
  */
 
 public class ThresholdAnalysis extends SwingWorker<Void,Void> {
@@ -127,11 +126,12 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 					prefParams = dialog.getParameters();
 				}
 				else { dialog.dispose(); return; }  // user canceled
-			
 				dialog.dispose();
 			}
-			runBatchAnalysis();
 		}
+
+		
+		if( prefBatchMode ) { runBatchAnalysis(); }
 		else { runSingleAnalysis(); }
 		
 		// don't do anything for nonbatch mode (TODO)
@@ -182,19 +182,27 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 			double maxFMeasure = 0.0;
 			double maxFMTh = 0.0;
 			
-			for( float currentThreshold = prefStartThreshold; currentThreshold < prefEndThreshold; currentThreshold += prefThresholdIncrement) {
+			for( double currentThreshold = prefStartThreshold; currentThreshold < prefEndThreshold; currentThreshold += prefThresholdIncrement) {
 
-				currentThreshold = Utility.roundFloat(currentThreshold, 4);
-				System.out.println("Selecting with threshold = " + currentThreshold );
+				currentThreshold = Utility.roundDouble(currentThreshold, 4);
+				if( Core.DEBUG_THRESHOLDANALYSIS ) System.out.println("Selecting with threshold = " + currentThreshold );
 				matcherToAnalyze.setThreshold(currentThreshold);
 				matcherToAnalyze.select();
 							
 				ReferenceEvaluationData currentEvaluation = ReferenceEvaluator.compare(matcherToAnalyze.getAlignmentSet(), referenceAlignmentMatcher.getAlignmentSet());
 				
-				float th = Utility.roundFloat(currentThreshold*100f, 4);
+				double th = Utility.roundDouble(currentThreshold*100f, 4);
 				writerPrecision.write(th + "," + Utility.roundDouble( currentEvaluation.getPrecision() * 100.0d, 2) + "\n");
 				writerRecall.write(th + "," + Utility.roundDouble( currentEvaluation.getRecall() * 100.0d, 2) + "\n");
 				writerFMeasure.write(th + "," + Utility.roundDouble( currentEvaluation.getFmeasure()* 100.0d, 2) + "\n");
+				if( Core.DEBUG_THRESHOLDANALYSIS ) { 
+					System.out.println("Results: (precision, recall, f-measure) = (" + 
+						Utility.roundDouble( currentEvaluation.getPrecision() * 100.0d, 2) + ", " + 
+						Utility.roundDouble( currentEvaluation.getRecall() * 100.0d, 2) + ", " +
+						Utility.roundDouble( currentEvaluation.getFmeasure()* 100.0d, 2) + ")");
+					System.out.println("       : (found mappings, correct mappings, reference mappings) = (" + 
+							currentEvaluation.getFound() + ", " + currentEvaluation.getCorrect() + ", " + currentEvaluation.getExist() + ")");
+				}
 				
 				writerPrecision.flush();
 				writerRecall.flush();
@@ -202,7 +210,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 				
 				if( maxFMeasure < currentEvaluation.getFmeasure() ) {
 					maxFMeasure = currentEvaluation.getFmeasure();
-					maxFMTh = currentThreshold;
+					maxFMTh = Utility.roundDouble(currentThreshold*100f, 4);
 				}
 				
 			}
@@ -230,13 +238,14 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		// open and parse the benchmark XML file
 		try {
 			
+			if( Core.DEBUG_THRESHOLDANALYSIS ) System.out.println("Reading batch file.");
 			File batchFile = new File( prefBatchFile );
 			
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document doc = db.parse(batchFile);
 			doc.getDocumentElement().normalize();
-			System.out.println("Root element " + doc.getDocumentElement().getNodeName());
+			//if( Core.DEBUG_THRESHOLDANALYSIS ) System.out.println("Root element " + doc.getDocumentElement().getNodeName());
 			
 			outputPrefix = doc.getDocumentElement().getAttribute("title");
 			
@@ -259,14 +268,11 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 			String thEnd = threshold.getAttribute("end");
 			prefEndThreshold = Float.parseFloat(thEnd);
 			
-			
 			// parse the Runs
 			NodeList runList = doc.getElementsByTagName("run");
 			for( int i = 0; i < runList.getLength(); i++ ) {
 				
 				Element currentRun = (Element) runList.item(i);
-				
-				String currentRunName = currentRun.getAttribute("name");
 				
 				Element sourceOntology = (Element) currentRun.getElementsByTagName("sourceOntology").item(0);
 				
@@ -284,9 +290,9 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 				
 				String referenceAlignmentFile = referenceAlignment.getAttribute("filename");
 				
-				System.out.println("Running analysis for " + sourceOntologyName + " to " + targetOntologyName);
+				if( Core.DEBUG_THRESHOLDANALYSIS ) System.out.println("Running analysis for " + sourceOntologyName + " to " + targetOntologyName);
 				
-				runAnalysis( sourceOntologyFile, sourceOntologyName, targetOntologyFile, targetOntologyName, referenceAlignmentFile, currentRunName );
+				runAnalysis( sourceOntologyFile, sourceOntologyName, targetOntologyFile, targetOntologyName, referenceAlignmentFile );
 				
 			}
 			
@@ -301,9 +307,10 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 	
 	private void runAnalysis(String sourceOntologyFile,
 			String sourceOntologyName, String targetOntologyFile,
-			String targetOntologyName, String referenceAlignmentFile, String runName) {
+			String targetOntologyName, String referenceAlignmentFile) {
 
 		
+		if( Core.DEBUG_THRESHOLDANALYSIS ) System.out.println("Loading ontology " +  sourceOntologyFile);
 		// load source ontology
 		OntoTreeBuilder sourceBuilder = new OntoTreeBuilder(sourceOntologyFile , 
 															GlobalStaticVariables.SOURCENODE, 
@@ -313,25 +320,22 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		
 		Ontology sourceOntology = sourceBuilder.getOntology();
 		
+		if( Core.DEBUG_THRESHOLDANALYSIS ) System.out.println("Loading ontology " +  targetOntologyFile);
 		// load target ontology
 		OntoTreeBuilder targetBuilder = new OntoTreeBuilder(targetOntologyFile , 
 															GlobalStaticVariables.SOURCENODE, 
 															GlobalStaticVariables.LANG_OWL,
 															GlobalStaticVariables.SYNTAX_RDFXML, false);
-		targetBuilder.build();
+		sourceBuilder.build();
 		
-		Ontology targetOntology = targetBuilder.getOntology();
-	
-		
-		// update the code with the two ontologies (needed because of AlignmentMatrix.setSimilarity()
-		Core.getInstance().setSourceOntology(sourceOntology);
-		Core.getInstance().setTargetOntology(targetOntology);
+		Ontology targetOntology = sourceBuilder.getOntology();
+				
 
 		// set the settings for the matcher			
 		matcherToAnalyze.setSourceOntology(sourceOntology);
 		matcherToAnalyze.setTargetOntology(targetOntology);
 		matcherToAnalyze.setPerformSelection(false);
-		matcherToAnalyze.setParam(prefParams);
+		if( matcherToAnalyze.needsParam() ) matcherToAnalyze.setParam(prefParams);
 		matcherToAnalyze.setMaxSourceAlign(prefSourceCardinality);
 		matcherToAnalyze.setMaxTargetAlign(prefTargetCardinality);
 
@@ -351,6 +355,9 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		refParam.format = ReferenceAlignmentMatcher.REF0;
 		AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 		referenceAlignmentMatcher.setParam(refParam);
+		referenceAlignmentMatcher.setSourceOntology(sourceOntology);
+		referenceAlignmentMatcher.setTargetOntology(targetOntology);
+		
 		try {
 			referenceAlignmentMatcher.match();
 		} catch (Exception e) {
@@ -360,10 +367,10 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		}
 		
 		// open the output files
-		File outputPrecision = new File( outputDirectory + "/" + outputPrefix + "-" + runName + "-precision.txt");
-		File outputRecall = new File( outputDirectory + "/" + outputPrefix + "-" + runName + "-recall.txt");
-		File outputFMeasure = new File( outputDirectory + "/" + outputPrefix + "-" + runName + "-fmeasure.txt");
-		File outputMaxFM = new File( outputDirectory + "/" + outputPrefix + "-" + runName + "-max-fmeasure.txt");
+		File outputPrecision = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-precision.txt");
+		File outputRecall = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-recall.txt");
+		File outputFMeasure = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-fmeasure.txt");
+		File outputMaxFM = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-max-fmeasure.txt");
 		
 		
 		try {
@@ -379,8 +386,11 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 			double maxFMeasure = 0.0;
 			double maxFMTh = 0.0;
 			
-			for( float currentThreshold = prefStartThreshold; currentThreshold < prefEndThreshold; currentThreshold += prefThresholdIncrement) {
+			for( double currentThreshold = prefStartThreshold; currentThreshold < prefEndThreshold; currentThreshold += prefThresholdIncrement) {
 				
+				currentThreshold = Utility.roundDouble(currentThreshold, 4);
+				
+				if( Core.DEBUG_THRESHOLDANALYSIS ) System.out.println("Selecting with threshold = " + currentThreshold );
 				matcherToAnalyze.setThreshold(currentThreshold);
 				matcherToAnalyze.select();
 							
@@ -390,14 +400,23 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 				writerRecall.write(currentThreshold + "," + Utility.roundDouble( currentEvaluation.getRecall(), 2) + "\n");
 				writerFMeasure.write(currentThreshold + "," + Utility.roundDouble( currentEvaluation.getFmeasure(), 2) + "\n");
 				
+				if( Core.DEBUG_THRESHOLDANALYSIS ) { 
+					System.out.println("Results: (precision, recall, f-measure) = (" + 
+						Utility.roundDouble( currentEvaluation.getPrecision() * 100.0d, 2) + ", " + 
+						Utility.roundDouble( currentEvaluation.getRecall() * 100.0d, 2) + ", " +
+						Utility.roundDouble( currentEvaluation.getFmeasure()* 100.0d, 2) + ")");
+					System.out.println("       : (found mappings, correct mappings, reference mappings) = (" + 
+							currentEvaluation.getFound() + ", " + currentEvaluation.getCorrect() + ", " + currentEvaluation.getExist() + ")");
+				}
+				
 				if( maxFMeasure < currentEvaluation.getFmeasure() ) {
 					maxFMeasure = currentEvaluation.getFmeasure();
-					maxFMTh = currentThreshold;
+					maxFMTh = Utility.roundDouble(currentThreshold*100f, 4);
 				}
 				
 			}
 			
-			writerMaxFM.write( maxFMTh + ", " + Utility.roundDouble( maxFMeasure, 2) );
+			writerMaxFM.write( Utility.roundDouble( maxFMTh, 2) + ", " + Utility.roundDouble( maxFMeasure, 2) );
 			
 			writerPrecision.close();
 			writerRecall.close();
