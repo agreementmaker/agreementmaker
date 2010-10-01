@@ -151,7 +151,6 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 * matchGroups: takes an Ontology and partitions it with respect to the depth of every element
 	 * actually it takes the concepts or the properties separately, so in order to run on the whole ontology
 	 * it should run twice, once for the concepts and once for the properties.
-	 * Takes O(n) where n is the size of the inputOntology
 	 * @param inputOntology the ontology that has to be grouped by depth
 	 * @author michele 
 	 */
