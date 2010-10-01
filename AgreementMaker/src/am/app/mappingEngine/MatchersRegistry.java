@@ -69,7 +69,6 @@ public enum MatchersRegistry {
 	LexicalJAWS			( "Lexical Matcher: JAWS", LexicalMatcherJAWS.class ),
 	BaseSimilarity		( "Base Similarity Matcher (BSM)", BaseSimilarityMatcher.class ),
 	ParametricString ( "Parametric String Matcher (PSM)",	 ParametricStringMatcher.class ),
-	BaseInstance		("Base Instance-based Matcher (BIM)", BaseInstanceMatcher.class),
 	MultiWords       ("Vector-based Multi-Words Matcher (VMM)", MultiWordsMatcher.class),
 	WordNetLexical		("Lexical Matcher: WordNet", LexicalMatcherJWNL.class),
 	DSI					( "Descendant's Similarity Inheritance (DSI)", DescendantsSimilarityInheritanceMatcher.class ),
