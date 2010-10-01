@@ -3,6 +3,8 @@ package am.app.mappingEngine.StringUtil;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import am.app.Core;
+
 public class Normalizer {
 	
 	private HashMap<String, String> normalizeMap;
@@ -63,10 +65,13 @@ public class Normalizer {
 					if(!parameters.removeStopWords || !stopWords.contains(currentWord)) { // if we pass this test it means that the word has to be added to the final processed string
 						if(parameters.stem) {
 							try {
+								String beforeStem = null;
+								if( Core.DEBUG_NORMALIZER ) { beforeStem = currentWord; }
 								currentWord = ps.stem(currentWord);
+								if( Core.DEBUG_NORMALIZER ) System.out.println("Stemmed word: " + beforeStem + " -> " + currentWord);
 							}
 							catch(Exception ex) {
-								System.out.println("Can't stem this word: "+currentWord);
+								System.out.println("Error stemming this word: "+currentWord);
 								ex.printStackTrace();
 							}
 						}
