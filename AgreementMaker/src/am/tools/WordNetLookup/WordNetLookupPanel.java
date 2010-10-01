@@ -131,7 +131,7 @@ public class WordNetLookupPanel extends JPanel implements ActionListener, KeyLis
 		try {
 			WordNet = WordNetDatabase.getFileInstance();
 		} catch( Exception e ) {
-			Utility.displayErrorPane(e.getMessage(), "Cannot open WordNet files");
+			Utility.displayErrorPane(e.getMessage(), "Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
 		}
 
 	}
