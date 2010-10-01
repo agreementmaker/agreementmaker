@@ -71,30 +71,7 @@ public class AlignmentMatrix {
 
 
     
-    public Alignment get(int i, int j) {  // TODO: This function does not return null.  It should return null. (cos,10-29-09)
-    									  //why? aren't we keeping 0 similarity alignments as null alignments?	
-    	
-    	if( data[i][j] == null ) {
-    		
-        	Core core = Core.getInstance();
-			Ontology sourceOntology = core.getSourceOntology();
-			Ontology targetOntology = core.getTargetOntology();
-			ArrayList<Node> sourceList;
-			ArrayList<Node> targetList;
-			if(typeOfMatrix.equals(alignType.aligningClasses)){
-				sourceList = sourceOntology.getClassesList();
-				targetList = targetOntology.getClassesList();
-			}
-			else{
-				sourceList = sourceOntology.getPropertiesList();
-				targetList = targetOntology.getPropertiesList();
-			}
-    		
-    		return new Alignment(sourceList.get(i), targetList.get(j), 0.00d, relation);
-    	}
-    	else 
-    		return data[i][j];
-    }
+    public Alignment get(int i, int j) {  return data[i][j];  }
     
     public void set(int i, int j, Alignment d) {
     
