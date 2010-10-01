@@ -8,6 +8,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import am.AMException;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.LexiconStore;
 import am.app.mappingEngine.MatcherChangeEvent;
 import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.MatchersRegistry;
@@ -30,7 +31,11 @@ public class Core {
 	
 	// Program wide DEBUG flag.
 	public static final boolean DEBUG = false;
-	
+	public static final boolean DEBUG_NORMALIZER = false;  // debug flag for the am.app.mappingEngine.StringUtil.Normalizer class
+	public static final boolean DEBUG_ONTOLOGYLEXICONSYNSET = false;
+	public static boolean DEBUG_THRESHOLDANALYSIS = true;
+	public static boolean DEBUG_PSM = true;
+	public static final boolean DEBUG_FCM = false;
 	
 	/**List of matchers instances run by the user
 	 * Data of the tableModel of the matcherTable is taken from this structure
@@ -41,6 +46,11 @@ public class Core {
 	
 	private int IDcounter = 0;  // used in generating IDs for the ontologies and matchers
 	public static final int ID_NONE = -1;  // the ID for when no ID has been set
+
+
+
+
+	
 	
 	private Ontology sourceOntology; //Null if it's not loaded yet
 	private Ontology targetOntology; //Null if it's not loaded yet
@@ -58,6 +68,8 @@ public class Core {
 	private ArrayList<OntologyChangeListener> ontologyListeners;
 	private ArrayList<MatcherChangeListener>  matcherListeners;
 	
+	/** The Lexicon store for these ontologies. */
+	private static LexiconStore lexstore;
 	
 	/**A reference to the userinterface instance, canvas and table can be accessed anytime. It used often to invoke the method redisplayCanvas()*/
 	private static UI ui;
@@ -66,6 +78,8 @@ public class Core {
 	 * Singleton pattern: unique instance
 	 */
 	private static Core core  = new Core();
+
+
 	/**
 	 * 
 	 * @return the unique instance of the core
@@ -80,6 +94,7 @@ public class Core {
 		loadedOntologies = new ArrayList<Ontology>();  // initialize the arraylist of ontologies.
 		ontologyListeners    = new ArrayList<OntologyChangeListener>();  // new list of listeners
 		matcherListeners	= new ArrayList<MatcherChangeListener>(); // another list of listeners
+		lexstore = new LexiconStore();
 	}
 	
 
@@ -183,6 +198,8 @@ public class Core {
 	
 	public static UI   getUI()      { return ui;    }
 	public static void setUI(UI ui) { Core.ui = ui; }
+	
+	public static LexiconStore getLexiconStore() { return lexstore; }
 	
 	/**
 	 * Some selection parameters or some information in the alignMatrix of the matcher a are changed,
