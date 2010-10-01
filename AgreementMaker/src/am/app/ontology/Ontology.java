@@ -9,7 +9,6 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 
 import am.GlobalStaticVariables;
-import am.app.mapEngine.instance.InstanceList;
 import am.app.mapEngine.instance.InstanceProperty;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.qualityEvaluation.JoslynStructuralQuality;
@@ -59,16 +58,6 @@ public class Ontology {
 	private boolean skipOtherNamespaces;
 	
 	private String URI;
-	
-	//BEGIN Instance related fields and functions
-	private InstanceList instanceList;
-	
-	public InstanceList getInstanceList() {
-		return instanceList;
-	}
-	public void setInstanceList(InstanceList instanceList) {
-		this.instanceList = instanceList;
-	}
 	
 	private ArrayList<InstanceProperty> instanceProperties;
 	public ArrayList<InstanceProperty> getInstanceProperties() {

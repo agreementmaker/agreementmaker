@@ -84,6 +84,7 @@ public class IterativeMatcher extends AbstractMatcher{
 		statementsS = new ArrayList<Statement>();
 		statementsT = new ArrayList<Statement>();
 		
+		
 		//Matching methods here.
 		matchTransitiveProperties();
 		//0-1
@@ -107,6 +108,7 @@ public class IterativeMatcher extends AbstractMatcher{
 			//Recall = Correct/Reference: 20.2%
 			//Fmeasure = 2(precision*recall)/(precision+recall): 33.6%
 			
+			
 			matchDatatypePropertiesUsingAnnotations();
 			
 			matchPropertiesUsingClasses();
@@ -123,6 +125,8 @@ public class IterativeMatcher extends AbstractMatcher{
 			//Precision = Correct/Discovered: 93.5%
 			//Recall = Correct/Reference: 29.3%
 			//Fmeasure = 2(precision*recall)/(precision+recall): 44.6%
+			
+			//matchSuperClasses();
 			
 			//matchDataProperties();
 		}
@@ -207,8 +211,11 @@ public class IterativeMatcher extends AbstractMatcher{
 						OntClass sc = iS.getOntClass();
 						OntClass tc = iT.getOntClass();
 						if(!matchedClassesS.contains(sc) && !matchedClassesT.contains(tc)){
-							matchedClassesS.add(sc);
-							matchedClassesT.add(tc);
+							if(!matchedClassesS.contains(sc)){
+								matchedClassesS.add(sc);
+								matchedClassesT.add(tc);
+							}
+							
 						}
 					}
 				}
@@ -239,7 +246,6 @@ public class IterativeMatcher extends AbstractMatcher{
 	}
 	
 	//Adds to Classes
-	//TODO: Correct this, matched wrong concepts.
 	public void matchUnionClasses(){
 		ArrayList<UnionClass> unionClassesS = new ArrayList<UnionClass>();
 		ArrayList<UnionClass> unionClassesT = new ArrayList<UnionClass>();
@@ -347,10 +353,12 @@ public class IterativeMatcher extends AbstractMatcher{
 							if(op1 != null && op2 != null){
 								if(matchedPropsS.contains(op1)){
 									if(matchedPropsT.contains(op2) && matchedPropsT.get( matchedPropsS.indexOf(op1) ).equals(op2) ){
-										matchedClassesS.add(c);
-										matchedClassesT.add(b);
-										matched = true;
-										break;
+										if(!matchedClassesS.contains(c)){
+											matchedClassesS.add(c);
+											matchedClassesT.add(b);
+											matched = true;
+											break;
+										}
 									}
 								}
 							}
@@ -588,7 +596,7 @@ public class IterativeMatcher extends AbstractMatcher{
 						OntClass s1 = domainsS.get(0);
 						OntClass s2 = domainsS.get(1);
 						OntClass t1 = domainsT.get(0);
-						OntClass t2 = domainsT.get(1);
+						OntClass t2 = domainsT.get(1);//This gives outofbounds error in 304
 						
 						if( matchedClassesS.contains(s1) && matchedClassesS.contains(s2) ){
 							int index1 = matchedClassesS.indexOf(s1);
@@ -640,7 +648,7 @@ public class IterativeMatcher extends AbstractMatcher{
 	}
 	
 	//Adds to Properties
-	public void matchDataProperties(){
+	public void matchDataPropertiesUsingDomainAndRange(){
 		
 	}
 	
@@ -747,11 +755,66 @@ public class IterativeMatcher extends AbstractMatcher{
 	
 	//Adds to Classes
 	public void matchSuperClasses(){
+		ExtendedIterator<OntClass> ei = modelS.listClasses();
+		while(ei.hasNext()){
+			OntClass cs = ei.next();
+			System.out.println(cs.getLocalName());
+			OntClass sup = null;
+			ExtendedIterator<OntClass> sp = cs.listSuperClasses(true);
+			while(sp.hasNext()){
+				OntClass csp = sp.next();
+				System.out.println("\t" + csp.getLocalName());
+				if(csp.getLocalName() != null){
+					sup = csp;
+					break;
+				}
+				
+			}
+			
+			ExtendedIterator<OntClass> et = modelT.listClasses();
+			OntClass ct = null;
+			OntClass supt = null;
+			while(et.hasNext()){
+				ct = et.next();
+				System.out.println(ct.getLocalName());
+				ExtendedIterator<OntClass> st = ct.listSuperClasses(true);
+				while(st.hasNext()){
+					OntClass cst = st.next();
+					System.out.println("\t" + cst.getLocalName());
+					if(cst.getLocalName() != null){
+						supt = cst;
+						break;
+					}
+				}
+				
+				//Match here
+				try{
+				if(matchedClassesS.contains(cs) && matchedClassesT.get( matchedClassesS.indexOf(cs) ).equals(ct) ){
+					if(!matchedClassesS.contains(sup)){
+						matchedClassesS.add(sup);
+						matchedClassesT.add(supt);
+					}
+				}
+				}
+				catch (Exception e) {
+					System.out.println();
+				}
+			}
+			
+			
+			
+		}
 		
 	}
 	
 	//Adds to Classes
 	public void matchSubClasses(){
+		
+	}
+	
+	
+	//
+	public void matchBasedOnRestrictions(){
 		
 	}
 	

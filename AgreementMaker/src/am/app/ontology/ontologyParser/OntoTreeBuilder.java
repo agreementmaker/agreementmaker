@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import am.app.Core;
-import am.app.mapEngine.instance.Instance;
-import am.app.mapEngine.instance.InstanceList;
 import am.app.mapEngine.instance.InstanceProperty;
 import am.app.mapEngine.instance.PropType;
 import am.app.mappingEngine.AbstractMatcher.alignType;
@@ -232,7 +230,6 @@ public class OntoTreeBuilder extends TreeBuilder{
         
         ontology.setTreeCount(treeCount);
         
-        buildInstanceList();
         getInstancesFromModel();       
 	}
 	
@@ -557,88 +554,6 @@ public class OntoTreeBuilder extends TreeBuilder{
      */
     public void setURI( String URI ) {
     	ontURI = URI;
-    }
-    
-    //
-    protected void buildInstanceList() {
-    	InstanceList instanceList = new InstanceList();
-    	
-	    ExtendedIterator classes = model.listClasses();
-	    
-	    while (classes.hasNext())
-	    {
-	    	//com.hp.hpl.jena.ontology.ObjectProperty prop = model.getObjectProperty("http://oaei.ontologymatching.org/2009/benchmarks/101/onto.rdf#location");
-		    //OntResource ontres = prop.getDomain();
-		    //String s5 = ontres.getLocalName();
-		    //OntClass ontcls = prop.getDomain().asClass();
-		    
-	      OntClass thisClass = (OntClass) classes.next();
-	      
-	      if( Core.DEBUG ) System.out.println("Found class: " + thisClass.toString());
-	
-	      ExtendedIterator instances = thisClass.listInstances();
-	
-	      while (instances.hasNext())
-	      {
-	        Individual thisInstance = (Individual) instances.next();
-	        
-	        Instance anInstance = new Instance();	//This is not Jena individual.
-	        if( Core.DEBUG ) System.out.println("  Found instance: " + thisInstance.toString());
-	        
-	        //Go through the properties of current individual.
-	        for (Iterator<Statement> ipp = thisInstance.listProperties(); ipp.hasNext();) {
-                Statement s = (Statement) ipp.next();
-                
-                String subject = s.getSubject().getLocalName();
-                String predicate = s.getPredicate().getLocalName();
-                String object = s.getObject().toString();
-                
-                if(object.contains("^^")){
-                	int endIndex =  object.indexOf("^^");
-                	object = object.substring(0, endIndex);
-                }
-                if(object.contains("#")){
-                	int indexofPound = object.lastIndexOf('#');
-                	object = object.substring( indexofPound + 1, object.length() );
-                }
-                
-                if(subject != null && subject.contains("#")){
-                	int indexofPound = subject.lastIndexOf('#');
-                	subject = subject.substring( indexofPound + 1, subject.length() );
-                }
-                if(predicate.contains("#")){
-                	int indexofPound = predicate.lastIndexOf('#');
-                	predicate = predicate.substring( indexofPound + 1, predicate.length() );
-                }
-                
-                //Set the concept name for the instance.
-                if(predicate.equalsIgnoreCase("type")){
-                	
-                	if(object.contains("//")){
-                		int indexofLastSlash = object.lastIndexOf('/');
-                		object = object.substring( indexofLastSlash + 1, object.length() );
-                		anInstance.setConcept( object );
-                	}
-                	else {
-                		anInstance.setConcept( object );
-                	}
-                }
-                
-                InstanceProperty ip = new InstanceProperty();
-            	ip.setSubject(subject);
-            	ip.setPredicate(predicate);
-            	ip.setObject(object);
-            	anInstance.getIP().add(ip);                
-                
-            	if( Core.DEBUG ) System.out.println("    a: " + subject + " , " + predicate + " , " + object);
-
-            }
-	        //Add current instance to the list of instances.
-	        instanceList.getInstanceList().add(anInstance);
-	      }
-	    }
-	    
-	    ontology.setInstanceList(instanceList);
     }
 
     //Get Instance data from Jena
