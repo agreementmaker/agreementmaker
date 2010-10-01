@@ -131,6 +131,10 @@ public class Alignment
         }
     }
     
+    /**
+     * Returns true if the input Mapping is considering the same source and target concepts.
+     * Does not check for similarity equality.
+     */
     public boolean equals(Alignment alignment)
     {
         if (entity1.equals(alignment.getEntity1()) 
