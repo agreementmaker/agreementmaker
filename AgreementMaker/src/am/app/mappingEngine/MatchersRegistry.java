@@ -57,6 +57,7 @@ public enum MatchersRegistry {
 	 * And so, if your matcher is has no code errors, it will be incorporated into the AgreementMaker.  - Cosmin
 	 */
 	//
+	IterativeMatcher	( "Instance-based Iterator", am.app.mapEngine.instance.IterativeMatcher.class),
 	AdvancedSimilarity  ( "Advances Similarity Matcher", am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher.class),
 	GroupFinder			( "GroupFinder", am.app.mappingEngine.groupFinder.GroupFinderMatcher.class),
 	FCM					( "Federico Caimi Matcher", am.app.mappingEngine.FedericoCaimiMatcher.FedericoMatcher.class),
@@ -87,7 +88,6 @@ public enum MatchersRegistry {
 	OldPRAMAtcher		("Old PRA Matcher", OldPRAMatcher.class, false),
 	
 	//WORK IN PROGRESS
-	InstanceBasedProp	("Instance-based Property Matcher (IPM)", InstanceBasedPropMatcher.class),
 		
 	//MATCHERS USED BY THE SYSTEM, usually not shown
 	UserManual			( "User Manual Matching", UserManualMatcher.class, false),
