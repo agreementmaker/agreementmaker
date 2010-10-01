@@ -85,6 +85,7 @@ public class AlignmentMatrix {
     	return data[i][j].getSimilarity();
     }
     
+    @Deprecated
     public void setSimilarity(int i, int j, double d){
     	if( data[i][j] == null ) {
     		
