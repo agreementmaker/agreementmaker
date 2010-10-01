@@ -130,7 +130,10 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 				
 				t = target.get(j).toLowerCase();
 				tempValue = ((ParametricStringMatcher) localMatcher).performStringSimilarity(s, t);
-				localMatrix.setSimilarity(i, j, tempValue);
+				
+				localMatrix.set(i, j, new Alignment(new Node(i, s, typeOfNodes.toString(), sourceOntology.getIndex()),
+													new Node(j, t, typeOfNodes.toString(), targetOntology.getIndex()),
+													tempValue));
 				
 				// DEBUG INFO
 				// System.out.println(s + " " + t + " " + localMatrix.getSimilarity(i, j));
