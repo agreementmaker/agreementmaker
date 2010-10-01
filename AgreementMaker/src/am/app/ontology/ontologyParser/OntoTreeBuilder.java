@@ -701,7 +701,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 	    		InstanceProperty ip = new InstanceProperty(s, p, o, pt);
 	    		
 	    		instancePropList.add(ip);
-	    		System.out.println(ip);
+	    		//System.out.println(ip);
 		    }
 	    }
     	ontology.setInstanceProperties(instancePropList);
