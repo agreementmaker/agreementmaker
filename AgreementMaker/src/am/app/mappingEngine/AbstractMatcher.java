@@ -124,6 +124,15 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	private int matcherID;
 
 	/**
+	 * Used by the updateProgress() method.
+	 */
+	private long starttime = System.currentTimeMillis();
+	private long lastTime = 0;
+	private long lastStepsDone = 0;
+	private int tentativealignments = 0;  // incremental selection?
+
+	
+	/**
 	 * The constructor must be a Nullary Constructor
 	 */
 	public AbstractMatcher() {  // index and name will be set by the Matcher Factory
@@ -359,7 +368,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 					else { return matrix; }
 					
 					matrix.set(i,j,alignment);
-					if( isProgressDisplayed() ) stepDone(); // we have completed one step
+					if( isProgressDisplayed() ) {
+						stepDone(); // we have completed one step
+						if( alignment.getSimilarity() >= threshold ) tentativealignments++; // keep track of possible alignments for progress display
+					}
 				}
 				if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
 			}
@@ -1224,10 +1236,32 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 * Update the Progress Dialog with the current progress.
 	 * 
 	 *  @author Cosmin Stroe @date Dec 17, 2008
-	 */
+	 *  @author Cosmin Stroe @date Oct 1, 2010 @comment Updated to display estimated total time and estimated time left.  
+	 */	
 	protected void updateProgress() {
-	
+
+		long currentTime = System.currentTimeMillis();
+		long elapsedTime = currentTime - lastTime;
+		long elapsedSteps = stepsDone - lastStepsDone;
+		long totalelapsed = currentTime - starttime; // elapsed time since the start of the algorithm
+		
+		long estimatedDuration = elapsedTime * ( stepsTotal / elapsedSteps );
+		long estimatedtimeleft = ((stepsTotal - stepsDone) * totalelapsed) / stepsDone;   
+		
+		String formattedTime = Utility.getFormattedTime(estimatedDuration);
+		
 		float percent = ((float)stepsDone / (float)stepsTotal);
+
+		progressDisplay.clearReport();
+		progressDisplay.appendToReport( "Percentage done: " + Float.toString(percent* 100.0f)+ "%\n" +
+										"Current duration: " + Utility.getFormattedTime(totalelapsed) + "\n" +  
+										"Time left ~: " + Utility.getFormattedTime(estimatedtimeleft) + "\n" +
+										"Total Duration ~: " + formattedTime + "\n" +
+										"Mappings >= threshold: " + tentativealignments + "\n");
+		
+		lastTime = currentTime;
+		lastStepsDone = stepsDone;
+		
 		int p = (int) (percent * 100);
 		
 		// some error checking
