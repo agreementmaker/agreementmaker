@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package am.app.mappingEngine.oaei2010;
 
 import am.Utility;
@@ -9,6 +12,9 @@ import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.oaei2009.OAEI2009parameters;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 
+/**
+ * @author Michele Caci
+ */
 public class OAEI2010Matcher extends AbstractMatcher {
 
 	// values for running different combination
