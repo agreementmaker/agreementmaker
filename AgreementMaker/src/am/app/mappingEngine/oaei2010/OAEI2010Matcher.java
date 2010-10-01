@@ -206,7 +206,7 @@ public class OAEI2010Matcher extends AbstractMatcher {
 		
 		//LWC matcher
 		AbstractMatcher lwc2 = null;
-		if(usingLWC1){
+		if(usingLWC2){
 	    	System.out.println("Running LWC");
 	    	startime = System.nanoTime()/measure;
 	    	lwc2 = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 7);
