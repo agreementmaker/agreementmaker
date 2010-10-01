@@ -326,9 +326,9 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 															GlobalStaticVariables.SOURCENODE, 
 															GlobalStaticVariables.LANG_OWL,
 															GlobalStaticVariables.SYNTAX_RDFXML, false);
-		sourceBuilder.build();
+		targetBuilder.build();
 		
-		Ontology targetOntology = sourceBuilder.getOntology();
+		Ontology targetOntology = targetBuilder.getOntology();
 				
 
 		// set the settings for the matcher			
