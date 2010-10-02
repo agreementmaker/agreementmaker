@@ -1,6 +1,9 @@
 package am.app.mappingEngine.parametricStringMatcher;
 
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.GroupLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -12,7 +15,7 @@ import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.StringUtil.ISub;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 
-public class ParametricStringParametersPanel extends AbstractMatcherParametersPanel {
+public class ParametricStringParametersPanel extends AbstractMatcherParametersPanel implements ActionListener{
 
 	/**
 	 * Base Similarity Matcher - The Parameters Panel
@@ -59,6 +62,10 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 	private JLabel stemLabel = new JLabel("Apply stemming ( 'dogs' --> 'dog' or 'saying' --> 'say' ) ");
 	private JCheckBox stemCheck;
 
+	private JLabel lexiconLabel = new JLabel("Use Lexicons instead.");
+	private JCheckBox lexiconCheck;
+	private JLabel lexUseBestLabel = new JLabel("Do not use weights. Instead, use the max similarity out of all the synonyms.");
+	private JCheckBox lexUseBestCheck;
 	
 	/*
 	 * The constructor creates the GUI elements and adds 
@@ -102,6 +109,16 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 		stemCheck = new JCheckBox();
 		stemCheck.setSelected(true);
 		
+		lexiconCheck = new JCheckBox();
+		lexiconCheck.setSelected(false);
+		lexiconCheck.addActionListener(this);
+		lexUseBestCheck = new JCheckBox();
+		lexUseBestCheck.setSelected(false);
+		lexUseBestCheck.addActionListener(this);
+		
+		lexUseBestCheck.setVisible(false);
+		lexUseBestLabel.setVisible(false);
+		
 
 		//LAYOUT: grouplayout is already complicated but very flexible, plus in this case the matchers list is dynamic so it's even more complicated
 		GroupLayout layout = new GroupLayout(this);
@@ -142,6 +159,12 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 					.addComponent(redistributeCheck) 			
 					.addComponent(redistributeLabel)
 					)
+			.addGroup(layout.createSequentialGroup()
+				.addComponent(lexiconCheck)
+				.addComponent(lexiconLabel))
+			.addGroup(layout.createSequentialGroup()
+				.addComponent(lexUseBestCheck)
+				.addComponent(lexUseBestLabel))
 			.addComponent(preprocessLabel)
 			.addGroup(layout.createSequentialGroup()
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
@@ -174,6 +197,15 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 				.addGap(30)
 				.addComponent(conceptStringsLabel)
 				.addComponent(weightsNormLabel)
+				.addGap(20)
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+						.addComponent(lexiconCheck) 			
+						.addComponent(lexiconLabel)
+						)
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+						.addComponent(lexUseBestCheck) 			
+						.addComponent(lexUseBestLabel)
+						)
 				.addGap(10)
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(localnameLabel) 			
@@ -200,7 +232,7 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 						.addComponent(redistributeCheck) 			
 						.addComponent(redistributeLabel)
 						)
-				.addGap(30)
+				.addGap(20)
 				.addComponent(preprocessLabel)
 				.addGap(10)
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
@@ -252,11 +284,114 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 		parameters.normParameter.removeStopWords = stopCheck.isSelected();
 		parameters.normParameter.stem = stemCheck.isSelected();
 		
+		parameters.useLexicons = lexiconCheck.isSelected();
+		parameters.useBestLexSimilarity = lexUseBestCheck.isSelected();
+		parameters.lexOntSynonymWeight = Utility.getDoubleFromPercent((String)localnameCombo.getSelectedItem());
+		//parameters.lexOntDefinitionWeight = Utility.getDoubleFromPercent((String)labelCombo.getSelectedItem());
+		parameters.lexWNSynonymWeight = Utility.getDoubleFromPercent((String)labelCombo.getSelectedItem());
+		//parameters.lexWNDefinitionWeight = Utility.getDoubleFromPercent((String)isDefnedByCombo.getSelectedItem());
+		
 		return parameters;
 		
 	}
 	
 	public String checkParameters() {
 		return null;
+	}
+
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		
+		if( e.getSource() == lexiconCheck ) {
+			if( lexiconCheck.isSelected() == true ) { // use lexicons
+				localnameLabel.setText("Ontology Synonyms:");
+				labelLabel.setText("WordNet Synonyms:");
+				//commentLabel.setText("WordNet Synonyms:");
+				//seeAlsoLabel.setText("WordNet Definition:");
+				
+				lexUseBestCheck.setVisible(true);
+				lexUseBestLabel.setVisible(true);
+				
+				commentLabel.setVisible(false);
+				commentCombo.setVisible(false);
+				
+				seeAlsoLabel.setVisible(false);
+				seeAlsoCombo.setVisible(false);
+				
+				isDefnedByLabel.setVisible(false);
+				isDefnedByCombo.setVisible(false);
+				
+				if( lexUseBestCheck.isSelected() == true ) {
+					doUseBestSelect();
+				}
+				
+				
+			} else {
+				undoUseBestSelect();
+				localnameLabel.setText("Local-name:");
+				labelLabel.setText("Label:");
+				commentLabel.setText("Comment:");
+				seeAlsoLabel.setText("seeAlso:");
+				isDefnedByLabel.setText("isDefinedBy");
+				
+				lexUseBestCheck.setVisible(false);
+				lexUseBestLabel.setVisible(false);
+				
+				localnameCombo.setEnabled(true);
+				labelCombo.setEnabled(true);
+				commentCombo.setEnabled(true);
+				isDefnedByCombo.setEnabled(true);
+				seeAlsoCombo.setEnabled(true);
+
+				commentLabel.setVisible(true);
+				commentCombo.setVisible(true);
+				
+				seeAlsoLabel.setVisible(true);
+				seeAlsoCombo.setVisible(true);
+
+				
+				isDefnedByLabel.setVisible(true);
+				
+				isDefnedByCombo.setVisible(true);
+				
+			}
+		} else if ( e.getSource() == lexUseBestCheck ) {
+			if( lexUseBestCheck.isSelected() == true ) {
+				doUseBestSelect();
+			} else {
+				undoUseBestSelect();
+			}
+		}
+		
+	}
+
+
+	private void undoUseBestSelect() {
+		localnameCombo.setEnabled(true);
+		labelCombo.setEnabled(true);
+		commentCombo.setEnabled(true);
+		seeAlsoCombo.setEnabled(true);
+
+		localnameLabel.setEnabled(true);
+		labelLabel.setEnabled(true);
+		
+		redistributeCheck.setEnabled(true);
+		redistributeLabel.setEnabled(true);
+	}
+
+
+	private void doUseBestSelect() {
+		localnameCombo.setEnabled(false);
+		labelCombo.setEnabled(false);
+		commentCombo.setEnabled(false);
+		seeAlsoCombo.setEnabled(false);
+		
+		localnameLabel.setEnabled(false);
+		labelLabel.setEnabled(false);
+		
+		redistributeCheck.setEnabled(false);
+		redistributeLabel.setEnabled(false);
+		
 	}
 }

@@ -21,8 +21,14 @@ public class ParametricStringParameters extends AbstractParameters {
 	public double seeAlsoWeight = 0.05;
 	public double isDefinedByWeight = 0.05;
 	
-	
 	public boolean redistributeWeights = true;
+	
+	public boolean useLexicons = false;
+	public boolean useBestLexSimilarity = true;
+	public double lexOntSynonymWeight = 0.90;
+	public double lexOntDefinitionWeight = 0.10;
+	public double lexWNSynonymWeight = 0.90;
+	public double lexWNDefinitionWeight = 0.10;
 	
 	//Normalization operations
 	NormalizerParameter normParameter = new NormalizerParameter();
@@ -30,16 +36,27 @@ public class ParametricStringParameters extends AbstractParameters {
 	public void normalizeWeights() {
 		double totWeight = getTotWeight();
 		if( totWeight > 1 ) {
-			localWeight = localWeight / totWeight;
-			labelWeight = labelWeight / totWeight;
-			commentWeight = commentWeight / totWeight;
-			seeAlsoWeight = seeAlsoWeight / totWeight;
-			isDefinedByWeight = isDefinedByWeight / totWeight;
+			if( useLexicons ) {
+				lexOntSynonymWeight = lexOntSynonymWeight / totWeight;
+				lexOntDefinitionWeight = lexOntDefinitionWeight / totWeight;
+				lexWNSynonymWeight = lexWNSynonymWeight / totWeight;
+				lexWNDefinitionWeight = lexWNDefinitionWeight / totWeight;
+			} else {
+				localWeight = localWeight / totWeight;
+				labelWeight = labelWeight / totWeight;
+				commentWeight = commentWeight / totWeight;
+				seeAlsoWeight = seeAlsoWeight / totWeight;
+				isDefinedByWeight = isDefinedByWeight / totWeight;
+			}
 		}
 	}
 	
 	public double getTotWeight() {
-		return localWeight+labelWeight+commentWeight+seeAlsoWeight+isDefinedByWeight;
+		if( useLexicons ) {
+			return lexOntSynonymWeight + lexOntDefinitionWeight + lexWNSynonymWeight + lexWNDefinitionWeight;
+		} else {
+			return localWeight+labelWeight+commentWeight+seeAlsoWeight+isDefinedByWeight;
+		}
 	}
 
 	public void initForOAEI2009() {
