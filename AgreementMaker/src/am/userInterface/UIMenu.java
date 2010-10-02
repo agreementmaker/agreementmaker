@@ -24,6 +24,7 @@ import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.feedback.ui.SelectionPanel;
+import am.app.lexicon.Lexicon;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
@@ -31,6 +32,7 @@ import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.ontology.Ontology;
+import am.tools.LexiconLookup.LexiconLookupPanel;
 import am.tools.ThresholdAnalysis.ThresholdAnalysis;
 import am.tools.WordNetLookup.WordNetLookupPanel;
 import am.tools.seals.SealsPanel;
@@ -58,6 +60,8 @@ public class UIMenu implements ActionListener {
 	private JMenuItem colorsItem, itemViewsCanvas;
 	private JCheckBoxMenuItem smoMenuItem;  // Menu item for toggling "Selected Matchings Only" view mode.
 	private JMenu menuViews;  // Views submenu.  TODO: Rename this to something more descriptive.
+	private JMenu menuLexicons; // the Lexicons sub menu;
+	private JMenuItem menuLexiconsOntSource, menuLexiconsOntTarget, menuLexiconsWNSource, menuLexiconsWNTarget;
 	
 	// Ontology menu.
 	private JMenuItem ontologyDetails;
@@ -518,6 +522,45 @@ public class UIMenu implements ActionListener {
 						than.execute();
 					}
 				}
+			} else if( obj == menuLexiconsOntSource ) {
+				Ontology o = Core.getInstance().getSourceOntology();
+				if( o != null ) {
+					Lexicon lex = Core.getLexiconStore().getSourceOntLexicon( o );
+					LexiconLookupPanel wnlp = new LexiconLookupPanel(lex);
+					ui.addTab("Source OntLex", null, wnlp, "Source Ontology Lexicon.");
+				} else {
+					Utility.displayErrorPane("No source ontology loaded.", "Error");
+				}
+
+			} else if ( obj == menuLexiconsOntTarget ) {
+				Ontology o = Core.getInstance().getTargetOntology();
+				if( o != null ) {
+					Lexicon lex = Core.getLexiconStore().getTargetOntLexicon( o );
+					LexiconLookupPanel wnlp = new LexiconLookupPanel(lex);
+					ui.addTab("Target OntLex", null, wnlp, "Target Ontology Lexicon.");
+				} else {
+					Utility.displayErrorPane("No target ontology loaded.", "Error");
+				}
+			} else if( obj == menuLexiconsWNSource ) {
+				Ontology o = Core.getInstance().getSourceOntology();
+				if( o != null ) {
+					Lexicon sourceOntLex = Core.getLexiconStore().getSourceOntLexicon( o );
+					Lexicon sourceWNLex = Core.getLexiconStore().getSourceWNLexicon(o, sourceOntLex);
+					LexiconLookupPanel wnlp = new LexiconLookupPanel(sourceWNLex);
+					ui.addTab("Source WNLex", null, wnlp, "Source WordNet Lexicon.");
+				} else {
+					Utility.displayErrorPane("No source ontology loaded.", "Error");
+				}
+			} else if( obj == menuLexiconsWNTarget ) {
+				Ontology o = Core.getInstance().getTargetOntology();
+				if( o != null ) {
+					Lexicon targetOntLex = Core.getLexiconStore().getTargetOntLexicon( o );
+					Lexicon targetWNLex = Core.getLexiconStore().getSourceWNLexicon(o, targetOntLex);
+					LexiconLookupPanel wnlp = new LexiconLookupPanel(targetWNLex);
+					ui.addTab("Target WNLex", null, wnlp, "Target WordNet Lexicon.");
+				} else {
+					Utility.displayErrorPane("No target ontology loaded.", "Error");
+				}
 			}
 			
 			
@@ -754,7 +797,23 @@ public class UIMenu implements ActionListener {
 		menuViews.add(itemViewsCanvas);
 		//menuViews.add(itemViewsCanvas2);
 		//viewMenu.add(menuViews);
-		//Fake menus..********************************.
+		
+		// Lexicons menu.
+		menuLexicons = new JMenu("Lexicons");
+		menuLexiconsOntSource = new JMenuItem("Ontology Lexicon: Source");
+		menuLexiconsOntSource.addActionListener(this);
+		menuLexiconsOntTarget = new JMenuItem("Ontology Lexicon: Target");
+		menuLexiconsOntTarget.addActionListener(this);
+		menuLexiconsWNSource = new JMenuItem("WordNet Lexicon: Source");
+		menuLexiconsWNSource.addActionListener(this);
+		menuLexiconsWNTarget = new JMenuItem("WordNet Lexicon: Target");
+		menuLexiconsWNTarget.addActionListener(this);
+		menuLexicons.add(menuLexiconsOntSource);
+		menuLexicons.add(menuLexiconsOntTarget);
+		menuLexicons.add(menuLexiconsWNSource);
+		menuLexicons.add(menuLexiconsWNTarget);
+		viewMenu.add(menuLexicons);
+		
 		/*
 
 		evaluationMenu = new JMenu("Evaluation");
@@ -829,7 +888,7 @@ public class UIMenu implements ActionListener {
 		wordnetLookupItem = new JMenuItem("Wordnet Lookup ...");
 		wordnetLookupItem.setMnemonic(KeyEvent.VK_W);
 		wordnetLookupItem.addActionListener(this);
-		toolsMenu.add(wordnetLookupItem);  // Wordnet lookup is not done yet.
+		toolsMenu.add(wordnetLookupItem);
 		
 		// Tools -> SEALS Interface...
 		sealsItem = new JMenuItem("SEALS Interface...");
