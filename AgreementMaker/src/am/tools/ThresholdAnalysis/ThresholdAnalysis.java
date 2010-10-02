@@ -77,9 +77,10 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 	private AbstractParameters prefParams = null;
 	private int prefSourceCardinality = 1;
 	private int prefTargetCardinality = 1;
-	private float prefStartThreshold = 0.6f;
-	private float prefThresholdIncrement = 0.01f;
-	private float prefEndThreshold = 1.0f;
+	private double prefStartThreshold = 0.2d;
+	private double prefThresholdIncrement = 0.01d;
+	private double prefEndThreshold = 1.0d;
+	private boolean prefFilenameOntologyNames = true;
 	
 	public void setStartTh( float startTh ) { prefStartThreshold = startTh; }
 	public void setEndTh( float endTh ) { prefEndThreshold = endTh; }
@@ -165,12 +166,20 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		
 		String sourceOntologyName = Core.getInstance().getSourceOntology().getTitle();
 		String targetOntologyName = Core.getInstance().getTargetOntology().getTitle();
-		
+
+		File outputPrecision, outputRecall, outputFMeasure, outputMaxFM;
 		// open the output files
-		File outputPrecision = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + Core.getInstance().getTargetOntology().getTitle() + "-precision.txt");
-		File outputRecall = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-recall.txt");
-		File outputFMeasure = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-fmeasure.txt");
-		File outputMaxFM = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-max-fmeasure.txt");
+		if( prefFilenameOntologyNames ) {
+			outputPrecision = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-precision.txt");
+			outputRecall = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-recall.txt");
+			outputFMeasure = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-fmeasure.txt");
+			outputMaxFM = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-max-fmeasure.txt");
+		} else {
+			outputPrecision = new File( outputDirectory + "/" + outputPrefix + "-" + "-precision.txt");
+			outputRecall = new File( outputDirectory + "/" + outputPrefix + "-" + "-recall.txt");
+			outputFMeasure = new File( outputDirectory + "/" + outputPrefix + "-" + "-fmeasure.txt");
+			outputMaxFM = new File( outputDirectory + "/" + outputPrefix + "-" + "-max-fmeasure.txt");			
+		}
 		
 		
 		try {
@@ -450,6 +459,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		
 	}
 
+	public void setOntologyNames(boolean names ) { prefFilenameOntologyNames = names;}
 	
 	
 	
