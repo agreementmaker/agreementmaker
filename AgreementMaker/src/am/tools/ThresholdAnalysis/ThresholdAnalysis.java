@@ -39,7 +39,7 @@ import am.userInterface.MatcherParametersDialog;
 
 	<parameters>
 		<cardinality source="1" target="1" />
-		<threshold start="0.60" increment="0.01" end="1.0">
+		<threshold start="0.60" increment="0.01" end="1.0" />
 	</parameters>
 
 	<run>
@@ -54,6 +54,7 @@ import am.userInterface.MatcherParametersDialog;
  * 
  * @author cosmin
  * TODO: REMOVE ALL THE ROUNDING IN THE SINGLE AND BATCH RUNNING METHODS. !!!!!
+ * TODO: COMBINE DUPLICATED CODE BETWEEN SINGLE AND BATCH MODE (if it can be combined).
  */
 
 public class ThresholdAnalysis extends SwingWorker<Void,Void> {
