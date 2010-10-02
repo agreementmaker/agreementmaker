@@ -105,6 +105,28 @@ public class OAEI2010Matcher extends AbstractMatcher {
 			System.out.println("VMM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		}
 		
+		//VMM
+		AbstractMatcher lsm = null;
+		if(parameters.usingVMM){
+			System.out.println("Running VMM");
+	    	startime = System.nanoTime()/measure;
+	    	lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSM, 2);
+	    	lsm.setThreshold(threshold);
+	    	lsm.setMaxSourceAlign(maxSourceAlign);
+	    	lsm.setMaxTargetAlign(maxTargetAlign);
+	    	//MultiWordsParameters lsmp = new MultiWordsParameters();
+	    	//lsmp.initForOAEI2009();
+	    	//lsm.setParam(lsmp);
+	    	lsm.setSourceOntology(sourceOntology);
+	    	lsm.setTargetOntology(targetOntology);
+	    	//lsm.setPerformSelection(false);
+			lsm.match();
+	        endtime = System.nanoTime()/measure;
+	    	time = (endtime-startime);
+			System.out.println("VMM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
+		}
+		
+		
 		//Second layer: LWC(ASM, PSM, VMM)
 		
 		//LWC matcher
@@ -161,7 +183,7 @@ public class OAEI2010Matcher extends AbstractMatcher {
 		if(parameters.usingFCM){
 	    	System.out.println("Running FCM");
 	    	startime = System.nanoTime()/measure;
-	    	//fcm = MatcherFactory.getMatcherInstance(MatchersRegistry.???, 5);
+	    	fcm = MatcherFactory.getMatcherInstance(MatchersRegistry.FCM, 5);
 	    	fcm.getInputMatchers().add(lastLayer);
 	    	fcm.setThreshold(threshold);
 	    	fcm.setMaxSourceAlign(maxSourceAlign);

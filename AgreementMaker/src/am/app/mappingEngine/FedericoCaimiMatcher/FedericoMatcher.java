@@ -50,9 +50,9 @@ public class FedericoMatcher extends AbstractMatcher {
 	double CLASS_THRESHOLD = 0.8;
 	
 	boolean individuals = true;
-	boolean localname = true;
-	boolean comment = true;
-	boolean label = true;
+	boolean localname = false;
+	boolean comment = false;
+	boolean label = false;
 	
 	static boolean verbose = false; 
 	
@@ -626,11 +626,13 @@ public class FedericoMatcher extends AbstractMatcher {
 	
 	@SuppressWarnings("unchecked")
 	private Alignment alignByStrings(Node source, Node target,
-			alignType typeOfNodes) {
+			alignType typeOfNodes) throws Exception {
 		
 		if(!source.getUri().startsWith(sourceOntology.getURI())||
 				!target.getUri().startsWith(targetOntology.getURI()))
 			return null;
+		
+		//if( !useInputMatcher ) {
 		
 		if(localname){
 			double nameSim = substringSimilarity(Utils.removeSomeChars(source.getLocalName()),
@@ -707,7 +709,15 @@ public class FedericoMatcher extends AbstractMatcher {
 				}
 			}
 		}
-		return null;
+		
+		if( typeOfNodes == alignType.aligningClasses ) {
+			return classesMatrix.get(source.getIndex(), target.getIndex());
+		} else if( typeOfNodes == alignType.aligningProperties ){
+			return propertiesMatrix.get(source.getIndex(), target.getIndex());
+		} else {
+			throw new Exception("We are not aligning classes or properties.  Need to know the new matrix.");
+		}
+
 	}
 	
 	private void matchSuperclasses() {
