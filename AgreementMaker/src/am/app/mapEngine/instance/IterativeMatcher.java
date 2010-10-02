@@ -999,7 +999,7 @@ public class IterativeMatcher extends AbstractMatcher{
 						dt.add(c);
 					}
 					OntClass ct0 = dt.get(0);
-					//if(dt.size() == 1) return false;
+					if(dt.size() == 1) return false;
 					OntClass ct1 = dt.get(1);
 
 					if(isOntClassesEqual(cs0, ct0)){
