@@ -33,8 +33,8 @@ public class Core {
 	public static final boolean DEBUG = false;
 	public static final boolean DEBUG_NORMALIZER = false;  // debug flag for the am.app.mappingEngine.StringUtil.Normalizer class
 	public static final boolean DEBUG_ONTOLOGYLEXICONSYNSET = false;
-	public static boolean DEBUG_THRESHOLDANALYSIS = true;
 	public static boolean DEBUG_PSM = true;
+	public static boolean DEBUG_VMM = false;
 	public static final boolean DEBUG_FCM = false;
 	
 	/**List of matchers instances run by the user
@@ -91,6 +91,8 @@ public class Core {
 	 * It's private because it's not possible to create new instances of this class
 	 */
 	private Core() {
+		//System.setProperty("log4j.debug","strue" );  // Use this to see what log4j gets configured to.
+				
 		loadedOntologies = new ArrayList<Ontology>();  // initialize the arraylist of ontologies.
 		ontologyListeners    = new ArrayList<OntologyChangeListener>();  // new list of listeners
 		matcherListeners	= new ArrayList<MatcherChangeListener>(); // another list of listeners
