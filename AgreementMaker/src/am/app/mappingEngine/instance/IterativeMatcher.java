@@ -4,36 +4,25 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import sun.nio.cs.ext.MacHebrew;
-
-import com.hp.hpl.jena.Jena;
-import com.hp.hpl.jena.ontology.AnnotationProperty;
-import com.hp.hpl.jena.ontology.ComplementClass;
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.IntersectionClass;
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.ontology.SymmetricProperty;
 import com.hp.hpl.jena.ontology.TransitiveProperty;
 import com.hp.hpl.jena.ontology.UnionClass;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.rdf.model.impl.StatementImpl;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.ontology.Node;
-import am.app.ontology.ontologyParser.OntoTreeBuilder;
 
 /**
  * This class matches properties of ontologies using instance information.
@@ -59,6 +48,11 @@ public class IterativeMatcher extends AbstractMatcher{
 	ArrayList<Statement> statementsS;
 	ArrayList<Statement> statementsT;
 
+	int mappedTotal = 0;
+	int mappedTotalPrev = 0;
+	int mappedProp = 0;
+	int mappedClass = 0;
+	
 	public IterativeMatcher() {
 		super();
 		needsParam = false;
@@ -84,11 +78,21 @@ public class IterativeMatcher extends AbstractMatcher{
 		statementsS = new ArrayList<Statement>();
 		statementsT = new ArrayList<Statement>();
 		
+		mappedTotalPrev = 0;
+		mappedTotal = 0;
+		mappedProp = 0;
+		mappedClass = 0;
+		
 		
 		//Matching methods here.
 		matchTransitiveProperties();
 		//0-1
-		for(int i = 0; i < 2; i++){
+		
+		mappedProp = matchedPropsS.size();
+		mappedTotal = mappedProp + mappedClass;
+		
+		while(mappedTotal - mappedTotalPrev > 0){
+			mappedTotalPrev = mappedTotal;
 			//0-1
 			matchClassesUsingInstances();
 			//9-1
@@ -103,32 +107,41 @@ public class IterativeMatcher extends AbstractMatcher{
 			//Fmeasure = 2(precision*recall)/(precision+recall): 29.3%
 			
 			matchUnionClasses();
-			//12-8
+			//13-8
 			//Precision = Correct/Discovered: 100.0%
-			//Recall = Correct/Reference: 20.2%
-			//Fmeasure = 2(precision*recall)/(precision+recall): 33.6%
+			//Recall = Correct/Reference: 21.2%
+			//Fmeasure = 2(precision*recall)/(precision+recall): 35.0%
 			
+			matchObjectPropertiesUsingDomainAndRange();
+			//13-16
+			//Precision = Correct/Discovered: 100.0%
+			//Recall = Correct/Reference: 29.3%
+			//Fmeasure = 2(precision*recall)/(precision+recall): 45.3%
+			
+			matchObjectPropertiesUsingAnnotations();
+			//14-16
+			//Precision = Correct/Discovered: 100.0%
+			//Recall = Correct/Reference: 30.3%
+			//Fmeasure = 2(precision*recall)/(precision+recall): 46.5%
 			
 			matchDatatypePropertiesUsingAnnotations();
 			
-			matchPropertiesUsingClasses();
+			matchDatatypePropertiesByDefinedResources();
+			
+			matchObjectPropertiesByDefinedResources();
+			
+			//matchPropertiesUsingClasses();
 			
 			matchClassesUsingProperties();
 			
-			matchObjectPropertiesUsingDomainAndRange();
+			matchSuperClasses();
+			//Precision = Correct/Discovered: 100.0%
+			//Recall = Correct/Reference: 34.3%
+			//Fmeasure = 2(precision*recall)/(precision+recall): 51.1%
 			
-			
-			matchObjectPropertiesUsingAnnotations();
-			
-			
-			matchByDefinedResources();
-			//Precision = Correct/Discovered: 93.5%
-			//Recall = Correct/Reference: 29.3%
-			//Fmeasure = 2(precision*recall)/(precision+recall): 44.6%
-			
-			//matchSuperClasses();
-			
-			//matchDataProperties();
+			mappedProp = matchedPropsS.size();
+			mappedClass = matchedClassesS.size();
+			mappedTotal = mappedProp + mappedClass;
 		}
 	}
 
@@ -159,7 +172,7 @@ public class IterativeMatcher extends AbstractMatcher{
 			for(int k = 0; k < matchedPropsS.size(); k++){
 				if(source.getLocalName().equalsIgnoreCase(matchedPropsS.get(k).getLocalName())){
 					if(target.getLocalName().equalsIgnoreCase(matchedPropsT.get(k).getLocalName())){
-						return new Alignment(source, target, 65.0, Alignment.EQUIVALENCE);
+						return new Alignment(source, target, 99.0, Alignment.EQUIVALENCE);
 					}
 				}
 			}
@@ -198,7 +211,7 @@ public class IterativeMatcher extends AbstractMatcher{
 			for(int j = 0; j < individualsT.size(); j++){
 				Individual iT = individualsT.get(j);
 				
-				//TODO: isAnon(), then match props!
+				//TODO: isAnon()
 				if(iS.isAnon() && iT.isAnon()){
 					
 				}
@@ -212,8 +225,7 @@ public class IterativeMatcher extends AbstractMatcher{
 						OntClass tc = iT.getOntClass();
 						if(!matchedClassesS.contains(sc) && !matchedClassesT.contains(tc)){
 							if(!matchedClassesS.contains(sc)){
-								matchedClassesS.add(sc);
-								matchedClassesT.add(tc);
+								mapTwoOntClasses(sc, tc);
 							}
 							
 						}
@@ -242,6 +254,7 @@ public class IterativeMatcher extends AbstractMatcher{
 		if(tp1 != null && tp2 != null && numOfTransPropsS == 1 && numOfTransPropsT == 1){
 			matchedPropsS.add(tp1);
 			matchedPropsT.add(tp2);
+			matchDeclaringClasses(tp1, tp2);
 		}
 	}
 	
@@ -276,51 +289,54 @@ public class IterativeMatcher extends AbstractMatcher{
 				OntClass unionMember = (OntClass) r0.as( OntClass.class );
 				list.add(unionMember);
 				//System.out.print(" " + unionMember.getLocalName());
-				
-				for(int j = 0; j < unionClassesT.size(); j++){
-					UnionClass uc2 = unionClassesT.get(j);
-					ArrayList<OntClass> list2 = new ArrayList<OntClass>();
+			}
+			
+			for(int j = 0; j < unionClassesT.size(); j++){
+				UnionClass uc2 = unionClassesT.get(j);
+				ArrayList<OntClass> list2 = new ArrayList<OntClass>();
+
+				for (ExtendedIterator ei = uc2.listOperands(); ei.hasNext(); ) {
+					Resource r1 = (Resource) ei.next();
+					OntClass unionMember2 = (OntClass) r1.as( OntClass.class );
+					list2.add(unionMember2);
+					//System.out.print(" " + unionMember2.getLocalName());
+				}
+			
+				//Match HERE
+				//I have the list of classes constitutes the union class
+				if(list.size() == 2 && list2.size() == 2){
 					
-					for (ExtendedIterator ei = uc2.listOperands(); ei.hasNext(); ) {
-						Resource r1 = (Resource) ei.next();
-						OntClass unionMember2 = (OntClass) r1.as( OntClass.class );
-						list2.add(unionMember2);
-						//System.out.print(" " + unionMember2.getLocalName());
-					}
-					
-					//I have the list of classes constitutes the union class
-					if(list.size() == 2 && list2.size() == 2){
-						if(matchedClassesS.contains(list.get(0))){
-							if(matchedClassesT.contains(list2.get(0)) && matchedClassesT.get( matchedClassesS.indexOf(list.get(0)) ).equals(list2.get(0))){
-								if(!matchedClassesS.contains(list.get(1))){
-									matchedClassesS.add(list.get(1));
-									matchedClassesT.add(list2.get(1));
-								}
-							}
-							else if(matchedClassesT.contains(list2.get(1)) && matchedClassesT.get( matchedClassesS.indexOf(list.get(0)) ).equals(list2.get(1))){
-								if(!matchedClassesS.contains(list.get(1))){
-									matchedClassesS.add(list.get(1));
-									matchedClassesT.add(list2.get(0));
-								}
+					if(matchedClassesS.contains(list.get(0))){
+						if(matchedClassesT.contains(list2.get(0)) && matchedClassesT.get( matchedClassesS.indexOf(list.get(0)) ).equals(list2.get(0))){
+							if(!matchedClassesS.contains(list.get(1))){
+								mapTwoOntClasses(list.get(1), list2.get(1));
 							}
 						}
-						else if(matchedClassesS.contains(list.get(1))){
-							if(matchedClassesT.contains(list2.get(0)) && matchedClassesT.get( matchedClassesS.indexOf(list.get(1)) ).equals(list2.get(0))){
-								if(!matchedClassesS.contains(list.get(0))){
-									matchedClassesS.add(list.get(0));
-									matchedClassesT.add(list2.get(1));
-								}
+						else if(matchedClassesT.contains(list2.get(1)) && matchedClassesT.get( matchedClassesS.indexOf(list.get(0)) ).equals(list2.get(1))){
+							if(!matchedClassesS.contains(list.get(1))){
+								mapTwoOntClasses(list.get(1), list2.get(0));
 							}
-							if(matchedClassesT.contains(list2.get(1)) && matchedClassesT.get( matchedClassesS.indexOf(list.get(1)) ).equals(list2.get(1))){
-								if(!matchedClassesS.contains(list.get(0))){
-									matchedClassesS.add(list.get(0));
-									matchedClassesT.add(list2.get(0));
-								}
+						}
+					}
+					else if(matchedClassesS.contains(list.get(1))){
+						if(matchedClassesT.contains(list2.get(0)) && matchedClassesT.get( matchedClassesS.indexOf(list.get(1)) ).equals(list2.get(0))){
+							if(!matchedClassesS.contains(list.get(0))){
+								mapTwoOntClasses(list.get(0), list2.get(1));
+							}
+						}
+						if(matchedClassesT.contains(list2.get(1)) && matchedClassesT.get( matchedClassesS.indexOf(list.get(1)) ).equals(list2.get(1))){
+							if(!matchedClassesS.contains(list.get(0))){
+								mapTwoOntClasses(list.get(0), list2.get(0));
 							}
 						}
 					}
 				}
+				else if(list.size() == 3 && list2.size() == 3){
+					
+				}
+			
 			}
+		
 		}
 		
 	}
@@ -354,8 +370,7 @@ public class IterativeMatcher extends AbstractMatcher{
 								if(matchedPropsS.contains(op1)){
 									if(matchedPropsT.contains(op2) && matchedPropsT.get( matchedPropsS.indexOf(op1) ).equals(op2) ){
 										if(!matchedClassesS.contains(c)){
-											matchedClassesS.add(c);
-											matchedClassesT.add(b);
+											mapTwoOntClasses(c, b);
 											matched = true;
 											break;
 										}
@@ -406,19 +421,44 @@ public class IterativeMatcher extends AbstractMatcher{
 				if(objectvalue1.equals(objectvalue2)){
 					if(!matchedPropsS.contains(op1) && !matchedPropsT.contains(op2))
 					{
-						matchedPropsS.add(op1);
-						matchedPropsT.add(op2);
+							matchedPropsS.add(op1);
+							matchedPropsT.add(op2);
 					}
+					matchDeclaringClasses(op1, op2);
 				}
 
-				System.out.println(stmt1 + "\n" + stmt2);
+				//System.out.println(stmt1 + "\n" + stmt2);
 			}
 			
 		}
 	}
 	
+	public void matchObjectPropertiesUsingDomainAndRange(){
+		ExtendedIterator<ObjectProperty> itS = modelS.listObjectProperties();
+		while(itS.hasNext()){
+			ObjectProperty opS = itS.next();
+			if(matchedPropsS.contains(opS)) continue;
+			
+			ExtendedIterator<ObjectProperty> itT = modelT.listObjectProperties();
+			while(itT.hasNext()){
+				ObjectProperty opT = itT.next();
+				if(matchedPropsT.contains(opT)) continue;
+				
+				if(isDomainsAreSame(opS, opT) && isRangesAreSame(opS, opT)){
+					if(opS.getDomain() == null && opT.getDomain() == null && opS.getRange() == null && opT.getRange() == null ){}
+					else{
+						matchedPropsS.add(opS);
+						matchedPropsT.add(opT);
+						matchDeclaringClasses(opS, opT);
+						break;
+					}
+				}
+			}
+		}
+	}
+	
 	//Adds to Properties
-	public void matchObjectPropertiesUsingDomainAndRange(){		
+	public void matchObjectPropertiesUsingDomainAndRange2(){		
 		ExtendedIterator<ObjectProperty> itS = modelS.listObjectProperties();
 		while(itS.hasNext()){
 			ObjectProperty opS = itS.next();
@@ -516,6 +556,7 @@ public class IterativeMatcher extends AbstractMatcher{
 						if(rngS == null && rngT == null && opS.getComment(null).equals(opT.getComment(null))){
 							matchedPropsS.add(opS);
 							matchedPropsT.add(opT);
+							matchDeclaringClasses(opS, opT);
 							break;
 						}
 						//if range is single class
@@ -525,6 +566,7 @@ public class IterativeMatcher extends AbstractMatcher{
 								if(matchedClassesT.get(index).equals( rangesT.get(0) ) ){
 									matchedPropsS.add(opS);
 									matchedPropsT.add(opT);
+									matchDeclaringClasses(opS, opT);
 									break;
 								}
 							}
@@ -542,6 +584,7 @@ public class IterativeMatcher extends AbstractMatcher{
 								if(t1.equals( matchedClassesT.get(index1)) && t2.equals( matchedClassesT.get(index2)) ){
 									matchedPropsS.add(opS);
 									matchedPropsT.add(opT);
+									matchDeclaringClasses(opS, opT);
 									break;
 								}
 							}
@@ -558,6 +601,7 @@ public class IterativeMatcher extends AbstractMatcher{
 								if(rngS == null && rngT == null){
 									matchedPropsS.add(opS);
 									matchedPropsT.add(opT);
+									matchDeclaringClasses(opS, opT);
 									break;
 								}
 								//if range is single class
@@ -567,6 +611,7 @@ public class IterativeMatcher extends AbstractMatcher{
 										if(matchedClassesT.get(index2).equals( rangesT.get(0) ) ){
 											matchedPropsS.add(opS);
 											matchedPropsT.add(opT);
+											matchDeclaringClasses(opS, opT);
 											break;
 										}
 									}
@@ -584,6 +629,7 @@ public class IterativeMatcher extends AbstractMatcher{
 										if(t1.equals( matchedClassesT.get(index1)) && t2.equals( matchedClassesT.get(index2)) ){
 											matchedPropsS.add(opS);
 											matchedPropsT.add(opT);
+											matchDeclaringClasses(opS, opT);
 											break;
 										}
 									}
@@ -606,6 +652,7 @@ public class IterativeMatcher extends AbstractMatcher{
 								if(rngS == null && rngT == null){
 									matchedPropsS.add(opS);
 									matchedPropsT.add(opT);
+									matchDeclaringClasses(opS, opT);
 									break;
 								}
 								//if range is single class
@@ -615,6 +662,7 @@ public class IterativeMatcher extends AbstractMatcher{
 										if(matchedClassesT.get(index).equals( rangesT.get(0) ) ){
 											matchedPropsS.add(opS);
 											matchedPropsT.add(opT);
+											matchDeclaringClasses(opS, opT);
 											break;
 										}
 									}
@@ -632,6 +680,7 @@ public class IterativeMatcher extends AbstractMatcher{
 										if(t5.equals( matchedClassesT.get(index5)) && t6.equals( matchedClassesT.get(index6)) ){
 											matchedPropsS.add(opS);
 											matchedPropsT.add(opT);
+											matchDeclaringClasses(opS, opT);
 											break;
 										}
 									}
@@ -659,7 +708,7 @@ public class IterativeMatcher extends AbstractMatcher{
 	}
 	
 	
-	//TODO: Matches "book" and "collection" WRONG!
+	//Changes correct Proceedings mapping with Book mapping? 
 	public void matchObjectPropertiesUsingAnnotations(){
 		ExtendedIterator<ObjectProperty> itS = modelS.listObjectProperties();
 		while(itS.hasNext()){
@@ -674,9 +723,11 @@ public class IterativeMatcher extends AbstractMatcher{
 						String cS = opS.getComment(null);
 						String cT = opT.getComment(null);
 						if(cS != null && cT != null && cS.equals(cT)){
-							
-							matchedPropsS.add(opS);
-							matchedPropsT.add(opT);
+							if( isDomainsAreSame(opS, opT) && isRangesAreSame(opS, opT)){
+								matchedPropsS.add(opS);
+								matchedPropsT.add(opT);
+								matchDeclaringClasses(opS, opT);
+							}
 						}
 					}
 				}
@@ -701,10 +752,12 @@ public class IterativeMatcher extends AbstractMatcher{
 						String cS = opS.getComment(null);
 						String cT = opT.getComment(null);
 						if(cS != null && cT != null && cS.equals(cT)){
-							
-							matchedPropsS.add(opS);
-							matchedPropsT.add(opT);
-							break;
+							if(hasSameDataRange(opS, opT)){
+								matchedPropsS.add(opS);
+								matchedPropsT.add(opT);
+								matchDeclaringClasses(opS, opT);
+								break;
+							}
 						}
 					}
 				}
@@ -713,7 +766,7 @@ public class IterativeMatcher extends AbstractMatcher{
 	}
 	
 	//Each property is defined by some resources, find and match them.
-	public void matchByDefinedResources(){
+	public void matchObjectPropertiesByDefinedResources(){
 		ExtendedIterator<ObjectProperty> itS = modelS.listObjectProperties();
 		while(itS.hasNext()){
 			ObjectProperty opS = itS.next();
@@ -738,9 +791,12 @@ public class IterativeMatcher extends AbstractMatcher{
 								if(!matchedClassesT.contains(ct)) continue;
 									
 								if(matchedClassesS.indexOf(c) == matchedClassesT.indexOf(ct)){
-									matchedPropsS.add(opS);
-									matchedPropsT.add(opT);
-									break;
+									if(isRangesAreSame(opS, opT) && isDomainsAreSame(opS, opT)){
+										matchedPropsS.add(opS);
+										matchedPropsT.add(opT);
+										matchDeclaringClasses(opS, opT);
+										break;
+									}
 								}
 								
 							}
@@ -753,6 +809,95 @@ public class IterativeMatcher extends AbstractMatcher{
 		}
 	}
 	
+	//
+	public void matchDatatypePropertiesByDefinedResources(){
+		ExtendedIterator<DatatypeProperty> itS = modelS.listDatatypeProperties();
+		while(itS.hasNext()){
+			DatatypeProperty opS = itS.next();
+			if(!matchedPropsS.contains(opS)){
+				
+				ExtendedIterator<? extends OntClass> cls = opS.listDeclaringClasses(true);
+				List<? extends OntClass> ls = cls.toList();
+				if(ls.size() == 1){
+					OntClass c = ls.get(0);
+					if(!matchedClassesS.contains(c)) continue;
+					
+					ExtendedIterator<DatatypeProperty> itT = modelT.listDatatypeProperties();
+					while(itT.hasNext()){
+						DatatypeProperty opT = itT.next();
+						if(!matchedPropsT.contains(opT)){
+							
+							ExtendedIterator<? extends OntClass> clt = opT.listDeclaringClasses(true);
+							List<? extends OntClass> lt = clt.toList();
+							if(lt.size() == 1){
+								OntClass ct = lt.get(0);
+								
+								if(!matchedClassesT.contains(ct)) continue;
+									
+								if(matchedClassesS.indexOf(c) == matchedClassesT.indexOf(ct)){
+									if(hasSameDataRange(opS, opT)){//TODO: has same domain
+										matchedPropsS.add(opS);
+										matchedPropsT.add(opT);
+										matchDeclaringClasses(opS, opT);
+										break;
+									}
+								}
+								
+							}
+							//TODO: do for more classes.
+						}
+					}
+				}
+			}
+			
+		}
+	}	
+	
+	//For single and double declaring classes of two properties, match them
+	public void matchDeclaringClasses(OntProperty p1, OntProperty p2){
+		ExtendedIterator<? extends OntClass> c1 = p1.listDeclaringClasses(true);
+		List<? extends OntClass> ls = c1.toList();
+		ExtendedIterator<? extends OntClass> c2 = p2.listDeclaringClasses(true);
+		List<? extends OntClass> lt = c2.toList();
+		
+		if(ls.size() == 1 && lt.size() == 1){
+			OntClass cs = ls.get(0);
+			OntClass ct = lt.get(0);
+			if(cs.isAnon() || ct.isAnon())return;
+			if(!matchedClassesS.contains(cs)){
+				mapTwoOntClasses(cs, ct);
+			}
+		}
+		if(ls.size() == 2 && lt.size() == 2){
+			OntClass cs0 = ls.get(0);
+			OntClass cs1 = ls.get(1);
+			OntClass ct0 = lt.get(0);
+			OntClass ct1 = lt.get(1);
+			if(cs0.isAnon() || ct0.isAnon() || cs1.isAnon() || ct1.isAnon() )return;
+			if(isOntClassesEqual(cs0, ct0)){
+				if(!isSourceMapped(cs1)){
+					mapTwoOntClasses(cs1, ct1);
+				}
+			}
+			else if(isOntClassesEqual(cs1, ct1)){
+				if(!isSourceMapped(cs0)){
+					mapTwoOntClasses(cs0, ct0);
+				}
+			}
+			else if(isOntClassesEqual(cs0, ct1)){
+				if(!isSourceMapped(cs1)){
+					mapTwoOntClasses(cs1, ct0);
+				}
+			}
+			else{
+				if(!isSourceMapped(cs0)){
+					mapTwoOntClasses(cs0, ct1);
+				}
+			}
+		}
+	}
+	
+	
 	//Adds to Classes
 	public void matchSuperClasses(){
 		ExtendedIterator<OntClass> ei = modelS.listClasses();
@@ -764,7 +909,7 @@ public class IterativeMatcher extends AbstractMatcher{
 			while(sp.hasNext()){
 				OntClass csp = sp.next();
 				System.out.println("\t" + csp.getLocalName());
-				if(csp.getLocalName() != null){
+				if(csp.getLocalName() != null && !csp.isAnon()){
 					sup = csp;
 					break;
 				}
@@ -776,12 +921,12 @@ public class IterativeMatcher extends AbstractMatcher{
 			OntClass supt = null;
 			while(et.hasNext()){
 				ct = et.next();
-				System.out.println(ct.getLocalName());
+				//System.out.println(ct.getLocalName());
 				ExtendedIterator<OntClass> st = ct.listSuperClasses(true);
 				while(st.hasNext()){
 					OntClass cst = st.next();
-					System.out.println("\t" + cst.getLocalName());
-					if(cst.getLocalName() != null){
+					//System.out.println("\t" + cst.getLocalName());
+					if(cst.getLocalName() != null && !cst.isAnon()){
 						supt = cst;
 						break;
 					}
@@ -789,15 +934,14 @@ public class IterativeMatcher extends AbstractMatcher{
 				
 				//Match here
 				try{
-				if(matchedClassesS.contains(cs) && matchedClassesT.get( matchedClassesS.indexOf(cs) ).equals(ct) ){
-					if(!matchedClassesS.contains(sup)){
-						matchedClassesS.add(sup);
-						matchedClassesT.add(supt);
+					if(matchedClassesS.contains(cs) && matchedClassesT.get( matchedClassesS.indexOf(cs) ).equals(ct) ){
+						if(!matchedClassesS.contains(sup) && !sup.isAnon()){
+							mapTwoOntClasses(sup, supt);
+						}
 					}
 				}
-				}
 				catch (Exception e) {
-					System.out.println();
+					System.out.println(e.getMessage());
 				}
 			}
 			
@@ -816,6 +960,191 @@ public class IterativeMatcher extends AbstractMatcher{
 	//
 	public void matchBasedOnRestrictions(){
 		
+	}
+	
+	//Check if two ObjectProperty have the same domain class/es
+	//TODO: Works OntClass type domain for now.
+	public boolean isDomainsAreSame(ObjectProperty ob1, ObjectProperty ob2){
+		OntResource domS = ob1.getDomain();
+		OntResource domT = ob2.getDomain();
+		
+		if(domS == null && domT == null) return true;
+		else if(domS == null && domT != null) return false;
+		else if(domS != null && domT == null) return false;
+		else{
+			if(domS.isClass() && !domS.asClass().isUnionClass()){
+				OntClass cs = domS.asClass();
+
+				if(domT.isClass() && !domT.asClass().isUnionClass()){
+					OntClass ct = domT.asClass();
+
+					if(isOntClassesEqual(cs, ct)){
+						return true;
+					}
+				}
+			}
+			else if (domS.isClass() && domS.asClass().isUnionClass()) {
+				ArrayList<OntClass> ds = new ArrayList<OntClass>();
+				for (Iterator i = domS.asClass().asUnionClass().listOperands(); i.hasNext();) {
+					OntClass c = (OntClass)i.next();
+					ds.add(c);
+				}
+				OntClass cs0 = ds.get(0);
+				OntClass cs1 = ds.get(1);
+
+				if (domT.isClass() && domT.asClass().isUnionClass()) {
+					ArrayList<OntClass> dt = new ArrayList<OntClass>();
+					for (Iterator i = domT.asClass().asUnionClass().listOperands(); i.hasNext();) {
+						OntClass c = (OntClass)i.next();
+						dt.add(c);
+					}
+					OntClass ct0 = dt.get(0);
+					if(dt.size() == 1) return false;
+					OntClass ct1 = dt.get(1);
+
+					if(isOntClassesEqual(cs0, ct0)){
+						if(isOntClassesEqual(cs1, ct1)){return true;}
+					}
+					else if(isOntClassesEqual(cs1, ct1)){
+						if(isOntClassesEqual(cs0, ct0)){return true;}
+					}
+					else if(isOntClassesEqual(cs0, ct1)){
+						if(isOntClassesEqual(cs1, ct0)){return true;}
+					}
+					else{
+						if(isOntClassesEqual(cs0, ct1)){return true;}
+					}
+				}
+
+			}
+		}
+		return false;
+	}
+	
+	//Check if two ObjectProperty have the same range class
+	//TODO: Works for OntClass type range for now.
+	public boolean isRangesAreSame(ObjectProperty ob1, ObjectProperty ob2){
+		//domS mean rangeS.
+		OntResource domS = ob1.getRange();
+		OntResource domT = ob2.getRange();
+		
+		if(domS == null && domT == null) return true;
+		else if(domS == null && domT != null) return false;
+		else if(domS != null && domT == null) return false;
+		else{
+			if(domS.isClass() && !domS.asClass().isUnionClass()){
+				OntClass cs = domS.asClass();
+
+				if(domT.isClass() && !domT.asClass().isUnionClass()){
+					OntClass ct = domT.asClass();
+
+					if(isOntClassesEqual(cs, ct)){
+						return true;
+					}
+				}
+			}
+			else if (domS.isClass() && domS.asClass().isUnionClass()) {
+				ArrayList<OntClass> ds = new ArrayList<OntClass>();
+				for (Iterator i = domS.asClass().asUnionClass().listOperands(); i.hasNext();) {
+					OntClass c = (OntClass)i.next();
+					ds.add(c);
+				}
+				OntClass cs0 = ds.get(0);
+				OntClass cs1 = ds.get(1);
+
+				if (domT.isClass() && domT.asClass().isUnionClass()) {
+					ArrayList<OntClass> dt = new ArrayList<OntClass>();
+					for (Iterator i = domT.asClass().asUnionClass().listOperands(); i.hasNext();) {
+						OntClass c = (OntClass)i.next();
+						dt.add(c);
+					}
+					OntClass ct0 = dt.get(0);
+					OntClass ct1 = dt.get(1);
+
+					if(isOntClassesEqual(cs0, ct0)){
+						if(isOntClassesEqual(cs1, ct1)){return true;}
+					}
+					else if(isOntClassesEqual(cs1, ct1)){
+						if(isOntClassesEqual(cs0, ct0)){return true;}
+					}
+					else if(isOntClassesEqual(cs0, ct1)){
+						if(isOntClassesEqual(cs1, ct0)){return true;}
+					}
+					else{
+						if(isOntClassesEqual(cs0, ct1)){return true;}
+					}
+				}
+
+			}
+		}
+		return false;
+	}
+	
+	public boolean isRangePrimitive(OntResource r){
+		if(r.getLocalName().equals("http://www.w3.org/2001/XMLSchema#string")){
+			return true;
+		}
+		else if(r.getLocalName().equals("http://www.w3.org/2001/XMLSchema#nonNegativeInteger")){
+			return true;
+		}
+		else if(r.getLocalName().equals("http://www.w3.org/2001/XMLSchema#language")){
+			return true;
+		}
+		else if(r.getLocalName().equals("http://www.w3.org/2001/XMLSchema#gDay")){
+			return true;
+		}
+		else if(r.getLocalName().equals("http://www.w3.org/2001/XMLSchema#gMonth")){
+			return true;
+		}
+		else if(r.getLocalName().equals("http://www.w3.org/2001/XMLSchema#gYear")){
+			return true;
+		}
+		return false;
+	}
+	
+	//Checks for primitive type data ranges
+	public boolean hasSameDataRange(DatatypeProperty p1, DatatypeProperty p2){
+		//domS mean rangeS.
+		OntResource domS = p1.getRange();
+		OntResource domT = p2.getRange();
+		
+		if(domS == null && domT == null) return true;
+		else if(domS == null && domT != null) return false;
+		else if(domS != null && domT == null) return false;
+		else{
+			if(isRangePrimitive(domS) && isRangePrimitive(domT)){
+				if(domS.getLocalName().equals(domT.getLocalName())){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	
+	//Check if a given source OntClass a is mapped to target OntClass b 
+	public boolean isOntClassesEqual(OntClass a, OntClass b){
+		if(matchedClassesS.contains(a)){
+			if(matchedClassesT.contains(b)){
+				if(matchedClassesS.indexOf(a) == matchedClassesT.indexOf(b)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	//Returns true if a given source OntClass is already mapped
+	public boolean isSourceMapped(OntClass a){
+		if(matchedClassesS.contains(a)){
+			return true;
+		}
+		return false;
+	}
+	
+	public void mapTwoOntClasses(OntClass a, OntClass b){
+		matchedClassesS.add(a);
+		matchedClassesT.add(b);
 	}
 	
 	public void populateStatements(){
