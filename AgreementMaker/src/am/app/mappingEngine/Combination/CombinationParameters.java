@@ -1,6 +1,7 @@
 package am.app.mappingEngine.Combination;
 
 import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.oaei2010.OAEI2010MatcherParameters.Track;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
 
 public class CombinationParameters extends AbstractParameters {
@@ -32,6 +33,39 @@ public class CombinationParameters extends AbstractParameters {
 		quality = QualityEvaluator.LOCALCONFIDENCE;
 		
 	} 
+	
+	/**
+	 * 
+	 * @param t
+	 * @param layer Which LWC are we configuring.
+	 */
+	public void initForOAEI2010(Track t, boolean firstLWC) {
+		
+		switch(t) {
+		case Benchmarks:
+			if( firstLWC ) {
+				combinationType = AVERAGECOMB;
+				qualityEvaluation = true;
+				manualWeighted = false;
+				quality = QualityEvaluator.LOCALCONFIDENCE;
+			} else {
+				combinationType = MAXCOMB;
+				qualityEvaluation = true;
+				manualWeighted = false;
+				quality = QualityEvaluator.LOCALCONFIDENCE;
+			}
+			break;
+		case Anatomy:
+		case Conference:
+		default:
+			combinationType = AVERAGECOMB;
+			qualityEvaluation = true;
+			manualWeighted = false;
+			quality = QualityEvaluator.LOCALCONFIDENCE;
+		}
+		
+		
+	}
 		
 
 }
