@@ -326,6 +326,9 @@ public class Node {
 	public void setIndex(int index) {
 		this.index = index;
 	}
+	
+	public int getOntologyIndex() { return ontindex; }
+	
 	/**Owl classes or all rdf nodes or all xml nodes their are considered classes, so nodes in the first of the two trees*/
 	public boolean isClass() {
 		if( resource.canAs(OntClass.class)) return true;
