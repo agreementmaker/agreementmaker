@@ -32,12 +32,14 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	private Lexicon sourceOntologyLexicon, targetOntologyLexicon;
 	private Lexicon sourceWordNetLexicon, targetWordNetLexicon; 
 	
-	public ParametricStringMatcher() {
-		// warning, param is not available at the time of the constructor
-		super();
+	public ParametricStringMatcher() { super(); }
+	public ParametricStringMatcher( ParametricStringParameters p ) { super(p); }
+	
+	@Override
+	protected void initializeVariables() {
+		super.initializeVariables();
 		needsParam = true;
 	}
-	
 	
 	public String getDescriptionString() {
 		return "Performs a local matching using a String Based technique.\n" +
