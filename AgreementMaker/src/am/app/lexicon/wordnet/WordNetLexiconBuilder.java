@@ -69,13 +69,13 @@ public class WordNetLexiconBuilder implements LexiconBuilder {
 
 		
 		
-		// Iterate through all the Synsets in the pervious lexicon to get all the wordforms.
+		// Iterate through all the Synsets in the ontology lexicon to get all the wordforms.
 		for( Entry<OntResource, LexiconSynSet> currentEntry : ontologyLexicon.getSynSetMap().entrySet() ) {
 			LexiconSynSet currentInputSynSet = currentEntry.getValue();
 			List<String> inputSynonyms = currentInputSynSet.getSynonyms();
 			
-			ArrayList<String> completeWordForms = new ArrayList<String>();
-			ArrayList<String> allDefinitions = new ArrayList<String>();
+			ArrayList<String> wordnetWordForms = new ArrayList<String>();
+			ArrayList<String> wordnetDefinitions = new ArrayList<String>();
 			
 			for( String currentInputSynonym : inputSynonyms ) {
 				
@@ -85,30 +85,31 @@ public class WordNetLexiconBuilder implements LexiconBuilder {
 				if( currentWordForms.isEmpty() ) continue; // this word was not found in the dictionary.
 				
 				for( String wordform : currentWordForms ) {
-					if( !completeWordForms.contains(wordform) ) completeWordForms.add(wordform);
+					if( !wordnetWordForms.contains(wordform) ) wordnetWordForms.add(wordform);
 				}
 				
 				for( String def : currentDefinitions ) {
-					if( !allDefinitions.contains(def) ) allDefinitions.add(def);
+					if( !wordnetDefinitions.contains(def) ) wordnetDefinitions.add(def);
 				}
 				
 			}
 				
-			ArrayList<String> uniqueWordForms = new ArrayList<String>();
-			
-			// Step 1.  Check if any of these word forms are in the input Lexicon already.
-			ArrayList<LexiconSynSet> synSetsForCurrentClass = new ArrayList<LexiconSynSet>();
 
-			String definitionFromOnt = null; // the definition we find.
+			// Step 1.  Check if any of the wordnet word forms are in the ontology Lexicon already.
 			
-			for( String currentWordForm : completeWordForms ) {
+			ArrayList<String> uniqueWordForms = new ArrayList<String>();
+			ArrayList<LexiconSynSet> duplicatedWordForms = new ArrayList<LexiconSynSet>();
+
+			String definitionFromOnt = null; // the definition we find in the ontology lexicon. (should only be one????) TODO: Allow for multiple definitions in the ontology lexicon.
+			
+			for( String currentWordForm : wordnetWordForms ) {
 				LexiconSynSet synList = ontologyLexicon.getSynSet(currentWordForm);
 				if( synList == null ) {
 					// no SynSets found in ontoloy lexicon
 					uniqueWordForms.add(currentWordForm);
 				} else {
 					definitionFromOnt = synList.getGloss();
-					synSetsForCurrentClass.add(synList); // NOTE: There must be at least one synset found (because of at least one common wordform)!! 
+					duplicatedWordForms.add(synList); // NOTE: There must be at least one synset found (because of at least one common wordform)!! 
 				}
 			}
 
@@ -116,32 +117,37 @@ public class WordNetLexiconBuilder implements LexiconBuilder {
 				
 				
 			// Step 2. Create a new synset for this class.
-			GeneralLexiconSynSet wordNetSynSet = new GeneralLexiconSynSet();
+			GeneralLexiconSynSet wordNetNewSynSet = new GeneralLexiconSynSet();
 			
 			// Step 2a. add all the wordforms to the new synset.
 			for( String wordnetWordForm : uniqueWordForms ) {
-				wordNetSynSet.addSynonym(wordnetWordForm);
+				wordNetNewSynSet.addSynonym(wordnetWordForm);
 			}
 			
 			// Step 3. Create cross links between the synsets.
-			for( LexiconSynSet ontSynSet : synSetsForCurrentClass ) {
-				ontSynSet.addRelatedSynSet(wordNetSynSet);
-				wordNetSynSet.addRelatedSynSet(ontSynSet);  // TODO: Is it smart to put a backlink??? It should probably go from the OntLexicon to the WordNet lexicon only.
-				if( wordNetSynSet.getOntologyConcept() != null ) wordNetSynSet.setOntologyConcept(ontSynSet.getOntologyConcept()); // set the ontology concept
+			for( LexiconSynSet ontSynSet : duplicatedWordForms ) {
+				ontSynSet.addRelatedSynSet(wordNetNewSynSet);
+				//wordNetSynSet.addRelatedSynSet(ontSynSet);  // TODO: Is it smart to put a backlink??? It should probably go from the OntLexicon to the WordNet lexicon only.
+															  // DONE: Removed the back link.  Concepts must be accessed through the ontology lexicon, and then the 
+															  //       wordnet lexicon synsets can be accessed via the relatedSynSets.	
+				if( wordNetNewSynSet.getOntologyConcept() != null ) wordNetNewSynSet.setOntologyConcept(ontSynSet.getOntologyConcept()); // set the ontology concept (should not need this).  It is only required for the ontology lexicon.
 			}
 				
 				
-			// Step 4. Get the definition. (Problem: for multiple synsets, which definition do we choose????????) TODO
+			// Step 4. Get the definition. (Problem: for multiple wordnet synsets, which definition do we choose????????) TODO
+			 					  //( TODO: Answer: a robust disambiguation solution is required here. )
 			if( definitionFromOnt == null ) {
-				if( !allDefinitions.isEmpty() ) { wordNetSynSet.setGloss( allDefinitions.get(0) ); } // the first definition found
+				if( !wordnetDefinitions.isEmpty() ) { wordNetNewSynSet.setGloss( wordnetDefinitions.get(0) ); } // the first definition found
 				// no definitions were found
 			} else {
+				// the ontology definition exists.  That's fine, but we will set a wordnet definition also.
+				if( !wordnetDefinitions.isEmpty() ) wordNetNewSynSet.setGloss( wordnetDefinitions.get(0)); // TODO: for multiple wordnet synsets, we need a robust disambiguation solution
 				// supplement the ontology definitions with the wordnet definitions TODO
 			}
 				
 				
 			// Done creating the SynSet.
-			wordnetLexicon.addSynSet(wordNetSynSet);
+			wordnetLexicon.addSynSet(wordNetNewSynSet);
 			
 		}
 		
@@ -150,7 +156,7 @@ public class WordNetLexiconBuilder implements LexiconBuilder {
 	}
 
 	private ArrayList<String> getAllWordForms(String searchTerm) {
-		ArrayList<String> wordForms = new ArrayList<String>();
+		ArrayList<String> wordFormsFound = new ArrayList<String>();
 
 		
 		// lookup
@@ -161,17 +167,17 @@ public class WordNetLexiconBuilder implements LexiconBuilder {
 				String[] words = synsets[i].getWordForms(); // get the wordforms of this synset
 				
 				for (int j = 0; j < words.length; j++) {
-					if( !wordForms.contains( words[j] ) ) wordForms.add(words[j]);
+					if( !wordFormsFound.contains( words[j] ) ) wordFormsFound.add(words[j]);
 				}
 				
 			}
 		}
 		
-		return wordForms;
+		return wordFormsFound;
 	}
 	
 	private ArrayList<String> getAllDefinitions(String searchTerm) {
-		ArrayList<String> definitions = new ArrayList<String>();
+		ArrayList<String> definitionsFound = new ArrayList<String>();
 
 		
 		// lookup
@@ -179,12 +185,12 @@ public class WordNetLexiconBuilder implements LexiconBuilder {
 			Synset[] synsets = WordNet.getSynsets(searchTerm, t);
 			
 			for (int i = 0; i < synsets.length; i++) {
-				String words = synsets[i].getDefinition(); // get the wordforms of this synset
-				if( !definitions.contains( words ) ) definitions.add(words);
+				String definition = synsets[i].getDefinition(); // get the definition of this synset
+				if( !definitionsFound.contains( definition ) ) definitionsFound.add(definition);
 			}
 		}
 		
-		return definitions;
+		return definitionsFound;
 	}
 	
 }
