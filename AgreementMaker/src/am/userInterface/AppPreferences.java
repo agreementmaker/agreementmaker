@@ -55,6 +55,7 @@ public class AppPreferences {
 	private static final String		PREF_SHOWLOCALNAME = "pref_SHOWLOCALNAME";
 	private static final String		PREF_SHOWLABEL = "pref_SHOWLABEL";
 	
+	private static final String 	PREF_BEEPONFINISH = "pref_BEEPONFINISH";
 
 	
 	/**
@@ -66,6 +67,16 @@ public class AppPreferences {
 	}
 	
 	
+	public void saveBeepOnFinish( boolean beep ) {
+		if( beep ) appPrefs.put(PREF_BEEPONFINISH, "y");
+		else appPrefs.put(PREF_BEEPONFINISH, "n");
+	}
+	
+	public boolean getBeepOnFinish() {
+		String beep = appPrefs.get(PREF_BEEPONFINISH, "n");
+		if( beep.equals("y") ) { return true; }
+		return false; 
+	}
 	
 	/** 
 	 *
