@@ -76,7 +76,7 @@ public class OntologyLexiconBuilder implements LexiconBuilder {
 				
 				
 				// Step 2. Create a new synset for this class.
-				GeneralLexiconSynSet classSynSet = new GeneralLexiconSynSet();
+				GeneralLexiconSynSet classSynSet = new GeneralLexiconSynSet(LexiconRegistry.ONTOLOGY_LEXICON);
 				
 				// add all the synonyms to the synset
 				Iterator<String> synonymIter = synonyms.iterator();

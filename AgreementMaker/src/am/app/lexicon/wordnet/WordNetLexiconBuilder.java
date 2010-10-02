@@ -117,7 +117,7 @@ public class WordNetLexiconBuilder implements LexiconBuilder {
 				
 				
 			// Step 2. Create a new synset for this class.
-			GeneralLexiconSynSet wordNetNewSynSet = new GeneralLexiconSynSet();
+			GeneralLexiconSynSet wordNetNewSynSet = new GeneralLexiconSynSet(LexiconRegistry.WORDNET_LEXICON);
 			
 			// Step 2a. add all the wordforms to the new synset.
 			for( String wordnetWordForm : uniqueWordForms ) {

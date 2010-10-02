@@ -10,6 +10,7 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntResource;
 
 import am.app.Core;
+import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
@@ -17,9 +18,14 @@ import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 public class GeneralLexiconSynSet implements LexiconSynSet {
 
 	String gloss;  // aka Definition
-	List<String> synonyms = new ArrayList<String>(); // the SynSet
+	List<String> synonyms = new LinkedList<String>(); // the SynSet
 	
 	OntResource concept;
+	LexiconRegistry type;
+	
+	public GeneralLexiconSynSet( LexiconRegistry t ) {
+		type = t;
+	}
 	
 	// a list of resources that share this synset 
 	//List<OntResource> resourceList = new LinkedList<OntResource>();
@@ -126,5 +132,8 @@ public class GeneralLexiconSynSet implements LexiconSynSet {
 		if( !relatedSynSets.contains(related) ) relatedSynSets.add(related);
 	}
 	@Override public List<LexiconSynSet> getRelatedSynSets() { return relatedSynSets;	}
+
+	@Override
+	public LexiconRegistry getType() { return type; }
 	
 }
