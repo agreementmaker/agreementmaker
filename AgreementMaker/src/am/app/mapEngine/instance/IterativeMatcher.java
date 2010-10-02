@@ -77,7 +77,7 @@ public class IterativeMatcher extends AbstractMatcher{
 		//Matching methods here.
 		matchTransitiveProperties();
 		//0-1
-		for(int i = 0; i < 1; i++){
+		for(int i = 0; i < 2; i++){
 			//0-1
 			matchClassesUsingInstances();
 			//9-1
@@ -103,25 +103,21 @@ public class IterativeMatcher extends AbstractMatcher{
 			//Recall = Correct/Reference: 29.3%
 			//Fmeasure = 2(precision*recall)/(precision+recall): 45.3%
 			
-			//matchDatatypePropertiesUsingAnnotations();
+			matchObjectPropertiesUsingAnnotations();
+			//14-16
+			//Precision = Correct/Discovered: 100.0%
+			//Recall = Correct/Reference: 30.3%
+			//Fmeasure = 2(precision*recall)/(precision+recall): 46.5%
+			
+			matchDatatypePropertiesUsingAnnotations();
 			
 			
 			
-
+			//matchByDefinedResources();
 			
 			//matchPropertiesUsingClasses();
 			
 			//matchClassesUsingProperties();
-			
-			
-			
-			//matchObjectPropertiesUsingAnnotations();
-			
-			
-			//matchByDefinedResources();
-			//Precision = Correct/Discovered: 93.5%
-			//Recall = Correct/Reference: 29.3%
-			//Fmeasure = 2(precision*recall)/(precision+recall): 44.6%
 			
 			//matchSuperClasses();
 			
@@ -156,7 +152,7 @@ public class IterativeMatcher extends AbstractMatcher{
 			for(int k = 0; k < matchedPropsS.size(); k++){
 				if(source.getLocalName().equalsIgnoreCase(matchedPropsS.get(k).getLocalName())){
 					if(target.getLocalName().equalsIgnoreCase(matchedPropsT.get(k).getLocalName())){
-						return new Alignment(source, target, 65.0, Alignment.EQUIVALENCE);
+						return new Alignment(source, target, 99.0, Alignment.EQUIVALENCE);
 					}
 				}
 			}
@@ -195,7 +191,7 @@ public class IterativeMatcher extends AbstractMatcher{
 			for(int j = 0; j < individualsT.size(); j++){
 				Individual iT = individualsT.get(j);
 				
-				//TODO: isAnon(), then match props!
+				//TODO: isAnon()
 				if(iS.isAnon() && iT.isAnon()){
 					
 				}
@@ -692,7 +688,6 @@ public class IterativeMatcher extends AbstractMatcher{
 	}
 	
 	
-	//TODO: Matches "book" and "collection" WRONG!
 	//Changes correct Proceedings mapping with Book mapping? 
 	public void matchObjectPropertiesUsingAnnotations(){
 		ExtendedIterator<ObjectProperty> itS = modelS.listObjectProperties();
@@ -708,7 +703,7 @@ public class IterativeMatcher extends AbstractMatcher{
 						String cS = opS.getComment(null);
 						String cT = opT.getComment(null);
 						if(cS != null && cT != null && cS.equals(cT)){
-							if(isDomainsAreSame(opS, opT) && isRangesAreSame(opS, opT)){
+							if( isDomainsAreSame(opS, opT) && isRangesAreSame(opS, opT)){
 								matchedPropsS.add(opS);
 								matchedPropsT.add(opT);
 								matchDeclaringClasses(opS, opT);
@@ -737,11 +732,12 @@ public class IterativeMatcher extends AbstractMatcher{
 						String cS = opS.getComment(null);
 						String cT = opT.getComment(null);
 						if(cS != null && cT != null && cS.equals(cT)){
-							
-							matchedPropsS.add(opS);
-							matchedPropsT.add(opT);
-							matchDeclaringClasses(opS, opT);
-							break;
+							if(hasSameDataRange(opS, opT)){
+								matchedPropsS.add(opS);
+								matchedPropsT.add(opT);
+								matchDeclaringClasses(opS, opT);
+								break;
+							}
 						}
 					}
 				}
@@ -1012,6 +1008,47 @@ public class IterativeMatcher extends AbstractMatcher{
 					}
 				}
 
+			}
+		}
+		return false;
+	}
+	
+	public boolean isRangePrimitive(OntResource r){
+		if(r.getLocalName().equals("http://www.w3.org/2001/XMLSchema#string")){
+			return true;
+		}
+		else if(r.getLocalName().equals("http://www.w3.org/2001/XMLSchema#nonNegativeInteger")){
+			return true;
+		}
+		else if(r.getLocalName().equals("http://www.w3.org/2001/XMLSchema#language")){
+			return true;
+		}
+		else if(r.getLocalName().equals("http://www.w3.org/2001/XMLSchema#gDay")){
+			return true;
+		}
+		else if(r.getLocalName().equals("http://www.w3.org/2001/XMLSchema#gMonth")){
+			return true;
+		}
+		else if(r.getLocalName().equals("http://www.w3.org/2001/XMLSchema#gYear")){
+			return true;
+		}
+		return false;
+	}
+	
+	//Checks for primitive type data ranges
+	public boolean hasSameDataRange(DatatypeProperty p1, DatatypeProperty p2){
+		//domS mean rangeS.
+		OntResource domS = p1.getRange();
+		OntResource domT = p2.getRange();
+		
+		if(domS == null && domT == null) return true;
+		else if(domS == null && domT != null) return false;
+		else if(domS != null && domT == null) return false;
+		else{
+			if(isRangePrimitive(domS) && isRangePrimitive(domT)){
+				if(domS.getLocalName().equals(domT.getLocalName())){
+					return true;
+				}
 			}
 		}
 		return false;
