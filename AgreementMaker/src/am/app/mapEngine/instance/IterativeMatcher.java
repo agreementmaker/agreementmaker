@@ -48,6 +48,11 @@ public class IterativeMatcher extends AbstractMatcher{
 	ArrayList<Statement> statementsS;
 	ArrayList<Statement> statementsT;
 
+	int mappedTotal = 0;
+	int mappedTotalPrev = 0;
+	int mappedProp = 0;
+	int mappedClass = 0;
+	
 	public IterativeMatcher() {
 		super();
 		needsParam = false;
@@ -73,11 +78,21 @@ public class IterativeMatcher extends AbstractMatcher{
 		statementsS = new ArrayList<Statement>();
 		statementsT = new ArrayList<Statement>();
 		
+		mappedTotalPrev = 0;
+		mappedTotal = 0;
+		mappedProp = 0;
+		mappedClass = 0;
+		
 		
 		//Matching methods here.
 		matchTransitiveProperties();
 		//0-1
-		for(int i = 0; i < 2; i++){
+		
+		mappedProp = matchedPropsS.size();
+		mappedTotal = mappedProp + mappedClass;
+		
+		while(mappedTotal - mappedTotalPrev > 0){
+			mappedTotalPrev = mappedTotal;
 			//0-1
 			matchClassesUsingInstances();
 			//9-1
@@ -111,17 +126,22 @@ public class IterativeMatcher extends AbstractMatcher{
 			
 			matchDatatypePropertiesUsingAnnotations();
 			
+			matchDatatypePropertiesByDefinedResources();
 			
-			
-			matchByDefinedResources();
+			matchObjectPropertiesByDefinedResources();
 			
 			//matchPropertiesUsingClasses();
 			
-			//matchClassesUsingProperties();
+			matchClassesUsingProperties();
 			
-			//matchSuperClasses();
+			matchSuperClasses();
+			//Precision = Correct/Discovered: 100.0%
+			//Recall = Correct/Reference: 34.3%
+			//Fmeasure = 2(precision*recall)/(precision+recall): 51.1%
 			
-			//matchDataProperties();
+			mappedProp = matchedPropsS.size();
+			mappedClass = matchedClassesS.size();
+			mappedTotal = mappedProp + mappedClass;
 		}
 	}
 
@@ -746,7 +766,7 @@ public class IterativeMatcher extends AbstractMatcher{
 	}
 	
 	//Each property is defined by some resources, find and match them.
-	public void matchByDefinedResources(){
+	public void matchObjectPropertiesByDefinedResources(){
 		ExtendedIterator<ObjectProperty> itS = modelS.listObjectProperties();
 		while(itS.hasNext()){
 			ObjectProperty opS = itS.next();
@@ -788,6 +808,50 @@ public class IterativeMatcher extends AbstractMatcher{
 			
 		}
 	}
+	
+	//
+	public void matchDatatypePropertiesByDefinedResources(){
+		ExtendedIterator<DatatypeProperty> itS = modelS.listDatatypeProperties();
+		while(itS.hasNext()){
+			DatatypeProperty opS = itS.next();
+			if(!matchedPropsS.contains(opS)){
+				
+				ExtendedIterator<? extends OntClass> cls = opS.listDeclaringClasses(true);
+				List<? extends OntClass> ls = cls.toList();
+				if(ls.size() == 1){
+					OntClass c = ls.get(0);
+					if(!matchedClassesS.contains(c)) continue;
+					
+					ExtendedIterator<DatatypeProperty> itT = modelT.listDatatypeProperties();
+					while(itT.hasNext()){
+						DatatypeProperty opT = itT.next();
+						if(!matchedPropsT.contains(opT)){
+							
+							ExtendedIterator<? extends OntClass> clt = opT.listDeclaringClasses(true);
+							List<? extends OntClass> lt = clt.toList();
+							if(lt.size() == 1){
+								OntClass ct = lt.get(0);
+								
+								if(!matchedClassesT.contains(ct)) continue;
+									
+								if(matchedClassesS.indexOf(c) == matchedClassesT.indexOf(ct)){
+									if(hasSameDataRange(opS, opT)){//TODO: has same domain
+										matchedPropsS.add(opS);
+										matchedPropsT.add(opT);
+										matchDeclaringClasses(opS, opT);
+										break;
+									}
+								}
+								
+							}
+							//TODO: do for more classes.
+						}
+					}
+				}
+			}
+			
+		}
+	}	
 	
 	//For single and double declaring classes of two properties, match them
 	public void matchDeclaringClasses(OntProperty p1, OntProperty p2){
@@ -871,7 +935,7 @@ public class IterativeMatcher extends AbstractMatcher{
 				//Match here
 				try{
 				if(matchedClassesS.contains(cs) && matchedClassesT.get( matchedClassesS.indexOf(cs) ).equals(ct) ){
-					if(!matchedClassesS.contains(sup)){
+					if(!matchedClassesS.contains(sup) && !sup.isAnon()){
 						mapTwoOntClasses(sup, supt);
 					}
 				}
