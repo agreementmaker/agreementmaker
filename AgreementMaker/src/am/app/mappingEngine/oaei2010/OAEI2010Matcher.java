@@ -36,10 +36,6 @@ public class OAEI2010Matcher extends AbstractMatcher {
 	 * *******************************************************************************************************
 	 */
 	
-	public void beforeAlignOperations()  throws Exception{
-		super.beforeAlignOperations();
-	}
-	
 	public void match() throws Exception {
     	matchStart();
     	long measure = 1000000;
