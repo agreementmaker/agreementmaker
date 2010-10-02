@@ -490,7 +490,7 @@ public class UIMenu implements ActionListener {
 			} else if( obj == thresholdAnalysis ) {
 				// decide if we are running in a single mode or batch mode
 				if( Utility.displayConfirmPane("Are you running a batch mode?", "Batch mode?") ) {
-					String batchFile = JOptionPane.showInputDialog(null, "Batch File? (leave empty for no batch mode)");
+					String batchFile = JOptionPane.showInputDialog(null, "Batch File?");
 					String outputDirectory = JOptionPane.showInputDialog(null, "Output Directory?");
 					String matcherName = Core.getUI().getControlPanel().getComboboxSelectedItem();
 					MatchersRegistry matcher = MatcherFactory.getMatchersRegistryEntry(matcherName);
@@ -504,6 +504,8 @@ public class UIMenu implements ActionListener {
 					// single mode
 					String referenceAlignment = JOptionPane.showInputDialog(null, "Reference Alignment?");
 					String outputDirectory = JOptionPane.showInputDialog(null, "Output Directory?");
+					String prefix = JOptionPane.showInputDialog(null, "File name? (leave empty to use matcher name)");
+					if( prefix != null ) prefix.trim();
 					int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
 					if( rowsIndex.length == 0 ) { Utility.displayErrorPane("You must select a matcher from the control panel when running in single mode.", "Error"); return; }
 					AbstractMatcher matcherToBeAnalyzed = Core.getInstance().getMatcherInstances().get(rowsIndex[0]);
@@ -511,7 +513,7 @@ public class UIMenu implements ActionListener {
 						ThresholdAnalysis than = new ThresholdAnalysis(matcherToBeAnalyzed);
 						than.setReferenceAlignment(referenceAlignment);
 						than.setOutputDirectory(outputDirectory);
-						than.setOutputPrefix(matcherToBeAnalyzed.getName().getMatcherClass());
+						if( prefix != null && !prefix.isEmpty() ) than.setOutputPrefix(matcherToBeAnalyzed.getClass().getSimpleName() + "_" + System.currentTimeMillis() + "_");
 						than.execute();
 					}
 				}
