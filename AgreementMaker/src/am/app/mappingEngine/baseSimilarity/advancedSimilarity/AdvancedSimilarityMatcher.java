@@ -115,8 +115,9 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		// initializing local matcher (to be abstracted) and matrix
 		ParametricStringParameters localMatcherParams = new ParametricStringParameters();
 		localMatcherParams.initForOAEI2009();
-		AbstractMatcher localMatcher = new ParametricStringMatcher(localMatcherParams);
-		((ParametricStringMatcher)localMatcher).initializeNormalizer();
+		ParametricStringMatcher localMatcher = new ParametricStringMatcher();
+		localMatcher.setParam(localMatcherParams);
+		localMatcher.initializeNormalizer();
 		AlignmentMatrix localMatrix = new AlignmentMatrix(source.size(), target.size(), typeOfNodes);
 		
 		/* ------------- BEGIN FOR #1 --------------- */
