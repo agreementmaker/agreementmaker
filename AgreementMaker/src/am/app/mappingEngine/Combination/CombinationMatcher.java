@@ -93,11 +93,15 @@ public class CombinationMatcher extends AbstractMatcher {
 			q = a.getQualEvaluation();
 			//get the sim for this two nodes in the input matcher matrix
 			if(typeOfNodes == alignType.aligningClasses && a.areClassesAligned()) {
-				sim = a.getClassesMatrix().get(sourceindex, targetindex).getSimilarity();
+				if( a.getClassesMatrix().get(sourceindex, targetindex) != null ) {
+					sim = a.getClassesMatrix().get(sourceindex, targetindex).getSimilarity();
+				} else { sim = 0.0; }
 				weight = q.getClassQuality(sourceindex, targetindex);
 			}
 			else if(typeOfNodes == alignType.aligningProperties && a.arePropertiesAligned()) {
-				sim = a.getPropertiesMatrix().get(sourceindex, targetindex).getSimilarity();
+				if( a.getPropertiesMatrix().get(sourceindex, targetindex) != null ) {
+					sim = a.getPropertiesMatrix().get(sourceindex, targetindex).getSimilarity();
+				} else { sim = 0.0; }
 				weight = q.getPropQuality(sourceindex, targetindex);
 			}
 			else throw new RuntimeException("DEVELOPER ERROR: the alignType of node is not prop or class");
