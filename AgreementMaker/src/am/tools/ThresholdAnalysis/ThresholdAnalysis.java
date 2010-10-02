@@ -8,6 +8,8 @@ import java.io.IOException;
 import javax.swing.SwingWorker;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -21,6 +23,7 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.multiWords.MultiWordsMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
@@ -59,6 +62,7 @@ import am.userInterface.MatcherParametersDialog;
 
 public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 
+	private static Logger log = Logger.getLogger(ThresholdAnalysis.class); // logger
 	
 	
 	private boolean prefBatchMode = false; // are we running a batch mode?
@@ -155,8 +159,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		try {
 			referenceAlignmentMatcher.match();
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Analysis aborted.");
+			log.error("Analysis aborted.",e);
 			return;
 		}
 		
@@ -186,7 +189,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 			for( double currentThreshold = prefStartThreshold; currentThreshold < prefEndThreshold; currentThreshold += prefThresholdIncrement) {
 
 				currentThreshold = Utility.roundDouble(currentThreshold, 4);
-				if( Core.DEBUG_THRESHOLDANALYSIS ) System.out.println("Selecting with threshold = " + currentThreshold );
+				log.info("Selecting with threshold = " + currentThreshold );
 				matcherToAnalyze.setThreshold(currentThreshold);
 				matcherToAnalyze.select();
 							
@@ -196,14 +199,13 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 				writerPrecision.write(th + "," + Utility.roundDouble( currentEvaluation.getPrecision() * 100.0d, 2) + "\n");
 				writerRecall.write(th + "," + Utility.roundDouble( currentEvaluation.getRecall() * 100.0d, 2) + "\n");
 				writerFMeasure.write(th + "," + Utility.roundDouble( currentEvaluation.getFmeasure()* 100.0d, 2) + "\n");
-				if( Core.DEBUG_THRESHOLDANALYSIS ) { 
-					System.out.println("Results: (precision, recall, f-measure) = (" + 
+				log.info("Results: (precision, recall, f-measure) = (" + 
 						Utility.roundDouble( currentEvaluation.getPrecision() * 100.0d, 2) + ", " + 
 						Utility.roundDouble( currentEvaluation.getRecall() * 100.0d, 2) + ", " +
 						Utility.roundDouble( currentEvaluation.getFmeasure()* 100.0d, 2) + ")");
-					System.out.println("       : (found mappings, correct mappings, reference mappings) = (" + 
+				log.info("       : (found mappings, correct mappings, reference mappings) = (" + 
 							currentEvaluation.getFound() + ", " + currentEvaluation.getCorrect() + ", " + currentEvaluation.getExist() + ")");
-				}
+				
 				
 				writerPrecision.flush();
 				writerRecall.flush();
@@ -239,14 +241,14 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		// open and parse the benchmark XML file
 		try {
 			
-			if( Core.DEBUG_THRESHOLDANALYSIS ) System.out.println("Reading batch file.");
+			log.info("Reading batch file.");
 			File batchFile = new File( prefBatchFile );
 			
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document doc = db.parse(batchFile);
 			doc.getDocumentElement().normalize();
-			//if( Core.DEBUG_THRESHOLDANALYSIS ) System.out.println("Root element " + doc.getDocumentElement().getNodeName());
+			log.debug("Root element " + doc.getDocumentElement().getNodeName());
 			
 			outputPrefix = doc.getDocumentElement().getAttribute("title");
 			
@@ -291,7 +293,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 				
 				String referenceAlignmentFile = referenceAlignment.getAttribute("filename");
 				
-				if( Core.DEBUG_THRESHOLDANALYSIS ) System.out.println("Running analysis for " + sourceOntologyName + " to " + targetOntologyName);
+				log.info("Running analysis for " + sourceOntologyName + " to " + targetOntologyName);
 				
 				runAnalysis( sourceOntologyFile, sourceOntologyName, targetOntologyFile, targetOntologyName, referenceAlignmentFile );
 				
@@ -299,7 +301,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 			
 			
 		} catch(Exception e) {
-			e.printStackTrace();
+			log.error("Analysis aborted.",e);
 		}
 		
 		
@@ -311,7 +313,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 			String targetOntologyName, String referenceAlignmentFile) {
 
 		
-		if( Core.DEBUG_THRESHOLDANALYSIS ) System.out.println("Loading ontology " +  sourceOntologyFile);
+		log.info("Loading ontology " +  sourceOntologyFile);
 		// load source ontology
 		OntoTreeBuilder sourceBuilder = new OntoTreeBuilder(sourceOntologyFile , 
 															GlobalStaticVariables.SOURCENODE, 
@@ -321,7 +323,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		
 		Ontology sourceOntology = sourceBuilder.getOntology();
 		
-		if( Core.DEBUG_THRESHOLDANALYSIS ) System.out.println("Loading ontology " +  targetOntologyFile);
+		log.info("Loading ontology " +  targetOntologyFile);
 		// load target ontology
 		OntoTreeBuilder targetBuilder = new OntoTreeBuilder(targetOntologyFile , 
 															GlobalStaticVariables.SOURCENODE, 
@@ -344,8 +346,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		try {
 			matcherToAnalyze.match();
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Analysis aborted.");
+			log.error("Analysis aborted.", e);
 			return;
 		}
 		
@@ -362,8 +363,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		try {
 			referenceAlignmentMatcher.match();
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Analysis aborted.");
+			log.error("Analysis aborted.",e);
 			return;
 		}
 		
@@ -391,7 +391,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 				
 				currentThreshold = Utility.roundDouble(currentThreshold, 4);
 				
-				if( Core.DEBUG_THRESHOLDANALYSIS ) System.out.println("Selecting with threshold = " + currentThreshold );
+				log.info("Selecting with threshold = " + currentThreshold );
 				matcherToAnalyze.setThreshold(currentThreshold);
 				matcherToAnalyze.select();
 							
@@ -401,14 +401,13 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 				writerRecall.write(currentThreshold + "," + Utility.roundDouble( currentEvaluation.getRecall(), 2) + "\n");
 				writerFMeasure.write(currentThreshold + "," + Utility.roundDouble( currentEvaluation.getFmeasure(), 2) + "\n");
 				
-				if( Core.DEBUG_THRESHOLDANALYSIS ) { 
-					System.out.println("Results: (precision, recall, f-measure) = (" + 
-						Utility.roundDouble( currentEvaluation.getPrecision() * 100.0d, 2) + ", " + 
-						Utility.roundDouble( currentEvaluation.getRecall() * 100.0d, 2) + ", " +
-						Utility.roundDouble( currentEvaluation.getFmeasure()* 100.0d, 2) + ")");
-					System.out.println("       : (found mappings, correct mappings, reference mappings) = (" + 
+			 
+				log.info("Results: (precision, recall, f-measure) = (" + 
+					Utility.roundDouble( currentEvaluation.getPrecision() * 100.0d, 2) + ", " + 
+					Utility.roundDouble( currentEvaluation.getRecall() * 100.0d, 2) + ", " +
+					Utility.roundDouble( currentEvaluation.getFmeasure()* 100.0d, 2) + ")");
+				log.info("       : (found mappings, correct mappings, reference mappings) = (" + 
 							currentEvaluation.getFound() + ", " + currentEvaluation.getCorrect() + ", " + currentEvaluation.getExist() + ")");
-				}
 				
 				if( maxFMeasure < currentEvaluation.getFmeasure() ) {
 					maxFMeasure = currentEvaluation.getFmeasure();
