@@ -62,7 +62,8 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 * @author michele
 	 */
 	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
-
+		// TODO: works no more while returning null... no sparse matrix now.... creating 0.0 alignment
+		
 		// Step 0: tokenize source and target nodes (if possible) and separate by relevance
 		// prepare list of data
 		String sLN = super.treatString(source.getLocalName()); // source LocalName (sLN)
@@ -76,7 +77,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		double simValueContribution = nonContentWordCheck(tokenized_sLN, tokenized_tLN);
 		
 		if(simValueContribution == NO_MATCH){ // immediately discard those considered unmatchable
-			return null;
+			return new Alignment(source, target, 0);
 		}
 		// Step 2: check out for similarity between meaningful words
 		else {
@@ -95,7 +96,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 				return new Alignment(source, target, Math.min(1, simValue));
 			}
 		}
-		return null;
+		return new Alignment(source, target, 0);
 	}
 	
 	/**
@@ -130,7 +131,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 				
 				t = target.get(j).toLowerCase();
 				tempValue = ((ParametricStringMatcher) localMatcher).performStringSimilarity(s, t);
-				
+				//localMatrix.setSimilarity(i, j, tempValue);
 				localMatrix.set(i, j, new Alignment(new Node(i, s, typeOfNodes.toString(), sourceOntology.getIndex()),
 													new Node(j, t, typeOfNodes.toString(), targetOntology.getIndex()),
 													tempValue));
