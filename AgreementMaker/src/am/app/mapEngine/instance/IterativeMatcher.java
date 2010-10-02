@@ -77,7 +77,7 @@ public class IterativeMatcher extends AbstractMatcher{
 		//Matching methods here.
 		matchTransitiveProperties();
 		//0-1
-		for(int i = 0; i < 2; i++){
+		for(int i = 0; i < 1; i++){
 			//0-1
 			matchClassesUsingInstances();
 			//9-1
@@ -92,25 +92,25 @@ public class IterativeMatcher extends AbstractMatcher{
 			//Fmeasure = 2(precision*recall)/(precision+recall): 29.3%
 			
 			matchUnionClasses();
-			//12-8
+			//13-8
 			//Precision = Correct/Discovered: 100.0%
-			//Recall = Correct/Reference: 20.2%
-			//Fmeasure = 2(precision*recall)/(precision+recall): 33.6%
+			//Recall = Correct/Reference: 21.2%
+			//Fmeasure = 2(precision*recall)/(precision+recall): 35.0%
 			
 			
-			matchDatatypePropertiesUsingAnnotations();
+			//matchDatatypePropertiesUsingAnnotations();
 			
-			matchPropertiesUsingClasses();
+			//matchPropertiesUsingClasses();
 			
-			matchClassesUsingProperties();
+			//matchClassesUsingProperties();
 			
-			matchObjectPropertiesUsingDomainAndRange();
-			
-			
-			matchObjectPropertiesUsingAnnotations();
+			//matchObjectPropertiesUsingDomainAndRange();
 			
 			
-			matchByDefinedResources();
+			//matchObjectPropertiesUsingAnnotations();
+			
+			
+			//matchByDefinedResources();
 			//Precision = Correct/Discovered: 93.5%
 			//Recall = Correct/Reference: 29.3%
 			//Fmeasure = 2(precision*recall)/(precision+recall): 44.6%
@@ -201,8 +201,7 @@ public class IterativeMatcher extends AbstractMatcher{
 						OntClass tc = iT.getOntClass();
 						if(!matchedClassesS.contains(sc) && !matchedClassesT.contains(tc)){
 							if(!matchedClassesS.contains(sc)){
-								matchedClassesS.add(sc);
-								matchedClassesT.add(tc);
+								mapTwoOntClasses(sc, tc);
 							}
 							
 						}
@@ -266,51 +265,54 @@ public class IterativeMatcher extends AbstractMatcher{
 				OntClass unionMember = (OntClass) r0.as( OntClass.class );
 				list.add(unionMember);
 				//System.out.print(" " + unionMember.getLocalName());
-				
-				for(int j = 0; j < unionClassesT.size(); j++){
-					UnionClass uc2 = unionClassesT.get(j);
-					ArrayList<OntClass> list2 = new ArrayList<OntClass>();
+			}
+			
+			for(int j = 0; j < unionClassesT.size(); j++){
+				UnionClass uc2 = unionClassesT.get(j);
+				ArrayList<OntClass> list2 = new ArrayList<OntClass>();
+
+				for (ExtendedIterator ei = uc2.listOperands(); ei.hasNext(); ) {
+					Resource r1 = (Resource) ei.next();
+					OntClass unionMember2 = (OntClass) r1.as( OntClass.class );
+					list2.add(unionMember2);
+					//System.out.print(" " + unionMember2.getLocalName());
+				}
+			
+				//Match HERE
+				//I have the list of classes constitutes the union class
+				if(list.size() == 2 && list2.size() == 2){
 					
-					for (ExtendedIterator ei = uc2.listOperands(); ei.hasNext(); ) {
-						Resource r1 = (Resource) ei.next();
-						OntClass unionMember2 = (OntClass) r1.as( OntClass.class );
-						list2.add(unionMember2);
-						//System.out.print(" " + unionMember2.getLocalName());
-					}
-					
-					//I have the list of classes constitutes the union class
-					if(list.size() == 2 && list2.size() == 2){
-						if(matchedClassesS.contains(list.get(0))){
-							if(matchedClassesT.contains(list2.get(0)) && matchedClassesT.get( matchedClassesS.indexOf(list.get(0)) ).equals(list2.get(0))){
-								if(!matchedClassesS.contains(list.get(1))){
-									matchedClassesS.add(list.get(1));
-									matchedClassesT.add(list2.get(1));
-								}
-							}
-							else if(matchedClassesT.contains(list2.get(1)) && matchedClassesT.get( matchedClassesS.indexOf(list.get(0)) ).equals(list2.get(1))){
-								if(!matchedClassesS.contains(list.get(1))){
-									matchedClassesS.add(list.get(1));
-									matchedClassesT.add(list2.get(0));
-								}
+					if(matchedClassesS.contains(list.get(0))){
+						if(matchedClassesT.contains(list2.get(0)) && matchedClassesT.get( matchedClassesS.indexOf(list.get(0)) ).equals(list2.get(0))){
+							if(!matchedClassesS.contains(list.get(1))){
+								mapTwoOntClasses(list.get(1), list2.get(1));
 							}
 						}
-						else if(matchedClassesS.contains(list.get(1))){
-							if(matchedClassesT.contains(list2.get(0)) && matchedClassesT.get( matchedClassesS.indexOf(list.get(1)) ).equals(list2.get(0))){
-								if(!matchedClassesS.contains(list.get(0))){
-									matchedClassesS.add(list.get(0));
-									matchedClassesT.add(list2.get(1));
-								}
+						else if(matchedClassesT.contains(list2.get(1)) && matchedClassesT.get( matchedClassesS.indexOf(list.get(0)) ).equals(list2.get(1))){
+							if(!matchedClassesS.contains(list.get(1))){
+								mapTwoOntClasses(list.get(1), list2.get(0));
 							}
-							if(matchedClassesT.contains(list2.get(1)) && matchedClassesT.get( matchedClassesS.indexOf(list.get(1)) ).equals(list2.get(1))){
-								if(!matchedClassesS.contains(list.get(0))){
-									matchedClassesS.add(list.get(0));
-									matchedClassesT.add(list2.get(0));
-								}
+						}
+					}
+					else if(matchedClassesS.contains(list.get(1))){
+						if(matchedClassesT.contains(list2.get(0)) && matchedClassesT.get( matchedClassesS.indexOf(list.get(1)) ).equals(list2.get(0))){
+							if(!matchedClassesS.contains(list.get(0))){
+								mapTwoOntClasses(list.get(0), list2.get(1));
+							}
+						}
+						if(matchedClassesT.contains(list2.get(1)) && matchedClassesT.get( matchedClassesS.indexOf(list.get(1)) ).equals(list2.get(1))){
+							if(!matchedClassesS.contains(list.get(0))){
+								mapTwoOntClasses(list.get(0), list2.get(0));
 							}
 						}
 					}
 				}
+				else if(list.size() == 3 && list2.size() == 3){
+					
+				}
+			
 			}
+		
 		}
 		
 	}
@@ -344,8 +346,7 @@ public class IterativeMatcher extends AbstractMatcher{
 								if(matchedPropsS.contains(op1)){
 									if(matchedPropsT.contains(op2) && matchedPropsT.get( matchedPropsS.indexOf(op1) ).equals(op2) ){
 										if(!matchedClassesS.contains(c)){
-											matchedClassesS.add(c);
-											matchedClassesT.add(b);
+											mapTwoOntClasses(c, b);
 											matched = true;
 											break;
 										}
@@ -402,7 +403,7 @@ public class IterativeMatcher extends AbstractMatcher{
 					matchDeclaringClasses(op1, op2);
 				}
 
-				System.out.println(stmt1 + "\n" + stmt2);
+				//System.out.println(stmt1 + "\n" + stmt2);
 			}
 			
 		}
@@ -768,8 +769,7 @@ public class IterativeMatcher extends AbstractMatcher{
 			OntClass ct = lt.get(0);
 			if(cs.isAnon() || ct.isAnon())return;
 			if(!matchedClassesS.contains(cs)){
-				matchedClassesS.add(cs);
-				matchedClassesT.add(ct);
+				mapTwoOntClasses(cs, ct);
 			}
 		}
 		if(ls.size() == 2 && lt.size() == 2){
@@ -801,30 +801,6 @@ public class IterativeMatcher extends AbstractMatcher{
 		}
 	}
 	
-	//Check if a given source OntClass a is mapped to target OntClass b 
-	public boolean isOntClassesEqual(OntClass a, OntClass b){
-		if(matchedClassesS.contains(a)){
-			if(matchedClassesT.contains(b)){
-				if(matchedClassesS.indexOf(a) == matchedClassesT.indexOf(b)){
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
-	//Returns true if a given source OntClass is already mapped
-	public boolean isSourceMapped(OntClass a){
-		if(matchedClassesS.contains(a)){
-			return true;
-		}
-		return false;
-	}
-	
-	public void mapTwoOntClasses(OntClass a, OntClass b){
-		matchedClassesS.add(a);
-		matchedClassesT.add(b);
-	}
 	
 	//Adds to Classes
 	public void matchSuperClasses(){
@@ -864,8 +840,7 @@ public class IterativeMatcher extends AbstractMatcher{
 				try{
 				if(matchedClassesS.contains(cs) && matchedClassesT.get( matchedClassesS.indexOf(cs) ).equals(ct) ){
 					if(!matchedClassesS.contains(sup)){
-						matchedClassesS.add(sup);
-						matchedClassesT.add(supt);
+						mapTwoOntClasses(sup, supt);
 					}
 				}
 				}
@@ -889,6 +864,31 @@ public class IterativeMatcher extends AbstractMatcher{
 	//
 	public void matchBasedOnRestrictions(){
 		
+	}
+	
+	//Check if a given source OntClass a is mapped to target OntClass b 
+	public boolean isOntClassesEqual(OntClass a, OntClass b){
+		if(matchedClassesS.contains(a)){
+			if(matchedClassesT.contains(b)){
+				if(matchedClassesS.indexOf(a) == matchedClassesT.indexOf(b)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	//Returns true if a given source OntClass is already mapped
+	public boolean isSourceMapped(OntClass a){
+		if(matchedClassesS.contains(a)){
+			return true;
+		}
+		return false;
+	}
+	
+	public void mapTwoOntClasses(OntClass a, OntClass b){
+		matchedClassesS.add(a);
+		matchedClassesT.add(b);
 	}
 	
 	public void populateStatements(){
