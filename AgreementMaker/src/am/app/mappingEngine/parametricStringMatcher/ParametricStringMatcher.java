@@ -69,69 +69,11 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		normalizer = new Normalizer(parameters.normParameter);
 		
 		if( parameters.useLexicons ) {
-			// build all the lexicons if they don't exist.  TODO: Move this to the LexiconStore.
-			sourceOntologyLexicon = Core.getLexiconStore().getLexiconByOntIDAndType( sourceOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON );
-			
-			if( sourceOntologyLexicon == null ) {
-				if( Core.DEBUG_PSM ) System.out.println("Building source ontology lexicon...");
-				OntModel sourceModel = sourceOntology.getModel();
-				
-				// the synonym property, label property and definition property
-				Property sourceSynonymProperty = sourceModel.getProperty("http://www.geneontology.org/formats/oboInOwl#hasRelatedSynonym");
-				Property sourceLabelProperty = sourceModel.getProperty("http://www.w3.org/2000/01/rdf-schema#label");
-				Property sourceDefinitionProperty = sourceModel.getProperty("http://www.geneontology.org/formats/oboInOwl#hasDefinition");
-				
-				OntologyLexiconBuilder sourceOLB = new OntologyLexiconBuilder(sourceOntology, sourceLabelProperty, sourceSynonymProperty, sourceDefinitionProperty);
-				
-				sourceOntologyLexicon = sourceOLB.buildLexicon();
-				sourceOntologyLexicon.settOntologyID(sourceOntology.getID());
-				
-				Core.getLexiconStore().registerLexicon(sourceOntologyLexicon); // register for reuse by other matchers
-			}
-			
-			targetOntologyLexicon = Core.getLexiconStore().getLexiconByOntIDAndType( targetOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
-			
-			if( targetOntologyLexicon == null ) {
-				if( Core.DEBUG_PSM ) System.out.println("Building target ontology lexicon...");
-				OntModel targetModel = targetOntology.getModel();
-		
-				// the synonym property, label property and definition property
-				Property targetSynonymProperty = targetModel.getProperty("http://www.geneontology.org/formats/oboInOwl#hasRelatedSynonym");	
-				Property targetLabelProperty = targetModel.getProperty("http://www.w3.org/2000/01/rdf-schema#label");
-				Property targetDefinitionProperty = targetModel.getProperty("http://www.geneontology.org/formats/oboInOwl#hasDefinition");
-				
-				// STEP 1: Let's build the lexicons for the ontology
-				OntologyLexiconBuilder targetOLB = new OntologyLexiconBuilder(targetOntology, targetLabelProperty, targetSynonymProperty, targetDefinitionProperty);
-	
-				targetOntologyLexicon = targetOLB.buildLexicon();
-				targetOntologyLexicon.settOntologyID(targetOntology.getID());
-				
-				Core.getLexiconStore().registerLexicon(targetOntologyLexicon);
-			}
-			
-			sourceWordNetLexicon = Core.getLexiconStore().getLexiconByOntIDAndType( sourceOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
-			
-			if( sourceWordNetLexicon == null ) { // no lexicon available we must build it
-				if( Core.DEBUG_PSM ) System.out.println("Building source WordNet lexicon...");
-				// STEP 1: Let's build the lexicons for the ontology
-				WordNetLexiconBuilder sourceOLB = new WordNetLexiconBuilder(sourceOntology, sourceOntologyLexicon);
-	
-				sourceWordNetLexicon = sourceOLB.buildLexicon();
-				sourceWordNetLexicon.settOntologyID(sourceOntology.getID());
-				
-				Core.getLexiconStore().registerLexicon(sourceOntologyLexicon);
-			}
-			
-			targetWordNetLexicon = Core.getLexiconStore().getLexiconByOntIDAndType( targetOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
-			if( targetWordNetLexicon == null ) {
-				if( Core.DEBUG_PSM ) System.out.println("Building target WordNet lexicon...");
-				WordNetLexiconBuilder targetOLB = new WordNetLexiconBuilder(targetOntology, targetOntologyLexicon);
-				
-				targetWordNetLexicon = targetOLB.buildLexicon();
-				targetWordNetLexicon.settOntologyID( targetOntology.getID() );
-				
-				Core.getLexiconStore().registerLexicon(targetWordNetLexicon);
-			}
+			// build all the lexicons if they don't exist.
+			sourceOntologyLexicon = Core.getLexiconStore().getSourceOntLexicon(sourceOntology);			
+			targetOntologyLexicon = Core.getLexiconStore().getTargetOntLexicon(targetOntology);			
+			sourceWordNetLexicon = Core.getLexiconStore().getSourceWNLexicon(sourceOntology, sourceOntologyLexicon);
+			targetWordNetLexicon = Core.getLexiconStore().getTargetWNLexicon(targetOntology, targetOntologyLexicon);
 		}
 		
 	}
