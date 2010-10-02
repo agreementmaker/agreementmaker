@@ -9,7 +9,6 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 
 import am.GlobalStaticVariables;
-import am.app.mapEngine.instance.InstanceProperty;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.qualityEvaluation.JoslynStructuralQuality;
 import am.userInterface.vertex.Vertex;
@@ -58,14 +57,6 @@ public class Ontology {
 	private boolean skipOtherNamespaces;
 	
 	private String URI;
-	
-	private ArrayList<InstanceProperty> instanceProperties;
-	public ArrayList<InstanceProperty> getInstanceProperties() {
-		return instanceProperties;
-	}
-	public void setInstanceProperties(ArrayList<InstanceProperty> ips) {
-		instanceProperties = ips;
-	}
 	
 	private ArrayList<DatatypeProperty> dataProperties;
 	public ArrayList<DatatypeProperty> getDataProperties() {

@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import am.app.Core;
-import am.app.mapEngine.instance.InstanceProperty;
-import am.app.mapEngine.instance.PropType;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.userInterface.vertex.Vertex;
@@ -228,9 +226,7 @@ public class OntoTreeBuilder extends TreeBuilder{
         treeRoot.add(propertyRoot);
         ontology.setPropertiesTree( propertyRoot);
         
-        ontology.setTreeCount(treeCount);
-        
-        getInstancesFromModel();       
+        ontology.setTreeCount(treeCount);     
 	}
 	
 	/**
@@ -556,69 +552,5 @@ public class OntoTreeBuilder extends TreeBuilder{
     	ontURI = URI;
     }
 
-    //Get Instance data from Jena
-    protected void getInstancesFromModel(){
-    	/*
-    	ExtendedIterator dataprops = model.listDatatypeProperties();
-    	ArrayList<DatatypeProperty> dtps = new ArrayList<DatatypeProperty>(5);
-    	
-    	while(dataprops.hasNext()){
-    		dtps.add((DatatypeProperty)dataprops.next());
-    	}
-    	
-    	ontology.setDataProperties(dtps);
-    	
-    	ExtendedIterator objectprops = model.listObjectProperties();
-    	ArrayList<ObjectProperty> ops = new ArrayList<ObjectProperty>(5);
-    	
-    	while(objectprops.hasNext()){
-    		ops.add((ObjectProperty)objectprops.next());
-    	}
-    	
-    	ontology.setObjectProperties(ops);
-    	*/
-    	
-    	ArrayList<InstanceProperty> instancePropList = new ArrayList<InstanceProperty>();
-    	
-    	ExtendedIterator instances = model.listIndividuals();
-    	
-    	while (instances.hasNext())
-	    {
-	    	Individual thisInstance = (Individual) instances.next();
-	    	StmtIterator statements = thisInstance.listProperties();
-	    	
-	    	while (statements.hasNext())
-		    {
-	    		Statement stmt = statements.nextStatement();
-	    		String o = stmt.getObject().toString();
-	    		String s = stmt.getSubject().toString();
-	    		String p = stmt.getPredicate().toString();
-	    		
-	    		DatatypeProperty dtp = null;
-	    		ObjectProperty otp = null;
-	    		PropType pt;
-	    		
-	    		dtp = model.getDatatypeProperty(p);
-	    		
-	    		if(dtp != null){
-	    			pt = PropType.Data;
-	    		}
-	    		else {
-	    			otp = model.getObjectProperty(p);
-	    			if(otp != null){
-	    				pt = PropType.Object;
-	    			}
-	    			else{
-	    				pt = PropType.Unknown;
-	    			}
-	    		}
-	    		
-	    		InstanceProperty ip = new InstanceProperty(s, p, o, pt);
-	    		
-	    		instancePropList.add(ip);
-	    		//System.out.println(ip);
-		    }
-	    }
-    	ontology.setInstanceProperties(instancePropList);
-    }
+    
 }

@@ -6,8 +6,6 @@ import java.util.Iterator;
 
 import am.app.feedback.FeedbackLoop;
 import am.app.feedback.InitialMatchers;
-import am.app.mapEngine.instance.BaseInstanceMatcher;
-import am.app.mapEngine.instance.InstanceBasedPropMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.LexicalMatcherJAWS.LexicalMatcherJAWS;
