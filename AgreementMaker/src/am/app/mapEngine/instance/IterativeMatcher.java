@@ -4,36 +4,25 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import sun.nio.cs.ext.MacHebrew;
-
-import com.hp.hpl.jena.Jena;
-import com.hp.hpl.jena.ontology.AnnotationProperty;
-import com.hp.hpl.jena.ontology.ComplementClass;
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.IntersectionClass;
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.ontology.SymmetricProperty;
 import com.hp.hpl.jena.ontology.TransitiveProperty;
 import com.hp.hpl.jena.ontology.UnionClass;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.rdf.model.impl.StatementImpl;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.ontology.Node;
-import am.app.ontology.ontologyParser.OntoTreeBuilder;
 
 /**
  * This class matches properties of ontologies using instance information.
@@ -242,6 +231,7 @@ public class IterativeMatcher extends AbstractMatcher{
 		if(tp1 != null && tp2 != null && numOfTransPropsS == 1 && numOfTransPropsT == 1){
 			matchedPropsS.add(tp1);
 			matchedPropsT.add(tp2);
+			matchDeclaringClasses(tp1, tp2);
 		}
 	}
 	
@@ -406,9 +396,10 @@ public class IterativeMatcher extends AbstractMatcher{
 				if(objectvalue1.equals(objectvalue2)){
 					if(!matchedPropsS.contains(op1) && !matchedPropsT.contains(op2))
 					{
-						matchedPropsS.add(op1);
-						matchedPropsT.add(op2);
+							matchedPropsS.add(op1);
+							matchedPropsT.add(op2);
 					}
+					matchDeclaringClasses(op1, op2);
 				}
 
 				System.out.println(stmt1 + "\n" + stmt2);
@@ -516,6 +507,7 @@ public class IterativeMatcher extends AbstractMatcher{
 						if(rngS == null && rngT == null && opS.getComment(null).equals(opT.getComment(null))){
 							matchedPropsS.add(opS);
 							matchedPropsT.add(opT);
+							matchDeclaringClasses(opS, opT);
 							break;
 						}
 						//if range is single class
@@ -525,6 +517,7 @@ public class IterativeMatcher extends AbstractMatcher{
 								if(matchedClassesT.get(index).equals( rangesT.get(0) ) ){
 									matchedPropsS.add(opS);
 									matchedPropsT.add(opT);
+									matchDeclaringClasses(opS, opT);
 									break;
 								}
 							}
@@ -542,6 +535,7 @@ public class IterativeMatcher extends AbstractMatcher{
 								if(t1.equals( matchedClassesT.get(index1)) && t2.equals( matchedClassesT.get(index2)) ){
 									matchedPropsS.add(opS);
 									matchedPropsT.add(opT);
+									matchDeclaringClasses(opS, opT);
 									break;
 								}
 							}
@@ -558,6 +552,7 @@ public class IterativeMatcher extends AbstractMatcher{
 								if(rngS == null && rngT == null){
 									matchedPropsS.add(opS);
 									matchedPropsT.add(opT);
+									matchDeclaringClasses(opS, opT);
 									break;
 								}
 								//if range is single class
@@ -567,6 +562,7 @@ public class IterativeMatcher extends AbstractMatcher{
 										if(matchedClassesT.get(index2).equals( rangesT.get(0) ) ){
 											matchedPropsS.add(opS);
 											matchedPropsT.add(opT);
+											matchDeclaringClasses(opS, opT);
 											break;
 										}
 									}
@@ -584,6 +580,7 @@ public class IterativeMatcher extends AbstractMatcher{
 										if(t1.equals( matchedClassesT.get(index1)) && t2.equals( matchedClassesT.get(index2)) ){
 											matchedPropsS.add(opS);
 											matchedPropsT.add(opT);
+											matchDeclaringClasses(opS, opT);
 											break;
 										}
 									}
@@ -606,6 +603,7 @@ public class IterativeMatcher extends AbstractMatcher{
 								if(rngS == null && rngT == null){
 									matchedPropsS.add(opS);
 									matchedPropsT.add(opT);
+									matchDeclaringClasses(opS, opT);
 									break;
 								}
 								//if range is single class
@@ -615,6 +613,7 @@ public class IterativeMatcher extends AbstractMatcher{
 										if(matchedClassesT.get(index).equals( rangesT.get(0) ) ){
 											matchedPropsS.add(opS);
 											matchedPropsT.add(opT);
+											matchDeclaringClasses(opS, opT);
 											break;
 										}
 									}
@@ -632,6 +631,7 @@ public class IterativeMatcher extends AbstractMatcher{
 										if(t5.equals( matchedClassesT.get(index5)) && t6.equals( matchedClassesT.get(index6)) ){
 											matchedPropsS.add(opS);
 											matchedPropsT.add(opT);
+											matchDeclaringClasses(opS, opT);
 											break;
 										}
 									}
@@ -677,6 +677,7 @@ public class IterativeMatcher extends AbstractMatcher{
 							
 							matchedPropsS.add(opS);
 							matchedPropsT.add(opT);
+							matchDeclaringClasses(opS, opT);
 						}
 					}
 				}
@@ -704,6 +705,7 @@ public class IterativeMatcher extends AbstractMatcher{
 							
 							matchedPropsS.add(opS);
 							matchedPropsT.add(opT);
+							matchDeclaringClasses(opS, opT);
 							break;
 						}
 					}
@@ -740,6 +742,7 @@ public class IterativeMatcher extends AbstractMatcher{
 								if(matchedClassesS.indexOf(c) == matchedClassesT.indexOf(ct)){
 									matchedPropsS.add(opS);
 									matchedPropsT.add(opT);
+									matchDeclaringClasses(opS, opT);
 									break;
 								}
 								
@@ -751,6 +754,76 @@ public class IterativeMatcher extends AbstractMatcher{
 			}
 			
 		}
+	}
+	
+	//For single and double declaring classes of two properties, match them
+	public void matchDeclaringClasses(OntProperty p1, OntProperty p2){
+		ExtendedIterator<? extends OntClass> c1 = p1.listDeclaringClasses(true);
+		List<? extends OntClass> ls = c1.toList();
+		ExtendedIterator<? extends OntClass> c2 = p2.listDeclaringClasses(true);
+		List<? extends OntClass> lt = c2.toList();
+		
+		if(ls.size() == 1 && lt.size() == 1){
+			OntClass cs = ls.get(0);
+			OntClass ct = lt.get(0);
+			if(cs.isAnon() || ct.isAnon())return;
+			if(!matchedClassesS.contains(cs)){
+				matchedClassesS.add(cs);
+				matchedClassesT.add(ct);
+			}
+		}
+		if(ls.size() == 2 && lt.size() == 2){
+			OntClass cs0 = ls.get(0);
+			OntClass cs1 = ls.get(1);
+			OntClass ct0 = lt.get(0);
+			OntClass ct1 = lt.get(1);
+			if(cs0.isAnon() || ct0.isAnon() || cs1.isAnon() || ct1.isAnon() )return;
+			if(isOntClassesEqual(cs0, ct0)){
+				if(!isSourceMapped(cs1)){
+					mapTwoOntClasses(cs1, ct1);
+				}
+			}
+			else if(isOntClassesEqual(cs1, ct1)){
+				if(!isSourceMapped(cs0)){
+					mapTwoOntClasses(cs0, ct0);
+				}
+			}
+			else if(isOntClassesEqual(cs0, ct1)){
+				if(!isSourceMapped(cs1)){
+					mapTwoOntClasses(cs1, ct0);
+				}
+			}
+			else{
+				if(!isSourceMapped(cs0)){
+					mapTwoOntClasses(cs0, ct1);
+				}
+			}
+		}
+	}
+	
+	//Check if a given source OntClass a is mapped to target OntClass b 
+	public boolean isOntClassesEqual(OntClass a, OntClass b){
+		if(matchedClassesS.contains(a)){
+			if(matchedClassesT.contains(b)){
+				if(matchedClassesS.indexOf(a) == matchedClassesT.indexOf(b)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	//Returns true if a given source OntClass is already mapped
+	public boolean isSourceMapped(OntClass a){
+		if(matchedClassesS.contains(a)){
+			return true;
+		}
+		return false;
+	}
+	
+	public void mapTwoOntClasses(OntClass a, OntClass b){
+		matchedClassesS.add(a);
+		matchedClassesT.add(b);
 	}
 	
 	//Adds to Classes
@@ -797,7 +870,7 @@ public class IterativeMatcher extends AbstractMatcher{
 				}
 				}
 				catch (Exception e) {
-					System.out.println();
+					System.out.println(e.getMessage());
 				}
 			}
 			
