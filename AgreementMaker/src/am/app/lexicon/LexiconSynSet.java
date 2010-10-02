@@ -3,6 +3,8 @@ package am.app.lexicon;
 import java.io.PrintStream;
 import java.util.List;
 
+import am.app.mappingEngine.LexiconStore.LexiconRegistry;
+
 import com.hp.hpl.jena.ontology.OntResource;
 
 public interface LexiconSynSet {
@@ -25,4 +27,6 @@ public interface LexiconSynSet {
 	public void print( PrintStream out );
 	public void setID( long id );
 	public long getID();
+	
+	public LexiconRegistry getType();
 }
