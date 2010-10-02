@@ -46,6 +46,9 @@ public class FedericoMatcher extends AbstractMatcher {
 	double RANGE_DOMAIN_THRESHOLD = 0.9;
 	double PROP_USAGE_THRESHOLD = 0.6;
 	
+	double PROPERTY_THRESHOLD = 0.8;
+	double CLASS_THRESHOLD = 0.8;
+	
 	boolean individuals = true;
 	boolean localname = true;
 	boolean comment = true;
@@ -67,6 +70,8 @@ public class FedericoMatcher extends AbstractMatcher {
 	
 	public FedericoMatcher(){
 		super();
+		minInputMatchers = 1;
+		maxInputMatchers = 1;
 	}
 	
 	@Override
@@ -88,6 +93,8 @@ public class FedericoMatcher extends AbstractMatcher {
 		
 		//Initialize maps for information about restrictions
 		initHashMaps();
+		
+		receiveInputMatrixes();		
 		
 		sourcePropValues = initPropValues(sourcePropList,sourceOntology);
 		targetPropValues = initPropValues(targetPropList,targetOntology);
@@ -130,6 +137,16 @@ public class FedericoMatcher extends AbstractMatcher {
 		
 	}
 	
+	private void receiveInputMatrixes() {
+		if(inputMatchers.size()>0){
+			AbstractMatcher input = inputMatchers.get(0);
+			classesMatrix = input.getClassesMatrix();
+			propertiesMatrix = input.getPropertiesMatrix();
+			//System.out.println();
+		}
+		
+	}
+
 	private void filterNonOntologyAlignments() {
 		for (int i = 0; i < sourcePropList.size(); i++) {
 			if(!sourcePropList.get(i).getUri().startsWith(sourceOntology.getURI())){
@@ -275,7 +292,7 @@ public class FedericoMatcher extends AbstractMatcher {
 					tSub.add((OntProperty)it2.next());
 				}
 				
-				if(alignedProp(pr1.getURI(),pr2.getURI())==1.0 &&
+				if(alignedProp(pr1.getURI(),pr2.getURI())>=PROPERTY_THRESHOLD &&
 						sSub.size()==tSub.size() && sSub.size()>0){
 					
 					if(verbose){
@@ -288,7 +305,7 @@ public class FedericoMatcher extends AbstractMatcher {
 						
 					for (int k = 0; k < sSub.size(); k++) {
 						for (int t = 0; t < tSub.size(); t++) {
-							if(alignedProp(sSub.get(k).getURI(),tSub.get(t).getURI())==1.0){
+							if(alignedProp(sSub.get(k).getURI(),tSub.get(t).getURI())>=PROPERTY_THRESHOLD){
 								sSub.remove(k);
 								tSub.remove(t);
 								k--;
@@ -415,7 +432,7 @@ public class FedericoMatcher extends AbstractMatcher {
 					tSub.add((OntClass)it2.next());
 				}
 				
-				if(alignedClass(cl1.getURI(),cl2.getURI())==1.0 &&
+				if(alignedClass(cl1.getURI(),cl2.getURI())>=CLASS_THRESHOLD &&
 						sSub.size()==tSub.size() && sSub.size()>0){
 					
 					if(verbose){
@@ -428,7 +445,7 @@ public class FedericoMatcher extends AbstractMatcher {
 					
 					for (int k = 0; k < sSub.size(); k++) {
 						for (int t = 0; t < tSub.size(); t++) {
-							if(alignedClass(sSub.get(k).getURI(),tSub.get(t).getURI())==1.0){
+							if(alignedClass(sSub.get(k).getURI(),tSub.get(t).getURI())>=CLASS_THRESHOLD){
 								sSub.remove(k);
 								tSub.remove(t);
 								k--;
@@ -829,8 +846,7 @@ public class FedericoMatcher extends AbstractMatcher {
 				if(sim>=RANGE_DOMAIN_THRESHOLD){
 					if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+sourcePropList.get(i).getLocalName()+" "
 							+targetPropList.get(j).getLocalName()+" BY RANGE/DOMAIN");
-					propertiesMatrix.set(i,j,new Alignment(sourcePropList.get(i),targetPropList.get(j), 1.0));
-					
+					propertiesMatrix.set(i,j,new Alignment(sourcePropList.get(i),targetPropList.get(j), 1.0));				
 				}			
 			}
 		}		
@@ -846,7 +862,7 @@ public class FedericoMatcher extends AbstractMatcher {
 		OntProperty tProp = (OntProperty) target.getResource().as(OntProperty.class);
 		
 		return rangeAndDomainSimilarity(sProp, tProp);
-		}
+	}
 	
 	private double domainSimilarity(OntResource sDom, OntResource tDom) {
 		if(sDom.canAs(OntClass.class) && tDom.canAs(OntClass.class)){
@@ -981,7 +997,7 @@ public class FedericoMatcher extends AbstractMatcher {
 		if(t==-1) return 0.0;
 		return propertiesMatrix.getSimilarity(s, t);
 	}
-	
+		
 	private int getIndex(ArrayList<Node> list, String uri) {
 		for (int i = 0; i < list.size(); i++) {
 			if(list.get(i).getUri().equals(uri))
