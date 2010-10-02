@@ -40,6 +40,11 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 	private JCheckBox localCheck;
 
 	
+	private JCheckBox lexCheck;
+	private JLabel lexLabel = new JLabel("Use Lexicon definitions.");
+	private JCheckBox lexSynonymsCheck;
+	private JLabel lexSynonymsLabel = new JLabel("Use Lexicon synonyms.");
+	
 	/*
 	 * The constructor creates the GUI elements and adds 
 	 * them to this panel.  It also creates the parameters object.
@@ -67,6 +72,11 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 		localCheck = new JCheckBox();
 		localCheck.setSelected(true);
 		
+		lexCheck = new JCheckBox();
+		lexCheck.setSelected(false);
+		
+		lexSynonymsCheck = new JCheckBox();
+		lexSynonymsCheck.setSelected(false);
 
 		//LAYOUT: grouplayout is already complicated but very flexible, plus in this case the matchers list is dynamic so it's even more complicated
 		GroupLayout layout = new GroupLayout(this);
@@ -88,6 +98,8 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 			.addComponent(whichTermsLabel)
 			.addGroup(layout.createSequentialGroup()
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+						.addComponent(lexCheck)
+						.addComponent(lexSynonymsCheck)
 						.addComponent(conceptCheck)
 						.addComponent(neighbourCheck) 
 						.addComponent(indCheck) 		
@@ -96,6 +108,8 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 						.addComponent(localCheck) 
 					)
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+						.addComponent(lexLabel)
+						.addComponent(lexSynonymsLabel)
 						.addComponent(conceptLabel) 	
 						.addComponent(neighbourLabel) 	
 						.addComponent(indLabel) 
@@ -117,6 +131,14 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 				.addGap(30)
 				.addComponent(whichTermsLabel)
 				.addGap(10)
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+						.addComponent(lexCheck) 			
+						.addComponent(lexLabel)
+						)
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+						.addComponent(lexSynonymsCheck) 			
+						.addComponent(lexSynonymsLabel)
+						)
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(conceptCheck) 			
 						.addComponent(conceptLabel)
@@ -158,6 +180,9 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 		parameters.considerProperties     = propCheck.isSelected();
 		parameters.considerClasses   = classCheck.isSelected();
 		parameters.considerConcept = conceptCheck.isSelected();
+		
+		parameters.useLexiconDefinitions = lexCheck.isSelected();
+		parameters.useLexiconSynonyms = lexSynonymsCheck.isSelected();
 		
 		//normalization parameters are set in the MultiWordsParameters() because are not user input;
 		return parameters;

@@ -39,6 +39,10 @@ public class MultiWordsParameters extends AbstractParameters {
 	//must be set to false;
 	//it will affect both nodes and neighbors
 	public boolean ignoreLocalNames;
+	
+	// use the definitions in the lexicons
+	public boolean useLexiconDefinitions = false;
+	public boolean useLexiconSynonyms = false;
 
 	
 	//I put the constructor to init default values when we run this method batch mode

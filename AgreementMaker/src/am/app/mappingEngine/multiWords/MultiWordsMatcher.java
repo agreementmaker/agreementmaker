@@ -4,11 +4,26 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
+
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.wcohen.ss.api.StringWrapper;
 import am.Utility;
+import am.app.Core;
+import am.app.lexicon.Lexicon;
+import am.app.lexicon.LexiconSynSet;
+import am.app.lexicon.ontology.OntologyLexiconBuilder;
+import am.app.lexicon.wordnet.WordNetLexiconBuilder;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Alignment;
+import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
+
+import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.StringUtil.AMStringWrapper;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.ontology.Node;
@@ -19,6 +34,9 @@ import simpack.measure.weightingscheme.StringTFIDF;
 
 public class MultiWordsMatcher extends AbstractMatcher { 
 
+	// Logger
+	private static Logger log = Logger.getLogger(MultiWordsMatcher.class);
+	
 
 	private Normalizer normalizer;
 	private ArrayList<String> sourceClassDocuments = new ArrayList<String>();
@@ -32,6 +50,10 @@ public class MultiWordsMatcher extends AbstractMatcher {
 	private StringTFIDF tfidfClasses;
 	private StringTFIDF tfidfProperties;
 	
+	// Lexicons
+	private Lexicon sourceOntologyLexicon, targetOntologyLexicon;
+	private Lexicon sourceWordNetLexicon, targetWordNetLexicon; 
+	
 	public MultiWordsMatcher() {
 		// warning, param is not available at the time of the constructor
 		super();
@@ -40,6 +62,7 @@ public class MultiWordsMatcher extends AbstractMatcher {
 	
 	public MultiWordsMatcher( MultiWordsParameters param_new ) {
 		super(param_new);
+		
 	}
 	
 	
@@ -65,6 +88,17 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		MultiWordsParameters parameters =(MultiWordsParameters)param;
 		//prepare the normalizer to preprocess strings
 		normalizer = new Normalizer(parameters.normParameter);
+		
+		// lexicon support.
+		
+		if( parameters.useLexiconDefinitions || parameters.useLexiconSynonyms ) {
+			// build all the lexicons if they don't exist.  TODO: Move this to the LexiconStore.
+			sourceOntologyLexicon = Core.getLexiconStore().getSourceOntLexicon(sourceOntology);			
+			targetOntologyLexicon = Core.getLexiconStore().getTargetOntLexicon(targetOntology);			
+			sourceWordNetLexicon = Core.getLexiconStore().getSourceWNLexicon(sourceOntology, sourceOntologyLexicon);
+			targetWordNetLexicon = Core.getLexiconStore().getTargetWNLexicon(targetOntology, targetOntologyLexicon);
+		}
+		
 		
 		if(alignClass) {
 			//Class corpus is the list of documents from source and target. Each node consists of one document containing many terms: localname, label, all terms from comment and so on...
@@ -116,6 +150,7 @@ public class MultiWordsMatcher extends AbstractMatcher {
 			 }
 			 if(((MultiWordsParameters)param).measure.equals(MultiWordsParameters.TFIDF)){
 				 tfidfProperties = new StringTFIDF(propCorpus);
+				 
 			 }
 		}
 		
@@ -123,11 +158,10 @@ public class MultiWordsMatcher extends AbstractMatcher {
 
 	}
 	
-	private ArrayList<String> createDocumentsFromNodeList(ArrayList<Node> nodeList, alignType typeOfNodes) {
+	private ArrayList<String> createDocumentsFromNodeList(ArrayList<Node> nodeList, alignType typeOfNodes) throws Exception {
 		ArrayList<String> documents = new ArrayList<String>();
-		Iterator<Node> it = nodeList.iterator();
-		while(it.hasNext()) {
-			Node node = it.next();
+		
+		for( Node node : nodeList ) {
 			String document = createMultiWordsString(node,typeOfNodes) ;
 			String normDocument = normalizer.normalize(document);
 			documents.add(normDocument);
@@ -136,7 +170,7 @@ public class MultiWordsMatcher extends AbstractMatcher {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private String createMultiWordsString(Node node, alignType typeOfNodes) {
+	private String createMultiWordsString(Node node, alignType typeOfNodes) throws Exception {
 		
 		String multiWordsString = "";
 		MultiWordsParameters mp = (MultiWordsParameters)param;
@@ -233,8 +267,73 @@ public class MultiWordsMatcher extends AbstractMatcher {
 			multiWordsString = Utility.smartConcat(multiWordsString, classString);
 		}
 		
+		// lexicons
+		if( mp.useLexiconDefinitions ) {
+			String definitions = new String();
+			OntResource nodeResource = node.getResource().as(OntResource.class);
+			
+			if( node.getOntologyIndex() == sourceOntology.getIndex() ) {
+				// look up the definition in the source lexicons
+				LexiconSynSet sourceOntSS = sourceOntologyLexicon.getSynSet(nodeResource);
+				LexiconSynSet sourceWNSS = sourceWordNetLexicon.getSynSet(nodeResource);
+				if( sourceOntSS != null ) definitions = Utility.smartConcat(definitions, sourceOntSS.getGloss());
+				if( sourceWNSS != null ) definitions = Utility.smartConcat(definitions, sourceWNSS.getGloss());
+			} else if( node.getOntologyIndex() == targetOntology.getIndex() ) {
+				// look up the definition in the target lexicons
+				LexiconSynSet targetOntSS = targetOntologyLexicon.getSynSet(nodeResource);
+				LexiconSynSet targetWNSS = targetWordNetLexicon.getSynSet(nodeResource);
+				if( targetOntSS != null ) definitions = Utility.smartConcat(definitions, targetOntSS.getGloss());
+				if( targetWNSS != null ) definitions = Utility.smartConcat(definitions, targetWNSS.getGloss());
+			} else {
+				throw new Exception("Cannot find which ontology the node belongs to.");
+			}
+			
+			if( !definitions.equals("") ) multiWordsString = Utility.smartConcat(multiWordsString, definitions);
+			
+		}
+		
+		if( mp.useLexiconSynonyms ) {
+			String synonyms = new String();
+			OntResource nodeResource = node.getResource().as(OntResource.class);
+			
+			if( node.getOntologyIndex() == sourceOntology.getIndex() ) {
+				// look up the definition in the source lexicons
+				LexiconSynSet sourceOntSS = sourceOntologyLexicon.getSynSet(nodeResource);
+				LexiconSynSet sourceWNSS = sourceWordNetLexicon.getSynSet(nodeResource);
+				String ss = makeSynonymsString(sourceOntSS, sourceWNSS); 
+				if( !ss.isEmpty() ) synonyms = Utility.smartConcat(synonyms, ss);
+			} else if( node.getOntologyIndex() == targetOntology.getIndex() ) {
+				// look up the definition in the target lexicons
+				LexiconSynSet targetOntSS = targetOntologyLexicon.getSynSet(nodeResource);
+				LexiconSynSet targetWNSS = targetWordNetLexicon.getSynSet(nodeResource);
+				String ss = makeSynonymsString(targetOntSS, targetWNSS); 
+				if( !ss.isEmpty() ) synonyms = Utility.smartConcat(synonyms, ss);
+			} else {
+				throw new Exception("Cannot find which ontology the node belongs to.");
+			}
+			
+			if( !synonyms.isEmpty() ) multiWordsString = Utility.smartConcat(multiWordsString, synonyms);
+		}
+		
 		return multiWordsString;
 		
+	}
+
+	private String makeSynonymsString(LexiconSynSet ontSS,
+			LexiconSynSet WNSS) {
+		String synonymsString = new String();
+		
+		if( ontSS != null )
+		for( String ontSyn : ontSS.getSynonyms() ) {
+			synonymsString = Utility.smartConcat(synonymsString, ontSyn);
+		}
+		
+		if( WNSS != null )
+		for( String WNSyn : WNSS.getSynonyms() ) {
+			synonymsString = Utility.smartConcat(synonymsString, WNSyn);
+		}
+		
+		return synonymsString;
 	}
 
 	private String getLabelAndOrNameString(Node node) {
@@ -297,11 +396,12 @@ public class MultiWordsMatcher extends AbstractMatcher {
 			 }
 			 else tfidf = tfidfProperties;
 			 
+			 
 			 //calculate similarity
 			 sim = tfidf.getSimilarity(sourceString, targetString);
-			 
+			
 		}
-		//System.out.println("***** sim: "+sim+"\nmultisource: "+multiWordsSource+"\n"+processedSource+"\n"+multiWordsTarget+"\n"+processedTarget );
+		
 		return new Alignment(source, target, sim);
 		
 	}
