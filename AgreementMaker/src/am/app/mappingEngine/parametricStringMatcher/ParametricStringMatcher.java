@@ -38,10 +38,6 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		needsParam = true;
 	}
 	
-	public ParametricStringMatcher( ParametricStringParameters param_new ) {
-		super(param_new);
-	}
-	
 	
 	public String getDescriptionString() {
 		return "Performs a local matching using a String Based technique.\n" +
@@ -66,7 +62,7 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		super.beforeAlignOperations();
 		ParametricStringParameters parameters =(ParametricStringParameters)param;
 		//prepare the normalizer to preprocess strings
-		normalizer = new Normalizer(parameters.normParameter);
+		initializeNormalizer();
 		
 		if( parameters.useLexicons ) {
 			// build all the lexicons if they don't exist.
@@ -351,6 +347,10 @@ public class ParametricStringMatcher extends AbstractMatcher {
 			parametersPanel = new ParametricStringParametersPanel();
 		}
 		return parametersPanel;
+	}
+
+	public void initializeNormalizer() {
+		normalizer = new Normalizer( (( ParametricStringParameters)param).normParameter );
 	}
 	      
 }
