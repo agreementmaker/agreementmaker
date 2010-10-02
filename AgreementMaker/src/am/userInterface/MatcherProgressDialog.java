@@ -7,7 +7,9 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -16,6 +18,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.Document;
 
 import am.GlobalStaticVariables;
+import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 
 public class MatcherProgressDialog extends JDialog implements MatchingProgressDisplay, ActionListener {
@@ -37,6 +40,12 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
     private JTextArea matcherReport;
     private JScrollPane scrollingArea;
     
+    private JCheckBox radioAlarm, radioBeep;
+    private JLabel finishLabel = new JLabel("On finish:");
+    
+    /** Application Wide preferences, that are saved to a configuration file, and can be restored at any time. */
+	private AppPreferences prefs;
+    
 	/**
 	 * Constructor. 
 	 * @param m
@@ -44,6 +53,8 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 	public MatcherProgressDialog (AbstractMatcher m) {
 	    super();
 	
+	    prefs = Core.getInstance().getUI().getAppPreferences();
+	    
 	    matcherReport = new JTextArea(8, 35);
 	    
 		setTitle("Agreement Maker is Running ...");  // you'd better go catch it!
@@ -61,12 +72,24 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 	    progressPanel.add(progressBar, BorderLayout.PAGE_START);
 	    progressPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 	    
-	    JPanel buttonPanel = new JPanel(new FlowLayout());
+	    radioBeep = new JCheckBox("Beep");
+	    radioBeep.addActionListener(this);
+	    radioAlarm = new JCheckBox("Alarm");
+	    radioAlarm.addActionListener(this);
+	    
+	    if( prefs.getBeepOnFinish() ) radioBeep.setSelected(true);
+	    else radioBeep.setSelected(false);
+	    
+	    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 	    okButton.setEnabled(false);
 	    okButton.addActionListener(this);
 	    cancelButton.addActionListener(this);
-	    buttonPanel.add(okButton);
+	    buttonPanel.add(finishLabel);
+	    buttonPanel.add(radioBeep);
+	    //buttonPanel.add(radioAlarm);
 	    buttonPanel.add(cancelButton);
+	    buttonPanel.add(okButton);
+
 	    
 	    scrollingArea = new JScrollPane(matcherReport);
 	    textPanel.add(scrollingArea);
@@ -121,6 +144,12 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 		else if(obj == cancelButton) {
 			matcher.cancel(true);
 			this.dispose();
+		} else if( obj == radioBeep ) {
+			if( radioBeep.isSelected() && radioAlarm.isSelected() ) radioAlarm.setSelected(false);
+			if( radioBeep.isSelected() ) { prefs.saveBeepOnFinish(true); }
+			else { prefs.saveBeepOnFinish(false); }
+		} else if( obj == radioAlarm ) {
+			if( radioBeep.isSelected() && radioAlarm.isSelected() ) radioBeep.setSelected(false);
 		}
 		
 	}
@@ -144,9 +173,35 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 			progressBar.setIndeterminate(false);
 			progressBar.setValue(100);
 		}
+		
 		matcherReport.setText( matcher.getReport() );
 		cancelButton.setEnabled(false);
 		okButton.setEnabled(true);
+		
+		if( !matcher.isCancelled() ) {
+			if( radioAlarm.isSelected() ) {
+				finishLabel.setText("> > > > > > > >");
+				radioBeep.setVisible(false);
+				radioAlarm.setText("Uncheck to stop alarm.");
+				
+				startAlarm();
+			} else if( radioBeep.isSelected() ) {
+				doBeep();
+			}
+		}
+		
+		
+	}
+
+
+	private void doBeep() {
+		new SoundNotification("images/yeah.wav").start();
+	}
+
+
+	private void startAlarm() {
+		// TODO Auto-generated method stub
+		
 	}
 
 
