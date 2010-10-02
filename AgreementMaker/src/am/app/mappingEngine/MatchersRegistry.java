@@ -55,6 +55,7 @@ public enum MatchersRegistry {
 	 * And so, if your matcher is has no code errors, it will be incorporated into the AgreementMaker.  - Cosmin
 	 */
 	//
+	OAEI2010			( "OAEI 2010 Matcher", am.app.mappingEngine.oaei2010.OAEI2010Matcher.class ),
 	IterativeMatcher	( "Instance-based Iterator", am.app.mapEngine.instance.IterativeMatcher.class),
 	AdvancedSimilarity  ( "Advances Similarity Matcher", am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher.class),
 	GroupFinder			( "GroupFinder", am.app.mappingEngine.groupFinder.GroupFinderMatcher.class),
