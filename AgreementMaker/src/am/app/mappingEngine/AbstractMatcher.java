@@ -370,7 +370,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 					matrix.set(i,j,alignment);
 					if( isProgressDisplayed() ) {
 						stepDone(); // we have completed one step
-						if( alignment.getSimilarity() >= threshold ) tentativealignments++; // keep track of possible alignments for progress display
+						if( alignment != null && alignment.getSimilarity() >= threshold ) tentativealignments++; // keep track of possible alignments for progress display
 					}
 				}
 				if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
