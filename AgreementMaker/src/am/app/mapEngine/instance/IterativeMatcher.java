@@ -97,14 +97,22 @@ public class IterativeMatcher extends AbstractMatcher{
 			//Recall = Correct/Reference: 21.2%
 			//Fmeasure = 2(precision*recall)/(precision+recall): 35.0%
 			
+			matchObjectPropertiesUsingDomainAndRange();
+			//13-16
+			//Precision = Correct/Discovered: 100.0%
+			//Recall = Correct/Reference: 29.3%
+			//Fmeasure = 2(precision*recall)/(precision+recall): 45.3%
 			
 			//matchDatatypePropertiesUsingAnnotations();
+			
+			
+			
+
 			
 			//matchPropertiesUsingClasses();
 			
 			//matchClassesUsingProperties();
 			
-			//matchObjectPropertiesUsingDomainAndRange();
 			
 			
 			//matchObjectPropertiesUsingAnnotations();
@@ -409,8 +417,32 @@ public class IterativeMatcher extends AbstractMatcher{
 		}
 	}
 	
+	public void matchObjectPropertiesUsingDomainAndRange(){
+		ExtendedIterator<ObjectProperty> itS = modelS.listObjectProperties();
+		while(itS.hasNext()){
+			ObjectProperty opS = itS.next();
+			if(matchedPropsS.contains(opS)) continue;
+			
+			ExtendedIterator<ObjectProperty> itT = modelT.listObjectProperties();
+			while(itT.hasNext()){
+				ObjectProperty opT = itT.next();
+				if(matchedPropsT.contains(opT)) continue;
+				
+				if(isDomainsAreSame(opS, opT) && isRangesAreSame(opS, opT)){
+					if(opS.getDomain() == null && opT.getDomain() == null && opS.getRange() == null && opT.getRange() == null ){}
+					else{
+						matchedPropsS.add(opS);
+						matchedPropsT.add(opT);
+						matchDeclaringClasses(opS, opT);
+						break;
+					}
+				}
+			}
+		}
+	}
+	
 	//Adds to Properties
-	public void matchObjectPropertiesUsingDomainAndRange(){		
+	public void matchObjectPropertiesUsingDomainAndRange2(){		
 		ExtendedIterator<ObjectProperty> itS = modelS.listObjectProperties();
 		while(itS.hasNext()){
 			ObjectProperty opS = itS.next();
@@ -661,6 +693,7 @@ public class IterativeMatcher extends AbstractMatcher{
 	
 	
 	//TODO: Matches "book" and "collection" WRONG!
+	//Changes correct Proceedings mapping with Book mapping? 
 	public void matchObjectPropertiesUsingAnnotations(){
 		ExtendedIterator<ObjectProperty> itS = modelS.listObjectProperties();
 		while(itS.hasNext()){
@@ -675,10 +708,11 @@ public class IterativeMatcher extends AbstractMatcher{
 						String cS = opS.getComment(null);
 						String cT = opT.getComment(null);
 						if(cS != null && cT != null && cS.equals(cT)){
-							
-							matchedPropsS.add(opS);
-							matchedPropsT.add(opT);
-							matchDeclaringClasses(opS, opT);
+							if(isDomainsAreSame(opS, opT) && isRangesAreSame(opS, opT)){
+								matchedPropsS.add(opS);
+								matchedPropsT.add(opT);
+								matchDeclaringClasses(opS, opT);
+							}
 						}
 					}
 				}
@@ -865,6 +899,124 @@ public class IterativeMatcher extends AbstractMatcher{
 	public void matchBasedOnRestrictions(){
 		
 	}
+	
+	//Check if two ObjectProperty have the same domain class/es
+	//TODO: Works OntClass type domain for now.
+	public boolean isDomainsAreSame(ObjectProperty ob1, ObjectProperty ob2){
+		OntResource domS = ob1.getDomain();
+		OntResource domT = ob2.getDomain();
+		
+		if(domS == null && domT == null) return true;
+		else if(domS == null && domT != null) return false;
+		else if(domS != null && domT == null) return false;
+		else{
+			if(domS.isClass() && !domS.asClass().isUnionClass()){
+				OntClass cs = domS.asClass();
+
+				if(domT.isClass() && !domT.asClass().isUnionClass()){
+					OntClass ct = domT.asClass();
+
+					if(isOntClassesEqual(cs, ct)){
+						return true;
+					}
+				}
+			}
+			else if (domS.isClass() && domS.asClass().isUnionClass()) {
+				ArrayList<OntClass> ds = new ArrayList<OntClass>();
+				for (Iterator i = domS.asClass().asUnionClass().listOperands(); i.hasNext();) {
+					OntClass c = (OntClass)i.next();
+					ds.add(c);
+				}
+				OntClass cs0 = ds.get(0);
+				OntClass cs1 = ds.get(1);
+
+				if (domT.isClass() && domT.asClass().isUnionClass()) {
+					ArrayList<OntClass> dt = new ArrayList<OntClass>();
+					for (Iterator i = domT.asClass().asUnionClass().listOperands(); i.hasNext();) {
+						OntClass c = (OntClass)i.next();
+						dt.add(c);
+					}
+					OntClass ct0 = dt.get(0);
+					OntClass ct1 = dt.get(1);
+
+					if(isOntClassesEqual(cs0, ct0)){
+						if(isOntClassesEqual(cs1, ct1)){return true;}
+					}
+					else if(isOntClassesEqual(cs1, ct1)){
+						if(isOntClassesEqual(cs0, ct0)){return true;}
+					}
+					else if(isOntClassesEqual(cs0, ct1)){
+						if(isOntClassesEqual(cs1, ct0)){return true;}
+					}
+					else{
+						if(isOntClassesEqual(cs0, ct1)){return true;}
+					}
+				}
+
+			}
+		}
+		return false;
+	}
+	
+	//Check if two ObjectProperty have the same range class
+	//TODO: Works for OntClass type range for now.
+	public boolean isRangesAreSame(ObjectProperty ob1, ObjectProperty ob2){
+		//domS mean rangeS.
+		OntResource domS = ob1.getRange();
+		OntResource domT = ob2.getRange();
+		
+		if(domS == null && domT == null) return true;
+		else if(domS == null && domT != null) return false;
+		else if(domS != null && domT == null) return false;
+		else{
+			if(domS.isClass() && !domS.asClass().isUnionClass()){
+				OntClass cs = domS.asClass();
+
+				if(domT.isClass() && !domT.asClass().isUnionClass()){
+					OntClass ct = domT.asClass();
+
+					if(isOntClassesEqual(cs, ct)){
+						return true;
+					}
+				}
+			}
+			else if (domS.isClass() && domS.asClass().isUnionClass()) {
+				ArrayList<OntClass> ds = new ArrayList<OntClass>();
+				for (Iterator i = domS.asClass().asUnionClass().listOperands(); i.hasNext();) {
+					OntClass c = (OntClass)i.next();
+					ds.add(c);
+				}
+				OntClass cs0 = ds.get(0);
+				OntClass cs1 = ds.get(1);
+
+				if (domT.isClass() && domT.asClass().isUnionClass()) {
+					ArrayList<OntClass> dt = new ArrayList<OntClass>();
+					for (Iterator i = domT.asClass().asUnionClass().listOperands(); i.hasNext();) {
+						OntClass c = (OntClass)i.next();
+						dt.add(c);
+					}
+					OntClass ct0 = dt.get(0);
+					OntClass ct1 = dt.get(1);
+
+					if(isOntClassesEqual(cs0, ct0)){
+						if(isOntClassesEqual(cs1, ct1)){return true;}
+					}
+					else if(isOntClassesEqual(cs1, ct1)){
+						if(isOntClassesEqual(cs0, ct0)){return true;}
+					}
+					else if(isOntClassesEqual(cs0, ct1)){
+						if(isOntClassesEqual(cs1, ct0)){return true;}
+					}
+					else{
+						if(isOntClassesEqual(cs0, ct1)){return true;}
+					}
+				}
+
+			}
+		}
+		return false;
+	}
+	
 	
 	//Check if a given source OntClass a is mapped to target OntClass b 
 	public boolean isOntClassesEqual(OntClass a, OntClass b){
