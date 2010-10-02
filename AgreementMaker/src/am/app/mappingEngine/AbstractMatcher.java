@@ -126,7 +126,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/**
 	 * Used by the updateProgress() method.
 	 */
-	private long starttime = System.currentTimeMillis();
+	private long starttime;
 	private long lastTime = 0;
 	private long lastStepsDone = 0;
 	private int tentativealignments = 0;  // incremental selection?
@@ -297,6 +297,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     		progressDisplay.matchingStarted();
     	}
     	start = System.nanoTime();
+    	starttime = System.currentTimeMillis();
     	
 	}
     //Time calculation, if you override this method remember to call super.afterSelectionOperations()
