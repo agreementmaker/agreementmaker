@@ -113,7 +113,7 @@ public class IterativeMatcher extends AbstractMatcher{
 			
 			
 			
-			//matchByDefinedResources();
+			matchByDefinedResources();
 			
 			//matchPropertiesUsingClasses();
 			
@@ -771,10 +771,12 @@ public class IterativeMatcher extends AbstractMatcher{
 								if(!matchedClassesT.contains(ct)) continue;
 									
 								if(matchedClassesS.indexOf(c) == matchedClassesT.indexOf(ct)){
-									matchedPropsS.add(opS);
-									matchedPropsT.add(opT);
-									matchDeclaringClasses(opS, opT);
-									break;
+									if(isRangesAreSame(opS, opT) && isDomainsAreSame(opS, opT)){
+										matchedPropsS.add(opS);
+										matchedPropsT.add(opT);
+										matchDeclaringClasses(opS, opT);
+										break;
+									}
 								}
 								
 							}
