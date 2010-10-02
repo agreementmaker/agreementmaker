@@ -513,7 +513,8 @@ public class UIMenu implements ActionListener {
 						ThresholdAnalysis than = new ThresholdAnalysis(matcherToBeAnalyzed);
 						than.setReferenceAlignment(referenceAlignment);
 						than.setOutputDirectory(outputDirectory);
-						if( prefix != null && !prefix.isEmpty() ) than.setOutputPrefix(matcherToBeAnalyzed.getClass().getSimpleName() + "_" + System.currentTimeMillis() + "_");
+						if( prefix != null && !prefix.isEmpty() ) than.setOutputPrefix(prefix);
+						else { than.setOutputPrefix(matcherToBeAnalyzed.getClass().getSimpleName() + "_" + System.currentTimeMillis() + "_"); };
 						than.execute();
 					}
 				}
