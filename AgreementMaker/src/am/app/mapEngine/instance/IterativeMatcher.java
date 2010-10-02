@@ -134,7 +134,7 @@ public class IterativeMatcher extends AbstractMatcher{
 			
 			matchClassesUsingProperties();
 			
-			//matchSuperClasses();
+			matchSuperClasses();
 			//Precision = Correct/Discovered: 100.0%
 			//Recall = Correct/Reference: 34.3%
 			//Fmeasure = 2(precision*recall)/(precision+recall): 51.1%
@@ -909,7 +909,7 @@ public class IterativeMatcher extends AbstractMatcher{
 			while(sp.hasNext()){
 				OntClass csp = sp.next();
 				System.out.println("\t" + csp.getLocalName());
-				if(csp.getLocalName() != null){
+				if(csp.getLocalName() != null && !csp.isAnon()){
 					sup = csp;
 					break;
 				}
@@ -926,7 +926,7 @@ public class IterativeMatcher extends AbstractMatcher{
 				while(st.hasNext()){
 					OntClass cst = st.next();
 					//System.out.println("\t" + cst.getLocalName());
-					if(cst.getLocalName() != null){
+					if(cst.getLocalName() != null && !cst.isAnon()){
 						supt = cst;
 						break;
 					}
