@@ -1,7 +1,7 @@
 /**
  * 
  */
-package am.app.mappingEngine.oaei2010;
+package am.app.mappingEngine.oaei2010.conference;
 
 import am.Utility;
 import am.app.Core;
