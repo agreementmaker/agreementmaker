@@ -45,7 +45,9 @@ public class AlignmentMatrix {
 	   		for(int i=0; i< cloneme.getRows(); i++) {
 	   			for(int j = 0; j < cloneme.getColumns(); j++) {
 	   				Alignment a = cloneme.get(i, j);
-	   				data[i][j] = new Alignment(a.getEntity1(), a.getEntity2(), a.getSimilarity(), a.getRelation(), a.getAlignmentType());
+	   				if( a != null ) {
+	   					data[i][j] = new Alignment(a.getEntity1(), a.getEntity2(), a.getSimilarity(), a.getRelation(), a.getAlignmentType());
+	   				} else data[i][j] = null;
 	   			}
 	   		}
     	
