@@ -38,8 +38,9 @@ public class CombinationParameters extends AbstractParameters {
 	 * 
 	 * @param t
 	 * @param layer Which LWC are we configuring.
+	 * @throws Exception 
 	 */
-	public void initForOAEI2010(Track t, boolean firstLWC) {
+	public void initForOAEI2010(Track t, boolean firstLWC) throws Exception {
 		
 		switch(t) {
 		case Benchmarks:
@@ -56,7 +57,22 @@ public class CombinationParameters extends AbstractParameters {
 			}
 			break;
 		case Anatomy:
+			if( firstLWC ) {
+				combinationType = AVERAGECOMB;
+				qualityEvaluation = true;
+				manualWeighted = false;
+				quality = QualityEvaluator.LOCALCONFIDENCE;
+			}
+			else {
+				throw new Exception("Don't know what to do here.");
+			}
+			break;
 		case Conference:
+			combinationType = AVERAGECOMB;
+			qualityEvaluation = true;
+			manualWeighted = false;
+			quality = QualityEvaluator.LOCALCONFIDENCE;
+			break;
 		default:
 			combinationType = AVERAGECOMB;
 			qualityEvaluation = true;
