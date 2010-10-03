@@ -133,6 +133,9 @@ public class FedericoMatcher extends AbstractMatcher {
 		}
 		
 		filterNonOntologyAlignments();
+		
+		
+		
 		//evaluate();
 		
 	}
@@ -148,6 +151,23 @@ public class FedericoMatcher extends AbstractMatcher {
 	}
 
 	private void filterNonOntologyAlignments() {
+		
+		for (int i = 0; i < sourceClassList.size(); i++) {
+			if(!sourceClassList.get(i).getUri().startsWith(sourceOntology.getURI())){
+				for (int j = 0; j < targetClassList.size(); j++) {
+					classesMatrix.set(i, j, null);
+				}
+			}
+		}
+		for (int j = 0; j < targetClassList.size(); j++) {
+			if(!targetClassList.get(j).getUri().startsWith(targetOntology.getURI())){
+				for (int i = 0; i < sourceClassList.size(); i++) {
+					classesMatrix.set(i, j, null);
+				}
+			}
+		}
+		
+		
 		for (int i = 0; i < sourcePropList.size(); i++) {
 			if(!sourcePropList.get(i).getUri().startsWith(sourceOntology.getURI())){
 				for (int j = 0; j < targetPropList.size(); j++) {
