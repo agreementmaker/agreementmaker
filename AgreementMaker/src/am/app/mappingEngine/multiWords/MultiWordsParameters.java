@@ -2,6 +2,7 @@ package am.app.mappingEngine.multiWords;
 
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
+import am.app.mappingEngine.oaei2010.OAEI2010MatcherParameters.Track;
 
 public class MultiWordsParameters extends AbstractParameters {
 
@@ -78,5 +79,24 @@ public class MultiWordsParameters extends AbstractParameters {
 		normParameter = new NormalizerParameter();
 		normParameter.setForOAEI2009();
 		
+	}
+
+
+	public void initForOAEI2010(Track currentTrack) {
+		measure = TFIDF;
+		//only on concepts right now because it should be weighted differently
+		if( currentTrack == Track.Benchmarks ) considerInstances = true;
+		else { considerInstances = true; }
+		considerNeighbors = false;
+		considerConcept = true;
+		considerClasses = false;
+		considerProperties = false;
+		if( currentTrack == Track.Benchmarks ) ignoreLocalNames = false;
+		else { ignoreLocalNames = true; } 
+		
+		useLexiconSynonyms = true; // May change later.
+		
+		normParameter = new NormalizerParameter();
+		normParameter.setForOAEI2009();
 	}
 }

@@ -5,14 +5,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.table.AbstractTableModel;
-
 import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
 import com.hp.hpl.jena.ontology.CardinalityRestriction;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.MaxCardinalityRestriction;
 import com.hp.hpl.jena.ontology.MinCardinalityRestriction;
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.ontology.Restriction;
@@ -21,6 +20,7 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 import am.Utility;
@@ -650,11 +650,14 @@ public class FedericoMatcher extends AbstractMatcher {
 			if(source.getResource().canAs(OntClass.class)&&
 					target.getResource().canAs(OntClass.class))
 			{
-				OntClass sourceClass = (OntClass)source.getResource().as(OntClass.class);
-				OntClass targetClass = (OntClass)target.getResource().as(OntClass.class);
+				//OntClass sourceClass = (OntClass)source.getResource().as(OntClass.class);
+				//OntClass targetClass = (OntClass)target.getResource().as(OntClass.class);
 				//System.out.println("DISJ: "+sourceClass.getDisjointWith());
-				List<Individual> sList = (List<Individual>) sourceClass.listInstances().toList();
-				List<Individual> tList = (List<Individual>) targetClass.listInstances().toList();
+				List<Individual> sList = getIndividuals(source);
+			    List<Individual> tList = getIndividuals(target);
+				
+				//List<Individual> sList = (List<Individual>) sourceClass.listInstances().toList();
+				//List<Individual> tList = (List<Individual>) targetClass.listInstances().toList();
 				indSim = individualsComparison(sList, tList);
 			}
 			//Look at individuals
@@ -1068,4 +1071,73 @@ public class FedericoMatcher extends AbstractMatcher {
 		}	
 	}
 	
+	
+	
+	/**
+	 * Input must be a Node representing a class. (i.e. Node.isClass() == true)	
+	 * @param currentNode Node object representing a class.
+	 * @return List of OntResource object representing the individuals.
+	 */
+	public ArrayList<Individual> getIndividuals( Node currentNode ) {
+		
+		ArrayList<Individual> individualsList = new ArrayList<Individual>(); 
+		
+		OntClass currentClass = (OntClass) currentNode.getResource().as(OntClass.class);
+		
+		ExtendedIterator indiIter = currentClass.listInstances(true);
+		while( indiIter.hasNext() ) {
+			Individual ci = (Individual) indiIter.next();
+			
+			//if( ci.isAnon() ) System.out.println("\n************************\nProperties of individual:" + ci.getId() );
+			//else System.out.println("\n************************\nProperties of individual:" + ci.getLocalName() );
+			
+			StmtIterator indiPropertiesIter = ci.listProperties();
+			while( indiPropertiesIter.hasNext() ) {
+				Statement currentProperty = indiPropertiesIter.nextStatement();
+				//System.out.println(currentProperty);
+			}
+			
+			individualsList.add( ci );
+		}
+		
+		// try to deal with improperly declared individuals. (from the 202 scrambled ontology) 
+		if( individualsList.isEmpty() ) {
+			
+			
+			OntModel mod = (OntModel) currentClass.getModel();
+
+
+		
+			List<Statement> ls = mod.listStatements(null , mod.getProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), mod.getResource(currentClass.getLocalName())).toList();
+			
+			Iterator<Statement> lsiter = ls.iterator();
+			int k = 1;
+			while( lsiter.hasNext() ) {
+				Statement s = lsiter.next();
+				Resource r = s.getSubject();
+				if( r.canAs(Individual.class) ) {
+					Individual indi = r.as(Individual.class);
+					Individual ci = indi;
+					
+					//if( ci.isAnon() ) System.out.println("\n************************\nProperties of individual:" + ci.getId() );
+					//else System.out.println("\n************************\nProperties of individual:" + ci.getLocalName() );
+					
+					StmtIterator indiPropertiesIter = ci.listProperties();
+					while( indiPropertiesIter.hasNext() ) {
+						Statement currentProperty = indiPropertiesIter.nextStatement();
+						RDFNode currentnode = currentProperty.getObject();
+						if( currentnode.canAs(Literal.class) )  {
+							Literal currentLiteral = (Literal) currentnode.as(Literal.class); 
+							currentLiteral.getString();
+						}
+						//System.out.println(currentProperty);
+					}
+					
+					individualsList.add(indi);
+				}
+			}
+		}
+		
+		return individualsList;
+	}
 }

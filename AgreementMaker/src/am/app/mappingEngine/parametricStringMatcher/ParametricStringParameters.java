@@ -2,6 +2,7 @@ package am.app.mappingEngine.parametricStringMatcher;
 
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
+import am.app.mappingEngine.oaei2010.OAEI2010MatcherParameters.Track;
 
 public class ParametricStringParameters extends AbstractParameters {
 
@@ -65,6 +66,21 @@ public class ParametricStringParameters extends AbstractParameters {
 		commentWeight = 0.25d;
 		seeAlsoWeight = 0.05d;
 		isDefinedByWeight = 0.05d;
+		measure = AMSUB_AND_EDIT;
+		normParameter = new NormalizerParameter();
+		normParameter.setForOAEI2009();
+		redistributeWeights = true;
+	}
+	
+	public void initForOAEI2010(Track t) {
+		localWeight = 0;
+		labelWeight = 0.65d;
+		commentWeight = 0.25d;
+		seeAlsoWeight = 0.05d;
+		isDefinedByWeight = 0.05d;
+		
+		useLexicons = true;
+		useBestLexSimilarity = true;
 		measure = AMSUB_AND_EDIT;
 		normParameter = new NormalizerParameter();
 		normParameter.setForOAEI2009();

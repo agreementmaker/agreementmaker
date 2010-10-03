@@ -14,6 +14,7 @@ public class OAEI2010MatcherParameters extends AbstractParameters {
 	public boolean usingLCM;
 	public boolean usingLWC2;
 
+	public Track currentTrack;
 	
 	public static enum Track {
 		Anatomy,
@@ -25,7 +26,8 @@ public class OAEI2010MatcherParameters extends AbstractParameters {
 	
 	OAEI2010MatcherParameters( Track whichTrack ) { 
 		super(); 
-		initBooleansForOAEI2010(whichTrack); 
+		initBooleansForOAEI2010(whichTrack);
+		currentTrack = whichTrack;
 	}
 	
 	/** *********************************** SUPPORT METHODS *********************************************/
