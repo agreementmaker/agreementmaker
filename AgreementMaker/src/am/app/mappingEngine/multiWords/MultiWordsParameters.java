@@ -82,20 +82,53 @@ public class MultiWordsParameters extends AbstractParameters {
 	}
 
 
-	public void initForOAEI2010(Track currentTrack) {
-		measure = TFIDF;
-		//only on concepts right now because it should be weighted differently
-		if( currentTrack == Track.Benchmarks ) considerInstances = true;
-		else { considerInstances = true; }
-		considerNeighbors = false;
-		considerConcept = true;
-		considerClasses = false;
-		considerProperties = false;
-		if( currentTrack == Track.Benchmarks ) ignoreLocalNames = false;
-		else { ignoreLocalNames = true; } 
+	public void initForOAEI2010(Track currentTrack) throws Exception {
 		
-		useLexiconSynonyms = true; // May change later.
+		switch( currentTrack ) {
+		case Anatomy:
+			measure = TFIDF;
+			considerInstances = true;
+			considerNeighbors = false;  // figure out if this helps.
+			considerConcept = true;
+			considerClasses = false;
+			considerProperties = false;
+			ignoreLocalNames = true; 
+			
+			useLexiconSynonyms = true; // May change later.
+			break;
 		
+		case Benchmarks:
+			measure = TFIDF;
+			//only on concepts right now because it should be weighted differently
+			considerInstances = true;
+			considerNeighbors = false;
+			considerConcept = true;
+			considerClasses = false;
+			considerProperties = false;
+			ignoreLocalNames = true; 
+			
+			useLexiconSynonyms = true; // May change later.
+			break;
+			
+		case Conference:
+			throw new Exception("VMM is not used in Conference track for OAEI2010.");
+			
+		default:
+			measure = TFIDF;
+			//only on concepts right now because it should be weighted differently
+			if( currentTrack == Track.Benchmarks ) considerInstances = true;
+			else { considerInstances = true; }
+			considerNeighbors = false;
+			considerConcept = true;
+			considerClasses = false;
+			considerProperties = false;
+			if( currentTrack == Track.Benchmarks ) ignoreLocalNames = false;
+			else { ignoreLocalNames = true; } 
+			
+			useLexiconSynonyms = true; // May change later.
+			break;
+		}
+				
 		normParameter = new NormalizerParameter();
 		normParameter.setForOAEI2009();
 	}

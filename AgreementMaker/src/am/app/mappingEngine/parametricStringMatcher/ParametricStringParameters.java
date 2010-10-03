@@ -61,30 +61,78 @@ public class ParametricStringParameters extends AbstractParameters {
 	}
 
 	public void initForOAEI2009() {
-		localWeight = 0;
-		labelWeight = 0.65d;
-		commentWeight = 0.25d;
-		seeAlsoWeight = 0.05d;
-		isDefinedByWeight = 0.05d;
 		measure = AMSUB_AND_EDIT;
 		normParameter = new NormalizerParameter();
 		normParameter.setForOAEI2009();
-		redistributeWeights = true;
-	}
-	
-	public void initForOAEI2010(Track t) {
-		localWeight = 0;
-		labelWeight = 0.65d;
-		commentWeight = 0.25d;
-		seeAlsoWeight = 0.05d;
-		isDefinedByWeight = 0.05d;
 		
 		useLexicons = true;
 		useBestLexSimilarity = true;
-		measure = AMSUB_AND_EDIT;
-		normParameter = new NormalizerParameter();
-		normParameter.setForOAEI2009();
+		
 		redistributeWeights = true;
+		
+	}
+	
+	public void initForOAEI2010(Track t) {
+		
+		switch( t ) {
+		case Anatomy:
+			localWeight = 0;
+			labelWeight = 0.65d;
+			commentWeight = 0.25d;
+			seeAlsoWeight = 0.05d;
+			isDefinedByWeight = 0.05d;
+			
+			useLexicons = true;
+			useBestLexSimilarity = true;
+			measure = AMSUB_AND_EDIT;
+			normParameter = new NormalizerParameter();
+			normParameter.setForOAEI2009();
+			redistributeWeights = true;
+			break;
+		case Benchmarks:
+			localWeight = 0.33;
+			labelWeight = 0.34d;
+			commentWeight = 0.33d;
+			seeAlsoWeight = 0.00d;
+			isDefinedByWeight = 0.00d;
+			
+			useLexicons = false;
+			useBestLexSimilarity = false;
+			measure = AMSUB_AND_EDIT;
+			normParameter = new NormalizerParameter();
+			normParameter.setForOAEI2009();
+			redistributeWeights = true;
+			break;
+		case Conference:
+			localWeight = 0.5d;
+			labelWeight = 0.5d;
+			commentWeight = 0.0d;
+			seeAlsoWeight = 0.0d;
+			isDefinedByWeight = 0.0d;
+			
+			useLexicons = false;
+			useBestLexSimilarity = false;
+			
+			measure = AMSUB_AND_EDIT;
+			normParameter = new NormalizerParameter();
+			normParameter.setForOAEI2009();
+			redistributeWeights = true;
+			break;
+		default:
+			localWeight = 0;
+			labelWeight = 0.65d;
+			commentWeight = 0.25d;
+			seeAlsoWeight = 0.05d;
+			isDefinedByWeight = 0.05d;
+			
+			useLexicons = true;
+			useBestLexSimilarity = true;
+			measure = AMSUB_AND_EDIT;
+			normParameter = new NormalizerParameter();
+			normParameter.setForOAEI2009();
+			redistributeWeights = true;
+		}
+		
 	}
 	
 }
