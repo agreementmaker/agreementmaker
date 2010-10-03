@@ -37,6 +37,14 @@ public class OAEI2010MatcherParameters extends AbstractParameters {
 		case Anatomy:
 		case Benchmarks:
 		case Conference:
+			usingASM = true;
+			usingPSM = true;
+			usingVMM = false;
+			usingLWC1 = true;
+			usingGFM = true;
+			usingFCM = false;
+			usingLCM = false;
+			usingLWC2 = false;
 		case AllMatchers:
 		default:
 			usingASM = true;
