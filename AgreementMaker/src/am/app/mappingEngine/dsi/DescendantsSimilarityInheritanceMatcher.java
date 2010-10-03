@@ -107,7 +107,8 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 	protected Alignment recursiveDSI(Node sourceNode, Node targetNode, AlignmentMatrix input, TreeToDagConverter sourceDag, TreeToDagConverter targetDag) {
 		int sourceIndex = sourceNode.getIndex();
 		int targetIndex = targetNode.getIndex();
-		double mySim = input.get(sourceIndex, targetIndex).getSimilarity();
+		double mySim = 0.0d;
+		if( input.get(sourceIndex, targetIndex) != null ) mySim = input.get(sourceIndex, targetIndex).getSimilarity();
 		ArrayList<Node> sourceParents = sourceNode.getParents();
 		ArrayList<Node> targetParents = targetNode.getParents();
 		Iterator<Node> itSource = sourceParents.iterator();
@@ -153,7 +154,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 							maxAlignParents = alignParents;
 						}
 					}
-					sumOfMaxParents += maxAlignParents.getSimilarity();
+					if( maxAlignParents != null ) sumOfMaxParents += maxAlignParents.getSimilarity();
 				}
 				sumOfMaxParents/=sourceParents.size();
 				double mcp = MCP;
