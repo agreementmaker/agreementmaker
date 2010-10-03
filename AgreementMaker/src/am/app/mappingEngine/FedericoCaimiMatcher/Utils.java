@@ -123,4 +123,17 @@ public class Utils {
 		}
 		return s;
 	}
+	
+	 public static boolean allEquals(double[][] sims) {
+		  double prev = 0;
+		  for (int i = 0; i < sims.length; i++) {
+		   for (int j = 0; j < sims[0].length; j++) {
+		    if(!(i==0 && j==0))
+		     if(sims[i][j]!=prev)
+		      return false;
+		    prev = sims[i][j]; 
+		   }
+		  }
+		  return true;
+		 }
 }
