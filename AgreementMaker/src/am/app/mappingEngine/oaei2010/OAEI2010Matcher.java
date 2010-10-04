@@ -54,7 +54,16 @@ public class OAEI2010Matcher extends AbstractMatcher {
 			break;
 		case Conference:
 			OAEI2010ConferenceMatcher runConference = new OAEI2010ConferenceMatcher();
-			finalResult = runConference.getMatcher();
+
+			runConference.setSourceOntology(sourceOntology);
+			runConference.setTargetOntology(targetOntology);
+			runConference.setMaxSourceAlign(maxSourceAlign);
+			runConference.setMaxTargetAlign(maxTargetAlign);
+			runConference.setThreshold(threshold);
+
+			runConference.match();
+			
+			finalResult = runConference;
 			break;
 		default:
 			
