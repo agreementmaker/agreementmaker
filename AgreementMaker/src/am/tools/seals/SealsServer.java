@@ -33,6 +33,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.jws.WebService;
 import javax.swing.SwingWorker.StateValue;
@@ -44,6 +45,8 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
@@ -67,6 +70,8 @@ public class SealsServer implements AlignmentWS {
 	private int sourceRelations;
 	private int targetRelations;
 	private AbstractParameters parameters;
+	
+	private int BUFFERSIZE = 4096;
 	
 	public SealsServer( MatchersRegistry mR, MatchingProgressDisplay pD, double th, int sourceR, int targetR, AbstractParameters params ) {
 		matcherRegistry = mR;
@@ -96,6 +101,15 @@ public class SealsServer implements AlignmentWS {
 		String sourceOntologyFilename = downloadFile(source);
 		String targetOntologyFilename = downloadFile(target);
 		
+		if( sourceOntologyFilename == null || targetOntologyFilename == null ) {
+			if( sourceOntologyFilename == null ) {
+				progressDisplay.appendToReport("FATAL ERROR: The source ontology could not be saved to a file.\nURI: " + source + "\n");
+			}
+			if( targetOntologyFilename == null ) {
+				progressDisplay.appendToReport("FATAL ERROR: The target ontology could not be saved to a file.\nURI: " + target + "\n");
+			}
+			return "";
+		}
 		
 		progressDisplay.appendToReport("Loading source ontology. \n\tURI: " + source + "\n\tFile: " + sourceOntologyFilename + "\n");
 		
@@ -105,7 +119,8 @@ public class SealsServer implements AlignmentWS {
 		progressDisplay.appendToReport("Building source Ontology().\n");
 		otb1.build( OntoTreeBuilder.Profile.noReasoner );
 		m.setSourceOntology( otb1.getOntology() );
-		progressDisplay.appendToReport(otb1.getReport());
+		
+		progressDisplay.appendToReport(otb1.getReport()+"\n");
 		progressDisplay.appendToReport("Sucessfully loaded source ontology.\n");
 		
 		
@@ -116,6 +131,8 @@ public class SealsServer implements AlignmentWS {
 		progressDisplay.appendToReport("Building target Ontology().\n");
 		otb2.build( OntoTreeBuilder.Profile.noReasoner );
 		m.setTargetOntology( otb2.getOntology() );
+		
+		progressDisplay.appendToReport(otb2.getReport()+"\n");
 		progressDisplay.appendToReport("Sucessfully loaded target ontology.\n");
 		
 		// 2. Run the matcher.
@@ -129,17 +146,23 @@ public class SealsServer implements AlignmentWS {
 			m.cancel(true);
 			return "";
 		}
+
 		
+		AlignmentSet<Alignment> finalAlignments = m.getAlignmentSet();
+		
+		progressDisplay.appendToReport( "Matching done. Found " + finalAlignments.size() + " mappings.");
 		
 		// 3. Parse the alignment set into OAEI format.
-		AlignmentOutput output = new AlignmentOutput(m.getAlignmentSet());
-		String sourceUri = m.getSourceOntology().getURI();
-		String targetUri = m.getTargetOntology().getURI();
+		AlignmentOutput output = new AlignmentOutput(finalAlignments);
+		
+		
+		String sourceUri = source.toString();
+		String targetUri = target.toString();
 		String alignment = output.compileString(sourceUri, targetUri, sourceUri, targetUri);
 		
 		
 		// debugging
-		progressDisplay.appendToReport(alignment + "\n");
+		progressDisplay.appendToReport("\n\nFinal alignment: \n" + alignment + "\n");
 		// 3. Return the parsed alignment.
 		return alignment;
 	}
@@ -154,36 +177,37 @@ public class SealsServer implements AlignmentWS {
 			 URL soURL = file.toURL();
 			 URLConnection soURLConnection = soURL.openConnection();
 			 
-			 String contentType = soURLConnection.getContentType();
-			 int contentLength = soURLConnection.getContentLength();
+			 //String contentType = soURLConnection.getContentType();
+			 //int contentLength = soURLConnection.getContentLength();
 			 
 			 
 			 InputStream raw = soURLConnection.getInputStream();
 			 InputStream in = new BufferedInputStream(raw);
-			 
-			 byte[] data = new byte[contentLength];
-			 int bytesRead = 0;
-			 int offset = 0;
-			 
-			 while (offset < contentLength) {
-				 bytesRead = in.read(data, offset, data.length - offset);
-			     if (bytesRead == -1)
-			        break;
-			     offset += bytesRead;
-			 }
-			 in.close();
-
-			 if (offset != contentLength) {
-			      //throw new IOException("Only read " + offset + " bytes; Expected " + contentLength + " bytes");
-			 }
 
 			 File sourceOntologyFile = File.createTempFile("agreementmaker", "owl", new File("/home/cosmin/Desktop/temp_seals_downloads"));
-			 //sourceOntologyFile.deleteOnExit();
-			 sourceOntologyFilename = sourceOntologyFile.getAbsolutePath();
 			 FileOutputStream out = new FileOutputStream(sourceOntologyFile);
-			 out.write(data);
+			 
+			 
+			 byte[] buffer = new byte[BUFFERSIZE];
+			 int totalBytesRead = 0;
+			 int currentBytesRead = 0;
+			 
+			 while ( (currentBytesRead = in.read(buffer, 0, BUFFERSIZE)) != -1) {
+				 // read the file from the URI, by reading BUFFERSIZE bytes at a time.
+				 totalBytesRead += currentBytesRead;
+				 		 
+				 out.write( Arrays.copyOf(buffer, currentBytesRead) ); // only write the number of bytes we actually read
+				 
+			 }
+			 in.close();
 			 out.flush();
 			 out.close();
+
+			 progressDisplay.appendToReport("Downloaded " + file + " (" + totalBytesRead + " bytes).\n");
+			 
+			 //sourceOntologyFile.deleteOnExit(); TODO
+			 sourceOntologyFilename = sourceOntologyFile.getAbsolutePath();
+			 
 			 
 		} catch (MalformedURLException e1) {
 			progressDisplay.appendToReport("Source ontology URI cannot be converted to a URL.\n");
