@@ -206,7 +206,7 @@ public class OAEI2010Matcher extends AbstractMatcher {
 	    	
 	    	fcm.setMaxSourceAlign(AbstractMatcher.ANY_INT);
 	    	fcm.setMaxTargetAlign(AbstractMatcher.ANY_INT);
-	    	((FedericoMatcher)fcm).useTrick = true;
+	    	// ((FedericoMatcher)fcm).useTrick = true;  // no more trick
 	    	
 	    	fcm.setSourceOntology(sourceOntology);
 	    	fcm.setTargetOntology(targetOntology);
