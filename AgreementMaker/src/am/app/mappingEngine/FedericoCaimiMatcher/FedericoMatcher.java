@@ -124,6 +124,7 @@ public class FedericoMatcher extends AbstractMatcher {
 			matchSubClasses();
 			//match sons of aligned properties
 			matchSubProperties();
+
 			double totAlign2 = getNumberOfClassAlignments() + getNumberOfPropAlignments();
 			if(totAlign2==totAlign){
 				if( Core.DEBUG_FCM ) System.out.println("CONVERGED IN "+(i+1)+" ITERATIONS");
@@ -132,9 +133,9 @@ public class FedericoMatcher extends AbstractMatcher {
 				
 		}
 		
+		matchUnionClasses();
+		
 		filterNonOntologyAlignments();
-		
-		
 		
 		//evaluate();
 		
@@ -741,6 +742,222 @@ public class FedericoMatcher extends AbstractMatcher {
 			throw new Exception("We are not aligning classes or properties.  Need to know the new matrix.");
 		}
 
+	}
+	
+	/* Find UnionClass types and match member classes
+	 * @author Ulas
+	 */
+	private void matchUnionClasses(){
+		ArrayList<UnionClass> unionClassesS = new ArrayList<UnionClass>();
+		ArrayList<UnionClass> unionClassesT = new ArrayList<UnionClass>();
+		
+		ExtendedIterator<UnionClass> its = getSourceOntology().getModel().listUnionClasses();
+		ExtendedIterator<UnionClass> itt = getTargetOntology().getModel().listUnionClasses();
+		
+		while(its.hasNext()){
+			UnionClass uc = its.next();
+			unionClassesS.add(uc);
+			//System.out.println(uc.getLocalName() + " ." + uc.toString());
+		}
+		while(itt.hasNext()){
+			UnionClass uc = itt.next();
+			unionClassesT.add(uc);
+			//System.out.println(uc.getLocalName() + " ." + uc.toString());
+		}
+		System.out.println();
+		for(int k = 0; k < unionClassesS.size(); k++){
+			for(int m = 0; m < unionClassesT.size(); m++){
+				matchUnionClassMember(unionClassesS.get(k), unionClassesT.get(m));
+			}
+		}
+		
+	}
+	
+	/* Matches member classes of two union classes
+	 * @author Ulas
+	 * @param UnionClass, UnionClass
+	 */
+	private void matchUnionClassMember(UnionClass a, UnionClass b){
+		ArrayList<OntClass> aList = new ArrayList<OntClass>();
+		for (ExtendedIterator<? extends OntClass> e = a.listOperands(); e.hasNext(); ) {
+			Resource r0 = (Resource) e.next();
+			OntClass unionMember = (OntClass) r0.as( OntClass.class );
+			aList.add(unionMember);
+			//System.out.print(" " + unionMember.getLocalName());
+		}
+		ArrayList<OntClass> bList = new ArrayList<OntClass>();
+		for (ExtendedIterator<? extends OntClass> e = b.listOperands(); e.hasNext(); ) {
+			Resource r0 = (Resource) e.next();
+			OntClass unionMember = (OntClass) r0.as( OntClass.class );
+			bList.add(unionMember);
+			//System.out.print(" " + unionMember.getLocalName());
+		}
+		
+		if(aList.size() > 2 || bList.size() > 2){ return;}
+		
+		boolean matchedS0 = false;
+		boolean matchedT0 = false;
+		boolean matchedS1 = false;
+		boolean matchedT1 = false;
+		
+		for (int i = 0; i < sourceOntology.getClassesList().size(); i++) {
+			for (int j = 0; j < targetOntology.getClassesList().size(); j++) {
+				Alignment aln = null;
+				try{
+					aln = classesMatrix.get(i, j);
+					Node currentNode = aln.getEntity1();
+					OntClass currentClassS = (OntClass) currentNode.getResource().as(OntClass.class);
+					if(currentClassS.equals(aList.get(0))){
+						matchedS0 = true;
+						
+						Node n = classesMatrix.get(i, j).getEntity2();
+						OntClass cT = (OntClass) n.getResource().as(OntClass.class);
+						if(cT.equals(bList.get(0))){
+							//Align 1 and 1 Here
+							double sim1 = classesMatrix.getRowMaxValues(findSourceIndex(aList.get(1)), 1)[0].getSimilarity();
+							double sim2 = classesMatrix.getColMaxValues(findTargetIndex(bList.get(1)), 1)[0].getSimilarity();
+							if(sim1 < 0.5d && sim2 < 0.5d){
+								classesMatrix.set(findSourceIndex(aList.get(1)), findTargetIndex(bList.get(1)), 
+										new Alignment(findSourceNode(aList.get(1)), findTargetNode(bList.get(1)), 1.0d));
+								System.out.println();
+							}
+						}
+						else{
+							if(cT.equals(bList.get(1))){
+								//Align 1 and 0 here
+								double sim1 = classesMatrix.getRowMaxValues(findSourceIndex(aList.get(1)), 1)[0].getSimilarity();
+								double sim2 = classesMatrix.getColMaxValues(findTargetIndex(bList.get(0)), 1)[0].getSimilarity();
+								if(sim1 < 0.5d && sim2 < 0.5d){
+									double sims = classesMatrix.getSimilarity(findSourceIndex(aList.get(1)), findTargetIndex(bList.get(0)));
+									classesMatrix.set(findSourceIndex(aList.get(1)), findTargetIndex(bList.get(0)), 
+											new Alignment(findSourceNode(aList.get(1)), findTargetNode(bList.get(0)), 1.0d));
+									System.out.println();
+								}
+								
+							}
+						}
+					}
+					else if(currentClassS.equals(aList.get(1))){
+						matchedS1 = true;
+						
+						Node n = classesMatrix.get(i, j).getEntity2();
+						OntClass cT = (OntClass) n.getResource().as(OntClass.class);
+						if(cT.equals(bList.get(0))){
+							//Align 0 and 1 Here
+							double sim1 = classesMatrix.getRowMaxValues(findSourceIndex(aList.get(0)), 1)[0].getSimilarity();
+							double sim2 = classesMatrix.getColMaxValues(findTargetIndex(bList.get(1)), 1)[0].getSimilarity();
+							if(sim1 < 0.5d && sim2 < 0.5d){
+								classesMatrix.set(findSourceIndex(aList.get(0)), findTargetIndex(bList.get(1)), 
+										new Alignment(findSourceNode(aList.get(0)), findTargetNode(bList.get(1)), 1.0d));
+								System.out.println();
+							}
+						}
+						else{
+							if(cT.equals(bList.get(1))){
+								//Align 0 and 0 here
+								double sim1 = classesMatrix.getRowMaxValues(findSourceIndex(aList.get(0)), 1)[0].getSimilarity();
+								double sim2 = classesMatrix.getColMaxValues(findTargetIndex(bList.get(0)), 1)[0].getSimilarity();
+								if(sim1 < 0.5d && sim2 < 0.5d){
+									classesMatrix.set(findSourceIndex(aList.get(0)), findTargetIndex(bList.get(0)), 
+											new Alignment(findSourceNode(aList.get(0)), findTargetNode(bList.get(0)), 1.0d));
+									System.out.println();
+								}
+							}
+						}
+					}
+				}
+				catch(Exception e){}
+				
+			}
+		}
+	}
+	
+	/* Finds index of a source class in the matrix
+	 * @author Ulas
+	 * @param OntClass
+	 * @return int index
+	 */
+	private int findSourceIndex(OntClass c){
+		Alignment aln = null;
+		for(int i = 0; i < sourceOntology.getClassesList().size(); i++) {
+			try{
+				aln = classesMatrix.get(i, 0);
+				Node currentNode = aln.getEntity1();
+				OntClass currentClassS = (OntClass) currentNode.getResource().as(OntClass.class);
+				if(c.equals(currentClassS)){
+					return i;
+				}
+			}
+			catch(Exception e){
+			}
+		}
+		return -1;
+	}
+	
+	/* Find Node type of a source class in the matrix
+	 * @author Ulas
+	 * @param OntClass
+	 * @return Node represents the OntClass
+	 */
+	private Node findSourceNode(OntClass c){
+		Alignment aln = null;
+		for(int i = 0; i < sourceOntology.getClassesList().size(); i++) {
+			try{
+				aln = classesMatrix.get(i, 0);
+				Node currentNode = aln.getEntity1();
+				OntClass currentClassS = (OntClass) currentNode.getResource().as(OntClass.class);
+				if(c.equals(currentClassS)){
+					return currentNode;
+				}
+			}
+			catch(Exception e){
+			}
+		}
+		return null;
+	}
+	
+	/* Finds index of a target class in the matrix
+	 * @author Ulas
+	 * @param OntClass
+	 * @return int index
+	 */
+	private int findTargetIndex(OntClass c){
+		Alignment aln = null;
+		for(int i = 0; i < targetOntology.getClassesList().size(); i++) {
+			try{
+				aln = classesMatrix.get(0, i);
+				Node currentNode = aln.getEntity2();
+				OntClass currentClassS = (OntClass) currentNode.getResource().as(OntClass.class);
+				if(c.equals(currentClassS)){
+					return i;
+				}
+			}
+			catch(Exception e){
+			}
+		}
+		return -1;
+	}
+	
+	/* Find Node type of a target class in the matrix
+	 * @author Ulas
+	 * @param OntClass
+	 * @return Node represents the OntClass
+	 */
+	private Node findTargetNode(OntClass c){
+		Alignment aln = null;
+		for(int i = 0; i < targetOntology.getClassesList().size(); i++) {
+			try{
+				aln = classesMatrix.get(0, i);
+				Node currentNode = aln.getEntity2();
+				OntClass currentClassT = (OntClass) currentNode.getResource().as(OntClass.class);
+				if(c.equals(currentClassT)){
+					return currentNode;
+				}
+			}
+			catch(Exception e){
+			}
+		}
+		return null;
 	}
 	
 	private void matchSuperclasses() {
