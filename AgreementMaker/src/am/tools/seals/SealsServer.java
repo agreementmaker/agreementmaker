@@ -76,7 +76,7 @@ public class SealsServer implements AlignmentWS {
 		// 0. Instantiate the matcher.
 		
 		AbstractMatcher m = MatcherFactory.getMatcherInstance(matcherRegistry, Core.getInstance().getMatcherInstances().size());
-		m.setProgressDisplay(progressDisplay);
+		//m.setProgressDisplay(progressDisplay);
 		m.setThreshold(threshold);
 		m.setMaxSourceAlign(sourceRelations);
 		m.setMaxTargetAlign(targetRelations);
@@ -93,6 +93,7 @@ public class SealsServer implements AlignmentWS {
 		progressDisplay.appendToReport("Building source Ontology().\n");
 		otb1.build( OntoTreeBuilder.Profile.noReasoner );
 		m.setSourceOntology( otb1.getOntology() );
+		progressDisplay.appendToReport(otb1.getReport());
 		progressDisplay.appendToReport("Sucessfully loaded source ontology.\n");
 		
 		
