@@ -106,7 +106,7 @@ public class ParametricStringParameters extends AbstractParameters {
 		case Conference:
 			localWeight = 0.5d;
 			labelWeight = 0.5d;
-			commentWeight = 0.0d;
+			commentWeight = 0.5d;
 			seeAlsoWeight = 0.0d;
 			isDefinedByWeight = 0.0d;
 			
