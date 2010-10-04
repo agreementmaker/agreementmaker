@@ -23,7 +23,15 @@
 
 package am.tools.seals;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 
 import javax.jws.WebService;
@@ -84,11 +92,15 @@ public class SealsServer implements AlignmentWS {
 		
 		
 		// 1. Load ontologies.
-		progressDisplay.appendToReport("Loading source ontology. URI: " + source + "\n");
+		
+		String sourceOntologyFilename = downloadFile(source);
+		String targetOntologyFilename = downloadFile(target);
 		
 		
-		OntoTreeBuilder otb1 = new OntoTreeBuilder(".", GlobalStaticVariables.SOURCENODE, GlobalStaticVariables.LANG_OWL, "RDF/XML", false, false);
-		otb1.setURI(source.toString());
+		progressDisplay.appendToReport("Loading source ontology. \n\tURI: " + source + "\n\tFile: " + sourceOntologyFilename + "\n");
+		
+		
+		OntoTreeBuilder otb1 = new OntoTreeBuilder(sourceOntologyFilename, GlobalStaticVariables.SOURCENODE, GlobalStaticVariables.LANG_OWL, "RDF/XML", false, false);
 		
 		progressDisplay.appendToReport("Building source Ontology().\n");
 		otb1.build( OntoTreeBuilder.Profile.noReasoner );
@@ -99,8 +111,7 @@ public class SealsServer implements AlignmentWS {
 		
 		progressDisplay.appendToReport("Loading target ontology. URI: " + target + "\n");
 		
-		OntoTreeBuilder otb2 = new OntoTreeBuilder( ".", GlobalStaticVariables.TARGETNODE, GlobalStaticVariables.LANG_OWL, "RDF/XML", true, false);
-		otb2.setURI(target.toString());
+		OntoTreeBuilder otb2 = new OntoTreeBuilder( targetOntologyFilename, GlobalStaticVariables.TARGETNODE, GlobalStaticVariables.LANG_OWL, "RDF/XML", true, false);
 		
 		progressDisplay.appendToReport("Building target Ontology().\n");
 		otb2.build( OntoTreeBuilder.Profile.noReasoner );
@@ -133,4 +144,57 @@ public class SealsServer implements AlignmentWS {
 		return alignment;
 	}
 
+	
+	
+	private String downloadFile( URI file ) {
+		// save ontology to a file
+		String sourceOntologyFilename = null;
+		
+		try {
+			 URL soURL = file.toURL();
+			 URLConnection soURLConnection = soURL.openConnection();
+			 
+			 String contentType = soURLConnection.getContentType();
+			 int contentLength = soURLConnection.getContentLength();
+			 
+			 
+			 InputStream raw = soURLConnection.getInputStream();
+			 InputStream in = new BufferedInputStream(raw);
+			 
+			 byte[] data = new byte[contentLength];
+			 int bytesRead = 0;
+			 int offset = 0;
+			 
+			 while (offset < contentLength) {
+				 bytesRead = in.read(data, offset, data.length - offset);
+			     if (bytesRead == -1)
+			        break;
+			     offset += bytesRead;
+			 }
+			 in.close();
+
+			 if (offset != contentLength) {
+			      //throw new IOException("Only read " + offset + " bytes; Expected " + contentLength + " bytes");
+			 }
+
+			 File sourceOntologyFile = File.createTempFile("agreementmaker", "owl", new File("/home/cosmin/Desktop/temp_seals_downloads"));
+			 //sourceOntologyFile.deleteOnExit();
+			 sourceOntologyFilename = sourceOntologyFile.getAbsolutePath();
+			 FileOutputStream out = new FileOutputStream(sourceOntologyFile);
+			 out.write(data);
+			 out.flush();
+			 out.close();
+			 
+		} catch (MalformedURLException e1) {
+			progressDisplay.appendToReport("Source ontology URI cannot be converted to a URL.\n");
+			progressDisplay.appendToReport( e1.getMessage() + "\n" );
+			e1.printStackTrace();
+		} catch (IOException e) {
+			progressDisplay.appendToReport("Cannot open source ontology URL.\n");
+			progressDisplay.appendToReport( e.getMessage() + "\n" );
+			e.printStackTrace();
+		}
+		
+		return sourceOntologyFilename;
+	}
 }
