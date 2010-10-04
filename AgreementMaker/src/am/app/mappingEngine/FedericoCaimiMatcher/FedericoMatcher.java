@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
 import com.hp.hpl.jena.ontology.CardinalityRestriction;
 import com.hp.hpl.jena.ontology.Individual;
@@ -53,6 +54,7 @@ public class FedericoMatcher extends AbstractMatcher {
 	boolean localname = false;
 	boolean comment = false;
 	boolean label = false;
+	boolean matchUnionClasses = true;
 	
 	static boolean verbose = false; 
 	
@@ -66,6 +68,7 @@ public class FedericoMatcher extends AbstractMatcher {
 	private HashMap<Restriction, Node> restrictions;
 	private HashMap<OntProperty, List<Literal>> sourcePropValues;
 	private HashMap<OntProperty, List<Literal>> targetPropValues;
+	
 	
 	
 	public FedericoMatcher(){
@@ -110,7 +113,21 @@ public class FedericoMatcher extends AbstractMatcher {
 		
 		//Match properties by similar values
 		matchPropertyValues();		
-				
+		
+		if(individuals){
+			Node source;
+			Node target;
+			for (int i = 0; i < sourceClassList.size(); i++) {
+				source = sourceClassList.get(i);
+				for (int j = 0; j < targetClassList.size(); j++) {
+					target = targetClassList.get(j);
+					if(matchIndividuals(source,target))
+						classesMatrix.set(i, j, new Alignment(source, target, 1.0));
+				}
+			}
+		}
+		
+		
 		//Iterative part
 		for (int i = 0; ; i++) {
 			double totAlign = getNumberOfClassAlignments() + getNumberOfPropAlignments();
@@ -133,7 +150,7 @@ public class FedericoMatcher extends AbstractMatcher {
 				
 		}
 		
-		matchUnionClasses();
+		if( matchUnionClasses ) matchUnionClasses();
 		
 		filterNonOntologyAlignments();
 		
@@ -167,8 +184,7 @@ public class FedericoMatcher extends AbstractMatcher {
 				}
 			}
 		}
-		
-		
+				
 		for (int i = 0; i < sourcePropList.size(); i++) {
 			if(!sourcePropList.get(i).getUri().startsWith(sourceOntology.getURI())){
 				for (int j = 0; j < targetPropList.size(); j++) {
@@ -662,34 +678,9 @@ public class FedericoMatcher extends AbstractMatcher {
 				if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+source.getLocalName()+" "+
 						target.getLocalName()+" BY LOCALNAME");
 				return new Alignment(source, target, 1.0);
-			}
-					
+			}			
 		}
 		
-		if(individuals){
-			double indSim = 0;
-			if(source.getResource().canAs(OntClass.class)&&
-					target.getResource().canAs(OntClass.class))
-			{
-				//OntClass sourceClass = (OntClass)source.getResource().as(OntClass.class);
-				//OntClass targetClass = (OntClass)target.getResource().as(OntClass.class);
-				//System.out.println("DISJ: "+sourceClass.getDisjointWith());
-				List<Individual> sList = getIndividuals(source);
-			    List<Individual> tList = getIndividuals(target);
-				
-				//List<Individual> sList = (List<Individual>) sourceClass.listInstances().toList();
-				//List<Individual> tList = (List<Individual>) targetClass.listInstances().toList();
-				indSim = individualsComparison(sList, tList);
-			}
-			//Look at individuals
-					
-			if(indSim>INDIVIDUAL_THRESHOLD){
-				if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+source.getLocalName()+" "+
-						target.getLocalName()+" BY INDIVIDUAL NAMES");
-				return new Alignment(source,target,indSim);
-			}		
-		}
-						
 		if(comment){
 			double commSim = commentComparison(source, target);
 			if(commSim==1.0){
@@ -764,7 +755,7 @@ public class FedericoMatcher extends AbstractMatcher {
 			unionClassesT.add(uc);
 			//System.out.println(uc.getLocalName() + " ." + uc.toString());
 		}
-		System.out.println();
+		//System.out.println();
 		for(int k = 0; k < unionClassesS.size(); k++){
 			for(int m = 0; m < unionClassesT.size(); m++){
 				matchUnionClassMember(unionClassesS.get(k), unionClassesT.get(m));
@@ -811,8 +802,9 @@ public class FedericoMatcher extends AbstractMatcher {
 						matchedS0 = true;
 						
 						Node n = classesMatrix.get(i, j).getEntity2();
+						double sims = classesMatrix.get(i,j).getSimilarity();
 						OntClass cT = (OntClass) n.getResource().as(OntClass.class);
-						if(cT.equals(bList.get(0))){
+						if(cT.equals(bList.get(0)) && sims > 0.8){
 							//Align 1 and 1 Here
 							double sim1 = classesMatrix.getRowMaxValues(findSourceIndex(aList.get(1)), 1)[0].getSimilarity();
 							double sim2 = classesMatrix.getColMaxValues(findTargetIndex(bList.get(1)), 1)[0].getSimilarity();
@@ -823,12 +815,12 @@ public class FedericoMatcher extends AbstractMatcher {
 							}
 						}
 						else{
-							if(cT.equals(bList.get(1))){
+							if(cT.equals(bList.get(1)) && sims > 0.8){
 								//Align 1 and 0 here
 								double sim1 = classesMatrix.getRowMaxValues(findSourceIndex(aList.get(1)), 1)[0].getSimilarity();
 								double sim2 = classesMatrix.getColMaxValues(findTargetIndex(bList.get(0)), 1)[0].getSimilarity();
 								if(sim1 < 0.5d && sim2 < 0.5d){
-									double sims = classesMatrix.getSimilarity(findSourceIndex(aList.get(1)), findTargetIndex(bList.get(0)));
+									//double sims = classesMatrix.getSimilarity(findSourceIndex(aList.get(1)), findTargetIndex(bList.get(0)));
 									classesMatrix.set(findSourceIndex(aList.get(1)), findTargetIndex(bList.get(0)), 
 											new Alignment(findSourceNode(aList.get(1)), findTargetNode(bList.get(0)), 1.0d));
 									System.out.println();
@@ -841,8 +833,9 @@ public class FedericoMatcher extends AbstractMatcher {
 						matchedS1 = true;
 						
 						Node n = classesMatrix.get(i, j).getEntity2();
+						double sims = classesMatrix.get(i,j).getSimilarity();
 						OntClass cT = (OntClass) n.getResource().as(OntClass.class);
-						if(cT.equals(bList.get(0))){
+						if(cT.equals(bList.get(0)) && sims > 0.8){
 							//Align 0 and 1 Here
 							double sim1 = classesMatrix.getRowMaxValues(findSourceIndex(aList.get(0)), 1)[0].getSimilarity();
 							double sim2 = classesMatrix.getColMaxValues(findTargetIndex(bList.get(1)), 1)[0].getSimilarity();
@@ -853,7 +846,7 @@ public class FedericoMatcher extends AbstractMatcher {
 							}
 						}
 						else{
-							if(cT.equals(bList.get(1))){
+							if(cT.equals(bList.get(1)) && sims > 0.8){
 								//Align 0 and 0 here
 								double sim1 = classesMatrix.getRowMaxValues(findSourceIndex(aList.get(0)), 1)[0].getSimilarity();
 								double sim2 = classesMatrix.getColMaxValues(findTargetIndex(bList.get(0)), 1)[0].getSimilarity();
@@ -1298,8 +1291,8 @@ public class FedericoMatcher extends AbstractMatcher {
 			System.out.println(prop);
 			System.out.println(sourcePropValues.get(prop));
 		}
-		System.out.println("TARGET");
-		System.out.println(targetPropValues);
+		//System.out.println("TARGET");
+		//System.out.println(targetPropValues);
 		Iterator<OntProperty> it2 = targetPropValues.keySet().iterator();
 		while(it2.hasNext()){
 			OntProperty prop = it2.next();
@@ -1373,8 +1366,90 @@ public class FedericoMatcher extends AbstractMatcher {
 					individualsList.add(indi);
 				}
 			}
-		}
-		
+		}	
 		return individualsList;
+	}
+	
+	private boolean matchIndividuals(Node source, Node target) {
+		boolean classMatched = false;
+		boolean individualMatched = false;
+		
+		ArrayList<Individual> sourceIndi = getIndividuals(source);
+		ArrayList<Individual> targetIndi = getIndividuals(target);
+
+		for (Individual iSource: sourceIndi){
+			for (Individual iTarget: targetIndi) {
+				if (!iSource.isAnon() && !iTarget.isAnon()) { //if neither is anonymous
+					if (iSource.getLocalName().equals(iTarget.getLocalName())) {
+						classMatched = true;
+						individualMatched = recursiveMatchIndividuals(iSource, iTarget);
+					}
+				}
+				else if (iSource.isAnon() && iTarget.isAnon()) { //both anonnymous
+					individualMatched = recursiveMatchIndividuals(iSource, iTarget); //prop?
+				}
+				if (individualMatched) classMatched = true;
+			}
+		}
+		return classMatched;
+	}
+
+	private boolean recursiveMatchIndividuals(Individual iSource, Individual iTarget) {
+		boolean IndividualsMatched = false;
+		boolean propertyMatched = false;
+
+		List<Statement> sourceProperties = iSource.listProperties().toList();
+		List<Statement> targetProperties = iTarget.listProperties().toList();
+		//	for (Statement s: sourceProperties) System.out.println(s);
+
+		for(int i=0;i<sourceProperties.size();i++){
+			for(int j=0;j<targetProperties.size();j++){
+				Statement sourceProperty = sourceProperties.get(i);
+				Statement targetProperty = targetProperties.get(j);
+				propertyMatched = false;
+				if (sourceProperty.getObject().isAnon() && targetProperty.getObject().isAnon()) {
+					//						RDFNode subject = sourceProperty.getSubject();
+					//						RDFNode object = sourceProperty.getObject();
+					//						RDFNode prop = sourceProperty.getPredicate();
+
+					propertyMatched = recursiveMatchIndividuals((Individual)(sourceProperty.getObject().as(Individual.class)), 
+							(Individual)(targetProperty.getObject().as(Individual.class)));
+				}
+				
+				else {
+					Triple sourcePropTriple = (sourceProperty).asTriple();
+					Triple targetPropTriple = (targetProperty).asTriple();
+					//System.out.println("s:"+sourcePropTriple);
+					//System.out.println("t:"+targetPropTriple);
+					if(sourcePropTriple.getObject().equals(targetPropTriple.getObject())){
+						//System.out.println("EQUALS");
+						//System.out.println(sourcePropTriple.getPredicate().getURI());
+						String uri1 = sourcePropTriple.getPredicate().getURI();
+						String uri2 = targetPropTriple.getPredicate().getURI();
+						if(uri2.length()<20)
+							uri2 = targetOntology.getURI() + uri2;
+						//System.out.println(uri2);
+						Node source = get(sourcePropList, uri1);
+						//System.out.println(source);
+						Node target = get(targetPropList, uri2);
+						//System.out.println(target);
+						if (source != null && target != null) {
+							propertiesMatrix.set(sourcePropList.indexOf(source),  targetPropList.indexOf(target), new Alignment(source, target, 1.0d) );
+							//propertiesMatrix.setSimilarity(sourcePropList.indexOf(source), targetPropList.indexOf(target), 1.0);
+						}
+						propertyMatched = true;
+					}
+				}
+				if (propertyMatched) IndividualsMatched = true;
+			}	
+		}
+		return IndividualsMatched;
+	}
+
+	private Node get(ArrayList<Node> nodeList, String uri) {
+		int ind = getIndex(nodeList, uri);
+		if(ind!=-1)
+			return nodeList.get(ind);
+		return null;
 	}
 }
