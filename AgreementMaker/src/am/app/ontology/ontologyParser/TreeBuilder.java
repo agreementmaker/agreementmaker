@@ -33,9 +33,9 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		ontology.setSourceOrTarget(sourceOrTarget);
 		ontology.setLanguage(language);
 		ontology.setFormat(format);
-        File f = new File(ontology.getFilename());
+        File f = new File(filename);
         ontology.setTitle(f.getName()); 
-        System.out.println(filename);
+        if( Core.DEBUG ) System.out.println(filename);
 	}
 	
 	public static TreeBuilder buildTreeBuilder(String fileName, int ontoType, int langIndex, int syntaxIndex, boolean skip, boolean noReasoner){
