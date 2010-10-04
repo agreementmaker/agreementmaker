@@ -33,8 +33,7 @@ import am.app.mappingEngine.testMatchers.CopyMatcher;
 import am.app.mappingEngine.testMatchers.EqualsMatcher;
 import am.app.mappingEngine.testMatchers.RandomMatcher;
 //import am.app.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
-import am.extension.AnatomySynonymExtractor;
-import am.extension.IndividualLister;
+
 
 /**
  * Enum for keeping the current list of matchers in the system, and their class references
@@ -62,8 +61,6 @@ public enum MatchersRegistry {
 	FCM					( "Federico Caimi Matcher", am.app.mappingEngine.FedericoCaimiMatcher.FedericoMatcher.class),
 	LSM					( "Lexical Synonym Matcher", LexicalSynonymMatcher.class ),
 	//ShashiMatcher		( "Shashi Matcher", am.extension.shashi.ShashiMatcher.class),
-	IndiLister 			( "Individual Lister", IndividualLister.class ),
-	AnatomySyn 			( "Anatomy Synonym Extractor", AnatomySynonymExtractor.class ),
 	//OFFICIAL MATCHERS
 	LexicalJAWS			( "Lexical Matcher: JAWS", LexicalMatcherJAWS.class ),
 	BaseSimilarity		( "Base Similarity Matcher (BSM)", BaseSimilarityMatcher.class ),
