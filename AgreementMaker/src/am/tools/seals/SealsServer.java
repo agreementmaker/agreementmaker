@@ -124,7 +124,7 @@ public class SealsServer implements AlignmentWS {
 		progressDisplay.appendToReport("Sucessfully loaded source ontology.\n");
 		
 		
-		progressDisplay.appendToReport("Loading target ontology. URI: " + target + "\n");
+		progressDisplay.appendToReport("Loading target ontology. URI: " + target + "\n\tFile: " + targetOntologyFilename + "\n");
 		
 		OntoTreeBuilder otb2 = new OntoTreeBuilder( targetOntologyFilename, GlobalStaticVariables.TARGETNODE, GlobalStaticVariables.LANG_OWL, "RDF/XML", true, false);
 		
@@ -171,21 +171,21 @@ public class SealsServer implements AlignmentWS {
 	
 	private String downloadFile( URI file ) {
 		// save ontology to a file
-		String sourceOntologyFilename = null;
+		String ontologyFilename = null;
 		
 		try {
-			 URL soURL = file.toURL();
-			 URLConnection soURLConnection = soURL.openConnection();
+			 URL oURL = file.toURL();
+			 URLConnection oURLConnection = oURL.openConnection();
 			 
 			 //String contentType = soURLConnection.getContentType();
 			 //int contentLength = soURLConnection.getContentLength();
 			 
 			 
-			 InputStream raw = soURLConnection.getInputStream();
+			 InputStream raw = oURLConnection.getInputStream();
 			 InputStream in = new BufferedInputStream(raw);
 
-			 File sourceOntologyFile = File.createTempFile("agreementmaker", "owl", new File("/home/cosmin/Desktop/temp_seals_downloads"));
-			 FileOutputStream out = new FileOutputStream(sourceOntologyFile);
+			 File ontologyFile = File.createTempFile("agreementmaker", ".owl", null);
+			 FileOutputStream out = new FileOutputStream(ontologyFile);
 			 
 			 
 			 byte[] buffer = new byte[BUFFERSIZE];
@@ -205,20 +205,20 @@ public class SealsServer implements AlignmentWS {
 
 			 progressDisplay.appendToReport("Downloaded " + file + " (" + totalBytesRead + " bytes).\n");
 			 
-			 //sourceOntologyFile.deleteOnExit(); TODO
-			 sourceOntologyFilename = sourceOntologyFile.getAbsolutePath();
+			 ontologyFile.deleteOnExit();
+			 ontologyFilename = ontologyFile.getAbsolutePath();
 			 
 			 
 		} catch (MalformedURLException e1) {
-			progressDisplay.appendToReport("Source ontology URI cannot be converted to a URL.\n");
+			progressDisplay.appendToReport("Ontology URI cannot be converted to a URL.\n");
 			progressDisplay.appendToReport( e1.getMessage() + "\n" );
 			e1.printStackTrace();
 		} catch (IOException e) {
-			progressDisplay.appendToReport("Cannot open source ontology URL.\n");
+			progressDisplay.appendToReport("Cannot open ontology URL.\n");
 			progressDisplay.appendToReport( e.getMessage() + "\n" );
 			e.printStackTrace();
 		}
 		
-		return sourceOntologyFilename;
+		return ontologyFilename;
 	}
 }
