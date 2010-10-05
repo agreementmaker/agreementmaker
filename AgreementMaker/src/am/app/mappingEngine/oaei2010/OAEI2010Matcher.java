@@ -49,6 +49,7 @@ public class OAEI2010Matcher extends AbstractMatcher {
 		switch( parameters.currentTrack ) {
 		case Anatomy:
 			finalResult = runAnatomy();
+			break;
 		case Benchmarks:
 			finalResult = runBenchmarks();
 			break;
