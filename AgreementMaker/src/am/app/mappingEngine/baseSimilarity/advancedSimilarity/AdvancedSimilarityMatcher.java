@@ -32,6 +32,8 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	
 	private static int min_word_distance = 3; // average number of words composing the two concepts
 	
+	public boolean useLabelInsteadOfLocalname = true;  //TODO: REMOVE THIS! VERY BAD!
+	
 	private ArrayList<String> sourceWords;
 	private ArrayList<String> targetWords;
 	
@@ -40,8 +42,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 */
 	public AdvancedSimilarityMatcher() {
 		super();
-		param = new AdvancedSimilarityParameters();
-		initializeVariables();
+		needsParam = true;
 	}
 
 	/**
@@ -66,8 +67,19 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		
 		// Step 0: tokenize source and target nodes (if possible) and separate by relevance
 		// prepare list of data
-		String sLN = super.treatString(source.getLocalName()); // source LocalName (sLN)
-		String tLN = super.treatString(target.getLocalName()); // target LocalName (tLN)
+		
+		String sLN, tLN;
+		
+		AdvancedSimilarityParameters parameters = (AdvancedSimilarityParameters)param;
+		
+		if( !useLabelInsteadOfLocalname ) {
+			sLN = super.treatString(source.getLocalName()); // source LocalName (sLN)
+			tLN = super.treatString(target.getLocalName()); // target LocalName (tLN)
+		} else {
+			sLN = super.treatString(source.getLabel()); // source LocalName (sLN)
+			tLN = super.treatString(target.getLabel()); // target LocalName (tLN)
+		}
+		
 		String tokenized_sLN[] = sLN.split("\\s"); // token array of source LocalName (sLN)
 		String tokenized_tLN[] = tLN.split("\\s"); // token array of target LocalName (tLN)
 		
