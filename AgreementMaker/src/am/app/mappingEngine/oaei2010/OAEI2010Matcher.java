@@ -237,22 +237,26 @@ public class OAEI2010Matcher extends AbstractMatcher {
 		OAEI2010MatcherParameters parameters = new OAEI2010MatcherParameters(Track.Anatomy);
 		//((OAEI2010MatcherParameters)param).initBooleansForOAEI2010(Track.Conference);
 		
-		//ASM
-		AbstractMatcher asm = null;
-		if(parameters.usingASM){
-			System.out.println("Running ASM");
+		
+		//LSM
+		AbstractMatcher lsm = null;
+		if(parameters.usingLSM){
+			System.out.println("Running LSM");
 	    	startime = System.nanoTime()/measure;
-	    	asm = MatcherFactory.getMatcherInstance(MatchersRegistry.AdvancedSimilarity, 0);
-	    	asm.setThreshold(threshold);
-	    	asm.setMaxSourceAlign(maxSourceAlign);
-	    	asm.setMaxTargetAlign(maxTargetAlign);
-	    	asm.setSourceOntology(sourceOntology);
-	    	asm.setTargetOntology(targetOntology);
-	    	//asm.setPerformSelection(false);
-			asm.match();
-	    	endtime = System.nanoTime()/measure;
+	    	lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSM, 0);
+	    	lsm.setThreshold(threshold);
+	    	lsm.setMaxSourceAlign(maxSourceAlign);
+	    	lsm.setMaxTargetAlign(maxTargetAlign);
+	    	//MultiWordsParameters lsmp = new MultiWordsParameters();
+	    	//lsmp.initForOAEI2009();
+	    	//lsm.setParam(lsmp);
+	    	lsm.setSourceOntology(sourceOntology);
+	    	lsm.setTargetOntology(targetOntology);
+	    	//lsm.setPerformSelection(false);
+			lsm.match();
+	        endtime = System.nanoTime()/measure;
 	    	time = (endtime-startime);
-			System.out.println("ASM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
+			System.out.println("LSM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		}
 		
 		//PSM
@@ -297,29 +301,7 @@ public class OAEI2010Matcher extends AbstractMatcher {
 			System.out.println("VMM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		}
 		
-		//LSM
-		AbstractMatcher lsm = null;
-		if(parameters.usingLCM){
-			System.out.println("Running LSM");
-	    	startime = System.nanoTime()/measure;
-	    	lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSM, 2);
-	    	lsm.setThreshold(threshold);
-	    	lsm.setMaxSourceAlign(maxSourceAlign);
-	    	lsm.setMaxTargetAlign(maxTargetAlign);
-	    	//MultiWordsParameters lsmp = new MultiWordsParameters();
-	    	//lsmp.initForOAEI2009();
-	    	//lsm.setParam(lsmp);
-	    	lsm.setSourceOntology(sourceOntology);
-	    	lsm.setTargetOntology(targetOntology);
-	    	//lsm.setPerformSelection(false);
-			lsm.match();
-	        endtime = System.nanoTime()/measure;
-	    	time = (endtime-startime);
-			System.out.println("LSM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
-		}
-		
-		
-		//Second layer: LWC(ASM, PSM, VMM, LSM)
+		//Second layer: LWC(PSM, VMM, LSM)
 		
 		//LWC matcher
 		AbstractMatcher lwc1 = null;
@@ -327,9 +309,9 @@ public class OAEI2010Matcher extends AbstractMatcher {
 	    	System.out.println("Running LWC");
 	    	startime = System.nanoTime()/measure;
 	    	lwc1 = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 3);
-	    	lwc1.getInputMatchers().add(asm);
 	    	lwc1.getInputMatchers().add(psm);
-	    	//lwc1.getInputMatchers().add(vmm);
+	    	lwc1.getInputMatchers().add(vmm);
+	    	lwc1.getInputMatchers().add(lsm);
 	    	lwc1.setThreshold(threshold);
 	    	lwc1.setMaxSourceAlign(maxSourceAlign);
 	    	lwc1.setMaxTargetAlign(maxTargetAlign);
@@ -348,74 +330,7 @@ public class OAEI2010Matcher extends AbstractMatcher {
 		
 		
 	
-		//Third layer: GFM and FCM
-		
-		//GFM
-		AbstractMatcher gfm = null;
-		if(parameters.usingGFM){
-	    	System.out.println("Running GFM");
-	    	startime = System.nanoTime()/measure;
-	    	gfm = MatcherFactory.getMatcherInstance(MatchersRegistry.GroupFinder, 4);
-	    	gfm.getInputMatchers().add(lastLayer);
-	    	gfm.setThreshold(threshold);
-	    	gfm.setMaxSourceAlign(maxSourceAlign);
-	    	gfm.setMaxTargetAlign(maxTargetAlign);
-	    	gfm.setSourceOntology(sourceOntology);
-	    	gfm.setTargetOntology(targetOntology);
-	    	//gfm.setPerformSelection(false);
-			gfm.match();
-	        endtime = System.nanoTime()/measure;
-	    	time = (endtime-startime);
-			System.out.println("GFM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
-		}
-		//lastLayer = gfm;
-		
-		//FCM
-		AbstractMatcher fcm = null;
-		if(parameters.usingFCM && false){
-	    	System.out.println("Running FCM");
-	    	startime = System.nanoTime()/measure;
-	    	fcm = MatcherFactory.getMatcherInstance(MatchersRegistry.FCM, 5);
-	    	fcm.getInputMatchers().add(lastLayer);
-	    	fcm.setThreshold(threshold);
-	    	fcm.setMaxSourceAlign(maxSourceAlign);
-	    	fcm.setMaxTargetAlign(maxTargetAlign);
-	    	fcm.setSourceOntology(sourceOntology);
-	    	fcm.setTargetOntology(targetOntology);
-	    	//fcm.setPerformSelection(false);
-			fcm.match();
-	        endtime = System.nanoTime()/measure;
-	    	time = (endtime-startime);
-			System.out.println("FCM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
-		}
-		
-		//Fourth layer: LWC2(GFM, FCM)
-		
-		//LWC matcher
-		AbstractMatcher lwc2 = null;
-		if(parameters.usingLWC2 && false){
-	    	System.out.println("Running LWC2");
-	    	startime = System.nanoTime()/measure;
-	    	lwc2 = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 7);
-	    	lwc2.getInputMatchers().add(gfm);
-	    	lwc2.getInputMatchers().add(fcm);
-	    	//lwc2.getInputMatchers().add(lcm);
-	    	lwc2.setThreshold(threshold);
-	    	lwc2.setMaxSourceAlign(maxSourceAlign);
-	    	lwc2.setMaxTargetAlign(maxTargetAlign);
-	        CombinationParameters   lwcp = new CombinationParameters();
-	    	lwcp.initForOAEI2010(Track.Conference, false);
-	    	lwc2.setParam(lwcp);
-	    	lwc2.setSourceOntology(sourceOntology);
-	    	lwc2.setTargetOntology(targetOntology);
-	    	lwc2.setPerformSelection(true); // FINAL MATCHER (for now)
-			lwc2.match();
-	        endtime = System.nanoTime()/measure;
-	    	time = (endtime-startime);
-			System.out.println("LWC2 completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
-		}
-		//return lwc2;
-		return gfm;
+		return lwc1;
 	}
 	
 
