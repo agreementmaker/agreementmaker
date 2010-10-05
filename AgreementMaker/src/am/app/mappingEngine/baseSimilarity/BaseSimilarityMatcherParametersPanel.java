@@ -31,7 +31,9 @@ public class BaseSimilarityMatcherParametersPanel extends AbstractMatcherParamet
 	private JLabel warningLabel;
 	private JCheckBox useDictionaryCheckbox;
 	
-	private AppPreferences prefs;
+	protected AppPreferences prefs;
+	
+	protected Box contentBox;
 	
 	/*
 	 * The constructor creates the GUI elements and adds 
@@ -44,7 +46,7 @@ public class BaseSimilarityMatcherParametersPanel extends AbstractMatcherParamet
 		
 		this.setPreferredSize(new Dimension(350, 175) );
 		
-		prefs = Core.getInstance().getUI().getAppPreferences();
+		prefs = Core.getUI().getAppPreferences();
 		parameters = new BaseSimilarityParameters();
 		
 		useDictionaryLabel = new JLabel("<html>Would you like to consult a dictionary while performing the Base Similarity Matching ?</html>");
@@ -67,7 +69,7 @@ public class BaseSimilarityMatcherParametersPanel extends AbstractMatcherParamet
 		
 		Box paddingBox = Box.createHorizontalBox();
 		
-		Box contentBox = Box.createVerticalBox();
+		contentBox = Box.createVerticalBox();
 		
 		contentBox.add(Box.createVerticalStrut(20));
 		contentBox.add(useDictionaryLabel);
