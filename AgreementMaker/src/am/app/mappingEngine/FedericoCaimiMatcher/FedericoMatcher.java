@@ -295,6 +295,7 @@ public class FedericoMatcher extends AbstractMatcher {
 			//System.out.println("Prop: "+sProp);
 			literals = new ArrayList<Literal>();
 			stmts = ontology.getModel().listStatements(null, sProp, (RDFNode)null).toList();
+			if( stmts.isEmpty() ) { stmts = ontology.getModel().listStatements(null,   ontology.getModel().getProperty(sProp.getLocalName()) ,(RDFNode)null).toList(); }
 			for (int j = 0; j < stmts.size(); j++) {
 				Statement s = stmts.get(j);
 				//System.out.println(s);	
