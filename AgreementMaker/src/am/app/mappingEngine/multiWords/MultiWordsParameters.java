@@ -44,6 +44,7 @@ public class MultiWordsParameters extends AbstractParameters {
 	// use the definitions in the lexicons
 	public boolean useLexiconDefinitions = false;
 	public boolean useLexiconSynonyms = false;
+	public boolean considerSuperClass = false;
 
 	
 	//I put the constructor to init default values when we run this method batch mode
@@ -95,6 +96,7 @@ public class MultiWordsParameters extends AbstractParameters {
 			ignoreLocalNames = true; 
 			
 			useLexiconSynonyms = true; // May change later.
+			considerSuperClass = true;
 			break;
 		
 		case Benchmarks:
