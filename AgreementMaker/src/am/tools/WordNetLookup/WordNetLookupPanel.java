@@ -48,6 +48,7 @@ import javax.swing.text.StyledDocument;
 import javax.swing.text.html.HTMLDocument;
 
 import am.Utility;
+import am.app.mappingEngine.StringUtil.PorterStemmer;
 
 import edu.smu.tspell.wordnet.NounSynset;
 import edu.smu.tspell.wordnet.Synset;
@@ -168,11 +169,26 @@ public class WordNetLookupPanel extends JPanel implements ActionListener, KeyLis
 
 		String searchTerm = txtTerm.getText();
 
+		
+		
+		
 		String newResult = new String();
 		HTMLDocument resultDocument = new HTMLDocument();
 
 		newResult += "<h1>Search Term: " + txtTerm.getText() + "</h1><br>";
 
+		PorterStemmer ps = new PorterStemmer();
+		
+		String tokenized_searchTerm[] = searchTerm.split("\\s"); // token array of source LocalName (sLN)
+		
+		newResult += "<h1>Stemming: " + txtTerm.getText() + "</h1><br>";
+		int mn = 1;
+		for( String token : tokenized_searchTerm ) {
+			newResult += mn + ": " + ps.stem(token) + "<br>";
+		}
+		newResult += "<hr>";
+		
+		
 		// lookup and print out.
 		for (SynsetType t : SynsetType.ALL_TYPES) {
 			Synset[] synsets = WordNet.getSynsets(searchTerm, t);
