@@ -92,7 +92,7 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		// lexicon support.
 		
 		if( parameters.useLexiconDefinitions || parameters.useLexiconSynonyms ) {
-			// build all the lexicons if they don't exist.  TODO: Move this to the LexiconStore.
+			// build all the lexicons if they don't exist. 
 			sourceOntologyLexicon = Core.getLexiconStore().getSourceOntLexicon(sourceOntology);			
 			targetOntologyLexicon = Core.getLexiconStore().getTargetOntLexicon(targetOntology);			
 			sourceWordNetLexicon = Core.getLexiconStore().getSourceWNLexicon(sourceOntology, sourceOntologyLexicon);
@@ -313,6 +313,14 @@ public class MultiWordsMatcher extends AbstractMatcher {
 			}
 			
 			if( !synonyms.isEmpty() ) multiWordsString = Utility.smartConcat(multiWordsString, synonyms);
+		}
+		
+		if( mp.considerSuperClass ) {
+			ArrayList<Node> parent = node.getParent();
+			for( Node par : parent ) {
+				multiWordsString = Utility.smartConcat(multiWordsString, par.getLabel() );
+			}
+			
 		}
 		
 		return multiWordsString;
