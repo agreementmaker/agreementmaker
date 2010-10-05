@@ -8,6 +8,7 @@ public class OAEI2010MatcherParameters extends AbstractParameters {
 	public boolean usingASM;
 	public boolean usingPSM;
 	public boolean usingVMM;
+	public boolean usingLSM;  // Lexical Synonym Matcher
 	public boolean usingLWC1;
 	public boolean usingGFM;
 	public boolean usingFCM;
@@ -35,6 +36,11 @@ public class OAEI2010MatcherParameters extends AbstractParameters {
 		
 		switch( whichTrack ) {
 		case Anatomy:
+			usingASM = false;
+			usingPSM = true;
+			usingVMM = true;
+			usingLSM = true;
+			usingLWC1 = true;
 		case Benchmarks:
 		case Conference:
 			usingASM = true;
