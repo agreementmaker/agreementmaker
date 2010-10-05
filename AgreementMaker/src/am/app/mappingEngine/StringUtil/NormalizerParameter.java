@@ -1,5 +1,7 @@
 package am.app.mappingEngine.StringUtil;
 
+import am.app.mappingEngine.oaei2010.OAEI2010MatcherParameters.Track;
+
 public class NormalizerParameter {
 	//Normalization operations
 	public boolean stem = true; //dogs --> dog, saying --> say
@@ -8,6 +10,7 @@ public class NormalizerParameter {
 	public boolean normalizeDigit = false; //remove numbers
 	public boolean normalizeDiacritics = true; // �,�...--> a, o
 	public boolean normalizePunctuation = true; //. , ! ? ' " becomes blank
+	private boolean normalizeSlashes = false;
 	//lowercase is always done
 	
 	public void setAllTrue(){
@@ -36,5 +39,16 @@ public class NormalizerParameter {
 		normalizeDigit = false; //remove numbers
 		normalizeDiacritics = true; // �,�...--> a, o
 		normalizePunctuation = true;
+	}
+
+	public void setForOAEI2010(Track t) {
+		stem = false;
+		removeStopWords = true;
+		normalizeBlank = true;
+		normalizeDigit = false;
+		normalizeDiacritics = true;
+		normalizePunctuation = true;
+		normalizeSlashes  = true;
+		
 	}
 }
