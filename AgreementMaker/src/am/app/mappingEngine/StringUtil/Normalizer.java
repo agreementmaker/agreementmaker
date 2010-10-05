@@ -130,6 +130,8 @@ public class Normalizer {
 			normalizeMap.put(";", blank);
 			normalizeMap.put("\"", blank); // "
 			normalizeMap.put(" ' ",blank); // '
+			normalizeMap.put("/", blank);
+			normalizeMap.put("\\", blank);
 		}
 		
 		if(parameters.normalizeDigit) {
@@ -145,6 +147,7 @@ public class Normalizer {
 		}
 		
 		//i don't care about \ / | & ( )[] {}  > < = + *  #  ^ �  �  �
+		
 		
 		
 	}
