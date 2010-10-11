@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.SynsetType;
 import edu.smu.tspell.wordnet.WordNetDatabase;
-import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
+//import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
@@ -21,7 +21,7 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentMatrix;
 import am.app.ontology.Node;
 import am.userInterface.vertex.Vertex;
-import edu.stanford.nlp.trees.*;
+//import edu.stanford.nlp.trees.*;
 import java.util.*;
 
 public class ConceptMatcher extends AbstractMatcher { 
@@ -29,7 +29,7 @@ public class ConceptMatcher extends AbstractMatcher {
 
 	// JAWS WordNet interface
 	private WordNetDatabase wordnet  = null;
-	public LexicalizedParser parser = null;
+	//public LexicalizedParser parser = null;
 	Hashtable<String, String> htConcepts = null;
 	
 	
@@ -64,7 +64,7 @@ public class ConceptMatcher extends AbstractMatcher {
 	protected void beforeAlignOperations() throws Exception{
 		super.beforeAlignOperations();
 		
-		parser = new LexicalizedParser("englishPCFG.ser.gz");
+		//parser = new LexicalizedParser("englishPCFG.ser.gz");
 	}
 	
 	
@@ -92,10 +92,10 @@ public class ConceptMatcher extends AbstractMatcher {
 			{
 				String strTreatedText = treatString(strOriginalText);
 				String strConcept = "";
-				if (typeOfNodes == alignType.aligningClasses)
-					strConcept = GetClassConcept(strTreatedText);
-				else
-					strConcept = GetPropertyConcept(strTreatedText);
+//				if (typeOfNodes == alignType.aligningClasses)
+//					strConcept = GetClassConcept(strTreatedText);
+//				else
+//					strConcept = GetPropertyConcept(strTreatedText);
 				htConcepts.put(strOriginalText, strConcept);
 			}
 		}
@@ -114,9 +114,9 @@ public class ConceptMatcher extends AbstractMatcher {
 		return matrix;
 	}
     
-    private String GetClassConcept(String FullText)
+    /*private String GetClassConcept(String FullText)
     {
-    	/* 1.  Formulate a grammatical sentence using the node text:  "I described the X"
+    	 1.  Formulate a grammatical sentence using the node text:  "I described the X"
     	 * 2.  Parse the sentence to extract the direct object
     	 * 3.  Prepend word in the original text until the phrase is no longer defined in WordNet
     	 * Example:  "haulage truck driver:
@@ -125,7 +125,7 @@ public class ConceptMatcher extends AbstractMatcher {
     	 * Prepend "truck" to form "truck driver" --> this is defined in WordNet
     	 * Prepend "haulage to form "haulage truck driver" --> this is not defined
     	 * "truck driver" is the longest defined concept
-    	 */
+    	 
     	parser.parse("I described the " + FullText + ".");
 	    Tree parseTree = parser.getBestParse();
 	    TreebankLanguagePack tlp = parser.getOp().tlpParams.treebankLanguagePack();
@@ -167,7 +167,7 @@ public class ConceptMatcher extends AbstractMatcher {
 	    else
 	    	strConcept = FullText;
 	    return strConcept;
-    }
+    }*/
     
     private String GetPropertyConcept(String FullText)
     {
