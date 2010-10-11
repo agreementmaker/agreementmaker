@@ -285,6 +285,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 			for( int i = 0; i < runList.getLength(); i++ ) {
 				
 				Element currentRun = (Element) runList.item(i);
+				String runName = currentRun.getAttribute("name");
 				
 				Element sourceOntology = (Element) currentRun.getElementsByTagName("sourceOntology").item(0);
 				
@@ -304,7 +305,8 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 				
 				log.info("Running analysis for " + sourceOntologyName + " to " + targetOntologyName);
 				
-				runAnalysis( sourceOntologyFile, sourceOntologyName, targetOntologyFile, targetOntologyName, referenceAlignmentFile );
+				//runAnalysis( sourceOntologyFile, sourceOntologyName, targetOntologyFile, targetOntologyName, referenceAlignmentFile );
+				runAnalysis( sourceOntologyFile, runName, targetOntologyFile, "", referenceAlignmentFile );
 				
 			}
 			
