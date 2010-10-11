@@ -253,12 +253,14 @@ public class OAEI2010Matcher extends AbstractMatcher {
 	    	//lsm.setParam(lsmp);
 	    	lsm.setSourceOntology(sourceOntology);
 	    	lsm.setTargetOntology(targetOntology);
+	    	lsm.setProgressDisplay(getProgressDisplay());
 	    	//lsm.setPerformSelection(false);
 			lsm.match();
 	        endtime = System.nanoTime()/measure;
 	    	time = (endtime-startime);
 			System.out.println("LSM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		}
+		lsm.setProgressDisplay(null);
 		
 		//PSM
 		AbstractMatcher psm = null;
@@ -274,12 +276,14 @@ public class OAEI2010Matcher extends AbstractMatcher {
 	    	psm.setParam(psmp);
 	    	psm.setSourceOntology(sourceOntology);
 	    	psm.setTargetOntology(targetOntology);
+	    	psm.setProgressDisplay(getProgressDisplay());
 	    	//psm.setPerformSelection(false);
 			psm.match();
 	        endtime = System.nanoTime()/measure;
 	    	time = (endtime-startime);
 			System.out.println("PSM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		}
+		psm.setProgressDisplay(null);
 		
 		//VMM
 		AbstractMatcher vmm = null;
@@ -296,11 +300,13 @@ public class OAEI2010Matcher extends AbstractMatcher {
 	    	vmm.setSourceOntology(sourceOntology);
 	    	vmm.setTargetOntology(targetOntology);
 	    	//vmm.setPerformSelection(false);
+	    	vmm.setProgressDisplay(getProgressDisplay());
 			vmm.match();
 	        endtime = System.nanoTime()/measure;
 	    	time = (endtime-startime);
 			System.out.println("VMM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		}
+		vmm.setProgressDisplay(null);
 		
 		//Second layer: LWC(PSM, VMM, LSM)
 		
@@ -322,14 +328,15 @@ public class OAEI2010Matcher extends AbstractMatcher {
 	    	lwc1.setSourceOntology(sourceOntology);
 	    	lwc1.setTargetOntology(targetOntology);
 	    	//lwc1.setPerformSelection(false);
+	    	lwc1.setProgressDisplay(getProgressDisplay());
 			lwc1.match();
 	        endtime = System.nanoTime()/measure;
 	    	time = (endtime-startime);
 			System.out.println("LWC completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		}
-		AbstractMatcher lastLayer = lwc1;
+		//AbstractMatcher lastLayer = lwc1;
 		
-		
+		lwc1.setProgressDisplay(null);
 	
 		return lwc1;
 	}
