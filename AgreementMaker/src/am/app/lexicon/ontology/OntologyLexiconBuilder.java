@@ -5,15 +5,12 @@ import java.util.Iterator;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-
-import am.Utility;
 import am.app.lexicon.GeneralLexicon;
 import am.app.lexicon.GeneralLexiconSynSet;
 import am.app.lexicon.Lexicon;
