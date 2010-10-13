@@ -32,7 +32,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	
 	private static int min_word_distance = 3; // average number of words composing the two concepts
 	
-	public boolean useLabelInsteadOfLocalname = true;  //TODO: REMOVE THIS! VERY BAD!
+	//public boolean useLabelInsteadOfLocalname = true;  //TODO: REMOVE THIS! VERY BAD!
 	
 	private ArrayList<String> sourceWords;
 	private ArrayList<String> targetWords;
@@ -72,14 +72,14 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		
 		AdvancedSimilarityParameters parameters = (AdvancedSimilarityParameters)param;
 		
-		if( !useLabelInsteadOfLocalname ) {
+		//if( !useLabelInsteadOfLocalname ) {
 			sLN = super.treatString(source.getLocalName()); // source LocalName (sLN)
 			tLN = super.treatString(target.getLocalName()); // target LocalName (tLN)
-		} else {
+/*		} else {
 			sLN = super.treatString(source.getLabel()); // source LocalName (sLN)
 			tLN = super.treatString(target.getLabel()); // target LocalName (tLN)
 		}
-		
+		*/
 		String tokenized_sLN[] = sLN.split("\\s"); // token array of source LocalName (sLN)
 		String tokenized_tLN[] = tLN.split("\\s"); // token array of target LocalName (tLN)
 		
@@ -247,6 +247,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 			}
 			result.addAlignment(list.get(i));
 		}
+		super.testSerialization();
 		return result;
 		
 	}
