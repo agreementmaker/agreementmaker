@@ -19,6 +19,11 @@ import am.userInterface.Colors;
 public class UserManualMatcher extends AbstractMatcher {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6353884415922188426L;
+
 	public UserManualMatcher() {
 		//super(); VERY IMPORTANT NOT CALL SUPER FROM THIS MATCHER BECAUSE THIS MATCHER IS INVOKED BEFORE THE ONTOLOGY LOADING
 		

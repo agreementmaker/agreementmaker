@@ -15,10 +15,23 @@ import am.app.ontology.Ontology;
 import am.userInterface.MatchingProgressDisplay;
 
 import java.awt.Color;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import javax.swing.SwingWorker;
 
 
-public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements Matcher {
+public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements Matcher{
+	
+	/**
+	 * Version identifier for this serializable class
+	 */
+	private static final long serialVersionUID = 1L;
 	
 	/**Unique identifier of the algorithm used in the JTable list as index
 	 * if an algorithm gets deleted we have to decrease the index of all others by one
@@ -1373,8 +1386,44 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	public void setTargetOntology( Ontology t ) { targetOntology = t; }
 
 
+	/** ****************** Serialization methods *******************/
+	
+	  /**
+	   * readObject: gets the state of the object.
+	   * @author michele
+	   */
+	  protected AbstractMatcher readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
+		  AbstractMatcher thisClass = (AbstractMatcher) in.readObject();
+		  in.close();
+		  return thisClass;
+	  }
 
+	   /**
+	    * writeObject: saves the state of the object.
+	    * @author michele
+	    */
+	  protected void writeObject(ObjectOutputStream out) throws IOException {
+		  out.writeObject(this);
+		  out.close();
+	  }
 
-
+	  protected void testSerialization(){
+		  AbstractMatcher am = null;
+			try {
+				writeObject(new ObjectOutputStream(new FileOutputStream("testFile")));
+				am = readObject(new ObjectInputStream(new FileInputStream("testFile")));
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			System.out.println(am.name);
+	  }
 
 }
