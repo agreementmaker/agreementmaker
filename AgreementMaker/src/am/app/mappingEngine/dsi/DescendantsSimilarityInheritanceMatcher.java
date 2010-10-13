@@ -11,11 +11,14 @@ import am.app.ontology.TreeToDagConverter;
 
 public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1974656931030493132L;
+	
 	// the Alignment Matrices from the Input Matching algorithm.
 	protected AlignmentMatrix inputClassesMatrix = null;
 	protected AlignmentMatrix inputPropertiesMatrix = null;
-	
-
 	
 	protected double MCP;
 	protected boolean[][] isComputedAlready;
@@ -23,17 +26,12 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 	public DescendantsSimilarityInheritanceMatcher() {
 		super();
 		
-
-
 		needsParam = true; // we need to set the MCP before running DSI
-		
 		
 		// requires base similarity result (but can work on any alignment result) 
 		minInputMatchers = 1;
 		maxInputMatchers = 1;
-		
 	}
-	
 	
 	/**
 	 * Before the align process, have a reference to the classes Matrix, and the properties Matrix of the input Matcher

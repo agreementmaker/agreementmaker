@@ -2,6 +2,13 @@ package am.app.mappingEngine;
 
 
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -10,9 +17,14 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 
 
-public class AlignmentSet<E extends Alignment>
+public class AlignmentSet<E extends Alignment> implements Serializable
 {
-    protected ArrayList<E> collection = null;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8090732896473529999L;
+	
+	protected ArrayList<E> collection = null;
 
     public AlignmentSet()
     {
@@ -210,4 +222,44 @@ public class AlignmentSet<E extends Alignment>
     public Iterator<E> iterator() {
     	return collection.iterator();
     }
+    
+    /** ****************** Serialization methods *******************/
+	
+	  /**
+	   * readObject: gets the state of the object.
+	   * @author michele
+	   */
+	  protected AlignmentSet<Alignment> readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
+		  AlignmentSet<Alignment> thisClass = (AlignmentSet<Alignment>) in.readObject();
+		  in.close();
+		  return thisClass;
+	  }
+
+	   /**
+	    * writeObject: saves the state of the object.
+	    * @author michele
+	    */
+	  protected void writeObject(ObjectOutputStream out) throws IOException {
+		  out.writeObject(this);
+		  out.close();
+	  }
+
+	  protected void testSerialization(){
+		  AlignmentSet<Alignment> as = null;
+			try {
+				writeObject(new ObjectOutputStream(new FileOutputStream("testFile")));
+				as = readObject(new ObjectInputStream(new FileInputStream("testFile")));
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			System.out.println(as.getStringList());
+	  }
 }

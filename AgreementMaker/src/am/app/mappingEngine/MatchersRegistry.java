@@ -54,14 +54,13 @@ public enum MatchersRegistry {
 	 * And so, if your matcher is has no code errors, it will be incorporated into the AgreementMaker.  - Cosmin
 	 */
 	//
-	//AbstractMatcher		( "NoMatcher", am.app.mappingEngine.manualMatcher.UserManualMatcher.class ),
+	AbstractMatcher		( "NoMatcher", am.app.mappingEngine.manualMatcher.UserManualMatcher.class ),
 	OAEI2010			( "OAEI 2010 Matcher", am.app.mappingEngine.oaei2010.OAEI2010Matcher.class ),
 	IterativeMatcher	( "Instance-based Iterator", am.app.mappingEngine.instance.IterativeMatcher.class),
 	AdvancedSimilarity  ( "Advanced Similarity Matcher (ASM)", am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher.class),
 	GroupFinder			( "Group Finder Matcher (GFM)", am.app.mappingEngine.groupFinder.GroupFinderMatcher.class),
 	FCM					( "Federico Caimi Matcher", am.app.mappingEngine.FedericoCaimiMatcher.FedericoMatcher.class),
 	LSM					( "Lexical Synonym Matcher", LexicalSynonymMatcher.class ),
-	//ShashiMatcher		( "Shashi Matcher", am.extension.shashi.ShashiMatcher.class),
 	//OFFICIAL MATCHERS
 	LexicalJAWS			( "Lexical Matcher: JAWS", LexicalMatcherJAWS.class ),
 	BaseSimilarity		( "Base Similarity Matcher (BSM)", BaseSimilarityMatcher.class ),

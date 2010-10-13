@@ -23,6 +23,13 @@ import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 public class OAEI2010Matcher extends AbstractMatcher {
 
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2258529392257305604L;
+
+
+
 	public OAEI2010Matcher(){
 		super();
 		needsParam = true;

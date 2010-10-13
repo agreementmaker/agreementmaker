@@ -33,20 +33,25 @@ import am.app.ontology.Node;
 
 public class IterativeMatcher extends AbstractMatcher{
 	
-	OntModel modelS;
-	OntModel modelT;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3487688851847604469L;
 	
-	ArrayList<OntProperty> matchedPropsS;
-	ArrayList<OntProperty> matchedPropsT;
-	ArrayList<OntClass> matchedClassesS;
-	ArrayList<OntClass> matchedClassesT;
-	ArrayList<Individual> matchedIndividualsS;
-	ArrayList<Individual> matchedIndividualsT;
+	transient OntModel modelS;
+	transient OntModel modelT;
 	
-	ArrayList<Individual> individualsS;
-	ArrayList<Individual> individualsT;
-	ArrayList<Statement> statementsS;
-	ArrayList<Statement> statementsT;
+	transient ArrayList<OntProperty> matchedPropsS;
+	transient ArrayList<OntProperty> matchedPropsT;
+	transient ArrayList<OntClass> matchedClassesS;
+	transient ArrayList<OntClass> matchedClassesT;
+	transient ArrayList<Individual> matchedIndividualsS;
+	transient ArrayList<Individual> matchedIndividualsT;
+	
+	transient ArrayList<Individual> individualsS;
+	transient ArrayList<Individual> individualsT;
+	transient ArrayList<Statement> statementsS;
+	transient ArrayList<Statement> statementsT;
 
 	int mappedTotal = 0;
 	int mappedTotalPrev = 0;

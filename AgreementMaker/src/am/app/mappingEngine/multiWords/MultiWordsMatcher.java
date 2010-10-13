@@ -34,25 +34,30 @@ import simpack.measure.weightingscheme.StringTFIDF;
 
 public class MultiWordsMatcher extends AbstractMatcher { 
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8492028869952801951L;
+
 	// Logger
 	private static Logger log = Logger.getLogger(MultiWordsMatcher.class);
 	
 
-	private Normalizer normalizer;
+	private transient Normalizer normalizer;
 	private ArrayList<String> sourceClassDocuments = new ArrayList<String>();
 	private ArrayList<String> targetClassDocuments = new ArrayList<String>();
 	private ArrayList<String> sourcePropDocuments = new ArrayList<String>();
 	private ArrayList<String> targetPropDocuments = new ArrayList<String>();
 	
-	private ArrayList<StringWrapper> classCorpus = new ArrayList<StringWrapper>();
-	private ArrayList<StringWrapper> propCorpus = new ArrayList<StringWrapper>();
+	private transient ArrayList<StringWrapper> classCorpus = new ArrayList<StringWrapper>();
+	private transient ArrayList<StringWrapper> propCorpus = new ArrayList<StringWrapper>();
 	
-	private StringTFIDF tfidfClasses;
-	private StringTFIDF tfidfProperties;
+	private transient StringTFIDF tfidfClasses;
+	private transient StringTFIDF tfidfProperties;
 	
 	// Lexicons
-	private Lexicon sourceOntologyLexicon, targetOntologyLexicon;
-	private Lexicon sourceWordNetLexicon, targetWordNetLexicon; 
+	private transient Lexicon sourceOntologyLexicon, targetOntologyLexicon;
+	private transient Lexicon sourceWordNetLexicon, targetWordNetLexicon; 
 	
 	public MultiWordsMatcher() {
 		// warning, param is not available at the time of the constructor

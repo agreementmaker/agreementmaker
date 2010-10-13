@@ -40,6 +40,11 @@ import am.app.ontology.Ontology;
 import am.userInterface.MatcherParametersDialog;
 
 public class FedericoMatcher extends AbstractMatcher {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3612931342445940115L;
+	
 	double LABEL_TRESHOLD = 1.0; 
 	double SUBSTRING_TRESHOLD = 1.0;
 	double SUBCLASS_TRESHOLD = 0.6;
@@ -63,13 +68,11 @@ public class FedericoMatcher extends AbstractMatcher {
 	private ArrayList<Node> sourcePropList;
 	private ArrayList<Node> targetPropList;
 	
-	private HashMap<Node, List<Restriction>> sourceRestrictions;
-	private HashMap<Node, List<Restriction>> targetRestrictions;
-	private HashMap<Restriction, Node> restrictions;
-	private HashMap<OntProperty, List<Literal>> sourcePropValues;
-	private HashMap<OntProperty, List<Literal>> targetPropValues;
-	
-	
+	private transient HashMap<Node, List<Restriction>> sourceRestrictions;
+	private transient HashMap<Node, List<Restriction>> targetRestrictions;
+	private transient HashMap<Restriction, Node> restrictions;
+	private transient HashMap<OntProperty, List<Literal>> sourcePropValues;
+	private transient HashMap<OntProperty, List<Literal>> targetPropValues;
 	
 	public FedericoMatcher(){
 		super();

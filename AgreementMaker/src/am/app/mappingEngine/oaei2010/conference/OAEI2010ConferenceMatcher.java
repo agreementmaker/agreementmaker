@@ -19,6 +19,12 @@ import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
  */
 public class OAEI2010ConferenceMatcher extends AbstractMatcher{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1471422858827082733L;
+
+
 	public String getDescriptionString() {
 		return "The method adopted in the OAEI2010 competition " +
 				"for the conference track";

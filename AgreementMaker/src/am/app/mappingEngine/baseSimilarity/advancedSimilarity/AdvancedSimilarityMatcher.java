@@ -20,6 +20,11 @@ import am.app.ontology.Node;
  */
 public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2316666472074501151L;
+	
 	private static ArrayList<String> isHas = new ArrayList<String>();
 	private static ArrayList<String> prep = new ArrayList<String>();
 	
@@ -247,7 +252,6 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 			}
 			result.addAlignment(list.get(i));
 		}
-		super.testSerialization();
 		return result;
 		
 	}
@@ -258,6 +262,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 * @author michele
 	 */
 	public String getDescriptionString() {
+		super.testSerialization();
 		return "The Advanced Similarity Matcher (ASM for short) is a matching method that compare the source and the target concepts\n" +
 				"by looking at the words that compose them and use a string-matching technique to provide the overall result.\n" +
 				"The idea is that we try to look inside the strings to see if there is some mapping between the words composing\n" +

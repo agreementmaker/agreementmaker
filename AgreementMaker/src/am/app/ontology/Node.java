@@ -1,5 +1,12 @@
 package am.app.ontology;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -26,6 +33,7 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.sun.xml.internal.bind.v2.runtime.output.Pcdata;
 
 import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.userInterface.ontology.OntologyConceptGraphics;
 import am.userInterface.vertex.*;
@@ -36,8 +44,13 @@ import am.utility.Pair;
  * so we use our own structure, even though we keep the reference to the Jena structure
  *
  */
-public class Node {
+public class Node implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7629984078559964658L;
+
 	/** This is the reference of the Resource in the ontology, this is a Jena class.
 	 *  When parsing an XML ontology, there will be a Jena OntModel built in order to provide this resource.	
 	 *  The Node object is built taking information from this Jena Resource.
@@ -45,7 +58,7 @@ public class Node {
 	 *  If this node is a ClassNode, the resource will be instance of OntClass.
 	 *  The Jena Resource is used to access all information in the ontology regarding this concept.
 	 */
-	private Resource resource;
+	private transient Resource resource;
 	
 	/** The OWL/RDF uri identifier, that is namespace#localname.
 	 * This info is kept in the resource variable but we keep them separate to access them easily. TODO - Should we really be duplicating this information? - Cosmin.
@@ -98,7 +111,7 @@ public class Node {
 	 *List of vertex representing the node in the graphical tree hierarchy
 	 * Usually each node is represeted only by one vertex, but if the node hasDuplicate, it's represented more times
 	 */
-	private ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
+	private transient ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
 	/**RDF-node, OWL-classnode, OWL-propnode, OWL-unsatconcept, XML-node*/
 	private String type;
 	public final static String RDFNODE = "rdf-node";
@@ -118,7 +131,7 @@ public class Node {
 	 * This must be a list, as opposed to a single variable, because AgreementMaker 
 	 * can have multiple graphical representations of the same ontology.
 	 */
-	private ArrayList<OntologyConceptGraphics> graphicalRepresentations = new ArrayList<OntologyConceptGraphics>();
+	private transient ArrayList<OntologyConceptGraphics> graphicalRepresentations = new ArrayList<OntologyConceptGraphics>();
 	
 	
 	/***************************************** METHODS *************************************************/
@@ -828,5 +841,45 @@ public class Node {
 	private boolean matched;
 	public void setMatched(boolean b) { matched = b; }
 	public boolean isMatched() { return matched; }
+	
+	/** ****************** Serialization methods *******************/
+	
+	  /**
+	   * readObject: gets the state of the object.
+	   * @author michele
+	   */
+	  protected Node readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
+		  Node thisClass = (Node) in.readObject();
+		  in.close();
+		  return thisClass;
+	  }
+
+	   /**
+	    * writeObject: saves the state of the object.
+	    * @author michele
+	    */
+	  protected void writeObject(ObjectOutputStream out) throws IOException {
+		  out.writeObject(this);
+		  out.close();
+	  }
+
+	  protected void testSerialization(){
+		  Node n = null;
+			try {
+				writeObject(new ObjectOutputStream(new FileOutputStream("testFile")));
+				n = readObject(new ObjectInputStream(new FileInputStream("testFile")));
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			System.out.println(n.localName);
+	  }
 
 }

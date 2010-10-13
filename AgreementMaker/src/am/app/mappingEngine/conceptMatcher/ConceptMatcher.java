@@ -26,12 +26,15 @@ import java.util.*;
 
 public class ConceptMatcher extends AbstractMatcher { 
 
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8164676239475978748L;
+	
 	// JAWS WordNet interface
-	private WordNetDatabase wordnet  = null;
+	private transient WordNetDatabase wordnet  = null;
 	//public LexicalizedParser parser = null;
 	Hashtable<String, String> htConcepts = null;
-	
 	
 	public ConceptMatcher() {
 		// warning, param is not available at the time of the constructor
@@ -39,8 +42,6 @@ public class ConceptMatcher extends AbstractMatcher {
 		super();
 		needsParam = true;
 	}
-
-	
 	
 	public String getDescriptionString() {
 		return "Extracts the longest-defined concept from each node and compares the Jaccard scores of concept sets.\n" +
@@ -49,8 +50,6 @@ public class ConceptMatcher extends AbstractMatcher {
 				"A similarity matrix contains the Jaccard similarity between each pair (sourceNode, targetNode).\n" +
 				"A selection algorithm select valid alignments considering threshold and number of relations per node.\n"; 
 	}
-	
-	
 	
 	/* *******************************************************************************************************
 	 ************************ Algorithm functions beyond this point*************************************

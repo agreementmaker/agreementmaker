@@ -20,6 +20,10 @@ import am.app.ontology.Node;
  */
 public class GroupFinderMatcher extends AbstractMatcher {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2823104411109824547L;
 	// the AlignmentMatrices from the input matching algorithm
 	protected AlignmentMatrix inputClassesMatrix = null;
 	protected AlignmentMatrix inputPropertiesMatrix = null;
@@ -135,6 +139,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 * @author michele
 	 */
 	public String getDescriptionString() {
+		super.testSerialization();
 		return "The Concept Finder Matcher (CFM for short) is a matching method that visits the structure of the source\n" +
 				"and the target ontologies to see whether the mappings between nodes of the two ontologies is respected.\n" +
 				"The idea is that, if the two concepts are sibling in some ontolgy, the mappings should be between siblings\n" +

@@ -27,10 +27,15 @@ import uk.ac.shef.wit.simmetrics.similaritymetrics.*; //all sim metrics are in h
 public class ParametricStringMatcher extends AbstractMatcher { 
 
 
-	private Normalizer normalizer;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9164286339430046976L;
+
+	private transient Normalizer normalizer;
 	
-	private Lexicon sourceOntologyLexicon, targetOntologyLexicon;
-	private Lexicon sourceWordNetLexicon, targetWordNetLexicon; 
+	private transient Lexicon sourceOntologyLexicon, targetOntologyLexicon;
+	private transient Lexicon sourceWordNetLexicon, targetWordNetLexicon; 
 	
 	public ParametricStringMatcher() { super(); }
 	public ParametricStringMatcher( ParametricStringParameters p ) { super(p); }

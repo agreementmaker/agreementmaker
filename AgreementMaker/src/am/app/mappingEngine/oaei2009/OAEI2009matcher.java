@@ -22,8 +22,13 @@ import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 public class OAEI2009matcher extends AbstractMatcher { 
 
 	
-	//private Normalizer normalizer;
+	//private transient Normalizer normalizer;
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1267177915055140323L;
+
 	public OAEI2009matcher() {
 		// warning, param is not available at the time of the constructor
 		super();

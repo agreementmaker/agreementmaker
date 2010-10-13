@@ -19,6 +19,11 @@ import am.app.ontology.Node;
  */
 public class BasicStructuralSelectorMatcher extends AbstractMatcher {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5031932189615614189L;
+	
 	// the AlignmentMatrices from the input matching algorithm
 	protected AlignmentMatrix inputClassesMatrix = null;
 	protected AlignmentMatrix inputPropertiesMatrix = null;

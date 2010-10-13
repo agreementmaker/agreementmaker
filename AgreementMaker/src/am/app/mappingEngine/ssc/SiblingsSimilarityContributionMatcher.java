@@ -12,6 +12,10 @@ import am.userInterface.vertex.Vertex;
 
 public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3990033207967541294L;
 	// the Alignment Matrices from the Input Matching algorithm.
 	private AlignmentMatrix inputClassesMatrix = null;
 	private AlignmentMatrix inputPropertiesMatrix = null;

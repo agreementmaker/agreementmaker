@@ -10,7 +10,11 @@ import am.app.ontology.Node;
 
 public class CombinationMatcher extends AbstractMatcher {
 	
-	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6298803128635729082L;
+
 	public CombinationMatcher() {
 		super();
 		needsParam = true; // need the parameters

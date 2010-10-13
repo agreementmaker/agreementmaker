@@ -15,18 +15,21 @@ import am.app.mappingEngine.StringUtil.PorterStemmer;
 import am.app.ontology.Node;
 
 
-public class BaseSimilarityMatcher extends AbstractMatcher { 
-
+public class BaseSimilarityMatcher extends AbstractMatcher {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	// JAWS WordNet interface
-	private WordNetDatabase wordnet  = null;
+	private transient WordNetDatabase wordnet  = null;
 	
-	private NormalizerParameter param1;
-	private NormalizerParameter param2;
-	private NormalizerParameter param3;
-	private Normalizer norm1;
-	private Normalizer norm2;
-	private Normalizer norm3;
+	private transient NormalizerParameter param1;
+	private transient NormalizerParameter param2;
+	private transient NormalizerParameter param3;
+	private transient Normalizer norm1;
+	private transient Normalizer norm2;
+	private transient Normalizer norm3;
 	
 	public BaseSimilarityMatcher() {
 		// warning, param is not available at the time of the constructor (when creating a matcher from the User Interface)

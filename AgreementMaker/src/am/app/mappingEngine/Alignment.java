@@ -1,14 +1,27 @@
 
 package am.app.mappingEngine;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.*;
 import am.output.OutputController;
 
 
-public class Alignment
+public class Alignment implements Serializable
 {
-    private Node entity1 = null;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7594296130576633495L;
+	
+	private Node entity1 = null;
     private Node entity2 = null;
     private double similarity = 0;
     private String relation = null;
@@ -196,4 +209,44 @@ public class Alignment
 	public alignType getAlignmentType() {
 		return typeOfConcepts;
 	}
+	
+	/** ****************** Serialization methods *******************/
+	
+	  /**
+	   * readObject: gets the state of the object.
+	   * @author michele
+	   */
+	  protected Alignment readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
+		  Alignment thisClass = (Alignment) in.readObject();
+		  in.close();
+		  return thisClass;
+	  }
+
+	   /**
+	    * writeObject: saves the state of the object.
+	    * @author michele
+	    */
+	  protected void writeObject(ObjectOutputStream out) throws IOException {
+		  out.writeObject(this);
+		  out.close();
+	  }
+
+	  protected void testSerialization(){
+		  Alignment a = null;
+			try {
+				writeObject(new ObjectOutputStream(new FileOutputStream("testFile")));
+				a = readObject(new ObjectInputStream(new FileInputStream("testFile")));
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			System.out.println(a.similarity);
+	  }
 }

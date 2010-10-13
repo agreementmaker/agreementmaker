@@ -1,5 +1,12 @@
 package am.app.mappingEngine;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import am.app.Core;
@@ -7,8 +14,13 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
-public class AlignmentMatrix {
-	
+public class AlignmentMatrix implements Serializable
+{	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8724503849185030524L;
+
 	//not used at the moment. At the moment indetermined similarity are set with 0.
 	//if we want to start using it is important to keep it similar to 0, to allow compatibility with non-updated methods.
 	final static double INDETERMINED = Double.MIN_NORMAL;
@@ -428,4 +440,44 @@ public class AlignmentMatrix {
 		}
 		return list;		
 	}
+	
+	/** ****************** Serialization methods *******************/
+	
+	  /**
+	   * readObject: gets the state of the object.
+	   * @author michele
+	   */
+	  protected AlignmentMatrix readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
+		  AlignmentMatrix thisClass = (AlignmentMatrix) in.readObject();
+		  in.close();
+		  return thisClass;
+	  }
+
+	   /**
+	    * writeObject: saves the state of the object.
+	    * @author michele
+	    */
+	  protected void writeObject(ObjectOutputStream out) throws IOException {
+		  out.writeObject(this);
+		  out.close();
+	  }
+
+	  protected void testSerialization(){
+		  AlignmentMatrix am = null;
+			try {
+				writeObject(new ObjectOutputStream(new FileOutputStream("testFile")));
+				am = readObject(new ObjectInputStream(new FileInputStream("testFile")));
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			System.out.println(am.get(0, 0));
+	  }
 }
