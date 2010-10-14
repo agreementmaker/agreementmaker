@@ -5,6 +5,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -322,6 +324,12 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 				prefs.saveExportLastDir(outDirectory);
 				prefs.saveExportType(outputType);
 				
+				// get the currently selected matcher
+				ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
+				AbstractMatcher selectedMatcher;
+				int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
+				selectedMatcher = list.get(rowsIndex[0]); // we only care about the first matcher selected
+				
 				if( outputType == ExportType.ALIGNMENT_ONLY ) {
 					prefs.saveExportAlignmentFormatIndex(outFormatIndex);
 					try {
@@ -352,60 +360,56 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 					// full file name
 					String fullFileName = outDirectory+ "/" + outFileName + ".csv";
 					
-					
-					ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
-					AbstractMatcher matcher;
-					int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
-					matcher = list.get(rowsIndex[0]); // we only care about the first matcher selected
-					
 					if( radClassesMatrix.isSelected() ) {
-						if( matcher.getClassesMatrix() == null ) {
+						if( selectedMatcher.getClassesMatrix() == null ) {
 							// create a new matrix
-							if( matcher.getSourceOntology() == null || matcher.getTargetOntology() == null ) { 
+							if( selectedMatcher.getSourceOntology() == null || selectedMatcher.getTargetOntology() == null ) { 
 								throw new Exception("Matcher does not have Source or Target ontologies set.");
 							}
-							AlignmentMatrix m = new AlignmentMatrix(matcher.getSourceOntology().getClassesList().size(), 
-																	matcher.getTargetOntology().getClassesList().size(), 
+							AlignmentMatrix m = new AlignmentMatrix(selectedMatcher.getSourceOntology().getClassesList().size(), 
+																	selectedMatcher.getTargetOntology().getClassesList().size(), 
 																	alignType.aligningClasses);
-							if( matcher.getClassAlignmentSet() == null ) 
+							if( selectedMatcher.getClassAlignmentSet() == null ) 
 								throw new Exception("Matcher does not have a Classes Matrix nor a Classes Alignment Set.  Cannot do anything.");
 							
-							for( int i = 0; i < matcher.getClassAlignmentSet().size(); i++ ) {
-								am.app.mappingEngine.Alignment currentAlignment = matcher.getClassAlignmentSet().getAlignment(i);
+							for( int i = 0; i < selectedMatcher.getClassAlignmentSet().size(); i++ ) {
+								am.app.mappingEngine.Alignment currentAlignment = selectedMatcher.getClassAlignmentSet().getAlignment(i);
 								m.set(currentAlignment.getEntity1().getIndex(), currentAlignment.getEntity2().getIndex(), currentAlignment);
 							}
 							
 							OutputController.saveMatrixAsCSV(m, fullFileName, boxSort.isSelected(), boxIsolines.isSelected(), boxSkipZeros.isSelected());
 							
 						} else { 
-							OutputController.saveMatrixAsCSV(matcher.getClassesMatrix(), fullFileName, boxSort.isSelected(), boxIsolines.isSelected(), boxSkipZeros.isSelected());
+							OutputController.saveMatrixAsCSV(selectedMatcher.getClassesMatrix(), fullFileName, boxSort.isSelected(), boxIsolines.isSelected(), boxSkipZeros.isSelected());
 						}
 					} else {
-						if( matcher.getPropertiesMatrix() == null ) {
+						if( selectedMatcher.getPropertiesMatrix() == null ) {
 							// create a new matrix
-							if( matcher.getSourceOntology() == null || matcher.getTargetOntology() == null ) { 
+							if( selectedMatcher.getSourceOntology() == null || selectedMatcher.getTargetOntology() == null ) { 
 								throw new Exception("Matcher does not have Source or Target ontologies set.");
 							}
-							AlignmentMatrix m = new AlignmentMatrix(matcher.getSourceOntology().getPropertiesList().size(), 
-																	matcher.getTargetOntology().getPropertiesList().size(), 
+							AlignmentMatrix m = new AlignmentMatrix(selectedMatcher.getSourceOntology().getPropertiesList().size(), 
+																	selectedMatcher.getTargetOntology().getPropertiesList().size(), 
 																	alignType.aligningProperties);
-							if( matcher.getPropertyAlignmentSet() == null ) 
+							if( selectedMatcher.getPropertyAlignmentSet() == null ) 
 								throw new Exception("Matcher does not have a Properties Matrix nor a Properties Alignment Set.  Cannot do anything.");
 							
-							for( int i = 0; i < matcher.getPropertyAlignmentSet().size(); i++ ) {
-								am.app.mappingEngine.Alignment currentAlignment = matcher.getPropertyAlignmentSet().getAlignment(i);
+							for( int i = 0; i < selectedMatcher.getPropertyAlignmentSet().size(); i++ ) {
+								am.app.mappingEngine.Alignment currentAlignment = selectedMatcher.getPropertyAlignmentSet().getAlignment(i);
 								m.set(currentAlignment.getEntity1().getIndex(), currentAlignment.getEntity2().getIndex(), currentAlignment);
 							}
 							
 							OutputController.saveMatrixAsCSV(m, fullFileName, boxSort.isSelected(), boxIsolines.isSelected(), boxSkipZeros.isSelected());
 						} else {
-							OutputController.saveMatrixAsCSV(matcher.getPropertiesMatrix(), fullFileName, boxSort.isSelected(), boxIsolines.isSelected(), boxSkipZeros.isSelected());
+							OutputController.saveMatrixAsCSV(selectedMatcher.getPropertiesMatrix(), fullFileName, boxSort.isSelected(), boxIsolines.isSelected(), boxSkipZeros.isSelected());
 						}
 					}
 					Utility.displayMessagePane("File saved successfully.\nLocation: "+fullFileName+"\n", null);
 				} else if( outputType == ExportType.COMPLETE_MATCHER ) {
-					throw new Exception("Michele, implement this function.");
-					//Utility.displayMessagePane("File saved successfully.\nLocation: "+fullFileName+"\n", null);
+					//throw new Exception("Michele, implement this function.");
+					String fullFileName = outDirectory+ "/" + outFileName + ".bin";
+					selectedMatcher.writeObject(new ObjectOutputStream(new FileOutputStream(fullFileName)));
+					Utility.displayMessagePane("File saved successfully.\nLocation: "+fullFileName+"\n", null);
 				} else {
 					throw new Exception("Could not determine the output type.\nAt least one radio button must be selected.");
 				}
