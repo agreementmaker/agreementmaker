@@ -60,9 +60,15 @@ public class AppPreferences {
 	/** key for storing the status of the beep on finish checkbox of the matcher progress panel */
 	private static final String 	PREF_BEEPONFINISH = "pref_BEEPONFINISH";
 
-	/** keys for storing the type of the last export that was made */
+	/** keys for storing preferences for the export dialog */
 	private static final String		PREF_EXPORT_TYPE = "pref_export_type";
 	private static final String		PREF_EXPORT_ALIGNMENT_FORMAT = "pref_export_alignment_format";
+	private static final String 	PREF_EXPORTLASTDIR = "pref_export_last_dir_output";
+	private static final String 	PREF_EXPORTLASTFILENAME = "pref_export_last_filename";
+	private static final String 	PREF_EXPORT_CLASSESMATRIX = "pref_export_classes_matrix";
+	private static final String		PREF_EXPORT_SORT = "pref_export_sort";
+	private static final String		PREF_EXPORT_ISOLINES = "pref_export_isolines";
+	private static final String		PREF_EXPORT_SKIPZERO = "pref_export_skipzero";
 	
 	public static enum ExportType { 
 		ALIGNMENT_ONLY("1"), MATRIX_AS_CSV("2"), COMPLETE_MATCHER("3");
@@ -92,17 +98,6 @@ public class AppPreferences {
 		return false; 
 	}
 	
-	/** Export Dialog **/
-	public void setExportType( ExportType t ) { appPrefs.put(PREF_EXPORT_TYPE, t.getKey() ); }
-	
-	public boolean isExportTypeSelected( ExportType t ) {
-		String type = appPrefs.get(PREF_EXPORT_TYPE, "1");
-		if( type.equals(t.getKey()) ) return true;
-		return false;
-	}
-	
-	public void setExportAlignmentFormatIndex( int index ) { appPrefs.putInt(PREF_EXPORT_ALIGNMENT_FORMAT, index ); }
-	public int getExportAlignmentFormatIndex() { return appPrefs.getInt(PREF_EXPORT_ALIGNMENT_FORMAT, 0); }
 	
 	/** 
 	 *
@@ -470,6 +465,36 @@ public class AppPreferences {
 		
 	}
 	
+	
+	/** Export Dialog **/
+	public boolean getExportSort() {	return appPrefs.getBoolean(PREF_EXPORT_SORT, true); }
+	public void saveExportSort( boolean sort ) {	appPrefs.putBoolean(PREF_EXPORT_SORT, sort); }
+	public boolean getExportIsolines() {	return appPrefs.getBoolean(PREF_EXPORT_ISOLINES, true); }
+	public void saveExportIsolines( boolean sort ) {	appPrefs.putBoolean(PREF_EXPORT_ISOLINES, sort); }
+	public boolean getExportSkipZeros() {	return appPrefs.getBoolean(PREF_EXPORT_SKIPZERO, true); }
+	public void saveExportSkipZeros( boolean sort ) {	appPrefs.putBoolean(PREF_EXPORT_SKIPZERO, sort); }
+	public void saveExportClassesMatrix( boolean c ) { appPrefs.putBoolean(PREF_EXPORT_CLASSESMATRIX, c); }
+	public boolean isExportClassesMatrix() { return appPrefs.getBoolean(PREF_EXPORT_CLASSESMATRIX, true); }
+	public void saveExportType( ExportType t ) { appPrefs.put(PREF_EXPORT_TYPE, t.getKey() ); }
+	
+	public boolean isExportTypeSelected( ExportType t ) {
+		String type = appPrefs.get(PREF_EXPORT_TYPE, "1");
+		if( type.equals(t.getKey()) ) return true;
+		return false;
+	}
+	
+	public void saveExportAlignmentFormatIndex( int index ) { appPrefs.putInt(PREF_EXPORT_ALIGNMENT_FORMAT, index ); }
+	public int getExportAlignmentFormatIndex() { return appPrefs.getInt(PREF_EXPORT_ALIGNMENT_FORMAT, 0); }
+	
+	/**
+	 * @return The last directory selected by the user in the Export Dialog.
+	 */
+	public String getExportLastFilename() { return appPrefs.get(PREF_EXPORTLASTFILENAME,""); }
+	public File getExportLastDir() { return new File( appPrefs.get(PREF_EXPORTLASTDIR, "") ); }
+	public void saveExportLastFilename( String name ) { appPrefs.put( PREF_EXPORTLASTFILENAME, name); }
+	public void saveExportLastDir(File selecteddir) { appPrefs.put(PREF_EXPORTLASTDIR, selecteddir.getPath()); }
+	public void saveExportLastDir(String selecteddir) { appPrefs.put(PREF_EXPORTLASTDIR, selecteddir); }
+	
 	/**
 	 * This will save the location of the directory that was used by the user to save the output of the Evaluate Reference function
 	 * for use next time the user opens the dialog
@@ -494,9 +519,9 @@ public class AppPreferences {
 	 * for use next time the user opens the dialog
 	 * @param selectedfile - the file that was selected by the user
 	 */
-	public void saveLastNameOutput(String name) {
-		appPrefs.put(PREF_LASTNAMEOUTPUT, name);
-	}
+	public void saveLastNameOutput(String name) { appPrefs.put(PREF_LASTNAMEOUTPUT, name); }
+	
+	
 	//THE LAST FORMAT FOR THE OUTPUT FILE OF THE REFERENCE EVALUATION HAS NOT BEEN IMPLEMENTED YET BECAUSE THERE IS ONLY ONE FORMAT NOW
 	
 	/**
@@ -599,6 +624,9 @@ public class AppPreferences {
 		return appPrefs.getBoolean( "PREF_" + setting.prefKey, setting.defBool );
 		
 	}
+
+
+	
 
 	
 }
