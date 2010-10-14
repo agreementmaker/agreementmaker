@@ -45,7 +45,7 @@ import am.userInterface.vertex.VertexDescriptionPane;
 public class UIMenu implements ActionListener {
 	
 	// create Top Level menus
-	private JMenu fileMenu, editMenu, viewMenu, helpMenu, matchingMenu, toolsMenu, ontologyMenu;
+	private JMenu fileMenu, editMenu, viewMenu, helpMenu, matchersMenu, toolsMenu, ontologyMenu;
 	
 	// File menu.
 	private JMenuItem xit, openSource, openTarget, openMostRecentPair,
@@ -69,13 +69,16 @@ public class UIMenu implements ActionListener {
 	// Tools menu.
 	private JMenuItem wordnetLookupItem, sealsItem;
 	
-	// Matching menu.
+	// Matchers menu.
 	private JMenuItem manualMapping, userFeedBack, 
 					  newMatching, runMatching, copyMatching, deleteMatching, clearAll, 
 					  doRemoveDuplicates, 
 					  saveMatching, 
 					  refEvaluateMatching,
 					  thresholdAnalysis;
+	
+	private JMenu	menuExport;
+	private JMenuItem exportMatrixCSV;
 	
 	
 	// Help menu.
@@ -561,6 +564,11 @@ public class UIMenu implements ActionListener {
 				} else {
 					Utility.displayErrorPane("No target ontology loaded.", "Error");
 				}
+			} else if( obj == exportMatrixCSV ) {
+				
+				// TODO: Implement this.
+				
+				
 			}
 			
 			
@@ -808,10 +816,12 @@ public class UIMenu implements ActionListener {
 		menuLexiconsWNSource.addActionListener(this);
 		menuLexiconsWNTarget = new JMenuItem("WordNet Lexicon: Target");
 		menuLexiconsWNTarget.addActionListener(this);
+		
 		menuLexicons.add(menuLexiconsOntSource);
 		menuLexicons.add(menuLexiconsOntTarget);
 		menuLexicons.add(menuLexiconsWNSource);
 		menuLexicons.add(menuLexiconsWNTarget);
+		viewMenu.addSeparator();
 		viewMenu.add(menuLexicons);
 		
 		/*
@@ -830,52 +840,59 @@ public class UIMenu implements ActionListener {
 		ontologyMenu.add(ontologyDetails);
 		myMenuBar.add(ontologyMenu);
 		
-		matchingMenu = new JMenu("Matching");
-		matchingMenu.setMnemonic('M');
-		manualMapping = new JMenuItem("Manual Mapping"); 
+		matchersMenu = new JMenu("Matchers");
+		matchersMenu.setMnemonic('M');
+		manualMapping = new JMenuItem("Manual matcher"); 
 		manualMapping.addActionListener(this);
-		matchingMenu.add(manualMapping);
+		
+		menuExport = new JMenu("Export...");
+		exportMatrixCSV = new JMenuItem("Similarity Matrix as CSV");
+		menuExport.add(exportMatrixCSV);
+		
+		matchersMenu.add(menuExport);
+		matchersMenu.addSeparator();
+		matchersMenu.add(manualMapping);
 		
 		userFeedBack = new JMenuItem("User Feedback Loop");
 		userFeedBack.addActionListener(this);
 		//matchingMenu.add(userFeedBack);  // Remove UFL for distribution.
 		
-		matchingMenu.addSeparator();
-		newMatching = new JMenuItem("New empty matching");
+		matchersMenu.addSeparator();
+		newMatching = new JMenuItem("New empty matcher");
 		newMatching.addActionListener(this);
-		matchingMenu.add(newMatching);
+		matchersMenu.add(newMatching);
 		runMatching = new JMenuItem("Run selected matcher");
 		runMatching.addActionListener(this);
-		matchingMenu.add(runMatching);
+		matchersMenu.add(runMatching);
 		copyMatching = new JMenuItem("Copy selected matchings");
 		copyMatching.addActionListener(this);
-		matchingMenu.add(copyMatching);
+		matchersMenu.add(copyMatching);
 		deleteMatching = new JMenuItem("Delete selected matchings");
 		deleteMatching.addActionListener(this);
-		matchingMenu.add(deleteMatching);
+		matchersMenu.add(deleteMatching);
 		clearAll = new JMenuItem("Clear All");
 		clearAll.addActionListener(this);
-		matchingMenu.add(clearAll);
-		matchingMenu.addSeparator();
+		matchersMenu.add(clearAll);
+		matchersMenu.addSeparator();
 		
 		doRemoveDuplicates = new JMenuItem("Remove Duplicate Alignments");
 		doRemoveDuplicates.addActionListener(this);
 		//matchingMenu.add(doRemoveDuplicates);
 		//matchingMenu.addSeparator();
 		
-		saveMatching = new JMenuItem("Save selected matchings into a file");
+		saveMatching = new JMenuItem("Save selected matchers into a file");
 		saveMatching.addActionListener(this);
-		matchingMenu.add(saveMatching);
-		matchingMenu.addSeparator();
+		matchersMenu.add(saveMatching);
+		matchersMenu.addSeparator();
 		refEvaluateMatching = new JMenuItem("Evaluate with reference file");
 		refEvaluateMatching.addActionListener(this);
-		matchingMenu.add(refEvaluateMatching);
+		matchersMenu.add(refEvaluateMatching);
 		
 		thresholdAnalysis = new JMenuItem("Threshold Analysis");
 		thresholdAnalysis.addActionListener(this);
-		matchingMenu.add(thresholdAnalysis);
+		matchersMenu.add(thresholdAnalysis);
 		
-		myMenuBar.add(matchingMenu);
+		myMenuBar.add(matchersMenu);
 		
 		
 		

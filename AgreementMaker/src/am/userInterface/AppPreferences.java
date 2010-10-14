@@ -23,6 +23,8 @@ public class AppPreferences {
 	/** The app prefs. */
 	private Preferences appPrefs;
 	
+	// TODO: Convert all these static Strings to an enum.
+	
 	/** preferences key for storing the last directory used by the dialog */
 	private static final String PREF_LASTDIR = "pref_lastdirectoryused";
 	
@@ -55,8 +57,20 @@ public class AppPreferences {
 	private static final String		PREF_SHOWLOCALNAME = "pref_SHOWLOCALNAME";
 	private static final String		PREF_SHOWLABEL = "pref_SHOWLABEL";
 	
+	/** key for storing the status of the beep on finish checkbox of the matcher progress panel */
 	private static final String 	PREF_BEEPONFINISH = "pref_BEEPONFINISH";
 
+	/** keys for storing the type of the last export that was made */
+	private static final String		PREF_EXPORT_TYPE = "pref_export_type";
+	private static final String		PREF_EXPORT_ALIGNMENT_FORMAT = "pref_export_alignment_format";
+	
+	public static enum ExportType { 
+		ALIGNMENT_ONLY("1"), MATRIX_AS_CSV("2"), COMPLETE_MATCHER("3");
+		//----------------------- Implementation Details ------------------
+		String key;
+		ExportType(String k) { key = k; }
+		String getKey() { return key; }
+	}
 	
 	/**
 	 * Constructor
@@ -77,6 +91,18 @@ public class AppPreferences {
 		if( beep.equals("y") ) { return true; }
 		return false; 
 	}
+	
+	/** Export Dialog **/
+	public void setExportType( ExportType t ) { appPrefs.put(PREF_EXPORT_TYPE, t.getKey() ); }
+	
+	public boolean isExportTypeSelected( ExportType t ) {
+		String type = appPrefs.get(PREF_EXPORT_TYPE, "1");
+		if( type.equals(t.getKey()) ) return true;
+		return false;
+	}
+	
+	public void setExportAlignmentFormatIndex( int index ) { appPrefs.putInt(PREF_EXPORT_ALIGNMENT_FORMAT, index ); }
+	public int getExportAlignmentFormatIndex() { return appPrefs.getInt(PREF_EXPORT_ALIGNMENT_FORMAT, 0); }
 	
 	/** 
 	 *
