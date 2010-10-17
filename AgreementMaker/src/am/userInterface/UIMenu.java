@@ -8,6 +8,8 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -40,6 +42,7 @@ import am.userInterface.find.FindDialog;
 import am.userInterface.find.FindInterface;
 import am.userInterface.table.MatchersTablePanel;
 import am.userInterface.vertex.VertexDescriptionPane;
+import am.visualization.MatrixPlot;
 
 
 public class UIMenu implements ActionListener {
@@ -75,7 +78,7 @@ public class UIMenu implements ActionListener {
 					  doRemoveDuplicates, 
 					  saveMatching, 
 					  refEvaluateMatching,
-					  thresholdAnalysis;
+					  thresholdAnalysis, TEMP_viewClassMatrix, TEMP_viewPropMatrix;
 	
 	private JMenu	menuExport;
 	private JMenuItem exportMatrixCSV;
@@ -569,6 +572,36 @@ public class UIMenu implements ActionListener {
 				// TODO: Implement this.
 				
 				
+			} else if( obj == TEMP_viewClassMatrix ) {
+				// get the currently selected matcher
+				ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
+				AbstractMatcher selectedMatcher;
+				int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
+				if( rowsIndex.length == 0 ) { Utility.displayErrorPane("No matcher is selected.", "Error"); return; }
+				selectedMatcher = list.get(rowsIndex[0]); // we only care about the first matcher selected
+				
+				if( selectedMatcher.getClassesMatrix() == null ) { Utility.displayErrorPane("The matcher has not computed a classes similarity matrix.", "Error"); return; }
+				
+				MatrixPlot mp = new MatrixPlot( selectedMatcher.getClassesMatrix() );
+				
+				mp.draw();
+				
+				Core.getUI().addTab("MatrixPlot Class", null , mp , selectedMatcher.getName().getMatcherName());
+			} else if( obj == TEMP_viewPropMatrix ) {
+				// get the currently selected matcher
+				ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
+				AbstractMatcher selectedMatcher;
+				int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
+				if( rowsIndex.length == 0 ) { Utility.displayErrorPane("No matcher is selected.", "Error"); return; }
+				selectedMatcher = list.get(rowsIndex[0]); // we only care about the first matcher selected
+				
+				if( selectedMatcher.getPropertiesMatrix() == null ) { Utility.displayErrorPane("The matcher has not computed a classes similarity matrix.", "Error"); return; }
+				
+				MatrixPlot mp = new MatrixPlot( selectedMatcher.getPropertiesMatrix());
+				
+				mp.draw();
+				
+				Core.getUI().addTab("MatrixPlot Prop", null , mp , selectedMatcher.getName().getMatcherName());
 			}
 			
 			
@@ -891,6 +924,13 @@ public class UIMenu implements ActionListener {
 		thresholdAnalysis = new JMenuItem("Threshold Analysis");
 		thresholdAnalysis.addActionListener(this);
 		matchersMenu.add(thresholdAnalysis);
+		
+		TEMP_viewClassMatrix = new JMenuItem("View classesMatrix");
+		TEMP_viewClassMatrix.addActionListener(this);
+		matchersMenu.add(TEMP_viewClassMatrix);
+		TEMP_viewPropMatrix = new JMenuItem("View propertiesMatrix");
+		TEMP_viewPropMatrix.addActionListener(this);
+		matchersMenu.add(TEMP_viewPropMatrix);
 		
 		myMenuBar.add(matchersMenu);
 		
