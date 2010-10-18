@@ -28,13 +28,16 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.ontology.OntTools;
+import com.hp.hpl.jena.ontology.ProfileException;
 import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 import am.Utility;
 import am.app.Core;
@@ -969,30 +972,58 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	 */
 	private ArrayList<OntClass> getClassHierarchyRoots(OntModel m) {
 		
-		ArrayList<OntClass> roots = new ArrayList<OntClass>(); 
-
-    	ExtendedIterator itcls = m.listClasses();
-    	
-    	while( itcls.hasNext() ) {  // look through all the object properties
-    		OntClass oclass = (OntClass) itcls.next();
-    		boolean isRoot = true;
-    		
-    		ExtendedIterator superClassItr = oclass.listSuperClasses();
-    		while( superClassItr.hasNext() ) {
-    			OntClass superClass = (OntClass) superClassItr.next();
-    			
-    			if( !oclass.equals(superClass) && !superClass.isAnon() && !superClass.equals(OWL.Thing) ) {
-    				// this property has a valid superclass, therefore it is not a root property
-    				superClassItr.close();
-    				isRoot = false;
-    				break;
-    			}
-    		}
-    		
-    		if( isRoot ) 
-    			roots.add(oclass);
-    		
-		}    	
+		ArrayList<OntClass> roots = new ArrayList<OntClass>();
+		
+		if( m.containsResource(OWL.Thing) ) {
+			// OWL ontology
+	    	ExtendedIterator itcls = m.listClasses();
+	    	
+	    	while( itcls.hasNext() ) {  // look through all the object properties
+	    		OntClass oclass = (OntClass) itcls.next();
+	    		boolean isRoot = true;
+	    		
+	    		ExtendedIterator superClassItr = oclass.listSuperClasses();
+	    		while( superClassItr.hasNext() ) {
+	    			OntClass superClass = (OntClass) superClassItr.next();
+	    			
+	    			if( !oclass.equals(superClass) && !superClass.isAnon() && !superClass.equals(OWL.Thing) ) {
+	    				// this property has a valid superclass, therefore it is not a root property
+	    				superClassItr.close();
+	    				isRoot = false;
+	    				break;
+	    			}
+	    		}
+	    		
+	    		if( isRoot ) 
+	    			roots.add(oclass);
+	    		
+			}    	
+		} else {
+			// RDF/S Ontology
+			ExtendedIterator itcls = m.listClasses();
+	    	
+	    	while( itcls.hasNext() ) {  // look through all the object properties
+	    		OntClass oclass = (OntClass) itcls.next();
+	    		boolean isRoot = true;
+	    		
+	    		ExtendedIterator superClassItr = oclass.listSuperClasses();
+	    		while( superClassItr.hasNext() ) {
+	    			OntClass superClass = (OntClass) superClassItr.next();
+	    			
+	    			if( !oclass.equals(superClass) && !superClass.isAnon() && !superClass.getLocalName().equals("Resource")) {
+	    				// this property has a valid superclass, therefore it is not a root property
+	    				String localName = superClass.getLocalName();
+	    				superClassItr.close();
+	    				isRoot = false;
+	    				break;
+	    			}
+	    		}
+	    		
+	    		if( isRoot ) 
+	    			roots.add(oclass);
+	    		
+			}
+		}
     	
     	return roots;  // all the heirarchy roots
 	}
@@ -1005,57 +1036,88 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		
 		ArrayList<OntProperty> roots = new ArrayList<OntProperty>(); 
 		
-		// OBJECT PROPERTIES
+		try {
 		
-    	ExtendedIterator itobj = m.listObjectProperties();
-    	
-    	while( itobj.hasNext() ) {  // look through all the object properties
-    		OntProperty property = (OntProperty) itobj.next();
-    		boolean isRoot = true;
-    		
-    		ExtendedIterator superPropItr = property.listSuperProperties();
-    		while( superPropItr.hasNext() ) {
-    			OntProperty superProperty = (OntProperty) superPropItr.next();
-    			
-    			if( !property.equals(superProperty) && !superProperty.isAnon() ) {
-    				// this property has a valid superclass, therefore it is not a root property
-    				superPropItr.close();
-    				isRoot = false;
-    				break;
-    			}
-    		}
-    		
-    		if( isRoot ) roots.add(property);
-    		
+			// OBJECT PROPERTIES
+			
+	    	ExtendedIterator itobj = m.listObjectProperties();
+	    	
+	    	while( itobj.hasNext() ) {  // look through all the object properties
+	    		OntProperty property = (OntProperty) itobj.next();
+	    		boolean isRoot = true;
+	    		
+	    		ExtendedIterator superPropItr = property.listSuperProperties();
+	    		while( superPropItr.hasNext() ) {
+	    			OntProperty superProperty = (OntProperty) superPropItr.next();
+	    			
+	    			if( !property.equals(superProperty) && !superProperty.isAnon() ) {
+	    				// this property has a valid superclass, therefore it is not a root property
+	    				superPropItr.close();
+	    				isRoot = false;
+	    				break;
+	    			}
+	    		}
+	    		
+	    		if( isRoot ) roots.add(property);
+	    		
+			}
+		
+	    	
+	    	// DATATYPE PROPERTIES
+	    	
+	    	ExtendedIterator itdata = m.listDatatypeProperties();
+	    	while( itdata.hasNext() ) {  // look through all the object properties
+	    		OntProperty property = (OntProperty) itdata.next();
+	    		boolean isRoot = true;
+	    		
+	    		ExtendedIterator superPropItr = property.listSuperProperties();
+	    		while( superPropItr.hasNext() ) {
+	    			OntProperty superProperty = (OntProperty) superPropItr.next();
+	    			
+	    			if( !property.equals(superProperty) && !superProperty.isAnon() ) {
+	    				// this property has a valid superclass, therefore it is not a root property
+	    				superPropItr.close();
+	    				isRoot = false;
+	    				break;
+	    			}
+	    		}
+	    		
+	    		if( isRoot ) roots.add(property);
+	    		
+			}
+		} catch( ProfileException e ) {
+			// dealing with an RDFS ontology model.
+			// TODO: Find a better way to do this.
+			ExtendedIterator itobj = m.listOntProperties();
+	    	
+	    	while( itobj.hasNext() ) {  // look through all the object properties
+	    		OntProperty property = (OntProperty) itobj.next();
+	    		try {
+		    		boolean isRoot = true;
+		    		
+		    		ExtendedIterator superPropItr = property.listSuperProperties();
+		    		while( superPropItr.hasNext() ) {
+		    			OntProperty superProperty = (OntProperty) superPropItr.next();
+		    			
+		    			if( !property.equals(superProperty) && !superProperty.isAnon() ) {
+		    				// this property has a valid superclass, therefore it is not a root property
+		    				superPropItr.close();
+		    				isRoot = false;
+		    				break;
+		    			}
+		    		}
+		    		
+		    		if( isRoot ) roots.add(property);
+	    		} catch( ConversionException e2 ) {
+	    			roots.add(property);
+	    			continue;
+	    		}
+	    		
+			}
 		}
-	
-    	
-    	// DATATYPE PROPERTIES
-    	
-    	ExtendedIterator itdata = m.listDatatypeProperties();
-    	while( itdata.hasNext() ) {  // look through all the object properties
-    		OntProperty property = (OntProperty) itdata.next();
-    		boolean isRoot = true;
-    		
-    		ExtendedIterator superPropItr = property.listSuperProperties();
-    		while( superPropItr.hasNext() ) {
-    			OntProperty superProperty = (OntProperty) superPropItr.next();
-    			
-    			if( !property.equals(superProperty) && !superProperty.isAnon() ) {
-    				// this property has a valid superclass, therefore it is not a root property
-    				superPropItr.close();
-    				isRoot = false;
-    				break;
-    			}
-    		}
-    		
-    		if( isRoot ) roots.add(property);
-    		
-		}
     	
     	
-    	
-    	return roots;  // all the heirarchy roots
+    	return roots;  // all the hierarchy roots
 	}
 		
 	
