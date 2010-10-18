@@ -155,7 +155,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 		// now, the visualization panel needs to build its own graph.
 		if( progressDialog != null ) {
 			progressDialog.appendLine("Building visualization graphs.");
-			Core.getInstance().getUI().getCanvas().buildLayoutGraphs(ontology);
+			Core.getUI().getCanvas().buildLayoutGraphs(ontology);
 			progressDialog.appendLine("Done. " + timer.getFormattedRunTime());
 		} 
 
