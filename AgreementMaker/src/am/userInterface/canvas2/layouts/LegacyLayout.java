@@ -1774,8 +1774,8 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 					String sim = Utility.getNoDecimalPercentFromDouble(d.alignment.getSimilarity());
 					AbstractMatcher m = Core.getInstance().getMatcherByID( d.matcherID );
 					String shortName = MatcherFactory.getMatchersRegistryEntry( m.getClass() ).getMatcherShortName();
-					
-					d.label = sim + " - " + shortName;
+					if( shortName != null ) 
+						d.label = sim + " - " + shortName;
 				}
 			}
 			

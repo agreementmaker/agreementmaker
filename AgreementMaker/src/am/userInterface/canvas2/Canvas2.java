@@ -408,7 +408,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 
 							String sim = Utility.getNoDecimalPercentFromDouble(mdata.alignment.getSimilarity());
 							
-							if( showMapName ) {
+							if( showMapName && shortName != null) {
 								mdata.label = sim + " - " + shortName; 
 							} else {
 								mdata.label = sim;
