@@ -24,6 +24,7 @@ import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.TreeBuilder;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.classic.AgreementMakerClassic;
+import am.userInterface.tabs.MatrixPlotTab;
 import am.userInterface.vertex.VertexDescriptionPane;
 
 
@@ -42,6 +43,7 @@ public class UI {
 	
 	// this is the current UI Panel
 	private AgreementMakerClassic classicAM;
+	private MatrixPlotTab mpTable;
 	
 	private JFrame frame;
 	
@@ -114,8 +116,11 @@ public class UI {
 		
 		// The first view is the Classic AgreementMaker
 		classicAM = new AgreementMakerClassic();
+		mpTable = new MatrixPlotTab();
 		
+		// TODO: add mat tab
 		tabbedPane.addTab("AgreementMaker", null, classicAM, "AgreementMaker");
+		tabbedPane.addTab("MatrixPlot", null, mpTable, "Matrix Plot Table");
 		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		
 		//Add the listener to close the frame.
