@@ -1,4 +1,4 @@
-package am.userInterface.tabs;
+package am.visualization;
 
 import java.awt.Font;
 import java.awt.Rectangle;
