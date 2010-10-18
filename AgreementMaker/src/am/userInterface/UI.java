@@ -54,7 +54,7 @@ public class UI {
 	private JTabbedPane tabbedPane;
 	
 	/** Application Wide preferences, that are saved to a configuration file, and can be restored at any time. */
-	private AppPreferences prefs;
+	//private AppPreferences prefs;
 	
 	/**	 * Default constructor for UI class
 	 */
@@ -67,7 +67,7 @@ public class UI {
 	 
 	
 	/** Return the AppPreferences instance */
-	public AppPreferences getAppPreferences() { return prefs; }
+	//public AppPreferences getAppPreferences() { return prefs; }
 	
 	/**
 	 * @return canvas
@@ -97,10 +97,6 @@ public class UI {
 		//try { javax.swing.UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); }
 		//catch (Exception e) { System.out.println(e); }
 		
-		// initialize the application preferences
-		prefs = new AppPreferences();
-		
-
 		// Create a swing frame
 		frame = new JFrame("AgreementMaker");
 		frame.getContentPane().setLayout(new BorderLayout());

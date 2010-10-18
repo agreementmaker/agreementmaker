@@ -46,7 +46,7 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 	 */
 	public ReferenceAlignmentParametersPanel() {
 		super();
-		prefs = Core.getInstance().getUI().getAppPreferences(); // Class interface to Application Preferences
+		prefs = Core.getAppPreferences(); // Class interface to Application Preferences
 		fileType = new JLabel("Select File");
 		filePath = new JTextField(0);
 		//the system suggests the last file opened

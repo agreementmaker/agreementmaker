@@ -55,29 +55,29 @@ public enum MatchersRegistry {
 	 */
 	//
 	AbstractMatcher		( "NoMatcher", am.app.mappingEngine.manualMatcher.UserManualMatcher.class ),
-	OAEI2010			( "OAEI 2010 Matcher", am.app.mappingEngine.oaei2010.OAEI2010Matcher.class ),
-	IterativeMatcher	( "Instance-based Iterator", am.app.mappingEngine.instance.IterativeMatcher.class),
-	AdvancedSimilarity  ( "Advanced Similarity Matcher (ASM)", am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher.class),
-	GroupFinder			( "Group Finder Matcher (GFM)", am.app.mappingEngine.groupFinder.GroupFinderMatcher.class),
-	FCM					( "Federico Caimi Matcher", am.app.mappingEngine.FedericoCaimiMatcher.FedericoMatcher.class),
-	LSM					( "Lexical Synonym Matcher", LexicalSynonymMatcher.class ),
+	OAEI2010			( "OAEI-10", "OAEI 2010 Matcher", am.app.mappingEngine.oaei2010.OAEI2010Matcher.class ),
+	IterativeMatcher	( "IISM", "Instance-based Iterator", am.app.mappingEngine.instance.IterativeMatcher.class),
+	AdvancedSimilarity  ( "ASM", "Advanced Similarity Matcher", am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher.class),
+	GroupFinder			( "GFM", "Group Finder Matcher (GFM)", am.app.mappingEngine.groupFinder.GroupFinderMatcher.class),
+	FCM					( "FCM", "Federico Caimi Matcher", am.app.mappingEngine.FedericoCaimiMatcher.FedericoMatcher.class),
+	LSM					( "LSM", "Lexical Synonym Matcher", LexicalSynonymMatcher.class ),
 	//OFFICIAL MATCHERS
-	LexicalJAWS			( "Lexical Matcher: JAWS", LexicalMatcherJAWS.class ),
-	BaseSimilarity		( "Base Similarity Matcher (BSM)", BaseSimilarityMatcher.class ),
-	ParametricString ( "Parametric String Matcher (PSM)",	 ParametricStringMatcher.class ),
-	MultiWords       ("Vector-based Multi-Words Matcher (VMM)", MultiWordsMatcher.class),
-	WordNetLexical		("Lexical Matcher: WordNet", LexicalMatcherJWNL.class),
-	DSI					( "Descendant's Similarity Inheritance (DSI)", DescendantsSimilarityInheritanceMatcher.class ),
-	BSS					( "Basic Structure Selector Matcher (BSS)", BasicStructuralSelectorMatcher.class ),
-	SSC					( "Sibling's Similarity Contribution (SSC)", SiblingsSimilarityContributionMatcher.class ),
-	Combination	( "Linear Weighted Combination (LWC)", CombinationMatcher.class ),
+	LexicalJAWS			( "JAWS", "Lexical Matcher: JAWS", LexicalMatcherJAWS.class ),
+	BaseSimilarity		( "BSM", "Base Similarity Matcher", BaseSimilarityMatcher.class ),
+	ParametricString 	( "PSM", "Parametric String Matcher",	 ParametricStringMatcher.class ),
+	MultiWords       	( "VMM", "Vector-based Multi-Words Matcher", MultiWordsMatcher.class),
+	WordNetLexical		( "LM-WN", "Lexical Matcher: WordNet", LexicalMatcherJWNL.class),
+	DSI					( "DSI", "Descendant's Similarity Inheritance", DescendantsSimilarityInheritanceMatcher.class ),
+	BSS					( "BSS", "Basic Structure Selector Matcher", BasicStructuralSelectorMatcher.class ),
+	SSC					( "SSC", "Sibling's Similarity Contribution", SiblingsSimilarityContributionMatcher.class ),
+	Combination			( "LWC", "Linear Weighted Combination", CombinationMatcher.class ),
 	ConceptSimilarity   ( "Concept Similarity", ConceptMatcher.class, false),
-	OAEI2009   ( "OAEI2009 Matcher", OAEI2009matcher.class),
+	OAEI2009   			( "OAEI-09", "OAEI2009 Matcher", OAEI2009matcher.class),
 	//UMLSKSLexical		("Lexical Matcher: UMLSKS", LexicalMatcherUMLS.class, false), //it requires internet connection and the IP to be registered
 	
 	//Auxiliary matchers created for specific purposes
 	InitialMatcher      ("Initial Matcher: LWC (PSM+VMM+BSM)", InitialMatchers.class, true),
-	PRAintegration   ( "PRA Integration", PRAintegrationMatcher.class, false), //this works fine
+	PRAintegration   	( "PRA Integration", PRAintegrationMatcher.class, false), //this works fine
 	PRAMatcher			("PRA Matcher", PRAMatcher.class, false),
 	PRAMatcher2			("PRA Matcher2", PRAMatcher2.class, false),
 	OldPRAMAtcher		("Old PRA Matcher", OldPRAMatcher.class, false),
@@ -85,27 +85,31 @@ public enum MatchersRegistry {
 	//WORK IN PROGRESS
 		
 	//MATCHERS USED BY THE SYSTEM, usually not shown
-	UserManual			( "User Manual Matching", UserManualMatcher.class, false),
+	UserManual			( "USER", "User Manual Matching", UserManualMatcher.class, false),
 	UniqueMatchings		( "Unique Matchings", ReferenceAlignmentMatcher.class, false), // this is used by the "Remove Duplicate Alignments" UIMenu entry
-	ImportAlignment	( "Import Alignments", ReferenceAlignmentMatcher.class, true),
+	ImportAlignment		( "IMPORT", "Import Alignments", ReferenceAlignmentMatcher.class, true),
 	
 	//TEST MATCHERS 
 	Equals 				( "Local Name Equivalence Comparison", EqualsMatcher.class , false),
 	AllOne 				( "(Test) All One Similarities", AllOneMatcher.class, true ),
-	AllZero			( "(Test) All Zero Similarities", AllZeroMatcher.class, true ),
+	AllZero				( "(Test) All Zero Similarities", AllZeroMatcher.class, true ),
 	Copy				( "Copy Matcher", CopyMatcher.class,false ),
 	Random 				( "(Test) Random Similarities", RandomMatcher.class, true ),
-	DSI2					( "OLD Descendant's Similarity Inheritance (DSI)", OldDescendantsSimilarityInheritanceMatcher.class, false ),
-	UserFeedBackLoop ("User Feedback Loop", FeedbackLoop.class, false );
+	DSI2				( "OLD Descendant's Similarity Inheritance (DSI)", OldDescendantsSimilarityInheritanceMatcher.class, false ),
+	UserFeedBackLoop 	("User Feedback Loop", FeedbackLoop.class, false );
 	
 	/* Don't change anything below this line .. unless you intend to. */
 	private boolean showInControlPanel;
 	private String name;
-	private String className;
+	private String shortName;
+	private String className;  // TODO: this should be Class instead of string
 	
+	MatchersRegistry( String sn, String n, Class<?> matcherClass ) { shortName = sn; name = n; className = matcherClass.getName(); showInControlPanel = true;}
 	MatchersRegistry( String n, Class<?> matcherClass ) { name = n; className = matcherClass.getName(); showInControlPanel = true;}
 	MatchersRegistry( String n, Class<?> matcherClass, boolean shown) { name = n; className = matcherClass.getName(); showInControlPanel = shown; }
+	MatchersRegistry( String sn, String n, Class<?> matcherClass, boolean shown) { shortName = sn; name = n; className = matcherClass.getName(); showInControlPanel = shown; }
 	public String getMatcherName() { return name; }
+	public String getMatcherShortName() { return shortName; }
 	public String getMatcherClass() { return className; }
 	public boolean isShown() { return showInControlPanel; }
 	public String toString() { return name; }

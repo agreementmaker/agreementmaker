@@ -46,7 +46,7 @@ public class BaseSimilarityMatcherParametersPanel extends AbstractMatcherParamet
 		
 		this.setPreferredSize(new Dimension(350, 175) );
 		
-		prefs = Core.getUI().getAppPreferences();
+		prefs = Core.getAppPreferences();
 		parameters = new BaseSimilarityParameters();
 		
 		useDictionaryLabel = new JLabel("<html>Would you like to consult a dictionary while performing the Base Similarity Matching ?</html>");

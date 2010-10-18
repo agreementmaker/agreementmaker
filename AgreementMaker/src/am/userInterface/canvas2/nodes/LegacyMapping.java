@@ -8,7 +8,12 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
 
+import am.Utility;
 import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.MatcherFactory;
+import am.userInterface.AppPreferences;
 import am.userInterface.canvas2.graphical.GraphicalData;
 import am.userInterface.canvas2.graphical.MappingData;
 import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
@@ -46,7 +51,7 @@ public class LegacyMapping extends Canvas2Edge {
 		
 		MappingData data = new MappingData( sourceX, sourceY, width, height, source.layout, 
 											source.r, target.r, source.ontologyID, target.ontologyID, matcherID, mappingType );
-		data.setLabel(label);
+		data.label = label;
 		
 		setObject( data );
 		
@@ -56,6 +61,48 @@ public class LegacyMapping extends Canvas2Edge {
 		line = new Line2D.Double( startPoint, endPoint );
 		
 	}
+
+	
+	public LegacyMapping(Canvas2Vertex orig, Canvas2Vertex dest, Alignment a , int matcherID ) {
+		super(orig, dest, null);
+		
+		AppPreferences pref = Core.getAppPreferences();
+		String label = Utility.getNoDecimalPercentFromDouble(a.getSimilarity()); 
+		
+		GraphicalData source = orig.getObject();
+		GraphicalData target = dest.getObject();
+		
+		int sourceX = source.x + source.width;
+		int sourceY = source.y + (source.height / 2);
+		
+		int targetX = target.x + LegacyNode.circlePadding;
+		int targetY = target.y + (target.height / 2); 
+		
+		int width = targetX - sourceX;
+		int height = targetY - sourceY;
+		
+		MappingType mappingType = MappingType.NOT_SET; 
+		if( source.type == GraphicalData.NodeType.CLASS_NODE || source.type == GraphicalData.NodeType.CLASSES_ROOT ) {
+			mappingType = MappingType.ALIGNING_CLASSES;
+		} else if( source.type == GraphicalData.NodeType.PROPERTY_NODE || source.type == GraphicalData.NodeType.PROPERTIES_ROOT ) {
+			mappingType = MappingType.ALIGNING_PROPERTIES;
+		}
+		
+		MappingData data = new MappingData( sourceX, sourceY, width, height, source.layout, 
+											source.r, a, source.ontologyID, target.ontologyID, matcherID, mappingType );
+		
+		// if we need to show the short name of the matcher with the mappings
+		data.label = label;
+
+		setObject( data );
+		
+		Point2D.Double startPoint = new Point2D.Double(d.x, d.y);
+		Point2D.Double endPoint =   new Point2D.Double(d.x+d.width, d.y+d.height);
+		
+		line = new Line2D.Double( startPoint, endPoint );
+		
+	}
+
 	
 	// Used when the line endpoints have changed.
 	@Override
@@ -93,20 +140,30 @@ public class LegacyMapping extends Canvas2Edge {
 
 		// get the number of parallel mappings that are currently visible and drawn before this mapping
 		int numberOfPreviousMappings = 0;
-		Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = getOrigin().edgesOut();
-		while( edgeOutIter.hasNext() ) {
-			Canvas2Edge edge = (Canvas2Edge) edgeOutIter.next();
+		MappingData previousMappingData = null;
+		
+		Iterator<DirectedGraphEdge<GraphicalData>> edgeIter;
+		if( getOrigin().edgesOutList().size() > getDestination().edgesInList().size() ) { 
+			edgeIter = getOrigin().edgesOutIter();
+		} else {
+			edgeIter = getDestination().edgesInIter();
+		}
+		
+		while( edgeIter.hasNext() ) {
+			Canvas2Edge edge = (Canvas2Edge) edgeIter.next();
 			if( edge.getObject().type == NodeType.MAPPING ) {
 				// check to see if it's this mapping.  if it is this one, stop
-				if( this == edge ) { break; }
+				if( this.equals(edge) ) { break; }
 
 				// we have a mapping, check to see if it's parallel to this one, but only if we're in the general view.
 				// if we're in the single mapping view, space out the mappings even if they're not parallel
 				if( ((LegacyLayout)d.layout).isSingleMappingView() ) {
+					previousMappingData = (MappingData) edge.getObject();
 					numberOfPreviousMappings++;
 				} else {
 					if( this.getOrigin() == edge.getOrigin() && this.getDestination() == edge.getDestination() ) {
 						// we have another parallel mapping, and that mapping is iterated before this mapping
+						previousMappingData = (MappingData) edge.getObject();
 						numberOfPreviousMappings++;
 					}
 				}
@@ -115,7 +172,7 @@ public class LegacyMapping extends Canvas2Edge {
 		}
 		
 		
-		Core.getInstance();
+		//Core.getInstance();
 		// ok, now draw the mapping correctly
 		FontMetrics fontMetrics = Core.getUI().getCanvas().getFontMetrics(d.font); // need this to calculate the width of the label
 		
@@ -141,7 +198,17 @@ public class LegacyMapping extends Canvas2Edge {
 		int midpoint1_X, midpoint2_X, midpoint_Y;
 		midpoint1_X = d.x+(d.width/2)-(labelWidth/2);
 		midpoint2_X = d.x+(d.width/2)+(labelWidth/2);
-		midpoint_Y  = d.y+(d.height/2) + numberOfPreviousMappings*(fontMetrics.getHeight()); // this is where we take care not to overlap with parallel mappings
+		if( numberOfPreviousMappings == 0 || previousMappingData == null ) {
+			midpoint_Y  = d.y+(d.height/2) + numberOfPreviousMappings*(fontMetrics.getHeight()); // this is where we take care not to overlap with parallel mappings
+		} else {
+			int previousMappingY = previousMappingData.y + (previousMappingData.height/2) + numberOfPreviousMappings*(fontMetrics.getHeight());
+			int currentMappingY = d.y + (d.height/2);
+			if( previousMappingY + fontMetrics.getHeight() < currentMappingY ) {
+				midpoint_Y = currentMappingY + numberOfPreviousMappings*(fontMetrics.getHeight());
+			} else {
+				midpoint_Y = previousMappingY;
+			}
+		}
 		
 		g.drawLine( d.x, d.y, midpoint1_X, midpoint_Y);
 		g.drawLine( midpoint1_X, midpoint_Y, midpoint2_X, midpoint_Y);

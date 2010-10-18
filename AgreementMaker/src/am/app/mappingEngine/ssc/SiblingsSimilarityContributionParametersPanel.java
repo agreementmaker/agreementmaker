@@ -37,7 +37,7 @@ public class SiblingsSimilarityContributionParametersPanel extends AbstractMatch
 		// TODO Auto-generated constructor stub
 		super();
 	
-		prefs = Core.getInstance().getUI().getAppPreferences();  // get a reference to our application preferences
+		prefs = Core.getAppPreferences();  // get a reference to our application preferences
 		
 		this.setPreferredSize(new Dimension(350, 175) );
 		
@@ -93,7 +93,7 @@ public class SiblingsSimilarityContributionParametersPanel extends AbstractMatch
 		}
 
 		// we are going to save the value the user enters, so they don't have to keep entering it.		
-		Core.getInstance().getUI().getAppPreferences().savePanelFloat( MatcherSetting.SSC_MCP , inputMCP);
+		Core.getAppPreferences().savePanelFloat( MatcherSetting.SSC_MCP , inputMCP);
 		parameters.MCP = inputMCP;  // save our MCP to the parameters.
 		
 		return null;

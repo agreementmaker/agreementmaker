@@ -21,6 +21,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import am.GlobalStaticVariables;
+import am.app.Core;
 
 
 /**
@@ -61,7 +62,7 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		ui = userInterface;
 		this.ontoType = ontoType;
 		
-		AppPreferences prefs = ui.getAppPreferences(); // Class interface to Application Preferences
+		AppPreferences prefs = Core.getAppPreferences(); // Class interface to Application Preferences
 		
 		frame = new JDialog();
 		if(ontoType == GlobalStaticVariables.SOURCENODE)
@@ -201,7 +202,7 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 	public void actionPerformed (ActionEvent ae){
 		Object obj = ae.getSource();
 		JFileChooser fc;
-		AppPreferences prefs = ui.getAppPreferences(); // Class interface to Application Preferences
+		AppPreferences prefs = Core.getAppPreferences(); // Class interface to Application Preferences
 		
 		if(obj == cancel){
 			frame.dispose();

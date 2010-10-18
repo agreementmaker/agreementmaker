@@ -53,7 +53,7 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 	public MatcherProgressDialog (AbstractMatcher m) {
 	    super();
 	
-	    prefs = Core.getInstance().getUI().getAppPreferences();
+	    prefs = Core.getAppPreferences();
 	    
 	    matcherReport = new JTextArea(8, 35);
 	    

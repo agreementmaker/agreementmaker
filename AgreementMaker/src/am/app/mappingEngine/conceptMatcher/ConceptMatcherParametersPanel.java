@@ -51,7 +51,7 @@ public class ConceptMatcherParametersPanel extends AbstractMatcherParametersPane
 	public ConceptMatcherParametersPanel() {
 		super();
 		
-prefs = Core.getInstance().getUI().getAppPreferences();  // get a reference to our application preferences
+		prefs = Core.getAppPreferences();  // get a reference to our application preferences
 		
 		this.setPreferredSize(new Dimension(350, 175) );
 		
@@ -127,9 +127,9 @@ prefs = Core.getInstance().getUI().getAppPreferences();  // get a reference to o
 			return "Text Similarity should be a value between 0.0 and 1.0 (inclusive).  Please change the value to match the constraints."; 
 
 		// we are going to save the value the user enters, so they don't have to keep entering it.		
-		Core.getInstance().getUI().getAppPreferences().savePanelFloat( MatcherSetting.CON_DES , inputDesc);
-		Core.getInstance().getUI().getAppPreferences().savePanelFloat( MatcherSetting.CON_ANC , inputAnc);
-		Core.getInstance().getUI().getAppPreferences().savePanelFloat( MatcherSetting.CON_TXT , inputText);
+		Core.getAppPreferences().savePanelFloat( MatcherSetting.CON_DES , inputDesc);
+		Core.getAppPreferences().savePanelFloat( MatcherSetting.CON_ANC , inputAnc);
+		Core.getAppPreferences().savePanelFloat( MatcherSetting.CON_TXT , inputText);
 		parameters.DescendantSetWeight = inputDesc;
 		parameters.AncestorSetWeight = inputAnc;
 		parameters.TextSimilarityWeight = inputText;

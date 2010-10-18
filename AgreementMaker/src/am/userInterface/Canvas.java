@@ -144,10 +144,10 @@ public class Canvas extends VisualizationPanel implements MouseListener, ActionL
 		if( core.targetIsLoaded() ) setTree( core.getTargetOntology().getDeepRoot(), core.getTargetOntology(), core.getTargetOntology().getTreeCount() );
 		
 		// get whether the user had SMO enabled
-		disableVisualization = ui.getAppPreferences().getDisableVisualization();
-		smoMode = ui.getAppPreferences().getSelectedMatchingsOnly();
-		showLocalName = ui.getAppPreferences().getShowLocalname();
-		showLabel = ui.getAppPreferences().getShowLabel();
+		disableVisualization = Core.getAppPreferences().getDisableVisualization();
+		smoMode = Core.getAppPreferences().getSelectedMatchingsOnly();
+		showLocalName = Core.getAppPreferences().getShowLocalname();
+		showLabel = Core.getAppPreferences().getShowLabel();
 		
 		// repaint the canvas
 		repaint();

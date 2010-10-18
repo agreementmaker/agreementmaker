@@ -21,9 +21,12 @@ public class DirectedGraphVertex<E> {
 	public int inDegree()  { return edgesIn.size(); }
 	public int outDegree() { return edgesOut.size(); }
 	
-	public Iterator<DirectedGraphEdge<E>> edgesIn()  { return edgesIn.iterator(); }
-	public Iterator<DirectedGraphEdge<E>> edgesOut() { return edgesOut.iterator(); }
+	public Iterator<DirectedGraphEdge<E>> edgesInIter()  { return edgesIn.iterator(); }
+	public Iterator<DirectedGraphEdge<E>> edgesOutIter() { return edgesOut.iterator(); }
 
+	public ArrayList<DirectedGraphEdge<E>> edgesInList() { return edgesIn; }
+	public ArrayList<DirectedGraphEdge<E>> edgesOutList() { return edgesOut; }
+	
 	public void setObject(E object) { this.d = object; }
 	public E    getObject()         { return d; }
 	

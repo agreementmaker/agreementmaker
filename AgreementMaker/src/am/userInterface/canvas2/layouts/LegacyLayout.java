@@ -27,28 +27,26 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.ontology.OntTools;
 import com.hp.hpl.jena.ontology.ProfileException;
 import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.vocabulary.RDF;
-
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AlignmentSet;
+import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.GraphicalData;
+import am.userInterface.canvas2.graphical.MappingData;
 import am.userInterface.canvas2.graphical.RectangleElement;
 import am.userInterface.canvas2.graphical.TextElement;
 import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
@@ -101,7 +99,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	//private HashMap<OntResource,LegacyNode> hashMap; // used in the graph building to avoid visiting the same nodes twice 
 	private LegacyNode anonymousNode;
 	
-	private Dimension oldViewportDimensions;  // this variable is used in the stateChanged handler.
+	//private Dimension oldViewportDimensions;  // this variable is used in the stateChanged handler.
 
 	/**
 	 * Graph Building Variables.
@@ -125,7 +123,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	private GraphicalNode topDivider;
 	private GraphicalNode sourceOntologyText;
 	private GraphicalNode targetOntologyText;
-	private OntClass owlThing;
+	//private OntClass owlThing;
 	
 	private boolean leftSideLoaded = false; 
 	private boolean rightSideLoaded = false;
@@ -150,7 +148,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		super(vp);
 		ConceptHashMaps = new ArrayList<Pair<Integer,HashMap<OntResource,LegacyNode>>>();
 		//hashMap = new HashMap<OntResource, LegacyNode>();
-		oldViewportDimensions = new Dimension(0,0);
+		//oldViewportDimensions = new Dimension(0,0);
 		
 		layoutArtifactGraph = buildArtifactGraph();  // build the artifact graph
 		selectedNodes = new ArrayList<LegacyNode>(); 		
@@ -297,8 +295,8 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		ArrayList<CanvasGraph> ontologyGraphs = new ArrayList<CanvasGraph>();
 		
 		// Before we build the graph, update the preferences.
-		showLabel = Core.getUI().getAppPreferences().getShowLabel();
-		showLocalName = Core.getUI().getAppPreferences().getShowLocalname();
+		showLabel = Core.getAppPreferences().getShowLabel();
+		showLocalName = Core.getAppPreferences().getShowLocalname();
 		
 		if( !leftSideLoaded )	// source goes on the left.
 			leftSide = true;
@@ -342,13 +340,13 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		} else */
 		// if ( ont.getLanguage().equals("OWL") || ont.getLanguage().endsWith("XML") ) {
 		OntModel m = ont.getModel();
-		
+/*		
 		if( m == null ) {
 			// this is an ontology that is not loaded by jena
 		} else {
 			owlThing = m.getOntClass( OWL.Thing.getURI() );
 		}
-		
+*/		
 		
 		CanvasGraph classesGraph = new CanvasGraph( GraphLocator.GraphType.CLASSES_GRAPH, ont.getID() );
 		anonymousNode = new LegacyNode( new GraphicalData(0, 0, 0, 0, GraphicalData.NodeType.FAKE_NODE, this, ont.getID() )); // TODO: Anonymous nodes should be displayed!
@@ -526,7 +524,6 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	 * They both add to the graph, and build it up.
 	 * 
 	 */
-	@SuppressWarnings("unchecked")   // this comes from OntTools.namedHierarchyRoots()
 	private LegacyNode buildClassGraph( OntModel m, CanvasGraph graph, Ontology ont, HashMap<OntResource,LegacyNode> hashMap ) {
 
 		Logger log = null;
@@ -620,7 +617,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			log.debug(parentClass);
 		}
 		
-		ExtendedIterator clsIter = parentClass.listSubClasses(true);
+		ExtendedIterator<?> clsIter = parentClass.listSubClasses(true);
 		while( clsIter.hasNext() ) {
 			OntClass cls = (OntClass) clsIter.next();
 			if( cls.isAnon() ) {
@@ -913,7 +910,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			log.debug(parentProperty);
 		}
 		
-		ExtendedIterator clsIter = null;
+		ExtendedIterator<?> clsIter = null;
 		try { 
 			clsIter = parentProperty.listSubProperties(true);
 		} catch (ConversionException e ){
@@ -976,13 +973,13 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		
 		if( m.containsResource(OWL.Thing) ) {
 			// OWL ontology
-	    	ExtendedIterator itcls = m.listClasses();
+	    	ExtendedIterator<?> itcls = m.listClasses();
 	    	
 	    	while( itcls.hasNext() ) {  // look through all the object properties
 	    		OntClass oclass = (OntClass) itcls.next();
 	    		boolean isRoot = true;
 	    		
-	    		ExtendedIterator superClassItr = oclass.listSuperClasses();
+	    		ExtendedIterator<?> superClassItr = oclass.listSuperClasses();
 	    		while( superClassItr.hasNext() ) {
 	    			OntClass superClass = (OntClass) superClassItr.next();
 	    			
@@ -1000,19 +997,18 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			}    	
 		} else {
 			// RDF/S Ontology
-			ExtendedIterator itcls = m.listClasses();
+			ExtendedIterator<?> itcls = m.listClasses();
 	    	
 	    	while( itcls.hasNext() ) {  // look through all the object properties
 	    		OntClass oclass = (OntClass) itcls.next();
 	    		boolean isRoot = true;
 	    		
-	    		ExtendedIterator superClassItr = oclass.listSuperClasses();
+	    		ExtendedIterator<?> superClassItr = oclass.listSuperClasses();
 	    		while( superClassItr.hasNext() ) {
 	    			OntClass superClass = (OntClass) superClassItr.next();
 	    			
 	    			if( !oclass.equals(superClass) && !superClass.isAnon() && !superClass.getLocalName().equals("Resource")) {
 	    				// this property has a valid superclass, therefore it is not a root property
-	    				String localName = superClass.getLocalName();
 	    				superClassItr.close();
 	    				isRoot = false;
 	    				break;
@@ -1040,13 +1036,13 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		
 			// OBJECT PROPERTIES
 			
-	    	ExtendedIterator itobj = m.listObjectProperties();
+	    	ExtendedIterator<?> itobj = m.listObjectProperties();
 	    	
 	    	while( itobj.hasNext() ) {  // look through all the object properties
 	    		OntProperty property = (OntProperty) itobj.next();
 	    		boolean isRoot = true;
 	    		
-	    		ExtendedIterator superPropItr = property.listSuperProperties();
+	    		ExtendedIterator<?> superPropItr = property.listSuperProperties();
 	    		while( superPropItr.hasNext() ) {
 	    			OntProperty superProperty = (OntProperty) superPropItr.next();
 	    			
@@ -1065,12 +1061,12 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	    	
 	    	// DATATYPE PROPERTIES
 	    	
-	    	ExtendedIterator itdata = m.listDatatypeProperties();
+	    	ExtendedIterator<?> itdata = m.listDatatypeProperties();
 	    	while( itdata.hasNext() ) {  // look through all the object properties
 	    		OntProperty property = (OntProperty) itdata.next();
 	    		boolean isRoot = true;
 	    		
-	    		ExtendedIterator superPropItr = property.listSuperProperties();
+	    		ExtendedIterator<?> superPropItr = property.listSuperProperties();
 	    		while( superPropItr.hasNext() ) {
 	    			OntProperty superProperty = (OntProperty) superPropItr.next();
 	    			
@@ -1088,14 +1084,14 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		} catch( ProfileException e ) {
 			// dealing with an RDFS ontology model.
 			// TODO: Find a better way to do this.
-			ExtendedIterator itobj = m.listOntProperties();
+			ExtendedIterator<?> itobj = m.listOntProperties();
 	    	
 	    	while( itobj.hasNext() ) {  // look through all the object properties
 	    		OntProperty property = (OntProperty) itobj.next();
 	    		try {
 		    		boolean isRoot = true;
 		    		
-		    		ExtendedIterator superPropItr = property.listSuperProperties();
+		    		ExtendedIterator<?> superPropItr = property.listSuperProperties();
 		    		while( superPropItr.hasNext() ) {
 		    			OntProperty superProperty = (OntProperty) superPropItr.next();
 		    			
@@ -1140,30 +1136,9 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				Canvas2Vertex n1 = (Canvas2Vertex) e1.getGraphicalRepresentation( Canvas2.class );
 				Canvas2Vertex n2 = (Canvas2Vertex) e2.getGraphicalRepresentation( Canvas2.class );
 				
-				if( n1 == null || n2 == null ) {
-					if( n1 == null ) {
-						System.out.println("LegacyLayout.buildMatcherGraph(), line 1041: Concept1 \"" + e1 + "\" does not have a graphical representation." );
-					}
-					if( n2 == null ) {
-						System.out.println("LegacyLayout.buildMatcherGraph(), line 1044: Concept2 \"" + e1 + "\" does not have a graphical representation." );
-					}
-					continue;
-				}
+				if( n1 == null || n2 == null ) { continue; }
 				
-				if( n1.equals(n2) ) {
-					try {
-						throw new Exception("Source and target node should never be the same.");
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						System.err.println("******************* EXCEPTION *********************");
-						System.err.println("OntNode1 = " + e1 + ", Hashcode: " + e1.hashCode() );
-						System.err.println("OntNode2 = " + e2 + ", Hashcode: " + e2.hashCode() );
-						e.printStackTrace();
-					}
-				}
-				
-					
-				LegacyMapping edge = new LegacyMapping( n1, n2, null, m.getID(),  Utility.getNoDecimalPercentFromDouble(alignment.getSimilarity()) );
+				LegacyMapping edge = new LegacyMapping( n1, n2, alignment, m.getID());
 					
 				matcherGraph.insertEdge(edge);
 				
@@ -1184,7 +1159,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				Canvas2Vertex n1 = (Canvas2Vertex) e1.getGraphicalRepresentation( Canvas2.class );
 				Canvas2Vertex n2 = (Canvas2Vertex) e2.getGraphicalRepresentation( Canvas2.class );
 				
-				LegacyMapping edge = new LegacyMapping( n1, n2, null, m.getID(), Utility.getNoDecimalPercentFromDouble(alignment.getSimilarity()) );
+				LegacyMapping edge = new LegacyMapping( n1, n2, alignment, m.getID());
 					
 				matcherGraph.insertEdge(edge);
 
@@ -1460,7 +1435,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 								
 								// populate the individuals list
 								String individuals = new String();
-								ExtendedIterator indiIter = currentClass.listInstances(true);
+								ExtendedIterator<?> indiIter = currentClass.listInstances(true);
 								int indicount = 1;
 								while( indiIter.hasNext() ) {
 									Individual indi = (Individual) indiIter.next();
@@ -1645,7 +1620,6 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	}
 
 	private void disableSingleMappingView() {
-		// TODO Auto-generated method stub
 		Iterator<CanvasGraph> graphIter = vizpanel.getGraphs().iterator();
 		while( graphIter.hasNext() ) {
 			CanvasGraph graph = graphIter.next();
@@ -1672,7 +1646,19 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		SingleMappingMovedNodes.clear();
 		
 		Iterator<LegacyMapping> movedMappingsIter = SingleMappingMappings.iterator();
-		while( movedMappingsIter.hasNext() ) { movedMappingsIter.next().updateBounds(); }
+		while( movedMappingsIter.hasNext() ) { 
+			LegacyMapping currentMapping = movedMappingsIter.next();
+			// translate the label back to only similarity if so required
+			if( Core.getAppPreferences().getShowMappingsShortname() ) {
+				MappingData d = (MappingData) currentMapping.getObject();
+				if( d.alignment != null ) {
+					String sim = Utility.getNoDecimalPercentFromDouble(d.alignment.getSimilarity());
+					d.label = sim;
+				}
+			}
+			
+			currentMapping.updateBounds(); 
+		}
 		SingleMappingMappings.clear();
 		
 		
@@ -1728,7 +1714,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			selectedNode.setSelected(false); // unselect the nodes
 			
 			
-			Iterator<DirectedGraphEdge<GraphicalData>> edgeInIter = selectedNode.edgesIn();
+			Iterator<DirectedGraphEdge<GraphicalData>> edgeInIter = selectedNode.edgesInIter();
 			while( edgeInIter.hasNext() ) {
 				Canvas2Edge connectedEdge = (Canvas2Edge) edgeInIter.next();
 				connectedEdge.setVisible(true);
@@ -1736,7 +1722,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				else { ((Canvas2Vertex)connectedEdge.getOrigin()).setVisible(true); }
 			}
 			
-			Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = selectedNode.edgesOut();
+			Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = selectedNode.edgesOutIter();
 			while( edgeOutIter.hasNext() ) {
 				Canvas2Edge connectedEdge = (Canvas2Edge) edgeOutIter.next();
 				connectedEdge.setVisible(true);
@@ -1760,7 +1746,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			}
 			
 			// update the mappingList
-			Iterator<DirectedGraphEdge<GraphicalData>> edgeInIter = selectedNode.edgesIn();
+			Iterator<DirectedGraphEdge<GraphicalData>> edgeInIter = selectedNode.edgesInIter();
 			while( edgeInIter.hasNext() ) {
 				DirectedGraphEdge<GraphicalData> connectedEdge = edgeInIter.next();
 				if( connectedEdge instanceof LegacyMapping ) {
@@ -1768,7 +1754,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				}
 			}
 			
-			Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = selectedNode.edgesOut();
+			Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = selectedNode.edgesOutIter();
 			while( edgeOutIter.hasNext() ) {
 				DirectedGraphEdge<GraphicalData> connectedEdge = edgeOutIter.next();
 				if( connectedEdge instanceof LegacyMapping) {
@@ -1780,6 +1766,18 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		for( int i = 0; i < SingleMappingMappings.size(); i++ ) {
 			// nodeheight marginbottom
 			LegacyMapping currentMapping = SingleMappingMappings.get(i);
+			
+			// translate the label of the mapping to include the matcher name if the user so desires.
+			if( Core.getAppPreferences().getShowMappingsShortname() ) {
+				MappingData d = (MappingData) currentMapping.getObject();
+				if( d.alignment != null ) {
+					String sim = Utility.getNoDecimalPercentFromDouble(d.alignment.getSimilarity());
+					AbstractMatcher m = Core.getInstance().getMatcherByID( d.matcherID );
+					String shortName = MatcherFactory.getMatchersRegistryEntry( m.getClass() ).getMatcherShortName();
+					
+					d.label = sim + " - " + shortName;
+				}
+			}
 			
 			if( selectedNodes.contains( currentMapping.getOrigin()) ) {
 				// we doubleclicked on the origin of the mapping, so move the destination up.
@@ -1853,16 +1851,18 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				//hoveringOver.clearDrawArea(g);
 				
 				// redraw all the edges connected to this node. (only if they are visible)
-				Iterator<DirectedGraphEdge<GraphicalData>> edgeInIter = hoveringOver.edgesIn();
+				Iterator<DirectedGraphEdge<GraphicalData>> edgeInIter = hoveringOver.edgesInIter();
 				while( edgeInIter.hasNext() ) { 
 					Canvas2Edge currentEdge = (Canvas2Edge) edgeInIter.next();
+					if( !currentEdge.getObject().visible ) continue;
 					Canvas2Vertex originNode = (Canvas2Vertex) currentEdge.getOrigin();
 					if( originNode.getObject().visible )
 						currentEdge.draw(g); 
 				}
-				Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = hoveringOver.edgesOut();
+				Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = hoveringOver.edgesOutIter();
 				while( edgeOutIter.hasNext() ) {
 					Canvas2Edge currentEdge = (Canvas2Edge) edgeOutIter.next();
+					if( !currentEdge.getObject().visible ) continue;
 					Canvas2Vertex destinationNode = (Canvas2Vertex) currentEdge.getDestination();
 					if( destinationNode.getObject().visible )
 						currentEdge.draw(g);
@@ -1977,7 +1977,6 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			try {
 				n2 = o2.getNodefromOntResource( hoveringOver.getGraphicalData().r, type );
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			
@@ -1991,7 +1990,6 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				try {
 					n1 = o1.getNodefromOntResource( ln.getGraphicalData().r, type );
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				

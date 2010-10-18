@@ -49,13 +49,10 @@ public class AppPreferences {
 	
 	/** key for storying the VisualizationDisabledMode = When true hierarchies and mappings are not displayed in the canvas */
 	private static final String		PREF_DISABLEVISUALIZATION = "PREF_DISABLEVISUALIZATION";
-	
-	/** key for storing if the user is viewing the canvas in "selected matchings only" mode. */
 	private static final String		PREF_SELECTEDMATCHINGSONLY = "pref_selectedmatchingsonly";
-	
-	/** key for storing if the user is viewing labels and or localnames in the canvas. */
 	private static final String		PREF_SHOWLOCALNAME = "pref_SHOWLOCALNAME";
 	private static final String		PREF_SHOWLABEL = "pref_SHOWLABEL";
+	private static final String		PREF_SHOWMAPPINGSWITHNAME = "PREF_SHOWMAPPINGSWITHNAME";
 	
 	/** key for storing the status of the beep on finish checkbox of the matcher progress panel */
 	private static final String 	PREF_BEEPONFINISH = "pref_BEEPONFINISH";
@@ -558,52 +555,23 @@ public class AppPreferences {
 	public boolean getRecentTargetNoReasoner( int position) {
 		return appPrefs.getBoolean(PREF_RECENTTARGET + "noreasoner" + position, false);
 	}
-	
-	/**
-	 * Support for "Selected Matchings Only" view mode
-	 */
-	public boolean getDisableVisualization() {
-		return appPrefs.getBoolean(PREF_DISABLEVISUALIZATION, false);
-	}
-	
-	public void saveDisableVisualization(boolean value) {
-		appPrefs.putBoolean(PREF_DISABLEVISUALIZATION, value);
-	}
-	
-	
-	/**
-	 * Support for "Selected Matchings Only" view mode
-	 */
-	public boolean getSelectedMatchingsOnly() {
-		return appPrefs.getBoolean(PREF_SELECTEDMATCHINGSONLY, false);
-	}
-	
-	public void saveSelectedMatchingsOnly(boolean value) {
-		appPrefs.putBoolean(PREF_SELECTEDMATCHINGSONLY, value);
-	}
-	
-	/**
-	 * Support for showing localnames into vertex
-	 */
-	public boolean getShowLocalname() {
-		return appPrefs.getBoolean(PREF_SHOWLOCALNAME, true);
-	}
-	
-	public void saveShowLocalname(boolean value) {
-		appPrefs.putBoolean(PREF_SHOWLOCALNAME, value);
-	}
-	
-	/**
-	 * Support for showing labels into vertex
-	 */
-	public boolean getShowLabel() {
-		return appPrefs.getBoolean(PREF_SHOWLABEL, false);
-	}
-	
-	public void saveShowLabel(boolean value) {
-		appPrefs.putBoolean(PREF_SHOWLABEL, value);
-	}
 
+	/******************************* UIMenu() **********************************************/
+	
+	public boolean getDisableVisualization() { return appPrefs.getBoolean(PREF_DISABLEVISUALIZATION, false); }
+	public void saveDisableVisualization(boolean value) { appPrefs.putBoolean(PREF_DISABLEVISUALIZATION, value); }
+	
+	@Deprecated public boolean getSelectedMatchingsOnly() {	return appPrefs.getBoolean(PREF_SELECTEDMATCHINGSONLY, false); }  // View -> Selected Matchings Only (DEPRECATED in favor of doubleclicking)
+	@Deprecated public void saveSelectedMatchingsOnly(boolean value) { appPrefs.putBoolean(PREF_SELECTEDMATCHINGSONLY, value); }
+	
+	public boolean getShowLocalname() { return appPrefs.getBoolean(PREF_SHOWLOCALNAME, true); }  // View -> Show localname
+	public void saveShowLocalname(boolean value) { appPrefs.putBoolean(PREF_SHOWLOCALNAME, value); }	
+	
+	public boolean getShowLabel() {	return appPrefs.getBoolean(PREF_SHOWLABEL, true); }  // View -> Show label
+	public void saveShowLabel(boolean value) { appPrefs.putBoolean(PREF_SHOWLABEL, value); }
+
+	public boolean getShowMappingsShortname() {	return appPrefs.getBoolean(PREF_SHOWMAPPINGSWITHNAME, true); }  // View -> Mappings with Matcher name
+	public void saveShowMappingsShortname(boolean value) { appPrefs.putBoolean(PREF_SHOWMAPPINGSWITHNAME, value); }	
 	
 	
 	/**

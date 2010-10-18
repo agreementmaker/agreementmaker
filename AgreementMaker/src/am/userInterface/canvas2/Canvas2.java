@@ -1,14 +1,20 @@
 package am.userInterface.canvas2;
 
+import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.MatcherChangeEvent;
 import am.app.mappingEngine.MatcherChangeListener;
+import am.app.mappingEngine.MatcherFactory;
 import am.app.ontology.Ontology;
 import am.app.ontology.OntologyChangeEvent;
 import am.app.ontology.OntologyChangeListener;
 import am.userInterface.Colors;
+import am.userInterface.VisualizationChangeEvent;
+import am.userInterface.VisualizationChangeListener;
 import am.userInterface.VisualizationPanel;
+import am.userInterface.canvas2.graphical.MappingData;
+import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
 import am.userInterface.canvas2.layouts.LegacyLayout;
 import am.userInterface.canvas2.utility.Canvas2Edge;
 import am.userInterface.canvas2.utility.Canvas2Layout;
@@ -24,6 +30,7 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JScrollPane;
 
 import org.apache.log4j.Level;
@@ -50,7 +57,7 @@ import org.apache.log4j.Logger;
  *
  */
 
-public class Canvas2 extends VisualizationPanel implements OntologyChangeListener, MatcherChangeListener {
+public class Canvas2 extends VisualizationPanel implements OntologyChangeListener, MatcherChangeListener, VisualizationChangeListener {
 
 	private static final long serialVersionUID = 1544849142971067136L;
 
@@ -83,6 +90,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		viewport.addChangeListener(layout);
 		Core.getInstance().addOntologyChangeListener(this);
 		Core.getInstance().addMatcherChangeListener(this);
+		Core.getInstance().addVisualizationChangeListener(this);
 
 		graphs = new ArrayList<CanvasGraph>();	// this is our master list of graphs to be displayed
 		
@@ -279,6 +287,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			graphs.add(layout.buildMatcherGraph( Core.getInstance().getMatcherByID( e.getMatcherID() )));
 			repaint();
 			break;
+			
 		case MATCHER_ALIGNMENTSET_UPDATED:
 			
 			// first, remove the matcher graph from the list of graphs.
@@ -341,9 +350,80 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		
 	}
 		
+	
 	@Override public void setShowLocalName(boolean showLocalname) { layout.setShowLocalName(showLocalname); }
 	@Override public void setShowLabel( boolean showLabel ) { layout.setShowLabel(showLabel); }
 	@Override public boolean getShowLocalName() { return layout.getShowLocalName(); }
 	@Override public boolean getShowLabel() { return layout.getShowLabel(); }
+
+	@Override
+	public void visualizationSettingChanged(VisualizationChangeEvent e) {
+		
+		switch( e.getEvent() ) {
+		case TOGGLE_SHOWMAPPINGSSHORTNAME:
+			// check to see if we are dealing with a JCheckBoxMenuItem as the source (should aways be the case unless the code is changed)
+			if( e.getSource() instanceof JCheckBoxMenuItem ) {
+				// the source of the event is the checkbox menu item itself
+				boolean showMapName = ((JCheckBoxMenuItem)e.getSource()).isSelected();
+				
+				
+/*				
+				// ok, we have to search through all the graphs, looking for MATCHER_GRAPHs.
+				// then, for each graph, we update the mappings to include the shortName of the matcher.
+				for( CanvasGraph gr : graphs ) {
+					if( gr.getGraphType() == GraphLocator.GraphType.MATCHER_GRAPH ) {
+						AbstractMatcher m = Core.getInstance().getMatcherByID( gr.getID() );
+						String shortName = MatcherFactory.getMatchersRegistryEntry( m.getClass() ).getMatcherShortName();
+						// update all the Mapping edges in this graph to include the shortName
+						for( Iterator<Canvas2Edge> edgesIter = gr.edges(); edgesIter.hasNext(); ) {
+							Canvas2Edge edge = edgesIter.next();
+							
+							if( edge.getObject().type == NodeType.MAPPING ) {
+								// we only care about mappings.
+								MappingData mdata = (MappingData) edge.getObject();
+								if( mdata.alignment != null ) {
+									String sim = Utility.getNoDecimalPercentFromDouble(mdata.alignment.getSimilarity());
+									
+									if( showMapName ) {
+										mdata.label = sim + " - " + shortName; 
+									} else {
+										mdata.label = sim;
+									}
+								}
+							}
+						}
+						
+					}
+				}
+*/	
+								
+				// we only care about the currently visible mappings.
+				for( Canvas2Edge edge : visibleEdges ) {
+					if( edge.getObject().type == NodeType.MAPPING ) {
+						// we only care about mappings.
+						MappingData mdata = (MappingData) edge.getObject();
+						if( mdata.alignment != null ) {
+							AbstractMatcher m = Core.getInstance().getMatcherByID( mdata.matcherID );
+							String shortName = MatcherFactory.getMatchersRegistryEntry( m.getClass() ).getMatcherShortName();
+
+							String sim = Utility.getNoDecimalPercentFromDouble(mdata.alignment.getSimilarity());
+							
+							if( showMapName ) {
+								mdata.label = sim + " - " + shortName; 
+							} else {
+								mdata.label = sim;
+							}
+						}
+					}
+				}
+			}
+			
+			repaint();
+			
+			break;
+			
+		}
+		
+	}
 
 }

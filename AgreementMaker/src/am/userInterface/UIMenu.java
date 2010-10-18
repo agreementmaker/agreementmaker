@@ -3,7 +3,6 @@ package am.userInterface;
 
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
 import am.AMException;
 import am.GlobalStaticVariables;
@@ -38,6 +38,7 @@ import am.tools.LexiconLookup.LexiconLookupPanel;
 import am.tools.ThresholdAnalysis.ThresholdAnalysis;
 import am.tools.WordNetLookup.WordNetLookupPanel;
 import am.tools.seals.SealsPanel;
+import am.userInterface.VisualizationChangeEvent.VisualizationEventType;
 import am.userInterface.find.FindDialog;
 import am.userInterface.find.FindInterface;
 import am.userInterface.table.MatchersTablePanel;
@@ -61,7 +62,11 @@ public class UIMenu implements ActionListener {
 	
 	// View menu.
 	private JMenuItem colorsItem, itemViewsCanvas;
-	private JCheckBoxMenuItem smoMenuItem;  // Menu item for toggling "Selected Matchings Only" view mode.
+	private JCheckBoxMenuItem 	smoMenuItem,  
+								showLabelItem, 
+								showLocalNameItem, 
+								showMappingsShortname, 
+								disableVisualizationItem;
 	private JMenu menuViews;  // Views submenu.  TODO: Rename this to something more descriptive.
 	private JMenu menuLexicons; // the Lexicons sub menu;
 	private JMenuItem menuLexiconsOntSource, menuLexiconsOntTarget, menuLexiconsWNSource, menuLexiconsWNTarget;
@@ -94,13 +99,6 @@ public class UIMenu implements ActionListener {
 	
 	private UI ui;  // reference to the main ui.
 	
-
-	
-	
-	private JCheckBoxMenuItem disableVisualizationItem;
-	private JCheckBoxMenuItem showLabelItem;
-	private JCheckBoxMenuItem showLocalNameItem;
-
 	
 	public UIMenu(UI ui){
 		this.ui=ui;
@@ -120,7 +118,7 @@ public class UIMenu implements ActionListener {
 	 */
 	private void refreshRecentMenus( JMenu recentsource, JMenu recenttarget ) {
 		
-		AppPreferences prefs = ui.getAppPreferences();
+		AppPreferences prefs = Core.getAppPreferences();
 		
 		// first we start by removing all sub menus
 		recentsource.removeAll();
@@ -148,6 +146,8 @@ public class UIMenu implements ActionListener {
 	
 	
 	public void actionPerformed (ActionEvent ae){
+		AppPreferences prefs = Core.getAppPreferences();
+		
 		try {
 			Object obj = ae.getSource();
 			MatchersControlPanel controlPanel = ui.getControlPanel();
@@ -181,7 +181,6 @@ public class UIMenu implements ActionListener {
 					closeTarget.setEnabled(true);
 				}
 			}else if (obj == openMostRecentPair){
-				AppPreferences prefs = new AppPreferences();
 				int position = 0;
 				ui.openFile( prefs.getRecentSourceFileName(position), GlobalStaticVariables.SOURCENODE, 
 						prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position), prefs.getRecentSourceSkipNamespace(position), prefs.getRecentSourceNoReasoner(position));
@@ -201,16 +200,14 @@ public class UIMenu implements ActionListener {
 				//displayOptionPane("Agreement Maker 3.0\nAdvis research group\nThe University of Illinois at Chicago 2004","About Agreement Maker");
 			}
 			else if( obj == disableVisualizationItem ) {
-				// Save the SMO setting that has been changed
-				AppPreferences prefs = ui.getAppPreferences();
+				// Save the setting that has been changed
 				boolean disableVis = disableVisualizationItem.isSelected();
-				prefs.saveSelectedMatchingsOnly(disableVis);
+				prefs.saveDisableVisualization(disableVis);
 				ui.getCanvas().setDisableVisualization(disableVis);
 				ui.redisplayCanvas();
 			}
 			else if( obj == smoMenuItem ) {
 				// Save the SMO setting that has been changed
-				AppPreferences prefs = ui.getAppPreferences();
 				boolean smoStatus = smoMenuItem.isSelected();
 				prefs.saveSelectedMatchingsOnly(smoStatus);
 				ui.getCanvas().setSMO(smoStatus);
@@ -218,7 +215,6 @@ public class UIMenu implements ActionListener {
 			}
 			else if( obj == showLabelItem || obj == showLocalNameItem ) {
 				// Save the setting that has been changed
-				AppPreferences prefs = ui.getAppPreferences();
 				boolean showLabel = showLabelItem.isSelected();
 				prefs.saveShowLabel(showLabel);
 				ui.getCanvas().setShowLabel(showLabel);
@@ -226,6 +222,21 @@ public class UIMenu implements ActionListener {
 				prefs.saveShowLocalname(showLocalname);
 				ui.getCanvas().setShowLocalName(showLocalname);
 				ui.redisplayCanvas();
+			} else if( obj == showMappingsShortname ) {
+				
+				// thread safe event firing
+		    	Runnable fireNewEvent = new Runnable() {
+		    	    public void run() {
+						VisualizationChangeEvent vce = new VisualizationChangeEvent(showMappingsShortname, 
+								   VisualizationEventType.TOGGLE_SHOWMAPPINGSSHORTNAME );
+
+				    	Core.getInstance().fireEvent(vce);
+		    	    }
+		    	};
+		    	SwingUtilities.invokeLater(fireNewEvent);
+				
+		    	// save the setting in preferences
+		    	prefs.saveShowMappingsShortname(showMappingsShortname.isSelected());
 			}
 			else if( obj == sealsItem ) {
 				// open up the SEALS Interface tab
@@ -611,8 +622,6 @@ public class UIMenu implements ActionListener {
 			String command = ae.getActionCommand();  // get the command string we set
 			if( command.length() == 7 ) { // the only menus that set an action command  are the recent menus, so we're ok.
 				
-				AppPreferences prefs = new AppPreferences();
-				
 				char index[] = new char[1];  // '0' - '9'
 				char ontotype[] = new char[1]; // 's' or 't' (source or target)
 				
@@ -828,6 +837,10 @@ public class UIMenu implements ActionListener {
 		showLabelItem.setSelected(prefs.getShowLabel());
 		viewMenu.add(showLabelItem);
 		
+		showMappingsShortname = new JCheckBoxMenuItem("Mappings with Matcher name");
+		showMappingsShortname.addActionListener(this);
+		showMappingsShortname.setSelected(prefs.getShowMappingsShortname());
+		viewMenu.add(showMappingsShortname);
 		//viewMenu.addSeparator();
 		
 		menuViews = new JMenu("New view");

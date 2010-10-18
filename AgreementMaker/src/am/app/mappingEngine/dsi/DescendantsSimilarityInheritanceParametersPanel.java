@@ -43,7 +43,7 @@ public class DescendantsSimilarityInheritanceParametersPanel extends AbstractMat
 	public DescendantsSimilarityInheritanceParametersPanel() {
 		super();
 	
-		prefs = Core.getInstance().getUI().getAppPreferences();  // get a reference to our application preferences
+		prefs = Core.getAppPreferences();  // get a reference to our application preferences
 		
 		this.setPreferredSize(new Dimension(350, 175) );
 		
@@ -99,7 +99,7 @@ public class DescendantsSimilarityInheritanceParametersPanel extends AbstractMat
 		}
 
 		// we are going to save the value the user enters, so they don't have to keep entering it.		
-		Core.getInstance().getUI().getAppPreferences().savePanelFloat( MatcherSetting.DSI_MCP , inputMCP);
+		Core.getAppPreferences().savePanelFloat( MatcherSetting.DSI_MCP , inputMCP);
 		parameters.MCP = inputMCP;  // save our MCP to the parameters.
 		
 		return null;

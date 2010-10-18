@@ -12,7 +12,7 @@ import am.userInterface.canvas2.graphical.GraphicalData;
 import am.userInterface.canvas2.utility.GraphLocator.GraphType;
 import am.utility.DirectedGraph;
 
-public class CanvasGraph extends DirectedGraph<Canvas2Edge, Canvas2Vertex> {
+public class CanvasGraph extends DirectedGraph<Canvas2Edge, Canvas2Vertex>  {
 
 	// The graphical bounds of this graph.  Initially set so isVisible() will return false.
 	int x = 1;
@@ -32,7 +32,7 @@ public class CanvasGraph extends DirectedGraph<Canvas2Edge, Canvas2Vertex> {
 		graphType = gT;
 	}
 	
-	public int getID() { return ontologyID; }
+	public int getID() { return ontologyID; } // for MATCHER_GRAPHs this is the Matcher ID
 	public GraphLocator.GraphType getGraphType() { return graphType; }
 	
 	public void setVisible( boolean vis ) {	

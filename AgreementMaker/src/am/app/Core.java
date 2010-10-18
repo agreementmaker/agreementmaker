@@ -16,7 +16,10 @@ import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.OntologyChangeEvent;
 import am.app.ontology.OntologyChangeListener;
+import am.userInterface.AppPreferences;
 import am.userInterface.UI;
+import am.userInterface.VisualizationChangeEvent;
+import am.userInterface.VisualizationChangeListener;
 
 /**
  * SINGLETON JAVA PATTERN
@@ -65,19 +68,21 @@ public class Core {
 	 * 		- or removeChangeListener() to remove from the listener list
 	 */
 	private ArrayList<Ontology> loadedOntologies;
-	private ArrayList<OntologyChangeListener> ontologyListeners;
-	private ArrayList<MatcherChangeListener>  matcherListeners;
 	
-	/** The Lexicon store for these ontologies. */
-	private static LexiconStore lexstore;
+	/** Various change listeners. **/
+	private ArrayList<OntologyChangeListener>      ontologyListeners;
+	private ArrayList<MatcherChangeListener>  	   matcherListeners;
+	private ArrayList<VisualizationChangeListener> visualizationListeners;
 	
-	/**A reference to the userinterface instance, canvas and table can be accessed anytime. It used often to invoke the method redisplayCanvas()*/
-	private static UI ui;
 	
-	/**
-	 * Singleton pattern: unique instance
-	 */
-	private static Core core  = new Core();
+	private static AppPreferences prefs;
+	
+	private static LexiconStore lexstore; // The Lexicon store for these ontologies.
+	
+	private static UI ui; 	// A reference to the userinterface instance, canvas and table can be accessed anytime. 
+							// It used often to invoke the method redisplayCanvas()
+	
+	private static Core core  = new Core(); // Singleton pattern: unique instance
 
 
 	/**
@@ -96,48 +101,33 @@ public class Core {
 		loadedOntologies = new ArrayList<Ontology>();  // initialize the arraylist of ontologies.
 		ontologyListeners    = new ArrayList<OntologyChangeListener>();  // new list of listeners
 		matcherListeners	= new ArrayList<MatcherChangeListener>(); // another list of listeners
+		visualizationListeners = new ArrayList<VisualizationChangeListener>();
 		lexstore = new LexiconStore();
+		prefs = new AppPreferences();
 	}
 	
-
-	public Ontology getSourceOntology() {  // deprecated by multiple-ontology interface
-		return sourceOntology;
-	}
-
+	// deprecated by multiple-ontology interface (TODO: Finish implementing multiple-ontology interface. - Cosmin 10/17/2010)
+	public Ontology getSourceOntology() {  return sourceOntology; }
+	public Ontology getTargetOntology() { return targetOntology; } // deprecated by multi-ontology interface
+	
 	public void setSourceOntology(Ontology sourceOntology) {  // deprecated by multi-ontology array
     	this.sourceOntology = sourceOntology;
 		addOntology(sourceOntology); // support for more than 2 ontologies
 	}
-    
-
-	public Ontology getTargetOntology() {   // deprecated by multi-ontology interface
-		return targetOntology;
-	}
-    
 
 	public void setTargetOntology(Ontology targetOntology) {  // deprecated by multi-ontology interface
 		this.targetOntology = targetOntology;
 		addOntology(targetOntology); // support for more than 2 ontologies
 	}
 	
-	
-
-	public boolean sourceIsLoaded() {
-		return sourceOntology != null;
-	}
-
-	public boolean targetIsLoaded() {
-		return targetOntology != null;
-	}
-	
-
-	public boolean ontologiesLoaded() {
-		return sourceIsLoaded() &&  targetIsLoaded();
-	}
+	public boolean sourceIsLoaded() { return sourceOntology != null; }
+	public boolean targetIsLoaded() { return targetOntology != null; }
+	public boolean ontologiesLoaded() { return sourceIsLoaded() &&  targetIsLoaded(); }  // convenience function
 	
 	
 	/**
 	 * This function will return the first Matcher instance of type "matcher" in the AM (ordered by its index).
+	 * @return Returns null if a matcher of the specified type does not exist in the system.
 	 */
 	public AbstractMatcher getMatcherInstance( MatchersRegistry matcher ) {
 	
@@ -157,14 +147,10 @@ public class Core {
 			}
 			
 		}
-		
-		return null;
-		
+		return null;	
 	}
 	
-	public ArrayList<AbstractMatcher> getMatcherInstances() {
-		return matcherInstances;
-	}
+	public ArrayList<AbstractMatcher> getMatcherInstances() { return matcherInstances; }
 	
 	public AbstractMatcher getMatcherByID( int mID ) {
 		Iterator<AbstractMatcher> matchIter = matcherInstances.iterator();
@@ -202,6 +188,7 @@ public class Core {
 	public static void setUI(UI ui) { Core.ui = ui; }
 	
 	public static LexiconStore getLexiconStore() { return lexstore; }
+	public static AppPreferences getAppPreferences() { return prefs; }
 	
 	/**
 	 * Some selection parameters or some information in the alignMatrix of the matcher a are changed,
@@ -384,12 +371,23 @@ public class Core {
 		}
 	}
 	
+	/** Same thing as ontology change events, but for Matchers **/
 	public void addMatcherChangeListener( MatcherChangeListener l )  { matcherListeners.add(l); }
 	public void removeMatcherChangeListener( MatcherChangeListener l ) { matcherListeners.remove(l); }
 	
 	public void fireEvent( MatcherChangeEvent event ) {
 		for( int i = matcherListeners.size()-1; i >= 0; i-- ) {  // count DOWN from max (for a very good reason, http://book.javanb.com/swing-hacks/swinghacks-chp-12-sect-8.html )
 			matcherListeners.get(i).matcherChanged(event);
+		}
+	}
+	
+	/** Same thing as ontology change events, but for Visualization components **/
+	public void addVisualizationChangeListener( VisualizationChangeListener l )  { visualizationListeners.add(l); }
+	public void removeVisualizationChangeListener( VisualizationChangeListener l ) { visualizationListeners.remove(l); }
+	
+	public void fireEvent( VisualizationChangeEvent event ) {
+		for( int i = visualizationListeners.size()-1; i >= 0; i-- ) {  // count DOWN from max (for a very good reason, http://book.javanb.com/swing-hacks/swinghacks-chp-12-sect-8.html )
+			visualizationListeners.get(i).visualizationSettingChanged(event);
 		}
 	}
 	
