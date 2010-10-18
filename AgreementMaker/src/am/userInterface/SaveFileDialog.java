@@ -40,7 +40,7 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 	private static final long serialVersionUID = 7313974994418768939L;
 	AppPreferences prefs = new AppPreferences(); // Application preferences.  Used to automatically fill in previous values.
 
-	private JLabel lblFilename, lblFileDir, lblFileFormat;
+	private JLabel lblMatcher, lblFilename, lblFileDir, lblFileFormat;
 	private JButton btnBrowse, btnCancel, btnSave;
 	private JTextField txtFilename, txtFileDir;
 	private JComboBox cmbAlignmentFormat;
@@ -154,13 +154,29 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 		);
 		pnlMatrices.setLayout(layMatrices);
 		
-		panel.setLayout(new GridLayout(5,1) );
-		panel.add(radAlignmentOnly);
-		panel.add(pnlAlignmentFormat);
-		panel.add(radMatrixAsCSV);
-		panel.add(pnlMatrices);
-		panel.add(radCompleteMatcher);
 		
+		GroupLayout layMain = new GroupLayout(panel);
+		layMatrices.setAutoCreateGaps(true);
+		
+		layMain.setHorizontalGroup( layMain.createParallelGroup()
+				.addComponent(radAlignmentOnly)
+				.addComponent(pnlAlignmentFormat)
+				.addComponent(radMatrixAsCSV)
+				.addComponent(pnlMatrices)
+				.addComponent(radCompleteMatcher)
+		);
+		
+		layMain.setVerticalGroup( layMain.createSequentialGroup() 
+				.addComponent(radAlignmentOnly)
+				.addComponent(pnlAlignmentFormat)
+				.addGap(10)
+				.addComponent(radMatrixAsCSV)
+				.addComponent(pnlMatrices)
+				.addGap(10)
+				.addComponent(radCompleteMatcher)				
+		);
+		
+		panel.setLayout(layMain);
 		return panel;
 	}
 
@@ -175,7 +191,15 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 		setTitle("Export ...");
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
-		// elements of the dialog (in order from left to right, top to bottom) 
+		// get the currently selected matcher
+		ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
+		AbstractMatcher selectedMatcher;
+		int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
+		selectedMatcher = list.get(rowsIndex[0]); // we only care about the first matcher selected
+		
+		// elements of the dialog (in order from left to right, top to bottom)
+		lblMatcher = new JLabel("Exporting Matcher: " + selectedMatcher.getName().getMatcherName());
+		
 		lblFilename = new JLabel("Filename (without extension): ");
 		txtFilename = new JTextField();
 		lblFileDir = new JLabel("Save in folder: ");
@@ -212,7 +236,10 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 		
+		int pnlwidth = lblFileDir.getPreferredSize().width + txtFileDir.getPreferredSize().width + btnBrowse.getPreferredSize().width;
+		
 		layout.setHorizontalGroup( layout.createParallelGroup(Alignment.TRAILING)
+				.addComponent(lblMatcher, Alignment.LEADING)
 				.addGroup( layout.createSequentialGroup()
 						.addComponent(lblFilename)
 						.addComponent(txtFilename)
@@ -222,7 +249,7 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 						.addComponent(txtFileDir)
 						.addComponent(btnBrowse)
 				)
-				.addComponent(pnlSaveOptions)
+				.addComponent(pnlSaveOptions, pnlwidth, GroupLayout.PREFERRED_SIZE, 2000 )
 				.addGroup( layout.createSequentialGroup()
 						.addComponent(btnCancel)
 						.addComponent(btnSave)
@@ -232,6 +259,8 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 		// the Vertical group is the same structure as the horizontal group
 		// but Sequential and Parallel definition are exchanged		
 		layout.setVerticalGroup( layout.createSequentialGroup()
+				.addComponent(lblMatcher)
+				.addGap(10)
 				.addGroup( layout.createParallelGroup(Alignment.CENTER)
 						.addComponent(lblFilename)
 						.addComponent(txtFilename)
@@ -294,6 +323,8 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 		radClassesMatrix.setEnabled(en);
 		radPropertiesMatrix.setEnabled(en);
 		boxSort.setEnabled(en);
+		boxIsolines.setEnabled(en);
+		boxSkipZeros.setEnabled(en);
 	}
 	
 	private void save() {
