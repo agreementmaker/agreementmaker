@@ -595,7 +595,7 @@ public class UIMenu implements ActionListener {
 				
 				if( selectedMatcher.getClassesMatrix() == null ) { Utility.displayErrorPane("The matcher has not computed a classes similarity matrix.", "Error"); return; }
 				
-				MatrixPlot mp = new MatrixPlot( selectedMatcher.getClassesMatrix() );
+				MatrixPlot mp = new MatrixPlot( selectedMatcher.getClassesMatrix(), null);
 				
 				mp.draw();
 				JPanel plotPanel = new JPanel();
@@ -611,7 +611,7 @@ public class UIMenu implements ActionListener {
 				
 				if( selectedMatcher.getPropertiesMatrix() == null ) { Utility.displayErrorPane("The matcher has not computed a classes similarity matrix.", "Error"); return; }
 				
-				MatrixPlot mp = new MatrixPlot( selectedMatcher.getPropertiesMatrix());
+				MatrixPlot mp = new MatrixPlot( selectedMatcher.getPropertiesMatrix(), null);
 				
 				mp.draw();
 				JPanel plotPanel = new JPanel();
