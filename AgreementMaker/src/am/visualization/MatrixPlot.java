@@ -1,19 +1,16 @@
 package am.visualization;
 
+import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-
 import am.app.mappingEngine.AlignmentMatrix;
 
-public class MatrixPlot extends JPanel {
+public class MatrixPlot extends Canvas {
+
+	private static final long serialVersionUID = -8579270363759208673L;
 
 	private AlignmentMatrix matrix;
 
@@ -26,8 +23,6 @@ public class MatrixPlot extends JPanel {
 		setBackground(Color.BLACK);
 		setMatrix(mtx);
 		draw();
-		
-		setBorder( BorderFactory.createLineBorder(Color.BLACK));
 		
 	}
 
@@ -54,7 +49,7 @@ public class MatrixPlot extends JPanel {
 			
 			I.getColorModel();
 			
-			Gradient grad = new Gradient( Color.WHITE, Color.BLUE);
+			Gradient grad = new Gradient( Color.BLUE, Color.WHITE);
 			
 			
 			
@@ -88,8 +83,8 @@ public class MatrixPlot extends JPanel {
 	}
 
 	@Override
-	protected void paintComponent(Graphics g) {
-		super.paintComponent(g);
+	public void paint(Graphics g) {
+		super.paint(g);
 		g.drawImage(I, 0, 0, this);
 	}
 	

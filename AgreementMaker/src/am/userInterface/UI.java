@@ -25,7 +25,7 @@ import am.app.ontology.ontologyParser.TreeBuilder;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.classic.AgreementMakerClassic;
 import am.userInterface.vertex.VertexDescriptionPane;
-import am.visualization.MatrixPlotTab;
+import am.visualization.MatcherAnalyticsPanel;
 
 
 /**
@@ -43,7 +43,7 @@ public class UI {
 	
 	// this is the current UI Panel
 	private AgreementMakerClassic classicAM;
-	private MatrixPlotTab mpTable;
+	private MatcherAnalyticsPanel mpTable;
 	
 	private JFrame frame;
 	
@@ -116,11 +116,8 @@ public class UI {
 		
 		// The first view is the Classic AgreementMaker
 		classicAM = new AgreementMakerClassic();
-		mpTable = new MatrixPlotTab();
 		
-		// TODO: add mat tab
 		tabbedPane.addTab("AgreementMaker", null, classicAM, "AgreementMaker");
-		tabbedPane.addTab("MatrixPlot", null, mpTable, "Matrix Plot Table");
 		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		
 		//Add the listener to close the frame.
@@ -232,6 +229,12 @@ public class UI {
 	public void addTab( String tabName, ImageIcon icon, JComponent panel, String toolTip ) {
 		tabbedPane.addTab( tabName, icon, panel, toolTip);
 		tabbedPane.setTabComponentAt(tabbedPane.getTabCount() - 1 , new ButtonTabComponent(tabbedPane));
+		tabbedPane.setSelectedIndex( tabbedPane.getTabCount() - 1 );
+	}
+	
+	public void addTab( String tabName, ImageIcon icon, JComponent panel, String toolTip, Runnable callOnClose ) {
+		tabbedPane.addTab( tabName, icon, panel, toolTip);
+		tabbedPane.setTabComponentAt(tabbedPane.getTabCount() - 1 , new ButtonTabComponent(tabbedPane, callOnClose));
 		tabbedPane.setSelectedIndex( tabbedPane.getTabCount() - 1 );
 	}
 	

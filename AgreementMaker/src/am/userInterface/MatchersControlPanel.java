@@ -400,9 +400,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				refMatcher.setMaxSourceAlign(refMatcher.getDefaultMaxSourceRelations());
 				refMatcher.setMaxTargetAlign(refMatcher.getDefaultMaxTargetRelations());
 				refMatcher.match();
-				AlignmentSet referenceSet = refMatcher.getAlignmentSet(); //class + properties
+				AlignmentSet<Alignment> referenceSet = refMatcher.getAlignmentSet(); //class + properties
 				AbstractMatcher toBeEvaluated;
-				AlignmentSet evaluateSet;
+				AlignmentSet<Alignment> evaluateSet;
 				ReferenceEvaluationData rd;
 				String report="Reference Evaluation Complete\n\n";
 				for(int i = 0; i < rowsIndex.length; i++) {
@@ -499,9 +499,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				refMatcher.setMaxSourceAlign(refMatcher.getDefaultMaxSourceRelations());
 				refMatcher.setMaxTargetAlign(refMatcher.getDefaultMaxTargetRelations());
 				refMatcher.match();
-				AlignmentSet referenceSet = refMatcher.getAlignmentSet(); //class + properties
+				AlignmentSet<Alignment>referenceSet = refMatcher.getAlignmentSet(); //class + properties
 				AbstractMatcher toBeEvaluated;
-				AlignmentSet evaluateSet;
+				AlignmentSet<Alignment> evaluateSet;
 				ReferenceEvaluationData rd;
 				
 				double step = 0.05;
@@ -669,7 +669,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 			matchersTablePanel.deletedRows(firstRow, lastRow);
 			Core.getUI().getCanvas().clearAllSelections();
 			Core.getUI().redisplayCanvas();
-			MatcherChangeEvent evt = new MatcherChangeEvent(this, MatcherChangeEvent.EventType.REMOVE_ALL, Core.ID_NONE);
+			MatcherChangeEvent evt = new MatcherChangeEvent(userMatcher, MatcherChangeEvent.EventType.REMOVE_ALL, Core.ID_NONE);
 			Core.getInstance().fireEvent(evt);
 		}
 		catch(Exception ex) {

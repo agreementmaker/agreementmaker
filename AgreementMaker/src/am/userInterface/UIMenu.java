@@ -43,7 +43,9 @@ import am.userInterface.find.FindDialog;
 import am.userInterface.find.FindInterface;
 import am.userInterface.table.MatchersTablePanel;
 import am.userInterface.vertex.VertexDescriptionPane;
+import am.visualization.MatcherAnalyticsPanel;
 import am.visualization.MatrixPlot;
+import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 
 
 public class UIMenu implements ActionListener {
@@ -83,7 +85,7 @@ public class UIMenu implements ActionListener {
 					  doRemoveDuplicates, 
 					  saveMatching, 
 					  refEvaluateMatching,
-					  thresholdAnalysis, TEMP_viewClassMatrix, TEMP_viewPropMatrix;
+					  thresholdAnalysis, TEMP_viewClassMatrix, TEMP_viewPropMatrix, TEMP_matcherAnalysisClasses, TEMP_matcherAnalysisProp;
 	
 	private JMenu	menuExport;
 	private JMenuItem exportMatrixCSV;
@@ -596,8 +598,9 @@ public class UIMenu implements ActionListener {
 				MatrixPlot mp = new MatrixPlot( selectedMatcher.getClassesMatrix() );
 				
 				mp.draw();
-				
-				Core.getUI().addTab("MatrixPlot Class", null , mp , selectedMatcher.getName().getMatcherName());
+				JPanel plotPanel = new JPanel();
+				plotPanel.add(mp);
+				Core.getUI().addTab("MatrixPlot Class", null , plotPanel , selectedMatcher.getName().getMatcherName());
 			} else if( obj == TEMP_viewPropMatrix ) {
 				// get the currently selected matcher
 				ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
@@ -611,8 +614,32 @@ public class UIMenu implements ActionListener {
 				MatrixPlot mp = new MatrixPlot( selectedMatcher.getPropertiesMatrix());
 				
 				mp.draw();
+				JPanel plotPanel = new JPanel();
+				plotPanel.add(mp);
+				Core.getUI().addTab("MatrixPlot Prop", null , plotPanel , selectedMatcher.getName().getMatcherName());
+			} else if( obj == TEMP_matcherAnalysisClasses ) {
+				final MatcherAnalyticsPanel ma = new MatcherAnalyticsPanel( VisualizationType.CLASS_MATRIX );
 				
-				Core.getUI().addTab("MatrixPlot Prop", null , mp , selectedMatcher.getName().getMatcherName());
+				Runnable callOnExit = new Runnable() {
+					public void run() {
+						Core.getInstance().removeMatcherChangeListener(ma);
+					}
+				};
+				
+				Core.getUI().addTab("Matcher Analytics: Classes", null, ma, "Classes", callOnExit);
+				Core.getInstance().addMatcherChangeListener(ma);
+				
+			} else if( obj == TEMP_matcherAnalysisProp ) {
+				final MatcherAnalyticsPanel ma = new MatcherAnalyticsPanel( VisualizationType.PROPERTIES_MATRIX );
+				
+				Runnable callOnExit = new Runnable() {
+					public void run() {
+						Core.getInstance().removeMatcherChangeListener(ma);
+					}
+				};
+				
+				Core.getUI().addTab("Matcher Analytics: Properties", null, ma, "Properties", callOnExit);
+				Core.getInstance().addMatcherChangeListener(ma);
 			}
 			
 			
@@ -938,12 +965,22 @@ public class UIMenu implements ActionListener {
 		thresholdAnalysis.addActionListener(this);
 		matchersMenu.add(thresholdAnalysis);
 		
+		matchersMenu.addSeparator();
+		
 		TEMP_viewClassMatrix = new JMenuItem("View classesMatrix");
 		TEMP_viewClassMatrix.addActionListener(this);
 		matchersMenu.add(TEMP_viewClassMatrix);
 		TEMP_viewPropMatrix = new JMenuItem("View propertiesMatrix");
 		TEMP_viewPropMatrix.addActionListener(this);
 		matchersMenu.add(TEMP_viewPropMatrix);
+		
+		TEMP_matcherAnalysisClasses = new JMenuItem("Matcher Analysis: Classes Matrix");
+		TEMP_matcherAnalysisClasses.addActionListener(this);
+		matchersMenu.add(TEMP_matcherAnalysisClasses);
+		
+		TEMP_matcherAnalysisProp = new JMenuItem("Matcher Analysis: Properties Matrix");
+		TEMP_matcherAnalysisProp.addActionListener(this);
+		matchersMenu.add(TEMP_matcherAnalysisProp);
 		
 		myMenuBar.add(matchersMenu);
 		

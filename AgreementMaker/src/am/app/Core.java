@@ -169,7 +169,7 @@ public class Core {
 	}
 	
 	public void removeMatcher(AbstractMatcher a) {
-		MatcherChangeEvent evt = new MatcherChangeEvent(this, MatcherChangeEvent.EventType.MATCHER_REMOVED, a.getID());
+		MatcherChangeEvent evt = new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_REMOVED, a.getID());
 		int myIndex = a.getIndex();
 		matcherInstances.remove(myIndex);
 		//All indexes must be decreased by one;
@@ -202,7 +202,7 @@ public class Core {
 	 */
 	public void selectAndUpdateMatchers(AbstractMatcher a) throws Exception{
 		a.select();
-		MatcherChangeEvent evt = new MatcherChangeEvent(this, MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, a.getID() );
+		MatcherChangeEvent evt = new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, a.getID() );
 		fireEvent(evt);
 		updateMatchers(a);
 
@@ -210,7 +210,7 @@ public class Core {
 	
 	public void matchAndUpdateMatchers(AbstractMatcher a) throws Exception{
 		a.match();
-		MatcherChangeEvent evt = new MatcherChangeEvent(this, MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, a.getID() );
+		MatcherChangeEvent evt = new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, a.getID() );
 		fireEvent(evt);
 		updateMatchers(a);
 	}
@@ -230,7 +230,7 @@ public class Core {
 					modified = modifiedMatchers.get(j);
 					if(current.getInputMatchers().contains(modified)) {//if current contains any of the modified matchers as input matcher
 						current.match(); //reinvoke() current and add it to the modified list
-						MatcherChangeEvent evt = new MatcherChangeEvent(this, MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, current.getID() );
+						MatcherChangeEvent evt = new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, current.getID() );
 						fireEvent(evt);
 						modifiedMatchers.add(current);
 						break;
@@ -248,7 +248,7 @@ public class Core {
 		matcher.addManualAlignments(alignments);
 		
 		// fire a matcher change event.
-		MatcherChangeEvent evt = new MatcherChangeEvent(this, MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, matcher.getID() );
+		MatcherChangeEvent evt = new MatcherChangeEvent(matcher, MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, matcher.getID() );
 		fireEvent(evt);
 	}
 	

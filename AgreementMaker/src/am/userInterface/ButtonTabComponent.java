@@ -1,10 +1,27 @@
 package am.userInterface;
 
-import javax.swing.*;
-import javax.swing.*;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicButtonUI;
-import java.awt.*;
-import java.awt.event.*;
 
 /**
  * Component to be used as tabComponent;
@@ -12,7 +29,11 @@ import java.awt.event.*;
  * a JButton to close the tab it belongs to 
  */ 
 public class ButtonTabComponent extends JPanel {
-    private final JTabbedPane pane;
+
+	private static final long serialVersionUID = 1634357597358423097L;
+	
+	private final JTabbedPane pane;
+	private final Runnable callOnExit;
 
     public ButtonTabComponent(final JTabbedPane pane) {
         //unset default FlowLayout' gaps
@@ -21,11 +42,36 @@ public class ButtonTabComponent extends JPanel {
             throw new NullPointerException("TabbedPane is null");
         }
         this.pane = pane;
+        construct(pane);
+        
+        // no action on exit;
+        callOnExit = null;
+    }
+
+    public ButtonTabComponent(final JTabbedPane pane, Runnable callOnExit) {
+        //unset default FlowLayout' gaps
+    	super(new FlowLayout(FlowLayout.LEFT, 0, 0));
+    	if (pane == null) {
+            throw new NullPointerException("TabbedPane is null");
+        }
+        this.pane = pane;
+        
+    	construct(pane);
+    	
+    	// we will execute runnable on exit
+    	this.callOnExit = callOnExit;
+    }
+    
+    private void construct(final JTabbedPane pane) {
+    	
         setOpaque(false);
         
         //make JLabel read titles from JTabbedPane
         JLabel label = new JLabel() {
-            public String getText() {
+
+			private static final long serialVersionUID = -942948920683856206L;
+
+			public String getText() {
                 int i = pane.indexOfTabComponent(ButtonTabComponent.this);
                 if (i != -1) {
                     return pane.getTitleAt(i);
@@ -43,12 +89,15 @@ public class ButtonTabComponent extends JPanel {
         //add more space to the top of the component
         setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
     }
-
+    
     private class TabButton extends JButton implements ActionListener {
-        public TabButton() {
+ 
+		private static final long serialVersionUID = -7143226510714253236L;
+
+		public TabButton() {
             int size = 17;
             setPreferredSize(new Dimension(size, size));
-            setToolTipText("close this tab");
+            setToolTipText("Close this tab.");
             //Make the button looks the same for all Laf's
             setUI(new BasicButtonUI());
             //Make it transparent
@@ -66,10 +115,11 @@ public class ButtonTabComponent extends JPanel {
         }
 
         public void actionPerformed(ActionEvent e) {
-            int i = pane.indexOfTabComponent(ButtonTabComponent.this);
-            if (i != -1) {
-                pane.remove(i);
-            }
+        	int i = pane.indexOfTabComponent(ButtonTabComponent.this);
+        	if (i != -1) {
+        		pane.remove(i);
+        		if( callOnExit != null ) SwingUtilities.invokeLater(callOnExit);
+        	}
         }
 
         //we don't want to update UI for this button

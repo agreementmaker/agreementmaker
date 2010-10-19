@@ -9,12 +9,36 @@ import java.awt.Color;
  */
 public class Gradient {
 
-	Color color1;
-	Color color2;
+	Color foreground;
+	Color background;
 	
-	public Gradient(Color c1, Color c2) {
-		color1 = c1;
-		color2 = c2;
+	int colorDiffRed = 0;
+	int colorDiffGreen = 0;
+	int colorDiffBlue = 0;
+	boolean diffRed = false;
+	boolean diffGreen = false;
+	boolean diffBlue = false;
+	
+	boolean doC1minusC2 = false;
+	
+	
+	public Gradient(Color fg, Color bg) {
+		foreground = fg;
+		background = bg;
+		
+		if( foreground.getRed() != background.getRed() ){
+			diffRed = true;
+			colorDiffRed = background.getRed() - foreground.getRed();
+		}
+		if( foreground.getGreen() != background.getGreen() ) {
+			diffGreen = true;
+			colorDiffGreen = background.getRed() - foreground.getRed();
+		}
+		
+		if( foreground.getBlue() != background.getBlue() ) {
+			diffBlue = true;
+			colorDiffBlue = background.getBlue() - foreground.getBlue();
+		}
 	}
 	
 	/**
@@ -25,36 +49,14 @@ public class Gradient {
 	public Color getColor( double percentage ) {
 		if( percentage < 0d ) { percentage = 0d; }
 		if( percentage > 1.0d ) { percentage = 1.0d; }
-		
-		int colorDiffRed = 0;
-		int colorDiffGreen = 0;
-		int colorDiffBlue = 0;
-		boolean diffRed = false;
-		boolean diffGreen = false;
-		boolean diffBlue = false;
-		
-		if( color1.getRed() != color2.getRed() ){
-			diffRed = true;
-			colorDiffRed = color2.getRed() - color1.getRed();
-		}
-		
-		if( color1.getGreen() != color2.getGreen() ) {
-			diffGreen = true;
-			colorDiffGreen = color2.getRed() - color1.getRed();
-		}
-		
-		if( color1.getBlue() != color2.getBlue() ) {
-			diffBlue = true;
-			colorDiffBlue = color2.getBlue() - color1.getBlue();
-		}
-		
 
-		if( diffRed) colorDiffRed = (new Double(percentage * ( colorDiffRed ))).intValue();
-		if( diffGreen) colorDiffGreen = (new Double(percentage * ( colorDiffGreen ))).intValue();
-		if( diffBlue) colorDiffBlue = (new Double(percentage * ( colorDiffBlue ))).intValue();
+		int currentDiffRed = 0, currentDiffGreen = 0, currentDiffBlue = 0;
 		
-		return new Color(color1.getRed() + colorDiffRed , color1.getGreen() + colorDiffGreen , color1.getBlue() + colorDiffBlue);
+		if( diffRed) currentDiffRed = (new Double(percentage * ( colorDiffRed ))).intValue();
+		if( diffGreen) currentDiffGreen = (new Double(percentage * ( colorDiffGreen ))).intValue();
+		if( diffBlue) currentDiffBlue = (new Double(percentage * ( colorDiffBlue ))).intValue();
 		
+		return new Color(background.getRed() - currentDiffRed , background.getGreen() - currentDiffGreen , background.getBlue() - currentDiffBlue);
 	}
 	
 	
