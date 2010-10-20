@@ -1,5 +1,7 @@
 package am.visualization;
 
+import am.visualization.MatcherAnalyticsPanel.VisualizationType;
+
 /**
  * This interface is for objects that act as a dispatch for messages between MatrixPlot objects.
  * This allows the user to select the same mapping on multiple MatrixPlot objects, just by clicking
@@ -10,5 +12,6 @@ package am.visualization;
 public interface MatcherAnalyticsEventDispatch {
 
 	public void broadcastEvent( MatcherAnalyticsEvent e );
+	public VisualizationType getType();
 	
 }

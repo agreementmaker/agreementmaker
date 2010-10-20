@@ -44,8 +44,8 @@ import am.userInterface.find.FindInterface;
 import am.userInterface.table.MatchersTablePanel;
 import am.userInterface.vertex.VertexDescriptionPane;
 import am.visualization.MatcherAnalyticsPanel;
-import am.visualization.MatrixPlot;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;
+import am.visualization.matrixplot.MatrixPlotPanel;
 
 
 public class UIMenu implements ActionListener {
@@ -595,9 +595,9 @@ public class UIMenu implements ActionListener {
 				
 				if( selectedMatcher.getClassesMatrix() == null ) { Utility.displayErrorPane("The matcher has not computed a classes similarity matrix.", "Error"); return; }
 				
-				MatrixPlot mp = new MatrixPlot( selectedMatcher.getClassesMatrix(), null);
+				MatrixPlotPanel mp = new MatrixPlotPanel( selectedMatcher, selectedMatcher.getClassesMatrix(), null);
 				
-				mp.draw();
+				mp.getPlot().draw();
 				JPanel plotPanel = new JPanel();
 				plotPanel.add(mp);
 				Core.getUI().addTab("MatrixPlot Class", null , plotPanel , selectedMatcher.getName().getMatcherName());
@@ -611,9 +611,9 @@ public class UIMenu implements ActionListener {
 				
 				if( selectedMatcher.getPropertiesMatrix() == null ) { Utility.displayErrorPane("The matcher has not computed a classes similarity matrix.", "Error"); return; }
 				
-				MatrixPlot mp = new MatrixPlot( selectedMatcher.getPropertiesMatrix(), null);
+				MatrixPlotPanel mp = new MatrixPlotPanel( selectedMatcher, selectedMatcher.getPropertiesMatrix(), null);
 				
-				mp.draw();
+				mp.getPlot().draw();
 				JPanel plotPanel = new JPanel();
 				plotPanel.add(mp);
 				Core.getUI().addTab("MatrixPlot Prop", null , plotPanel , selectedMatcher.getName().getMatcherName());

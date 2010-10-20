@@ -17,7 +17,7 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 
 
-public class AlignmentSet<E extends Alignment> implements Serializable
+public class AlignmentSet<E extends Alignment> implements Iterable<E>, Serializable
 {
     /**
 	 * 
