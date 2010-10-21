@@ -14,7 +14,7 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
-public class AlignmentMatrix implements Serializable
+public class SimilarityMatrix implements Serializable
 {	
 	/**
 	 * 
@@ -25,11 +25,11 @@ public class AlignmentMatrix implements Serializable
 	//if we want to start using it is important to keep it similar to 0, to allow compatibility with non-updated methods.
 	final static double INDETERMINED = Double.MIN_NORMAL;
 	
-	protected String relation = Alignment.EQUIVALENCE; //this is a default relation used when no relation is specified for this matrix
+	protected String relation = Mapping.EQUIVALENCE; //this is a default relation used when no relation is specified for this matrix
 	protected alignType typeOfMatrix;
     protected final int rows;             // number of rows
     protected final int columns;             // number of columns
-    protected final Alignment[][] data;   // M-by-N array
+    protected final Mapping[][] data;   // M-by-N array
 
     protected int sourceOntologyID;
     protected int targetOntologyID;
@@ -41,7 +41,7 @@ public class AlignmentMatrix implements Serializable
 	public void setTargetOntologyID(int targetOntologyID) { this.targetOntologyID = targetOntologyID; }
 
 	// cloning constructor
-    public AlignmentMatrix( AlignmentMatrix cloneme ) {
+    public SimilarityMatrix( SimilarityMatrix cloneme ) {
     	
 	    	relation = cloneme.getRelation();
 	    	typeOfMatrix = cloneme.getAlignType();
@@ -52,13 +52,13 @@ public class AlignmentMatrix implements Serializable
 	    	rows = cloneme.getRows();
 	    	columns = cloneme.getColumns();
 	    	
-	    	data = new Alignment[rows][columns];
+	    	data = new Mapping[rows][columns];
 	    	
 	   		for(int i=0; i< cloneme.getRows(); i++) {
 	   			for(int j = 0; j < cloneme.getColumns(); j++) {
-	   				Alignment a = cloneme.get(i, j);
+	   				Mapping a = cloneme.get(i, j);
 	   				if( a != null ) {
-	   					data[i][j] = new Alignment(a.getEntity1(), a.getEntity2(), a.getSimilarity(), a.getRelation(), a.getAlignmentType());
+	   					data[i][j] = new Mapping(a.getEntity1(), a.getEntity2(), a.getSimilarity(), a.getRelation(), a.getAlignmentType());
 	   				} else data[i][j] = null;
 	   			}
 	   		}
@@ -66,28 +66,28 @@ public class AlignmentMatrix implements Serializable
     }
     
     // create M-by-N matrix of 0's with equivalence relation
-    public AlignmentMatrix(int M, int N, alignType type) {
-    	relation = Alignment.EQUIVALENCE;
+    public SimilarityMatrix(int M, int N, alignType type) {
+    	relation = Mapping.EQUIVALENCE;
     	typeOfMatrix = type;
         this.rows = M;
         this.columns = N;
-        data = new Alignment[M][N];
+        data = new Mapping[M][N];
     }
     
     // create M-by-N matrix of 0's
-    public AlignmentMatrix(int M, int N, alignType type, String rel) {
+    public SimilarityMatrix(int M, int N, alignType type, String rel) {
     	relation = rel;
     	typeOfMatrix = type;
         this.rows = M;
         this.columns = N;
-        data = new Alignment[M][N];
+        data = new Mapping[M][N];
     }
 
 
     
-    public Alignment get(int i, int j) {  return data[i][j];  }
+    public Mapping get(int i, int j) {  return data[i][j];  }
     
-    public void set(int i, int j, Alignment d) {
+    public void set(int i, int j, Mapping d) {
     
     	data[i][j] = d;
     }
@@ -118,7 +118,7 @@ public class AlignmentMatrix implements Serializable
 			}
     		
     		
-    		data[i][j] = new Alignment( sourceList.get(i), targetList.get(j), d , relation);
+    		data[i][j] = new Mapping( sourceList.get(i), targetList.get(j), d , relation);
     	}
     	else {
     		data[i][j].setSimilarity(d);
@@ -141,16 +141,16 @@ public class AlignmentMatrix implements Serializable
      * Return the array of numMaxValues max alignments, THE ARRAY IS ORDERED FROM THE BEST MAX VALUE TO THE WORST
      * this method is used both in selection process but also the AMlocalQuality algorithm
      */
-    public Alignment[] getRowMaxValues(int row, int numMaxValues) {
+    public Mapping[] getRowMaxValues(int row, int numMaxValues) {
 		//remember to check to have numMaxValues lower than matrix columns before
-    	Alignment[] maxAlignments = new Alignment[numMaxValues];
+    	Mapping[] maxAlignments = new Mapping[numMaxValues];
     	
 		for(int h = 0; h<maxAlignments.length;h++) {
-			maxAlignments[h] = new Alignment(-1); //intial max alignments have sim equals to -1, don't put 0 could create problem in the next for
+			maxAlignments[h] = new Mapping(-1); //intial max alignments have sim equals to -1, don't put 0 could create problem in the next for
 		}
 		
-		Alignment currentValue;
-		Alignment currentMax;
+		Mapping currentValue;
+		Mapping currentMax;
 		for(int j = 0; j<getColumns();j++) {
 			currentValue = get(row,j);
 			if( currentValue == null ) continue;
@@ -177,16 +177,16 @@ public class AlignmentMatrix implements Serializable
 		return sum;
 	}
 
-	public Alignment[] getColMaxValues(int col, int numMaxValues) {
+	public Mapping[] getColMaxValues(int col, int numMaxValues) {
 		//remember to check to have numMaxValues lower than matrix rows before
-    	Alignment[] maxAlignments = new Alignment[numMaxValues];
+    	Mapping[] maxAlignments = new Mapping[numMaxValues];
     	
 		for(int h = 0; h<maxAlignments.length;h++) {
-			maxAlignments[h] = new Alignment(-1); //intial max alignments have sim equals to -1
+			maxAlignments[h] = new Mapping(-1); //intial max alignments have sim equals to -1
 		}
 		
-		Alignment currentValue;
-		Alignment currentMax;
+		Mapping currentValue;
+		Mapping currentMax;
 		for(int j = 0; j<getRows();j++) {
 			currentValue = get(j, col);
 			if( currentValue == null ) continue;
@@ -221,7 +221,7 @@ public class AlignmentMatrix implements Serializable
 	}
 	
 	public Object clone(){
-		AlignmentMatrix matrix = new AlignmentMatrix(this);
+		SimilarityMatrix matrix = new SimilarityMatrix(this);
 		return matrix;
 	}
     
@@ -231,8 +231,8 @@ public class AlignmentMatrix implements Serializable
 
 
     // create and return the transpose of the invoking matrix
-    public AlignmentMatrix transpose() {
-        AlignmentMatrix A = new AlignmentMatrix(columns, rows, typeOfMatrix, relation);
+    public SimilarityMatrix transpose() {
+        SimilarityMatrix A = new SimilarityMatrix(columns, rows, typeOfMatrix, relation);
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++)
                 A.data[j][i] = this.data[i][j];
@@ -240,10 +240,10 @@ public class AlignmentMatrix implements Serializable
     }
 
     // return C = A + B;
-    public AlignmentMatrix plus(AlignmentMatrix B) {
-        AlignmentMatrix A = this;
+    public SimilarityMatrix plus(SimilarityMatrix B) {
+        SimilarityMatrix A = this;
         if (B.rows != A.rows || B.columns != A.columns) throw new RuntimeException("Illegal matrix dimensions.");
-        AlignmentMatrix C = new AlignmentMatrix(rows, columns, typeOfMatrix, relation);
+        SimilarityMatrix C = new SimilarityMatrix(rows, columns, typeOfMatrix, relation);
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++) {
             		C.data[i][j].setSimilarity(A.data[i][j].getSimilarity()  + B.data[i][j].getSimilarity());
@@ -254,10 +254,10 @@ public class AlignmentMatrix implements Serializable
 
 
     // return C = A - B
-    public AlignmentMatrix minus(AlignmentMatrix B) {
-        AlignmentMatrix A = this;
+    public SimilarityMatrix minus(SimilarityMatrix B) {
+        SimilarityMatrix A = this;
         if (B.rows != A.rows || B.columns != A.columns) throw new RuntimeException("Illegal matrix dimensions.");
-        AlignmentMatrix C = new AlignmentMatrix(rows, columns, typeOfMatrix, relation);
+        SimilarityMatrix C = new SimilarityMatrix(rows, columns, typeOfMatrix, relation);
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++) {
             	C.data[i][j].setSimilarity( A.data[i][j].getSimilarity() - B.data[i][j].getSimilarity());
@@ -267,8 +267,8 @@ public class AlignmentMatrix implements Serializable
     }
 
     // does A = B exactly?
-    public boolean eq(AlignmentMatrix B) {
-        AlignmentMatrix A = this;
+    public boolean eq(SimilarityMatrix B) {
+        SimilarityMatrix A = this;
         if (B.rows != A.rows || B.columns != A.columns) throw new RuntimeException("Illegal matrix dimensions.");
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++)
@@ -277,10 +277,10 @@ public class AlignmentMatrix implements Serializable
     }
 
     // EACH CELL MULTIPLIED FOR THE SAME CELL IN THE OTHER MATRIX NOT A REAL MOLTIPLICATION MATRIX
-    public AlignmentMatrix times(AlignmentMatrix B) {
-        AlignmentMatrix A = this;
+    public SimilarityMatrix times(SimilarityMatrix B) {
+        SimilarityMatrix A = this;
         if (A.columns != B.rows) throw new RuntimeException("Illegal matrix dimensions.");
-        AlignmentMatrix C = new AlignmentMatrix(A.rows, B.columns, typeOfMatrix, relation);
+        SimilarityMatrix C = new SimilarityMatrix(A.rows, B.columns, typeOfMatrix, relation);
         for (int i = 0; i < C.rows; i++)
             for (int j = 0; j < C.columns; j++)
                 for (int k = 0; k < A.columns; k++)
@@ -293,7 +293,7 @@ public class AlignmentMatrix implements Serializable
         for (int i = 0; i < rows; i++) {
         	System.out.println("**********************ROW "+i+" ************************");
             for (int j = 0; j < columns; j++) {
-            	Alignment a = get(i,j);
+            	Mapping a = get(i,j);
             	if(a == null) {
             		System.out.println("Break for null alignment"+a);
             		break;
@@ -328,7 +328,7 @@ public class AlignmentMatrix implements Serializable
 	public void initFromNodeList(ArrayList<Node> sourceList, ArrayList<Node> targetList) {
 		for(int i = 0; i < sourceList.size(); i++){
 			for(int j = 0; j < targetList.size(); j++){
-				data[i][j] = new Alignment(sourceList.get(i), targetList.get(j), 0.0);
+				data[i][j] = new Mapping(sourceList.get(i), targetList.get(j), 0.0);
 			}
 		}
 	}
@@ -344,12 +344,12 @@ public class AlignmentMatrix implements Serializable
 	 * @param threshold the threshold value   
 	 * @author michele 
 	 */
-	public ArrayList<Alignment> chooseBestN(ArrayList<Integer> rowsIncludedList, ArrayList<Integer> colsIncludedList, boolean considerThreshold, double threshold) {
+	public ArrayList<Mapping> chooseBestN(ArrayList<Integer> rowsIncludedList, ArrayList<Integer> colsIncludedList, boolean considerThreshold, double threshold) {
 
 		// Creation of the output ArrayList and a copy of the matrix
 		int arraySize = Math.min(rowsIncludedList.size(), colsIncludedList.size());
-		ArrayList<Alignment> chosenMappings = new ArrayList<Alignment>(arraySize);
-		AlignmentMatrix input = new AlignmentMatrix(this);
+		ArrayList<Mapping> chosenMappings = new ArrayList<Mapping>(arraySize);
+		SimilarityMatrix input = new SimilarityMatrix(this);
 
 		ArrayList<Integer> rowsIncluded = rowsIncludedList;
 		ArrayList<Integer> colsIncluded = colsIncludedList;
@@ -358,7 +358,7 @@ public class AlignmentMatrix implements Serializable
 		while(rowsIncluded.size() > 0 && colsIncluded.size() > 0 ) // until we can look no more at concepts either in the source or in the target ontology
 		{
 			double simValue = 0;
-			Alignment currentChoose = null;
+			Mapping currentChoose = null;
 			Integer r = new Integer(0);
 			Integer c = new Integer(0);;
 			for(int i = 0; i < input.getRows(); i++) {
@@ -402,7 +402,7 @@ public class AlignmentMatrix implements Serializable
 	 * @param threshold the threshold value
 	 * @author michele 
 	 */
-	public ArrayList<Alignment> chooseBestN(boolean considerThreshold, double threshold) {
+	public ArrayList<Mapping> chooseBestN(boolean considerThreshold, double threshold) {
 		return this.chooseBestN(createIntListToN(this.getRows()), createIntListToN(this.getColumns()), considerThreshold, threshold);
 	}
 	
@@ -413,7 +413,7 @@ public class AlignmentMatrix implements Serializable
 	 * @param colsIncludedList subset of the columns we want to consider in the matrix (each column represents a concept in the target)
 	 * @author michele 
 	 */
-	public ArrayList<Alignment> chooseBestN(ArrayList<Integer> rowsIncludedList, ArrayList<Integer> colsIncludedList) {
+	public ArrayList<Mapping> chooseBestN(ArrayList<Integer> rowsIncludedList, ArrayList<Integer> colsIncludedList) {
 		return this.chooseBestN(rowsIncludedList, colsIncludedList, false, 0.0);
 	}
 	
@@ -421,7 +421,7 @@ public class AlignmentMatrix implements Serializable
 	 * chooseBestN(): overridden with no parameters
 	 * @author michele 
 	 */
-	public ArrayList<Alignment> chooseBestN() {
+	public ArrayList<Mapping> chooseBestN() {
 		return this.chooseBestN(createIntListToN(this.getRows()), createIntListToN(this.getColumns()), false, 0.0);
 	}
 	
@@ -447,8 +447,8 @@ public class AlignmentMatrix implements Serializable
 	   * readObject: gets the state of the object.
 	   * @author michele
 	   */
-	  protected AlignmentMatrix readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
-		  AlignmentMatrix thisClass = (AlignmentMatrix) in.readObject();
+	  protected SimilarityMatrix readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
+		  SimilarityMatrix thisClass = (SimilarityMatrix) in.readObject();
 		  in.close();
 		  return thisClass;
 	  }
@@ -463,7 +463,7 @@ public class AlignmentMatrix implements Serializable
 	  }
 
 	  protected void testSerialization(){
-		  AlignmentMatrix am = null;
+		  SimilarityMatrix am = null;
 			try {
 				writeObject(new ObjectOutputStream(new FileOutputStream("testFile")));
 				am = readObject(new ObjectInputStream(new FileInputStream("testFile")));

@@ -8,7 +8,8 @@ public class MatcherAnalyticsEvent extends EventObject {
 
 	public static enum EventType {
 		SELECT_MAPPING,  // implies that the payload is a Point, representing the row, and column of the mapping.
-		SET_REFERENCE	 // Set this matcher as the reference matcher.  Implies that the payload is an AbstractMatcher.
+		SET_REFERENCE,	 // Set this matcher as the reference matcher.  Implies that the payload is an AbstractMatcher.
+		MATRIX_UPDATED   // when a matrix is updated
 	}
 	
 	public final EventType type;

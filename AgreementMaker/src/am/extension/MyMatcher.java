@@ -13,7 +13,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.ontology.Node;
 
 public class MyMatcher extends AbstractMatcher {
@@ -74,7 +74,7 @@ public class MyMatcher extends AbstractMatcher {
 	
 	
 	@Override
-	public Alignment alignTwoNodes( Node source, Node target, alignType typeOfNodes ) {
+	public Mapping alignTwoNodes( Node source, Node target, alignType typeOfNodes ) {
 		
 	
 		if( seen.contains(target) ) return null;

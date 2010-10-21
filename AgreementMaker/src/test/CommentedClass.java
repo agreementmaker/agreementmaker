@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import am.app.feedback.CandidateConcept;
 import am.app.feedback.CandidateConcept.ontology;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 
 public class CommentedClass {

@@ -6,15 +6,15 @@ import java.util.TreeSet;
 
 import am.app.Core;
 import am.app.feedback.CandidateConcept.ontology;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
-import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 
 
 // TODO: This FilteredAlignmentMatrix only works for 1-1 alignments.  To extend this, there requires some work.
-public class FilteredAlignmentMatrix extends AlignmentMatrix {
+public class FilteredAlignmentMatrix extends SimilarityMatrix {
 	// TODO: Add intializeVariables() method for the constructors to use (added to AlignmentMatrix)
 	
 
@@ -29,7 +29,7 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 	public int[] numCellsFilteredPerColumn;
 	private boolean[][] isFiltered;
 	
-	public FilteredAlignmentMatrix( AlignmentMatrix am_new ) {
+	public FilteredAlignmentMatrix( SimilarityMatrix am_new ) {
 		super( am_new );
 
 
@@ -113,12 +113,12 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 	 * @param selectedAlignments - the mappings which will be in the final alignment (sim will be set to 1.0)
 	 */
 	
-	public void validateAlignments( AlignmentSet<Alignment> selectedAlignments ) throws IndexOutOfBoundsException {
+	public void validateAlignments( Alignment<Mapping> selectedAlignments ) throws IndexOutOfBoundsException {
 		
 		// for every alignment that was selected, zero out the row and the columns, and set the alignment similarity to 1
 		for( int i = 0; i < selectedAlignments.size(); i++ ) {
 			
-			Alignment currentAlignment = selectedAlignments.getAlignment(i);
+			Mapping currentAlignment = selectedAlignments.getAlignment(i);
 			
 			int row = currentAlignment.getSourceKey();
 			int col = currentAlignment.getTargetKey();
@@ -153,12 +153,12 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 	
 	
 	// made this method work with the filtered matrix
-    public Alignment[] getRowMaxValues(int row, int numMaxValues) {
+    public Mapping[] getRowMaxValues(int row, int numMaxValues) {
     	
     	if( isRowFiltered(row) ) { return null; } // this row is filtered
     	
 		//remember to check to have numMaxValues lower than matrix columns before
-    	Alignment[] maxAlignments = new Alignment[numMaxValues];
+    	Mapping[] maxAlignments = new Mapping[numMaxValues];
 
     	/*
     	Node entity1 = null;
@@ -168,8 +168,8 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 		}
 		
 		*/
-		Alignment currentValue;
-		Alignment currentMax;
+		Mapping currentValue;
+		Mapping currentMax;
 		for(int j = 0; j<getColumns();j++) {
 			if(!isCellFiltered(row, j)){
 				currentValue = get(row,j);
@@ -196,20 +196,20 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
     
     
     // made this method work with the filtered matrix
-	public Alignment[] getColMaxValues(int col, int numMaxValues) {
+	public Mapping[] getColMaxValues(int col, int numMaxValues) {
 		
 		if( isColFiltered(col) ) return null; // this column is filtered
 		
 		//remember to check to have numMaxValues lower than matrix rows before
-    	Alignment[] maxAlignments = new Alignment[numMaxValues];
+    	Mapping[] maxAlignments = new Mapping[numMaxValues];
     
 /*    	
 		for(int h = 0; h<maxAlignments.length;h++) {			
 			maxAlignments[h] = new Alignment(-1);
 		}
 */		
-		Alignment currentValue;
-		Alignment currentMax;
+		Mapping currentValue;
+		Mapping currentMax;
 		for(int j = 0; j<getRows();j++) {
 			if(!isCellFiltered(j, col)){
 				currentValue = get(j, col);
@@ -243,10 +243,10 @@ public class FilteredAlignmentMatrix extends AlignmentMatrix {
 	}
 
 
-	public void filterCells(AlignmentSet<Alignment> topAlignments) {
+	public void filterCells(Alignment<Mapping> topAlignments) {
 		
 		for(int i=0; i<topAlignments.size(); i++){
-			Alignment a = topAlignments.getAlignment(i);
+			Mapping a = topAlignments.getAlignment(i);
 			
 			int row = a.getSourceKey();
 			int col = a.getTargetKey();

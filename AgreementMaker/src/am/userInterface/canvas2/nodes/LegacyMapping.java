@@ -11,7 +11,7 @@ import java.util.Iterator;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.userInterface.AppPreferences;
 import am.userInterface.canvas2.graphical.GraphicalData;
@@ -63,7 +63,7 @@ public class LegacyMapping extends Canvas2Edge {
 	}
 
 	
-	public LegacyMapping(Canvas2Vertex orig, Canvas2Vertex dest, Alignment a , int matcherID ) {
+	public LegacyMapping(Canvas2Vertex orig, Canvas2Vertex dest, Mapping a , int matcherID ) {
 		super(orig, dest, null);
 		
 		AppPreferences pref = Core.getAppPreferences();

@@ -17,8 +17,8 @@ import edu.smu.tspell.wordnet.WordNetDatabase;
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.userInterface.vertex.Vertex;
 //import edu.stanford.nlp.trees.*;
@@ -68,18 +68,18 @@ public class ConceptMatcher extends AbstractMatcher {
 	
 	
 	// overriding the abstract method in order to keep track of what kind of nodes we are aligning
-    protected AlignmentMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) {
+    protected SimilarityMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) {
 		return alignNodesOneByOne(sourcePropList, targetPropList, alignType.aligningProperties );
 	}
 
 	// overriding the abstract method in order to keep track of what kind of nodes we are aligning
-    protected AlignmentMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList) {
+    protected SimilarityMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList) {
 		return alignNodesOneByOne(sourceClassList, targetClassList, alignType.aligningClasses);
 	}
 	
 	// this method is exactly similar to the abstract method, except we pass one extra parameters to the alignTwoNodes function
-    protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) {
-		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
+    protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) {
+		SimilarityMatrix matrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		Node source;
 		Node target;
 		//first go through and extract the longest defined concept for each node
@@ -99,7 +99,7 @@ public class ConceptMatcher extends AbstractMatcher {
 			}
 		}
 
-		Alignment alignment; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
+		Mapping alignment; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
 		for(int i = 0; i < sourceList.size(); i++) {
 			source = sourceList.get(i);
 			for(int j = 0; j < targetList.size(); j++) {
@@ -266,7 +266,7 @@ public class ConceptMatcher extends AbstractMatcher {
 	 * Align Two nodes using concept set similarity.
 	 * @see am.app.mappingEngine.AbstractMatcher#alignTwoNodes(am.app.ontology.Node, am.app.ontology.Node)
 	 */
-	protected Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+	protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
 
 		
 		/**
@@ -312,7 +312,7 @@ public class ConceptMatcher extends AbstractMatcher {
 		double dblTxtWeight = ((ConceptMatcherParameters) param).TextSimilarityWeight;
 		double dblScore = (dblDescendantScore * dblDesWeight + dblAncestorScore * dblAncWeight + dblLCSScore * dblTxtWeight) / (dblDesWeight + dblAncWeight + dblTxtWeight);
 		
-		return new Alignment(source, target, dblScore, Alignment.EQUIVALENCE);
+		return new Mapping(source, target, dblScore, Mapping.EQUIVALENCE);
 	}
 	
 	private int LongestCommonSubstringLength(String str1, String str2)

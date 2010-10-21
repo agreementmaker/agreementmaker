@@ -1,9 +1,9 @@
 package am.app.feedback;
 
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
-import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.Combination.CombinationParameters;
@@ -124,27 +124,27 @@ public class InitialMatchers extends AbstractMatcher {
 	
 	// doInBackground is inherited
 	
-    public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
+    public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
     	
     	matchStart();
     	
     	m_psm.beforeAlignOperations();
     	m_vmm.beforeAlignOperations();
     	
-    	Alignment bsm = m_bsm.alignTwoNodes(source, target, typeOfNodes);
+    	Mapping bsm = m_bsm.alignTwoNodes(source, target, typeOfNodes);
     	//Alignment psm = m_psm.alignTwoNodes(source, target, typeOfNodes);
     	//Alignment vmm = m_vmm.alignTwoNodes(source, target, typeOfNodes);
     	
     	// TODO: Need to figure out if we return the average or the max of the three similarities; Can't use the LWC.
     	
     	// return the Max of the similarities
-    	Alignment maxSimilarity = new Alignment(0.0d);
+    	Mapping maxSimilarity = new Mapping(0.0d);
     	if( bsm.getSimilarity() > maxSimilarity.getSimilarity() ) maxSimilarity.setSimilarity(bsm.getSimilarity());
     	//if( psm.getSimilarity() > maxSimilarity.getSimilarity() ) maxSimilarity.setSimilarity(psm.getSimilarity());
     	//if( vmm.getSimilarity() > maxSimilarity.getSimilarity() ) maxSimilarity.setSimilarity(vmm.getSimilarity());
     	
     	
-		return new Alignment(maxSimilarity.getSimilarity());
+		return new Mapping(maxSimilarity.getSimilarity());
 	}
 
 }

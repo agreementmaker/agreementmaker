@@ -3,22 +3,25 @@ package am.visualization.matrixplot;
 import java.awt.AlphaComposite;
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
+import javax.swing.JPanel;
+
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
-import am.app.mappingEngine.AlignmentSet;
 import am.visualization.Gradient;
 
-public class MatrixPlot extends Canvas {
+public class MatrixPlot extends JPanel {
 
 	private static final long serialVersionUID = -7536491459476626040L;
 
-	private final AlignmentMatrix matrix;
+	private final SimilarityMatrix matrix;
 	private int squareSize = 10;
 	private int border = 2;
 	private BufferedImage I;
@@ -27,17 +30,17 @@ public class MatrixPlot extends Canvas {
 	
 	private MatrixPlotPanel enclosingPanel = null; // set if we are using a MatrixPlotPanel
 	
-	private AlignmentSet<Alignment> referenceAlignmentSet = null;
+	private Alignment<Mapping> referenceAlignmentSet = null;
 	private Color referenceAlignmentColor = Color.RED;
 	
-	public MatrixPlot(AlignmentMatrix mtx) {
+	public MatrixPlot(SimilarityMatrix mtx) {
 		super();
 		I = null;
 		matrix = mtx;
 		createImage(false);
 	}
 	
-	public MatrixPlot(AlignmentMatrix mtx, MatrixPlotPanel mpnl) {
+	public MatrixPlot(SimilarityMatrix mtx, MatrixPlotPanel mpnl) {
 		super();
 		I = null;
 		matrix = mtx;
@@ -48,13 +51,13 @@ public class MatrixPlot extends Canvas {
 	/**
 	 * Set the size of the window to the dimensions of the matrix.
 	 */
-	public void setPlotSize() { setSize(matrix.getRows() * squareSize, matrix.getColumns() * squareSize); }
+	public void setPlotSize() { setPreferredSize(new Dimension( matrix.getRows() * squareSize, matrix.getColumns() * squareSize) ); }
 	public int getSquareSize() { return squareSize; }
-	public AlignmentMatrix getMatrix() { return matrix; }
+	public SimilarityMatrix getMatrix() { return matrix; }
 	
-	public void draw() {
+	public void draw(boolean reCreate) {
 		setPlotSize();
-		createImage(false);
+		createImage(reCreate);
 	}
 	
 	/**
@@ -97,7 +100,7 @@ public class MatrixPlot extends Canvas {
 			
 			// add the dots for the reference alignment.
 			if ( referenceAlignmentSet != null )
-			for( Alignment a : referenceAlignmentSet ) {
+			for( Mapping a : referenceAlignmentSet ) {
 				int row = a.getEntity1().getIndex();
 				int col = a.getEntity2().getIndex();
 				
@@ -131,14 +134,18 @@ public class MatrixPlot extends Canvas {
 	public void setEnclosingPanel( MatrixPlotPanel pnl ) { enclosingPanel = pnl; }
 	public MatrixPlotPanel getEnclosingPanel() { return enclosingPanel; }
 	
-	public void setReferenceAlignment( AlignmentSet<Alignment> ref ) { 
+	public void setReferenceAlignment( Alignment<Mapping> ref ) { 
 		referenceAlignmentSet = ref;
 		createImage(true);
+		repaint();
 	}
 	
 	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
+	public void paintComponent(Graphics g) {
+				
+		//if( enclosingPanel.popupMenuActive() ) return;
+		
+		super.paintComponent(g);
 		
 		Graphics2D gPlotArea = (Graphics2D)g;
 

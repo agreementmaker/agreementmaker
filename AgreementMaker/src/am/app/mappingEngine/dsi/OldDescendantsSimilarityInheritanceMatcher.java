@@ -3,16 +3,16 @@ package am.app.mappingEngine.dsi;
 import javax.swing.tree.TreeNode;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.userInterface.vertex.Vertex;
 
 public class OldDescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 
 	// the Alignment Matrices from the Input Matching algorithm.
-	private AlignmentMatrix inputClassesMatrix = null;
-	private AlignmentMatrix inputPropertiesMatrix = null;
+	private SimilarityMatrix inputClassesMatrix = null;
+	private SimilarityMatrix inputPropertiesMatrix = null;
 	
 
 	
@@ -64,7 +64,7 @@ public class OldDescendantsSimilarityInheritanceMatcher extends AbstractMatcher 
 	 * Align Two nodes using DSI algorithm.
 	 * @see am.app.mappingEngine.AbstractMatcher#alignTwoNodes(am.app.ontology.Node, am.app.ontology.Node)
 	 */
-	protected Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+	protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
 
 		
 		/**
@@ -134,7 +134,7 @@ public class OldDescendantsSimilarityInheritanceMatcher extends AbstractMatcher 
 			int targetMatrixIndex = targetParent_i.getNode().getIndex();
 			
 			// now, we need to get the similarity of the parents to eachother, which is stored in the AlignmentMatrix
-			Alignment parentSimilarity = null;
+			Mapping parentSimilarity = null;
 			switch( typeOfNodes ) {
 			case aligningClasses:
 				// we are aligning class nodes, so lookup the similarity in the classes matrix
@@ -166,7 +166,7 @@ public class OldDescendantsSimilarityInheritanceMatcher extends AbstractMatcher 
 		int sourceIndex = source.getIndex();
 		int targetIndex = target.getIndex();
 		
-		Alignment baseSimilarity = null;
+		Mapping baseSimilarity = null;
 		switch( typeOfNodes ) {
 		case aligningClasses:
 			baseSimilarity = inputClassesMatrix.get(sourceIndex, targetIndex);
@@ -187,7 +187,7 @@ public class OldDescendantsSimilarityInheritanceMatcher extends AbstractMatcher 
 		}
 		
 		// return the result
-		return new Alignment(source, target, DSI_similarity, Alignment.EQUIVALENCE);
+		return new Mapping(source, target, DSI_similarity, Mapping.EQUIVALENCE);
 		
 	}
 

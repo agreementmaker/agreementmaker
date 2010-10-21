@@ -3,8 +3,8 @@ package am.batchMode.conflictResolution;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentSet;
 import am.app.ontology.Node;
 
 public class VotedMappingSet {
@@ -15,10 +15,10 @@ public class VotedMappingSet {
 	public int sourceOntologyIndex;
 	public int targetOntologyIndex;
 	
-	public VotedMappingSet(AlignmentSet aset, int sourceOnt, int targetOnt){
+	public VotedMappingSet(Alignment aset, int sourceOnt, int targetOnt){
 		sourceOntologyIndex = sourceOnt;
 		targetOntologyIndex = targetOnt;
-		Alignment a;
+		Mapping a;
 		VotedMapping v;
 		sourceMappings = new HashMap<Integer, VotedMapping>();
 		targetMappings = new HashMap<Integer, VotedMapping>();
@@ -38,7 +38,7 @@ public class VotedMappingSet {
 		return getSourceVotedMapping(n.getIndex());
 	}
 	
-	public VotedMapping getSourceVotedMapping(Alignment a){
+	public VotedMapping getSourceVotedMapping(Mapping a){
 		return getSourceVotedMapping(a.getSourceKey());
 	}
 	//GET TARGET
@@ -50,18 +50,18 @@ public class VotedMappingSet {
 		return getTargetVotedMapping(n.getIndex());
 	}
 	
-	public VotedMapping getTargetVotedMapping(Alignment a){
+	public VotedMapping getTargetVotedMapping(Mapping a){
 		return getTargetVotedMapping(a.getTargetKey());
 	}
 	
 	
 	//PUT MAPPING
 	public void putVotedMapping(Node sNode, Node tNode, double sim, String rel){
-		Alignment a = new Alignment(sNode, tNode, sim, rel);
+		Mapping a = new Mapping(sNode, tNode, sim, rel);
 		putVotedMapping(a);
 	}
 	
-	public void putVotedMapping(Alignment a){
+	public void putVotedMapping(Mapping a){
 		 VotedMapping v = new VotedMapping(a, this);
 		 putVotedMapping(v);
 	}
@@ -71,7 +71,7 @@ public class VotedMappingSet {
 		targetMappings.put(v.mapping.getTargetKey(),v);
 	}
 	//DEL
-	public void delVotedMapping(Alignment a){
+	public void delVotedMapping(Mapping a){
 			sourceMappings.remove(a.getSourceKey());
 			targetMappings.remove(a.getTargetKey());
 	}
@@ -86,8 +86,8 @@ public class VotedMappingSet {
 	}
 	
 
-	public AlignmentSet getAlignmentSet(){
-		AlignmentSet set = new AlignmentSet();
+	public Alignment getAlignmentSet(){
+		Alignment set = new Alignment();
 		Iterator<VotedMapping> it = getVotedMappings().iterator();
 		VotedMapping v;
 		while(it.hasNext()){

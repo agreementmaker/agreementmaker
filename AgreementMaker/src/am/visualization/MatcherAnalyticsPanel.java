@@ -2,21 +2,30 @@ package am.visualization;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AlignmentMatrix;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.MatcherChangeEvent;
 import am.app.mappingEngine.MatcherChangeListener;
 import am.utility.WrapLayout;
+import am.visualization.MatcherAnalyticsEvent.EventType;
 import am.visualization.matrixplot.MatrixPlotPanel;
 
 public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListener, MatcherAnalyticsEventDispatch {
@@ -25,15 +34,19 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 
 	int plotsLoaded = 0;  // TODO: find a better way to do this
 	
-	
 	ArrayList<MatcherAnalyticsEventListener> eventListeners = new ArrayList<MatcherAnalyticsEventListener>();
 	
 	public enum VisualizationType {
 		CLASS_MATRIX, PROPERTIES_MATRIX
 	}
 	
+	private JPanel pnlToolbar;
+	
 	private JScrollPane scrOuterScrollbars;
 	private JPanel pnlPlots;
+	
+	private JTextField txtClusterThreshold;
+	private JButton btnApplyThreshold;
 	
 	private VisualizationType type;
 	
@@ -42,12 +55,15 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 
 		type = t;
 		
+		pnlToolbar = createToolbarPanel();
+		
 		pnlPlots = createPlotsPanel();
 		
 		scrOuterScrollbars = createOuterScrollBars(pnlPlots);
 		
 		setLayout(new BorderLayout());
-		add(scrOuterScrollbars);
+		add(pnlToolbar, BorderLayout.NORTH);
+		add(scrOuterScrollbars, BorderLayout.CENTER);
 		
 		initializeMatchers();
 		
@@ -80,8 +96,35 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		
 	}
 	
+	private JPanel createToolbarPanel() {
+		JPanel panel = new JPanel();
+		
+		panel.setLayout( new FlowLayout(FlowLayout.LEADING) );
+		
+		JCheckBox chkClusters = new JCheckBox("View individual cluster:");
+		JComboBox boxClusters = new JComboBox();
+		
+		JLabel lblClusterThreshold = new JLabel( "Clustering Threshold:");
+		txtClusterThreshold = new JTextField();
+		//txtClusterThreshold.setMinimumSize(new Dimension( 400, lblClusterThreshold.getHeight()));
+		
+		btnApplyThreshold = new JButton("Apply");
+		
+		panel.add(chkClusters);
+		panel.add(boxClusters);
+		panel.add(Box.createHorizontalStrut(10));
+		panel.add(lblClusterThreshold);
+		panel.add(txtClusterThreshold);
+		panel.add(btnApplyThreshold);
+
+		txtClusterThreshold.setPreferredSize(new Dimension( 70, btnApplyThreshold.getPreferredSize().height));
+		
+		return panel;
+	}
+	
 	private JScrollPane createOuterScrollBars(JPanel plots) {
-		JScrollPane pane = new JScrollPane(plots);
+		JScrollPane pane = new JScrollPane();
+		pane.setViewportView(plots);
 		pane.setWheelScrollingEnabled(true);
 		pane.getVerticalScrollBar().setUnitIncrement(20);
 		return pane;
@@ -89,17 +132,18 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	
 	private JPanel createPlotsPanel() {
 		JPanel panel = new JPanel();
-		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		panel.setBorder(BorderFactory.createEmptyBorder());
 		panel.setLayout( new WrapLayout(WrapLayout.LEADING, 10, 10) );
 		return panel;
 	}
 
 	public VisualizationType getType() { return type; }
+	public JPanel getPlotsPanel() { return pnlPlots; }
 	
 	/****************************** CHANGE LISTENERS *********************************/
 	
 	@Override
-	public void matcherChanged(MatcherChangeEvent e) {
+	public void matcherChanged(final MatcherChangeEvent e) {
 	
 		switch( e.getEvent() ) {
 		case MATCHER_ADDED:
@@ -119,14 +163,27 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 				break;
 			}
 			break;
+			
+		case MATCHER_ALIGNMENTSET_UPDATED:
+			Runnable fire = new Runnable() {
+				public void run() {
+					broadcastEvent( new MatcherAnalyticsEvent( this,  EventType.MATRIX_UPDATED,  e.getMatcher() ));
+				}
+			};
+			
+			SwingUtilities.invokeLater(fire);
+			break;
 		}
+		
+		
+			
 	}
 
-	private void addPlot(AbstractMatcher a, AlignmentMatrix matrix) {
+	private void addPlot(AbstractMatcher a, SimilarityMatrix matrix) {
 		
 		
 		MatrixPlotPanel newPlot = new MatrixPlotPanel(a, matrix, this);
-		newPlot.getPlot().draw();
+		newPlot.getPlot().draw(false);
 		
 		addMatcherAnalyticsEventListener(newPlot);
 		

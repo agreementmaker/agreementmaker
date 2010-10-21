@@ -15,8 +15,8 @@ import org.dom4j.Element;
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.output.OutputController;
 
@@ -54,7 +54,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 			Iterator<MatchingPair> it = referenceListOfPairs.iterator();
 			while (it.hasNext()){
 				MatchingPair mp = it.next();
-				if(!mp.relation.equals(Alignment.EQUIVALENCE)){//should be equals but sometimes they have spaces together with the =
+				if(!mp.relation.equals(Mapping.EQUIVALENCE)){//should be equals but sometimes they have spaces together with the =
 					nonEquivalencePairs.add(mp);
 					it.remove();
 				}
@@ -86,11 +86,11 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	 *
 	 */
 	
-	protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
-		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
+	protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
+		SimilarityMatrix matrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		Node source;
 		Node target;
-		Alignment alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok		
+		Mapping alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok		
 	
 
 		
@@ -118,7 +118,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 							
 							if( mp.targetname.equals(tname) ) {
 								// we have found a match for the target node, it means a valid alignment
-								alignment = new Alignment( source, target, mp.similarity );
+								alignment = new Mapping( source, target, mp.similarity );
 								matrix.set(i, j, alignment);
 								//it.remove();
 							}
@@ -238,12 +238,12 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	}
 	
 	private String getRelationFromFileFormat(String relation) {
-		String result = Alignment.EQUIVALENCE;
+		String result = Mapping.EQUIVALENCE;
 		String format = ((ReferenceAlignmentParameters)param).format;
 		if(format.equals(REF0)){//Right now only this format has the relation string
 			//TODO i don't actually know symbols different from equivalence used in this format, so i will put the symbol itself as relation
-			if(relation == null || relation.equals("") || relation.equals(Alignment.EQUIVALENCE)) {
-				result = Alignment.EQUIVALENCE;
+			if(relation == null || relation.equals("") || relation.equals(Mapping.EQUIVALENCE)) {
+				result = Mapping.EQUIVALENCE;
 			}
 			else result = relation; //if it is another symbol i'll put it directly in the alignment so that is displayed on the AM we can actually see it, and maybe use it to represent those relations in our Alignment class
 		}
@@ -284,7 +284,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	            target = target.substring(0,target.length()-2);
 	            MatchingPair r = new MatchingPair(source,target);
 	            r.similarity = 1;
-	            r.relation = Alignment.EQUIVALENCE;
+	            r.relation = Mapping.EQUIVALENCE;
 	            result.add(r);
 	    	}
 	    }
@@ -308,7 +308,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		        	target = split[1];
 		            MatchingPair r = new MatchingPair(source,target);
 		            r.similarity = 1;
-		            r.relation = Alignment.EQUIVALENCE;
+		            r.relation = Mapping.EQUIVALENCE;
 		            result.add(r);
 		    	}
 		    	else if(split.length == 3) {
@@ -316,7 +316,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		        	target = split[2];
 		            MatchingPair r = new MatchingPair(source,target);
 		            r.similarity = 1;
-		            r.relation = Alignment.EQUIVALENCE;
+		            r.relation = Mapping.EQUIVALENCE;
 		            result.add(r);
 		    	}
 		    	//else System.out.println("Some lines in the reference are not in the correct format. Check result please");
@@ -344,7 +344,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	        	target = split[3];
 	            MatchingPair r = new MatchingPair(source,target);
 	            r.similarity = 1;
-	            r.relation = Alignment.EQUIVALENCE;
+	            r.relation = Mapping.EQUIVALENCE;
 	            result.add(r);
 	    	}
 	    	else if(split.length == 4) {
@@ -352,7 +352,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	        	target = split[2];
 	            MatchingPair r = new MatchingPair(source,target);
 	            r.similarity = 1;
-	            r.relation = Alignment.EQUIVALENCE;
+	            r.relation = Mapping.EQUIVALENCE;
 	            result.add(r);
 	    	}
 	    	//else System.out.println("Some lines in the reference are not in the correct format. Check result please");
@@ -381,7 +381,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	        	}
 	        	relation = split[4];
 	        	if(relation == null || relation.equals("")) {
-	        		relation = Alignment.EQUIVALENCE;
+	        		relation = Mapping.EQUIVALENCE;
 	        	}
 	            MatchingPair r = new MatchingPair(source,target);
 	            r.similarity = similarity;

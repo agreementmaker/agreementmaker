@@ -28,7 +28,7 @@ import javax.swing.filechooser.FileFilter;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AlignmentMatrix;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.output.OutputController;
 import am.userInterface.AppPreferences.ExportType;
@@ -397,14 +397,14 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 							if( selectedMatcher.getSourceOntology() == null || selectedMatcher.getTargetOntology() == null ) { 
 								throw new Exception("Matcher does not have Source or Target ontologies set.");
 							}
-							AlignmentMatrix m = new AlignmentMatrix(selectedMatcher.getSourceOntology().getClassesList().size(), 
+							SimilarityMatrix m = new SimilarityMatrix(selectedMatcher.getSourceOntology().getClassesList().size(), 
 																	selectedMatcher.getTargetOntology().getClassesList().size(), 
 																	alignType.aligningClasses);
 							if( selectedMatcher.getClassAlignmentSet() == null ) 
 								throw new Exception("Matcher does not have a Classes Matrix nor a Classes Alignment Set.  Cannot do anything.");
 							
 							for( int i = 0; i < selectedMatcher.getClassAlignmentSet().size(); i++ ) {
-								am.app.mappingEngine.Alignment currentAlignment = selectedMatcher.getClassAlignmentSet().getAlignment(i);
+								am.app.mappingEngine.Mapping currentAlignment = selectedMatcher.getClassAlignmentSet().getAlignment(i);
 								m.set(currentAlignment.getEntity1().getIndex(), currentAlignment.getEntity2().getIndex(), currentAlignment);
 							}
 							
@@ -419,14 +419,14 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 							if( selectedMatcher.getSourceOntology() == null || selectedMatcher.getTargetOntology() == null ) { 
 								throw new Exception("Matcher does not have Source or Target ontologies set.");
 							}
-							AlignmentMatrix m = new AlignmentMatrix(selectedMatcher.getSourceOntology().getPropertiesList().size(), 
+							SimilarityMatrix m = new SimilarityMatrix(selectedMatcher.getSourceOntology().getPropertiesList().size(), 
 																	selectedMatcher.getTargetOntology().getPropertiesList().size(), 
 																	alignType.aligningProperties);
 							if( selectedMatcher.getPropertyAlignmentSet() == null ) 
 								throw new Exception("Matcher does not have a Properties Matrix nor a Properties Alignment Set.  Cannot do anything.");
 							
 							for( int i = 0; i < selectedMatcher.getPropertyAlignmentSet().size(); i++ ) {
-								am.app.mappingEngine.Alignment currentAlignment = selectedMatcher.getPropertyAlignmentSet().getAlignment(i);
+								am.app.mappingEngine.Mapping currentAlignment = selectedMatcher.getPropertyAlignmentSet().getAlignment(i);
 								m.set(currentAlignment.getEntity1().getIndex(), currentAlignment.getEntity2().getIndex(), currentAlignment);
 							}
 							

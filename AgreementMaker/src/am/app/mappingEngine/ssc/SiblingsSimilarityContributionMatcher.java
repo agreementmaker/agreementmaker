@@ -5,8 +5,8 @@ import javax.swing.tree.TreeNode;
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.userInterface.vertex.Vertex;
 
@@ -17,8 +17,8 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 	 */
 	private static final long serialVersionUID = -3990033207967541294L;
 	// the Alignment Matrices from the Input Matching algorithm.
-	private AlignmentMatrix inputClassesMatrix = null;
-	private AlignmentMatrix inputPropertiesMatrix = null;
+	private SimilarityMatrix inputClassesMatrix = null;
+	private SimilarityMatrix inputPropertiesMatrix = null;
 	
 	private double MCP;
 	
@@ -58,21 +58,21 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 	
 	
 	// overriding the abstract method in order to keep track of what kind of nodes we are aligning
-    protected AlignmentMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) {
+    protected SimilarityMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) {
 		return alignNodesOneByOne(sourcePropList, targetPropList, alignType.aligningProperties );
 	}
 
 	// overriding the abstract method in order to keep track of what kind of nodes we are aligning
-    protected AlignmentMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList) {
+    protected SimilarityMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList) {
 		return alignNodesOneByOne(sourceClassList, targetClassList, alignType.aligningClasses);
 	}
 	
 	// this method is exactly similar to the abstract method, except we pass one extra parameters to the alignTwoNodes function
-    protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) {
-		AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
+    protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) {
+		SimilarityMatrix matrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		Node source;
 		Node target;
-		Alignment alignment; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
+		Mapping alignment; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
 		for(int i = 0; i < sourceList.size(); i++) {
 			source = sourceList.get(i);
 			for(int j = 0; j < targetList.size(); j++) {
@@ -96,7 +96,7 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 	 * Align Two nodes using SSC algorithm.
 	 * @see am.app.mappingEngine.AbstractMatcher#alignTwoNodes(am.app.ontology.Node, am.app.ontology.Node)
 	 */
-	protected Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+	protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
 
 		
 		/**
@@ -167,7 +167,7 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 			for( int j = 1; j <= m; j++ ) { 
 				Vertex currentTargetSibling = targetSiblingSet.get(j-1);  // get the j-th sibling of the target node ( j-1 because j goes from 1 to m, while the index of the ArrayList goes from 0 to m-1 )
 				
-				Alignment inputSimilarity = null;  // this will store input_sim( source_sibling_i, target_sibling_j )
+				Mapping inputSimilarity = null;  // this will store input_sim( source_sibling_i, target_sibling_j )
 				int sourceMatrixIndex = currentSourceSibling.getNode().getIndex();  // index of the source node in the AlignmentMatrix 
 				int targetMatrixIndex = currentTargetSibling.getNode().getIndex();  // index of the target node in the AlignmentMatrix 
 				
@@ -203,7 +203,7 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 		int sourceIndex = source.getIndex();
 		int targetIndex = target.getIndex();
 		
-		Alignment baseSimilarity = null;
+		Mapping baseSimilarity = null;
 		switch( typeOfNodes ) {
 		case aligningClasses:
 			baseSimilarity = inputClassesMatrix.get(sourceIndex, targetIndex);
@@ -224,7 +224,7 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 		}
 		
 		// return the result
-		return new Alignment(source, target, SSC_similarity, Alignment.EQUIVALENCE);
+		return new Mapping(source, target, SSC_similarity, Mapping.EQUIVALENCE);
 		
 	}
 	

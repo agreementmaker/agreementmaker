@@ -1,8 +1,8 @@
 package am.extension;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 
 public class MyMatcher_LayerII extends AbstractMatcher {
@@ -18,8 +18,8 @@ public class MyMatcher_LayerII extends AbstractMatcher {
 	}
 
 	// the Alignment Matrices from the input matcher.
-	private AlignmentMatrix inputClassesMatrix = null;
-	private AlignmentMatrix inputPropertiesMatrix = null;
+	private SimilarityMatrix inputClassesMatrix = null;
+	private SimilarityMatrix inputPropertiesMatrix = null;
 	
 	@Override
 	protected void beforeAlignOperations()throws Exception {
@@ -32,15 +32,15 @@ public class MyMatcher_LayerII extends AbstractMatcher {
     	AbstractMatcher input = inputMatchers.get(0);
     	
     	// we must clone the AlignmentMatrix, otherwise we will be changing the alignment matrix of the input matcher.
-    	inputClassesMatrix = (AlignmentMatrix) input.getClassesMatrix().clone();  // clone
-    	inputPropertiesMatrix = (AlignmentMatrix)input.getPropertiesMatrix().clone(); // clone
+    	inputClassesMatrix = (SimilarityMatrix) input.getClassesMatrix().clone();  // clone
+    	inputPropertiesMatrix = (SimilarityMatrix)input.getPropertiesMatrix().clone(); // clone
     	
 	}
 	
 	@Override
-	public Alignment alignTwoNodes( Node source, Node target, alignType typeOfNodes ) {
+	public Mapping alignTwoNodes( Node source, Node target, alignType typeOfNodes ) {
 	
-		AlignmentMatrix currentInputMatrix;
+		SimilarityMatrix currentInputMatrix;
 		
 		// depending on what kind of nodes we're working with, their similarities are stored in different matrices (either classesMatrix or propertiesMatrix).
 		if(typeOfNodes.equals(alignType.aligningClasses)){
@@ -55,7 +55,7 @@ public class MyMatcher_LayerII extends AbstractMatcher {
 		int targetIndex = target.getIndex();
 		
 		// the alignment that is returned represents the alignment between these specific source and target concepts.
-		Alignment myAlignment = currentInputMatrix.get(sourceIndex, targetIndex);  
+		Mapping myAlignment = currentInputMatrix.get(sourceIndex, targetIndex);  
 
 		if( myAlignment != null ) { // the matrix can contain null values ( usually these mean a similarity value of 0. ) 
 			double mySim = myAlignment.getSimilarity();

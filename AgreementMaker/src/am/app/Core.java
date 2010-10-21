@@ -7,7 +7,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 
 import am.AMException;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.LexiconStore;
 import am.app.mappingEngine.MatcherChangeEvent;
 import am.app.mappingEngine.MatcherChangeListener;
@@ -243,7 +243,7 @@ public class Core {
 	 * add or update the alignments selected by the user in all the matchers selected in the table
 	 * @param alignments selected by the user
 	 */
-	public void performUserMatching(int index, ArrayList<Alignment> alignments) {
+	public void performUserMatching(int index, ArrayList<Mapping> alignments) {
 		AbstractMatcher matcher = matcherInstances.get(index);
 		matcher.addManualAlignments(alignments);
 		

@@ -19,7 +19,7 @@ import am.app.lexicon.ontology.OntologyLexiconBuilder;
 import am.app.lexicon.wordnet.WordNetLexiconBuilder;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import org.apache.log4j.Category;
 import org.apache.log4j.Logger;
 
@@ -370,7 +370,7 @@ public class MultiWordsMatcher extends AbstractMatcher {
 	 * *******************************************************************************************************
 	 */
 
-	public Alignment alignTwoNodes(Node source, Node target,alignType typeOfNodes) {
+	public Mapping alignTwoNodes(Node source, Node target,alignType typeOfNodes) {
 		MultiWordsParameters mp = (MultiWordsParameters)param;
 		double sim = 0;
 		
@@ -415,7 +415,7 @@ public class MultiWordsMatcher extends AbstractMatcher {
 			
 		}
 		
-		return new Alignment(source, target, sim);
+		return new Mapping(source, target, sim);
 		
 	}
 	

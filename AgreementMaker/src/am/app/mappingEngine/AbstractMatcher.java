@@ -64,15 +64,15 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected int maxTargetAlign;
 	
 	/**Contain alignments, NULL if alignment has not been calculated*/
-	protected AlignmentSet<Alignment> propertiesAlignmentSet;
-	protected AlignmentSet<Alignment> classesAlignmentSet;
+	protected Alignment<Mapping> propertiesAlignmentSet;
+	protected Alignment<Mapping> classesAlignmentSet;
 	
 	/**Structure containing similarity values between classes nodes, matrix[source][target]
 	 * should not be accessible outside of this class, the system should only be able to access alignments sets
 	 * */
-	protected AlignmentMatrix classesMatrix;
+	protected SimilarityMatrix classesMatrix;
 	/**Structure containing similarity values between classes nodes, matrix[source][target]*/
-	protected AlignmentMatrix propertiesMatrix;
+	protected SimilarityMatrix propertiesMatrix;
 	
 	/** The ontologies to be matched. */
 	protected transient Ontology sourceOntology;
@@ -184,7 +184,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		alignProp = true;
 		minInputMatchers = 0;
 		maxInputMatchers = 0;
-		relation = Alignment.EQUIVALENCE;
+		relation = Mapping.EQUIVALENCE;
 		optimized = false;
 		//ALIGNMENTS LIST MUST BE NULL UNTIL THEY ARE CALCULATED
 		classesAlignmentSet = null;
@@ -351,15 +351,15 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 	}
 
-    protected AlignmentMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) throws Exception {
+    protected SimilarityMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) throws Exception {
     		return alignNodesOneByOne(sourcePropList, targetPropList, alignType.aligningProperties);
 	}
 
-    protected AlignmentMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList)  throws Exception{
+    protected SimilarityMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList)  throws Exception{
 			return alignNodesOneByOne(sourceClassList, targetClassList, alignType.aligningClasses);
 	}
 	
-    protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
+    protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
     	
     	if(optimized && inputMatchers.size() > 0){ 
     		//run in optimized mode by mapping only concepts that have not been mapped in the input matcher
@@ -373,10 +373,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	
     	else{
     		//run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
-	    	AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
+	    	SimilarityMatrix matrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 			Node source;
 			Node target;
-			Alignment alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
+			Mapping alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
 			for(int i = 0; i < sourceList.size(); i++) {
 				source = sourceList.get(i);
 				for(int j = 0; j < targetList.size(); j++) {
@@ -397,15 +397,15 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	}
 	}
     
-    protected AlignmentMatrix alignUnmappedNodes(ArrayList<Node> sourceList, ArrayList<Node> targetList, AlignmentMatrix inputMatrix,
-			AlignmentSet inputAlignmentSet, alignType typeOfNodes) throws Exception {
+    protected SimilarityMatrix alignUnmappedNodes(ArrayList<Node> sourceList, ArrayList<Node> targetList, SimilarityMatrix inputMatrix,
+			Alignment inputAlignmentSet, alignType typeOfNodes) throws Exception {
     	
     	MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, maxSourceAlign, maxTargetAlign);
-    	AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
+    	SimilarityMatrix matrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		Node source;
 		Node target;
-		Alignment alignment; 
-		Alignment inputAlignment;
+		Mapping alignment; 
+		Mapping inputAlignment;
 		for(int i = 0; i < sourceList.size(); i++) {
 			source = sourceList.get(i);
 			for(int j = 0; j < targetList.size(); j++) {
@@ -420,7 +420,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 					//else we take the alignment that was computed from the previous matcher
 					else{
 						inputAlignment = inputMatrix.get(i, j);
-						alignment = new Alignment(inputAlignment.getEntity1(), inputAlignment.getEntity2(), inputAlignment.getSimilarity(), inputAlignment.getRelation());
+						alignment = new Mapping(inputAlignment.getEntity1(), inputAlignment.getEntity2(), inputAlignment.getSimilarity(), inputAlignment.getRelation());
 					}
 					matrix.set(i,j,alignment);
 					if( isProgressDisplayed() ) stepDone(); // we have completed one step
@@ -439,17 +439,17 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
      * @return the alignment between the two nodes (a, b, sim, relation)
      * @throws Exception are managed in the doInBackground() method, to interrupt the process to send a message to the user thow new AMException(MESSAGE)
      */
-    protected Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
+    protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
 		//TO BE IMPLEMENTED BY THE ALGORITHM, THIS IS JUST A FAKE ABSTRACT METHOD
 		double sim;
-		String rel = Alignment.EQUIVALENCE;
+		String rel = Mapping.EQUIVALENCE;
 		if(source.getLocalName().equals(target.getLocalName())) {
 			sim = 1;
 		}
 		else {
 			return null;
 		}
-		return new Alignment(source, target, sim, rel);
+		return new Mapping(source, target, sim, rel);
 	}
 	
 	//***************SELECTION PHASE*****************//
@@ -463,9 +463,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	}
 	}
 
-    protected AlignmentSet<Alignment> scanMatrix(AlignmentMatrix matrix) {
+    protected Alignment<Mapping> scanMatrix(SimilarityMatrix matrix) {
     	if( matrix == null ) { // there is no matrix, return empty set
-    		return new AlignmentSet<Alignment>();
+    		return new Alignment<Mapping>();
     	}
     	int columns = matrix.getColumns();
     	int rows = matrix.getRows();
@@ -500,13 +500,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 
 
-	protected AlignmentSet oneToOneMatching(AlignmentMatrix matrix) {
-		AlignmentSet aset = new AlignmentSet();
+	protected Alignment oneToOneMatching(SimilarityMatrix matrix) {
+		Alignment aset = new Alignment();
 		double[][] similarityMatrix = matrix.getCopiedSimilarityMatrix();
 		MaxWeightBipartiteMatching<Integer> mwbm = new MaxWeightBipartiteMatching<Integer>(similarityMatrix, threshold);
 		Collection<MappingMWBM<Integer>> mappings = mwbm.execute();
 		Iterator<MappingMWBM<Integer>> it = mappings.iterator();
-		Alignment a;
+		Mapping a;
 		MappingMWBM<Integer>  m;
 		while(it.hasNext()){
 			if( this.isCancelled() ) { return null; }
@@ -544,12 +544,12 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 
 
-    protected AlignmentSet scanForMaxValuesRows(AlignmentMatrix matrix, int numMaxValues) {
-		AlignmentSet aset = new AlignmentSet();
-		Alignment toBeAdded;
+    protected Alignment scanForMaxValuesRows(SimilarityMatrix matrix, int numMaxValues) {
+		Alignment aset = new Alignment();
+		Mapping toBeAdded;
 		//temp structure to keep the first numMaxValues best alignments for each source
 		//when maxRelations are both ANY we could have this structure too big that's why we have checked this case in the previous method
-		Alignment[] maxAlignments;
+		Mapping[] maxAlignments;
 		for(int i = 0; i<matrix.getRows();i++) {
 			maxAlignments = matrix.getRowMaxValues(i, numMaxValues);
 			//get only the alignments over the threshold
@@ -565,12 +565,12 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     
 
     
-    protected AlignmentSet scanForMaxValuesColumns(AlignmentMatrix matrix,int numMaxValues) {
-		AlignmentSet aset = new AlignmentSet();
-		Alignment toBeAdded;
+    protected Alignment scanForMaxValuesColumns(SimilarityMatrix matrix,int numMaxValues) {
+		Alignment aset = new Alignment();
+		Mapping toBeAdded;
 		//temp structure to keep the first numMaxValues best alignments for each source
 		//when maxRelations are both ANY we could have this structure too big that's why we have checked this case in the previous method
-		Alignment[] maxAlignments;
+		Mapping[] maxAlignments;
 		for(int i = 0; i<matrix.getColumns();i++) {
 			maxAlignments = matrix.getColMaxValues(i, numMaxValues);
 			//get only the alignments over the threshold
@@ -585,9 +585,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
     
     
-    protected AlignmentSet getThemAll(AlignmentMatrix matrix) {
-		AlignmentSet aset = new AlignmentSet();
-		Alignment currentValue;
+    protected Alignment getThemAll(SimilarityMatrix matrix) {
+		Alignment aset = new Alignment();
+		Mapping currentValue;
 		for(int i = 0; i<matrix.getColumns();i++) {
 			for(int j = 0; j<matrix.getRows();j++) {		
 				currentValue = matrix.get(j,i);
@@ -598,14 +598,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return aset;
 	}
 
-    protected AlignmentSet scanWithBothConstraints(AlignmentMatrix matrix, int sourceConstraint,int targetConstraint) {
+    protected Alignment scanWithBothConstraints(SimilarityMatrix matrix, int sourceConstraint,int targetConstraint) {
     	
     	
     	IntDoublePair fakePair = IntDoublePair.createFakePair();
     	int rows = matrix.getRows();
     	int cols = matrix.getColumns();
     	
-    	AlignmentSet aset = new AlignmentSet();
+    	Alignment aset = new Alignment();
 
     	//I need to build a copy of the similarity matrix to work on it, i just need the similarity values
     	//and i don't need values higher than threshold so i'll just set them as fake so they won't be selected
@@ -747,9 +747,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 	//*****************USER ALIGN METHOD*****************************
     
-	public void addManualAlignments(ArrayList<Alignment> alignments) {
-		Iterator<Alignment> it = alignments.iterator();
-		Alignment al;
+	public void addManualAlignments(ArrayList<Mapping> alignments) {
+		Iterator<Mapping> it = alignments.iterator();
+		Mapping al;
 		while(it.hasNext()) {
 			al = it.next();
 			if(al.getEntity1().isClass() && al.getEntity2().isClass()) {
@@ -767,15 +767,15 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		modifiedByUser = true;
 	}
 		
-    public void addManualClassAlignment(Alignment a) {
+    public void addManualClassAlignment(Mapping a) {
     	addManualAlignment(a, classesMatrix);
     }
 
-    public void addManualPropAlignment(Alignment a) {
+    public void addManualPropAlignment(Mapping a) {
     	addManualAlignment(a, propertiesMatrix);
     }
     
-    public void addManualAlignment(Alignment a, AlignmentMatrix matrix) {
+    public void addManualAlignment(Mapping a, SimilarityMatrix matrix) {
     	matrix.set(a.getEntity1().getIndex(), a.getEntity2().getIndex(), a);
     }
     
@@ -789,8 +789,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		//you will have to override this method this way: "return new MyParameterPanel(with some more parameters); (see manualCombinationMatcher structure
 	}
 	
-	public AlignmentSet<Alignment> getAlignmentSet() {
-    	AlignmentSet<Alignment> aligns = new AlignmentSet<Alignment>();
+	public Alignment<Mapping> getAlignmentSet() {
+    	Alignment<Mapping> aligns = new Alignment<Mapping>();
     	if(areClassesAligned()) {
     		aligns.addAll(classesAlignmentSet);
     	}
@@ -800,15 +800,15 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	return aligns;
     }
 
-    public AlignmentSet<Alignment> getClassAlignmentSet() {
+    public Alignment<Mapping> getClassAlignmentSet() {
     	return classesAlignmentSet;
     }
 
-    public AlignmentSet<Alignment> getPropertyAlignmentSet() {
+    public Alignment<Mapping> getPropertyAlignmentSet() {
     	return propertiesAlignmentSet;
     }
     /**AgreementMaker doesn't calculate instances matching, if you add this you should also modify getAlignmenSet*/
-    public AlignmentSet<Alignment> getInstanceAlignmentSet() {
+    public Alignment<Mapping> getInstanceAlignmentSet() {
     	throw new RuntimeException("trying to invoking a function not implemented yet");
     }
     
@@ -999,11 +999,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		this.alignClass = alignClass;
 	}
 	
-	public AlignmentMatrix getClassesMatrix() {
+	public SimilarityMatrix getClassesMatrix() {
 		return classesMatrix;
 	}
 
-	public AlignmentMatrix getPropertiesMatrix() {
+	public SimilarityMatrix getPropertiesMatrix() {
 		return propertiesMatrix;
 	}
 	
@@ -1316,11 +1316,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return progressDisplay != null;  // don't need to check for the global static variable, since if it's false, we should never have to call this function
 	}
 
-	public void setPropertiesAlignmentSet(AlignmentSet propertiesAlignmentSet) {
+	public void setPropertiesAlignmentSet(Alignment propertiesAlignmentSet) {
 		this.propertiesAlignmentSet = propertiesAlignmentSet;
 	}
 
-	public void setClassesAlignmentSet(AlignmentSet classesAlignmentSet) {
+	public void setClassesAlignmentSet(Alignment classesAlignmentSet) {
 		this.classesAlignmentSet = classesAlignmentSet;
 	}
 
@@ -1330,8 +1330,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	// this method removes any mappings between these two nodes
 	public void removeMapping(Node n1, Node n2, alignType type) {
 				
-		AlignmentSet<Alignment> workingSet = null;
-		AlignmentMatrix workingMatrix = null;
+		Alignment<Mapping> workingSet = null;
+		SimilarityMatrix workingMatrix = null;
 		if( type == alignType.aligningClasses ) {
 			workingSet = classesAlignmentSet;
 			workingMatrix = classesMatrix;
@@ -1340,7 +1340,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			workingMatrix = propertiesMatrix;
 		}
 		
-		Alignment a = workingSet.getAlignment(n1, n2);
+		Mapping a = workingSet.getAlignment(n1, n2);
 		if( a == null ) { a = workingSet.getAlignment(n2, n1); }
 		
 		assert (a != null);
@@ -1352,7 +1352,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		int col = n2.getIndex();
 		
 		if( row < workingMatrix.rows && col < workingMatrix.columns ) {
-			Alignment a2 = workingMatrix.get( row, col );
+			Mapping a2 = workingMatrix.get( row, col );
 			if( a.equals(a2) ) {
 				// ding ding ding, we have a winner.
 				workingMatrix.set(row, col, null); // delete the alignment
@@ -1363,7 +1363,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			col = n1.getIndex();
 			
 			if( row < workingMatrix.rows && col < workingMatrix.columns ) {
-				Alignment a2 = workingMatrix.get(row, col);
+				Mapping a2 = workingMatrix.get(row, col);
 				if( a.equals(a2) ) {
 					// ding ding ding, we have a winner.
 					workingMatrix.set(row,col, null); // delete the alignment

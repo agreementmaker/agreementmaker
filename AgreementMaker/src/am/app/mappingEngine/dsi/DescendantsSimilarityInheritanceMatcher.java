@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.TreeToDagConverter;
 
@@ -17,8 +17,8 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 	private static final long serialVersionUID = 1974656931030493132L;
 	
 	// the Alignment Matrices from the Input Matching algorithm.
-	protected AlignmentMatrix inputClassesMatrix = null;
-	protected AlignmentMatrix inputPropertiesMatrix = null;
+	protected SimilarityMatrix inputClassesMatrix = null;
+	protected SimilarityMatrix inputPropertiesMatrix = null;
 	
 	protected double MCP;
 	protected boolean[][] isComputedAlready;
@@ -46,8 +46,8 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
     	
     	AbstractMatcher input = inputMatchers.get(0);
     	
-    	inputClassesMatrix = (AlignmentMatrix) input.getClassesMatrix().clone();
-    	inputPropertiesMatrix = (AlignmentMatrix)input.getPropertiesMatrix().clone();
+    	inputClassesMatrix = (SimilarityMatrix) input.getClassesMatrix().clone();
+    	inputPropertiesMatrix = (SimilarityMatrix)input.getPropertiesMatrix().clone();
     	
     	// set our MCP
     	MCP = ((DescendantsSimilarityInheritanceParameters)this.param).MCP;
@@ -55,12 +55,12 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 	}
 
 	
-    protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
+    protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
     	
     	//we need to work on a DAG not on the vertex
 		TreeToDagConverter sourceDag;
 		TreeToDagConverter targetDag;
-		AlignmentMatrix input;
+		SimilarityMatrix input;
 
     	if(typeOfNodes.equals(alignType.aligningClasses)){
     		sourceDag = new TreeToDagConverter(sourceOntology.getClassesTree());
@@ -97,12 +97,12 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 	}
 
 	
-	protected void initBooleanMatrix(AlignmentMatrix input) {
+	protected void initBooleanMatrix(SimilarityMatrix input) {
 		isComputedAlready = new boolean[input.getRows()][input.getColumns()];
 	}
 
 
-	protected Alignment recursiveDSI(Node sourceNode, Node targetNode, AlignmentMatrix input, TreeToDagConverter sourceDag, TreeToDagConverter targetDag) {
+	protected Mapping recursiveDSI(Node sourceNode, Node targetNode, SimilarityMatrix input, TreeToDagConverter sourceDag, TreeToDagConverter targetDag) {
 		int sourceIndex = sourceNode.getIndex();
 		int targetIndex = targetNode.getIndex();
 		double mySim = 0.0d;
@@ -115,11 +115,11 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		Node targetParent;
 		int sourceParentIndex;
 		int targetParentIndex;
-		Alignment alignParents;
-		Alignment maxAlignParents;
+		Mapping alignParents;
+		Mapping maxAlignParents;
 		//sumOfMaxParents will keep the information related to the parents similarity (the 1-MCP part)
 		double sumOfMaxParents;
-		Alignment result;
+		Mapping result;
 		if(isComputedAlready[sourceIndex][targetIndex]){
 			//the DSI has already been computed and stored for this mapping and their parents
 			result = input.get(sourceIndex,targetIndex);
@@ -157,7 +157,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 				sumOfMaxParents/=sourceParents.size();
 				double mcp = MCP;
 				double finalSim = (mcp*mySim) + ((1 - mcp) * sumOfMaxParents);
-				result = new Alignment(sourceNode, targetNode, finalSim, Alignment.EQUIVALENCE);
+				result = new Mapping(sourceNode, targetNode, finalSim, Mapping.EQUIVALENCE);
 				input.set(sourceIndex, targetIndex, result);
 				
 				result = input.get(sourceIndex,targetIndex);

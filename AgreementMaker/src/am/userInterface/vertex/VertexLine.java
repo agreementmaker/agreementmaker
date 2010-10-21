@@ -1,6 +1,6 @@
 package am.userInterface.vertex;
 
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 
 /**
  * This is just a structure used to keep the structures needed to show a line
@@ -11,7 +11,7 @@ import am.app.mappingEngine.Alignment;
 public class VertexLine{
 	public Vertex source;
 	public Vertex target;
-	public Alignment alignment;
+	public Mapping alignment;
 	
 	public boolean equals(Object o) {
 		if(o instanceof VertexLine) {

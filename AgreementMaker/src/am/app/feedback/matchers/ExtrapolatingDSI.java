@@ -6,9 +6,9 @@ import java.util.Iterator;
 
 import am.app.feedback.FilteredAlignmentMatrix;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
-import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
 import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceParameters;
 import am.app.mappingEngine.oneToOneSelection.MappingMWBM;
@@ -22,7 +22,7 @@ public class ExtrapolatingDSI extends DescendantsSimilarityInheritanceMatcher {
      * Everything is the same of the DSI, except that if a cell has been filtered out, it is set as TRUE in the boolean matrix 
        so that it won't be modified.
      */
-	protected void initBooleanMatrix(AlignmentMatrix input) {
+	protected void initBooleanMatrix(SimilarityMatrix input) {
 		super.initBooleanMatrix(input);
 		if(input instanceof FilteredAlignmentMatrix) {
 			FilteredAlignmentMatrix fInput = (FilteredAlignmentMatrix)input;

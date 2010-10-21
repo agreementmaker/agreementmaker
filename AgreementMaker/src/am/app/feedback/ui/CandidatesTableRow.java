@@ -5,7 +5,7 @@ import javax.swing.JRadioButton;
 import org.omg.SendingContext.RunTime;
 
 import am.app.feedback.CandidateConcept;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 
 public class CandidatesTableRow {
@@ -25,7 +25,7 @@ public class CandidatesTableRow {
 		radio = jr;
 	}
 	
-	public Alignment getMapping(){
+	public Mapping getMapping(){
 		if(candidateConcept.getCandidateMappings() == null || candidateConcept.getCandidateMappings().size() <= index)
 			throw new RuntimeException("A row referring to no candidate mapping exists in the table.");
 		else return candidateConcept.getCandidateMappings().get(index);

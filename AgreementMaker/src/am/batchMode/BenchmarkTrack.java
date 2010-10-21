@@ -4,7 +4,7 @@ import java.io.File;
 import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
-import am.app.mappingEngine.AlignmentSet;
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.oaei2009.OAEI2009parameters;
 import am.output.AlignmentOutput;
@@ -185,7 +185,7 @@ public class BenchmarkTrack extends Track{
 		String targetOntology;
 		String sourceUri;
 		String targetUri;
-		AlignmentSet as;
+		Alignment as;
 		AlignmentOutput ao;
 		String outputFileDir;
 		long startTime = System.nanoTime()/1000000;

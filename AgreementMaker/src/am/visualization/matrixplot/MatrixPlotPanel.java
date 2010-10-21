@@ -1,6 +1,5 @@
 package am.visualization.matrixplot;
 
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -12,19 +11,19 @@ import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.RepaintManager;
 import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
-import am.app.mappingEngine.AlignmentSet;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.visualization.MatcherAnalyticsEvent;
 import am.visualization.MatcherAnalyticsEventDispatch;
 import am.visualization.MatcherAnalyticsEventListener;
 import am.visualization.MatcherAnalyticsEvent.EventType;
-import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 
 public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAnalyticsEventListener, ActionListener {
 
@@ -35,16 +34,19 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 	private final JLabel lblName;
 	private final JLabel lblSimilaritySelected;
 	private final AbstractMatcher matcher;
+	private AbstractMatcher referenceMatcher = null;
+	
+	//private boolean popupMenuActive = false;
 	
 	//private VisualizationType type;
 	
-	public MatrixPlotPanel(AbstractMatcher a, AlignmentMatrix mtx, MatcherAnalyticsEventDispatch d ) {
+	public MatrixPlotPanel(AbstractMatcher a, SimilarityMatrix mtx, MatcherAnalyticsEventDispatch d ) {
 		super();
 
 		dispatch = d;
 		plot = new MatrixPlot(mtx, this);
 		plot.addMouseListener(this);
-		plot.draw();
+		plot.draw(false);
 		
 		lblName = new JLabel(a.getName().getMatcherName());
 		lblSimilaritySelected = new JLabel("", JLabel.TRAILING);
@@ -147,11 +149,15 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 		
 		if( e.getButton() == MouseEvent.BUTTON3 ) {  // Right Click
 			MatrixPlotPopupMenu popup = new MatrixPlotPopupMenu(this);
+			//popup.addPopupMenuListener(this);
+			popup.setLightWeightPopupEnabled(false); // to avoid drawing over this menu
 			popup.show(plot, e.getX(), e.getY());
+			popup.repaint();
 		}
 	}
 
 	public MatrixPlot getPlot() { return plot; }
+	//public boolean popupMenuActive() { return popupMenuActive; }
 
 	
 	/** These mouse event functions are not used yet. **/
@@ -167,6 +173,7 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 		
 		if( e.getActionCommand() == "SET_REFERENCE" ) {
 			// set this matcher as the reference
+			//popupMenuActive = false;
 			setReference(matcher);
 			
 			if( dispatch != null ) {
@@ -183,9 +190,15 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 		
 	}
 	
+	//@Override public void popupMenuWillBecomeVisible(PopupMenuEvent e) {	}
+	//@Override public void popupMenuWillBecomeInvisible(PopupMenuEvent e) { popupMenuActive = false; }
+	//@Override public void popupMenuCanceled(PopupMenuEvent e) { popupMenuActive = false; }
+	
 	private void setReference(AbstractMatcher matcher2) {
 		if( dispatch == null ) return;
 
+		referenceMatcher = matcher2;
+		
 		switch( dispatch.getType() ) {
 		case CLASS_MATRIX:
 			plot.setReferenceAlignment( matcher2.getClassAlignmentSet() );
@@ -199,16 +212,26 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 
 	@Override
 	public void receiveEvent(MatcherAnalyticsEvent e) {
-		if( e.getSource() != this && e.type == EventType.SELECT_MAPPING ) {
+		if( e.getSource() == this ) return;
+		
+		if( e.type == EventType.SELECT_MAPPING ) {
 			Point sel = (Point)e.payload;
 			plot.selectMapping(sel.x, sel.y);
 			lblSimilaritySelected.setText( Double.toString( Utility.roundDouble( plot.getMatrix().getSimilarity(sel.x, sel.y), 4) ) );
 		}
 		
-		if( e.getSource() != this && e.type == EventType.SET_REFERENCE ) {
+		if( e.type == EventType.SET_REFERENCE ) {
 			AbstractMatcher ref = (AbstractMatcher)e.payload;
 			// we have set the reference alignment.
 			setReference(ref);
+		}
+		
+		if( e.type == EventType.MATRIX_UPDATED ) {
+			if( e.payload == matcher || e.payload == referenceMatcher ) {
+				if( e.payload == referenceMatcher ) setReference(referenceMatcher);
+				plot.createImage(true);
+				plot.repaint();				
+			}
 		}
 		
 	}

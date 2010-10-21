@@ -28,8 +28,8 @@ import am.app.Core;
 import am.app.feedback.ui.SelectionPanel;
 import am.app.lexicon.Lexicon;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
@@ -342,21 +342,21 @@ public class UIMenu implements ActionListener {
 					AbstractMatcher firstMatcher = core.getMatcherInstances().get(selectedRows[0]);
 					AbstractMatcher secondMatcher = core.getMatcherInstances().get(selectedRows[1]);
 					
-					AlignmentSet<Alignment> firstClassSet = firstMatcher.getClassAlignmentSet();
-					AlignmentSet<Alignment> secondClassSet = secondMatcher.getClassAlignmentSet();
+					Alignment<Mapping> firstClassSet = firstMatcher.getClassAlignmentSet();
+					Alignment<Mapping> secondClassSet = secondMatcher.getClassAlignmentSet();
 					
-					AlignmentSet<Alignment> firstPropertiesSet = firstMatcher.getPropertyAlignmentSet();
-					AlignmentSet<Alignment> secondPropertiesSet = secondMatcher.getPropertyAlignmentSet();
+					Alignment<Mapping> firstPropertiesSet = firstMatcher.getPropertyAlignmentSet();
+					Alignment<Mapping> secondPropertiesSet = secondMatcher.getPropertyAlignmentSet();
 					
-					AlignmentSet<Alignment> combinedClassSet = new AlignmentSet<Alignment>();
-					AlignmentSet<Alignment> combinedPropertiesSet = new AlignmentSet<Alignment>();
+					Alignment<Mapping> combinedClassSet = new Alignment<Mapping>();
+					Alignment<Mapping> combinedPropertiesSet = new Alignment<Mapping>();
 
 					// double nested loop, later I will write a better algorithm -cos
 					for( i = 0; i < firstClassSet.size(); i++ ) {
-						Alignment candidate = firstClassSet.getAlignment(i);
+						Mapping candidate = firstClassSet.getAlignment(i);
 						boolean foundDuplicate = false;
 						for( j = 0; j < secondClassSet.size(); j++ ) {
-							Alignment test = secondClassSet.getAlignment(j);							
+							Mapping test = secondClassSet.getAlignment(j);							
 						
 						
 							int sourceNode1 = candidate.getEntity1().getIndex();
@@ -377,10 +377,10 @@ public class UIMenu implements ActionListener {
 					}
 
 					for( i = 0; i < secondClassSet.size(); i++ ) {
-						Alignment candidate = secondClassSet.getAlignment(i);
+						Mapping candidate = secondClassSet.getAlignment(i);
 						boolean foundDuplicate = false;
 						for( j = 0; j < firstClassSet.size(); j++ ) {
-							Alignment test = firstClassSet.getAlignment(j);							
+							Mapping test = firstClassSet.getAlignment(j);							
 						
 						
 							int sourceNode1 = candidate.getEntity1().getIndex();
@@ -405,10 +405,10 @@ public class UIMenu implements ActionListener {
 					
 					// double nested loop, later I will write a better algorithm -cos
 					for( i = 0; i < firstPropertiesSet.size(); i++ ) {
-						Alignment candidate = firstPropertiesSet.getAlignment(i);
+						Mapping candidate = firstPropertiesSet.getAlignment(i);
 						boolean foundDuplicate = false;
 						for( j = 0; j < secondPropertiesSet.size(); j++ ) {
-							Alignment test = secondPropertiesSet.getAlignment(j);							
+							Mapping test = secondPropertiesSet.getAlignment(j);							
 						
 						
 							int sourceNode1 = candidate.getEntity1().getIndex();
@@ -429,10 +429,10 @@ public class UIMenu implements ActionListener {
 					}
 
 					for( i = 0; i < secondPropertiesSet.size(); i++ ) {
-						Alignment candidate = secondPropertiesSet.getAlignment(i);
+						Mapping candidate = secondPropertiesSet.getAlignment(i);
 						boolean foundDuplicate = false;
 						for( j = 0; j < firstPropertiesSet.size(); j++ ) {
-							Alignment test = firstPropertiesSet.getAlignment(j);							
+							Mapping test = firstPropertiesSet.getAlignment(j);							
 						
 						
 							int sourceNode1 = candidate.getEntity1().getIndex();
@@ -597,7 +597,7 @@ public class UIMenu implements ActionListener {
 				
 				MatrixPlotPanel mp = new MatrixPlotPanel( selectedMatcher, selectedMatcher.getClassesMatrix(), null);
 				
-				mp.getPlot().draw();
+				mp.getPlot().draw(false);
 				JPanel plotPanel = new JPanel();
 				plotPanel.add(mp);
 				Core.getUI().addTab("MatrixPlot Class", null , plotPanel , selectedMatcher.getName().getMatcherName());
@@ -613,7 +613,7 @@ public class UIMenu implements ActionListener {
 				
 				MatrixPlotPanel mp = new MatrixPlotPanel( selectedMatcher, selectedMatcher.getPropertiesMatrix(), null);
 				
-				mp.getPlot().draw();
+				mp.getPlot().draw(false);
 				JPanel plotPanel = new JPanel();
 				plotPanel.add(mp);
 				Core.getUI().addTab("MatrixPlot Prop", null , plotPanel , selectedMatcher.getName().getMatcherName());

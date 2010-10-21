@@ -3,8 +3,8 @@ package am.app.mappingEngine.PRAMatcher;
 import java.util.ArrayList;
 import java.util.HashMap;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.ontology.Node;
@@ -12,9 +12,9 @@ import am.app.ontology.Node;
 public class OldPRAMatcher extends AbstractMatcher 
 {
 	// the Alignment Matrices from the Input Matching algorithm.
-	private AlignmentMatrix inputClassesMatrix = null;
-	private AlignmentMatrix inputPropertiesMatrix = null;
-	private AlignmentMatrix matrix = null;
+	private SimilarityMatrix inputClassesMatrix = null;
+	private SimilarityMatrix inputPropertiesMatrix = null;
+	private SimilarityMatrix matrix = null;
 	
 	//the structure that holds the roots of subtrees which are matched nodes in the ontology
 	private ArrayList<OldTreeNode> matchedClassRootNodes = null;
@@ -48,7 +48,7 @@ public class OldPRAMatcher extends AbstractMatcher
 	}	
 	
 	
-	protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception 
+	protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception 
     {
 		nodeToOldTreeNode = new HashMap<Node, OldTreeNode>();
 		ArrayList<OldTreeNode> srcOldTreeNodes = createOldTreeNode(sourceList);
@@ -101,7 +101,7 @@ public class OldPRAMatcher extends AbstractMatcher
 		
 		//Now we align nodes by considering only nodes in the subtrees of matched nodes
 		//Initialize matrix before aligning nodes, cos this method will access matrix
-		matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes);
+		matrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes);
 		alignNodes(typeOfNodes);
 		
 		
@@ -113,7 +113,7 @@ public class OldPRAMatcher extends AbstractMatcher
 			{
 				target = targetList.get(j);
 				if(matrix.get(i, j) == null)
-					matrix.set(i, j, new Alignment(src, target, 0.0d, Alignment.EQUIVALENCE));
+					matrix.set(i, j, new Mapping(src, target, 0.0d, Mapping.EQUIVALENCE));
 			}
 		}
 		
@@ -124,7 +124,7 @@ public class OldPRAMatcher extends AbstractMatcher
 	
 	
 	/**Set all alignment sim to a random value between 0 and 1*/
-	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) 
+	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) 
 	{
 		NormalizerParameter param = null;
 		Normalizer norm = null;
@@ -133,7 +133,7 @@ public class OldPRAMatcher extends AbstractMatcher
 		String tLabel = target.getLabel();
 		
 			if(sLabel.equalsIgnoreCase(tLabel))
-				return new Alignment( source, target, 1, Alignment.EQUIVALENCE);
+				return new Mapping( source, target, 1, Mapping.EQUIVALENCE);
 			//all normalization without stemming and digits return 0.95
 			
 			param = new NormalizerParameter();
@@ -147,7 +147,7 @@ public class OldPRAMatcher extends AbstractMatcher
 			String tProcessedLabel = norm.normalize(tLabel);
 			
 			if(sProcessedLabel.equals(tProcessedLabel))
-				return new Alignment( source, target, 0.95d, Alignment.EQUIVALENCE);
+				return new Mapping( source, target, 0.95d, Mapping.EQUIVALENCE);
 			//apply stem return 0.90 
 	
 			param.setAllfalse();
@@ -157,7 +157,7 @@ public class OldPRAMatcher extends AbstractMatcher
 			sProcessedLabel = norm.normalize(sLabel);
 			tProcessedLabel = norm.normalize(tLabel);
 			if(sProcessedLabel.equals(tProcessedLabel))
-				return new Alignment( source, target, 0.9d, Alignment.EQUIVALENCE);
+				return new Mapping( source, target, 0.9d, Mapping.EQUIVALENCE);
 			
 			//apply normDigits return 0.8
 			
@@ -167,9 +167,9 @@ public class OldPRAMatcher extends AbstractMatcher
 			sProcessedLabel = norm.normalize(sLabel);
 			tProcessedLabel = norm.normalize(tLabel);
 			if(sProcessedLabel.equals(tProcessedLabel))
-				return new Alignment( source, target, 0.8d, Alignment.EQUIVALENCE);
+				return new Mapping( source, target, 0.8d, Mapping.EQUIVALENCE);
 		
-			return new Alignment(source, target, 0.0d, Alignment.EQUIVALENCE);
+			return new Mapping(source, target, 0.0d, Mapping.EQUIVALENCE);
 	}
 
 	
@@ -191,9 +191,9 @@ public class OldPRAMatcher extends AbstractMatcher
 		return OldTreeNodes;
 	}
 	
-	private void setMatchingPairs(AlignmentMatrix inputMatrix, ArrayList<OldTreeNode> sourceList, ArrayList<OldTreeNode> targetList) throws Exception
+	private void setMatchingPairs(SimilarityMatrix inputMatrix, ArrayList<OldTreeNode> sourceList, ArrayList<OldTreeNode> targetList) throws Exception
 	{
-		Alignment alignment = null;
+		Mapping alignment = null;
 		int numRows = sourceList.size();
 		int numCols = targetList.size();
 		OldTreeNode src = null, target = null;
@@ -446,7 +446,7 @@ public class OldPRAMatcher extends AbstractMatcher
 		ArrayList<OldTreeNode> myChildren = targetNode.getChildren();
 		//ArrayList<OldTreeNode> myChildren = adjacency.get(targetNode);
 		OldTreeNode childNode = null;
-		Alignment alignment = null;
+		Mapping alignment = null;
 		
 		targetNode.setColor(1);
 		if(myChildren != null)
@@ -554,7 +554,7 @@ public class OldPRAMatcher extends AbstractMatcher
 	/**
 	 * @param inputClassesMatrix the inputClassesMatrix to set
 	 */
-	public void setInputClassesMatrix(AlignmentMatrix inputClassesMatrix) 
+	public void setInputClassesMatrix(SimilarityMatrix inputClassesMatrix) 
 	{
 		this.inputClassesMatrix = inputClassesMatrix;
 	}
@@ -563,7 +563,7 @@ public class OldPRAMatcher extends AbstractMatcher
 	/**
 	 * @return the inputClassesMatrix
 	 */
-	public AlignmentMatrix getInputClassesMatrix() 
+	public SimilarityMatrix getInputClassesMatrix() 
 	{
 		return inputClassesMatrix;
 	}
@@ -571,7 +571,7 @@ public class OldPRAMatcher extends AbstractMatcher
 	/**
 	 * @param inputPropertiesMatrix the inputPropertiesMatrix to set
 	 */
-	public void setInputPropertiesMatrix(AlignmentMatrix inputPropertiesMatrix) 
+	public void setInputPropertiesMatrix(SimilarityMatrix inputPropertiesMatrix) 
 	{
 		this.inputPropertiesMatrix = inputPropertiesMatrix;
 	}
@@ -579,7 +579,7 @@ public class OldPRAMatcher extends AbstractMatcher
 	/**
 	 * @return the inputPropertiesMatrix
 	 */
-	public AlignmentMatrix getInputPropertiesMatrix() 
+	public SimilarityMatrix getInputPropertiesMatrix() 
 	{
 		return inputPropertiesMatrix;
 	}

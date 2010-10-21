@@ -10,7 +10,7 @@ import am.app.feedback.FeedbackLoop;
 import am.app.feedback.FilteredAlignmentMatrix;
 import am.app.feedback.InitialMatchers;
 import java.util.HashMap;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -137,7 +137,7 @@ public class FamilialSimilarity extends RelevanceMeasure {
 			C1 = childrenList.get(indexofC1);
 			C2 = childrenList.get(j);
 			
-			Alignment ali = im.alignTwoNodes(C1.getNode(), C2.getNode(), whichType );
+			Mapping ali = im.alignTwoNodes(C1.getNode(), C2.getNode(), whichType );
 			if ( ali.getSimilarity() >= threshold ) {
 				simAbove++;
 			}
@@ -158,7 +158,7 @@ public class FamilialSimilarity extends RelevanceMeasure {
 
 			C2 = childrenList.get(j);
 			
-			Alignment ali = im.alignTwoNodes(C1.getNode(), C2.getNode(), whichType );
+			Mapping ali = im.alignTwoNodes(C1.getNode(), C2.getNode(), whichType );
 			if ( ali.getSimilarity() >= threshold ) {
 				vl.put(C2.getNode(), ali.getSimilarity());
 			}

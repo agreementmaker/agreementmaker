@@ -9,9 +9,9 @@ import java.util.Iterator;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
-import am.app.mappingEngine.AlignmentSet;
 import am.app.ontology.Node;
 
 /**
@@ -25,8 +25,8 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 */
 	private static final long serialVersionUID = -2823104411109824547L;
 	// the AlignmentMatrices from the input matching algorithm
-	protected AlignmentMatrix inputClassesMatrix = null;
-	protected AlignmentMatrix inputPropertiesMatrix = null;
+	protected SimilarityMatrix inputClassesMatrix = null;
+	protected SimilarityMatrix inputPropertiesMatrix = null;
 	
 	protected ArrayList<Node> source_root_list;
 	protected ArrayList<Node> target_root_list;
@@ -74,8 +74,8 @@ public class GroupFinderMatcher extends AbstractMatcher {
 		
 		AbstractMatcher input = inputMatchers.get(0);
 		
-		inputClassesMatrix = (AlignmentMatrix) input.getClassesMatrix().clone();
-    	inputPropertiesMatrix = (AlignmentMatrix)input.getPropertiesMatrix().clone();
+		inputClassesMatrix = (SimilarityMatrix) input.getClassesMatrix().clone();
+    	inputPropertiesMatrix = (SimilarityMatrix)input.getPropertiesMatrix().clone();
 	}
 	
 	/**
@@ -84,12 +84,12 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 * @author michele
 	 * NOTE: parameters sourceList and targetList are NOT used
 	 */
-	protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
+	protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
 		
 		// step 0: gathering all the data
 		ArrayList<Node> source; // list of the source ontology concepts
 		ArrayList<Node> target; // list of the target ontology concepts
-		AlignmentMatrix input;  // input matrix from previous matching
+		SimilarityMatrix input;  // input matrix from previous matching
 		
     	if(typeOfNodes.equals(alignType.aligningClasses)){
     		source = sourceOntology.getClassesList();
@@ -104,7 +104,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
     	
     	// building local matrix
 	    
-    	ArrayList<Alignment> localList = new ArrayList<Alignment>();
+    	ArrayList<Mapping> localList = new ArrayList<Mapping>();
 	    localList = selectGroups(groupElementsByLevel(source).get(0), groupElementsByLevel(target).get(0), input, typeOfNodes);
 	    
 	    for(int i = 0; i < localList.size(); i++){
@@ -118,12 +118,12 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	
 	/**
 	 * Overridden method
-	 * @see am.app.mappingEngine.BaseSimilarityMatcher#oneToOneMatching(AlignmentMatrix matrix)
+	 * @see am.app.mappingEngine.BaseSimilarityMatcher#oneToOneMatching(SimilarityMatrix matrix)
 	 * @author michele
 	 */
-	protected AlignmentSet<Alignment> oneToOneMatching(AlignmentMatrix matrix){
-		ArrayList<Alignment> list = matrix.chooseBestN();
-		AlignmentSet<Alignment> result = new AlignmentSet<Alignment>();
+	protected Alignment<Mapping> oneToOneMatching(SimilarityMatrix matrix){
+		ArrayList<Mapping> list = matrix.chooseBestN();
+		Alignment<Mapping> result = new Alignment<Mapping>();
 		for(int i = 0; i < list.size(); i++){
 			if(list.get(i).getSimilarity() < threshold){
 				break;
@@ -159,14 +159,14 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 * @param inputOntology the ontology that has to be grouped by depth
 	 * @author michele 
 	 */
-	protected ArrayList<Alignment> selectGroups(ArrayList<Node> sourceRoots, ArrayList<Node> targetRoots, AlignmentMatrix input, alignType typeOfNodes){
+	protected ArrayList<Mapping> selectGroups(ArrayList<Node> sourceRoots, ArrayList<Node> targetRoots, SimilarityMatrix input, alignType typeOfNodes){
 		source_root_list = sourceRoots;
     	target_root_list = targetRoots;
-    	AlignmentMatrix localMatrix = new AlignmentMatrix(source_root_list.size(), target_root_list.size(), typeOfNodes);
+    	SimilarityMatrix localMatrix = new SimilarityMatrix(source_root_list.size(), target_root_list.size(), typeOfNodes);
     	localMatrix.initFromNodeList(source_root_list, target_root_list);
     	
     	// step 1: taking level 0 source concepts with their descendants and assigning groups
-    	ArrayList<Alignment> localList = new ArrayList<Alignment>();
+    	ArrayList<Mapping> localList = new ArrayList<Mapping>();
     	ArrayList<Integer> localCount = new ArrayList<Integer>(target_root_list.size());
     	for(int i = 0; i < target_root_list.size(); i++){
     		localCount.add(new Integer(0));
@@ -189,7 +189,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 
 	    	// computing best root
 	    	localList = input.chooseBestN(createIntList(sourceSet), createIntList(targetSet));
-	    	Alignment a = null;
+	    	Mapping a = null;
 	    	double newSim = 0.0;
     		Node sourceRoot, targetRoot;
 	    	
@@ -225,7 +225,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 		return localMatrix.chooseBestN();
 	}
 	
-	protected void matchGroups(AlignmentMatrix input, Node sourceRoot, Node targetRoot, alignType typeOfNodes){
+	protected void matchGroups(SimilarityMatrix input, Node sourceRoot, Node targetRoot, alignType typeOfNodes){
     	ArrayList<Node> sourceSet, targetSet;
 
     	sourceSet = new ArrayList<Node>(); // contains source current group	
@@ -314,7 +314,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 * @param targetList list of target nodes
 	 * @author michele 
 	 */
-	private void computeNewValues(AlignmentMatrix inputMatrix, ArrayList<Node> sourceList, ArrayList<Node> targetList){
+	private void computeNewValues(SimilarityMatrix inputMatrix, ArrayList<Node> sourceList, ArrayList<Node> targetList){
 		ArrayList<Integer> sList = createIntList(sourceList);
 		ArrayList<Integer> tList = createIntList(targetList);
 		
@@ -362,7 +362,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 * @param 
 	 * @author michele 
 	 */
-	protected Node chooseBestRoot(AlignmentMatrix input, ArrayList<Node> list, ArrayList<Node> target){
+	protected Node chooseBestRoot(SimilarityMatrix input, ArrayList<Node> list, ArrayList<Node> target){
 		
 		
 		

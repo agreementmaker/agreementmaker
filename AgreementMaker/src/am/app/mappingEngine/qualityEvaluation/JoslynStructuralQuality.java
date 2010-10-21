@@ -6,8 +6,8 @@ import java.util.Iterator;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentSet;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.TreeToDagConverter;
@@ -132,7 +132,7 @@ public class JoslynStructuralQuality {
 	 * @param propertiesTree2
 	 * @return
 	 */
-	private double orderPreservation(AlignmentSet set,
+	private double orderPreservation(Alignment set,
 			ArrayList<Node> sourceList, ArrayList<Node> targetList,
 			Vertex sourceTree, Vertex targetTree) {
 		
@@ -183,7 +183,7 @@ public class JoslynStructuralQuality {
 		return quality;
 	}
 	
-	private int[][] calculateOrderDiscrepancies(AlignmentSet set,
+	private int[][] calculateOrderDiscrepancies(Alignment set,
 			int[][] sourceOrderMatrix, int[][] targetOrderMatrix) {
 		
 		//build the matrix of orderdiscrepancy between alignemnts a1 = (a, a') a2 = (b, b') 
@@ -194,10 +194,10 @@ public class JoslynStructuralQuality {
 		
 		for(int i= 0; i < size; i++) {
 			//a1
-			Alignment first = set.getAlignment(i);
+			Mapping first = set.getAlignment(i);
 			for(int j = 0; j < size; j++) {
 				//a2
-				Alignment second = set.getAlignment(j);
+				Mapping second = set.getAlignment(j);
 				//a
 				int firstSource = first.getEntity1().getIndex();
 				//a'
@@ -316,7 +316,7 @@ public class JoslynStructuralQuality {
 	 * @param targetTree
 	 * @return
 	 */
-	private double distancePreservation(AlignmentSet set,
+	private double distancePreservation(Alignment set,
 			ArrayList<Node> sourceList, ArrayList<Node> targetList,
 			Vertex sourceTree, Vertex targetTree) {
 		
@@ -427,7 +427,7 @@ public class JoslynStructuralQuality {
 		return diameter;
 	}
 
-	private double[][] calculateDistanceDiscrepancies(AlignmentSet set, double[][] sourceDistances, double[][] targetDistances) {
+	private double[][] calculateDistanceDiscrepancies(Alignment set, double[][] sourceDistances, double[][] targetDistances) {
 		//calculate the link distance discrepancy, look at the example on the paper to understand it
 		//given two alignments  a1( a, a') & a2(b, b')
 		// f(a1, a2) = | d(a,b) - d(a',b') | 
@@ -437,10 +437,10 @@ public class JoslynStructuralQuality {
 		
 		for(int i= 0; i < size; i++) {
 			//a1
-			Alignment first = set.getAlignment(i);
+			Mapping first = set.getAlignment(i);
 			for(int j = 0; j < size; j++) {
 				//a2
-				Alignment second = set.getAlignment(j);
+				Mapping second = set.getAlignment(j);
 				//a
 				int firstSource = first.getEntity1().getIndex();
 				//a'

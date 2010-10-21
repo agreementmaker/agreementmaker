@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
-import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.MappedNodes;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
@@ -61,16 +61,16 @@ public class PRAintegrationMatcher extends AbstractMatcher {
     }
 	
 	protected void integrateAlignment(ArrayList<Node> sourceList,
-			ArrayList<Node> targetList, AlignmentSet inputAlignmentSet,
-			AlignmentSet refAlignmentSet, AlignmentMatrix refAlignmentMatrix, alignType typeOfNodes)  throws Exception{
+			ArrayList<Node> targetList, Alignment inputAlignmentSet,
+			Alignment refAlignmentSet, SimilarityMatrix refAlignmentMatrix, alignType typeOfNodes)  throws Exception{
 		
 
-		AlignmentMatrix resultMatrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, inputMatchers.get(0).getRelation());
-		AlignmentSet resultSet = new AlignmentSet();
-		HashSet<Alignment> mappings = new HashSet<Alignment>();
+		SimilarityMatrix resultMatrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, inputMatchers.get(0).getRelation());
+		Alignment resultSet = new Alignment();
+		HashSet<Mapping> mappings = new HashSet<Mapping>();
 		
 		//make the mapping set equals to the reference matching.
-		Alignment alignment;
+		Mapping alignment;
 		for(int i = 0; i < refAlignmentSet.size(); i++){
 			alignment = refAlignmentSet.getAlignment(i);
 			mappings.add(alignment);

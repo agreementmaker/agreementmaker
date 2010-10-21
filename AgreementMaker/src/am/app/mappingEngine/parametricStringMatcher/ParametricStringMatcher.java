@@ -15,7 +15,7 @@ import am.app.lexicon.ontology.OntologyLexiconBuilder;
 import am.app.lexicon.wordnet.WordNetLexiconBuilder;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.StringUtil.ISub;
 import am.app.mappingEngine.StringUtil.Normalizer;
@@ -86,7 +86,7 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	 * *******************************************************************************************************
 	 */
 
-	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
 		
 		ParametricStringParameters parameters  = (ParametricStringParameters)param;
 		double sim = 0.0d; // this must be set
@@ -290,7 +290,7 @@ public class ParametricStringMatcher extends AbstractMatcher {
 				
 		}
 
-		if( sim > 0.0d ) return new Alignment(source, target, sim);
+		if( sim > 0.0d ) return new Mapping(source, target, sim);
 		return null; // no similarity was found
 	}
 	

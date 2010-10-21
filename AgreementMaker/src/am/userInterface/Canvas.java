@@ -24,8 +24,8 @@ import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentSet;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.TreeBuilder;
@@ -209,15 +209,15 @@ public class Canvas extends VisualizationPanel implements MouseListener, ActionL
 	}
 	
 	public void createManualAlignment(Object obj) {
-		String relation = Alignment.EQUIVALENCE;;
+		String relation = Mapping.EQUIVALENCE;;
 		double sim = 0;
 		boolean abort = false;
 		if(obj == standardAlignment) {
-			relation = Alignment.EQUIVALENCE;
+			relation = Mapping.EQUIVALENCE;
 			sim = 1;
 		}
 		else if(obj == deleteAlignment) {
-			relation = Alignment.EQUIVALENCE;
+			relation = Mapping.EQUIVALENCE;
 			sim = 0;
 		}
 		else {
@@ -256,15 +256,15 @@ public class Canvas extends VisualizationPanel implements MouseListener, ActionL
 				}
 			}
 			else if (obj == exact)
-				relation = Alignment.EQUIVALENCE;
+				relation = Mapping.EQUIVALENCE;
 			else if (obj == subset)
-				relation = Alignment.SUBSET;
+				relation = Mapping.SUBSET;
 			else if (obj == subsetComplete)
-				relation = Alignment.SUBSETCOMPLETE;
+				relation = Mapping.SUBSETCOMPLETE;
 			else if (obj == superset)
-				relation = Alignment.SUPERSET;
+				relation = Mapping.SUPERSET;
 			else if (obj == supersetComplete)
-				relation = Alignment.SUPERSETCOMPLETE;
+				relation = Mapping.SUPERSETCOMPLETE;
 			/*
 			else if (obj == comparativeExact)
 				map.setMappingType("Comparative exact");
@@ -277,15 +277,15 @@ public class Canvas extends VisualizationPanel implements MouseListener, ActionL
 		if(!abort) {
 			Vertex global;
 			Vertex local;
-			ArrayList<Alignment> alignments = new ArrayList<Alignment>();
-			Alignment align;
+			ArrayList<Mapping> alignments = new ArrayList<Mapping>();
+			Mapping align;
 			for (int i =0; i < globalNodesSelected.size(); i++){
 				global = globalNodesSelected.get(i);
 				if(!global.isFake()) {
 					for(int j= 0; j < localNodesSelected.size();j++) {
 						local = localNodesSelected.get(j);
 						if(!local.isFake()) {
-							align = new Alignment(global.getNode(), local.getNode(), sim, relation);
+							align = new Mapping(global.getNode(), local.getNode(), sim, relation);
 							if(!alignments.contains(align)) {
 								alignments.add(align);
 							}
@@ -751,9 +751,9 @@ public class Canvas extends VisualizationPanel implements MouseListener, ActionL
 		}
 	}
 	
-	private void displayAlignmentSet(Graphics g, AbstractMatcher matcher, AlignmentSet<Alignment> aset) {
+	private void displayAlignmentSet(Graphics g, AbstractMatcher matcher, Alignment<Mapping> aset) {
 		if(aset != null) {
-			Alignment a = null;
+			Mapping a = null;
 			for(int i = 0; i < aset.size(); i++) {
 				a = aset.getAlignment(i); 
 				displayAlignment(g, matcher, a);
@@ -762,7 +762,7 @@ public class Canvas extends VisualizationPanel implements MouseListener, ActionL
 		
 	}
 	
-	private void displayAlignment(Graphics graphic, AbstractMatcher m, Alignment a) {
+	private void displayAlignment(Graphics graphic, AbstractMatcher m, Mapping a) {
 		Vertex source, target;
 		ArrayList<Vertex> sourceVertexes = a.getEntity1().getVertexList();
 		ArrayList<Vertex> targetVertexes = a.getEntity2().getVertexList();
@@ -783,7 +783,7 @@ public class Canvas extends VisualizationPanel implements MouseListener, ActionL
 		}
 	}
 	
-	private void displayLine(Graphics graphic, AbstractMatcher m, Alignment a, Vertex source, Vertex target) {
+	private void displayLine(Graphics graphic, AbstractMatcher m, Mapping a, Vertex source, Vertex target) {
 		//if needed add the line to selected lines, we must do this both in SMO mode and normal mode
 		VertexLine line = new VertexLine();
 		line.source = source;
@@ -839,7 +839,7 @@ public class Canvas extends VisualizationPanel implements MouseListener, ActionL
 		Vertex highlightedNode;
 		Vertex source;
 		Vertex target;
-		Alignment a;
+		Mapping a;
 		for(int i = 0; i < selectedLines.size(); i++) {
 			line = selectedLines.get(i);
 			highlightedNode = line.getHighlightedNode();

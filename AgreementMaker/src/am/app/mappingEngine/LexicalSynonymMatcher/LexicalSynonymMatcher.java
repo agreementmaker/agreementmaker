@@ -10,7 +10,7 @@ import am.app.lexicon.GeneralLexiconSynSet;
 import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconSynSet;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.ontology.Node;
 
 public class LexicalSynonymMatcher extends AbstractMatcher {
@@ -56,7 +56,7 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
  */
 	
 	@Override
-	protected Alignment alignTwoNodes(Node source, Node target,
+	protected Mapping alignTwoNodes(Node source, Node target,
 			alignType typeOfNodes) throws Exception {
 
 
@@ -71,7 +71,7 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		
 		if( synonymSimilarity > 0.0d ) {
 			alignmentsfound++;
-			return new Alignment(source, target, synonymSimilarity);
+			return new Mapping(source, target, synonymSimilarity);
 		}
 		return null;
 	}

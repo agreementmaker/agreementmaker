@@ -27,9 +27,9 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
-import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -125,7 +125,7 @@ public class FedericoMatcher extends AbstractMatcher {
 				for (int j = 0; j < targetClassList.size(); j++) {
 					target = targetClassList.get(j);
 					if(matchIndividuals(source,target))
-						classesMatrix.set(i, j, new Alignment(source, target, 1.0));
+						classesMatrix.set(i, j, new Mapping(source, target, 1.0));
 				}
 			}
 		}
@@ -219,8 +219,8 @@ public class FedericoMatcher extends AbstractMatcher {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			AlignmentSet referenceSet = refMatcher.getAlignmentSet(); //class + properties
-			AlignmentSet evaluateSet;
+			Alignment referenceSet = refMatcher.getAlignmentSet(); //class + properties
+			Alignment evaluateSet;
 			ReferenceEvaluationData rd;
 			String report="Reference Evaluation Complete\n\n";
 			
@@ -281,7 +281,7 @@ public class FedericoMatcher extends AbstractMatcher {
 				sim = sim / Math.max(sList.size(),tList.size()); 				
 				
 				if(sim >= 0.5){
-					propertiesMatrix.set(i, j, new Alignment(sourcePropList.get(i), targetPropList.get(j), 1.0d));
+					propertiesMatrix.set(i, j, new Mapping(sourcePropList.get(i), targetPropList.get(j), 1.0d));
 					if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+sProp.getLocalName()+" "+tProp.getLocalName()+" BY PROP VALUES");
 				}
 			}
@@ -364,7 +364,7 @@ public class FedericoMatcher extends AbstractMatcher {
 					if(sSub.size()==1){
 						int row = getIndex(sourcePropList,sSub.get(0).getURI());
 						int col = getIndex(targetPropList,tSub.get(0).getURI()); 
-						propertiesMatrix.set( row, col, new Alignment( sourcePropList.get(row), targetPropList.get(col), 1.0d));
+						propertiesMatrix.set( row, col, new Mapping( sourcePropList.get(row), targetPropList.get(col), 1.0d));
 
 						if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+sSub.get(0).getLocalName()+" "+
 								tSub.get(0).getLocalName()+" BY SUBPROPERTIES");
@@ -384,7 +384,7 @@ public class FedericoMatcher extends AbstractMatcher {
 						if( Core.DEBUG_FCM ) System.out.println(aligns.get(k).getX()+" "+aligns.get(k).getY());
 						int row = getIndex(sourcePropList,sSub.get(aligns.get(k).getX()).getURI());
 						int col = getIndex(targetPropList,tSub.get(aligns.get(k).getY()).getURI()); 
-						propertiesMatrix.set( row, col, new Alignment( sourcePropList.get(row), targetPropList.get(col), 1.0d));
+						propertiesMatrix.set( row, col, new Mapping( sourcePropList.get(row), targetPropList.get(col), 1.0d));
 						if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+sSub.get(aligns.get(k).getX()).getLocalName()+" "
 								+tSub.get(aligns.get(k).getY()).getLocalName()+ " BY SUBPROPERTIES");
 					}
@@ -436,7 +436,7 @@ public class FedericoMatcher extends AbstractMatcher {
 		if(sProp.getRange()==null && tProp.getRange()==null)
 			rangeSim = 0.8;
 		
-		if(!unions && tProp.getRange()!=null &&
+		if(!unions && tProp.getRange()!=null && tProp.getRange().getURI() != null &&
 				Utils.primitiveType(tProp.getRange().getURI()))
 			rangeSim *= 0.75;
 		
@@ -502,7 +502,7 @@ public class FedericoMatcher extends AbstractMatcher {
 					if(sSub.size()==1){
 						int row = getIndex(sourceClassList,sSub.get(0).getURI());
 						int col = getIndex(targetClassList,tSub.get(0).getURI());
-						classesMatrix.set(row, col, new Alignment( sourceClassList.get(row), targetClassList.get(col), 1.0d));
+						classesMatrix.set(row, col, new Mapping( sourceClassList.get(row), targetClassList.get(col), 1.0d));
 						if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+sSub.get(0)+" "+tSub.get(0)+" BY SUBCLASSES");
 						continue;
 					}
@@ -611,7 +611,7 @@ public class FedericoMatcher extends AbstractMatcher {
 			if(index!=-1 && verbose) System.out.println(similarities.get(index));
 			
 			if(index!=-1 && similarities.get(index)>PROP_USAGE_THRESHOLD){
-				propertiesMatrix.set(i, index, new Alignment( sProp, targetPropList.get(index), 1.0d));
+				propertiesMatrix.set(i, index, new Mapping( sProp, targetPropList.get(index), 1.0d));
 				if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+sProp.getLocalName()+" "+targetPropList.get(index).getLocalName()+" BY PROPERTY USAGE");
 			}
 		}	
@@ -642,12 +642,12 @@ public class FedericoMatcher extends AbstractMatcher {
 		return restr;
 	}
 
-	protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
+	protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
 		//run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
-	    AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
+	    SimilarityMatrix matrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		Node source;
 		Node target;
-		Alignment alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
+		Mapping alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
 		
 		for(int i = 0; i < sourceList.size(); i++) {
 			source = sourceList.get(i);
@@ -666,7 +666,7 @@ public class FedericoMatcher extends AbstractMatcher {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private Alignment alignByStrings(Node source, Node target,
+	private Mapping alignByStrings(Node source, Node target,
 			alignType typeOfNodes) throws Exception {
 		
 		if(!source.getUri().startsWith(sourceOntology.getURI())||
@@ -681,7 +681,7 @@ public class FedericoMatcher extends AbstractMatcher {
 			if(nameSim>=SUBSTRING_TRESHOLD){
 				if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+source.getLocalName()+" "+
 						target.getLocalName()+" BY LOCALNAME");
-				return new Alignment(source, target, 1.0);
+				return new Mapping(source, target, 1.0);
 			}			
 		}
 		
@@ -690,7 +690,7 @@ public class FedericoMatcher extends AbstractMatcher {
 			if(commSim==1.0){
 				if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+source.getLocalName()+" "+
 						target.getLocalName()+" BY COMMENTS");
-				return new Alignment(source,target,commSim);
+				return new Mapping(source,target,commSim);
 			}
 		}
 		
@@ -706,7 +706,7 @@ public class FedericoMatcher extends AbstractMatcher {
 				if(labelSim >= LABEL_TRESHOLD){
 					if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+source.getLocalName()+" "+
 							target.getLocalName()+" BY LABELS");
-					return new Alignment(source,target,1.0);
+					return new Mapping(source,target,1.0);
 				}
 			}
 			if(tLabel!=null){
@@ -714,7 +714,7 @@ public class FedericoMatcher extends AbstractMatcher {
 				if(labelSim >= LABEL_TRESHOLD){
 					if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+source.getLocalName()+" "+
 							target.getLocalName()+" BY LABELS");
-					return new Alignment(source,target,1.0);
+					return new Mapping(source,target,1.0);
 				}
 				if(sLabel!=null && sLabel.length()>0){
 					labelSim = substringSimilarity(tLabel, sLabel);
@@ -723,7 +723,7 @@ public class FedericoMatcher extends AbstractMatcher {
 								+target.getLocalName());
 						if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+source.getLocalName()+" "+
 								target.getLocalName()+" BY LABELS");
-						return new Alignment(source,target,1.0);
+						return new Mapping(source,target,1.0);
 					}
 				}
 			}
@@ -797,7 +797,7 @@ public class FedericoMatcher extends AbstractMatcher {
 		
 		for (int i = 0; i < sourceOntology.getClassesList().size(); i++) {
 			for (int j = 0; j < targetOntology.getClassesList().size(); j++) {
-				Alignment aln = null;
+				Mapping aln = null;
 				try{
 					aln = classesMatrix.get(i, j);
 					Node currentNode = aln.getEntity1();
@@ -814,7 +814,7 @@ public class FedericoMatcher extends AbstractMatcher {
 							double sim2 = classesMatrix.getColMaxValues(findTargetIndex(bList.get(1)), 1)[0].getSimilarity();
 							if(sim1 < 0.5d && sim2 < 0.5d){
 								classesMatrix.set(findSourceIndex(aList.get(1)), findTargetIndex(bList.get(1)), 
-										new Alignment(findSourceNode(aList.get(1)), findTargetNode(bList.get(1)), 1.0d));
+										new Mapping(findSourceNode(aList.get(1)), findTargetNode(bList.get(1)), 1.0d));
 								System.out.println();
 							}
 						}
@@ -826,7 +826,7 @@ public class FedericoMatcher extends AbstractMatcher {
 								if(sim1 < 0.5d && sim2 < 0.5d){
 									//double sims = classesMatrix.getSimilarity(findSourceIndex(aList.get(1)), findTargetIndex(bList.get(0)));
 									classesMatrix.set(findSourceIndex(aList.get(1)), findTargetIndex(bList.get(0)), 
-											new Alignment(findSourceNode(aList.get(1)), findTargetNode(bList.get(0)), 1.0d));
+											new Mapping(findSourceNode(aList.get(1)), findTargetNode(bList.get(0)), 1.0d));
 									System.out.println();
 								}
 								
@@ -845,7 +845,7 @@ public class FedericoMatcher extends AbstractMatcher {
 							double sim2 = classesMatrix.getColMaxValues(findTargetIndex(bList.get(1)), 1)[0].getSimilarity();
 							if(sim1 < 0.5d && sim2 < 0.5d){
 								classesMatrix.set(findSourceIndex(aList.get(0)), findTargetIndex(bList.get(1)), 
-										new Alignment(findSourceNode(aList.get(0)), findTargetNode(bList.get(1)), 1.0d));
+										new Mapping(findSourceNode(aList.get(0)), findTargetNode(bList.get(1)), 1.0d));
 								System.out.println();
 							}
 						}
@@ -856,7 +856,7 @@ public class FedericoMatcher extends AbstractMatcher {
 								double sim2 = classesMatrix.getColMaxValues(findTargetIndex(bList.get(0)), 1)[0].getSimilarity();
 								if(sim1 < 0.5d && sim2 < 0.5d){
 									classesMatrix.set(findSourceIndex(aList.get(0)), findTargetIndex(bList.get(0)), 
-											new Alignment(findSourceNode(aList.get(0)), findTargetNode(bList.get(0)), 1.0d));
+											new Mapping(findSourceNode(aList.get(0)), findTargetNode(bList.get(0)), 1.0d));
 									System.out.println();
 								}
 							}
@@ -875,7 +875,7 @@ public class FedericoMatcher extends AbstractMatcher {
 	 * @return int index
 	 */
 	private int findSourceIndex(OntClass c){
-		Alignment aln = null;
+		Mapping aln = null;
 		for(int i = 0; i < sourceOntology.getClassesList().size(); i++) {
 			try{
 				aln = classesMatrix.get(i, 0);
@@ -897,7 +897,7 @@ public class FedericoMatcher extends AbstractMatcher {
 	 * @return Node represents the OntClass
 	 */
 	private Node findSourceNode(OntClass c){
-		Alignment aln = null;
+		Mapping aln = null;
 		for(int i = 0; i < sourceOntology.getClassesList().size(); i++) {
 			try{
 				aln = classesMatrix.get(i, 0);
@@ -919,7 +919,7 @@ public class FedericoMatcher extends AbstractMatcher {
 	 * @return int index
 	 */
 	private int findTargetIndex(OntClass c){
-		Alignment aln = null;
+		Mapping aln = null;
 		for(int i = 0; i < targetOntology.getClassesList().size(); i++) {
 			try{
 				aln = classesMatrix.get(0, i);
@@ -941,7 +941,7 @@ public class FedericoMatcher extends AbstractMatcher {
 	 * @return Node represents the OntClass
 	 */
 	private Node findTargetNode(OntClass c){
-		Alignment aln = null;
+		Mapping aln = null;
 		for(int i = 0; i < targetOntology.getClassesList().size(); i++) {
 			try{
 				aln = classesMatrix.get(0, i);
@@ -980,7 +980,7 @@ public class FedericoMatcher extends AbstractMatcher {
 			}
 			
 			if(index!=-1 && similarities.get(index)>=SUBCLASS_TRESHOLD){
-				classesMatrix.set(i, index, new Alignment(source, targetClassList.get(index), 1.0d));
+				classesMatrix.set(i, index, new Mapping(source, targetClassList.get(index), 1.0d));
 				if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+source.getLocalName()+" "
 						+targetClassList.get(index).getLocalName()+" BY SUBCLASSOF");
 			}
@@ -1093,7 +1093,7 @@ public class FedericoMatcher extends AbstractMatcher {
 				if(sim>=RANGE_DOMAIN_THRESHOLD){
 					if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+sourcePropList.get(i).getLocalName()+" "
 							+targetPropList.get(j).getLocalName()+" BY RANGE/DOMAIN");
-					propertiesMatrix.set(i,j,new Alignment(sourcePropList.get(i),targetPropList.get(j), 1.0));				
+					propertiesMatrix.set(i,j,new Mapping(sourcePropList.get(i),targetPropList.get(j), 1.0));				
 				}			
 			}
 		}		
@@ -1438,7 +1438,7 @@ public class FedericoMatcher extends AbstractMatcher {
 						Node target = get(targetPropList, uri2);
 						//System.out.println(target);
 						if (source != null && target != null) {
-							propertiesMatrix.set(sourcePropList.indexOf(source),  targetPropList.indexOf(target), new Alignment(source, target, 1.0d) );
+							propertiesMatrix.set(sourcePropList.indexOf(source),  targetPropList.indexOf(target), new Mapping(source, target, 1.0d) );
 							//propertiesMatrix.setSimilarity(sourcePropList.indexOf(source), targetPropList.indexOf(target), 1.0);
 						}
 						propertyMatched = true;

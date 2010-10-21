@@ -38,8 +38,8 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
@@ -1124,11 +1124,11 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		
 		// Get the Class alignments.
 		
-		AlignmentSet<Alignment> classesMatchings = m.getClassAlignmentSet();
+		Alignment<Mapping> classesMatchings = m.getClassAlignmentSet();
 		if( classesMatchings != null ) {
-			Iterator<Alignment> alignmentIter = classesMatchings.iterator();
+			Iterator<Mapping> alignmentIter = classesMatchings.iterator();
 			while( alignmentIter.hasNext() ) {
-				Alignment alignment = alignmentIter.next();
+				Mapping alignment = alignmentIter.next();
 
 				Node e1 = alignment.getEntity1();
 				Node e2 = alignment.getEntity2();
@@ -1147,11 +1147,11 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 
 		// Get the Properties alignments.
 		
-		AlignmentSet<Alignment> propertiesMatchings = m.getPropertyAlignmentSet();
+		Alignment<Mapping> propertiesMatchings = m.getPropertyAlignmentSet();
 		if( propertiesMatchings != null ) {
-			Iterator<Alignment> alignmentIter = propertiesMatchings.iterator();
+			Iterator<Mapping> alignmentIter = propertiesMatchings.iterator();
 			while( alignmentIter.hasNext() ) {
-				Alignment alignment = alignmentIter.next();
+				Mapping alignment = alignmentIter.next();
 				
 				Node e1 = alignment.getEntity1();
 				Node e2 = alignment.getEntity2();
@@ -1903,13 +1903,13 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			actionCommand == "CREATE_SUPERSETCOMPLETE" || 
 			actionCommand == "CREATE_OTHER" ) {
 		
-			String relation = Alignment.EQUIVALENCE;;
+			String relation = Mapping.EQUIVALENCE;;
 			double sim = 0;
-			ArrayList<Alignment> userMappings = new ArrayList<Alignment>();
+			ArrayList<Mapping> userMappings = new ArrayList<Mapping>();
 			
 			
 			if( actionCommand == "CREATE_DEFAULT" ) {
-				relation = Alignment.EQUIVALENCE;
+				relation = Mapping.EQUIVALENCE;
 				sim = 1.0d;
 			} else {
 				// ask the user for the similarity value
@@ -1952,11 +1952,11 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				}
 			}
 			
-			if( actionCommand == "CREATE_EQUIVALENCE" ) relation = Alignment.EQUIVALENCE;
-			if( actionCommand == "CREATE_SUBSET" ) relation = Alignment.SUBSET;
-			if( actionCommand == "CREATE_SUBSETCOMPLETE" ) relation = Alignment.SUBSETCOMPLETE;
-			if( actionCommand == "CREATE_SUPERSET" ) relation = Alignment.SUPERSET;
-			if( actionCommand == "CREATE_SUPERSETCOMPLETE") relation = Alignment.SUPERSETCOMPLETE;
+			if( actionCommand == "CREATE_EQUIVALENCE" ) relation = Mapping.EQUIVALENCE;
+			if( actionCommand == "CREATE_SUBSET" ) relation = Mapping.SUBSET;
+			if( actionCommand == "CREATE_SUBSETCOMPLETE" ) relation = Mapping.SUBSETCOMPLETE;
+			if( actionCommand == "CREATE_SUPERSET" ) relation = Mapping.SUPERSET;
+			if( actionCommand == "CREATE_SUPERSETCOMPLETE") relation = Mapping.SUPERSETCOMPLETE;
 			
 
 			// **************** create the alignments
@@ -1993,11 +1993,11 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 					e1.printStackTrace();
 				}
 				
-				Alignment a;
+				Mapping a;
 				if( ln.getGraphicalData().ontologyID == leftOntologyID ) { // this if statement fixes a small display bug
-					a = new Alignment( n1, n2, sim, relation, type);
+					a = new Mapping( n1, n2, sim, relation, type);
 				} else {
-					a = new Alignment( n2, n1, sim, relation, type);
+					a = new Mapping( n2, n1, sim, relation, type);
 				}
 				
 				userMappings.add(a);

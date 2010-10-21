@@ -2,7 +2,7 @@ package am.app.mappingEngine.testMatchers;
 
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AlignmentMatrix;
+import am.app.mappingEngine.SimilarityMatrix;
 
 public class CopyMatcher extends AbstractMatcher {
 	
@@ -31,11 +31,11 @@ public class CopyMatcher extends AbstractMatcher {
     protected void align() {
     	AbstractMatcher a = inputMatchers.get(0);
 		if(alignClass) {
-			classesMatrix = (AlignmentMatrix)a.getClassesMatrix().clone();
+			classesMatrix = (SimilarityMatrix)a.getClassesMatrix().clone();
 			//classesMatrix.show();
 		}
 		if(alignProp) {
-			propertiesMatrix = (AlignmentMatrix)a.getPropertiesMatrix().clone();
+			propertiesMatrix = (SimilarityMatrix)a.getPropertiesMatrix().clone();
 		}
 
 	}

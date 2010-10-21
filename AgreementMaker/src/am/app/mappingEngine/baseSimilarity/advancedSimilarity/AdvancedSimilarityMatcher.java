@@ -7,9 +7,9 @@ import java.util.ArrayList;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
-import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
@@ -67,7 +67,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 * @see am.app.mappingEngine.BaseSimilarityMatcher#alignTwoNodes(Node source, Node target, alignType typeOfNodes)
 	 * @author michele
 	 */
-	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
+	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
 		// TODO: works no more while returning null... no sparse matrix now.... creating 0.0 alignment
 		
 		// Step 0: tokenize source and target nodes (if possible) and separate by relevance
@@ -94,7 +94,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		double simValueContribution = nonContentWordCheck(tokenized_sLN, tokenized_tLN);
 		
 		if(simValueContribution == NO_MATCH){ // immediately discard those considered unmatchable
-			return new Alignment(source, target, 0);
+			return new Mapping(source, target, 0);
 		}
 		// Step 2: check out for similarity between meaningful words
 		else {
@@ -107,13 +107,13 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		
 		if(simValue > 0.0){
 			if(simValueContribution > 0.0){
-				return new Alignment(source, target, Math.min(1, simValue * (1.0 + simValueContribution)));
+				return new Mapping(source, target, Math.min(1, simValue * (1.0 + simValueContribution)));
 			}
 			else{
-				return new Alignment(source, target, Math.min(1, simValue));
+				return new Mapping(source, target, Math.min(1, simValue));
 			}
 		}
-		return new Alignment(source, target, 0);
+		return new Mapping(source, target, 0);
 	}
 	
 	/**
@@ -135,7 +135,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		ParametricStringMatcher localMatcher = new ParametricStringMatcher();
 		localMatcher.setParam(localMatcherParams);
 		localMatcher.initializeNormalizer();
-		AlignmentMatrix localMatrix = new AlignmentMatrix(source.size(), target.size(), typeOfNodes);
+		SimilarityMatrix localMatrix = new SimilarityMatrix(source.size(), target.size(), typeOfNodes);
 		
 		/* ------------- BEGIN FOR #1 --------------- */
 		double tempValue = 0.0;
@@ -150,7 +150,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 				t = target.get(j).toLowerCase();
 				tempValue = ((ParametricStringMatcher) localMatcher).performStringSimilarity(s, t);
 				//localMatrix.setSimilarity(i, j, tempValue);
-				localMatrix.set(i, j, new Alignment(new Node(i, s, typeOfNodes.toString(), sourceOntology.getIndex()),
+				localMatrix.set(i, j, new Mapping(new Node(i, s, typeOfNodes.toString(), sourceOntology.getIndex()),
 													new Node(j, t, typeOfNodes.toString(), targetOntology.getIndex()),
 													tempValue));
 				
@@ -161,7 +161,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		}
 		/* ------------- END FOR #1 --------------- */
 
-		ArrayList<Alignment> localResult = localMatrix.chooseBestN();
+		ArrayList<Mapping> localResult = localMatrix.chooseBestN();
 		
 		double simValue = 0;
 		for(int i = 0; i < localResult.size(); i++){
@@ -240,12 +240,12 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	/**
 	 * Overridden method
 	 * Select best instead of solving the stable marriage problem
-	 * @see am.app.mappingEngine.BaseSimilarityMatcher#oneToOneMatching(AlignmentMatrix matrix)
+	 * @see am.app.mappingEngine.BaseSimilarityMatcher#oneToOneMatching(SimilarityMatrix matrix)
 	 * @author michele
 	 */
-	protected AlignmentSet<Alignment> oneToOneMatching(AlignmentMatrix matrix){
-		ArrayList<Alignment> list = matrix.chooseBestN();
-		AlignmentSet<Alignment> result = new AlignmentSet<Alignment>();
+	protected Alignment<Mapping> oneToOneMatching(SimilarityMatrix matrix){
+		ArrayList<Mapping> list = matrix.chooseBestN();
+		Alignment<Mapping> result = new Alignment<Mapping>();
 		for(int i = 0; i < list.size(); i++){
 			if(list.get(i).getSimilarity() < threshold){
 				break;

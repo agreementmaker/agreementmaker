@@ -20,7 +20,7 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
 	
 	
 	
-    protected AlignmentMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) throws Exception {
+    protected SimilarityMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) throws Exception {
     	if(inputMatchers.size() == 0){ //run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
 			return super.alignProperties(sourcePropList, targetPropList);
 		}
@@ -30,7 +30,7 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
 	}
 
 
-	protected AlignmentMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList)  throws Exception{
+	protected SimilarityMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList)  throws Exception{
     	if(inputMatchers.size() == 0){ //run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
 			return super.alignClasses(sourceClassList, targetClassList);
 		}
@@ -39,15 +39,15 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
     	}
 	}
 	
-    protected AlignmentMatrix alignUnmappedNodes(ArrayList<Node> sourceList, ArrayList<Node> targetList, AlignmentMatrix inputMatrix,
-			AlignmentSet inputAlignmentSet, alignType typeOfNodes) throws Exception {
+    protected SimilarityMatrix alignUnmappedNodes(ArrayList<Node> sourceList, ArrayList<Node> targetList, SimilarityMatrix inputMatrix,
+			Alignment inputAlignmentSet, alignType typeOfNodes) throws Exception {
     	
     	MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, maxSourceAlign, maxTargetAlign);
-    	AlignmentMatrix matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
+    	SimilarityMatrix matrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		Node source;
 		Node target;
-		Alignment alignment; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
-		Alignment inputAlignment;
+		Mapping alignment; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
+		Mapping inputAlignment;
 		for(int i = 0; i < sourceList.size(); i++) {
 			source = sourceList.get(i);
 			for(int j = 0; j < targetList.size(); j++) {
@@ -65,13 +65,13 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
 						if(inputAlignment == null)
 							alignment = null;
 						else
-							alignment = new Alignment(inputAlignment.getEntity1(), inputAlignment.getEntity2(), inputAlignment.getSimilarity(), inputAlignment.getRelation());
+							alignment = new Mapping(inputAlignment.getEntity1(), inputAlignment.getEntity2(), inputAlignment.getSimilarity(), inputAlignment.getRelation());
 					}
 					else{
 						alignment = null;
 					}
 					if(alignment == null)
-						alignment = new Alignment(source, target, 0.0d, Alignment.SUBSET);
+						alignment = new Mapping(source, target, 0.0d, Mapping.SUBSET);
 					matrix.set(i,j,alignment);
 					if( isProgressDisplayed() ) stepDone(); // we have completed one step
 				}
@@ -82,17 +82,17 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
 		return matrix;
 	}
     
-    protected Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
+    protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
 		//TO BE IMPLEMENTED BY THE ALGORITHM, THIS IS JUST A FAKE ABSTRACT METHOD
 		double sim;
-		String rel = Alignment.EQUIVALENCE;
+		String rel = Mapping.EQUIVALENCE;
 		if(source.getLocalName().equals(target.getLocalName())) {
 			sim = 1;
 		}
 		else {
 			sim = 0;
 		}
-		return new Alignment(source, target, sim, rel);
+		return new Mapping(source, target, sim, rel);
 	}
 	
 	

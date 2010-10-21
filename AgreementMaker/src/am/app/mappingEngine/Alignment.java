@@ -1,5 +1,6 @@
-
 package am.app.mappingEngine;
+
+
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,216 +9,233 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
 
+import am.app.feedback.CandidateConcept.ontology;
 import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.ontology.*;
-import am.output.OutputController;
+import am.app.ontology.Node;
 
-
-public class Alignment implements Serializable
+/**
+ * An Alignment is a set of mappings between concepts from two ontologies.
+ * An Alignment is meant to represent a complete set of mappings between the ontologies.
+ *
+ * @param <E>  This represents a Mapping object.
+ */
+public class Alignment<E extends Mapping> implements Iterable<E>, Serializable
 {
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = 7594296130576633495L;
+	private static final long serialVersionUID = -8090732896473529999L;
 	
-	private Node entity1 = null;
-    private Node entity2 = null;
-    private double similarity = 0;
-    private String relation = null;
-    
-    private alignType typeOfConcepts = null;
-    
-    //THE FONT USED IN THE CANVAS MUST BE A UNICODE FONT TO VIEW THIS SPECIAL CHARS
-    public final static String EQUIVALENCE = "=";
-    public final static String SUBSET = "\u2282";
-    public final static String SUPERSET = "\u2283";
-    public final static String SUBSETCOMPLETE = "\u2286";
-    public final static String SUPERSETCOMPLETE = "\u2287";
+	protected ArrayList<E> collection = null;
 
-    public Alignment(Node e1, Node e2, double sim, String r, alignType tyoc)
+    public Alignment()
     {
-        entity1 = e1;
-        entity2 = e2;
-        similarity = sim;
-        relation = r;
-        typeOfConcepts = tyoc;
+        collection = new ArrayList<E>();
+    }
+
+    public void addAlignment(E alignment)
+    {
+        if( alignment != null ) collection.add(alignment);
     }
     
-    public Alignment(Node e1, Node e2, double sim, String r)
+    public void addAll(Alignment<E> a)
     {
-        entity1 = e1;
-        entity2 = e2;
-        similarity = sim;
-        relation = r;
+    	if(a != null) {
+    		for(int i= 0; i<a.size();i++) {
+    			E alignment = a.getAlignment(i);
+    			collection.add(alignment);
+    		}
+    	}
+        
     }
 
-    public Alignment(Node e1, Node e2, double sim)
+    // adds all the alignments in the set a, but checking for duplicates, making sure it doesn't add duplicate alignments
+    public void addAllNoDuplicate(Alignment<E> a)
     {
-        entity1 = e1;
-        entity2 = e2;
-        similarity = sim;
-        relation = "=";
-    }
-
-    public Alignment(Node e1, Node e2)
+    	if(a != null) {
+    		for(int i= 0; i<a.size();i++) {
+    			E alignment = a.getAlignment(i);
+    			if( !contains( alignment ) ) addAlignment(alignment);
+    		}
+    	}
+        
+    }    
+    
+    public E getAlignment(int index)
     {
-        entity1 = e1;
-        entity2 = e2;
-        similarity = 1.0;
-        relation = "=";
-    }
-
-    public Alignment(double s) {
-		//This is a fake contructor to use an alignment as a container for sim and relation, to move both values between methods
-    	similarity = s;
-    	relation = EQUIVALENCE;
-	}
-
-	public Alignment(Alignment old) {
-		this.entity1 = old.entity1;
-	    this.entity2 = old.entity2;
-	    this.similarity = old.similarity;
-	    this.relation = old.relation;
-	    
-	    this.typeOfConcepts = old.typeOfConcepts;
-	}
-
-	public Node getEntity1()
-    {
-        return entity1;
-    }
-
-    public void setEntity1(Node e1)
-    {
-        entity1 = e1;
-    }
-
-    public Node getEntity2()
-    {
-        return entity2;
-    }
-
-    public void setEntity2(Node e2)
-    {
-        entity2 = e2;
-    }
-
-    public void setSimilarity(double sim)
-    {
-        similarity = sim;
-    }
-
-    public double getSimilarity()
-    {
-        return similarity;
-    }
-
-
-
-    public String getRelation()
-    {
-        return relation;
-    }
-
-    public void setRelation(String r)
-    {
-        relation = r;
-    }
-
-    public String filter(String s)
-    {
-        if (s == null) {
-            return null;
+        if (index >= 0 && index < size()) {
+            return collection.get(index);
         } else {
-            int index = s.lastIndexOf("#");
-            if (index >= 0) {
-                return s.substring(index + 1);
-            } else {
-                index = s.lastIndexOf("/");
-                if (index >= 0) {
-                    return s.substring(index + 1);
-                } else { 
-                    return s;
-                }
-            }
+            System.err.println("getAlignmentError: Index is out of bound.");
+            return null;
         }
     }
-    
-    /**
-     * Returns true if the input Mapping is considering the same source and target concepts.
-     * Does not check for similarity equality.
-     */
-    public boolean equals(Alignment alignment)
+
+    public double getSimilarity(Node left, Node right)
     {
-        if (entity1.equals(alignment.getEntity1()) 
-                && entity2.equals(alignment.getEntity2())) {
+        E align = contains(left, right);
+        if (align == null) {
+            return 0;
+        } else {
+            return align.getSimilarity();
+        }
+    }
+
+    public void setSimilarity(Node left, Node right, double sim)
+    {
+        E align = contains(left, right);
+        if (align == null) {
+            System.err.println("setSimilarityError: Cannot find such alignment.");
+        } else {
+            align.setSimilarity(sim);
+        }
+    }
+
+    public boolean removeAlignment(int index)
+    {
+        if (index >= 0 && index < size()) {
+            collection.remove(index);
             return true;
         } else {
+            System.err.println("removeAlignmentError: Index is out of bound.");
             return false;
         }
     }
-    
 
+    public boolean removeAlignment(Node left, Node right)
+    {
+        for (int i = 0, n = size(); i < n; i++) {
+            Mapping align = (Mapping) collection.get(i);
+            if (align.getEntity1().equals(left) && align.getEntity2().equals(right)) {
+                collection.remove(i);
+                return true;
+            }
+        }
+        System.err.println("removeAlignmentError: Cannot find such alignment.");
+        return false;
+    }
     
-    public String toString() {
-    	return "("+entity1.toString()+" -> "+entity2.toString()+": "+similarity+" "+relation+" )";
+    public Mapping getAlignment(Node left, Node right)
+    {
+        for (int i = 0, n = size(); i < n; i++) {
+            Mapping align = (Mapping) collection.get(i);
+            if (align.getEntity1().equals(left) && align.getEntity2().equals(right)) {
+                return align;
+            }
+        }
+        System.err.println("getAlignmentError: Cannot find such alignment.");
+        return null;
+    }    
+
+    public E contains(Node left, Node right)
+    {
+        for (int i = 0, n = size(); i < n; i++) {
+            E align = collection.get(i);
+            if (align.getEntity1().equals(left) && align.getEntity2().equals(right)) {
+                return align;
+            }
+        }
+        return null;
+    }
+    
+    public E contains(Node nod, ontology o)
+    {
+        for (int i = 0, n = size(); i < n; i++) {
+            E align = collection.get(i);
+            if(o == ontology.source){
+            	if(align.getEntity1().equals(nod))
+            		return align;
+            }
+            else{
+            	if(align.getEntity2().equals(nod))
+            		return align;
+            }
+        }
+        return null;
+    }
+    
+    
+    public boolean contains( E alignment ) {
+        for (int i = 0, n = size(); i < n; i++) {
+            E align = collection.get(i);
+            Node left = alignment.getEntity1();
+            Node right = alignment.getEntity2();
+            if (align.getEntity1().equals(left) && align.getEntity2().equals(right)) {
+                return true;
+            }
+        }
+        return false;
     }
     
 
-	public String getString() {
-		return entity1.getLocalName()+"\t"+OutputController.arrow+"\t"+entity2.getLocalName()+"\t"+getSimilarity()+"\t"+getRelation()+"\n";
-	}
+    public Alignment<E> cut(double threshold)
+    {
+        for (int i = 0; i < size(); i++) {
+            E align = collection.get(i);
+            if (align.getSimilarity() <= threshold) {
+                removeAlignment(i);
+                i--;
+            }
+        }
+        return this;
+    }
+
+    public int size()
+    {
+        return collection.size();
+    }
+
+    public int size(double threshold)
+    {
+        int count = 0;
+        for (int i = 0, n = size(); i < n; i++) {
+            E align = collection.get(i);
+            if (align.getSimilarity() > threshold) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public void show()
+    {
+        for (int i = 0, n = size(); i < n; i++) {
+            E align = collection.get(i);
+            System.out.println("entity1=" + align.getEntity1().toString());
+            System.out.println("entity2=" + align.getEntity2().toString());
+            System.out.println("similarity=" + align.getSimilarity());
+            System.out.println("relation=" + align.getRelation() + "\n");
+        }
+    }
+
 	
-	public int hashCode(){
-		//relation may be added to this definition 
-		//map can be replaced with string except empty string
-		//this method is used in the PRAintegrationMatcher
-		//and in the conference conflict resolution.
-		return (entity1.getIndex()+"map"+entity2.getIndex()).hashCode();
-	}
-	
-	public boolean equals(Object o){
-		if(o instanceof Alignment){
-			Alignment alignment = (Alignment)o;
-	        if (entity1.equals(alignment.getEntity1()) 
-	                && entity2.equals(alignment.getEntity2())) {
-	            return true;
-	        } else {
-	            return false;
-	        }
+    public String getStringList() {
+		String result = "";
+		E a;
+		for(int i = 0; i < collection.size(); i++) {
+			a = collection.get(i);
+			result += a.getString();
+			if(i == collection.size()-1)
+				result+= "\n";
 		}
-		return false;
+		return result;
 	}
-	
-	public int getSourceKey(){
-		//used in the Conflict resulotion method of the conference track
-		//it is based on the idea that in a 1-1 matching a mapping is identified by the sourcenode
-		return getEntity1().getIndex();
-	}
-	
-	public int getTargetKey(){
-		//used in the Conflict resulotion method of the conference track
-		//it is based on the idea that in a 1-1 matching a mapping is identified by the sourcenode
-		return getEntity2().getIndex();
-	}
-	
-	public void setAlignmentType( alignType t ) {
-		typeOfConcepts = t;
-	}
-	
-	public alignType getAlignmentType() {
-		return typeOfConcepts;
-	}
-	
-	/** ****************** Serialization methods *******************/
+    
+    public Iterator<E> iterator() {
+    	return collection.iterator();
+    }
+    
+    /** ****************** Serialization methods *******************/
 	
 	  /**
 	   * readObject: gets the state of the object.
 	   * @author michele
 	   */
-	  protected Alignment readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
-		  Alignment thisClass = (Alignment) in.readObject();
+	  protected Alignment<Mapping> readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
+		  Alignment<Mapping> thisClass = (Alignment<Mapping>) in.readObject();
 		  in.close();
 		  return thisClass;
 	  }
@@ -232,10 +250,10 @@ public class Alignment implements Serializable
 	  }
 
 	  protected void testSerialization(){
-		  Alignment a = null;
+		  Alignment<Mapping> as = null;
 			try {
 				writeObject(new ObjectOutputStream(new FileOutputStream("testFile")));
-				a = readObject(new ObjectInputStream(new FileInputStream("testFile")));
+				as = readObject(new ObjectInputStream(new FileInputStream("testFile")));
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -247,6 +265,6 @@ public class Alignment implements Serializable
 				e.printStackTrace();
 			}
 			
-			System.out.println(a.similarity);
+			System.out.println(as.getStringList());
 	  }
 }

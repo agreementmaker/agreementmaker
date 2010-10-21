@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.userInterface.Colors;
 import am.userInterface.canvas2.utility.Canvas2Layout;
 
@@ -25,7 +25,7 @@ public class MappingData extends GraphicalData {
 	public int matcherID;
 	public Color color = Colors.mapped;
 	public MappingType mappingType;
-	public Alignment alignment = null;
+	public Mapping alignment = null;
 	
 	public MappingData(int x1, int y1, int width, int height, Canvas2Layout l, 
 						OntResource res1, OntResource res2, int OntID1, int OntID2, int mID, MappingType t ) {
@@ -46,7 +46,7 @@ public class MappingData extends GraphicalData {
 	}
 
 	public MappingData(int x1, int y1, int width, int height, Canvas2Layout l, 
-			OntResource res1, Alignment a, int OntID1, int OntID2, int mID, MappingType t ) {
+			OntResource res1, Mapping a, int OntID1, int OntID2, int mID, MappingType t ) {
 		super(x1, y1, width, height, res1, NodeType.MAPPING, l);
 
 		if( a.getEntity1().getResource().equals(res1) ) {

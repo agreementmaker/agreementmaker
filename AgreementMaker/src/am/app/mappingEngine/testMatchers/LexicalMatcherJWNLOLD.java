@@ -4,7 +4,7 @@ import java.io.FileInputStream;
 import java.util.Iterator;
 import java.util.List;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.ontology.Node;
 import net.didion.jwnl.JWNL;
@@ -48,7 +48,7 @@ public class LexicalMatcherJWNLOLD extends AbstractMatcher{
 	/**
 	 * Function aligns 2 nodes using WordNet:
 	 */
-	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
 		
 		//Get local name		
 		String sourceName= source.getLocalName();
@@ -123,7 +123,7 @@ public class LexicalMatcherJWNLOLD extends AbstractMatcher{
 			max = max2;
 		}
 		
-		return new Alignment(source, target, max, Alignment.EQUIVALENCE);
+		return new Mapping(source, target, max, Mapping.EQUIVALENCE);
 	}
 	
 	/**

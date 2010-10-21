@@ -8,7 +8,7 @@ import edu.smu.tspell.wordnet.SynsetType;
 import edu.smu.tspell.wordnet.WordNetDatabase;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.StringUtil.PorterStemmer;
@@ -91,7 +91,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	/*
 	 * This function does the main base similarity algorithm.
 	 */
-	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
+	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
 
 
 		
@@ -148,8 +148,8 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			
 			// Step 2:	If the labels are equal, then return a similarity of 1
 			if( sourceName.equalsIgnoreCase(targetName) ) {
-				String relation = Alignment.EQUIVALENCE;
-				return new Alignment(source, target, 1.0d, relation);
+				String relation = Mapping.EQUIVALENCE;
+				return new Mapping(source, target, 1.0d, relation);
 			}
 			// if we haven't initialized our wordnet database, do it
 			if( wordnet == null )
@@ -167,14 +167,14 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			
 			float verbSimilarity = getSensesComparison(sourceVerbs, targetVerbs);
 			
-			String rel = Alignment.EQUIVALENCE;
+			String rel = Mapping.EQUIVALENCE;
 	        
 			// select the best similarity found. (either verb or noun)
 	        if( nounSimilarity > verbSimilarity ) {
-	        	return new Alignment(source, target, nounSimilarity, rel);
+	        	return new Mapping(source, target, nounSimilarity, rel);
 	        }
 	        else {
-	        	return new Alignment(source, target, verbSimilarity, rel);
+	        	return new Mapping(source, target, verbSimilarity, rel);
 	        }
 			
 		}
@@ -188,25 +188,25 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			String tLocalname = target.getLocalName();
 			
 			if(sLocalname.equalsIgnoreCase(tLocalname))
-				return new Alignment( source, target, 1d, Alignment.EQUIVALENCE);
+				return new Mapping( source, target, 1d, Mapping.EQUIVALENCE);
 			//all normalization without stemming and digits return 0.95
 			
 			String sProcessedLocalnames = norm1.normalize(sLocalname);
 			String tProcessedLocalnames = norm1.normalize(tLocalname);
 			if(sProcessedLocalnames.equals(tProcessedLocalnames))
-				return new Alignment( source, target, 0.95d, Alignment.EQUIVALENCE);
+				return new Mapping( source, target, 0.95d, Mapping.EQUIVALENCE);
 			//all normalization without digits return 0.90
 
 			sProcessedLocalnames = norm2.normalize(sLocalname);
 			tProcessedLocalnames = norm2.normalize(tLocalname);
 			if(sProcessedLocalnames.equals(tProcessedLocalnames))
-				return new Alignment( source, target, 0.9d, Alignment.EQUIVALENCE);
+				return new Mapping( source, target, 0.9d, Mapping.EQUIVALENCE);
 			//all normalization return 0.8
 
 			sProcessedLocalnames = norm3.normalize(sLocalname);
 			tProcessedLocalnames = norm3.normalize(tLocalname);
 			if(sProcessedLocalnames.equals(tProcessedLocalnames))
-				return new Alignment( source, target, 0.8d, Alignment.EQUIVALENCE);
+				return new Mapping( source, target, 0.8d, Mapping.EQUIVALENCE);
 	
 			//FOCUS ON LABELS
 			//equivalence return 1
@@ -214,7 +214,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			String tLabel = target.getLabel();
 			if( !(sLabel.equals("") || tLabel.equals("")) ){
 				if(sLabel.equalsIgnoreCase(tLabel))
-					return new Alignment( source, target, 1, Alignment.EQUIVALENCE);
+					return new Mapping( source, target, 1, Mapping.EQUIVALENCE);
 				//all normalization without stemming and digits return 0.95
 				
 				
@@ -222,7 +222,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 				String sProcessedLabel = norm1.normalize(sLabel);
 				String tProcessedLabel = norm1.normalize(tLabel);
 				if(sProcessedLabel.equals(tProcessedLabel))
-					return new Alignment( source, target, 0.95d, Alignment.EQUIVALENCE);
+					return new Mapping( source, target, 0.95d, Mapping.EQUIVALENCE);
 				//apply stem return 0.90 
 				
 				
@@ -230,17 +230,17 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 				sProcessedLabel = norm2.normalize(sLabel);
 				tProcessedLabel = norm2.normalize(tLabel);
 				if(sProcessedLabel.equals(tProcessedLabel))
-					return new Alignment( source, target, 0.9d, Alignment.EQUIVALENCE);
+					return new Mapping( source, target, 0.9d, Mapping.EQUIVALENCE);
 				//apply normDigits return 0.8
 				
 
 				sProcessedLabel = norm3.normalize(sLabel);
 				tProcessedLabel = norm3.normalize(tLabel);
 				if(sProcessedLabel.equals(tProcessedLabel))
-					return new Alignment( source, target, 0.8d, Alignment.EQUIVALENCE);
+					return new Mapping( source, target, 0.8d, Mapping.EQUIVALENCE);
 			}
 			//none of the above
-			return new  Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
+			return new  Mapping( source, target, 0.0d, Mapping.EQUIVALENCE);
 		}
 		
 		

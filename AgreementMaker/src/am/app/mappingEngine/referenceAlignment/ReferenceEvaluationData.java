@@ -1,6 +1,6 @@
 package am.app.mappingEngine.referenceAlignment;
 import am.Utility;
-import am.app.mappingEngine.AlignmentSet;
+import am.app.mappingEngine.Alignment;
 
 public class ReferenceEvaluationData
 {
@@ -10,36 +10,36 @@ public class ReferenceEvaluationData
     private double precision = 0;
     private double recall = 0;
     private double fmeasure = 0;
-    private AlignmentSet errorAlignments = null;
-    private AlignmentSet correctAlignments = null;
-    private AlignmentSet lostAlignments = null;
+    private Alignment errorAlignments = null;
+    private Alignment correctAlignments = null;
+    private Alignment lostAlignments = null;
   
-    public AlignmentSet getCorrectAlignments()
+    public Alignment getCorrectAlignments()
     {
         return correctAlignments;
     }
 
-    public void setCorrectAlignments(AlignmentSet ca)
+    public void setCorrectAlignments(Alignment ca)
     {
         correctAlignments = ca;
     }
 
-    public AlignmentSet getLostAlignments()
+    public Alignment getLostAlignments()
     {
         return lostAlignments;
     }
 
-    public void setLostAlignments(AlignmentSet la)
+    public void setLostAlignments(Alignment la)
     {
         lostAlignments = la;
     }
 
-    public AlignmentSet getErrorAlignments()
+    public Alignment getErrorAlignments()
     {
         return errorAlignments;
     }
 
-    public void setErrorAlignments(AlignmentSet ea)
+    public void setErrorAlignments(Alignment ea)
     {
         errorAlignments = ea;
     }

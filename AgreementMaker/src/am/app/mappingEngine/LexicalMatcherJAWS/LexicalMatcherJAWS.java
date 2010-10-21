@@ -23,7 +23,7 @@ import edu.smu.tspell.wordnet.VerbSynset;
 import edu.smu.tspell.wordnet.WordNetDatabase;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.ontology.Node;
 import am.utility.DirectedGraphVertex;
 
@@ -106,7 +106,7 @@ public class LexicalMatcherJAWS extends AbstractMatcher {
 	};
 	
 	@Override
-	public Alignment alignTwoNodes( Node source, Node target, alignType typeOfNodes ) {
+	public Mapping alignTwoNodes( Node source, Node target, alignType typeOfNodes ) {
 		
 		
 		LogicalDescription sourceBreakdown = new LogicalDescription( source );
@@ -142,7 +142,7 @@ public class LexicalMatcherJAWS extends AbstractMatcher {
 				
 				double sim = 1.0;
 				
-				return new Alignment(source, target, sim);
+				return new Mapping(source, target, sim);
 			}
 			
 			

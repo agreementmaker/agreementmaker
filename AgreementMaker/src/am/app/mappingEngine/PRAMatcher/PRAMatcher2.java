@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
-import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.PRAMatcher.PRAMatcher;
 import am.app.ontology.Node;
 
 public class PRAMatcher2 extends AbstractMatcher
 {
 	// the Alignment Matrices from the Input Matching algorithm.
-	private AlignmentSet inputPropertiesAlignmentSet;
-	private AlignmentSet inputClassesAlignmentSet;
-	private AlignmentSet praClassesAlignmentSet;
-	private AlignmentSet praPropertiesAlignmentSet;
+	private Alignment inputPropertiesAlignmentSet;
+	private Alignment inputClassesAlignmentSet;
+	private Alignment praClassesAlignmentSet;
+	private Alignment praPropertiesAlignmentSet;
 	private HashMap<Node, TreeNode> nodeToTreeNode;
 	private HashMap<Integer, Node> srcClassesIdToNode;
 	private HashMap<Integer, Node> targetClassesIdToNode;
@@ -98,10 +98,10 @@ public class PRAMatcher2 extends AbstractMatcher
 		int numSources = 0;		
 		int numTargets = 0;
 	
-		AlignmentSet resultSet = new AlignmentSet();
-		AlignmentMatrix resultMatrix = null;
-		Alignment anAlignment = null;
-		HashSet<Alignment> mappedNodes = new HashSet<Alignment>();
+		Alignment resultSet = new Alignment();
+		SimilarityMatrix resultMatrix = null;
+		Mapping anAlignment = null;
+		HashSet<Mapping> mappedNodes = new HashSet<Mapping>();
 		Node praSrc = null, praTarget = null, inputSrc = null, inputTarget = null;
 		TreeNode aTreeNode = null, matchedNode = null;
 
@@ -111,7 +111,7 @@ public class PRAMatcher2 extends AbstractMatcher
 		{	
 			numSources = sourceOntology.getClassesList().size();
 			numTargets = targetOntology.getClassesList().size();
-			resultMatrix = new AlignmentMatrix(numSources, numTargets, alignType.aligningClasses);
+			resultMatrix = new SimilarityMatrix(numSources, numTargets, alignType.aligningClasses);
 
 			System.out.println("Num of entries in input class alignment set is " + inputClassesAlignmentSet.size());
 			for(int i = 0; i < inputClassesAlignmentSet.size(); i++)
@@ -161,7 +161,7 @@ public class PRAMatcher2 extends AbstractMatcher
 		{
 			numSources = sourceOntology.getPropertiesList().size();			
 			numTargets = targetOntology.getPropertiesList().size();
-			resultMatrix = new AlignmentMatrix(numSources, numTargets, alignType.aligningProperties);
+			resultMatrix = new SimilarityMatrix(numSources, numTargets, alignType.aligningProperties);
 		
 			//add everything in the partial reference alignment in the alignmentSet
 			for(int i = 0; i < inputPropertiesAlignmentSet.size(); i++)

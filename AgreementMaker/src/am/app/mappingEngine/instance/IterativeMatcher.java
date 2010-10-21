@@ -21,7 +21,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.ontology.Node;
 
 /**
@@ -152,7 +152,7 @@ public class IterativeMatcher extends AbstractMatcher{
 
 	
 	
-	protected Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+	protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
 		
 		String tURI, sURI;
 		sURI = sourceOntology.getURI();
@@ -160,16 +160,16 @@ public class IterativeMatcher extends AbstractMatcher{
 		
 		
 		if(!source.getUri().contains(sURI) || !target.getUri().contains(tURI)){
-			return new Alignment(source, target, 0, Alignment.EQUIVALENCE);
+			return new Mapping(source, target, 0, Mapping.EQUIVALENCE);
 		}
 
 		if(!source.getUri().contains(sURI) && !source.getUri().equalsIgnoreCase(target.getUri()) ) {
 			//System.out.println("External Node: " + source.getLocalName());
-			return new Alignment(source, target, 0, Alignment.EQUIVALENCE);
+			return new Mapping(source, target, 0, Mapping.EQUIVALENCE);
 		}
 		else if (!target.getUri().contains(tURI) && !target.getUri().equalsIgnoreCase(source.getUri())){
 			//System.out.println("External Node: " + target.getLocalName());
-			return new Alignment(source, target, 0, Alignment.EQUIVALENCE);
+			return new Mapping(source, target, 0, Mapping.EQUIVALENCE);
 		}
 		
 		
@@ -177,7 +177,7 @@ public class IterativeMatcher extends AbstractMatcher{
 			for(int k = 0; k < matchedPropsS.size(); k++){
 				if(source.getLocalName().equalsIgnoreCase(matchedPropsS.get(k).getLocalName())){
 					if(target.getLocalName().equalsIgnoreCase(matchedPropsT.get(k).getLocalName())){
-						return new Alignment(source, target, 99.0, Alignment.EQUIVALENCE);
+						return new Mapping(source, target, 99.0, Mapping.EQUIVALENCE);
 					}
 				}
 			}
@@ -186,13 +186,13 @@ public class IterativeMatcher extends AbstractMatcher{
 			for(int x = 0; x < matchedClassesS.size(); x++){
 				if( source.getLocalName().equalsIgnoreCase( matchedClassesS.get(x).getLocalName() ) ){
 					if(target.getLocalName().equalsIgnoreCase( matchedClassesT.get(x).getLocalName() )){
-						return new Alignment(source, target, 99.0, Alignment.EQUIVALENCE);
+						return new Mapping(source, target, 99.0, Mapping.EQUIVALENCE);
 					}
 				}
 			}
 		}
 		
-		return new Alignment(source, target, 0.0, Alignment.EQUIVALENCE);
+		return new Mapping(source, target, 0.0, Mapping.EQUIVALENCE);
 		
 	}
 	

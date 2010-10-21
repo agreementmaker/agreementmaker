@@ -22,8 +22,8 @@ import am.AMException;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.MatcherChangeEvent;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
@@ -400,9 +400,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				refMatcher.setMaxSourceAlign(refMatcher.getDefaultMaxSourceRelations());
 				refMatcher.setMaxTargetAlign(refMatcher.getDefaultMaxTargetRelations());
 				refMatcher.match();
-				AlignmentSet<Alignment> referenceSet = refMatcher.getAlignmentSet(); //class + properties
+				Alignment<Mapping> referenceSet = refMatcher.getAlignmentSet(); //class + properties
 				AbstractMatcher toBeEvaluated;
-				AlignmentSet<Alignment> evaluateSet;
+				Alignment<Mapping> evaluateSet;
 				ReferenceEvaluationData rd;
 				String report="Reference Evaluation Complete\n\n";
 				for(int i = 0; i < rowsIndex.length; i++) {
@@ -499,9 +499,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				refMatcher.setMaxSourceAlign(refMatcher.getDefaultMaxSourceRelations());
 				refMatcher.setMaxTargetAlign(refMatcher.getDefaultMaxTargetRelations());
 				refMatcher.match();
-				AlignmentSet<Alignment>referenceSet = refMatcher.getAlignmentSet(); //class + properties
+				Alignment<Mapping>referenceSet = refMatcher.getAlignmentSet(); //class + properties
 				AbstractMatcher toBeEvaluated;
-				AlignmentSet<Alignment> evaluateSet;
+				Alignment<Mapping> evaluateSet;
 				ReferenceEvaluationData rd;
 				
 				double step = 0.05;
@@ -585,7 +585,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		return matchersTablePanel;
 	}
 	
-	public void userMatching(ArrayList<Alignment> alignments) {
+	public void userMatching(ArrayList<Mapping> alignments) {
 		if(alignments.size()>0) {
 			int[] rows = matchersTablePanel.getTable().getSelectedRows();
 			if(rows != null) {

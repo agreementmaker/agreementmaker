@@ -7,7 +7,7 @@ import java.util.Iterator;
 
 import am.app.Core;
 import am.app.feedback.CandidateConcept.ontology;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -72,9 +72,9 @@ public class SimilarityBasedCandidateSelection extends CandidateSelection {
 		int M = param.M;
 		ArrayList<CandidateConcept> result = new ArrayList<CandidateConcept>();
 		CandidateConcept c;
-		Alignment a;
+		Mapping a;
 		for(int i = 0; i < list.size(); i++){
-			Alignment[] candidateCells = null;
+			Mapping[] candidateCells = null;
 			if(whichOntology == ontology.source){ 
 				if(!matrix.isRowFiltered(i)){
 					candidateCells = matrix.getRowMaxValues(i, M);
@@ -86,7 +86,7 @@ public class SimilarityBasedCandidateSelection extends CandidateSelection {
 				}
 			}
 			if(candidateCells != null && candidateCells.length > 0){
-				ArrayList<Alignment> candidateMappings = new ArrayList<Alignment>();
+				ArrayList<Mapping> candidateMappings = new ArrayList<Mapping>();
 				double relevance = 0;//is the sum of the similarities of the top K mappings between hTH and lTH
 				for(int j = 0; j < candidateCells.length; j++){
 					a = candidateCells[j];

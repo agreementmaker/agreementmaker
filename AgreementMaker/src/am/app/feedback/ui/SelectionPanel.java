@@ -33,7 +33,7 @@ import am.app.feedback.FeedbackLoop;
 import am.app.feedback.FeedbackLoopParameters;
 import am.app.feedback.CandidateSelection.MeasuresRegistry;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.AbstractMatcher.alignType;
@@ -85,7 +85,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
     CandidatesTable table;
     ButtonGroup radios;
 	
-	Alignment selectedMapping;
+	Mapping selectedMapping;
 	CandidateConcept selectedConcept;
 	String selectedAction;
 	ArrayList<CandidateConcept> candidateMappings;
@@ -290,7 +290,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 
 
 
-	public Alignment getUserMapping() {
+	public Mapping getUserMapping() {
 		return selectedMapping;
 		
 	}
@@ -606,10 +606,10 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		ArrayList<CandidatesTableRow> rows = new ArrayList<CandidatesTableRow>();
 		for(int i=0; i< topConceptsAndAlignments.size(); i++){
 			CandidateConcept c = topConceptsAndAlignments.get(i);
-			ArrayList<Alignment> candidateMappings = c.getCandidateMappings();
+			ArrayList<Mapping> candidateMappings = c.getCandidateMappings();
 			if(candidateMappings!= null){
 				for(int j = 0; j < candidateMappings.size(); j++){
-					Alignment m = candidateMappings.get(j);
+					Mapping m = candidateMappings.get(j);
 					rows.add(createTableRow(c,m, i, j));
 				}
 			}
@@ -682,9 +682,9 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 
 
 
-	private CandidatesTableRow createTableRow(CandidateConcept c, Alignment m, int groupNumber, int indexWithinTheGroup) {
+	private CandidatesTableRow createTableRow(CandidateConcept c, Mapping m, int groupNumber, int indexWithinTheGroup) {
 		//controls made by Cosmin
-		Alignment cA = m;
+		Mapping cA = m;
 		if( cA == null ) {
 			System.out.println(" Null entries in the mappings matrix (the ones to display to the user)! SelectionPanel.java line 213");
 			throw new RuntimeException(" Null entries in the mappings matrix (the ones to display to the user)! SelectionPanel.java line 213");

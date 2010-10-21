@@ -2,7 +2,7 @@ package am.app.mappingEngine.manualMatcher;
 
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -44,17 +44,17 @@ public class UserManualMatcher extends AbstractMatcher {
 		alignProp = true;
 		minInputMatchers = 0;
 		maxInputMatchers = 0;
-		relation = Alignment.EQUIVALENCE;
+		relation = Mapping.EQUIVALENCE;
 		optimized = false;
 	}
 	
 	/**Set all alignment sim to 0*/
-	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
 		
 
 		double sim = 0;
-		String rel = Alignment.EQUIVALENCE;
-		return new Alignment(source, target, sim, rel);
+		String rel = Mapping.EQUIVALENCE;
+		return new Mapping(source, target, sim, rel);
 	}
 	
     protected void afterSelectionOperations() {

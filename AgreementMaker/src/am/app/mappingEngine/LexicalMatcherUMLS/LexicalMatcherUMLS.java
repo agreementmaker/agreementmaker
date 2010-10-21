@@ -19,7 +19,7 @@ import gov.nih.nlm.kss.util.DatabaseException;
 import gov.nih.nlm.kss.util.XMLException;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.ontology.Node;
 
 
@@ -289,14 +289,14 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 	
 	
 	//Function aligns 2 nodes using UMLS.
-	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
+	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
 		
 		//Get labels		
 		String sourceName= source.getLabel();
 		String targetName = target.getLabel();
 		
 		if(sourceName.equalsIgnoreCase("") || targetName.equalsIgnoreCase(""))
-			return new Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
+			return new Mapping( source, target, 0.0d, Mapping.EQUIVALENCE);
 		
 		//if(sourceName.equalsIgnoreCase("Brunner's gland"))
 			//System.out.println( sourceName + " : " + targetName);
@@ -321,16 +321,16 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 				
 				//System.out.println(sourceName + " :: " + targetName + " : " + indS + " : " + indT);
 				if(indS == -1 || indT == -1)
-					return new Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
+					return new Mapping( source, target, 0.0d, Mapping.EQUIVALENCE);
 				
 				if(synonymsT[indT].length == 0 || synonymsS[indS].length == 0){
-					return new Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
+					return new Mapping( source, target, 0.0d, Mapping.EQUIVALENCE);
 				}
 				
 				if(		(synonymsT[indT].length == 1 && synonymsT[indT][0].equals("") ) 
 						|| ( synonymsS[indS].length == 1 && synonymsS[indS][0].equals("") )
 						){
-					return new Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
+					return new Mapping( source, target, 0.0d, Mapping.EQUIVALENCE);
 				}
 					
 				for(int i = 0; i < synonymsT[indT].length; i++){
@@ -339,7 +339,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 						
 						if(s.equalsIgnoreCase(synonymsS[indS][j]) && !s.equalsIgnoreCase("unspecified") 
 								&& !s.equalsIgnoreCase("SAI") && !s.equalsIgnoreCase("NOS") ){
-							return new Alignment( source, target, 0.99d, Alignment.EQUIVALENCE);
+							return new Mapping( source, target, 0.99d, Mapping.EQUIVALENCE);
 						}
 						
 						/*
@@ -360,7 +360,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 					}
 				}
 				
-				return new Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
+				return new Mapping( source, target, 0.0d, Mapping.EQUIVALENCE);
 			}
 			else
 			{
@@ -371,7 +371,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 					int index = targetNodeName.indexOf(targetName);
 					if(index == -1){
 						//System.out.println(targetName + " is not in the list");
-						return new Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
+						return new Mapping( source, target, 0.0d, Mapping.EQUIVALENCE);
 					}
 					
 					String synArr[] = synsLists[index].get(0).toString().replace("[", "").replace("]", "").split(", ");
@@ -381,14 +381,14 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 						if(sourceName.equalsIgnoreCase(synArr[i]))
 						{
 							//System.out.println(sourceName + " && " + targetName + " MATCHED FROM SYNONYMS LIST...");
-							return new Alignment( source, target, 0.99d, Alignment.EQUIVALENCE);
+							return new Mapping( source, target, 0.99d, Mapping.EQUIVALENCE);
 						}
 					}
 				} catch (java.lang.ArrayIndexOutOfBoundsException e) {
 					System.out.println("index = " + index + " target name = " + targetName);
 					e.printStackTrace();
 				}
-				return new Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
+				return new Mapping( source, target, 0.0d, Mapping.EQUIVALENCE);
 			}
 		}
 		else{
@@ -397,7 +397,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 				return inputMatchers.get(0).getPropertiesMatrix().get(source.getIndex(), target.getIndex());
 			}
 			else{
-				return new Alignment( source, target, 0.0d, Alignment.EQUIVALENCE);
+				return new Mapping( source, target, 0.0d, Mapping.EQUIVALENCE);
 			}
 		}
 	}

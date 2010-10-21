@@ -1,6 +1,6 @@
 package am.batchMode.conflictResolution;
 
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 
 public class VotedMapping {
 	
@@ -8,7 +8,7 @@ public class VotedMapping {
 	boolean validated = false;//when this is set to true it means that this mapping is confirmed as valid and will be selected at the end
 	boolean added = false;
 	
-	public Alignment mapping;
+	public Mapping mapping;
 	
 	public int positiveVote = 1; //each mapping is at least voted by the set of mapping in which it is included
 	public int negativeVote = 0; //these values will be incremented by the algorithm in the voting phase
@@ -16,7 +16,7 @@ public class VotedMapping {
 	
 	public VotedMappingSet mappingSet;
 	
-	public VotedMapping(Alignment map, VotedMappingSet mapSet){
+	public VotedMapping(Mapping map, VotedMappingSet mapSet){
 		mapping = map;
 		mappingSet = mapSet;
 	}

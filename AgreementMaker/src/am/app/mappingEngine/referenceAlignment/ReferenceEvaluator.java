@@ -1,7 +1,7 @@
 package am.app.mappingEngine.referenceAlignment;
 
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentSet;
 
 public class ReferenceEvaluator{
 
@@ -15,7 +15,7 @@ public class ReferenceEvaluator{
 	 * @param referenceSet The reference alignment.
 	 * @return
 	 */
-    public static ReferenceEvaluationData compare(AlignmentSet<?> evaluationSet, AlignmentSet<?> referenceSet)
+    public static ReferenceEvaluationData compare(Alignment<?> evaluationSet, Alignment<?> referenceSet)
     {
         int foundMappings = 0; 
         int referenceMappings = 0;
@@ -28,17 +28,17 @@ public class ReferenceEvaluator{
         
         ReferenceEvaluationData result = new ReferenceEvaluationData();
         
-        AlignmentSet<Alignment> errorAlignments = new AlignmentSet<Alignment>();
-        AlignmentSet<Alignment> correctAlignments = new AlignmentSet<Alignment>();
-        AlignmentSet<Alignment> lostAlignments = new AlignmentSet<Alignment>();
+        Alignment<Mapping> errorAlignments = new Alignment<Mapping>();
+        Alignment<Mapping> correctAlignments = new Alignment<Mapping>();
+        Alignment<Mapping> lostAlignments = new Alignment<Mapping>();
         
         int correctMappings = 0;
         // check all mappings for correctness
         for (int i = 0; i < foundMappings; i++) {
-            Alignment evaluationMapping = evaluationSet.getAlignment(i);
+            Mapping evaluationMapping = evaluationSet.getAlignment(i);
             boolean evaluationMappingIsWrong = true;
             for (int j = 0; j < referenceMappings; j++) {
-                Alignment referenceMapping = referenceSet.getAlignment(j);
+                Mapping referenceMapping = referenceSet.getAlignment(j);
                 if (evaluationMapping.equals(referenceMapping)) {
                     correctMappings++;
                     correctAlignments.addAlignment(evaluationMapping);
@@ -52,10 +52,10 @@ public class ReferenceEvaluator{
         }
         
         for (int i = 0; i < referenceMappings; i++) {
-            Alignment referenceMapping = referenceSet.getAlignment(i);
+            Mapping referenceMapping = referenceSet.getAlignment(i);
             boolean referenceMappingNotFound = true;
             for (int j = 0; j < foundMappings; j++) {
-                Alignment evaluationMapping = evaluationSet.getAlignment(j);
+                Mapping evaluationMapping = evaluationSet.getAlignment(j);
                 if (referenceMapping.equals(evaluationMapping)) {
                     referenceMappingNotFound = false;
                     break;

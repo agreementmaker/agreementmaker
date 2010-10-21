@@ -9,8 +9,8 @@ import java.util.Date;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.utility.Capsule;
 import am.utility.Pair;
 /**
@@ -100,7 +100,7 @@ public class OutputController {
 	 * @param doSort If true, the rows and columns will be sorted in order to put the highest similarities in one corner of the matrix.
 	 * @throws Exception If anything goes wrong, an exception is thrown.
 	 */
-	public static void saveMatrixAsCSV(AlignmentMatrix matrix, String fullFileName, boolean doSort, boolean doIsolines, boolean skipZeros) throws Exception {
+	public static void saveMatrixAsCSV(SimilarityMatrix matrix, String fullFileName, boolean doSort, boolean doIsolines, boolean skipZeros) throws Exception {
 		
 		if( matrix == null ) throw new Exception("Cannot save a null AlignmentMatrix.");  
 
@@ -108,14 +108,14 @@ public class OutputController {
 			ArrayList<Capsule<Integer>> rowList = new ArrayList<Capsule<Integer>>(); 
 			
 			for( int row = 0; row < matrix.getRows(); row++ ) {
-				Alignment[] rowMax = matrix.getRowMaxValues(row, 1);
+				Mapping[] rowMax = matrix.getRowMaxValues(row, 1);
 				rowList.add( new Capsule<Integer>( rowMax[0].getSimilarity() , new Integer(row) ));
 			}
 			
 			ArrayList<Capsule<Integer>> colList = new ArrayList<Capsule<Integer>>(); 
 			
 			for( int col = 0; col < matrix.getColumns(); col++ ) {
-				Alignment[] colMax = matrix.getColMaxValues(col, 1);
+				Mapping[] colMax = matrix.getColMaxValues(col, 1);
 				colList.add( new Capsule<Integer>( colMax[0].getSimilarity() , new Integer(col) ));
 			}
 			

@@ -3,7 +3,7 @@ package am.app.mappingEngine.Combination;
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
 import am.app.ontology.Node;
@@ -73,7 +73,7 @@ public class CombinationMatcher extends AbstractMatcher {
 
     
 
-	protected Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+	protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
 		
 		CombinationParameters parameters = (CombinationParameters)param;
 		int sourceindex = source.getIndex();
@@ -145,7 +145,7 @@ public class CombinationMatcher extends AbstractMatcher {
 			else sim = 0;
 		}
 		else throw new RuntimeException("DEVELOPMENT ERROR: combination type selected is not implemented");
-		return new Alignment(source, target, sim, Alignment.EQUIVALENCE);
+		return new Mapping(source, target, sim, Mapping.EQUIVALENCE);
 	}
 
 	public AbstractMatcherParametersPanel getParametersPanel() {

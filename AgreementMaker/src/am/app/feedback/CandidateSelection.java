@@ -13,8 +13,8 @@ import am.app.feedback.measures.RelevanceMeasure;
 import am.app.feedback.measures.RepeatingPatterns;
 import am.app.feedback.measures.Specificity;
 import am.app.feedback.ui.SelectionPanel;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -170,8 +170,8 @@ public class CandidateSelection {
 			CandidateConcept top1 = it.next();
 			if(!fbL.isCandidateConceptValidated(top1)){
 				//topMappings contains the top M mappings for top1 candidate concept
-				ArrayList<Alignment> topMappings = new ArrayList<Alignment>();
-				Alignment[] topM;
+				ArrayList<Mapping> topMappings = new ArrayList<Mapping>();
+				Mapping[] topM;
 
 				System.out.println("\nCandidate Selection: ConceptCandidate -> Alignment Translation, working with \"" + top1.toString() + "\"." );
 				
@@ -276,7 +276,7 @@ public class CandidateSelection {
 	}
 
 
-	public AlignmentSet<ExtendedAlignment> getCurrentAlignments() {
+	public Alignment<ExtendedAlignment> getCurrentAlignments() {
 		// TODO Auto-generated method stub
 		return null;
 	}

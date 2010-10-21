@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.ontology.Node;
 
 
@@ -124,7 +124,7 @@ public class LexicalMatcherJWNL extends AbstractMatcher{
 	/**
 	 * Function aligns 2 nodes using WordNet:
 	 */
-	public Alignment alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
+	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
 		
 		double sHyperNoun = 0.0d;
 		double sHyperVerb = 0.0d;
@@ -199,7 +199,7 @@ public class LexicalMatcherJWNL extends AbstractMatcher{
 			max = max2;
 		}
 		
-		return new Alignment(source, target, max, Alignment.EQUIVALENCE);
+		return new Mapping(source, target, max, Mapping.EQUIVALENCE);
 	}
 	
 	/**

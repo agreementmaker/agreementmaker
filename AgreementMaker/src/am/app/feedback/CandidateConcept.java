@@ -2,7 +2,7 @@ package am.app.feedback;
 
 import java.util.ArrayList;
 
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 
@@ -29,7 +29,7 @@ public class CandidateConcept extends Node implements Comparable<CandidateConcep
 	
 	//Contains the Top M candidate mappings for this candidate concept
 	//it is remains null, until the getCandidateAlignments is called;
-	protected ArrayList<Alignment> candidateMappings;
+	protected ArrayList<Mapping> candidateMappings;
 
 
 	public CandidateConcept(Node n, double r, ontology o, alignType t ) {
@@ -98,11 +98,11 @@ public class CandidateConcept extends Node implements Comparable<CandidateConcep
 		return super.toString() + "\t" + Double.toString(relevance);
 	}
 	
-	public ArrayList<Alignment> getCandidateMappings() {
+	public ArrayList<Mapping> getCandidateMappings() {
 		return candidateMappings;
 	}
 
-	public void setCandidateMappings(ArrayList<Alignment> candidateMappings) {
+	public void setCandidateMappings(ArrayList<Mapping> candidateMappings) {
 		this.candidateMappings = candidateMappings;
 	}
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
@@ -175,8 +175,8 @@ public class ConflictsResolution {
 			//we set as validated and we solve conflicts consequently
 			Node c1 = null;
 			Node c2 = null;
-			Alignment tempAlignment1 = null;
-			Alignment tempAlignment2 = null;
+			Mapping tempAlignment1 = null;
+			Mapping tempAlignment2 = null;
 			VotedMapping toBeDeleted1 = null;
 			VotedMapping toBeDeleted2 = null;
 			if(maxMapping!= null){
@@ -248,25 +248,25 @@ public class ConflictsResolution {
 							//prepare the alignments that will be added if needed
 							if(k < currentSource){
 								//need to add c2-a
-								tempAlignment1 = new Alignment(c2, currentMapping.mapping.getEntity1(), currentMapping.mapping.getSimilarity(), currentMapping.mapping.getRelation());
+								tempAlignment1 = new Mapping(c2, currentMapping.mapping.getEntity1(), currentMapping.mapping.getSimilarity(), currentMapping.mapping.getRelation());
 								if(c2 != null)
 									toBeDeleted1 = AvsCset.getSourceVotedMapping(c2);
 							}
 							else{
 								//need to add a-c2
-								tempAlignment1 = new Alignment(currentMapping.mapping.getEntity1(),c2,  currentMapping.mapping.getSimilarity(), currentMapping.mapping.getRelation());
+								tempAlignment1 = new Mapping(currentMapping.mapping.getEntity1(),c2,  currentMapping.mapping.getSimilarity(), currentMapping.mapping.getRelation());
 								if(c2 != null)
 									toBeDeleted1 = AvsCset.getTargetVotedMapping(c2);
 							}
 							if(k < currentTarget){
 								//need to add c1-b
-								tempAlignment2 = new Alignment(c1, currentMapping.mapping.getEntity2(), currentMapping.mapping.getSimilarity(), currentMapping.mapping.getRelation());
+								tempAlignment2 = new Mapping(c1, currentMapping.mapping.getEntity2(), currentMapping.mapping.getSimilarity(), currentMapping.mapping.getRelation());
 								if(c1 != null)
 									toBeDeleted2 = BvsCset.getSourceVotedMapping(c1);
 							}
 							else{
 								//need to add b-c1
-								tempAlignment2 = new Alignment(currentMapping.mapping.getEntity2(),c1,  currentMapping.mapping.getSimilarity(), currentMapping.mapping.getRelation());
+								tempAlignment2 = new Mapping(currentMapping.mapping.getEntity2(),c1,  currentMapping.mapping.getSimilarity(), currentMapping.mapping.getRelation());
 								if(c1 != null)
 									toBeDeleted2 = BvsCset.getTargetVotedMapping(c1);
 							}

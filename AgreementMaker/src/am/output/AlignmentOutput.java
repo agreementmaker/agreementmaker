@@ -8,12 +8,12 @@ import java.util.ArrayList;
 
 import com.hp.hpl.jena.rdf.model.Resource;
 
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentSet;
 
 public class AlignmentOutput
 {
-    private AlignmentSet alignmentSet = null;
+    private Alignment alignmentSet = null;
     private RandomAccessFile raf = null;
     private String filepath = null;
     private ArrayList<String> writeList = null;
@@ -24,7 +24,7 @@ public class AlignmentOutput
      * This constructor is used for saving as a String, not to a file.  Use only with compileString().
      * @param as The set of mappings between two ontologies.
      */
-    public AlignmentOutput( AlignmentSet as ) {
+    public AlignmentOutput( Alignment as ) {
     	alignmentSet = as;
     	filepath = "";
     	buffer = new StringBuilder();
@@ -43,7 +43,7 @@ public class AlignmentOutput
         stringNS();
         stringStart("yes", "0", "11", onto1, onto2, uri1, uri2);
         for (int i = 0, n = alignmentSet.size(); i < n; i++) {
-            Alignment alignment = (Alignment) alignmentSet.getAlignment(i);
+            Mapping alignment = (Mapping) alignmentSet.getAlignment(i);
             String e1 = alignment.getEntity1().getUri();
             String e2 = alignment.getEntity2().getUri();
             String measure = Double.toString(alignment.getSimilarity());
@@ -114,7 +114,7 @@ public class AlignmentOutput
     }
 
     
-    public AlignmentOutput(AlignmentSet as, String fp)
+    public AlignmentOutput(Alignment as, String fp)
     {
         alignmentSet = as;
         filepath = fp;
@@ -137,7 +137,7 @@ public class AlignmentOutput
         writeNS();
         writeStart("yes", "0", "11", onto1, onto2, uri1, uri2);
         for (int i = 0, n = alignmentSet.size(); i < n; i++) {
-            Alignment alignment = (Alignment) alignmentSet.getAlignment(i);
+            Mapping alignment = (Mapping) alignmentSet.getAlignment(i);
             String e1 = alignment.getEntity1().getUri();
             String e2 = alignment.getEntity2().getUri();
             String measure = Double.toString(alignment.getSimilarity());

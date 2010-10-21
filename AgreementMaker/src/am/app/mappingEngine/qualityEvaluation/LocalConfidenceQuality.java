@@ -1,8 +1,8 @@
 package am.app.mappingEngine.qualityEvaluation;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 
 public class LocalConfidenceQuality {
 	
@@ -35,7 +35,7 @@ public class LocalConfidenceQuality {
 		return q;
 	}
 	
-	private static double[] evaluateMatrix(AlignmentMatrix matrix, boolean localForSource, int numRel, double th) {
+	private static double[] evaluateMatrix(SimilarityMatrix matrix, boolean localForSource, int numRel, double th) {
 		//double threshold = th;
 		double threshold = 0.01;
 		
@@ -67,7 +67,7 @@ public class LocalConfidenceQuality {
 		int numberOfNonSelected;
 		int numberOfSelected;
 
-		Alignment[] maxValues;
+		Mapping[] maxValues;
 		for(int i=0; i < localMeasure.length; i++) {
 			double avgOfNonSelected = 0;
 			double avgOfSelected = 0;

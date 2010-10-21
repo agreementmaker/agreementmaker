@@ -3,25 +3,25 @@ package am.app.mappingEngine.PRAMatcher;
 import java.util.ArrayList;
 import java.util.HashMap;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
-import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import am.app.ontology.Node;
 
 public class PRAMatcher extends BaseSimilarityMatcher 
 {
 	// the Alignment Matrices from the Input Matching algorithm.
-	private AlignmentMatrix inputClassesMatrix;
-	private AlignmentMatrix inputPropertiesMatrix;
-	private AlignmentSet inputClassesAlignmentSet;
-	private AlignmentSet inputPropertiesAlignmentSet;
+	private SimilarityMatrix inputClassesMatrix;
+	private SimilarityMatrix inputPropertiesMatrix;
+	private Alignment inputClassesAlignmentSet;
+	private Alignment inputPropertiesAlignmentSet;
 	private HashMap<Node, TreeNode> nodeToTreeNode;
 	private HashMap<Integer, Node> srcClassesIdToNode;
 	private HashMap<Integer, Node> targetClassesIdToNode;
 	private HashMap<Integer, Node> srcPropertiesIdToNode;
 	private HashMap<Integer, Node> targetPropertiesIdToNode;
-	private AlignmentMatrix matrix;
+	private SimilarityMatrix matrix;
 	
 	//the structure that holds the roots of subtrees which are matched nodes in the ontology
 	private ArrayList<TreeNode> matchedClassSourceRootNodes;
@@ -61,7 +61,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	}	
 	
 	
-	protected AlignmentMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception 
+	protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception 
     {
 		ArrayList<TreeNode> srcTreeNodes = createTreeNode(sourceList);
 		ArrayList<TreeNode> targetTreeNodes = createTreeNode(targetList);
@@ -110,7 +110,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 
 		//Now we align nodes by considering only nodes in the subtrees of matched nodes
 		//Initialize matrix before aligning nodes, cos this method will access matrix
-		matrix = new AlignmentMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
+		matrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		alignNodes(typeOfNodes);
 		
 		
@@ -122,7 +122,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 			{
 				target = targetList.get(j);
 				if(matrix.get(i, j) == null)
-					matrix.set(i, j, new Alignment(src, target, 0.0d, Alignment.EQUIVALENCE));
+					matrix.set(i, j, new Mapping(src, target, 0.0d, Mapping.EQUIVALENCE));
 			}
 		}
 		
@@ -236,9 +236,9 @@ public class PRAMatcher extends BaseSimilarityMatcher
 		return treeNodes;
 	}
 	
-	private void setMatchingPairs(AlignmentMatrix inputMatrix, ArrayList<TreeNode> sourceList, ArrayList<TreeNode> targetList) throws Exception
+	private void setMatchingPairs(SimilarityMatrix inputMatrix, ArrayList<TreeNode> sourceList, ArrayList<TreeNode> targetList) throws Exception
 	{
-		Alignment alignment = null;
+		Mapping alignment = null;
 		int numRows = sourceList.size();
 		int numCols = targetList.size();
 		TreeNode src = null, target = null;
@@ -579,7 +579,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 		ArrayList<TreeNode> myChildren = targetNode.getChildren();
 		//ArrayList<TreeNode> myChildren = adjacency.get(targetNode);
 		TreeNode childNode = null;
-		Alignment alignment = null;
+		Mapping alignment = null;
 		
 		targetNode.setColor(1);
 		if(myChildren != null)
@@ -667,7 +667,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	/**
 	 * @param inputClassesMatrix the inputClassesMatrix to set
 	 */
-	public void setInputClassesMatrix(AlignmentMatrix inputClassesMatrix) 
+	public void setInputClassesMatrix(SimilarityMatrix inputClassesMatrix) 
 	{
 		this.inputClassesMatrix = inputClassesMatrix;
 	}
@@ -676,7 +676,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	/**
 	 * @return the inputClassesMatrix
 	 */
-	public AlignmentMatrix getInputClassesMatrix() 
+	public SimilarityMatrix getInputClassesMatrix() 
 	{
 		return inputClassesMatrix;
 	}
@@ -684,7 +684,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	/**
 	 * @param inputPropertiesMatrix the inputPropertiesMatrix to set
 	 */
-	public void setInputPropertiesMatrix(AlignmentMatrix inputPropertiesMatrix) 
+	public void setInputPropertiesMatrix(SimilarityMatrix inputPropertiesMatrix) 
 	{
 		this.inputPropertiesMatrix = inputPropertiesMatrix;
 	}
@@ -692,7 +692,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	/**
 	 * @return the inputPropertiesMatrix
 	 */
-	public AlignmentMatrix getInputPropertiesMatrix() 
+	public SimilarityMatrix getInputPropertiesMatrix() 
 	{
 		return inputPropertiesMatrix;
 	}
@@ -702,7 +702,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	/**
 	 * @param inputClassesAlignmentSet the inputClassesAlignmentSet to set
 	 */
-	public void setInputClassesAlignmentSet(AlignmentSet inputClassesAlignmentSet) {
+	public void setInputClassesAlignmentSet(Alignment inputClassesAlignmentSet) {
 		this.inputClassesAlignmentSet = inputClassesAlignmentSet;
 	}
 
@@ -711,7 +711,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	/**
 	 * @return the inputClassesAlignmentSet
 	 */
-	public AlignmentSet getInputClassesAlignmentSet() {
+	public Alignment getInputClassesAlignmentSet() {
 		return inputClassesAlignmentSet;
 	}
 
@@ -721,7 +721,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	 * @param inputPropertiesAlignmentSet the inputPropertiesAlignmentSet to set
 	 */
 	public void setInputPropertiesAlignmentSet(
-			AlignmentSet inputPropertiesAlignmentSet) {
+			Alignment inputPropertiesAlignmentSet) {
 		this.inputPropertiesAlignmentSet = inputPropertiesAlignmentSet;
 	}
 
@@ -730,7 +730,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	/**
 	 * @return the inputPropertiesAlignmentSet
 	 */
-	public AlignmentSet getInputPropertiesAlignmentSet() {
+	public Alignment getInputPropertiesAlignmentSet() {
 		return inputPropertiesAlignmentSet;
 	}
 

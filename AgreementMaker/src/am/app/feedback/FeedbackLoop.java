@@ -12,9 +12,9 @@ import am.app.feedback.matchers.ExtrapolatingDSI;
 import am.app.feedback.matchers.ExtrapolatingFS;
 import am.app.feedback.ui.SelectionPanel;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AlignmentMatrix;
-import am.app.mappingEngine.AlignmentSet;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.AbstractMatcher.alignType;
@@ -70,15 +70,15 @@ public class FeedbackLoop extends AbstractMatcher  {
 	ArrayList<CandidateConcept> topConceptsAndAlignments;
 	private executionStage currentStage;
 	private AbstractMatcher referenceAlignmentMatcher;
-	private AlignmentSet<Alignment> classesToBeFiltered;
-	private AlignmentSet<Alignment> propertiesToBeFiltered;
+	private Alignment<Mapping> classesToBeFiltered;
+	private Alignment<Mapping> propertiesToBeFiltered;
 	private int iteration;
 	private boolean stop;//when this is set to true it means that the user has clicked the stop button
 	private boolean userContinued;//this is set to false during user validation until the user performs an actions
 	private int new_mapping;
 	int lastFirstPhaseIteration;
 	//User variables
-	Alignment userMapping;  // this is the correct mapping chosen by the user
+	Mapping userMapping;  // this is the correct mapping chosen by the user
 	CandidateConcept userConcept; //this is either the concept of the validated mapping, or the unvalidated concept
 	String userAction; 
 	//these structures are used to keep track of partial evaluations
@@ -251,7 +251,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			System.out.println("K: "+param.K);
 			System.out.println("M: "+param.M);
 			//Present the evaluations
-			AlignmentSet<Alignment> fblextrapolationSet = getAlignmentSet();
+			Alignment<Mapping> fblextrapolationSet = getAlignmentSet();
 			
 			ReferenceEvaluationData rd_end = ReferenceEvaluator.compare(fblextrapolationSet, referenceAlignmentMatcher.getAlignmentSet());
 			FeedbackIteration finalIteration = new FeedbackIteration(iteration);
@@ -299,14 +299,14 @@ public class FeedbackLoop extends AbstractMatcher  {
 				System.out.println( partialIteration.iteration+",\t"+precision+",\t"+recall+",\t"+fmeasure+",\t"+impPrecision+",\t"+impRecall+",\t"+impFmeasure+",\t"+correct+",\t"+wrong+",\t"+missing+",\t"+impCorrect+",\t"+impWrong+",\t"+impMissing+",\t"+partialIteration.EDSIcorrect+",\t"+partialIteration.EDSIwrong+",\t"+partialIteration.EFScorrect+",\t"+partialIteration.EFSwrong+",\t"+(partialIteration.EDSIcorrect+partialIteration.EFScorrect)+",\t"+(partialIteration.EDSIwrong+partialIteration.EFSwrong));
 			}
 			//understanding why some mappings are not mapped
-			AlignmentSet losts = rd_end.getLostAlignments();
+			Alignment losts = rd_end.getLostAlignments();
 			System.out.println("Missing are : "+losts.size()+" or "+(rd_end.getExist() - rd_end.getCorrect()));
 			for(int i = 0; i< losts.size(); i++){
-				Alignment lost = losts.getAlignment(i);
+				Mapping lost = losts.getAlignment(i);
 				boolean isProp = lost.getEntity1().isProp();
 				System.out.println("---------Lost alignment "+i+": "+lost+" isProp? "+isProp);
 				FilteredAlignmentMatrix matrix = (FilteredAlignmentMatrix)classesMatrix;
-				AlignmentSet<Alignment> aset = classesAlignmentSet;
+				Alignment<Mapping> aset = classesAlignmentSet;
 				if(isProp){
 					matrix = (FilteredAlignmentMatrix)propertiesMatrix;
 					aset = propertiesAlignmentSet;
@@ -315,8 +315,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 				boolean isCol = matrix.isColFiltered(lost.getEntity2().getIndex());
 				boolean isCell = matrix.isCellFiltered(lost.getEntity1().getIndex(), lost.getEntity2().getIndex());
 				System.out.println("is Row: "+isRow+", is Col: "+isCol+", is Cell: "+isCell);
-				Alignment source = aset.contains(lost.getEntity1(), ontology.source);
-				Alignment target = aset.contains(lost.getEntity2(), ontology.target);
+				Mapping source = aset.contains(lost.getEntity1(), ontology.source);
+				Mapping target = aset.contains(lost.getEntity2(), ontology.target);
 				System.out.println("Alternative source: "+source);
 				System.out.println("Alternative target: "+target);
 			}
@@ -335,7 +335,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			setStage(executionStage.runningExtrapolatingMatchers);				
 			progressDisplay.appendNewLineReportText("1 mapping validated by the user: "+userMapping);
 			
-			AlignmentSet<Alignment> userSet = new AlignmentSet<Alignment>();
+			Alignment<Mapping> userSet = new Alignment<Mapping>();
 			
 			userSet.addAlignment( userMapping );
 			
@@ -363,8 +363,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 			eFS.select(); // will contain values that already filtered.
 
 			// choose only alignments that are not filtered
-			AlignmentSet<Alignment> newClassAlignments_eFS = getNewClassAlignments( eFS );
-			AlignmentSet<Alignment> newPropertyAlignments_eFS = getNewPropertyAlignments( eFS );
+			Alignment<Mapping> newClassAlignments_eFS = getNewClassAlignments( eFS );
+			Alignment<Mapping> newPropertyAlignments_eFS = getNewPropertyAlignments( eFS );
 			progressDisplay.appendNewLineReportText("\tFamilial Similarity method found "+newClassAlignments_eFS.size()+" class mappings.");
 			progressDisplay.appendNewLineReportText("\tFamilial Similarity method found "+newPropertyAlignments_eFS.size()+" property mappings.");
 			// report on the eDSI
@@ -379,7 +379,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			propertiesToBeFiltered.addAll( newPropertyAlignments_eFS );
 			
 			//evaluate EFS
-			AlignmentSet<Alignment> set = new AlignmentSet<Alignment>();
+			Alignment<Mapping> set = new Alignment<Mapping>();
 			set.addAll(newClassAlignments_eFS);
 			set.addAll(newPropertyAlignments_eFS);
 			ReferenceEvaluationData EFSdata = ReferenceEvaluator.compare(set, referenceAlignmentMatcher.getAlignmentSet());
@@ -393,10 +393,10 @@ public class FeedbackLoop extends AbstractMatcher  {
 			// when all the mappings are wrong they should be filtered from the similarity matrix (on a cell by cell basis)
 			for(int i=0; i < topConceptsAndAlignments.size(); i++){
 				CandidateConcept c = topConceptsAndAlignments.get(i);
-				ArrayList<Alignment> candidateMappings = c.getCandidateMappings();
+				ArrayList<Mapping> candidateMappings = c.getCandidateMappings();
 				if(candidateMappings!= null){
 					for(int j = 0; j < candidateMappings.size(); j++){
-						Alignment a = candidateMappings.get(j);
+						Mapping a = candidateMappings.get(j);
 						if(c.whichType.equals(alignType.aligningProperties)){
 							propertiesMatrix.filterCell(a.getSourceKey(), a.getTargetKey());
 						}
@@ -421,10 +421,10 @@ public class FeedbackLoop extends AbstractMatcher  {
 				for(int i=0; i < topConceptsAndAlignments.size(); i++){
 					CandidateConcept c = topConceptsAndAlignments.get(i);
 					if(!c.equals(userConcept)){
-						ArrayList<Alignment> candidateMappings = c.getCandidateMappings();
+						ArrayList<Mapping> candidateMappings = c.getCandidateMappings();
 						if(candidateMappings!= null){
 							for(int j = 0; j < candidateMappings.size(); j++){
-								Alignment a = candidateMappings.get(j);
+								Mapping a = candidateMappings.get(j);
 								if(c.whichType.equals(alignType.aligningProperties)){
 									propertiesMatrix.filterCell(a.getSourceKey(), a.getTargetKey());
 								}
@@ -458,8 +458,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 		eDSI.select(); // will contain values that already filtered.
 
 		// choose only alignments that are not filtered
-		AlignmentSet<Alignment> newClassAlignments_eDSI = getNewClassAlignments( eDSI );
-		AlignmentSet<Alignment> newPropertyAlignments_eDSI = getNewPropertyAlignments( eDSI );
+		Alignment<Mapping> newClassAlignments_eDSI = getNewClassAlignments( eDSI );
+		Alignment<Mapping> newPropertyAlignments_eDSI = getNewPropertyAlignments( eDSI );
 		progressDisplay.appendNewLineReportText("\tDSI found "+newClassAlignments_eDSI.size()+" class mappings.");
 		progressDisplay.appendNewLineReportText("\tDSI found "+newPropertyAlignments_eDSI.size()+" property mappings.");
 		
@@ -476,7 +476,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		propertiesToBeFiltered.addAll( newPropertyAlignments_eDSI );	
 		
 		//evaluate EFS
-		AlignmentSet<Alignment> set = new AlignmentSet<Alignment>();
+		Alignment<Mapping> set = new Alignment<Mapping>();
 		set.addAll(newClassAlignments_eDSI);
 		set.addAll(newPropertyAlignments_eDSI);
 		if( referenceAlignmentMatcher != null ) {
@@ -521,10 +521,10 @@ public class FeedbackLoop extends AbstractMatcher  {
 			//validate mappings against the reference, only one mapping can be validated therefore we take the first correct
 			for(int i=0; i < topConceptsAndAlignments.size(); i++){
 				CandidateConcept c = topConceptsAndAlignments.get(i);
-				ArrayList<Alignment> candidateMappings = c.getCandidateMappings();
+				ArrayList<Mapping> candidateMappings = c.getCandidateMappings();
 				if(candidateMappings!= null){
 					for(int j = 0; j < candidateMappings.size(); j++){
-						Alignment a = candidateMappings.get(j);
+						Mapping a = candidateMappings.get(j);
 						if(c.whichType.equals(alignType.aligningProperties)){
 							// we are looking at a property alignment
 							if(referenceAlignmentMatcher.getPropertyAlignmentSet().contains(a.getEntity1(), a.getEntity2()) != null){
@@ -610,11 +610,11 @@ public class FeedbackLoop extends AbstractMatcher  {
 		int numCandidateMappings = 0;//this value is not only used for printing
 		for(int i= 0; i<topConceptsAndAlignments.size(); i++){
 			CandidateConcept c = topConceptsAndAlignments.get(i);
-			ArrayList<Alignment> candidateMappings = c.getCandidateMappings();
+			ArrayList<Mapping> candidateMappings = c.getCandidateMappings();
 			if(candidateMappings!= null){
 				numCandidateMappings += candidateMappings.size();
 				for( int aCandidate = 0; aCandidate < candidateMappings.size(); aCandidate++ ) {
-					Alignment candidateAlignment = candidateMappings.get(aCandidate);
+					Mapping candidateAlignment = candidateMappings.get(aCandidate);
 					progressDisplay.appendToReport(" Candidate Concept: "+i+" "+c.getNode()+ ", Candidate Mapping: " + Integer.toString(aCandidate) + ". " + candidateAlignment.toString() );
 					System.out.println( " Candidate Concept: "+i+" "+c.getNode()+ ", Candidate Mapping: " + Integer.toString(aCandidate) + ". " + candidateAlignment.toString() );	
 				}
@@ -642,8 +642,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 		//System.out.println( "Double Threshold Filtering: filtered " + Integer.toString(propertiesBelowTh) + " properties.");
 		//progressDisplay.appendNewLineReportText("\tFiltered "+Integer.toString(classesBelowTh) + " classes.");
 		//progressDisplay.appendNewLineReportText("\tFiltered "+Integer.toString(propertiesBelowTh) + " properties.");
-		classesToBeFiltered = new AlignmentSet<Alignment>(); // create a new, empty set
-		propertiesToBeFiltered = new AlignmentSet<Alignment>(); // create a new, empty set
+		classesToBeFiltered = new Alignment<Mapping>(); // create a new, empty set
+		propertiesToBeFiltered = new Alignment<Mapping>(); // create a new, empty set
 		setStage( executionStage.afterFilter );
 	}
 
@@ -662,7 +662,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 	
 	private void evaluate(){
 		FeedbackIteration partialIteration = new FeedbackIteration(iteration);
-		AlignmentSet<Alignment> partialSet = getAlignmentSet();
+		Alignment<Mapping> partialSet = getAlignmentSet();
 		ReferenceEvaluationData partialRD = ReferenceEvaluator.compare(partialSet, referenceAlignmentMatcher.getAlignmentSet());
 		partialIteration.iteration = iteration;
 		partialIteration.evaluationData = partialRD;
@@ -867,11 +867,11 @@ public class FeedbackLoop extends AbstractMatcher  {
 		}
 	}
 
-	private void printAlignments(AlignmentSet<Alignment> mappings, alignType atype) {
+	private void printAlignments(Alignment<Mapping> mappings, alignType atype) {
 		
-		Iterator<Alignment> iter = mappings.iterator();
+		Iterator<Mapping> iter = mappings.iterator();
 		while( iter.hasNext() ) {
-			Alignment itha = iter.next();
+			Mapping itha = iter.next();
 			
 			if( referenceAlignmentMatcher != null ) {
 				if( atype == alignType.aligningClasses ) {
@@ -915,23 +915,23 @@ public class FeedbackLoop extends AbstractMatcher  {
     
 	
 	
-	private AlignmentSet<Alignment> getNewClassAlignments( AbstractMatcher a ) {
+	private Alignment<Mapping> getNewClassAlignments( AbstractMatcher a ) {
 		return getNewMappings( a.getClassAlignmentSet(), (FilteredAlignmentMatrix)classesMatrix );
 	}
 	
-	private AlignmentSet<Alignment> getNewPropertyAlignments( AbstractMatcher a ) {
+	private Alignment<Mapping> getNewPropertyAlignments( AbstractMatcher a ) {
 		return getNewMappings( a.getPropertyAlignmentSet(), (FilteredAlignmentMatrix)propertiesMatrix );
 	}
 
 	// look through all the alignments found by the matcher and choose only those that are not already filtered, this way
 	// we are choosing only the new alignments to be filtered
-	private AlignmentSet<Alignment> getNewMappings( AlignmentSet<Alignment> extrapolatedMatchings, FilteredAlignmentMatrix matrix ) {
+	private Alignment<Mapping> getNewMappings( Alignment<Mapping> extrapolatedMatchings, FilteredAlignmentMatrix matrix ) {
 				
-		AlignmentSet<Alignment> newAlignments = new AlignmentSet<Alignment>();	
+		Alignment<Mapping> newAlignments = new Alignment<Mapping>();	
 		
-		Iterator<Alignment> clsIter = extrapolatedMatchings.iterator();
+		Iterator<Mapping> clsIter = extrapolatedMatchings.iterator();
 		while( clsIter.hasNext() ) {
-			Alignment extrapolatedAlignment = clsIter.next();
+			Mapping extrapolatedAlignment = clsIter.next();
 			if( !matrix.isCellFiltered( extrapolatedAlignment.getEntity1().getIndex(), extrapolatedAlignment.getEntity2().getIndex() ) ) {
 				// the extrapolated alignment is a new alignment
 				newAlignments.addAlignment( extrapolatedAlignment );
@@ -974,8 +974,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 	// check to see if a Candidate concept is in the reference alignment  
 	public boolean isInReferenceAlignment( CandidateConcept nc ) {
 		if( referenceAlignmentMatcher == null ) { return false; } // we cannot check the reference alignment if it not loaded
-		AlignmentSet<Alignment> cset = referenceAlignmentMatcher.getClassAlignmentSet();
-		AlignmentSet<Alignment> pset = referenceAlignmentMatcher.getPropertyAlignmentSet();
+		Alignment<Mapping> cset = referenceAlignmentMatcher.getClassAlignmentSet();
+		Alignment<Mapping> pset = referenceAlignmentMatcher.getPropertyAlignmentSet();
 		
 		if( nc.whichType == alignType.aligningClasses) {
 			return cset.contains(nc.getNode(), nc.whichOntology) != null;
