@@ -12,48 +12,60 @@ import java.awt.image.WritableRaster;
 
 import javax.swing.JPanel;
 
+import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.evaluation.clustering.Cluster;
 import am.visualization.Gradient;
+import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 
 public class MatrixPlot extends JPanel {
 
 	private static final long serialVersionUID = -7536491459476626040L;
 
+	private final AbstractMatcher  matcher;
 	private final SimilarityMatrix matrix;
+	private final VisualizationType type;
+	
 	private int squareSize = 10;
 	private int border = 2;
 	private BufferedImage I;
-	private BufferedImage R;
 	private Point selected = null;
 	
 	private MatrixPlotPanel enclosingPanel = null; // set if we are using a MatrixPlotPanel
+	private boolean viewAlignmentOnly = false;
 	
 	private Alignment<Mapping> referenceAlignmentSet = null;
 	private Color referenceAlignmentColor = Color.RED;
+	
+	private Cluster<Mapping> viewCluster = null;
 	
 	public MatrixPlot(SimilarityMatrix mtx) {
 		super();
 		I = null;
 		matrix = mtx;
+		matcher = null;
+		
+		if( mtx.getAlignType() == alignType.aligningClasses ) type = VisualizationType.CLASS_MATRIX;
+		else type = VisualizationType.PROPERTIES_MATRIX;
+		
 		createImage(false);
 	}
 	
-	public MatrixPlot(SimilarityMatrix mtx, MatrixPlotPanel mpnl) {
+	public MatrixPlot(AbstractMatcher a, SimilarityMatrix mtx, MatrixPlotPanel mpnl) {
 		super();
 		I = null;
+		matcher = a;
 		matrix = mtx;
+		
+		if( mtx.getAlignType() == alignType.aligningClasses ) type = VisualizationType.CLASS_MATRIX;
+		else type = VisualizationType.PROPERTIES_MATRIX;
+		
 		createImage(false);
 		enclosingPanel = mpnl;
 	}
-	
-	/**
-	 * Set the size of the window to the dimensions of the matrix.
-	 */
-	public void setPlotSize() { setPreferredSize(new Dimension( matrix.getRows() * squareSize, matrix.getColumns() * squareSize) ); }
-	public int getSquareSize() { return squareSize; }
-	public SimilarityMatrix getMatrix() { return matrix; }
 	
 	public void draw(boolean reCreate) {
 		setPlotSize();
@@ -71,30 +83,83 @@ public class MatrixPlot extends JPanel {
 			int cols = matrix.getColumns();
 
 			I = new BufferedImage(rows * squareSize, cols * squareSize, BufferedImage.TYPE_INT_RGB);
+			//Graphics2D g = (Graphics2D)I.getGraphics(); // TODO: Get rid of WritableRaster
 			WritableRaster wr = I.getRaster();
-			Gradient grad = new Gradient( Color.BLUE, Color.WHITE);
-
-			for( int r = 0; r < rows; r++ ){
-				for( int c = 0; c < cols; c++ ) {
-					int x1 = r * squareSize;
-					int y1 = c * squareSize;
+			
+			if( viewCluster != null ) {
+				// we are visualizing a cluster;
+				// visualize only the Alignment, using a solid color
+				
+				Graphics2D g = (Graphics2D)I.getGraphics();
+				
+				g.setColor( Color.WHITE );
+				g.fillRect(0, 0, I.getWidth(), I.getHeight() );
+				g.setColor( Color.ORANGE);
+		
+				for( Mapping map : viewCluster ) {
+					int x1 = map.getSourceKey() * squareSize;
+					int y1 = map.getTargetKey() * squareSize;
+					g.fillRect(x1, y1, squareSize, squareSize);
+				}
+				
+				g.dispose();
+				
+			} else {
+				// we are not visualizing a cluster;
+				
+				if( !viewAlignmentOnly ) { 
+					// visualize the full alignment matrix, using a gradient
 					
-					double similarity = matrix.getSimilarity(r, c);
-					Color simcolor = grad.getColor(similarity);
-					int[] iArray = { simcolor.getRed(), simcolor.getGreen(), simcolor.getBlue() };
-					
-					if( squareSize == 1 ) {	
-						wr.setPixel(x1, y1, iArray );
-					} else {
-						//g.drawRect(x1, y1, x1+squareSize, y1+squareSize);
-						
-						for( int i = 0; i < squareSize; i++ ) {
-							for( int j = 0; j < squareSize; j++ ) {
-								wr.setPixel(x1+i, y1+j, iArray);
+					Gradient grad = new Gradient( Color.BLUE, Color.WHITE);
+		
+					for( int r = 0; r < rows; r++ ){
+						for( int c = 0; c < cols; c++ ) {
+							int x1 = r * squareSize;
+							int y1 = c * squareSize;
+							
+							double similarity = matrix.getSimilarity(r, c);
+							Color simcolor = grad.getColor(similarity);
+							int[] iArray = { simcolor.getRed(), simcolor.getGreen(), simcolor.getBlue() };
+							
+							if( squareSize == 1 ) {	
+								wr.setPixel(x1, y1, iArray );
+							} else {
+								//g.drawRect(x1, y1, x1+squareSize, y1+squareSize);
+								
+								for( int i = 0; i < squareSize; i++ ) {
+									for( int j = 0; j < squareSize; j++ ) {
+										wr.setPixel(x1+i, y1+j, iArray);
+									}
+								}
+								
 							}
+						}
+					}
+				} else {
+					// visualize only the Alignment, using a solid color
+					
+					Alignment<Mapping> vizAlignment = null;
+					
+					if( type == VisualizationType.CLASS_MATRIX ) vizAlignment = matcher.getClassAlignmentSet();
+					if( type == VisualizationType.PROPERTIES_MATRIX ) vizAlignment = matcher.getPropertyAlignmentSet();
+					
+					Graphics2D g = (Graphics2D)I.getGraphics();
+					
+					g.setColor( Color.WHITE );
+					g.fillRect(0, 0, I.getWidth(), I.getHeight() );
+					g.setColor( Color.BLUE );
+					
+					if( vizAlignment != null ) {
+						
+						for( Mapping map : vizAlignment ) {
+							int x1 = map.getSourceKey() * squareSize;
+							int y1 = map.getTargetKey() * squareSize;
+							g.fillRect(x1, y1, squareSize, squareSize);
 						}
 						
 					}
+					
+					g.dispose();
 				}
 			}
 			
@@ -128,11 +193,43 @@ public class MatrixPlot extends JPanel {
 
 	}
 	
-	public void selectMapping(int row, int col) { selected = new Point(row,col); repaint();	}
+	public void setCluster( Cluster<Mapping> c ) { 
+		viewCluster = c;
+		createImage(true);
+		repaint();
+	}
+	
+	public void selectMapping(int row, int col) {
+		if( selected == null ) {
+			selected = new Point(row,col);
+		} else if( selected.x == row && selected.y == col ) {
+			selected = null;
+		} else {
+			selected = new Point(row,col);
+		}
+		repaint();
+	}
 	public void clearSelectedMapping() { selected = null; }
 	
 	public void setEnclosingPanel( MatrixPlotPanel pnl ) { enclosingPanel = pnl; }
 	public MatrixPlotPanel getEnclosingPanel() { return enclosingPanel; }
+	
+	public void setViewAlignmentOnly( boolean vao ) {
+		if( (vao && !viewAlignmentOnly) || (!vao && viewAlignmentOnly) ) {
+			// View Alignment Only has been toggled.  Update the drawing.
+			viewAlignmentOnly = vao;
+			createImage(true);
+			repaint();
+		}
+	}
+	public boolean getViewAlignmentOnly() { return viewAlignmentOnly; }
+	
+	/**
+	 * Set the size of the window to the dimensions of the matrix.
+	 */
+	public void setPlotSize() { setPreferredSize(new Dimension( matrix.getRows() * squareSize, matrix.getColumns() * squareSize) ); }
+	public int getSquareSize() { return squareSize; }
+	public SimilarityMatrix getMatrix() { return matrix; }
 	
 	public void setReferenceAlignment( Alignment<Mapping> ref ) { 
 		referenceAlignmentSet = ref;

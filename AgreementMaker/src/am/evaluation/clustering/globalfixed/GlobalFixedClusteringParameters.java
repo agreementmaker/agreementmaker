@@ -1,6 +1,8 @@
-package am.evaluation.clustering;
+package am.evaluation.clustering.globalfixed;
 
 import java.util.Collection;
+
+import am.evaluation.clustering.ClusteringParameters;
 
 public class GlobalFixedClusteringParameters extends ClusteringParameters {
 

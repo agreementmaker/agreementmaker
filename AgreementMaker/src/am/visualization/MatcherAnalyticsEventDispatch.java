@@ -1,5 +1,6 @@
 package am.visualization;
 
+import am.evaluation.clustering.ClusterFactory.ClusteringType;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 
 /**
@@ -10,8 +11,10 @@ import am.visualization.MatcherAnalyticsPanel.VisualizationType;
  *
  */
 public interface MatcherAnalyticsEventDispatch {
-
+	
 	public void broadcastEvent( MatcherAnalyticsEvent e );
 	public VisualizationType getType();
+	public void buildClusters( ClusteringType t );
+	//public void setMappingLabel(String label);
 	
 }

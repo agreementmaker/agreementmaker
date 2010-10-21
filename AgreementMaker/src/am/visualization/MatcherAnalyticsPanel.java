@@ -1,9 +1,9 @@
 package am.visualization;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Point;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +21,16 @@ import javax.swing.SwingUtilities;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.MatcherChangeEvent;
 import am.app.mappingEngine.MatcherChangeListener;
+import am.app.ontology.Node;
+import am.app.ontology.Ontology;
+import am.evaluation.clustering.Cluster;
+import am.evaluation.clustering.ClusterFactory;
+import am.evaluation.clustering.ClusteringMethod;
+import am.evaluation.clustering.ClusterFactory.ClusteringType;
 import am.utility.WrapLayout;
 import am.visualization.MatcherAnalyticsEvent.EventType;
 import am.visualization.matrixplot.MatrixPlotPanel;
@@ -41,14 +48,17 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	}
 	
 	private JPanel pnlToolbar;
+	private JPanel pnlInfo;
 	
 	private JScrollPane scrOuterScrollbars;
 	private JPanel pnlPlots;
 	
-	private JTextField txtClusterThreshold;
-	private JButton btnApplyThreshold;
+	//private JTextField txtClusterThreshold;
+	//private JButton btnApplyThreshold;
 	
 	private VisualizationType type;
+	private JLabel lblMapping;
+	private Point currentSelectedMapping;
 	
 	public MatcherAnalyticsPanel( VisualizationType t ) {
 		super();
@@ -57,12 +67,20 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		
 		pnlToolbar = createToolbarPanel();
 		
+		pnlInfo = createInfoPanel();
+		
 		pnlPlots = createPlotsPanel();
+		
+		JPanel topPanel = new JPanel();
+		topPanel.setLayout(new BorderLayout());
+		
+		topPanel.add(pnlToolbar, BorderLayout.NORTH);
+		topPanel.add(pnlInfo, BorderLayout.CENTER);
 		
 		scrOuterScrollbars = createOuterScrollBars(pnlPlots);
 		
 		setLayout(new BorderLayout());
-		add(pnlToolbar, BorderLayout.NORTH);
+		add(topPanel, BorderLayout.NORTH);
 		add(scrOuterScrollbars, BorderLayout.CENTER);
 		
 		initializeMatchers();
@@ -96,6 +114,19 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		
 	}
 	
+	private JPanel createInfoPanel() {
+		JPanel panel = new JPanel();
+		
+		panel.setLayout( new FlowLayout( FlowLayout.LEADING ) );
+		
+		lblMapping = new JLabel(" ");
+		
+		panel.add(lblMapping);
+		
+		return panel;
+		
+	}
+	
 	private JPanel createToolbarPanel() {
 		JPanel panel = new JPanel();
 		
@@ -104,20 +135,20 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		JCheckBox chkClusters = new JCheckBox("View individual cluster:");
 		JComboBox boxClusters = new JComboBox();
 		
-		JLabel lblClusterThreshold = new JLabel( "Clustering Threshold:");
-		txtClusterThreshold = new JTextField();
+		//JLabel lblClusterThreshold = new JLabel( "Clustering Threshold:");
+		//txtClusterThreshold = new JTextField();
 		//txtClusterThreshold.setMinimumSize(new Dimension( 400, lblClusterThreshold.getHeight()));
 		
-		btnApplyThreshold = new JButton("Apply");
+		//btnApplyThreshold = new JButton("Apply");
 		
 		panel.add(chkClusters);
 		panel.add(boxClusters);
 		panel.add(Box.createHorizontalStrut(10));
-		panel.add(lblClusterThreshold);
-		panel.add(txtClusterThreshold);
-		panel.add(btnApplyThreshold);
+		//panel.add(lblClusterThreshold);
+		//panel.add(txtClusterThreshold);
+		//panel.add(btnApplyThreshold);
 
-		txtClusterThreshold.setPreferredSize(new Dimension( 70, btnApplyThreshold.getPreferredSize().height));
+		//txtClusterThreshold.setPreferredSize(new Dimension( 70, btnApplyThreshold.getPreferredSize().height));
 		
 		return panel;
 	}
@@ -139,6 +170,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 
 	public VisualizationType getType() { return type; }
 	public JPanel getPlotsPanel() { return pnlPlots; }
+	public void setMappingLabel(String label) { lblMapping.setText(label); }
 	
 	/****************************** CHANGE LISTENERS *********************************/
 	
@@ -165,9 +197,10 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			break;
 			
 		case MATCHER_ALIGNMENTSET_UPDATED:
+			final Object sourceObject = this;
 			Runnable fire = new Runnable() {
 				public void run() {
-					broadcastEvent( new MatcherAnalyticsEvent( this,  EventType.MATRIX_UPDATED,  e.getMatcher() ));
+					broadcastEvent( new MatcherAnalyticsEvent( sourceObject,  EventType.MATRIX_UPDATED,  e.getMatcher() ));
 				}
 			};
 			
@@ -201,10 +234,74 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	public void removeMatcherAnalyticsEventListener( MatcherAnalyticsEventListener l ) { eventListeners.remove(l); }
 
 	@Override
-	public void broadcastEvent(MatcherAnalyticsEvent e) {
+	public void broadcastEvent(MatcherAnalyticsEvent e) {		
+		if( e.type == EventType.REMOVE_PLOT ) {
+			// remove this plot.
+			MatrixPlotPanel ptor = (MatrixPlotPanel) e.getSource();
+			pnlPlots.remove(ptor);
+			removeMatcherAnalyticsEventListener(ptor);
+			pnlPlots.repaint();
+			return;
+		}
+		
+		
 		for( int i = eventListeners.size()-1; i >= 0; i-- ) {  // count DOWN from max (for a very good reason, http://book.javanb.com/swing-hacks/swinghacks-chp-12-sect-8.html )
 			eventListeners.get(i).receiveEvent(e);
 		}
+		
+		// update the mapping label if we are selecting a mapping.
+		if( e.type == EventType.SELECT_MAPPING ) {
+			Point mapRowCol = (Point) e.payload;
+			currentSelectedMapping = mapRowCol;
+			
+			MatrixPlotPanel plotPanel = (MatrixPlotPanel) e.getSource();
+			
+			Mapping selectedMapping = plotPanel.getPlot().getMatrix().get(mapRowCol.x, mapRowCol.y);
+			Node sNode = null;
+			Node tNode = null;
+			if( selectedMapping == null ) {
+				// we have to dig deeper.
+				Ontology source = plotPanel.getMatcher().getSourceOntology();
+				Ontology target = plotPanel.getMatcher().getTargetOntology();
+				if( source != null && target != null ) {
+					if( type == VisualizationType.CLASS_MATRIX ) {
+						sNode = source.getClassesList().get(mapRowCol.x);
+						tNode = target.getClassesList().get(mapRowCol.y);
+					} else if( type == VisualizationType.PROPERTIES_MATRIX ) {
+						sNode = source.getPropertiesList().get(mapRowCol.x);
+						tNode = target.getPropertiesList().get(mapRowCol.y);
+					}
+				}
+			} else {
+				sNode = selectedMapping.getEntity1();
+				tNode = selectedMapping.getEntity2();
+			}
+			if( sNode != null && tNode != null ) {
+				// TODO: Display graphical representation of the node, not text.
+				lblMapping.setText(sNode.getLocalName() + " <--> " + tNode.getLocalName());
+			}
+		}
+	}
+
+	@Override
+	public void buildClusters(ClusteringType t) {
+
+		// make a list of the available matchers
+		
+		ArrayList<AbstractMatcher> matcherList = new ArrayList<AbstractMatcher>();
+		for( MatcherAnalyticsEventListener l : eventListeners ) {
+			matcherList.add(l.getMatcher());
+		}
+		
+		ClusteringMethod method = ClusterFactory.getMethodInstance(t, matcherList);
+		
+		Cluster<Mapping> c = method.getCluster(currentSelectedMapping.x, currentSelectedMapping.y, type);
+		
+		
+		// fire an event telling the plots to display the cluster
+		
+		MatcherAnalyticsEvent displayClusterEvent = new MatcherAnalyticsEvent(this, EventType.DISPLAY_CLUSTER, c);
+		broadcastEvent(displayClusterEvent);
 	}
 
 }

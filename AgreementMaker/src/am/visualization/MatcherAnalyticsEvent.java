@@ -9,7 +9,10 @@ public class MatcherAnalyticsEvent extends EventObject {
 	public static enum EventType {
 		SELECT_MAPPING,  // implies that the payload is a Point, representing the row, and column of the mapping.
 		SET_REFERENCE,	 // Set this matcher as the reference matcher.  Implies that the payload is an AbstractMatcher.
-		MATRIX_UPDATED   // when a matrix is updated
+		MATRIX_UPDATED,   // when a matrix is updated
+		DISPLAY_CLUSTER,	  // display a cluster, payload is inferred to be the cluster
+		CLEAR_CLUSTER,		// clear the cluster display
+		REMOVE_PLOT			// remove the plot from the analytics panel
 	}
 	
 	public final EventType type;
