@@ -22,11 +22,13 @@ import am.AMException;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.MatcherChangeEvent;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
@@ -35,6 +37,9 @@ import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
 import am.userInterface.table.MatchersTablePanel;
+import am.visualization.MatcherAnalyticsPanel;
+import am.visualization.MatcherAnalyticsPanel.VisualizationType;
+import am.visualization.matrixplot.MatrixPlotPanel;
 
 public class MatchersControlPanel extends JPanel implements ActionListener,
 		ItemListener {
@@ -68,10 +73,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	private JButton exportAlignmentsButton;
 	private JButton importAlignmentsButton;
 	private JButton thresholdTuning;
-
-	
-	
-	
+	private JButton mappingAnalyzerButton;	
 	
 	public MatchersControlPanel() {
 		init();
@@ -163,6 +165,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		importAlignmentsButton.addActionListener(this);
 		thresholdTuning = new JButton("Tuning");
 		thresholdTuning.addActionListener(this);
+		mappingAnalyzerButton = new JButton("Disagreement Analysis");
+		mappingAnalyzerButton.addActionListener(this);
 		JPanel panel3 = new JPanel();
 		panel3.setLayout(new FlowLayout(FlowLayout.LEADING));
 		panel3.add(newMatching);
@@ -175,6 +179,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		panel3.add(exportAlignmentsButton);
 		panel3.add(importAlignmentsButton);
 		panel3.add(thresholdTuning);
+		panel3.add(mappingAnalyzerButton);
 		//panel3.add(editMatrixButton);
 
 		//
@@ -229,6 +234,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 			}
 			else if(obj == thresholdTuning) {
 				tuning();
+			}
+			else if(obj == mappingAnalyzerButton) {
+				disagreementEval();
 			}
 		}
 		//ATTENTION: the exception of the match() method of a matcher is not catched here because it runs in a separated thread
@@ -576,7 +584,58 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		
 	}
 	
+
+	public void disagreementEval() throws Exception {
+		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
+		if(rowsIndex.length < 1) {
+			Utility.displayErrorPane("Select two or more matchers", null);
+		}
+		else if(Utility.displayConfirmPane("AgreementMaker will now perform disagreement evaluation on the selected matchers", null)) {
+			Core core = Core.getInstance();
+			int sourceDim = core.getSourceOntology().getClassesList().size(),
+				targetDim = core.getTargetOntology().getClassesList().size();
+			
+			SimilarityMatrix localMatrix = new SimilarityMatrix(sourceDim, targetDim, alignType.aligningClasses);
+			
+			for(int i = 0; i < sourceDim; i++){
+				for(int j = 0; j < targetDim; j++){
+					localMatrix.set(i, j, new Mapping(core.getSourceOntology().getClassesList().get(i),
+														core.getTargetOntology().getClassesList().get(j),
+														disagreementComp(i, j, core.getMatcherInstances())));
+					System.out.println(disagreementComp(i, j, core.getMatcherInstances()));
+				}
+			}
+			
+			ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
+			AbstractMatcher selectedMatcher;
+			int[] rowIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
+			if( rowIndex.length == 0 ) { Utility.displayErrorPane("No matcher is selected.", "Error"); return; }
+			selectedMatcher = list.get(rowIndex[0]); // we only care about the first matcher selected
+			
+			if( selectedMatcher.getClassesMatrix() == null ) { Utility.displayErrorPane("The matcher has not computed a classes similarity matrix.", "Error"); return; }
+			
+			MatrixPlotPanel mp = new MatrixPlotPanel( selectedMatcher, localMatrix, null);
+			
+			mp.getPlot().draw(false);
+			JPanel plotPanel = new JPanel();
+			plotPanel.add(mp);
+			Core.getUI().addTab("MatrixPlot Class", null , plotPanel , selectedMatcher.getName().getMatcherName());
+		}
+	}
 	
+	public double disagreementComp(int row, int column, ArrayList<AbstractMatcher> involvedMatchers){
+		int totalMatchers = matchersTablePanel.getTable().getSelectedRows().length;
+		double mean = 0.0, var = 0.0;
+		for(int i = 0; i < totalMatchers; i++){
+			mean += involvedMatchers.get(i).getClassesMatrix().getSimilarity(row, column);
+		}
+		mean /= totalMatchers;
+		for(int i = 0; i < totalMatchers; i++){
+			var += (mean - involvedMatchers.get(i).getClassesMatrix().getSimilarity(row, column)) *
+					(mean - involvedMatchers.get(i).getClassesMatrix().getSimilarity(row, column));
+		}
+		return mean;
+	}
 	
 	/////////////////////////////////////////////////PANEL METHODS
 	
