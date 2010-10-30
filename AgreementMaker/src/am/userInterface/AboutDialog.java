@@ -91,7 +91,7 @@ public class AboutDialog implements ActionListener {
 		l.add( new JLabel("AgreementMaker v0.21 ( Aug 19th 2010 )"));
 		
 		l.add( new JLabel("AgreementMaker v0.2 ( fall 2008 - 2009):") );
-		l.add( new JLabel("Flavio Palandri Antonelli, Cosmin Stroe, Ula\u0219 Kele\u0219.") );
+		l.add( new JLabel("Flavio Palandri Antonelli, Cosmin Stroe, Ula\u0219 Kele\u0219.") );  // Ulas Keles
 		
 		l.add( new JLabel("AgreementMaker v0.1 (2001 - 2008):") );
 		l.add( new JLabel("Afsheen Rajendran, Anjli Chaudhry, Nalin Makar,") );
