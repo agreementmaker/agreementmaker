@@ -370,8 +370,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	}
 	
 	public void importa() throws Exception {
-		int lastIndex = Core.getInstance().getMatcherInstances().size();
-		AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, lastIndex);
+		LoadFileDialog lfd = new LoadFileDialog();
+		AbstractMatcher referenceAlignmentMatcher = lfd.getLoadedMatcher();
 		match(referenceAlignmentMatcher , true);
 	}
 	
@@ -606,20 +606,14 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				}
 			}
 			
-			ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
-			AbstractMatcher selectedMatcher;
-			int[] rowIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
-			if( rowIndex.length == 0 ) { Utility.displayErrorPane("No matcher is selected.", "Error"); return; }
-			selectedMatcher = list.get(rowIndex[0]); // we only care about the first matcher selected
-			
-			if( selectedMatcher.getClassesMatrix() == null ) { Utility.displayErrorPane("The matcher has not computed a classes similarity matrix.", "Error"); return; }
-			
+			// to be managed better overall (we should not need the selected matcher here
+			AbstractMatcher selectedMatcher = Core.getInstance().getMatcherInstances().get(0);			
 			MatrixPlotPanel mp = new MatrixPlotPanel( selectedMatcher, localMatrix, null);
 			
 			mp.getPlot().draw(false);
 			JPanel plotPanel = new JPanel();
 			plotPanel.add(mp);
-			Core.getUI().addTab("MatrixPlot Class", null , plotPanel , selectedMatcher.getName().getMatcherName());
+			Core.getUI().addTab("Disagreement Tab", null , plotPanel , selectedMatcher.getName().getMatcherName());
 		}
 	}
 	

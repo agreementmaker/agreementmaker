@@ -16,16 +16,21 @@ import am.app.ontology.Node;
 public class LexicalSynonymMatcher extends AbstractMatcher {
 	
 	
-	Lexicon sourceLexicon;
-	Lexicon targetLexicon;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7674172048857214961L;
 	
-	Property sourceSynonymProperty, targetSynonymProperty;
-	Property sourceLabelProperty, targetLabelProperty;
-	Property sourceDefinitionProperty, targetDefinitionProperty;
+	transient Lexicon sourceLexicon;
+	transient Lexicon targetLexicon;
+	
+	transient Property sourceSynonymProperty, targetSynonymProperty;
+	transient Property sourceLabelProperty, targetLabelProperty;
+	transient Property sourceDefinitionProperty, targetDefinitionProperty;
 
 	
-	HashMap<Node, GeneralLexiconSynSet> sourceSynsetLookup = new HashMap<Node, GeneralLexiconSynSet>();
-	HashMap<Node, GeneralLexiconSynSet> targetSynsetLookup = new HashMap<Node, GeneralLexiconSynSet>();
+	transient HashMap<Node, GeneralLexiconSynSet> sourceSynsetLookup = new HashMap<Node, GeneralLexiconSynSet>();
+	transient HashMap<Node, GeneralLexiconSynSet> targetSynsetLookup = new HashMap<Node, GeneralLexiconSynSet>();
 	
 	
 /**

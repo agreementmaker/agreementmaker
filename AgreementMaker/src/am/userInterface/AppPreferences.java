@@ -67,11 +67,11 @@ public class AppPreferences {
 	private static final String		PREF_EXPORT_ISOLINES = "pref_export_isolines";
 	private static final String		PREF_EXPORT_SKIPZERO = "pref_export_skipzero";
 	
-	public static enum ExportType { 
+	public static enum FileType { 
 		ALIGNMENT_ONLY("1"), MATRIX_AS_CSV("2"), COMPLETE_MATCHER("3");
 		//----------------------- Implementation Details ------------------
 		String key;
-		ExportType(String k) { key = k; }
+		FileType(String k) { key = k; }
 		String getKey() { return key; }
 	}
 	
@@ -472,9 +472,9 @@ public class AppPreferences {
 	public void saveExportSkipZeros( boolean sort ) {	appPrefs.putBoolean(PREF_EXPORT_SKIPZERO, sort); }
 	public void saveExportClassesMatrix( boolean c ) { appPrefs.putBoolean(PREF_EXPORT_CLASSESMATRIX, c); }
 	public boolean isExportClassesMatrix() { return appPrefs.getBoolean(PREF_EXPORT_CLASSESMATRIX, true); }
-	public void saveExportType( ExportType t ) { appPrefs.put(PREF_EXPORT_TYPE, t.getKey() ); }
+	public void saveExportType( FileType t ) { appPrefs.put(PREF_EXPORT_TYPE, t.getKey() ); }
 	
-	public boolean isExportTypeSelected( ExportType t ) {
+	public boolean isExportTypeSelected( FileType t ) {
 		String type = appPrefs.get(PREF_EXPORT_TYPE, "1");
 		if( type.equals(t.getKey()) ) return true;
 		return false;

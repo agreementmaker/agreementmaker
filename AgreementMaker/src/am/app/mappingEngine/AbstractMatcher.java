@@ -1397,7 +1397,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	   * readObject: gets the state of the object.
 	   * @author michele
 	   */
-	  public AbstractMatcher readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
+	  public static AbstractMatcher readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
 		  AbstractMatcher thisClass = (AbstractMatcher) in.readObject();
 		  in.close();
 		  return thisClass;

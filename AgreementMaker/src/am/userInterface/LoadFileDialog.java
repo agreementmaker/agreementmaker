@@ -5,7 +5,9 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
@@ -35,25 +37,27 @@ import am.userInterface.AppPreferences.FileType;
 
 
 
-public class SaveFileDialog extends JDialog implements ActionListener{
+public class LoadFileDialog extends JDialog implements ActionListener{
 	
 	private static final long serialVersionUID = 7313974994418768939L;
 	AppPreferences prefs = new AppPreferences(); // Application preferences.  Used to automatically fill in previous values.
 
-	private JLabel lblMatcher, lblFilename, lblFileDir, lblFileFormat;
-	private JButton btnBrowse, btnCancel, btnSave;
-	private JTextField txtFilename, txtFileDir;
+	private JLabel lblMatcher, lblFilename, lblFileFormat;
+	private JButton btnBrowse, btnCancel, btnLoad;
+	private JTextField txtFilename;
 	private JComboBox cmbAlignmentFormat;
 	private JPanel pnlSaveOptions;
 	private JCheckBox boxSort, boxIsolines, boxSkipZeros;
 	
 	private JRadioButton radAlignmentOnly, radMatrixAsCSV, radCompleteMatcher, radClassesMatrix, radPropertiesMatrix;
 	
+	private AbstractMatcher loadedMatcher;
+	
 	/**
 	 * Helper function to create the export options panel.
 	 * @return The panel in the dialog that contains the radio buttons of what should be saved.
 	 */
-	private JPanel getSaveOptionsPanel() {
+	private JPanel getLoadOptionsPanel() {
 		JPanel panel = new JPanel();
 		panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), " Export: "));
 		
@@ -184,47 +188,34 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 	 * This is the dialog that is shown when the Export menu item is used.
 	 * It can save Alignments or Similarity Matrices of Matchers, or complete Matchers (for later Import).
 	 */
-	public SaveFileDialog() {
+	public LoadFileDialog() {
 		 // Class interface to Application Preferences
 		
+		loadedMatcher = null;
+		
 		// 
-		setTitle("Export ...");
+		setTitle("Import ...");
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
-		// get the currently selected matcher
-		ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
-		AbstractMatcher selectedMatcher;
-		int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
-		selectedMatcher = list.get(rowsIndex[0]); // we only care about the first matcher selected
-		
 		// elements of the dialog (in order from left to right, top to bottom)
-		lblMatcher = new JLabel("Exporting Matcher: " + selectedMatcher.getName().getMatcherName());
+		lblMatcher = new JLabel("Importing Matcher: ");
 		
-		lblFilename = new JLabel("Filename (without extension): ");
+		lblFilename = new JLabel("File: ");
 		txtFilename = new JTextField();
-		lblFileDir = new JLabel("Save in folder: ");
-		txtFileDir = new JTextField();
 		
 		btnBrowse = new JButton("Browse...");
 		btnBrowse.addActionListener(this);
 		
 		// Restore some values saved 
 		//the system suggests the last file opened
-		if( prefs.getExportLastDir().exists() ) {
-			txtFileDir.setText(prefs.getExportLastDir().getPath());
-			Dimension currentPreferred = txtFileDir.getPreferredSize();
-			currentPreferred.width += 50;
-			txtFileDir.setPreferredSize(currentPreferred);
-		}
 		txtFilename.setText(prefs.getExportLastFilename());		
-		pnlSaveOptions = getSaveOptionsPanel();
-		
+		pnlSaveOptions = getLoadOptionsPanel();
 		
 		btnCancel = new JButton("Cancel");
-		btnSave = new JButton("Save");
+		btnLoad = new JButton("Load");
 		
 		btnCancel.addActionListener(this);
-		btnSave.addActionListener(this);
+		btnLoad.addActionListener(this);
 				
 		
 		//Make the GroupLayout for this dialog (somewhat complicated, but very flexible)
@@ -236,23 +227,17 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 		
-		int pnlwidth = lblFileDir.getPreferredSize().width + txtFileDir.getPreferredSize().width + btnBrowse.getPreferredSize().width;
-		
 		layout.setHorizontalGroup( layout.createParallelGroup(Alignment.TRAILING)
 				.addComponent(lblMatcher, Alignment.LEADING)
 				.addGroup( layout.createSequentialGroup()
 						.addComponent(lblFilename)
 						.addComponent(txtFilename)
-				)
-				.addGroup( layout.createSequentialGroup()
-						.addComponent(lblFileDir)
-						.addComponent(txtFileDir)
 						.addComponent(btnBrowse)
 				)
-				.addComponent(pnlSaveOptions, pnlwidth, GroupLayout.PREFERRED_SIZE, 2000 )
+				.addComponent(pnlSaveOptions, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, 2000 )
 				.addGroup( layout.createSequentialGroup()
 						.addComponent(btnCancel)
-						.addComponent(btnSave)
+						.addComponent(btnLoad)
 				)
 		);
 
@@ -264,16 +249,12 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 				.addGroup( layout.createParallelGroup(Alignment.CENTER)
 						.addComponent(lblFilename)
 						.addComponent(txtFilename)
-				)
-				.addGroup( layout.createParallelGroup(Alignment.CENTER)
-						.addComponent(lblFileDir)
-						.addComponent(txtFileDir)
 						.addComponent(btnBrowse)
 				)
 				.addComponent(pnlSaveOptions)
 				.addGroup( layout.createParallelGroup(Alignment.CENTER)
 						.addComponent(btnCancel)
-						.addComponent(btnSave)
+						.addComponent(btnLoad)
 				)
 		);
 		
@@ -306,8 +287,8 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 		else if(obj == btnBrowse){
 			browse();
 		}
-		else if(obj == btnSave){
-			save();
+		else if(obj == btnLoad){
+			load();
 		} else if( obj == radAlignmentOnly || obj == radMatrixAsCSV || obj == radCompleteMatcher ) {
 			// enables/disables controls depending on which radio button is selected
 			setAlignmentOnlyEnabled(radAlignmentOnly.isSelected());
@@ -327,121 +308,50 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 		boxSkipZeros.setEnabled(en);
 	}
 	
-	private void save() {
+	private void load() {
 		try {
-			// what kind of export are we doing?
-			FileType outputType;
-			if( radCompleteMatcher.isSelected() ) { outputType = FileType.COMPLETE_MATCHER; }
-			else if( radMatrixAsCSV.isSelected() ) { outputType = FileType.MATRIX_AS_CSV; }
-			else { outputType = FileType.ALIGNMENT_ONLY; } // use Alignment_ONLY as default.
+			// what kind of import are we doing?
+			FileType inputType;
+			if( radCompleteMatcher.isSelected() ) { inputType = FileType.COMPLETE_MATCHER; }
+			else if( radMatrixAsCSV.isSelected() ) { inputType = FileType.MATRIX_AS_CSV; }
+			else { inputType = FileType.ALIGNMENT_ONLY; } // use Alignment_ONLY as default.
 			
 			// directory, filename, fileformat ?
-			String outDirectory = txtFileDir.getText();
 			String outFileName = txtFilename.getText();
-			int outFormatIndex = cmbAlignmentFormat.getSelectedIndex();
 			
-			if(outDirectory.equals("")){
-				JOptionPane.showMessageDialog(this, "Select the directory for the output file to proceed.");
-			}
-			else if(outFileName.equals("")){
-				JOptionPane.showMessageDialog(this, "Insert a name for the output file to proceed");
-			}
-			else if(outFileName.indexOf(".")!=-1) {
-				JOptionPane.showMessageDialog(this, "Insert a file name without Extension");
+			if(outFileName.equals("")){
+				JOptionPane.showMessageDialog(this, "Select an input file to proceed");
 			}
 			else{
 				// save app preferences.
 				prefs.saveExportLastFilename(outFileName);
-				prefs.saveExportLastDir(outDirectory);
-				prefs.saveExportType(outputType);
+				prefs.saveExportType(inputType);
 				
-				// get the currently selected matcher
-				ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
-				AbstractMatcher selectedMatcher;
-				int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
-				selectedMatcher = list.get(rowsIndex[0]); // we only care about the first matcher selected
-				
-				if( outputType == FileType.ALIGNMENT_ONLY ) {
-					prefs.saveExportAlignmentFormatIndex(outFormatIndex);
-					try {
-						// full file name
-						String fullFileName = outDirectory+ "/" +outFileName+ "." + OutputController.getAlignmentFormatExtension(outFormatIndex);
-
-						if( OutputController.getAlignmentFormatExtension(outFormatIndex) == "rdf" ){ // RDF	
-							OutputController.printDocumentOAEI(fullFileName);
-							Utility.displayMessagePane("File saved successfully.\nLocation: "+fullFileName+"\n", null);
-						}
-						else{						
-							OutputController.printDocument(fullFileName);
-							Utility.displayMessagePane("File saved successfully.\nLocation: "+fullFileName+"\n", null);	
-						}
-						setModal(false);
-						dispose();
-					}
-					catch(Exception e) {
-						e.printStackTrace();
-						//ok = false;
-						JOptionPane.showMessageDialog(this, "Error while saving the file\nTry to change filename or location.");
-					}
-				} else if( outputType == FileType.MATRIX_AS_CSV ) {
-					prefs.saveExportClassesMatrix( radClassesMatrix.isSelected() );
-					prefs.saveExportSort(boxSort.isSelected());
-					prefs.saveExportIsolines(boxIsolines.isSelected());
-					prefs.saveExportSkipZeros(boxSkipZeros.isSelected());
-					// full file name
-					String fullFileName = outDirectory+ "/" + outFileName + ".csv";
+				if( inputType == FileType.ALIGNMENT_ONLY ) {
+					
+				}
+				else if( inputType == FileType.MATRIX_AS_CSV ) {
 					
 					if( radClassesMatrix.isSelected() ) {
-						if( selectedMatcher.getClassesMatrix() == null ) {
-							// create a new matrix
-							if( selectedMatcher.getSourceOntology() == null || selectedMatcher.getTargetOntology() == null ) { 
-								throw new Exception("Matcher does not have Source or Target ontologies set.");
-							}
-							SimilarityMatrix m = new SimilarityMatrix(selectedMatcher.getSourceOntology().getClassesList().size(), 
-																	selectedMatcher.getTargetOntology().getClassesList().size(), 
-																	alignType.aligningClasses);
-							if( selectedMatcher.getClassAlignmentSet() == null ) 
-								throw new Exception("Matcher does not have a Classes Matrix nor a Classes Alignment Set.  Cannot do anything.");
-							
-							for( int i = 0; i < selectedMatcher.getClassAlignmentSet().size(); i++ ) {
-								am.app.mappingEngine.Mapping currentAlignment = selectedMatcher.getClassAlignmentSet().getAlignment(i);
-								m.set(currentAlignment.getEntity1().getIndex(), currentAlignment.getEntity2().getIndex(), currentAlignment);
-							}
-							
-							OutputController.saveMatrixAsCSV(m, fullFileName, boxSort.isSelected(), boxIsolines.isSelected(), boxSkipZeros.isSelected());
-							
-						} else { 
-							OutputController.saveMatrixAsCSV(selectedMatcher.getClassesMatrix(), fullFileName, boxSort.isSelected(), boxIsolines.isSelected(), boxSkipZeros.isSelected());
 						}
-					} else {
-						if( selectedMatcher.getPropertiesMatrix() == null ) {
-							// create a new matrix
-							if( selectedMatcher.getSourceOntology() == null || selectedMatcher.getTargetOntology() == null ) { 
-								throw new Exception("Matcher does not have Source or Target ontologies set.");
-							}
-							SimilarityMatrix m = new SimilarityMatrix(selectedMatcher.getSourceOntology().getPropertiesList().size(), 
-																	selectedMatcher.getTargetOntology().getPropertiesList().size(), 
-																	alignType.aligningProperties);
-							if( selectedMatcher.getPropertyAlignmentSet() == null ) 
-								throw new Exception("Matcher does not have a Properties Matrix nor a Properties Alignment Set.  Cannot do anything.");
-							
-							for( int i = 0; i < selectedMatcher.getPropertyAlignmentSet().size(); i++ ) {
-								am.app.mappingEngine.Mapping currentAlignment = selectedMatcher.getPropertyAlignmentSet().getAlignment(i);
-								m.set(currentAlignment.getEntity1().getIndex(), currentAlignment.getEntity2().getIndex(), currentAlignment);
-							}
-							
-							OutputController.saveMatrixAsCSV(m, fullFileName, boxSort.isSelected(), boxIsolines.isSelected(), boxSkipZeros.isSelected());
-						} else {
-							OutputController.saveMatrixAsCSV(selectedMatcher.getPropertiesMatrix(), fullFileName, boxSort.isSelected(), boxIsolines.isSelected(), boxSkipZeros.isSelected());
+					else { 
 						}
+				}
+				else if ( inputType == FileType.COMPLETE_MATCHER ) {
+					// full file name. TODO: correctness check
+					String fullFileName = outFileName;
+					
+					try {
+						loadedMatcher = AbstractMatcher.readObject(new ObjectInputStream(new FileInputStream(fullFileName)));
+						Utility.displayMessagePane("File loaded successfully.\n", null);
 					}
-					Utility.displayMessagePane("File saved successfully.\nLocation: "+fullFileName+"\n", null);
-				} else if( outputType == FileType.COMPLETE_MATCHER ) {
-					//throw new Exception("Michele, implement this function.");
-					String fullFileName = outDirectory+ "/" + outFileName + ".bin";
-					selectedMatcher.writeObject(new ObjectOutputStream(new FileOutputStream(fullFileName)));
-					Utility.displayMessagePane("File saved successfully.\nLocation: "+fullFileName+"\n", null);
-				} else {
+					catch(Exception ex){
+						JOptionPane.showConfirmDialog(null,"Can not parse the file '" + fullFileName + "'. Please check the policy.","Parser Error",JOptionPane.PLAIN_MESSAGE);
+						ex.printStackTrace();
+					}
+					//frame.dispose();
+				}
+				else {
 					throw new Exception("Could not determine the output type.\nAt least one radio button must be selected.");
 				}
 			}
@@ -464,22 +374,10 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 		} 	 
 		else if( prefs.getLastDir().exists() ) { 
 			fc = new JFileChooser(prefs.getLastDir()); 
-		} else { fc = new JFileChooser(); } 
-
-		//This lines are needed to set the filechooser as directory chooser, we are creating a file filter class here which has to implements all needed methods.
-		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); 
-		fc.setFileFilter(new FileFilter() {  
-            public boolean accept(File f) {  
-                if (f.isDirectory()) { 
-                    return true;   
-                } 
-                return false;  
-            }
- 
-            public String getDescription() { 
-                return "Directory";
-            }
-        });
+		}
+		else {
+			fc = new JFileChooser();
+		}
 
 		int returnVal = fc.showOpenDialog(this);
 
@@ -488,8 +386,17 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 			// ok, now that we know what file the user selected
 			// let's save it for future use (for the chooser)
 			prefs.saveLastDirOutput(selectedfile); 
-			txtFileDir.setText(selectedfile.getPath());
+			txtFilename.setText(selectedfile.getPath());
 		}
+	}
+
+	public void setLoadedMatcher(AbstractMatcher loadedMatcher) {
+		this.loadedMatcher = loadedMatcher;
+	}
+
+	public AbstractMatcher getLoadedMatcher() {
+		return loadedMatcher;
 	}
 	
 }
+
