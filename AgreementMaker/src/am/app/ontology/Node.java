@@ -882,4 +882,5 @@ public class Node implements Serializable{
 			System.out.println(n.localName);
 	  }
 
+	  public String getType() {  return type;  }
 }

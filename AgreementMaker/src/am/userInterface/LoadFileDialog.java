@@ -30,8 +30,12 @@ import javax.swing.filechooser.FileFilter;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.output.OutputController;
 import am.userInterface.AppPreferences.FileType;
 
@@ -328,7 +332,21 @@ public class LoadFileDialog extends JDialog implements ActionListener{
 				prefs.saveExportType(inputType);
 				
 				if( inputType == FileType.ALIGNMENT_ONLY ) {
+					int lastIndex = Core.getInstance().getMatcherInstances().size();
+					AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, lastIndex);
 					
+					ReferenceAlignmentParameters refParams = new ReferenceAlignmentParameters();
+					
+					refParams.fileName = outFileName;
+					refParams.format = ReferenceAlignmentMatcher.REF0;
+					referenceAlignmentMatcher.setParam(refParams);
+					
+					referenceAlignmentMatcher.setThreshold(referenceAlignmentMatcher.getDefaultThreshold());
+					referenceAlignmentMatcher.setMaxSourceAlign(referenceAlignmentMatcher.getDefaultMaxSourceRelations());
+					referenceAlignmentMatcher.setMaxTargetAlign(referenceAlignmentMatcher.getDefaultMaxTargetRelations());
+					new MatcherProgressDialog(referenceAlignmentMatcher);
+					
+					loadedMatcher = referenceAlignmentMatcher;
 				}
 				else if( inputType == FileType.MATRIX_AS_CSV ) {
 					
@@ -344,6 +362,7 @@ public class LoadFileDialog extends JDialog implements ActionListener{
 					try {
 						loadedMatcher = AbstractMatcher.readObject(new ObjectInputStream(new FileInputStream(fullFileName)));
 						Utility.displayMessagePane("File loaded successfully.\n", null);
+						this.setVisible(false);
 					}
 					catch(Exception ex){
 						JOptionPane.showConfirmDialog(null,"Can not parse the file '" + fullFileName + "'. Please check the policy.","Parser Error",JOptionPane.PLAIN_MESSAGE);

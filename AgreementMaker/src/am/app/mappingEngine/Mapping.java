@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.*;
 import am.output.OutputController;
@@ -52,6 +53,11 @@ public class Mapping implements Serializable
         entity2 = e2;
         similarity = sim;
         relation = r;
+        if( entity1.getType().equals( Node.OWLCLASS ) || entity1.getType().equals( Node.RDFNODE ) || entity1.getType().equals( Node.XMLNODE )  ) {
+        	typeOfConcepts = alignType.aligningClasses;
+        } else {
+        	typeOfConcepts = alignType.aligningProperties;
+        }
     }
 
     public Mapping(Node e1, Node e2, double sim)
@@ -60,6 +66,11 @@ public class Mapping implements Serializable
         entity2 = e2;
         similarity = sim;
         relation = "=";
+        if( entity1.getType().equals( Node.OWLCLASS ) || entity1.getType().equals( Node.RDFNODE ) || entity1.getType().equals( Node.XMLNODE )  ) {
+        	typeOfConcepts = alignType.aligningClasses;
+        } else {
+        	typeOfConcepts = alignType.aligningProperties;
+        }
     }
 
     public Mapping(Node e1, Node e2)
@@ -68,6 +79,11 @@ public class Mapping implements Serializable
         entity2 = e2;
         similarity = 1.0;
         relation = "=";
+        if( entity1.getType().equals( Node.OWLCLASS ) || entity1.getType().equals( Node.RDFNODE ) || entity1.getType().equals( Node.XMLNODE )  ) {
+        	typeOfConcepts = alignType.aligningClasses;
+        } else {
+        	typeOfConcepts = alignType.aligningProperties;
+        }
     }
 
     public Mapping(double s) {
@@ -214,25 +230,37 @@ public class Mapping implements Serializable
 	
 	/** ****************** Serialization methods *******************/
 	
-	  /**
-	   * readObject: gets the state of the object.
-	   * @author michele
-	   */
-	  protected Mapping readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
-		  Mapping thisClass = (Mapping) in.readObject();
-		  in.close();
-		  return thisClass;
-	  }
+	private void readObject( ObjectInputStream in ) throws ClassNotFoundException, IOException {
 
-	   /**
-	    * writeObject: saves the state of the object.
-	    * @author michele
-	    */
-	  protected void writeObject(ObjectOutputStream out) throws IOException {
-		  out.writeObject(this);
-		  out.close();
-	  }
+		in.defaultReadObject();
 
+		// fix the reference of the Nodes
+		
+		Ontology sourceOntology = Core.getInstance().getSourceOntology();
+		Ontology targetOntology = Core.getInstance().getTargetOntology();
+
+		Node sourceNode = null;
+		Node targetNode = null;
+
+		if( this.getAlignmentType() == alignType.aligningClasses ) {
+			// class nodes
+			sourceNode = sourceOntology.getClassesList().get( this.getSourceKey() );
+			targetNode = targetOntology.getClassesList().get( this.getTargetKey() );
+		} else {
+			// property nodes
+			sourceNode = sourceOntology.getPropertiesList().get( this.getSourceKey() );
+			targetNode = targetOntology.getPropertiesList().get( this.getTargetKey() );
+		}
+
+		entity1 = sourceNode;
+		entity2 = targetNode;
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+	}
+	
+	/*
 	  protected void testSerialization(){
 		  Mapping a = null;
 			try {
@@ -251,4 +279,5 @@ public class Mapping implements Serializable
 			
 			System.out.println(a.similarity);
 	  }
+	  */
 }

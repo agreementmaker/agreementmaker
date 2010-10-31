@@ -370,9 +370,21 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	}
 	
 	public void importa() throws Exception {
+		
+		if(!Core.getInstance().ontologiesLoaded() ) {
+			Utility.displayErrorPane("You have to load Source and Target ontologies before running any matcher\nClick on File Menu and select Open Ontology functions ", null);
+		}
+		
+		
+		
 		LoadFileDialog lfd = new LoadFileDialog();
-		AbstractMatcher referenceAlignmentMatcher = lfd.getLoadedMatcher();
-		match(referenceAlignmentMatcher , true);
+		AbstractMatcher importedMatcher = lfd.getLoadedMatcher();
+		
+		importedMatcher.setSourceOntology( Core.getInstance().getSourceOntology() );
+		importedMatcher.setTargetOntology( Core.getInstance().getTargetOntology() );
+		
+		matchersTablePanel.addMatcher(importedMatcher);
+		Core.getUI().redisplayCanvas();
 	}
 	
 	public void copy() throws Exception{

@@ -16,10 +16,7 @@ import am.app.ontology.Ontology;
 
 public class SimilarityMatrix implements Serializable
 {	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8724503849185030524L;
+	private static final long serialVersionUID = -8724503849185030524L; // do not change the serialVersionUID unless required to break backward compatibility
 
 	//not used at the moment. At the moment indetermined similarity are set with 0.
 	//if we want to start using it is important to keep it similar to 0, to allow compatibility with non-updated methods.
@@ -441,43 +438,4 @@ public class SimilarityMatrix implements Serializable
 		return list;		
 	}
 	
-	/** ****************** Serialization methods *******************/
-	
-	  /**
-	   * readObject: gets the state of the object.
-	   * @author michele
-	   */
-	  protected SimilarityMatrix readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
-		  SimilarityMatrix thisClass = (SimilarityMatrix) in.readObject();
-		  in.close();
-		  return thisClass;
-	  }
-
-	   /**
-	    * writeObject: saves the state of the object.
-	    * @author michele
-	    */
-	  protected void writeObject(ObjectOutputStream out) throws IOException {
-		  out.writeObject(this);
-		  out.close();
-	  }
-
-	  protected void testSerialization(){
-		  SimilarityMatrix am = null;
-			try {
-				writeObject(new ObjectOutputStream(new FileOutputStream("testFile")));
-				am = readObject(new ObjectInputStream(new FileInputStream("testFile")));
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			System.out.println(am.get(0, 0));
-	  }
 }

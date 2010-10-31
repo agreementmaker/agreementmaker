@@ -164,6 +164,7 @@ public class Core {
 	// this method adds a matcher to the end of the matchers list.
 	public void addMatcherInstance(AbstractMatcher a) {
 		a.setIndex( matcherInstances.size() );
+		a.setID(getNextMatcherID());
 		matcherInstances.add(a);
 		fireEvent( new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_ADDED, a.getID() ));
 	}
