@@ -1090,7 +1090,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 * @return
 	 */
 	public String getDescriptionString() {
-		testSerialization();
 		return "No description available for this matcher\n";
 	}
 	public String getReferenceString() {
@@ -1450,25 +1449,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	  public void writeObject(ObjectOutputStream out) throws IOException {
 		  out.writeObject(this);
 		  out.close();
-	  }
-
-	  protected void testSerialization(){
-		  AbstractMatcher am = null;
-			try {
-				writeObject(new ObjectOutputStream(new FileOutputStream("testFile")));
-				am = readObject(new ObjectInputStream(new FileInputStream("testFile")));
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			System.out.println(am.name);
 	  }
 
 }

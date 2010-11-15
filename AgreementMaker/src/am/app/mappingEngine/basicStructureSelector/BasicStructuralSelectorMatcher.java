@@ -62,9 +62,9 @@ public class BasicStructuralSelectorMatcher extends AbstractMatcher {
 	 */
 	protected void beforeAlignOperations() throws Exception {
 		super.beforeAlignOperations();
-		if( inputMatchers.size() != 1 ) {
+		/*if( inputMatchers.size() != 1 ) {
     		throw new RuntimeException("BSS algorithm needs to have one and only one input matcher.");
-    	}
+    	}*/
 		
 		AbstractMatcher input = inputMatchers.get(0);
 		

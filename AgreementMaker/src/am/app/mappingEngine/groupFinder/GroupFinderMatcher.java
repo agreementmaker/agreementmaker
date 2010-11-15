@@ -139,14 +139,13 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 * @author michele
 	 */
 	public String getDescriptionString() {
-		super.testSerialization();
-		return "The Concept Finder Matcher (CFM for short) is a matching method that visits the structure of the source\n" +
+		return "The Group Finder Matcher (GFM for short) is a matching method that visits the structure of the source\n" +
 				"and the target ontologies to see whether the mappings between nodes of the two ontologies is respected.\n" +
 				"The idea is that, if the two concepts are sibling in some ontolgy, the mappings should be between siblings\n" +
 				"node concepts in target or in a different relation that is not subclass/subproperty relation\n\n" +
-				"The CFM method is a refining method (we call it a Second Layer Matcher), meaning that it requires\n" +
+				"The GFM method is a refining method (we call it a Second Layer Matcher), meaning that it requires\n" +
 				"another Matcher to create the initial similarity values between the nodes and then operates\n" +
-				"using the already computed similarities. CFM needs no parameters (so far)\n\n";
+				"using the already computed similarities. GFM needs no parameters (so far)\n\n";
 	}
 	
 	/******************************************* SUPPORT METHODS *******************************************************/
@@ -189,30 +188,32 @@ public class GroupFinderMatcher extends AbstractMatcher {
 
 	    	// computing best root
 	    	localList = input.chooseBestN(createIntList(sourceSet), createIntList(targetSet));
-	    	Mapping a = null;
+	    	Mapping selectedMapping = null;
 	    	double newSim = 0.0;
     		Node sourceRoot, targetRoot;
 	    	
-	    	for(int k = 0; k < localList.size(); k++){
-	    		a = localList.get(k);
-	    		//System.out.println();
-	    		//System.out.println("start:");
-	    		sourceRoot = a.getEntity1().getRoot();
-	    		//System.out.println("source root " + sourceRoot.getLocalName());
-	    		//System.out.println("target " + a.getEntity2());
-	    		//System.out.println("target root " + a.getEntity2().getRoot().getLocalName());
-	    		targetRoot = a.getEntity2().getRoot();
-	    		//System.out.println("target root " + targetRoot.getLocalName());
-	    		int sourceInd = source_root_list.indexOf(sourceRoot);
-	    		//System.out.println("sourceIndex " + sourceInd);
-	    		int targetInd = target_root_list.indexOf(targetRoot);
-	    		//System.out.println("targetIndex " + targetInd);
-	    		newSim = a.getSimilarity() + localMatrix.getSimilarity(sourceInd, targetInd);
-	    		//System.out.println("newSim " + newSim);
-	    		localMatrix.setSimilarity(sourceInd, targetInd, newSim);
-	    		//System.out.println("localMatrix updated ");
-	    		localCount.set(targetInd, localCount.get(targetInd) + 1);
-	    		//System.out.println("localCount updated ");
+    		if(localList.size() > 0){
+		    	for(int k = 0; k < localList.size(); k++){
+		    		selectedMapping = localList.get(k);
+		    		//System.out.println();
+		    		//System.out.println("start:");
+		    		sourceRoot = selectedMapping.getEntity1().getRoot();
+		    		//System.out.println("source root " + sourceRoot.getLocalName());
+		    		//System.out.println("target " + a.getEntity2());
+		    		//System.out.println("target root " + a.getEntity2().getRoot().getLocalName());
+		    		targetRoot = selectedMapping.getEntity2().getRoot();
+		    		//System.out.println("target root " + targetRoot.getLocalName());
+		    		int sourceInd = source_root_list.indexOf(sourceRoot);
+		    		//System.out.println("sourceIndex " + sourceInd);
+		    		int targetInd = target_root_list.indexOf(targetRoot);
+		    		//System.out.println("targetIndex " + targetInd);
+		    		newSim = selectedMapping.getSimilarity() + localMatrix.getSimilarity(sourceInd, targetInd);
+		    		//System.out.println("newSim " + newSim);
+		    		localMatrix.setSimilarity(sourceInd, targetInd, newSim);
+		    		//System.out.println("localMatrix updated ");
+		    		localCount.set(targetInd, localCount.get(targetInd) + 1);
+		    		//System.out.println("localCount updated ");
+		    	}
 	    	}
 	    	/*/ computing similarity average
 	    	for(int j = 0; j < localCount.size(); j++){
