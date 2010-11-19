@@ -10,7 +10,7 @@ import java.io.PrintStream;
 public class GlobalStaticVariables
 {
 	// AgreementMaker Version!
-	public static final String AgreementMakerVersion = "v0.21";
+	public static final String AgreementMakerVersion = "v0.22beta";
 	
 	/**
 	 * IMPORTANT!:  USE_PROGRESS_BAR determines if the matcher will be sending setProgress() messages to the progress dialog.
