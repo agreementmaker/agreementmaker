@@ -271,15 +271,19 @@ public class Node implements Serializable{
 				}
 			}
 			else {
-				OntProperty prop = (OntProperty)or.as(OntProperty.class);
-				it = prop.listDeclaringClasses(true);
-				String localname;
-				while(it.hasNext()) {
-					OntClass op = (OntClass)it.next();
-					if(!op.isAnon()) {
-						localname = op.getLocalName();
-						propOrClassNeighbours.add(localname);
+				try{ 
+					OntProperty prop = (OntProperty)or.as(OntProperty.class);
+					it = prop.listDeclaringClasses(true);
+					String localname;
+					while(it.hasNext()) {
+						OntClass op = (OntClass)it.next();
+						if(!op.isAnon()) {
+							localname = op.getLocalName();
+							propOrClassNeighbours.add(localname);
+						}
 					}
+				} catch ( Exception e ) {
+					e.printStackTrace();
 				}
 			}
 		}
