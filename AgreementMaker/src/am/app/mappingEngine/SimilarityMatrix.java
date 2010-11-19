@@ -1,5 +1,6 @@
 package am.app.mappingEngine;
 
+import java.awt.Point;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -8,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
@@ -438,4 +440,77 @@ public class SimilarityMatrix implements Serializable
 		return list;		
 	}
 	
+	// TODO: Make the max value update when populating the matrix. 
+	public double getMaxValue() {
+		double max = 0.0;
+		
+		for( int i = 0; i < data.length; i++ ) {
+			for( int j = 0; j < data[i].length; j++ ) {
+				if( data[i][j].getSimilarity() > max ) { max = data[i][j].getSimilarity(); }
+			}
+		}
+		
+		return max;
+	}
+	
+	
+	public Mapping[] getTopK( int k ) {
+		Mapping[] topK = new Mapping[k];
+		
+		for( int i = 0; i < k; i++ ) { topK[i] = null; } // clear the matrix
+		
+		for( int i = 0; i < data.length; i++ ) {
+			for( int j = 0; j < data[i].length; j++ ) {
+				if( data[i][j] == null ) continue; 
+				if( topK[k-1] == null || topK[k-1].getSimilarity() < data[i][j].getSimilarity() ) {
+					topK[k-1] = data[i][j];
+					// the bubble rises up the array
+					for( int l = k-1; l > 0; l-- ) {
+						if( topK[l-1] == null || topK[l-1].getSimilarity() < topK[l].getSimilarity() ) {
+							Mapping temp = topK[l-1];
+							topK[l-1] = topK[l];
+							topK[l] = temp;
+						} else {
+							break;
+						}
+					}
+				}
+				
+			}
+		}
+		
+		return topK;
+	}
+	
+	
+	public Mapping[] getTopK( int k, boolean[][] filteredCells ) {
+		Mapping[] topK = new Mapping[k];
+		
+		for( int i = 0; i < k; i++ ) { topK[i] = null; } // clear the matrix
+		
+		for( int i = 0; i < data.length; i++ ) {
+			for( int j = 0; j < data[i].length; j++) {
+				if( filteredCells[i][j] ) continue;  // this cell is filtered, go on to the next one
+				if( data[i][j] == null ) continue; 
+				if( topK[k-1] == null || topK[k-1].getSimilarity() < data[i][j].getSimilarity() ) {
+					topK[k-1] = data[i][j];
+					// the bubble rises up the array
+					for( int l = k-1; l > 0; l-- ) {
+						if( topK[l-1] == null || topK[l-1].getSimilarity() < topK[l].getSimilarity() ) {
+							Mapping temp = topK[l-1];
+							topK[l-1] = topK[l];
+							topK[l] = temp;
+						} else {
+							break;
+						}
+					}
+				}
+				
+			}
+		}
+		
+		return topK;
+	}
+	
+
 }

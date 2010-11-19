@@ -170,6 +170,13 @@ public class Alignment<E extends Mapping> implements Iterable<E>, Serializable
         return false;
     }
     
+    public boolean contains( int row, int col ) {
+    	for( int i = 0; i < size(); i++ ) {
+    		E mapping = collection.get(i);
+    		if( mapping.getSourceKey() == row && mapping.getTargetKey() == col ) return true;
+    	}
+    	return false;
+    }
 
     public Alignment<E> cut(double threshold)
     {
