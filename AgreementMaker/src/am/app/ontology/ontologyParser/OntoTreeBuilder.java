@@ -486,14 +486,18 @@ public class OntoTreeBuilder extends TreeBuilder{
     			skip = true;
     		}
     		//check if there is any valid property between the superproperties, i need to check all superproperties hierarchy so i can't use listProp(true), doing this there will always be a the property itself in the list
-    		ExtendedIterator it2 = p.listSuperProperties();
-    		while(it2.hasNext()) {
-    			OntProperty superp = (OntProperty)it2.next();
-    			if(!p.equals(superp) && !superp.isAnon() && !(skipOtherNamespaces && !superp.getNameSpace().toString().equals(ns))){//if we find a valid father in the superclass hierarchy we skip this property because is not a root
-    				skip = true;
-    				it2.close();  // iterators must be closed if they are not iterated until the end.
-    				break;
-    			}
+    		try {
+	    		ExtendedIterator it2 = p.listSuperProperties();
+	    		while(it2.hasNext()) {
+	    			OntProperty superp = (OntProperty)it2.next();
+	    			if(!p.equals(superp) && !superp.isAnon() && !(skipOtherNamespaces && !superp.getNameSpace().toString().equals(ns))){//if we find a valid father in the superclass hierarchy we skip this property because is not a root
+	    				skip = true;
+	    				it2.close();  // iterators must be closed if they are not iterated until the end.
+	    				break;
+	    			}
+	    		}
+    		} catch( Exception e ) {
+    			e.printStackTrace();
     		}
     		if(!skip) {
         		Vertex vp = createPropertySubTree(p);
