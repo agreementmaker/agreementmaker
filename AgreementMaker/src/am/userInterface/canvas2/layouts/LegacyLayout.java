@@ -617,52 +617,56 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			log.debug(parentClass);
 		}
 		
-		ExtendedIterator<?> clsIter = parentClass.listSubClasses(true);
-		while( clsIter.hasNext() ) {
-			OntClass cls = (OntClass) clsIter.next();
-			if( cls.isAnon() ) {
-				hashMap.put(cls, anonymousNode);  // avoid cycles between anonymous nodes
-				if( Core.DEBUG ) log.debug(">> Inserted anonymous node " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
-				recursiveBuildClassGraph( parentNode, cls, depth, graph, ont, hashMap );
-				continue;
-			} else if( cls.equals( OWL.Nothing ) ) 
-				continue;
-
-			// this is the cycle check
-			if( hashMap.containsKey(cls) ) { // we have seen this node before, do NOT recurse again
-				if( Core.DEBUG ) log.debug("Cycle detected.  OntClass:" + cls );
-				continue;
-			}
-			
-			GraphicalData gr = new GraphicalData( depth*depthIndent + subgraphXoffset, 
-												   graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
-												   100 , nodeHeight, cls, GraphicalData.NodeType.CLASS_NODE, this, graph.getID() ); 
-			LegacyNode node = new LegacyNode( gr);
-			
-			try {
-				// Try to connect this graphical represenation of an Ontology Class to the Node object that represents that class.
-				Node amnode = ont.getNodefromOntResource(cls, alignType.aligningClasses);
-				amnode.addGraphicalRepresentation(node);
-			} catch (Exception e) {
-				// An exception has been thrown by getNodefromOntResource().
-				// This means that the OntClass was not found, therefore we cannot connect this LegacyNode to a Node object.
-				if( Core.DEBUG ) {
-					System.err.println(e.getMessage());
-					e.printStackTrace();
+		try { 
+			ExtendedIterator<?> clsIter = parentClass.listSubClasses(true);
+			while( clsIter.hasNext() ) {
+				OntClass cls = (OntClass) clsIter.next();
+				if( cls.isAnon() ) {
+					hashMap.put(cls, anonymousNode);  // avoid cycles between anonymous nodes
+					if( Core.DEBUG ) log.debug(">> Inserted anonymous node " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
+					recursiveBuildClassGraph( parentNode, cls, depth, graph, ont, hashMap );
+					continue;
+				} else if( cls.equals( OWL.Nothing ) ) 
+					continue;
+	
+				// this is the cycle check
+				if( hashMap.containsKey(cls) ) { // we have seen this node before, do NOT recurse again
+					if( Core.DEBUG ) log.debug("Cycle detected.  OntClass:" + cls );
+					continue;
 				}
-			}
-			
-			graph.insertVertex(node);
 				
-			LegacyEdge edge = new LegacyEdge( parentNode, node, null, this );
-			graph.insertEdge( edge );
-			
-			hashMap.put(cls, node);
-			if( Core.DEBUG ) {
-				log.debug(">> Inserted " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
-				log.debug(">>   Label: " + cls.getLabel(null));
+				GraphicalData gr = new GraphicalData( depth*depthIndent + subgraphXoffset, 
+													   graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
+													   100 , nodeHeight, cls, GraphicalData.NodeType.CLASS_NODE, this, graph.getID() ); 
+				LegacyNode node = new LegacyNode( gr);
+				
+				try {
+					// Try to connect this graphical represenation of an Ontology Class to the Node object that represents that class.
+					Node amnode = ont.getNodefromOntResource(cls, alignType.aligningClasses);
+					amnode.addGraphicalRepresentation(node);
+				} catch (Exception e) {
+					// An exception has been thrown by getNodefromOntResource().
+					// This means that the OntClass was not found, therefore we cannot connect this LegacyNode to a Node object.
+					if( Core.DEBUG ) {
+						System.err.println(e.getMessage());
+						e.printStackTrace();
+					}
+				}
+				
+				graph.insertVertex(node);
+					
+				LegacyEdge edge = new LegacyEdge( parentNode, node, null, this );
+				graph.insertEdge( edge );
+				
+				hashMap.put(cls, node);
+				if( Core.DEBUG ) {
+					log.debug(">> Inserted " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
+					log.debug(">>   Label: " + cls.getLabel(null));
+				}
+				recursiveBuildClassGraph( node, cls, depth+1, graph, ont, hashMap );
 			}
-			recursiveBuildClassGraph( node, cls, depth+1, graph, ont, hashMap );
+		} catch( Exception e ) {
+			e.printStackTrace();
 		}
 	
 	}
@@ -1066,16 +1070,20 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	    		OntProperty property = (OntProperty) itdata.next();
 	    		boolean isRoot = true;
 	    		
-	    		ExtendedIterator<?> superPropItr = property.listSuperProperties();
-	    		while( superPropItr.hasNext() ) {
-	    			OntProperty superProperty = (OntProperty) superPropItr.next();
-	    			
-	    			if( !property.equals(superProperty) && !superProperty.isAnon() ) {
-	    				// this property has a valid superclass, therefore it is not a root property
-	    				superPropItr.close();
-	    				isRoot = false;
-	    				break;
-	    			}
+	    		try {
+		    		ExtendedIterator<?> superPropItr = property.listSuperProperties();
+		    		while( superPropItr.hasNext() ) {
+		    			OntProperty superProperty = (OntProperty) superPropItr.next();
+		    			
+		    			if( !property.equals(superProperty) && !superProperty.isAnon() ) {
+		    				// this property has a valid superclass, therefore it is not a root property
+		    				superPropItr.close();
+		    				isRoot = false;
+		    				break;
+		    			}
+		    		}
+	    		} catch (Exception e) {
+	    			e.printStackTrace();
 	    		}
 	    		
 	    		if( isRoot ) roots.add(property);

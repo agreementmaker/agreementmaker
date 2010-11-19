@@ -1,7 +1,6 @@
 package am.visualization.matrixplot;
 
 import java.awt.AlphaComposite;
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -42,6 +41,9 @@ public class MatrixPlot extends JPanel {
 	
 	private Cluster<Mapping> viewCluster = null;
 	
+	private Gradient gradient = null;
+	private boolean tooBig = false; // TODO: Remove this, and make the MatrixPlot scalable.
+	
 	public MatrixPlot(SimilarityMatrix mtx) {
 		super();
 		I = null;
@@ -54,11 +56,52 @@ public class MatrixPlot extends JPanel {
 		createImage(false);
 	}
 	
+	public MatrixPlot(SimilarityMatrix mtx, MatrixPlotPanel mpnl) {
+		super();
+		I = null;
+		matrix = mtx;
+		matcher = null;
+		
+		if( mtx.getAlignType() == alignType.aligningClasses ) type = VisualizationType.CLASS_MATRIX;
+		else type = VisualizationType.PROPERTIES_MATRIX;
+		
+		createImage(false);
+		enclosingPanel = mpnl;
+	}
+	
+	public MatrixPlot(SimilarityMatrix mtx, MatrixPlotPanel mpnl, Gradient g) {
+		super();
+		I = null;
+		matrix = mtx;
+		matcher = null;
+		gradient = g;
+		
+		if( mtx.getAlignType() == alignType.aligningClasses ) type = VisualizationType.CLASS_MATRIX;
+		else type = VisualizationType.PROPERTIES_MATRIX;
+		
+		createImage(false);
+		enclosingPanel = mpnl;
+	}
+	
 	public MatrixPlot(AbstractMatcher a, SimilarityMatrix mtx, MatrixPlotPanel mpnl) {
 		super();
 		I = null;
 		matcher = a;
 		matrix = mtx;
+		
+		if( mtx.getAlignType() == alignType.aligningClasses ) type = VisualizationType.CLASS_MATRIX;
+		else type = VisualizationType.PROPERTIES_MATRIX;
+		
+		createImage(false);
+		enclosingPanel = mpnl;
+	}
+	
+	public MatrixPlot(AbstractMatcher a, SimilarityMatrix mtx, MatrixPlotPanel mpnl, Gradient g) {
+		super();
+		I = null;
+		matcher = a;
+		matrix = mtx;
+		gradient = g;
 		
 		if( mtx.getAlignType() == alignType.aligningClasses ) type = VisualizationType.CLASS_MATRIX;
 		else type = VisualizationType.PROPERTIES_MATRIX;
@@ -81,7 +124,14 @@ public class MatrixPlot extends JPanel {
 
 			int rows = matrix.getRows();
 			int cols = matrix.getColumns();
-
+			
+			if( rows > 200 || cols > 200 ) {
+				// the image is too big.
+				// TODO: Remove this check and make MatrixPlot Scalable.
+				tooBig = true;
+				return;
+			}
+			
 			I = new BufferedImage(rows * squareSize, cols * squareSize, BufferedImage.TYPE_INT_RGB);
 			//Graphics2D g = (Graphics2D)I.getGraphics(); // TODO: Get rid of WritableRaster
 			WritableRaster wr = I.getRaster();
@@ -110,7 +160,9 @@ public class MatrixPlot extends JPanel {
 				if( !viewAlignmentOnly ) { 
 					// visualize the full alignment matrix, using a gradient
 					
-					Gradient grad = new Gradient( Color.BLUE, Color.WHITE);
+					if( gradient == null ) { 
+						gradient = new Gradient( Color.BLUE, Color.WHITE); 
+					}
 		
 					for( int r = 0; r < rows; r++ ){
 						for( int c = 0; c < cols; c++ ) {
@@ -118,7 +170,7 @@ public class MatrixPlot extends JPanel {
 							int y1 = c * squareSize;
 							
 							double similarity = matrix.getSimilarity(r, c);
-							Color simcolor = grad.getColor(similarity);
+							Color simcolor = gradient.getColor(similarity);
 							int[] iArray = { simcolor.getRed(), simcolor.getGreen(), simcolor.getBlue() };
 							
 							if( squareSize == 1 ) {	
@@ -140,26 +192,29 @@ public class MatrixPlot extends JPanel {
 					
 					Alignment<Mapping> vizAlignment = null;
 					
-					if( type == VisualizationType.CLASS_MATRIX ) vizAlignment = matcher.getClassAlignmentSet();
-					if( type == VisualizationType.PROPERTIES_MATRIX ) vizAlignment = matcher.getPropertyAlignmentSet();
+					if( matcher != null ) {
+						if( type == VisualizationType.CLASS_MATRIX ) vizAlignment = matcher.getClassAlignmentSet();
+						if( type == VisualizationType.PROPERTIES_MATRIX ) vizAlignment = matcher.getPropertyAlignmentSet();
+				
 					
-					Graphics2D g = (Graphics2D)I.getGraphics();
-					
-					g.setColor( Color.WHITE );
-					g.fillRect(0, 0, I.getWidth(), I.getHeight() );
-					g.setColor( Color.BLUE );
-					
-					if( vizAlignment != null ) {
+						Graphics2D g = (Graphics2D)I.getGraphics();
 						
-						for( Mapping map : vizAlignment ) {
-							int x1 = map.getSourceKey() * squareSize;
-							int y1 = map.getTargetKey() * squareSize;
-							g.fillRect(x1, y1, squareSize, squareSize);
+						g.setColor( Color.WHITE );
+						g.fillRect(0, 0, I.getWidth(), I.getHeight() );
+						g.setColor( Color.BLUE );
+						
+						if( vizAlignment != null ) {
+							
+							for( Mapping map : vizAlignment ) {
+								int x1 = map.getSourceKey() * squareSize;
+								int y1 = map.getTargetKey() * squareSize;
+								g.fillRect(x1, y1, squareSize, squareSize);
+							}
+							
 						}
 						
+						g.dispose();
 					}
-					
-					g.dispose();
 				}
 			}
 			
@@ -227,7 +282,15 @@ public class MatrixPlot extends JPanel {
 	/**
 	 * Set the size of the window to the dimensions of the matrix.
 	 */
-	public void setPlotSize() { setPreferredSize(new Dimension( matrix.getRows() * squareSize, matrix.getColumns() * squareSize) ); }
+	public void setPlotSize() { 
+		if( matrix.getRows() * squareSize > 1000 || matrix.getColumns() * squareSize > 1000 ) {
+			// image is too big to display
+			// TODO: Fix this.
+			tooBig = true;
+			setPreferredSize( new Dimension( 100,100 ) );
+		} else {
+			setPreferredSize(new Dimension( matrix.getRows() * squareSize, matrix.getColumns() * squareSize) ); }
+		}
 	public int getSquareSize() { return squareSize; }
 	public SimilarityMatrix getMatrix() { return matrix; }
 	
@@ -243,6 +306,8 @@ public class MatrixPlot extends JPanel {
 		//if( enclosingPanel.popupMenuActive() ) return;
 		
 		super.paintComponent(g);
+		
+		if( tooBig ) return; // TODO: Remove this!!!!! 
 		
 		Graphics2D gPlotArea = (Graphics2D)g;
 
@@ -267,5 +332,6 @@ public class MatrixPlot extends JPanel {
 	}
 	
 	
+	public void setGradient( Gradient g ) { gradient = g; }
 	
 }

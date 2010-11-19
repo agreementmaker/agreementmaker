@@ -894,8 +894,8 @@ public class UIMenu implements ActionListener {
 		menuLexicons.add(menuLexiconsOntTarget);
 		menuLexicons.add(menuLexiconsWNSource);
 		menuLexicons.add(menuLexiconsWNTarget);
-		viewMenu.addSeparator();
-		viewMenu.add(menuLexicons);
+		//viewMenu.addSeparator();
+		//viewMenu.add(menuLexicons);
 		
 		/*
 
@@ -928,7 +928,7 @@ public class UIMenu implements ActionListener {
 		
 		userFeedBack = new JMenuItem("User Feedback Loop");
 		userFeedBack.addActionListener(this);
-		//matchingMenu.add(userFeedBack);  // Remove UFL for distribution.
+		matchersMenu.add(userFeedBack);  // Remove UFL for distribution.
 		
 		matchersMenu.addSeparator();
 		newMatching = new JMenuItem("New empty matcher");

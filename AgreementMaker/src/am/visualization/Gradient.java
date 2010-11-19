@@ -21,6 +21,7 @@ public class Gradient {
 	
 	boolean doC1minusC2 = false;
 	
+	private double maxValue = 1.0;
 	
 	public Gradient(Color fg, Color bg) {
 		foreground = fg;
@@ -32,7 +33,7 @@ public class Gradient {
 		}
 		if( foreground.getGreen() != background.getGreen() ) {
 			diffGreen = true;
-			colorDiffGreen = background.getRed() - foreground.getRed();
+			colorDiffGreen = background.getGreen() - foreground.getGreen();
 		}
 		
 		if( foreground.getBlue() != background.getBlue() ) {
@@ -43,21 +44,29 @@ public class Gradient {
 	
 	/**
 	 * Returns the color associated with a certain percentage in the gradient.
-	 * @param percentage A percentage from 0.0 to 1.0;
+	 * @param inputValue A percentage from 0.0 to 1.0;
 	 * @return
 	 */
-	public Color getColor( double percentage ) {
-		if( percentage < 0d ) { percentage = 0d; }
-		if( percentage > 1.0d ) { percentage = 1.0d; }
+	public Color getColor( double inputValue ) {
+		if( inputValue < 0d ) { inputValue = 0d; }
+		if( inputValue > maxValue ) { inputValue = maxValue; }
 
 		int currentDiffRed = 0, currentDiffGreen = 0, currentDiffBlue = 0;
 		
-		if( diffRed) currentDiffRed = (new Double(percentage * ( colorDiffRed ))).intValue();
-		if( diffGreen) currentDiffGreen = (new Double(percentage * ( colorDiffGreen ))).intValue();
-		if( diffBlue) currentDiffBlue = (new Double(percentage * ( colorDiffBlue ))).intValue();
+		double ratio = inputValue/maxValue;
+		
+		System.out.println("");
+		
+		if( diffRed) currentDiffRed = (new Double(ratio * ( colorDiffRed ))).intValue();
+		if( diffGreen) currentDiffGreen = (new Double(ratio * ( colorDiffGreen ))).intValue();
+		if( diffBlue) currentDiffBlue = (new Double(ratio * ( colorDiffBlue ))).intValue();
 		
 		return new Color(background.getRed() - currentDiffRed , background.getGreen() - currentDiffGreen , background.getBlue() - currentDiffBlue);
 	}
+	
+	public void setMax( double maxValue ) { 
+		this.maxValue = maxValue;
+	} 
 	
 	
 }

@@ -1,7 +1,5 @@
 package am.visualization.matrixplot;
 
-import java.awt.event.ActionListener;
-
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -16,7 +14,7 @@ public class MatrixPlotPopupMenu extends JPopupMenu {
 
 	// used instead of string for action commands
 	public enum ActionCommands {
-		SET_REFERENCE, VIEW_ALIGNMENT, VIEW_CLUSTER, CLEAR_CLUSTER, REMOVE_PLOT;
+		SET_REFERENCE, VIEW_ALIGNMENT, VIEW_CLUSTER, CLEAR_CLUSTER, REMOVE_PLOT, SET_FEEDBACK;
 	}
 	
 	
@@ -28,6 +26,9 @@ public class MatrixPlotPopupMenu extends JPopupMenu {
 		JMenuItem miReference = new JMenuItem("Set as Reference");
 	    		  miReference.setActionCommand(ActionCommands.SET_REFERENCE.name());
 	    
+	    JMenuItem miFeedback = new JMenuItem("Set as Feedback");
+	    		  miFeedback.setActionCommand(ActionCommands.SET_FEEDBACK.name());
+	    		  
 	    JCheckBoxMenuItem miViewAlignment = new JCheckBoxMenuItem("View only Alignment");
 	    				  miViewAlignment.setActionCommand(ActionCommands.VIEW_ALIGNMENT.name());
 	    				  miViewAlignment.setSelected(listener.getViewAlignmentOnly());
@@ -47,6 +48,7 @@ public class MatrixPlotPopupMenu extends JPopupMenu {
 	    		  miRemove.addActionListener(listener);
 	    
 	    add(miReference);
+	    add(miFeedback);
 	    addSeparator();
 	    add(miViewAlignment);
 	    add(miViewCluster);
@@ -55,6 +57,7 @@ public class MatrixPlotPopupMenu extends JPopupMenu {
 	    add(miRemove);
 	    
 	        miReference.addActionListener(listener);
+	         miFeedback.addActionListener(listener);
 	    miViewAlignment.addActionListener(listener);
 	     miClearCluster.addActionListener(listener);
 	}

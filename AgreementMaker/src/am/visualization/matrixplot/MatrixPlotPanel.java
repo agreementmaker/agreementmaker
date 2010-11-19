@@ -10,12 +10,9 @@ import java.awt.event.MouseListener;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
-
-import org.junit.experimental.runners.Enclosed;
 
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
@@ -24,11 +21,11 @@ import am.app.mappingEngine.SimilarityMatrix;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.ClusterFactory;
 import am.evaluation.clustering.ClusterFactory.ClusteringType;
+import am.visualization.Gradient;
 import am.visualization.MatcherAnalyticsEvent;
 import am.visualization.MatcherAnalyticsEventDispatch;
 import am.visualization.MatcherAnalyticsEventListener;
 import am.visualization.MatcherAnalyticsEvent.EventType;
-import am.visualization.matrixplot.MatrixPlotPopupMenu.ActionCommands;
 
 public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAnalyticsEventListener, ActionListener {
 
@@ -54,13 +51,52 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 		plot.addMouseListener(this);
 		plot.draw(false);
 		
-		lblName = new JLabel(a.getName().getMatcherName());
+		if( a != null ) { lblName = new JLabel(a.getName().getMatcherName()); }
+		else { lblName = new JLabel("--"); }
+		
 		lblSimilaritySelected = new JLabel("", JLabel.TRAILING);
 		
 		matcher = a;
 		
 		initThisPanel();		
 		
+	}
+	
+	public MatrixPlotPanel(AbstractMatcher a, SimilarityMatrix mtx, MatcherAnalyticsEventDispatch d, Gradient g ) {
+		super();
+
+		dispatch = d;
+		plot = new MatrixPlot(a, mtx, this, g);
+		plot.addMouseListener(this);
+		plot.draw(false);
+		
+		if( a != null ) { lblName = new JLabel(a.getName().getMatcherName()); }
+		else { lblName = new JLabel("--"); }
+		
+		lblSimilaritySelected = new JLabel("", JLabel.TRAILING);
+		
+		matcher = a;
+		
+		initThisPanel();		
+		
+	}
+	
+	public MatrixPlotPanel( String name, SimilarityMatrix mtx, MatcherAnalyticsEventDispatch d, Gradient g ) {
+		super();
+		
+		dispatch = d;
+		plot = new MatrixPlot( mtx, this, g);
+		plot.addMouseListener(this);
+		plot.draw(false);
+		
+		lblName = new JLabel(name);
+		lblSimilaritySelected = new JLabel("", JLabel.TRAILING);
+		
+		matcher = null;
+		
+		
+		
+		initThisPanel();
 	}
 
 	private void initThisPanel() {
@@ -186,17 +222,19 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 		if( e.getActionCommand().equals( MatrixPlotPopupMenu.ActionCommands.SET_REFERENCE.name() ) ) {
 			// set this matcher as the reference
 			//popupMenuActive = false;
-			setReference(matcher);
-			
-			if( dispatch != null ) {
-				// broadcast this event to the other MatrixPlot objects.
-				Runnable fire = new Runnable() {
-					public void run() {
-						dispatch.broadcastEvent( new MatcherAnalyticsEvent( this,  EventType.SET_REFERENCE,  matcher ));
-					}
-				};
+			if( matcher != null ) {
+				setReference(matcher);
 				
-				SwingUtilities.invokeLater(fire);
+				if( dispatch != null ) {
+					// broadcast this event to the other MatrixPlot objects.
+					Runnable fire = new Runnable() {
+						public void run() {
+							dispatch.broadcastEvent( new MatcherAnalyticsEvent( this,  EventType.SET_REFERENCE,  matcher ));
+						}
+					};
+					
+					SwingUtilities.invokeLater(fire);
+				}
 			}
 		}
 		
@@ -254,6 +292,19 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
     		SwingUtilities.invokeLater(removePlot); // run in separate thread
 		}
 		
+		if( e.getActionCommand() == MatrixPlotPopupMenu.ActionCommands.SET_FEEDBACK.name() ) {
+			if( dispatch != null ) {
+				// broadcast this event to the other MatrixPlot objects.
+				Runnable fire = new Runnable() {
+					public void run() {
+						dispatch.broadcastEvent( new MatcherAnalyticsEvent( this,  EventType.SET_FEEDBACK,  matcher ));
+					}
+				};
+				
+				SwingUtilities.invokeLater(fire);
+			}
+		}
+		
 	}
 	
 	private void setReference(AbstractMatcher matcher2) {
@@ -290,7 +341,7 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 		}
 		
 		if( e.type == EventType.MATRIX_UPDATED ) {
-			if( e.payload == matcher || e.payload == referenceMatcher ) {
+			if( (matcher != null && e.payload == matcher) || e.payload == referenceMatcher ) {
 				if( e.payload == referenceMatcher ) setReference(referenceMatcher);
 				plot.createImage(true);
 				plot.repaint();				

@@ -12,7 +12,8 @@ public class MatcherAnalyticsEvent extends EventObject {
 		MATRIX_UPDATED,   // when a matrix is updated
 		DISPLAY_CLUSTER,	  // display a cluster, payload is inferred to be the cluster
 		CLEAR_CLUSTER,		// clear the cluster display
-		REMOVE_PLOT			// remove the plot from the analytics panel
+		REMOVE_PLOT,			// remove the plot from the analytics panel
+		SET_FEEDBACK		// set the feedback matcher that will be updated when the user generates feedback (payload == the matcher)
 	}
 	
 	public final EventType type;
