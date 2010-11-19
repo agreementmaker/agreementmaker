@@ -54,7 +54,7 @@ public class ClusterFactoryDialog extends JDialog implements ActionListener {
 		
 		if( method != null ) {
 			clusterPanel = method.getParametersPanel();
-			add(clusterPanel, BorderLayout.CENTER);
+			if( clusterPanel != null ) add(clusterPanel, BorderLayout.CENTER);
 		}
 		
 		

@@ -51,6 +51,12 @@ public class Cluster<E extends Mapping> implements Iterable<E> {
 	/** GETTERS and SETTERS **/
 	public String getName() { return name; }
 	public void setName( String n ) { name = n; }
+	
+	/** SIZE **/
+	public int size() { 
+		if( clusterSet == null ) return 0; 
+		return clusterSet.size(); 
+	}
 
 	@Override
 	public Iterator<E> iterator() {	return clusterSet.iterator(); }
