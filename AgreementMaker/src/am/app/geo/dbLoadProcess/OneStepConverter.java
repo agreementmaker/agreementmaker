@@ -8,11 +8,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
-import java.util.Vector;
 
 import am.app.geo.IFileToDatabaseConverter;
 
@@ -26,8 +24,21 @@ public class OneStepConverter implements IFileToDatabaseConverter {
 	private Statement statement = null;
 	
 	public OneStepConverter() {
+		// sets up the class
 		setUp();
 	}
+	
+
+	/**
+	 * @author michele
+	 * method to call to run every function
+	 */
+	@Override
+	public void runAll(File inputFile) {
+		runConversion(inputFile);
+		close();
+	}
+
 	
 	@Override
 	public void setUp() {
@@ -57,20 +68,8 @@ public class OneStepConverter implements IFileToDatabaseConverter {
 	}
 
 	@Override
-	public void runConversion() {
-		
-		try {
-			
-			//adding information to the database
-			statement = connect.createStatement();
-			statement.executeUpdate("INSERT INTO geonamesSchema.geonames (gID)" +
-					" VALUES (" + 60 + ")");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			
-		}
-		
+	public void runConversion(File inputFile) {
+		readFile(inputFile);
 	}
 	
 	/**
@@ -80,6 +79,7 @@ public class OneStepConverter implements IFileToDatabaseConverter {
 	 */
 	@Override
 	public void readFile(File inputFile) {
+		
 		//Note that FileReader is used, not File, since File is not Closeable
 	    Scanner scanner;
 		try {
@@ -87,6 +87,7 @@ public class OneStepConverter implements IFileToDatabaseConverter {
 			//first use a Scanner to get each line 
 		    while ( scanner.hasNextLine() ){
 		      processLine( scanner.nextLine(), "\t" );
+		      break;
 		    }
 		    //ensure the underlying stream is always closed this only has any effect if the item 
 		    //passed to the Scanner constructor implements Closeable (which it does in this case).
@@ -105,15 +106,41 @@ public class OneStepConverter implements IFileToDatabaseConverter {
 		//use a second Scanner to parse the content of each line 
 		  Scanner scanner = new Scanner(inputLine);
 		  scanner.useDelimiter(delimiter);
-		  Vector<String> outcomes = new Vector<String>();
-		  String choice;
+		  String processedLine = new String();
+		  String currentReadValue;
 		  while(scanner.hasNext()){
-			  choice = scanner.next();
-			  System.out.println(choice);
-			  outcomes.add(choice);
+			  currentReadValue = scanner.next();
+			  
+			  if(currentReadValue.equals("")){
+				  processedLine += "null";
+			  }
+			  else{
+				  processedLine += "'" + currentReadValue + "'";
+			  }
+			  
+			  // this is to prevent the writing of the last comma
+			  if(scanner.hasNext()){
+				  processedLine += ", ";
+			  }
 		  }
+		  System.out.println(processedLine);
 		  //no need to call scanner.close(), since the source is a String
-		  //return outcomes;
+		  
+		  try {
+			  //adding information to the database
+			  String sqlInsertScript = "INSERT INTO geonamesschema.\"geonames\"(" +
+		            "\"gID\", \"name\", \"asciiName\", \"alterName\", latitude, longitude, " +
+			  		"\"featureClass\", \"featureCode\", \"countryCode\", cc2, \"adminCode1\", " + 
+		            "\"adminCode2\", \"adminCode3\", \"adminCode4\", population, elevation, " + 
+		            "\"gTopo30\", timezone, \"modificationDate\") " +
+				    "VALUES (" + processedLine + ");";
+			  System.out.println(sqlInsertScript);
+			  
+			  statement = connect.createStatement();
+			  statement.executeUpdate(sqlInsertScript);
+		  } catch (SQLException e) {
+			  e.printStackTrace();
+		  }
 	}
 	
 	// You need to close the resultSet
@@ -131,5 +158,4 @@ public class OneStepConverter implements IFileToDatabaseConverter {
 
 		}
 	}
-
 }
