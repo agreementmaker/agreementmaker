@@ -18,12 +18,12 @@ import am.app.geo.IFileToDatabaseConverter;
  * @author Michele Caci
  *
  */
-public class OneStepConverter implements IFileToDatabaseConverter {
+public class OneStepScannerConverter implements IFileToDatabaseConverter {
 
 	private Connection connect = null;
 	private Statement statement = null;
 	
-	public OneStepConverter() {
+	public OneStepScannerConverter() {
 		// sets up the class
 		setUp();
 	}
@@ -114,7 +114,8 @@ public class OneStepConverter implements IFileToDatabaseConverter {
 				  processedLine += "null";
 			  }
 			  else{
-				  processedLine += "'" + currentReadValue + "'";
+				  // the character "'" can break the query. TODO: check for other special characters?
+				  processedLine += "'" + currentReadValue.replace('\'', '_') + "'";
 			  }
 			  
 			  // this is to prevent the writing of the last comma
