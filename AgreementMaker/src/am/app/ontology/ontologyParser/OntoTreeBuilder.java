@@ -163,6 +163,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 	
 	
 	protected void buildTreeDefault() {
+		// used to run the reasoner when loading the ontologies.
 		buildTreeNoReasoner();
 	}
 	
