@@ -87,7 +87,6 @@ public class OneStepConverter implements IFileToDatabaseConverter {
 			//first use a Scanner to get each line 
 		    while ( scanner.hasNextLine() ){
 		      processLine( scanner.nextLine(), "\t" );
-		      break;
 		    }
 		    //ensure the underlying stream is always closed this only has any effect if the item 
 		    //passed to the Scanner constructor implements Closeable (which it does in this case).
@@ -123,8 +122,7 @@ public class OneStepConverter implements IFileToDatabaseConverter {
 				  processedLine += ", ";
 			  }
 		  }
-		  System.out.println(processedLine);
-		  //no need to call scanner.close(), since the source is a String
+		  //System.out.println(processedLine);
 		  
 		  try {
 			  //adding information to the database
@@ -134,13 +132,15 @@ public class OneStepConverter implements IFileToDatabaseConverter {
 		            "\"adminCode2\", \"adminCode3\", \"adminCode4\", population, elevation, " + 
 		            "\"gTopo30\", timezone, \"modificationDate\") " +
 				    "VALUES (" + processedLine + ");";
-			  System.out.println(sqlInsertScript);
+			  //System.out.println(sqlInsertScript);
 			  
 			  statement = connect.createStatement();
 			  statement.executeUpdate(sqlInsertScript);
 		  } catch (SQLException e) {
 			  e.printStackTrace();
 		  }
+
+		  //no need to call scanner.close(), since the source is a String
 	}
 	
 	// You need to close the resultSet
