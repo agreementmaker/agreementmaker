@@ -12,7 +12,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
 
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
+import am.app.Core;
 import am.app.geo.IFileToDatabaseConverter;
+import am.batchMode.TrackDispatcher;
+import am.userInterface.UI;
 
 /**
  * @author Michele Caci
@@ -20,6 +27,17 @@ import am.app.geo.IFileToDatabaseConverter;
  */
 public class OneStepScannerConverter implements IFileToDatabaseConverter {
 
+	private static OneStepScannerConverter converter = null;
+	
+	public static void main(String args[])
+	{
+		converter = new OneStepScannerConverter();
+		JFileChooser fc = new JFileChooser("~");
+		fc.showOpenDialog(null);
+		converter.runAll(fc.getSelectedFile());
+	}
+	
+	
 	private Connection connect = null;
 	private Statement statement = null;
 	
@@ -48,7 +66,7 @@ public class OneStepScannerConverter implements IFileToDatabaseConverter {
 			// Setup the connection with the DB
 			// TODO: ask for user and password
 			// connect = DriverManager.getConnection("jdbc:postgresql://hostname:port/dbname","username", "password");
-			connect = DriverManager.getConnection("jdbc:postgresql://localhost:5432/geonamesADVIS","postgres", "legione");
+			connect = DriverManager.getConnection("jdbc:postgresql://localhost:5432/advis","postgres", "Tomato1234");
 			
 			//schema creation: TODO
 			//table creation: TODO
@@ -84,9 +102,12 @@ public class OneStepScannerConverter implements IFileToDatabaseConverter {
 	    Scanner scanner;
 		try {
 			scanner = new Scanner(new FileReader(inputFile));
-			//first use a Scanner to get each line 
+			//first use a Scanner to get each line
+			long currentLine = 0;
 		    while ( scanner.hasNextLine() ){
 		      processLine( scanner.nextLine(), "\t" );
+		      currentLine++;
+		      if( currentLine % 10000 == 0 ) System.out.println(currentLine + "\n"); 
 		    }
 		    //ensure the underlying stream is always closed this only has any effect if the item 
 		    //passed to the Scanner constructor implements Closeable (which it does in this case).
@@ -115,7 +136,8 @@ public class OneStepScannerConverter implements IFileToDatabaseConverter {
 			  }
 			  else{
 				  // the character "'" can break the query. TODO: check for other special characters?
-				  processedLine += "'" + currentReadValue.replace('\'', '_') + "'";
+				  //processedLine += "'" + currentReadValue.replace('\'', '_') + "'";
+				  processedLine += "'" + currentReadValue.replace("'", "\\\'") + "'";
 			  }
 			  
 			  // this is to prevent the writing of the last comma
@@ -127,7 +149,7 @@ public class OneStepScannerConverter implements IFileToDatabaseConverter {
 		  
 		  try {
 			  //adding information to the database
-			  String sqlInsertScript = "INSERT INTO geonamesschema.\"geonames\"(" +
+			  String sqlInsertScript = "INSERT INTO geonames.\"geonamesDB\"(" +
 		            "\"gID\", \"name\", \"asciiName\", \"alterName\", latitude, longitude, " +
 			  		"\"featureClass\", \"featureCode\", \"countryCode\", cc2, \"adminCode1\", " + 
 		            "\"adminCode2\", \"adminCode3\", \"adminCode4\", population, elevation, " + 
@@ -139,6 +161,12 @@ public class OneStepScannerConverter implements IFileToDatabaseConverter {
 			  statement.executeUpdate(sqlInsertScript);
 		  } catch (SQLException e) {
 			  e.printStackTrace();
+			  try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		  }
 
 		  //no need to call scanner.close(), since the source is a String
