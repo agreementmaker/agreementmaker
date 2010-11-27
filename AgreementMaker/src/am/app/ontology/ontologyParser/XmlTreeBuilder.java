@@ -5,8 +5,6 @@ package am.app.ontology.ontologyParser;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -137,10 +135,10 @@ public class XmlTreeBuilder extends TreeBuilder
 				org.w3c.dom.Node currentXMLNode = nodeList.item(i);
 				//String currentName = currentNode.getNodeName();//TODO: What is this used for ? FIX IT
 			
-				
+				//String name = currentXMLNode.getNodeName();
 				String name = getAttr(currentXMLNode, "id");
 				System.out.println(name);
-				String des = getAttr(currentXMLNode, "exp");
+				String des = getAttr(currentXMLNode, "comment");
 				String label = getAttr(currentXMLNode, "label");
 				String seeAlso = getAttr(currentXMLNode,"seeAlso");
 				String isDefBy = getAttr(currentXMLNode,"isDefinedBy");
@@ -153,12 +151,12 @@ public class XmlTreeBuilder extends TreeBuilder
 				OntClass currentClass;
 				if(currentNode == null) {
 					//if it's new create the node, add it to the class list and incr uniqueKey
-					if( des.equals("") ) {
-						currentClass = m.createClass( "#anon"+ currentVertex.getID());
+					if( name.equals("") ) {
+						currentClass = m.createClass( "#genid"+ currentVertex.getID());
 					} else {
-						currentClass = m.createClass( "#id" + des );
+						currentClass = m.createClass( "#" + name );
 					}
-					currentClass.setLabel(name, null);
+					currentClass.setLabel(label, null);
 					
 					System.out.println("Localname: " +currentClass.getLocalName());
 					currentClass.setComment(label, null);
@@ -167,8 +165,8 @@ public class XmlTreeBuilder extends TreeBuilder
 					
 					currentNode.setResource(currentClass);
 					processedSubs.put( ((OntResource)currentClass) ,currentNode);
-					currentNode.setLabel(des);
-					currentNode.setComment(label);
+					currentNode.setLabel(label);
+					currentNode.setComment(des);
 					currentNode.setSeeAlsoLabel(seeAlso);
 					currentNode.setIsDefinedByLabel(isDefBy);
 					ontology.getClassesList().add(currentNode); //THE XML FILES ONLY CONTAINS CLASSES IN OUR SEMPLIFICATION
