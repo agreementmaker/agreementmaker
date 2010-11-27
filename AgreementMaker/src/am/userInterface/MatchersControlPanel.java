@@ -380,6 +380,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 		LoadFileDialog lfd = new LoadFileDialog();
 		AbstractMatcher importedMatcher = lfd.getLoadedMatcher();
 		
+		if( importedMatcher == null ) return;
+		
 		importedMatcher.setSourceOntology( Core.getInstance().getSourceOntology() );
 		importedMatcher.setTargetOntology( Core.getInstance().getTargetOntology() );
 		
