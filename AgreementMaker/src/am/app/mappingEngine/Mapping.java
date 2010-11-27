@@ -33,6 +33,8 @@ public class Mapping implements Serializable
     
     //THE FONT USED IN THE CANVAS MUST BE A UNICODE FONT TO VIEW THIS SPECIAL CHARS
     public final static String EQUIVALENCE = "=";
+    public final static String SUPERCLASS = ">";
+    public final static String SUBCLASS = "<";
     public final static String SUBSET = "\u2282";
     public final static String SUPERSET = "\u2283";
     public final static String SUBSETCOMPLETE = "\u2286";
