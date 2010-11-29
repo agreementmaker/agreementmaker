@@ -7,8 +7,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Scanner;
 
 import javax.swing.JFileChooser;
@@ -42,17 +40,17 @@ public class OneStepScannerConverter extends OneStepConverter {
 			scanner = new Scanner(new FileReader(inputFile));
 			//first use a Scanner to get each line 
 
-			Calendar cal = Calendar.getInstance();
-		    SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss:SSS");
-		    System.out.println(sdf.format(cal.getTime()));
-		    long currLine = 0;
+//			Calendar cal = Calendar.getInstance();
+//		    SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss:SSS");
+//		    System.out.println(sdf.format(cal.getTime()));
+//		    long currLine = 0;
 		    while ( scanner.hasNextLine() ){
 		    	processLine(scanner.nextLine(), "\t");
-		    	currLine++;
-		    	if( currLine >= 10000) break;  
+//		    	currLine++;
+//		    	if( currLine >= 50000 ) break;  
 		    }
-		    Calendar cal2 = Calendar.getInstance();
-		    System.out.println(sdf.format(cal2.getTime()));
+//		    Calendar cal2 = Calendar.getInstance();
+//		    System.out.println(sdf.format(cal2.getTime()));
 			    
 		    //ensure the underlying stream is always closed this only has any effect if the item 
 		    //passed to the Scanner constructor implements Closeable (which it does in this case).

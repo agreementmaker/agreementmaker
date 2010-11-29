@@ -9,8 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 import javax.swing.JFileChooser;
 
@@ -43,17 +41,17 @@ public class OneStepBufferedConverter extends OneStepConverter {
 
 			String currentLine = null;
 			
-			Calendar cal = Calendar.getInstance();
-		    SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss:SSS");
-		    System.out.println(sdf.format(cal.getTime()));
-			long currLine = 0;
+			//Calendar cal = Calendar.getInstance();
+		    //SimpleDateFormat sdf = new SimpleDateFormat("H:mm:ss:SSS");
+		    //System.out.println(sdf.format(cal.getTime()));
+			//long currLine = 0;
 		    while ( (currentLine = bufReader.readLine()) != null ){
 		    	processLine( currentLine, "\t" );
-		    	currLine++;
-			      if( currLine >= 10000) break;  
+		    	//currLine++;
+			    // if( currLine >= 50000) break;
 		    }
-		    Calendar cal2 = Calendar.getInstance();
-		    System.out.println(sdf.format(cal2.getTime()));
+		    //Calendar cal2 = Calendar.getInstance();
+		    //System.out.println(sdf.format(cal2.getTime()));
 		    
 		    //closing the buffered reader (same reason for scanner)
 		    bufReader.close();
