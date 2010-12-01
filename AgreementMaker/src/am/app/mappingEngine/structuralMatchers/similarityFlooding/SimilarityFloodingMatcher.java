@@ -3,6 +3,9 @@
  */
 package am.app.mappingEngine.structuralMatchers.similarityFlooding;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -10,14 +13,19 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdge;
+import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertex;
+import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PairwiseConnectivityGraph;
 import am.utility.DirectedGraph;
 import am.utility.DirectedGraphEdge;
 import am.utility.DirectedGraphVertex;
 import am.utility.Pair;
 
 /**
+ * Similarity Flooding algorithm implementation.
  * @author Michele Caci
  *
  */
@@ -27,40 +35,47 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 	 * 
 	 */
 	private static final long serialVersionUID = -3749229483504509029L;
-
+	private static final boolean DEBUG_FLAG = true;
 	private boolean hasInput;
-	private DirectedGraph< DirectedGraphEdge<Property>,
-							DirectedGraphVertex< Pair<RDFNode, RDFNode> >
-						  > pairwiseConnectivityGraph;
-	
+	private PairwiseConnectivityGraph pcg;
+
 	/**
 	 * 
 	 */
 	public SimilarityFloodingMatcher() {
 		super();
-		setHasInput(false);
-		loadSimilarityMatrices();
-		pairwiseConnectivityGraph = new DirectedGraph<DirectedGraphEdge<Property>, DirectedGraphVertex<Pair<RDFNode,RDFNode>>>();
+		needsParam = true; // we need to display the parameters panel.
+		//setHasInput(false);
 	}
 
 	/**
 	 * @param params_new
 	 */
-	public SimilarityFloodingMatcher(AbstractParameters params_new) {
+	public SimilarityFloodingMatcher(SimilarityFloodingMatcherParameters params_new) {
 		super(params_new);
 	}
 	
+	@Override 
+	public AbstractMatcherParametersPanel getParametersPanel() { return new SimilarityFloodingParametersPanel(); };
+	
 	/**
-	 * Overridden method 
+	 * Similarity Flooding Algorithm. 
 	 * @see am.app.mappingEngine.AbstractMatcher#align(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes)
 	 * @author michele
 	 * NOTE: we are using graphs instead of arrayList
 	 */
 	 protected void align() throws Exception {
-		 createPairwiseConnectivityGraph();
-    	/*
-    	if( sourceOntology == null || targetOntology == null ) return;  // cannot align just one ontology 
+		progressDisplay.clearReport();
+		 
+		// cannot align just one ontology (this is here to catch improper invocations)
+		if( sourceOntology == null ) throw new NullPointerException("sourceOntology == null");   
+		if( targetOntology == null ) throw new NullPointerException("targetOntology == null");
+		
+		progressDisplay.appendToReport("Creating Pairwise Connectivity Graph...");
+		createPairwiseConnectivityGraph();
+		progressDisplay.appendToReport("done.\n");
     	
+		/* TODO: make use of alignClass and alignProp in our code
 		if(alignClass && !this.isCancelled() ) {
 			ArrayList<Node> sourceClassList = sourceOntology.getClassesList();
 			ArrayList<Node> targetClassList = targetOntology.getClassesList();
@@ -75,7 +90,23 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 		*/
 	 }
 	 
+	 
+	 /**
+	  * This method creates the Pairwise Connectivity Graph.
+	  * 
+	  * Given the graphs for the source and target ontologies, A and B respectively,
+	  * and elements x, y in A and x', y' in B, we construct the PCG in this way:
+	  *  
+	  *   PCGVertex    PCGVertex
+	  *      \/           \/
+	  *  ( (x, y) , p, (x', y') ) in PCG(A, B) <==> (x, p, x') in A and (y, p, y') in B
+	  *            /\
+	  *  	     PCGEdge
+	  */
 	 protected void createPairwiseConnectivityGraph(){
+		 
+		 pcg = new PairwiseConnectivityGraph();
+		 
 		 OntModel localSource = sourceOntology.getModel();
 		 OntModel localTarget = targetOntology.getModel();
 		 
@@ -94,18 +125,29 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 				 // condition where we add a new element in the pairwise connectivity graph:
 				 // comparison of predicates
 				 if(sStmt.getPredicate().equals(tStmt.getPredicate())){
-					 insertInPCG(new Pair<RDFNode, RDFNode>(sStmt.getSubject(), tStmt.getSubject()),
-							 		sStmt.getPredicate(),
-							 		new Pair<RDFNode, RDFNode>(sStmt.getObject(), tStmt.getObject())
-							 	);
+
+					 if( ((SimilarityFloodingMatcherParameters)param).omitAnonymousNodes && 
+							 ( sStmt.getSubject().isAnon() || sStmt.getObject().isAnon() ||
+							   tStmt.getSubject().isAnon() || tStmt.getObject().isAnon() )  ) {
+						// these nodes are anonymous
+						// parameter is set to not insert anonymous nodes
+						// do nothing
+					 } else {
+						 
+						 insertInPCG(new Pair<RDFNode, RDFNode>(sStmt.getSubject(), tStmt.getSubject()),  // vertex
+							 		sStmt.getPredicate(),                                             // edge
+							 		new Pair<RDFNode, RDFNode>(sStmt.getObject(), tStmt.getObject())  // vertex
+									);
+					 }
+					 
+					
 				 }
 				 
 			 }
 			 tStmtIterator = localTarget.listStatements();
 		 }
 		 
-		 pairwiseConnectivityGraph.vertices();
-		 System.out.println(pairwiseConnectivityGraph.toString());
+		 System.out.println(pcg.toString());
 	 }
 	 
 	 /* *************************************************** */
@@ -118,17 +160,22 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 	 private void insertInPCG(Pair<RDFNode, RDFNode> sourcePair,
 			 					Property linkingPred,
 			 					Pair<RDFNode, RDFNode> targetPair){
+		 Logger log = null;
 		 
-		 DirectedGraphVertex<Pair<RDFNode,RDFNode>> sourceVertex = new DirectedGraphVertex<Pair<RDFNode,RDFNode>>(sourcePair);
-		 DirectedGraphVertex<Pair<RDFNode,RDFNode>> targetVertex = new DirectedGraphVertex<Pair<RDFNode,RDFNode>>(targetPair);
-		 // problem in dealing with edges
-		 DirectedGraphEdge<Property> pairEdge = null;
-		 // TODO: new DirectedGraphEdge<Property>(sourcePair);
+		 if( DEBUG_FLAG ) {
+			 log = Logger.getLogger(this.getClass());
+			 log.setLevel( Level.DEBUG );
+		 }
 		 
-		 // pairwiseConnectivityGraph is a field of the class so far
-		 pairwiseConnectivityGraph.insertVertex(sourceVertex);
-		 pairwiseConnectivityGraph.insertVertex(targetVertex);
-		 pairwiseConnectivityGraph.insertEdge(pairEdge);
+		 PCGVertex sourceVertex = new PCGVertex(sourcePair);
+		 PCGVertex targetVertex = new PCGVertex(targetPair);
+		 PCGEdge pairEdge = new PCGEdge(sourceVertex, targetVertex, linkingPred);
+		 
+		 //if( DEBUG_FLAG ) log.debug("insertInPCG: \n" + sourceVertex + "\n" + targetVertex + "\n");
+		 
+		 pcg.insertVertex(sourceVertex);
+		 pcg.insertVertex(targetVertex);
+		 pcg.insertEdge(pairEdge);
 	 }
 
 	/* *************************************************** */

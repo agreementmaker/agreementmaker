@@ -13,5 +13,5 @@ import am.utility.DirectedGraphEdge;
  */
 public interface IPropCoefficient {
 
-	public void applyCoefficient(DirectedGraphEdge<Node> selectedEdge); 
+	public void applyCoefficient(DirectedGraphEdge<Node, Node> selectedEdge); 
 }
