@@ -1,15 +1,7 @@
 package am.app.mappingEngine;
 
-import java.awt.Point;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
@@ -73,6 +65,16 @@ public class SimilarityMatrix implements Serializable
         data = new Mapping[M][N];
     }
     
+    // create M-by-N matrix of the selected value
+    public SimilarityMatrix(int M, int N, alignType type, double value) {
+    	relation = Mapping.EQUIVALENCE;
+    	typeOfMatrix = type;
+        this.rows = M;
+        this.columns = N;
+        data = new Mapping[M][N];
+        fillMatrix(value);
+    }
+    
     // create M-by-N matrix of 0's
     public SimilarityMatrix(int M, int N, alignType type, String rel) {
     	relation = rel;
@@ -81,8 +83,6 @@ public class SimilarityMatrix implements Serializable
         this.columns = N;
         data = new Mapping[M][N];
     }
-
-
     
     public Mapping get(int i, int j) {  return data[i][j];  }
     
@@ -440,6 +440,27 @@ public class SimilarityMatrix implements Serializable
 		return list;		
 	}
 	
+	/**
+	 * fillMatrix: fill the matrix with one value
+	 * @param val value to fill the matrix with
+	 * @author michele 
+	 */
+	public void fillMatrix(double val){
+		// create M-by-N matrix of the selected value
+		assert (val >= 0 && val <= 1);
+	    for(int i = 0; i < this.getRows(); i++){
+	    	for(int j = 0; j < this.getColumns(); j++){
+	    		if(get(i, j) == null){
+	    			set(i, j, new Mapping(val));
+	    		}
+	    		else {
+	    			Mapping updatingMapping = this.get(i, j);
+	    			updatingMapping.setSimilarity(val);
+	    			set(i, j, updatingMapping);
+	    		}
+	    	}
+	    }
+	}
 	// TODO: Make the max value update when populating the matrix. 
 	public double getMaxValue() {
 		double max = 0.0;

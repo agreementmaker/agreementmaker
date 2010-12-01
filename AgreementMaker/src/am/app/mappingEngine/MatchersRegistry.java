@@ -1,12 +1,7 @@
 package am.app.mappingEngine;
 
-import java.util.EnumSet;
-import java.util.Enumeration;
-import java.util.Iterator;
-
 import am.app.feedback.FeedbackLoop;
 import am.app.feedback.InitialMatchers;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.LexicalMatcherJAWS.LexicalMatcherJAWS;
 import am.app.mappingEngine.LexicalMatcherJWNL.LexicalMatcherJWNL;
@@ -54,11 +49,11 @@ public enum MatchersRegistry {
 	 * And so, if your matcher is has no code errors, it will be incorporated into the AgreementMaker.  - Cosmin
 	 */
 	//
-	AbstractMatcher		( "NoMatcher", am.app.mappingEngine.manualMatcher.UserManualMatcher.class ),
+	SimilarityFlooding  ( "SFM", "Similarity Flooding Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.SimilarityFloodingMatcher.class ),
 	OAEI2010			( "OAEI-10", "OAEI 2010 Matcher", am.app.mappingEngine.oaei2010.OAEI2010Matcher.class ),
 	IterativeMatcher	( "IISM", "Instance-based Iterator", am.app.mappingEngine.instance.IterativeMatcher.class),
 	AdvancedSimilarity  ( "ASM", "Advanced Similarity Matcher", am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher.class),
-	GroupFinder			( "GFM", "Group Finder Matcher (GFM)", am.app.mappingEngine.groupFinder.GroupFinderMatcher.class),
+	GroupFinder			( "GFM", "Group Finder Matcher", am.app.mappingEngine.groupFinder.GroupFinderMatcher.class),
 	FCM					( "FCM", "Federico Caimi Matcher", am.app.mappingEngine.FedericoCaimiMatcher.FedericoMatcher.class),
 	LSM					( "LSM", "Lexical Synonym Matcher", LexicalSynonymMatcher.class ),
 	//OFFICIAL MATCHERS

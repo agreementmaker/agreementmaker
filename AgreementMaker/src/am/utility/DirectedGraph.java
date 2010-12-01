@@ -16,7 +16,7 @@ import java.util.Iterator;
  * @author cosmin
  *
  */
-public class DirectedGraph<E,V> {
+public class DirectedGraph<E extends DirectedGraphEdge<?>,V extends DirectedGraphVertex<?>> {
 
 	protected ArrayList<V> vertices;
 	protected ArrayList<E> edges;
