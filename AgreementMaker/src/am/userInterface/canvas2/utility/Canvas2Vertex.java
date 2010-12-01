@@ -31,7 +31,7 @@ import am.utility.DirectedGraphVertex;
  *
  */
 
-public class Canvas2Vertex extends DirectedGraphVertex<GraphicalData> implements OntologyConceptGraphics {  // we have to extend the DGVertex because we need access to the adjacency lists
+public class Canvas2Vertex extends DirectedGraphVertex<GraphicalData, GraphicalData> implements OntologyConceptGraphics {  // we have to extend the DGVertex because we need access to the adjacency lists
 
 
 	//protected GraphicalData d;  // all the (d)ata is stored in this class (the name is short because it is used ALOT)
@@ -117,7 +117,7 @@ public class Canvas2Vertex extends DirectedGraphVertex<GraphicalData> implements
 	@Deprecated
 	public boolean hasMappings() {
 		int mappings = 0;
-		Iterator<DirectedGraphEdge<GraphicalData>> edgeIter = edgesIn.iterator();
+		Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeIter = edgesInIter();
 		while( edgeIter.hasNext() ) {
 			Canvas2Edge edge = (Canvas2Edge) edgeIter.next();
 			if( edge.getObject().type == NodeType.MAPPING ) mappings++;
@@ -137,7 +137,7 @@ public class Canvas2Vertex extends DirectedGraphVertex<GraphicalData> implements
 	public ArrayList<LegacyMapping> getMappings() {
 		ArrayList<LegacyMapping> mappings = new ArrayList<LegacyMapping>();
 		
-		Iterator<DirectedGraphEdge<GraphicalData>> edgeIter = edgesIn.iterator();
+		Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeIter = edgesIn.iterator();
 		while( edgeIter.hasNext() ) {
 			Canvas2Edge edge = (Canvas2Edge) edgeIter.next();
 			if( edge.getObject().type == NodeType.MAPPING ) mappings.add( (LegacyMapping) edge);

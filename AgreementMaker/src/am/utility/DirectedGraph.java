@@ -16,12 +16,12 @@ import java.util.Iterator;
  * @author cosmin
  *
  */
-public class DirectedGraph<E extends DirectedGraphEdge<?>,V extends DirectedGraphVertex<?>> {
+public class DirectedGraph<E extends DirectedGraphEdge, V extends DirectedGraphVertex> {
 
 	protected ArrayList<V> vertices;
 	protected ArrayList<E> edges;
 	
-	ArrayList<DirectedGraphVertex<E>> hierarchyRoots;
+	ArrayList<V> hierarchyRoots;
 	
 	
 	public DirectedGraph() {
@@ -36,7 +36,7 @@ public class DirectedGraph<E extends DirectedGraphEdge<?>,V extends DirectedGrap
 	public Iterator<V> vertices() { return vertices.iterator(); }  // return an iterator of the vertices of G
 	public Iterator<E>   edges()    { return edges.iterator(); } // return an iterator of the edges of G
 	
-	public V           aVertex()  { if( vertices.size() != 0 ) return vertices.get(0); else return null; }  // return any vertex of the graph
+	public V aVertex()  { if( vertices.size() != 0 ) return vertices.get(0); else return null; }  // return any vertex of the graph
 	
 	
 	/**

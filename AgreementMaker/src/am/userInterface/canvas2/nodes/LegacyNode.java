@@ -108,7 +108,7 @@ public class LegacyNode extends Canvas2Vertex {
 		
 
 		// update the mapping edges, since the width of our node has changed
-		Iterator<DirectedGraphEdge<GraphicalData>> edgeIter = edgesOut.iterator();
+		Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeIter = edgesOut.iterator();
 		while( edgeIter.hasNext() ) {
 			GraphicalData gd = edgeIter.next().getObject();
 			if( gd.type == GraphicalData.NodeType.MAPPING ) {
@@ -123,7 +123,7 @@ public class LegacyNode extends Canvas2Vertex {
 	
 	private int numChildren() {
 		int numChildren = 0;
-		Iterator<DirectedGraphEdge<GraphicalData>> edgeIter = edgesOut.iterator();
+		Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeIter = edgesOut.iterator();
 		while( edgeIter.hasNext() ) {
 			GraphicalData gd = edgeIter.next().getObject();
 			if( gd.type == GraphicalData.NodeType.MAPPING ) continue; // ignore mappings
@@ -139,7 +139,7 @@ public class LegacyNode extends Canvas2Vertex {
 		int matcherID = Core.ID_NONE;
 		
 		// check the outgoing edges (for source nodes)
-		Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = edgesOut.iterator();
+		Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeOutIter = edgesOut.iterator();
 		while( edgeOutIter.hasNext() ) {
 			GraphicalData gd = edgeOutIter.next().getObject();
 			if( gd.type == GraphicalData.NodeType.MAPPING && gd.visible == true ) {
@@ -151,7 +151,7 @@ public class LegacyNode extends Canvas2Vertex {
 		}
 		
 		// check the incoming edges (for target nodes)
-		Iterator<DirectedGraphEdge<GraphicalData>> edgeInIter = edgesIn.iterator();
+		Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeInIter = edgesIn.iterator();
 		while( edgeInIter.hasNext() ) {
 			GraphicalData gd = edgeInIter.next().getObject();
 			if( gd.type == GraphicalData.NodeType.MAPPING && gd.visible == true ) {

@@ -2,33 +2,36 @@ package am.utility;
 
 /**
  * Directed Graph Edge.  This is a container class, storing objects of type E.
+ *
  * @author cosmin
  *
  * @param <E>
  */
-public class DirectedGraphEdge<E> {
+public class DirectedGraphEdge<E, V> {
 	
-	protected DirectedGraphVertex<E> origin;
-	protected DirectedGraphVertex<E> destination;
+	protected DirectedGraphVertex<V, E> origin;  // we can mix Vertex types
+	protected DirectedGraphVertex<V, E> destination; 
 	
 	protected E d;
 	
-	public DirectedGraphEdge(DirectedGraphVertex<E> orig, DirectedGraphVertex<E> dest, E o) {
+	public DirectedGraphEdge(DirectedGraphVertex<V, E> orig, DirectedGraphVertex<V, E> dest, E o) {
 		origin      = orig;
 		destination = dest;
 		d      = o;
 	}
-	public DirectedGraphVertex<E> getDestination() { return destination; }
-	public DirectedGraphVertex<E> getOrigin()      { return origin; }
-	public void        setDestination( DirectedGraphVertex<E> v ) { destination = v; }
-	public void        setOrigin     ( DirectedGraphVertex<E> v ) { origin      = v; }
+	public DirectedGraphVertex<V, E> getDestination() { return destination; }
+	public DirectedGraphVertex<V, E> getOrigin()      { return origin; }
+	public void        setDestination( DirectedGraphVertex<V, E> v ) { destination = v; }
+	public void        setOrigin     ( DirectedGraphVertex<V, E> v ) { origin      = v; }
 	
 	public void setObject(E object) { this.d = object; }
 	public E    getObject()         { return d; }
 
+/*  // Commented out because we cannot reverse direction without origin and destination types being the same.
 	public void reverseDirection() {
-		DirectedGraphVertex<E> temp = origin;
+		DirectedGraphVertex<O> temp = origin;
 		origin = destination;
 		destination = temp;
 	}
+*/
 }

@@ -6,7 +6,7 @@ import java.awt.Rectangle;
 import am.userInterface.canvas2.graphical.GraphicalData;
 import am.utility.DirectedGraphEdge;
 
-public class Canvas2Edge extends DirectedGraphEdge<GraphicalData> {
+public class Canvas2Edge extends DirectedGraphEdge<GraphicalData, GraphicalData> {
 
 	//private CanvasGraph graph = null; // the graph that this edge belongs to
 

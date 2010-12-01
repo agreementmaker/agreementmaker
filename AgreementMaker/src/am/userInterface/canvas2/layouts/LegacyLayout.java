@@ -1722,7 +1722,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			selectedNode.setSelected(false); // unselect the nodes
 			
 			
-			Iterator<DirectedGraphEdge<GraphicalData>> edgeInIter = selectedNode.edgesInIter();
+			Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeInIter = selectedNode.edgesInIter();
 			while( edgeInIter.hasNext() ) {
 				Canvas2Edge connectedEdge = (Canvas2Edge) edgeInIter.next();
 				connectedEdge.setVisible(true);
@@ -1730,7 +1730,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				else { ((Canvas2Vertex)connectedEdge.getOrigin()).setVisible(true); }
 			}
 			
-			Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = selectedNode.edgesOutIter();
+			Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeOutIter = selectedNode.edgesOutIter();
 			while( edgeOutIter.hasNext() ) {
 				Canvas2Edge connectedEdge = (Canvas2Edge) edgeOutIter.next();
 				connectedEdge.setVisible(true);
@@ -1754,17 +1754,17 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			}
 			
 			// update the mappingList
-			Iterator<DirectedGraphEdge<GraphicalData>> edgeInIter = selectedNode.edgesInIter();
+			Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeInIter = selectedNode.edgesInIter();
 			while( edgeInIter.hasNext() ) {
-				DirectedGraphEdge<GraphicalData> connectedEdge = edgeInIter.next();
+				Canvas2Edge connectedEdge = (Canvas2Edge) edgeInIter.next();
 				if( connectedEdge instanceof LegacyMapping ) {
 					SingleMappingMappings.add( (LegacyMapping) connectedEdge );
 				}
 			}
 			
-			Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = selectedNode.edgesOutIter();
+			Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeOutIter = selectedNode.edgesOutIter();
 			while( edgeOutIter.hasNext() ) {
-				DirectedGraphEdge<GraphicalData> connectedEdge = edgeOutIter.next();
+				Canvas2Edge connectedEdge = (Canvas2Edge) edgeOutIter.next();
 				if( connectedEdge instanceof LegacyMapping) {
 					SingleMappingMappings.add( (LegacyMapping) connectedEdge );
 				}
@@ -1859,7 +1859,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				//hoveringOver.clearDrawArea(g);
 				
 				// redraw all the edges connected to this node. (only if they are visible)
-				Iterator<DirectedGraphEdge<GraphicalData>> edgeInIter = hoveringOver.edgesInIter();
+				Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeInIter = hoveringOver.edgesInIter();
 				while( edgeInIter.hasNext() ) { 
 					Canvas2Edge currentEdge = (Canvas2Edge) edgeInIter.next();
 					if( !currentEdge.getObject().visible ) continue;
@@ -1867,7 +1867,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 					if( originNode.getObject().visible )
 						currentEdge.draw(g); 
 				}
-				Iterator<DirectedGraphEdge<GraphicalData>> edgeOutIter = hoveringOver.edgesOutIter();
+				Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeOutIter = hoveringOver.edgesOutIter();
 				while( edgeOutIter.hasNext() ) {
 					Canvas2Edge currentEdge = (Canvas2Edge) edgeOutIter.next();
 					if( !currentEdge.getObject().visible ) continue;

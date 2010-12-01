@@ -142,7 +142,7 @@ public class LegacyMapping extends Canvas2Edge {
 		int numberOfPreviousMappings = 0;
 		MappingData previousMappingData = null;
 		
-		Iterator<DirectedGraphEdge<GraphicalData>> edgeIter;
+		Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeIter;
 		if( getOrigin().edgesOutList().size() > getDestination().edgesInList().size() ) { 
 			edgeIter = getOrigin().edgesOutIter();
 		} else {
