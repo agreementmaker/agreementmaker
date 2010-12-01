@@ -592,6 +592,32 @@ public class AppPreferences {
 		return appPrefs.getBoolean( "PREF_" + setting.prefKey, setting.defBool );
 		
 	}
+	
+	/**
+	 * Used to return saved preferences (this method is for boolean values).
+	 * This method is meant to be used by parameters panels of all matchers.
+	 * 
+	 * @param key The key string for the setting.  Use the same key to save the value.
+	 * @param def The default value to be returned in case the preferences cannot be read.
+	 * @return The saved setting.
+	 * @see savePanelBool
+	 */
+	public boolean getPanelBool( String key, boolean def ) {
+		return appPrefs.getBoolean( "PREF_MATCHERPANEL_" + key , def );
+	}
+	
+	/**
+	 * Used to save parameters panel preferences (this method is for boolean values).
+	 * 
+	 * @param key The key string for the setting.  Use the same key to retrieve a saved value.
+	 * @param def The default value to be returned in case the preferences cannot be read.
+	 * @return The saved setting.
+	 * @see getPanelBool
+	 */
+	public void savePanelBool( String key, boolean val ) {
+		appPrefs.putBoolean( "PREF_MATCHERPANEL_" + key , val );
+	}
+	
 
 
 	
