@@ -16,7 +16,7 @@ import java.util.Iterator;
  * @author cosmin
  *
  */
-public class DirectedGraph<E extends DirectedGraphEdge, V extends DirectedGraphVertex> {
+public class DirectedGraph<E extends DirectedGraphEdge<?, ?>, V extends DirectedGraphVertex<?, ?>> {
 
 	protected ArrayList<V> vertices;
 	protected ArrayList<E> edges;
@@ -57,5 +57,27 @@ public class DirectedGraph<E extends DirectedGraphEdge, V extends DirectedGraphV
 
 	public void removeVertex( V e ) { vertices.remove(e); }
 	
+	/**
+	 * Outputs all the vertices and edges as strings.
+	 */
+	public String toString() {
+		String s = new String();
+		
+		s += "----------------------------\n";
+		s += "Vertices (" + numVertices() + "): \n";
+		for( int i = 0; i < vertices.size(); i++ ) {
+			V currentVertex = vertices.get(i);
+			s += i + ". " + currentVertex.toString() + "\n"; // numbered lines
+		}
+		
+		s += "----------------------------\n";
+		s += "Edges ("+ numEdges() +"): \n";
+		for( int i = 0; i < edges.size(); i++ ) {
+			E currentEdge = edges.get(i);
+			s += i + ". " + currentEdge.toString() + "\n"; // numbered lines
+		}
+		
+		return s;
+	}
 	
 }
