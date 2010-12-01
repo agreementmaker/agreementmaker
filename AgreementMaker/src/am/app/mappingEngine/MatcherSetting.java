@@ -3,6 +3,7 @@ package am.app.mappingEngine;
 /** This enum stores the names of settings for different algorithms ( currently used by AppPreferences ) @author Cosmin Stroe @date Nov 25, 2008 
  * If you need to save settings for your algorithm panel, use this enum along with the AppPreferences savePanelSetting() and getPanelSetting() functions. 
  * */
+@Deprecated
 public enum MatcherSetting {
 	DSI_MCP ( "DSI_MCP", 0.75f),  // Descendant's Similarity Inheritance ( MCP value, 0.75 is the default )
 	SSC_MCP ( "SSC_MCP", 0.75f),  // Sibling Similarity Inheritance ( MCP Value )
