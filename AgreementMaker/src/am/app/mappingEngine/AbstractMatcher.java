@@ -624,7 +624,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return aset;
 	}
     
-    
+    /**
+     * Returns all mappings that have a similarity value >= the matcher threshold.
+     * @param matrix Matrix to scan for mappings.
+     * @return Alignment set of mappings. 
+     */
     protected Alignment getThemAll(SimilarityMatrix matrix) {
 		Alignment aset = new Alignment();
 		Mapping currentValue;
