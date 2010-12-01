@@ -59,20 +59,26 @@ public class DirectedGraph<E extends DirectedGraphEdge<?, ?>, V extends Directed
 	
 	/**
 	 * Outputs all the vertices and edges as strings.
+	 * For efficiency, we only output the first 100 vertices and 100 edges.
 	 */
+	@Override
 	public String toString() {
 		String s = new String();
 		
+		int maxDisplay = 100;
+		
 		s += "----------------------------\n";
-		s += "Vertices (" + numVertices() + "): \n";
+		s += "Vertices (" + maxDisplay + " of " + numVertices() + "): \n";
 		for( int i = 0; i < vertices.size(); i++ ) {
+			if( i >= maxDisplay ) break;
 			V currentVertex = vertices.get(i);
 			s += i + ". " + currentVertex.toString() + "\n"; // numbered lines
 		}
 		
 		s += "----------------------------\n";
-		s += "Edges ("+ numEdges() +"): \n";
+		s += "Edges (" + maxDisplay + " of " + numEdges() +"): \n";
 		for( int i = 0; i < edges.size(); i++ ) {
+			if( i >= maxDisplay ) break;
 			E currentEdge = edges.get(i);
 			s += i + ". " + currentEdge.toString() + "\n"; // numbered lines
 		}
