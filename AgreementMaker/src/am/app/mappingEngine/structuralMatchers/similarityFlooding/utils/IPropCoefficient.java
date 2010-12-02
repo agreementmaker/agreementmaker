@@ -3,9 +3,6 @@
  */
 package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
 
-import am.app.ontology.Node;
-import am.utility.DirectedGraphEdge;
-
 /**
  * @author Michele Caci
  * @param <E>
@@ -13,5 +10,5 @@ import am.utility.DirectedGraphEdge;
  */
 public interface IPropCoefficient {
 
-	public void applyCoefficient(DirectedGraphEdge<Node, Node> selectedEdge); 
+	public void applyCoefficients(PairwiseConnectivityGraph pcg); 
 }

@@ -18,6 +18,9 @@ public class DirectedGraphEdge<E, V> {
 		origin      = orig;
 		destination = dest;
 		d      = o;
+		//TODO: MAKE THIS WORK (uncomment the lines, but requires updating of all usages)
+		//origin.addOutEdge(this);
+		//destination.addInEdge(this);
 	}
 	public DirectedGraphVertex<V, E> getDestination() { return destination; }
 	public DirectedGraphVertex<V, E> getOrigin()      { return origin; }

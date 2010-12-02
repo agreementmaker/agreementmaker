@@ -1,18 +1,14 @@
 package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
 
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-
 import am.utility.DirectedGraphVertex;
-import am.utility.Pair;
 /**
  * Pairwise Connectivity Graph Vertex.
  * @author cosmin
  *
  */
-public class PCGVertex extends DirectedGraphVertex<Pair<RDFNode, RDFNode>, Property>{
+public class PCGVertex extends DirectedGraphVertex<PCGVertexData, PCGEdgeData>{
 
-	public PCGVertex(Pair<RDFNode, RDFNode> object) {
+	public PCGVertex(PCGVertexData object) {
 		super(object);
 	}
 
@@ -23,7 +19,7 @@ public class PCGVertex extends DirectedGraphVertex<Pair<RDFNode, RDFNode>, Prope
 	public String toString() {
 		String s = new String();
 		
-		s += "( " + getObject().getLeft().toString() + ", " + getObject().getRight().toString() + " )";
+		s += "( " + getObject().getStCouple().getLeft().toString() + ", " + getObject().getStCouple().getRight().toString() + " )";
 		
 		return s;
 	}

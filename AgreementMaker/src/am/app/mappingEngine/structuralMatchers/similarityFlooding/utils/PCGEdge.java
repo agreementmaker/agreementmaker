@@ -15,10 +15,11 @@ import am.utility.Pair;
  * @author cosmin
  *
  */
-public class PCGEdge extends DirectedGraphEdge<Property, Pair<RDFNode, RDFNode>>{
-
-	public PCGEdge(PCGVertex orig, PCGVertex dest, Property o) {
+public class PCGEdge extends DirectedGraphEdge<PCGEdgeData, PCGVertexData>{
+	
+	public PCGEdge(PCGVertex orig, PCGVertex dest, PCGEdgeData o) {
 		super(orig, dest, o);
+		// TODO Auto-generated constructor stub
 	}
 
 	/**
