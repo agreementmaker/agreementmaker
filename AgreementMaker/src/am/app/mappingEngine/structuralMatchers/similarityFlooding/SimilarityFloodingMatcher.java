@@ -6,15 +6,9 @@ package am.app.mappingEngine.structuralMatchers.similarityFlooding;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
-import sun.font.LayoutPathImpl.EndType;
-
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
@@ -81,12 +75,12 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 		
 		progressDisplay.appendToReport("Creating Pairwise Connectivity Graph...");
 		createPairwiseConnectivityGraph();
-		 System.out.println(pcg.toString());
+		if( DEBUG_FLAG ) System.out.println(pcg.toString());
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Creating Induced Propagation Graph...");
 		createInducedPropagationGraph();
-		 System.out.println(pcg.toString());
+		if( DEBUG_FLAG ) System.out.println(pcg.toString());
 		progressDisplay.appendToReport("done.\n");
 		
 		
@@ -107,6 +101,13 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 		*/
 	 }
 	 
+	 
+	 
+	 
+	 
+	 /* *********************************************************************************** */
+	 /* 							PAIRWISE CONNECTIVITY GRAPH OPERATIONS					*/
+	 /* *********************************************************************************** */
 	 
 	 /**
 	  * This method creates the Pairwise Connectivity Graph.
@@ -173,10 +174,6 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 						 PCGVertex sourcePCGVertex = getPCGVertex(firstHashTable, sStmt.getSubject(), tStmt.getSubject() );
 						 PCGVertex targetPCGVertex = getPCGVertex(firstHashTable, sStmt.getObject(),  tStmt.getObject() );
 						 						 
-						 /*insertInPCG(new Pair<RDFNode, RDFNode>(sStmt.getSubject(), tStmt.getSubject()),  // vertex
-							 		sStmt.getPredicate(),                                             // edge
-							 		new Pair<RDFNode, RDFNode>(sStmt.getObject(), tStmt.getObject())  // vertex
-									);*/
 						 insertInPCG(sourcePCGVertex,  // vertex
 					 		sStmt.getPredicate(),      // edge
 					 		targetPCGVertex,           // vertex
@@ -301,17 +298,12 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 	}
 
 	/**
-	  * This method creates the Induced Propagation Graph.
+	  * This method creates the Induced Propagation Graph.]
+	  * NOTE! This is done in place using the Pairwise Connectivity Graph as the base.
+	  * In other words, a new graph structure is NOT created.  Two operations are done:
 	  * 
-	  * TODO: change description
-	  * Given the graphs for the source and target ontologies, A and B respectively,
-	  * and elements x, y in A and x', y' in B, we construct the PCG in this way:
-	  *  
-	  *   PCGVertex    PCGVertex
-	  *      \/           \/
-	  *  ( (x, y) , p, (x', y') ) in PCG(A, B) <==> (x, p, x') in A and (y, p, y') in B
-	  *            /\
-	  *  	     PCGEdge
+	  * 1) Existing edges (forward edges) are annotated with a propagation coefficient (edge weight).
+	  * 2) Back edges are created and annotated with a propagation coefficient.
 	  *  
 	  */
 	 protected void createInducedPropagationGraph(){
@@ -319,43 +311,12 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 		 createBackwardEdges();
 	 }
 	 
-	 /* *************************************************** */
-	 /* 			   MATCHING STEP OPERATIONS				*/
-	 /* *************************************************** */
 	 
-	 /**
-	  * 
-	  */
-	 private void insertInPCG(Pair<RDFNode, RDFNode> sourcePair,
-			 					Property linkingPred,
-			 					Pair<RDFNode, RDFNode> targetPair){
-		 Logger log = null;
-		 
-		 if( DEBUG_FLAG ) {
-			 log = Logger.getLogger(this.getClass());
-			 log.setLevel( Level.DEBUG );
-		 }
-		 PCGVertexData vertexData;
-		 PCGEdgeData edgeData;
-		 
-		 vertexData = new PCGVertexData(sourcePair);
-		 PCGVertex sourceVertex = new PCGVertex(vertexData);
-		 
-		 vertexData = new PCGVertexData(targetPair);
-		 PCGVertex targetVertex = new PCGVertex(vertexData);
-		 
-		 edgeData = new PCGEdgeData(linkingPred);
-		 PCGEdge pairEdge = new PCGEdge(sourceVertex, targetVertex, edgeData);
-		 
-		 //if( DEBUG_FLAG ) log.debug("insertInPCG: \n" + sourceVertex + "\n" + targetVertex + "\n");
-		 
-		 sourceVertex.addOutEdge(pairEdge);
-		 targetVertex.addInEdge(pairEdge);
-		 
-		 pcg.insertVertex(sourceVertex);
-		 pcg.insertVertex(targetVertex);
-		 pcg.insertEdge(pairEdge);
-	 }
+	 
+	 
+	 /* *********************************************************************************** */
+	 /* 							INDUCED PROPAGATION GRAPH OPERATIONS					*/
+	 /* *********************************************************************************** */
 	 
 	 public void applyCoefficients(){
 		 Iterator<PCGVertex> iVert = pcg.vertices();
