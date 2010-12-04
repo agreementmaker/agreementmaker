@@ -198,13 +198,13 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 	 * This method inserts a new "triple" in the PairwiseConnectivityGraph.
 	 * A triple is a ( PCGVertex, PCGEdge, PCGVertex ).
 	 * 
-	 * @param sourcePCGVertex
-	 * @param predicate
-	 * @param targetPCGVertex
-	 * @param sourceSubject
-	 * @param targetSubject
-	 * @param sourceObject
-	 * @param targetObject
+	 * @param sourcePCGVertex (x, y)
+	 * @param predicate		  p
+	 * @param targetPCGVertex (x', y')
+	 * @param sourceSubject   x
+	 * @param targetSubject   y
+	 * @param sourceObject    x'
+	 * @param targetObject    y'
 	 * @param firstHashTable
 	 */
 	private void insertInPCG(
@@ -212,7 +212,13 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 			RDFNode sourceSubject, RDFNode targetSubject, RDFNode sourceObject, RDFNode targetObject,
 			HashMap<RDFNode, HashMap<RDFNode, PCGVertex>> firstHashTable ) {
 		
+		boolean sourceVertexCreated;
+		boolean targetVertexCreated;
+		
+		
+		
 		if( sourcePCGVertex == null ) {
+			sourceVertexCreated = true; // we are creating a new sourcePCGVertex, make sure we insert it in the graph.
 			// the source PCGVertex does not exist, create it.
 			Pair<RDFNode, RDFNode> sourcePair = new Pair<RDFNode, RDFNode>(sourceSubject, targetSubject);
 			PCGVertexData vertexData = new PCGVertexData( sourcePair );
@@ -220,16 +226,45 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 			
 			// add source vertex to the hash table.
 			HashMap<RDFNode, PCGVertex> secondHashTable = firstHashTable.get(sourceSubject);
-			//TODO: Finish this.
-			//PCGVertexData
+			if( secondHashTable == null ) {
+				// second hash table does not exist.  create it.
+				secondHashTable = new HashMap<RDFNode, PCGVertex>();
+				
+				// add it to the first hash table.
+				firstHashTable.put(sourceSubject, secondHashTable);
+			}
+			
+			secondHashTable.put(targetSubject, sourcePCGVertex);
+			
+		} else {
+			sourceVertexCreated = false; // the sourcePCGVertex exists already. do not insert it again into the graph.			
 		}
 		
+		
+		
 		if( targetPCGVertex == null ) {
+			targetVertexCreated = true; // we are creating a new targetPCGVertex, make sure we insert it in the graph.
+			
 			// the target PCGVertex does not exist, create it.
 			Pair<RDFNode, RDFNode> targetPair = new Pair<RDFNode, RDFNode>(sourceObject, targetObject);
 			PCGVertexData vertexData = new PCGVertexData( targetPair );
 			targetPCGVertex = new PCGVertex(vertexData);
+			
+			// add the target vertex to the hash table.
+			HashMap<RDFNode, PCGVertex> secondHashTable = firstHashTable.get(sourceObject);
+			if( secondHashTable == null ) {
+				// second hash table does not exist. create it.
+				secondHashTable = new HashMap<RDFNode, PCGVertex>();
+				
+				// add it to the first hash table
+				firstHashTable.put(targetObject, secondHashTable);
+			}
+			
+			secondHashTable.put(targetObject, targetPCGVertex);
+		} else {
+			targetVertexCreated = false; // the targetPCGVertex exists already. do not insert it again into the graph.
 		}
+		
 		
 		// create the edge and insert it into the graph.
 		
@@ -239,8 +274,8 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 		sourcePCGVertex.addOutEdge(pairEdge);
 		targetPCGVertex.addInEdge(pairEdge);
 		 
-		pcg.insertVertex(sourcePCGVertex);
-		pcg.insertVertex(targetPCGVertex);
+		if( sourceVertexCreated ) pcg.insertVertex(sourcePCGVertex);
+		if( targetVertexCreated ) pcg.insertVertex(targetPCGVertex);
 		pcg.insertEdge(pairEdge);
 		
 	}

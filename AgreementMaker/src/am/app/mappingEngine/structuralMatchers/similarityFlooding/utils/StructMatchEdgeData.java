@@ -12,8 +12,8 @@ import com.hp.hpl.jena.rdf.model.Property;
  */
 public abstract class StructMatchEdgeData {
 
-	private Property stProperty;
-	private double propagationCoefficient;
+	protected Property stProperty;
+	protected double propagationCoefficient;
 	
 	/**
 	 *  The default value for the propagation coefficient is of 1.0
