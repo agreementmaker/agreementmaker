@@ -14,6 +14,7 @@ import sun.font.LayoutPathImpl.EndType;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
@@ -132,6 +133,21 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 		 Statement sStmt = null;
 		 Statement tStmt = null;
 		 
+
+		 /**
+		  * We hash the source concept into the first hashtable, which returns a second hash table.
+		  * Then we hash the target concept into the second hash table and that returns the PCGVertex corresponding
+		  * to the source and target concepts.
+		  *  
+		  * 
+		  * Maybe linear probing or double hashing (http://en.wikipedia.org/wiki/Double_hashing) would be a better solution.
+		  * Actually, a double indexed HashTable (two keys for get() put() operations), along with standard linear probing 
+		  * and double hashing as a fall back would be the better solution.
+		  * 
+		  */
+		 
+		 HashMap<RDFNode, HashMap<RDFNode, PCGVertex>> firstHashTable = new HashMap<RDFNode, HashMap<RDFNode, PCGVertex>>();
+		 
 		 while(sStmtIterator.hasNext()){
 			 sStmt = sStmtIterator.next();
 			 
@@ -142,6 +158,8 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 				 // comparison of predicates
 				 if(sStmt.getPredicate().equals(tStmt.getPredicate())){
 
+					 
+					 
 					 if( ((SimilarityFloodingMatcherParameters)param).omitAnonymousNodes && 
 							 ( sStmt.getSubject().isAnon() || sStmt.getObject().isAnon() ||
 							   tStmt.getSubject().isAnon() || tStmt.getObject().isAnon() )  ) {
@@ -150,10 +168,19 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 						// do nothing
 					 } else {
 						 
-						 insertInPCG(new Pair<RDFNode, RDFNode>(sStmt.getSubject(), tStmt.getSubject()),  // vertex
+						 // check to see if we have a node already for the source vertex and for the target vertex.
+						 
+						 PCGVertex sourcePCGVertex = getPCGVertex(firstHashTable, sStmt.getSubject(), tStmt.getSubject() );
+						 PCGVertex targetPCGVertex = getPCGVertex(firstHashTable, sStmt.getObject(),  tStmt.getObject() );
+						 						 
+						 /*insertInPCG(new Pair<RDFNode, RDFNode>(sStmt.getSubject(), tStmt.getSubject()),  // vertex
 							 		sStmt.getPredicate(),                                             // edge
 							 		new Pair<RDFNode, RDFNode>(sStmt.getObject(), tStmt.getObject())  // vertex
-									);
+									);*/
+						 insertInPCG(sourcePCGVertex,  // vertex
+					 		sStmt.getPredicate(),      // edge
+					 		targetPCGVertex,           // vertex
+					 		sStmt.getSubject(), tStmt.getSubject(), sStmt.getObject(), tStmt.getObject(), firstHashTable );
 					 }
 					 
 					
@@ -166,7 +193,79 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 //		 System.out.println(pcg.toString());
 	 }
 
-	 /**
+	 
+	/**
+	 * This method inserts a new "triple" in the PairwiseConnectivityGraph.
+	 * A triple is a ( PCGVertex, PCGEdge, PCGVertex ).
+	 * 
+	 * @param sourcePCGVertex
+	 * @param predicate
+	 * @param targetPCGVertex
+	 * @param sourceSubject
+	 * @param targetSubject
+	 * @param sourceObject
+	 * @param targetObject
+	 * @param firstHashTable
+	 */
+	private void insertInPCG(
+			PCGVertex sourcePCGVertex, Property predicate, PCGVertex targetPCGVertex,
+			RDFNode sourceSubject, RDFNode targetSubject, RDFNode sourceObject, RDFNode targetObject,
+			HashMap<RDFNode, HashMap<RDFNode, PCGVertex>> firstHashTable ) {
+		
+		if( sourcePCGVertex == null ) {
+			// the source PCGVertex does not exist, create it.
+			Pair<RDFNode, RDFNode> sourcePair = new Pair<RDFNode, RDFNode>(sourceSubject, targetSubject);
+			PCGVertexData vertexData = new PCGVertexData( sourcePair );
+			sourcePCGVertex = new PCGVertex(vertexData);
+			
+			// add source vertex to the hash table.
+			HashMap<RDFNode, PCGVertex> secondHashTable = firstHashTable.get(sourceSubject);
+			//TODO: Finish this.
+			//PCGVertexData
+		}
+		
+		if( targetPCGVertex == null ) {
+			// the target PCGVertex does not exist, create it.
+			Pair<RDFNode, RDFNode> targetPair = new Pair<RDFNode, RDFNode>(sourceObject, targetObject);
+			PCGVertexData vertexData = new PCGVertexData( targetPair );
+			targetPCGVertex = new PCGVertex(vertexData);
+		}
+		
+		// create the edge and insert it into the graph.
+		
+		PCGEdgeData edgeData = new PCGEdgeData(predicate);
+		PCGEdge pairEdge = new PCGEdge(sourcePCGVertex, targetPCGVertex, edgeData);
+		
+		sourcePCGVertex.addOutEdge(pairEdge);
+		targetPCGVertex.addInEdge(pairEdge);
+		 
+		pcg.insertVertex(sourcePCGVertex);
+		pcg.insertVertex(targetPCGVertex);
+		pcg.insertEdge(pairEdge);
+		
+	}
+
+	/**
+	  * Returns the PCGVertex associated with the sourceSubject and targetSubject. 
+	  * @param firstHashTable  The first hashtable. (described in createPairwiseConnectivityGraph())
+	  * @param sourceSubject
+	  * @param targetSubject
+	  * @return Returns null if no PCGVertex exists.
+	  */
+	 private PCGVertex getPCGVertex(
+			HashMap<RDFNode, HashMap<RDFNode, PCGVertex>> firstHashTable,
+			RDFNode sourceSubject, RDFNode targetSubject) {
+		
+		HashMap<RDFNode, PCGVertex> secondHashTable = firstHashTable.get(sourceSubject);
+		
+		if( secondHashTable == null ) return null;
+		
+		PCGVertex existingVertex = secondHashTable.get(targetSubject); 
+		
+		return existingVertex;  // can be null
+	}
+
+	/**
 	  * This method creates the Induced Propagation Graph.
 	  * 
 	  * TODO: change description
@@ -178,6 +277,7 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 	  *  ( (x, y) , p, (x', y') ) in PCG(A, B) <==> (x, p, x') in A and (y, p, y') in B
 	  *            /\
 	  *  	     PCGEdge
+	  *  
 	  */
 	 protected void createInducedPropagationGraph(){
 		 applyCoefficients();
