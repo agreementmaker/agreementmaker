@@ -55,7 +55,7 @@ public class Gradient {
 		
 		double ratio = inputValue/maxValue;
 		
-		System.out.println("");
+		//System.out.println("");
 		
 		if( diffRed) currentDiffRed = (new Double(ratio * ( colorDiffRed ))).intValue();
 		if( diffGreen) currentDiffGreen = (new Double(ratio * ( colorDiffGreen ))).intValue();
