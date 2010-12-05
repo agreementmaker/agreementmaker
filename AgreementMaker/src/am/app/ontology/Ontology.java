@@ -218,13 +218,13 @@ public class Ontology {
 			if( mapOntResource2Node_Classes.containsKey( r ) ){
 				return mapOntResource2Node_Classes.get(r);	
 			} else {
-				throw new Exception("OntResource (" + r.toString() + ") cannot be found in Ontology " + ontID);
+				throw new Exception("OntResource (" + r.toString() + ") is not a class in Ontology " + ontID + " (" + title + ").");
 			}
 		} else if( nodeType == alignType.aligningProperties ) {
 			if( mapOntResource2Node_Properties.containsKey( r ) ){
 				return mapOntResource2Node_Properties.get(r);	
 			} else {
-				throw new Exception("OntResource (" + r.toString() + ") cannot be found in Ontology " + ontID);
+				throw new Exception("OntResource (" + r.toString() + ") is not a property in Ontology " + ontID + " (" + title + ").");
 			}
 		}
 		
