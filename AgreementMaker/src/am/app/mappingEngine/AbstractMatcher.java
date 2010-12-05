@@ -796,6 +796,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		Mapping al;
 		while(it.hasNext()) {
 			al = it.next();
+			if( al == null ) continue;  // TODO: Figure out why al would be null.
 			if(al.getEntity1().isClass() && al.getEntity2().isClass()) {
 				if(alignClass) {
 					addManualClassAlignment(al) ;
