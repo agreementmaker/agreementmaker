@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -15,26 +16,30 @@ import javax.swing.event.ChangeListener;
 import am.app.Core;
 
 /**
+ * 
+ * TODO: Make the settings get saved to AppPreferences.
+ * TODO: Refactor code to be more organized. (e.g. Make Legend extend JDialog (is that a good idea?).)
+ * TODO: Redesign the UI layout of this dialog to be more user friendly.
+ * 
  * @author Nalin
+ * 			^-- find out full name of Nalin - Cosmin, Dec 5, 2010
  *
  */
 public class Legend implements ActionListener, ChangeListener{
 	
-	//buttons to change the color of the components of the user interface
-	private JButton	background, selected;
-	//	 boolean values to keep track of which button button in key is changed
-	public boolean backgroundChanged, selectedChanged;
-	//create the labels 
-	JLabel backgroundLabel,selectedLabel;
 	protected JColorChooser cc;
+	private JDialog legendFrame;
+
+	//buttons to change the color of the components of the user interface
+	private JButton	btnLineColor, btnForeground, btnDividers, btnHoverColor, btnBackground, btnSelected;
+
+	// boolean values to keep track of which button button in key is changed
+	// TODO: Find a better way to do this. We don't need these variables.
+	private boolean backgroundChanged, selectedChanged, lineColorChanged, foregroundColorChanged, dividersColorChanged, hoverChanged;
 	
-	JFrame frame;
-	private JButton	lineColor, foreground, dividers;
-	public boolean lineColorChanged, foregroundColorChanged, dividersColorChanged;
+	private JLabel lblBackground, lblSelected, lblLineColor, lblForeground, lblDividers, lblHoverOver;
 	
-	JLabel lineColorLabel, foregroundLabel, dividersLabel;
 	JPanel p;
-	//UI ui;
 	
 	/**
 	 * @param userInterface
@@ -42,57 +47,63 @@ public class Legend implements ActionListener, ChangeListener{
 	public Legend(){
 		
 		//ui = userInterface;
-		frame = new JFrame("Legend");
-		p = new JPanel(new GridLayout(11,11));
+		legendFrame = new JDialog( Core.getUI().getUIFrame(), "Color Legend");
+		p = new JPanel(new GridLayout(13,13));  // 13 (instead of 12) to leave a blank space at the bottom
 		
 		// initialize all the labels					
-		backgroundLabel = new JLabel("Background");
-		foregroundLabel = new JLabel("Foreground");
-		dividersLabel = new JLabel("Dividers");
-		selectedLabel = new JLabel("Selected");
-		lineColorLabel = new JLabel("Line Color");
+		lblBackground = new JLabel("Background");
+		lblForeground = new JLabel("Foreground");
+		lblDividers = new JLabel("Dividers");
+		lblSelected = new JLabel("Selected");
+		lblLineColor = new JLabel("Line Color");
+		lblHoverOver = new JLabel("Hover Over");
 
 		// initialize all the buttons
-		background = new JButton("");
-		foreground = new JButton("");
-		dividers = new JButton("");
-		selected = new JButton("");
-		lineColor = new JButton("");
+		btnBackground = new JButton("");
+		btnForeground = new JButton("");
+		btnDividers = new JButton("");
+		btnSelected = new JButton("");
+		btnLineColor = new JButton("");
+		btnHoverColor = new JButton("");
 		
 		// set the action listeners to all the buttons
-		background.addActionListener(this);
-		foreground.addActionListener(this);
-		dividers.addActionListener(this);
-		selected.addActionListener(this);
-		lineColor.addActionListener(this);
+		btnBackground.addActionListener(this);
+		btnForeground.addActionListener(this);
+		btnDividers.addActionListener(this);
+		btnSelected.addActionListener(this);
+		btnLineColor.addActionListener(this);
+		btnHoverColor.addActionListener(this);
 		
 		// set the background color to the appropriate Colors from COLOR class
-		background.setBackground(Colors.background);
-		foreground.setBackground(Colors.foreground);
-		dividers.setBackground(Colors.dividers);
-		selected.setBackground(Colors.selected);
-		lineColor.setBackground(Colors.lineColor);
+		btnBackground.setBackground(Colors.background);
+		btnForeground.setBackground(Colors.foreground);
+		btnDividers.setBackground(Colors.dividers);
+		btnSelected.setBackground(Colors.selected);
+		btnLineColor.setBackground(Colors.lineColor);
+		btnHoverColor.setBackground(Colors.hover);
 		
 		// add the labels and buttons to the panel
-		p.add(backgroundLabel);
-		p.add(background);
-		p.add(foregroundLabel);
-		p.add(foreground);
-		p.add(dividersLabel);
-		p.add(dividers);
-		p.add(selectedLabel);
-		p.add(selected);
-		p.add(lineColorLabel);
-		p.add(lineColor);
+		p.add(lblBackground);   	// 1
+		p.add(btnBackground);		// 2
+		p.add(lblForeground);   	// 3
+		p.add(btnForeground);       // 4
+		p.add(lblDividers);			// 5
+		p.add(btnDividers);			// 6
+		p.add(lblSelected);			// 7
+		p.add(btnSelected);			// 8
+		p.add(lblLineColor);		// 9
+		p.add(btnLineColor);		// 10
+		p.add(lblHoverOver);		// 11
+		p.add(btnHoverColor);		// 12
 		
 		// add the panel to the frame
-		frame.getContentPane().add(p);
+		legendFrame.getContentPane().add(p);
 		
-		// set frame size (width = 1000 height = 700)
-		frame.setSize(400,300);
+		// set frame size
+		legendFrame.setSize(400,300);
 		
 		// make sure the frame is visible
-		frame.setVisible(true); 
+		legendFrame.setVisible(true); 
 		
 	}
 	
@@ -102,34 +113,39 @@ public class Legend implements ActionListener, ChangeListener{
 	public void actionPerformed (ActionEvent ae){
 		Object obj = ae.getSource();
 		
-		if(obj == background)
+		if(obj == btnBackground)
 		{
 			makeAllFalse();
 			backgroundChanged = true;
 			createColorChooser();
 		}
-		else if (obj == selected)
+		else if (obj == btnSelected)
 		{
 			makeAllFalse();
 			selectedChanged = true;
 			createColorChooser();
 		}
-		else if (obj == lineColor)
+		else if (obj == btnLineColor)
 		{
 			makeAllFalse();
 			lineColorChanged = true;
 			createColorChooser();
 		}
-		else if (obj == foreground)
+		else if (obj == btnForeground)
 		{
 			makeAllFalse();
 			foregroundColorChanged = true;
 			createColorChooser();
 		}
-		else if (obj == dividers)
+		else if (obj == btnDividers)
 		{
 			makeAllFalse();
 			dividersColorChanged = true;
+			createColorChooser();
+		}
+		else if ( obj == btnHoverColor ) {
+			makeAllFalse();
+			hoverChanged = true;
 			createColorChooser();
 		}
 	}
@@ -172,7 +188,7 @@ public class Legend implements ActionListener, ChangeListener{
 	public void makeAllFalse()
 	{
 		lineColorChanged  = foregroundColorChanged = dividersColorChanged = false;
-		backgroundChanged  = selectedChanged  = false;
+		backgroundChanged  = selectedChanged  = hoverChanged =  false;
 	}
 	/*******************************************************************************************/
 	/**
@@ -185,28 +201,33 @@ public class Legend implements ActionListener, ChangeListener{
 		if(selectedChanged == true)
 		{
 			Colors.selected = cc.getColor();
-			selected.setBackground(Colors.selected);
+			btnSelected.setBackground(Colors.selected);
 		}
 		else if (backgroundChanged == true)
 		{
 			Colors.background = cc.getColor();
-			background.setBackground(Colors.background);
+			btnBackground.setBackground(Colors.background);
 		}
 		else if (lineColorChanged == true)
 		{
 			Colors.lineColor = cc.getColor();
-			lineColor.setBackground(Colors.lineColor);
+			btnLineColor.setBackground(Colors.lineColor);
 		}
 		
 		else if (foregroundColorChanged == true)
 		{
 			Colors.foreground = cc.getColor();
-			foreground.setBackground(Colors.foreground);
+			btnForeground.setBackground(Colors.foreground);
 		}
 		else if (dividersColorChanged == true)
 		{
 			Colors.dividers = cc.getColor();
-			dividers.setBackground(Colors.dividers);
+			btnDividers.setBackground(Colors.dividers);
+		}
+		else if (hoverChanged == true )
+		{
+			Colors.hover = cc.getColor();
+			btnHoverColor.setBackground(Colors.hover);
 		}
 		Core.getUI().redisplayCanvas();
 	}
