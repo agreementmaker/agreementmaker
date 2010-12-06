@@ -14,7 +14,8 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 public abstract class StructMatchVertexData {
 	
 	private Pair<RDFNode, RDFNode> stCouple;
-	private double similarityValue;
+	private double newSimilarityValue;
+	private double oldSimilarityValue;
 	
 	/**
 	 *  The default value for the similarity value is of 1.0
@@ -25,17 +26,20 @@ public abstract class StructMatchVertexData {
 	
 	public StructMatchVertexData(){
 		this.stCouple = null;
-		this.similarityValue = defaultSMValue;
+		this.newSimilarityValue = defaultSMValue;
+		this.oldSimilarityValue = defaultSMValue;
 	}
 	
 	public StructMatchVertexData(Pair<RDFNode, RDFNode> stCouple) {
 		this.stCouple = stCouple;
-		this.similarityValue = defaultSMValue;
+		this.newSimilarityValue = defaultSMValue;
+		this.oldSimilarityValue = defaultSMValue;
 	}
 	
 	public StructMatchVertexData(Pair<RDFNode, RDFNode> stCouple, double similarityValue) {
 		this.stCouple = stCouple;
-		this.similarityValue = similarityValue;
+		this.newSimilarityValue = similarityValue;
+		this.oldSimilarityValue = similarityValue;
 	}
 	/**
 	 * @return the stCouple
@@ -52,17 +56,31 @@ public abstract class StructMatchVertexData {
 	}
 
 	/**
-	 * @return the propagationCoefficient
+	 * @return the old similarity value
 	 */
-	public double getSimilarityValue() {
-		return similarityValue;
+	public double getOldSimilarityValue() {
+		return oldSimilarityValue;
+	}
+	
+	/**
+	 * @return the new similarity value
+	 */
+	public double getNewSimilarityValue() {
+		return newSimilarityValue;
 	}
 
 	/**
-	 * @param propagationCoefficient the propagationCoefficient to set
+	 * @param similarityValue the similarityValue to set
 	 */
-	public void setSimilarityValue(double similarityValue) {
-		this.similarityValue = similarityValue;
+	public void setOldSimilarityValue(double similarityValue) {
+		this.oldSimilarityValue = similarityValue;
+	}
+	
+	/**
+	 * @param similarityValue the similarityValue to set
+	 */
+	public void setNewSimilarityValue(double similarityValue) {
+		this.newSimilarityValue = similarityValue;
 	}
 
 }

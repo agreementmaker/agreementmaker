@@ -5,6 +5,7 @@ package am.app.mappingEngine.structuralMatchers.similarityFlooding;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Vector;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -34,11 +35,21 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 	 * 
 	 */
 	private static final long serialVersionUID = -3749229483504509029L;
-	private static final boolean DEBUG_FLAG = true;
-	private boolean hasInput;
-	private PairwiseConnectivityGraph pcg;
-	public static final double MAX_PC = 1.0;
+	protected static final boolean DEBUG_FLAG = true;
 	
+	protected PairwiseConnectivityGraph pcg;
+	
+	protected boolean hasInput;
+	
+	public static final double MAX_PC = 1.0; // maximum value for propagation coefficient
+	public static final double DELTA = 0.01; // min value for differenciating two similarity vectors
+	public static final int MAX_ROUND = 100; // maximum numbers of rounds for fixpoint computation
+	
+	
+	/**
+	 * given two nodes named origin and destination we have a list of the possible 
+	 * directions of an edge connecting them
+	 */
 	private enum Direction{ORIG2DEST, DEST2ORIG};
 
 	/**
@@ -83,7 +94,10 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 		if( DEBUG_FLAG ) System.out.println(pcg.toString());
 		progressDisplay.appendToReport("done.\n");
 		
-		
+		progressDisplay.appendToReport("Computing Fixpoints...");
+		computeSimilarities();
+		if( DEBUG_FLAG ) System.out.println(pcg.toString());
+		progressDisplay.appendToReport("done.\n");
     	
 		
 		/* TODO: make use of alignClass and alignProp in our code
@@ -100,10 +114,6 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 		}
 		*/
 	 }
-	 
-	 
-	 
-	 
 	 
 	 /* *********************************************************************************** */
 	 /* 							PAIRWISE CONNECTIVITY GRAPH OPERATIONS					*/
@@ -186,8 +196,6 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 			 }
 			 tStmtIterator = localTarget.listStatements();
 		 }
-		 
-//		 System.out.println(pcg.toString());
 	 }
 
 	 
@@ -212,8 +220,6 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 		boolean sourceVertexCreated;
 		boolean targetVertexCreated;
 		
-		
-		
 		if( sourcePCGVertex == null ) {
 			sourceVertexCreated = true; // we are creating a new sourcePCGVertex, make sure we insert it in the graph.
 			// the source PCGVertex does not exist, create it.
@@ -236,8 +242,6 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 		} else {
 			sourceVertexCreated = false; // the sourcePCGVertex exists already. do not insert it again into the graph.			
 		}
-		
-		
 		
 		if( targetPCGVertex == null ) {
 			targetVertexCreated = true; // we are creating a new targetPCGVertex, make sure we insert it in the graph.
@@ -311,8 +315,31 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 		 createBackwardEdges();
 	 }
 	 
-	 
-	 
+	 /**
+	  * 
+	  */
+	 protected void computeSimilarities(){
+		 int round = 0;
+		 double maxSimilarity = 0.0, newSimilarity = 0.0;
+		 
+		 // base case checked: stop computation. Either we reached the fixpoint or we overcame the limit;
+		 do {
+			 // new round: computing new similarities
+			 round++;
+			 Iterator<PCGVertex> iVert = pcg.vertices();
+			 PCGVertex vert = null;
+			 while(iVert.hasNext()){
+				 // take the current vertex
+				 vert = iVert.next();
+				 // compute the new similarity value for that vertex
+				 newSimilarity = computeFixpointPerVertex(vert);
+				 // store it inside the vertex
+				 vert.getObject().setNewSimilarityValue(newSimilarity);
+				 // update the maximum value
+				 maxSimilarity = Math.max(newSimilarity, maxSimilarity);
+			 }
+		 } while(!checkBaseCase(round, pcg.getSimValueVector(true), pcg.getSimValueVector(false)));
+	 }
 	 
 	 /* *********************************************************************************** */
 	 /* 							INDUCED PROPAGATION GRAPH OPERATIONS					*/
@@ -322,92 +349,153 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 		 Iterator<PCGVertex> iVert = pcg.vertices();
 		 PCGVertex currentVert = null;
 		 while(iVert.hasNext()){
-			 currentVert = iVert.next();
+			 
 			 // assigning outgoing propagation coefficients
 			 HashMap<Property, Integer> counter = new HashMap<Property, Integer>();
-			 Iterator<DirectedGraphEdge<PCGEdgeData, PCGVertexData>> iVEdge = currentVert.edgesOutIter();
-			 PCGEdge currentEdge = null;
-			 // counting phase
-			 while(iVEdge.hasNext()){
-				 currentEdge = (PCGEdge) iVEdge.next();
-				 Property currentProp = currentEdge.getObject().getStProperty();
-				 
-				 if( counter.containsKey(currentProp) ) {
-					 Integer i = counter.get(currentProp);
-					 i++;
-				 } else {
-					 counter.put(currentProp, new Integer(1) );
-				 }
-				 
-			 }
+			 currentVert = iVert.next();
 			 
-			 iVEdge = currentVert.edgesOutIter();
-			 // dividing phase
-			 while(iVEdge.hasNext()){
-				 currentEdge = (PCGEdge) iVEdge.next();
-				 Property currentProp = currentEdge.getObject().getStProperty();
-				 
-				 currentEdge.getObject().setPropagationCoefficient(MAX_PC / counter.get(currentProp).doubleValue() );
-				 
-			 }
+			 // counting phase (with outgoing edges)
+			 computeQuantities(currentVert.edgesOutIter(), counter, true);
+			 // dividing phase (with outgoing edges)
+			 computeQuantities(currentVert.edgesOutIter(), counter, false);
 		 }
 	 }
 	 
 	 public void createBackwardEdges(){
-//		 System.out.println("anything");
+		 
 		 Iterator<PCGVertex> iVert = pcg.vertices();
 		 PCGVertex currentVert = null;
 		 while(iVert.hasNext()){
-//			 System.out.println("anything2");
 			 currentVert = iVert.next();
 			 // creating duplicate outgoing edges for ingoing ones
 			 HashMap<Property, Integer> counter = new HashMap<Property, Integer>();
-			 Iterator<DirectedGraphEdge<PCGEdgeData, PCGVertexData>> iVEdge = currentVert.edgesInIter();
-			 PCGEdge currentEdge = null;
-			 // counting phase
-			 while(iVEdge.hasNext()){
-				 currentEdge = (PCGEdge) iVEdge.next();
-				 Property currentProp = currentEdge.getObject().getStProperty();
-				 
+			 
+			 // counting phase (with ingoing edges)
+			 computeQuantities(currentVert.edgesInIter(), counter, true);
+
+			 // back-edge creation and weight assignment phase (with ingoing edges)
+			 createBackedges(currentVert.edgesInIter(), counter);
+		 }
+	 }
+	 
+	 private void computeQuantities(Iterator<DirectedGraphEdge<PCGEdgeData, PCGVertexData>> iVEdge,
+			 						HashMap<Property, Integer> counter,
+			 						boolean computing){
+		 PCGEdge currentEdge = null;
+		 while(iVEdge.hasNext()){
+			 if(!computing){
+				 System.out.print("");
+			 }
+			 currentEdge = (PCGEdge) iVEdge.next();
+			 Property currentProp = currentEdge.getObject().getStProperty();
+			 
+			 if(computing){ // computing phase
 				 if( counter.containsKey(currentProp) ) {
 					 Integer i = counter.get(currentProp);
 					 i++;
 				 } else {
 					 counter.put(currentProp, new Integer(1) );
 				 }
-				 
-				 
 			 }
-			 iVEdge = currentVert.edgesInIter();
-			 // back-edge creation and weight assignment phase
-			 while(iVEdge.hasNext()){
-				 
-				 currentEdge = (PCGEdge) iVEdge.next();
-				 // check if back-edge exists
-				 if(checkEdge(  (PCGVertex)currentEdge.getOrigin(),   // neighbor (orig)
-						 		(PCGVertex)currentEdge.getDestination(),  // current vertex (dest)
-						 		Direction.DEST2ORIG)
-						 		){
-					 continue; // so far ineffective because it goes anyway to the next iteration
-				 }
-				 else{
-					 
-					 Property currentProp = currentEdge.getObject().getStProperty();
-					 double tmpPC = MAX_PC / counter.get(currentProp).doubleValue();
-					 
-					 //adding new edge
-					 pcg.insertEdge(new PCGEdge(   (PCGVertex)currentEdge.getDestination(),
-							                       (PCGVertex)currentEdge.getOrigin(), 
-							                       new PCGEdgeData(null, tmpPC)));
-				 }
-				 
-				 
+			 else{ // dividing phase
+				 currentEdge.getObject().setPropagationCoefficient( MAX_PC / counter.get(currentProp).doubleValue() );
 			 }
 		 }
 	 }
 	 
-	 private void computeQuantities(){
+	 private void createBackedges(Iterator<DirectedGraphEdge<PCGEdgeData, PCGVertexData>> iVEdge,
+				HashMap<Property, Integer> counter){
 		 
+		 PCGEdge currentEdge = null;
+		 
+		 while(iVEdge.hasNext()){
+			 currentEdge = (PCGEdge) iVEdge.next();
+			 // check if back-edge exists
+			 if(checkEdge(  (PCGVertex)currentEdge.getOrigin(),   // neighbor (orig)
+					 		(PCGVertex)currentEdge.getDestination(),  // current vertex (dest)
+					 		Direction.DEST2ORIG)
+					 		){
+				 continue; // so far ineffective because it goes anyway to the next iteration
+			 }
+			 else{
+				 
+				 Property currentProp = currentEdge.getObject().getStProperty();
+				 double tmpPC = MAX_PC / counter.get(currentProp).doubleValue();
+				 
+				 //adding new edge
+				 pcg.insertEdge(new PCGEdge(   (PCGVertex)currentEdge.getDestination(),
+						                       (PCGVertex)currentEdge.getOrigin(), 
+						                       new PCGEdgeData(null, tmpPC)));
+			 }
+		 }
+	 }
+	 
+	 /**
+	  * 
+	  */
+	 protected boolean checkBaseCase(int round, Vector<Double> simVectBefore, Vector<Double> simVectAfter){
+		 return ((round > MAX_ROUND) || (simDistance(simVectBefore, simVectAfter) < DELTA));
+	 }
+
+	 protected double simDistance(Vector<Double> simVectBefore, Vector<Double> simVectAfter){
+		 double simD = 0.0, diff = 0.0;
+		 assert (simVectBefore.size() == simVectAfter.size()); // size of both vectors should always be the same
+		 
+		 // computing euclidean distance
+		 for(int i = 0; i < simVectAfter.size(); i++){
+			 diff = simVectBefore.get(i) - simVectAfter.get(i);
+			 simD += (diff * diff);
+		 }
+		 return Math.sqrt(simD);
+	 }
+	 
+	 /**
+	 * @return 
+	  * 
+	  */
+	 protected double computeFixpointPerVertex(PCGVertex pcgV){
+		 return pcgV.getObject().getOldSimilarityValue()	// old value
+		 			+ sumIncomings(pcgV.edgesInIter())		// sum of incoming regular edges values
+		 			+ sumBackedges(pcgV.edgesOutIter());	// sum of incoming backedge values
+	 }
+	 
+	 protected double sumIncomings(Iterator<DirectedGraphEdge<PCGEdgeData, PCGVertexData>> inIter){
+		 double sum = 0.0, oldValue = 0.0, propCoeff = 0.0;
+		 PCGEdge currEdge = null;
+		 while(inIter.hasNext()){
+			 currEdge = (PCGEdge) inIter.next();
+			 // computing old sim value multiplied by the prop coefficient of the regular incoming edge
+			 oldValue = currEdge.getOrigin().getObject().getOldSimilarityValue();
+			 propCoeff = currEdge.getObject().getPropagationCoefficient();
+			 sum += oldValue * propCoeff;
+		 }
+		 return sum;
+	 }
+	 
+	 protected double sumBackedges(Iterator<DirectedGraphEdge<PCGEdgeData, PCGVertexData>> outIter){
+		 double sum = 0.0, oldValue = 0.0, propCoeff = 0.0;
+		 PCGVertex origin, destination;
+		 
+		 while(outIter.hasNext()){
+			 origin = (PCGVertex) outIter.next().getOrigin();
+			 destination = (PCGVertex) outIter.next().getDestination(); // TODO: destination seems to have no out edges... to look at
+			 
+			 // looking for the backedge: check if the destination of the backedge is the stored origin
+			 PCGEdge backEdge = null;
+			 Iterator<DirectedGraphEdge<PCGEdgeData, PCGVertexData>> destIter = destination.edgesOutIter();
+			 
+			 while(destIter.hasNext()){
+				 backEdge = (PCGEdge) destIter.next();
+				 if(backEdge.getDestination().equals(origin)){
+					 break;
+				 }
+			 }
+			 // computing old sim value multiplied by the prop coefficient of the back edge
+			 oldValue = backEdge.getOrigin().getObject().getOldSimilarityValue();
+			 propCoeff = backEdge.getObject().getPropagationCoefficient();
+			 sum += oldValue * propCoeff;
+		 }
+		 return sum;
 	 }
 
 	/* *************************************************** */
@@ -428,6 +516,7 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 			 destinatonVertex = o;
 		 }
 		 
+		 // we are checking that one of the edges coming out the origin matches with the destination
 		 Iterator<DirectedGraphEdge<PCGEdgeData, PCGVertexData>> iVEdge = originVertex.edgesOutIter();
 		 PCGEdge currentEdge = null;
 		 while(iVEdge.hasNext()){
