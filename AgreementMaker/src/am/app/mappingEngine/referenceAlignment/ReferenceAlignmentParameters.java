@@ -7,5 +7,7 @@ public class ReferenceAlignmentParameters extends AbstractParameters {
 	public String fileName;
 	public String format;
 	public boolean onlyEquivalence = false;
+	public boolean skipClasses;
+	public boolean skipProperties;
 	
 }

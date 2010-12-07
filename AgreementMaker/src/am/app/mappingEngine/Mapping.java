@@ -40,6 +40,19 @@ public class Mapping implements Serializable
     public final static String SUBSETCOMPLETE = "\u2286";
     public final static String SUPERSETCOMPLETE = "\u2287";
 
+    
+    public static String parseRelation(String r) {
+    	if( r.equals(EQUIVALENCE.trim()) ) return EQUIVALENCE;
+    	if( r.equals(SUPERCLASS.trim())) return SUPERCLASS;
+    	if( r.equals(SUBCLASS.trim()) ) return SUBCLASS;
+    	if( r.equals(SUBSET.trim()) ) return SUBSET;
+    	if( r.equals(SUPERSET.trim()) ) return SUPERSET;
+    	if( r.equals(SUBSETCOMPLETE.trim()) ) return SUBSETCOMPLETE;
+    	if( r.equals(SUPERSETCOMPLETE.trim()) ) return SUPERSETCOMPLETE;
+    	
+    	return "?";  // unknown relation
+    }
+    
     public Mapping(Node e1, Node e2, double sim, String r, alignType tyoc)
     {
         entity1 = e1;

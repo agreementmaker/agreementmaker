@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.dom4j.io.SAXReader;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -22,20 +24,24 @@ import am.output.OutputController;
 
 public class ReferenceAlignmentMatcher extends AbstractMatcher {
 
-		//Constants
-		/**Formats for reference files*/
-	    public final static String REF5 = "AM exported file format";
-		public final static String REF0 = "OAEI standard format";
-		public final static String REF1 = "OAEI-2007 i.e. weapons, wetlands...";
-		public final static String REF2 = "TXT: sourcename(tab)targetname";
-		public final static String REF3= "TXT: sourceDesc(tab)sourceName(tab)targetName(tab)targetDesc(tab)";
+	private static final long serialVersionUID = -1688117047019381847L;
 
-		/**Formats for output files*/
-		public final static String OUTF1 = "TXT-1";
-		
-		private ArrayList<MatchingPair> referenceListOfPairs;
-		private ArrayList<MatchingPair> nonEquivalencePairs;
-		
+	//Constants
+	/**Formats for reference files*/
+    public final static String REF5 = "AM exported file format";
+	public final static String REF0 = "OAEI standard format";
+	public final static String REF1 = "OAEI-2007 i.e. weapons, wetlands...";
+	public final static String REF2a = "TXT: sourcename(tab)targetname";
+	public final static String REF2b = "TXT: sourcename(tab)relation(tab)targetname";
+	public final static String REF2c = "TXT: sourcename(tab)relation(tab)targetname(tab)similarity";
+	public final static String REF3= "TXT: sourceDesc(tab)sourceName(tab)targetName(tab)targetDesc(tab)";
+
+	/**Formats for output files*/
+	public final static String OUTF1 = "TXT-1";
+	
+	private ArrayList<MatchingPair> referenceListOfPairs;
+	private ArrayList<MatchingPair> nonEquivalencePairs;
+	
 	public ReferenceAlignmentMatcher() {
 		super();
 		needsParam = true;
@@ -68,6 +74,12 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 			stepsTotal = referenceListOfPairs.size() * 2; // twice, once for classes, and another for properties
 		}
 		
+		classesAlignmentSet = null;
+		propertiesAlignmentSet = null;
+		alignClass = !((ReferenceAlignmentParameters)param).skipClasses; // if we skipClasses, then we should not align them
+		alignProp  = !((ReferenceAlignmentParameters)param).skipProperties; // same as above
+		
+		
 	}
 	
 	
@@ -86,6 +98,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	 *
 	 */
 	
+	@Override
 	protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
 		SimilarityMatrix matrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		Node source;
@@ -160,7 +173,9 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 			else if(parameters.format.equals(REF1)) {
 				result = parseRefFormat1(input);
 			}
-			else if(parameters.format.equals(REF2)) {
+			else if(parameters.format.equals(REF2a) || 
+					parameters.format.equals(REF2b) || 
+					parameters.format.equals(REF2c) ) {
 				result = parseRefFormat2(input);
 			}
 			else if(parameters.format.equals(REF3)) {
@@ -294,30 +309,48 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		
 		/**
 		 * Format used for the simplest txt format.
-		 * This method parse a reference  file in the format sourceName(tab)--->(tab)targetName or sourceName(tab)targetName
+		 * This method parse a reference  file in the formats:
+		 * 
+		 * a) sourceName(tab)targetName
+		 * b) sourceName(tab)relation(tab)targetName
+		 * c) sourceName(tab)relation(tab)targetName(tab)similarity 
 		 */
 		public ArrayList<MatchingPair> parseRefFormat2(BufferedReader br) throws IOException{
 			ArrayList<MatchingPair> result = new ArrayList<MatchingPair>();
 		    String line;
 		    String source;
 		    String target;
+		    int linenum = 0;
 		    while((line = br.readLine()) !=null){	
+		    	linenum++;
 		    	String[] split = line.split("\t");
 		    	if(split.length == 2) {
-		        	source = split[0];
-		        	target = split[1];
+		        	source = split[0].trim();
+		        	target = split[1].trim();
 		            MatchingPair r = new MatchingPair(source,target);
-		            r.similarity = 1;
+		            r.similarity = 1d;
 		            r.relation = Mapping.EQUIVALENCE;
 		            result.add(r);
 		    	}
 		    	else if(split.length == 3) {
-		        	source = split[0];
-		        	target = split[2];
+		        	source = split[0].trim();
+		        	target = split[2].trim();
 		            MatchingPair r = new MatchingPair(source,target);
-		            r.similarity = 1;
-		            r.relation = Mapping.EQUIVALENCE;
+		            r.similarity = 1d;
+		            r.relation = Mapping.parseRelation(split[1]);
 		            result.add(r);
+		    	}
+		    	else if(split.length == 4) {
+		    		source = split[0].trim();
+		    		target = split[2].trim();
+		    		MatchingPair r = new MatchingPair(source,target);
+		    		r.similarity = Double.parseDouble(split[3]);
+		    		r.relation = Mapping.parseRelation(split[1]);
+		    	}
+		    	else {
+		    		Logger log = Logger.getLogger(this.getClass());
+		    		log.setLevel(Level.ERROR);
+		    		log.error("Reference file parse error (line " + linenum + "): " + line);
 		    	}
 		    	//else System.out.println("Some lines in the reference are not in the correct format. Check result please");
 		    	 
@@ -393,22 +426,24 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	}
 	
 	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
+	@Override
 	public double getDefaultThreshold() {
 		return 0.01;
 	}
 	
 	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
+	@Override
 	public int getDefaultMaxSourceRelations() {
-		// TODO Auto-generated method stub
 		return ANY_INT;
 	}
 
 	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
+	@Override
 	public int getDefaultMaxTargetRelations() {
-		// TODO Auto-generated method stub
 		return ANY_INT;
 	}
 	
+	@Override
 	public String getDescriptionString() {
 		String result = "Allows user to display a reference alignment, which is a set of mappings that has been determined by domain experts.\n";
 		result += "It's used to determine the quality, in terms of precision and recall, of a matching method.\n";
@@ -418,6 +453,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		return result;
 	}
 	
+	@Override
 	public AbstractMatcherParametersPanel getParametersPanel() {
 		if(parametersPanel == null){
 			parametersPanel = new ReferenceAlignmentParametersPanel();

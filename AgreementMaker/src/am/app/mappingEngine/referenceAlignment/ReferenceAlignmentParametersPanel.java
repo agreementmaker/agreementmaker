@@ -33,11 +33,11 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 	public JTextField filePath;
 	private JLabel fileType;
 	public JList formatList;
-	public JCheckBox equivalenceCheck;
+	public JCheckBox equivalenceCheck, chkSkipClasses, chkSkipProperties;
 
-
-	
-	private AppPreferences prefs;
+	private static final String PREF_EQUIVALENCE = "EQUIVALENCE";
+	private static final String PREF_SKIPCLASSES = "SKIPCLASSES";
+	private static final String PREF_SKIPPROPERTIES = "SKIPPROPERTIES";
 	
 	/*
 	 * The constructor creates the GUI elements and adds 
@@ -46,7 +46,9 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 	 */
 	public ReferenceAlignmentParametersPanel() {
 		super();
-		prefs = Core.getAppPreferences(); // Class interface to Application Preferences
+		AppPreferences prefs = Core.getAppPreferences(); // Class interface to Application Preferences
+		
+		
 		fileType = new JLabel("Select File");
 		filePath = new JTextField(0);
 		//the system suggests the last file opened
@@ -58,7 +60,7 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 		browse.addActionListener(this);
 		
 		//Formats are fixed, the development.ReferenceEvaluation class contains definitions.
-		String[] format_list = {ReferenceAlignmentMatcher.REF5, ReferenceAlignmentMatcher.REF0,ReferenceAlignmentMatcher.REF1,ReferenceAlignmentMatcher.REF2, ReferenceAlignmentMatcher.REF3};
+		String[] format_list = {ReferenceAlignmentMatcher.REF5, ReferenceAlignmentMatcher.REF0,ReferenceAlignmentMatcher.REF1,ReferenceAlignmentMatcher.REF2a, ReferenceAlignmentMatcher.REF3};
 		formatList = new JList(format_list);
 		formatList.setPrototypeCellValue("012345678901234567890123456789012345678901234567890123456789"); // this string sets the width of the list
 		formatList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -66,9 +68,15 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 		formatList.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "File format"));
 		formatList.setSelectedIndex(prefs.getFileFormatReference());  // select the last thing selected
 
-		equivalenceCheck = new JCheckBox();
-		equivalenceCheck.setSelected(true);
-		JLabel equivalenceLabel = new JLabel("Consider only mappings with EQUIVALENCE relations");
+		equivalenceCheck = new JCheckBox("Consider only mappings with EQUIVALENCE relations");
+		equivalenceCheck.setSelected(prefs.getPanelBool(PREF_EQUIVALENCE, false));
+
+		chkSkipClasses = new JCheckBox("Skip classes");
+		chkSkipClasses.setSelected(prefs.getPanelBool(PREF_SKIPCLASSES, false));
+		
+		chkSkipProperties = new JCheckBox("Skip properties");
+		chkSkipProperties.setSelected(prefs.getPanelBool(PREF_SKIPPROPERTIES, false));
+		
 		//Make the GroupLayout for this dialog (somewhat complicated, but very flexible)
 		// This Group layout lays the items in relation with eachother.  The horizontal
 		// and vertical groups decide the relation between UI elements.
@@ -92,8 +100,11 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 							)
 				)
 				.addGroup(layout.createSequentialGroup()
-						.addComponent(equivalenceCheck) 		
-						.addComponent(equivalenceLabel)
+						.addComponent(equivalenceCheck) 
+				)
+				.addGroup(layout.createSequentialGroup()
+						.addComponent(chkSkipClasses)
+						.addComponent(chkSkipProperties)
 				)
 		);
 		// the Vertical group is the same structure as the horizontal group
@@ -111,8 +122,11 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 							          GroupLayout.PREFERRED_SIZE))
 	            )
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(equivalenceCheck) 		
-						.addComponent(equivalenceLabel)
+						.addComponent(equivalenceCheck) 
+				)
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+						.addComponent(chkSkipClasses)
+						.addComponent(chkSkipProperties)
 				)
 		);
 	}
@@ -161,6 +175,8 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 		parameters.fileName = filePath.getText();
 		parameters.format = (String)formatList.getSelectedValue();
 		parameters.onlyEquivalence = equivalenceCheck.isSelected();
+		parameters.skipClasses = chkSkipClasses.isSelected();
+		parameters.skipProperties = chkSkipProperties.isSelected();
 		return parameters;
 	}
 	
@@ -174,7 +190,13 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 		Object format = formatList.getSelectedValue();
 		if(format == null)
 			return "Select reference file's format";
-		prefs.saveLastFormatReference(formatList.getSelectedIndex());	
+		
+		// save settings
+		Core.getAppPreferences().saveLastFormatReference(formatList.getSelectedIndex());
+		Core.getAppPreferences().savePanelBool(PREF_EQUIVALENCE, equivalenceCheck.isSelected());
+		Core.getAppPreferences().savePanelBool(PREF_SKIPCLASSES, chkSkipClasses.isSelected());
+		Core.getAppPreferences().savePanelBool(PREF_SKIPPROPERTIES, chkSkipProperties.isSelected());
+		
 		return null;//null means everything ok
 	}
 }

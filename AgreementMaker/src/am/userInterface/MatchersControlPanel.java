@@ -422,14 +422,35 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				refMatcher.setMaxSourceAlign(refMatcher.getDefaultMaxSourceRelations());
 				refMatcher.setMaxTargetAlign(refMatcher.getDefaultMaxTargetRelations());
 				refMatcher.match();
-				Alignment<Mapping> referenceSet = refMatcher.getAlignmentSet(); //class + properties
+				
+				// TODO: Move the if-else into ReferenceAlignmentMatcher
+				Alignment<Mapping> referenceSet;
+				if( refMatcher.areClassesAligned() && refMatcher.arePropertiesAligned() ) {
+					referenceSet = refMatcher.getAlignmentSet(); //class + properties
+				} else if( refMatcher.areClassesAligned() ) {
+					referenceSet = refMatcher.getClassAlignmentSet();
+				} else if( refMatcher.arePropertiesAligned() ) {
+					referenceSet = refMatcher.getPropertyAlignmentSet();
+				} else {
+					// empty set?
+					referenceSet = new Alignment<Mapping>();
+				}
 				AbstractMatcher toBeEvaluated;
 				Alignment<Mapping> evaluateSet;
 				ReferenceEvaluationData rd;
 				String report="Reference Evaluation Complete\n\n";
 				for(int i = 0; i < rowsIndex.length; i++) {
 					toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
-					evaluateSet = toBeEvaluated.getAlignmentSet();
+					//evaluateSet = null;
+					if( refMatcher.areClassesAligned() && refMatcher.arePropertiesAligned() ) {
+						evaluateSet = toBeEvaluated.getAlignmentSet();
+					} else if( refMatcher.areClassesAligned() ) {
+						evaluateSet = toBeEvaluated.getClassAlignmentSet();
+					} else if( refMatcher.arePropertiesAligned() ) {
+						evaluateSet = toBeEvaluated.getPropertyAlignmentSet();
+					} else {
+						evaluateSet = new Alignment<Mapping>(); // empty
+					}
 					rd = ReferenceEvaluator.compare(evaluateSet, referenceSet);
 					toBeEvaluated.setRefEvaluation(rd);
 					report+=i+" "+toBeEvaluated.getName().getMatcherName()+"\n\n";
