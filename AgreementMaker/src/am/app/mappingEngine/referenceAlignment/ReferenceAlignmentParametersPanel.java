@@ -60,7 +60,7 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 		browse.addActionListener(this);
 		
 		//Formats are fixed, the development.ReferenceEvaluation class contains definitions.
-		String[] format_list = {ReferenceAlignmentMatcher.REF5, ReferenceAlignmentMatcher.REF0,ReferenceAlignmentMatcher.REF1,ReferenceAlignmentMatcher.REF2a, ReferenceAlignmentMatcher.REF3};
+		String[] format_list = {ReferenceAlignmentMatcher.REF5, ReferenceAlignmentMatcher.REF0,ReferenceAlignmentMatcher.REF1,ReferenceAlignmentMatcher.REF2a, ReferenceAlignmentMatcher.REF2b,ReferenceAlignmentMatcher.REF2c, ReferenceAlignmentMatcher.REF3};
 		formatList = new JList(format_list);
 		formatList.setPrototypeCellValue("012345678901234567890123456789012345678901234567890123456789"); // this string sets the width of the list
 		formatList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
