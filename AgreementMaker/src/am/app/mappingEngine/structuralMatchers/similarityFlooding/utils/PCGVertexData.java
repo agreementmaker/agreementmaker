@@ -30,12 +30,16 @@ public class PCGVertexData extends StructMatchVertexData {
 
 	/**
 	 * @param stCouple
-	 * @param propagationCoefficient
+	 * @param similarityValue
 	 */
-	public PCGVertexData(Pair<RDFNode, RDFNode> stCouple, double propagationCoefficient) {
-		super(stCouple, propagationCoefficient);
+	public PCGVertexData(Pair<RDFNode, RDFNode> stCouple, double similarityValue) {
+		super(stCouple, similarityValue);
 	}
 
+	public PCGVertexData(Pair<RDFNode, RDFNode> stCouple, double oldSV, double newSV) {
+		super(stCouple, oldSV, newSV);
+	}
+	
 	/**
 	 * @param stCouple
 	 * @param propagationCoefficient
@@ -43,5 +47,5 @@ public class PCGVertexData extends StructMatchVertexData {
 	public PCGVertexData toPCGVertexData(IPGVertexData ipgData) {
 		return new PCGVertexData(getStCouple(), getNewSimilarityValue());
 	}
-
+	
 }

@@ -9,7 +9,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 
 /**
  * @author Michele Caci
- *
+ * TODO: just in case we are going to define the Induced Propagation Graph
  */
 public class IPGVertexData extends StructMatchVertexData {
 

@@ -17,7 +17,6 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdge;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdgeData;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertex;
@@ -32,7 +31,7 @@ import am.utility.Pair;
  * @author Cosmin and Michele
  *
  */
-public class SimilarityFloodingMatcher extends AbstractMatcher {
+public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 
 	/**
 	 * 
@@ -42,10 +41,8 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 	
 	protected PairwiseConnectivityGraph pcg;
 	
-	protected boolean hasInput;
-	
 	public static final double MAX_PC = 1.0; // maximum value for propagation coefficient
-	public static final double DELTA = 0.01; // min value for differenciating two similarity vectors
+	public static final double DELTA = 0.01; // min value for differentiating two similarity vectors
 	public static final int MAX_ROUND = 100; // maximum numbers of rounds for fixpoint computation
 	
 	/**
@@ -60,7 +57,6 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 	public SimilarityFloodingMatcher() {
 		super();
 		needsParam = true; // we need to display the parameters panel.
-		//setHasInput(false);
 	}
 
 	/**
@@ -81,12 +77,6 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 	 */
 	 protected void align() throws Exception {
 		progressDisplay.clearReport();
-		classesMatrix = new SimilarityMatrix(sourceOntology.getClassesList().size(),
-				targetOntology.getClassesList().size(),
-				alignType.aligningClasses);
-		propertiesMatrix = new SimilarityMatrix(sourceOntology.getPropertiesList().size(),
-				targetOntology.getPropertiesList().size(),
-				alignType.aligningProperties);
 		 
 		// cannot align just one ontology (this is here to catch improper invocations)
 		if( sourceOntology == null ) throw new NullPointerException("sourceOntology == null");   
@@ -103,28 +93,16 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Computing Fixpoints...");
-		computeSimilarities();
+		computeFixpoint();
 		if( DEBUG_FLAG ) System.out.println(pcg.toString());
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Creating Similarity Matrices...");
+		loadSimilarityMatrices();
 		createSimilarityMatrices();
-//		if( DEBUG_FLAG ) System.out.println(pcg.toString());
+		if( DEBUG_FLAG ) System.out.println(pcg.toString());
 		progressDisplay.appendToReport("done.\n");
-
-		/* TODO: make use of alignClass and alignProp in our code
-		if(alignClass && !this.isCancelled() ) {
-			ArrayList<Node> sourceClassList = sourceOntology.getClassesList();
-			ArrayList<Node> targetClassList = targetOntology.getClassesList();
-			classesMatrix = alignClasses(sourceClassList,targetClassList );	
-			//classesMatrix.show();
-		}
-		if(alignProp && !this.isCancelled() ) {
-			ArrayList<Node> sourcePropList = sourceOntology.getPropertiesList();
-			ArrayList<Node> targetPropList = targetOntology.getPropertiesList();
-			propertiesMatrix = alignProperties(sourcePropList, targetPropList );					
-		}
-		*/
+		
 	 }
 	 
 	 /* *********************************************************************************** */
@@ -155,7 +133,6 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 		 
 		 Statement sStmt = null;
 		 Statement tStmt = null;
-		 
 
 		 /**
 		  * We hash the source concept into the first hashtable, which returns a second hash table.
@@ -180,7 +157,6 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 				 // condition where we add a new element in the pairwise connectivity graph:
 				 // comparison of predicates
 				 if(sStmt.getPredicate().equals(tStmt.getPredicate())){
-
 					 
 					 
 					 if( ((SimilarityFloodingMatcherParameters)param).omitAnonymousNodes && 
@@ -202,7 +178,6 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 					 		sStmt.getSubject(), tStmt.getSubject(), sStmt.getObject(), tStmt.getObject(), firstHashTable );
 					 }
 					 
-					
 				 }
 				 
 			 }
@@ -330,7 +305,7 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 	 /**
 	  * 
 	  */
-	 protected void computeSimilarities(){
+	 protected void computeFixpoint(){
 		 int round = 0;
 		 double maxSimilarity = 0.0, newSimilarity = 0.0;
 		 
@@ -343,6 +318,8 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 			 while(iVert.hasNext()){
 				 // take the current vertex
 				 vert = iVert.next();
+				 // update old value with new value of previous round
+				 // vert.getObject().setOldSimilarityValue(vert.getObject().getNewSimilarityValue()); 
 				 // compute the new similarity value for that vertex
 				 newSimilarity = computeFixpointPerVertex(vert);
 				 // store it inside the vertex
@@ -455,7 +432,7 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 	  */
 	 protected boolean checkBaseCase(int round, Vector<Double> simVectBefore, Vector<Double> simVectAfter){
 //		 System.out.println(round > MAX_ROUND);
-//		 System.out.println(simDistance(simVectBefore, simVectAfter) < DELTA);
+		 System.out.println(simDistance(simVectBefore, simVectAfter) );
 		 return ((round > MAX_ROUND) || (simDistance(simVectBefore, simVectAfter) < DELTA));
 	 }
 
@@ -535,14 +512,13 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 				 // compute normalized value
 				 normSimilarity = nonNormSimilarity / maxSimilarity;
 				 
-				 // set normalized value
-				 currentVert.getObject().setOldSimilarityValue(normSimilarity);
+				 // set normalized to new value
 				 currentVert.getObject().setNewSimilarityValue(normSimilarity);
 			 }
 		 }
 
 	 /* *************************************************** */
-	/* 					  SIMILARITY MATRICES CREATION 			   */
+	/* 					  SIMILARITY MATRICES CREATION 		*/
 	/* *************************************************** */
 	 
 	 protected void createSimilarityMatrices(){
@@ -623,50 +599,9 @@ public class SimilarityFloodingMatcher extends AbstractMatcher {
 		 return false; 
 	 }
 	 
-	/**
-	 * this function has to be called as soon as possible because this matcher needs some sort of input
-	 */
-	private void loadSimilarityMatrices(){
-		if(this.hasInput){
-			classesMatrix = inputMatchers.get(0).getClassesMatrix();
-			propertiesMatrix = inputMatchers.get(0).getPropertiesMatrix();
-		}
-		else{
-			// load classesMatrix
-			if(classesMatrix != null){
-				classesMatrix.fillMatrix(1.0);
-			}
-			else{
-				classesMatrix = new SimilarityMatrix(getSourceOntology().getClassesList().size(),
-						getTargetOntology().getClassesList().size(),
-						alignType.aligningClasses,
-						1.0);
-			}
-			// load propertiesMatrix
-			if(propertiesMatrix != null){
-				propertiesMatrix.fillMatrix(1.0);
-			}
-			else{
-				classesMatrix = new SimilarityMatrix(getSourceOntology().getPropertiesList().size(),
-						getTargetOntology().getPropertiesList().size(),
-						alignType.aligningClasses,
-						1.0);
-			}
-		}
-	}
 
-	/**
-	 * @return the hasInput
-	 */
-	public boolean getHasInput() {
-		return hasInput;
-	}
-
-	/**
-	 * @param hasInput the hasInput value to set
-	 */
-	public void setHasInput(boolean hasInput) {
-		this.hasInput = hasInput;
-	}
+	protected abstract void loadSimilarityMatrices();
+	
+	protected abstract PCGVertexData selectInput(Pair<RDFNode, RDFNode> pair);
 
 }

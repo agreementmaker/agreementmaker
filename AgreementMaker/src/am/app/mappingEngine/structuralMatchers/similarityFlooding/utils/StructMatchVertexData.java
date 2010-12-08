@@ -22,24 +22,31 @@ public abstract class StructMatchVertexData {
 	 *  in order to exploit it when we compute the values in the edges
 	 *  (In this way, if we don't have input, nodes have already similarity 1.0)
 	 */
-	public static final double defaultSMValue = 1.0;
+	public static final double defaultOldSMValue = 1.0;
+	public static final double defaultNewSMValue = 0.0;
 	
 	public StructMatchVertexData(){
 		this.stCouple = null;
-		this.newSimilarityValue = defaultSMValue;
-		this.oldSimilarityValue = defaultSMValue;
+		this.newSimilarityValue = defaultOldSMValue;
+		this.oldSimilarityValue = defaultNewSMValue;
 	}
 	
 	public StructMatchVertexData(Pair<RDFNode, RDFNode> stCouple) {
 		this.stCouple = stCouple;
-		this.newSimilarityValue = defaultSMValue;
-		this.oldSimilarityValue = defaultSMValue;
+		this.newSimilarityValue = defaultOldSMValue;
+		this.oldSimilarityValue = defaultNewSMValue;
 	}
 	
 	public StructMatchVertexData(Pair<RDFNode, RDFNode> stCouple, double similarityValue) {
 		this.stCouple = stCouple;
 		this.newSimilarityValue = similarityValue;
 		this.oldSimilarityValue = similarityValue;
+	}
+	
+	public StructMatchVertexData(Pair<RDFNode, RDFNode> stCouple, double oldSV, double newSV) {
+		this.stCouple = stCouple;
+		this.newSimilarityValue = oldSV;
+		this.oldSimilarityValue = newSV;
 	}
 	/**
 	 * @return the stCouple

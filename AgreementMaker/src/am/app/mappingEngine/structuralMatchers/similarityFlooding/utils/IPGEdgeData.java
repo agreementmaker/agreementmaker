@@ -7,7 +7,7 @@ import com.hp.hpl.jena.rdf.model.Property;
 
 /**
  * @author Michele Caci
- *
+ * TODO: just in case we are going to define the Induced Propagation Graph
  */
 public class IPGEdgeData extends StructMatchEdgeData {
 
