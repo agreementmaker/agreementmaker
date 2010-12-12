@@ -19,7 +19,8 @@ public class PCGVertex extends DirectedGraphVertex<PCGVertexData, PCGEdgeData>{
 	public String toString() {
 		String s = new String();
 		
-		s += "( " + getObject().getStCouple().getLeft().toString() + ", " + getObject().getStCouple().getRight().toString() + " )";
+		s += "( " + getObject().getStCouple().getLeft().toString() + ", " + getObject().getStCouple().getRight().toString() + " )" +
+		 		" - " + getObject().getOldSimilarityValue() + " - " + getObject().getNewSimilarityValue();
 		
 		return s;
 	}
