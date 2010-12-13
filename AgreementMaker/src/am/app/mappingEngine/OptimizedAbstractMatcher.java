@@ -10,8 +10,8 @@ import am.app.ontology.Node;
 //For this reason the MinInputMatcher must be 0 and the MaxInputMatcher has to be 1.
 public class OptimizedAbstractMatcher extends AbstractMatcher {
 	
-	
-	
+	private static final long serialVersionUID = 1852460707983840543L;
+
 	public OptimizedAbstractMatcher() {
 		super();
 		maxInputMatchers = 1;
@@ -19,7 +19,7 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
 	}
 	
 	
-	
+	@Override
     protected SimilarityMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) throws Exception {
     	if(inputMatchers.size() == 0){ //run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
 			return super.alignProperties(sourcePropList, targetPropList);
@@ -29,7 +29,7 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
     	}
 	}
 
-
+	@Override
 	protected SimilarityMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList)  throws Exception{
     	if(inputMatchers.size() == 0){ //run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
 			return super.alignClasses(sourceClassList, targetClassList);
@@ -39,8 +39,9 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
     	}
 	}
 	
+	@Override
     protected SimilarityMatrix alignUnmappedNodes(ArrayList<Node> sourceList, ArrayList<Node> targetList, SimilarityMatrix inputMatrix,
-			Alignment inputAlignmentSet, alignType typeOfNodes) throws Exception {
+			Alignment<Mapping> inputAlignmentSet, alignType typeOfNodes) throws Exception {
     	
     	MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, maxSourceAlign, maxTargetAlign);
     	SimilarityMatrix matrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
@@ -82,6 +83,7 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
 		return matrix;
 	}
     
+	@Override
     protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
 		//TO BE IMPLEMENTED BY THE ALGORITHM, THIS IS JUST A FAKE ABSTRACT METHOD
 		double sim;
@@ -94,16 +96,5 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
 		}
 		return new Mapping(source, target, sim, rel);
 	}
-	
-	
-	
-
-	
-	
-
-	
-	
-	
-	
 
 }

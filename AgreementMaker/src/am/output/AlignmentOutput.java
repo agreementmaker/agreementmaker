@@ -13,7 +13,7 @@ import am.app.mappingEngine.Alignment;
 
 public class AlignmentOutput
 {
-    private Alignment alignmentSet = null;
+    private Alignment<Mapping> alignmentSet = null;
     private RandomAccessFile raf = null;
     private String filepath = null;
     private ArrayList<String> writeList = null;
@@ -24,7 +24,7 @@ public class AlignmentOutput
      * This constructor is used for saving as a String, not to a file.  Use only with compileString().
      * @param as The set of mappings between two ontologies.
      */
-    public AlignmentOutput( Alignment as ) {
+    public AlignmentOutput( Alignment<Mapping> as ) {
     	alignmentSet = as;
     	filepath = "";
     	buffer = new StringBuilder();
@@ -114,7 +114,7 @@ public class AlignmentOutput
     }
 
     
-    public AlignmentOutput(Alignment as, String fp)
+    public AlignmentOutput(Alignment<Mapping> as, String fp)
     {
         alignmentSet = as;
         filepath = fp;

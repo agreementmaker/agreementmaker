@@ -15,10 +15,6 @@ import am.app.ontology.Ontology;
 import am.userInterface.MatchingProgressDisplay;
 
 import java.awt.Color;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -438,7 +434,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
     
     protected SimilarityMatrix alignUnmappedNodes(ArrayList<Node> sourceList, ArrayList<Node> targetList, SimilarityMatrix inputMatrix,
-			Alignment inputAlignmentSet, alignType typeOfNodes) throws Exception {
+			Alignment<Mapping> inputAlignmentSet, alignType typeOfNodes) throws Exception {
     	
     	MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, maxSourceAlign, maxTargetAlign);
     	SimilarityMatrix matrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
@@ -540,8 +536,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 
 
-	protected Alignment oneToOneMatching(SimilarityMatrix matrix) {
-		Alignment aset = new Alignment();
+	protected Alignment<Mapping> oneToOneMatching(SimilarityMatrix matrix) {
+		Alignment<Mapping> aset = new Alignment<Mapping>();
 		double[][] similarityMatrix = matrix.getCopiedSimilarityMatrix();
 		MaxWeightBipartiteMatching<Integer> mwbm = new MaxWeightBipartiteMatching<Integer>(similarityMatrix, threshold);
 		Collection<MappingMWBM<Integer>> mappings = mwbm.execute();
@@ -584,8 +580,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 
 
-    protected Alignment scanForMaxValuesRows(SimilarityMatrix matrix, int numMaxValues) {
-		Alignment aset = new Alignment();
+    protected Alignment<Mapping> scanForMaxValuesRows(SimilarityMatrix matrix, int numMaxValues) {
+		Alignment<Mapping> aset = new Alignment<Mapping>();
 		Mapping toBeAdded;
 		//temp structure to keep the first numMaxValues best alignments for each source
 		//when maxRelations are both ANY we could have this structure too big that's why we have checked this case in the previous method
@@ -605,8 +601,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     
 
     
-    protected Alignment scanForMaxValuesColumns(SimilarityMatrix matrix,int numMaxValues) {
-		Alignment aset = new Alignment();
+    protected Alignment<Mapping> scanForMaxValuesColumns(SimilarityMatrix matrix,int numMaxValues) {
+		Alignment<Mapping> aset = new Alignment<Mapping>();
 		Mapping toBeAdded;
 		//temp structure to keep the first numMaxValues best alignments for each source
 		//when maxRelations are both ANY we could have this structure too big that's why we have checked this case in the previous method
@@ -629,8 +625,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
      * @param matrix Matrix to scan for mappings.
      * @return Alignment set of mappings. 
      */
-    protected Alignment getThemAll(SimilarityMatrix matrix) {
-		Alignment aset = new Alignment();
+    protected Alignment<Mapping> getThemAll(SimilarityMatrix matrix) {
+		Alignment<Mapping> aset = new Alignment<Mapping>();
 		Mapping currentValue;
 		for(int i = 0; i<matrix.getColumns();i++) {
 			for(int j = 0; j<matrix.getRows();j++) {		
@@ -642,14 +638,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return aset;
 	}
 
-    protected Alignment scanWithBothConstraints(SimilarityMatrix matrix, int sourceConstraint,int targetConstraint) {
+    protected Alignment<Mapping> scanWithBothConstraints(SimilarityMatrix matrix, int sourceConstraint,int targetConstraint) {
     	
     	
     	IntDoublePair fakePair = IntDoublePair.createFakePair();
     	int rows = matrix.getRows();
     	int cols = matrix.getColumns();
     	
-    	Alignment aset = new Alignment();
+    	Alignment<Mapping> aset = new Alignment<Mapping>();
 
     	//I need to build a copy of the similarity matrix to work on it, i just need the similarity values
     	//and i don't need values higher than threshold so i'll just set them as fake so they won't be selected
@@ -1360,11 +1356,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return progressDisplay != null;  // don't need to check for the global static variable, since if it's false, we should never have to call this function
 	}
 
-	public void setPropertiesAlignmentSet(Alignment propertiesAlignmentSet) {
+	public void setPropertiesAlignmentSet(Alignment<Mapping> propertiesAlignmentSet) {
 		this.propertiesAlignmentSet = propertiesAlignmentSet;
 	}
 
-	public void setClassesAlignmentSet(Alignment classesAlignmentSet) {
+	public void setClassesAlignmentSet(Alignment<Mapping> classesAlignmentSet) {
 		this.classesAlignmentSet = classesAlignmentSet;
 	}
 
