@@ -1456,4 +1456,12 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		  out.close();
 	  }
 
+	  
+	  /**
+	   * Matcher Category.
+	   * You need to override this function in order to categorize your matcher.
+	   */
+	  public MatcherCategory getMatcherCategory() {
+		  return MatcherCategory.UNCATEGORIZED;
+	  }
 }
