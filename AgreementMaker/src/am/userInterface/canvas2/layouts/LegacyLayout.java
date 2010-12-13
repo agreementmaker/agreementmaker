@@ -44,12 +44,14 @@ import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.userInterface.VisualizationPanel;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.GraphicalData;
 import am.userInterface.canvas2.graphical.MappingData;
 import am.userInterface.canvas2.graphical.RectangleElement;
 import am.userInterface.canvas2.graphical.TextElement;
 import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
+import am.userInterface.canvas2.layouts.legacylayout.LegacyLayoutMouseHandler;
 import am.userInterface.canvas2.nodes.GraphicalNode;
 import am.userInterface.canvas2.nodes.LegacyEdge;
 import am.userInterface.canvas2.nodes.LegacyMapping;
@@ -133,7 +135,9 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	private int rightOntologyID = Ontology.ID_NONE; // the ontology ID of the graphs on the right side of the canvas layout 
 
 	
-	/** Mouse Event handlers Variables */
+	/** Mouse Event handlers and Variables */
+	
+	private LegacyLayoutMouseHandler mouseHandler = new LegacyLayoutMouseHandler(this);
 	
 	private ArrayList<LegacyNode> selectedNodes;  // the list of currently selected nodes
 	private boolean PopupMenuActive = false;
@@ -198,10 +202,21 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		else 
 			return "";
 	}
+
+	/* ****************** Getters and Setters **************************** */
 	@Override public void setShowLabel(boolean shL ) { showLabel = shL; }
 	@Override public void setShowLocalName( boolean shLN ) { showLocalName = shLN; }
 	@Override public boolean getShowLabel() { return showLabel; }
 	@Override public boolean getShowLocalName() { return showLocalName; }
+	public Canvas2 getVizPanel() { return vizpanel; }
+	public boolean isPopupMenuActive() { return PopupMenuActive; }
+	public void setPopupMenuActive( boolean v ) { PopupMenuActive = v; }
+	public Canvas2Vertex getHoveringOver() { return hoveringOver; }
+	public void setHoveringOver(Canvas2Vertex vertex) { hoveringOver = vertex; }
+	public boolean isSingleMappingView() { return SingleMappingView; }
+	public ArrayList<LegacyNode> getSelectedNodes() { return selectedNodes; }
+	public int getLeftOntologyID() { return leftOntologyID; }
+	public int getRightOntologyID() { return rightOntologyID; }
 	
 	public int getDepthIndent() { return depthIndent; }  // * Getter.
 	
@@ -1244,382 +1259,17 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	/**
 	 * MOUSE EVENT listener functions
 	 */
-	@Override
-	public void mouseClicked( MouseEvent e ) {
-		// BUTTON1 = Left Click Button, BUTTON2 = Middle Click Button, BUTTON3 = Right Click Button
-
-		Graphics g = vizpanel.getGraphics();   // used for any redrawing of nodes
-		ArrayList<Canvas2Vertex> visibleVertices = vizpanel.getVisibleVertices();
-
-		Logger log = Logger.getLogger(this.getClass());
-		if( Core.DEBUG ) log.setLevel(Level.DEBUG);
-
-		// if we have an active popup menu, cancel it
-		if( PopupMenuActive ) { 
-			cancelPopupMenu(g);
-		}
-
-		// only process mouse clicks if there's not a popup menu active
-		switch( e.getButton() ) {
-
-		// because of the way Java (and most any platform) handles the difference between single and double clicks,
-		// the single click action must be "complementary" to the double click action, as when you double click a 
-		// single click is always fired just before the double click is detected.  
-		// There is no way around this.  A single click event will *always* be fired just before a double click.
-
-		// So then:
-		//		- LEFT button SINGLE click = select NODE (or deselect if clicking empty space)
-		//		- LEFT button DOUBLE click = line up two nodes by their mapping (do nothing if it's empty space)
-
-		// Jan 29, 2010 - Cosmin
-		//   Ok now, we are adding menu support:
-		//      1. User must single left click to select a node in one ontology graph, in order to select that node.
-		//      2. User must single left click a node in the OTHER ontology graph in order to cause a menu to come up.
-		//         If the user clicks a node in the same ontology, this new node becomes the selected node.
-
-		//      These actions should work with MULTIPLE selections (using the Control key).
-
-		// Feb 13th, 2010 - Cosmin
-		//   Adding rightclick menu for deleting mappings.
-
-		// June 17th, 2010 - Cosmin
-		//   Added the SingleMappingView to replace SMO.  Activated by doubleclicking a node.
-
-		case MouseEvent.BUTTON1:
-			if( e.getClickCount() == 2 ) {  // double click with the left mouse button
-				if( Core.DEBUG) log.debug("Double click with the LEFT mouse button detected.");
-				//do stuff
-
-				if( hoveringOver != null && SingleMappingView != true ) {
-					enableSingleMappingView();
-					vizpanel.repaint();
-				}
-
-			} else if( e.getClickCount() == 1 ) {  // single click with left mouse button
-
-				if( SingleMappingView == true ) {
-					// if we don't click on anything, cancel the single mapping view
-					// restore the previous visibility of the nodes and edges
-
-					if( hoveringOver == null ) {
-						disableSingleMappingView();
-						vizpanel.repaint();
-					} else {
-						// we doubleclicked on another node.
-						disableSingleMappingView();
-
-						// move the viewpane to the new node
-						//vizpanel.getScrollPane().scrollRectToVisible( new Rectangle(0, vizpanel.getScrollPane().getSize().height, 1, 1) );
-						vizpanel.getScrollPane().getViewport().setViewPosition( new Point(vizpanel.getScrollPane().getViewport().getLocation().x, 
-								hoveringOver.getBounds().y - vizpanel.getScrollPane().getViewport().getHeight()/2 ));  // TODO: Check canvas boundaries when moving view.
-						//System.out.print( "Moving viewport to: " + hoveringOver.getBounds().toString() );
-						hoveringOver = null;
-						vizpanel.repaint();
-					}
-				}
-
-				if( hoveringOver == null ) {
-					// we have clicked in an empty area, clear all the selected nodes
-					Iterator<LegacyNode> nodeIter = selectedNodes.iterator();
-					while( nodeIter.hasNext() ) {
-						LegacyNode selectedNode = nodeIter.next();
-						selectedNode.setSelected(false); // deselect the node
-						if( visibleVertices.contains( (Canvas2Vertex) selectedNode ) ) {
-							// redraw only if it's currently visible
-							//selectedNode.clearDrawArea(g);
-							selectedNode.draw(g);
-						}
-					}
-					selectedNodes.clear();
-				} else {
-					// user clicked over a node.
-
-					// is it a node in the OTHER ontology?
-					if( getSelectedNodesOntology() != Core.ID_NONE && getSelectedNodesOntology() != hoveringOver.getGraphicalData().ontologyID ) {
-						// yes it is in the other ontology
-						// bring up the Mapping Popup Menu, so the user can make a mapping
-						CreateMappingMenu menuCreate = new CreateMappingMenu( this );
-						menuCreate.show( vizpanel, e.getX(), e.getY());
-						menuCreate.addPopupMenuListener(this);
-						PopupMenuActive = true;
-					} else {
-						// the nodes are in the same ontology
-						// we either add to the selection, or clear it and select the node that was just clicked
-						if( e.isControlDown() ) {
-							// if the user control clicked (CTRL+LEFTCLICK), we have to add this node to the list of selected nodes.
-							if( selectedNodes.contains(hoveringOver) ) { // if it already is in the list, remove it
-								selectedNodes.remove(hoveringOver);
-								hoveringOver.setSelected(false);
-							} else { // it's not in the list already, add it
-								hoveringOver.setSelected(true);
-								selectedNodes.add((LegacyNode) hoveringOver);
-							}
-
-							//hoveringOver.clearDrawArea(g);
-							hoveringOver.draw(g);
-						} else { // control is not pressed, clear any selections that there may be, and select single node
-
-							Iterator<LegacyNode> nodeIter = selectedNodes.iterator();
-							while( nodeIter.hasNext() ) {
-								LegacyNode selectedNode = nodeIter.next();
-								selectedNode.setSelected(false); // deselect the node
-								if( visibleVertices.contains( (Canvas2Vertex) selectedNode ) ) {
-									// redraw only if it's currently visible
-									//selectedNode.clearDrawArea(g);
-									selectedNode.draw(g);
-								}
-							}
-							selectedNodes.clear();
-
-							// select single node
-							hoveringOver.setSelected(true);
-							selectedNodes.add( (LegacyNode)hoveringOver);
-							//hoveringOver.clearDrawArea(g);
-							hoveringOver.draw(g);
-						}
-
-						// Populate the annotation box.
-						if( hoveringOver.getGraphicalData().r != null ) {
-
-							if( hoveringOver.getGraphicalData().r.canAs( OntClass.class ) ) {
-								// we clicked on a class
-								OntClass currentClass = (OntClass) hoveringOver.getGraphicalData().r.as(OntClass.class);
-								StmtIterator i = currentClass.listProperties();
-								String annotationProperties = new String();
-								while( i.hasNext() ) {
-									Statement s = (Statement) i.next();
-									Property p = s.getPredicate();
-
-									if( p.canAs( AnnotationProperty.class ) ) {
-										// this is an annotation property
-										RDFNode obj = s.getObject();
-										if( obj.canAs(Literal.class) ) {
-											Literal l = (Literal) obj.as(Literal.class);
-											annotationProperties += p.getLocalName() + ": " + l.getString() + "\n";
-										} else {
-											annotationProperties += p.getLocalName() + ": " + obj.toString() + "\n";
-										}
-									}
-								}
-
-								
-								String propString = new String();
-								// get a list of the properties.  TODO: Make this easier to work with.
-								try {
-									// we need the Ontology to map from OntResource to Node
-									Ontology o = Core.getInstance().getOntologyByID(hoveringOver.getGraphicalData().ontologyID);
-									// map from the OntResource we are hoveringOver to the Node that it represents
-									Node classNode = o.getNodefromOntResource(hoveringOver.getGraphicalData().r, alignType.aligningClasses);
-									// get a list of the properties that are declared for this class
-									ArrayList<Node> properties = classNode.getClassProperties();
-									// iterate over the property list and build a string representation.
-									Iterator<Node> propIter = properties.iterator();
-									while( propIter.hasNext() ) {
-										Node currentProperty = propIter.next();
-										propString += currentProperty.getLocalName() + "\n";
-									}
-								} catch (Exception e1) {
-									// Could not convert from OntResource to Node, give up.
-									//e1.printStackTrace();
-								}
-								
-								// if we have listed some properties, add them to the main string
-								if( !propString.equals("") ) {
-									annotationProperties += "\n\nProperties:\n\n" + propString;
-								}
-								
-								
-								
-								
-								// update the text box.
-								VertexDescriptionPane vdp = (VertexDescriptionPane) Core.getUI().getUISplitPane().getRightComponent();
-								if( hoveringOver.getGraphicalData().ontologyID == leftOntologyID ) {
-									vdp.setSourceAnnotations(annotationProperties);
-								} else {
-									vdp.setTargetAnnotations(annotationProperties);
-								}
-								
-								
-								
-								// populate the individuals list
-								String individuals = new String();
-								ExtendedIterator<?> indiIter = currentClass.listInstances(true);
-								int indicount = 1;
-								while( indiIter.hasNext() ) {
-									Individual indi = (Individual) indiIter.next();
-									if( indi.isAnon() ) {
-										individuals += indicount + ". Anonymous Individual (" + indi.getId() + ")\n";
-										indicount++;
-									} else {
-										individuals += indicount + ". " + indi.getLocalName() + "\n";
-										indicount++;
-									}
-								}
-								
-								// try to deal with improperly declared individuals.
-								if( individuals.equals("") ) {
-									OntModel mod = (OntModel) currentClass.getModel();
-								
-								
-									List<Statement> ls = mod.listStatements(null , mod.getProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), mod.getResource(currentClass.getLocalName())).toList();
-									
-									Iterator<Statement> lsiter = ls.iterator();
-									int k = 1;
-									while( lsiter.hasNext() ) {
-										Statement s = lsiter.next();
-										OntResource indi = s.getSubject().as(OntResource.class);
-										if( indi.isAnon() ) {
-											individuals += k + ". Anonymous Individual (" + indi.getId() + ")\n";
-											k++;
-										} else {
-											individuals += k + ". " + indi.getLocalName() + "\n";
-											k++;
-										}
-										
-									}
-								}
-								
-								
-								if( hoveringOver.getGraphicalData().ontologyID == leftOntologyID ) {
-									vdp.setSourceIndividuals(individuals);
-								} else {
-									vdp.setTargetIndividuals(individuals);
-								}
-								
-							} else if( hoveringOver.getGraphicalData().r.canAs( OntProperty.class)) {
-								// we clicked on a property
-								
-								OntProperty currentProperty = (OntProperty) hoveringOver.getGraphicalData().r.as(OntProperty.class);
-								StmtIterator i = currentProperty.listProperties();
-								String annotationProperties = new String();
-								while( i.hasNext() ) {
-									Statement s = (Statement) i.next();
-									Property p = s.getPredicate();
-
-									if( p.canAs( AnnotationProperty.class) ) {
-										RDFNode obj = s.getObject();
-										if( obj.canAs( Literal.class)) {
-											Literal l = (Literal) obj.as(Literal.class);
-											annotationProperties += p.getLocalName() + ": " + l.getString() + "\n";
-										} else {
-											annotationProperties += p.getLocalName() + ": " + obj.toString() + "\n";
-										}
-									}
-								}
-								
-								// The domain of a property
-								String domString = new String();
-								// get a list of the properties.  TODO: Make this easier to work with.
-								try {
-									// we need the Ontology to map from OntResource to Node
-									Ontology o = Core.getInstance().getOntologyByID(hoveringOver.getGraphicalData().ontologyID);
-									// map from the OntResource we are hoveringOver to the Node that it represents
-									Node propertyNode = o.getNodefromOntResource(hoveringOver.getGraphicalData().r, alignType.aligningProperties);
-									// get a list of the properties that are declared for this class
-									OntResource domNode = propertyNode.getPropertyDomain();
-									// iterate over the property list and build a string representation.
-									
-									domString += domNode.getLocalName() + "\n";
-									
-								} catch (Exception e1) {
-									// Could not convert from OntResource to Node, give up.
-									//e1.printStackTrace();
-								}
-								
-								// if we have listed some properties, add them to the main string
-								if( !domString.equals("") ) {
-									annotationProperties += "Property Domain: " + domString;
-								}
-								
-								
-								// The range of a property
-								String rangeString = new String();
-								// get a list of the properties.  TODO: Make this easier to work with.
-								try {
-									// we need the Ontology to map from OntResource to Node
-									Ontology o = Core.getInstance().getOntologyByID(hoveringOver.getGraphicalData().ontologyID);
-									// map from the OntResource we are hoveringOver to the Node that it represents
-									Node propertyNode = o.getNodefromOntResource(hoveringOver.getGraphicalData().r, alignType.aligningProperties);
-									// get a list of the properties that are declared for this class
-									OntResource domNode = propertyNode.getPropertyRange();
-									// iterate over the property list and build a string representation.
-									
-									rangeString += domNode.getLocalName() + "\n";
-									
-								} catch (Exception e1) {
-									// Could not convert from OntResource to Node, give up.
-									//e1.printStackTrace();
-								}
-								
-								// if we have listed some properties, add them to the main string
-								if( !domString.equals("") ) {
-									annotationProperties += "Property Range: " + rangeString;
-								}
-								
-								
-								VertexDescriptionPane vdp = (VertexDescriptionPane) Core.getUI().getUISplitPane().getRightComponent();
-								if( hoveringOver.getGraphicalData().ontologyID == leftOntologyID ) {
-									vdp.setSourceAnnotations(annotationProperties);
-								} else {
-									vdp.setTargetAnnotations(annotationProperties);
-								}
-							}
-						}  // end of populate the annotation box.
-
-
-					}
-				}
-
-			}
-			break;
-
-		/*************************************************** MIDDLE MOUSE BUTTON ******************************************/
-		case MouseEvent.BUTTON2:
-			if( e.getClickCount() == 2 ) {
-				// double click with the middle mouse button.
-				log.debug("Double click with the MIDDLE mouse button detected.");
-				//do stuff
-			} else if( e.getClickCount() == 1 ) {
-				// middle click, print out debugging info
-				if( hoveringOver != null ) { // relying on the hover code in MouseMove
-					log.debug("\nResource: " + hoveringOver.getObject().r + 
-							"\nHashCode: " + hoveringOver.getObject().r.hashCode());
-					log.debug("\nPosition" + e.getPoint().toString() );
-
-				}
-				//log.debug("Single click with the MIDDLE mouse button detected.");
-			}
-			break;
-
-		/*************************************************** RIGHT CLICK **************************************************/
-		case MouseEvent.BUTTON3:
-			if( e.getClickCount() == 2 ) {
-				// double click with the right mouse button.
-				if( Core.DEBUG ) log.debug("Double click with the RIGHT mouse button detected.");
-				//do stuff
-			} else if( e.getClickCount() == 1 ) {
-				// single right click, bring up delete menu
-				if( hoveringOver != null ) {
-					DeleteMappingMenu menuDelete = new DeleteMappingMenu( this, hoveringOver.getMappings() );
-					menuDelete.show( vizpanel, e.getX(), e.getY());
-					menuDelete.addPopupMenuListener(this);
-					PopupMenuActive = true;
-				}
-
-				if( Core.DEBUG ) log.debug("Single click with the RIGHT mouse button detected.");
-			}
-			break;
-		}
-
-		g.dispose(); // dispose of this graphics element, we don't need it anymore
-	}
-		
+	
+	// These methods relay the mouse events to the mouseHandler.
+	@Override public void mouseClicked(MouseEvent e) { mouseHandler.mouseClicked(e); }
+	@Override public void mouseMoved(MouseEvent e)    { mouseHandler.mouseMoved(e); }
 
 	/**
 	 * Used to let the layout know that a popup menu has been canceled.
 	 */
-	private void cancelPopupMenu(Graphics g) {
+	public void cancelPopupMenu(Graphics g) {
 		PopupMenuActive = false;
+		vizpanel.repaint();
 		//if( hoveringOver != null ) {
 		//	hoveringOver.setHover(false);
 		//	hoveringOver.draw(g);
@@ -1627,7 +1277,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		//}
 	}
 
-	private void disableSingleMappingView() {
+	public void disableSingleMappingView() {
 		Iterator<CanvasGraph> graphIter = vizpanel.getGraphs().iterator();
 		while( graphIter.hasNext() ) {
 			CanvasGraph graph = graphIter.next();
@@ -1687,7 +1337,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	/**
 	 * This method activates the SingleMappingView after the user doubleclicks a concept.s
 	 */
-	private void enableSingleMappingView() {
+	public void enableSingleMappingView() {
 		// Activate the SingleMappingView
 		SingleMappingView = true;
 		
@@ -1826,76 +1476,6 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 
 
 	private Canvas2Vertex hoveringOver;
-	
-	@Override
-	public void mouseMoved(MouseEvent e)    {
-		
-		// don't redraw over a popupmenu
-		if( PopupMenuActive ) { return; }
-		
-		Graphics g = vizpanel.getGraphics();
-		ArrayList<Canvas2Vertex> visibleVertices = vizpanel.getVisibleVertices();
-		Iterator<Canvas2Vertex> visibleIter = visibleVertices.iterator();
-		boolean hoveringOverEmptySpace = true;
-		while( visibleIter.hasNext() ) {
-			Canvas2Vertex vertex = visibleIter.next();
-			if( vertex instanceof LegacyNode )    // we only care about legacy nodes (for now)
-			if( vertex.contains(e.getPoint()) ) {
-				// we are hovering over vertex
-				hoveringOverEmptySpace = false;
-				// first, remove the hover from the last element we were hovering over
-				if( hoveringOver == vertex ) {
-					// we are still hoovering over this element, do nothing
-					break;
-				} else if( hoveringOver != null ) {
-					// we had been hovering over something, but now we're not
-					hoveringOver.setHover(false);
-					//hoveringOver.clearDrawArea(g);
-					hoveringOver.draw(g);
-				}
-				
-				hoveringOver = vertex;
-				hoveringOver.setHover(true);
-				//hoveringOver.clearDrawArea(g);
-				
-				// redraw all the edges connected to this node. (only if they are visible)
-				Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeInIter = hoveringOver.edgesInIter();
-				while( edgeInIter.hasNext() ) { 
-					Canvas2Edge currentEdge = (Canvas2Edge) edgeInIter.next();
-					if( !currentEdge.getObject().visible ) continue;
-					Canvas2Vertex originNode = (Canvas2Vertex) currentEdge.getOrigin();
-					if( originNode.getObject().visible )
-						currentEdge.draw(g); 
-				}
-				Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeOutIter = hoveringOver.edgesOutIter();
-				while( edgeOutIter.hasNext() ) {
-					Canvas2Edge currentEdge = (Canvas2Edge) edgeOutIter.next();
-					if( !currentEdge.getObject().visible ) continue;
-					Canvas2Vertex destinationNode = (Canvas2Vertex) currentEdge.getDestination();
-					if( destinationNode.getObject().visible )
-						currentEdge.draw(g);
-				}
-				
-				
-				hoveringOver.draw(g);
-				break;
-				
-			}
-		}
-		
-		if( hoveringOverEmptySpace && hoveringOver != null) {
-			// clear the hover
-			hoveringOver.setHover(false);
-			//hoveringOver.clearDrawArea(g);
-			hoveringOver.draw(g);
-			hoveringOver = null;
-		}
-		
-		g.dispose();
-		
-		
-	}
-		
 
 	@Override 
 	public void actionPerformed(ActionEvent e) {
@@ -2023,7 +1603,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		
 	}
 	
-	private int getSelectedNodesOntology() {
+	public int getSelectedNodesOntology() {
 		int ontologyID = -1;
 		Iterator<LegacyNode> nodeIter = selectedNodes.iterator();
 
@@ -2045,8 +1625,6 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		// all the nodes in the selectedNodes list are from the ontology with id "ontologyID"
 		return ontologyID;
 	}
-	
-	public boolean isSingleMappingView() { return SingleMappingView; }
 
 	
 	/************************** POPUP MENU LISTENER EVENTS *****************************************/
