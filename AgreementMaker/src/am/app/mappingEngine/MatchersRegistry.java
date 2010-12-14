@@ -56,7 +56,7 @@ public enum MatchersRegistry {
 	IterativeMatcher	( "IISM", "Instance-based Iterator", am.app.mappingEngine.instance.IterativeMatcher.class),
 	AdvancedSimilarity  ( "ASM", "Advanced Similarity Matcher", am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher.class),
 	GroupFinder			( "GFM", "Group Finder Matcher", am.app.mappingEngine.groupFinder.GroupFinderMatcher.class),
-	FCM					( "FCM", "Federico Caimi Matcher", am.app.mappingEngine.FedericoCaimiMatcher.FedericoMatcher.class),
+	IISM					( "IISM", "Iterative Instance and Structural Matcher", am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralMatcher.class),
 	LSM					( "LSM", "Lexical Synonym Matcher", LexicalSynonymMatcher.class ),
 	//OFFICIAL MATCHERS
 	LexicalJAWS			( "JAWS", "Lexical Matcher: JAWS", LexicalMatcherJAWS.class ),

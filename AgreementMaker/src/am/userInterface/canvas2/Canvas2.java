@@ -192,7 +192,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	/**
 	 * The paint function tries to paint only those graphical elements that are in the current viewport bounds.
 	 */
-	public void paintComponent(Graphics g ) {
+	public synchronized void paintComponent(Graphics g ) {
 		super.paintComponent(g);
 		
 		Rectangle currentView = viewport.getViewRect();
@@ -280,7 +280,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	}
 
 	
-	public void matcherChanged(MatcherChangeEvent e) {
+	public synchronized void matcherChanged(MatcherChangeEvent e) {
 
 		switch( e.getEvent() ) {
 		case MATCHER_ADDED:

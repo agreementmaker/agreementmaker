@@ -11,7 +11,7 @@ public class OAEI2010MatcherParameters extends AbstractParameters {
 	public boolean usingLSM;  // Lexical Synonym Matcher
 	public boolean usingLWC1;
 	public boolean usingGFM;
-	public boolean usingFCM;
+	public boolean usingIISM;
 	public boolean usingLCM;
 	public boolean usingLWC2;
 
@@ -48,7 +48,7 @@ public class OAEI2010MatcherParameters extends AbstractParameters {
 			usingVMM = false;
 			usingLWC1 = true;
 			usingGFM = true;
-			usingFCM = false;
+			usingIISM = false;
 			usingLCM = false;
 			usingLWC2 = false;
 		case AllMatchers:
@@ -58,7 +58,7 @@ public class OAEI2010MatcherParameters extends AbstractParameters {
 			usingVMM = true;
 			usingLWC1 = true;
 			usingGFM = true;
-			usingFCM = true;
+			usingIISM = true;
 			usingLCM = true;
 			usingLWC2 = true;
 		
