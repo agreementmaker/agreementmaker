@@ -3,29 +3,22 @@ package am.app.feedback;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import sun.awt.CausedFocusEvent.Cause;
-
 import am.Utility;
-import am.app.Core;
 import am.app.feedback.CandidateConcept.ontology;
 import am.app.feedback.matchers.ExtrapolatingDSI;
 import am.app.feedback.matchers.ExtrapolatingFS;
 import am.app.feedback.ui.SelectionPanel;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParametersPanel;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
-import am.userInterface.UI;
 
 /**
  * This class is implemented to run the user feedback loop.
@@ -64,7 +57,8 @@ import am.userInterface.UI;
 
 public class FeedbackLoop extends AbstractMatcher  {
 	
-
+	private static final long serialVersionUID = -5492225632641036980L;
+	
 	//FeedBackLoop private variables used in the iterations
 	private CandidateSelection candidateSelection;
 	ArrayList<CandidateConcept> topConceptsAndAlignments;
@@ -299,7 +293,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 				System.out.println( partialIteration.iteration+",\t"+precision+",\t"+recall+",\t"+fmeasure+",\t"+impPrecision+",\t"+impRecall+",\t"+impFmeasure+",\t"+correct+",\t"+wrong+",\t"+missing+",\t"+impCorrect+",\t"+impWrong+",\t"+impMissing+",\t"+partialIteration.EDSIcorrect+",\t"+partialIteration.EDSIwrong+",\t"+partialIteration.EFScorrect+",\t"+partialIteration.EFSwrong+",\t"+(partialIteration.EDSIcorrect+partialIteration.EFScorrect)+",\t"+(partialIteration.EDSIwrong+partialIteration.EFSwrong));
 			}
 			//understanding why some mappings are not mapped
-			Alignment losts = rd_end.getLostAlignments();
+			Alignment<Mapping> losts = rd_end.getLostAlignments();
 			System.out.println("Missing are : "+losts.size()+" or "+(rd_end.getExist() - rd_end.getCorrect()));
 			for(int i = 0; i< losts.size(); i++){
 				Mapping lost = losts.getAlignment(i);
