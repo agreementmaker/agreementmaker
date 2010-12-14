@@ -4,6 +4,7 @@ import java.io.File;
 import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.oaei2009.OAEI2009parameters;
 import am.output.AlignmentOutput;
@@ -60,7 +61,7 @@ public class AnatomyTrack extends Track{
 			int targetCardinality = 1;
 			param = new OAEI2009parameters(OAEI2009parameters.ANATOMY);
 			long startTime = System.nanoTime()/1000000;
-			Alignment as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param);
+			Alignment<Mapping> as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param);
 			String sourceUri = Core.getInstance().getSourceOntology().getURI();
 			String targetUri = Core.getInstance().getTargetOntology().getURI();
 			long endTime = System.nanoTime()/1000000;
@@ -79,7 +80,7 @@ public class AnatomyTrack extends Track{
 			int targetCardinality = 1;
 			param = new OAEI2009parameters(OAEI2009parameters.ANATOMY);
 			long startTime = System.nanoTime()/1000000;
-			Alignment as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param);
+			Alignment<Mapping> as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param);
 			long endTime = System.nanoTime()/1000000;
 			long totTime = endTime - startTime;
 			String sourceUri = Core.getInstance().getSourceOntology().getURI();
@@ -98,7 +99,7 @@ public class AnatomyTrack extends Track{
 			int targetCardinality = 1;
 			param = new OAEI2009parameters(OAEI2009parameters.ANATOMY);
 			long startTime = System.nanoTime()/1000000;
-			Alignment as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param);
+			Alignment<Mapping> as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param);
 			long endTime = System.nanoTime()/1000000;
 			long totTime = endTime - startTime;
 			String sourceUri = Core.getInstance().getSourceOntology().getURI();
@@ -118,7 +119,7 @@ public class AnatomyTrack extends Track{
 			int targetCardinality = 1;
 			long startTime = System.nanoTime()/1000000;
 			//the partial reference filename has to be set in the method parameters
-			Alignment as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param);
+			Alignment<Mapping> as = computeAlignment(SOURCE_ONTOLOGY, TARGET_ONTOLOGY, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param);
 			long endTime = System.nanoTime()/1000000;
 			long totTime = endTime - startTime;
 			String sourceUri = Core.getInstance().getSourceOntology().getURI();

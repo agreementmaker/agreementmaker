@@ -7,6 +7,7 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.ontology.Ontology;
@@ -45,7 +46,7 @@ public abstract class Track {
 	}
 	
 	//compute the alignment between any two ontologies, given their filepath using the specified matcher
-	protected Alignment computeAlignment(String sourcePath, String targetPath, String languageS, String syntaxS, boolean skip, MatchersRegistry matcher, double threshold, int sourceRel, int targetRel, AbstractParameters parameters) throws Exception{
+	protected Alignment<Mapping> computeAlignment(String sourcePath, String targetPath, String languageS, String syntaxS, boolean skip, MatchersRegistry matcher, double threshold, int sourceRel, int targetRel, AbstractParameters parameters) throws Exception{
 		System.out.println("The matching process is started between:\nSource Ontology: "+sourcePath+"\nTarget Ontology: "+targetPath);
 		
 		//LOADING ONTOLOGIES

@@ -6,14 +6,6 @@ import javax.swing.JRadioButton;
 import javax.swing.table.AbstractTableModel;
 
 import am.Utility;
-import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
-import am.app.ontology.Node;
-import am.userInterface.UI;
-
-import java.awt.Color;
 
 public class CandidatesTableModel extends AbstractTableModel {
 		

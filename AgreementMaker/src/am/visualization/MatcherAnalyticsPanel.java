@@ -21,8 +21,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import com.ibm.xml.parser.TXText;
-
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
@@ -450,7 +448,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			for( int i = 0; i < k; i++ ) {
 				String inReference = "";
 				if( refAlignment != null && refAlignment.contains(topK[i].getSourceKey() , topK[i].getTargetKey() ) ) inReference = "*";
-				Cluster cl = clusterMethod.getCluster(topK[i].getSourceKey(), topK[i].getTargetKey(), type);
+				Cluster<Mapping> cl = clusterMethod.getCluster(topK[i].getSourceKey(), topK[i].getTargetKey(), type);
 				topKClusters[i] = cl;
 				String topKDescription = topK[i].getEntity1().toString() +"<->" + topK[i].getEntity2().toString() + 
 									     " Cl:(" + cl.size() + ") " + inReference;

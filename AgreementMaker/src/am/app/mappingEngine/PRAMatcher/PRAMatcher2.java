@@ -1,6 +1,5 @@
 package am.app.mappingEngine.PRAMatcher;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import am.app.mappingEngine.AbstractMatcher;
@@ -12,11 +11,13 @@ import am.app.ontology.Node;
 
 public class PRAMatcher2 extends AbstractMatcher
 {
+	private static final long serialVersionUID = 5546644981873422439L;
+
 	// the Alignment Matrices from the Input Matching algorithm.
-	private Alignment inputPropertiesAlignmentSet;
-	private Alignment inputClassesAlignmentSet;
-	private Alignment praClassesAlignmentSet;
-	private Alignment praPropertiesAlignmentSet;
+	private Alignment<Mapping> inputPropertiesAlignmentSet;
+	private Alignment<Mapping> inputClassesAlignmentSet;
+	private Alignment<Mapping> praClassesAlignmentSet;
+	private Alignment<Mapping> praPropertiesAlignmentSet;
 	private HashMap<Node, TreeNode> nodeToTreeNode;
 	private HashMap<Integer, Node> srcClassesIdToNode;
 	private HashMap<Integer, Node> targetClassesIdToNode;
@@ -25,14 +26,14 @@ public class PRAMatcher2 extends AbstractMatcher
 
 	
 	//the structure that holds the roots of subtrees which are matched nodes in the ontology
-	private ArrayList<TreeNode> matchedClassSourceRootNodes;
+/*	private ArrayList<TreeNode> matchedClassSourceRootNodes;
 	private ArrayList<TreeNode> matchedPropertySourceRootNodes;
 	private ArrayList<TreeNode> unMatchedClassSourceRootNodes;
 	private ArrayList<TreeNode> unMatchedPropertySourceRootNodes;
 	private ArrayList<TreeNode> matchedClassTargetRootNodes;
 	private ArrayList<TreeNode> matchedPropertyTargetRootNodes;
 	private ArrayList<TreeNode> unMatchedClassTargetRootNodes;
-	private ArrayList<TreeNode> unMatchedPropertyTargetRootNodes;
+	private ArrayList<TreeNode> unMatchedPropertyTargetRootNodes;*/
 
 	public PRAMatcher2()
 	{
@@ -71,14 +72,14 @@ public class PRAMatcher2 extends AbstractMatcher
 		nodeToTreeNode = praMatcher.getNodeToTreeNode();
 		praClassesAlignmentSet = praMatcher.getInputClassesAlignmentSet();
 		praPropertiesAlignmentSet = praMatcher.getInputPropertiesAlignmentSet();
-		matchedClassSourceRootNodes = praMatcher.getMatchedClassSourceRootNodes();
+/*		matchedClassSourceRootNodes = praMatcher.getMatchedClassSourceRootNodes();
 		matchedPropertySourceRootNodes = praMatcher.getMatchedPropertySourceRootNodes();
 		unMatchedClassSourceRootNodes = praMatcher.getUnMatchedClassSourceRootNodes();
 		unMatchedPropertySourceRootNodes = praMatcher.getUnMatchedPropertySourceRootNodes();
 		matchedClassTargetRootNodes = praMatcher.getMatchedClassTargetRootNodes();
 		matchedPropertyTargetRootNodes = praMatcher.getMatchedPropertyTargetRootNodes();
 		unMatchedClassTargetRootNodes = praMatcher.getUnMatchedClassTargetRootNodes();
-		unMatchedPropertyTargetRootNodes = praMatcher.getUnMatchedPropertyTargetRootNodes();
+		unMatchedPropertyTargetRootNodes = praMatcher.getUnMatchedPropertyTargetRootNodes();*/
 		srcClassesIdToNode = praMatcher.getSrcClassesIdToNode();
 		targetClassesIdToNode = praMatcher.getTargetClassesIdToNode();
 		srcPropertiesIdToNode = praMatcher.getSrcPropertiesIdToNode();
@@ -98,7 +99,7 @@ public class PRAMatcher2 extends AbstractMatcher
 		int numSources = 0;		
 		int numTargets = 0;
 	
-		Alignment resultSet = new Alignment();
+		Alignment<Mapping> resultSet = new Alignment<Mapping>();
 		SimilarityMatrix resultMatrix = null;
 		Mapping anAlignment = null;
 		HashSet<Mapping> mappedNodes = new HashSet<Mapping>();

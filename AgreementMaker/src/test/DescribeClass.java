@@ -27,7 +27,7 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
  *
  * @author Ian Dickinson, HP Labs
  *         (<a  href="mailto:Ian.Dickinson@hp.com" >email</a>)
- * @version CVS $Id: DescribeClass.java,v 1.4 2009-10-09 13:18:29 cstroe1 Exp $
+ * @version CVS $Id: DescribeClass.java,v 1.5 2010-12-14 00:09:43 cstroe1 Exp $
  */
 public class DescribeClass {
 
@@ -53,14 +53,14 @@ public class DescribeClass {
         out.println();
 
         // sub-classes
-        for (ExtendedIterator i = cls.listSuperClasses( true ); i.hasNext(); ) {
+        for (ExtendedIterator<OntClass> i = cls.listSuperClasses( true ); i.hasNext(); ) {
             out.print( "  is a sub-class of " );
             renderClassDescription( out, (OntClass) i.next() );
             out.println();
         }
 
         // super-classes
-        for (ExtendedIterator i = cls.listSubClasses( true ); i.hasNext(); ) {
+        for (ExtendedIterator<OntClass> i = cls.listSubClasses( true ); i.hasNext(); ) {
             out.print( "  is a super-class of " );
             renderClassDescription( out, (OntClass) i.next() );
             out.println();
@@ -165,7 +165,7 @@ public class DescribeClass {
         out.print( op );
         out.println( " of {" );
 
-        for (ExtendedIterator i = boolClass.listOperands(); i.hasNext(); ) {
+        for (ExtendedIterator<? extends OntClass> i = boolClass.listOperands(); i.hasNext(); ) {
             out.print( "      " );
             renderClassDescription( out, (OntClass) i.next() );
             out.println();

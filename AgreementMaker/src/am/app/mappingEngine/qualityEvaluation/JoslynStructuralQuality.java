@@ -132,7 +132,7 @@ public class JoslynStructuralQuality {
 	 * @param propertiesTree2
 	 * @return
 	 */
-	private double orderPreservation(Alignment set,
+	private double orderPreservation(Alignment<Mapping> set,
 			ArrayList<Node> sourceList, ArrayList<Node> targetList,
 			Vertex sourceTree, Vertex targetTree) {
 		
@@ -183,7 +183,7 @@ public class JoslynStructuralQuality {
 		return quality;
 	}
 	
-	private int[][] calculateOrderDiscrepancies(Alignment set,
+	private int[][] calculateOrderDiscrepancies(Alignment<Mapping> set,
 			int[][] sourceOrderMatrix, int[][] targetOrderMatrix) {
 		
 		//build the matrix of orderdiscrepancy between alignemnts a1 = (a, a') a2 = (b, b') 
@@ -316,7 +316,7 @@ public class JoslynStructuralQuality {
 	 * @param targetTree
 	 * @return
 	 */
-	private double distancePreservation(Alignment set,
+	private double distancePreservation(Alignment<Mapping> set,
 			ArrayList<Node> sourceList, ArrayList<Node> targetList,
 			Vertex sourceTree, Vertex targetTree) {
 		
@@ -427,7 +427,7 @@ public class JoslynStructuralQuality {
 		return diameter;
 	}
 
-	private double[][] calculateDistanceDiscrepancies(Alignment set, double[][] sourceDistances, double[][] targetDistances) {
+	private double[][] calculateDistanceDiscrepancies(Alignment<Mapping> set, double[][] sourceDistances, double[][] targetDistances) {
 		//calculate the link distance discrepancy, look at the example on the paper to understand it
 		//given two alignments  a1( a, a') & a2(b, b')
 		// f(a1, a2) = | d(a,b) - d(a',b') | 

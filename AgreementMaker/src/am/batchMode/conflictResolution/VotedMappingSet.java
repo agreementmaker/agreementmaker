@@ -15,7 +15,7 @@ public class VotedMappingSet {
 	public int sourceOntologyIndex;
 	public int targetOntologyIndex;
 	
-	public VotedMappingSet(Alignment aset, int sourceOnt, int targetOnt){
+	public VotedMappingSet(Alignment<Mapping> aset, int sourceOnt, int targetOnt){
 		sourceOntologyIndex = sourceOnt;
 		targetOntologyIndex = targetOnt;
 		Mapping a;
@@ -86,8 +86,8 @@ public class VotedMappingSet {
 	}
 	
 
-	public Alignment getAlignmentSet(){
-		Alignment set = new Alignment();
+	public Alignment<Mapping> getAlignmentSet(){
+		Alignment<Mapping> set = new Alignment<Mapping>();
 		Iterator<VotedMapping> it = getVotedMappings().iterator();
 		VotedMapping v;
 		while(it.hasNext()){

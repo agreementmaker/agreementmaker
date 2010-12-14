@@ -25,6 +25,8 @@ import am.app.ontology.Node;
 
 public class LexicalMatcherUMLS extends AbstractMatcher{
 
+	private static final long serialVersionUID = -592216894091578508L;
+	
 	private KSSRetrieverV5_0 retriever = null;
     private static String hostName = "//umlsks.nlm.nih.gov/KSSRetriever";
     private static String LAT = "";
@@ -101,7 +103,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 			cui = getCUIfromName(sourceName);
 			if(cui != null){
 				cuisS.add(cui);
-				synsListsS[currS] = new ArrayList();
+				synsListsS[currS] = new ArrayList<ArrayList<String>>();
 				synsListsS[currS].add(getSynonyms(cui));
 				currS++;
 			}
@@ -109,7 +111,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 				cuisS.add("fakecui");
 				ArrayList<String> a = new ArrayList<String>();
 				a.add("fakelist");
-				synsListsS[currS] = new ArrayList();
+				synsListsS[currS] = new ArrayList<ArrayList<String>>();
 				synsListsS[currS].add(a);
 				currS++;
 			}
@@ -163,7 +165,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 			cui = getCUIfromName(targetName);
 			if(cui != null){
 				cuis.add(cui);
-				synsLists[curr] = new ArrayList();
+				synsLists[curr] = new ArrayList<ArrayList<String>>();
 				synsLists[curr].add(getSynonyms(cui));
 				curr++;
 			}
@@ -171,7 +173,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 				cuis.add("fakecui");
 				ArrayList<String> a = new ArrayList<String>();
 				a.add("fakelist");
-				synsLists[curr] = new ArrayList();
+				synsLists[curr] = new ArrayList<ArrayList<String>>();
 				synsLists[curr].add(a);
 				curr++;
 			}
@@ -438,7 +440,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 	//C0040300 Returns:
 	//Tissue Types, Tissues, Normal Tissue, Textus, Body tissue structure (body structure),...
 	public ArrayList<String> getSynonyms(String CUI) {
-        ArrayList synonyms = new ArrayList();
+        ArrayList<String> synonyms = new ArrayList<String>();
         try {
             char[] result = retriever.getBasicConceptProperties(DBYEAR, CUI, null, LAT);
             String xml = new String(result);

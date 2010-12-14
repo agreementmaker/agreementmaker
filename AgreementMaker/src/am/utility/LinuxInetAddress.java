@@ -100,8 +100,8 @@ public class LinuxInetAddress {
 	 * @throws UnknownHostException - if there is a problem determining addresses
 	 */
 	private static InetAddress[] getAllLocalUsingNetworkInterface() throws UnknownHostException {
-		ArrayList addresses = new ArrayList();
-		Enumeration e = null;
+		ArrayList<InetAddress> addresses = new ArrayList<InetAddress>();
+		Enumeration<NetworkInterface> e = null;
 		try {
 			e = NetworkInterface.getNetworkInterfaces();
 		} catch (SocketException ex) {
@@ -109,7 +109,7 @@ public class LinuxInetAddress {
 		}
 		while(e.hasMoreElements()) {
 			NetworkInterface ni = (NetworkInterface)e.nextElement();
-			for(Enumeration e2 = ni.getInetAddresses(); e2.hasMoreElements();) {
+			for(Enumeration<InetAddress> e2 = ni.getInetAddresses(); e2.hasMoreElements();) {
 				addresses.add(e2.nextElement());
 			}	
 		}

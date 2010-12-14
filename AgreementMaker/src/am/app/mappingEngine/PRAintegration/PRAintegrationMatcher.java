@@ -15,6 +15,8 @@ import am.app.ontology.Node;
 
 public class PRAintegrationMatcher extends AbstractMatcher {
 	
+	private static final long serialVersionUID = -2666184985092759802L;
+	
 	//It uses the same parameters and parameters panel of the ReferenceAlignmentMatcher
 	AbstractMatcher referenceAlignmentMatcher;
 	
@@ -61,12 +63,12 @@ public class PRAintegrationMatcher extends AbstractMatcher {
     }
 	
 	protected void integrateAlignment(ArrayList<Node> sourceList,
-			ArrayList<Node> targetList, Alignment inputAlignmentSet,
-			Alignment refAlignmentSet, SimilarityMatrix refAlignmentMatrix, alignType typeOfNodes)  throws Exception{
+			ArrayList<Node> targetList, Alignment<Mapping> inputAlignmentSet,
+			Alignment<Mapping> refAlignmentSet, SimilarityMatrix refAlignmentMatrix, alignType typeOfNodes)  throws Exception{
 		
 
 		SimilarityMatrix resultMatrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, inputMatchers.get(0).getRelation());
-		Alignment resultSet = new Alignment();
+		Alignment<Mapping> resultSet = new Alignment<Mapping>();
 		HashSet<Mapping> mappings = new HashSet<Mapping>();
 		
 		//make the mapping set equals to the reference matching.

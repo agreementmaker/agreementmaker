@@ -11,11 +11,13 @@ import am.app.ontology.Node;
 
 public class PRAMatcher extends BaseSimilarityMatcher 
 {
+	private static final long serialVersionUID = 8241040990308110584L;
+
 	// the Alignment Matrices from the Input Matching algorithm.
 	private SimilarityMatrix inputClassesMatrix;
 	private SimilarityMatrix inputPropertiesMatrix;
-	private Alignment inputClassesAlignmentSet;
-	private Alignment inputPropertiesAlignmentSet;
+	private Alignment<Mapping> inputClassesAlignmentSet;
+	private Alignment<Mapping> inputPropertiesAlignmentSet;
 	private HashMap<Node, TreeNode> nodeToTreeNode;
 	private HashMap<Integer, Node> srcClassesIdToNode;
 	private HashMap<Integer, Node> targetClassesIdToNode;
@@ -223,14 +225,14 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	private ArrayList<TreeNode> createTreeNode(ArrayList<Node> listOfNodes) 
 	{
 		ArrayList<TreeNode> treeNodes = new ArrayList<TreeNode>();
-		TreeNode aTreeNode = null, treeNodeInMap = null;
+		TreeNode aTreeNode = null;
 		Node aNode = null;
 	
 		for(int i = 0; i < listOfNodes.size(); i++)
 		{
 			aNode = listOfNodes.get(i);
 			aTreeNode = new TreeNode(aNode);
-			treeNodeInMap = nodeToTreeNode.put(aNode, aTreeNode); //recall that there are source and target lists
+			nodeToTreeNode.put(aNode, aTreeNode); //recall that there are source and target lists
 			treeNodes.add(aTreeNode);
 		}
 		return treeNodes;
@@ -272,7 +274,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	
 
 	
-	private void printAdjacency(ArrayList<TreeNode> nodes)
+	/*private void printAdjacency(ArrayList<TreeNode> nodes)
 	{
 		TreeNode aNode;
 		TreeNode nNode;
@@ -293,7 +295,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 				System.out.println();
 			}
 		}
-	}
+	}*/
 	
 	
 	private void createPRATrees(ArrayList<TreeNode> sourceList, ArrayList<TreeNode> targetList, alignType typeOfNodes) throws Exception
@@ -530,7 +532,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	}
 	
 	
-	private void resetColors(TreeNode aNode)
+	/*private void resetColors(TreeNode aNode)
 	{
 		aNode.setColor(0);
 		ArrayList<TreeNode> anAdj = aNode.getChildren();
@@ -544,7 +546,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 				resetColors(cNode);
 			}
 		}
-	}
+	}*/
 	
 	
 	private void alignNodes(TreeNode sourceNode, TreeNode targetNode, alignType typeOfNodes)
@@ -702,7 +704,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	/**
 	 * @param inputClassesAlignmentSet the inputClassesAlignmentSet to set
 	 */
-	public void setInputClassesAlignmentSet(Alignment inputClassesAlignmentSet) {
+	public void setInputClassesAlignmentSet(Alignment<Mapping> inputClassesAlignmentSet) {
 		this.inputClassesAlignmentSet = inputClassesAlignmentSet;
 	}
 
@@ -711,7 +713,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	/**
 	 * @return the inputClassesAlignmentSet
 	 */
-	public Alignment getInputClassesAlignmentSet() {
+	public Alignment<Mapping> getInputClassesAlignmentSet() {
 		return inputClassesAlignmentSet;
 	}
 
@@ -721,7 +723,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	 * @param inputPropertiesAlignmentSet the inputPropertiesAlignmentSet to set
 	 */
 	public void setInputPropertiesAlignmentSet(
-			Alignment inputPropertiesAlignmentSet) {
+			Alignment<Mapping> inputPropertiesAlignmentSet) {
 		this.inputPropertiesAlignmentSet = inputPropertiesAlignmentSet;
 	}
 
@@ -730,7 +732,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	/**
 	 * @return the inputPropertiesAlignmentSet
 	 */
-	public Alignment getInputPropertiesAlignmentSet() {
+	public Alignment<Mapping> getInputPropertiesAlignmentSet() {
 		return inputPropertiesAlignmentSet;
 	}
 
