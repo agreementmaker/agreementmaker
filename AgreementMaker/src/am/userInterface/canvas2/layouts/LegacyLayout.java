@@ -13,12 +13,15 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+
+import sun.misc.Cleaner;
 
 import com.hp.hpl.jena.ontology.AnnotationProperty;
 import com.hp.hpl.jena.ontology.ConversionException;
@@ -44,6 +47,7 @@ import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.userInterface.UI;
 import am.userInterface.VisualizationPanel;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.GraphicalData;
@@ -1489,7 +1493,13 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			actionCommand == "CREATE_SUPERSETCOMPLETE" || 
 			actionCommand == "CREATE_OTHER" ) {
 		
-			if( hoveringOver == null ) return; // TODO: Figure out what causes this to happen.
+			if( PopupMenuActive ) PopupMenuActive = false; // the menu was just closed if this action was fired.
+			
+			if( hoveringOver == null ) {
+				// this seems to happen when you click too fast
+				Utility.displayErrorPane("bug", "null hoveringOver");
+				return;
+			}
 			
 			String relation = Mapping.EQUIVALENCE;;
 			double sim = 0;
@@ -1583,6 +1593,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 					Utility.displayErrorPane( "Cannot create this mapping.  \nYou may be trying to match incompatible concepts (e.g. classes with properties).\n\n" 
 											  + e1.getMessage() , "Cannot create mapping");
 					//e1.printStackTrace();
+					return;
 				}
 				
 				Mapping a;
@@ -1599,7 +1610,14 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			// add the mappings created to the user
 			Core.getUI().getControlPanel().userMatching(userMappings);
 			
-			PopupMenuActive = false;  // the popup menu goes away when something is clicked on it
+			// clear the hover
+			if( hoveringOver != null ) {
+				hoveringOver.setHover(false);
+				hoveringOver = null;
+			}
+			
+			// redraw the canvas, but not in this thread
+			SwingUtilities.invokeLater( new Runnable() { public void run() { Core.getUI().getCanvas().repaint(); } } );
 		}
 		
 	}

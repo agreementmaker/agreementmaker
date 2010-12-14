@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
@@ -103,6 +104,12 @@ public class LegacyLayoutMouseHandler {
 		
 		// BUTTON1 = Left Click Button, BUTTON2 = Middle Click Button, BUTTON3 = Right Click Button
 
+		// The next 3 lines are important.  Do not remove.  They give a nice feel to the interaction between the popup menus and the canvas.
+		Canvas2Vertex hoverBefore = layout.getHoveringOver();
+		updateHoveringOver(e.getPoint());
+		if( hoverBefore != layout.getHoveringOver() ) return; // prevent deselecting nodes on the first click
+		
+		// commonly used variables
 		Canvas2 vizpanel = layout.getVizPanel();
 		Canvas2Vertex hoveringOver = layout.getHoveringOver();
 		ArrayList<LegacyNode> selectedNodes = layout.getSelectedNodes();
@@ -118,6 +125,8 @@ public class LegacyLayoutMouseHandler {
 			layout.cancelPopupMenu(g);
 		}
 
+		
+		
 		// only process mouse clicks if there's not a popup menu active
 		switch( e.getButton() ) {
 
@@ -143,6 +152,9 @@ public class LegacyLayoutMouseHandler {
 
 		// June 17th, 2010 - Cosmin
 		//   Added the SingleMappingView to replace SMO.  Activated by doubleclicking a node.
+		
+		// Dec 13th, 2010 - Cosmin
+		//   Worked out all the bugs in the interface.  It feels and looks really nice now.
 
 		case MouseEvent.BUTTON1:
 			if( e.getClickCount() == 2 ) {  // double click with the left mouse button
@@ -478,69 +490,20 @@ public class LegacyLayoutMouseHandler {
 	
 	public void mouseMoved(MouseEvent e)    {
 
+		if( layout.isPopupMenuActive() ) return; // don't mess with anything while there's a popup menu active.
+		
 		// Setup our commonly used variables.
 		Canvas2 vizpanel = layout.getVizPanel();
 		Canvas2Vertex hoveringOver = layout.getHoveringOver();
 		Graphics g = vizpanel.getGraphics();
 		
-		
-
-		boolean hoveringOverEmptySpace = true;
-		for( Canvas2Vertex vertex : vizpanel.getVisibleVertices() ) {
-			if( vertex instanceof LegacyNode )    // we only care about legacy nodes (for now)
-			if( vertex.contains(e.getPoint()) ) {
-				// we are hovering over vertex
-				hoveringOverEmptySpace = false;
-				// first, remove the hover from the last element we were hovering over
-				if( hoveringOver == vertex ) {
-					// we are still hoovering over this element, do nothing
-					break;
-				} else if( hoveringOver != null ) {
-					// we had been hovering over something, but now we're not
-					hoveringOver.setHover(false);
-					layout.setHoveringOver(null);
-					//hoveringOver.clearDrawArea(g);
-					if( !layout.isPopupMenuActive() ) hoveringOver.draw(g);
-				}
-				
-				hoveringOver = vertex;  
-				layout.setHoveringOver(vertex); // update the layout
-				hoveringOver.setHover(true);
-				//hoveringOver.clearDrawArea(g);
-				
-				// don't redraw over a popupmenu
-				if( layout.isPopupMenuActive() ) { break; }
-				
-				// redraw all the edges connected to this node. (only if they are visible)
-				Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeInIter = hoveringOver.edgesInIter();
-				while( edgeInIter.hasNext() ) { 
-					Canvas2Edge currentEdge = (Canvas2Edge) edgeInIter.next();
-					if( !currentEdge.getObject().visible ) continue;
-					Canvas2Vertex originNode = (Canvas2Vertex) currentEdge.getOrigin();
-					if( originNode.getObject().visible )
-						currentEdge.draw(g); 
-				}
-				Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeOutIter = hoveringOver.edgesOutIter();
-				while( edgeOutIter.hasNext() ) {
-					Canvas2Edge currentEdge = (Canvas2Edge) edgeOutIter.next();
-					if( !currentEdge.getObject().visible ) continue;
-					Canvas2Vertex destinationNode = (Canvas2Vertex) currentEdge.getDestination();
-					if( destinationNode.getObject().visible )
-						currentEdge.draw(g);
-				}
-				
-				
-				hoveringOver.draw(g);
-				break;
-				
-			}
-		}
+		boolean hoveringOverEmptySpace = updateHoveringOver(e.getPoint());
 		
 		if( hoveringOverEmptySpace && hoveringOver != null) {
-			// clear the hover
+			// clear the hover (moving from hovering over a node to empty space)
 			hoveringOver.setHover(false);
 			//hoveringOver.clearDrawArea(g);
-			if( !layout.isPopupMenuActive() ) { hoveringOver.draw(g); } // don't redraw over a popupmenu
+			hoveringOver.draw(g);
 			
 			hoveringOver = null;
 			layout.setHoveringOver(null);
@@ -551,4 +514,75 @@ public class LegacyLayoutMouseHandler {
 		
 	}
 	
+	/**
+	 * Update the hoveringOver variable with the current mouse position.
+	 * @param mousePosition
+	 * @return true if we are hovering over something, false if we're hovering over nothing (empty space)
+	 */
+	public boolean updateHoveringOver(Point mousePosition) {
+		
+		Graphics g = layout.getVizPanel().getGraphics();
+		
+		boolean hoveringOverEmptySpace = true;
+		for( Canvas2Vertex vertex : layout.getVizPanel().getVisibleVertices() ) {
+			if( vertex instanceof LegacyNode )    // we only care about legacy nodes (for now)
+			if( vertex.contains(mousePosition) ) {
+				
+				// we are hovering over vertex
+				hoveringOverEmptySpace = false;
+				// first, remove the hover from the last element we were hovering over
+				if( layout.getHoveringOver() == vertex ) {
+					// we are still hoovering over this element, do nothing
+					break;
+				} 
+				
+				if( layout.getHoveringOver() != null ) {
+					// we had been hovering over something, but now we're not
+					Canvas2Vertex hoveringOver = layout.getHoveringOver();
+					layout.getHoveringOver().setHover(false);
+					layout.setHoveringOver(null);
+					//hoveringOver.clearDrawArea(g);
+					if( !layout.isPopupMenuActive() ) hoveringOver.draw(g);
+				}
+				  
+				layout.setHoveringOver(vertex); // update the layout
+				vertex.setHover(true);
+				//hoveringOver.clearDrawArea(g);
+				
+				// don't redraw over a popupmenu
+				if( layout.isPopupMenuActive() ) { break; }
+				
+				// redraw all the edges connected to this node. (only if they are visible)
+				Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeInIter = vertex.edgesInIter();
+				while( edgeInIter.hasNext() ) { 
+					Canvas2Edge currentEdge = (Canvas2Edge) edgeInIter.next();
+					if( !currentEdge.getObject().visible ) continue;
+					Canvas2Vertex originNode = (Canvas2Vertex) currentEdge.getOrigin();
+					if( originNode.getObject().visible )
+						currentEdge.draw(g); 
+				}
+				Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeOutIter = vertex.edgesOutIter();
+				while( edgeOutIter.hasNext() ) {
+					Canvas2Edge currentEdge = (Canvas2Edge) edgeOutIter.next();
+					if( !currentEdge.getObject().visible ) continue;
+					Canvas2Vertex destinationNode = (Canvas2Vertex) currentEdge.getDestination();
+					if( destinationNode.getObject().visible )
+						currentEdge.draw(g);
+				}
+				
+				
+				vertex.draw(g);
+				break;
+				
+			}
+		}
+		
+		if( hoveringOverEmptySpace && layout.getHoveringOver() != null ) {
+			// clear the hover, we are now hovering over empty space
+			Canvas2Vertex hoveringOver = layout.getHoveringOver();
+			hoveringOver.setHover(false);
+			layout.setHoveringOver(null);
+		}
+		return hoveringOverEmptySpace;
+	}
 }
