@@ -151,7 +151,7 @@ public class LegacyMapping extends Canvas2Edge {
 		
 		while( edgeIter.hasNext() ) {
 			Canvas2Edge edge = (Canvas2Edge) edgeIter.next();
-			if( edge.getObject().type == NodeType.MAPPING ) {
+			if( edge.getObject().type == NodeType.MAPPING && edge.getObject().visible == true ) {
 				// check to see if it's this mapping.  if it is this one, stop
 				if( this.equals(edge) ) { break; }
 
