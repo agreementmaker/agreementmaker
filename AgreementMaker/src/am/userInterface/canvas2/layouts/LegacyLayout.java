@@ -144,7 +144,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 
 	private boolean SingleMappingView = false; 	// this is used when a mapping is doubleclicked with the left mouse button
 												// in order to show only that specific mapping
-	private ArrayList<LegacyMapping> SingleMappingMappings = new ArrayList<LegacyMapping>(); // we need to keep a list of the mappings we change for the SingleMappingView
+	private ArrayList<LegacyMapping> MovedMappings = new ArrayList<LegacyMapping>(); // we need to keep a list of the mappings we change for the SingleMappingView
 	private ArrayList<LegacyNode> SingleMappingMovedNodes = new ArrayList<LegacyNode>(); // we need to keep a list of the nodes we moved
 	
 	
@@ -1303,7 +1303,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		while( movedNodesIter.hasNext() ) { movedNodesIter.next().popXY(); }
 		SingleMappingMovedNodes.clear();
 		
-		Iterator<LegacyMapping> movedMappingsIter = SingleMappingMappings.iterator();
+		Iterator<LegacyMapping> movedMappingsIter = MovedMappings.iterator();
 		while( movedMappingsIter.hasNext() ) { 
 			LegacyMapping currentMapping = movedMappingsIter.next();
 			// translate the label back to only similarity if so required
@@ -1317,7 +1317,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			
 			currentMapping.updateBounds(); 
 		}
-		SingleMappingMappings.clear();
+		MovedMappings.clear();
 		
 		
 		SingleMappingView = false; // turn off the singlemappingview
@@ -1394,9 +1394,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		// we need to move the opposite side up to the side we clicked
 		//ArrayList<LegacyMapping> mappingList = new ArrayList<LegacyMapping>(); // we have to keep a list of all the mappings to/from this node
 		int uppermostY = -1; // -1 is a dummy value.  Valid values are >= 0.
-		Iterator<LegacyNode> nodeIter2 = selectedNodes.iterator();
-		while( nodeIter2.hasNext() ) {
-			LegacyNode selectedNode = nodeIter2.next();
+		for( LegacyNode selectedNode : selectedNodes ) {
 			
 			// update the uppermostY
 			if( uppermostY < 0 || selectedNode.getObject().y < uppermostY ) {
@@ -1408,7 +1406,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			while( edgeInIter.hasNext() ) {
 				Canvas2Edge connectedEdge = (Canvas2Edge) edgeInIter.next();
 				if( connectedEdge instanceof LegacyMapping ) {
-					SingleMappingMappings.add( (LegacyMapping) connectedEdge );
+					MovedMappings.add( (LegacyMapping) connectedEdge );
 				}
 			}
 			
@@ -1416,14 +1414,14 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			while( edgeOutIter.hasNext() ) {
 				Canvas2Edge connectedEdge = (Canvas2Edge) edgeOutIter.next();
 				if( connectedEdge instanceof LegacyMapping) {
-					SingleMappingMappings.add( (LegacyMapping) connectedEdge );
+					MovedMappings.add( (LegacyMapping) connectedEdge );
 				}
 			}
 		}
 		// now we must move the mappings to the uppermostY.
-		for( int i = 0; i < SingleMappingMappings.size(); i++ ) {
+		for( int i = 0; i < MovedMappings.size(); i++ ) {
 			// nodeheight marginbottom
-			LegacyMapping currentMapping = SingleMappingMappings.get(i);
+			LegacyMapping currentMapping = MovedMappings.get(i);
 			
 			// translate the label of the mapping to include the matcher name if the user so desires.
 			if( Core.getAppPreferences().getShowMappingsShortname() ) {
@@ -1491,6 +1489,8 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			actionCommand == "CREATE_SUPERSETCOMPLETE" || 
 			actionCommand == "CREATE_OTHER" ) {
 		
+			if( hoveringOver == null ) return; // TODO: Figure out what causes this to happen.
+			
 			String relation = Mapping.EQUIVALENCE;;
 			double sim = 0;
 			ArrayList<Mapping> userMappings = new ArrayList<Mapping>();
@@ -1553,6 +1553,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	
 			// what type of nodes are we mapping
 			alignType type = null;
+			
 			if( hoveringOver.getGraphicalData().type == NodeType.CLASS_NODE ) {
 				type = AbstractMatcher.alignType.aligningClasses;
 			} else if( hoveringOver.getGraphicalData().type == NodeType.PROPERTY_NODE ) {
