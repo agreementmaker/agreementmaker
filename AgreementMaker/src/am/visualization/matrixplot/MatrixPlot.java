@@ -24,11 +24,11 @@ public class MatrixPlot extends JPanel {
 
 	private static final long serialVersionUID = -7536491459476626040L;
 
-	private final AbstractMatcher  matcher;
+	protected final AbstractMatcher  matcher;
 	protected final SimilarityMatrix matrix;
 	private final VisualizationType type;
 	
-	private int squareSize = 10;
+	protected int squareSize = 10;
 	private int border = 2;
 	private BufferedImage I;
 	private Point selected = null;
@@ -43,6 +43,8 @@ public class MatrixPlot extends JPanel {
 	
 	private Gradient gradient = null;
 	private boolean tooBig = false; // TODO: Remove this, and make the MatrixPlot scalable.
+	
+	protected boolean autoDrawCrosshairs = true; // automatically draw the crosshairs.  This can be set false by overriding classes to do custom drawing.
 	
 	public MatrixPlot(SimilarityMatrix mtx) {
 		super();
@@ -192,6 +194,8 @@ public class MatrixPlot extends JPanel {
 				} else {
 					// visualize only the Alignment, using a solid color
 					
+					System.out.println("AAAAAAAAAAA");
+					
 					Alignment<Mapping> vizAlignment = null;
 					
 					if( matcher != null ) {
@@ -208,8 +212,9 @@ public class MatrixPlot extends JPanel {
 						if( vizAlignment != null ) {
 							
 							for( Mapping map : vizAlignment ) {
-								int x1 = map.getSourceKey() * squareSize;
-								int y1 = map.getTargetKey() * squareSize;
+								System.out.println("align");
+								int x1 = translateRow(map.getSourceKey()) * squareSize;
+								int y1 = translateCol(map.getTargetKey()) * squareSize;
 								g.fillRect(x1, y1, squareSize, squareSize);
 							}
 							
@@ -316,6 +321,11 @@ public class MatrixPlot extends JPanel {
 		gPlotArea.setComposite( AlphaComposite.getInstance( AlphaComposite.SRC_ATOP , 1.0f));
 		gPlotArea.drawImage(I, 0, 0, this);
 		
+		if( autoDrawCrosshairs ) drawCrosshairs(gPlotArea);
+		
+	}
+	
+	protected void drawCrosshairs( Graphics2D gPlotArea ) {
 		if( selected != null ) {
 			int row = selected.x;  // the selected.x is already translated by the selectMapping function.
 			int col = selected.y;  // the selected.y is already translated by the selectMapping function.
@@ -332,7 +342,6 @@ public class MatrixPlot extends JPanel {
 			}
 		}
 	}
-	
 	
 	public void setGradient( Gradient g ) { gradient = g; }
 	

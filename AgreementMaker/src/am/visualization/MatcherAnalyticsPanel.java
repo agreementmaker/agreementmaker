@@ -321,7 +321,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		if( e.type == EventType.VIEW_ORDERED_PLOT ) {
 			MatrixPlotPanel payload = (MatrixPlotPanel)e.payload;
 			
-			OrderedMatrixPlot plot = new OrderedMatrixPlot(payload.getMatrix());
+			OrderedMatrixPlot plot = new OrderedMatrixPlot(payload.getMatcher(), payload.getMatrix(), payload);
 			
 			MatrixPlotPanel newPlot = new MatrixPlotPanel(payload.getMatcher(), this, plot);
 			newPlot.getPlot().draw(false);

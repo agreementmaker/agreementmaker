@@ -1,9 +1,18 @@
 package am.visualization.matrixplot;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import test.instanceHiding.A;
+
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntProperty;
+
 import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
@@ -15,14 +24,21 @@ public class OrderedMatrixPlot extends MatrixPlot {
 	
 	int[] rowInverseTransform;
 	int[] colInverseTransform;
+	
+	ArrayList<Integer> colLines;
+	ArrayList<Integer> rowLines;	
+	
+	public OrderedMatrixPlot(AbstractMatcher matcher, SimilarityMatrix mtx, MatrixPlotPanel mpnl) {
+		super(matcher, mtx, mpnl);
+		autoDrawCrosshairs = false;
 		
-	public OrderedMatrixPlot(SimilarityMatrix mtx) {
-		super(mtx);
 	}
 	
 	private void createColTransform() {
 		Ontology targetOntology = Core.getInstance().getOntologyByID(matrix.getTargetOntologyID());
 		ArrayList<Node> nodes = null;
+		
+		colLines = new ArrayList<Integer>();
 		
 		if(matrix.getAlignType() == alignType.aligningClasses)
 			nodes = targetOntology.getClassesList();
@@ -46,9 +62,7 @@ public class OrderedMatrixPlot extends MatrixPlot {
 //			System.out.println(ordered.get(i).getLocalName());
 //		}
 		
-		for (int i = 0; i < colTransform.length; i++) {
-			colTransform[i] = ordered.get(i).getIndex();
-		}
+		createTransformAndLines(colLines, ordered, colTransform);
 		
 		boolean found;
 		for (int i = 0; i < colTransform.length; i++){
@@ -68,6 +82,8 @@ public class OrderedMatrixPlot extends MatrixPlot {
 		Ontology sourceOntology = Core.getInstance().getOntologyByID(ontId);
 		ArrayList<Node> nodes = null;
 		
+		rowLines = new ArrayList<Integer>();
+		
 		if(matrix.getAlignType() == alignType.aligningClasses)
 			nodes = sourceOntology.getClassesList();
 		else nodes = sourceOntology.getPropertiesList();
@@ -82,8 +98,9 @@ public class OrderedMatrixPlot extends MatrixPlot {
 			rowTransform[i] = ordered.get(i).getIndex();
 		}
 		
-		boolean found;
+		createTransformAndLines(rowLines, ordered, rowTransform);
 		
+		boolean found;
 		for (int i = 0; i < rowInverseTransform.length; i++){
 			found = false;
 			for (int j = 0; j < rowInverseTransform.length && !found; j++) {
@@ -120,5 +137,50 @@ public class OrderedMatrixPlot extends MatrixPlot {
 	@Override
 	public int inverseTranslateRow(int translatedRow) {
 		return rowInverseTransform[translatedRow];
+	}
+	
+	public void createTransformAndLines(ArrayList<Integer> lines,ArrayList<Node> ordered,int[] transform){
+		int prevDepth = 1;
+		int currDepth;
+		for (int i = 0; i < transform.length; i++) {
+			if(matrix.getAlignType() == alignType.aligningClasses){
+				OntClass cl = ordered.get(i).getResource().as(OntClass.class);
+				currDepth = NodeComparator.getClassDepth(cl, 1);
+				System.out.println(cl.getLocalName()+" "+currDepth);
+			}
+			else{
+				OntProperty pr = ordered.get(i).getResource().as(OntProperty.class);
+				currDepth = NodeComparator.getPropertyDepth(pr, 1);
+			}
+				
+			if(currDepth!=prevDepth){
+				lines.add(i);
+				System.out.println("adding line "+ i);
+			}
+			prevDepth = currDepth;				
+			transform[ordered.get(i).getIndex()] = i;
+		}
+	}
+	
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		
+		Graphics2D gPlotArea = (Graphics2D)g;
+		
+		//Draw depth lines
+		gPlotArea.setColor(Color.RED);
+		
+		for (int i = 0; i < rowLines.size(); i++) {
+			int row = rowLines.get(i);
+			gPlotArea.drawLine( row * squareSize, 0, row * squareSize, getHeight() );
+		}
+		
+		for (int i = 0; i < colLines.size(); i++) {
+			int col = colLines.get(i);
+			gPlotArea.drawLine( 0, col * squareSize, getWidth(), col * squareSize);
+		}
+		
+		drawCrosshairs((Graphics2D)g);		
 	}
 }
