@@ -47,7 +47,32 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 		super();
 
 		dispatch = d;
+		
+		
 		plot = new MatrixPlot(a, mtx, this);
+		
+		plot.addMouseListener(this);
+		plot.draw(false);
+		
+		if( a != null ) { lblName = new JLabel(a.getName().getMatcherName()); }
+		else { lblName = new JLabel("--"); }
+		
+		lblSimilaritySelected = new JLabel("", JLabel.TRAILING);
+		
+		matcher = a;
+		
+		initThisPanel();		
+		
+	}
+	
+	public MatrixPlotPanel(AbstractMatcher a, MatcherAnalyticsEventDispatch d , MatrixPlot plot) {
+		super();
+
+		dispatch = d;
+		
+		
+		this.plot = plot;
+		
 		plot.addMouseListener(this);
 		plot.draw(false);
 		
@@ -170,13 +195,16 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 			int squareSize = plot.getSquareSize();
 			
 			int rowMod = clickPoint.x % squareSize;
-			final int row = (clickPoint.x - rowMod) / squareSize;
+			int row = (clickPoint.x - rowMod) / squareSize;
 			
 			int colMod = clickPoint.y % squareSize;
-			final int col = (clickPoint.y - colMod) / squareSize;
+			int col = (clickPoint.y - colMod) / squareSize;
 			
-			plot.selectMapping(row, col);
-			lblSimilaritySelected.setText( Double.toString( Utility.roundDouble( plot.getMatrix().getSimilarity(row, col), 4) ) );
+			final int rowInverse = plot.inverseTranslateRow(row);
+			final int colInverse = plot.inverseTranslateCol(col);
+			
+			plot.selectMapping(rowInverse,colInverse);
+			lblSimilaritySelected.setText( Double.toString( Utility.roundDouble( plot.getMatrix().getSimilarity(rowInverse, colInverse), 4) ) );
 			
 			if( dispatch != null ) {
 				// broadcast this event to the other MatrixPlot objects.
@@ -184,7 +212,7 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 				Runnable fire = new Runnable() {
 					
 					public void run() {
-						dispatch.broadcastEvent( new MatcherAnalyticsEvent( sourceObject ,  EventType.SELECT_MAPPING,  new Point(row,col) ));
+						dispatch.broadcastEvent( new MatcherAnalyticsEvent( sourceObject ,  EventType.SELECT_MAPPING,  new Point(rowInverse,colInverse) ));
 					}
 				};
 				
@@ -298,6 +326,20 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 				Runnable fire = new Runnable() {
 					public void run() {
 						dispatch.broadcastEvent( new MatcherAnalyticsEvent( this,  EventType.SET_FEEDBACK,  matcher ));
+					}
+				};
+				
+				SwingUtilities.invokeLater(fire);
+			}
+		}
+		
+		if( e.getActionCommand() == MatrixPlotPopupMenu.ActionCommands.VIEW_ORDERED_PLOT.name() ) {
+			if( dispatch != null ) {
+				// broadcast this event to the other MatrixPlot objects.
+				final MatrixPlotPanel mpp = this;
+				Runnable fire = new Runnable() {
+					public void run() {
+						dispatch.broadcastEvent( new MatcherAnalyticsEvent( this,  EventType.VIEW_ORDERED_PLOT,  mpp ));
 					}
 				};
 				

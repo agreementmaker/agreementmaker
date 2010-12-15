@@ -3,6 +3,9 @@ package am;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import com.hp.hpl.jena.ontology.OntClass;
+
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.IntDoublePair;
 import am.userInterface.table.MyTableModel;
@@ -456,11 +459,5 @@ public class Utility {
 		
 
 		return hh+":"+mm+":"+ss+":"+msmsms;
-		
-		
-		
 	}
-
-
-	
 }

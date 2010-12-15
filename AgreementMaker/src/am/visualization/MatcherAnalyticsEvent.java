@@ -13,7 +13,8 @@ public class MatcherAnalyticsEvent extends EventObject {
 		DISPLAY_CLUSTER,	  // display a cluster, payload is inferred to be the cluster
 		CLEAR_CLUSTER,		// clear the cluster display
 		REMOVE_PLOT,			// remove the plot from the analytics panel
-		SET_FEEDBACK		// set the feedback matcher that will be updated when the user generates feedback (payload == the matcher)
+		SET_FEEDBACK,		// set the feedback matcher that will be updated when the user generates feedback (payload == the matcher)
+		VIEW_ORDERED_PLOT	// event is fired when adding the ordered matrix plot (payload == MatrixPlotPanel of the unordered plot)
 	}
 	
 	public final EventType type;

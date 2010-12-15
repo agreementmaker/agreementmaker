@@ -332,7 +332,18 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	refEvaluation = null;
 	}
     //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
-    protected void afterAlignOperations()  {}
+    protected void afterAlignOperations()  {
+    	// Setup the ontology IDs of the SimilarityMatrices.
+    	if( classesMatrix != null ) {
+    		classesMatrix.setSourceOntologyID(sourceOntology.getID());
+    		classesMatrix.setTargetOntologyID(targetOntology.getID());
+    	}
+    	
+    	if( propertiesMatrix != null ) {
+    		propertiesMatrix.setSourceOntologyID(sourceOntology.getID());
+    		propertiesMatrix.setTargetOntologyID(targetOntology.getID());
+    	}
+    }
     //RESET ALIGNMENT STRUCTURES,     //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
     public void beforeSelectionOperations() {
     	classesAlignmentSet = null;

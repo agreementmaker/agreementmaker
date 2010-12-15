@@ -40,6 +40,7 @@ import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.utility.WrapLayout;
 import am.visualization.MatcherAnalyticsEvent.EventType;
 import am.visualization.matrixplot.MatrixPlotPanel;
+import am.visualization.matrixplot.OrderedMatrixPlot;
 
 public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListener, MatcherAnalyticsEventDispatch, ActionListener {
 	
@@ -315,6 +316,20 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			removeMatcherAnalyticsEventListener(ptor);
 			revalidate();
 			return;
+		}
+		
+		if( e.type == EventType.VIEW_ORDERED_PLOT ) {
+			MatrixPlotPanel payload = (MatrixPlotPanel)e.payload;
+			
+			OrderedMatrixPlot plot = new OrderedMatrixPlot(payload.getMatrix());
+			
+			MatrixPlotPanel newPlot = new MatrixPlotPanel(payload.getMatcher(), this, plot);
+			newPlot.getPlot().draw(false);
+			
+			addMatcherAnalyticsEventListener(newPlot);
+			
+			pnlPlots.add(newPlot);
+			plotsLoaded++;
 		}
 		
 		if( e.type == EventType.SET_REFERENCE ) {

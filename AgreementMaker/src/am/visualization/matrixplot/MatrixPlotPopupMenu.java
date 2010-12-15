@@ -14,7 +14,7 @@ public class MatrixPlotPopupMenu extends JPopupMenu {
 
 	// used instead of string for action commands
 	public enum ActionCommands {
-		SET_REFERENCE, VIEW_ALIGNMENT, VIEW_CLUSTER, CLEAR_CLUSTER, REMOVE_PLOT, SET_FEEDBACK;
+		SET_REFERENCE, VIEW_ALIGNMENT, VIEW_CLUSTER, CLEAR_CLUSTER, REMOVE_PLOT, SET_FEEDBACK, VIEW_ORDERED_PLOT;
 	}
 	
 	
@@ -46,6 +46,10 @@ public class MatrixPlotPopupMenu extends JPopupMenu {
 	    JMenuItem miRemove = new JMenuItem("Remove plot");
 	    		  miRemove.setActionCommand(ActionCommands.REMOVE_PLOT.name());
 	    		  miRemove.addActionListener(listener);
+	    		  
+	    JMenuItem miOrdered = new JMenuItem("View ordered plot");
+	    		  miOrdered.setActionCommand(ActionCommands.VIEW_ORDERED_PLOT.name());
+	    		  miOrdered.addActionListener(listener);
 	    
 	    add(miReference);
 	    add(miFeedback);
@@ -53,6 +57,8 @@ public class MatrixPlotPopupMenu extends JPopupMenu {
 	    add(miViewAlignment);
 	    add(miViewCluster);
 	    add(miClearCluster);
+	    addSeparator();
+	    add(miOrdered);
 	    addSeparator();
 	    add(miRemove);
 	    

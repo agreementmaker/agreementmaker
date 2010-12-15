@@ -25,7 +25,7 @@ public class MatrixPlot extends JPanel {
 	private static final long serialVersionUID = -7536491459476626040L;
 
 	private final AbstractMatcher  matcher;
-	private final SimilarityMatrix matrix;
+	protected final SimilarityMatrix matrix;
 	private final VisualizationType type;
 	
 	private int squareSize = 10;
@@ -166,10 +166,12 @@ public class MatrixPlot extends JPanel {
 		
 					for( int r = 0; r < rows; r++ ){
 						for( int c = 0; c < cols; c++ ) {
-							int x1 = r * squareSize;
-							int y1 = c * squareSize;
+							int translatedRow = translateRow(r);
+							int translatedCol = translateCol(c);
+							int x1 = translatedRow * squareSize;
+							int y1 = translatedCol * squareSize;
 							
-							double similarity = matrix.getSimilarity(r, c);
+							double similarity = matrix.getSimilarity( r, c );
 							Color simcolor = gradient.getColor(similarity);
 							int[] iArray = { simcolor.getRed(), simcolor.getGreen(), simcolor.getBlue() };
 							
@@ -256,11 +258,11 @@ public class MatrixPlot extends JPanel {
 	
 	public void selectMapping(int row, int col) {
 		if( selected == null ) {
-			selected = new Point(row,col);
-		} else if( selected.x == row && selected.y == col ) {
+			selected = new Point(translateRow(row),translateCol(col));
+		} else if( selected.x == translateRow(row) && selected.y == translateCol(col) ) {
 			selected = null;
 		} else {
-			selected = new Point(row,col);
+			selected = new Point(translateRow(row),translateCol(col));
 		}
 		repaint();
 	}
@@ -315,8 +317,8 @@ public class MatrixPlot extends JPanel {
 		gPlotArea.drawImage(I, 0, 0, this);
 		
 		if( selected != null ) {
-			int row = selected.x;
-			int col = selected.y;
+			int row = selected.x;  // the selected.x is already translated by the selectMapping function.
+			int col = selected.y;  // the selected.y is already translated by the selectMapping function.
 			int sqMod = squareSize % 2;
 			int selectRowCol = (squareSize - sqMod) / 2;
 			
@@ -334,4 +336,12 @@ public class MatrixPlot extends JPanel {
 	
 	public void setGradient( Gradient g ) { gradient = g; }
 	
+	/**
+	 * These translation functions do nothing in this class.  
+	 * They are meant to be extended by the overriding classes.
+	 */
+	public int translateRow( int originalRow ) { return originalRow; }
+	public int translateCol( int originalCol ) { return originalCol; }
+	public int inverseTranslateRow( int translatedRow ) { return translatedRow; }
+	public int inverseTranslateCol( int translatedCol ) { return translatedCol; }
 }
