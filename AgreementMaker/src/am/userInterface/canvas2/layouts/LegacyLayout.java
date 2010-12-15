@@ -1497,8 +1497,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			
 			if( hoveringOver == null ) {
 				// this seems to happen when you click too fast
-				Utility.displayErrorPane("bug", "null hoveringOver");
-				return;
+				return;  // do nothing for now
 			}
 			
 			String relation = Mapping.EQUIVALENCE;;
