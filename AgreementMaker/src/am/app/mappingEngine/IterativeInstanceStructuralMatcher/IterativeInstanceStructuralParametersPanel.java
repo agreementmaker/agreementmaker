@@ -123,12 +123,6 @@ public class IterativeInstanceStructuralParametersPanel extends AbstractMatcherP
 		layout.setVerticalGroup(vGroup); 
 	}
 
-
-	public static void main(String[] args) {
-		AbstractMatcher iism = MatcherFactory.getMatcherInstance(MatchersRegistry.IISM, 5);
-		MatcherParametersDialog dialog = new MatcherParametersDialog(iism);
-	}
-	
 	@Override
 	public String checkParameters() {
 		parameters.setConsiderIndividuals(individuals.isSelected());
