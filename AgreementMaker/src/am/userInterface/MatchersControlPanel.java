@@ -203,7 +203,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 				Utility.displayMessagePane(a.getDetails(), "Matcher details");
 			}
 			else if(obj == matchButton) {
-				matchSelected();
+				match();
 			}
 			else if(obj == delete) {
 				delete();
@@ -325,7 +325,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	public void newManual() throws Exception {
 		int lastIndex = Core.getInstance().getMatcherInstances().size();
 		AbstractMatcher manualMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.UserManual, lastIndex);
-		match(manualMatcher , true);
+		matchersTablePanel.addMatcher(manualMatcher);
+		Core.getUI().redisplayCanvas();
+		
 	}
 	
 	public void delete() throws Exception {
@@ -467,64 +469,50 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	}
 	
 	//WARNING THIS METHOD IS INVOKED BY matchSelected(), and by newManual(), basically this method should be invoked anytime we want to invoke a specific matcher, like if we selected it and clicked match button.
-	public void match(AbstractMatcher currentMatcher, boolean defaultParam) throws Exception{
-		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows(); //indexes in the table correspond to the indexes of the matchers in the matcherInstances list in core class
-		int selectedMatchers = rowsIndex.length;
+	public void match() throws Exception{
+		
+		// 1. Make sure ontologies are loaded.
 		if(!Core.getInstance().ontologiesLoaded() ) {
 			Utility.displayErrorPane("You have to load Source and Target ontologies before running any matcher\nClick on File Menu and select Open Ontology functions ", null);
+			return;
 		}
-		else if(currentMatcher.getMinInputMatchers() > selectedMatchers ) {
+		
+		// 2. Create the MatcherParametersDialog and get the matcher with settings.
+		MatcherParametersDialog dialog = new MatcherParametersDialog();
+		
+		AbstractMatcher currentMatcher;
+		if(dialog.parametersSet()) {
+			currentMatcher = dialog.getMatcher();
+			currentMatcher.setParam(dialog.getParameters());
+		} else {
+			dialog.dispose();
+			return;
+		}
+		
+		// 3. Bring up dialog to set input matchers, and add them to the AbstractMatcher.
+		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows(); //indexes in the table correspond to the indexes of the matchers in the matcherInstances list in core class
+		int selectedMatchers = rowsIndex.length;
+		if(currentMatcher.getMinInputMatchers() > selectedMatchers ) {
 			Utility.displayErrorPane("Select at least "+currentMatcher.getMinInputMatchers()+" matchings from the table to run this matcher.", null);
+			return;
 		}
-		else {
-			//Set input matchers into the abstractmatcher VERY IMPORTANT to set them before invoking the parameter panel, in fact the parameter panel may need to work on inputMatchers also.
-			currentMatcher.setOptimized(optimizedCheck.isSelected());//this method set maxInputMatcher to 1
-			for(int i = 0; i<rowsIndex.length && i< currentMatcher.getMaxInputMatchers(); i++) {
-				AbstractMatcher input = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
-				currentMatcher.addInputMatcher(input);
-			}
-			boolean everythingOk = true;
-			//Asking parameters before setting input matcher list, just because the user can still cancel the operation
-			if(currentMatcher.needsParam()) {
-				everythingOk = false;
-				MatcherParametersDialog dialog = new MatcherParametersDialog(currentMatcher);
-				if(dialog.parametersSet()) {
-					currentMatcher.setParam(dialog.getParameters());
-					everythingOk = true;
-				}
-				dialog.dispose();
-			}
-			if(everythingOk) {
-				if(defaultParam) {
-					currentMatcher.setThreshold(currentMatcher.getDefaultThreshold());
-					currentMatcher.setMaxSourceAlign(currentMatcher.getDefaultMaxSourceRelations());
-					currentMatcher.setMaxTargetAlign(currentMatcher.getDefaultMaxTargetRelations());
-				}
-				else {
-					currentMatcher.setThreshold(Utility.getDoubleFromPercent((String)thresholdCombo.getSelectedItem()));
-					currentMatcher.setMaxSourceAlign(Utility.getIntFromNumRelString((String)sRelationCombo.getSelectedItem()));
-					currentMatcher.setMaxTargetAlign(Utility.getIntFromNumRelString((String)tRelationCombo.getSelectedItem()));
-				}
-				
-				
-				// The dialog will start the matcher in a background thread, show progress as the matcher is running, and show the report at the end.
-				new MatcherProgressDialog(currentMatcher);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
-				if(!currentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
-					matchersTablePanel.addMatcher(currentMatcher);
-					Core.getUI().redisplayCanvas();
-				}	
+		//Set input matchers into the abstractmatcher VERY IMPORTANT to set them before invoking the parameter panel, in fact the parameter panel may need to work on inputMatchers also.
+		for(int i = 0; i<rowsIndex.length && i< currentMatcher.getMaxInputMatchers(); i++) {
+			AbstractMatcher input = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
+			currentMatcher.addInputMatcher(input);
+		}
+		
+		
+		// 4. Bring up MatcherProgressDialog which runs the matcher.
+		// The dialog will start the matcher in a background thread, show progress as the matcher is running, and show the report at the end.
+		new MatcherProgressDialog(currentMatcher);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
+		if(!currentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
+			matchersTablePanel.addMatcher(currentMatcher);
+			Core.getUI().redisplayCanvas();
+		}	
 
-				System.out.println("Matching Process Complete");
-			}
-		}
-	}
-	
-	public void matchSelected() throws Exception{
-		String matcherName = (String) matcherCombo.getSelectedItem();
-		//the new matcher will put at the end of the list so at the end of the table so the index will be:
-		int lastIndex = Core.getInstance().getMatcherInstances().size();
-		AbstractMatcher currentMatcher = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), lastIndex);
-		match(currentMatcher , false);
+		if( Core.DEBUG ) System.out.println("Matching Process Complete");
+
 	}
 
 	public void tuning() throws Exception{
@@ -771,4 +759,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener,
 	}
 	
 	public String getComboboxSelectedItem() { return (String) matcherCombo.getSelectedItem(); }
+	
+	public MatchersTablePanel getMatchersTablePanel() {
+		return matchersTablePanel;
+	}
 }
