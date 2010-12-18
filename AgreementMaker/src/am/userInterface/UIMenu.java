@@ -262,7 +262,7 @@ public class UIMenu implements ActionListener {
 				controlPanel.newManual();
 			}
 			else if(obj == runMatching) {
-				controlPanel.matchSelected();
+				controlPanel.match();
 			}
 			else if(obj == copyMatching) {
 				controlPanel.copy();

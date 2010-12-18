@@ -443,9 +443,9 @@ public class FeedbackLoop extends AbstractMatcher  {
 		DescendantsSimilarityInheritanceParameters params = new DescendantsSimilarityInheritanceParameters();
 		params.MCP = 0.75;
 		eDSI.setParam(params);
-		eDSI.setThreshold(threshold);
-		eDSI.setMaxSourceAlign(maxSourceAlign);
-		eDSI.setMaxTargetAlign(maxTargetAlign);
+		eDSI.setThreshold(getThreshold());
+		eDSI.setMaxSourceAlign(getMaxSourceAlign());
+		eDSI.setMaxTargetAlign(getMaxTargetAlign());
 		eDSI.addInputMatcher(this);
 		
 		eDSI.match();

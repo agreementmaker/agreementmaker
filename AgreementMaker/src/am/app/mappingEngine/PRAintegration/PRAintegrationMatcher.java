@@ -81,7 +81,7 @@ public class PRAintegrationMatcher extends AbstractMatcher {
 		}
 
 		//keep track of what is already been mapped enough times in the PRA and that can't be mapped by the matcher
-		MappedNodes refMappedNodes = new MappedNodes(sourceList, targetList, refAlignmentSet, maxSourceAlign, maxTargetAlign);
+		MappedNodes refMappedNodes = new MappedNodes(sourceList, targetList, refAlignmentSet, getMaxSourceAlign(), getMaxTargetAlign());
 		
 		//add to the mapping set those mappings found by the matcher that are compatible with reference
 		Node source;

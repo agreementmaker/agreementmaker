@@ -395,7 +395,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 		}
 		else{
 			//properties are not matched in this matcher
-			if(optimized && inputMatchers.size() > 0){ 
+			if(isCompletionMode() && inputMatchers.size() > 0){ 
 				return inputMatchers.get(0).getPropertiesMatrix().get(source.getIndex(), target.getIndex());
 			}
 			else{

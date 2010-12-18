@@ -170,7 +170,7 @@ public class BasicStructuralSelectorMatcher extends AbstractMatcher {
 		ArrayList<Mapping> list = matrix.chooseBestN();
 		Alignment<Mapping> result = new Alignment<Mapping>();
 		for(int i = 0; i < list.size(); i++){
-			if(list.get(i).getSimilarity() < threshold){
+			if(list.get(i).getSimilarity() < getThreshold()){
 				break;
 			}
 			result.addAlignment(list.get(i));
@@ -278,7 +278,7 @@ public class BasicStructuralSelectorMatcher extends AbstractMatcher {
 			input.setSimilarity(best.get(i).getSourceKey(), best.get(i).getTargetKey(), Math.min(1.0, best.get(i).getSimilarity() * bonus));
     		
 			// and we discard from further computation couples of best-matching concepts that don't have high similarity value
-    		if(best.get(i).getSimilarity() < threshold){
+    		if(best.get(i).getSimilarity() < getThreshold()){
     			best.remove(i);
     			i--; // we need to balance i++ at the end of the for loop when an element is removed
     		}

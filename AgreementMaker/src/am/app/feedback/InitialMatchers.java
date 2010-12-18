@@ -106,6 +106,10 @@ public class InitialMatchers extends AbstractMatcher {
 
 	
 	protected void matchStart() {
+		double threshold = getThreshold();
+		int maxSourceAlign = getMaxSourceAlign();
+		int maxTargetAlign = getMaxTargetAlign();
+		
 		m_bsm.setThreshold(threshold);
 		m_psm.setThreshold(threshold);
 		m_vmm.setThreshold(threshold);
@@ -116,10 +120,10 @@ public class InitialMatchers extends AbstractMatcher {
 		m_vmm.setMaxSourceAlign(maxSourceAlign);
 		m_lwc.setMaxSourceAlign(maxSourceAlign);
 		
-		m_bsm.setMaxTargetAlign(maxSourceAlign);
-		m_psm.setMaxTargetAlign(maxSourceAlign);
-		m_vmm.setMaxTargetAlign(maxSourceAlign);
-		m_lwc.setMaxTargetAlign(maxSourceAlign);
+		m_bsm.setMaxTargetAlign(maxTargetAlign);
+		m_psm.setMaxTargetAlign(maxTargetAlign);
+		m_vmm.setMaxTargetAlign(maxTargetAlign);
+		m_lwc.setMaxTargetAlign(maxTargetAlign);
 	}
 	
 	// doInBackground is inherited

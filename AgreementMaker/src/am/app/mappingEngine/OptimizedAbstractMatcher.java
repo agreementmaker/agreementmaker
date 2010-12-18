@@ -43,7 +43,7 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
     protected SimilarityMatrix alignUnmappedNodes(ArrayList<Node> sourceList, ArrayList<Node> targetList, SimilarityMatrix inputMatrix,
 			Alignment<Mapping> inputAlignmentSet, alignType typeOfNodes) throws Exception {
     	
-    	MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, maxSourceAlign, maxTargetAlign);
+    	MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, getMaxSourceAlign(), getMaxTargetAlign());
     	SimilarityMatrix matrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		Node source;
 		Node target;

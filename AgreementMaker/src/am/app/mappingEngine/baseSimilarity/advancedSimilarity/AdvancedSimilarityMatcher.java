@@ -247,7 +247,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		ArrayList<Mapping> list = matrix.chooseBestN();
 		Alignment<Mapping> result = new Alignment<Mapping>();
 		for(int i = 0; i < list.size(); i++){
-			if(list.get(i).getSimilarity() < threshold){
+			if(list.get(i).getSimilarity() < getThreshold()){
 				break;
 			}
 			result.addAlignment(list.get(i));

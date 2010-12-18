@@ -99,9 +99,9 @@ public class OAEI2009matcher extends AbstractMatcher {
 	    	//AbstractMatcher pra = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity, 0);
 	    	pra = MatcherFactory.getMatcherInstance(MatchersRegistry.PRAMatcher, 0);
 	    	pra.getInputMatchers().add(myMatcher);
-	    	pra.setThreshold(threshold);
-	    	pra.setMaxSourceAlign(maxSourceAlign);
-	    	pra.setMaxTargetAlign(maxTargetAlign);
+	    	pra.setThreshold(getThreshold());
+	    	pra.setMaxSourceAlign(getMaxSourceAlign());
+	    	pra.setMaxTargetAlign(getMaxTargetAlign());
 	    	BaseSimilarityParameters bsmp = new BaseSimilarityParameters();
 	    	bsmp.initForOAEI2009();
 	    	pra.setParam(bsmp);
@@ -120,9 +120,9 @@ public class OAEI2009matcher extends AbstractMatcher {
 			System.out.println("Running BSM");
 	    	startime = System.nanoTime()/measure;
 	    	pra = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity, 0);
-	    	pra.setThreshold(threshold);
-	    	pra.setMaxSourceAlign(maxSourceAlign);
-	    	pra.setMaxTargetAlign(maxTargetAlign);
+	    	pra.setThreshold(getThreshold());
+	    	pra.setMaxSourceAlign(getMaxSourceAlign());
+	    	pra.setMaxTargetAlign(getMaxTargetAlign());
 	    	BaseSimilarityParameters bsmp = new BaseSimilarityParameters();
 	    	bsmp.initForOAEI2009();
 	    	pra.setParam(bsmp);
@@ -141,9 +141,9 @@ public class OAEI2009matcher extends AbstractMatcher {
     	System.out.println("Running PSM");
     	startime = System.nanoTime()/measure;
     	AbstractMatcher psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 1);
-    	psm.setThreshold(threshold);
-    	psm.setMaxSourceAlign(maxSourceAlign);
-    	psm.setMaxTargetAlign(maxTargetAlign);
+    	psm.setThreshold(getThreshold());
+    	psm.setMaxSourceAlign(getMaxSourceAlign());
+    	psm.setMaxTargetAlign(getMaxTargetAlign());
     	ParametricStringParameters psmp = new ParametricStringParameters();
     	psmp.initForOAEI2009();
     	psm.setParam(psmp);
@@ -159,9 +159,9 @@ public class OAEI2009matcher extends AbstractMatcher {
     	System.out.println("Running VMM");
     	startime = System.nanoTime()/measure;
     	AbstractMatcher vmm = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 2);
-    	vmm.setThreshold(threshold);
-    	vmm.setMaxSourceAlign(maxSourceAlign);
-    	vmm.setMaxTargetAlign(maxTargetAlign);
+    	vmm.setThreshold(getThreshold());
+    	vmm.setMaxSourceAlign(getMaxSourceAlign());
+    	vmm.setMaxTargetAlign(getMaxTargetAlign());
     	MultiWordsParameters vmmp = new MultiWordsParameters();
     	vmmp.initForOAEI2009();
     	vmm.setParam(vmmp);
@@ -184,9 +184,9 @@ public class OAEI2009matcher extends AbstractMatcher {
     	lwc.getInputMatchers().add(psm);
     	lwc.getInputMatchers().add(vmm);
     	lwc.getInputMatchers().add(pra);
-    	lwc.setThreshold(threshold);
-    	lwc.setMaxSourceAlign(maxSourceAlign);
-    	lwc.setMaxTargetAlign(maxTargetAlign);
+    	lwc.setThreshold(getThreshold());
+    	lwc.setMaxSourceAlign(getMaxSourceAlign());
+    	lwc.setMaxTargetAlign(getMaxTargetAlign());
         CombinationParameters   lwcp = new CombinationParameters();
     	lwcp.initForOAEI2009();
     	lwc.setParam(lwcp);
@@ -206,9 +206,9 @@ public class OAEI2009matcher extends AbstractMatcher {
     	startime = System.nanoTime()/measure;
     	AbstractMatcher dsi = MatcherFactory.getMatcherInstance(MatchersRegistry.DSI, 0);
     	dsi.getInputMatchers().add(lastLayer);
-    	dsi.setThreshold(threshold);
-    	dsi.setMaxSourceAlign(maxSourceAlign);
-    	dsi.setMaxTargetAlign(maxTargetAlign);
+    	dsi.setThreshold(getThreshold());
+    	dsi.setMaxSourceAlign(getMaxSourceAlign());
+    	dsi.setMaxTargetAlign(getMaxTargetAlign());
     	DescendantsSimilarityInheritanceParameters dsip = new DescendantsSimilarityInheritanceParameters();
     	dsip.initForOAEI2009();
     	dsi.setParam(dsip);
@@ -228,9 +228,9 @@ public class OAEI2009matcher extends AbstractMatcher {
     	startime = System.nanoTime()/measure;
     	AbstractMatcher bss = MatcherFactory.getMatcherInstance(MatchersRegistry.BSS, 0);
     	bss.getInputMatchers().add(lastLayer);
-    	bss.setThreshold(threshold);
-    	bss.setMaxSourceAlign(maxSourceAlign);
-    	bss.setMaxTargetAlign(maxTargetAlign);
+    	bss.setThreshold(getThreshold());
+    	bss.setMaxSourceAlign(getMaxSourceAlign());
+    	bss.setMaxTargetAlign(getMaxTargetAlign());
     	bss.setSourceOntology(sourceOntology);
     	bss.setTargetOntology(targetOntology);
     	/* to modify and create if ever BSS will need parameters
@@ -252,9 +252,9 @@ public class OAEI2009matcher extends AbstractMatcher {
 	    	AbstractMatcher wnl = MatcherFactory.getMatcherInstance(MatchersRegistry.WordNetLexical, 2);
 	    	wnl.setOptimized(true);
 	    	wnl.addInputMatcher(lastLayer);
-	    	wnl.setThreshold(threshold);
-	    	wnl.setMaxSourceAlign(maxSourceAlign);
-	    	wnl.setMaxTargetAlign(maxTargetAlign);
+	    	wnl.setThreshold(getThreshold());
+	    	wnl.setMaxSourceAlign(getMaxSourceAlign());
+	    	wnl.setMaxTargetAlign(getMaxTargetAlign());
 	    	wnl.setSourceOntology(sourceOntology);
 	    	wnl.setTargetOntology(targetOntology);
 	    	wnl.match();
@@ -274,9 +274,9 @@ public class OAEI2009matcher extends AbstractMatcher {
 		    	AbstractMatcher umls = MatcherFactory.getMatcherInstance(MatchersRegistry.UMLSKSLexical, 4);
 		    	umls.setOptimized(true);
 		    	umls.getInputMatchers().add(lastLayer);
-		    	umls.setThreshold(threshold);
-		    	umls.setMaxSourceAlign(maxSourceAlign);
-		    	umls.setMaxTargetAlign(maxTargetAlign);
+		    	umls.setThreshold(getThreshold());
+		    	umls.setMaxSourceAlign(getMaxSourceAlign());
+		    	umls.setMaxTargetAlign(getMaxTargetAlign());
 		    	//umls.initForOAEI2009();
 		    	umls.match();
 		    	time = (endtime-startime);
@@ -296,9 +296,9 @@ public class OAEI2009matcher extends AbstractMatcher {
 	    	startime = System.nanoTime()/measure;
 	    	AbstractMatcher praIntegration = MatcherFactory.getMatcherInstance(MatchersRegistry.PRAintegration, 0);
 	    	praIntegration.getInputMatchers().add(lastLayer);
-	    	praIntegration.setThreshold(threshold);
-	    	praIntegration.setMaxSourceAlign(maxSourceAlign);
-	    	praIntegration.setMaxTargetAlign(maxTargetAlign);
+	    	praIntegration.setThreshold(getThreshold());
+	    	praIntegration.setMaxSourceAlign(getMaxSourceAlign());
+	    	praIntegration.setMaxTargetAlign(getMaxTargetAlign());
 	    	//praIntegration uses the same parameters of ReferenceAlignmentMatcher
 	    	ReferenceAlignmentParameters par = new ReferenceAlignmentParameters();
 	    	par.fileName = parameters.partialReferenceFile;
@@ -317,9 +317,9 @@ public class OAEI2009matcher extends AbstractMatcher {
 			pra2.addInputMatcher(lastLayer);
 			pra2.addInputMatcher(pra);
 			
-			pra2.setThreshold(threshold);
-			pra2.setMaxSourceAlign(maxSourceAlign);
-			pra2.setMaxTargetAlign(maxTargetAlign);
+			pra2.setThreshold(getThreshold());
+			pra2.setMaxSourceAlign(getMaxSourceAlign());
+			pra2.setMaxTargetAlign(getMaxTargetAlign());
 			pra2.setSourceOntology(sourceOntology);
 			pra2.setTargetOntology(targetOntology);
 			pra2.match();

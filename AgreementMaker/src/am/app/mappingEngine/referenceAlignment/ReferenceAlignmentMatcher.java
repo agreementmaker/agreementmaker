@@ -45,9 +45,9 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	public ReferenceAlignmentMatcher() {
 		super();
 		needsParam = true;
-		maxSourceAlign = ANY_INT;
-		maxTargetAlign = ANY_INT;
-		threshold = 0.01;
+		setMaxSourceAlign(ANY_INT);
+		setMaxTargetAlign(ANY_INT);
+		setThreshold(0.01d);
 		
 	}
 	

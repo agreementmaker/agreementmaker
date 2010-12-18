@@ -47,9 +47,9 @@ public class OAEI2010ConferenceMatcher extends AbstractMatcher{
 		System.out.println("Running ASM");
     	startime = System.nanoTime()/measure;
     	asm = MatcherFactory.getMatcherInstance(MatchersRegistry.AdvancedSimilarity, 0);
-    	asm.setThreshold(threshold);
-    	asm.setMaxSourceAlign(maxSourceAlign);
-    	asm.setMaxTargetAlign(maxTargetAlign);
+    	asm.setThreshold(getThreshold());
+    	asm.setMaxSourceAlign(getMaxSourceAlign());
+    	asm.setMaxTargetAlign(getMaxTargetAlign());
     	//BaseSimilarityParameters bsmp = new BaseSimilarityParameters(); // ASM doesn't need parameters yet
     	//bsmp.initForOAEI2009();
     	//asm.setParam(bsmp);
@@ -66,9 +66,9 @@ public class OAEI2010ConferenceMatcher extends AbstractMatcher{
     	System.out.println("Running PSM");
     	startime = System.nanoTime()/measure;
     	AbstractMatcher psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 1);
-    	psm.setThreshold(threshold);
-    	psm.setMaxSourceAlign(maxSourceAlign);
-    	psm.setMaxTargetAlign(maxTargetAlign);
+    	psm.setThreshold(getThreshold());
+    	psm.setMaxSourceAlign(getMaxSourceAlign());
+    	psm.setMaxTargetAlign(getMaxTargetAlign());
     	ParametricStringParameters psmp = new ParametricStringParameters();
     	psmp.initForOAEI2010(Track.Conference);
     	psm.setParam(psmp);
@@ -87,9 +87,9 @@ public class OAEI2010ConferenceMatcher extends AbstractMatcher{
     	AbstractMatcher lwc = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 3);
     	lwc.getInputMatchers().add(asm);
     	lwc.getInputMatchers().add(psm);
-    	lwc.setThreshold(threshold);
-    	lwc.setMaxSourceAlign(maxSourceAlign);
-    	lwc.setMaxTargetAlign(maxTargetAlign);
+    	lwc.setThreshold(getThreshold());
+    	lwc.setMaxSourceAlign(getMaxSourceAlign());
+    	lwc.setMaxTargetAlign(getMaxTargetAlign());
         CombinationParameters   lwcp = new CombinationParameters();
     	lwcp.initForOAEI2010(Track.Conference, true);
     	lwc.setParam(lwcp);
@@ -107,9 +107,9 @@ public class OAEI2010ConferenceMatcher extends AbstractMatcher{
     	startime = System.nanoTime()/measure;
     	AbstractMatcher gfm = MatcherFactory.getMatcherInstance(MatchersRegistry.GroupFinder, 0);
     	gfm.getInputMatchers().add(lastLayer);
-    	gfm.setThreshold(threshold);
-    	gfm.setMaxSourceAlign(maxSourceAlign);
-    	gfm.setMaxTargetAlign(maxTargetAlign);
+    	gfm.setThreshold(getThreshold());
+    	gfm.setMaxSourceAlign(getMaxSourceAlign());
+    	gfm.setMaxTargetAlign(getMaxTargetAlign());
 //    	DescendantsSimilarityInheritanceParameters dsip = new DescendantsSimilarityInheritanceParameters();
 //    	dsip.initForOAEI2009();
 //    	dsi.setParam(dsip);

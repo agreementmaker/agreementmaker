@@ -929,6 +929,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		this.needsParam = needsParam;
 	}
 
+	public boolean isCompletionMode() { return param.completionMode; }
+	
 	public AbstractParameters getParam() {
 		return param;
 	}

@@ -85,9 +85,9 @@ public class OAEI2010Matcher extends AbstractMatcher{
 
 			runConference.setSourceOntology(sourceOntology);
 			runConference.setTargetOntology(targetOntology);
-			runConference.setMaxSourceAlign(maxSourceAlign);
-			runConference.setMaxTargetAlign(maxTargetAlign);
-			runConference.setThreshold(threshold);
+			runConference.setMaxSourceAlign(getMaxSourceAlign());
+			runConference.setMaxTargetAlign(getMaxTargetAlign());
+			runConference.setThreshold(getThreshold());
 
 			runConference.match();
 			
@@ -128,7 +128,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		   	
 		   	matchers.add(asm);
 		   	
-		   	asm.setThreshold(threshold);
+		   	asm.setThreshold(getThreshold());
 		   	asm.setMaxSourceAlign(1);
 		   	asm.setMaxTargetAlign(1);
 		   	asm.setSourceOntology(sourceOntology);
@@ -153,7 +153,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		   	
 		   	matchers.add(psm);
 		   	
-		   	psm.setThreshold(threshold);
+		   	psm.setThreshold(getThreshold());
 		   	psm.setMaxSourceAlign(1);
 		   	psm.setMaxTargetAlign(1);
 		   	ParametricStringParameters psmp = new ParametricStringParameters();
@@ -182,7 +182,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		   	
 		   	matchers.add(vmm);
 		   	
-		   	vmm.setThreshold(threshold);
+		   	vmm.setThreshold(getThreshold());
 		   	vmm.setMaxSourceAlign(1);
 		   	vmm.setMaxTargetAlign(1);
 		   	MultiWordsParameters vmmp = new MultiWordsParameters();
@@ -210,7 +210,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		   	
 		   	matchers.add(lsm);
 		   	
-		   	lsm.setThreshold(threshold);
+		   	lsm.setThreshold(getThreshold());
 		   	lsm.setMaxSourceAlign(1);
 		   	lsm.setMaxTargetAlign(1);
 		   	//MultiWordsParameters lsmp = new MultiWordsParameters();
@@ -241,7 +241,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		   	lwc1.getInputMatchers().add(asm);
 		   	lwc1.getInputMatchers().add(psm);
 		   	lwc1.getInputMatchers().add(vmm);
-		   	lwc1.setThreshold(threshold);
+		   	lwc1.setThreshold(getThreshold());
 		   	lwc1.setMaxSourceAlign(1);
 		   	lwc1.setMaxTargetAlign(1);
 		    CombinationParameters   lwcp = new CombinationParameters();
@@ -277,7 +277,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 	    	if(lastLayer!=null)
 	    		iism.getInputMatchers().add(lastLayer);
 	    	
-	    	iism.setThreshold(threshold);
+	    	iism.setThreshold(getThreshold());
 	    	
 	    	((IterativeInstanceStructuralMatcher)iism).setForOAEI2010();
 	    		    	
@@ -312,9 +312,9 @@ public class OAEI2010Matcher extends AbstractMatcher{
 			System.out.println("Running LSM");
 	    	startime = System.nanoTime()/measure;
 	    	lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSM, 0);
-	    	lsm.setThreshold(threshold);
-	    	lsm.setMaxSourceAlign(maxSourceAlign);
-	    	lsm.setMaxTargetAlign(maxTargetAlign);
+	    	lsm.setThreshold(getThreshold());
+	    	lsm.setMaxSourceAlign(getMaxSourceAlign());
+	    	lsm.setMaxTargetAlign(getMaxTargetAlign());
 	    	//MultiWordsParameters lsmp = new MultiWordsParameters();
 	    	//lsmp.initForOAEI2009();
 	    	//lsm.setParam(lsmp);
@@ -336,9 +336,9 @@ public class OAEI2010Matcher extends AbstractMatcher{
 			System.out.println("Running PSM");
 	    	startime = System.nanoTime()/measure;
 	    	psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 1);
-	    	psm.setThreshold(threshold);
-	    	psm.setMaxSourceAlign(maxSourceAlign);
-	    	psm.setMaxTargetAlign(maxTargetAlign);
+	    	psm.setThreshold(getThreshold());
+	    	psm.setMaxSourceAlign(getMaxSourceAlign());
+	    	psm.setMaxTargetAlign(getMaxTargetAlign());
 	    	ParametricStringParameters psmp = new ParametricStringParameters();
 	    	psmp.initForOAEI2010(parameters.currentTrack);
 	    	psm.setParam(psmp);
@@ -360,9 +360,9 @@ public class OAEI2010Matcher extends AbstractMatcher{
 			System.out.println("Running VMM");
 	    	startime = System.nanoTime()/measure;
 	    	vmm = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 2);
-	    	vmm.setThreshold(threshold);
-	    	vmm.setMaxSourceAlign(maxSourceAlign);
-	    	vmm.setMaxTargetAlign(maxTargetAlign);
+	    	vmm.setThreshold(getThreshold());
+	    	vmm.setMaxSourceAlign(getMaxSourceAlign());
+	    	vmm.setMaxTargetAlign(getMaxTargetAlign());
 	    	MultiWordsParameters vmmp = new MultiWordsParameters();
 	    	vmmp.initForOAEI2010(parameters.currentTrack);
 	    	vmm.setParam(vmmp);
@@ -389,9 +389,9 @@ public class OAEI2010Matcher extends AbstractMatcher{
 	    	lwc1.getInputMatchers().add(psm);
 	    	lwc1.getInputMatchers().add(vmm);
 	    	lwc1.getInputMatchers().add(lsm);
-	    	lwc1.setThreshold(threshold);
-	    	lwc1.setMaxSourceAlign(maxSourceAlign);
-	    	lwc1.setMaxTargetAlign(maxTargetAlign);
+	    	lwc1.setThreshold(getThreshold());
+	    	lwc1.setMaxSourceAlign(getMaxSourceAlign());
+	    	lwc1.setMaxTargetAlign(getMaxTargetAlign());
 	        CombinationParameters   lwcp = new CombinationParameters();
 	    	lwcp.initForOAEI2010(parameters.currentTrack, true);
 	    	lwc1.setParam(lwcp);
