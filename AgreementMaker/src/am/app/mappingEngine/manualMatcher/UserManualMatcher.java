@@ -37,15 +37,15 @@ public class UserManualMatcher extends AbstractMatcher {
 		needsParam = false;
 		isShown = true;
 		modifiedByUser = false;
-		threshold = 0.01; //the minimum value != 0 in the threshold list;
-		maxSourceAlign = ANY_INT;
-		maxTargetAlign = ANY_INT;
+		setThreshold(0.01); //the minimum value != 0 in the threshold list;
+		setMaxSourceAlign(ANY_INT);
+		setMaxTargetAlign(ANY_INT);
 		alignClass = true;
 		alignProp = true;
 		minInputMatchers = 0;
 		maxInputMatchers = 0;
 		relation = Mapping.EQUIVALENCE;
-		optimized = false;
+		setOptimized(false);
 	}
 	
 	/**Set all alignment sim to 0*/
