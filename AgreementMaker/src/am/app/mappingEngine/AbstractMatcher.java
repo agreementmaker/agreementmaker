@@ -53,12 +53,12 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/**True means that AM should show its alignments*/
 	protected boolean isShown;
 	protected boolean modifiedByUser;
-	protected double threshold;
+	//protected double threshold;
 	
 	/**ANY means any number of relations for source or target*/
 	public final static int ANY_INT = Integer.MAX_VALUE;
-	protected int maxSourceAlign;
-	protected int maxTargetAlign;
+	//protected int maxSourceAlign;
+	//protected int maxTargetAlign;
 	
 	/**Contain alignments, NULL if alignment has not been calculated*/
 	protected Alignment<Mapping> propertiesAlignmentSet;
@@ -173,7 +173,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 * For this reason, if this value is set to true another matcher has to be provided in input to this matcher.
 	 * When this value is set to true, the maxNumberInputMatcher is also automatically set to 1 in the setOptimized() method.
 	 */
-	protected boolean optimized;
+	//protected boolean optimized;
 	private int matcherID;
 
 	/**
@@ -213,15 +213,15 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		isShown = true;
 		modifiedByUser = false;
 		performSelection = true;//only in batchmode can be set to false in the internal matchers.
-		threshold = 0.6;
-		maxSourceAlign = 1;
-		maxTargetAlign = 1;
+		//threshold = 0.6;
+		//maxSourceAlign = 1;
+		//maxTargetAlign = 1;
 		alignClass = true;
 		alignProp = true;
 		minInputMatchers = 0;
 		maxInputMatchers = 0;
 		relation = Mapping.EQUIVALENCE;
-		optimized = false;
+		//optimized = false;
 		//ALIGNMENTS LIST MUST BE NULL UNTIL THEY ARE CALCULATED
 		classesAlignmentSet = null;
 		propertiesAlignmentSet = null;
@@ -408,7 +408,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	
     protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
     	
-    	if(optimized && inputMatchers.size() > 0){ 
+    	if(param.completionMode && inputMatchers.size() > 0){ 
     		//run in optimized mode by mapping only concepts that have not been mapped in the input matcher
     		if(typeOfNodes.equals(alignType.aligningClasses)){
     			return alignUnmappedNodes(sourceList, targetList, inputMatchers.get(0).getClassesMatrix(), inputMatchers.get(0).getClassAlignmentSet(), alignType.aligningClasses);
@@ -435,7 +435,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 					matrix.set(i,j,alignment);
 					if( isProgressDisplayed() ) {
 						stepDone(); // we have completed one step
-						if( alignment != null && alignment.getSimilarity() >= threshold ) tentativealignments++; // keep track of possible alignments for progress display
+						if( alignment != null && alignment.getSimilarity() >= param.threshold ) tentativealignments++; // keep track of possible alignments for progress display
 					}
 				}
 				if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
@@ -447,7 +447,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     protected SimilarityMatrix alignUnmappedNodes(ArrayList<Node> sourceList, ArrayList<Node> targetList, SimilarityMatrix inputMatrix,
 			Alignment<Mapping> inputAlignmentSet, alignType typeOfNodes) throws Exception {
     	
-    	MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, maxSourceAlign, maxTargetAlign);
+    	MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, param.maxSourceAlign, param.maxTargetAlign);
     	SimilarityMatrix matrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		Node source;
 		Node target;
@@ -517,9 +517,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	int columns = matrix.getColumns();
     	int rows = matrix.getRows();
     	// at most each source can be aligned with all targets (columns) it's the same of selecting ANY for source
-		int realSourceRelations = Math.min(maxSourceAlign, columns);
+		int realSourceRelations = Math.min(param.maxSourceAlign, columns);
 		// at most each target can be aligned with all sources (rows) it's the same of selecting ANY for target
-		int realTargetRelations = Math.min(maxTargetAlign, rows);
+		int realTargetRelations = Math.min(param.maxTargetAlign, rows);
 		
 		
 		if(realSourceRelations == columns && realTargetRelations == rows) { //ANY TO ANY
@@ -550,7 +550,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected Alignment<Mapping> oneToOneMatching(SimilarityMatrix matrix) {
 		Alignment<Mapping> aset = new Alignment<Mapping>();
 		double[][] similarityMatrix = matrix.getCopiedSimilarityMatrix();
-		MaxWeightBipartiteMatching<Integer> mwbm = new MaxWeightBipartiteMatching<Integer>(similarityMatrix, threshold);
+		MaxWeightBipartiteMatching<Integer> mwbm = new MaxWeightBipartiteMatching<Integer>(similarityMatrix, param.threshold);
 		Collection<MappingMWBM<Integer>> mappings = mwbm.execute();
 		Iterator<MappingMWBM<Integer>> it = mappings.iterator();
 		Mapping a;
@@ -602,7 +602,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			//get only the alignments over the threshold
 			for(int e = 0;e < maxAlignments.length; e++) { 
 				toBeAdded = maxAlignments[e];
-				if(toBeAdded != null && toBeAdded.getSimilarity() >= threshold) {
+				if(toBeAdded != null && toBeAdded.getSimilarity() >= param.threshold) {
 					aset.addAlignment(toBeAdded);
 				}
 			}
@@ -623,7 +623,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			//get only the alignments over the threshold
 			for(int e = 0;e < maxAlignments.length; e++) { 
 				toBeAdded = maxAlignments[e];
-				if(toBeAdded != null && toBeAdded.getSimilarity() >= threshold) {
+				if(toBeAdded != null && toBeAdded.getSimilarity() >= param.threshold) {
 					aset.addAlignment(toBeAdded);
 				}
 			}
@@ -642,7 +642,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		for(int i = 0; i<matrix.getColumns();i++) {
 			for(int j = 0; j<matrix.getRows();j++) {		
 				currentValue = matrix.get(j,i);
-				if(currentValue != null && currentValue.getSimilarity() >= threshold)
+				if(currentValue != null && currentValue.getSimilarity() >= param.threshold)
 					aset.addAlignment(currentValue);
 			}
 		}
@@ -669,7 +669,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     			} else {
     				sim = 0;
     			}
-    			if(sim >= threshold)
+    			if(sim >= param.threshold)
     				workingMatrix[i][j] = sim;
     			else workingMatrix[i][j] = IntDoublePair.fake;
     		}
@@ -953,27 +953,27 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	
 
 	public double getThreshold() {
-		return threshold;
+		return param.threshold;
 	}
 
 	public void setThreshold(double threshold) {
-		this.threshold = threshold;
+		param.threshold = threshold;
 	}
 
 	public int getMaxSourceAlign() {
-		return maxSourceAlign;
+		return param.maxSourceAlign;
 	}
 
 	public void setMaxSourceAlign(int maxSourceAlign) {
-		this.maxSourceAlign = maxSourceAlign;
+		param.maxSourceAlign = maxSourceAlign;
 	}
 
 	public int getMaxTargetAlign() {
-		return maxTargetAlign;
+		return param.maxTargetAlign;
 	}
 
 	public void setMaxTargetAlign(int maxTargetAlign) {
-		this.maxTargetAlign = maxTargetAlign;
+		param.maxTargetAlign = maxTargetAlign;
 	}
 
 	
@@ -1160,11 +1160,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}     
 	
 	public boolean isOptimized() {
-		return optimized;
+		return param.completionMode;
 	}
 
 	public void setOptimized(boolean optimized) {
-		this.optimized = optimized;
+		param.completionMode = optimized;
 		if(maxInputMatchers < 1){
 			maxInputMatchers = 1;
 		}
