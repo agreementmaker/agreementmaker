@@ -2,6 +2,7 @@ package am.app.mappingEngine.manualMatcher;
 
 
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.ontology.Node;
@@ -32,7 +33,7 @@ public class UserManualMatcher extends AbstractMatcher {
 		name = MatchersRegistry.UserManual;
 		color = Colors.matchersColors[0];
 		
-		
+		param = new AbstractParameters();		
 		isAutomatic = false;
 		needsParam = false;
 		isShown = true;

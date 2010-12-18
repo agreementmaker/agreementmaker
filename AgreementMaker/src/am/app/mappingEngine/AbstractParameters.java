@@ -1,6 +1,6 @@
 package am.app.mappingEngine;
 
-public abstract class AbstractParameters {
+public class AbstractParameters {
 
 	public double threshold = 0.6;
 	public int maxSourceAlign = 1;

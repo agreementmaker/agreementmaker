@@ -208,6 +208,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 * 
 	 */
 	protected void initializeVariables() {
+		param = new AbstractParameters();
 		isAutomatic = true;
 		needsParam = false;
 		isShown = true;
