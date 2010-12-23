@@ -40,12 +40,4 @@ public class PCGVertexData extends StructMatchVertexData {
 		super(stCouple, oldSV, newSV);
 	}
 	
-	/**
-	 * @param stCouple
-	 * @param propagationCoefficient
-	 */
-	public PCGVertexData toPCGVertexData(IPGVertexData ipgData) {
-		return new PCGVertexData(getStCouple(), getNewSimilarityValue());
-	}
-	
 }

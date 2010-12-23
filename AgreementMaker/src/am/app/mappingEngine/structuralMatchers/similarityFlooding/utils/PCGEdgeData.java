@@ -32,14 +32,6 @@ public class PCGEdgeData extends StructMatchEdgeData {
 	public PCGEdgeData(Property p, double propagationCoefficient) {
 		super(p, propagationCoefficient);
 	}
-	
-	/**
-	 * @param stCouple
-	 * @param propagationCoefficient
-	 */
-	public PCGEdgeData toPCGEdgeData(IPGEdgeData ipgData) {
-		return new PCGEdgeData(ipgData.getStProperty(), ipgData.getPropagationCoefficient());
-	}
 
 	@Override
 	public String toString() {

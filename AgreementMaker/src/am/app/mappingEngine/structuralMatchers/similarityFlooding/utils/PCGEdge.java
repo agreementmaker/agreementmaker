@@ -3,12 +3,7 @@
  */
 package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
 
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-
 import am.utility.DirectedGraphEdge;
-import am.utility.DirectedGraphVertex;
-import am.utility.Pair;
 
 /**
  * Pairwise Connectivity Graph Edge.
