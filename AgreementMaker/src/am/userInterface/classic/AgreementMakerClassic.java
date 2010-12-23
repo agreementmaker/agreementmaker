@@ -53,7 +53,7 @@ public class AgreementMakerClassic extends JPanel implements FindInterface {
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, null);
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setResizeWeight(1.0);
-		splitPane.setMinimumSize(new Dimension(640,480));
+		//splitPane.setMinimumSize(new Dimension(640,480));
 		splitPane.setPreferredSize(new Dimension(640,480));
 		splitPane.getLeftComponent().setPreferredSize(new Dimension(640,480));
 
@@ -62,7 +62,7 @@ public class AgreementMakerClassic extends JPanel implements FindInterface {
 		outerSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, splitPane,matcherControlPanel);
 		outerSplitPane.setOneTouchExpandable(true);
 		outerSplitPane.setResizeWeight(1.0);
-		outerSplitPane.setDividerLocation(0.75);
+		//outerSplitPane.setDividerLocation();
 		
 		add(outerSplitPane, BorderLayout.CENTER);
 		
@@ -77,7 +77,7 @@ public class AgreementMakerClassic extends JPanel implements FindInterface {
 	
 	public MatchersControlPanel getMatchersControlPanel() { return matcherControlPanel; }
 	public JScrollPane getScrollPane() { return scrollPane; }
-	
+	public JSplitPane getOuterSplitPane() { return outerSplitPane; }
 	
 	
 	

@@ -1003,7 +1003,7 @@ public class UIMenu implements ActionListener {
 		
 
 		// add menu item to help menu
-		howToUse = new JMenuItem("Help", new ImageIcon("images/helpImage.gif"));
+		howToUse = new JMenuItem("Help", new ImageIcon("images"+File.pathSeparator+"helpImage.gif"));
 		howToUse.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));                	
 		howToUse.setMnemonic(KeyEvent.VK_H);
 		howToUse.addActionListener(this);

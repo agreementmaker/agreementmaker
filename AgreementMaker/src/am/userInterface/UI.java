@@ -131,6 +131,8 @@ public class UI {
 		
 		// make sure the frame is visible
 		frame.setVisible(true); 
+		
+		classicAM.getOuterSplitPane().setDividerLocation(0.65d);
 	}
 
 	/**
