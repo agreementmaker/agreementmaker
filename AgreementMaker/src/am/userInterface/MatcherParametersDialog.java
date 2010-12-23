@@ -2,12 +2,11 @@ package am.userInterface;
 
 
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.GroupLayout;
@@ -28,10 +27,12 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralMatcher;
 import am.userInterface.table.MatchersTablePanel;
 
 
+/**
+ * This dialog lets the user select the matching algorithm and its parameters.
+ */
 
 public class MatcherParametersDialog extends JDialog implements ActionListener{
 	
@@ -39,10 +40,10 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 
 	private JLabel matcherLabel;
 	private JComboBox matcherCombo;
-	private JLabel settingsLabel;
-	private JComboBox settingsCombo;
-	private JButton saveButton;
-	private JButton deleteButton;
+	private JLabel lblPresets;
+	private JComboBox cmbPresets;
+	private JButton btnSavePresets;
+	private JButton btnDeletePresets;
 	
 	private JLabel thresholdLabel;
 	private JComboBox thresholdCombo;
@@ -57,7 +58,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	
 	private JPanel topPanel;
 	private JPanel generalPanel;
-	private JPanel settingsPanel;
+	//private JPanel settingsPanel;
 	
 	private JScrollPane settingsScroll;
 	
@@ -102,9 +103,9 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		generalPanel = createGeneralPanel();
 		
 		// matcher specific settings panel
-		if(parametersPanel == null){  settingsPanel = new JPanel(); }
-		else settingsPanel = parametersPanel;
-		settingsScroll = new JScrollPane(settingsPanel);
+		//if(parametersPanel == null){  parametersPanel = (AbstractMatcherParametersPanel) new JPanel(); }
+
+		settingsScroll = new JScrollPane(parametersPanel);
 		settingsScroll.setBorder(new TitledBorder("Matcher Specific Settings"));
 		
 		initLayout();
@@ -147,9 +148,9 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		generalPanel = createGeneralPanel();
 		
 		// matcher specific settings panel
-		if(parametersPanel == null){  settingsPanel = new JPanel(); }
-		else settingsPanel = parametersPanel;
-		settingsScroll = new JScrollPane(settingsPanel);
+		//if(parametersPanel == null){  settingsPanel = new JPanel(); }
+		//else settingsPanel = parametersPanel;
+		settingsScroll = new JScrollPane(parametersPanel);
 		settingsScroll.setBorder(new TitledBorder("Matcher Specific Settings"));
 		
 //		// matcher specific settings panel
@@ -185,10 +186,10 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		matcherCombo = new JComboBox(matcherList);
 		matcherCombo.addActionListener(this);
 		
-		settingsLabel = new JLabel("Settings:");
-		settingsCombo = new JComboBox();
-		saveButton = new JButton("Save");
-		deleteButton = new JButton("Delete");
+		lblPresets = new JLabel("Presets:");
+		cmbPresets = new JComboBox();
+		btnSavePresets = new JButton("Save");
+		btnDeletePresets = new JButton("Delete");
 		
 		thresholdLabel = new JLabel("Threshold:");
 		String[] thresholdList = Utility.getPercentStringList();
@@ -226,19 +227,19 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		topLayout.setHorizontalGroup( topLayout.createSequentialGroup()
 				.addComponent(matcherLabel)
 				.addComponent(matcherCombo)
-	            .addComponent(settingsLabel)
-	            .addComponent(settingsCombo)
-	            .addComponent(saveButton)
-	            .addComponent(deleteButton)
+	            .addComponent(lblPresets)
+	            .addComponent(cmbPresets)
+	            .addComponent(btnSavePresets)
+	            .addComponent(btnDeletePresets)
 		);
 		
 		topLayout.setVerticalGroup( topLayout.createParallelGroup()
 				.addComponent(matcherLabel)
 				.addComponent(matcherCombo)
-	            .addComponent(settingsLabel)
-	            .addComponent(settingsCombo)
-	            .addComponent(saveButton)
-	            .addComponent(deleteButton)
+	            .addComponent(lblPresets)
+	            .addComponent(cmbPresets)
+	            .addComponent(btnSavePresets)
+	            .addComponent(btnDeletePresets)
 		);
 
 		topPanel.setLayout(topLayout);
@@ -335,13 +336,14 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			
 			remove(settingsScroll);
 			
-			if(matcher.needsParam() && matcher.getParametersPanel() != null){  settingsPanel = matcher.getParametersPanel(); }
-			else { settingsPanel = new JPanel(); }
-			settingsScroll = new JScrollPane(settingsPanel);
+			if(matcher.needsParam() && matcher.getParametersPanel() != null){  parametersPanel = matcher.getParametersPanel(); }
+			else { parametersPanel = null; }
+			settingsScroll = new JScrollPane(parametersPanel);
 			settingsScroll.setBorder(new TitledBorder("Matcher Specific Settings"));
 						
 			initLayout();
 			pack();
+			setLocationRelativeTo(null); 	// center the window on the screen
 		}
 		else if(obj == cancelButton){
 			success = false;
@@ -450,5 +452,32 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			}
 		}
 	}
+	
+	/**
+	 * This method sets up the preset dropdown combo box.
+	 * @param mr
+	 */
+	private void setupPresets(MatchersRegistry mr) {
+		// check to see if the presets directory exists.
+		String presetDir = System.getProperty("user.dir") + File.pathSeparator + "presets";
+		
+		File presetsDirectory = new File(presetDir);
+		if( !presetsDirectory.exists() ) {
+			// attempt to create the presets directory
+			if( !presetsDirectory.mkdir() ) {
+				// the directory doesn't exist and we cannot make it
+				lblPresets.setEnabled(false);
+				cmbPresets.setEnabled(false);
+				btnSavePresets.setEnabled(false);
+				btnDeletePresets.setEnabled(false);
+				return;
+			}
+		}
+		
+		AbstractParameters ap;
+		
+		
+	}
+	
 	
 }
