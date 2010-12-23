@@ -4,9 +4,11 @@ package am.userInterface;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
@@ -743,25 +745,20 @@ public class UIMenu implements ActionListener {
 		
 		// need AppPreferences for smoItem, to get if is checked or not.
 		AppPreferences prefs = new AppPreferences();
-		
-		//Creating the menu bar
-		myMenuBar = new JMenuBar();
-		ui.getUIFrame().setJMenuBar(myMenuBar);
 
 		// building the file menu
 		fileMenu = new JMenu("File");
-		fileMenu.setMnemonic(KeyEvent.VK_F);
-		myMenuBar.add(fileMenu);	
+		fileMenu.setMnemonic(KeyEvent.VK_F);	
 
 		//add openGFile menu item to file menu
-		openSource = new JMenuItem("Open Source Ontology...",new ImageIcon("../images/fileImage.gif"));
+		openSource = new JMenuItem("Open Source Ontology...",new ImageIcon("images"+File.pathSeparator+"fileImage.gif"));
 		//openSource.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));                		
 		//openSource.setMnemonic(KeyEvent.VK_O);
 		openSource.addActionListener(this);
 		fileMenu.add(openSource);
 		
 		//add openGFile menu item to file menu
-		openTarget = new JMenuItem("Open Target Ontology...",new ImageIcon("../images/fileImage.gif"));
+		openTarget = new JMenuItem("Open Target Ontology...",new ImageIcon("images"+File.pathSeparator+"fileImage.gif"));
 		//openTarget.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));                		
 		//openTarget.setMnemonic(KeyEvent.VK_O);
 		openTarget.addActionListener(this);
@@ -816,10 +813,9 @@ public class UIMenu implements ActionListener {
 		// build the Edit menu
 		editMenu = new JMenu("Edit");
 		editMenu.setMnemonic(KeyEvent.VK_E);
-		myMenuBar.add(editMenu);
 		
 		itemFind = new JMenuItem("Find", KeyEvent.VK_F);
-		itemFind.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
+		itemFind.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		itemFind.addActionListener(this);
 		editMenu.add(itemFind);
 		
@@ -828,7 +824,6 @@ public class UIMenu implements ActionListener {
 		// Build view menu in the menu bar: TODO
 		viewMenu = new JMenu("View");
 		viewMenu.setMnemonic(KeyEvent.VK_V);
-		myMenuBar.add(viewMenu);
 
 		//All show and hide details has been removed right now
 		// add separator
@@ -836,7 +831,7 @@ public class UIMenu implements ActionListener {
 
 		// add keyItem 
 		colorsItem = new JMenuItem("Colors",KeyEvent.VK_K);
-		colorsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, ActionEvent.CTRL_MASK)); 	                
+		colorsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); 	                
 		colorsItem.addActionListener(this);
 		viewMenu.add(colorsItem);
 		
@@ -911,8 +906,10 @@ public class UIMenu implements ActionListener {
 		ontologyDetails = new JMenuItem("Ontology details");
 		ontologyDetails.addActionListener(this); 
 		ontologyMenu.add(ontologyDetails);
-		myMenuBar.add(ontologyMenu);
 		
+		
+		
+		// **************** Matchers Menu *******************
 		matchersMenu = new JMenu("Matchers");
 		matchersMenu.setMnemonic('M');
 		manualMapping = new JMenuItem("Manual matcher"); 
@@ -982,14 +979,10 @@ public class UIMenu implements ActionListener {
 		TEMP_matcherAnalysisProp.addActionListener(this);
 		matchersMenu.add(TEMP_matcherAnalysisProp);
 		
-		myMenuBar.add(matchersMenu);
-		
-		
 		
 		// *************************** TOOLS MENU ****************************
 		toolsMenu = new JMenu("Tools");
 		toolsMenu.setMnemonic('T');
-		myMenuBar.add(toolsMenu);
 		
 		// Tools -> Wordnet lookup panel...
 		wordnetLookupItem = new JMenuItem("Wordnet Lookup ...");
@@ -1007,11 +1000,11 @@ public class UIMenu implements ActionListener {
 		// Build help menu in the menu bar.
 		helpMenu = new JMenu("Help");
 		helpMenu.setMnemonic(KeyEvent.VK_H);
-		myMenuBar.add(helpMenu);
+		
 
 		// add menu item to help menu
 		howToUse = new JMenuItem("Help", new ImageIcon("images/helpImage.gif"));
-		howToUse.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));                	
+		howToUse.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));                	
 		howToUse.setMnemonic(KeyEvent.VK_H);
 		howToUse.addActionListener(this);
 		helpMenu.add(howToUse);
@@ -1023,7 +1016,18 @@ public class UIMenu implements ActionListener {
 		aboutItem.addActionListener(this);
 		helpMenu.add(aboutItem);
 		
+		
+		myMenuBar = new JMenuBar();
 
+		myMenuBar.add(fileMenu);
+		myMenuBar.add(editMenu);
+		myMenuBar.add(viewMenu);
+		myMenuBar.add(ontologyMenu);
+		myMenuBar.add(matchersMenu);
+		myMenuBar.add(toolsMenu);
+		myMenuBar.add(helpMenu);
+
+		ui.getUIFrame().setJMenuBar(myMenuBar);
 	}
 	
 

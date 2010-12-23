@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton; 
@@ -18,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JScrollPane;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import am.Utility;
@@ -80,49 +82,29 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	public MatcherParametersDialog(AbstractMatcher a) {
 		super();
 		
-		initComponents();
+		initComponents();  // initialize the components
 		
+		// select the matcher in the combobox
 		ComboBoxModel model = matcherCombo.getModel();
 		for (int i = 0; i < model.getSize(); i++) {
 			String curr = (String)model.getElementAt(i);
 			if(curr.equals(a.getName().getMatcherName()))
 				matcherCombo.setSelectedIndex(i);
 		}
-		matcherCombo.setSelectedItem(a.getName());		
 		
-		matcherCombo.setEnabled(false);
+		matcherCombo.setSelectedItem(a.getName());		
+		matcherCombo.setEnabled(false);  // user cannot change the matcher in this mode
 		
 		String name = a.getName().getMatcherName();
 		setTitle(name+": additional parameters");
+		
 		//This is the specific panel defined by the developer to set additional parameters to the specific matcher implemented
 		parametersPanel = a.getParametersPanel();
-		
-		// top panel
-		topPanel = createTopPanel();
-		
-		// general panel
-		generalPanel = createGeneralPanel();
-		
-		// matcher specific settings panel
-		//if(parametersPanel == null){  parametersPanel = (AbstractMatcherParametersPanel) new JPanel(); }
 
-		settingsScroll = new JScrollPane(parametersPanel);
-		settingsScroll.setBorder(new TitledBorder("Matcher Specific Settings"));
+		settingsScroll = createMatcherSettingsScroll(parametersPanel);
 		
 		initLayout();
-				
-		//frame.addWindowListener(new WindowEventHandler());//THIS SHOULD BE CHANGED THE PROGRAM SHOULD NOT CLOSE
-		//pack(); // automatically set the frame size
-		//set the width equals to title dimension
-		if( getFont() != null && getFontMetrics(getFont()) != null ) {
-			FontMetrics fm = getFontMetrics(getFont());
-			// +100 to allow for icon and "x-out" button
-			int width = fm.stringWidth(getTitle()) + 100;
-			width = Math.max(width, getPreferredSize().width);
-			setSize(new Dimension(width, getPreferredSize().height));
-		}
-		pack();  // make it smaller.
-		setLocationRelativeTo(null); 	// center the window on the screen
+
 		setModal(true);
 		setVisible(true);
 	}
@@ -142,39 +124,10 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		//This is the specific panel defined by the developer to set additional parameters to the specific matcher implemented
 		parametersPanel = matcher.getParametersPanel();
 		
-		// top panel
-		topPanel = createTopPanel();
+		settingsScroll = createMatcherSettingsScroll(parametersPanel);
 		
-		// general panel
-		generalPanel = createGeneralPanel();
-		
-		// matcher specific settings panel
-		//if(parametersPanel == null){  settingsPanel = new JPanel(); }
-		//else settingsPanel = parametersPanel;
-		settingsScroll = new JScrollPane(parametersPanel);
-		settingsScroll.setBorder(new TitledBorder("Matcher Specific Settings"));
-		
-//		// matcher specific settings panel
-//		if(matcher.getParametersPanel() != null){  settingsPanel = matcher.getParametersPanel(); }
-//		else { settingsPanel = new JPanel(); }
-//		settingsPanel.setBorder(new TitledBorder("Matcher Specific Settings"));
-//		
-//		settingsScroll = new JScrollPane(settingsPanel);
-//		
 		initLayout();
 				
-		//frame.addWindowListener(new WindowEventHandler());//THIS SHOULD BE CHANGED THE PROGRAM SHOULD NOT CLOSE
-		//pack(); // automatically set the frame size
-		//set the width equals to title dimension
-		if( getFont() != null && getFontMetrics(getFont()) != null ) {
-			FontMetrics fm = getFontMetrics(getFont());
-			// +100 to allow for icon and "x-out" button
-			int width = fm.stringWidth(getTitle()) + 100;
-			width = Math.max(width, getPreferredSize().width);
-			setSize(new Dimension(width, getPreferredSize().height));
-		}
-		pack();  // make it smaller.
-		setLocationRelativeTo(null); 	// center the window on the screen
 		setModal(true);
 		setVisible(true);
 	}
@@ -211,6 +164,12 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		
 		completionBox = new JCheckBox("Completion mode");
 	
+		// top panel
+		topPanel = createTopPanel();
+
+		// general panel
+		generalPanel = createGeneralPanel();
+		
 		// cancel and run buttons
 		runButton = new JButton("Run");
 		runButton.addActionListener(this);
@@ -294,6 +253,15 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		
 		return generalPanel;
 	}
+	
+	private JScrollPane createMatcherSettingsScroll(JPanel parametersPanel) {
+		JScrollPane settingsScroll = new JScrollPane(parametersPanel);
+		settingsScroll.setBorder(BorderFactory.createTitledBorder(
+				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Matcher Specific Settings"));
+		
+		return settingsScroll;
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
@@ -328,6 +296,18 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		); 
 
 		setLayout(layout);	
+		
+		if( getFont() != null && getFontMetrics(getFont()) != null ) {
+			FontMetrics fm = getFontMetrics(getFont());
+			// +100 to allow for icon and "x-out" button
+			int width = fm.stringWidth(getTitle()) + 100;
+			width = Math.max(width, getPreferredSize().width);
+			setSize(new Dimension(width, getPreferredSize().height));
+		}
+		
+		pack();  // make it smaller.
+		setLocationRelativeTo(null); 	// center the window on the screen
+		
 	}	
 
 	public void actionPerformed (ActionEvent ae){
@@ -340,12 +320,19 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			String name = matcher.getName().getMatcherName();
 			setTitle(name+": additional parameters");
 			
-			remove(settingsScroll);
+			if( settingsScroll != null ) remove(settingsScroll);
 			
-			if(matcher.needsParam() && matcher.getParametersPanel() != null){  parametersPanel = matcher.getParametersPanel(); }
-			else { parametersPanel = null; }
-			settingsScroll = new JScrollPane(parametersPanel);
-			settingsScroll.setBorder(new TitledBorder("Matcher Specific Settings"));
+			if(matcher.needsParam() && matcher.getParametersPanel() != null){  
+				parametersPanel = matcher.getParametersPanel(); 
+				settingsScroll = new JScrollPane(parametersPanel);
+			}
+			else { 
+				parametersPanel = null; 
+				settingsScroll = new JScrollPane();
+			}
+			//settingsScroll = new JScrollPane(parametersPanel);
+			settingsScroll.setBorder(BorderFactory.createTitledBorder(
+					BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Matcher Specific Settings"));
 			
 			setDefaultCommonParameters(matcher);
 			

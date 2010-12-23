@@ -41,6 +41,8 @@ public class AgreementMakerClassic extends JPanel implements FindInterface {
 		scrollPane = new JScrollPane();
 		scrollPane.setWheelScrollingEnabled(true);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(20);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		// create a VisualizationPanel
 		canvas = new Canvas2(scrollPane);

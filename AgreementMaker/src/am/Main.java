@@ -44,6 +44,10 @@ public class Main
 	 */
 	public static void main(String args[])
 	{
+		
+		System.setProperty("apple.laf.useScreenMenuBar", "true");
+		System.setProperty("apple.awt.brushMetalLook", "true");
+		
 		if(args.length == 0 ){
 			// Proper way of intializing the UI.
 			// Reference: http://java.sun.com/developer/technicalArticles/javase/swingworker/ (Starting off on the Right Thread)
