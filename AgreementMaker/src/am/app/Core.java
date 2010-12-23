@@ -17,6 +17,7 @@ import am.app.ontology.Ontology;
 import am.app.ontology.OntologyChangeEvent;
 import am.app.ontology.OntologyChangeListener;
 import am.userInterface.AppPreferences;
+import am.userInterface.Colors;
 import am.userInterface.UI;
 import am.userInterface.VisualizationChangeEvent;
 import am.userInterface.VisualizationChangeListener;
@@ -164,6 +165,7 @@ public class Core {
 	// this method adds a matcher to the end of the matchers list.
 	public void addMatcherInstance(AbstractMatcher a) {
 		a.setIndex( matcherInstances.size() );
+		a.setColor(Colors.matchersColors[a.getIndex()%6]);
 		a.setID(getNextMatcherID());
 		matcherInstances.add(a);
 		fireEvent( new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_ADDED, a.getID() ));

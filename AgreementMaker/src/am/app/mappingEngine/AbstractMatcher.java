@@ -409,7 +409,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	
     protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
     	
-    	if(param.completionMode && inputMatchers.size() > 0){ 
+    	if(param.completionMode && inputMatchers != null && inputMatchers.size() > 0){ 
     		//run in optimized mode by mapping only concepts that have not been mapped in the input matcher
     		if(typeOfNodes.equals(alignType.aligningClasses)){
     			return alignUnmappedNodes(sourceList, targetList, inputMatchers.get(0).getClassesMatrix(), inputMatchers.get(0).getClassAlignmentSet(), alignType.aligningClasses);
@@ -1199,14 +1199,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		
 	}
 	
-	public Color getColor() {
-		return color;
-	}
+	public Color getColor() { return color; }
+	public void setColor(Color color) { this.color = color; }
 	
-
-	public void setColor(Color color) {
-		this.color = color;
-	}
 	//*************************UTILITY METHODS**************************************
 	public boolean equals(Object o) {
 		if(o instanceof AbstractMatcher) {

@@ -40,6 +40,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 
 	private JLabel matcherLabel;
 	private JComboBox matcherCombo;
+	private JButton btnMatcherDetails;
 	private JLabel lblPresets;
 	private JComboBox cmbPresets;
 	private JButton btnSavePresets;
@@ -134,7 +135,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		initComponents();
 		
 		matcher = MatcherFactory.getMatcherInstance(
-				MatcherFactory.getMatchersRegistryEntry((String)matcherCombo.getSelectedItem()), 0);
+				MatcherFactory.getMatchersRegistryEntry((String)matcherCombo.getSelectedItem()), Core.getInstance().getMatcherInstances().size());
 		
 		String name = matcher.getName().getMatcherName();
 		setTitle(name+": additional parameters");
@@ -186,6 +187,9 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		matcherCombo = new JComboBox(matcherList);
 		matcherCombo.addActionListener(this);
 		
+		btnMatcherDetails = new JButton("Explanation");
+		btnMatcherDetails.addActionListener(this);
+		
 		lblPresets = new JLabel("Presets:");
 		cmbPresets = new JComboBox();
 		btnSavePresets = new JButton("Save");
@@ -227,6 +231,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		topLayout.setHorizontalGroup( topLayout.createSequentialGroup()
 				.addComponent(matcherLabel)
 				.addComponent(matcherCombo)
+				.addComponent(btnMatcherDetails)
 	            .addComponent(lblPresets)
 	            .addComponent(cmbPresets)
 	            .addComponent(btnSavePresets)
@@ -236,6 +241,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		topLayout.setVerticalGroup( topLayout.createParallelGroup()
 				.addComponent(matcherLabel)
 				.addComponent(matcherCombo)
+				.addComponent(btnMatcherDetails)
 	            .addComponent(lblPresets)
 	            .addComponent(cmbPresets)
 	            .addComponent(btnSavePresets)
@@ -340,7 +346,9 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			else { parametersPanel = null; }
 			settingsScroll = new JScrollPane(parametersPanel);
 			settingsScroll.setBorder(new TitledBorder("Matcher Specific Settings"));
-						
+			
+			setDefaultCommonParameters(matcher);
+			
 			initLayout();
 			pack();
 			setLocationRelativeTo(null); 	// center the window on the screen
@@ -351,7 +359,9 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			setVisible(false);  // required
 		}
 		else if(obj == runButton){
-			String check = parametersPanel.checkParameters();
+			
+			String check = null;
+			if ( parametersPanel != null ) check = parametersPanel.checkParameters();
 			if(check == null || check.equals("")) {
 				success = true;
 				//setModal(false);
@@ -362,7 +372,11 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 				return;
 			}
 			
-			params = parametersPanel.getParameters();
+			if( parametersPanel != null ) {
+				params = parametersPanel.getParameters();
+			} else {
+				params = new AbstractParameters();
+			}
 			
 			// fill in threshold
 			params.threshold = Utility.getDoubleFromPercent((String)thresholdCombo.getSelectedItem());
@@ -376,6 +390,9 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			
 			
 			matcher.setParam(params);
+		}
+		else if( obj == btnMatcherDetails ) {
+			Utility.displayMessagePane(matcher.getDetails(), "Matcher details");
 		}
 	}
 	
@@ -464,8 +481,17 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		File presetsDirectory = new File(presetDir);
 		if( !presetsDirectory.exists() ) {
 			// attempt to create the presets directory
-			if( !presetsDirectory.mkdir() ) {
-				// the directory doesn't exist and we cannot make it
+			try {
+				if( !presetsDirectory.mkdir() ) {
+					// the directory doesn't exist and we cannot make it
+					lblPresets.setEnabled(false);
+					cmbPresets.setEnabled(false);
+					btnSavePresets.setEnabled(false);
+					btnDeletePresets.setEnabled(false);
+					return;
+				}
+			} catch (SecurityException se) {
+				se.printStackTrace();
 				lblPresets.setEnabled(false);
 				cmbPresets.setEnabled(false);
 				btnSavePresets.setEnabled(false);
@@ -479,5 +505,12 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		
 	}
 	
+	private void setDefaultCommonParameters(AbstractMatcher a) {
+		//String matcherName = (String) matcherCombo.getSelectedItem();
+		//AbstractMatcher a = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), 0); //i'm just using a fake instance so the algorithm code is not important i put 0 but maybe anythings
+		thresholdCombo.setSelectedItem(Utility.getNoDecimalPercentFromDouble(a.getDefaultThreshold()));
+		sourceRelCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxSourceRelations()));
+		targetRelCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxTargetRelations()));
+	}
 	
 }

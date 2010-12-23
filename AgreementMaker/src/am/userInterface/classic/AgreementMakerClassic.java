@@ -29,6 +29,7 @@ public class AgreementMakerClassic extends JPanel implements FindInterface {
 	private static final long serialVersionUID = -1913594055550719146L;
 	
 	private JSplitPane splitPane;
+	private JSplitPane outerSplitPane;
 	private JScrollPane scrollPane;
 	private Canvas2 canvas;
 	private MatchersControlPanel matcherControlPanel;
@@ -36,7 +37,7 @@ public class AgreementMakerClassic extends JPanel implements FindInterface {
 	public AgreementMakerClassic() {
 		
 		setLayout( new BorderLayout() );
-		
+				
 		scrollPane = new JScrollPane();
 		scrollPane.setWheelScrollingEnabled(true);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(20);
@@ -53,12 +54,18 @@ public class AgreementMakerClassic extends JPanel implements FindInterface {
 		splitPane.setMinimumSize(new Dimension(640,480));
 		splitPane.setPreferredSize(new Dimension(640,480));
 		splitPane.getLeftComponent().setPreferredSize(new Dimension(640,480));
-		
-		add(splitPane, BorderLayout.CENTER);
-		
+
 		matcherControlPanel = new MatchersControlPanel();
+
+		outerSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, splitPane,matcherControlPanel);
+		outerSplitPane.setOneTouchExpandable(true);
+		outerSplitPane.setResizeWeight(1.0);
+		outerSplitPane.setDividerLocation(0.75);
 		
-		add(matcherControlPanel, BorderLayout.PAGE_END);
+		add(outerSplitPane, BorderLayout.CENTER);
+		
+		
+		//add(matcherControlPanel, BorderLayout.PAGE_END);
 	}
 	
 	public JSplitPane getSplitPane() { return splitPane; }

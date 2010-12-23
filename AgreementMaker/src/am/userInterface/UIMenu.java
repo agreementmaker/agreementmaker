@@ -515,7 +515,7 @@ public class UIMenu implements ActionListener {
 				if( Utility.displayConfirmPane("Are you running a batch mode?", "Batch mode?") ) {
 					String batchFile = JOptionPane.showInputDialog(null, "Batch File?");
 					String outputDirectory = JOptionPane.showInputDialog(null, "Output Directory?");
-					String matcherName = Core.getUI().getControlPanel().getComboboxSelectedItem();
+					String matcherName = (new MatcherParametersDialog()).getMatcher().getName().getMatcherName();
 					MatchersRegistry matcher = MatcherFactory.getMatchersRegistryEntry(matcherName);
 					if( Utility.displayConfirmPane("Using matcher: " + matcherName, "Ok?") ) {
 						ThresholdAnalysis than = new ThresholdAnalysis(matcher);

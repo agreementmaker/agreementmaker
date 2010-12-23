@@ -1166,7 +1166,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				if( n1 == null || n2 == null ) { continue; }
 				
 				LegacyMapping edge = new LegacyMapping( n1, n2, alignment, m.getID());
-					
+	
 				matcherGraph.insertEdge(edge);
 				
 			}
