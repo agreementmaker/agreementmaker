@@ -132,7 +132,8 @@ public class UI {
 		frame.setExtendedState(Frame.MAXIMIZED_BOTH); // maximize the window
 		
 		Dimension size = frame.getSize(); 
-		classicAM.getOuterSplitPane().setDividerLocation(size.height - 135);
+		int percent = size.height / 3;
+		classicAM.getOuterSplitPane().setDividerLocation(size.height - percent);
 		
 		// make sure the frame is visible
 		frame.setVisible(true); 
