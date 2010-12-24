@@ -85,71 +85,15 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 		layout.setAutoCreateContainerGaps(true);
 		layout.setAutoCreateGaps(true);
 		
-		
-		
-		//setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Matchers Control Panel"));
-		//setAlignmentX(LEFT_ALIGNMENT);
-		//setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-		
-		//JPANEL MATCHER SELECTION (first top of the three panels)
-		//label
-		//matcherLabel = new JLabel("Matcher: ");
-		//String[] matcherList = MatcherFactory.getMatcherComboList();
-		//matcher combo list
-		//matcherCombo = new JComboBox(matcherList);
-		//matcherCombo.addItemListener(this);
-		//button to view matcher details
-		//viewDetails = new JButton("Details");
-		//viewDetails.addActionListener(this);
-		//button to run match
-		matchButton = new JButton("Match!");
-		matchButton.addActionListener(this);
-		//Threshold combo and label
-		//thresholdLabel = new JLabel("Threshold");
-		//String[] thresholdList = Utility.getPercentStringList();
-		//thresholdCombo = new JComboBox(thresholdList);
-		//thresholdCombo.setSelectedItem("60%");
-		//Relations combo
-		//Object[] numRelList = Utility.getNumRelList();
-		
-		
-		//sRelLabel = new JLabel("Source relations");
-		//sRelationCombo = new JComboBox(numRelList);
-		//sRelationCombo.setSelectedItem(1);
-		//tRelLabel = new JLabel("Target relations");
-		//tRelationCombo = new JComboBox(numRelList);
-		//tRelationCombo.setSelectedItem(1);
-		//defaultValButton = new JButton("Default");
-		//defaultValButton.addActionListener(this);
-		//optimizedCheck = new JCheckBox();
-		//optimizedCheck.setSelected(false);
-		//optimizedLabel = new JLabel("Optimized");
-		
-
-		//matcher selection panel
-//		JPanel matcherSelectionPanel = new JPanel();
-//		matcherSelectionPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
-		//matcherSelectionPanel.add(matcherLabel);
-		//matcherSelectionPanel.add(matcherCombo);
-		//matcherSelectionPanel.add(viewDetails);
-//		matcherSelectionPanel.add(matchButton);
-		//matcherSelectionPanel.add(thresholdLabel);
-		//matcherSelectionPanel.add(thresholdCombo);
-		//matcherSelectionPanel.add(sRelLabel);
-		//matcherSelectionPanel.add(sRelationCombo);
-		//matcherSelectionPanel.add(tRelLabel);
-		//matcherSelectionPanel.add(tRelationCombo);
-		//matcherSelectionPanel.add(optimizedCheck);
-		//matcherSelectionPanel.add(optimizedLabel);
-		//matcherSelectionPanel.add(defaultValButton);
-		
-		
+				
 		//TABLE PANEL:center panel
 		matchersTablePanel = new MatchersTablePanel();
 		
-		//JPANEL EDIT MATCHINGS: lower panel
+		//JPANEL EDIT MATCHINGS
+		matchButton = new JButton("Match!");
+		matchButton.addActionListener(this);
 		newMatching = new JButton("New");
 		newMatching.addActionListener(this);
 		delete = new JButton("Delete");
@@ -170,8 +114,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 		importAlignmentsButton.addActionListener(this);
 		thresholdTuning = new JButton("Tuning");
 		thresholdTuning.addActionListener(this);
-		//mappingAnalyzerButton = new JButton("Disagreement Analysis");
-		//mappingAnalyzerButton.addActionListener(this);
+		
 		JPanel panel3 = new JPanel();
 		panel3.setLayout(new FlowLayout(FlowLayout.LEADING));
 		panel3.add(matchButton);
@@ -185,17 +128,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 		panel3.add(exportAlignmentsButton);
 		panel3.add(importAlignmentsButton);
 		panel3.add(thresholdTuning);
-		//panel3.add(mappingAnalyzerButton);
-		//panel3.add(editMatrixButton);
-
-		//
-
-		//panel3.add(importMatchingsButton);
-		//panel3.add(exportMatchingsButton);
 		
-		// WHOLE CONTROL PANEL
-		//add(matcherSelectionPanel);
-
+		// Layout
 		layout.setHorizontalGroup( layout.createParallelGroup() 
 				.addComponent(panel3)
 				.addComponent(matchersTablePanel)
@@ -212,12 +146,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		try {
 			Object obj = e.getSource();
-/*			if(obj == viewDetails) {
-				String matcherName = (String) matcherCombo.getSelectedItem();
-				AbstractMatcher a = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), 0); //i'm just using a fake instance so the algorithm code is not important i put 0 but maybe anything
-				Utility.displayMessagePane(a.getDetails(), "Matcher details");
-			}*/
-			//else if(obj == matchButton) {
+
 			if(obj == matchButton) {
 				match();
 			}
@@ -230,9 +159,6 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 			else if(obj == clearMatchings) {
 				clearAll();
 			}
-/*			else if(obj == defaultValButton) {
-				setDefaultCommonParameters();
-			}*/
 			else if (obj == copyButton) {
 				copy();
 			}
@@ -251,17 +177,15 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 			else if(obj == thresholdTuning) {
 				tuning();
 			}
-/*			else if(obj == mappingAnalyzerButton) {
-				disagreementEval();
-			}*/
 		}
+
 		//ATTENTION: the exception of the match() method of a matcher is not catched here because it runs in a separated thread
 		catch(AMException ex2) {
 			Utility.displayMessagePane(ex2.getMessage(), null);
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR, null);
+			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR + "\n" + ex.getMessage() , null);
 		}
 	}
 	
