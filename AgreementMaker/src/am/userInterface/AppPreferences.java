@@ -67,6 +67,10 @@ public class AppPreferences {
 	private static final String		PREF_EXPORT_ISOLINES = "pref_export_isolines";
 	private static final String		PREF_EXPORT_SKIPZERO = "pref_export_skipzero";
 	
+	private static final String		PREF_IMPORTLASTFILENAME = "pref_import_lastfilename";
+	private static final String		PREF_IMPORT_TYPE = "pref_import_type";
+	private static final String		PREF_IMPORT_ALIGNMENT_FORMAT = "pref_export_alignment_format";
+	
 	public static enum FileType { 
 		ALIGNMENT_ONLY("1"), MATRIX_AS_CSV("2"), COMPLETE_MATCHER("3");
 		//----------------------- Implementation Details ------------------
@@ -473,6 +477,7 @@ public class AppPreferences {
 	public void saveExportClassesMatrix( boolean c ) { appPrefs.putBoolean(PREF_EXPORT_CLASSESMATRIX, c); }
 	public boolean isExportClassesMatrix() { return appPrefs.getBoolean(PREF_EXPORT_CLASSESMATRIX, true); }
 	public void saveExportType( FileType t ) { appPrefs.put(PREF_EXPORT_TYPE, t.getKey() ); }
+	public void saveImportType( FileType t ) { appPrefs.put(PREF_IMPORT_TYPE, t.getKey() ); }
 	
 	public boolean isExportTypeSelected( FileType t ) {
 		String type = appPrefs.get(PREF_EXPORT_TYPE, "1");
@@ -483,9 +488,14 @@ public class AppPreferences {
 	public void saveExportAlignmentFormatIndex( int index ) { appPrefs.putInt(PREF_EXPORT_ALIGNMENT_FORMAT, index ); }
 	public int getExportAlignmentFormatIndex() { return appPrefs.getInt(PREF_EXPORT_ALIGNMENT_FORMAT, 0); }
 	
+	public void saveImportAlignmentFormatIndex( int index ) { appPrefs.putInt(PREF_IMPORT_ALIGNMENT_FORMAT, index ); }
+	public int getImportAlignmentFormatIndex() { return appPrefs.getInt(PREF_IMPORT_ALIGNMENT_FORMAT, 0); }
+	
 	/**
 	 * @return The last directory selected by the user in the Export Dialog.
 	 */
+	public String getImportLastFilename() { return appPrefs.get(PREF_IMPORTLASTFILENAME, ""); }
+	public void saveImportLastFilename( String name ) { appPrefs.put( PREF_IMPORTLASTFILENAME, name); }
 	public String getExportLastFilename() { return appPrefs.get(PREF_EXPORTLASTFILENAME,""); }
 	public File getExportLastDir() { return new File( appPrefs.get(PREF_EXPORTLASTDIR, "") ); }
 	public void saveExportLastFilename( String name ) { appPrefs.put( PREF_EXPORTLASTFILENAME, name); }

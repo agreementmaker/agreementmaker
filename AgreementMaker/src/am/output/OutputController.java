@@ -22,15 +22,23 @@ public class OutputController {
 	
 	public static enum AlignmentFormats {
 		RDF("OAEI ( .rdf )", "rdf"),
-		TXT("Text ( .txt )", "txt"),
-		DOC("Word ( .doc )", "doc"),
-		XLS("Excel ( .xls )", "xls");
+		TXT("Text ( .txt )", "txt");
 		
 		String description, file_extension;
 		AlignmentFormats(String desc, String ext) { description = desc; file_extension = ext; }
 		String getDescription() { return description; }
 		String getFileExtension() { return file_extension; }
 	}
+	
+	public static enum ImportAlignmentFormats {
+		RDF("OAEI ( .rdf )", "rdf");
+		
+		String description, file_extension;
+		ImportAlignmentFormats(String desc, String ext) { description = desc; file_extension = ext; }
+		String getDescription() { return description; }
+		String getFileExtension() { return file_extension; }
+	}
+	
 	public static String[] getAlignmentFormatDescriptionList() {
 		AlignmentFormats[] array = AlignmentFormats.values();
 		String[] formatList = new String[ array.length ];
@@ -39,6 +47,16 @@ public class OutputController {
 		}
 		return formatList;
 	}
+	
+	public static String[] getImportAlignmentFormatDescriptionList() {
+		ImportAlignmentFormats[] array = ImportAlignmentFormats.values();
+		String[] formatList = new String[ array.length ];
+		for( int i = 0; i < formatList.length; i++ ) {
+			formatList[i] = array[i].getDescription();
+		}
+		return formatList;
+	}
+	
 	public static String getAlignmentFormatExtension( int index ) {
 		AlignmentFormats[] array = AlignmentFormats.values();
 		return array[index].getFileExtension();

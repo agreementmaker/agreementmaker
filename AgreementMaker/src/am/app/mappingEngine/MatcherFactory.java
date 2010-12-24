@@ -142,7 +142,7 @@ public class MatcherFactory {
 	}
 
 	public static boolean isTheUserMatcher(AbstractMatcher toBeDeleted) {
-		return toBeDeleted.getName() == MatchersRegistry.UserManual;
+		return toBeDeleted.getName() == MatchersRegistry.UserManual && toBeDeleted.getIndex() == 0;
 	}
 	
 	

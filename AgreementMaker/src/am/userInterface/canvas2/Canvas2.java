@@ -16,6 +16,7 @@ import am.userInterface.VisualizationPanel;
 import am.userInterface.canvas2.graphical.MappingData;
 import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
 import am.userInterface.canvas2.layouts.LegacyLayout;
+import am.userInterface.canvas2.nodes.LegacyMapping;
 import am.userInterface.canvas2.utility.Canvas2Edge;
 import am.userInterface.canvas2.utility.Canvas2Layout;
 import am.userInterface.canvas2.utility.Canvas2Vertex;
@@ -24,6 +25,7 @@ import am.userInterface.canvas2.utility.GraphLocator;
 import am.userInterface.canvas2.utility.GraphLocator.GraphType;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -72,7 +74,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	private ArrayList<Canvas2Vertex> visibleVertices;  // everytime we paint the canvas, we keep a list of the visible nodes. (used in mouse movement functions)
 	private ArrayList<Canvas2Edge>   visibleEdges;  // also keep a list of visible edges
 	
-	private Canvas2Layout layout; // the Canvas2Listener is the muscle of the operation, i.e. it does everything related to layout.
+	private LegacyLayout layout; // the Canvas2Listener is the muscle of the operation, i.e. it does everything related to layout.
 	
 	public int Xpadding = 20;
 	public int Ypadding = 20;
@@ -329,6 +331,30 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 				if( gr.getID() == matcherID11 ) {
 					AbstractMatcher a = Core.getInstance().getMatcherByID(matcherID11);
 					gr.setVisible(a.getShown());
+					break;
+				}
+			}
+			repaint();
+			break;
+			
+		case MATCHER_COLOR_CHANGED:
+			int matcherID11c = e.getMatcherID();
+			Iterator<CanvasGraph> graphIter11c = graphs.iterator();
+			while( graphIter11c.hasNext() ) {
+				CanvasGraph gr = graphIter11c.next();
+				if( gr.getID() == matcherID11c ) {
+					AbstractMatcher a = Core.getInstance().getMatcherByID(matcherID11c);
+					Color newColor = a.getColor();
+					
+					Iterator<Canvas2Edge> edgesIter = gr.edges();
+					while( edgesIter.hasNext() ) {
+						Canvas2Edge edge = edgesIter.next();
+						if( edge instanceof LegacyMapping ) {
+							MappingData mapdata = (MappingData)edge.getObject();
+							mapdata.color = newColor;
+						}
+					}
+					
 					break;
 				}
 			}

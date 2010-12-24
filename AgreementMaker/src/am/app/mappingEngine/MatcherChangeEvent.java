@@ -11,6 +11,7 @@ public class MatcherChangeEvent extends EventObject {
 		MATCHER_ALIGNMENTSET_UPDATED,	// used when the alignment set has changed
 		MATCHER_VISIBILITY_CHANGED, // used when the matcher is toggled on and off from the control panel
 		MATCHER_REMOVED,	// used when a matcher is removed from the Core
+		MATCHER_COLOR_CHANGED, // used when a matcher's color is changed
 		REMOVE_ALL,
 		NOT_SET
 	}

@@ -1200,7 +1200,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 	
 	public Color getColor() { return color; }
-	public void setColor(Color color) { this.color = color; }
+	public void setColor(Color color) { 
+		this.color = color;
+		MatcherChangeEvent mce = new MatcherChangeEvent(this, MatcherChangeEvent.EventType.MATCHER_COLOR_CHANGED);
+		Core.getInstance().fireEvent(mce);
+	}
 	
 	//*************************UTILITY METHODS**************************************
 	public boolean equals(Object o) {

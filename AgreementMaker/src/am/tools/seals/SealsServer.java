@@ -66,19 +66,13 @@ public class SealsServer implements AlignmentWS {
 	private MatchersRegistry matcherRegistry;
 	private MatchingProgressDisplay progressDisplay;
 	
-	private double threshold;
-	private int sourceRelations;
-	private int targetRelations;
 	private AbstractParameters parameters;
 	
 	private int BUFFERSIZE = 4096;
 	
-	public SealsServer( MatchersRegistry mR, MatchingProgressDisplay pD, double th, int sourceR, int targetR, AbstractParameters params ) {
+	public SealsServer( MatchersRegistry mR, MatchingProgressDisplay pD, AbstractParameters params ) {
 		matcherRegistry = mR;
 		progressDisplay = pD;
-		threshold = th;
-		sourceRelations = sourceR;
-		targetRelations = targetR;
 		parameters = params;
 	}
 	
@@ -90,9 +84,6 @@ public class SealsServer implements AlignmentWS {
 		
 		AbstractMatcher m = MatcherFactory.getMatcherInstance(matcherRegistry, Core.getInstance().getMatcherInstances().size());
 		//m.setProgressDisplay(progressDisplay);
-		m.setThreshold(threshold);
-		m.setMaxSourceAlign(sourceRelations);
-		m.setMaxTargetAlign(targetRelations);
 		m.setParam(parameters);
 		
 		

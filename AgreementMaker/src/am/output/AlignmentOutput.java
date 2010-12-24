@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import com.hp.hpl.jena.rdf.model.Resource;
 
+import am.Utility;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
 
@@ -114,14 +115,19 @@ public class AlignmentOutput
     }
 
     
-    public AlignmentOutput(Alignment<Mapping> as, String fp)
+    public AlignmentOutput(Alignment<Mapping> as, String fp) throws Exception
     {
         alignmentSet = as;
         filepath = fp;
         try {
             File file = new File(fp);
             if (file.exists()) {
-                file.delete();
+            	if( Utility.displayConfirmPane("File already exists.  Overwrite?", "File exists") ) {
+            		file.delete();
+            	}
+            	else {
+            		throw new Exception("Not overwriting existing file.");
+            	}
             }
             raf = new RandomAccessFile(filepath, "rw");
             writeList = new ArrayList<String>();

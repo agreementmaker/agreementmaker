@@ -82,8 +82,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 	void init() {
 
 		GroupLayout layout = new GroupLayout(this);
-		layout.setAutoCreateContainerGaps(true);
-		layout.setAutoCreateGaps(true);
+		//layout.setAutoCreateContainerGaps(true);
+		//layout.setAutoCreateGaps(true);
 		
 		setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Matchers Control Panel"));
@@ -190,6 +190,11 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 	}
 	
 	private void qualityEvaluation() {
+		if(!Core.getInstance().ontologiesLoaded() ) {
+			Utility.displayErrorPane("You have to load Source and Target ontologies before quality evaluation.\nClick on File Menu and select Open Ontology functions ", null);
+			return;
+		}
+		
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
 		if(rowsIndex.length == 0) {
 			Utility.displayErrorPane("No matchers selected", null);
@@ -304,6 +309,11 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 	}
 
 	public void export() {
+		if(!Core.getInstance().ontologiesLoaded() ) {
+			Utility.displayErrorPane("You have to load Source and Target ontologies before exporting alignments.\nClick on File Menu and select Open Ontology functions ", null);
+			return;
+		}
+		
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
 		if(rowsIndex.length == 0) {
 			Utility.displayErrorPane("No matchers selected", null);
@@ -314,10 +324,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 	public void importa() throws Exception {
 		
 		if(!Core.getInstance().ontologiesLoaded() ) {
-			Utility.displayErrorPane("You have to load Source and Target ontologies before running any matcher\nClick on File Menu and select Open Ontology functions ", null);
+			Utility.displayErrorPane("You have to load Source and Target ontologies before importing alignments.\nClick on File Menu and select Open Ontology functions ", null);
+			return;
 		}
-		
-		
 		
 		LoadFileDialog lfd = new LoadFileDialog();
 		AbstractMatcher importedMatcher = lfd.getLoadedMatcher();
@@ -350,19 +359,21 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 	}
 	
 	public void evaluate() throws Exception{
+		if(!Core.getInstance().ontologiesLoaded() ) {
+			Utility.displayErrorPane("You have to load Source and Target ontologies before reference evaluation.\nClick on File Menu and select Open Ontology functions ", null);
+			return;
+		}
+		
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
 		if(rowsIndex.length == 0) {
-			Utility.displayErrorPane("No matchers selected", null);
+			Utility.displayErrorPane("No matchers selected from the control panel table.", null);
 		}
 		else {
 			//Run the reference alignment matcher to get the list of alignments in reference file, we are not going to add it in the table list
 			ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment,0);
-			MatcherParametersDialog dialog = new MatcherParametersDialog(refMatcher);
+			MatcherParametersDialog dialog = new MatcherParametersDialog(refMatcher, false, false);
 			if(dialog.parametersSet()) {
 				refMatcher.setParam(dialog.getParameters());
-				refMatcher.setThreshold(refMatcher.getDefaultThreshold());
-				refMatcher.setMaxSourceAlign(refMatcher.getDefaultMaxSourceRelations());
-				refMatcher.setMaxTargetAlign(refMatcher.getDefaultMaxTargetRelations());
 				refMatcher.match();
 				
 				// TODO: Move the if-else into ReferenceAlignmentMatcher
@@ -456,6 +467,11 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 	}
 
 	public void tuning() throws Exception{
+		if(!Core.getInstance().ontologiesLoaded() ) {
+			Utility.displayErrorPane("You have to load Source and Target ontologies before tuning.\nClick on File Menu and select Open Ontology functions ", null);
+			return;
+		}
+		
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
 		if(rowsIndex.length == 0) {
 			Utility.displayErrorPane("No matchers selected", null);
@@ -463,7 +479,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 		else {
 			//Run the reference alignment matcher to get the list of alignments in reference file, we are not going to add it in the table list
 			ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment,0);
-			MatcherParametersDialog dialog = new MatcherParametersDialog(refMatcher);
+			MatcherParametersDialog dialog = new MatcherParametersDialog(refMatcher, false, false);
 			if(dialog.parametersSet()) {
 				refMatcher.setParam(dialog.getParameters());
 				refMatcher.setThreshold(refMatcher.getDefaultThreshold());

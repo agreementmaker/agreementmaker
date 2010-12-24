@@ -92,7 +92,7 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 				.addGroup(layout.createSequentialGroup()
 					.addComponent(fileType) 					// fileType label
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-							.addComponent(filePath) 			// filepath text
+							.addComponent(filePath, GroupLayout.PREFERRED_SIZE, 500, GroupLayout.PREFERRED_SIZE) 			// filepath text
 							.addComponent(formatList) 	
 							)
 					.addGroup(layout.createParallelGroup()

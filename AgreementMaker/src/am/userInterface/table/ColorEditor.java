@@ -102,6 +102,7 @@ public class ColorEditor extends AbstractCellEditor
     }
 
     //Implement the one CellEditor method that AbstractCellEditor doesn't.
+    @Override
     public Object getCellEditorValue() {
         return currentColor;
     }

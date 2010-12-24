@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -17,6 +18,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
+import javax.swing.text.Document;
 
 import am.GlobalStaticVariables;
 import am.app.Core;
@@ -128,11 +131,11 @@ public class UI {
 		frame.pack();
 		frame.setExtendedState(Frame.MAXIMIZED_BOTH); // maximize the window
 		
+		Dimension size = frame.getSize(); 
+		classicAM.getOuterSplitPane().setDividerLocation(size.height - 135);
 		
 		// make sure the frame is visible
 		frame.setVisible(true); 
-		
-		classicAM.getOuterSplitPane().setDividerLocation(0.65d);
 	}
 
 	/**

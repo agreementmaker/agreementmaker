@@ -216,7 +216,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 			result = "Only FIRST layer matchers can be used in the feedback loop ";
 		}
 		else if(currentMatcher.needsParam()) {
-			MatcherParametersDialog dialog = new MatcherParametersDialog(currentMatcher);
+			MatcherParametersDialog dialog = new MatcherParametersDialog(currentMatcher, true, true);
 			if(dialog.parametersSet()) {
 				currentMatcher.setParam(dialog.getParameters());
 				//no error, so result must be ""

@@ -23,7 +23,8 @@ public class MyTableModel extends AbstractTableModel {
 	public final static int ROWUPDATE = 1;
 	public final static int ALLROWUPDATE = 2;
 	
-	public final static int INDEX = 0;
+	public final static int COLOR = 0;
+	public final static int INDEX = COLOR+1;
 	public final static int NAME = INDEX+1;
 	public final static int SHOWHIDE =NAME+1;
 	public final static int THRESHOLD = SHOWHIDE+1;
@@ -41,10 +42,10 @@ public class MyTableModel extends AbstractTableModel {
 	public final static int RECALL = PRECISION+1;
 	public final static int FMEASURE = RECALL+1;
 	public final static int CQUAL = FMEASURE+1;
-	public final static int PQUAL = CQUAL+1;
-	public final static int COLOR = PQUAL+1;	
+	public final static int PQUAL = CQUAL+1;	
 	
-	public String[] columnNames = {"Index",
+	public String[] columnNames = {							"Color",
+															"Index",
 					                                        "Name",
 					                                        "Show/Hide",
 					                                        "Threshold",
@@ -62,8 +63,7 @@ public class MyTableModel extends AbstractTableModel {
 					                                        "Recall",
 					                                        "F-Measure",
 					                                        "Class Quality",
-					                                        "Prop Quality",
-					                                        "Color"
+					                                        "Prop Quality"
 					                                        };
         
 	public ArrayList<AbstractMatcher> data =  Core.getInstance().getMatcherInstances();

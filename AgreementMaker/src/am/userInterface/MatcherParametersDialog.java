@@ -63,6 +63,9 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	private JPanel generalPanel;
 	//private JPanel settingsPanel;
 	
+	private boolean showPresets = true;
+	private boolean showGeneralSettings = true;
+	
 	private JScrollPane settingsScroll;
 	
 	GroupLayout.ParallelGroup mainHorizontalGroup;
@@ -74,13 +77,19 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	AbstractParameters params;
 	
 	AbstractMatcher matcher;
+
+	private boolean matcherDefined = false;
 	
 	/**
 	 * @param ontoType
 	 * @param userInterface
 	 */
-	public MatcherParametersDialog(AbstractMatcher a) {
+	public MatcherParametersDialog(AbstractMatcher a, boolean showPresets, boolean showGeneralSettings) {
 		super();
+
+		this.showPresets = showPresets;
+		this.showGeneralSettings = showGeneralSettings;
+		this.matcherDefined  = true;
 		
 		initComponents();  // initialize the components
 		
@@ -103,7 +112,9 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 
 		settingsScroll = createMatcherSettingsScroll(parametersPanel);
 		
-		initLayout();
+		matcher = a;  // we want to use our own matcher.
+		
+		initLayout(showPresets, showGeneralSettings);
 
 		setModal(true);
 		setVisible(true);
@@ -265,36 +276,38 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	/* (non-Javadoc)
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
+	private void initLayout() { initLayout(showPresets, showGeneralSettings); } // default settings
 	
-	private void initLayout() {
+	private void initLayout(boolean showPresets, boolean showGeneralSettings) {
 		//overall dialog layout
 		GroupLayout layout = new GroupLayout(this.getContentPane());
 		layout.setAutoCreateContainerGaps(true);
 		layout.setAutoCreateGaps(true);
-		
-		
-		
-		
-		layout.setHorizontalGroup( mainHorizontalGroup = layout.createParallelGroup(Alignment.TRAILING)
-				.addComponent(topPanel)
-				.addComponent(generalPanel)
-	            .addComponent(settingsScroll)
-	            .addGroup( layout.createSequentialGroup()
+				
+		// horizontal setup
+		mainHorizontalGroup = layout.createParallelGroup(Alignment.TRAILING);
+		if( showPresets ) mainHorizontalGroup.addComponent(topPanel);
+		if( showGeneralSettings ) mainHorizontalGroup.addComponent(generalPanel);
+		mainHorizontalGroup.addComponent(settingsScroll);
+		mainHorizontalGroup.addGroup( layout.createSequentialGroup()
 	            		.addComponent(cancelButton)
-	            		.addComponent(runButton)
-	            )
+	            		.addComponent(runButton) 
 		);
 		
-		layout.setVerticalGroup( mainVerticalGroup = layout.createSequentialGroup()
-				.addComponent(topPanel)
-				.addComponent(generalPanel)
-	            .addComponent(settingsScroll)
-	            .addGroup( layout.createParallelGroup()
-	            		.addComponent(cancelButton)
-	            		.addComponent(runButton)
-	            )
-		); 
+		layout.setHorizontalGroup( mainHorizontalGroup );
+		
+		// vertical setup
+		mainVerticalGroup = layout.createSequentialGroup();
+		if( showPresets ) mainVerticalGroup.addComponent(topPanel);
+		if( showGeneralSettings ) mainVerticalGroup.addComponent(generalPanel);
+		mainVerticalGroup.addComponent(settingsScroll);
+		mainVerticalGroup.addGroup( layout.createParallelGroup()
+        		.addComponent(cancelButton)
+        		.addComponent(runButton)
+        );
+		layout.setVerticalGroup( mainVerticalGroup ); 
 
+		
 		setLayout(layout);	
 		
 		if( getFont() != null && getFontMetrics(getFont()) != null ) {
@@ -313,7 +326,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	public void actionPerformed (ActionEvent ae){
 		Object obj = ae.getSource();
 		
-		if(ae.getSource() == matcherCombo){
+		if(ae.getSource() == matcherCombo && !matcherDefined){
 			matcher = MatcherFactory.getMatcherInstance(
 					MatcherFactory.getMatchersRegistryEntry((String)matcherCombo.getSelectedItem()), 0);
 			
@@ -404,6 +417,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 
 	}
 	
+	// TODO: Is this method still required?
 	public void match(AbstractMatcher currentMatcher, boolean defaultParam) throws Exception{
 		MatchersTablePanel matchersTablePanel = Core.getInstance().getUI().getControlPanel().getMatchersTablePanel();
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows(); //indexes in the table correspond to the indexes of the matchers in the matcherInstances list in core class
@@ -425,7 +439,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			//Asking parameters before setting input matcher list, just because the user can still cancel the operation
 			if(currentMatcher.needsParam()) {
 				everythingOk = false;
-				MatcherParametersDialog dialog = new MatcherParametersDialog(currentMatcher);
+				MatcherParametersDialog dialog = new MatcherParametersDialog(currentMatcher, true, true);
 				if(dialog.parametersSet()) {
 					currentMatcher.setParam(dialog.getParameters());
 					everythingOk = true;
@@ -452,7 +466,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 					Core.getUI().redisplayCanvas();
 				}	
 
-				System.out.println("Matching Process Complete");
+				if( Core.DEBUG ) System.out.println("Matching Process Complete");
 			}
 		}
 	}

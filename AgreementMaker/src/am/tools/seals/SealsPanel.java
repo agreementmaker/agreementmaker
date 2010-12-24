@@ -74,7 +74,7 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 	private JButton btnPublish, btnDefaultName;
 	private JTextField txtHost, txtPort, txtEndpoint;
 	private JTextArea txtReport;
-	private JComboBox cmbMatcherList, cmbThreshold, cmbSource, cmbTarget;
+	private JComboBox cmbMatcherList;//, cmbThreshold, cmbSource, cmbTarget;
 	private JProgressBar barProgress;
 	private JScrollPane sclReport;
 	
@@ -131,7 +131,7 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 		String[] thresholds = Utility.getPercentStringList();
 		String[] numRelations = Utility.getNumRelList();
 		
-		JLabel lblThreshold = new JLabel("Threshold:");
+		/*JLabel lblThreshold = new JLabel("Threshold:");
 		cmbThreshold = new JComboBox(thresholds);
 		cmbThreshold.setSelectedItem("60%");
 		
@@ -139,7 +139,7 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 		cmbSource = new JComboBox(numRelations);
 		
 		JLabel lblTo = new JLabel("to");
-		cmbTarget = new JComboBox(numRelations);
+		cmbTarget = new JComboBox(numRelations);*/
 		
 		
 		btnPublish = new JButton("Publish!");
@@ -173,25 +173,25 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 		
 		settingsLayout.setHorizontalGroup( settingsLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup( settingsLayout.createSequentialGroup()
-						.addComponent(lblHost, GroupLayout.PREFERRED_SIZE, lblThreshold.getPreferredSize().width, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblHost, GroupLayout.PREFERRED_SIZE, lblMatcher.getPreferredSize().width, GroupLayout.PREFERRED_SIZE)
 						.addComponent(txtHost)
 						.addComponent(lblPort)
 						.addComponent(txtPort, GroupLayout.PREFERRED_SIZE, txtPort.getPreferredSize().width, GroupLayout.PREFERRED_SIZE)
 						)
 				.addGroup( settingsLayout.createSequentialGroup()
-						.addComponent(lblMatcher, GroupLayout.PREFERRED_SIZE, lblThreshold.getPreferredSize().width, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblMatcher, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(cmbMatcherList)
 						)
-				.addGroup( settingsLayout.createSequentialGroup()
+				/*.addGroup( settingsLayout.createSequentialGroup()
 						.addComponent(lblThreshold)
 						.addComponent(cmbThreshold)
 						.addComponent(lblCardinality)
 						.addComponent(cmbSource)
 						.addComponent(lblTo)
 						.addComponent(cmbTarget)
-						)
+						)*/
 				.addGroup( settingsLayout.createSequentialGroup()
-						.addComponent(lblEndpoint, GroupLayout.PREFERRED_SIZE, lblThreshold.getPreferredSize().width, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblEndpoint, GroupLayout.PREFERRED_SIZE, lblMatcher.getPreferredSize().width, GroupLayout.PREFERRED_SIZE)
 						.addComponent(txtEndpoint)
 						.addGroup( settingsLayout.createParallelGroup()
 								.addComponent(btnPublish, GroupLayout.PREFERRED_SIZE, buttonWidth, GroupLayout.PREFERRED_SIZE)
@@ -212,14 +212,14 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 						.addComponent(lblMatcher)
 						.addComponent(cmbMatcherList)
 						)
-				.addGroup( settingsLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+				/*.addGroup( settingsLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(lblThreshold)
 						.addComponent(cmbThreshold)
 						.addComponent(lblCardinality)
 						.addComponent(cmbSource)
 						.addComponent(lblTo)
 						.addComponent(cmbTarget)
-						)
+						)*/
 				.addGroup( settingsLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(lblEndpoint)
 						.addComponent(txtEndpoint)
@@ -335,7 +335,7 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 				// 3. If the matcher requires parameters, bring up the corresponding parameters panel and have the user set the parameters
 				if( matcherToPublish.needsParam() ) {
 					// bring up the matcherparametersdialog to have the users set the parameters for the algorithm
-					MatcherParametersDialog paramDialog = new MatcherParametersDialog( matcherToPublish );
+					MatcherParametersDialog paramDialog = new MatcherParametersDialog( matcherToPublish, true, true );
 					matcherToPublish.setParam( paramDialog.getParameters() );
 				}
 
@@ -360,9 +360,7 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 				
 				
 				
-				SealsServer sealsServer = new SealsServer(mR, this, Utility.getDoubleFromPercent((String)cmbThreshold.getSelectedItem()), 
-										Utility.getIntFromNumRelString((String)cmbSource.getSelectedItem()), 
-										Utility.getIntFromNumRelString((String)cmbTarget.getSelectedItem()), matcherToPublish.getParam());
+				SealsServer sealsServer = new SealsServer(mR, this, matcherToPublish.getParam());
 				
 				matcherToPublish = null; // don't need this object anymore.
 				
@@ -409,9 +407,9 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 				txtHost.setEnabled(false);
 				txtPort.setEditable(false);
 				cmbMatcherList.setEnabled(false);
-				cmbThreshold.setEnabled(false);
-				cmbSource.setEnabled(false);
-				cmbTarget.setEnabled(false);
+				//cmbThreshold.setEnabled(false);
+				//cmbSource.setEnabled(false);
+				//cmbTarget.setEnabled(false);
 				txtEndpoint.setEnabled(false);
 				btnDefaultName.setEnabled(false);
 				
@@ -435,9 +433,9 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 				txtHost.setEnabled(true);
 				txtPort.setEditable(true);
 				cmbMatcherList.setEnabled(true);
-				cmbThreshold.setEnabled(true);
-				cmbSource.setEnabled(true);
-				cmbTarget.setEnabled(true);
+				//cmbThreshold.setEnabled(true);
+				//cmbSource.setEnabled(true);
+				//cmbTarget.setEnabled(true);
 				txtEndpoint.setEnabled(true);
 				btnDefaultName.setEnabled(true);
 				

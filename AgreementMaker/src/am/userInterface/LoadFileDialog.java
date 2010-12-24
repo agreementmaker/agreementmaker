@@ -46,7 +46,7 @@ public class LoadFileDialog extends JDialog implements ActionListener{
 	private static final long serialVersionUID = 7313974994418768939L;
 	AppPreferences prefs = new AppPreferences(); // Application preferences.  Used to automatically fill in previous values.
 
-	private JLabel lblMatcher, lblFilename, lblFileFormat;
+	private JLabel lblFilename, lblFileFormat;
 	private JButton btnBrowse, btnCancel, btnLoad;
 	private JTextField txtFilename;
 	private JComboBox cmbAlignmentFormat;
@@ -63,7 +63,7 @@ public class LoadFileDialog extends JDialog implements ActionListener{
 	 */
 	private JPanel getLoadOptionsPanel() {
 		JPanel panel = new JPanel();
-		panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), " Export: "));
+		panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), " Import: "));
 		
 		// create the radio buttons (using the preferences to set the options)
 		radAlignmentOnly = new JRadioButton("Alignment only", prefs.isExportTypeSelected( FileType.ALIGNMENT_ONLY ));
@@ -93,7 +93,7 @@ public class LoadFileDialog extends JDialog implements ActionListener{
 		// create a button group for the radio buttons
 		ButtonGroup grpType = new ButtonGroup();
 		grpType.add(radAlignmentOnly);
-		grpType.add(radMatrixAsCSV);
+		grpType.add(radMatrixAsCSV); 
 		grpType.add(radCompleteMatcher);
 		
 		ButtonGroup grpMatrix = new ButtonGroup();
@@ -103,8 +103,13 @@ public class LoadFileDialog extends JDialog implements ActionListener{
 		// we need to create a subpanel to group the "Alignment only" radio button with the format label and combobox.
 		lblFileFormat = new JLabel("Format: ");
 		
-		cmbAlignmentFormat = new JComboBox( OutputController.getAlignmentFormatDescriptionList() );
-		cmbAlignmentFormat.setSelectedIndex( prefs.getExportAlignmentFormatIndex() );
+		cmbAlignmentFormat = new JComboBox( OutputController.getImportAlignmentFormatDescriptionList() );
+		try {
+			cmbAlignmentFormat.setSelectedIndex( prefs.getImportAlignmentFormatIndex() );
+		} catch( IllegalArgumentException e ) {
+			// index out of bounds.
+			if( cmbAlignmentFormat.getItemCount() > 0 ) cmbAlignmentFormat.setSelectedIndex(0);
+		}
 		
 		// a panel for the alignment format label + combo box 
 		JPanel pnlAlignmentFormat = new JPanel();
@@ -166,22 +171,23 @@ public class LoadFileDialog extends JDialog implements ActionListener{
 		GroupLayout layMain = new GroupLayout(panel);
 		layMatrices.setAutoCreateGaps(true);
 		
+		// TODO: Enable all commented out options when they work.
 		layMain.setHorizontalGroup( layMain.createParallelGroup()
 				.addComponent(radAlignmentOnly)
 				.addComponent(pnlAlignmentFormat)
-				.addComponent(radMatrixAsCSV)
-				.addComponent(pnlMatrices)
-				.addComponent(radCompleteMatcher)
+				//.addComponent(radMatrixAsCSV)
+				//.addComponent(pnlMatrices)
+				//.addComponent(radCompleteMatcher)
 		);
 		
 		layMain.setVerticalGroup( layMain.createSequentialGroup() 
 				.addComponent(radAlignmentOnly)
 				.addComponent(pnlAlignmentFormat)
-				.addGap(10)
-				.addComponent(radMatrixAsCSV)
-				.addComponent(pnlMatrices)
-				.addGap(10)
-				.addComponent(radCompleteMatcher)				
+				//.addGap(10)
+				//.addComponent(radMatrixAsCSV)
+				//.addComponent(pnlMatrices)
+				//.addGap(10)
+				//.addComponent(radCompleteMatcher)				
 		);
 		
 		panel.setLayout(layMain);
@@ -202,17 +208,19 @@ public class LoadFileDialog extends JDialog implements ActionListener{
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
 		// elements of the dialog (in order from left to right, top to bottom)
-		lblMatcher = new JLabel("Importing Matcher: ");
+		//lblMatcher = new JLabel("Importing Matcher: ");
 		
 		lblFilename = new JLabel("File: ");
 		txtFilename = new JTextField();
+		
+		txtFilename.setPreferredSize(new Dimension(500, lblFilename.getPreferredSize().height));
 		
 		btnBrowse = new JButton("Browse...");
 		btnBrowse.addActionListener(this);
 		
 		// Restore some values saved 
 		//the system suggests the last file opened
-		txtFilename.setText(prefs.getExportLastFilename());		
+		txtFilename.setText(prefs.getImportLastFilename());		
 		pnlSaveOptions = getLoadOptionsPanel();
 		
 		btnCancel = new JButton("Cancel");
@@ -232,7 +240,7 @@ public class LoadFileDialog extends JDialog implements ActionListener{
 		layout.setAutoCreateContainerGaps(true);
 		
 		layout.setHorizontalGroup( layout.createParallelGroup(Alignment.TRAILING)
-				.addComponent(lblMatcher, Alignment.LEADING)
+				//.addComponent(lblMatcher, Alignment.LEADING)
 				.addGroup( layout.createSequentialGroup()
 						.addComponent(lblFilename)
 						.addComponent(txtFilename)
@@ -248,8 +256,8 @@ public class LoadFileDialog extends JDialog implements ActionListener{
 		// the Vertical group is the same structure as the horizontal group
 		// but Sequential and Parallel definition are exchanged		
 		layout.setVerticalGroup( layout.createSequentialGroup()
-				.addComponent(lblMatcher)
-				.addGap(10)
+				//.addComponent(lblMatcher)
+				//.addGap(10)
 				.addGroup( layout.createParallelGroup(Alignment.CENTER)
 						.addComponent(lblFilename)
 						.addComponent(txtFilename)
@@ -325,13 +333,15 @@ public class LoadFileDialog extends JDialog implements ActionListener{
 			
 			if(outFileName.equals("")){
 				JOptionPane.showMessageDialog(this, "Select an input file to proceed");
+				return;
 			}
 			else{
 				// save app preferences.
-				prefs.saveExportLastFilename(outFileName);
-				prefs.saveExportType(inputType);
+				prefs.saveImportLastFilename(outFileName);
+				prefs.saveImportType(inputType);
 				
 				if( inputType == FileType.ALIGNMENT_ONLY ) {
+					// TODO: Make this work with other types of outputs.
 					int lastIndex = Core.getInstance().getMatcherInstances().size();
 					AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, lastIndex);
 					
@@ -347,28 +357,18 @@ public class LoadFileDialog extends JDialog implements ActionListener{
 					new MatcherProgressDialog(referenceAlignmentMatcher);
 					
 					loadedMatcher = referenceAlignmentMatcher;
+					setVisible(false);
+					dispose();
 				}
 				else if( inputType == FileType.MATRIX_AS_CSV ) {
-					
-					if( radClassesMatrix.isSelected() ) {
-						}
-					else { 
-						}
+					// TODO: Implement this.
+					setVisible(false);
+					dispose();
 				}
 				else if ( inputType == FileType.COMPLETE_MATCHER ) {
-					// full file name. TODO: correctness check
-					String fullFileName = outFileName;
-					
-					try {
-						loadedMatcher = AbstractMatcher.readObject(new ObjectInputStream(new FileInputStream(fullFileName)));
-						Utility.displayMessagePane("File loaded successfully.\n", null);
-						this.setVisible(false);
-					}
-					catch(Exception ex){
-						JOptionPane.showConfirmDialog(null,"Can not parse the file '" + fullFileName + "'. Please check the policy.","Parser Error",JOptionPane.PLAIN_MESSAGE);
-						ex.printStackTrace();
-					}
-					//frame.dispose();
+					// TODO: Implement this.
+					setVisible(false);
+					dispose();
 				}
 				else {
 					throw new Exception("Could not determine the output type.\nAt least one radio button must be selected.");

@@ -125,7 +125,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 	
 		if( prefBatchMode ) {
 			if( matcherToAnalyze.needsParam() ) {
-				MatcherParametersDialog dialog = new MatcherParametersDialog(matcherToAnalyze);
+				MatcherParametersDialog dialog = new MatcherParametersDialog();
 			
 				if( dialog.parametersSet() ) {
 					// user clicked run

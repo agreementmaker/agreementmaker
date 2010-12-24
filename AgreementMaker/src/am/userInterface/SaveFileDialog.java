@@ -163,7 +163,7 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 				.addComponent(pnlAlignmentFormat)
 				.addComponent(radMatrixAsCSV)
 				.addComponent(pnlMatrices)
-				.addComponent(radCompleteMatcher)
+				//.addComponent(radCompleteMatcher)
 		);
 		
 		layMain.setVerticalGroup( layMain.createSequentialGroup() 
@@ -172,8 +172,8 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 				.addGap(10)
 				.addComponent(radMatrixAsCSV)
 				.addComponent(pnlMatrices)
-				.addGap(10)
-				.addComponent(radCompleteMatcher)				
+				//.addGap(10)
+				//.addComponent(radCompleteMatcher)				
 		);
 		
 		panel.setLayout(layMain);
@@ -198,15 +198,18 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 		selectedMatcher = list.get(rowsIndex[0]); // we only care about the first matcher selected
 		
 		// elements of the dialog (in order from left to right, top to bottom)
-		lblMatcher = new JLabel("Exporting Matcher: " + selectedMatcher.getName().getMatcherName());
+		lblMatcher = new JLabel("Exporting \"" + selectedMatcher.getName().getMatcherName() + "\"");
 		
-		lblFilename = new JLabel("Filename (without extension): ");
+		lblFilename = new JLabel("Filename: ");
 		txtFilename = new JTextField();
 		lblFileDir = new JLabel("Save in folder: ");
 		txtFileDir = new JTextField();
+		txtFilename.setPreferredSize(new Dimension(500, lblFilename.getPreferredSize().height));
 		
 		btnBrowse = new JButton("Browse...");
 		btnBrowse.addActionListener(this);
+		
+		
 		
 		// Restore some values saved 
 		//the system suggests the last file opened
@@ -346,9 +349,9 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 			else if(outFileName.equals("")){
 				JOptionPane.showMessageDialog(this, "Insert a name for the output file to proceed");
 			}
-			else if(outFileName.indexOf(".")!=-1) {
+			/*else if(outFileName.indexOf(".")!=-1) {
 				JOptionPane.showMessageDialog(this, "Insert a file name without Extension");
-			}
+			}*/
 			else{
 				// save app preferences.
 				prefs.saveExportLastFilename(outFileName);
@@ -365,8 +368,13 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 					prefs.saveExportAlignmentFormatIndex(outFormatIndex);
 					try {
 						// full file name
-						String fullFileName = outDirectory+ "/" +outFileName+ "." + OutputController.getAlignmentFormatExtension(outFormatIndex);
-
+						String fullFileName = outDirectory+ File.separator +outFileName;
+						
+						// append extension
+						if( !fullFileName.endsWith("." + OutputController.getAlignmentFormatExtension(outFormatIndex)) ) {
+							fullFileName += "." + OutputController.getAlignmentFormatExtension(outFormatIndex);
+						}
+						
 						if( OutputController.getAlignmentFormatExtension(outFormatIndex) == "rdf" ){ // RDF	
 							OutputController.printDocumentOAEI(fullFileName);
 							Utility.displayMessagePane("File saved successfully.\nLocation: "+fullFileName+"\n", null);
