@@ -158,7 +158,7 @@ public class UI {
 	 * @param ontoType the type of ontology, source or target
 	 * 
 	 * */
-	public void openFile( String filename, int ontoType, int syntax, int language, boolean skip, boolean noReasoner) {
+	public boolean openFile( String filename, int ontoType, int syntax, int language, boolean skip, boolean noReasoner) {
 		try{
 			JPanel jPanel = null;
 			System.out.println("opening file");
@@ -189,21 +189,24 @@ public class UI {
 				else Core.getInstance().setTargetOntology(ont);
 				//System.out.println("after after Core.getInstancein am.userinterface.ui.openFile()...");
 				//Set the tree in the canvas
-				System.out.println("Displaying the hierarchies in the canvas");
+				if( Core.DEBUG ) System.out.println("Displaying the hierarchies in the canvas");
 				ont.setDeepRoot(t.getTreeRoot());
 				ont.setTreeCount(t.getTreeCount());
 				getCanvas().setTree(t);
 				if(Core.getInstance().ontologiesLoaded()) {
 					//Ogni volta che ho caricato un ontologia e le ho entrambe, devo resettare o settare se � la prima volta, tutto lo schema dei matchings
-					System.out.println("Init matchings table");
+					if( Core.DEBUG ) System.out.println("Init matchings table");
 					classicAM.getMatchersControlPanel().resetMatchings();
 					
 				}
-				System.out.println("Ontologies loaded succesfully");
+				if( Core.DEBUG ) System.out.println("Ontologies loaded succesfully");
+				return true;
 			}
+			return false;
 		}catch(Exception ex){
-			JOptionPane.showConfirmDialog(null,"Can not parse the file '" + filename + "'. Please check the policy.","Parser Error",JOptionPane.PLAIN_MESSAGE);
+			JOptionPane.showConfirmDialog(getUIFrame(),"Can not parse the file '" + filename + "'. Please check the policy.","Parser Error",JOptionPane.ERROR_MESSAGE);
 			ex.printStackTrace();
+			return false;
 		}
 	}
 

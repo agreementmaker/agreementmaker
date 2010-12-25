@@ -52,32 +52,32 @@ public enum MatchersRegistry {
 	//
 	SimilarityFlooding  ( "SFM", "Similarity Flooding Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.sfm.SimilarityFlooding.class ),
 	AnchorFlood			( "AFM", "AnchorFlood Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.anchorFlood.AnchorFloodMatcher.class ),
-	OAEI2010			( "OAEI-10", "OAEI 2010 Matcher", am.app.mappingEngine.oaei2010.OAEI2010Matcher.class ),
+	OAEI2010			( "OAEI-10", "OAEI 2010 Matcher", am.app.mappingEngine.oaei2010.OAEI2010Matcher.class, MatcherCategory.HYBRID),
 	IterativeMatcher	( "IISM", "Instance-based Iterator", am.app.mappingEngine.instance.IterativeMatcher.class),
-	AdvancedSimilarity  ( "ASM", "Advanced Similarity Matcher", am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher.class),
+	AdvancedSimilarity  ( "ASM", "Advanced Similarity Matcher", am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher.class, MatcherCategory.SYNTACTIC),
 	GroupFinder			( "GFM", "Group Finder Matcher", am.app.mappingEngine.groupFinder.GroupFinderMatcher.class),
-	IISM					( "IISM", "Iterative Instance and Structural Matcher", am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralMatcher.class),
-	LSM					( "LSM", "Lexical Synonym Matcher", LexicalSynonymMatcher.class ),
+	IISM					( "IISM", "Iterative Instance and Structural Matcher", am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralMatcher.class, MatcherCategory.STRUCTURAL),
+	LSM					( "LSM", "Lexical Synonym Matcher", LexicalSynonymMatcher.class, MatcherCategory.LEXICAL ),
 	//OFFICIAL MATCHERS
-	LexicalJAWS			( "JAWS", "Lexical Matcher: JAWS", LexicalMatcherJAWS.class ),
-	BaseSimilarity		( "BSM", "Base Similarity Matcher", BaseSimilarityMatcher.class ),
-	ParametricString 	( "PSM", "Parametric String Matcher",	 ParametricStringMatcher.class ),
-	MultiWords       	( "VMM", "Vector-based Multi-Words Matcher", MultiWordsMatcher.class),
-	WordNetLexical		( "LM-WN", "Lexical Matcher: WordNet", LexicalMatcherJWNL.class),
-	DSI					( "DSI", "Descendant's Similarity Inheritance", DescendantsSimilarityInheritanceMatcher.class ),
+	LexicalJAWS			( "JAWS", "Lexical Matcher: JAWS", LexicalMatcherJAWS.class, MatcherCategory.LEXICAL ),
+	BaseSimilarity		( "BSM", "Base Similarity Matcher", BaseSimilarityMatcher.class, MatcherCategory.SYNTACTIC ),
+	ParametricString 	( "PSM", "Parametric String Matcher",	 ParametricStringMatcher.class, MatcherCategory.SYNTACTIC ),
+	MultiWords       	( "VMM", "Vector-based Multi-Words Matcher", MultiWordsMatcher.class, MatcherCategory.SYNTACTIC),
+	WordNetLexical		( "LM-WN", "Lexical Matcher: WordNet", LexicalMatcherJWNL.class, MatcherCategory.LEXICAL),
+	DSI					( "DSI", "Descendant's Similarity Inheritance", DescendantsSimilarityInheritanceMatcher.class, MatcherCategory.STRUCTURAL ),
 	BSS					( "BSS", "Basic Structure Selector Matcher", BasicStructuralSelectorMatcher.class ),
-	SSC					( "SSC", "Sibling's Similarity Contribution", SiblingsSimilarityContributionMatcher.class ),
-	Combination			( "LWC", "Linear Weighted Combination", CombinationMatcher.class ),
+	SSC					( "SSC", "Sibling's Similarity Contribution", SiblingsSimilarityContributionMatcher.class, MatcherCategory.STRUCTURAL ),
+	Combination			( "LWC", "Linear Weighted Combination", CombinationMatcher.class, MatcherCategory.COMBINATION ),
 	ConceptSimilarity   ( "Concept Similarity", ConceptMatcher.class, false),
-	OAEI2009   			( "OAEI-09", "OAEI2009 Matcher", OAEI2009matcher.class),
+	OAEI2009   			( "OAEI-09", "OAEI2009 Matcher", OAEI2009matcher.class, MatcherCategory.HYBRID),
 	//UMLSKSLexical		("Lexical Matcher: UMLSKS", LexicalMatcherUMLS.class, false), //it requires internet connection and the IP to be registered
 	
 	//Auxiliary matchers created for specific purposes
-	InitialMatcher      ("Initial Matcher: LWC (PSM+VMM+BSM)", InitialMatchers.class, true),
+	InitialMatcher      ( "Initial Matcher: LWC (PSM+VMM+BSM)", InitialMatchers.class, true),
 	PRAintegration   	( "PRA Integration", PRAintegrationMatcher.class, false), //this works fine
-	PRAMatcher			("PRA Matcher", PRAMatcher.class, false),
-	PRAMatcher2			("PRA Matcher2", PRAMatcher2.class, false),
-	OldPRAMAtcher		("Old PRA Matcher", OldPRAMatcher.class, false),
+	PRAMatcher			( "PRA Matcher", PRAMatcher.class, false),
+	PRAMatcher2			( "PRA Matcher2", PRAMatcher2.class, false),
+	OldPRAMAtcher		( "Old PRA Matcher", OldPRAMatcher.class, false),
 	
 	//WORK IN PROGRESS
 		
@@ -88,26 +88,61 @@ public enum MatchersRegistry {
 	
 	//TEST MATCHERS 
 	Equals 				( "Local Name Equivalence Comparison", EqualsMatcher.class , false),
-	AllOne 				( "(Test) All One Similarities", AllOneMatcher.class, true ),
-	AllZero				( "(Test) All Zero Similarities", AllZeroMatcher.class, true ),
-	Copy				( "Copy Matcher", CopyMatcher.class,false ),
-	Random 				( "(Test) Random Similarities", RandomMatcher.class, true ),
-	DSI2				( "OLD Descendant's Similarity Inheritance (DSI)", OldDescendantsSimilarityInheritanceMatcher.class, false ),
+	AllOne 				( "(Test) All One Similarities", AllOneMatcher.class, MatcherCategory.UTILITY, true ),
+	AllZero				( "(Test) All Zero Similarities", AllZeroMatcher.class, MatcherCategory.UTILITY, true ),
+	Copy				( "Copy Matcher", CopyMatcher.class, MatcherCategory.UTILITY, false ),
+	Random 				( "(Test) Random Similarities", RandomMatcher.class, MatcherCategory.UTILITY, true ),
+	DSI2				( "OLD Descendant's Similarity Inheritance (DSI)", OldDescendantsSimilarityInheritanceMatcher.class, MatcherCategory.STRUCTURAL, false ),
 	UserFeedBackLoop 	("User Feedback Loop", FeedbackLoop.class, false );
 	
 	/* Don't change anything below this line .. unless you intend to. */
 	private boolean showInControlPanel;
 	private String name;
 	private String shortName;
-	private String className;  // TODO: this should be Class instead of string
+	private Class<? extends AbstractMatcher> className;  // TODO: this should be Class instead of string
+	private MatcherCategory category;
 	
-	MatchersRegistry( String sn, String n, Class<?> matcherClass ) { shortName = sn; name = n; className = matcherClass.getName(); showInControlPanel = true;}
-	MatchersRegistry( String n, Class<?> matcherClass ) { name = n; className = matcherClass.getName(); showInControlPanel = true;}
-	MatchersRegistry( String n, Class<?> matcherClass, boolean shown) { name = n; className = matcherClass.getName(); showInControlPanel = shown; }
-	MatchersRegistry( String sn, String n, Class<?> matcherClass, boolean shown) { shortName = sn; name = n; className = matcherClass.getName(); showInControlPanel = shown; }
+	/* 	Constructors */
+	
+	MatchersRegistry( String sn, String n, Class<? extends AbstractMatcher> matcherClass ) { 
+		shortName = sn; name = n; className = matcherClass; showInControlPanel = true; category = MatcherCategory.UNCATEGORIZED;
+	}
+	
+	MatchersRegistry( String sn, String n, Class<? extends AbstractMatcher> matcherClass, MatcherCategory c ) { 
+		shortName = sn; name = n; className = matcherClass; showInControlPanel = true; category = c;
+	}
+	
+	MatchersRegistry( String n, Class<? extends AbstractMatcher> matcherClass ) { 
+		shortName = ""; name = n; className = matcherClass; showInControlPanel = true; category = MatcherCategory.UNCATEGORIZED;
+	}
+	
+	MatchersRegistry( String n, Class<? extends AbstractMatcher> matcherClass, MatcherCategory c ) { 
+		shortName = ""; name = n; className = matcherClass; category = c;
+	}
+	
+	MatchersRegistry( String n, Class<? extends AbstractMatcher> matcherClass, boolean shown) { 
+		name = n; className = matcherClass; showInControlPanel = shown; category = MatcherCategory.UNCATEGORIZED; 
+	}
+	
+	MatchersRegistry( String n, Class<? extends AbstractMatcher> matcherClass, MatcherCategory c, boolean shown) { 
+		name = n; className = matcherClass; showInControlPanel = shown; category = c; 
+	}
+	
+	MatchersRegistry( String sn, String n, Class<? extends AbstractMatcher> matcherClass, boolean shown) { 
+		shortName = sn; name = n; className = matcherClass; showInControlPanel = shown; category = MatcherCategory.UNCATEGORIZED; 
+	}
+	
+	MatchersRegistry( String sn, String n, Class<? extends AbstractMatcher> matcherClass, MatcherCategory c, boolean shown) { 
+		shortName = sn; name = n; className = matcherClass; showInControlPanel = shown; category = c; 
+	}
+	
+	/* Getters and setters */
+	
 	public String getMatcherName() { return name; }
 	public String getMatcherShortName() { return shortName; }
-	public String getMatcherClass() { return className; }
+	public String getMatcherClass() { return className.getName(); }
+	public Class<? extends AbstractMatcher> getMatcher() { return className; }
+	public MatcherCategory getCategory() { return category; }
 	public boolean isShown() { return showInControlPanel; }
 	public String toString() { return name; }
 	

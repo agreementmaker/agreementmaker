@@ -72,8 +72,9 @@ public class OntologyLoadingProgressDialog extends JDialog implements PropertyCh
 	    okButton.setEnabled(false);
 	    okButton.addActionListener(this);
 	    cancelButton.addActionListener(this);
-	    buttonPanel.add(okButton);
+	    
 	    buttonPanel.add(cancelButton);
+	    buttonPanel.add(okButton);
 	    
 	    scrollingArea = new JScrollPane(report);
 	    textPanel.add(scrollingArea);

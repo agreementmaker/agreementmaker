@@ -196,7 +196,7 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 	public CombinationParameters getParameters() {
 		int size = inputMatchers.size();
 		parameters = new CombinationParameters();
-		parameters.combinationType = (String)combOperationsCombo.getSelectedItem();
+		parameters.combinationType = combOperationsCombo.getSelectedItem().toString();
 		
 
 		parameters.manualWeighted = false;
@@ -206,7 +206,7 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 		parameters.matchersWeights = new double[size];
 		if(qualityWeightsRadio.isSelected() || bothWeightsRadio.isSelected()) {
 			parameters.qualityEvaluation = true;
-			parameters.quality = (String)qualityCombo.getSelectedItem();
+			parameters.quality = qualityCombo.getSelectedItem().toString();
 			//weights will be assigned later by the matcher in this case, which will invoke the qualityEvaluation
 		}
 		if (noWeightsRadio.isSelected() || manualWeightsRadio.isSelected() || bothWeightsRadio.isSelected()) {

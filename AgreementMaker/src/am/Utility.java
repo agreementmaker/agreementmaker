@@ -6,6 +6,7 @@ import javax.swing.JTextArea;
 
 import com.hp.hpl.jena.ontology.OntClass;
 
+import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.IntDoublePair;
 import am.userInterface.table.MyTableModel;
@@ -210,7 +211,7 @@ public class Utility {
 	public static boolean displayConfirmPane(String desc, String title) {
 		if(title == null)
 			title = "Confirmation required";
-		int res =  JOptionPane.showConfirmDialog(null,
+		int res =  JOptionPane.showConfirmDialog(Core.getUI().getUIFrame(),
 			    desc,
 			    title,
 			    JOptionPane.YES_NO_OPTION);	

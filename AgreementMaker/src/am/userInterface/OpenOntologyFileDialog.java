@@ -229,7 +229,7 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		}else if(obj == proceed){
 			String filename = filePath.getText();
 			if(filename.equals("")){
-				JOptionPane.showMessageDialog(frame, "Load an ontology file to proceed.");
+				JOptionPane.showMessageDialog(frame, "Load an ontology file to proceed.", "Filename is empty", JOptionPane.ERROR_MESSAGE);
 			}else{
 				try{
 					ui.openFile(filename, ontoType, syntaxList.getSelectedIndex(), langList.getSelectedIndex(), skipCheck.isSelected(), noReasonerCheck.isSelected());
@@ -240,7 +240,7 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 					ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
 				
 				}catch(Exception ex){
-					JOptionPane.showConfirmDialog(null,"Can not parse the file '" + filename + "'. Please check the policy.","Parser Error",JOptionPane.PLAIN_MESSAGE);
+					JOptionPane.showConfirmDialog(frame,"Can not parse the file '" + filename + "'. Please check the policy.","Parser Error",JOptionPane.ERROR_MESSAGE);
 					ex.printStackTrace();
 				}
 

@@ -57,7 +57,7 @@ public class UIMenu implements ActionListener {
 	
 	// File menu.
 	private JMenuItem xit, openSource, openTarget, openMostRecentPair,
-					  closeSource, closeTarget, saveAlignment, loadAlignment;
+					  closeSource, closeTarget, closeBoth, saveAlignment, loadAlignment;
 	private JMenu menuRecentSource, menuRecentTarget;
 	
 	// Edit menu.
@@ -158,6 +158,7 @@ public class UIMenu implements ActionListener {
 				// confirm exit
 				confirmExit();
 				// if it is no, then do nothing
+				return;
 			} else if ( obj == itemFind ) {
 				// we are going to be searching throught the currently visible tab
 				Object visibleTab = Core.getUI().getCurrentTab();
@@ -185,17 +186,32 @@ public class UIMenu implements ActionListener {
 				}
 			}else if (obj == openMostRecentPair){
 				int position = 0;
-				ui.openFile( prefs.getRecentSourceFileName(position), GlobalStaticVariables.SOURCENODE, 
+				boolean loadedSecond = false;
+				boolean loadedFirst = ui.openFile( prefs.getRecentSourceFileName(position), GlobalStaticVariables.SOURCENODE, 
 						prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position), prefs.getRecentSourceSkipNamespace(position), prefs.getRecentSourceNoReasoner(position));
-				ui.openFile( prefs.getRecentTargetFileName(position), GlobalStaticVariables.TARGETNODE, 
-						prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position), prefs.getRecentTargetSkipNamespace(position), prefs.getRecentTargetNoReasoner(position));
-				closeSource.setEnabled(true);
-				closeTarget.setEnabled(true);
 				
+				if( loadedFirst ) {
+					// load the second ontology
+					loadedSecond = ui.openFile( prefs.getRecentTargetFileName(position), GlobalStaticVariables.TARGETNODE, 
+						prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position), prefs.getRecentTargetSkipNamespace(position), prefs.getRecentTargetNoReasoner(position));
+				}
+				else { return; }
+				
+				if( !loadedSecond ) {
+					// user canceled, unload first ontology
+					Core.getInstance().removeOntology( Core.getInstance().getSourceOntology() );
+					return;
+				}
+				
+				// grey out menus
 				openSource.setEnabled(false);
-				openTarget.setEnabled(false);
+				closeSource.setEnabled(true);
 				menuRecentSource.setEnabled(false);
+				
+				closeTarget.setEnabled(true);
+				openTarget.setEnabled(false);
 				menuRecentTarget.setEnabled(false);
+				
 				openMostRecentPair.setEnabled(false);
 				
 			}else if (obj == aboutItem){
@@ -514,6 +530,39 @@ public class UIMenu implements ActionListener {
 					ui.redisplayCanvas();
 				}
 				if( !Core.getInstance().sourceIsLoaded() && !Core.getInstance().targetIsLoaded() ) openMostRecentPair.setEnabled(true);
+			} else if( obj == closeBoth ) {
+				if( Core.getInstance().ontologiesLoaded() ) {
+					// confirm with the user that we should reset matchings
+					if( controlPanel.clearAll() ) {
+						Core.getInstance().removeOntology( Core.getInstance().getSourceOntology() );
+						Core.getInstance().removeOntology( Core.getInstance().getTargetOntology() );
+						closeSource.setEnabled(false); // the source ontology has been removed, grey out the menu entry
+						closeTarget.setEnabled(false); // the source ontology has been removed, grey out the menu entry
+						// and we need to enable the source ontology loading menu entries
+						openSource.setEnabled(true);
+						openTarget.setEnabled(true);
+						menuRecentSource.setEnabled(true);
+						menuRecentTarget.setEnabled(true);
+					}
+				} else {
+					if( Core.getInstance().sourceIsLoaded() ) {
+						Core.getInstance().removeOntology( Core.getInstance().getSourceOntology() );
+						closeSource.setEnabled(false);  // the source ontology has been removed, grey out the menu entry
+						// and we need to enable the source ontology loading menu entries
+						openSource.setEnabled(true);
+						menuRecentSource.setEnabled(true);
+						ui.redisplayCanvas();
+					}
+					if( Core.getInstance().targetIsLoaded() ) {
+						Core.getInstance().removeOntology( Core.getInstance().getTargetOntology() );
+						closeTarget.setEnabled(false);  // the source ontology has been removed, grey out the menu entry
+						// and we need to enable the source ontology loading menu entries
+						openTarget.setEnabled(true);
+						menuRecentTarget.setEnabled(true);
+						ui.redisplayCanvas();
+					}
+				}
+				if( !Core.getInstance().sourceIsLoaded() && !Core.getInstance().targetIsLoaded() ) openMostRecentPair.setEnabled(true);
 			} else if( obj == thresholdAnalysis ) {
 				// decide if we are running in a single mode or batch mode
 				if( Utility.displayConfirmPane("Are you running a batch mode?", "Batch mode?") ) {
@@ -753,14 +802,14 @@ public class UIMenu implements ActionListener {
 		fileMenu.setMnemonic(KeyEvent.VK_F);	
 
 		//add openGFile menu item to file menu
-		openSource = new JMenuItem("Open Source Ontology...",new ImageIcon("images"+File.pathSeparator+"fileImage.gif"));
+		openSource = new JMenuItem("Open Source Ontology...",new ImageIcon("images"+File.separator+"fileImage.png"));
 		//openSource.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));                		
 		//openSource.setMnemonic(KeyEvent.VK_O);
 		openSource.addActionListener(this);
 		fileMenu.add(openSource);
 		
 		//add openGFile menu item to file menu
-		openTarget = new JMenuItem("Open Target Ontology...",new ImageIcon("images"+File.pathSeparator+"fileImage.gif"));
+		openTarget = new JMenuItem("Open Target Ontology...",new ImageIcon("images"+File.separator+"fileImage.png"));
 		//openTarget.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));                		
 		//openTarget.setMnemonic(KeyEvent.VK_O);
 		openTarget.addActionListener(this);
@@ -794,8 +843,13 @@ public class UIMenu implements ActionListener {
 		closeTarget = new JMenuItem("Close Target Ontology");
 		closeTarget.addActionListener(this);
 		closeTarget.setEnabled(false); // there is no target ontology loaded at the beginning
+		closeBoth = new JMenuItem("Close both ontologies");
+		closeBoth.addActionListener(this);
+		closeBoth.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); 
+		
 		fileMenu.add(closeSource);
 		fileMenu.add(closeTarget);
+		fileMenu.add(closeBoth);
 		
 		fileMenu.addSeparator();
 		saveAlignment = new JMenuItem("Save Selected Alignment...");
@@ -813,6 +867,7 @@ public class UIMenu implements ActionListener {
 		// add exit menu item to file menu
 		xit = new JMenuItem("Exit", KeyEvent.VK_X);
 		xit.addActionListener(this);
+		xit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		fileMenu.add(xit);
 		
 
@@ -1051,7 +1106,7 @@ public class UIMenu implements ActionListener {
 	  * Function that is called when to user wants to close the program. 
 	  */
 	 public void confirmExit() {
-		int n = JOptionPane.showConfirmDialog(null,"Are you sure you want to exit ?","Exit Agreement Maker",JOptionPane.YES_NO_OPTION);
+		int n = JOptionPane.showConfirmDialog(Core.getUI().getUIFrame(),"Are you sure you want to exit ?","Exit Agreement Maker",JOptionPane.YES_NO_OPTION);
 		if (n == JOptionPane.YES_OPTION)
 		{
 			System.out.println("Exiting the program.\n");

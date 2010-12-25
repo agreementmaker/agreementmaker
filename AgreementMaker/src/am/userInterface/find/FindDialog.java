@@ -12,17 +12,23 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRootPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.SpringLayout;
 
 import org.apache.log4j.Level;
@@ -54,7 +60,7 @@ public class FindDialog extends JDialog implements ActionListener {
 	FindInterface haystack;  // searching for a needle in the haystack
 	
 	public FindDialog( FindInterface hs ) {
-		super();
+		super(Core.getUI().getUIFrame());
 
 		haystack = hs;
 		
@@ -136,62 +142,31 @@ public class FindDialog extends JDialog implements ActionListener {
 		);
 		
 		
+		getRootPane().setDefaultButton(findButton);
 		
-		
-/*  unfinished spring layout		
-		
-		
-		// create a spring layout for the find dialog
-		Container contentPane = getContentPane();
-		SpringLayout mainLayout = new SpringLayout();
-		contentPane.setLayout(mainLayout);
-		
-		JPanel input = new JPanel();
-		input.setLayout( new BoxLayout(input, BoxLayout.Y_AXIS));
-		
-		JLabel labelRegularExpression = new JLabel("Search words/Regular Expression:");
-		labelRegularExpression.setAlignmentX(Component.LEFT_ALIGNMENT);
-		labelRegularExpression.setHorizontalTextPosition(JLabel.LEFT);
-		labelRegularExpression.setVerticalTextPosition(JLabel.BOTTOM);
-		
-		JComboBox cmbFind = new JComboBox(); // TODO: Add previous search entries
-		cmbFind.setEditable(true);
-		cmbFind.setAlignmentX(LEFT_ALIGNMENT);
-		labelRegularExpression.setLabelFor(cmbFind);
-		
-		// TODO: cmbFind.addActionListener(this);
-		
-
-		
-		JButton findButton = new JButton("Find Next");
-		findButton.addActionListener(this);
-		
-		
-		input.add( labelRegularExpression );
-		input.add( cmbFind );
-		
-		
-		
-		
-		// compile all the sections together
-		contentPane.add(input);
-		//sections.setBorder(BorderFactory.createCompoundBorder( BorderFactory.createLineBorder(Color.red), sections.getBorder()));
-
-		mainLayout.putConstraint(SpringLayout.WEST, input, 5, SpringLayout.WEST, contentPane);
-		
-		contentPane.add(findButton);
-		
-		mainLayout.putConstraint(SpringLayout.NORTH, findButton, 5, SpringLayout.SOUTH, input);
-		
-		mainLayout.putConstraint(SpringLayout.EAST, contentPane, 5, SpringLayout.EAST, input);
-		mainLayout.putConstraint(SpringLayout.SOUTH, contentPane, 5, SpringLayout.SOUTH, findButton);
-		
-*/
 		pack();
 		setResizable(false);
 		setLocationRelativeTo(null);
 	}
 
+	// make the escape key work
+	@Override
+	protected JRootPane createRootPane() {
+	    JRootPane rootPane = new JRootPane();
+	    KeyStroke stroke = KeyStroke.getKeyStroke("ESCAPE");
+	    Action actionListener = new AbstractAction() {
+	      public void actionPerformed(ActionEvent actionEvent) {
+	        cancelButton.doClick();
+	      }
+	    };
+	    InputMap inputMap = rootPane
+	        .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+	    inputMap.put(stroke, "ESCAPE");
+	    rootPane.getActionMap().put("ESCAPE", actionListener);
+
+	    return rootPane;
+	  }
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 	
@@ -203,8 +178,8 @@ public class FindDialog extends JDialog implements ActionListener {
 				// we continue searching from the last found thing
 				if( findButton.getText() == "Reset" ) {
 					haystack.resetSearch();
+					findButton.setText("Find");
 				}
-				
 				findNext();
 			} else {
 				// create a new search
@@ -229,7 +204,12 @@ public class FindDialog extends JDialog implements ActionListener {
 				log.setLevel(Level.DEBUG);
 				log.debug(e);
 			}
-			continueFromLast = false;
+			if( e.getActionCommand() == "comboBoxEdited" ) {
+				Object selectedItem = findBox.getSelectedItem(); 
+				if( selectedItem != null && searchString != selectedItem.toString() )
+					continueFromLast = false;				
+			}
+			
 		}
 	}
 	

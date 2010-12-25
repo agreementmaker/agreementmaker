@@ -123,7 +123,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		initLayout(showPresets, showGeneralSettings);
 		
 		getRootPane().setDefaultButton(runButton);
-
+		
 		setVisible(true);
 	}
 	
@@ -133,7 +133,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		initComponents();
 		
 		matcher = MatcherFactory.getMatcherInstance(
-				MatcherFactory.getMatchersRegistryEntry((String)matcherCombo.getSelectedItem()), Core.getInstance().getMatcherInstances().size());
+				MatcherFactory.getMatchersRegistryEntry(matcherCombo.getSelectedItem().toString()), Core.getInstance().getMatcherInstances().size());
 		
 		String name = matcher.getName().getMatcherName();
 		setTitle(name+": additional parameters");
@@ -146,6 +146,9 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 
 		getRootPane().setDefaultButton(runButton);
 		
+		// restore last selected matcher
+		matcherCombo.setSelectedIndex( Core.getAppPreferences().getInt("MATCHERSPARAMETERSDIALOG_SELECTEDMATCHER") );
+		
 		setVisible(true);
 	}
 
@@ -156,9 +159,10 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	    JRootPane rootPane = new JRootPane();
 	    KeyStroke stroke = KeyStroke.getKeyStroke("ESCAPE");
 	    Action actionListener = new AbstractAction() {
-	      public void actionPerformed(ActionEvent actionEvent) {
-	        cancelButton.doClick();
-	      }
+			private static final long serialVersionUID = 1774539460694983567L;
+			public void actionPerformed(ActionEvent actionEvent) {
+		        cancelButton.doClick();
+		      }
 	    };
 	    InputMap inputMap = rootPane
 	        .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -170,8 +174,8 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	
 	private void initComponents() {
 		matcherLabel = new JLabel("Matcher:");
-		String[] matcherList = MatcherFactory.getMatcherComboList();
-		matcherCombo = new JComboBox(matcherList);
+		//String[] matcherList = MatcherFactory.getMatcherComboList();
+		matcherCombo = new MatcherComboBox();
 		matcherCombo.addActionListener(this);
 		
 		btnMatcherDetails = new JButton("Explanation");
@@ -181,6 +185,11 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		cmbPresets = new JComboBox();
 		btnSavePresets = new JButton("Save");
 		btnDeletePresets = new JButton("Delete");
+		
+		lblPresets.setVisible(false);
+		cmbPresets.setVisible(false);
+		btnSavePresets.setVisible(false);
+		btnDeletePresets.setVisible(false);
 		
 		thresholdLabel = new JLabel("Threshold:");
 		String[] thresholdList = Utility.getPercentStringList();
@@ -351,7 +360,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		
 		if(ae.getSource() == matcherCombo && !matcherDefined){
 			matcher = MatcherFactory.getMatcherInstance(
-					MatcherFactory.getMatchersRegistryEntry((String)matcherCombo.getSelectedItem()), 0);
+					MatcherFactory.getMatchersRegistryEntry(matcherCombo.getSelectedItem().toString()), 0);
 			
 			String name = matcher.getName().getMatcherName();
 			setTitle(name+": additional parameters");
@@ -413,6 +422,9 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			
 			
 			matcher.setParam(params);
+			
+			// save selected index
+			if( !matcherDefined ) Core.getAppPreferences().saveInt("MATCHERSPARAMETERSDIALOG_SELECTEDMATCHER", matcherCombo.getSelectedIndex());
 		}
 		else if( obj == btnMatcherDetails ) {
 			Utility.displayMessagePane(matcher.getDetails(), "Matcher details");
@@ -433,7 +445,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	}
 	
 	public static void main(String[] args) {
-		AbstractMatcher matcher = MatcherFactory.getMatcherInstance(MatchersRegistry.IISM, 1);
+		//AbstractMatcher matcher = MatcherFactory.getMatcherInstance(MatchersRegistry.IISM, 1);
 		//new MatcherParametersDialog(matcher);
 		
 		new MatcherParametersDialog();
@@ -442,7 +454,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	
 	// TODO: Is this method still required?
 	public void match(AbstractMatcher currentMatcher, boolean defaultParam) throws Exception{
-		MatchersTablePanel matchersTablePanel = Core.getInstance().getUI().getControlPanel().getMatchersTablePanel();
+		MatchersTablePanel matchersTablePanel = Core.getUI().getControlPanel().getMatchersTablePanel();
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows(); //indexes in the table correspond to the indexes of the matchers in the matcherInstances list in core class
 		int selectedMatchers = rowsIndex.length;
 		if(!Core.getInstance().ontologiesLoaded() ) {

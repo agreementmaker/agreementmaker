@@ -630,7 +630,9 @@ public class AppPreferences {
 	
 
 
-	
+
+	public void saveInt( String key, int val ) { appPrefs.putInt("PREF_GENERIC_INT_" + key, val); }
+	public int getInt( String key ) { return appPrefs.getInt("PREF_GENERIC_INT_" + key, 0); }
 
 	
 }

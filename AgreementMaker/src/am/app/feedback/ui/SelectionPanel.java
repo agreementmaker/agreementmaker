@@ -311,7 +311,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 	}
 
 	public int getM() {
-		return Integer.parseInt( (String) cmbM.getSelectedItem() );
+		return Integer.parseInt( cmbM.getSelectedItem().toString() );
 	}
 
 
@@ -326,7 +326,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		
 		fblp.cardinality = cmbCardinality.getSelectedItem().toString();
 		
-		if( cmbCardinality.getSelectedItem().equals("1-1") ) {
+		if( cmbCardinality.getSelectedItem().toString().equals("1-1") ) {
 			fblp.sourceNumMappings = 1;
 			fblp.targetNumMappings = 1;
 		}
@@ -346,7 +346,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 
 		
 		//get the automatic inital matcher
-		String matcherName = (String) cmbMatcher.getSelectedItem();
+		String matcherName = cmbMatcher.getSelectedItem().toString();
 		fblp.initialMatcher = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), 0); //index is not needed because this matcher is not set into the table
 		fblp.initialMatcher.setThreshold(fblp.highThreshold );
 		fblp.initialMatcher.setMaxSourceAlign(fblp.sourceNumMappings);
