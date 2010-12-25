@@ -26,6 +26,10 @@ public class CombinationParameters extends AbstractParameters {
 	//when weights are manually assigned, each matcher as an array with the same value for all nodes. like if it is a global weight not local
 	public double[] matchersWeights;
 
+	public CombinationParameters() { super(); }
+	public CombinationParameters(double th, int s, int t) { super(th, s, t); }
+	
+	
 	public void initForOAEI2009() {
 		combinationType = AVERAGECOMB;
 		qualityEvaluation = true;
@@ -40,7 +44,7 @@ public class CombinationParameters extends AbstractParameters {
 	 * @param layer Which LWC are we configuring.
 	 * @throws Exception 
 	 */
-	public void initForOAEI2010(Track t, boolean firstLWC) throws Exception {
+	public CombinationParameters initForOAEI2010(Track t, boolean firstLWC) throws Exception {
 		
 		switch(t) {
 		case Benchmarks:
@@ -80,7 +84,7 @@ public class CombinationParameters extends AbstractParameters {
 			quality = QualityEvaluator.LOCALCONFIDENCE;
 		}
 		
-		
+		return this;
 	}
 		
 

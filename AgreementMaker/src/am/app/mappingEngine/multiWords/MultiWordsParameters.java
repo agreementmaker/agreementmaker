@@ -49,8 +49,10 @@ public class MultiWordsParameters extends AbstractParameters {
 	
 	//I put the constructor to init default values when we run this method batch mode
 	//and because it has some parameters that are not in input by user.
-	public MultiWordsParameters() {
-		super();
+	public MultiWordsParameters() { super(); initVariables(); }
+	public MultiWordsParameters(double th, int maxS, int maxT) { super(th, maxS, maxT); initVariables(); }
+	
+	private void initVariables() {
 		measure = TFIDF;
 		considerInstances = false;
 		considerNeighbors = false;
@@ -66,9 +68,8 @@ public class MultiWordsParameters extends AbstractParameters {
 		normParameter.removeStopWords = true;
 		normParameter.stem = true;
 	}
-
-
-	public void initForOAEI2009() {
+	
+	public MultiWordsParameters initForOAEI2009() {
 		measure = TFIDF;
 		//only on concepts right now because it should be weighted differently
 		considerInstances = false;
@@ -79,11 +80,11 @@ public class MultiWordsParameters extends AbstractParameters {
 		ignoreLocalNames = true;
 		normParameter = new NormalizerParameter();
 		normParameter.setForOAEI2009();
-		
+		return this;
 	}
 
 
-	public void initForOAEI2010(Track currentTrack) throws Exception {
+	public MultiWordsParameters initForOAEI2010(Track currentTrack) throws Exception {
 		
 		switch( currentTrack ) {
 		case Anatomy:
@@ -133,5 +134,6 @@ public class MultiWordsParameters extends AbstractParameters {
 				
 		normParameter = new NormalizerParameter();
 		normParameter.setForOAEI2009();
+		return this;
 	}
 }

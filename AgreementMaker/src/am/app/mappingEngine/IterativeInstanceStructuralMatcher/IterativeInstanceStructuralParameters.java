@@ -15,6 +15,9 @@ public class IterativeInstanceStructuralParameters extends AbstractParameters {
 	boolean useRangeDomain;
 	boolean usePropertyUsage;
 	
+	public IterativeInstanceStructuralParameters() { super(); }
+	public IterativeInstanceStructuralParameters(double th, int s, int t) { super(th, s, t); }
+	
 	public boolean isConsiderIndividuals() {
 		return considerIndividuals;
 	}
@@ -87,5 +90,16 @@ public class IterativeInstanceStructuralParameters extends AbstractParameters {
 		this.usePropertyUsage = usePropertyUsage;
 	}
 	
-	
+	public IterativeInstanceStructuralParameters setForOAEI2010() {
+		setConsiderIndividuals(true);
+		setPropertyUsageThreshold(0.6);
+		setPropertyValuesThreshold(0.5);
+		setRangeDomainThreshold(0.9);
+		setSuperclassThreshold(0.6);
+		setUsePropertyUsage(true);
+		setUsePropertyValues(true);
+		setUseRangeDomain(true);
+		setUseSuperclasses(true);
+		return this;
+	}
 }

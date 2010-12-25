@@ -10,6 +10,8 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException; 
 import javax.sound.sampled.SourceDataLine; 
 import javax.sound.sampled.UnsupportedAudioFileException; 
+
+import am.app.Core;
  
 public class SoundNotification extends Thread { 
  
@@ -37,7 +39,7 @@ public class SoundNotification extends Thread {
  
         File soundFile = new File(filename);
         if (!soundFile.exists()) { 
-            System.err.println("Wave file not found: " + filename);
+            if(Core.DEBUG) System.err.println("Wave file not found: " + filename);
             return;
         } 
  

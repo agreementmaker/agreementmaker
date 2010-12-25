@@ -7,6 +7,7 @@ import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -86,6 +87,8 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 
 	private boolean matcherDefined = false;
 	
+	ArrayList<AbstractMatcher> selectedMatchers;
+	
 	/**
 	 * @param ontoType
 	 * @param userInterface
@@ -102,7 +105,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		// select the matcher in the combobox
 		ComboBoxModel model = matcherCombo.getModel();
 		for (int i = 0; i < model.getSize(); i++) {
-			String curr = (String)model.getElementAt(i);
+			String curr = model.getElementAt(i).toString();
 			if(curr.equals(a.getName().getMatcherName()))
 				matcherCombo.setSelectedIndex(i);
 		}
@@ -120,6 +123,8 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		
 		matcher = a;  // we want to use our own matcher.
 		
+		addInputMatchers(matcher);
+		
 		initLayout(showPresets, showGeneralSettings);
 		
 		getRootPane().setDefaultButton(runButton);
@@ -127,6 +132,16 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		setVisible(true);
 	}
 	
+	private void addInputMatchers(AbstractMatcher currentMatcher) {
+		//Set input matchers into the abstractmatcher VERY IMPORTANT to set them before invoking the parameter panel, in fact the parameter panel may need to work on inputMatchers also.
+		int[] rowsIndex = Core.getInstance().getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
+		for(int i = 0; i<rowsIndex.length && i< currentMatcher.getMaxInputMatchers(); i++) {
+			AbstractMatcher input = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
+			currentMatcher.addInputMatcher(input);
+		}
+		
+	}
+
 	public MatcherParametersDialog() {
 		super(Core.getUI().getUIFrame(), true);
 		
@@ -134,6 +149,8 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		
 		matcher = MatcherFactory.getMatcherInstance(
 				MatcherFactory.getMatchersRegistryEntry(matcherCombo.getSelectedItem().toString()), Core.getInstance().getMatcherInstances().size());
+		
+		addInputMatchers(matcher);
 		
 		String name = matcher.getName().getMatcherName();
 		setTitle(name+": additional parameters");
@@ -364,6 +381,8 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			
 			String name = matcher.getName().getMatcherName();
 			setTitle(name+": additional parameters");
+			
+			addInputMatchers(matcher);
 			
 			if( settingsScroll != null ) remove(settingsScroll);
 			

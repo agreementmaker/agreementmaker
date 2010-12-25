@@ -496,10 +496,10 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 	}
 
 	@Override
-	public void matchingStarted() { 
+	public void matchingStarted(AbstractMatcher m) { 
 		barProgress.setEnabled(true); 
 		barProgress.setValue(0); 
-		txtReport.append("Matcher has started to run.\n"); 
+		txtReport.append(m.getName().getMatcherName() + " Matcher has started to run.\n"); 
 	}
 	
 	@Override
@@ -525,6 +525,14 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 	public void clearReport() {
 		txtReport.setText("");		
 	}
+
+	@Override
+	public void ignoreComplete(boolean ignore) {
+		// TODO: figure out if this is really needed.
+	}
+
+	@Override
+	public void setProgressLabel(String label) { barProgress.setString(label); }
 
 	
 }

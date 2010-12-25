@@ -447,12 +447,6 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 			Utility.displayErrorPane("Select at least "+currentMatcher.getMinInputMatchers()+" matchings from the table to run this matcher.", null);
 			return;
 		}
-		//Set input matchers into the abstractmatcher VERY IMPORTANT to set them before invoking the parameter panel, in fact the parameter panel may need to work on inputMatchers also.
-		for(int i = 0; i<rowsIndex.length && i< currentMatcher.getMaxInputMatchers(); i++) {
-			AbstractMatcher input = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
-			currentMatcher.addInputMatcher(input);
-		}
-		
 		
 		// 4. Bring up MatcherProgressDialog which runs the matcher.
 		// The dialog will start the matcher in a background thread, show progress as the matcher is running, and show the report at the end.

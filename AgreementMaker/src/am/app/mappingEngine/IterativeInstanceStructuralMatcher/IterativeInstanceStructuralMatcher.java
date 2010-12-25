@@ -83,7 +83,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		super.matchEnd();
 	}
 	
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
 	protected void align() throws Exception {
 		if (sourceOntology == null || targetOntology == null)
 			return; // cannot align just one ontology
@@ -1605,18 +1605,5 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 			parametersPanel = new IterativeInstanceStructuralParametersPanel();
 		}
 		return parametersPanel;
-	}
-	
-	public void setForOAEI2010(){
-		parameters = new IterativeInstanceStructuralParameters();
-		parameters.setConsiderIndividuals(true);
-		parameters.setPropertyUsageThreshold(0.6);
-		parameters.setPropertyValuesThreshold(0.5);
-		parameters.setRangeDomainThreshold(0.9);
-		parameters.setSuperclassThreshold(0.6);
-		parameters.setUsePropertyUsage(true);
-		parameters.setUsePropertyValues(true);
-		parameters.setUseRangeDomain(true);
-		parameters.setUseSuperclasses(true);
 	}
 }

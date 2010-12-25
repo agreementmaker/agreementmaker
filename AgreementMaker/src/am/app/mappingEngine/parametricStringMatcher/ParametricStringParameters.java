@@ -34,6 +34,13 @@ public class ParametricStringParameters extends AbstractParameters {
 	//Normalization operations
 	NormalizerParameter normParameter = new NormalizerParameter();
 	
+	public ParametricStringParameters() { super(); }
+	
+	public ParametricStringParameters(double threshold, int maxSourceAlign,
+			int maxTargetAlign) {
+		super(threshold, maxSourceAlign, maxTargetAlign);
+	}	
+
 	public void normalizeWeights() {
 		double totWeight = getTotWeight();
 		if( totWeight > 1 ) {
@@ -72,7 +79,7 @@ public class ParametricStringParameters extends AbstractParameters {
 		
 	}
 	
-	public void initForOAEI2010(Track t) {
+	public AbstractParameters initForOAEI2010(Track t) {
 		
 		switch( t ) {
 		case Anatomy:
@@ -133,6 +140,7 @@ public class ParametricStringParameters extends AbstractParameters {
 			redistributeWeights = true;
 		}
 		
+		return this;
 	}
 	
 }

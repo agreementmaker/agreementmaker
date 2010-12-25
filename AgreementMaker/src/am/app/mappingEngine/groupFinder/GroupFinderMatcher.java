@@ -69,7 +69,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	protected void beforeAlignOperations() throws Exception {
 		super.beforeAlignOperations();
 		if( inputMatchers.size() != 1 ) {
-    		throw new RuntimeException("CFM algorithm needs to have one and only one input matcher.");
+    		throw new RuntimeException("GFM algorithm needs to have one and only one input matcher.");
     	}
 		
 		AbstractMatcher input = inputMatchers.get(0);

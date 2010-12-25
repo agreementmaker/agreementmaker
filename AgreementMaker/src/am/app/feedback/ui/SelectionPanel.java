@@ -258,7 +258,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 
 
 	@Override
-	public void matchingStarted() {	}
+	public void matchingStarted(AbstractMatcher m) {	}
 	
 	// gets called when a matcher finishes
 	public void matchingComplete() {
@@ -756,5 +756,13 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 	public void clearReport() {
 		matcherReport.setText("");
 	}
+
+	@Override
+	public void ignoreComplete(boolean ignore) {
+		// TODO figure out if we need this
+	}
+
+	@Override
+	public void setProgressLabel(String label) { progressBar.setString(label); }
 	
 }

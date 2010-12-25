@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -41,6 +42,7 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 	
 	private JProgressBar progressBar;
     private AbstractMatcher matcher; // the matcher that is associated with this dialog, needed in order for cancel() to work.
+    private AbstractMatcher subMatcher = null; // if this matcher runs another matcher 
     
     private JButton okButton = new JButton("Ok");
     private JButton cancelButton = new JButton("Cancel");
@@ -53,6 +55,8 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
     /** Application Wide preferences, that are saved to a configuration file, and can be restored at any time. */
 	private AppPreferences prefs;
     
+	private boolean ignoreComplete = false;
+	
 	/**
 	 * Constructor. 
 	 * @param m
@@ -170,6 +174,7 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 		}
 		else if(obj == cancelButton) {
 			matcher.cancel(true);
+			if( subMatcher != null ) subMatcher.cancel(true);
 			this.dispose();
 		} else if( obj == radioBeep ) {
 			if( radioBeep.isSelected() && radioAlarm.isSelected() ) radioAlarm.setSelected(false);
@@ -191,11 +196,18 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 	public void appendToReport( String report ) { matcherReport.append( report ); }
 	
 	@Override
-	public void matchingStarted() { progressBar.setEnabled(true); }
+	public void matchingStarted(AbstractMatcher m) {
+		if( m != matcher ) {
+			subMatcher = m;
+		}
+		progressBar.setEnabled(true); 
+	}
 	
 	@Override
 	public void matchingComplete() {
 		//  The algorithm has been completed, update the report text area.
+		if( ignoreComplete ) return;  // not really finished, used for subMatcher support
+		
 		if( !GlobalStaticVariables.USE_PROGRESS_BAR ) {
 			progressBar.setIndeterminate(false);
 			progressBar.setValue(100);
@@ -222,7 +234,7 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 
 
 	private void doBeep() {
-		new SoundNotification("images/yeah.wav").start();
+		new SoundNotification("images"+File.separator+"complete.wav").start();
 	}
 
 
@@ -251,5 +263,12 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 		matcherReport.setText("");		
 	}	
 
+	@Override
+	public void setProgressLabel( String label ) {
+		progressBar.setString(label);
+	}
+	
+	@Override
+	public void ignoreComplete(boolean ignore) { ignoreComplete = ignore; }
 	
 }

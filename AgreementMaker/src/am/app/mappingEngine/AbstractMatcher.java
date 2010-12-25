@@ -102,9 +102,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	   this parameter is mainly used in batchmode. For the UI has to be set to TRUE. Therefore, the paramter can be set to false, but should always be init to true.
 	 *  **/
 	protected boolean performSelection;
+	protected boolean useProgressDelay = false;
+	
 	public void setPerformSelection(boolean performSelection) {
 		this.performSelection = performSelection;
 	}
+	public void setUseProgressDelay(boolean d ) { useProgressDelay = d; }
+	
 
 	/**This enum is for the matching functions that take nodes as an input.  Because we are comparing two kinds of nodes (classes and properties), we need to know the kind of nodes we are comparing in order to lookup up the input similarities in the corrent matrix */
 	public enum alignType implements Serializable {
@@ -183,6 +187,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	private long lastTime = 0;
 	private long lastStepsDone = 0;
 	private int tentativealignments = 0;  // incremental selection?
+	private long timeOfLastUpdate = 0;
 
 	
 	/**
@@ -359,7 +364,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     protected void matchStart() {
     	if( isProgressDisplayed() ) {
     		setupProgress();  // if we are using the progress dialog, setup the variables
-    		progressDisplay.matchingStarted();
+    		progressDisplay.matchingStarted(this);
     	}
     	start = System.nanoTime();
     	starttime = System.currentTimeMillis();
@@ -960,6 +965,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 
 	public void setThreshold(double threshold) {
+		if( param == null ) { param = new AbstractParameters() {}; }
 		param.threshold = threshold;
 	}
 
@@ -1256,7 +1262,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
      * @param p
      */
 	public void setProgressDisplay( MatchingProgressDisplay p ) {
+		if( progressDisplay != null && p != progressDisplay ) {
+			removePropertyChangeListener(progressDisplay);
+		}
 		progressDisplay = p;
+		if( p != null ) addPropertyChangeListener(p);
 	}
 	
 	
@@ -1289,6 +1299,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	}
 
     	// we have computed stepsTotal, and initialized stepsDone to 0.
+    	setProgress(0);
 	}
 
 	/**
@@ -1313,33 +1324,38 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected void updateProgress() {
 
 		long currentTime = System.currentTimeMillis();
-		long elapsedTime = currentTime - lastTime;
-		long elapsedSteps = stepsDone - lastStepsDone;
-		long totalelapsed = currentTime - starttime; // elapsed time since the start of the algorithm
-		
-		long estimatedDuration = elapsedTime * ( stepsTotal / elapsedSteps );
-		long estimatedtimeleft = ((stepsTotal - stepsDone) * totalelapsed) / stepsDone;   
-		
-		String formattedTime = Utility.getFormattedTime(estimatedDuration);
-		
-		float percent = ((float)stepsDone / (float)stepsTotal);
-
-		progressDisplay.clearReport();
-		progressDisplay.appendToReport( "Percentage done: " + Float.toString(percent* 100.0f)+ "%\n" +
-										"Current duration: " + Utility.getFormattedTime(totalelapsed) + "\n" +  
-										"Time left ~: " + Utility.getFormattedTime(estimatedtimeleft) + "\n" +
-										"Total Duration ~: " + formattedTime + "\n" +
-										"Mappings >= threshold: " + tentativealignments + "\n");
-		
-		lastTime = currentTime;
-		lastStepsDone = stepsDone;
-		
-		int p = (int) (percent * 100);
-		
-		// some error checking
-		if( p > 100 && p > 0 ) { p = 100; }
-		if( p < 0 ) { p = 0; }
-		setProgress(p);  // this function does the actual work ( via Swingworker, which uses the PropertyChangeListener )
+		if( !useProgressDelay || currentTime - timeOfLastUpdate > 500 ) {
+			timeOfLastUpdate = currentTime;
+			long elapsedTime = currentTime - lastTime;
+			long elapsedSteps = stepsDone - lastStepsDone;
+			long totalelapsed = currentTime - starttime; // elapsed time since the start of the algorithm
+			
+			long estimatedDuration = elapsedTime * ( stepsTotal / elapsedSteps );
+			long estimatedtimeleft = ((stepsTotal - stepsDone) * totalelapsed) / stepsDone;   
+			
+			String formattedTime = Utility.getFormattedTime(estimatedDuration);
+			
+			float percent = ((float)stepsDone / (float)stepsTotal);
+			
+			progressDisplay.clearReport();
+			progressDisplay.appendToReport( "Percentage done: " + Float.toString(percent* 100.0f)+ "%\n" +
+											"Current duration: " + Utility.getFormattedTime(totalelapsed) + "\n" +  
+											"Time left ~: " + Utility.getFormattedTime(estimatedtimeleft) + "\n" +
+											"Total Duration ~: " + formattedTime + "\n" +
+											"Mappings >= threshold: " + tentativealignments + "\n" + 
+											"\nFree Memory: " + (Runtime.getRuntime().freeMemory() / (1024*1024)) + "mb\n");
+			
+			lastTime = currentTime;
+			lastStepsDone = stepsDone;
+			
+			Float p_f = new Float(percent * 100.0f);
+			int p = p_f.intValue();
+			
+			// some error checking
+			if( p > 100 && p > 0 ) { p = 100; }
+			if( p < 0 ) { p = 0; }
+			setProgress(p);  // this function does the actual work ( via Swingworker, which uses the PropertyChangeListener )
+		}
 		
 	}
 	
