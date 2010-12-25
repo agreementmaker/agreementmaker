@@ -83,6 +83,8 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	private JTextField txtE;
 	private Cluster<Mapping>[] topKClusters;
 	
+	private WrapLayout wrap;
+	
 	public MatcherAnalyticsPanel( VisualizationType t ) {
 		super();
 
@@ -217,7 +219,8 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	private JPanel createPlotsPanel() {
 		JPanel panel = new JPanel();
 		panel.setBorder(BorderFactory.createEmptyBorder());
-		panel.setLayout( new WrapLayout(WrapLayout.LEADING, 10, 10) );
+		wrap = new WrapLayout(WrapLayout.LEADING, 10, 10);
+		panel.setLayout( wrap );
 		return panel;
 	}
 
@@ -278,6 +281,9 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		//int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
 		//int panelHeight = plotsLoaded * newPlot.getHeight();
 		//pnlPlots.setPreferredSize(new Dimension(screenWidth, panelHeight));
+		wrap.layoutContainer(pnlPlots);
+		revalidate();
+		repaint();
 	}
 
 	private void addPlot(String name, SimilarityMatrix matrix, Gradient g) {
@@ -291,6 +297,9 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		
 		pnlPlots.add(newPlot);
 		plotsLoaded++;
+		wrap.layoutContainer(pnlPlots);
+		revalidate();
+		repaint();
 	}
 	
 	/** EVENT LISTENERS **/
@@ -313,8 +322,11 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			// remove this plot.
 			MatrixPlotPanel ptor = (MatrixPlotPanel) e.getSource();
 			pnlPlots.remove(ptor);
+			plotsLoaded--;
 			removeMatcherAnalyticsEventListener(ptor);
+			wrap.layoutContainer(pnlPlots);
 			revalidate();
+			repaint();
 			return;
 		}
 		

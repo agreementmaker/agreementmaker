@@ -42,6 +42,7 @@ public class DisagreementCalculationDialog extends JDialog implements ActionList
 		
 		for( int i = 0; i < matchers.size(); i++ ) {
 			AbstractMatcher currentMatcher = matchers.get(i);
+			if( currentMatcher == null ) { continue; }
 			JCheckBox chkMatcher = new JCheckBox(currentMatcher.getName().getMatcherName());
 			chkMatcher.setSelected(true);
 			matcherCheckboxes[i] = chkMatcher;
@@ -99,7 +100,7 @@ public class DisagreementCalculationDialog extends JDialog implements ActionList
 		DisagreementParameters p = clusterPanel.getParameters();
 		
 		for( int i = 0; i < matcherCheckboxes.length; i++ ) {
-			if( matcherCheckboxes[i].isSelected() ) {
+			if( matcherCheckboxes[i] != null && matcherCheckboxes[i].isSelected() ) {
 				p.addMatcher(matchers.get(i));
 			}
 		}
