@@ -23,7 +23,7 @@ public abstract class StructMatchVertexData {
 	 *  (In this way, if we don't have input, nodes have already similarity 1.0)
 	 */
 	public static final double defaultOldSMValue = 1.0;
-	public static final double defaultNewSMValue = 0.0;
+	public static final double defaultNewSMValue = 1.0;
 	
 	public StructMatchVertexData(){
 		this.stCouple = null;

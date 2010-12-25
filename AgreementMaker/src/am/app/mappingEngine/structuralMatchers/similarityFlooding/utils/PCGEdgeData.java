@@ -21,20 +21,20 @@ public class PCGEdgeData extends StructMatchEdgeData {
 	/**
 	 * @param stCouple
 	 */
-	public PCGEdgeData(Property p) {
+	public PCGEdgeData(String p) {
 		super(p);
 	}
 	
 	/**
-	 * @param p
+	 * @param property
 	 * @param propagationCoefficient
 	 */
-	public PCGEdgeData(Property p, double propagationCoefficient) {
-		super(p, propagationCoefficient);
+	public PCGEdgeData(String property, double propagationCoefficient) {
+		super(property, propagationCoefficient);
 	}
 
 	@Override
 	public String toString() {
-		return stProperty.toString() + ":" + Double.toString(propagationCoefficient);
+		return stProperty + ":" + Double.toString(propagationCoefficient);
 	}
 }

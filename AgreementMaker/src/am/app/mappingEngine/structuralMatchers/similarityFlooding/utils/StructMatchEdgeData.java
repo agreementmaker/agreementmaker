@@ -3,16 +3,13 @@
  */
 package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
 
-
-import com.hp.hpl.jena.rdf.model.Property;
-
 /**
  * @author Michele Caci
  *
  */
 public abstract class StructMatchEdgeData {
 
-	protected Property stProperty;
+	protected String stProperty;
 	protected double propagationCoefficient;
 	
 	/**
@@ -27,26 +24,26 @@ public abstract class StructMatchEdgeData {
 		this.propagationCoefficient = defaultPCValue;
 	}
 	
-	public StructMatchEdgeData(Property stCouple) {
+	public StructMatchEdgeData(String stCouple) {
 		this.stProperty = stCouple;
 		this.propagationCoefficient = defaultPCValue;
 	}
 	
-	public StructMatchEdgeData(Property stCouple, double propagationCoefficient) {
+	public StructMatchEdgeData(String stCouple, double propagationCoefficient) {
 		this.stProperty = stCouple;
 		this.propagationCoefficient = propagationCoefficient;
 	}
 	/**
 	 * @return the stCouple
 	 */
-	public Property getStProperty() {
+	public String getStProperty() {
 		return stProperty;
 	}
 
 	/**
 	 * @param stCouple the stCouple to set
 	 */
-	public void setStProperty(Property stProperty) {
+	public void setStProperty(String stProperty) {
 		this.stProperty = stProperty;
 	}
 
