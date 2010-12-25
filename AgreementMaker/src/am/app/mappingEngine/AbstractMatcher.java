@@ -1253,9 +1253,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     /**
      * Function called by the worker thread when the matcher finishes the algorithm.
      */
-    public void done() {
+    /*public void done() {
     	if( isProgressDisplayed() ) progressDisplay.matchingComplete();  // when we're done, close the progress dialog
-    }
+    }*/
 	
     /**
      * Need to keep track of the progress dialog we have because right now, there is no button to close it, so we must make it close automatically.
