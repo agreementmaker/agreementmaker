@@ -13,16 +13,22 @@ import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JRootPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
 import am.Utility;
@@ -185,8 +191,8 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 	 * It can save Alignments or Similarity Matrices of Matchers, or complete Matchers (for later Import).
 	 */
 	public SaveFileDialog() {
-		 // Class interface to Application Preferences
-		
+		super(Core.getUI().getUIFrame(), true);
+
 		// 
 		setTitle("Export ...");
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -286,15 +292,33 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 		setAlignmentOnlyEnabled( radAlignmentOnly.isSelected() );		
 		setMatrixRadioButtonsEnable( radMatrixAsCSV.isSelected() );
 	
+		getRootPane().setDefaultButton(btnSave);
 		
 		addWindowListener(Core.getUI().new WindowEventHandler());
 		pack(); // automatically set the frame size
 		setLocationRelativeTo(null); 	// center the window on the screen
-		setModal(true);
 		setVisible(true);
 		//the order of modal and visible must be exactly this one!
 	}
 	
+	
+	// make the escape key work
+	@Override
+	protected JRootPane createRootPane() {
+	    JRootPane rootPane = new JRootPane();
+	    KeyStroke stroke = KeyStroke.getKeyStroke("ESCAPE");
+	    Action actionListener = new AbstractAction() {
+	      public void actionPerformed(ActionEvent actionEvent) {
+	        btnCancel.doClick();
+	      }
+	    };
+	    InputMap inputMap = rootPane
+	        .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+	    inputMap.put(stroke, "ESCAPE");
+	    rootPane.getActionMap().put("ESCAPE", actionListener);
+
+	    return rootPane;
+	  }
 
 	/* (non-Javadoc)
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)

@@ -57,7 +57,7 @@ public class UIMenu implements ActionListener {
 	
 	// File menu.
 	private JMenuItem xit, openSource, openTarget, openMostRecentPair,
-					  closeSource, closeTarget;
+					  closeSource, closeTarget, saveAlignment, loadAlignment;
 	private JMenu menuRecentSource, menuRecentTarget;
 	
 	// Edit menu.
@@ -84,8 +84,7 @@ public class UIMenu implements ActionListener {
 	// Matchers menu.
 	private JMenuItem manualMapping, userFeedBack, 
 					  newMatching, runMatching, copyMatching, deleteMatching, clearAll, 
-					  doRemoveDuplicates, 
-					  saveMatching, 
+					  doRemoveDuplicates,
 					  refEvaluateMatching,
 					  thresholdAnalysis, TEMP_viewClassMatrix, TEMP_viewPropMatrix, TEMP_matcherAnalysisClasses, TEMP_matcherAnalysisProp;
 	
@@ -272,8 +271,11 @@ public class UIMenu implements ActionListener {
 			else if(obj == deleteMatching) {
 				controlPanel.delete();
 			}
-			else if(obj == saveMatching) {
+			else if( obj == saveAlignment) {
 				controlPanel.export();
+			}
+			else if( obj == loadAlignment ) {
+				controlPanel.importa();
 			}
 			else if(obj == refEvaluateMatching) {
 				controlPanel.evaluate();
@@ -777,18 +779,11 @@ public class UIMenu implements ActionListener {
 		
 		refreshRecentMenus(menuRecentSource, menuRecentTarget);
 		
-/*		
-		menuRecentSourceList = new JMenuItem[10];
-		Preferences prefs = Preferences.userRoot().node("/com/advis/agreementMaker");
-		int lastsynt = prefs.getInt(PREF_LASTSYNT, 0);
-		int lastlang = prefs.getInt(PREF_LASTLANG, 1);
-		*/
-		//menuRecentSource.add( new JMenu());
-		
 		fileMenu.add(menuRecentSource);
 		fileMenu.add(menuRecentTarget);
 		openMostRecentPair = new JMenuItem("Open most recent pair");
 		openMostRecentPair.addActionListener(this);
+		openMostRecentPair.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); 
 		fileMenu.add(openMostRecentPair);
 		fileMenu.addSeparator();
 		//private JMenuItem menuRecentSource, menuRecentTarget;
@@ -801,6 +796,17 @@ public class UIMenu implements ActionListener {
 		closeTarget.setEnabled(false); // there is no target ontology loaded at the beginning
 		fileMenu.add(closeSource);
 		fileMenu.add(closeTarget);
+		
+		fileMenu.addSeparator();
+		saveAlignment = new JMenuItem("Save Selected Alignment...");
+		saveAlignment.addActionListener(this);
+		saveAlignment.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); 
+		fileMenu.add(saveAlignment);
+		
+		loadAlignment = new JMenuItem("Load Alignment...");
+		loadAlignment.addActionListener(this);
+		loadAlignment.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); 
+		fileMenu.add(loadAlignment);
 		
 		
 		fileMenu.addSeparator();
@@ -931,7 +937,8 @@ public class UIMenu implements ActionListener {
 		newMatching = new JMenuItem("New empty matcher");
 		newMatching.addActionListener(this);
 		matchersMenu.add(newMatching);
-		runMatching = new JMenuItem("Run selected matcher");
+		runMatching = new JMenuItem("Run matcher...");
+		runMatching.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); 
 		runMatching.addActionListener(this);
 		matchersMenu.add(runMatching);
 		copyMatching = new JMenuItem("Copy selected matchings");
@@ -950,10 +957,10 @@ public class UIMenu implements ActionListener {
 		//matchingMenu.add(doRemoveDuplicates);
 		//matchingMenu.addSeparator();
 		
-		saveMatching = new JMenuItem("Save selected matchers into a file");
-		saveMatching.addActionListener(this);
-		matchersMenu.add(saveMatching);
-		matchersMenu.addSeparator();
+		//saveMatching = new JMenuItem("Save selected matchers into a file");
+		//saveMatching.addActionListener(this);
+		//matchersMenu.add(saveMatching);
+		//matchersMenu.addSeparator();
 		refEvaluateMatching = new JMenuItem("Evaluate with reference file");
 		refEvaluateMatching.addActionListener(this);
 		matchersMenu.add(refEvaluateMatching);

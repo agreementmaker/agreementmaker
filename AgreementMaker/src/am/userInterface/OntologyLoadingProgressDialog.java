@@ -6,13 +6,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
+
+import am.app.Core;
 import am.app.ontology.ontologyParser.TreeBuilder;
 
 public class OntologyLoadingProgressDialog extends JDialog implements PropertyChangeListener, ActionListener {
@@ -39,12 +48,13 @@ public class OntologyLoadingProgressDialog extends JDialog implements PropertyCh
 	 * @param m
 	 */
 	public OntologyLoadingProgressDialog (TreeBuilder t) {
-	    super();
+	    super(Core.getUI().getUIFrame(), true);  // to get focus back
 	
 	    report = new JTextArea(10, 38);
 	    
 		setTitle("Agreement Maker is Running ...");  // you'd better go catch it!
 		report.setText("Loading...\nIf the ontology contains several thousands of concepts,\nthis operation may take some minutes.");
+		report.setEditable(false);
 		//setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setResizable(false);
 	    
@@ -85,13 +95,32 @@ public class OntologyLoadingProgressDialog extends JDialog implements PropertyCh
 		
 		treeBuilder.execute();
 		
+		getRootPane().setDefaultButton(okButton);
+		
+		
 		pack();
 		setLocationRelativeTo(null);
-		setModal(true);
 		setVisible(true);   
 	    
 	}
 	
+	// make the escape key work
+	@Override
+	protected JRootPane createRootPane() {
+	    JRootPane rootPane = new JRootPane();
+	    KeyStroke stroke = KeyStroke.getKeyStroke("ESCAPE");
+	    Action actionListener = new AbstractAction() {
+	      public void actionPerformed(ActionEvent actionEvent) {
+	        cancelButton.doClick();
+	      }
+	    };
+	    InputMap inputMap = rootPane
+	        .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+	    inputMap.put(stroke, "ESCAPE");
+	    rootPane.getActionMap().put("ESCAPE", actionListener);
+
+	    return rootPane;
+	  }
 	
 	/**
 	 * This function is called from the AbstractMatcher everytime setProgress() is called from inside the matcher.

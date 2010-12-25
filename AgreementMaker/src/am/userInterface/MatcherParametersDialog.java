@@ -8,15 +8,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.GroupLayout;
+import javax.swing.InputMap;
 import javax.swing.JButton; 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRootPane;
+import javax.swing.KeyStroke;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JScrollPane;
 import javax.swing.border.EtchedBorder;
@@ -85,7 +91,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	 * @param userInterface
 	 */
 	public MatcherParametersDialog(AbstractMatcher a, boolean showPresets, boolean showGeneralSettings) {
-		super();
+		super(Core.getUI().getUIFrame(), true);
 
 		this.showPresets = showPresets;
 		this.showGeneralSettings = showGeneralSettings;
@@ -115,15 +121,14 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		matcher = a;  // we want to use our own matcher.
 		
 		initLayout(showPresets, showGeneralSettings);
+		
+		getRootPane().setDefaultButton(runButton);
 
-		setModal(true);
 		setVisible(true);
 	}
 	
-	
-
 	public MatcherParametersDialog() {
-		super();
+		super(Core.getUI().getUIFrame(), true);
 		
 		initComponents();
 		
@@ -138,12 +143,30 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		settingsScroll = createMatcherSettingsScroll(parametersPanel);
 		
 		initLayout();
-				
-		setModal(true);
+
+		getRootPane().setDefaultButton(runButton);
+		
 		setVisible(true);
 	}
 
 	
+	// make the escape key work
+	@Override
+	protected JRootPane createRootPane() {
+	    JRootPane rootPane = new JRootPane();
+	    KeyStroke stroke = KeyStroke.getKeyStroke("ESCAPE");
+	    Action actionListener = new AbstractAction() {
+	      public void actionPerformed(ActionEvent actionEvent) {
+	        cancelButton.doClick();
+	      }
+	    };
+	    InputMap inputMap = rootPane
+	        .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+	    inputMap.put(stroke, "ESCAPE");
+	    rootPane.getActionMap().put("ESCAPE", actionListener);
+
+	    return rootPane;
+	  }
 	
 	private void initComponents() {
 		matcherLabel = new JLabel("Matcher:");

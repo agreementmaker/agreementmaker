@@ -64,7 +64,7 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		
 		AppPreferences prefs = Core.getAppPreferences(); // Class interface to Application Preferences
 		
-		frame = new JDialog();
+		frame = new JDialog(Core.getUI().getUIFrame(), true);
 		if(ontoType == GlobalStaticVariables.SOURCENODE)
 			frame.setTitle("Open Source Ontology File...");
 		else if(ontoType == GlobalStaticVariables.TARGETNODE)
@@ -190,7 +190,6 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		frame.addWindowListener(ui.new WindowEventHandler());
 		frame.pack(); // automatically set the frame size
 		frame.setLocationRelativeTo(null); 	// center the window on the screen
-		frame.setModal(true);
 		
 		frame.setVisible(true);
 		

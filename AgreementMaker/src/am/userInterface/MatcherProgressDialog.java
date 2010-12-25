@@ -5,15 +5,22 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.text.Document;
 
@@ -51,11 +58,12 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 	 * @param m
 	 */
 	public MatcherProgressDialog (AbstractMatcher m) {
-	    super();
+	    super(Core.getUI().getUIFrame(), true);
 	
 	    prefs = Core.getAppPreferences();
 	    
 	    matcherReport = new JTextArea(8, 35);
+	    matcherReport.setEditable(false);
 	    
 		setTitle("Agreement Maker is Running ...");  // you'd better go catch it!
 		matcherReport.setText("Running...");
@@ -114,13 +122,32 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 		
 		matcher.execute();
 		
+		getRootPane().setDefaultButton(okButton);
+		
 		pack();
 		setLocationRelativeTo(null);
-		setModal(true);
 		setVisible(true);   
 	    
 	}
 	
+	
+	// make the escape key work
+	@Override
+	protected JRootPane createRootPane() {
+	    JRootPane rootPane = new JRootPane();
+	    KeyStroke stroke = KeyStroke.getKeyStroke("ESCAPE");
+	    Action actionListener = new AbstractAction() {
+	      public void actionPerformed(ActionEvent actionEvent) {
+	        cancelButton.doClick();
+	      }
+	    };
+	    InputMap inputMap = rootPane
+	        .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+	    inputMap.put(stroke, "ESCAPE");
+	    rootPane.getActionMap().put("ESCAPE", actionListener);
+
+	    return rootPane;
+	  }
 	
 	/**
 	 * This function is called from the AbstractMatcher everytime setProgress() is called from inside the matcher.
