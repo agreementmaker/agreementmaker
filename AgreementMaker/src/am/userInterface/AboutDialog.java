@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -22,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import am.GlobalStaticVariables;
+import am.app.Core;
 
 public class AboutDialog implements ActionListener {
 		
@@ -53,7 +55,7 @@ public class AboutDialog implements ActionListener {
 	public AboutDialog() {
 		
 		/** Main window */
-		frameAbout = new JDialog();
+		frameAbout = new JDialog(Core.getUI().getUIFrame(), true);
 		frameAbout.setTitle("About AgreementMaker...");
 		frameAbout.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		frameAbout.setResizable(false);
@@ -74,7 +76,7 @@ public class AboutDialog implements ActionListener {
 		/********* MIDDLE *****************/
 		
 		image_label = new JLabel();
-		label_icon = new ImageIcon("images/advis.png");
+		label_icon = new ImageIcon("images"+File.separator+"splash.png");
 		//image_label.setSize(600,400);
 		image_label.setIcon(label_icon);
 
@@ -83,54 +85,49 @@ public class AboutDialog implements ActionListener {
 		credits.setLayout(new BoxLayout(credits, BoxLayout.Y_AXIS));
 		
 		ArrayList<JLabel> l = new ArrayList<JLabel>();
-		l.add( new JLabel("Professor Isabel Cruz") );
+		l.add( new JLabel("Professor Isabel Cruz") );					// 0
 		
-		l.add( new JLabel("Advances in Information Systems Laboratory") );
-		l.add( new JLabel("University of Illinois at Chicago") );
+		//l.add( new JLabel("Advances in Information Systems Laboratory") ); 
+		//l.add( new JLabel("University of Illinois at Chicago") );          
 
-		l.add( new JLabel("AgreementMaker v0.21 ( Aug 19th 2010 )"));
-		
-		l.add( new JLabel("AgreementMaker v0.2 ( fall 2008 - 2009):") );
-		l.add( new JLabel("Flavio Palandri Antonelli, Cosmin Stroe, Ula\u0219 Kele\u0219.") );  // Ulas Keles
-		
-		l.add( new JLabel("AgreementMaker v0.1 (2001 - 2008):") );
-		l.add( new JLabel("Afsheen Rajendran, Anjli Chaudhry, Nalin Makar,") );
-		l.add( new JLabel("Sarang Kapadia, Sujan Bathala, William Sunna.") );
+		l.add( new JLabel("AgreementMaker v0.22 ( Dec 25th 2010 )"));   // 1
+		l.add( new JLabel("Michele Caci, Matteo Palmonari, Federico Caimi")); // 2
+		l.add( new JLabel("AgreementMaker v0.21 ( Aug 19th 2010 )"));  // 3
+		l.add( new JLabel("AgreementMaker v0.2 ( fall 2008 - 2009):") );  // 4
+		l.add( new JLabel("Flavio Palandri Antonelli, Cosmin Stroe, Ula\u0219 Kele\u0219.") );  // Ulas Keles  // 5
+		l.add( new JLabel("AgreementMaker v0.1 (2001 - 2008):") );   // 6
+		l.add( new JLabel("Afsheen Rajendran, Anjli Chaudhry, Nalin Makar,") );  // 7
+		l.add( new JLabel("Sarang Kapadia, Sujan Bathala, William Sunna.") ); //8
 		
 		for(int i=0; i<3; i++ ) { l.get(i).setAlignmentX(Component.CENTER_ALIGNMENT); }
 		for(int i=3; i<l.size(); i++ ) { l.get(i).setAlignmentX(Component.CENTER_ALIGNMENT); }
 
 		l.get(0).setFont(new Font("Helvetica", Font.PLAIN,  22));
-		l.get(1).setFont(new Font("Helvetica", Font.PLAIN,  18));
-		l.get(2).setFont(new Font("Helvetica", Font.PLAIN,  18));
-		
+		l.get(1).setFont(new Font("Helvetica", Font.BOLD,  14));
+		l.get(2).setFont(new Font("Helvetica", Font.PLAIN,  14));
 		l.get(3).setFont(new Font("Helvetica", Font.BOLD,   14));
 		l.get(4).setFont(new Font("Helvetica", Font.BOLD,   14));
-		l.get(5).setFont(new Font("Helvetica", Font.PLAIN,  14));
-		l.get(6).setFont(new Font("Helvetica", Font.BOLD,   14));
-		l.get(7).setFont(new Font("Helvetica", Font.PLAIN,  14));
+		l.get(5).setFont(new Font("Helvetica", Font.PLAIN,   14));
+		l.get(6).setFont(new Font("Helvetica", Font.BOLD,  14));
+		l.get(7).setFont(new Font("Helvetica", Font.PLAIN,   14));
 		l.get(8).setFont(new Font("Helvetica", Font.PLAIN,  14));
 		
-		credits.add(l.get(0));
+		//credits.add(l.get(0));
 		credits.add(Box.createVerticalStrut(10));
-		credits.add(l.get(1));
-		credits.add(Box.createVerticalStrut(10));
-		credits.add(l.get(2));
-		credits.add(Box.createVerticalStrut(20));
-		
-		for( int i=3; i<l.size(); i++) {
+
+		for( int i=1; i<l.size(); i++) {
 			credits.add(l.get(i));
-			if( i == 3 || i == 5 ) credits.add(Box.createVerticalStrut(5));
-			if( i == 3 ) credits.add(Box.createVerticalStrut(10));
+			//if( i == 1 || i == 4 || i == 6 ) credits.add(Box.createVerticalStrut(5));
+			if( i == 2 || i == 3 || i == 5) credits.add(Box.createVerticalStrut(10));
 		}
 
 		credits.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 		
 
 		
-		JPanel middle = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		middle.add(image_label);
-		middle.add(credits);
+		JPanel middle = new JPanel(new BorderLayout());
+		middle.add(image_label, BorderLayout.NORTH);
+		middle.add(credits, BorderLayout.CENTER);
 		
 		/*********** BOTTOM *************/
 		
@@ -160,14 +157,13 @@ public class AboutDialog implements ActionListener {
 		
 
 		
-		frameAbout.add(title, BorderLayout.NORTH);
+		//frameAbout.add(title, BorderLayout.NORTH);
 		frameAbout.add(middle, BorderLayout.CENTER);
 		
 		frameAbout.add(bottom, BorderLayout.SOUTH);
 		
 		frameAbout.pack();
 		frameAbout.setLocationRelativeTo(null);
-		frameAbout.setModal(true);
 		frameAbout.setVisible(true);
 		
 		

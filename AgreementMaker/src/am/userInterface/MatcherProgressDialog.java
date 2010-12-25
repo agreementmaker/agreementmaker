@@ -234,7 +234,7 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 
 
 	private void doBeep() {
-		new SoundNotification("images"+File.separator+"complete.wav").start();
+		new SoundNotification("sounds"+File.separator+"alignment_complete.wav").start();
 	}
 
 

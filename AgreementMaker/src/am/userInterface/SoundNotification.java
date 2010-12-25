@@ -17,7 +17,7 @@ public class SoundNotification extends Thread {
  
     private String filename;
  
-    private Position curPosition;
+    private Position curPosition = Position.NORMAL;
  
     private final int EXTERNAL_BUFFER_SIZE = 524288; // 128Kb 
  
@@ -72,11 +72,25 @@ public class SoundNotification extends Thread {
         if (auline.isControlSupported(FloatControl.Type.PAN)) { 
             FloatControl pan = (FloatControl) auline
                     .getControl(FloatControl.Type.PAN);
-            if (curPosition == Position.RIGHT) 
+/*            if (curPosition == Position.RIGHT) 
                 pan.setValue(1.0f);
             else if (curPosition == Position.LEFT) 
-                pan.setValue(-1.0f);
+                pan.setValue(-1.0f);*/
+            pan.setValue(0.0f);
         } 
+        if( auline.isControlSupported(FloatControl.Type.BALANCE)) {
+        	FloatControl bal = (FloatControl) auline.getControl(FloatControl.Type.BALANCE);
+        	bal.setValue(0.0f);
+        }
+        if( auline.isControlSupported(FloatControl.Type.REVERB_SEND)) {
+        	FloatControl bal = (FloatControl) auline.getControl(FloatControl.Type.REVERB_SEND);
+        	bal.setValue(0.0f);
+        }
+        
+        if( auline.isControlSupported(FloatControl.Type.REVERB_RETURN)) {
+        	FloatControl bal = (FloatControl) auline.getControl(FloatControl.Type.REVERB_RETURN);
+        	bal.setValue(0.0f);
+        }
  
         auline.start();
         int nBytesRead = 0;
@@ -92,9 +106,10 @@ public class SoundNotification extends Thread {
             e.printStackTrace();
             return;
         } finally { 
-            //auline.drain();
+            auline.drain();
             auline.close();
         } 
- 
+        
+        
     } 
 } 

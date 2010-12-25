@@ -130,10 +130,14 @@ public class UI {
 		//frame.setSize(900,600);
 		frame.pack();
 		frame.setExtendedState(Frame.MAXIMIZED_BOTH); // maximize the window
+
 		
-		Dimension size = frame.getSize(); 
-		int percent = 2 * size.height / 10 ;
-		classicAM.getOuterSplitPane().setDividerLocation(size.height - percent);
+		
+		//Dimension size = frame.getSize();
+		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+		int percent = (7 * size.height) / 20 ;
+		int location = size.height - percent;
+		classicAM.getOuterSplitPane().setDividerLocation(location);
 		
 		// make sure the frame is visible
 		frame.setVisible(true); 
