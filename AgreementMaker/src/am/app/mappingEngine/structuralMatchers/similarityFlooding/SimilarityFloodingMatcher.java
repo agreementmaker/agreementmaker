@@ -44,12 +44,12 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	 * 
 	 */
 	private static final long serialVersionUID = -3749229483504509029L;
-	protected static final boolean DEBUG_FLAG = false;
+	protected static final boolean DEBUG_FLAG = true;
 	
 	protected PairwiseConnectivityGraph pcg;
 	
 	public static final double MAX_PC = 1.0; // maximum value for propagation coefficient
-	public static final double DELTA = 0.1; // min value for differentiating two similarity vectors
+	public static final double DELTA = 0.2; // min value for differentiating two similarity vectors
 	public static final int MAX_ROUND = 10; // maximum numbers of rounds for fixpoint computation
 	
 	/**
@@ -57,6 +57,8 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	 * directions of an edge connecting them
 	 */
 	private enum Direction{ORIG2DEST, DEST2ORIG};
+	
+	private HashMap<Pair<RDFNode, RDFNode>, PCGVertex> pairTable = new HashMap<Pair<RDFNode, RDFNode>, PCGVertex>();
 
 	/**
 	 * 
@@ -90,7 +92,7 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 		if( sourceOntology == null ) throw new NullPointerException("sourceOntology == null");   
 		if( targetOntology == null ) throw new NullPointerException("targetOntology == null");
 		
-		progressDisplay.appendToReport("Creating Pairwise Connectivity Graph...");
+		progressDisplay.appendToReport("Creating Wrapping Graphs...");
 		WrappingGraph sourceGraph = new WrappingGraph(sourceOntology.getModel());
 		WrappingGraph targetGraph = new WrappingGraph(targetOntology.getModel());
 		if( DEBUG_FLAG ) System.out.println(sourceGraph.toString());
@@ -175,8 +177,8 @@ protected void createPairwiseConnectivityGraph(WrappingGraph sourceOnt, Wrapping
 							// do nothing
 						 } else {
 							 try{
-					 				PCGVertex sourcePCGVertex = getPCGVertex(firstHashTable, sEdge.getOrigin().getObject(), tEdge.getOrigin().getObject() );
-						 			PCGVertex targetPCGVertex = getPCGVertex(firstHashTable, sEdge.getDestination().getObject(), tEdge.getDestination().getObject() );
+					 				PCGVertex sourcePCGVertex = getPCGVertexNew(sEdge.getOrigin().getObject(), tEdge.getOrigin().getObject() );
+						 			PCGVertex targetPCGVertex = getPCGVertexNew(sEdge.getDestination().getObject(), tEdge.getDestination().getObject() );
 									 						 
 						 			insertInPCG(sourcePCGVertex,  // vertex
 								 		sEdge.getObject(),      // edge
@@ -224,7 +226,6 @@ protected void oldCreatePairwiseConnectivityGraph(){
 	  * 
 	  */
 	 
-	 HashMap<RDFNode, HashMap<RDFNode, PCGVertex>> firstHashTable = new HashMap<RDFNode, HashMap<RDFNode, PCGVertex>>();
 		 while(sStmtIterator.hasNext()){
 			 sStmt = sStmtIterator.next();
 		 
@@ -243,7 +244,6 @@ protected void oldCreatePairwiseConnectivityGraph(){
 						// do nothing
 					 } else {
 						 
-						 // TODO: put here check of namespace, here we take into account only OWL/OWL2 vocabulary
 						 try{
 						 		if( !( //sStmt.getSubject().getNameSpace().equals(OWL.NS) || tStmt.getSubject().getNameSpace().equals(OWL.NS) ||
 						 				//sStmt.getSubject().getNameSpace().equals(FOAF.NS) || tStmt.getSubject().getNameSpace().equals(FOAF.NS) ||
@@ -253,8 +253,8 @@ protected void oldCreatePairwiseConnectivityGraph(){
 						 			if( true //!( sStmt.getObject().as(Resource.class).getNameSpace().equals(OWL.NS) || tStmt.getObject().as(Resource.class).getNameSpace().equals(OWL.NS) ||
 							 				//sStmt.getObject().as(Resource.class).getNameSpace().equals(FOAF.NS) || tStmt.getObject().as(Resource.class).getNameSpace().equals(FOAF.NS) )
 						 					){
-						 				PCGVertex sourcePCGVertex = getPCGVertex(firstHashTable, sStmt.getSubject(), tStmt.getSubject() );
-							 			PCGVertex targetPCGVertex = getPCGVertex(firstHashTable, sStmt.getObject(),  tStmt.getObject() );
+//						 				PCGVertex sourcePCGVertex = getPCGVertex(pairTable, sStmt.getSubject(), tStmt.getSubject() );
+//							 			PCGVertex targetPCGVertex = getPCGVertex(pairTable, sStmt.getObject(),  tStmt.getObject() );
 										 						 
 							 			/*insertInPCG(sourcePCGVertex,  // vertex
 									 		sStmt.getPredicate(),      // edge
@@ -381,6 +381,28 @@ protected void oldCreatePairwiseConnectivityGraph(){
 		
 		return existingVertex;  // can be null
 	}
+	 
+	 private PCGVertex getPCGVertexNew(
+				RDFNode sourceSubject, RDFNode targetSubject
+			 ){
+		 Pair<RDFNode, RDFNode> pairToCheck = new Pair<RDFNode, RDFNode>(sourceSubject, targetSubject);
+		 if(pairTable.get(pairToCheck) != null){
+				// there was already a node with that rdfNode
+				return pairTable.get(pairToCheck);
+			}
+			else{
+				// there wasn't already that node so
+				
+				// we create it
+				PCGVertex vertNew = new PCGVertex(new PCGVertexData(pairToCheck));
+				// we add it to the list
+				pcg.insertVertex(vertNew);
+				// we add it to the map of nodes (we will always include it in the set of nodes to search in)
+				pairTable.put(pairToCheck, vertNew);
+				// and we return it
+				return vertNew;
+			}
+	 }
 
 	/**
 	  * This method creates the Induced Propagation Graph.]
@@ -430,20 +452,13 @@ protected void oldCreatePairwiseConnectivityGraph(){
 				 // update the maximum value (according to where they belong)
 //				 OntResource source = getOntResourceFromRDFNode(vert.getObject().getStCouple().getLeft());
 //				 OntResource target = getOntResourceFromRDFNode(vert.getObject().getStCouple().getRight());
-				 
-/*				 if(isOntResInSimMatrix(source, sourceOntology) && isOntResInSimMatrix(target, targetOntology) ){
-//					 if(vert.getObject().getNewSimilarityValue() > 10){System.out.println(vert.toString());}
-					 limitedMax =  Math.max(newSimilarity, limitedMax);
-				 }
-				 else {
-*/				
+				 				
 				 if(realMax <= Math.max(newSimilarity, realMax)){
 					 maxV = vert;
 					 realMax = Math.max(newSimilarity, realMax);
 					 
 				 }
 //				 if(true){System.out.println(vert.toString());}
-//				 }
 			 }
 			 // normalize all the similarity values of all nodes (and updates oldSimilarities for next round
 			 normalizeSimilarities(round, pcg.vertices(), realMax, 0);

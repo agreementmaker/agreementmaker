@@ -110,7 +110,7 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
     		while(results.hasNext()){
     			soln = results.nextSolution();
     			
-//    			System.out.println(soln.get("x").toString());
+    			System.out.println(soln.get("x").toString());
     			
     			// create the node
     			WGraphVertex vertexNew = new WGraphVertex(soln.get("x"));
@@ -249,10 +249,20 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 
 	private WGraphVertex returnVert(RDFNode rdfNode) {
 		if(nodesMap.get(rdfNode) != null){
+			// there was already a node with that rdfNode
 			return nodesMap.get(rdfNode);
 		}
 		else{
-			return new WGraphVertex(rdfNode);
+			// there wasn't already that node so
+			
+			// we create it
+			WGraphVertex vertNew = new WGraphVertex(rdfNode);
+			// we add it to the list
+			this.insertVertex(vertNew);
+			// we add it to the map of nodes (we will always include it in the set of nodes to search in)
+			nodesMap.put(rdfNode, vertNew);
+			// and we return it
+			return vertNew;
 		}
 	}
 }
