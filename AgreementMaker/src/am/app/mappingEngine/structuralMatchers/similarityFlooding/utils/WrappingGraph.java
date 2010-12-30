@@ -110,8 +110,6 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
     		while(results.hasNext()){
     			soln = results.nextSolution();
     			
-    			System.out.println(soln.get("x").toString());
-    			
     			// create the node
     			WGraphVertex vertexNew = new WGraphVertex(soln.get("x"));
     			this.insertVertex(vertexNew);

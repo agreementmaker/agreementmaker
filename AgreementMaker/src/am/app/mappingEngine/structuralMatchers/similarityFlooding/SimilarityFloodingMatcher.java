@@ -9,12 +9,8 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 
-import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
@@ -58,13 +54,14 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	 */
 	private enum Direction{ORIG2DEST, DEST2ORIG};
 	
-	private HashMap<Pair<RDFNode, RDFNode>, PCGVertex> pairTable = new HashMap<Pair<RDFNode, RDFNode>, PCGVertex>();
+	private HashMap<String, PCGVertex> pairTable;
 
 	/**
 	 * 
 	 */
 	public SimilarityFloodingMatcher() {
 		super();
+		pairTable = new HashMap<String, PCGVertex>();
 		needsParam = true; // we need to display the parameters panel.
 	}
 
@@ -73,6 +70,8 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	 */
 	public SimilarityFloodingMatcher(SimilarityFloodingMatcherParameters params_new) {
 		super(params_new);
+		pairTable = new HashMap<String, PCGVertex>();
+		needsParam = true; // we need to display the parameters panel.
 	}
 	
 	@Override 
@@ -95,18 +94,18 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 		progressDisplay.appendToReport("Creating Wrapping Graphs...");
 		WrappingGraph sourceGraph = new WrappingGraph(sourceOntology.getModel());
 		WrappingGraph targetGraph = new WrappingGraph(targetOntology.getModel());
-		if( DEBUG_FLAG ) System.out.println(sourceGraph.toString());
-		if( DEBUG_FLAG ) System.out.println(targetGraph.toString());
+//		if( DEBUG_FLAG ) System.out.println(sourceGraph.toString());
+//		if( DEBUG_FLAG ) System.out.println(targetGraph.toString());
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Creating Pairwise Connectivity Graph...");
-		createPairwiseConnectivityGraph(sourceGraph, targetGraph);
+		createPairwiseConnectivityGraphNew(sourceGraph, targetGraph);
 		if( DEBUG_FLAG ) System.out.println(pcg.toString());
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Creating Induced Propagation Graph...");
 		createInducedPropagationGraph();
-		if( DEBUG_FLAG ) System.out.println(pcg.toString());
+//		if( DEBUG_FLAG ) System.out.println(pcg.toString());
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Computing Fixpoints...");
@@ -136,8 +135,8 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	  *            /\
 	  *  	     PCGEdge
 	  */
-protected void createPairwiseConnectivityGraph(WrappingGraph sourceOnt, WrappingGraph targetOnt){
-		 
+	 protected void createPairwiseConnectivityGraph(WrappingGraph sourceOnt, WrappingGraph targetOnt){
+		 // TODO: to fix duplicates
 		 pcg = new PairwiseConnectivityGraph();
 		 
 		 Iterator<WGraphEdge> sourceIterator = sourceOnt.edges();
@@ -145,7 +144,7 @@ protected void createPairwiseConnectivityGraph(WrappingGraph sourceOnt, Wrapping
 		 
 		 WGraphEdge sEdge = null;
 		 WGraphEdge tEdge = null;
-
+		 
 		 /**
 		  * We hash the source concept into the first hashtable, which returns a second hash table.
 		  * Then we hash the target concept into the second hash table and that returns the PCGVertex corresponding
@@ -159,6 +158,7 @@ protected void createPairwiseConnectivityGraph(WrappingGraph sourceOnt, Wrapping
 		  */
 		 
 		 HashMap<RDFNode, HashMap<RDFNode, PCGVertex>> firstHashTable = new HashMap<RDFNode, HashMap<RDFNode, PCGVertex>>();
+		 
 			 while(sourceIterator.hasNext()){
 				 sEdge = sourceIterator.next();
 			 
@@ -177,17 +177,13 @@ protected void createPairwiseConnectivityGraph(WrappingGraph sourceOnt, Wrapping
 							// do nothing
 						 } else {
 							 try{
-					 				PCGVertex sourcePCGVertex = getPCGVertexNew(sEdge.getOrigin().getObject(), tEdge.getOrigin().getObject() );
-						 			PCGVertex targetPCGVertex = getPCGVertexNew(sEdge.getDestination().getObject(), tEdge.getDestination().getObject() );
+					 				PCGVertex sourcePCGVertex = getPCGVertex(firstHashTable, sEdge.getOrigin().getObject(), tEdge.getOrigin().getObject());
+						 			PCGVertex targetPCGVertex = getPCGVertex(firstHashTable, sEdge.getDestination().getObject(), tEdge.getDestination().getObject());
 									 						 
-						 			insertInPCG(sourcePCGVertex,  // vertex
-								 		sEdge.getObject(),      // edge
-								 		targetPCGVertex,           // vertex
-								 		sEdge.getOrigin().getObject(),
-								 		tEdge.getOrigin().getObject(),
-								 		sEdge.getDestination().getObject(),
-								 		tEdge.getDestination().getObject(),
-								 		firstHashTable );
+						 			insertInPCG(sourcePCGVertex, sEdge.getObject(), targetPCGVertex,
+						 					sEdge.getOrigin().getObject(), tEdge.getOrigin().getObject(),
+						 					sEdge.getDestination().getObject(), tEdge.getDestination().getObject(),
+						 					firstHashTable );
 							 }
 							 catch(com.hp.hpl.jena.rdf.model.ResourceRequiredException e){
 								 e.printStackTrace();
@@ -200,85 +196,59 @@ protected void createPairwiseConnectivityGraph(WrappingGraph sourceOnt, Wrapping
 				 targetIterator = targetOnt.edges();
 			 }
 	 }
-
-protected void oldCreatePairwiseConnectivityGraph(){
-	 
-	 pcg = new PairwiseConnectivityGraph();
-	 
-	 OntModel localSource = sourceOntology.getModel();
-	 OntModel localTarget = targetOntology.getModel();
-	 
-	 StmtIterator sStmtIterator = localSource.listStatements();
-	 StmtIterator tStmtIterator = localTarget.listStatements();
-	 
-	 Statement sStmt = null;
-	 Statement tStmt = null;
-
-	 /**
-	  * We hash the source concept into the first hashtable, which returns a second hash table.
-	  * Then we hash the target concept into the second hash table and that returns the PCGVertex corresponding
-	  * to the source and target concepts.
-	  *  
-	  * 
-	  * Maybe linear probing or double hashing (http://en.wikipedia.org/wiki/Double_hashing) would be a better solution.
-	  * Actually, a double indexed HashTable (two keys for get() put() operations), along with standard linear probing 
-	  * and double hashing as a fall back would be the better solution.
-	  * 
-	  */
-	 
-		 while(sStmtIterator.hasNext()){
-			 sStmt = sStmtIterator.next();
-		 
-			 while(tStmtIterator.hasNext()){
-				 tStmt = tStmtIterator.next();
+			 
+			 
+			 protected void createPairwiseConnectivityGraphNew(WrappingGraph sourceOnt, WrappingGraph targetOnt){
+				 // TODO: to fix duplicates
+				 pcg = new PairwiseConnectivityGraph();
 				 
-				 // condition where we add a new element in the pairwise connectivity graph:
-				 // comparison of predicates
-				 if(sStmt.getPredicate().equals(tStmt.getPredicate())){
+				 Iterator<WGraphEdge> sourceIterator = sourceOnt.edges();
+				 Iterator<WGraphEdge> targetIterator = targetOnt.edges();
+				 
+				 WGraphEdge sEdge = null;
+				 WGraphEdge tEdge = null;
+				 
+					 while(sourceIterator.hasNext()){
+						 sEdge = sourceIterator.next();
 					 
-					 if( ((SimilarityFloodingMatcherParameters)param).omitAnonymousNodes && 
-							 ( sStmt.getSubject().isAnon() || sStmt.getObject().isAnon() ||
-							   tStmt.getSubject().isAnon() || tStmt.getObject().isAnon() )  ) {
-						// these nodes are anonymous
-						// parameter is set to not insert anonymous nodes
-						// do nothing
-					 } else {
-						 
-						 try{
-						 		if( !( //sStmt.getSubject().getNameSpace().equals(OWL.NS) || tStmt.getSubject().getNameSpace().equals(OWL.NS) ||
-						 				//sStmt.getSubject().getNameSpace().equals(FOAF.NS) || tStmt.getSubject().getNameSpace().equals(FOAF.NS) ||
-						 				!sStmt.getObject().canAs(Resource.class) || !tStmt.getObject().canAs(Resource.class) )
-						 				){
-								 			// check to see if we have a node already for the source vertex and for the target vertex.
-						 			if( true //!( sStmt.getObject().as(Resource.class).getNameSpace().equals(OWL.NS) || tStmt.getObject().as(Resource.class).getNameSpace().equals(OWL.NS) ||
-							 				//sStmt.getObject().as(Resource.class).getNameSpace().equals(FOAF.NS) || tStmt.getObject().as(Resource.class).getNameSpace().equals(FOAF.NS) )
-						 					){
-//						 				PCGVertex sourcePCGVertex = getPCGVertex(pairTable, sStmt.getSubject(), tStmt.getSubject() );
-//							 			PCGVertex targetPCGVertex = getPCGVertex(pairTable, sStmt.getObject(),  tStmt.getObject() );
-										 						 
-							 			/*insertInPCG(sourcePCGVertex,  // vertex
-									 		sStmt.getPredicate(),      // edge
-									 		targetPCGVertex,           // vertex
-									 		sStmt.getSubject(),
-									 		tStmt.getSubject(),
-									 		sStmt.getObject(),
-									 		tStmt.getObject(),
-									 		firstHashTable );*/
-						 			}
-						 		}
+						 while(targetIterator.hasNext()){
+							 tEdge = targetIterator.next();
+							 
+							 // condition where we add a new element in the pairwise connectivity graph:
+							 // comparison of predicates (now string labels)
+							 if(sEdge.getObject().equals(tEdge.getObject())){
+								 
+								 if( ((SimilarityFloodingMatcherParameters)param).omitAnonymousNodes && 
+										 ( sEdge.getOrigin().getObject().isAnon() || sEdge.getDestination().getObject().isAnon() ||
+										   tEdge.getOrigin().getObject().isAnon() || tEdge.getDestination().getObject().isAnon() )  ) {
+									// these nodes are anonymous
+									// parameter is set to not insert anonymous nodes
+									// do nothing
+								 } else {
+									 try{
+										 	String originKey = new String(sEdge.getOrigin().getObject().toString() + tEdge.getOrigin().getObject().toString());
+										 	String destinationKey = new String(sEdge.getDestination().getObject().toString() + tEdge.getDestination().getObject().toString());
+//										 	System.out.println((originPair != null) + " " + (destinationPair != null));
+							 				PCGVertex sourcePCGVertex = getPCGVertexNew(originKey, sEdge.getOrigin().getObject(), tEdge.getOrigin().getObject());
+								 			PCGVertex targetPCGVertex = getPCGVertexNew(destinationKey, sEdge.getDestination().getObject(), tEdge.getDestination().getObject());
+								 			PCGEdge pairEdge = new PCGEdge(sourcePCGVertex, targetPCGVertex, new PCGEdgeData(sEdge.getObject()));
+											 						 
+								 			insertEdgeInPCG(sourcePCGVertex,  // vertex
+										 		pairEdge,      		// edge
+										 		targetPCGVertex		// vertex
+										 		);
+									 }
+									 catch(com.hp.hpl.jena.rdf.model.ResourceRequiredException e){
+										 e.printStackTrace();
+									 }
+								 }
+								 
+							 }
+							 
 						 }
-						 catch(com.hp.hpl.jena.rdf.model.ResourceRequiredException e){
-							 e.printStackTrace();
-						 }
+						 targetIterator = targetOnt.edges();
 					 }
-					 
-				 }
-				 
-			 }
-			 tStmtIterator = localTarget.listStatements();
-		 }
-	}
-
+	 }
 	 
 	/**
 	 * This method inserts a new "triple" in the PairwiseConnectivityGraph.
@@ -361,6 +331,19 @@ protected void oldCreatePairwiseConnectivityGraph(){
 		pcg.insertEdge(pairEdge);
 		
 	}
+	
+	/**
+	 * This method inserts a new "triple" in the PairwiseConnectivityGraph.
+	 * A triple is a ( PCGVertex, PCGEdge, PCGVertex ).
+	 */
+	private void insertEdgeInPCG(PCGVertex sourcePCGVertex, PCGEdge pairEdge, PCGVertex targetPCGVertex) {
+		
+		sourcePCGVertex.addOutEdge(pairEdge);
+		targetPCGVertex.addInEdge(pairEdge);
+		
+		pcg.insertEdge(pairEdge);
+		
+	}
 
 	/**
 	  * Returns the PCGVertex associated with the sourceSubject and targetSubject. 
@@ -382,26 +365,43 @@ protected void oldCreatePairwiseConnectivityGraph(){
 		return existingVertex;  // can be null
 	}
 	 
-	 private PCGVertex getPCGVertexNew(
-				RDFNode sourceSubject, RDFNode targetSubject
-			 ){
-		 Pair<RDFNode, RDFNode> pairToCheck = new Pair<RDFNode, RDFNode>(sourceSubject, targetSubject);
-		 if(pairTable.get(pairToCheck) != null){
+	 private PCGVertex getPCGVertexNew(String key, RDFNode s, RDFNode t){
+		 
+		 System.out.println(pairTable.toString());
+		 
+		 PCGVertex vert = pairTable.get(key);
+//		 System.out.println(pairTable.get(pairToCheck) != null);
+		 
+		 /*
+		 // COLLISION TEST --- to be eventually removed
+		 HashMap<Integer, Integer> test = new HashMap<Integer, Integer>();
+		 test.put(new Integer(1), new Integer(1));
+		 System.out.println(test.get(new Integer(1)) != null);
+		 System.out.println(test.get(new Integer(1)));
+		 test.put(new Integer(2), new Integer(2));
+		 System.out.println(test.get(new Integer(2)) != null);
+		 System.out.println(test.get(new Integer(2)));
+		 test.put(new Integer(1), new Integer(0));
+		 System.out.println(test.containsValue(new Integer(1)));
+		 System.out.println(test.get(new Integer(1)));
+		 */
+		 
+		 if(pairTable.get(key) != null){
+			 	System.out.println("table has pair");
 				// there was already a node with that rdfNode
-				return pairTable.get(pairToCheck);
 			}
 			else{
 				// there wasn't already that node so
 				
 				// we create it
-				PCGVertex vertNew = new PCGVertex(new PCGVertexData(pairToCheck));
+				vert = new PCGVertex(new PCGVertexData(new Pair<RDFNode, RDFNode>(s, t)));
+//				System.out.println(vertNew.toString());
 				// we add it to the list
-				pcg.insertVertex(vertNew);
+				pcg.insertVertex(vert);
 				// we add it to the map of nodes (we will always include it in the set of nodes to search in)
-				pairTable.put(pairToCheck, vertNew);
-				// and we return it
-				return vertNew;
+				pairTable.put(key, vert);
 			}
+		 return vert;
 	 }
 
 	/**
