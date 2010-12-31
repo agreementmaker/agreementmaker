@@ -40,7 +40,7 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	 * 
 	 */
 	private static final long serialVersionUID = -3749229483504509029L;
-	protected static final boolean DEBUG_FLAG = true;
+	protected static final boolean DEBUG_FLAG = false;
 	
 	protected PairwiseConnectivityGraph pcg;
 	
@@ -94,8 +94,8 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 		progressDisplay.appendToReport("Creating Wrapping Graphs...");
 		WrappingGraph sourceGraph = new WrappingGraph(sourceOntology.getModel());
 		WrappingGraph targetGraph = new WrappingGraph(targetOntology.getModel());
-//		if( DEBUG_FLAG ) System.out.println(sourceGraph.toString());
-//		if( DEBUG_FLAG ) System.out.println(targetGraph.toString());
+		if( DEBUG_FLAG ) System.out.println(sourceGraph.toString());
+		if( DEBUG_FLAG ) System.out.println(targetGraph.toString());
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Creating Pairwise Connectivity Graph...");
@@ -105,7 +105,7 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 		
 		progressDisplay.appendToReport("Creating Induced Propagation Graph...");
 		createInducedPropagationGraph();
-//		if( DEBUG_FLAG ) System.out.println(pcg.toString());
+		if( DEBUG_FLAG ) System.out.println(pcg.toString());
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Computing Fixpoints...");
@@ -367,8 +367,6 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	 
 	 private PCGVertex getPCGVertexNew(String key, RDFNode s, RDFNode t){
 		 
-		 System.out.println(pairTable.toString());
-		 
 		 PCGVertex vert = pairTable.get(key);
 //		 System.out.println(pairTable.get(pairToCheck) != null);
 		 
@@ -387,7 +385,7 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 		 */
 		 
 		 if(pairTable.get(key) != null){
-			 	System.out.println("table has pair");
+//			 	System.out.println("table has pair");
 				// there was already a node with that rdfNode
 			}
 			else{
@@ -509,16 +507,14 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 			 						boolean computing){
 		 PCGEdge currentEdge = null;
 		 while(iVEdge.hasNext()){
-			 if(!computing){
-//				 System.out.print("");
-			 }
+			 
 			 currentEdge = (PCGEdge) iVEdge.next();
 			 String currentProp = currentEdge.getObject().getStProperty();
 			 
 			 if(computing){ // computing phase
 				 if( counter.containsKey(currentProp) ) {
 					 Integer i = counter.get(currentProp);
-					 i++;
+					 counter.put(currentProp, i + 1);
 				 } else {
 					 counter.put(currentProp, new Integer(1) );
 				 }
@@ -587,10 +583,10 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	 }
 	 
 	 /**
-	 * @return 
 	  * 
 	  */
 	 protected double computeFixpointPerVertex(PCGVertex pcgV){
+//		 System.out.println(pcgV.getObject().getOldSimilarityValue());
 		 return pcgV.getObject().getOldSimilarityValue()	// old value (correct, we are supposed to find the old value there)
 		 			+ sumIncomings(pcgV.edgesInIter());		// sum of incoming regular edges values
 		 //			+ sumBackedges(pcgV.edgesOutIter());	// sum of incoming backedge values
@@ -604,14 +600,17 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 			 // computing old sim value multiplied by the prop coefficient of the regular incoming edge
 			 oldValue = currEdge.getOrigin().getObject().getOldSimilarityValue();
 			 propCoeff = currEdge.getObject().getPropagationCoefficient();
-//			 if(sum > 1.0){final int a = 0;} //for debugging purposes (can be removed)
+			 
 			 sum += (oldValue * propCoeff);
+//			 System.out.println(currEdge.getOrigin().getObject().toString() + " ---> " + currEdge.getDestination().getObject().toString());
+//			 System.out.println(oldValue + " " + propCoeff);
 		 }
+//		 System.out.println("---" + sum);
 		 return sum;
 	 }
 	 
 	 /**
-	  * not called, sumIncomings is taking care of it too
+	  * not called, sumIncomings is taking care of this too
 	  * @param outIter
 	  * @return
 	  */
