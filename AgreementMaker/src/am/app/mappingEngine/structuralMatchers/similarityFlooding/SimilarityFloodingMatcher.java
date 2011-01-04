@@ -16,6 +16,7 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdge;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdgeData;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertex;
@@ -113,8 +114,12 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Creating Similarity Matrices...");
-		loadSimilarityMatrices();
+//		loadSimilarityMatrices();
 		createSimilarityMatrices();
+		progressDisplay.appendToReport("done.\n");
+		
+		progressDisplay.appendToReport("Computing Relative Similarities...");
+		computeRelativeSimilarities();
 		progressDisplay.appendToReport("done.\n");
 		
 	 }
@@ -136,7 +141,7 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	  *  	     PCGEdge
 	  */
 	 protected void createPairwiseConnectivityGraph(WrappingGraph sourceOnt, WrappingGraph targetOnt){
-		 // TODO: to fix duplicates
+
 		 pcg = new PairwiseConnectivityGraph();
 		 
 		 Iterator<WGraphEdge> sourceIterator = sourceOnt.edges();
@@ -199,7 +204,6 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 			 
 			 
 			 protected void createPairwiseConnectivityGraphNew(WrappingGraph sourceOnt, WrappingGraph targetOnt){
-				 // TODO: to fix duplicates
 				 pcg = new PairwiseConnectivityGraph();
 				 
 				 Iterator<WGraphEdge> sourceIterator = sourceOnt.edges();
@@ -407,13 +411,13 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	  */
 	 protected void computeFixpoint(){
 		 int round = 0;
-		 double realMax = 0.0, newSimilarity = 0.0;
+		 double maxSimilarity = 0.0, newSimilarity = 0.0;
 		 
 		 // base case checked: stop computation. Either we reached the fixpoint or we overcame the limit;
 		 do {
 			 // new round: computing new similarities
 			 round++;
-			 realMax = 0.0;
+			 maxSimilarity = 0.0;
 			 Iterator<PCGVertex> iVert = null;
 			 PCGVertex vert = null;
 			 PCGVertex maxV = null;
@@ -441,23 +445,20 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 				 
 				 // store it inside the vertex
 				 vert.getObject().setNewSimilarityValue(newSimilarity);
-				 
-				 // update the maximum value (according to where they belong)
-//				 OntResource source = getOntResourceFromRDFNode(vert.getObject().getStCouple().getLeft());
-//				 OntResource target = getOntResourceFromRDFNode(vert.getObject().getStCouple().getRight());
 				 				
-				 if(realMax <= Math.max(newSimilarity, realMax)){
+				 if(maxSimilarity <= newSimilarity){
 					 maxV = vert;
-					 realMax = Math.max(newSimilarity, realMax);
+					 maxSimilarity = newSimilarity;
+					 System.out.println("maxSim: " + maxSimilarity + " ------------------- " + "maxV: " + maxV.toString() + "\n");
 					 
 				 }
 				 if(true){System.out.println(vert.toString());}
 			 }
 			 // normalize all the similarity values of all nodes (and updates oldSimilarities for next round
-			 normalizeSimilarities(round, pcg.vertices(), realMax, 0);
-			 System.out.println("realMax: " + realMax + " ------------------- " + "vert: " + maxV.toString() + "\n");
+			 System.out.println("maxSim: " + maxSimilarity + " ------------------- " + "maxV: " + maxV.toString() + "\n");
+			 normalizeSimilarities(pcg.vertices(), maxSimilarity);
 			 
-//			 createSimilarityMatrices();
+			 createSimilarityMatrices();
 		 } while(!checkBaseCase(round, pcg.getSimValueVector(true), pcg.getSimValueVector(false)));
 	 }
 	 
@@ -590,10 +591,9 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	 
 	 protected double sumIncomings(Iterator<DirectedGraphEdge<PCGEdgeData, PCGVertexData>> inIter){
 		 
-		 // TODO: fix oldSimValue
-		 
 		 double sum = 0.0, oldValue = 0.0, propCoeff = 0.0;
 		 PCGEdge currEdge = null;
+		 System.out.println();
 		 while(inIter.hasNext()){
 			 currEdge = (PCGEdge) inIter.next();
 			 // computing old sim value multiplied by the prop coefficient of the regular incoming edge
@@ -601,10 +601,9 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 			 propCoeff = currEdge.getObject().getPropagationCoefficient();
 			 
 			 sum += (oldValue * propCoeff);
-			 System.out.println(currEdge.getOrigin().getObject().getStCouple().toString() + " ---> " + currEdge.getDestination().getObject().getStCouple().toString());
+			 System.out.println(currEdge.getOrigin().toString() + " ---> " + currEdge.getDestination().toString());
 			 System.out.println(oldValue + " " + propCoeff);
 		 }
-//		 System.out.println("---" + sum);
 		 return sum;
 	 }
 	 
@@ -644,7 +643,7 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	 /* 				 NORMALIZATION PHASE 			   	*/
 	 /* *************************************************** */
 		 
-		 protected void normalizeSimilarities(int round, Iterator<PCGVertex> iVert, double realMax, double limitedMax){
+		 protected void normalizeSimilarities(Iterator<PCGVertex> iVert, double roundMax){
 			 double nonNormSimilarity = 0.0, normSimilarity = 0.0;
 			 PCGVertex currentVert = null;
 			 while(iVert.hasNext()){
@@ -653,25 +652,61 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 				 // the value computed is stored in the new similarity value at this stage
 				 nonNormSimilarity = currentVert.getObject().getNewSimilarityValue();
 				 
-				 // compute normalized value (according to the content of the vertex)
-/*				 OntResource source = getOntResourceFromRDFNode(currentVert.getObject().getStCouple().getLeft());
-				 OntResource target = getOntResourceFromRDFNode(currentVert.getObject().getStCouple().getRight());
-				 if(isOntResInSimMatrix(source, sourceOntology) && isOntResInSimMatrix(target, targetOntology) ){
-					 normSimilarity = nonNormSimilarity / limitedMax;
-				 }
-				 else {
-*/					 normSimilarity = nonNormSimilarity / realMax;
-//				 }
-				 //normSimilarity = nonNormSimilarity / currentVert.outDegree();
+				 // compute normalized value
+				 normSimilarity = nonNormSimilarity / roundMax;
 				 
 				 // set normalized to new value
 				 currentVert.getObject().setNewSimilarityValue(normSimilarity);
 //				 if(true){System.out.println(currentVert.toString());}
 			 }
 		 }
+		 
+		 /* *************************************************** */
+		 /* 				RELATIVE SIMILARITIES 				*/
+		 /* *************************************************** */
+		 
+		 /**
+		  * working on similarity matrices only
+		  * TODO: to be modified to accept Similarity Matrix as a parameter
+		  */
+		 protected void computeRelativeSimilarities(){
+			 
+			 double max = 0;
+			 double oldValue = 0;
+			 Mapping current = null;
+			 
+			 for(int i = 0; i < classesMatrix.getRows(); i++){
+				 max = classesMatrix.getRowMaxValues(i, 1)[0].getSimilarity();
+				 
+				 for(int j = 0; j < classesMatrix.getColumns(); j++){
+					 
+					 current = classesMatrix.get(i, j);
+					 if(current != null){
+						 oldValue = current.getSimilarity();
+						 classesMatrix.get(i, j).setSimilarity(oldValue/max);
+					 }
+					 
+				 }
+			 }
+			 
+			 for(int i = 0; i < propertiesMatrix.getRows(); i++){
+				 max = propertiesMatrix.getRowMaxValues(i, 1)[0].getSimilarity();
+				 
+				 for(int j = 0; j < propertiesMatrix.getColumns(); j++){
+					 
+					 current = propertiesMatrix.get(i, j);
+					 if(current != null){
+						 oldValue = current.getSimilarity();
+						 propertiesMatrix.get(i, j).setSimilarity(oldValue/max);
+					 }
+					 
+				 }
+			 }
+			 
+		 }
 
 	 /* *************************************************** */
-	/* 					  SIMILARITY MATRICES CREATION 		*/
+	/* 				SIMILARITY MATRICES CREATION 			*/
 	/* *************************************************** */
 	 
 	 protected void createSimilarityMatrices(){
