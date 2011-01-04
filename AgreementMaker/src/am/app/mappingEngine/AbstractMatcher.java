@@ -565,7 +565,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			if( this.isCancelled() ) { return null; }
 			m = it.next();
 			a = matrix.get(m.getSourceNode(), m.getTargetNode());
-			if( a != null ) aset.addAlignment(a);
+			if( a != null ) aset.addMapping(a);
 		}
 		
 		/* CODE FOR THE HUNGARIAN
@@ -609,7 +609,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			for(int e = 0;e < maxAlignments.length; e++) { 
 				toBeAdded = maxAlignments[e];
 				if(toBeAdded != null && toBeAdded.getSimilarity() >= param.threshold) {
-					aset.addAlignment(toBeAdded);
+					aset.addMapping(toBeAdded);
 				}
 			}
 		}
@@ -630,7 +630,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			for(int e = 0;e < maxAlignments.length; e++) { 
 				toBeAdded = maxAlignments[e];
 				if(toBeAdded != null && toBeAdded.getSimilarity() >= param.threshold) {
-					aset.addAlignment(toBeAdded);
+					aset.addMapping(toBeAdded);
 				}
 			}
 		}
@@ -649,7 +649,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			for(int j = 0; j<matrix.getRows();j++) {		
 				currentValue = matrix.get(j,i);
 				if(currentValue != null && currentValue.getSimilarity() >= param.threshold)
-					aset.addAlignment(currentValue);
+					aset.addMapping(currentValue);
 			}
 		}
 		return aset;
@@ -792,7 +792,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     		for(int j = 0; j < sourceConstraint; j++) {
     			toBeAdded = rowsMaxValues[i][j];
     			if(!toBeAdded.isFake()) {
-        			aset.addAlignment(matrix.get(i,toBeAdded.index));
+        			aset.addMapping(matrix.get(i,toBeAdded.index));
     			}
     		}
     	}
@@ -847,7 +847,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		//you will have to override this method this way: "return new MyParameterPanel(with some more parameters); (see manualCombinationMatcher structure
 	}
 	
-	public Alignment<Mapping> getAlignmentSet() {
+	public Alignment<Mapping> getAlignment() {
     	Alignment<Mapping> aligns = new Alignment<Mapping>();
     	if(areClassesAligned()) {
     		aligns.addAll(classesAlignmentSet);

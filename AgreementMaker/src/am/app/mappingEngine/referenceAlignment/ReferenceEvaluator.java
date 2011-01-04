@@ -35,34 +35,34 @@ public class ReferenceEvaluator{
         int correctMappings = 0;
         // check all mappings for correctness
         for (int i = 0; i < foundMappings; i++) {
-            Mapping evaluationMapping = evaluationSet.getAlignment(i);
+            Mapping evaluationMapping = evaluationSet.getMapping(i);
             boolean evaluationMappingIsWrong = true;
             for (int j = 0; j < referenceMappings; j++) {
-                Mapping referenceMapping = referenceSet.getAlignment(j);
+                Mapping referenceMapping = referenceSet.getMapping(j);
                 if (evaluationMapping.equals(referenceMapping)) {
                     correctMappings++;
-                    correctAlignments.addAlignment(evaluationMapping);
+                    correctAlignments.addMapping(evaluationMapping);
                     evaluationMappingIsWrong = false;
                     break;
                 }
             }
             if (evaluationMappingIsWrong == true) {
-                errorAlignments.addAlignment(evaluationMapping);
+                errorAlignments.addMapping(evaluationMapping);
             }
         }
         
         for (int i = 0; i < referenceMappings; i++) {
-            Mapping referenceMapping = referenceSet.getAlignment(i);
+            Mapping referenceMapping = referenceSet.getMapping(i);
             boolean referenceMappingNotFound = true;
             for (int j = 0; j < foundMappings; j++) {
-                Mapping evaluationMapping = evaluationSet.getAlignment(j);
+                Mapping evaluationMapping = evaluationSet.getMapping(j);
                 if (referenceMapping.equals(evaluationMapping)) {
                     referenceMappingNotFound = false;
                     break;
                 }
             }
             if (referenceMappingNotFound == true) {
-                lostAlignments.addAlignment(referenceMapping);
+                lostAlignments.addMapping(referenceMapping);
             }
         }
         //System.out.println("Found: " + found + ", Exist: " + exist + ", Correct: " + correct);

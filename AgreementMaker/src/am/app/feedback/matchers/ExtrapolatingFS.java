@@ -60,7 +60,7 @@ public class ExtrapolatingFS extends AbstractMatcher {
 		int numMappings = userMappings.size();
 		for( int i = 0; i < numMappings; i++ ) {
 			
-			Mapping e1e2 = userMappings.getAlignment(i);
+			Mapping e1e2 = userMappings.getMapping(i);
 			
 			ArrayList<Vertex> e1_sibblingList = new ArrayList<Vertex>();
 			
@@ -108,12 +108,12 @@ public class ExtrapolatingFS extends AbstractMatcher {
 		classesAlignmentSet = new Alignment<Mapping>();
 		propertiesAlignmentSet = new Alignment<Mapping>();
 		for( int i = 0; i < newMappings.size(); i++ ) {
-			Mapping j = newMappings.getAlignment(i);
+			Mapping j = newMappings.getMapping(i);
 			
 			if ( j.getAlignmentType() == alignType.aligningClasses ) {
-				classesAlignmentSet.addAlignment(j);
+				classesAlignmentSet.addMapping(j);
 			} else {
-				propertiesAlignmentSet.addAlignment(j);
+				propertiesAlignmentSet.addMapping(j);
 			}
 		}
 		
@@ -140,7 +140,7 @@ public class ExtrapolatingFS extends AbstractMatcher {
 				
 				if( approx( e1SimAboveThreshold.get(e1n) , e2SimAboveThreshold.get(e2n) , 0.01 ) ) {
 					Mapping newmapping = new Mapping(e1n, e2n, 1.00d, Mapping.EQUIVALENCE, tyoc  );
-					newMappings.addAlignment( newmapping );
+					newMappings.addMapping( newmapping );
 				}
 				
 			}

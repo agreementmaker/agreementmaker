@@ -36,7 +36,7 @@ public class Alignment<E extends Mapping> implements Iterable<E>, Serializable
         collection = new ArrayList<E>();
     }
 
-    public void addAlignment(E alignment)
+    public void addMapping(E alignment)
     {
         if( alignment != null ) collection.add(alignment);
     }
@@ -45,7 +45,7 @@ public class Alignment<E extends Mapping> implements Iterable<E>, Serializable
     {
     	if(a != null) {
     		for(int i= 0; i<a.size();i++) {
-    			E alignment = a.getAlignment(i);
+    			E alignment = a.getMapping(i);
     			collection.add(alignment);
     		}
     	}
@@ -57,14 +57,14 @@ public class Alignment<E extends Mapping> implements Iterable<E>, Serializable
     {
     	if(a != null) {
     		for(int i= 0; i<a.size();i++) {
-    			E alignment = a.getAlignment(i);
-    			if( !contains( alignment ) ) addAlignment(alignment);
+    			E alignment = a.getMapping(i);
+    			if( !contains( alignment ) ) addMapping(alignment);
     		}
     	}
         
     }    
     
-    public E getAlignment(int index)
+    public E getMapping(int index)
     {
         if (index >= 0 && index < size()) {
             return collection.get(index);

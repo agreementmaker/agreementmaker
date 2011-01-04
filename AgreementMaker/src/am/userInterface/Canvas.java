@@ -450,7 +450,6 @@ public class Canvas extends VisualizationPanel implements MouseListener, ActionL
 		{
 			setPreferredSize(new Dimension((int)canvasWidth,(int)height));
 		}		
-
 	}
 	
 
@@ -755,7 +754,7 @@ public class Canvas extends VisualizationPanel implements MouseListener, ActionL
 		if(aset != null) {
 			Mapping a = null;
 			for(int i = 0; i < aset.size(); i++) {
-				a = aset.getAlignment(i); 
+				a = aset.getMapping(i); 
 				displayAlignment(g, matcher, a);
 			}
 		}

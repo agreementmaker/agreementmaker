@@ -118,7 +118,7 @@ public class FilteredAlignmentMatrix extends SimilarityMatrix {
 		// for every alignment that was selected, zero out the row and the columns, and set the alignment similarity to 1
 		for( int i = 0; i < selectedAlignments.size(); i++ ) {
 			
-			Mapping currentAlignment = selectedAlignments.getAlignment(i);
+			Mapping currentAlignment = selectedAlignments.getMapping(i);
 			
 			int row = currentAlignment.getSourceKey();
 			int col = currentAlignment.getTargetKey();
@@ -246,7 +246,7 @@ public class FilteredAlignmentMatrix extends SimilarityMatrix {
 	public void filterCells(Alignment<Mapping> topAlignments) {
 		
 		for(int i=0; i<topAlignments.size(); i++){
-			Mapping a = topAlignments.getAlignment(i);
+			Mapping a = topAlignments.getMapping(i);
 			
 			int row = a.getSourceKey();
 			int col = a.getTargetKey();

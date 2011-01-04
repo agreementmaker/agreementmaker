@@ -79,7 +79,7 @@ public class ConferenceTrack extends Track {
 			Ontology targetOntology = theMatcher.getTargetOntology();
 			sourceUri = sourceOntology.getURI();
 			targetUri = targetOntology.getURI();	
-			ao = new AlignmentOutput(theMatcher.getAlignmentSet(), outputFileDir+"/" + removeFileExtension(ontologyFiles[sourceOntology.getIndex()].getName()) + "-"+ removeFileExtension(ontologyFiles[targetOntology.getIndex()].getName()) +".rdf");
+			ao = new AlignmentOutput(theMatcher.getAlignment(), outputFileDir+"/" + removeFileExtension(ontologyFiles[sourceOntology.getIndex()].getName()) + "-"+ removeFileExtension(ontologyFiles[targetOntology.getIndex()].getName()) +".rdf");
 			ao.write(sourceUri, targetUri, sourceUri, targetUri);
 		}
 		

@@ -63,7 +63,7 @@ public abstract class Track {
 		//System.out.println(sourceBuilder.getReport());
 		
 		AbstractMatcher result = matchTwoOntologies(sourceBuilder.getOntology(), targetBuilder.getOntology(), matcher, threshold, sourceRel, targetRel, parameters);
-		return result.getAlignmentSet();
+		return result.getAlignment();
 		
 		/*Modified so in order to have this part of the code in a separate method: matchTwoOntologies()
 		//Set the ontologies in the Core structure which is common to all matchers

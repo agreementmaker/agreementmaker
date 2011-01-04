@@ -44,7 +44,7 @@ public class AlignmentOutput
         stringNS();
         stringStart("yes", "0", "11", onto1, onto2, uri1, uri2);
         for (int i = 0, n = alignmentSet.size(); i < n; i++) {
-            Mapping alignment = (Mapping) alignmentSet.getAlignment(i);
+            Mapping alignment = (Mapping) alignmentSet.getMapping(i);
             String e1 = alignment.getEntity1().getUri();
             String e2 = alignment.getEntity2().getUri();
             String measure = Double.toString(alignment.getSimilarity());
@@ -70,12 +70,12 @@ public class AlignmentOutput
     	//Below two if statement is only for OAEI 09 test case 303 
     	//where uri is not mentioned in the ontology by xlmns=base:
     	if(uri1.equals("")){
-    		Resource r = alignmentSet.getAlignment(0).getEntity1().getResource();
+    		Resource r = alignmentSet.getMapping(0).getEntity1().getResource();
     		uri1 = r.getURI();
     		uri1 = uri1.substring(0, uri1.indexOf("#")+1);
     	}
     	if(uri2.equals("")){
-    		Resource r = alignmentSet.getAlignment(0).getEntity2().getResource();
+    		Resource r = alignmentSet.getMapping(0).getEntity2().getResource();
     		uri2 = r.getURI();
     		uri2 = uri2.substring(0, uri2.indexOf("#")+1);
     		if(uri2.equalsIgnoreCase("http://www.aifb.uni-karlsruhe.de/ontology#"))
@@ -143,7 +143,7 @@ public class AlignmentOutput
         writeNS();
         writeStart("yes", "0", "11", onto1, onto2, uri1, uri2);
         for (int i = 0, n = alignmentSet.size(); i < n; i++) {
-            Mapping alignment = (Mapping) alignmentSet.getAlignment(i);
+            Mapping alignment = (Mapping) alignmentSet.getMapping(i);
             String e1 = alignment.getEntity1().getUri();
             String e2 = alignment.getEntity2().getUri();
             String measure = Double.toString(alignment.getSimilarity());
@@ -174,12 +174,12 @@ public class AlignmentOutput
     	//Below two if statement is only for OAEI 09 test case 303 
     	//where uri is not mentioned in the ontology by xlmns=base:
     	if(uri1.equals("")){
-    		Resource r = alignmentSet.getAlignment(0).getEntity1().getResource();
+    		Resource r = alignmentSet.getMapping(0).getEntity1().getResource();
     		uri1 = r.getURI();
     		uri1 = uri1.substring(0, uri1.indexOf("#")+1);
     	}
     	if(uri2.equals("")){
-    		Resource r = alignmentSet.getAlignment(0).getEntity2().getResource();
+    		Resource r = alignmentSet.getMapping(0).getEntity2().getResource();
     		uri2 = r.getURI();
     		uri2 = uri2.substring(0, uri2.indexOf("#")+1);
     		if(uri2.equalsIgnoreCase("http://www.aifb.uni-karlsruhe.de/ontology#"))

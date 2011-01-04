@@ -43,4 +43,10 @@ public class GlobalFixedMethod extends ClusteringMethod {
 		
 	}
 
+	@Override
+	public Cluster<Mapping> getCluster(Mapping mapping) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

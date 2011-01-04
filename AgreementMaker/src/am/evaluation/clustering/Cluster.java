@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
@@ -39,7 +40,7 @@ public class Cluster<E extends Mapping> implements Iterable<E> {
 		}
 		
 		for( Point p : set ) {
-			clusterSet.add( (E) new Mapping(sourceList.get(p.x), targetList.get(p.y), 1.0, "=", aType  ) );
+			clusterSet.add( (E) new Mapping(sourceList.get(p.x), targetList.get(p.y), 1.0, "=", aType  ) ); // unchecked conversion
 		}
 		
 	}
@@ -47,6 +48,11 @@ public class Cluster<E extends Mapping> implements Iterable<E> {
 	
 	public void addMapping( E m ) { clusterSet.add(m); }
 	public ArrayList<E> getMappingList() { return clusterSet; }
+	public Alignment<E> getAlignment() {
+		Alignment<E> a = new Alignment<E>();
+		for( E m : clusterSet ) { a.addMapping(m); }
+		return a;
+	}
 	
 	/** GETTERS and SETTERS **/
 	public String getName() { return name; }

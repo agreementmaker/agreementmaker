@@ -172,7 +172,7 @@ public class UI {
 				jPanel = new VertexDescriptionPane(GlobalStaticVariables.ONTFILE);//takes care of fields for XML files as well
 			else if(language == GlobalStaticVariables.XMLFILE)//XML
 				jPanel = new VertexDescriptionPane(GlobalStaticVariables.XMLFILE);//takes care of fields for XML files as well 
-		    jPanel.setMinimumSize(new Dimension(200,480));
+		    jPanel.setMinimumSize(new Dimension(200,200));
 			getUISplitPane().setRightComponent(jPanel);
 			setDescriptionPanel(jPanel);
 			System.out.println("Before treebuilder.buildTreeBuilder in am.userinterface.ui.openFile()...");

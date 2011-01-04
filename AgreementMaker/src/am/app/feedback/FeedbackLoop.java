@@ -245,9 +245,9 @@ public class FeedbackLoop extends AbstractMatcher  {
 			System.out.println("K: "+param.K);
 			System.out.println("M: "+param.M);
 			//Present the evaluations
-			Alignment<Mapping> fblextrapolationSet = getAlignmentSet();
+			Alignment<Mapping> fblextrapolationSet = getAlignment();
 			
-			ReferenceEvaluationData rd_end = ReferenceEvaluator.compare(fblextrapolationSet, referenceAlignmentMatcher.getAlignmentSet());
+			ReferenceEvaluationData rd_end = ReferenceEvaluator.compare(fblextrapolationSet, referenceAlignmentMatcher.getAlignment());
 			FeedbackIteration finalIteration = new FeedbackIteration(iteration);
 			finalIteration.evaluationData = rd_end;
 			finalIteration.EDSIcorrect = EDSIcorrect;
@@ -296,7 +296,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			Alignment<Mapping> losts = rd_end.getLostAlignments();
 			System.out.println("Missing are : "+losts.size()+" or "+(rd_end.getExist() - rd_end.getCorrect()));
 			for(int i = 0; i< losts.size(); i++){
-				Mapping lost = losts.getAlignment(i);
+				Mapping lost = losts.getMapping(i);
 				boolean isProp = lost.getEntity1().isProp();
 				System.out.println("---------Lost alignment "+i+": "+lost+" isProp? "+isProp);
 				FilteredAlignmentMatrix matrix = (FilteredAlignmentMatrix)classesMatrix;
@@ -331,14 +331,14 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			Alignment<Mapping> userSet = new Alignment<Mapping>();
 			
-			userSet.addAlignment( userMapping );
+			userSet.addMapping( userMapping );
 			
 			if(userConcept.whichType == alignType.aligningClasses ) {
 				classesMatrix.validateAlignments( userSet );
-				classesAlignmentSet.addAlignment(userMapping);
+				classesAlignmentSet.addMapping(userMapping);
 			} else {
 				propertiesMatrix.validateAlignments( userSet );
-				propertiesAlignmentSet.addAlignment(userMapping);
+				propertiesAlignmentSet.addMapping(userMapping);
 			}
 			progressDisplay.appendNewLineReportText("Running extrapolation matchers: ");
 			ExtrapolatingFS eFS = new ExtrapolatingFS();
@@ -376,7 +376,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			Alignment<Mapping> set = new Alignment<Mapping>();
 			set.addAll(newClassAlignments_eFS);
 			set.addAll(newPropertyAlignments_eFS);
-			ReferenceEvaluationData EFSdata = ReferenceEvaluator.compare(set, referenceAlignmentMatcher.getAlignmentSet());
+			ReferenceEvaluationData EFSdata = ReferenceEvaluator.compare(set, referenceAlignmentMatcher.getAlignment());
 			EFScorrect += EFSdata.getCorrect();
 			EFSwrong += (EFSdata.getFound() - EFSdata.getCorrect());
 		}
@@ -474,7 +474,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		set.addAll(newClassAlignments_eDSI);
 		set.addAll(newPropertyAlignments_eDSI);
 		if( referenceAlignmentMatcher != null ) {
-			ReferenceEvaluationData EDSIdata = ReferenceEvaluator.compare(set, referenceAlignmentMatcher.getAlignmentSet());
+			ReferenceEvaluationData EDSIdata = ReferenceEvaluator.compare(set, referenceAlignmentMatcher.getAlignment());
 			EDSIcorrect += EDSIdata.getCorrect();
 			EDSIwrong += (EDSIdata.getFound() - EDSIdata.getCorrect());
 		}
@@ -656,8 +656,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 	
 	private void evaluate(){
 		FeedbackIteration partialIteration = new FeedbackIteration(iteration);
-		Alignment<Mapping> partialSet = getAlignmentSet();
-		ReferenceEvaluationData partialRD = ReferenceEvaluator.compare(partialSet, referenceAlignmentMatcher.getAlignmentSet());
+		Alignment<Mapping> partialSet = getAlignment();
+		ReferenceEvaluationData partialRD = ReferenceEvaluator.compare(partialSet, referenceAlignmentMatcher.getAlignment());
 		partialIteration.iteration = iteration;
 		partialIteration.evaluationData = partialRD;
 		partialIteration.EDSIcorrect = EDSIcorrect;
@@ -698,7 +698,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		classesToBeFiltered = classesAlignmentSet;
 		propertiesToBeFiltered = propertiesAlignmentSet;
 		if(isInAutomaticMode()){
-			initialEvaluation = ReferenceEvaluator.compare(im.getAlignmentSet(), referenceAlignmentMatcher.getAlignmentSet());
+			initialEvaluation = ReferenceEvaluator.compare(im.getAlignment(), referenceAlignmentMatcher.getAlignment());
 		}
 		setStage( executionStage.afterInitialMatchers );		
 	}
@@ -928,7 +928,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			Mapping extrapolatedAlignment = clsIter.next();
 			if( !matrix.isCellFiltered( extrapolatedAlignment.getEntity1().getIndex(), extrapolatedAlignment.getEntity2().getIndex() ) ) {
 				// the extrapolated alignment is a new alignment
-				newAlignments.addAlignment( extrapolatedAlignment );
+				newAlignments.addMapping( extrapolatedAlignment );
 			}
 		}
 		return newAlignments;

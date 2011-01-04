@@ -31,7 +31,7 @@ public class MappedNodes {
 		Node source;
 		Node target;
 		for(int i = 0; i < alignment.size(); i++){
-			mapping = alignment.getAlignment(i);
+			mapping = alignment.getMapping(i);
 			source = mapping.getEntity1();
 			target = mapping.getEntity2();
 			mappedSources[source.getIndex()] += 1;

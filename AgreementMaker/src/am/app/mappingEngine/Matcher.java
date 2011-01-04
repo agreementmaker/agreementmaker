@@ -8,7 +8,7 @@ public interface Matcher extends Serializable{
 	
 	public void select();
 
-    public Alignment<Mapping> getAlignmentSet();
+    public Alignment<Mapping> getAlignment();
 
     public Alignment<Mapping> getClassAlignmentSet();
 

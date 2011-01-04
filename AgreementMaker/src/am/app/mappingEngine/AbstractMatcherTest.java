@@ -177,11 +177,11 @@ public abstract class AbstractMatcherTest {
 	}
 
 	/**
-	 * Test method for {@link am.app.mappingEngine.AbstractMatcher#getAlignmentSet()}.
+	 * Test method for {@link am.app.mappingEngine.AbstractMatcher#getAlignment()}.
 	 */
 	@Test
 	public final void testGetAlignmentSet() {
-		assertNotNull("The alignment is not initialized", testMatcher.getAlignmentSet());
+		assertNotNull("The alignment is not initialized", testMatcher.getAlignment());
 	}
 
 	/**
@@ -362,7 +362,7 @@ public abstract class AbstractMatcherTest {
 	 * @author michele
 	 */
 	private void testFinalAlignment(){
-		assertNotNull("Resulting Aligmnent is null and not usable", testMatcher.getAlignmentSet());
+		assertNotNull("Resulting Aligmnent is null and not usable", testMatcher.getAlignment());
 		testClassesAlignmentSubset();
 		testPropertyAlignmentSubset();
 	}

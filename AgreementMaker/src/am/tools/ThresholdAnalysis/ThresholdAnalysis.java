@@ -202,7 +202,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 				matcherToAnalyze.setThreshold(currentThreshold);
 				matcherToAnalyze.select();
 							
-				ReferenceEvaluationData currentEvaluation = ReferenceEvaluator.compare(matcherToAnalyze.getAlignmentSet(), referenceAlignmentMatcher.getAlignmentSet());
+				ReferenceEvaluationData currentEvaluation = ReferenceEvaluator.compare(matcherToAnalyze.getAlignment(), referenceAlignmentMatcher.getAlignment());
 				
 				double th = Utility.roundDouble(currentThreshold*100f, 4);
 				writerPrecision.write(th + "," + Utility.roundDouble( currentEvaluation.getPrecision() * 100.0d, 2) + "\n");
@@ -406,7 +406,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 				matcherToAnalyze.setThreshold(currentThreshold);
 				matcherToAnalyze.select();
 							
-				ReferenceEvaluationData currentEvaluation = ReferenceEvaluator.compare(matcherToAnalyze.getAlignmentSet(), referenceAlignmentMatcher.getAlignmentSet());
+				ReferenceEvaluationData currentEvaluation = ReferenceEvaluator.compare(matcherToAnalyze.getAlignment(), referenceAlignmentMatcher.getAlignment());
 				
 				writerPrecision.write(currentThreshold + "," + Utility.roundDouble( currentEvaluation.getPrecision(), 2) + "\n");
 				writerRecall.write(currentThreshold + "," + Utility.roundDouble( currentEvaluation.getRecall(), 2) + "\n");

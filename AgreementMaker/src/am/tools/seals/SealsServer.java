@@ -139,7 +139,7 @@ public class SealsServer implements AlignmentWS {
 		}
 
 		
-		Alignment<Mapping> finalAlignments = m.getAlignmentSet();
+		Alignment<Mapping> finalAlignments = m.getAlignment();
 		
 		progressDisplay.appendToReport( "Matching done. Found " + finalAlignments.size() + " mappings.");
 		

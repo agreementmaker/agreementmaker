@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.evaluation.clustering.Cluster;
@@ -76,6 +77,17 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 		return c;
 	}
 
+	@Override
+	public Cluster<Mapping> getCluster(Mapping m ) {
+		
+		VisualizationType t;
+		if( m.getAlignmentType() == alignType.aligningClasses ) t = VisualizationType.CLASS_MATRIX;
+		else { t = VisualizationType.PROPERTIES_MATRIX; }
+		
+		return getCluster(m.getSourceKey(), m.getTargetKey(), t);
+	}
+	
+	
 
 
 	private TreeSet<Point> buildSet(AbstractMatcher m, VisualizationType t,

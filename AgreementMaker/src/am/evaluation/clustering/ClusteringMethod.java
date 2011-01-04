@@ -19,6 +19,7 @@ public abstract class ClusteringMethod {
 	public ClusteringMethod() {	}
 
 	public abstract Cluster<Mapping> getCluster(int row, int col, VisualizationType t);
+	public abstract Cluster<Mapping> getCluster(Mapping mapping);
 	public abstract ClusteringParameters getParameters();
 	public abstract ClusteringParametersPanel getParametersPanel();
 	public abstract void setParameters( ClusteringParameters params );

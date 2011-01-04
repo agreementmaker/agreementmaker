@@ -379,7 +379,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 				// TODO: Move the if-else into ReferenceAlignmentMatcher
 				Alignment<Mapping> referenceSet;
 				if( refMatcher.areClassesAligned() && refMatcher.arePropertiesAligned() ) {
-					referenceSet = refMatcher.getAlignmentSet(); //class + properties
+					referenceSet = refMatcher.getAlignment(); //class + properties
 				} else if( refMatcher.areClassesAligned() ) {
 					referenceSet = refMatcher.getClassAlignmentSet();
 				} else if( refMatcher.arePropertiesAligned() ) {
@@ -396,7 +396,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 					toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
 					//evaluateSet = null;
 					if( refMatcher.areClassesAligned() && refMatcher.arePropertiesAligned() ) {
-						evaluateSet = toBeEvaluated.getAlignmentSet();
+						evaluateSet = toBeEvaluated.getAlignment();
 					} else if( refMatcher.areClassesAligned() ) {
 						evaluateSet = toBeEvaluated.getClassAlignmentSet();
 					} else if( refMatcher.arePropertiesAligned() ) {
@@ -480,7 +480,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 				refMatcher.setMaxSourceAlign(refMatcher.getDefaultMaxSourceRelations());
 				refMatcher.setMaxTargetAlign(refMatcher.getDefaultMaxTargetRelations());
 				refMatcher.match();
-				Alignment<Mapping>referenceSet = refMatcher.getAlignmentSet(); //class + properties
+				Alignment<Mapping>referenceSet = refMatcher.getAlignment(); //class + properties
 				AbstractMatcher toBeEvaluated;
 				Alignment<Mapping> evaluateSet;
 				ReferenceEvaluationData rd;
@@ -515,7 +515,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 						th = thresholds[t];
 						toBeEvaluated.setThreshold(th);
 						toBeEvaluated.select();
-						evaluateSet = toBeEvaluated.getAlignmentSet();
+						evaluateSet = toBeEvaluated.getAlignment();
 						rd = ReferenceEvaluator.compare(evaluateSet, referenceSet);
 						report += Utility.getNoDecimalPercentFromDouble(th)+"\t"+rd.getMeasuresLine();
 						sumPrecision += rd.getPrecision();

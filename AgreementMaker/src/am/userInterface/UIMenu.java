@@ -36,6 +36,7 @@ import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.ontology.Ontology;
+import am.extension.ClusteringEvaluation.ClusteringEvaluationPanel;
 import am.tools.LexiconLookup.LexiconLookupPanel;
 import am.tools.ThresholdAnalysis.ThresholdAnalysis;
 import am.tools.WordNetLookup.WordNetLookupPanel;
@@ -79,7 +80,7 @@ public class UIMenu implements ActionListener {
 	private JMenuItem ontologyDetails;
 	
 	// Tools menu.
-	private JMenuItem wordnetLookupItem, sealsItem;
+	private JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation;
 	
 	// Matchers menu.
 	private JMenuItem manualMapping, userFeedBack, 
@@ -272,6 +273,9 @@ public class UIMenu implements ActionListener {
 				sp.showScreen_Start();
 				ui.addTab("User Feedback Loop", null, sp, "User Feedback Loop");	
 			}
+			else if( obj == clusteringEvaluation ) {
+				ui.addTab("Clustering Evaluation",null, new ClusteringEvaluationPanel(), "Clustering Evaluation");
+			}
 			else if( obj == manualMapping) {
 				Utility.displayMessagePane("To edit or create a manual mapping select any number of source and target nodes.\nLeft click on a node to select it, use Ctrl and/or Shift for multiple selections.", "Manual Mapping");
 			}
@@ -373,10 +377,10 @@ public class UIMenu implements ActionListener {
 
 					// double nested loop, later I will write a better algorithm -cos
 					for( i = 0; i < firstClassSet.size(); i++ ) {
-						Mapping candidate = firstClassSet.getAlignment(i);
+						Mapping candidate = firstClassSet.getMapping(i);
 						boolean foundDuplicate = false;
 						for( j = 0; j < secondClassSet.size(); j++ ) {
-							Mapping test = secondClassSet.getAlignment(j);							
+							Mapping test = secondClassSet.getMapping(j);							
 						
 						
 							int sourceNode1 = candidate.getEntity1().getIndex();
@@ -392,15 +396,15 @@ public class UIMenu implements ActionListener {
 							}
 						}
 						
-						if( !foundDuplicate ) combinedClassSet.addAlignment(candidate);
+						if( !foundDuplicate ) combinedClassSet.addMapping(candidate);
 						
 					}
 
 					for( i = 0; i < secondClassSet.size(); i++ ) {
-						Mapping candidate = secondClassSet.getAlignment(i);
+						Mapping candidate = secondClassSet.getMapping(i);
 						boolean foundDuplicate = false;
 						for( j = 0; j < firstClassSet.size(); j++ ) {
-							Mapping test = firstClassSet.getAlignment(j);							
+							Mapping test = firstClassSet.getMapping(j);							
 						
 						
 							int sourceNode1 = candidate.getEntity1().getIndex();
@@ -416,7 +420,7 @@ public class UIMenu implements ActionListener {
 							}
 						}
 						
-						if( !foundDuplicate ) combinedClassSet.addAlignment(candidate);
+						if( !foundDuplicate ) combinedClassSet.addMapping(candidate);
 						
 					}
 					
@@ -425,10 +429,10 @@ public class UIMenu implements ActionListener {
 					
 					// double nested loop, later I will write a better algorithm -cos
 					for( i = 0; i < firstPropertiesSet.size(); i++ ) {
-						Mapping candidate = firstPropertiesSet.getAlignment(i);
+						Mapping candidate = firstPropertiesSet.getMapping(i);
 						boolean foundDuplicate = false;
 						for( j = 0; j < secondPropertiesSet.size(); j++ ) {
-							Mapping test = secondPropertiesSet.getAlignment(j);							
+							Mapping test = secondPropertiesSet.getMapping(j);							
 						
 						
 							int sourceNode1 = candidate.getEntity1().getIndex();
@@ -444,15 +448,15 @@ public class UIMenu implements ActionListener {
 							}
 						}
 						
-						if( !foundDuplicate ) combinedPropertiesSet.addAlignment(candidate);
+						if( !foundDuplicate ) combinedPropertiesSet.addMapping(candidate);
 						
 					}
 
 					for( i = 0; i < secondPropertiesSet.size(); i++ ) {
-						Mapping candidate = secondPropertiesSet.getAlignment(i);
+						Mapping candidate = secondPropertiesSet.getMapping(i);
 						boolean foundDuplicate = false;
 						for( j = 0; j < firstPropertiesSet.size(); j++ ) {
-							Mapping test = firstPropertiesSet.getAlignment(j);							
+							Mapping test = firstPropertiesSet.getMapping(j);							
 						
 						
 							int sourceNode1 = candidate.getEntity1().getIndex();
@@ -468,7 +472,7 @@ public class UIMenu implements ActionListener {
 							}
 						}
 						
-						if( !foundDuplicate ) combinedPropertiesSet.addAlignment(candidate);
+						if( !foundDuplicate ) combinedPropertiesSet.addMapping(candidate);
 						
 					}
 					
@@ -1058,6 +1062,11 @@ public class UIMenu implements ActionListener {
 		sealsItem.addActionListener(this);
 		toolsMenu.add(sealsItem);
 		
+		// Tools -> Clustering Evaluation
+		clusteringEvaluation = new JMenuItem("Clustering Evaluation");
+		clusteringEvaluation.addActionListener(this);
+		toolsMenu.addSeparator();
+		toolsMenu.add(clusteringEvaluation);
 		
 		// Build help menu in the menu bar.
 		helpMenu = new JMenu("Help");
