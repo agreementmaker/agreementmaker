@@ -45,7 +45,7 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	protected PairwiseConnectivityGraph pcg;
 	
 	public static final double MAX_PC = 1.0; // maximum value for propagation coefficient
-	public static final double DELTA = 0.2; // min value for differentiating two similarity vectors
+	public static final double DELTA = 0.1; // min value for differentiating two similarity vectors
 	public static final int MAX_ROUND = 10; // maximum numbers of rounds for fixpoint computation
 	
 	/**
@@ -370,20 +370,6 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 		 PCGVertex vert = pairTable.get(key);
 //		 System.out.println(pairTable.get(pairToCheck) != null);
 		 
-		 /*
-		 // COLLISION TEST --- to be eventually removed
-		 HashMap<Integer, Integer> test = new HashMap<Integer, Integer>();
-		 test.put(new Integer(1), new Integer(1));
-		 System.out.println(test.get(new Integer(1)) != null);
-		 System.out.println(test.get(new Integer(1)));
-		 test.put(new Integer(2), new Integer(2));
-		 System.out.println(test.get(new Integer(2)) != null);
-		 System.out.println(test.get(new Integer(2)));
-		 test.put(new Integer(1), new Integer(0));
-		 System.out.println(test.containsValue(new Integer(1)));
-		 System.out.println(test.get(new Integer(1)));
-		 */
-		 
 		 if(pairTable.get(key) != null){
 //			 	System.out.println("table has pair");
 				// there was already a node with that rdfNode
@@ -428,10 +414,22 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 			 // new round: computing new similarities
 			 round++;
 			 realMax = 0.0;
-			 Iterator<PCGVertex> iVert = pcg.vertices();
+			 Iterator<PCGVertex> iVert = null;
 			 PCGVertex vert = null;
 			 PCGVertex maxV = null;
 			 
+			 // update old value with new value of previous round
+			 iVert = pcg.vertices();
+			 if(round != 1){
+				 while(iVert.hasNext()){
+					 // take the current vertex
+					 vert = iVert.next();
+					 vert.getObject().setOldSimilarityValue(vert.getObject().getNewSimilarityValue());
+//					 if(true){System.out.println(vert.toString());}
+				 }
+			 }
+
+			 iVert = pcg.vertices();
 			 while(iVert.hasNext()){
 				 
 				 // take the current vertex
@@ -459,16 +457,7 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 			 normalizeSimilarities(round, pcg.vertices(), realMax, 0);
 			 System.out.println("realMax: " + realMax + " ------------------- " + "vert: " + maxV.toString() + "\n");
 			 
-			 // update old value with new value of previous round
-			 iVert = pcg.vertices();
-			 while(iVert.hasNext()){
-				 // take the current vertex
-				 vert = iVert.next();
-				 vert.getObject().setOldSimilarityValue(vert.getObject().getNewSimilarityValue());
-//				 if(true){System.out.println(vert.toString());}
-			 }
-			 
-			 createSimilarityMatrices();
+//			 createSimilarityMatrices();
 		 } while(!checkBaseCase(round, pcg.getSimValueVector(true), pcg.getSimValueVector(false)));
 	 }
 	 
