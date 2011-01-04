@@ -398,6 +398,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		
 		ClusteringMethod method = ClusterFactory.getMethodInstance(t, matcherList);
 		
+		if( method == null ) return; 
 		Cluster<Mapping> c = method.getCluster(currentSelectedMapping.x, currentSelectedMapping.y, type);
 		
 		
