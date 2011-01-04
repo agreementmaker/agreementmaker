@@ -105,7 +105,7 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 		
 		progressDisplay.appendToReport("Creating Induced Propagation Graph...");
 		createInducedPropagationGraph();
-		if( DEBUG_FLAG ) System.out.println(pcg.toString());
+		if( !DEBUG_FLAG ) System.out.println(pcg.toString());
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Computing Fixpoints...");
@@ -431,14 +431,11 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 			 Iterator<PCGVertex> iVert = pcg.vertices();
 			 PCGVertex vert = null;
 			 PCGVertex maxV = null;
+			 
 			 while(iVert.hasNext()){
 				 
 				 // take the current vertex
 				 vert = iVert.next();
-//				 if(true){System.out.println(vert.toString());}
-				 
-				 // update old value with new value of previous round
-				 vert.getObject().setOldSimilarityValue(vert.getObject().getNewSimilarityValue());
 //				 if(true){System.out.println(vert.toString());}
 				 
 				 // compute the new similarity value for that vertex
@@ -456,11 +453,21 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 					 realMax = Math.max(newSimilarity, realMax);
 					 
 				 }
-//				 if(true){System.out.println(vert.toString());}
+				 if(true){System.out.println(vert.toString());}
 			 }
 			 // normalize all the similarity values of all nodes (and updates oldSimilarities for next round
 			 normalizeSimilarities(round, pcg.vertices(), realMax, 0);
 			 System.out.println("realMax: " + realMax + " ------------------- " + "vert: " + maxV.toString() + "\n");
+			 
+			 // update old value with new value of previous round
+			 iVert = pcg.vertices();
+			 while(iVert.hasNext()){
+				 // take the current vertex
+				 vert = iVert.next();
+				 vert.getObject().setOldSimilarityValue(vert.getObject().getNewSimilarityValue());
+//				 if(true){System.out.println(vert.toString());}
+			 }
+			 
 			 createSimilarityMatrices();
 		 } while(!checkBaseCase(round, pcg.getSimValueVector(true), pcg.getSimValueVector(false)));
 	 }
@@ -593,6 +600,9 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	 }
 	 
 	 protected double sumIncomings(Iterator<DirectedGraphEdge<PCGEdgeData, PCGVertexData>> inIter){
+		 
+		 // TODO: fix oldSimValue
+		 
 		 double sum = 0.0, oldValue = 0.0, propCoeff = 0.0;
 		 PCGEdge currEdge = null;
 		 while(inIter.hasNext()){
@@ -602,8 +612,8 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 			 propCoeff = currEdge.getObject().getPropagationCoefficient();
 			 
 			 sum += (oldValue * propCoeff);
-//			 System.out.println(currEdge.getOrigin().getObject().toString() + " ---> " + currEdge.getDestination().getObject().toString());
-//			 System.out.println(oldValue + " " + propCoeff);
+			 System.out.println(currEdge.getOrigin().getObject().getStCouple().toString() + " ---> " + currEdge.getDestination().getObject().getStCouple().toString());
+			 System.out.println(oldValue + " " + propCoeff);
 		 }
 //		 System.out.println("---" + sum);
 		 return sum;
