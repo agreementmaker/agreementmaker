@@ -53,7 +53,7 @@ public class AnchorFloodMatcher extends SimilarityFloodingMatcher {
 	/**
 	 *
 	 */
-	@Override
+	//@Override
 	protected PCGVertexData selectInput(Pair<RDFNode, RDFNode> pair) {
 		OntResource sourceRes, targetRes;
 		double sim = 0.0;

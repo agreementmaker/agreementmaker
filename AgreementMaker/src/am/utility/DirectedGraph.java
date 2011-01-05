@@ -29,6 +29,34 @@ public class DirectedGraph<E extends DirectedGraphEdge<?, ?>, V extends Directed
 		edges    = new ArrayList<E>();
 	}
 	
+	/**
+	 * @return the vertices
+	 */
+	public ArrayList<V> getVertices() {
+		return vertices;
+	}
+
+	/**
+	 * @param vertices the vertices to set
+	 */
+	public void setVertices(ArrayList<V> vertices) {
+		this.vertices = vertices;
+	}
+
+	/**
+	 * @return the edges
+	 */
+	public ArrayList<E> getEdges() {
+		return edges;
+	}
+
+	/**
+	 * @param edges the edges to set
+	 */
+	public void setEdges(ArrayList<E> edges) {
+		this.edges = edges;
+	}
+
 	/* General Graph Methods */
 	public int numVertices() { return vertices.size(); }
 	public int numEdges()    { return edges.size(); }

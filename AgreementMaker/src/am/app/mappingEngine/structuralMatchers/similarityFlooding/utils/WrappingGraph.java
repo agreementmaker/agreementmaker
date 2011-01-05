@@ -3,6 +3,7 @@
  */
 package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
 
+import java.util.Collections;
 import java.util.HashMap;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -212,6 +213,10 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
     }
     
     // CHECKS FOR VERTEXES AND EDGE MANIPULATION //
+    
+    public void sortEdges(){
+    	Collections.sort(this.edges);
+    }
 
 	private WGraphEdge returnEdge(WGraphVertex origin,
 			WGraphVertex destination, RDFNode rdfNode) {

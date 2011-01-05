@@ -11,7 +11,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 /**
  * @author Michele Caci
  */
-public class WGraphEdge extends DirectedGraphEdge<String, RDFNode> {
+public class WGraphEdge extends DirectedGraphEdge<String, RDFNode> implements Comparable<WGraphEdge>{
 
 	public WGraphEdge(DirectedGraphVertex<RDFNode, String> orig,
 			DirectedGraphVertex<RDFNode, String> dest, String o) {
@@ -22,5 +22,15 @@ public class WGraphEdge extends DirectedGraphEdge<String, RDFNode> {
 		return " <" + this.getOrigin().getObject().toString() + " --- "
 					+ this.getObject().toString() + " --- "
 					+ this.getDestination().toString() + "> ";
+	}
+
+	@Override
+	public int compareTo(WGraphEdge anotherEdge) {
+		if(anotherEdge == null){
+			throw new NullPointerException();
+		}
+		else{
+			return this.getObject().compareTo(anotherEdge.getObject());
+		}
 	}
 }
