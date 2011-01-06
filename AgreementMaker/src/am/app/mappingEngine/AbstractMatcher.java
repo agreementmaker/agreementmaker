@@ -1342,8 +1342,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 											"Current duration: " + Utility.getFormattedTime(totalelapsed) + "\n" +  
 											"Time left ~: " + Utility.getFormattedTime(estimatedtimeleft) + "\n" +
 											"Total Duration ~: " + formattedTime + "\n" +
-											"Mappings >= threshold: " + tentativealignments + "\n" + 
-											"\nFree Memory: " + (Runtime.getRuntime().freeMemory() / (1024*1024)) + "mb\n");
+											"Mappings >= threshold: " + tentativealignments + "\n");
 			
 			lastTime = currentTime;
 			lastStepsDone = stepsDone;

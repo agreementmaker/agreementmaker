@@ -26,24 +26,15 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 	private JComboBox metricsCombo;
 	
 	private JLabel whichTermsLabel = new JLabel("For each concept a multi-words string is built considering several terms related to it.");
-	private JLabel conceptLabel = new JLabel("Consider concept's terms (localname, label, comment, seeAlso, isDefBy).");
-	private JCheckBox conceptCheck;
-	private JLabel neighbourLabel = new JLabel("Consider neighbours terms (parents, siblings, descendants).") ;
-	private JCheckBox  neighbourCheck;
-	private JLabel indLabel = new JLabel("Consider individuals.");
-	private JCheckBox indCheck;
-	private JLabel propLabel = new JLabel("If the concept is a class consider localnames of properties declared by this class");
-	private JCheckBox propCheck;
-	private JLabel classLabel = new JLabel("if the concept is a property consider localnames of classes declaring this property");
-	private JCheckBox classCheck;
-	private JLabel localLabel = new JLabel("Do not consider localnames (to be selected when they are just meaningless codes. It will affect all sources).");
-	private JCheckBox localCheck;
-
-	
-	private JCheckBox lexCheck;
-	private JLabel lexLabel = new JLabel("Use Lexicon definitions.");
-	private JCheckBox lexSynonymsCheck;
-	private JLabel lexSynonymsLabel = new JLabel("Use Lexicon synonyms.");
+	private JCheckBox chkConceptTerms = new JCheckBox("Consider concept's terms (localname, label, comment, seeAlso, isDefBy).");
+	private JCheckBox  neighbourCheck = new JCheckBox("Consider neighbours terms (parents, siblings, descendants).");
+	private JCheckBox indCheck = new JCheckBox("Consider individuals.");
+	private JCheckBox propCheck = new JCheckBox("If the concept is a class -> consider localnames of properties declared by this class");
+	private JCheckBox classCheck = new JCheckBox("If the concept is a property -> consider localnames of classes declaring this property");
+	private JCheckBox localCheck = new JCheckBox("Do not consider localnames (to be selected when they are just meaningless codes. It will affect all sources).");
+	private JCheckBox lexCheck = new JCheckBox("Use Lexicon definitions.");
+	private JCheckBox lexSynonymsCheck = new JCheckBox("Use Lexicon synonyms.");
+	private JCheckBox chkConsiderSuperClass = new JCheckBox("Consider super class labels.");
 	
 	/*
 	 * The constructor creates the GUI elements and adds 
@@ -59,23 +50,13 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 		
 
 
-		conceptCheck = new JCheckBox();
-		conceptCheck.setSelected(true);
-		neighbourCheck = new JCheckBox();
+		chkConceptTerms.setSelected(true);
 		neighbourCheck.setSelected(false);
-		indCheck = new JCheckBox();
 		indCheck.setSelected(false);
-		propCheck = new JCheckBox();
 		propCheck.setSelected(false);
-		classCheck = new JCheckBox();
 		classCheck.setSelected(false);
-		localCheck = new JCheckBox();
 		localCheck.setSelected(true);
-		
-		lexCheck = new JCheckBox();
 		lexCheck.setSelected(false);
-		
-		lexSynonymsCheck = new JCheckBox();
 		lexSynonymsCheck.setSelected(false);
 
 		//LAYOUT: grouplayout is already complicated but very flexible, plus in this case the matchers list is dynamic so it's even more complicated
@@ -97,17 +78,18 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 					)
 			.addComponent(whichTermsLabel)
 			.addGroup(layout.createSequentialGroup()
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 						.addComponent(lexCheck)
 						.addComponent(lexSynonymsCheck)
-						.addComponent(conceptCheck)
+						.addComponent(chkConceptTerms)
 						.addComponent(neighbourCheck) 
 						.addComponent(indCheck) 		
 						.addComponent(propCheck) 
 						.addComponent(classCheck) 
 						.addComponent(localCheck) 
+						.addComponent(chkConsiderSuperClass)
 					)
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+/*					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 						.addComponent(lexLabel)
 						.addComponent(lexSynonymsLabel)
 						.addComponent(conceptLabel) 	
@@ -116,7 +98,7 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 						.addComponent(propLabel) 
 						.addComponent(classLabel) 
 						.addComponent(localLabel) 	
-					)
+					)*/
 			)
 		);
 		// the Vertical group is the same structure as the horizontal group
@@ -131,39 +113,15 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 				.addGap(30)
 				.addComponent(whichTermsLabel)
 				.addGap(10)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(lexCheck) 			
-						.addComponent(lexLabel)
-						)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(lexSynonymsCheck) 			
-						.addComponent(lexSynonymsLabel)
-						)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(conceptCheck) 			
-						.addComponent(conceptLabel)
-						)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(neighbourCheck) 			
-						.addComponent(neighbourLabel)
-						)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(indCheck) 			
-						.addComponent(indLabel)
-						)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(propCheck) 			
-						.addComponent(propLabel)
-						)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(classCheck) 			
-						.addComponent(classLabel)
-						)
-				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(localCheck) 			
-						.addComponent(localLabel)
-						)
-						
+				.addComponent(lexCheck)
+				.addComponent(lexSynonymsCheck)
+				.addComponent(chkConceptTerms) 
+				.addComponent(neighbourCheck) 
+				.addComponent(indCheck)
+				.addComponent(propCheck)
+				.addComponent(classCheck)
+				.addComponent(localCheck)
+				.addComponent(chkConsiderSuperClass)
 						
 				.addGap(30)
 			);
@@ -179,10 +137,12 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 		parameters.considerNeighbors  = neighbourCheck.isSelected();
 		parameters.considerProperties     = propCheck.isSelected();
 		parameters.considerClasses   = classCheck.isSelected();
-		parameters.considerConcept = conceptCheck.isSelected();
+		parameters.considerConcept = chkConceptTerms.isSelected();
 		
 		parameters.useLexiconDefinitions = lexCheck.isSelected();
 		parameters.useLexiconSynonyms = lexSynonymsCheck.isSelected();
+		
+		parameters.considerSuperClass = chkConsiderSuperClass.isSelected();
 		
 		//normalization parameters are set in the MultiWordsParameters() because are not user input;
 		return parameters;
@@ -190,7 +150,7 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 	}
 	
 	public String checkParameters() {
-		if(!(indCheck.isSelected() || neighbourCheck.isSelected() || conceptCheck.isSelected() || propCheck.isSelected() || classCheck.isSelected())) {
+		if(!(indCheck.isSelected() || neighbourCheck.isSelected() || chkConceptTerms.isSelected() || propCheck.isSelected() || classCheck.isSelected())) {
 			return "At least one of the three terms sources must be selected.\n Select concept's or neighbours or individuals terms.";
 		}
 		return null;
