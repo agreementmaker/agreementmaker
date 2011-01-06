@@ -80,7 +80,6 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	/**
 	 * Similarity Flooding Algorithm. 
 	 * @see am.app.mappingEngine.AbstractMatcher#align(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes)
-	 * @author michele
 	 * NOTE: we are using graphs instead of arrayList
 	 */
 	 protected void align() throws Exception {
@@ -151,40 +150,39 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 		 Iterator<WGraphEdge> sourceIterator = sourceOnt.edges();
 		 Iterator<WGraphEdge> targetIterator = targetOnt.edges();
 		 
-		 WGraphEdge sCurrentEdge = null;
-		 WGraphEdge tCurrentEdge = null;
+		 WGraphEdge sEdge = null;
+		 WGraphEdge tEdge = null;
 		 
 			 while(sourceIterator.hasNext()){
-				 sCurrentEdge = sourceIterator.next();
+				 sEdge = sourceIterator.next();
 				 
 				 while(targetIterator.hasNext()){
-					 tCurrentEdge = targetIterator.next();
+					 tEdge = targetIterator.next();
 //					 System.out.println(sEdge.toString() + " " + tEdge.toString());
-		 				
 					 
 					 // condition where we add a new element in the pairwise connectivity graph:
 					 // comparison of predicates (now string labels)
-					 if(sCurrentEdge.getObject().compareTo(tCurrentEdge.getObject()) > 0){
+					 if(sEdge.getObject().compareTo(tEdge.getObject()) > 0){
 						// target property is smaller than source property (continue to cycle on target edges)
 						continue; 
 					 }
-					 else if(sCurrentEdge.getObject().equals(tCurrentEdge.getObject())){
+					 else if(sEdge.getObject().equals(tEdge.getObject())){
 						 // target property is equal to source property (go compute)
 						 if( ((SimilarityFloodingMatcherParameters)param).omitAnonymousNodes && 
-								 ( sCurrentEdge.getOrigin().getObject().isAnon() || sCurrentEdge.getDestination().getObject().isAnon() ||
-								   tCurrentEdge.getOrigin().getObject().isAnon() || tCurrentEdge.getDestination().getObject().isAnon() )  ) {
+								 ( sEdge.getOrigin().getObject().isAnon() || sEdge.getDestination().getObject().isAnon() ||
+								   tEdge.getOrigin().getObject().isAnon() || tEdge.getDestination().getObject().isAnon() )  ) {
 							// these nodes are anonymous
 							// parameter is set to not insert anonymous nodes
 							// do nothing
 						 } else {
 							 try{
-								 	String originKey = new String(sCurrentEdge.getOrigin().getObject().toString() + tCurrentEdge.getOrigin().getObject().toString());
-								 	String destinationKey = new String(sCurrentEdge.getDestination().getObject().toString() + tCurrentEdge.getDestination().getObject().toString());
+								 	String originKey = new String(sEdge.getOrigin().getObject().toString() + tEdge.getOrigin().getObject().toString());
+								 	String destinationKey = new String(sEdge.getDestination().getObject().toString() + tEdge.getDestination().getObject().toString());
 								 	
-					 				PCGVertex sourcePCGVertex = getPCGVertex(originKey, sCurrentEdge.getOrigin().getObject(), tCurrentEdge.getOrigin().getObject());
-						 			PCGVertex targetPCGVertex = getPCGVertex(destinationKey, sCurrentEdge.getDestination().getObject(), tCurrentEdge.getDestination().getObject());
-						 			PCGEdge pairEdge = new PCGEdge(sourcePCGVertex, targetPCGVertex, new PCGEdgeData(sCurrentEdge.getObject()));
-								 	System.out.println(sourcePCGVertex.toString() + " ---> " + pairEdge.getObject().getStProperty() + " ----> " + targetPCGVertex.toString());		 
+					 				PCGVertex sourcePCGVertex = getPCGVertex(originKey, sEdge.getOrigin().getObject(), tEdge.getOrigin().getObject());
+						 			PCGVertex targetPCGVertex = getPCGVertex(destinationKey, sEdge.getDestination().getObject(), tEdge.getDestination().getObject());
+						 			PCGEdge pairEdge = new PCGEdge(sourcePCGVertex, targetPCGVertex, new PCGEdgeData(sEdge.getObject()));
+//								 	System.out.println(sourcePCGVertex.toString() + " ---> " + pairEdge.getObject().getStProperty() + " ----> " + targetPCGVertex.toString());		 
 						 			insertEdgeInPCG(sourcePCGVertex,  // vertex
 								 		pairEdge,      		// edge
 								 		targetPCGVertex		// vertex
@@ -205,6 +203,78 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 				 }
 				 targetIterator = targetOnt.edges();
 			 }
+	 }
+	 
+	 protected void createPairwiseConnectivityGraphNew(WrappingGraph sourceOnt, WrappingGraph targetOnt){
+		 pcg = new PairwiseConnectivityGraph();
+		 
+		 WGraphEdge[] sourceVector = (WGraphEdge[]) sourceOnt.getEdges().toArray(new WGraphEdge[sourceOnt.getEdges().size()]);
+		 WGraphEdge[] targetVector = (WGraphEdge[]) targetOnt.getEdges().toArray(new WGraphEdge[targetOnt.getEdges().size()]);
+		 
+		 WGraphEdge sEdge = null;
+		 WGraphEdge tEdge = null;
+		 
+		 int targetNewIndex = 0;
+		 
+		 for(int i = 0; i < sourceVector.length; i++){
+			 sEdge = sourceVector[i];
+			 
+			 for(int j = targetNewIndex; j < targetVector.length; j++){
+				 tEdge = targetVector[j];
+				 
+				 System.out.println(sEdge.toString());
+				 System.out.println(tEdge.toString());
+				 System.out.println();
+				 
+				 // condition where we add a new element in the pairwise connectivity graph:
+				 // comparison of predicates (now string labels)
+/*				 if(sEdge.getObject().compareTo(tEdge.getObject()) > 0){
+					// target property is smaller than source property (continue to cycle on target edges)
+					continue; 
+				 }
+				 else*/ if(sEdge.getObject().equals(tEdge.getObject())){
+					 // target property is equal to source property (go compute)
+					 if( ((SimilarityFloodingMatcherParameters)param).omitAnonymousNodes && 
+							 ( sEdge.getOrigin().getObject().isAnon() || sEdge.getDestination().getObject().isAnon() ||
+							   tEdge.getOrigin().getObject().isAnon() || tEdge.getDestination().getObject().isAnon() )  ) {
+						// these nodes are anonymous
+						// parameter is set to not insert anonymous nodes
+						// do nothing
+					 } else {
+						 try{
+							 	String originKey = new String(sEdge.getOrigin().getObject().toString() + tEdge.getOrigin().getObject().toString());
+							 	String destinationKey = new String(sEdge.getDestination().getObject().toString() + tEdge.getDestination().getObject().toString());
+							 	
+				 				PCGVertex sourcePCGVertex = getPCGVertex(originKey, sEdge.getOrigin().getObject(), tEdge.getOrigin().getObject());
+					 			PCGVertex targetPCGVertex = getPCGVertex(destinationKey, sEdge.getDestination().getObject(), tEdge.getDestination().getObject());
+					 			PCGEdge pairEdge = new PCGEdge(sourcePCGVertex, targetPCGVertex, new PCGEdgeData(sEdge.getObject()));
+//							 	System.out.println(sourcePCGVertex.toString() + " ---> " + pairEdge.getObject().getStProperty() + " ----> " + targetPCGVertex.toString());		 
+					 			insertEdgeInPCG(sourcePCGVertex,  // vertex
+							 		pairEdge,      		// edge
+							 		targetPCGVertex		// vertex
+							 		);
+						 }
+						 catch(com.hp.hpl.jena.rdf.model.ResourceRequiredException e){
+							 e.printStackTrace();
+						 }
+					 }
+					 
+				 }
+				 else{
+					 // first condition is an array out of bound check
+					 // (since egdes are sorted we break the target cycle and go to the next source edge)
+					 if( ((i + 1) < sourceVector.length) && (sourceVector[i].equals(sourceVector[i+1])) ){
+						 
+					 }
+					 else{
+						 targetNewIndex = j;
+					 }
+					 break;
+				 }
+
+			 }
+		 }
+		 
 	 }
 	
 	/**
