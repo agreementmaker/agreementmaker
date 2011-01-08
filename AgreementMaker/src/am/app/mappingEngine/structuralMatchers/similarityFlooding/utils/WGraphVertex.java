@@ -11,7 +11,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
  * @author Michele Caci
  */
 public class WGraphVertex extends DirectedGraphVertex<RDFNode, String> {
-
+	
 	public WGraphVertex(RDFNode object) {
 		super(object);
 	}

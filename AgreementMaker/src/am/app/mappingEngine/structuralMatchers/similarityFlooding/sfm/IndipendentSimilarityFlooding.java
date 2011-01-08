@@ -6,7 +6,7 @@ package am.app.mappingEngine.structuralMatchers.similarityFlooding.sfm;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.SimilarityFloodingMatcher;
+import am.app.mappingEngine.structuralMatchers.similarityFlooding.FullGraphMatcher;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.SimilarityFloodingMatcherParameters;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertexData;
 import am.utility.Pair;
@@ -15,7 +15,7 @@ import am.utility.Pair;
  * @author michele
  *
  */
-public class SimilarityFlooding extends SimilarityFloodingMatcher {
+public class IndipendentSimilarityFlooding extends FullGraphMatcher {
 
 	/**
 	 * 
@@ -25,7 +25,7 @@ public class SimilarityFlooding extends SimilarityFloodingMatcher {
 	/**
 	 * 
 	 */
-	public SimilarityFlooding() {
+	public IndipendentSimilarityFlooding() {
 		super();
 		minInputMatchers = 0;
 		maxInputMatchers = 0;
@@ -34,7 +34,7 @@ public class SimilarityFlooding extends SimilarityFloodingMatcher {
 	/**
 	 * @param params_new
 	 */
-	public SimilarityFlooding(SimilarityFloodingMatcherParameters params_new) {
+	public IndipendentSimilarityFlooding(SimilarityFloodingMatcherParameters params_new) {
 		super(params_new);
 		minInputMatchers = 0;
 		maxInputMatchers = 0;

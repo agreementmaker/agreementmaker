@@ -6,6 +6,8 @@ package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
 import java.util.Collections;
 import java.util.HashMap;
 
+import am.utility.DirectedGraph;
+
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -18,8 +20,6 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
-import am.utility.DirectedGraph;
-
 /**
  * @author michele
  *
@@ -27,7 +27,8 @@ import am.utility.DirectedGraph;
 public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 	
 	/**
-	 * List of admitted properties
+	 * List of admitted properties: each element in the array has to be managed in the returnEdge method
+	 * (either when new element is inserted or removed) 
 	 */
 	private static String[] admittedProperties = {
 			RDFS.domain.toString(), RDFS.range.toString(),
@@ -99,11 +100,17 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
     			if( !(origin.getObject().isAnon() || destination.getObject().isAnon()) ){
     				WGraphEdge edgeNew = returnEdge(origin, destination, soln.get("y"));
         			
-        			// actual insertion
-        			this.insertEdge(edgeNew);
-        			
-        			origin.addOutEdge(edgeNew);
-        			destination.addInEdge(edgeNew);
+    				if(edgeNew != null){
+
+        				origin = (WGraphVertex) edgeNew.getOrigin();
+        				destination = (WGraphVertex) edgeNew.getDestination();
+    					
+	        			// actual insertion
+	        			this.insertEdge(edgeNew);
+	        			
+	        			origin.addOutEdge(edgeNew);
+	        			destination.addInEdge(edgeNew);
+    				}
     			}
     		}
     		break;
@@ -218,10 +225,10 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
     	Collections.sort(this.edges);
     }
 
-	private WGraphEdge returnEdge(WGraphVertex origin,
-			WGraphVertex destination, RDFNode rdfNode) {
+	private WGraphEdge returnEdge(WGraphVertex origin, WGraphVertex destination, RDFNode rdfNode) {
 		if(rdfNode == null){ // coming from the restriction
-			return new WGraphEdge(origin, destination, "hasRestrictedProperty"); // very similar to hasProperty
+//			return new WGraphEdge(origin, destination, "hasRestrictedProperty"); // very similar to hasProperty
+			return null;
 		}
 		else if(rdfNode.equals(RDFS.domain)){
 			return new WGraphEdge(destination, origin, "hasProperty");

@@ -14,7 +14,6 @@ public class PCGEdge extends DirectedGraphEdge<PCGEdgeData, PCGVertexData>{
 	
 	public PCGEdge(PCGVertex orig, PCGVertex dest, PCGEdgeData o) {
 		super(orig, dest, o);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**

@@ -6,7 +6,7 @@ package am.app.mappingEngine.structuralMatchers.similarityFlooding.anchorFlood;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.SimilarityFloodingMatcher;
+import am.app.mappingEngine.structuralMatchers.similarityFlooding.FullGraphMatcher;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.SimilarityFloodingMatcherParameters;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertexData;
 import am.app.ontology.Node;
@@ -16,7 +16,7 @@ import am.utility.Pair;
  * @author michele
  *
  */
-public class AnchorFloodMatcher extends SimilarityFloodingMatcher {
+public class AnchorFloodMatcher extends FullGraphMatcher {
 
 	/**
 	 * 

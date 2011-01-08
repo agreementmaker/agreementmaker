@@ -1,21 +1,15 @@
 /**
  * 
  */
-package am.app.mappingEngine.structuralMatchers.similarityFlooding;
+package am.app.mappingEngine.structuralMatchers;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.swing.JPanel;
-
-import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.structuralMatchers.similarityFlooding.SimilarityFloodingMatcherParameters;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdge;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdgeData;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertex;
@@ -27,25 +21,27 @@ import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.utility.DirectedGraphEdge;
 import am.utility.Pair;
-import am.visualization.matrixplot.MatrixPlotPanel;
+
+import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 /**
  * Similarity Flooding algorithm implementation.
  * @author Cosmin and Michele
- *
  */
-public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
+public abstract class SimilarityFlooding extends AbstractMatcher {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -3749229483504509029L;
+	private static final long serialVersionUID = -5964745776316412043L;
+
 	protected static final boolean DEBUG_FLAG = false;
 	
 	protected PairwiseConnectivityGraph pcg;
 	
 	public static final double MAX_PC = 1.0; // maximum value for propagation coefficient
-	public static final double DELTA = 0.1; // min value for differentiating two similarity vectors
+	public static final double DELTA = 0.01; // min value for differentiating two similarity vectors
 	public static final int MAX_ROUND = 10; // maximum numbers of rounds for fixpoint computation
 	
 	/**
@@ -59,8 +55,8 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	/**
 	 * 
 	 */
-	public SimilarityFloodingMatcher() {
-		super();
+	public SimilarityFlooding() {
+		pcg = new PairwiseConnectivityGraph();
 		pairTable = new HashMap<String, PCGVertex>();
 		needsParam = true; // we need to display the parameters panel.
 	}
@@ -68,65 +64,18 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	/**
 	 * @param params_new
 	 */
-	public SimilarityFloodingMatcher(SimilarityFloodingMatcherParameters params_new) {
-		super(params_new);
+	public SimilarityFlooding(SimilarityFloodingParameters params_new) {
+		pcg = new PairwiseConnectivityGraph();
 		pairTable = new HashMap<String, PCGVertex>();
 		needsParam = true; // we need to display the parameters panel.
 	}
-	
-	@Override 
-	public AbstractMatcherParametersPanel getParametersPanel() { return new SimilarityFloodingParametersPanel(); };
 	
 	/**
 	 * Similarity Flooding Algorithm. 
 	 * @see am.app.mappingEngine.AbstractMatcher#align(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes)
 	 * NOTE: we are using graphs instead of arrayList
 	 */
-	 protected void align() throws Exception {
-		progressDisplay.clearReport();
-		loadSimilarityMatrices();
-		
-		// cannot align just one ontology (this is here to catch improper invocations)
-		if( sourceOntology == null ) throw new NullPointerException("sourceOntology == null");   
-		if( targetOntology == null ) throw new NullPointerException("targetOntology == null");
-		
-		progressDisplay.appendToReport("Creating Wrapping Graphs...");
-		WrappingGraph sourceGraph = new WrappingGraph(sourceOntology.getModel());
-		WrappingGraph targetGraph = new WrappingGraph(targetOntology.getModel());
-		if( DEBUG_FLAG ) System.out.println(sourceGraph.toString());
-		if( DEBUG_FLAG ) System.out.println(targetGraph.toString());
-		progressDisplay.appendToReport("done.\n");
-		
-		progressDisplay.appendToReport("Sorting Wrapping Graphs...");
-		sourceGraph.sortEdges();
-		targetGraph.sortEdges();
-		if( !DEBUG_FLAG ) System.out.println(sourceGraph.toString());
-		if( !DEBUG_FLAG ) System.out.println(targetGraph.toString());
-		progressDisplay.appendToReport("done.\n");
-		
-		progressDisplay.appendToReport("Creating Pairwise Connectivity Graph...");
-		createPairwiseConnectivityGraph(sourceGraph, targetGraph);
-		if( DEBUG_FLAG ) System.out.println(pcg.toString());
-		progressDisplay.appendToReport("done.\n");
-		
-		progressDisplay.appendToReport("Creating Induced Propagation Graph...");
-		createInducedPropagationGraph();
-		if( DEBUG_FLAG ) System.out.println(pcg.toString());
-		progressDisplay.appendToReport("done.\n");
-		
-		progressDisplay.appendToReport("Computing Fixpoints...");
-		computeFixpoint();
-		progressDisplay.appendToReport("done.\n");
-		
-		progressDisplay.appendToReport("Creating Similarity Matrices...");
-		createSimilarityMatrices();
-		progressDisplay.appendToReport("done.\n");
-		
-		progressDisplay.appendToReport("Computing Relative Similarities...");
-		computeRelativeSimilarities();
-		progressDisplay.appendToReport("done.\n");
-		
-	 }
+	 protected abstract void align() throws Exception;
 	 
 	 /* *********************************************************************************** */
 	 /* 							PAIRWISE CONNECTIVITY GRAPH OPERATIONS					*/
@@ -145,8 +94,7 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	  *  	     PCGEdge
 	  */
 	 protected void createPairwiseConnectivityGraph(WrappingGraph sourceOnt, WrappingGraph targetOnt){
-		 pcg = new PairwiseConnectivityGraph();
-		 
+
 		 Iterator<WGraphEdge> sourceIterator = sourceOnt.edges();
 		 Iterator<WGraphEdge> targetIterator = targetOnt.edges();
 		 
@@ -204,90 +152,17 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 				 targetIterator = targetOnt.edges();
 			 }
 	 }
-	 
-	 protected void createPairwiseConnectivityGraphNew(WrappingGraph sourceOnt, WrappingGraph targetOnt){
-		 pcg = new PairwiseConnectivityGraph();
-		 
-		 WGraphEdge[] sourceVector = (WGraphEdge[]) sourceOnt.getEdges().toArray(new WGraphEdge[sourceOnt.getEdges().size()]);
-		 WGraphEdge[] targetVector = (WGraphEdge[]) targetOnt.getEdges().toArray(new WGraphEdge[targetOnt.getEdges().size()]);
-		 
-		 WGraphEdge sEdge = null;
-		 WGraphEdge tEdge = null;
-		 
-		 int targetNewIndex = 0;
-		 
-		 for(int i = 0; i < sourceVector.length; i++){
-			 sEdge = sourceVector[i];
-			 
-			 for(int j = targetNewIndex; j < targetVector.length; j++){
-				 tEdge = targetVector[j];
-				 
-				 System.out.println(sEdge.toString());
-				 System.out.println(tEdge.toString());
-				 System.out.println();
-				 
-				 // condition where we add a new element in the pairwise connectivity graph:
-				 // comparison of predicates (now string labels)
-/*				 if(sEdge.getObject().compareTo(tEdge.getObject()) > 0){
-					// target property is smaller than source property (continue to cycle on target edges)
-					continue; 
-				 }
-				 else*/ if(sEdge.getObject().equals(tEdge.getObject())){
-					 // target property is equal to source property (go compute)
-					 if( ((SimilarityFloodingMatcherParameters)param).omitAnonymousNodes && 
-							 ( sEdge.getOrigin().getObject().isAnon() || sEdge.getDestination().getObject().isAnon() ||
-							   tEdge.getOrigin().getObject().isAnon() || tEdge.getDestination().getObject().isAnon() )  ) {
-						// these nodes are anonymous
-						// parameter is set to not insert anonymous nodes
-						// do nothing
-					 } else {
-						 try{
-							 	String originKey = new String(sEdge.getOrigin().getObject().toString() + tEdge.getOrigin().getObject().toString());
-							 	String destinationKey = new String(sEdge.getDestination().getObject().toString() + tEdge.getDestination().getObject().toString());
-							 	
-				 				PCGVertex sourcePCGVertex = getPCGVertex(originKey, sEdge.getOrigin().getObject(), tEdge.getOrigin().getObject());
-					 			PCGVertex targetPCGVertex = getPCGVertex(destinationKey, sEdge.getDestination().getObject(), tEdge.getDestination().getObject());
-					 			PCGEdge pairEdge = new PCGEdge(sourcePCGVertex, targetPCGVertex, new PCGEdgeData(sEdge.getObject()));
-//							 	System.out.println(sourcePCGVertex.toString() + " ---> " + pairEdge.getObject().getStProperty() + " ----> " + targetPCGVertex.toString());		 
-					 			insertEdgeInPCG(sourcePCGVertex,  // vertex
-							 		pairEdge,      		// edge
-							 		targetPCGVertex		// vertex
-							 		);
-						 }
-						 catch(com.hp.hpl.jena.rdf.model.ResourceRequiredException e){
-							 e.printStackTrace();
-						 }
-					 }
-					 
-				 }
-				 else{
-					 // first condition is an array out of bound check
-					 // (since egdes are sorted we break the target cycle and go to the next source edge)
-					 if( ((i + 1) < sourceVector.length) && (sourceVector[i].equals(sourceVector[i+1])) ){
-						 
-					 }
-					 else{
-						 targetNewIndex = j;
-					 }
-					 break;
-				 }
-
-			 }
-		 }
-		 
-	 }
 	
 	/**
 	 * This method inserts a new "triple" in the PairwiseConnectivityGraph.
 	 * A triple is a ( PCGVertex, PCGEdge, PCGVertex ).
 	 */
-	private void insertEdgeInPCG(PCGVertex sourcePCGVertex, PCGEdge pairEdge, PCGVertex targetPCGVertex) {
+	protected void insertEdgeInPCG(PCGVertex sourcePCGVertex, PCGEdge pairEdge, PCGVertex targetPCGVertex) {
 		
 		sourcePCGVertex.addOutEdge(pairEdge);
 		targetPCGVertex.addInEdge(pairEdge);
 		
 		pcg.insertEdge(pairEdge);
-		
 	}
 
 	/**
@@ -297,7 +172,7 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	  * @param t
 	  * @return Returns null if no PCGVertex exists.
 	  */	 
-	 private PCGVertex getPCGVertex(String key, RDFNode s, RDFNode t){
+	 protected PCGVertex getPCGVertex(String key, RDFNode s, RDFNode t){
 		 
 		 PCGVertex vert = pairTable.get(key);
 //		 System.out.println(pairTable.get(pairToCheck) != null);
@@ -346,7 +221,7 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 			 maxSimilarity = 0.0;
 			 Iterator<PCGVertex> iVert = null;
 			 PCGVertex vert = null;
-//			 PCGVertex maxV = null;
+			 PCGVertex maxV = null;
 			 
 			 // update old value with new value of previous round
 			 iVert = pcg.vertices();
@@ -373,18 +248,18 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 				 vert.getObject().setNewSimilarityValue(newSimilarity);
 				 				
 				 if(maxSimilarity <= newSimilarity){
-//					 maxV = vert;
+					 maxV = vert;
 					 maxSimilarity = newSimilarity;
 //					 System.out.println("maxSim: " + maxSimilarity + " ------------------- " + "maxV: " + maxV.toString() + "\n");
 					 
 				 }
-//				 if(true){System.out.println(vert.toString());}
+				 if(true){System.out.println(vert.toString());}
 			 }
 			 // normalize all the similarity values of all nodes (and updates oldSimilarities for next round
-//			 System.out.println("maxSim: " + maxSimilarity + " ------------------- " + "maxV: " + maxV.toString() + "\n");
+			 System.out.println("maxSim: " + maxSimilarity + " ------------------- " + "maxV: " + maxV.toString() + "\n");
 			 normalizeSimilarities(pcg.vertices(), maxSimilarity);
 			 
-		 } while(!checkBaseCase(round, pcg.getSimValueVector(true), pcg.getSimValueVector(false)));
+		 } while(!checkStopCondition(round, pcg.getSimValueVector(true), pcg.getSimValueVector(false)));
 	 }
 	 
 	 /* *********************************************************************************** */
@@ -483,7 +358,7 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	 /**
 	  * 
 	  */
-	 protected boolean checkBaseCase(int round, Vector<Double> simVectBefore, Vector<Double> simVectAfter){
+	 protected boolean checkStopCondition(int round, Vector<Double> simVectBefore, Vector<Double> simVectAfter){
 //		 System.out.println(round);
 //		 System.out.println(simVectBefore.toString() );
 //		 System.out.println(simVectAfter.toString() );
@@ -500,7 +375,7 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 			 diff = simVectBefore.get(i) - simVectAfter.get(i);
 			 simD += (diff * diff);
 		 }
-//		 System.out.println("delta: " + Math.sqrt(simD));
+		 System.out.println("delta: " + Math.sqrt(simD));
 		 return Math.sqrt(simD);
 	 }
 	 
@@ -634,7 +509,7 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	/* 				SIMILARITY MATRICES CREATION 			*/
 	/* *************************************************** */
 	 
-	 protected void createSimilarityMatrices(){
+	 protected void populateSimilarityMatrices(){
 		 Iterator<PCGVertex> iVert = pcg.vertices();
 		 PCGVertex currentVert = null;
 		 while(iVert.hasNext()){
@@ -675,7 +550,7 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 			 
 		 }
 		 
-		 // Creating plots for classes and properties
+		 /*/ Creating plots for classes and properties
 		 MatrixPlotPanel mp;
 		 
 		 mp = new MatrixPlotPanel( null, getClassesMatrix(), null);
@@ -689,7 +564,7 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 		 JPanel plotPanelP = new JPanel();
 		 plotPanelP.add(mp);
 		 Core.getUI().addTab("MatrixPlot Properties", null , plotPanelP , this.getName().toString());
-
+		*/
 	 }
 	 
 	 
@@ -752,5 +627,6 @@ public abstract class SimilarityFloodingMatcher extends AbstractMatcher {
 	 protected abstract void loadSimilarityMatrices();
 	
 	 protected abstract PCGVertexData selectInput(Pair<RDFNode, RDFNode> pair);
-
+	 
+	 
 }
