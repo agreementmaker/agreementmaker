@@ -22,7 +22,8 @@ import am.app.mappingEngine.oaei2009.OAEI2009matcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.ssc.SiblingsSimilarityContributionMatcher;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.SimilarityFloodingMatcher;
+import am.app.mappingEngine.structuralMatchers.similarityFlooding.FullGraphMatcher;
+import am.app.mappingEngine.structuralMatchers.similarityFloodingDC.PartialGraphMatcher;
 import am.app.mappingEngine.testMatchers.AllOneMatcher;
 import am.app.mappingEngine.testMatchers.AllZeroMatcher;
 import am.app.mappingEngine.testMatchers.CopyMatcher;
@@ -50,7 +51,8 @@ public enum MatchersRegistry {
 	 * And so, if your matcher is has no code errors, it will be incorporated into the AgreementMaker.  - Cosmin
 	 */
 	//
-	SimilarityFlooding  ( "SFM", "Similarity Flooding Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.sfm.SimilarityFlooding.class ),
+	PartialGraph		( "PGM", "Partial Graph Matcher", PartialGraphMatcher.class, MatcherCategory.STRUCTURAL ),
+	SimilarityFlooding  ( "SFM", "Similarity Flooding Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.sfm.IndipendentSimilarityFlooding.class ),
 	AnchorFlood			( "AFM", "AnchorFlood Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.anchorFlood.AnchorFloodMatcher.class ),
 	OAEI2010			( "OAEI-10", "OAEI 2010 Matcher", am.app.mappingEngine.oaei2010.OAEI2010Matcher.class, MatcherCategory.HYBRID),
 	IterativeMatcher	( "IISM", "Instance-based Iterator", am.app.mappingEngine.instance.IterativeMatcher.class),
