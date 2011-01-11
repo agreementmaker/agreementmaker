@@ -2,6 +2,7 @@ package am.app.mappingEngine;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
@@ -219,12 +220,30 @@ public class SimilarityMatrix implements Serializable
 		return false;
 	}
 	
+	@Override
 	public Object clone(){
 		SimilarityMatrix matrix = new SimilarityMatrix(this);
 		return matrix;
 	}
     
-    
+	public Vector<Mapping> toMappingArray(){
+		Vector<Mapping> mappingArray = new Vector<Mapping>(getRows() * getColumns());
+		for(int i = 0; i < getRows(); i++){
+			for(int j = 0; j < getColumns(); j++){
+				mappingArray.add(this.get(i, j));
+			}
+		}
+		return mappingArray;
+    }
+	
+	
+	public Vector<Double> toSimilarityArray(Vector<Mapping> mapsArray){
+		Vector<Double> similarityArray = new Vector<Double>();
+		for(int i = 0; i < mapsArray.size(); i++){
+			similarityArray.add(mapsArray.get(i).getSimilarity());
+		}
+		return similarityArray;
+    }
     
     /**GENERAL FUNCTIONS FOR MATRIX NOT NEEDED NOW BUT MAY BE USEFUL IN THE FUTUR*/
 
@@ -443,8 +462,9 @@ public class SimilarityMatrix implements Serializable
 	/**
 	 * fillMatrix: fill the matrix with one value
 	 * @param val value to fill the matrix with
-	 * @author michele 
+	 * @author michele
 	 */
+	@Deprecated
 	public void fillMatrix(double val){
 		// create M-by-N matrix of the selected value
 		assert (val >= 0 && val <= 1);
@@ -461,6 +481,30 @@ public class SimilarityMatrix implements Serializable
 	    	}
 	    }
 	}
+	
+	/**
+	 * fillMatrix: fill the matrix with one value
+	 * @param val value to fill the matrix with
+	 * @author michele
+	 * TODO: there yet is no check on whether the matrix is the classes matrix or the properties matrix 
+	 * (and so on the size of the list versus the size of the rows and columns)
+	 */
+	public void fillMatrix(double val, ArrayList<Node> s, ArrayList<Node> t){
+		assert (val >= 0 && val <= 1);
+		
+		// create M-by-N matrix of the selected value
+		Node sourceNode, targetNode;
+		
+	    for(int i = 0; i < this.getRows(); i++){
+	    	sourceNode = s.get(i);
+	    	for(int j = 0; j < this.getColumns(); j++){
+	    		targetNode = t.get(j);
+	    		
+	    		set(i, j, new Mapping(sourceNode, targetNode, val));
+	    	}
+	    }
+	}
+	
 	// TODO: Make the max value update when populating the matrix. 
 	public double getMaxValue() {
 		double max = 0.0;

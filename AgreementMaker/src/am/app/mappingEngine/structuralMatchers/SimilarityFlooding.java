@@ -247,7 +247,7 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 double maxSimilarity = 0.0, newSimilarity = 0.0;
 		 PCGVertex vert = null;
 		 @SuppressWarnings("unused")
-		PCGVertex maxV = null;
+		 PCGVertex maxV = null;
 		 
 		 while(iVert.hasNext()){
 			 
@@ -390,7 +390,7 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 			 diff = simVectBefore.get(i) - simVectAfter.get(i);
 			 simD += (diff * diff);
 		 }
-//		 System.out.println("delta: " + Math.sqrt(simD));
+		 System.out.println("delta: " + Math.sqrt(simD));
 		 return Math.sqrt(simD);
 	 }
 	 
