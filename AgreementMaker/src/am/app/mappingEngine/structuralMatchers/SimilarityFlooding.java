@@ -9,6 +9,7 @@ import java.util.Vector;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.SimilarityFloodingMatcherParameters;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdge;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdgeData;
@@ -16,6 +17,7 @@ import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVerte
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertexData;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PairwiseConnectivityGraph;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphEdge;
+import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphVertex;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -42,7 +44,7 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	
 	public static final double MAX_PC = 1.0; // maximum value for propagation coefficient
 	public static final double DELTA = 0.01; // min value for differentiating two similarity vectors
-	public static final int MAX_ROUND = 10; // maximum numbers of rounds for fixpoint computation
+	public static final int ROUND_MAX = 10; // maximum numbers of rounds for fixpoint computation
 	
 	/**
 	 * given two nodes named origin and destination we have a list of the possible 
@@ -50,7 +52,7 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	 */
 	private enum Direction{ORIG2DEST, DEST2ORIG};
 	
-	private HashMap<String, PCGVertex> pairTable;
+	protected HashMap<String, PCGVertex> pairTable;
 
 	/**
 	 * 
@@ -124,11 +126,8 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 							// do nothing
 						 } else {
 							 try{
-								 	String originKey = new String(sEdge.getOrigin().getObject().toString() + tEdge.getOrigin().getObject().toString());
-								 	String destinationKey = new String(sEdge.getDestination().getObject().toString() + tEdge.getDestination().getObject().toString());
-								 	
-					 				PCGVertex sourcePCGVertex = getPCGVertex(originKey, sEdge.getOrigin().getObject(), tEdge.getOrigin().getObject());
-						 			PCGVertex targetPCGVertex = getPCGVertex(destinationKey, sEdge.getDestination().getObject(), tEdge.getDestination().getObject());
+					 				PCGVertex sourcePCGVertex = getPCGVertex((WGraphVertex)sEdge.getOrigin(), (WGraphVertex)tEdge.getOrigin());
+						 			PCGVertex targetPCGVertex = getPCGVertex((WGraphVertex)sEdge.getDestination(), (WGraphVertex)tEdge.getDestination());
 						 			PCGEdge pairEdge = new PCGEdge(sourcePCGVertex, targetPCGVertex, new PCGEdgeData(sEdge.getObject()));
 //								 	System.out.println(sourcePCGVertex.toString() + " ---> " + pairEdge.getObject().getStProperty() + " ----> " + targetPCGVertex.toString());		 
 						 			insertEdgeInPCG(sourcePCGVertex,  // vertex
@@ -172,24 +171,24 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	  * @param t
 	  * @return Returns null if no PCGVertex exists.
 	  */	 
-	 protected PCGVertex getPCGVertex(String key, RDFNode s, RDFNode t){
+	 protected PCGVertex getPCGVertex(WGraphVertex s, WGraphVertex t){
 		 
+		 String key = new String(s.getObject().toString() + t.getObject().toString());
 		 PCGVertex vert = pairTable.get(key);
 //		 System.out.println(pairTable.get(pairToCheck) != null);
 		 
 		 // there was already a vertex in the table (do nothing)
 		 if(pairTable.get(key) != null){
-//			 	System.out.println("table has pair");
-			}
-		// there wasn't already that vertex (create it)
-		else{
-			vert = new PCGVertex(new PCGVertexData(new Pair<RDFNode, RDFNode>(s, t)));
-//			System.out.println(vertNew.toString());
-			// add it to the list
-			pcg.insertVertex(vert);
-			// add it to the map of nodes (we will always include it in the set of nodes to search in)
-			pairTable.put(key, vert);
-		}
+		 }
+		 // there wasn't already that vertex (create it)
+		 else{
+			 vert = new PCGVertex(s, t);
+//			 System.out.println(vertNew.toString());
+			 // add it to the list
+			 pcg.insertVertex(vert);
+			 // add it to the map of nodes (we will always include it in the set of nodes to search in)
+			 pairTable.put(key, vert);
+		 }
 		 return vert;
 	 }
 
@@ -207,61 +206,74 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 createBackwardEdges();
 	 }
 	 
-	 /**
-	  * 
-	  */
+	 /* *********************************************************************************** */
+	 /*		 							COMPUTING THE FIXPOINT								*/
+	 /* *********************************************************************************** */
+	 
 	 protected void computeFixpoint(){
 		 int round = 0;
-		 double maxSimilarity = 0.0, newSimilarity = 0.0;
+		 double maxSimilarity = 0.0;
 		 
-		 // base case checked: stop computation. Either we reached the fixpoint or we overcame the limit;
 		 do {
-			 // new round: computing new similarities
+			 // new round starts
 			 round++;
-			 maxSimilarity = 0.0;
-			 Iterator<PCGVertex> iVert = null;
-			 PCGVertex vert = null;
-			 PCGVertex maxV = null;
 			 
 			 // update old value with new value of previous round
-			 iVert = pcg.vertices();
-			 if(round != 1){
-				 while(iVert.hasNext()){
-					 // take the current vertex
-					 vert = iVert.next();
-					 vert.getObject().setOldSimilarityValue(vert.getObject().getNewSimilarityValue());
-//					 if(true){System.out.println(vert.toString());}
-				 }
-			 }
-
-			 iVert = pcg.vertices();
-			 while(iVert.hasNext()){
-				 
-				 // take the current vertex
-				 vert = iVert.next();
-//				 if(true){System.out.println(vert.toString());}
-				 
-				 // compute the new similarity value for that vertex
-				 newSimilarity = computeFixpointPerVertex(vert);
-				 
-				 // store it inside the vertex
-				 vert.getObject().setNewSimilarityValue(newSimilarity);
-				 				
-				 if(maxSimilarity <= newSimilarity){
-					 maxV = vert;
-					 maxSimilarity = newSimilarity;
-//					 System.out.println("maxSim: " + maxSimilarity + " ------------------- " + "maxV: " + maxV.toString() + "\n");
-					 
-				 }
-				 if(true){System.out.println(vert.toString());}
-			 }
-			 // normalize all the similarity values of all nodes (and updates oldSimilarities for next round
-			 System.out.println("maxSim: " + maxSimilarity + " ------------------- " + "maxV: " + maxV.toString() + "\n");
-			 normalizeSimilarities(pcg.vertices(), maxSimilarity);
+			 updateOldSimValues(pcg.vertices(), round);
 			 
+			 // compute fixpoint round and max value per that round
+			 maxSimilarity = computeFixpointRound(pcg.vertices());
+			 
+			 // normalize all the similarity values of all nodes
+			 normalizeSimilarities(pcg.vertices(), maxSimilarity);
+
+			// stop condition check: delta or maxRound
 		 } while(!checkStopCondition(round, pcg.getSimValueVector(true), pcg.getSimValueVector(false)));
 	 }
 	 
+	 private void updateOldSimValues(Iterator<PCGVertex> iVert, int round){
+		 PCGVertex vert = null;
+		 if(round != 1){
+			 while(iVert.hasNext()){
+				 // take the current vertex
+				 vert = iVert.next();
+				 vert.getObject().setOldSimilarityValue(vert.getObject().getNewSimilarityValue());
+//				 if(true){System.out.println(vert.toString());}
+			 }
+		 }
+	 }
+	 
+	 protected double computeFixpointRound(Iterator<PCGVertex> iVert){
+		 double maxSimilarity = 0.0, newSimilarity = 0.0;
+		 PCGVertex vert = null;
+		 @SuppressWarnings("unused")
+		PCGVertex maxV = null;
+		 
+		 while(iVert.hasNext()){
+			 
+			 // take the current vertex
+			 vert = iVert.next();
+//			 if(true){System.out.println(vert.toString());}
+			 
+			 // compute the new similarity value for that vertex
+			 newSimilarity = computeFixpointPerVertex(vert);
+			 
+			 // store it inside the vertex
+			 vert.getObject().setNewSimilarityValue(newSimilarity);
+			 				
+			 // track the maximum similarity
+			 if(maxSimilarity < newSimilarity){
+				 maxV = vert;
+				 maxSimilarity = newSimilarity;
+//				 System.out.println("maxSim: " + maxSimilarity + " ------------------- " + "maxV: " + maxV.toString() + "\n");
+				 
+			 }
+//			 if(true){System.out.println(vert.toString());}
+//			 System.out.println("maxSim: " + maxSimilarity + " ------------------- " + "maxV: " + maxV.toString() + "\n");
+		 }
+		 return maxSimilarity;
+	 }
+
 	 /* *********************************************************************************** */
 	 /* 							INDUCED PROPAGATION GRAPH OPERATIONS					*/
 	 /* *********************************************************************************** */
@@ -355,15 +367,18 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 }
 	 }
 	 
+	 protected boolean checkStopCondition(int round, Vector<Double> simVectBefore, Vector<Double> simVectAfter){
+		return checkStopCondition(round, ROUND_MAX, simVectBefore, simVectAfter);
+	 }
 	 /**
 	  * 
 	  */
-	 protected boolean checkStopCondition(int round, Vector<Double> simVectBefore, Vector<Double> simVectAfter){
+	 protected boolean checkStopCondition(int round, int max_round, Vector<Double> simVectBefore, Vector<Double> simVectAfter){
 //		 System.out.println(round);
 //		 System.out.println(simVectBefore.toString() );
 //		 System.out.println(simVectAfter.toString() );
 //		 System.out.println(simDistance(simVectBefore, simVectAfter) );
-		 return ((round > MAX_ROUND) || (simDistance(simVectBefore, simVectAfter) < DELTA));
+		 return ((round > max_round) || (simDistance(simVectBefore, simVectAfter) < DELTA));
 	 }
 
 	 protected double simDistance(Vector<Double> simVectBefore, Vector<Double> simVectAfter){
@@ -375,7 +390,7 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 			 diff = simVectBefore.get(i) - simVectAfter.get(i);
 			 simD += (diff * diff);
 		 }
-		 System.out.println("delta: " + Math.sqrt(simD));
+//		 System.out.println("delta: " + Math.sqrt(simD));
 		 return Math.sqrt(simD);
 	 }
 	 
@@ -469,55 +484,40 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		  * working on similarity matrices only
 		  * TODO: (improvement) works on one SimilarityMatrix at a time given as parameter
 		  */
-		 protected void computeRelativeSimilarities(){
+		 protected void computeRelativeSimilarities(SimilarityMatrix matrix){
 			 
 			 double max = 0;
 			 double oldValue = 0;
 			 Mapping current = null;
 			 
-			 for(int i = 0; i < classesMatrix.getRows(); i++){
-				 max = classesMatrix.getRowMaxValues(i, 1)[0].getSimilarity();
+			 for(int i = 0; i < matrix.getRows(); i++){
+				 max = matrix.getRowMaxValues(i, 1)[0].getSimilarity();
 				 
-				 for(int j = 0; j < classesMatrix.getColumns(); j++){
+				 for(int j = 0; j < matrix.getColumns(); j++){
 					 
-					 current = classesMatrix.get(i, j);
+					 current = matrix.get(i, j);
 					 if(current != null){
 						 oldValue = current.getSimilarity();
-						 classesMatrix.get(i, j).setSimilarity(oldValue/max);
+						 matrix.get(i, j).setSimilarity(oldValue/max);
 					 }
 					 
 				 }
 			 }
-			 
-			 for(int i = 0; i < propertiesMatrix.getRows(); i++){
-				 max = propertiesMatrix.getRowMaxValues(i, 1)[0].getSimilarity();
-				 
-				 for(int j = 0; j < propertiesMatrix.getColumns(); j++){
-					 
-					 current = propertiesMatrix.get(i, j);
-					 if(current != null){
-						 oldValue = current.getSimilarity();
-						 propertiesMatrix.get(i, j).setSimilarity(oldValue/max);
-					 }
-					 
-				 }
-			 }
-			 
 		 }
 
 	 /* *************************************************** */
 	/* 				SIMILARITY MATRICES CREATION 			*/
 	/* *************************************************** */
 	 
-	 protected void populateSimilarityMatrices(){
+	 protected void populateSimilarityMatrices(PairwiseConnectivityGraph pcg){
 		 Iterator<PCGVertex> iVert = pcg.vertices();
 		 PCGVertex currentVert = null;
 		 while(iVert.hasNext()){
 			 currentVert = iVert.next();
 			 
 			 // take both source and target ontResources (values can be null, means not possible to take resources
-			 OntResource sourceRes = getOntResourceFromRDFNode(currentVert.getObject().getStCouple().getLeft());
-			 OntResource targetRes = getOntResourceFromRDFNode(currentVert.getObject().getStCouple().getRight());
+			 OntResource sourceRes = getOntResourceFromRDFNode(currentVert.getObject().getStCouple().getLeft().getObject());
+			 OntResource targetRes = getOntResourceFromRDFNode(currentVert.getObject().getStCouple().getRight().getObject());
 			 if(sourceRes != null && targetRes != null){
 				
 				 Mapping m;

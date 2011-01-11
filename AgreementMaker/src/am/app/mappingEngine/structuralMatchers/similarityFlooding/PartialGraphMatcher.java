@@ -1,18 +1,16 @@
-package am.app.mappingEngine.structuralMatchers.similarityFloodingDC;
+package am.app.mappingEngine.structuralMatchers.similarityFlooding;
 
 import java.util.HashMap;
 import java.util.Iterator;
 
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.structuralMatchers.SimilarityFlooding;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.SimilarityFloodingMatcherParameters;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.SimilarityFloodingParametersPanel;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdge;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdgeData;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertex;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertexData;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PairwiseConnectivityGraph;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphEdge;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphVertex;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
@@ -30,6 +28,8 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 	
 	private HashMap<String, PCGEdge> edgesMap;
 	private enum EdgeDirection{IN, OUT};
+	
+	public static final int ROUND_MAX = 2; // maximum numbers of rounds for fixpoint computation
 
 	/**
 	 * 
@@ -56,8 +56,10 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 	 */
 	@Override
 	 protected void align() {
-		 try{
+
 		progressDisplay.clearReport();
+		
+		// load the matrices
 		loadSimilarityMatrices();
 		
 		// cannot align just one ontology (this is here to catch improper invocations)
@@ -71,110 +73,118 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 		if( DEBUG_FLAG ) System.out.println(targetGraph.toString());
 		progressDisplay.appendToReport("done.\n");
 		
-		progressDisplay.appendToReport("Sorting Wrapping Graphs...");
-		sourceGraph.sortEdges();
-		targetGraph.sortEdges();
-		if( !DEBUG_FLAG ) System.out.println(sourceGraph.toString());
-		if( !DEBUG_FLAG ) System.out.println(targetGraph.toString());
-		progressDisplay.appendToReport("done.\n");
-		
 		progressDisplay.appendToReport("Start Computation...");
-		Iterator<WGraphVertex> sourceGraphIterator = sourceGraph.vertices();
-		Iterator<WGraphVertex> targetGraphIterator = targetGraph.vertices();
-		WGraphVertex s, t;
-		int pairs = 0;
-		while(sourceGraphIterator.hasNext()){
-			s = sourceGraphIterator.next();
-			while(targetGraphIterator.hasNext()){
-				
-				t = targetGraphIterator.next();
 
-				pairs = startComputation(pairs, s, t);
-				
-			}
-			targetGraphIterator = targetGraph.vertices();
-		}
+		//TODO: check collateral effects and details
+		//TODO: take values from matrices
+		//TODO: check how to compute delta
+
+		int round = 0;
+		do{
+			// new round starts
+			round++;
+			// phase 1 to 5
+			executeRoundOperations(sourceGraph.vertices(), targetGraph.vertices());
+			
+			// phase 6: get global similarity
+			double roundMax = Math.max(classesMatrix.getMaxValue(), propertiesMatrix.getMaxValue());
+			
+			// phase 7: normalize all values
+			normalizeSimilarities(classesMatrix, roundMax);
+			normalizeSimilarities(propertiesMatrix, roundMax);
+			
+			// phase 8: CLEAN all the data used before, matrix and WGraph survive
+			
+		} while(!checkStopCondition(round, pcg.getSimValueVector(true), pcg.getSimValueVector(false)));
+		// until delta less then value
+		
+		// phase 9: compute relative similarities (at the very end)
+		progressDisplay.appendToReport("Computing Relative Similarities...");
+		computeRelativeSimilarities(classesMatrix);
+		computeRelativeSimilarities(propertiesMatrix);
 		progressDisplay.appendToReport("done.\n");
-		 }
-		 catch(Exception e){
-			 e.printStackTrace();
-		 }
 		
 	 }
 	 
+	private void executeRoundOperations(Iterator<WGraphVertex> sVertices, Iterator<WGraphVertex> tVertices){
+		Iterator<WGraphVertex> sLocalItr = sVertices;
+		Iterator<WGraphVertex> tLocalItr = tVertices;
+
+		WGraphVertex s = null, t = null;
+		// until all cells are covered
+		while(sLocalItr.hasNext()){
+			s = sLocalItr.next();
+			while(tLocalItr.hasNext()){
+				t = tLocalItr.next();
+				
+				if(s.getNodeType().equals(t.getNodeType())){
+					
+					// phase 1: get a pcg vertex
+					PCGVertex pcgV = getPCGVertex(s, t);
+					
+					// phase 2: compute pcg graph on that vertex
+					createPairwiseConnectivityGraph(pcgV);
+					
+					// phase 3: grab matrix values
+//					grabMatrixValues(pcg.vertices());
+					
+					// phase 4: one round of the fixpoint
+					computeFixpointRound(pcg.vertices());
+					
+					// phase 5: translate results in matrix
+					populateSimilarityMatrices(pcg);
+				}
+			}
+			tLocalItr = tVertices;
+		}
+	}
+	
 	/**
 	 * 
 	 */
-	 private int startComputation(int pairs, WGraphVertex s, WGraphVertex t) {
-		
-		boolean pcgCreated = false;
-		 
-		progressDisplay.appendToReport("Creating Pairwise Connectivity Graph...");
-		pcg = new PairwiseConnectivityGraph();
-		pcgCreated = createPairwiseConnectivityGraph(s, t);
-		pairs++;
-		if(pcgCreated && pcg.numEdges() > 0 && pcg.numVertices() > 1){
-			
-			if( !DEBUG_FLAG ) System.out.println(pcg.toString());
-//			progressDisplay.appendToReport("done.\n");
-			
-//			progressDisplay.appendToReport("Creating Induced Propagation Graph...");
-			createInducedPropagationGraph();
-			if( DEBUG_FLAG ) System.out.println(pcg.toString());
-//			progressDisplay.appendToReport("done.\n");
-			
-//			progressDisplay.appendToReport("Computing Fixpoints...");
-			computeFixpoint();
-//			progressDisplay.appendToReport("done.\n");
-			
-//			progressDisplay.appendToReport("Creating Similarity Matrices...");
-			populateSimilarityMatrices();
-//			progressDisplay.appendToReport("done.\n");
-			
-//			progressDisplay.appendToReport("Computing Relative Similarities...");
-			computeRelativeSimilarities();
-//			progressDisplay.appendToReport("done.\n");
-		}
-		else{
-			progressDisplay.appendToReport("PCG not created. moving to next couple.\n");
-		}
-		System.out.println("N° of cells filled: " + pairs);
+	private int startComputation(int pairs) {
+//		System.out.println("N° of cells filled: " + pairs);
 		return pairs;
-	 }	 
+	 }
 	 
-	 protected boolean createPairwiseConnectivityGraph(WGraphVertex s, WGraphVertex t){
+	 // PHASE 1: get a pcg vertex //
+	 
+	 // PHASE 2: compute pcg graph on that vertex //
+	 
+	 protected boolean createPairwiseConnectivityGraph(PCGVertex pcgV){
 		 
-		 String key = new String(s.getObject().toString() + t.getObject().toString());
-		 PCGVertex pcgV = getPCGVertex(key, s.getObject(), t.getObject());
-			
 		 if(pcgV.isVisited()){
 			return false;	
 		 }
 		 else{
 			 pcgV.setVisited(true);
 			 
-			 lookForNodesInEdges(pcgV, s, t, EdgeDirection.IN);
-			 lookForNodesInEdges(pcgV, s, t, EdgeDirection.OUT);
+			 lookForNodesInEdges(pcgV, EdgeDirection.IN);
+			 lookForNodesInEdges(pcgV, EdgeDirection.OUT);
 			 
 			 return true;
 		 }
 
 	 }
 	 
-	 private void lookForNodesInEdges(PCGVertex pcgV, WGraphVertex s, WGraphVertex t, EdgeDirection ed){
+	 private void lookForNodesInEdges(PCGVertex pcgV, EdgeDirection ed){
+	
+		 // WGraphEdges iterators
 		 Iterator<DirectedGraphEdge<String,RDFNode>> sourceIterator = null;
 		 Iterator<DirectedGraphEdge<String,RDFNode>> targetIterator = null;
-		 Iterator<DirectedGraphEdge<String,RDFNode>> targetStart = null;
+		 Iterator<DirectedGraphEdge<String,RDFNode>> targetStart = null; // used as a starting point for the target iterator
+		 
+		 // WGraphVertices for edges lookup
+		 WGraphVertex s = pcgV.getObject().getStCouple().getLeft();
+		 WGraphVertex t = pcgV.getObject().getStCouple().getRight();
 		 
 		 switch(ed){
 		 case IN:
 			 sourceIterator = s.edgesInIter();
-			 targetIterator = t.edgesInIter();
-			 targetStart = t.edgesInIter();
+			 targetStart = t.edgesOutIter();
 			 break;
 		 case OUT:
 			 sourceIterator = s.edgesOutIter();
-			 targetIterator = t.edgesOutIter();
 			 targetStart = t.edgesOutIter();
 			 break;
 		 default:
@@ -184,9 +194,10 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 				e.printStackTrace();
 			}
 		 }
+
+		 targetIterator = targetStart;
 		 
-		 WGraphEdge sEdge = null;
-		 WGraphEdge tEdge = null;
+		 WGraphEdge sEdge = null, tEdge = null;
 		 String edgeLabel = null;
 //		 System.out.println("source: " + sourceIterator.hasNext() + " target: " + targetIterator.hasNext());
 		 while(sourceIterator.hasNext()){
@@ -220,53 +231,73 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 		 }
 	 }
 	 
-	private PCGEdge getEdge(PCGVertex pcgV, String edgeLabel, PCGVertex pcgV2) {
-		
-		PCGEdge edgeNew = edgesMap.get(pcgV.toString() + edgeLabel + pcgV2.toString());
-		
-		if (edgeNew == null) {
-			// we don't have that edge, we create it
-			edgeNew = new PCGEdge(pcgV, pcgV2, new PCGEdgeData(edgeLabel));
-			edgesMap.put(pcgV.toString() + edgeLabel + pcgV2.toString(), edgeNew);
-			return edgeNew;
-		}
-		else{
-			// we already have that edge (it would give a duplicate)
-			return null;
-		}
-	}
-
-	private void addNewElementsToPCG(PCGVertex pcgV, WGraphVertex s, String edgeLabel, WGraphVertex t, EdgeDirection ed) {
-		
-		String key = new String(s.getObject().toString() + t.getObject().toString());;
-		PCGVertex secondPCGVertex = getPCGVertex(key, s.getObject(), t.getObject());
-		PCGEdge edge = null;
-//		System.out.println(pcgV + " ----- " + secondPCGVertex.toString());
-		 
-		// insertion
-		switch(ed){
-		 case IN:
-			 if((edge = getEdge(secondPCGVertex, edgeLabel, pcgV)) != null){
-				 insertEdgeInPCG(secondPCGVertex, edge, pcgV);
+	 private void addNewElementsToPCG(PCGVertex pcgV, WGraphVertex s, String edgeLabel, WGraphVertex t, EdgeDirection ed) {
+			
+			PCGVertex secondPCGVertex = getPCGVertex(s, t);
+			PCGEdge edge = null;
+//			System.out.println(pcgV + " ----- " + secondPCGVertex.toString());
+			 
+			// insertion
+			switch(ed){
+			 case IN:
+				 if((edge = getEdge(secondPCGVertex, edgeLabel, pcgV)) != null){
+					 insertEdgeInPCG(secondPCGVertex, edge, pcgV);
+				 }
+				 break;
+			 case OUT:
+				 if((edge = getEdge(pcgV, edgeLabel, secondPCGVertex)) != null){
+					 insertEdgeInPCG(pcgV, edge, secondPCGVertex);
+				 }
+				 break;
+			 default:
+				 try {
+					throw new Exception("Should not be here. Make sure EdgeDirection is provided and not null");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			 }
-			 break;
-		 case OUT:
-			 if((edge = getEdge(pcgV, edgeLabel, secondPCGVertex)) != null){
-				 insertEdgeInPCG(pcgV, edge, secondPCGVertex);
-			 }
-			 break;
-		 default:
-			 try {
-				throw new Exception("Should not be here. Make sure EdgeDirection is provided and not null");
-			} catch (Exception e) {
-				e.printStackTrace();
+			
+			// recursive step
+			createPairwiseConnectivityGraph(secondPCGVertex);
+			
+		}
+	 
+		private PCGEdge getEdge(PCGVertex pcgV, String edgeLabel, PCGVertex pcgV2) {
+			
+			PCGEdge edgeNew = edgesMap.get(pcgV.toString() + edgeLabel + pcgV2.toString());
+			
+			if (edgeNew == null) {
+				// we don't have that edge, we create it
+				edgeNew = new PCGEdge(pcgV, pcgV2, new PCGEdgeData(edgeLabel));
+				edgesMap.put(pcgV.toString() + edgeLabel + pcgV2.toString(), edgeNew);
+				return edgeNew;
 			}
+			else{
+				// we already have that edge (it would give a duplicate)
+				return null;
+			}
+		}
+	 
+	 // PHASE 3: one round of the fixpoint 		//
+	 // PHASE 4: translate results in matrix	//
+	 // PHASE 5: get global similarity 			//
+	 // PHASE 6: normalize all values 			//
+	 private void normalizeSimilarities(SimilarityMatrix localMatrix, double roundMax) {
+		 double oldValue = 0;
+		 Mapping current = null;
+		 
+		 for(int i = 0; i < localMatrix.getRows(); i++){
+			 for(int j = 0; j < localMatrix.getColumns(); j++){
+				 
+				 current = localMatrix.get(i, j);
+				 if(current != null){
+					 oldValue = current.getSimilarity();
+					 localMatrix.get(i, j).setSimilarity(oldValue / roundMax);
+				 }
+				 
+			 }
 		 }
-		
-		// recursive step
-		createPairwiseConnectivityGraph(s, t);
-		
-	}
+	 }	
 
 	@Override
 	protected void loadSimilarityMatrices() {
@@ -274,10 +305,12 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 		classesMatrix = new SimilarityMatrix(sourceOntology.getClassesList().size(),
 				targetOntology.getClassesList().size(),
 				alignType.aligningClasses);
+		classesMatrix.fillMatrix(1.0);
 		// load propertiesMatrix
 		propertiesMatrix = new SimilarityMatrix(sourceOntology.getPropertiesList().size(),
 				targetOntology.getPropertiesList().size(),
 				alignType.aligningProperties);
+		propertiesMatrix.fillMatrix(1.0);
 	}
 	
 	

@@ -56,6 +56,7 @@ public class AnchorFloodMatcher extends FullGraphMatcher {
 	//@Override
 	protected PCGVertexData selectInput(Pair<RDFNode, RDFNode> pair) {
 		OntResource sourceRes, targetRes;
+		@SuppressWarnings("unused")
 		double sim = 0.0;
 		// try to get the ontResource from them
 		if(pair.getLeft().canAs(OntResource.class) && pair.getRight().canAs(OntResource.class)){
@@ -79,7 +80,8 @@ public class AnchorFloodMatcher extends FullGraphMatcher {
 				}
 			}
 		}
-		return new PCGVertexData( pair, sim, 0.0 );
+//		return new PCGVertexData( pair, sim, 0.0 );
+		return null;
 	}
 
 }

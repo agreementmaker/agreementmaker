@@ -60,7 +60,8 @@ public class IndipendentSimilarityFlooding extends FullGraphMatcher {
 	 */
 	@Override
 	protected PCGVertexData selectInput(Pair<RDFNode, RDFNode> pair) {
-		return new PCGVertexData( pair );
+//		return new PCGVertexData( pair );
+		return null;
 	}
 
 }

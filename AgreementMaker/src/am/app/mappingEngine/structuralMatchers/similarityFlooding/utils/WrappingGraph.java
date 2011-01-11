@@ -8,7 +8,9 @@ import java.util.HashMap;
 
 import am.utility.DirectedGraph;
 
+import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -267,6 +269,12 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 			
 			// we create it
 			WGraphVertex vertNew = new WGraphVertex(rdfNode);
+			if(rdfNode.canAs(OntProperty.class)){
+				vertNew.setNodeType("PROPERTY");
+			}
+			else if(rdfNode.canAs(OntClass.class)){
+				vertNew.setNodeType("CLASS");
+			}
 			// we add it to the list
 			this.insertVertex(vertNew);
 			// we add it to the map of nodes (we will always include it in the set of nodes to search in)

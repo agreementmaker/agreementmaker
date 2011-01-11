@@ -5,15 +5,13 @@ package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
 
 import am.utility.Pair;
 
-import com.hp.hpl.jena.rdf.model.RDFNode;
-
 /**
  * @author Michele Caci
  *
  */
 public abstract class StructMatchVertexData {
 	
-	private Pair<RDFNode, RDFNode> stCouple;
+	private Pair<WGraphVertex, WGraphVertex> stCouple;
 	private double newSimilarityValue;
 	private double oldSimilarityValue;
 	
@@ -31,19 +29,19 @@ public abstract class StructMatchVertexData {
 		this.oldSimilarityValue = defaultNewSMValue;
 	}
 	
-	public StructMatchVertexData(Pair<RDFNode, RDFNode> stCouple) {
+	public StructMatchVertexData(Pair<WGraphVertex, WGraphVertex> stCouple) {
 		this.stCouple = stCouple;
 		this.newSimilarityValue = defaultOldSMValue;
 		this.oldSimilarityValue = defaultNewSMValue;
 	}
 	
-	public StructMatchVertexData(Pair<RDFNode, RDFNode> stCouple, double similarityValue) {
+	public StructMatchVertexData(Pair<WGraphVertex, WGraphVertex> stCouple, double similarityValue) {
 		this.stCouple = stCouple;
 		this.newSimilarityValue = similarityValue;
 		this.oldSimilarityValue = similarityValue;
 	}
 	
-	public StructMatchVertexData(Pair<RDFNode, RDFNode> stCouple, double oldSV, double newSV) {
+	public StructMatchVertexData(Pair<WGraphVertex, WGraphVertex> stCouple, double oldSV, double newSV) {
 		this.stCouple = stCouple;
 		this.newSimilarityValue = oldSV;
 		this.oldSimilarityValue = newSV;
@@ -51,14 +49,14 @@ public abstract class StructMatchVertexData {
 	/**
 	 * @return the stCouple
 	 */
-	public Pair<RDFNode, RDFNode> getStCouple() {
+	public Pair<WGraphVertex, WGraphVertex> getStCouple() {
 		return stCouple;
 	}
 
 	/**
 	 * @param stCouple the stCouple to set
 	 */
-	public void setStCouple(Pair<RDFNode, RDFNode> stCouple) {
+	public void setStCouple(Pair<WGraphVertex, WGraphVertex> stCouple) {
 		this.stCouple = stCouple;
 	}
 

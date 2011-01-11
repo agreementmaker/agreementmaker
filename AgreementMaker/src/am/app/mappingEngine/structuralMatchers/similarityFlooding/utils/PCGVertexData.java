@@ -5,8 +5,6 @@ package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
 
 import am.utility.Pair;
 
-import com.hp.hpl.jena.rdf.model.RDFNode;
-
 /**
  * @author Michele Caci
  *
@@ -24,7 +22,7 @@ public class PCGVertexData extends StructMatchVertexData {
 	 * @param stCouple
 	 * @param propagationCoefficient
 	 */
-	public PCGVertexData(Pair<RDFNode, RDFNode> stCouple) {
+	public PCGVertexData(Pair<WGraphVertex, WGraphVertex> stCouple) {
 		super(stCouple);
 	}
 
@@ -32,11 +30,11 @@ public class PCGVertexData extends StructMatchVertexData {
 	 * @param stCouple
 	 * @param similarityValue
 	 */
-	public PCGVertexData(Pair<RDFNode, RDFNode> stCouple, double similarityValue) {
+	public PCGVertexData(Pair<WGraphVertex, WGraphVertex> stCouple, double similarityValue) {
 		super(stCouple, similarityValue);
 	}
 
-	public PCGVertexData(Pair<RDFNode, RDFNode> stCouple, double oldSV, double newSV) {
+	public PCGVertexData(Pair<WGraphVertex, WGraphVertex> stCouple, double oldSV, double newSV) {
 		super(stCouple, oldSV, newSV);
 	}
 	

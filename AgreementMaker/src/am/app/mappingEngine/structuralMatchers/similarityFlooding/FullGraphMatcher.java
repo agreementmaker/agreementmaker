@@ -44,11 +44,13 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 	 */
 	 protected void align() throws Exception {
 		progressDisplay.clearReport();
-		loadSimilarityMatrices();
 		
 		// cannot align just one ontology (this is here to catch improper invocations)
 		if( sourceOntology == null ) throw new NullPointerException("sourceOntology == null");   
 		if( targetOntology == null ) throw new NullPointerException("targetOntology == null");
+		
+		// loading similarity matrices
+		loadSimilarityMatrices();
 		
 		progressDisplay.appendToReport("Creating Wrapping Graphs...");
 		WrappingGraph sourceGraph = new WrappingGraph(sourceOntology.getModel());
@@ -60,8 +62,8 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		progressDisplay.appendToReport("Sorting Wrapping Graphs...");
 		sourceGraph.sortEdges();
 		targetGraph.sortEdges();
-		if( !DEBUG_FLAG ) System.out.println(sourceGraph.toString());
-		if( !DEBUG_FLAG ) System.out.println(targetGraph.toString());
+		if( DEBUG_FLAG ) System.out.println(sourceGraph.toString());
+		if( DEBUG_FLAG ) System.out.println(targetGraph.toString());
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Creating Pairwise Connectivity Graph...");
@@ -71,19 +73,20 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		
 		progressDisplay.appendToReport("Creating Induced Propagation Graph...");
 		createInducedPropagationGraph();
-		if( !DEBUG_FLAG ) System.out.println(pcg.toString());
+		if( DEBUG_FLAG ) System.out.println(pcg.toString());
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Computing Fixpoints...");
 		computeFixpoint();
 		progressDisplay.appendToReport("done.\n");
 		
-		progressDisplay.appendToReport("Creating Similarity Matrices...");
-		populateSimilarityMatrices();
+		progressDisplay.appendToReport("Populating Similarity Matrices...");
+		populateSimilarityMatrices(pcg);
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Computing Relative Similarities...");
-		computeRelativeSimilarities();
+		computeRelativeSimilarities(classesMatrix);
+		computeRelativeSimilarities(propertiesMatrix);
 		progressDisplay.appendToReport("done.\n");
 		
 	 }

@@ -23,7 +23,7 @@ import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.ssc.SiblingsSimilarityContributionMatcher;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.FullGraphMatcher;
-import am.app.mappingEngine.structuralMatchers.similarityFloodingDC.PartialGraphMatcher;
+import am.app.mappingEngine.structuralMatchers.similarityFlooding.PartialGraphMatcher;
 import am.app.mappingEngine.testMatchers.AllOneMatcher;
 import am.app.mappingEngine.testMatchers.AllZeroMatcher;
 import am.app.mappingEngine.testMatchers.CopyMatcher;
