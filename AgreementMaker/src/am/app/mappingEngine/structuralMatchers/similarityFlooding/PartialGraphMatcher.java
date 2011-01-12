@@ -148,8 +148,8 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 			while(tLocalItr.hasNext()){
 				tInd++;
 				tVertex = tLocalItr.next();
-				if( DEBUG_FLAG ) System.out.println(sVertex + ": " + sVertex.getObject().getClass() + " "+ tVertex + ": " + tVertex.getObject().getClass());
-				if( DEBUG_FLAG ) System.out.println(sVertex + ": " + sVertex.getNodeType() + " "+ tVertex + ": " + tVertex.getNodeType());
+				if( !DEBUG_FLAG ) System.out.println(sVertex + ": " + sVertex.getObject().getClass() + " "+ tVertex + ": " + tVertex.getObject().getClass());
+				if( !DEBUG_FLAG ) System.out.println(sVertex + ": " + sVertex.getNodeType() + " "+ tVertex + ": " + tVertex.getNodeType());
 
 				if(sVertex.getNodeType().equals(tVertex.getNodeType())){
 					

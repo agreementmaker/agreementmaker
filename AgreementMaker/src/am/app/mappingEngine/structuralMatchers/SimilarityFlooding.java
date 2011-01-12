@@ -43,7 +43,7 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	protected PairwiseConnectivityGraph pcg;
 	
 	public static final double MAX_PC = 1.0; // maximum value for propagation coefficient
-	public static final double DELTA = 0.01; // min value for differentiating two similarity vectors
+	public static final double DELTA = 0.1; // min value for differentiating two similarity vectors
 	public static final int ROUND_MAX = 10; // maximum numbers of rounds for fixpoint computation
 	
 	/**
