@@ -177,11 +177,8 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 PCGVertex vert = pairTable.get(key);
 //		 System.out.println(pairTable.get(pairToCheck) != null);
 		 
-		 // there was already a vertex in the table (do nothing)
-		 if(pairTable.get(key) != null){
-		 }
 		 // there wasn't already that vertex (create it)
-		 else{
+		 if(vert == null){
 			 vert = new PCGVertex(s, t);
 //			 System.out.println(vertNew.toString());
 			 // add it to the list
@@ -190,6 +187,27 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 			 pairTable.put(key, vert);
 		 }
 		 return vert;
+	 }
+	 
+	 /**
+	  * Returns the PCGVertex associated with the source concept 's' and target concept 's'. 
+	  * @param key
+	  * @param s
+	  * @param t
+	  * @return Returns null if no PCGVertex exists.
+	  */	 
+	 protected void unsetVisitedPCGVert(HashMap<String, PCGVertex> vertMap){
+		 
+		 Iterator<PCGVertex> iVert = vertMap.values().iterator();
+		 PCGVertex vert = null;
+		 
+		 while(iVert.hasNext()){
+			 vert = iVert.next();
+			 // add it to the list
+			 vert.setVisited(false);
+			 // add it to the map of nodes (we will always include it in the set of nodes to search in)
+			 //pairTable.put(key, vert);
+		 }
 	 }
 
 	/**

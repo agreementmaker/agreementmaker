@@ -5,6 +5,7 @@ package am.app.mappingEngine.structuralMatchers.similarityFlooding;
 
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.structuralMatchers.SimilarityFlooding;
+import am.app.mappingEngine.structuralMatchers.SimilarityFloodingParameters;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
 
 /**
@@ -29,8 +30,8 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 	/**
 	 * @param params_new
 	 */
-	public FullGraphMatcher(SimilarityFloodingMatcherParameters params_new) {
-//		super(params_new);
+	public FullGraphMatcher(SimilarityFloodingParameters params_new) {
+		super(params_new);
 		needsParam = true; // we need to display the parameters panel.
 	}
 	

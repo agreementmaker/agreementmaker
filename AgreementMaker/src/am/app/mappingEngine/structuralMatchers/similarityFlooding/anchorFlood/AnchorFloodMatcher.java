@@ -3,14 +3,14 @@
  */
 package am.app.mappingEngine.structuralMatchers.similarityFlooding.anchorFlood;
 
-import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-
+import am.app.mappingEngine.structuralMatchers.SimilarityFloodingParameters;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.FullGraphMatcher;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.SimilarityFloodingMatcherParameters;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertexData;
 import am.app.ontology.Node;
 import am.utility.Pair;
+
+import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 /**
  * @author michele
@@ -35,7 +35,7 @@ public class AnchorFloodMatcher extends FullGraphMatcher {
 	/**
 	 * @param params_new
 	 */
-	public AnchorFloodMatcher(SimilarityFloodingMatcherParameters params_new) {
+	public AnchorFloodMatcher(SimilarityFloodingParameters params_new) {
 		super(params_new);
 		minInputMatchers = 1;
 		maxInputMatchers = ANY_INT;
