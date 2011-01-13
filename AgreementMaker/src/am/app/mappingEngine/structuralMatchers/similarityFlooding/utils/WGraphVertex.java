@@ -5,9 +5,7 @@ package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
 
 import am.utility.DirectedGraphVertex;
 
-import com.hp.hpl.jena.ontology.impl.ObjectPropertyImpl;
 import com.hp.hpl.jena.ontology.impl.OntClassImpl;
-import com.hp.hpl.jena.ontology.impl.OntPropertyImpl;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
 /**
@@ -20,10 +18,10 @@ public class WGraphVertex extends DirectedGraphVertex<RDFNode, String> {
 	public WGraphVertex(RDFNode object) {
 		super(object);
 		if(object.canAs(OntClassImpl.class)){
-			setNodeType("CLASS");
+			nodeType = new String("CLASS");
 		}
 		else{ //if(object.canAs(OntPropertyImpl.class)){
-			setNodeType("PROPERTY");
+			nodeType = new String("PROPERTY");
 		}
 		
 	}

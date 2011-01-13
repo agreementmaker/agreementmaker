@@ -66,16 +66,6 @@ public class SimilarityMatrix implements Serializable
         data = new Mapping[M][N];
     }
     
-    // create M-by-N matrix of the selected value
-    public SimilarityMatrix(int M, int N, alignType type, double value) {
-    	relation = Mapping.EQUIVALENCE;
-    	typeOfMatrix = type;
-        this.rows = M;
-        this.columns = N;
-        data = new Mapping[M][N];
-        fillMatrix(value);
-    }
-    
     // create M-by-N matrix of 0's
     public SimilarityMatrix(int M, int N, alignType type, String rel) {
     	relation = rel;
@@ -230,7 +220,9 @@ public class SimilarityMatrix implements Serializable
 		Vector<Mapping> mappingArray = new Vector<Mapping>(getRows() * getColumns());
 		for(int i = 0; i < getRows(); i++){
 			for(int j = 0; j < getColumns(); j++){
-				mappingArray.add(this.get(i, j));
+				if(this.get(i, j) != null){
+					mappingArray.add(this.get(i, j));
+				}
 			}
 		}
 		return mappingArray;
@@ -464,20 +456,11 @@ public class SimilarityMatrix implements Serializable
 	 * @param val value to fill the matrix with
 	 * @author michele
 	 */
-	@Deprecated
-	public void fillMatrix(double val){
+	public void fillMatrix(){
 		// create M-by-N matrix of the selected value
-		assert (val >= 0 && val <= 1);
 	    for(int i = 0; i < this.getRows(); i++){
 	    	for(int j = 0; j < this.getColumns(); j++){
-	    		if(get(i, j) == null){
-	    			set(i, j, new Mapping(val));
-	    		}
-	    		else {
-	    			Mapping updatingMapping = this.get(i, j);
-	    			updatingMapping.setSimilarity(val);
-	    			set(i, j, updatingMapping);
-	    		}
+    			set(i, j, null);
 	    	}
 	    }
 	}
@@ -505,17 +488,24 @@ public class SimilarityMatrix implements Serializable
 	    }
 	}
 	
-	// TODO: Make the max value update when populating the matrix. 
-	public double getMaxValue() {
+	public Mapping getMaxMapping() {
+		Mapping m = null;
 		double max = 0.0;
 		
 		for( int i = 0; i < data.length; i++ ) {
 			for( int j = 0; j < data[i].length; j++ ) {
-				if( data[i][j].getSimilarity() > max ) { max = data[i][j].getSimilarity(); }
+				if( (data[i][j] != null) && (data[i][j].getSimilarity() > max) ) {
+					m = data[i][j];
+					max = data[i][j].getSimilarity();
+				}
 			}
 		}
-		
-		return max;
+		return m;
+	}
+	
+	// TODO: Make the max value update when populating the matrix. 
+	public double getMaxValue() {
+		return getMaxMapping().getSimilarity();
 	}
 	
 	

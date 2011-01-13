@@ -43,7 +43,7 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	protected PairwiseConnectivityGraph pcg;
 	
 	public static final double MAX_PC = 1.0; // maximum value for propagation coefficient
-	public static final double DELTA = 0.1; // min value for differentiating two similarity vectors
+	public static final double DELTA = 0.01; // min value for differentiating two similarity vectors
 	public static final int ROUND_MAX = 10; // maximum numbers of rounds for fixpoint computation
 	
 	/**
@@ -129,8 +129,16 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 					 				PCGVertex sourcePCGVertex = getPCGVertex((WGraphVertex)sEdge.getOrigin(), (WGraphVertex)tEdge.getOrigin());
 						 			PCGVertex targetPCGVertex = getPCGVertex((WGraphVertex)sEdge.getDestination(), (WGraphVertex)tEdge.getDestination());
 						 			PCGEdge pairEdge = new PCGEdge(sourcePCGVertex, targetPCGVertex, new PCGEdgeData(sEdge.getObject()));
-//								 	System.out.println(sourcePCGVertex.toString() + " ---> " + pairEdge.getObject().getStProperty() + " ----> " + targetPCGVertex.toString());		 
-						 			insertEdgeInPCG(sourcePCGVertex,  // vertex
+//								 	System.out.println(sourcePCGVertex.toString() + " ---> " + pairEdge.getObject().getStProperty() + " ----> " + targetPCGVertex.toString());
+						 			if(!sourcePCGVertex.isVisited()){
+						 				sourcePCGVertex.setVisited(true);
+						 				pcg.insertVertex(sourcePCGVertex);
+						 			}
+						 			if(!targetPCGVertex.isVisited()){
+						 				targetPCGVertex.setVisited(true);
+						 				pcg.insertVertex(targetPCGVertex);
+						 			}
+						 			pcg.insertEdge(sourcePCGVertex,  // vertex
 								 		pairEdge,      		// edge
 								 		targetPCGVertex		// vertex
 								 		);
@@ -151,18 +159,20 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 				 targetIterator = targetOnt.edges();
 			 }
 	 }
-	
-	/**
-	 * This method inserts a new "triple" in the PairwiseConnectivityGraph.
-	 * A triple is a ( PCGVertex, PCGEdge, PCGVertex ).
-	 */
-	protected void insertEdgeInPCG(PCGVertex sourcePCGVertex, PCGEdge pairEdge, PCGVertex targetPCGVertex) {
+
 		
-		sourcePCGVertex.addOutEdge(pairEdge);
-		targetPCGVertex.addInEdge(pairEdge);
+		/*
+		 * This method inserts a new "triple" in the PairwiseConnectivityGraph.
+		 * A triple is a ( PCGVertex, PCGEdge, PCGVertex ).
+		 * protected void insertEdgeInPCG(PCGVertex sourcePCGVertex, PCGEdge pairEdge, PCGVertex targetPCGVertex) {
+			
+			sourcePCGVertex.addOutEdge(pairEdge);
+			targetPCGVertex.addInEdge(pairEdge);
+			
+			pcg.insertEdge(pairEdge);
+		}
+		 */
 		
-		pcg.insertEdge(pairEdge);
-	}
 
 	/**
 	  * Returns the PCGVertex associated with the source concept 's' and target concept 's'. 
@@ -182,7 +192,7 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 			 vert = new PCGVertex(s, t);
 //			 System.out.println(vertNew.toString());
 			 // add it to the list
-			 pcg.insertVertex(vert);
+//			 pcg.insertVertex(vert);
 			 // add it to the map of nodes (we will always include it in the set of nodes to search in)
 			 pairTable.put(key, vert);
 		 }
@@ -246,6 +256,9 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 			 normalizeSimilarities(pcg.vertices(), maxSimilarity);
 
 			// stop condition check: delta or maxRound
+//			System.out.println(pcg.getSimValueVector(true).toString());
+//			System.out.println(pcg.getSimValueVector(false).toString());
+//			 System.out.println(round);
 		 } while(!checkStopCondition(round, pcg.getSimValueVector(true), pcg.getSimValueVector(false)));
 	 }
 	 
@@ -408,7 +421,7 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 			 diff = simVectBefore.get(i) - simVectAfter.get(i);
 			 simD += (diff * diff);
 		 }
-		 System.out.println("delta: " + Math.sqrt(simD));
+//		 System.out.println("delta: " + Math.sqrt(simD));
 		 return Math.sqrt(simD);
 	 }
 	 
@@ -527,7 +540,7 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	/* 				SIMILARITY MATRICES CREATION 			*/
 	/* *************************************************** */
 	 
-	 protected void populateSimilarityMatrices(PairwiseConnectivityGraph pcg){
+	 protected void populateSimilarityMatrices(PairwiseConnectivityGraph pcg, SimilarityMatrix cMatrix, SimilarityMatrix pMatrix){
 		 Iterator<PCGVertex> iVert = pcg.vertices();
 		 PCGVertex currentVert = null;
 		 while(iVert.hasNext()){
@@ -553,13 +566,13 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 					 else{
 						 // the necessary similarity value is stored in the newSimilarityValue var
 						 m = new Mapping(sourceProperty, targetProperty, currentVert.getObject().getNewSimilarityValue());
-						 propertiesMatrix.set(sourceProperty.getIndex(), targetProperty.getIndex(), m);
+						 pMatrix.set(sourceProperty.getIndex(), targetProperty.getIndex(), m);
 					 }
 				 }
 				 else{
 					 // the necessary similarity value is stored in the newSimilarityValue var
 					 m = new Mapping(sourceClass, targetClass, currentVert.getObject().getNewSimilarityValue());
-					 classesMatrix.set(sourceClass.getIndex(), targetClass.getIndex(), m);
+					 cMatrix.set(sourceClass.getIndex(), targetClass.getIndex(), m);
 				 }
 			 }
 			 else{

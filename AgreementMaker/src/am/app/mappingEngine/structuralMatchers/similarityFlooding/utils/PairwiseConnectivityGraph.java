@@ -7,6 +7,16 @@ import am.utility.DirectedGraph;
 
 public class PairwiseConnectivityGraph extends DirectedGraph<PCGEdge, PCGVertex> {
 
+	/**
+	 * Slightly modified insertEdge to insert properly a PCGEdge
+	 */
+	public void insertEdge(PCGVertex origin, PCGEdge edge, PCGVertex destination) {
+		edges.add(edge);
+		
+		origin.addOutEdge(edge);
+		destination.addInEdge(edge);
+	}
+	
 	public Vector<Double> getSimValueVector(boolean old){
 		Iterator<PCGVertex> iVert = this.vertices();
 		Vector<Double> simVector = new Vector<Double>();

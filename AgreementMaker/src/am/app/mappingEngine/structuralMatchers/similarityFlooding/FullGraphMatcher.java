@@ -3,9 +3,12 @@
  */
 package am.app.mappingEngine.structuralMatchers.similarityFlooding;
 
+import java.util.Iterator;
+
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.structuralMatchers.SimilarityFlooding;
 import am.app.mappingEngine.structuralMatchers.SimilarityFloodingParameters;
+import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdge;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
 
 /**
@@ -63,13 +66,20 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		progressDisplay.appendToReport("Sorting Wrapping Graphs...");
 		sourceGraph.sortEdges();
 		targetGraph.sortEdges();
-		if( DEBUG_FLAG ) System.out.println(sourceGraph.toString());
-		if( DEBUG_FLAG ) System.out.println(targetGraph.toString());
+		if( !DEBUG_FLAG ) System.out.println(sourceGraph.toString());
+		if( !DEBUG_FLAG ) System.out.println(targetGraph.toString());
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Creating Pairwise Connectivity Graph...");
 		createPairwiseConnectivityGraph(sourceGraph, targetGraph);
-		if( DEBUG_FLAG ) System.out.println(pcg.toString());
+		if( !DEBUG_FLAG ) {
+			System.out.println(pcg);
+			Iterator<PCGEdge> iEdge = pcg.edges();
+			while(iEdge.hasNext()){
+				PCGEdge vert = iEdge.next();
+				System.out.println(vert);
+			}
+		}
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Creating Induced Propagation Graph...");
@@ -82,7 +92,7 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Populating Similarity Matrices...");
-		populateSimilarityMatrices(pcg);
+		populateSimilarityMatrices(pcg, classesMatrix, propertiesMatrix);
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Computing Relative Similarities...");

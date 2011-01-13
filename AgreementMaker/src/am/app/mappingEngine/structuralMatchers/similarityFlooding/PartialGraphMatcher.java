@@ -33,7 +33,8 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 	
 	private HashMap<String, PCGEdge> edgesMap;
 	private enum EdgeDirection{IN, OUT};
-	int round = 0;
+	private int round = 0;
+	public static final int ROUND_MAX = 1; // maximum numbers of rounds for fixpoint computation
 	
 	// intialized when initialized the classes and properties matrix (loadSimilarityMatrix())
 	private SimilarityMatrix prevRoundClasses;
@@ -68,12 +69,12 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 
 		progressDisplay.clearReport();
 		
-		// load the matrices
-		loadSimilarityMatrices();
-		
 		// cannot align just one ontology (this is here to catch improper invocations)
 		if( sourceOntology == null ) throw new NullPointerException("sourceOntology == null");   
 		if( targetOntology == null ) throw new NullPointerException("targetOntology == null");
+
+		// load the matrices
+		loadSimilarityMatrices();
 		
 		// starting phase: create wrapping graphs
 		progressDisplay.appendToReport("Creating Wrapping Graphs...");
@@ -91,10 +92,10 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 		do{
 			// new round starts
 			round++;
-			System.out.println("----------- ROUND #" + round + " ---------------\n");
+//			if( round == 1 )System.out.println("----------- ROUND #" + round + " ---------------\n");
 			
 			// phase 0: CLEAN all the data used before, matrix and WGraph survive and update old matrices
-			System.out.println("----------- PHASE:" + round + ".0" + " ---------------");
+//			if( round == 1 )System.out.println("----------- PHASE:" + round + ".0" + " ---------------");
 			unsetVisitedPCGVert(pairTable);
 			prevRoundClasses = (SimilarityMatrix) classesMatrix.clone();
 			prevRoundProperties = (SimilarityMatrix) propertiesMatrix.clone();
@@ -103,16 +104,16 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 			executeRoundOperations(sourceGraph, targetGraph);
 			
 			// phase 6: get global max similarity
-			System.out.println("----------- PHASE:" + round + ".6" + " ---------------");
+//			if( round == 1 )System.out.println("----------- PHASE:" + round + ".6" + " ---------------");
 			double roundMax = getGlobalMaxSimilarity(classesMatrix, propertiesMatrix);
 			
 			// phase 7: normalize all values
-			System.out.println("----------- PHASE:" + round + ".7" + " ---------------");
+//			if( round == 1 )System.out.println("----------- PHASE:" + round + ".7" + " ---------------");
 			normalizeSimilarities(classesMatrix, roundMax);
 			normalizeSimilarities(propertiesMatrix, roundMax);
 			
 			// phase 8: prepare Vectors for delta check
-			System.out.println("----------- PHASE:" + round + ".8" + " ---------------");
+//			if( round == 1 )System.out.println("----------- PHASE:" + round + ".8" + " ---------------");
 			Vector<Double> pVect = prevRoundProperties.toSimilarityArray(prevRoundProperties.toMappingArray());
 			
 			cOldVect = prevRoundClasses.toSimilarityArray(prevRoundClasses.toMappingArray());
@@ -123,6 +124,8 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 			cNewVect = classesMatrix.toSimilarityArray(classesMatrix.toMappingArray());
 			cNewVect.addAll(pVect);
 			
+//			if( round == 1 )System.out.println(cOldVect.toString());
+//			if( round == 1 )System.out.println(cNewVect.toString());
 		} while(!checkStopCondition(round, cOldVect, cNewVect));
 		progressDisplay.appendToReport("done.\n");
 		// until delta less then value
@@ -148,36 +151,51 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 			while(tLocalItr.hasNext()){
 				tInd++;
 				tVertex = tLocalItr.next();
-				if( !DEBUG_FLAG ) System.out.println(sVertex + ": " + sVertex.getObject().getClass() + " "+ tVertex + ": " + tVertex.getObject().getClass());
-				if( !DEBUG_FLAG ) System.out.println(sVertex + ": " + sVertex.getNodeType() + " "+ tVertex + ": " + tVertex.getNodeType());
+//				if( round == 1 ) System.out.println(sVertex + ": " + sVertex.getObject().getClass() + " "+ tVertex + ": " + tVertex.getObject().getClass());
+//				if( round == 1 ) System.out.println(sVertex + ": " + sVertex.getNodeType() + " "+ tVertex + ": " + tVertex.getNodeType());
 
 				if(sVertex.getNodeType().equals(tVertex.getNodeType())){
 					
 					// phase 1: get a pcg vertex and inserts it in the pcg
-					System.out.println("----------- PHASE:" + round + ".1." + sInd + "." + tInd + " ---------------");
+//					System.out.println("----------- PHASE:" + round + ".1." + sInd + "." + tInd + " ---------------");
 					PCGVertex pcgV = getPCGVertex(sVertex, tVertex);
 					pcg = new PairwiseConnectivityGraph(); // clean out old PCG
 					if( DEBUG_FLAG ) System.out.println(pcgV.toString());
 
 					// phase 2: compute pcg graph on that vertex
-					System.out.println("----------- PHASE:" + round + ".2." + sInd + "." + tInd + " ---------------");
-					if(createPairwiseConnectivityGraph(pcgV)){
-						if( DEBUG_FLAG ) System.out.println(pcg.toString());
+//					System.out.println("----------- PHASE:" + round + ".2." + sInd + "." + tInd + " ---------------");
+					boolean pcgCreated = createPairwiseConnectivityGraph(pcgV); 
+					if(pcgCreated && pcg.numVertices() > 1){
+						if( round == 1 ){
+							
+							Iterator<PCGEdge> iEdge = pcg.edges();
+							while(iEdge.hasNext()){
+								PCGEdge vert = iEdge.next();
+								System.out.println(vert);
+							}
+							System.out.println("--------------");
+						}
+						
+						if(round == 1) {
+							populateSimilarityMatrices(pcg, classesMatrix, propertiesMatrix);
+							populateSimilarityMatrices(pcg, prevRoundClasses, prevRoundProperties);
+						}
 						
 						// phase 3: grab matrix values
-						System.out.println("----------- PHASE:" + round + ".3." + sInd + "." + tInd + " ---------------");
+//						if( round == 1 )System.out.println("----------- PHASE:" + round + ".3." + sInd + "." + tInd + " ---------------");
 						grabMatrixValues(pcg.vertices());
-						
+						createInducedPropagationGraph();
+
 						// phase 4: one round of the fixpoint
-						System.out.println("----------- PHASE:" + round + ".4." + sInd + "." + tInd + " ---------------");
+//						if( round == 1 )System.out.println("----------- PHASE:" + round + ".4." + sInd + "." + tInd + " ---------------");
 						computeFixpointRound(pcg.vertices());
 						
 						// phase 5: translate results in matrix
-						System.out.println("----------- PHASE:" + round + ".5." + sInd + "." + tInd + " ---------------");
-						populateSimilarityMatrices(pcg);
+//						if( round == 1 )System.out.println("----------- PHASE:" + round + ".5." + sInd + "." + tInd + " ---------------");
+						populateSimilarityMatrices(pcg, classesMatrix, propertiesMatrix);
 					}
 
-					System.out.println();
+//					System.out.println();
 				}
 			}
 			tLocalItr = t.vertices();
@@ -289,12 +307,12 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 			switch(ed){
 			 case IN:
 				 if((edge = getEdge(secondPCGVertex, edgeLabel, pcgV)) != null){
-					 insertEdgeInPCG(secondPCGVertex, edge, pcgV);
+					 pcg.insertEdge(secondPCGVertex, edge, pcgV);
 				 }
 				 break;
 			 case OUT:
 				 if((edge = getEdge(pcgV, edgeLabel, secondPCGVertex)) != null){
-					 insertEdgeInPCG(pcgV, edge, secondPCGVertex);
+					 pcg.insertEdge(pcgV, edge, secondPCGVertex);
 				 }
 				 break;
 			 default:
@@ -326,7 +344,7 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 			}
 		}
 	 
-		// PHASE 3: grab matrix values
+		// PHASE 3: grab matrix values	//
 		private void grabMatrixValues(Iterator<PCGVertex> iVert) {
 			
 			PCGVertex vert = null;
@@ -380,13 +398,65 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 		 }
 		 
 		 // PHASE 5: translate results in matrix	//
-		 @Override
-		 protected void populateSimilarityMatrices(PairwiseConnectivityGraph pcg){
-			 super.populateSimilarityMatrices(pcg);
-		 }
+		 protected void populateSimilarityMatrices(PairwiseConnectivityGraph pcg, SimilarityMatrix cMatrix, SimilarityMatrix pMatrix){
+			 Iterator<PCGVertex> iVert = pcg.vertices();
+			 PCGVertex currentVert = null;
+			 while(iVert.hasNext()){
+				 currentVert = iVert.next();
+				 
+				 // take both source and target ontResources (values can be null, means not possible to take resources
+				 OntResource sourceRes = getOntResourceFromRDFNode(currentVert.getObject().getStCouple().getLeft().getObject());
+				 OntResource targetRes = getOntResourceFromRDFNode(currentVert.getObject().getStCouple().getRight().getObject());
+				 if(sourceRes != null && targetRes != null){
+					
+					 Mapping m;
+					 // try to get the Node and check they belong to the same alignType
+					 Node sourceClass = getNodefromOntResource(sourceOntology, sourceRes, alignType.aligningClasses);
+					 Node targetClass = getNodefromOntResource(targetOntology, targetRes, alignType.aligningClasses);
+					 // test if both nodes are classes
+					 if(sourceClass == null || targetClass == null){
+						 Node sourceProperty = getNodefromOntResource(sourceOntology, sourceRes, alignType.aligningProperties);
+						 Node targetProperty = getNodefromOntResource(targetOntology, targetRes, alignType.aligningProperties);
+						 // test if both nodes are properties
+						 if(sourceProperty == null || targetProperty == null){
+							 continue;
+						 }
+						 else{
+							 // the necessary similarity value is stored in the newSimilarityValue var
+							 if(pMatrix.get(sourceProperty.getIndex(), targetProperty.getIndex()) != null){
+								 m = new Mapping(sourceProperty, targetProperty, currentVert.getObject().getNewSimilarityValue());
+							 }
+							 else{
+								 m = new Mapping(sourceProperty, targetProperty, 1.0);
+							 }
+							 pMatrix.set(sourceProperty.getIndex(), targetProperty.getIndex(), m);
+						 }
+					 }
+					 else{
+						 // the necessary similarity value is stored in the newSimilarityValue var
+						 if(cMatrix.get(sourceClass.getIndex(), targetClass.getIndex()) != null){
+							 m = new Mapping(sourceClass, targetClass, currentVert.getObject().getNewSimilarityValue());
+						 }
+						 else{
+							 m = new Mapping(sourceClass, targetClass, 1.0);
+						 }
+						 cMatrix.set(sourceClass.getIndex(), targetClass.getIndex(), m);
+					 }
+				 }
+				 else{
+					 continue;
+				 }
+			 }
+		}
 		 
 		 // PHASE 6: get global max similarity		//
 		 private double getGlobalMaxSimilarity(SimilarityMatrix c, SimilarityMatrix p){
+			 if(c.getMaxValue() > p.getMaxValue()){
+//				 System.out.println(c.getMaxMapping());
+			 }
+			 else{
+//				 System.out.println(p.getMaxMapping());
+			 }
 			 return Math.max(c.getMaxValue(), p.getMaxValue());
 		 }
 		
@@ -407,7 +477,6 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 				 }
 			 }
 		 }	
-	
 		 
 		 // INHERITED FUNCTIONS //
 		 
@@ -417,13 +486,13 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 			classesMatrix = new SimilarityMatrix(sourceOntology.getClassesList().size(),
 					targetOntology.getClassesList().size(),
 					alignType.aligningClasses);
-			classesMatrix.fillMatrix(1.0, sourceOntology.getClassesList(), targetOntology.getClassesList());
+//			classesMatrix.fillMatrix(1.0, sourceOntology.getClassesList(), targetOntology.getClassesList());
 			prevRoundClasses = new SimilarityMatrix(classesMatrix);
 			// load propertiesMatrix
 			propertiesMatrix = new SimilarityMatrix(sourceOntology.getPropertiesList().size(),
 					targetOntology.getPropertiesList().size(),
 					alignType.aligningProperties);
-			propertiesMatrix.fillMatrix(1.0, sourceOntology.getPropertiesList(), targetOntology.getPropertiesList());
+//			propertiesMatrix.fillMatrix(1.0, sourceOntology.getPropertiesList(), targetOntology.getPropertiesList());
 			prevRoundProperties = new SimilarityMatrix(propertiesMatrix);
 		}
 		
