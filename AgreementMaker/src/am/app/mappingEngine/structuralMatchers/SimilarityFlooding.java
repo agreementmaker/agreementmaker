@@ -170,14 +170,20 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	 }
 	 
 	 protected boolean createPartialPCG(PCGVertex pcgV){
-		 
+		 if(pcgV.getObject().getStCouple().getLeft().getObject().toString().contains("Academic") &&
+				 pcgV.getObject().getStCouple().getRight().getObject().toString().contains("dqzdxdcsqj") ){
+			 
+		 }
+
 		 if(pcgV.isVisited()){
+
+			 System.out.println("NO new partial graph");
 				return false;	
 		 }
 		 else{
 
-//			 pcg.insertVertex(pcgV);
-//			 pcgV.setVisited(true);
+			 System.out.println("new partial graph");
+			 pcgV.setVisited(true);
 //			 System.out.println(pcgV.toString() + " isVisited: " + pcgV.isVisited());
 
 			 // for the Incoming edges
@@ -244,16 +250,20 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 WGraphEdge sEdge = null;
 		 WGraphEdge tEdge = null;
 		 int edgeComparison = 0;
-		 
+
+		 System.out.println("looking edges");
 			 while(sourceIterator.hasNext()){
 				 sEdge = (WGraphEdge) sourceIterator.next();
 				 
 				 while(targetIterator.hasNext()){
 					 tEdge = (WGraphEdge) targetIterator.next();
 
+					 System.out.println("new edge");
 					 // comparing edges here
 					 edgeComparison = compareEdges(sEdge, tEdge);
 					 if(edgeComparison == 0){
+
+						 System.out.println("new insertion");
 						 insertInPCG(sEdge, tEdge, ed);
 						 switch(ed){
 						 case IN:
@@ -325,20 +335,25 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 					 */
 					 
 	 protected PCGEdge getEdge(PCGVertex pcgV, String edgeLabel, PCGVertex pcgV2) {
-			
-			PCGEdge edgeNew = edgesMap.get(pcgV.toString() + edgeLabel + pcgV2.toString());
-			
-			if (edgeNew == null) {
-				// we don't have that edge, we create it
-				edgeNew = new PCGEdge(pcgV, pcgV2, new PCGEdgeData(edgeLabel));
-				edgesMap.put(pcgV.toString() + edgeLabel + pcgV2.toString(), edgeNew);
-				return edgeNew;
-			}
-			else{
-				// we already have that edge (it would give a duplicate)
-				return null;
-			}
+	 	System.out.println("start get edge");
+	 	PCGEdge edgeNew = null;
+	 	try{
+	 		edgeNew = edgesMap.get(pcgV.toString() + edgeLabel + pcgV2.toString());
+	 		System.out.println(edgeNew);
+	 	} catch(Exception e){
+	 		e.printStackTrace();
+	 	}
+	 	
+		System.out.println("edge taken?");
+		if (edgeNew == null) {
+
+		 	System.out.println("no edge, create it");
+			// we don't have that edge, we create it
+			edgeNew = new PCGEdge(pcgV, pcgV2, new PCGEdgeData(edgeLabel));
+			edgesMap.put(pcgV.toString() + edgeLabel + pcgV2.toString(), edgeNew);
 		}
+		return edgeNew;
+	}
 	 
 	 protected int compareEdges(WGraphEdge sEdge, WGraphEdge tEdge){
 		 return sEdge.getObject().compareTo(tEdge.getObject());
@@ -349,35 +364,50 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	  * It checks for duplicates
 	  */
 	 private void insertInPCG(WGraphEdge sEdge, WGraphEdge tEdge, EdgeDirection ed) {
+
+		 System.out.println("start insertion");
 		 PCGVertex sourcePCGVertex = getPCGVertex((WGraphVertex)sEdge.getOrigin(), (WGraphVertex)tEdge.getOrigin());
+		 System.out.println("source pcg");
 		 PCGVertex targetPCGVertex = getPCGVertex((WGraphVertex)sEdge.getDestination(), (WGraphVertex)tEdge.getDestination());
+		 System.out.println("target pcg");
 		 PCGEdge pairEdge = null;
 		 switch(ed){
 		 case IN:
-			 pairEdge = getEdge(targetPCGVertex, sEdge.getObject(), sourcePCGVertex);
+			 pairEdge = getEdge(sourcePCGVertex, sEdge.getObject(), targetPCGVertex);
+//			 pairEdge = getEdge(targetPCGVertex, sEdge.getObject(), sourcePCGVertex);
+			 System.out.println("in edge");
 			 break;
 		 case OUT:
 			 pairEdge = getEdge(sourcePCGVertex, sEdge.getObject(), targetPCGVertex);
+//			 pairEdge = getEdge(targetPCGVertex, sEdge.getObject(), sourcePCGVertex);
+			 System.out.println("out source");
 			 break;
 		 default:
-			 try {
-				 throw new Exception("Should not be here. Make sure EdgeDirection is provided and not null");
-			 } catch (Exception e) {
-				 e.printStackTrace();
-			 }
+			 System.out.println("error???");
+			 break;
 		 }
 		 
-		 if(!sourcePCGVertex.isVisited()){
+		 if(!sourcePCGVertex.isInserted()){
+
+			 System.out.println("insert source");
 			 pcg.insertVertex(sourcePCGVertex);
-			 sourcePCGVertex.setVisited(true);
+			 sourcePCGVertex.setInserted(true);
+			 System.out.println("end insert source");
 		 }
-		 if(!targetPCGVertex.isVisited()){
+		 if(!targetPCGVertex.isInserted()){
+			 System.out.println("insert target");
 			 pcg.insertVertex(targetPCGVertex);
-			 targetPCGVertex.setVisited(true);
+			 targetPCGVertex.setInserted(true);
+			 System.out.println("end insert target");
 		 }
-		 if(pairEdge != null){
+		 if(!pairEdge.isInserted()){
+			 System.out.println("insert edge");
 			 pcg.insertEdge(pairEdge);
+			 pairEdge.setInserted(true);
+			 System.out.println("end insert edge");
 		 }
+
+		 System.out.println("end insertion");
 		 
 	 }
 		

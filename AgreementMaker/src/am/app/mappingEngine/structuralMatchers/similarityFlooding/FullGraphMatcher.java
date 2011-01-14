@@ -4,6 +4,7 @@
 package am.app.mappingEngine.structuralMatchers.similarityFlooding;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.Iterator;
 import java.util.Scanner;
 
@@ -80,13 +81,14 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		if( !DEBUG_FLAG ) {
 			System.out.println(pcg);
 			Iterator<PCGEdge> iEdge = pcg.edges();
-//			File f = new File("/home/nikiforos/Desktop/super");
-//			Scanner s = new Scanner(f);
+			File f = new File("/home/nikiforos/Desktop/by_connComp");
+			FileWriter fw = new FileWriter(f);
 			while(iEdge.hasNext()){
 				PCGEdge vert = iEdge.next();
-//				s.
 				System.out.println(vert);
+				fw.append(vert.toString() + "\n");
 			}
+			fw.close();
 		}
 		progressDisplay.appendToReport("done.\n");
 		
@@ -112,25 +114,27 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 	 
 	 protected void createFullPCG(WrappingGraph sourceOnt, WrappingGraph targetOnt){
 		 //old method
-		 super.createFullPCG(sourceOnt, targetOnt);
+//		 super.createFullPCG(sourceOnt, targetOnt);
 		 
 		 //new method
-//		 createPCG(sourceOnt, targetOnt);
+		 createPCG(sourceOnt, targetOnt);
 	 }
 
 	private void createPCG(WrappingGraph sourceOnt, WrappingGraph targetOnt) {
 		Iterator<WGraphVertex> sLocalItr = sourceOnt.vertices();
 		Iterator<WGraphVertex> tLocalItr = targetOnt.vertices();
 
+		System.out.println("Start");
 		WGraphVertex sVertex = null, tVertex = null;
 		// until all cells are covered
 		while(sLocalItr.hasNext()){
 			sVertex = sLocalItr.next();
 			while(tLocalItr.hasNext()){
 				tVertex = tLocalItr.next();
-				
+				System.out.println("NewPCGVertex");
 				if(sVertex.getNodeType().equals(tVertex.getNodeType())){
 					createPartialPCG(getPCGVertex(sVertex, tVertex));
+					
 				}
 			}
 			tLocalItr = targetOnt.vertices();

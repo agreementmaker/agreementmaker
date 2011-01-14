@@ -12,8 +12,24 @@ import am.utility.DirectedGraphEdge;
  */
 public class PCGEdge extends DirectedGraphEdge<PCGEdgeData, PCGVertexData>{
 	
+	private boolean inserted;
+	
 	public PCGEdge(PCGVertex orig, PCGVertex dest, PCGEdgeData o) {
 		super(orig, dest, o);
+	}
+
+	/**
+	 * @param visited the visited to set
+	 */
+	public void setInserted(boolean inserted) {
+		this.inserted = inserted;
+	}
+
+	/**
+	 * @return the visited
+	 */
+	public boolean isInserted() {
+		return inserted;
 	}
 
 	/**

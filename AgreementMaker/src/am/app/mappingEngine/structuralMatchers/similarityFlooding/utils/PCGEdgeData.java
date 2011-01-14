@@ -3,7 +3,6 @@
  */
 package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
 
-import com.hp.hpl.jena.rdf.model.Property;
 
 /**
  * @author Michele Caci

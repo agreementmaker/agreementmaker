@@ -9,11 +9,13 @@ import am.utility.Pair;
  */
 public class PCGVertex extends DirectedGraphVertex<PCGVertexData, PCGEdgeData>{
 
+	private boolean inserted;
 	private boolean visited;
 	
 	public PCGVertex(PCGVertexData object) {
 		super(object);
 		setVisited(false);
+		setInserted(false);
 	}
 	
 	/**
@@ -22,6 +24,7 @@ public class PCGVertex extends DirectedGraphVertex<PCGVertexData, PCGEdgeData>{
 	public PCGVertex(WGraphVertex s, WGraphVertex t) {
 		super(new PCGVertexData(new Pair<WGraphVertex, WGraphVertex>(s, t)));
 		setVisited(false);
+		setInserted(false);
 	}
 
 	/**
@@ -38,6 +41,20 @@ public class PCGVertex extends DirectedGraphVertex<PCGVertexData, PCGEdgeData>{
 		return visited;
 	}
 	
+	/**
+	 * @param inserted the inserted to set
+	 */
+	public void setInserted(boolean inserted) {
+		this.inserted = inserted;
+	}
+
+	/**
+	 * @return the inserted
+	 */
+	public boolean isInserted() {
+		return inserted;
+	}
+
 	/**
 	 * String format: ( leftNode, rightNode )
 	 */

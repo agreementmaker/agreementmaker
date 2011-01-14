@@ -200,14 +200,6 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 			tLocalItr = t.vertices();
 		}
 	}
-
-	/*
-	 * private int startComputation(int pairs) {
-//		System.out.println("N° of cells filled: " + pairs);
-		return pairs;
-	 }
-	 */
-	
 	 
 	 // PHASE 1: get a pcg vertex and inserts it in the pcg //
 	 @Override
