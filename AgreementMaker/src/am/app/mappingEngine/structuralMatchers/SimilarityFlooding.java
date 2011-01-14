@@ -3,6 +3,7 @@
  */
 package am.app.mappingEngine.structuralMatchers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
@@ -46,30 +47,39 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	public static final double DELTA = 0.01; // min value for differentiating two similarity vectors
 	public static final int ROUND_MAX = 10; // maximum numbers of rounds for fixpoint computation
 	
+	protected boolean sortEdges = true;
+	
 	/**
 	 * given two nodes named origin and destination we have a list of the possible 
 	 * directions of an edge connecting them
 	 */
-	private enum Direction{ORIG2DEST, DEST2ORIG};
+	private static enum Direction{ORIG2DEST, DEST2ORIG};
+
+	public static enum EdgeDirection{IN, OUT};
 	
 	protected HashMap<String, PCGVertex> pairTable;
+	protected HashMap<String, PCGEdge> edgesMap;
 
 	/**
 	 * 
 	 */
 	public SimilarityFlooding() {
+		needsParam = true; // we need to display the parameters panel.
+
 		pcg = new PairwiseConnectivityGraph();
 		pairTable = new HashMap<String, PCGVertex>();
-		needsParam = true; // we need to display the parameters panel.
+		edgesMap = new HashMap<String, PCGEdge>();
 	}
 
 	/**
 	 * @param params_new
 	 */
 	public SimilarityFlooding(SimilarityFloodingParameters params_new) {
+		needsParam = true; // we need to display the parameters panel.
+		
 		pcg = new PairwiseConnectivityGraph();
 		pairTable = new HashMap<String, PCGVertex>();
-		needsParam = true; // we need to display the parameters panel.
+		edgesMap = new HashMap<String, PCGEdge>();
 	}
 	
 	/**
@@ -95,7 +105,7 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	  *            /\
 	  *  	     PCGEdge
 	  */
-	 protected void createPairwiseConnectivityGraph(WrappingGraph sourceOnt, WrappingGraph targetOnt){
+	 protected void createFullPCG(WrappingGraph sourceOnt, WrappingGraph targetOnt){
 
 		 Iterator<WGraphEdge> sourceIterator = sourceOnt.edges();
 		 Iterator<WGraphEdge> targetIterator = targetOnt.edges();
@@ -154,32 +164,42 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 						 // (since egdes are sorted we break the target cycle and go to the next source edge)
 						 break;
 					 }
-					 
 				 }
 				 targetIterator = targetOnt.edges();
 			 }
 	 }
+	 
+	 protected boolean createPartialPCG(PCGVertex pcgV){
+		 
+		 if(pcgV.isVisited()){
+				return false;	
+		 }
+		 else{
 
-		
-		/*
-		 * This method inserts a new "triple" in the PairwiseConnectivityGraph.
-		 * A triple is a ( PCGVertex, PCGEdge, PCGVertex ).
-		 * protected void insertEdgeInPCG(PCGVertex sourcePCGVertex, PCGEdge pairEdge, PCGVertex targetPCGVertex) {
-			
-			sourcePCGVertex.addOutEdge(pairEdge);
-			targetPCGVertex.addInEdge(pairEdge);
-			
-			pcg.insertEdge(pairEdge);
-		}
-		 */
-		
+//			 pcg.insertVertex(pcgV);
+//			 pcgV.setVisited(true);
+//			 System.out.println(pcgV.toString() + " isVisited: " + pcgV.isVisited());
 
-	/**
+			 // for the Incoming edges
+			 lookupEdges(pcgV.getObject().getStCouple().getLeft().edgesInList(),
+					 pcgV.getObject().getStCouple().getRight().edgesInList(),
+					 EdgeDirection.IN);
+			 // for the Outgoing edges
+			 lookupEdges(pcgV.getObject().getStCouple().getLeft().edgesOutList(),
+					 pcgV.getObject().getStCouple().getRight().edgesOutList(),
+					 EdgeDirection.OUT);
+			 
+			 return true;
+		 }
+	 }
+	 
+	 // VERTICES OPERATIONS //
+	 
+	 /**
 	  * Returns the PCGVertex associated with the source concept 's' and target concept 's'. 
-	  * @param key
 	  * @param s
 	  * @param t
-	  * @return Returns null if no PCGVertex exists.
+	  * @return Returns the PCGVertex.
 	  */	 
 	 protected PCGVertex getPCGVertex(WGraphVertex s, WGraphVertex t){
 		 
@@ -190,21 +210,15 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 // there wasn't already that vertex (create it)
 		 if(vert == null){
 			 vert = new PCGVertex(s, t);
-//			 System.out.println(vertNew.toString());
-			 // add it to the list
-//			 pcg.insertVertex(vert);
+			 
 			 // add it to the map of nodes (we will always include it in the set of nodes to search in)
 			 pairTable.put(key, vert);
 		 }
 		 return vert;
 	 }
-	 
+
 	 /**
-	  * Returns the PCGVertex associated with the source concept 's' and target concept 's'. 
-	  * @param key
-	  * @param s
-	  * @param t
-	  * @return Returns null if no PCGVertex exists.
+	  * Reset PCGNodes 
 	  */	 
 	 protected void unsetVisitedPCGVert(HashMap<String, PCGVertex> vertMap){
 		 
@@ -219,7 +233,158 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 			 //pairTable.put(key, vert);
 		 }
 	 }
+	 
+	 // EDGES OPERATIONS //
+	 
+	 protected void lookupEdges(ArrayList<DirectedGraphEdge<String, RDFNode>> s, ArrayList<DirectedGraphEdge<String, RDFNode>> t, EdgeDirection ed){
+		 
+		 Iterator<DirectedGraphEdge<String, RDFNode>> sourceIterator = s.iterator();
+		 Iterator<DirectedGraphEdge<String, RDFNode>> targetIterator = t.iterator();
+		 
+		 WGraphEdge sEdge = null;
+		 WGraphEdge tEdge = null;
+		 int edgeComparison = 0;
+		 
+			 while(sourceIterator.hasNext()){
+				 sEdge = (WGraphEdge) sourceIterator.next();
+				 
+				 while(targetIterator.hasNext()){
+					 tEdge = (WGraphEdge) targetIterator.next();
 
+					 // comparing edges here
+					 edgeComparison = compareEdges(sEdge, tEdge);
+					 if(edgeComparison == 0){
+						 insertInPCG(sEdge, tEdge, ed);
+						 switch(ed){
+						 case IN:
+							 createPartialPCG(getPCGVertex((WGraphVertex) sEdge.getOrigin(), (WGraphVertex) tEdge.getOrigin()));
+							 break;
+						 case OUT:
+							 createPartialPCG(getPCGVertex((WGraphVertex) sEdge.getDestination(), (WGraphVertex) tEdge.getDestination()));
+							 break;
+						 default:
+							 try {
+								 throw new Exception("Should not be here. Make sure EdgeDirection is provided and not null");
+							 } catch (Exception e) {
+								 e.printStackTrace();
+							 }
+						 }
+						 
+					 }
+					 else{
+						 // what to do in case prop are not equal
+						 if(isSortEdges()){
+							 // Conditions where we add a new element in the pairwise connectivity graph
+							 // when egdes are sorted. Predicates comparison involves string comparison
+							 if(edgeComparison > 0){
+								// target property is smaller than source property (continue to cycle on target edges)
+								continue; 
+							 }
+							 else{
+								 // target property is greater than source property (break the cycle on target edges)
+								 break;
+							 }
+						 }
+						 else{
+							 // Conditions where we add a new element in the pairwise connectivity graph
+							 // when egdes are NOT sorted. Predicates comparison involves string comparison
+							 continue;
+						 }
+					 }
+				 }
+			 }
+	 }
+					
+
+					 /*
+						 // target property is equal to source property (go compute)
+						 if( ((SimilarityFloodingMatcherParameters)param).omitAnonymousNodes && 
+								 ( sEdge.getOrigin().getObject().isAnon() || sEdge.getDestination().getObject().isAnon() ||
+								   tEdge.getOrigin().getObject().isAnon() || tEdge.getDestination().getObject().isAnon() )  ) {
+							// these nodes are anonymous
+							// parameter is set to not insert anonymous nodes
+							// do nothing
+						 } else {
+					 				PCGVertex sourcePCGVertex = getPCGVertex((WGraphVertex)sEdge.getOrigin(), (WGraphVertex)tEdge.getOrigin());
+						 			PCGVertex targetPCGVertex = getPCGVertex((WGraphVertex)sEdge.getDestination(), (WGraphVertex)tEdge.getDestination());
+						 			PCGEdge pairEdge = new PCGEdge(sourcePCGVertex, targetPCGVertex, new PCGEdgeData(sEdge.getObject()));
+						 			if(!sourcePCGVertex.isVisited()){
+						 				
+						 			if(!targetPCGVertex.isVisited()){
+						 				targetPCGVertex.setVisited(true);
+						 				pcg.insertVertex(targetPCGVertex);
+						 			}
+						 			pcg.insertEdge(sourcePCGVertex,  // vertex
+								 		pairEdge,      		// edge
+								 		targetPCGVertex		// vertex
+								 		);
+							 }
+						 }
+						 
+					 }
+					 */
+					 
+	 protected PCGEdge getEdge(PCGVertex pcgV, String edgeLabel, PCGVertex pcgV2) {
+			
+			PCGEdge edgeNew = edgesMap.get(pcgV.toString() + edgeLabel + pcgV2.toString());
+			
+			if (edgeNew == null) {
+				// we don't have that edge, we create it
+				edgeNew = new PCGEdge(pcgV, pcgV2, new PCGEdgeData(edgeLabel));
+				edgesMap.put(pcgV.toString() + edgeLabel + pcgV2.toString(), edgeNew);
+				return edgeNew;
+			}
+			else{
+				// we already have that edge (it would give a duplicate)
+				return null;
+			}
+		}
+	 
+	 protected int compareEdges(WGraphEdge sEdge, WGraphEdge tEdge){
+		 return sEdge.getObject().compareTo(tEdge.getObject());
+	 }
+	 
+	 /**
+	  * This method inserts a new triple (vertex, edge, vertex) in the PairwiseConnectivityGraph. 
+	  * It checks for duplicates
+	  */
+	 private void insertInPCG(WGraphEdge sEdge, WGraphEdge tEdge, EdgeDirection ed) {
+		 PCGVertex sourcePCGVertex = getPCGVertex((WGraphVertex)sEdge.getOrigin(), (WGraphVertex)tEdge.getOrigin());
+		 PCGVertex targetPCGVertex = getPCGVertex((WGraphVertex)sEdge.getDestination(), (WGraphVertex)tEdge.getDestination());
+		 PCGEdge pairEdge = null;
+		 switch(ed){
+		 case IN:
+			 pairEdge = getEdge(targetPCGVertex, sEdge.getObject(), sourcePCGVertex);
+			 break;
+		 case OUT:
+			 pairEdge = getEdge(sourcePCGVertex, sEdge.getObject(), targetPCGVertex);
+			 break;
+		 default:
+			 try {
+				 throw new Exception("Should not be here. Make sure EdgeDirection is provided and not null");
+			 } catch (Exception e) {
+				 e.printStackTrace();
+			 }
+		 }
+		 
+		 if(!sourcePCGVertex.isVisited()){
+			 pcg.insertVertex(sourcePCGVertex);
+			 sourcePCGVertex.setVisited(true);
+		 }
+		 if(!targetPCGVertex.isVisited()){
+			 pcg.insertVertex(targetPCGVertex);
+			 targetPCGVertex.setVisited(true);
+		 }
+		 if(pairEdge != null){
+			 pcg.insertEdge(pairEdge);
+		 }
+		 
+	 }
+		
+	 /* *********************************************************************************** */
+	 /*		 				INDUCED PROPAGATION GRAPH OPERATIONS							*/
+	 /* *********************************************************************************** */
+	 
 	/**
 	  * This method creates the Induced Propagation Graph.]
 	  * NOTE! This is done in place using the Pairwise Connectivity Graph as the base.
@@ -513,7 +678,6 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 
 		 /**
 		  * working on similarity matrices only
-		  * TODO: (improvement) works on one SimilarityMatrix at a time given as parameter
 		  */
 		 protected void computeRelativeSimilarities(SimilarityMatrix matrix){
 			 
@@ -655,7 +819,21 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 }
 	 }
 
-	 protected abstract void loadSimilarityMatrices();
+	 /**
+	 * @return the sortEdges
+	 */
+	public boolean isSortEdges() {
+		return sortEdges;
+	}
+
+	/**
+	 * @param sortEdges the sortEdges to set
+	 */
+	public void setSortEdges(boolean sortEdges) {
+		this.sortEdges = sortEdges;
+	}
+
+	protected abstract void loadSimilarityMatrices();
 	
 	 protected abstract PCGVertexData selectInput(Pair<RDFNode, RDFNode> pair);
 	 

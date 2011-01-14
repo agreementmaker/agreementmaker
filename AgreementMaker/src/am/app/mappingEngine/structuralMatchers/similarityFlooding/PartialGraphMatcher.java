@@ -31,8 +31,7 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 	 */
 	private static final long serialVersionUID = -4674863017457273447L;
 	
-	private HashMap<String, PCGEdge> edgesMap;
-	private enum EdgeDirection{IN, OUT};
+	protected HashMap<String, PCGEdge> edgesMap;
 	private int round = 0;
 	public static final int ROUND_MAX = 1; // maximum numbers of rounds for fixpoint computation
 	
@@ -328,7 +327,7 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 			
 		}
 	 
-		private PCGEdge getEdge(PCGVertex pcgV, String edgeLabel, PCGVertex pcgV2) {
+		protected PCGEdge getEdge(PCGVertex pcgV, String edgeLabel, PCGVertex pcgV2) {
 			
 			PCGEdge edgeNew = edgesMap.get(pcgV.toString() + edgeLabel + pcgV2.toString());
 			

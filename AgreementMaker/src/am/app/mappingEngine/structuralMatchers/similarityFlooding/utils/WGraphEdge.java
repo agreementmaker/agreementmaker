@@ -17,7 +17,7 @@ public class WGraphEdge extends DirectedGraphEdge<String, RDFNode> implements Co
 			DirectedGraphVertex<RDFNode, String> dest, String o) {
 		super(orig, dest, o);
 	}
-	
+
 	public String toString(){
 		return " <" + this.getOrigin().getObject().toString() + " --- "
 					+ this.getObject().toString() + " --- "
