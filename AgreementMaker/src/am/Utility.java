@@ -14,6 +14,7 @@ import am.userInterface.table.MyTableModel;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.Locale;
 
 
@@ -461,4 +462,22 @@ public class Utility {
 
 		return hh+":"+mm+":"+ss+":"+msmsms;
 	}
+	
+	
+	/**
+	 * createIntListToN: creates an ArrayList of n integers from 0 to n-1
+	 * useful to create a list for considering all the values of the rows or columns of the alignment matrix
+	 * Takes O(n)
+	 * @param n size of the ArrayList (n-1 is the last value)
+	 * @return arrayList of integer values from 0 to n-1 
+	 * @author michele 
+	 */
+	public static ArrayList<Integer> createIntListToN(int n){
+		ArrayList<Integer> list = new ArrayList<Integer>();
+		for(int i = 0; i < n; i++){
+			list.add(i);
+		}
+		return list;		
+	}
+	
 }
