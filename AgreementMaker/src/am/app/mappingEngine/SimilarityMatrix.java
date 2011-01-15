@@ -1,6 +1,7 @@
 package am.app.mappingEngine;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
@@ -57,5 +58,8 @@ public interface SimilarityMatrix
 	double getMaxValue();
 	Mapping[] getTopK(int k);
 	Mapping[] getTopK(int k, boolean[][] filteredCells);
+	
+	Vector<Mapping> toMappingArray();
+	Vector<Double> toSimilarityArray(Vector<Mapping> mapsArray);
 	
 }

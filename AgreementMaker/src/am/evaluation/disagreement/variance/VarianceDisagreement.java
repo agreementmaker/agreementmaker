@@ -8,6 +8,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.evaluation.disagreement.DisagreementCalculationMethod;
 import am.evaluation.disagreement.DisagreementParameters;
 import am.evaluation.disagreement.DisagreementParametersPanel;
@@ -36,7 +37,7 @@ public class VarianceDisagreement extends DisagreementCalculationMethod {
 			int rows = matchersToConsider.get(0).getClassesMatrix().getRows();
 			int cols = matchersToConsider.get(0).getClassesMatrix().getColumns();
 			
-			SimilarityMatrix disagreementMatrix = new SimilarityMatrix(rows, cols, alignType.aligningClasses );
+			SimilarityMatrix disagreementMatrix = new ArraySimilarityMatrix(rows, cols, alignType.aligningClasses );
 			
 			for( int i = 0; i < rows; i++ ) {
 				for( int j = 0; j < cols; j++ ) {
@@ -59,7 +60,7 @@ public class VarianceDisagreement extends DisagreementCalculationMethod {
 			int rows = matchersToConsider.get(0).getPropertiesMatrix().getRows();
 			int cols = matchersToConsider.get(0).getPropertiesMatrix().getColumns();
 			
-			SimilarityMatrix disagreementMatrix = new SimilarityMatrix(rows, cols, alignType.aligningClasses );
+			SimilarityMatrix disagreementMatrix = new ArraySimilarityMatrix(rows, cols, alignType.aligningClasses );
 			
 			for( int i = 0; i < rows; i++ ) {
 				for( int j = 0; j < cols; j++ ) {

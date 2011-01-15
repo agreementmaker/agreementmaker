@@ -2,6 +2,7 @@ package am.app.mappingEngine.similarityMatrix;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import am.Utility;
 import am.app.Core;
@@ -231,7 +232,27 @@ public class ArraySimilarityMatrix implements SimilarityMatrix, Serializable {
 		return matrix;
 	}
     
+	@Override
+	public Vector<Mapping> toMappingArray(){
+		Vector<Mapping> mappingArray = new Vector<Mapping>(getRows() * getColumns());
+		for(int i = 0; i < getRows(); i++){
+			for(int j = 0; j < getColumns(); j++){
+				if(this.get(i, j) != null){
+					mappingArray.add(this.get(i, j));
+				}
+			}
+		}
+		return mappingArray;
+    }
     
+	@Override
+	public Vector<Double> toSimilarityArray(Vector<Mapping> mapsArray){
+		Vector<Double> similarityArray = new Vector<Double>();
+		for(int i = 0; i < mapsArray.size(); i++){
+			similarityArray.add(mapsArray.get(i).getSimilarity());
+		}
+		return similarityArray;
+    }
     
     /**GENERAL FUNCTIONS FOR MATRIX NOT NEEDED NOW BUT MAY BE USEFUL IN THE FUTUR*/
 

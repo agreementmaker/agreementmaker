@@ -36,6 +36,7 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.output.OutputController;
 import am.userInterface.AppPreferences.FileType;
 
@@ -429,7 +430,7 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 							if( selectedMatcher.getSourceOntology() == null || selectedMatcher.getTargetOntology() == null ) { 
 								throw new Exception("Matcher does not have Source or Target ontologies set.");
 							}
-							SimilarityMatrix m = new SimilarityMatrix(selectedMatcher.getSourceOntology().getClassesList().size(), 
+							SimilarityMatrix m = new ArraySimilarityMatrix(selectedMatcher.getSourceOntology().getClassesList().size(), 
 																	selectedMatcher.getTargetOntology().getClassesList().size(), 
 																	alignType.aligningClasses);
 							if( selectedMatcher.getClassAlignmentSet() == null ) 
@@ -451,7 +452,7 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 							if( selectedMatcher.getSourceOntology() == null || selectedMatcher.getTargetOntology() == null ) { 
 								throw new Exception("Matcher does not have Source or Target ontologies set.");
 							}
-							SimilarityMatrix m = new SimilarityMatrix(selectedMatcher.getSourceOntology().getPropertiesList().size(), 
+							SimilarityMatrix m = new ArraySimilarityMatrix(selectedMatcher.getSourceOntology().getPropertiesList().size(), 
 																	selectedMatcher.getTargetOntology().getPropertiesList().size(), 
 																	alignType.aligningProperties);
 							if( selectedMatcher.getPropertyAlignmentSet() == null ) 
