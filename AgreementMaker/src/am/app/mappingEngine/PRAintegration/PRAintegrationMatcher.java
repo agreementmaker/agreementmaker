@@ -5,12 +5,13 @@ import java.util.HashSet;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.MappedNodes;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParametersPanel;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 
 public class PRAintegrationMatcher extends AbstractMatcher {
@@ -67,7 +68,7 @@ public class PRAintegrationMatcher extends AbstractMatcher {
 			Alignment<Mapping> refAlignmentSet, SimilarityMatrix refAlignmentMatrix, alignType typeOfNodes)  throws Exception{
 		
 
-		SimilarityMatrix resultMatrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, inputMatchers.get(0).getRelation());
+		SimilarityMatrix resultMatrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, inputMatchers.get(0).getRelation());
 		Alignment<Mapping> resultSet = new Alignment<Mapping>();
 		HashSet<Mapping> mappings = new HashSet<Mapping>();
 		

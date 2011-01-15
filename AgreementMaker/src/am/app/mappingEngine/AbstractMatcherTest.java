@@ -435,8 +435,8 @@ public abstract class AbstractMatcherTest {
 	private void runMatrixTest(SimilarityMatrix matrix){
 		SimilarityMatrix local = matrix;
 		String errorMessage;
-		for(int i = 0; i < local.rows; i++){
-			for(int j = 0; j < local.columns; j++){
+		for(int i = 0; i < local.getRows(); i++){
+			for(int j = 0; j < local.getColumns(); j++){
 				errorMessage = "Value for " + i + " - " + j + " not between [0,1] interval\n";
 				errorMessage += "Value = " + local.getSimilarity(i, j);
 				assertTrue(errorMessage, ((local.get(i, j).getSimilarity() >= 0) && (local.get(i, j).getSimilarity() <= 1)));

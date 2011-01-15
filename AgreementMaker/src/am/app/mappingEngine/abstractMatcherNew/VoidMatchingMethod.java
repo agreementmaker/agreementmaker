@@ -2,6 +2,7 @@ package am.app.mappingEngine.abstractMatcherNew;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Ontology;
 import am.utility.Pair;
 
@@ -17,11 +18,11 @@ public class VoidMatchingMethod implements MatchingMethod {
 		Ontology source = inputOntologies.getLeft();
 		Ontology target = inputOntologies.getRight();
 		
-		SimilarityMatrix classes = new SimilarityMatrix(
+		SimilarityMatrix classes = new ArraySimilarityMatrix(
 				source.getClassesList().size(),
 				target.getClassesList().size(),
 				alignType.aligningClasses);
-		SimilarityMatrix properties = new SimilarityMatrix(
+		SimilarityMatrix properties = new ArraySimilarityMatrix(
 				source.getPropertiesList().size(),
 				target.getPropertiesList().size(),
 				alignType.aligningProperties);

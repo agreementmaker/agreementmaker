@@ -38,6 +38,7 @@ import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarity
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.MatcherParametersDialog;
@@ -226,14 +227,14 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		if(inputMatchers.size()>0){
 			AbstractMatcher input = inputMatchers.get(0);
 			//classesMatrix = input.getClassesMatrix();
-			classesMatrix = new SimilarityMatrix(input.getClassesMatrix());
+			classesMatrix = new ArraySimilarityMatrix(input.getClassesMatrix());
 			//propertiesMatrix = input.getPropertiesMatrix();
-			propertiesMatrix = new SimilarityMatrix(input.getPropertiesMatrix());
+			propertiesMatrix = new ArraySimilarityMatrix(input.getPropertiesMatrix());
 			//System.out.println();
 		}
 		else{
-			classesMatrix = new SimilarityMatrix(sourceClassList.size(),targetClassList.size(),alignType.aligningClasses);
-			propertiesMatrix = new SimilarityMatrix(sourcePropList.size(),targetPropList.size(),alignType.aligningProperties);
+			classesMatrix = new ArraySimilarityMatrix(sourceClassList.size(),targetClassList.size(),alignType.aligningClasses);
+			propertiesMatrix = new ArraySimilarityMatrix(sourcePropList.size(),targetPropList.size(),alignType.aligningProperties);
 		}
 		
 	}

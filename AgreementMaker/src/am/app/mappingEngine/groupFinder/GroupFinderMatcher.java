@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 
 /**
@@ -161,7 +161,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	protected ArrayList<Mapping> selectGroups(ArrayList<Node> sourceRoots, ArrayList<Node> targetRoots, SimilarityMatrix input, alignType typeOfNodes){
 		source_root_list = sourceRoots;
     	target_root_list = targetRoots;
-    	SimilarityMatrix localMatrix = new SimilarityMatrix(source_root_list.size(), target_root_list.size(), typeOfNodes);
+    	SimilarityMatrix localMatrix = new ArraySimilarityMatrix(source_root_list.size(), target_root_list.size(), typeOfNodes);
     	localMatrix.initFromNodeList(source_root_list, target_root_list);
     	
     	// step 1: taking level 0 source concepts with their descendants and assigning groups

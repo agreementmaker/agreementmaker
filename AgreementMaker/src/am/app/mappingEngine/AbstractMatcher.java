@@ -10,6 +10,7 @@ import am.app.mappingEngine.oneToOneSelection.MappingMWBM;
 import am.app.mappingEngine.oneToOneSelection.MaxWeightBipartiteMatching;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.MatchingProgressDisplay;
@@ -426,7 +427,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	
     	else{
     		//run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
-	    	SimilarityMatrix matrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
+	    	SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 			Node source;
 			Node target;
 			Mapping alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
@@ -454,7 +455,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			Alignment<Mapping> inputAlignmentSet, alignType typeOfNodes) throws Exception {
     	
     	MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, param.maxSourceAlign, param.maxTargetAlign);
-    	SimilarityMatrix matrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
+    	SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		Node source;
 		Node target;
 		Mapping alignment; 
@@ -1419,7 +1420,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		int row = n1.getIndex();
 		int col = n2.getIndex();
 		
-		if( row < workingMatrix.rows && col < workingMatrix.columns ) {
+		if( row < workingMatrix.getRows() && col < workingMatrix.getColumns() ) {
 			Mapping a2 = workingMatrix.get( row, col );
 			if( a.equals(a2) ) {
 				// ding ding ding, we have a winner.
@@ -1430,7 +1431,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			row = n2.getIndex();
 			col = n1.getIndex();
 			
-			if( row < workingMatrix.rows && col < workingMatrix.columns ) {
+			if( row < workingMatrix.getRows() && col < workingMatrix.getColumns() ) {
 				Mapping a2 = workingMatrix.get(row, col);
 				if( a.equals(a2) ) {
 					// ding ding ding, we have a winner.

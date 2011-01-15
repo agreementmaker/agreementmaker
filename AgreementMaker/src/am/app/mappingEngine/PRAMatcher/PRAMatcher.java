@@ -7,6 +7,7 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 
 public class PRAMatcher extends BaseSimilarityMatcher 
@@ -112,7 +113,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 
 		//Now we align nodes by considering only nodes in the subtrees of matched nodes
 		//Initialize matrix before aligning nodes, cos this method will access matrix
-		matrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
+		matrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 		alignNodes(typeOfNodes);
 		
 		

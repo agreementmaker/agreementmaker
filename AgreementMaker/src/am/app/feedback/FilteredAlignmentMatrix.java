@@ -1,20 +1,19 @@
 package am.app.feedback;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.TreeSet;
-
-import am.app.Core;
 import am.app.feedback.CandidateConcept.ontology;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.ontology.Node;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 
 
 // TODO: This FilteredAlignmentMatrix only works for 1-1 alignments.  To extend this, there requires some work.
-public class FilteredAlignmentMatrix extends SimilarityMatrix {
+public class FilteredAlignmentMatrix extends ArraySimilarityMatrix {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -301537917820651062L;
 	// TODO: Add intializeVariables() method for the constructors to use (added to AlignmentMatrix)
 	
 
@@ -236,7 +235,8 @@ public class FilteredAlignmentMatrix extends SimilarityMatrix {
 	}
 	
 	// return a copy of the matrix
-	public Object clone(){
+	@Override
+	public SimilarityMatrix clone(){
 		
 		FilteredAlignmentMatrix matrix = new FilteredAlignmentMatrix(this);
 		return matrix;

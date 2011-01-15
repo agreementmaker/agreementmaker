@@ -7,6 +7,7 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.PRAMatcher.PRAMatcher;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 
 public class PRAMatcher2 extends AbstractMatcher
@@ -112,7 +113,7 @@ public class PRAMatcher2 extends AbstractMatcher
 		{	
 			numSources = sourceOntology.getClassesList().size();
 			numTargets = targetOntology.getClassesList().size();
-			resultMatrix = new SimilarityMatrix(numSources, numTargets, alignType.aligningClasses);
+			resultMatrix = new ArraySimilarityMatrix(numSources, numTargets, alignType.aligningClasses);
 
 			System.out.println("Num of entries in input class alignment set is " + inputClassesAlignmentSet.size());
 			for(int i = 0; i < inputClassesAlignmentSet.size(); i++)
@@ -162,7 +163,7 @@ public class PRAMatcher2 extends AbstractMatcher
 		{
 			numSources = sourceOntology.getPropertiesList().size();			
 			numTargets = targetOntology.getPropertiesList().size();
-			resultMatrix = new SimilarityMatrix(numSources, numTargets, alignType.aligningProperties);
+			resultMatrix = new ArraySimilarityMatrix(numSources, numTargets, alignType.aligningProperties);
 		
 			//add everything in the partial reference alignment in the alignmentSet
 			for(int i = 0; i < inputPropertiesAlignmentSet.size(); i++)

@@ -13,6 +13,7 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 
 /**
@@ -135,7 +136,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		ParametricStringMatcher localMatcher = new ParametricStringMatcher();
 		localMatcher.setParam(localMatcherParams);
 		localMatcher.initializeNormalizer();
-		SimilarityMatrix localMatrix = new SimilarityMatrix(source.size(), target.size(), typeOfNodes);
+		SimilarityMatrix localMatrix = new ArraySimilarityMatrix(source.size(), target.size(), typeOfNodes);
 		
 		/* ------------- BEGIN FOR #1 --------------- */
 		double tempValue = 0.0;
