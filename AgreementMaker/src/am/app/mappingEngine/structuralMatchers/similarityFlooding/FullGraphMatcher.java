@@ -6,7 +6,6 @@ package am.app.mappingEngine.structuralMatchers.similarityFlooding;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Iterator;
-import java.util.Scanner;
 
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.structuralMatchers.SimilarityFlooding;
@@ -81,14 +80,15 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		if( !DEBUG_FLAG ) {
 			System.out.println(pcg);
 			Iterator<PCGEdge> iEdge = pcg.edges();
-			File f = new File("/home/nikiforos/Desktop/by_connComp");
-			FileWriter fw = new FileWriter(f);
-			while(iEdge.hasNext()){
-				PCGEdge vert = iEdge.next();
-				System.out.println(vert);
-				fw.append(vert.toString() + "\n");
-			}
-			fw.close();
+//			File f = new File("/home/nikiforos/Desktop/at_once");
+//			File f = new File("/home/nikiforos/Desktop/by_connComp");
+//			FileWriter fw = new FileWriter(f);
+//			while(iEdge.hasNext()){
+//				PCGEdge vert = iEdge.next();
+//				System.out.println(vert);
+//				fw.append(vert.toString() + "\n");
+//			}
+//			fw.close();
 		}
 		progressDisplay.appendToReport("done.\n");
 		
@@ -114,10 +114,10 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 	 
 	 protected void createFullPCG(WrappingGraph sourceOnt, WrappingGraph targetOnt){
 		 //old method
-//		 super.createFullPCG(sourceOnt, targetOnt);
+		 super.createFullPCG(sourceOnt, targetOnt);
 		 
 		 //new method
-		 createPCG(sourceOnt, targetOnt);
+//		 createPCG(sourceOnt, targetOnt);
 	 }
 
 	private void createPCG(WrappingGraph sourceOnt, WrappingGraph targetOnt) {
@@ -131,7 +131,12 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 			sVertex = sLocalItr.next();
 			while(tLocalItr.hasNext()){
 				tVertex = tLocalItr.next();
-				System.out.println("NewPCGVertex");
+				
+				if(sVertex.getObject().toString().contains("Academic") &&
+						tVertex.getObject().toString().contains("Organization") ){
+					 System.out.println();
+				 }
+				
 				if(sVertex.getNodeType().equals(tVertex.getNodeType())){
 					createPartialPCG(getPCGVertex(sVertex, tVertex));
 					

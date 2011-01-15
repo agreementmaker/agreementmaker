@@ -169,20 +169,16 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 			 }
 	 }
 	 
-	 protected boolean createPartialPCG(PCGVertex pcgV){
+	protected boolean createPartialPCG(PCGVertex pcgV){
 		 if(pcgV.getObject().getStCouple().getLeft().getObject().toString().contains("Academic") &&
-				 pcgV.getObject().getStCouple().getRight().getObject().toString().contains("dqzdxdcsqj") ){
-			 
+				 pcgV.getObject().getStCouple().getRight().getObject().toString().contains("Organization") ){
+			 System.out.println();
 		 }
 
 		 if(pcgV.isVisited()){
-
-			 System.out.println("NO new partial graph");
-				return false;	
+			 return false;	
 		 }
 		 else{
-
-			 System.out.println("new partial graph");
 			 pcgV.setVisited(true);
 //			 System.out.println(pcgV.toString() + " isVisited: " + pcgV.isVisited());
 
@@ -252,57 +248,62 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 int edgeComparison = 0;
 
 		 System.out.println("looking edges");
-			 while(sourceIterator.hasNext()){
-				 sEdge = (WGraphEdge) sourceIterator.next();
-				 
-				 while(targetIterator.hasNext()){
-					 tEdge = (WGraphEdge) targetIterator.next();
+		 while(sourceIterator.hasNext()){
+			 sEdge = (WGraphEdge) sourceIterator.next();
+			 
+			 if(sourceIterator.hasNext()){
+				 System.out.println();
+			 }
+			 
+			 while(targetIterator.hasNext()){
+				 tEdge = (WGraphEdge) targetIterator.next();
 
-					 System.out.println("new edge");
-					 // comparing edges here
-					 edgeComparison = compareEdges(sEdge, tEdge);
-					 if(edgeComparison == 0){
+				 System.out.println("new edge");
+				 // comparing edges here
+				 edgeComparison = compareEdges(sEdge, tEdge);
+				 if(edgeComparison == 0){
 
-						 System.out.println("new insertion");
-						 insertInPCG(sEdge, tEdge, ed);
-						 switch(ed){
-						 case IN:
-							 createPartialPCG(getPCGVertex((WGraphVertex) sEdge.getOrigin(), (WGraphVertex) tEdge.getOrigin()));
-							 break;
-						 case OUT:
-							 createPartialPCG(getPCGVertex((WGraphVertex) sEdge.getDestination(), (WGraphVertex) tEdge.getDestination()));
-							 break;
-						 default:
-							 try {
-								 throw new Exception("Should not be here. Make sure EdgeDirection is provided and not null");
-							 } catch (Exception e) {
-								 e.printStackTrace();
-							 }
+					 System.out.println("new insertion");
+					 insertInPCG(sEdge, tEdge);
+					 switch(ed){
+					 case IN:
+						 createPartialPCG(getPCGVertex((WGraphVertex) sEdge.getOrigin(), (WGraphVertex) tEdge.getOrigin()));
+						 break;
+					 case OUT:
+						 createPartialPCG(getPCGVertex((WGraphVertex) sEdge.getDestination(), (WGraphVertex) tEdge.getDestination()));
+						 break;
+					 default:
+						 try {
+							 throw new Exception("Should not be here. Make sure EdgeDirection is provided and not null");
+						 } catch (Exception e) {
+							 e.printStackTrace();
 						 }
-						 
 					 }
-					 else{
-						 // what to do in case prop are not equal
-						 if(isSortEdges()){
-							 // Conditions where we add a new element in the pairwise connectivity graph
-							 // when egdes are sorted. Predicates comparison involves string comparison
-							 if(edgeComparison > 0){
-								// target property is smaller than source property (continue to cycle on target edges)
-								continue; 
-							 }
-							 else{
-								 // target property is greater than source property (break the cycle on target edges)
-								 break;
-							 }
+					 
+				 }
+				 else{
+					 // what to do in case prop are not equal
+					 if(isSortEdges()){
+						 // Conditions where we add a new element in the pairwise connectivity graph
+						 // when egdes are sorted. Predicates comparison involves string comparison
+						 if(edgeComparison > 0){
+							// target property is smaller than source property (continue to cycle on target edges)
+							continue; 
 						 }
 						 else{
-							 // Conditions where we add a new element in the pairwise connectivity graph
-							 // when egdes are NOT sorted. Predicates comparison involves string comparison
-							 continue;
+							 // target property is greater than source property (break the cycle on target edges)
+							 break;
 						 }
+					 }
+					 else{
+						 // Conditions where we add a new element in the pairwise connectivity graph
+						 // when egdes are NOT sorted. Predicates comparison involves string comparison
+						 continue;
 					 }
 				 }
 			 }
+			 targetIterator = t.iterator();
+		 }
 	 }
 					
 
@@ -363,45 +364,30 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	  * This method inserts a new triple (vertex, edge, vertex) in the PairwiseConnectivityGraph. 
 	  * It checks for duplicates
 	  */
-	 private void insertInPCG(WGraphEdge sEdge, WGraphEdge tEdge, EdgeDirection ed) {
+	 private void insertInPCG(WGraphEdge sEdge, WGraphEdge tEdge) {
 
 		 System.out.println("start insertion");
 		 PCGVertex sourcePCGVertex = getPCGVertex((WGraphVertex)sEdge.getOrigin(), (WGraphVertex)tEdge.getOrigin());
 		 System.out.println("source pcg");
 		 PCGVertex targetPCGVertex = getPCGVertex((WGraphVertex)sEdge.getDestination(), (WGraphVertex)tEdge.getDestination());
 		 System.out.println("target pcg");
-		 PCGEdge pairEdge = null;
-		 switch(ed){
-		 case IN:
-			 pairEdge = getEdge(sourcePCGVertex, sEdge.getObject(), targetPCGVertex);
-//			 pairEdge = getEdge(targetPCGVertex, sEdge.getObject(), sourcePCGVertex);
-			 System.out.println("in edge");
-			 break;
-		 case OUT:
-			 pairEdge = getEdge(sourcePCGVertex, sEdge.getObject(), targetPCGVertex);
-//			 pairEdge = getEdge(targetPCGVertex, sEdge.getObject(), sourcePCGVertex);
-			 System.out.println("out source");
-			 break;
-		 default:
-			 System.out.println("error???");
-			 break;
-		 }
+		 PCGEdge pairEdge = getEdge(sourcePCGVertex, sEdge.getObject(), targetPCGVertex);
 		 
 		 if(!sourcePCGVertex.isInserted()){
 
-			 System.out.println("insert source");
+			 System.out.println(sourcePCGVertex);
 			 pcg.insertVertex(sourcePCGVertex);
 			 sourcePCGVertex.setInserted(true);
 			 System.out.println("end insert source");
 		 }
 		 if(!targetPCGVertex.isInserted()){
-			 System.out.println("insert target");
+			 System.out.println(targetPCGVertex);
 			 pcg.insertVertex(targetPCGVertex);
 			 targetPCGVertex.setInserted(true);
 			 System.out.println("end insert target");
 		 }
 		 if(!pairEdge.isInserted()){
-			 System.out.println("insert edge");
+			 System.out.println(pairEdge);
 			 pcg.insertEdge(pairEdge);
 			 pairEdge.setInserted(true);
 			 System.out.println("end insert edge");
