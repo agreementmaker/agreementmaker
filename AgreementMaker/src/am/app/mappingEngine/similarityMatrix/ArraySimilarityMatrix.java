@@ -68,17 +68,7 @@ public class ArraySimilarityMatrix implements SimilarityMatrix, Serializable {
         this.columns = N;
         data = new Mapping[M][N];
     }
-    
-    // create M-by-N matrix of the selected value
-    public ArraySimilarityMatrix(int M, int N, alignType type, double value) {
-    	relation = Mapping.EQUIVALENCE;
-    	typeOfMatrix = type;
-        this.rows = M;
-        this.columns = N;
-        data = new Mapping[M][N];
-        fillMatrix(value);
-    }
-    
+     
     // create M-by-N matrix of 0's
     public ArraySimilarityMatrix(int M, int N, alignType type, String rel) {
     	relation = rel;

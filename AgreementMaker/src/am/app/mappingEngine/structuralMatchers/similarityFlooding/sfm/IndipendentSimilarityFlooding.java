@@ -4,6 +4,7 @@
 package am.app.mappingEngine.structuralMatchers.similarityFlooding.sfm;
 
 import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.structuralMatchers.SimilarityFloodingParameters;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.FullGraphMatcher;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertexData;
@@ -46,11 +47,11 @@ public class IndipendentSimilarityFlooding extends FullGraphMatcher {
 	@Override
 	protected void loadSimilarityMatrices(){
 		// load classesMatrix
-		classesMatrix = new SimilarityMatrix(sourceOntology.getClassesList().size(),
+		classesMatrix = new ArraySimilarityMatrix(sourceOntology.getClassesList().size(),
 				targetOntology.getClassesList().size(),
 				alignType.aligningClasses);
 		// load propertiesMatrix
-		propertiesMatrix = new SimilarityMatrix(sourceOntology.getPropertiesList().size(),
+		propertiesMatrix = new ArraySimilarityMatrix(sourceOntology.getPropertiesList().size(),
 				targetOntology.getPropertiesList().size(),
 				alignType.aligningProperties);
 	}

@@ -7,6 +7,7 @@ import java.util.Vector;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.structuralMatchers.SimilarityFlooding;
 import am.app.mappingEngine.structuralMatchers.SimilarityFloodingParameters;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdge;
@@ -474,17 +475,17 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 		@Override
 		protected void loadSimilarityMatrices() {
 			// load classesMatrix
-			classesMatrix = new SimilarityMatrix(sourceOntology.getClassesList().size(),
+			classesMatrix = new ArraySimilarityMatrix(sourceOntology.getClassesList().size(),
 					targetOntology.getClassesList().size(),
 					alignType.aligningClasses);
 //			classesMatrix.fillMatrix(1.0, sourceOntology.getClassesList(), targetOntology.getClassesList());
-			prevRoundClasses = new SimilarityMatrix(classesMatrix);
+			prevRoundClasses = new ArraySimilarityMatrix(classesMatrix);
 			// load propertiesMatrix
-			propertiesMatrix = new SimilarityMatrix(sourceOntology.getPropertiesList().size(),
+			propertiesMatrix = new ArraySimilarityMatrix(sourceOntology.getPropertiesList().size(),
 					targetOntology.getPropertiesList().size(),
 					alignType.aligningProperties);
 //			propertiesMatrix.fillMatrix(1.0, sourceOntology.getPropertiesList(), targetOntology.getPropertiesList());
-			prevRoundProperties = new SimilarityMatrix(propertiesMatrix);
+			prevRoundProperties = new ArraySimilarityMatrix(propertiesMatrix);
 		}
 		
 		
