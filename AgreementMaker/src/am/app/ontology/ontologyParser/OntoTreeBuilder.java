@@ -12,6 +12,7 @@ import am.app.ontology.Node;
 import am.userInterface.vertex.Vertex;
 import am.utility.RunTimer;
 
+import com.hp.hpl.jena.ontology.ConversionException;
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual; 
 import com.hp.hpl.jena.ontology.ObjectProperty;
@@ -305,24 +306,30 @@ public class OntoTreeBuilder extends TreeBuilder{
 	}
 
 
-
+	// TODO: Merge this with the hierarchy roots function in LegacyLayout
 	private void createFosterHome( OntClass currentOrphan, HashMap<OntClass, Vertex> classesMap ) {
 		
 		Vertex currentVertex = getVertexFromClass( classesMap, currentOrphan );
 		
-		ExtendedIterator parentsItr = currentOrphan.listSuperClasses( true );  // iterator of the current class' parents
-		
-		while( parentsItr.hasNext() ) {
+		try { 
+			ExtendedIterator<?> parentsItr = currentOrphan.listSuperClasses( true );  // iterator of the current class' parents
 			
-			OntClass parentClass = (OntClass) parentsItr.next();
+			while( parentsItr.hasNext() ) {
+				
+				OntClass parentClass = (OntClass) parentsItr.next();
 
-			if( !parentClass.isAnon() && !parentClass.equals(owlThing) ) {
+				if( !parentClass.isAnon() && !parentClass.equals(owlThing) ) {
 
-				Vertex parentVertex = getVertexFromClass(classesMap, parentClass);  // create a new Vertex object or use an existing one.
-				parentVertex.add( currentVertex );  // create the parent link between the parent and the child
-				currentVertex.getNode().addParent(parentVertex.getNode()); // TODO: GET RID OF OR FIX VERTEX!
+					Vertex parentVertex = getVertexFromClass(classesMap, parentClass);  // create a new Vertex object or use an existing one.
+					parentVertex.add( currentVertex );  // create the parent link between the parent and the child
+					currentVertex.getNode().addParent(parentVertex.getNode()); // TODO: GET RID OF OR FIX VERTEX!
 
-			} 
+				} 
+			}
+		} catch ( ConversionException ce ) {
+			// could not convert currentOrphan to an ontClass.
+			// we will assume that it has no superclass.
+			return;
 		}
 		
 	}

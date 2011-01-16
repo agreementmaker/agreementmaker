@@ -35,6 +35,7 @@ public class Core {
 	
 	// Program wide DEBUG flag.
 	public static final boolean DEBUG = false;
+	public static final boolean DEBUG_STACK_TRACE_MSG = false;
 	public static final boolean DEBUG_NORMALIZER = false;  // debug flag for the am.app.mappingEngine.StringUtil.Normalizer class
 	public static final boolean DEBUG_ONTOLOGYLEXICONSYNSET = false;
 	public static boolean DEBUG_PSM = true;

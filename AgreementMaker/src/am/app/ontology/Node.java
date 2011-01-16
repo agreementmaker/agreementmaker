@@ -251,23 +251,29 @@ public class Node implements Serializable{
 			}
 			//properties and invidviduals lists only for classes
 			if(!or.canAs(OntProperty.class)) {//remember is important to check on prop instead of class to avoid a jena bug that a prop canAs ontClass
-				OntClass cls = (OntClass)or.as(OntClass.class);
-				it = cls.listDeclaredProperties(true);
-				String localname;
-				while(it.hasNext()) {
-					OntProperty op = (OntProperty)it.next();
-					if(!op.isAnon()) {
-						localname = op.getLocalName();
-						propOrClassNeighbours.add(localname);
+				try {
+					OntClass cls = (OntClass)or.as(OntClass.class);
+					it = cls.listDeclaredProperties(true);
+					String localname;
+					while(it.hasNext()) {
+						OntProperty op = (OntProperty)it.next();
+						if(!op.isAnon()) {
+							localname = op.getLocalName();
+							propOrClassNeighbours.add(localname);
+						}
+	
 					}
-
+					it = cls.listInstances(true);
+					while(it.hasNext()) {
+						Individual ind = (Individual)it.next();
+						localname = ind.getLabel(null);
+						if(localname != null && !localname.equals(""))
+							individuals.add(localname);
+					}
 				}
-				it = cls.listInstances(true);
-				while(it.hasNext()) {
-					Individual ind = (Individual)it.next();
-					localname = ind.getLabel(null);
-					if(localname != null && !localname.equals(""))
-						individuals.add(localname);
+				catch ( Exception e ) {
+					if( Core.DEBUG_STACK_TRACE_MSG ) System.out.println(e.getMessage());
+					if( Core.DEBUG ) e.printStackTrace();
 				}
 			}
 			else {
@@ -283,7 +289,8 @@ public class Node implements Serializable{
 						}
 					}
 				} catch ( Exception e ) {
-					e.printStackTrace();
+					if( Core.DEBUG_STACK_TRACE_MSG ) System.out.println(e.getMessage());
+					if( Core.DEBUG ) e.printStackTrace();
 				}
 			}
 		}

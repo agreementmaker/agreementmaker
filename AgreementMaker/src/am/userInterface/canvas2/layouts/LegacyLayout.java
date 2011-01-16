@@ -1026,16 +1026,29 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	    		OntClass oclass = (OntClass) itcls.next();
 	    		boolean isRoot = true;
 	    		
-	    		ExtendedIterator<?> superClassItr = oclass.listSuperClasses();
-	    		while( superClassItr.hasNext() ) {
-	    			OntClass superClass = (OntClass) superClassItr.next();
-	    			
-	    			if( !oclass.equals(superClass) && !superClass.isAnon() && !superClass.getLocalName().equals("Resource")) {
-	    				// this property has a valid superclass, therefore it is not a root property
-	    				superClassItr.close();
-	    				isRoot = false;
-	    				break;
+	    		ExtendedIterator<?> superClassItr = null;
+	    		try {
+	    			superClassItr = oclass.listSuperClasses();
+		    		while( superClassItr.hasNext() ) {
+		    			OntClass superClass = (OntClass) superClassItr.next();
+		    			
+		    			if( !oclass.equals(superClass) && !superClass.isAnon() && !superClass.getLocalName().equals("Resource")) {
+		    				// this property has a valid superclass, therefore it is not a root property
+		    				superClassItr.close();
+		    				isRoot = false;
+		    				break;
+		    			}
+		    		}
+	    		} catch( ConversionException ce ) {
+	    			// cannot list superclasses of this node.
+	    			// put it as a hierarchy root
+	    			// TODO: Figure out why we are getting these ConversionExceptions.
+	    			if( Core.DEBUG ) {
+		    			Logger log = Logger.getLogger(this.getClass());
+		    			log.setLevel(Level.DEBUG);
+		    			log.debug("Caught exception, but working around it.");
 	    			}
+	    			isRoot = true;
 	    		}
 	    		
 	    		if( isRoot ) 
