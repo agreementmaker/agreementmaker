@@ -477,7 +477,7 @@ public class ArraySimilarityMatrix implements SimilarityMatrix, Serializable {
 		
 		for( int i = 0; i < data.length; i++ ) {
 			for( int j = 0; j < data[i].length; j++ ) {
-				if( data[i][j].getSimilarity() > max ) { max = data[i][j].getSimilarity(); }
+				if( data[i][j] != null && data[i][j].getSimilarity() > max ) { max = data[i][j].getSimilarity(); }
 			}
 		}
 		

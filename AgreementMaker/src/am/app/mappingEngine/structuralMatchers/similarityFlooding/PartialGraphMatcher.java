@@ -1,5 +1,6 @@
 package am.app.mappingEngine.structuralMatchers.similarityFlooding;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
@@ -32,9 +33,7 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 	 */
 	private static final long serialVersionUID = -4674863017457273447L;
 	
-	protected HashMap<String, PCGEdge> edgesMap;
 	private int round = 0;
-	public static final int ROUND_MAX = 1; // maximum numbers of rounds for fixpoint computation
 	
 	// intialized when initialized the classes and properties matrix (loadSimilarityMatrix())
 	private SimilarityMatrix prevRoundClasses;
@@ -45,7 +44,6 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 	 */
 	public PartialGraphMatcher() {
 		super();
-		edgesMap = new HashMap<String, PCGEdge>();
 	}
 
 	/**
@@ -53,7 +51,6 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 	 */
 	public PartialGraphMatcher(SimilarityFloodingParameters params_new) {
 		super(params_new);
-		edgesMap = new HashMap<String, PCGEdge>();
 	}
 	
 	@Override 
@@ -86,19 +83,18 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 		
 		progressDisplay.appendToReport("Start Computation...");
 
-		//TODO: check collateral effects and details
-
 		Vector<Double> cOldVect, cNewVect;
 		do{
 			// new round starts
 			round++;
-//			if( round == 1 )System.out.println("----------- ROUND #" + round + " ---------------\n");
+			if( round == 2 )System.out.println("----------- ROUND #" + round + " ---------------\n");
 			
 			// phase 0: CLEAN all the data used before, matrix and WGraph survive and update old matrices
 //			if( round == 1 )System.out.println("----------- PHASE:" + round + ".0" + " ---------------");
-			unsetVisitedPCGVert(pairTable);
-			prevRoundClasses = (SimilarityMatrix) classesMatrix.clone();
-			prevRoundProperties = (SimilarityMatrix) propertiesMatrix.clone();
+			pairTable = new HashMap<String, PCGVertex>();
+			edgesMap = new HashMap<String, PCGEdge>();
+			updateOldSimValues(prevRoundClasses, classesMatrix, round);
+			updateOldSimValues(prevRoundProperties, propertiesMatrix, round);			
 			
 			// phase 1 to 5
 			executeRoundOperations(sourceGraph, targetGraph);
@@ -124,6 +120,13 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 			cNewVect = classesMatrix.toSimilarityArray(classesMatrix.toMappingArray());
 			cNewVect.addAll(pVect);
 			
+			try {
+				fw.append(cOldVect.size() + "\n");
+				fw.append(cNewVect.size() + "\n");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 //			if( round == 1 )System.out.println(cOldVect.toString());
 //			if( round == 1 )System.out.println(cNewVect.toString());
 		} while(!checkStopCondition(round, cOldVect, cNewVect));
@@ -136,6 +139,13 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 		computeRelativeSimilarities(propertiesMatrix);
 		progressDisplay.appendToReport("done.\n");
 		
+		try {
+			fw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	 }
 	 
 	private void executeRoundOperations(WrappingGraph s, WrappingGraph t){
@@ -144,7 +154,7 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 
 		WGraphVertex sVertex = null, tVertex = null;
 		// until all cells are covered
-		int sInd = 0, tInd = 0;
+		int sInd = 0, tInd = 0, pcgSize = 0;
 		while(sLocalItr.hasNext()){
 			sVertex = sLocalItr.next();
 			sInd++;
@@ -160,22 +170,22 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 //					System.out.println("----------- PHASE:" + round + ".1." + sInd + "." + tInd + " ---------------");
 					PCGVertex pcgV = getPCGVertex(sVertex, tVertex);
 					pcg = new PairwiseConnectivityGraph(); // clean out old PCG
-					if( DEBUG_FLAG ) System.out.println(pcgV.toString());
+					if(round == 2 && pcg.numVertices() > 0) System.out.println();
 
 					// phase 2: compute pcg graph on that vertex
 //					System.out.println("----------- PHASE:" + round + ".2." + sInd + "." + tInd + " ---------------");
 					boolean pcgCreated = createPairwiseConnectivityGraph(pcgV); 
-					if(pcgCreated && pcg.numVertices() > 1){
-						if( round == 1 ){
-							
-							Iterator<PCGEdge> iEdge = pcg.edges();
-							while(iEdge.hasNext()){
-								PCGEdge vert = iEdge.next();
-								System.out.println(vert);
-							}
-							System.out.println("--------------");
-						}
 						
+					if(pcgCreated && pcg.numVertices() > 0){
+						
+						pcgSize += pcg.numVertices();
+						System.out.print("-" + pcgSize + "-");
+						try {
+							fw.append("-" + pcgSize + "-");
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						if(round == 1) {
 							populateSimilarityMatrices(pcg, classesMatrix, propertiesMatrix);
 							populateSimilarityMatrices(pcg, prevRoundClasses, prevRoundProperties);
@@ -194,12 +204,16 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 //						if( round == 1 )System.out.println("----------- PHASE:" + round + ".5." + sInd + "." + tInd + " ---------------");
 						populateSimilarityMatrices(pcg, classesMatrix, propertiesMatrix);
 					}
-
-//					System.out.println();
 				}
 			}
 			tLocalItr = t.vertices();
 		}
+		 try {
+				fw.append("----------------------------------------------> " + new Integer(pcgSize).toString()+ "\n");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 	 
 	 // PHASE 1: get a pcg vertex and inserts it in the pcg //
@@ -210,24 +224,10 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 	 
 	 // PHASE 2: compute pcg graph on that vertex //
 	 protected boolean createPairwiseConnectivityGraph(PCGVertex pcgV){
-		 
-//		 System.out.println(pcgV.toString() + " isVisited: " + pcgV.isVisited());
-		 if(pcgV.isVisited()){
-			return false;	
-		 }
-		 else{
-			 pcg.insertVertex(pcgV);
-			 pcgV.setVisited(true);
-//			 System.out.println(pcgV.toString() + " isVisited: " + pcgV.isVisited());
-			 performEdgesLookup(pcgV, EdgeDirection.IN);
-			 performEdgesLookup(pcgV, EdgeDirection.OUT);
-			 
-			 return true;
-		 }
-
+		 return super.createPartialPCG(pcgV);
 	 }
 	 
-	 private void performEdgesLookup(PCGVertex pcgV, EdgeDirection ed){
+	/* private void performEdgesLookup(PCGVertex pcgV, EdgeDirection ed){
 	
 		 // WGraphEdges iterators
 		 Iterator<DirectedGraphEdge<String,RDFNode>> sourceIterator = null;
@@ -287,9 +287,9 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 			 }
 			 targetIterator = t.edgesOutIter();
 		 }
-	 }
+	 }*/
 	 
-	 private void addNewElementsToPCG(PCGVertex pcgV, WGraphVertex s, String edgeLabel, WGraphVertex t, EdgeDirection ed) {
+/*	 private void addNewElementsToPCG(PCGVertex pcgV, WGraphVertex s, String edgeLabel, WGraphVertex t, EdgeDirection ed) {
 			
 			PCGVertex secondPCGVertex = getPCGVertex(s, t);
 			PCGEdge edge = null;
@@ -334,7 +334,7 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 				// we already have that edge (it would give a duplicate)
 				return null;
 			}
-		}
+		}*/
 	 
 		// PHASE 3: grab matrix values	//
 		private void grabMatrixValues(Iterator<PCGVertex> iVert) {
@@ -443,31 +443,12 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 		 
 		 // PHASE 6: get global max similarity		//
 		 private double getGlobalMaxSimilarity(SimilarityMatrix c, SimilarityMatrix p){
-			 if(c.getMaxValue() > p.getMaxValue()){
-//				 System.out.println(c.getMaxMapping());
-			 }
-			 else{
-//				 System.out.println(p.getMaxMapping());
-			 }
 			 return Math.max(c.getMaxValue(), p.getMaxValue());
 		 }
 		
 		 // PHASE 7: normalize all values 			//
-		 private void normalizeSimilarities(SimilarityMatrix localMatrix, double roundMax) {
-			 double oldValue = 0;
-			 Mapping current = null;
-			 
-			 for(int i = 0; i < localMatrix.getRows(); i++){
-				 for(int j = 0; j < localMatrix.getColumns(); j++){
-					 
-					 current = localMatrix.get(i, j);
-					 if(current != null){
-						 oldValue = current.getSimilarity();
-						 localMatrix.get(i, j).setSimilarity(oldValue / roundMax);
-					 }
-					 
-				 }
-			 }
+		 protected void normalizeSimilarities(SimilarityMatrix localMatrix, double roundMax) {
+			 super.normalizeSimilarities(localMatrix, roundMax);
 		 }	
 		 
 		 // INHERITED FUNCTIONS //

@@ -79,16 +79,6 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		createFullPCG(sourceGraph, targetGraph);
 		if( !DEBUG_FLAG ) {
 			System.out.println(pcg);
-			Iterator<PCGEdge> iEdge = pcg.edges();
-//			File f = new File("/home/nikiforos/Desktop/at_once");
-//			File f = new File("/home/nikiforos/Desktop/by_connComp");
-//			FileWriter fw = new FileWriter(f);
-//			while(iEdge.hasNext()){
-//				PCGEdge vert = iEdge.next();
-//				System.out.println(vert);
-//				fw.append(vert.toString() + "\n");
-//			}
-//			fw.close();
 		}
 		progressDisplay.appendToReport("done.\n");
 		
@@ -124,18 +114,12 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		Iterator<WGraphVertex> sLocalItr = sourceOnt.vertices();
 		Iterator<WGraphVertex> tLocalItr = targetOnt.vertices();
 
-		System.out.println("Start");
 		WGraphVertex sVertex = null, tVertex = null;
 		// until all cells are covered
 		while(sLocalItr.hasNext()){
 			sVertex = sLocalItr.next();
 			while(tLocalItr.hasNext()){
 				tVertex = tLocalItr.next();
-				
-				if(sVertex.getObject().toString().contains("Academic") &&
-						tVertex.getObject().toString().contains("Organization") ){
-					 System.out.println();
-				 }
 				
 				if(sVertex.getNodeType().equals(tVertex.getNodeType())){
 					createPartialPCG(getPCGVertex(sVertex, tVertex));
