@@ -1199,6 +1199,16 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				Canvas2Vertex n1 = (Canvas2Vertex) e1.getGraphicalRepresentation( Canvas2.class );
 				Canvas2Vertex n2 = (Canvas2Vertex) e2.getGraphicalRepresentation( Canvas2.class );
 				
+				if( n1 == null || n2 == null ) {
+					// graphical representation not updated??
+					// TODO: Figure out why this is happening.  - Cosmin.
+					Logger log = Logger.getLogger(this.getClass());
+					log.setLevel(Level.DEBUG);
+					if( n1 == null ) log.debug("Missing graphical representation! " + e1);
+					if( n2 == null ) log.debug("Missing graphical representation! " + e2);	
+					continue;
+				}
+				
 				LegacyMapping edge = new LegacyMapping( n1, n2, alignment, m.getID());
 					
 				matcherGraph.insertEdge(edge);
