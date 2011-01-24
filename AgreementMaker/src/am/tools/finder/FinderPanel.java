@@ -1,12 +1,15 @@
 package am.tools.finder;
 
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
@@ -21,6 +24,9 @@ import am.tools.finder.DBPediaFinder.QueryType;
 import com.hp.hpl.jena.ontology.OntClass;
 
 public class FinderPanel extends JPanel implements ActionListener {
+
+	private static final long serialVersionUID = 1564636297715206829L;
+
 	JTextField searchField;
 	JButton search;
 	JTextField resourceField;
@@ -59,6 +65,16 @@ public class FinderPanel extends JPanel implements ActionListener {
 		pane.add(textScroll,"Text");
 		pane.add(htmlScroll,"Html");
 		
+		// fix the problem with the pane. (don't let the preferred size get too big)
+		pane.addChangeListener(new ChangeListener() {
+
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                Dimension nd = new Dimension( 800, 600);
+                pane.setPreferredSize(nd);
+            }
+
+        });
 	}
 	
 	private void addComponents() {
