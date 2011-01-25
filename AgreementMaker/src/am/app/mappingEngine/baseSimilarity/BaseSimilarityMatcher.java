@@ -9,6 +9,7 @@ import edu.smu.tspell.wordnet.WordNetDatabase;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.StringUtil.PorterStemmer;
@@ -40,6 +41,10 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		String cwd = System.getProperty("user.dir");
 		String wordnetdir = cwd + "/wordnet-3.0";
 		System.setProperty("wordnet.database.dir", wordnetdir);
+		
+		supportedFeatures.add(MatcherFeature.ONTOLOGY_PROFILING);
+		supportedFeatures.add(MatcherFeature.ONTOLOGY_PROFILING_CLASS_ANNOTATION_FIELDS);
+		supportedFeatures.add(MatcherFeature.ONTOLOGY_PROFILING_PROPERTY_ANNOTATION_FIELDS);
 	}
 	
 	// Constructor used when the parameters are available at the time of matcher initialization

@@ -3,6 +3,8 @@ package am.app.mappingEngine;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+
 import am.AMException;
 import am.Utility;
 import am.app.Core;
@@ -1488,5 +1490,22 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	   */
 	  public MatcherCategory getMatcherCategory() {
 		  return MatcherCategory.UNCATEGORIZED;
+	  }
+	  
+/***********************************************************************************************
+ ************************************* MATCHER FEATURES ****************************************
+ ***********************************************************************************************/
+	  
+	  // List of features supported by this matcher.
+	  protected List<MatcherFeature> supportedFeatures = new ArrayList<MatcherFeature>();
+	  
+	  /**
+	   * Determine if a feature is supported by a specific matcher.
+	   * These features must be setup in the constructor.
+	   * @param f Feature to check for.
+	   * @return true if feature is supported, false otherwise.
+	   */
+	  public boolean supportsFeature( MatcherFeature f ) {
+		  return supportedFeatures.contains(f);
 	  }
 }
