@@ -1,7 +1,14 @@
 package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
 
+import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.EOntNodeType.EOntologyNodeType;
+import am.app.ontology.Node;
+import am.app.ontology.Ontology;
 import am.utility.DirectedGraphVertex;
 import am.utility.Pair;
+
+import com.hp.hpl.jena.rdf.model.RDFNode;
 /**
  * Pairwise Connectivity Graph Vertex.
  * @author cosmin
@@ -27,6 +34,33 @@ public class PCGVertex extends DirectedGraphVertex<PCGVertexData, PCGEdgeData>{
 		setInserted(false);
 	}
 
+	public Mapping toMapping(Ontology sourceOnt, Ontology targetOnt){
+		WGraphVertex s = this.getObject().getStCouple().getLeft();
+		WGraphVertex t = this.getObject().getStCouple().getRight();
+		
+		// take both source and target ontResources (values can be null, means not possible to take resources
+		Node sourceNode = null, targetNode = null;
+		if(this.representsClass()){
+			sourceNode = Node.getNodefromRDFNode(sourceOnt, s.getObject(), alignType.aligningClasses);
+			targetNode = Node.getNodefromRDFNode(targetOnt, t.getObject(), alignType.aligningClasses);
+		}
+		else if(this.representsProperty()){
+			sourceNode = Node.getNodefromRDFNode(sourceOnt, s.getObject(), alignType.aligningProperties);
+			targetNode = Node.getNodefromRDFNode(targetOnt, t.getObject(), alignType.aligningProperties);
+		}
+		else{
+			// TODO: manage type error
+			System.out.println("Type error found.");
+		}
+		
+		if((sourceNode != null) && (targetNode != null)){
+			return new Mapping(sourceNode, targetNode, this.getObject().getNewSimilarityValue());
+		}
+		else{
+			return null;
+		}
+	}
+	
 	/**
 	 * @param visited the visited to set
 	 */
@@ -54,6 +88,22 @@ public class PCGVertex extends DirectedGraphVertex<PCGVertexData, PCGEdgeData>{
 	public boolean isInserted() {
 		return inserted;
 	}
+	
+	/**
+	 * @return the inserted
+	 */
+	public boolean representsClass() {
+		return this.getObject().getStCouple().getLeft().getNodeType().equals(EOntologyNodeType.CLASS) &&
+				this.getObject().getStCouple().getRight().getNodeType().equals(EOntologyNodeType.CLASS);
+	}
+	
+	/**
+	 * @return the inserted
+	 */
+	public boolean representsProperty() {
+		return this.getObject().getStCouple().getLeft().getNodeType().equals(EOntologyNodeType.PROPERTY) &&
+				this.getObject().getStCouple().getRight().getNodeType().equals(EOntologyNodeType.PROPERTY);
+	}
 
 	/**
 	 * String format: ( leftNode, rightNode )
@@ -67,4 +117,8 @@ public class PCGVertex extends DirectedGraphVertex<PCGVertexData, PCGEdgeData>{
 		
 		return s;
 	}
+	
+	// SUPPORT FUNCTIONS
+	
+
 }

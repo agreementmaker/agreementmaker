@@ -3,12 +3,16 @@
  */
 package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.EOntNodeType.EOntologyNodeType;
+import am.app.ontology.Node;
+import am.app.ontology.Ontology;
 import am.utility.DirectedGraph;
 
-import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -36,10 +40,10 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
     		OWL.equivalentClass.toString(), OWL.equivalentProperty.toString(),
     		OWL.inverseOf.toString()
     		};
-	/**
-	 * To discriminate which kind of data we want to extract to build the graph
-	 */
-	private enum TypeExtracted{ EDGES, VERTEXES }
+	
+	private int classMatSize;
+	private int propertyMatSize;
+	private int currentIndexForClass;
 	
 	/**
 	 * This is to keep track of the inserted vertexes
@@ -48,36 +52,55 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 	
 	// CONSTRUCTOR //
 	
-	public WrappingGraph(OntModel jenaGraph) {
+	public WrappingGraph(Ontology AMOntology) {
 		super();
+		classMatSize = 0;
+		propertyMatSize = 0;
+		currentIndexForClass = AMOntology.getClassesList().size();
 		nodesMap = new HashMap<RDFNode, WGraphVertex>();
-		buildGraph(jenaGraph);
+		buildGraph(AMOntology);
 	}
 	
 	// GRAPH BUILDING METHODS //
 	
-	/**
-	 * main function: building the graph
-	 */
-	private void buildGraph(OntModel jenaGraph){
+	private void buildGraph(Ontology AMOntology){
 		
-		// VERTEXES first
-		String queryString = composeQuery(TypeExtracted.VERTEXES);
-		Query query = QueryFactory.create(queryString);
-		QueryExecution qexec = QueryExecutionFactory.create(query, jenaGraph);
-		ResultSet results = qexec.execSelect();
-		processResults(results, TypeExtracted.VERTEXES);
-//		qexec.close();
+		// VERTICES first
+		ArrayList<Node> setC = AMOntology.getClassesList();
+		ArrayList<Node> setP = AMOntology.getPropertiesList();
 		
+		classMatSize = setC.size();
+		propertyMatSize = setP.size();
+		
+		for(int i = 0; i < classMatSize; i++){
+			// create the node
+			WGraphVertex vertexNew = new WGraphVertex(setC.get(i).getResource(), setC.get(i).getIndex());
+			this.insertVertex(vertexNew);
+			// insert the node in the table (for future lookup)
+			nodesMap.put(setC.get(i).getResource(), vertexNew);
+		}
+		for(int i = 0; i < propertyMatSize; i++){
+			// create the node
+			WGraphVertex vertexNew = new WGraphVertex(setP.get(i).getResource(), setP.get(i).getIndex());
+			this.insertVertex(vertexNew);
+			// insert the node in the table (for future lookup)
+			nodesMap.put(setP.get(i).getResource(), vertexNew);
+		}
+		
+//		VERTICES first, old method
+//		String queryString = composeQuery(EGraphNodeType.VERTEXES);
+//		Query query = QueryFactory.create(queryString);
+//		QueryExecution qexec = QueryExecutionFactory.create(query, jenaGraph);
+//		ResultSet results = qexec.execSelect();
+//		processResults(results, EGraphNodeType.VERTEXES);
 		
 		// EDGES then
-		queryString = composeQuery(TypeExtracted.EDGES);
-		query = QueryFactory.create(queryString);
-		qexec = QueryExecutionFactory.create(query, jenaGraph);
-		results = qexec.execSelect();
-		processResults(results, TypeExtracted.EDGES);
+		String queryString = composeQuery(EGraphNodeType.EDGES);
+		Query query = QueryFactory.create(queryString);
+		QueryExecution qexec = QueryExecutionFactory.create(query, AMOntology.getModel());
+		ResultSet results = qexec.execSelect();
+		processResults(results, EGraphNodeType.EDGES);
 		qexec.close();
-		
 	}
 	
 	/**
@@ -85,7 +108,7 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 	 * @param results
 	 * @param t
 	 */
-    private void processResults(ResultSet results, TypeExtracted t) {
+    private void processResults(ResultSet results, EGraphNodeType t) {
     	
 		QuerySolution soln;
     	switch(t){
@@ -93,11 +116,12 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
     		while(results.hasNext()){
     			soln = results.nextSolution();
     			
-    			WGraphVertex origin = returnVert(soln.get("x"));
-    			WGraphVertex destination = returnVert(soln.get("z"));
+    			RDFNode originNode = soln.get("x");
+    			RDFNode destinationNode = soln.get("z");
     			
-    			// excluding anonymous nodes: they don't have a URI starting with http
-    			if( !(origin.getObject().isAnon() || destination.getObject().isAnon()) ){
+    			if(!originNode.isAnon() && !destinationNode.isAnon()){
+    				WGraphVertex origin = returnVert(originNode);
+        			WGraphVertex destination = returnVert(destinationNode);
     				WGraphEdge edgeNew = returnEdge(origin, destination, soln.get("y"));
         			
     				if(edgeNew != null){
@@ -129,13 +153,13 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 			new Exception("Unexpected state: check why neither nodes nor edges are considered.\n");
     	}
 	}
-    
+
     /**
      * create the queries for edges and nodes
      * @param t
      * @return
      */
-    private String composeQuery(TypeExtracted t){
+    private String composeQuery(EGraphNodeType t){
     	
     	// building the prefix part (with RDF and RDFS vocabulary)
     	String prefixes = "" +
@@ -257,6 +281,11 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 		}
 	}
 
+	/**
+	 * to be used ONLY to build the wrapping graph
+	 * @param rdfNode
+	 * @return
+	 */
 	private WGraphVertex returnVert(RDFNode rdfNode) {
 		if(nodesMap.get(rdfNode) != null){
 			// there was already a node with that rdfNode
@@ -266,7 +295,8 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 			// there wasn't already that node so
 			
 			// we create it
-			WGraphVertex vertNew = new WGraphVertex(rdfNode);
+			WGraphVertex vertNew = new WGraphVertex(rdfNode, currentIndexForClass);
+			currentIndexForClass++;
 			
 			// we add it to the list
 			this.insertVertex(vertNew);
@@ -276,4 +306,158 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 			return vertNew;
 		}
 	}
+	
+//	public Node vertexToNode(WGraphVertex vert, EOntologyNodeType type){
+//		Node n = null;
+//		if(type == EOntologyNodeType.CLASS){
+//			return new Node(vert.getMatrixIndex(), vert.getObject().asResource(), Node.OWLCLASS, ontID);
+//		}
+//		return null;
+//	 }
+	
+	// COMPUTE DIFFERENCE WG-ONTOLOGY
+	
+	public ArrayList<Node> diff(Ontology o, EOntologyNodeType tp){
+		ArrayList<Node> ontNodes = null;
+		ArrayList<Node> wgNodes = null;
+		
+		ArrayList<Node> diff = new ArrayList<Node>();
+		
+		switch(tp){
+    	case CLASS:
+    		ontNodes = o.getClassesList();
+    		wgNodes = this.createNodesList(o, EOntologyNodeType.CLASS);
+    		break;
+    	case PROPERTY:
+    		ontNodes = o.getPropertiesList();
+    		wgNodes = this.createNodesList(o, EOntologyNodeType.PROPERTY);
+    		break;
+		default:
+			new Exception("Unexpected state: should always be able to tell if edges or vertexes are processed");
+			break;
+		}
+		
+		Collections.sort(ontNodes);
+		for(int i = 0; i < wgNodes.size(); i++){
+			System.out.println(wgNodes.get(i));
+		}
+		Collections.sort(wgNodes);
+		int wgIndex = 0, ontIndex = 0;
+		for(wgIndex = 0; wgIndex < wgNodes.size(); wgIndex++){
+			if(wgNodes.get(wgIndex).compareTo(ontNodes.get(ontIndex)) < 0){ // wg(i) < ont(i)
+				diff.add(wgNodes.get(wgIndex));
+			}
+			else if(wgNodes.get(wgIndex).compareTo(ontNodes.get(ontIndex)) == 0){ // wg(i) = ont(i)
+				ontIndex++;
+			}
+			else{ // wgNodes.get(i).compareTo(wgNodes.get(i)) < 0 ---> wg(i) > ont(i)
+				// to be checked but should be an impossible situation since both of the arrays are sorted
+			}
+		}
+		
+		return diff;
+	}
+
+	public ArrayList<Node> createNodesList(Ontology ont, EOntologyNodeType tp) {
+		ArrayList<Node> wgNodes = new ArrayList<Node>();
+		ArrayList<WGraphVertex> wgVertices = this.getVertices();
+		
+		int key = 0;
+		switch(tp){
+    	case CLASS:
+    		key = ont.getClassesList().size();
+    		break;
+    	case PROPERTY:
+    		key = ont.getPropertiesList().size();
+    		break;
+		default:
+			new Exception("Unexpected state: should always be able to tell if classes or properties are processed");
+			break;
+		}
+		
+		for(int i = 0; i < wgVertices.size(); i++){
+			if(wgVertices.get(i).getObject().isResource()){
+				Node n = null;
+				switch(tp){
+		    	case CLASS:
+		    		if(wgVertices.get(i).getNodeType().equals(EOntologyNodeType.CLASS)){
+		    			n = Node.getNodefromRDFNode(ont, wgVertices.get(i).getObject(), alignType.aligningClasses);
+						if(n == null){
+							n = new Node(key, wgVertices.get(i).getObject().toString(), Node.OWLCLASS, ont.getIndex());
+							wgVertices.get(i).setMatrixIndex(key);
+							key++;
+						}
+						else{
+							wgVertices.get(i).setMatrixIndex(n.getIndex());
+						}
+		    		}
+		    		break;
+		    	case PROPERTY:
+		    		if(wgVertices.get(i).getNodeType().equals(EOntologyNodeType.PROPERTY)){
+			    		n = Node.getNodefromRDFNode(ont, wgVertices.get(i).getObject(), alignType.aligningProperties);
+						if(n == null){
+							// TODO: check on OWLCLASS and OWLPROPERTY 
+							n = new Node(key, wgVertices.get(i).getObject().toString(), Node.OWLPROPERTY, ont.getIndex());
+							wgVertices.get(i).setMatrixIndex(key);
+							key++;
+			    		}
+						else{
+							wgVertices.get(i).setMatrixIndex(n.getIndex());
+						}
+		    		}
+		    		break;
+				default:
+					new Exception("Unexpected state: should always be able to tell if classes or properties are processed");
+					break;
+				}
+				if(n != null){
+					wgNodes.add(n);
+				}
+			}
+		}
+		return wgNodes;
+	}
+
+	/**
+	 * @param classMatSize the classMatSize to set
+	 */
+	public void setClassMatSize(int classMatSize) {
+		this.classMatSize = classMatSize;
+	}
+
+	/**
+	 * @return the classMatSize
+	 */
+	public int getClassMatSize() {
+		return classMatSize;
+	}
+
+	/**
+	 * @param propertyMatSize the propertyMatSize to set
+	 */
+	public void setPropertyMatSize(int propertyMatSize) {
+		this.propertyMatSize = propertyMatSize;
+	}
+
+	/**
+	 * @return the propertyMatSize
+	 */
+	public int getPropertyMatSize() {
+		return propertyMatSize;
+	}
+
+	/**
+	 * @param currentIndexForClass the currentIndexForClass to set
+	 */
+	public void setCurrentIndexForClass(int currentIndexForClass) {
+		this.currentIndexForClass = currentIndexForClass;
+	}
+
+	/**
+	 * @return the currentIndexForClass
+	 */
+	public int getCurrentIndexForClass() {
+		return currentIndexForClass;
+	}
+	
 }

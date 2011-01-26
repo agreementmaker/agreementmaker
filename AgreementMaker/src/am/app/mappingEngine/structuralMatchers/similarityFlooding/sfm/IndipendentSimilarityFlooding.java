@@ -3,7 +3,6 @@
  */
 package am.app.mappingEngine.structuralMatchers.similarityFlooding.sfm;
 
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.structuralMatchers.SimilarityFloodingParameters;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.FullGraphMatcher;

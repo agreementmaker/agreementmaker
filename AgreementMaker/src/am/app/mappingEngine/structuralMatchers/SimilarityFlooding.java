@@ -11,15 +11,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.swing.JPanel;
-
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.SimilarityFloodingMatcherParameters;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdge;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdgeData;
+import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGSimilarityMatrix;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertex;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertexData;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PairwiseConnectivityGraph;
@@ -27,12 +25,9 @@ import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphEd
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphVertex;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
 import am.app.ontology.Node;
-import am.app.ontology.Ontology;
 import am.utility.DirectedGraphEdge;
 import am.utility.Pair;
-import am.visualization.matrixplot.MatrixPlotPanel;
 
-import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
 /**
@@ -84,7 +79,6 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 try {
 			fw = new FileWriter(f);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -102,7 +96,6 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		try {
 			fw = new FileWriter(f);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -196,6 +189,11 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	 
 	protected boolean createPartialPCG(PCGVertex pcgV){
 
+		if(pcgV.getObject().getStCouple().getLeft().getObject().toString().contains("numberOrVolume") &&
+				pcgV.getObject().getStCouple().getRight().getObject().toString().contains("sbqgzga")){
+			System.out.println();
+		}
+		
 		 if(pcgV.isVisited()){
 			 return false;	
 		 }
@@ -212,7 +210,7 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 					 pcgV.getObject().getStCouple().getRight().edgesOutList(),
 					 EdgeDirection.OUT);
 			 
-			 return true;
+			 return this.pcg.getVertices().size() > 0;
 		 }
 	 }
 	 
@@ -300,7 +298,7 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 				 // comparing edges here
 				 edgeComparison = compareEdges(sEdge, tEdge);
 				 if(edgeComparison == 0){
-
+					 System.out.println();
 					 insertInPCG(sEdge, tEdge);
 					 switch(ed){
 					 case IN:
@@ -347,7 +345,7 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	 	PCGEdge edgeNew = null;
 	 	try{
 	 		edgeNew = edgesMap.get(pcgV.toString() + edgeLabel + pcgV2.toString());
-	 		System.out.println(edgeNew);
+//	 		System.out.println(edgeNew);
 	 	} catch(Exception e){
 	 		e.printStackTrace();
 	 	}
@@ -380,22 +378,21 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 //				fw.append("About to insert " + targetPCGVertex + " but isInserted:" + targetPCGVertex.isInserted() + "\n");
 //				fw.append("About to insert " + pairEdge + " but isInserted:" + pairEdge.isInserted() + "\n");
 //			} catch (IOException e) {
-//				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			}
 		 if(!sourcePCGVertex.isInserted()){
 
-			 System.out.println(sourcePCGVertex);
+//			 System.out.println(sourcePCGVertex);
 			 pcg.insertVertex(sourcePCGVertex);
 			 sourcePCGVertex.setInserted(true);
 		 }
 		 if(!targetPCGVertex.isInserted()){
-			 System.out.println(targetPCGVertex);
+//			 System.out.println(targetPCGVertex);
 			 pcg.insertVertex(targetPCGVertex);
 			 targetPCGVertex.setInserted(true);
 		 }
 		 if(!pairEdge.isInserted()){
-			 System.out.println(pairEdge);
+//			 System.out.println(pairEdge);
 			 pcg.insertEdge(pairEdge);
 			 sourcePCGVertex.addOutEdge(pairEdge);
 			 targetPCGVertex.addInEdge(pairEdge);
@@ -443,21 +440,21 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 			 // normalize all the similarity values of all nodes
 			 normalizeSimilarities(pcg.vertices(), maxSimilarity);
 
-			// stop condition check: delta or maxRound
-//			System.out.println(pcg.getSimValueVector(true).toString() + "\n");
-//			System.out.println(pcg.getSimValueVector(false).toString());
+			 // stop condition check: delta or maxRound
+			 populateSimilarityMatrices(pcg, classesMatrix, propertiesMatrix);
+
+			 Vector<Double> oldV = pcg.getSimValueVector(fw, round, true);
+			 Vector<Double> newV = pcg.getSimValueVector(fw, round, false);
+//			 Vector<Double> newV = propertiesMatrix.toSimilarityArray(propertiesMatrix.toMappingArray(fw, round));
+//			 newV.addAll(classesMatrix.toSimilarityArray(classesMatrix.toMappingArray(fw, round)));
+
 			 try {
-//				 	if(round == 1){
-//						fw.append(pcg.getSimValueVector(true) + "\n");
-//						fw.append(pcg.getSimValueVector(false) + "\n");
-//				 	}
-					fw.append(pcg.getSimValueVector(true).size() + "\n");
-					fw.append(pcg.getSimValueVector(false).size() + "\n");
+					fw.append("old: " + oldV.size() + "\n");
+					fw.append("new: " + newV.size() + "\n");
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-//			System.out.println(round);
+
 		 } while(!checkStopCondition(round, pcg.getSimValueVector(true), pcg.getSimValueVector(false)));
 	 }
 	 
@@ -491,7 +488,6 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	 protected double computeFixpointRound(Iterator<PCGVertex> iVert){
 		 double maxSimilarity = 0.0, newSimilarity = 0.0;
 		 PCGVertex vert = null;
-		 @SuppressWarnings("unused")
 		 PCGVertex maxV = null;
 		 
 		 while(iVert.hasNext()){
@@ -637,9 +633,10 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 }
 //		 System.out.println("delta: " + Math.sqrt(simD));
 		 try {
-				fw.append("delta: " + Math.sqrt(simD) + "\n");
+			 fw.append("before: " + simVectBefore + "\n");
+			 fw.append("after: " + simVectAfter + "\n");
+			 fw.append("delta: " + Math.sqrt(simD) + "\n");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		 return Math.sqrt(simD);
@@ -672,7 +669,7 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 //				} catch (IOException e) {
 //					e.printStackTrace();
 //				}
-			 System.out.println(currEdge.getOrigin().toString() + " ---> " + currEdge.getDestination().toString());
+//			 System.out.println(currEdge.getOrigin().toString() + " ---> " + currEdge.getDestination().toString());
 //			 System.out.println(oldValue + " " + propCoeff);
 		 }
 		 return sum;
@@ -787,49 +784,46 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	 /* *************************************************** */
 	/* 				SIMILARITY MATRICES CREATION 			*/
 	/* *************************************************** */
-	 
+		 
 	 protected void populateSimilarityMatrices(PairwiseConnectivityGraph pcg, SimilarityMatrix cMatrix, SimilarityMatrix pMatrix){
 		 Iterator<PCGVertex> iVert = pcg.vertices();
 		 PCGVertex currentVert = null;
 		 while(iVert.hasNext()){
 			 currentVert = iVert.next();
-			 
+			 Mapping m = currentVert.toMapping(sourceOntology, targetOntology);
 			 // take both source and target ontResources (values can be null, means not possible to take resources
-			 OntResource sourceRes = getOntResourceFromRDFNode(currentVert.getObject().getStCouple().getLeft().getObject());
-			 OntResource targetRes = getOntResourceFromRDFNode(currentVert.getObject().getStCouple().getRight().getObject());
-			 if(sourceRes != null && targetRes != null){
-				
-				 Mapping m;
-				 // try to get the Node and check they belong to the same alignType
-				 Node sourceClass = getNodefromOntResource(sourceOntology, sourceRes, alignType.aligningClasses);
-				 Node targetClass = getNodefromOntResource(targetOntology, targetRes, alignType.aligningClasses);
-				 // test if both nodes are classes
-				 if(sourceClass == null || targetClass == null){
-					 Node sourceProperty = getNodefromOntResource(sourceOntology, sourceRes, alignType.aligningProperties);
-					 Node targetProperty = getNodefromOntResource(targetOntology, targetRes, alignType.aligningProperties);
-					 // test if both nodes are properties
-					 if(sourceProperty == null || targetProperty == null){
-						 continue;
-					 }
-					 else{
-						 // the necessary similarity value is stored in the newSimilarityValue var
-						 m = new Mapping(sourceProperty, targetProperty, currentVert.getObject().getNewSimilarityValue());
-						 pMatrix.set(sourceProperty.getIndex(), targetProperty.getIndex(), m);
-					 }
+
+			 if(m != null){
+				 if(currentVert.representsClass()){
+					 cMatrix.set(m.getSourceKey(), m.getTargetKey(), m);
+				 }
+				 else if(currentVert.representsProperty()){
+					 pMatrix.set(m.getSourceKey(), m.getTargetKey(), m);
 				 }
 				 else{
-					 // the necessary similarity value is stored in the newSimilarityValue var
-					 m = new Mapping(sourceClass, targetClass, currentVert.getObject().getNewSimilarityValue());
-					 cMatrix.set(sourceClass.getIndex(), targetClass.getIndex(), m);
+					 // TODO: manage type error
 				 }
 			 }
 			 else{
+				 // manage here the case where you may be using the PCG MATRIX (only classes, properties use the old matrix
+				 if(cMatrix.getClass().equals(PCGSimilarityMatrix.class)){
+					 WGraphVertex row = currentVert.getObject().getStCouple().getLeft();
+					 WGraphVertex col = currentVert.getObject().getStCouple().getRight();
+					 if(row.getMatrixIndex() < ((PCGSimilarityMatrix)cMatrix).getRows()
+							 && col.getMatrixIndex() < ((PCGSimilarityMatrix)cMatrix).getColumns()){
+						 cMatrix.set(row.getMatrixIndex(),
+								 		col.getMatrixIndex(),
+								 		new Mapping(new Node(row.getMatrixIndex(), row.getObject().toString(), Node.OWLCLASS, sourceOntology.getID()),
+								 					new Node(col.getMatrixIndex(), col.getObject().toString(), Node.OWLCLASS, targetOntology.getID()),
+								 					currentVert.getObject().getNewSimilarityValue()));
+					 }
+				 }
 				 continue;
 			 }
-			 
 		 }
+	 }
 		 
-//		 /*/ Creating plots for classes and properties
+		 /*/ Creating plots for classes and properties
 		 MatrixPlotPanel mp;
 		 
 		 mp = new MatrixPlotPanel( null, getClassesMatrix(), null);
@@ -846,13 +840,10 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 try {
 			fw.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		*/
-	 }
-	 
-	 
+		*/
+		 
 	/* *************************************************** */
 	/* 					  SUPPORT FUNCTIONS 			   */
 	/* *************************************************** */
@@ -883,31 +874,6 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 }
 		 return false; 
 	 }
-	 
-	 protected OntResource getOntResourceFromRDFNode(RDFNode node){
-		 // try to get the ontResource from them
-		 if(node.canAs(OntResource.class)){
-			 return node.as(OntResource.class);
-		 }
-		 else{
-			 return null;
-		 }
-	 }
-	 
-	 protected boolean isOntResInSimMatrix(OntResource res, Ontology ont){
-		 boolean isResourceClass = getNodefromOntResource(ont, res, alignType.aligningClasses) != null;
-		 boolean isResourceProperty = getNodefromOntResource(ont, res, alignType.aligningProperties) != null;
-		 return (isResourceClass || isResourceProperty);
-	 }
-	 
-	 protected Node getNodefromOntResource(Ontology ont, OntResource res, alignType aType){
-		 try{
-			 return ont.getNodefromOntResource(res, aType);
-		 }
-		 catch(Exception eClass){
-			 return null;
-		 }
-	 }
 
 	 /**
 	 * @return the sortEdges
@@ -923,9 +889,14 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		this.sortEdges = sortEdges;
 	}
 
-	protected abstract void loadSimilarityMatrices();
-	
-	 protected abstract PCGVertexData selectInput(Pair<RDFNode, RDFNode> pair);
-	 
-	 
+	protected void loadSimilarityMatrices(){
+		;
+	}
+	protected void loadSimilarityMatrices(WrappingGraph s, WrappingGraph t){
+		;
+	}
+
+	protected abstract PCGVertexData selectInput(Pair<RDFNode, RDFNode> pair);
+
+			
 }

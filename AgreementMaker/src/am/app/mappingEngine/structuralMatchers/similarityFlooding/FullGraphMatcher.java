@@ -3,20 +3,19 @@
  */
 package am.app.mappingEngine.structuralMatchers.similarityFlooding;
 
-import java.io.File;
-import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Iterator;
 
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.structuralMatchers.SimilarityFlooding;
 import am.app.mappingEngine.structuralMatchers.SimilarityFloodingParameters;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdge;
+import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertex;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphVertex;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
 
 /**
  * 
- *
  */
 public abstract class FullGraphMatcher extends SimilarityFlooding {
 
@@ -60,8 +59,8 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		loadSimilarityMatrices();
 		
 		progressDisplay.appendToReport("Creating Wrapping Graphs...");
-		WrappingGraph sourceGraph = new WrappingGraph(sourceOntology.getModel());
-		WrappingGraph targetGraph = new WrappingGraph(targetOntology.getModel());
+		WrappingGraph sourceGraph = new WrappingGraph(sourceOntology);
+		WrappingGraph targetGraph = new WrappingGraph(targetOntology);
 		if( DEBUG_FLAG ) System.out.println(sourceGraph.toString());
 		if( DEBUG_FLAG ) System.out.println(targetGraph.toString());
 		progressDisplay.appendToReport("done.\n");
@@ -70,16 +69,20 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 			progressDisplay.appendToReport("Sorting Wrapping Graphs...");
 			sourceGraph.sortEdges();
 			targetGraph.sortEdges();
-			if( !DEBUG_FLAG ) System.out.println(sourceGraph.toString());
-			if( !DEBUG_FLAG ) System.out.println(targetGraph.toString());
+			if( DEBUG_FLAG ) System.out.println(sourceGraph.toString());
+			if( DEBUG_FLAG ) System.out.println(targetGraph.toString());
 			progressDisplay.appendToReport("done.\n");
 		}
 		
 		progressDisplay.appendToReport("Creating Pairwise Connectivity Graph...");
 		createFullPCG(sourceGraph, targetGraph);
-		if( !DEBUG_FLAG ) {
-			System.out.println(pcg);
-		}
+		if( DEBUG_FLAG ) {
+			try {
+				fw.append("old: " + pcg + "\n");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	}
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Creating Induced Propagation Graph...");
@@ -100,16 +103,24 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		computeRelativeSimilarities(propertiesMatrix);
 		progressDisplay.appendToReport("done.\n");
 		
+		try {
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	 }
 	 
 	 protected void createFullPCG(WrappingGraph sourceOnt, WrappingGraph targetOnt){
 		 //old method
-		 super.createFullPCG(sourceOnt, targetOnt);
+//		 super.createFullPCG(sourceOnt, targetOnt);
 		 
 		 //new method
-//		 createPCG(sourceOnt, targetOnt);
+		 createPCG(sourceOnt, targetOnt);
+		
 	 }
 
+	@SuppressWarnings("unused")
 	private void createPCG(WrappingGraph sourceOnt, WrappingGraph targetOnt) {
 		Iterator<WGraphVertex> sLocalItr = sourceOnt.vertices();
 		Iterator<WGraphVertex> tLocalItr = targetOnt.vertices();

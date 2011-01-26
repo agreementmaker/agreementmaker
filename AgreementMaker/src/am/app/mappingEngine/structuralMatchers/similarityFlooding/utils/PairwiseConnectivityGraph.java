@@ -1,5 +1,7 @@
 package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -26,6 +28,31 @@ public class PairwiseConnectivityGraph extends DirectedGraph<PCGEdge, PCGVertex>
 			}
 			else{
 				simVector.add(iVert.next().getObject().getNewSimilarityValue());
+			}
+			
+		}
+		return simVector;
+	}
+	
+	public Vector<Double> getSimValueVector(FileWriter fw, int round, boolean old){
+		Iterator<PCGVertex> iVert = this.vertices();
+		Vector<Double> simVector = new Vector<Double>();
+		while(iVert.hasNext()){
+			
+			PCGVertex vert = iVert.next();
+			if(round == 1){
+		 		try {
+					fw.append(vert + "\n");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		 	}
+			if(old){
+				simVector.add(vert.getObject().getOldSimilarityValue());
+			}
+			else{
+				simVector.add(vert.getObject().getNewSimilarityValue());
 			}
 			
 		}
