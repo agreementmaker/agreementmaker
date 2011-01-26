@@ -264,7 +264,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	            .addComponent(btnDeletePresets)
 		);
 		
-		topLayout.setVerticalGroup( topLayout.createParallelGroup()
+		topLayout.setVerticalGroup( topLayout.createParallelGroup(Alignment.CENTER, false)
 				.addComponent(matcherLabel)
 				.addComponent(matcherCombo)
 				.addComponent(btnMatcherDetails)
@@ -346,7 +346,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		matcherPanelLayout.setAutoCreateGaps(true);
 				
 		// horizontal setup
-		GroupLayout.ParallelGroup mainHorizontalGroup = matcherPanelLayout.createParallelGroup(Alignment.TRAILING);
+		GroupLayout.ParallelGroup mainHorizontalGroup = matcherPanelLayout.createParallelGroup(Alignment.TRAILING, false);
 		if( showPresets ) mainHorizontalGroup.addComponent(topPanel);
 		if( showGeneralSettings ) mainHorizontalGroup.addComponent(generalPanel);
 		mainHorizontalGroup.addComponent(settingsScroll);	
