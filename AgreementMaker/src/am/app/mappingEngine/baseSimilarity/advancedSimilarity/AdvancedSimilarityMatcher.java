@@ -4,7 +4,9 @@
 package am.app.mappingEngine.baseSimilarity.advancedSimilarity;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
+import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
@@ -15,6 +17,8 @@ import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
+import am.app.ontology.profiling.OntologyProfiler;
+import am.utility.Pair;
 
 /**
  * @author Michele Caci
@@ -74,6 +78,73 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		// Step 0: tokenize source and target nodes (if possible) and separate by relevance
 		// prepare list of data
 		
+		OntologyProfiler pro = Core.getInstance().getOntologyProfiler();
+
+		if( pro != null ) {
+			// we are using ontology profiling
+			double highestSimilarity = 0.0d;
+			Iterator<Pair<String,String>> annIter = pro.getAnnotationIterator(source, target);
+			while( annIter.hasNext() ) {
+				Pair<String,String> currentPair = annIter.next();
+				double currentSimilarity = calculateSimilarity(currentPair.getLeft(), currentPair.getRight(), typeOfNodes);
+				if( currentSimilarity > highestSimilarity ) highestSimilarity = currentSimilarity;
+			}
+			
+			if( highestSimilarity == 0.0d ) return null;
+			else return new Mapping( source, target, highestSimilarity);
+			
+		} else {
+			// we are not using ontology profiling
+			return withoutProfiling(source, target, typeOfNodes);
+		}
+
+	}
+	
+	/**
+	 * This is the algorithm of Michele, but returns a double, not a Mapping object.
+	 * @param sLN
+	 * @param tLN
+	 * @param typeOfNodes
+	 * @return
+	 * @throws Exception
+	 */
+	private double calculateSimilarity( String sLN, String tLN, alignType typeOfNodes) throws Exception {
+		
+		AdvancedSimilarityParameters parameters = (AdvancedSimilarityParameters)param;
+		
+		String tokenized_sLN[] = sLN.split("\\s"); // token array of source LocalName (sLN)
+		String tokenized_tLN[] = tLN.split("\\s"); // token array of target LocalName (tLN)
+		
+		// Step 1: similarity check between less "meaningful" words
+		// e.g. if one concept has "is" in the word and another one has "has", I assume they are not matchable, same thing with prepositions 
+		double simValue = 0.0;
+		double simValueContribution = nonContentWordCheck(tokenized_sLN, tokenized_tLN);
+		
+		if(simValueContribution == NO_MATCH){ // immediately discard those considered unmatchable
+			return 0.0;
+		}
+		// Step 2: check out for similarity between meaningful words
+		else {
+			sourceWords = createWordsList(tokenized_sLN);
+			targetWords = createWordsList(tokenized_tLN);
+			
+			// here is where we perform the check
+			simValue = contentWordCheck(sourceWords, targetWords, typeOfNodes);
+		}
+		
+		if(simValue > 0.0d){
+			if(simValueContribution > 0.0d){
+				return Math.min(1, simValue * (1.0d + simValueContribution));
+			}
+			else{
+				return Math.min(1, simValue);
+			}
+		}
+		return 0.0d;
+		
+	}
+
+	private Mapping withoutProfiling(Node source, Node target, alignType typeOfNodes) throws Exception {
 		String sLN, tLN;
 		
 		AdvancedSimilarityParameters parameters = (AdvancedSimilarityParameters)param;
@@ -263,12 +334,12 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 * @author michele
 	 */
 	public String getDescriptionString() {
-		return "The Advanced Similarity Matcher (ASM for short) is a matching method that compare the source and the target concepts\n" +
+		return "The Advanced Similarity Matcher (ASM for short) is a matching method that compares the source and the target concepts\n" +
 				"by looking at the words that compose them and use a string-matching technique to provide the overall result.\n" +
 				"The idea is that we try to look inside the strings to see if there is some mapping between the words composing\n" +
 				"the string if the word is compound and see if we can find some words that can tell us if there can be a mapping between them.\n\n" +
 				"The ASM method is a matcher that belongs to the First Layer Matchers, meaning that it doesn't require another Matcher to\n" +
-				"create an initial similarity values between the nodes and can be easily combined with other string-matching techniques.\n" +
+				"create input similarity values.  Also it can be easily combined with other string-matching techniques.\n" +
 				"ASM needs to get parameters to specify the technique to use when comparing strings and words composing them\n\n";
 	}
 	

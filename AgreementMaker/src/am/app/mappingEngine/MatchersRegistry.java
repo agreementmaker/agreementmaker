@@ -101,7 +101,7 @@ public enum MatchersRegistry {
 	private boolean showInControlPanel;
 	private String name;
 	private String shortName;
-	private Class<? extends AbstractMatcher> className;  // TODO: this should be Class instead of string
+	private Class<? extends AbstractMatcher> className;
 	private MatcherCategory category;
 	
 	/* 	Constructors */

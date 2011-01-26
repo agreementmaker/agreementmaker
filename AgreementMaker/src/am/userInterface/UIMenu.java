@@ -36,6 +36,7 @@ import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.ontology.Ontology;
+import am.app.ontology.profiling.ProfilingDialog;
 import am.extension.ClusteringEvaluation.ClusteringEvaluationPanel;
 import am.tools.LexiconLookup.LexiconLookupPanel;
 import am.tools.ThresholdAnalysis.ThresholdAnalysis;
@@ -77,7 +78,7 @@ public class UIMenu implements ActionListener {
 	private JMenuItem menuLexiconsOntSource, menuLexiconsOntTarget, menuLexiconsWNSource, menuLexiconsWNTarget;
 	
 	// Ontology menu.
-	private JMenuItem ontologyDetails;
+	private JMenuItem ontologyDetails, ontologyProfiling;
 	
 	// Tools menu.
 	private JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation;
@@ -305,6 +306,14 @@ public class UIMenu implements ActionListener {
 			}
 			else if(obj == ontologyDetails) {
 				ontologyDetails();
+			} else if( obj == ontologyProfiling ) {
+				if(!Core.getInstance().ontologiesLoaded() ) {
+					Utility.displayErrorPane("You have to load Source and Target ontologies before selecting an ontology profiling algorithm.\nClick on File Menu and select Open Ontology functions.", null);
+					return;
+				}
+
+				// show profiling dialog
+				ProfilingDialog pd = new ProfilingDialog();
 			}
 			else if( obj == itemViewsCanvas ) {
 
@@ -971,6 +980,12 @@ public class UIMenu implements ActionListener {
 		ontologyDetails = new JMenuItem("Ontology details");
 		ontologyDetails.addActionListener(this); 
 		ontologyMenu.add(ontologyDetails);
+		
+		ontologyMenu.addSeparator();
+		
+		ontologyProfiling = new JMenuItem("Profiling...");
+		ontologyProfiling.addActionListener(this);
+		ontologyMenu.add(ontologyProfiling);
 		
 		
 		

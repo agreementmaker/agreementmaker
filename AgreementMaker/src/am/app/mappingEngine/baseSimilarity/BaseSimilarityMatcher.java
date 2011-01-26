@@ -2,10 +2,12 @@ package am.app.mappingEngine.baseSimilarity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.SynsetType;
 import edu.smu.tspell.wordnet.WordNetDatabase;
+import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
@@ -14,6 +16,8 @@ import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.StringUtil.PorterStemmer;
 import am.app.ontology.Node;
+import am.app.ontology.profiling.OntologyProfiler;
+import am.utility.Pair;
 
 
 public class BaseSimilarityMatcher extends AbstractMatcher {
@@ -133,16 +137,36 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		 *  			string matching algorithm.	
 		 */
 		
-		
+		OntologyProfiler pro = Core.getInstance().getOntologyProfiler();
 
-		
-		
-		
-		if( param != null && ((BaseSimilarityParameters) param).useDictionary ) {  // Step 3a
-			//this is the same as the one of William Sunan
-			//String sourceName = source.getLocalName();
-			//String targetName = target.getLocalName();
+		if( pro != null ) {
+			// we are using ontology profiling
+			double highestSimilarity = 0.0d;
+			Iterator<Pair<String,String>> annIter = pro.getAnnotationIterator(source, target);
+			while( annIter.hasNext() ) {
+				Pair<String,String> currentPair = annIter.next();
+				double currentSimilarity = calculateSimilarity(currentPair.getLeft(), currentPair.getRight());
+				if( currentSimilarity > highestSimilarity ) highestSimilarity = currentSimilarity;
+			}
 			
+			if( highestSimilarity == 0.0d ) return null;
+			else return new Mapping( source, target, highestSimilarity);
+			
+		} else {
+			// we are not using ontology profiling
+			return withoutProfiling(source, target);
+		}
+		
+	}
+	
+	/**
+	 * This is exactly the algorithm before ontology profiling.
+	 * @param source
+	 * @param target
+	 * @return
+	 */
+	private Mapping withoutProfiling(Node source, Node target) {
+		if( param != null && ((BaseSimilarityParameters) param).useDictionary ) {  // Step 3a
 			String sourceName = source.getLabel();
 			String targetName = target.getLabel();
 			
@@ -247,11 +271,82 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			//none of the above
 			return new  Mapping( source, target, 0.0d, Mapping.EQUIVALENCE);
 		}
-		
-		
 	}
 	
 	
+	/**
+	 * This only calculates the similarity.
+	 * @param sourceName
+	 * @param targetName
+	 * @return
+	 */
+	private double calculateSimilarity(String sourceName, String targetName ) {
+		
+		if( param != null && ((BaseSimilarityParameters) param).useDictionary ) {  // Step 3a
+			
+			// Step 1:		run treatString on each name to clean it up
+			sourceName = treatString(sourceName);
+			targetName = treatString(targetName);
+			
+			
+			// Step 2:	If the labels are equal, then return a similarity of 1
+			if( sourceName.equalsIgnoreCase(targetName) ) {
+				String relation = Mapping.EQUIVALENCE;
+				return 1.0d;
+			}
+			// if we haven't initialized our wordnet database, do it
+			if( wordnet == null )
+				wordnet = WordNetDatabase.getFileInstance();
+			
+			// The user wants us to use a dictionary to find related words
+			
+			Synset[] sourceNouns = wordnet.getSynsets(sourceName, SynsetType.NOUN );
+			Synset[] targetNouns = wordnet.getSynsets(targetName, SynsetType.NOUN );
+			
+			float nounSimilarity = getSensesComparison(sourceNouns, targetNouns);
+			
+			Synset[] sourceVerbs = wordnet.getSynsets(sourceName, SynsetType.VERB);
+			Synset[] targetVerbs = wordnet.getSynsets(targetName, SynsetType.VERB);
+			
+			float verbSimilarity = getSensesComparison(sourceVerbs, targetVerbs);
+			
+			String rel = Mapping.EQUIVALENCE;
+	        
+			// select the best similarity found. (either verb or noun)
+	        if( nounSimilarity > verbSimilarity ) {
+	        	return nounSimilarity;
+	        }
+	        else {
+	        	return verbSimilarity;
+	        }
+			
+		}
+		else {  // Step no dictionary
+			// the user does not want to use the dictionary
+			// Changed from the one of Sunna
+			
+			// equivalence return 1
+			if(sourceName.equalsIgnoreCase(targetName)) return 1d;
+			
+			// all normalization without stemming and digits return 0.95
+			String sProcessed = norm1.normalize(sourceName);
+			String tProcessed= norm1.normalize(targetName);
+			if(sProcessed.equals(tProcessed)) return 0.95d;
+			
+			// all normalization without digits return 0.90
+			sProcessed = norm2.normalize(sourceName);
+			tProcessed= norm2.normalize(targetName);
+			if(sProcessed.equals(tProcessed)) return 0.9d;
+
+			// all normalization return 0.8
+			sProcessed = norm3.normalize(sourceName);
+			tProcessed = norm3.normalize(targetName);
+			if(sProcessed.equals(tProcessed)) return 0.8d;
+
+			// none of the above
+			return 0.0d;
+		}
+	}
 	
 	
 	

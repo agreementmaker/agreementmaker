@@ -16,6 +16,7 @@ import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.OntologyChangeEvent;
 import am.app.ontology.OntologyChangeListener;
+import am.app.ontology.profiling.OntologyProfiler;
 import am.userInterface.AppPreferences;
 import am.userInterface.Colors;
 import am.userInterface.UI;
@@ -358,6 +359,8 @@ public class Core {
 			OntologyChangeEvent e = new OntologyChangeEvent(this, OntologyChangeEvent.EventType.ONTOLOGY_REMOVED, ont.getID() );
 			fireEvent(e);
 		}
+		
+		if( !ontologiesLoaded() ) { currentProfiler = null; } // clear the ontology profiler
 	}
 	
 	
@@ -395,5 +398,19 @@ public class Core {
 		}
 	}
 	
+	/* ***************************** ONTOLOGY PROFILING **************************************** */
+	private OntologyProfiler currentProfiler;
+	
+	/**
+	 * Ontology profiler.  Set the profiler by using the Ontology -> Profiling... menu.
+	 * @return  The current ontology profiling algorithm set.
+	 */
+	public OntologyProfiler getOntologyProfiler() { return currentProfiler; }
+	
+	/**
+	 * Set the ontology profiler.
+	 * @param p
+	 */
+	public void setOntologyProfiler( OntologyProfiler p ) { currentProfiler = p; }
 	
 }

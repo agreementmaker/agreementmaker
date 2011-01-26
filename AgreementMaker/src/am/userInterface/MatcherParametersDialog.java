@@ -2,6 +2,7 @@ package am.userInterface;
 
 
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
@@ -23,6 +24,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
+import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JScrollPane;
@@ -36,6 +38,7 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.ontology.profiling.ProfilerRegistry;
 import am.userInterface.table.MatchersTablePanel;
 
 
@@ -70,13 +73,15 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	private JPanel generalPanel;
 	//private JPanel settingsPanel;
 	
+	//private JTabbedPane dialogTabbedPane; // a tabbed pane
+	
 	private boolean showPresets = true;
 	private boolean showGeneralSettings = true;
 	
 	private JScrollPane settingsScroll;
 	
-	GroupLayout.ParallelGroup mainHorizontalGroup;
-	GroupLayout.SequentialGroup mainVerticalGroup;
+	//GroupLayout.ParallelGroup mainHorizontalGroup;
+	//GroupLayout.SequentialGroup mainVerticalGroup;
 	
 	private boolean success = false;
 	AbstractMatcherParametersPanel parametersPanel;
@@ -235,7 +240,6 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		runButton.addActionListener(this);
 		cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(this);
-	
 	}
 	
 	
@@ -329,35 +333,75 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	
 	private void initLayout(boolean showPresets, boolean showGeneralSettings) {
 		//overall dialog layout
-		GroupLayout layout = new GroupLayout(this.getContentPane());
-		layout.setAutoCreateContainerGaps(true);
-		layout.setAutoCreateGaps(true);
+		
+		
+		// initialize the matcher panel.
+		JPanel matcherPanel = new JPanel();
+		
+		GroupLayout matcherPanelLayout = new GroupLayout(matcherPanel);
+		matcherPanelLayout.setAutoCreateContainerGaps(true);
+		matcherPanelLayout.setAutoCreateGaps(true);
 				
 		// horizontal setup
-		mainHorizontalGroup = layout.createParallelGroup(Alignment.TRAILING);
+		GroupLayout.ParallelGroup mainHorizontalGroup = matcherPanelLayout.createParallelGroup(Alignment.TRAILING);
 		if( showPresets ) mainHorizontalGroup.addComponent(topPanel);
 		if( showGeneralSettings ) mainHorizontalGroup.addComponent(generalPanel);
-		mainHorizontalGroup.addComponent(settingsScroll);
-		mainHorizontalGroup.addGroup( layout.createSequentialGroup()
-	            		.addComponent(cancelButton)
-	            		.addComponent(runButton) 
-		);
-		
-		layout.setHorizontalGroup( mainHorizontalGroup );
+		mainHorizontalGroup.addComponent(settingsScroll);	
+		matcherPanelLayout.setHorizontalGroup( mainHorizontalGroup );
 		
 		// vertical setup
-		mainVerticalGroup = layout.createSequentialGroup();
+		GroupLayout.SequentialGroup mainVerticalGroup = matcherPanelLayout.createSequentialGroup();
 		if( showPresets ) mainVerticalGroup.addComponent(topPanel);
 		if( showGeneralSettings ) mainVerticalGroup.addComponent(generalPanel);
 		mainVerticalGroup.addComponent(settingsScroll);
-		mainVerticalGroup.addGroup( layout.createParallelGroup()
-        		.addComponent(cancelButton)
-        		.addComponent(runButton)
-        );
-		layout.setVerticalGroup( mainVerticalGroup ); 
+		matcherPanelLayout.setVerticalGroup( mainVerticalGroup ); 
 
+		matcherPanel.setLayout(matcherPanelLayout);	
 		
-		setLayout(layout);	
+		// initialize the ontology profiling panel.		
+		JPanel profilingPanel = new JPanel();
+		profilingPanel.setLayout(new BorderLayout());
+		
+		if( Core.getInstance().getOntologyProfiler() == null ) {
+			// there is no ontology profiling algorithm defined.	
+			profilingPanel.add(new JLabel("No ontology profiling algorithm selected."), BorderLayout.CENTER);
+		} else if( Core.getInstance().getOntologyProfiler().getProfilerPanel(false) == null ){
+			// the ontology profiler does not have a match time parameters panel
+			ProfilerRegistry name = Core.getInstance().getOntologyProfiler().getName();
+			profilingPanel.add(new JLabel( name.getProfilerName() + " has been selected." + 
+					"\nThe profiling algorithm does not need parameters at match time."), BorderLayout.CENTER);
+		} else {
+			profilingPanel.add( Core.getInstance().getOntologyProfiler().getProfilerPanel(false), BorderLayout.CENTER);
+		}
+		
+		// add the tabs to the JTabbedPane
+		JTabbedPane dialogTabbedPane = new JTabbedPane();
+		dialogTabbedPane.addTab("Matcher", matcherPanel);
+		dialogTabbedPane.addTab("Ontology Profiling", profilingPanel);
+		
+		// put everything together.
+				
+		GroupLayout mainPanelLayout = new GroupLayout(getContentPane());
+		mainPanelLayout.setAutoCreateContainerGaps(true);
+		mainPanelLayout.setAutoCreateGaps(true);
+		
+		mainPanelLayout.setHorizontalGroup( mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+				.addComponent(dialogTabbedPane)
+				.addGroup( mainPanelLayout.createSequentialGroup()
+						.addComponent(cancelButton)
+						.addComponent(runButton)
+				)
+		);
+		
+		mainPanelLayout.setVerticalGroup( mainPanelLayout.createSequentialGroup()
+				.addComponent(dialogTabbedPane)
+				.addGroup( mainPanelLayout.createParallelGroup()
+						.addComponent(cancelButton)
+						.addComponent(runButton)
+				)
+		);
+		
+		getContentPane().setLayout(mainPanelLayout);
 		
 		if( getFont() != null && getFontMetrics(getFont()) != null ) {
 			FontMetrics fm = getFontMetrics(getFont());
@@ -384,7 +428,8 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			
 			addInputMatchers(matcher);
 			
-			if( settingsScroll != null ) remove(settingsScroll);
+			setRootPane( createRootPane() );  // ignore the old root pane
+			getRootPane().setDefaultButton(runButton);
 			
 			if(matcher.needsParam() && matcher.getParametersPanel() != null){  
 				parametersPanel = matcher.getParametersPanel(); 
