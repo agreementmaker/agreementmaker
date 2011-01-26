@@ -5,12 +5,7 @@ package am.app.mappingEngine.structuralMatchers.similarityFlooding.anchorFlood;
 
 import am.app.mappingEngine.structuralMatchers.SimilarityFloodingParameters;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.FullGraphMatcher;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertexData;
-import am.app.ontology.Node;
-import am.utility.Pair;
-
-import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.RDFNode;
+import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
 
 /**
  * @author michele
@@ -45,43 +40,9 @@ public class AnchorFloodMatcher extends FullGraphMatcher {
 	 *
 	 */
 	@Override
-	protected void loadSimilarityMatrices() {
+	protected void loadSimilarityMatrices(WrappingGraph s, WrappingGraph t) {
 		classesMatrix = inputMatchers.get(0).getClassesMatrix();
 		propertiesMatrix = inputMatchers.get(0).getPropertiesMatrix();
-	}
-
-	/**
-	 *
-	 */
-	//@Override
-	protected PCGVertexData selectInput(Pair<RDFNode, RDFNode> pair) {
-		OntResource sourceRes, targetRes;
-		@SuppressWarnings("unused")
-		double sim = 0.0;
-		// try to get the ontResource from them
-		if(pair.getLeft().canAs(OntResource.class) && pair.getRight().canAs(OntResource.class)){
-			sourceRes = pair.getLeft().as(OntResource.class);
-			targetRes = pair.getRight().as(OntResource.class);
-			 
-			// try to get the Node and check they belong to the same alignType
-			Node source, target;
-			try{
-				source = sourceOntology.getNodefromOntResource(sourceRes, alignType.aligningClasses);
-				target = targetOntology.getNodefromOntResource(targetRes, alignType.aligningClasses);
-				sim = classesMatrix.get(source.getIndex(), target.getIndex()).getSimilarity();
-			}
-			catch(Exception eClass){
-				try{
-					source = sourceOntology.getNodefromOntResource(sourceRes, alignType.aligningProperties);
-					target = targetOntology.getNodefromOntResource(targetRes, alignType.aligningProperties);
-					sim = propertiesMatrix.get(source.getIndex(), target.getIndex()).getSimilarity();
-				}
-				catch(Exception eProp){
-				}
-			}
-		}
-//		return new PCGVertexData( pair, sim, 0.0 );
-		return null;
 	}
 
 }

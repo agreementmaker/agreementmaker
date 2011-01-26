@@ -55,8 +55,8 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		if( sourceOntology == null ) throw new NullPointerException("sourceOntology == null");   
 		if( targetOntology == null ) throw new NullPointerException("targetOntology == null");
 		
-		// loading similarity matrices
-		loadSimilarityMatrices();
+		// loading similarity matrices (null values are permitted if WrappingGraphs are not used to build the Matrices)
+		loadSimilarityMatrices(null, null);
 		
 		progressDisplay.appendToReport("Creating Wrapping Graphs...");
 		WrappingGraph sourceGraph = new WrappingGraph(sourceOntology);
@@ -76,13 +76,7 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		
 		progressDisplay.appendToReport("Creating Pairwise Connectivity Graph...");
 		createFullPCG(sourceGraph, targetGraph);
-		if( DEBUG_FLAG ) {
-			try {
-				fw.append("old: " + pcg + "\n");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-	}
+		if( DEBUG_FLAG ) System.out.println(pcg.toString());
 		progressDisplay.appendToReport("done.\n");
 		
 		progressDisplay.appendToReport("Creating Induced Propagation Graph...");
@@ -103,11 +97,11 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		computeRelativeSimilarities(propertiesMatrix);
 		progressDisplay.appendToReport("done.\n");
 		
-		try {
-			fw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			fw.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		
 	 }
 	 
@@ -120,7 +114,7 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		
 	 }
 
-	@SuppressWarnings("unused")
+//	@SuppressWarnings("unused")
 	private void createPCG(WrappingGraph sourceOnt, WrappingGraph targetOnt) {
 		Iterator<WGraphVertex> sLocalItr = sourceOnt.vertices();
 		Iterator<WGraphVertex> tLocalItr = targetOnt.vertices();

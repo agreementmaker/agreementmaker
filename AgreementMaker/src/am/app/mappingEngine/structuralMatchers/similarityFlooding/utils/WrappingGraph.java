@@ -87,13 +87,13 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 			nodesMap.put(setP.get(i).getResource(), vertexNew);
 		}
 		
-//		VERTICES first, old method
-//		String queryString = composeQuery(EGraphNodeType.VERTEXES);
-//		Query query = QueryFactory.create(queryString);
-//		QueryExecution qexec = QueryExecutionFactory.create(query, jenaGraph);
-//		ResultSet results = qexec.execSelect();
-//		processResults(results, EGraphNodeType.VERTEXES);
-		
+/*		VERTICES first, old method
+		String queryString = composeQuery(EGraphNodeType.VERTEXES);
+		Query query = QueryFactory.create(queryString);
+		QueryExecution qexec = QueryExecutionFactory.create(query, jenaGraph);
+		ResultSet results = qexec.execSelect();
+		processResults(results, EGraphNodeType.VERTEXES);
+*/		
 		// EDGES then
 		String queryString = composeQuery(EGraphNodeType.EDGES);
 		Query query = QueryFactory.create(queryString);
@@ -179,7 +179,6 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
     			new Exception("Unexpected state: should always be able to tell if edges or vertexes are processed");
     			break;
     	}
-//    	System.out.println(query);
     	return query;
     }
 
@@ -251,8 +250,7 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 
 	private WGraphEdge returnEdge(WGraphVertex origin, WGraphVertex destination, RDFNode rdfNode) {
 		if(rdfNode == null){ // coming from the restriction
-//			return new WGraphEdge(origin, destination, "hasRestrictedProperty"); // very similar to hasProperty
-			return null;
+			return null; // not managed yet
 		}
 		else if(rdfNode.equals(RDFS.domain)){
 			return new WGraphEdge(destination, origin, "hasProperty");
@@ -307,14 +305,6 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 		}
 	}
 	
-//	public Node vertexToNode(WGraphVertex vert, EOntologyNodeType type){
-//		Node n = null;
-//		if(type == EOntologyNodeType.CLASS){
-//			return new Node(vert.getMatrixIndex(), vert.getObject().asResource(), Node.OWLCLASS, ontID);
-//		}
-//		return null;
-//	 }
-	
 	// COMPUTE DIFFERENCE WG-ONTOLOGY
 	
 	public ArrayList<Node> diff(Ontology o, EOntologyNodeType tp){
@@ -350,7 +340,7 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 			else if(wgNodes.get(wgIndex).compareTo(ontNodes.get(ontIndex)) == 0){ // wg(i) = ont(i)
 				ontIndex++;
 			}
-			else{ // wgNodes.get(i).compareTo(wgNodes.get(i)) < 0 ---> wg(i) > ont(i)
+			else{ // wgNodes.get(i).compareTo(wgNodes.get(i)) > 0 ---> wg(i) > ont(i)
 				// to be checked but should be an impossible situation since both of the arrays are sorted
 			}
 		}
@@ -396,7 +386,6 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 		    		if(wgVertices.get(i).getNodeType().equals(EOntologyNodeType.PROPERTY)){
 			    		n = Node.getNodefromRDFNode(ont, wgVertices.get(i).getObject(), alignType.aligningProperties);
 						if(n == null){
-							// TODO: check on OWLCLASS and OWLPROPERTY 
 							n = new Node(key, wgVertices.get(i).getObject().toString(), Node.OWLPROPERTY, ont.getIndex());
 							wgVertices.get(i).setMatrixIndex(key);
 							key++;

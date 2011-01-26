@@ -6,10 +6,7 @@ package am.app.mappingEngine.structuralMatchers.similarityFlooding.sfm;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.structuralMatchers.SimilarityFloodingParameters;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.FullGraphMatcher;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertexData;
-import am.utility.Pair;
-
-import com.hp.hpl.jena.rdf.model.RDFNode;
+import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
 
 /**
  * @author michele
@@ -44,7 +41,7 @@ public class IndipendentSimilarityFlooding extends FullGraphMatcher {
 	 *
 	 */
 	@Override
-	protected void loadSimilarityMatrices(){
+	protected void loadSimilarityMatrices(WrappingGraph s, WrappingGraph t){
 		// load classesMatrix
 		classesMatrix = new ArraySimilarityMatrix(sourceOntology.getClassesList().size(),
 				targetOntology.getClassesList().size(),
@@ -53,15 +50,6 @@ public class IndipendentSimilarityFlooding extends FullGraphMatcher {
 		propertiesMatrix = new ArraySimilarityMatrix(sourceOntology.getPropertiesList().size(),
 				targetOntology.getPropertiesList().size(),
 				alignType.aligningProperties);
-	}
-
-	/**
-	 *
-	 */
-	@Override
-	protected PCGVertexData selectInput(Pair<RDFNode, RDFNode> pair) {
-//		return new PCGVertexData( pair );
-		return null;
 	}
 
 }

@@ -122,12 +122,12 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 //			cNewVect = classesMatrix.toSimilarityArray(classesMatrix.toMappingArray(fw, round));
 //			cNewVect.addAll(pVect);
 			
-			try {
-				fw.append("old: " + cOldVect.size() + "\n");
-				fw.append("new: " + cNewVect.size() + "\n");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				fw.append("old: " + cOldVect.size() + "\n");
+//				fw.append("new: " + cNewVect.size() + "\n");
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
 			if( round == 1 )System.out.println(cOldVect.toString());
 			if( round == 1 )System.out.println(cNewVect.toString());
 			
@@ -144,11 +144,11 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 		computeRelativeSimilarities(propertiesMatrix);
 		progressDisplay.appendToReport("done.\n");
 		
-		try {
-			fw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			fw.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 			
 	
 	 }
@@ -205,11 +205,11 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 			}
 			tLocalItr = t.vertices();
 		}
-		 try {
-				fw.append("----------------------------------------------> " + new Integer(pcgSize).toString()+ "\n");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+//		 try {
+//				fw.append("----------------------------------------------> " + new Integer(pcgSize).toString()+ "\n");
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
 	}
 	 
 	 // PHASE 1: get a pcg vertex and inserts it in the pcg //
@@ -348,10 +348,5 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 			prevRoundProperties = new ArraySimilarityMatrix(propertiesMatrix);
 		}
 	 */
-	
 
-	@Override
-	protected PCGVertexData selectInput(Pair<RDFNode, RDFNode> pair) {
-		return null;
-	}
 }
