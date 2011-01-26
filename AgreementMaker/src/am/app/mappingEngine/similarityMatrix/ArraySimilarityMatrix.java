@@ -1,14 +1,16 @@
 package am.app.mappingEngine.similarityMatrix;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Vector;
 
 import am.Utility;
 import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
@@ -22,9 +24,13 @@ public class ArraySimilarityMatrix implements SimilarityMatrix, Serializable {
 	
 	protected String relation = Mapping.EQUIVALENCE; //this is a default relation used when no relation is specified for this matrix
 	protected alignType typeOfMatrix;
-    protected final int rows;             // number of rows
-    protected final int columns;             // number of columns
-    protected final Mapping[][] data;   // M-by-N array
+//	protected final int rows;             // number of rows
+//    protected final int columns;             // number of columns
+//    protected final Mapping[][] data;   // M-by-N array
+    
+    protected int rows;             // number of rows
+    protected int columns;             // number of columns
+    protected Mapping[][] data;   // M-by-N array
 
     protected int sourceOntologyID;
     protected int targetOntologyID;
@@ -58,6 +64,21 @@ public class ArraySimilarityMatrix implements SimilarityMatrix, Serializable {
 	   			}
 	   		}
     	
+    }
+    
+ // create M-by-N matrix of 0's with equivalence relation
+    public ArraySimilarityMatrix(Ontology s, Ontology t, alignType type) {
+    	relation = Mapping.EQUIVALENCE;
+    	typeOfMatrix = type;
+    	if(type == alignType.aligningClasses){
+            this.rows = s.getClassesList().size();
+            this.columns = t.getClassesList().size();
+    	}
+    	else{
+            this.rows = s.getPropertiesList().size();
+            this.columns = t.getPropertiesList().size();
+    	}
+        data = new Mapping[this.rows][this.columns];
     }
     
     // create M-by-N matrix of 0's with equivalence relation
@@ -224,11 +245,30 @@ public class ArraySimilarityMatrix implements SimilarityMatrix, Serializable {
     
 	@Override
 	public Vector<Mapping> toMappingArray(){
+		Vector<Mapping> mappingArray = new Vector<Mapping>();
+		for(int i = 0; i < getRows(); i++){
+			for(int j = 0; j < getColumns(); j++){
+				if(this.get(i, j) != null){
+					mappingArray.add(this.get(i, j));
+				}
+			}
+		}
+		return mappingArray;
+    }
+	
+	public Vector<Mapping> toMappingArray(FileWriter fw, int round){
 		Vector<Mapping> mappingArray = new Vector<Mapping>(getRows() * getColumns());
 		for(int i = 0; i < getRows(); i++){
 			for(int j = 0; j < getColumns(); j++){
 				if(this.get(i, j) != null){
 					mappingArray.add(this.get(i, j));
+					if(round == 1)
+					try {
+						fw.append(this.get(i, j).toString() + "\n");
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -453,14 +493,14 @@ public class ArraySimilarityMatrix implements SimilarityMatrix, Serializable {
 	 * @param val value to fill the matrix with
 	 * @author michele 
 	 */
-	@Override
-	public void fillMatrix(double val){
+//	@Override
+	public void fillMatrix(double val, ArrayList<Node> sList, ArrayList<Node> tList){
 		// create M-by-N matrix of the selected value
 		assert (val >= 0 && val <= 1);
 	    for(int i = 0; i < this.getRows(); i++){
 	    	for(int j = 0; j < this.getColumns(); j++){
 	    		if(get(i, j) == null){
-	    			set(i, j, new Mapping(val));
+	    			set(i, j, new Mapping(sList.get(i), tList.get(j), val));
 	    		}
 	    		else {
 	    			Mapping updatingMapping = this.get(i, j);
@@ -470,6 +510,7 @@ public class ArraySimilarityMatrix implements SimilarityMatrix, Serializable {
 	    	}
 	    }
 	}
+	
 	// TODO: Make the max value update when populating the matrix.
 	@Override
 	public double getMaxValue() {
@@ -541,6 +582,24 @@ public class ArraySimilarityMatrix implements SimilarityMatrix, Serializable {
 		}
 		
 		return topK;
+	}
+	
+	@Override
+	public int countNonNullValues() {
+		int count = 0;
+		for(int i = 0; i < this.getRows(); i++){
+			for(int j = 0; j < this.getColumns(); j++){
+				if(this.get(i, j) != null){
+					count++;
+				}
+			}
+		}
+		return count;
+	}
+	@Override
+	public SimilarityMatrix toArraySimilarityMatrix() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

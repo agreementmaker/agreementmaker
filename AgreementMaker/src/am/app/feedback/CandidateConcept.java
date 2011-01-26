@@ -13,7 +13,7 @@ import am.app.ontology.Node;
  *
  */
 
-public class CandidateConcept extends Node implements Comparable<CandidateConcept>{
+public class CandidateConcept extends Node /*implements Comparable<CandidateConcept>*/{
 
 	protected double relevance = 0.00;
 	protected boolean patternRepeats = false;

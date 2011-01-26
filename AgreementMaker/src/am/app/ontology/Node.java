@@ -12,39 +12,32 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.userInterface.ontology.OntologyConceptGraphics;
+import am.userInterface.vertex.Vertex;
 
 import com.hp.hpl.jena.ontology.AnnotationProperty;
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.ontology.impl.OntResourceImpl;
 import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import com.sun.xml.internal.bind.v2.runtime.output.Pcdata;
-
-import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.userInterface.ontology.OntologyConceptGraphics;
-import am.userInterface.vertex.*;
-import am.utility.Pair;
 /**
  * This class represents an element of the ontology to be aligned.
  * we could use the Resource class of Jena directly, but accessing information would be slower
  * so we use our own structure, even though we keep the reference to the Jena structure
  *
  */
-public class Node implements Serializable{
+public class Node implements Serializable, Comparable<Node>{
 	
 	/**
 	 * 
@@ -894,4 +887,40 @@ public class Node implements Serializable{
 	  }
 
 	  public String getType() {  return type;  }
+	  
+	  // GETTING OUR NODE FROM OTHER TYPES 
+	  
+	  public static OntResource getOntResourceFromRDFNode(RDFNode node){
+			 // try to get the ontResource from them
+			 if(node.canAs(OntResource.class)){
+				 return node.as(OntResource.class);
+			 }
+			 else{
+				 return null;
+			 }
+		 }
+		 
+		 public static Node getNodefromOntResource(Ontology ont, OntResource res, alignType aType){
+			 try{
+				 Node n = ont.getNodefromOntResource(res, aType);
+				 if(n != null){
+					 return n;
+				 }
+				 else{
+					 return null;
+				 }
+			 }
+			 catch(Exception eClass){
+				 return null;
+			 }
+		 }
+		 
+		 public static Node getNodefromRDFNode(Ontology ont, RDFNode node, alignType aType){
+			 return getNodefromOntResource(ont, getOntResourceFromRDFNode(node), aType);
+		 }
+
+		@Override
+		public int compareTo(Node n) {
+			return this.getResource().getURI().compareTo(n.getResource().getURI());
+		}
 }

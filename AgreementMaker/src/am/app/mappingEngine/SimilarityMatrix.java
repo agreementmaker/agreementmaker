@@ -1,9 +1,11 @@
 package am.app.mappingEngine;
 
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Vector;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphVertex;
 import am.app.ontology.Node;
 
 /**
@@ -54,12 +56,17 @@ public interface SimilarityMatrix
 	double getRowSum(int row);
 	double getColSum(int col);
 	
-	void fillMatrix(double val);
+	void fillMatrix(double d, ArrayList<Node> sourceList, ArrayList<Node> targetList);
 	double getMaxValue();
 	Mapping[] getTopK(int k);
 	Mapping[] getTopK(int k, boolean[][] filteredCells);
 	
+	int countNonNullValues();
+	
 	Vector<Mapping> toMappingArray();
+	Vector<Mapping> toMappingArray(FileWriter fw, int round);
 	Vector<Double> toSimilarityArray(Vector<Mapping> mapsArray);
+	
+	SimilarityMatrix toArraySimilarityMatrix();
 	
 }
