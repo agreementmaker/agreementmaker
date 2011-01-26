@@ -1,11 +1,14 @@
 package am.app.ontology.profiling.manual;
 
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import com.hp.hpl.jena.rdf.model.Property;
 
@@ -85,7 +88,8 @@ public class ManualProfilerMatchingPanel extends OntologyProfilerPanel {
 
 	private void initializeLayout() {
 		
-		GroupLayout mainLayout = new GroupLayout(this);
+		JPanel mainPanel = new JPanel();
+		GroupLayout mainLayout = new GroupLayout(mainPanel);
 		
 		JLabel sourceClassLabel = new JLabel("Source Class Annotations");
 		JLabel targetClassLabel = new JLabel("Target Class Annotations");
@@ -189,7 +193,14 @@ public class ManualProfilerMatchingPanel extends OntologyProfilerPanel {
 		}
 		
 		
-		setLayout(mainLayout);
+		mainPanel.setLayout(mainLayout);
+		
+		// add the main panel to this dialog
+		JScrollPane scrollPane = new JScrollPane(mainPanel);
+		
+		setLayout(new BorderLayout());
+		add(scrollPane,BorderLayout.CENTER);
+		
 		
 		
 	}
