@@ -38,6 +38,7 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.ontology.profiling.OntologyProfilerPanel;
 import am.app.ontology.profiling.ProfilerRegistry;
 import am.userInterface.table.MatchersTablePanel;
 
@@ -93,6 +94,8 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	private boolean matcherDefined = false;
 	
 	ArrayList<AbstractMatcher> selectedMatchers;
+	
+	OntologyProfilerPanel matchTimeProfilingPanel = null;
 	
 	/**
 	 * @param ontoType
@@ -371,7 +374,10 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			profilingPanel.add(new JLabel( name.getProfilerName() + " has been selected." + 
 					"\nThe profiling algorithm does not need parameters at match time."), BorderLayout.CENTER);
 		} else {
-			profilingPanel.add( Core.getInstance().getOntologyProfiler().getProfilerPanel(false), BorderLayout.CENTER);
+			if( matchTimeProfilingPanel == null ) {
+				matchTimeProfilingPanel = Core.getInstance().getOntologyProfiler().getProfilerPanel(false);
+			}
+			profilingPanel.add( matchTimeProfilingPanel, BorderLayout.CENTER);
 		}
 		
 		// add the tabs to the JTabbedPane
@@ -486,6 +492,11 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			
 			
 			matcher.setParam(params);
+			
+			// set the ontology profiling parameters.
+			if( matchTimeProfilingPanel != null ) {
+				Core.getInstance().getOntologyProfiler().setMatchTimeParams(matchTimeProfilingPanel.getParameters());
+			}
 			
 			// save selected index
 			if( !matcherDefined ) Core.getAppPreferences().saveInt("MATCHERSPARAMETERSDIALOG_SELECTEDMATCHER", matcherCombo.getSelectedIndex());
