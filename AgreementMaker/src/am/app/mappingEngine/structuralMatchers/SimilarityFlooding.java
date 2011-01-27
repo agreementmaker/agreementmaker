@@ -396,101 +396,6 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 createBackwardEdges();
 	 }
 	 
-	 /* *********************************************************************************** */
-	 /*		 							COMPUTING THE FIXPOINT								*/
-	 /* *********************************************************************************** */
-	 
-	 protected void computeFixpoint(){
-		 int round = 0;
-		 double maxSimilarity = 0.0;
-		 Vector<Double> oldV , newV;
-		 do {
-			 // new round starts
-			 round++;
-			 
-			 // update old value with new value of previous round
-			 updateOldSimValues(pcg.vertices(), round);
-			 
-			 // compute fixpoint round and max value per that round
-			 maxSimilarity = computeFixpointRound(pcg.vertices());
-			 
-			 // normalize all the similarity values of all nodes
-			 normalizeSimilarities(pcg.vertices(), maxSimilarity);
-
-			 // stop condition check: delta or maxRound
-			 populateSimilarityMatrices(pcg, classesMatrix, propertiesMatrix);
-
-			 oldV = pcg.getSimValueVector(true);
-			 newV = pcg.getSimValueVector(false);
-
-//			 try {
-//					fw.append("old: " + oldV.size() + "\n");
-//					fw.append("new: " + newV.size() + "\n");
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-
-		 } while(!checkStopCondition(round, oldV, newV));
-	 }
-	 
-	 private void updateOldSimValues(Iterator<PCGVertex> iVert, int round){
-		 PCGVertex vert = null;
-		 if(round != 1){
-			 while(iVert.hasNext()){
-				 // take the current vertex
-				 vert = iVert.next();
-				 vert.getObject().setOldSimilarityValue(vert.getObject().getNewSimilarityValue());
-			 }
-		 }
-	 }
-	 
-	 protected void updateOldSimValues(SimilarityMatrix matrixOld, SimilarityMatrix matrixNew, double round) {
-		 Mapping current = null;
-		 
-		 for(int i = 0; i < matrixOld.getRows(); i++){
-			 for(int j = 0; j < matrixOld.getColumns(); j++){
-				 
-				 current = matrixOld.get(i, j);
-				 if(current != null){
-					 current.setSimilarity(matrixNew.get(i,j).getSimilarity());
-					 matrixOld.set(i, j, current);
-				 }
-			 }
-		 }
-	 }	
-	 
-	 protected double computeFixpointRound(Iterator<PCGVertex> iVert){
-		 double maxSimilarity = 0.0, newSimilarity = 0.0;
-		 PCGVertex vert = null;
-		 PCGVertex maxV = null;
-		 
-		 while(iVert.hasNext()){
-			 
-			 // take the current vertex
-			 vert = iVert.next();
-			 
-			 // compute the new similarity value for that vertex
-			 newSimilarity = computeFixpointPerVertex(vert);
-			 
-			 // store it inside the vertex
-			 vert.getObject().setNewSimilarityValue(newSimilarity);
-			 				
-			 // track the maximum similarity
-			 if(maxSimilarity < newSimilarity){
-				 maxV = vert;
-				 maxSimilarity = newSimilarity;
-//				 System.out.println("maxSim: " + maxSimilarity + " ------------------- " + "maxV: " + maxV.toString() + "\n");
-				 
-			 }
-			 System.out.println("maxSim: " + maxSimilarity + " ------------------- " + "maxV: " + maxV.toString() + "\n");
-		 }
-		 return maxSimilarity;
-	 }
-
-	 /* *********************************************************************************** */
-	 /* 							INDUCED PROPAGATION GRAPH OPERATIONS					*/
-	 /* *********************************************************************************** */
-	 
 	 public void applyCoefficients(){
 		 Iterator<PCGVertex> iVert = pcg.vertices();
 		 PCGVertex currentVert = null;
@@ -580,35 +485,38 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 }
 	 }
 	 
-	 protected boolean checkStopCondition(int round, Vector<Double> simVectBefore, Vector<Double> simVectAfter){
-		return checkStopCondition(round, ROUND_MAX, simVectBefore, simVectAfter);
-	 }
-	 /**
-	  * 
-	  */
-	 protected boolean checkStopCondition(int round, int max_round, Vector<Double> simVectBefore, Vector<Double> simVectAfter){
-		 return ((round > max_round) || (simDistance(simVectBefore, simVectAfter) < DELTA));
+	 /* *********************************************************************************** */
+	 /*		 							COMPUTING THE FIXPOINT								*/
+	 /* *********************************************************************************** */
+	 
+	 protected double computeFixpointRound(Iterator<PCGVertex> iVert){
+		 double maxSimilarity = 0.0, newSimilarity = 0.0;
+		 PCGVertex vert = null;
+		 PCGVertex maxV = null;
+		 
+		 while(iVert.hasNext()){
+			 
+			 // take the current vertex
+			 vert = iVert.next();
+			 
+			 // compute the new similarity value for that vertex
+			 newSimilarity = computeFixpointPerVertex(vert);
+			 
+			 // store it inside the vertex
+			 vert.getObject().setNewSimilarityValue(newSimilarity);
+			 				
+			 // track the maximum similarity
+			 if(maxSimilarity < newSimilarity){
+				 maxV = vert;
+				 maxSimilarity = newSimilarity;
+//				 System.out.println("maxSim: " + maxSimilarity + " ------------------- " + "maxV: " + maxV.toString() + "\n");
+				 
+			 }
+			 System.out.println("maxSim: " + maxSimilarity + " ------------------- " + "maxV: " + maxV.toString() + "\n");
+		 }
+		 return maxSimilarity;
 	 }
 
-	 protected double simDistance(Vector<Double> simVectBefore, Vector<Double> simVectAfter){
-		 double simD = 0.0, diff = 0.0;
-		 assert (simVectBefore.size() == simVectAfter.size()); // size of both vectors should always be the same
-		 
-		 // computing euclidean distance
-		 for(int i = 0; i < simVectAfter.size(); i++){
-			 diff = simVectBefore.get(i) - simVectAfter.get(i);
-			 simD += (diff * diff);
-		 }
-//		 try {
-//			 fw.append("before: " + simVectBefore + "\n");
-//			 fw.append("after: " + simVectAfter + "\n");
-//			 fw.append("delta: " + Math.sqrt(simD) + "\n");
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-		 return Math.sqrt(simD);
-	 }
-	 
 	 /**
 	  * 
 	  */
@@ -674,50 +582,39 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 return sum;
 	 }
 	 
-	 /* *************************************************** */
-	 /* 				 NORMALIZATION PHASE 			   	*/
-	 /* *************************************************** */
+	 /* *********************************************************************************** */
+	 /* 								CHECK STOP CONDITIONS								*/
+	 /* *********************************************************************************** */
+	 
+	 protected boolean checkStopCondition(int round, Vector<Double> simVectBefore, Vector<Double> simVectAfter){
+		return checkStopCondition(round, ROUND_MAX, simVectBefore, simVectAfter);
+	 }
+	 /**
+	  * 
+	  */
+	 protected boolean checkStopCondition(int round, int max_round, Vector<Double> simVectBefore, Vector<Double> simVectAfter){
+		 return ((round > max_round) || (simDistance(simVectBefore, simVectAfter) < DELTA));
+	 }
+
+	 protected double simDistance(Vector<Double> simVectBefore, Vector<Double> simVectAfter){
+		 double simD = 0.0, diff = 0.0;
+		 assert (simVectBefore.size() == simVectAfter.size()); // size of both vectors should always be the same
 		 
-		 protected void normalizeSimilarities(Iterator<PCGVertex> iVert, double roundMax){
-			 double nonNormSimilarity = 0.0, normSimilarity = 0.0;
-			 PCGVertex currentVert = null;
-			 while(iVert.hasNext()){
-				 currentVert = iVert.next();
-				 
-				 // the value computed is stored in the new similarity value at this stage
-				 nonNormSimilarity = currentVert.getObject().getNewSimilarityValue();
-				 
-				 // compute normalized value
-				 normSimilarity = nonNormSimilarity / roundMax;
-				 
-				 // set normalized to new value
-				 currentVert.getObject().setNewSimilarityValue(normSimilarity);
-			 }
+		 // computing euclidean distance
+		 for(int i = 0; i < simVectAfter.size(); i++){
+			 diff = simVectBefore.get(i) - simVectAfter.get(i);
+			 simD += (diff * diff);
 		 }
-		 
-		 protected void normalizeSimilarities(SimilarityMatrix localMatrix, double roundMax) {
-			 double nonNormSimilarity = 0.0, normSimilarity = 0.0;
-			 Mapping current = null;
-			 
-			 for(int i = 0; i < localMatrix.getRows(); i++){
-				 for(int j = 0; j < localMatrix.getColumns(); j++){
-					 
-					 current = localMatrix.get(i, j);
-					 if(current != null){
-						// the value computed is stored in the new similarity value at this stage
-						 nonNormSimilarity = current.getSimilarity();
-						 
-						 // compute normalized value
-						 normSimilarity = nonNormSimilarity / roundMax;
-						 
-						 // set normalized to new value
-						 localMatrix.get(i, j).setSimilarity(normSimilarity);
-					 }
-					 
-				 }
-			 }
-		 }	
-		 
+//		 try {
+//			 fw.append("before: " + simVectBefore + "\n");
+//			 fw.append("after: " + simVectAfter + "\n");
+//			 fw.append("delta: " + Math.sqrt(simD) + "\n");
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+		 return Math.sqrt(simD);
+	 }
+	 
 		 /* *************************************************** */
 		 /* 				RELATIVE SIMILARITIES 				*/
 		 /* *************************************************** */

@@ -3,13 +3,12 @@
  */
 package am.app.mappingEngine.structuralMatchers.similarityFlooding;
 
-import java.io.IOException;
 import java.util.Iterator;
+import java.util.Vector;
 
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.structuralMatchers.SimilarityFlooding;
 import am.app.mappingEngine.structuralMatchers.SimilarityFloodingParameters;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdge;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertex;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphVertex;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
@@ -55,9 +54,6 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		if( sourceOntology == null ) throw new NullPointerException("sourceOntology == null");   
 		if( targetOntology == null ) throw new NullPointerException("targetOntology == null");
 		
-		// loading similarity matrices (null values are permitted if WrappingGraphs are not used to build the Matrices)
-		loadSimilarityMatrices(null, null);
-		
 		progressDisplay.appendToReport("Creating Wrapping Graphs...");
 		WrappingGraph sourceGraph = new WrappingGraph(sourceOntology);
 		WrappingGraph targetGraph = new WrappingGraph(targetOntology);
@@ -65,6 +61,10 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		if( DEBUG_FLAG ) System.out.println(targetGraph.toString());
 		progressDisplay.appendToReport("done.\n");
 		
+		// loading similarity matrices (null values are permitted if WrappingGraphs are not used to build the Matrices)
+		loadSimilarityMatrices(null, null);
+		
+		// PHASE 0: sorting edges (for optimization purposes)
 		if(isSortEdges()){
 			progressDisplay.appendToReport("Sorting Wrapping Graphs...");
 			sourceGraph.sortEdges();
@@ -74,24 +74,29 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 			progressDisplay.appendToReport("done.\n");
 		}
 		
+		// PHASE 1: creating PCG
 		progressDisplay.appendToReport("Creating Pairwise Connectivity Graph...");
 		createFullPCG(sourceGraph, targetGraph);
 		if( DEBUG_FLAG ) System.out.println(pcg.toString());
 		progressDisplay.appendToReport("done.\n");
 		
+		// PHASE 2: creating IPG
 		progressDisplay.appendToReport("Creating Induced Propagation Graph...");
 		createInducedPropagationGraph();
 		if( DEBUG_FLAG ) System.out.println(pcg.toString());
 		progressDisplay.appendToReport("done.\n");
 		
+		// PHASE 3: computing fixpoint
 		progressDisplay.appendToReport("Computing Fixpoints...");
 		computeFixpoint();
 		progressDisplay.appendToReport("done.\n");
 		
+		// PHASE 4: update values in matrix
 		progressDisplay.appendToReport("Populating Similarity Matrices...");
 		populateSimilarityMatrices(pcg, classesMatrix, propertiesMatrix);
 		progressDisplay.appendToReport("done.\n");
 		
+		// PHASE 5: compute relative similarities
 		progressDisplay.appendToReport("Computing Relative Similarities...");
 		computeRelativeSimilarities(classesMatrix);
 		computeRelativeSimilarities(propertiesMatrix);
@@ -107,7 +112,7 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 	 
 	 protected void createFullPCG(WrappingGraph sourceOnt, WrappingGraph targetOnt){
 		 //old method
-//		 super.createFullPCG(sourceOnt, targetOnt);
+//		 createFullPCG(sourceOnt, targetOnt);
 		 
 		 //new method
 		 createPCG(sourceOnt, targetOnt);
@@ -133,7 +138,67 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 			}
 			tLocalItr = targetOnt.vertices();
 		}
-		
 	}
+	
+	protected void computeFixpoint(){
+		 int round = 0;
+		 double maxSimilarity = 0.0;
+		 Vector<Double> oldV , newV;
+		 do {
+			 // new round starts
+			 round++;
+			 
+			 // update old value with new value of previous round
+			 updateOldSimValues(pcg.vertices(), round);
+			 
+			 // compute fixpoint round and max value per that round
+			 maxSimilarity = computeFixpointRound(pcg.vertices());
+			 
+			 // normalize all the similarity values of all nodes
+			 normalizeSimilarities(pcg.vertices(), maxSimilarity);
+
+			 // stop condition check: delta or maxRound
+			 populateSimilarityMatrices(pcg, classesMatrix, propertiesMatrix);
+
+			 oldV = pcg.getSimValueVector(true);
+			 newV = pcg.getSimValueVector(false);
+
+//			 try {
+//					fw.append("old: " + oldV.size() + "\n");
+//					fw.append("new: " + newV.size() + "\n");
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+
+		 } while(!checkStopCondition(round, oldV, newV));
+	 }
+	
+	private void updateOldSimValues(Iterator<PCGVertex> iVert, int round){
+		 PCGVertex vert = null;
+		 if(round != 1){
+			 while(iVert.hasNext()){
+				 // take the current vertex
+				 vert = iVert.next();
+				 vert.getObject().setOldSimilarityValue(vert.getObject().getNewSimilarityValue());
+			 }
+		 }
+	 }
+	 
+	protected void normalizeSimilarities(Iterator<PCGVertex> iVert, double roundMax){
+		 double nonNormSimilarity = 0.0, normSimilarity = 0.0;
+		 PCGVertex currentVert = null;
+		 while(iVert.hasNext()){
+			 currentVert = iVert.next();
+			 
+			 // the value computed is stored in the new similarity value at this stage
+			 nonNormSimilarity = currentVert.getObject().getNewSimilarityValue();
+			 
+			 // compute normalized value
+			 normSimilarity = nonNormSimilarity / roundMax;
+			 
+			 // set normalized to new value
+			 currentVert.getObject().setNewSimilarityValue(normSimilarity);
+		 }
+	 }
 	 
 }
