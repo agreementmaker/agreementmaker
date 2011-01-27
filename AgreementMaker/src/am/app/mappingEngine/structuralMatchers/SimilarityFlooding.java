@@ -124,14 +124,11 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 Iterator<WGraphEdge> sourceIterator = sourceOnt.edges();
 		 Iterator<WGraphEdge> targetIterator = targetOnt.edges();
 		 
-		 WGraphEdge sEdge = null;
-		 WGraphEdge tEdge = null;
-		 
 			 while(sourceIterator.hasNext()){
-				 sEdge = sourceIterator.next();
+				 WGraphEdge sEdge = sourceIterator.next();
 				 
 				 while(targetIterator.hasNext()){
-					 tEdge = targetIterator.next();
+					 WGraphEdge tEdge = targetIterator.next();
 					 
 					 // condition where we add a new element in the pairwise connectivity graph:
 					 // comparison of predicates (now string labels)
@@ -183,11 +180,6 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	 
 	protected boolean createPartialPCG(PCGVertex pcgV){
 
-		if(pcgV.getObject().getStCouple().getLeft().getObject().toString().contains("numberOrVolume") &&
-				pcgV.getObject().getStCouple().getRight().getObject().toString().contains("sbqgzga")){
-			System.out.println();
-		}
-		
 		 if(pcgV.isVisited()){
 			 return false;	
 		 }
@@ -203,7 +195,7 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 					 pcgV.getObject().getStCouple().getRight().edgesOutList(),
 					 EdgeDirection.OUT);
 			 
-			 return this.pcg.getVertices().size() > 0;
+			 return this.pcg.getVertices().size() > 0; // visited nodes return empty PCGs (optimizaton step)
 		 }
 	 }
 	 
@@ -236,10 +228,8 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	 protected void unsetVisitedPCGVert(HashMap<String, PCGVertex> vertMap){
 		 
 		 Iterator<PCGVertex> iVert = vertMap.values().iterator();
-		 PCGVertex vert = null;
-		 
 		 while(iVert.hasNext()){
-			 vert = iVert.next();
+			 PCGVertex vert = iVert.next();
 			 // add it to the list
 			 vert.setVisited(false);
 		 }
@@ -248,16 +238,15 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	 protected void unsetInsertedPCGElements(HashMap<String, ?> elementsMap){
 		 
 		 Iterator<?> iterator = elementsMap.values().iterator();
-		 Object nextElement = null;
 		 
 		 while(iterator.hasNext()){
-			 nextElement = iterator.next();
+			 Object nextElement = iterator.next();
 			 // add it to the list
 			 if(nextElement.getClass().equals(PCGEdge.class)){
 				 PCGEdge edge = (PCGEdge) nextElement;
 				 edge.setInserted(false);
 			 }
-			 else if(nextElement.getClass().equals(PCGEdge.class)){
+			 else if(nextElement.getClass().equals(PCGVertex.class)){
 				 PCGVertex vert = (PCGVertex) nextElement;
 				 vert.setInserted(false);
 			 }
@@ -271,18 +260,14 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 Iterator<DirectedGraphEdge<String, RDFNode>> sourceIterator = s.iterator();
 		 Iterator<DirectedGraphEdge<String, RDFNode>> targetIterator = t.iterator();
 		 
-		 WGraphEdge sEdge = null;
-		 WGraphEdge tEdge = null;
-		 int edgeComparison = 0;
-
 		 while(sourceIterator.hasNext()){
-			 sEdge = (WGraphEdge) sourceIterator.next();
+			 WGraphEdge sEdge = (WGraphEdge) sourceIterator.next();
 			 
 			 while(targetIterator.hasNext()){
-				 tEdge = (WGraphEdge) targetIterator.next();
+				 WGraphEdge tEdge = (WGraphEdge) targetIterator.next();
 
+				 int edgeComparison = sEdge.compareTo(tEdge);
 				 // comparing edges here
-				 edgeComparison = compareEdges(sEdge, tEdge);
 				 if(edgeComparison == 0){
 					 // if edges are equal: insert then call recursively
 					 insertInPCG(sEdge, tEdge);
@@ -328,15 +313,8 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	 }
 					
 	 protected PCGEdge getEdge(PCGVertex pcgV, String edgeLabel, PCGVertex pcgV2) {
-	 	PCGEdge edgeNew = null;
-	 	try{
-	 		edgeNew = edgesMap.get(pcgV.toString() + edgeLabel + pcgV2.toString());
-	 	} catch(Exception e){
-	 		e.printStackTrace();
-	 	}
-	 	
-		if (edgeNew == null) {
-
+	 	PCGEdge edgeNew = edgesMap.get(pcgV.toString() + edgeLabel + pcgV2.toString());
+ 		if (edgeNew == null) {
 			// we don't have that edge, we create it
 			edgeNew = new PCGEdge(pcgV, pcgV2, new PCGEdgeData(edgeLabel));
 			edgesMap.put(pcgV.toString() + edgeLabel + pcgV2.toString(), edgeNew);
@@ -398,12 +376,11 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	 
 	 public void applyCoefficients(){
 		 Iterator<PCGVertex> iVert = pcg.vertices();
-		 PCGVertex currentVert = null;
 		 while(iVert.hasNext()){
 			 
 			 // assigning outgoing propagation coefficients
 			 HashMap<String, Integer> counter = new HashMap<String, Integer>();
-			 currentVert = iVert.next();
+			 PCGVertex currentVert = iVert.next();
 			 
 			 // counting phase (with outgoing edges)
 			 computeQuantities(currentVert.edgesOutIter(), counter, true);
@@ -413,11 +390,9 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	 }
 	 
 	 public void createBackwardEdges(){
-		 
 		 Iterator<PCGVertex> iVert = pcg.vertices();
-		 PCGVertex currentVert = null;
 		 while(iVert.hasNext()){
-			 currentVert = iVert.next();
+			 PCGVertex currentVert = iVert.next();
 			 // creating duplicate outgoing edges for ingoing ones
 			 HashMap<String, Integer> counter = new HashMap<String, Integer>();
 			 
@@ -455,10 +430,8 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	 private void createBackedges(Iterator<DirectedGraphEdge<PCGEdgeData, PCGVertexData>> iVEdge,
 				HashMap<String, Integer> counter){
 		 
-		 PCGEdge currentEdge = null;
-		 
 		 while(iVEdge.hasNext()){
-			 currentEdge = (PCGEdge) iVEdge.next();
+			 PCGEdge currentEdge = (PCGEdge) iVEdge.next();
 			 // check if back-edge exists
 			 if(checkEdge(  (PCGVertex)currentEdge.getOrigin(),   // neighbor (orig)
 					 		(PCGVertex)currentEdge.getDestination(),  // current vertex (dest)
@@ -490,17 +463,16 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	 /* *********************************************************************************** */
 	 
 	 protected double computeFixpointRound(Iterator<PCGVertex> iVert){
-		 double maxSimilarity = 0.0, newSimilarity = 0.0;
-		 PCGVertex vert = null;
+		 double maxSimilarity = 0.0;
 		 PCGVertex maxV = null;
 		 
 		 while(iVert.hasNext()){
 			 
 			 // take the current vertex
-			 vert = iVert.next();
+			 PCGVertex vert = iVert.next();
 			 
 			 // compute the new similarity value for that vertex
-			 newSimilarity = computeFixpointPerVertex(vert);
+			 double newSimilarity = computeFixpointPerVertex(vert);
 			 
 			 // store it inside the vertex
 			 vert.getObject().setNewSimilarityValue(newSimilarity);
@@ -528,13 +500,12 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	 
 	 protected double sumIncomings(Iterator<DirectedGraphEdge<PCGEdgeData, PCGVertexData>> inIter){
 		 
-		 double sum = 0.0, oldValue = 0.0, propCoeff = 0.0;
-		 PCGEdge currEdge = null;
+		 double sum = 0.0;
 		 while(inIter.hasNext()){
-			 currEdge = (PCGEdge) inIter.next();
+			 PCGEdge currEdge = (PCGEdge) inIter.next();
 			 // computing old sim value multiplied by the prop coefficient of the regular incoming edge
-			 oldValue = currEdge.getOrigin().getObject().getOldSimilarityValue();
-			 propCoeff = currEdge.getObject().getPropagationCoefficient();
+			 double oldValue = currEdge.getOrigin().getObject().getOldSimilarityValue();
+			 double propCoeff = currEdge.getObject().getPropagationCoefficient();
 			 
 			 sum += (oldValue * propCoeff);
 //			 try {
@@ -556,13 +527,12 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	  */
 	 @Deprecated
 	 protected double sumBackedges(Iterator<DirectedGraphEdge<PCGEdgeData, PCGVertexData>> outIter){
-		 double sum = 0.0, oldValue = 0.0, propCoeff = 0.0;
-		 PCGVertex origin, destination;
+		 double sum = 0.0;
 		 
 		 while(outIter.hasNext()){
 			 PCGEdge currentBackedge = (PCGEdge) outIter.next();
-			 origin = (PCGVertex) currentBackedge.getOrigin();
-			 destination = (PCGVertex) currentBackedge.getDestination();
+			 PCGVertex origin = (PCGVertex) currentBackedge.getOrigin();
+			 PCGVertex destination = (PCGVertex) currentBackedge.getDestination();
 			 
 			 // looking for the backedge: check if the destination of the backedge is the stored origin
 			 PCGEdge backEdge = null;
@@ -575,8 +545,8 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 				 }
 			 }
 			 // computing old sim value multiplied by the prop coefficient of the back edge
-			 oldValue = backEdge.getOrigin().getObject().getOldSimilarityValue();
-			 propCoeff = backEdge.getObject().getPropagationCoefficient();
+			 double oldValue = backEdge.getOrigin().getObject().getOldSimilarityValue();
+			 double propCoeff = backEdge.getObject().getPropagationCoefficient();
 			 sum += oldValue * propCoeff;
 		 }
 		 return sum;
@@ -597,12 +567,12 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	 }
 
 	 protected double simDistance(Vector<Double> simVectBefore, Vector<Double> simVectAfter){
-		 double simD = 0.0, diff = 0.0;
 		 assert (simVectBefore.size() == simVectAfter.size()); // size of both vectors should always be the same
 		 
 		 // computing euclidean distance
+		 double simD = 0.0;
 		 for(int i = 0; i < simVectAfter.size(); i++){
-			 diff = simVectBefore.get(i) - simVectAfter.get(i);
+			 double diff = simVectBefore.get(i) - simVectAfter.get(i);
 			 simD += (diff * diff);
 		 }
 //		 try {
@@ -623,22 +593,14 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		  * working on similarity matrices only
 		  */
 		 protected void computeRelativeSimilarities(SimilarityMatrix matrix){
-			 
-			 double max = 0;
-			 double oldValue = 0;
-			 Mapping current = null;
-			 
 			 for(int i = 0; i < matrix.getRows(); i++){
-				 max = matrix.getRowMaxValues(i, 1)[0].getSimilarity();
-				 
+				 double max = matrix.getRowMaxValues(i, 1)[0].getSimilarity();
 				 for(int j = 0; j < matrix.getColumns(); j++){
-					 
-					 current = matrix.get(i, j);
+					 Mapping current = matrix.get(i, j);
 					 if(current != null){
-						 oldValue = current.getSimilarity();
+						 double oldValue = current.getSimilarity();
 						 matrix.get(i, j).setSimilarity(oldValue/max);
 					 }
-					 
 				 }
 			 }
 		 }
@@ -649,9 +611,8 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 
 	 protected void populateSimilarityMatrices(PairwiseConnectivityGraph pcg, SimilarityMatrix cMatrix, SimilarityMatrix pMatrix){
 		 Iterator<PCGVertex> iVert = pcg.vertices();
-		 PCGVertex currentVert = null;
 		 while(iVert.hasNext()){
-			 currentVert = iVert.next();
+			 PCGVertex currentVert = iVert.next();
 			 Mapping m = currentVert.toMapping(sourceOntology, targetOntology);
 			 // take both source and target ontResources (values can be null, means not possible to take resources
 
@@ -705,9 +666,8 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 
 		 // we are checking that one of the edges coming out the origin matches with the destination
 		 Iterator<DirectedGraphEdge<PCGEdgeData, PCGVertexData>> iVEdge = originVertex.edgesOutIter();
-		 PCGEdge currentEdge = null;
 		 while(iVEdge.hasNext()){
-			 currentEdge = (PCGEdge) iVEdge.next();
+			 PCGEdge currentEdge = (PCGEdge) iVEdge.next();
 			 if(currentEdge.getDestination().equals(destinatonVertex)){
 				 return true;
 			 }

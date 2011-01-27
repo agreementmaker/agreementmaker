@@ -124,16 +124,14 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		Iterator<WGraphVertex> sLocalItr = sourceOnt.vertices();
 		Iterator<WGraphVertex> tLocalItr = targetOnt.vertices();
 
-		WGraphVertex sVertex = null, tVertex = null;
 		// until all cells are covered
 		while(sLocalItr.hasNext()){
-			sVertex = sLocalItr.next();
+			WGraphVertex sVertex = sLocalItr.next();
 			while(tLocalItr.hasNext()){
-				tVertex = tLocalItr.next();
+				WGraphVertex tVertex = tLocalItr.next();
 				
 				if(sVertex.getNodeType().equals(tVertex.getNodeType())){
 					createPartialPCG(getPCGVertex(sVertex, tVertex));
-					
 				}
 			}
 			tLocalItr = targetOnt.vertices();
@@ -142,7 +140,6 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 	
 	protected void computeFixpoint(){
 		 int round = 0;
-		 double maxSimilarity = 0.0;
 		 Vector<Double> oldV , newV;
 		 do {
 			 // new round starts
@@ -152,13 +149,12 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 			 updateOldSimValues(pcg.vertices(), round);
 			 
 			 // compute fixpoint round and max value per that round
-			 maxSimilarity = computeFixpointRound(pcg.vertices());
+			 double maxSimilarity = computeFixpointRound(pcg.vertices());
 			 
 			 // normalize all the similarity values of all nodes
 			 normalizeSimilarities(pcg.vertices(), maxSimilarity);
 
 			 // stop condition check: delta or maxRound
-			 populateSimilarityMatrices(pcg, classesMatrix, propertiesMatrix);
 
 			 oldV = pcg.getSimValueVector(true);
 			 newV = pcg.getSimValueVector(false);
@@ -174,27 +170,24 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 	 }
 	
 	private void updateOldSimValues(Iterator<PCGVertex> iVert, int round){
-		 PCGVertex vert = null;
 		 if(round != 1){
 			 while(iVert.hasNext()){
 				 // take the current vertex
-				 vert = iVert.next();
+				 PCGVertex vert = iVert.next();
 				 vert.getObject().setOldSimilarityValue(vert.getObject().getNewSimilarityValue());
 			 }
 		 }
 	 }
 	 
 	protected void normalizeSimilarities(Iterator<PCGVertex> iVert, double roundMax){
-		 double nonNormSimilarity = 0.0, normSimilarity = 0.0;
-		 PCGVertex currentVert = null;
 		 while(iVert.hasNext()){
-			 currentVert = iVert.next();
+			 PCGVertex currentVert = iVert.next();
 			 
 			 // the value computed is stored in the new similarity value at this stage
-			 nonNormSimilarity = currentVert.getObject().getNewSimilarityValue();
+			 double nonNormSimilarity = currentVert.getObject().getNewSimilarityValue();
 			 
 			 // compute normalized value
-			 normSimilarity = nonNormSimilarity / roundMax;
+			 double normSimilarity = nonNormSimilarity / roundMax;
 			 
 			 // set normalized to new value
 			 currentVert.getObject().setNewSimilarityValue(normSimilarity);
