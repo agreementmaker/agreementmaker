@@ -12,8 +12,8 @@ import am.app.mappingEngine.Mapping;
  */
 public abstract class CandidateSelectionEvaluation {
 
-	Alignment<Mapping> rankedList;
-	Alignment<Mapping> reference;
+	protected Alignment<Mapping> rankedList;
+	protected Alignment<Mapping> reference;
 	
 	public CandidateSelectionEvaluation( Alignment<Mapping> rL, Alignment<Mapping> ref) {
 		rankedList = rL;
