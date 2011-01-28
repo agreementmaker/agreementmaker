@@ -49,6 +49,8 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		}
 		else if(langIndex == GlobalStaticVariables.RDFSFILE)
 			treeBuilder = new RdfsTreeBuilder(fileName, ontoType, languageS, syntaxS, skip);
+		else if(langIndex == GlobalStaticVariables.TABBEDTEXT)
+			treeBuilder = new TabbedTextBuilder(fileName, ontoType, languageS, syntaxS);
 		else treeBuilder = new OntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip, noReasoner);
 		
 		return treeBuilder;

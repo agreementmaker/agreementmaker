@@ -171,7 +171,9 @@ public class UI {
 			else if(language == GlobalStaticVariables.ONTFILE)//OWL
 				jPanel = new VertexDescriptionPane(GlobalStaticVariables.ONTFILE);//takes care of fields for XML files as well
 			else if(language == GlobalStaticVariables.XMLFILE)//XML
-				jPanel = new VertexDescriptionPane(GlobalStaticVariables.XMLFILE);//takes care of fields for XML files as well 
+				jPanel = new VertexDescriptionPane(GlobalStaticVariables.XMLFILE);//takes care of fields for XML files as well
+			else if(language == GlobalStaticVariables.TABBEDTEXT)
+				jPanel = new VertexDescriptionPane(GlobalStaticVariables.XMLFILE); // TODO: Figure out if we need to pass in the correct language type to VertexDescriptionPane constructor.
 		    jPanel.setMinimumSize(new Dimension(200,200));
 			getUISplitPane().setRightComponent(jPanel);
 			setDescriptionPanel(jPanel);

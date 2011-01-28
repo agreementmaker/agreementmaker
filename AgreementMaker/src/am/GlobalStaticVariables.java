@@ -32,6 +32,7 @@ public class GlobalStaticVariables
 	public static final int XMLFILE = 2;
 	public static final int ONTFILE = 1;
 	public static final int RDFSFILE = 0;
+	public static final int TABBEDTEXT = 3;
 	//public static final int DAMLFILE = 3;
 	
 	public static final int RDFXML = 0;
@@ -49,7 +50,8 @@ public class GlobalStaticVariables
 	public final static String LANG_RDFS = "RDFS";
 	public final static String LANG_OWL = "OWL";
 	public final static String LANG_XML = "XML";
-	public static final String[] languageStrings = {LANG_RDFS, LANG_OWL, LANG_XML};
+	public final static String LANG_TABBEDTEXT = "Tabbed TEXT";
+	public static final String[] languageStrings = {LANG_RDFS, LANG_OWL, LANG_XML, LANG_TABBEDTEXT};
 
 	
 	
