@@ -14,32 +14,13 @@ import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
-public class ArraySimilarityMatrix implements SimilarityMatrix, Serializable {
+public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializable {
 
 	private static final long serialVersionUID = 7152244093634002737L;
-
-	//not used at the moment. At the moment indetermined similarity are set with 0.
-	//if we want to start using it is important to keep it similar to 0, to allow compatibility with non-updated methods.
-	final static double INDETERMINED = Double.MIN_NORMAL;
 	
-	protected String relation = Mapping.EQUIVALENCE; //this is a default relation used when no relation is specified for this matrix
-	protected alignType typeOfMatrix;
-//	protected final int rows;             // number of rows
-//    protected final int columns;             // number of columns
-//    protected final Mapping[][] data;   // M-by-N array
-    
     protected int rows;             // number of rows
     protected int columns;             // number of columns
     protected Mapping[][] data;   // M-by-N array
-
-    protected int sourceOntologyID;
-    protected int targetOntologyID;
-
-    
-    @Override public int getSourceOntologyID() { return sourceOntologyID; }
-	@Override public void setSourceOntologyID(int sourceOntologyID) { this.sourceOntologyID = sourceOntologyID; }
-	@Override public int getTargetOntologyID() { return targetOntologyID; }
-	@Override public void setTargetOntologyID(int targetOntologyID) { this.targetOntologyID = targetOntologyID; }
 
 	// cloning constructor
     public ArraySimilarityMatrix( SimilarityMatrix cloneme ) {
@@ -362,6 +343,7 @@ public class ArraySimilarityMatrix implements SimilarityMatrix, Serializable {
         }
     }
 
+    /* What does this do? What is it used by? */
     @Override
 	public double[][] getCopiedSimilarityMatrix(){
 		double[][] result = new double[rows][columns];

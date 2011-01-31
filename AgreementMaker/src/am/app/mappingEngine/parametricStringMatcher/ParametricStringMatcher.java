@@ -73,10 +73,14 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		
 		if( parameters.useLexicons ) {
 			// build all the lexicons if they don't exist.
+			
+			if( progressDisplay != null ) progressDisplay.setProgressLabel("Building Ontology Lexicon (1/2)");
 			sourceOntologyLexicon = Core.getLexiconStore().getSourceOntLexicon(sourceOntology);			
-			targetOntologyLexicon = Core.getLexiconStore().getTargetOntLexicon(targetOntology);			
+			targetOntologyLexicon = Core.getLexiconStore().getTargetOntLexicon(targetOntology);
+			if( progressDisplay != null ) progressDisplay.setProgressLabel("Building WordNet Lexicon (2/2)");
 			sourceWordNetLexicon = Core.getLexiconStore().getSourceWNLexicon(sourceOntology, sourceOntologyLexicon);
 			targetWordNetLexicon = Core.getLexiconStore().getTargetWNLexicon(targetOntology, targetOntologyLexicon);
+			if( progressDisplay != null ) progressDisplay.setProgressLabel(null);
 		}
 		
 	}

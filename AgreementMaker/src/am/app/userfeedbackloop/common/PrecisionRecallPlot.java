@@ -1,11 +1,8 @@
-package am.app.userfeedbackloop.disagreementclustering;
+package am.app.userfeedbackloop.common;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.Scanner;
-
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.userfeedbackloop.CandidateSelectionEvaluation;
@@ -13,7 +10,7 @@ import am.app.userfeedbackloop.CandidateSelectionEvaluation;
 public class PrecisionRecallPlot extends CandidateSelectionEvaluation {
 
 	private int correct;// number of correct mappings found
-	private int found;//number of mappings in rankedList  TODO: is this needed???
+	//private int found;//number of mappings in rankedList  TODO: is this needed???
 	String filename;//name of the file to output the data
 	
 	public PrecisionRecallPlot(Alignment<Mapping> rL, Alignment<Mapping> ref, String filename) {
@@ -48,6 +45,7 @@ public class PrecisionRecallPlot extends CandidateSelectionEvaluation {
 			write(persision, recall, currentMapping.toString(),isCorrect);
 		}//end for loop
 	}
+	
 	public void write(float per, float rec, String mapping, int cor)
 	{
 		try {

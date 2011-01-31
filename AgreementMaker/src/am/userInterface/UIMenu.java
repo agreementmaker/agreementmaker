@@ -27,7 +27,6 @@ import am.AMException;
 import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
-import am.app.feedback.ui.SelectionPanel;
 import am.app.lexicon.Lexicon;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
@@ -37,6 +36,7 @@ import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.ontology.Ontology;
 import am.app.ontology.profiling.ProfilingDialog;
+import am.app.userfeedbackloop.ui.UFLControlGUI;
 import am.extension.ClusteringEvaluation.ClusteringEvaluationPanel;
 import am.tools.LexiconLookup.LexiconLookupPanel;
 import am.tools.ThresholdAnalysis.ThresholdAnalysis;
@@ -270,9 +270,9 @@ public class UIMenu implements ActionListener {
 				ui.addTab("WordNet", null, wnlp, "Query the WordNet dictionary.");
 			}
 			else if( obj == userFeedBack ) {
-				SelectionPanel sp = new SelectionPanel(ui);
-				sp.showScreen_Start();
-				ui.addTab("User Feedback Loop", null, sp, "User Feedback Loop");	
+				UFLControlGUI ufl_control = new UFLControlGUI(ui);
+				ufl_control.showScreen_Start();
+				ui.addTab("User Feedback Loop", null, ufl_control, "User Feedback Loop");	
 			}
 			else if( obj == clusteringEvaluation ) {
 				ui.addTab("Clustering Evaluation",null, new ClusteringEvaluationPanel(), "Clustering Evaluation");

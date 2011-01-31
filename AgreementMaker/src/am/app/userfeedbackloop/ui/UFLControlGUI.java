@@ -261,6 +261,7 @@ public class UFLControlGUI extends JPanel implements MatchingProgressDisplay, Ac
 	public void matchingStarted(AbstractMatcher m) {	}
 	
 	// gets called when a matcher finishes
+	@Override
 	public void matchingComplete() {
 		
 		//if( ufl.isStage( FeedbackLoop.executionStage.runningInitialMatchers ) ) {
@@ -279,21 +280,11 @@ public class UFLControlGUI extends JPanel implements MatchingProgressDisplay, Ac
 	/**
 	 * Function that is called when the progress of the matchers
 	 */
-	public void propertyChange(PropertyChangeEvent evt) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) { }
 	
 
-
-
-
-	public Mapping getUserMapping() {
-		return selectedMapping;
-		
-	}
+	public Mapping getUserMapping() { return selectedMapping; }
 
 
 
@@ -730,13 +721,8 @@ public class UFLControlGUI extends JPanel implements MatchingProgressDisplay, Ac
 		}
 	}
 
-	public CandidateConcept getUserConcept() {
-		return selectedConcept;
-	}
-
-	public String getUserAction() {
-		return selectedAction;
-	}
+	public CandidateConcept getUserConcept() { return selectedConcept; }
+	public String getUserAction() { return selectedAction; }
 
 	@Override
 	public void scrollToEndOfReport() {
@@ -752,17 +738,8 @@ public class UFLControlGUI extends JPanel implements MatchingProgressDisplay, Ac
 		
 	}
 
-	@Override
-	public void clearReport() {
-		matcherReport.setText("");
-	}
-
-	@Override
-	public void ignoreComplete(boolean ignore) {
-		// TODO figure out if we need this
-	}
-
-	@Override
-	public void setProgressLabel(String label) { progressBar.setString(label); }
+	@Override public void clearReport() {	matcherReport.setText(""); }
+	@Override public void ignoreComplete(boolean ignore) { /* TODO figure out if we need this	*/ }
+	@Override public void setProgressLabel(String label) { progressBar.setString(label); }
 	
 }
