@@ -89,6 +89,8 @@ public class UFLControlGUI extends JPanel implements MatchingProgressDisplay, Ac
 	CandidateConcept selectedConcept;
 	String selectedAction;
 	ArrayList<CandidateConcept> candidateMappings;
+	
+	private UFLControl_InitialSettingsPanel panel;
 
 	UI ui;
 	
@@ -407,111 +409,9 @@ public class UFLControlGUI extends JPanel implements MatchingProgressDisplay, Ac
 	public void showScreen_Start() {
 		
 		removeAll();
-		//all other component are initialized in the initScreenStartComponents() method
-		//because we want to init them in the constructor only once.
-		//this way the parameters remains set when the user click cancel
-		JLabel lblMatcher = new JLabel("Automatic Initial Matcher:");
-		JLabel lblInitialMatcherThreshold = new JLabel("Initial Matcher threshold:");
-		JLabel lblHighThreshold = new JLabel("High threshold:");
-		JLabel lblLowThreshold = new JLabel("Low threshold:");
-		JLabel lblCardinality = new JLabel("Cardinality:");
-		JLabel lblConfiguration = new JLabel("Run configuration:");
-		JLabel lblIterations = new JLabel("Maximum iteration:");
-		JLabel lblK = new JLabel("Num candidate concepts K:");
-		JLabel lblM = new JLabel("Num candidate mappings M:");
-		JLabel lblMeasure = new JLabel("Relevance measure");
-		//LAYOUT
-
-		JPanel centralContainer  = new JPanel();
-		GroupLayout groupLayout = new GroupLayout(centralContainer);
-		centralContainer.setLayout( groupLayout );
-		centralContainer.setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "User Feedback Loop parameters"));
-		groupLayout.setAutoCreateGaps(true);
-		groupLayout.setAutoCreateContainerGaps(true);
-		
-		// Here we define the horizontal and vertical groups for the layout.
-		// Both definitions are required for the GroupLayout to be complete.
-		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-			.addComponent(btn_start)
-			.addGroup(groupLayout.createSequentialGroup()
-				//ALL LABELS IN THE FIRST COLUMN
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-					.addComponent(lblMatcher)
-					.addComponent(lblInitialMatcherThreshold)
-					.addComponent(lblConfiguration)
-					.addComponent(lblIterations)
-					.addComponent(lblHighThreshold)
-					.addComponent(lblLowThreshold)
-					.addComponent(lblK)
-					.addComponent(lblM)
-					.addComponent(lblCardinality)
-					.addComponent(lblMeasure)
-				)
-				//ALL COMPONENTS IN THE SECOND COLUMNS
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-					.addComponent(cmbMatcher,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE)
-					.addComponent(cmbInitialMatcherThreshold,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE)
-					.addComponent(cmbConfigurations,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE)
-					.addComponent(cmbIterations,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 
-					.addComponent(cmbHighThreshold,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
-					.addComponent(cmbLowThreshold,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
-					.addComponent(cmbK,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 			
-					.addComponent(cmbM,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
-					.addComponent(cmbCardinality,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
-					.addComponent(cmbMeasure,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
-				)
-			)
-		);
-		
-		// the Vertical group is the same structure as the horizontal group
-		// but Sequential and Parallel definition are exchanged
-		groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
-				.addComponent(btn_start)
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(lblMatcher)
-						.addComponent(cmbMatcher,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
-				)
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(lblInitialMatcherThreshold)
-						.addComponent(cmbInitialMatcherThreshold,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
-				)
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(lblConfiguration)
-						.addComponent(cmbConfigurations,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
-				)
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(lblIterations)
-						.addComponent(cmbIterations,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
-				)						
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(lblHighThreshold)
-						.addComponent(cmbHighThreshold,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
-				)
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(lblLowThreshold)
-						.addComponent(cmbLowThreshold,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
-				)
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(lblK)
-						.addComponent(cmbK,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
-				)
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(lblM)
-						.addComponent(cmbM,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
-				)
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(lblCardinality)
-						.addComponent(cmbCardinality,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
-				)
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(lblMeasure)
-						.addComponent(cmbMeasure,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE) 	
-				)
-			);
-		
+		panel=new UFLControl_InitialSettingsPanel();
 		this.setLayout(new FlowLayout(FlowLayout.CENTER));
-		this.add(centralContainer);
+		this.add(panel);
 		repaint();
 		
 	}
