@@ -143,7 +143,7 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 			// source localname <-> target annotations
 			if( matchTimeParams.matchSourceClassLocalname && matchTimeParams.targetClassAnnotations != null ) {
 				for( Property p : matchTimeParams.targetClassAnnotations ) {
-					OntClass c1 = n1.getResource().as(OntClass.class);
+					OntClass c1 = n2.getResource().as(OntClass.class);
 					NodeIterator nIter = c1.listPropertyValues(p);
 					while( nIter.hasNext() ) {
 						RDFNode rdfNode = nIter.next();
