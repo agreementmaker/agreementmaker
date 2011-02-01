@@ -391,7 +391,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 		// Creation of the output ArrayList and a copy of the matrix
 		int arraySize = Math.min(rowsIncludedList.size(), colsIncludedList.size());
 		ArrayList<Mapping> chosenMappings = new ArrayList<Mapping>(arraySize);
-		SimilarityMatrix input = new ArraySimilarityMatrix(this);
+		//SimilarityMatrix input = new ArraySimilarityMatrix(this);
 
 		ArrayList<Integer> rowsIncluded = rowsIncludedList;
 		ArrayList<Integer> colsIncluded = colsIncludedList;
@@ -403,14 +403,14 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 			Mapping currentChoose = null;
 			Integer r = new Integer(0);
 			Integer c = new Integer(0);;
-			for(int i = 0; i < input.getRows(); i++) {
-				for(int j = 0; j < input.getColumns(); j++) {
+			for(int i = 0; i < getRows(); i++) {
+				for(int j = 0; j < getColumns(); j++) {
 					
 					// within this loop we choose the couple of concepts with the highest similarity value
-					if(simValue <= input.getSimilarity(i, j) && rowsIncluded.contains(i) && colsIncluded.contains(j)) {
+					if(simValue <= getSimilarity(i, j) && rowsIncluded.contains(i) && colsIncluded.contains(j)) {
 						
-						simValue = input.getSimilarity(i, j);
-						currentChoose = input.get(i, j);
+						simValue = getSimilarity(i, j);
+						currentChoose = get(i, j);
 						r = i;
 						c = j;
 					}
@@ -419,20 +419,21 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 			if(considerThreshold && simValue < threshold){
 				return chosenMappings;
 			}
-			else{
-				// then we exclude from the matrix the chosen concepts for further computation
-				rowsIncluded.remove((Object) r);
-				colsIncluded.remove((Object) c);
-				// and we add the chosen mapping to the final list
+			else if ( currentChoose != null ) {
+				// we add the chosen mapping to the final list
 				chosenMappings.add(currentChoose);
 			}
+			// then we exclude from the matrix the chosen concepts for further computation
+			rowsIncluded.remove((Object) r);
+			colsIncluded.remove((Object) c);
+
 			
-			/*/ DEBUG INFORMATION
-			System.out.println(currentChoose.toString());
-			System.out.println(currentChoose.getEntity1().getChildren().toString());
+			// DEBUG INFORMATION
+			//System.out.println(currentChoose.toString());
+			//System.out.println(currentChoose.getEntity1().getChildren().toString());
 			//System.out.println(r + " " + c + " " + currentChoose.getSimilarity());
-			System.out.println();
-			//*/	
+			//System.out.println();
+			//	
 		}
 		return chosenMappings;
 	}
