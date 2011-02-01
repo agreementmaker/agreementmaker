@@ -196,10 +196,10 @@ public class ManualProfilerMatchingPanel extends OntologyProfilerPanel {
 		mainPanel.setLayout(mainLayout);
 		
 		// add the main panel to this dialog
-		JScrollPane scrollPane = new JScrollPane(mainPanel);
+		//JScrollPane scrollPane = new JScrollPane(mainPanel);
 		
 		setLayout(new BorderLayout());
-		add(scrollPane,BorderLayout.CENTER);
+		add(mainPanel,BorderLayout.CENTER);
 		
 		
 		
