@@ -101,6 +101,9 @@ public class UFLControlGUI extends JPanel implements MatchingProgressDisplay, Ac
 		//Initialized here so that we don't reset the report text at each iteration
 		matcherReport = new JTextArea(8, 35);
 		initScreenStartComponents();
+		
+		JButton b = new JButton();
+		b.addActionListener(null);
 	}
 
 	public void actionPerformed(ActionEvent arg0) {

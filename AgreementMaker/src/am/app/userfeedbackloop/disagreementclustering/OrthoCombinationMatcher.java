@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.Combination.CombinationParameters;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
@@ -15,6 +17,7 @@ import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.userfeedbackloop.ExecutionSemantics;
+import am.userInterface.MatchingProgressDisplay;
 
 /**
  * The orthogonal combination matcher.  Used as the first step in the new
@@ -23,7 +26,7 @@ import am.app.userfeedbackloop.ExecutionSemantics;
  * @author Cosmin Stroe - Jan 29th, 2011.
  *
  */
-public class OrthoCombinationMatcher extends AbstractMatcher implements ExecutionSemantics {
+public class OrthoCombinationMatcher extends ExecutionSemantics {
 
 	private static final long serialVersionUID = -9089694302091522666L;
 
@@ -57,58 +60,54 @@ public class OrthoCombinationMatcher extends AbstractMatcher implements Executio
 	
 	private CombinationMatcher			m_lwc;
 	
-	@Override
-	protected void align() throws Exception {
-		
-		// TODO: Run Multiple Threads.
-		
-		// run matchers.
-		if( progressDisplay != null ) {	
-			progressDisplay.ignoreComplete(true);
-			
-			progressDisplay.setProgressLabel("BSM (1/5)");
-			m_bsm.match();
-			
-			progressDisplay.setProgressLabel("ASM (2/5)");
-			m_asm.match();
-			
-			progressDisplay.setProgressLabel("PSM (3/5)");
-			m_psm.match();
-			
-			progressDisplay.setProgressLabel("VMM (4/5)");
-			m_vmm.match();
-			
-			progressDisplay.setProgressLabel("LWC (5/5)");
-			m_lwc.addInputMatcher(m_bsm);
-			m_lwc.addInputMatcher(m_asm);
-			m_lwc.addInputMatcher(m_psm);
-			m_lwc.addInputMatcher(m_vmm);
-			m_lwc.match();
-			
-			progressDisplay.ignoreComplete(false);
-		} else {
-			m_bsm.match();
-			m_asm.match();
-			m_psm.match();
-			m_vmm.match();
-			m_lwc.addInputMatcher(m_bsm);
-			m_lwc.addInputMatcher(m_asm);
-			m_lwc.addInputMatcher(m_psm);
-			m_lwc.addInputMatcher(m_vmm);
-			m_lwc.match();
-		}
-		
-		classesMatrix = m_lwc.getClassesMatrix();
-		propertiesMatrix = m_lwc.getPropertiesMatrix();
-		classesAlignmentSet = m_lwc.getClassAlignmentSet();
-		propertiesAlignmentSet = m_lwc.getPropertyAlignmentSet();
-		
-	}
+	MatchingProgressDisplay progressDisplay;
 	
 	@Override
-	protected void initializeVariables() {
-		super.initializeVariables();
-		
+	public void run() {
+		try {
+			// TODO: Run Multiple Threads.
+			// run matchers.
+			if( progressDisplay != null ) {	
+				progressDisplay.ignoreComplete(true);
+				
+				progressDisplay.setProgressLabel("BSM (1/5)");
+				m_bsm.match();
+				
+				progressDisplay.setProgressLabel("ASM (2/5)");
+				m_asm.match();
+				
+				progressDisplay.setProgressLabel("PSM (3/5)");
+				m_psm.match();
+				
+				progressDisplay.setProgressLabel("VMM (4/5)");
+				m_vmm.match();
+				
+				progressDisplay.setProgressLabel("LWC (5/5)");
+				m_lwc.addInputMatcher(m_bsm);
+				m_lwc.addInputMatcher(m_asm);
+				m_lwc.addInputMatcher(m_psm);
+				m_lwc.addInputMatcher(m_vmm);
+				m_lwc.match();
+				
+				progressDisplay.ignoreComplete(false);
+			} else {
+				m_bsm.match();
+				m_asm.match();
+				m_psm.match();
+				m_vmm.match();
+				m_lwc.addInputMatcher(m_bsm);
+				m_lwc.addInputMatcher(m_asm);
+				m_lwc.addInputMatcher(m_psm);
+				m_lwc.addInputMatcher(m_vmm);
+				m_lwc.match();
+			}
+		} catch( Exception e ) {
+			e.printStackTrace();
+		}
+				
+	}
+	
+	private void initializeVariables() {		
 		// Initialize the parameters for all the matchers that will be used
 		param_bsm = new BaseSimilarityParameters();
 		param_asm = new AdvancedSimilarityParameters();
@@ -147,6 +146,10 @@ public class OrthoCombinationMatcher extends AbstractMatcher implements Executio
 		m_lwc = new CombinationMatcher( param_lwc );
 		m_lwc.setProgressDisplay(progressDisplay);
 
-		performSelection = false; // selection will be done on the last matcher
+	}
+
+	@Override
+	public Alignment<Mapping> getAlignment() {
+		return m_lwc.getAlignment();
 	}
 }

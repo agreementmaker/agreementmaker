@@ -13,10 +13,11 @@ import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 
 
-public class DisagreementRanking implements CandidateSelection {
+public class DisagreementRanking extends CandidateSelection {
 
 	private List<Mapping> rankedClassMappings;
 	private List<Mapping> rankedPropertyMappings;
+	
 	
 	@Override public List<Mapping> getRankedMappings(alignType t) { 
 		if( t == alignType.aligningClasses ) { return rankedClassMappings; }
