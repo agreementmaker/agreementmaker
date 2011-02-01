@@ -7,6 +7,7 @@ public class AbstractParameters {
 	public int maxSourceAlign = 1;
 	public int maxTargetAlign = 1;
 	public boolean completionMode = false;
+	public boolean storeProvenance = false; // whether the matcher stores provenance information for mappings.
 
 	public AbstractParameters() { /* work is done by the field initialization; */ }
 	
