@@ -6,10 +6,13 @@ package am.app.mappingEngine.baseSimilarity.advancedSimilarity;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.hp.hpl.jena.sparql.engine.http.Params;
+
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
@@ -52,7 +55,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 */
 	public AdvancedSimilarityMatcher() {
 		super();
-		needsParam = true;
+		initializeVariables();
 	}
 
 	/**
@@ -80,19 +83,33 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		
 		OntologyProfiler pro = Core.getInstance().getOntologyProfiler();
 
+		
 		if( pro != null ) {
 			// we are using ontology profiling
 			double highestSimilarity = 0.0d;
+			String provS = null, provT = null;
 			Iterator<Pair<String,String>> annIter = pro.getAnnotationIterator(source, target);
 			while( annIter.hasNext() ) {
 				Pair<String,String> currentPair = annIter.next();
 				double currentSimilarity = calculateSimilarity(currentPair.getLeft(), currentPair.getRight(), typeOfNodes);
-				if( currentSimilarity > highestSimilarity ) highestSimilarity = currentSimilarity;
+				if( currentSimilarity > highestSimilarity ) {
+					highestSimilarity = currentSimilarity;
+					if( param.storeProvenance) {
+						provS = currentPair.getLeft();
+						provT = currentPair.getRight();
+					}
+				}
 			}
 			
 			if( highestSimilarity == 0.0d ) return null;
-			else return new Mapping( source, target, highestSimilarity);
-			
+			else {
+				Mapping pmapping = new Mapping( source, target, highestSimilarity);
+				if( param.storeProvenance ) {
+					String provenanceString = "sim(\"" + provS + "\", \"" + provT + "\") = " + highestSimilarity;
+					pmapping.setProvenance(provenanceString);
+				}
+				return pmapping;
+			}
 		} else {
 			// we are not using ontology profiling
 			return withoutProfiling(source, target, typeOfNodes);
@@ -149,14 +166,14 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		
 		AdvancedSimilarityParameters parameters = (AdvancedSimilarityParameters)param;
 		
-		//if( !useLabelInsteadOfLocalname ) {
-			sLN = super.treatString(source.getLocalName()); // source LocalName (sLN)
-			tLN = super.treatString(target.getLocalName()); // target LocalName (tLN)
-/*		} else {
+		if( parameters.useLabels ) {
 			sLN = super.treatString(source.getLabel()); // source LocalName (sLN)
 			tLN = super.treatString(target.getLabel()); // target LocalName (tLN)
+		} else {
+			sLN = super.treatString(source.getLocalName()); // source LocalName (sLN)
+			tLN = super.treatString(target.getLocalName()); // target LocalName (tLN)
 		}
-		*/
+		
 		String tokenized_sLN[] = sLN.split("\\s"); // token array of source LocalName (sLN)
 		String tokenized_tLN[] = tLN.split("\\s"); // token array of target LocalName (tLN)
 		
@@ -166,7 +183,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		double simValueContribution = nonContentWordCheck(tokenized_sLN, tokenized_tLN);
 		
 		if(simValueContribution == NO_MATCH){ // immediately discard those considered unmatchable
-			return new Mapping(source, target, 0);
+			return null; // no match
 		}
 		// Step 2: check out for similarity between meaningful words
 		else {
@@ -177,15 +194,23 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 			simValue = contentWordCheck(sourceWords, targetWords, typeOfNodes);
 		}
 		
-		if(simValue > 0.0){
-			if(simValueContribution > 0.0){
-				return new Mapping(source, target, Math.min(1, simValue * (1.0 + simValueContribution)));
+		if(simValue > 0.0d) {
+			String provenanceString = null;
+			if( param.storeProvenance ) {
+				provenanceString = "sim(\"" + sLN + "\", \"" + tLN + "\") = " + simValue;
+			}
+			if(simValueContribution > 0.0d){
+				Mapping pmapping = new Mapping(source, target, Math.min(1, simValue * (1.0 + simValueContribution)));
+				if( param.storeProvenance ) pmapping.setProvenance(provenanceString);
+				return pmapping;
 			}
 			else{
-				return new Mapping(source, target, Math.min(1, simValue));
+				Mapping pmapping = new Mapping(source, target, Math.min(1, simValue));
+				if( param.storeProvenance ) pmapping.setProvenance(provenanceString);
+				return pmapping;
 			}
 		}
-		return new Mapping(source, target, 0);
+		return null;
 	}
 	
 	/**
@@ -223,8 +248,8 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 				tempValue = ((ParametricStringMatcher) localMatcher).performStringSimilarity(s, t);
 				//localMatrix.setSimilarity(i, j, tempValue);
 				localMatrix.set(i, j, new Mapping(new Node(i, s, typeOfNodes.toString(), sourceOntology.getIndex()),
-													new Node(j, t, typeOfNodes.toString(), targetOntology.getIndex()),
-													tempValue));
+								new Node(j, t, typeOfNodes.toString(), targetOntology.getIndex()),
+								tempValue));
 				
 				// DEBUG INFO
 				// System.out.println(s + " " + t + " " + localMatrix.getSimilarity(i, j));
@@ -440,6 +465,14 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		prep.add("of");
 		prep.add("by");
 		prep.add("for");
+		
+		needsParam = true;
+		
+		// features supported
+		addFeature(MatcherFeature.ONTOLOGY_PROFILING);
+		addFeature(MatcherFeature.ONTOLOGY_PROFILING_CLASS_ANNOTATION_FIELDS);
+		addFeature(MatcherFeature.ONTOLOGY_PROFILING_PROPERTY_ANNOTATION_FIELDS);
+		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 	}
 	
 	/**

@@ -6,6 +6,7 @@ package am.app.mappingEngine.referenceAlignment;
  * 
  *
  */
+// TODO: Remove this class and use Mapping instead.  - cosmin
 public class MatchingPair {
 	/**the name of the label of the source node, this is based on the idea that the name is unique in the ontology, for the OWL ontology this should be true because the name is the local name that is part of the URI. namespace#localname*/
 	public String sourcename;
@@ -20,6 +21,8 @@ public class MatchingPair {
 	public double similarity;
 	
 	public String relation;
+	
+	public String provenance;
 
 	public MatchingPair() {
 	}
@@ -33,7 +36,15 @@ public class MatchingPair {
 		similarity = sim;
 		relation = rel;
 		sourcename = s;
+		targetname = t;	
+	}
+	
+	public MatchingPair(String s, String t, double sim, String rel, String p) {
+		similarity = sim;
+		relation = rel;
+		sourcename = s;
 		targetname = t;
+		provenance = p;
 	}
 	
 	public boolean sameSource(MatchingPair mp) {

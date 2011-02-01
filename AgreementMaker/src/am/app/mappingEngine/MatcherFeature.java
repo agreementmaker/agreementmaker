@@ -18,5 +18,7 @@ public enum MatcherFeature {
 	ONTOLOGY_PROFILING_CLASS_ANNOTATION_FIELDS,				// Supports profiling of CLASS ANNOTATION FIELDS (one field).
 	ONTOLOGY_PROFILING_PROPERTY_ANNOTATION_FIELDS,			// Supports profiling of PROPERTY ANNOTATION FIELDS (one field).
 	ONTOLOGY_PROFILING_CLASS_ANNOTATION_MULTI_FIELDS,		// Supports profiling of CLASS ANNOTATION FIELDS (multiple fields).
-	ONTOLOGY_PROFILING_PROPERTY_ANNOTATION_MULTI_FIELDS;	// Supports profiling of PROPERTY ANNOTATION FIELDS (multiple fields). 
+	ONTOLOGY_PROFILING_PROPERTY_ANNOTATION_MULTI_FIELDS,	// Supports profiling of PROPERTY ANNOTATION FIELDS (multiple fields).
+	
+	MAPPING_PROVENANCE;										// Supports storing provenance information for mappings.
 }

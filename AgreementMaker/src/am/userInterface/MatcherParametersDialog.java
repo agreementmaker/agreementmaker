@@ -5,6 +5,8 @@ package am.userInterface;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -37,6 +39,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.ontology.profiling.OntologyProfilerPanel;
 import am.app.ontology.profiling.ProfilerRegistry;
@@ -66,6 +69,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	private JLabel targetRelLabel;
 	private JComboBox targetRelCombo;
 	private JCheckBox completionBox;
+	private JCheckBox provenanceBox;
 	
 	private JButton runButton;
 	private JButton cancelButton;
@@ -141,8 +145,9 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	}
 	
 	private void addInputMatchers(AbstractMatcher currentMatcher) {
+		Core.getInstance();
 		//Set input matchers into the abstractmatcher VERY IMPORTANT to set them before invoking the parameter panel, in fact the parameter panel may need to work on inputMatchers also.
-		int[] rowsIndex = Core.getInstance().getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
+		int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
 		for(int i = 0; i<rowsIndex.length && i< currentMatcher.getMaxInputMatchers(); i++) {
 			AbstractMatcher input = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
 			currentMatcher.addInputMatcher(input);
@@ -197,6 +202,26 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	    return rootPane;
 	  }
 	
+	/**
+	 * A hack to make the maximum size actually work.
+	 */
+	@Override
+	public void paint(Graphics g) {
+		Dimension d = getSize();
+		Dimension m = getMaximumSize();
+		boolean resize = d.width > m.width || d.height > m.height;
+		d.width = Math.min(m.width, d.width);
+		d.height = Math.min(m.height, d.height);
+		if (resize) {
+			//setVisible(false);
+			setSize(d);
+			setLocationRelativeTo(null);
+			//setVisible(true);
+		}
+		super.paint(g);
+	}
+
+	
 	private void initComponents() {
 		matcherLabel = new JLabel("Matcher:");
 		//String[] matcherList = MatcherFactory.getMatcherComboList();
@@ -231,6 +256,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		targetRelCombo.setSelectedItem(1);
 		
 		completionBox = new JCheckBox("Completion mode");
+		provenanceBox = new JCheckBox("Save mapping provenance");
 	
 		// top panel
 		topPanel = createTopPanel();
@@ -299,7 +325,12 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			            .addComponent(targetRelLabel)
 			            .addComponent(targetRelCombo)
 				)
-				.addComponent(completionBox)
+				.addGroup( generalLayout.createSequentialGroup()
+						.addComponent(completionBox)
+						.addGap(10)
+						.addComponent(provenanceBox)
+				)
+				
 				
 		);
 		
@@ -313,7 +344,12 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			            .addComponent(targetRelLabel)
 			            .addComponent(targetRelCombo)
 				)
-				.addComponent(completionBox)
+				.addGap(20)
+				.addGroup( generalLayout.createParallelGroup()
+						.addComponent(completionBox)
+						.addComponent(provenanceBox)
+				)
+				
 		);
 		
 		generalPanel.setLayout(generalLayout);
@@ -335,8 +371,10 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	private void initLayout() { initLayout(showPresets, showGeneralSettings); } // default settings
 	
 	private void initLayout(boolean showPresets, boolean showGeneralSettings) {
-		//overall dialog layout
 		
+		// update the provenanceBox
+		if( matcher != null && matcher.supportsFeature(MatcherFeature.MAPPING_PROVENANCE)) provenanceBox.setEnabled(true);
+		else provenanceBox.setEnabled(false);
 		
 		// initialize the matcher panel.
 		JPanel matcherPanel = new JPanel();
@@ -377,7 +415,9 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			if( matchTimeProfilingPanel == null ) {
 				matchTimeProfilingPanel = Core.getInstance().getOntologyProfiler().getProfilerPanel(false);
 			}
-			profilingPanel.add( matchTimeProfilingPanel, BorderLayout.CENTER);
+			JScrollPane profilingScroll = new JScrollPane(matchTimeProfilingPanel);
+			profilingScroll.getVerticalScrollBar().setUnitIncrement(20);
+			profilingPanel.add( profilingScroll, BorderLayout.CENTER);
 		}
 		
 		// add the tabs to the JTabbedPane
@@ -409,12 +449,20 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		
 		getContentPane().setLayout(mainPanelLayout);
 		
+		//overall dialog layout
+		Dimension maxSize = Toolkit.getDefaultToolkit().getScreenSize();
+		maxSize.height = maxSize.height - 40; // leave 20 pixels on top and bottom
+		maxSize.width = maxSize.width - 40; // and 20 pixels on left and right
+		setMaximumSize(maxSize);
+		
 		if( getFont() != null && getFontMetrics(getFont()) != null ) {
 			FontMetrics fm = getFontMetrics(getFont());
 			// +100 to allow for icon and "x-out" button
 			int width = fm.stringWidth(getTitle()) + 100;
 			width = Math.max(width, getPreferredSize().width);
-			setSize(new Dimension(width, getPreferredSize().height));
+			if( width > maxSize.width ) width = maxSize.width;
+			if( getPreferredSize().height <= maxSize.height ) setSize(new Dimension(width, getPreferredSize().height));
+			else setSize( new Dimension( width, maxSize.height ) );
 		}
 		
 		pack();  // make it smaller.
@@ -489,6 +537,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			
 			// fill in completion mode
 			params.completionMode = completionBox.isSelected();
+			params.storeProvenance = provenanceBox.isSelected();
 			
 			
 			matcher.setParam(params);

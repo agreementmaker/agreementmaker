@@ -133,6 +133,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 							if( mp.targetname.equals(tname) ) {
 								// we have found a match for the target node, it means a valid alignment
 								alignment = new Mapping( source, target, mp.similarity );
+								if( mp.provenance != null ) alignment.setProvenance(mp.provenance);
 								matrix.set(i, j, alignment);
 								//it.remove();
 							}
@@ -242,11 +243,19 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
             }
             if(mes < 0 || mes > 1) mes = 1;
             
+            
+            String provenance = e.elementText("provenance");
+            
             // String correctRelation = getRelationFromFileFormat(relation);
             
             if(sourceid != null && targetid != null) {
-            	MatchingPair mp = new MatchingPair(sourceid, targetid, mes, relation);
-            	result.add(mp);
+            	if( provenance == null ) {
+            		MatchingPair mp = new MatchingPair(sourceid, targetid, mes, relation);
+            		result.add(mp);
+            	} else {
+            		MatchingPair mp = new MatchingPair(sourceid, targetid, mes, relation, provenance);
+            		result.add(mp);
+            	}
             }
         }
 

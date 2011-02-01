@@ -38,7 +38,17 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	
 	public BaseSimilarityMatcher() {
 		// warning, param is not available at the time of the constructor (when creating a matcher from the User Interface)
-		super();
+		super(); initializeVariables();
+	}
+	
+	// Constructor used when the parameters are available at the time of matcher initialization
+	public BaseSimilarityMatcher( BaseSimilarityParameters param_new ) {  
+		super(param_new); initializeVariables();
+	}
+	
+	protected void initializeVariables() {
+		super.initializeVariables();
+		
 		needsParam = true;
 		
 		// Initialize the WordNet interface.
@@ -46,19 +56,6 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		String wordnetdir = cwd + "/wordnet-3.0";
 		System.setProperty("wordnet.database.dir", wordnetdir);
 		
-		supportedFeatures.add(MatcherFeature.ONTOLOGY_PROFILING);
-		supportedFeatures.add(MatcherFeature.ONTOLOGY_PROFILING_CLASS_ANNOTATION_FIELDS);
-		supportedFeatures.add(MatcherFeature.ONTOLOGY_PROFILING_PROPERTY_ANNOTATION_FIELDS);
-	}
-	
-	// Constructor used when the parameters are available at the time of matcher initialization
-	public BaseSimilarityMatcher( BaseSimilarityParameters param_new ) {  
-		super(param_new);	
-	}
-	
-	protected void initializeVariables() {
-		super.initializeVariables();
-
 		// setup the different normalizers
 		param1 = new NormalizerParameter();
 		param1.setAllTrue();
@@ -77,6 +74,10 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		param3.normalizeDigit = true;
 		norm3 = new Normalizer(param3);
 
+		// setup the features:
+		addFeature(MatcherFeature.ONTOLOGY_PROFILING);
+		addFeature(MatcherFeature.ONTOLOGY_PROFILING_CLASS_ANNOTATION_FIELDS);
+		addFeature(MatcherFeature.ONTOLOGY_PROFILING_PROPERTY_ANNOTATION_FIELDS);
 	}
 	
 	

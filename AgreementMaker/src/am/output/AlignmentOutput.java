@@ -48,7 +48,9 @@ public class AlignmentOutput
             String e1 = alignment.getEntity1().getUri();
             String e2 = alignment.getEntity2().getUri();
             String measure = Double.toString(alignment.getSimilarity());
-            stringElement(e1, e2, measure);
+            String prov = alignment.getProvenance();
+            if( prov != null ) stringElement(e1, e2, measure, prov);
+            else stringElement(e1, e2, measure);
 
         }
         stringEnd();
@@ -102,7 +104,22 @@ public class AlignmentOutput
                 + "        <entity2 rdf:resource=\"" + res2 + "\"/>\n" 
                 + "        <measure rdf:datatype=\"http://www.w3.org/2001/XMLSchema#float\">" 
                 + measure + "</measure>\n" 
-                + "        <relation>=</relation>\n" 
+                + "        <relation>=</relation>\n"
+                + "      </Cell>\n" 
+                + "    </map>";
+        buffer.append(temp);
+    }
+    
+    private void stringElement(String res1, String res2, String measure, String provenance)
+    {
+        String temp = "    <map>\n" 
+                + "      <Cell>\n" 
+                + "        <entity1 rdf:resource=\"" + res1 + "\"/>\n" 
+                + "        <entity2 rdf:resource=\"" + res2 + "\"/>\n" 
+                + "        <measure rdf:datatype=\"http://www.w3.org/2001/XMLSchema#float\">" 
+                + measure + "</measure>\n" 
+                + "        <relation>=</relation>\n"
+                + "		   <provenance>" + provenance + "</provenance>"
                 + "      </Cell>\n" 
                 + "    </map>";
         buffer.append(temp);
@@ -147,7 +164,10 @@ public class AlignmentOutput
             String e1 = alignment.getEntity1().getUri();
             String e2 = alignment.getEntity2().getUri();
             String measure = Double.toString(alignment.getSimilarity());
-            writeElement(e1, e2, measure);
+            String prov = alignment.getProvenance();
+            String relation = alignment.getRelation();
+            if( prov != null ) writeElement(e1, e2, measure, relation, prov);
+            else writeElement(e1, e2, measure, relation);
 
         }
         writeEnd();
@@ -203,7 +223,7 @@ public class AlignmentOutput
         String temp = "  </Alignment>\n</rdf:RDF>";
         writeList.add(temp);
     }
-
+    
     public void writeElement(String res1, String res2, String measure)
     {
         String temp = "    <map>\n" 
@@ -232,6 +252,21 @@ public class AlignmentOutput
         writeList.add(temp);
     }
 
+    public void writeElement(String res1, String res2, String measure, String r, String prov)
+    {
+        String temp = "    <map>\n" 
+                + "      <Cell>\n" 
+                + "        <entity1 rdf:resource=\"" + res1 + "\"/>\n" 
+                + "        <entity2 rdf:resource=\"" + res2 + "\"/>\n"
+                + "        <measure rdf:datatype=\"http://www.w3.org/2001/XMLSchema#float\">" 
+                + measure + "</measure>\n"
+                + "        <relation>" + r + "</relation>\n"
+                + "        <provenance>"+prov+"</provenance>\n"
+                + "      </Cell>\n" 
+                + "    </map>";
+        writeList.add(temp);
+    }
+    
     public void writeToFile()
     {
         try {

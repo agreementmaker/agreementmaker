@@ -215,7 +215,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 * constructor, but DON'T FORGET TO CALL super.initializeVariables() from their method.
 	 * 
 	 */
-	protected void initializeVariables() {
+	protected void initializeVariables() {  // TODO: Make this method a PRIVATE method.  If you do that, it should only be called from the constructor. - Cosmin
 		param = new AbstractParameters();
 		isAutomatic = true;
 		needsParam = false;
@@ -1489,15 +1489,23 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
  ***********************************************************************************************/
 	  
 	  // List of features supported by this matcher.
-	  protected List<MatcherFeature> supportedFeatures = new ArrayList<MatcherFeature>();
-	  
+	  protected List<MatcherFeature> supportedFeatures = null;
+
 	  /**
 	   * Determine if a feature is supported by a specific matcher.
 	   * These features must be setup in the constructor.
 	   * @param f Feature to check for.
 	   * @return true if feature is supported, false otherwise.
 	   */
-	  public boolean supportsFeature( MatcherFeature f ) {
-		  return supportedFeatures.contains(f);
+	  public boolean supportsFeature( MatcherFeature f ) { 
+		  if( supportedFeatures != null ) return supportedFeatures.contains(f); 
+		  return false;
+	  }
+	  
+	  protected void addFeature ( MatcherFeature f ) { 
+		  if( !supportsFeature(f) ) { 
+			  if( supportedFeatures == null ) supportedFeatures = new ArrayList<MatcherFeature>(); 
+			  supportedFeatures.add(f); 
+		  }
 	  }
 }
