@@ -28,8 +28,9 @@ public class Mapping implements Serializable
     private Node entity2 = null;
     private double similarity = 0;
     private String relation = null;
-    
-    private alignType typeOfConcepts = null;
+    private String provenance;
+
+	private alignType typeOfConcepts = null;
     
     //THE FONT USED IN THE CANVAS MUST BE A UNICODE FONT TO VIEW THIS SPECIAL CHARS
     public final static String EQUIVALENCE = "=";
@@ -52,6 +53,8 @@ public class Mapping implements Serializable
     	
     	return "?";  // unknown relation
     }
+    
+    /* Constructors */
     
     public Mapping(Node e1, Node e2, double sim, String r, alignType tyoc)
     {
@@ -116,49 +119,47 @@ public class Mapping implements Serializable
 	    this.typeOfConcepts = old.typeOfConcepts;
 	}
 
-	public Node getEntity1()
-    {
-        return entity1;
-    }
+	/* Access methods */
+	
+	public Node getEntity1() { return entity1; }
+	public void setEntity1(Node e1) { entity1 = e1; }
 
-    public void setEntity1(Node e1)
-    {
-        entity1 = e1;
-    }
+	public Node getEntity2() { return entity2; }
+	public void setEntity2(Node e2) { entity2 = e2; }
 
-    public Node getEntity2()
-    {
-        return entity2;
-    }
+	public void setSimilarity(double sim) { similarity = sim; }
+	public double getSimilarity() { return similarity; }
 
-    public void setEntity2(Node e2)
-    {
-        entity2 = e2;
-    }
+	public String getRelation() { return relation; }
+	public void setRelation(String r) { relation = r; }
 
-    public void setSimilarity(double sim)
-    {
-        similarity = sim;
-    }
+	public String getProvenance() { return provenance; }
+	public void setProvenance(String provenance) { this.provenance = provenance; }
 
-    public double getSimilarity()
-    {
-        return similarity;
-    }
+	public String toString() { return "("+entity1.toString()+" -> "+entity2.toString()+
+		": "+similarity+" "+relation+" )"; }
+	public String getString() { return entity1.getLocalName()+"\t"+OutputController.arrow+"\t"+
+		entity2.getLocalName()+"\t"+getSimilarity()+"\t"+getRelation()+"\n"; }
+	
+	public int getSourceKey(){
+		//used in the Conflict resulotion method of the conference track
+		//it is based on the idea that in a 1-1 matching a mapping is identified by the sourcenode
+		return getEntity1().getIndex();
+	}
+	
+	public int getTargetKey(){
+		//used in the Conflict resulotion method of the conference track
+		//it is based on the idea that in a 1-1 matching a mapping is identified by the sourcenode
+		return getEntity2().getIndex();
+	}
+	
+	public void setAlignmentType( alignType t ) { typeOfConcepts = t; }
+	public alignType getAlignmentType() { return typeOfConcepts; }
 
-
-
-    public String getRelation()
-    {
-        return relation;
-    }
-
-    public void setRelation(String r)
-    {
-        relation = r;
-    }
-
-    public String filter(String s)
+	
+	/* Methods that calculate */
+	
+    public static String filter(String s)
     {
         if (s == null) {
             return null;
@@ -191,26 +192,7 @@ public class Mapping implements Serializable
         }
     }
     
-
-    
-    public String toString() {
-    	return "("+entity1.toString()+" -> "+entity2.toString()+": "+similarity+" "+relation+" )";
-    }
-    
-
-	public String getString() {
-		return entity1.getLocalName()+"\t"+OutputController.arrow+"\t"+entity2.getLocalName()+"\t"+getSimilarity()+"\t"+getRelation()+"\n";
-	}
-	
-	public int hashCode(){
-		//relation may be added to this definition 
-		//map can be replaced with string except empty string
-		//this method is used in the PRAintegrationMatcher
-		//and in the conference conflict resolution.
-		return (entity1.getIndex()+"map"+entity2.getIndex()).hashCode();
-	}
-	
-	public boolean equals(Object o){
+    public boolean equals(Object o){
 		if(o instanceof Mapping){
 			Mapping alignment = (Mapping)o;
 	        if (entity1.equals(alignment.getEntity1()) 
@@ -222,26 +204,18 @@ public class Mapping implements Serializable
 		}
 		return false;
 	}
+    
 	
-	public int getSourceKey(){
-		//used in the Conflict resulotion method of the conference track
-		//it is based on the idea that in a 1-1 matching a mapping is identified by the sourcenode
-		return getEntity1().getIndex();
+	public int hashCode(){
+		//relation may be added to this definition 
+		//map can be replaced with string except empty string
+		//this method is used in the PRAintegrationMatcher
+		//and in the conference conflict resolution.
+		return (entity1.getIndex()+"map"+entity2.getIndex()).hashCode();
 	}
 	
-	public int getTargetKey(){
-		//used in the Conflict resulotion method of the conference track
-		//it is based on the idea that in a 1-1 matching a mapping is identified by the sourcenode
-		return getEntity2().getIndex();
-	}
 	
-	public void setAlignmentType( alignType t ) {
-		typeOfConcepts = t;
-	}
 	
-	public alignType getAlignmentType() {
-		return typeOfConcepts;
-	}
 	
 	/** ****************** Serialization methods *******************/
 	
