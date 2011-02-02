@@ -18,7 +18,7 @@ public abstract class ExecutionSemantics {
 		listeners = new EventListenerList();
 	}
 	
-	public abstract void run();
+	public abstract void run(UFLExperiment exp);
 	public abstract List<AbstractMatcher> getComponentMatchers();
 	public abstract Alignment<Mapping> getAlignment();
 	

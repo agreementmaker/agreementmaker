@@ -271,7 +271,7 @@ public class UIMenu implements ActionListener {
 			}
 			else if( obj == userFeedBack ) {
 				UFLControlGUI ufl_control = new UFLControlGUI(ui);
-				ufl_control.showScreen_Start();
+				ufl_control.displayInitialScreen();
 				ui.addTab("User Feedback Loop", null, ufl_control, "User Feedback Loop");	
 			}
 			else if( obj == clusteringEvaluation ) {

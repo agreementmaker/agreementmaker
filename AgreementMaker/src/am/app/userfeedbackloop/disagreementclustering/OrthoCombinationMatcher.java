@@ -3,6 +3,7 @@ package am.app.userfeedbackloop.disagreementclustering;
 import java.util.ArrayList;
 import java.util.List;
 
+import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
@@ -16,7 +17,9 @@ import am.app.mappingEngine.multiWords.MultiWordsMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
+import am.app.ontology.Ontology;
 import am.app.userfeedbackloop.ExecutionSemantics;
+import am.app.userfeedbackloop.UFLExperiment;
 import am.userInterface.MatchingProgressDisplay;
 
 /**
@@ -60,11 +63,20 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 	
 	private CombinationMatcher			m_lwc;
 	
-	MatchingProgressDisplay progressDisplay;
+	private MatchingProgressDisplay progressDisplay;
 	
 	@Override
-	public void run() {
+	public void run(UFLExperiment experiment) {
+				
+		if( experiment.getSourceOntology() == null || experiment.getTargetOntology() == null ) {
+			Utility.displayErrorPane("The experiment must define a pair of ontologies before the matching can start.", "Ontologies not loaded");
+			return;
+		}
+		
 		try {
+			
+			initializeVariables(experiment.getSourceOntology(), experiment.getTargetOntology());
+			
 			// TODO: Run Multiple Threads.
 			// run matchers.
 			if( progressDisplay != null ) {	
@@ -107,7 +119,7 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 				
 	}
 	
-	private void initializeVariables() {		
+	private void initializeVariables( Ontology sourceOntology, Ontology targetOntology ) {
 		// Initialize the parameters for all the matchers that will be used
 		param_bsm = new BaseSimilarityParameters();
 		param_asm = new AdvancedSimilarityParameters();
@@ -119,31 +131,36 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		
 		// BSM
 		param_bsm.useDictionary = false;
-		m_bsm = new BaseSimilarityMatcher(param_bsm);		
+		m_bsm = new BaseSimilarityMatcher(param_bsm);
+		m_bsm.setOntologies(sourceOntology, targetOntology);
 		m_bsm.setPerformSelection(false);
 		m_bsm.setProgressDisplay(progressDisplay);
 		
 		// ASM
 		param_asm.initForOAEI2009();
 		m_asm = new AdvancedSimilarityMatcher(param_asm);
+		m_asm.setOntologies(sourceOntology, targetOntology);
 		m_asm.setPerformSelection(false);
 		m_asm.setProgressDisplay(progressDisplay);
 		
 		// PSM
 		param_psm.initForOAEI2009();  // use the OAEI 2009 settings
 		m_psm = new ParametricStringMatcher( param_psm );
+		m_psm.setOntologies(sourceOntology, targetOntology);
 		m_psm.setPerformSelection(false);
 		m_psm.setProgressDisplay(progressDisplay);
 		
 		// VMM
 		param_vmm.initForOAEI2009();  // use the OAEI 2009 settings for this also.
 		m_vmm = new MultiWordsMatcher( param_vmm );
+		m_vmm.setOntologies(sourceOntology, targetOntology);
 		m_vmm.setPerformSelection(false);
 		m_vmm.setProgressDisplay(progressDisplay);
 		
 		// LWC
 		param_lwc.initForOAEI2009();  // use the OAEI 2009 settings for this also (Quality Evaluation = Local Confidence)
 		m_lwc = new CombinationMatcher( param_lwc );
+		m_lwc.setOntologies(sourceOntology, targetOntology);
 		m_lwc.setProgressDisplay(progressDisplay);
 
 	}

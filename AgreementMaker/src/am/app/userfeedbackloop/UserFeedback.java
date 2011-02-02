@@ -14,7 +14,7 @@ EventListenerList listeners;  // list of listeners for this class
 	public UserFeedback() {
 		listeners = new EventListenerList();
 	}
-	public enum Validation { CORRECT, INCORRECT; }
+	public enum Validation { CORRECT, INCORRECT, END_EXPERIMENT; }
 
 	public abstract void validate( CandidateSelection cs );
 	public abstract Validation getUserFeedback();

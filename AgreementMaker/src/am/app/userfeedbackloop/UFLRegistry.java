@@ -8,6 +8,17 @@ package am.app.userfeedbackloop;
  */
 public class UFLRegistry {
 
+	/* Different experimental setups (Ontologies + Reference alignment) */
+	public enum ExperimentRegistry {
+		Manual ( am.app.userfeedbackloop.common.ManualExperimentSetup.class );
+		
+		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
+		Class<? extends UFLExperiment> clazz;
+
+		ExperimentRegistry( Class<? extends UFLExperiment> cs ) { clazz = cs; }
+		public Class<? extends UFLExperiment> getEntryClass() { return clazz; }
+	}
+	
 	public enum InitialMatcherRegistry {
 		OrthoCombination ( am.app.userfeedbackloop.disagreementclustering.OrthoCombinationMatcher.class );
 			
