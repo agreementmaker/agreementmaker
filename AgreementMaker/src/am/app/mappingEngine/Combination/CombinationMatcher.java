@@ -96,7 +96,11 @@ public class CombinationMatcher extends AbstractMatcher {
 			a = inputMatchers.get(i);
 			q = a.getQualEvaluation();
 			//get the sim for this two nodes in the input matcher matrix
-			if(typeOfNodes == alignType.aligningClasses && a.areClassesAligned()) {
+			if( typeOfNodes != alignType.aligningClasses && 
+				typeOfNodes != alignType.aligningProperties )
+				throw new RuntimeException("DEVELOPER ERROR: the alignType of node is not prop or class. (" + a + ")");
+			
+			if( typeOfNodes == alignType.aligningClasses && a.areClassesAligned()) {
 				if( a.getClassesMatrix().get(sourceindex, targetindex) != null ) {
 					sim = a.getClassesMatrix().get(sourceindex, targetindex).getSimilarity();
 				} else { sim = 0.0; }
@@ -108,7 +112,8 @@ public class CombinationMatcher extends AbstractMatcher {
 				} else { sim = 0.0; }
 				weight = q.getPropQuality(sourceindex, targetindex);
 			}
-			else throw new RuntimeException("DEVELOPER ERROR: the alignType of node is not prop or class");
+			else throw new RuntimeException("DEVELOPER ERROR: The input matchers must perform the mapping selection step. (" + a + ")");
+			
 			
 			//sigmoid average
 			sigmoidSim = Utility.getSigmoidFunction(sim);
