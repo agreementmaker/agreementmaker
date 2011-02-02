@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import am.app.Core;
 import am.app.feedback.CandidateConcept;
 import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.vertex.Vertex;
 
@@ -71,7 +70,7 @@ public class Specificity extends RelevanceMeasure {
 		double Fanout = new Double(fanout);
 		for( int i = 0; i < childrenList.size(); i++ ) {
 			
-			Node curr = childrenList.get(i).getNode();
+			//Node curr = childrenList.get(i).getNode();
 			
 			//if( !fbl.isValidated(curr) ) {
 				double specificity = (1 / Depth) * ( 1 / Fanout);

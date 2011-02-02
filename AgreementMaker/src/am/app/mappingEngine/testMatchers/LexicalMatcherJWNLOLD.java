@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.ontology.Node;
 import net.didion.jwnl.JWNL;
 import net.didion.jwnl.JWNLException;
@@ -20,7 +19,9 @@ import net.didion.jwnl.data.list.PointerTargetNodeList;
 
 public class LexicalMatcherJWNLOLD extends AbstractMatcher{
 	
-	private Normalizer normalizer;
+	private static final long serialVersionUID = -2443784819859112128L;
+	
+	//private Normalizer normalizer;
 	private Dictionary dictionary;
 	
 	//Constructor

@@ -8,8 +8,6 @@ import javax.swing.GroupLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
 import com.hp.hpl.jena.rdf.model.Property;
 
 import am.app.ontology.profiling.OntologyProfilerPanel;

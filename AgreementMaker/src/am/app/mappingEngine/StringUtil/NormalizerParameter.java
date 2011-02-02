@@ -10,7 +10,7 @@ public class NormalizerParameter {
 	public boolean normalizeDigit = false; //remove numbers
 	public boolean normalizeDiacritics = true; // �,�...--> a, o
 	public boolean normalizePunctuation = true; //. , ! ? ' " becomes blank
-	private boolean normalizeSlashes = false;
+	public boolean normalizeSlashes = false;
 	//lowercase is always done
 	
 	public void setAllTrue(){

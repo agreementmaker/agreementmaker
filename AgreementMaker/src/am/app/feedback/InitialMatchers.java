@@ -2,9 +2,6 @@ package am.app.feedback;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.Combination.CombinationParameters;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
@@ -17,6 +14,8 @@ import am.app.ontology.Node;
 
 public class InitialMatchers extends AbstractMatcher {
 
+	private static final long serialVersionUID = 6682407547341816388L;
+	
 	/******* PARAMETERS ************/
 	private BaseSimilarityParameters    param_bsm = null;  // the parameters that will be used for the BSM
 	private ParametricStringParameters 	param_psm = null;  // the parameters that will be used for the PSM

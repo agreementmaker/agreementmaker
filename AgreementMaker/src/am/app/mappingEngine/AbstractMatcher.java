@@ -1460,6 +1460,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	
 	public void setSourceOntology( Ontology s ) { sourceOntology = s; }
 	public void setTargetOntology( Ontology t ) { targetOntology = t; }
+	public void setOntologies( Ontology source, Ontology target ) { sourceOntology = source; targetOntology = target; } // convenience function
 
 
 	/** ****************** Serialization methods *******************/

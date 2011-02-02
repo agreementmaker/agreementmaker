@@ -1,7 +1,5 @@
 package am.app.mappingEngine.baseSimilarity;
 
-import java.lang.annotation.Annotation;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 

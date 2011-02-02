@@ -1,12 +1,8 @@
 package am.app.feedback.measures;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import am.app.Core;
 import am.app.feedback.CandidateConcept;
-import am.app.feedback.ConceptList;
-import am.app.feedback.FeedbackLoop;
 import am.app.feedback.FilteredAlignmentMatrix;
 import am.app.feedback.InitialMatchers;
 import java.util.HashMap;

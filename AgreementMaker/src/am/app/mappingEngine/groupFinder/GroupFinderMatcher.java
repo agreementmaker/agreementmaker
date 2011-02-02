@@ -172,12 +172,12 @@ public class GroupFinderMatcher extends AbstractMatcher {
     	}
     	
     	ArrayList<Node> sourceSet, targetSet;
-    	boolean targetSetFlag;
+    	//boolean targetSetFlag;
     	for(int i = 0; i < source_root_list.size(); i++){
     		sourceSet = new ArrayList<Node>(); // contains source current group	
         	targetSet = new ArrayList<Node>(); // contains target nodes to be used for selecting target group
         	
-        	targetSetFlag = false;
+        	//targetSetFlag = false;
     		// setting source current group and target node set
 	    	sourceSet.add(source_root_list.get(i));
 	    	sourceSet.addAll(source_root_list.get(i).getDescendants());
@@ -209,7 +209,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 		    		//System.out.println("targetIndex " + targetInd);
 		    		newSim = selectedMapping.getSimilarity() + localMatrix.getSimilarity(sourceInd, targetInd);
 		    		//System.out.println("newSim " + newSim);
-		    		localMatrix.setSimilarity(sourceInd, targetInd, newSim);
+		    		localMatrix.set(sourceInd, targetInd, new Mapping( sourceRoot, targetRoot, newSim) );
 		    		//System.out.println("localMatrix updated ");
 		    		localCount.set(targetInd, localCount.get(targetInd) + 1);
 		    		//System.out.println("localCount updated ");
@@ -323,7 +323,8 @@ public class GroupFinderMatcher extends AbstractMatcher {
 			for(int j = 0; j < inputMatrix.getColumns(); j++){
 				if((sList.contains(i) && !tList.contains(j)) || (!sList.contains(i) && tList.contains(j)))
 				{
-					inputMatrix.setSimilarity(i, j, inputMatrix.getSimilarity(i, j) * scaling_factor);
+					Mapping m = inputMatrix.get(i,j);
+					if( m != null ) m.setSimilarity(m.getSimilarity() * scaling_factor);
 				}
 			}
 		}

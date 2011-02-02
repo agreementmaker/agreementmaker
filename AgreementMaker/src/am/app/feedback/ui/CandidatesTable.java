@@ -15,8 +15,6 @@ import javax.swing.JViewport;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-
-import am.userInterface.table.MyTableModel;
 /**
  * We could have used the JTable Class instead of using this extension
  * but there is a famous bug: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4127936
@@ -42,7 +40,8 @@ public class CandidatesTable extends JTable {
 		 
 		class RadioButtonEditor extends    DefaultCellEditor
 		                        implements ItemListener {
-		  private JRadioButton button;
+		private static final long serialVersionUID = -2659989651230572367L;
+		private JRadioButton button;
 		 
 		  public RadioButtonEditor(JCheckBox checkBox) {
 		    super(checkBox);

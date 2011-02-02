@@ -292,7 +292,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			
 			// Step 2:	If the labels are equal, then return a similarity of 1
 			if( sourceName.equalsIgnoreCase(targetName) ) {
-				String relation = Mapping.EQUIVALENCE;
+				//String relation = Mapping.EQUIVALENCE;
 				return 1.0d;
 			}
 			// if we haven't initialized our wordnet database, do it
@@ -311,7 +311,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			
 			float verbSimilarity = getSensesComparison(sourceVerbs, targetVerbs);
 			
-			String rel = Mapping.EQUIVALENCE;
+			//String rel = Mapping.EQUIVALENCE;
 	        
 			// select the best similarity found. (either verb or noun)
 	        if( nounSimilarity > verbSimilarity ) {

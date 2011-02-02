@@ -1,20 +1,10 @@
 package am.app.lexicon.wordnet;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.swing.text.html.HTMLDocument;
-
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Statement;
-
-import edu.smu.tspell.wordnet.NounSynset;
 import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.SynsetType;
 import edu.smu.tspell.wordnet.WordNetDatabase;
@@ -26,7 +16,6 @@ import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconBuilder;
 import am.app.lexicon.LexiconSynSet;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
-import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
 public class WordNetLexiconBuilder implements LexiconBuilder {

@@ -51,10 +51,10 @@ public class LexiconStore {
 		
 		switch( whichOne ) {
 		case ONTOLOGY_LEXICON:
-			Ontology source;
+			/*Ontology source;
 			Ontology target;
 			if( Core.getInstance().getSourceOntology() != null ) source = Core.getInstance().getSourceOntology();
-			if( Core.getInstance().getTargetOntology() != null ) target = Core.getInstance().getTargetOntology();
+			if( Core.getInstance().getTargetOntology() != null ) target = Core.getInstance().getTargetOntology();*/
 			//OntologyLexiconBuilder ontLexBuilder = new OntologyLexiconBuilder(source, label, synonym, definition)
 		}
 		

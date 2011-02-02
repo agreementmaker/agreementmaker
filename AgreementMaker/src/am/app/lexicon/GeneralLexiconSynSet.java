@@ -1,12 +1,10 @@
 package am.app.lexicon;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntResource;
 
 import am.app.Core;

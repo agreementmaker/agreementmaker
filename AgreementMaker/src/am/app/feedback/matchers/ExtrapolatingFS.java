@@ -11,12 +11,13 @@ import am.app.feedback.measures.FamilialSimilarity;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceParameters;
 import am.app.ontology.Node;
 import am.userInterface.vertex.Vertex;
 
 public class ExtrapolatingFS extends AbstractMatcher {
 	
+	private static final long serialVersionUID = -8692918883729097171L;
+
 	InitialMatchers im = new InitialMatchers();
 	
 	protected FilteredAlignmentMatrix classesMatrix;

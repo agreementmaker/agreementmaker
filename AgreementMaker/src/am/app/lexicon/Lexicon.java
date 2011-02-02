@@ -1,7 +1,6 @@
 package am.app.lexicon;
 
 import java.io.PrintStream;
-import java.util.List;
 import java.util.Map;
 
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;

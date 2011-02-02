@@ -8,9 +8,6 @@ import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
@@ -25,7 +22,6 @@ import com.hp.hpl.jena.vocabulary.OWL;
 
 public class TabbedTextBuilder extends TreeBuilder {
 	// instance variables
-	private Document documentRoot;
 	private HashMap<String,Node> processedNodes;
 	final static String XMLHIERARCHY = "XML Hierarchy";
 	
@@ -91,7 +87,7 @@ public class TabbedTextBuilder extends TreeBuilder {
 		// now, the visualization panel needs to build its own graph.
 		if( progressDialog != null ) {
 			progressDialog.appendLine("Building visualization graphs.");
-			Core.getInstance().getUI().getCanvas().buildLayoutGraphs(ontology);
+			Core.getUI().getCanvas().buildLayoutGraphs(ontology);
 			progressDialog.appendLine("Done.");
 		} 
 	}

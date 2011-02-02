@@ -9,7 +9,6 @@ import am.app.feedback.FilteredAlignmentMatrix;
 import am.app.feedback.CandidateConcept.ontology;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
-import am.app.ontology.Ontology;
 
 public class InformationGain extends RelevanceMeasure {
 

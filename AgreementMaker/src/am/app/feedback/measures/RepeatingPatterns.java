@@ -5,12 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import javax.swing.JOptionPane;
-
 import am.app.Core;
 import am.app.feedback.CandidateConcept;
-import am.app.feedback.InitialMatchers;
-import am.app.feedback.CandidateConcept.ontology;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;

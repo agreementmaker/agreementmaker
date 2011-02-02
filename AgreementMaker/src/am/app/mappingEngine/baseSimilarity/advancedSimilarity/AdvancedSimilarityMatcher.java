@@ -6,10 +6,7 @@ package am.app.mappingEngine.baseSimilarity.advancedSimilarity;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.hp.hpl.jena.sparql.engine.http.Params;
-
 import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
@@ -127,7 +124,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 */
 	private double calculateSimilarity( String sLN, String tLN, alignType typeOfNodes) throws Exception {
 		
-		AdvancedSimilarityParameters parameters = (AdvancedSimilarityParameters)param;
+		//AdvancedSimilarityParameters parameters = (AdvancedSimilarityParameters)param;
 		
 		String tokenized_sLN[] = sLN.split("\\s"); // token array of source LocalName (sLN)
 		String tokenized_tLN[] = tLN.split("\\s"); // token array of target LocalName (tLN)

@@ -6,6 +6,9 @@ import am.app.mappingEngine.SimilarityMatrix;
 
 public class CopyMatcher extends AbstractMatcher {
 	
+	private static final long serialVersionUID = 7262313405221341087L;
+
+
 	public CopyMatcher() {
 		maxInputMatchers = 1;
 		minInputMatchers = 1;

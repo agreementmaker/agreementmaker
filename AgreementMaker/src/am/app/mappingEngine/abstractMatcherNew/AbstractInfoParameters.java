@@ -105,7 +105,7 @@ public class AbstractInfoParameters {
 	/**
 	 * Used by the updateProgress() method.
 	 */
-	private long starttime;
+/*	private long starttime;
 	private long lastTime = 0;
-	private long lastStepsDone = 0;
+	private long lastStepsDone = 0;*/
 }

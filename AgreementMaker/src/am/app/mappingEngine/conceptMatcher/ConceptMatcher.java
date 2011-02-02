@@ -10,7 +10,6 @@ package am.app.mappingEngine.conceptMatcher;
 // TODO: Remove the Stanford Parser before distribution, GPL Licensed. - cosmin
 
 import java.util.ArrayList;
-import edu.smu.tspell.wordnet.WordNetDatabase;
 //import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher;
@@ -31,7 +30,7 @@ public class ConceptMatcher extends AbstractMatcher {
 	private static final long serialVersionUID = 8164676239475978748L;
 	
 	// JAWS WordNet interface
-	private transient WordNetDatabase wordnet  = null;
+	//private transient WordNetDatabase wordnet  = null;
 	//public LexicalizedParser parser = null;
 	Hashtable<String, String> htConcepts = null;
 	
@@ -88,7 +87,7 @@ public class ConceptMatcher extends AbstractMatcher {
 			String strOriginalText = sourceList.get(i).getLocalName();
 			if (!htConcepts.containsKey(strOriginalText))
 			{
-				String strTreatedText = treatString(strOriginalText);
+				//String strTreatedText = treatString(strOriginalText);
 				String strConcept = "";
 //				if (typeOfNodes == alignType.aligningClasses)
 //					strConcept = GetClassConcept(strTreatedText);
@@ -167,12 +166,12 @@ public class ConceptMatcher extends AbstractMatcher {
 	    return strConcept;
     }*/
     
-    private String GetPropertyConcept(String FullText)
+/*    private String GetPropertyConcept(String FullText)
     {
     	//for now we use the original string since the desired concept is unclear
     	//in the case of properties
     	return FullText;
-    }
+    }*/
     
     private ArrayList<String> GetDescendants(Vertex vert)
     {
@@ -336,7 +335,7 @@ public class ConceptMatcher extends AbstractMatcher {
 	 * 2) Separates capitalized words, ( "BaseSimilarity" -> "Base Similarity" )
 	 */
 	
-	 private String treatString(String s) {
+	 public static String treatString(String s) {
 		 
 		 
 		 String s2 = s.replace("_"," ");

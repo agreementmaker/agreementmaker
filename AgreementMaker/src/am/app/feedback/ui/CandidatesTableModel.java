@@ -96,7 +96,7 @@ public class CandidatesTableModel extends AbstractTableModel {
          * then the last column would contain text ("true"/"false"),
          * rather than a check box.
          */
-        public Class getColumnClass(int col) {
+        public Class<?> getColumnClass(int col) {
             Object o = getValueAt(0, col);
             if(o != null)
              return o.getClass();
@@ -147,7 +147,7 @@ public class CandidatesTableModel extends AbstractTableModel {
         	}
         }
         
-		private void printDebugData() {
+/*		private void printDebugData() {
             int numRows = getRowCount();
             int numCols = getColumnCount();
 
@@ -159,7 +159,7 @@ public class CandidatesTableModel extends AbstractTableModel {
                 System.out.println();
             }
             System.out.println("--------------------------");
-        }
+        }*/
 		
 
     }

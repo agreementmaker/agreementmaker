@@ -275,7 +275,9 @@ public class BasicStructuralSelectorMatcher extends AbstractMatcher {
     				break;
     		}
     		// we compute the similarity then
-			input.setSimilarity(best.get(i).getSourceKey(), best.get(i).getTargetKey(), Math.min(1.0, best.get(i).getSimilarity() * bonus));
+    		Mapping m = input.get(best.get(i).getSourceKey(), best.get(i).getTargetKey());
+    		if( m != null )	m.setSimilarity(Math.min(1.0, best.get(i).getSimilarity() * bonus));
+
     		
 			// and we discard from further computation couples of best-matching concepts that don't have high similarity value
     		if(best.get(i).getSimilarity() < getThreshold()){

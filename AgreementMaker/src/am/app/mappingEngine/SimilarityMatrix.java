@@ -51,7 +51,7 @@ public abstract class SimilarityMatrix
 	public abstract void set(int i, int j, Mapping d);
 	
 	@Deprecated
-	public abstract void setSimilarity(int i, int j, double d);
+	public abstract void setSimilarity(int i, int j, double d);  // deprecated because it cannot deal with null values.
 	public abstract double getSimilarity( int i, int j);
 	
 	/* Methods that calculate */

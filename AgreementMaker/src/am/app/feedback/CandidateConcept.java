@@ -15,6 +15,8 @@ import am.app.ontology.Node;
 
 public class CandidateConcept extends Node /*implements Comparable<CandidateConcept>*/{
 
+	private static final long serialVersionUID = 5565715572303899116L;
+	
 	protected double relevance = 0.00;
 	protected boolean patternRepeats = false;
 	

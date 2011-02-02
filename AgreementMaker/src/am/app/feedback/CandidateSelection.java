@@ -2,7 +2,6 @@ package am.app.feedback;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Iterator;
 
 import am.app.Core;
@@ -10,9 +9,7 @@ import am.app.feedback.CandidateConcept.ontology;
 import am.app.feedback.measures.FamilialSimilarity;
 import am.app.feedback.measures.InformationGain;
 import am.app.feedback.measures.RelevanceMeasure;
-import am.app.feedback.measures.RepeatingPatterns;
 import am.app.feedback.measures.Specificity;
-import am.app.feedback.ui.SelectionPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AbstractMatcher.alignType;

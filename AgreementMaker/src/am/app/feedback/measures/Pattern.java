@@ -90,7 +90,7 @@ public class Pattern  {
 
 
 	public void setLastVisit(int lastVisit) {
-		this.lastVisit = lastVisit;
+		Pattern.lastVisit = lastVisit;
 	}
 
 
