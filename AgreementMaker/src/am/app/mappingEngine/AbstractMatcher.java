@@ -201,6 +201,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		//therefore by modifying something in this method you may also have to modify the UserManualMatcher
 		//while all other matchers will automatically inherit the changes
 		initializeVariables();
+		param = new AbstractParameters();
 	}
 	
 	public AbstractMatcher( AbstractParameters params_new ) {
@@ -216,7 +217,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 * 
 	 */
 	protected void initializeVariables() {  // TODO: Make this method a PRIVATE method.  If you do that, it should only be called from the constructor. - Cosmin
-		param = new AbstractParameters();
+		//param = new AbstractParameters();
 		isAutomatic = true;
 		needsParam = false;
 		isShown = true;
