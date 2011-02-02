@@ -315,7 +315,7 @@ public class UFLControlGUI extends JPanel implements MatchingProgressDisplay, Ac
 		
 		System.out.println(e.getActionCommand());  // TODO: Remove this.
 		
-		if( experimentSetup.isDone() ) return; // check stop condition
+		if( experimentSetup != null && experimentSetup.isDone() ) return; // check stop condition
 		
 		try{
 	

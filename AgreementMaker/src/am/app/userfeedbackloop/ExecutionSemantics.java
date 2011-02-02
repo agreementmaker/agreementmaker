@@ -9,6 +9,7 @@ import javax.swing.event.EventListenerList;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.userfeedbackloop.ui.UFLControlGUI;
 
 public abstract class ExecutionSemantics {
 
@@ -32,9 +33,14 @@ public abstract class ExecutionSemantics {
 	protected void fireEvent( ActionEvent e ) {
 		ActionListener[] actionListeners = listeners.getListeners(ActionListener.class);
 		
-		for( int i = actionListeners.length-1; i > 0; i-- ) {
+		for( int i = actionListeners.length-1; i >= 0; i-- ) {
 			actionListeners[i].actionPerformed(e);
 		}
+	}
+	
+	protected void done() {
+		ActionEvent e = new ActionEvent(this, 0, UFLControlGUI.ActionCommands.EXECUTION_SEMANTICS_DONE.name() );
+		fireEvent(e);
 	}
 	
 }

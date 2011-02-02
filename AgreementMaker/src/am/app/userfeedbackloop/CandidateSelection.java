@@ -8,6 +8,7 @@ import javax.swing.event.EventListenerList;
 
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.userfeedbackloop.ui.UFLControlGUI;
 
 public abstract class CandidateSelection {
 
@@ -33,9 +34,13 @@ public abstract class CandidateSelection {
 	protected void fireEvent( ActionEvent e ) {
 		ActionListener[] actionListeners = listeners.getListeners(ActionListener.class);
 		
-		for( int i = actionListeners.length-1; i > 0; i-- ) {
+		for( int i = actionListeners.length-1; i >= 0; i-- ) {
 			actionListeners[i].actionPerformed(e);
 		}
 	}
 	
+	protected void done() {
+		ActionEvent e = new ActionEvent(this, 0, UFLControlGUI.ActionCommands.CANDIDATE_SELECTION_DONE.name() );
+		fireEvent(e);
+	}
 }

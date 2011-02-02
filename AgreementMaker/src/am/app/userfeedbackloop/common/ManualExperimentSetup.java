@@ -46,7 +46,7 @@ public class ManualExperimentSetup extends UFLExperiment {
 
 	@Override
 	public boolean isDone() {
-		if( userFeedback.getUserFeedback() == Validation.END_EXPERIMENT ) return true;  // we're done when the user says so
+		if( userFeedback != null && userFeedback.getUserFeedback() == Validation.END_EXPERIMENT ) return true;  // we're done when the user says so
 		return false;
 	}
 

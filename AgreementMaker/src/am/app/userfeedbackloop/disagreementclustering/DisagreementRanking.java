@@ -47,6 +47,7 @@ public class DisagreementRanking extends CandidateSelection {
 		rankedPropertyMappings = propertyDisagreement.getOrderedMappingsAboveThreshold(0.0);
 		propertyDisagreement = null;
 		
+		done();
 	}
 
 

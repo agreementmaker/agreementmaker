@@ -20,6 +20,7 @@ import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.ontology.Ontology;
 import am.app.userfeedbackloop.ExecutionSemantics;
 import am.app.userfeedbackloop.UFLExperiment;
+import am.app.userfeedbackloop.ui.UFLControlGUI;
 import am.userInterface.MatchingProgressDisplay;
 
 /**
@@ -113,6 +114,9 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 				m_lwc.addInputMatcher(m_vmm);
 				m_lwc.match();
 			}
+			
+			done();
+			
 		} catch( Exception e ) {
 			e.printStackTrace();
 		}
@@ -133,28 +137,24 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		param_bsm.useDictionary = false;
 		m_bsm = new BaseSimilarityMatcher(param_bsm);
 		m_bsm.setOntologies(sourceOntology, targetOntology);
-		m_bsm.setPerformSelection(false);
 		m_bsm.setProgressDisplay(progressDisplay);
 		
 		// ASM
 		param_asm.initForOAEI2009();
 		m_asm = new AdvancedSimilarityMatcher(param_asm);
 		m_asm.setOntologies(sourceOntology, targetOntology);
-		m_asm.setPerformSelection(false);
 		m_asm.setProgressDisplay(progressDisplay);
 		
 		// PSM
 		param_psm.initForOAEI2009();  // use the OAEI 2009 settings
 		m_psm = new ParametricStringMatcher( param_psm );
 		m_psm.setOntologies(sourceOntology, targetOntology);
-		m_psm.setPerformSelection(false);
 		m_psm.setProgressDisplay(progressDisplay);
 		
 		// VMM
 		param_vmm.initForOAEI2009();  // use the OAEI 2009 settings for this also.
 		m_vmm = new MultiWordsMatcher( param_vmm );
 		m_vmm.setOntologies(sourceOntology, targetOntology);
-		m_vmm.setPerformSelection(false);
 		m_vmm.setProgressDisplay(progressDisplay);
 		
 		// LWC

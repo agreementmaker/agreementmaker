@@ -192,7 +192,7 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 	protected void fireEvent( ActionEvent e ) {
 		ActionListener[] actionListeners = listeners.getListeners(ActionListener.class);
 		
-		for( int i = actionListeners.length-1; i > 0; i-- ) {
+		for( int i = actionListeners.length-1; i >= 0; i-- ) {
 			actionListeners[i].actionPerformed(e);
 		}
 	}
