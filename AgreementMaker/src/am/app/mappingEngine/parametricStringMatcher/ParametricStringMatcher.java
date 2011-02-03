@@ -3,20 +3,14 @@ package am.app.mappingEngine.parametricStringMatcher;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.Property;
-
 import am.Utility;
 import am.app.Core;
 import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconSynSet;
-import am.app.lexicon.ontology.OntologyLexiconBuilder;
-import am.app.lexicon.wordnet.WordNetLexiconBuilder;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.StringUtil.ISub;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.StringMetrics;
@@ -97,11 +91,11 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		
 		if( parameters.useLexicons ) { // lexicon code
 		
-			double weightOntSyn = parameters.lexOntSynonymWeight;
+/*			double weightOntSyn = parameters.lexOntSynonymWeight;
 			double weightOntDef = parameters.lexOntDefinitionWeight;
 			
 			double weightWNSyn = parameters.lexWNSynonymWeight;
-			double weightWNDef = parameters.lexWNDefinitionWeight;
+			double weightWNDef = parameters.lexWNDefinitionWeight;*/
 			
 			// lexicons have been built in beforeAlignOperations();
 			

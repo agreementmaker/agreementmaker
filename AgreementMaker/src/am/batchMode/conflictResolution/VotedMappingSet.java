@@ -23,7 +23,7 @@ public class VotedMappingSet {
 		sourceMappings = new HashMap<Integer, VotedMapping>();
 		targetMappings = new HashMap<Integer, VotedMapping>();
 		for(int i = 0; i < aset.size(); i++){
-			a = aset.getMapping(i);
+			a = aset.get(i);
 			v = new VotedMapping(a, this);
 			sourceMappings.put(a.getSourceKey(),v);
 			targetMappings.put(a.getTargetKey(),v);
@@ -93,7 +93,7 @@ public class VotedMappingSet {
 		while(it.hasNext()){
 			v = it.next();
 			if(v.validated){
-				set.addMapping(v.mapping);
+				set.add(v.mapping);
 			}
 			else throw new RuntimeException("Development error: all mappings should be validated or deleted in the conflict resultion");
 		}

@@ -173,7 +173,7 @@ public class BasicStructuralSelectorMatcher extends AbstractMatcher {
 			if(list.get(i).getSimilarity() < getThreshold()){
 				break;
 			}
-			result.addMapping(list.get(i));
+			result.add(list.get(i));
 		}
 		return result;
 		

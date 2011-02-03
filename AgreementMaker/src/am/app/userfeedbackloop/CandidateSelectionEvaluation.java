@@ -2,6 +2,7 @@ package am.app.userfeedbackloop;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.event.EventListenerList;
 
@@ -17,18 +18,13 @@ import am.app.mappingEngine.Mapping;
  */
 public abstract class CandidateSelectionEvaluation {
 
-	protected Alignment<Mapping> rankedList;
-	protected Alignment<Mapping> reference;
-	EventListenerList listeners;  // list of listeners for this class
+	protected EventListenerList listeners;  // list of listeners for this class
 	
-	public CandidateSelectionEvaluation( Alignment<Mapping> rL, Alignment<Mapping> ref) {
-		rankedList = rL;
-		reference = ref;
+	public CandidateSelectionEvaluation() {
 		listeners = new EventListenerList();
 	}
 	
-	
-	public abstract void evaluate();
+	public abstract void evaluate(CandidateSelection cs, Alignment<Mapping> reference);
 	
 	public void addActionListener( ActionListener l ) {
 		listeners.add(ActionListener.class, l);

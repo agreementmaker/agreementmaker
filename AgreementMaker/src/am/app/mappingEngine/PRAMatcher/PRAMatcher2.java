@@ -118,7 +118,7 @@ public class PRAMatcher2 extends AbstractMatcher
 			System.out.println("Num of entries in input class alignment set is " + inputClassesAlignmentSet.size());
 			for(int i = 0; i < inputClassesAlignmentSet.size(); i++)
 			{
-				anAlignment = inputClassesAlignmentSet.getMapping(i);
+				anAlignment = inputClassesAlignmentSet.get(i);
 				inputSrc = anAlignment.getEntity1();
 				inputTarget = anAlignment.getEntity2();
 				anInt = new Integer(inputSrc.getIndex());
@@ -133,7 +133,7 @@ public class PRAMatcher2 extends AbstractMatcher
 				{
 					//System.out.println("Adding a result from the input classes alignmentSet");
 					resultMatrix.set(inputSrc.getIndex(), inputTarget.getIndex(), anAlignment);
-					resultSet.addMapping(anAlignment);
+					resultSet.add(anAlignment);
 					mappedNodes.add(anAlignment);
 				}
 				//else
@@ -145,11 +145,11 @@ public class PRAMatcher2 extends AbstractMatcher
 			//add every other alignment in the partial reference alignment not yet in the result
 			for(int i = 0; i < praClassesAlignmentSet.size(); i++)
 			{
-				anAlignment = praClassesAlignmentSet.getMapping(i);
+				anAlignment = praClassesAlignmentSet.get(i);
 				if(!mappedNodes.contains(anAlignment))
 				{
 					//System.out.println("Adding a result from the pra classes alignment set");
-					resultSet.addMapping(anAlignment);
+					resultSet.add(anAlignment);
 					praSrc = anAlignment.getEntity1();
 					praTarget = anAlignment.getEntity2();
 					mappedNodes.add(anAlignment);
@@ -168,7 +168,7 @@ public class PRAMatcher2 extends AbstractMatcher
 			//add everything in the partial reference alignment in the alignmentSet
 			for(int i = 0; i < inputPropertiesAlignmentSet.size(); i++)
 			{
-				anAlignment = inputPropertiesAlignmentSet.getMapping(i); 
+				anAlignment = inputPropertiesAlignmentSet.get(i); 
 				inputSrc = anAlignment.getEntity1();
 				inputTarget = anAlignment.getEntity2();
 				anInt = new Integer(inputSrc.getIndex());
@@ -181,7 +181,7 @@ public class PRAMatcher2 extends AbstractMatcher
 				if(aTreeNode.getDepth() == matchedNode.getDepth())
 				{
 					resultMatrix.set(inputSrc.getIndex(), inputTarget.getIndex(), anAlignment);
-					resultSet.addMapping(anAlignment);
+					resultSet.add(anAlignment);
 					mappedNodes.add(anAlignment);
 				}
 			}
@@ -189,10 +189,10 @@ public class PRAMatcher2 extends AbstractMatcher
 			//add every other alignment in the partial reference alignment not yet in the result
 			for(int i = 0; i < praPropertiesAlignmentSet.size(); i++)
 			{
-				anAlignment = praPropertiesAlignmentSet.getMapping(i);
+				anAlignment = praPropertiesAlignmentSet.get(i);
 				if(!mappedNodes.contains(anAlignment))
 				{
-					resultSet.addMapping(anAlignment);
+					resultSet.add(anAlignment);
 					praSrc = anAlignment.getEntity1();
 					praTarget = anAlignment.getEntity2();
 					mappedNodes.add(anAlignment);

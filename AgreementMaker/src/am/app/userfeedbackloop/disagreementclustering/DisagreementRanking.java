@@ -22,6 +22,7 @@ public class DisagreementRanking extends CandidateSelection {
 	@Override public List<Mapping> getRankedMappings(alignType t) { 
 		if( t == alignType.aligningClasses ) { return rankedClassMappings; }
 		if( t == alignType.aligningProperties ) { return rankedPropertyMappings; }
+
 		return null;
 	}
 
@@ -44,7 +45,7 @@ public class DisagreementRanking extends CandidateSelection {
 		classDisagreement = null;  // release the memory used by this
 		
 		SimilarityMatrix propertyDisagreement = disagreementMetric.getDisagreementMatrix(VisualizationType.PROPERTIES_MATRIX);
-		rankedPropertyMappings = propertyDisagreement.getOrderedMappingsAboveThreshold(0.0);
+		rankedPropertyMappings = propertyDisagreement.getOrderedMappingsAboveThreshold(0.0d);
 		propertyDisagreement = null;
 		
 		done();

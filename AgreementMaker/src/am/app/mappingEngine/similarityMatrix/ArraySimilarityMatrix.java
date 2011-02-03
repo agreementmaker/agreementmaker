@@ -284,8 +284,15 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
         SimilarityMatrix C = new ArraySimilarityMatrix(rows, columns, typeOfMatrix, relation);
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++) {
-            		C.setSimilarity(i,j,A.getSimilarity(i,j)  + B.getSimilarity(i,j));
-        			if( C.getSimilarity(i,j) > 1.00d ) C.setSimilarity(i,j,1.00d);
+            	Mapping m1 = A.get(i,j);
+            	Mapping m2 = B.get(i,j);
+            	if( m1 == null && m2 == null ) continue;
+            	else if( m1 == null ) C.set(i, j, new Mapping( m2.getEntity1(), m2.getEntity2(), m2.getSimilarity() ));
+            	else if( m2 == null ) C.set(i, j, new Mapping( m1.getEntity1(), m1.getEntity2(), m1.getSimilarity() ));
+            	else {
+            		double newSim = Math.max(1.00d, A.getSimilarity(i,j)  + B.getSimilarity(i,j) );
+            		C.set(i, j, new Mapping( m1.getEntity1(), m1.getEntity2(), newSim ));
+            	}
             }
         return C;
     }
@@ -298,8 +305,15 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
         SimilarityMatrix C = new ArraySimilarityMatrix(rows, columns, typeOfMatrix, relation);
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++) {
-            	C.setSimilarity(i,j,A.getSimilarity(i,j) - B.getSimilarity(i,j));
-    			if( C.getSimilarity(i,j) < 0.00d ) C.setSimilarity(i,j,0.00d);
+            	Mapping m1 = A.get(i,j);
+            	Mapping m2 = B.get(i,j);
+            	if( m1 == null && m2 == null ) continue;
+            	else if( m1 == null ) C.set(i, j, new Mapping( m2.getEntity1(), m2.getEntity2(), m2.getSimilarity() ));
+            	else if( m2 == null ) C.set(i, j, new Mapping( m1.getEntity1(), m1.getEntity2(), m1.getSimilarity() ));
+            	else {
+            		double newSim = Math.min(1.00d, A.getSimilarity(i,j) - B.getSimilarity(i,j) );
+            		C.set(i, j, new Mapping( m1.getEntity1(), m1.getEntity2(), newSim ));
+            	}
             }
         return C;
     }
@@ -321,8 +335,17 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
         SimilarityMatrix C = new ArraySimilarityMatrix(A.getRows(), B.getColumns(), typeOfMatrix, relation);
         for (int i = 0; i < C.getRows(); i++)
             for (int j = 0; j < C.getColumns(); j++)
-                for (int k = 0; k < A.getColumns(); k++)
-                	C.setSimilarity(i,j,A.getSimilarity(i,j) * B.getSimilarity(i,j)); 
+                for (int k = 0; k < A.getColumns(); k++) {
+	                Mapping m1 = A.get(i,j);
+	            	Mapping m2 = B.get(i,j);
+	            	if( m1 == null && m2 == null ) continue;
+	            	else if( m1 == null ) C.set(i, j, new Mapping( m2.getEntity1(), m2.getEntity2(), 0.0d ));
+	            	else if( m2 == null ) C.set(i, j, new Mapping( m1.getEntity1(), m1.getEntity2(), 0.0d ));
+	            	else {
+	            		double newSim = Math.max(1.00d, A.getSimilarity(i,j) * B.getSimilarity(i,j) );
+	            		C.set(i, j, new Mapping( m1.getEntity1(), m1.getEntity2(), newSim ));
+	            	}
+                }
         return C;
     }
     

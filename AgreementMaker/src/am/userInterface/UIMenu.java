@@ -386,10 +386,10 @@ public class UIMenu implements ActionListener {
 
 					// double nested loop, later I will write a better algorithm -cos
 					for( i = 0; i < firstClassSet.size(); i++ ) {
-						Mapping candidate = firstClassSet.getMapping(i);
+						Mapping candidate = firstClassSet.get(i);
 						boolean foundDuplicate = false;
 						for( j = 0; j < secondClassSet.size(); j++ ) {
-							Mapping test = secondClassSet.getMapping(j);							
+							Mapping test = secondClassSet.get(j);							
 						
 						
 							int sourceNode1 = candidate.getEntity1().getIndex();
@@ -405,15 +405,15 @@ public class UIMenu implements ActionListener {
 							}
 						}
 						
-						if( !foundDuplicate ) combinedClassSet.addMapping(candidate);
+						if( !foundDuplicate ) combinedClassSet.add(candidate);
 						
 					}
 
 					for( i = 0; i < secondClassSet.size(); i++ ) {
-						Mapping candidate = secondClassSet.getMapping(i);
+						Mapping candidate = secondClassSet.get(i);
 						boolean foundDuplicate = false;
 						for( j = 0; j < firstClassSet.size(); j++ ) {
-							Mapping test = firstClassSet.getMapping(j);							
+							Mapping test = firstClassSet.get(j);							
 						
 						
 							int sourceNode1 = candidate.getEntity1().getIndex();
@@ -429,7 +429,7 @@ public class UIMenu implements ActionListener {
 							}
 						}
 						
-						if( !foundDuplicate ) combinedClassSet.addMapping(candidate);
+						if( !foundDuplicate ) combinedClassSet.add(candidate);
 						
 					}
 					
@@ -438,10 +438,10 @@ public class UIMenu implements ActionListener {
 					
 					// double nested loop, later I will write a better algorithm -cos
 					for( i = 0; i < firstPropertiesSet.size(); i++ ) {
-						Mapping candidate = firstPropertiesSet.getMapping(i);
+						Mapping candidate = firstPropertiesSet.get(i);
 						boolean foundDuplicate = false;
 						for( j = 0; j < secondPropertiesSet.size(); j++ ) {
-							Mapping test = secondPropertiesSet.getMapping(j);							
+							Mapping test = secondPropertiesSet.get(j);							
 						
 						
 							int sourceNode1 = candidate.getEntity1().getIndex();
@@ -457,15 +457,15 @@ public class UIMenu implements ActionListener {
 							}
 						}
 						
-						if( !foundDuplicate ) combinedPropertiesSet.addMapping(candidate);
+						if( !foundDuplicate ) combinedPropertiesSet.add(candidate);
 						
 					}
 
 					for( i = 0; i < secondPropertiesSet.size(); i++ ) {
-						Mapping candidate = secondPropertiesSet.getMapping(i);
+						Mapping candidate = secondPropertiesSet.get(i);
 						boolean foundDuplicate = false;
 						for( j = 0; j < firstPropertiesSet.size(); j++ ) {
-							Mapping test = firstPropertiesSet.getMapping(j);							
+							Mapping test = firstPropertiesSet.get(j);							
 						
 						
 							int sourceNode1 = candidate.getEntity1().getIndex();
@@ -481,7 +481,7 @@ public class UIMenu implements ActionListener {
 							}
 						}
 						
-						if( !foundDuplicate ) combinedPropertiesSet.addMapping(candidate);
+						if( !foundDuplicate ) combinedPropertiesSet.add(candidate);
 						
 					}
 					

@@ -388,7 +388,7 @@ public class UFLControlGUI extends JPanel implements MatchingProgressDisplay, Ac
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						experimentSetup.csEvaluation.evaluate();
+						experimentSetup.csEvaluation.evaluate(experimentSetup.candidateSelection, experimentSetup.getReferenceAlignment());
 					}
 				});
 				

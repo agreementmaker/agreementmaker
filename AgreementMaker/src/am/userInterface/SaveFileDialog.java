@@ -437,7 +437,7 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 								throw new Exception("Matcher does not have a Classes Matrix nor a Classes Alignment Set.  Cannot do anything.");
 							
 							for( int i = 0; i < selectedMatcher.getClassAlignmentSet().size(); i++ ) {
-								am.app.mappingEngine.Mapping currentAlignment = selectedMatcher.getClassAlignmentSet().getMapping(i);
+								am.app.mappingEngine.Mapping currentAlignment = selectedMatcher.getClassAlignmentSet().get(i);
 								m.set(currentAlignment.getEntity1().getIndex(), currentAlignment.getEntity2().getIndex(), currentAlignment);
 							}
 							
@@ -459,7 +459,7 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 								throw new Exception("Matcher does not have a Properties Matrix nor a Properties Alignment Set.  Cannot do anything.");
 							
 							for( int i = 0; i < selectedMatcher.getPropertyAlignmentSet().size(); i++ ) {
-								am.app.mappingEngine.Mapping currentAlignment = selectedMatcher.getPropertyAlignmentSet().getMapping(i);
+								am.app.mappingEngine.Mapping currentAlignment = selectedMatcher.getPropertyAlignmentSet().get(i);
 								m.set(currentAlignment.getEntity1().getIndex(), currentAlignment.getEntity2().getIndex(), currentAlignment);
 							}
 							

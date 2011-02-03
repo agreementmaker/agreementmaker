@@ -20,6 +20,7 @@ public class CandidateConcept extends Node /*implements Comparable<CandidateConc
 	protected double relevance = 0.00;
 	protected boolean patternRepeats = false;
 	
+	// TODO: Get rid of this enum.  Move it to Ontology.
 	public enum ontology {
 		source,
 		target

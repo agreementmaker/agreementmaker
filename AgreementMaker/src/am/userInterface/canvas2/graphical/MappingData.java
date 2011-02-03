@@ -20,7 +20,7 @@ public class MappingData extends GraphicalData {
 	
 	public String label;
 	
-	@Deprecated public OntResource r2; // deprecated because we don't need the second resource, but we need the Alignment
+	@Deprecated public OntResource r2; // deprecated because we don't need the second resource, but we need the Mapping
 	public int ontologyID2;
 	public int matcherID;
 	public Color color = Colors.mapped;

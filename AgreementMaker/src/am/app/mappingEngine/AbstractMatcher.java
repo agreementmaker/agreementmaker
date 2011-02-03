@@ -8,6 +8,7 @@ import java.util.List;
 import am.AMException;
 import am.Utility;
 import am.app.Core;
+import am.app.mappingEngine.MatcherChangeEvent.EventType;
 import am.app.mappingEngine.oneToOneSelection.MappingMWBM;
 import am.app.mappingEngine.oneToOneSelection.MaxWeightBipartiteMatching;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
@@ -569,7 +570,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			if( this.isCancelled() ) { return null; }
 			m = it.next();
 			a = matrix.get(m.getSourceNode(), m.getTargetNode());
-			if( a != null ) aset.addMapping(a);
+			if( a != null ) aset.add(a);
 		}
 		
 		/* CODE FOR THE HUNGARIAN
@@ -613,7 +614,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			for(int e = 0;e < maxAlignments.length; e++) { 
 				toBeAdded = maxAlignments[e];
 				if(toBeAdded != null && toBeAdded.getSimilarity() >= param.threshold) {
-					aset.addMapping(toBeAdded);
+					aset.add(toBeAdded);
 				}
 			}
 		}
@@ -634,7 +635,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			for(int e = 0;e < maxAlignments.length; e++) { 
 				toBeAdded = maxAlignments[e];
 				if(toBeAdded != null && toBeAdded.getSimilarity() >= param.threshold) {
-					aset.addMapping(toBeAdded);
+					aset.add(toBeAdded);
 				}
 			}
 		}
@@ -653,7 +654,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			for(int j = 0; j<matrix.getRows();j++) {		
 				currentValue = matrix.get(j,i);
 				if(currentValue != null && currentValue.getSimilarity() >= param.threshold)
-					aset.addMapping(currentValue);
+					aset.add(currentValue);
 			}
 		}
 		return aset;
@@ -796,7 +797,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     		for(int j = 0; j < sourceConstraint; j++) {
     			toBeAdded = rowsMaxValues[i][j];
     			if(!toBeAdded.isFake()) {
-        			aset.addMapping(matrix.get(i,toBeAdded.index));
+        			aset.add(matrix.get(i,toBeAdded.index));
     			}
     		}
     	}
@@ -1399,9 +1400,24 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	public void setID(int nextMatcherID) { matcherID = nextMatcherID; }
 	public int  getID()                  { return matcherID; }
 
-	// this method removes any mappings between these two nodes
-	public void removeMapping(Node n1, Node n2, alignType type) {
-				
+	// 
+	/**
+	 * this method removes any mappings between these two nodes
+	 * 
+	 * @param source The source concept.
+	 * @param target The target concept.  Must be the same type of concept as the source. 
+	 */
+	public void removeMapping(Node source, Node target) {
+
+		if( (source.isClass() && target.isProp()) || (source.isProp() && target.isClass()) ) {
+			// cannot have mappings between non matching types of concepts
+			return;
+		}
+		
+		alignType type = alignType.aligningClasses;
+		if( source.isProp() ) type = alignType.aligningProperties;
+		
+		
 		Alignment<Mapping> workingSet = null;
 		SimilarityMatrix workingMatrix = null;
 		if( type == alignType.aligningClasses ) {
@@ -1412,16 +1428,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			workingMatrix = propertiesMatrix;
 		}
 		
-		Mapping a = workingSet.getAlignment(n1, n2);
-		if( a == null ) { a = workingSet.getAlignment(n2, n1); }
-		
-		assert (a != null);
-		
+		Mapping a = workingSet.contains(source, target);
+		if( a == null ) { return; } // this mapping does not exist.
 		
 		// delete the alignment from the matrix
 		
-		int row = n1.getIndex();
-		int col = n2.getIndex();
+		int row = source.getIndex();
+		int col = target.getIndex();
 		
 		if( row < workingMatrix.getRows() && col < workingMatrix.getColumns() ) {
 			Mapping a2 = workingMatrix.get( row, col );
@@ -1429,10 +1442,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 				// ding ding ding, we have a winner.
 				workingMatrix.set(row, col, null); // delete the alignment
 			}
-		} else {
-			// swap the row and col values
-			row = n2.getIndex();
-			col = n1.getIndex();
+		}/* else {
+			// swap the row and col values 
+			row = target.getIndex();
+			col = source.getIndex();
 			
 			if( row < workingMatrix.getRows() && col < workingMatrix.getColumns() ) {
 				Mapping a2 = workingMatrix.get(row, col);
@@ -1441,15 +1454,20 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 					workingMatrix.set(row,col, null); // delete the alignment
 				}
 			}
-		}
+		}*/
 		
 		// delete the alignment from the alignment set
 		// don't know if the order will be correct, so try both.
-		if( !workingSet.removeAlignment(n1, n2) ) {
-			if( !workingSet.removeAlignment(n2, n1) ) {
+		workingSet.remove(a);
+		/*if( !workingSet.removeAlignment(source, target) ) {
+			if( !workingSet.removeAlignment(target, source) ) {
 				// should never get here
 			}
-		}
+		}*/
+		
+		// make sure we let our listeners know that we changed the alignment set
+		Core.getInstance().fireEvent( new MatcherChangeEvent(this, 
+				EventType.MATCHER_ALIGNMENTSET_UPDATED, this.matcherID) );
 		
 	}
 

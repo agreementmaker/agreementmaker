@@ -754,7 +754,7 @@ public class Canvas extends VisualizationPanel implements MouseListener, ActionL
 		if(aset != null) {
 			Mapping a = null;
 			for(int i = 0; i < aset.size(); i++) {
-				a = aset.getMapping(i); 
+				a = aset.get(i); 
 				displayAlignment(g, matcher, a);
 			}
 		}

@@ -88,7 +88,7 @@ public class MaxWeightBipartiteMatching<E> {
 	}
 	
 	protected void initStructures(int[][] intMatrix, int intThreshold){
-		G = (Graph<E>) new GraphMWBM<Integer>();
+		G = (Graph<E>) new GraphMWBM<E>();
 		int rows = intMatrix.length;
 		int cols = 1;
 		if(rows > 0);
@@ -100,12 +100,12 @@ public class MaxWeightBipartiteMatching<E> {
 			NodeMWBM<E> targetNode;
 			int weight;
 			for(int i = 0; i < rows; i++){
-				sourceNode = G.addNode((E) new Integer(i));
+				sourceNode = G.addNode((E) new Integer(i));  // TODO: Fix this.
 				sourceNodes.add(sourceNode);
 			}
 			
 			for(int j = 0; j < cols; j++){
-				targetNode = G.addNode((E) new Integer(j));
+				targetNode = G.addNode((E) new Integer(j));  // TODO: Fix this.
 				targetNodes.add(targetNode);
 			}
 			for(int i = 0; i < rows; i++){

@@ -12,7 +12,6 @@ import javax.swing.JLabel;
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.AbstractParameters;
-import am.app.mappingEngine.StringUtil.ISub;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 
 public class ParametricStringParametersPanel extends AbstractMatcherParametersPanel implements ActionListener{

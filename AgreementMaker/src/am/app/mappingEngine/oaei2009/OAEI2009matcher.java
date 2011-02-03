@@ -1,6 +1,5 @@
 package am.app.mappingEngine.oaei2009;
 
-import java.rmi.RemoteException;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;

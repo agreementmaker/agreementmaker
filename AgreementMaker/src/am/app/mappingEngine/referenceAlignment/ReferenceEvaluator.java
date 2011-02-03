@@ -35,34 +35,34 @@ public class ReferenceEvaluator{
         int correctMappings = 0;
         // check all mappings for correctness
         for (int i = 0; i < foundMappings; i++) {
-            Mapping evaluationMapping = evaluationSet.getMapping(i);
+            Mapping evaluationMapping = evaluationSet.get(i);
             boolean evaluationMappingIsWrong = true;
             for (int j = 0; j < referenceMappings; j++) {
-                Mapping referenceMapping = referenceSet.getMapping(j);
+                Mapping referenceMapping = referenceSet.get(j);
                 if (evaluationMapping.equals(referenceMapping)) {
                     correctMappings++;
-                    correctAlignments.addMapping(evaluationMapping);
+                    correctAlignments.add(evaluationMapping);
                     evaluationMappingIsWrong = false;
                     break;
                 }
             }
             if (evaluationMappingIsWrong == true) {
-                errorAlignments.addMapping(evaluationMapping);
+                errorAlignments.add(evaluationMapping);
             }
         }
         
         for (int i = 0; i < referenceMappings; i++) {
-            Mapping referenceMapping = referenceSet.getMapping(i);
+            Mapping referenceMapping = referenceSet.get(i);
             boolean referenceMappingNotFound = true;
             for (int j = 0; j < foundMappings; j++) {
-                Mapping evaluationMapping = evaluationSet.getMapping(j);
+                Mapping evaluationMapping = evaluationSet.get(j);
                 if (referenceMapping.equals(evaluationMapping)) {
                     referenceMappingNotFound = false;
                     break;
                 }
             }
             if (referenceMappingNotFound == true) {
-                lostAlignments.addMapping(referenceMapping);
+                lostAlignments.add(referenceMapping);
             }
         }
         //System.out.println("Found: " + found + ", Exist: " + exist + ", Correct: " + correct);

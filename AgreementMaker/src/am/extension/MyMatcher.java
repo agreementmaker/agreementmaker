@@ -18,6 +18,8 @@ import am.app.ontology.Node;
 
 public class MyMatcher extends AbstractMatcher {
 
+	private static final long serialVersionUID = -2384502913762576364L;
+
 	public MyMatcher() {
 		super();
 	}

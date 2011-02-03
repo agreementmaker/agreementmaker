@@ -344,7 +344,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 			if(list.get(i).getSimilarity() < getThreshold()){
 				break;
 			}
-			result.addMapping(list.get(i));
+			result.add(list.get(i));
 		}
 		return result;
 		

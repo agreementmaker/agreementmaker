@@ -7,6 +7,8 @@ import am.app.ontology.Node;
 
 public class MyMatcher_LayerII extends AbstractMatcher {
 
+	private static final long serialVersionUID = 2524807180868225047L;
+
 	// Constructor
 	public MyMatcher_LayerII() {
 		super();

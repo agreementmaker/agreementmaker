@@ -5,25 +5,15 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
-
-import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.wcohen.ss.api.StringWrapper;
 import am.Utility;
 import am.app.Core;
 import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconSynSet;
-import am.app.lexicon.ontology.OntologyLexiconBuilder;
-import am.app.lexicon.wordnet.WordNetLexiconBuilder;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
-import org.apache.log4j.Category;
-import org.apache.log4j.Logger;
-
-import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.StringUtil.AMStringWrapper;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.ontology.Node;
@@ -40,7 +30,7 @@ public class MultiWordsMatcher extends AbstractMatcher {
 	private static final long serialVersionUID = -8492028869952801951L;
 
 	// Logger
-	private static Logger log = Logger.getLogger(MultiWordsMatcher.class);
+	//private static Logger log = Logger.getLogger(MultiWordsMatcher.class);
 	
 
 	private transient Normalizer normalizer;

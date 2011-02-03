@@ -163,18 +163,13 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 		assert (n1 != null);
 		
 		Ontology o2 = Core.getInstance().getOntologyByID( data.ontologyID2 );
-		Node n2 = null;
-		try {
-			n2 = o2.getNodefromOntResource( data.r2, mappingType );
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 		
-		assert (n2 != null );
+		Node n2 = null;
+		if( data.alignment != null ) n2 = data.alignment.getEntity2(); 
+		else return;
 		
 		// remove the mapping from the matcher.
-		matcher.removeMapping( n1, n2, mappingType);
+		matcher.removeMapping( n1, n2 );
 		
 		// ok, now that we removed the mapping from the matcher,
 		// remove the LegacyMapping from the CanvasGraph 

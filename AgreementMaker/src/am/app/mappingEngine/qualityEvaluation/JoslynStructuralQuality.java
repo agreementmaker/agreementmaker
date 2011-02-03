@@ -194,10 +194,10 @@ public class JoslynStructuralQuality {
 		
 		for(int i= 0; i < size; i++) {
 			//a1
-			Mapping first = set.getMapping(i);
+			Mapping first = set.get(i);
 			for(int j = 0; j < size; j++) {
 				//a2
-				Mapping second = set.getMapping(j);
+				Mapping second = set.get(j);
 				//a
 				int firstSource = first.getEntity1().getIndex();
 				//a'
@@ -437,10 +437,10 @@ public class JoslynStructuralQuality {
 		
 		for(int i= 0; i < size; i++) {
 			//a1
-			Mapping first = set.getMapping(i);
+			Mapping first = set.get(i);
 			for(int j = 0; j < size; j++) {
 				//a2
-				Mapping second = set.getMapping(j);
+				Mapping second = set.get(j);
 				//a
 				int firstSource = first.getEntity1().getIndex();
 				//a'

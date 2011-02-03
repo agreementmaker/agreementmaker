@@ -1,19 +1,7 @@
 package am.app.mappingEngine;
 
-
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import am.app.feedback.CandidateConcept.ontology;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 
 /**
@@ -22,235 +10,94 @@ import am.app.ontology.Node;
  *
  * @param <E>  This represents a Mapping object.
  */
-public class Alignment<E extends Mapping> implements Iterable<E>, Serializable
+public class Alignment<E extends Mapping> extends ArrayList<E>
 {
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = -8090732896473529999L;
 	
-	protected ArrayList<E> collection = null;
-
-    public Alignment()
-    {
-        collection = new ArrayList<E>();
-    }
-
-    public void addMapping(E alignment)
-    {
-        if( alignment != null ) collection.add(alignment);
-    }
-    
-    public void addAll(Alignment<E> a)
-    {
-    	if(a != null) {
-    		for(int i= 0; i<a.size();i++) {
-    			E alignment = a.getMapping(i);
-    			collection.add(alignment);
-    		}
-    	}
-        
-    }
 
     // adds all the alignments in the set a, but checking for duplicates, making sure it doesn't add duplicate alignments
-    public void addAllNoDuplicate(Alignment<E> a)
+    public void addAllNoDuplicate(Alignment<E> alignment)
     {
-    	if(a != null) {
-    		for(int i= 0; i<a.size();i++) {
-    			E alignment = a.getMapping(i);
-    			if( !contains( alignment ) ) addMapping(alignment);
-    		}
-    	}
-        
+    	if( alignment == null ) return;
+    	for( E mapping : alignment ) if( !contains(mapping) ) add(mapping);        
     }    
     
-    public E getMapping(int index)
-    {
-        if (index >= 0 && index < size()) {
-            return collection.get(index);
-        } else {
-            System.err.println("getAlignmentError: Index is out of bound.");
-            return null;
-        }
-    }
-
     public double getSimilarity(Node left, Node right)
     {
         E align = contains(left, right);
-        if (align == null) {
-            return 0;
-        } else {
-            return align.getSimilarity();
-        }
+        if (align == null) return 0.0d;
+        return align.getSimilarity();
     }
 
     public void setSimilarity(Node left, Node right, double sim)
     {
-        E align = contains(left, right);
-        if (align == null) {
-            System.err.println("setSimilarityError: Cannot find such alignment.");
-        } else {
-            align.setSimilarity(sim);
-        }
+    	E mapping = contains(left, right);
+    	if (mapping != null) mapping.setSimilarity(sim);
     }
-
-    public boolean removeAlignment(int index)
-    {
-        if (index >= 0 && index < size()) {
-            collection.remove(index);
-            return true;
-        } else {
-            System.err.println("removeAlignmentError: Index is out of bound.");
-            return false;
-        }
-    }
-
-    public boolean removeAlignment(Node left, Node right)
-    {
-        for (int i = 0, n = size(); i < n; i++) {
-            Mapping align = (Mapping) collection.get(i);
-            if (align.getEntity1().equals(left) && align.getEntity2().equals(right)) {
-                collection.remove(i);
-                return true;
-            }
-        }
-        System.err.println("removeAlignmentError: Cannot find such alignment.");
-        return false;
-    }
-    
-    public Mapping getAlignment(Node left, Node right)
-    {
-        for (int i = 0, n = size(); i < n; i++) {
-            Mapping align = (Mapping) collection.get(i);
-            if (align.getEntity1().equals(left) && align.getEntity2().equals(right)) {
-                return align;
-            }
-        }
-        System.err.println("getAlignmentError: Cannot find such alignment.");
-        return null;
-    }    
 
     public E contains(Node left, Node right)
     {
-        for (int i = 0, n = size(); i < n; i++) {
-            E align = collection.get(i);
-            if (align.getEntity1().equals(left) && align.getEntity2().equals(right)) {
-                return align;
-            }
-        }
-        return null;
+    	for( E mapping : this ) if( mapping.getEntity1().equals(left) && mapping.getEntity2().equals(right) ) return mapping;
+    	return null;
     }
     
     public E contains(Node nod, ontology o)
     {
-        for (int i = 0, n = size(); i < n; i++) {
-            E align = collection.get(i);
-            if(o == ontology.source){
-            	if(align.getEntity1().equals(nod))
-            		return align;
-            }
-            else{
-            	if(align.getEntity2().equals(nod))
-            		return align;
-            }
-        }
-        return null;
-    }
-    
-    
-    public boolean contains( E alignment ) {
-        for (int i = 0, n = size(); i < n; i++) {
-            E align = collection.get(i);
-            Node left = alignment.getEntity1();
-            Node right = alignment.getEntity2();
-            if (align.getEntity1().equals(left) && align.getEntity2().equals(right)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    public boolean contains( int row, int col ) {
-    	for( int i = 0; i < size(); i++ ) {
-    		E mapping = collection.get(i);
-    		if( mapping.getSourceKey() == row && mapping.getTargetKey() == col ) return true;
+    	for( E mapping : this ) {
+    		if(o == ontology.source && mapping.getEntity1().equals(nod) ) return mapping;
+    		if(o == ontology.target && mapping.getEntity2().equals(nod) ) return mapping;
     	}
+    	return null;
+    }
+
+    public boolean contains( int row, int col ) {
+    	for( E mapping : this ) if( mapping.getSourceKey() == row && mapping.getTargetKey() == col ) return true;
     	return false;
     }
 
-    public Alignment<E> cut(double threshold)
+    public void cut(double threshold)
     {
-        for (int i = 0; i < size(); i++) {
-            E align = collection.get(i);
-            if (align.getSimilarity() <= threshold) {
-                removeAlignment(i);
-                i--;
-            }
-        }
-        return this;
+        for (int i = size()-1; i >= 0; i--)
+        	if (get(i) == null || get(i).getSimilarity() <= threshold) remove(i);
     }
 
-    public int size()
-    {
-        return collection.size();
-    }
-
+    
     public int size(double threshold)
     {
         int count = 0;
-        for (int i = 0, n = size(); i < n; i++) {
-            E align = collection.get(i);
-            if (align.getSimilarity() > threshold) {
-                count++;
-            }
-        }
+        for( E mapping : this )	if( mapping.getSimilarity() > threshold ) count++;
         return count;
     }
 
-    public void show()
-    {
-        for (int i = 0, n = size(); i < n; i++) {
-            E align = collection.get(i);
-            System.out.println("entity1=" + align.getEntity1().toString());
-            System.out.println("entity2=" + align.getEntity2().toString());
-            System.out.println("similarity=" + align.getSimilarity());
-            System.out.println("relation=" + align.getRelation() + "\n");
-        }
-    }
-
-	
     public String getStringList() {
 		String result = "";
 		E a;
-		for(int i = 0; i < collection.size(); i++) {
-			a = collection.get(i);
+		for(int i = 0; i < size(); i++) {
+			a = get(i);
 			result += a.getString();
-			if(i == collection.size()-1)
+			if(i == size()-1)
 				result+= "\n";
 		}
 		return result;
 	}
     
-    public Iterator<E> iterator() {
-    	return collection.iterator();
-    }
-    
-    /** ****************** Serialization methods *******************/
+   
+/*    *//** ****************** Serialization methods *******************//*
 	
-	  /**
+	  *//**
 	   * readObject: gets the state of the object.
 	   * @author michele
-	   */
+	   *//*
 	  protected Alignment<Mapping> readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
 		  Alignment<Mapping> thisClass = (Alignment<Mapping>) in.readObject();
 		  in.close();
 		  return thisClass;
 	  }
 
-	   /**
+	   *//**
 	    * writeObject: saves the state of the object.
 	    * @author michele
-	    */
+	    *//*
 	  protected void writeObject(ObjectOutputStream out) throws IOException {
 		  out.writeObject(this);
 		  out.close();
@@ -273,5 +120,5 @@ public class Alignment<E extends Mapping> implements Iterable<E>, Serializable
 			}
 			
 			System.out.println(as.getStringList());
-	  }
+	  }*/
 }

@@ -10,14 +10,11 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.evaluation.clustering.Cluster;
-import am.evaluation.clustering.ClusteringMethod;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdMethod;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdParameters;
 import am.userInterface.MatchersChooser;
@@ -63,7 +60,7 @@ public class ClusteringEvaluationPanel extends JPanel implements ActionListener,
 		clmp.clusteringThreshold = 0.1;
 		clm.setParameters(clmp);
 		
-		Mapping firstMapping = reference.getClassAlignmentSet().getMapping(0);
+		Mapping firstMapping = reference.getClassAlignmentSet().get(0);
 		System.out.println("Computing the cluster of mapping: " + firstMapping);
 		for( double th = 0.0d; th < 0.5; th += 0.01 ) {
 			((LocalByThresholdParameters)(clm.getParameters())).clusteringThreshold = th;

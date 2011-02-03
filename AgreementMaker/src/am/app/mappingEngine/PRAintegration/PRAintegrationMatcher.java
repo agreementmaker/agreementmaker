@@ -75,10 +75,11 @@ public class PRAintegrationMatcher extends AbstractMatcher {
 		//make the mapping set equals to the reference matching.
 		Mapping alignment;
 		for(int i = 0; i < refAlignmentSet.size(); i++){
-			alignment = refAlignmentSet.getMapping(i);
+			alignment = refAlignmentSet.get(i);
 			mappings.add(alignment);
-			resultSet.addMapping(alignment);
-			resultMatrix.setSimilarity(alignment.getEntity1().getIndex(), alignment.getEntity2().getIndex(), alignment.getSimilarity());
+			resultSet.add(alignment);
+			resultMatrix.set( alignment.getEntity1().getIndex(), alignment.getEntity2().getIndex(), 
+					new Mapping(alignment.getEntity1(), alignment.getEntity2(), alignment.getSimilarity()));
 		}
 
 		//keep track of what is already been mapped enough times in the PRA and that can't be mapped by the matcher
@@ -88,14 +89,15 @@ public class PRAintegrationMatcher extends AbstractMatcher {
 		Node source;
 		Node target;
 		for(int i = 0; i < inputAlignmentSet.size(); i++){
-			alignment = inputAlignmentSet.getMapping(i);
+			alignment = inputAlignmentSet.get(i);
 			source = alignment.getEntity1();
 			target = alignment.getEntity2();
 			if(!refMappedNodes.isSourceMapped(source) && !refMappedNodes.isTargetMapped(target)){
 				if(!mappings.contains(alignment)){
 					mappings.add(alignment);
-					resultSet.addMapping(alignment);
-					resultMatrix.setSimilarity(alignment.getEntity1().getIndex(), alignment.getEntity2().getIndex(), alignment.getSimilarity());
+					resultSet.add(alignment);
+					resultMatrix.set( alignment.getEntity1().getIndex(), alignment.getEntity2().getIndex(), 
+							new Mapping(alignment.getEntity1(), alignment.getEntity2(), alignment.getSimilarity()));
 					refMappedNodes.addAlignment(alignment);
 				}
 			}

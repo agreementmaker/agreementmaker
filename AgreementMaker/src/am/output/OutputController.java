@@ -12,7 +12,6 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.utility.Capsule;
-import am.utility.Pair;
 /**
  * Q: What do the methods of this class do? - Cosmin. (Oct 13th, 2010)
  * A: They are responsible for saving the AlignmentSets in different formats. - Cosmin

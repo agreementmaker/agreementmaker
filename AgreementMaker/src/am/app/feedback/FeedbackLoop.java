@@ -296,7 +296,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			Alignment<Mapping> losts = rd_end.getLostAlignments();
 			System.out.println("Missing are : "+losts.size()+" or "+(rd_end.getExist() - rd_end.getCorrect()));
 			for(int i = 0; i< losts.size(); i++){
-				Mapping lost = losts.getMapping(i);
+				Mapping lost = losts.get(i);
 				boolean isProp = lost.getEntity1().isProp();
 				System.out.println("---------Lost alignment "+i+": "+lost+" isProp? "+isProp);
 				FilteredAlignmentMatrix matrix = (FilteredAlignmentMatrix)classesMatrix;
@@ -331,14 +331,14 @@ public class FeedbackLoop extends AbstractMatcher  {
 			
 			Alignment<Mapping> userSet = new Alignment<Mapping>();
 			
-			userSet.addMapping( userMapping );
+			userSet.add( userMapping );
 			
 			if(userConcept.whichType == alignType.aligningClasses ) {
 				classesMatrix.validateAlignments( userSet );
-				classesAlignmentSet.addMapping(userMapping);
+				classesAlignmentSet.add(userMapping);
 			} else {
 				propertiesMatrix.validateAlignments( userSet );
-				propertiesAlignmentSet.addMapping(userMapping);
+				propertiesAlignmentSet.add(userMapping);
 			}
 			progressDisplay.appendNewLineReportText("Running extrapolation matchers: ");
 			ExtrapolatingFS eFS = new ExtrapolatingFS();
@@ -928,7 +928,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			Mapping extrapolatedAlignment = clsIter.next();
 			if( !matrix.isCellFiltered( extrapolatedAlignment.getEntity1().getIndex(), extrapolatedAlignment.getEntity2().getIndex() ) ) {
 				// the extrapolated alignment is a new alignment
-				newAlignments.addMapping( extrapolatedAlignment );
+				newAlignments.add( extrapolatedAlignment );
 			}
 		}
 		return newAlignments;

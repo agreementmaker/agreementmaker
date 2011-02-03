@@ -207,7 +207,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
         Document doc = reader.read(file);
         Element root = doc.getRootElement();
         Element align = root.element("Alignment");
-        Iterator map = align.elementIterator("map");
+        Iterator<?> map = align.elementIterator("map");  // TODO: Fix this hack? (Iterator<?>)
         while (map.hasNext()) {
             Element e = ((Element)map.next()).element("Cell");
             if (e == null) {
@@ -262,7 +262,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	    return result;
 	}
 	
-	private String getRelationFromFileFormat(String relation) {
+	public String getRelationFromFileFormat(String relation) {
 		String result = Mapping.EQUIVALENCE;
 		String format = ((ReferenceAlignmentParameters)param).format;
 		if(format.equals(REF0)){//Right now only this format has the relation string

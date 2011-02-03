@@ -12,6 +12,8 @@ import am.app.ontology.Node;
 
 public class OldPRAMatcher extends AbstractMatcher 
 {
+	private static final long serialVersionUID = -5513566845502011858L;
+	
 	// the Alignment Matrices from the Input Matching algorithm.
 	private SimilarityMatrix inputClassesMatrix = null;
 	private SimilarityMatrix inputPropertiesMatrix = null;
@@ -270,7 +272,7 @@ public class OldPRAMatcher extends AbstractMatcher
 		ArrayList<OldTreeNode> srcRootNodes = getRootNodes(srcOldTreeNodes);
 		//System.out.println("The size of the srcRootNodes is "+srcRootNodes.size());
 		
-		ArrayList<OldTreeNode> targetRootNodes = getRootNodes(targetOldTreeNodes);
+		//ArrayList<OldTreeNode> targetRootNodes = getRootNodes(targetOldTreeNodes);
 		//System.out.println("The size of the targetRootNodes is "+targetRootNodes.size());
 		
 		//initialize class and property root nodes
@@ -468,7 +470,7 @@ public class OldPRAMatcher extends AbstractMatcher
 		matrix.set(srcNode.getNode().getIndex(), targetNode.getNode().getIndex(), alignment);
 	}
 	
-	private ArrayList<OldTreeNode> createAdjacency(OldTreeNode OldTreeNode)
+	public ArrayList<OldTreeNode> createAdjacency(OldTreeNode OldTreeNode)
 	{
 		Node aNode = null;
 		OldTreeNode childNode = null;
