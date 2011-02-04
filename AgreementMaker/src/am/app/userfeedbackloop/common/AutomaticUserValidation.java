@@ -15,11 +15,12 @@ public class AutomaticUserValidation extends UserFeedback {
 	@Override
 	public void validate(UFLExperiment experiment) {
 		
-		experiment.getReferenceAlignment();
 		candidateMapping = experiment.candidateSelection.getCandidateMapping();
 		
-		userValidation = Validation.CORRECT;
-		// TODO Auto-generated method stub
+		if( experiment.getReferenceAlignment().contains(candidateMapping))
+			userValidation = Validation.CORRECT;
+		else
+			userValidation = Validation.INCORRECT;
 		
 		done();
 	}
