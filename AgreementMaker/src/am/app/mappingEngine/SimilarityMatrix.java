@@ -6,8 +6,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
+import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
+import am.app.ontology.Ontology;
 
 /**
  * This interface represents a Similarity Matrix.
@@ -101,6 +103,57 @@ public abstract class SimilarityMatrix
 		Collections.sort(mappingArray, new MappingSimilarityComparator() );
 		return mappingArray;
 	}
+	
+	
+	public List<Mapping> getOrderedMappingsWithNull() {
+		
+		Vector<Mapping> mappingArray = new Vector<Mapping>();
+		for(int i = 0; i < getRows(); i++){
+			for(int j = 0; j < getColumns(); j++){
+				Mapping currentMapping = get(i,j);
+				if( currentMapping == null ) mappingArray.add( new Mapping(null, null, 0.0d) );
+				else {mappingArray.add(this.get(i, j)); }
+			}
+		}
+		
+		Collections.sort(mappingArray, new MappingSimilarityComparator() );
+		return mappingArray;
+	}
+	
+	
+	/**
+	 * This method returns all the mappings in the matrix.
+	 * Null entries are allocated new Mapping object with similarity = 0.0.
+	 * @return
+	 * @throws Exception 
+	 */
+	public List<Mapping> toList() throws Exception {
+		ArrayList<Mapping> list = new ArrayList<Mapping>();
+		for( int row = 0; row < getRows(); row++ ) {
+			for( int col = 0; col < getColumns(); col++ ) {
+				Mapping m = get(row, col);
+				if( m == null ) {
+					Ontology sourceOntology = Core.getInstance().getOntologyByID(sourceOntologyID);
+					Ontology targetOntology = Core.getInstance().getOntologyByID(targetOntologyID);
+					
+					if( typeOfMatrix == alignType.aligningClasses ) {
+						Node sN = sourceOntology.getClassesList().get(row);
+						Node tN = targetOntology.getClassesList().get(col);
+						list.add( new Mapping(sN, tN, 0.0d) );
+					} else if( typeOfMatrix == alignType.aligningProperties ) {
+						Node sN = sourceOntology.getPropertiesList().get(row);
+						Node tN = targetOntology.getPropertiesList().get(col);
+						list.add( new Mapping(sN, tN, 0.0d) );
+					} else {
+						throw new Exception("Similarity Matrix in invalid state.");
+					}
+				}
+				else list.add(m);
+			}
+		}
+		return list;
+	}
+	
 	
 	/* Ranking methods */
 	public abstract double getMaxValue(); // TODO: Should not be abstract.

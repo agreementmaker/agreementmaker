@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
@@ -27,7 +29,7 @@ public class PrecisionRecallPlot extends CandidateSelectionEvaluation {
 	public void evaluate(CandidateSelection cs, Alignment<Mapping> reference ) {
 		// This method is called to create the 'table' and calculate the points
 		
-		List<Mapping> rankedList = cs.getRankedMappings(alignType.aligningClasses);
+		List<Mapping> rankedList = cs.getRankedMappings();
 		
 		correct=0;
 		float precision;
@@ -58,6 +60,9 @@ public class PrecisionRecallPlot extends CandidateSelectionEvaluation {
 			return;
 		}
 		
+		NumberFormat formatter = new DecimalFormat("0.000000000");
+		NumberFormat indexformat = new DecimalFormat("0000000000");
+		
 		// do the evaluation
 		for(int i=0;i<rankedList.size();i++)
 		{
@@ -75,7 +80,11 @@ public class PrecisionRecallPlot extends CandidateSelectionEvaluation {
 			recall=(float)correct/(float)reference.size();
 			
 			//write the data to a file
-			out.println(precision+", "+recall+", "+currentMapping.toString()+", "+isCorrect);
+			out.println( indexformat.format(i)+ ", " + 
+						 formatter.format(recall) + ", " + 
+						 formatter.format(precision) + ", " + 
+						 isCorrect + ", " + formatter.format(currentMapping.getSimilarity()) + ", "
+						 + currentMapping.toString());
 		}//end for loop
 	}
 	

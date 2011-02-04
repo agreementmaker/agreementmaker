@@ -44,4 +44,6 @@ public abstract class CandidateSelection {
 		ActionEvent e = new ActionEvent(this, 0, UFLControlGUI.ActionCommands.CANDIDATE_SELECTION_DONE.name() );
 		fireEvent(e);
 	}
+
+	public abstract List<Mapping> getRankedMappings();
 }
