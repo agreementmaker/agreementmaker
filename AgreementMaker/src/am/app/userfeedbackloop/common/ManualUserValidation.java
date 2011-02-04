@@ -1,7 +1,7 @@
 package am.app.userfeedbackloop.common;
 
 import am.app.mappingEngine.Mapping;
-import am.app.userfeedbackloop.CandidateSelection;
+import am.app.userfeedbackloop.UFLExperiment;
 import am.app.userfeedbackloop.UserFeedback;
 
 public class ManualUserValidation extends UserFeedback {
@@ -19,7 +19,7 @@ public class ManualUserValidation extends UserFeedback {
 	}
 
 	@Override
-	public void validate(CandidateSelection cs) {
+	public void validate(UFLExperiment exp) {
 		// TODO Auto-generated method stub
 		
 	}

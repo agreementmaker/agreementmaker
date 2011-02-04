@@ -4,9 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
 import javax.swing.event.EventListenerList;
 
-import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.userfeedbackloop.ui.UFLControlGUI;
@@ -19,9 +19,12 @@ public abstract class CandidateSelection {
 		listeners = new EventListenerList();
 	}
 	
-	public abstract void rank( ExecutionSemantics ex );
+	public abstract void rank( UFLExperiment exp );
 	
 	public abstract List<Mapping> getRankedMappings(alignType typeOfRanking);
+	public abstract List<Mapping> getRankedMappings();
+	
+	public abstract Mapping getCandidateMapping();
 	
 	
 	public void addActionListener( ActionListener l ) {
@@ -33,11 +36,18 @@ public abstract class CandidateSelection {
 	 * @param e Represents the action that was performed.
 	 */
 	protected void fireEvent( ActionEvent e ) {
-		ActionListener[] actionListeners = listeners.getListeners(ActionListener.class);
+		final ActionEvent evt = e;
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				ActionListener[] actionListeners = listeners.getListeners(ActionListener.class);
+				
+				for( int i = actionListeners.length-1; i >= 0; i-- ) {
+					actionListeners[i].actionPerformed(evt);
+				}
+			}
+		});
 		
-		for( int i = actionListeners.length-1; i >= 0; i-- ) {
-			actionListeners[i].actionPerformed(e);
-		}
 	}
 	
 	protected void done() {
@@ -45,5 +55,4 @@ public abstract class CandidateSelection {
 		fireEvent(e);
 	}
 
-	public abstract List<Mapping> getRankedMappings();
 }

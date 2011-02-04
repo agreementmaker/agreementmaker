@@ -9,11 +9,10 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.userfeedbackloop.CandidateSelection;
 import am.app.userfeedbackloop.CandidateSelectionEvaluation;
+import am.app.userfeedbackloop.UFLExperiment;
 
 public class PrecisionRecallPlot extends CandidateSelectionEvaluation {
 
@@ -26,10 +25,11 @@ public class PrecisionRecallPlot extends CandidateSelectionEvaluation {
 	}
 
 	@Override
-	public void evaluate(CandidateSelection cs, Alignment<Mapping> reference ) {
+	public void evaluate(UFLExperiment exp ) {
 		// This method is called to create the 'table' and calculate the points
 		
-		List<Mapping> rankedList = cs.getRankedMappings();
+		List<Mapping> rankedList = exp.candidateSelection.getRankedMappings();
+		Alignment<Mapping> reference = exp.getReferenceAlignment();
 		
 		correct=0;
 		float precision;

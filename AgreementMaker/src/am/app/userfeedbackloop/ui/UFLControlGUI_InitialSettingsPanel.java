@@ -61,7 +61,7 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 		cmbMatcher.addActionListener(this);
 		
 		cmbCandidate = new JComboBox(CandidateSelectionEntries);
-		cmbCandidate.setActionCommand( UFLControlGUI.ActionCommands.INITSCREEN_btnStart.name() );
+		cmbCandidate.setActionCommand( UFLControlGUI.ActionCommands.INITSCREEN_cmbCandidate.name() );
 		cmbCandidate.addActionListener(this);
 		
 		cmbCSEvaluation = new JComboBox(CSEvaluationEntries);

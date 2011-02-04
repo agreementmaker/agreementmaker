@@ -20,7 +20,6 @@ import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.ontology.Ontology;
 import am.app.userfeedbackloop.ExecutionSemantics;
 import am.app.userfeedbackloop.UFLExperiment;
-import am.app.userfeedbackloop.ui.UFLControlGUI;
 import am.userInterface.MatchingProgressDisplay;
 
 /**

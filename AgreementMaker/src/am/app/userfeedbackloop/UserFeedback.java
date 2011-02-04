@@ -3,20 +3,22 @@ package am.app.userfeedbackloop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.SwingUtilities;
 import javax.swing.event.EventListenerList;
 
 import am.app.mappingEngine.Mapping;
+import am.app.userfeedbackloop.ui.UFLControlGUI;
 
 public abstract class UserFeedback {
 
-EventListenerList listeners;  // list of listeners for this class
+	private EventListenerList listeners;  // list of listeners for this class
 	
 	public UserFeedback() {
 		listeners = new EventListenerList();
 	}
 	public enum Validation { CORRECT, INCORRECT, END_EXPERIMENT; }
 
-	public abstract void validate( CandidateSelection cs );
+	public abstract void validate( UFLExperiment experiment );
 	public abstract Validation getUserFeedback();
 	public abstract Mapping getCandidateMapping();
 	
@@ -28,11 +30,22 @@ EventListenerList listeners;  // list of listeners for this class
 	 * @param e Represents the action that was performed.
 	 */
 	protected void fireEvent( ActionEvent e ) {
-		ActionListener[] actionListeners = listeners.getListeners(ActionListener.class);
+		final ActionEvent evt = e;
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				ActionListener[] actionListeners = listeners.getListeners(ActionListener.class);
+				
+				for( int i = actionListeners.length-1; i >= 0; i-- ) {
+					actionListeners[i].actionPerformed(evt);
+				}
+			}
+		});
 		
-		for( int i = actionListeners.length-1; i >= 0; i-- ) {
-			actionListeners[i].actionPerformed(e);
-		}
 	}
 	
+	protected void done() {
+		ActionEvent e = new ActionEvent(this, 0, UFLControlGUI.ActionCommands.USER_FEEDBACK_DONE.name() );
+		fireEvent(e);
+	}
 }

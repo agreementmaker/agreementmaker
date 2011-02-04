@@ -1,17 +1,16 @@
 package am.app.userfeedbackloop.disagreementclustering;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.userfeedbackloop.CandidateSelection;
-import am.app.userfeedbackloop.ExecutionSemantics;
+import am.app.userfeedbackloop.UFLExperiment;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;
@@ -30,6 +29,12 @@ public class DisagreementRanking extends CandidateSelection {
 
 		return null;
 	}
+	
+	@Override
+	public Mapping getCandidateMapping() {
+		// TODO: Fix this to not return mappings that have been validated already.
+		return allRanked.get(0);
+	}
 
 	@Override
 	public List<Mapping> getRankedMappings() {
@@ -37,10 +42,10 @@ public class DisagreementRanking extends CandidateSelection {
 	}
 	
 	@Override
-	public void rank(ExecutionSemantics ex) {
+	public void rank(UFLExperiment ex) {
 
 		// get the matchers from the execution semantics
-		List<AbstractMatcher> matchers = ex.getComponentMatchers();
+		List<AbstractMatcher> matchers = ex.initialMatcher.getComponentMatchers();
 		
 		// setup the variance disagreement calculation
 		VarianceDisagreementParameters disagreementParams = new VarianceDisagreementParameters();
