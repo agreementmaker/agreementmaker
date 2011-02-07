@@ -9,6 +9,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 
+import com.panayotis.gnuplot.JavaPlot;
+
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.userfeedbackloop.CandidateSelectionEvaluation;
@@ -18,7 +20,8 @@ public class PrecisionRecallPlot extends CandidateSelectionEvaluation {
 
 	private int correct;// number of correct mappings found
 	//private int found;//number of mappings in rankedList  TODO: is this needed???
-	String filename = "/home/cosmin/evaluation.data";//name of the file to output the data
+	//String filename = "/home/cosmin/evaluation.data";//name of the file to output the data
+	String filename;
 	
 	public PrecisionRecallPlot() {
 		super();
@@ -88,4 +91,8 @@ public class PrecisionRecallPlot extends CandidateSelectionEvaluation {
 		}//end for loop
 	}
 	
+	private void showPlot() {
+		JavaPlot plot = new JavaPlot();
+		
+	}
 }

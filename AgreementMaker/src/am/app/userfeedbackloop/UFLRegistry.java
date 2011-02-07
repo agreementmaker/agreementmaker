@@ -51,6 +51,7 @@ public class UFLRegistry {
 	}
 	
 	public enum UserValidationRegistry {
+		AutomaticReference ( am.app.userfeedbackloop.common.AutomaticUserValidation.class ),
 		Manual ( am.app.userfeedbackloop.common.ManualUserValidation.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */

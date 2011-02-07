@@ -8,6 +8,8 @@ public class ClusterBoostPropagation extends FeedbackPropagation {
 	@Override
 	public void propagate( UFLExperiment re ) {
 		// TODO Auto-generated method stub	
+		
+		done();
 	}
 
 	
