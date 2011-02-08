@@ -30,7 +30,6 @@ import java.net.BindException;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.util.concurrent.Executor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,9 +48,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.text.Document;
 import javax.xml.ws.Endpoint;
-
-import com.sun.xml.internal.ws.server.ServerRtException;
-import com.sun.xml.internal.ws.transport.http.server.EndpointImpl;
 
 import am.Utility;
 import am.app.Core;
@@ -128,8 +124,8 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 		
 		
 		
-		String[] thresholds = Utility.getPercentStringList();
-		String[] numRelations = Utility.getNumRelList();
+		//String[] thresholds = Utility.getPercentStringList();
+		//String[] numRelations = Utility.getNumRelList();
 		
 		/*JLabel lblThreshold = new JLabel("Threshold:");
 		cmbThreshold = new JComboBox(thresholds);
@@ -368,7 +364,7 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 				String endpointDescription = "http://" + txtHost.getText().trim() + ":" + txtPort.getText().trim() + "/" + txtEndpoint.getText().trim();
 				try {
 					endpoint.publish(endpointDescription);
-				} catch ( ServerRtException e ) {
+				} catch ( Exception e ) {
 					
 					if( e.getCause() instanceof BindException ) {
 						// bind exception.
@@ -383,12 +379,7 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 						
 					} else if ( e.getCause() instanceof URISyntaxException ) {
 						Utility.displayErrorPane(e.getMessage() + "\nYour endpoint name contains invalid characters.", "Cannot Publish Endpoint");
-						if( endpoint instanceof EndpointImpl ) {
-							EndpointImpl eimpl = (EndpointImpl) endpoint;
-							eimpl.stop();
-						}
-						Executor exec = endpoint.getExecutor();
-						exec.getClass();
+						endpoint.stop();
 					}else {
 						Utility.displayErrorPane(e.getMessage(), "Cannot Publish Endpoint");
 					}
