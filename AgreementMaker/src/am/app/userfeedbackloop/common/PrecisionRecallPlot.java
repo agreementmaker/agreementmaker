@@ -89,6 +89,8 @@ public class PrecisionRecallPlot extends CandidateSelectionEvaluation {
 						 isCorrect + ", " + formatter.format(currentMapping.getSimilarity()) + ", "
 						 + currentMapping.toString());
 		}//end for loop
+		
+		done();
 	}
 	
 	private void showPlot() {

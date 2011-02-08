@@ -6,6 +6,8 @@ import java.awt.event.ActionListener;
 import javax.swing.SwingUtilities;
 import javax.swing.event.EventListenerList;
 
+import am.app.userfeedbackloop.ui.UFLControlGUI;
+
 /**
  * This class is meant to be extended by an implementation of an
  * evaluation method for the candidate selection.
@@ -45,4 +47,8 @@ public abstract class CandidateSelectionEvaluation {
 		
 	}
 	
+	protected void done() {
+		ActionEvent e = new ActionEvent(this, 0, UFLControlGUI.ActionCommands.CS_EVALUATION_DONE.name() );
+		fireEvent(e);
+	}
 }

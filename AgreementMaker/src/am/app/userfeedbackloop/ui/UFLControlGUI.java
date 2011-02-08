@@ -108,12 +108,14 @@ public class UFLControlGUI extends JPanel implements ActionListener {
 				experimentSetup.initialMatcher.addActionListener(this);
 
 				// separate thread for large work
-				SwingUtilities.invokeLater(new Runnable() {
+				Thread initialMatchersThread = new Thread() {
 					@Override
 					public void run() {
 						experimentSetup.initialMatcher.run(experimentSetup);	
 					}
-				});
+				};
+				
+				initialMatchersThread.start();
 				
 				return;
 			}
@@ -135,12 +137,14 @@ public class UFLControlGUI extends JPanel implements ActionListener {
 				experimentSetup.candidateSelection.addActionListener(this);
 				
 				// heavy work in separate thread
-				SwingUtilities.invokeLater(new Runnable() {
+				Thread candidateSelection = new Thread() {
 					@Override
 					public void run() {
 						experimentSetup.candidateSelection.rank(experimentSetup);	
 					}
-				});
+				};
+				
+				candidateSelection.start();
 				
 				return;
 			}
@@ -155,12 +159,14 @@ public class UFLControlGUI extends JPanel implements ActionListener {
 				experimentSetup.csEvaluation.addActionListener(this);
 				
 				// separate thread
-				SwingUtilities.invokeLater(new Runnable() {
+				Thread csEvaluationThread = new Thread() {
 					@Override
 					public void run() {
 						experimentSetup.csEvaluation.evaluate(experimentSetup);
 					}
-				});
+				};
+				
+				csEvaluationThread.start();
 				
 				return;
 			}
@@ -175,12 +181,14 @@ public class UFLControlGUI extends JPanel implements ActionListener {
 				experimentSetup.userFeedback.addActionListener(this);
 				
 				// separate thread
-				SwingUtilities.invokeLater(new Runnable() {
+				Thread userFeedbackThread = new Thread() {
 					@Override
 					public void run() {
 						experimentSetup.userFeedback.validate(experimentSetup);
 					}
-				});
+				};
+				
+				userFeedbackThread.start();
 				
 				return;
 			}
@@ -195,13 +203,14 @@ public class UFLControlGUI extends JPanel implements ActionListener {
 				experimentSetup.feedbackPropagation.addActionListener(this);
 				
 				// separate thread
-				SwingUtilities.invokeLater(new Runnable() {
+				Thread fbThread = new Thread() {
 					@Override
 					public void run() {
 						experimentSetup.feedbackPropagation.propagate(experimentSetup);
 					}
-				});
+				};
 				
+				fbThread.start();
 				return;
 			}
 			
@@ -215,13 +224,14 @@ public class UFLControlGUI extends JPanel implements ActionListener {
 				experimentSetup.propagationEvaluation.addActionListener(this);
 				
 				// separate thread
-				SwingUtilities.invokeLater(new Runnable() {
+				Thread propEvalThread = new Thread() {
 					@Override
 					public void run() {
 						experimentSetup.propagationEvaluation.evaluate(experimentSetup);
 					}
-				});
+				};
 				
+				propEvalThread.start();
 				return;
 			}
 			

@@ -15,4 +15,5 @@ public abstract class ClusteringParameters {
 	
 	public void addMatcher(AbstractMatcher abstractMatcher) { matchersToConsider.add(abstractMatcher); }
 	public List<AbstractMatcher> getMatchers() { return matchersToConsider; }
+	public void setMatchers( List<AbstractMatcher> m ) { matchersToConsider = m; }
 }
