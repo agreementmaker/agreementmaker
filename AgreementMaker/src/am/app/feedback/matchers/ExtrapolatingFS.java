@@ -12,7 +12,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
 import am.app.ontology.Node;
-import am.userInterface.vertex.Vertex;
+import am.userInterface.sidebar.vertex.Vertex;
 
 public class ExtrapolatingFS extends AbstractMatcher {
 	

@@ -11,7 +11,7 @@ import am.app.mappingEngine.Alignment;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.TreeToDagConverter;
-import am.userInterface.vertex.Vertex;
+import am.userInterface.sidebar.vertex.Vertex;
 
 
 

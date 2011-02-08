@@ -193,12 +193,12 @@ public class AlignmentOutput
     {
     	//Below two if statement is only for OAEI 09 test case 303 
     	//where uri is not mentioned in the ontology by xlmns=base:
-    	if(uri1.equals("")){
+    	if(uri1 == null || uri1.equals("")){
     		Resource r = alignmentSet.get(0).getEntity1().getResource();
     		uri1 = r.getURI();
     		uri1 = uri1.substring(0, uri1.indexOf("#")+1);
     	}
-    	if(uri2.equals("")){
+    	if(uri2 == null || uri2.equals("")){
     		Resource r = alignmentSet.get(0).getEntity2().getResource();
     		uri2 = r.getURI();
     		uri2 = uri2.substring(0, uri2.indexOf("#")+1);

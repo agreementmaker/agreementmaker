@@ -6,7 +6,7 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
-import am.userInterface.vertex.Vertex;
+import am.userInterface.sidebar.vertex.Vertex;
 
 public class OldDescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 

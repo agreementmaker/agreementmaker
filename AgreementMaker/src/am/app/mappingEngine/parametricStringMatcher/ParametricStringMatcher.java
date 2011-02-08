@@ -89,6 +89,10 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		ParametricStringParameters parameters  = (ParametricStringParameters)param;
 		double sim = 0.0d; // this must be set
 		
+		//used for provenanceString 
+		String TS=null;//targetSynonym
+		String SS=null;//sourceSynonym
+		
 		if( parameters.useLexicons ) { // lexicon code
 		
 /*			double weightOntSyn = parameters.lexOntSynonymWeight;
@@ -129,7 +133,11 @@ public class ParametricStringMatcher extends AbstractMatcher {
 				for( String sourceSynonym : sourceSynonymList ) {
 					for( String targetSynonym : targetSynonymList ) {
 						double currentSynonymPairSimilarity = performStringSimilarity(sourceSynonym, targetSynonym);
-						if( currentSynonymPairSimilarity > maxSimilarity ) maxSimilarity = currentSynonymPairSimilarity;
+						if( currentSynonymPairSimilarity > maxSimilarity ){ 
+							maxSimilarity = currentSynonymPairSimilarity;
+							TS=targetSynonym;//get the target synonym for use with the provenanceString, if its being used
+							SS=sourceSynonym;//get the source synonym for use with the provenanceString, if its being used
+						}
 					}
 				}
 				
@@ -288,7 +296,33 @@ public class ParametricStringMatcher extends AbstractMatcher {
 				
 		}
 
-		if( sim > 0.0d ) return new Mapping(source, target, sim);
+		if( sim > 0.0d ){
+			String provenanceString=null;
+			if(param.storeProvenance){
+				provenanceString= "sim(\"" 
+				+ source.getLabel() + "\", \""
+				+ target.getLabel()
+				+ "\") = "+sim+", ";
+				//statments to check if lexicon was used
+				if(parameters.useLexicons)
+				{
+					provenanceString+="using lexicons ";
+					//setup the provenance string if no weights are used
+					if(parameters.useBestLexSimilarity )
+						provenanceString+="without weights ";
+					provenanceString+="with source synonym: "+SS+" and target synonym: "+TS;	
+				}
+				else
+				{
+					//list all the weights
+				}
+			}
+			
+			Mapping pmapping=new Mapping(source, target, sim);
+			if( param.storeProvenance ) pmapping.setProvenance(provenanceString);
+			return pmapping;
+			}
+		
 		return null; // no similarity was found
 	}
 	

@@ -7,7 +7,7 @@ import am.Utility;
 import am.app.Core;
 import am.app.ontology.Ontology;
 import am.userInterface.OntologyLoadingProgressDialog;
-import am.userInterface.vertex.Vertex;
+import am.userInterface.sidebar.vertex.Vertex;
 
 public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 

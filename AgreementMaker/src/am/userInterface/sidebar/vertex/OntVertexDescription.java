@@ -1,4 +1,4 @@
-package am.userInterface.vertex;
+package am.userInterface.sidebar.vertex;
 
 //import edu.stanford.smi.protegex.ont.ProtegeOWL;
 //import edu.stanford.smi.protegex.ont.*;

@@ -1,4 +1,4 @@
-package am.userInterface.vertex;
+package am.userInterface.sidebar.vertex;
 
 import am.app.mappingEngine.Mapping;
 

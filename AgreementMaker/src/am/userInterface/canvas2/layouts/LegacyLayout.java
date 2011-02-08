@@ -68,7 +68,7 @@ import am.userInterface.canvas2.utility.Canvas2Vertex;
 import am.userInterface.canvas2.utility.CanvasGraph;
 import am.userInterface.canvas2.utility.GraphLocator;
 import am.userInterface.canvas2.utility.GraphLocator.GraphType;
-import am.userInterface.vertex.VertexDescriptionPane;
+import am.userInterface.sidebar.vertex.VertexDescriptionPane;
 import am.utility.DirectedGraphEdge;
 import am.utility.Pair;
 

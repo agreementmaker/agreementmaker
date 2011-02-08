@@ -27,7 +27,7 @@ import com.hp.hpl.jena.vocabulary.OWL;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
-import am.userInterface.vertex.Vertex;
+import am.userInterface.sidebar.vertex.Vertex;
 
 /**
  * XmlTreeBuilder Class - 

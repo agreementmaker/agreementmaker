@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import am.userInterface.vertex.Vertex;
+import am.userInterface.sidebar.vertex.Vertex;
 
 /** this is used to create a fake DAG given the root of tree of vertex with duplicates and so on
  *  so you will have to do new TreeToDagConverter(Vertex root) 

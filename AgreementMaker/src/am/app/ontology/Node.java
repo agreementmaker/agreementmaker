@@ -15,7 +15,7 @@ import java.util.Iterator;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.userInterface.ontology.OntologyConceptGraphics;
-import am.userInterface.vertex.Vertex;
+import am.userInterface.sidebar.vertex.Vertex;
 
 import com.hp.hpl.jena.ontology.AnnotationProperty;
 import com.hp.hpl.jena.ontology.DatatypeProperty;

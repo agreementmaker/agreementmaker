@@ -29,9 +29,9 @@ import am.app.mappingEngine.Alignment;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.TreeBuilder;
-import am.userInterface.vertex.Vertex;
-import am.userInterface.vertex.VertexDescriptionPane;
-import am.userInterface.vertex.VertexLine;
+import am.userInterface.sidebar.vertex.Vertex;
+import am.userInterface.sidebar.vertex.VertexDescriptionPane;
+import am.userInterface.sidebar.vertex.VertexLine;
 
 /**
  * Canvas class is responsible for all the contents inside the canvas such as

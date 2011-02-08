@@ -11,7 +11,7 @@ import com.hp.hpl.jena.ontology.OntResource;
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.qualityEvaluation.JoslynStructuralQuality;
-import am.userInterface.vertex.Vertex;
+import am.userInterface.sidebar.vertex.Vertex;
 
 /**
  * This class contains all information about one of the two ontologies to be compared

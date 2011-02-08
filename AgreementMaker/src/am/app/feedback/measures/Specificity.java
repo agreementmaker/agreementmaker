@@ -6,7 +6,7 @@ import am.app.Core;
 import am.app.feedback.CandidateConcept;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Ontology;
-import am.userInterface.vertex.Vertex;
+import am.userInterface.sidebar.vertex.Vertex;
 
 public class Specificity extends RelevanceMeasure {
 

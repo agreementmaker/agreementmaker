@@ -27,7 +27,7 @@ import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.TreeBuilder;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.classic.AgreementMakerClassic;
-import am.userInterface.vertex.VertexDescriptionPane;
+import am.userInterface.sidebar.vertex.VertexDescriptionPane;
 import am.visualization.MatcherAnalyticsPanel;
 
 

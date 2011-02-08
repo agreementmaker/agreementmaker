@@ -17,7 +17,7 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.StringUtil.AMStringWrapper;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.ontology.Node;
-import am.userInterface.vertex.Vertex;
+import am.userInterface.sidebar.vertex.Vertex;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.*; //all sim metrics are in here
 import simpack.measure.weightingscheme.StringTFIDF;

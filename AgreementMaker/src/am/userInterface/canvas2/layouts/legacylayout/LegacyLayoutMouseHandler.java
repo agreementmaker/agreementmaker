@@ -37,7 +37,7 @@ import am.userInterface.canvas2.popupmenus.CreateMappingMenu;
 import am.userInterface.canvas2.popupmenus.DeleteMappingMenu;
 import am.userInterface.canvas2.utility.Canvas2Edge;
 import am.userInterface.canvas2.utility.Canvas2Vertex;
-import am.userInterface.vertex.VertexDescriptionPane;
+import am.userInterface.sidebar.vertex.VertexDescriptionPane;
 import am.utility.DirectedGraphEdge;
 
 import com.hp.hpl.jena.ontology.AnnotationProperty;
