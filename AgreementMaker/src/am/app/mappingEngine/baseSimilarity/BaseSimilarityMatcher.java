@@ -78,6 +78,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		addFeature(MatcherFeature.ONTOLOGY_PROFILING);
 		addFeature(MatcherFeature.ONTOLOGY_PROFILING_CLASS_ANNOTATION_FIELDS);
 		addFeature(MatcherFeature.ONTOLOGY_PROFILING_PROPERTY_ANNOTATION_FIELDS);
+		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 	}
 	
 	

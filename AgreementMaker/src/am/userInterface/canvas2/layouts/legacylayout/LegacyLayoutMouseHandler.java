@@ -26,17 +26,21 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.GraphicalData;
+import am.userInterface.canvas2.graphical.MappingData;
 import am.userInterface.canvas2.layouts.LegacyLayout;
+import am.userInterface.canvas2.nodes.LegacyMapping;
 import am.userInterface.canvas2.nodes.LegacyNode;
 import am.userInterface.canvas2.popupmenus.CreateMappingMenu;
 import am.userInterface.canvas2.popupmenus.DeleteMappingMenu;
 import am.userInterface.canvas2.utility.Canvas2Edge;
 import am.userInterface.canvas2.utility.Canvas2Vertex;
+import am.userInterface.sidebar.provenance.ProvenanceSidebar;
 import am.userInterface.sidebar.vertex.VertexDescriptionPane;
 import am.utility.DirectedGraphEdge;
 
@@ -166,7 +170,6 @@ public class LegacyLayoutMouseHandler {
 				}
 
 			} else if( e.getClickCount() == 1 ) {  // single click with left mouse button
-
 				if( layout.isSingleMappingView() == true ) {
 					// if we don't click on anything, cancel the single mapping view
 					// restore the previous visibility of the nodes and edges
@@ -249,6 +252,23 @@ public class LegacyLayoutMouseHandler {
 							hoveringOver.draw(g);
 						}
 
+						//insert the propegation data if it exits
+						if(Core.getUI().getUISplitPane().getRightComponent() instanceof ProvenanceSidebar){
+							if(selectedNodes.size()>0)
+							{
+								LegacyNode selected=selectedNodes.get(0);
+								ArrayList<LegacyMapping> mappingList=selected.getMappings();
+								String provenance="";
+								for (LegacyMapping l : mappingList ){
+									MappingData md=(MappingData)l.getObject();
+									provenance+=md.alignment.getProvenance();
+									provenance+="\n";
+								}
+								ProvenanceSidebar psb=(ProvenanceSidebar) Core.getUI().getUISplitPane().getRightComponent();
+								psb.setProvenance(provenance);
+							}
+						}
+						
 						// Populate the annotation box.
 						if( hoveringOver.getGraphicalData().r != null ) {
 
@@ -256,6 +276,7 @@ public class LegacyLayoutMouseHandler {
 								// we clicked on a class
 								OntClass currentClass = (OntClass) hoveringOver.getGraphicalData().r.as(OntClass.class);
 								StmtIterator i = currentClass.listProperties();
+								
 								String annotationProperties = new String();
 								while( i.hasNext() ) {
 									Statement s = (Statement) i.next();
@@ -301,60 +322,63 @@ public class LegacyLayoutMouseHandler {
 								
 								
 								
-								
-								// update the text box.
-								VertexDescriptionPane vdp = (VertexDescriptionPane) Core.getUI().getUISplitPane().getRightComponent();
-								if( hoveringOver.getGraphicalData().ontologyID == layout.getLeftOntologyID() ) {
-									vdp.setSourceAnnotations(annotationProperties);
-								} else {
-									vdp.setTargetAnnotations(annotationProperties);
-								}
-								
-								
-								
-								// populate the individuals list
-								String individuals = new String();
-								ExtendedIterator<?> indiIter = currentClass.listInstances(true);
-								int indicount = 1;
-								while( indiIter.hasNext() ) {
-									Individual indi = (Individual) indiIter.next();
-									if( indi.isAnon() ) {
-										individuals += indicount + ". Anonymous Individual (" + indi.getId() + ")\n";
-										indicount++;
+								if(Core.getUI().getUISplitPane().getRightComponent() instanceof VertexDescriptionPane){
+									// update the text box.
+									VertexDescriptionPane vdp = (VertexDescriptionPane) Core.getUI().getUISplitPane().getRightComponent();
+									if( hoveringOver.getGraphicalData().ontologyID == layout.getLeftOntologyID() ) {
+										vdp.setSourceAnnotations(annotationProperties);
 									} else {
-										individuals += indicount + ". " + indi.getLocalName() + "\n";
-										indicount++;
+										vdp.setTargetAnnotations(annotationProperties);
 									}
-								}
-								
-								// try to deal with improperly declared individuals.
-								if( individuals.equals("") ) {
-									OntModel mod = (OntModel) currentClass.getModel();
 								
 								
-									List<Statement> ls = mod.listStatements(null , mod.getProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), mod.getResource(currentClass.getLocalName())).toList();
-									
-									Iterator<Statement> lsiter = ls.iterator();
-									int k = 1;
-									while( lsiter.hasNext() ) {
-										Statement s = lsiter.next();
-										OntResource indi = s.getSubject().as(OntResource.class);
+								
+								
+									// populate the individuals list
+									String individuals = new String();
+									ExtendedIterator<?> indiIter = currentClass.listInstances(true);
+									int indicount = 1;
+									while( indiIter.hasNext() ) {
+										Individual indi = (Individual) indiIter.next();
 										if( indi.isAnon() ) {
-											individuals += k + ". Anonymous Individual (" + indi.getId() + ")\n";
-											k++;
+											individuals += indicount + ". Anonymous Individual (" + indi.getId() + ")\n";
+											indicount++;
 										} else {
-											individuals += k + ". " + indi.getLocalName() + "\n";
-											k++;
+											individuals += indicount + ". " + indi.getLocalName() + "\n";
+											indicount++;
 										}
-										
 									}
-								}
+									
+									// try to deal with improperly declared individuals.
+									if( individuals.equals("") ) {
+										OntModel mod = (OntModel) currentClass.getModel();
+									
+									
+										List<Statement> ls = mod.listStatements(null , mod.getProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), mod.getResource(currentClass.getLocalName())).toList();
+										
+										Iterator<Statement> lsiter = ls.iterator();
+										int k = 1;
+										while( lsiter.hasNext() ) {
+											Statement s = lsiter.next();
+											OntResource indi = s.getSubject().as(OntResource.class);
+											if( indi.isAnon() ) {
+												individuals += k + ". Anonymous Individual (" + indi.getId() + ")\n";
+												k++;
+											} else {
+												individuals += k + ". " + indi.getLocalName() + "\n";
+												k++;
+											}
+											
+										}
+									}
 								
 								
-								if( hoveringOver.getGraphicalData().ontologyID == layout.getLeftOntologyID() ) {
-									vdp.setSourceIndividuals(individuals);
-								} else {
-									vdp.setTargetIndividuals(individuals);
+								
+									if( hoveringOver.getGraphicalData().ontologyID == layout.getLeftOntologyID() ) {
+										vdp.setSourceIndividuals(individuals);
+									} else {
+										vdp.setTargetIndividuals(individuals);
+									}
 								}
 								
 							} else if( hoveringOver.getGraphicalData().r.canAs( OntProperty.class)) {
@@ -427,12 +451,13 @@ public class LegacyLayoutMouseHandler {
 									annotationProperties += "Property Range: " + rangeString;
 								}
 								
-								
-								VertexDescriptionPane vdp = (VertexDescriptionPane) Core.getUI().getUISplitPane().getRightComponent();
-								if( hoveringOver.getGraphicalData().ontologyID == layout.getLeftOntologyID() ) {
-									vdp.setSourceAnnotations(annotationProperties);
-								} else {
-									vdp.setTargetAnnotations(annotationProperties);
+								if(Core.getUI().getUISplitPane().getRightComponent() instanceof VertexDescriptionPane){
+									VertexDescriptionPane vdp = (VertexDescriptionPane) Core.getUI().getUISplitPane().getRightComponent();
+									if( hoveringOver.getGraphicalData().ontologyID == layout.getLeftOntologyID() ) {
+										vdp.setSourceAnnotations(annotationProperties);
+									} else {
+										vdp.setTargetAnnotations(annotationProperties);
+									}
 								}
 							}
 						}  // end of populate the annotation box.

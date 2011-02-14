@@ -11,8 +11,10 @@ import am.app.lexicon.LexiconSynSet;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.StringUtil.ISub;
 import am.app.mappingEngine.StringUtil.Normalizer;
+import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.ontology.Node;
 
@@ -38,6 +40,9 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	protected void initializeVariables() {
 		super.initializeVariables();
 		needsParam = true;
+		
+		//features
+		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 	}
 	
 	public String getDescriptionString() {
@@ -300,22 +305,90 @@ public class ParametricStringMatcher extends AbstractMatcher {
 			String provenanceString=null;
 			if(param.storeProvenance){
 				provenanceString= "sim(\"" 
-				+ source.getLabel() + "\", \""
-				+ target.getLabel()
+				+ source.getLocalName() + "\", \""
+				+ target.getLocalName()
+				
 				+ "\") = "+sim+", ";
+				provenanceString+="similarity metric used: "+parameters.measure;
 				//statments to check if lexicon was used
 				if(parameters.useLexicons)
 				{
 					provenanceString+="using lexicons ";
 					//setup the provenance string if no weights are used
 					if(parameters.useBestLexSimilarity )
-						provenanceString+="without weights ";
-					provenanceString+="with source synonym: "+SS+" and target synonym: "+TS;	
+						provenanceString+="with best similarity ";
+					else
+						provenanceString+="with ontology synonym weight: "+parameters.lexOntSynonymWeight+" and wordnet synonym weight: "
+										  +parameters.lexWNSynonymWeight;
+					provenanceString+="with source synonym: "+SS+" and target synonym: "+TS;
 				}
-				else
+				else //list all the weights
+					provenanceString+="label weight: "+parameters.labelWeight+" local-name weight:"+parameters.localWeight+
+									  " comment weight: "+parameters.commentWeight+" seeAlso weight: "+parameters.seeAlsoWeight+" isDefinedBy weight: " +
+									  parameters.isDefinedByWeight;
+				//time for the other parameters to be listed
+				provenanceString+=" ";//do not consider empty concept strings..??what param is that
+				
+				
+				boolean first=true;
+				//NormalizerParameter params = (NormalizerParameter)param;
+				NormalizerParameter params=(( ParametricStringParameters)param).normParameter;
+				if(params.normalizeBlank)
 				{
-					//list all the weights
+					if(first)
+					{
+						first=false;
+						provenanceString+="with preprocessing:";
+					}
+					provenanceString+="blank normalization";
 				}
+				if(params.normalizePunctuation)
+				{
+					if(first)
+					{
+						first=false;
+						provenanceString+="with preprocessing:";
+					}
+					provenanceString+="punctuation normalization";
+				}
+				if(params.normalizeDiacritics)
+				{
+					if(first)
+					{
+						first=false;
+						provenanceString+="with preprocessing:";
+					}
+					provenanceString+="diacritics normalization";
+				}
+				if(params.normalizeDigit)
+				{
+					if(first)
+					{
+						first=false;
+						provenanceString+="with preprocessing:";
+					}
+					provenanceString+="digit suppression";
+				}
+				if(params.removeStopWords)
+				{
+					if(first)
+					{
+						first=false;
+						provenanceString+="with preprocessing:";
+					}
+					provenanceString+="stop word removal";
+				}
+				if(params.stem)
+				{
+					if(first)
+					{
+						first=false;
+						provenanceString+="with preprocessing:";
+					}
+					provenanceString+="stemming";
+				}
+				if(first)	
+					provenanceString+="without preprocessing";
 			}
 			
 			Mapping pmapping=new Mapping(source, target, sim);

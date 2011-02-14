@@ -29,8 +29,8 @@ import am.Utility;
 import am.app.Core;
 import am.app.lexicon.Lexicon;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
@@ -45,6 +45,8 @@ import am.tools.seals.SealsPanel;
 import am.userInterface.VisualizationChangeEvent.VisualizationEventType;
 import am.userInterface.find.FindDialog;
 import am.userInterface.find.FindInterface;
+import am.userInterface.sidebar.provenance.ProvenanceMenuItem;
+import am.userInterface.sidebar.provenance.ProvenanceSidebar;
 import am.userInterface.sidebar.vertex.VertexDescriptionPane;
 import am.userInterface.table.MatchersTablePanel;
 import am.visualization.MatcherAnalyticsPanel;
@@ -68,6 +70,7 @@ public class UIMenu implements ActionListener {
 	
 	// View menu.
 	private JMenuItem colorsItem, itemViewsCanvas;
+	private ProvenanceMenuItem provenanceItem;
 	private JCheckBoxMenuItem 	smoMenuItem,  
 								showLabelItem, 
 								showLocalNameItem, 
@@ -170,6 +173,22 @@ public class UIMenu implements ActionListener {
 				}
 			}else if (obj == colorsItem){
 				new Legend();	
+			}else if(obj == provenanceItem){//TODO: when all he matchers are gone need to switch back to the other pane
+				JSplitPane uiPane=Core.getUI().getUISplitPane();
+				if(uiPane.getRightComponent() instanceof ProvenanceSidebar)
+				{
+					ProvenanceSidebar p=(ProvenanceSidebar)uiPane.getRightComponent();
+					uiPane.setRightComponent(p.getOldComponent());
+					provenanceItem.setText("Show Provenance");
+					//provenanceItem.set
+				}
+				else{
+					ProvenanceSidebar p= new ProvenanceSidebar();
+					
+					p.setOldComponent(Core.getUI().getUISplitPane().getRightComponent());
+					Core.getUI().getUISplitPane().setRightComponent(p);
+					provenanceItem.setText("Hide Provenance");
+				}
 			}else if (obj == howToUse){
 				Utility.displayTextAreaPane(Help.getHelpMenuString(), "Help");
 			}else if (obj == openSource){
@@ -908,6 +927,13 @@ public class UIMenu implements ActionListener {
 		colorsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); 	                
 		colorsItem.addActionListener(this);
 		viewMenu.add(colorsItem);
+		
+		provenanceItem=new ProvenanceMenuItem("Show Provenance");//,KeyEvent.VK_P);
+		provenanceItem.setEnabled(false);
+		Core.getInstance().addMatcherChangeListener(provenanceItem);
+		provenanceItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); 
+		provenanceItem.addActionListener(this);
+		viewMenu.add(provenanceItem);
 		
 		viewMenu.addSeparator();
 		

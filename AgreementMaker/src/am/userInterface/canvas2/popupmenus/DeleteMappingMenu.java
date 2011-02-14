@@ -46,7 +46,7 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 		//  3. Delete All Mappings (item)
 		
 		JMenu mDeleteMappings = new JMenu("Delete Mappings");
-		JMenu mProvenance = new JMenu("Provenance");
+		//JMenu mProvenance = new JMenu("Provenance");
 		
 		JMenuItem miDeleteAll = new JMenuItem("Delete All Mappings");
         miDeleteAll.setActionCommand("DELETE_ALL");
@@ -100,15 +100,15 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 				}
 				
 				if( hasMappings ) mDeleteMappings.add(mMatcher); 
-				if( hasProvenance) mProvenance.add(mMatcherProv);
+				//if( hasProvenance) mProvenance.add(mMatcherProv);
 				
 				
 			}
 		}
 		
 		add(mDeleteMappings);        
-		addSeparator();
-		add(mProvenance);
+		//addSeparator();
+		//add(mProvenance);
 		
 		// TODO: add(miDeleteAll);
 
