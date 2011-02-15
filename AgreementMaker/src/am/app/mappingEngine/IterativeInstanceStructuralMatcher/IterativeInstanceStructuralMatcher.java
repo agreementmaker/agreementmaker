@@ -42,15 +42,17 @@ import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.MatcherParametersDialog;
+import am.userInterface.MatchingProgressDisplay;
 
 public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 	private static final long serialVersionUID = 3612931342445940115L;
-	
+
 	double PROPERTY_THRESHOLD = 0.8;
 	double CLASS_THRESHOLD = 0.8;
 	
 	boolean individuals = true;
 	boolean matchUnionClasses = true;
+	boolean printMappingTable = false;
 	
 	static boolean verbose = false; 
 	
@@ -68,6 +70,19 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 	private PropertySimilarity[][] propSimilarities;
 	private ClassSimilarity[][] classSimilarities;
 	
+	//Provenance Strings
+	private final String RECURSIVE_INDIVIDUALS = "Recursive Individuals";
+	private final String SUBPROPERTIES = "Subproperties";
+	private final String SUBCLASSES = "Subclasses";
+	private final String COMBINATION = "Combination";
+	private final String PROPERTY_VALUES = "Property Values";
+	private final String PROPERTY_USAGE = "Property Usage";
+	private final String UNION_CLASSES = "Union Classes";
+	private final String SUBCLASSOF = "SubclassOf";
+	private final String RANGE_DOMAIN = "Range Domain";
+	private final String SYNTACTIC = "Syntactic";
+
+	
 	IterativeInstanceStructuralParameters parameters;
 	
 	public IterativeInstanceStructuralMatcher(){
@@ -76,12 +91,17 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		maxInputMatchers = 1;
 		
 		needsParam = true;
+		
+		//progressDisplay = new MatchingProgressDisplay();		
 	}
 	
 	@Override
 	protected void matchEnd() {
 		// TODO Auto-generated method stub
 		super.matchEnd();
+		
+		if(printMappingTable)
+			evaluate();
 	}
 	
 //	@SuppressWarnings("unchecked")
@@ -122,8 +142,12 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 				source = sourceClassList.get(i);
 				for (int j = 0; j < targetClassList.size(); j++) {
 					target = targetClassList.get(j);
-					if(matchIndividuals(source,target))
-						classesMatrix.set(i, j, new Mapping(source, target, 1.0));
+					if(matchIndividuals(source,target)){
+						Mapping m = new Mapping(source, target, 1.0);
+						m.setProvenance(RECURSIVE_INDIVIDUALS);
+						classesMatrix.set(i, j, m);
+					}
+						
 				}
 			}
 		}
@@ -170,8 +194,11 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		for (int i = 0; i < classSimilarities.length; i++) {
 			for (int j = 0; j < classSimilarities[0].length; j++) {
 				sim = classSimilarities[i][j].getSimilarity();
-				if(sim > classesMatrix.getSimilarity(i, j))
-					classesMatrix.set(i, j, new Mapping( sourceClassList.get(i), targetClassList.get(j), sim ));
+				if(sim > classesMatrix.getSimilarity(i, j)){
+					Mapping m = new Mapping( sourceClassList.get(i), targetClassList.get(j), sim );
+					m.setProvenance(COMBINATION);
+					classesMatrix.set(i, j, m);
+				}
 			}
 		}
 		for (int i = 0; i < propSimilarities.length; i++) {
@@ -179,29 +206,16 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 				//System.out.print(sourcePropList.get(i)+" "+targetPropList.get(j));
 				sim = propSimilarities[i][j].getSimilarity();
 				if(sim > propertiesMatrix.getSimilarity(i, j)){
-					propertiesMatrix.set(i, j, new Mapping( sourcePropList.get(i), targetPropList.get(j), sim ));
+					Mapping m = new Mapping( sourcePropList.get(i), targetPropList.get(j), sim );
+					m.setProvenance(COMBINATION);
+					propertiesMatrix.set(i, j, m);
 				}
 					
 			}
 		}
 	}
 
-	private void printAllSimilarities() {
-		for (int i = 0; i < classSimilarities.length; i++) {
-			for (int j = 0; j < classSimilarities[0].length; j++) {
-				System.out.println(sourceClassList.get(i)+" "+targetClassList.get(j)
-						+classesMatrix.getSimilarity(i, j));
-				System.out.println(classSimilarities[i][j]);
-			}
-		}
-		for (int i = 0; i < propSimilarities.length; i++) {
-			for (int j = 0; j < propSimilarities[0].length; j++) {
-				System.out.println(sourcePropList.get(i)+" "+targetPropList.get(j)
-						+ " " + propertiesMatrix.getSimilarity(i, j));
-				System.out.println(propSimilarities[i][j]);
-			}
-		}
-	}
+
 
 	private void initSimilarityMatrixes() {
 		classSimilarities = new ClassSimilarity[sourceClassList.size()][targetClassList.size()];
@@ -270,43 +284,40 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		}
 	}
 
-//	private void evaluate() {
-//		ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment,0);
-//		MatcherParametersDialog dialog = new MatcherParametersDialog(refMatcher);
-//		if(dialog.parametersSet()) {
-//			refMatcher.setParam(dialog.getParameters());
-//			refMatcher.setThreshold(refMatcher.getDefaultThreshold());
-//			refMatcher.setMaxSourceAlign(refMatcher.getDefaultMaxSourceRelations());
-//			refMatcher.setMaxTargetAlign(refMatcher.getDefaultMaxTargetRelations());
-//			try {
-//				refMatcher.match();
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			Alignment referenceSet = refMatcher.getAlignmentSet(); //class + properties
-//			Alignment evaluateSet;
-//			ReferenceEvaluationData rd;
-//			String report="Reference Evaluation Complete\n\n";
-//			
-//			evaluateSet = getAlignmentSet();
-//			rd = ReferenceEvaluator.compare(evaluateSet, referenceSet);
-//			setRefEvaluation(rd);
-//			
-//			Iterator it = rd.getErrorAlignments().iterator();
-//			if( Core.DEBUG_FCM ) System.out.println("Wrong alignments");
-//			while(it.hasNext()){
-//				if( Core.DEBUG_FCM ) System.out.println(it.next());
-//			}
-//			if( Core.DEBUG_FCM ) System.out.println("end");
-//			
-//			report+= getName().getMatcherName()+"\n\n";
-//			report +=rd.getReport()+"\n";
-//			Utility.displayTextAreaPane(report,"Reference Evaluation Report");
-//		}
-//		dialog.dispose();
-//		Core.getUI().redisplayCanvas();
-//	}
+	private void evaluate() {
+		
+		ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment,0);
+		MatcherParametersDialog dialog = new MatcherParametersDialog(refMatcher,false,false);
+		if(dialog.parametersSet()) {
+			refMatcher.setParam(dialog.getParameters());
+			refMatcher.setThreshold(refMatcher.getDefaultThreshold());
+			refMatcher.setMaxSourceAlign(refMatcher.getDefaultMaxSourceRelations());
+			refMatcher.setMaxTargetAlign(refMatcher.getDefaultMaxTargetRelations());
+			try {
+				refMatcher.match();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			String report="Reference Evaluation Complete\n\n";
+			
+			ReferenceEvaluationData rd = ReferenceEvaluator.compare(getAlignment(), refMatcher.getAlignment());
+			setRefEvaluation(rd);
+			
+			System.out.println("CORRECT MAPPINGS");
+			System.out.println(allSimilarities(rd.getCorrectAlignments()));
+			System.out.println("WRONG MAPPINGS");
+			System.out.println(allSimilarities(rd.getErrorAlignments()));			
+			System.out.println("MISSED MAPPINGS");
+			System.out.println(allSimilarities(rd.getLostAlignments()));			
+						
+			report+= getName().getMatcherName()+"\n\n";
+			report +=rd.getReport()+"\n";
+			Utility.displayTextAreaPane(report,"Reference Evaluation Report");
+		}
+		dialog.dispose();
+		Core.getUI().redisplayCanvas();
+	}
 
 	private void matchPropertyValues() {
 		if( Core.DEBUG_FCM ) System.out.println("MATCH PROPERTY VALUES");
@@ -346,7 +357,10 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 				propSimilarities[i][j].setValues(sim);
 				
 				if(sim >= parameters.getPropertyValuesThreshold()){
-					propertiesMatrix.set(i, j, new Mapping(sourcePropList.get(i), targetPropList.get(j), 1.0d));
+					Mapping m = new Mapping(sourcePropList.get(i), targetPropList.get(j), sim);
+					m.setProvenance(PROPERTY_VALUES);
+					if(parameters.boostPropertyValues) m.setSimilarity(1.0d);
+					propertiesMatrix.set(i, j, m);
 					if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+sProp.getLocalName()+" "+tProp.getLocalName()+" BY PROP VALUES");
 				}
 			}
@@ -429,7 +443,10 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 					if(sSub.size()==1){
 						int row = getIndex(sourcePropList,sSub.get(0).getURI());
 						int col = getIndex(targetPropList,tSub.get(0).getURI()); 
-						propertiesMatrix.set( row, col, new Mapping( sourcePropList.get(row), targetPropList.get(col), 1.0d));
+						
+						Mapping m = new Mapping( sourcePropList.get(row), targetPropList.get(col), 1.0d);
+						m.setProvenance(SUBPROPERTIES);
+						propertiesMatrix.set( row, col, m);
 
 						if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+sSub.get(0).getLocalName()+" "+
 								tSub.get(0).getLocalName()+" BY SUBPROPERTIES");
@@ -449,7 +466,11 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 						if( Core.DEBUG_FCM ) System.out.println(aligns.get(k).getX()+" "+aligns.get(k).getY());
 						int row = getIndex(sourcePropList,sSub.get(aligns.get(k).getX()).getURI());
 						int col = getIndex(targetPropList,tSub.get(aligns.get(k).getY()).getURI()); 
-						propertiesMatrix.set( row, col, new Mapping( sourcePropList.get(row), targetPropList.get(col), 1.0d));
+						
+						Mapping m = new Mapping( sourcePropList.get(row), targetPropList.get(col), 1.0d);
+						m.setProvenance(SUBPROPERTIES);
+						propertiesMatrix.set( row, col, m);
+						
 						if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+sSub.get(aligns.get(k).getX()).getLocalName()+" "
 								+tSub.get(aligns.get(k).getY()).getLocalName()+ " BY SUBPROPERTIES");
 					}
@@ -567,7 +588,9 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 					if(sSub.size()==1){
 						int row = getIndex(sourceClassList,sSub.get(0).getURI());
 						int col = getIndex(targetClassList,tSub.get(0).getURI());
-						classesMatrix.set(row, col, new Mapping( sourceClassList.get(row), targetClassList.get(col), 1.0d));
+						Mapping m = new Mapping( sourceClassList.get(row), targetClassList.get(col), 1.0d);
+						m.setProvenance(SUBCLASSES);
+						classesMatrix.set(row, col, m);
 						if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+sSub.get(0)+" "+tSub.get(0)+" BY SUBCLASSES");
 						continue;
 					}
@@ -577,7 +600,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 					
 					for (int k = 0; k < sSub.size(); k++) {
 						for (int t = 0; t < tSub.size(); t++) {
-							System.out.println(sSub.get(k).getLocalName()+" "+tSub.get(t).getLocalName());
+							if (verbose) System.out.println(sSub.get(k).getLocalName()+" "+tSub.get(t).getLocalName());
 							sims[k][t] = superclassesComparison(sSub.get(k), tSub.get(t));	
 						}
 					}
@@ -675,8 +698,12 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 			}
 			if(index!=-1 && verbose) System.out.println(similarities.get(index));
 			
+						
 			if(index!=-1 && similarities.get(index)>parameters.getPropertyUsageThreshold()){
-				propertiesMatrix.set(i, index, new Mapping( sProp, targetPropList.get(index), 1.0d));
+				Mapping m = new Mapping( sProp, targetPropList.get(index), similarities.get(index));
+				m.setProvenance(PROPERTY_USAGE);
+				if(parameters.boostPropertyUsage) m.setSimilarity(1.0d);
+				propertiesMatrix.set(i, index, m);
 				if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+sProp.getLocalName()+" "+targetPropList.get(index).getLocalName()+" BY PROPERTY USAGE");
 			}
 		}	
@@ -711,7 +738,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 	 * @author Ulas
 	 */
 	private void matchUnionClasses(){
-		System.out.println("MATCH UNION");
+		if(verbose) System.out.println("MATCH UNION");
 		ArrayList<UnionClass> unionClassesS = new ArrayList<UnionClass>();
 		ArrayList<UnionClass> unionClassesT = new ArrayList<UnionClass>();
 		
@@ -811,9 +838,10 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 								int c1 = findSourceIndex(aList.get(1));
 								int c2 = findTargetIndex(bList.get(1));
 								if(i1==-1 || i2==-1) continue;
-								classesMatrix.set(c1, c2, 
-										new Mapping(sourceClassList.get(c1), targetClassList.get(c2), 1.0d));
-								System.out.println("ALIGNMENT:"+aList.get(1)+" "+bList.get(1)+" BY ULAS1");
+								Mapping m = new Mapping(sourceClassList.get(c1), targetClassList.get(c2), 1.0d);
+								m.setProvenance(UNION_CLASSES);
+								classesMatrix.set(c1, c2, m);
+								if(verbose) System.out.println("ALIGNMENT:"+aList.get(1)+" "+bList.get(1)+" BY ULAS1");
 							}
 						}
 						else{
@@ -827,10 +855,11 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 								if(sim1 < 0.6 && sim2 < 0.6d){
 									int c1 = findSourceIndex(aList.get(1));
 									int c2 = findTargetIndex(bList.get(0));
-									classesMatrix.set(c1, c2, 
-											new Mapping(sourceClassList.get(c1), targetClassList.get(c2), 1.0d));
-									System.out.println("ALIGNMENT:"+aList.get(1)+" "+bList.get(0)+" BY ULAS2");
-								}
+									Mapping m = new Mapping(sourceClassList.get(c1), targetClassList.get(c2), 1.0d);
+									m.setProvenance(UNION_CLASSES);
+									classesMatrix.set(c1, c2, m);
+									if(verbose) System.out.println("ALIGNMENT:"+aList.get(1)+" "+bList.get(0)+" BY ULAS2");
+								} 
 								
 							}
 						}
@@ -848,8 +877,9 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 							if(sim1 < 0.6d && sim2 < 0.6d){
 								int c1 = findSourceIndex(aList.get(0));
 								int c2 = findTargetIndex(bList.get(1));
-								classesMatrix.set(c1, c2, 
-										new Mapping(sourceClassList.get(c1), targetClassList.get(c2), 1.0d));
+								Mapping m = new Mapping(sourceClassList.get(c1), targetClassList.get(c2), 1.0d);
+								m.setProvenance(UNION_CLASSES);
+								classesMatrix.set(c1, c2, m);
 								System.out.println("ALIGNMENT:"+aList.get(0)+" "+bList.get(1)+" BY ULAS3");
 								//System.out.println("A");
 //								classesMatrix.set(findSourceIndex(aList.get(0)), findTargetIndex(bList.get(1)), 
@@ -865,8 +895,9 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 								if(sim1 < 0.6d && sim2 < 0.6d){
 									int c1 = findSourceIndex(aList.get(0));
 									int c2 = findTargetIndex(bList.get(0));
-									classesMatrix.set(c1, c2, 
-											new Mapping(sourceClassList.get(c1), targetClassList.get(c2), 1.0d));
+									Mapping m = new Mapping(sourceClassList.get(c1), targetClassList.get(c2), 1.0d);
+									m.setProvenance(UNION_CLASSES);
+									classesMatrix.set(c1, c2, m);
 									System.out.println("ALIGNMENT:"+aList.get(0)+" "+bList.get(0)+" BY ULAS2");
 //									System.out.println("B");
 //									classesMatrix.set(findSourceIndex(aList.get(0)), findTargetIndex(bList.get(0)), 
@@ -985,9 +1016,6 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 			//You can print something once per class
 			similarities = new ArrayList<Double>();
 			
-			
-			
-			
 			double sim;
 			for (int j = 0; j<targetOntology.getClassesList().size(); j++) {
 				Node target = targetOntology.getClassesList().get(j);
@@ -998,8 +1026,8 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 				classSimilarities[i][j].setSuperclasses(sim);
 				similarities.add(sim);				
 			}
-			if(verbose)
-			System.out.println(similarities);
+			
+			if(verbose)	System.out.println(similarities);
 			
 			int index = Utils.getOnlyMax(similarities);
 			
@@ -1009,7 +1037,10 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 			}
 			
 			if(index!=-1 && similarities.get(index)>=parameters.getSuperclassThreshold()){
-				classesMatrix.set(i, index, new Mapping(source, targetClassList.get(index), 1.0d));
+				Mapping m = new Mapping(source, targetClassList.get(index), similarities.get(index));
+				m.setProvenance(SUBCLASSOF);
+				if(parameters.boostSubclassOf) m.setSimilarity(1.0d);
+				classesMatrix.set(i, index, m);
 				if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+source.getLocalName()+" "
 						+targetClassList.get(index).getLocalName()+" BY SUBCLASSOF");
 			}
@@ -1123,7 +1154,10 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 				if(sim>=parameters.getRangeDomainThreshold()){
 					if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+sourcePropList.get(i).getLocalName()+" "
 							+targetPropList.get(j).getLocalName()+" BY RANGE/DOMAIN");
-					propertiesMatrix.set(i,j,new Mapping(sourcePropList.get(i),targetPropList.get(j), 1.0));				
+					Mapping m = new Mapping(sourcePropList.get(i),targetPropList.get(j), sim);
+					m.setProvenance(RANGE_DOMAIN);
+					if(parameters.boostRangeDomain) m.setSimilarity(1.0d);
+					propertiesMatrix.set(i,j, m);				
 				}			
 			}
 		}		
@@ -1195,28 +1229,6 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 			}
 		}
 		return 0;
-	}
-
-	public static double substringSimilarity(String s1,String s2){
-		s1 = s1.toLowerCase();
-		s2 = s2.toLowerCase();
-		int n = 0;
-		for(int i=0; i<s1.length() && i<s2.length(); i++){
-			if(s1.charAt(i)==s2.charAt(i)) n++;
-		}
-		return (double)n/(s1.length()+s2.length())*2;
-	}
-	
-	public static double commentComparison(Node source, Node target){
-		String sComment = source.getComment();
-		String tComment = target.getComment();
-		
-		//This should be NLP...
-		if(sComment!=null && tComment!=null && sComment.length()>0 
-				&& sComment.equals(tComment)){
-			return 1.0;
-		}	
-		return 0.0;
 	}
 	
 	public static double individualsComparison(List<Individual> sList, List<Individual> tList){
@@ -1369,8 +1381,6 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 			
 			OntModel mod = (OntModel) currentClass.getModel();
 
-
-		
 			List<Statement> ls = mod.listStatements(null , mod.getProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), mod.getResource(currentClass.getLocalName())).toList();
 			
 			Iterator<Statement> lsiter = ls.iterator();
@@ -1467,7 +1477,9 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 						Node target = get(targetPropList, uri2);
 						//System.out.println(target);
 						if (source != null && target != null) {
-							propertiesMatrix.set(sourcePropList.indexOf(source),  targetPropList.indexOf(target), new Mapping(source, target, 1.0d) );
+							Mapping m = new Mapping(source, target, 1.0d);
+							m.setProvenance(RECURSIVE_INDIVIDUALS);
+							propertiesMatrix.set(sourcePropList.indexOf(source),  targetPropList.indexOf(target), m);
 							//propertiesMatrix.setSimilarity(sourcePropList.indexOf(source), targetPropList.indexOf(target), 1.0);
 						}
 						propertyMatched = true;
@@ -1485,107 +1497,6 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 			return nodeList.get(ind);
 		return null;
 	}
-	
-	/*
-	protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
-		//run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
-	    SimilarityMatrix matrix = new SimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
-		Node source;
-		Node target;
-		Mapping alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
-		
-		for(int i = 0; i < sourceList.size(); i++) {
-			source = sourceList.get(i);
-			for(int j = 0; j < targetList.size(); j++) {
-				target = targetList.get(j);
-				
-				if( !this.isCancelled() ) { 
-					//alignment = alignByStrings(source, target, typeOfNodes); 
-				}
-				
-				else { return matrix; }
-				matrix.set(i,j,alignment);
-			}
-		}
-		return matrix;
-	}
-	*/
-	
-	/*
-	@SuppressWarnings("unchecked")
-	private Mapping alignByStrings(Node source, Node target,
-			alignType typeOfNodes) throws Exception {
-		
-		if(!source.getUri().startsWith(sourceOntology.getURI())||
-				!target.getUri().startsWith(targetOntology.getURI()))
-			return null;
-		
-		//if( !useInputMatcher ) {
-		
-		if(localname){
-			double nameSim = substringSimilarity(Utils.removeSomeChars(source.getLocalName()),
-					Utils.removeSomeChars(target.getLocalName()));
-			if(nameSim>=SUBSTRING_TRESHOLD){
-				if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+source.getLocalName()+" "+
-						target.getLocalName()+" BY LOCALNAME");
-				return new Mapping(source, target, 1.0);
-			}			
-		}
-		
-		if(comment){
-			double commSim = commentComparison(source, target);
-			if(commSim==1.0){
-				if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+source.getLocalName()+" "+
-						target.getLocalName()+" BY COMMENTS");
-				return new Mapping(source,target,commSim);
-			}
-		}
-		
-		if(label){
-			//LABEL comparison with local names
-			String sLabel = source.getLabel();
-			String tLabel = target.getLabel();
-			
-			double labelSim = 0;
-			
-			if(sLabel!=null){
-				labelSim = substringSimilarity(sLabel, target.getLocalName());
-				if(labelSim >= LABEL_TRESHOLD){
-					if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+source.getLocalName()+" "+
-							target.getLocalName()+" BY LABELS");
-					return new Mapping(source,target,1.0);
-				}
-			}
-			if(tLabel!=null){
-				labelSim = substringSimilarity(tLabel, source.getLocalName());
-				if(labelSim >= LABEL_TRESHOLD){
-					if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+source.getLocalName()+" "+
-							target.getLocalName()+" BY LABELS");
-					return new Mapping(source,target,1.0);
-				}
-				if(sLabel!=null && sLabel.length()>0){
-					labelSim = substringSimilarity(tLabel, sLabel);
-					if(labelSim >= LABEL_TRESHOLD){
-						if( Core.DEBUG_FCM ) System.out.println("LABEL:"+source.getLocalName()+","
-								+target.getLocalName());
-						if( Core.DEBUG_FCM ) System.out.println("ALIGNMENT:"+source.getLocalName()+" "+
-								target.getLocalName()+" BY LABELS");
-						return new Mapping(source,target,1.0);
-					}
-				}
-			}
-		}
-		
-		if( typeOfNodes == alignType.aligningClasses ) {
-			return classesMatrix.get(source.getIndex(), target.getIndex());
-		} else if( typeOfNodes == alignType.aligningProperties ){
-			return propertiesMatrix.get(source.getIndex(), target.getIndex());
-		} else {
-			throw new Exception("We are not aligning classes or properties.  Need to know the new matrix.");
-		}
-
-	}
-	*/
 	
 	public ClassSimilarity getClassSimilarity(Mapping mapping){
 		if(mapping.getAlignmentType().equals(alignType.aligningProperties)) return null;
@@ -1606,5 +1517,94 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 			parametersPanel = new IterativeInstanceStructuralParametersPanel();
 		}
 		return parametersPanel;
+	}
+	
+	public String allSimilarities(Alignment<Mapping> mappings){
+		
+		
+		String ret = "Source\tTarget\tSimilarity\tSyntactic\tRestrictions\tSuperclasses\tSubclasses\tProvenance\n";
+			
+		for(Mapping mapping: mappings){
+			if(mapping.getAlignmentType() == alignType.aligningClasses)
+			ret += classMappingTuple(mapping) + "\n";
+		}
+			
+		ret += "Source\tTarget\tSimilarity\tSyntactic\tRangeDomain\tValues\tSubproperties\tProvenance\n";
+			
+		for(Mapping mapping: mappings){
+			if(mapping.getAlignmentType() == alignType.aligningProperties)
+			ret += propertyMappingTuple(mapping) + "\n";
+		}
+				
+		return ret;
+	}	
+
+	public String allSimilarities(alignType type, boolean onlyMappings){
+		if(classesAlignmentSet==null || propertiesAlignmentSet==null)
+			return null;
+		
+		
+		if(type == alignType.aligningClasses){
+			String ret = "Source\tTarget\tSimilarity\tSyntactic\tRestrictions\tSuperclasses\tSubclasses\tProvenance\n";
+			
+			for(Mapping mapping: classesAlignmentSet){
+				ret += classMappingTuple(mapping) + "\n";
+			}
+			
+			return ret;
+		}
+		
+		else if(type == alignType.aligningProperties){
+			String ret = "Source\tTarget\tSimilarity\tSyntactic\tRangeDomain\tValues\tSubproperties\tProvenance\n";
+			
+			PropertySimilarity sim = null;
+			
+			for(Mapping mapping: propertiesAlignmentSet){
+				ret += propertyMappingTuple(mapping) + "\n";
+			}
+			
+			return ret;
+		}
+		
+		return null;
+	}
+	
+	public String classMappingTuple(Mapping mapping){
+		String ret = mapping.getEntity1().getLocalName() + "\t" + mapping.getEntity2().getLocalName() +
+		"\t" + mapping.getSimilarity();
+		ClassSimilarity sim = getClassSimilarity(mapping);
+		ret += "\t" + sim.getSyntactic() + "\t" + sim.getRestrictions() + "\t" + sim.getSuperclasses()
+			+ "\t" + sim.getSubclasses();
+		if(mapping.getProvenance()!=null) ret += "\t" + mapping.getProvenance();
+		else ret += "\t" + SYNTACTIC;
+		return ret;
+	}
+	
+	public String propertyMappingTuple(Mapping mapping){
+		String ret = mapping.getEntity1().getLocalName() + "\t" + mapping.getEntity2().getLocalName() +
+		"\t" + mapping.getSimilarity();
+		PropertySimilarity sim = getPropertySimilarity(mapping);
+		ret += "\t" + sim.getSyntactic() + "\t" + sim.getRangeAndDomain() + "\t" + sim.getValues() + 
+			"\t" + sim.getSubProperties();
+		if(mapping.getProvenance()!=null) ret += "\t" + mapping.getProvenance();
+		else ret += "\t" + SYNTACTIC;
+		return ret;
+	}
+	
+	private void printAllSimilarities() {
+		for (int i = 0; i < classSimilarities.length; i++) {
+			for (int j = 0; j < classSimilarities[0].length; j++) {
+				System.out.println(sourceClassList.get(i)+" "+targetClassList.get(j)
+						+classesMatrix.getSimilarity(i, j));
+				System.out.println(classSimilarities[i][j]);
+			}
+		}
+		for (int i = 0; i < propSimilarities.length; i++) {
+			for (int j = 0; j < propSimilarities[0].length; j++) {
+				System.out.println(sourcePropList.get(i)+" "+targetPropList.get(j)
+						+ " " + propertiesMatrix.getSimilarity(i, j));
+				System.out.println(propSimilarities[i][j]);
+			}
+		}
 	}
 }
