@@ -47,6 +47,9 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	private ArrayList<String> sourceWords;
 	private ArrayList<String> targetWords;
 	
+	//vars for provenance
+	private ArrayList<Mapping> bestMappings;
+	
 	/**
 	 * Empty constructor
 	 */
@@ -194,7 +197,11 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		if(simValue > 0.0d) {
 			String provenanceString = null;
 			if( param.storeProvenance ) {
-				provenanceString = "sim(\"" + sLN + "\", \"" + tLN + "\") = " + simValue;
+				provenanceString="\t********AdvancedSimilarityMatcher********\n";
+				provenanceString += "sim(\"" + sLN + "\", \"" + tLN + "\") = " + simValue+"\n";
+				provenanceString+="Best Mappings:\n";
+				for(int i=0;i<bestMappings.size();i++)
+					provenanceString+="\t"+bestMappings.get(i).toString()+"\n";
 			}
 			if(simValueContribution > 0.0d){
 				Mapping pmapping = new Mapping(source, target, Math.min(1, simValue * (1.0 + simValueContribution)));
@@ -209,6 +216,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		}
 		return null;
 	}
+	
 	
 	/**
 	 * ContentWordCheck compares the source and the target words (either compound or simple) to compute the similarity value between those words
@@ -256,6 +264,8 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		/* ------------- END FOR #1 --------------- */
 
 		ArrayList<Mapping> localResult = localMatrix.chooseBestN();
+		
+		bestMappings=localResult;
 		
 		double simValue = 0;
 		for(int i = 0; i < localResult.size(); i++){

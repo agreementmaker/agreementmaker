@@ -31,7 +31,6 @@ public class TabbedTextBuilder extends TreeBuilder {
 	
 	public TabbedTextBuilder(String filename, int sourceOrTarget, String language, String format) {
 		super(filename, sourceOrTarget, language, format);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -155,7 +154,7 @@ public class TabbedTextBuilder extends TreeBuilder {
 			if( numOfTabs == currentTabLevel)
 			{
 				//current.add(new TNode(scIn.substring(numOfTabs+1),current));// add the child
-				current.add(new TNode(scIn,current));// add the child
+				current.add(new TNode(scIn.substring(numOfTabs),current));// add the child
 				System.out.println(scIn);
 				parse(sc, current.getChildren().get(current.getChildren().size()-1),currentTabLevel+=1);
 			}
@@ -167,7 +166,7 @@ public class TabbedTextBuilder extends TreeBuilder {
 				
 				//add a new child to the parent and keep going
 				//current.add(new TNode(scIn.substring(numOfTabs+1),current));
-				current.add(new TNode(scIn,current));// add the child
+				current.add(new TNode(scIn.substring(numOfTabs),current));// add the child
 				System.out.println(scIn);
 				parse(sc, current.getChildren().get(current.getChildren().size()-1),currentTabLevel+=1);
 			}
@@ -178,7 +177,7 @@ public class TabbedTextBuilder extends TreeBuilder {
 				currentTabLevel-=2;
 				
 				//current.add(new TNode(scIn.substring(numOfTabs+1),current));
-				current.add(new TNode(scIn,current));// add the child
+				current.add(new TNode(scIn.substring(numOfTabs),current));// add the child
 				System.out.println(scIn);
 				parse(sc, current.getChildren().get(current.getChildren().size()-1),currentTabLevel+=1);
 			}

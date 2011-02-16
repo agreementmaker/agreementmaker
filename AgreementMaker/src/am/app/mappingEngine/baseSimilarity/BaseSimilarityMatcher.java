@@ -170,16 +170,17 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 						processed1="stem \"" + norm3.normalize(currentPair.getLeft());
 					
 					//the provenance string has the left and right pair with the way it was matched
-					provenanceString = "sim(\"" 
+					provenanceString="\t********BaseSimilarityMatcher********\n";
+					provenanceString += "sim(\"" 
 						+ currentPair.getLeft() + "\", \""
 						+ currentPair.getRight() 
-						+ "\") = \n" 
+						+ "\") = " 
 						+ highestSimilarity
-						+ ", matched with "
+						+ "\nmatched with "
 						+processed1+"\"";
 				}
 				Mapping pmapping=new Mapping( source, target, highestSimilarity, relation, typeOfNodes);
-				if( param.storeProvenance ) pmapping.setProvenance(provenanceString);
+				if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 				return pmapping;
 			}
 		}
@@ -234,15 +235,16 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 				if( param.storeProvenance ) 
 				{
 					//set provenance string
-					provenanceString = "sim(\"" 
+					provenanceString="\t********BaseSimilarityMatcher********\n";
+					provenanceString += "sim(\"" 
 						+ sourceName + "\", \""
 						+ targetName
 						+ "\") = " 
 						+ nounSimilarity
-						+ ", matched by label based noun similarity";
+						+ "\nmatched by label based noun similarity";
 				}
 	        	Mapping pmapping=new Mapping(source, target, nounSimilarity, rel, typeOfNode);
-	        	if( param.storeProvenance ) pmapping.setProvenance(provenanceString);
+	        	if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 	        	return pmapping;
 	        }
 	        else {
@@ -250,7 +252,8 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 				if( param.storeProvenance ) 
 				{
 					//set provenance string
-					provenanceString = "sim(\"" 
+					provenanceString="\t********BaseSimilarityMatcher********\n";
+					provenanceString += "sim(\"" 
 						+ sourceName + "\", \""
 						+ targetName
 						+ "\") = " 
@@ -258,7 +261,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 						+ ", matched by label based verb similarity";
 				}
 	        	Mapping pmapping=new Mapping(source, target, verbSimilarity, rel, typeOfNode);
-	        	if( param.storeProvenance ) pmapping.setProvenance(provenanceString);
+	        	if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 	        	return pmapping;
 	        }
 			
@@ -275,7 +278,8 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			//setup the base of the provenance string
 			String provenanceString = null;
 			if( param.storeProvenance ) {
-				provenanceString = "sim(\"" 
+				provenanceString="\t********BaseSimilarityMatcher********\n";
+				provenanceString += "sim(\"" 
 					+ sLocalname + "\", \""
 					+ tLocalname
 					+ "\") = ";
@@ -284,11 +288,11 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			if(sLocalname.equalsIgnoreCase(tLocalname)){
 				if( param.storeProvenance ){
 					//setup the rest of the string
-					provenanceString+="1, matched by exact local match";
+					provenanceString+="1\nmatched by exact local match";
 				}
 				
 				Mapping pmapping=new Mapping( source, target, 1d, Mapping.EQUIVALENCE, typeOfNode);
-				if( param.storeProvenance ) pmapping.setProvenance(provenanceString);
+				if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 				return pmapping;
 			}
 				
@@ -299,11 +303,11 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			if(sProcessedLocalnames.equals(tProcessedLocalnames)){
 				if( param.storeProvenance ){
 					//setup the rest of the string
-					provenanceString+=".95, matched by local stem \""+sProcessedLocalnames+"\"";
+					provenanceString+=".95\nmatched by local stem \""+sProcessedLocalnames+"\"";
 				}
 				
 				Mapping pmapping=new Mapping( source, target, 0.95d, Mapping.EQUIVALENCE, typeOfNode);
-				if( param.storeProvenance ) pmapping.setProvenance(provenanceString);
+				if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 				return pmapping;
 			}
 			//all normalization without digits return 0.90
@@ -313,11 +317,11 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			if(sProcessedLocalnames.equals(tProcessedLocalnames)){
 				if( param.storeProvenance ){
 					//setup the rest of the string
-					provenanceString+=".9, matched by local stem \""+sProcessedLocalnames+"\"";
+					provenanceString+=".9\nmatched by local stem \""+sProcessedLocalnames+"\"";
 				}
 				
 				Mapping pmapping=new Mapping( source, target, 0.9d, Mapping.EQUIVALENCE, typeOfNode);
-				if( param.storeProvenance ) pmapping.setProvenance(provenanceString);
+				if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 				return pmapping;
 			}
 			//all normalization return 0.8
@@ -328,11 +332,11 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			{
 				if( param.storeProvenance ){
 					//setup the rest of the string
-					provenanceString+=".8, matched by local stem \""+sProcessedLocalnames+"\"";
+					provenanceString+=".8\nmatched by local stem \""+sProcessedLocalnames+"\"";
 				}
 				
 				Mapping pmapping=new Mapping( source, target, 0.9d, Mapping.EQUIVALENCE, typeOfNode);
-				if( param.storeProvenance ) pmapping.setProvenance(provenanceString);
+				if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 				return pmapping;
 			}
 	
@@ -343,7 +347,8 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			
 			provenanceString = null;
 			if( param.storeProvenance ) {
-				provenanceString = "sim(\"" 
+				provenanceString="\t********BaseSimilarityMatcher********\n";
+				provenanceString += "sim(\"" 
 					+ sLabel + "\", \""
 					+ tLabel
 					+ "\") = ";
@@ -354,11 +359,11 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 				{
 					if( param.storeProvenance ){
 						//setup the rest of the string
-						provenanceString+="1, matched by exact label match";
+						provenanceString+="1\nmatched by exact label match";
 					}
 					
 					Mapping pmapping=new Mapping( source, target, 1d, Mapping.EQUIVALENCE, typeOfNode);
-					if( param.storeProvenance ) pmapping.setProvenance(provenanceString);
+					if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 					return pmapping;
 				}
 				//all normalization without stemming and digits return 0.95
@@ -371,11 +376,11 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 				{
 					if( param.storeProvenance ){
 						//setup the rest of the string
-						provenanceString+=".95 matched by label stem \""+sProcessedLabel+"\"";
+						provenanceString+=".95\nmatched by label stem \""+sProcessedLabel+"\"";
 					}
 					
 					Mapping pmapping=new Mapping( source, target, .95d, Mapping.EQUIVALENCE, typeOfNode);
-					if( param.storeProvenance ) pmapping.setProvenance(provenanceString);
+					if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 					return pmapping;
 				}
 				//apply stem return 0.90 
@@ -388,11 +393,11 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 				{
 					if( param.storeProvenance ){
 						//setup the rest of the string
-						provenanceString+=".9 matched by label stem \""+sProcessedLabel+"\"";
+						provenanceString+=".9\nmatched by label stem \""+sProcessedLabel+"\"";
 					}
 					
 					Mapping pmapping=new Mapping( source, target, .9d, Mapping.EQUIVALENCE, typeOfNode);
-					if( param.storeProvenance ) pmapping.setProvenance(provenanceString);
+					if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 					return pmapping;
 				}
 				//apply normDigits return 0.8
@@ -404,11 +409,11 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 				{
 					if( param.storeProvenance ){
 						//setup the rest of the string
-						provenanceString+=".8 matched by label stem \""+sProcessedLabel+"\"";
+						provenanceString+=".8\nmatched by label stem \""+sProcessedLabel+"\"";
 					}
 					
 					Mapping pmapping=new Mapping( source, target, .8d, Mapping.EQUIVALENCE, typeOfNode);
-					if( param.storeProvenance ) pmapping.setProvenance(provenanceString);
+					if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 					return pmapping;
 				}
 			}
