@@ -1,6 +1,7 @@
 package am.app.ontology.profiling;
 
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
+import am.app.ontology.profiling.ontologymetrics.MetricsOntologyProfiler;
 
 
 /**
@@ -11,7 +12,8 @@ import am.app.ontology.profiling.manual.ManualOntologyProfiler;
  */
 public enum ProfilerRegistry {
 
-	ManualProfiler	("Manual Ontology Profiler", ManualOntologyProfiler.class);
+	ManualProfiler	("Manual Ontology Profiler", ManualOntologyProfiler.class),
+	MetricsProfiler	("Metrics Ontology Profiler", MetricsOntologyProfiler.class);
 	
 	private String name;
 	private Class<? extends OntologyProfiler> className;
@@ -24,4 +26,9 @@ public enum ProfilerRegistry {
 	/* Getters and Setters */
 	public String getProfilerName() { return name; }
 	public Class<? extends OntologyProfiler> getProfilerClass() { return className; }
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }
