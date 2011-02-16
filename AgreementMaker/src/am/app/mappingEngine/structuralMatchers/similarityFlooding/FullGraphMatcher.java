@@ -3,6 +3,7 @@
  */
 package am.app.mappingEngine.structuralMatchers.similarityFlooding;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -102,20 +103,20 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		computeRelativeSimilarities(propertiesMatrix);
 		progressDisplay.appendToReport("done.\n");
 		
-//		try {
-//			fw.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 	 }
 	 
 	 protected void createFullPCG(WrappingGraph sourceOnt, WrappingGraph targetOnt){
 		 //old method
-//		 createFullPCG(sourceOnt, targetOnt);
+		 super.createFullPCG(sourceOnt, targetOnt);
 		 
 		 //new method
-		 createPCG(sourceOnt, targetOnt);
+//		 createPCG(sourceOnt, targetOnt);
 		
 	 }
 

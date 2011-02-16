@@ -3,6 +3,9 @@
  */
 package am.app.mappingEngine.structuralMatchers;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,11 +48,11 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	public static final double DELTA = 0.01; // min value for differentiating two similarity vectors
 	public static final int ROUND_MAX = 10; // maximum numbers of rounds for fixpoint computation
 	
-	protected boolean sortEdges = true;
+	protected boolean sortEdges = false;
 	
-//	File f = new File("/home/nikiforos/Desktop/at_once");
-//	File f = new File("/home/nikiforos/Desktop/by_connComp");
-//	protected FileWriter fw;
+	File f = new File("/home/nikiforos/Desktop/various/at_once");
+//	File f = new File("/home/nikiforos/Desktop/various/by_connComp");
+	protected FileWriter fw;
 	
 	/**
 	 * given two nodes named origin and destination we have a list of the possible 
@@ -72,11 +75,11 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		pairTable = new HashMap<String, PCGVertex>();
 		edgesMap = new HashMap<String, PCGEdge>();
 		
-//		 try {
-//			fw = new FileWriter(f);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		 try {
+			fw = new FileWriter(f);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -89,11 +92,11 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		pairTable = new HashMap<String, PCGVertex>();
 		edgesMap = new HashMap<String, PCGEdge>();
 		
-//		try {
-//			fw = new FileWriter(f);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			fw = new FileWriter(f);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -186,6 +189,11 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		 else{
 			 pcgV.setVisited(true);
 
+			 if(pcgV.getObject().getStCouple().getLeft().getObject().toString().contains("number") &&
+					 pcgV.getObject().getStCouple().getRight().getObject().toString().contains("zdnzqnd")){
+				 System.err.println();
+			 }
+			 
 			 // for the Incoming edges
 			 lookupEdges(pcgV.getObject().getStCouple().getLeft().edgesInList(),
 					 pcgV.getObject().getStCouple().getRight().edgesInList(),
@@ -464,7 +472,7 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	 
 	 protected double computeFixpointRound(Iterator<PCGVertex> iVert){
 		 double maxSimilarity = 0.0;
-		 PCGVertex maxV = null;
+//		 PCGVertex maxV = null;
 		 
 		 while(iVert.hasNext()){
 			 
@@ -479,12 +487,20 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 			 				
 			 // track the maximum similarity
 			 if(maxSimilarity < newSimilarity){
-				 maxV = vert;
+//				 maxV = vert;
 				 maxSimilarity = newSimilarity;
 //				 System.out.println("maxSim: " + maxSimilarity + " ------------------- " + "maxV: " + maxV.toString() + "\n");
 				 
 			 }
-			 System.out.println("maxSim: " + maxSimilarity + " ------------------- " + "maxV: " + maxV.toString() + "\n");
+//			 System.out.println("maxSim: " + maxSimilarity + " ------------------- " + "maxV: " + maxV.toString() + "\n");
+			 
+			 try {
+			 fw.append(vert.toString() + "\n");
+//			 fw.append(oldValue + " " + propCoeff + "\n");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			 
 		 }
 		 return maxSimilarity;
 	 }
@@ -514,8 +530,8 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 //				} catch (IOException e) {
 //					e.printStackTrace();
 //				}
-//			 System.out.println(currEdge.getOrigin().toString() + " ---> " + currEdge.getDestination().toString());
-//			 System.out.println(oldValue + " " + propCoeff);
+			 System.out.println(currEdge.getOrigin().toString() + " ---> " + currEdge.getDestination().toString());
+			 System.out.println(oldValue + " " + propCoeff);
 		 }
 		 return sum;
 	 }
