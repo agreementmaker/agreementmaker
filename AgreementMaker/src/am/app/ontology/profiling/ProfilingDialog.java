@@ -2,6 +2,7 @@ package am.app.ontology.profiling;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Constructor;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -15,6 +16,7 @@ import javax.swing.JRootPane;
 import javax.swing.KeyStroke;
 
 import am.app.Core;
+import am.app.ontology.Ontology;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 
 /**
@@ -53,7 +55,8 @@ public class ProfilingDialog extends JDialog implements ActionListener {
 		profilingAlgorithmsBox = new JComboBox();
 		
 		// make this iterate through matchers.
-		profilingAlgorithmsBox.addItem(ProfilerRegistry.ManualProfiler.getProfilerName());
+		profilingAlgorithmsBox.addItem(ProfilerRegistry.ManualProfiler);
+		profilingAlgorithmsBox.addItem(ProfilerRegistry.MetricsProfiler);
 		
 		cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(this);
@@ -115,11 +118,25 @@ public class ProfilingDialog extends JDialog implements ActionListener {
 		}
 		
 		if( e.getSource() == profileButton ) {
-			ManualOntologyProfiler mop = new ManualOntologyProfiler(Core.getInstance().getSourceOntology(), Core.getInstance().getTargetOntology());
-			Core.getInstance().setOntologyProfiler(mop);
+			ProfilerRegistry entry = (ProfilerRegistry)profilingAlgorithmsBox.getSelectedItem();
+			OntologyProfiler profiler = null;
+			Constructor<? extends OntologyProfiler> constructor = null;
+						
+			try {
+				constructor = entry.getProfilerClass().getConstructor(Ontology.class, Ontology.class);
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+			
+			try {
+				profiler = constructor.newInstance(Core.getInstance().getSourceOntology(), Core.getInstance().getTargetOntology());
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			
+			if(profiler!=null) Core.getInstance().setOntologyProfiler(profiler);
 			setVisible(false);
 			return;
 		}
-	}
-	
+	}	
 }
