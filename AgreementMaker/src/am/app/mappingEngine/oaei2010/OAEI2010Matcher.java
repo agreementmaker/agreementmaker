@@ -132,7 +132,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		
 		OAEI2010MatcherParameters parameters = (OAEI2010MatcherParameters)param;
 		
-		getProgressDisplay().ignoreComplete(true);
+		if(getProgressDisplay()!=null) getProgressDisplay().ignoreComplete(true);
 		
 		//ASM
 		AbstractMatcher asm = null;
@@ -193,7 +193,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 	    	runSubMatcher(iism, "Submatcher: IISM");
 	    }
 		
-		getProgressDisplay().ignoreComplete(false);
+		if(getProgressDisplay()!=null) getProgressDisplay().ignoreComplete(false);
 		
 		return iism;
 	}
@@ -246,8 +246,8 @@ public class OAEI2010Matcher extends AbstractMatcher{
 			setupSubMatcher(lwc1, new CombinationParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign()).initForOAEI2010(parameters.currentTrack, true), true);
 			runSubMatcher(lwc1, "LWC (4/4)");
 		}
-
-		getProgressDisplay().ignoreComplete(false); // done with sub matchers.
+		
+		if(getProgressDisplay()!=null) getProgressDisplay().ignoreComplete(false); // done with sub matchers.
 		return lwc1;
 	}
 	
@@ -267,7 +267,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		if( Core.DEBUG ) System.out.println("Running " + m.getName().getMatcherShortName() );
 		startime = System.nanoTime()/measure;
 		
-		getProgressDisplay().setProgressLabel(label);
+		if(getProgressDisplay()!=null) getProgressDisplay().setProgressLabel(label);
 		m.setProgressDisplay(getProgressDisplay());
 		m.match();
 		m.setProgressDisplay(null);
