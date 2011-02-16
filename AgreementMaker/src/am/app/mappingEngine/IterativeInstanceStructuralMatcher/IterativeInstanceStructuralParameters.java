@@ -98,7 +98,7 @@ public class IterativeInstanceStructuralParameters extends AbstractParameters {
 	}
 	
 	public IterativeInstanceStructuralParameters setForOAEI2010() {
-		//allBoost();
+		allBoost();
 		setConsiderIndividuals(true);
 		setPropertyUsageThreshold(0.6);
 		setPropertyValuesThreshold(0.5);

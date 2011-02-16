@@ -64,8 +64,8 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 	private transient HashMap<Node, List<Restriction>> sourceRestrictions;
 	private transient HashMap<Node, List<Restriction>> targetRestrictions;
 	private transient HashMap<Restriction, Node> restrictions;
-	private transient HashMap<OntProperty, List<Literal>> sourcePropValues;
-	private transient HashMap<OntProperty, List<Literal>> targetPropValues;
+	private transient HashMap<OntProperty, List<String>> sourcePropValues;
+	private transient HashMap<OntProperty, List<String>> targetPropValues;
 	
 	private PropertySimilarity[][] propSimilarities;
 	private ClassSimilarity[][] classSimilarities;
@@ -129,7 +129,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 			targetPropValues = initPropValues(targetPropList,targetOntology);
 		}
 		
-		//printPropValues();
+		printPropValues();
 		
 		if(individuals){
 			//Match properties by similar values
@@ -325,7 +325,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		OntProperty tProp;
 		for (int i = 0; i < sourcePropList.size() ; i++) {
 			sProp = (OntProperty)sourcePropList.get(i).getResource().as(OntProperty.class);
-			List<Literal> sList = sourcePropValues.get(sProp);
+			List<String> sList = sourcePropValues.get(sProp);
 			for (int j = 0; j < targetPropList.size(); j++) {
 				
 				tProp = (OntProperty)targetPropList.get(j).getResource().as(OntProperty.class);	
@@ -334,7 +334,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 						!tProp.getURI().startsWith(targetOntology.getURI()))
 					continue;
 				
-				List<Literal> tList = targetPropValues.get(tProp);
+				List<String> tList = targetPropValues.get(tProp);
 				
 				if(sList.size()==0 || tList.size()==0) continue;
 				
@@ -342,14 +342,17 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 				
 				double sim = 0;
 								
-				Literal l1;
-				Literal l2;
+				String l1;
+				String l2;
 				for (int k = 0; k < sList.size(); k++) {
 					l1 = sList.get(k);
 					for (int t = 0; t < tList.size(); t++) {
 						l2 = tList.get(t);
-						if(l1.getString().equals(l2.getString()))
-							sim++;
+						if(l1.equals(l2)){
+							sim++; 
+							
+						}
+							
 					}
 				}
 				sim = sim / Math.max(sList.size(),tList.size()); 				
@@ -368,14 +371,14 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 	}
 
 	@SuppressWarnings("unchecked")
-	private HashMap<OntProperty, List<Literal>> initPropValues(List<Node> propList,Ontology ontology) {
-		HashMap<OntProperty, List<Literal>> propValues = new HashMap<OntProperty, List<Literal>>();
+	private HashMap<OntProperty, List<String>> initPropValues(List<Node> propList,Ontology ontology) {
+		HashMap<OntProperty, List<String>> propValues = new HashMap<OntProperty, List<String>>();
 		List<Statement> stmts;
-		List<Literal> literals;
+		List<String> literals;
 		for (int i = 0; i < propList.size(); i++) {
 			OntProperty sProp = (OntProperty)propList.get(i).getResource().as(OntProperty.class);
 			//System.out.println("Prop: "+sProp);
-			literals = new ArrayList<Literal>();
+			literals = new ArrayList<String>();
 			stmts = ontology.getModel().listStatements(null, sProp, (RDFNode)null).toList();
 			if( stmts.isEmpty() ) { stmts = ontology.getModel().listStatements(null,   ontology.getModel().getProperty(sProp.getLocalName()) ,(RDFNode)null).toList(); }
 			for (int j = 0; j < stmts.size(); j++) {
@@ -384,7 +387,8 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 				RDFNode obj = s.getObject();
 				if(obj.isLiteral()){
 					Literal l = (Literal)obj;
-					literals.add(l);
+					if(!literals.contains(l.getString()))
+						literals.add(l.getString());
 				}
 			}
 			propValues.put(sProp, literals);
