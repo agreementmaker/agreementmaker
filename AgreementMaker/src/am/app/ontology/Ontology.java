@@ -3,15 +3,15 @@ package am.app.ontology;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import am.GlobalStaticVariables;
+import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.qualityEvaluation.JoslynStructuralQuality;
+import am.userInterface.sidebar.vertex.Vertex;
+
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
-
-import am.GlobalStaticVariables;
-import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.qualityEvaluation.JoslynStructuralQuality;
-import am.userInterface.vertex.Vertex;
 
 /**
  * This class contains all information about one of the two ontologies to be compared
