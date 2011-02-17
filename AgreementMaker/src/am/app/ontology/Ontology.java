@@ -11,7 +11,7 @@ import com.hp.hpl.jena.ontology.OntResource;
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.qualityEvaluation.JoslynStructuralQuality;
-import am.userInterface.sidebar.vertex.Vertex;
+import am.userInterface.vertex.Vertex;
 
 /**
  * This class contains all information about one of the two ontologies to be compared
@@ -229,7 +229,20 @@ public class Ontology {
 		}
 		
 		throw new Exception("Cannot search for nodeType == " + nodeType.toString() );
-
+	}
+	
+	public Node getNodefromIndex( int index, alignType aType ) throws Exception {
+		if( aType == alignType.aligningClasses ) {
+			if( index < classesList.size() ){
+				return classesList.get(index);	
+			}
+		} else if( aType == alignType.aligningProperties ) {
+			if( index < propertiesList.size() ){
+				return propertiesList.get(index);	
+			}
+		}
+		
+		throw new Exception("Cannot search for nodeType == " + aType.toString() );
 	}
 	
 }
