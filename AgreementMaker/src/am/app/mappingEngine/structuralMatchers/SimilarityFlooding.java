@@ -50,9 +50,9 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	
 	protected boolean sortEdges = false;
 	
-	File f = new File("/home/nikiforos/Desktop/various/at_once");
+//	File f = new File("/home/nikiforos/Desktop/various/at_once");
 //	File f = new File("/home/nikiforos/Desktop/various/by_connComp");
-	protected FileWriter fw;
+//	protected FileWriter fw;
 	
 	/**
 	 * given two nodes named origin and destination we have a list of the possible 
@@ -75,11 +75,11 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		pairTable = new HashMap<String, PCGVertex>();
 		edgesMap = new HashMap<String, PCGEdge>();
 		
-		 try {
-			fw = new FileWriter(f);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		 try {
+//			fw = new FileWriter(f);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	/**
@@ -92,11 +92,11 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 		pairTable = new HashMap<String, PCGVertex>();
 		edgesMap = new HashMap<String, PCGEdge>();
 		
-		try {
-			fw = new FileWriter(f);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			fw = new FileWriter(f);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 	
 	/**
@@ -494,12 +494,12 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 			 }
 //			 System.out.println("maxSim: " + maxSimilarity + " ------------------- " + "maxV: " + maxV.toString() + "\n");
 			 
-			 try {
-			 fw.append(vert.toString() + "\n");
+//			 try {
+//			 fw.append(vert.toString() + "\n");
 //			 fw.append(oldValue + " " + propCoeff + "\n");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
 			 
 		 }
 		 return maxSimilarity;

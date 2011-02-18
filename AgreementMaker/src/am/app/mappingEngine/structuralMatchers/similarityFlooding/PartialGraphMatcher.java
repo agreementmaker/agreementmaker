@@ -126,7 +126,7 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 			e.printStackTrace();
 		}
 		
-		try { fw.close(); } catch (IOException e) { e.printStackTrace(); }
+//		try { fw.close(); } catch (IOException e) { e.printStackTrace(); }
 	 }
 	 
 	private void executeRoundOperations(WrappingGraph s, WrappingGraph t){

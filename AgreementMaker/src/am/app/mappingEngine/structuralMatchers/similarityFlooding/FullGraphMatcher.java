@@ -103,11 +103,11 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 		computeRelativeSimilarities(propertiesMatrix);
 		progressDisplay.appendToReport("done.\n");
 		
-		try {
-			fw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			fw.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		
 	 }
 	 
