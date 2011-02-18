@@ -204,13 +204,15 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		ArrayList<MatchingPair> result = new ArrayList<MatchingPair>();
 		File file = new File(((ReferenceAlignmentParameters)param).fileName);
         SAXReader reader = new SAXReader();
-        Document doc = reader.read(file);
+        Document doc = reader.read(file);   // TODO: FIX PARSE ERROR if using UTF-8 Characters!!!!!!
         Element root = doc.getRootElement();
         Element align = root.element("Alignment");
         Iterator<?> map = align.elementIterator("map");  // TODO: Fix this hack? (Iterator<?>)
         while (map.hasNext()) {
+        	System.out.println(map.toString());
             Element e = ((Element)map.next()).element("Cell");
             if (e == null) {
+            	
                 continue;
             }
             String s1 = e.element("entity1").attributeValue("resource");
@@ -225,11 +227,19 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
             	if(split.length==2) {
             		sourceid = split[1];
             	}
+            	else {
+            		split = s1.split("/"); // the URI does not contain a #
+            		sourceid = split[  split.length - 1 ]; // use the last token as the name
+            	}
+            		
             }
             if(s2!=null) {
             	split = s2.split("#");
             	if(split.length==2) {
             		targetid = split[1];
+            	} else {
+            		split = s1.split("/"); // the URI does not contain a #
+            		targetid = split[  split.length - 1 ]; // use the last token as the name
             	}
             }
             //Take the measure, if i can't find a valid measure i'll suppose 1
