@@ -109,8 +109,8 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 		for( int i = 0; i < mtx.getRows(); i++ ) {
 			for( int j = 0; j < mtx.getColumns(); j++ ) {
 				double currentSim = mtx.getSimilarity(i, j);
-				if( currentSim > candidateSim - params.clusteringThreshold &&
-					currentSim < candidateSim + params.clusteringThreshold ) {
+				if( currentSim >= candidateSim - params.clusteringThreshold &&
+					currentSim <= candidateSim + params.clusteringThreshold ) {
 					// the currentSim is within the clustering threshold range of the candidateSim
 					// add it to the set
 					//System.out.println("candidateSim: " + candidateSim + ", currentSim: " + )
