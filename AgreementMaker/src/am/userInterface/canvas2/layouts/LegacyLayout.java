@@ -1121,6 +1121,36 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	    		if( isRoot ) roots.add(property);
 	    		
 			}
+		} catch( ConversionException e ) {
+			// dealing with an RDFS ontology model
+			// TODO: Fix this and the one below.
+			// copied from below
+			ExtendedIterator<?> itobj = m.listOntProperties();
+	    	
+	    	while( itobj.hasNext() ) {  // look through all the object properties
+	    		OntProperty property = (OntProperty) itobj.next();
+	    		try {
+		    		boolean isRoot = true;
+		    		
+		    		ExtendedIterator<?> superPropItr = property.listSuperProperties();
+		    		while( superPropItr.hasNext() ) {
+		    			OntProperty superProperty = (OntProperty) superPropItr.next();
+		    			
+		    			if( !property.equals(superProperty) && !superProperty.isAnon() ) {
+		    				// this property has a valid superclass, therefore it is not a root property
+		    				superPropItr.close();
+		    				isRoot = false;
+		    				break;
+		    			}
+		    		}
+		    		
+		    		if( isRoot ) roots.add(property);
+	    		} catch( ConversionException e2 ) {
+	    			roots.add(property);
+	    			continue;
+	    		}
+	    		
+			}
 		} catch( ProfileException e ) {
 			// dealing with an RDFS ontology model.
 			// TODO: Find a better way to do this.
