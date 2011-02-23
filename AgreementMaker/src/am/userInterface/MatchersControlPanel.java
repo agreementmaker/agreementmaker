@@ -17,6 +17,7 @@ import am.AMException;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.MatcherChangeEvent;
@@ -26,6 +27,7 @@ import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
@@ -362,8 +364,17 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 			ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment,0);
 			MatcherParametersDialog dialog = new MatcherParametersDialog(refMatcher, false, false);
 			if(dialog.parametersSet()) {
-				refMatcher.setParam(dialog.getParameters());
+				AbstractParameters param = dialog.getParameters();
+				ReferenceAlignmentParameters params = (ReferenceAlignmentParameters)param;
+				refMatcher.setParam(param);
+				
+				//When working with sub-superclass relations the cardinality is always ANY to ANY
+				if(!params.onlyEquivalence){
+					params.maxSourceAlign = AbstractMatcher.ANY_INT;
+					params.maxTargetAlign = AbstractMatcher.ANY_INT;
+				}
 				refMatcher.match();
+									
 				
 				// TODO: Move the if-else into ReferenceAlignmentMatcher
 				Alignment<Mapping> referenceSet;
@@ -393,6 +404,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 					} else {
 						evaluateSet = new Alignment<Mapping>(); // empty
 					}
+					
 					rd = ReferenceEvaluator.compare(evaluateSet, referenceSet);
 					toBeEvaluated.setRefEvaluation(rd);
 					report+=i+" "+toBeEvaluated.getName().getMatcherName()+"\n\n";
