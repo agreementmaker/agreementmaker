@@ -17,6 +17,7 @@ import org.dom4j.Element;
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
@@ -57,16 +58,20 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		super.beforeAlignOperations();
 		referenceListOfPairs = readReferenceFile();
 		nonEquivalencePairs = new ArrayList<MatchingPair>();
-		if(((ReferenceAlignmentParameters)param).onlyEquivalence){
-			Iterator<MatchingPair> it = referenceListOfPairs.iterator();
-			while (it.hasNext()){
-				MatchingPair mp = it.next();
-				if(!mp.relation.equals(Mapping.EQUIVALENCE)){//should be equals but sometimes they have spaces together with the =
-					nonEquivalencePairs.add(mp);
-					it.remove();
-				}
+		
+		
+		//if(((ReferenceAlignmentParameters)param).onlyEquivalence){
+		//This has to be done in any case
+			
+		Iterator<MatchingPair> it = referenceListOfPairs.iterator();
+		while (it.hasNext()){
+			MatchingPair mp = it.next();
+			if(!mp.relation.equals(Mapping.EQUIVALENCE)){//should be equals but sometimes they have spaces together with the =
+				nonEquivalencePairs.add(mp);
+				it.remove();
 			}
 		}
+		
 		if(referenceListOfPairs == null || referenceListOfPairs.size() == 0) {
 			Utility.displayMessagePane("The reference file selected doen not contain any alignment.\nPlease check the format.", null);
 		}
@@ -80,6 +85,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		alignClass = !((ReferenceAlignmentParameters)param).skipClasses; // if we skipClasses, then we should not align them
 		alignProp  = !((ReferenceAlignmentParameters)param).skipProperties; // same as above
 		
+		//printAllPairs();
 		
 	}
 	
@@ -106,14 +112,17 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		Node target;
 		Mapping alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok		
 	
-
-		
 		MatchingPair mp = null;
 		if( referenceListOfPairs != null ) {
+			
+			//non equivalence pairs have to be considered!!
+			if(nonEquivalencePairs!=null && !((ReferenceAlignmentParameters)param).onlyEquivalence)
+				referenceListOfPairs.addAll(nonEquivalencePairs);
 			
 			Iterator<MatchingPair> it = referenceListOfPairs.iterator();
 			
 			// Iterate over the list of pairs from the file
+			
 			while( it.hasNext() ) {
 				mp = it.next(); // get the first matching pair from the list
 				//System.out.println("A:"+mp.sourcename+"- B:"+mp.targetname+".");
@@ -132,7 +141,8 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 							
 							if( mp.targetname.equals(tname) ) {
 								// we have found a match for the target node, it means a valid alignment
-								alignment = new Mapping( source, target, mp.similarity );
+								alignment = new Mapping( source, target, mp.similarity);
+								alignment.setRelation(mp.relation);
 								if( mp.provenance != null ) alignment.setProvenance(mp.provenance);
 								matrix.set(i, j, alignment);
 								//it.remove();
@@ -140,8 +150,6 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 						}
 					}
 				}
-				
-				
 				
 				if( isProgressDisplayed() ) {
 					stepDone();
@@ -151,7 +159,6 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 				
 			}
 		}
-		
 		return matrix;
 	}
 	
@@ -481,4 +488,15 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		return parametersPanel;
 	}
 	
+	public void printAllPairs(){
+		System.out.println("REFERENCE (size = "+referenceListOfPairs.size()+")");
+		for(MatchingPair pair: referenceListOfPairs){
+			System.out.println("P:" + pair.getTabString());
+		}
+		System.out.println("NON EQUIVALENCE (size = "+nonEquivalencePairs.size()+")");
+		for(MatchingPair pair: nonEquivalencePairs){
+			System.out.println("P:" + pair.getTabString());
+		}
+		
+	}
 }
