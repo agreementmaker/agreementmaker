@@ -16,6 +16,7 @@ import am.app.mappingEngine.basicStructureSelector.BasicStructuralSelectorMatche
 import am.app.mappingEngine.conceptMatcher.ConceptMatcher;
 import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
 import am.app.mappingEngine.dsi.OldDescendantsSimilarityInheritanceMatcher;
+import am.app.mappingEngine.hierarchy.HierarchyMatcher;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsMatcher;
 import am.app.mappingEngine.oaei2009.OAEI2009matcher;
@@ -82,6 +83,7 @@ public enum MatchersRegistry {
 	OldPRAMAtcher		( "Old PRA Matcher", OldPRAMatcher.class, false),
 	
 	//WORK IN PROGRESS
+	HierarchyMatcher	("Hierarchy Matcher", HierarchyMatcher.class, true),   
 		
 	//MATCHERS USED BY THE SYSTEM, usually not shown
 	UserManual			( "USER", "User Manual Matching", UserManualMatcher.class, false),
