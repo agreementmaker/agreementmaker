@@ -17,7 +17,6 @@ import org.dom4j.Element;
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
@@ -31,8 +30,8 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	//Constants
 	/**Formats for reference files*/
     public final static String REF5 = "AM exported file format";
-	public final static String REF0 = "OAEI standard format";
-	public final static String REF1 = "OAEI-2007 i.e. weapons, wetlands...";
+	public final static String OAEI = "OAEI standard format";
+	public final static String OLD_OAEI = "OAEI-2007 i.e. weapons, wetlands... (Deprecated)";
 	public final static String REF2a = "TXT: sourcename(tab)targetname";
 	public final static String REF2b = "TXT: sourcename(tab)relation(tab)targetname";
 	public final static String REF2c = "TXT: sourcename(tab)relation(tab)targetname(tab)similarity";
@@ -58,20 +57,16 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		super.beforeAlignOperations();
 		referenceListOfPairs = readReferenceFile();
 		nonEquivalencePairs = new ArrayList<MatchingPair>();
-		
-		
-		//if(((ReferenceAlignmentParameters)param).onlyEquivalence){
-		//This has to be done in any case
-			
-		Iterator<MatchingPair> it = referenceListOfPairs.iterator();
-		while (it.hasNext()){
-			MatchingPair mp = it.next();
-			if(!mp.relation.equals(Mapping.EQUIVALENCE)){//should be equals but sometimes they have spaces together with the =
-				nonEquivalencePairs.add(mp);
-				it.remove();
+		if(((ReferenceAlignmentParameters)param).onlyEquivalence){
+			Iterator<MatchingPair> it = referenceListOfPairs.iterator();
+			while (it.hasNext()){
+				MatchingPair mp = it.next();
+				if(!mp.relation.equals(Mapping.EQUIVALENCE)){//should be equals but sometimes they have spaces together with the =
+					nonEquivalencePairs.add(mp);
+					it.remove();
+				}
 			}
 		}
-		
 		if(referenceListOfPairs == null || referenceListOfPairs.size() == 0) {
 			Utility.displayMessagePane("The reference file selected doen not contain any alignment.\nPlease check the format.", null);
 		}
@@ -85,7 +80,6 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		alignClass = !((ReferenceAlignmentParameters)param).skipClasses; // if we skipClasses, then we should not align them
 		alignProp  = !((ReferenceAlignmentParameters)param).skipProperties; // same as above
 		
-		//printAllPairs();
 		
 	}
 	
@@ -108,46 +102,30 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	@Override
 	protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
 		SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation); // TODO: Sparse Matrix instead of Array Matrix!
-		Node source;
-		Node target;
+
 		Mapping alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok		
 	
-		MatchingPair mp = null;
+
 		if( referenceListOfPairs != null ) {
-			
-			//non equivalence pairs have to be considered!!
-			if(nonEquivalencePairs!=null && !((ReferenceAlignmentParameters)param).onlyEquivalence)
-				referenceListOfPairs.addAll(nonEquivalencePairs);
 			
 			Iterator<MatchingPair> it = referenceListOfPairs.iterator();
 			
 			// Iterate over the list of pairs from the file
-			
 			while( it.hasNext() ) {
-				mp = it.next(); // get the first matching pair from the list
-				//System.out.println("A:"+mp.sourcename+"- B:"+mp.targetname+".");
+				MatchingPair mp = it.next(); // get the first matching pair from the list
 				// find the source node in the source ontology
 				for( int i = 0; i < sourceList.size(); i++ ) {
-					source = sourceList.get(i);
-			    	String sname = source.getLocalName();
-					if( mp.sourcename.equals(sname) ) {
+					if( mp.sourceURI.equals(sourceList.get(i).getResource().getURI()) ) {
 						// we have found a match for the source node
-						
-						for( int j = 0; j < targetList.size(); j++ ) {
-							target = targetList.get(j);
-							String tname = target.getLocalName();
-							
-							if( this.isCancelled() ) { return matrix; }
-							
-							if( mp.targetname.equals(tname) ) {
+						for( int j = 0; j < targetList.size() && !this.isCancelled() ; j++ ) {
+							if( mp.targetURI.equals(targetList.get(j).getResource().getURI()) ) {
 								// we have found a match for the target node, it means a valid alignment
-								alignment = new Mapping( source, target, mp.similarity);
-								alignment.setRelation(mp.relation);
-								if( mp.provenance != null ) alignment.setProvenance(mp.provenance);
+								alignment = new Mapping( sourceList.get(i), targetList.get(j), mp.similarity, mp.relation, typeOfNodes, mp.provenance );
 								matrix.set(i, j, alignment);
-								//it.remove();
+								break;
 							}
 						}
+						break;
 					}
 				}
 				
@@ -159,6 +137,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 				
 			}
 		}
+		
 		return matrix;
 	}
 	
@@ -176,11 +155,11 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 			BufferedReader input;
 			input = new BufferedReader(new FileReader(parameters.fileName));
 			//depending on file format a different parser is invoked
-			if(parameters.format.equals(REF0)) {
-				result = parseRefFormat0();
+			if(parameters.format.equals(OAEI)) {
+				result = parseStandardOAEI();
 			}
-			else if(parameters.format.equals(REF1)) {
-				result = parseRefFormat1(input);
+			else if(parameters.format.equals(OLD_OAEI)) {
+				result = parseOldOAEIFormat(input);
 			}
 			else if(parameters.format.equals(REF2a) || 
 					parameters.format.equals(REF2b) || 
@@ -207,7 +186,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	 * Parsing OAEI 2008 Ontology testcase onto101.rdf and so on
 	 * @throws DocumentException 
 	 */
-	public ArrayList<MatchingPair> parseRefFormat0() throws IOException, DocumentException{
+	public ArrayList<MatchingPair> parseStandardOAEI() throws IOException, DocumentException{
 		ArrayList<MatchingPair> result = new ArrayList<MatchingPair>();
 		File file = new File(((ReferenceAlignmentParameters)param).fileName);
         SAXReader reader = new SAXReader();
@@ -216,64 +195,55 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
         Element align = root.element("Alignment");
         Iterator<?> map = align.elementIterator("map");  // TODO: Fix this hack? (Iterator<?>)
         while (map.hasNext()) {
-        	System.out.println(map.toString());
             Element e = ((Element)map.next()).element("Cell");
             if (e == null) {
             	
                 continue;
             }
-            String s1 = e.element("entity1").attributeValue("resource");
-            String s2 = e.element("entity2").attributeValue("resource");
-           
+            String sourceURI = e.element("entity1").attributeValue("resource");
+            String targetURI = e.element("entity2").attributeValue("resource");
             String relation =  e.elementText("relation");
-            String sourceid = null;
-            String targetid = null;
-            String split[];
-            if(s1!=null) {
-            	split = s1.split("#");
+            String measure = e.elementText("measure");
+            String provenance = e.elementText("provenance");
+
+//            String sourceid = null;
+            //String targetid = null;
+/*            String split[];
+            if(sourceURI!=null) {
+            	split = sourceURI.split("#");
             	if(split.length==2) {
             		sourceid = split[1];
             	}
             	else {
-            		split = s1.split("/"); // the URI does not contain a #
+            		split = sourceURI.split("/"); // the URI does not contain a #
             		sourceid = split[  split.length - 1 ]; // use the last token as the name
             	}
             		
             }
-            if(s2!=null) {
-            	split = s2.split("#");
+            if(targetURI!=null) {
+            	split = targetURI.split("#");
             	if(split.length==2) {
             		targetid = split[1];
             	} else {
-            		split = s1.split("/"); // the URI does not contain a #
+            		split = sourceURI.split("/"); // the URI does not contain a #
             		targetid = split[  split.length - 1 ]; // use the last token as the name
             	}
-            }
+            }*/
             //Take the measure, if i can't find a valid measure i'll suppose 1
-            String measure = e.elementText("measure");
-            double mes=-1;
+            
+            double parsedSimilarity = -1;
             if(measure != null) {
             	try {
-            		mes = Double.parseDouble(measure);
+            		parsedSimilarity = Double.parseDouble(measure);
             	}
             	catch(Exception ex) {};
             }
-            if(mes < 0 || mes > 1) mes = 1;
-            
-            
-            String provenance = e.elementText("provenance");
+            if(parsedSimilarity < 0 || parsedSimilarity > 1) parsedSimilarity = 1;
             
             // String correctRelation = getRelationFromFileFormat(relation);
             
-            if(sourceid != null && targetid != null) {
-            	if( provenance == null ) {
-            		MatchingPair mp = new MatchingPair(sourceid, targetid, mes, relation);
-            		result.add(mp);
-            	} else {
-            		MatchingPair mp = new MatchingPair(sourceid, targetid, mes, relation, provenance);
-            		result.add(mp);
-            	}
-            }
+    		MatchingPair mp = new MatchingPair(sourceURI, targetURI, parsedSimilarity, relation, provenance);
+    		result.add(mp);
         }
 
 	    return result;
@@ -282,7 +252,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	public String getRelationFromFileFormat(String relation) {
 		String result = Mapping.EQUIVALENCE;
 		String format = ((ReferenceAlignmentParameters)param).format;
-		if(format.equals(REF0)){//Right now only this format has the relation string
+		if(format.equals(OAEI)){//Right now only this format has the relation string
 			//TODO i don't actually know symbols different from equivalence used in this format, so i will put the symbol itself as relation
 			if(relation == null || relation.equals("") || relation.equals(Mapping.EQUIVALENCE)) {
 				result = Mapping.EQUIVALENCE;
@@ -306,7 +276,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	 *ao:alignmentConfidence "1". 
 	 *
 	 */
-	public ArrayList<MatchingPair> parseRefFormat1(BufferedReader br) throws IOException{
+	public ArrayList<MatchingPair> parseOldOAEIFormat(BufferedReader br) throws IOException{
 		ArrayList<MatchingPair> result = new ArrayList<MatchingPair>();
 	    
 	    String line;
@@ -488,15 +458,4 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		return parametersPanel;
 	}
 	
-	public void printAllPairs(){
-		System.out.println("REFERENCE (size = "+referenceListOfPairs.size()+")");
-		for(MatchingPair pair: referenceListOfPairs){
-			System.out.println("P:" + pair.getTabString());
-		}
-		System.out.println("NON EQUIVALENCE (size = "+nonEquivalencePairs.size()+")");
-		for(MatchingPair pair: nonEquivalencePairs){
-			System.out.println("P:" + pair.getTabString());
-		}
-		
-	}
 }
