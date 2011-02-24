@@ -105,7 +105,10 @@ public class Core {
 		ontologyListeners    = new ArrayList<OntologyChangeListener>();  // new list of listeners
 		matcherListeners	= new ArrayList<MatcherChangeListener>(); // another list of listeners
 		visualizationListeners = new ArrayList<VisualizationChangeListener>();
+		
 		lexstore = new LexiconStore();
+		addOntologyChangeListener(lexstore);
+		
 		prefs = new AppPreferences();
 	}
 	
@@ -372,9 +375,18 @@ public class Core {
 	public void addOntologyChangeListener( OntologyChangeListener l )    { ontologyListeners.add(l); }
 	public void removeOntologyChangeListener( OntologyChangeListener l ) { ontologyListeners.remove(l); }
 	
-	public void fireEvent( OntologyChangeEvent event ) {
+	public void fireEvent( final OntologyChangeEvent event ) {
 		for( int i = ontologyListeners.size()-1; i >= 0; i-- ) {  // count DOWN from max (for a very good reason, http://book.javanb.com/swing-hacks/swinghacks-chp-12-sect-8.html )
-			ontologyListeners.get(i).ontologyChanged(event);
+			// execute each event in its own thread.
+			
+			final int finalI = i; // declared final so that it may be used in the anonymous Thread class.
+			Thread t = new Thread() {
+				public void run() {
+					ontologyListeners.get(finalI).ontologyChanged(event);
+				};
+			};
+			
+			t.start();
 		}
 	}
 	
@@ -382,9 +394,20 @@ public class Core {
 	public void addMatcherChangeListener( MatcherChangeListener l )  { matcherListeners.add(l); }
 	public void removeMatcherChangeListener( MatcherChangeListener l ) { matcherListeners.remove(l); }
 	
-	public void fireEvent( MatcherChangeEvent event ) {
+	public void fireEvent( final MatcherChangeEvent event ) {
 		for( int i = matcherListeners.size()-1; i >= 0; i-- ) {  // count DOWN from max (for a very good reason, http://book.javanb.com/swing-hacks/swinghacks-chp-12-sect-8.html )
-			matcherListeners.get(i).matcherChanged(event);
+			// execute each event in its own thread.
+			
+			final int finalI = i; // declared final so that it may be used in the anonymous Thread class.
+			Thread t = new Thread() {
+				public void run() {
+					matcherListeners.get(finalI).matcherChanged(event);
+				};
+			};
+			
+			t.start();
+			
+			
 		}
 	}
 	
@@ -392,9 +415,19 @@ public class Core {
 	public void addVisualizationChangeListener( VisualizationChangeListener l )  { visualizationListeners.add(l); }
 	public void removeVisualizationChangeListener( VisualizationChangeListener l ) { visualizationListeners.remove(l); }
 	
-	public void fireEvent( VisualizationChangeEvent event ) {
+	public void fireEvent( final VisualizationChangeEvent event ) {
 		for( int i = visualizationListeners.size()-1; i >= 0; i-- ) {  // count DOWN from max (for a very good reason, http://book.javanb.com/swing-hacks/swinghacks-chp-12-sect-8.html )
-			visualizationListeners.get(i).visualizationSettingChanged(event);
+			// execute each event in its own thread.
+			
+			final int finalI = i; // declared final so that it may be used in the anonymous Thread class.
+			Thread t = new Thread() {
+				public void run() {
+					visualizationListeners.get(finalI).visualizationSettingChanged(event);
+				};
+			};
+			
+			t.start();
+			
 		}
 	}
 	
