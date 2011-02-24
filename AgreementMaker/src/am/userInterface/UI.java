@@ -14,18 +14,14 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JViewport;
-import javax.swing.SwingUtilities;
-import javax.swing.text.Document;
 
 import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.TreeBuilder;
-import am.userInterface.canvas2.Canvas2;
 import am.userInterface.classic.AgreementMakerClassic;
 import am.userInterface.sidebar.vertex.VertexDescriptionPane;
 import am.visualization.MatcherAnalyticsPanel;
@@ -257,9 +253,12 @@ public class UI {
 	 * Returns the currently selected tab from the main AgreementMaker window.
 	 * @return Currently selected tab.
 	 */
-	public Component getCurrentTab() {
-		return tabbedPane.getSelectedComponent();
-	}
+	public Component getCurrentTab() { return tabbedPane.getSelectedComponent(); }
+	
+	/**
+	 * @return The main tabbed pane of the UI.
+	 */
+	public JTabbedPane getTabbedPane() { return tabbedPane; }
 	
 	@Deprecated
 	public JViewport getViewport() { // don't need this, it should be passed on the constructor of the VisualzationPanel

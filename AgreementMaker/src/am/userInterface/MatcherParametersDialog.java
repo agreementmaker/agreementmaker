@@ -671,7 +671,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		thresholdCombo.setSelectedItem(Utility.getNoDecimalPercentFromDouble(a.getDefaultThreshold()));
 		sourceRelCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxSourceRelations()));
 		targetRelCombo.setSelectedItem(Utility.getStringFromNumRelInt(a.getDefaultMaxTargetRelations()));
-		provenanceBox.setSelected(true);
+		provenanceBox.setSelected(false);
 	}
 	
 }

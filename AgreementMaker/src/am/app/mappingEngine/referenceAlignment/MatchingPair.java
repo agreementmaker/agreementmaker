@@ -6,20 +6,13 @@ package am.app.mappingEngine.referenceAlignment;
  * 
  *
  */
-// TODO: Remove this class and use Mapping instead.  - cosmin
 public class MatchingPair {
 	/**the name of the label of the source node, this is based on the idea that the name is unique in the ontology, for the OWL ontology this should be true because the name is the local name that is part of the URI. namespace#localname*/
-	public String sourcename;
+	public String sourceURI;
 	/**the name of the label of the target node */
-	public String targetname;
-	
-	/**the description of the source node*/
-	public String sourcedesc;
-	/**the description of the target node*/
-	public String targetdesc;
+	public String targetURI;
 	
 	public double similarity;
-	
 	public String relation;
 	
 	public String provenance;
@@ -28,39 +21,39 @@ public class MatchingPair {
 	}
 	
 	public MatchingPair(String s, String t) {
-		sourcename = s;
-		targetname = t;
+		sourceURI = s;
+		targetURI = t;
 	}
 	
 	public MatchingPair(String s, String t, double sim, String rel) {
 		similarity = sim;
 		relation = rel;
-		sourcename = s;
-		targetname = t;	
+		sourceURI = s;
+		targetURI = t;	
 	}
 	
 	public MatchingPair(String s, String t, double sim, String rel, String p) {
 		similarity = sim;
 		relation = rel;
-		sourcename = s;
-		targetname = t;
+		sourceURI = s;
+		targetURI = t;
 		provenance = p;
 	}
 	
 	public boolean sameSource(MatchingPair mp) {
-		if(sourcename.equalsIgnoreCase(mp.sourcename))
+		if(sourceURI.equalsIgnoreCase(mp.sourceURI))
 			return true;
 		else return false;
 	}
 	
 	public boolean sameTarget(MatchingPair mp) {
-		if(targetname.equalsIgnoreCase(mp.targetname))
+		if(targetURI.equalsIgnoreCase(mp.targetURI))
 			return true;
 		else return false;
 	}
 	
 	public String getNameTabName() {
-		return sourcename+"\t"+targetname;
+		return sourceURI+"\t"+targetURI;
 	}
 	
 	public String getSimTabRel() {

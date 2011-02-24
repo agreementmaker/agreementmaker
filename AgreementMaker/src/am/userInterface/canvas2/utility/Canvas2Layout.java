@@ -7,14 +7,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputListener;
-
-import com.hp.hpl.jena.ontology.OntResource;
-
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.ontology.Ontology;
@@ -22,7 +18,7 @@ import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.GraphicalData;
 import am.userInterface.canvas2.utility.GraphLocator.GraphType;
 
-public class Canvas2Layout implements MouseInputListener, 
+public abstract class Canvas2Layout implements MouseInputListener, 
 									  MouseWheelListener,
 									  ChangeListener,		// used to know when the viewport is resized
 									  ActionListener
@@ -43,30 +39,36 @@ public class Canvas2Layout implements MouseInputListener,
 	/**
 	 * MouseEvent Listener methods.
 	 */
-	public void mouseClicked(MouseEvent e)         { /* This function must be implemented in the subclass. */ }
-	public void mouseEntered(MouseEvent e)         { /* This function must be implemented in the subclass. */ }
-	public void mouseExited(MouseEvent e)          { /* This function must be implemented in the subclass. */ }
-	public void mousePressed(MouseEvent e)         { /* This function must be implemented in the subclass. */ }
-	public void mouseReleased(MouseEvent e)        { /* This function must be implemented in the subclass. */ }
-	public void mouseDragged(MouseEvent e)         { /* This function must be implemented in the subclass. */ }
-	public void mouseMoved(MouseEvent e)           { /* This function must be implemented in the subclass. */ }
-	public void mouseWheelMoved(MouseWheelEvent e) { 
-		//vizpanel.getS 
-	}
+	public abstract void mouseClicked(MouseEvent e);
+	public abstract void mouseEntered(MouseEvent e);
+	public abstract void mouseExited(MouseEvent e);
+	public abstract void mousePressed(MouseEvent e);
+	public abstract void mouseReleased(MouseEvent e);
+	public abstract void mouseDragged(MouseEvent e);
+	public abstract void mouseMoved(MouseEvent e);
+	public abstract void mouseWheelMoved(MouseWheelEvent e);
 	
-	public void actionPerformed(ActionEvent e)  { /* This function must be implemented in the subclass. */ }
+	public abstract boolean isViewActive( int viewID );  // determine if a special layout view is active (used by the node drawing functions)
 	
-	public void stateChanged(ChangeEvent e)        { /* This function must be implemented in the subclass. */ }
+	public abstract void actionPerformed(ActionEvent e);
+	
+	public abstract void stateChanged(ChangeEvent e);
 	
 	
 	
 	/*************** Canvas Specific methods *******************/
 	
-	public void getReadyForRepaint(Rectangle viewport) { /* getReadyForRepaint() is called from Canvas2.paint() just before that method iterates through
-															all the vertices and all the edges calling isVisible() and draw().
-															It's called because the layout may have some special things to do just before a repaint. */ }
-	/** Allow for node name manipulation */
-	public String getNodeLabel(GraphicalData d ) { return ""; } /* must be implemented in the subclass */
+	/**
+	 * getReadyForRepaint() is called from Canvas2.paint() 
+	 * just before that method iterates through
+	 * all the vertices and all the edges calling isVisible() and draw().
+	 * 
+	 * It's called because the layout may have some special things to do just before a repaint.
+	 */
+	public abstract void getReadyForRepaint(Rectangle viewport);
+
+	/** Allow for node name manipulation on a layout basis */
+	public abstract String getNodeLabel(GraphicalData d );
 	
 	/**
 	 * Called from Canvas2.

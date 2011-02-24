@@ -11,6 +11,7 @@ import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconSynSet;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.ontology.Node;
 
 public class LexicalSynonymMatcher extends AbstractMatcher {
@@ -44,10 +45,10 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	protected void beforeAlignOperations() throws Exception {
 		super.beforeAlignOperations();
 		
-		sourceLexicon = Core.getLexiconStore().getSourceOntLexicon(sourceOntology);			
-		targetLexicon = Core.getLexiconStore().getTargetOntLexicon(targetOntology);			
-		Lexicon sourceWordNetLexicon = Core.getLexiconStore().getSourceWNLexicon(sourceOntology, sourceLexicon);
-		Lexicon targetWordNetLexicon = Core.getLexiconStore().getTargetWNLexicon(targetOntology, targetLexicon);
+		sourceLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);			
+		targetLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);			
+		//Lexicon sourceWordNetLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
+		//Lexicon targetWordNetLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
 		
 		//sourceLexicon.print( System.out );
 		//targetLexicon.print( System.out );

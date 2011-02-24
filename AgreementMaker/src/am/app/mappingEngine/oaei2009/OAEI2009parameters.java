@@ -38,7 +38,7 @@ public class OAEI2009parameters extends AbstractParameters {
 			useWordNet = false;
 			useUMLS = true;
 			partialReferenceFile = AnatomyTrack.PARTIAL_REFERENCE;
-			format = ReferenceAlignmentMatcher.REF0;
+			format = ReferenceAlignmentMatcher.OAEI;
 		
 		}
 		// this is Angela's Track!
@@ -46,7 +46,7 @@ public class OAEI2009parameters extends AbstractParameters {
 			useWordNet = false;
 			useUMLS = true;
 			partialReferenceFile = AnatomyTrack.PARTIAL_REFERENCE;
-			format = ReferenceAlignmentMatcher.REF0;
+			format = ReferenceAlignmentMatcher.OAEI;
 		}
 		else if(track.equals(BENCHMARKS)){
 			useWordNet = false;
@@ -70,7 +70,7 @@ public class OAEI2009parameters extends AbstractParameters {
 			useWordNet = false;
 			useUMLS = false;
 			partialReferenceFile = BenchmarkTrack.TRACK_INPUT_DIR+"303/refalign.rdf";
-			format = ReferenceAlignmentMatcher.REF0;
+			format = ReferenceAlignmentMatcher.OAEI;
 		}
 	}
 

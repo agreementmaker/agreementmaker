@@ -58,7 +58,7 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 	}
 
 	
-	private void createPropertyAnnotationsList(
+	public static void createPropertyAnnotationsList(
 			List<Property> propertyList, Node propertyNode) {
 		
 		OntProperty currentProperty = (OntProperty) propertyNode.getResource().as(OntProperty.class);
@@ -75,7 +75,7 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 		
 	}
 
-	private void createClassAnnotationsList(
+	public static void createClassAnnotationsList(
 			List<Property> annotationList, Node classNode) {
 		
 		OntClass currentClass = (OntClass) classNode.getResource().as(OntClass.class);

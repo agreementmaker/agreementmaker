@@ -12,6 +12,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
+import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.StringUtil.ISub;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
@@ -81,11 +82,11 @@ public class ParametricStringMatcher extends AbstractMatcher {
 			// build all the lexicons if they don't exist.
 			
 			if( progressDisplay != null ) progressDisplay.setProgressLabel("Building Ontology Lexicon (1/2)");
-			sourceOntologyLexicon = Core.getLexiconStore().getSourceOntLexicon(sourceOntology);			
-			targetOntologyLexicon = Core.getLexiconStore().getTargetOntLexicon(targetOntology);
+			sourceOntologyLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
+			targetOntologyLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
 			if( progressDisplay != null ) progressDisplay.setProgressLabel("Building WordNet Lexicon (2/2)");
-			sourceWordNetLexicon = Core.getLexiconStore().getSourceWNLexicon(sourceOntology, sourceOntologyLexicon);
-			targetWordNetLexicon = Core.getLexiconStore().getTargetWNLexicon(targetOntology, targetOntologyLexicon);
+			sourceWordNetLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
+			targetWordNetLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
 			if( progressDisplay != null ) progressDisplay.setProgressLabel(null);
 		}
 		
@@ -102,8 +103,8 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		double sim = 0.0d; // this must be set
 		
 		//used for provenanceString 
-		String TS=null;//targetSynonym
-		String SS=null;//sourceSynonym
+		String TS= new String();//targetSynonym
+		String SS= new String();//sourceSynonym
 		
 		if( parameters.useLexicons ) { // lexicon code
 		
@@ -176,7 +177,11 @@ public class ParametricStringMatcher extends AbstractMatcher {
 					for( String sourceOntSynonym : sourceOntSynonymList ) {
 						for( String targetOntSynonym : targetOntSynonymList ) {
 							double currentOntSynonymPairSimilarity = performStringSimilarity(sourceOntSynonym, targetOntSynonym);
-							if( currentOntSynonymPairSimilarity > maxOntSynSimilarity ) maxOntSynSimilarity = currentOntSynonymPairSimilarity;
+							if( currentOntSynonymPairSimilarity > maxOntSynSimilarity ) {
+								maxOntSynSimilarity = currentOntSynonymPairSimilarity;
+								SS = sourceOntSynonym;
+								TS = targetOntSynonym;
+							}
 						}
 					}
 				}
@@ -196,7 +201,11 @@ public class ParametricStringMatcher extends AbstractMatcher {
 					for( String sourceWNSynonym : sourceWNSynonymList ) {
 						for( String targetWNSynonym : targetWNSynonymList ) {
 							double currentWNSynonymPairSimilarity = performStringSimilarity(sourceWNSynonym, targetWNSynonym);
-							if( currentWNSynonymPairSimilarity > maxWNSynSimilarity ) maxWNSynSimilarity = currentWNSynonymPairSimilarity;
+							if( currentWNSynonymPairSimilarity > maxWNSynSimilarity ) {
+								maxWNSynSimilarity = currentWNSynonymPairSimilarity;
+								SS += ", " + sourceWNSynonym;
+								TS += ", " + targetWNSynonym;
+							}
 						}
 					}
 				}
@@ -332,9 +341,9 @@ public class ParametricStringMatcher extends AbstractMatcher {
 					if(parameters.useBestLexSimilarity )
 						provenanceString+="with best similarity \n";
 					else
-						provenanceString+="ontology synonym weight: "+parameters.lexOntSynonymWeight+"\n wordnet synonym weight: "
+						provenanceString+="\nontology synonym weight: "+parameters.lexOntSynonymWeight+"\n wordnet synonym weight: "
 										  +parameters.lexWNSynonymWeight;
-					provenanceString+=" source synonym: "+SS+"\n target synonym: "+TS;
+					provenanceString+="\n source synonym: "+SS+"\n target synonym: "+TS;
 				}
 				else if(parameters.redistributeWeights) //list all the weights without redistubution
 					provenanceString+="Weights:\n\tlabel weight: "+lw+"\n\tlocal-name weight:"+lnw+
@@ -410,7 +419,7 @@ public class ParametricStringMatcher extends AbstractMatcher {
 			}
 			
 			Mapping pmapping=new Mapping(source, target, sim);
-			if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
+			if( param.storeProvenance && sim > param.threshold ) pmapping.setProvenance(provenanceString+"\n");
 			return pmapping;
 			}
 		

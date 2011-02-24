@@ -15,6 +15,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
+import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.StringUtil.AMStringWrapper;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
@@ -97,10 +98,10 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		
 		if( parameters.useLexiconDefinitions || parameters.useLexiconSynonyms ) {
 			// build all the lexicons if they don't exist. 
-			sourceOntologyLexicon = Core.getLexiconStore().getSourceOntLexicon(sourceOntology);			
-			targetOntologyLexicon = Core.getLexiconStore().getTargetOntLexicon(targetOntology);			
-			sourceWordNetLexicon = Core.getLexiconStore().getSourceWNLexicon(sourceOntology, sourceOntologyLexicon);
-			targetWordNetLexicon = Core.getLexiconStore().getTargetWNLexicon(targetOntology, targetOntologyLexicon);
+			sourceOntologyLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);			
+			targetOntologyLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);			
+			sourceWordNetLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
+			targetWordNetLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
 		}
 		
 		
@@ -176,8 +177,9 @@ public class MultiWordsMatcher extends AbstractMatcher {
 	@SuppressWarnings("unchecked")
 	private String createMultiWordsString(Node node, alignType typeOfNodes) throws Exception {
 		
+		mWS = new String();
 		String multiWordsString = "";
-		if(param.storeProvenance){mWS="";}
+
 		MultiWordsParameters mp = (MultiWordsParameters)param;
 		
 		//Add concept strings to the multiwordsstring
@@ -187,16 +189,18 @@ public class MultiWordsMatcher extends AbstractMatcher {
 			multiWordsString = Utility.smartConcat(multiWordsString, node.getSeeAlsoLabel());
 			multiWordsString = Utility.smartConcat(multiWordsString, node.getIsDefinedByLabel());
 			
-			mWS+="considering Concept:\n";
-			mWS+="\tlabel and/or name: "+getLabelAndOrNameString(node)+"\n";
-			mWS+="\tcomment: "+node.getComment()+"\n";
-			mWS+="\tSee also label: "+node.getSeeAlsoLabel()+"\n";
-			mWS+="\tis defined by label: "+node.getIsDefinedByLabel()+"\n";
+			if( param.storeProvenance ) {
+				mWS+="considering Concept:\n";
+				mWS+="\tlabel and/or name: "+getLabelAndOrNameString(node)+"\n";
+				mWS+="\tcomment: "+node.getComment()+"\n";
+				mWS+="\tSee also label: "+node.getSeeAlsoLabel()+"\n";
+				mWS+="\tis defined by label: "+node.getIsDefinedByLabel()+"\n";
+			}
 		}
 
 		//add neighbors strings
 		if(mp.considerNeighbors) {
-			mWS+="considering neighbors:\n";
+			if( param.storeProvenance ) mWS+="considering neighbors:\n";
 			ArrayList<Vertex> duplicateList = node.getVertexList();
 			//add child strings
 			Vertex mainVertex = duplicateList.get(0);
@@ -209,7 +213,7 @@ public class MultiWordsMatcher extends AbstractMatcher {
 				childstring = Utility.smartConcat(childstring, neighbourString);
 			}
 			multiWordsString = Utility.smartConcat(multiWordsString, childstring);
-			mWS+="\tchild string: "+childstring+"\n";
+			if( param.storeProvenance ) mWS+="\tchild string: "+childstring+"\n";
 			//for each father add father strings and create hashSet of siblings
 			String parentsString = "";
 			HashSet<Node> siblingNodes = new HashSet<Node>();
@@ -234,7 +238,7 @@ public class MultiWordsMatcher extends AbstractMatcher {
 				
 			}
 			multiWordsString = Utility.smartConcat(multiWordsString, parentsString);
-			mWS+="\tparents string: "+parentsString+"\n";
+			if( param.storeProvenance ) mWS+="\tparents string: "+parentsString+"\n";
 			
 			//add sibling string from the hashSet, i need to use hashset to avoid adding duplicates.
 			Iterator<Node> it = siblingNodes.iterator();
@@ -245,12 +249,12 @@ public class MultiWordsMatcher extends AbstractMatcher {
 				siblingsString = Utility.smartConcat(siblingsString, neighbourString);
 			}
 			multiWordsString = Utility.smartConcat(multiWordsString, siblingsString);
-			mWS+="\tsiblings string: "+siblingsString+"\n";
+			if( param.storeProvenance ) mWS+="\tsiblings string: "+siblingsString+"\n";
 		}
 		
 		//add instances strings
 		if(mp.considerInstances && typeOfNodes == alignType.aligningClasses) {
-			mWS+="considering instances:\n";
+			if( param.storeProvenance ) mWS+="considering instances:\n";
 			String instancesString = "";
 			Iterator<String> it = node.getIndividuals().iterator();
 			while(it.hasNext()) {
@@ -258,12 +262,12 @@ public class MultiWordsMatcher extends AbstractMatcher {
 				instancesString = Utility.smartConcat(instancesString, ind);
 			}
 			multiWordsString = Utility.smartConcat(multiWordsString, instancesString);
-			mWS+="\tinstances string: "+instancesString+"\n";
+			if( param.storeProvenance ) mWS+="\tinstances string: "+instancesString+"\n";
 		}
 		
 		//add properties declared by this class or classes declaring this properties
 		if(mp.considerProperties && typeOfNodes == alignType.aligningClasses) {
-			mWS+="considering properties:\n";
+			if( param.storeProvenance ) mWS+="considering properties:\n";
 			String propString = "";
 			Iterator<String> it = node.getpropOrClassNeighbours().iterator();
 			while(it.hasNext()) {
@@ -271,12 +275,12 @@ public class MultiWordsMatcher extends AbstractMatcher {
 				propString = Utility.smartConcat(propString, s);
 			}
 			multiWordsString = Utility.smartConcat(multiWordsString, propString);
-			mWS+="\tproperties string: "+propString+"\n";
+			if( param.storeProvenance ) mWS+="\tproperties string: "+propString+"\n";
 		}
 			
 	    //add classes declaring this properties
 		if(mp.considerClasses && typeOfNodes == alignType.aligningProperties) {
-			mWS+="considering classess:\n";
+			if( param.storeProvenance ) mWS+="considering classess:\n";
 			String classString = "";
 			Iterator<String> it = node.getpropOrClassNeighbours().iterator();
 			while(it.hasNext()) {
@@ -284,12 +288,12 @@ public class MultiWordsMatcher extends AbstractMatcher {
 				classString = Utility.smartConcat(classString, s);
 			}
 			multiWordsString = Utility.smartConcat(multiWordsString, classString);
-			mWS+="\tclass string: "+classString+"\n";
+			if( param.storeProvenance ) mWS+="\tclass string: "+classString+"\n";
 		}
 		
 		// lexicons
 		if( mp.useLexiconDefinitions ) {
-			mWS+="considering lexicon definitions:\n";
+			if( param.storeProvenance ) mWS+="considering lexicon definitions:\n";
 			String definitions = new String();
 			OntResource nodeResource = node.getResource().as(OntResource.class);
 			
@@ -310,11 +314,11 @@ public class MultiWordsMatcher extends AbstractMatcher {
 			}
 			
 			if( !definitions.equals("") ) multiWordsString = Utility.smartConcat(multiWordsString, definitions);
-			mWS+="\tdefinitions: "+definitions+"\n";
+			if( param.storeProvenance ) mWS+="\tdefinitions: "+definitions+"\n";
 		}
 		
 		if( mp.useLexiconSynonyms ) {
-			mWS+="considering lexicon synonyms:\n";
+			if( param.storeProvenance ) mWS+="considering lexicon synonyms:\n";
 			String synonyms = new String();
 			OntResource nodeResource = node.getResource().as(OntResource.class);
 			
@@ -335,16 +339,16 @@ public class MultiWordsMatcher extends AbstractMatcher {
 			}
 			
 			if( !synonyms.isEmpty() ) multiWordsString = Utility.smartConcat(multiWordsString, synonyms);
-			mWS+="\tsynonyms: "+synonyms+"\n";
+			if( param.storeProvenance ) mWS+="\tsynonyms: "+synonyms+"\n";
 		}
 		
 		if( mp.considerSuperClass ) {
-			mWS+="considering super class:\n";
+			if( param.storeProvenance ) mWS+="considering super class:\n";
 			ArrayList<Node> parent = node.getParent();
-			mWS+="\tsuper class parents: \n";
+			if( param.storeProvenance ) mWS+="\tsuper class parents: \n";
 			for( Node par : parent ) {
 				multiWordsString = Utility.smartConcat(multiWordsString, par.getLabel() );
-				mWS+="\t\t "+par.getLabel()+"\n";
+				if( param.storeProvenance ) mWS+="\t\t "+par.getLabel()+"\n";
 			}
 			
 		}
@@ -439,7 +443,7 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		}
 		
 		Mapping pmapping=new Mapping(source, target, sim);
-		if(param.storeProvenance){
+		if(param.storeProvenance && sim > param.threshold){
 			provenanceString+="sim(\""+source+"\",\""+target+"\") = "+sim+"\n";
 			provenanceString+="similarity metric used: "+((MultiWordsParameters)param).measure+"\n";
 			provenanceString+=mWS;

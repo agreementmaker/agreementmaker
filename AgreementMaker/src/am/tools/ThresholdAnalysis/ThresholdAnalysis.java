@@ -154,7 +154,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 		refParam.onlyEquivalence = true;
 		refParam.fileName = singleRunReferenceAlignment;
-		refParam.format = ReferenceAlignmentMatcher.REF0;
+		refParam.format = ReferenceAlignmentMatcher.OAEI;
 		AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 		referenceAlignmentMatcher.setParam(refParam);
 		try {
@@ -365,7 +365,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 		refParam.onlyEquivalence = true;
 		refParam.fileName = referenceAlignmentFile;
-		refParam.format = ReferenceAlignmentMatcher.REF0;
+		refParam.format = ReferenceAlignmentMatcher.OAEI;
 		AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 		referenceAlignmentMatcher.setParam(refParam);
 		referenceAlignmentMatcher.setSourceOntology(sourceOntology);

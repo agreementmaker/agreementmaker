@@ -3,6 +3,7 @@ package am.userInterface;
 
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -33,6 +34,7 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.ontology.Ontology;
 import am.app.ontology.profiling.ProfilingDialog;
@@ -78,7 +80,9 @@ public class UIMenu implements ActionListener {
 								disableVisualizationItem;
 	private JMenu menuViews;  // Views submenu.  TODO: Rename this to something more descriptive.
 	private JMenu menuLexicons; // the Lexicons sub menu;
-	private JMenuItem menuLexiconsOntSource, menuLexiconsOntTarget, menuLexiconsWNSource, menuLexiconsWNTarget;
+	private JMenuItem menuLexiconsViewOntSource, menuLexiconsViewOntTarget, menuLexiconsViewWNSource, menuLexiconsViewWNTarget, 
+					  menuLexiconsBuildOntSource, menuLexiconsBuildOntTarget, menuLexiconsBuildWNSource, menuLexiconsBuildWNTarget,
+					  menuLexiconsBuildAll;
 	
 	// Ontology menu.
 	private JMenuItem ontologyDetails, ontologyProfiling;
@@ -87,14 +91,14 @@ public class UIMenu implements ActionListener {
 	private JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation;
 	
 	// Matchers menu.
-	private JMenuItem manualMapping, userFeedBack, 
+	private JMenuItem userFeedBack, 
 					  newMatching, runMatching, copyMatching, deleteMatching, clearAll, 
 					  doRemoveDuplicates,
 					  refEvaluateMatching,
 					  thresholdAnalysis, TEMP_viewClassMatrix, TEMP_viewPropMatrix, TEMP_matcherAnalysisClasses, TEMP_matcherAnalysisProp;
 	
-	private JMenu	menuExport;
-	private JMenuItem exportMatrixCSV;
+	//private JMenu	menuExport;
+	//private JMenuItem exportMatrixCSV;
 	
 	
 	// Help menu.
@@ -106,6 +110,8 @@ public class UIMenu implements ActionListener {
 	private JMenuBar myMenuBar;
 	
 	private UI ui;  // reference to the main ui.
+
+	private JMenuItem menuLexiconsClearAll;
 	
 	
 	public UIMenu(UI ui){
@@ -295,9 +301,6 @@ public class UIMenu implements ActionListener {
 			}
 			else if( obj == clusteringEvaluation ) {
 				ui.addTab("Clustering Evaluation",null, new ClusteringEvaluationPanel(), "Clustering Evaluation");
-			}
-			else if( obj == manualMapping) {
-				Utility.displayMessagePane("To edit or create a manual mapping select any number of source and target nodes.\nLeft click on a node to select it, use Ctrl and/or Shift for multiple selections.", "Manual Mapping");
 			}
 			else if(obj == newMatching) {
 				controlPanel.newManual();
@@ -626,50 +629,14 @@ public class UIMenu implements ActionListener {
 						than.execute();
 					}
 				}
-			} else if( obj == menuLexiconsOntSource ) {
-				Ontology o = Core.getInstance().getSourceOntology();
-				if( o != null ) {
-					Lexicon lex = Core.getLexiconStore().getSourceOntLexicon( o );
-					LexiconLookupPanel wnlp = new LexiconLookupPanel(lex);
-					ui.addTab("Source OntLex", null, wnlp, "Source Ontology Lexicon.");
-				} else {
-					Utility.displayErrorPane("No source ontology loaded.", "Error");
-				}
-
-			} else if ( obj == menuLexiconsOntTarget ) {
-				Ontology o = Core.getInstance().getTargetOntology();
-				if( o != null ) {
-					Lexicon lex = Core.getLexiconStore().getTargetOntLexicon( o );
-					LexiconLookupPanel wnlp = new LexiconLookupPanel(lex);
-					ui.addTab("Target OntLex", null, wnlp, "Target Ontology Lexicon.");
-				} else {
-					Utility.displayErrorPane("No target ontology loaded.", "Error");
-				}
-			} else if( obj == menuLexiconsWNSource ) {
-				Ontology o = Core.getInstance().getSourceOntology();
-				if( o != null ) {
-					Lexicon sourceOntLex = Core.getLexiconStore().getSourceOntLexicon( o );
-					Lexicon sourceWNLex = Core.getLexiconStore().getSourceWNLexicon(o, sourceOntLex);
-					LexiconLookupPanel wnlp = new LexiconLookupPanel(sourceWNLex);
-					ui.addTab("Source WNLex", null, wnlp, "Source WordNet Lexicon.");
-				} else {
-					Utility.displayErrorPane("No source ontology loaded.", "Error");
-				}
-			} else if( obj == menuLexiconsWNTarget ) {
-				Ontology o = Core.getInstance().getTargetOntology();
-				if( o != null ) {
-					Lexicon targetOntLex = Core.getLexiconStore().getTargetOntLexicon( o );
-					Lexicon targetWNLex = Core.getLexiconStore().getSourceWNLexicon(o, targetOntLex);
-					LexiconLookupPanel wnlp = new LexiconLookupPanel(targetWNLex);
-					ui.addTab("Target WNLex", null, wnlp, "Target WordNet Lexicon.");
-				} else {
-					Utility.displayErrorPane("No target ontology loaded.", "Error");
-				}
-			} else if( obj == exportMatrixCSV ) {
-				
-				// TODO: Implement this.
-				
-				
+			} else if( obj == menuLexiconsViewOntSource ) {
+				showLexiconLookupPanel( Core.getInstance().getSourceOntology(), LexiconRegistry.ONTOLOGY_LEXICON);
+			} else if( obj == menuLexiconsViewOntTarget ) {
+				showLexiconLookupPanel( Core.getInstance().getTargetOntology(), LexiconRegistry.ONTOLOGY_LEXICON );
+			} else if( obj == menuLexiconsViewWNSource ) {
+				showLexiconLookupPanel( Core.getInstance().getSourceOntology(), LexiconRegistry.WORDNET_LEXICON);
+			} else if( obj == menuLexiconsViewWNTarget ) {
+				showLexiconLookupPanel( Core.getInstance().getTargetOntology(), LexiconRegistry.WORDNET_LEXICON);
 			} else if( obj == TEMP_viewClassMatrix ) {
 				// get the currently selected matcher
 				ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
@@ -725,6 +692,14 @@ public class UIMenu implements ActionListener {
 				
 				Core.getUI().addTab("Matcher Analytics: Properties", null, ma, "Properties", callOnExit);
 				Core.getInstance().addMatcherChangeListener(ma);
+			} else if ( obj == menuLexiconsBuildAll ) {
+				// Lexicons -> Build all ...
+				LexiconBuilderDialog d = new LexiconBuilderDialog();
+				d.setVisible(true);
+			} else if ( obj == menuLexiconsClearAll ) {
+				// Lexicons -> Clear all ...
+				if( Utility.displayConfirmPane("Are you sure you want to clear the existing lexicons?\nYou will lose any parameters that were set.", "Clear lexicons?") )
+					Core.getLexiconStore().clear();
 			}
 			
 			
@@ -793,6 +768,50 @@ public class UIMenu implements ActionListener {
 		
 	}
 	
+	/**
+	 * This method adds a new tab to the UI with a lexicon lookup panel on it.
+	 * @param o
+	 * @param reg
+	 * @param tabTitle
+	 * @param tabTip
+	 * @return Returns null on error.
+	 */
+	public LexiconLookupPanel showLexiconLookupPanel(Ontology o,	LexiconRegistry reg) {
+		if( o != null ) {
+			String tabTitle = new String();
+			if( Core.getInstance().getSourceOntology() == o ) tabTitle += "Source ";
+			else if( Core.getInstance().getTargetOntology() == o ) tabTitle += "Target ";
+			else tabTitle += "Ontology " + o.getID() + " ";
+			
+			tabTitle += reg.getShortName() + " Lexicon";
+			
+			try {
+				final Lexicon lex = Core.getLexiconStore().getLexicon(o.getID(), reg);
+				final LexiconLookupPanel lexPanel;
+				if( lex.getLookupPanel() == null ) {
+					lexPanel = new LexiconLookupPanel(lex);
+					ui.addTab(tabTitle, null, lexPanel, null, new Runnable() {
+						@Override
+						public void run() {
+							lex.setLookupPanel(null);
+						}
+					});
+				} else {
+					lexPanel = lex.getLookupPanel();
+					ui.getTabbedPane().setSelectedComponent(lexPanel);
+				}
+				return lexPanel;
+			} catch (Exception e) {
+				e.printStackTrace();
+				Utility.displayErrorPane("Could not display lexicon lookup panel.\n\n"+e.getMessage(), "Error");
+			}
+		} else {
+			Utility.displayErrorPane("The ontology cannot be null.", "Error");
+		}	
+		return null;
+	}
+	
+
 	public void ontologyDetails() {
 		Core c = Core.getInstance();
 		Ontology sourceO = c.getSourceOntology();
@@ -851,10 +870,10 @@ public class UIMenu implements ActionListener {
 		fileMenu.addSeparator();
 		
 		// Construct the recent files menu.
-		menuRecentSource = new JMenu("Recent Sources...");
+		menuRecentSource = new JMenu("Recent Sources");
 		menuRecentSource.setMnemonic('u');
 		
-		menuRecentTarget = new JMenu("Recent Targets...");
+		menuRecentTarget = new JMenu("Recent Targets");
 		menuRecentTarget.setMnemonic('a');
 		
 		
@@ -884,12 +903,12 @@ public class UIMenu implements ActionListener {
 		fileMenu.add(closeBoth);
 		
 		fileMenu.addSeparator();
-		saveAlignment = new JMenuItem("Save Selected Alignment...");
+		saveAlignment = new JMenuItem("Save Selected Alignment ...");
 		saveAlignment.addActionListener(this);
 		saveAlignment.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); 
 		fileMenu.add(saveAlignment);
 		
-		loadAlignment = new JMenuItem("Load Alignment...");
+		loadAlignment = new JMenuItem("Load Alignment ...");
 		loadAlignment.addActionListener(this);
 		loadAlignment.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); 
 		fileMenu.add(loadAlignment);
@@ -976,21 +995,56 @@ public class UIMenu implements ActionListener {
 		
 		// Lexicons menu.
 		menuLexicons = new JMenu("Lexicons");
-		menuLexiconsOntSource = new JMenuItem("Ontology Lexicon: Source");
-		menuLexiconsOntSource.addActionListener(this);
-		menuLexiconsOntTarget = new JMenuItem("Ontology Lexicon: Target");
-		menuLexiconsOntTarget.addActionListener(this);
-		menuLexiconsWNSource = new JMenuItem("WordNet Lexicon: Source");
-		menuLexiconsWNSource.addActionListener(this);
-		menuLexiconsWNTarget = new JMenuItem("WordNet Lexicon: Target");
-		menuLexiconsWNTarget.addActionListener(this);
+		menuLexicons.setMnemonic('L');
 		
-		menuLexicons.add(menuLexiconsOntSource);
-		menuLexicons.add(menuLexiconsOntTarget);
-		menuLexicons.add(menuLexiconsWNSource);
-		menuLexicons.add(menuLexiconsWNTarget);
-		//viewMenu.addSeparator();
-		//viewMenu.add(menuLexicons);
+		menuLexiconsBuildAll = new JMenuItem("Build all ...");
+		menuLexiconsBuildAll.addActionListener(this);
+		
+		menuLexiconsClearAll = new JMenuItem("Delete all ...");
+		menuLexiconsClearAll.addActionListener(this);
+		
+		JMenu menuLexiconsBuild = new JMenu("Build");
+		
+		menuLexiconsBuildOntSource = new JMenuItem("Ontology Lexicon: Source ...");
+		menuLexiconsBuildOntSource.addActionListener(this);
+		menuLexiconsBuildOntTarget = new JMenuItem("Ontology Lexicon: Target ...");
+		menuLexiconsBuildOntTarget.addActionListener(this);
+		menuLexiconsBuildWNSource = new JMenuItem("WordNet Lexicon: Source ...");
+		menuLexiconsBuildWNSource.addActionListener(this);
+		menuLexiconsBuildWNTarget = new JMenuItem("WordNet Lexicon: Target ...");
+		menuLexiconsBuildWNTarget.addActionListener(this);
+		
+		menuLexiconsBuild.add(menuLexiconsBuildOntSource);
+		menuLexiconsBuild.add(menuLexiconsBuildOntTarget);
+		menuLexiconsBuild.addSeparator();
+		menuLexiconsBuild.add(menuLexiconsBuildWNSource);
+		menuLexiconsBuild.add(menuLexiconsBuildWNTarget);
+		
+		
+		JMenu menuLexiconsView = new JMenu("View");
+		
+		menuLexiconsViewOntSource = new JMenuItem("Ontology Lexicon: Source");
+		menuLexiconsViewOntSource.addActionListener(this);
+		menuLexiconsViewOntTarget = new JMenuItem("Ontology Lexicon: Target");
+		menuLexiconsViewOntTarget.addActionListener(this);
+		menuLexiconsViewWNSource = new JMenuItem("WordNet Lexicon: Source");
+		menuLexiconsViewWNSource.addActionListener(this);
+		menuLexiconsViewWNTarget = new JMenuItem("WordNet Lexicon: Target");
+		menuLexiconsViewWNTarget.addActionListener(this);
+		
+		menuLexiconsView.add(menuLexiconsViewOntSource);
+		menuLexiconsView.add(menuLexiconsViewOntTarget);
+		menuLexiconsView.addSeparator();
+		menuLexiconsView.add(menuLexiconsViewWNSource);
+		menuLexiconsView.add(menuLexiconsViewWNTarget);
+		
+		menuLexicons.add(menuLexiconsBuildAll);
+		menuLexicons.add(menuLexiconsClearAll);
+		menuLexicons.addSeparator();
+		//menuLexicons.add(menuLexiconsBuild);
+		menuLexicons.add(menuLexiconsView);
+		
+		
 		
 		/*
 
@@ -1009,7 +1063,7 @@ public class UIMenu implements ActionListener {
 		
 		ontologyMenu.addSeparator();
 		
-		ontologyProfiling = new JMenuItem("Profiling...");
+		ontologyProfiling = new JMenuItem("Profiling ...");
 		ontologyProfiling.addActionListener(this);
 		ontologyMenu.add(ontologyProfiling);
 		
@@ -1018,29 +1072,19 @@ public class UIMenu implements ActionListener {
 		// **************** Matchers Menu *******************
 		matchersMenu = new JMenu("Matchers");
 		matchersMenu.setMnemonic('M');
-		manualMapping = new JMenuItem("Manual matcher"); 
-		manualMapping.addActionListener(this);
 		
-		menuExport = new JMenu("Export...");
-		exportMatrixCSV = new JMenuItem("Similarity Matrix as CSV");
-		menuExport.add(exportMatrixCSV);
-		
-		matchersMenu.add(menuExport);
-		matchersMenu.addSeparator();
-		matchersMenu.add(manualMapping);
-		
-		userFeedBack = new JMenuItem("User Feedback Loop");
-		userFeedBack.addActionListener(this);
-		matchersMenu.add(userFeedBack);  // Remove UFL for distribution.
-		
-		matchersMenu.addSeparator();
-		newMatching = new JMenuItem("New empty matcher");
-		newMatching.addActionListener(this);
-		matchersMenu.add(newMatching);
-		runMatching = new JMenuItem("Run matcher...");
+		runMatching = new JMenuItem("Run matcher ...");
 		runMatching.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); 
 		runMatching.addActionListener(this);
 		matchersMenu.add(runMatching);
+		
+		matchersMenu.addSeparator();
+		
+		
+		newMatching = new JMenuItem("New empty matcher");
+		newMatching.addActionListener(this);
+		matchersMenu.add(newMatching);
+		
 		copyMatching = new JMenuItem("Copy selected matchings");
 		copyMatching.addActionListener(this);
 		matchersMenu.add(copyMatching);
@@ -1068,6 +1112,10 @@ public class UIMenu implements ActionListener {
 		thresholdAnalysis = new JMenuItem("Threshold Analysis");
 		thresholdAnalysis.addActionListener(this);
 		matchersMenu.add(thresholdAnalysis);
+		
+		userFeedBack = new JMenuItem("User Feedback Loop");
+		userFeedBack.addActionListener(this);
+		matchersMenu.add(userFeedBack);  // Remove UFL for distribution.
 		
 		matchersMenu.addSeparator();
 		
@@ -1134,6 +1182,7 @@ public class UIMenu implements ActionListener {
 		myMenuBar.add(fileMenu);
 		myMenuBar.add(editMenu);
 		myMenuBar.add(viewMenu);
+		myMenuBar.add(menuLexicons);
 		myMenuBar.add(ontologyMenu);
 		myMenuBar.add(matchersMenu);
 		myMenuBar.add(toolsMenu);

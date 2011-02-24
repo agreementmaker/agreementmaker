@@ -150,9 +150,9 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 	}
 	
 	public String checkParameters() {
-		if(!(indCheck.isSelected() || neighbourCheck.isSelected() || chkConceptTerms.isSelected() || propCheck.isSelected() || classCheck.isSelected())) {
+		/*if(!(indCheck.isSelected() || neighbourCheck.isSelected() || chkConceptTerms.isSelected() || propCheck.isSelected() || classCheck.isSelected())) {
 			return "At least one of the three terms sources must be selected.\n Select concept's or neighbours or individuals terms.";
-		}
+		}*/
 		return null;
 	}
 }

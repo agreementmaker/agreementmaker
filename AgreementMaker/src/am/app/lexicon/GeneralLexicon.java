@@ -1,13 +1,18 @@
 package am.app.lexicon;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import am.app.Core;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
+import am.tools.LexiconLookup.LexiconLookupPanel;
 
 import com.hp.hpl.jena.ontology.OntResource;
 
@@ -55,8 +60,43 @@ public class GeneralLexicon implements Lexicon {
  
 	}
 	
-	@Override public LexiconSynSet getSynSet(String wordForm) { return synsetsByString.get(wordForm); }
-	@Override public LexiconSynSet getSynSet(OntResource ontRes) { return synsetsByOntResource.get(ontRes); }
+	@Override public LexiconSynSet getSynSet(String wordForm) {
+		// TODO: Make this work with partial strings - cosmin
+		return synsetsByString.get(wordForm); 
+	}
+	@Override public LexiconSynSet getSynSet(OntResource ontRes) {
+		// TODO: Make this lookup work with partial strings - cosmin
+		return synsetsByOntResource.get(ontRes); 
+	}
+	
+	/**
+	 * Find all the word forms matching the search string.
+	 * @param searchString The case insensitive search string (can be a regular expression).
+	 * @return Return an empty list if no match is found. Will not return null. 
+	 */
+	@Override public List<LexiconSynSet> lookup( String searchString ) {
+		List<LexiconSynSet> synsets = new ArrayList<LexiconSynSet>();
+		
+		Pattern searchPattern = Pattern.compile( searchString, Pattern.CASE_INSENSITIVE );
+		
+		for( Entry<String,LexiconSynSet> straw : synsetsByString.entrySet() ) {
+			// check this straw if it has the needle
+			Matcher matcher = searchPattern.matcher( straw.getKey() );
+			
+			while( matcher.find() ) {
+				if( matcher.start() == matcher.end() ) {
+					// zero length match, ignore
+					continue;
+				}
+				// found a non trivial match.
+				synsets.add( straw.getValue() );
+				
+			}
+		}
+	
+		return synsets;
+	}
+	
 	
 	@Override
 	public void print(PrintStream out) {
@@ -68,26 +108,22 @@ public class GeneralLexicon implements Lexicon {
 	}
 
 
-
-
 	@Override
-	public LexiconRegistry getRegistryEntry() {	return lexiconRegistryEntry; }
-
-
-
+	public LexiconRegistry getType() {	return lexiconRegistryEntry; }
 
 	@Override
 	public Map<OntResource, LexiconSynSet> getSynSetMap() {	return synsetsByOntResource; }
-
-
-
 
 	@Override
 	public int getOntologyID() { return ontID; }
 	
 	@Override
-	public void settOntologyID(int id) { ontID = id; }
+	public void setOntologyID(int id) { ontID = id; }
 	
+	private LexiconLookupPanel lookupPanel;  // this is the user interface to this lexicon
+	
+	@Override public void setLookupPanel(LexiconLookupPanel wnlp) { lookupPanel = wnlp; }
+	@Override public LexiconLookupPanel getLookupPanel() { return lookupPanel; }
 
 	
 }

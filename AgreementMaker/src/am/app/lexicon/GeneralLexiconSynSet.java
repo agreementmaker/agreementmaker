@@ -134,4 +134,9 @@ public class GeneralLexiconSynSet implements LexiconSynSet {
 	@Override
 	public LexiconRegistry getType() { return type; }
 	
+	@Override
+	public boolean isEmpty() {
+		return gloss == null && synonyms.isEmpty();
+	}
+	
 }

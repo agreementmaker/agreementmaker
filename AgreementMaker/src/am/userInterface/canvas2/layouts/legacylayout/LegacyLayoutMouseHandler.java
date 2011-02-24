@@ -26,7 +26,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -164,13 +163,13 @@ public class LegacyLayoutMouseHandler {
 				if( Core.DEBUG) log.debug("Double click with the LEFT mouse button detected.");
 				//do stuff
 
-				if( layout.getHoveringOver() != null && layout.isSingleMappingView() != true ) {
+				if( layout.getHoveringOver() != null && layout.isViewActive(LegacyLayout.VIEW_SINGLE_MAPPING) != true ) {
 					layout.enableSingleMappingView();
 					vizpanel.repaint();
 				}
 
 			} else if( e.getClickCount() == 1 ) {  // single click with left mouse button
-				if( layout.isSingleMappingView() == true ) {
+				if( layout.isViewActive(LegacyLayout.VIEW_SINGLE_MAPPING) == true ) {
 					// if we don't click on anything, cancel the single mapping view
 					// restore the previous visibility of the nodes and edges
 
@@ -183,15 +182,29 @@ public class LegacyLayoutMouseHandler {
 						
 						// move the viewpane to the new node
 						//vizpanel.getScrollPane().scrollRectToVisible( new Rectangle(0, vizpanel.getScrollPane().getSize().height, 1, 1) );
-						vizpanel.getScrollPane().getViewport().setViewPosition( new Point(vizpanel.getScrollPane().getViewport().getLocation().x, 
-								hoveringOver.getBounds().y - vizpanel.getScrollPane().getViewport().getHeight()/2 ));  // TODO: Check canvas boundaries when moving view.
+						//new Point(vizpanel.getScrollPane().getViewport().getLocation().x - vizpanel.getScrollPane().getViewport().getWidth()/2, 
+							//	hoveringOver.getBounds().y - vizpanel.getScrollPane().getViewport().getHeight()/2 ));  // TODO: Check canvas boundaries when moving view.
+						if( hoveringOver.getGraphicalData().ontologyID == layout.getRightOntologyID() ) {
+							// move towards the left as much as we can
+							vizpanel.getScrollPane().getViewport().setViewPosition(
+									new Point( Math.max(hoveringOver.getBounds().x - vizpanel.getScrollPane().getViewport().getWidth() + hoveringOver.getBounds().width + 20, 0), 
+									Math.max(hoveringOver.getBounds().y - vizpanel.getScrollPane().getViewport().getHeight()/2 ,0) ));  // TODO: Check canvas boundaries when moving view.
+						} else if ( hoveringOver.getGraphicalData().ontologyID == layout.getLeftOntologyID() ) {
+							// move towards the right as much as we can
+							vizpanel.getScrollPane().getViewport().setViewPosition(
+									new Point( Math.max(hoveringOver.getBounds().x - hoveringOver.getBounds().width - 20, 0), 
+									Math.max(hoveringOver.getBounds().y - vizpanel.getScrollPane().getViewport().getHeight()/2 ,0) ));  // TODO: Check canvas boundaries when moving view.
+						} else {
+							vizpanel.getScrollPane().getViewport().setViewPosition(
+								new Point( Math.max(hoveringOver.getBounds().x - vizpanel.getScrollPane().getViewport().getWidth()/2, 0), 
+								Math.max(hoveringOver.getBounds().y - vizpanel.getScrollPane().getViewport().getHeight()/2 ,0) ));  // TODO: Check canvas boundaries when moving view.
+						}
+						
 						//System.out.print( "Moving viewport to: " + hoveringOver.getBounds().toString() );
 						hoveringOver = null;
 						vizpanel.repaint();
 					}
-				}
-
-				if( hoveringOver == null ) {
+				} else if( hoveringOver == null ) {
 					// we have clicked in an empty area, clear all the selected nodes
 					Iterator<LegacyNode> nodeIter = selectedNodes.iterator();
 					while( nodeIter.hasNext() ) {
@@ -496,7 +509,7 @@ public class LegacyLayoutMouseHandler {
 			} else if( e.getClickCount() == 1 ) {
 				// single right click, bring up delete menu
 				if( hoveringOver != null ) {
-					DeleteMappingMenu menuDelete = new DeleteMappingMenu( layout, hoveringOver.getMappings() );
+					DeleteMappingMenu menuDelete = new DeleteMappingMenu( layout, hoveringOver, hoveringOver.getMappings() );
 					menuDelete.show( vizpanel, e.getX(), e.getY());
 					menuDelete.addPopupMenuListener(layout);
 					layout.setPopupMenuActive(true);

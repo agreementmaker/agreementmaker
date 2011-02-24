@@ -36,10 +36,10 @@ public class Mapping implements Serializable
     public final static String EQUIVALENCE = "=";
     public final static String SUPERCLASS = ">";
     public final static String SUBCLASS = "<";
-    public final static String SUBSET = "\u2282";
-    public final static String SUPERSET = "\u2283";
-    public final static String SUBSETCOMPLETE = "\u2286";
-    public final static String SUPERSETCOMPLETE = "\u2287";
+    public final static String SUBSET = "<s";
+    public final static String SUPERSET = ">s";
+    public final static String SUBSETCOMPLETE = "<sc";
+    public final static String SUPERSETCOMPLETE = ">sc";
 
     
     public static String parseRelation(String r) {
@@ -55,6 +55,14 @@ public class Mapping implements Serializable
     }
     
     /* Constructors */
+    public Mapping(Node e1, Node e2, double sim, String rel, alignType tyoc, String p) {
+        entity1 = e1;
+        entity2 = e2;
+        similarity = sim;
+        relation = rel;
+        typeOfConcepts = tyoc;
+        provenance = p;
+    }
     
     public Mapping(Node e1, Node e2, double sim, String r, alignType tyoc)
     {

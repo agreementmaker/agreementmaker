@@ -1246,11 +1246,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		catch(AMException ex2) {
 			report = ex2.getMessage();
 			this.cancel(true);
+			if( progressDisplay != null ) { progressDisplay.matchingComplete(); }
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			report = Utility.UNEXPECTED_ERROR;
+			report = ex.getMessage();
 			this.cancel(true);
+			if( progressDisplay != null ) { progressDisplay.matchingComplete(); }
 		}
 		return null;
 	}

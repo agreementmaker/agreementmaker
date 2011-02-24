@@ -372,7 +372,7 @@ public class LoadFileDialog extends JDialog implements ActionListener{
 					ReferenceAlignmentParameters refParams = new ReferenceAlignmentParameters();
 					
 					refParams.fileName = outFileName;
-					refParams.format = ReferenceAlignmentMatcher.REF0;
+					refParams.format = ReferenceAlignmentMatcher.OAEI;
 					referenceAlignmentMatcher.setParam(refParams);
 					
 					referenceAlignmentMatcher.setThreshold(referenceAlignmentMatcher.getDefaultThreshold());

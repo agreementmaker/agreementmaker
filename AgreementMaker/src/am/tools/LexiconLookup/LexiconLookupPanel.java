@@ -24,14 +24,11 @@
 package am.tools.LexiconLookup;
 
 import java.awt.Font;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -42,25 +39,17 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Document;
-import javax.swing.text.StyledDocument;
-import javax.swing.text.html.HTMLDocument;
 
-import com.hp.hpl.jena.ontology.OntResource;
+import org.apache.commons.lang.StringEscapeUtils;
 
-import am.Utility;
 import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconSynSet;
 
-import edu.smu.tspell.wordnet.NounSynset;
-import edu.smu.tspell.wordnet.Synset;
-import edu.smu.tspell.wordnet.SynsetType;
-import edu.smu.tspell.wordnet.WordNetDatabase;
+import com.hp.hpl.jena.ontology.OntResource;
 
 public class LexiconLookupPanel extends JPanel implements ActionListener, KeyListener {
 
+	private static final long serialVersionUID = -6497486517225004234L;
 	
 	private JLabel lblTerm;
 	private JTextField txtTerm;
@@ -80,6 +69,7 @@ public class LexiconLookupPanel extends JPanel implements ActionListener, KeyLis
 		if( l == null ) throw new NullPointerException("Cannot display a null Lexicon.");
 		
 		lexicon = l;
+		lexicon.setLookupPanel(this);
 		
 		// create the UI components for the WordNet Lookup Panel.
 		
@@ -154,7 +144,7 @@ public class LexiconLookupPanel extends JPanel implements ActionListener, KeyLis
 
 	private void viewAll() {
 		
-		HTMLDocument resultDocument = new HTMLDocument();
+		//HTMLDocument resultDocument = new HTMLDocument();
 		
 		String wholeLexicon = new String();
 		
@@ -170,7 +160,7 @@ public class LexiconLookupPanel extends JPanel implements ActionListener, KeyLis
 				wholeLexicon += getSynSetDescription(related);
 			}
 
-			wholeLexicon += "<hr>";
+			wholeLexicon += "<hr><br>";
 		}
 		
 	
@@ -194,28 +184,73 @@ public class LexiconLookupPanel extends JPanel implements ActionListener, KeyLis
 		}
 	}
 	
+	public void doLookup(OntResource r) {
+		String newResult = new String();
+		
+		if( r == null ) {
+			newResult += "<h2><font color=\"red\">Resource is null.</font></h2>";
+			newResult += "<p>No resource was selected to be viewed.</p>";
+		} else {
+			// do the lookup
+			LexiconSynSet synSet = lexicon.getSynSet(r);
+			
+			if( synSet == null ) {
+				// term was not found.
+				newResult += "<h2><font color=\"red\">Resource not found.</font></h2>";
+				newResult += "<p>This resource does not have a lexicon entry.</p><p>" + r.getLocalName() + "</p>";
+	
+			} else {
+	
+				newResult += "<h2><font color=\"blue\">Main Synset</font></h2>";
+				newResult += getSynSetDescription(synSet);
+				newResult += "<h2><font color=\"blue\">Related Synsets</font></h2>";
+	
+				for( LexiconSynSet related : synSet.getRelatedSynSets() ) {
+					newResult += getSynSetDescription(related);
+				}
+				newResult += "<br><hr><br>";
+			}
+		}
+
+		// ok, we have created the SyledDocument for the result, update the
+		// JTextPane.
+		txtResult.setText( newResult );
+		txtResult.setCaretPosition(0); // scroll to the top
+		
+		txtTerm.select(0, txtTerm.getText().length() );
+	}
 	
 	private void doLookup() {
-		// Let's do a wordnet lookup!
+		// Let's do a lexicon lookup!
 
 		String searchTerm = txtTerm.getText();
 
 		String newResult = new String();
-		HTMLDocument resultDocument = new HTMLDocument();
+		//HTMLDocument resultDocument = new HTMLDocument();
 
 		newResult += "<h1>Search Term: " + txtTerm.getText() + "</h1><br>";
 		
-		newResult += "<h2><font color=\"blue\">Main Synset</font></h2>";
 		
 		// lookup and print out.
-		LexiconSynSet synSet = lexicon.getSynSet(searchTerm);
+		List<LexiconSynSet> synSet = lexicon.lookup(searchTerm);
 
-		newResult += getSynSetDescription(synSet);
+		if( synSet.size() == 0 ) {
+			// term was not found.
+			newResult += "<h2><font color=\"red\">Term not found.</font></h2>";
+			newResult += "<p>The search string is treated as a regular expression over the set of all word forms.  Definitions are not searched at this time.</p>";
+			
+		} else {
+			
+			for( LexiconSynSet sset : synSet ) {
+				newResult += "<h2><font color=\"blue\">Main Synset</font></h2>";
+				newResult += getSynSetDescription(sset);
+				newResult += "<h2><font color=\"blue\">Related Synsets</font></h2>";
 		
-		newResult += "<h2><font color=\"blue\">Related Synsets</font></h2>";
-
-		for( LexiconSynSet related : synSet.getRelatedSynSets() ) {
-			newResult += getSynSetDescription(related);
+				for( LexiconSynSet related : sset.getRelatedSynSets() ) {
+					newResult += getSynSetDescription(related);
+				}
+				newResult += "<br><hr><br>";
+			}
 		}
 
 		// ok, we have created the SyledDocument for the result, update the
@@ -234,17 +269,24 @@ public class LexiconLookupPanel extends JPanel implements ActionListener, KeyLis
 		
 		if( synSet == null ) return newResult;
 		
-		newResult += "<b>Synset " + "</b> (" + synSet.getID() + ") (" + synSet.getType().getLexiconName() + ").<br>";
-		newResult += "<b>Gloss: " + "</b>"+ synSet.getGloss() + ".<br>";
+		//newResult += "<b>Synset " + "</b> (" + synSet.getID() + ") (" + synSet.getType().getLexiconName() + ").<br>";
+		newResult += "<b>Set of synonyms: " + "</b>";
+		for( String syn : synSet.getSynonyms() ) {
+			newResult += StringEscapeUtils.escapeHtml(syn) + ", ";
+		}
+		newResult += ".<br>";
+		
+		if( synSet.getGloss() != null ) {
+			newResult += "<b>Gloss: " + "</b>"+ StringEscapeUtils.escapeHtml( synSet.getGloss() ) + ".<br>";
+		} else {
+			newResult += "<b>Gloss: " + "</b>null.<br>";
+		}
 		
 		if( synSet.getOntologyConcept() != null ) {
-			newResult += "<b>OntResource: " + "</b> " + synSet.getOntologyConcept().getLocalName() + ".<br>";
+			newResult += "<b>OntResource: " + "</b>" + StringEscapeUtils.escapeHtml( synSet.getOntologyConcept().getLocalName() ) + ".<br>";
 		}
 
-		for( String syn : synSet.getSynonyms() ) {
-			newResult += syn + ", ";
-		}
-		newResult += ".<br><br>";
+
 		
 		return newResult;
 	}

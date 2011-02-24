@@ -13,6 +13,7 @@ public interface LexiconSynSet {
 	public OntResource getOntologyConcept();
 	
 	public boolean isEditable();
+	public boolean isEmpty();
 	
 	public void setGloss(String def);
 	public String getGloss();

@@ -2,11 +2,11 @@ package am.userInterface.canvas2.layouts;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,34 +21,15 @@ import javax.swing.event.PopupMenuListener;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import sun.misc.Cleaner;
-
-import com.hp.hpl.jena.ontology.AnnotationProperty;
-import com.hp.hpl.jena.ontology.ConversionException;
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.ontology.ProfileException;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import com.hp.hpl.jena.vocabulary.OWL;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.userInterface.UI;
-import am.userInterface.VisualizationPanel;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.GraphicalData;
 import am.userInterface.canvas2.graphical.MappingData;
@@ -68,9 +49,17 @@ import am.userInterface.canvas2.utility.Canvas2Vertex;
 import am.userInterface.canvas2.utility.CanvasGraph;
 import am.userInterface.canvas2.utility.GraphLocator;
 import am.userInterface.canvas2.utility.GraphLocator.GraphType;
-import am.userInterface.sidebar.vertex.VertexDescriptionPane;
 import am.utility.DirectedGraphEdge;
 import am.utility.Pair;
+
+import com.hp.hpl.jena.ontology.ConversionException;
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.ontology.ProfileException;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.OWL;
 
 /**
  * This layout is resposible for placement of nodes and edges.
@@ -81,6 +70,9 @@ import am.utility.Pair;
  */
 
 public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
+	
+	public static final int VIEW_NORMAL = 0;
+	public static final int VIEW_SINGLE_MAPPING = 1;
 	
 	/* FLAGS, and SETTINGS */
 	private boolean showLocalName = true;
@@ -217,7 +209,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	public void setPopupMenuActive( boolean v ) { PopupMenuActive = v; }
 	public Canvas2Vertex getHoveringOver() { return hoveringOver; }
 	public void setHoveringOver(Canvas2Vertex vertex) { hoveringOver = vertex; }
-	public boolean isSingleMappingView() { return SingleMappingView; }
+	@Deprecated public boolean isSingleMappingView() { return SingleMappingView; } // Deprecated in favor of isViewActive(LegacyLayout.VIEW_SINGLE_MAPPING)
 	public ArrayList<LegacyNode> getSelectedNodes() { return selectedNodes; }
 	public int getLeftOntologyID() { return leftOntologyID; }
 	public int getRightOntologyID() { return rightOntologyID; }
@@ -1335,6 +1327,16 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	}
 
 	public void disableSingleMappingView() {
+		
+		// select the node that was last clicked
+		for( LegacyNode n : selectedNodes ) { n.setSelected(false);	}
+		selectedNodes.clear();
+		
+		if( hoveringOver != null && hoveringOver instanceof LegacyNode ) {
+			selectedNodes.add( (LegacyNode) hoveringOver);
+			hoveringOver.setSelected(true);
+		}
+		
 		Iterator<CanvasGraph> graphIter = vizpanel.getGraphs().iterator();
 		while( graphIter.hasNext() ) {
 			CanvasGraph graph = graphIter.next();
@@ -1421,34 +1423,62 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		
 		
 		// now that all of the nodes and edges have been hidden, show only the ones we want to see
-		// we will show all edges connected to the selectedNodes, and all nodes connected to the edges of the selectedNodes
+		ArrayList<LegacyNode> nodesToMoveUp = new ArrayList<LegacyNode>();
 		Iterator<LegacyNode> nodeIter = selectedNodes.iterator();
 		while( nodeIter.hasNext() ) {
+			// we will show all edges connected to the selectedNodes, and all nodes connected to the edges of the selectedNodes
 			LegacyNode selectedNode = nodeIter.next();
 			selectedNode.setVisible(true);
 			selectedNode.setSelected(false); // unselect the nodes
 			
-			
-			Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeInIter = selectedNode.edgesInIter();
-			while( edgeInIter.hasNext() ) {
-				Canvas2Edge connectedEdge = (Canvas2Edge) edgeInIter.next();
+			for( DirectedGraphEdge<GraphicalData, GraphicalData> connectedInEdge : selectedNode.edgesInList() ) {
+				Canvas2Edge connectedEdge = (Canvas2Edge) connectedInEdge;
 				connectedEdge.setVisible(true);
-				if( selectedNode == connectedEdge.getOrigin() ) { ((Canvas2Vertex)connectedEdge.getDestination()).setVisible(true); }
-				else { ((Canvas2Vertex)connectedEdge.getOrigin()).setVisible(true); }
+				((Canvas2Vertex)connectedEdge.getOrigin()).setVisible(true); // the selected node is the destination, so we need to set the origin to be visible
+				
+				// if the node connected to this one is a mapping, we will traverse one more hop. -- TODO: Make this work.
+				/*if( connectedEdge instanceof LegacyMapping && connectedEdge.getOrigin() instanceof LegacyNode ) {
+					LegacyNode mappingOrigin = (LegacyNode) connectedEdge.getOrigin();
+					for( DirectedGraphEdge<GraphicalData, GraphicalData> mappingInEdge : mappingOrigin.edgesInList() ) {
+						Canvas2Edge mappingConnectedEdge = (Canvas2Edge) mappingInEdge;
+						mappingConnectedEdge.setVisible(true);
+						((Canvas2Vertex)mappingConnectedEdge.getOrigin()).setVisible(true); // the selected node is the destination, so we need to set the origin to be visible
+					}
+					for( DirectedGraphEdge<GraphicalData, GraphicalData> mappingOutEdge : mappingOrigin.edgesOutList() ) {
+						Canvas2Edge mappingConnectedEdge = (Canvas2Edge) mappingOutEdge;
+						mappingConnectedEdge.setVisible(true);
+						((Canvas2Vertex)connectedEdge.getDestination()).setVisible(true); // the selected node is the the origin, so we need to set the destination to be visible
+					}
+				}*/
 			}
 			
-			Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeOutIter = selectedNode.edgesOutIter();
-			while( edgeOutIter.hasNext() ) {
-				Canvas2Edge connectedEdge = (Canvas2Edge) edgeOutIter.next();
+			for( DirectedGraphEdge<GraphicalData, GraphicalData> connectedOutEdge : selectedNode.edgesOutList() ) {
+				Canvas2Edge connectedEdge = (Canvas2Edge) connectedOutEdge;
 				connectedEdge.setVisible(true);
-				if( selectedNode == connectedEdge.getOrigin() ) { ((Canvas2Vertex)connectedEdge.getDestination()).setVisible(true); }
-				else { ((Canvas2Vertex)connectedEdge.getOrigin()).setVisible(true); }
+				((Canvas2Vertex)connectedEdge.getDestination()).setVisible(true);
+				
+				// if the node connected to this one is a mapping, we will traverse one more hop. // TODO: Make this work.
+				/*if( connectedEdge instanceof LegacyMapping && connectedEdge.getDestination() instanceof LegacyNode ) {
+					LegacyNode mappingDestination = (LegacyNode) connectedEdge.getDestination();
+					for( DirectedGraphEdge<GraphicalData, GraphicalData> mappingInEdge : mappingDestination.edgesInList() ) {
+						Canvas2Edge mappingConnectedEdge = (Canvas2Edge) mappingInEdge;
+						mappingConnectedEdge.setVisible(true);
+						((Canvas2Vertex)mappingConnectedEdge.getOrigin()).setVisible(true); // the selected node is the destination, so we need to set the origin to be visible
+					}
+					for( DirectedGraphEdge<GraphicalData, GraphicalData> mappingOutEdge : mappingDestination.edgesOutList() ) {
+						Canvas2Edge mappingConnectedEdge = (Canvas2Edge) mappingOutEdge;
+						mappingConnectedEdge.setVisible(true);
+						((Canvas2Vertex)connectedEdge.getDestination()).setVisible(true); // the selected node is the the origin, so we need to set the destination to be visible
+					}
+				}*/
 			}
 			
 		}
 		
 		
+		
 		// we need to move the opposite side up to the side we clicked
+		// Step 1. Calculate the uppermostY.
 		//ArrayList<LegacyMapping> mappingList = new ArrayList<LegacyMapping>(); // we have to keep a list of all the mappings to/from this node
 		int uppermostY = -1; // -1 is a dummy value.  Valid values are >= 0.
 		for( LegacyNode selectedNode : selectedNodes ) {
@@ -1723,4 +1753,19 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			
 		}
 	}
+
+	@Override
+	public boolean isViewActive(int viewID) {
+		if( viewID == VIEW_SINGLE_MAPPING ) return SingleMappingView;
+		if( viewID == VIEW_NORMAL ) return !SingleMappingView;
+		return false;
+	}
+
+	// TODO: Remove these unused methods (by changing Canvas2Layout)
+	@Override public void mouseDragged(MouseEvent e) { }
+	@Override public void mouseEntered(MouseEvent e) { }
+	@Override public void mouseExited(MouseEvent e) { }
+	@Override public void mousePressed(MouseEvent e) { }
+	@Override public void mouseReleased(MouseEvent e) {	}
+	@Override public void mouseWheelMoved(MouseWheelEvent e) { }
 }

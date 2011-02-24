@@ -124,7 +124,7 @@ public class WordNetLexiconBuilder implements LexiconBuilder {
 				
 				
 			// Step 4. Get the definition. (Problem: for multiple wordnet synsets, which definition do we choose????????) TODO
-			 					  //( TODO: Answer: a robust disambiguation solution is required here. )
+			 					  //( TODO: Answer: a robust disambiguation solution is required here. (ha ha ha, that's not going to happen anytime soon) )
 			if( definitionFromOnt == null ) {
 				if( !wordnetDefinitions.isEmpty() ) { wordNetNewSynSet.setGloss( wordnetDefinitions.get(0) ); } // the first definition found
 				// no definitions were found
@@ -136,7 +136,7 @@ public class WordNetLexiconBuilder implements LexiconBuilder {
 				
 				
 			// Done creating the SynSet.
-			wordnetLexicon.addSynSet(wordNetNewSynSet);
+			if( !wordNetNewSynSet.isEmpty() ) wordnetLexicon.addSynSet(wordNetNewSynSet);
 			
 		}
 		
@@ -156,7 +156,7 @@ public class WordNetLexiconBuilder implements LexiconBuilder {
 				String[] words = synsets[i].getWordForms(); // get the wordforms of this synset
 				
 				for (int j = 0; j < words.length; j++) {
-					if( !wordFormsFound.contains( words[j] ) ) wordFormsFound.add(words[j]);
+					if( !words[j].trim().equals("") && !wordFormsFound.contains( words[j] ) ) wordFormsFound.add(words[j]);
 				}
 				
 			}

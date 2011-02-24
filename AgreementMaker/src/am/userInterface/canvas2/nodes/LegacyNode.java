@@ -13,6 +13,7 @@ import am.app.ontology.Ontology;
 import am.userInterface.Colors;
 import am.userInterface.canvas2.graphical.GraphicalData;
 import am.userInterface.canvas2.graphical.MappingData;
+import am.userInterface.canvas2.layouts.LegacyLayout;
 import am.userInterface.canvas2.utility.Canvas2Vertex;
 import am.utility.DirectedGraphEdge;
 
@@ -73,7 +74,7 @@ public class LegacyNode extends Canvas2Vertex {
 		
 		if( isSelected() ) {
 			g.setColor(Colors.selected);
-			g.fillRoundRect(d.x+circlePadding, d.y, d.width-circlePadding, d.height, arcWidth, arcHeight); 
+			g.fillRoundRect(d.x+circlePadding, d.y, d.width-circlePadding, d.height, arcWidth, arcHeight);
 		} else if( d.hover ) {
 			g.setColor(Colors.hover);
 			g.fillRoundRect(d.x+circlePadding, d.y, d.width-circlePadding, d.height, arcWidth, arcHeight);
@@ -142,7 +143,8 @@ public class LegacyNode extends Canvas2Vertex {
 		Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeOutIter = edgesOut.iterator();
 		while( edgeOutIter.hasNext() ) {
 			GraphicalData gd = edgeOutIter.next().getObject();
-			if( gd.type == GraphicalData.NodeType.MAPPING && gd.visible == true ) {
+			if( gd.type == GraphicalData.NodeType.MAPPING && 
+					( gd.visible == true || gd.layout.isViewActive(LegacyLayout.VIEW_SINGLE_MAPPING) ) ) {
 				if( matcherID < ((MappingData)gd).matcherID ) {
 					matcherID = ((MappingData)gd).matcherID;
 					c = mixColors(c, ((MappingData)gd).color);
@@ -154,7 +156,8 @@ public class LegacyNode extends Canvas2Vertex {
 		Iterator<DirectedGraphEdge<GraphicalData, GraphicalData>> edgeInIter = edgesIn.iterator();
 		while( edgeInIter.hasNext() ) {
 			GraphicalData gd = edgeInIter.next().getObject();
-			if( gd.type == GraphicalData.NodeType.MAPPING && gd.visible == true ) {
+			if( gd.type == GraphicalData.NodeType.MAPPING && 
+					( gd.visible == true || gd.layout.isViewActive(LegacyLayout.VIEW_SINGLE_MAPPING) ) ) {
 				if( matcherID < ((MappingData)gd).matcherID ) {
 					matcherID = ((MappingData)gd).matcherID;
 					c = mixColors(c, ((MappingData)gd).color);
