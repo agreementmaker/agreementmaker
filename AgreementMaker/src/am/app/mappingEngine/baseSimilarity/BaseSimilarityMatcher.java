@@ -180,7 +180,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 						+processed1+"\"";
 				}
 				Mapping pmapping=new Mapping( source, target, highestSimilarity, relation, typeOfNodes);
-				if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
+				if( param.storeProvenance && highestSimilarity >= param.threshold ) pmapping.setProvenance(provenanceString+"\n");
 				return pmapping;
 			}
 		}

@@ -86,7 +86,7 @@ public class MatcherFactory {
 		// Set the Index in the Control Panel
 		a.setIndex(instanceIndex);
 		a.setID( Core.getInstance().getNextMatcherID() );  // used globally
-		a.setName(name);
+		a.setRegistryEntry(name);
 		
 		// Set the color of the matcher
 		Color color = getColorFromIndex(instanceIndex);
@@ -142,7 +142,7 @@ public class MatcherFactory {
 	}
 
 	public static boolean isTheUserMatcher(AbstractMatcher toBeDeleted) {
-		return toBeDeleted.getName() == MatchersRegistry.UserManual && toBeDeleted.getIndex() == 0;
+		return toBeDeleted.getRegistryEntry() == MatchersRegistry.UserManual && toBeDeleted.getIndex() == 0;
 	}
 	
 	

@@ -200,7 +200,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 				for(int i = 0; i < rowsIndex.length; i++) {
 					
 					toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
-					report+=(i+1)+" "+toBeEvaluated.getName().getMatcherName()+"\n\n";
+					report+=(i+1)+" "+toBeEvaluated.getName()+"\n\n";
 					q = QualityEvaluator.evaluate(toBeEvaluated, quality);
 					if(!q.isLocal()) {
 						report+= quality+"\n";
@@ -407,7 +407,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 					
 					rd = ReferenceEvaluator.compare(evaluateSet, referenceSet);
 					toBeEvaluated.setRefEvaluation(rd);
-					report+=i+" "+toBeEvaluated.getName().getMatcherName()+"\n\n";
+					report+=i+" "+toBeEvaluated.getName()+"\n\n";
 					report +=rd.getReport()+"\n";
 					AbstractTableModel model = (AbstractTableModel)matchersTablePanel.getTable().getModel();
 					model.fireTableRowsUpdated(toBeEvaluated.getIndex(), toBeEvaluated.getIndex());
@@ -503,7 +503,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 					int sumFound = 0;
 					int sumCorrect = 0;
 					toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
-					report+=i+" "+toBeEvaluated.getName().getMatcherName()+"\n\n";
+					report+=i+" "+toBeEvaluated.getRegistryEntry().getMatcherName()+"\n\n";
 					double th;
 					report+="Threshold:\tFound\tCorrect\tReference\tPrecision\tRecall\tF-Measure\n";
 					

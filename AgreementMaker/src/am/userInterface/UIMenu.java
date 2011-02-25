@@ -512,7 +512,7 @@ public class UIMenu implements ActionListener {
 					
 					newMatcher.setClassesAlignmentSet(combinedClassSet);
 					newMatcher.setPropertiesAlignmentSet(combinedClassSet);
-					newMatcher.setName(MatchersRegistry.UniqueMatchings);
+					newMatcher.setRegistryEntry(MatchersRegistry.UniqueMatchings);
 					newMatcher.setID( Core.getInstance().getNextMatcherID());
 					
 					m.addMatcher(newMatcher);
@@ -603,7 +603,7 @@ public class UIMenu implements ActionListener {
 				if( Utility.displayConfirmPane("Are you running a batch mode?", "Batch mode?") ) {
 					String batchFile = JOptionPane.showInputDialog(null, "Batch File?");
 					String outputDirectory = JOptionPane.showInputDialog(null, "Output Directory?");
-					String matcherName = (new MatcherParametersDialog()).getMatcher().getName().getMatcherName();
+					String matcherName = (new MatcherParametersDialog()).getMatcher().getRegistryEntry().getMatcherName();
 					MatchersRegistry matcher = MatcherFactory.getMatchersRegistryEntry(matcherName);
 					if( Utility.displayConfirmPane("Using matcher: " + matcherName, "Ok?") ) {
 						ThresholdAnalysis than = new ThresholdAnalysis(matcher);
@@ -620,7 +620,7 @@ public class UIMenu implements ActionListener {
 					int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
 					if( rowsIndex.length == 0 ) { Utility.displayErrorPane("You must select a matcher from the control panel when running in single mode.", "Error"); return; }
 					AbstractMatcher matcherToBeAnalyzed = Core.getInstance().getMatcherInstances().get(rowsIndex[0]);
-					if( Utility.displayConfirmPane("Using matcher: " + matcherToBeAnalyzed.getName().getMatcherName(), "Ok?") ) {
+					if( Utility.displayConfirmPane("Using matcher: " + matcherToBeAnalyzed.getRegistryEntry().getMatcherName(), "Ok?") ) {
 						ThresholdAnalysis than = new ThresholdAnalysis(matcherToBeAnalyzed);
 						than.setReferenceAlignment(referenceAlignment);
 						than.setOutputDirectory(outputDirectory);
@@ -652,7 +652,7 @@ public class UIMenu implements ActionListener {
 				mp.getPlot().draw(false);
 				JPanel plotPanel = new JPanel();
 				plotPanel.add(mp);
-				Core.getUI().addTab("MatrixPlot Class", null , plotPanel , selectedMatcher.getName().getMatcherName());
+				Core.getUI().addTab("MatrixPlot Class", null , plotPanel , selectedMatcher.getRegistryEntry().getMatcherName());
 			} else if( obj == TEMP_viewPropMatrix ) {
 				// get the currently selected matcher
 				ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
@@ -668,7 +668,7 @@ public class UIMenu implements ActionListener {
 				mp.getPlot().draw(false);
 				JPanel plotPanel = new JPanel();
 				plotPanel.add(mp);
-				Core.getUI().addTab("MatrixPlot Prop", null , plotPanel , selectedMatcher.getName().getMatcherName());
+				Core.getUI().addTab("MatrixPlot Prop", null , plotPanel , selectedMatcher.getRegistryEntry().getMatcherName());
 			} else if( obj == TEMP_matcherAnalysisClasses ) {
 				final MatcherAnalyticsPanel ma = new MatcherAnalyticsPanel( VisualizationType.CLASS_MATRIX );
 				

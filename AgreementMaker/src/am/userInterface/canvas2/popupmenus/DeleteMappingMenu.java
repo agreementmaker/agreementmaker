@@ -78,8 +78,8 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 				
 				int matcherID = matcher.getID();
 				
-				JMenu mMatcher = new JMenu(matcher.getName().name() + "(#" + Integer.toString(matcherID) + ")");
-				JMenu mMatcherProv = new JMenu(matcher.getName().name() + "(#" + Integer.toString(matcherID) + ")");
+				JMenu mMatcher = new JMenu(matcher.getName() + "(#" + Integer.toString(matcherID) + ")");
+				JMenu mMatcherProv = new JMenu(matcher.getName() + "(#" + Integer.toString(matcherID) + ")");
 				
 				boolean hasMappings = false, hasProvenance = false;
 				for( int i = 0; i < mappings.size(); i++ ) {

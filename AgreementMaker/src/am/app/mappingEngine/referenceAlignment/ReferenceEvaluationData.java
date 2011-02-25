@@ -14,6 +14,10 @@ public class ReferenceEvaluationData
     private Alignment<Mapping> errorAlignments = null;
     private Alignment<Mapping> correctAlignments = null;
     private Alignment<Mapping> lostAlignments = null;
+	private int classesFound;
+	private int classesCorrect;
+	private int propertiesCorrect;
+	private int propertiesFound;
   
     public Alignment<Mapping> getCorrectAlignments()
     {
@@ -112,6 +116,10 @@ public class ReferenceEvaluationData
 	public String getReport() {
 		String result  = "";
 		result+="Matchings discovered: "+getFound()+"\n";
+		result+="Class mappings correct/found: "+classesCorrect+"/" + classesFound + ": " + 
+				(classesFound == 0 ? "0%" : Utility.getOneDecimalPercentFromDouble(classesCorrect/classesFound)) + "\n";
+		result+="Property mappings correct/found: "+propertiesCorrect+"/" + propertiesFound + ": " + 
+				(propertiesFound == 0 ? "0%" : Utility.getOneDecimalPercentFromDouble(propertiesCorrect/propertiesFound) ) + "\n";
 		result+="Matchings in Reference: "+getExist()+"\n";
 		result+="Matchings correct: "+getCorrect()+"\n";
 		result+="Precision = Correct/Discovered: "+Utility.getOneDecimalPercentFromDouble(getPrecision())+"\n";
@@ -122,6 +130,14 @@ public class ReferenceEvaluationData
 	
 	public String getMeasuresLine() {
 		return found+"\t"+correct+"\t"+exist+"\t"+Utility.getOneDecimalPercentFromDouble(precision)+"\t"+Utility.getOneDecimalPercentFromDouble(recall)+"\t"+Utility.getOneDecimalPercentFromDouble(fmeasure)+"\n";
+	}
+
+	public void setClasses(int classesCorrect, int classesFound) {
+			this.classesFound = classesFound; this.classesCorrect = classesCorrect;
+	}
+	
+	public void setProperties(int propertiesCorrect, int propertiesFound) {
+		this.propertiesFound = propertiesFound; this.propertiesCorrect = propertiesCorrect;
 	}
     
 }

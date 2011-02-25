@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dom4j.io.SAXReader;
@@ -192,6 +193,10 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
         SAXReader reader = new SAXReader();
         Document doc = reader.read(file);   // TODO: FIX PARSE ERROR if using UTF-8 Characters!!!!!!
         Element root = doc.getRootElement();
+        
+        String matcherName = root.attributeValue("matcherName");
+        if( matcherName != null && !matcherName.isEmpty() ) setName(StringEscapeUtils.unescapeHtml(matcherName));
+        
         Element align = root.element("Alignment");
         Iterator<?> map = align.elementIterator("map");  // TODO: Fix this hack? (Iterator<?>)
         while (map.hasNext()) {

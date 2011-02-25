@@ -112,7 +112,7 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 		AbstractMatcher a;
 		for(int i = 0; i< matchers.size();i++) {
 			a = matchers.get(i);
-			String name =( (MatchersRegistry)a.getName()).getMatcherName();
+			String name = a.getRegistryEntry().getMatcherName();
 			nameLabel = new JLabel(a.getIndex()+". "+name);
 			nameLabel.setEnabled(false);
 			inputMatchersLabel[i] = nameLabel;

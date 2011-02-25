@@ -311,7 +311,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 			System.out.println("MISSED MAPPINGS");
 			System.out.println(allSimilarities(rd.getLostAlignments()));			
 						
-			report+= getName().getMatcherName()+"\n\n";
+			report+= getRegistryEntry().getMatcherName()+"\n\n";
 			report +=rd.getReport()+"\n";
 			Utility.displayTextAreaPane(report,"Reference Evaluation Report");
 		}

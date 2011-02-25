@@ -43,7 +43,7 @@ public class ClusterFactoryDialog extends JDialog implements ActionListener {
 		
 		for( int i = 0; i < matchers.size(); i++ ) {
 			AbstractMatcher currentMatcher = matchers.get(i);
-			JCheckBox chkMatcher = new JCheckBox(currentMatcher.getName().getMatcherName());
+			JCheckBox chkMatcher = new JCheckBox(currentMatcher.getRegistryEntry().getMatcherName());
 			chkMatcher.setSelected(true);
 			matcherCheckboxes[i] = chkMatcher;
 			selectionPanel.add(chkMatcher);

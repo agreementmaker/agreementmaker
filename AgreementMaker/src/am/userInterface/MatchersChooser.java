@@ -99,7 +99,7 @@ public class MatchersChooser {
 			
 			for( int i = 0; i < matchers.size(); i++ ) {
 				AbstractMatcher currentMatcher = matchers.get(i);
-				JRadioButton radMatcher = new JRadioButton(currentMatcher.getName().getMatcherName());
+				JRadioButton radMatcher = new JRadioButton(currentMatcher.getRegistryEntry().getMatcherName());
 				radMatcher.setSelected(true);
 				matcherRadios[i] = radMatcher;
 				grpMatchers.add(radMatcher);
@@ -161,7 +161,7 @@ public class MatchersChooser {
 			
 			for( int i = 0; i < matchers.size(); i++ ) {
 				AbstractMatcher currentMatcher = matchers.get(i);
-				JCheckBox chkMatcher = new JCheckBox(currentMatcher.getName().getMatcherName());
+				JCheckBox chkMatcher = new JCheckBox(currentMatcher.getRegistryEntry().getMatcherName());
 				chkMatcher.setSelected(true);
 				matcherCheckboxes[i] = chkMatcher;
 				selectionPanel.add(chkMatcher);

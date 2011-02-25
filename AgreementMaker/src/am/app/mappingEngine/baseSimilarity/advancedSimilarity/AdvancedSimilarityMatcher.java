@@ -104,7 +104,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 			if( highestSimilarity == 0.0d ) return null;
 			else {
 				Mapping pmapping = new Mapping( source, target, highestSimilarity);
-				if( param.storeProvenance ) {
+				if( param.storeProvenance && highestSimilarity >= param.threshold ) {
 					String provenanceString = "sim(\"" + provS + "\", \"" + provT + "\") = " + highestSimilarity;
 					pmapping.setProvenance(provenanceString);
 				}

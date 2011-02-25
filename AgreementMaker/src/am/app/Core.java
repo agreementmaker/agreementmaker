@@ -138,7 +138,7 @@ public class Core {
 	public AbstractMatcher getMatcherInstance( MatchersRegistry matcher ) {
 	
 		for( int i = 0; i < matcherInstances.size(); i++ ) {
-			String m1 = matcherInstances.get(i).getName().getMatcherClass();
+			String m1 = matcherInstances.get(i).getRegistryEntry().getMatcherClass();
 			String m2 = matcher.getMatcherClass();
 			
 			if( Core.DEBUG ) {

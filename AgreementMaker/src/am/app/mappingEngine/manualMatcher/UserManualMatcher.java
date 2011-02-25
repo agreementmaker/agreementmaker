@@ -30,7 +30,7 @@ public class UserManualMatcher extends AbstractMatcher {
 		
 		//maybe this first 3 lines are not needed anymore after the matcherregistry change
 		index = 0;
-		name = MatchersRegistry.UserManual;
+		registryEntry = MatchersRegistry.UserManual;
 		color = Colors.matchersColors[0];
 		
 		param = new AbstractParameters();		

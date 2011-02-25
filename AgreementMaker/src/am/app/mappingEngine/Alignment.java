@@ -1,7 +1,7 @@
 package am.app.mappingEngine;
 
 import java.util.ArrayList;
-import am.app.feedback.CandidateConcept.ontology;
+
 import am.app.ontology.Node;
 
 /**
@@ -41,14 +41,6 @@ public class Alignment<E extends Mapping> extends ArrayList<E>
     	return null;
     }
     
-    public E contains(Node nod, ontology o)
-    {
-    	for( E mapping : this ) {
-    		if(o == ontology.source && mapping.getEntity1().equals(nod) ) return mapping;
-    		if(o == ontology.target && mapping.getEntity2().equals(nod) ) return mapping;
-    	}
-    	return null;
-    }
 
     public boolean contains( int row, int col ) {
     	for( E mapping : this ) if( mapping.getSourceKey() == row && mapping.getTargetKey() == col ) return true;

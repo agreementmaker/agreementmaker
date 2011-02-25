@@ -205,7 +205,7 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 		selectedMatcher = list.get(rowsIndex[0]); // we only care about the first matcher selected
 		
 		// elements of the dialog (in order from left to right, top to bottom)
-		lblMatcher = new JLabel("Exporting \"" + selectedMatcher.getName().getMatcherName() + "\"");
+		lblMatcher = new JLabel("Exporting \"" + selectedMatcher.getRegistryEntry().getMatcherName() + "\"");
 		
 		lblFilename = new JLabel("Filename: ");
 		txtFilename = new JTextField();

@@ -1,7 +1,6 @@
 package am.userInterface.classic;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Iterator;
@@ -10,8 +9,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JViewport;
-
-import test.instanceHiding.A;
 
 import am.userInterface.MatchersControlPanel;
 import am.userInterface.VisualizationPanel;

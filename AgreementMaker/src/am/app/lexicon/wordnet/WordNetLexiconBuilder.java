@@ -58,88 +58,77 @@ public class WordNetLexiconBuilder implements LexiconBuilder {
 
 		
 		
-		// Iterate through all the Synsets in the ontology lexicon to get all the wordforms.
+		// Iterate through all the Synsets in the ontology lexicon
 		for( Entry<OntResource, LexiconSynSet> currentEntry : ontologyLexicon.getSynSetMap().entrySet() ) {
-			LexiconSynSet currentInputSynSet = currentEntry.getValue();
-			List<String> inputSynonyms = currentInputSynSet.getSynonyms();
+			LexiconSynSet currentOntologySynSet = currentEntry.getValue();   			// current synset in the ontology lexicon
+			List<String> currentOntologySynonyms = currentOntologySynSet.getSynonyms();	// synonyms of the current ontology synset.
 			
 			ArrayList<String> wordnetWordForms = new ArrayList<String>();
 			ArrayList<String> wordnetDefinitions = new ArrayList<String>();
 			
-			for( String currentInputSynonym : inputSynonyms ) {
+			// Step 1. Lookup all the word forms of the current ontology synset in WordNet.  Gather the results in a list.
+			for( String currentOntologySynonym : currentOntologySynonyms ) {
 				
-				ArrayList<String> currentWordForms = getAllWordForms(currentInputSynonym);
-				ArrayList<String> currentDefinitions = getAllDefinitions(currentInputSynonym); // TODO: Merge with above method.  No sense in looking up the same word twice.
+				ArrayList<String> wordFormsFound = getAllWordForms(currentOntologySynonym);
+				ArrayList<String> definitionsFound = getAllDefinitions(currentOntologySynonym); // TODO: Merge with above method.  No sense in looking up the same word twice.
 				
-				if( currentWordForms.isEmpty() ) continue; // this word was not found in the dictionary.
+				if( wordFormsFound.isEmpty() ) continue; // this word was not found in the wordnet dictionary.
 				
-				for( String wordform : currentWordForms ) {
+				for( String wordform : wordFormsFound ) {
 					if( !wordnetWordForms.contains(wordform) ) wordnetWordForms.add(wordform);
 				}
 				
-				for( String def : currentDefinitions ) {
+				for( String def : definitionsFound ) {
 					if( !wordnetDefinitions.contains(def) ) wordnetDefinitions.add(def);
 				}
 				
 			}
 				
 
-			// Step 1.  Check if any of the wordnet word forms are in the ontology Lexicon already.
+
+			// Step 2.  Check if any of the wordnet word forms are in the ontology Lexicon already.  Keep a list of the unique entries found in wordnet.
 			
 			ArrayList<String> uniqueWordForms = new ArrayList<String>();
-			ArrayList<LexiconSynSet> duplicatedWordForms = new ArrayList<LexiconSynSet>();
-
-			String definitionFromOnt = null; // the definition we find in the ontology lexicon. (should only be one????) TODO: Allow for multiple definitions in the ontology lexicon.
 			
 			for( String currentWordForm : wordnetWordForms ) {
-				LexiconSynSet synList = ontologyLexicon.getSynSet(currentWordForm);
-				if( synList == null ) {
-					// no SynSets found in ontoloy lexicon
+				if( !wordnetWordForms.contains(currentWordForm) ) {
 					uniqueWordForms.add(currentWordForm);
-				} else {
-					definitionFromOnt = synList.getGloss();
-					duplicatedWordForms.add(synList); // NOTE: There must be at least one synset found (because of at least one common wordform)!! 
 				}
 			}
 
+			// Step 2a. Check to make sure we found new information.
+			//if( uniqueWordForms.isEmpty() ) continue; // no unique wordnet word forms found for the ontology synset.
 				
-				
-				
-			// Step 2. Create a new synset for this class.
+			// Step 3. Create a new synset for this class.
 			GeneralLexiconSynSet wordNetNewSynSet = new GeneralLexiconSynSet(LexiconRegistry.WORDNET_LEXICON);
 			
-			// Step 2a. add all the wordforms to the new synset.
+			// Step 3a. add all the unique wornet wordforms to the new synset.
 			for( String wordnetWordForm : uniqueWordForms ) {
 				wordNetNewSynSet.addSynonym(wordnetWordForm);
 			}
 			
-			// Step 3. Create cross links between the synsets.
-			for( LexiconSynSet ontSynSet : duplicatedWordForms ) {
-				ontSynSet.addRelatedSynSet(wordNetNewSynSet);
-				//wordNetSynSet.addRelatedSynSet(ontSynSet);  // TODO: Is it smart to put a backlink??? It should probably go from the OntLexicon to the WordNet lexicon only.
-															  // DONE: Removed the back link.  Concepts must be accessed through the ontology lexicon, and then the 
-															  //       wordnet lexicon synsets can be accessed via the relatedSynSets.	
-				if( wordNetNewSynSet.getOntologyConcept() != null ) wordNetNewSynSet.setOntologyConcept(ontSynSet.getOntologyConcept()); // set the ontology concept (should not need this).  It is only required for the ontology lexicon.
-			}
 				
-				
-			// Step 4. Get the definition. (Problem: for multiple wordnet synsets, which definition do we choose????????) TODO
+			// Step 4. Set the definition. (Problem: for multiple wordnet synsets, which definition do we choose????????) TODO
 			 					  //( TODO: Answer: a robust disambiguation solution is required here. (ha ha ha, that's not going to happen anytime soon) )
-			if( definitionFromOnt == null ) {
-				if( !wordnetDefinitions.isEmpty() ) { wordNetNewSynSet.setGloss( wordnetDefinitions.get(0) ); } // the first definition found
-				// no definitions were found
-			} else {
+			if( currentOntologySynSet.getGloss() == null && !wordnetDefinitions.isEmpty() ) {
+				wordNetNewSynSet.setGloss( wordnetDefinitions.get(0) ); // the first definition found	
+			} 
+			if( !wordnetDefinitions.isEmpty() ) {
 				// the ontology definition exists.  That's fine, but we will set a wordnet definition also.
-				if( !wordnetDefinitions.isEmpty() ) wordNetNewSynSet.setGloss( wordnetDefinitions.get(0)); // TODO: for multiple wordnet synsets, we need a robust disambiguation solution
-				// supplement the ontology definitions with the wordnet definitions TODO
+				wordNetNewSynSet.setGloss( wordnetDefinitions.get(0)); // TODO: for multiple wordnet synsets, we need a robust disambiguation solution
 			}
 				
+			if( wordNetNewSynSet.isEmpty() ) continue; // no new information
+			
+			// Step 5. Create link from ontology synset to wordnet synset (and back).
+			currentOntologySynSet.addRelatedSynSet(wordNetNewSynSet);
+			wordNetNewSynSet.setOntologyConcept( currentOntologySynSet.getOntologyConcept() );
+			wordNetNewSynSet.addRelatedSynSet(currentOntologySynSet);
 				
 			// Done creating the SynSet.
-			if( !wordNetNewSynSet.isEmpty() ) wordnetLexicon.addSynSet(wordNetNewSynSet);
+			wordnetLexicon.addSynSet(wordNetNewSynSet);
 			
 		}
-		
 		
 		return wordnetLexicon;
 	}

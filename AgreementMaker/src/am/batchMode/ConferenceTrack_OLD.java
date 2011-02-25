@@ -90,7 +90,7 @@ public class ConferenceTrack_OLD extends Track {
 		(new File(outputFileDir)).mkdirs();//create directories
 		
 		ao = new AlignmentOutput(as, outputFileDir+"/" + removeFileExtension(ontologyFiles[sourceIndex].getName()) + "-"+ removeFileExtension(ontologyFiles[targetIndex].getName()) +".rdf");
-		ao.write(sourceUri, targetUri, sourceUri, targetUri);
+		ao.write(sourceUri, targetUri, sourceUri, targetUri, matcher.getMatcherName());
 		
 	}
 	

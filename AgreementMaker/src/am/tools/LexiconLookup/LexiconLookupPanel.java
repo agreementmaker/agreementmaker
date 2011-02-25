@@ -28,6 +28,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +54,7 @@ public class LexiconLookupPanel extends JPanel implements ActionListener, KeyLis
 	
 	private JLabel lblTerm;
 	private JTextField txtTerm;
-	private JButton btnLookup, btnViewAll;
+	private JButton btnLookup, btnViewAll, btnReset;
 	private JScrollPane sclResult;
 	
 	private JTextPane txtResult;
@@ -62,6 +63,8 @@ public class LexiconLookupPanel extends JPanel implements ActionListener, KeyLis
 	
 	Lexicon lexicon;
 	
+	int currentIndex = 0;
+	int pageSize = 50;
 	
 	public LexiconLookupPanel( Lexicon l ) {
 		super();
@@ -80,8 +83,12 @@ public class LexiconLookupPanel extends JPanel implements ActionListener, KeyLis
 		btnLookup = new JButton("Lookup");
 		btnLookup.addActionListener(this);
 		
-		btnViewAll = new JButton("View All");
+		int lastIndex = (currentIndex+pageSize) < lexicon.size() ? (currentIndex+pageSize) : lexicon.size();
+		btnViewAll = new JButton("View " + currentIndex + " to " + lastIndex + " of " + lexicon.size() );
 		btnViewAll.addActionListener(this);
+		
+		btnReset = new JButton("Reset" );
+		btnReset.addActionListener(this);
 		
 		txtResult = new JTextPane();
 		txtResult.setContentType("text/html");
@@ -108,7 +115,9 @@ public class LexiconLookupPanel extends JPanel implements ActionListener, KeyLis
 						.addComponent(lblTerm)
 						.addComponent(txtTerm)
 						.addComponent(btnLookup)
+						.addGap(30)
 						.addComponent(btnViewAll)
+						.addComponent(btnReset)
 						)
 				.addComponent(sclResult)
 				);
@@ -119,6 +128,7 @@ public class LexiconLookupPanel extends JPanel implements ActionListener, KeyLis
 						.addComponent(txtTerm, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnLookup)
 						.addComponent(btnViewAll)
+						.addComponent(btnReset)
 						)
 				.addComponent(sclResult)
 				);
@@ -137,20 +147,30 @@ public class LexiconLookupPanel extends JPanel implements ActionListener, KeyLis
 			// The Lookup button was clicked. 
 			doLookup();
 		} else if ( currentEvent.getSource() == btnViewAll ) {
-			viewAll();
-		}
+			viewRange();
+		} else if( currentEvent.getSource() == btnReset ) { reset(); }
 
 	}
 
-	private void viewAll() {
+	private void reset() {
+		currentIndex = 0;
+		txtResult.setText( "" );
+		txtResult.setCaretPosition(0); // scroll to the top
+		int lastIndex = (currentIndex+pageSize) < lexicon.size() ? (currentIndex+pageSize) : lexicon.size();
+		btnViewAll.setText("View " + currentIndex + " to " + lastIndex + " of " + lexicon.size());
+		btnViewAll.setEnabled(true);
+	}
+	
+	private void viewRange() {
 		
 		//HTMLDocument resultDocument = new HTMLDocument();
 		
 		String wholeLexicon = new String();
 		
-		Map<OntResource,LexiconSynSet> lexMap = lexicon.getSynSetMap();
-		for( LexiconSynSet currentSynSet : lexMap.values() ) {
-
+		Collection<LexiconSynSet> lexMapCollection = lexicon.getSynSetMap().values();
+		Object[] lexMapArray = lexMapCollection.toArray();
+		for( int i = currentIndex; i < lexMapArray.length && i - currentIndex <= pageSize; i++ ) {
+			LexiconSynSet currentSynSet = (LexiconSynSet) lexMapArray[i];
 			wholeLexicon += getSynSetDescription(currentSynSet);
 			
 			
@@ -160,14 +180,23 @@ public class LexiconLookupPanel extends JPanel implements ActionListener, KeyLis
 				wholeLexicon += getSynSetDescription(related);
 			}
 
-			wholeLexicon += "<hr><br>";
+			wholeLexicon += "<br><hr><br>";
 		}
-		
 	
 		// ok, we have created the SyledDocument for the result, update the
 		// JTextPane.
 		txtResult.setText( wholeLexicon );
 		txtResult.setCaretPosition(0); // scroll to the top
+		
+		currentIndex += pageSize;
+		if( currentIndex < lexicon.size() ) {
+			int lastIndex = (currentIndex+pageSize) < lexicon.size() ? (currentIndex+pageSize) : lexicon.size();
+			btnViewAll.setText("View " + currentIndex + " to " + lastIndex + " of " + lexicon.size());
+		} else {
+			btnViewAll.setEnabled(false);
+		}
+		
+		
 		
 	}
 
@@ -208,7 +237,7 @@ public class LexiconLookupPanel extends JPanel implements ActionListener, KeyLis
 				for( LexiconSynSet related : synSet.getRelatedSynSets() ) {
 					newResult += getSynSetDescription(related);
 				}
-				newResult += "<br><hr><br>";
+				newResult += "<br><hr><br><br>";
 			}
 		}
 
@@ -249,7 +278,7 @@ public class LexiconLookupPanel extends JPanel implements ActionListener, KeyLis
 				for( LexiconSynSet related : sset.getRelatedSynSets() ) {
 					newResult += getSynSetDescription(related);
 				}
-				newResult += "<br><hr><br>";
+				newResult += "<br><hr><br><br>";
 			}
 		}
 
@@ -268,6 +297,9 @@ public class LexiconLookupPanel extends JPanel implements ActionListener, KeyLis
 		String newResult = new String();
 		
 		if( synSet == null ) return newResult;
+
+		newResult += "<b>OntResource: " + "</b>" + StringEscapeUtils.escapeHtml( synSet.getOntologyConcept().getLocalName() ) + ".<br>";
+		newResult += "<b>SynSet Type: " + "</b>" + StringEscapeUtils.escapeHtml( synSet.getType().getLexiconName() ) + ".<br>";
 		
 		//newResult += "<b>Synset " + "</b> (" + synSet.getID() + ") (" + synSet.getType().getLexiconName() + ").<br>";
 		newResult += "<b>Set of synonyms: " + "</b>";
@@ -281,12 +313,6 @@ public class LexiconLookupPanel extends JPanel implements ActionListener, KeyLis
 		} else {
 			newResult += "<b>Gloss: " + "</b>null.<br>";
 		}
-		
-		if( synSet.getOntologyConcept() != null ) {
-			newResult += "<b>OntResource: " + "</b>" + StringEscapeUtils.escapeHtml( synSet.getOntologyConcept().getLocalName() ) + ".<br>";
-		}
-
-
 		
 		return newResult;
 	}

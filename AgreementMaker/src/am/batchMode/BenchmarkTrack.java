@@ -204,7 +204,7 @@ public class BenchmarkTrack extends Track{
 			outputFileDir = TRACK_OUTPUT_DIR+currentTarget;//the last / is not needed for mkdirs but is needed later
 			(new File(outputFileDir)).mkdirs();//create directories
 			ao = new AlignmentOutput(as, outputFileDir+"/"+AM_NAME+".rdf");
-			ao.write(sourceUri, targetUri, sourceUri, targetUri);
+			ao.write(sourceUri, targetUri, sourceUri, targetUri, matcher.getMatcherName());
 		}
 		long endTime = System.nanoTime()/1000000;
 		long totTime = endTime - startTime;

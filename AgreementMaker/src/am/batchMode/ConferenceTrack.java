@@ -80,7 +80,7 @@ public class ConferenceTrack extends Track {
 			sourceUri = sourceOntology.getURI();
 			targetUri = targetOntology.getURI();	
 			ao = new AlignmentOutput(theMatcher.getAlignment(), outputFileDir+"/" + removeFileExtension(ontologyFiles[sourceOntology.getIndex()].getName()) + "-"+ removeFileExtension(ontologyFiles[targetOntology.getIndex()].getName()) +".rdf");
-			ao.write(sourceUri, targetUri, sourceUri, targetUri);
+			ao.write(sourceUri, targetUri, sourceUri, targetUri, matcher.getMatcherName());
 		}
 		
 		System.out.println("All alignment files have been saved correctly.");

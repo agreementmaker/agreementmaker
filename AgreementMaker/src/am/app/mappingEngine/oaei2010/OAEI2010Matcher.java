@@ -264,7 +264,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		long startime = 0, endtime = 0, time = 0;
 		long measure = 1000000;
 		
-		if( Core.DEBUG ) System.out.println("Running " + m.getName().getMatcherShortName() );
+		if( Core.DEBUG ) System.out.println("Running " + m.getRegistryEntry().getMatcherShortName() );
 		startime = System.nanoTime()/measure;
 		
 		if(getProgressDisplay()!=null) getProgressDisplay().setProgressLabel(label);
@@ -275,7 +275,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		
 		endtime = System.nanoTime()/measure;
 	    time = (endtime-startime);
-		if( Core.DEBUG ) System.out.println(m.getName().getMatcherShortName() + " completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
+		if( Core.DEBUG ) System.out.println(m.getRegistryEntry().getMatcherShortName() + " completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		
 		if(showAllMatchers && !m.isCancelled()) Core.getUI().getControlPanel().getTablePanel().addMatcher(m);
 	}

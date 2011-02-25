@@ -54,7 +54,7 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 		plot.addMouseListener(this);
 		plot.draw(false);
 		
-		if( a != null ) { lblName = new JLabel(a.getName().getMatcherName()); }
+		if( a != null ) { lblName = new JLabel(a.getRegistryEntry().getMatcherName()); }
 		else { lblName = new JLabel("--"); }
 		
 		lblSimilaritySelected = new JLabel("", JLabel.TRAILING);
@@ -76,7 +76,7 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 		plot.addMouseListener(this);
 		plot.draw(false);
 		
-		if( a != null ) { lblName = new JLabel(a.getName().getMatcherName()); }
+		if( a != null ) { lblName = new JLabel(a.getRegistryEntry().getMatcherName()); }
 		else { lblName = new JLabel("--"); }
 		
 		lblSimilaritySelected = new JLabel("", JLabel.TRAILING);
@@ -95,7 +95,7 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 		plot.addMouseListener(this);
 		plot.draw(false);
 		
-		if( a != null ) { lblName = new JLabel(a.getName().getMatcherName()); }
+		if( a != null ) { lblName = new JLabel(a.getRegistryEntry().getMatcherName()); }
 		else { lblName = new JLabel("--"); }
 		
 		lblSimilaritySelected = new JLabel("", JLabel.TRAILING);

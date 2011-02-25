@@ -125,5 +125,5 @@ public class GeneralLexicon implements Lexicon {
 	@Override public void setLookupPanel(LexiconLookupPanel wnlp) { lookupPanel = wnlp; }
 	@Override public LexiconLookupPanel getLookupPanel() { return lookupPanel; }
 
-	
+	@Override public int size() { return synsetsByOntResource == null ? 0 : synsetsByOntResource.size(); }
 }

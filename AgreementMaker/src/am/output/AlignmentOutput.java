@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.hp.hpl.jena.rdf.model.Resource;
 
 import am.Utility;
@@ -155,9 +157,9 @@ public class AlignmentOutput
 
     
     
-    public void write(String onto1, String onto2, String uri1, String uri2)
+    public void write(String onto1, String onto2, String uri1, String uri2, String matcherName)
     {
-        writeNS();
+        writeNS(matcherName);
         writeStart("yes", "0", "11", onto1, onto2, uri1, uri2);
         for (int i = 0, n = alignmentSet.size(); i < n; i++) {
             Mapping alignment = (Mapping) alignmentSet.get(i);
@@ -179,12 +181,13 @@ public class AlignmentOutput
         }
     }
 
-    public void writeNS()
+    public void writeNS(String matcherName)
     {
         String temp = "<?xml version='1.0' encoding='utf-8'?>\n" 
                 + "<rdf:RDF xmlns='http://knowledgeweb.semanticweb.org/heterogeneity/alignment' \n" 
                 + "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' \n" 
-                + "xmlns:xsd='http://www.w3.org/2001/XMLSchema#'>\n";
+                + "xmlns:xsd='http://www.w3.org/2001/XMLSchema#' \n"
+                + "matcherName='" + StringEscapeUtils.escapeHtml(matcherName) + "'>\n";
         writeList.add(temp);
     }
 

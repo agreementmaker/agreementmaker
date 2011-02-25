@@ -490,7 +490,7 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 	public void matchingStarted(AbstractMatcher m) { 
 		barProgress.setEnabled(true); 
 		barProgress.setValue(0); 
-		txtReport.append(m.getName().getMatcherName() + " Matcher has started to run.\n"); 
+		txtReport.append(m.getRegistryEntry().getMatcherName() + " Matcher has started to run.\n"); 
 	}
 	
 	@Override

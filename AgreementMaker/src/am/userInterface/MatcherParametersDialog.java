@@ -10,7 +10,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -18,7 +17,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.InputMap;
-import javax.swing.JButton; 
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -26,10 +25,11 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JScrollPane;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
@@ -54,52 +54,29 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	
 	private static final long serialVersionUID = 7150332604304262664L;
 
-	private JLabel matcherLabel;
-	private JComboBox matcherCombo;
-	private JButton btnMatcherDetails;
-	private JLabel lblPresets;
-	private JComboBox cmbPresets;
-	private JButton btnSavePresets;
-	private JButton btnDeletePresets;
-	
-	private JLabel thresholdLabel;
-	private JComboBox thresholdCombo;
-	private JLabel sourceRelLabel;
-	private JComboBox sourceRelCombo;
-	private JLabel targetRelLabel;
-	private JComboBox targetRelCombo;
-	private JCheckBox completionBox;
-	private JCheckBox provenanceBox;
-	
-	private JButton runButton;
-	private JButton cancelButton;
-	
-	private JPanel topPanel;
-	private JPanel generalPanel;
-	//private JPanel settingsPanel;
-	
-	//private JTabbedPane dialogTabbedPane; // a tabbed pane
-	
-	private boolean showPresets = true;
-	private boolean showGeneralSettings = true;
-	
+	/* UI Components */
+	private JLabel matcherLabel, lblPresets, thresholdLabel, sourceRelLabel, targetRelLabel;
+	private JComboBox matcherCombo, cmbPresets, thresholdCombo, sourceRelCombo, targetRelCombo;
+	private JButton btnMatcherDetails, btnSavePresets, btnDeletePresets, runButton, cancelButton;
+	private JCheckBox completionBox, provenanceBox, chkCustomName;
+	private JPanel topPanel, generalPanel;
 	private JScrollPane settingsScroll;
+	private JTextField txtCustomName;
 	
-	//GroupLayout.ParallelGroup mainHorizontalGroup;
-	//GroupLayout.SequentialGroup mainVerticalGroup;
-	
+	/* State variables */
+	private boolean showPresets = true;
+	private boolean showGeneralSettings = true;	
 	private boolean success = false;
-	AbstractMatcherParametersPanel parametersPanel;
-	
-	AbstractParameters params;
-	
-	AbstractMatcher matcher;
-
 	private boolean matcherDefined = false;
 	
-	ArrayList<AbstractMatcher> selectedMatchers;
+	/* Abstract Matcher variables */
+	private AbstractMatcherParametersPanel parametersPanel;
+	private AbstractParameters params;
+	private AbstractMatcher matcher;
+	//private ArrayList<AbstractMatcher> selectedMatchers;
 	
-	OntologyProfilerPanel matchTimeProfilingPanel = null;
+	/* Ontology profiling panel */
+	private OntologyProfilerPanel matchTimeProfilingPanel = null;
 	
 	/**
 	 * @param ontoType
@@ -118,14 +95,14 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		ComboBoxModel model = matcherCombo.getModel();
 		for (int i = 0; i < model.getSize(); i++) {
 			String curr = model.getElementAt(i).toString();
-			if(curr.equals(a.getName().getMatcherName()))
+			if(curr.equals(a.getRegistryEntry().getMatcherName()))
 				matcherCombo.setSelectedIndex(i);
 		}
 		
 		matcherCombo.setSelectedItem(a.getName());		
 		matcherCombo.setEnabled(false);  // user cannot change the matcher in this mode
 		
-		String name = a.getName().getMatcherName();
+		String name = a.getRegistryEntry().getMatcherName();
 		setTitle(name+": additional parameters");
 		
 		//This is the specific panel defined by the developer to set additional parameters to the specific matcher implemented
@@ -165,7 +142,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		
 		addInputMatchers(matcher);
 		
-		String name = matcher.getName().getMatcherName();
+		String name = matcher.getRegistryEntry().getMatcherName();
 		setTitle(name+": additional parameters");
 		//This is the specific panel defined by the developer to set additional parameters to the specific matcher implemented
 		parametersPanel = matcher.getParametersPanel();
@@ -227,6 +204,11 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		//String[] matcherList = MatcherFactory.getMatcherComboList();
 		matcherCombo = new MatcherComboBox();
 		matcherCombo.addActionListener(this);
+		
+		chkCustomName = new JCheckBox("Custom name:");
+		chkCustomName.addActionListener(this);
+		txtCustomName = new JTextField();
+		txtCustomName.setEnabled(false);
 		
 		btnMatcherDetails = new JButton("Explanation");
 		btnMatcherDetails.addActionListener(this);
@@ -330,13 +312,17 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 						.addGap(10)
 						.addComponent(provenanceBox)
 				)
+				.addGroup( generalLayout.createSequentialGroup()
+						.addComponent(chkCustomName)
+						.addComponent(txtCustomName)
+				)
 				
 				
 		);
 		
 		
 		generalLayout.setVerticalGroup( generalLayout.createSequentialGroup()
-				.addGroup( generalLayout.createParallelGroup(Alignment.LEADING, false)
+				.addGroup( generalLayout.createParallelGroup(Alignment.CENTER, false)
 						.addComponent(thresholdLabel)
 						.addComponent(thresholdCombo)
 			            .addComponent(sourceRelLabel)
@@ -344,10 +330,15 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			            .addComponent(targetRelLabel)
 			            .addComponent(targetRelCombo)
 				)
-				.addGap(20)
-				.addGroup( generalLayout.createParallelGroup()
+				.addGap(5)
+				.addGroup( generalLayout.createParallelGroup(Alignment.CENTER)
 						.addComponent(completionBox)
 						.addComponent(provenanceBox)
+				)
+				.addGap(5)
+				.addGroup( generalLayout.createParallelGroup(Alignment.CENTER, false)
+						.addComponent(chkCustomName)
+						.addComponent(txtCustomName)
 				)
 				
 		);
@@ -477,7 +468,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			matcher = MatcherFactory.getMatcherInstance(
 					MatcherFactory.getMatchersRegistryEntry(matcherCombo.getSelectedItem().toString()), 0);
 			
-			String name = matcher.getName().getMatcherName();
+			String name = matcher.getRegistryEntry().getMatcherName();
 			setTitle(name+": additional parameters");
 			
 			addInputMatchers(matcher);
@@ -498,6 +489,8 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 					BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Matcher Specific Settings"));
 			
 			setDefaultCommonParameters(matcher);
+			
+			if( !chkCustomName.isSelected() ) txtCustomName.setText(matcher.getRegistryEntry().getMatcherShortName());
 			
 			initLayout();
 			pack();
@@ -542,6 +535,8 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			
 			matcher.setParam(params);
 			
+			if( txtCustomName.isEnabled() ) matcher.setName(txtCustomName.getText());
+			
 			// set the ontology profiling parameters.
 			if( matchTimeProfilingPanel != null ) {
 				Core.getInstance().getOntologyProfiler().setMatchTimeParams(matchTimeProfilingPanel.getParameters());
@@ -552,6 +547,9 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		}
 		else if( obj == btnMatcherDetails ) {
 			Utility.displayMessagePane(matcher.getDetails(), "Matcher details");
+		}
+		else if( obj == chkCustomName ) {
+			txtCustomName.setEnabled(chkCustomName.isSelected());
 		}
 	}
 	

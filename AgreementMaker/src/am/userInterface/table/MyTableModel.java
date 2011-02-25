@@ -115,7 +115,7 @@ public class MyTableModel extends AbstractTableModel {
             	if(col == INDEX)
             		return a.getIndex();
             	else if(col == NAME)
-            		return a.getName().getMatcherName();
+            		return a.getName();
             	else if(col == SHOWHIDE)
             		return a.isShown();
             	else if(col == THRESHOLD) 
@@ -126,7 +126,7 @@ public class MyTableModel extends AbstractTableModel {
             		return Utility.getStringFromNumRelInt(a.getMaxTargetAlign());
             	else if(col == INPUTMATCHERS) {
             		if(a.getInputMatchers()!= null && a.getInputMatchers().size() >0)
-            			return a.getInputMatchers().get(0).getName().getMatcherName();
+            			return a.getInputMatchers().get(0).getName();
             		else return NONE;
             	}
             	else if( col == MODIFIED)

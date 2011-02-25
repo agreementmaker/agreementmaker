@@ -48,38 +48,38 @@ public class ManualProfilerMatchingPanel extends OntologyProfilerPanel {
 		
 		// TODO: Most likely would be better to do a list instead of checkboxes. - cosmin
 		
-		sourceClassLocalName = new JCheckBox("Localname"); sourceClassLocalName.setSelected(true);
-		targetClassLocalName = new JCheckBox("Localname"); targetClassLocalName.setSelected(true);
+		sourceClassLocalName = new JCheckBox("Localname"); //sourceClassLocalName.setSelected(true);
+		targetClassLocalName = new JCheckBox("Localname"); //targetClassLocalName.setSelected(true);
 		
-		sourcePropertyLocalName = new JCheckBox("Localname"); sourcePropertyLocalName.setSelected(true);
-		targetPropertyLocalName = new JCheckBox("Localname"); targetPropertyLocalName.setSelected(true);
+		sourcePropertyLocalName = new JCheckBox("Localname"); //sourcePropertyLocalName.setSelected(true);
+		targetPropertyLocalName = new JCheckBox("Localname"); //targetPropertyLocalName.setSelected(true);
 		
 		//source classes
 		sourceClassList = new JCheckBox[ sC.size() ];
 		for( int i = 0; i < sC.size(); i++ ) {
 			sourceClassList[i] = new JCheckBox(sC.get(i).getLocalName());
-			sourceClassList[i].setSelected(true);
+			//sourceClassList[i].setSelected(true);
 		}
 		
 		//target classes
 		targetClassList = new JCheckBox[ tC.size() ];
 		for( int i = 0; i < tC.size(); i++ ) {
 			targetClassList[i] = new JCheckBox(tC.get(i).getLocalName());
-			targetClassList[i].setSelected(true);
+			//targetClassList[i].setSelected(true);
 		}
 		
 		// source properties
 		sourcePropertyList = new JCheckBox[ sP.size() ];
 		for( int i = 0; i < sP.size(); i++ ) {
 			sourcePropertyList[i] = new JCheckBox(sP.get(i).getLocalName());
-			sourcePropertyList[i].setSelected(true);
+			//sourcePropertyList[i].setSelected(true);
 		}
 		
 		// target properties
 		targetPropertyList = new JCheckBox[ tP.size() ];
 		for( int i = 0; i < tP.size(); i++ ) {
 			targetPropertyList[i] = new JCheckBox(tP.get(i).getLocalName());
-			targetPropertyList[i].setSelected(true);
+			//targetPropertyList[i].setSelected(true);
 		}
 		
 	}

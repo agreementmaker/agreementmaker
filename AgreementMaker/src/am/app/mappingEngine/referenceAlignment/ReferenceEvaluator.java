@@ -2,6 +2,7 @@ package am.app.mappingEngine.referenceAlignment;
 
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 
 public class ReferenceEvaluator{
 
@@ -15,10 +16,14 @@ public class ReferenceEvaluator{
 	 * @param referenceSet The reference alignment.
 	 * @return
 	 */
-    public static ReferenceEvaluationData compare(Alignment<?> evaluationSet, Alignment<?> referenceSet)
+    public static ReferenceEvaluationData compare(Alignment<? extends Mapping> evaluationSet, Alignment<? extends Mapping> referenceSet)
     {
         int foundMappings = 0; 
         int referenceMappings = 0;
+        
+        int classesFound = 0, propertiesFound = 0;
+        int classesCorrect = 0, propertiesCorrect = 0;
+        
         if(evaluationSet != null) {
         	foundMappings = evaluationSet.size();
         }
@@ -36,6 +41,8 @@ public class ReferenceEvaluator{
         // check all mappings for correctness
         for (int i = 0; i < foundMappings; i++) {
             Mapping evaluationMapping = evaluationSet.get(i);
+            if(evaluationMapping.getAlignmentType() == alignType.aligningClasses ) classesFound++;
+            if(evaluationMapping.getAlignmentType() == alignType.aligningProperties ) propertiesFound++;
             boolean evaluationMappingIsWrong = true;
             for (int j = 0; j < referenceMappings; j++) {
                 Mapping referenceMapping = referenceSet.get(j);
@@ -43,6 +50,8 @@ public class ReferenceEvaluator{
                     correctMappings++;
                     correctAlignments.add(evaluationMapping);
                     evaluationMappingIsWrong = false;
+                    if(evaluationMapping.getAlignmentType() == alignType.aligningClasses ) classesCorrect++;
+                    if(evaluationMapping.getAlignmentType() == alignType.aligningProperties ) propertiesCorrect++;
                     break;
                 }
             }
@@ -96,6 +105,8 @@ public class ReferenceEvaluator{
         result.setCorrectAlignments(correctAlignments);
         result.setErrorAlignments(errorAlignments);
         result.setLostAlignments(lostAlignments);
+        result.setClasses( classesCorrect, classesFound );
+        result.setProperties( propertiesCorrect, propertiesFound );
         return result;
     }
 }

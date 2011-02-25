@@ -28,4 +28,5 @@ public interface Lexicon {
 	public void setLookupPanel(LexiconLookupPanel wnlp);  // used to link this lookup panel with its lexicon.
 	public LexiconLookupPanel getLookupPanel();
 	
+	public int size();  // the number of entries in the lexicon
 }

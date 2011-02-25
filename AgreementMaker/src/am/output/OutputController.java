@@ -63,7 +63,7 @@ public class OutputController {
 
 	public final static String arrow = "--->";
 	
-	public static void printDocumentOAEI(String name) throws Exception{
+	public static void printDocumentOAEI(String completeFileName) throws Exception{
 		ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
 		AbstractMatcher matcher;
 
@@ -71,10 +71,10 @@ public class OutputController {
 		//May be multiple matchers.
 		int [] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
 		matcher = list.get(rowsIndex[0]);
-		AlignmentOutput output = new AlignmentOutput(matcher.getAlignment(), name);
+		AlignmentOutput output = new AlignmentOutput(matcher.getAlignment(), completeFileName);
 		String sourceUri = Core.getInstance().getSourceOntology().getURI();
 		String targetUri = Core.getInstance().getTargetOntology().getURI();
-		output.write(sourceUri, targetUri, sourceUri, targetUri);
+		output.write(sourceUri, targetUri, sourceUri, targetUri, matcher.getName());
 	}
 	
 	// TODO: This function should differentiate between TXT, DOC, and XLS formats. (Or create separate print functions for each format)
@@ -104,7 +104,7 @@ public class OutputController {
 		AbstractMatcher matcher;
 		for(int i = 0; i < rowsIndex.length; i++) {
 			matcher = list.get(rowsIndex[i]);
-			result += "Matcher "+(i+1)+": "+matcher.getName().getMatcherName()+"\n\n";
+			result += "Matcher "+(i+1)+": "+matcher.getRegistryEntry().getMatcherName()+"\n\n";
 			result += matcher.getAlignmentsStrings();
 		}
 		return result;

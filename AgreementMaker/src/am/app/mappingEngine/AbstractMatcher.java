@@ -45,7 +45,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/**Name of the algorithm, there should be also a final static String in the instance class
 	 * in the constructor of the non-abstract class should happen "name = FINALNAME"
 	 * */
-	protected MatchersRegistry name;
+	protected MatchersRegistry registryEntry;
+	protected String name;
 	/**User mapping should be the only one with this variable equal to false*/
 	protected boolean isAutomatic;
 	/**True if the algorithm needs additional parameter other than threshold, in this case the developer must develop a JFrame to let the user define them*/
@@ -916,29 +917,16 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		this.index = index;
 	}
 
-	public MatchersRegistry getName() {
-		return name;
-	}
+	public String getName() { return name != null ? name : registryEntry.getMatcherName(); }
+	public void setName(String n) { name = n; } 
+	public MatchersRegistry getRegistryEntry() { return registryEntry; }
+	public void setRegistryEntry(MatchersRegistry name) { this.registryEntry = name; }
 
-	public void setName(MatchersRegistry name) {
-		this.name = name;
-	}
+	public boolean isAutomatic() { return isAutomatic; }
+	public void setAutomatic(boolean isAutomatic) { this.isAutomatic = isAutomatic; }
 
-	public boolean isAutomatic() {
-		return isAutomatic;
-	}
-
-	public void setAutomatic(boolean isAutomatic) {
-		this.isAutomatic = isAutomatic;
-	}
-
-	public boolean needsParam() {
-		return needsParam;
-	}
-
-	public void setNeedsParam(boolean needsParam) {
-		this.needsParam = needsParam;
-	}
+	public boolean needsParam() { return needsParam; }
+	public void setNeedsParam(boolean needsParam) { this.needsParam = needsParam; }
 
 	public boolean isCompletionMode() { return param.completionMode; }
 	
@@ -1092,7 +1080,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 */
 	public String getDetails() {
 		String s = "";
-		s+= "Matcher: "+getName().getMatcherName()+"\n\n";
+		s+= "Matcher: "+getName()+"\n\n";
 		s+= "Brief Description:\n\n";
 		s += getDescriptionString()+"\n";
 		s += "Characteristics\n\n";
@@ -1197,7 +1185,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 	
 	public AbstractMatcher copy() throws Exception {
-		AbstractMatcher cloned = MatcherFactory.getMatcherInstance(getName(), Core.getInstance().getMatcherInstances().size());
+		AbstractMatcher cloned = MatcherFactory.getMatcherInstance(getRegistryEntry(), Core.getInstance().getMatcherInstances().size());
 		cloned.setInputMatchers(getInputMatchers());
 		cloned.setParam(getParam());
 		cloned.setThreshold(getThreshold());
