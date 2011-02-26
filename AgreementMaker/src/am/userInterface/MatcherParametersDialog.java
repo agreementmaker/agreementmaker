@@ -154,7 +154,11 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		getRootPane().setDefaultButton(runButton);
 		
 		// restore last selected matcher
-		matcherCombo.setSelectedIndex( Core.getAppPreferences().getInt("MATCHERSPARAMETERSDIALOG_SELECTEDMATCHER") );
+		matcherCombo.setSelectedIndex( 
+				Core.getAppPreferences().getInt("MATCHERSPARAMETERSDIALOG_SELECTEDMATCHER") >= matcherCombo.getItemCount() ? 
+						matcherCombo.getItemCount() - 1 : 
+						Core.getAppPreferences().getInt("MATCHERSPARAMETERSDIALOG_SELECTEDMATCHER")  
+		);
 		
 		setVisible(true);
 	}
