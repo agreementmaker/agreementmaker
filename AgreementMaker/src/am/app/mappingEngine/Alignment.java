@@ -3,6 +3,7 @@ package am.app.mappingEngine;
 import java.util.ArrayList;
 
 import am.app.ontology.Node;
+import am.app.ontology.Ontology;
 
 /**
  * An Alignment is a set of mappings between concepts from two ontologies.
@@ -38,6 +39,15 @@ public class Alignment<E extends Mapping> extends ArrayList<E>
     public E contains(Node left, Node right)
     {
     	for( E mapping : this ) if( mapping.getEntity1().equals(left) && mapping.getEntity2().equals(right) ) return mapping;
+    	return null;
+    }
+    
+    public E contains(Node nod, int ontType)
+    {
+    	for( E mapping : this ) {
+    		if(ontType == Ontology.SOURCE && mapping.getEntity1().equals(nod) ) return mapping;
+    		if(ontType == Ontology.TARGET && mapping.getEntity2().equals(nod) ) return mapping;
+    	}
     	return null;
     }
     

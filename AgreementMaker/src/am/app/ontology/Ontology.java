@@ -22,6 +22,9 @@ public class Ontology {
 	
 	public static final int ID_NONE = -1;  // used when there is no ontology id.
 	
+	public static final int SOURCE = GlobalStaticVariables.SOURCENODE;
+	public static final int TARGET = GlobalStaticVariables.TARGETNODE;
+	
 	
 	/** 
 	 * <p>It may be SOURCE or TARGET.  Use the final static int values in GSV to set this. (GlobalStaticVariables.SOURCENODE or GlobalStaticVariables.TARGETNODE)</p>
