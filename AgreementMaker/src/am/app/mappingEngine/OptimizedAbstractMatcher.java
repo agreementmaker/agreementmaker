@@ -2,6 +2,7 @@ package am.app.mappingEngine;
 
 import java.util.ArrayList;
 
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 
@@ -74,7 +75,7 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
 						alignment = null;
 					}
 					if(alignment == null)
-						alignment = new Mapping(source, target, 0.0d, Mapping.SUBSET);
+						alignment = new Mapping(source, target, 0.0d, MappingRelation.SUBSET);
 					matrix.set(i,j,alignment);
 					if( isProgressDisplayed() ) stepDone(); // we have completed one step
 				}
@@ -89,7 +90,7 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
     protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
 		//TO BE IMPLEMENTED BY THE ALGORITHM, THIS IS JUST A FAKE ABSTRACT METHOD
 		double sim;
-		String rel = Mapping.EQUIVALENCE;
+		MappingRelation rel = MappingRelation.EQUIVALENCE;
 		if(source.getLocalName().equals(target.getLocalName())) {
 			sim = 1;
 		}

@@ -1054,8 +1054,8 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 	
 	private double superclassesComparison(OntClass sClass, OntClass tClass) {
 		
-		List l1 = sClass.listSuperClasses().toList();
-		List l2 = tClass.listSuperClasses().toList();
+		List<OntClass> l1 = sClass.listSuperClasses().toList();
+		List<OntClass> l2 = tClass.listSuperClasses().toList();
 		
 		if(l1.size()!=l2.size() || l1.size()==0) return 0.0;
 		
@@ -1079,7 +1079,6 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		return subSim;
 	}
 
-	@SuppressWarnings("unchecked")
 	private double superclassesComparison(Node source, Node target) {
 		if(verbose)
 		System.out.println("SuperClassesComp: "+source.getLocalName()+","+target.getLocalName());
@@ -1199,8 +1198,8 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 				}
 				UnionClass u1 = c1.asUnionClass();
 				UnionClass u2 = c2.asUnionClass();
-				List l1 = u1.listOperands().toList();
-				List l2 = u2.listOperands().toList();
+				List<? extends OntClass> l1 = u1.listOperands().toList();
+				List<? extends OntClass> l2 = u2.listOperands().toList();
 				
 				if(l1.size() != l2.size() || l1.size()==0)
 					return 0.0;

@@ -10,10 +10,7 @@ import java.util.Iterator;
 
 import am.Utility;
 import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MatcherFactory;
-import am.userInterface.AppPreferences;
 import am.userInterface.canvas2.graphical.GraphicalData;
 import am.userInterface.canvas2.graphical.MappingData;
 import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
@@ -66,7 +63,7 @@ public class LegacyMapping extends Canvas2Edge {
 	public LegacyMapping(Canvas2Vertex orig, Canvas2Vertex dest, Mapping a , int matcherID ) {
 		super(orig, dest, null);
 		
-		AppPreferences pref = Core.getAppPreferences();
+		//AppPreferences pref = Core.getAppPreferences();
 		String label = Utility.getNoDecimalPercentFromDouble(a.getSimilarity()); 
 		
 		GraphicalData source = orig.getObject();
@@ -157,7 +154,7 @@ public class LegacyMapping extends Canvas2Edge {
 
 				// we have a mapping, check to see if it's parallel to this one, but only if we're in the general view.
 				// if we're in the single mapping view, space out the mappings even if they're not parallel
-				if( ((LegacyLayout)d.layout).isSingleMappingView() ) {
+				if( ((LegacyLayout)d.layout).isViewActive(LegacyLayout.VIEW_SINGLE_MAPPING) ) {
 					previousMappingData = (MappingData) edge.getObject();
 					numberOfPreviousMappings++;
 				} else {
@@ -242,7 +239,7 @@ public class LegacyMapping extends Canvas2Edge {
 	public String toString() {
 		MappingData data = (MappingData)d;
 		String name1 = Integer.toString(data.ontologyID) + ":" + data.r.getLocalName();
-		String name2 = Integer.toString(data.ontologyID2) + ":" + data.r2.getLocalName();
+		String name2 = Integer.toString(data.ontologyID2) + ":" + data.alignment.getEntity2().getLocalName();
 		return name1 + " - " + name2;
 	}
 

@@ -6,6 +6,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
 import am.app.ontology.TreeToDagConverter;
 
@@ -157,7 +158,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 				sumOfMaxParents/=sourceParents.size();
 				double mcp = MCP;
 				double finalSim = (mcp*mySim) + ((1 - mcp) * sumOfMaxParents);
-				result = new Mapping(sourceNode, targetNode, finalSim, Mapping.EQUIVALENCE);
+				result = new Mapping(sourceNode, targetNode, finalSim, MappingRelation.EQUIVALENCE);
 				input.set(sourceIndex, targetIndex, result);
 				
 				result = input.get(sourceIndex,targetIndex);

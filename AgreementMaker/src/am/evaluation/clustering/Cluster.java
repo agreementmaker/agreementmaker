@@ -8,6 +8,7 @@ import java.util.TreeSet;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;
@@ -40,7 +41,7 @@ public class Cluster<E extends Mapping> implements Iterable<E> {
 		}
 		
 		for( Point p : set ) {
-			clusterSet.add( (E) new Mapping(sourceList.get(p.x), targetList.get(p.y), 1.0, "=", aType  ) ); // unchecked conversion
+			clusterSet.add( (E) new Mapping(sourceList.get(p.x), targetList.get(p.y), 1.0, MappingRelation.EQUIVALENCE, aType  ) ); // unchecked conversion
 		}
 		
 	}

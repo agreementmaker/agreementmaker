@@ -12,6 +12,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.StringUtil.PorterStemmer;
@@ -208,8 +209,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			
 			// Step 2:	If the labels are equal, then return a similarity of 1
 			if( sourceName.equalsIgnoreCase(targetName) ) {
-				String relation = Mapping.EQUIVALENCE;
-				return new Mapping(source, target, 1.0d, relation, typeOfNode);
+				return new Mapping(source, target, 1.0d, MappingRelation.EQUIVALENCE, typeOfNode);
 			}
 			// if we haven't initialized our wordnet database, do it
 			if( wordnet == null )
@@ -226,8 +226,6 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			Synset[] targetVerbs = wordnet.getSynsets(targetName, SynsetType.VERB);
 			
 			float verbSimilarity = getSensesComparison(sourceVerbs, targetVerbs);
-			
-			String rel = Mapping.EQUIVALENCE;
 	        
 			// select the best similarity found. (either verb or noun)
 	        if( nounSimilarity > verbSimilarity ) {
@@ -243,7 +241,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 						+ nounSimilarity
 						+ "\nmatched by label based noun similarity";
 				}
-	        	Mapping pmapping=new Mapping(source, target, nounSimilarity, rel, typeOfNode);
+	        	Mapping pmapping=new Mapping(source, target, nounSimilarity, MappingRelation.EQUIVALENCE, typeOfNode);
 	        	if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 	        	return pmapping;
 	        }
@@ -260,7 +258,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 						+ verbSimilarity
 						+ ", matched by label based verb similarity";
 				}
-	        	Mapping pmapping=new Mapping(source, target, verbSimilarity, rel, typeOfNode);
+	        	Mapping pmapping=new Mapping(source, target, verbSimilarity, MappingRelation.EQUIVALENCE, typeOfNode);
 	        	if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 	        	return pmapping;
 	        }
@@ -291,7 +289,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 					provenanceString+="1\nmatched by exact local match";
 				}
 				
-				Mapping pmapping=new Mapping( source, target, 1d, Mapping.EQUIVALENCE, typeOfNode);
+				Mapping pmapping=new Mapping( source, target, 1d, MappingRelation.EQUIVALENCE, typeOfNode);
 				if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 				return pmapping;
 			}
@@ -306,7 +304,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 					provenanceString+=".95\nmatched by local stem \""+sProcessedLocalnames+"\"";
 				}
 				
-				Mapping pmapping=new Mapping( source, target, 0.95d, Mapping.EQUIVALENCE, typeOfNode);
+				Mapping pmapping=new Mapping( source, target, 0.95d, MappingRelation.EQUIVALENCE, typeOfNode);
 				if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 				return pmapping;
 			}
@@ -320,7 +318,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 					provenanceString+=".9\nmatched by local stem \""+sProcessedLocalnames+"\"";
 				}
 				
-				Mapping pmapping=new Mapping( source, target, 0.9d, Mapping.EQUIVALENCE, typeOfNode);
+				Mapping pmapping=new Mapping( source, target, 0.9d, MappingRelation.EQUIVALENCE, typeOfNode);
 				if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 				return pmapping;
 			}
@@ -335,7 +333,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 					provenanceString+=".8\nmatched by local stem \""+sProcessedLocalnames+"\"";
 				}
 				
-				Mapping pmapping=new Mapping( source, target, 0.9d, Mapping.EQUIVALENCE, typeOfNode);
+				Mapping pmapping=new Mapping( source, target, 0.9d, MappingRelation.EQUIVALENCE, typeOfNode);
 				if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 				return pmapping;
 			}
@@ -362,7 +360,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 						provenanceString+="1\nmatched by exact label match";
 					}
 					
-					Mapping pmapping=new Mapping( source, target, 1d, Mapping.EQUIVALENCE, typeOfNode);
+					Mapping pmapping=new Mapping( source, target, 1d, MappingRelation.EQUIVALENCE, typeOfNode);
 					if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 					return pmapping;
 				}
@@ -379,7 +377,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 						provenanceString+=".95\nmatched by label stem \""+sProcessedLabel+"\"";
 					}
 					
-					Mapping pmapping=new Mapping( source, target, .95d, Mapping.EQUIVALENCE, typeOfNode);
+					Mapping pmapping=new Mapping( source, target, .95d, MappingRelation.EQUIVALENCE, typeOfNode);
 					if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 					return pmapping;
 				}
@@ -396,7 +394,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 						provenanceString+=".9\nmatched by label stem \""+sProcessedLabel+"\"";
 					}
 					
-					Mapping pmapping=new Mapping( source, target, .9d, Mapping.EQUIVALENCE, typeOfNode);
+					Mapping pmapping=new Mapping( source, target, .9d, MappingRelation.EQUIVALENCE, typeOfNode);
 					if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 					return pmapping;
 				}
@@ -412,13 +410,13 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 						provenanceString+=".8\nmatched by label stem \""+sProcessedLabel+"\"";
 					}
 					
-					Mapping pmapping=new Mapping( source, target, .8d, Mapping.EQUIVALENCE, typeOfNode);
+					Mapping pmapping=new Mapping( source, target, .8d, MappingRelation.EQUIVALENCE, typeOfNode);
 					if( param.storeProvenance ) pmapping.setProvenance(provenanceString+"\n");
 					return pmapping;
 				}
 			}
 			//none of the above
-			return new  Mapping( source, target, 0.0d, Mapping.EQUIVALENCE, typeOfNode);
+			return new  Mapping( source, target, 0.0d, MappingRelation.EQUIVALENCE, typeOfNode);
 		}
 	}
 	
@@ -440,7 +438,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			
 			// Step 2:	If the labels are equal, then return a similarity of 1
 			if( sourceName.equalsIgnoreCase(targetName) ) {
-				//String relation = Mapping.EQUIVALENCE;
+				//String relation = MappingRelation.EQUIVALENCE;
 				return 1.0d;
 			}
 			// if we haven't initialized our wordnet database, do it
@@ -459,7 +457,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			
 			float verbSimilarity = getSensesComparison(sourceVerbs, targetVerbs);
 			
-			//String rel = Mapping.EQUIVALENCE;
+			//String rel = MappingRelation.EQUIVALENCE;
 	        
 			// select the best similarity found. (either verb or noun)
 	        if( nounSimilarity > verbSimilarity ) {

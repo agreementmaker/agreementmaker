@@ -10,16 +10,17 @@ import java.util.Iterator;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.dom4j.io.SAXReader;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.output.OutputController;
@@ -62,7 +63,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 			Iterator<MatchingPair> it = referenceListOfPairs.iterator();
 			while (it.hasNext()){
 				MatchingPair mp = it.next();
-				if(!mp.relation.equals(Mapping.EQUIVALENCE)){//should be equals but sometimes they have spaces together with the =
+				if(!mp.relation.equals(MappingRelation.EQUIVALENCE)){//should be equals but sometimes they have spaces together with the =
 					nonEquivalencePairs.add(mp);
 					it.remove();
 				}
@@ -207,7 +208,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
             }
             String sourceURI = e.element("entity1").attributeValue("resource");
             String targetURI = e.element("entity2").attributeValue("resource");
-            String relation =  e.elementText("relation");
+            MappingRelation relation =  MappingRelation.parseRelation( e.elementText("relation") );
             String measure = e.elementText("measure");
             String provenance = e.elementText("provenance");
 
@@ -254,18 +255,18 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	    return result;
 	}
 	
-	public String getRelationFromFileFormat(String relation) {
-		String result = Mapping.EQUIVALENCE;
+	/*public MappingRelation getRelationFromFileFormat(String relation) {
+		MappingRelation result = MappingRelation.EQUIVALENCE;
 		String format = ((ReferenceAlignmentParameters)param).format;
 		if(format.equals(OAEI)){//Right now only this format has the relation string
 			//TODO i don't actually know symbols different from equivalence used in this format, so i will put the symbol itself as relation
-			if(relation == null || relation.equals("") || relation.equals(Mapping.EQUIVALENCE)) {
-				result = Mapping.EQUIVALENCE;
+			if(relation == null || relation.equals("") || relation.equals(MappingRelation.EQUIVALENCE)) {
+				result = MappingRelation.EQUIVALENCE;
 			}
-			else result = relation; //if it is another symbol i'll put it directly in the alignment so that is displayed on the AM we can actually see it, and maybe use it to represent those relations in our Alignment class
+			else result = MappingRelation.parseRelation(relation); //if it is another symbol i'll put it directly in the alignment so that is displayed on the AM we can actually see it, and maybe use it to represent those relations in our Alignment class
 		}
 		return result;
-	}
+	}*/
 
 
 	/**
@@ -301,7 +302,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	            target = target.substring(0,target.length()-2);
 	            MatchingPair r = new MatchingPair(source,target);
 	            r.similarity = 1;
-	            r.relation = Mapping.EQUIVALENCE;
+	            r.relation = MappingRelation.EQUIVALENCE;
 	            result.add(r);
 	    	}
 	    }
@@ -331,7 +332,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		        	target = split[1].trim();
 		            MatchingPair r = new MatchingPair(source,target);
 		            r.similarity = 1d;
-		            r.relation = Mapping.EQUIVALENCE;
+		            r.relation = MappingRelation.EQUIVALENCE;
 		            result.add(r);
 		    	}
 		    	else if(split.length == 3) {
@@ -339,7 +340,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		        	target = split[2].trim();
 		            MatchingPair r = new MatchingPair(source,target);
 		            r.similarity = 1d;
-		            r.relation = Mapping.parseRelation(split[1]);
+		            r.relation = MappingRelation.parseRelation(split[1]);
 		            result.add(r);
 		    	}
 		    	else if(split.length == 4) {
@@ -347,7 +348,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		    		target = split[2].trim();
 		    		MatchingPair r = new MatchingPair(source,target);
 		    		r.similarity = Double.parseDouble(split[3]);
-		    		r.relation = Mapping.parseRelation(split[1]);
+		    		r.relation = MappingRelation.parseRelation(split[1]);
 		    	}
 		    	else {
 		    		Logger log = Logger.getLogger(this.getClass());
@@ -379,7 +380,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	        	target = split[3];
 	            MatchingPair r = new MatchingPair(source,target);
 	            r.similarity = 1;
-	            r.relation = Mapping.EQUIVALENCE;
+	            r.relation = MappingRelation.EQUIVALENCE;
 	            result.add(r);
 	    	}
 	    	else if(split.length == 4) {
@@ -387,7 +388,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	        	target = split[2];
 	            MatchingPair r = new MatchingPair(source,target);
 	            r.similarity = 1;
-	            r.relation = Mapping.EQUIVALENCE;
+	            r.relation = MappingRelation.EQUIVALENCE;
 	            result.add(r);
 	    	}
 	    	//else System.out.println("Some lines in the reference are not in the correct format. Check result please");
@@ -402,7 +403,6 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	    String source;
 	    String target;
 	    double similarity;
-	    String relation;
 	    while((line = br.readLine()) !=null){
 	    	String[] split = line.split("\t");
 	    	if(split.length == 5 && split[1].equals(OutputController.arrow)) {
@@ -414,13 +414,13 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	        	catch(Exception e) {
 	        		similarity = 1;
 	        	}
-	        	relation = split[4];
-	        	if(relation == null || relation.equals("")) {
-	        		relation = Mapping.EQUIVALENCE;
+	        	String relationString = split[4];
+	        	if(relationString == null || relationString.equals("")) {
+	        		relation = MappingRelation.EQUIVALENCE;
 	        	}
 	            MatchingPair r = new MatchingPair(source,target);
 	            r.similarity = similarity;
-	            r.relation = relation;
+	            r.relation = MappingRelation.parseRelation(relationString);
 	            result.add(r);
 	    	}
 	    }

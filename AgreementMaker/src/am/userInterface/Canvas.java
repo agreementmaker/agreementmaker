@@ -24,8 +24,9 @@ import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.TreeBuilder;
@@ -209,15 +210,15 @@ public class Canvas extends VisualizationPanel implements MouseListener, ActionL
 	}
 	
 	public void createManualAlignment(Object obj) {
-		String relation = Mapping.EQUIVALENCE;;
+		MappingRelation relation = MappingRelation.EQUIVALENCE;
 		double sim = 0;
 		boolean abort = false;
 		if(obj == standardAlignment) {
-			relation = Mapping.EQUIVALENCE;
+			relation = MappingRelation.EQUIVALENCE;
 			sim = 1;
 		}
 		else if(obj == deleteAlignment) {
-			relation = Mapping.EQUIVALENCE;
+			relation = MappingRelation.EQUIVALENCE;
 			sim = 0;
 		}
 		else {
@@ -239,7 +240,7 @@ public class Canvas extends VisualizationPanel implements MouseListener, ActionL
 				catch(Exception ex) {//WRONG INPUT, ASK INPUT AGAIN
 				}
 			}
-			if(obj == other){
+			/*if(obj == other){  // TODO: Figure out how to allow for user controlled relations.
 				correct = false;
 				while(!correct &&  !abort) {
 					String x = JOptionPane.showInputDialog(null, "Insert the relation type:");
@@ -254,17 +255,17 @@ public class Canvas extends VisualizationPanel implements MouseListener, ActionL
 					catch(Exception ex) {//WRONG INPUT, ASK INPUT AGAIN
 					}
 				}
-			}
-			else if (obj == exact)
-				relation = Mapping.EQUIVALENCE;
+			}*/
+			if (obj == exact)
+				relation = MappingRelation.EQUIVALENCE;
 			else if (obj == subset)
-				relation = Mapping.SUBSET;
+				relation = MappingRelation.SUBSET;
 			else if (obj == subsetComplete)
-				relation = Mapping.SUBSETCOMPLETE;
+				relation = MappingRelation.SUBSETCOMPLETE;
 			else if (obj == superset)
-				relation = Mapping.SUPERSET;
+				relation = MappingRelation.SUPERSET;
 			else if (obj == supersetComplete)
-				relation = Mapping.SUPERSETCOMPLETE;
+				relation = MappingRelation.SUPERSETCOMPLETE;
 			/*
 			else if (obj == comparativeExact)
 				map.setMappingType("Comparative exact");

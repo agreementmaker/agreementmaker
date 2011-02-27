@@ -1,30 +1,22 @@
 package am.app.mappingEngine.hierarchy;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
-import javax.swing.text.html.HTMLDocument;
+import am.Utility;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.ontology.Node;
 
-import org.hamcrest.core.IsNull;
-
-import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
-import com.hp.hpl.jena.ontology.CardinalityRestriction;
 import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.MaxCardinalityRestriction;
-import com.hp.hpl.jena.ontology.MinCardinalityRestriction;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.ontology.Restriction;
-import com.hp.hpl.jena.ontology.UnionClass;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -33,25 +25,6 @@ import edu.smu.tspell.wordnet.NounSynset;
 import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.SynsetType;
 import edu.smu.tspell.wordnet.WordNetDatabase;
-
-import am.Utility;
-import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractParameters;
-import am.app.mappingEngine.MappedNodes;
-import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.StringUtil.PorterStemmer;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
-import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
-import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
-import am.app.ontology.Node;
-import am.app.ontology.Ontology;
-import am.tools.WordNetLookup.WordNetLookupPanel;
 
 
 
@@ -196,13 +169,13 @@ public class HierarchyMatcher extends AbstractMatcher
 					 * overwrite alread established relationships*/
 					if( classesMatrix.get( sourceNode.getIndex(), targetNode.getIndex()) == null || 
 						classesMatrix.getSimilarity( sourceNode.getIndex(), targetNode.getIndex()) < 0.80d ) {
-						classesMatrix.set(sourceNode.getIndex(), targetNode.getIndex(), new Mapping(sourceNode, targetNode, 0.89d, Mapping.SUPERCLASS));
+						classesMatrix.set(sourceNode.getIndex(), targetNode.getIndex(), new Mapping(sourceNode, targetNode, 0.89d, MappingRelation.SUPERCLASS));
 					}
 				} else if ( synsetIsContainedBy(targetSynsetList, sourceHypernymList) ) {
 					//source < target
 					if( classesMatrix.get( sourceNode.getIndex(), targetNode.getIndex()) == null || 
 							classesMatrix.getSimilarity( sourceNode.getIndex(), targetNode.getIndex()) < 0.80d ) {
-							classesMatrix.set(sourceNode.getIndex(), targetNode.getIndex(), new Mapping(sourceNode, targetNode, 0.89d, Mapping.SUBCLASS));
+							classesMatrix.set(sourceNode.getIndex(), targetNode.getIndex(), new Mapping(sourceNode, targetNode, 0.89d, MappingRelation.SUBCLASS));
 						}
 				}
 				
@@ -445,12 +418,12 @@ public class HierarchyMatcher extends AbstractMatcher
 			if(row != -1)
 			{
 				
-				classesMatrix.set(indexSource,targetTemp.getIndex(),new Mapping(source,targetTemp,0.85d,">"));
+				classesMatrix.set(indexSource,targetTemp.getIndex(),new Mapping(source,targetTemp,0.85d,MappingRelation.SUPERCLASS));
 			}
 			/*IF THE SOURCE HAS A SUPER CLASS IT WILL HAVE THE SAME subClassOf RELATIONSHIP WITH THE TARGET CONCEPT*/
 			if(superClassOfSOurce != null)
 			{
-				classesMatrix.set(superClassOfSOurce.getIndex(),targetTemp.getIndex(),new Mapping(superClassOfSOurce,targetTemp,0.85d,">"));
+				classesMatrix.set(superClassOfSOurce.getIndex(),targetTemp.getIndex(),new Mapping(superClassOfSOurce,targetTemp,0.85d,MappingRelation.SUPERCLASS));
 			}
 		}
 		
@@ -472,10 +445,10 @@ public class HierarchyMatcher extends AbstractMatcher
 							int index1 = getIndex(targetClassList,temp.getURI());
 							Node temp1 = targetClassList.get(index1);
 							/*HERE THE SECOND LEVEL OF SUBCLASSES ARE BEING MATCHED*/
-							classesMatrix.set(indexSource,temp1.getIndex(),new Mapping(source,temp1,0.85d,">"));
+							classesMatrix.set(indexSource,temp1.getIndex(),new Mapping(source,temp1,0.85d,MappingRelation.SUPERCLASS));
 							if(superClassOfSOurce != null)
 							{
-								classesMatrix.set(superClassOfSOurce.getIndex(),temp1.getIndex(),new Mapping(superClassOfSOurce,temp1,0.85d,">"));
+								classesMatrix.set(superClassOfSOurce.getIndex(),temp1.getIndex(),new Mapping(superClassOfSOurce,temp1,0.85d,MappingRelation.SUPERCLASS));
 							}
 						}
 					
@@ -494,10 +467,10 @@ public class HierarchyMatcher extends AbstractMatcher
 						OntClass temp = (OntClass)targetSubClassIterator.next();
 						int index1 = getIndex(targetClassList,temp.getURI());
 						Node temp1 = targetClassList.get(index1);
-						classesMatrix.set(indexSource,temp1.getIndex(),new Mapping(source,temp1,0.85d,">"));
+						classesMatrix.set(indexSource,temp1.getIndex(),new Mapping(source,temp1,0.85d,MappingRelation.SUPERCLASS));
 						if(superClassOfSOurce != null)
 						{
-							classesMatrix.set(superClassOfSOurce.getIndex(),temp1.getIndex(),new Mapping(superClassOfSOurce,temp1,0.85d,">"));
+							classesMatrix.set(superClassOfSOurce.getIndex(),temp1.getIndex(),new Mapping(superClassOfSOurce,temp1,0.85d,MappingRelation.SUPERCLASS));
 						}
 					}
 					
@@ -508,7 +481,7 @@ public class HierarchyMatcher extends AbstractMatcher
 		if(superClassOfTarget != null)
 		{
 			//System.out.println("I have matcher "+source.getLocalName() +" TO "+superClassOfTarget.getLocalName());
-			classesMatrix.set(source.getIndex(),superClassOfTarget.getIndex(),new Mapping(source,superClassOfTarget,0.85d,">"));
+			classesMatrix.set(source.getIndex(),superClassOfTarget.getIndex(),new Mapping(source,superClassOfTarget,0.85d,MappingRelation.SUPERCLASS));
 		}
 		
 	}
@@ -548,11 +521,11 @@ public class HierarchyMatcher extends AbstractMatcher
 		{
 			int row = getIndex(sourceClassList,sourceSubClasses.get(k).getURI());
 			Node sourceTemp = (Node)sourceClassList.get(row);
-			classesMatrix.set(sourceTemp.getIndex(),indexTarget,new Mapping(sourceTemp,target,0.85d,"<"));
+			classesMatrix.set(sourceTemp.getIndex(),indexTarget,new Mapping(sourceTemp,target,0.85d,MappingRelation.SUBCLASS));
 			if(superClassOfTarget != null)
 			{
 				
-				classesMatrix.set(sourceTemp.getIndex(),superClassOfTarget.getIndex(),new Mapping(sourceTemp,superClassOfTarget,0.85d,"<"));
+				classesMatrix.set(sourceTemp.getIndex(),superClassOfTarget.getIndex(),new Mapping(sourceTemp,superClassOfTarget,0.85d,MappingRelation.SUBCLASS));
 			}
 		}
 		
@@ -570,10 +543,10 @@ public class HierarchyMatcher extends AbstractMatcher
 					sourceSubClassesLevel2.add(temp);
 					int index1 = getIndex(sourceClassList,temp.getURI());
 					Node temp1 = sourceClassList.get(index1);
-					classesMatrix.set(temp1.getIndex(),indexTarget,new Mapping(temp1,target,0.85d,"<"));
+					classesMatrix.set(temp1.getIndex(),indexTarget,new Mapping(temp1,target,0.85d,MappingRelation.SUBCLASS));
 					if (superClassOfTarget != null)
 					{
-						classesMatrix.set(temp1.getIndex(),superClassOfTarget.getIndex(),new Mapping(temp1,superClassOfTarget,0.85d,"<"));
+						classesMatrix.set(temp1.getIndex(),superClassOfTarget.getIndex(),new Mapping(temp1,superClassOfTarget,0.85d,MappingRelation.SUBCLASS));
 					}
 				}
 			}
@@ -593,10 +566,10 @@ public class HierarchyMatcher extends AbstractMatcher
 					temp = (OntClass)sourceSubClassIterator.next();
 					int index1 = getIndex(sourceClassList,temp.getURI());
 					Node temp1 = sourceClassList.get(index1);
-					classesMatrix.set(temp1.getIndex(),indexTarget,new Mapping(temp1,target,0.85d,"<"));
+					classesMatrix.set(temp1.getIndex(),indexTarget,new Mapping(temp1,target,0.85d,MappingRelation.SUBCLASS));
 					if (superClassOfTarget != null)
 					{
-						classesMatrix.set(temp1.getIndex(),superClassOfTarget.getIndex(),new Mapping(temp1,superClassOfTarget,0.85d,"<"));
+						classesMatrix.set(temp1.getIndex(),superClassOfTarget.getIndex(),new Mapping(temp1,superClassOfTarget,0.85d,MappingRelation.SUBCLASS));
 					}
 				}
 			}
@@ -608,7 +581,7 @@ public class HierarchyMatcher extends AbstractMatcher
 		if(superClassOfSource != null)
 		{
 			//System.out.println("I have matcher "+source.getLocalName() +" TO "+superClassOfSource.getLocalName());
-			classesMatrix.set(superClassOfSource.getIndex(),target.getIndex(),new Mapping(superClassOfSource,target,0.85d,">"));
+			classesMatrix.set(superClassOfSource.getIndex(),target.getIndex(),new Mapping(superClassOfSource,target,0.85d,MappingRelation.SUPERCLASS));
 		}
 	}
 	private Node getSuperClass(Node Target,ArrayList<Node> list)

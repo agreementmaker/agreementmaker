@@ -8,11 +8,12 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
-import com.hp.hpl.jena.rdf.model.Resource;
-
 import am.Utility;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.Mapping.MappingRelation;
+
+import com.hp.hpl.jena.rdf.model.Resource;
 
 public class AlignmentOutput
 {
@@ -167,7 +168,7 @@ public class AlignmentOutput
             String e2 = alignment.getEntity2().getUri();
             String measure = Double.toString(alignment.getSimilarity());
             String prov = alignment.getProvenance();
-            String relation = alignment.getRelation();
+            MappingRelation relation = alignment.getRelation();
             if( prov != null ) writeElement(e1, e2, measure, relation, prov);
             else writeElement(e1, e2, measure, relation);
 
@@ -241,7 +242,7 @@ public class AlignmentOutput
         writeList.add(temp);
     }
 
-    public void writeElement(String res1, String res2, String measure, String r)
+    public void writeElement(String res1, String res2, String measure, MappingRelation r)
     {
         String temp = "    <map>\n" 
                 + "      <Cell>\n" 
@@ -255,7 +256,7 @@ public class AlignmentOutput
         writeList.add(temp);
     }
 
-    public void writeElement(String res1, String res2, String measure, String r, String prov)
+    public void writeElement(String res1, String res2, String measure, MappingRelation r, String prov)
     {
         String temp = "    <map>\n" 
                 + "      <Cell>\n" 

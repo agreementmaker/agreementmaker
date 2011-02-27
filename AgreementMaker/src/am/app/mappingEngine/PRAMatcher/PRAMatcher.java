@@ -6,6 +6,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
@@ -125,7 +126,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 			{
 				target = targetList.get(j);
 				if(matrix.get(i, j) == null)
-					matrix.set(i, j, new Mapping(src, target, 0.0d, Mapping.EQUIVALENCE));
+					matrix.set(i, j, new Mapping(src, target, 0.0d, MappingRelation.EQUIVALENCE));
 			}
 		}
 		

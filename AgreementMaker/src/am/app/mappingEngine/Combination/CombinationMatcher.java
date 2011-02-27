@@ -4,6 +4,7 @@ import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
 import am.app.ontology.Node;
@@ -150,7 +151,7 @@ public class CombinationMatcher extends AbstractMatcher {
 			else sim = 0;
 		}
 		else throw new RuntimeException("DEVELOPMENT ERROR: combination type selected is not implemented");
-		return new Mapping(source, target, sim, Mapping.EQUIVALENCE);
+		return new Mapping(source, target, sim, MappingRelation.EQUIVALENCE);
 	}
 
 	public AbstractMatcherParametersPanel getParametersPanel() {

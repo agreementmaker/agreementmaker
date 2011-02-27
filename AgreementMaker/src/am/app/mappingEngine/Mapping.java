@@ -25,35 +25,47 @@ public class Mapping implements Serializable
 	private Node entity1 = null;
     private Node entity2 = null;
     private double similarity = 0;
-    private String relation = null;
+    private MappingRelation relation = null;
     private String provenance;
 
 	private alignType typeOfConcepts = null;
     
-    //THE FONT USED IN THE CANVAS MUST BE A UNICODE FONT TO VIEW THIS SPECIAL CHARS
-    public final static String EQUIVALENCE = "=";
-    public final static String SUPERCLASS = ">";
-    public final static String SUBCLASS = "<";
-    public final static String SUBSET = "<s";
-    public final static String SUPERSET = ">s";
-    public final static String SUBSETCOMPLETE = "<sc";
-    public final static String SUPERSETCOMPLETE = ">sc";
+    public enum MappingRelation {
+    	EQUIVALENCE		 ("=", " = "),
+    	SUPERCLASS       (")", "> c"),
+    	SUBCLASS         ("(", "< c"),
+    	SUPERSET         ("]", "> s"),
+    	SUBSET           ("[", "< s"),
+    	SUPERSETCOMPLETE ("}", "> s+"),
+    	SUBSETCOMPLETE   ("{", "< s+"),
+    	RELATED			 ("~", " ~ "),
+    	UNKNOWN			 ("?", " ? ");
+    	
+    	private String internalRepresentation;
+    	private String visualRepresentation;  // TODO: Change this to a graphical representation, not a string.
+    	private MappingRelation(String rep, String vrep) { internalRepresentation = rep; visualRepresentation = vrep; }
+    	public String toString() { return internalRepresentation; }
+    	public String getVisualRepresentation() { return visualRepresentation; }
+    	
+		public static MappingRelation parseRelation(String relation) {
+			for( MappingRelation rel : MappingRelation.values() )
+				if( relation.equals(rel.toString()) ) return rel;
+			return UNKNOWN;
+		}
+		
+    }
+    
 
     
     public static String parseRelation(String r) {
-    	if( r.equals(EQUIVALENCE.trim()) ) return EQUIVALENCE;
-    	if( r.equals(SUPERCLASS.trim())) return SUPERCLASS;
-    	if( r.equals(SUBCLASS.trim()) ) return SUBCLASS;
-    	if( r.equals(SUBSET.trim()) ) return SUBSET;
-    	if( r.equals(SUPERSET.trim()) ) return SUPERSET;
-    	if( r.equals(SUBSETCOMPLETE.trim()) ) return SUBSETCOMPLETE;
-    	if( r.equals(SUPERSETCOMPLETE.trim()) ) return SUPERSETCOMPLETE;
-    	
-    	return "?";  // unknown relation
+    	for( MappingRelation rel : MappingRelation.values() ) {
+    		if( r.equals( rel.toString() ) ) return rel.toString();
+    	}    	
+    	return MappingRelation.UNKNOWN.toString();  // unknown relation
     }
     
     /* Constructors */
-    public Mapping(Node e1, Node e2, double sim, String rel, alignType tyoc, String p) {
+    public Mapping(Node e1, Node e2, double sim, MappingRelation rel, alignType tyoc, String p) {
         entity1 = e1;
         entity2 = e2;
         similarity = sim;
@@ -62,7 +74,7 @@ public class Mapping implements Serializable
         provenance = p;
     }
     
-    public Mapping(Node e1, Node e2, double sim, String r, alignType tyoc)
+    public Mapping(Node e1, Node e2, double sim, MappingRelation r, alignType tyoc)
     {
         entity1 = e1;
         entity2 = e2;
@@ -71,7 +83,7 @@ public class Mapping implements Serializable
         typeOfConcepts = tyoc;
     }
     
-    public Mapping(Node e1, Node e2, double sim, String r)
+    public Mapping(Node e1, Node e2, double sim, MappingRelation r)
     {
         entity1 = e1;
         entity2 = e2;
@@ -89,7 +101,7 @@ public class Mapping implements Serializable
         entity1 = e1;
         entity2 = e2;
         similarity = sim;
-        relation = "=";
+        relation = MappingRelation.EQUIVALENCE;
         if( entity1.getType().equals( Node.OWLCLASS ) || entity1.getType().equals( Node.RDFNODE ) || entity1.getType().equals( Node.XMLNODE )  ) {
         	typeOfConcepts = alignType.aligningClasses;
         } else {
@@ -102,7 +114,7 @@ public class Mapping implements Serializable
         entity1 = e1;
         entity2 = e2;
         similarity = 1.0;
-        relation = "=";
+        relation = MappingRelation.EQUIVALENCE;
         if( entity1.getType().equals( Node.OWLCLASS ) || entity1.getType().equals( Node.RDFNODE ) || entity1.getType().equals( Node.XMLNODE )  ) {
         	typeOfConcepts = alignType.aligningClasses;
         } else {
@@ -113,7 +125,7 @@ public class Mapping implements Serializable
     public Mapping(double s) {
 		//This is a fake contructor to use an alignment as a container for sim and relation, to move both values between methods
     	similarity = s;
-    	relation = EQUIVALENCE;
+    	relation = MappingRelation.EQUIVALENCE;
 	}
 
 	public Mapping(Mapping old) {
@@ -136,8 +148,8 @@ public class Mapping implements Serializable
 	public void setSimilarity(double sim) { similarity = sim; }
 	public double getSimilarity() { return similarity; }
 
-	public String getRelation() { return relation; }
-	public void setRelation(String r) { relation = r; }
+	public MappingRelation getRelation() { return relation; }
+	public void setRelation(MappingRelation r) { relation = r; }
 
 	public String getProvenance() { return provenance; }
 	public void setProvenance(String provenance) { this.provenance = provenance; }

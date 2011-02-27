@@ -5,6 +5,7 @@ import java.util.HashMap;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
@@ -116,7 +117,7 @@ public class OldPRAMatcher extends AbstractMatcher
 			{
 				target = targetList.get(j);
 				if(matrix.get(i, j) == null)
-					matrix.set(i, j, new Mapping(src, target, 0.0d, Mapping.EQUIVALENCE));
+					matrix.set(i, j, new Mapping(src, target, 0.0d, MappingRelation.EQUIVALENCE));
 			}
 		}
 		
@@ -136,7 +137,7 @@ public class OldPRAMatcher extends AbstractMatcher
 		String tLabel = target.getLabel();
 		
 			if(sLabel.equalsIgnoreCase(tLabel))
-				return new Mapping( source, target, 1, Mapping.EQUIVALENCE);
+				return new Mapping( source, target, 1, MappingRelation.EQUIVALENCE);
 			//all normalization without stemming and digits return 0.95
 			
 			param = new NormalizerParameter();
@@ -150,7 +151,7 @@ public class OldPRAMatcher extends AbstractMatcher
 			String tProcessedLabel = norm.normalize(tLabel);
 			
 			if(sProcessedLabel.equals(tProcessedLabel))
-				return new Mapping( source, target, 0.95d, Mapping.EQUIVALENCE);
+				return new Mapping( source, target, 0.95d, MappingRelation.EQUIVALENCE);
 			//apply stem return 0.90 
 	
 			param.setAllfalse();
@@ -160,7 +161,7 @@ public class OldPRAMatcher extends AbstractMatcher
 			sProcessedLabel = norm.normalize(sLabel);
 			tProcessedLabel = norm.normalize(tLabel);
 			if(sProcessedLabel.equals(tProcessedLabel))
-				return new Mapping( source, target, 0.9d, Mapping.EQUIVALENCE);
+				return new Mapping( source, target, 0.9d, MappingRelation.EQUIVALENCE);
 			
 			//apply normDigits return 0.8
 			
@@ -170,9 +171,9 @@ public class OldPRAMatcher extends AbstractMatcher
 			sProcessedLabel = norm.normalize(sLabel);
 			tProcessedLabel = norm.normalize(tLabel);
 			if(sProcessedLabel.equals(tProcessedLabel))
-				return new Mapping( source, target, 0.8d, Mapping.EQUIVALENCE);
+				return new Mapping( source, target, 0.8d, MappingRelation.EQUIVALENCE);
 		
-			return new Mapping(source, target, 0.0d, Mapping.EQUIVALENCE);
+			return new Mapping(source, target, 0.0d, MappingRelation.EQUIVALENCE);
 	}
 
 	

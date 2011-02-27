@@ -7,6 +7,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.userInterface.sidebar.vertex.Vertex;
@@ -225,7 +226,7 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 		}
 		
 		// return the result
-		return new Mapping(source, target, SSC_similarity, Mapping.EQUIVALENCE);
+		return new Mapping(source, target, SSC_similarity, MappingRelation.EQUIVALENCE);
 		
 	}
 	

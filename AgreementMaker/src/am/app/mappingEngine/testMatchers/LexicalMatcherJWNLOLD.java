@@ -3,18 +3,20 @@ package am.app.mappingEngine.testMatchers;
 import java.io.FileInputStream;
 import java.util.Iterator;
 import java.util.List;
-import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Mapping;
-import am.app.ontology.Node;
+
 import net.didion.jwnl.JWNL;
 import net.didion.jwnl.JWNLException;
-import net.didion.jwnl.dictionary.Dictionary;
 import net.didion.jwnl.data.IndexWord;
 import net.didion.jwnl.data.POS;
-import net.didion.jwnl.data.Synset;
 import net.didion.jwnl.data.PointerUtils;
+import net.didion.jwnl.data.Synset;
 import net.didion.jwnl.data.list.PointerTargetNode;
 import net.didion.jwnl.data.list.PointerTargetNodeList;
+import net.didion.jwnl.dictionary.Dictionary;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.ontology.Node;
 
 
 public class LexicalMatcherJWNLOLD extends AbstractMatcher{
@@ -124,7 +126,7 @@ public class LexicalMatcherJWNLOLD extends AbstractMatcher{
 			max = max2;
 		}
 		
-		return new Mapping(source, target, max, Mapping.EQUIVALENCE);
+		return new Mapping(source, target, max, MappingRelation.EQUIVALENCE);
 	}
 	
 	/**

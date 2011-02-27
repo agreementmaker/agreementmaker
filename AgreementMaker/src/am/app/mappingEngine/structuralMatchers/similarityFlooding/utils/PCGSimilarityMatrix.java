@@ -3,8 +3,9 @@
  */
 package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
 
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 
 /**
@@ -50,7 +51,7 @@ public class PCGSimilarityMatrix extends ArraySimilarityMatrix {
 	public PCGSimilarityMatrix(WrappingGraph s, WrappingGraph t, alignType aType) {
 		super(0, 0, aType);
 		
-		relation = Mapping.EQUIVALENCE;
+		relation = MappingRelation.EQUIVALENCE;
     	typeOfMatrix = aType;
     	int M = 0;
     	int N = 0;

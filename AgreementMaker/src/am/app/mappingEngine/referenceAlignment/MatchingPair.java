@@ -1,5 +1,7 @@
 package am.app.mappingEngine.referenceAlignment;
 
+import am.app.mappingEngine.Mapping.MappingRelation;
+
 
 /**
  * This class represents a mapping pair between to nodes in the reference file
@@ -13,7 +15,7 @@ public class MatchingPair {
 	public String targetURI;
 	
 	public double similarity;
-	public String relation;
+	public MappingRelation relation;
 	
 	public String provenance;
 
@@ -25,14 +27,14 @@ public class MatchingPair {
 		targetURI = t;
 	}
 	
-	public MatchingPair(String s, String t, double sim, String rel) {
+	public MatchingPair(String s, String t, double sim, MappingRelation rel) {
 		similarity = sim;
 		relation = rel;
 		sourceURI = s;
 		targetURI = t;	
 	}
 	
-	public MatchingPair(String s, String t, double sim, String rel, String p) {
+	public MatchingPair(String s, String t, double sim, MappingRelation rel, String p) {
 		similarity = sim;
 		relation = rel;
 		sourceURI = s;

@@ -8,9 +8,10 @@ import java.util.Vector;
 
 import am.Utility;
 import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
@@ -49,7 +50,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
     
  // create M-by-N matrix of 0's with equivalence relation
     public ArraySimilarityMatrix(Ontology s, Ontology t, alignType type) {
-    	relation = Mapping.EQUIVALENCE;
+    	relation = MappingRelation.EQUIVALENCE;
     	typeOfMatrix = type;
     	if(type == alignType.aligningClasses){
             this.rows = s.getClassesList().size();
@@ -64,7 +65,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
     
     // create M-by-N matrix of 0's with equivalence relation
     public ArraySimilarityMatrix(int M, int N, alignType type) {
-    	relation = Mapping.EQUIVALENCE;
+    	relation = MappingRelation.EQUIVALENCE;
     	typeOfMatrix = type;
         this.rows = M;
         this.columns = N;
@@ -72,7 +73,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
     }
      
     // create M-by-N matrix of 0's
-    public ArraySimilarityMatrix(int M, int N, alignType type, String rel) {
+    public ArraySimilarityMatrix(int M, int N, alignType type, MappingRelation rel) {
     	relation = rel;
     	typeOfMatrix = type;
         this.rows = M;
@@ -127,7 +128,6 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
     	return columns;
     }
     
-	public String getRelation() { return relation; }
 	public alignType getAlignType() { return typeOfMatrix; }
     
     //********************* METHODS ADDED FOR SOME AM CALCULATIONS**********************************************

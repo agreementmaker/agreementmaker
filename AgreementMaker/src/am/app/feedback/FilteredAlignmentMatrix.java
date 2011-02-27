@@ -4,6 +4,7 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Ontology;
 
@@ -72,7 +73,7 @@ public class FilteredAlignmentMatrix extends ArraySimilarityMatrix {
 	}
 	
 	
-	public FilteredAlignmentMatrix(int numRows, int numCols, alignType typeOfNodes, String relation) {
+	public FilteredAlignmentMatrix(int numRows, int numCols, alignType typeOfNodes, MappingRelation relation) {
 		super( numRows, numCols, typeOfNodes, relation);
 		
 		// initialize list of filtered rows and columns

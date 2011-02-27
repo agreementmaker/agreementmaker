@@ -7,6 +7,7 @@ import java.util.Iterator;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import am.Utility;
@@ -14,6 +15,7 @@ import am.app.Core;
 import am.app.lexicon.Lexicon;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.ontology.Node;
@@ -32,6 +34,10 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 	private static final long serialVersionUID = 3231794310838624406L;
 	private ArrayList<LegacyMapping> mappings;
 
+	private static final int provenanceStringMaxLength = 50;
+	private static final String DELETE = "DELETE_";
+	private static final String SET_PROVENANCE = "SET_PROVENANCE_";
+	
 	Canvas2Layout layout;
 	Canvas2Vertex node; // the node that we right clicked.
 	
@@ -51,7 +57,7 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 		//  3. Delete All Mappings (item)
 		
 		JMenu mDeleteMappings = new JMenu("Delete Mappings");
-		//JMenu mProvenance = new JMenu("Provenance");
+		JMenu mProvenance = new JMenu("Set mapping provenance");
 		JMenuItem miViewLexicon = new JMenuItem("Show lexicon entry");
 				  miViewLexicon.setActionCommand("VIEW_LEXICON");
 				  miViewLexicon.addActionListener(this);
@@ -67,6 +73,10 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 			
 			mDeleteMappings.add(noMappings);
 			
+			JMenuItem noMappings2 = new JMenuItem("No mappings for this node.");
+			noMappings2.setEnabled(false);
+			mProvenance.add(noMappings2);
+			
 			
 		} else {
 			
@@ -81,7 +91,7 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 				JMenu mMatcher = new JMenu(matcher.getName() + "(#" + Integer.toString(matcherID) + ")");
 				JMenu mMatcherProv = new JMenu(matcher.getName() + "(#" + Integer.toString(matcherID) + ")");
 				
-				boolean hasMappings = false, hasProvenance = false;
+				boolean hasMappings = false;
 				for( int i = 0; i < mappings.size(); i++ ) {
 					MappingData currentData = (MappingData) mappings.get(i).getObject();
 					int currentID = currentData.matcherID;
@@ -89,7 +99,7 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 						// we found a mapping of this matcher, add the mapping to the delete menu
 						LegacyMapping mapping = mappings.get(i);
 						JMenuItem miMapping = new JMenuItem( mapping.toString() );
-								  miMapping.setActionCommand(Integer.toString(i)); // this is a hack, to be fixed later. - Cosmin (2/14/2010)
+								  miMapping.setActionCommand( DELETE + Integer.toString(i)); // this is a hack, to be fixed later. - Cosmin (2/14/2010)
 
 						miMapping.addActionListener(this);
 						mMatcher.add(miMapping);
@@ -97,18 +107,26 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 						
 						// check for provenance information for this matcher
 						Mapping map = ((MappingData)mapping.getObject()).alignment;
+						JMenuItem miMappingProvenance;
 						if( map.getProvenance() != null ) {
-							hasProvenance = true;
-							JMenuItem miMappingProvenance = new JMenuItem( map.getProvenance() );
-							mMatcherProv.add(miMappingProvenance);
+							miMappingProvenance = new JMenuItem( map.getProvenance().length() > provenanceStringMaxLength 
+									? map.getProvenance().substring(0, provenanceStringMaxLength) + " ..." 
+									: map.getProvenance() );
 						} else {
-							mMatcherProv.setEnabled(false);
+							miMappingProvenance = new JMenuItem("Set provenance ...");
 						}
+						miMappingProvenance.setActionCommand( SET_PROVENANCE + Integer.toString(i));
+						miMappingProvenance.addActionListener(this);
+						mMatcherProv.add(miMappingProvenance);
 					}
 				}
 				
-				if( hasMappings ) mDeleteMappings.add(mMatcher); 
-				//if( hasProvenance) mProvenance.add(mMatcherProv);
+				if( hasMappings ) 
+				{ 
+					mDeleteMappings.add(mMatcher);
+					mProvenance.add(mMatcherProv);
+				}
+				
 				
 				
 			}
@@ -116,6 +134,7 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 		
 		add(mDeleteMappings);        
 		addSeparator();
+		add(mProvenance);
 		add(miViewLexicon);
 		
 		// TODO: add(miDeleteAll);
@@ -126,13 +145,19 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 
 		String actionCommand = e.getActionCommand();
 		
-		if( actionCommand == "DELETE_ALL" && mappings != null) {
+		if( actionCommand.equals("DELETE_ALL") && mappings != null) {
 			// delete all the mappings associated with the node
 			for( int i = 0; i < mappings.size(); i++ ) {
 				// maybe popup a confirmation dialog? TODO
-				removeByIndex(i);
+				try {
+					removeByIndex(i);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					Utility.displayErrorPane("Could not delete mapping.\n\n"+e1.getMessage(), "Error");
+				}
 			}
-		} else if ( actionCommand == "VIEW_LEXICON" && node != null ) {
+		} else if ( actionCommand.equals("VIEW_LEXICON") && node != null ) {
 			try {
 				Lexicon lex = Core.getLexiconStore().getLexicon(node.getObject().ontologyID, LexiconRegistry.ONTOLOGY_LEXICON);
 				LexiconLookupPanel lookupPanel = lex.getLookupPanel();
@@ -148,20 +173,36 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 				Utility.displayErrorPane("Could not display lexicon lookup panel.\n\n"+e1.getMessage(), "Error");
 			}
 			
-		} else {
+		} else if( actionCommand.length() > DELETE.length() && 
+				actionCommand.substring(0, DELETE.length()).equals(DELETE) ) {
 			// the action command is the index of the mapping we want to delete
-			int index = Integer.parseInt(actionCommand);
+			int index = Integer.parseInt( actionCommand.substring( DELETE.length(), actionCommand.length() ) );
 			if( index < 0 || index >= mappings.size() ) {
 				// invalid index, do nothing.
 				return;
 			}
-			removeByIndex( index );
+			try {
+				removeByIndex(index);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				Utility.displayErrorPane("Could not delete mapping.\n\n"+e1.getMessage(), "Error");
+			}
 			
+		} else if( actionCommand.length() > SET_PROVENANCE.length() && 
+				actionCommand.substring(0, SET_PROVENANCE.length()).equals(SET_PROVENANCE) ) {
+			// the action command is the index of the mapping we want to delete
+			int index = Integer.parseInt( actionCommand.substring( SET_PROVENANCE.length(), actionCommand.length() ) );
+			if( index < 0 || index >= mappings.size() ) {
+				// invalid index, do nothing.
+				return;
+			}
+			setMappingProvenance( index );
 		}
 		
 	}
 	
-	private void removeByIndex( int index ) {
+	private void removeByIndex( int index ) throws Exception {
 		LegacyMapping mapping = mappings.get(index);
 		MappingData data = (MappingData) mapping.getObject();
 		
@@ -206,12 +247,22 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 		
 		Canvas2 canvas = (Canvas2) Core.getUI().getCanvas();
 		CanvasGraph gr = canvas.getMatcherGraph( data.matcherID );
+		if( gr != null ) gr.removeEdge( mapping );
+		else throw new Exception("Cannot find mapping in the visualization graphs.");
 		
-		assert (gr != null);
-		gr.removeEdge( mapping);
 
 		// repaint
 		Core.getUI().redisplayCanvas();
+	}
+	
+	private void setMappingProvenance( int index ) {
+		LegacyMapping mapping = mappings.get(index);
+		MappingData data = (MappingData) mapping.getObject();
+		Mapping m = data.alignment;
+		
+		String newProvenance = JOptionPane.showInputDialog("Set provenance:", m.getProvenance());
+		if( newProvenance != null ) m.setProvenance(newProvenance);
+		
 	}
 	
 	

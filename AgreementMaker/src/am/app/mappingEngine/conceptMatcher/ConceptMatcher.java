@@ -16,6 +16,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.userInterface.sidebar.vertex.Vertex;
@@ -310,7 +311,7 @@ public class ConceptMatcher extends AbstractMatcher {
 		double dblTxtWeight = ((ConceptMatcherParameters) param).TextSimilarityWeight;
 		double dblScore = (dblDescendantScore * dblDesWeight + dblAncestorScore * dblAncWeight + dblLCSScore * dblTxtWeight) / (dblDesWeight + dblAncWeight + dblTxtWeight);
 		
-		return new Mapping(source, target, dblScore, Mapping.EQUIVALENCE);
+		return new Mapping(source, target, dblScore, MappingRelation.EQUIVALENCE);
 	}
 	
 	private int LongestCommonSubstringLength(String str1, String str2)

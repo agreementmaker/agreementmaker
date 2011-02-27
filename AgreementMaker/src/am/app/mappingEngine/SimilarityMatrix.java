@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
@@ -33,10 +34,10 @@ public abstract class SimilarityMatrix
 	//if we want to start using it is important to keep it similar to 0, to allow compatibility with non-updated methods.
 	final static double INDETERMINED = Double.MIN_NORMAL;
 	
-	protected String relation = Mapping.EQUIVALENCE; //this is a default relation used when no relation is specified for this matrix
+	protected MappingRelation relation = MappingRelation.EQUIVALENCE; //this is a default relation used when no relation is specified for this matrix
 	protected alignType typeOfMatrix;
     
-	public abstract String getRelation();	// relation of the matrix? is this required?
+	public MappingRelation getRelation() { return relation; };	// relation of the matrix? is this required?
 	public abstract alignType getAlignType();
 	
 	/* Getters and Setters */

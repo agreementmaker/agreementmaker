@@ -28,6 +28,7 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.canvas2.Canvas2;
@@ -993,21 +994,24 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	    	while( itcls.hasNext() ) {  // look through all the object properties
 	    		OntClass oclass = (OntClass) itcls.next();
 	    		boolean isRoot = true;
-	    		
-	    		ExtendedIterator<?> superClassItr = oclass.listSuperClasses();
-	    		while( superClassItr.hasNext() ) {
-	    			OntClass superClass = (OntClass) superClassItr.next();
-	    			
-	    			if( !oclass.equals(superClass) && !superClass.isAnon() && !superClass.equals(OWL.Thing) ) {
-	    				// this property has a valid superclass, therefore it is not a root property
-	    				superClassItr.close();
-	    				isRoot = false;
-	    				break;
-	    			}
+	    		try {
+		    		ExtendedIterator<?> superClassItr = oclass.listSuperClasses();
+		    		while( superClassItr.hasNext() ) {
+		    			OntClass superClass = (OntClass) superClassItr.next();
+		    			
+		    			if( !oclass.equals(superClass) && !superClass.isAnon() && !superClass.equals(OWL.Thing) ) {
+		    				// this property has a valid superclass, therefore it is not a root property
+		    				superClassItr.close();
+		    				isRoot = false;
+		    				break;
+		    			}
+		    		}
+		    		
+		    		if( isRoot ) 
+		    			roots.add(oclass);
+	    		} catch( Exception e ) {
+	    			e.printStackTrace();
 	    		}
-	    		
-	    		if( isRoot ) 
-	    			roots.add(oclass);
 	    		
 			}    	
 		} else {
@@ -1517,8 +1521,8 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 					String sim = Utility.getNoDecimalPercentFromDouble(d.alignment.getSimilarity());
 					AbstractMatcher m = Core.getInstance().getMatcherByID( d.matcherID );
 					String shortName = MatcherFactory.getMatchersRegistryEntry( m.getClass() ).getMatcherShortName();
-					if( shortName != null ) 
-						d.label = sim + " - " + shortName;
+					d.label = d.alignment.getRelation().getVisualRepresentation() + " (" + sim + ")";
+					if( shortName != null ) { d.label += " " + shortName; }
 				}
 			}
 			
@@ -1568,13 +1572,16 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		String actionCommand = e.getActionCommand();
 		
 		// these commands are from the Create Mappings popup menu
-		if( actionCommand == "CREATE_DEFAULT"          ||
-			actionCommand == "CREATE_EQUIVALENCE"      ||
-			actionCommand == "CREATE_SUBSET"           || 
-			actionCommand == "CREATE_SUBSETCOMPLETE"    ||
-			actionCommand == "CREATE_SUPERSET"         || 
-			actionCommand == "CREATE_SUPERSETCOMPLETE" || 
-			actionCommand == "CREATE_OTHER" ) {
+		if( actionCommand.equals("CREATE_DEFAULT")          ||
+			actionCommand.equals("CREATE_EQUIVALENCE")      ||
+			actionCommand.equals("CREATE_SUPERCLASS")       ||
+			actionCommand.equals("CREATE_SUBCLASS")         ||
+			actionCommand.equals("CREATE_SUBSET")           || 
+			actionCommand.equals("CREATE_SUBSETCOMPLETE")   ||
+			actionCommand.equals("CREATE_SUPERSET")         || 
+			actionCommand.equals("CREATE_SUPERSETCOMPLETE") ||
+			actionCommand.equals("CREATE_RELATED")          ||
+			actionCommand.equals("CREATE_OTHER")            ){
 		
 			if( PopupMenuActive ) PopupMenuActive = false; // the menu was just closed if this action was fired.
 			
@@ -1583,13 +1590,13 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				return;  // do nothing for now
 			}
 			
-			String relation = Mapping.EQUIVALENCE;;
+			MappingRelation relation = MappingRelation.EQUIVALENCE;;
 			double sim = 0;
 			ArrayList<Mapping> userMappings = new ArrayList<Mapping>();
 			
 			
 			if( actionCommand == "CREATE_DEFAULT" ) {
-				relation = Mapping.EQUIVALENCE;
+				relation = MappingRelation.EQUIVALENCE;
 				sim = 1.0d;
 			} else {
 				// ask the user for the similarity value
@@ -1614,7 +1621,8 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				}
 			}
 
-			if( actionCommand == "CREATE_OTHER" ){
+			// TODO: Figure out how to allow the user to set a custom relation.
+			/*if( actionCommand == "CREATE_OTHER" ){
 				boolean correct = false;
 				boolean abort = false;
 				while(!correct &&  !abort) {
@@ -1630,13 +1638,16 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 					catch(Exception ex) {//WRONG INPUT, ASK INPUT AGAIN
 					}
 				}
-			}
+			}*/
 			
-			if( actionCommand == "CREATE_EQUIVALENCE" ) relation = Mapping.EQUIVALENCE;
-			if( actionCommand == "CREATE_SUBSET" ) relation = Mapping.SUBSET;
-			if( actionCommand == "CREATE_SUBSETCOMPLETE" ) relation = Mapping.SUBSETCOMPLETE;
-			if( actionCommand == "CREATE_SUPERSET" ) relation = Mapping.SUPERSET;
-			if( actionCommand == "CREATE_SUPERSETCOMPLETE") relation = Mapping.SUPERSETCOMPLETE;
+			if( actionCommand.equals("CREATE_EQUIVALENCE") )      relation = MappingRelation.EQUIVALENCE;
+			if( actionCommand.equals("CREATE_SUPERCLASS") )       relation = MappingRelation.SUPERCLASS;
+			if( actionCommand.equals("CREATE_SUBCLASS") )         relation = MappingRelation.SUBCLASS;
+			if( actionCommand.equals("CREATE_SUBSET") )           relation = MappingRelation.SUBSET;
+			if( actionCommand.equals("CREATE_SUBSETCOMPLETE") )   relation = MappingRelation.SUBSETCOMPLETE;
+			if( actionCommand.equals("CREATE_SUPERSET") )         relation = MappingRelation.SUPERSET;
+			if( actionCommand.equals("CREATE_SUPERSETCOMPLETE") ) relation = MappingRelation.SUPERSETCOMPLETE;
+			if( actionCommand.equals("CREATE_RELATED") )          relation = MappingRelation.RELATED;
 			
 
 			// **************** create the alignments

@@ -1,13 +1,21 @@
 package am.app.mappingEngine;
 
+import java.awt.Color;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.SwingWorker;
+
 import am.AMException;
 import am.Utility;
 import am.app.Core;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.MatcherChangeEvent.EventType;
 import am.app.mappingEngine.oneToOneSelection.MappingMWBM;
 import am.app.mappingEngine.oneToOneSelection.MaxWeightBipartiteMatching;
@@ -17,14 +25,6 @@ import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.MatchingProgressDisplay;
-
-import java.awt.Color;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-
-import javax.swing.SwingWorker;
 
 /**
  * transient data are not taken into account while serializing/deserializing the matcher
@@ -173,7 +173,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 * at the moment a matcher is not allowed to compute different relations for different concepts
 	 * in that case a matrix of relation has to be kept within the matcher and the situation has to be managed properly
 	 */
-	protected String relation;
+	protected MappingRelation relation;
 	
 	
 	/**
@@ -232,7 +232,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		alignProp = true;
 		minInputMatchers = 0;
 		maxInputMatchers = 0;
-		relation = Mapping.EQUIVALENCE;
+		relation = MappingRelation.EQUIVALENCE;
 		//optimized = false;
 		//ALIGNMENTS LIST MUST BE NULL UNTIL THEY ARE CALCULATED
 		classesAlignmentSet = null;
@@ -501,7 +501,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
 		//TO BE IMPLEMENTED BY THE ALGORITHM, THIS IS JUST A FAKE ABSTRACT METHOD
 		double sim;
-		String rel = Mapping.EQUIVALENCE;
+		MappingRelation rel = MappingRelation.EQUIVALENCE;
 		if(source.getLocalName().equals(target.getLocalName())) {
 			sim = 1;
 		}
@@ -810,7 +810,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 	//*****************USER ALIGN METHOD*****************************
     
-	public void addManualAlignments(ArrayList<Mapping> alignments) {
+	public void addManualAlignments(ArrayList<Mapping> alignments) throws Exception {
 		Iterator<Mapping> it = alignments.iterator();
 		Mapping al;
 		while(it.hasNext()) {
@@ -831,11 +831,15 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		modifiedByUser = true;
 	}
 		
-    public void addManualClassAlignment(Mapping a) {
+    public void addManualClassAlignment(Mapping a) throws Exception {
+    	if( classesMatrix == null ) throw new Exception("The classMatrix is not initialized."); 
+    	if( a == null ) throw new Exception("Cannot set a null alignment.");
     	addManualAlignment(a, classesMatrix);
     }
 
-    public void addManualPropAlignment(Mapping a) {
+    public void addManualPropAlignment(Mapping a) throws Exception {
+    	if( classesMatrix == null ) throw new Exception("The propertiesMatrix is not initialized."); 
+    	if( a == null ) throw new Exception("Cannot set a null alignment.");
     	addManualAlignment(a, propertiesMatrix);
     }
     
@@ -1153,11 +1157,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		this.report = report;
 	}
 	
-	public String getRelation() {
+	public MappingRelation getRelation() {
 		return relation;
 	}
 
-	public void setRelation(String relation) {
+	public void setRelation(MappingRelation relation) {
 		this.relation = relation;
 	}     
 	
@@ -1460,6 +1464,26 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 				EventType.MATCHER_ALIGNMENTSET_UPDATED, this.matcherID) );
 		
 	}
+	
+	// 
+	/**
+	 * this method removes any mappings between these two nodes
+	 * 
+	 * @param source The source concept.
+	 * @param target The target concept.  Must be the same type of concept as the source. 
+	 */
+	public Mapping getMapping(Node source, Node target) {
+
+		if( (source.isClass() && target.isProp()) || (source.isProp() && target.isClass()) ) {
+			// cannot have mappings between non matching types of concepts
+			return null;
+		}
+		
+		if( source.isClass() )	return classesAlignmentSet.contains(source, target);
+		if( source.isProp() ) return propertiesAlignmentSet.contains(source, target);
+		return null;
+	}
+	
 
 	
 	/***************** Ontology methods **************************/

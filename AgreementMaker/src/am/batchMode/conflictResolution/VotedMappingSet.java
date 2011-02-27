@@ -3,8 +3,10 @@ package am.batchMode.conflictResolution;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import am.app.mappingEngine.Mapping;
+
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
 
 public class VotedMappingSet {
@@ -56,7 +58,7 @@ public class VotedMappingSet {
 	
 	
 	//PUT MAPPING
-	public void putVotedMapping(Node sNode, Node tNode, double sim, String rel){
+	public void putVotedMapping(Node sNode, Node tNode, double sim, MappingRelation rel){
 		Mapping a = new Mapping(sNode, tNode, sim, rel);
 		putVotedMapping(a);
 	}

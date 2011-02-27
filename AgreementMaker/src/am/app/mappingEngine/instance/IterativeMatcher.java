@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.ontology.Node;
+
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.ObjectProperty;
@@ -19,10 +24,6 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-
-import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Mapping;
-import am.app.ontology.Node;
 
 /**
  * This class matches properties of ontologies using instance information.
@@ -160,16 +161,16 @@ public class IterativeMatcher extends AbstractMatcher{
 		
 		
 		if(!source.getUri().contains(sURI) || !target.getUri().contains(tURI)){
-			return new Mapping(source, target, 0, Mapping.EQUIVALENCE);
+			return new Mapping(source, target, 0, MappingRelation.EQUIVALENCE);
 		}
 
 		if(!source.getUri().contains(sURI) && !source.getUri().equalsIgnoreCase(target.getUri()) ) {
 			//System.out.println("External Node: " + source.getLocalName());
-			return new Mapping(source, target, 0, Mapping.EQUIVALENCE);
+			return new Mapping(source, target, 0, MappingRelation.EQUIVALENCE);
 		}
 		else if (!target.getUri().contains(tURI) && !target.getUri().equalsIgnoreCase(source.getUri())){
 			//System.out.println("External Node: " + target.getLocalName());
-			return new Mapping(source, target, 0, Mapping.EQUIVALENCE);
+			return new Mapping(source, target, 0, MappingRelation.EQUIVALENCE);
 		}
 		
 		
@@ -177,7 +178,7 @@ public class IterativeMatcher extends AbstractMatcher{
 			for(int k = 0; k < matchedPropsS.size(); k++){
 				if(source.getLocalName().equalsIgnoreCase(matchedPropsS.get(k).getLocalName())){
 					if(target.getLocalName().equalsIgnoreCase(matchedPropsT.get(k).getLocalName())){
-						return new Mapping(source, target, 99.0, Mapping.EQUIVALENCE);
+						return new Mapping(source, target, 99.0, MappingRelation.EQUIVALENCE);
 					}
 				}
 			}
@@ -186,13 +187,13 @@ public class IterativeMatcher extends AbstractMatcher{
 			for(int x = 0; x < matchedClassesS.size(); x++){
 				if( source.getLocalName().equalsIgnoreCase( matchedClassesS.get(x).getLocalName() ) ){
 					if(target.getLocalName().equalsIgnoreCase( matchedClassesT.get(x).getLocalName() )){
-						return new Mapping(source, target, 99.0, Mapping.EQUIVALENCE);
+						return new Mapping(source, target, 99.0, MappingRelation.EQUIVALENCE);
 					}
 				}
 			}
 		}
 		
-		return new Mapping(source, target, 0.0, Mapping.EQUIVALENCE);
+		return new Mapping(source, target, 0.0, MappingRelation.EQUIVALENCE);
 		
 	}
 	

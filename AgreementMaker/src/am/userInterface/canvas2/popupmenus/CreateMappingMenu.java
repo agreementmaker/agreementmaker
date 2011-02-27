@@ -33,6 +33,12 @@ public class CreateMappingMenu extends JPopupMenu {
 		JMenuItem miEquivalence = new JMenuItem("Equivalence");
 		          miEquivalence.setActionCommand("CREATE_EQUIVALENCE");
 		          
+		JMenuItem miSuperclass = new JMenuItem("Superclass");
+		          miSuperclass.setActionCommand("CREATE_SUPERCLASS");
+		          
+		JMenuItem miSubclass = new JMenuItem("Subclass");
+		          miSubclass.setActionCommand("CREATE_SUBCLASS");
+		          
 		JMenuItem miSubset = new JMenuItem("Subset");
 		          miSubset.setActionCommand("CREATE_SUBSET");
 		          
@@ -44,17 +50,25 @@ public class CreateMappingMenu extends JPopupMenu {
 		
 		JMenuItem miSupersetComplete = new JMenuItem("Superset Complete");
 				  miSupersetComplete.setActionCommand("CREATE_SUPERSETCOMPLETE");
+		JMenuItem miRelated = new JMenuItem("Related");
+		          miRelated.setActionCommand("CREATE_RELATED");
 				  
-		JMenuItem miOther = new JMenuItem("Other");
-				  miOther.setActionCommand("CREATE_OTHER");
+		//JMenuItem miOther = new JMenuItem("Other");
+		//		  miOther.setActionCommand("CREATE_OTHER");
 				  
 		mManual.add( miEquivalence);
+		mManual.addSeparator();
+		mManual.add( miSuperclass );
+		mManual.add( miSubclass );
+		mManual.addSeparator();
 		mManual.add( miSubset);
 		mManual.add( miSubsetComplete);
 		mManual.add( miSuperset );
 		mManual.add( miSupersetComplete);
 		mManual.addSeparator();
-		mManual.add( miOther);
+		mManual.add( miRelated );
+		//mManual.addSeparator();
+		//mManual.add( miOther);
 		
 		add(miStandard);
 		add(mManual);
@@ -63,11 +77,14 @@ public class CreateMappingMenu extends JPopupMenu {
 		// Listeners
 		miStandard.addActionListener(layout);
 		miEquivalence.addActionListener(layout);
+		miSuperclass.addActionListener(layout);
+		miSubclass.addActionListener(layout);
 		miSubset.addActionListener(layout);
 		miSubsetComplete.addActionListener(layout);
 		miSuperset.addActionListener(layout);
 		miSupersetComplete.addActionListener(layout);
-		miOther.addActionListener(layout);
+		miRelated.addActionListener(layout);
+		//miOther.addActionListener(layout);
 		
 	}
 }

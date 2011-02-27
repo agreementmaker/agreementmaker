@@ -11,6 +11,7 @@ import am.app.feedback.measures.FamilialSimilarity;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
 import am.userInterface.sidebar.vertex.Vertex;
 
@@ -140,7 +141,7 @@ public class ExtrapolatingFS extends AbstractMatcher {
 				Node e2n = e2i.next();
 				
 				if( approx( e1SimAboveThreshold.get(e1n) , e2SimAboveThreshold.get(e2n) , 0.01 ) ) {
-					Mapping newmapping = new Mapping(e1n, e2n, 1.00d, Mapping.EQUIVALENCE, tyoc  );
+					Mapping newmapping = new Mapping(e1n, e2n, 1.00d, MappingRelation.EQUIVALENCE, tyoc  );
 					newMappings.add( newmapping );
 				}
 				

@@ -7,9 +7,12 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.prefs.Preferences;
+
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.AbstractTableModel;
@@ -259,11 +262,18 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 	}
 
 	public void newManual() throws Exception {
+		String matcherName = JOptionPane.showInputDialog("Name for the new matcher? (Cancel for default)", MatchersRegistry.UserManual.getMatcherName());
 		int lastIndex = Core.getInstance().getMatcherInstances().size();
 		AbstractMatcher manualMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.UserManual, lastIndex);
+		if( manualMatcher.needsParam() ) {
+			MatcherParametersDialog d = new MatcherParametersDialog(manualMatcher, false, true);
+			if( d.parametersSet() ) manualMatcher.setParam(d.getParameters());
+			else return;
+		}
+		if( matcherName != null ) manualMatcher.setName(matcherName);
+		new MatcherProgressDialog(manualMatcher);
 		matchersTablePanel.addMatcher(manualMatcher);
 		Core.getUI().redisplayCanvas();
-		
 	}
 	
 	public void delete() throws Exception {
@@ -613,24 +623,29 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 	}
 	
 	public void userMatching(ArrayList<Mapping> alignments) {
-		if(alignments.size()>0) {
-			int[] rows = matchersTablePanel.getTable().getSelectedRows();
-			if(rows != null) {
-				if(rows.length == 0) {
-					//lf no rows are selected it adds it to the UserMatching
-					Core.getInstance().performUserMatching(0, alignments);
-					matchersTablePanel.updatedRows(0,0);
-				}
-				else {
-					for(int i=0; i < rows.length;i++) {
-						Core.getInstance().performUserMatching(rows[i], alignments);
-						
+		try {
+			if(alignments.size()>0) {
+				int[] rows = matchersTablePanel.getTable().getSelectedRows();
+				if(rows != null) {
+					if(rows.length == 0) {
+						//lf no rows are selected it adds it to the UserMatching
+						Core.getInstance().performUserMatching(0, alignments);
+						matchersTablePanel.updatedRows(0,0);
 					}
-					matchersTablePanel.updatedRows(rows[0], rows[rows.length-1]);
+					else {
+						for(int i=0; i < rows.length;i++) {
+							Core.getInstance().performUserMatching(rows[i], alignments);
+							
+						}
+						matchersTablePanel.updatedRows(rows[0], rows[rows.length-1]);
+					}
+					Core.getUI().redisplayCanvas();
+					
 				}
-				Core.getUI().redisplayCanvas();
-				
 			}
+		} catch(Exception e) {
+			Utility.displayErrorPane("There was a problem in creating the mapping.\n\n"+e.getMessage(), "Cannot create mapping");
+			e.printStackTrace();
 		}
 	}
 	
