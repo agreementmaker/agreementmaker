@@ -50,6 +50,8 @@ public class Mapping implements Serializable
 		public static MappingRelation parseRelation(String relation) {
 			for( MappingRelation rel : MappingRelation.values() )
 				if( relation.equals(rel.toString()) ) return rel;
+			if(relation.equals(">")) return MappingRelation.SUPERCLASS;
+			if(relation.equals("<")) return MappingRelation.SUBCLASS;
 			return UNKNOWN;
 		}
 		
