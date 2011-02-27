@@ -59,6 +59,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		super.beforeAlignOperations();
 		referenceListOfPairs = readReferenceFile();
 		nonEquivalencePairs = new ArrayList<MatchingPair>();
+		
 		if(((ReferenceAlignmentParameters)param).onlyEquivalence){
 			Iterator<MatchingPair> it = referenceListOfPairs.iterator();
 			while (it.hasNext()){
@@ -107,39 +108,82 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 
 		Mapping alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok		
 	
-
+		/*Federico: to deal also with non equivalence relationship I have to put the nonEquivalence
+		 * in the reference list, otherwise mappings wouldn't be processed */
+		
+		if(!((ReferenceAlignmentParameters)param).onlyEquivalence){
+			if(nonEquivalencePairs != null)
+				referenceListOfPairs.addAll(nonEquivalencePairs);
+		}
+			
 		if( referenceListOfPairs != null ) {
+			boolean localnames = false;
+			
+			if(referenceListOfPairs.size()>0){
+				if(!referenceListOfPairs.get(referenceListOfPairs.size()/2).sourceURI.startsWith("http://"))
+					localnames = true;					
+			}
+			
+			System.out.println("LOCALNAMES:"+localnames);
 			
 			Iterator<MatchingPair> it = referenceListOfPairs.iterator();
 			
-			// Iterate over the list of pairs from the file
-			while( it.hasNext() ) {
-				MatchingPair mp = it.next(); // get the first matching pair from the list
-				// find the source node in the source ontology
-				for( int i = 0; i < sourceList.size(); i++ ) {
-					if( mp.sourceURI.equals(sourceList.get(i).getResource().getURI()) ) {
-						// we have found a match for the source node
-						for( int j = 0; j < targetList.size() && !this.isCancelled() ; j++ ) {
-							if( mp.targetURI.equals(targetList.get(j).getResource().getURI()) ) {
-								// we have found a match for the target node, it means a valid alignment
-								alignment = new Mapping( sourceList.get(i), targetList.get(j), mp.similarity, mp.relation, typeOfNodes, mp.provenance );
-								matrix.set(i, j, alignment);
-								break;
+			//in this case the reference file contains URIs and that's what will be used for comparisons
+			if(!localnames){
+				// Iterate over the list of pairs from the file
+				while( it.hasNext() ) {
+					MatchingPair mp = it.next(); // get the first matching pair from the list
+					// find the source node in the source ontology
+					for( int i = 0; i < sourceList.size(); i++ ) {
+						if( mp.sourceURI.equals(sourceList.get(i).getResource().getURI()) ) {
+							// we have found a match for the source node
+							for( int j = 0; j < targetList.size() && !this.isCancelled() ; j++ ) {
+								if( mp.targetURI.equals(targetList.get(j).getResource().getURI()) ) {
+									// we have found a match for the target node, it means a valid alignment
+									alignment = new Mapping( sourceList.get(i), targetList.get(j), mp.similarity, mp.relation, typeOfNodes, mp.provenance );
+									matrix.set(i, j, alignment);
+									break;
+								}
 							}
+							break;
 						}
-						break;
+					}
+					
+					if( isProgressDisplayed() ) {
+						stepDone();
+						updateProgress();
 					}
 				}
-				
-				if( isProgressDisplayed() ) {
-					stepDone();
-					updateProgress();
+			}
+			
+			//in this case the reference file contains localnames
+			else{ 
+				// Iterate over the list of pairs from the file
+				while( it.hasNext() ) {
+					MatchingPair mp = it.next(); // get the first matching pair from the list
+					// find the source node in the source ontology
+					for( int i = 0; i < sourceList.size(); i++ ) {
+						if( mp.sourceURI.equals(sourceList.get(i).getLocalName()) ) {
+							// we have found a match for the source node
+							for( int j = 0; j < targetList.size() && !this.isCancelled() ; j++ ) {
+								if( mp.targetURI.equals(targetList.get(j).getLocalName()) ) {
+									// we have found a match for the target node, it means a valid alignment
+									alignment = new Mapping( sourceList.get(i), targetList.get(j), mp.similarity, mp.relation, typeOfNodes, mp.provenance );
+									matrix.set(i, j, alignment);
+									break;
+								}
+							}
+							break;
+						}
+					}
+					
+					if( isProgressDisplayed() ) {
+						stepDone();
+						updateProgress();
+					}
 				}
-				
-				
 			}
 		}
-		
 		return matrix;
 	}
 	
@@ -463,4 +507,15 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		return parametersPanel;
 	}
 	
+	//useful for debug
+	public void printAllPairs(){
+		System.out.println("REFERENCE (size = "+referenceListOfPairs.size()+")");
+		for(MatchingPair pair: referenceListOfPairs){
+			System.out.println("P:" + pair.getTabString());
+		}
+		System.out.println("NON EQUIVALENCE (size = "+nonEquivalencePairs.size()+")");
+		for(MatchingPair pair: nonEquivalencePairs){
+			System.out.println("P:" + pair.getTabString());
+		}
+	}
 }
