@@ -134,7 +134,10 @@ public class ProfilingDialog extends JDialog implements ActionListener {
 				e1.printStackTrace();
 			}
 			
-			if(profiler!=null) Core.getInstance().setOntologyProfiler(profiler);
+			if(profiler!=null) {
+				profiler.setName(entry);
+				Core.getInstance().setOntologyProfiler(profiler);
+			}
 			setVisible(false);
 			return;
 		}

@@ -1,6 +1,8 @@
 package am.app.ontology.profiling.ontologymetrics;
 
-public class OntologyMetrics {
+import am.app.ontology.profiling.ProfilingReport;
+
+public class OntologyMetrics implements ProfilingReport {
 	float relationshipRichness;
 	float attributeRichness;
 	float inheritanceRichness;

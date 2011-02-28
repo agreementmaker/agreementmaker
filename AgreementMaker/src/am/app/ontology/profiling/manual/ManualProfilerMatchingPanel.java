@@ -3,6 +3,7 @@ package am.app.ontology.profiling.manual;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.GroupLayout;
 import javax.swing.JCheckBox;
@@ -10,8 +11,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import com.hp.hpl.jena.rdf.model.Property;
 
+import am.Utility;
 import am.app.ontology.profiling.OntologyProfilerPanel;
 import am.app.ontology.profiling.OntologyProfilerParameters;
+import am.app.ontology.profiling.metrics.propertycoverage.CoverageTriple;
 
 /**
  * This class represents the matching panel for the manual ontology profiling algorithm.
@@ -28,13 +31,16 @@ public class ManualProfilerMatchingPanel extends OntologyProfilerPanel {
 	
 	List<Property> sC, tC, sP, tP;
 	
-	public ManualProfilerMatchingPanel(List<Property> sourceClass, List<Property> targetClass,
-									   List<Property> sourceProperty, List<Property> targetProperty ) {
+	ManualOntologyProfiler manualProfiler;
 	
-		sC = sourceClass;
-		tC = targetClass;
-		sP = sourceProperty;
-		tP = targetProperty;
+	public ManualProfilerMatchingPanel(ManualOntologyProfiler manualProfiler ) {
+	
+		sC = manualProfiler.getSourceClassAnnotations();
+		tC = manualProfiler.getTargetClassAnnotations();
+		sP = manualProfiler.getSourcePropertyAnnotations();
+		tP = manualProfiler.getTargetPropertyAnnotations();
+	
+		this.manualProfiler = manualProfiler;
 		
 		initializeComponents();
 		
@@ -57,31 +63,44 @@ public class ManualProfilerMatchingPanel extends OntologyProfilerPanel {
 		//source classes
 		sourceClassList = new JCheckBox[ sC.size() ];
 		for( int i = 0; i < sC.size(); i++ ) {
-			sourceClassList[i] = new JCheckBox(sC.get(i).getLocalName());
+			Property p = sC.get(i);
+			sourceClassList[i] = new JCheckBox(p.getLocalName() + " " + getCoverageString(manualProfiler.getSourceClassAnnotationCoverage().get(p)));
 			//sourceClassList[i].setSelected(true);
 		}
 		
 		//target classes
 		targetClassList = new JCheckBox[ tC.size() ];
 		for( int i = 0; i < tC.size(); i++ ) {
-			targetClassList[i] = new JCheckBox(tC.get(i).getLocalName());
+			Property p = tC.get(i);
+			targetClassList[i] = new JCheckBox(p.getLocalName() + " " + getCoverageString(manualProfiler.getTargetClassAnnotationCoverage().get(p)));
 			//targetClassList[i].setSelected(true);
 		}
 		
 		// source properties
 		sourcePropertyList = new JCheckBox[ sP.size() ];
 		for( int i = 0; i < sP.size(); i++ ) {
-			sourcePropertyList[i] = new JCheckBox(sP.get(i).getLocalName());
+			Property p = sP.get(i);
+			sourcePropertyList[i] = new JCheckBox(p.getLocalName() + " " + getCoverageString(manualProfiler.getSourcePropertyAnnotationCoverage().get(p)));
 			//sourcePropertyList[i].setSelected(true);
 		}
 		
 		// target properties
 		targetPropertyList = new JCheckBox[ tP.size() ];
 		for( int i = 0; i < tP.size(); i++ ) {
-			targetPropertyList[i] = new JCheckBox(tP.get(i).getLocalName());
+			Property p = tP.get(i);
+			targetPropertyList[i] = new JCheckBox(p.getLocalName() + " " + getCoverageString(manualProfiler.getTargetPropertyAnnotationCoverage().get(p)));
 			//targetPropertyList[i].setSelected(true);
 		}
 		
+	}
+
+	private String getCoverageString(CoverageTriple t ) {
+		//String s = "(" + t.count + " - " + Utility.getOneDecimalPercentFromDouble(t.coverage) + ")";
+		if( t.coverage > 1.0 ) {
+			System.out.println("..");
+		}
+		String s = "(" + Utility.getOneDecimalPercentFromDouble(t.coverage) + ")";
+		return s;
 	}
 
 	private void initializeLayout() {

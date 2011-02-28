@@ -3,6 +3,17 @@ package am.app.ontology.profiling.manual;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import am.app.ontology.Node;
+import am.app.ontology.Ontology;
+import am.app.ontology.profiling.OntologyProfiler;
+import am.app.ontology.profiling.OntologyProfilerPanel;
+import am.app.ontology.profiling.OntologyProfilerParameters;
+import am.app.ontology.profiling.ProfilerRegistry;
+import am.app.ontology.profiling.metrics.propertycoverage.CoverageTriple;
+import am.app.ontology.profiling.metrics.propertycoverage.PropertyCoverage;
+import am.utility.Pair;
 
 import com.hp.hpl.jena.ontology.AnnotationProperty;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -14,14 +25,6 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
-import am.app.ontology.Node;
-import am.app.ontology.Ontology;
-import am.app.ontology.profiling.OntologyProfiler;
-import am.app.ontology.profiling.OntologyProfilerPanel;
-import am.app.ontology.profiling.OntologyProfilerParameters;
-import am.app.ontology.profiling.ProfilerRegistry;
-import am.utility.Pair;
-
 /**
  * This ontology profiler allows the user to manually set 
  * profiling information.
@@ -31,23 +34,44 @@ import am.utility.Pair;
  */
 public class ManualOntologyProfiler implements OntologyProfiler {
 	
-	private ProfilerRegistry name;  // automatically set the the OntologyProfilerFactory.
+	private ProfilerRegistry name;  // automatically set by the ProfilingDialog 
+//	private ProfilingReport manualProfilingReport;
 
+	// TODO: This is a big mess.  Fix this somehow.
 	private List<Property> sourceClassAnnotations;
+	public List<Property> getSourceClassAnnotations() { return sourceClassAnnotations; }
 	private List<Property> targetClassAnnotations;
+	public List<Property> getTargetClassAnnotations() { return targetClassAnnotations; }
 	private List<Property> sourcePropertyAnnotations;
+	public List<Property> getSourcePropertyAnnotations() { return sourcePropertyAnnotations; }
 	private List<Property> targetPropertyAnnotations;
-
+	public List<Property> getTargetPropertyAnnotations() { return targetPropertyAnnotations; }
+	
+	private Map<Property, CoverageTriple> sourceClassAnnotationCoverage;
+	public Map<Property, CoverageTriple> getSourceClassAnnotationCoverage() { return sourceClassAnnotationCoverage; }
+	private Map<Property, CoverageTriple> sourcePropertyAnnotationCoverage;
+	public Map<Property, CoverageTriple> getSourcePropertyAnnotationCoverage() { return sourcePropertyAnnotationCoverage; }
+	private Map<Property, CoverageTriple> targetClassAnnotationCoverage;
+	public Map<Property, CoverageTriple> getTargetClassAnnotationCoverage() { return targetClassAnnotationCoverage; }
+	private Map<Property, CoverageTriple> targetPropertyAnnotationCoverage;
+	public Map<Property, CoverageTriple> getTargetPropertyAnnotationCoverage() { return targetPropertyAnnotationCoverage; }
+	
 	private ManualProfilerMatchingParameters matchTimeParams;
 	
 	// main constructor
-	public ManualOntologyProfiler(Ontology source, Ontology target) {
+	public ManualOntologyProfiler(Ontology source, Ontology target) {  // TODO: This should be a list of ontologies.
 		
 		sourceClassAnnotations = new ArrayList<Property>();
 		for( Node classNode : source.getClassesList() ) createClassAnnotationsList(sourceClassAnnotations, classNode);
-		
+				
 		targetClassAnnotations = new ArrayList<Property>();
 		for( Node classNode : target.getClassesList() ) createClassAnnotationsList(targetClassAnnotations, classNode);
+		
+		// annotation property coverage
+		PropertyCoverage sourceCoverage = new PropertyCoverage(source);
+		sourceCoverage.runMetric();
+		sourceClassAnnotationCoverage = sourceCoverage.getClassMap();
+		sourcePropertyAnnotationCoverage = sourceCoverage.getPropertyMap();
 		
 		sourcePropertyAnnotations = new ArrayList<Property>();
 		for( Node propertyNode : source.getPropertiesList() ) createPropertyAnnotationsList(sourcePropertyAnnotations, propertyNode);
@@ -55,6 +79,14 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 		targetPropertyAnnotations = new ArrayList<Property>();
 		for( Node propertyNode : target.getPropertiesList() ) createPropertyAnnotationsList(targetPropertyAnnotations, propertyNode);
 		
+		// annotation property coverage
+		PropertyCoverage targetCoverage = new PropertyCoverage(target);
+		targetCoverage.runMetric();
+		targetClassAnnotationCoverage = targetCoverage.getClassMap();
+		targetPropertyAnnotationCoverage = targetCoverage.getPropertyMap();
+		
+		
+//		ProfilingReport manuProfilingReport = new ManualProfilingReport();
 	}
 
 	
@@ -94,7 +126,7 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 	@Override
 	public OntologyProfilerPanel getProfilerPanel(boolean initial) {
 		if( initial ) return null;
-		return new ManualProfilerMatchingPanel(sourceClassAnnotations, targetClassAnnotations, sourcePropertyAnnotations, targetPropertyAnnotations);
+		return new ManualProfilerMatchingPanel(this);
 	}
 
 	@Override
