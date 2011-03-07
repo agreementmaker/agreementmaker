@@ -17,6 +17,7 @@ import am.app.mappingEngine.conceptMatcher.ConceptMatcher;
 import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
 import am.app.mappingEngine.dsi.OldDescendantsSimilarityInheritanceMatcher;
 import am.app.mappingEngine.hierarchy.HierarchyMatcher;
+import am.app.mappingEngine.hierarchy.HierarchyMatcherModified;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsMatcher;
 import am.app.mappingEngine.oaei2009.OAEI2009matcher;
@@ -30,6 +31,7 @@ import am.app.mappingEngine.testMatchers.AllZeroMatcher;
 import am.app.mappingEngine.testMatchers.CopyMatcher;
 import am.app.mappingEngine.testMatchers.EqualsMatcher;
 import am.app.mappingEngine.testMatchers.RandomMatcher;
+import am.app.mappingEngine.wikipedia.WikiMatcher;
 //import am.app.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
 
 
@@ -83,8 +85,9 @@ public enum MatchersRegistry {
 	OldPRAMAtcher		( "Old PRA Matcher", OldPRAMatcher.class, false),
 	
 	//WORK IN PROGRESS
-	HierarchyMatcher	("Hierarchy Matcher", HierarchyMatcher.class, true),   
-		
+	HierarchyMatcher	("Hierarchy Matcher", HierarchyMatcher.class, true), 
+	HierarchyMatcherModified	("Hierarchy Matcher Modified", HierarchyMatcherModified.class, true),
+	
 	//MATCHERS USED BY THE SYSTEM, usually not shown
 	UserManual			( "USER", "User Manual Matching", UserManualMatcher.class, false),
 	UniqueMatchings		( "Unique Matchings", ReferenceAlignmentMatcher.class, false), // this is used by the "Remove Duplicate Alignments" UIMenu entry
