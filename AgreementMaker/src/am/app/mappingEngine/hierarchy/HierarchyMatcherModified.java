@@ -90,37 +90,6 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		{
 			Utility.displayErrorPane(e.getMessage(), "Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
 		}
-	
-		if(useOtherOntologies == true){
-			Ontology ontology;
-			OntoTreeBuilder treeBuilder;
-			otherOntologies = new ArrayList<OntModel>();
-			
-			if(!sourceOntology.getURI().equals(LODOntologies.FOAF_URI) &&
-					!targetOntology.getURI().equals(LODOntologies.FOAF_URI)){
-				System.out.println("Opening FOAF");
-				treeBuilder = new OntoTreeBuilder(LODOntologies.FOAF, GlobalStaticVariables.SOURCENODE,
-						GlobalStaticVariables.LANG_OWL, 
-						GlobalStaticVariables.SYNTAX_RDFXML, false, true);
-				
-				treeBuilder.build();
-				ontology = treeBuilder.getOntology();
-				otherOntologies.add(ontology.getModel());
-			}
-				
-			if(!sourceOntology.getURI().equals(LODOntologies.SW_CONFERENCE_URI) &&
-					!targetOntology.getURI().equals(LODOntologies.SW_CONFERENCE_URI)){
-				System.out.println("Opening SWC");
-				treeBuilder = new OntoTreeBuilder(LODOntologies.SW_CONFERENCE, GlobalStaticVariables.SOURCENODE,
-						GlobalStaticVariables.LANG_OWL, 
-						GlobalStaticVariables.SYNTAX_RDFXML, false, true);
-				
-				treeBuilder.build();
-				ontology = treeBuilder.getOntology();
-				otherOntologies.add(ontology.getModel());
-			}
-			
-		}
 	}
 	
 	protected void align() throws Exception{
@@ -187,7 +156,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		Node tNode;
 		for (int i = 0; i < sourceClassList.size(); i++) {
 			sNode = sourceClassList.get(i);
-			name = separateWords(sNode.getLocalName());
+			name = Utilities.separateWords(sNode.getLocalName());
 			sourceSplitted = name.split(" ");
 			
 			if(sourceSplitted.length != 2) continue;
@@ -204,7 +173,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		String[] targetSplitted;
 		for (int i = 0; i < targetClassList.size(); i++) {
 			tNode = targetClassList.get(i);
-			name = separateWords(tNode.getLocalName());
+			name = Utilities.separateWords(tNode.getLocalName());
 			targetSplitted = name.split(" ");
 			
 			if(targetSplitted.length != 2) continue;
@@ -301,13 +270,47 @@ public class HierarchyMatcherModified extends AbstractMatcher
 //				
 //			}
 //		}
-		if(useOtherOntologies)
-			useOtherOntologies();		
+		
+		if(useOtherOntologies == true){
+			initOtherOntologies();
+			useOtherOntologies();
+		}
 		
 		filterEqualityMappings();
 		
 	}
 	
+	private void initOtherOntologies() {
+		Ontology ontology;
+		OntoTreeBuilder treeBuilder;
+		otherOntologies = new ArrayList<OntModel>();
+		
+		if(!sourceOntology.getURI().equals(LODOntologies.FOAF_URI) &&
+				!targetOntology.getURI().equals(LODOntologies.FOAF_URI)){
+			System.out.println("Opening FOAF");
+			treeBuilder = new OntoTreeBuilder(LODOntologies.FOAF, GlobalStaticVariables.SOURCENODE,
+					GlobalStaticVariables.LANG_OWL, 
+					GlobalStaticVariables.SYNTAX_RDFXML, false, true);
+			
+			treeBuilder.build();
+			ontology = treeBuilder.getOntology();
+			otherOntologies.add(ontology.getModel());
+		}
+			
+		if(!sourceOntology.getURI().equals(LODOntologies.SW_CONFERENCE_URI) &&
+				!targetOntology.getURI().equals(LODOntologies.SW_CONFERENCE_URI)){
+			System.out.println("Opening SWC");
+			treeBuilder = new OntoTreeBuilder(LODOntologies.SW_CONFERENCE, GlobalStaticVariables.SOURCENODE,
+					GlobalStaticVariables.LANG_OWL, 
+					GlobalStaticVariables.SYNTAX_RDFXML, false, true);
+			
+			treeBuilder.build();
+			ontology = treeBuilder.getOntology();
+			otherOntologies.add(ontology.getModel());
+		}
+		
+	}
+
 	/**
 	 * This method uses information taken from other LOD ontologies to improve the match.
 	 * The idea is that we can use sub and superclasses of standard classes in LOD famous ontologies to
@@ -863,30 +866,5 @@ public class HierarchyMatcherModified extends AbstractMatcher
 				return i;
 		}
 		return -1;
-	}
-	
-	public static String separateWords(String string){
-		string = string.replaceAll("-", " ");
-		string = string.replaceAll("_", " ");
-		for (int i = 0; i < string.length()-1; i++) {
-			if(Character.isUpperCase(string.charAt(i)) && Character.isLowerCase(string.charAt(i+1)))
-				if(i>0 && string.charAt(i-1)!=' '){
-					string = string.substring(0, i) + " " + string.substring(i);
-					i++;
-				}
-		}
-		return string;
-	}
-	
-	public static void main(String[] args) {
-		System.out.println(separateWords("CiaoBello"));
-		System.out.println(separateWords("PhDStudent"));
-		System.out.println(separateWords("SWConference"));
-		System.out.println(separateWords("ciao_bello"));
-		System.out.println(separateWords("PhD_student"));
-		System.out.println(separateWords("SWC-conference"));
-		System.out.println(separateWords("Ciao_Bello"));
-		System.out.println(separateWords("PhD_Student"));
-		System.out.println(separateWords("SWC-Conference"));
 	}
 }
