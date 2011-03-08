@@ -87,6 +87,7 @@ public enum MatchersRegistry {
 	//WORK IN PROGRESS
 	HierarchyMatcher	("Hierarchy Matcher", HierarchyMatcher.class, true), 
 	HierarchyMatcherModified	("Hierarchy Matcher Modified", HierarchyMatcherModified.class, true),
+	WikipediaMatcher	("Wikipedia Matcher", WikiMatcher.class, true),
 	
 	//MATCHERS USED BY THE SYSTEM, usually not shown
 	UserManual			( "USER", "User Manual Matching", UserManualMatcher.class, false),
