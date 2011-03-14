@@ -109,18 +109,20 @@ public class LODEvaluator {
 		ArrayList<MatchingPair> refPairs = matcher.parseRefFormat2(refBR);
 		
 		
-		System.out.println("FP:" + filePairs.size());
-		System.out.println("RP:" + refPairs.size());
+		//System.out.println("FP:" + filePairs.size());
+		//System.out.println("RP:" + refPairs.size());
 		
 		compare(filePairs, refPairs);
 		
 		removeDuplicates(filePairs);
 		removeDuplicates(refPairs);
 		
-		System.out.println("FP:" + filePairs.size());
-		System.out.println("RP:" + refPairs.size());
+		//System.out.println("FP:" + filePairs.size());
+		//System.out.println("RP:" + refPairs.size());
 		
-		compare(filePairs, refPairs);		
+		compare(filePairs, refPairs);	
+		
+		System.out.println();
 	}
 	
 	public void evaluate(ArrayList<MatchingPair> filePairs, String reference) throws Exception{
@@ -128,18 +130,20 @@ public class LODEvaluator {
 		ArrayList<MatchingPair> refPairs = matcher.parseRefFormat2(refBR);
 		
 		
-		System.out.println("FP:" + filePairs.size());
-		System.out.println("RP:" + refPairs.size());
+		//System.out.println("FP:" + filePairs.size());
+		//System.out.println("RP:" + refPairs.size());
 		
 		compare(filePairs, refPairs);
 		
 		removeDuplicates(filePairs);
 		removeDuplicates(refPairs);
 		
-		System.out.println("FP:" + filePairs.size());
-		System.out.println("RP:" + refPairs.size());
+		//System.out.println("FP:" + filePairs.size());
+		//System.out.println("RP:" + refPairs.size());
 		
-		compare(filePairs, refPairs);		
+		compare(filePairs, refPairs);	
+		
+		System.out.println();
 	}
 	
 	public void compare(ArrayList<MatchingPair> toEvaluate, ArrayList<MatchingPair> reference){
@@ -159,8 +163,9 @@ public class LODEvaluator {
 				}
 			}
 		}	
-		System.out.println("right mappings: "+count);
-		System.out.println("prec:"+ (float)count/toEvaluate.size() + " rec: " +  (float)count/reference.size());
+		//System.out.println("right mappings: "+count);
+		//System.out.println("prec:"+ (float)count/toEvaluate.size() + " rec: " +  (float)count/reference.size());
+		System.out.print((float)count/toEvaluate.size() + "\t" +  (float)count/reference.size() + "\t");
 	}
 	
 	public void removeDuplicates(ArrayList<MatchingPair> pairs){
@@ -191,6 +196,9 @@ public class LODEvaluator {
 //		fromSubClassof(new File("LOD/BLOOMS/Music-DBpedia/SubClass.txt"), 
 //				LODOntologies.DBPEDIA_URI, LODOntologies.MUSIC_ONTOLOGY_URI);
 		LODEvaluator eval = new LODEvaluator();
+		
+		System.out.println("OLD RESULTS\n");
+		
 		System.out.println("FOAF_DBPEDIA");
 		eval.evaluate("LOD/AMOldAlignments/FOAFANDDBPEDIA.txt", LODReferences.FOAF_DBPEDIA);
 		System.out.println("MUSIC_BBC");
@@ -214,8 +222,32 @@ public class LODEvaluator {
 		//ArrayList<MatchingPair> pairs = parseBLOOMSReference("LOD/BLOOMS/AKT-SWC/SubClass.txt", "http://swrc.ontoware.org/ontology#", "http://www.aktors.org/ontology/");
 		//eval.evaluate(pairs, LODReferences.SWC_AKT);
 		
+		System.out.println("\nNEW RESULTS\n");
+		
+
+		System.out.println("SWC_DBPEDIA");
+		eval.evaluate("LOD/lastResults/swc-dbpedia.txt", LODReferences.SWC_DBPEDIA);
+		
 		System.out.println("SWC_AKT");
-		eval.evaluate("LOD/results/swc-akt.txt", LODReferences.SWC_AKT);
+		eval.evaluate("LOD/lastResults/swc-akt.txt", LODReferences.SWC_AKT);
+		
+		System.out.println("SIOC_FOAF");
+		eval.evaluate("LOD/lastResults/sioc-foaf.txt", LODReferences.SIOC_FOAF);
+			
+		System.out.println("GEONAMES_DBPEDIA");
+		eval.evaluate("LOD/lastResults/geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA);
+		
+		System.out.println("FOAF_DBPEDIA");
+		eval.evaluate("LOD/lastResults/foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
+		
+		System.out.println("MUSIC_DBPEDIA");
+		eval.evaluate("LOD/lastResults/music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA);
+		
+		System.out.println("MUSIC_BBC");
+		eval.evaluate("LOD/lastResults/music-bbc.txt", LODReferences.MUSIC_BBC);
+		
+		System.out.println("FOAF_DBPEDIA");
+		eval.evaluate("LOD/batch/foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
 		
 		
 	}
