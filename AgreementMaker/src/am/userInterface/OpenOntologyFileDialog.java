@@ -6,17 +6,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.LayoutStyle;
-import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -34,12 +35,18 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 	 * @param args
 	 */
 	
-	private JButton browse, cancel, proceed;
+	private JButton browse, cancel, proceed, databaseSettings;
+	private JRadioButton memoryRadio, databaseRadio;
+	private JComboBox syntaxCombo, langCombo;
+	private JLabel syntaxLbl, langLbl;
 	private JTextField filePath;
 	private JLabel fileType;
 	private JDialog frame;
 	private int ontoType;
-	private JList syntaxList, langList;	
+	
+	private JPanel filePanel, optionsPanel, cancelProceedPanel, checkboxPanel;
+	
+	//private JList syntaxList, langList;	
 	private JCheckBox skipCheck;
 	private JLabel skipLabel;
 	private JCheckBox noReasonerCheck;
@@ -64,7 +71,7 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		
 		AppPreferences prefs = Core.getAppPreferences(); // Class interface to Application Preferences
 		
-		frame = new JDialog(Core.getUI().getUIFrame(), true);
+		frame = new JDialog(ui.getUIFrame(), true);
 		if(ontoType == GlobalStaticVariables.SOURCENODE)
 			frame.setTitle("Open Source Ontology File...");
 		else if(ontoType == GlobalStaticVariables.TARGETNODE)
@@ -76,115 +83,206 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		//frame.setResizable(false);
 
 		
-		if(ontoType == GlobalStaticVariables.SOURCENODE)
-			fileType = new JLabel(GlobalStaticVariables.SOURCETITILE);
-		else if(ontoType == GlobalStaticVariables.TARGETNODE)
-			fileType = new JLabel(GlobalStaticVariables.TARGETTITLE);
+		fileType = new JLabel("File:");
 		
 		filePath = new JTextField(0);
 		
 		browse = new JButton("Browse...");
 		cancel = new JButton("Cancel");
 		proceed = new JButton("Proceed");
+		databaseSettings=new JButton("Database Settings");
 		browse.addActionListener(this);
 		proceed.addActionListener(this);
 		cancel.addActionListener(this);
+		databaseSettings.addActionListener(this);
 
 		
 		String[] languageStrings = GlobalStaticVariables.languageStrings;
 		String[] syntaxStrings = GlobalStaticVariables.syntaxStrings;
 		
-		syntaxList = new JList(syntaxStrings);
-		syntaxList.setPrototypeCellValue("01234567890123456789"); // this string sets the width of the list
-		syntaxList.addListSelectionListener(this);
-		syntaxList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		syntaxList.setVisibleRowCount(5);
-		//syntaxList.setSize(300,100); // this function does not seem to make a difference
-		syntaxList.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Syntax Language"));
-		syntaxList.setSelectedIndex(prefs.getSyntaxListSelection());  // select the last thing selected
+		syntaxCombo=new JComboBox(syntaxStrings);
+		langCombo=new JComboBox(languageStrings);
 		
-		langList = new JList(languageStrings);
-		langList.addListSelectionListener(this);
-		langList.setPrototypeCellValue("01234567890123456789"); // this string sets the width of the list
-		langList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		langList.setVisibleRowCount(5);
-		//langList.setSize(300,100);  // this function does not seem to make a difference
-		langList.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Ontology Language"));
-		langList.setSelectedIndex(prefs.getLanguageListSelection());  // select the last thing selected
-
+		syntaxLbl=new JLabel("Ontololgy Syntax");
+		langLbl=new JLabel("Ontology Language");
+		
+		memoryRadio=new JRadioButton("In Memory");
+		memoryRadio.setSelected(true);
+		databaseRadio=new JRadioButton("In Database");
+		
+		ButtonGroup g=new ButtonGroup();
+		g.add(memoryRadio);
+		g.add(databaseRadio);
+		
+		
 		skipCheck = new JCheckBox();
 		skipCheck.setSelected(prefs.getLastSkipNamespace());
 		skipLabel = new JLabel("Skip concepts with different namespace");
 		
 		noReasonerCheck = new JCheckBox();
 		noReasonerCheck.setSelected( prefs.getLastNoReasoner() );
-		noReasonerLabel = new JLabel("Do not use a reasoner");
+		noReasonerLabel = new JLabel("Do not use checkboxPanel reasoner");
 		
-		//Make the GroupLayout for this dialog (somewhat complicated, but very flexible)
-		// This Group layout lays the items in relation with eachother.  The horizontal
-		// and vertical groups decide the relation between UI elements.
+		//create the layout for the entire frame
 		GroupLayout layout = new GroupLayout(frame.getContentPane());
 		frame.getContentPane().setLayout(layout);
 		
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 		
-		// Here we define the horizontal and vertical groups for the layout.
-		// Both definitions are required for the GroupLayout to be complete.
+		//instance the panel for the objects on screen
+		optionsPanel=new JPanel();
+		filePanel=new JPanel();
+		cancelProceedPanel=new JPanel();
+		checkboxPanel=new JPanel();
+		
+		//create the layout for the file choosing label, txt area, and browse button
+		GroupLayout filePanelLayout=new GroupLayout(filePanel);
+		filePanel.setLayout(filePanelLayout);
+		
+		filePanelLayout.setAutoCreateGaps(true);
+		filePanelLayout.setAutoCreateContainerGaps(true);
+		
+		filePanelLayout.setHorizontalGroup(
+				filePanelLayout.createSequentialGroup()
+					.addComponent(fileType)
+					.addComponent(filePath, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
+					.addComponent(browse, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,GroupLayout.PREFERRED_SIZE)
+		);
+		filePanelLayout.setVerticalGroup(
+				filePanelLayout.createParallelGroup()
+					.addComponent(fileType)
+					.addComponent(filePath, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
+					.addComponent(browse, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,GroupLayout.PREFERRED_SIZE)
+		);
+		
+		//create the layout for the combo boxes, labels, the radio buttons, and database config button
+		GroupLayout optionsPanelLayout=new GroupLayout(optionsPanel);
+		optionsPanel.setLayout(optionsPanelLayout);
+		
+		optionsPanelLayout.setAutoCreateGaps(true);
+		optionsPanelLayout.setAutoCreateContainerGaps(true);
+		
+		optionsPanelLayout.setHorizontalGroup(
+				optionsPanelLayout.createSequentialGroup()
+					.addGroup(optionsPanelLayout.createParallelGroup()
+						.addComponent(langLbl)
+						.addComponent(syntaxLbl)
+					)
+					.addGroup(optionsPanelLayout.createParallelGroup()
+						.addComponent(langCombo)
+						.addComponent(syntaxCombo)
+					)
+					.addGroup(optionsPanelLayout.createParallelGroup()
+						.addComponent(memoryRadio)
+						.addComponent(databaseRadio)
+						.addComponent(databaseSettings)
+					)		
+		);
+		
+		optionsPanelLayout.setVerticalGroup(
+				optionsPanelLayout.createParallelGroup()
+					.addGroup(optionsPanelLayout.createSequentialGroup()
+							.addGroup(optionsPanelLayout.createParallelGroup(GroupLayout.Alignment.CENTER, false)
+									.addComponent(langLbl)
+									.addComponent(langCombo)
+							)
+							.addGroup(optionsPanelLayout.createParallelGroup(GroupLayout.Alignment.CENTER, false)
+									.addComponent(syntaxLbl)
+									.addComponent(syntaxCombo)
+							)
+					)
+					.addGroup( optionsPanelLayout.createSequentialGroup() 
+							.addComponent(memoryRadio)
+							.addComponent(databaseRadio)
+							.addComponent(databaseSettings)
+					)
+		);
+		
+		//layout for the skip checkbox/label and reasoner checkbox/label
+		GroupLayout checkPanelLayout=new GroupLayout(checkboxPanel);
+		checkboxPanel.setLayout(checkPanelLayout);
+		
+		checkPanelLayout.setAutoCreateGaps(true);
+		checkPanelLayout.setAutoCreateContainerGaps(true);
+		
+		checkPanelLayout.setHorizontalGroup(
+				checkPanelLayout.createSequentialGroup()
+					.addGroup(checkPanelLayout.createParallelGroup()
+							.addComponent(filePanel)
+							.addComponent(optionsPanel)
+							.addGroup(checkPanelLayout.createSequentialGroup()
+									.addComponent(skipCheck)
+									.addComponent(skipLabel)
+							)
+							.addGroup(checkPanelLayout.createSequentialGroup()
+									.addComponent(noReasonerCheck)
+									.addComponent(noReasonerLabel)
+							)
+					)
+		);
+		
+		checkPanelLayout.setVerticalGroup(
+				checkPanelLayout.createParallelGroup()
+				.addGroup(checkPanelLayout.createSequentialGroup()
+						.addComponent(filePanel)
+						.addComponent(optionsPanel)
+						.addGroup(checkPanelLayout.createParallelGroup()
+								.addComponent(skipCheck)
+								.addComponent(skipLabel)
+						)
+						.addGroup(checkPanelLayout.createParallelGroup()
+								.addComponent(noReasonerCheck)
+								.addComponent(noReasonerLabel)
+						)
+				)
+		);
+		
+		
+		//layout for the canel and proceed buttons
+		GroupLayout canelProceedPanelLayout=new GroupLayout(cancelProceedPanel);
+		cancelProceedPanel.setLayout(canelProceedPanelLayout);
+		
+		canelProceedPanelLayout.setAutoCreateGaps(true);
+		canelProceedPanelLayout.setAutoCreateContainerGaps(true);
+		
+		canelProceedPanelLayout.setHorizontalGroup(
+				canelProceedPanelLayout.createSequentialGroup()
+					.addComponent(cancel)
+					.addComponent(proceed)
+		);
+		
+		canelProceedPanelLayout.setVerticalGroup(
+				canelProceedPanelLayout.createParallelGroup()
+				.addGroup(canelProceedPanelLayout.createSequentialGroup()
+						.addComponent(cancel)
+				)
+				.addGroup(canelProceedPanelLayout.createSequentialGroup()
+						.addComponent(proceed)
+				)
+		);
+		
+		//add all the panels to the frame layout, use trailing so that the cancel/proceed buttons are on the right side of the frame
 		layout.setHorizontalGroup(
 				layout.createSequentialGroup()
-					.addComponent(fileType) 					// fileType label
-					.addGroup(layout.createParallelGroup()
-							.addComponent(filePath) 			// filepath textbox
-							.addGroup(layout.createSequentialGroup()
-									.addComponent(langList) 	// the lists are part of their own group
-									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED,
-											 GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addComponent(syntaxList))
-							.addGroup(layout.createSequentialGroup()
-									.addComponent(skipCheck) 
-									.addComponent(skipLabel))
-							.addGroup(layout.createSequentialGroup()
-									.addComponent(noReasonerCheck) 
-									.addComponent(noReasonerLabel))
-							.addGroup(layout.createSequentialGroup()
-									.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED,
-						                     GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addComponent(cancel)		// the buttons are also part of their own groups
-									.addComponent(proceed)
-									)
-							)
-					.addGroup(layout.createParallelGroup()
-							.addComponent(browse)
-							)
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+						.addComponent(checkboxPanel)
+						.addGroup(layout.createSequentialGroup()
+							.addComponent(cancelProceedPanel)
+						)
+					)
+					
 		);
-		// the Vertical group is the same structure as the horizontal group
-		// but Sequential and Parallel definition are exchanged
+		
 		layout.setVerticalGroup(
 				layout.createParallelGroup()
-					.addComponent(fileType)
 					.addGroup(layout.createSequentialGroup()
-							.addComponent(filePath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-							          GroupLayout.PREFERRED_SIZE)
+							.addComponent(checkboxPanel)
 							.addGroup(layout.createParallelGroup()
-									.addComponent(langList)
-									.addComponent(syntaxList))
-							.addGroup(layout.createParallelGroup()
-									.addComponent(skipCheck) 
-									.addComponent(skipLabel))
-							.addGroup(layout.createParallelGroup()
-									.addComponent(noReasonerCheck) 
-									.addComponent(noReasonerLabel))
-							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-									.addComponent(cancel)
-									.addComponent(proceed)
-									)
+									.addComponent(cancelProceedPanel)
 							)
-					.addGroup(layout.createSequentialGroup()
-							.addComponent(browse, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-							          GroupLayout.PREFERRED_SIZE))
+					)
 		);
-
 		// end of Layout Code
 		
 		frame.addWindowListener(ui.new WindowEventHandler());
@@ -232,11 +330,11 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 				JOptionPane.showMessageDialog(frame, "Load an ontology file to proceed.", "Filename is empty", JOptionPane.ERROR_MESSAGE);
 			}else{
 				try{
-					ui.openFile(filename, ontoType, syntaxList.getSelectedIndex(), langList.getSelectedIndex(), skipCheck.isSelected(), noReasonerCheck.isSelected());
+					ui.openFile(filename, ontoType, syntaxCombo.getSelectedIndex(), langCombo.getSelectedIndex(), skipCheck.isSelected(), noReasonerCheck.isSelected());
 					// once we are done, let's save the syntax and language selection that was made by the user
 					// and save the file used to the recent file list, and also what syntax and language it is
-					prefs.saveOpenDialogListSelection(syntaxList.getSelectedIndex() , langList.getSelectedIndex(), skipCheck.isSelected(), noReasonerCheck.isSelected());
-					prefs.saveRecentFile(filePath.getText(), ontoType, syntaxList.getSelectedIndex(), langList.getSelectedIndex(), skipCheck.isSelected(), noReasonerCheck.isSelected());
+					prefs.saveOpenDialogListSelection(syntaxCombo.getSelectedIndex() , langCombo.getSelectedIndex(), skipCheck.isSelected(), noReasonerCheck.isSelected());
+					prefs.saveRecentFile(filePath.getText(), ontoType, syntaxCombo.getSelectedIndex(), langCombo.getSelectedIndex(), skipCheck.isSelected(), noReasonerCheck.isSelected());
 					ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
 				
 				}catch(Exception ex){
@@ -253,13 +351,16 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 	 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
 	 */
 	public void valueChanged(ListSelectionEvent e) {
-		if(e.getSource() == langList){
-			if(langList.getSelectedIndex() == 2)//for XML files selection
-				syntaxList.setEnabled(false);
+		if(e.getSource() == langCombo){
+			if(langCombo.getSelectedIndex() == 2)//for XML files selection
+				syntaxCombo.setEnabled(false);
 			else
-				syntaxList.setEnabled(true);
+				syntaxCombo.setEnabled(true);
 		}
 	}
+	public static void main(String[] args)
+	{
+		OpenOntologyFileDialog n=new OpenOntologyFileDialog(0, new UI());
+	}
 	
-
 }
