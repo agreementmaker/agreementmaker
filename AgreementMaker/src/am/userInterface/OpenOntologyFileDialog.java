@@ -5,6 +5,7 @@ package am.userInterface;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.prefs.Preferences;
 
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
@@ -41,10 +42,11 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 	private JLabel syntaxLbl, langLbl;
 	private JTextField filePath;
 	private JLabel fileType;
-	private JDialog frame;
+	private JDialog frame, databaseSettingsFrame;
 	private int ontoType;
 	
 	private JPanel filePanel, optionsPanel, cancelProceedPanel, checkboxPanel;
+	private Preferences prefs;
 	
 	//private JList syntaxList, langList;	
 	private JCheckBox skipCheck;
@@ -77,7 +79,6 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		else if(ontoType == GlobalStaticVariables.TARGETNODE)
 			frame.setTitle("Open Target Ontology File...");
 		
-
 		
 		//Container contentPane = frame.getContentPane();
 		//frame.setResizable(false);
@@ -95,6 +96,7 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		proceed.addActionListener(this);
 		cancel.addActionListener(this);
 		databaseSettings.addActionListener(this);
+		databaseSettings.setEnabled(false);
 
 		
 		String[] languageStrings = GlobalStaticVariables.languageStrings;
@@ -109,6 +111,9 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		memoryRadio=new JRadioButton("In Memory");
 		memoryRadio.setSelected(true);
 		databaseRadio=new JRadioButton("In Database");
+		
+		memoryRadio.addActionListener(this);
+		databaseRadio.addActionListener(this);
 		
 		ButtonGroup g=new ButtonGroup();
 		g.add(memoryRadio);
@@ -303,10 +308,13 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		
 		if(obj == cancel){
 			frame.dispose();
+		}else if(obj==databaseRadio){
+			databaseSettings.setEnabled(true);
+		}else if(obj==memoryRadio){
+			databaseSettings.setEnabled(false);
+		}else if(obj==databaseSettings){
+			//open a new dialog that has fields for the database connection settings
 		}else if(obj == browse){
-			
-			
-			
 			// if the directory we received from our preferences exists, use that as the 
 			// starting directory for the chooser
 			if( prefs.getLastDir().exists() ) {
