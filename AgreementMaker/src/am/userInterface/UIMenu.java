@@ -3,7 +3,6 @@ package am.userInterface;
 
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -24,6 +23,8 @@ import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import edu.uic.advis.im.userInterface.InformationMatchingPanel;
+
 import am.AMException;
 import am.GlobalStaticVariables;
 import am.Utility;
@@ -31,10 +32,10 @@ import am.app.Core;
 import am.app.lexicon.Lexicon;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.ontology.Ontology;
 import am.app.ontology.profiling.ProfilingDialog;
@@ -88,7 +89,7 @@ public class UIMenu implements ActionListener {
 	private JMenuItem ontologyDetails, ontologyProfiling;
 	
 	// Tools menu.
-	private JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation;
+	private JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation, informationMatching;
 	
 	// Matchers menu.
 	private JMenuItem userFeedBack, 
@@ -700,6 +701,8 @@ public class UIMenu implements ActionListener {
 				// Lexicons -> Clear all ...
 				if( Utility.displayConfirmPane("Are you sure you want to clear the existing lexicons?\nYou will lose any parameters that were set.", "Clear lexicons?") )
 					Core.getLexiconStore().clear();
+			} else if( obj == informationMatching ) {
+				Core.getUI().addTab("Information Matching", null, new InformationMatchingPanel(), "Information Matching Panel");
 			}
 			
 			
@@ -1156,6 +1159,10 @@ public class UIMenu implements ActionListener {
 		clusteringEvaluation.addActionListener(this);
 		toolsMenu.addSeparator();
 		toolsMenu.add(clusteringEvaluation);
+		
+		informationMatching = new JMenuItem("Information Matching");
+		informationMatching.addActionListener(this);
+		toolsMenu.add(informationMatching);
 		
 		// Build help menu in the menu bar.
 		helpMenu = new JMenu("Help");
