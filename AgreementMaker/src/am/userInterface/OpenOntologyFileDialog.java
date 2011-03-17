@@ -268,25 +268,23 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		);
 		
 		//add all the panels to the frame layout, use trailing so that the cancel/proceed buttons are on the right side of the frame
-		layout.setHorizontalGroup(
-				layout.createSequentialGroup()
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+		layout.setHorizontalGroup(	layout.createSequentialGroup()
+				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
 						.addComponent(checkboxPanel)
 						.addGroup(layout.createSequentialGroup()
-							.addComponent(cancelProceedPanel)
+								.addComponent(cancelProceedPanel)
 						)
-					)
+				)
 					
 		);
 		
-		layout.setVerticalGroup(
-				layout.createParallelGroup()
-					.addGroup(layout.createSequentialGroup()
-							.addComponent(checkboxPanel)
-							.addGroup(layout.createParallelGroup()
+		layout.setVerticalGroup( layout.createParallelGroup()
+				.addGroup(layout.createSequentialGroup()
+						.addComponent(checkboxPanel)
+						.addGroup(layout.createParallelGroup()
 									.addComponent(cancelProceedPanel)
-							)
-					)
+						)
+				)
 		);
 		// end of Layout Code
 		
