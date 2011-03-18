@@ -14,12 +14,14 @@ import am.utility.RunTimer;
 import com.hp.hpl.jena.ontology.ConversionException;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.vocabulary.OWL;
-import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.OWL;
 /**
  * <p>Title: </p>
  *
@@ -165,13 +167,15 @@ public class OntoTreeBuilder extends TreeBuilder{
 	protected void buildTreeNoReasoner() {
 		if( Core.DEBUG ) System.out.print("OntoTreeBuilder: Reading Model with no reasoner...");
 		
-		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, null );
+		
 		if( Core.DEBUG ) System.out.println("Model created...but not read yet.");
 		
 		if( ontURI == null ) {
 			ontURI = "file:"+ontology.getFilename();
 		}
-		model.read( ontURI, null, ontology.getFormat() );
+		Model basemodel = FileManager.get().loadModel(ontology.getFilename(), ontology.getFormat());
+		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
+		//model.read( ontURI, null, ontology.getFormat() );
 		
 		if( Core.DEBUG ) System.out.println(" done.");
 		
