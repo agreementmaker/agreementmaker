@@ -23,8 +23,7 @@ import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-import edu.uic.advis.im.userInterface.InformationMatchingPanel;
-
+import edu.uic.advis.im.userInterface.InformationMatchingMenu;
 import am.AMException;
 import am.GlobalStaticVariables;
 import am.Utility;
@@ -89,7 +88,7 @@ public class UIMenu implements ActionListener {
 	private JMenuItem ontologyDetails, ontologyProfiling;
 	
 	// Tools menu.
-	private JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation, informationMatching;
+	private JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation; //, informationMatching;
 	
 	// Matchers menu.
 	private JMenuItem userFeedBack, 
@@ -701,10 +700,7 @@ public class UIMenu implements ActionListener {
 				// Lexicons -> Clear all ...
 				if( Utility.displayConfirmPane("Are you sure you want to clear the existing lexicons?\nYou will lose any parameters that were set.", "Clear lexicons?") )
 					Core.getLexiconStore().clear();
-			} else if( obj == informationMatching ) {
-				Core.getUI().addTab("Information Matching", null, new InformationMatchingPanel(), "Information Matching Panel");
 			}
-			
 			
 			
 			// TODO: find a Better way to do this
@@ -1160,8 +1156,7 @@ public class UIMenu implements ActionListener {
 		toolsMenu.addSeparator();
 		toolsMenu.add(clusteringEvaluation);
 		
-		informationMatching = new JMenuItem("Information Matching");
-		informationMatching.addActionListener(this);
+		JMenu informationMatching = new InformationMatchingMenu(ui);
 		toolsMenu.add(informationMatching);
 		
 		// Build help menu in the menu bar.
