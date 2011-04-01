@@ -79,13 +79,13 @@ public class ReferenceEvaluator{
         if(foundMappings == 0.0d) {
         	prec = 1;
         }
-        else prec = (double) correctMappings / foundMappings;
+        else prec = (double) correctMappings / (double) foundMappings;
         
         double rec;
         if(referenceMappings == 0.0d) {
         	rec = 1;
         }
-        else rec = (double) correctMappings / referenceMappings;
+        else rec = (double) correctMappings / (double) referenceMappings;
         //System.out.println("Precision: " + prec + ", Recall: " + rec);
         // F-measure
         double fm;

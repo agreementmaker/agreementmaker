@@ -155,7 +155,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	private JPanel createToolbarPanel() {
 		JPanel panel = new JPanel();
 		
-		panel.setLayout( new FlowLayout(FlowLayout.LEADING) );
+		panel.setLayout( new WrapLayout(WrapLayout.LEADING) );
 		
 		JCheckBox chkClusters = new JCheckBox("View individual cluster:");
 		JComboBox boxClusters = new JComboBox();
@@ -165,9 +165,9 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		//txtClusterThreshold.setMinimumSize(new Dimension( 400, lblClusterThreshold.getHeight()));
 		
 		//btnApplyThreshold = new JButton("Apply");
-		panel.add(chkClusters);
-		panel.add(boxClusters);
-		panel.add(Box.createHorizontalStrut(10));
+		//panel.add(chkClusters);
+		//panel.add(boxClusters);
+		//panel.add(Box.createHorizontalStrut(10));
 		
 		btnDisagreementMeasure = new JButton("Calculate Disagreement");
 		btnDisagreementMeasure.addActionListener(this);
@@ -180,9 +180,10 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		panel.add(btnCandidateSelection);
 		panel.add(Box.createHorizontalStrut(10));
 		
-		panel.add(new JLabel("TopK") );
+		panel.add(new JLabel("Candidate Mapping:") );
 		cmbTopK = new JComboBox();
-		cmbTopK.setPrototypeDisplayValue("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+		cmbTopK.setPrototypeDisplayValue("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+		cmbTopK.addActionListener(this);
 		panel.add(cmbTopK);
 		panel.add(Box.createHorizontalStrut(10));
 		
@@ -357,7 +358,20 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			Point mapRowCol = (Point) e.payload;
 			currentSelectedMapping = mapRowCol;
 			
-			MatrixPlotPanel plotPanel = (MatrixPlotPanel) e.getSource();
+			MatrixPlotPanel plotPanel = null;
+			if( plotPanel == null ) {
+				if( e.getSource() instanceof MatrixPlotPanel ) {
+					plotPanel = (MatrixPlotPanel) e.getSource();
+				} else {
+					// Initiated by the combo box.
+					for( MatcherAnalyticsEventListener l : eventListeners ) {
+						if ( l instanceof MatrixPlotPanel ) {
+							plotPanel = (MatrixPlotPanel) l;
+						}
+					}
+				}
+			}
+			if( plotPanel == null ) { return; }  // If there are not MatrixPlotPanels, just return.
 			
 			Mapping selectedMapping = plotPanel.getPlot().getMatrix().get(mapRowCol.x, mapRowCol.y);
 			Node sNode = null;
@@ -443,7 +457,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			
 			addPlot("Disagreement Matrix", disagreementMatrix, g);
 			
-			
+			return;
 		}
 		
 		if( e.getSource() == btnCandidateSelection ) {
@@ -483,7 +497,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 				cmbTopK.insertItemAt(topKDescription, i);
 			}
 			
-			
+			return;
 		}
 		
 		if( e.getSource() == btnConfirmMapping ) {
@@ -512,7 +526,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			
 			
 			feedbackMatcher.select();
-			
+			return;
 		}
 		
 		if( e.getSource() == btnRefuteMapping ) {
@@ -534,8 +548,21 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			filteredCells[selectedMapping.getSourceKey()][selectedMapping.getTargetKey()] = true;
 			
 			feedbackMatcher.select();
+			return;
 		}
 		
+		
+		if( e.getSource() == cmbTopK ) {
+			// The user selected a mapping.  Select this mapping in all the panels.
+			int sel = cmbTopK.getSelectedIndex();
+			
+			Mapping selectedMapping = topK[sel];
+			
+			
+			broadcastEvent( new MatcherAnalyticsEvent( this ,  EventType.SELECT_MAPPING,  
+					new Point(selectedMapping.getEntity1().getIndex(), selectedMapping.getEntity2().getIndex()) ));
+			
+		}
 	}
 
 	private void rewardCluster(Cluster<Mapping> cl, double eValue, SimilarityMatrix feedbackMatrix2) {

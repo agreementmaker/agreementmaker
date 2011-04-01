@@ -54,7 +54,7 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 		plot.addMouseListener(this);
 		plot.draw(false);
 		
-		if( a != null ) { lblName = new JLabel(a.getRegistryEntry().getMatcherName()); }
+		if( a != null ) { lblName = new JLabel(a.getName()); }
 		else { lblName = new JLabel("--"); }
 		
 		lblSimilaritySelected = new JLabel("", JLabel.TRAILING);

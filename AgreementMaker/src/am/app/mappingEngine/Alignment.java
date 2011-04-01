@@ -57,6 +57,11 @@ public class Alignment<E extends Mapping> extends ArrayList<E>
     	return false;
     }
 
+    public boolean contains( E mapping ) {
+    	// TODO: Make this check be better than linear time.
+    	return super.contains( mapping ); 
+    }
+    
     public void cut(double threshold)
     {
         for (int i = size()-1; i >= 0; i--)

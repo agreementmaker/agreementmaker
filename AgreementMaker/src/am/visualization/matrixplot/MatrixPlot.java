@@ -28,8 +28,8 @@ public class MatrixPlot extends JPanel {
 	protected final SimilarityMatrix matrix;
 	private final VisualizationType type;
 	
-	protected int squareSize = 10;
-	private int border = 2;
+	protected int squareSize = 8;
+	private int border = 0;
 	private BufferedImage I;
 	private Point selected = null;
 	
@@ -38,6 +38,8 @@ public class MatrixPlot extends JPanel {
 	
 	private Alignment<Mapping> referenceAlignmentSet = null;
 	private Color referenceAlignmentColor = Color.RED;
+	private Color refAlignIncorrect = Color.RED;
+	private Color refAlignCorrect = Color.GREEN;
 	
 	private Cluster<Mapping> viewCluster = null;
 	
@@ -194,8 +196,6 @@ public class MatrixPlot extends JPanel {
 				} else {
 					// visualize only the Alignment, using a solid color
 					
-					System.out.println("AAAAAAAAAAA");
-					
 					Alignment<Mapping> vizAlignment = null;
 					
 					if( matcher != null ) {
@@ -212,7 +212,6 @@ public class MatrixPlot extends JPanel {
 						if( vizAlignment != null ) {
 							
 							for( Mapping map : vizAlignment ) {
-								System.out.println("align");
 								int x1 = translateRow(map.getSourceKey()) * squareSize;
 								int y1 = translateCol(map.getTargetKey()) * squareSize;
 								g.fillRect(x1, y1, squareSize, squareSize);
@@ -228,22 +227,35 @@ public class MatrixPlot extends JPanel {
 			// add the dots for the reference alignment.
 			if ( referenceAlignmentSet != null )
 			for( Mapping a : referenceAlignmentSet ) {
-				int row = a.getEntity1().getIndex();
-				int col = a.getEntity2().getIndex();
+				int row = translateRow(a.getEntity1().getIndex());
+				int col = translateCol(a.getEntity2().getIndex());
 				
 				int x1 = row * squareSize;
 				int y1 = col * squareSize;
 				
 				int diameter  = squareSize - 2*border;
 				
-				int[] iArray = { referenceAlignmentColor.getRed(), referenceAlignmentColor.getGreen(), referenceAlignmentColor.getBlue() };
+				Color mappingColor = referenceAlignmentColor;
+				Alignment<Mapping> vizAlignment = null;
+				if( matcher != null ) {
+					if( type == VisualizationType.CLASS_MATRIX ) vizAlignment = matcher.getClassAlignmentSet();
+					if( type == VisualizationType.PROPERTIES_MATRIX ) vizAlignment = matcher.getPropertyAlignmentSet();
+				}
+				
+				if( vizAlignment != null ) {
+					if( vizAlignment.contains(a) ) mappingColor = refAlignCorrect;
+					else mappingColor = refAlignIncorrect;
+				}
+				
+				
+				int[] iArray = { mappingColor.getRed(), mappingColor.getGreen(), mappingColor.getBlue() };
 				if( diameter <= 0 ) {
 					wr.setPixel(x1, y1, iArray);
 				} else {
 					for( int i = 0; i < squareSize; i++ ) {
-						if( i > border && i < squareSize - border - 1 )
+						if( i >= border && i < squareSize - border)
 						for( int j = 0; j < squareSize; j++ ) {
-							if( j > border && j < squareSize - border - 1 )
+							if( j >= border && j < squareSize - border )
 								wr.setPixel(x1+i, y1+j, iArray);
 						}
 					}
