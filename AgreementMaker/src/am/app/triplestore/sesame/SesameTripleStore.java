@@ -33,7 +33,7 @@ public class SesameTripleStore implements TripleStore{
 		this.baseURI=baseURI;
 	}
 	@Override
-	public void openConnection() {
+	public boolean openConnection() {
 		try {
 			repoConnection = memoryRepo.getConnection();//get connection to the repository
 			
@@ -43,6 +43,7 @@ public class SesameTripleStore implements TripleStore{
 			catch (IOException e) {e.printStackTrace();}
 		}
 		catch (RepositoryException e){e.printStackTrace();}
+		return true;
 	}
 	@Override
 	public void closeConnection() {

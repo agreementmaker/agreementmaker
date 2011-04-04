@@ -18,90 +18,170 @@ import com.hp.hpl.jena.sdb.store.DatabaseType;
 import com.hp.hpl.jena.sdb.store.LayoutType;
 import com.hp.hpl.jena.sdb.util.StoreUtils;
 
-public class JenaTDBTripleStore implements TripleStore{
+public class JenaTDBTripleStore{
 
 	private StoreDesc storeDesc;
-	private SDBConnection conn;
-	private Store store;
-	private Connection jdbcConnection;
+	private SDBConnection connSource,connTarget;
+	private Store storeSource;
+	private Store storeTarget;
+	private Connection jdbcConnectionTarget;
 	
-	private String host;
-	private String DBName;
-	private String username;
-	private String password;
-	private int port;
-	private String URI;
+	private String hostSource,hostTarget;
+	private String DBNameSource,DBNameTarget;
+	private String usernameSource,usernameTarget;
+	private String passwordSource,passwordTarget;
+	private int portSource,portTarget;
+	private String URISource,URITarget;
+	private Connection jdbcConnectionSource;
+	private boolean persistentSource,persistentTarget;
 	
-	public JenaTDBTripleStore(String host, int port, String DBName,String username,String password, String URI)
+	public JenaTDBTripleStore(String hostSource, int portSource, String DBNameSource,String usernameSource,String passwordSource, String URISource, 
+							  String hostTarget, int portTarget, String DBNameTarget,String usernameTarget,String passwordTarget,String URITarget,
+							  boolean persistantS, boolean persistantT)
 	{
 		JDBC.loadDriverPGSQL();
-		this.host=host;
-		this.port=port;
-		this.DBName=DBName;
-		this.username=username;
-		this.password=password;
-		this.URI=URI;
-	}
-	@Override
-	public void openConnection() {
-		try {
-			jdbcConnection= DriverManager.getConnection("jdbc:postgresql://"+host+":"+port+"/"+DBName,username,password);
-		} catch (SQLException e) {e.printStackTrace();}
-		conn = SDBFactory.createConnection(jdbcConnection);	
-		storeDesc = new StoreDesc(LayoutType.LayoutTripleNodesHash,DatabaseType.PostgreSQL);
+		this.hostSource=hostSource;
+		this.portSource=portSource;
+		this.DBNameSource=DBNameSource;
+		this.usernameSource=usernameSource;
+		this.passwordSource=passwordSource;
+		this.URISource=URISource;
+		
+		this.hostTarget=hostTarget;
+		this.portTarget=portTarget;
+		this.DBNameTarget=DBNameTarget;
+		this.usernameTarget=usernameTarget;
+		this.passwordTarget=passwordTarget;
+		this.URITarget=URITarget;
+		
+		persistentSource=persistantS;
+		persistentTarget=persistantT;
+		
+		storeDesc = new StoreDesc(LayoutType.LayoutTripleNodesIndex,DatabaseType.PostgreSQL);
 	}
 
-	public void loadModel()
+	public boolean openSourceConnection() {
+		try {
+			jdbcConnectionSource= DriverManager.getConnection("jdbc:postgresql://"+hostSource+":"+portSource+"/"+DBNameSource,usernameSource,
+					passwordSource);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+			}
+		connSource = SDBFactory.createConnection(jdbcConnectionSource);	
+		storeSource = SDBFactory.connectStore(connSource, storeDesc);
+		
+		return true;
+	}
+	
+	public boolean openTargetConnection() {
+		try {
+			jdbcConnectionTarget= DriverManager.getConnection("jdbc:postgresql://"+hostTarget+":"+portTarget+"/"+DBNameTarget,usernameTarget,
+					passwordTarget);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+			}
+		connTarget= SDBFactory.createConnection(jdbcConnectionTarget);	
+		storeTarget = SDBFactory.connectStore(connTarget, storeDesc);
+		
+		return true;
+	}
+
+	public void loadSourceModel()
 	{
-		store = SDBFactory.connectStore(conn, storeDesc);
 		//formate the store and empty it if it is full
 		try {
-			if(!StoreUtils.isFormatted(store))
-				store.getTableFormatter().create();
-			else
-				store.getTableFormatter().truncate();
+			if(!StoreUtils.isFormatted(storeSource))
+				storeSource.getTableFormatter().create();
+			else if(!persistentSource)
+				storeSource.getTableFormatter().truncate();
+
 		} catch (SQLException e) {e.printStackTrace();}
+		Model modelSource=SDBFactory.connectDefaultModel(storeSource);
+		if(!persistentSource)
+			modelSource.read(URISource);
 		
-		Model model=SDBFactory.connectDefaultModel(store);
-		model.read(URI);
-		
-		StmtIterator sIter = model.listStatements() ;
+		StmtIterator sIter = modelSource.listStatements() ;
+		int x=0;
 		for ( ; sIter.hasNext() ; )
 		{
 			Statement stmt = sIter.nextStatement() ;
 		    System.out.println(stmt) ;
+		    x++;
 		}
 		sIter.close();
-		
-		store.close();
-	}
-	@Override
-	public void closeConnection() {
-		store.getConnection().close();
-		store.close();		
+		System.out.println(x);
+		storeSource.close();
 	}
 
-	@Override
+	public void loadTargetModel()
+	{
+		//formate the store and empty it if it is full
+		try {
+			if(!StoreUtils.isFormatted(storeTarget))
+				storeTarget.getTableFormatter().create();
+			else if(!persistentTarget)
+				storeTarget.getTableFormatter().truncate();
+		} catch (SQLException e) {e.printStackTrace();}
+
+		Model modelTarget=SDBFactory.connectDefaultModel(storeTarget);
+		if(!persistentTarget)
+			modelTarget.read(URITarget);
+		
+		StmtIterator sIter = modelTarget.listStatements() ;
+		int x=0;
+		for ( ; sIter.hasNext() ; )
+		{
+			Statement stmt = sIter.nextStatement() ;
+		    System.out.println(stmt) ;
+		    x++;
+		}
+		sIter.close();
+		System.out.println(x);
+
+		storeTarget.close();
+	}
+	
+	public void closeSourceConnection() {
+		if(!persistentSource)
+			storeSource.getTableFormatter().truncate();
+		storeSource.getConnection().close();
+		storeSource.close();
+	}
+	public void closeTargetConnection() {
+		if(!persistentTarget)
+			storeTarget.getTableFormatter().truncate();
+		storeTarget.getConnection().close();
+		storeTarget.close();
+	}
+
+
 	public void removeEntry() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+
 	public void addEntry() {
 		// TODO Auto-generated method stub
 		
 	}
 	public static void main(String[] args)
 	{
-		JenaTDBTripleStore t=new JenaTDBTripleStore("localhost", 5432, "joedb", "postgres", "tomato", 
-				"file:/home/joe/ADVISWorkspace/AgreementMaker/AgreementMaker/ontologies/OAEI09_OWL_RDF:XML/conference/Conference.owl");
-		t.openConnection();
-		t.loadModel();
-		t.closeConnection();
+		JenaTDBTripleStore t=new JenaTDBTripleStore("localhost", 5432, "source", "postgres", "tomato", 
+				"file:/home/joe/ADVISWorkspace/AgreementMaker/AgreementMaker/ontologies/OAEI09_OWL_RDF:XML/conference/Conference.owl",
+				"localhost", 5432, "target", "postgres", "tomato",
+				"file:/home/joe/ADVISWorkspace/AgreementMaker/AgreementMaker/ontologies/OAEI09_OWL_RDF:XML/conference/edas.owl",true,true);
+		t.openSourceConnection();
+		t.openTargetConnection();
+		t.loadSourceModel();
+		t.loadTargetModel();
+		t.closeSourceConnection();
+		t.closeTargetConnection();
 	}
 }
-/*import java.sql.Connection;
+/*import java.sql.Connection;s
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;

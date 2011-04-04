@@ -42,7 +42,7 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 	private JLabel syntaxLbl, langLbl;
 	private JTextField filePath;
 	private JLabel fileType;
-	private JDialog frame, databaseSettingsFrame;
+	private JDialog frame;
 	private int ontoType;
 	
 	private JPanel filePanel, optionsPanel, cancelProceedPanel, checkboxPanel;
@@ -312,6 +312,8 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 			databaseSettings.setEnabled(false);
 		}else if(obj==databaseSettings){
 			//open a new dialog that has fields for the database connection settings
+			JDialog dSettings=new DatabaseSettingsDialog(frame);
+			Preferences p=Preferences.userNodeForPackage(DatabaseSettingsDialog.class);
 		}else if(obj == browse){
 			// if the directory we received from our preferences exists, use that as the 
 			// starting directory for the chooser

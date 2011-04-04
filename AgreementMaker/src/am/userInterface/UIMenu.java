@@ -23,7 +23,6 @@ import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-import edu.uic.advis.im.userInterface.InformationMatchingMenu;
 import am.AMException;
 import am.GlobalStaticVariables;
 import am.Utility;
@@ -62,7 +61,7 @@ public class UIMenu implements ActionListener {
 	private JMenu fileMenu, editMenu, viewMenu, helpMenu, matchersMenu, toolsMenu, ontologyMenu;
 	
 	// File menu.
-	private JMenuItem xit, openSource, openTarget, openMostRecentPair,
+	private JMenuItem xit, openFiles, openTarget, openMostRecentPair,
 					  closeSource, closeTarget, closeBoth, saveAlignment, loadAlignment;
 	private JMenu menuRecentSource, menuRecentTarget;
 	
@@ -197,17 +196,13 @@ public class UIMenu implements ActionListener {
 				}
 			}else if (obj == howToUse){
 				Utility.displayTextAreaPane(Help.getHelpMenuString(), "Help");
-			}else if (obj == openSource){
-				openAndReadFilesForMapping(GlobalStaticVariables.SOURCENODE);
+			}else if (obj == openFiles){
+				new OpenOntologyFileDialogCombined(ui);
 				if( Core.getInstance().sourceIsLoaded() ) {
-					openSource.setEnabled(false);
 					menuRecentSource.setEnabled(false);
 					closeSource.setEnabled(true);
 				}
-			}else if (obj == openTarget){
-				openAndReadFilesForMapping(GlobalStaticVariables.TARGETNODE);
 				if( Core.getInstance().targetIsLoaded() ) {
-					openTarget.setEnabled(false);
 					menuRecentTarget.setEnabled(false);
 					closeTarget.setEnabled(true);
 				}
@@ -231,7 +226,7 @@ public class UIMenu implements ActionListener {
 				}
 				
 				// grey out menus
-				openSource.setEnabled(false);
+				openFiles.setEnabled(false);
 				closeSource.setEnabled(true);
 				menuRecentSource.setEnabled(false);
 				
@@ -530,7 +525,7 @@ public class UIMenu implements ActionListener {
 						Core.getInstance().removeOntology( Core.getInstance().getSourceOntology() );
 						closeSource.setEnabled(false); // the source ontology has been removed, grey out the menu entry
 						// and we need to enable the source ontology loading menu entries
-						openSource.setEnabled(true);
+						openFiles.setEnabled(true);
 						menuRecentSource.setEnabled(true);
 					}
 				} else {
@@ -539,7 +534,7 @@ public class UIMenu implements ActionListener {
 					Core.getInstance().removeOntology( Core.getInstance().getSourceOntology() );
 					closeSource.setEnabled(false);  // the source ontology has been removed, grey out the menu entry
 					// and we need to enable the source ontology loading menu entries
-					openSource.setEnabled(true);
+					openFiles.setEnabled(true);
 					menuRecentSource.setEnabled(true);
 					ui.redisplayCanvas();
 				}
@@ -574,7 +569,7 @@ public class UIMenu implements ActionListener {
 						closeSource.setEnabled(false); // the source ontology has been removed, grey out the menu entry
 						closeTarget.setEnabled(false); // the source ontology has been removed, grey out the menu entry
 						// and we need to enable the source ontology loading menu entries
-						openSource.setEnabled(true);
+						openFiles.setEnabled(true);
 						openTarget.setEnabled(true);
 						menuRecentSource.setEnabled(true);
 						menuRecentTarget.setEnabled(true);
@@ -584,7 +579,7 @@ public class UIMenu implements ActionListener {
 						Core.getInstance().removeOntology( Core.getInstance().getSourceOntology() );
 						closeSource.setEnabled(false);  // the source ontology has been removed, grey out the menu entry
 						// and we need to enable the source ontology loading menu entries
-						openSource.setEnabled(true);
+						openFiles.setEnabled(true);
 						menuRecentSource.setEnabled(true);
 						ui.redisplayCanvas();
 					}
@@ -728,7 +723,7 @@ public class UIMenu implements ActionListener {
 						ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
 						
 						// Now that we have loaded a source ontology, disable all the source ontology loading menu entries ...
-						openSource.setEnabled(false);
+						openFiles.setEnabled(false);
 						menuRecentSource.setEnabled(false);
 						openMostRecentPair.setEnabled(false);
 						// ... and enable the close menu entry 
@@ -852,18 +847,14 @@ public class UIMenu implements ActionListener {
 		fileMenu.setMnemonic(KeyEvent.VK_F);	
 
 		//add openGFile menu item to file menu
-		openSource = new JMenuItem("Open Source Ontology...",new ImageIcon("images"+File.separator+"fileImage.png"));
+		openFiles = new JMenuItem("Open Ontologies...",new ImageIcon("images"+File.separator+"fileImage.png"));
 		//openSource.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));                		
 		//openSource.setMnemonic(KeyEvent.VK_O);
-		openSource.addActionListener(this);
-		fileMenu.add(openSource);
+		openFiles.addActionListener(this);
+		fileMenu.add(openFiles);
 		
 		//add openGFile menu item to file menu
-		openTarget = new JMenuItem("Open Target Ontology...",new ImageIcon("images"+File.separator+"fileImage.png"));
-		//openTarget.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));                		
-		//openTarget.setMnemonic(KeyEvent.VK_O);
-		openTarget.addActionListener(this);
-		fileMenu.add(openTarget);
+	
 
 		// add separator
 		fileMenu.addSeparator();
@@ -1156,8 +1147,8 @@ public class UIMenu implements ActionListener {
 		toolsMenu.addSeparator();
 		toolsMenu.add(clusteringEvaluation);
 		
-		JMenu informationMatching = new InformationMatchingMenu(ui);
-		toolsMenu.add(informationMatching);
+		//JMenu informationMatching = new InformationMatchingMenu(ui);
+		//toolsMenu.add(informationMatching);
 		
 		// Build help menu in the menu bar.
 		helpMenu = new JMenu("Help");
@@ -1198,7 +1189,7 @@ public class UIMenu implements ActionListener {
 	 * This method reads the XML or OWL files and creates trees for mapping
 	 */	
 	 public void openAndReadFilesForMapping(int fileType){
-		new OpenOntologyFileDialog(fileType, ui);
+		new OpenOntologyFileDialogCombined(ui);
 	 }
 
 	
