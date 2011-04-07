@@ -63,6 +63,24 @@ public class OutputController {
 
 	public final static String arrow = "--->";
 	
+	/**
+	 * Save the alignment of a matcher to an alignment file in the OAEI format. 
+	 * @param matcher The matcher storing the alignment.
+	 * @param completeFileName Complete path of the filename to save the alignment to.
+	 * @throws Exception
+	 */
+	public static void saveOAEIAlignment( AbstractMatcher matcher, String completeFileName) throws Exception {
+		AlignmentOutput output = new AlignmentOutput(matcher.getAlignment(), completeFileName);
+		String sourceUri = Core.getInstance().getSourceOntology().getURI();
+		String targetUri = Core.getInstance().getTargetOntology().getURI();
+		output.write(sourceUri, targetUri, sourceUri, targetUri, matcher.getName());
+	}
+	
+	/**
+	 * Save an alignment to the given file.  The alignment to be saved is taken from the first selected matcher in the Matchers Control Panel.
+	 * @param completeFileName
+	 * @throws Exception
+	 */
 	public static void printDocumentOAEI(String completeFileName) throws Exception{
 		ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
 		AbstractMatcher matcher;
