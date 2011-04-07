@@ -21,6 +21,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import am.GlobalStaticVariables;
+import am.Utility;
 import am.app.Core;
 import am.userInterface.UI.WindowEventHandler;
 
@@ -64,8 +65,8 @@ public class OpenOntologyFileDialogCombined implements ActionListener, ListSelec
 		filePaths[1]=new JTextField(0);
 		
 		browseButtons=new JButton[2];
-		browseButtons[0]=new JButton("..");
-		browseButtons[1]=new JButton("..");
+		browseButtons[0]=new JButton("...");
+		browseButtons[1]=new JButton("...");
 		
 		sourceTargetLabel=new JLabel[2];
 		sourceTargetLabel[0]=new JLabel("Source");
@@ -105,6 +106,11 @@ public class OpenOntologyFileDialogCombined implements ActionListener, ListSelec
 		inDB[1]=new JRadioButton("In Database");
 		
 		
+		inDB[0].addActionListener(this);
+		inDB[1].addActionListener(this);
+		inMem[0].addActionListener(this);
+		inMem[1].addActionListener(this);
+		
 		ButtonGroup source=new ButtonGroup();
 		source.add(inMem[0]);
 		source.add(inDB[0]);
@@ -118,6 +124,7 @@ public class OpenOntologyFileDialogCombined implements ActionListener, ListSelec
 		skip[1]=new JCheckBox();
 		
 		DBSettings=new JButton("Database Settings");
+		DBSettings.setEnabled(false);
 		cancel=new JButton("Cancel");
 		proceed=new JButton("Proceed");
 		
@@ -305,6 +312,28 @@ public class OpenOntologyFileDialogCombined implements ActionListener, ListSelec
 		);
 		// end of Layout Code
 		
+		//disable the file loading if there are ontologies loaded
+		if(Core.getInstance().sourceIsLoaded()){
+			filePaths[0].setText(Core.getInstance().getSourceOntology().getFilename());
+			filePaths[0].setEnabled(false);
+			browseButtons[0].setEnabled(false);
+			ontLang[0].setEnabled(false);
+			ontSyntax[0].setEnabled(false);
+			inMem[0].setEnabled(false);
+			inDB[0].setEnabled(false);
+			skip[0].setEnabled(false);
+		}
+		if(Core.getInstance().targetIsLoaded()){
+			filePaths[1].setText(Core.getInstance().getTargetOntology().getFilename());
+			filePaths[1].setEnabled(false);
+			browseButtons[1].setEnabled(false);
+			ontLang[1].setEnabled(false);
+			ontSyntax[1].setEnabled(false);
+			inMem[1].setEnabled(false);
+			inDB[1].setEnabled(false);
+			skip[1].setEnabled(false);
+		}
+		
 		frame.addWindowListener(ui.new WindowEventHandler());
 		frame.pack(); // automatically set the frame size
 		frame.setLocationRelativeTo(null); 	// center the window on the screen
@@ -323,13 +352,14 @@ public class OpenOntologyFileDialogCombined implements ActionListener, ListSelec
 		
 		if(obj == cancel){
 			frame.dispose();
-		}else if(obj== null){//setting the database button
-			//databaseSettings.setEnabled(true);
-		//}else if(obj==memoryRadio){
-		//	databaseSettings.setEnabled(false);
+		}else if(obj== inDB[0] || obj==inDB[1] || obj== inMem[0] || obj==inMem[1]){//setting the database button
+			if(inDB[0].isSelected() || inDB[1].isSelected())
+				DBSettings.setEnabled(true);
+			else
+				DBSettings.setEnabled(false);
 		}else if(obj==DBSettings){
 			//open a new dialog that has fields for the database connection settings
-			JDialog dSettings=new DatabaseSettingsDialog(frame);
+			JDialog dSettings=new DatabaseSettingsDialog(frame,inDB[0].isSelected(),inDB[1].isSelected());
 			Preferences p=Preferences.userNodeForPackage(DatabaseSettingsDialog.class);
 		}else if(obj == browseButtons[0]){//browse for source
 			// if the directory we received from our preferences exists, use that as the 
@@ -372,11 +402,12 @@ public class OpenOntologyFileDialogCombined implements ActionListener, ListSelec
 				String targetFilename = filePaths[1].getText();
 
 				try{
-					if(sourceFilename.equals("")){
-						JOptionPane.showMessageDialog(frame, "No source ontology will be loaded.", "Source Filename is empty", JOptionPane.ERROR_MESSAGE);
-					}
-					else{
-						ui.openFile(sourceFilename, GlobalStaticVariables.SOURCENODE, ontSyntax[0].getSelectedIndex(), ontLang[0].getSelectedIndex(), skip[0].isSelected(), false);
+					if(sourceFilename.equals(""))
+						JOptionPane.showMessageDialog(frame, "No source ontology will be loaded.", "Source Filename is empty"
+								, JOptionPane.ERROR_MESSAGE);
+					else if(!Core.getInstance().sourceIsLoaded()){
+						ui.openFile(sourceFilename, GlobalStaticVariables.SOURCENODE, ontSyntax[0].getSelectedIndex(), ontLang[0].getSelectedIndex(), skip[0].isSelected()
+								, false,inDB[0].isSelected());
 					// once we are done, let's save the syntax and language selection that was made by the user
 					// and save the file used to the recent file list, and also what syntax and language it is
 					//prefs.saveOpenDialogListSelection(ontSyntax[0].getSelectedIndex() , ontLang[0].getSelectedIndex(), skip[0].isSelected());
@@ -392,9 +423,11 @@ public class OpenOntologyFileDialogCombined implements ActionListener, ListSelec
 				
 				try{
 					if(targetFilename.equals(""))
-						JOptionPane.showMessageDialog(frame, "Load a target ontology file to proceed.", "Target Filename is empty", JOptionPane.ERROR_MESSAGE);
-					else{
-						ui.openFile(targetFilename, GlobalStaticVariables.TARGETNODE, ontSyntax[1].getSelectedIndex(), ontLang[1].getSelectedIndex(), skip[1].isSelected(), false);
+						JOptionPane.showMessageDialog(frame, "No target ontology will be loaded.", "Target Filename is empty"
+								, JOptionPane.ERROR_MESSAGE);
+					else if(!Core.getInstance().targetIsLoaded()){
+						ui.openFile(targetFilename, GlobalStaticVariables.TARGETNODE, ontSyntax[1].getSelectedIndex(), ontLang[1].getSelectedIndex()
+								, skip[1].isSelected(), false,inDB[1].isSelected());
 						// once we are done, let's save the syntax and language selection that was made by the user
 						// and save the file used to the recent file list, and also what syntax and language it is
 						//prefs.saveOpenDialogListSelection(ontSyntax[0].getSelectedIndex() , ontLang[0].getSelectedIndex(), skip[0].isSelected());
@@ -429,8 +462,8 @@ public class OpenOntologyFileDialogCombined implements ActionListener, ListSelec
 				ontSyntax[1].setEnabled(true);
 		}
 	}
-	public static void main(String[] args)
-	{
-		OpenOntologyFileDialogCombined n=new OpenOntologyFileDialogCombined(new UI());
-	}
+	//public static void main(String[] args)
+	//{
+	//	OpenOntologyFileDialogCombined n=new OpenOntologyFileDialogCombined(new UI());
+	//}
 }

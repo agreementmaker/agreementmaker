@@ -312,7 +312,7 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 			databaseSettings.setEnabled(false);
 		}else if(obj==databaseSettings){
 			//open a new dialog that has fields for the database connection settings
-			JDialog dSettings=new DatabaseSettingsDialog(frame);
+			JDialog dSettings=new DatabaseSettingsDialog(frame,true,true);
 			Preferences p=Preferences.userNodeForPackage(DatabaseSettingsDialog.class);
 		}else if(obj == browse){
 			// if the directory we received from our preferences exists, use that as the 
@@ -338,7 +338,7 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 				JOptionPane.showMessageDialog(frame, "Load an ontology file to proceed.", "Filename is empty", JOptionPane.ERROR_MESSAGE);
 			}else{
 				try{
-					ui.openFile(filename, ontoType, syntaxCombo.getSelectedIndex(), langCombo.getSelectedIndex(), skipCheck.isSelected(), noReasonerCheck.isSelected());
+					ui.openFile(filename, ontoType, syntaxCombo.getSelectedIndex(), langCombo.getSelectedIndex(), skipCheck.isSelected(), noReasonerCheck.isSelected(),false);
 					// once we are done, let's save the syntax and language selection that was made by the user
 					// and save the file used to the recent file list, and also what syntax and language it is
 					prefs.saveOpenDialogListSelection(syntaxCombo.getSelectedIndex() , langCombo.getSelectedIndex(), skipCheck.isSelected(), noReasonerCheck.isSelected());

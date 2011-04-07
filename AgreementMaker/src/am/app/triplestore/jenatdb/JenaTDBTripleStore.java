@@ -71,6 +71,15 @@ public class JenaTDBTripleStore{
 		connSource = SDBFactory.createConnection(jdbcConnectionSource);	
 		storeSource = SDBFactory.connectStore(connSource, storeDesc);
 		
+		try {
+			System.out.println(StoreUtils.isFormatted(storeSource));
+			if(!StoreUtils.isFormatted(storeSource))
+				storeSource.getTableFormatter().create();
+			else if(!persistentSource)
+				storeSource.getTableFormatter().truncate();
+
+		} catch (SQLException e) {e.printStackTrace();}
+		
 		return true;
 	}
 	
@@ -85,19 +94,20 @@ public class JenaTDBTripleStore{
 		connTarget= SDBFactory.createConnection(jdbcConnectionTarget);	
 		storeTarget = SDBFactory.connectStore(connTarget, storeDesc);
 		
+		//formate the store and empty it if it is full
+		try {
+			if(!StoreUtils.isFormatted(storeTarget))
+				storeTarget.getTableFormatter().create();
+			else if(!persistentTarget)
+				storeTarget.getTableFormatter().truncate();
+		} catch (SQLException e) {e.printStackTrace();}
+		
 		return true;
 	}
 
 	public void loadSourceModel()
 	{
 		//formate the store and empty it if it is full
-		try {
-			if(!StoreUtils.isFormatted(storeSource))
-				storeSource.getTableFormatter().create();
-			else if(!persistentSource)
-				storeSource.getTableFormatter().truncate();
-
-		} catch (SQLException e) {e.printStackTrace();}
 		Model modelSource=SDBFactory.connectDefaultModel(storeSource);
 		if(!persistentSource)
 			modelSource.read(URISource);
@@ -117,14 +127,6 @@ public class JenaTDBTripleStore{
 
 	public void loadTargetModel()
 	{
-		//formate the store and empty it if it is full
-		try {
-			if(!StoreUtils.isFormatted(storeTarget))
-				storeTarget.getTableFormatter().create();
-			else if(!persistentTarget)
-				storeTarget.getTableFormatter().truncate();
-		} catch (SQLException e) {e.printStackTrace();}
-
 		Model modelTarget=SDBFactory.connectDefaultModel(storeTarget);
 		if(!persistentTarget)
 			modelTarget.read(URITarget);

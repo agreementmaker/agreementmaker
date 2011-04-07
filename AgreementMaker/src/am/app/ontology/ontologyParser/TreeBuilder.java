@@ -38,7 +38,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
         if( Core.DEBUG ) System.out.println(filename);
 	}
 	
-	public static TreeBuilder buildTreeBuilder(String fileName, int ontoType, int langIndex, int syntaxIndex, boolean skip, boolean noReasoner){
+	public static TreeBuilder buildTreeBuilder(String fileName, int ontoType, int langIndex, int syntaxIndex, boolean skip, boolean noReasoner, boolean DB){
 		
 		
 		String languageS = GlobalStaticVariables.getLanguageString(langIndex);
@@ -51,6 +51,8 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 			treeBuilder = new RdfsTreeBuilder(fileName, ontoType, languageS, syntaxS, skip);
 		else if(langIndex == GlobalStaticVariables.TABBEDTEXT)
 			treeBuilder = new TabbedTextBuilder(fileName, ontoType, languageS, syntaxS);
+		else if(DB)
+			treeBuilder= new DBOntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip, noReasoner);
 		else treeBuilder = new OntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip, noReasoner);
 		
 		return treeBuilder;

@@ -23,7 +23,7 @@ public class DatabaseSettingsDialog extends JDialog implements ActionListener{
 	private JTextField dbNameTarget,hostTarget, portTarget, usernameTarget;
 	private JPasswordField passwordTarget;
 	private JLabel hostL, portL,DBNameL, userL, passL;
-	private JButton cancel, proceed, test;
+	private JButton cancel, proceed, test,create;
 	private Preferences p;
 	private JPanel buttonsPanel, inputPanelSource,inputPanelTarget, mainPanel;
 	private JPanel source, target;
@@ -32,14 +32,20 @@ public class DatabaseSettingsDialog extends JDialog implements ActionListener{
 	private JLabel DBNameLT;
 	private JLabel userLT;
 	private JLabel passLT;
+	private JCheckBox persistentSourceChk, persistentTargetChk;
+	private JLabel persistentSourceLbl, persistentTargetLbl;
 	
 	private JCheckBox sourceInfo, targetInfo;
 	private JLabel sourceInfoLbl, targetInfoLbl;
 	
-	public DatabaseSettingsDialog(JDialog openFile)
+	private boolean sourceEnabled, targetEnabled;
+	
+	public DatabaseSettingsDialog(JDialog openFile, boolean sourceEnabled, boolean targetEnabled)
 	{
 		super(openFile,true);
 		p=Preferences.userNodeForPackage(this.getClass());
+		this.sourceEnabled=sourceEnabled;
+		this.targetEnabled=targetEnabled;
 		setup();
 	}
 	private void setup()
@@ -72,12 +78,13 @@ public class DatabaseSettingsDialog extends JDialog implements ActionListener{
 		cancel=new JButton("Cancel");
 		proceed=new JButton("Proceed");
 		test=new JButton("Test Connection");
+		create=new JButton("Create New Database");
 		
 		sourceInfoLbl=new JLabel("Source login information is the same as target login information");
 		targetInfoLbl=new JLabel("Target login information is the same as source login information");
 		
-		sourceInfo=new JCheckBox();
-		targetInfo=new JCheckBox();
+		sourceInfo=new JCheckBox("Source login information is the same as target login information");
+		targetInfo=new JCheckBox("Target login information is the same as source login information");
 		
 		sourceInfo.setSelected(p.getBoolean("sourceChk", false));
 		targetInfo.setSelected(p.getBoolean("targetChk", false));
@@ -98,6 +105,46 @@ public class DatabaseSettingsDialog extends JDialog implements ActionListener{
 		cancel.addActionListener(this);
 		proceed.addActionListener(this);
 		test.addActionListener(this);
+		create.addActionListener(this);
+		
+		persistentSourceChk=new JCheckBox("Persistent Source Database");
+		persistentTargetChk=new JCheckBox("Persistent Target Database");
+		
+		persistentSourceChk.setSelected(p.getBoolean("persistentSource", false));
+		persistentTargetChk.setSelected(p.getBoolean("persistentTarget", false));
+		
+		//check to see if either ontology is being loaded into a db, if not the fields are greyed out
+		if(!sourceEnabled){
+			usernameSource.setEnabled(false);
+			passwordSource.setEnabled(false);
+			portSource.setEnabled(false);
+			hostSource.setEnabled(false);
+			dbNameSource.setEnabled(false);
+			persistentSourceChk.setEnabled(false);
+			sourceInfo.setEnabled(false);
+			hostL.setEnabled(false);
+			portL.setEnabled(false);
+			DBNameL.setEnabled(false);
+			userL.setEnabled(false);
+			passL.setEnabled(false);
+			targetInfo.setEnabled(false);
+		}
+		if(!targetEnabled){
+			usernameTarget.setEnabled(false);
+			passwordTarget.setEnabled(false);
+			portTarget.setEnabled(false);
+			hostTarget.setEnabled(false);
+			dbNameTarget.setEnabled(false);
+			persistentTargetChk.setEnabled(false);
+			targetInfo.setEnabled(false);
+			hostLT.setEnabled(false);
+			portLT.setEnabled(false);
+			DBNameLT.setEnabled(false);
+			userLT.setEnabled(false);
+			passLT.setEnabled(false);
+			sourceInfo.setEnabled(false);
+			//sourceInfoLbl.setEnabled(false);
+		}
 		
 		source=new JPanel();
 		target=new JPanel();
@@ -140,7 +187,10 @@ public class DatabaseSettingsDialog extends JDialog implements ActionListener{
 					)
 					.addGroup(inputPanelLayoutSource.createSequentialGroup()
 							.addComponent(sourceInfo)
-							.addComponent(sourceInfoLbl)
+							//.addComponent(sourceInfoLbl)
+					)
+					.addGroup(inputPanelLayoutSource.createSequentialGroup()
+							.addComponent(persistentSourceChk)
 					)
 			);
 		
@@ -168,7 +218,10 @@ public class DatabaseSettingsDialog extends JDialog implements ActionListener{
 					)
 					.addGroup(inputPanelLayoutSource.createParallelGroup()
 							.addComponent(sourceInfo)
-							.addComponent(sourceInfoLbl)
+							//.addComponent(sourceInfoLbl)
+					)
+					.addGroup(inputPanelLayoutSource.createParallelGroup()
+							.addComponent(persistentSourceChk)
 					)
 		);
 		
@@ -201,8 +254,13 @@ public class DatabaseSettingsDialog extends JDialog implements ActionListener{
 							.addComponent(passwordTarget)
 					)
 					.addGroup(inputPanelLayoutTarget.createSequentialGroup()
+							.addComponent(persistentTargetChk)
+					).addGroup(inputPanelLayoutTarget.createSequentialGroup()
 							.addComponent(targetInfo)
-							.addComponent(targetInfoLbl)
+							//.addComponent(targetInfoLbl)
+					)
+					.addGroup(inputPanelLayoutTarget.createSequentialGroup()
+							.addComponent(persistentTargetChk)
 					)
 			);
 		
@@ -230,7 +288,10 @@ public class DatabaseSettingsDialog extends JDialog implements ActionListener{
 					)
 					.addGroup(inputPanelLayoutTarget.createParallelGroup()
 							.addComponent(targetInfo)
-							.addComponent(targetInfoLbl)
+							//.addComponent(targetInfoLbl)
+					)
+					.addGroup(inputPanelLayoutTarget.createParallelGroup()
+							.addComponent(persistentTargetChk)
 					)
 		);
 		
@@ -242,6 +303,7 @@ public class DatabaseSettingsDialog extends JDialog implements ActionListener{
 		
 		buttonsPanelLayout.setHorizontalGroup(
 				buttonsPanelLayout.createSequentialGroup()
+					.addComponent(create)
 					.addComponent(test)
 					.addComponent(cancel)
 					.addComponent(proceed)
@@ -249,6 +311,7 @@ public class DatabaseSettingsDialog extends JDialog implements ActionListener{
 		
 		buttonsPanelLayout.setVerticalGroup(
 				buttonsPanelLayout.createParallelGroup()
+					.addComponent(create)
 					.addComponent(test)
 					.addComponent(cancel)
 					.addComponent(proceed)
@@ -310,6 +373,9 @@ public class DatabaseSettingsDialog extends JDialog implements ActionListener{
 		p.putBoolean("sourceChk", sourceInfo.isSelected());
 		p.putBoolean("targetChk", targetInfo.isSelected());
 		
+		p.putBoolean("persistentSource", persistentSourceChk.isSelected());
+		p.putBoolean("persistentTarget", persistentTargetChk.isSelected());
+		
 		try{
 			p.putInt("portSource", Integer.parseInt(portSource.getText()));
 		}catch(NumberFormatException e)
@@ -332,16 +398,16 @@ public class DatabaseSettingsDialog extends JDialog implements ActionListener{
 			p.get("hostSource",""),p.getInt("portSource", 5432),p.get("dbNameSource", ""),p.get("usernameSource", ""),p.get("passwordSource", ""),"",
 			p.get("hostTarget",""),p.getInt("portTarget", 5432),p.get("dbNameTarget", ""),p.get("usernameTarget", ""),p.get("passwordTarget", ""),""
 			, false, false);
-		if(testDB.openSourceConnection()){
+		if(sourceEnabled && testDB.openSourceConnection()){
 			Utility.displayMessagePane("Connected successfully to the Source database.", "Connection Successful");
 			testDB.closeSourceConnection();
-		}else
+		}else if(sourceEnabled)
 			Utility.displayErrorPane("Could not connect to the Source database.  Please check the settings and try again.","Connection Unsuccessful");
 		
-		if(testDB.openTargetConnection()){
+		if(targetEnabled && testDB.openTargetConnection()){
 			Utility.displayMessagePane("Connected successfully to the Target database.", "Connection Successful");
 			testDB.closeSourceConnection();
-		}else
+		}else if(targetEnabled)
 			Utility.displayErrorPane("Could not connect to the Target database.  Please check the settings and try again.","Connection Unsuccessful");
 	}
 	@Override
@@ -381,6 +447,8 @@ public class DatabaseSettingsDialog extends JDialog implements ActionListener{
 				passwordTarget.setEnabled(true);
 				sourceInfo.setEnabled(true);
 			}
+		}else if(obj==create){
+			CreateDatabase n=new CreateDatabase(this);
 		}
 	}
 

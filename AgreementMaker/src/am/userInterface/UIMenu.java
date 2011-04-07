@@ -209,13 +209,15 @@ public class UIMenu implements ActionListener {
 			}else if (obj == openMostRecentPair){
 				int position = 0;
 				boolean loadedSecond = false;
+				//TODO:make a prefs for loading in db and use the prefs instead of hardcoding a value
 				boolean loadedFirst = ui.openFile( prefs.getRecentSourceFileName(position), GlobalStaticVariables.SOURCENODE, 
-						prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position), prefs.getRecentSourceSkipNamespace(position), prefs.getRecentSourceNoReasoner(position));
+						prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position), prefs.getRecentSourceSkipNamespace(position), prefs.getRecentSourceNoReasoner(position),false);
 				
 				if( loadedFirst ) {
 					// load the second ontology
+					//TODO:make a prefs for loading in db and use the prefs instead of hardcoding a value
 					loadedSecond = ui.openFile( prefs.getRecentTargetFileName(position), GlobalStaticVariables.TARGETNODE, 
-						prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position), prefs.getRecentTargetSkipNamespace(position), prefs.getRecentTargetNoReasoner(position));
+						prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position), prefs.getRecentTargetSkipNamespace(position), prefs.getRecentTargetNoReasoner(position),false);
 				}
 				else { return; }
 				
@@ -714,10 +716,10 @@ public class UIMenu implements ActionListener {
 				
 				int position = index[0] - 48; // 0 - 9
 				switch( ontotype[0] ) {
-					
+				//TODO:make a prefs for loading in db and use the prefs instead of hardcoding a value
 					case 's':
 						ui.openFile( prefs.getRecentSourceFileName(position), GlobalStaticVariables.SOURCENODE, 
-								prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position), prefs.getRecentSourceSkipNamespace(position), prefs.getRecentSourceNoReasoner(position));
+								prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position), prefs.getRecentSourceSkipNamespace(position), prefs.getRecentSourceNoReasoner(position),false);
 						prefs.saveRecentFile(prefs.getRecentSourceFileName(position), GlobalStaticVariables.SOURCENODE, 
 								prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position), prefs.getRecentSourceSkipNamespace(position), prefs.getRecentSourceNoReasoner(position));
 						ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
@@ -731,8 +733,9 @@ public class UIMenu implements ActionListener {
 						
 						break;
 					case 't':
+						//TODO:make a prefs for loading in db and use the prefs instead of hardcoding a value
 						ui.openFile( prefs.getRecentTargetFileName(position), GlobalStaticVariables.TARGETNODE, 
-								prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position), prefs.getRecentTargetSkipNamespace(position), prefs.getRecentTargetNoReasoner(position));
+								prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position), prefs.getRecentTargetSkipNamespace(position), prefs.getRecentTargetNoReasoner(position),false);
 						prefs.saveRecentFile(prefs.getRecentTargetFileName(position), GlobalStaticVariables.TARGETNODE, 
 								prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position), prefs.getRecentTargetSkipNamespace(position), prefs.getRecentTargetNoReasoner(position));
 						ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
