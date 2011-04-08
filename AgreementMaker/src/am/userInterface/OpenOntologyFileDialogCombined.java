@@ -102,8 +102,8 @@ public class OpenOntologyFileDialogCombined implements ActionListener, ListSelec
 		inMem[1].setSelected(true);
 		
 		inDB=new JRadioButton[2];
-		inDB[0]=new JRadioButton("In Database");
-		inDB[1]=new JRadioButton("In Database");
+		inDB[0]=new JRadioButton("On Disk");
+		inDB[1]=new JRadioButton("On Disk");
 		
 		
 		inDB[0].addActionListener(this);

@@ -140,12 +140,14 @@ public class CreateDatabase extends JDialog implements ActionListener{
 		mainPanelLayout.setHorizontalGroup(
 				mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
 					.addComponent(inputPanel)
+					.addComponent(notice)
 					.addComponent(buttonsPanel)
 		);
 		
 		mainPanelLayout.setVerticalGroup(
 				mainPanelLayout.createSequentialGroup()
 					.addComponent(inputPanel)
+					.addComponent(notice)
 					.addComponent(buttonsPanel)
 		);
 		

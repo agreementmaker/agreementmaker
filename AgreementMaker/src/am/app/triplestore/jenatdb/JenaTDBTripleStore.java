@@ -109,6 +109,7 @@ public class JenaTDBTripleStore{
 	{
 		//formate the store and empty it if it is full
 		Model modelSource=SDBFactory.connectDefaultModel(storeSource);
+		
 		if(!persistentSource)
 			modelSource.read(URISource);
 		
