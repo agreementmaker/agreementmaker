@@ -683,7 +683,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	/*
 	 * Determine whether this is a non-content word
 	 */
-	protected boolean isNonContent(String s){
+	public static boolean isNonContent(String s){
 	    
 	if(s.equalsIgnoreCase("the") || 
 	   s.equalsIgnoreCase("is") || 

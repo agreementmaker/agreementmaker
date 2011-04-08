@@ -100,7 +100,7 @@ public class PRAMatcher2 extends AbstractMatcher
 		int numSources = 0;		
 		int numTargets = 0;
 	
-		Alignment<Mapping> resultSet = new Alignment<Mapping>();
+		Alignment<Mapping> resultSet = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 		SimilarityMatrix resultMatrix = null;
 		Mapping anAlignment = null;
 		HashSet<Mapping> mappedNodes = new HashSet<Mapping>();

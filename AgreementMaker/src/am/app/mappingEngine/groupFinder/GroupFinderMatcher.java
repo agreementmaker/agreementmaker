@@ -123,7 +123,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 */
 	protected Alignment<Mapping> oneToOneMatching(SimilarityMatrix matrix){
 		ArrayList<Mapping> list = matrix.chooseBestN();
-		Alignment<Mapping> result = new Alignment<Mapping>();
+		Alignment<Mapping> result = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 		for(int i = 0; i < list.size(); i++){
 			if(list.get(i).getSimilarity() < getThreshold()){
 				break;

@@ -1,5 +1,6 @@
 package am.userInterface.canvas2.utility;
 
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -188,6 +189,7 @@ public class CanvasGraph extends DirectedGraph<Canvas2Edge, Canvas2Vertex>  {
 	}
 	
 	public Rectangle getBounds() {	return new Rectangle( x, y, w, h);	}
+	public Dimension getDimensions() { return new Dimension(w, h); }
 	
 	
 	/**

@@ -31,7 +31,7 @@ public class GraphicalData {
 			RECTANGLE_ELEMENT,
 			TEXT_ELEMENT,
 		
-		MAPPING,
+		MAPPING, ICON_ELEMENT,
 		
 	}
 	

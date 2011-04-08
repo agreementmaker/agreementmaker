@@ -524,7 +524,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
     protected Alignment<Mapping> scanMatrix(SimilarityMatrix matrix) {
     	if( matrix == null ) { // there is no matrix, return empty set
-    		return new Alignment<Mapping>();
+    		return new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
     	}
     	int columns = matrix.getColumns();
     	int rows = matrix.getRows();
@@ -560,7 +560,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 
 	protected Alignment<Mapping> oneToOneMatching(SimilarityMatrix matrix) {
-		Alignment<Mapping> aset = new Alignment<Mapping>();
+		Alignment<Mapping> aset = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 		double[][] similarityMatrix = matrix.getCopiedSimilarityMatrix();
 		MaxWeightBipartiteMatching<Integer> mwbm = new MaxWeightBipartiteMatching<Integer>(similarityMatrix, param.threshold);
 		Collection<MappingMWBM<Integer>> mappings = mwbm.execute();
@@ -604,7 +604,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 
     protected Alignment<Mapping> scanForMaxValuesRows(SimilarityMatrix matrix, int numMaxValues) {
-		Alignment<Mapping> aset = new Alignment<Mapping>();
+		Alignment<Mapping> aset = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 		Mapping toBeAdded;
 		//temp structure to keep the first numMaxValues best alignments for each source
 		//when maxRelations are both ANY we could have this structure too big that's why we have checked this case in the previous method
@@ -625,7 +625,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
     
     protected Alignment<Mapping> scanForMaxValuesColumns(SimilarityMatrix matrix,int numMaxValues) {
-		Alignment<Mapping> aset = new Alignment<Mapping>();
+		Alignment<Mapping> aset = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 		Mapping toBeAdded;
 		//temp structure to keep the first numMaxValues best alignments for each source
 		//when maxRelations are both ANY we could have this structure too big that's why we have checked this case in the previous method
@@ -649,7 +649,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
      * @return Alignment set of mappings. 
      */
     protected Alignment<Mapping> getThemAll(SimilarityMatrix matrix) {
-		Alignment<Mapping> aset = new Alignment<Mapping>();
+		Alignment<Mapping> aset = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 		Mapping currentValue;
 		for(int i = 0; i<matrix.getColumns();i++) {
 			for(int j = 0; j<matrix.getRows();j++) {		
@@ -668,7 +668,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	int rows = matrix.getRows();
     	int cols = matrix.getColumns();
     	
-    	Alignment<Mapping> aset = new Alignment<Mapping>();
+    	Alignment<Mapping> aset = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 
     	//I need to build a copy of the similarity matrix to work on it, i just need the similarity values
     	//and i don't need values higher than threshold so i'll just set them as fake so they won't be selected
@@ -858,7 +858,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 	
 	public Alignment<Mapping> getAlignment() {
-    	Alignment<Mapping> aligns = new Alignment<Mapping>();
+    	Alignment<Mapping> aligns = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
     	if(areClassesAligned()) {
     		aligns.addAll(classesAlignmentSet);
     	}

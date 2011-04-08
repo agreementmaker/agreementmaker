@@ -34,6 +34,7 @@ import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
+import am.app.ontology.Ontology;
 import am.userInterface.table.MatchersTablePanel;
 
 public class MatchersControlPanel extends JPanel implements ActionListener {
@@ -396,7 +397,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 					referenceSet = refMatcher.getPropertyAlignmentSet();
 				} else {
 					// empty set?
-					referenceSet = new Alignment<Mapping>();
+					referenceSet = new Alignment<Mapping>(Ontology.ID_NONE, Ontology.ID_NONE);
 				}
 				AbstractMatcher toBeEvaluated;
 				Alignment<Mapping> evaluateSet;
@@ -412,7 +413,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 					} else if( refMatcher.arePropertiesAligned() ) {
 						evaluateSet = toBeEvaluated.getPropertyAlignmentSet();
 					} else {
-						evaluateSet = new Alignment<Mapping>(); // empty
+						evaluateSet = new Alignment<Mapping>(Ontology.ID_NONE,Ontology.ID_NONE); // empty
 					}
 					
 					rd = ReferenceEvaluator.compare(evaluateSet, referenceSet);

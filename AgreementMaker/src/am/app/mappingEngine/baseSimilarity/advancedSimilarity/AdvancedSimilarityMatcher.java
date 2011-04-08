@@ -44,8 +44,8 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	
 	//public boolean useLabelInsteadOfLocalname = true;  //TODO: REMOVE THIS! VERY BAD!
 	
-	private ArrayList<String> sourceWords;
-	private ArrayList<String> targetWords;
+	//private ArrayList<String> sourceWords;
+	//private ArrayList<String> targetWords;
 	
 	//vars for provenance
 	private ArrayList<Mapping> bestMappings;
@@ -125,7 +125,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 * @return
 	 * @throws Exception
 	 */
-	private double calculateSimilarity( String sLN, String tLN, alignType typeOfNodes) throws Exception {
+	public double calculateSimilarity( String sLN, String tLN, alignType typeOfNodes) throws Exception {
 		
 		//AdvancedSimilarityParameters parameters = (AdvancedSimilarityParameters)param;
 		
@@ -142,8 +142,8 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		}
 		// Step 2: check out for similarity between meaningful words
 		else {
-			sourceWords = createWordsList(tokenized_sLN);
-			targetWords = createWordsList(tokenized_tLN);
+			ArrayList<String> sourceWords = createWordsList(tokenized_sLN);
+			ArrayList<String> targetWords = createWordsList(tokenized_tLN);
 			
 			// here is where we perform the check
 			simValue = contentWordCheck(sourceWords, targetWords, typeOfNodes);
@@ -187,8 +187,8 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		}
 		// Step 2: check out for similarity between meaningful words
 		else {
-			sourceWords = createWordsList(tokenized_sLN);
-			targetWords = createWordsList(tokenized_tLN);
+			ArrayList<String> sourceWords = createWordsList(tokenized_sLN);
+			ArrayList<String> targetWords = createWordsList(tokenized_tLN);
 			
 			// here is where we perform the check
 			simValue = contentWordCheck(sourceWords, targetWords, typeOfNodes);
@@ -282,7 +282,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 * @return small similarity value bonus or 0.0 if there are no nonContent strings involved or NO_MATCH
 	 * @author michele
 	 */
-	private double nonContentWordCheck(String[] sourceLocalName, String[] targetLocalName){
+	private static double nonContentWordCheck(String[] sourceLocalName, String[] targetLocalName){
 		double simValue = 0.0;
 		String s = null, t = null;
 		
@@ -349,7 +349,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 */
 	protected Alignment<Mapping> oneToOneMatching(SimilarityMatrix matrix){
 		ArrayList<Mapping> list = matrix.chooseBestN(true, getThreshold());
-		Alignment<Mapping> result = new Alignment<Mapping>();
+		Alignment<Mapping> result = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 		for(int i = 0; i < list.size(); i++){
 			if(list.get(i).getSimilarity() < getThreshold()){
 				break;
@@ -417,8 +417,8 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 * @see am.app.mappingEngine.BaseSimilarityMatcher#isNonContent()
 	 * @author michele
 	 */
-	protected boolean isNonContent(String s){
-		return (super.isNonContent(s.toLowerCase()) || isRelevantString(s.toLowerCase()));
+	public static boolean isNonContent(String s){
+		return (BaseSimilarityMatcher.isNonContent(s.toLowerCase()) || isRelevantString(s.toLowerCase()));
 	}
 	
 	/**
@@ -428,7 +428,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 * (last mapping example taken from cmt-edas reference alignment)
 	 * @author michele
 	 */
-	private boolean isRelevantString(String s){
+	private static boolean isRelevantString(String s){
 		return (prep.contains(s.toLowerCase()) || isHas.contains(s.toLowerCase()));
 	}
 	
@@ -436,7 +436,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 * createWordsList: create an ArrayList of strings for relevant words from an Array
 	 * @author michele
 	 */
-	private ArrayList<String> createWordsList(String[] word){
+	private static ArrayList<String> createWordsList(String[] word){
 		ArrayList<String> list = new ArrayList<String>();
 		for(int i = 0; i < word.length; i++){
 			if(!isNonContent(word[i])){
@@ -453,8 +453,8 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 */
 	protected void initializeVariables() {
 		super.initializeVariables();
-		sourceWords = new ArrayList<String>();
-		targetWords = new ArrayList<String>();
+		//sourceWords = new ArrayList<String>();
+		//targetWords = new ArrayList<String>();
 		
 		isHas.add("is");
 		isHas.add("are");

@@ -329,7 +329,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			setStage(executionStage.runningExtrapolatingMatchers);				
 			progressDisplay.appendNewLineReportText("1 mapping validated by the user: "+userMapping);
 			
-			Alignment<Mapping> userSet = new Alignment<Mapping>();
+			Alignment<Mapping> userSet = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 			
 			userSet.add( userMapping );
 			
@@ -373,7 +373,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			propertiesToBeFiltered.addAll( newPropertyAlignments_eFS );
 			
 			//evaluate EFS
-			Alignment<Mapping> set = new Alignment<Mapping>();
+			Alignment<Mapping> set = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 			set.addAll(newClassAlignments_eFS);
 			set.addAll(newPropertyAlignments_eFS);
 			ReferenceEvaluationData EFSdata = ReferenceEvaluator.compare(set, referenceAlignmentMatcher.getAlignment());
@@ -470,7 +470,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		propertiesToBeFiltered.addAll( newPropertyAlignments_eDSI );	
 		
 		//evaluate EFS
-		Alignment<Mapping> set = new Alignment<Mapping>();
+		Alignment<Mapping> set = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 		set.addAll(newClassAlignments_eDSI);
 		set.addAll(newPropertyAlignments_eDSI);
 		if( referenceAlignmentMatcher != null ) {
@@ -636,8 +636,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 		//System.out.println( "Double Threshold Filtering: filtered " + Integer.toString(propertiesBelowTh) + " properties.");
 		//progressDisplay.appendNewLineReportText("\tFiltered "+Integer.toString(classesBelowTh) + " classes.");
 		//progressDisplay.appendNewLineReportText("\tFiltered "+Integer.toString(propertiesBelowTh) + " properties.");
-		classesToBeFiltered = new Alignment<Mapping>(); // create a new, empty set
-		propertiesToBeFiltered = new Alignment<Mapping>(); // create a new, empty set
+		classesToBeFiltered = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID()); // create a new, empty set
+		propertiesToBeFiltered = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID()); // create a new, empty set
 		setStage( executionStage.afterFilter );
 	}
 
@@ -921,7 +921,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 	// we are choosing only the new alignments to be filtered
 	private Alignment<Mapping> getNewMappings( Alignment<Mapping> extrapolatedMatchings, FilteredAlignmentMatrix matrix ) {
 				
-		Alignment<Mapping> newAlignments = new Alignment<Mapping>();	
+		Alignment<Mapping> newAlignments = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());	
 		
 		Iterator<Mapping> clsIter = extrapolatedMatchings.iterator();
 		while( clsIter.hasNext() ) {

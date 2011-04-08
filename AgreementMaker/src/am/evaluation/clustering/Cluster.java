@@ -50,7 +50,7 @@ public class Cluster<E extends Mapping> implements Iterable<E> {
 	public void addMapping( E m ) { clusterSet.add(m); }
 	public ArrayList<E> getMappingList() { return clusterSet; }
 	public Alignment<E> getAlignment() {
-		Alignment<E> a = new Alignment<E>();
+		Alignment<E> a = new Alignment<E>(Ontology.ID_NONE, Ontology.ID_NONE);
 		for( E m : clusterSet ) { a.add(m); }
 		return a;
 	}

@@ -10,8 +10,8 @@ import am.userInterface.canvas2.utility.Canvas2Layout;
 
 public class TextElement extends GraphicalElement {
 
-	private String text = "";
-	private boolean bold = false;
+	protected String text = "";
+	protected boolean bold = false;
 	
 	public TextElement(int x1, int y1, int width, int height, Canvas2Layout l,
 			int ontID) {
@@ -19,17 +19,21 @@ public class TextElement extends GraphicalElement {
 		type = NodeType.TEXT_ELEMENT;
 	}
 	
-	public void setText( String txt ) { text = txt;	calcWidth(); }  // width changes with text is changed
+	public void setText( String txt ) { text = txt;	width = calcWidth(); }  // width changes with text is changed
 	public String getText() { return text; }
-	public void setBold(boolean b) { bold = b; calcWidth(); }  // width changes when bold is toggled
+	public void setBold(boolean b) { bold = b; width = calcWidth(); }  // width changes when bold is toggled
 	
-	private void calcWidth() {
+	/**
+	 * Calculate the pixel width of the text associated with this element.
+	 * @return Width in pixels.
+	 */
+	public int calcWidth() {
 		Font workingFont;
 		if( bold ) workingFont = font.deriveFont( Font.BOLD );
 		else workingFont = font;
 		
 		FontMetrics fontMetrics = new JFrame().getFontMetrics(workingFont);  // maybe there's a better way to do this... we shouldn't need to make a new JFrame just for the metric
-        width = fontMetrics.stringWidth(text);
+        return fontMetrics.stringWidth(text);
 	}
 	
 	@Override

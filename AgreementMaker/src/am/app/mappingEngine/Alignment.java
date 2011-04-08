@@ -15,6 +15,23 @@ public class Alignment<E extends Mapping> extends ArrayList<E>
 {
 	private static final long serialVersionUID = -8090732896473529999L;
 	
+	private int sourceOntologyID;
+	private int targetOntologyID;
+	
+	/**
+	 * A set of mappings between two ontologies.  
+	 * 
+	 * Ontology.ID_NONE can be used as the source and 
+	 * target ids if you do not wish to associate this 
+	 * alignment with any ontologies.
+	 * 
+	 * @param sourceOntologyID
+	 * @param targetOntologyID
+	 */
+	public Alignment(int sourceOntologyID, int targetOntologyID) {
+		this.sourceOntologyID = sourceOntologyID;
+		this.targetOntologyID = targetOntologyID;
+	}
 
     // adds all the alignments in the set a, but checking for duplicates, making sure it doesn't add duplicate alignments
     public void addAllNoDuplicate(Alignment<E> alignment)
@@ -88,6 +105,8 @@ public class Alignment<E extends Mapping> extends ArrayList<E>
 		return result;
 	}
     
+    public int getSourceOntologyID() { return sourceOntologyID; }
+    public int getTargetOntologyID() { return targetOntologyID; }
    
 /*    *//** ****************** Serialization methods *******************//*
 	

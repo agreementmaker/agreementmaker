@@ -56,7 +56,7 @@ public class ExtrapolatingFS extends AbstractMatcher {
 		propertiesMatrix = new FilteredAlignmentMatrix(inputPropertiesMatrix);
 		
 		FamilialSimilarity fs_measure = new FamilialSimilarity( getThreshold() );
-		Alignment<Mapping> newMappings = new Alignment<Mapping>();
+		Alignment<Mapping> newMappings = new Alignment<Mapping>( sourceOntology.getID(), targetOntology.getID());
 		
 		
 		int numMappings = userMappings.size();
@@ -107,8 +107,8 @@ public class ExtrapolatingFS extends AbstractMatcher {
 	
 		
 		// now add the new mappings to the alignment sets
-		classesAlignmentSet = new Alignment<Mapping>();
-		propertiesAlignmentSet = new Alignment<Mapping>();
+		classesAlignmentSet = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
+		propertiesAlignmentSet = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 		for( int i = 0; i < newMappings.size(); i++ ) {
 			Mapping j = newMappings.get(i);
 			
@@ -127,7 +127,7 @@ public class ExtrapolatingFS extends AbstractMatcher {
 
 	private Alignment<Mapping> compare_sets( HashMap<Node, Double> e1SimAboveThreshold, HashMap<Node, Double> e2SimAboveThreshold, alignType tyoc ) {
 		
-		Alignment<Mapping> newMappings = new Alignment<Mapping>();
+		Alignment<Mapping> newMappings = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 		
 		Set<Node> e1s = e1SimAboveThreshold.keySet();
 		Set<Node> e2s = e2SimAboveThreshold.keySet();

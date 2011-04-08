@@ -8,6 +8,7 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
+import am.app.ontology.Ontology;
 
 public class VotedMappingSet {
 	
@@ -89,7 +90,7 @@ public class VotedMappingSet {
 	
 
 	public Alignment<Mapping> getAlignmentSet(){
-		Alignment<Mapping> set = new Alignment<Mapping>();
+		Alignment<Mapping> set = new Alignment<Mapping>(Ontology.ID_NONE, Ontology.ID_NONE);
 		Iterator<VotedMapping> it = getVotedMappings().iterator();
 		VotedMapping v;
 		while(it.hasNext()){

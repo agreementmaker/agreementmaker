@@ -401,8 +401,8 @@ public class UIMenu implements ActionListener {
 					Alignment<Mapping> firstPropertiesSet = firstMatcher.getPropertyAlignmentSet();
 					Alignment<Mapping> secondPropertiesSet = secondMatcher.getPropertyAlignmentSet();
 					
-					Alignment<Mapping> combinedClassSet = new Alignment<Mapping>();
-					Alignment<Mapping> combinedPropertiesSet = new Alignment<Mapping>();
+					Alignment<Mapping> combinedClassSet = new Alignment<Mapping>(Ontology.ID_NONE,Ontology.ID_NONE);
+					Alignment<Mapping> combinedPropertiesSet = new Alignment<Mapping>(Ontology.ID_NONE,Ontology.ID_NONE);
 
 					// double nested loop, later I will write a better algorithm -cos
 					for( i = 0; i < firstClassSet.size(); i++ ) {

@@ -3,6 +3,7 @@ package am.app.mappingEngine.referenceAlignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.ontology.Ontology;
 
 public class ReferenceEvaluator{
 
@@ -33,9 +34,9 @@ public class ReferenceEvaluator{
         
         ReferenceEvaluationData result = new ReferenceEvaluationData();
         
-        Alignment<Mapping> errorAlignments = new Alignment<Mapping>();
-        Alignment<Mapping> correctAlignments = new Alignment<Mapping>();
-        Alignment<Mapping> lostAlignments = new Alignment<Mapping>();
+        Alignment<Mapping> errorAlignments = new Alignment<Mapping>(Ontology.ID_NONE, Ontology.ID_NONE);
+        Alignment<Mapping> correctAlignments = new Alignment<Mapping>(Ontology.ID_NONE, Ontology.ID_NONE);
+        Alignment<Mapping> lostAlignments = new Alignment<Mapping>(Ontology.ID_NONE, Ontology.ID_NONE);
         
         int correctMappings = 0;
         // check all mappings for correctness

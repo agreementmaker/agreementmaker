@@ -106,4 +106,9 @@ public abstract class Canvas2Layout implements MouseInputListener,
 	public void setShowLocalName( boolean s ) {}; // implemented in the subclass
 	public boolean getShowLabel() { return true; }; // implemented in the subclass
 	public boolean getShowLocalName() { return true; }; // implemented in the subclass
+	
+	/**
+	 * Get the canvas which this layout controls. 
+	 */
+	public Canvas2 getVizPanel() { return vizpanel; }
 }
