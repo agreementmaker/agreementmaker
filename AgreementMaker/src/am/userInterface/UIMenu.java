@@ -30,10 +30,10 @@ import am.app.Core;
 import am.app.lexicon.Lexicon;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.ontology.Ontology;
 import am.app.ontology.profiling.ProfilingDialog;
@@ -53,6 +53,7 @@ import am.userInterface.table.MatchersTablePanel;
 import am.visualization.MatcherAnalyticsPanel;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 import am.visualization.matrixplot.MatrixPlotPanel;
+import edu.uic.advis.im.userInterface.InformationMatchingMenu;
 
 
 public class UIMenu implements ActionListener {
@@ -61,7 +62,7 @@ public class UIMenu implements ActionListener {
 	private JMenu fileMenu, editMenu, viewMenu, helpMenu, matchersMenu, toolsMenu, ontologyMenu;
 	
 	// File menu.
-	private JMenuItem xit, openFiles, openTarget, openMostRecentPair,
+	private JMenuItem xit, openFiles, openMostRecentPair,
 					  closeSource, closeTarget, closeBoth, saveAlignment, loadAlignment;
 	private JMenu menuRecentSource, menuRecentTarget;
 	
@@ -87,7 +88,7 @@ public class UIMenu implements ActionListener {
 	private JMenuItem ontologyDetails, ontologyProfiling;
 	
 	// Tools menu.
-	private JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation; //, informationMatching;
+	private JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation, informationMatching;
 	
 	// Matchers menu.
 	private JMenuItem userFeedBack, 
@@ -233,7 +234,7 @@ public class UIMenu implements ActionListener {
 				menuRecentSource.setEnabled(false);
 				
 				closeTarget.setEnabled(true);
-				openTarget.setEnabled(false);
+				//openTarget.setEnabled(false);
 				menuRecentTarget.setEnabled(false);
 				
 				openMostRecentPair.setEnabled(false);
@@ -548,7 +549,7 @@ public class UIMenu implements ActionListener {
 						Core.getInstance().removeOntology( Core.getInstance().getTargetOntology() );
 						closeTarget.setEnabled(false); // the target ontology has been removed, grey out the menu entry
 						// and we need to enable the target ontology loading menu entries
-						openTarget.setEnabled(true);
+						//openTarget.setEnabled(true);
 						menuRecentTarget.setEnabled(true);
 
 					}
@@ -557,7 +558,7 @@ public class UIMenu implements ActionListener {
 					Core.getInstance().removeOntology( Core.getInstance().getTargetOntology() );
 					closeTarget.setEnabled(false);  // the target ontology has been removed, grey out the menu entrys
 					// and we need to enable the target ontology loading menu entries
-					openTarget.setEnabled(true);
+					//openTarget.setEnabled(true);
 					menuRecentTarget.setEnabled(true);
 					ui.redisplayCanvas();
 				}
@@ -572,7 +573,7 @@ public class UIMenu implements ActionListener {
 						closeTarget.setEnabled(false); // the source ontology has been removed, grey out the menu entry
 						// and we need to enable the source ontology loading menu entries
 						openFiles.setEnabled(true);
-						openTarget.setEnabled(true);
+						//openTarget.setEnabled(true);
 						menuRecentSource.setEnabled(true);
 						menuRecentTarget.setEnabled(true);
 					}
@@ -589,7 +590,7 @@ public class UIMenu implements ActionListener {
 						Core.getInstance().removeOntology( Core.getInstance().getTargetOntology() );
 						closeTarget.setEnabled(false);  // the source ontology has been removed, grey out the menu entry
 						// and we need to enable the source ontology loading menu entries
-						openTarget.setEnabled(true);
+						//openTarget.setEnabled(true);
 						menuRecentTarget.setEnabled(true);
 						ui.redisplayCanvas();
 					}
@@ -741,7 +742,7 @@ public class UIMenu implements ActionListener {
 						ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
 						
 						// Now that we have loaded a source ontology, disable all the source ontology loading menu entries ...
-						openTarget.setEnabled(false);
+						//openTarget.setEnabled(false);
 						menuRecentTarget.setEnabled(false);
 						openMostRecentPair.setEnabled(false);
 						// ... and enable the close menu entry 
@@ -1150,8 +1151,9 @@ public class UIMenu implements ActionListener {
 		toolsMenu.addSeparator();
 		toolsMenu.add(clusteringEvaluation);
 		
-		//JMenu informationMatching = new InformationMatchingMenu(ui);
-		//toolsMenu.add(informationMatching);
+		// Tools -> Information Matching
+		JMenu informationMatching = new InformationMatchingMenu(ui);
+		toolsMenu.add(informationMatching);
 		
 		// Build help menu in the menu bar.
 		helpMenu = new JMenu("Help");
