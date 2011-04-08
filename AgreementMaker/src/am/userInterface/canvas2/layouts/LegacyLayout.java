@@ -2,8 +2,9 @@ package am.userInterface.canvas2.layouts;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -420,7 +421,12 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		
 		CanvasGraph artifactGraph = new CanvasGraph(GraphLocator.GraphType.LAYOUT_GRAPH_IGNORE_BOUNDS, Ontology.ID_NONE);
 		
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		//Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();  // This is for treating multiple screens as one big screen.
+		
+		// This code gets the individual screen size even if there are multiple screens.
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice gd = ge.getDefaultScreenDevice();
+		Dimension screenSize = new Dimension( gd.getDisplayMode().getWidth(), gd.getDisplayMode().getHeight() );
 		
 		// MIDDLE DIVIDER
 		RectangleElement dividerData = new RectangleElement(screenSize.width/2, 0, middleDividerWidth, screenSize.height , this, Ontology.ID_NONE );
