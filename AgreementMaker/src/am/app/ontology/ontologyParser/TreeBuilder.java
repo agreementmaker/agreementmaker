@@ -39,7 +39,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 	}
 	
 	public static TreeBuilder buildTreeBuilder(String fileName, int ontoType, int langIndex, int syntaxIndex, boolean skip, boolean noReasoner, boolean DB){
-		
+		// TODO: Not sure if this method is supposed to take implementation specific variables (ex. DB).
 		
 		String languageS = GlobalStaticVariables.getLanguageString(langIndex);
 		String syntaxS = GlobalStaticVariables.getSyntaxString(syntaxIndex);
