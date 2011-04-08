@@ -37,26 +37,33 @@ public class LODBatch {
 	
 	public void singleRun(String sourceName, String targetName, String testName){
 		long start = System.nanoTime();
-		Ontology sourceOntology;
-		Ontology targetOntology;
+		Ontology sourceOntology = null;
+		Ontology targetOntology = null;
 		OntoTreeBuilder treeBuilder;
 		
 		System.out.println("Opening sourceOntology");
-		treeBuilder = new OntoTreeBuilder(sourceName, GlobalStaticVariables.SOURCENODE,
-			GlobalStaticVariables.LANG_OWL, 
-			GlobalStaticVariables.SYNTAX_RDFXML, false, true);
-			
-		treeBuilder.build();
-		sourceOntology = treeBuilder.getOntology();
+		try {
+			treeBuilder = new OntoTreeBuilder(sourceName, GlobalStaticVariables.SOURCENODE,
+				GlobalStaticVariables.LANG_OWL, 
+				GlobalStaticVariables.SYNTAX_RDFXML, false, true);
+				
+			treeBuilder.build();
+			sourceOntology = treeBuilder.getOntology();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 				
 		System.out.println("Opening targetOntology");
+		try {	
+			treeBuilder = new OntoTreeBuilder(targetName, GlobalStaticVariables.SOURCENODE,
+				GlobalStaticVariables.LANG_OWL, 
+				GlobalStaticVariables.SYNTAX_RDFXML, false, true);
 				
-		treeBuilder = new OntoTreeBuilder(targetName, GlobalStaticVariables.SOURCENODE,
-			GlobalStaticVariables.LANG_OWL, 
-			GlobalStaticVariables.SYNTAX_RDFXML, false, true);
-			
-		treeBuilder.build();
-		targetOntology = treeBuilder.getOntology();
+			treeBuilder.build();
+			targetOntology = treeBuilder.getOntology();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		AdvancedSimilarityMatcher asm = new AdvancedSimilarityMatcher();
 		asm.setSourceOntology(sourceOntology);

@@ -490,16 +490,21 @@ public abstract class AbstractMatcherTest {
 	
 	private void loadOntologies(){
 		// source ontology
-		TreeBuilder tb = TreeBuilder.buildTreeBuilder(sourceOntologyFilename, 0, 1, 0, false, true,false);
-		tb.build();		
-		Ontology s = tb.getOntology();
-		Core.getInstance().setSourceOntology(s);
-		
-		// target ontology
-		tb = TreeBuilder.buildTreeBuilder(targetOntologyFilename, 1, 1, 0, false, true,false);
-		tb.build();
-		Ontology t = tb.getOntology();
-		Core.getInstance().setTargetOntology(t);
+		try {
+			TreeBuilder tb = TreeBuilder.buildTreeBuilder(sourceOntologyFilename, 0, 1, 0, false, true,false);
+			tb.build();
+			Ontology s = tb.getOntology();
+			Core.getInstance().setSourceOntology(s);
+			
+			// target ontology
+			tb = TreeBuilder.buildTreeBuilder(targetOntologyFilename, 1, 1, 0, false, true,false);
+			tb.build();
+			Ontology t = tb.getOntology();
+			Core.getInstance().setTargetOntology(t);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 	}
 	
 	private void loadThresholdAndCardinalities(){

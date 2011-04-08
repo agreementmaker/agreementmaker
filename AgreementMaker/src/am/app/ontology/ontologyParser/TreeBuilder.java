@@ -52,13 +52,13 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		else if(langIndex == GlobalStaticVariables.TABBEDTEXT)
 			treeBuilder = new TabbedTextBuilder(fileName, ontoType, languageS, syntaxS);
 		else if(DB)
-			treeBuilder= new DBOntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip, noReasoner);
+			treeBuilder= new TDBOntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip, noReasoner);
 		else treeBuilder = new OntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip, noReasoner);
 		
 		return treeBuilder;
 	}
 	
-	public void build(){
+	public void build() throws Exception{
 		buildTree();//Instantiated in the subclasses
 		report = "Ontology loaded succesfully\n\n";
         report += "Total number of classes: "+ontology.getClassesList().size()+"\n";
@@ -67,7 +67,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
         report += "The 'Hierarchy Visualization' can be disabled from the 'View' menu\nto improve system performances.\n";
 	}
 	
-	protected void buildTree(){
+	protected void buildTree() throws Exception {
 		throw new RuntimeException("This method has to be implemented in the subclass");
 	}
 

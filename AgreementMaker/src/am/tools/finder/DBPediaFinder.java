@@ -34,13 +34,17 @@ public class DBPediaFinder implements Finder{
 		ALL_PROP_VALUES, ALL_PROP_AND_VALUE };
 	
 	public void openOntology(){
-		TreeBuilder t = new OntoTreeBuilder(filename, GlobalStaticVariables.SOURCENODE, 
-				GlobalStaticVariables.LANG_OWL,
-				GlobalStaticVariables.SYNTAX_RDFXML, true, true);
-		t.build();
-		Ontology ontology = t.getOntology();
-		model = ontology.getModel();
-		System.out.println(t.getReport());		
+		try {
+			TreeBuilder t = new OntoTreeBuilder(filename, GlobalStaticVariables.SOURCENODE, 
+					GlobalStaticVariables.LANG_OWL,
+					GlobalStaticVariables.SYNTAX_RDFXML, true, true);
+			t.build();
+			Ontology ontology = t.getOntology();
+			model = ontology.getModel();
+			System.out.println(t.getReport());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
 	}
 	
 	public List<OntClass> search(String term){

@@ -288,25 +288,32 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		if(!sourceOntology.getURI().equals(LODOntologies.FOAF_URI) &&
 				!targetOntology.getURI().equals(LODOntologies.FOAF_URI)){
 			System.out.println("Opening FOAF");
-			treeBuilder = new OntoTreeBuilder(LODOntologies.FOAF, GlobalStaticVariables.SOURCENODE,
-					GlobalStaticVariables.LANG_OWL, 
-					GlobalStaticVariables.SYNTAX_RDFXML, false, true);
-			
-			treeBuilder.build();
-			ontology = treeBuilder.getOntology();
-			otherOntologies.add(ontology.getModel());
+			try {
+				treeBuilder = new OntoTreeBuilder(LODOntologies.FOAF, GlobalStaticVariables.SOURCENODE,
+						GlobalStaticVariables.LANG_OWL, 
+						GlobalStaticVariables.SYNTAX_RDFXML, false, true);
+				treeBuilder.build();
+				ontology = treeBuilder.getOntology();
+				otherOntologies.add(ontology.getModel());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 			
 		if(!sourceOntology.getURI().equals(LODOntologies.SW_CONFERENCE_URI) &&
 				!targetOntology.getURI().equals(LODOntologies.SW_CONFERENCE_URI)){
 			System.out.println("Opening SWC");
-			treeBuilder = new OntoTreeBuilder(LODOntologies.SW_CONFERENCE, GlobalStaticVariables.SOURCENODE,
-					GlobalStaticVariables.LANG_OWL, 
-					GlobalStaticVariables.SYNTAX_RDFXML, false, true);
-			
-			treeBuilder.build();
-			ontology = treeBuilder.getOntology();
-			otherOntologies.add(ontology.getModel());
+			try {
+				treeBuilder = new OntoTreeBuilder(LODOntologies.SW_CONFERENCE, GlobalStaticVariables.SOURCENODE,
+						GlobalStaticVariables.LANG_OWL, 
+						GlobalStaticVariables.SYNTAX_RDFXML, false, true);
+				
+				treeBuilder.build();
+				ontology = treeBuilder.getOntology();
+				otherOntologies.add(ontology.getModel());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 	}

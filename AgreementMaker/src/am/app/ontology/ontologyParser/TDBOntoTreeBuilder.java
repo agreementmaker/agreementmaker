@@ -1,8 +1,7 @@
 package am.app.ontology.ontologyParser;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,7 +9,6 @@ import java.util.Set;
 import java.util.prefs.Preferences;
 
 import am.GlobalStaticVariables;
-import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
@@ -26,17 +24,7 @@ import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.sdb.SDBFactory;
-import com.hp.hpl.jena.sdb.Store;
-import com.hp.hpl.jena.sdb.StoreDesc;
-import com.hp.hpl.jena.sdb.sql.JDBC;
-import com.hp.hpl.jena.sdb.sql.SDBConnection;
-import com.hp.hpl.jena.sdb.store.DatabaseType;
-import com.hp.hpl.jena.sdb.store.LayoutType;
-import com.hp.hpl.jena.sdb.util.StoreUtils;
-import com.hp.hpl.jena.util.FileManager;
+import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 /**
@@ -51,7 +39,7 @@ import com.hp.hpl.jena.vocabulary.OWL;
  * @author Nalin Makar
  * @version 1.5
  */
-public class DBOntoTreeBuilder extends TreeBuilder{
+public class TDBOntoTreeBuilder extends TreeBuilder{
 	
 	
 		// Profile definitions. Used in loading ontologies in different ways
@@ -61,7 +49,7 @@ public class DBOntoTreeBuilder extends TreeBuilder{
 		}
 
 	//instance variables
-	private String ontURI = null;
+	private URI ontURI = null;
 	private boolean noReasoner = false;
 	private OntModel model;
 	private Set<OntResource> unsatConcepts;  
@@ -84,6 +72,8 @@ public class DBOntoTreeBuilder extends TreeBuilder{
 	 * This method cannot be used with "" input for N3
 	 */
 	private String ns = null;
+	private final static String TDB_LAST_SOURCE_DIRECTORY = "TDB_LAST_SOURCE_DIRECTORY";
+	private final static String TDB_LAST_TARGET_DIRECTORY = "TDB_LAST_TARGET_DIRECTORY";
 	
 	/**
 	 * Builds an ontology with list of classes, list of properties, classes tree and properties tree, all information are kept in the ontology istance
@@ -94,7 +84,7 @@ public class DBOntoTreeBuilder extends TreeBuilder{
 	 * @param skip Skip other namespaces, usually set to true.
 	 * @param reas Set to true in order to use a reasoner when loading the ontology, false to load without using a reasoner.
 	 */
-	public DBOntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip, boolean reas) {
+	public TDBOntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip, boolean reas) {
 		super(fileName, sourceOrTarget, language, format); 
 		skipOtherNamespaces = skip;
 		noReasoner = reas;
@@ -102,22 +92,21 @@ public class DBOntoTreeBuilder extends TreeBuilder{
 	}
 	
 	// this function is here for legacy purposes, needs to be removed
-	public DBOntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip ) {
+	public TDBOntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip ) {
 		super(fileName, sourceOrTarget, language, format); 
 		skipOtherNamespaces = skip;
 		noReasoner = false;
 		treeCount = 0;
 	}
 	
-	
-	public void build( OntoTreeBuilder.Profile prof ) {
+	/*public void build( OntoTreeBuilder.Profile prof ) throws Exception {
 		buildTree( prof );//Instantiated in the subclasses
 		report = "Ontology loaded succesfully\n\n";
         report += "Total number of classes: "+ontology.getClassesList().size()+"\n";
         report += "Total number of properties: "+ontology.getPropertiesList().size()+"\n\n";
         //report += "Select the 'Ontology Details' function in the 'Ontology' menu\nfor additional informations.\n";
         //report += "The 'Hierarchy Visualization' can be disabled from the 'View' menu\nto improve system performances.";
-	}
+	}*/
 	
 	
 	/**
@@ -127,7 +116,8 @@ public class DBOntoTreeBuilder extends TreeBuilder{
 	 * @param concepts
 	 * @return
 	 */
-	protected void buildTree() {
+	@Override
+	protected void buildTree() throws Exception {
 		if( noReasoner ) {
 			buildTree( OntoTreeBuilder.Profile.noReasoner );
 		} else {
@@ -137,7 +127,7 @@ public class DBOntoTreeBuilder extends TreeBuilder{
 	}
 	
 	// this function dispatches functions depending on the ontology loading profile selected.
-	protected void buildTree( OntoTreeBuilder.Profile prof ) {
+	protected void buildTree( OntoTreeBuilder.Profile prof ) throws Exception {
 		
 		// TODO: Find a better way to check if we're running with a UI or not.
 		
@@ -176,36 +166,38 @@ public class DBOntoTreeBuilder extends TreeBuilder{
 	}
 	
 	
-	protected void buildTreeDefault() {
+	protected void buildTreeDefault() throws Exception {
 		// used to run the reasoner when loading the ontologies.
 		buildTreeNoReasoner();
 	}
 	
-	protected void buildTreeNoReasoner() {
+	protected void buildTreeNoReasoner() throws Exception {
 		if( Core.DEBUG ) System.out.print("OntoTreeBuilder: Reading Model with no reasoner...");
 		
 		
 		if( Core.DEBUG ) System.out.println("Model created...but not read yet.");
 		
 		if( ontURI == null ) {
-			ontURI = "file:"+ontology.getFilename();
+			ontURI = new File(ontology.getFilename()).toURI();
 		}
 		//connect and load the ont to the db
-		JDBC.loadDriverPGSQL();
-		StoreDesc storeDesc = new StoreDesc(LayoutType.LayoutTripleNodesIndex,DatabaseType.PostgreSQL);
+		//JDBC.loadDriverPGSQL();
+		//StoreDesc storeDesc = new StoreDesc(LayoutType.LayoutTripleNodesIndex,DatabaseType.PostgreSQL);
 		
-		Connection jdbcConnection=null;
-		Store store=null;
-		Preferences p=Preferences.userNodeForPackage(DatabaseSettingsDialog.class);
-		String host="";
-		int port=0;
-		String DBname="";
-		String username="";
-		String password="";
-		boolean persistent=false;
+		//Connection jdbcConnection=null;
+		//Store store=null;
+		Preferences p=Preferences.userNodeForPackage(TDBOntoTreeBuilder.class);
+		p.put(TDB_LAST_SOURCE_DIRECTORY, "TDB/source");
+		p.put(TDB_LAST_TARGET_DIRECTORY, "TDB/target");
+		//String host="";
+		//int port=0;
+		//String DBname="";
+		//String username="";
+		//String password="";
+		//boolean persistent=false;
 		
 		//get all the information for the dbsettings
-		if(super.ontology.getSourceOrTarget()==GlobalStaticVariables.SOURCENODE){
+		/*if(super.ontology.getSourceOrTarget()==GlobalStaticVariables.SOURCENODE){
 			host=p.get("hostSource", "");
 			port=p.getInt("portHost", 5432);
 			DBname=p.get("dbNameSource", "");
@@ -220,10 +212,10 @@ public class DBOntoTreeBuilder extends TreeBuilder{
 			username=p.get("usernameTarget", "");
 			password=p.get("passwordTarget", "");
 			persistent=p.getBoolean("persistentTarget", false);
-		}
+		}*/
 		
 		//try to connect to the db
-		try {
+/*		try {
 			jdbcConnection= DriverManager.getConnection("jdbc:postgresql://"+host+":"+port+"/"+DBname,username,
 					password);
 		} catch (SQLException e) {
@@ -248,7 +240,7 @@ public class DBOntoTreeBuilder extends TreeBuilder{
 		Model basemodel=SDBFactory.connectDefaultModel(store);
 		if(!persistent)
 			basemodel.read(ontURI);
-		
+		*/
 		/*
 		StmtIterator sIter = basemodel.listStatements() ;
 		int x=0;
@@ -262,9 +254,20 @@ public class DBOntoTreeBuilder extends TreeBuilder{
 		System.out.println(x);
 		*/
 		//store.close();
-			
+		
+		String dirPath = null;
+		if( super.ontology.getSourceOrTarget()==GlobalStaticVariables.SOURCENODE ) {
+			dirPath = p.get(TDB_LAST_SOURCE_DIRECTORY , "");
+		} else {
+			dirPath = p.get(TDB_LAST_TARGET_DIRECTORY , "");
+		}
+		File directory = new File(dirPath);
+		if( !directory.exists() || !directory.isDirectory() ) { throw new Exception("Path must be an existing directory."); }
+		
+		Model basemodel = TDBFactory.createModel( directory.getAbsolutePath() );
 		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
-		//model.read( ontURI, null, ontology.getFormat() );
+		
+		model.read( ontURI.toString(), null, ontology.getFormat() );
 		
 		if( Core.DEBUG ) System.out.println(" done.");
 		
@@ -651,8 +654,8 @@ public class DBOntoTreeBuilder extends TreeBuilder{
      * Upon creating an OntoTreeBuilder object, you can set the URI of the ontology you want to load.  If the URI is not set, it will be constructed from the fileName passed to the constructor.
      * @param URI The URI of the ontology to load, whether it be a local file or an internet address.
      */
-    public void setURI( String URI ) {
-    	ontURI = URI;
+    public void setURI( String uri ) throws Exception {
+    	ontURI = new URI(uri);
     }
 
     

@@ -326,23 +326,33 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		
 		log.info("Loading ontology " +  sourceOntologyFile);
 		// load source ontology
-		OntoTreeBuilder sourceBuilder = new OntoTreeBuilder(sourceOntologyFile , 
-															GlobalStaticVariables.SOURCENODE, 
-															GlobalStaticVariables.LANG_OWL,
-															GlobalStaticVariables.SYNTAX_RDFXML, false);
-		sourceBuilder.build();
-		
-		Ontology sourceOntology = sourceBuilder.getOntology();
+		Ontology sourceOntology = null;
+		try {
+			OntoTreeBuilder sourceBuilder = new OntoTreeBuilder(sourceOntologyFile , 
+																GlobalStaticVariables.SOURCENODE, 
+																GlobalStaticVariables.LANG_OWL,
+																GlobalStaticVariables.SYNTAX_RDFXML, false);
+			sourceBuilder.build();
+			
+			sourceOntology = sourceBuilder.getOntology();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		log.info("Loading ontology " +  targetOntologyFile);
 		// load target ontology
-		OntoTreeBuilder targetBuilder = new OntoTreeBuilder(targetOntologyFile , 
-															GlobalStaticVariables.SOURCENODE, 
-															GlobalStaticVariables.LANG_OWL,
-															GlobalStaticVariables.SYNTAX_RDFXML, false);
-		targetBuilder.build();
-		
-		Ontology targetOntology = targetBuilder.getOntology();
+		Ontology targetOntology = null;
+		try {
+			OntoTreeBuilder targetBuilder = new OntoTreeBuilder(targetOntologyFile , 
+																GlobalStaticVariables.SOURCENODE, 
+																GlobalStaticVariables.LANG_OWL,
+																GlobalStaticVariables.SYNTAX_RDFXML, false);
+			targetBuilder.build();
+			
+			targetOntology = targetBuilder.getOntology();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 				
 
 		// set the settings for the matcher			
