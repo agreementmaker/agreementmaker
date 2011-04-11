@@ -9,10 +9,12 @@ import java.util.Set;
 import java.util.prefs.Preferences;
 
 import am.GlobalStaticVariables;
+import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.userInterface.DatabaseSettingsDialog;
+import am.userInterface.OnDiskLocationDialog;
 import am.userInterface.sidebar.vertex.Vertex;
 import am.utility.RunTimer;
 
@@ -186,9 +188,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 		
 		//Connection jdbcConnection=null;
 		//Store store=null;
-		Preferences p=Preferences.userNodeForPackage(TDBOntoTreeBuilder.class);
-		p.put(TDB_LAST_SOURCE_DIRECTORY, "TDB/source");
-		p.put(TDB_LAST_TARGET_DIRECTORY, "TDB/target");
+		Preferences p=Preferences.userNodeForPackage(OnDiskLocationDialog.class);
 		//String host="";
 		//int port=0;
 		//String DBname="";
@@ -256,17 +256,23 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 		//store.close();
 		
 		String dirPath = null;
+		boolean persistent=false;
 		if( super.ontology.getSourceOrTarget()==GlobalStaticVariables.SOURCENODE ) {
 			dirPath = p.get(TDB_LAST_SOURCE_DIRECTORY , "");
+			persistent=p.getBoolean("persistentSource", false);
 		} else {
 			dirPath = p.get(TDB_LAST_TARGET_DIRECTORY , "");
+			persistent=p.getBoolean("persistentTarget", false);
 		}
 		File directory = new File(dirPath);
 		if( !directory.exists() || !directory.isDirectory() ) { throw new Exception("Path must be an existing directory."); }
 		
 		Model basemodel = TDBFactory.createModel( directory.getAbsolutePath() );
 		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
-		
+		//if(!persistent || (persistent && model.size()==0)){
+		//	Utility.displayConfirmPane("reading", "");
+		//	model.read( ontURI.toString(), null, ontology.getFormat() );
+		//}
 		model.read( ontURI.toString(), null, ontology.getFormat() );
 		
 		if( Core.DEBUG ) System.out.println(" done.");

@@ -123,7 +123,7 @@ public class OpenOntologyFileDialogCombined implements ActionListener, ListSelec
 		skip[0]=new JCheckBox();
 		skip[1]=new JCheckBox();
 		
-		DBSettings=new JButton("Database Settings");
+		DBSettings=new JButton("Select disk Location");
 		DBSettings.setEnabled(false);
 		cancel=new JButton("Cancel");
 		proceed=new JButton("Proceed");
@@ -359,8 +359,8 @@ public class OpenOntologyFileDialogCombined implements ActionListener, ListSelec
 				DBSettings.setEnabled(false);
 		}else if(obj==DBSettings){
 			//open a new dialog that has fields for the database connection settings
-			JDialog dSettings=new DatabaseSettingsDialog(frame,inDB[0].isSelected(),inDB[1].isSelected());
-			Preferences p=Preferences.userNodeForPackage(DatabaseSettingsDialog.class);
+			JDialog dSettings=new OnDiskLocationDialog(frame,inDB[0].isSelected(),inDB[1].isSelected());
+			Preferences p=Preferences.userNodeForPackage(OnDiskLocationDialog.class);
 		}else if(obj == browseButtons[0]){//browse for source
 			// if the directory we received from our preferences exists, use that as the 
 			// starting directory for the chooser

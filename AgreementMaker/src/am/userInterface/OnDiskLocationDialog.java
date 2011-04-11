@@ -2,41 +2,34 @@ package am.userInterface;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.prefs.Preferences;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import am.Utility;
-import am.app.triplestore.jenatdb.JenaTDBTripleStore;
 
 public class OnDiskLocationDialog extends JDialog implements ActionListener{
 
-	private JTextField dbNameSource,hostSource, portSource, usernameSource;
-	private JPasswordField passwordSource;
-	private JTextField dbNameTarget,hostTarget, portTarget, usernameTarget;
-	private JPasswordField passwordTarget;
-	private JLabel hostL, portL,DBNameL, userL, passL;
-	private JButton cancel, proceed, test,create;
+	private JTextField locationSource;
+	private JTextField locationTarget;
+	private JLabel locationL;
+	private JButton cancel, proceed, browseSource, browseTarget;
 	private Preferences p;
 	private JPanel buttonsPanel, inputPanelSource,inputPanelTarget, mainPanel;
 	private JPanel source, target;
-	private JLabel hostLT;
-	private JLabel portLT;
-	private JLabel DBNameLT;
-	private JLabel userLT;
-	private JLabel passLT;
-	private JCheckBox persistentSourceChk, persistentTargetChk;
-	private JLabel persistentSourceLbl, persistentTargetLbl;
+	private JLabel locationLT;
 	
-	private JCheckBox sourceInfo, targetInfo;
-	private JLabel sourceInfoLbl, targetInfoLbl;
+	private final static String TDB_LAST_SOURCE_DIRECTORY = "TDB_LAST_SOURCE_DIRECTORY";
+	private final static String TDB_LAST_TARGET_DIRECTORY = "TDB_LAST_TARGET_DIRECTORY";
+
+	private JCheckBox persistentSourceChk, persistentTargetChk;
 	
 	private boolean sourceEnabled, targetEnabled;
 	
@@ -51,100 +44,31 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 	private void setup()
 	{
 		this.setTitle("Database Settings");
-		hostL=new JLabel("Host Name");
-		portL=new JLabel("Port Number");
-		DBNameL=new JLabel("Database Name");
-		userL=new JLabel("Username");
-		passL=new JLabel("Password");
+		locationL=new JLabel("Directory Location");
 		
-		hostLT=new JLabel("Host Name");
-		portLT=new JLabel("Port Number");
-		DBNameLT=new JLabel("Database Name");
-		userLT=new JLabel("Username");
-		passLT=new JLabel("Password");
+		locationLT=new JLabel("Directory Location");
 		
-		hostSource=new JTextField(p.get("hostSource", ""));
-		portSource=new JTextField(String.valueOf(p.getInt("portSource", 5432)));
-		dbNameSource=new JTextField(p.get("dbNameSource", ""));
-		usernameSource=new JTextField(p.get("usernameSource", ""));
-		passwordSource=new JPasswordField(p.get("passwordSource", ""));	
-		
-		hostTarget=new JTextField(p.get("hostTarget", ""));
-		portTarget=new JTextField(String.valueOf(p.getInt("portTarget", 5432)));
-		dbNameTarget=new JTextField(p.get("dbNameTarget", ""));
-		usernameTarget=new JTextField(p.get("usernameTarget", ""));
-		passwordTarget=new JPasswordField(p.get("passwordTarget", ""));	
+		locationSource=new JTextField(p.get(TDB_LAST_SOURCE_DIRECTORY, ""));
+	
+		locationTarget=new JTextField(p.get(TDB_LAST_TARGET_DIRECTORY, ""));
 		
 		cancel=new JButton("Cancel");
 		proceed=new JButton("Proceed");
-		test=new JButton("Test Connection");
-		create=new JButton("Create New Database");
+		browseSource=new JButton("...");
+		browseTarget=new JButton("...");
 		
-		sourceInfoLbl=new JLabel("Source login information is the same as target login information");
-		targetInfoLbl=new JLabel("Target login information is the same as source login information");
 		
-		sourceInfo=new JCheckBox("Source login information is the same as target login information");
-		targetInfo=new JCheckBox("Target login information is the same as source login information");
-		
-		sourceInfo.setSelected(p.getBoolean("sourceChk", false));
-		targetInfo.setSelected(p.getBoolean("targetChk", false));
-		
-		if(sourceInfo.isSelected()){
-			usernameSource.setEnabled(false);
-			passwordSource.setEnabled(false);
-			targetInfo.setEnabled(false);
-		}
-		if(targetInfo.isSelected()){
-			usernameTarget.setEnabled(false);
-			passwordTarget.setEnabled(false);
-			sourceInfo.setEnabled(false);
-		}
-		
-		sourceInfo.addActionListener(this);
-		targetInfo.addActionListener(this);
 		cancel.addActionListener(this);
 		proceed.addActionListener(this);
-		test.addActionListener(this);
-		create.addActionListener(this);
+		browseSource.addActionListener(this);
+		browseTarget.addActionListener(this);
 		
-		persistentSourceChk=new JCheckBox("Persistent Source Database");
-		persistentTargetChk=new JCheckBox("Persistent Target Database");
+		persistentSourceChk=new JCheckBox("Persistent Source Directory");
+		persistentTargetChk=new JCheckBox("Persistent Target Directory");
 		
 		persistentSourceChk.setSelected(p.getBoolean("persistentSource", false));
 		persistentTargetChk.setSelected(p.getBoolean("persistentTarget", false));
 		
-		//check to see if either ontology is being loaded into a db, if not the fields are greyed out
-		if(!sourceEnabled){
-			usernameSource.setEnabled(false);
-			passwordSource.setEnabled(false);
-			portSource.setEnabled(false);
-			hostSource.setEnabled(false);
-			dbNameSource.setEnabled(false);
-			persistentSourceChk.setEnabled(false);
-			sourceInfo.setEnabled(false);
-			hostL.setEnabled(false);
-			portL.setEnabled(false);
-			DBNameL.setEnabled(false);
-			userL.setEnabled(false);
-			passL.setEnabled(false);
-			targetInfo.setEnabled(false);
-		}
-		if(!targetEnabled){
-			usernameTarget.setEnabled(false);
-			passwordTarget.setEnabled(false);
-			portTarget.setEnabled(false);
-			hostTarget.setEnabled(false);
-			dbNameTarget.setEnabled(false);
-			persistentTargetChk.setEnabled(false);
-			targetInfo.setEnabled(false);
-			hostLT.setEnabled(false);
-			portLT.setEnabled(false);
-			DBNameLT.setEnabled(false);
-			userLT.setEnabled(false);
-			passLT.setEnabled(false);
-			sourceInfo.setEnabled(false);
-			//sourceInfoLbl.setEnabled(false);
-		}
 		
 		source=new JPanel();
 		target=new JPanel();
@@ -166,28 +90,10 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 		inputPanelLayoutSource.setHorizontalGroup(
 				inputPanelLayoutSource.createParallelGroup()
 					.addGroup(inputPanelLayoutSource.createSequentialGroup()
-							.addComponent(hostL)
-							.addComponent(hostSource)
-					)
-					.addGroup(inputPanelLayoutSource.createSequentialGroup()
-							.addComponent(portL)
-							.addComponent(portSource)
-					)
-					.addGroup(inputPanelLayoutSource.createSequentialGroup()
-							.addComponent(DBNameL)
-							.addComponent(dbNameSource)
-					)
-					.addGroup(inputPanelLayoutSource.createSequentialGroup()
-							.addComponent(userL)
-							.addComponent(usernameSource)
-					)
-					.addGroup(inputPanelLayoutSource.createSequentialGroup()
-							.addComponent(passL)
-							.addComponent(passwordSource)
-					)
-					.addGroup(inputPanelLayoutSource.createSequentialGroup()
-							.addComponent(sourceInfo)
-							//.addComponent(sourceInfoLbl)
+							.addComponent(locationL)
+							.addComponent(locationSource, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
+							.addComponent(browseSource)
+							
 					)
 					.addGroup(inputPanelLayoutSource.createSequentialGroup()
 							.addComponent(persistentSourceChk)
@@ -197,28 +103,9 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 		inputPanelLayoutSource.setVerticalGroup(
 				inputPanelLayoutSource.createSequentialGroup()
 					.addGroup(inputPanelLayoutSource.createParallelGroup()
-							.addComponent(hostL)
-							.addComponent(hostSource)
-					)
-					.addGroup(inputPanelLayoutSource.createParallelGroup()
-							.addComponent(portL)
-							.addComponent(portSource)
-					)
-					.addGroup(inputPanelLayoutSource.createParallelGroup()
-							.addComponent(DBNameL)
-							.addComponent(dbNameSource)
-					)
-					.addGroup(inputPanelLayoutSource.createParallelGroup()
-							.addComponent(userL)
-							.addComponent(usernameSource)
-					)
-					.addGroup(inputPanelLayoutSource.createParallelGroup()
-							.addComponent(passL)
-							.addComponent(passwordSource)
-					)
-					.addGroup(inputPanelLayoutSource.createParallelGroup()
-							.addComponent(sourceInfo)
-							//.addComponent(sourceInfoLbl)
+							.addComponent(locationL)
+							.addComponent(locationSource, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
+							.addComponent(browseSource)
 					)
 					.addGroup(inputPanelLayoutSource.createParallelGroup()
 							.addComponent(persistentSourceChk)
@@ -234,30 +121,9 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 		inputPanelLayoutTarget.setHorizontalGroup(
 				inputPanelLayoutTarget.createParallelGroup()
 					.addGroup(inputPanelLayoutTarget.createSequentialGroup()
-							.addComponent(hostLT)
-							.addComponent(hostTarget)
-					)
-					.addGroup(inputPanelLayoutTarget.createSequentialGroup()
-							.addComponent(portLT)
-							.addComponent(portTarget)
-					)
-					.addGroup(inputPanelLayoutTarget.createSequentialGroup()
-							.addComponent(DBNameLT)
-							.addComponent(dbNameTarget)
-					)
-					.addGroup(inputPanelLayoutTarget.createSequentialGroup()
-							.addComponent(userLT)
-							.addComponent(usernameTarget)
-					)
-					.addGroup(inputPanelLayoutTarget.createSequentialGroup()
-							.addComponent(passLT)
-							.addComponent(passwordTarget)
-					)
-					.addGroup(inputPanelLayoutTarget.createSequentialGroup()
-							.addComponent(persistentTargetChk)
-					).addGroup(inputPanelLayoutTarget.createSequentialGroup()
-							.addComponent(targetInfo)
-							//.addComponent(targetInfoLbl)
+							.addComponent(locationLT)
+							.addComponent(locationTarget, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
+							.addComponent(browseTarget)
 					)
 					.addGroup(inputPanelLayoutTarget.createSequentialGroup()
 							.addComponent(persistentTargetChk)
@@ -267,28 +133,9 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 		inputPanelLayoutTarget.setVerticalGroup(
 				inputPanelLayoutTarget.createSequentialGroup()
 					.addGroup(inputPanelLayoutTarget.createParallelGroup()
-							.addComponent(hostLT)
-							.addComponent(hostTarget)
-					)
-					.addGroup(inputPanelLayoutTarget.createParallelGroup()
-							.addComponent(portLT)
-							.addComponent(portTarget)
-					)
-					.addGroup(inputPanelLayoutTarget.createParallelGroup()
-							.addComponent(DBNameLT)
-							.addComponent(dbNameTarget)
-					)
-					.addGroup(inputPanelLayoutTarget.createParallelGroup()
-							.addComponent(userLT)
-							.addComponent(usernameTarget)
-					)
-					.addGroup(inputPanelLayoutTarget.createParallelGroup()
-							.addComponent(passLT)
-							.addComponent(passwordTarget)
-					)
-					.addGroup(inputPanelLayoutTarget.createParallelGroup()
-							.addComponent(targetInfo)
-							//.addComponent(targetInfoLbl)
+							.addComponent(locationLT)
+							.addComponent(locationTarget, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
+							.addComponent(browseTarget)
 					)
 					.addGroup(inputPanelLayoutTarget.createParallelGroup()
 							.addComponent(persistentTargetChk)
@@ -303,16 +150,12 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 		
 		buttonsPanelLayout.setHorizontalGroup(
 				buttonsPanelLayout.createSequentialGroup()
-					.addComponent(create)
-					.addComponent(test)
 					.addComponent(cancel)
 					.addComponent(proceed)
 			);
 		
 		buttonsPanelLayout.setVerticalGroup(
 				buttonsPanelLayout.createParallelGroup()
-					.addComponent(create)
-					.addComponent(test)
 					.addComponent(cancel)
 					.addComponent(proceed)
 		);
@@ -340,6 +183,18 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 					.addComponent(buttonsPanel)
 		);
 		
+		//check to see if either ontology is being loaded into a db, if not the fields are greyed out
+		if(!sourceEnabled){
+			locationSource.setEnabled(false);
+			browseSource.setEnabled(false);
+			persistentSourceChk.setEnabled(false);
+		}
+		if(!targetEnabled){
+			locationTarget.setEnabled(false);
+			browseTarget.setEnabled(false);
+			persistentTargetChk.setEnabled(false);
+		}
+		
 		this.add(mainPanel);
 		this.pack();
 		this.setLocationRelativeTo(null);
@@ -349,66 +204,13 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 	{
 		p=Preferences.userNodeForPackage(this.getClass());
 		
-		p.put("hostSource", hostSource.getText());
-		p.put("dbNameSource",dbNameSource.getText());
-		
-		if(sourceInfo.isSelected()){
-			p.put("usernameSource",usernameTarget.getText());
-			p.put("passwordSource",String.valueOf(passwordTarget.getPassword()));
-		}else{
-			p.put("usernameSource",usernameSource.getText());
-			p.put("passwordSource",String.valueOf(passwordSource.getPassword()));
-		}
-		
-		p.put("hostTarget", hostTarget.getText());
-		p.put("dbNameTarget",dbNameTarget.getText());
-		if(targetInfo.isSelected()){
-			p.put("usernameTarget",usernameSource.getText());
-			p.put("passwordTarget",String.valueOf(passwordSource.getPassword()));
-		}else{
-			p.put("usernameTarget",usernameTarget.getText());
-			p.put("passwordTarget",String.valueOf(passwordTarget.getPassword()));
-		}
-		
-		p.putBoolean("sourceChk", sourceInfo.isSelected());
-		p.putBoolean("targetChk", targetInfo.isSelected());
+		p.put(TDB_LAST_SOURCE_DIRECTORY, locationSource.getText());
+		p.put(TDB_LAST_TARGET_DIRECTORY, locationTarget.getText());
 		
 		p.putBoolean("persistentSource", persistentSourceChk.isSelected());
 		p.putBoolean("persistentTarget", persistentTargetChk.isSelected());
 		
-		try{
-			p.putInt("portSource", Integer.parseInt(portSource.getText()));
-		}catch(NumberFormatException e)
-		{
-			Utility.displayErrorPane("Source port number is invalid.", "ERROR");
-			return false;//problem found, do not proceed
-		}
-		try{
-			p.putInt("portTarget", Integer.parseInt(portSource.getText()));
-		}catch(NumberFormatException e)
-		{
-			Utility.displayErrorPane("Target port number is invalid.", "ERROR");
-			return false;//problem found, do not proceed
-		}
 		return true;//no problems found
-	}
-	private void testConnection()
-	{	
-		JenaTDBTripleStore testDB=new JenaTDBTripleStore(
-			p.get("hostSource",""),p.getInt("portSource", 5432),p.get("dbNameSource", ""),p.get("usernameSource", ""),p.get("passwordSource", ""),"",
-			p.get("hostTarget",""),p.getInt("portTarget", 5432),p.get("dbNameTarget", ""),p.get("usernameTarget", ""),p.get("passwordTarget", ""),""
-			, false, false);
-		if(sourceEnabled && testDB.openSourceConnection()){
-			Utility.displayMessagePane("Connected successfully to the Source database.", "Connection Successful");
-			testDB.closeSourceConnection();
-		}else if(sourceEnabled)
-			Utility.displayErrorPane("Could not connect to the Source database.  Please check the settings and try again.","Connection Unsuccessful");
-		
-		if(targetEnabled && testDB.openTargetConnection()){
-			Utility.displayMessagePane("Connected successfully to the Target database.", "Connection Successful");
-			testDB.closeSourceConnection();
-		}else if(targetEnabled)
-			Utility.displayErrorPane("Could not connect to the Target database.  Please check the settings and try again.","Connection Unsuccessful");
 	}
 	@Override
 	public void actionPerformed(ActionEvent ae) {
@@ -420,35 +222,29 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 			//proceed button code here
 			if(setPreferences())
 				this.dispose();
-		}else if(obj==test){
-			//test button code here
-			if(setPreferences())
-				testConnection();
-		}else if(obj==sourceInfo){
-			if(sourceInfo.isSelected()){
-				usernameSource.setEnabled(false);
-				passwordSource.setEnabled(false);
-				targetInfo.setEnabled(false);
+		}else if(obj==browseSource){
+			
+			JFileChooser fc = new JFileChooser();
+			
+			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			fc.setAcceptAllFileFilterUsed(false);
+			int returnVal = fc.showOpenDialog(this);
+
+			if( returnVal == JFileChooser.APPROVE_OPTION ) {
+				locationSource.setText(fc.getSelectedFile().getPath());
 			}
-			else{
-				usernameSource.setEnabled(true);
-				passwordSource.setEnabled(true);
-				targetInfo.setEnabled(true);
+			System.out.println(fc.getSelectedFile().getPath());
+		}else if(obj==browseTarget){
+			
+			JFileChooser fc = new JFileChooser();
+			
+			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			fc.setAcceptAllFileFilterUsed(false);
+			int returnVal = fc.showOpenDialog(this);
+
+			if( returnVal == JFileChooser.APPROVE_OPTION ) {
+				locationTarget.setText(fc.getSelectedFile().getPath());
 			}
-		}
-		else if(obj==targetInfo){
-			if(targetInfo.isSelected()){
-				usernameTarget.setEnabled(false);
-				passwordTarget.setEnabled(false);
-				sourceInfo.setEnabled(false);
-			}
-			else{
-				usernameTarget.setEnabled(true);
-				passwordTarget.setEnabled(true);
-				sourceInfo.setEnabled(true);
-			}
-		}else if(obj==create){
-			CreateDatabase n=new CreateDatabase(this);
 		}
 	}
 
