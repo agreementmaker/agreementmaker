@@ -20,7 +20,7 @@
 
 package am;
 
-import javax.swing.SwingUtilities;
+import chrriis.dj.nativeswing.swtimpl.NativeInterface;
 
 import am.app.Core;
 import am.batchMode.TrackDispatcher;
@@ -44,20 +44,21 @@ public class Main
 	 */
 	public static void main(String args[])
 	{
-		
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		System.setProperty("apple.awt.brushMetalLook", "true");
 		
 		if(args.length == 0 ){
+			NativeInterface.open();
 			// Proper way of intializing the UI.
 			// Reference: http://java.sun.com/developer/technicalArticles/javase/swingworker/ (Starting off on the Right Thread)
-			SwingUtilities.invokeLater( 
-					new Runnable() {
-						public void run() {
-							Core.setUI( new UI() );
-						} 
-					}
-			);
+			Thread mainUI = new Thread() {
+					public void run() {
+						Core.setUI( new UI() );
+					} 
+			};
+			
+			mainUI.start();
+			NativeInterface.runEventPump();
 		}
 		else{
 			String track = args[0];
