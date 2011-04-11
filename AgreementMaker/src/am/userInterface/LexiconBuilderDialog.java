@@ -62,7 +62,7 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 	private JCheckBox sourceUseLocalnames;
 	private JCheckBox targetUseLocalnames;
 	
-	public LexiconBuilderDialog() {
+	public LexiconBuilderDialog() throws Exception {
 		super(Core.getUI().getUIFrame(), "Lexicon Builder Settings", true);
 		
 		setMinimumSize(new Dimension(600,400));
@@ -74,6 +74,8 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 		
 		Ontology sourceOntology = Core.getInstance().getSourceOntology();
 		Ontology targetOntology = Core.getInstance().getTargetOntology();
+		
+		if( sourceOntology == null || targetOntology == null ) throw new Exception("Ontologies are not loaded.");
 		
 		// instantiate our panels
 		JPanel sourcePanel = createAnnotationConfigurationPanel(sourceOntology);
