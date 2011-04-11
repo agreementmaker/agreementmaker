@@ -88,7 +88,7 @@ public class UIMenu implements ActionListener {
 	private JMenuItem ontologyDetails, ontologyProfiling;
 	
 	// Tools menu.
-	private JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation, informationMatching;
+	private JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation;//, informationMatching;
 	
 	// Matchers menu.
 	private JMenuItem userFeedBack, 
@@ -761,7 +761,7 @@ public class UIMenu implements ActionListener {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR, null);
+			Utility.displayErrorPane(ex.getMessage() + "\n\n" + Utility.UNEXPECTED_ERROR, null);
 		}
 		
 	}
@@ -1152,7 +1152,7 @@ public class UIMenu implements ActionListener {
 		toolsMenu.add(clusteringEvaluation);
 		
 		// Tools -> Information Matching
-		JMenu informationMatching =null;// new InformationMatchingMenu(ui);
+		//JMenu informationMatching = new InformationMatchingMenu(ui);
 		//toolsMenu.add(informationMatching);
 		
 		// Build help menu in the menu bar.
