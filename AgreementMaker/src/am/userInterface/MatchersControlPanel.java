@@ -717,7 +717,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			Utility.displayErrorPane("Unexepcted System Error.\nTry to reset the system and repeat the operation.\nContact developers if the error persists.", null);
+			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR+ex.getMessage(), null);
 		}
 	}
 	
