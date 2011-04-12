@@ -20,7 +20,7 @@
 
 package am;
 
-import chrriis.dj.nativeswing.swtimpl.NativeInterface;
+//import chrriis.dj.nativeswing.swtimpl.NativeInterface;
 
 import am.app.Core;
 import am.batchMode.TrackDispatcher;
@@ -48,7 +48,7 @@ public class Main
 		System.setProperty("apple.awt.brushMetalLook", "true");
 		
 		if(args.length == 0 ){
-			NativeInterface.open();
+			//NativeInterface.open();  // DJNativeSwing
 			// Proper way of intializing the UI.
 			// Reference: http://java.sun.com/developer/technicalArticles/javase/swingworker/ (Starting off on the Right Thread)
 			Thread mainUI = new Thread() {
@@ -58,7 +58,7 @@ public class Main
 			};
 			
 			mainUI.start();
-			NativeInterface.runEventPump();
+			//NativeInterface.runEventPump();  // DJNativeSwing
 		}
 		else{
 			String track = args[0];

@@ -1,5 +1,6 @@
 package am.userInterface;
 
+import java.awt.FileDialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -26,7 +27,7 @@ import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import chrriis.dj.nativeswing.swtimpl.components.JFileDialog;
+//import chrriis.dj.nativeswing.swtimpl.components.JFileDialog;
 
 import am.GlobalStaticVariables;
 import am.app.Core;
@@ -419,17 +420,15 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		}else if(obj == browseButtons[0]){//browse for source
 			// if the directory we received from our preferences exists, use that as the 
 			// starting directory for the chooser
-			JFileDialog fd = new JFileDialog();
-			fd.setDialogType(JFileDialog.DialogType.OPEN_DIALOG_TYPE);
-			fd.setTitle("Open Source Ontology");
+			FileDialog fd = new FileDialog(this,"Open Source Ontology");
 			if( prefs.getLastDir().exists() ) {
-				fd.setParentDirectory(prefs.getLastDir().getParent());
+				fd.setFile(prefs.getLastDir().getAbsolutePath());
 			} 
 			
-			fd.show(this);
+			fd.setVisible(true);
 
-			if( fd.getSelectedFileName() != null ) {
-				File selectedfile = new File(fd.getParentDirectory() + File.separator + fd.getSelectedFileName());
+			if( fd.getFile() != null ) {
+				File selectedfile = new File(fd.getDirectory() + File.separator + fd.getFile());
 				
 				// ok, now that we know what file the user selected
 				// let's save it for future use (for the chooser)
@@ -441,19 +440,15 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			// if the directory we received from our preferences exists, use that as the 
 			// starting directory for the chooser
 			
-			JFileDialog fd = new JFileDialog();
-			fd.setDialogType(JFileDialog.DialogType.OPEN_DIALOG_TYPE);
-			fd.setTitle("Open Target Ontology");
+			FileDialog fd = new FileDialog(this,"Open Source Ontology");
 			if( prefs.getLastDir().exists() ) {
-				fd.setParentDirectory(prefs.getLastDir().getParent());
+				fd.setFile(prefs.getLastDir().getAbsolutePath());
 			} 
 			
-			fd.show(this);
+			fd.setVisible(true);
 
-			if( fd.getSelectedFileName() != null ) {
-				String selfile = fd.getSelectedFileName();
-				String parent = fd.getParentDirectory();
-				File selectedfile = new File(fd.getParentDirectory() + File.separator + fd.getSelectedFileName());
+			if( fd.getFile() != null ) {
+				File selectedfile = new File(fd.getDirectory() + File.separator + fd.getFile());
 				
 				// ok, now that we know what file the user selected
 				// let's save it for future use (for the chooser)
