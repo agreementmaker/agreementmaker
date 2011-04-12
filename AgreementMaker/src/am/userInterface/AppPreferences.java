@@ -104,7 +104,7 @@ public class AppPreferences {
 	 *
 	 * @return the last directory selected by the user in the file chooser
 	 */
-	public File getLastDir() {
+	public File getLastFile() {
 		
 		File lastdir = new File( appPrefs.get(PREF_LASTDIR, "~"));
 		return lastdir;

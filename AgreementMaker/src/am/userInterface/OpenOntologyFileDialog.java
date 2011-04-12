@@ -317,8 +317,8 @@ public class OpenOntologyFileDialog implements ActionListener, ListSelectionList
 		}else if(obj == browse){
 			// if the directory we received from our preferences exists, use that as the 
 			// starting directory for the chooser
-			if( prefs.getLastDir().exists() ) {
-				fc = new JFileChooser(prefs.getLastDir());
+			if( prefs.getLastFile().exists() ) {
+				fc = new JFileChooser(prefs.getLastFile());
 			} else { fc = new JFileChooser(); } 
 			
 			int returnVal = fc.showOpenDialog(frame);

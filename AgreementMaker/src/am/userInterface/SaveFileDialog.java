@@ -495,8 +495,8 @@ public class SaveFileDialog extends JDialog implements ActionListener{
 		if(prefs.getLastDirOutput().exists()) {  
 			fc = new JFileChooser(prefs.getLastDirOutput()); 
 		} 	 
-		else if( prefs.getLastDir().exists() ) { 
-			fc = new JFileChooser(prefs.getLastDir()); 
+		else if( prefs.getLastFile().exists() ) { 
+			fc = new JFileChooser(prefs.getLastFile()); 
 		} else { fc = new JFileChooser(); } 
 
 		//This lines are needed to set the filechooser as directory chooser, we are creating a file filter class here which has to implements all needed methods.

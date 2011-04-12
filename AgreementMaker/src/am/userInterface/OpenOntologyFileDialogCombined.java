@@ -421,8 +421,9 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			// if the directory we received from our preferences exists, use that as the 
 			// starting directory for the chooser
 			FileDialog fd = new FileDialog(this,"Open Source Ontology");
-			if( prefs.getLastDir().exists() ) {
-				fd.setFile(prefs.getLastDir().getAbsolutePath());
+			if( prefs.getLastFile().exists() ) {
+				fd.setDirectory(prefs.getLastFile().getParent());
+				fd.setFile(prefs.getLastFile().getName());
 			} 
 			
 			fd.setVisible(true);
@@ -441,8 +442,9 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			// starting directory for the chooser
 			
 			FileDialog fd = new FileDialog(this,"Open Source Ontology");
-			if( prefs.getLastDir().exists() ) {
-				fd.setFile(prefs.getLastDir().getAbsolutePath());
+			if( prefs.getLastFile().exists() ) {
+				fd.setDirectory(prefs.getLastFile().getParent());
+				fd.setFile(prefs.getLastFile().getName());
 			} 
 			
 			fd.setVisible(true);

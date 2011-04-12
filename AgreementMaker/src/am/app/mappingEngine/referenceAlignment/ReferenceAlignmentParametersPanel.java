@@ -148,8 +148,8 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 			if( prefs.getLastDirReference().exists() ) {
 				fc = new JFileChooser(prefs.getLastDirReference());
 			}
-			else if( prefs.getLastDir().exists() ) {
-				fc = new JFileChooser(prefs.getLastDir());
+			else if( prefs.getLastFile().exists() ) {
+				fc = new JFileChooser(prefs.getLastFile());
 			} else { fc = new JFileChooser(); } 
 			
 			int returnVal = fc.showOpenDialog(null);

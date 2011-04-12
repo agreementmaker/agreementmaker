@@ -415,8 +415,8 @@ public class LoadFileDialog extends JDialog implements ActionListener{
 		if(prefs.getLastDirOutput().exists()) {  
 			fc = new JFileChooser(prefs.getLastDirOutput()); 
 		} 	 
-		else if( prefs.getLastDir().exists() ) { 
-			fc = new JFileChooser(prefs.getLastDir()); 
+		else if( prefs.getLastFile().exists() ) { 
+			fc = new JFileChooser(prefs.getLastFile()); 
 		}
 		else {
 			fc = new JFileChooser();
