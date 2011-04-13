@@ -153,12 +153,23 @@ public class UI {
 	@Deprecated
 	public void setDescriptionPanel(JPanel jPanel){ this.panelDesc = jPanel; }
 
-	/** This function will open a file
-	 *  Attention syntax and language are placed differently from other functions.
-	 * @param ontoType the type of ontology, source or target
+	/** 
+	 * This function will open an ontology given a file.
+	 * Attention syntax and language are placed differently from other functions.
+	 * 
+	 * TODO: Find a better way to pass in all the parameters.
+	 *  
+	 * @param filename The full path to the ontology file.
+	 * @param ontoType Type of ontology: GlobalStaticVariables.SOURCENODE (source) or GlobalStaticVariables.TARGETNODE (target)
+	 * @param syntax The ontology syntax: GlobalStaticVariables.{SYNTAX_RDFXML, SYNTAX_RDFXMLABBREV, SYNTAX_N3, SYNTAX_NTRIPLE, SYNTAX_TURTLE}
+	 * @param language The ontology language: GlobalStaticVariables.{LANG_OWL, LANG_RDFS, LANG_XML, LANG_TABBEDTEXT}    
+	 * @param skip Skip concepts with different namespace?
+	 * @param noReasoner Don't use a reasoner?
+	 * @param onDisk Load using Jena TDB, into a directory?
+	 * @return Return true on successful loading of the ontology, false otherwise.
 	 * 
 	 * */
-	public boolean openFile( String filename, int ontoType, int syntax, int language, boolean skip, boolean noReasoner, boolean DB) {
+	public boolean openFile( String filename, int ontoType, int syntax, int language, boolean skip, boolean noReasoner, boolean onDisk) {
 		try{
 			JPanel jPanel = null;
 			System.out.println("opening file");
@@ -175,7 +186,7 @@ public class UI {
 			setDescriptionPanel(jPanel);
 			System.out.println("Before treebuilder.buildTreeBuilder in am.userinterface.ui.openFile()...");
 			//This function manage the whole process of loading, parsing the ontology and building data structures: Ontology to be set in the Core and Tree and to be set in the canvas
-			TreeBuilder t = TreeBuilder.buildTreeBuilder(filename, ontoType, language, syntax, skip, noReasoner, DB);
+			TreeBuilder t = TreeBuilder.buildTreeBuilder(filename, ontoType, language, syntax, skip, noReasoner, onDisk);
 			//System.out.println("after treebuilder.buildTreeBuilder before progress dialog treebuilder.buildTreeBuilder in am.userinterface.ui.openFile()...");
 			//the treebuilder is initialized now we have to execute it in a separate thread.
 			// The dialog will start the treebuilder in a background thread, 
@@ -194,7 +205,7 @@ public class UI {
 				if( Core.DEBUG ) System.out.println("Displaying the hierarchies in the canvas");
 				ont.setDeepRoot(t.getTreeRoot());
 				ont.setTreeCount(t.getTreeCount());
-				getCanvas().setTree(t);
+				getCanvas().setTree(t);  // legacy calls?
 				if(Core.getInstance().ontologiesLoaded()) {
 					//Ogni volta che ho caricato un ontologia e le ho entrambe, devo resettare o settare se � la prima volta, tutto lo schema dei matchings
 					if( Core.DEBUG ) System.out.println("Init matchings table");
@@ -206,7 +217,7 @@ public class UI {
 			}
 			return false;
 		}catch(Exception ex){
-			JOptionPane.showConfirmDialog(getUIFrame(),"Can not parse the file '" + filename + "'. Please check the policy.","Parser Error",JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showConfirmDialog(getUIFrame(),"Can not parse the file '" + filename + "'. Please check the policy.","Parser Error\n\n" + ex.getMessage(),JOptionPane.ERROR_MESSAGE);
 			ex.printStackTrace();
 			return false;
 		}

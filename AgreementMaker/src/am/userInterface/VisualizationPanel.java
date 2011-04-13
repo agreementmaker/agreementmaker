@@ -41,6 +41,7 @@ public class VisualizationPanel extends JPanel {
 	/**
 	 * Legacy Methods.
 	 * We may need these, or they may be taken out.
+	 * TODO: Remove these methods.
 	 */
 	public void clearAllSelections() {};
 	public void setTree(TreeBuilder t) {};

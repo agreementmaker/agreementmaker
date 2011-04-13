@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
@@ -211,20 +212,42 @@ public class UIMenu implements ActionListener {
 				int position = 0;
 				boolean loadedSecond = false;
 				//TODO:make a prefs for loading in db and use the prefs instead of hardcoding a value
-				boolean loadedFirst = ui.openFile( prefs.getRecentSourceFileName(position), GlobalStaticVariables.SOURCENODE, 
-						prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position), prefs.getRecentSourceSkipNamespace(position), prefs.getRecentSourceNoReasoner(position),false);
+				boolean loadedFirst = false;
+				if( !Core.getInstance().sourceIsLoaded() ) { 
+					loadedFirst = ui.openFile( prefs.getRecentSourceFileName(position), 
+												GlobalStaticVariables.SOURCENODE, 
+												prefs.getRecentSourceSyntax(position), 
+												prefs.getRecentSourceLanguage(position), 
+												prefs.getRecentSourceSkipNamespace(position), 
+												prefs.getRecentSourceNoReasoner(position),false);
+				} else {
+					loadedFirst = true;
+				}
 				
 				if( loadedFirst ) {
+					closeBoth.setEnabled(true);
 					// load the second ontology
 					//TODO:make a prefs for loading in db and use the prefs instead of hardcoding a value
-					loadedSecond = ui.openFile( prefs.getRecentTargetFileName(position), GlobalStaticVariables.TARGETNODE, 
-						prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position), prefs.getRecentTargetSkipNamespace(position), prefs.getRecentTargetNoReasoner(position),false);
+					if( !Core.getInstance().targetIsLoaded() ) {
+						loadedSecond = ui.openFile( prefs.getRecentTargetFileName(position), 
+													GlobalStaticVariables.TARGETNODE,
+													prefs.getRecentTargetSyntax(position), 
+													prefs.getRecentTargetLanguage(position), 
+													prefs.getRecentTargetSkipNamespace(position), 
+													prefs.getRecentTargetNoReasoner(position),false);
+					} else {
+						loadedSecond = true;
+					}
+						
 				}
 				else { return; }
 				
 				if( !loadedSecond ) {
-					// user canceled, unload first ontology
-					Core.getInstance().removeOntology( Core.getInstance().getSourceOntology() );
+					// user canceled the second ontology
+					if( loadedFirst ) {
+						closeSource.setEnabled(true);
+						menuRecentSource.setEnabled(false);
+					}
 					return;
 				}
 				
@@ -234,7 +257,6 @@ public class UIMenu implements ActionListener {
 				menuRecentSource.setEnabled(false);
 				
 				closeTarget.setEnabled(true);
-				//openTarget.setEnabled(false);
 				menuRecentTarget.setEnabled(false);
 				
 				openMostRecentPair.setEnabled(false);
@@ -569,33 +591,37 @@ public class UIMenu implements ActionListener {
 					if( controlPanel.clearAll() ) {
 						Core.getInstance().removeOntology( Core.getInstance().getSourceOntology() );
 						Core.getInstance().removeOntology( Core.getInstance().getTargetOntology() );
-						closeSource.setEnabled(false); // the source ontology has been removed, grey out the menu entry
-						closeTarget.setEnabled(false); // the source ontology has been removed, grey out the menu entry
 						// and we need to enable the source ontology loading menu entries
 						openFiles.setEnabled(true);
+						openMostRecentPair.setEnabled(true);
 						//openTarget.setEnabled(true);
 						menuRecentSource.setEnabled(true);
 						menuRecentTarget.setEnabled(true);
+						closeSource.setEnabled(false); // the source ontology has been removed, grey out the menu entry
+						closeTarget.setEnabled(false); // the target ontology has been removed, grey out the menu entry
+						closeBoth.setEnabled(false);
 					}
 				} else {
 					if( Core.getInstance().sourceIsLoaded() ) {
 						Core.getInstance().removeOntology( Core.getInstance().getSourceOntology() );
+						openMostRecentPair.setEnabled(true);
 						closeSource.setEnabled(false);  // the source ontology has been removed, grey out the menu entry
 						// and we need to enable the source ontology loading menu entries
 						openFiles.setEnabled(true);
 						menuRecentSource.setEnabled(true);
-						ui.redisplayCanvas();
+						if( !Core.getInstance().targetIsLoaded() ) closeBoth.setEnabled(false);
 					}
 					if( Core.getInstance().targetIsLoaded() ) {
 						Core.getInstance().removeOntology( Core.getInstance().getTargetOntology() );
+						openMostRecentPair.setEnabled(true);
 						closeTarget.setEnabled(false);  // the source ontology has been removed, grey out the menu entry
 						// and we need to enable the source ontology loading menu entries
 						//openTarget.setEnabled(true);
 						menuRecentTarget.setEnabled(true);
-						ui.redisplayCanvas();
+						if( !Core.getInstance().sourceIsLoaded() ) closeBoth.setEnabled(false);
 					}
 				}
-				if( !Core.getInstance().sourceIsLoaded() && !Core.getInstance().targetIsLoaded() ) openMostRecentPair.setEnabled(true);
+				ui.redisplayCanvas();
 			} else if( obj == thresholdAnalysis ) {
 				// decide if we are running in a single mode or batch mode
 				if( Utility.displayConfirmPane("Are you running a batch mode?", "Batch mode?") ) {
@@ -721,12 +747,21 @@ public class UIMenu implements ActionListener {
 					case 's':
 						ui.openFile( prefs.getRecentSourceFileName(position), GlobalStaticVariables.SOURCENODE, 
 								prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position), prefs.getRecentSourceSkipNamespace(position), prefs.getRecentSourceNoReasoner(position),false);
-						prefs.saveRecentFile(prefs.getRecentSourceFileName(position), GlobalStaticVariables.SOURCENODE, 
-								prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position), prefs.getRecentSourceSkipNamespace(position), prefs.getRecentSourceNoReasoner(position));
+						prefs.saveRecentFile(prefs.getRecentSourceFileName(position), 
+											 GlobalStaticVariables.SOURCENODE, 
+											 prefs.getRecentSourceSyntax(position), 
+											 prefs.getRecentSourceLanguage(position), 
+											 prefs.getRecentSourceSkipNamespace(position), 
+											 prefs.getRecentSourceNoReasoner(position),
+											 prefs.getRecentSourceOnDisk(position),
+											 prefs.getRecentSourceOnDiskDirectory(position),
+											 prefs.getRecentSourceOnDiskPersistent(position));
 						ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
 						
 						// Now that we have loaded a source ontology, disable all the source ontology loading menu entries ...
-						openFiles.setEnabled(false);
+						if( Core.getInstance().ontologiesLoaded() )openFiles.setEnabled(false);
+						else openFiles.setEnabled(true);
+						if( Core.getInstance().sourceIsLoaded() || Core.getInstance().targetIsLoaded() ) closeBoth.setEnabled(true);
 						menuRecentSource.setEnabled(false);
 						openMostRecentPair.setEnabled(false);
 						// ... and enable the close menu entry 
@@ -737,12 +772,21 @@ public class UIMenu implements ActionListener {
 						//TODO:make a prefs for loading in db and use the prefs instead of hardcoding a value
 						ui.openFile( prefs.getRecentTargetFileName(position), GlobalStaticVariables.TARGETNODE, 
 								prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position), prefs.getRecentTargetSkipNamespace(position), prefs.getRecentTargetNoReasoner(position),false);
-						prefs.saveRecentFile(prefs.getRecentTargetFileName(position), GlobalStaticVariables.TARGETNODE, 
-								prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position), prefs.getRecentTargetSkipNamespace(position), prefs.getRecentTargetNoReasoner(position));
+						prefs.saveRecentFile(prefs.getRecentTargetFileName(position), 
+											 GlobalStaticVariables.TARGETNODE, 
+											 prefs.getRecentTargetSyntax(position), 
+											 prefs.getRecentTargetLanguage(position), 
+											 prefs.getRecentTargetSkipNamespace(position), 
+											 prefs.getRecentTargetNoReasoner(position),
+											 prefs.getRecentTargetOnDisk(position),
+											 prefs.getRecentTargetOnDiskDirectory(position),
+											 prefs.getRecentTargetOnDiskPersistent(position));
 						ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
 						
 						// Now that we have loaded a source ontology, disable all the source ontology loading menu entries ...
-						//openTarget.setEnabled(false);
+						if( Core.getInstance().ontologiesLoaded() )openFiles.setEnabled(false);
+						else openFiles.setEnabled(true);
+						if( Core.getInstance().sourceIsLoaded() || Core.getInstance().targetIsLoaded() ) closeBoth.setEnabled(true);
 						menuRecentTarget.setEnabled(false);
 						openMostRecentPair.setEnabled(false);
 						// ... and enable the close menu entry 
@@ -851,7 +895,8 @@ public class UIMenu implements ActionListener {
 		fileMenu.setMnemonic(KeyEvent.VK_F);	
 
 		//add openGFile menu item to file menu
-		openFiles = new JMenuItem("Open Ontologies...",new ImageIcon("images"+File.separator+"fileImage.png"));
+		openFiles = new JMenuItem("Open Ontologies ...",new ImageIcon("images"+File.separator+"fileImage.png"));
+		openFiles.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		//openSource.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));                		
 		//openSource.setMnemonic(KeyEvent.VK_O);
 		openFiles.addActionListener(this);
@@ -877,7 +922,7 @@ public class UIMenu implements ActionListener {
 		fileMenu.add(menuRecentTarget);
 		openMostRecentPair = new JMenuItem("Open most recent pair");
 		openMostRecentPair.addActionListener(this);
-		openMostRecentPair.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); 
+		openMostRecentPair.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() + InputEvent.SHIFT_DOWN_MASK)); 
 		fileMenu.add(openMostRecentPair);
 		fileMenu.addSeparator();
 		//private JMenuItem menuRecentSource, menuRecentTarget;
@@ -891,6 +936,7 @@ public class UIMenu implements ActionListener {
 		closeBoth = new JMenuItem("Close both ontologies");
 		closeBoth.addActionListener(this);
 		closeBoth.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); 
+		closeBoth.setEnabled(false);
 		
 		fileMenu.add(closeSource);
 		fileMenu.add(closeTarget);

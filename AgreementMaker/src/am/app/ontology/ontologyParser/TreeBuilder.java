@@ -38,7 +38,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
         if( Core.DEBUG ) System.out.println(filename);
 	}
 	
-	public static TreeBuilder buildTreeBuilder(String fileName, int ontoType, int langIndex, int syntaxIndex, boolean skip, boolean noReasoner, boolean DB){
+	public static TreeBuilder buildTreeBuilder(String fileName, int ontoType, int langIndex, int syntaxIndex, boolean skip, boolean noReasoner, boolean onDisk){
 		// TODO: Not sure if this method is supposed to take implementation specific variables (ex. DB).
 		
 		String languageS = GlobalStaticVariables.getLanguageString(langIndex);
@@ -51,7 +51,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 			treeBuilder = new RdfsTreeBuilder(fileName, ontoType, languageS, syntaxS, skip);
 		else if(langIndex == GlobalStaticVariables.TABBEDTEXT)
 			treeBuilder = new TabbedTextBuilder(fileName, ontoType, languageS, syntaxS);
-		else if(DB)
+		else if(onDisk)
 			treeBuilder= new TDBOntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip, noReasoner);
 		else treeBuilder = new OntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip, noReasoner);
 		

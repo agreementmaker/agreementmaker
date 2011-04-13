@@ -78,6 +78,9 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	
 	public int Xpadding = 20;
 	public int Ypadding = 20;
+
+
+	private boolean painting = false;
 	
 	public Canvas2(JScrollPane s) {
 		super(s);
@@ -193,8 +196,10 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 
 	/**
 	 * The paint function tries to paint only those graphical elements that are in the current viewport bounds.
-	 */
+	*/
 	public synchronized void paintComponent(Graphics g ) {
+		if( painting ) return;  // avoid concurrent paintings
+		painting = true;
 		super.paintComponent(g);
 		
 		Rectangle currentView = viewport.getViewRect();
@@ -268,7 +273,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			
 		}
 		
-		
+		painting = false;
 		return;
 		
 		/*

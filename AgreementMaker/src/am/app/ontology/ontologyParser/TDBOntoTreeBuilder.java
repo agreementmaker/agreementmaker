@@ -74,8 +74,6 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 	 * This method cannot be used with "" input for N3
 	 */
 	private String ns = null;
-	private final static String TDB_LAST_SOURCE_DIRECTORY = "TDB_LAST_SOURCE_DIRECTORY";
-	private final static String TDB_LAST_TARGET_DIRECTORY = "TDB_LAST_TARGET_DIRECTORY";
 	
 	/**
 	 * Builds an ontology with list of classes, list of properties, classes tree and properties tree, all information are kept in the ontology istance
@@ -182,98 +180,37 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 		if( ontURI == null ) {
 			ontURI = new File(ontology.getFilename()).toURI();
 		}
-		//connect and load the ont to the db
-		//JDBC.loadDriverPGSQL();
-		//StoreDesc storeDesc = new StoreDesc(LayoutType.LayoutTripleNodesIndex,DatabaseType.PostgreSQL);
-		
-		//Connection jdbcConnection=null;
-		//Store store=null;
-		Preferences p=Preferences.userNodeForPackage(OnDiskLocationDialog.class);
-		//String host="";
-		//int port=0;
-		//String DBname="";
-		//String username="";
-		//String password="";
-		//boolean persistent=false;
-		
-		//get all the information for the dbsettings
-		/*if(super.ontology.getSourceOrTarget()==GlobalStaticVariables.SOURCENODE){
-			host=p.get("hostSource", "");
-			port=p.getInt("portHost", 5432);
-			DBname=p.get("dbNameSource", "");
-			username=p.get("usernameSource", "");
-			password=p.get("passwordSource", "");
-			persistent=p.getBoolean("persistentSource", false);
-		}
-		else if(super.ontology.getSourceOrTarget()==GlobalStaticVariables.TARGETNODE){
-			host=p.get("hostTarget", "");
-			port=p.getInt("portTarger", 5432);
-			DBname=p.get("dbNameTarget", "");
-			username=p.get("usernameTarget", "");
-			password=p.get("passwordTarget", "");
-			persistent=p.getBoolean("persistentTarget", false);
-		}*/
-		
-		//try to connect to the db
-/*		try {
-			jdbcConnection= DriverManager.getConnection("jdbc:postgresql://"+host+":"+port+"/"+DBname,username,
-					password);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			Utility.displayErrorPane("Unknown connection Error", "ERROR");
-			}
-		if(jdbcConnection!=null){
-			SDBConnection connSource = SDBFactory.createConnection(jdbcConnection);	
-			store = SDBFactory.connectStore(connSource, storeDesc);
-		}
-		try {
-			//System.out.println(StoreUtils.isFormatted(store));
-			if(!StoreUtils.isFormatted(store))
-				store.getTableFormatter().create();
-			else if(!persistent)
-				store.getTableFormatter().truncate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			Utility.displayErrorPane("Unknown connection Error", "ERROR");
-			}
-		
-		Model basemodel=SDBFactory.connectDefaultModel(store);
-		if(!persistent)
-			basemodel.read(ontURI);
-		*/
-		/*
-		StmtIterator sIter = basemodel.listStatements() ;
-		int x=0;
-		for ( ; sIter.hasNext() ; )
-		{
-			Statement stmt = sIter.nextStatement() ;
-		    System.out.println(stmt) ;
-		    x++;
-		}
-		sIter.close();
-		System.out.println(x);
-		*/
-		//store.close();
+
+		Preferences p = Preferences.userNodeForPackage(OnDiskLocationDialog.class);
 		
 		String dirPath = null;
-		boolean persistent=false;
-		if( super.ontology.getSourceOrTarget()==GlobalStaticVariables.SOURCENODE ) {
-			dirPath = p.get(TDB_LAST_SOURCE_DIRECTORY , "");
-			persistent=p.getBoolean("persistentSource", false);
+		
+		boolean persistent = false;
+
+		if( super.ontology.getSourceOrTarget() == GlobalStaticVariables.SOURCENODE ) {
+			dirPath = p.get(OnDiskLocationDialog.TDB_LAST_SOURCE_DIRECTORY , "");
+			persistent=p.getBoolean(OnDiskLocationDialog.TDB_LAST_SOURCE_PERSISTENT, false);
 		} else {
-			dirPath = p.get(TDB_LAST_TARGET_DIRECTORY , "");
-			persistent=p.getBoolean("persistentTarget", false);
+			dirPath = p.get(OnDiskLocationDialog.TDB_LAST_TARGET_DIRECTORY , "");
+			persistent=p.getBoolean(OnDiskLocationDialog.TDB_LAST_TARGET_PERSISTENT, false);
 		}
 		File directory = new File(dirPath);
 		if( !directory.exists() || !directory.isDirectory() ) { throw new Exception("Path must be an existing directory."); }
 		
 		Model basemodel = TDBFactory.createModel( directory.getAbsolutePath() );
 		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
-		//if(!persistent || (persistent && model.size()==0)){
-		//	Utility.displayConfirmPane("reading", "");
-		//	model.read( ontURI.toString(), null, ontology.getFormat() );
-		//}
-		model.read( ontURI.toString(), null, ontology.getFormat() );
+		
+		if( !persistent ) {
+			// we're not running in persistent mode, remove everything and load the ontology.
+			model.removeAll();
+			model.read( ontURI.toString(), null, ontology.getFormat() );
+			model.commit();
+		} 
+		else if( model.isEmpty() ) {
+			// we're running in persistent mode, load the ontology only if the model is empty
+			model.read( ontURI.toString(), null, ontology.getFormat() );
+			model.commit();
+		}
 		
 		if( Core.DEBUG ) System.out.println(" done.");
 		
