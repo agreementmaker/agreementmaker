@@ -184,7 +184,7 @@ public class UI {
 		    jPanel.setMinimumSize(new Dimension(200,200));
 			getUISplitPane().setRightComponent(jPanel);
 			setDescriptionPanel(jPanel);
-			System.out.println("Before treebuilder.buildTreeBuilder in am.userinterface.ui.openFile()...");
+			//System.out.println("Before treebuilder.buildTreeBuilder in am.userinterface.ui.openFile()...");
 			//This function manage the whole process of loading, parsing the ontology and building data structures: Ontology to be set in the Core and Tree and to be set in the canvas
 			TreeBuilder t = TreeBuilder.buildTreeBuilder(filename, ontoType, language, syntax, skip, noReasoner, onDisk, onDiskDirectory, onDiskPersistent);
 			//System.out.println("after treebuilder.buildTreeBuilder before progress dialog treebuilder.buildTreeBuilder in am.userinterface.ui.openFile()...");
