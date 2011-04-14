@@ -27,6 +27,8 @@ import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import com.hp.hpl.jena.tdb.index.Index;
+
 import am.GlobalStaticVariables;
 import am.app.Core;
 import am.utility.AMFileChooser;

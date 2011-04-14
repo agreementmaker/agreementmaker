@@ -26,8 +26,8 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 
 	private static final long serialVersionUID = 2226622082564201065L;
 	
-	private JTextField locationSource;
-	private JTextField locationTarget;
+	private JTextField txtLocationSource;
+	private JTextField txtLocationTarget;
 	private JLabel lblSourceLocation;
 	private JButton btnCancel, btnSave, btnBrowseSource, btnBrowseTarget;
 	//private Preferences p;
@@ -68,11 +68,11 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 		lblSourceLocation = new JLabel("Source Directory:");
 		lblTargetLocation = new JLabel("Target Directory:");
 
-		locationSource = new JTextField(p.get(TDB_LAST_SOURCE_DIRECTORY, ""));
-		locationSource.setPreferredSize(new Dimension(400, locationSource.getHeight()));
+		txtLocationSource = new JTextField(p.get(TDB_LAST_SOURCE_DIRECTORY, ""));
+		txtLocationSource.setPreferredSize(new Dimension(400, txtLocationSource.getHeight()));
 
-		locationTarget=new JTextField(p.get(TDB_LAST_TARGET_DIRECTORY, ""));
-		locationTarget.setPreferredSize(new Dimension(400, locationTarget.getHeight()));
+		txtLocationTarget=new JTextField(p.get(TDB_LAST_TARGET_DIRECTORY, ""));
+		txtLocationTarget.setPreferredSize(new Dimension(400, txtLocationTarget.getHeight()));
 
 		btnCancel = new JButton("Cancel");
 		btnSave = new JButton("Save");
@@ -88,8 +88,8 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 		chkSourcePersistent = new JCheckBox("Persistent Source Directory");
 		chkTargetPersistent = new JCheckBox("Persistent Target Directory");
 
-		chkSourcePersistent.setSelected(p.getBoolean("persistentSource", false));
-		chkTargetPersistent.setSelected(p.getBoolean("persistentTarget", false));
+		chkSourcePersistent.setSelected(p.getBoolean(TDB_LAST_SOURCE_PERSISTENT, false));
+		chkTargetPersistent.setSelected(p.getBoolean(TDB_LAST_TARGET_PERSISTENT, false));
 
 
 		pnlSource=new JPanel();
@@ -110,7 +110,7 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 				inputPanelLayoutSource.createParallelGroup()
 				.addGroup(inputPanelLayoutSource.createSequentialGroup()
 						.addComponent(lblSourceLocation)
-						.addComponent(locationSource, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
+						.addComponent(txtLocationSource, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
 						.addComponent(btnBrowseSource)
 
 				)
@@ -123,7 +123,7 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 				inputPanelLayoutSource.createSequentialGroup()
 				.addGroup(inputPanelLayoutSource.createParallelGroup()
 						.addComponent(lblSourceLocation)
-						.addComponent(locationSource, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
+						.addComponent(txtLocationSource, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
 						.addComponent(btnBrowseSource)
 				)
 				.addGroup(inputPanelLayoutSource.createParallelGroup()
@@ -141,7 +141,7 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 				inputPanelLayoutTarget.createParallelGroup()
 				.addGroup(inputPanelLayoutTarget.createSequentialGroup()
 						.addComponent(lblTargetLocation )
-						.addComponent(locationTarget, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
+						.addComponent(txtLocationTarget, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
 						.addComponent(btnBrowseTarget)
 				)
 				.addGroup(inputPanelLayoutTarget.createSequentialGroup()
@@ -153,7 +153,7 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 				inputPanelLayoutTarget.createSequentialGroup()
 				.addGroup(inputPanelLayoutTarget.createParallelGroup()
 						.addComponent(lblTargetLocation )
-						.addComponent(locationTarget, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
+						.addComponent(txtLocationTarget, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
 						.addComponent(btnBrowseTarget)
 				)
 				.addGroup(inputPanelLayoutTarget.createParallelGroup()
@@ -191,14 +191,14 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 		if(!sourceEnabled){
 			pnlSource.setEnabled(false);
 			lblSourceLocation.setEnabled(false);
-			locationSource.setEnabled(false);
+			txtLocationSource.setEnabled(false);
 			btnBrowseSource.setEnabled(false);
 			chkSourcePersistent.setEnabled(false);
 		}
 		if(!targetEnabled){
 			pnlTarget.setEnabled(false);
 			lblTargetLocation.setEnabled(false);
-			locationTarget.setEnabled(false);
+			txtLocationTarget.setEnabled(false);
 			btnBrowseTarget.setEnabled(false);
 			chkTargetPersistent.setEnabled(false);
 		}
@@ -229,8 +229,8 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 	{
 		Preferences p=Preferences.userNodeForPackage(this.getClass());
 
-		if( locationSource.isEnabled() ) p.put(TDB_LAST_SOURCE_DIRECTORY, locationSource.getText());
-		if( locationTarget.isEnabled() ) p.put(TDB_LAST_TARGET_DIRECTORY, locationTarget.getText());
+		if( txtLocationSource.isEnabled() ) p.put(TDB_LAST_SOURCE_DIRECTORY, txtLocationSource.getText());
+		if( txtLocationTarget.isEnabled() ) p.put(TDB_LAST_TARGET_DIRECTORY, txtLocationTarget.getText());
 
 		if( chkSourcePersistent.isEnabled() ) p.putBoolean(TDB_LAST_SOURCE_PERSISTENT, chkSourcePersistent.isSelected());
 		if( chkTargetPersistent.isEnabled() ) p.putBoolean(TDB_LAST_TARGET_PERSISTENT, chkTargetPersistent.isSelected());
@@ -251,18 +251,28 @@ public class OnDiskLocationDialog extends JDialog implements ActionListener{
 			setVisible(false);
 		}
 		else if(obj==btnBrowseSource) {
+			Preferences p=Preferences.userNodeForPackage(this.getClass());
+			
+			File selectedFile = new File(p.get(TDB_LAST_SOURCE_DIRECTORY, "."));
+			
 			JFileChooser fc = new JFileChooser();
 			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			fc.setSelectedFile(selectedFile);
 			int returnVal = fc.showOpenDialog(this);
 			
-			if( returnVal == JFileChooser.APPROVE_OPTION ) locationSource.setText(fc.getSelectedFile().getPath());
+			if( returnVal == JFileChooser.APPROVE_OPTION ) txtLocationSource.setText(fc.getSelectedFile().getPath());
 		}
 		else if(obj==btnBrowseTarget){
+			Preferences p=Preferences.userNodeForPackage(this.getClass());
+			
+			File selectedFile = new File(p.get(TDB_LAST_TARGET_DIRECTORY, "."));
+			
 			JFileChooser fc = new JFileChooser();
 			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			fc.setSelectedFile(selectedFile);
 			int returnVal = fc.showOpenDialog(this);
 
-			if( returnVal == JFileChooser.APPROVE_OPTION ) locationTarget.setText(fc.getSelectedFile().getPath());
+			if( returnVal == JFileChooser.APPROVE_OPTION ) txtLocationTarget.setText(fc.getSelectedFile().getPath());
 		}
 	}
 
