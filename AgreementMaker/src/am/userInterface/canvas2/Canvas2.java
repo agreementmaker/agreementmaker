@@ -34,6 +34,7 @@ import java.util.Iterator;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -121,9 +122,26 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			// an ontology was added.
 			layout.displayOntology(graphs,  e.getOntologyID() );
 			updateSize();
-			repaint();
+			
+			final Canvas2 canvas = this;
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					canvas.repaint();
+				}
+			});
+			
 		} else if( e.getEvent() == OntologyChangeEvent.EventType.ONTOLOGY_REMOVED ) {
 			layout.removeOntology( graphs, e.getOntologyID() );
+			updateSize();
+			
+			final Canvas2 canvas = this;
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					canvas.repaint();
+				}
+			});
 		}
 		
 	}
