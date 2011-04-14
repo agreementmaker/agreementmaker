@@ -463,7 +463,7 @@ public class Utility {
 		long hh = totH % 60;
 		
 
-		return hh+":"+mm+":"+ss+":"+msmsms;
+		return hh+"h "+mm+"m "+ss+"s "+msmsms+"ms";
 	}
 	
 	
