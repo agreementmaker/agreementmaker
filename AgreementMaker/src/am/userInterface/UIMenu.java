@@ -31,10 +31,10 @@ import am.app.Core;
 import am.app.lexicon.Lexicon;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.ontology.Ontology;
 import am.app.ontology.profiling.ProfilingDialog;
@@ -54,7 +54,6 @@ import am.userInterface.table.MatchersTablePanel;
 import am.visualization.MatcherAnalyticsPanel;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 import am.visualization.matrixplot.MatrixPlotPanel;
-//import edu.uic.advis.im.userInterface.InformationMatchingMenu;
 
 
 public class UIMenu implements ActionListener {
@@ -92,8 +91,7 @@ public class UIMenu implements ActionListener {
 	private JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation;//, informationMatching;
 	
 	// Matchers menu.
-	private JMenuItem userFeedBack, 
-					  newMatching, runMatching, copyMatching, deleteMatching, clearAll, 
+	private JMenuItem userFeedBack, newMatching, runMatching, copyMatching, deleteMatching, clearAll, 
 					  doRemoveDuplicates,
 					  refEvaluateMatching,
 					  thresholdAnalysis, TEMP_viewClassMatrix, TEMP_viewPropMatrix, TEMP_matcherAnalysisClasses, TEMP_matcherAnalysisProp;
@@ -141,7 +139,18 @@ public class UIMenu implements ActionListener {
 		
 		// then populate the menus again.
 		for( int i = 0; i < prefs.countRecentSources(); i++) {
-			JMenuItem menuitem = new JMenuItem(i + ".  " + prefs.getRecentSourceFileName(i));
+			JMenuItem menuitem;
+			String extraNote = new String();
+			if( prefs.getRecentSourceOnDisk(i) ) {
+				if( prefs.getRecentSourceOnDiskPersistent(i) ) extraNote += "on disk, persistent";
+				else extraNote += "on disk, not persistent";
+			}
+			
+			if( !extraNote.isEmpty() ) {
+				menuitem = new JMenuItem(i + ".  " + prefs.getRecentSourceFileName(i) + " (" + extraNote + ")");
+			} else { 
+				menuitem = new JMenuItem(i + ".  " + prefs.getRecentSourceFileName(i));
+			}
 			menuitem.setActionCommand("source" + i);
 			menuitem.setMnemonic( 48 + i);
 			menuitem.addActionListener(this);
@@ -149,7 +158,19 @@ public class UIMenu implements ActionListener {
 		}
 		
 		for( int i = 0; i < prefs.countRecentTargets(); i++) {
-			JMenuItem menuitem = new JMenuItem(i + ".  " + prefs.getRecentTargetFileName(i));
+			JMenuItem menuitem;
+			
+			String extraNote = new String();
+			if( prefs.getRecentTargetOnDisk(i) ) {
+				if( prefs.getRecentSourceOnDiskPersistent(i) ) extraNote += "persistent on disk";
+				else extraNote += "on disk";
+			}
+			
+			if( !extraNote.isEmpty() ) {
+				menuitem = new JMenuItem(i + ".  " + prefs.getRecentTargetFileName(i) + " (" + extraNote + ")");
+			} else { 
+				menuitem = new JMenuItem(i + ".  " + prefs.getRecentTargetFileName(i));
+			}
 			menuitem.setActionCommand("target" + i);
 			menuitem.setMnemonic( 48 + i);
 			menuitem.addActionListener(this);
@@ -219,7 +240,10 @@ public class UIMenu implements ActionListener {
 												prefs.getRecentSourceSyntax(position), 
 												prefs.getRecentSourceLanguage(position), 
 												prefs.getRecentSourceSkipNamespace(position), 
-												prefs.getRecentSourceNoReasoner(position),false);
+												prefs.getRecentSourceNoReasoner(position),
+												prefs.getRecentSourceOnDisk(position),
+												prefs.getRecentSourceOnDiskDirectory(position),
+												prefs.getRecentSourceOnDiskPersistent(position));
 				} else {
 					loadedFirst = true;
 				}
@@ -234,7 +258,10 @@ public class UIMenu implements ActionListener {
 													prefs.getRecentTargetSyntax(position), 
 													prefs.getRecentTargetLanguage(position), 
 													prefs.getRecentTargetSkipNamespace(position), 
-													prefs.getRecentTargetNoReasoner(position),false);
+													prefs.getRecentTargetNoReasoner(position),
+													prefs.getRecentTargetOnDisk(position),
+													prefs.getRecentTargetOnDiskDirectory(position),
+													prefs.getRecentSourceOnDiskPersistent(position));
 					} else {
 						loadedSecond = true;
 					}
@@ -260,6 +287,13 @@ public class UIMenu implements ActionListener {
 				menuRecentTarget.setEnabled(false);
 				
 				openMostRecentPair.setEnabled(false);
+				
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						Core.getUI().getCanvas().repaint();
+					}
+				});
 				
 			}else if (obj == aboutItem){
 				new AboutDialog();
@@ -374,7 +408,7 @@ public class UIMenu implements ActionListener {
 				
 				JPanel jPanel = null;
 				System.out.println("opening file");
-				jPanel = new VertexDescriptionPane(GlobalStaticVariables.ONTFILE);//takes care of fields for XML files as well
+				jPanel = new VertexDescriptionPane(GlobalStaticVariables.OWLFILE);//takes care of fields for XML files as well
 			    jPanel.setMinimumSize(new Dimension(200,480));
 		
 				JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, jPanel);
@@ -561,7 +595,6 @@ public class UIMenu implements ActionListener {
 					// and we need to enable the source ontology loading menu entries
 					openFiles.setEnabled(true);
 					menuRecentSource.setEnabled(true);
-					ui.redisplayCanvas();
 				}
 				if( !Core.getInstance().sourceIsLoaded() && !Core.getInstance().targetIsLoaded() ) openMostRecentPair.setEnabled(true);
 			} else if( obj == closeTarget ) {
@@ -573,7 +606,6 @@ public class UIMenu implements ActionListener {
 						// and we need to enable the target ontology loading menu entries
 						//openTarget.setEnabled(true);
 						menuRecentTarget.setEnabled(true);
-
 					}
 				} else {
 					// if there is no source ontology loaded, we don't have to ask the user
@@ -582,7 +614,6 @@ public class UIMenu implements ActionListener {
 					// and we need to enable the target ontology loading menu entries
 					//openTarget.setEnabled(true);
 					menuRecentTarget.setEnabled(true);
-					ui.redisplayCanvas();
 				}
 				if( !Core.getInstance().sourceIsLoaded() && !Core.getInstance().targetIsLoaded() ) openMostRecentPair.setEnabled(true);
 			} else if( obj == closeBoth ) {
@@ -621,7 +652,6 @@ public class UIMenu implements ActionListener {
 						if( !Core.getInstance().sourceIsLoaded() ) closeBoth.setEnabled(false);
 					}
 				}
-				ui.redisplayCanvas();
 			} else if( obj == thresholdAnalysis ) {
 				// decide if we are running in a single mode or batch mode
 				if( Utility.displayConfirmPane("Are you running a batch mode?", "Batch mode?") ) {
@@ -743,10 +773,18 @@ public class UIMenu implements ActionListener {
 				
 				int position = index[0] - 48; // 0 - 9
 				switch( ontotype[0] ) {
-				//TODO:make a prefs for loading in db and use the prefs instead of hardcoding a value
 					case 's':
-						ui.openFile( prefs.getRecentSourceFileName(position), GlobalStaticVariables.SOURCENODE, 
-								prefs.getRecentSourceSyntax(position), prefs.getRecentSourceLanguage(position), prefs.getRecentSourceSkipNamespace(position), prefs.getRecentSourceNoReasoner(position),false);
+						//TODO:make a prefs for loading in db and use the prefs instead of hardcoding a value
+						ui.openFile( 
+								prefs.getRecentSourceFileName(position), 
+								GlobalStaticVariables.SOURCENODE, 
+								prefs.getRecentSourceSyntax(position), 
+								prefs.getRecentSourceLanguage(position), 
+								prefs.getRecentSourceSkipNamespace(position), 
+								prefs.getRecentSourceNoReasoner(position),
+								prefs.getRecentSourceOnDisk(position),
+								prefs.getRecentSourceOnDiskDirectory(position),
+								prefs.getRecentSourceOnDiskPersistent(position));
 						prefs.saveRecentFile(prefs.getRecentSourceFileName(position), 
 											 GlobalStaticVariables.SOURCENODE, 
 											 prefs.getRecentSourceSyntax(position), 
@@ -770,8 +808,15 @@ public class UIMenu implements ActionListener {
 						break;
 					case 't':
 						//TODO:make a prefs for loading in db and use the prefs instead of hardcoding a value
-						ui.openFile( prefs.getRecentTargetFileName(position), GlobalStaticVariables.TARGETNODE, 
-								prefs.getRecentTargetSyntax(position), prefs.getRecentTargetLanguage(position), prefs.getRecentTargetSkipNamespace(position), prefs.getRecentTargetNoReasoner(position),false);
+						ui.openFile(prefs.getRecentTargetFileName(position), 
+									GlobalStaticVariables.TARGETNODE, 
+									prefs.getRecentTargetSyntax(position), 
+									prefs.getRecentTargetLanguage(position), 
+									prefs.getRecentTargetSkipNamespace(position), 
+									prefs.getRecentTargetNoReasoner(position),
+									prefs.getRecentTargetOnDisk(position),
+									prefs.getRecentTargetOnDiskDirectory(position),
+									prefs.getRecentTargetOnDiskPersistent(position));
 						prefs.saveRecentFile(prefs.getRecentTargetFileName(position), 
 											 GlobalStaticVariables.TARGETNODE, 
 											 prefs.getRecentTargetSyntax(position), 
@@ -858,25 +903,34 @@ public class UIMenu implements ActionListener {
 		Core c = Core.getInstance();
 		Ontology sourceO = c.getSourceOntology();
 		Ontology targetO = c.getTargetOntology();
+		String sourceTitleString = "Not loaded\n";
 		String sourceClassString = "Not loaded\n";
 		String sourcePropString = "Not loaded\n";
+		String targetTitleString = "Not loaded\n";
 		String targetClassString = "Not loaded\n";
 		String targetPropString = "Not loaded\n";
-		if(c.sourceIsLoaded()) {
+		if(sourceO != null) {
 			sourceClassString = sourceO.getClassDetails();
 			sourcePropString = sourceO.getPropDetails();
+			sourceTitleString = sourceO.getTitle();
 		}
-		if(c.targetIsLoaded()) {
+		if(targetO != null) {
 			targetClassString = targetO.getClassDetails();
 			targetPropString = targetO.getPropDetails();
+			targetTitleString = targetO.getTitle();
 		}
-		String report = "Ontology details\n\n";
+		String report = new String();
+		
+		report+= "Source Ontology:\t" + sourceTitleString +"\n";
+		report+= "Target Ontology:\t" + targetTitleString +"\n";
+		report+= "\n";
 		report+= "Hierarchies             \t#concepts\tdepth\tUC-diameter\tLC-diameter\t#roots\t#leaves\n";
 		report+= "Source Classes:\t"+sourceClassString;
-		report+= "Target Classes:\t"+targetClassString;
 		report+= "Source Properties:\t"+sourcePropString;
+		report+= "\n";
+		report+= "Target Classes:\t"+targetClassString;
 		report+= "Target Properties:\t"+targetPropString;
-		Utility.displayTextAreaWithDim(report,"Reference Evaluation Report", 10, 60);
+		Utility.displayTextAreaWithDim(report,"Ontology Details", 12, 60);
 	}
 
 
@@ -1153,27 +1207,6 @@ public class UIMenu implements ActionListener {
 		thresholdAnalysis.addActionListener(this);
 		matchersMenu.add(thresholdAnalysis);
 		
-		userFeedBack = new JMenuItem("User Feedback Loop");
-		userFeedBack.addActionListener(this);
-		matchersMenu.add(userFeedBack);  // Remove UFL for distribution.
-		
-		matchersMenu.addSeparator();
-		
-		TEMP_viewClassMatrix = new JMenuItem("View classesMatrix");
-		TEMP_viewClassMatrix.addActionListener(this);
-		matchersMenu.add(TEMP_viewClassMatrix);
-		TEMP_viewPropMatrix = new JMenuItem("View propertiesMatrix");
-		TEMP_viewPropMatrix.addActionListener(this);
-		matchersMenu.add(TEMP_viewPropMatrix);
-		
-		TEMP_matcherAnalysisClasses = new JMenuItem("Matcher Analysis: Classes Matrix");
-		TEMP_matcherAnalysisClasses.addActionListener(this);
-		matchersMenu.add(TEMP_matcherAnalysisClasses);
-		
-		TEMP_matcherAnalysisProp = new JMenuItem("Matcher Analysis: Properties Matrix");
-		TEMP_matcherAnalysisProp.addActionListener(this);
-		matchersMenu.add(TEMP_matcherAnalysisProp);
-		
 		
 		// *************************** TOOLS MENU ****************************
 		toolsMenu = new JMenu("Tools");
@@ -1191,11 +1224,6 @@ public class UIMenu implements ActionListener {
 		sealsItem.addActionListener(this);
 		toolsMenu.add(sealsItem);
 		
-		// Tools -> Clustering Evaluation
-		clusteringEvaluation = new JMenuItem("Clustering Evaluation");
-		clusteringEvaluation.addActionListener(this);
-		toolsMenu.addSeparator();
-		toolsMenu.add(clusteringEvaluation);
 		
 		// Tools -> Information Matching
 		//JMenu informationMatching = new InformationMatchingMenu(ui);
