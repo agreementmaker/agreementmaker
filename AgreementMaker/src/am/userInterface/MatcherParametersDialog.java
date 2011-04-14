@@ -398,9 +398,12 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		JPanel profilingPanel = new JPanel();
 		profilingPanel.setLayout(new BorderLayout());
 		
+		
 		if( Core.getInstance().getOntologyProfiler() == null ) {
 			// there is no ontology profiling algorithm defined.	
 			profilingPanel.add(new JLabel("No ontology profiling algorithm selected."), BorderLayout.CENTER);
+		} else if( !matcher.supportsFeature( MatcherFeature.ONTOLOGY_PROFILING ) ) {
+			profilingPanel.add(new JLabel("This matcher does not support ontology profiling."), BorderLayout.CENTER);
 		} else if( Core.getInstance().getOntologyProfiler().getProfilerPanel(false) == null ){
 			// the ontology profiler does not have a match time parameters panel
 			ProfilerRegistry name = Core.getInstance().getOntologyProfiler().getName();
