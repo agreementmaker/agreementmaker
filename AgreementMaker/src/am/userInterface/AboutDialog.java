@@ -94,7 +94,7 @@ public class AboutDialog extends JDialog implements ActionListener {
 				//l.add( new JLabel("Advances in Information Systems Laboratory") ); 
 		//l.add( new JLabel("University of Illinois at Chicago") );          
 
-		l.add( new JLabel("Professor Isabel Cruz") );					// 0
+		l.add( new JLabel("Professor Isabel F. Cruz") );					// 0
 		l.add( Box.createVerticalStrut(10) );
 		l.add( new JLabel("AgreementMaker v0.23 ( April 14th 2011 )"));   // 1
 		l.add( new JLabel("Joe Lozar"));   // 1
