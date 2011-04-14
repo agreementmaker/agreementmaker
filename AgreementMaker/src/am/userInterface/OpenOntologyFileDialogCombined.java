@@ -437,19 +437,22 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 					JOptionPane.showMessageDialog(this, "No source ontology will be loaded.", "Source Filename is empty"
 							, JOptionPane.ERROR_MESSAGE);
 				else if(!Core.getInstance().sourceIsLoaded()){
+					Preferences onDiskPrefs = Preferences.userNodeForPackage(OnDiskLocationDialog.class);
+					String onDiskDirectory = onDiskPrefs.get(OnDiskLocationDialog.TDB_LAST_SOURCE_DIRECTORY, "");
+					boolean onDiskPersistent = onDiskPrefs.getBoolean(OnDiskLocationDialog.TDB_LAST_SOURCE_PERSISTENT, false);
+
 					ui.openFile(sourceFilename, 
 								GlobalStaticVariables.SOURCENODE, 
 								ontSyntax[0].getSelectedIndex(), 
 								ontLang[0].getSelectedIndex(), 
 								skip[0].isSelected(), 
 								false,
-								onDisk[0].isSelected());
+								onDisk[0].isSelected(),
+								onDiskDirectory,
+								onDiskPersistent);
 					
 					// once we are done, let's save the syntax and language selection that was made by the user
 					// and save the file used to the recent file list, and also what syntax and language it is
-					Preferences onDiskPrefs = Preferences.userNodeForPackage(OnDiskLocationDialog.class);
-					String onDiskDirectory = onDiskPrefs.get(OnDiskLocationDialog.TDB_LAST_SOURCE_DIRECTORY, "");
-					boolean onDiskPersistent = onDiskPrefs.getBoolean(OnDiskLocationDialog.TDB_LAST_SOURCE_PERSISTENT, false);
 					Core.getAppPreferences().saveOpenDialogListSelection(ontSyntax[0].getSelectedIndex() , 
 																		ontLang[0].getSelectedIndex(), 
 																		skip[0].isSelected(),
@@ -480,15 +483,23 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 					JOptionPane.showMessageDialog(this, "No target ontology will be loaded.", "Target Filename is empty"
 							, JOptionPane.ERROR_MESSAGE);
 				else if(!Core.getInstance().targetIsLoaded()){
-					ui.openFile(targetFilename, GlobalStaticVariables.TARGETNODE, ontSyntax[1].getSelectedIndex(), ontLang[1].getSelectedIndex()
-							, skip[1].isSelected(), false,onDisk[1].isSelected());
-					// once we are done, let's save the syntax and language selection that was made by the user
-					// and save the file used to the recent file list, and also what syntax and language it is
-					// once we are done, let's save the syntax and language selection that was made by the user
-					// and save the file used to the recent file list, and also what syntax and language it is
 					Preferences onDiskPrefs = Preferences.userNodeForPackage(OnDiskLocationDialog.class);
 					String onDiskDirectory = onDiskPrefs.get(OnDiskLocationDialog.TDB_LAST_TARGET_DIRECTORY, "");
 					boolean onDiskPersistent = onDiskPrefs.getBoolean(OnDiskLocationDialog.TDB_LAST_TARGET_PERSISTENT, false);
+
+					ui.openFile(targetFilename, 
+								GlobalStaticVariables.TARGETNODE, 
+								ontSyntax[1].getSelectedIndex(), 
+								ontLang[1].getSelectedIndex(), 
+								skip[1].isSelected(), 
+								false,
+								onDisk[1].isSelected(),
+								onDiskDirectory,
+								onDiskPersistent);
+					// once we are done, let's save the syntax and language selection that was made by the user
+					// and save the file used to the recent file list, and also what syntax and language it is
+					// once we are done, let's save the syntax and language selection that was made by the user
+					// and save the file used to the recent file list, and also what syntax and language it is
 					Core.getAppPreferences().saveOpenDialogListSelection(ontSyntax[1].getSelectedIndex() , 
 																		ontLang[1].getSelectedIndex(), 
 																		skip[1].isSelected(),
