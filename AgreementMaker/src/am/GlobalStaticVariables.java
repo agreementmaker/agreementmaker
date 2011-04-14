@@ -10,7 +10,7 @@ import java.io.PrintStream;
 public class GlobalStaticVariables
 {
 	// AgreementMaker Version!
-	public static final String AgreementMakerVersion = "v0.22";
+	public static final String AgreementMakerVersion = "v0.23";
 	
 	/**
 	 * IMPORTANT!:  USE_PROGRESS_BAR determines if the matcher will be sending setProgress() messages to the progress dialog.
@@ -30,7 +30,7 @@ public class GlobalStaticVariables
 	//	OWL File type representation
 	public static final int TARGETNODE = 1;
 	public static final int XMLFILE = 2;
-	public static final int ONTFILE = 1;
+	public static final int OWLFILE = 1;
 	public static final int RDFSFILE = 0;
 	public static final int TABBEDTEXT = 3;
 	//public static final int DAMLFILE = 3;
