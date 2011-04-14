@@ -296,8 +296,7 @@ public class UIMenu implements ActionListener {
 				});
 				
 			}else if (obj == aboutItem){
-				new AboutDialog();
-				//displayOptionPane("Agreement Maker 3.0\nAdvis research group\nThe University of Illinois at Chicago 2004","About Agreement Maker");
+				new AboutDialog(ui.getUIFrame());
 			}
 			else if( obj == disableVisualizationItem ) {
 				// Save the setting that has been changed
@@ -773,9 +772,10 @@ public class UIMenu implements ActionListener {
 				
 				int position = index[0] - 48; // 0 - 9
 				switch( ontotype[0] ) {
-					case 's':
+					case 's': 
+					{
 						//TODO:make a prefs for loading in db and use the prefs instead of hardcoding a value
-						ui.openFile( 
+						boolean loadedSuccessfully = ui.openFile( 
 								prefs.getRecentSourceFileName(position), 
 								GlobalStaticVariables.SOURCENODE, 
 								prefs.getRecentSourceSyntax(position), 
@@ -785,17 +785,18 @@ public class UIMenu implements ActionListener {
 								prefs.getRecentSourceOnDisk(position),
 								prefs.getRecentSourceOnDiskDirectory(position),
 								prefs.getRecentSourceOnDiskPersistent(position));
+						if( !loadedSuccessfully ) return;
 						prefs.saveRecentFile(prefs.getRecentSourceFileName(position), 
-											 GlobalStaticVariables.SOURCENODE, 
-											 prefs.getRecentSourceSyntax(position), 
-											 prefs.getRecentSourceLanguage(position), 
-											 prefs.getRecentSourceSkipNamespace(position), 
-											 prefs.getRecentSourceNoReasoner(position),
-											 prefs.getRecentSourceOnDisk(position),
-											 prefs.getRecentSourceOnDiskDirectory(position),
-											 prefs.getRecentSourceOnDiskPersistent(position));
+								GlobalStaticVariables.SOURCENODE, 
+								prefs.getRecentSourceSyntax(position), 
+								prefs.getRecentSourceLanguage(position), 
+								prefs.getRecentSourceSkipNamespace(position), 
+								prefs.getRecentSourceNoReasoner(position),
+								prefs.getRecentSourceOnDisk(position),
+								prefs.getRecentSourceOnDiskDirectory(position),
+								prefs.getRecentSourceOnDiskPersistent(position));
 						ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
-						
+
 						// Now that we have loaded a source ontology, disable all the source ontology loading menu entries ...
 						if( Core.getInstance().ontologiesLoaded() )openFiles.setEnabled(false);
 						else openFiles.setEnabled(true);
@@ -804,11 +805,13 @@ public class UIMenu implements ActionListener {
 						openMostRecentPair.setEnabled(false);
 						// ... and enable the close menu entry 
 						closeSource.setEnabled(true);
-						
+
 						break;
+					}
 					case 't':
+					{
 						//TODO:make a prefs for loading in db and use the prefs instead of hardcoding a value
-						ui.openFile(prefs.getRecentTargetFileName(position), 
+						boolean loadedSuccessfully = ui.openFile(prefs.getRecentTargetFileName(position), 
 									GlobalStaticVariables.TARGETNODE, 
 									prefs.getRecentTargetSyntax(position), 
 									prefs.getRecentTargetLanguage(position), 
@@ -817,6 +820,7 @@ public class UIMenu implements ActionListener {
 									prefs.getRecentTargetOnDisk(position),
 									prefs.getRecentTargetOnDiskDirectory(position),
 									prefs.getRecentTargetOnDiskPersistent(position));
+						if( !loadedSuccessfully ) return;
 						prefs.saveRecentFile(prefs.getRecentTargetFileName(position), 
 											 GlobalStaticVariables.TARGETNODE, 
 											 prefs.getRecentTargetSyntax(position), 
@@ -839,6 +843,7 @@ public class UIMenu implements ActionListener {
 
 						
 						break;
+					}
 					default:
 						break;
 				}
@@ -912,17 +917,17 @@ public class UIMenu implements ActionListener {
 		if(sourceO != null) {
 			sourceClassString = sourceO.getClassDetails();
 			sourcePropString = sourceO.getPropDetails();
-			sourceTitleString = sourceO.getTitle();
+			sourceTitleString = sourceO.getTitle() + "\n";
 		}
 		if(targetO != null) {
 			targetClassString = targetO.getClassDetails();
 			targetPropString = targetO.getPropDetails();
-			targetTitleString = targetO.getTitle();
+			targetTitleString = targetO.getTitle() + "\n";
 		}
 		String report = new String();
 		
-		report+= "Source Ontology:\t" + sourceTitleString +"\n";
-		report+= "Target Ontology:\t" + targetTitleString +"\n";
+		report+= "Source Ontology:\t" + sourceTitleString;
+		report+= "Target Ontology:\t" + targetTitleString;
 		report+= "\n";
 		report+= "Hierarchies             \t#concepts\tdepth\tUC-diameter\tLC-diameter\t#roots\t#leaves\n";
 		report+= "Source Classes:\t"+sourceClassString;
