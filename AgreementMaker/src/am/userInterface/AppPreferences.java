@@ -39,6 +39,15 @@ public class AppPreferences {
 	private static final String PREF_RECENTSOURCE = "recentsource_";
 	private static final String PREF_RECENTTARGET = "recenttarget_";
 	
+	private static final String PREF_RECENT_FILENAME = "_filename_";
+	private static final String PREF_RECENT_SYNTAX = "_syntax_";
+	private static final String PREF_RECENT_LANGUAGE = "_language_";
+	private static final String PREF_RECENT_SKIP = "_skip_";
+	private static final String PREF_RECENT_REASONER = "_reasoner_";
+	private static final String PREF_RECENT_ONDISK = "_ondisk_";
+	private static final String PREF_RECENT_ONDISKDIRECTORY = "_ondiskdirectory_";
+	private static final String PREF_RECENT_ONDISKPERSISTENT = "_ondiskpersistent_";
+	
 	/** key for storing the last directory used to open the reference file in the Evaluate Reference function */
 	private static final String 	PREF_LASTDIRREFERENCE = "pref_lastdirreference";													 
 	/** format of the last reference file opened in the Evaluate Reference function */
@@ -246,8 +255,26 @@ public class AppPreferences {
 								boolean onDisk, 
 								String tdbDir, 
 								boolean persistent ) {		
-		if(ontoType == GlobalStaticVariables.SOURCENODE) saveRecentFile(PREF_RECENTSOURCE, filename, syntax, language,skip, noReasoner, onDisk, tdbDir, persistent);
-		else if(ontoType == GlobalStaticVariables.TARGETNODE) saveRecentFile(PREF_RECENTTARGET, filename, syntax, language, skip, noReasoner, onDisk, tdbDir, persistent);
+		if(ontoType == GlobalStaticVariables.SOURCENODE) 
+			saveRecentFile(	PREF_RECENTSOURCE, 
+							filename, 
+							syntax, 
+							language,
+							skip, 
+							noReasoner, 
+							onDisk, 
+							tdbDir, 
+							persistent);
+		else if(ontoType == GlobalStaticVariables.TARGETNODE) 
+			saveRecentFile( PREF_RECENTTARGET, 
+							filename, 
+							syntax, 
+							language, 
+							skip, 
+							noReasoner, 
+							onDisk, 
+							tdbDir, 
+							persistent);
 	}
 	
 	
@@ -280,6 +307,10 @@ public class AppPreferences {
 		int currentSyntax;
 		int currentLanguage;
 		boolean currentSkip;
+		boolean currentNoReasoner;
+		boolean currentOnDisk;
+		String currentOnDiskDirectory;
+		boolean currentOnDiskPersistent;
 		
 		for( int i = 0; i <= 9; i++) {
 						
@@ -287,16 +318,23 @@ public class AppPreferences {
 				// we are at the top of the list
 				// we need to put the current entry on the top of the list.
 				
-				previousName = getFileName( keyPrefix, i ); // save current top entry
-				previousSyntax = getFileSyntax( keyPrefix, i);
-				previousLanguage = getFileLanguage( keyPrefix, i);
-				previousSkip = getSkipNamespace(keyPrefix, i);
-				previousNoReasoner = getNoReasoner( keyPrefix, i);
-				previousOnDisk = getOnDisk( keyPrefix, i);
-				previousDirectory = getOnDiskDirectory( keyPrefix, i);
-				previousPersistent = getPersistent( keyPrefix, i);
+				previousName = getRecentFileName( keyPrefix, i ); // save current top entry
+				previousSyntax = getRecentFileSyntax( keyPrefix, i);
+				previousLanguage = getRecentFileLanguage( keyPrefix, i);
+				previousSkip = getRecentSkipNamespace(keyPrefix, i);
+				previousNoReasoner = getRecentNoReasoner( keyPrefix, i);
+				previousOnDisk = getRecentOnDisk( keyPrefix, i);
+				previousDirectory = getRecentOnDiskDirectory( keyPrefix, i);
+				previousPersistent = getRecentOnDiskPersistent( keyPrefix, i);
 				
-				if( previousName.equals(filename) ) { // when comparing strings, use the equals() function
+				if( previousName.equals(filename) &&
+					previousSyntax == syntax &&
+					previousLanguage == language &&
+					previousSkip == skip &&
+					previousNoReasoner == noReasoner &&
+					previousOnDisk == onDisk && 
+					previousPersistent == persistent &&
+					previousDirectory.equals(tdbDir) ) { // when comparing strings, use the equals() function
 					// the current file is already at the top of the list
 					// no need to do anything
 					saveFileEntry( keyPrefix, i, filename, syntax, language, skip, noReasoner, onDisk, tdbDir, persistent);
@@ -310,10 +348,14 @@ public class AppPreferences {
 			}
 			
 			// we have placed the current entry on the top, now we are moving entries down.
-			currentName = getFileName( keyPrefix, i ); // save current top entry
-			currentSyntax = getFileSyntax( keyPrefix, i);
-			currentLanguage = getFileLanguage( keyPrefix, i);
-			currentSkip = getSkipNamespace(keyPrefix, i);
+			currentName = getRecentFileName( keyPrefix, i ); // save current top entry
+			currentSyntax = getRecentFileSyntax( keyPrefix, i);
+			currentLanguage = getRecentFileLanguage( keyPrefix, i);
+			currentSkip = getRecentSkipNamespace(keyPrefix, i);
+			currentNoReasoner = getRecentNoReasoner(keyPrefix, i);
+			currentOnDisk = getRecentOnDisk(keyPrefix, i);
+			currentOnDiskDirectory = getRecentOnDiskDirectory(keyPrefix, i);
+			currentOnDiskPersistent = getRecentOnDiskPersistent(keyPrefix, i);
 			
 			if ( currentName.equals("") ) {
 				// we have reached an empty entry, so no need to go any further
@@ -322,7 +364,14 @@ public class AppPreferences {
 				break;
 			}
 			
-			if( currentName.equals(filename) ) {
+			if( currentName.equals(filename) &&
+				currentSyntax == syntax &&
+				currentLanguage == language &&
+				currentSkip == skip &&
+				currentNoReasoner == noReasoner &&
+				currentOnDisk == onDisk && 
+				currentOnDiskPersistent == persistent &&
+				currentOnDiskDirectory.equals(tdbDir) ) {
 				// the file that we put on the top is found at this location
 				// that means we bumped it to the top from this location
 				// just replace this entry with the file we are bumping down, and that's it
@@ -339,6 +388,10 @@ public class AppPreferences {
 			previousSyntax = currentSyntax;
 			previousLanguage = currentLanguage;
 			previousSkip = currentSkip;
+			previousNoReasoner = currentNoReasoner;
+			previousOnDisk = currentOnDisk;
+			previousDirectory = currentOnDiskDirectory;
+			previousPersistent = currentOnDiskPersistent;
 					
 			
 		} // for()
@@ -359,32 +412,14 @@ public class AppPreferences {
 	 * @param noReasoner
 	 */
 	private void saveFileEntry( String prefix, int position, String filename, int syntax, int language, boolean skip, boolean noReasoner, boolean onDisk, String tdbDir, boolean persistent) {
-		appPrefs.put( prefix + "name" + position, filename); 
-		appPrefs.putInt( prefix + "syntax" + position , syntax); 
-		appPrefs.putInt( prefix + "language" + position, language); 
-		appPrefs.putBoolean( prefix + "skip" + position, skip);
-		appPrefs.putBoolean( prefix + "noreasoner" + position, noReasoner);
-		appPrefs.putBoolean(prefix + "onDisk" + position, onDisk);
-		appPrefs.put(prefix + "onDiskDirectory" + position, tdbDir);
-		appPrefs.putBoolean(prefix + "onDiskPersistent" + position, persistent);
-	}
-	
-	/**
-	 * Internal function for returning a file name depening on the prefix and the position
-	 * @param prefix either "source" or "target"
-	 * @param position 10 positions, from 0 - 9
-	 * @return
-	 */
-	private String getFileName( String prefix, int position) {
-		return appPrefs.get( prefix + "name" + position, "");
-	}
-	
-	private int getFileSyntax( String prefix, int position) {
-		return appPrefs.getInt(prefix +"syntax" + position, 0);
-	}
-	
-	private int getFileLanguage( String prefix, int position) {
-		return appPrefs.getInt(prefix + "language" + position, 0);
+		appPrefs.put( prefix + PREF_RECENT_FILENAME + position, filename); 
+		appPrefs.putInt( prefix + PREF_RECENT_SYNTAX + position , syntax); 
+		appPrefs.putInt( prefix + PREF_RECENT_LANGUAGE + position, language); 
+		appPrefs.putBoolean( prefix + PREF_RECENT_SKIP + position, skip);
+		appPrefs.putBoolean( prefix + PREF_RECENT_REASONER + position, noReasoner);
+		appPrefs.putBoolean(prefix + PREF_RECENT_ONDISK + position, onDisk);
+		appPrefs.put(prefix + PREF_RECENT_ONDISKDIRECTORY + position, tdbDir);
+		appPrefs.putBoolean(prefix + PREF_RECENT_ONDISKPERSISTENT + position, persistent);
 	}
 
 
@@ -409,14 +444,14 @@ public class AppPreferences {
 		
 		for( int i = 0; i <= 9; i++) {
 			
-			String filename = getFileName(prefix, i); // get the filename of the current location
-			int syntax = getFileSyntax(prefix, i); // get the syntax of the current file
-			int language = getFileLanguage(prefix, i); // get the language of the current file
-			boolean skip = getSkipNamespace(prefix, i); // get the language of the current file
-			boolean noReasoner = getNoReasoner(prefix, i); // get whether we want to use a reasoner or not
-			boolean onDisk = getOnDisk(prefix, i); // get whether we are loading to the disk instead of memory
-			String diskDirectory = getOnDiskDirectory(prefix, i); // get the directory where we're saving the ontology
-			boolean diskPersistent = getPersistent(prefix, i); // get whether we are loading to the disk instead of memory
+			String filename = getRecentFileName(prefix, i); // get the filename of the current location
+			int syntax = getRecentFileSyntax(prefix, i); // get the syntax of the current file
+			int language = getRecentFileLanguage(prefix, i); // get the language of the current file
+			boolean skip = getRecentSkipNamespace(prefix, i); // get the language of the current file
+			boolean noReasoner = getRecentNoReasoner(prefix, i); // get whether we want to use a reasoner or not
+			boolean onDisk = getRecentOnDisk(prefix, i); // get whether we are loading to the disk instead of memory
+			String diskDirectory = getRecentOnDiskDirectory(prefix, i); // get the directory where we're saving the ontology
+			boolean diskPersistent = getRecentOnDiskPersistent(prefix, i); // get whether we are loading to the disk instead of memory
 			
 			File testfile = new File(filename);
 			
@@ -569,73 +604,29 @@ public class AppPreferences {
 	/**
 	 * The last value for the skip namespace value in the loading ontology function
 	 */
-	public boolean getLastSkipNamespace() {
-		boolean last = appPrefs.getBoolean(PREF_LAST_SKIP_NAMESPACE, false);
-		return last;
-	}
-	private boolean getSkipNamespace( String prefix, int position) {
-		return appPrefs.getBoolean(prefix + "skip" + position, false);
-	}
+	public boolean getLastSkipNamespace() { return appPrefs.getBoolean(PREF_LAST_SKIP_NAMESPACE, false); }
+	public boolean getLastNoReasoner() {return appPrefs.getBoolean(PREF_LAST_NO_REASONER, false); }
 	
-	public boolean getLastNoReasoner() {
-		boolean last = appPrefs.getBoolean(PREF_LAST_NO_REASONER, false);
-		return last;
-	}
-	public boolean getNoReasoner( String prefix, int position ) {
-		return appPrefs.getBoolean(prefix + "noreasoner" + position, false);
-	}
+	public String getRecentFileName( String prefix, int position) { return appPrefs.get( prefix + PREF_RECENT_FILENAME + position, ""); }
+	public int getRecentFileSyntax( String prefix, int position) { return appPrefs.getInt(prefix + PREF_RECENT_SYNTAX + position, 0); }
+	public int getRecentFileLanguage( String prefix, int position) { return appPrefs.getInt(prefix + PREF_RECENT_LANGUAGE + position, 0); }
+	public boolean getRecentSkipNamespace( String prefix, int position) { return appPrefs.getBoolean(prefix + PREF_RECENT_SKIP + position, false); }
+	public boolean getRecentNoReasoner( String prefix, int position ) {	return appPrefs.getBoolean(prefix + PREF_RECENT_REASONER + position, false); }	
+	public boolean getRecentOnDisk( String prefix, int position ) { return appPrefs.getBoolean(prefix + PREF_RECENT_ONDISK + position, false); }
+	public String getRecentOnDiskDirectory( String prefix, int position ) {	return appPrefs.get(prefix + PREF_RECENT_ONDISKDIRECTORY + position, ""); }
+	public boolean getRecentOnDiskPersistent( String prefix, int position ) { return appPrefs.getBoolean(prefix + PREF_RECENT_ONDISKPERSISTENT + position, false); }
 	
-	public boolean getOnDisk( String prefix, int position ) {
-		return appPrefs.getBoolean(prefix + "onDisk" + position, false);
-	}
+	@Deprecated public boolean getRecentSourceSkipNamespace( int position) { return getRecentSkipNamespace(PREF_RECENTSOURCE, position); }
+	@Deprecated public boolean getRecentSourceNoReasoner( int position) { return getRecentNoReasoner(PREF_RECENTSOURCE, position); }
+	@Deprecated public boolean getRecentSourceOnDisk( int position) { return getRecentOnDisk(PREF_RECENTSOURCE, position); }
+	@Deprecated public String getRecentSourceOnDiskDirectory( int position) { return getRecentOnDiskDirectory(PREF_RECENTSOURCE, position); }
+	@Deprecated public boolean getRecentSourceOnDiskPersistent( int position) {	return getRecentOnDiskPersistent(PREF_RECENTSOURCE, position); }
 	
-	public String getOnDiskDirectory( String prefix, int position ) {
-		return appPrefs.get(prefix + "onDiskDirectory" + position, "");
-	}
-	
-	public boolean getPersistent( String prefix, int position ) {
-		return appPrefs.getBoolean(prefix + "onDiskPersistent" + position, false);
-	}
-	
-	public boolean getRecentSourceSkipNamespace( int position) {
-		return appPrefs.getBoolean(PREF_RECENTSOURCE + "skip" + position, false);
-	}
-	
-	public boolean getRecentSourceNoReasoner( int position) {
-		return appPrefs.getBoolean(PREF_RECENTSOURCE + "noreasoner" + position, false);
-	}
-	
-	public boolean getRecentSourceOnDisk( int position) {
-		return appPrefs.getBoolean(PREF_RECENTSOURCE + "onDisk" + position, false);
-	}
-	
-	public String getRecentSourceOnDiskDirectory( int position) {
-		return appPrefs.get(PREF_RECENTSOURCE + "onDiskDirectory" + position, "");
-	}
-	
-	public boolean getRecentSourceOnDiskPersistent( int position) {
-		return appPrefs.getBoolean(PREF_RECENTSOURCE + "onDiskPersisent" + position, false);
-	}
-	
-	public boolean getRecentTargetSkipNamespace( int position) {
-		return appPrefs.getBoolean(PREF_RECENTTARGET + "skip" + position, false);
-	}
-	
-	public boolean getRecentTargetNoReasoner( int position) {
-		return appPrefs.getBoolean(PREF_RECENTTARGET + "noreasoner" + position, false);
-	}
-	
-	public boolean getRecentTargetOnDisk( int position) {
-		return appPrefs.getBoolean(PREF_RECENTTARGET + "onDisk" + position, false);
-	}
-	
-	public String getRecentTargetOnDiskDirectory( int position) {
-		return appPrefs.get(PREF_RECENTTARGET + "onDiskDirectory" + position, "");
-	}
-	
-	public boolean getRecentTargetOnDiskPersistent( int position) {
-		return appPrefs.getBoolean(PREF_RECENTTARGET + "onDiskPersistent" + position, false);
-	}
+	@Deprecated public boolean getRecentTargetSkipNamespace( int position) { return getRecentSkipNamespace(PREF_RECENTTARGET, position); }
+	@Deprecated public boolean getRecentTargetNoReasoner( int position) { return getRecentNoReasoner(PREF_RECENTTARGET, position); }
+	@Deprecated public boolean getRecentTargetOnDisk( int position) { return getRecentOnDisk(PREF_RECENTTARGET, position); }
+	@Deprecated public String getRecentTargetOnDiskDirectory( int position) { return getRecentOnDiskDirectory(PREF_RECENTTARGET, position);	}
+	@Deprecated public boolean getRecentTargetOnDiskPersistent( int position) {	return getRecentOnDiskPersistent(PREF_RECENTTARGET, position); }
 
 	/******************************* UIMenu() **********************************************/
 	
