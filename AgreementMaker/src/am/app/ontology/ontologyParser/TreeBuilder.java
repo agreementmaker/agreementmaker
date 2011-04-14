@@ -38,22 +38,30 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
         if( Core.DEBUG ) System.out.println(filename);
 	}
 	
-	public static TreeBuilder buildTreeBuilder(String fileName, int ontoType, int langIndex, int syntaxIndex, boolean skip, boolean noReasoner, boolean onDisk){
+	public static TreeBuilder buildTreeBuilder(String fileName, int ontoType, int langIndex, int syntaxIndex, boolean skip, boolean noReasoner, boolean onDisk, String onDiskDirectory, boolean persistent){
 		// TODO: Not sure if this method is supposed to take implementation specific variables (ex. DB).
 		
 		String languageS = GlobalStaticVariables.getLanguageString(langIndex);
 		String syntaxS = GlobalStaticVariables.getSyntaxString(syntaxIndex);
-		TreeBuilder treeBuilder;
+		TreeBuilder treeBuilder = null;
+		
 		if(langIndex == GlobalStaticVariables.XMLFILE){
 			treeBuilder = new XmlTreeBuilder(fileName, ontoType, languageS, syntaxS);
 		}
-		else if(langIndex == GlobalStaticVariables.RDFSFILE)
-			treeBuilder = new RdfsTreeBuilder(fileName, ontoType, languageS, syntaxS, skip);
+		else if(langIndex == GlobalStaticVariables.RDFSFILE) {
+			if( onDisk )
+				treeBuilder = new TDBOntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip, noReasoner, onDisk, onDiskDirectory, persistent);
+			else
+				treeBuilder = new RdfsTreeBuilder(fileName, ontoType, languageS, syntaxS, skip);
+		}
 		else if(langIndex == GlobalStaticVariables.TABBEDTEXT)
 			treeBuilder = new TabbedTextBuilder(fileName, ontoType, languageS, syntaxS);
-		else if(onDisk)
-			treeBuilder= new TDBOntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip, noReasoner);
-		else treeBuilder = new OntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip, noReasoner);
+		else if(langIndex == GlobalStaticVariables.OWLFILE ) {
+			if( onDisk ) 
+				treeBuilder= new TDBOntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip, noReasoner, onDisk, onDiskDirectory, persistent);
+			else 
+				treeBuilder = new OntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip, noReasoner);
+		}
 		
 		return treeBuilder;
 	}
