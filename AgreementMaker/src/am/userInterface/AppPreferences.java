@@ -130,7 +130,7 @@ public class AppPreferences {
 		// we start from the bottom of the preferences, and go until we find a nonempty entry
 		// that tells us how many entries hold information
 		for( int i = 9; i >= 0; i--) {
-			if( !appPrefs.get( PREF_RECENTSOURCE + "name" + i, "").equals("") ) { // not equals
+			if( !appPrefs.get( PREF_RECENTSOURCE + PREF_RECENT_FILENAME + i, "").equals("") ) { // not equals
 				// found a non empty entry
 				return i + 1; // return the count, which is the current index + 1 
 			}
@@ -151,7 +151,7 @@ public class AppPreferences {
 		// we start from the bottom of the preferences, and go until we find a nonempty entry
 		// that tells us how many entries hold information
 		for( int i = 9; i >= 0; i--) {
-			if( !appPrefs.get( PREF_RECENTTARGET + "name" + i, "").equals("") ) { // not equals
+			if( !appPrefs.get( PREF_RECENTTARGET + PREF_RECENT_FILENAME + i, "").equals("") ) { // not equals
 				// found a non empty entry
 				return i + 1; // return the count, which is the current index + 1 
 			}
