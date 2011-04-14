@@ -124,7 +124,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 		
 		// TODO: Find a better way to check if we're running with a UI or not.
 		
-		if( progressDialog != null ) progressDialog.appendLine("");
+		if( progressDialog != null ) progressDialog.clearMessage();
 		
 		RunTimer timer = new RunTimer();
 		if( progressDialog != null ) progressDialog.appendLine("Reading the ontology...");
@@ -165,19 +165,18 @@ public class OntoTreeBuilder extends TreeBuilder{
 	}
 	
 	protected void buildTreeNoReasoner() {
-		if( Core.DEBUG ) System.out.print("OntoTreeBuilder: Reading Model with no reasoner...");
-		
-		
-		if( Core.DEBUG ) System.out.println("Model created...but not read yet.");
-		
+	
 		if( ontURI == null ) {
 			ontURI = "file:"+ontology.getFilename();
 		}
-		Model basemodel = FileManager.get().loadModel(ontology.getFilename(), ontology.getFormat());
-		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
-		//model.read( ontURI, null, ontology.getFormat() );
 		
-		if( Core.DEBUG ) System.out.println(" done.");
+		if( progressDialog != null ) progressDialog.append("Creating Jena Model ... ");
+		Model basemodel = FileManager.get().loadModel(ontology.getFilename(), ontology.getFormat());
+		if( progressDialog != null ) progressDialog.appendLine("done.");
+		
+		if( progressDialog != null ) progressDialog.append("Creating Jena OntModel ...");
+		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
+		if( progressDialog != null ) progressDialog.appendLine("done.");
 		
 		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
@@ -190,8 +189,8 @@ public class OntoTreeBuilder extends TreeBuilder{
 		}
 		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
 
-		
-		
+		if( progressDialog != null ) progressDialog.append("Creating AgreementMaker data structures ... ");
+
 		//Preparing model
 		model.prepare();		
 		
@@ -226,7 +225,9 @@ public class OntoTreeBuilder extends TreeBuilder{
         treeRoot.add(propertyRoot);
         ontology.setPropertiesTree( propertyRoot);
         
-        ontology.setTreeCount(treeCount);     
+        ontology.setTreeCount(treeCount); 
+        
+        if( progressDialog != null ) progressDialog.appendLine("done.");
 	}
 	
 	/**
