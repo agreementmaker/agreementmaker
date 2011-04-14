@@ -441,7 +441,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 					String onDiskDirectory = onDiskPrefs.get(OnDiskLocationDialog.TDB_LAST_SOURCE_DIRECTORY, "");
 					boolean onDiskPersistent = onDiskPrefs.getBoolean(OnDiskLocationDialog.TDB_LAST_SOURCE_PERSISTENT, false);
 
-					ui.openFile(sourceFilename, 
+					boolean loadSuccess = ui.openFile(sourceFilename, 
 								GlobalStaticVariables.SOURCENODE, 
 								ontSyntax[0].getSelectedIndex(), 
 								ontLang[0].getSelectedIndex(), 
@@ -450,26 +450,27 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 								onDisk[0].isSelected(),
 								onDiskDirectory,
 								onDiskPersistent);
-					
-					// once we are done, let's save the syntax and language selection that was made by the user
-					// and save the file used to the recent file list, and also what syntax and language it is
-					Core.getAppPreferences().saveOpenDialogListSelection(ontSyntax[0].getSelectedIndex() , 
-																		ontLang[0].getSelectedIndex(), 
-																		skip[0].isSelected(),
-																		false, // use reasoner
-																		onDisk[0].isSelected(), 
-																		onDiskDirectory, 
-																		onDiskPersistent);
-					Core.getAppPreferences().saveRecentFile(filePaths[0].getText(), 
-															GlobalStaticVariables.SOURCENODE, 
-															ontSyntax[0].getSelectedIndex(), 
-															ontLang[0].getSelectedIndex(), 
-															skip[0].isSelected(),
-															false,
-															onDisk[0].isSelected(), 
-															onDiskDirectory, 
-															onDiskPersistent);
-					ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
+					if( loadSuccess ) {
+						// once we are done, let's save the syntax and language selection that was made by the user
+						// and save the file used to the recent file list, and also what syntax and language it is
+						Core.getAppPreferences().saveOpenDialogListSelection(ontSyntax[0].getSelectedIndex() , 
+																			ontLang[0].getSelectedIndex(), 
+																			skip[0].isSelected(),
+																			false, // use reasoner
+																			onDisk[0].isSelected(), 
+																			onDiskDirectory, 
+																			onDiskPersistent);
+						Core.getAppPreferences().saveRecentFile(filePaths[0].getText(), 
+																GlobalStaticVariables.SOURCENODE, 
+																ontSyntax[0].getSelectedIndex(), 
+																ontLang[0].getSelectedIndex(), 
+																skip[0].isSelected(),
+																false,
+																onDisk[0].isSelected(), 
+																onDiskDirectory, 
+																onDiskPersistent);
+						ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
+					}
 				}
 			}catch(Exception ex){
 				JOptionPane.showConfirmDialog(this,"Can not parse the file '" + sourceFilename + "'. Please check the policy.\n\n"+ex.getMessage(),"Parser Error",JOptionPane.ERROR_MESSAGE);
@@ -487,7 +488,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 					String onDiskDirectory = onDiskPrefs.get(OnDiskLocationDialog.TDB_LAST_TARGET_DIRECTORY, "");
 					boolean onDiskPersistent = onDiskPrefs.getBoolean(OnDiskLocationDialog.TDB_LAST_TARGET_PERSISTENT, false);
 
-					ui.openFile(targetFilename, 
+					boolean loadSuccess = ui.openFile(targetFilename, 
 								GlobalStaticVariables.TARGETNODE, 
 								ontSyntax[1].getSelectedIndex(), 
 								ontLang[1].getSelectedIndex(), 
@@ -496,27 +497,28 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 								onDisk[1].isSelected(),
 								onDiskDirectory,
 								onDiskPersistent);
-					// once we are done, let's save the syntax and language selection that was made by the user
-					// and save the file used to the recent file list, and also what syntax and language it is
-					// once we are done, let's save the syntax and language selection that was made by the user
-					// and save the file used to the recent file list, and also what syntax and language it is
-					Core.getAppPreferences().saveOpenDialogListSelection(ontSyntax[1].getSelectedIndex() , 
-																		ontLang[1].getSelectedIndex(), 
-																		skip[1].isSelected(),
-																		false, // use reasoner
-																		onDisk[1].isSelected(), 
-																		onDiskDirectory, 
-																		onDiskPersistent);
-					Core.getAppPreferences().saveRecentFile(filePaths[1].getText(), 
-															GlobalStaticVariables.TARGETNODE, 
-															ontSyntax[1].getSelectedIndex(), 
-															ontLang[1].getSelectedIndex(), 
-															skip[1].isSelected(),
-															false,
-															onDisk[1].isSelected(), 
-															onDiskDirectory, 
-															onDiskPersistent);
-					ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
+					
+					if( loadSuccess ) {
+						// once we are done, let's save the syntax and language selection that was made by the user
+						// and save the file used to the recent file list, and also what syntax and language it is
+						Core.getAppPreferences().saveOpenDialogListSelection(ontSyntax[1].getSelectedIndex() , 
+																			ontLang[1].getSelectedIndex(), 
+																			skip[1].isSelected(),
+																			false, // use reasoner
+																			onDisk[1].isSelected(), 
+																			onDiskDirectory, 
+																			onDiskPersistent);
+						Core.getAppPreferences().saveRecentFile(filePaths[1].getText(), 
+																GlobalStaticVariables.TARGETNODE, 
+																ontSyntax[1].getSelectedIndex(), 
+																ontLang[1].getSelectedIndex(), 
+																skip[1].isSelected(),
+																false,
+																onDisk[1].isSelected(), 
+																onDiskDirectory, 
+																onDiskPersistent);
+						ui.getUIMenu().refreshRecentMenus(); // after we update the recent files, refresh the contents of the recent menus.
+					}
 				}
 			}catch(Exception ex){
 				JOptionPane.showConfirmDialog(this,"Can not parse the file '" + targetFilename + "'. Please check the policy.\n\n"+ex.getMessage(),"Parser Error",JOptionPane.ERROR_MESSAGE);
