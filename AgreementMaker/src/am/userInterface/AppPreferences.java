@@ -162,31 +162,6 @@ public class AppPreferences {
 		
 	}
 	
-	public String getRecentSourceFileName( int position ) {
-		return appPrefs.get(PREF_RECENTSOURCE + "name" + position, "");
-	}
-	
-	public String getRecentTargetFileName( int position ) {
-		return appPrefs.get(PREF_RECENTTARGET + "name" + position, "");
-	}
-	
-	public int getRecentSourceSyntax( int position) {
-		return appPrefs.getInt(PREF_RECENTSOURCE + "syntax" + position, 0);
-	}
-	
-	public int getRecentTargetSyntax( int position) {
-		return appPrefs.getInt(PREF_RECENTTARGET + "syntax" + position, 0);
-	}
-	
-	public int getRecentSourceLanguage( int position) {
-		return appPrefs.getInt(PREF_RECENTSOURCE + "language" + position, 0);
-	}
-	
-	public int getRecentTargetLanguage( int position) {
-		return appPrefs.getInt(PREF_RECENTTARGET + "language" + position, 0);
-	}
-	
-	
 	/**
 	 * 
 	 * @return The last thing selected in the syntax list.
@@ -616,12 +591,18 @@ public class AppPreferences {
 	public String getRecentOnDiskDirectory( String prefix, int position ) {	return appPrefs.get(prefix + PREF_RECENT_ONDISKDIRECTORY + position, ""); }
 	public boolean getRecentOnDiskPersistent( String prefix, int position ) { return appPrefs.getBoolean(prefix + PREF_RECENT_ONDISKPERSISTENT + position, false); }
 	
+	@Deprecated public String getRecentSourceFileName( int position ) { return getRecentFileName(PREF_RECENTSOURCE,position); }
+	@Deprecated public int getRecentSourceSyntax( int position) { return getRecentFileSyntax(PREF_RECENTSOURCE,position); }
+	@Deprecated public int getRecentSourceLanguage( int position) {	return getRecentFileLanguage(PREF_RECENTSOURCE,position); }
 	@Deprecated public boolean getRecentSourceSkipNamespace( int position) { return getRecentSkipNamespace(PREF_RECENTSOURCE, position); }
 	@Deprecated public boolean getRecentSourceNoReasoner( int position) { return getRecentNoReasoner(PREF_RECENTSOURCE, position); }
 	@Deprecated public boolean getRecentSourceOnDisk( int position) { return getRecentOnDisk(PREF_RECENTSOURCE, position); }
 	@Deprecated public String getRecentSourceOnDiskDirectory( int position) { return getRecentOnDiskDirectory(PREF_RECENTSOURCE, position); }
 	@Deprecated public boolean getRecentSourceOnDiskPersistent( int position) {	return getRecentOnDiskPersistent(PREF_RECENTSOURCE, position); }
 	
+	@Deprecated public String getRecentTargetFileName( int position ) {	return getRecentFileName(PREF_RECENTTARGET,position);	}
+	@Deprecated public int getRecentTargetSyntax( int position) { return getRecentFileSyntax(PREF_RECENTTARGET,position); }
+	@Deprecated public int getRecentTargetLanguage( int position) {	return getRecentFileLanguage(PREF_RECENTTARGET,position); }
 	@Deprecated public boolean getRecentTargetSkipNamespace( int position) { return getRecentSkipNamespace(PREF_RECENTTARGET, position); }
 	@Deprecated public boolean getRecentTargetNoReasoner( int position) { return getRecentNoReasoner(PREF_RECENTTARGET, position); }
 	@Deprecated public boolean getRecentTargetOnDisk( int position) { return getRecentOnDisk(PREF_RECENTTARGET, position); }
