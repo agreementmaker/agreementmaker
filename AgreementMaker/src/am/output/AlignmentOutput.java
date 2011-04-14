@@ -18,9 +18,9 @@ import com.hp.hpl.jena.rdf.model.Resource;
 public class AlignmentOutput
 {
     private Alignment<Mapping> alignmentSet = null;
-    private RandomAccessFile raf = null;
+    private RandomAccessFile raf = null;  // Why is this a RandomAccessFile? Can be a BufferedWriter for faster writing. - Cosmin.
     private String filepath = null;
-    private ArrayList<String> writeList = null;
+    private ArrayList<String> writeList = null;  // TODO: REMOVE THIS!!!!!! VERY VERY VERY INEFFICIENT USE OF MEMORY - Cosmin.
     private StringBuilder buffer;
 
     

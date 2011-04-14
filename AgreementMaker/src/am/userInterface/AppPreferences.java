@@ -69,6 +69,7 @@ public class AppPreferences {
 	private static final String		PREF_EXPORT_SKIPZERO = "pref_export_skipzero";
 	
 	private static final String		PREF_IMPORTLASTFILENAME = "pref_import_lastfilename";
+	private static final String		PREF_IMPORTLASTDIRECTORY = "pref_import_lastdirectory";
 	private static final String		PREF_IMPORT_TYPE = "pref_import_type";
 	private static final String		PREF_IMPORT_ALIGNMENT_FORMAT = "pref_export_alignment_format";
 	
@@ -527,7 +528,9 @@ public class AppPreferences {
 	 * @return The last directory selected by the user in the Export Dialog.
 	 */
 	public String getImportLastFilename() { return appPrefs.get(PREF_IMPORTLASTFILENAME, ""); }
+	public String getImportLastDirectory() { return appPrefs.get(PREF_IMPORTLASTDIRECTORY, ""); }
 	public void saveImportLastFilename( String name ) { appPrefs.put( PREF_IMPORTLASTFILENAME, name); }
+	public void saveImportLastDirectory( String name ) { appPrefs.put( PREF_IMPORTLASTDIRECTORY, name); }
 	public String getExportLastFilename() { return appPrefs.get(PREF_EXPORTLASTFILENAME,""); }
 	public File getExportLastDir() { return new File( appPrefs.get(PREF_EXPORTLASTDIR, "") ); }
 	public void saveExportLastFilename( String name ) { appPrefs.put( PREF_EXPORTLASTFILENAME, name); }

@@ -41,23 +41,10 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = -2258009700001283026L;
 
-	//SELECTION MATCHER PANEL, the one in the top
-	//private JLabel matcherLabel;
-	//private JLabel thresholdLabel;
-	//private JLabel sRelLabel;
-	//private JLabel tRelLabel;;
-	//private JComboBox matcherCombo;
-	//private JComboBox thresholdCombo;
-	//private JComboBox sRelationCombo;
-	//private JComboBox tRelationCombo;
+
 	private JButton matchButton;
-	//private JButton viewDetails;
-	//private JButton defaultValButton;
-	//private JCheckBox optimizedCheck;
-	//private JLabel optimizedLabel;
-	//TABLE PANEL
 	private MatchersTablePanel matchersTablePanel;
-	//EDIT MATCHINGS PANEL
+
 	private JButton newMatching;
 	private JButton delete;
 	private JButton clearMatchings;
@@ -71,6 +58,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 	//private JButton mappingAnalyzerButton;	
 	
 	public MatchersControlPanel() {
+		super();
 		init();
 	}
 
@@ -320,7 +308,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 		if(rowsIndex.length == 0) {
 			Utility.displayErrorPane("No matchers selected", null);
 		}
-		else 	new SaveFileDialog(); //demand control to the savefile dialog which since is modal will take care of everything
+		else 	new ExportDialog(); //demand control to the savefile dialog which since is modal will take care of everything
 	}
 	
 	public void importa() throws Exception {
@@ -330,7 +318,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 			return;
 		}
 		
-		LoadFileDialog lfd = new LoadFileDialog();
+		ImportDialog lfd = new ImportDialog();
 		AbstractMatcher importedMatcher = lfd.getLoadedMatcher();
 		
 		if( importedMatcher == null ) return;
