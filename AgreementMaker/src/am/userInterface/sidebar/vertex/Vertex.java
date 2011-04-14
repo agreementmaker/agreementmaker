@@ -106,7 +106,7 @@ public class Vertex extends DefaultMutableTreeNode implements Serializable
 		setIsVisible(true);
 		isSelected = false;
 		setNodeType(sourceOrTarget);
-		setOntNode(GlobalStaticVariables.ONTFILE);
+		setOntNode(GlobalStaticVariables.OWLFILE);
 		setShouldCollapse(false);
 		//vertexDescription = (VertexDescriptionPane)jDescriptionPanel;
 	}

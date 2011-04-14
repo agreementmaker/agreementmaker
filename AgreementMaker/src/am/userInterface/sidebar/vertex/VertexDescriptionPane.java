@@ -110,7 +110,7 @@ public class VertexDescriptionPane extends JPanel{
 	        targetPane.addTab("Description", null, pnlTargetDescription, "Description of the target node");
 	        sourcePane.addTab("Mapping Information", null, pnlSourceDescription, "Description of the source node");
 	        targetPane.addTab("Mapping Information", null, pnlTargetDescription, "Description of the target node");
-		}else if(typeOfFile == GlobalStaticVariables.ONTFILE){
+		}else if(typeOfFile == GlobalStaticVariables.OWLFILE){
 			txtSourceAnnotations = new JTextArea();
 			txtSourceProperties = new JTextArea();
 			txtSourceIndividuals = new JTextArea();
@@ -251,7 +251,7 @@ public class VertexDescriptionPane extends JPanel{
 			    	   lt1.setText(node.getLabel());
 			    }
 			}
-			else if(typeOfFile == GlobalStaticVariables.ONTFILE){
+			else if(typeOfFile == GlobalStaticVariables.OWLFILE){
 		       if(v.isSourceOrGlobal()){
 		    	   txtSourceDescription.setText(node.getDescriptionsString());
 		    	   txtSourceAnnotations.setText(node.getAnnotationsString());
@@ -276,7 +276,7 @@ public class VertexDescriptionPane extends JPanel{
 		       }else {
 		    	   lt1.setText("");
 		       }
-		}else if(typeOfFile == GlobalStaticVariables.ONTFILE){
+		}else if(typeOfFile == GlobalStaticVariables.OWLFILE){
 			if(node.isSourceOrGlobal()){
 		    	   txtSourceDescription.setText("");
 		    	   txtSourceAnnotations.setText("");
