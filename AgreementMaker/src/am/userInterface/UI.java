@@ -24,7 +24,6 @@ import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.TreeBuilder;
 import am.userInterface.classic.AgreementMakerClassic;
 import am.userInterface.sidebar.vertex.VertexDescriptionPane;
-import am.visualization.MatcherAnalyticsPanel;
 
 
 /**
@@ -42,7 +41,6 @@ public class UI {
 	
 	// this is the current UI Panel
 	private AgreementMakerClassic classicAM;
-	private MatcherAnalyticsPanel mpTable;
 	
 	private JFrame frame;
 	
@@ -166,17 +164,19 @@ public class UI {
 	 * @param skip Skip concepts with different namespace?
 	 * @param noReasoner Don't use a reasoner?
 	 * @param onDisk Load using Jena TDB, into a directory?
+	 * @param onDiskDirectory The directory for Jena TDB.
+	 * @param onDiskPersistent Is the Jena TDB ontology persistent?
 	 * @return Return true on successful loading of the ontology, false otherwise.
 	 * 
 	 * */
-	public boolean openFile( String filename, int ontoType, int syntax, int language, boolean skip, boolean noReasoner, boolean onDisk) {
+	public boolean openFile( String filename, int ontoType, int syntax, int language, boolean skip, boolean noReasoner, boolean onDisk, String onDiskDirectory, boolean onDiskPersistent) {
 		try{
 			JPanel jPanel = null;
 			System.out.println("opening file");
 			if(language == GlobalStaticVariables.RDFSFILE)//RDFS
 				jPanel = new VertexDescriptionPane(GlobalStaticVariables.RDFSFILE);//takes care of fields for XML files as well
-			else if(language == GlobalStaticVariables.ONTFILE)//OWL
-				jPanel = new VertexDescriptionPane(GlobalStaticVariables.ONTFILE);//takes care of fields for XML files as well
+			else if(language == GlobalStaticVariables.OWLFILE)//OWL
+				jPanel = new VertexDescriptionPane(GlobalStaticVariables.OWLFILE);//takes care of fields for XML files as well
 			else if(language == GlobalStaticVariables.XMLFILE)//XML
 				jPanel = new VertexDescriptionPane(GlobalStaticVariables.XMLFILE);//takes care of fields for XML files as well
 			else if(language == GlobalStaticVariables.TABBEDTEXT)
@@ -186,7 +186,7 @@ public class UI {
 			setDescriptionPanel(jPanel);
 			System.out.println("Before treebuilder.buildTreeBuilder in am.userinterface.ui.openFile()...");
 			//This function manage the whole process of loading, parsing the ontology and building data structures: Ontology to be set in the Core and Tree and to be set in the canvas
-			TreeBuilder t = TreeBuilder.buildTreeBuilder(filename, ontoType, language, syntax, skip, noReasoner, onDisk);
+			TreeBuilder t = TreeBuilder.buildTreeBuilder(filename, ontoType, language, syntax, skip, noReasoner, onDisk, onDiskDirectory, onDiskPersistent);
 			//System.out.println("after treebuilder.buildTreeBuilder before progress dialog treebuilder.buildTreeBuilder in am.userinterface.ui.openFile()...");
 			//the treebuilder is initialized now we have to execute it in a separate thread.
 			// The dialog will start the treebuilder in a background thread, 
