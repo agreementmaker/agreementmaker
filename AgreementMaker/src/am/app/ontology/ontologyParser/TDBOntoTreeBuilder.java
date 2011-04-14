@@ -74,6 +74,9 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 	 * This method cannot be used with "" input for N3
 	 */
 	private String ns = null;
+	private boolean onDisk;
+	private String onDiskDirectory;
+	private boolean onDiskPersistent;
 	
 	/**
 	 * Builds an ontology with list of classes, list of properties, classes tree and properties tree, all information are kept in the ontology istance
@@ -84,29 +87,15 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 	 * @param skip Skip other namespaces, usually set to true.
 	 * @param reas Set to true in order to use a reasoner when loading the ontology, false to load without using a reasoner.
 	 */
-	public TDBOntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip, boolean reas) {
+	public TDBOntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip, boolean reas, boolean onDisk, String diskDirectory, boolean persistent) {
 		super(fileName, sourceOrTarget, language, format); 
 		skipOtherNamespaces = skip;
 		noReasoner = reas;
 		treeCount = 0;
+		this.onDisk = onDisk; 
+		this.onDiskDirectory = diskDirectory;
+		this.onDiskPersistent = persistent;
 	}
-	
-	// this function is here for legacy purposes, needs to be removed
-	public TDBOntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip ) {
-		super(fileName, sourceOrTarget, language, format); 
-		skipOtherNamespaces = skip;
-		noReasoner = false;
-		treeCount = 0;
-	}
-	
-	/*public void build( OntoTreeBuilder.Profile prof ) throws Exception {
-		buildTree( prof );//Instantiated in the subclasses
-		report = "Ontology loaded succesfully\n\n";
-        report += "Total number of classes: "+ontology.getClassesList().size()+"\n";
-        report += "Total number of properties: "+ontology.getPropertiesList().size()+"\n\n";
-        //report += "Select the 'Ontology Details' function in the 'Ontology' menu\nfor additional informations.\n";
-        //report += "The 'Hierarchy Visualization' can be disabled from the 'View' menu\nto improve system performances.";
-	}*/
 	
 	
 	/**
@@ -131,7 +120,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 		
 		// TODO: Find a better way to check if we're running with a UI or not.
 		
-		if( progressDialog != null ) progressDialog.appendLine("");
+		if( progressDialog != null ) progressDialog.clearMessage();
 		
 		RunTimer timer = new RunTimer();
 		if( progressDialog != null ) progressDialog.appendLine("Reading the ontology...");
@@ -172,47 +161,46 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 	}
 	
 	protected void buildTreeNoReasoner() throws Exception {
-		if( Core.DEBUG ) System.out.print("OntoTreeBuilder: Reading Model with no reasoner...");
-		
-		
-		if( Core.DEBUG ) System.out.println("Model created...but not read yet.");
 		
 		if( ontURI == null ) {
 			ontURI = new File(ontology.getFilename()).toURI();
 		}
 
-		Preferences p = Preferences.userNodeForPackage(OnDiskLocationDialog.class);
+		//Preferences p = Preferences.userNodeForPackage(OnDiskLocationDialog.class);
 		
-		String dirPath = null;
-		
-		boolean persistent = false;
-
-		if( super.ontology.getSourceOrTarget() == GlobalStaticVariables.SOURCENODE ) {
-			dirPath = p.get(OnDiskLocationDialog.TDB_LAST_SOURCE_DIRECTORY , "");
-			persistent=p.getBoolean(OnDiskLocationDialog.TDB_LAST_SOURCE_PERSISTENT, false);
-		} else {
-			dirPath = p.get(OnDiskLocationDialog.TDB_LAST_TARGET_DIRECTORY , "");
-			persistent=p.getBoolean(OnDiskLocationDialog.TDB_LAST_TARGET_PERSISTENT, false);
-		}
-		File directory = new File(dirPath);
+		File directory = new File(onDiskDirectory);
 		if( !directory.exists() || !directory.isDirectory() ) { throw new Exception("Path must be an existing directory."); }
 		
+		if( progressDialog != null ) progressDialog.append("Creating Jena TDB Model ... ");
 		Model basemodel = TDBFactory.createModel( directory.getAbsolutePath() );
-		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
+		if( progressDialog != null ) progressDialog.appendLine("done.");
 		
-		if( !persistent ) {
+		if( progressDialog != null ) progressDialog.append("Creating Jena OntModel from TDB Model ... ");
+		if( ontology.getLanguage().equalsIgnoreCase("RDFS") )
+			model = ModelFactory.createOntologyModel( OntModelSpec.RDFS_MEM, basemodel );
+		else
+			model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
+		if( progressDialog != null ) progressDialog.appendLine("done.");
+		
+		if( !onDiskPersistent ) {
 			// we're not running in persistent mode, remove everything and load the ontology.
+			if( progressDialog != null ) progressDialog.append("Disk ontology is not persistent.\nClearing on disk ontology ... ");
 			model.removeAll();
+			if( progressDialog != null ) progressDialog.appendLine("done.");
+			if( progressDialog != null ) progressDialog.append("Reading ontology onto disk ... ");
 			model.read( ontURI.toString(), null, ontology.getFormat() );
 			model.commit();
+			if( progressDialog != null ) progressDialog.appendLine("done.");
 		} 
 		else if( model.isEmpty() ) {
 			// we're running in persistent mode, load the ontology only if the model is empty
+			if( progressDialog != null ) progressDialog.append("Disk ontology is persistent and empty.\nReading ontology into on disk store ... ");
 			model.read( ontURI.toString(), null, ontology.getFormat() );
 			model.commit();
+			if( progressDialog != null ) progressDialog.appendLine("done.");
+		} else {
+			if( progressDialog != null ) progressDialog.appendLine("Disk ontology is persistent.\nUsing existing on disk ontology.");
 		}
-		
-		if( Core.DEBUG ) System.out.println(" done.");
 		
 		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
@@ -225,6 +213,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 		}
 		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
 
+		if( progressDialog != null ) progressDialog.append("Creating AgreementMaker data structures ... ");
 		
 		
 		//Preparing model
@@ -261,7 +250,9 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
         treeRoot.add(propertyRoot);
         ontology.setPropertiesTree( propertyRoot);
         
-        ontology.setTreeCount(treeCount);     
+        ontology.setTreeCount(treeCount);   
+
+        if( progressDialog != null ) progressDialog.appendLine("done.");
 	}
 	
 	/**
