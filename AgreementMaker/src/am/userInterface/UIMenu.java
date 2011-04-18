@@ -24,6 +24,8 @@ import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import edu.uic.advis.im.userInterface.InformationMatchingMenu;
+
 import am.AMException;
 import am.GlobalStaticVariables;
 import am.Utility;
@@ -1231,8 +1233,8 @@ public class UIMenu implements ActionListener {
 		
 		
 		// Tools -> Information Matching
-		//JMenu informationMatching = new InformationMatchingMenu(ui);
-		//toolsMenu.add(informationMatching);
+		JMenu informationMatching = new InformationMatchingMenu(ui);
+		toolsMenu.add(informationMatching);
 		
 		// Build help menu in the menu bar.
 		helpMenu = new JMenu("Help");

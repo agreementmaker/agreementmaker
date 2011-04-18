@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.qualityEvaluation.JoslynStructuralQuality;
+import am.app.mappingEngine.qualityEvaluation.metrics.joslyn.JoslynStructuralQuality;
 import am.userInterface.sidebar.vertex.Vertex;
 
 import com.hp.hpl.jena.ontology.DatatypeProperty;
@@ -177,9 +177,11 @@ public class Ontology {
 		int depth = tree.getDepth()-1;
 		int roots = conv.getRoots().size();
 		int leaves = conv.getLeaves().size();
-		JoslynStructuralQuality q = new JoslynStructuralQuality(true, true, false); //the first two boolean dont matter here
+		JoslynStructuralQuality q = new JoslynStructuralQuality(); //the first two boolean dont matter here
+		q.setParameters(true, true, true);
 		double LCdiameter = q.getDiameter(list, conv);
-		JoslynStructuralQuality q2 = new JoslynStructuralQuality(true, true, true); //the first two boolean dont matter here
+		JoslynStructuralQuality q2 = new JoslynStructuralQuality(); //the first two boolean dont matter here
+		q2.setParameters(true, true, true);
 		double UCdiameter = q2.getDiameter(list, conv);
 		
 		return concepts+"\t"+depth+"\t"+UCdiameter+"\t"+LCdiameter+"\t"+roots+"\t"+leaves+"\n";

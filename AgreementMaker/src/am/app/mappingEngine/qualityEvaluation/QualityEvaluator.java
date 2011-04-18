@@ -2,6 +2,10 @@ package am.app.mappingEngine.qualityEvaluation;
 
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.qualityEvaluation.metrics.GlobalConfidenceQuality;
+import am.app.mappingEngine.qualityEvaluation.metrics.LocalConfidenceQuality;
+import am.app.mappingEngine.qualityEvaluation.metrics.joslyn.JoslynStructuralQuality;
+import am.utility.parameters.AMParameter;
 
 public class QualityEvaluator {
 	
@@ -24,42 +28,31 @@ public class QualityEvaluator {
 	//LIST USED IN THE QUALITY COMBINATION MATCHER 
 	public final static String[] QUALITIES = {LOCALCONFIDENCE, GLOBALCONFIDENCE, UPPER_DISTANCE, LOWER_DISTANCE,ORDER, UPPER_DISTANCE_DISCREPANCY, LOWER_DISTANCE_DISCREPANCY, ORDER_DISCREPANCY};
 	
-	public static QualityEvaluationData evaluate(AbstractMatcher matcher, String quality) {
+	public static QualityEvaluationData evaluate(AbstractMatcher matcher, String quality) throws Exception {
 		QualityEvaluationData finalData = null;
 		QualityEvaluationData localConfData  = null;
 		QualityEvaluationData globalConfData = null;
 		QualityEvaluationData distData = null;
 
+		if( quality.equals(LOCALCONFIDENCE) ) {
+			QualityMetric localQ = new LocalConfidenceQuality();
+			localQ.setParameter(new AMParameter(LocalConfidenceQuality.PARAM_CONSIDER_THRESHOLD, false));
+			return localQ.getQuality(matcher);
+		}
+		
 		//LOCAL GLOBAL confidence without considering theshold
-		if(quality.equals(LOCALCONFIDENCE) || quality.equals(GLOBALCONFIDENCE)){
-			//in all 2 cases i have to calculate local first
-			localConfData = LocalConfidenceQuality.getQuality(matcher, false);
-			finalData = localConfData;
-			//then global is the average of locals
-			if(quality.equals(GLOBALCONFIDENCE) ){
-				globalConfData = new QualityEvaluationData();
-				double[] localClassQualities = localConfData.getLocalClassMeasures();
-				double[] localPropQualities = localConfData.getLocalPropMeasures();
-				
-				//When we use the this quality as weight, when is 0 it doesn't count
-				double classAverage = Utility.getAverageOfArrayNonZeroValues(localClassQualities);
-				double propAverage = Utility.getAverageOfArrayNonZeroValues(localPropQualities);
-				//then global is the average of locals
-				globalConfData.setLocal(false);
-				if(matcher.areClassesAligned()) {
-					globalConfData.setGlobalClassMeasure(classAverage);
-				}
-				if(matcher.arePropertiesAligned()) {
-					globalConfData.setGlobalPropMeasure(propAverage);
-				}
-				finalData = globalConfData;
-			}
+		if(quality.equals(GLOBALCONFIDENCE)){
+			GlobalConfidenceQuality globalQ = new GlobalConfidenceQuality();
+			globalQ.setParameter(new AMParameter(GlobalConfidenceQuality.PARAM_CONSIDER_THRESHOLD, false));
+			return globalQ.getQuality(matcher);
 		}
 			
-		//LOCAL GLOBAL confidence considering th NOT USED BY THE SYSTEM NOW
+		/*//LOCAL GLOBAL confidence considering th NOT USED BY THE SYSTEM NOW
 		if(quality.equals(LOCALTHRESHOLDCONFIDENCE) || quality.equals(GLOBALTHRESHOLDCONFIDENCE) ){
 			//in all 2 cases i have to calculate local first
-			localConfData = LocalConfidenceQuality.getQuality(matcher, true);
+			LocalConfidenceQuality localQ = new LocalConfidenceQuality();
+			localQ.setParameter(new AMParameter(LocalConfidenceQuality.PARAM_CONSIDER_THRESHOLD, true));
+			localConfData = localQ.getQuality(matcher);
 			finalData = localConfData;
 			//then global is the average of locals
 			if(quality.equals(GLOBALTHRESHOLDCONFIDENCE)) {
@@ -78,7 +71,7 @@ public class QualityEvaluator {
 				}
 				finalData = globalConfData;
 			}
-		}
+		}*/
 		
 		//JOslyn structural qualities
 		if(quality.equals(LOWER_DISTANCE) || 
@@ -97,8 +90,13 @@ public class QualityEvaluator {
 			boolean upper = true;
 			if(quality.equals(LOWER_DISTANCE) || quality.equals(LOWER_DISTANCE_DISCREPANCY))
 				upper = false;
-			JoslynStructuralQuality evaluator = new JoslynStructuralQuality(matcher, distance, preservation, upper);
-			distData = evaluator.getQuality();
+
+			JoslynStructuralQuality joslynQM = new JoslynStructuralQuality();
+			joslynQM.setParameter(new AMParameter(JoslynStructuralQuality.PREF_UPPER_DISTANCE, upper));
+			joslynQM.setParameter(new AMParameter(JoslynStructuralQuality.PREF_USE_DISTANCE, distance));
+			joslynQM.setParameter(new AMParameter(JoslynStructuralQuality.PREF_USE_PRESERVATION, preservation));
+			
+			distData = joslynQM.getQuality(matcher);
 			finalData = distData;
 		}
 			

@@ -1236,15 +1236,33 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			match();
 		}
 		catch(AMException ex2) {
-			report = ex2.getMessage();
+			
+			report += "\nUnexpected error.\n";
+			
+			String message = ex2.getMessage();
+			if( !(message == null || message.isEmpty()) ) report += ex2.getMessage() + "\n";
+			else report += ex2.toString();
+			
+			ex2.printStackTrace();
 			this.cancel(true);
-			if( progressDisplay != null ) { progressDisplay.matchingComplete(); }
+			if( progressDisplay != null ) {
+				progressDisplay.appendToReport(report);
+				progressDisplay.matchingComplete(); 
+			}
 		}
 		catch(Exception ex) {
+			report += "\nUnexpected error.\n";
+
+			String message = ex.getMessage();
+			if( !(message == null || message.isEmpty()) ) report += ex.getMessage() + "\n";
+			else report += ex.toString();
+			
 			ex.printStackTrace();
-			report = ex.getMessage();
 			this.cancel(true);
-			if( progressDisplay != null ) { progressDisplay.matchingComplete(); }
+			if( progressDisplay != null ) {
+				progressDisplay.appendToReport(report);
+				progressDisplay.matchingComplete(); 
+			}
 		}
 		return null;
 	}

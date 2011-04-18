@@ -1,12 +1,18 @@
-package am.app.mappingEngine.qualityEvaluation;
+package am.app.mappingEngine.qualityEvaluation.metrics;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.qualityEvaluation.AbstractQualityMetric;
+import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 
-public class LocalConfidenceQuality {
+public class LocalConfidenceQuality extends AbstractQualityMetric {
 	
-	protected static QualityEvaluationData getQuality(AbstractMatcher matcher, boolean considerThreshold) {
+	public static final String PARAM_CONSIDER_THRESHOLD = "CONSIDER_THRESHOLD";
+	@Override public String getNameString() { return "Local Confidence"; }
+	
+	public QualityEvaluationData getQuality(AbstractMatcher matcher) throws Exception {
+		
 		QualityEvaluationData q = new QualityEvaluationData();
 		q.setLocal(true);
 		
@@ -20,7 +26,7 @@ public class LocalConfidenceQuality {
 		}
 		
 		double threshold = 0.01; //could be 0 and should be the same
-		if(considerThreshold) {
+		if( params.containsKey(PARAM_CONSIDER_THRESHOLD) && params.getBit(PARAM_CONSIDER_THRESHOLD) ) {
 			threshold = matcher.getThreshold();
 		}
 		if(matcher.areClassesAligned()) {

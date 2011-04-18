@@ -34,7 +34,7 @@ public class CombinationMatcher extends AbstractMatcher {
 	}
 
 	
-	protected void beforeAlignOperations()  throws Exception{
+	protected void beforeAlignOperations() throws Exception{
 		super.beforeAlignOperations();
 		
 		int size = inputMatchers.size();

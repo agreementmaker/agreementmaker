@@ -1,17 +1,21 @@
-package am.app.mappingEngine.qualityEvaluation;
+package am.app.mappingEngine.qualityEvaluation.metrics.joslyn;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.qualityEvaluation.AbstractQualityMetric;
+import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.TreeToDagConverter;
 import am.userInterface.sidebar.vertex.Vertex;
+import am.utility.parameters.AMParameter;
 
 
 
@@ -21,58 +25,59 @@ import am.userInterface.sidebar.vertex.Vertex;
 	Semantic Hierarchy Alignments
 	Cliff Joslyn, Alex Donaldson, and Patrick Paulson
 	 */
-public class JoslynStructuralQuality {
+public class JoslynStructuralQuality extends AbstractQualityMetric {
 	
-	private AbstractMatcher matcher;
+	//private AbstractMatcher matcher;
 	
 	/**True if a upper or lower distance or discrepancy is required,
 	 * false if the order ones are required
 	 * **/
-	private boolean useDistance;
+	//private boolean useDistance;
 	
 	/**True if the upper distance is used, false for the lower distance**/
-	private boolean useUpperDistance; //used only of the distance preservation measure
+	//private boolean useUpperDistance; //used only of the distance preservation measure
 	
 	/**True if the preservation = 1 - discrepancy measure is used**/
-	private boolean usePreservation; 
+	//private boolean usePreservation; 
 	
 	public final static int HIGHER = 1;
 	public final static int NONCOMPARABLE = 0;
 	public final static int LOWER = -1;
 	
+	public static final String PREF_USE_DISTANCE = "USE_DISTANCE";
+	public static final String PREF_USE_PRESERVATION = "USE_PRESERVATION";
+	public static final String PREF_UPPER_DISTANCE = "USE_PRESERVATION";
+	
+	@Override public String getNameString() { return "Joslyn Structural Quality Metrics"; }
 	
 	public enum evaType {
 		classes,
 		properties
 	}
 	
-
-	
 	//TEMP STRUCTURES USED BY RECURSIVE METHODS
 	int[] tempRecursiveNum;
 	int[][] tempOrder;
 	
-	public JoslynStructuralQuality(AbstractMatcher m,boolean distance,boolean preservation, boolean upper ) {
-		matcher = m;
-		useDistance = distance;
-		useUpperDistance = upper;
-		usePreservation =preservation;
+	/*public JoslynStructuralQuality(boolean distance,boolean preservation, boolean upper) {
+		params.put(new AMParameter(PREF_USE_DISTANCE, distance));
+		params.put(new AMParameter(PREF_USE_PRESERVATION, preservation));
+		params.put(new AMParameter(PREF_UPPER_DISTANCE, upper));
+	}*/
+
+	public void setParameters(boolean distance, boolean preservation, boolean upper) {
+		params.put(new AMParameter(PREF_USE_DISTANCE, distance));
+		params.put(new AMParameter(PREF_USE_PRESERVATION, preservation));
+		params.put(new AMParameter(PREF_UPPER_DISTANCE, upper));
 	}
 	
-	//used to get only the diameter
-	public JoslynStructuralQuality(boolean distance,boolean preservation, boolean upper) {
-		useDistance = distance;
-		useUpperDistance = upper;
-		usePreservation = preservation;
+	public QualityEvaluationData getQuality(AbstractMatcher m) throws Exception {
+		if( params.getBit(PREF_USE_DISTANCE) )
+			return getDistanceQuality(m);
+		else return getOrderQuality(m);
 	}
 	
-	public QualityEvaluationData getQuality() {
-		if(useDistance)
-			return getDistanceQuality();
-		else return getOrderQuality();
-	}
-	
-	public QualityEvaluationData getOrderQuality() {
+	public QualityEvaluationData getOrderQuality(AbstractMatcher matcher) throws Exception {
 		Ontology sourceOntology = Core.getInstance().getSourceOntology();
 		Ontology targetOntology = Core.getInstance().getTargetOntology();
 		
@@ -95,7 +100,7 @@ public class JoslynStructuralQuality {
 		return q;
 	}
 	
-	public QualityEvaluationData getDistanceQuality() {
+	public QualityEvaluationData getDistanceQuality(AbstractMatcher matcher) throws Exception {
 		Ontology sourceOntology = Core.getInstance().getSourceOntology();
 		Ontology targetOntology = Core.getInstance().getTargetOntology();
 		
@@ -134,7 +139,7 @@ public class JoslynStructuralQuality {
 	 */
 	private double orderPreservation(Alignment<Mapping> set,
 			ArrayList<Node> sourceList, ArrayList<Node> targetList,
-			Vertex sourceTree, Vertex targetTree) {
+			Vertex sourceTree, Vertex targetTree) throws Exception {
 		
 		TreeToDagConverter sourceDag = new TreeToDagConverter(sourceTree);
 		TreeToDagConverter targetDag = new TreeToDagConverter(targetTree);
@@ -176,7 +181,7 @@ public class JoslynStructuralQuality {
 		
 		//the discrepancy is a measure of dissimilarity, between 1 and 0. so the quality should be 1 - totalDescrepancy
 		double quality = totalDescrepancy;
-		if(usePreservation)
+		if(params.getBit(PREF_USE_PRESERVATION))
 			quality = 1 - totalDescrepancy;
 		
 		//System.out.println("quality: "+quality+" discrepancy: "+totalDescrepancy+" sum: "+sum+" binom: "+binom+" size: "+size);
@@ -318,7 +323,7 @@ public class JoslynStructuralQuality {
 	 */
 	private double distancePreservation(Alignment<Mapping> set,
 			ArrayList<Node> sourceList, ArrayList<Node> targetList,
-			Vertex sourceTree, Vertex targetTree) {
+			Vertex sourceTree, Vertex targetTree) throws Exception {
 		
 		//SOURCE ONTOLOGY STRUCTURES
 		//LOWER DISTANCE: an array num of descendants of each node. sourceDescendants[node.getIndex()] = num of  descendants of node
@@ -335,7 +340,7 @@ public class JoslynStructuralQuality {
 		TreeToDagConverter sourceDag = new TreeToDagConverter(sourceTree);
 		TreeToDagConverter targetDag = new TreeToDagConverter(targetTree);
 		
-		if(useUpperDistance){
+		if(params.getBit(PREF_UPPER_DISTANCE)){
 			sourceDescendants = createAncestorsArray(sourceList,sourceDag );
 			targetDescendants = createAncestorsArray(targetList,targetDag );
 		}
@@ -354,7 +359,7 @@ public class JoslynStructuralQuality {
 		
 		
 		//I need to calculate which is the distance between each pair of node
-		if(useUpperDistance){
+		if(params.getBit(PREF_UPPER_DISTANCE)){
 			sourceDistances = createUCDistances(sourceList, sourceDescendants);
 			targetDistances = createUCDistances(targetList, targetDescendants);
 		}
@@ -389,7 +394,7 @@ public class JoslynStructuralQuality {
 		//the discrepancy is a measure of dissimilarity, between 1 and 0. so the quality should be 1 - totalDescrepancy
 		
 		double quality = totalDescrepancy;
-		if(usePreservation)
+		if(params.getBit(PREF_USE_PRESERVATION))
 			quality = 1 - totalDescrepancy;
 		//System.out.println("discrepancy: "+totalDescrepancy);
 		//System.out.println("quality: "+quality);

@@ -172,7 +172,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 		}
 	}
 	
-	private void qualityEvaluation() {
+	private void qualityEvaluation() throws Exception {
 		if(!Core.getInstance().ontologiesLoaded() ) {
 			Utility.displayErrorPane("You have to load Source and Target ontologies before quality evaluation.\nClick on File Menu and select Open Ontology functions ", null);
 			return;
