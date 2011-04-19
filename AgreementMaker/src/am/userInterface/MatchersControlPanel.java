@@ -206,7 +206,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 						ArrayList<Node> classList;
 						ArrayList<Node> propList; 
 						report+= quality+"\n";
-						if(q.isLocalForSource()) {
+						if(q.isSourceOntology()) {
 							report+= "This quality is local in respect to source concepts: \n\n";
 							classList = Core.getInstance().getSourceOntology().getClassesList();
 							propList = Core.getInstance().getSourceOntology().getPropertiesList();

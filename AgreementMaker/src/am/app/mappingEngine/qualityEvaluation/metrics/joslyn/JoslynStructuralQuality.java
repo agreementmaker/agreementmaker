@@ -81,7 +81,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 		
 		QualityEvaluationData q = new QualityEvaluationData();
 		q.setLocal(false);
-		q.setLocalForSource(true); //It doesn't matter because is global
+		q.setSourceOrTarget(true); //It doesn't matter because is global
 		
 		double classQuality = 0;
 		double propQuality = 0;
@@ -104,7 +104,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 		
 		QualityEvaluationData q = new QualityEvaluationData();
 		q.setLocal(false);
-		q.setLocalForSource(true); //It doesn't matter because is global
+		q.setSourceOrTarget(true); //It doesn't matter because is global
 		
 		double classQuality = 0;
 		double propQuality = 0;

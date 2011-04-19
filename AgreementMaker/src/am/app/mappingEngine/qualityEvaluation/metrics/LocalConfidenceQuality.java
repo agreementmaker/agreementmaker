@@ -18,9 +18,9 @@ public class LocalConfidenceQuality extends AbstractQualityMetric {
 		int maxSourceRelations = matcher.getMaxSourceAlign();
 		int maxTargetRelations = matcher.getMaxTargetAlign();
 		int numOfRelations = maxSourceRelations;
-		q.setLocalForSource(true);
+		q.setSourceOrTarget(true);
 		if( maxSourceRelations > maxTargetRelations) {
-			q.setLocalForSource(false);
+			q.setSourceOrTarget(false);
 			numOfRelations = maxTargetRelations;
 		}
 		
@@ -29,11 +29,11 @@ public class LocalConfidenceQuality extends AbstractQualityMetric {
 			threshold = matcher.getThreshold();
 		}
 		if(matcher.areClassesAligned()) {
-			double[] measures = evaluateMatrix(matcher.getClassesMatrix(), q.isLocalForSource(),numOfRelations, threshold );
+			double[] measures = evaluateMatrix(matcher.getClassesMatrix(), q.isSourceOntology(),numOfRelations, threshold );
 			q.setLocalClassMeasures(measures);
 		}
 		if(matcher.arePropertiesAligned()) {
-			double[] measures = evaluateMatrix(matcher.getPropertiesMatrix(), q.isLocalForSource(),numOfRelations,threshold);
+			double[] measures = evaluateMatrix(matcher.getPropertiesMatrix(), q.isSourceOntology(),numOfRelations,threshold);
 			q.setLocalPropMeasures(measures);
 		}
 		

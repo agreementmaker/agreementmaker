@@ -38,23 +38,23 @@ public class QualityEvaluator {
 		QualityEvaluationData result = new QualityEvaluationData();
 		
 		if(first.isLocal() && second.isLocal()) { //both locals
-			if(first.isLocalForSource() != second.isLocalForSource()) {
+			if(first.isSourceOntology() != second.isSourceOntology()) {
 				throw new RuntimeException("Developer error, you are merging two local qualities which have a different way of defining if the quality is local for source or target");
 			}
 			result.setLocal(true);
-			result.setLocalForSource(first.isLocalForSource());
+			result.setSourceOrTarget(first.isSourceOntology());
 			result.setLocalClassMeasures(Utility.avgArrays(first.getLocalClassMeasures(), second.getLocalClassMeasures()));
 			result.setLocalPropMeasures(Utility.avgArrays(first.getLocalPropMeasures(), second.getLocalPropMeasures()));
 		}
 		else if(first.isLocal()) { //only first local
 			result.setLocal(true);
-			result.setLocalForSource(first.isLocalForSource());
+			result.setSourceOrTarget(first.isSourceOntology());
 			result.setLocalClassMeasures(Utility.avgArrayAndDouble(first.getLocalClassMeasures(), second.getGlobalClassMeasure()));
 			result.setLocalPropMeasures(Utility.avgArrayAndDouble(first.getLocalPropMeasures(), second.getGlobalPropMeasure()));
 		}
 		else if(second.isLocal()) { //only second local
 			result.setLocal(true);
-			result.setLocalForSource(second.isLocalForSource());
+			result.setSourceOrTarget(second.isSourceOntology());
 			result.setLocalClassMeasures(Utility.avgArrayAndDouble(second.getLocalClassMeasures(), first.getGlobalClassMeasure()));
 			result.setLocalPropMeasures(Utility.avgArrayAndDouble(second.getLocalPropMeasures(), first.getGlobalPropMeasure()));
 		}
