@@ -117,9 +117,9 @@ public class ReferenceEvaluationData
 		String result  = "";
 		result+="Matchings discovered: "+getFound()+"\n";
 		result+="Class mappings correct/found: "+classesCorrect+"/" + classesFound + ": " + 
-				(classesFound == 0 ? "0%" : Utility.getOneDecimalPercentFromDouble(classesCorrect/classesFound)) + "\n";
+				(classesFound == 0 ? "0%" : Utility.getOneDecimalPercentFromDouble((double)classesCorrect/(double)classesFound)) + "\n";
 		result+="Property mappings correct/found: "+propertiesCorrect+"/" + propertiesFound + ": " + 
-				(propertiesFound == 0 ? "0%" : Utility.getOneDecimalPercentFromDouble(propertiesCorrect/propertiesFound) ) + "\n";
+				(propertiesFound == 0 ? "0%" : Utility.getOneDecimalPercentFromDouble((double)propertiesCorrect/(double)propertiesFound) ) + "\n";
 		result+="Matchings in Reference: "+getExist()+"\n";
 		result+="Matchings correct: "+getCorrect()+"\n";
 		result+="Precision = Correct/Discovered: "+Utility.getOneDecimalPercentFromDouble(getPrecision())+"\n";
