@@ -6,8 +6,6 @@ import am.utility.parameters.AMParameterSet;
 
 public interface QualityMetric {
 
-	public String getNameString();
-
 	public void setParameter( AMParameter param );
 	public void setParameters( AMParameterSet params );
 	

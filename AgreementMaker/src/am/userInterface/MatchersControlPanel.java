@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.prefs.Preferences;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -16,19 +15,21 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.AbstractTableModel;
+
 import am.AMException;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractParameters;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherChangeEvent;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
+import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
@@ -185,7 +186,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 		else {
 			QualityEvaluationDialog qDialog = new QualityEvaluationDialog();
 			if(qDialog.isSuccess()) {
-				String quality = (String) qDialog.qualCombo.getSelectedItem();
+				QualityMetricRegistry quality = (QualityMetricRegistry) qDialog.qualCombo.getSelectedItem();
 				AbstractMatcher toBeEvaluated;
 				String report= "Quality Evaluation Complete\n\n";
 				QualityEvaluationData q;
@@ -193,7 +194,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 					
 					toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
 					report+=(i+1)+" "+toBeEvaluated.getName()+"\n\n";
-					q = QualityEvaluator.evaluate(toBeEvaluated, quality);
+					q = QualityEvaluator.evaluate(toBeEvaluated, QualityEvaluator.getQM(quality));
 					if(!q.isLocal()) {
 						report+= quality+"\n";
 						report+= "Class Alignments Quality: "+Utility.getOneDecimalPercentFromDouble(q.getGlobalClassMeasure())+"\n" ;

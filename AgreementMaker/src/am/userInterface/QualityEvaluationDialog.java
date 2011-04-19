@@ -9,13 +9,13 @@ import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton; 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
+import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 
 
 
@@ -49,7 +49,7 @@ public class QualityEvaluationDialog extends JDialog implements ActionListener{
 		
 		JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		qualLabel = new JLabel("Quality measure: ");
-		qualCombo = new JComboBox(QualityEvaluator.QUALITIES);
+		qualCombo = new JComboBox(QualityMetricRegistry.values());
 		centerPanel.add(qualLabel);
 		centerPanel.add(qualCombo);
 		

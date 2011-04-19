@@ -9,7 +9,6 @@ import am.utility.parameters.AMParameter;
 public class GlobalConfidenceQuality extends AbstractQualityMetric {
 
 	public static final String PARAM_CONSIDER_THRESHOLD = "CONSIDER_THRESHOLD";
-	@Override public String getNameString() { return "Global Confidence"; }
 	
 	@Override
 	public QualityEvaluationData getQuality(AbstractMatcher matcher)

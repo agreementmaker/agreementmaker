@@ -3,6 +3,7 @@ package am.app.mappingEngine.Combination;
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.oaei2010.OAEI2010MatcherParameters.Track;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
+import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 
 public class CombinationParameters extends AbstractParameters {
 	
@@ -20,7 +21,7 @@ public class CombinationParameters extends AbstractParameters {
 	public boolean qualityEvaluation  = true;
 	public boolean manualWeighted = false;
 	
-	public String quality = QualityEvaluator.LOCALCONFIDENCE; //selected quality measure to be used to define weights
+	public QualityMetricRegistry quality = QualityMetricRegistry.LOCAL_CONFIDENCE; //selected quality measure to be used to define weights
 	
 	//for each matcher there is an array of local weights for each node
 	//when weights are manually assigned, each matcher as an array with the same value for all nodes. like if it is a global weight not local
@@ -34,7 +35,7 @@ public class CombinationParameters extends AbstractParameters {
 		combinationType = AVERAGECOMB;
 		qualityEvaluation = true;
 		manualWeighted = false;
-		quality = QualityEvaluator.LOCALCONFIDENCE;
+		quality = QualityMetricRegistry.LOCAL_CONFIDENCE;
 		
 	} 
 	
@@ -52,12 +53,12 @@ public class CombinationParameters extends AbstractParameters {
 				combinationType = AVERAGECOMB;
 				qualityEvaluation = true;
 				manualWeighted = false;
-				quality = QualityEvaluator.LOCALCONFIDENCE;
+				quality = QualityMetricRegistry.LOCAL_CONFIDENCE;
 			} else {
 				combinationType = MAXCOMB;
 				qualityEvaluation = true;
 				manualWeighted = false;
-				quality = QualityEvaluator.LOCALCONFIDENCE;
+				quality = QualityMetricRegistry.LOCAL_CONFIDENCE;
 			}
 			break;
 		case Anatomy:
@@ -65,7 +66,7 @@ public class CombinationParameters extends AbstractParameters {
 				combinationType = AVERAGECOMB;
 				qualityEvaluation = true;
 				manualWeighted = false;
-				quality = QualityEvaluator.LOCALCONFIDENCE;
+				quality = QualityMetricRegistry.LOCAL_CONFIDENCE;
 			}
 			else {
 				throw new Exception("Don't know what to do here.");
@@ -75,13 +76,13 @@ public class CombinationParameters extends AbstractParameters {
 			combinationType = AVERAGECOMB;
 			qualityEvaluation = true;
 			manualWeighted = false;
-			quality = QualityEvaluator.LOCALCONFIDENCE;
+			quality = QualityMetricRegistry.LOCAL_CONFIDENCE;
 			break;
 		default:
 			combinationType = AVERAGECOMB;
 			qualityEvaluation = true;
 			manualWeighted = false;
-			quality = QualityEvaluator.LOCALCONFIDENCE;
+			quality = QualityMetricRegistry.LOCAL_CONFIDENCE;
 		}
 		
 		return this;

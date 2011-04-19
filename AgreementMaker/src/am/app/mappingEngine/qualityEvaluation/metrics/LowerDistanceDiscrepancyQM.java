@@ -6,7 +6,7 @@ import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.qualityEvaluation.metrics.joslyn.JoslynStructuralQuality;
 import am.utility.parameters.AMParameter;
 
-public class LowerDistancePreservationQM extends AbstractQualityMetric {
+public class LowerDistanceDiscrepancyQM extends AbstractQualityMetric {
 
 	@Override
 	public QualityEvaluationData getQuality(AbstractMatcher matcher)
@@ -15,7 +15,7 @@ public class LowerDistancePreservationQM extends AbstractQualityMetric {
 		JoslynStructuralQuality joslynQM = new JoslynStructuralQuality();
 		
 		joslynQM.setParameter(new AMParameter(JoslynStructuralQuality.PREF_USE_DISTANCE, true));
-		joslynQM.setParameter(new AMParameter(JoslynStructuralQuality.PREF_USE_PRESERVATION, true));
+		joslynQM.setParameter(new AMParameter(JoslynStructuralQuality.PREF_USE_PRESERVATION, false));
 		joslynQM.setParameter(new AMParameter(JoslynStructuralQuality.PREF_UPPER_DISTANCE, false));
 		
 		return joslynQM.getQuality(matcher);

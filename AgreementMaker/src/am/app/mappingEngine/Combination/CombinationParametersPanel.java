@@ -15,6 +15,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
+import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 
 
 /**
@@ -90,7 +91,7 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 		//the list of input matchers is created dinamically in the group layout
 		
 		qualityLabel = new JLabel("Select the quality measure to be used as weight.");
-		qualityCombo = new JComboBox(QualityEvaluator.QUALITIES);
+		qualityCombo = new JComboBox(QualityMetricRegistry.values());
 		qualityLabel.setEnabled(false);
 		qualityCombo.setEnabled(false);
 		
@@ -206,7 +207,12 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 		parameters.matchersWeights = new double[size];
 		if(qualityWeightsRadio.isSelected() || bothWeightsRadio.isSelected()) {
 			parameters.qualityEvaluation = true;
-			parameters.quality = qualityCombo.getSelectedItem().toString();
+			if( !(qualityCombo.getSelectedItem() instanceof QualityMetricRegistry) ) {
+				Utility.displayErrorPane("Cannot determine which quality metric is selected.", "Error");
+				return null;
+			} else {
+				parameters.quality = (QualityMetricRegistry) qualityCombo.getSelectedItem();
+			}
 			//weights will be assigned later by the matcher in this case, which will invoke the qualityEvaluation
 		}
 		if (noWeightsRadio.isSelected() || manualWeightsRadio.isSelected() || bothWeightsRadio.isSelected()) {

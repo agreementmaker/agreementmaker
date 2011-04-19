@@ -2,106 +2,25 @@ package am.app.mappingEngine.qualityEvaluation;
 
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.qualityEvaluation.metrics.GlobalConfidenceQuality;
-import am.app.mappingEngine.qualityEvaluation.metrics.LocalConfidenceQuality;
-import am.app.mappingEngine.qualityEvaluation.metrics.joslyn.JoslynStructuralQuality;
-import am.utility.parameters.AMParameter;
 
 public class QualityEvaluator {
 	
-	//LOCAL QUALITIES
-	public final static String  LOCALCONFIDENCE = "Local confidence";
-	
-	//GLOBAL QUALITIES
-	public final static String  GLOBALCONFIDENCE = "Global confidence";
-	public final static String LOWER_DISTANCE = "Lower Distance Preservation";
-	public final static String LOWER_DISTANCE_DISCREPANCY = "Lower Distance discrepancy";
-	public final static String UPPER_DISTANCE = "Upper Distance Preservation";
-	public final static String UPPER_DISTANCE_DISCREPANCY = "Upper Distance discrepancy";
-	public final static String ORDER = "Order Preservation";
-	public final static String ORDER_DISCREPANCY = "Order Discrepancy";
-	//TEST QUALITIES
-	//it's a try to see the difference
-	public final static String GLOBALTHRESHOLDCONFIDENCE = "Global confidence considering threshold";
-	public final static String LOCALTHRESHOLDCONFIDENCE = "Local confidence considering threshold";
-	
-	//LIST USED IN THE QUALITY COMBINATION MATCHER 
-	public final static String[] QUALITIES = {LOCALCONFIDENCE, GLOBALCONFIDENCE, UPPER_DISTANCE, LOWER_DISTANCE,ORDER, UPPER_DISTANCE_DISCREPANCY, LOWER_DISTANCE_DISCREPANCY, ORDER_DISCREPANCY};
-	
-	public static QualityEvaluationData evaluate(AbstractMatcher matcher, String quality) throws Exception {
-		QualityEvaluationData finalData = null;
-		QualityEvaluationData localConfData  = null;
-		QualityEvaluationData globalConfData = null;
-		QualityEvaluationData distData = null;
-
-		if( quality.equals(LOCALCONFIDENCE) ) {
-			QualityMetric localQ = new LocalConfidenceQuality();
-			localQ.setParameter(new AMParameter(LocalConfidenceQuality.PARAM_CONSIDER_THRESHOLD, false));
-			return localQ.getQuality(matcher);
+	public static QualityMetric getQM( QualityMetricRegistry regEntry ) {
+		try {
+			return (QualityMetric) regEntry.getQMClass().newInstance();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
 		}
-		
-		//LOCAL GLOBAL confidence without considering theshold
-		if(quality.equals(GLOBALCONFIDENCE)){
-			GlobalConfidenceQuality globalQ = new GlobalConfidenceQuality();
-			globalQ.setParameter(new AMParameter(GlobalConfidenceQuality.PARAM_CONSIDER_THRESHOLD, false));
-			return globalQ.getQuality(matcher);
-		}
-			
-		/*//LOCAL GLOBAL confidence considering th NOT USED BY THE SYSTEM NOW
-		if(quality.equals(LOCALTHRESHOLDCONFIDENCE) || quality.equals(GLOBALTHRESHOLDCONFIDENCE) ){
-			//in all 2 cases i have to calculate local first
-			LocalConfidenceQuality localQ = new LocalConfidenceQuality();
-			localQ.setParameter(new AMParameter(LocalConfidenceQuality.PARAM_CONSIDER_THRESHOLD, true));
-			localConfData = localQ.getQuality(matcher);
-			finalData = localConfData;
-			//then global is the average of locals
-			if(quality.equals(GLOBALTHRESHOLDCONFIDENCE)) {
-				globalConfData = new QualityEvaluationData();
-				double[] localClassQualities = localConfData.getLocalClassMeasures();
-				double[] localPropQualities = localConfData.getLocalPropMeasures();
-				double classAverage = Utility.getAverageOfArrayNonZeroValues(localClassQualities);
-				double propAverage = Utility.getAverageOfArrayNonZeroValues(localPropQualities);
-				//then global is the average of locals
-				globalConfData.setLocal(false);
-				if(matcher.areClassesAligned()) {
-					globalConfData.setGlobalClassMeasure(classAverage);
-				}
-				if(matcher.arePropertiesAligned()) {
-					globalConfData.setGlobalPropMeasure(propAverage);
-				}
-				finalData = globalConfData;
-			}
-		}*/
-		
-		//JOslyn structural qualities
-		if(quality.equals(LOWER_DISTANCE) || 
-		   quality.equals(UPPER_DISTANCE) || 
-		   quality.equals(LOWER_DISTANCE_DISCREPANCY) || 
-		   quality.equals(UPPER_DISTANCE_DISCREPANCY) ||
-		   quality.equals(ORDER) ||
-		   quality.equals(ORDER_DISCREPANCY)) {
-			
-			boolean distance = true;
-			if(quality.equals(ORDER) || quality.equals(ORDER_DISCREPANCY))
-				distance = false;
-			boolean preservation = true;
-			if(quality.equals(LOWER_DISTANCE_DISCREPANCY) || quality.equals(UPPER_DISTANCE_DISCREPANCY) || quality.equals(ORDER_DISCREPANCY))
-				preservation = false;
-			boolean upper = true;
-			if(quality.equals(LOWER_DISTANCE) || quality.equals(LOWER_DISTANCE_DISCREPANCY))
-				upper = false;
-
-			JoslynStructuralQuality joslynQM = new JoslynStructuralQuality();
-			joslynQM.setParameter(new AMParameter(JoslynStructuralQuality.PREF_UPPER_DISTANCE, upper));
-			joslynQM.setParameter(new AMParameter(JoslynStructuralQuality.PREF_USE_DISTANCE, distance));
-			joslynQM.setParameter(new AMParameter(JoslynStructuralQuality.PREF_USE_PRESERVATION, preservation));
-			
-			distData = joslynQM.getQuality(matcher);
-			finalData = distData;
-		}
-			
-		//OTHER QUALITIES TO BE ADDED
-		return finalData;
+	}
+	
+	public static QualityEvaluationData evaluate(AbstractMatcher matcher, QualityMetric qm) throws Exception {
+		return qm.getQuality(matcher);		
 	}
 
 	

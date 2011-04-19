@@ -9,7 +9,6 @@ import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 public class LocalConfidenceQuality extends AbstractQualityMetric {
 	
 	public static final String PARAM_CONSIDER_THRESHOLD = "CONSIDER_THRESHOLD";
-	@Override public String getNameString() { return "Local Confidence"; }
 	
 	public QualityEvaluationData getQuality(AbstractMatcher matcher) throws Exception {
 		

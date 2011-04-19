@@ -48,8 +48,6 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 	public static final String PREF_USE_PRESERVATION = "USE_PRESERVATION";
 	public static final String PREF_UPPER_DISTANCE = "USE_PRESERVATION";
 	
-	@Override public String getNameString() { return "Joslyn Structural Quality Metrics"; }
-	
 	public enum evaType {
 		classes,
 		properties

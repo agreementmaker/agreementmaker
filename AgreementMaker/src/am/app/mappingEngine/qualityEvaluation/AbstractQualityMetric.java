@@ -16,8 +16,7 @@ import am.utility.parameters.AMParameterSet;
 public abstract class AbstractQualityMetric implements QualityMetric {
 
 	protected AMParameterSet params = new AMParameterSet();
-		
-	@Override public abstract String getNameString();
+
 	@Override public void setParameter(AMParameter param) { params.put(param); }
 	@Override public void setParameters(AMParameterSet param) { params = param; }
 	@Override public QualityEvaluationData getQuality(AbstractMatcher matcher, AMParameterSet params) throws Exception {
