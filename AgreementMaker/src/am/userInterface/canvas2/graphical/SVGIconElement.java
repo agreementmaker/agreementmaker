@@ -99,7 +99,7 @@ public class SVGIconElement extends TextElement {
 	
 	@Override
 	public void draw(Graphics g) {
-		
+		if( g == null ) return;
 		if( icon != null && container != null ) icon.paintIcon(container, g, x, y);
 		else System.out.println("ERROR: Null icon/container.");
 		
