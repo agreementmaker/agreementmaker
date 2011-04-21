@@ -90,7 +90,7 @@ public class UIMenu implements ActionListener {
 	private JMenuItem ontologyDetails, ontologyProfiling;
 	
 	// Tools menu.
-	private JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation;//, informationMatching;
+	private JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation, informationMatching;
 	
 	// Matchers menu.
 	private JMenuItem userFeedBack, newMatching, runMatching, copyMatching, deleteMatching, clearAll, 
