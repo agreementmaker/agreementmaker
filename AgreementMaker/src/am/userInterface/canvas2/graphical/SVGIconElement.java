@@ -41,8 +41,9 @@ public class SVGIconElement extends TextElement {
 	 * @param ontID
 	 * @param icon
 	 * @param iconText
+	 * @throws Exception 
 	 */
-	public SVGIconElement(int x1, int y1, int width, int height, Component comp, int ontID, SVGIcon icon, String iconText) {
+	public SVGIconElement(int x1, int y1, int width, int height, Component comp, int ontID, SVGIcon icon, String iconText) throws Exception {
 		super(x1, y1, width, height, null, ontID);
 		
 		this.icon = icon;
@@ -51,6 +52,8 @@ public class SVGIconElement extends TextElement {
 		this.icon.setPreferredSize(new Dimension(width,height));
 		this.type = NodeType.ICON_ELEMENT;
 		
+		if( comp == null ) throw new Exception("Cannot have a null component.");
+		if( icon == null ) throw new Exception("Cannot have a null icon.");
 		container = comp;
 	}
 	
@@ -97,7 +100,8 @@ public class SVGIconElement extends TextElement {
 	@Override
 	public void draw(Graphics g) {
 		
-		icon.paintIcon(container, g, x, y);
+		if( icon != null && container != null ) icon.paintIcon(container, g, x, y);
+		else System.out.println("ERROR: Null icon/container.");
 		
 		//g.drawRect(x, y, icon.getIconWidth(), icon.getIconHeight());
 		
