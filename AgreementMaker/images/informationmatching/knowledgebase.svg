@@ -7,38 +7,12 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
    width="65.013397"
    height="75.570854"
-   id="svg2"
-   version="1.1"
-   inkscape:version="0.48.1 r9760"
-   sodipodi:docname="New document 1">
+   id="svg2">
   <defs
      id="defs4" />
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="1.979899"
-     inkscape:cx="128.97454"
-     inkscape:cy="69.259418"
-     inkscape:document-units="px"
-     inkscape:current-layer="layer1"
-     showgrid="false"
-     fit-margin-top="0"
-     fit-margin-left="0"
-     fit-margin-right="0"
-     fit-margin-bottom="0"
-     inkscape:window-width="1440"
-     inkscape:window-height="850"
-     inkscape:window-x="0"
-     inkscape:window-y="25"
-     inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -52,24 +26,31 @@
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(-46.642856,-46.147895)">
+     transform="translate(-46.642856,-46.147895)"
+     id="layer1">
     <path
-       style="opacity:0.98999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        d="m 47.15625,55.84375 0,56.09375 0,0.34375 0.03125,0 c 0.636956,4.96545 14.701299,8.9375 31.96875,8.9375 17.270354,0 31.3362,-3.97088 31.96875,-8.9375 l 0.0312,0 0,-0.34375 0,-56.09375 -64,0 z"
        id="rect3755"
-       inkscape:connector-curvature="0" />
+       style="opacity:0.98999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
     <path
-       sodipodi:type="arc"
-       style="opacity:0.98999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.00222969;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       d="m 111.42857,55.933609 a 32.142857,9.2857141 0 1 1 -64.285713,0 32.142857,9.2857141 0 1 1 64.285713,0 z"
+       transform="matrix(0.99555557,0,0,1,0.20952301,0)"
        id="path2985"
-       sodipodi:cx="79.285713"
-       sodipodi:cy="55.933609"
-       sodipodi:rx="32.142857"
-       sodipodi:ry="9.2857141"
-       d="m 111.42857,55.933609 c 0,5.128358 -14.390847,9.285714 -32.142857,9.285714 -17.752009,0 -32.142856,-4.157356 -32.142856,-9.285714 0,-5.128358 14.390847,-9.285714 32.142856,-9.285714 17.75201,0 32.142857,4.157356 32.142857,9.285714 z"
-       transform="matrix(0.99555557,0,0,1,0.20952301,0)" />
+       style="opacity:0.98999999;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.00222969;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <path
+       d="m 51.274097,36.726841 a 19.123207,4.6612816 0 1 1 -38.246414,0 19.123207,4.6612816 0 1 1 38.246414,0 z"
+       transform="translate(46.642856,46.147895)"
+       id="path2987"
+       style="fill:none;stroke:#000000;stroke-width:0.99999994;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.99999988, 1.99999988;stroke-dashoffset:0" />
+    <path
+       d="m 51.274097,36.726841 a 19.123207,4.6612816 0 1 1 -38.246414,0 19.123207,4.6612816 0 1 1 38.246414,0 z"
+       transform="translate(46.642856,52.147895)"
+       id="path2989"
+       style="fill:none;stroke:#000000;stroke-width:0.99999994;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.99999988, 1.99999988;stroke-dashoffset:0" />
+    <path
+       d="m 51.274097,36.726841 a 19.123207,4.6612816 0 1 1 -38.246414,0 19.123207,4.6612816 0 1 1 38.246414,0 z"
+       transform="translate(46.642856,58.147895)"
+       id="path2991"
+       style="fill:none;stroke:#000000;stroke-width:0.99999994;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.99999988, 1.99999988;stroke-dashoffset:0" />
   </g>
 </svg>
