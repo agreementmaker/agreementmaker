@@ -24,8 +24,6 @@ import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
-import edu.uic.advis.im.userInterface.InformationMatchingMenu;
-
 import am.AMException;
 import am.GlobalStaticVariables;
 import am.Utility;
@@ -38,6 +36,7 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
+import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.profiling.ProfilingDialog;
 import am.app.userfeedbackloop.ui.UFLControlGUI;
@@ -56,6 +55,7 @@ import am.userInterface.table.MatchersTablePanel;
 import am.visualization.MatcherAnalyticsPanel;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 import am.visualization.matrixplot.MatrixPlotPanel;
+import edu.uic.advis.im.userInterface.InformationMatchingMenu;
 
 
 public class UIMenu implements ActionListener {
@@ -87,7 +87,7 @@ public class UIMenu implements ActionListener {
 					  menuLexiconsBuildAll;
 	
 	// Ontology menu.
-	private JMenuItem ontologyDetails, ontologyProfiling;
+	private JMenuItem ontologyDetails, ontologyViewEntityList, ontologyProfiling;
 	
 	// Tools menu.
 	private JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation;
@@ -755,6 +755,25 @@ public class UIMenu implements ActionListener {
 				// Lexicons -> Clear all ...
 				if( Utility.displayConfirmPane("Are you sure you want to clear the existing lexicons?\nYou will lose any parameters that were set.", "Clear lexicons?") )
 					Core.getLexiconStore().clear();
+			} else if( obj == ontologyViewEntityList ) {
+				Ontology sourceOntology = Core.getInstance().getSourceOntology();
+				System.out.println("Source Classes:");
+				for( Node currentClass : sourceOntology.getClassesList() ) {
+					System.out.println(currentClass.toString());
+				}
+				System.out.println("Source Properties:");
+				for( Node currentProp : sourceOntology.getPropertiesList() ) {
+					System.out.println(currentProp.toString());
+				}
+				Ontology targetOntology = Core.getInstance().getTargetOntology();
+				System.out.println("Target Classes:");
+				for( Node currentClass : targetOntology.getClassesList() ) {
+					System.out.println(currentClass.toString());
+				}
+				System.out.println("Taget Properties:");
+				for( Node currentProp : targetOntology.getPropertiesList() ) {
+					System.out.println(currentProp.toString());
+				}
 			}
 			
 			
@@ -1162,6 +1181,10 @@ public class UIMenu implements ActionListener {
 		ontologyDetails.addActionListener(this); 
 		ontologyMenu.add(ontologyDetails);
 		
+		ontologyViewEntityList = new JMenuItem("View entity list");
+		ontologyViewEntityList.addActionListener(this);
+		ontologyMenu.add(ontologyViewEntityList);
+		
 		ontologyMenu.addSeparator();
 		
 		ontologyProfiling = new JMenuItem("Profiling ...");
@@ -1214,6 +1237,15 @@ public class UIMenu implements ActionListener {
 		thresholdAnalysis.addActionListener(this);
 		matchersMenu.add(thresholdAnalysis);
 		
+		TEMP_matcherAnalysisClasses = new JMenuItem("Matcher Analysis: Classes");
+		TEMP_matcherAnalysisClasses.addActionListener(this);
+		
+		TEMP_matcherAnalysisProp = new JMenuItem("Matcher Analysis: Properties");
+		TEMP_matcherAnalysisProp.addActionListener(this);
+		
+		matchersMenu.addSeparator();
+		matchersMenu.add(TEMP_matcherAnalysisClasses);
+		matchersMenu.add(TEMP_matcherAnalysisProp);
 		
 		// *************************** TOOLS MENU ****************************
 		toolsMenu = new JMenu("Tools");
