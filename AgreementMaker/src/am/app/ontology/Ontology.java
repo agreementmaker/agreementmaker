@@ -22,6 +22,38 @@ public class Ontology {
 	
 	public static final int ID_NONE = -1;  // used when there is no ontology id.
 	
+	// local title
+	public static final String TARGETTITLE = "Target Ontology";
+	// ontology title
+	public static final String SOURCETITILE = "Source Ontology";
+	//	OWL File type representation
+	public static final int SOURCENODE = 0;
+	//	OWL File type representation
+	public static final int TARGETNODE = 1;
+	public static final int XMLFILE = 2;
+	public static final int OWLFILE = 1;
+	public static final int RDFSFILE = 0;
+	public static final int TABBEDTEXT = 3;
+	//public static final int DAMLFILE = 3;
+	
+	public static final int RDFXML = 0;
+	public static final int RDFXMLABBREV = 1;
+	public static final int NTRIPLE = 2;
+	public static final int N3  = 3;
+	public static final int TURTLE = 4;
+
+	public final static String SYNTAX_RDFXML = "RDF/XML";
+	public final static String SYNTAX_RDFXMLABBREV = "RDF/XML-ABBREV";
+	public final static String SYNTAX_NTRIPLE = "N-TRIPLE";
+	public final static String SYNTAX_N3 = "N3";
+	public final static String SYNTAX_TURTLE = "TURTLE";
+	public final static String[] syntaxStrings  = {SYNTAX_RDFXML, SYNTAX_RDFXMLABBREV, SYNTAX_NTRIPLE, SYNTAX_N3, SYNTAX_TURTLE};
+	public final static String LANG_RDFS = "RDFS";
+	public final static String LANG_OWL = "OWL";
+	public final static String LANG_XML = "XML";
+	public final static String LANG_TABBEDTEXT = "Tabbed TEXT";
+	public static final String[] languageStrings = {LANG_RDFS, LANG_OWL, LANG_XML, LANG_TABBEDTEXT};
+	
 	public static final int SOURCE = GlobalStaticVariables.SOURCENODE;
 	public static final int TARGET = GlobalStaticVariables.TARGETNODE;
 	
