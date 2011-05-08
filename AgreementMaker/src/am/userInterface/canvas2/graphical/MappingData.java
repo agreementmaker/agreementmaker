@@ -29,7 +29,7 @@ public class MappingData extends GraphicalData {
 	
 	public MappingData(int x1, int y1, int width, int height, Canvas2Layout l, 
 						OntResource res1, OntResource res2, int OntID1, int OntID2, int mID, MappingType t ) {
-		super(x1, y1, width, height, res1, NodeType.MAPPING, l);
+		super(x1, y1, width, height, res1, NodeType.MAPPING, l, 0);
 
 		r2 = res2;
 		ontologyID = OntID1;

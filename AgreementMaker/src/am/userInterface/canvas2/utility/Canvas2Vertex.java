@@ -31,6 +31,11 @@ import am.utility.DirectedGraphVertex;
  *
  */
 
+// TODO: Canvas2Vertex should not expose the getObject() method, but instead should
+// 		 have getters/setters for all the data in the object().
+//       But that would not allow you to use any of the classes that extend GraphicalData.
+//		 So that would have to be left up to classes that extend Canvas2Vertex.
+
 public class Canvas2Vertex extends DirectedGraphVertex<GraphicalData, GraphicalData> implements OntologyConceptGraphics {  // we have to extend the DGVertex because we need access to the adjacency lists
 
 
@@ -59,6 +64,7 @@ public class Canvas2Vertex extends DirectedGraphVertex<GraphicalData, GraphicalD
 	
 	
 	public void setVisible(boolean vis ) { d.visible = vis; }
+	public boolean isVisible() { return d.visible; }
 	public boolean isVisible(Rectangle bounds) {
 		
 		if( d == null ) return false;  // if we don't have any graphical data, we are not visible.
@@ -66,6 +72,7 @@ public class Canvas2Vertex extends DirectedGraphVertex<GraphicalData, GraphicalD
 		//if( graph != null ) { if( !graph.visible ) return false; }  // if the graph isn't visible, any of its elements aren't visible either
 		
 		if( !d.visible ) return false;  // if our node was set to be invisible, so no need to check bounds
+		if( bounds == null ) return true; // if no retangle is passed in and we are visible, return true.
 		
 		int x1 = (int) bounds.getX();
 		int y1 = (int) bounds.getY();

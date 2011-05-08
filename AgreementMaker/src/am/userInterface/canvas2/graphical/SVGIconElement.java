@@ -1,12 +1,17 @@
 package am.userInterface.canvas2.graphical;
 
-import java.awt.Component;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import am.userInterface.canvas2.utility.Canvas2Layout;
 
@@ -15,9 +20,11 @@ import com.kitfox.svg.app.beans.SVGIcon;
 public class SVGIconElement extends TextElement {
 
 	private SVGIcon icon;
-	private int iconBottomMargin = 3; // the space between the icon and the text (in pixels);
+	public static final int ICON_BOTTOM_MARGIN = 3; // the space between the icon and the text (in pixels);
 
-	private Component container;
+	private JPanel container;
+	
+	private BufferedImage I;
 	
 	public SVGIconElement(int x1, int y1, int width, int height, Canvas2Layout l, int ontID, SVGIcon icon, String iconText) {
 		super(x1, y1, width, height, l, ontID);
@@ -29,6 +36,14 @@ public class SVGIconElement extends TextElement {
 		this.type = NodeType.ICON_ELEMENT;
 		
 		container = l.getVizPanel();
+		
+		if( icon != null && container != null ) {
+			I = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+			icon.paintIcon(null, I.getGraphics(), 0, 0);
+		}
+		
+		if( getTextWidth() > width ) this.width = getTextWidth();
+		this.height = height + ICON_BOTTOM_MARGIN + getTextHeight();
 	}
 
 	/**
@@ -43,7 +58,7 @@ public class SVGIconElement extends TextElement {
 	 * @param iconText
 	 * @throws Exception 
 	 */
-	public SVGIconElement(int x1, int y1, int width, int height, Component comp, int ontID, SVGIcon icon, String iconText) throws Exception {
+	public SVGIconElement(int x1, int y1, int width, int height, JPanel comp, int ontID, SVGIcon icon, String iconText) throws Exception {
 		super(x1, y1, width, height, null, ontID);
 		
 		this.icon = icon;
@@ -52,9 +67,19 @@ public class SVGIconElement extends TextElement {
 		this.icon.setPreferredSize(new Dimension(width,height));
 		this.type = NodeType.ICON_ELEMENT;
 		
+		if( icon != null && comp != null ) {
+			I = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g = (Graphics2D)I.getGraphics();
+			icon.paintIcon(null, g, 0, 0);
+		}
+		
+		if( getTextWidth() > width ) this.width = getTextWidth();
+		this.height = height + ICON_BOTTOM_MARGIN + getTextHeight();
+		
 		if( comp == null ) throw new Exception("Cannot have a null component.");
 		if( icon == null ) throw new Exception("Cannot have a null icon.");
 		container = comp;
+		
 	}
 	
 	/**
@@ -96,16 +121,42 @@ public class SVGIconElement extends TextElement {
 	 * @return svgSalamaner icon.
 	 */
 	public SVGIcon getIcon() {	return icon; }
-	
+
 	@Override
 	public void draw(Graphics g) {
 		if( g == null ) return;
-		if( icon != null && container != null ) icon.paintIcon(container, g, x, y);
-		else System.out.println("ERROR: Null icon/container.");
 		
-		//g.drawRect(x, y, icon.getIconWidth(), icon.getIconHeight());
+		Graphics2D gPlotArea = (Graphics2D)g;
+
 		
-		g.drawString( text, x, y + getTextHeight() + icon.getIconHeight() + iconBottomMargin);
+		
+		// icon.paintIcon(container, g, x, y);
+
+		if( hover ) {
+			Composite c = gPlotArea.getComposite();
+			gPlotArea.setComposite(AlphaComposite.SrcAtop);
+			gPlotArea.drawImage(I, x, y, null);
+			gPlotArea.setColor(new Color(0,255,0,128));
+			gPlotArea.fillRect(x, y, icon.getIconWidth(), icon.getIconHeight());
+			gPlotArea.setComposite(c);
+			gPlotArea.setColor(Color.BLACK);
+			g.drawRect(x-5, y-5, width+10, height+10);
+		} else {
+			gPlotArea.drawImage(I, x, y, null);
+		}
+		
+		gPlotArea.setColor(container.getBackground());
+		g.fillRect( x, y + icon.getIconHeight() + ICON_BOTTOM_MARGIN + 4, getTextWidth(), getTextHeight());
+		
+		if( selected ) {
+			gPlotArea.setColor(new Color(255,255,0,64));
+			g.fillRect( x-2, y + icon.getIconHeight() + ICON_BOTTOM_MARGIN + 4, getTextWidth()+4, getTextHeight());
+			gPlotArea.setColor(Color.BLACK);
+			g.drawRect( x-2, y + icon.getIconHeight() + ICON_BOTTOM_MARGIN + 4, getTextWidth()+4, getTextHeight());
+		}
+		
+		gPlotArea.setColor(Color.BLACK);
+		g.drawString( text, x, y + getTextHeight() + icon.getIconHeight() + ICON_BOTTOM_MARGIN);
 			
 	}
 }

@@ -16,11 +16,13 @@ public class Canvas2Edge extends DirectedGraphEdge<GraphicalData, GraphicalData>
 	
 	public void draw(Graphics g) { /* This function must be implemented in the subclass. */	}
 	public void setVisible( boolean v ) { d.visible = v; }
+	public boolean isVisible() { return d.visible; }
 	public boolean isVisible(Rectangle bounds) {
 		//if( graph != null ) { if( !graph.visible ) return false; }  // if the graph isn't visible, any of its elements aren't visible either
 		if( d == null ) return false; // no GraphicalData -> no visibility
 		
 		if( !d.visible ) return false;  // if our node was set to be invisible, so no need to check bounds
+		if( bounds == null ) return true;  // we are visible is no rectangle is passed in (works with the line above)
 		
 		int x1 = (int) bounds.getX();
 		int y1 = (int) bounds.getY();
@@ -35,6 +37,7 @@ public class Canvas2Edge extends DirectedGraphEdge<GraphicalData, GraphicalData>
 		return true;
 		
 	}
+	
 	
 	//public void setGraph(CanvasGraph g ) { graph = g; } // the graph to which this egde belongs to
 	/**

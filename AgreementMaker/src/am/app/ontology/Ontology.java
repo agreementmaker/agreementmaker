@@ -240,6 +240,9 @@ public class Ontology {
 	// used for mapping from OntResource to Nodes
 	private HashMap<OntResource, Node> mapOntResource2Node_Classes = null;
 	private HashMap<OntResource, Node> mapOntResource2Node_Properties = null;
+
+	private String description;
+	
 	public void setOntResource2NodeMap(HashMap<OntResource, Node> processedSubs, alignType atype) {
 		if( atype == alignType.aligningClasses ) {
 			mapOntResource2Node_Classes = processedSubs;
@@ -281,5 +284,8 @@ public class Ontology {
 		
 		throw new Exception("Cannot search for nodeType == " + aType.toString() );
 	}
+	
+	public void setDescription(String desc) { this.description = desc; }
+	public String getDescription() { return description; }
 	
 }

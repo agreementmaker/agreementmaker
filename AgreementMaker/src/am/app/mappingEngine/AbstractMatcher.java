@@ -266,7 +266,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	if( sourceOntology == null ) {
     		if( Core.getInstance().getSourceOntology() == null ) {
     			// no source ontology defined or loaded
-    			return;
+    			throw new Exception("No source ontology is loaded!");
     		} else {
     			// the source Ontology is not defined, but a Source ontology is loaded in the Core. Use that.
     			sourceOntology = Core.getInstance().getSourceOntology();
@@ -276,7 +276,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	if( targetOntology == null ) {
     		if( Core.getInstance().getTargetOntology() == null ) {
     			// no target ontology defined or loaded
-    			return;
+    			throw new Exception("No target ontology is loaded!");
     		} else {
     			// the target Ontology is not defined as part of this matcher, but a Target ontology is loaded in the Core.  Use that.
     			targetOntology = Core.getInstance().getTargetOntology();

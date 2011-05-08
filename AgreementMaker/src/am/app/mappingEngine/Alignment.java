@@ -18,6 +18,8 @@ public class Alignment<E extends Mapping> extends ArrayList<E>
 	private int sourceOntologyID;
 	private int targetOntologyID;
 	
+	private String fileName; // where is this alignment found?
+	
 	/**
 	 * A set of mappings between two ontologies.  
 	 * 
@@ -108,6 +110,9 @@ public class Alignment<E extends Mapping> extends ArrayList<E>
     public int getSourceOntologyID() { return sourceOntologyID; }
     public int getTargetOntologyID() { return targetOntologyID; }
    
+    public String getFileName() { return fileName; }
+    public void setFileName(String fileName) { this.fileName = fileName; }
+    
 /*    *//** ****************** Serialization methods *******************//*
 	
 	  *//**

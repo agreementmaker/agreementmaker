@@ -156,22 +156,26 @@ public class CanvasGraph extends DirectedGraph<Canvas2Edge, Canvas2Vertex>  {
 		}
 
 		
+		boolean mod = false;
+		if( x1 < x ) { // if the new element is to the left of the current bounds.
+			w += x - x1;  // expand the graph so the right bound is where it was before
+			x = x1; // move the bounds to the left
+			mod=true; 
+		}  
+		if( y1 < y ) { // if the new element is above the current bounds.
+			h += y - y1; // expand the graph down
+			y = y1; // move the graph up
+			mod=true; 
+		}
+		
+		// IMPORTANT TO CALCULATE THESE VARIABLES AFTER THE FIRST TWO IF STATEMENTS!!!
+		// The first two if statements change x, w, y, and h which are variables used to
+		// calculate l and m.  So they must be calculated after the if statements.
 		int l  = x + w;  // the highest x coordinate of the current bounds
 		int l1 = x1 + w1;  // the highest x coordinate of the element
 		int m  = y + h;  // the highest y coordinate of the current bounds
 		int m1 = y1 + h1; // the highest y coordinate of the element
 		
-		boolean mod = false;
-		if( x1 < x ) { // if the new element is to the left of the current bounds.
-			x = x1; // move the bounds to the left
-			w += x - x1;  // expand the graph so the right bound is where it was before
-			mod=true; 
-		}  
-		if( y1 < y ) { // if the new element is above the current bounds.
-			y = y1; // move the graph up
-			h += y - y1; // expand the graph down
-			mod=true; 
-		} 
 		if( l1 > l ) { // if the new element is to the right of the bounds
 			w += l1 - l; // expand the graph to the right
 			mod=true; 
