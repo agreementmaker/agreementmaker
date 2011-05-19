@@ -127,7 +127,6 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			skip[1].setEnabled(false);
 		}
 
-		this.addWindowListener(ui.new WindowEventHandler());
 		this.pack(); // automatically set the frame size
 		this.setLocationRelativeTo(null); 	// center the window on the screen
 		this.setResizable(false);

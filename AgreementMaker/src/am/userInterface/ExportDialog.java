@@ -307,7 +307,6 @@ public class ExportDialog extends JDialog implements ActionListener{
 	
 		getRootPane().setDefaultButton(btnSave);
 		
-		addWindowListener(Core.getUI().new WindowEventHandler());
 		pack(); // automatically set the frame size
 		setLocationRelativeTo(null); 	// center the window on the screen
 		setVisible(true);

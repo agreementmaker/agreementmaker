@@ -1316,7 +1316,7 @@ public class UIMenu implements ActionListener {
 	  * Function that is called when to user wants to close the program. 
 	  */
 	 public void confirmExit() {
-		int n = JOptionPane.showConfirmDialog(Core.getUI().getUIFrame(),"Are you sure you want to exit ?","Exit Agreement Maker",JOptionPane.YES_NO_OPTION);
+		int n = JOptionPane.showConfirmDialog(Core.getUI().getUIFrame(),"Are you sure you want to exit ?\n\nYou will lose any unsaved alignments!\n","Exit AgreementMaker",JOptionPane.YES_NO_OPTION);
 		if (n == JOptionPane.YES_OPTION)
 		{
 			System.out.println("Exiting the program.\n");

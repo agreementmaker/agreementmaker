@@ -8,6 +8,7 @@ import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -100,10 +101,6 @@ public class UI {
 		frame = new JFrame("AgreementMaker");
 		frame.getContentPane().setLayout(new BorderLayout());
 		
-		// TODO: Ask the user if he wants to exit the program.  But that might be annoying. (Or they might lose unsaved data!)
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // if the user closes the window from the window manager, close the application.
-		
-		
 		// created the tabbed pane.
 		tabbedPane = new JTabbedPane();
 		
@@ -117,8 +114,19 @@ public class UI {
 		tabbedPane.addTab("AgreementMaker", null, classicAM, "AgreementMaker");
 		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		
-		//Add the listener to close the frame.
-		frame.addWindowListener(new WindowEventHandler());
+		// confirmExit if the user is trying to close the window.
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frame.addWindowListener(new WindowListener() {
+			@Override public void windowOpened(WindowEvent e) {}
+			@Override public void windowIconified(WindowEvent e) {}
+			@Override public void windowDeiconified(WindowEvent e) {}
+			@Override public void windowDeactivated(WindowEvent e) {}
+			@Override public void windowClosing(WindowEvent e) {
+				uiMenu.confirmExit();
+			}
+			@Override public void windowClosed(WindowEvent e) {}
+			@Override public void windowActivated(WindowEvent e) {}
+		});
 		
 		// set frame size (width = 1000 height = 700)
 		//frame.setSize(900,600);
@@ -221,22 +229,6 @@ public class UI {
 			ex.printStackTrace();
 			return false;
 		}
-	}
-
-	/**
-	 * Class to close the frame and exit the application
-	 */
-	public class WindowEventHandler extends WindowAdapter
-	{
-		/**
-		 * Function which closes the window
-		 * @param e WindowEvent Object
-		 */
-		public void windowClosing(WindowEvent e)
-	{
-		e.getWindow().dispose();
-		//System.exit(0);   
-	}
 	}
 	
 	public void redisplayCanvas() {	classicAM.getVisualizationPanel().repaint(); }    
