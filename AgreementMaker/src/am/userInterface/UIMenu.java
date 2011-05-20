@@ -1319,7 +1319,6 @@ public class UIMenu implements ActionListener {
 		int n = JOptionPane.showConfirmDialog(Core.getUI().getUIFrame(),"Are you sure you want to exit ?\n\nYou will lose any unsaved alignments!\n","Exit AgreementMaker",JOptionPane.YES_NO_OPTION);
 		if (n == JOptionPane.YES_OPTION)
 		{
-			System.out.println("Exiting the program.\n");
 			System.exit(0);   
 		}
 	 }
