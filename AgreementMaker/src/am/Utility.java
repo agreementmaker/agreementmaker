@@ -25,7 +25,7 @@ import java.util.Locale;
 public class Utility {
 	public final static String UNEXPECTED_ERROR = "Unexpected System Error.\nTry to reset the system and repeat the operation.\nContact developers if the error persists.";
 	public final static String OUT_OF_MEMORY = "Operation aborted\n\n" +
-											   "The system run out of memory.\n" +
+											   "The system has run out of memory.\n" +
 											   "Try to run the system with more heap space\n" +
 											   "(e.g., java -Xms64m -Xmx2048m -jar AgreementMaker.jar).";
 	
@@ -246,12 +246,21 @@ public class Utility {
 		return sum;
 	}
 	
+	/**
+	 * @param array An array of doubles.
+	 * @return Average = sum of all array entries / length.
+	 */
 	public static double getAverageOfArray(double[] array) {
 		double sum = getSumOfArray(array);
 		sum = sum / (double) array.length;
 		return sum;
 	}
 	
+	/**
+	 * 
+	 * @param array
+	 * @return
+	 */
 	public static double getAverageOfArrayNonZeroValues(double[] array) {
 		double sum=0;
 		double tot = 0;
