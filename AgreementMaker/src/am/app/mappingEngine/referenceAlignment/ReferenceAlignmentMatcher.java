@@ -124,7 +124,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 					localnames = true;					
 			}
 			
-			System.out.println("LOCALNAMES:"+localnames);
+			//System.out.println("LOCALNAMES:"+localnames);
 			
 			Iterator<MatchingPair> it = referenceListOfPairs.iterator();
 			
