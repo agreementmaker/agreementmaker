@@ -27,6 +27,7 @@ import javax.swing.GroupLayout.Alignment;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -358,9 +359,11 @@ public class ImportDialog extends JDialog implements ActionListener{
 					
 					ReferenceAlignmentParameters refParams = new ReferenceAlignmentParameters();
 					
-					refParams.fileName = inFileName;
-					refParams.format = ReferenceAlignmentMatcher.OAEI;
+					refParams.fileName = inFileName;  // the path of the input file name as a String
+					refParams.format = ReferenceAlignmentMatcher.OAEI;  // set the format
 					referenceAlignmentMatcher.setParam(refParams);
+					referenceAlignmentMatcher.setSourceOntology(Core.getInstance().getSourceOntology()); // set the source ontology
+					referenceAlignmentMatcher.setTargetOntology(Core.getInstance().getTargetOntology()); // set the target ontology
 					
 					referenceAlignmentMatcher.setThreshold(referenceAlignmentMatcher.getDefaultThreshold());
 					referenceAlignmentMatcher.setMaxSourceAlign(referenceAlignmentMatcher.getDefaultMaxSourceRelations());

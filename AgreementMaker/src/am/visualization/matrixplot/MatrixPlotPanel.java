@@ -234,6 +234,7 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 	public SimilarityMatrix getMatrix() { return plot.getMatrix(); }
 	//public boolean popupMenuActive() { return popupMenuActive; }
 	public boolean getViewAlignmentOnly() { return plot.getViewAlignmentOnly(); }
+	public boolean getViewReferenceAlignment() { return plot.getViewReferenceAlignment(); }
 
 	
 	/** These mouse event functions are not used yet. **/
@@ -269,6 +270,11 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 		if( e.getActionCommand().equals( MatrixPlotPopupMenu.ActionCommands.VIEW_ALIGNMENT.name()  ) ) {
 			// for this matcher, toggle the viewAlignmentOnly option.
 			plot.setViewAlignmentOnly( !plot.getViewAlignmentOnly() );
+		}
+		
+		if( e.getActionCommand().equals( MatrixPlotPopupMenu.ActionCommands.VIEW_REF_ALIGNMENT.name()  ) ) {
+			// for this matcher, toggle the viewAlignmentOnly option.
+			plot.setViewReferenceAlignment( !plot.getViewReferenceAlignment() );
 		}
 		
 		if( e.getActionCommand().length() > MatrixPlotPopupMenu.ActionCommands.VIEW_CLUSTER.name().length() + 1 ) {
@@ -365,6 +371,8 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 		
 	}
 
+	public void setName(String newName) { lblName.setText(newName); }
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void receiveEvent(MatcherAnalyticsEvent e) {
@@ -399,6 +407,10 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 			plot.setCluster(null);
 		}
 		
+	}
+
+	public void setCluster(Cluster<Mapping> c) { 
+		plot.setCluster(c); 
 	}
 	
 }

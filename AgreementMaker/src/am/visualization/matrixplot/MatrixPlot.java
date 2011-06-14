@@ -29,12 +29,13 @@ public class MatrixPlot extends JPanel {
 	private final VisualizationType type;
 	
 	protected int squareSize = 8;
-	private int border = 0;
+	private int border = 2;
 	private BufferedImage I;
 	private Point selected = null;
 	
 	private MatrixPlotPanel enclosingPanel = null; // set if we are using a MatrixPlotPanel
 	private boolean viewAlignmentOnly = false;
+	private boolean viewReferenceAlignment = true;
 	
 	private Alignment<Mapping> referenceAlignmentSet = null;
 	private Color referenceAlignmentColor = Color.RED;
@@ -225,7 +226,7 @@ public class MatrixPlot extends JPanel {
 			}
 			
 			// add the dots for the reference alignment.
-			if ( referenceAlignmentSet != null )
+			if ( referenceAlignmentSet != null && viewReferenceAlignment)
 			for( Mapping a : referenceAlignmentSet ) {
 				int row = translateRow(a.getEntity1().getIndex());
 				int col = translateCol(a.getEntity2().getIndex());
@@ -296,6 +297,16 @@ public class MatrixPlot extends JPanel {
 			repaint();
 		}
 	}
+	public void setViewReferenceAlignment( boolean vref ) {
+		if( (vref && !viewReferenceAlignment) || (!vref && viewReferenceAlignment) ) {
+			// View Reference Alignment has been toggled.  Update the drawing.
+			viewReferenceAlignment = vref;
+			createImage(true);
+			repaint();
+		}
+	}
+	
+	public boolean getViewReferenceAlignment() { return viewReferenceAlignment; }
 	public boolean getViewAlignmentOnly() { return viewAlignmentOnly; }
 	
 	/**
@@ -304,7 +315,7 @@ public class MatrixPlot extends JPanel {
 	public void setPlotSize() { 
 		if( matrix.getRows() * squareSize > 1000 || matrix.getColumns() * squareSize > 1000 ) {
 			// image is too big to display
-			// TODO: Fix this.
+			// FIXME: Implement a SCALABLE VISUALIZATION!!!!! 
 			tooBig = true;
 			setPreferredSize( new Dimension( 100,100 ) );
 		} else {
@@ -326,7 +337,7 @@ public class MatrixPlot extends JPanel {
 		
 		super.paintComponent(g);
 		
-		if( tooBig ) return; // TODO: Remove this!!!!! 
+		if( tooBig ) return; // FIXME: Implement a SCALABLE VISUALIZATION!!!!! 
 		
 		Graphics2D gPlotArea = (Graphics2D)g;
 

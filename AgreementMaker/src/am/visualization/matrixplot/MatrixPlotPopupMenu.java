@@ -14,7 +14,7 @@ public class MatrixPlotPopupMenu extends JPopupMenu {
 
 	// used instead of string for action commands
 	public enum ActionCommands {
-		SET_REFERENCE, VIEW_ALIGNMENT, VIEW_CLUSTER, CLEAR_CLUSTER, REMOVE_PLOT, SET_FEEDBACK, VIEW_ORDERED_PLOT;
+		SET_REFERENCE, VIEW_ALIGNMENT, VIEW_CLUSTER, CLEAR_CLUSTER, REMOVE_PLOT, SET_FEEDBACK, VIEW_ORDERED_PLOT, VIEW_REF_ALIGNMENT;
 	}
 	
 	
@@ -32,6 +32,10 @@ public class MatrixPlotPopupMenu extends JPopupMenu {
 	    JCheckBoxMenuItem miViewAlignment = new JCheckBoxMenuItem("View only Alignment");
 	    				  miViewAlignment.setActionCommand(ActionCommands.VIEW_ALIGNMENT.name());
 	    				  miViewAlignment.setSelected(listener.getViewAlignmentOnly());
+	    JCheckBoxMenuItem miViewReference = new JCheckBoxMenuItem("View Reference Alignment");
+		    			  miViewReference.setActionCommand(ActionCommands.VIEW_REF_ALIGNMENT.name());
+		    			  miViewReference.setSelected(listener.getViewReferenceAlignment());
+
 	    JMenu miViewCluster = new JMenu("View cluster...");
 	    JMenuItem miClearCluster = new JMenuItem("Clear cluster");
 	    		  miClearCluster.setActionCommand(ActionCommands.CLEAR_CLUSTER.name());

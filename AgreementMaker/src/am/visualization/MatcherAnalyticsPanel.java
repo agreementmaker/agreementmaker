@@ -28,6 +28,8 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.MatcherChangeEvent;
 import am.app.mappingEngine.MatcherChangeListener;
+import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.evaluation.clustering.Cluster;
@@ -269,7 +271,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			
 	}
 
-	private void addPlot(AbstractMatcher a, SimilarityMatrix matrix) {
+	private MatrixPlotPanel addPlot(AbstractMatcher a, SimilarityMatrix matrix) {
 		
 		
 		MatrixPlotPanel newPlot = new MatrixPlotPanel(a, matrix, this);
@@ -285,9 +287,11 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		wrap.layoutContainer(pnlPlots);
 		revalidate();
 		repaint();
+		
+		return newPlot;
 	}
 
-	private void addPlot(String name, SimilarityMatrix matrix, Gradient g) {
+	private MatrixPlotPanel addPlot(String name, SimilarityMatrix matrix, Gradient g) {
 		
 		
 		MatrixPlotPanel newPlot = new MatrixPlotPanel(name, matrix, this, g);
@@ -301,6 +305,8 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		wrap.layoutContainer(pnlPlots);
 		revalidate();
 		repaint();
+		
+		return newPlot;
 	}
 	
 	/** EVENT LISTENERS **/
@@ -378,8 +384,16 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			Node tNode = null;
 			if( selectedMapping == null ) {
 				// we have to dig deeper.
-				Ontology source = plotPanel.getMatcher().getSourceOntology();
-				Ontology target = plotPanel.getMatcher().getTargetOntology();
+				Ontology source = null;
+				Ontology target = null;
+				if( plotPanel.getMatcher() == null ) {
+					// null matcher, get everything from Core
+					source = Core.getInstance().getSourceOntology();
+					target = Core.getInstance().getTargetOntology();
+				} else {
+					source = plotPanel.getMatcher().getSourceOntology();
+					target = plotPanel.getMatcher().getTargetOntology();
+				}
 				if( source != null && target != null ) {
 					if( type == VisualizationType.CLASS_MATRIX ) {
 						sNode = source.getClassesList().get(mapRowCol.x);
@@ -394,7 +408,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 				tNode = selectedMapping.getEntity2();
 			}
 			if( sNode != null && tNode != null ) {
-				// TODO: Display graphical representation of the node, not text.
+				// FIXME: Display interactive graphical representation of the node, not text.
 				lblMapping.setText(sNode.getLocalName() + " <--> " + tNode.getLocalName());
 			}
 		}
@@ -418,8 +432,31 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		
 		// fire an event telling the plots to display the cluster
 		
-		MatcherAnalyticsEvent displayClusterEvent = new MatcherAnalyticsEvent(this, EventType.DISPLAY_CLUSTER, c);
-		broadcastEvent(displayClusterEvent);
+		
+		
+		//MatcherAnalyticsEvent displayClusterEvent = new MatcherAnalyticsEvent(this, EventType.DISPLAY_CLUSTER, c);
+		//broadcastEvent(displayClusterEvent);
+		
+		switch( type ) {
+		case CLASS_MATRIX: {
+			SimilarityMatrix matrix = new ArraySimilarityMatrix(Core.getInstance().getSourceOntology().getClassesList().size(), 
+																Core.getInstance().getTargetOntology().getClassesList().size(),
+																alignType.aligningClasses);	
+			MatrixPlotPanel newPanel = addPlot("Cluster View", matrix, new Gradient(Color.WHITE, Color.WHITE));
+			newPanel.setCluster(c);
+			break;
+		}
+		case PROPERTIES_MATRIX: {
+			SimilarityMatrix matrix = new ArraySimilarityMatrix(Core.getInstance().getSourceOntology().getPropertiesList().size(), 
+					Core.getInstance().getTargetOntology().getPropertiesList().size(),
+					alignType.aligningProperties);	
+			MatrixPlotPanel newPanel = addPlot("Cluster View", matrix, new Gradient(Color.WHITE, Color.WHITE));
+			newPanel.setCluster(c);
+			break;
+		}
+		}
+		
+		
 	}
 
 	public void buildDisagreementMatrix() {
