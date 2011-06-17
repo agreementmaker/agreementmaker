@@ -171,6 +171,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 		}
 		
 		if( progressDialog != null ) progressDialog.append("Creating Jena Model ... ");
+		FileManager.get().resetCache();
 		Model basemodel = FileManager.get().loadModel(ontology.getFilename(), ontology.getFormat());
 		if( progressDialog != null ) progressDialog.appendLine("done.");
 		
