@@ -1320,4 +1320,12 @@ public class UIMenu implements ActionListener {
 			System.exit(0);   
 		}
 	 }
+	 
+	 public JMenu getMenu(String name) {
+		 if( name.equals("Tools") ) {
+			 return toolsMenu;
+		 }
+
+		 return null;
+	 }
 }
