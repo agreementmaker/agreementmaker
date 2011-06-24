@@ -55,7 +55,7 @@ import am.userInterface.table.MatchersTablePanel;
 import am.visualization.MatcherAnalyticsPanel;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 import am.visualization.matrixplot.MatrixPlotPanel;
-import edu.uic.advis.im.userInterface.InformationMatchingMenu;
+//import edu.uic.advis.im.userInterface.InformationMatchingMenu;
 
 
 public class UIMenu implements ActionListener {
@@ -1265,8 +1265,6 @@ public class UIMenu implements ActionListener {
 		
 		
 		// Tools -> Information Matching
-		JMenu informationMatching = new InformationMatchingMenu(ui);
-		toolsMenu.add(informationMatching);
 		
 		// Build help menu in the menu bar.
 		helpMenu = new JMenu("Help");
