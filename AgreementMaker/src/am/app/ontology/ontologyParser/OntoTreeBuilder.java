@@ -40,7 +40,8 @@ public class OntoTreeBuilder extends TreeBuilder{
 		// Profile definitions. Used in loading ontologies in different ways
 		public enum Profile {
 			defaultProfile,  // Pellet reasoner
-			noReasoner  // no reasoner at all.
+			noReasoner,  // no reasoner at all.
+			noFileManager, // do not use the Jena File Manager
 		}
 
 	//instance variables
@@ -107,9 +108,12 @@ public class OntoTreeBuilder extends TreeBuilder{
 	 * Create a root node for the given concepts and add child nodes for
 	 * the subclasses. Return null for owl:Nothing 
 	 * 
+	 * @deprecated Please use buildTree(OntoTreeBuilder.Profile).
+	 * 
 	 * @param concepts
 	 * @return
 	 */
+	@Deprecated
 	protected void buildTree() {
 		if( noReasoner ) {
 			buildTree( OntoTreeBuilder.Profile.noReasoner );
@@ -132,7 +136,9 @@ public class OntoTreeBuilder extends TreeBuilder{
 		timer.start();
 		
 		switch ( prof ) {
-		
+		case noFileManager:
+			buildTreeNoFileManager();
+			break;
 		case defaultProfile:
 			buildTreeDefault();
 			break;
@@ -164,6 +170,49 @@ public class OntoTreeBuilder extends TreeBuilder{
 		buildTreeNoReasoner();
 	}
 	
+	/**
+	 * This method constructs the ontology without using the Jena File Manager.
+	 * This is to avoid dereferencing URIs.
+	 */
+	protected void buildTreeNoFileManager() {
+		if( ontURI == null ) {
+			ontURI = "file:"+ontology.getFilename();
+		}
+		
+		if( progressDialog != null ) progressDialog.append("Creating Jena Model ... ");
+		
+		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, null );
+		model.read( ontURI, null, ontology.getFormat() );
+		
+		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
+		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
+			ns = model.getNsPrefixMap().get("").toString();
+			ontology.setURI(ns);
+		}
+		catch(Exception e) {
+			skipOtherNamespaces = false;
+			ontology.setURI("");
+		}
+		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
+
+		if( progressDialog != null ) progressDialog.append("Creating AgreementMaker data structures ... ");
+
+		//Preparing model
+		model.prepare();		
+		
+		ontology.setModel(model);
+		
+		
+		createDataStructures();
+		
+		if( progressDialog != null ) progressDialog.appendLine("done.");
+	}
+	
+	
+	/**
+	 * The default method for loading ontologies.
+	 * This method pulls in referenced ontologies by dereferencing their URIs.
+	 */
 	protected void buildTreeNoReasoner() {
 	
 		if( ontURI == null ) {
@@ -197,6 +246,12 @@ public class OntoTreeBuilder extends TreeBuilder{
 		
 		ontology.setModel(model);
 		
+		createDataStructures();
+        
+        if( progressDialog != null ) progressDialog.appendLine("done.");
+	}
+	
+	private void createDataStructures() {
 		// Use OntClass for convenience
         owlThing = model.getOntClass( OWL.Thing.getURI() );
         OntClass owlNothing = model.getOntClass( OWL.Nothing.getURI() );
@@ -227,8 +282,6 @@ public class OntoTreeBuilder extends TreeBuilder{
         ontology.setPropertiesTree( propertyRoot);
         
         ontology.setTreeCount(treeCount); 
-        
-        if( progressDialog != null ) progressDialog.appendLine("done.");
 	}
 	
 	/**
