@@ -1,6 +1,7 @@
 package am.userInterface.table;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -12,7 +13,7 @@ import am.userInterface.UI;
 
 import java.awt.Color;
 
-public class MyTableModel extends AbstractTableModel {
+public class MatchersControlPanelTableModel extends AbstractTableModel {
 		
 
 	private static final long serialVersionUID = 1L;
@@ -91,7 +92,7 @@ public class MyTableModel extends AbstractTableModel {
                 Color.pink
                 };
 
-        public MyTableModel() {
+        public MatchersControlPanelTableModel() {
         	super();
 	    }
 
@@ -197,6 +198,8 @@ public class MyTableModel extends AbstractTableModel {
         	}
         }
 
+        public List<AbstractMatcher> getData() { return data; }
+        
         /*
          * JTable uses this method to determine the default renderer/
          * editor for each cell.  If we didn't implement this method,
@@ -329,7 +332,7 @@ public class MyTableModel extends AbstractTableModel {
         	}
         	catch(Exception e) {
         		e.printStackTrace();
-        		System.out.println("There is a development error in the table data management, the Exception get catched to keep the system running, check the error");
+        		System.out.println("There is a development error in the table data management, the Exception got caught to keep the system running, check the error");
         	}
         	return update;
 		}

@@ -21,7 +21,7 @@ public class MatchersTable extends JTable {
 	 */
 	private static final long serialVersionUID = 3268258464854514945L;
 
-	public MatchersTable(MyTableModel mt) {
+	public MatchersTable(MatchersControlPanelTableModel mt) {
 		super(mt);
 	}
 	// when the viewport shrinks below the preferred size, stop tracking the viewport width

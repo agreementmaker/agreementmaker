@@ -44,7 +44,7 @@ public class MatchersTablePanel extends JPanel {
     public MatchersTablePanel() {
         super(new GridLayout(1,1));
         
-        MyTableModel mt = new MyTableModel();
+        MatchersControlPanelTableModel mt = new MatchersControlPanelTableModel();
         table = new  MatchersTable(mt);
         table.setPreferredScrollableViewportSize(new Dimension(500, 70));
         table.setFillsViewportHeight(true);
@@ -62,27 +62,27 @@ public class MatchersTablePanel extends JPanel {
         
         //Fiddle with the column's cell editors/renderers: THRESHOLD
         JComboBox comboTh = new JComboBox(Utility.getPercentStringList());
-        TableColumn thColumn = table.getColumnModel().getColumn(MyTableModel.THRESHOLD);
+        TableColumn thColumn = table.getColumnModel().getColumn(MatchersControlPanelTableModel.THRESHOLD);
         thColumn.setCellEditor(new DefaultCellEditor(comboTh));
         thColumn.setCellRenderer(renderer);
         
         //Fiddle with the column's cell editors/renderers: NUM RELATIONS FOR SOURCE AND TARGET
         JComboBox comboNumRelations = new JComboBox(Utility.getNumRelList());
-        TableColumn SRelColumn = table.getColumnModel().getColumn(MyTableModel.SRELATIONS);
+        TableColumn SRelColumn = table.getColumnModel().getColumn(MatchersControlPanelTableModel.SRELATIONS);
         SRelColumn.setCellEditor(new DefaultCellEditor(comboNumRelations));
         SRelColumn.setCellRenderer(renderer);
-        TableColumn TRelColumn = table.getColumnModel().getColumn(MyTableModel.TRELATIONS);
+        TableColumn TRelColumn = table.getColumnModel().getColumn(MatchersControlPanelTableModel.TRELATIONS);
         TRelColumn.setCellEditor(new DefaultCellEditor(comboNumRelations));
         TRelColumn.setCellRenderer(renderer);
         
-        TableColumn inputColumn = table.getColumnModel().getColumn(MyTableModel.INPUTMATCHERS);
+        TableColumn inputColumn = table.getColumnModel().getColumn(MatchersControlPanelTableModel.INPUTMATCHERS);
         InputMatchersEditor mc = new InputMatchersEditor();
         inputColumn.setCellEditor(mc);
         inputColumn.setCellRenderer(renderer);
         
         ColorRenderer cr = new ColorRenderer(true);
         ColorEditor ce = new ColorEditor();
-        TableColumn colorColumn = table.getColumnModel().getColumn(MyTableModel.COLOR);
+        TableColumn colorColumn = table.getColumnModel().getColumn(MatchersControlPanelTableModel.COLOR);
         colorColumn.setCellEditor(ce);
         colorColumn.setCellRenderer(cr);
         
@@ -106,7 +106,7 @@ public class MatchersTablePanel extends JPanel {
      * contents, then you can just use column.sizeWidthToFit().
      */
     private void initColumnSizes(JTable table) {
-    	  MyTableModel model = (MyTableModel)table.getModel();
+    	  MatchersControlPanelTableModel model = (MatchersControlPanelTableModel)table.getModel();
           TableColumn column = null;
           Component comp = null;
           TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
@@ -118,7 +118,7 @@ public class MatchersTablePanel extends JPanel {
                       null, column.getHeaderValue(),
                       false, false, 0, 0);
               width = 0;
-          	if(i == MyTableModel.INPUTMATCHERS || i == MyTableModel.NAME){
+          	if(i == MatchersControlPanelTableModel.INPUTMATCHERS || i == MatchersControlPanelTableModel.NAME){
           		width = 175;
           	}
           	else{
@@ -184,7 +184,7 @@ public class MatchersTablePanel extends JPanel {
     
     public void addMatcher(AbstractMatcher a) {
     	Core.getInstance().addMatcherInstance(a);
-    	TableColumn inputColumn = table.getColumnModel().getColumn(MyTableModel.INPUTMATCHERS);
+    	TableColumn inputColumn = table.getColumnModel().getColumn(MatchersControlPanelTableModel.INPUTMATCHERS);
     	InputMatchersEditor mc = (InputMatchersEditor)inputColumn.getCellEditor();
     	mc.addEditor(a);
     	insertedRows(a.getIndex(), a.getIndex());
@@ -208,7 +208,7 @@ public class MatchersTablePanel extends JPanel {
     
     public void removeMatcher(AbstractMatcher a) {
     	Core.getInstance().removeMatcher(a);
-    	TableColumn inputColumn = table.getColumnModel().getColumn(MyTableModel.INPUTMATCHERS);
+    	TableColumn inputColumn = table.getColumnModel().getColumn(MatchersControlPanelTableModel.INPUTMATCHERS);
     	InputMatchersEditor mc = (InputMatchersEditor)inputColumn.getCellEditor();
     	mc.removeEditor(a);
     	deletedRows(a.getIndex(), a.getIndex());

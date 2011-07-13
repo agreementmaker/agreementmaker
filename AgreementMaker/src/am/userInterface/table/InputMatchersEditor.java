@@ -41,7 +41,7 @@ public class InputMatchersEditor extends AbstractCellEditor implements TableCell
 		}
 		else {
 			s = new String[1];
-			s[0] = MyTableModel.NONE;
+			s[0] = MatchersControlPanelTableModel.NONE;
 		}
 		jc = new JComboBox(s);
 		DefaultCellEditor dfc = new DefaultCellEditor(jc);

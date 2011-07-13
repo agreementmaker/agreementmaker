@@ -1,5 +1,20 @@
 package am.userInterface.canvas2;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
@@ -18,26 +33,10 @@ import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
 import am.userInterface.canvas2.layouts.LegacyLayout;
 import am.userInterface.canvas2.nodes.LegacyMapping;
 import am.userInterface.canvas2.utility.Canvas2Edge;
-import am.userInterface.canvas2.utility.Canvas2Layout;
 import am.userInterface.canvas2.utility.Canvas2Vertex;
 import am.userInterface.canvas2.utility.CanvasGraph;
 import am.userInterface.canvas2.utility.GraphLocator;
 import am.userInterface.canvas2.utility.GraphLocator.GraphType;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 
 /**
@@ -354,6 +353,9 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 				if( gr.getID() == matcherID11 ) {
 					AbstractMatcher a = Core.getInstance().getMatcherByID(matcherID11);
 					gr.setVisible(a.getShown());
+					for( Canvas2Edge edge : gr.getEdges() ) {  // added the for loop because of the filtering changes! - Cosmin.
+						edge.getObject().visible = a.getShown();
+					}
 					break;
 				}
 			}

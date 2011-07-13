@@ -4,6 +4,8 @@ package am.userInterface;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -38,7 +40,7 @@ import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.table.MatchersTablePanel;
 
-public class MatchersControlPanel extends JPanel implements ActionListener {
+public class MatchersControlPanel extends JPanel implements ActionListener, MouseListener {
 
 	private static final long serialVersionUID = -2258009700001283026L;
 
@@ -74,6 +76,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 				
 		//TABLE PANEL:center panel
 		matchersTablePanel = new MatchersTablePanel();
+		matchersTablePanel.getTable().addMouseListener(this);
 		
 		//JPANEL EDIT MATCHINGS
 		matchButton = new JButton("Match!");
@@ -99,28 +102,28 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 		thresholdTuning = new JButton("Tuning");
 		thresholdTuning.addActionListener(this);
 		
-		JPanel panel3 = new JPanel();
-		panel3.setLayout(new FlowLayout(FlowLayout.LEADING));
-		panel3.add(matchButton);
-		panel3.add(newMatching);
-		panel3.add(copyButton);
-		panel3.add(delete);
-		panel3.add(clearMatchings);
-		panel3.add(exportAlignmentsButton);
-		panel3.add(refEvaluate);
-		panel3.add(qualityEvaluationButton);
-		panel3.add(exportAlignmentsButton);
-		panel3.add(importAlignmentsButton);
-		panel3.add(thresholdTuning);
+		JPanel fauxToolBar = new JPanel();  // a toolbar wannabe
+		fauxToolBar.setLayout(new FlowLayout(FlowLayout.LEADING));
+		fauxToolBar.add(matchButton);
+		fauxToolBar.add(newMatching);
+		fauxToolBar.add(copyButton);
+		fauxToolBar.add(delete);
+		fauxToolBar.add(clearMatchings);
+		fauxToolBar.add(exportAlignmentsButton);
+		fauxToolBar.add(refEvaluate);
+		fauxToolBar.add(qualityEvaluationButton);
+		fauxToolBar.add(exportAlignmentsButton);
+		fauxToolBar.add(importAlignmentsButton);
+		fauxToolBar.add(thresholdTuning);
 		
 		// Layout
 		layout.setHorizontalGroup( layout.createParallelGroup() 
-				.addComponent(panel3)
+				.addComponent(fauxToolBar)
 				.addComponent(matchersTablePanel)
 		);
 		
 		layout.setVerticalGroup( layout.createSequentialGroup() 
-				.addComponent(panel3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE )
+				.addComponent(fauxToolBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE )
 				.addComponent(matchersTablePanel)
 		);
 		
@@ -719,4 +722,18 @@ public class MatchersControlPanel extends JPanel implements ActionListener {
 	public MatchersTablePanel getMatchersTablePanel() {
 		return matchersTablePanel;
 	}
+
+	@Override public void mouseClicked(MouseEvent e) { 
+		if( e.getSource() == matchersTablePanel.getTable() 
+				&& e.getButton() == MouseEvent.BUTTON3 ) {
+			// right click
+			MatchersControlPanelPopupMenu popup = new MatchersControlPanelPopupMenu(this);
+			popup.show(matchersTablePanel.getTable(), e.getX(), e.getY());
+		}
+	}
+
+	@Override public void mouseEntered(MouseEvent e) {}
+	@Override public void mouseExited(MouseEvent e) {}
+	@Override public void mousePressed(MouseEvent e) {}
+	@Override public void mouseReleased(MouseEvent e) {}
 }

@@ -9,7 +9,7 @@ import com.hp.hpl.jena.ontology.OntClass;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.IntDoublePair;
-import am.userInterface.table.MyTableModel;
+import am.userInterface.table.MatchersControlPanelTableModel;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -126,7 +126,7 @@ public class Utility {
 		int max = 100;
 		int spin = 1;
 		String[] list  = new String[(max/spin)+1];
-		String any = MyTableModel.ANY;
+		String any = MatchersControlPanelTableModel.ANY;
 		for(int i =min, j =0; i <= max && j<list.length-1; i+=spin, j++) {
 			list[j] = i+"";
 		}
@@ -149,7 +149,7 @@ public class Utility {
 	public static String getStringFromNumRelInt(int n) {
 		String s;
 		if(n ==AbstractMatcher.ANY_INT)
-			s = MyTableModel.ANY;
+			s = MatchersControlPanelTableModel.ANY;
 		else s = n+"";
 		return s;
 	}

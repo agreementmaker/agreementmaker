@@ -19,6 +19,8 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JViewport;
 
+import org.apache.log4j.Logger;
+
 import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.ontology.Ontology;
@@ -180,7 +182,11 @@ public class UI {
 	public boolean openFile( String filename, int ontoType, int syntax, int language, boolean skip, boolean noReasoner, boolean onDisk, String onDiskDirectory, boolean onDiskPersistent) {
 		try{
 			JPanel jPanel = null;
-			System.out.println("opening file");
+			
+			Logger log = Logger.getLogger(UI.class);
+			
+			if( log.isInfoEnabled() ) log.info("Opening file: " + filename );
+			
 			if(language == GlobalStaticVariables.RDFSFILE)//RDFS
 				jPanel = new VertexDescriptionPane(GlobalStaticVariables.RDFSFILE);//takes care of fields for XML files as well
 			else if(language == GlobalStaticVariables.OWLFILE)//OWL

@@ -213,6 +213,20 @@ public class Mapping implements Serializable
         }
     }
     
+    /**
+     * Returns true if the input Mapping is considering the same source and target concepts.
+     * Ignore if the relation types are not equal.
+     */
+    public boolean equalsIgnoreRelation(Mapping alignment)
+    {
+        if (entity1.equals(alignment.getEntity1()) 
+                && entity2.equals(alignment.getEntity2())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     public boolean equals(Object o){
 		if(o instanceof Mapping){
 			Mapping alignment = (Mapping)o;
