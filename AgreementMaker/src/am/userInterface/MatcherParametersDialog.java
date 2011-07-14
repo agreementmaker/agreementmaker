@@ -145,9 +145,15 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		String name = matcher.getRegistryEntry().getMatcherName();
 		setTitle(name+": additional parameters");
 		//This is the specific panel defined by the developer to set additional parameters to the specific matcher implemented
-		parametersPanel = matcher.getParametersPanel();
+		if(matcher.needsParam() && matcher.getParametersPanel() != null){  
+			parametersPanel = matcher.getParametersPanel(); 
+			settingsScroll = new JScrollPane(parametersPanel);
+		}
+		else { 
+			parametersPanel = null; 
+			settingsScroll = new JScrollPane();
+		}
 		
-		settingsScroll = createMatcherSettingsScroll(parametersPanel);
 		
 		initLayout();
 
@@ -382,14 +388,14 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		GroupLayout.ParallelGroup mainHorizontalGroup = matcherPanelLayout.createParallelGroup(Alignment.TRAILING, false);
 		if( showPresets ) mainHorizontalGroup.addComponent(topPanel);
 		if( showGeneralSettings ) mainHorizontalGroup.addComponent(generalPanel);
-		mainHorizontalGroup.addComponent(settingsScroll);	
+		if( settingsScroll != null ) mainHorizontalGroup.addComponent(settingsScroll);	
 		matcherPanelLayout.setHorizontalGroup( mainHorizontalGroup );
 		
 		// vertical setup
 		GroupLayout.SequentialGroup mainVerticalGroup = matcherPanelLayout.createSequentialGroup();
 		if( showPresets ) mainVerticalGroup.addComponent(topPanel);
 		if( showGeneralSettings ) mainVerticalGroup.addComponent(generalPanel);
-		mainVerticalGroup.addComponent(settingsScroll);
+		if( settingsScroll != null ) mainVerticalGroup.addComponent(settingsScroll);
 		matcherPanelLayout.setVerticalGroup( mainVerticalGroup ); 
 
 		matcherPanel.setLayout(matcherPanelLayout);	
