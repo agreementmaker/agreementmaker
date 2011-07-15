@@ -4,6 +4,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.apache.log4j.Logger;
+
 import com.hp.hpl.jena.ontology.OntClass;
 
 import am.app.Core;
@@ -11,6 +13,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.IntDoublePair;
 import am.userInterface.table.MatchersControlPanelTableModel;
 
+import java.awt.HeadlessException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -208,7 +211,12 @@ public class Utility {
 	public static void displayErrorPane(String desc, String title) {
 		if(title == null)
 			title = "Error";
-		JOptionPane.showMessageDialog(null, desc,title, JOptionPane.ERROR_MESSAGE);
+		try {
+			JOptionPane.showMessageDialog(null, desc,title, JOptionPane.ERROR_MESSAGE);
+		} catch( HeadlessException ex ) {
+			Logger log = Logger.getLogger(Utility.class);
+			log.error(desc);
+		}
 	}
 	
 	
