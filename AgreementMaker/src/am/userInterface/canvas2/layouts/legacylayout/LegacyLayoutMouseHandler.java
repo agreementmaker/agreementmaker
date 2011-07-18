@@ -531,6 +531,7 @@ public class LegacyLayoutMouseHandler {
 		
 		// Setup our commonly used variables.
 		Canvas2 vizpanel = layout.getVizPanel();
+		if( vizpanel == null ) return; // viz panel is not set yet.
 		Canvas2Vertex hoveringOver = layout.getHoveringOver();
 		Graphics g = vizpanel.getGraphics();
 		
@@ -557,7 +558,7 @@ public class LegacyLayoutMouseHandler {
 	 * @return true if we are hovering over something, false if we're hovering over nothing (empty space)
 	 */
 	public boolean updateHoveringOver(Point mousePosition) {
-		
+		if( layout.getVizPanel() == null ) return false; // no viz panel set
 		Graphics g = layout.getVizPanel().getGraphics();
 		
 		boolean hoveringOverEmptySpace = true;

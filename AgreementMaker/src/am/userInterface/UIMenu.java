@@ -87,7 +87,7 @@ public class UIMenu implements ActionListener {
 					  menuLexiconsBuildAll;
 	
 	// Ontology menu.
-	private JMenuItem ontologyDetails, ontologyViewEntityList, ontologyProfiling;
+	private JMenuItem ontologyDetails, ontologyViewEntityList, ontologyProfiling, ontologyAlternateHierarchy;
 	
 	// Tools menu.
 	private JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation;
@@ -774,6 +774,9 @@ public class UIMenu implements ActionListener {
 				for( Node currentProp : targetOntology.getPropertiesList() ) {
 					System.out.println(currentProp.toString());
 				}
+			} else if( obj == ontologyAlternateHierarchy ) {
+				ViewAlternateHierachyDialog dialog = new ViewAlternateHierachyDialog();
+				dialog.setVisible(true); // blocks here until the dialog is dismissed.
 			}
 			
 			
@@ -1191,6 +1194,11 @@ public class UIMenu implements ActionListener {
 		ontologyProfiling.addActionListener(this);
 		ontologyMenu.add(ontologyProfiling);
 		
+		ontologyMenu.addSeparator();
+		
+		ontologyAlternateHierarchy = new JMenuItem("View alternate hierachy...");
+		ontologyAlternateHierarchy.addActionListener(this);
+		ontologyMenu.add(ontologyAlternateHierarchy);
 		
 		
 		// **************** Matchers Menu *******************

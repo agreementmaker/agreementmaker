@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -28,10 +29,11 @@ public abstract class Canvas2Layout implements MouseInputListener,
 	protected Canvas2 vizpanel;
 	protected CanvasGraph layoutArtifactGraph;  // The artifact graph must be created in the constructor.
 	
+	public Canvas2Layout() {
+		// do nothing for now.
+	}
+	
 	public Canvas2Layout( Canvas2 vp ) {
-		if( vp == null ) {
-			throw new RuntimeException("Canvas2Layout cannot be initialized without a Canvas2");
-		}
 		vizpanel = vp;
 		layoutArtifactGraph = buildArtifactGraph();
 	}
@@ -74,7 +76,7 @@ public abstract class Canvas2Layout implements MouseInputListener,
 	 * Called from Canvas2.
 	 * This method will build the layout graph with the default layout for each ontology.
 	 */
-	public ArrayList<CanvasGraph> buildInitialGraphs() {
+	public List<CanvasGraph> buildInitialGraphs() {
 		/* This function must be implemented in the subclass. */
 		return new ArrayList<CanvasGraph>();
 	}
@@ -85,7 +87,7 @@ public abstract class Canvas2Layout implements MouseInputListener,
 	 * @param ont
 	 * @return
 	 */
-	public ArrayList<CanvasGraph> buildGlobalGraph( Ontology ont) {
+	public List<CanvasGraph> buildGlobalGraph( Ontology ont) {
 		/* This function must be implemented in the subclass. */
 		return new ArrayList<CanvasGraph>();
 	}
@@ -107,8 +109,7 @@ public abstract class Canvas2Layout implements MouseInputListener,
 	public boolean getShowLabel() { return true; }; // implemented in the subclass
 	public boolean getShowLocalName() { return true; }; // implemented in the subclass
 	
-	/**
-	 * Get the canvas which this layout controls. 
-	 */
+	public void setVizPanel( Canvas2 canvas ) { vizpanel = canvas; }
+	/** Get the canvas which this layout controls. */
 	public Canvas2 getVizPanel() { return vizpanel; }
 }

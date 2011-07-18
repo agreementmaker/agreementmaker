@@ -28,16 +28,29 @@ public class OntologyChangeEvent extends EventObject {
 	private EventType typeOfEvent;
 	private int ontologyID = 0;
 	
+	/**
+	 * @param s The source of this ontology change event. Usually it is the Core.
+	 */
 	public OntologyChangeEvent( Object s ) {
 		super(s);
 		typeOfEvent = EventType.NOT_SET;
 	}
-	
+
+	/**
+	 * @param s The source of this ontology change event. Usually it is the Core.
+	 * @param t This must be a value of the OntologyChangeEvent.EventType enum.
+	 */
 	public OntologyChangeEvent( Object s, EventType t ) {
 		super(s);
 		typeOfEvent = t;
 	}
-	
+
+	/**
+	 * 
+	 * @param s The source of this ontology change event. Usually it is the Core.
+	 * @param t This must be a value of the OntologyChangeEvent.EventType enum.
+	 * @param id The ID of the ontology that was changed.
+	 */
 	public OntologyChangeEvent( Object s, EventType t, int id ) {
 		super(s);
 		typeOfEvent = t;

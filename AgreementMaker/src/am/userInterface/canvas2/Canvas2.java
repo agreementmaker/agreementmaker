@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JScrollPane;
@@ -28,11 +29,12 @@ import am.userInterface.Colors;
 import am.userInterface.VisualizationChangeEvent;
 import am.userInterface.VisualizationChangeListener;
 import am.userInterface.VisualizationPanel;
-import am.userInterface.canvas2.graphical.MappingData;
 import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
+import am.userInterface.canvas2.graphical.MappingData;
 import am.userInterface.canvas2.layouts.LegacyLayout;
 import am.userInterface.canvas2.nodes.LegacyMapping;
 import am.userInterface.canvas2.utility.Canvas2Edge;
+import am.userInterface.canvas2.utility.Canvas2Layout;
 import am.userInterface.canvas2.utility.Canvas2Vertex;
 import am.userInterface.canvas2.utility.CanvasGraph;
 import am.userInterface.canvas2.utility.GraphLocator;
@@ -74,7 +76,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	private ArrayList<Canvas2Vertex> visibleVertices;  // everytime we paint the canvas, we keep a list of the visible nodes. (used in mouse movement functions)
 	private ArrayList<Canvas2Edge>   visibleEdges;  // also keep a list of visible edges
 	
-	private LegacyLayout layout; // the Canvas2Listener is the muscle of the operation, i.e. it does everything related to layout.
+	private Canvas2Layout layout; // the Canvas2Listener is the muscle of the operation, i.e. it does everything related to layout.
 	
 	public int Xpadding = 20;
 	public int Ypadding = 20;
@@ -106,13 +108,39 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		}
 	}
 	
+	/**
+	 * This constructor allows the use of a custom layout.
+	 */
+	public Canvas2(JScrollPane scrollPane, Canvas2Layout layout) {
+		super(scrollPane);
+		this.layout = layout;
+		
+		/* Setup the Listeners */
+		setLayout(new BorderLayout());
+		addMouseMotionListener(layout);
+		addMouseListener(layout);
+		//addMouseWheelListener(layout);  // TODO: Add this later.  For now let the jscrollpane listen for mouse wheel events.
+		viewport.addChangeListener(layout);
+		Core.getInstance().addOntologyChangeListener(this);
+		Core.getInstance().addMatcherChangeListener(this);
+		Core.getInstance().addVisualizationChangeListener(this);
+
+		graphs = new ArrayList<CanvasGraph>();	// this is our master list of graphs to be displayed
+		
+		
+		CanvasGraph artifacts = layout.getArtifactsGraph();  // The layout has its own artifacts.
+		if( artifacts != null ) {
+			graphs.add(artifacts);  // if there are artifacts that the layout uses, add that to the graph list so it's displayed
+		}
+	}
+	
 	public ArrayList<Canvas2Vertex> getVisibleVertices() { return visibleVertices; }
 	public ArrayList<Canvas2Edge>   getVisibleEdges()    { return visibleEdges; }
 	
 	/**
 	 * Ontology Change Listener methods 
 	 */
-	public void ontologyChanged(OntologyChangeEvent e) { 
+	public synchronized void ontologyChanged(OntologyChangeEvent e) { 
 		/**
 		 *  This function gets called when an ontology is added or removed to/from the Core.
 		 *  When this happens, we need to create the layout graph for the ontologies. 
@@ -154,7 +182,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	@Override
 	public void buildLayoutGraphs(Ontology ontology) {
 		// build the graph and put it in the repository, because we are not necessarily going to display it now
-		ArrayList<CanvasGraph> gr = layout.buildGlobalGraph(ontology);
+		List<CanvasGraph> gr = layout.buildGlobalGraph(ontology);
 		Iterator<CanvasGraph> graphIter = gr.iterator();
 		while( graphIter.hasNext() ) { graphIter.next().setVisible(false); } // initially the graphs should be invisible.  
 																			 // they will be displayed when displayOntology() is called.
@@ -408,7 +436,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	@Override public boolean getShowLabel() { return layout.getShowLabel(); }
 
 	@Override
-	public void visualizationSettingChanged(VisualizationChangeEvent e) {
+	public synchronized void visualizationSettingChanged(VisualizationChangeEvent e) {
 		
 		switch( e.getEvent() ) {
 		case TOGGLE_SHOWMAPPINGSSHORTNAME:

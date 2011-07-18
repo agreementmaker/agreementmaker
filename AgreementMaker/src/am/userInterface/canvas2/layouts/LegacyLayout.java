@@ -77,14 +77,14 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	public static final int VIEW_SINGLE_MAPPING = 1;
 	
 	/* FLAGS, and SETTINGS */
-	private boolean showLocalName = true;
-	private boolean showLabel     = false;
+	protected boolean showLocalName = true;
+	protected boolean showLabel     = false;
 //	private String  language      = "EN";
-	private String  labelAndNameSeparator = " || ";
+	protected String  labelAndNameSeparator = " || ";
 
-	private boolean[] pixelColumnDrawn;  // used for a very special hack in LegacyEdge.draw();  Read about it in that method.
+	protected boolean[] pixelColumnDrawn;  // used for a very special hack in LegacyEdge.draw();  Read about it in that method.
 									     // It's done in order to avoid unnecessary draws() and speed up the paint() function. 
-	private Rectangle pixelColumnViewport;  // required to know the correct index in the pixelColumnDrawn array.
+	protected Rectangle pixelColumnViewport;  // required to know the correct index in the pixelColumnDrawn array.
 
 	/**
 	 * An array of hashmaps that translate Jena OntResource object into AgreementMaker LegacyNode object for each individual ontology. 
@@ -94,10 +94,10 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	 * they would be considered identical in the hashmap.  Therefore we are left with the hope that every OntResource in one ontology will 
 	 * hash to a unique key, even if this guarantee does not hold across multiple ontologies.
 	 */
-	private ArrayList<Pair<Integer,HashMap<OntResource,LegacyNode>>> ConceptHashMaps; 
+	protected ArrayList<Pair<Integer,HashMap<OntResource,LegacyNode>>> ConceptHashMaps; 
 
 	//private HashMap<OntResource,LegacyNode> hashMap; // used in the graph building to avoid visiting the same nodes twice 
-	private LegacyNode anonymousNode;
+	protected LegacyNode anonymousNode;
 	
 	//private Dimension oldViewportDimensions;  // this variable is used in the stateChanged handler.
 
@@ -105,46 +105,54 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	 * Graph Building Variables.
 	 */
 	
-	private int subgraphXoffset = 20;
-	private int subgraphYoffset = 20;
-	private int depthIndent = 20;
-	private int marginBottom = 5;
-	private int nodeHeight = 20;
+	protected int subgraphXoffset = 20;
+	protected int subgraphYoffset = 20;
+	protected int depthIndent = 20;
+	protected int marginBottom = 5;
+	protected int nodeHeight = 20;
 	
-	private int leftGraphX = 20;
-	private int leftGraphY = 42;
-	private int rightGraphX = 500;
-	private int rightGraphY = 42;
-	private int middleDividerLeftMargin = 10;
-	private int middleDividerWidth = 1;
-	private int topDividerTopMargin = 20;
+	protected int leftGraphX = 20;
+	protected int leftGraphY = 42;
+	protected int rightGraphX = 500;
+	protected int rightGraphY = 42;
+	protected int middleDividerLeftMargin = 10;
+	protected int middleDividerWidth = 1;
+	protected int topDividerTopMargin = 20;
 	
-	private GraphicalNode middleDivider;
-	private GraphicalNode topDivider;
-	private GraphicalNode sourceOntologyText;
-	private GraphicalNode targetOntologyText;
+	protected GraphicalNode middleDivider;
+	protected GraphicalNode topDivider;
+	protected GraphicalNode sourceOntologyText;
+	protected GraphicalNode targetOntologyText;
 	//private OntClass owlThing;
 	
-	private boolean leftSideLoaded = false; 
-	private boolean rightSideLoaded = false;
-	private boolean leftSide;
+	protected boolean leftSideLoaded = false; 
+	protected boolean rightSideLoaded = false;
+	protected boolean leftSide;
 	
-	private int leftOntologyID = Ontology.ID_NONE;  // the ontology ID of the graphs on the left side of the canvas layout
-	private int rightOntologyID = Ontology.ID_NONE; // the ontology ID of the graphs on the right side of the canvas layout 
+	protected int leftOntologyID = Ontology.ID_NONE;  // the ontology ID of the graphs on the left side of the canvas layout
+	protected int rightOntologyID = Ontology.ID_NONE; // the ontology ID of the graphs on the right side of the canvas layout 
 
 	
 	/** Mouse Event handlers and Variables */
 	
-	private LegacyLayoutMouseHandler mouseHandler = new LegacyLayoutMouseHandler(this);
+	protected LegacyLayoutMouseHandler mouseHandler = new LegacyLayoutMouseHandler(this);
 	
-	private ArrayList<LegacyNode> selectedNodes;  // the list of currently selected nodes
-	private boolean PopupMenuActive = false;
+	protected ArrayList<LegacyNode> selectedNodes;  // the list of currently selected nodes
+	protected boolean PopupMenuActive = false;
 
-	private boolean SingleMappingView = false; 	// this is used when a mapping is doubleclicked with the left mouse button
+	protected boolean SingleMappingView = false; 	// this is used when a mapping is doubleclicked with the left mouse button
 												// in order to show only that specific mapping
-	private ArrayList<LegacyMapping> MovedMappings = new ArrayList<LegacyMapping>(); // we need to keep a list of the mappings we change for the SingleMappingView
-	private ArrayList<LegacyNode> SingleMappingMovedNodes = new ArrayList<LegacyNode>(); // we need to keep a list of the nodes we moved
+	protected ArrayList<LegacyMapping> MovedMappings = new ArrayList<LegacyMapping>(); // we need to keep a list of the mappings we change for the SingleMappingView
+	protected ArrayList<LegacyNode> SingleMappingMovedNodes = new ArrayList<LegacyNode>(); // we need to keep a list of the nodes we moved
 	
+	
+	public LegacyLayout() {
+		super();
+		ConceptHashMaps = new ArrayList<Pair<Integer,HashMap<OntResource,LegacyNode>>>();
+		
+		layoutArtifactGraph = buildArtifactGraph();  // build the artifact graph
+		selectedNodes = new ArrayList<LegacyNode>(); 	
+	}
 	
 	public LegacyLayout(Canvas2 vp) {
 		super(vp);
@@ -303,7 +311,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	 *
 	 */
 	@Override
-	public ArrayList<CanvasGraph> buildGlobalGraph( Ontology ont ) {
+	public List<CanvasGraph> buildGlobalGraph( Ontology ont ) {
 		
 		ArrayList<CanvasGraph> ontologyGraphs = new ArrayList<CanvasGraph>();
 		
@@ -503,7 +511,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	 * @param propertiesGraph
 	 * @return
 	 */
-	private CanvasGraph buildOntologyGraph(LegacyNode classesRoot,
+	protected CanvasGraph buildOntologyGraph(LegacyNode classesRoot,
 			LegacyNode propertiesRoot, Ontology ont) {
 		GraphicalData gr = classesRoot.getObject();
 		if( gr == null ) return null;
@@ -542,7 +550,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	 * They both add to the graph, and build it up.
 	 * 
 	 */
-	private LegacyNode buildClassGraph( OntModel m, CanvasGraph graph, Ontology ont, HashMap<OntResource,LegacyNode> hashMap ) {
+	protected LegacyNode buildClassGraph( OntModel m, CanvasGraph graph, Ontology ont, HashMap<OntResource,LegacyNode> hashMap ) {
 
 		Logger log = null;
 		if( Core.DEBUG ) {
@@ -562,7 +570,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		graph.insertVertex(root);
 		
 		//List<OntClass> classesList = OntTools.namedHierarchyRoots(m);
-		ArrayList<OntClass> classesList = getClassHierarchyRoots(m);
+		List<OntClass> classesList = getClassHierarchyRoots(m);
 		
 		depth++;
 		Iterator<OntClass> clsIter = classesList.iterator();
@@ -618,7 +626,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	}
 	
 	
-	private void recursiveBuildClassGraph(
+	protected void recursiveBuildClassGraph(
 			LegacyNode parentNode,
 			OntClass parentClass,  // this has to be passed because of anonymous classes and the special root node
 			int depth, 
@@ -989,7 +997,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	 * This function tries to identify the root nodes of the Class hierarchy of the ontology by 
 	 * searching for properties that do no have any super properties. 
 	 */
-	private ArrayList<OntClass> getClassHierarchyRoots(OntModel m) {
+	protected List<OntClass> getClassHierarchyRoots(OntModel m) {
 		
 		ArrayList<OntClass> roots = new ArrayList<OntClass>();
 		
