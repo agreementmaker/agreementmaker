@@ -468,7 +468,9 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	 * Update the position of the middle divider according to this globalGraph.
 	 */
 	private void updateArtifactGraph(int deepestY, int rightmostX, boolean leftSide ) {
-
+		// TODO: Make this method not depend on any arguments.
+		
+		if( vizpanel.getViewport() == null ) return;
 		
 		// update the x position of the middle divider
 		Rectangle viewportDim = vizpanel.getViewport().getBounds();

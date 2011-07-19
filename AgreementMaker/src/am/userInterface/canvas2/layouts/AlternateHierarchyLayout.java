@@ -30,7 +30,6 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
@@ -229,12 +228,12 @@ public class AlternateHierarchyLayout extends LegacyLayout {
 		String queryString  = "PREFIX owl: <http://www.w3.org/2002/07/owl#> \n";
 	       queryString += "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
 	       queryString += "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n";
-	       queryString += "SELECT ?subject ?object \n { \n";
-	       queryString += "?subject rdf:type owl:Class .";
-	       queryString += "?subject rdfs:subClassOf ?restriction .";
+	       queryString += "SELECT ?object ?subject \n { \n";
+	       queryString += "?object rdf:type owl:Class .";
+	       queryString += "?object rdfs:subClassOf ?restriction .";
 	       queryString += "?restriction rdf:type owl:Restriction .";
 	       queryString += "?restriction owl:onProperty <"+hierarchyProperty.getURI().toString()+"> .";
-	       queryString += "?restriction owl:someValuesFrom ?object .";
+	       queryString += "?restriction owl:someValuesFrom ?subject .";
 	       queryString += "}";
 		
         Query query = QueryFactory.create(queryString);
@@ -304,8 +303,6 @@ public class AlternateHierarchyLayout extends LegacyLayout {
 			if( parentsToChildrenMap.get( currentClass ) == null ) {
 				// this is a hierachy root.
 				hierarchyRoots.add(currentClass);
-			} else {
-				System.out.println("This is not a root: " + currentClass );
 			}
 		}
 		

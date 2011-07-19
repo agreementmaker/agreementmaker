@@ -9,6 +9,9 @@ public class VisualizationChangeEvent extends EventObject {
 
 	public enum VisualizationEventType {
 		TOGGLE_SHOWMAPPINGSSHORTNAME,  // View -> Mappings with Matcher Name
+		CONCEPT_SELECTED, // a concept was selected
+		TOGGLE_SYNCHRONIZATION, // toggle the View -> Synchronized Views
+		CUSTOM,
 		NOT_SET
 	}
 	

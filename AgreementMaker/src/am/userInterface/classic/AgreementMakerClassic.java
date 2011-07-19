@@ -21,6 +21,13 @@ import am.userInterface.canvas2.utility.CanvasGraph;
 import am.userInterface.canvas2.utility.GraphLocator;
 import am.userInterface.find.FindInterface;
 
+/**
+ * This panel is the classic view of AgreementMaker.
+ * 
+ * It displays a Canvas2 next to two side panes, and a 
+ * matchers control panel at the bottom of the window.
+ * 
+ */
 public class AgreementMakerClassic extends JPanel implements FindInterface {
 
 	private static final long serialVersionUID = -1913594055550719146L;
@@ -31,21 +38,25 @@ public class AgreementMakerClassic extends JPanel implements FindInterface {
 	private Canvas2 canvas;
 	private MatchersControlPanel matcherControlPanel;
 	
-	public AgreementMakerClassic() {
-		
-		setLayout( new BorderLayout() );
-				
+	/** This constructor creates a new Canvas2 object which will be contained in this panel. */
+	public AgreementMakerClassic() { super(); canvas = new Canvas2(); initialize(); }
+	
+	/** This constructor allows the user to specify a custom Canvas2 */
+	public AgreementMakerClassic(Canvas2 canvas) { super(); this.canvas = canvas; initialize(); }
+	
+	/** This method executes the operations common to all constructors. */
+	private void initialize() {
 		scrollPane = new JScrollPane();
 		scrollPane.setWheelScrollingEnabled(true);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(20);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
-		// create a VisualizationPanel
-		canvas = new Canvas2(scrollPane);
-		canvas.setFocusable(true);
-		scrollPane.setViewportView(canvas);		
+		
+		setLayout( new BorderLayout() );
+		
+		scrollPane.setViewportView(canvas);
 		canvas.setScrollPane(scrollPane);
+		canvas.setFocusable(true);
 
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, null);
 		splitPane.setOneTouchExpandable(true);
@@ -63,12 +74,11 @@ public class AgreementMakerClassic extends JPanel implements FindInterface {
 		
 		add(outerSplitPane, BorderLayout.CENTER);
 		
-		
 		//add(matcherControlPanel, BorderLayout.PAGE_END);
 	}
 	
+ 
 	public JSplitPane getSplitPane() { return splitPane; }
-	
 	
 	public VisualizationPanel getVisualizationPanel() { return canvas; }
 	

@@ -1,6 +1,5 @@
 package am.userInterface;
 
-import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,8 +12,6 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 import am.Utility;
 import am.app.Core;
@@ -24,6 +21,7 @@ import am.app.ontology.OntologyChangeEvent.EventType;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.layouts.AlternateHierarchyLayout;
+import am.userInterface.classic.AgreementMakerClassic;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
@@ -167,18 +165,12 @@ public class ViewAlternateHierachyDialog extends JDialog implements ActionListen
 	}
 	
 
-	private void createNewHierarcyTab(OntProperty sourceProperty,
+	public void createNewHierarcyTab(OntProperty sourceProperty,
 			OntProperty targetProperty) {
-		
-		JPanel panel = new JPanel(new BorderLayout());
-		
-		JScrollPane js = new JScrollPane();
-		js.getVerticalScrollBar().setBlockIncrement(50);
 		
 		AlternateHierarchyLayout altLayout = new AlternateHierarchyLayout(sourceProperty, targetProperty);
 		
-		Canvas2 canvas = new Canvas2(js, altLayout);
-		
+		Canvas2 canvas = new Canvas2(altLayout);
 		altLayout.setVizPanel(canvas);
 		
 		if( Core.getInstance().sourceIsLoaded() ) {
@@ -193,10 +185,10 @@ public class ViewAlternateHierachyDialog extends JDialog implements ActionListen
 					new OntologyChangeEvent(this, EventType.ONTOLOGY_ADDED, Core.getInstance().getTargetOntology().getID()));
 		}
 		
-		js.setViewportView(canvas);
-		panel.add(js, BorderLayout.CENTER);
 		
-		Core.getUI().addTab("Alternate Hierarchy", null, panel, null);
+		AgreementMakerClassic amPanel = new AgreementMakerClassic(canvas);
+				
+		Core.getUI().addTab("Alternate Hierarchy", null, amPanel, null);
 		
 	}
 

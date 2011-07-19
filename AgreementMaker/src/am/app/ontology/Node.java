@@ -618,6 +618,23 @@ public class Node implements Serializable, Comparable<Node>{
 		return false;
 	}
 	
+	// TODO: This is a bug fix for getChildren().  Will replace the getChildren() with this one once it has been confirmed.
+	public static ArrayList<Node> getChildren(Node n) {
+		ArrayList<Node> result = new ArrayList<Node>();
+		
+		ArrayList<Vertex> vertexList = n.getVertexList();
+		for( Vertex v : vertexList ) {
+			if( !v.isLeaf() ) {
+				Enumeration<Vertex> c = v.children();
+				while( c.hasMoreElements() ) {
+					Vertex child = (Vertex)c.nextElement();
+					result.add(child.getNode());
+				}
+			}
+		}
+		return result;
+	}
+	
 	public ArrayList<Node> getChildren(){
 		ArrayList<Node> result = new ArrayList<Node>();
 		Vertex v = getVertex();

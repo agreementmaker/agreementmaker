@@ -25,6 +25,9 @@ public class VisualizationPanel extends JPanel {
 	
 	private static final long serialVersionUID = -6609778504803522544L;
 	
+	public VisualizationPanel() {
+		super();
+	}
 	
 	public VisualizationPanel( JScrollPane s ) {
 		super();

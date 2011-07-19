@@ -84,54 +84,28 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 
 	private boolean painting = false;
 	
-	public Canvas2(JScrollPane s) {
-		super(s);
-		
-		layout = new LegacyLayout(this);
-		
-		/* Setup the Listeners */
-		setLayout(new BorderLayout());
-		addMouseMotionListener(layout);
-		addMouseListener(layout);
-		//addMouseWheelListener(layout);  // TODO: Add this later.  For now let the jscrollpane listen for mouse wheel events.
-		viewport.addChangeListener(layout);
-		Core.getInstance().addOntologyChangeListener(this);
-		Core.getInstance().addMatcherChangeListener(this);
-		Core.getInstance().addVisualizationChangeListener(this);
-
-		graphs = new ArrayList<CanvasGraph>();	// this is our master list of graphs to be displayed
-		
-		
-		CanvasGraph artifacts = layout.getArtifactsGraph();  // The layout has its own artifacts.
-		if( artifacts != null ) {
-			graphs.add(artifacts);  // if there are artifacts that the layout uses, add that to the graph list so it's displayed
-		}
-	}
+	/* ************************************************* CONSTRUCTORS ********************************* */
 	
-	/**
-	 * This constructor allows the use of a custom layout.
-	 */
-	public Canvas2(JScrollPane scrollPane, Canvas2Layout layout) {
-		super(scrollPane);
-		this.layout = layout;
+	public Canvas2() { super(); initialize(null,null); }
+	public Canvas2(JScrollPane s) { super(s); initialize(s,null); }
+	public Canvas2(Canvas2Layout layout) { super(); initialize(null, layout); } // allows the use of a custom layout
+	public Canvas2(JScrollPane s, Canvas2Layout layout) { super(s); initialize(s, layout); } // allows the use of a custom layout
+	
+	/** Shared method called from the constructors. */
+	private void initialize(JScrollPane scrollPane, Canvas2Layout layout) {
+		
+		if( scrollPane != null ) setScrollPane(scrollPane);
+		
+		if( layout == null ) layout = new LegacyLayout(this);
+		
+		setCanvasLayout(layout);
 		
 		/* Setup the Listeners */
 		setLayout(new BorderLayout());
-		addMouseMotionListener(layout);
-		addMouseListener(layout);
 		//addMouseWheelListener(layout);  // TODO: Add this later.  For now let the jscrollpane listen for mouse wheel events.
-		viewport.addChangeListener(layout);
 		Core.getInstance().addOntologyChangeListener(this);
 		Core.getInstance().addMatcherChangeListener(this);
 		Core.getInstance().addVisualizationChangeListener(this);
-
-		graphs = new ArrayList<CanvasGraph>();	// this is our master list of graphs to be displayed
-		
-		
-		CanvasGraph artifacts = layout.getArtifactsGraph();  // The layout has its own artifacts.
-		if( artifacts != null ) {
-			graphs.add(artifacts);  // if there are artifacts that the layout uses, add that to the graph list so it's displayed
-		}
 	}
 	
 	public ArrayList<Canvas2Vertex> getVisibleVertices() { return visibleVertices; }
@@ -503,6 +477,32 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			
 		}
 		
+	}
+	
+	/**
+	 * The layout is responsible for placing graphical elements on the screen.
+	 */
+	public void setCanvasLayout(Canvas2Layout layout) {
+		this.layout = layout;
+		addMouseMotionListener(layout);
+		addMouseListener(layout);
+		
+		// when the layout changes, the old graphs are discarded.  TODO: Check for memory leaks.
+		graphs = new ArrayList<CanvasGraph>();	// this is our master list of graphs to be displayed
+		
+		CanvasGraph artifacts = layout.getArtifactsGraph();  // The layout has its own artifacts.
+		if( artifacts != null ) {
+			graphs.add(artifacts);  // if there are artifacts that the layout uses, add that to the graph list so it's displayed
+		}
+	}
+	
+	/** The canvas layout must not be null in order for this method to work properly. 
+	 * (A null pointer exception will be thrown otherwise.) 
+	 */
+	@Override
+	public void setScrollPane(JScrollPane jsp) {
+		super.setScrollPane(jsp);
+		viewport.addChangeListener(layout);
 	}
 
 }
