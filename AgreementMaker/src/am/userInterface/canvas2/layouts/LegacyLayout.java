@@ -1419,7 +1419,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	}
 
 	/**
-	 * This method activates the SingleMappingView after the user doubleclicks a concept.s
+	 * This method activates the SingleMappingView after the user doubleclicks a concept.
 	 */
 	public void enableSingleMappingView() {
 		// Activate the SingleMappingView
