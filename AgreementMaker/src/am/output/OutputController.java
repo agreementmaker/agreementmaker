@@ -30,7 +30,8 @@ public class OutputController {
 	}
 	
 	public static enum ImportAlignmentFormats {
-		RDF("OAEI ( .rdf )", "rdf");
+		RDF("OAEI ( .rdf )", "rdf"), 
+		TABBEDTEXT("source(tab)target (.txt)", "txt");
 		
 		String description, file_extension;
 		ImportAlignmentFormats(String desc, String ext) { description = desc; file_extension = ext; }

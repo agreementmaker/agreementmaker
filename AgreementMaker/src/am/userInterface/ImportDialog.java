@@ -33,6 +33,7 @@ import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.output.OutputController;
+import am.output.OutputController.ImportAlignmentFormats;
 import am.userInterface.AppPreferences.FileType;
 
 
@@ -360,7 +361,17 @@ public class ImportDialog extends JDialog implements ActionListener{
 					ReferenceAlignmentParameters refParams = new ReferenceAlignmentParameters();
 					
 					refParams.fileName = inFileName;  // the path of the input file name as a String
-					refParams.format = ReferenceAlignmentMatcher.OAEI;  // set the format
+					
+					int selectedIndex = cmbAlignmentFormat.getSelectedIndex();
+					ImportAlignmentFormats[] array = ImportAlignmentFormats.values();
+					switch( array[selectedIndex] ) {
+					case RDF:
+						refParams.format = ReferenceAlignmentMatcher.OAEI;  // OAEI format
+						break;
+					case TABBEDTEXT:
+						refParams.format = ReferenceAlignmentMatcher.REF2a;
+						break;
+					}
 					referenceAlignmentMatcher.setParam(refParams);
 					referenceAlignmentMatcher.setSourceOntology(Core.getInstance().getSourceOntology()); // set the source ontology
 					referenceAlignmentMatcher.setTargetOntology(Core.getInstance().getTargetOntology()); // set the target ontology
