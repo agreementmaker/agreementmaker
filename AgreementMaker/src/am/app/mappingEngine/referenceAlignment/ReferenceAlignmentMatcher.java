@@ -120,7 +120,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 			boolean localnames = false;
 			
 			if(referenceListOfPairs.size()>0){
-				if(!referenceListOfPairs.get(referenceListOfPairs.size()/2).sourceURI.startsWith("http://"))
+				if(!referenceListOfPairs.get(referenceListOfPairs.size()/2).sourceURI.startsWith("http://")) // What kind of a check is this? -- Cosmin.
 					localnames = true;					
 			}
 			
