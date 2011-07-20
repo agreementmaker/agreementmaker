@@ -297,13 +297,13 @@ public class MultiWordsMatcher extends AbstractMatcher {
 			String definitions = new String();
 			OntResource nodeResource = node.getResource().as(OntResource.class);
 			
-			if( node.getOntologyIndex() == sourceOntology.getIndex() ) {
+			if( node.getOntologyID() == sourceOntology.getIndex() ) {
 				// look up the definition in the source lexicons
 				LexiconSynSet sourceOntSS = sourceOntologyLexicon.getSynSet(nodeResource);
 				LexiconSynSet sourceWNSS = sourceWordNetLexicon.getSynSet(nodeResource);
 				if( sourceOntSS != null ) definitions = Utility.smartConcat(definitions, sourceOntSS.getGloss());
 				if( sourceWNSS != null ) definitions = Utility.smartConcat(definitions, sourceWNSS.getGloss());
-			} else if( node.getOntologyIndex() == targetOntology.getIndex() ) {
+			} else if( node.getOntologyID() == targetOntology.getIndex() ) {
 				// look up the definition in the target lexicons
 				LexiconSynSet targetOntSS = targetOntologyLexicon.getSynSet(nodeResource);
 				LexiconSynSet targetWNSS = targetWordNetLexicon.getSynSet(nodeResource);
@@ -322,13 +322,13 @@ public class MultiWordsMatcher extends AbstractMatcher {
 			String synonyms = new String();
 			OntResource nodeResource = node.getResource().as(OntResource.class);
 			
-			if( node.getOntologyIndex() == sourceOntology.getIndex() ) {
+			if( node.getOntologyID() == sourceOntology.getID() ) {
 				// look up the definition in the source lexicons
 				LexiconSynSet sourceOntSS = sourceOntologyLexicon.getSynSet(nodeResource);
 				LexiconSynSet sourceWNSS = sourceWordNetLexicon.getSynSet(nodeResource);
 				String ss = makeSynonymsString(sourceOntSS, sourceWNSS); 
 				if( !ss.isEmpty() ) synonyms = Utility.smartConcat(synonyms, ss);
-			} else if( node.getOntologyIndex() == targetOntology.getIndex() ) {
+			} else if( node.getOntologyID() == targetOntology.getID() ) {
 				// look up the definition in the target lexicons
 				LexiconSynSet targetOntSS = targetOntologyLexicon.getSynSet(nodeResource);
 				LexiconSynSet targetWNSS = targetWordNetLexicon.getSynSet(nodeResource);

@@ -16,18 +16,15 @@ public class VisualizationChangeEvent extends EventObject {
 	}
 	
 	private VisualizationEventType typeOfEvent;
+	private Object payload;
 	
-	public VisualizationChangeEvent(Object source) {
+	public VisualizationChangeEvent( Object source, VisualizationEventType t, Object payload ) {
 		super(source);
-		typeOfEvent = VisualizationEventType.NOT_SET;
-	}
-
-	
-	public VisualizationChangeEvent( Object s, VisualizationEventType t ) {
-		super(s);
 		typeOfEvent = t;
+		this.payload = payload;
 	}
 		
 	public VisualizationEventType getEvent()      { return typeOfEvent; }
+	public Object getPayload() { return payload; }
 	
 }

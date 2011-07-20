@@ -63,6 +63,7 @@ public class AppPreferences {
 	private static final String		PREF_SHOWLOCALNAME = "pref_SHOWLOCALNAME";
 	private static final String		PREF_SHOWLABEL = "pref_SHOWLABEL";
 	private static final String		PREF_SHOWMAPPINGSWITHNAME = "PREF_SHOWMAPPINGSWITHNAME";
+	private static final String		PREF_SYNCHRONIZEDVIEWS = "PREF_SYNCHRONIZEDVIEWS";
 	
 	/** key for storing the status of the beep on finish checkbox of the matcher progress panel */
 	private static final String 	PREF_BEEPONFINISH = "pref_BEEPONFINISH";
@@ -626,6 +627,8 @@ public class AppPreferences {
 	public boolean getShowMappingsShortname() {	return appPrefs.getBoolean(PREF_SHOWMAPPINGSWITHNAME, true); }  // View -> Mappings with Matcher name
 	public void saveShowMappingsShortname(boolean value) { appPrefs.putBoolean(PREF_SHOWMAPPINGSWITHNAME, value); }	
 	
+	public boolean getSynchronizedViews() {	return appPrefs.getBoolean(PREF_SYNCHRONIZEDVIEWS, true); }  // View -> Synchronized Views
+	public void saveSynchronizedViews(boolean value) { appPrefs.putBoolean(PREF_SYNCHRONIZEDVIEWS, value); }	
 	
 	/**
 	 * Support for various settings saved by the Matcher Panels

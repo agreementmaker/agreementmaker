@@ -78,7 +78,8 @@ public class UIMenu implements ActionListener {
 	private JCheckBoxMenuItem 	smoMenuItem,  
 								showLabelItem, 
 								showLocalNameItem, 
-								showMappingsShortname, 
+								showMappingsShortname,
+								synchronizedViews,
 								disableVisualizationItem;
 	private JMenu menuViews;  // Views submenu.  TODO: Rename this to something more descriptive.
 	private JMenu menuLexicons; // the Lexicons sub menu;
@@ -329,7 +330,7 @@ public class UIMenu implements ActionListener {
 		    	Runnable fireNewEvent = new Runnable() {
 		    	    public void run() {
 						VisualizationChangeEvent vce = new VisualizationChangeEvent(showMappingsShortname, 
-								   VisualizationEventType.TOGGLE_SHOWMAPPINGSSHORTNAME );
+								   VisualizationEventType.TOGGLE_SHOWMAPPINGSSHORTNAME, null );
 
 				    	Core.getInstance().fireEvent(vce);
 		    	    }
@@ -338,6 +339,20 @@ public class UIMenu implements ActionListener {
 				
 		    	// save the setting in preferences
 		    	prefs.saveShowMappingsShortname(showMappingsShortname.isSelected());
+			} else if( obj == synchronizedViews ) {
+				// thread safe event firing
+		    	Runnable fireNewEvent = new Runnable() {
+		    	    public void run() {
+						VisualizationChangeEvent vce = new VisualizationChangeEvent(synchronizedViews, 
+								   VisualizationEventType.TOGGLE_SYNCHRONIZATION, null );
+
+				    	Core.getInstance().fireEvent(vce);
+		    	    }
+		    	};
+		    	SwingUtilities.invokeLater(fireNewEvent);
+		    	
+		    	// save the setting
+		    	prefs.saveSynchronizedViews(synchronizedViews.isSelected());
 			}
 			else if( obj == sealsItem ) {
 				// open up the SEALS Interface tab
@@ -1106,6 +1121,11 @@ public class UIMenu implements ActionListener {
 		showMappingsShortname.setSelected(prefs.getShowMappingsShortname());
 		viewMenu.add(showMappingsShortname);
 		//viewMenu.addSeparator();
+		
+		synchronizedViews = new JCheckBoxMenuItem("Synchronized Views");
+		synchronizedViews.addActionListener(this);
+		synchronizedViews.setSelected(prefs.getSynchronizedViews());
+		viewMenu.add(synchronizedViews);
 		
 		menuViews = new JMenu("New view");
 		itemViewsCanvas = new JMenuItem("Canvas");

@@ -14,6 +14,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputListener;
 
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.GraphicalData;
@@ -73,29 +74,17 @@ public abstract class Canvas2Layout implements MouseInputListener,
 	public abstract String getNodeLabel(GraphicalData d );
 	
 	/**
-	 * Called from Canvas2.
-	 * This method will build the layout graph with the default layout for each ontology.
-	 */
-	public List<CanvasGraph> buildInitialGraphs() {
-		/* This function must be implemented in the subclass. */
-		return new ArrayList<CanvasGraph>();
-	}
-
-	/**
 	 * This function produces the Classes, Properties, and Layout graphs for the given ontology,
 	 * and returns them in an ArrayList.
 	 * @param ont
 	 * @return
 	 */
-	public List<CanvasGraph> buildGlobalGraph( Ontology ont) {
-		/* This function must be implemented in the subclass. */
-		return new ArrayList<CanvasGraph>();
-	}
+	public abstract List<CanvasGraph> buildGlobalGraph( Ontology ont);
 
 	// TODO: Do we really need the method canDisplayMoreOntologies() ?  Everything can be taken care of by displayOntology()
-	public boolean canDisplayMoreOntologies() { return false; } /* must be implemented in the subclass */
-	public void displayOntology( ArrayList<CanvasGraph> graphs, int ontologyID) { } /* must be implemented in the subclass */
-	public void removeOntology( ArrayList<CanvasGraph> graphs, int ontologyID ) { } /* must be implemented in the subclass */
+	public abstract boolean canDisplayMoreOntologies(); /* must be implemented in the subclass */
+	public abstract void displayOntology( ArrayList<CanvasGraph> graphs, int ontologyID); /* must be implemented in the subclass */
+	public abstract void removeOntology( ArrayList<CanvasGraph> graphs, int ontologyID ); /* must be implemented in the subclass */
 
 	/* buildMatcherGraph must be implemented in the subclass */
 	public CanvasGraph buildMatcherGraph(AbstractMatcher m) { return new CanvasGraph(GraphType.MATCHER_GRAPH, m.getID()); }
@@ -112,4 +101,14 @@ public abstract class Canvas2Layout implements MouseInputListener,
 	public void setVizPanel( Canvas2 canvas ) { vizpanel = canvas; }
 	/** Get the canvas which this layout controls. */
 	public Canvas2 getVizPanel() { return vizpanel; }
+	
+	/**
+	 * This method is used when synchronizing views.  The visualization 
+	 * should select the concept represented by the Node object.
+	 * @param n The concept that should be selected.
+	 */
+	public abstract void selectNode(Node n);
+	
+	/** Unselect all the nodes that are selected */
+	public abstract void unselectAllNodes();
 }

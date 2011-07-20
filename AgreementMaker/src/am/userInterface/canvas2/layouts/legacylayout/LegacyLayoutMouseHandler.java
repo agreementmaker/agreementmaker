@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -29,8 +31,11 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.userInterface.VisualizationChangeEvent;
+import am.userInterface.VisualizationChangeEvent.VisualizationEventType;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.GraphicalData;
+import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
 import am.userInterface.canvas2.graphical.MappingData;
 import am.userInterface.canvas2.layouts.LegacyLayout;
 import am.userInterface.canvas2.nodes.LegacyMapping;
@@ -263,9 +268,27 @@ public class LegacyLayoutMouseHandler {
 							selectedNodes.add( (LegacyNode)hoveringOver);
 							//hoveringOver.clearDrawArea(g);
 							hoveringOver.draw(g);
+							
+							// shoot out a CONCEPT_SELECTED visualization event.
+							GraphicalData data = hoveringOver.getObject();
+							Ontology ont = Core.getInstance().getOntologyByID(data.ontologyID);
+							alignType t = null;
+							if( data.type == NodeType.PROPERTY_NODE ) t = alignType.aligningProperties;
+							if( data.type == NodeType.CLASS_NODE ) t = alignType.aligningClasses;
+							
+							final Node n = Node.getNodefromOntResource(ont, data.r, t);
+					    	Runnable fireNewEvent = new Runnable() {
+					    	    public void run() {
+									VisualizationChangeEvent vce = new VisualizationChangeEvent(layout, 
+											   VisualizationEventType.CONCEPT_SELECTED, n );
+
+							    	Core.getInstance().fireEvent(vce);
+					    	    }
+					    	};
+					    	SwingUtilities.invokeLater(fireNewEvent);							
 						}
 
-						//insert the propegation data if it exits
+						//insert the provenance data if it exits
 						if(Core.getUI().getUISplitPane().getRightComponent() instanceof ProvenanceSidebar){
 							if(selectedNodes.size()>0)
 							{

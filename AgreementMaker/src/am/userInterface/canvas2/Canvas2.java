@@ -22,9 +22,11 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.MatcherChangeEvent;
 import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.MatcherFactory;
+import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.OntologyChangeEvent;
 import am.app.ontology.OntologyChangeListener;
+import am.userInterface.AppPreferences;
 import am.userInterface.Colors;
 import am.userInterface.VisualizationChangeEvent;
 import am.userInterface.VisualizationChangeListener;
@@ -295,8 +297,8 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		painting = false;
 		return;
 		
-		/*
-		Logger log = Logger.getLogger(this.getClass());
+		
+		/*Logger log = Logger.getLogger(this.getClass());
 		log.setLevel(Level.DEBUG);
 		log.debug("paint(): viewport( "+currentView +") - " + Integer.toString(nodeNum) + " nodes and " +
 				  Integer.toString(edgeNum) +" edges visible. (" + Integer.toString(nodeNotVis) +
@@ -410,10 +412,11 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	@Override public boolean getShowLabel() { return layout.getShowLabel(); }
 
 	@Override
-	public synchronized void visualizationSettingChanged(VisualizationChangeEvent e) {
+	public void visualizationSettingChanged(VisualizationChangeEvent e) {
+		// TODO: This code should be part of the Canvas2Layout.
 		
 		switch( e.getEvent() ) {
-		case TOGGLE_SHOWMAPPINGSSHORTNAME:
+		case TOGGLE_SHOWMAPPINGSSHORTNAME: {
 			// check to see if we are dealing with a JCheckBoxMenuItem as the source (should aways be the case unless the code is changed)
 			if( e.getSource() instanceof JCheckBoxMenuItem ) {
 				// the source of the event is the checkbox menu item itself
@@ -472,9 +475,21 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			}
 			
 			repaint();
+		}
+		break;
+		case CONCEPT_SELECTED: {
+			// a concept was selected
+			AppPreferences prefs = Core.getAppPreferences();
+			if( !prefs.getSynchronizedViews() ) break;
 			
-			break;
-			
+			// select the concept that was selected by the other visualizations
+			if( !e.getSource().equals(layout) && e.getPayload() instanceof Node )  {
+				Node n = (Node)e.getPayload();
+				layout.selectNode(n);
+			}
+		}
+		break;
+		
 		}
 		
 	}

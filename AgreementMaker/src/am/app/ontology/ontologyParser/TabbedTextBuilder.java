@@ -47,7 +47,7 @@ public class TabbedTextBuilder extends TreeBuilder {
 		Vertex ClassRoot = new Vertex(XMLHIERARCHY, ontology.getSourceOrTarget());
 		ClassRoot.setOntModel(m);
 		
-		Node rootNode = new Node(uniqueKey,"OWL:Thing", Node.XMLNODE, ontology.getIndex());
+		Node rootNode = new Node(uniqueKey,"OWL:Thing", Node.XMLNODE, ontology.getID());
 		uniqueKey++;
 		rootNode.setResource(owlThing);
 		rootNode.setLabel("OWL:Thing");
@@ -112,7 +112,7 @@ public class TabbedTextBuilder extends TreeBuilder {
 					
 					System.out.println("Localname: " +currentClass.getLocalName());
 					
-					currentNode = new Node(uniqueKey,name, Node.XMLNODE, ontology.getIndex());
+					currentNode = new Node(uniqueKey,name, Node.XMLNODE, ontology.getID());
 					
 					currentNode.setResource(currentClass);
 					processedSubs.put( ((OntResource)currentClass) ,currentNode);

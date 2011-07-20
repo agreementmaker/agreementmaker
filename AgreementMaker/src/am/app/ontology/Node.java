@@ -113,7 +113,7 @@ public class Node implements Serializable, Comparable<Node>{
     public final static String XMLNODE = "xml-node";
 	/**UNIQUE KEY IN THE RANGE OF TYPE to be used as index to retrieve this node from the list and from the matrix*/
 	protected int index;
-	protected int ontindex;  // the index of the ONTOLOGY to which this node belongs
+	protected int ontID;  // the ID of the ONTOLOGY to which this node belongs
 
 	private int color;
 	private ArrayList<Node> parent = new ArrayList<Node>();
@@ -136,11 +136,11 @@ public class Node implements Serializable, Comparable<Node>{
 	 * @param desc
 	 * @param type
 	 */
-	public Node(int key, String name, String type, int oindex) {
+	public Node(int key, String name, String type, int ontID) {
 		localName = name;
 		this.type = type;
 		index = key;
-		ontindex = oindex;
+		this.ontID = ontID;
 	}
 	
 	public Node(Node a){
@@ -152,16 +152,16 @@ public class Node implements Serializable, Comparable<Node>{
 		uri = a.getUri();
 		localName = a.getLocalName();
 		vertexList.addAll(a.getVertexList());
-		ontindex = a.ontindex;
+		ontID = a.ontID;
 	}
 	
 	/**RDF OWL Constructor*/
-	public Node(int key, Resource r, String type, int oindex ) {
+	public Node(int key, Resource r, String type, int ontID ) {
 		String language = "EN";
 		resource = r;
 		uri = r.getURI();
 		localName = r.getLocalName();
-		ontindex = oindex;
+		this.ontID = ontID;
 		this.type = type;
 		if(r.canAs(OntResource.class)) {
 			OntResource or = (OntResource)r.as(OntResource.class);
@@ -290,32 +290,18 @@ public class Node implements Serializable, Comparable<Node>{
 		index = key;
 	}
 	
-	public Resource getResource() {
-		return resource;
-	}
-	public void setResource(Resource resource) {
-		this.resource = resource;
-	}
-	public String getLocalName() {
-		return localName;
-	}
-	public void setLocalName(String localName) {
-		this.localName = localName;
-	}
-	public String getLabel() {
-		return label;
-	}
-	public void setLabel(String label) {
-		this.label = label;
-	}
-	public String getComment() {
-		return comment;
-	}
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
+	public Resource getResource() { return resource; }
+	public void setResource(Resource resource) { this.resource = resource; }
 	
+	public String getLocalName() { return localName; }
+	public void setLocalName(String localName) { this.localName = localName; }
 	
+	public String getLabel() { return label; }
+	public void setLabel(String label) { this.label = label; }
+	
+	public String getComment() { return comment; }
+	public void setComment(String comment) { this.comment = comment; }
+		
 	@Deprecated
 	public boolean hasDuplicates() {
 		return vertexList.size() > 1;
@@ -336,15 +322,11 @@ public class Node implements Serializable, Comparable<Node>{
 			return null;
 	}
 
-	public int getIndex() {
-		return index;
-	}
-
-	public void setIndex(int index) {
-		this.index = index;
-	}
+	public int getIndex() { return index; }
+	public void setIndex(int index) { this.index = index; }
 	
-	public int getOntologyIndex() { return ontindex; }
+	/** @return The ID of the ontology to which this Node belongs. */
+	public int getOntologyID() { return ontID; }
 	
 	/**Owl classes or all rdf nodes or all xml nodes their are considered classes, so nodes in the first of the two trees*/
 	public boolean isClass() {
@@ -375,7 +357,7 @@ public class Node implements Serializable, Comparable<Node>{
 		
 		// 2. equal ontology
 		// we use ontology indices here, if the indices are equal, the nodes are from the same ontology
-		if( o.ontindex != ontindex ) return false;
+		if( o.ontID != ontID ) return false;
 		
 		// 3. equal index
 		// because the nodes we are comparing are from the same ontology, we can now check for index equality
@@ -495,7 +477,7 @@ public class Node implements Serializable, Comparable<Node>{
 			ArrayList<Node> returnList = new ArrayList<Node>();
 
 			Ontology currentOntology = Core.getInstance().getOntologyByIndex(
-					ontindex);
+					ontID);
 			OntClass thisclass = (OntClass) resource.as(OntClass.class);
 			StmtIterator sIter = thisclass.listProperties();
 
@@ -906,38 +888,38 @@ public class Node implements Serializable, Comparable<Node>{
 	  public String getType() {  return type;  }
 	  
 	  // GETTING OUR NODE FROM OTHER TYPES 
-	  
-	  public static OntResource getOntResourceFromRDFNode(RDFNode node){
-			 // try to get the ontResource from them
-			 if(node.canAs(OntResource.class)){
-				 return node.as(OntResource.class);
-			 }
-			 else{
-				 return null;
-			 }
-		 }
-		 
-		 public static Node getNodefromOntResource(Ontology ont, OntResource res, alignType aType){
-			 try{
-				 Node n = ont.getNodefromOntResource(res, aType);
-				 if(n != null){
-					 return n;
-				 }
-				 else{
-					 return null;
-				 }
-			 }
-			 catch(Exception eClass){
-				 return null;
-			 }
-		 }
-		 
-		 public static Node getNodefromRDFNode(Ontology ont, RDFNode node, alignType aType){
-			 return getNodefromOntResource(ont, getOntResourceFromRDFNode(node), aType);
-		 }
 
-		@Override
-		public int compareTo(Node n) {
-			return this.getResource().getURI().compareTo(n.getResource().getURI());
-		}
+	  public static OntResource getOntResourceFromRDFNode(RDFNode node){
+		  // try to get the ontResource from them
+		  if(node.canAs(OntResource.class)){
+			  return node.as(OntResource.class);
+		  }
+		  else{
+			  return null;
+		  }
+	  }
+
+	  public static Node getNodefromOntResource(Ontology ont, OntResource res, alignType aType){
+		  try{
+			  Node n = ont.getNodefromOntResource(res, aType);
+			  if(n != null){
+				  return n;
+			  }
+			  else{
+				  return null;
+			  }
+		  }
+		  catch(Exception eClass){
+			  return null;
+		  }
+	  }
+
+	  public static Node getNodefromRDFNode(Ontology ont, RDFNode node, alignType aType){
+		  return getNodefromOntResource(ont, getOntResourceFromRDFNode(node), aType);
+	  }
+
+	  @Override
+	  public int compareTo(Node n) {
+		  return this.getResource().getURI().compareTo(n.getResource().getURI());
+	  }
 }

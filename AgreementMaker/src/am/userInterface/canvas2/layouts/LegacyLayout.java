@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
@@ -14,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JOptionPane;
+import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.PopupMenuEvent;
@@ -25,19 +27,19 @@ import org.apache.log4j.Logger;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.MatcherFactory;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.GraphicalData;
+import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
 import am.userInterface.canvas2.graphical.MappingData;
 import am.userInterface.canvas2.graphical.RectangleElement;
 import am.userInterface.canvas2.graphical.TextElement;
-import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
 import am.userInterface.canvas2.layouts.legacylayout.LegacyLayoutMouseHandler;
 import am.userInterface.canvas2.nodes.GraphicalNode;
 import am.userInterface.canvas2.nodes.LegacyEdge;
@@ -60,6 +62,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.ontology.ProfileException;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 
@@ -1399,6 +1402,8 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		MovedMappings.clear();
 		
 		
+		
+		
 		SingleMappingView = false; // turn off the singlemappingview
 		
 		// because we have moved nodes, the bounds of the graphs have changed.
@@ -1443,7 +1448,8 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		
 		
 		// now that all of the nodes and edges have been hidden, show only the ones we want to see
-		ArrayList<LegacyNode> nodesToMoveUp = new ArrayList<LegacyNode>();
+		ArrayList<Canvas2Vertex> parentNodes = new ArrayList<Canvas2Vertex>();
+		ArrayList<Canvas2Vertex> childNodes = new ArrayList<Canvas2Vertex>();
 		Iterator<LegacyNode> nodeIter = selectedNodes.iterator();
 		while( nodeIter.hasNext() ) {
 			// we will show all edges connected to the selectedNodes, and all nodes connected to the edges of the selectedNodes
@@ -1455,6 +1461,8 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				Canvas2Edge connectedEdge = (Canvas2Edge) connectedInEdge;
 				connectedEdge.setVisible(true);
 				((Canvas2Vertex)connectedEdge.getOrigin()).setVisible(true); // the selected node is the destination, so we need to set the origin to be visible
+				
+				if( connectedEdge instanceof LegacyEdge ) parentNodes.add((Canvas2Vertex)connectedEdge.getOrigin());
 				
 				// if the node connected to this one is a mapping, we will traverse one more hop. -- TODO: Make this work.
 				/*if( connectedEdge instanceof LegacyMapping && connectedEdge.getOrigin() instanceof LegacyNode ) {
@@ -1477,6 +1485,9 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				connectedEdge.setVisible(true);
 				((Canvas2Vertex)connectedEdge.getDestination()).setVisible(true);
 				
+				
+				if( connectedEdge instanceof LegacyEdge ) childNodes.add((Canvas2Vertex)connectedEdge.getDestination());
+				
 				// if the node connected to this one is a mapping, we will traverse one more hop. // TODO: Make this work.
 				/*if( connectedEdge instanceof LegacyMapping && connectedEdge.getDestination() instanceof LegacyNode ) {
 					LegacyNode mappingDestination = (LegacyNode) connectedEdge.getDestination();
@@ -1494,7 +1505,6 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			}
 			
 		}
-		
 		
 		
 		// we need to move the opposite side up to the side we clicked
@@ -1525,6 +1535,25 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				}
 			}
 		}
+		
+		// move the parent nodes down to the child
+		for( int i = 0; i < parentNodes.size(); i++ ) {
+			Canvas2Vertex parent = parentNodes.get(i);
+			if( parent instanceof LegacyNode ) { 
+				parent.pushXY(parent.getBounds().x, uppermostY - ((nodeHeight + marginBottom) * (i+1)) );
+				SingleMappingMovedNodes.add((LegacyNode)parent);
+			}
+		}
+		
+		// move the children nodes up to the child
+		for( int i = 0; i < childNodes.size(); i++ ) {
+			Canvas2Vertex child = childNodes.get(i);
+			if( child instanceof LegacyNode ) {
+				child.pushXY(child.getBounds().x, uppermostY + ((nodeHeight + marginBottom) * (i+1)) );
+				SingleMappingMovedNodes.add((LegacyNode)child);
+			}
+		}
+		
 		// now we must move the mappings to the uppermostY.
 		for( int i = 0; i < MovedMappings.size(); i++ ) {
 			// nodeheight marginbottom
@@ -1795,4 +1824,66 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	@Override public void mousePressed(MouseEvent e) { }
 	@Override public void mouseReleased(MouseEvent e) {	}
 	@Override public void mouseWheelMoved(MouseWheelEvent e) { }
+	
+	/**
+	 * Select the graphical representation of a node in the current layout.
+	 */
+	@Override
+	public void selectNode(Node n) {
+		
+		int ontID = n.getOntologyID();
+		
+		// Find the HashMap for the ontology
+		Iterator<Pair<Integer,HashMap<OntResource,LegacyNode>>> pairIter = ConceptHashMaps.iterator();
+		while( pairIter.hasNext() ) {
+			Pair<Integer,HashMap<OntResource,LegacyNode>> pair = pairIter.next();
+			if( pair.getLeft().intValue() == ontID ) {
+				// we have the hashmap which for the node's ontology
+				HashMap<OntResource,LegacyNode> ontologyMap = pair.getRight();
+				Resource r = n.getResource();
+				if( !r.canAs(OntResource.class) ) return;
+				OntResource or = r.as(OntResource.class);
+				
+				LegacyNode ln = ontologyMap.get(or);
+				
+				if( ln != null ) selectLegacyNode(ln);
+				
+				return;
+			}
+		}
+	}
+	
+	@Override
+	public void unselectAllNodes() {
+		
+		//Graphics g = vizpanel.getGraphics();   // used for any redrawing of nodes
+		//ArrayList<Canvas2Vertex> visibleVertices = getVizPanel().getVisibleVertices();
+		
+		for( LegacyNode ln : selectedNodes ) {
+			ln.setSelected(false);
+			//if( visibleVertices.contains( (Canvas2Vertex) ln ) ) {
+				// redraw only if it's currently visible
+				//selectedNode.clearDrawArea(g);
+			//	ln.draw(g);
+			//}
+		}
+		selectedNodes.clear();
+	}
+	
+	/** Selects a LegacyNode in the current visualization. */
+	public void selectLegacyNode(LegacyNode ln) {
+		
+		if( SingleMappingView ) disableSingleMappingView();
+		
+		unselectAllNodes();
+		
+		JViewport vp = vizpanel.getViewport();
+		Rectangle bounds = ln.getBounds();
+		int midpointX = bounds.x+ bounds.width/2;
+		int midpointY = bounds.y+ bounds.height/2;
+		vp.setViewPosition( new Point( Math.max( midpointX - vp.getWidth()/2, 0), Math.max(midpointY - vp.getHeight()/2,0) ));  // display the needle at the center of the viewport
+		// since this is a vertex, select it.
+		ln.setSelected(true);
+		selectedNodes.add(ln);
+	}
 }
