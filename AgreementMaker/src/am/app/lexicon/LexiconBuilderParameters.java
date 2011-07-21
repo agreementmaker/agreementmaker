@@ -8,6 +8,8 @@ public class LexiconBuilderParameters {
 
 	public boolean sourceUseLocalname;
 	public boolean targetUseLocalname;
+	public boolean sourceUseSCSLexicon;
+	public boolean targetUseSCSLexicon;
 	
 	public List<Property> sourceLabelProperties;
 	public List<Property> sourceSynonyms;

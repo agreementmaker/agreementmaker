@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import am.app.lexicon.GeneralLexicon;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 
@@ -24,6 +26,8 @@ public class SCSLexicon extends GeneralLexicon implements SubconceptSynonymLexic
 
 	@Override
 	public void addSubConceptSynonyms(String synonym1, String synonym2 ) {
+		Logger log = Logger.getLogger(this.getClass());
+		log.info("Adding subconcept synonyms: " + synonym1 + " = " + synonym2);		
 		addToMap( synonym1, synonym2);
 		addToMap( synonym2, synonym1);
 	}

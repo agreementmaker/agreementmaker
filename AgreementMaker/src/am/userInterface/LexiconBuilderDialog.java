@@ -60,8 +60,8 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 	private JButton btnOk;
 	private JButton btnCancel;
 
-	private JCheckBox sourceUseLocalnames;
-	private JCheckBox targetUseLocalnames;
+	private JCheckBox sourceUseLocalnames, targetUseLocalnames;
+	private JCheckBox sourceUseSCSLexicon, targetUseSCSLexicon;
 	
 	public LexiconBuilderDialog() throws Exception {
 		super(Core.getUI().getUIFrame(), "Lexicon Builder Settings", true);
@@ -239,6 +239,19 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 		
 		chkUseLocalnames.addActionListener(this);
 		
+		JCheckBox chkUseSCSLexicon;
+		if( ont == Core.getInstance().getSourceOntology() ) {
+			sourceUseSCSLexicon = new JCheckBox("Compute and use subconcept synonyms.");
+			chkUseSCSLexicon = sourceUseSCSLexicon;
+			chkUseSCSLexicon.setSelected(prefs.getBoolean("PREF_SOURCE_USESCSLEXICON", false));
+		} else {
+			targetUseSCSLexicon = new JCheckBox("Compute and use subconcept synonyms.");
+			chkUseSCSLexicon = targetUseSCSLexicon;
+			chkUseSCSLexicon.setSelected(prefs.getBoolean("PREF_TARGET_USESCSLEXICON", false));
+		}
+		
+		chkUseSCSLexicon.addActionListener(this);
+		
 		CheckBoxList list = createAnnotationPropertyCheckBoxList(ont);
 
 		// determine the correct key
@@ -268,14 +281,17 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 
 		JLabel annotationLabel = new JLabel("Annotation properties:");
 		
-		panelLayout.setHorizontalGroup( panelLayout.createParallelGroup()
+		panelLayout.setHorizontalGroup( panelLayout.createParallelGroup()				
 				.addComponent(chkUseLocalnames)
+				.addComponent(chkUseSCSLexicon)
 				.addComponent( annotationLabel )
 				.addComponent(annotationScrollPane)
 		);
 		
 		panelLayout.setVerticalGroup( panelLayout.createSequentialGroup()
 				.addComponent(chkUseLocalnames)
+				.addComponent(chkUseSCSLexicon)
+				.addGap(10)
 				.addComponent(annotationLabel )
 				.addComponent(annotationScrollPane)
 		);
@@ -364,6 +380,9 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 			params.sourceUseLocalname = sourceUseLocalnames.isSelected();
 			params.targetUseLocalname = targetUseLocalnames.isSelected();
 			
+			params.sourceUseSCSLexicon = sourceUseSCSLexicon.isSelected();
+			params.targetUseSCSLexicon = targetUseSCSLexicon.isSelected();
+			
 			params.sourceSynonyms = new ArrayList<Property>();
 			for( int i = 0; i < sourceProperties.size(); i++ ) {
 				if( sourceSynonym.isSelectedIndex(i) ) params.sourceSynonyms.add(sourceProperties.get(i));
@@ -437,6 +456,25 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 				prefs.remove("PREF_TARGET_USELOCALNAMES");
 			}
 		}
+		
+		if( e.getSource() == sourceUseSCSLexicon ) {
+			Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+			if( sourceUseSCSLexicon.isSelected() ) {
+				prefs.putBoolean("PREF_SOURCE_USESCSLEXICON", true);
+			} else {
+				prefs.remove("PREF_SOURCE_USESCSLEXICON");
+			}
+		}
+		
+		if( e.getSource() == targetUseSCSLexicon ) {
+			Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+			if( targetUseSCSLexicon.isSelected() ) {
+				prefs.putBoolean("PREF_TARGET_USESCSLEXICON", true);
+			} else {
+				prefs.remove("PREF_TARGET_USESCSLEXICON");
+			}
+		}
+		
 		
 	}
 	

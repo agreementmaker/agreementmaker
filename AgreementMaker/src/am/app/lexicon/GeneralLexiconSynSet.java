@@ -15,11 +15,11 @@ import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 
 public class GeneralLexiconSynSet implements LexiconSynSet {
 
-	String gloss;  // aka Definition
-	List<String> synonyms = new LinkedList<String>(); // the SynSet
+	protected String gloss;  // aka Definition
+	protected List<String> synonyms = new LinkedList<String>(); // the SynSet
 	
-	OntResource concept;
-	LexiconRegistry type;
+	protected OntResource concept;
+	protected LexiconRegistry type;
 	
 	public GeneralLexiconSynSet( LexiconRegistry t ) {
 		type = t;
@@ -139,4 +139,8 @@ public class GeneralLexiconSynSet implements LexiconSynSet {
 		return gloss == null && synonyms.isEmpty();
 	}
 	
+	@Override
+	public String toString() {
+		return id + ":" + concept.getLocalName() + " (" + synonyms.size() + " synonyms)" ;
+	}
 }

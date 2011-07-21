@@ -9,11 +9,12 @@ import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconBuilder;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.lexicon.ontology.OntologyLexiconBuilder;
+import am.app.lexicon.subconcept.SCSLexiconBuilder;
 import am.app.lexicon.wordnet.WordNetLexiconBuilder;
 import am.app.ontology.Ontology;
 import am.app.ontology.OntologyChangeEvent;
-import am.app.ontology.OntologyChangeListener;
 import am.app.ontology.OntologyChangeEvent.EventType;
+import am.app.ontology.OntologyChangeListener;
 
 public class LexiconStore implements OntologyChangeListener {
 	
@@ -74,8 +75,14 @@ public class LexiconStore implements OntologyChangeListener {
 		case ONTOLOGY_LEXICON:
 		{
 			if( Core.getInstance().getSourceOntology() == ont ) {  // source
-				OntologyLexiconBuilder sourceOLB = new OntologyLexiconBuilder(ont, params.sourceUseLocalname, 
+				OntologyLexiconBuilder sourceOLB;
+				if( params.sourceUseSCSLexicon ) {
+					sourceOLB = new SCSLexiconBuilder(ont, params.sourceUseLocalname,
 						params.sourceLabelProperties, params.sourceSynonyms, params.sourceDefinitions);
+				} else {
+					sourceOLB = new OntologyLexiconBuilder(ont, params.sourceUseLocalname,
+						params.sourceLabelProperties, params.sourceSynonyms, params.sourceDefinitions);
+				}
 	
 				Lexicon sourceOntologyLexicon = sourceOLB.buildLexicon();
 				sourceOntologyLexicon.setOntologyID(ont.getID());
@@ -83,9 +90,15 @@ public class LexiconStore implements OntologyChangeListener {
 				Core.getLexiconStore().registerLexicon(sourceOntologyLexicon); // register for reuse by other matchers
 				return sourceOntologyLexicon;
 			} else {  // target
-				OntologyLexiconBuilder targetOLB = new OntologyLexiconBuilder(ont, params.targetUseLocalname, 
+				OntologyLexiconBuilder targetOLB;
+				if( params.targetUseSCSLexicon ) {
+					targetOLB = new SCSLexiconBuilder(ont, params.targetUseLocalname,
 						params.targetLabelProperties, params.targetSynonyms, params.targetDefinitions);
-	
+				} else {
+					targetOLB = new OntologyLexiconBuilder(ont, params.targetUseLocalname,
+						params.targetLabelProperties, params.targetSynonyms, params.targetDefinitions);
+				}
+				
 				Lexicon targetOntologyLexicon = targetOLB.buildLexicon();
 				targetOntologyLexicon.setOntologyID(ont.getID());
 	

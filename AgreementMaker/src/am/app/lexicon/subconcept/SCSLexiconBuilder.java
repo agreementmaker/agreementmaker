@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.log4j.Logger;
 
-import am.app.lexicon.GeneralLexicon;
 import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconSynSet;
 import am.app.lexicon.ontology.OntologyLexiconBuilder;
@@ -45,6 +45,11 @@ public class SCSLexiconBuilder
 		}
 		
 		// Step 3.  Extend the lexicon by adding extra synonyms using the subconcept synonyms identified.
+		// We run out of memory _very_ quickly doing this.  We should do it at the matcher level.
+		//for(LexiconSynSet currentSynSet : lexiconSynsetMap.values() ) {
+		//	extendSynSet(currentSynSet);
+		//}
+		
 		
 		return currentLexicon;
 	}
@@ -134,7 +139,9 @@ public class SCSLexiconBuilder
 		int shorterSynonymEndIndex = (shorterSynonymWords.length - 1) - distanceFromEnd;
 		
 		if( longerSynonymEndIndex < startIndex || shorterSynonymEndIndex < startIndex )
-			throw new Exception("Ending index is before the starting index."); // this should never happen, and indicates a bug in the algorithm.
+			return; // happens when there is no correspondence between words (for example "facial vii motor nucleus" with "facial vii nucleus" leaves motor with no match).
+				    // TODO: Do something with this in the future?
+			//throw new Exception("Ending index is before the starting index."); // this should never happen, and indicates a bug in the algorithm.
 		
 		// create the longer synonym string;
 		String longerSynonym = new String();
@@ -163,25 +170,47 @@ public class SCSLexiconBuilder
 	}
 	
 	
+	/**
+	 * After the sub concept synonyms have been found (by calling compareSynonyms),
+	 * extend the synsets in the Lexicon with newly created synonyms.
+	 */
 	@Override
-	public void extendSynSet(LexiconSynSet synset) {
+	public List<String> extendSynSet(LexiconSynSet synset) {
 		
 		SubconceptSynonymLexicon scsLexicon = (SubconceptSynonymLexicon) currentLexicon;
 		
 		List<String> subconceptSynonyms = scsLexicon.getAllSubConceptSynonyms();
+		List<String> newSynonymList = new LinkedList<String>();
 		
+		
+		// Step 1. Compute the new synonyms.
 		List<String> synonyms = synset.getSynonyms();
 		for( String currentSynonym : synonyms ) {
 			for( String subconceptSynonym : subconceptSynonyms ) {
-				if( currentSynonym.contains(subconceptSynonym) ) {
+				if( currentSynonym.contains(" " + subconceptSynonym + " ") ) {
 					// the current synonym contains the sub concept synonym.
-					// TODO: Finish this.
-					//List<String> subconceptscsLexicon.getSubConceptSynonyms(subconceptSynonym);
-					//String newSynonym = currentSynonym.replace(target, replacement)
+					List<String> subconceptEntries = scsLexicon.getSubConceptSynonyms(subconceptSynonym);
+					for( String subconceptPairWord : subconceptEntries ) {
+						String newSynonym = currentSynonym.replace(" " + subconceptSynonym + " ", " " + subconceptPairWord + " ");
+						newSynonymList.add(newSynonym);
+					}
+
 				}
 			}
 		}
 		
+		if( newSynonymList.isEmpty() ) return newSynonymList;
+		
+		// Step 2. Remove any duplicate synonyms.
+		List<String> synsetSynonyms = synset.getSynonyms();
+		
+		for( String currentSynsetSynonym : synsetSynonyms ) {
+			if( newSynonymList.contains(currentSynsetSynonym) ) {
+				newSynonymList.remove(currentSynsetSynonym);
+			}
+		}
+		
+		return newSynonymList;
 	}
 
 }

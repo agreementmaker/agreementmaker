@@ -1,5 +1,7 @@
 package am.app.lexicon.subconcept;
 
+import java.util.List;
+
 import am.app.lexicon.LexiconBuilder;
 import am.app.lexicon.LexiconSynSet;
 
@@ -23,6 +25,6 @@ public interface SubconceptSynonymLexiconBuilder extends LexiconBuilder {
 	/**
 	 * Extend a synset with synonyms created by using the subconcept synonyms.
 	 */
-	public void extendSynSet(LexiconSynSet synset);
+	public List<String> extendSynSet(LexiconSynSet synset);
 	
 }
