@@ -90,6 +90,8 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		LexiconSynSet sourceSet = sourceLexicon.getSynSet(sourceOR);
 		LexiconSynSet targetSet = targetLexicon.getSynSet(targetOR);
 		
+		if( sourceSet == null || targetSet == null ) return null; // one or both of the concepts do not have a synset.
+		
 		double synonymSimilarity = synonymSimilarity( sourceSet, targetSet );
 		
 		if( synonymSimilarity > 0.0d ) {
