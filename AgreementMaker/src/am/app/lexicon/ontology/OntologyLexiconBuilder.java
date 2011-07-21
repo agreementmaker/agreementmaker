@@ -30,15 +30,15 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
  */
 public class OntologyLexiconBuilder implements LexiconBuilder {
 
-	List<Property> synonymProperty;
-	List<Property> labelProperty;
-	List<Property> definitionProperty;
+	protected List<Property> synonymProperty;
+	protected List<Property> labelProperty;
+	protected List<Property> definitionProperty;
 
-	Ontology currentOntology;
+	protected Ontology currentOntology;
 	
-	boolean includeLocalname;
+	protected boolean includeLocalname;
 	
-	Lexicon currentLexicon;
+	protected Lexicon currentLexicon;
 	
 	public OntologyLexiconBuilder( Ontology ont, boolean includeLN, List<Property> label, List<Property> synonym, List<Property> definition ) {
 		currentOntology = ont;

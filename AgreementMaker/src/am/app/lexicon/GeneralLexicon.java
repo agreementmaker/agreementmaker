@@ -16,21 +16,26 @@ import am.tools.LexiconLookup.LexiconLookupPanel;
 
 import com.hp.hpl.jena.ontology.OntResource;
 
-
+/**
+ * This class is mainly just a container class (containing LexiconSynSet objects), 
+ * meant to be populated with entries by a lexicon builder.
+ * 
+ * Main methods are: addSynSet, getSynSet, and lookup.
+ * 
+ * @author cosmin
+ *
+ */
 public class GeneralLexicon implements Lexicon {
 	
 	// Dictionaries/Lexicons are ALWAYS implemented as a hashtable.
-	HashMap<OntResource,LexiconSynSet> synsetsByOntResource = new HashMap<OntResource,LexiconSynSet>();
-	HashMap<String,LexiconSynSet> synsetsByString = new HashMap<String, LexiconSynSet>();
+	protected HashMap<OntResource,LexiconSynSet> synsetsByOntResource = new HashMap<OntResource,LexiconSynSet>();
+	protected HashMap<String,LexiconSynSet> synsetsByString = new HashMap<String, LexiconSynSet>();
 	
-	long id = 0;
-	int ontID = Core.ID_NONE;
-	LexiconRegistry lexiconRegistryEntry; // the type of lexicon
+	protected long id = 0;
+	protected int ontID = Core.ID_NONE;
+	protected LexiconRegistry lexiconRegistryEntry; // the type of lexicon
 	
 	public GeneralLexicon( LexiconRegistry lr ) { lexiconRegistryEntry = lr; }
-	
-	
-	
 	
 	@Override
 	public void addSynSet(LexiconSynSet t) {
@@ -64,6 +69,7 @@ public class GeneralLexicon implements Lexicon {
 		// TODO: Make this work with partial strings - cosmin
 		return synsetsByString.get(wordForm); 
 	}
+	
 	@Override public LexiconSynSet getSynSet(OntResource ontRes) {
 		// TODO: Make this lookup work with partial strings - cosmin
 		return synsetsByOntResource.get(ontRes); 
@@ -108,22 +114,17 @@ public class GeneralLexicon implements Lexicon {
 	}
 
 
-	@Override
-	public LexiconRegistry getType() {	return lexiconRegistryEntry; }
+	@Override public LexiconRegistry getType() {	return lexiconRegistryEntry; }
 
-	@Override
-	public Map<OntResource, LexiconSynSet> getSynSetMap() {	return synsetsByOntResource; }
+	@Override public Map<OntResource, LexiconSynSet> getSynSetMap() { return synsetsByOntResource; }
 
-	@Override
-	public int getOntologyID() { return ontID; }
+	@Override public int getOntologyID() { return ontID; }
+	@Override public void setOntologyID(int id) { ontID = id; }
 	
-	@Override
-	public void setOntologyID(int id) { ontID = id; }
+	@Override public int size() { return synsetsByOntResource == null ? 0 : synsetsByOntResource.size(); }
 	
 	private LexiconLookupPanel lookupPanel;  // this is the user interface to this lexicon
 	
 	@Override public void setLookupPanel(LexiconLookupPanel wnlp) { lookupPanel = wnlp; }
 	@Override public LexiconLookupPanel getLookupPanel() { return lookupPanel; }
-
-	@Override public int size() { return synsetsByOntResource == null ? 0 : synsetsByOntResource.size(); }
 }

@@ -35,7 +35,7 @@ public class GeneralLexiconSynSet implements LexiconSynSet {
 	
 	//public OntologyLexiconSynSet(long id) {setID(id);}
 	
-	@Override public boolean isEditable() { return true; } // yes, we can edit this lexicon
+	@Override public boolean isEditable() { return true; } // yes, we can edit this lexicon synset
 
 	@Override 
 	public void setGloss(String def) {
