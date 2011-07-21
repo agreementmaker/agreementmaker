@@ -9,9 +9,11 @@ public class LexiconBuilderParameters {
 	public boolean sourceUseLocalname;
 	public boolean targetUseLocalname;
 	
+	public List<Property> sourceLabelProperties;
 	public List<Property> sourceSynonyms;
 	public List<Property> sourceDefinitions;
 	
+	public List<Property> targetLabelProperties;
 	public List<Property> targetSynonyms;
 	public List<Property> targetDefinitions;
 	

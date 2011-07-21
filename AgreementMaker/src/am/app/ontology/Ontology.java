@@ -20,6 +20,9 @@ import com.hp.hpl.jena.ontology.OntResource;
  */
 public class Ontology {
 	
+	public static final String RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+	public static final String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
+	
 	public static final int ID_NONE = -1;  // used when there is no ontology id.
 	
 	// local title
@@ -36,11 +39,11 @@ public class Ontology {
 	public static final int TABBEDTEXT = 3;
 	//public static final int DAMLFILE = 3;
 	
-	public static final int RDFXML = 0;
+	/*public static final int RDFXML = 0;
 	public static final int RDFXMLABBREV = 1;
 	public static final int NTRIPLE = 2;
 	public static final int N3  = 3;
-	public static final int TURTLE = 4;
+	public static final int TURTLE = 4;*/
 
 	public final static String SYNTAX_RDFXML = "RDF/XML";
 	public final static String SYNTAX_RDFXMLABBREV = "RDF/XML-ABBREV";

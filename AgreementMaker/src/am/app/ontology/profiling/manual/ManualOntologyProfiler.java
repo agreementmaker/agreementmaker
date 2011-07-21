@@ -90,6 +90,10 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 	}
 
 	
+	/**
+	 * Given a Node representing an ontology property, append to the propertyList
+	 * any annotation properties not in the list already that are defined on this property.
+	 */
 	public static void createPropertyAnnotationsList(
 			List<Property> propertyList, Node propertyNode) {
 		
@@ -107,6 +111,10 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 		
 	}
 
+	/**
+	 * Given a Node representing an ontology class, append to the annotationList
+	 * any annotation properties not in the list already that are defined on this class.
+	 */
 	public static void createClassAnnotationsList(
 			List<Property> annotationList, Node classNode) {
 		

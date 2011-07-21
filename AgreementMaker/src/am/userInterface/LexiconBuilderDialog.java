@@ -38,6 +38,7 @@ import am.app.ontology.Ontology;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.utility.LocalnameComparator;
 
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.jidesoft.swing.CheckBoxList;
 import com.jidesoft.swing.CheckBoxListSelectionModel;
@@ -288,28 +289,31 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 	
 	private Map<Ontology,List<Property>> listHashMap = new HashMap<Ontology,List<Property>>(); 
 	
+	/**
+	 * Create the list of annotation properties with checkboxes next to them.
+	 */
 	private CheckBoxList createAnnotationPropertyCheckBoxList(Ontology ont) {
 		//OntModel m = ont.getModel();
 		
-		List<Property> sourceClassAnnotations = listHashMap.get(ont);
-		if( sourceClassAnnotations == null ) {
+		List<Property> annotationList = listHashMap.get(ont);
+		if( annotationList == null ) {
 
-			sourceClassAnnotations = new ArrayList<Property>();
-			for( Node classNode : ont.getClassesList() ) ManualOntologyProfiler.createClassAnnotationsList(sourceClassAnnotations, classNode);
-			for( Node propertyNode : ont.getPropertiesList() ) ManualOntologyProfiler.createPropertyAnnotationsList(sourceClassAnnotations, propertyNode);
+			annotationList = new ArrayList<Property>();
+			for( Node classNode : ont.getClassesList() ) ManualOntologyProfiler.createClassAnnotationsList(annotationList, classNode);
+			for( Node propertyNode : ont.getPropertiesList() ) ManualOntologyProfiler.createPropertyAnnotationsList(annotationList, propertyNode);
 			
-			Collections.sort(sourceClassAnnotations, new LocalnameComparator());
+			Collections.sort(annotationList, new LocalnameComparator());
 			
-			listHashMap.put(ont, sourceClassAnnotations);
+			listHashMap.put(ont, annotationList);
 			if( ont == Core.getInstance().getSourceOntology() ) {
-				sourceProperties = sourceClassAnnotations;
+				sourceProperties = annotationList;
 			} else {
-				targetProperties = sourceClassAnnotations;
+				targetProperties = annotationList;
 			}
 		}
 		
 		DefaultListModel propertyList = new DefaultListModel();
-		for( Property p : sourceClassAnnotations ) propertyList.addElement(p.getLocalName());
+		for( Property annotationProperty : annotationList ) propertyList.addElement(annotationProperty.getLocalName());
 				
 		CheckBoxList list = new CheckBoxList(propertyList);
 		list.getCheckBoxListSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -380,6 +384,30 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 				if( targetDefinition.isSelectedIndex(i) ) params.targetDefinitions.add(targetProperties.get(i));
 			}
 			
+			Ontology sourceOntology = Core.getInstance().getSourceOntology();
+			OntModel sourceOntModel = sourceOntology.getModel();
+			params.sourceLabelProperties = new ArrayList<Property>();
+			Property sourceRDFSLabel = sourceOntModel.getProperty(Ontology.RDFS + "label"); // TODO: Make this customizable by the user.
+			if( sourceRDFSLabel == null ) {
+				// source ontology does not have RDFS label defined???
+				params.sourceLabelProperties.addAll( params.sourceSynonyms );
+			} else {
+				// choose rdfs:label as the label property
+				params.sourceLabelProperties.add( sourceRDFSLabel );
+			}
+			
+			Ontology targetOntology = Core.getInstance().getTargetOntology();
+			OntModel targetOntModel = targetOntology.getModel();
+			params.targetLabelProperties = new ArrayList<Property>();
+			Property targetRDFSLabel = targetOntModel.getProperty(Ontology.RDFS + "label"); // TODO: Make this customizable by the user.
+			if( targetRDFSLabel == null ) {
+				// target ontology does not have RDFS label defined???
+				params.targetLabelProperties.addAll( params.targetSynonyms );
+			} else {
+				// choose rdfs:label as the label property
+				params.targetLabelProperties.add( targetRDFSLabel );
+			}
+						
 			Core.getLexiconStore().setParameters(params);
 			
 			try {

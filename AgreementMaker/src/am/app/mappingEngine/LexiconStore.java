@@ -58,6 +58,13 @@ public class LexiconStore implements OntologyChangeListener {
 		lexList = new ArrayList<Lexicon>();
 	}
 	
+	/**
+	 * This method build an ontology lexicon.
+	 * @param whichOne A lexicon defined in the LexiconRegistry.
+	 * @param ont The ontology for which this lexicon is built.
+	 * @return The lexicon that was built.
+	 * @throws Exception An exception is thrown if no parameters have been set.
+	 */
 	public Lexicon build(LexiconRegistry whichOne, Ontology ont) throws Exception {
 
 		if( params == null )
@@ -68,7 +75,7 @@ public class LexiconStore implements OntologyChangeListener {
 		{
 			if( Core.getInstance().getSourceOntology() == ont ) {  // source
 				OntologyLexiconBuilder sourceOLB = new OntologyLexiconBuilder(ont, params.sourceUseLocalname, 
-						params.sourceSynonyms, params.sourceSynonyms, params.sourceDefinitions);
+						params.sourceLabelProperties, params.sourceSynonyms, params.sourceDefinitions);
 	
 				Lexicon sourceOntologyLexicon = sourceOLB.buildLexicon();
 				sourceOntologyLexicon.setOntologyID(ont.getID());
@@ -77,7 +84,7 @@ public class LexiconStore implements OntologyChangeListener {
 				return sourceOntologyLexicon;
 			} else {  // target
 				OntologyLexiconBuilder targetOLB = new OntologyLexiconBuilder(ont, params.targetUseLocalname, 
-						params.targetSynonyms, params.targetSynonyms, params.targetDefinitions);
+						params.targetLabelProperties, params.targetSynonyms, params.targetDefinitions);
 	
 				Lexicon targetOntologyLexicon = targetOLB.buildLexicon();
 				targetOntologyLexicon.setOntologyID(ont.getID());
