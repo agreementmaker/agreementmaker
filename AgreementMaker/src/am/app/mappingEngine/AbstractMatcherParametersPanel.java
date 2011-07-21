@@ -13,9 +13,11 @@ public abstract class AbstractMatcherParametersPanel extends JPanel {
 		super();
 	}
 	
-	public AbstractParameters getParameters() {
-		throw new RuntimeException("To be implemented in the real parameter class of the specific matcher");
-	}
+	/**
+	 * This method returns an object containing all the parameters that were set by the user
+	 * in this panel.
+	 */
+	public abstract AbstractParameters getParameters();
 	
 	/**
 	 * This method is used to check parameters for errors.  If the users enters parameters that are 
@@ -38,7 +40,7 @@ public abstract class AbstractMatcherParametersPanel extends JPanel {
 	 * This method is used to load preset parameters.
 	 * @param presets The parameters that must be displayed by the parameters panel.
 	 */
-	public void loadParameters( AbstractParameters presets ) {
+	/*public void loadParameters( AbstractParameters presets ) {
 		throw new RuntimeException("This feature has not been implemented by this matcher's panel.");
-	}
+	}*/
 }

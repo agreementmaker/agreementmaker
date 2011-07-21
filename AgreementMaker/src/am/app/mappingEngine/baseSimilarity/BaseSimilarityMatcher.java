@@ -47,6 +47,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		super(param_new); initializeVariables();
 	}
 	
+	@Override
 	protected void initializeVariables() {
 		super.initializeVariables();
 		
@@ -82,7 +83,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 	}
 	
-	
+	@Override
 	public String getDescriptionString() {
 		return "Performs a local matching using a String Based technique. To be used as first matcher.\n" +
 				"Only Nodes' local-names (XML id) and labels are considered in the process.\n" +

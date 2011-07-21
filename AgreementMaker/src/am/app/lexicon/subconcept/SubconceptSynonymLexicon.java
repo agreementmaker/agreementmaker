@@ -3,6 +3,7 @@ package am.app.lexicon.subconcept;
 import java.util.List;
 
 import am.app.lexicon.Lexicon;
+import am.app.lexicon.LexiconSynSet;
 
 public interface SubconceptSynonymLexicon extends Lexicon {
 
@@ -19,4 +20,9 @@ public interface SubconceptSynonymLexicon extends Lexicon {
 	 * @return A list of all the discovered subconcept synonyms.
 	 */
 	public List<String> getAllSubConceptSynonyms();
+	
+	/**
+	 * Return a list of synonyms that are computed using the subconcept synonyms.
+	 */
+	public List<String> extendSynSet(LexiconSynSet synset);
 }

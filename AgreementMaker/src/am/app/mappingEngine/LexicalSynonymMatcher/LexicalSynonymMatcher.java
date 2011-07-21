@@ -9,7 +9,9 @@ import am.app.Core;
 import am.app.lexicon.GeneralLexiconSynSet;
 import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconSynSet;
+import am.app.lexicon.subconcept.SubconceptSynonymLexicon;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.ontology.Node;
@@ -22,24 +24,39 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	 */
 	private static final long serialVersionUID = -7674172048857214961L;
 	
-	transient Lexicon sourceLexicon;
-	transient Lexicon targetLexicon;
+	private transient Lexicon sourceLexicon;
+	private transient Lexicon targetLexicon;
 	
-	transient Property sourceSynonymProperty, targetSynonymProperty;
-	transient Property sourceLabelProperty, targetLabelProperty;
-	transient Property sourceDefinitionProperty, targetDefinitionProperty;
+	private transient Property sourceSynonymProperty, targetSynonymProperty;
+	private transient Property sourceLabelProperty, targetLabelProperty;
+	private transient Property sourceDefinitionProperty, targetDefinitionProperty;
 
 	
-	transient HashMap<Node, GeneralLexiconSynSet> sourceSynsetLookup = new HashMap<Node, GeneralLexiconSynSet>();
-	transient HashMap<Node, GeneralLexiconSynSet> targetSynsetLookup = new HashMap<Node, GeneralLexiconSynSet>();
+	private transient HashMap<Node, GeneralLexiconSynSet> sourceSynsetLookup = new HashMap<Node, GeneralLexiconSynSet>();
+	private transient HashMap<Node, GeneralLexiconSynSet> targetSynsetLookup = new HashMap<Node, GeneralLexiconSynSet>();
 	
+	
+	@Override
+	protected void initializeVariables() {
+		super.initializeVariables();
+		needsParam = true;
+		
+		// TODO: Setup Features.
+	}
+	
+	@Override
+	public AbstractMatcherParametersPanel getParametersPanel() {
+		if( parametersPanel == null ) {
+			parametersPanel = new LexicalSynonymMatcherParametersPanel();
+		}
+		return parametersPanel;
+	}
 	
 /**
  * PRE PROCESSING STEP
  * 
  * 1) Build the Ontology Lexicons.
  */
-	int alignmentsfound = 0;
 	
 	@Override
 	protected void beforeAlignOperations() throws Exception {
@@ -76,9 +93,30 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		double synonymSimilarity = synonymSimilarity( sourceSet, targetSet );
 		
 		if( synonymSimilarity > 0.0d ) {
-			alignmentsfound++;
+			//alignmentsfound++;
 			return new Mapping(source, target, synonymSimilarity);
 		}
+		
+		// no matches found. Try to extend the synsets.
+		if( ((LexicalSynonymMatcherParameters)getParam()).useSubconceptSynonyms ) {
+			
+			SubconceptSynonymLexicon sourceSCSLexicon = (SubconceptSynonymLexicon) sourceLexicon;
+			SubconceptSynonymLexicon targetSCSLexicon = (SubconceptSynonymLexicon) targetLexicon;
+			
+			
+			List<String> sourceExtendedSynonyms = sourceSCSLexicon.extendSynSet(sourceSet);
+			List<String> targetExtendedSynonyms = targetSCSLexicon.extendSynSet(targetSet);
+			
+			sourceExtendedSynonyms.addAll( sourceSet.getSynonyms() );
+			targetExtendedSynonyms.addAll( targetSet.getSynonyms() );
+			
+			double extendedSimilarity = computeLexicalSimilarity(sourceExtendedSynonyms, targetExtendedSynonyms);
+			
+			if( extendedSimilarity > 0.0d ) {
+				return new Mapping(source, target, extendedSimilarity );
+			}
+		}
+		
 		return null;
 	}
 
@@ -115,15 +153,22 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		if( sourceLexicon2 == null ) throw new NullPointerException("Source lexicon is null.");
 		if( targetLexicon2 == null ) throw new NullPointerException("Target lexicon is null.");
 		
+		List<String> sourceSyns = sourceLexicon2.getSynonyms();
+		List<String> targetSyns = targetLexicon2.getSynonyms();
+
+		return computeLexicalSimilarity(sourceSyns, targetSyns);
+	}
+	
+	
+	private double computeLexicalSimilarity( List<String> sourceSyns, List<String> targetSyns ) {
 		
 		double greatestWordSimilarity = 0.0d;
 
-		
 		boolean breakout = false;
-		List<String> sourceSyns = sourceLexicon2.getSynonyms();
+	//	List<String> sourceSyns = sourceLexicon2.getSynonyms();
 		for( int i = 0; i < sourceSyns.size(); i++ ) {
 			String sourceSynonym = sourceSyns.get(i);
-			List<String> targetSyns = targetLexicon2.getSynonyms();
+//			List<String> targetSyns = targetLexicon2.getSynonyms();
 			for( int j = 0; j < targetSyns.size(); j++ ) {
 				String targetSynonym = targetSyns.get(j);
 				
@@ -137,6 +182,6 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		}
 		
 		return greatestWordSimilarity;
+		
 	}
-	
 }

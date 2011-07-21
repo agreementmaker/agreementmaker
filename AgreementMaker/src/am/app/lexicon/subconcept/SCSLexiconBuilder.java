@@ -168,49 +168,5 @@ public class SCSLexiconBuilder
 		
 		return;
 	}
-	
-	
-	/**
-	 * After the sub concept synonyms have been found (by calling compareSynonyms),
-	 * extend the synsets in the Lexicon with newly created synonyms.
-	 */
-	@Override
-	public List<String> extendSynSet(LexiconSynSet synset) {
-		
-		SubconceptSynonymLexicon scsLexicon = (SubconceptSynonymLexicon) currentLexicon;
-		
-		List<String> subconceptSynonyms = scsLexicon.getAllSubConceptSynonyms();
-		List<String> newSynonymList = new LinkedList<String>();
-		
-		
-		// Step 1. Compute the new synonyms.
-		List<String> synonyms = synset.getSynonyms();
-		for( String currentSynonym : synonyms ) {
-			for( String subconceptSynonym : subconceptSynonyms ) {
-				if( currentSynonym.contains(" " + subconceptSynonym + " ") ) {
-					// the current synonym contains the sub concept synonym.
-					List<String> subconceptEntries = scsLexicon.getSubConceptSynonyms(subconceptSynonym);
-					for( String subconceptPairWord : subconceptEntries ) {
-						String newSynonym = currentSynonym.replace(" " + subconceptSynonym + " ", " " + subconceptPairWord + " ");
-						newSynonymList.add(newSynonym);
-					}
-
-				}
-			}
-		}
-		
-		if( newSynonymList.isEmpty() ) return newSynonymList;
-		
-		// Step 2. Remove any duplicate synonyms.
-		List<String> synsetSynonyms = synset.getSynonyms();
-		
-		for( String currentSynsetSynonym : synsetSynonyms ) {
-			if( newSynonymList.contains(currentSynsetSynonym) ) {
-				newSynonymList.remove(currentSynsetSynonym);
-			}
-		}
-		
-		return newSynonymList;
-	}
 
 }

@@ -25,6 +25,6 @@ public interface SubconceptSynonymLexiconBuilder extends LexiconBuilder {
 	/**
 	 * Extend a synset with synonyms created by using the subconcept synonyms.
 	 */
-	public List<String> extendSynSet(LexiconSynSet synset);
+	//public List<String> extendSynSet(LexiconSynSet synset);
 	
 }
