@@ -314,6 +314,10 @@ public class LegacyLayoutMouseHandler {
 								StmtIterator i = currentClass.listProperties();
 								
 								String annotationProperties = new String();
+								
+								// view the localname:
+								annotationProperties += "Localname: " + currentClass.getLocalName() + "\n\n";
+								
 								while( i.hasNext() ) {
 									Statement s = (Statement) i.next();
 									Property p = s.getPredicate();
@@ -326,7 +330,17 @@ public class LegacyLayoutMouseHandler {
 											annotationProperties += p.getLocalName() + ": " + l.getString() + "\n";
 										} else {
 											annotationProperties += p.getLocalName() + ": " + obj.toString() + "\n";
+											if( obj.canAs(Individual.class) ) {
+												// this is an instance, output the properties declared on the instance
+												Individual idv = obj.as(Individual.class);
+												StmtIterator prop = idv.listProperties();
+												while(prop.hasNext()) {
+													Statement st = prop.next();
+													annotationProperties += st.toString() +"\n";
+												}
+											}
 										}
+										annotationProperties += "\n";
 									}
 								}
 
