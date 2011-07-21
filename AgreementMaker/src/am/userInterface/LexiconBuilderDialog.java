@@ -241,11 +241,11 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 		
 		JCheckBox chkUseSCSLexicon;
 		if( ont == Core.getInstance().getSourceOntology() ) {
-			sourceUseSCSLexicon = new JCheckBox("Compute and use subconcept synonyms.");
+			sourceUseSCSLexicon = new JCheckBox("Compute subconcept synonyms.");
 			chkUseSCSLexicon = sourceUseSCSLexicon;
 			chkUseSCSLexicon.setSelected(prefs.getBoolean("PREF_SOURCE_USESCSLEXICON", false));
 		} else {
-			targetUseSCSLexicon = new JCheckBox("Compute and use subconcept synonyms.");
+			targetUseSCSLexicon = new JCheckBox("Compute subconcept synonyms.");
 			chkUseSCSLexicon = targetUseSCSLexicon;
 			chkUseSCSLexicon.setSelected(prefs.getBoolean("PREF_TARGET_USESCSLEXICON", false));
 		}
