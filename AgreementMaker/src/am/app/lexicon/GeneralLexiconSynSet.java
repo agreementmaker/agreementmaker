@@ -141,6 +141,6 @@ public class GeneralLexiconSynSet implements LexiconSynSet {
 	
 	@Override
 	public String toString() {
-		return id + ":" + concept.getLocalName() + " (" + synonyms.size() + " synonyms)" ;
+		return id + ":" + concept.getLocalName() + " (" + synonyms.size() + " synonyms) " + synonyms.toString();
 	}
 }
