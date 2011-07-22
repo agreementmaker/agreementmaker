@@ -84,7 +84,8 @@ public class SCSLexicon extends GeneralLexicon implements SubconceptSynonymLexic
 			}
 		}
 		
-		if( newSynonymList.isEmpty() ) return newSynonymList;
+		if( newSynonymList.isEmpty() ) 
+			return newSynonymList;
 		
 		// Step 2. Remove any duplicate synonyms.
 		List<String> synsetSynonyms = synset.getSynonyms();
