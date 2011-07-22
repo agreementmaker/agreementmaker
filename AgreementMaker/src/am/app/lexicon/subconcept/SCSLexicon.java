@@ -70,16 +70,30 @@ public class SCSLexicon extends GeneralLexicon implements SubconceptSynonymLexic
 		
 		// Step 1. Compute the new synonyms.
 		List<String> synonyms = synset.getSynonyms();
-		for( String currentSynonym : synonyms ) {
+		for( String existingSynonym : synonyms ) {
 			for( String subconceptSynonym : subconceptSynonyms ) {
-				if( currentSynonym.contains(" " + subconceptSynonym + " ") ) {
+				if( existingSynonym.contains(" " + subconceptSynonym + " ") ) {
 					// the current synonym contains the sub concept synonym.
 					List<String> subconceptEntries = getSubConceptSynonyms(subconceptSynonym);
 					for( String subconceptPairWord : subconceptEntries ) {
-						String newSynonym = currentSynonym.replace(" " + subconceptSynonym + " ", " " + subconceptPairWord + " ");
+						String newSynonym = existingSynonym.replace(" " + subconceptSynonym + " ", " " + subconceptPairWord + " ");
 						newSynonymList.add(newSynonym);
 					}
 
+				} else if( existingSynonym.contains( " " + subconceptSynonym ) ) {
+					// the current synonym contains the sub concept synonym.
+					List<String> subconceptEntries = getSubConceptSynonyms(subconceptSynonym);
+					for( String subconceptPairWord : subconceptEntries ) {
+						String newSynonym = existingSynonym.replace(" " + subconceptSynonym, " " + subconceptPairWord);
+						newSynonymList.add(newSynonym);
+					}
+				} else if( existingSynonym.contains( subconceptSynonym + " ") ) {
+					// the current synonym contains the sub concept synonym.
+					List<String> subconceptEntries = getSubConceptSynonyms(subconceptSynonym);
+					for( String subconceptPairWord : subconceptEntries ) {
+						String newSynonym = existingSynonym.replace(subconceptSynonym + " ", subconceptPairWord + " ");
+						newSynonymList.add(newSynonym);
+					}
 				}
 			}
 		}
