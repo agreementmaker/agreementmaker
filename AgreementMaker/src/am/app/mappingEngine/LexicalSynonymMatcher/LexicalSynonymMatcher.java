@@ -109,6 +109,11 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 			List<String> sourceExtendedSynonyms = sourceSCSLexicon.extendSynSet(sourceSet);
 			List<String> targetExtendedSynonyms = targetSCSLexicon.extendSynSet(targetSet);
 			
+			if( sourceExtendedSynonyms.isEmpty() && targetExtendedSynonyms.isEmpty() ) {
+				// no extra synonyms.
+				return null;
+			}
+			
 			sourceExtendedSynonyms.addAll( sourceSet.getSynonyms() );
 			targetExtendedSynonyms.addAll( targetSet.getSynonyms() );
 			
