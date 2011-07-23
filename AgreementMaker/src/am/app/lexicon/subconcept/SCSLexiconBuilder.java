@@ -1,8 +1,9 @@
 package am.app.lexicon.subconcept;
 
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
@@ -50,6 +51,14 @@ public class SCSLexiconBuilder
 		//	extendSynSet(currentSynSet);
 		//}
 		
+		Logger log = Logger.getLogger(this.getClass());
+		SCSLexicon currentSCSLexicon = (SCSLexicon) currentLexicon;
+		HashMap<String,List<String>> hashMap = currentSCSLexicon.getHashMap();
+		
+		log.info("Synonym Word Pairs HashMap: ");
+		for( Entry<String,List<String>> currentEntry : hashMap.entrySet() ) {
+			log.info( currentEntry.getKey() + ": " + currentEntry.getValue() );
+		}
 		
 		return currentLexicon;
 	}

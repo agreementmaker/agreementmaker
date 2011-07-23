@@ -61,10 +61,11 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 	private JLabel stemLabel = new JLabel("Apply stemming ( 'dogs' --> 'dog' or 'saying' --> 'say' ) ");
 	private JCheckBox stemCheck;
 
-	private JLabel lexiconLabel = new JLabel("Use Lexicons instead.");
-	private JCheckBox lexiconCheck;
-	private JLabel lexUseBestLabel = new JLabel("Do not use weights. Instead, use the max similarity out of all the synonyms.");
-	private JCheckBox lexUseBestCheck;
+	//private JLabel lexiconLabel = new JLabel("Use Lexicons instead.");
+	//private JLabel lexUseBestLabel = new JLabel("Do not use weights. Instead, use the max similarity out of all the synonyms.");
+	private JCheckBox lexiconCheck = new JCheckBox("Use Lexicons instead.");
+	private JCheckBox lexUseBestCheck = new JCheckBox("Do not use weights. Instead, use the max similarity out of all the synonyms.");
+	private JCheckBox lexUseSubconceptSynonyms = new JCheckBox("Use subconcept synonyms.");
 	
 	/*
 	 * The constructor creates the GUI elements and adds 
@@ -116,7 +117,7 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 		lexUseBestCheck.addActionListener(this);
 		
 		lexUseBestCheck.setVisible(false);
-		lexUseBestLabel.setVisible(false);
+		//lexUseBestLabel.setVisible(false);
 		
 
 		//LAYOUT: grouplayout is already complicated but very flexible, plus in this case the matchers list is dynamic so it's even more complicated
@@ -160,10 +161,12 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 					)
 			.addGroup(layout.createSequentialGroup()
 				.addComponent(lexiconCheck)
-				.addComponent(lexiconLabel))
+				//.addComponent(lexiconLabel)
+			)
 			.addGroup(layout.createSequentialGroup()
 				.addComponent(lexUseBestCheck)
-				.addComponent(lexUseBestLabel))
+				//.addComponent(lexUseBestLabel)
+			)
 			.addComponent(preprocessLabel)
 			.addGroup(layout.createSequentialGroup()
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
@@ -199,11 +202,11 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 				.addGap(20)
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(lexiconCheck) 			
-						.addComponent(lexiconLabel)
+						//.addComponent(lexiconLabel)
 						)
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 						.addComponent(lexUseBestCheck) 			
-						.addComponent(lexUseBestLabel)
+						//.addComponent(lexUseBestLabel)
 						)
 				.addGap(10)
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
@@ -310,7 +313,7 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 				//seeAlsoLabel.setText("WordNet Definition:");
 				
 				lexUseBestCheck.setVisible(true);
-				lexUseBestLabel.setVisible(true);
+				//lexUseBestLabel.setVisible(true);
 				
 				commentLabel.setVisible(false);
 				commentCombo.setVisible(false);
@@ -335,7 +338,7 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 				isDefnedByLabel.setText("isDefinedBy");
 				
 				lexUseBestCheck.setVisible(false);
-				lexUseBestLabel.setVisible(false);
+				//lexUseBestLabel.setVisible(false);
 				
 				localnameCombo.setEnabled(true);
 				labelCombo.setEnabled(true);

@@ -16,6 +16,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRootPane;
@@ -173,6 +174,10 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 			this.dispose();
 		}
 		else if(obj == cancelButton) {
+			if( matcher.getRunningTime() >= 5*60*1000 ) { // if a matcher runs for longer than 5 minutes, ask the user if they are sure when clicking the cancel button.
+				int retVal = JOptionPane.showConfirmDialog(this, "Are you sure you want to cancel this matcher?");
+				if( retVal != JOptionPane.YES_OPTION ) return;
+			}
 			matcher.cancel(true);
 			if( subMatcher != null ) subMatcher.cancel(true);
 			this.dispose();

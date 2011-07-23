@@ -21,6 +21,7 @@ public interface SubconceptSynonymLexicon extends Lexicon {
 	 */
 	public List<String> getAllSubConceptSynonyms();
 	
+	
 	/**
 	 * Return a list of synonyms that are computed using the subconcept synonyms.
 	 */

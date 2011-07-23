@@ -15,6 +15,8 @@ public class OAEI2010MatcherParameters extends AbstractParameters {
 	public boolean usingLCM;
 	public boolean usingLWC2;
 
+	public boolean lsmUseExtractedTermSyonyms;
+	
 	public Track currentTrack;
 	
 	public static enum Track {

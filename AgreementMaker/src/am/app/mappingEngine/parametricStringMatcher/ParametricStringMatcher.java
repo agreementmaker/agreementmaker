@@ -8,6 +8,7 @@ import am.Utility;
 import am.app.Core;
 import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconSynSet;
+import am.app.lexicon.subconcept.SubconceptSynonymLexicon;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
@@ -136,10 +137,23 @@ public class ParametricStringMatcher extends AbstractMatcher {
 				if( sourceOntSS != null && sourceOntSS.getSynonyms() != null ) sourceSynonymList.addAll( sourceOntSS.getSynonyms() ); // add all the ont synonyms for the source concept.
 				if( sourceWNSS != null && sourceWNSS.getSynonyms() != null ) sourceSynonymList.addAll(sourceWNSS.getSynonyms() ); // add all the WordNet synonyms for the source concept.
 				
+				if( parameters.lexExtendSynonyms && sourceOntologyLexicon instanceof SubconceptSynonymLexicon ) {
+					// we are using extended synonyms.
+					SubconceptSynonymLexicon sourceSCSLexicon = (SubconceptSynonymLexicon) sourceOntologyLexicon; 
+					sourceSynonymList.addAll( sourceSCSLexicon.extendSynSet(sourceOntSS) );
+				}
+				
+				
 				// now, compile a list of the target synonyms.
 				List<String> targetSynonymList = new ArrayList<String>();
 				if( targetOntSS != null && targetOntSS.getSynonyms() != null ) targetSynonymList.addAll( targetOntSS.getSynonyms() ); // ont synonyms for target concept.
 				if( targetWNSS != null && targetWNSS.getSynonyms() != null ) targetSynonymList.addAll( targetWNSS.getSynonyms() ); // wordnet synonyms for target concept.
+				
+				if( parameters.lexExtendSynonyms && targetOntologyLexicon instanceof SubconceptSynonymLexicon ) {
+					// using extended synonyms for the target
+					SubconceptSynonymLexicon targetSCSLexicon = (SubconceptSynonymLexicon) targetOntologyLexicon;
+					sourceSynonymList.addAll( targetSCSLexicon.extendSynSet(targetOntSS) );
+				}
 				
 				
 				// now, start comparing synonyms.
@@ -170,8 +184,17 @@ public class ParametricStringMatcher extends AbstractMatcher {
 					// 1. Compile the list of source and target synonyms.
 					List<String> sourceOntSynonymList = new ArrayList<String>();
 					if( sourceOntSS != null && sourceOntSS.getSynonyms() != null ) sourceOntSynonymList.addAll( sourceOntSS.getSynonyms() );
+					if( parameters.lexExtendSynonyms && sourceOntologyLexicon instanceof SubconceptSynonymLexicon ) {
+						SubconceptSynonymLexicon sourceSCSLexicon = (SubconceptSynonymLexicon) sourceOntologyLexicon; 
+						sourceOntSynonymList.addAll( sourceSCSLexicon.extendSynSet(sourceOntSS) );
+					}
+					
 					List<String> targetOntSynonymList = new ArrayList<String>();
 					if( targetOntSS != null && targetOntSS.getSynonyms() != null ) targetOntSynonymList.addAll( targetOntSS.getSynonyms() );
+					if( parameters.lexExtendSynonyms && targetOntologyLexicon instanceof SubconceptSynonymLexicon ) {
+						SubconceptSynonymLexicon targetSCSLexicon = (SubconceptSynonymLexicon) targetOntologyLexicon; 
+						targetOntSynonymList.addAll( targetSCSLexicon.extendSynSet(sourceOntSS) );
+					}
 					
 					// calculate max similarity
 					for( String sourceOntSynonym : sourceOntSynonymList ) {

@@ -26,6 +26,7 @@ public class ParametricStringParameters extends AbstractParameters {
 	
 	public boolean useLexicons = false;
 	public boolean useBestLexSimilarity = true;
+	public boolean lexExtendSynonyms = false; // use the Subconcept Synonyms to extend the synonyms.
 	public double lexOntSynonymWeight = 0.90;
 	public double lexOntDefinitionWeight = 0.10;
 	public double lexWNSynonymWeight = 0.90;

@@ -26,19 +26,23 @@ public class SCSLexicon extends GeneralLexicon implements SubconceptSynonymLexic
 	}
 
 	@Override
-	public void addSubConceptSynonyms(String synonym1, String synonym2 ) {
-		Logger log = Logger.getLogger(this.getClass());
-		log.info("Adding subconcept synonyms: " + synonym1 + " = " + synonym2);		
+	public void addSubConceptSynonyms(String synonym1, String synonym2 ) {	
 		addToMap( synonym1, synonym2);
 		addToMap( synonym2, synonym1);
 	}
 
 	private void addToMap(String synonym1, String synonym2) {
+		Logger log = Logger.getLogger(this.getClass());	
+		
 		if( subconceptSynonymMap.containsKey(synonym1) ) {
 			List<String> synonym1List = subconceptSynonymMap.get(synonym1);
-			if( !synonym1List.contains(synonym2) ) synonym1List.add(synonym2);
+			if( !synonym1List.contains(synonym2) ) {
+				log.info("Adding subconcept synonyms: " + synonym1 + " = " + synonym2);
+				synonym1List.add(synonym2);
+			}
 		} else {
 			List<String> synonym1List = new LinkedList<String>(); // LinkedList to save space. (if you need to access via index, change to ArrayList).
+			log.info("Adding subconcept synonyms: " + synonym1 + " = " + synonym2);
 			synonym1List.add(synonym2);
 			subconceptSynonymMap.put(synonym1, synonym1List);
 		}
@@ -113,4 +117,6 @@ public class SCSLexicon extends GeneralLexicon implements SubconceptSynonymLexic
 		return newSynonymList;
 	}
 
+	
+	public HashMap<String,List<String>> getHashMap() { return subconceptSynonymMap; }
 }

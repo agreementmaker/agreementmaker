@@ -17,11 +17,7 @@ import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.ontology.Node;
 
 public class LexicalSynonymMatcher extends AbstractMatcher {
-	
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -7674172048857214961L;
 	
 	private transient Lexicon sourceLexicon;
@@ -92,12 +88,19 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		
 		if( sourceSet == null || targetSet == null ) return null; // one or both of the concepts do not have a synset.
 		
+		
+		
 		double synonymSimilarity = synonymSimilarity( sourceSet, targetSet );
 		
 		if( synonymSimilarity > 0.0d ) {
 			//alignmentsfound++;
 			return new Mapping(source, target, synonymSimilarity);
 		}
+		
+		/*boolean tempDisabled = true;
+		if( source.getLocalName().equals("MA_0002684") && target.getLocalName().equals("NCI_C32658") ) {
+			tempDisabled = false;
+		}*/
 		
 		// no matches found. Try to extend the synsets.
 		if( ((LexicalSynonymMatcherParameters)getParam()).useSubconceptSynonyms ) {
@@ -117,7 +120,7 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 			sourceExtendedSynonyms.addAll( sourceSet.getSynonyms() );
 			targetExtendedSynonyms.addAll( targetSet.getSynonyms() );
 			
-			double extendedSimilarity = computeLexicalSimilarity(sourceExtendedSynonyms, targetExtendedSynonyms);
+			double extendedSimilarity = computeLexicalSimilarity(sourceExtendedSynonyms, targetExtendedSynonyms, 0.9d);
 			
 			if( extendedSimilarity > 0.0d ) {
 				return new Mapping(source, target, extendedSimilarity );
@@ -163,11 +166,11 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		List<String> sourceSyns = sourceLexicon2.getSynonyms();
 		List<String> targetSyns = targetLexicon2.getSynonyms();
 
-		return computeLexicalSimilarity(sourceSyns, targetSyns);
+		return computeLexicalSimilarity(sourceSyns, targetSyns, 1.0d);
 	}
 	
 	
-	private double computeLexicalSimilarity( List<String> sourceSyns, List<String> targetSyns ) {
+	private double computeLexicalSimilarity( List<String> sourceSyns, List<String> targetSyns, double greatest ) {
 		
 		double greatestWordSimilarity = 0.0d;
 
@@ -180,7 +183,7 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 				String targetSynonym = targetSyns.get(j);
 				
 				if( sourceSynonym.equalsIgnoreCase(targetSynonym) ) {
-					greatestWordSimilarity = 1.0d;
+					greatestWordSimilarity = greatest;
 					breakout = true;
 					break;
 				}

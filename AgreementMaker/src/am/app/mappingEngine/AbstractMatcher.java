@@ -1376,6 +1376,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 	
 	/**
+	 * Should only be called while the matcher is still runnning.
+	 * @return The time in milliseconds that the matcher has been running.
+	 */
+	public long getRunningTime() {
+		return System.currentTimeMillis() - lastTime;
+	}
+	
+	/**
 	 * If the matcher implemented by a developer doesn't take care of the progress
 	 * for example it overrides the align method and doesn't write any code to increase steps
 	 * in that case we have to force the progress to be 100% at the end

@@ -1,15 +1,17 @@
 package am.app.mappingEngine.oaei2010;
 
-import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import java.awt.Dimension;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
+import am.app.Core;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.oaei2010.OAEI2010MatcherParameters.Track;
+import am.app.ontology.Ontology;
 import am.userInterface.AppPreferences;
 
 /**
@@ -27,6 +29,7 @@ public class OAEI2010MatcherParametersPanel extends AbstractMatcherParametersPan
 	private OAEI2010MatcherParameters parameters;
 	
 	private JComboBox trackCombo;
+	private JCheckBox chkUseExtractedTermSynonyms = new JCheckBox("Use extracted term synonyms.");
 	
 	@SuppressWarnings("unused")
 	private AppPreferences prefs;
@@ -41,6 +44,14 @@ public class OAEI2010MatcherParametersPanel extends AbstractMatcherParametersPan
 		
 		
 		this.setPreferredSize(new Dimension(350, 175) );
+		
+		
+		// setup the checkbox for using extracted term synonyms.
+		Ontology sourceOnt = Core.getInstance().getSourceOntology();
+		Ontology targetOnt = Core.getInstance().getTargetOntology();
+		
+		//if( Core.getLexiconStore().getLexicon(, type))
+		
 		
 		Track[] tracks = {  OAEI2010MatcherParameters.Track.Anatomy, 
 						     OAEI2010MatcherParameters.Track.Benchmarks, 
