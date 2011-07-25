@@ -1275,6 +1275,11 @@ public class UIMenu implements ActionListener {
 		matchersMenu.add(TEMP_matcherAnalysisClasses);
 		matchersMenu.add(TEMP_matcherAnalysisProp);
 		
+		userFeedBack = new JMenuItem("User Feedback Loop");
+		userFeedBack.addActionListener(this);
+		matchersMenu.addSeparator();
+		matchersMenu.add(userFeedBack);
+		
 		// *************************** TOOLS MENU ****************************
 		toolsMenu = new JMenu("Tools");
 		toolsMenu.setMnemonic('T');

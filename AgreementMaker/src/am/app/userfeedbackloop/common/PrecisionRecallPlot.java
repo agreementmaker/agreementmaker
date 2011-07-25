@@ -73,6 +73,7 @@ public class PrecisionRecallPlot extends CandidateSelectionEvaluation {
 			
 			Mapping currentMapping=rankedList.get(i);
 			
+		
 			if(reference.contains(currentMapping))//increase the number of correct and set isCorrect to true
 			{
 				correct++;

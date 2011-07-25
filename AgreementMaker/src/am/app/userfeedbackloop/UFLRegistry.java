@@ -72,6 +72,7 @@ public class UFLRegistry {
 	}
 	
 	public enum PropagationEvaluationRegistry {
+		DeltaFromRef ( am.app.userfeedbackloop.disagreementclustering.DeltaFromReferenceEvaluation.class ),
 		ClusterBoost ( am.app.userfeedbackloop.disagreementclustering.ClusterBoostEvaluation.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */

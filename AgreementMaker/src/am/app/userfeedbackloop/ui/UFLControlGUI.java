@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import am.Utility;
 import am.app.userfeedbackloop.UFLExperiment;
@@ -83,13 +82,20 @@ public class UFLControlGUI extends JPanel implements ActionListener {
 		repaint();
 	}
 	
+	public void displayPanel( JPanel panel ) {
+		removeAll();		
+		this.setLayout(new FlowLayout(FlowLayout.CENTER));
+		this.add(panel);
+		repaint();
+	}
+	
 	
 	/* actionPerformed.  Almost all the real work is done here. */
 	public void actionPerformed(ActionEvent e) {
 		
 		System.out.println(e.getActionCommand());  // TODO: Remove this.
 		
-		if( experimentSetup != null && experimentSetup.isDone() ) return; // check stop condition
+		if( experimentSetup != null && experimentSetup.experimentHasCompleted() ) return; // check stop condition
 		
 		try{
 	
@@ -99,6 +105,7 @@ public class UFLControlGUI extends JPanel implements ActionListener {
 				// Step 1.  experiment is starting.  Initialize the experiment setup.
 				ExperimentRegistry experimentRegistryEntry = (ExperimentRegistry) panel.cmbExperiment.getSelectedItem();
 				experimentSetup = experimentRegistryEntry.getEntryClass().newInstance();
+				experimentSetup.gui = this;
 				
 				// Step 2.  Run the initial matchers.
 

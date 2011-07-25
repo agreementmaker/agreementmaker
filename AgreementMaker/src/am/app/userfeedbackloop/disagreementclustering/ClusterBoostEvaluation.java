@@ -56,7 +56,9 @@ public class ClusterBoostEvaluation extends PropagationEvaluation {
 		
 		
 		
-		//done();
+		
+		
+		done();
 		
 	}
 

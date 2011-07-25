@@ -9,12 +9,17 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.Combination.CombinationParameters;
+import am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralMatcher;
+import am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralParameters;
+import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcher;
+import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
 import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher;
 import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
 import am.app.mappingEngine.multiWords.MultiWordsMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
+import am.app.mappingEngine.oaei2010.OAEI2010MatcherParameters.Track;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.ontology.Ontology;
@@ -51,17 +56,20 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 	private AdvancedSimilarityParameters param_asm; // parameters for ASM
 	private ParametricStringParameters 	param_psm;  // the parameters that will be used for the PSM
 	private MultiWordsParameters		param_vmm;  // VMM parameters
+	private LexicalSynonymMatcherParameters param_lsm; // LSM parameters
 	
 	private CombinationParameters		param_lwc;  // LWC params
-	
+	private IterativeInstanceStructuralParameters param_iism;
 	
 	/********* MATCHERS **********/
 	private BaseSimilarityMatcher		m_bsm;
 	private AdvancedSimilarityMatcher	m_asm;
 	private ParametricStringMatcher		m_psm;
 	private MultiWordsMatcher			m_vmm;
+	private LexicalSynonymMatcher       m_lsm;
 	
 	private CombinationMatcher			m_lwc;
+	private IterativeInstanceStructuralMatcher m_iism;
 	
 	private MatchingProgressDisplay progressDisplay;
 	
@@ -94,12 +102,19 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 				progressDisplay.setProgressLabel("VMM (4/5)");
 				m_vmm.match();
 				
+				progressDisplay.setProgressLabel("LSM");
+				m_lsm.match();
+				
 				progressDisplay.setProgressLabel("LWC (5/5)");
 				m_lwc.addInputMatcher(m_bsm);
 				m_lwc.addInputMatcher(m_asm);
 				m_lwc.addInputMatcher(m_psm);
 				m_lwc.addInputMatcher(m_vmm);
+				m_lwc.addInputMatcher(m_lsm);
 				m_lwc.match();
+				
+				m_iism.addInputMatcher(m_lwc);
+				m_iism.match();
 				
 				progressDisplay.ignoreComplete(false);
 			} else {
@@ -107,11 +122,17 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 				m_asm.match();
 				m_psm.match();
 				m_vmm.match();
+				m_lsm.match();
+				
 				m_lwc.addInputMatcher(m_bsm);
 				m_lwc.addInputMatcher(m_asm);
 				m_lwc.addInputMatcher(m_psm);
 				m_lwc.addInputMatcher(m_vmm);
+				m_lwc.addInputMatcher(m_lsm);
 				m_lwc.match();
+				
+				m_iism.addInputMatcher(m_lwc);
+				m_iism.match();
 			}
 			
 			done();
@@ -128,9 +149,10 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		param_asm = new AdvancedSimilarityParameters();
 		param_psm = new ParametricStringParameters();
 		param_vmm = new MultiWordsParameters();
+		param_lsm = new LexicalSynonymMatcherParameters();
 		
 		param_lwc = new CombinationParameters();
-		
+		param_iism = new IterativeInstanceStructuralParameters();
 		
 		// BSM
 		param_bsm.useDictionary = false;
@@ -145,27 +167,58 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		m_asm.setProgressDisplay(progressDisplay);
 		
 		// PSM
-		param_psm.initForOAEI2009();  // use the OAEI 2009 settings
+		param_psm.initForOAEI2010(Track.Benchmarks);  // use the OAEI 2010 settings
 		m_psm = new ParametricStringMatcher( param_psm );
 		m_psm.setOntologies(sourceOntology, targetOntology);
 		m_psm.setProgressDisplay(progressDisplay);
 		
 		// VMM
-		param_vmm.initForOAEI2009();  // use the OAEI 2009 settings for this also.
+		try {
+			param_vmm.initForOAEI2010(Track.Benchmarks); // use the OAEI 2010 settings for this also.
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			param_vmm.initForOAEI2009();
+		}  
 		m_vmm = new MultiWordsMatcher( param_vmm );
 		m_vmm.setOntologies(sourceOntology, targetOntology);
 		m_vmm.setProgressDisplay(progressDisplay);
 		
+		param_lsm.useSubconceptSynonyms = false;
+		m_lsm = new LexicalSynonymMatcher( param_lsm );
+		m_lsm.setOntologies(sourceOntology, targetOntology);
+		m_lsm.setProgressDisplay(progressDisplay);
+				
 		// LWC
-		param_lwc.initForOAEI2009();  // use the OAEI 2009 settings for this also (Quality Evaluation = Local Confidence)
+		try {
+			param_lwc.initForOAEI2010(Track.Benchmarks,true); // use the OAEI 2010 settings for this also (Quality Evaluation = Local Confidence)
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 		m_lwc = new CombinationMatcher( param_lwc );
 		m_lwc.setOntologies(sourceOntology, targetOntology);
 		m_lwc.setProgressDisplay(progressDisplay);
-
+		
+		// IISM
+		param_iism.setForOAEI2010();
+		m_iism = new IterativeInstanceStructuralMatcher();
+		m_iism.setParam(param_iism);
+		m_iism.setOntologies(sourceOntology, targetOntology);
+		m_iism.setProgressDisplay(progressDisplay);
+		
 	}
 
-	@Override
-	public Alignment<Mapping> getAlignment() {
-		return m_lwc.getAlignment();
+	@Override public Alignment<Mapping> getAlignment() { 
+		return getFinalMatcher().getAlignment(); }
+	
+	@Override public Alignment<Mapping> getClassAlignment() { 
+		return getFinalMatcher().getClassAlignmentSet(); }
+	
+	@Override public Alignment<Mapping> getPropertyAlignment() { 
+		return getFinalMatcher().getPropertyAlignmentSet(); }
+	
+	@Override public AbstractMatcher getFinalMatcher() {
+		return m_lwc;
 	}
 }

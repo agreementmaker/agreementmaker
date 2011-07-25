@@ -31,6 +31,17 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	private transient HashMap<Node, GeneralLexiconSynSet> sourceSynsetLookup = new HashMap<Node, GeneralLexiconSynSet>();
 	private transient HashMap<Node, GeneralLexiconSynSet> targetSynsetLookup = new HashMap<Node, GeneralLexiconSynSet>();
 	
+	public LexicalSynonymMatcher() {
+		super();
+		needsParam = true;
+		initializeVariables();
+	}
+	
+	public LexicalSynonymMatcher(LexicalSynonymMatcherParameters params) {
+		super(params);
+		needsParam = true;
+		initializeVariables();
+	}
 	
 	@Override
 	protected void initializeVariables() {

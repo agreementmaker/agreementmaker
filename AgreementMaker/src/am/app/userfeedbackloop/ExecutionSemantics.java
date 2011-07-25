@@ -23,6 +23,9 @@ public abstract class ExecutionSemantics {
 	public abstract void run(UFLExperiment exp);
 	public abstract List<AbstractMatcher> getComponentMatchers();
 	public abstract Alignment<Mapping> getAlignment();
+	public abstract Alignment<Mapping> getClassAlignment();
+	public abstract Alignment<Mapping> getPropertyAlignment();
+	public abstract AbstractMatcher getFinalMatcher(); // the matcher from which the final alignment is derived, and to which propagation should be done.
 	
 	public void addActionListener( ActionListener l ) {
 		listeners.add(ActionListener.class, l);

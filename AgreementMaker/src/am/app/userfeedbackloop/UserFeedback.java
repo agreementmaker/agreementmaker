@@ -20,6 +20,7 @@ public abstract class UserFeedback {
 
 	public abstract void validate( UFLExperiment experiment );
 	public abstract Validation getUserFeedback();
+	public abstract void setUserFeedback(Validation feedback);
 	public abstract Mapping getCandidateMapping();
 	
 	public void addActionListener( ActionListener l ) {

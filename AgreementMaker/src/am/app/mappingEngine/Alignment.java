@@ -78,7 +78,10 @@ public class Alignment<E extends Mapping> extends ArrayList<E>
 
     public boolean contains( E mapping ) {
     	// TODO: Make this check be better than linear time.
-    	return super.contains( mapping ); 
+    	//return super.contains( mapping );
+    	if( contains(mapping.getEntity1(), mapping.getEntity2()) != null ) 
+    		return true;
+    	return false;
     }
     
     public void cut(double threshold)
@@ -112,6 +115,20 @@ public class Alignment<E extends Mapping> extends ArrayList<E>
    
     public String getFileName() { return fileName; }
     public void setFileName(String fileName) { this.fileName = fileName; }
+      
+    
+/*    @SuppressWarnings("unchecked")
+	@Override
+    public Object clone() {
+    	Alignment<E> a = null;
+    	try {
+    		a = (Alignment<E>) super.clone();
+    	} catch (Exception e) {
+    		// this should never happen
+            throw new InternalError(e.toString());
+    	}
+    	return a;
+    }*/
     
 /*    *//** ****************** Serialization methods *******************//*
 	

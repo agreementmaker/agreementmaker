@@ -45,14 +45,20 @@ public class ManualExperimentSetup extends UFLExperiment {
 	}
 
 	@Override
-	public boolean isDone() {
+	public boolean experimentHasCompleted() {
 		if( userFeedback != null && userFeedback.getUserFeedback() == Validation.END_EXPERIMENT ) return true;  // we're done when the user says so
 		return false;
 	}
 
 	@Override
 	public void newIteration() {
+		super.newIteration();
 		// TODO: Save all the objects that we used in the previous iteration.
+	}
+
+	@Override
+	public Alignment<Mapping> getFinalAlignment() {
+		return initialMatcher.getAlignment();
 	}
 
 }
