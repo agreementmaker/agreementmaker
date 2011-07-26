@@ -4,10 +4,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
-
 import am.app.userfeedbackloop.PropagationEvaluation;
 import am.app.userfeedbackloop.UFLExperiment;
+import am.evaluation.alignment.AlignmentMetrics;
 import am.evaluation.alignment.DeltaFromReference;
 
 public class DeltaFromReferenceEvaluation extends PropagationEvaluation {
@@ -31,14 +30,17 @@ public class DeltaFromReferenceEvaluation extends PropagationEvaluation {
 	@Override
 	public void evaluate(UFLExperiment exp) {
 
-		if( deltaFromReference == null ) {
-			deltaFromReference = new DeltaFromReference(exp.getReferenceAlignment());
-		}
+		deltaFromReference = new DeltaFromReference(exp.getReferenceAlignment());
 		
 		int delta = deltaFromReference.getDelta(exp.getFinalAlignment());
 		
-		Logger log = Logger.getLogger(this.getClass());
-		log.info("Iteration: " + exp.getIterationNumber() + ", Delta from reference: " + delta);
+		AlignmentMetrics metrics = new AlignmentMetrics(exp.getReferenceAlignment(), exp.getFinalAlignment());
+		
+		//Logger log = Logger.getLogger(this.getClass());
+		UFLExperiment log = exp;
+		log.info("Iteration: " + exp.getIterationNumber() + ", Delta from reference: " + delta + 
+				", Precision: " + metrics.getPrecisionPercent() + ", Recall: " + metrics.getRecallPercent() + ", FMeasure: " + metrics.getFMeasurePercent());
+		log.info("");
 		
 		if( fileWriter != null ) {
 			try {
@@ -64,3 +66,4 @@ public class DeltaFromReferenceEvaluation extends PropagationEvaluation {
 		super.done();
 	}
 }
+

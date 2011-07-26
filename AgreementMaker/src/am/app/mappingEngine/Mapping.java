@@ -157,9 +157,9 @@ public class Mapping implements Serializable
 	public void setProvenance(String provenance) { this.provenance = provenance; }
 
 	public String toString() { return "("+entity1.toString()+" -> "+entity2.toString()+
-		": "+similarity+" "+relation+" )"; }
+		": "+similarity+" "+relation.getVisualRepresentation()+" )"; }
 	public String getString() { return entity1.getLocalName()+"\t"+OutputController.arrow+"\t"+
-		entity2.getLocalName()+"\t"+getSimilarity()+"\t"+getRelation()+"\n"; }
+		entity2.getLocalName()+"\t"+getSimilarity()+"\t"+getRelation().getVisualRepresentation()+"\n"; }
 	
 	public int getSourceKey(){
 		//used in the Conflict resulotion method of the conference track

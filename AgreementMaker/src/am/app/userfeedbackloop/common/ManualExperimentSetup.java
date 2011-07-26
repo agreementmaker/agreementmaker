@@ -1,5 +1,8 @@
 package am.app.userfeedbackloop.common;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 import am.app.Core;
@@ -21,6 +24,19 @@ import am.app.userfeedbackloop.UserFeedback.Validation;
  *
  */
 public class ManualExperimentSetup extends UFLExperiment {
+	
+	private BufferedWriter logFile;
+	
+	public ManualExperimentSetup() {
+		// setup the log file
+		try {
+			FileWriter fr = new FileWriter("/home/cosmin/Desktop/ufllog.txt",true);
+			logFile = new BufferedWriter(fr);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	@Override
 	public Ontology getSourceOntology() {
@@ -61,4 +77,15 @@ public class ManualExperimentSetup extends UFLExperiment {
 		return initialMatcher.getAlignment();
 	}
 
+	@Override
+	public void info(String line) {
+		if( logFile != null )
+			try {
+				logFile.write(line + "\n");
+				logFile.flush();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
 }

@@ -2,6 +2,7 @@ package am.app.userfeedbackloop.disagreementclustering;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
@@ -48,6 +49,8 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		l.add(m_asm);
 		l.add(m_psm);
 		l.add(m_vmm);
+		l.add(m_lsm);
+		l.add(m_iism);
 		
 		return l;
 	}
@@ -73,6 +76,8 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 	
 	private MatchingProgressDisplay progressDisplay;
 	
+	private UFLExperiment experiment;
+	
 	@Override
 	public void run(UFLExperiment experiment) {
 				
@@ -80,6 +85,8 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 			Utility.displayErrorPane("The experiment must define a pair of ontologies before the matching can start.", "Ontologies not loaded");
 			return;
 		}
+		
+		this.experiment = experiment;
 		
 		try {
 			
@@ -220,5 +227,83 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 	
 	@Override public AbstractMatcher getFinalMatcher() {
 		return m_lwc;
+	}
+	
+	@Override
+	protected void done() {
+		
+		//Logger log = Logger.getLogger(this.getClass().toString());
+		
+		UFLExperiment log = experiment;
+		
+		
+		
+		// output the reference alignment
+		Alignment<Mapping> referenceAlignment = experiment.getReferenceAlignment();
+		
+		log.info("Referene alignment has " + referenceAlignment.size() + " mappings.");
+		for( int i = 0; i < referenceAlignment.size(); i++ ) {
+			Mapping currentMapping = referenceAlignment.get(i);
+			log.info( i + ". " + currentMapping.toString() );
+		}
+		
+		log.info("");
+		
+		// save to log file the alignment we start with.
+		
+		Alignment<Mapping> finalAlignment = getFinalMatcher().getAlignment();
+		Alignment<Mapping> classAlignment = getFinalMatcher().getClassAlignmentSet();
+		Alignment<Mapping> propertiesAlignment = getFinalMatcher().getPropertyAlignmentSet();
+		
+		log.info("Initial matchers have finished running.");
+		log.info("Alignment contains " + finalAlignment.size() + " mappings. " + 
+				  classAlignment.size() + " class mappings, " + propertiesAlignment.size() + " property mappings.");
+		
+		log.info("Class mappings:");
+		for( int i = 0; i < classAlignment.size(); i++ ) {
+			Mapping currentMapping = classAlignment.get(i);
+			boolean mappingCorrect = false;
+			
+			if( experiment.getReferenceAlignment().contains(currentMapping.getEntity1(),currentMapping.getEntity2(), currentMapping.getRelation()) ) {
+				mappingCorrect = true;
+			}
+			
+			String mappingAnnotation = "X";
+			if( mappingCorrect ) mappingAnnotation = " ";
+			
+			log.info( i + ". " + mappingAnnotation + " " + currentMapping.toString() );
+		}
+		
+		log.info("");
+		
+		log.info("Property mappings:");
+		for( int i = 0; i < propertiesAlignment.size(); i++ ) {
+			Mapping currentMapping = propertiesAlignment.get(i);
+			boolean mappingCorrect = false;
+			
+			if( experiment.getReferenceAlignment().contains(currentMapping.getEntity1(), currentMapping.getEntity2(), currentMapping.getRelation()) ) {
+				mappingCorrect = true;
+			}
+			
+			String mappingAnnotation = "X";
+			if( mappingCorrect ) mappingAnnotation = " ";
+			
+			log.info( i + ". " + mappingAnnotation + " " + currentMapping.toString() );
+		}
+		
+		log.info("");
+		
+		log.info("Missed mappings:");
+		int missedMappingNumber = 0;
+		for( Mapping referenceMapping : referenceAlignment ) {
+			if( !finalAlignment.contains(referenceMapping.getEntity1(), referenceMapping.getEntity2(), referenceMapping.getRelation()) ) {
+				log.info( missedMappingNumber + ". " + referenceMapping );
+				missedMappingNumber++;
+			}
+		}
+		
+		log.info("");
+		
+		super.done();
 	}
 }

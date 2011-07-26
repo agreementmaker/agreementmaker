@@ -9,12 +9,12 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 
-import com.panayotis.gnuplot.JavaPlot;
-
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.userfeedbackloop.CandidateSelectionEvaluation;
 import am.app.userfeedbackloop.UFLExperiment;
+
+import com.panayotis.gnuplot.JavaPlot;
 
 public class PrecisionRecallPlot extends CandidateSelectionEvaluation {
 
@@ -30,6 +30,28 @@ public class PrecisionRecallPlot extends CandidateSelectionEvaluation {
 	@Override
 	public void evaluate(UFLExperiment exp ) {
 		// This method is called to create the 'table' and calculate the points
+		
+		UFLExperiment log = exp;
+		
+		Alignment<Mapping> referenceAlignment = exp.getReferenceAlignment();
+		
+		Mapping candidateMapping = exp.candidateSelection.getCandidateMapping();
+		boolean mappingIsInReference = false;
+		if( referenceAlignment.contains(candidateMapping) ) mappingIsInReference = true;
+		
+		Alignment<Mapping> finalAlignment = exp.getFinalAlignment();
+		boolean mappingIsInAlignment = false;
+		if( finalAlignment.contains(candidateMapping) ) mappingIsInAlignment = true;
+		
+		
+		String annotationString = "(in reference: no)";
+		if( mappingIsInReference ) annotationString = "(in reference: yes)";
+		
+		String annotationString2 = "(in alignment: no)";
+		if( mappingIsInAlignment ) annotationString2 = "(in alignment: yes)";
+		
+		log.info("Candidate selection mapping: " + annotationString + " " + annotationString2 + " " + candidateMapping );
+		log.info("");
 		
 		List<Mapping> rankedList = exp.candidateSelection.getRankedMappings();
 		Alignment<Mapping> reference = exp.getReferenceAlignment();
@@ -90,6 +112,9 @@ public class PrecisionRecallPlot extends CandidateSelectionEvaluation {
 						 isCorrect + ", " + formatter.format(currentMapping.getSimilarity()) + ", "
 						 + currentMapping.toString());
 		}//end for loop
+		
+		
+		
 		
 		done();
 	}

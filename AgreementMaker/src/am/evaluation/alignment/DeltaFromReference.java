@@ -21,28 +21,8 @@ public class DeltaFromReference {
 
 	private Alignment<Mapping> referenceAlignment;
 	
-	private HashMap<Node,List<Mapping>> sourceNodeMap = new HashMap<Node,List<Mapping>>();
-	//private HashMap<Node,List<Mapping>> targetNodeMap = new HashMap<Node,List<Mapping>>();
-	
 	public DeltaFromReference(Alignment<Mapping> referenceAlignment) {
 		this.referenceAlignment = referenceAlignment;
-		
-		// create the hashmaps (used to check if nodes are part of the reference alignment)
-		for( Mapping m : referenceAlignment ) {
-			Node sourceNode = m.getEntity1();
-			
-			if( sourceNodeMap.containsKey(sourceNode) ) {
-				List<Mapping> mappingList = sourceNodeMap.get(sourceNode);
-				mappingList.add(m);
-			} else {
-				List<Mapping> mappingList = new ArrayList<Mapping>();
-				mappingList.add(m);
-				sourceNodeMap.put(sourceNode, mappingList);
-			}
-			
-			//Node targetNode = m.getEntity2();
-			//targetNodeMap.put(targetNode, m);
-		}
 	}
 	
 	/**
@@ -53,29 +33,12 @@ public class DeltaFromReference {
 		
 		int correctMappings = 0;
 		// keep track of the mappings discovered in order to avoid counting duplicates more than once
-		HashMap<Mapping,Boolean> mappingsDiscovered = new HashMap<Mapping,Boolean>();
+		//HashMap<Mapping,Boolean> mappingsDiscovered = new HashMap<Mapping,Boolean>();
 		
-		for( Mapping currentMapping : alignment ) {
-			
-			if( mappingsDiscovered.containsKey(currentMapping) ) continue; // this mapping is a duplicate
-			
-			Node sourceNode = currentMapping.getEntity1();
-			Node targetNode = currentMapping.getEntity2();
-			
-			// check to see if the mapping is correct
-			boolean mappingIsCorrect = false;
-			
-			if( sourceNodeMap.containsKey(sourceNode) ) {
-				List<Mapping> referenceMappingList = sourceNodeMap.get(sourceNode);
-				for( Mapping referenceMapping : referenceMappingList ) {
-					if( referenceMapping.getEntity2().equals(targetNode) ) {
-						mappingIsCorrect = true;
-						mappingsDiscovered.put(currentMapping, new Boolean(true) );
-					}
-				}
+		for( Mapping m : alignment ) {
+			if( referenceAlignment.contains(m.getEntity1(), m.getEntity2(), m.getRelation()) ) {
+				correctMappings++;
 			}
-			
-			if( mappingIsCorrect ) correctMappings++;
 		}
 		
 		// incorrectMappings = alignment.size() - correctMappings;

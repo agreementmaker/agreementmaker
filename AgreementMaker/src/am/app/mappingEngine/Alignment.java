@@ -2,6 +2,7 @@ package am.app.mappingEngine;
 
 import java.util.ArrayList;
 
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
@@ -70,12 +71,30 @@ public class Alignment<E extends Mapping> extends ArrayList<E>
     	return null;
     }
     
+    public boolean contains( Node source, Node target, MappingRelation relation ) {
+    	
+    	for( E mapping : this ) {
+    		if( mapping.getEntity1().equals(source) &&
+    			mapping.getEntity2().equals(target) &&
+    			mapping.getRelation().equals(relation) ) {
+    			return true;
+    		}
+    	}
+    	
+    	return false;
+    }
 
     public boolean contains( int row, int col ) {
     	for( E mapping : this ) if( mapping.getSourceKey() == row && mapping.getTargetKey() == col ) return true;
     	return false;
     }
 
+    /**
+     * This containment function ignores similarity and relation of the mapping.
+     * 
+     * @param mapping
+     * @return
+     */
     public boolean contains( E mapping ) {
     	// TODO: Make this check be better than linear time.
     	//return super.contains( mapping );

@@ -26,6 +26,7 @@ public abstract class UFLExperiment {
 	public abstract Ontology 			getTargetOntology();
 	public abstract Alignment<Mapping> 	getReferenceAlignment();
 	public abstract Alignment<Mapping>  getFinalAlignment();
+	public abstract void				info(String line);   // FIXME: Change this, or get rid of it. Or learn how to use log4j.
 	
 	public abstract boolean 			experimentHasCompleted();  // return true if the experiment is done, false otherwise.
 	

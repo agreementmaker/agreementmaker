@@ -107,5 +107,4 @@ public class DisagreementRanking extends CandidateSelection {
 		done();
 	}
 
-
 }
