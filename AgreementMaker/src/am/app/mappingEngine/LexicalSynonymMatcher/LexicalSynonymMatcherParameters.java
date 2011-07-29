@@ -9,4 +9,9 @@ public class LexicalSynonymMatcherParameters extends AbstractParameters {
 	public LexicalSynonymMatcherParameters() {
 		super();
 	}
+	
+	public LexicalSynonymMatcherParameters(double threshold, int maxSourceAlign,
+			int maxTargetAlign) {
+		super( threshold, maxSourceAlign, maxTargetAlign );
+	}
 }

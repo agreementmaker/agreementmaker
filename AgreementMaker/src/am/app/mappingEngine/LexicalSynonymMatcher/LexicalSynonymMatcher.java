@@ -3,8 +3,8 @@ package am.app.mappingEngine.LexicalSynonymMatcher;
 import java.util.HashMap;
 import java.util.List;
 
-import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.Property;
+import org.apache.log4j.Logger;
+
 import am.app.Core;
 import am.app.lexicon.GeneralLexiconSynSet;
 import am.app.lexicon.Lexicon;
@@ -12,9 +12,13 @@ import am.app.lexicon.LexiconSynSet;
 import am.app.lexicon.subconcept.SubconceptSynonymLexicon;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatcherFeature;
 import am.app.ontology.Node;
+
+import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.Property;
 
 public class LexicalSynonymMatcher extends AbstractMatcher {
 
@@ -49,6 +53,7 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		needsParam = true;
 		
 		// TODO: Setup Features.
+		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 	}
 	
 	@Override
@@ -101,11 +106,16 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		
 		
 		
-		double synonymSimilarity = synonymSimilarity( sourceSet, targetSet );
+		ProvenanceStructure provNoTermSyn = synonymSimilarity( sourceSet, targetSet );
 		
-		if( synonymSimilarity > 0.0d ) {
-			//alignmentsfound++;
-			return new Mapping(source, target, synonymSimilarity);
+		if( provNoTermSyn != null && provNoTermSyn.similarity > 0.0d ) {
+			if( getParam().storeProvenance ) {
+				Mapping m = new Mapping(source, target, provNoTermSyn.similarity);
+				m.setProvenance(provNoTermSyn.getProvenanceString());
+				return m;
+			} else {
+				return new Mapping(source, target, provNoTermSyn.similarity);
+			}
 		}
 		
 		/*boolean tempDisabled = true;
@@ -131,22 +141,39 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 			sourceExtendedSynonyms.addAll( sourceSet.getSynonyms() );
 			targetExtendedSynonyms.addAll( targetSet.getSynonyms() );
 			
-			double extendedSimilarity = computeLexicalSimilarity(sourceExtendedSynonyms, targetExtendedSynonyms, 0.9d);
+			ProvenanceStructure prov = computeLexicalSimilarity(sourceExtendedSynonyms, targetExtendedSynonyms, 0.9d);
 			
-			if( extendedSimilarity > 0.0d ) {
-				return new Mapping(source, target, extendedSimilarity );
+			if( prov != null && prov.similarity > 0.0d ) {
+				if( getParam().storeProvenance ) {
+					Mapping m = new Mapping(source, target, prov.similarity);
+					m.setProvenance(prov.getProvenanceString());
+					return m;
+				} else {
+					return new Mapping(source, target, prov.similarity);
+				}
 			}
 		}
 		
 		return null;
 	}
 
-	private double synonymSimilarity(LexiconSynSet sourceSet, LexiconSynSet targetSet) {
+	/**
+	 * Given the synsets associated with two concepts, calculate the "synonym similarity" between the concepts.
+	 * 
+	 * This method checks all related synsets in addition to any other synsets.
+	 * 
+	 * @return Currently we return the greatest similarity we find.
+	 */
+	private ProvenanceStructure synonymSimilarity(LexiconSynSet sourceSet, LexiconSynSet targetSet) {
 	
-		double greatestLexicalSimilarity = 0.0d;
+		ProvenanceStructure prov = null; // keep track of the provenance info
+		
 		if( sourceSet != null && targetSet != null ) {
 			try {
-				greatestLexicalSimilarity = computeLexicalSimilarity(sourceSet, targetSet);
+				prov = computeLexicalSimilarity(sourceSet, targetSet);
+				if( prov != null ) prov.setSynSets(sourceSet, targetSet);
+				
+				if( prov != null && prov.similarity == 1.0d ) return prov; // we can't get higher than 1.0;
 				
 				List<LexiconSynSet> sourceRelatedSets = sourceSet.getRelatedSynSets();
 				List<LexiconSynSet> targetRelatedSets = targetSet.getRelatedSynSets();
@@ -154,20 +181,35 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 				for( LexiconSynSet sourceRelatedSet : sourceRelatedSets ) {
 					for( LexiconSynSet targetRelatedSet : targetRelatedSets ) {
 						if( sourceRelatedSet != null && targetRelatedSet != null ) {
-							double computedLexicalSimilarity = computeLexicalSimilarity(sourceRelatedSet, targetRelatedSet);
-							if( computedLexicalSimilarity > greatestLexicalSimilarity ) greatestLexicalSimilarity = computedLexicalSimilarity;
+							ProvenanceStructure currentProv = computeLexicalSimilarity(sourceRelatedSet, targetRelatedSet);
+							if( currentProv != null ) currentProv.setSynSets(sourceRelatedSet, targetRelatedSet);
+							
+							if( currentProv != null && 
+								prov != null &&
+								currentProv.similarity > prov.similarity ) { prov = currentProv; } // keep track of the highest provenance
+							if( prov != null && prov.similarity == 1.0d ) return prov; // we can't get higher than 1.0;
 						}
 					}
 				}
 			} catch( NullPointerException e ) {
 				e.printStackTrace();
 			}
+		} else {
+			Logger log = Logger.getLogger(this.getClass());
+			log.error("LSM needs to be fixed. "  + sourceSet + " " + targetSet);
 		}
 			
-		return greatestLexicalSimilarity;
+		return prov;
 	}
 
-	private double computeLexicalSimilarity(LexiconSynSet sourceLexicon2,
+	/**
+	 * Compute the lexical similarity betwen
+	 * @param sourceLexicon2
+	 * @param targetLexicon2
+	 * @return
+	 * @throws NullPointerException
+	 */
+	private ProvenanceStructure computeLexicalSimilarity(LexiconSynSet sourceLexicon2,
 			LexiconSynSet targetLexicon2) throws NullPointerException {
 
 
@@ -181,28 +223,51 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	}
 	
 	
-	private double computeLexicalSimilarity( List<String> sourceSyns, List<String> targetSyns, double greatest ) {
+	private ProvenanceStructure computeLexicalSimilarity( List<String> sourceSyns, List<String> targetSyns, double greatest ) {
 		
-		double greatestWordSimilarity = 0.0d;
-
-		boolean breakout = false;
-	//	List<String> sourceSyns = sourceLexicon2.getSynonyms();
 		for( int i = 0; i < sourceSyns.size(); i++ ) {
 			String sourceSynonym = sourceSyns.get(i);
-//			List<String> targetSyns = targetLexicon2.getSynonyms();
+
 			for( int j = 0; j < targetSyns.size(); j++ ) {
 				String targetSynonym = targetSyns.get(j);
 				
 				if( sourceSynonym.equalsIgnoreCase(targetSynonym) ) {
-					greatestWordSimilarity = greatest;
-					breakout = true;
-					break;
+					return new ProvenanceStructure(greatest, sourceSynonym, targetSynonym);
 				}
 			}
-			if( breakout ) break;
+	
 		}
 		
-		return greatestWordSimilarity;
+		return null;
 		
+	}
+	
+	/**
+	 * This class is just an encapsulating class that contains provenance information 
+	 * for when a mapping is created.
+	 * 
+	 * TODO: Make Provenance a system wide thing??? - Cosmin.
+	 */
+	private class ProvenanceStructure {
+		public double similarity;
+		public String sourceSynonym;
+		public String targetSynonym;
+		public LexiconSynSet sourceSynSet;
+		public LexiconSynSet targetSynSet;
+		
+		public ProvenanceStructure(double similarity, String sourceSynonym, String targetSynonym) {
+			this.similarity = similarity;
+			this.sourceSynonym = sourceSynonym;
+			this.targetSynonym = targetSynonym;
+		}
+		
+		public void setSynSets( LexiconSynSet sourceSynSet, LexiconSynSet targetSynSet ) {
+			this.sourceSynSet = sourceSynSet;
+			this.targetSynSet = targetSynSet;
+		}
+		
+		public String getProvenanceString() {
+			return "\"" + sourceSynonym + "\" (" + sourceSynSet + ") = \"" + targetSynonym + "\" (" + targetSynSet + ")";
+		}
 	}
 }
