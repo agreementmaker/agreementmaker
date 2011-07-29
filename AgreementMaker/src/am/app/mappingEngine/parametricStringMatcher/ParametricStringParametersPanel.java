@@ -109,10 +109,10 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 		stemCheck = new JCheckBox();
 		stemCheck.setSelected(true);
 		
-		lexiconCheck = new JCheckBox();
+		//lexiconCheck = new JCheckBox();
 		lexiconCheck.setSelected(false);
 		lexiconCheck.addActionListener(this);
-		lexUseBestCheck = new JCheckBox();
+		//lexUseBestCheck = new JCheckBox();
 		lexUseBestCheck.setSelected(false);
 		lexUseBestCheck.addActionListener(this);
 		
