@@ -9,6 +9,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
+import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,7 +45,7 @@ public class FindDialog extends JDialog implements ActionListener {
 	private JButton cancelButton;
 	private JButton findButton;
 	
-	private JComboBox findBox;
+	private JComboBox cmbQuery;
 	
 	private JCheckBox nameCheckbox;
 	private JCheckBox labelCheckbox;
@@ -56,6 +57,8 @@ public class FindDialog extends JDialog implements ActionListener {
 	private String searchString = null;
 	private Pattern searchPattern = null;
 	private Matcher matcher = null;
+	
+	private static final String PREF_ENTRIES_PREFIX = "PREF_ENTRY_";
 	
 	FindInterface haystack;  // searching for a needle in the haystack
 	
@@ -69,9 +72,15 @@ public class FindDialog extends JDialog implements ActionListener {
 		
 		// components
 		JLabel findLabel = new JLabel("Search words/Regular expression:");
-		findBox = new JComboBox();
-		findBox.setEditable(true);
-		findBox.addActionListener(this);
+		cmbQuery = new JComboBox();
+		cmbQuery.setEditable(true);
+		cmbQuery.addActionListener(this);
+		
+		// populate the find combobox
+		Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+		for( int i = 0; i < 10; i++ ) {
+			
+		}
 	
 		JLabel searchThroughLabel = new JLabel("Search through:");
 		nameCheckbox = new JCheckBox("Name");
@@ -100,7 +109,7 @@ public class FindDialog extends JDialog implements ActionListener {
 		mainLayout.setHorizontalGroup( mainLayout.createSequentialGroup()
 				.addGroup( mainLayout.createParallelGroup()
 					.addComponent(findLabel)
-					.addComponent(findBox, GroupLayout.PREFERRED_SIZE, findBox.getPreferredSize().width+200, GroupLayout.PREFERRED_SIZE)
+					.addComponent(cmbQuery, GroupLayout.PREFERRED_SIZE, cmbQuery.getPreferredSize().width+200, GroupLayout.PREFERRED_SIZE)
 					.addGroup( mainLayout.createSequentialGroup()
 						.addGroup( mainLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(searchThroughLabel, GroupLayout.PREFERRED_SIZE, searchThroughLabel.getPreferredSize().width+50, GroupLayout.PREFERRED_SIZE)
@@ -122,7 +131,7 @@ public class FindDialog extends JDialog implements ActionListener {
 		mainLayout.setVerticalGroup( mainLayout.createSequentialGroup()
 				.addComponent(findLabel)
 				.addGroup( mainLayout.createParallelGroup()
-						.addComponent(findBox)
+						.addComponent(cmbQuery)
 						.addComponent(findButton)
 				)
 				.addGroup( mainLayout.createParallelGroup()
@@ -183,7 +192,7 @@ public class FindDialog extends JDialog implements ActionListener {
 				findNext();
 			} else {
 				// create a new search
-				Object selectedItem = findBox.getSelectedItem();
+				Object selectedItem = cmbQuery.getSelectedItem();
 				if( selectedItem == null ) {
 					// nothing to search for
 					return;
@@ -197,7 +206,7 @@ public class FindDialog extends JDialog implements ActionListener {
 				continueFromLast = true;
 				findNext();
 			}
-		} else if( e.getSource() == findBox ) {
+		} else if( e.getSource() == cmbQuery ) {
 			// the user is editing the search field
 			if( Core.DEBUG ) {
 				Logger log = Logger.getLogger(this.getClass());
@@ -205,9 +214,11 @@ public class FindDialog extends JDialog implements ActionListener {
 				log.debug(e);
 			}
 			if( e.getActionCommand() == "comboBoxEdited" ) {
-				Object selectedItem = findBox.getSelectedItem(); 
+				Object selectedItem = cmbQuery.getSelectedItem(); 
 				if( selectedItem != null && searchString != selectedItem.toString() )
-					continueFromLast = false;				
+					//continueFromLast = false;	
+					haystack.resetSearch();
+					findButton.setText("Find");
 			}
 			
 		}
@@ -250,5 +261,8 @@ public class FindDialog extends JDialog implements ActionListener {
 				return; // stop here until the user presses find again
 			}
 		}
+		
+		findButton.setText("Find");
+		haystack.resetSearch();
 	}
 }
