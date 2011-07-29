@@ -13,6 +13,7 @@ import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Combination.CombinationParameters;
 import am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralParameters;
+import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
 import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.oaei2010.OAEI2010MatcherParameters.Track;
@@ -214,7 +215,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		AbstractMatcher lsm = null;
 		if(parameters.usingLSM && !isCancelled() ){
 	    	lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSM, 0);    	
-	    	setupSubMatcher(lsm, new AbstractParameters( getThreshold(), getMaxSourceAlign(), getMaxTargetAlign() ), true );
+	    	setupSubMatcher(lsm, new LexicalSynonymMatcherParameters( getThreshold(), getMaxSourceAlign(), getMaxTargetAlign() ), true );
 	    	runSubMatcher(lsm, "LSM (1/4)");
 		}
 		
