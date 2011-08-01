@@ -2,11 +2,13 @@ package am.app.mappingEngine.PRAMatcher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
@@ -403,7 +405,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	
 	private void createPRATrees(TreeNode aNode, alignType typeOfNodes, boolean source, int treeDepth)
 	{
-		ArrayList<TreeNode> myChildren = aNode.getChildren();
+		List<TreeNode> myChildren = aNode.getChildren();
 		//ArrayList<TreeNode> myChildren = adjacency.get(aNode);
 		TreeNode myChild = null;
 		
@@ -553,7 +555,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	
 	private void alignNodes(TreeNode sourceNode, TreeNode targetNode, alignType typeOfNodes)
 	{
-		ArrayList<TreeNode> myChildren = sourceNode.getChildren();
+		List<TreeNode> myChildren = sourceNode.getChildren();
 		//ArrayList<TreeNode> myChildren = adjacency.get(aNode);
 		TreeNode childNode = null;
 				
@@ -580,7 +582,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	
 	private void alignNodeWithTargets(TreeNode srcNode, TreeNode targetNode, alignType typeOfNodes)
 	{
-		ArrayList<TreeNode> myChildren = targetNode.getChildren();
+		List<TreeNode> myChildren = targetNode.getChildren();
 		//ArrayList<TreeNode> myChildren = adjacency.get(targetNode);
 		TreeNode childNode = null;
 		Mapping alignment = null;
@@ -610,12 +612,12 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	}
 	
 	
-	private void createAdjacency(ArrayList<TreeNode> treeNodes)
+	private void createAdjacency(List<TreeNode> treeNodes)
 	{
 		Node aNode, cNode;
 		TreeNode parentNode, childNode;
-		ArrayList<Node> childrenNodes;
-		ArrayList<TreeNode> anAdj;
+		List<Node> childrenNodes;
+		List<TreeNode> anAdj;
 		
 		
 		

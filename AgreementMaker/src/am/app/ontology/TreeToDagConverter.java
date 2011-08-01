@@ -1,12 +1,11 @@
 package am.app.ontology;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
-import am.userInterface.sidebar.vertex.Vertex;
 
 /** this is used to create a fake DAG given the root of tree of vertex with duplicates and so on
  *  so you will have to do new TreeToDagConverter(Vertex root) 
@@ -14,26 +13,29 @@ import am.userInterface.sidebar.vertex.Vertex;
  *  It is used also to avoid using the vertex structure, so that you can only use nodes
  *  So vertex should the parameter only of the constructor, all the other methods should receive and return node
  *  IT WORKS ONLY IF WE KEEP THE STRUCTURE LIKE THIS WITH ROOTS AT SECOND LEVEL
-	//0 LEVEL ontology name, 1 level class and prop hierachy fake root nodes, 2 level real roots 
+	//0 LEVEL ontology name, 1 level class and prop hierachy fake root nodes, 2 level real roots
+ *
+ *  TODO: Not sure what this class is used for.  It seems relatively useless, I'm merging its methods into the Node class. -- Cosmin, July 30, 2011.
  *  */
+@Deprecated
 public class TreeToDagConverter {
 	
 	final static int REALROOTSLEVEL = 2;
 	
-	private Vertex root;
+	private Node root;
 	
-	public TreeToDagConverter(Vertex r) {
+	public TreeToDagConverter(Node r) {
 		if(r == null) {
 			throw new RuntimeException("DEVELOPER ERROR, you are creating a dag from a null tree, maybe this ontology doesn't contain properties or classes, in that case the tree shouldn't be explored.");
 		}
 		root = r;
 	}
 	
-	public Vertex getRoot() {
+	public Node getRoot() {
 		return root;
 	}
 
-	public void setRoot(Vertex root) {
+	public void setRoot(Node root) {
 		this.root = root;
 	}
 	
@@ -41,43 +43,25 @@ public class TreeToDagConverter {
 	
 	//RETURN THE LIST OF ROOTS Of this dag, it WORKS ONLY IF WE KEEP THE STRUCTURE LIKE THIS WITH ROOTS AT SECOND LEVEL
 	//0 LEVEL ontology name, 1 level class and prop hierachy fake root node, 2 level real roots 
-	public ArrayList<Node> getRoots(){
-		
-		ArrayList<Node> result = new ArrayList<Node>();
-		Enumeration<Vertex> allVertex = root.breadthFirstEnumeration();
-		
-		Vertex v;
-		while(allVertex.hasMoreElements()) {
-			v = allVertex.nextElement();
-			if(v.getLevel() <= REALROOTSLEVEL) {
-				if(!v.isFake()) {
-					result.add(v.getNode());
-
-				}
+	public List<Node> getRoots() { return root.getChildren(); }
+	
+	/** @return the leaves of the root node (i.e. the whole hierarchy) */
+	public List<Node> getLeaves() { return getLeaves(root); }
+	
+	/** Recursive method to return the leaves of the hierarchy under a node */
+	public List<Node> getLeaves(Node root) {
+		LinkedList<Node> nodeList = new LinkedList<Node>();
+		if( root.isLeaf() ) {
+			nodeList.add(root);
+		} else {
+			List<Node> childList = root.getChildren();
+			for( int i = 0; i < childList.size(); i++ ) {
+				nodeList.addAll( getLeaves(childList.get(i)) ); // recursive call
 			}
-			else {break;}
 		}
-		return result;
+		return nodeList;
 	}
 	
-
-	public ArrayList<Node> getLeaves(){
-		ArrayList<Node> result = new ArrayList<Node>();
-		HashSet<Node> processed = new HashSet<Node>();
-		Enumeration<Vertex> allVertex = root.breadthFirstEnumeration();
-		Vertex v;
-		Node n;
-		while(allVertex.hasMoreElements()) {
-			v = allVertex.nextElement();
-			n = v.getNode();
-			if(!v.isFake() && v.isLeaf() && !processed.contains(n)) {
-				result.add(n);
-				processed.add(n);
-				//ystem.out.println("leaf: "+n.getLocalName());
-			}
-		}
-		return result;
-	}
 	
 
 
@@ -87,51 +71,8 @@ public class TreeToDagConverter {
 	 * 
 	 * */
 	
-	public static ArrayList<Node> getOrderedCommonDescendants(Node first, Node second){
-		ArrayList<Node> result = new ArrayList<Node>();
-
-		//I need to see if any of the descendants of the lowest are descendats of  the highest
-		Node higherOne = first;
-		Node lowerOne = second;
-		if(first.getLevel() > second.getLevel()) { //if you higher in tree the level is lower, root is 0 for example
-			higherOne = second;
-			lowerOne = first;
-		}
-		
-		Vertex lowerVertex = lowerOne.getVertex();
-		
-		HashSet processed = new HashSet<Node>();
-		Enumeration<Vertex> allVertex = lowerVertex.breadthFirstEnumeration();
-		while(allVertex.hasMoreElements()) {
-			Vertex v = allVertex.nextElement();
-			Node n = v.getNode();
-			if(higherOne.isNodeDescendant(n)) {
-				if(!processed.contains(n)){
-					result.add(n);
-					processed.add(n);
-				}
-			}
-		}
-		
-		/*
-		if(!first.getLocalName().equals(second.getLocalName()) && result.size() > 0) {
-			System.out.println("\n\nCommon descendants of "+first.getLocalName()+" & "+second.getLocalName());
-			for(int i= 0; i < result.size(); i++) {
-				Node bla = result.get(i);
-				System.out.print(bla.getLocalName()+" ");
-			}
-		}
-		*/
-		/*
-		if(first.getLocalName().equals("PROJECTILE-WEAPON") && second.getLocalName().equals("BOMB")) {
-			System.out.println("\n\nCommon descendants of "+first.getLocalName()+" & "+second.getLocalName());
-			for(int i= 0; i < result.size(); i++) {
-				Node bla = result.get(i);
-				System.out.print(bla.getLocalName()+" ");
-			}
-		}
-		*/
-		return result;
+	public static List<Node> getOrderedCommonDescendants(Node first, Node second){
+		return Node.getCommonDescendants(first, second);
 	}
 	
 	/**return the list of ancestors of both this two node. Could be optimezed i guess but i don't have time.
@@ -155,11 +96,11 @@ public class TreeToDagConverter {
 		LinkedList<Node> queue = new LinkedList<Node>();
 		queue.add(higherOne);
 		Node current;
-		ArrayList<Node> parents;
+		List<Node> parents;
 		Iterator<Node> it;
 		while(!queue.isEmpty()){
 			current = queue.removeFirst();
-			if(!processed.contains(current) && current.isNodeDescendant(lowerOne)){
+			if(!processed.contains(current) && current.hasDescendant(lowerOne)){
 				result.add(current);
 				processed.add(current);
 			}

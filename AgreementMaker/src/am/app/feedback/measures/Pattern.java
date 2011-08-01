@@ -1,6 +1,7 @@
 package am.app.feedback.measures;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Pattern  {
 	private int length;
@@ -8,7 +9,7 @@ public class Pattern  {
 	private int lastAssignedVisit;
 	private static int lastVisit;
 
-	public Pattern(ArrayList<Edge> edgeSeq, Pattern p){
+	public Pattern(List<Edge> edgeSeq, Pattern p){
 		
 		edgeSequence = new ArrayList<Edge>();
 		if(p != null){

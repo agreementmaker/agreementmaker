@@ -10,7 +10,6 @@ import java.util.List;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
-import am.userInterface.sidebar.vertex.Vertex;
 
 import com.hp.hpl.jena.ontology.ConversionException;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -85,15 +84,17 @@ public class RdfsTreeBuilder extends TreeBuilder{
 			}
 			ontology.setSkipOtherNamespaces(skipOtherNamespaces);
 			ontology.setModel(ontModel);
-			treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(),ontModel,  ontology.getSourceOrTarget());//Creates the root of type Vertex for the tree, is a fake vertex with no corresponding node
-			Vertex classRoot = new Vertex(RDFCLASSROOTNAME,RDFCLASSROOTNAME,ontModel,  ontology.getSourceOrTarget());
+			//treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(),ontModel,  ontology.getSourceOrTarget());//Creates the root of type Vertex for the tree, is a fake vertex with no corresponding node
+			treeRoot = new Node(-1, ontology.getTitle(), Node.RDFNODE, ontology.getID());
+			//Vertex classRoot = new Vertex(RDFCLASSROOTNAME,RDFCLASSROOTNAME,ontModel,  ontology.getSourceOrTarget());
+			Node classRoot = new Node( -1, RDFCLASSROOTNAME, Node.OWLCLASS, ontology.getID());
 			processedSubs = new HashMap<OntResource, Node>();
 			ExtendedIterator i = ontModel.listHierarchyRootClasses();
 			classRoot = createTree(classRoot, i);//should add all valid classes and subclasses in the iterator to the classRoot
 			ontology.setOntResource2NodeMap( processedSubs, alignType.aligningClasses );
-			treeRoot.add(classRoot);
+			treeRoot.addChild(classRoot);
 			treeCount = 2;
-			ontology.setClassesTree(classRoot);
+			ontology.setClassesRoot(classRoot);
 			
 			
 			
@@ -101,14 +102,15 @@ public class RdfsTreeBuilder extends TreeBuilder{
 			uniqueKey = 0; //restart the key because properties are kept in a different structure with different index
 	        processedSubs = new HashMap<OntResource, Node>();
 	        
-			Vertex propertiesRoot = new Vertex(RDFPROPERTIESROOTNAME, RDFPROPERTIESROOTNAME, ontModel, ontology.getSourceOrTarget());
+			//Vertex propertiesRoot = new Vertex(RDFPROPERTIESROOTNAME, RDFPROPERTIESROOTNAME, ontModel, ontology.getSourceOrTarget());
+	        Node propertiesRoot = new Node( -1, RDFPROPERTIESROOTNAME, Node.OWLPROPERTY, ontology.getID() );
 			propertiesRoot = createPropertiesTree( propertiesRoot, listHierarchyRootProperties(ontModel) );
 			ontology.setOntResource2NodeMap( processedSubs, alignType.aligningClasses );
 			
-			treeRoot.add(propertiesRoot);
+			treeRoot.addChild(propertiesRoot);
 			treeCount++;
 			
-			ontology.setPropertiesTree(propertiesRoot);
+			ontology.setPropertiesRoot(propertiesRoot);
 			
 			
 			
@@ -160,7 +162,7 @@ public class RdfsTreeBuilder extends TreeBuilder{
     	return roots;
 	}
 	
-	protected Vertex createTree(Vertex root, ExtendedIterator i){
+	protected Node createTree(Node root, ExtendedIterator i){
 		while (i.hasNext()) {
 			OntClass cls = (OntClass)i.next();
 			if(cls.isAnon()) ;//skip
@@ -170,17 +172,17 @@ public class RdfsTreeBuilder extends TreeBuilder{
           	   root = createTree(root, moreSubs);       	   
             }
 		    else {
-				Vertex newVertex = createNodeAndVertex(cls, true, root.getNodeType());
+				Node newNode = createNode(cls, true);
 				ExtendedIterator subs = cls.listSubClasses( true );
-				newVertex = createTree(newVertex, subs);
-				root.add(newVertex);
+				newNode = createTree(newNode, subs);
+				root.addChild(newNode);
 				treeCount++;
 			}
 		}
 		return root;
 	}
 	
-	protected Vertex createPropertiesTree(Vertex root, List<OntProperty> subChildren ) {
+	protected Node createPropertiesTree(Node root, List<OntProperty> subChildren ) {
 		
 		for( OntProperty prop : subChildren ) {
 			if( prop.isAnon() ) continue; // skip anonymous properties
@@ -190,15 +192,36 @@ public class RdfsTreeBuilder extends TreeBuilder{
 				root = createPropertiesTree( root, moreSubProperties.toList() );
 			} 
 			else {
-				Vertex newVertex = createNodeAndVertex( prop, false, root.getNodeType() );
+				Node newNode = createNode( prop, false );
 				ExtendedIterator subProperties = prop.listSubProperties(true);
-				newVertex = createPropertiesTree(newVertex, subProperties.toList() );
-				root.add(newVertex);
+				newNode = createPropertiesTree(newNode, subProperties.toList() );
+				root.addChild(newNode);
 				treeCount++;
 			}
 		}
 		
 		return root;
+	}
+	
+	
+	public Node createNode( OntResource entity, boolean isClass) {
+		Node node;
+		if( processedSubs.containsKey( entity ) ) {//the node has been already created, but we need only to create a new vertex;
+			node = processedSubs.get(entity); //reuse of the previous Node information for this class, but we need a new Vertex
+		}
+		else { 
+			if(isClass) {
+				node = new Node(uniqueKey,entity, Node.OWLCLASS, ontology.getID()); //new node with a new key, with the link to the graphical Vertex representation
+				ontology.getClassesList().add(node);
+			}
+			else {//it has to be a prop
+				node = new Node(uniqueKey,entity, Node.OWLPROPERTY, ontology.getID()); //new node with a new key, with the link to the graphical Vertex representation
+				ontology.getPropertiesList().add(node);
+			}
+			processedSubs.put(entity, node);
+			uniqueKey++;  // uniqueKey starts from 0, then gets incremented.
+		}
+		return node;
 	}
 	
 	/**
@@ -211,7 +234,10 @@ public class RdfsTreeBuilder extends TreeBuilder{
 	 * Each node is identified by a uniqueKey used as index in the ClassList structure
 	 * @param entity
 	 * @return
+	 * 
+	 * TODO: Remove this commented out code and copy the documentation over to the classes that replaced this code. - Cosmin.
 	 */
+	/*@Deprecated
 	public Vertex createNodeAndVertex(OntResource entity, boolean isClass, int sourceOrTarget) {
 		 
 		 Node node;
@@ -230,17 +256,17 @@ public class RdfsTreeBuilder extends TreeBuilder{
              processedSubs.put(entity, node);
              uniqueKey++;  // uniqueKey starts from 0, then gets incremented.
           }
- 	 /*
+ 	 
 	// uniqueKey == 0 here, no need to increment it.
 		node = new Node(uniqueKey,entity, Node.OWLCLASS, ontology.getIndex()); //new node with a new key, with the link to the graphical Vertex representation
     ontology.getClassesList().add(node);
     processedSubs.put(entity, node);
     uniqueKey++;  // here is where we increment the uniqueKey.
-    */
+    
 	
          Vertex vert = new Vertex(node.getLocalName(), entity.getURI(), ontModel, sourceOrTarget);
          node.addVertex(vert);
          vert.setNode(node);
 		 return vert;
-	}
+	}*/
 }

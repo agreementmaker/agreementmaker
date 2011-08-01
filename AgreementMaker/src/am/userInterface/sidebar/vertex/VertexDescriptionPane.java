@@ -10,6 +10,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
 import am.GlobalStaticVariables;
+import am.app.Core;
 import am.app.ontology.Node;
 
 public class VertexDescriptionPane extends JPanel{
@@ -240,19 +241,17 @@ public class VertexDescriptionPane extends JPanel{
 	//}
 	
 	@Deprecated
-	public void fillDescription (Vertex v){
-		clearDescription(v);
-		if(!v.isFake()){
-			Node node = v.getNode();
+	public void fillDescription (Node node){
+		clearDescription(node);
 			if(typeOfFile == GlobalStaticVariables.XMLFILE){			
-				if(v.isSourceOrGlobal()){
+				if(node.getOntologyID() == Core.getInstance().getSourceOntology().getID()){
 			    	   txtSourceDescription.setText(node.getLabel());
 			    }else {
 			    	   lt1.setText(node.getLabel());
 			    }
 			}
 			else if(typeOfFile == GlobalStaticVariables.OWLFILE){
-		       if(v.isSourceOrGlobal()){
+		       if(node.getOntologyID() == Core.getInstance().getSourceOntology().getID()){
 		    	   txtSourceDescription.setText(node.getDescriptionsString());
 		    	   txtSourceAnnotations.setText(node.getAnnotationsString());
 		    	   txtSourceProperties.setText(node.getPropOrClassString());
@@ -266,18 +265,17 @@ public class VertexDescriptionPane extends JPanel{
 			}else if(typeOfFile == GlobalStaticVariables.RDFSFILE){
 				//TODO: WORK here for RDFS
 			}
-		}
 	}
 	
-	public void clearDescription (Vertex node){
+	public void clearDescription (Node node){
 		if(typeOfFile == GlobalStaticVariables.XMLFILE){
-			if(node.isSourceOrGlobal()){
+			if(node.getOntologyID() == Core.getInstance().getSourceOntology().getID()){
 		    	   txtSourceDescription.setText("");
 		       }else {
 		    	   lt1.setText("");
 		       }
 		}else if(typeOfFile == GlobalStaticVariables.OWLFILE){
-			if(node.isSourceOrGlobal()){
+			if(node.getOntologyID() == Core.getInstance().getSourceOntology().getID()){
 		    	   txtSourceDescription.setText("");
 		    	   txtSourceAnnotations.setText("");
 		    	   txtSourceProperties.setText("");

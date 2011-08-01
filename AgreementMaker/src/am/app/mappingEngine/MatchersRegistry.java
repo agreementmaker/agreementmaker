@@ -33,6 +33,7 @@ import am.app.mappingEngine.testMatchers.EqualsMatcher;
 import am.app.mappingEngine.testMatchers.RandomMatcher;
 import am.app.mappingEngine.wikipedia.WikiMatcher;
 //import am.app.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
+import am.extension.MyTestMatcher;
 
 
 /**
@@ -54,6 +55,7 @@ public enum MatchersRegistry {
 	 * And so, if your matcher is has no code errors, it will be incorporated into the AgreementMaker.  - Cosmin
 	 */
 	//
+	MyTestMatch			( "MTM", "My Test Matcher", MyTestMatcher.class, MatcherCategory.USER ),
 	PartialGraph		( "PGM", "Partial Graph Matcher", PartialGraphMatcher.class, MatcherCategory.STRUCTURAL ),
 	SimilarityFlooding  ( "SFM", "Similarity Flooding Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.sfm.IndipendentSimilarityFlooding.class ),
 	AnchorFlood			( "AFM", "AnchorFlood Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.anchorFlood.AnchorFloodMatcher.class ),

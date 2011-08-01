@@ -1,16 +1,16 @@
 package am.app.mappingEngine.ssc;
 
 import java.util.ArrayList;
-import javax.swing.tree.TreeNode;
+import java.util.List;
+
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
-import am.userInterface.sidebar.vertex.Vertex;
 
 public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 
@@ -129,25 +129,29 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 		 * Where n = sibling_count(source) and m = sibling_count(target)
 		 */
 		
-		Vertex vsource = source.getVertex();
-		Vertex vtarget = target.getVertex();
+		//Vertex vsource = source.getVertex();
+		//Vertex vtarget = target.getVertex();
 		
-		TreeNode sourceParent = vsource.getParent(); // parent of source node
-		TreeNode targetParent = vtarget.getParent(); // parent of target node
+		List<Node> sourceParents = source.getParents(); // parent of source node
+		List<Node> targetParents = target.getParents(); // parent of target node
 		
 		// create the SiblingSets for the source and target nodes
-		ArrayList<Vertex> sourceSiblingSet = new ArrayList<Vertex>();  // set of siblings of the source node
-		for( int i = 0; i < sourceParent.getChildCount(); i++ ) {	
-			Vertex currentChild = (Vertex) sourceParent.getChildAt(i);
-			if( currentChild.equals(vsource) ) { continue; } // do not add the node to its own sibling set
-			sourceSiblingSet.add( currentChild );
+		List<Node> sourceSiblingSet = new ArrayList<Node>();  // set of siblings of the source node
+		for( Node sourceParent : sourceParents ) {
+			for( int i = 0; i < sourceParent.getChildCount(); i++ ) {	
+				Node currentChild = sourceParent.getChildAt(i);
+				if( currentChild.equals(source) ) { continue; } // do not add the node to its own sibling set
+				sourceSiblingSet.add( currentChild );
+			}
 		}
 		
-		ArrayList<Vertex> targetSiblingSet = new ArrayList<Vertex>();  // set of siblings of the target node
-		for( int i = 0; i < targetParent.getChildCount(); i++ ) {	
-			Vertex currentChild = (Vertex) targetParent.getChildAt(i);
-			if( currentChild.equals(vtarget) ) { continue; } // do not add the node to its own sibling set
-			targetSiblingSet.add( currentChild );
+		List<Node> targetSiblingSet = new ArrayList<Node>();  // set of siblings of the target node
+		for( Node targetParent : targetParents ) {
+			for( int i = 0; i < targetParent.getChildCount(); i++ ) {	
+				Node currentChild = targetParent.getChildAt(i);
+				if( currentChild.equals(target) ) { continue; } // do not add the node to its own sibling set
+				targetSiblingSet.add( currentChild );
+			}
 		}
 		
 		int n = sourceSiblingSet.size();  // number of siblings of the source node  i.e. sibling_count(source)
@@ -161,17 +165,17 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 		
 		for( int i = 1; i <= n; i++ ) {
 			
-			Vertex currentSourceSibling = sourceSiblingSet.get(i-1);  // get the i-th sibling of the source node ( i-1 because i goes from 1 to n, while the index of the ArrayList goes from 0 to n-1 )
+			Node currentSourceSibling = sourceSiblingSet.get(i-1);  // get the i-th sibling of the source node ( i-1 because i goes from 1 to n, while the index of the ArrayList goes from 0 to n-1 )
 			
 			double currentTerm = 0.0d;  // this is result of the current max function
 			
 			// calculate max( input_sim( source_sibling_i, target_sibling_1 ), ... , source_sibling_i, target_sibling_m )
 			for( int j = 1; j <= m; j++ ) { 
-				Vertex currentTargetSibling = targetSiblingSet.get(j-1);  // get the j-th sibling of the target node ( j-1 because j goes from 1 to m, while the index of the ArrayList goes from 0 to m-1 )
+				Node currentTargetSibling = targetSiblingSet.get(j-1);  // get the j-th sibling of the target node ( j-1 because j goes from 1 to m, while the index of the ArrayList goes from 0 to m-1 )
 				
 				Mapping inputSimilarity = null;  // this will store input_sim( source_sibling_i, target_sibling_j )
-				int sourceMatrixIndex = currentSourceSibling.getNode().getIndex();  // index of the source node in the AlignmentMatrix 
-				int targetMatrixIndex = currentTargetSibling.getNode().getIndex();  // index of the target node in the AlignmentMatrix 
+				int sourceMatrixIndex = currentSourceSibling.getIndex();  // index of the source node in the AlignmentMatrix 
+				int targetMatrixIndex = currentTargetSibling.getIndex();  // index of the target node in the AlignmentMatrix 
 				
 				switch( typeOfNodes ) {
 				case aligningClasses:

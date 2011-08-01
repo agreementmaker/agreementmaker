@@ -22,6 +22,7 @@ package am.app.mappingEngine.qualityEvaluation.metrics.joslyn;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 import am.Utility;
 import am.app.Core;
@@ -33,7 +34,6 @@ import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.TreeToDagConverter;
-import am.userInterface.sidebar.vertex.Vertex;
 import am.utility.parameters.AMParameter;
 
 
@@ -106,10 +106,10 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 		double propQuality = 0;
 		if(matcher.areClassesAligned()) {
 			
-				classQuality = orderPreservation(matcher.getClassAlignmentSet(),sourceOntology.getClassesList(),targetOntology.getClassesList(), sourceOntology.getClassesTree(), targetOntology.getClassesTree());
+				classQuality = orderPreservation(matcher.getClassAlignmentSet(),sourceOntology.getClassesList(),targetOntology.getClassesList(), sourceOntology.getClassesRoot(), targetOntology.getClassesRoot());
 		}
 		if(matcher.arePropertiesAligned()) {
-				propQuality = orderPreservation(matcher.getPropertyAlignmentSet(),sourceOntology.getPropertiesList(),targetOntology.getPropertiesList(), sourceOntology.getPropertiesTree(), targetOntology.getPropertiesTree());			
+				propQuality = orderPreservation(matcher.getPropertyAlignmentSet(),sourceOntology.getPropertiesList(),targetOntology.getPropertiesList(), sourceOntology.getPropertiesRoot(), targetOntology.getPropertiesRoot());			
 		}
 		q.setGlobalClassMeasure(classQuality);
 		q.setGlobalPropMeasure(propQuality);
@@ -129,13 +129,13 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 		double propQuality = 0;
 		if(matcher.areClassesAligned()) {
 		
-				classQuality = distancePreservation(matcher.getClassAlignmentSet(),sourceOntology.getClassesList(),targetOntology.getClassesList(), sourceOntology.getClassesTree(), targetOntology.getClassesTree());
+				classQuality = distancePreservation(matcher.getClassAlignmentSet(),sourceOntology.getClassesList(),targetOntology.getClassesList(), sourceOntology.getClassesRoot(), targetOntology.getClassesRoot());
 				System.out.println("Class alignment quality: "+classQuality);
 				
 		}
 		if(matcher.arePropertiesAligned()) {
 		
-				propQuality = distancePreservation(matcher.getPropertyAlignmentSet(),sourceOntology.getPropertiesList(),targetOntology.getPropertiesList(), sourceOntology.getPropertiesTree(), targetOntology.getPropertiesTree());			
+				propQuality = distancePreservation(matcher.getPropertyAlignmentSet(),sourceOntology.getPropertiesList(),targetOntology.getPropertiesList(), sourceOntology.getPropertiesRoot(), targetOntology.getPropertiesRoot());			
 				System.out.println("Property alignment quality: "+propQuality);
 		}
 		q.setGlobalClassMeasure(classQuality);
@@ -156,7 +156,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 	 */
 	private double orderPreservation(Alignment<Mapping> set,
 			ArrayList<Node> sourceList, ArrayList<Node> targetList,
-			Vertex sourceTree, Vertex targetTree) throws Exception {
+			Node sourceTree, Node targetTree) throws Exception {
 		
 		TreeToDagConverter sourceDag = new TreeToDagConverter(sourceTree);
 		TreeToDagConverter targetDag = new TreeToDagConverter(targetTree);
@@ -281,7 +281,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 		// each node is >= of himself and of his descendants
 		// then simmetrically a >= b then b <= a so the <= relations are set copying simmetrically the matrix
 		tempOrder = new int[list.size()][list.size()]; //to be used only by recursive method
-		ArrayList<Node> roots = dag.getRoots();
+		List<Node> roots = dag.getRoots();
 		Iterator<Node> it = roots.iterator();
 		while(it.hasNext()) {
 			Node n = it.next();
@@ -308,7 +308,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 		int myIndex = n.getIndex();
 		tempOrder[myIndex][myIndex] = HIGHER;
 		if(!n.isLeaf()) {
-			ArrayList<Node> children = n.getChildren();
+			List<Node> children = n.getChildren();
 			Iterator<Node> it = children.iterator();
 			while(it.hasNext()) {
 				Node child = it.next();
@@ -339,8 +339,8 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 	 * @return
 	 */
 	private double distancePreservation(Alignment<Mapping> set,
-			ArrayList<Node> sourceList, ArrayList<Node> targetList,
-			Vertex sourceTree, Vertex targetTree) throws Exception {
+			List<Node> sourceList, List<Node> targetList,
+			Node sourceTree, Node targetTree) throws Exception {
 		
 		//SOURCE ONTOLOGY STRUCTURES
 		//LOWER DISTANCE: an array num of descendants of each node. sourceDescendants[node.getIndex()] = num of  descendants of node
@@ -439,7 +439,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 		return quality;
 	}
 	
-	private double calculateTopBottomDiameter(ArrayList<Node> sourceList, TreeToDagConverter sourceTree) {
+	private double calculateTopBottomDiameter(List<Node> sourceList, TreeToDagConverter sourceTree) {
 		
 		double diameter = sourceList.size() - 1;
 		if(sourceTree.getRoots().size() != 1)
@@ -509,7 +509,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 	 * The max commonDescendats is the commonDescendants between a and b, which has highest num of descendants itself
 	 * The highest commonDescendants are all at the same level in the hierarchy. I was thinking of using the total num of common descendants but is not exatly the same.
 	 */
-	private double[][] createLCDistances(ArrayList<Node> nodesList, int[] descendants) {
+	private double[][] createLCDistances(List<Node> nodesList, int[] descendants) {
 		double[][] distances = new double[nodesList.size()][nodesList.size()];
 		
 		for(int i = 0; i < nodesList.size(); i++) {
@@ -518,7 +518,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 				int descendantsA = descendants[i];
 				int descendantsB = descendants[j];
 				int maxCommonDescendants = 0;
-				ArrayList<Node> commonDescendants = TreeToDagConverter.getOrderedCommonDescendants(nodesList.get(i), nodesList.get(j));
+				List<Node> commonDescendants = Node.getCommonDescendants(nodesList.get(i), nodesList.get(j));
 				if(commonDescendants.size() > 0) {
 					//I need to find which is the common descendant with highest num of descendants
 					//so it can only be one of the common descendants in the highest level
@@ -569,7 +569,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 	 * The max commonAncestors is the commonAncestors between a and b, which has highest num of ancestors
 	 * The possible highest commonAncestors are all at the same level in the hierarchy, that is the lowest level of the ancestors.
 	 */
-	private double[][] createUCDistances(ArrayList<Node> nodesList, int[] ancestors) {
+	private double[][] createUCDistances(List<Node> nodesList, int[] ancestors) {
 		double[][] distances = new double[nodesList.size()][nodesList.size()];
 		
 		for(int i = 0; i < nodesList.size(); i++) {
@@ -623,7 +623,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 		return distances;
 	}
 	
-	private double[][] normalizeDistances(ArrayList<Node> nodesList, double[][] dist, TreeToDagConverter dag) {
+	private double[][] normalizeDistances(List<Node> nodesList, double[][] dist, TreeToDagConverter dag) {
 		double[][] distances = new double[nodesList.size()][nodesList.size()];
 		//the diameter is the max distance, but we consider that there is always a top and bottom node, so the distance is always distance(top,bpttom)
 		double diameter = calculateTopBottomDiameter(nodesList, dag); 
@@ -647,10 +647,10 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 	 * @param sourceTree
 	 * @return
 	 */
-	private int[] createDescendantsArray(ArrayList<Node> sourceList, TreeToDagConverter sourceTree) {
+	private int[] createDescendantsArray(List<Node> sourceList, TreeToDagConverter sourceTree) {
 		//LOWER DISTANCE: for each node we will have the num of descendants
 		tempRecursiveNum = new int[sourceList.size()]; //to be used only by recursive descendants
-		ArrayList<Node> roots = sourceTree.getRoots();
+		List<Node> roots = sourceTree.getRoots();
 		Iterator<Node> it = roots.iterator();
 		while(it.hasNext()) {
 			Node n = it.next();
@@ -667,10 +667,10 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 	 * @param sourceTree
 	 * @return
 	 */
-	private int[] createAncestorsArray(ArrayList<Node> sourceList, TreeToDagConverter sourceTree) {
+	private int[] createAncestorsArray(List<Node> sourceList, TreeToDagConverter sourceTree) {
 		//UPPER DISTANCE: for each node we will have the num of ancestors
 		tempRecursiveNum = new int[sourceList.size()]; //to be used only by recursive method
-		ArrayList<Node> leaves = sourceTree.getLeaves();
+		List<Node> leaves = sourceTree.getLeaves();
 		Iterator<Node> it = leaves.iterator();
 		while(it.hasNext()) {
 			
@@ -687,7 +687,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 	private HashSet<Node> recursiveAncestorsCount(Node n,  TreeToDagConverter tree) {
 		
 		HashSet<Node> ancestors = new HashSet<Node>();
-		ArrayList<Node> parents = n.getParents();
+		List<Node> parents = n.getParents();
 		//if(n.getLocalName().equalsIgnoreCase("PersonList"))
 			//System.out.println(n.getLocalName()+" parents: "+parents.size());
 		if(parents.size() != 0){
@@ -716,7 +716,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 
 	private HashSet<Node> recursiveDescendantsCount(Node n,  TreeToDagConverter tree) {
 		HashSet<Node> descendants = new HashSet<Node>();
-		ArrayList<Node> children = n.getChildren();
+		List<Node> children = n.getChildren();
 		//if(n.getLocalName().equalsIgnoreCase("PersonList"))
 			//System.out.println(n.getLocalName()+" children: "+parents.size());
 		if(children.size() != 0){

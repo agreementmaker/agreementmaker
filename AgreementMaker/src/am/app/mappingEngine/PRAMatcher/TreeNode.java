@@ -6,6 +6,7 @@ package am.app.mappingEngine.PRAMatcher;
 //import java.util.ArrayList;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import am.app.ontology.Node;
 
@@ -18,7 +19,7 @@ public class TreeNode
 	private Node node;
 	private boolean matched;
 	private TreeNode matchedTo;
-	private ArrayList<TreeNode> children;
+	private List<TreeNode> children;
 	private TreeNode parent;
 	private int color;
 	private int depth;
@@ -98,7 +99,7 @@ public class TreeNode
 	 * @param children the children to set
 	 */
 	
-	public void setChildren(ArrayList<TreeNode> children) 
+	public void setChildren(List<TreeNode> children) 
 	{
 		this.children = children;
 	}
@@ -107,7 +108,7 @@ public class TreeNode
 	 * @return the children
 	 */
 	
-	public ArrayList<TreeNode> getChildren() 
+	public List<TreeNode> getChildren() 
 	{
 		return children;
 	}

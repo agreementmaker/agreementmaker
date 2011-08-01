@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import am.app.Core;
 import am.app.feedback.CandidateConcept;
@@ -80,11 +81,11 @@ public class RepeatingPatterns extends RelevanceMeasure{
 	}
 	
 	private void computeRelevances(int k, int edgeSize, ArrayList<Node> list) {
-		ArrayList<Node> newList = new ArrayList<Node>();
+		List<Node> newList = new ArrayList<Node>();
 		newList.addAll(list);
 		Collections.sort(newList, nc);
-		ArrayList<Edge> start = createEdgesFromNodeList(newList);
-		ArrayList<Pattern> finalPatterns = getPatternsGivenLength(start, k, edgeSize);
+		List<Edge> start = createEdgesFromNodeList(newList);
+		List<Pattern> finalPatterns = getPatternsGivenLength(start, k, edgeSize);
 		double[] relevances = new double[list.size()];
 		Iterator<Pattern> it = finalPatterns.iterator();
 		while(it.hasNext()){
@@ -111,8 +112,8 @@ public class RepeatingPatterns extends RelevanceMeasure{
 	}
 	
 	//Returns Lex sorted children of a node
-	public ArrayList<Node> getChildrenSorted(Node n){
-		ArrayList<Node> sortedChildren = new ArrayList<Node>();
+	public List<Node> getChildrenSorted(Node n){
+		List<Node> sortedChildren = new ArrayList<Node>();
 		sortedChildren = n.getChildren();
 		if(sortedChildren != null){
 			sortNodesLex(sortedChildren);
@@ -124,13 +125,13 @@ public class RepeatingPatterns extends RelevanceMeasure{
 	}
 	
 	//Sorts given list in Lexicographical order
-	public ArrayList<Node> sortNodesLex(ArrayList<Node> nodeList){
+	public List<Node> sortNodesLex(List<Node> nodeList){
 		Collections.sort(nodeList, nc);
 		return nodeList;
 	}
 	
 	//Sorts given list in Lexicographical order
-	public ArrayList<Edge> sortEdgesLex(ArrayList<Edge> edgeList){
+	public List<Edge> sortEdgesLex(List<Edge> edgeList){
 		Collections.sort(edgeList);
 		return edgeList;
 	}
@@ -141,10 +142,10 @@ public class RepeatingPatterns extends RelevanceMeasure{
 	}
 	
 	//
-	public ArrayList<Edge> createEdgesFromNodeList(ArrayList<Node> list){
-		ArrayList<Edge> edges = new ArrayList<Edge>();
+	public List<Edge> createEdgesFromNodeList(List<Node> list){
+		List<Edge> edges = new ArrayList<Edge>();
 		for(Node n: list){
-			ArrayList<Node> nAdj = n.getChildren();
+			List<Node> nAdj = n.getChildren();
 			for(Node child: nAdj){
 				Edge e = new Edge(n, child);
 				edges.add(e);
@@ -155,14 +156,14 @@ public class RepeatingPatterns extends RelevanceMeasure{
 
 	
 	//Generate patterns of length k
-	public ArrayList<Pattern> getPatternsGivenLength(ArrayList<Edge> list, int k, int edgeSize){
+	public List<Pattern> getPatternsGivenLength(List<Edge> list, int k, int edgeSize){
 		
-		ArrayList<Pattern> pats = new ArrayList<Pattern>();
-		ArrayList<Edge> edges = sortEdgesLex(list);
+		List<Pattern> pats = new ArrayList<Pattern>();
+		List<Edge> edges = sortEdgesLex(list);
 		Node srcNode = null;
 		Pattern aPat = null;
 		
-		ArrayList<Edge> edgeSeq = new ArrayList<Edge>();
+		List<Edge> edgeSeq = new ArrayList<Edge>();
 		
 		for(Edge a : edges){
 						
@@ -188,14 +189,14 @@ public class RepeatingPatterns extends RelevanceMeasure{
 			//create edgelist of that list
 			//
 			srcNode = a.getSourceNode();
-			ArrayList<Node> srcNodeChildren = getChildrenSorted(srcNode);
+			List<Node> srcNodeChildren = getChildrenSorted(srcNode);
 			
-			ArrayList<Edge> asd = createEdgesFromNodeList(srcNodeChildren);
+			List<Edge> asd = createEdgesFromNodeList(srcNodeChildren);
 			if(asd.contains(a)){
 				asd.remove(a);
 			}
 			//bu yeni pattern gerekli mi?
-			ArrayList<Pattern> pp = new ArrayList<Pattern>();
+			List<Pattern> pp = new ArrayList<Pattern>();
 			for(Edge b: asd){
 				for(int i = 0; i < pats.size(); i++)
 				{
@@ -211,7 +212,7 @@ public class RepeatingPatterns extends RelevanceMeasure{
 	
 	
 	//Find repeating patterns here
-	public void growEdge(Pattern p, Edge a, int k, ArrayList<Pattern> pats, boolean st){
+	public void growEdge(Pattern p, Edge a, int k, List<Pattern> pats, boolean st){
 
 		//Decide growing source or target
 		Node nodeToGrow = null;
@@ -224,7 +225,7 @@ public class RepeatingPatterns extends RelevanceMeasure{
 		
 		
 		//Nodes are sorted lex
-		ArrayList<Node> ntgADJ = nodeToGrow.getChildren();
+		List<Node> ntgADJ = nodeToGrow.getChildren();
 		ntgADJ = sortNodesLex(ntgADJ);
 		
 		//ArrayList<Edge> ntgEdges = createEdgesFromNodeList(ntgADJ);
@@ -294,8 +295,8 @@ public class RepeatingPatterns extends RelevanceMeasure{
 				//pats.add(pats2.get(i));
 				
 				Node curr = passInRecursion.getTargetNode();
-				ArrayList<Node> currChildren = getChildrenSorted(curr);
-				ArrayList<Edge> currEdge = createEdgesFromNodeList(currChildren);
+				List<Node> currChildren = getChildrenSorted(curr);
+				List<Edge> currEdge = createEdgesFromNodeList(currChildren);
 				
 				for(Edge ed: currEdge)
 				{

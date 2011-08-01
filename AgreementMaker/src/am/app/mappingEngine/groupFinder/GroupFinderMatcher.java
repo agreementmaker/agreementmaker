@@ -5,12 +5,13 @@ package am.app.mappingEngine.groupFinder;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 
@@ -28,8 +29,8 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	protected SimilarityMatrix inputClassesMatrix = null;
 	protected SimilarityMatrix inputPropertiesMatrix = null;
 	
-	protected ArrayList<Node> source_root_list;
-	protected ArrayList<Node> target_root_list;
+	protected List<Node> source_root_list;
+	protected List<Node> target_root_list;
 	
 	protected static double scaling_factor = 0.8;
 	
@@ -104,7 +105,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
     	
     	// building local matrix
 	    
-    	ArrayList<Mapping> localList = new ArrayList<Mapping>();
+    	List<Mapping> localList = new ArrayList<Mapping>();
 	    localList = selectGroups(groupElementsByLevel(source).get(0), groupElementsByLevel(target).get(0), input, typeOfNodes);
 	    
 	    for(int i = 0; i < localList.size(); i++){
@@ -122,7 +123,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 * @author michele
 	 */
 	protected Alignment<Mapping> oneToOneMatching(SimilarityMatrix matrix){
-		ArrayList<Mapping> list = matrix.chooseBestN();
+		List<Mapping> list = matrix.chooseBestN();
 		Alignment<Mapping> result = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 		for(int i = 0; i < list.size(); i++){
 			if(list.get(i).getSimilarity() < getThreshold()){
@@ -158,15 +159,15 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 * @param inputOntology the ontology that has to be grouped by depth
 	 * @author michele 
 	 */
-	protected ArrayList<Mapping> selectGroups(ArrayList<Node> sourceRoots, ArrayList<Node> targetRoots, SimilarityMatrix input, alignType typeOfNodes){
+	protected List<Mapping> selectGroups(List<Node> sourceRoots, List<Node> targetRoots, SimilarityMatrix input, alignType typeOfNodes){
 		source_root_list = sourceRoots;
     	target_root_list = targetRoots;
     	SimilarityMatrix localMatrix = new ArraySimilarityMatrix(source_root_list.size(), target_root_list.size(), typeOfNodes);
     	localMatrix.initFromNodeList(source_root_list, target_root_list);
     	
     	// step 1: taking level 0 source concepts with their descendants and assigning groups
-    	ArrayList<Mapping> localList = new ArrayList<Mapping>();
-    	ArrayList<Integer> localCount = new ArrayList<Integer>(target_root_list.size());
+    	List<Mapping> localList = new ArrayList<Mapping>();
+    	List<Integer> localCount = new ArrayList<Integer>(target_root_list.size());
     	for(int i = 0; i < target_root_list.size(); i++){
     		localCount.add(new Integer(0));
     	}

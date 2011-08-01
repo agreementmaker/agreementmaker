@@ -2,11 +2,13 @@ package am.app.mappingEngine.dsi;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.TreeToDagConverter;
 
@@ -64,13 +66,13 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		SimilarityMatrix input;
 
     	if(typeOfNodes.equals(alignType.aligningClasses)){
-    		sourceDag = new TreeToDagConverter(sourceOntology.getClassesTree());
-    		targetDag = new TreeToDagConverter(targetOntology.getClassesTree());
+    		sourceDag = new TreeToDagConverter(sourceOntology.getClassesRoot());
+    		targetDag = new TreeToDagConverter(targetOntology.getClassesRoot());
     		input = inputClassesMatrix;
     	}
     	else{
-    		sourceDag = new TreeToDagConverter(sourceOntology.getPropertiesTree());
-    		targetDag = new TreeToDagConverter(targetOntology.getPropertiesTree());
+    		sourceDag = new TreeToDagConverter(sourceOntology.getPropertiesRoot());
+    		targetDag = new TreeToDagConverter(targetOntology.getPropertiesRoot());
     		input = inputPropertiesMatrix;
     	}
     	initBooleanMatrix(input);
@@ -108,8 +110,8 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		int targetIndex = targetNode.getIndex();
 		double mySim = 0.0d;
 		if( input.get(sourceIndex, targetIndex) != null ) mySim = input.get(sourceIndex, targetIndex).getSimilarity();
-		ArrayList<Node> sourceParents = sourceNode.getParents();
-		ArrayList<Node> targetParents = targetNode.getParents();
+		List<Node> sourceParents = sourceNode.getParents();
+		List<Node> targetParents = targetNode.getParents();
 		Iterator<Node> itSource = sourceParents.iterator();
 		Iterator<Node> itTarget = targetParents.iterator();
 		Node sourceParent;

@@ -69,9 +69,9 @@ public class CandidatesTableModel extends AbstractTableModel {
                 		return a.radio;
                 	}
                 	else if(col == C2_SOURCE)
-                		return a.getMapping().getEntity1().getCandidateString();
+                		return a.getMapping().getEntity1().toString();
                 	else if(col == C3_TARGET)
-                		return a.getMapping().getEntity2().getCandidateString();
+                		return a.getMapping().getEntity2().toString();
                 	else if(col == C4_SIMILARITY) 
                 		return Utility.getNoDecimalPercentFromDouble(a.getMapping().getSimilarity());
                 	else if(col == C5_GROUP)
@@ -79,7 +79,7 @@ public class CandidatesTableModel extends AbstractTableModel {
                 	else if(col == C6_TYPE)
                 		return a.getTypeString();
                 	else if(col == C7_CONCEPT)
-                		return a.candidateConcept.getNode().getCandidateString();
+                		return a.candidateConcept.getNode().toString();
                 	else return null;
             	}
             	catch(Exception e) {

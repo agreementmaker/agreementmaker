@@ -59,14 +59,14 @@ public abstract class SimilarityMatrix
 	
 	/* Methods that calculate */
 	
-	public abstract ArrayList<Mapping> chooseBestN();
-	public abstract ArrayList<Mapping> chooseBestN(ArrayList<Integer> rowsIncludedList, ArrayList<Integer> colsIncludedList, boolean considerThreshold, double threshold);
-	public abstract ArrayList<Mapping> chooseBestN(boolean considerThreshold, double threshold);
-	public abstract ArrayList<Mapping> chooseBestN(ArrayList<Integer> rowsIncludedList,	ArrayList<Integer> colsIncludedList);
+	public abstract List<Mapping> chooseBestN();
+	public abstract List<Mapping> chooseBestN(List<Integer> rowsIncludedList, List<Integer> colsIncludedList, boolean considerThreshold, double threshold);
+	public abstract List<Mapping> chooseBestN(boolean considerThreshold, double threshold);
+	public abstract List<Mapping> chooseBestN(List<Integer> rowsIncludedList,	List<Integer> colsIncludedList);
 	
 	public abstract SimilarityMatrix clone();  // TODO: Should not be abstract? Investigate.
 	
-	public abstract void initFromNodeList(ArrayList<Node> sourceList, ArrayList<Node> targetList);
+	public abstract void initFromNodeList(List<Node> sourceList, List<Node> targetList);
 	
 	public abstract Mapping[] getColMaxValues(int col, int numMaxValues);
 	public abstract Mapping[] getRowMaxValues(int row, int numMaxValues);
@@ -74,7 +74,7 @@ public abstract class SimilarityMatrix
 	public abstract double getRowSum(int row);
 	public abstract double getColSum(int col);
 	
-	public abstract void fillMatrix(double d, ArrayList<Node> sourceList, ArrayList<Node> targetList);
+	public abstract void fillMatrix(double d, List<Node> sourceList, List<Node> targetList);
 	
 	/* Mapping retrieval methods */
 	
@@ -129,7 +129,7 @@ public abstract class SimilarityMatrix
 	 * @throws Exception 
 	 */
 	public List<Mapping> toList() throws Exception {
-		ArrayList<Mapping> list = new ArrayList<Mapping>();
+		List<Mapping> list = new ArrayList<Mapping>();
 		for( int row = 0; row < getRows(); row++ ) {
 			for( int col = 0; col < getColumns(); col++ ) {
 				Mapping m = get(row, col);
@@ -164,9 +164,9 @@ public abstract class SimilarityMatrix
 	
 	public abstract int countNonNullValues(); // TODO: What is this used for? Investigate.
 	
-	public abstract Vector<Mapping> toMappingArray();
-	public abstract Vector<Mapping> toMappingArray(FileWriter fw, int round);
-	public abstract Vector<Double> toSimilarityArray(Vector<Mapping> mapsArray);
+	public abstract List<Mapping> toMappingArray();
+	public abstract List<Mapping> toMappingArray(FileWriter fw, int round);
+	public abstract List<Double> toSimilarityArray(List<Mapping> mapsArray);
 	
 	public abstract SimilarityMatrix toArraySimilarityMatrix();  // TODO: Is this necessary? Investigate.
 	

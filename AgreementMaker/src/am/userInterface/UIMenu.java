@@ -73,7 +73,7 @@ public class UIMenu implements ActionListener {
 	//private JMenuItem undo, redo;
 	
 	// View menu.
-	private JMenuItem colorsItem, itemViewsCanvas;
+	private JMenuItem colorsItem;
 	private ProvenanceMenuItem provenanceItem;
 	private JCheckBoxMenuItem 	smoMenuItem,  
 								showLabelItem, 
@@ -406,47 +406,6 @@ public class UIMenu implements ActionListener {
 
 				// show profiling dialog
 				ProfilingDialog pd = new ProfilingDialog();
-			}
-			else if( obj == itemViewsCanvas ) {
-
-				JPanel CanvasPanel = new JPanel();
-				CanvasPanel.setLayout(new BorderLayout());
-				
-				Canvas goodOldCanvas = new Canvas(ui);
-				goodOldCanvas.setFocusable(true);
-				
-				JScrollPane scrollPane = new JScrollPane();
-				scrollPane.setWheelScrollingEnabled(true);
-				scrollPane.getVerticalScrollBar().setUnitIncrement(20);
-				
-				scrollPane.setViewportView(goodOldCanvas);
-				goodOldCanvas.setScrollPane(scrollPane);
-				
-				JPanel jPanel = null;
-				System.out.println("opening file");
-				jPanel = new VertexDescriptionPane(GlobalStaticVariables.OWLFILE);//takes care of fields for XML files as well
-			    jPanel.setMinimumSize(new Dimension(200,480));
-		
-				JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, jPanel);
-				splitPane.setOneTouchExpandable(true);
-				splitPane.setResizeWeight(1.0);
-				splitPane.setMinimumSize(new Dimension(640,480));
-				splitPane.setPreferredSize(new Dimension(640,480));
-				splitPane.getLeftComponent().setPreferredSize(new Dimension(640,480));
-				// add scrollpane to the panel and add the panel to the frame's content pane
-				
-				CanvasPanel.add(splitPane, BorderLayout.CENTER);
-				//frame.getContentPane().add(splitPane, BorderLayout.CENTER);
-
-				
-				//panelControlPanel = new ControlPanel(this, uiMenu, canvas);
-				MatchersControlPanel matcherControlPanel = new MatchersControlPanel();
-				CanvasPanel.add(matcherControlPanel, BorderLayout.PAGE_END);
-				//frame.getContentPane().add(matcherControlPanel, BorderLayout.PAGE_END);
-				
-				
-				ui.addTab("Canvas View", null, CanvasPanel, "Canvas View");
-				
 			}
 			else if( obj == doRemoveDuplicates ) {
 				// TODO: Get rid of this from here.
@@ -1128,11 +1087,6 @@ public class UIMenu implements ActionListener {
 		viewMenu.add(synchronizedViews);
 		
 		menuViews = new JMenu("New view");
-		itemViewsCanvas = new JMenuItem("Canvas");
-		itemViewsCanvas.addActionListener(this);
-		//itemViewsCanvas2 = new JMenuItem("Canvas2");
-		//itemViewsCanvas2.addActionListener(this);
-		menuViews.add(itemViewsCanvas);
 		//menuViews.add(itemViewsCanvas2);
 		//viewMenu.add(menuViews);
 		

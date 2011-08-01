@@ -10,18 +10,17 @@ package am.app.mappingEngine.conceptMatcher;
 // TODO: Remove the Stanford Parser before distribution, GPL Licensed. - cosmin
 
 import java.util.ArrayList;
-//import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
+import java.util.Hashtable;
+import java.util.List;
+
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
-import am.userInterface.sidebar.vertex.Vertex;
-//import edu.stanford.nlp.trees.*;
-import java.util.*;
 
 public class ConceptMatcher extends AbstractMatcher { 
 
@@ -174,31 +173,27 @@ public class ConceptMatcher extends AbstractMatcher {
     	return FullText;
     }*/
     
-    private ArrayList<String> GetDescendants(Vertex vert)
+    private ArrayList<String> GetDescendants(Node vert)
     {
     	ArrayList<String> descendants = new ArrayList<String>();
     	for(int i = 0; i<vert.getChildCount(); i++)
     	{
-    		Vertex v = (Vertex) vert.getChildAt(i);
-    		Node n = v.getNode();
+    		Node n = vert.getChildAt(i);
     		descendants.add(htConcepts.get(n.getLocalName()));
-    		descendants.addAll(GetDescendants(v));
+    		descendants.addAll(GetDescendants(n));
     	}
     	return descendants;
     }
     
-    private ArrayList<String> GetAncestors(Vertex vert)
+    private ArrayList<String> GetAncestors(Node n)
     {
     	ArrayList<String> ancestors = new ArrayList<String>();
-    	Node n = vert.getNode();
-    	ancestors.add(htConcepts.get(n.getLocalName()));
-    	Vertex parent = vert;
-    	while (!parent.getParent().equals(vert.getRoot()))
-    	{
-    		String strLabel = parent.getNode().getLocalName();
-    		ancestors.add(htConcepts.get(strLabel));
-    		parent = (Vertex) parent.getParent();
+
+    	List<Node> ancestorList = n.getAncestors();
+    	for( Node ancestor : ancestorList ) {
+    		ancestors.add( ancestor.getLocalName() );
     	}
+    	
     	return ancestors;
     }
     
@@ -288,18 +283,16 @@ public class ConceptMatcher extends AbstractMatcher {
 		 * 		1.  length(LongestCommonSubstring(source, target)) / (length(source) + length(target))
 		 */
 		
-		Vertex vsource = source.getVertex();
-		Vertex vtarget = target.getVertex();
 		String strSourceLabel = source.getLocalName();
 		String strTargetLabel = target.getLocalName();
 		
 		//get set of descendants for source node
-		ArrayList<String> sourceDescendants = GetDescendants(vsource);
-		ArrayList<String> targetDescendants = GetDescendants(vtarget);
+		ArrayList<String> sourceDescendants = GetDescendants(source);
+		ArrayList<String> targetDescendants = GetDescendants(target);
 		
 		//get set of ancestors
-		ArrayList<String> sourceAncestors = GetAncestors(vsource);
-		ArrayList<String> targetAncestors = GetAncestors(vtarget);
+		ArrayList<String> sourceAncestors = GetAncestors(source);
+		ArrayList<String> targetAncestors = GetAncestors(target);
 		
 		double dblDescendantScore = GetJaccardScore(sourceDescendants, targetDescendants);
 		double dblAncestorScore = GetJaccardScore(sourceAncestors, targetAncestors);

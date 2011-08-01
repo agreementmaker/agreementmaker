@@ -1,29 +1,30 @@
 package am.app.mappingEngine.multiWords;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
-import com.hp.hpl.jena.ontology.OntResource;
-import com.wcohen.ss.api.StringWrapper;
+import simpack.measure.weightingscheme.StringTFIDF;
+import uk.ac.shef.wit.simmetrics.similaritymetrics.CosineSimilarity;
+import uk.ac.shef.wit.simmetrics.similaritymetrics.DiceSimilarity;
+import uk.ac.shef.wit.simmetrics.similaritymetrics.EuclideanDistance;
+import uk.ac.shef.wit.simmetrics.similaritymetrics.JaccardSimilarity;
 import am.Utility;
 import am.app.Core;
 import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconSynSet;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
-import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.StringUtil.AMStringWrapper;
 import am.app.mappingEngine.StringUtil.Normalizer;
-import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.ontology.Node;
-import am.userInterface.sidebar.vertex.Vertex;
 
-import uk.ac.shef.wit.simmetrics.similaritymetrics.*; //all sim metrics are in here
-import simpack.measure.weightingscheme.StringTFIDF;
+import com.hp.hpl.jena.ontology.OntResource;
+import com.wcohen.ss.api.StringWrapper;
 
 public class MultiWordsMatcher extends AbstractMatcher { 
 
@@ -201,55 +202,30 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		//add neighbors strings
 		if(mp.considerNeighbors) {
 			if( param.storeProvenance ) mWS+="considering neighbors:\n";
-			ArrayList<Vertex> duplicateList = node.getVertexList();
-			//add child strings
-			Vertex mainVertex = duplicateList.get(0);
-			String childstring = "";
-			Enumeration<Vertex> children = mainVertex.children();
-			while(children.hasMoreElements()) {
-				Vertex childVertex = (Vertex) children.nextElement();
-				Node childNode = childVertex.getNode();
-				String neighbourString = getLabelAndOrNameString(childNode);
-				childstring = Utility.smartConcat(childstring, neighbourString);
-			}
-			multiWordsString = Utility.smartConcat(multiWordsString, childstring);
-			if( param.storeProvenance ) mWS+="\tchild string: "+childstring+"\n";
-			//for each father add father strings and create hashSet of siblings
-			String parentsString = "";
-			HashSet<Node> siblingNodes = new HashSet<Node>();
 			
-			for(int i = 0; i < duplicateList.size(); i++) {
-
-				Vertex duplicateVertex = duplicateList.get(i);
-				Vertex parentVertex = (Vertex)duplicateVertex.getParent();
-				if(parentVertex!= null && !parentVertex.isFake()) {
-					Node parentNode = parentVertex.getNode();
-					String neighbourString = getLabelAndOrNameString(parentNode);;
-					parentsString = Utility.smartConcat(parentsString, neighbourString);
-					//create hashSet
-					Enumeration<Vertex> siblings = parentVertex.children();
-					while(siblings.hasMoreElements()) {
-						Vertex sibVertex = (Vertex) siblings.nextElement();
-						Node sibNode = sibVertex.getNode();
-						if(!sibNode.equals(node))//aggiungo tutti i fratelli tranne me, i duplicati non vengono aggiunti perche � un hashset
-							siblingNodes.add(sibNode);
-					}
+			String neighbourString = "";
+			HashSet<Node> neighborNodes = new HashSet<Node>(); // use a hashset to avoid duplicates
+			
+			// add child strings
+			List<Node> children = node.getChildren();
+			for( Node child : children ) { neighborNodes.add(child); }
+			
+		
+			// add father nodes and the father's children (siblings)
+			List<Node> parents = node.getParents();
+			for( Node parent : parents ) {
+				for( Node sibling : parent.getChildren() ) {
+					neighborNodes.add(sibling);
 				}
-				
 			}
-			multiWordsString = Utility.smartConcat(multiWordsString, parentsString);
-			if( param.storeProvenance ) mWS+="\tparents string: "+parentsString+"\n";
 			
-			//add sibling string from the hashSet, i need to use hashset to avoid adding duplicates.
-			Iterator<Node> it = siblingNodes.iterator();
-			String siblingsString = "";
-			while(it.hasNext()) {
-				Node sibNode = it.next();
-				String neighbourString = getLabelAndOrNameString(sibNode);
-				siblingsString = Utility.smartConcat(siblingsString, neighbourString);
+			for( Node neighbor : neighborNodes ) { 
+				neighbourString = Utility.smartConcat(neighbourString, getLabelAndOrNameString(neighbor));
 			}
-			multiWordsString = Utility.smartConcat(multiWordsString, siblingsString);
-			if( param.storeProvenance ) mWS+="\tsiblings string: "+siblingsString+"\n";
+			multiWordsString = Utility.smartConcat(multiWordsString, neighbourString);
+			
+			if( param.storeProvenance ) mWS+="\tneighbour string: "+neighbourString+"\n";
+			
 		}
 		
 		//add instances strings
@@ -344,7 +320,7 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		
 		if( mp.considerSuperClass ) {
 			if( param.storeProvenance ) mWS+="considering super class:\n";
-			ArrayList<Node> parent = node.getParent();
+			List<Node> parent = node.getParents();
 			if( param.storeProvenance ) mWS+="\tsuper class parents: \n";
 			for( Node par : parent ) {
 				multiWordsString = Utility.smartConcat(multiWordsString, par.getLabel() );

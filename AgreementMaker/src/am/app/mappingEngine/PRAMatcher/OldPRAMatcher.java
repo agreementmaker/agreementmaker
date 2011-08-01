@@ -2,10 +2,12 @@ package am.app.mappingEngine.PRAMatcher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
@@ -471,12 +473,12 @@ public class OldPRAMatcher extends AbstractMatcher
 		matrix.set(srcNode.getNode().getIndex(), targetNode.getNode().getIndex(), alignment);
 	}
 	
-	public ArrayList<OldTreeNode> createAdjacency(OldTreeNode OldTreeNode)
+	public List<OldTreeNode> createAdjacency(OldTreeNode OldTreeNode)
 	{
 		Node aNode = null;
 		OldTreeNode childNode = null;
-		ArrayList<OldTreeNode> adjacentNodes = null;
-		ArrayList<Node> childrenNodes = null;
+		List<OldTreeNode> adjacentNodes = null;
+		List<Node> childrenNodes = null;
 		
 		aNode = OldTreeNode.getNode();
 		childrenNodes = aNode.getChildren();
@@ -496,11 +498,11 @@ public class OldPRAMatcher extends AbstractMatcher
 	}
 	
 	
-	private void createAdjacency(ArrayList<OldTreeNode> OldTreeNodes)
+	private void createAdjacency(List<OldTreeNode> OldTreeNodes)
 	{
 		Node aNode, cNode;
 		OldTreeNode parentNode, childNode;
-		ArrayList<Node> childrenNodes;
+		List<Node> childrenNodes;
 		//adjacency = new HashMap<OldTreeNode, ArrayList<OldTreeNode>>();
 		//ArrayList<OldTreeNode> anAdj;
 		

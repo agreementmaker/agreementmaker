@@ -8,14 +8,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.ontology.NodeEnumeration.EnumerationType;
 import am.userInterface.ontology.OntologyConceptGraphics;
-import am.userInterface.sidebar.vertex.Vertex;
 
 import com.hp.hpl.jena.ontology.AnnotationProperty;
 import com.hp.hpl.jena.ontology.DatatypeProperty;
@@ -104,7 +106,7 @@ public class Node implements Serializable, Comparable<Node>{
 	 *List of vertex representing the node in the graphical tree hierarchy
 	 * Usually each node is represeted only by one vertex, but if the node hasDuplicate, it's represented more times
 	 */
-	private transient ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
+	//private transient ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
 	/**RDF-node, OWL-classnode, OWL-propnode, OWL-unsatconcept, XML-node*/
 	private String type;
 	public final static String RDFNODE = "rdf-node";
@@ -116,7 +118,8 @@ public class Node implements Serializable, Comparable<Node>{
 	protected int ontID;  // the ID of the ONTOLOGY to which this node belongs
 
 	private int color;
-	private ArrayList<Node> parent = new ArrayList<Node>();
+	private List<Node> parents = new ArrayList<Node>();
+	private List<Node> children = new ArrayList<Node>();
 	private int depth;
 	
 	/**
@@ -151,7 +154,7 @@ public class Node implements Serializable, Comparable<Node>{
 		resource = a.resource;
 		uri = a.getUri();
 		localName = a.getLocalName();
-		vertexList.addAll(a.getVertexList());
+		//vertexList.addAll(a.getVertexList());
 		ontID = a.ontID;
 	}
 	
@@ -302,7 +305,7 @@ public class Node implements Serializable, Comparable<Node>{
 	public String getComment() { return comment; }
 	public void setComment(String comment) { this.comment = comment; }
 		
-	@Deprecated
+	/*@Deprecated
 	public boolean hasDuplicates() {
 		return vertexList.size() > 1;
 	}
@@ -320,7 +323,7 @@ public class Node implements Serializable, Comparable<Node>{
 			return vertexList.get(0);
 		else
 			return null;
-	}
+	}*/
 
 	public int getIndex() { return index; }
 	public void setIndex(int index) { this.index = index; }
@@ -372,7 +375,14 @@ public class Node implements Serializable, Comparable<Node>{
 	*/
 	
 	public String toString() {
-		return index+" "+localName;
+		String result = Integer.toString(index);
+		if(label != null && label.length() > 0){
+			result+= " "+label;
+		}
+		else{
+			result += " "+localName;
+		}
+		return result;
 	}
 
 	public String getUri() {
@@ -583,24 +593,81 @@ public class Node implements Serializable, Comparable<Node>{
 	//**********************Methods for managing the node as a DAG node see also TreeToDagConverter********************************************
 	//TO BE DONE isRoot, getSiblings, getParents, getAllDescendants, getAllAncestors, getSiblingsOfAParent(Node parent
 	public int getLevel() {
-		return getVertex().getLevel() - TreeToDagConverter.REALROOTSLEVEL;
+		int level = 0;
+		Node n = this;
+		boolean isRoot = ( n.getIndex() == -1 );
+		while( !isRoot ) {
+			level++;
+			isRoot = ( n.getIndex() == -1 );
+		}
+		
+		return level;
 	}
 	
 	public boolean isLeaf() {
-		Vertex v = getVertex();
-		if(v.isLeaf())
-			return true;
-		return false;
+		return children == null || children.size() == 0;
 	}
 	
 	public boolean isRoot() {
-		Vertex v = getVertex();
-		if(v.getLevel() == TreeToDagConverter.REALROOTSLEVEL)
-			return true;
+		if( index == -1 ) return true; // roots have an index of -1
 		return false;
 	}
 	
-	// TODO: This is a bug fix for getChildren().  Will replace the getChildren() with this one once it has been confirmed.
+	/** @return A list of all the leaf nodes in the hierarchy under this node. */
+	public List<Node> getLeaves() { return getLeaves(this); }
+	
+	/** Recursive method to return the leaves of the hierarchy under a node */
+	public static List<Node> getLeaves(Node root) {
+		LinkedList<Node> nodeList = new LinkedList<Node>();
+		if( root.isLeaf() ) {
+			nodeList.add(root);
+		} else {
+			List<Node> childList = root.getChildren();
+			for( int i = 0; i < childList.size(); i++ ) {
+				nodeList.addAll( getLeaves(childList.get(i)) ); // recursive call
+			}
+		}
+		return nodeList;
+	}
+	
+	/**
+	 * @return A list of common descendants between two nodes.
+	 */
+	public static List<Node> getCommonDescendants( Node node1, Node node2 ) {
+		
+		List<Node> commonNodes = new ArrayList<Node>();
+		Enumeration<Node> e1 = new NodeEnumeration(node1, EnumerationType.DESCENDANTS);
+		Enumeration<Node> e2 = new NodeEnumeration(node2, EnumerationType.DESCENDANTS);
+		
+		while( e1.hasMoreElements() ) {
+			Node n1 = e1.nextElement();
+			while( e2.hasMoreElements() ) {
+				Node n2 = e2.nextElement();
+				if( n1.equals(n2) ) {
+					commonNodes.add(n1);
+				}
+			}
+		}
+		
+		return commonNodes;
+	}
+		
+	/** @return the ancestors of this node, not including the node itself. */
+	public List<Node> getAncestors() {
+		List<Node> ancestors = new ArrayList<Node>();
+		
+		if( getIndex() == -1 ) return ancestors;
+		
+		for( int i = 0; i < parents.size(); i++ ) {
+			Node currentParent = parents.get(i);
+			ancestors.add( currentParent );
+			ancestors.addAll( currentParent.getAncestors() );
+		}
+		
+		return ancestors;
+	}
+	
+/*	// TODO: This is a bug fix for getChildren().  Will replace the getChildren() with this one once it has been confirmed.
 	public static ArrayList<Node> getChildren(Node n) {
 		ArrayList<Node> result = new ArrayList<Node>();
 		
@@ -615,57 +682,25 @@ public class Node implements Serializable, Comparable<Node>{
 			}
 		}
 		return result;
-	}
+	}*/
 	
-	public ArrayList<Node> getChildren(){
-		ArrayList<Node> result = new ArrayList<Node>();
-		Vertex v = getVertex();
-		if(!v.isLeaf()) {
-			Enumeration<Vertex> c = v.children();
-			Vertex child;
-			while(c.hasMoreElements()) {
-				//no need to check duplicates because the same vertex can't have two duplicates as sons
-				child = (Vertex)c.nextElement();
-				result.add(child.getNode());
-			}
-		}
-		return result;
-	}
 	
-	public ArrayList<Node> getParents(){
-		ArrayList<Node> result = new ArrayList<Node>();
-		if(!isRoot()){
-			ArrayList<Vertex> list = getVertexList();
-			
-			if(list.size() == 1) { //I'm not a duplicate therefore I just have one original father
-				
-				Vertex tempVertex = list.get(0);
-				Vertex parentVertex = (Vertex) tempVertex.getParent();
-				if( parentVertex != null ) {  // we are not at the root
-					Node parentNode = parentVertex.getNode();
-					result.add(parentNode);
-				}
-			}
-			else{
-				//Being a duplicate means having more parents OR being the son of an ancestor with more fathers
-				Vertex v;
-				Vertex parent;
-				Node parentNode;
-				HashSet<Node> processed = new HashSet<Node>();
-				for(int i = 0; i < list.size(); i++){
-					v = list.get(i);
-					parent = (Vertex)v.getParent();
-					parentNode = parent.getNode();
-					if(!processed.contains(parentNode)){
-						result.add(parentNode);
-						processed.add(parentNode);
-					}
-				}
-			}
-			
+	public void addChild(Node child) { 
+		if( !children.contains(child) ) {
+			children.add(child);
+			Collections.sort(children, new NodeNameComparator());
 		}
-		return result;
+		
 	}
+	public List<Node> getChildren() { return children; }
+	public int getChildCount() { if( children == null ) return 0; return children.size(); }
+	public Node getChildAt(int i) { return children.get(i); }
+	public void addParent(Node parent) { 
+		if( !parents.contains(parent) ) parents.add(parent);
+	}
+	public List<Node> getParents(){	return parents;	}
+	public int getParentCount() { if( parents == null ) return 0; return parents.size(); }
+
 	
 	/**
 	 * getDescendants(): creates a list of descendant nodes starting using dfs search
@@ -697,38 +732,30 @@ public class Node implements Serializable, Comparable<Node>{
 		return this;
 	}
 	
-	/**n is a descendant of this? same as vertex.isNodeDescendant*/
-	public boolean isNodeDescendant(Node n){
-		Vertex ancestor = getVertex();
-		Iterator<Vertex> it = n.getVertexList().iterator();
-		while(it.hasNext()) {
-			Vertex v = it.next();
-			if(ancestor.isNodeDescendant(v)) {
-				return true;
-			}
-		}
+	/** @return True if Node n is a descendant of this node. */
+	public boolean hasDescendant(Node n){
+		
+		for( int i = 0; i < children.size(); i++ ) {
+			Node currentChild = children.get(i);
+			if( currentChild.equals(n) ) return true;
+			boolean childDescendant = currentChild.hasDescendant(n);
+			if( childDescendant ) return true;
+		}		
 		return false;
 	}
 
-	public String getIsDefinedByURI() {
-		return isDefinedByURI;
-	}
+	public String getIsDefinedByURI() { return isDefinedByURI; }
 
-	public void setIsDefinedByURI(String isDefinedByURI) {
-		this.isDefinedByURI = isDefinedByURI;
-	}
+	public void setIsDefinedByURI(String isDefinedByURI) { this.isDefinedByURI = isDefinedByURI; }
 
-	public String getIsDefinedByComment() {
-		return isDefinedByComment;
-	}
+	public String getIsDefinedByComment() { return isDefinedByComment; }
 
-	public void setIsDefinedByComment(String isDefinedByComment) {
-		this.isDefinedByComment = isDefinedByComment;
-	}
+	public void setIsDefinedByComment(String isDefinedByComment) { this.isDefinedByComment = isDefinedByComment; }
 
 
 	/**
 	 * @param color the color to set
+	 * FIXME: This does not belong here, but in OntologyConceptGraphics.
 	 */
 	public void setColor(int color) {
 		this.color = color;
@@ -744,17 +771,6 @@ public class Node implements Serializable, Comparable<Node>{
 	/**
 	 * @param parent the parent to set
 	 */
-	public void addParent(Node parent) {
-		if( this.parent != null ) this.parent.add(parent);
-	}
-
-	/**
-	 * @return the parent
-	 */
-	public ArrayList<Node> getParent() {
-		return parent;
-	}
-
 	/**
 	 * @param depth the depth to set
 	 */
@@ -773,7 +789,7 @@ public class Node implements Serializable, Comparable<Node>{
 	 * method created for the Mappings Candidate Selection in the User Feedback Loop
 	 * @return index + label, if label is meaningful else index + localname
 	 */
-	public String getCandidateString() {
+/*	public String getCandidateString() {
 		String result = index+"";
 		if(label != null && label.length() > 0){
 			result+= " "+label;
@@ -782,7 +798,7 @@ public class Node implements Serializable, Comparable<Node>{
 			result += " "+localName;
 		}
 		return result;
-	}
+	}*/
 
 	
 	/******************************* GRAPHICAL REPRESENTATION METHODS ******************************/

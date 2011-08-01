@@ -6,16 +6,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.prefs.Preferences;
 
-import am.GlobalStaticVariables;
-import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
-import am.userInterface.DatabaseSettingsDialog;
-import am.userInterface.OnDiskLocationDialog;
-import am.userInterface.sidebar.vertex.Vertex;
 import am.utility.RunTimer;
 
 import com.hp.hpl.jena.ontology.ConversionException;
@@ -235,20 +229,21 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
         processedSubs = new HashMap<OntResource, Node>();
         
 
-        Vertex classRoot = buildClassTree();
+        Node classRoot = buildClassTree();
         ontology.setOntResource2NodeMap( processedSubs, alignType.aligningClasses );
-        Vertex propertyRoot = createPropertyTree();
+        Node propertyRoot = createPropertyTree();
         ontology.setOntResource2NodeMap( processedSubs, alignType.aligningProperties );
         
         //The root of the tree is a fake vertex node, just containing the name of the ontology,
-        treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(), model, ontology.getSourceOrTarget() );
+        //treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(), model, ontology.getSourceOrTarget() );
+        treeRoot = new Node( -1, ontology.getTitle(), Node.XMLNODE, ontology.getID() );
         treeCount++;
 
-        treeRoot.add(classRoot);
-        ontology.setClassesTree( classRoot);
+        treeRoot.addChild(classRoot);
+        ontology.setClassesRoot( classRoot);
         
-        treeRoot.add(propertyRoot);
-        ontology.setPropertiesTree( propertyRoot);
+        treeRoot.addChild(propertyRoot);
+        ontology.setPropertiesRoot( propertyRoot);
         
         ontology.setTreeCount(treeCount);   
 
@@ -264,9 +259,9 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 	 * (This method may be hard to understand. -cos)
 	 * @return
 	 */
-	protected Vertex buildClassTree() {
+	protected Node buildClassTree() {
 		
-		HashMap<OntClass, Vertex> classesMap = new HashMap<OntClass, Vertex>();  // this maps between ontology classes and Vertices created for the each class
+		HashMap<OntClass, Node> classesMap = new HashMap<OntClass, Node>();  // this maps between ontology classes and Vertices created for the each class
 		ExtendedIterator orphansItr = model.listClasses();  // right now the classes have no parents, so they are orphans.
 		
 		while( orphansItr.hasNext() ) { // iterate through all the classes
@@ -279,7 +274,8 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 		}
 		
 		// this is the root node of the class tree (think of it like owl:Thing)
-		Vertex root = new Vertex(CLASSROOTNAME, CLASSROOTNAME, model, ontology.getSourceOrTarget());		
+		//Vertex root = new Vertex(CLASSROOTNAME, CLASSROOTNAME, model, ontology.getSourceOrTarget());
+		Node root = new Node( -1, CLASSROOTNAME, Node.XMLNODE, ontology.getID() );
 		treeCount++;  // we created a new vertex, increment treeCount
 
 		// we may have classes that still don't have a parent. these orphans will be adopted by root.
@@ -290,7 +286,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 	}
 	
 
-	private void adoptRemainingOrphans(Vertex root, HashMap<OntClass, Vertex> classesMap) {
+	private void adoptRemainingOrphans(Node root, HashMap<OntClass, Node> classesMap) {
 
 		/*  // Alternative way of iterating through the classes (via the classesMap that was created).
 		 *   
@@ -309,11 +305,11 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 			OntClass currentClass = (OntClass) classesItr.next();
 			if( !currentClass.isAnon() ) {
 				if( classesMap.containsKey(currentClass) ) {
-					Vertex currentVertex = classesMap.get(currentClass);
+					Node currentVertex = classesMap.get(currentClass);
 					
-					if( currentVertex.getParent() == null ) {
+					if( currentVertex.getParentCount() == 0 ) {
 						// this vertex has no parent, that means root needs to adopt it
-						root.add( currentVertex );
+						root.addChild( currentVertex );
 					}
 					
 				}
@@ -331,9 +327,10 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 
 
 	// TODO: Merge this with the hierarchy roots function in LegacyLayout
-	private void createFosterHome( OntClass currentOrphan, HashMap<OntClass, Vertex> classesMap ) {
+	private void createFosterHome( OntClass currentOrphan, HashMap<OntClass, Node> classesMap ) {
 		
-		Vertex currentVertex = getVertexFromClass( classesMap, currentOrphan );
+		//Vertex currentVertex = getVertexFromClass( classesMap, currentOrphan );
+		Node currentNode = getNodeFromClass( classesMap, currentOrphan );
 		
 		try { 
 			ExtendedIterator<?> parentsItr = currentOrphan.listSuperClasses( true );  // iterator of the current class' parents
@@ -344,9 +341,9 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 
 				if( !parentClass.isAnon() && !parentClass.equals(owlThing) ) {
 
-					Vertex parentVertex = getVertexFromClass(classesMap, parentClass);  // create a new Vertex object or use an existing one.
-					parentVertex.add( currentVertex );  // create the parent link between the parent and the child
-					currentVertex.getNode().addParent(parentVertex.getNode()); // TODO: GET RID OF OR FIX VERTEX!
+					Node parentVertex = getNodeFromClass(classesMap, parentClass);  // create a new Vertex object or use an existing one.
+					parentVertex.addChild( currentNode );  // create the parent link between the parent and the child
+					currentNode.addParent(parentVertex);
 
 				} 
 			}
@@ -358,12 +355,43 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 		
 	}
 
+	private Node getNodeFromClass( HashMap<OntClass, Node> classesMap, OntClass currentClass ) {
+		Node currentNode = null;
+		
+		if( classesMap.containsKey( currentClass ) ) {
+			// we already have a Vertex for the currentClass (because it is the parent of some node)
+			currentNode = classesMap.get( currentClass );
+		} else {
+			// we don't have a Vertex for the current class, create one;
+			currentNode = createNode( currentClass, true );
+			treeCount++;  // we created a new vertex, increment treeCount
+			classesMap.put(currentClass, currentNode);
+		}
+		
+		return currentNode;
+	}
+	
+	
+	public Set<OntResource> collect( ExtendedIterator<OntClass> i ) {
+        Set<OntResource> set = new HashSet<OntResource>();
+        while( i.hasNext() ) {
+            OntResource res = i.next();
+            if( res.isAnon() )
+                continue;
+            
+            set.add( res );
+        }
+        
+        return set;
+    }
+	
 	/**
 	 * helper Function for buildClassesTree()
 	 * @param classesMap
 	 * @param currentClass
 	 * @return
 	 */
+	/*@Deprecated
 	private Vertex getVertexFromClass( HashMap<OntClass, Vertex> classesMap, OntClass currentClass ) {
 		Vertex currentVertex = null;
 		
@@ -391,7 +419,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
         }
         
         return set;
-    }
+    }*/
     
     /**
      * Create a root node for the given concepts and add child nodes for the subclasses. Return null
@@ -400,7 +428,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
      * @param concepts
      * @return
      */
-    public Vertex createClassTree( OntClass cls, boolean isFirst) {
+   /* public Vertex createClassTree( OntClass cls, boolean isFirst) {
     	
     	
     	if( unsatConcepts.contains( cls ) ) {
@@ -452,8 +480,29 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
             }
         }
         return root;
-    }
+    }*/
 	
+    
+    public Node createNode( OntResource entity, boolean isClass ) {
+    	Node node;
+    	if( processedSubs.containsKey( entity ) ) {//the node has been already created, but we need only to create a new vertex;
+         	node = processedSubs.get(entity); //reuse of the previous Node information for this class, but we need a new Vertex
+         }
+         else {
+         	if(isClass) {
+                node = new Node(uniqueKey,entity, Node.OWLCLASS, ontology.getID()); //new node with a new key, with the link to the graphical Vertex representation
+                ontology.getClassesList().add(node);
+         	}
+         	else {//it has to be a prop
+         		node = new Node(uniqueKey,entity, Node.OWLPROPERTY, ontology.getID()); //new node with a new key, with the link to the graphical Vertex representation
+                ontology.getPropertiesList().add(node);
+         	}
+            processedSubs.put(entity, node);
+            uniqueKey++;  // uniqueKey starts from 0, then gets incremented.
+         }
+    	return node;
+    }
+    
 	/**
 	 * Create a TreeNode for the given class
 	 * This method is a builder for the pair Node Vertex
@@ -465,7 +514,10 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 	 * Each prop is identified by a uniqueKey used as index in the propList structure
 	 * @param entity
 	 * @return
+	 * 
+	 * * TODO: Remove this commented out code and copy the documentation over to the classes that replaced this code. - Cosmin.
 	 */
+   /* @Deprecated
 	public Vertex createNodeAndVertex(OntResource entity, boolean isClass,int sourceOrTarget) {
 		 
 		 Node node;
@@ -488,12 +540,13 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
          node.addVertex(vert);
          vert.setNode(node);
 		 return vert;
-	}
+	}*/
 	
 
-    public Vertex createPropertyTree() {
+    public Node createPropertyTree() {
     	
-    	Vertex root = new Vertex(PROPERTYROOTNAME, PROPERTYROOTNAME, model, ontology.getSourceOrTarget());
+    	//Vertex root = new Vertex(PROPERTYROOTNAME, PROPERTYROOTNAME, model, ontology.getSourceOrTarget());
+    	Node root = new Node( -1, PROPERTYROOTNAME, Node.XMLNODE, ontology.getID() );
     	treeCount++;
         uniqueKey = 0; //restart the key because properties are kept in a differnt structure with different index
         processedSubs = new HashMap<OntResource, Node>();
@@ -536,16 +589,17 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
     			//e.printStackTrace();
     		}
     		if(!skip) {
-        		Vertex vp = createPropertySubTree(p);
-        		root.add(vp);    			
+        		Node vp = createPropertySubTree(p);
+        		root.addChild(vp);    			
     		}
 
     	}
         return root;
     }
     
-    public Vertex createPropertySubTree( OntProperty p ) {
-    	Vertex root = createNodeAndVertex(p, false, ontology.getSourceOrTarget());
+    public Node createPropertySubTree( OntProperty p ) {
+    	//Vertex root = createNodeAndVertex(p, false, ontology.getSourceOrTarget());
+    	Node root = createNode(p, false);
 		treeCount++;
 		
        // If one of the sons of this prop is a prop with different namespace
@@ -577,8 +631,8 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
              	   iterators.add(moreSubs);
              	   continue;
                 }
-                Vertex vert = createPropertySubTree(sub);
-                root.add( vert );
+                Node vert = createPropertySubTree(sub);
+                root.addChild( vert );
             }
         }
         return root;

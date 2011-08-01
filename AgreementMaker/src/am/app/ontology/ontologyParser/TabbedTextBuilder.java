@@ -11,7 +11,6 @@ import javax.swing.JOptionPane;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
-import am.userInterface.sidebar.vertex.Vertex;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -43,15 +42,17 @@ public class TabbedTextBuilder extends TreeBuilder {
 		ontology.setModel(m);
 		
 		// create a new tree root
-		treeRoot = new Vertex(ontology.getTitle(), ontology.getSourceOrTarget());
-		Vertex ClassRoot = new Vertex(XMLHIERARCHY, ontology.getSourceOrTarget());
-		ClassRoot.setOntModel(m);
+		//treeRoot = new Vertex(ontology.getTitle(), ontology.getSourceOrTarget());
+		treeRoot = new Node( -1, ontology.getTitle(), Node.RDFNODE, ontology.getID());
+		//Vertex ClassRoot = new Vertex(XMLHIERARCHY, ontology.getSourceOrTarget());
+		Node ClassRoot = new Node( -1 , XMLHIERARCHY, Node.XMLNODE, ontology.getID() );
+		//ClassRoot.setOntModel(m);
 		
 		Node rootNode = new Node(uniqueKey,"OWL:Thing", Node.XMLNODE, ontology.getID());
 		uniqueKey++;
 		rootNode.setResource(owlThing);
 		rootNode.setLabel("OWL:Thing");
-		ClassRoot.setNode(rootNode);
+		//ClassRoot.setNode(rootNode);
 		
 
 		treeCount=2;
@@ -79,8 +80,8 @@ public class TabbedTextBuilder extends TreeBuilder {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		treeRoot.add(ClassRoot);
-		ontology.setClassesTree( ClassRoot);
+		treeRoot.addChild(ClassRoot);
+		ontology.setClassesRoot( ClassRoot);
 		ontology.setOntResource2NodeMap(processedSubs, alignType.aligningClasses);
 		
 		// now, the visualization panel needs to build its own graph.
@@ -90,7 +91,7 @@ public class TabbedTextBuilder extends TreeBuilder {
 			progressDialog.appendLine("Done.");
 		} 
 	}
-		protected void createTree(Vertex parentVertex, TNode document){
+		protected void createTree(Node parentNode, TNode document){
 			
 			//System.out.println("Length: " + nodeList.getLength());
 			for (int i = 0; i < document.getNumOfChildren(); i++)
@@ -100,14 +101,14 @@ public class TabbedTextBuilder extends TreeBuilder {
 				String name = currentTNode.getName();
 				System.out.println(name);
 				
-				Vertex currentVertex = new Vertex(name,ontology.getSourceOrTarget());
-				currentVertex.setOntModel(m);
+				//Vertex currentVertex = new Vertex(name,ontology.getSourceOrTarget());
+				//currentVertex.setOntModel(m);
 				//We have to check if it is a new node or a previous processed node in a different position
 				Node currentNode = processedNodes.get(name);
 				OntClass currentClass;
 				if(currentNode == null) {
 					//if it's new create the node, add it to the class list and incr uniqueKey
-					currentClass = m.createClass( "#genid"+ currentVertex.getID());
+					currentClass = m.createClass( "#genid"+ uniqueKey);
 					currentClass.setLabel(name, null);
 					
 					System.out.println("Localname: " +currentClass.getLocalName());
@@ -122,19 +123,18 @@ public class TabbedTextBuilder extends TreeBuilder {
 				} else {
 					currentClass = (OntClass) currentNode.getResource();
 				}
-				currentNode.addVertex(currentVertex);
-				currentVertex.setNode(currentNode);
+				//currentNode.addVertex(currentVertex);
+				//currentVertex.setNode(currentNode);
 				// increment the number of nodes created
 				treeCount++;
 				// add the node created to the previous node
-				parentVertex.add(currentVertex); // adds a child.
+				parentNode.addChild(currentNode); // adds a child.
 				
-				Node parentNode = parentVertex.getNode();
 				OntClass parentClass = (OntClass) parentNode.getResource();
 				parentClass.addSubClass(currentClass);
 				
 				// recursively create the whole tree
-				createTree(currentVertex, currentTNode);
+				createTree(currentNode, currentTNode);
 			} // end of for loop
 		}
 

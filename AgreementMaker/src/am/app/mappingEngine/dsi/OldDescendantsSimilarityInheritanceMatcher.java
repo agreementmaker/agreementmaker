@@ -1,13 +1,8 @@
 package am.app.mappingEngine.dsi;
 
-import javax.swing.tree.TreeNode;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.Mapping.MappingRelation;
-import am.app.ontology.Node;
-import am.userInterface.sidebar.vertex.Vertex;
 
 public class OldDescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 
@@ -67,10 +62,10 @@ public class OldDescendantsSimilarityInheritanceMatcher extends AbstractMatcher 
 	 * Align Two nodes using DSI algorithm.
 	 * @see am.app.mappingEngine.AbstractMatcher#alignTwoNodes(am.app.ontology.Node, am.app.ontology.Node)
 	 */
-	protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+	/*protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
 
 		
-		/**
+		*//**
 		 * @author Cosmin Stroe
 		 * @date Nov 23, 2008
 		 * 
@@ -92,13 +87,13 @@ public class OldDescendantsSimilarityInheritanceMatcher extends AbstractMatcher 
 		 *                                                           i=1
 		 *                                                           
 		 *  Where n = min( path_len_root(source), path_len_root(target) )  ( also represents the number of ancestors the node with the least ancestors has)
-		 */
+		 *//*
 		
-		Vertex vsource = source.getVertex();
-		Vertex vtarget = target.getVertex();
+		//Vertex vsource = source.getVertex();
+		//Vertex vtarget = target.getVertex();
 		
-		TreeNode[] sourcePath = vsource.getPath();  // get the path to root from source vertex
-		TreeNode[] targetPath = vtarget.getPath();  // get the path to root from target vertex
+		//TreeNode[] sourcePath = vsource.getPath();  // get the path to root from source vertex
+		//TreeNode[] targetPath = vtarget.getPath();  // get the path to root from target vertex
 		
 		int n = 0;  // n = number of ancestors of the node with the least ancestors
 		
@@ -193,7 +188,7 @@ public class OldDescendantsSimilarityInheritanceMatcher extends AbstractMatcher 
 		return new Mapping(source, target, DSI_similarity, MappingRelation.EQUIVALENCE);
 		
 	}
-
+*/
 	
 	public String getDescriptionString() {
 		String description;

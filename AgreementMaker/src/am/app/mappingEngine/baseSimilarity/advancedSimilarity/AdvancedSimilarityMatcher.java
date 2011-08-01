@@ -5,13 +5,14 @@ package am.app.mappingEngine.baseSimilarity.advancedSimilarity;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
@@ -48,7 +49,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	//private ArrayList<String> targetWords;
 	
 	//vars for provenance
-	private ArrayList<Mapping> bestMappings;
+	private List<Mapping> bestMappings;
 	
 	/**
 	 * Empty constructor
@@ -263,7 +264,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		}
 		/* ------------- END FOR #1 --------------- */
 
-		ArrayList<Mapping> localResult = localMatrix.chooseBestN();
+		List<Mapping> localResult = localMatrix.chooseBestN();
 		
 		bestMappings=localResult;
 		
@@ -348,7 +349,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 * @author michele
 	 */
 	protected Alignment<Mapping> oneToOneMatching(SimilarityMatrix matrix){
-		ArrayList<Mapping> list = matrix.chooseBestN(true, getThreshold());
+		List<Mapping> list = matrix.chooseBestN(true, getThreshold());
 		Alignment<Mapping> result = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 		for(int i = 0; i < list.size(); i++){
 			if(list.get(i).getSimilarity() < getThreshold()){

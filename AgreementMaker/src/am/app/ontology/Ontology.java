@@ -6,7 +6,6 @@ import java.util.HashMap;
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.qualityEvaluation.metrics.joslyn.JoslynStructuralQuality;
-import am.userInterface.sidebar.vertex.Vertex;
 
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.ObjectProperty;
@@ -86,11 +85,11 @@ public class Ontology {
 	private ArrayList<Node> propertiesList = new ArrayList<Node>();
 	
 	/**The root of the classes hierarchy, is not the root of the whole tree but is the second node, the root vertex itself is fake doesn't refers to any node to be aligned, all sons of this node are classes to be aligned*/
-	private Vertex classesTree;//in a XML or RDF ontology this will be the only tree
+	private Node classesRoot;//in a XML or RDF ontology this will be the only tree
 	/**The root of the properties hierarchy, is not the root of the whole tree but is the third node, the root vertex itself is fake doesn't refers to any node to be aligned, all sons of this node are classes to be aligned*/
-	private Vertex propertiesTree;//in a XML or RDF ontology this will be null, while in a OWL ontology it contains at least the fake root "prop hierarchy"
+	private Node propertiesRoot;//in a XML or RDF ontology this will be null, while in a OWL ontology it contains at least the fake root "prop hierarchy"
 	
-	private Vertex deepRoot; // for the Canvas
+	private Node deepRoot; // for the Canvas
 	
 	private boolean skipOtherNamespaces;
 	
@@ -181,31 +180,30 @@ public class Ontology {
 	public void setSourceOrTarget(int s) {
 		sourceOrTarget = s;
 	}
-	public Vertex getClassesTree()                   { return classesTree; }
-	public void   setClassesTree(Vertex classesTree) { this.classesTree = classesTree; }
-	public Vertex getDeepRoot()                      { return deepRoot; }
-	public void   setDeepRoot(Vertex root)           { this.deepRoot = root; }
+
+	/** @return the root of the classes hierarchy. */
+	public Node getClassesRoot()                   { return classesRoot; }
+	public void   setClassesRoot(Node classesRoot) { this.classesRoot = classesRoot; }
 	
-	public Vertex getPropertiesTree() {
-		return propertiesTree;
-	}
-	public void setPropertiesTree(Vertex propertiesTree) {
-		this.propertiesTree = propertiesTree;
-	}
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
+	/** The deep root encompases the classes and properties hierachy */
+	public Node getDeepRoot()                      { return deepRoot; }
+	public void   setDeepRoot(Node root)           { this.deepRoot = root; }
+	
+	/** @return the root of the properties hierachy. */
+	public Node getPropertiesRoot() { return propertiesRoot; }
+	public void setPropertiesRoot(Node propertiesRoot) { this.propertiesRoot = propertiesRoot; }
+	
+	public String getTitle() { return title; }
+	public void setTitle(String title) { this.title = title; }
 	
 	//used in UImenu.ontologyDetails()
 	public String getClassDetails() {	
-		return getDetails(classesList, classesTree);
+		return getDetails(classesList, classesRoot);
 	}
 	
+	// FIXME: UNIT TEST THIS METHOD!! I have a feeling that they are INCORRECT! - Cosmin.
 	//used in getClassDetails and getPropDetails
-	private String getDetails(ArrayList<Node> list, Vertex tree) {
+	private String getDetails(ArrayList<Node> list, Node tree) {
 		TreeToDagConverter conv = new TreeToDagConverter(tree);
 		
 		int concepts = list.size();
@@ -224,7 +222,7 @@ public class Ontology {
 	
 	//used in UImenu.ontologyDetails()
 	public String getPropDetails() {
-		return getDetails(propertiesList, propertiesTree);
+		return getDetails(propertiesList, propertiesRoot);
 	}
 	public boolean isSkipOtherNamespaces() {
 		return skipOtherNamespaces;

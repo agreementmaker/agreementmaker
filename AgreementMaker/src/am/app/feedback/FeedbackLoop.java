@@ -402,7 +402,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			}
 		}
 		else if(userAction.equals(SelectionPanel.A_CONCEPT_WRONG)){
-			progressDisplay.appendNewLineReportText("\tSelected candidate concept "+userConcept.getCandidateString()+" has not to be mapped and is filterd out.");
+			progressDisplay.appendNewLineReportText("\tSelected candidate concept "+userConcept.toString()+" has not to be mapped and is filterd out.");
 			System.out.println("User selected to "+SelectionPanel.A_CONCEPT_WRONG);
 			ArrayList<CandidateConcept> toBeFiltered = new ArrayList<CandidateConcept>(1);
 			toBeFiltered.add(userConcept);
@@ -561,7 +561,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 				else if(wrongConcepts.size() > 0){
 					userAction = SelectionPanel.A_CONCEPT_WRONG;
 					userConcept = wrongConcepts.get(0);
-					System.out.println( "Automatic User Validation: wrong candidate concept: "+userConcept.getCandidateString());
+					System.out.println( "Automatic User Validation: wrong candidate concept: "+userConcept.toString());
 				}
 				else{//all candidate concepts are in the reference, but all of their candidate mappings are wrong
 					userAction = SelectionPanel.A_ALL_MAPPING_WRONG;

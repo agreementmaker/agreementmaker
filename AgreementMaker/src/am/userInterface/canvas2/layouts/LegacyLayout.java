@@ -56,6 +56,7 @@ import am.userInterface.canvas2.utility.GraphLocator.GraphType;
 import am.utility.DirectedGraphEdge;
 import am.utility.Pair;
 
+import com.hp.hpl.jena.enhanced.UnsupportedPolymorphismException;
 import com.hp.hpl.jena.ontology.ConversionException;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -574,7 +575,14 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		
 		graph.insertVertex(root);
 		
-		//List<OntClass> classesList = OntTools.namedHierarchyRoots(m);
+		Node classRoot = ont.getClassesRoot();
+		List<Node> rootChildren = classRoot.getChildren();
+		for( int i = 0; i < rootChildren.size(); i++ ) {
+			Node currentChild = rootChildren.get(i);
+			recursiveBuildClassGraph( root, currentChild, depth+1, graph, ont, hashMap );
+		}
+		
+		/*//List<OntClass> classesList = OntTools.namedHierarchyRoots(m);
 		List<OntClass> classesList = getClassHierarchyRoots(m);
 		
 		depth++;
@@ -623,13 +631,49 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			if( Core.DEBUG ) log.debug(">> Inserted " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
 			recursiveBuildClassGraph( node, cls, depth+1, graph, ont, hashMap );
 			
-		}
+		}*/
 	
 		
 		
 		return root;
 	}
 	
+	protected void recursiveBuildClassGraph(LegacyNode parentLNode, Node currentNode, int depth, CanvasGraph graph, Ontology ont, HashMap<OntResource, LegacyNode> hashMap ) {
+		
+		// create the LegacyNode for the current class.
+		
+		// get the OntResource for the current node.
+		OntResource currentResource = null;
+		try {
+			currentResource = currentNode.getResource().as(OntResource.class);
+		} catch( UnsupportedPolymorphismException e ) {
+			e.printStackTrace();
+		}
+		
+		// create the graphical data and the legacy node
+		GraphicalData gr = new GraphicalData( depth*depthIndent + subgraphXoffset, 
+				   graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
+				   100 , nodeHeight, currentResource, GraphicalData.NodeType.CLASS_NODE, this, graph.getID() ); 
+		LegacyNode currentLNode = new LegacyNode( gr);
+		
+		currentNode.addGraphicalRepresentation(currentLNode);
+	
+		// insert the vertex and the edge in to the graph.
+		graph.insertVertex(currentLNode);
+		
+		LegacyEdge edge = new LegacyEdge( parentLNode, currentLNode, null, this );
+		graph.insertEdge( edge );
+		
+		hashMap.put(currentResource, currentLNode);
+		
+		// recursive call for the children.
+		List<Node> childrenNodes = currentNode.getChildren();
+		for( int i = 0; i < childrenNodes.size(); i++ ) {
+			Node currentChild = childrenNodes.get(i);
+			recursiveBuildClassGraph( currentLNode, currentChild, depth+1, graph, ont, hashMap);
+		}
+		
+	}
 	
 	protected void recursiveBuildClassGraph(
 			LegacyNode parentNode,
@@ -703,149 +747,6 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	}
 
 
-/*
-
-	/**
-	 * buildClassTree(), createFosterHome() and adoptRemainingOrphans(), and getVertexFromClass() are ported from OntoTree builder
-	 * 
-	 * fixDepthDFS() is written because the depthIndent information cannot be passed with these functions, so it has to be set
-	 * after the heirarchy has been finished.
-	 * @return
-	 /
-	protected LegacyNode buildClassTree( OntModel m, CanvasGraph graph) {
-		
-		//HashMap<OntClass, Vertex> classesMap = new HashMap<OntClass, Vertex>();  // this maps between ontology classes and Vertices created for the each class
-		ExtendedIterator orphansItr = m.listClasses();  // right now the classes have no parents, so they are orphans.
-		
-		while( orphansItr.hasNext() ) { // iterate through all the classes
-			
-			OntClass currentOrphan = (OntClass) orphansItr.next();  // the current class we are looking at
-			
-			if( !currentOrphan.isAnon() ) {  // make sure this is a real class  (anoynymous classes are not real classes)
-				createFosterHome( currentOrphan, graph );  // assign orphan classes to parent parent classes
-			}
-		}
-		
-		// this is the root node of the class tree (think of it like owl:Thing)
-		// create the root node;
-		TextElement gr = new TextElement(0,	 0,	 0, nodeHeight, this, Core.getInstance().getOntologyIDbyModel(m));
-		gr.setText("OWL Classes Hierarchy");
-		LegacyNode root = new LegacyNode( gr );
-
-		// we may have classes that still don't have a parent. these orphans will be adopted by root.
-		
-		adoptRemainingOrphans( root, graph );
-		
-		fixDepthHeightDFS( root, 0, 0);  // because the heirarchy was not built in any order, the height and depth must be fixed after it is built (not during).
-		
-		return root;
-	}
-
-	private void createFosterHome( OntClass currentOrphan, CanvasGraph graph ) {
-		
-		LegacyNode currentVertex = getVertexFromClass( currentOrphan );
-		
-		ExtendedIterator parentsItr = currentOrphan.listSuperClasses( true );  // iterator of the current class' parents
-		
-		while( parentsItr.hasNext() ) {
-			
-			OntClass parentClass = (OntClass) parentsItr.next();
-
-			
-			if( !parentClass.isAnon() && !parentClass.equals(owlThing) ) {
-
-				LegacyNode parentVertex = getVertexFromClass(parentClass);  // create a new Vertex object or use an existing one.
-				
-				//parentVertex.add( currentVertex );  // create the parent link between the parent and the child
-
-			} 
-		}
-		
-	}	
-
-	private void adoptRemainingOrphans(LegacyNode root, CanvasGraph graph) {
-
-		/*  // Alternative way of iterating through the classes (via the classesMap that was created).
-		 *   
-		Set< Entry<OntClass, Vertex>> classesSet = classesMap.entrySet();
-		Iterator<Entry<OntClass, Vertex>> classesItr = classesSet.iterator();
-		
-		while( classesItr.hasNext() ) {
-			
-		}
-		/
-		
-		// We will just iterate through the classes again, and find any remaining orphans
-		ExtendedIterator classesItr = model.listClasses();
-		
-		while( classesItr.hasNext() ) {
-			OntClass currentClass = (OntClass) classesItr.next();
-			if( !currentClass.isAnon() ) {
-				if( classesMap.containsKey(currentClass) ) {
-					Vertex currentVertex = classesMap.get(currentClass);
-					
-					if( currentVertex.getParent() == null ) {
-						// this vertex has no parent, that means root needs to adopt it
-						root.add( currentVertex );
-					}
-					
-				}
-				else {
-					// we should never get here
-					// if we do, it means we _somehow_ missed a class during our first iteration in buildClassTree();
-					System.err.println("Assertion failed: listClasses() returning different classes between calls.");
-				}
-				 
-			}
-			
-		}
-		
-	}	
-	
-	
-	/**
-	 * helper Function for buildClassesTree()
-	 * @param classesMap
-	 * @param currentClass
-	 * @return
-	 /
-	private LegacyNode getVertexFromClass( OntClass currentClass ) {
-		LegacyNode currentVertex = null;
-		
-		if( hashMap.containsKey( currentClass ) ) { // we already have a Vertex for the currentClass (because it is the parent of some node)
-			currentVertex = hashMap.get( currentClass );
-		} else {
-			// we don't have a Vertex for the current class, create one;
-			//currentVertex = createNodeAndVertex( currentClass, true, ontology.getSourceOrTarget());
-			
-			GraphicalData gr = new GraphicalData( depth*depthIndent + subgraphXoffset, 
-					   graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
-					   100 , nodeHeight, cls, GraphicalData.NodeType.CLASS_NODE, this ); 
-			LegacyNode node = new LegacyNode( gr); 
-			
-			
-			hashMap.put(currentClass, currentVertex);
-		}
-		
-		return currentVertex;
-	}
-
-	// fix the positions of all the nodes linked to this graph
-	private int fixDepthHeightDFS( DirectedGraphVertex<GraphicalData> root, int depth, int height ) {
-		
-		root.getObject().x = depth*depthIndent + subgraphXoffset;
-		root.getObject().y = height * (nodeHeight+marginBottom) + subgraphYoffset;
-		height = height+1;
-		
-		Iterator<DirectedGraphEdge<GraphicalData>> edgeIter = root.edgesOut();
-		while( edgeIter.hasNext() ) { height = fixDepthHeightDFS( edgeIter.next().getDestination(), depth+1, height );	} // DFS call
-		return height;
-	}
-	
-(((((((((((((((((((((((((((((((((((((((((((())))))))))))))))))))))))))))))))))))))))))))
-*/
-	
-	
 	/**
 	 * This function, and the recursive version build the properties graph.  It's a copy of the Class building methods
 	 * 

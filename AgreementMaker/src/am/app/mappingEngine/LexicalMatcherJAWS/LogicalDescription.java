@@ -1,17 +1,13 @@
 package am.app.mappingEngine.LexicalMatcherJAWS;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import edu.smu.tspell.wordnet.WordNetDatabase;
-
 import am.app.ontology.Node;
-import am.utility.DirectedGraph;
-import am.utility.DirectedGraphEdge;
-import am.utility.DirectedGraphVertex;
+import edu.smu.tspell.wordnet.WordNetDatabase;
 
 /**
  * Author: Cosmin Stroe.
@@ -132,8 +128,8 @@ public class LogicalDescription {
 				// Looking at the parents of the current node can help.
 				
 				// 1. Get the strings of the parents (more than one parent in case of multiple hierarchy)
-				ArrayList<Node> parentNodes = concept.getParent();
-				ArrayList<String[]> parentStrings = new ArrayList<String[]>();
+				List<Node> parentNodes = concept.getParents();
+				List<String[]> parentStrings = new ArrayList<String[]>();
 				for( int i = 0; i < parentNodes.size(); i++ ) {
 					String parentTerm;
 					if( usingLabel ) {

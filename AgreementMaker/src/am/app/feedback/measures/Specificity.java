@@ -1,12 +1,13 @@
 package am.app.feedback.measures;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import am.app.Core;
 import am.app.feedback.CandidateConcept;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.userInterface.sidebar.vertex.Vertex;
 
 public class Specificity extends RelevanceMeasure {
 
@@ -20,15 +21,15 @@ public class Specificity extends RelevanceMeasure {
 		
 		// source classes
 		whichType     = alignType.aligningClasses;
-		visitNode( sourceOntology.getClassesTree(), 1 );
-		if( sourceOntology.getClassesTree().getNode() != null )
-			candidateList.add( new CandidateConcept( sourceOntology.getClassesTree().getNode(), 1.0d, whichOntology, whichType ));
+		visitNode( sourceOntology.getClassesRoot(), 1 );
+		if( sourceOntology.getClassesRoot() != null )
+			candidateList.add( new CandidateConcept( sourceOntology.getClassesRoot(), 1.0d, whichOntology, whichType ));
 
 		// source properties
 		whichType     = alignType.aligningProperties;
-		visitNode( sourceOntology.getPropertiesTree(), 1 );
-		if( sourceOntology.getPropertiesTree().getNode() != null )		
-			candidateList.add( new CandidateConcept( sourceOntology.getPropertiesTree().getNode(), 1.0d, whichOntology, whichType ));
+		visitNode( sourceOntology.getPropertiesRoot(), 1 );
+		if( sourceOntology.getPropertiesRoot() != null )		
+			candidateList.add( new CandidateConcept( sourceOntology.getPropertiesRoot(), 1.0d, whichOntology, whichType ));
 
 		
 		
@@ -37,29 +38,29 @@ public class Specificity extends RelevanceMeasure {
 		
 		// target classes
 		whichType     = alignType.aligningClasses;
-		visitNode( targetOntology.getClassesTree(), 1 );
-		if( targetOntology.getClassesTree().getNode() != null )
-			candidateList.add( new CandidateConcept( targetOntology.getClassesTree().getNode(), 1.0d, whichOntology, whichType ));
+		visitNode( targetOntology.getClassesRoot(), 1 );
+		if( targetOntology.getClassesRoot() != null )
+			candidateList.add( new CandidateConcept( targetOntology.getClassesRoot(), 1.0d, whichOntology, whichType ));
 
 		
 		// target properties
 		whichType     = alignType.aligningProperties;
-		visitNode( targetOntology.getPropertiesTree(), 1 );
-		if( targetOntology.getPropertiesTree().getNode() != null )
-			candidateList.add( new CandidateConcept( targetOntology.getPropertiesTree().getNode(), 1.0d, whichOntology, whichType ));
+		visitNode( targetOntology.getPropertiesRoot(), 1 );
+		if( targetOntology.getPropertiesRoot() != null )
+			candidateList.add( new CandidateConcept( targetOntology.getPropertiesRoot(), 1.0d, whichOntology, whichType ));
 
 		
 		
 		
 	}
 	
-	protected void visitNode( Vertex concept, int depth ) {
+	protected void visitNode( Node concept, int depth ) {
 		
-		ArrayList<Vertex> childrenList = new ArrayList<Vertex>();
+		List<Node> childrenList = new ArrayList<Node>();
 		int numChildren = concept.getChildCount();
 		
 		for( int i = 0; i < numChildren; i++ ) {
-			childrenList.add((Vertex) concept.getChildAt(i));
+			childrenList.add( concept.getChildAt(i) );
 		}
 		
 		int fanout = childrenList.size();
@@ -74,7 +75,7 @@ public class Specificity extends RelevanceMeasure {
 			
 			//if( !fbl.isValidated(curr) ) {
 				double specificity = (1 / Depth) * ( 1 / Fanout);
-				candidateList.add( new CandidateConcept( childrenList.get(i).getNode(), specificity, whichOntology, whichType ));
+				candidateList.add( new CandidateConcept( childrenList.get(i), specificity, whichOntology, whichType ));
 			//}	
 			visitNode( childrenList.get(i), depth + 1 );
 		}

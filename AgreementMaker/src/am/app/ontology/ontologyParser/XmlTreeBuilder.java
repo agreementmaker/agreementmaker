@@ -5,6 +5,7 @@ package am.app.ontology.ontologyParser;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -16,18 +17,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.ontology.Node;
+
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.vocabulary.OWL;
-
-
-import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.ontology.Node;
-import am.userInterface.sidebar.vertex.Vertex;
 
 /**
  * XmlTreeBuilder Class - 
@@ -80,15 +79,16 @@ public class XmlTreeBuilder extends TreeBuilder
 		ontology.setModel(m);
 		
 		// create a new tree root
-		treeRoot = new Vertex(ontology.getTitle(), ontology.getSourceOrTarget());
-		Vertex ClassRoot = new Vertex(XMLHIERARCHY, ontology.getSourceOrTarget());
-		ClassRoot.setOntModel(m);
+		//treeRoot = new Vertex(ontology.getTitle(), ontology.getSourceOrTarget());
+		treeRoot = new Node( -1, ontology.getTitle(), Node.XMLNODE, ontology.getID() );
+		Node ClassRoot = new Node(-1 , XMLHIERARCHY, Node.XMLNODE, ontology.getID() );
+		//ClassRoot.setOntModel(m);
 		
 		Node rootNode = new Node(uniqueKey,"OWL:Thing", Node.XMLNODE, ontology.getID());
 		uniqueKey++;
 		rootNode.setResource(owlThing);
 		rootNode.setLabel("OWL:Thing");
-		ClassRoot.setNode(rootNode);
+		//ClassRoot.setNode(rootNode);
 		
 
 		treeCount=2;
@@ -107,8 +107,8 @@ public class XmlTreeBuilder extends TreeBuilder
 			
 			createTree(ClassRoot, documentRoot);
 		}
-		treeRoot.add(ClassRoot);
-		ontology.setClassesTree( ClassRoot);
+		treeRoot.addChild(ClassRoot);
+		ontology.setClassesRoot( ClassRoot);
 		ontology.setOntResource2NodeMap(processedSubs, alignType.aligningClasses);
 		
 		// now, the visualization panel needs to build its own graph.
@@ -120,7 +120,7 @@ public class XmlTreeBuilder extends TreeBuilder
 		
 	}
 	
-	protected void createTree(Vertex parentVertex, org.w3c.dom.Node document){
+	protected void createTree(Node parentNode, org.w3c.dom.Node document){
 		// get the node list from the document
 		NodeList nodeList = getNodeList(document);
 		
@@ -143,22 +143,22 @@ public class XmlTreeBuilder extends TreeBuilder
 				String seeAlso = getAttr(currentXMLNode,"seeAlso");
 				String isDefBy = getAttr(currentXMLNode,"isDefinedBy");
 				
-				Vertex currentVertex = new Vertex(name,ontology.getSourceOrTarget());
-				currentVertex.setOntModel(m);
-				currentVertex.setDesc(des);
+				//Vertex currentVertex = new Vertex(name,ontology.getSourceOrTarget());
+				//currentVertex.setOntModel(m);
+				//currentVertex.setDesc(des);
 				//We have to check if it is a new node or a previous processed node in a different position
 				Node currentNode = processedNodes.get(name);
 				OntClass currentClass;
 				if(currentNode == null) {
 					//if it's new create the node, add it to the class list and incr uniqueKey
 					if( name.equals("") ) {
-						currentClass = m.createClass( "#genid"+ currentVertex.getID());
+						currentClass = m.createClass( "#genid"+ uniqueKey);
 					} else {
 						currentClass = m.createClass( "#" + name );
 					}
 					currentClass.setLabel(label, null);
 					
-					System.out.println("Localname: " +currentClass.getLocalName());
+					//System.out.println("Localname: " +currentClass.getLocalName());
 					currentClass.setComment(label, null);
 					
 					currentNode = new Node(uniqueKey,name, Node.XMLNODE, ontology.getID());
@@ -175,19 +175,17 @@ public class XmlTreeBuilder extends TreeBuilder
 				} else {
 					currentClass = (OntClass) currentNode.getResource();
 				}
-				currentNode.addVertex(currentVertex);
-				currentVertex.setNode(currentNode);
+				//currentNode.addVertex(currentVertex);
+				//currentVertex.setNode(currentNode);
 				// increment the number of nodes created
 				treeCount++;
 				// add the node created to the previous node
-				parentVertex.add(currentVertex); // adds a child.
 				
-				Node parentNode = parentVertex.getNode();
 				OntClass parentClass = (OntClass) parentNode.getResource();
 				parentClass.addSubClass(currentClass);
 				
 				// recursively create the whole tree
-				createTree(currentVertex, nodeList.item(i));
+				createTree(currentNode, nodeList.item(i));
 			} // end of for loop
 		} // end of if nodeList ! = null
 	}

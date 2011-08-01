@@ -1,19 +1,21 @@
 package am.app.ontology.ontologyParser;
 
 import java.io.File;
+
 import javax.swing.SwingWorker;
+
 import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
+import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.OntologyLoadingProgressDialog;
-import am.userInterface.sidebar.vertex.Vertex;
 
 public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 
 	// instance variables 
 	protected int treeCount;  // this variable is used in the Canvas visualization.  ( it is the total number of Vertices in the Classes and Properties trees )
-	protected Vertex treeRoot;
+	protected Node treeRoot;
 	protected Ontology ontology;  
 	protected int uniqueKey = 0;
 	
@@ -91,10 +93,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 	 * This function returns the tree root
 	 * @return treeRoot	root of the tree
 	 */
-	public Vertex getTreeRoot()
-	{
-		return treeRoot;
-	}
+	public Node getTreeRoot() { return treeRoot; }
 
 
 	/********************************************************************************************/
@@ -103,10 +102,9 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 	 *
 	 * @param root root of the tree
 	 */
-	public void setTreeRoot(Vertex root)    
-	{
-		treeRoot = root;
-	}
+
+	public void setTreeRoot(Node root) { treeRoot = root; }
+	
 	/********************************************************************************************/	
 	public Ontology getOntology() {
 		return ontology;

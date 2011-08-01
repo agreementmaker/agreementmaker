@@ -4,14 +4,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import am.Utility;
 import am.app.Core;
-import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
@@ -257,7 +258,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
     }
     
 	@Override
-	public Vector<Double> toSimilarityArray(Vector<Mapping> mapsArray){
+	public List<Double> toSimilarityArray(List<Mapping> mapsArray){
 		Vector<Double> similarityArray = new Vector<Double>();
 		for(int i = 0; i < mapsArray.size(); i++){
 			similarityArray.add(mapsArray.get(i).getSimilarity());
@@ -389,7 +390,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 	 * @author michele 
 	 */
 	@Override
-	public void initFromNodeList(ArrayList<Node> sourceList, ArrayList<Node> targetList) {
+	public void initFromNodeList(List<Node> sourceList, List<Node> targetList) {
 		for(int i = 0; i < sourceList.size(); i++){
 			for(int j = 0; j < targetList.size(); j++){
 				data[i][j] = new Mapping(sourceList.get(i), targetList.get(j), 0.0);
@@ -409,15 +410,15 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 	 * @author michele 
 	 */
 	@Override
-	public ArrayList<Mapping> chooseBestN(ArrayList<Integer> rowsIncludedList, ArrayList<Integer> colsIncludedList, boolean considerThreshold, double threshold) {
+	public List<Mapping> chooseBestN(List<Integer> rowsIncludedList, List<Integer> colsIncludedList, boolean considerThreshold, double threshold) {
 
 		// Creation of the output ArrayList and a copy of the matrix
 		int arraySize = Math.min(rowsIncludedList.size(), colsIncludedList.size());
 		ArrayList<Mapping> chosenMappings = new ArrayList<Mapping>(arraySize);
 		//SimilarityMatrix input = new ArraySimilarityMatrix(this);
 
-		ArrayList<Integer> rowsIncluded = rowsIncludedList;
-		ArrayList<Integer> colsIncluded = colsIncludedList;
+		List<Integer> rowsIncluded = rowsIncludedList;
+		List<Integer> colsIncluded = colsIncludedList;
 		
 		// matrix scan starts here
 		while(rowsIncluded.size() > 0 && colsIncluded.size() > 0 ) // until we can look no more at concepts either in the source or in the target ontology
@@ -469,7 +470,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 	 * @author michele 
 	 */
 	@Override
-	public ArrayList<Mapping> chooseBestN(boolean considerThreshold, double threshold) {
+	public List<Mapping> chooseBestN(boolean considerThreshold, double threshold) {
 		return this.chooseBestN(Utility.createIntListToN(this.getRows()), Utility.createIntListToN(this.getColumns()), considerThreshold, threshold);
 	}
 	
@@ -481,7 +482,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 	 * @author michele 
 	 */
 	@Override
-	public ArrayList<Mapping> chooseBestN(ArrayList<Integer> rowsIncludedList, ArrayList<Integer> colsIncludedList) {
+	public List<Mapping> chooseBestN(List<Integer> rowsIncludedList, List<Integer> colsIncludedList) {
 		return this.chooseBestN(rowsIncludedList, colsIncludedList, false, 0.0);
 	}
 	
@@ -490,7 +491,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 	 * @author michele 
 	 */
 	@Override
-	public ArrayList<Mapping> chooseBestN() {
+	public List<Mapping> chooseBestN() {
 		return this.chooseBestN(Utility.createIntListToN(this.getRows()), Utility.createIntListToN(this.getColumns()), false, 0.0);
 	}
 	
@@ -500,7 +501,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 	 * @author michele 
 	 */
 //	@Override
-	public void fillMatrix(double val, ArrayList<Node> sList, ArrayList<Node> tList){
+	public void fillMatrix(double val, List<Node> sList, List<Node> tList){
 		// create M-by-N matrix of the selected value
 		assert (val >= 0 && val <= 1);
 	    for(int i = 0; i < this.getRows(); i++){

@@ -3,17 +3,18 @@ package am.app.feedback.matchers;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
+import sun.security.provider.certpath.Vertex;
 import am.app.feedback.FilteredAlignmentMatrix;
 import am.app.feedback.InitialMatchers;
 import am.app.feedback.measures.FamilialSimilarity;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
-import am.userInterface.sidebar.vertex.Vertex;
 
 public class ExtrapolatingFS extends AbstractMatcher {
 	
@@ -64,39 +65,31 @@ public class ExtrapolatingFS extends AbstractMatcher {
 			
 			Mapping e1e2 = userMappings.get(i);
 			
-			ArrayList<Vertex> e1_sibblingList = new ArrayList<Vertex>();
+			List<Node> e1_sibblingList = new ArrayList<Node>();
 			
-			int numChildren;
-			Vertex parent = (Vertex) e1e2.getEntity1().getVertex().getParent();
-			if( parent == null ) { numChildren = 0; }
-			else { numChildren = parent.getChildCount(); }
-			
-			for( int j = 0; j < numChildren; j++ ) {
-				Vertex s1 = (Vertex) parent.getChildAt(j);
-				if( !s1.getNode().equals(e1e2.getEntity1()) ) e1_sibblingList.add(s1);
-			}
-			
-			HashMap<Node, Double> e1_simAboveThreshold = fs_measure.simSetAboveThreshold(e1_sibblingList, e1e2.getEntity1().getVertex() );
-			
-			
-			
-			
-			ArrayList<Vertex> e2_sibblingList = new ArrayList<Vertex>();
-			
-			parent = (Vertex) e1e2.getEntity2().getVertex().getParent();
-			if( parent == null ) { numChildren = 0; }
-			else { numChildren = parent.getChildCount(); }
-			
-			for( int j = 0; j < numChildren; j++ ) {
-				Vertex s2 = (Vertex) parent.getChildAt(j);
-				if( !s2.getNode().equals( e1e2.getEntity2() ) ) {
-					e2_sibblingList.add(s2);
+			List<Node> parentList = e1e2.getEntity1().getParents();
+			for( Node parent : parentList ) {
+				for( int j = 0; j < parent.getChildCount(); j++ ) {
+					if( !parent.getChildAt(j).equals(e1e2.getEntity1()) ) e1_sibblingList.add(parent.getChildAt(j));
 				}
 			}
 			
-			HashMap<Node, Double> e2_simAboveThreshold = fs_measure.simSetAboveThreshold( e2_sibblingList, e1e2.getEntity2().getVertex() );
+			HashMap<Node, Double> e1_simAboveThreshold = fs_measure.simSetAboveThreshold(e1_sibblingList, e1e2.getEntity1() );
 			
 			
+			
+			
+			List<Node> e2_sibblingList = new ArrayList<Node>();
+			
+			List<Node> parentList2 = e1e2.getEntity2().getParents();
+			for( Node parent : parentList2 ) {
+				for( int j = 0; j < parent.getChildCount(); j++ ) {
+					if( !parent.getChildAt(j).equals(e1e2.getEntity1()) ) e2_sibblingList.add(parent.getChildAt(j));
+				}
+			}
+			
+			
+			HashMap<Node, Double> e2_simAboveThreshold = fs_measure.simSetAboveThreshold( e2_sibblingList, e1e2.getEntity2() );
 			
 			
 			newMappings.addAll( compare_sets( e1_simAboveThreshold , e2_simAboveThreshold, e1e2.getAlignmentType() ) );
