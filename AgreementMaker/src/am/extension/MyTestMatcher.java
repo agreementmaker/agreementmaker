@@ -33,7 +33,7 @@ public class MyTestMatcher extends AbstractMatcher {
 			log.info("This node has " + childList.size() + " children.");
 			for( int i = 0; i < childList.size(); i++ ) {
 				Node currentChild = childList.get(i);
-				log.info(i + ". " + currentChild.getLocalName() );
+				log.info(i + ". " + currentChild.getLocalName() + ", Level: " + currentChild.getLevel() );
 			}
 			
 			log.info("");

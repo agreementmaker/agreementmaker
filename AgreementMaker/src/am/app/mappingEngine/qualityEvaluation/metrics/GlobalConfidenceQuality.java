@@ -35,7 +35,7 @@ public class GlobalConfidenceQuality extends AbstractQualityMetric {
 		
 		LocalConfidenceQuality localQ = new LocalConfidenceQuality();
 		localQ.setParameter(new AMParameter( LocalConfidenceQuality.PARAM_CONSIDER_THRESHOLD, 
-											 params.getBit(PARAM_CONSIDER_THRESHOLD)));
+											 params.containsKey(PARAM_CONSIDER_THRESHOLD) && params.getBit(PARAM_CONSIDER_THRESHOLD)));
 		QualityEvaluationData localConfData = localQ.getQuality(matcher);
 
 		QualityEvaluationData globalConfData = new QualityEvaluationData();

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import am.Utility;
 import am.app.Core;
@@ -73,7 +74,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 	}
 	
 	//TEMP STRUCTURES USED BY RECURSIVE METHODS
-	int[] tempRecursiveNum;
+	//int[] tempRecursiveNum;
 	int[][] tempOrder;
 	
 	/*public JoslynStructuralQuality(boolean distance,boolean preservation, boolean upper) {
@@ -353,17 +354,16 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 		int[] targetDescendants;
 		double[][] targetDistances;
 		
-		
 		TreeToDagConverter sourceDag = new TreeToDagConverter(sourceTree);
 		TreeToDagConverter targetDag = new TreeToDagConverter(targetTree);
 		
 		if(params.getBit(PREF_UPPER_DISTANCE)){
-			sourceDescendants = createAncestorsArray(sourceList,sourceDag );
-			targetDescendants = createAncestorsArray(targetList,targetDag );
+			sourceDescendants = createAncestorsArray(sourceList);
+			targetDescendants = createAncestorsArray(targetList);
 		}
 		else{
-			sourceDescendants = createDescendantsArray(sourceList,sourceDag );
-			targetDescendants = createDescendantsArray(targetList,targetDag );
+			sourceDescendants = createDescendantsArray(sourceList);
+			targetDescendants = createDescendantsArray(targetList);
 		}
 		//create the array for target and source with the numver of descendants of each node
 		/* DEBUG
@@ -578,7 +578,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 				int ancestorsA = ancestors[i];
 				int ancestorsB = ancestors[j];
 				int maxCommonAncestors = 0;
-				ArrayList<Node> commonAncestors = TreeToDagConverter.getOrderedCommonAncestors(nodesList.get(i), nodesList.get(j));
+				List<Node> commonAncestors = Node.getCommonAncestors(nodesList.get(i), nodesList.get(j));
 				if(commonAncestors.size() > 0) {
 					//I need to find which is the common with highest num of anc
 					//so it can only be one of the common anc in the lowest level
@@ -647,17 +647,16 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 	 * @param sourceTree
 	 * @return
 	 */
-	private int[] createDescendantsArray(List<Node> sourceList, TreeToDagConverter sourceTree) {
+	private int[] createDescendantsArray(List<Node> sourceList) {
 		//LOWER DISTANCE: for each node we will have the num of descendants
-		tempRecursiveNum = new int[sourceList.size()]; //to be used only by recursive descendants
-		List<Node> roots = sourceTree.getRoots();
-		Iterator<Node> it = roots.iterator();
-		while(it.hasNext()) {
-			Node n = it.next();
-			recursiveDescendantsCount(n, sourceTree);
+		int[] result = new int[sourceList.size()]; //to be used only by recursive descendants
+		
+		for( int i = 0; i < sourceList.size(); i++ ) {
+			Node sourceNode = sourceList.get(i);
+			Set<Node> currentNodeDescentants = sourceNode.getDescendants();
+			result[i] = currentNodeDescentants.size();
 		}
-		int[] result = tempRecursiveNum;
-		tempRecursiveNum = null;
+		
 		return result;
 	}
 	
@@ -667,24 +666,24 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 	 * @param sourceTree
 	 * @return
 	 */
-	private int[] createAncestorsArray(List<Node> sourceList, TreeToDagConverter sourceTree) {
+	private int[] createAncestorsArray(List<Node> sourceList) {
 		//UPPER DISTANCE: for each node we will have the num of ancestors
-		tempRecursiveNum = new int[sourceList.size()]; //to be used only by recursive method
-		List<Node> leaves = sourceTree.getLeaves();
-		Iterator<Node> it = leaves.iterator();
-		while(it.hasNext()) {
-			
-			Node n = it.next();
-			//System.out.println("leaf: "+n.getLocalName());
-			recursiveAncestorsCount(n, sourceTree);
+		int[] result = new int[sourceList.size()]; //to be used only by recursive method
+		
+		for( int i = 0; i < sourceList.size(); i++ ) {
+			Node sourceNode = sourceList.get(i);
+			Set<Node> currentNodeAncestors = sourceNode.getAncestors();
+			result[i] = currentNodeAncestors.size();
 		}
-		int[] result = tempRecursiveNum;
-		tempRecursiveNum = null;
+		
 		return result;
 	}
 
 	
-	private HashSet<Node> recursiveAncestorsCount(Node n,  TreeToDagConverter tree) {
+	/*private HashSet<Node> recursiveAncestorsCount(Node n) {
+		
+		
+		n.getAncestors();
 		
 		HashSet<Node> ancestors = new HashSet<Node>();
 		List<Node> parents = n.getParents();
@@ -699,7 +698,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 			while(it.hasNext()) {
 				//my number of ancestors: me + the ancestors of my parents
 				parent = it.next();
-				parentAncestors =	recursiveAncestorsCount(parent, tree); //this is the set of ancestors of my parent and it also set the number of them
+				parentAncestors =	recursiveAncestorsCount(parent); //this is the set of ancestors of my parent and it also set the number of them
 				parentAncIterator = parentAncestors.iterator();
 				//i have to add to my set of ancestors all the ancestors of my parents, to do this i need an hashset to avoid
 				//adding the same ancestor of two different parents twice...the add function of the hashset adds the element only if it's not there already.
@@ -712,9 +711,9 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 		ancestors.add(n); //I'm one of my ancestors by definition
 		tempRecursiveNum[n.getIndex()] = ancestors.size();
 		return ancestors;
-	}
+	}*/
 
-	private HashSet<Node> recursiveDescendantsCount(Node n,  TreeToDagConverter tree) {
+	/*private HashSet<Node> recursiveDescendantsCount(Node n,  TreeToDagConverter tree) {
 		HashSet<Node> descendants = new HashSet<Node>();
 		List<Node> children = n.getChildren();
 		//if(n.getLocalName().equalsIgnoreCase("PersonList"))
@@ -741,7 +740,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 		descendants.add(n); //I'm one of my descendants by definition
 		tempRecursiveNum[n.getIndex()] = descendants.size();
 		return descendants;
-	}
+	}*/
 	
 	public double getDiameter(ArrayList<Node> list,
 			TreeToDagConverter dag) {

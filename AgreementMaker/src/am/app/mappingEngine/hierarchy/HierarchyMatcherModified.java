@@ -2,18 +2,18 @@ package am.app.mappingEngine.hierarchy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.LinkedOpenData.LODOntologies;
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.LinkedOpenData.LODOntologies;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
-import am.app.ontology.ontologyParser.TreeBuilder;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -389,7 +389,8 @@ public class HierarchyMatcherModified extends AbstractMatcher
 
 	private ArrayList<NounSynset> disambiguate(Node sourceNode, ArrayList<NounSynset> sourceSynsetList) {
 		//System.out.println("DISAMBIGUATE");
-		ArrayList<Node> descendants = sourceNode.getDescendants();
+		Set<Node> descendantsSet = sourceNode.getDescendants();
+		List<Node> descendants = new ArrayList<Node>(descendantsSet);
 		
 		ArrayList<NounSynset> synsetList;
 		ArrayList<ArrayList<NounSynset>> hypernymList;

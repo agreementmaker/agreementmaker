@@ -10,9 +10,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
@@ -592,13 +594,21 @@ public class Node implements Serializable, Comparable<Node>{
 	
 	//**********************Methods for managing the node as a DAG node see also TreeToDagConverter********************************************
 	//TO BE DONE isRoot, getSiblings, getParents, getAllDescendants, getAllAncestors, getSiblingsOfAParent(Node parent
+	/**
+	 * NOTE: This method computes the deepest level of a node.  This only makes a difference for concepts that have multiple parents.
+	 */
 	public int getLevel() {
 		int level = 0;
 		Node n = this;
 		boolean isRoot = ( n.getIndex() == -1 );
-		while( !isRoot ) {
-			level++;
-			isRoot = ( n.getIndex() == -1 );
+		if( !isRoot ) {
+			int deepestLevel = 0;
+			for( int i = 0; i < n.getParentCount(); i++ ) {
+				Node currentParent = n.getParents().get(i);
+				int currentLevel = currentParent.getLevel() + 1;
+				if( currentLevel > deepestLevel ) deepestLevel = currentLevel;
+			}
+			return deepestLevel;
 		}
 		
 		return level;
@@ -635,37 +645,63 @@ public class Node implements Serializable, Comparable<Node>{
 	 */
 	public static List<Node> getCommonDescendants( Node node1, Node node2 ) {
 		
-		List<Node> commonNodes = new ArrayList<Node>();
-		Enumeration<Node> e1 = new NodeEnumeration(node1, EnumerationType.DESCENDANTS);
-		Enumeration<Node> e2 = new NodeEnumeration(node2, EnumerationType.DESCENDANTS);
+		Set<Node> node1Descendants = node1.getDescendants();
+		Set<Node> node2Descendants = node2.getDescendants();
 		
-		while( e1.hasMoreElements() ) {
-			Node n1 = e1.nextElement();
-			while( e2.hasMoreElements() ) {
-				Node n2 = e2.nextElement();
-				if( n1.equals(n2) ) {
-					commonNodes.add(n1);
-				}
-			}
+		node1Descendants.add(node1);
+		node2Descendants.add(node2);
+		
+		// node1Descendants = node1Descendants INTERSECTION node2Descendants.
+		node1Descendants.retainAll(node2Descendants);
+		
+		return new ArrayList<Node>(node1Descendants);
+	}
+	
+	/** @return a list of common ancestors between two nodes. */
+	public static List<Node> getCommonAncestors( Node node1, Node node2 ) {
+		Set<Node> node1Ancestors = node1.getAncestors();
+		Set<Node> node2Ancestors = node2.getAncestors();
+		
+		node1Ancestors.add(node1);
+		node2Ancestors.add(node2);
+		
+		// node1Ancestors = node1Ancestors INTERSECTION node2Ancestors.
+		node1Ancestors.retainAll(node2Ancestors);
+		
+		return new ArrayList<Node>(node1Ancestors);
+	}
+	
+	/** Return a list of the descentants of this node.  Nodes are not duplicated. */
+	public Set<Node> getDescendants() {
+		Set<Node> descendants = new HashSet<Node>(); // using a hashset to avoid duplicates. 
+		
+		for( int i = 0; i < children.size(); i++ ) {
+			Node currentChild = children.get(i);
+			descendants.add(currentChild);
+			descendants.addAll(currentChild.getDescendants());
 		}
 		
-		return commonNodes;
+		return descendants;
 	}
-		
-	/** @return the ancestors of this node, not including the node itself. */
-	public List<Node> getAncestors() {
-		List<Node> ancestors = new ArrayList<Node>();
+	
+	/** @return the ancestors of this node, not including the node itself. Nodes are not duplicated. */
+	public Set<Node> getAncestors() {
+		Set<Node> ancestors = new HashSet<Node>();
 		
 		if( getIndex() == -1 ) return ancestors;
 		
 		for( int i = 0; i < parents.size(); i++ ) {
 			Node currentParent = parents.get(i);
-			ancestors.add( currentParent );
-			ancestors.addAll( currentParent.getAncestors() );
+			if( currentParent.getIndex() != -1 ) {
+				ancestors.add( currentParent );
+				ancestors.addAll( currentParent.getAncestors() );
+			}
 		}
 		
 		return ancestors;
 	}
+	
+	
 	
 /*	// TODO: This is a bug fix for getChildren().  Will replace the getChildren() with this one once it has been confirmed.
 	public static ArrayList<Node> getChildren(Node n) {
@@ -700,25 +736,6 @@ public class Node implements Serializable, Comparable<Node>{
 	}
 	public List<Node> getParents(){	return parents;	}
 	public int getParentCount() { if( parents == null ) return 0; return parents.size(); }
-
-	
-	/**
-	 * getDescendants(): creates a list of descendant nodes starting using dfs search
-	 * @author michele
-	 * @return list of all descendant nodes
-	 */
-	public ArrayList<Node> getDescendants(){
-		Node root = this, currentChild;
-		ArrayList<Node> dList = new ArrayList<Node>();
-		//System.out.println("root: " + root.getLocalName() + " " + root.getChildren().size());
-		for(int i = 0; i < root.getChildren().size(); i++){
-			currentChild = root.getChildren().get(i);
-			//System.out.println("root: " + root.getChildren().get(i).getLocalName());
-			dList.add(currentChild);
-			dList.addAll(currentChild.getDescendants());
-		}
-		return dList;
-	}
 	
 	/**
 	 * getRoot(): return the root node of the calling Node

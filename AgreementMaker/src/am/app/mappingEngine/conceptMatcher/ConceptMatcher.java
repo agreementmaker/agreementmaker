@@ -189,7 +189,7 @@ public class ConceptMatcher extends AbstractMatcher {
     {
     	ArrayList<String> ancestors = new ArrayList<String>();
 
-    	List<Node> ancestorList = n.getAncestors();
+    	List<Node> ancestorList = new ArrayList<Node>(n.getAncestors());
     	for( Node ancestor : ancestorList ) {
     		ancestors.add( ancestor.getLocalName() );
     	}
