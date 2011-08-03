@@ -239,34 +239,6 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 				if(sourceOrder != targetOrder) {
 					result[i][j] = 1;
 				}
-				/*
-				//DEBUG
-				if(first.getEntity1().getLocalName().equalsIgnoreCase("BOOK")) {
-					if(second.getEntity1().getLocalName().equalsIgnoreCase("PROCEEDINGS")) {
-						System.out.println("book proc: "+result[i][j]);
-					}
-				}
-				if(first.getEntity1().getLocalName().equalsIgnoreCase("PHDTHESIS")) {
-					if(second.getEntity1().getLocalName().equalsIgnoreCase("MASTERsTHESIS")) {
-						System.out.println("phd master: "+result[i][j]);
-					}
-				}
-				if(first.getEntity1().getLocalName().equalsIgnoreCase("HUMANCREATOR")) {
-					if(second.getEntity1().getLocalName().equalsIgnoreCase("HOWPUBLISHED")) {
-						System.out.println("hum how: "+result[i][j]);
-					}
-				}
-				//DEBUG
-				/*
-				if(first.getEntity1().getLocalName().equalsIgnoreCase("WEAPON")) {
-					if(second.getEntity1().getLocalName().equalsIgnoreCase("PROJECTILE-WEAPON")) {
-						System.out.println("*** "+i+" "+j);
-						System.out.println("sources: "+first.getEntity1().getLocalName()+" "+second.getEntity1().getLocalName()+" "+sourceDistance);
-						System.out.println("target: "+first.getEntity2().getLocalName()+" "+second.getEntity2().getLocalName()+" "+targetDistance);
-						System.out.println("discrepancy: "+result[i][j]);
-					}
-				}
-				*/
 				
 			}
 		}
@@ -366,12 +338,6 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 			targetDescendants = createDescendantsArray(targetList);
 		}
 		//create the array for target and source with the numver of descendants of each node
-		/* DEBUG
-		System.out.println("\nsoruce descendants");
-		for(int i = 0; i < sourceDescendants.length; i++) {
-			System.out.println(sourceList.get(i).getLocalName()+" "+sourceDescendants[i]);
-		}
-		*/
 		
 		
 		
@@ -413,32 +379,17 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 		double quality = totalDescrepancy;
 		if(params.getBit(PREF_USE_PRESERVATION))
 			quality = 1 - totalDescrepancy;
-		//System.out.println("discrepancy: "+totalDescrepancy);
-		//System.out.println("quality: "+quality);
-		//DEBUG
-		/*
-		try{
-		
-		int sourceIndex1 = Core.getInstance().getNode("Reference", true, true).getIndex();
-		int sourceIndex2 = Core.getInstance().getNode("MastersThesis", true, true).getIndex();
-		int targetIndex1 = Core.getInstance().getNode("PhdThesis", false, true).getIndex();
-		int targetIndex2 = Core.getInstance().getNode("MastersThesis", false, true).getIndex();
-		
-		System.out.println("source descendants: "+sourceDescendants[sourceIndex1]+" "+sourceDescendants[sourceIndex2]);
-		System.out.println("source descendants: "+targetDescendants[targetIndex1]+" "+targetDescendants[targetIndex2]);
-		System.out.println("sourcedistance "+sourceDistances[sourceIndex1][sourceIndex2]);
-		System.out.println("target distance "+targetDistances[targetIndex1][targetIndex2]);
-		System.out.println("linkDistanceDiscrepancies  "+ linkDistanceDiscrepancies[0][1]);
-		System.out.println("quality: "+quality+" discrepancy: "+totalDescrepancy+" sum: "+sum+" binom: "+binom+" size: "+size);
-		}
-		catch(Exception e){
-			System.out.println("exception");
-		}
-		*/
 	
 		return quality;
 	}
 	
+	/** This method is used in the getDetails() method of the Ontology class. */
+	public double getDiameter(ArrayList<Node> list, TreeToDagConverter dag) {
+		//the diameter is now forced to be always N - 1 where N = nodes + top + bottom if they are not already included.
+		return calculateTopBottomDiameter(list, dag);
+	}
+	
+	/** FIXME: This method needs to be checked for correctness. */
 	private double calculateTopBottomDiameter(List<Node> sourceList, TreeToDagConverter sourceTree) {
 		
 		double diameter = sourceList.size() - 1;
@@ -677,122 +628,6 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 		}
 		
 		return result;
-	}
-
-	
-	/*private HashSet<Node> recursiveAncestorsCount(Node n) {
-		
-		
-		n.getAncestors();
-		
-		HashSet<Node> ancestors = new HashSet<Node>();
-		List<Node> parents = n.getParents();
-		//if(n.getLocalName().equalsIgnoreCase("PersonList"))
-			//System.out.println(n.getLocalName()+" parents: "+parents.size());
-		if(parents.size() != 0){
-			Iterator<Node> it = parents.iterator();
-			Node parent;
-			HashSet<Node> parentAncestors;
-			Iterator<Node> parentAncIterator;
-			Node parentParent; 
-			while(it.hasNext()) {
-				//my number of ancestors: me + the ancestors of my parents
-				parent = it.next();
-				parentAncestors =	recursiveAncestorsCount(parent); //this is the set of ancestors of my parent and it also set the number of them
-				parentAncIterator = parentAncestors.iterator();
-				//i have to add to my set of ancestors all the ancestors of my parents, to do this i need an hashset to avoid
-				//adding the same ancestor of two different parents twice...the add function of the hashset adds the element only if it's not there already.
-				while(parentAncIterator.hasNext()){
-					parentParent = parentAncIterator.next();
-					ancestors.add(parentParent);
-				}
-			}
-		}
-		ancestors.add(n); //I'm one of my ancestors by definition
-		tempRecursiveNum[n.getIndex()] = ancestors.size();
-		return ancestors;
-	}*/
-
-	/*private HashSet<Node> recursiveDescendantsCount(Node n,  TreeToDagConverter tree) {
-		HashSet<Node> descendants = new HashSet<Node>();
-		List<Node> children = n.getChildren();
-		//if(n.getLocalName().equalsIgnoreCase("PersonList"))
-			//System.out.println(n.getLocalName()+" children: "+parents.size());
-		if(children.size() != 0){
-			Iterator<Node> it = children.iterator();
-			Node child;
-			HashSet<Node> childDescendants;
-			Iterator<Node> childDescIterator;
-			Node childChild; 
-			while(it.hasNext()) {
-				//my number of desc: me + the desc of my sons
-				child = it.next();
-				childDescendants =	recursiveDescendantsCount(child, tree); //this is the set of descendants of my sons and it also set the number of them
-				childDescIterator = childDescendants.iterator();
-				//i have to add to my set of ancestors all the ancestors of my parents, to do this i need an hashset to avoid
-				//adding the same ancestor of two different parents twice...the add function of the hashset adds the element only if it's not there already.
-				while(childDescIterator.hasNext()){
-					childChild = childDescIterator.next();
-					descendants.add(childChild);
-				}
-			}
-		}
-		descendants.add(n); //I'm one of my descendants by definition
-		tempRecursiveNum[n.getIndex()] = descendants.size();
-		return descendants;
-	}*/
-	
-	public double getDiameter(ArrayList<Node> list,
-			TreeToDagConverter dag) {
-		
-		
-		//the diameter is now forced to be always N - 1 where N = nodes + top + bottom if they are not already included.
-		return calculateTopBottomDiameter(list, dag);
-		
-		/*
-		//LOWER DISTANCE: an array num of descendants of each node. sourceDescendants[node.getIndex()] = num of  descendants of node
-		int[] descOrAncestors; 
-		//the normalized distance between each pair of nodes
-		double[][] distances;
-		
-		if(!useUpperDistance){
-			//create the array for target and source with the numver of descendants of each node
-			descOrAncestors = createDescendantsArray(list,dag );
-			/* DEBUG
-			System.out.println("\n descendants");
-			for(int i = 0; i < descOrAncestors.length; i++) {
-				System.out.println(list.get(i).getLocalName()+" "+descOrAncestors[i]);
-			}
-			//*/
-			//I need to calculate the distance between each pair of node
-			/*
-			distances = createLCDistances(list, descOrAncestors);
-		}
-		else{
-			//create the array for target and source with the number of ancestors of each node
-			descOrAncestors = createAncestorsArray(list,dag );
-			/* DEBUG
-			System.out.println("\n ancestors");
-			for(int i = 0; i < descOrAncestors.length; i++) {
-				System.out.println(list.get(i).getLocalName()+" "+descOrAncestors[i]);
-			}
-			*/
-			//I need to calculate which is the distance between each pair of node
-			/*
-			distances = createUCDistances(list, descOrAncestors);
-			/*
-			System.out.println("Distances in diameter function with useUpper = "+useUpperDistance);
-			for(int i = 0; i < distances.length; i++){
-				for(int j = 0; j < distances[i].length; j++){
-					System.out.println(list.get(i).getLocalName()+" "+list.get(j).getLocalName()+" "+distances[i][j]);
-				}	
-			}
-			*/
-		/*
-		}
-		
-		return Utility.getMaxOfMatrix(distances);
-		*/
 	}
 	
 }
