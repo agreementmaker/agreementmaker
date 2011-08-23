@@ -162,7 +162,7 @@ public abstract class SimilarityMatrix
 	public abstract Mapping[] getTopK(int k); // TODO: Should not be abstract.
 	public abstract Mapping[] getTopK(int k, boolean[][] filteredCells); // TODO: Should not be abstract.
 	
-	public abstract int countNonNullValues(); // TODO: What is this used for? Investigate.
+	//public abstract int countNonNullValues(); // TODO: What is this used for? Investigate.
 	
 	public abstract List<Mapping> toMappingArray();
 	public abstract List<Mapping> toMappingArray(FileWriter fw, int round);
