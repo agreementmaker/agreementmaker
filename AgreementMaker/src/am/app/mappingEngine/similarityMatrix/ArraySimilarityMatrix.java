@@ -590,7 +590,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 		
 		return topK;
 	}
-	
+	/*
 	@Override
 	public int countNonNullValues() {
 		int count = 0;
@@ -603,6 +603,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 		}
 		return count;
 	}
+	*/
 	@Override
 	public SimilarityMatrix toArraySimilarityMatrix() {
 		// TODO Auto-generated method stub
