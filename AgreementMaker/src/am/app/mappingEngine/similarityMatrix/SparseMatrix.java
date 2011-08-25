@@ -1,12 +1,17 @@
 package am.app.mappingEngine.similarityMatrix;
 
 import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
+import am.app.ontology.Ontology;
 
 
 // TODO: Keep track of matrix bounds.
@@ -14,6 +19,7 @@ import am.app.ontology.Node;
 public class SparseMatrix extends SimilarityMatrix
 {
 	private RowCell<Mapping> head;// LinkedList<LinkedList<RowCell>> rows;
+	private int rows;
 	
 	//private List matrixList;
 	
@@ -23,6 +29,40 @@ public class SparseMatrix extends SimilarityMatrix
 	{
 		//rows=new LinkedList<LinkedList<RowCell>>();
 		head=new RowCell<Mapping>(-1,-1,null);//create the head of the LL
+		rows=0;
+	}
+	public SparseMatrix(SparseMatrix cloneme){
+		this();
+		relation = cloneme.getRelation();
+    	typeOfMatrix = cloneme.getAlignType();
+    	
+    	sourceOntologyID = cloneme.getSourceOntologyID();
+    	targetOntologyID = cloneme.getTargetOntologyID();
+    	
+    	RowCell<Mapping> currentCol, currentRow;//these RowCells are the originals
+    	
+    	currentRow=cloneme.getHead().nextr;//get the first row
+    	
+    	while(currentRow!=null){
+    		//clone stuff here
+    		this.set(currentRow.row, currentRow.col, currentRow.ob);
+    		currentCol=currentRow.nextc;
+    		
+    		while(currentCol!=null){
+    			//clone stuff here
+    			this.set(currentCol.row, currentCol.col, currentCol.ob);
+    			currentCol=currentCol.nextc;
+    		}
+    		currentRow=currentRow.nextr;
+    	}
+	}
+	public SparseMatrix(Ontology s, Ontology t, alignType type) {
+		this();
+    	relation = MappingRelation.EQUIVALENCE;
+    	typeOfMatrix = type;
+    	
+    	sourceOntologyID=s.getID();
+    	targetOntologyID=t.getID();    	
 	}
 	@Override
 	public void set(int row, int column, Mapping obj)
@@ -51,6 +91,7 @@ public class SparseMatrix extends SimilarityMatrix
 					//currentCell.nextr=null;
 					
 					//notDone=false;
+					rows++;
 					break;
 				}
 				else if(row == currentCell.row)//if the rows are equal then we need to start looking at col to insert
@@ -102,6 +143,7 @@ public class SparseMatrix extends SimilarityMatrix
 					currentCell.nextr=newCell;
 					newCell.prevr=currentCell;
 					//notDone=false;
+					rows++;
 					break;
 				}
 				currentCell=currentCell.nextr;//grab the next row in case it needs to
@@ -141,11 +183,12 @@ public class SparseMatrix extends SimilarityMatrix
 		return null;
 	}
 	
-	
+	public RowCell<Mapping> getHead(){
+		return head;
+	}
 	
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
 		String print = new String();
 		
 		RowCell<Mapping> currentRow = head.nextr;
@@ -165,128 +208,239 @@ public class SparseMatrix extends SimilarityMatrix
 	}
 	@Override
 	public List<Mapping> chooseBestN() {
-		// TODO Auto-generated method stub
+		System.err.println("Not implemented");
 		return null;
 	}
 	@Override
 	public List<Mapping> chooseBestN(List<Integer> rowsIncludedList,
 			List<Integer> colsIncludedList, boolean considerThreshold,
 			double threshold) {
-		// TODO Auto-generated method stub
+		System.err.println("Not implemented");
 		return null;
 	}
 	@Override
 	public List<Mapping> chooseBestN(boolean considerThreshold, double threshold) {
-		// TODO Auto-generated method stub
+		System.err.println("Not implemented");
 		return null;
 	}
 	@Override
 	public List<Mapping> chooseBestN(List<Integer> rowsIncludedList,
 			List<Integer> colsIncludedList) {
-		// TODO Auto-generated method stub
+		System.err.println("Not implemented");
 		return null;
 	}
 	@Override
 	public SimilarityMatrix clone() {
-		// TODO Auto-generated method stub
-		return null;
+		return new SparseMatrix(this);
 	}
 	@Override
 	public void fillMatrix(double d, List<Node> sourceList,
 			List<Node> targetList) {
-		// TODO Auto-generated method stub
-		
+		// TODO not needed yet
+		System.err.println("Not implemented yet");
 	}
 	@Override
-	public alignType getAlignType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public alignType getAlignType() { return typeOfMatrix;}
 	@Override
 	public Mapping[] getColMaxValues(int col, int numMaxValues) {
-		// TODO Auto-generated method stub
+		// TODO this gets an array of mappings for a col and puts them in sorted order,  comparator maybe?
+		System.err.println("Not implemented yet");
 		return null;
 	}
 	@Override
 	public double getColSum(int col) {
-		// TODO Auto-generated method stub
-		return 0;
+		// returns a sum of similarities for a col
+		double sum=0;
+		RowCell<Mapping> currentRow;//these RowCells are the originals
+    	
+    	currentRow=head.nextr;//get the first row
+    	
+    	while(currentRow!=null){    		
+    		Mapping temp=get(currentRow.row,col);
+    		if(temp!=null)
+    			sum+=temp.getSimilarity();
+    		
+    		currentRow=currentRow.nextr;
+    	}
+		return sum;
 	}
 	@Override
 	public int getColumns() {
-		// TODO Auto-generated method stub
-		return 0;
+		//FIXME this method is not used in the sparse matrix because the columns can be different for each row
+		System.err.println("This method is not used because the column size differs for each row");
+		return -1;
 	}
 	@Override
 	public double[][] getCopiedSimilarityMatrix() {
-		// TODO Auto-generated method stub
+		// FIXME remove
+		System.err.println("Not implemented yet");
 		return null;
 	}
 	@Override
 	public double getMaxValue() {
-		// TODO Auto-generated method stub
-		return 0;
+		// returns the max similarity of the matrix
+		double max=0.0;
+		RowCell<Mapping> currentCol, currentRow;
+    	currentRow=head.nextr;//get the first row
+    	
+    	while(currentRow!=null){
+    		if(currentRow.ob.getSimilarity()>max)
+    			max=currentRow.ob.getSimilarity();
+ 
+    		currentCol=currentRow.nextc;
+    		while(currentCol!=null){
+    			if(currentCol.ob.getSimilarity()>max)
+        			max=currentCol.ob.getSimilarity();
+    			currentCol=currentCol.nextc;
+    		}
+    		currentRow=currentRow.nextr;
+    	}
+		return max;
 	}
 	@Override
 	public Mapping[] getRowMaxValues(int row, int numMaxValues) {
-		// TODO Auto-generated method stub
+		// FIXME implement this
+		System.err.println("Not implemented yet");
 		return null;
 	}
 	@Override
 	public double getRowSum(int row) {
-		// TODO Auto-generated method stub
-		return 0;
+		// gets the sum of the similarities for a row
+		double sum=0.0;
+		
+		RowCell<Mapping> currentCol, currentRow;
+		currentRow=head.nextr;//get the first row
+		while(currentRow!=null){
+			if(currentRow.row==row){
+				sum+=currentRow.ob.getSimilarity();
+	    		currentCol=currentRow.nextc;
+	    		while(currentCol!=null){
+	    			sum+=currentCol.ob.getSimilarity();
+	    			currentCol=currentCol.nextc;
+	    		}
+			}
+    		currentRow=currentRow.nextr;
+    	}
+		return sum;
 	}
 	@Override
 	public int getRows() {
-		// TODO Auto-generated method stub
-		return 0;
+		// returns the number of the rows in the matrix
+		return rows;
 	}
 	@Override
 	public double getSimilarity(int i, int j) {
-		// TODO Auto-generated method stub
-		return 0;
+		// returns the similarity of the specified row
+		Mapping temp=get(i,j);
+		if(temp==null)
+			return 0.00d;
+		return temp.getSimilarity();
 	}
 	@Override
 	public Mapping[] getTopK(int k) {
-		// TODO Auto-generated method stub
+		// FIXME implemnt
+		System.err.println("Not implemented yet");
 		return null;
 	}
 	@Override
 	public Mapping[] getTopK(int k, boolean[][] filteredCells) {
-		// TODO Auto-generated method stub
+		// FIXME implement
+		System.err.println("Not implemented yet");
 		return null;
 	}
 	@Override
 	public void initFromNodeList(List<Node> sourceList, List<Node> targetList) {
-		// TODO Auto-generated method stub
+		// FIXME remove
+		System.err.println("Not implemented yet");
 		
 	}
 	@Override
 	public void setSimilarity(int i, int j, double d) {
-		// TODO Auto-generated method stub
+		// sets the similarity of a specified entry in the matrix
+		Mapping temp=get(i,j);
+		if(temp!=null)
+			temp.setSimilarity(d);
 		
 	}
 	@Override
 	public SimilarityMatrix toArraySimilarityMatrix() {
-		// TODO Auto-generated method stub
+		//FIXME remove
+		System.err.println("Not implemented yet");
 		return null;
 	}
 	@Override
 	public List<Mapping> toMappingArray() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Mapping> mappings=new ArrayList<Mapping>();
+		RowCell<Mapping> currentCol, currentRow;
+		currentRow=head.nextr;//get the first row
+		while(currentRow!=null){
+			mappings.add(currentRow.ob);
+    		currentCol=currentRow.nextc;
+    		while(currentCol!=null){
+    			mappings.add(currentCol.ob);
+    			currentCol=currentCol.nextc;
+    		}
+    		currentRow=currentRow.nextr;
+    	}
+		return mappings;
 	}
 	@Override
 	public List<Mapping> toMappingArray(FileWriter fw, int round) {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Mapping> mappingArray = new ArrayList<Mapping>();
+		RowCell<Mapping> currentCol, currentRow;
+		currentRow=head.nextr;//get the first row
+		while(currentRow!=null){
+			mappingArray.add(currentRow.ob);
+			if(round == 1)
+			try {
+				fw.append(currentRow.ob.toString() + "\n");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    		currentCol=currentRow.nextc;
+    		while(currentCol!=null){
+    			mappingArray.add(currentCol.ob);
+    			if(round == 1)
+    			try {
+    				fw.append(currentCol.ob.toString() + "\n");
+    			} catch (IOException e) {
+    				e.printStackTrace();
+    			}
+    			currentCol=currentCol.nextc;
+    		}
+    		currentRow=currentRow.nextr;
+    	}
+		
+		
+		for(int i = 0; i < getRows(); i++){
+			for(int j = 0; j < getColumns(); j++){
+				if(this.get(i, j) != null){
+					
+				}
+			}
+		}
+		return mappingArray;
 	}
 	@Override
 	public List<Double> toSimilarityArray(List<Mapping> mapsArray) {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Double> similarities=new ArrayList<Double>();
+		for(int i=0;i<mapsArray.size();i++)
+			similarities.add(mapsArray.get(i).getSimilarity());
+		return similarities;
 	}
 
-
+	
+	
+	public class RowCell <E>
+	{
+		public int row, col;
+		public E ob;
+		public RowCell<E> nextr=null, nextc=null, prevr=null, prevc=null;
+		public RowCell(int r, int c, E o)
+		{
+			row=r;
+			col=c;
+			ob=o;
+		}
+	}
 }
