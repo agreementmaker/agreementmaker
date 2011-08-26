@@ -190,11 +190,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/**
 	 * Used by the updateProgress() method.
 	 */
-	private long starttime;
-	private long lastTime = 0;
-	private long lastStepsDone = 0;
-	private int tentativealignments = 0;  // incremental selection?
-	private long timeOfLastUpdate = 0;
+	protected long starttime;
+	protected long lastTime = 0;
+	protected long lastStepsDone = 0;
+	protected int tentativealignments = 0;  // incremental selection?
+	protected long timeOfLastUpdate = 0;
 
 	
 	/**
