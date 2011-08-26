@@ -243,9 +243,38 @@ public class SparseMatrix extends SimilarityMatrix
 	public alignType getAlignType() { return typeOfMatrix;}
 	@Override
 	public Mapping[] getColMaxValues(int col, int numMaxValues) {
-		// TODO this gets an array of mappings for a col and puts them in sorted order,  comparator maybe?
-		System.err.println("Not implemented yet");
-		return null;
+		//i do not check for maxAlignements < numMaxValues
+		Mapping[] maxAlignments= new Mapping[numMaxValues];
+		
+		for(int h = 0; h<maxAlignments.length;h++) {
+			maxAlignments[h] = new Mapping(-1); //intial max alignments have sim equals to -1, don't put 0 could create problem in the next for
+		}
+		
+		Mapping currentValue;
+		Mapping currentMax;
+		
+		RowCell<Mapping> currentRow=head.nextr;
+		
+		while(currentRow!=null){
+			RowCell<Mapping> currentCol=currentRow;
+			while(currentCol!=null){
+				if(currentCol.col==col){
+					currentValue= currentCol.ob;
+					for(int k = 0;k<maxAlignments.length; k++) {
+						currentMax = maxAlignments[k];
+						if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value
+							maxAlignments[k] = currentValue;
+							currentValue = currentMax;
+						}
+					}
+					break;
+				}
+				currentCol=currentCol.nextc;
+			}
+			currentRow=currentRow.nextr;
+		}
+		
+		return maxAlignments;
 	}
 	@Override
 	public double getColSum(int col) {
@@ -299,9 +328,38 @@ public class SparseMatrix extends SimilarityMatrix
 	}
 	@Override
 	public Mapping[] getRowMaxValues(int row, int numMaxValues) {
-		// FIXME implement this
-		System.err.println("Not implemented yet");
-		return null;
+		//i do not check for maxAlignements < numMaxValues
+		Mapping[] maxAlignments= new Mapping[numMaxValues];
+		
+		for(int h = 0; h<maxAlignments.length;h++) {
+			maxAlignments[h] = new Mapping(-1); //intial max alignments have sim equals to -1, don't put 0 could create problem in the next for
+		}
+		
+		Mapping currentValue;
+		Mapping currentMax;
+		
+		RowCell<Mapping> currentRow=head.nextr;
+		
+		while(currentRow!=null){
+			if(currentRow.row==row){
+				RowCell<Mapping> currentCol=currentRow;
+				while(currentCol!=null){
+					currentValue= currentCol.ob;
+					for(int k = 0;k<maxAlignments.length; k++) {
+						currentMax = maxAlignments[k];
+						if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value
+							maxAlignments[k] = currentValue;
+							currentValue = currentMax;
+						}
+					}
+					currentCol=currentCol.nextc;
+				}
+				break;
+			}
+			currentRow=currentRow.nextr;
+		}
+		
+		return maxAlignments;
 	}
 	@Override
 	public double getRowSum(int row) {
