@@ -72,7 +72,7 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	 * *******************************************************************************************************
 	 */
 	
-	
+	@Override
 	public void beforeAlignOperations()  throws Exception{
 		super.beforeAlignOperations();
 		ParametricStringParameters parameters =(ParametricStringParameters)param;
@@ -97,7 +97,8 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	 ************************ Algorithm functions beyond this point*************************************
 	 * *******************************************************************************************************
 	 */
-
+	
+	@Override
 	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
 		
 		ParametricStringParameters parameters  = (ParametricStringParameters)param;
