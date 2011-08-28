@@ -1,24 +1,29 @@
 package am.app.mappingEngine.LexicalSynonymMatcher;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import am.app.Core;
-import am.app.lexicon.GeneralLexiconSynSet;
 import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconSynSet;
 import am.app.lexicon.subconcept.SubconceptSynonymLexicon;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.MappedNodes;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
+import am.app.ontology.Ontology;
 
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.Property;
 
 public class LexicalSynonymMatcher extends AbstractMatcher {
 
@@ -27,25 +32,16 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	private transient Lexicon sourceLexicon;
 	private transient Lexicon targetLexicon;
 	
-	private transient Property sourceSynonymProperty, targetSynonymProperty;
-	private transient Property sourceLabelProperty, targetLabelProperty;
-	private transient Property sourceDefinitionProperty, targetDefinitionProperty;
-
+	// The hashmap and the list of string are used to optimize the LSM when running with SCS enabled.
+	private HashMap<LexiconSynSet,List<String>> extendedSynSets;
+	private List<String> extendedSingle;
+	private boolean sourceIsLarger = false;  // TODO: Figure out a better way to do this.
 	
-	private transient HashMap<Node, GeneralLexiconSynSet> sourceSynsetLookup = new HashMap<Node, GeneralLexiconSynSet>();
-	private transient HashMap<Node, GeneralLexiconSynSet> targetSynsetLookup = new HashMap<Node, GeneralLexiconSynSet>();
+	// Default constructor.
+	public LexicalSynonymMatcher() { super(); initializeVariables(); }
 	
-	public LexicalSynonymMatcher() {
-		super();
-		needsParam = true;
-		initializeVariables();
-	}
-	
-	public LexicalSynonymMatcher(LexicalSynonymMatcherParameters params) {
-		super(params);
-		needsParam = true;
-		initializeVariables();
-	}
+	// Constructor that sets the parameters.
+	public LexicalSynonymMatcher(LexicalSynonymMatcherParameters params) { super(params); 	initializeVariables(); }
 	
 	@Override
 	protected void initializeVariables() {
@@ -56,20 +52,16 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 	}
 	
-	@Override
+	@Override 
 	public AbstractMatcherParametersPanel getParametersPanel() {
-		if( parametersPanel == null ) {
-			parametersPanel = new LexicalSynonymMatcherParametersPanel();
-		}
+		if( parametersPanel == null ) { parametersPanel = new LexicalSynonymMatcherParametersPanel(); }
 		return parametersPanel;
 	}
 	
-/**
- * PRE PROCESSING STEP
- * 
- * 1) Build the Ontology Lexicons.
- */
 	
+	/**
+	 * Before aligning, get a copy of the current ontology lexicons.
+	 */
 	@Override
 	protected void beforeAlignOperations() throws Exception {
 		super.beforeAlignOperations();
@@ -79,13 +71,168 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		//Lexicon sourceWordNetLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
 		//Lexicon targetWordNetLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
 		
-		//sourceLexicon.print( System.out );
-		//targetLexicon.print( System.out );
-		
-		//if( !Utility.displayConfirmPane("waiting for continue", "continue?") ) cancel(true);
-		
 	}	
 	
+	/**
+	 * Method updated with SCS optimizations. - Cosmin.
+	 */
+	@Override
+	protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList,
+			ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
+
+		if(param.completionMode && inputMatchers != null && inputMatchers.size() > 0){ 
+    		//run in optimized mode by mapping only concepts that have not been mapped in the input matcher
+    		if(typeOfNodes.equals(alignType.aligningClasses)){
+    			return alignUnmappedNodes(sourceList, targetList, inputMatchers.get(0).getClassesMatrix(), inputMatchers.get(0).getClassAlignmentSet(), alignType.aligningClasses);
+    		}
+    		else{
+    			return alignUnmappedNodes(sourceList, targetList, inputMatchers.get(0).getPropertiesMatrix(), inputMatchers.get(0).getPropertyAlignmentSet(), alignType.aligningProperties);
+    		}
+		}
+    	
+    	else{
+    		//run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
+	    	SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
+			
+			// SCS optimizations (only for classes at the moment)
+			if( ((LexicalSynonymMatcherParameters)getParam()).useSubconceptSynonyms && typeOfNodes == alignType.aligningClasses ) {
+				// choose the smaller ontology.
+				List<Node> smallerList = null, largerList = null;
+				SubconceptSynonymLexicon smallerLexicon = null, largerLexicon = null;
+				
+				if( sourceOntology.getClassesList().size() > targetOntology.getClassesList().size() ) {
+					smallerList = targetList;
+					smallerLexicon = (SubconceptSynonymLexicon) targetLexicon;
+					largerList = sourceList;
+					largerLexicon = (SubconceptSynonymLexicon) sourceLexicon;
+					sourceIsLarger = true;
+				} else {
+					smallerList = sourceList;
+					smallerLexicon = (SubconceptSynonymLexicon) sourceLexicon;
+					largerList = targetList;
+					largerLexicon = (SubconceptSynonymLexicon) targetLexicon;
+					sourceIsLarger = false;
+				}
+				
+				// create the hashmap of the smaller ontology
+				extendedSynSets = new HashMap<LexiconSynSet,List<String>>();
+				
+				for( Node currentClass : smallerList ) {
+					OntResource currentOR = currentClass.getResource().as(OntResource.class);
+					LexiconSynSet currentSet = smallerLexicon.getSynSet(currentOR);
+					if( currentSet == null ) continue;
+					List<String> currentExtension = smallerLexicon.extendSynSet(currentSet);
+					extendedSynSets.put(currentSet, currentExtension);
+				}
+				
+				
+				// iterate through the larger ontology
+				for( int i = 0; i < largerList.size(); i++ ) {
+					Node larger = largerList.get(i);
+					
+					OntResource largerOR = larger.getResource().as(OntResource.class);
+					LexiconSynSet largerSynSet = largerLexicon.getSynSet(largerOR);
+					if( largerSynSet != null ) 
+						extendedSingle = largerLexicon.extendSynSet( largerSynSet );
+					else 
+						extendedSingle = null;
+					
+					for( int j = 0; j < smallerList.size(); j++ ) {
+						Node smaller = smallerList.get(j);
+						
+						if( !this.isCancelled() ) {
+							Mapping alignment = null;
+							if( sourceIsLarger ) {
+								alignment = alignTwoNodes(larger, smaller, typeOfNodes);
+								matrix.set(i,j,alignment);
+							}
+							else {
+								alignment = alignTwoNodes(smaller, larger, typeOfNodes);
+								matrix.set(j,i,alignment);
+							}
+							
+							if( isProgressDisplayed() ) {
+								stepDone(); // we have completed one step
+								if( alignment != null && alignment.getSimilarity() >= param.threshold ) tentativealignments++; // keep track of possible alignments for progress display
+							}
+						}
+					}
+					if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
+				}
+			}
+			else { // normal algorithm no SCS optimizations				
+				for(int i = 0; i < sourceList.size(); i++) {
+					Node source = sourceList.get(i);
+					
+					for(int j = 0; j < targetList.size(); j++) {
+						Node target = targetList.get(j);
+						
+						if( !this.isCancelled() ) { 
+							Mapping alignment = alignTwoNodes(source, target, typeOfNodes);
+						
+							matrix.set(i,j,alignment);
+							if( isProgressDisplayed() ) {
+								stepDone(); // we have completed one step
+								if( alignment != null && alignment.getSimilarity() >= param.threshold ) tentativealignments++; // keep track of possible alignments for progress display
+							}
+						}
+						else { 
+							return matrix; 
+						}
+						
+					}
+					if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
+				}
+			}
+		
+
+			return matrix;
+    	}
+		
+	}
+	
+	
+	/**
+	 * TODO: Update method to deal with SCS optimizations. - Cosmin.
+	 */
+/*	@Override
+	protected SimilarityMatrix alignUnmappedNodes(ArrayList<Node> sourceList,
+			ArrayList<Node> targetList, SimilarityMatrix inputMatrix,
+			Alignment<Mapping> inputAlignmentSet, alignType typeOfNodes)
+			throws Exception {
+
+		MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, param.maxSourceAlign, param.maxTargetAlign);
+    	SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
+		Node source;
+		Node target;
+		Mapping alignment; 
+		Mapping inputAlignment;
+		for(int i = 0; i < sourceList.size(); i++) {
+			source = sourceList.get(i);
+			for(int j = 0; j < targetList.size(); j++) {
+				target = targetList.get(j);
+				
+				if( !this.isCancelled() ) {
+					//if both nodes have not been mapped yet enough times
+					//we map them regularly
+					if(!mappedNodes.isSourceMapped(source) && !mappedNodes.isTargetMapped(target)){
+						alignment = alignTwoNodes(source, target, typeOfNodes); 
+					}
+					//else we take the alignment that was computed from the previous matcher
+					else{
+						inputAlignment = inputMatrix.get(i, j);
+						alignment = new Mapping(inputAlignment.getEntity1(), inputAlignment.getEntity2(), inputAlignment.getSimilarity(), inputAlignment.getRelation());
+					}
+					matrix.set(i,j,alignment);
+					if( isProgressDisplayed() ) stepDone(); // we have completed one step
+				}
+				else { return matrix; }
+			}
+			if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
+		}
+		return matrix;
+
+	}*/
 /**
  * MATCHING WITH SYNONYMS
  */
@@ -126,12 +273,16 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		// no matches found. Try to extend the synsets.
 		if( ((LexicalSynonymMatcherParameters)getParam()).useSubconceptSynonyms ) {
 			
-			SubconceptSynonymLexicon sourceSCSLexicon = (SubconceptSynonymLexicon) sourceLexicon;
-			SubconceptSynonymLexicon targetSCSLexicon = (SubconceptSynonymLexicon) targetLexicon;
 			
+			List<String> sourceExtendedSynonyms, targetExtendedSynonyms;
 			
-			List<String> sourceExtendedSynonyms = sourceSCSLexicon.extendSynSet(sourceSet);
-			List<String> targetExtendedSynonyms = targetSCSLexicon.extendSynSet(targetSet);
+			if( sourceIsLarger ) {
+				sourceExtendedSynonyms = extendedSingle;
+				targetExtendedSynonyms = extendedSynSets.get(targetSet);
+			} else {
+				sourceExtendedSynonyms = extendedSynSets.get(sourceSet);
+				targetExtendedSynonyms = extendedSingle;
+			}
 			
 			if( sourceExtendedSynonyms.isEmpty() && targetExtendedSynonyms.isEmpty() ) {
 				// no extra synonyms.
