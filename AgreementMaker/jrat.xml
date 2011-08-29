@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jrat>
+    <settings>
+        <property name="httpServerEnabled" value="true"/>
+    </settings>
+
+    <profile name="AgreementMaker">
+
+        <criteria>
+            <include className="am.app.mappingEngine.LexicalSynonymMatcher" methodName="*" signature="*" />
+			<include className="LexicalSynonymMatcher" methodName="*" signature="*" />
+        </criteria>
+
+        <handlers>
+
+            <handler factory="org.shiftone.jrat.provider.tree.TreeMethodHandlerFactory">
+                <property name="outputFile" value="LSM.jrat"/>
+            </handler>
+
+        </handlers>
+
+    </profile>
+</jrat> 
