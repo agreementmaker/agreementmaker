@@ -1349,12 +1349,12 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			long elapsedSteps = stepsDone - lastStepsDone;
 			long totalelapsed = currentTime - starttime; // elapsed time since the start of the algorithm
 			
-			long estimatedDuration = elapsedTime * ( stepsTotal / elapsedSteps );
-			long estimatedtimeleft = ((stepsTotal - stepsDone) * totalelapsed) / stepsDone;   
+			long estimatedDuration = elapsedSteps == 0 ? 0 : elapsedTime * ( stepsTotal / elapsedSteps );
+			long estimatedtimeleft = stepsDone == 0 ? 0 : ((stepsTotal - stepsDone) * totalelapsed) / stepsDone;   
 			
 			String formattedTime = Utility.getFormattedTime(estimatedDuration);
 			
-			float percent = ((float)stepsDone / (float)stepsTotal);
+			float percent = stepsTotal == 0 ? 0f : ((float)stepsDone / (float)stepsTotal);
 			
 			progressDisplay.clearReport();
 			progressDisplay.appendToReport( "Percentage done: " + Float.toString(percent* 100.0f)+ "%\n" +
