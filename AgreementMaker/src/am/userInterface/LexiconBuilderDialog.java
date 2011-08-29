@@ -61,7 +61,9 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 	private JButton btnCancel;
 
 	private JCheckBox sourceUseLocalnames, targetUseLocalnames;
-	private JCheckBox sourceUseSCSLexicon, targetUseSCSLexicon;
+	private JCheckBox sourceUseSTLexicon, targetUseSTLexicon;
+
+	private static final String PREF_USE_STLEXICON = "PREF_SOURCE_USESTLEXICON";
 	
 	public LexiconBuilderDialog() throws Exception {
 		super(Core.getUI().getUIFrame(), "Lexicon Builder Settings", true);
@@ -241,13 +243,13 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 		
 		JCheckBox chkUseSCSLexicon;
 		if( ont == Core.getInstance().getSourceOntology() ) {
-			sourceUseSCSLexicon = new JCheckBox("Compute subconcept synonyms.");
-			chkUseSCSLexicon = sourceUseSCSLexicon;
-			chkUseSCSLexicon.setSelected(prefs.getBoolean("PREF_SOURCE_USESCSLEXICON", false));
+			sourceUseSTLexicon = new JCheckBox("Compute synonym terms.");
+			chkUseSCSLexicon = sourceUseSTLexicon;
+			chkUseSCSLexicon.setSelected(prefs.getBoolean(PREF_USE_STLEXICON, false));
 		} else {
-			targetUseSCSLexicon = new JCheckBox("Compute subconcept synonyms.");
-			chkUseSCSLexicon = targetUseSCSLexicon;
-			chkUseSCSLexicon.setSelected(prefs.getBoolean("PREF_TARGET_USESCSLEXICON", false));
+			targetUseSTLexicon = new JCheckBox("Compute synonym terms.");
+			chkUseSCSLexicon = targetUseSTLexicon;
+			chkUseSCSLexicon.setSelected(prefs.getBoolean(PREF_USE_STLEXICON, false));
 		}
 		
 		chkUseSCSLexicon.addActionListener(this);
@@ -380,8 +382,8 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 			params.sourceUseLocalname = sourceUseLocalnames.isSelected();
 			params.targetUseLocalname = targetUseLocalnames.isSelected();
 			
-			params.sourceUseSCSLexicon = sourceUseSCSLexicon.isSelected();
-			params.targetUseSCSLexicon = targetUseSCSLexicon.isSelected();
+			params.sourceUseSCSLexicon = sourceUseSTLexicon.isSelected();
+			params.targetUseSCSLexicon = targetUseSTLexicon.isSelected();
 			
 			params.sourceSynonyms = new ArrayList<Property>();
 			for( int i = 0; i < sourceProperties.size(); i++ ) {
@@ -457,18 +459,18 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 			}
 		}
 		
-		if( e.getSource() == sourceUseSCSLexicon ) {
+		if( e.getSource() == sourceUseSTLexicon ) {
 			Preferences prefs = Preferences.userNodeForPackage(this.getClass());
-			if( sourceUseSCSLexicon.isSelected() ) {
+			if( sourceUseSTLexicon.isSelected() ) {
 				prefs.putBoolean("PREF_SOURCE_USESCSLEXICON", true);
 			} else {
 				prefs.remove("PREF_SOURCE_USESCSLEXICON");
 			}
 		}
 		
-		if( e.getSource() == targetUseSCSLexicon ) {
+		if( e.getSource() == targetUseSTLexicon ) {
 			Preferences prefs = Preferences.userNodeForPackage(this.getClass());
-			if( targetUseSCSLexicon.isSelected() ) {
+			if( targetUseSTLexicon.isSelected() ) {
 				prefs.putBoolean("PREF_TARGET_USESCSLEXICON", true);
 			} else {
 				prefs.remove("PREF_TARGET_USESCSLEXICON");
