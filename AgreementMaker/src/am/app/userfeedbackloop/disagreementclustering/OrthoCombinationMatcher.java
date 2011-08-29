@@ -191,7 +191,7 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		m_vmm.setOntologies(sourceOntology, targetOntology);
 		m_vmm.setProgressDisplay(progressDisplay);
 		
-		param_lsm.useSubconceptSynonyms = false;
+		param_lsm.useSynonymTerms = false;
 		m_lsm = new LexicalSynonymMatcher( param_lsm );
 		m_lsm.setOntologies(sourceOntology, targetOntology);
 		m_lsm.setProgressDisplay(progressDisplay);
