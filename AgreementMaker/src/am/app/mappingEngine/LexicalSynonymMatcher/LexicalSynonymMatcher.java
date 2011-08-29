@@ -33,9 +33,12 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	private transient Lexicon targetLexicon;
 	
 	// The hashmap and the list of string are used to optimize the LSM when running with SCS enabled.
-	private HashMap<LexiconSynSet,List<String>> extendedSynSets;
+	private HashMap<Node,List<String>> extendedSynSets;
 	private List<String> extendedSingle;
 	private boolean sourceIsLarger = false;  // TODO: Figure out a better way to do this.
+	
+	// use this to save time.
+	LexiconSynSet sourceSet;  // using this field variable gives a 3% speed boost to LSM without SCS.
 	
 	// Default constructor.
 	public LexicalSynonymMatcher() { super(); initializeVariables(); }
@@ -100,7 +103,7 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 				List<Node> smallerList = null, largerList = null;
 				SubconceptSynonymLexicon smallerLexicon = null, largerLexicon = null;
 				
-				if( sourceOntology.getClassesList().size() > targetOntology.getClassesList().size() ) {
+				if( sourceList.size() > targetList.size() ) {
 					smallerList = targetList;
 					smallerLexicon = (SubconceptSynonymLexicon) targetLexicon;
 					largerList = sourceList;
@@ -115,14 +118,15 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 				}
 				
 				// create the hashmap of the smaller ontology
-				extendedSynSets = new HashMap<LexiconSynSet,List<String>>();
+				extendedSynSets = new HashMap<Node,List<String>>();
 				
 				for( Node currentClass : smallerList ) {
 					OntResource currentOR = currentClass.getResource().as(OntResource.class);
 					LexiconSynSet currentSet = smallerLexicon.getSynSet(currentOR);
 					if( currentSet == null ) continue;
 					List<String> currentExtension = smallerLexicon.extendSynSet(currentSet);
-					extendedSynSets.put(currentSet, currentExtension);
+					currentExtension.addAll(currentSet.getSynonyms());
+					extendedSynSets.put(currentClass, currentExtension);
 				}
 				
 				
@@ -132,10 +136,14 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 					
 					OntResource largerOR = larger.getResource().as(OntResource.class);
 					LexiconSynSet largerSynSet = largerLexicon.getSynSet(largerOR);
-					if( largerSynSet != null ) 
+					if( largerSynSet != null ) { 
 						extendedSingle = largerLexicon.extendSynSet( largerSynSet );
+						extendedSingle.addAll(largerSynSet.getSynonyms());
+					}
 					else 
 						extendedSingle = null;
+					
+					if( sourceIsLarger ) { sourceSet = largerSynSet; }
 					
 					for( int j = 0; j < smallerList.size(); j++ ) {
 						Node smaller = smallerList.get(j);
@@ -147,6 +155,10 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 								matrix.set(i,j,alignment);
 							}
 							else {
+								// source set needs to be set
+								OntResource smallerOR = smaller.getResource().as(OntResource.class);
+								sourceSet = smallerLexicon.getSynSet(smallerOR);
+								
 								alignment = alignTwoNodes(smaller, larger, typeOfNodes);
 								matrix.set(j,i,alignment);
 							}
@@ -157,12 +169,15 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 							}
 						}
 					}
-					if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
+					if( isProgressDisplayed() ) { updateProgress(); }
+					System.out.println(System.currentTimeMillis());
 				}
 			}
 			else { // normal algorithm no SCS optimizations				
 				for(int i = 0; i < sourceList.size(); i++) {
 					Node source = sourceList.get(i);
+					OntResource sourceOR = source.getResource().as(OntResource.class);
+					sourceSet = sourceLexicon.getSynSet(sourceOR);
 					
 					for(int j = 0; j < targetList.size(); j++) {
 						Node target = targetList.get(j);
@@ -241,17 +256,12 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	protected Mapping alignTwoNodes(Node source, Node target,
 			alignType typeOfNodes) throws Exception {
 
-
 		
-		OntResource sourceOR = source.getResource().as(OntResource.class);
+		
 		OntResource targetOR = target.getResource().as(OntResource.class);
-		
-		LexiconSynSet sourceSet = sourceLexicon.getSynSet(sourceOR);
 		LexiconSynSet targetSet = targetLexicon.getSynSet(targetOR);
 		
 		if( sourceSet == null || targetSet == null ) return null; // one or both of the concepts do not have a synset.
-		
-		
 		
 		ProvenanceStructure provNoTermSyn = synonymSimilarity( sourceSet, targetSet );
 		
@@ -265,32 +275,22 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 			}
 		}
 		
-		/*boolean tempDisabled = true;
-		if( source.getLocalName().equals("MA_0002684") && target.getLocalName().equals("NCI_C32658") ) {
-			tempDisabled = false;
-		}*/
-		
-		// no matches found. Try to extend the synsets.
-		if( ((LexicalSynonymMatcherParameters)getParam()).useSubconceptSynonyms ) {
-			
+		if( ((LexicalSynonymMatcherParameters)param).useSubconceptSynonyms ) { // using subconcept synonyms	
 			
 			List<String> sourceExtendedSynonyms, targetExtendedSynonyms;
 			
 			if( sourceIsLarger ) {
 				sourceExtendedSynonyms = extendedSingle;
-				targetExtendedSynonyms = extendedSynSets.get(targetSet);
+				targetExtendedSynonyms = extendedSynSets.get(target);
 			} else {
-				sourceExtendedSynonyms = extendedSynSets.get(sourceSet);
+				sourceExtendedSynonyms = extendedSynSets.get(source);
 				targetExtendedSynonyms = extendedSingle;
 			}
 			
-			if( sourceExtendedSynonyms.isEmpty() && targetExtendedSynonyms.isEmpty() ) {
+			if( sourceExtendedSynonyms == null || targetExtendedSynonyms == null || sourceExtendedSynonyms.isEmpty() || targetExtendedSynonyms.isEmpty() ) {
 				// no extra synonyms.
 				return null;
 			}
-			
-			sourceExtendedSynonyms.addAll( sourceSet.getSynonyms() );
-			targetExtendedSynonyms.addAll( targetSet.getSynonyms() );
 			
 			ProvenanceStructure prov = computeLexicalSimilarity(sourceExtendedSynonyms, targetExtendedSynonyms, 0.9d);
 			
