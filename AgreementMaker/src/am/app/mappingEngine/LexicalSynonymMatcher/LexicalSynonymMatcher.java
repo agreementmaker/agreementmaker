@@ -77,7 +77,7 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	}	
 	
 	/**
-	 * Method updated with SCS optimizations. - Cosmin.
+	 * Method updated with ST optimizations. - Cosmin.
 	 */
 	@Override
 	protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList,
@@ -98,7 +98,7 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	    	SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 			
 			// SCS optimizations (only for classes at the moment)
-			if( ((LexicalSynonymMatcherParameters)getParam()).useSubconceptSynonyms && typeOfNodes == alignType.aligningClasses ) {
+			if( ((LexicalSynonymMatcherParameters)getParam()).useSynonymTerms && typeOfNodes == alignType.aligningClasses ) {
 				// choose the smaller ontology.
 				List<Node> smallerList = null, largerList = null;
 				SubconceptSynonymLexicon smallerLexicon = null, largerLexicon = null;
@@ -275,7 +275,7 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 			}
 		}
 		
-		if( ((LexicalSynonymMatcherParameters)param).useSubconceptSynonyms ) { // using subconcept synonyms	
+		if( ((LexicalSynonymMatcherParameters)param).useSynonymTerms ) { // using subconcept synonyms	
 			
 			List<String> sourceExtendedSynonyms, targetExtendedSynonyms;
 			
