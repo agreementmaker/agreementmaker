@@ -18,13 +18,14 @@ public class LexicalSynonymMatcherParametersPanel extends AbstractMatcherParamet
 	private static final long serialVersionUID = 772347863431325953L;
 
 	private JCheckBox chkUseSubconceptSynonyms;
+	private static final String PREF_USE_SYNONYM_TERMS = "PREF_USE_SYNONYM_TERMS";
 	
 	public LexicalSynonymMatcherParametersPanel() {
 		super();
 		
 		Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 		
-		chkUseSubconceptSynonyms = new JCheckBox("Use subconcept synonyms.");
+		chkUseSubconceptSynonyms = new JCheckBox("Use synonym terms.");
 		chkUseSubconceptSynonyms.setEnabled(false);
 		
 		Ontology sourceOntology = Core.getInstance().getSourceOntology();
@@ -38,7 +39,7 @@ public class LexicalSynonymMatcherParametersPanel extends AbstractMatcherParamet
 				targetOntLexicon instanceof SubconceptSynonymLexicon ){
 				
 				chkUseSubconceptSynonyms.setEnabled(true);
-				chkUseSubconceptSynonyms.setSelected( prefs.getBoolean("PREF_USE_SUBCONCEPT_SYNONYMS", false) );
+				chkUseSubconceptSynonyms.setSelected( prefs.getBoolean(PREF_USE_SYNONYM_TERMS, false) );
 			}
 		} catch (Exception e) {
 			//e.printStackTrace();
@@ -64,7 +65,10 @@ public class LexicalSynonymMatcherParametersPanel extends AbstractMatcherParamet
 		
 		LexicalSynonymMatcherParameters params = new LexicalSynonymMatcherParameters();
 		
-		params.useSubconceptSynonyms = chkUseSubconceptSynonyms.isSelected();
+		params.useSynonymTerms = chkUseSubconceptSynonyms.isSelected();
+		
+		Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+		prefs.putBoolean(PREF_USE_SYNONYM_TERMS, params.useSynonymTerms);
 		
 		return params;
 	}
