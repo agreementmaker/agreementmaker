@@ -4,7 +4,8 @@ import am.app.mappingEngine.AbstractParameters;
 
 public class LexicalSynonymMatcherParameters extends AbstractParameters {
 
-	public boolean useSubconceptSynonyms = false;
+	/** Synonym Terms are a feature of the Lexicon implementation. */
+	public boolean useSynonymTerms = false;
 	
 	public LexicalSynonymMatcherParameters() {
 		super();
