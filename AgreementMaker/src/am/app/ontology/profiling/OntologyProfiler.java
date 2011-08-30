@@ -51,4 +51,7 @@ public interface OntologyProfiler {
 	
 	public void setName( ProfilerRegistry name ); // used by the ontology profiler factory
 	public ProfilerRegistry getName();
+	
+	/** @return The configuration of the matchers computed by the ontology profiling algorithm. */
+	public MatcherStack getMatcherStack();
 }

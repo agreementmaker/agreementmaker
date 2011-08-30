@@ -7,6 +7,7 @@ import java.util.Map;
 
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.app.ontology.profiling.MatcherStack;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.app.ontology.profiling.OntologyProfilerPanel;
 import am.app.ontology.profiling.OntologyProfilerParameters;
@@ -302,6 +303,12 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 		}
 		
 		return l.iterator();
+	}
+
+
+	@Override
+	public MatcherStack getMatcherStack() {
+		return null;
 	}
 
 	

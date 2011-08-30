@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.app.ontology.profiling.MatcherStack;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.app.ontology.profiling.OntologyProfilerPanel;
 import am.app.ontology.profiling.OntologyProfilerParameters;
@@ -63,5 +64,11 @@ public class MetricsOntologyProfiler implements OntologyProfiler{
 	@Override
 	public void setName(ProfilerRegistry name) {
 		this.name = name;
+	}
+
+	@Override
+	public MatcherStack getMatcherStack() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

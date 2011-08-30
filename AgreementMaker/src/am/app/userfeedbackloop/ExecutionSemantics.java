@@ -12,6 +12,13 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.userfeedbackloop.ui.UFLControlGUI;
 
+/**
+ * This class instantiates automatically instantiates a matcher configuration using
+ * the ontology profiling methods.
+ *  
+ * @author cosmin
+ *
+ */
 public abstract class ExecutionSemantics {
 
 	EventListenerList listeners;  // list of listeners for this class
