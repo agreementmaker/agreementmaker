@@ -8,6 +8,7 @@ import java.util.Set;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
+import am.app.ontology.Ontology;
 import am.utility.RunTimer;
 
 import com.hp.hpl.jena.ontology.ConversionException;
@@ -672,6 +673,18 @@ public class OntoTreeBuilder extends TreeBuilder{
      */
     public void setURI( String URI ) {
     	ontURI = URI;
+    }
+    
+    /** Loads an OWL ontology in RDF/XML syntax. */
+    public static Ontology loadOWLOntology( String ontURI ) {
+    	OntoTreeBuilder ontoBuilder = new OntoTreeBuilder(
+				ontURI, Ontology.SOURCE, Ontology.LANG_OWL,
+				Ontology.SYNTAX_RDFXML, false, false);
+
+		ontoBuilder.build(OntoTreeBuilder.Profile.noReasoner);
+		//ontoBuilder.build(OntoTreeBuilder.Profile.noFileManager);
+
+		return ontoBuilder.getOntology();
     }
 
     
