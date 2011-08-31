@@ -1,8 +1,7 @@
 package am.app.mappingEngine.Combination;
 
 import am.app.mappingEngine.AbstractParameters;
-import am.app.mappingEngine.oaei2010.OAEI2010MatcherParameters.Track;
-import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
+import am.app.mappingEngine.oaei.OAEI_Track;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 
 public class CombinationParameters extends AbstractParameters {
@@ -45,7 +44,7 @@ public class CombinationParameters extends AbstractParameters {
 	 * @param layer Which LWC are we configuring.
 	 * @throws Exception 
 	 */
-	public CombinationParameters initForOAEI2010(Track t, boolean firstLWC) throws Exception {
+	public CombinationParameters initForOAEI2010(OAEI_Track t, boolean firstLWC) throws Exception {
 		
 		switch(t) {
 		case Benchmarks:

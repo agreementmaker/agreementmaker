@@ -1,7 +1,7 @@
 /**
  * 
  */
-package am.app.mappingEngine.oaei2010;
+package am.app.mappingEngine.oaei.oaei2011;
 
 import am.Utility;
 import am.app.Core;
@@ -17,12 +17,14 @@ import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameter
 import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.oaei.OAEI_Track;
+import am.app.mappingEngine.oaei2010.OAEI2010MatcherParameters;
+import am.app.mappingEngine.oaei2010.OAEI2010MatcherParametersPanel;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 
 /**
- * @author Michele Caci
+ * 
  */
-public class OAEI2010Matcher extends AbstractMatcher{
+public class OAEI2011Matcher extends AbstractMatcher{
 	
 	private static final long serialVersionUID = -2258529392257305604L;
 	
@@ -40,10 +42,10 @@ public class OAEI2010Matcher extends AbstractMatcher{
 	
 	//AbstractMatcher lastLayer;
 
-	public OAEI2010Matcher(){
+	public OAEI2011Matcher(){
 		super();
 		needsParam = true;
-		param = new OAEI2010MatcherParameters(OAEI_Track.AllMatchers); // should this be here?? Probably not.
+		param = new OAEI2011MatcherParameters(OAEI_Track.AllMatchers); // should this be here?? Probably not.
 	}
 	
 	public String getDescriptionString() {
@@ -57,7 +59,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 	
 	public void match() throws Exception {
     	matchStart();
-    	OAEI2010MatcherParameters parameters = (OAEI2010MatcherParameters)param;
+    	OAEI2011MatcherParameters parameters = (OAEI2011MatcherParameters)param;
 		AbstractMatcher finalResult = null;
 		
 		switch( parameters.currentTrack ) {

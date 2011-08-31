@@ -2,7 +2,7 @@ package am.app.mappingEngine.parametricStringMatcher;
 
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
-import am.app.mappingEngine.oaei2010.OAEI2010MatcherParameters.Track;
+import am.app.mappingEngine.oaei.OAEI_Track;
 
 public class ParametricStringParameters extends AbstractParameters {
 
@@ -80,7 +80,7 @@ public class ParametricStringParameters extends AbstractParameters {
 		
 	}
 	
-	public AbstractParameters initForOAEI2010(Track t) {
+	public AbstractParameters initForOAEI2010(OAEI_Track t) {
 		
 		switch( t ) {
 		case Anatomy:

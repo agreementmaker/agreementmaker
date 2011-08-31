@@ -2,7 +2,6 @@ package am.app.userfeedbackloop.disagreementclustering;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
@@ -20,7 +19,7 @@ import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarity
 import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
 import am.app.mappingEngine.multiWords.MultiWordsMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
-import am.app.mappingEngine.oaei2010.OAEI2010MatcherParameters.Track;
+import am.app.mappingEngine.oaei.OAEI_Track;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.ontology.Ontology;
@@ -174,14 +173,14 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		m_asm.setProgressDisplay(progressDisplay);
 		
 		// PSM
-		param_psm.initForOAEI2010(Track.Benchmarks);  // use the OAEI 2010 settings
+		param_psm.initForOAEI2010(OAEI_Track.Benchmarks);  // use the OAEI 2010 settings
 		m_psm = new ParametricStringMatcher( param_psm );
 		m_psm.setOntologies(sourceOntology, targetOntology);
 		m_psm.setProgressDisplay(progressDisplay);
 		
 		// VMM
 		try {
-			param_vmm.initForOAEI2010(Track.Benchmarks); // use the OAEI 2010 settings for this also.
+			param_vmm.initForOAEI2010(OAEI_Track.Benchmarks); // use the OAEI 2010 settings for this also.
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -198,7 +197,7 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 				
 		// LWC
 		try {
-			param_lwc.initForOAEI2010(Track.Benchmarks,true); // use the OAEI 2010 settings for this also (Quality Evaluation = Local Confidence)
+			param_lwc.initForOAEI2010(OAEI_Track.Benchmarks,true); // use the OAEI 2010 settings for this also (Quality Evaluation = Local Confidence)
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

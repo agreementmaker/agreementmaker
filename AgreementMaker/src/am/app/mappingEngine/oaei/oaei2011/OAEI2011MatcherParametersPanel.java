@@ -1,17 +1,14 @@
-package am.app.mappingEngine.oaei2010;
+package am.app.mappingEngine.oaei.oaei2011;
 
 import java.awt.Dimension;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.oaei.OAEI_Track;
-import am.app.ontology.Ontology;
 import am.userInterface.AppPreferences;
 
 /**
@@ -21,12 +18,12 @@ import am.userInterface.AppPreferences;
  * ADVIS @ UIC
  */
 
-public class OAEI2010MatcherParametersPanel extends AbstractMatcherParametersPanel {
+public class OAEI2011MatcherParametersPanel extends AbstractMatcherParametersPanel {
 
 	private static final long serialVersionUID = -7652636660460034435L;
 
 	@SuppressWarnings("unused")
-	private OAEI2010MatcherParameters parameters;
+	private OAEI2011MatcherParameters parameters;
 	
 	private JComboBox trackCombo;
 	//private JCheckBox chkUseExtractedTermSynonyms = new JCheckBox("Use extracted term synonyms.");
@@ -39,7 +36,7 @@ public class OAEI2010MatcherParametersPanel extends AbstractMatcherParametersPan
 	 * them to this panel.  It also creates the parameters object.
 	 * 
 	 */
-	public OAEI2010MatcherParametersPanel() {
+	public OAEI2011MatcherParametersPanel() {
 		super();
 		
 		
@@ -81,7 +78,7 @@ public class OAEI2010MatcherParametersPanel extends AbstractMatcherParametersPan
 		
 	public AbstractParameters getParameters() {
 		
-		return new OAEI2010MatcherParameters((OAEI_Track)trackCombo.getSelectedItem());
+		return new OAEI2011MatcherParameters((OAEI_Track)trackCombo.getSelectedItem());
 		
 	}
 	

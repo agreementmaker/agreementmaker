@@ -2,7 +2,7 @@ package am.app.mappingEngine.multiWords;
 
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
-import am.app.mappingEngine.oaei2010.OAEI2010MatcherParameters.Track;
+import am.app.mappingEngine.oaei.OAEI_Track;
 
 public class MultiWordsParameters extends AbstractParameters {
 
@@ -84,7 +84,7 @@ public class MultiWordsParameters extends AbstractParameters {
 	}
 
 
-	public MultiWordsParameters initForOAEI2010(Track currentTrack) throws Exception {
+	public MultiWordsParameters initForOAEI2010(OAEI_Track currentTrack) throws Exception {
 		
 		switch( currentTrack ) {
 		case Anatomy:
@@ -119,13 +119,13 @@ public class MultiWordsParameters extends AbstractParameters {
 		default:
 			measure = TFIDF;
 			//only on concepts right now because it should be weighted differently
-			if( currentTrack == Track.Benchmarks ) considerInstances = true;
+			if( currentTrack == OAEI_Track.Benchmarks ) considerInstances = true;
 			else { considerInstances = true; }
 			considerNeighbors = false;
 			considerConcept = true;
 			considerClasses = false;
 			considerProperties = false;
-			if( currentTrack == Track.Benchmarks ) ignoreLocalNames = false;
+			if( currentTrack == OAEI_Track.Benchmarks ) ignoreLocalNames = false;
 			else { ignoreLocalNames = true; } 
 			
 			useLexiconSynonyms = true; // May change later.

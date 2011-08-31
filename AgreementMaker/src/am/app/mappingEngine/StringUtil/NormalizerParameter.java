@@ -1,6 +1,6 @@
 package am.app.mappingEngine.StringUtil;
 
-import am.app.mappingEngine.oaei2010.OAEI2010MatcherParameters.Track;
+import am.app.mappingEngine.oaei.OAEI_Track;
 
 public class NormalizerParameter {
 	//Normalization operations
@@ -41,7 +41,7 @@ public class NormalizerParameter {
 		normalizePunctuation = true;
 	}
 
-	public void setForOAEI2010(Track t) {
+	public void setForOAEI2010(OAEI_Track t) {
 		stem = false;
 		removeStopWords = true;
 		normalizeBlank = true;

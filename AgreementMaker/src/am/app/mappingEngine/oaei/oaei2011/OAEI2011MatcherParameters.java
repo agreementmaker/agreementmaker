@@ -1,9 +1,9 @@
-package am.app.mappingEngine.oaei2010;
+package am.app.mappingEngine.oaei.oaei2011;
 
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.oaei.OAEI_Track;
 
-public class OAEI2010MatcherParameters extends AbstractParameters {
+public class OAEI2011MatcherParameters extends AbstractParameters {
 
 	// values for running different combination
 	public boolean usingASM;
@@ -18,10 +18,9 @@ public class OAEI2010MatcherParameters extends AbstractParameters {
 
 	public boolean lsmUseExtractedTermSyonyms;
 	
-	public OAEI_Track currentTrack;
+	public OAEI_Track currentTrack;	
 	
-	
-	public OAEI2010MatcherParameters( OAEI_Track whichTrack ) { 
+	OAEI2011MatcherParameters( OAEI_Track whichTrack ) { 
 		super(); 
 		initBooleansForOAEI2010(whichTrack);
 		currentTrack = whichTrack;
