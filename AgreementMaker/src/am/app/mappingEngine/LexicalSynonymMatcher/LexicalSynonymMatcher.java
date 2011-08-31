@@ -38,7 +38,7 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	private boolean sourceIsLarger = false;  // TODO: Figure out a better way to do this.
 	
 	// use this to save time.
-	LexiconSynSet sourceSet;  // using this field variable gives a 3% speed boost to LSM without SCS.
+	private LexiconSynSet sourceSet;  // using this field variable gives a 3% speed boost to LSM without SCS.
 	
 	// Default constructor.
 	public LexicalSynonymMatcher() { super(); initializeVariables(); }
@@ -127,6 +127,7 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 					List<String> currentExtension = smallerLexicon.extendSynSet(currentSet);
 					currentExtension.addAll(currentSet.getSynonyms());
 					extendedSynSets.put(currentClass, currentExtension);
+					if( this.isCancelled() ) return null;
 				}
 				
 				
@@ -195,8 +196,8 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 							return matrix; 
 						}
 						
+						if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
 					}
-					if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
 				}
 			}
 		
@@ -262,6 +263,8 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		LexiconSynSet targetSet = targetLexicon.getSynSet(targetOR);
 		
 		if( sourceSet == null || targetSet == null ) return null; // one or both of the concepts do not have a synset.
+		
+		System.out.println( sourceSet.getID() + ": " + sourceSet.getSynonyms().size() + " x " + targetSet.getID() + ": " + targetSet.getSynonyms().size() );
 		
 		ProvenanceStructure provNoTermSyn = synonymSimilarity( sourceSet, targetSet );
 		
