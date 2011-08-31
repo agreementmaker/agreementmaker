@@ -109,7 +109,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected boolean performSelection;
 	
 	/** If true, the progress display may not be updated faster than once every 500ms. */
-	protected boolean useProgressDelay = false;
+	protected boolean useProgressDelay = true;
 	
 	public void setPerformSelection(boolean performSelection) {
 		this.performSelection = performSelection;
