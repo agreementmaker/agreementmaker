@@ -8,13 +8,17 @@ import am.app.lexicon.GeneralLexicon;
 import am.app.lexicon.GeneralLexiconSynSet;
 import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconBuilder;
+import am.app.lexicon.LexiconBuilderParameters;
 import am.app.lexicon.LexiconSynSet;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
+import com.hp.hpl.jena.ontology.AnnotationProperty;
+import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -22,6 +26,7 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 /**
  * Build a lexicon from an ontology (via synonyms and definitions in the ontology).
@@ -309,5 +314,69 @@ public class OntologyLexiconBuilder implements LexiconBuilder {
 		}
 		
 		return synList;
+	}
+	
+	/**
+	 * This method builds a default set of LexiconBuilderParameters.
+	 * It's used if you want to automatically create the lexicons.
+	 */
+	public static LexiconBuilderParameters getDefaultParameters( Ontology sourceOntology, Ontology targetOntology ) {
+		LexiconBuilderParameters lexiconParams = new LexiconBuilderParameters();
+		
+		// instantiate the source lists.
+		lexiconParams.sourceDefinitions = new ArrayList<Property>();
+		lexiconParams.sourceSynonyms = new ArrayList<Property>();
+		lexiconParams.sourceLabelProperties = new ArrayList<Property>();
+		
+		// find the synonym and definition annotations.
+		// TODO: Figure out a better way to do this other than to look for "synonym" and "definition" in the name.
+		OntModel sourceModel = sourceOntology.getModel();
+		ExtendedIterator<AnnotationProperty> sourceAnnotationIter = sourceModel.listAnnotationProperties();
+		while( sourceAnnotationIter.hasNext() ) {
+			AnnotationProperty p = sourceAnnotationIter.next();
+			if( p.getLocalName().toLowerCase().contains("synonym") ) {
+				lexiconParams.sourceSynonyms.add(p);
+			} else if( p.getLocalName().toLowerCase().contains("definition") ) {
+				lexiconParams.sourceDefinitions.add(p);
+			}
+		}
+		
+		// find the label property.
+		ExtendedIterator<DatatypeProperty> sourceDatatypeIter = sourceModel.listDatatypeProperties();
+		while( sourceDatatypeIter.hasNext() ) {
+			DatatypeProperty p = sourceDatatypeIter.next();
+			if( p.getLocalName().equals("label") ) {
+				lexiconParams.sourceLabelProperties.add(p);
+			}
+		}
+		
+		// instantiate the target lists.
+		lexiconParams.targetDefinitions = new ArrayList<Property>();
+		lexiconParams.targetSynonyms = new ArrayList<Property>();
+		lexiconParams.targetLabelProperties = new ArrayList<Property>();
+		
+		// find the synonym and definition annotations.
+		// TODO: Figure out a better way to do this other than to look for "synonym" and "definition" in the name. (same problem as above).
+		OntModel targetModel = targetOntology.getModel();
+		ExtendedIterator<AnnotationProperty> targetAnnotationIter = targetModel.listAnnotationProperties();
+		while( targetAnnotationIter.hasNext() ) {
+			AnnotationProperty p = targetAnnotationIter.next();
+			if( p.getLocalName().toLowerCase().contains("synonym") ) {
+				lexiconParams.targetSynonyms.add(p);
+			} else if( p.getLocalName().toLowerCase().contains("definition") ) {
+				lexiconParams.targetDefinitions.add(p);
+			}
+		}
+		
+		// find the label property.
+		ExtendedIterator<DatatypeProperty> targetDatatypeIter = targetModel.listDatatypeProperties();
+		while( targetDatatypeIter.hasNext() ) {
+			DatatypeProperty p = targetDatatypeIter.next();
+			if( p.getLocalName().equals("label") ) {
+				lexiconParams.sourceLabelProperties.add(p);
+			}
+		}
+		
+		return lexiconParams;
 	}
 }
