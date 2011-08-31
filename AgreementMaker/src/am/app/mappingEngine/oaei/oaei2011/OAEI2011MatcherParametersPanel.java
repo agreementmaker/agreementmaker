@@ -39,46 +39,14 @@ public class OAEI2011MatcherParametersPanel extends AbstractMatcherParametersPan
 	public OAEI2011MatcherParametersPanel() {
 		super();
 		
-		
 		this.setPreferredSize(new Dimension(350, 175) );
-		
-		
-		// setup the checkbox for using extracted term synonyms.
-		//Ontology sourceOnt = Core.getInstance().getSourceOntology();
-		//Ontology targetOnt = Core.getInstance().getTargetOntology();
-		
-		//if( Core.getLexiconStore().getLexicon(, type))
-		
-		
-		OAEI_Track[] tracks = {  OAEI_Track.Anatomy, 
-							OAEI_Track.Benchmarks, 
-							OAEI_Track.Conference,
-							OAEI_Track.AllMatchers };
-		trackCombo = new JComboBox(tracks);		
-		trackCombo.setAlignmentX((float) 0.5);
-		
-		BoxLayout panelLayout = new BoxLayout(this, BoxLayout.Y_AXIS);
-		
-		Box paddingBox = Box.createHorizontalBox();
-		
-		Box contentBox = Box.createVerticalBox();
-		
-		contentBox.add(Box.createVerticalStrut(20));
-		contentBox.add(trackCombo);
-		paddingBox.add(Box.createHorizontalStrut(20));
-		paddingBox.add(contentBox);
-		paddingBox.add(Box.createHorizontalStrut(20));
-		
-		this.setLayout(panelLayout);
-		
-		this.add(paddingBox);
-		
+					
 	}
 	
 		
 	public AbstractParameters getParameters() {
 		
-		return new OAEI2011MatcherParameters((OAEI_Track)trackCombo.getSelectedItem());
+		return new OAEI2011MatcherParameters();
 		
 	}
 	
