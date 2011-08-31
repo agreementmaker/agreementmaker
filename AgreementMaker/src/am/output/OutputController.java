@@ -1,5 +1,6 @@
 package am.output;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Date;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.utility.Capsule;
@@ -94,6 +96,21 @@ public class OutputController {
 		String sourceUri = Core.getInstance().getSourceOntology().getURI();
 		String targetUri = Core.getInstance().getTargetOntology().getURI();
 		output.write(sourceUri, targetUri, sourceUri, targetUri, matcher.getName());
+	}
+	
+	/**
+	 * Save an alignment to the given file.
+	 * @param completeFileName
+	 * @param alignment The alignment to be saved.
+	 * @param matcherName The name of the matcher that created this alignment. (This is used to name the alignment when we import)
+	 * @throws Exception
+	 */
+	public static void printDocumentOAEI(File completeFileName, Alignment<Mapping> alignment, String matcherName) throws Exception{
+
+		AlignmentOutput output = new AlignmentOutput(alignment, completeFileName);
+		String sourceUri = Core.getInstance().getSourceOntology().getURI();
+		String targetUri = Core.getInstance().getTargetOntology().getURI();
+		output.write(sourceUri, targetUri, sourceUri, targetUri, matcherName);
 	}
 	
 	// TODO: This function should differentiate between TXT, DOC, and XLS formats. (Or create separate print functions for each format)

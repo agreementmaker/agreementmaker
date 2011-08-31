@@ -156,6 +156,17 @@ public class AlignmentOutput
         }
     }
 
+    public AlignmentOutput(Alignment<Mapping> as, File fp) throws Exception
+    {
+        alignmentSet = as;
+        filepath = fp.getAbsolutePath();
+        try {
+            raf = new RandomAccessFile(fp, "rw");
+            writeList = new ArrayList<String>();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
     
     
     public void write(String onto1, String onto2, String uri1, String uri2, String matcherName)
