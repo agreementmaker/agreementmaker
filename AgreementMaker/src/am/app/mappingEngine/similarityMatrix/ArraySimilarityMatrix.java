@@ -1,11 +1,16 @@
 package am.app.mappingEngine.similarityMatrix;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Vector;
+
+import org.junit.Test;
 
 import am.Utility;
 import am.app.Core;
@@ -81,6 +86,11 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
         this.columns = N;
         data = new Mapping[M][N];
     }
+    
+    //junit constructor
+   //public ArraySimilarityMatrix(){}
+    //public void initData(int m, int n){data=new Mapping[m][n];}
+    
     
     public Mapping get(int i, int j) {  return data[i][j];  }
     
@@ -609,5 +619,54 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+	/*
+	//junit test
+	@Test public void insertAndGet16000000() {
+		long start=System.currentTimeMillis();
+		for(int j=0;j<500;j++){
+			Random r=new Random();
+			ArrayList<Integer> xVals=new ArrayList<Integer>();
+			ArrayList<Integer> yVals=new ArrayList<Integer>();
+			
+			for(int i=0;i<4000;i++){
+				xVals.add(new Integer(i));
+				yVals.add(new Integer(i));
+			}
+			
+			ArraySimilarityMatrix m=new ArraySimilarityMatrix();
+			m.initData(4000, 4000);
+			int[] x=new int[16000000];
+			int[] y=new int[16000000];
+			double[] z=new double[16000000];
+			//insert 500 entries in the matrix and
+			for(int i=0;i<4000;i++){
+				int x1=r.nextInt(xVals.size());
+				int y1=r.nextInt(yVals.size());
+				double z1=r.nextDouble();
+				
+				//System.out.println("inserting i="+i+" : ("+xVals.get(x1)+","+yVals.get(y1)+","+z1+")");
+				m.set(xVals.get(x1), yVals.get(y1), new Mapping(z1));
+				x[i]=xVals.get(x1);
+				y[i]=yVals.get(y1);
+				z[i]=z1;
+				
+				xVals.remove(x1);
+				yVals.remove(y1);
+			}
+			/*
+			//check the entries
+			for(int i=0;i<4000;i++){
+				//System.out.println("getting i="+i+" : ("+x[i]+","+y[i]+")");
+				Mapping temp=m.get(x[i], y[i]);
+				//System.out.println(x[i]+","+ y[i]);
+				//System.out.println(temp);
+				assertTrue(temp.getSimilarity()==z[i]);
+			}
+			
+		}
+		long end=System.currentTimeMillis();
+		long total=end-start;
+		System.out.println("total time (in seconds): "+(total/100)/500);
+	}
+	*/
 }

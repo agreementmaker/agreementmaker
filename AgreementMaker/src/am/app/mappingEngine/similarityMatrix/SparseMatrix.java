@@ -1,10 +1,14 @@
 package am.app.mappingEngine.similarityMatrix;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+import java.util.Random;
+
+import org.junit.Test;
 
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
@@ -20,7 +24,6 @@ public class SparseMatrix extends SimilarityMatrix
 {
 	private RowCell<Mapping> head;// LinkedList<LinkedList<RowCell>> rows;
 	private int rows;
-	
 	//private List matrixList;
 	
 	
@@ -64,6 +67,11 @@ public class SparseMatrix extends SimilarityMatrix
     	sourceOntologyID=s.getID();
     	targetOntologyID=t.getID();    	
 	}
+	public SparseMatrix(alignType type, MappingRelation rel){
+		this();
+    	relation = rel;
+    	typeOfMatrix = type;
+	}
 	@Override
 	public void set(int row, int column, Mapping obj)
 	{
@@ -106,7 +114,7 @@ public class SparseMatrix extends SimilarityMatrix
 							newCell.prevc=currentCell.prevc;
 							if(newCell.prevc!=null) {
 								newCell.prevc.nextc=newCell;
-							} else {
+							}else {
 								// we are replacing a row header
 								newCell.prevr = currentCell.prevr;
 								newCell.nextr = currentCell.nextr;
@@ -124,6 +132,49 @@ public class SparseMatrix extends SimilarityMatrix
 							
 							notDone=false;
 							break;
+						}
+						else if(column == currentCell.col){//implicit removal
+							if(obj==null){//gotta remove this RowCell
+								if(currentCell.nextr==null && currentCell.prevr==null){//im in the middle of the row
+									if(currentCell.nextc==null){//end of the row
+										currentCell.prevc.nextc=null;
+										notDone=false;
+										break;
+									}else{//time to start linking...
+										currentCell.nextc.prevc=currentCell.prevc;
+										currentCell.prevc.nextc=currentCell.nextc;
+										notDone=false;
+										break;
+									}
+								}else{//we are a header more linking..
+									if(currentCell.nextc==null){//nothing in this row
+										if(currentCell.nextr==null){
+											currentCell.prevr=null;
+										}
+										else{
+											currentCell.nextr.prevr=currentCell.prevr;
+											currentCell.prevr.nextr=currentCell.nextr;	
+										}
+										notDone=false;
+										break;
+									}else{//need to link the row headers to a new row header
+										currentCell.nextr.prevr=currentCell.nextc;
+										currentCell.prevr.nextr=currentCell.nextc;
+										
+										currentCell.nextc.prevr=currentCell.prevr;
+										currentCell.nextc.nextr=currentCell.nextr;
+										currentCell.nextc.prevc=null;
+										
+										notDone=false;
+										break;
+									}
+								}
+							}else{
+								//replace whats in the current rowCell
+								currentCell.ob=obj;
+								notDone=false;
+								break;
+							}
 						}
 						else if( currentCell.nextc==null )//if the next col is null then we know that newCell is 
 						{//the largest col so it gets stuck at the end
@@ -302,7 +353,7 @@ public class SparseMatrix extends SimilarityMatrix
 	@Override
 	public double[][] getCopiedSimilarityMatrix() {
 		// FIXME remove
-		System.err.println("Not implemented yet");
+		System.err.println("to be deleted");
 		return null;
 	}
 	@Override
@@ -397,19 +448,19 @@ public class SparseMatrix extends SimilarityMatrix
 	@Override
 	public Mapping[] getTopK(int k) {
 		// FIXME implemnt
-		System.err.println("Not implemented yet");
+		System.err.println("Not implemented yet topK");
 		return null;
 	}
 	@Override
 	public Mapping[] getTopK(int k, boolean[][] filteredCells) {
 		// FIXME implement
-		System.err.println("Not implemented yet");
+		System.err.println("Not implemented yet topK2");
 		return null;
 	}
 	@Override
 	public void initFromNodeList(List<Node> sourceList, List<Node> targetList) {
 		// FIXME remove
-		System.err.println("Not implemented yet");
+		System.err.println("to be deleted");
 		
 	}
 	@Override
@@ -423,7 +474,7 @@ public class SparseMatrix extends SimilarityMatrix
 	@Override
 	public SimilarityMatrix toArraySimilarityMatrix() {
 		//FIXME remove
-		System.err.println("Not implemented yet");
+		System.err.println("to be deleted");
 		return null;
 	}
 	@Override
@@ -501,4 +552,63 @@ public class SparseMatrix extends SimilarityMatrix
 			ob=o;
 		}
 	}
+	
+	//junit tests
+	/*
+	@Test public void replaceTest(){
+		SparseMatrix m=new SparseMatrix();
+		m.set(0, 0, new Mapping(.0));
+		m.set(0, 0, null);
+		m.set(0, 1, new Mapping(.2));
+		//System.out.println(m.get(0, 1));
+		assertTrue(m.get(0, 1).getSimilarity()==.2);
+	}
+	/*
+	@Test public void insertAndGet16000000() {
+		long start=System.currentTimeMillis();
+		for(int j=0;j<500;j++){
+			Random r=new Random();
+			ArrayList<Integer> xVals=new ArrayList<Integer>();
+			ArrayList<Integer> yVals=new ArrayList<Integer>();
+			
+			for(int i=0;i<4000;i++){
+				xVals.add(new Integer(i));
+				yVals.add(new Integer(i));
+			}
+			
+			SparseMatrix m=new SparseMatrix();
+			int[] x=new int[16000000];
+			int[] y=new int[16000000];
+			double[] z=new double[16000000];
+			//insert 500 entries in the matrix and
+			for(int i=0;i<4000;i++){
+				int x1=r.nextInt(xVals.size());
+				int y1=r.nextInt(yVals.size());
+				double z1=r.nextDouble();
+				
+				//System.out.println("inserting i="+i+" : ("+xVals.get(x1)+","+yVals.get(y1)+","+z1+")");
+				m.set(xVals.get(x1), yVals.get(y1), new Mapping(z1));
+				x[i]=xVals.get(x1);
+				y[i]=yVals.get(y1);
+				z[i]=z1;
+				
+				xVals.remove(x1);
+				yVals.remove(y1);
+			}
+			/*
+			//check the entries
+			for(int i=0;i<4000;i++){
+				//System.out.println("getting i="+i+" : ("+x[i]+","+y[i]+")");
+				Mapping temp=m.get(x[i], y[i]);
+				//System.out.println(x[i]+","+ y[i]);
+				//System.out.println(temp);
+				assertTrue(temp.getSimilarity()==z[i]);
+			}
+			
+		}
+		long end=System.currentTimeMillis();
+		long total=end-start;
+		System.out.println("total time (in seconds): "+(total/100)/500);
+	}
+	*/
 }

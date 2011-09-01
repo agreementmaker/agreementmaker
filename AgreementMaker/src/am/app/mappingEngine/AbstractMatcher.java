@@ -22,6 +22,7 @@ import am.app.mappingEngine.oneToOneSelection.MaxWeightBipartiteMatching;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.MatchingProgressDisplay;
@@ -422,6 +423,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	
     protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
     	
+    	if((sourceList.size()*targetList.size())>4000000){
+    		param.largeOntologyMode=true;
+    		System.out.println("running in large ontology mode");
+    	}
+    	
     	if(param.completionMode && inputMatchers != null && inputMatchers.size() > 0){ 
     		//run in optimized mode by mapping only concepts that have not been mapped in the input matcher
     		if(typeOfNodes.equals(alignType.aligningClasses)){
@@ -432,9 +438,32 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     		}
 		}
     	
-    	else{
+    	else if(param.largeOntologyMode ==true){
     		//run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
-	    	SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
+	    	SimilarityMatrix matrix = new SparseMatrix(typeOfNodes, relation);
+			Node source;
+			Node target;
+			Mapping alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
+			for(int i = 0; i < sourceList.size(); i++) {
+				source = sourceList.get(i);
+				for(int j = 0; j < targetList.size(); j++) {
+					target = targetList.get(j);
+					
+					if( !this.isCancelled() ) { alignment = alignTwoNodes(source, target, typeOfNodes); }
+					else { return matrix; }
+					if(alignment != null && alignment.getSimilarity() >= param.threshold)
+						matrix.set(i,j,alignment);
+					if( isProgressDisplayed() ) {
+						stepDone(); // we have completed one step
+						if( alignment != null && alignment.getSimilarity() >= param.threshold ) tentativealignments++; // keep track of possible alignments for progress display
+					}
+				}
+				if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
+			}
+			return matrix;
+    	}
+    	else{
+    		SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 			Node source;
 			Node target;
 			Mapping alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok

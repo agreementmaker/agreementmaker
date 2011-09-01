@@ -10,6 +10,7 @@ import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.Colors;
@@ -66,11 +67,14 @@ public class UserManualMatcher extends AbstractMatcher {
 	/**Set all alignment sim to 0*/
 	@Override public void align() throws Exception {
 		
-		classesMatrix = new ArraySimilarityMatrix(sourceOntology.getClassesList().size(), targetOntology.getClassesList().size(), 
-				alignType.aligningClasses, relation);
+		classesMatrix=new SparseMatrix(alignType.aligningProperties, relation);
 		
-		propertiesMatrix = new ArraySimilarityMatrix(sourceOntology.getPropertiesList().size(), targetOntology.getPropertiesList().size(), 
-				alignType.aligningProperties, relation);
+		//classesMatrix = new ArraySimilarityMatrix(sourceOntology.getClassesList().size(), targetOntology.getClassesList().size(), 
+		//		alignType.aligningClasses, relation);
+		
+		propertiesMatrix=new SparseMatrix(alignType.aligningProperties, relation);
+		//propertiesMatrix = new ArraySimilarityMatrix(sourceOntology.getPropertiesList().size(), targetOntology.getPropertiesList().size(), 
+		//		alignType.aligningProperties, relation);
 		
 		return;
 	}
