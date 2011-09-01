@@ -60,6 +60,7 @@ public enum MatchersRegistry {
 	SimilarityFlooding  ( "SFM", "Similarity Flooding Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.sfm.IndipendentSimilarityFlooding.class ),
 	AnchorFlood			( "AFM", "AnchorFlood Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.anchorFlood.AnchorFloodMatcher.class ),
 	OAEI2010			( "OAEI-10", "OAEI 2010 Matcher", am.app.mappingEngine.oaei2010.OAEI2010Matcher.class, MatcherCategory.HYBRID),
+	OAEI2011			( "OAEI-11", "OAEI 2011 Matcher", am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher.class, MatcherCategory.HYBRID),
 	IterativeMatcher	( "IISM", "Instance-based Iterator", am.app.mappingEngine.instance.IterativeMatcher.class),
 	AdvancedSimilarity  ( "ASM", "Advanced Similarity Matcher", am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher.class, MatcherCategory.SYNTACTIC),
 	GroupFinder			( "GFM", "Group Finder Matcher", am.app.mappingEngine.groupFinder.GroupFinderMatcher.class),
