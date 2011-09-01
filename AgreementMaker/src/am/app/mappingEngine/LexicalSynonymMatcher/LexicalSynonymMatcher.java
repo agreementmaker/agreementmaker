@@ -171,7 +171,6 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 						}
 					}
 					if( isProgressDisplayed() ) { updateProgress(); }
-					System.out.println(System.currentTimeMillis());
 				}
 			}
 			else { // normal algorithm no SCS optimizations				
@@ -264,7 +263,7 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		
 		if( sourceSet == null || targetSet == null ) return null; // one or both of the concepts do not have a synset.
 		
-		System.out.println( sourceSet.getID() + ": " + sourceSet.getSynonyms().size() + " x " + targetSet.getID() + ": " + targetSet.getSynonyms().size() );
+		//System.out.println( sourceSet.getID() + ": " + sourceSet.getSynonyms().size() + " x " + targetSet.getID() + ": " + targetSet.getSynonyms().size() );
 		
 		ProvenanceStructure provNoTermSyn = synonymSimilarity( sourceSet, targetSet );
 		
