@@ -11,11 +11,10 @@ import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.Combination.CombinationParameters;
+import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
 import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.oaei.OAEI_Track;
-import am.app.mappingEngine.oaei2010.OAEI2010MatcherParameters;
-import am.app.mappingEngine.oaei2010.OAEI2010MatcherParametersPanel;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 
 /**
@@ -97,7 +96,7 @@ public class OAEI2011Matcher extends AbstractMatcher{
 		AbstractMatcher lsm = null;
 		if( !isCancelled() ){
 		   	lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSM, 2);
-		   	setupSubMatcher(lsm, new AbstractParameters(getThreshold(), 1, 1));
+		   	setupSubMatcher(lsm, new LexicalSynonymMatcherParameters(getThreshold(), 1, 1));
 		   	runSubMatcher(lsm, "Submatcher: LSM");
 		}
 			
@@ -138,6 +137,7 @@ public class OAEI2011Matcher extends AbstractMatcher{
 	private void setupSubMatcher( AbstractMatcher m, AbstractParameters p, boolean progressDelay ) {
 		m.setParam(p);
 		m.setUseProgressDelay(progressDelay);
+		m.setProgressDisplay(getProgressDisplay());
 		m.setSourceOntology(sourceOntology);
     	m.setTargetOntology(targetOntology);
 	}
@@ -159,13 +159,13 @@ public class OAEI2011Matcher extends AbstractMatcher{
 	    time = (endtime-startime);
 		if( Core.DEBUG ) System.out.println(m.getRegistryEntry().getMatcherShortName() + " completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		
-		if(showAllMatchers && !m.isCancelled()) Core.getUI().getControlPanel().getTablePanel().addMatcher(m);
+		//if(showAllMatchers && !m.isCancelled()) Core.getUI().getControlPanel().getTablePanel().addMatcher(m);
 	}
 	
 	
 	public AbstractMatcherParametersPanel getParametersPanel() {
 		if(parametersPanel == null){
-			parametersPanel = new OAEI2010MatcherParametersPanel();
+			parametersPanel = new OAEI2011MatcherParametersPanel();
 		}
 		return parametersPanel;
 	}
