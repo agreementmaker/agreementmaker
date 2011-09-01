@@ -423,7 +423,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	
     protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
     	
-    	if((sourceList.size()*targetList.size())>4000000){
+    	if((sourceList.size()*targetList.size())>4000000000000000L){
     		param.largeOntologyMode=true;
     		System.out.println("running in large ontology mode");
     	}
