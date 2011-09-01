@@ -127,4 +127,18 @@ public class GeneralLexicon implements Lexicon {
 	
 	@Override public void setLookupPanel(LexiconLookupPanel wnlp) { lookupPanel = wnlp; }
 	@Override public LexiconLookupPanel getLookupPanel() { return lookupPanel; }
+
+	@Override
+	public List<String> extendSynSet(LexiconSynSet synset) {
+		List<String> extendedList = new ArrayList<String>();
+		
+		// add the current synonyms
+		extendedList.addAll( synset.getSynonyms() );
+		
+		for( LexiconSynSet relatedSynSet : synset.getRelatedSynSets() ) {
+			extendedList.addAll( relatedSynSet.getSynonyms() );
+		}
+		
+		return extendedList;
+	}
 }

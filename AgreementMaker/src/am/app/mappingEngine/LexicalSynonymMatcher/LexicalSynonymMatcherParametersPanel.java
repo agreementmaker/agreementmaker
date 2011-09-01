@@ -7,7 +7,7 @@ import javax.swing.JCheckBox;
 
 import am.app.Core;
 import am.app.lexicon.Lexicon;
-import am.app.lexicon.subconcept.SubconceptSynonymLexicon;
+import am.app.lexicon.subconcept.SynonymTermLexicon;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
@@ -35,11 +35,10 @@ public class LexicalSynonymMatcherParametersPanel extends AbstractMatcherParamet
 			Lexicon sourceOntLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
 			Lexicon targetOntLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
 			
-			if( sourceOntLexicon instanceof SubconceptSynonymLexicon || 
-				targetOntLexicon instanceof SubconceptSynonymLexicon ){
+			if( sourceOntLexicon instanceof SynonymTermLexicon || 
+				targetOntLexicon instanceof SynonymTermLexicon ){
 				
-				chkUseSubconceptSynonyms.setEnabled(true);
-				chkUseSubconceptSynonyms.setSelected( prefs.getBoolean(PREF_USE_SYNONYM_TERMS, false) );
+				chkUseSubconceptSynonyms.setSelected(true);
 			}
 		} catch (Exception e) {
 			//e.printStackTrace();

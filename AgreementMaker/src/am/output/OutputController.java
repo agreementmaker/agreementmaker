@@ -113,6 +113,19 @@ public class OutputController {
 		output.write(sourceUri, targetUri, sourceUri, targetUri, matcherName);
 	}
 	
+	/**
+	 * Save an alignment to the given file. (without calls to Core)
+	 * @param completeFileName
+	 * @param alignment The alignment to be saved.
+	 * @param matcherName The name of the matcher that created this alignment. (This is used to name the alignment when we import)
+	 * @throws Exception
+	 */
+	public static void printDocumentOAEI(File completeFileName, Alignment<Mapping> alignment, String matcherName, String sourceURI, String targetURI) throws Exception{
+
+		AlignmentOutput output = new AlignmentOutput(alignment, completeFileName);
+		output.write(sourceURI, targetURI, sourceURI, targetURI, matcherName);
+	}
+	
 	// TODO: This function should differentiate between TXT, DOC, and XLS formats. (Or create separate print functions for each format)
 	public static void printDocument(String name) throws Exception{
 		

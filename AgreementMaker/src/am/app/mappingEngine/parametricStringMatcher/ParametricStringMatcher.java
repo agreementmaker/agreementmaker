@@ -8,7 +8,7 @@ import am.Utility;
 import am.app.Core;
 import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconSynSet;
-import am.app.lexicon.subconcept.SubconceptSynonymLexicon;
+import am.app.lexicon.subconcept.SynonymTermLexicon;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
@@ -138,9 +138,9 @@ public class ParametricStringMatcher extends AbstractMatcher {
 				if( sourceOntSS != null && sourceOntSS.getSynonyms() != null ) sourceSynonymList.addAll( sourceOntSS.getSynonyms() ); // add all the ont synonyms for the source concept.
 				if( sourceWNSS != null && sourceWNSS.getSynonyms() != null ) sourceSynonymList.addAll(sourceWNSS.getSynonyms() ); // add all the WordNet synonyms for the source concept.
 				
-				if( parameters.lexExtendSynonyms && sourceOntologyLexicon instanceof SubconceptSynonymLexicon ) {
+				if( parameters.lexExtendSynonyms && sourceOntologyLexicon instanceof SynonymTermLexicon ) {
 					// we are using extended synonyms.
-					SubconceptSynonymLexicon sourceSCSLexicon = (SubconceptSynonymLexicon) sourceOntologyLexicon; 
+					SynonymTermLexicon sourceSCSLexicon = (SynonymTermLexicon) sourceOntologyLexicon; 
 					sourceSynonymList.addAll( sourceSCSLexicon.extendSynSet(sourceOntSS) );
 				}
 				
@@ -150,9 +150,9 @@ public class ParametricStringMatcher extends AbstractMatcher {
 				if( targetOntSS != null && targetOntSS.getSynonyms() != null ) targetSynonymList.addAll( targetOntSS.getSynonyms() ); // ont synonyms for target concept.
 				if( targetWNSS != null && targetWNSS.getSynonyms() != null ) targetSynonymList.addAll( targetWNSS.getSynonyms() ); // wordnet synonyms for target concept.
 				
-				if( parameters.lexExtendSynonyms && targetOntologyLexicon instanceof SubconceptSynonymLexicon ) {
+				if( parameters.lexExtendSynonyms && targetOntologyLexicon instanceof SynonymTermLexicon ) {
 					// using extended synonyms for the target
-					SubconceptSynonymLexicon targetSCSLexicon = (SubconceptSynonymLexicon) targetOntologyLexicon;
+					SynonymTermLexicon targetSCSLexicon = (SynonymTermLexicon) targetOntologyLexicon;
 					sourceSynonymList.addAll( targetSCSLexicon.extendSynSet(targetOntSS) );
 				}
 				
@@ -185,15 +185,15 @@ public class ParametricStringMatcher extends AbstractMatcher {
 					// 1. Compile the list of source and target synonyms.
 					List<String> sourceOntSynonymList = new ArrayList<String>();
 					if( sourceOntSS != null && sourceOntSS.getSynonyms() != null ) sourceOntSynonymList.addAll( sourceOntSS.getSynonyms() );
-					if( parameters.lexExtendSynonyms && sourceOntologyLexicon instanceof SubconceptSynonymLexicon ) {
-						SubconceptSynonymLexicon sourceSCSLexicon = (SubconceptSynonymLexicon) sourceOntologyLexicon; 
+					if( parameters.lexExtendSynonyms && sourceOntologyLexicon instanceof SynonymTermLexicon ) {
+						SynonymTermLexicon sourceSCSLexicon = (SynonymTermLexicon) sourceOntologyLexicon; 
 						sourceOntSynonymList.addAll( sourceSCSLexicon.extendSynSet(sourceOntSS) );
 					}
 					
 					List<String> targetOntSynonymList = new ArrayList<String>();
 					if( targetOntSS != null && targetOntSS.getSynonyms() != null ) targetOntSynonymList.addAll( targetOntSS.getSynonyms() );
-					if( parameters.lexExtendSynonyms && targetOntologyLexicon instanceof SubconceptSynonymLexicon ) {
-						SubconceptSynonymLexicon targetSCSLexicon = (SubconceptSynonymLexicon) targetOntologyLexicon; 
+					if( parameters.lexExtendSynonyms && targetOntologyLexicon instanceof SynonymTermLexicon ) {
+						SynonymTermLexicon targetSCSLexicon = (SynonymTermLexicon) targetOntologyLexicon; 
 						targetOntSynonymList.addAll( targetSCSLexicon.extendSynSet(sourceOntSS) );
 					}
 					

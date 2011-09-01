@@ -29,4 +29,12 @@ public interface Lexicon {
 	public LexiconLookupPanel getLookupPanel();
 	
 	public int size();  // the number of entries in the lexicon
+	
+	/**
+	 * Return a complete list of synonyms.
+	 * 
+	 * This list includes synonyms from the related synsets.
+	 * 
+	 */
+	public List<String> extendSynSet(LexiconSynSet synset);
 }

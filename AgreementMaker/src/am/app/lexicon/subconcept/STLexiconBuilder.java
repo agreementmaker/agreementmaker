@@ -19,19 +19,19 @@ import com.hp.hpl.jena.rdf.model.Property;
 
 /**
  * This lexicon builder is the same as an ontology lexicon, except that it builds
- * extra synonyms by checking for sub concept synonyms words.
+ * extra synonyms by checking for synonym terms.
  * @author cosmin
  *
  */
-public class SCSLexiconBuilder 
+public class STLexiconBuilder 
 	   extends OntologyLexiconBuilder 
 	   implements SubconceptSynonymLexiconBuilder {
 
-	public SCSLexiconBuilder(Ontology ont, boolean includeLN,
+	public STLexiconBuilder(Ontology ont, boolean includeLN,
 			List<Property> label, List<Property> synonym,
 			List<Property> definition) {
 		super(ont, includeLN, label, synonym, definition);
-		currentLexicon = new SCSLexicon( LexiconRegistry.ONTOLOGY_LEXICON );
+		currentLexicon = new STLexicon( LexiconRegistry.ONTOLOGY_LEXICON );
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class SCSLexiconBuilder
 		//}
 		
 		Logger log = Logger.getLogger(this.getClass());
-		SCSLexicon currentSCSLexicon = (SCSLexicon) currentLexicon;
+		STLexicon currentSCSLexicon = (STLexicon) currentLexicon;
 		HashMap<String,List<String>> hashMap = currentSCSLexicon.getHashMap();
 		
 		log.info("Synonym Word Pairs HashMap: ");
@@ -168,11 +168,11 @@ public class SCSLexiconBuilder
 		
 		// Step 4.  Save the synonyms in the Lexicon.
 		
-		if( !(currentLexicon instanceof SubconceptSynonymLexicon) ) 
+		if( !(currentLexicon instanceof SynonymTermLexicon) ) 
 			throw new Exception("The lexicon is not compatible with this builder."); // should never happen. 
 		
-		SubconceptSynonymLexicon scsLexicon = (SubconceptSynonymLexicon) currentLexicon; 
-		scsLexicon.addSubConceptSynonyms(shorterSynonym, longerSynonym);
+		SynonymTermLexicon scsLexicon = (SynonymTermLexicon) currentLexicon; 
+		scsLexicon.addSynonymTerm(shorterSynonym, longerSynonym);
 		
 		
 		return;

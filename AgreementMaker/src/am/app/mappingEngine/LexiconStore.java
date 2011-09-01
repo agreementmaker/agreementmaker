@@ -9,7 +9,7 @@ import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconBuilder;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.lexicon.ontology.OntologyLexiconBuilder;
-import am.app.lexicon.subconcept.SCSLexiconBuilder;
+import am.app.lexicon.subconcept.STLexiconBuilder;
 import am.app.lexicon.wordnet.WordNetLexiconBuilder;
 import am.app.ontology.Ontology;
 import am.app.ontology.OntologyChangeEvent;
@@ -77,7 +77,7 @@ public class LexiconStore implements OntologyChangeListener {
 			if( Core.getInstance().getSourceOntology() == ont ) {  // source
 				OntologyLexiconBuilder sourceOLB;
 				if( params.sourceUseSCSLexicon ) {
-					sourceOLB = new SCSLexiconBuilder(ont, params.sourceUseLocalname,
+					sourceOLB = new STLexiconBuilder(ont, params.sourceUseLocalname,
 						params.sourceLabelProperties, params.sourceSynonyms, params.sourceDefinitions);
 				} else {
 					sourceOLB = new OntologyLexiconBuilder(ont, params.sourceUseLocalname,
@@ -92,7 +92,7 @@ public class LexiconStore implements OntologyChangeListener {
 			} else {  // target
 				OntologyLexiconBuilder targetOLB;
 				if( params.targetUseSCSLexicon ) {
-					targetOLB = new SCSLexiconBuilder(ont, params.targetUseLocalname,
+					targetOLB = new STLexiconBuilder(ont, params.targetUseLocalname,
 						params.targetLabelProperties, params.targetSynonyms, params.targetDefinitions);
 				} else {
 					targetOLB = new OntologyLexiconBuilder(ont, params.targetUseLocalname,

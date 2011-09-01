@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import am.app.Core;
 import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconSynSet;
-import am.app.lexicon.subconcept.SubconceptSynonymLexicon;
+import am.app.lexicon.subconcept.SynonymTermLexicon;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.AbstractMatcher.alignType;
@@ -97,110 +97,80 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
     		//run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
 	    	SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 			
-			// SCS optimizations (only for classes at the moment)
-			if( ((LexicalSynonymMatcherParameters)getParam()).useSynonymTerms && typeOfNodes == alignType.aligningClasses ) {
-				// choose the smaller ontology.
-				List<Node> smallerList = null, largerList = null;
-				SubconceptSynonymLexicon smallerLexicon = null, largerLexicon = null;
-				
-				if( sourceList.size() > targetList.size() ) {
-					smallerList = targetList;
-					smallerLexicon = (SubconceptSynonymLexicon) targetLexicon;
-					largerList = sourceList;
-					largerLexicon = (SubconceptSynonymLexicon) sourceLexicon;
-					sourceIsLarger = true;
-				} else {
-					smallerList = sourceList;
-					smallerLexicon = (SubconceptSynonymLexicon) sourceLexicon;
-					largerList = targetList;
-					largerLexicon = (SubconceptSynonymLexicon) targetLexicon;
-					sourceIsLarger = false;
-				}
-				
-				// create the hashmap of the smaller ontology
-				extendedSynSets = new HashMap<Node,List<String>>();
-				
-				for( Node currentClass : smallerList ) {
-					OntResource currentOR = currentClass.getResource().as(OntResource.class);
-					LexiconSynSet currentSet = smallerLexicon.getSynSet(currentOR);
-					if( currentSet == null ) continue;
-					List<String> currentExtension = smallerLexicon.extendSynSet(currentSet);
-					currentExtension.addAll(currentSet.getSynonyms());
-					extendedSynSets.put(currentClass, currentExtension);
-					if( this.isCancelled() ) return null;
-				}
-				
-				
-				// iterate through the larger ontology
-				for( int i = 0; i < largerList.size(); i++ ) {
-					Node larger = largerList.get(i);
-					
-					OntResource largerOR = larger.getResource().as(OntResource.class);
-					LexiconSynSet largerSynSet = largerLexicon.getSynSet(largerOR);
-					if( largerSynSet != null ) { 
-						extendedSingle = largerLexicon.extendSynSet( largerSynSet );
-						extendedSingle.addAll(largerSynSet.getSynonyms());
-					}
-					else 
-						extendedSingle = null;
-					
-					if( sourceIsLarger ) { sourceSet = largerSynSet; }
-					
-					for( int j = 0; j < smallerList.size(); j++ ) {
-						Node smaller = smallerList.get(j);
-						
-						if( !this.isCancelled() ) {
-							Mapping alignment = null;
-							if( sourceIsLarger ) {
-								alignment = alignTwoNodes(larger, smaller, typeOfNodes);
-								matrix.set(i,j,alignment);
-							}
-							else {
-								// source set needs to be set
-								OntResource smallerOR = smaller.getResource().as(OntResource.class);
-								sourceSet = smallerLexicon.getSynSet(smallerOR);
-								
-								alignment = alignTwoNodes(smaller, larger, typeOfNodes);
-								matrix.set(j,i,alignment);
-							}
-							
-							if( isProgressDisplayed() ) {
-								stepDone(); // we have completed one step
-								if( alignment != null && alignment.getSimilarity() >= param.threshold ) tentativealignments++; // keep track of possible alignments for progress display
-							}
-						}
-					}
-					if( isProgressDisplayed() ) { updateProgress(); }
-				}
+			// choose the smaller ontology.
+			List<Node> smallerList = null, largerList = null;
+			Lexicon smallerLexicon = null, largerLexicon = null;
+			
+			if( sourceList.size() > targetList.size() ) {
+				smallerList = targetList;
+				smallerLexicon = targetLexicon;
+				largerList = sourceList;
+				largerLexicon = sourceLexicon;
+				sourceIsLarger = true;
+			} else {
+				smallerList = sourceList;
+				smallerLexicon = sourceLexicon;
+				largerList = targetList;
+				largerLexicon = targetLexicon;
+				sourceIsLarger = false;
 			}
-			else { // normal algorithm no SCS optimizations				
-				for(int i = 0; i < sourceList.size(); i++) {
-					Node source = sourceList.get(i);
-					OntResource sourceOR = source.getResource().as(OntResource.class);
-					sourceSet = sourceLexicon.getSynSet(sourceOR);
+			
+			// create the hashmap of the smaller ontology
+			extendedSynSets = new HashMap<Node,List<String>>();
+			
+			for( Node currentClass : smallerList ) {
+				OntResource currentOR = currentClass.getResource().as(OntResource.class);
+				LexiconSynSet currentSet = smallerLexicon.getSynSet(currentOR);
+				if( currentSet == null ) continue;
+				List<String> currentExtension = smallerLexicon.extendSynSet(currentSet);
+				currentExtension.addAll(currentSet.getSynonyms());
+				extendedSynSets.put(currentClass, currentExtension);
+				if( this.isCancelled() ) return null;
+			}
+			
+			
+			// iterate through the larger ontology
+			for( int i = 0; i < largerList.size(); i++ ) {
+				Node larger = largerList.get(i);
+				
+				OntResource largerOR = larger.getResource().as(OntResource.class);
+				LexiconSynSet largerSynSet = largerLexicon.getSynSet(largerOR);
+				if( largerSynSet != null ) { 
+					extendedSingle = largerLexicon.extendSynSet( largerSynSet );
+					extendedSingle.addAll(largerSynSet.getSynonyms());
+				}
+				else 
+					extendedSingle = null;
+				
+				if( sourceIsLarger ) { sourceSet = largerSynSet; }
+				
+				for( int j = 0; j < smallerList.size(); j++ ) {
+					Node smaller = smallerList.get(j);
 					
-					for(int j = 0; j < targetList.size(); j++) {
-						Node target = targetList.get(j);
-						
-						if( !this.isCancelled() ) { 
-							Mapping alignment = alignTwoNodes(source, target, typeOfNodes);
-						
+					if( !this.isCancelled() ) {
+						Mapping alignment = null;
+						if( sourceIsLarger ) {
+							alignment = alignTwoNodes(larger, smaller, typeOfNodes);
 							matrix.set(i,j,alignment);
-							if( isProgressDisplayed() ) {
-								stepDone(); // we have completed one step
-								if( alignment != null && alignment.getSimilarity() >= param.threshold ) tentativealignments++; // keep track of possible alignments for progress display
-							}
 						}
-						else { 
-							return matrix; 
+						else {
+							// source set needs to be set
+							OntResource smallerOR = smaller.getResource().as(OntResource.class);
+							sourceSet = smallerLexicon.getSynSet(smallerOR);
+							
+							alignment = alignTwoNodes(smaller, larger, typeOfNodes);
+							matrix.set(j,i,alignment);
 						}
 						
-						if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
+						if( isProgressDisplayed() ) {
+							stepDone(); // we have completed one step
+							if( alignment != null && alignment.getSimilarity() >= param.threshold ) tentativealignments++; // keep track of possible alignments for progress display
+						}
 					}
 				}
+				if( isProgressDisplayed() ) { updateProgress(); }
 			}
-		
-
+	
 			return matrix;
     	}
 		
@@ -263,9 +233,18 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		
 		if( sourceSet == null || targetSet == null ) return null; // one or both of the concepts do not have a synset.
 		
-		//System.out.println( sourceSet.getID() + ": " + sourceSet.getSynonyms().size() + " x " + targetSet.getID() + ": " + targetSet.getSynonyms().size() );
 		
-		ProvenanceStructure provNoTermSyn = synonymSimilarity( sourceSet, targetSet );
+		List<String> sourceExtendedSynonyms, targetExtendedSynonyms;
+		
+		if( sourceIsLarger ) {
+			sourceExtendedSynonyms = extendedSingle;
+			targetExtendedSynonyms = extendedSynSets.get(target);
+		} else {
+			sourceExtendedSynonyms = extendedSynSets.get(source);
+			targetExtendedSynonyms = extendedSingle;
+		}
+		
+		ProvenanceStructure provNoTermSyn = computeLexicalSimilarity(sourceExtendedSynonyms, targetExtendedSynonyms, 1.0d);
 		
 		if( provNoTermSyn != null && provNoTermSyn.similarity > 0.0d ) {
 			if( getParam().storeProvenance ) {
@@ -277,38 +256,11 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 			}
 		}
 		
-		if( ((LexicalSynonymMatcherParameters)param).useSynonymTerms ) { // using subconcept synonyms	
-			
-			List<String> sourceExtendedSynonyms, targetExtendedSynonyms;
-			
-			if( sourceIsLarger ) {
-				sourceExtendedSynonyms = extendedSingle;
-				targetExtendedSynonyms = extendedSynSets.get(target);
-			} else {
-				sourceExtendedSynonyms = extendedSynSets.get(source);
-				targetExtendedSynonyms = extendedSingle;
-			}
-			
-			if( sourceExtendedSynonyms == null || targetExtendedSynonyms == null || sourceExtendedSynonyms.isEmpty() || targetExtendedSynonyms.isEmpty() ) {
-				// no extra synonyms.
-				return null;
-			}
-			
-			ProvenanceStructure prov = computeLexicalSimilarity(sourceExtendedSynonyms, targetExtendedSynonyms, 0.9d);
-			
-			if( prov != null && prov.similarity > 0.0d ) {
-				if( getParam().storeProvenance ) {
-					Mapping m = new Mapping(source, target, prov.similarity);
-					m.setProvenance(prov.getProvenanceString());
-					return m;
-				} else {
-					return new Mapping(source, target, prov.similarity);
-				}
-			}
-		}
-		
+
 		return null;
 	}
+
+	
 
 	/**
 	 * Given the synsets associated with two concepts, calculate the "synonym similarity" between the concepts.
@@ -317,6 +269,7 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	 * 
 	 * @return Currently we return the greatest similarity we find.
 	 */
+	@Deprecated
 	private ProvenanceStructure synonymSimilarity(LexiconSynSet sourceSet, LexiconSynSet targetSet) {
 	
 		ProvenanceStructure prov = null; // keep track of the provenance info
