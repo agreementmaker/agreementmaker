@@ -440,7 +440,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	
     	else if(param.largeOntologyMode ==true){
     		//run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
-	    	SimilarityMatrix matrix = new SparseMatrix(typeOfNodes, relation);
+	    	SimilarityMatrix matrix = new SparseMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 			Node source;
 			Node target;
 			Mapping alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
@@ -592,7 +592,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 	protected Alignment<Mapping> oneToOneMatching(SimilarityMatrix matrix) {
 		Alignment<Mapping> aset = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
-		double[][] similarityMatrix = matrix.getCopiedSimilarityMatrix();
+		double[][] similarityMatrix = matrix.getCopiedSimilarityMatrix();  // in order of our selection algorithm to be scalable, this has to change! we cannot allocate an NxM matrix if N and M are large! - Cosmin.
 		MaxWeightBipartiteMatching<Integer> mwbm = new MaxWeightBipartiteMatching<Integer>(similarityMatrix, param.threshold);
 		Collection<MappingMWBM<Integer>> mappings = mwbm.execute();
 		Iterator<MappingMWBM<Integer>> it = mappings.iterator();

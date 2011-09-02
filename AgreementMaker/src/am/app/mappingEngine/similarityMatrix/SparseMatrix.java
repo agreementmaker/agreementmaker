@@ -10,12 +10,11 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
-import am.app.ontology.Ontology;
 
 
 // TODO: Keep track of matrix bounds.
@@ -23,19 +22,30 @@ import am.app.ontology.Ontology;
 public class SparseMatrix extends SimilarityMatrix
 {
 	private RowCell<Mapping> head;// LinkedList<LinkedList<RowCell>> rows;
-	private int rows;
-	//private List matrixList;
+	/** The number of rows in this matrix. */
+	private final int numRows; 
 	
+	/** The number of columns in this matrix. */
+	private final int numCols;
 	
-	
-	public SparseMatrix()
+	/**
+	 * Main constructor of the SparseMatrix.
+	 * @param numRows The number of rows in the matrix.
+	 * @param numCols The number of columns in the matrix.
+	 */
+	public SparseMatrix(int numRows, int numCols)
 	{
-		//rows=new LinkedList<LinkedList<RowCell>>();
-		head=new RowCell<Mapping>(-1,-1,null);//create the head of the LL
-		rows=0;
+		// save the dimensions
+		this.numRows = numRows;
+		this.numCols = numCols;
+		
+		//create the head of the LL
+		head = new RowCell<Mapping>(-1,-1,null);
 	}
+	
+	/** A method to clone the similarity matrix. */
 	public SparseMatrix(SparseMatrix cloneme){
-		this();
+		this(cloneme.getRows(), cloneme.getColumns());
 		relation = cloneme.getRelation();
     	typeOfMatrix = cloneme.getAlignType();
     	
@@ -48,30 +58,34 @@ public class SparseMatrix extends SimilarityMatrix
     	
     	while(currentRow!=null){
     		//clone stuff here
-    		this.set(currentRow.row, currentRow.col, currentRow.ob);
+    		this.set(currentRow.row, currentRow.col, currentRow.object);
     		currentCol=currentRow.nextc;
     		
     		while(currentCol!=null){
     			//clone stuff here
-    			this.set(currentCol.row, currentCol.col, currentCol.ob);
+    			this.set(currentCol.row, currentCol.col, currentCol.object);
     			currentCol=currentCol.nextc;
     		}
     		currentRow=currentRow.nextr;
     	}
 	}
-	public SparseMatrix(Ontology s, Ontology t, alignType type) {
+	
+	/*public SparseMatrix(Ontology s, Ontology t, alignType type) {
 		this();
     	relation = MappingRelation.EQUIVALENCE;
     	typeOfMatrix = type;
     	
     	sourceOntologyID=s.getID();
     	targetOntologyID=t.getID();    	
-	}
-	public SparseMatrix(alignType type, MappingRelation rel){
-		this();
+	}*/
+	
+	/** A constructor used in AbstractMatcher. */
+	public SparseMatrix(int numRows, int numCols, alignType type, MappingRelation rel){
+		this(numRows, numCols);
     	relation = rel;
     	typeOfMatrix = type;
 	}
+	
 	@Override
 	public void set(int row, int column, Mapping obj)
 	{
@@ -99,7 +113,7 @@ public class SparseMatrix extends SimilarityMatrix
 					//currentCell.nextr=null;
 					
 					//notDone=false;
-					rows++;
+					//numRows++;
 					break;
 				}
 				else if(row == currentCell.row)//if the rows are equal then we need to start looking at col to insert
@@ -171,7 +185,7 @@ public class SparseMatrix extends SimilarityMatrix
 								}
 							}else{
 								//replace whats in the current rowCell
-								currentCell.ob=obj;
+								currentCell.object = obj;
 								notDone=false;
 								break;
 							}
@@ -194,7 +208,7 @@ public class SparseMatrix extends SimilarityMatrix
 					currentCell.nextr=newCell;
 					newCell.prevr=currentCell;
 					//notDone=false;
-					rows++;
+					//numRows++;
 					break;
 				}
 				currentCell=currentCell.nextr;//grab the next row in case it needs to
@@ -218,7 +232,7 @@ public class SparseMatrix extends SimilarityMatrix
 					while(!done)
 					{
 						if(currentCell.col==j)
-							return currentCell.ob;
+							return currentCell.object;
 						else if(currentCell.nextc!=null)
 							currentCell=currentCell.nextc;
 						else
@@ -234,9 +248,8 @@ public class SparseMatrix extends SimilarityMatrix
 		return null;
 	}
 	
-	public RowCell<Mapping> getHead(){
-		return head;
-	}
+	/** TODO: Does this method really have to be public? */
+	public RowCell<Mapping> getHead() { return head; }
 	
 	@Override
 	public String toString() {
@@ -257,6 +270,7 @@ public class SparseMatrix extends SimilarityMatrix
 		return print;
 
 	}
+	
 	@Override
 	public List<Mapping> chooseBestN() {
 		System.err.println("Not implemented");
@@ -280,18 +294,22 @@ public class SparseMatrix extends SimilarityMatrix
 		System.err.println("Not implemented");
 		return null;
 	}
+	
 	@Override
 	public SimilarityMatrix clone() {
 		return new SparseMatrix(this);
 	}
+	
 	@Override
 	public void fillMatrix(double d, List<Node> sourceList,
 			List<Node> targetList) {
 		// TODO not needed yet
 		System.err.println("Not implemented yet");
 	}
+	
 	@Override
 	public alignType getAlignType() { return typeOfMatrix;}
+	
 	@Override
 	public Mapping[] getColMaxValues(int col, int numMaxValues) {
 		//i do not check for maxAlignements < numMaxValues
@@ -310,7 +328,7 @@ public class SparseMatrix extends SimilarityMatrix
 			RowCell<Mapping> currentCol=currentRow;
 			while(currentCol!=null){
 				if(currentCol.col==col){
-					currentValue= currentCol.ob;
+					currentValue= currentCol.object;
 					for(int k = 0;k<maxAlignments.length; k++) {
 						currentMax = maxAlignments[k];
 						if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value
@@ -327,6 +345,7 @@ public class SparseMatrix extends SimilarityMatrix
 		
 		return maxAlignments;
 	}
+	
 	@Override
 	public double getColSum(int col) {
 		// returns a sum of similarities for a col
@@ -344,18 +363,24 @@ public class SparseMatrix extends SimilarityMatrix
     	}
 		return sum;
 	}
-	@Override
-	public int getColumns() {
-		//FIXME this method is not used in the sparse matrix because the columns can be different for each row
-		System.err.println("This method is not used because the column size differs for each row");
-		return -1;
-	}
+	
+	@Override public int getColumns() { return numCols; }
+	@Override public int getRows() { return numRows; }
+	
 	@Override
 	public double[][] getCopiedSimilarityMatrix() {
-		// FIXME remove
-		System.err.println("to be deleted");
-		return null;
+		
+		double[][] copiedMatrix = new double[numRows][numCols];
+		
+		for( int i = 0; i < numRows; i++ ) {
+			for( int j = 0; j < numCols; j++ ) {
+				copiedMatrix[i][j] = getSimilarity(i, j);
+			}
+		}
+		
+		return copiedMatrix;
 	}
+	
 	@Override
 	public double getMaxValue() {
 		// returns the max similarity of the matrix
@@ -364,19 +389,20 @@ public class SparseMatrix extends SimilarityMatrix
     	currentRow=head.nextr;//get the first row
     	
     	while(currentRow!=null){
-    		if(currentRow.ob.getSimilarity()>max)
-    			max=currentRow.ob.getSimilarity();
+    		if(currentRow.object.getSimilarity()>max)
+    			max=currentRow.object.getSimilarity();
  
     		currentCol=currentRow.nextc;
     		while(currentCol!=null){
-    			if(currentCol.ob.getSimilarity()>max)
-        			max=currentCol.ob.getSimilarity();
+    			if(currentCol.object.getSimilarity()>max)
+        			max=currentCol.object.getSimilarity();
     			currentCol=currentCol.nextc;
     		}
     		currentRow=currentRow.nextr;
     	}
 		return max;
 	}
+	
 	@Override
 	public Mapping[] getRowMaxValues(int row, int numMaxValues) {
 		//i do not check for maxAlignements < numMaxValues
@@ -395,7 +421,7 @@ public class SparseMatrix extends SimilarityMatrix
 			if(currentRow.row==row){
 				RowCell<Mapping> currentCol=currentRow;
 				while(currentCol!=null){
-					currentValue= currentCol.ob;
+					currentValue= currentCol.object;
 					for(int k = 0;k<maxAlignments.length; k++) {
 						currentMax = maxAlignments[k];
 						if(currentValue.getSimilarity() >= currentMax.getSimilarity()) { //if so switch the new value with the one in array and then i have to continue scanning the array to put in the switched value
@@ -412,6 +438,7 @@ public class SparseMatrix extends SimilarityMatrix
 		
 		return maxAlignments;
 	}
+	
 	@Override
 	public double getRowSum(int row) {
 		// gets the sum of the similarities for a row
@@ -421,10 +448,10 @@ public class SparseMatrix extends SimilarityMatrix
 		currentRow=head.nextr;//get the first row
 		while(currentRow!=null){
 			if(currentRow.row==row){
-				sum+=currentRow.ob.getSimilarity();
+				sum+=currentRow.object.getSimilarity();
 	    		currentCol=currentRow.nextc;
 	    		while(currentCol!=null){
-	    			sum+=currentCol.ob.getSimilarity();
+	    			sum+=currentCol.object.getSimilarity();
 	    			currentCol=currentCol.nextc;
 	    		}
 			}
@@ -432,11 +459,7 @@ public class SparseMatrix extends SimilarityMatrix
     	}
 		return sum;
 	}
-	@Override
-	public int getRows() {
-		// returns the number of the rows in the matrix
-		return rows;
-	}
+	
 	@Override
 	public double getSimilarity(int i, int j) {
 		// returns the similarity of the specified row
@@ -445,24 +468,28 @@ public class SparseMatrix extends SimilarityMatrix
 			return 0.00d;
 		return temp.getSimilarity();
 	}
+	
 	@Override
 	public Mapping[] getTopK(int k) {
 		// FIXME implemnt
 		System.err.println("Not implemented yet topK");
 		return null;
 	}
+	
 	@Override
 	public Mapping[] getTopK(int k, boolean[][] filteredCells) {
 		// FIXME implement
 		System.err.println("Not implemented yet topK2");
 		return null;
 	}
+	
 	@Override
 	public void initFromNodeList(List<Node> sourceList, List<Node> targetList) {
 		// FIXME remove
-		System.err.println("to be deleted");
+		System.err.println("initFromNodeList: to be deleted");
 		
 	}
+	
 	@Override
 	public void setSimilarity(int i, int j, double d) {
 		// sets the similarity of a specified entry in the matrix
@@ -471,47 +498,50 @@ public class SparseMatrix extends SimilarityMatrix
 			temp.setSimilarity(d);
 		
 	}
+	
 	@Override
 	public SimilarityMatrix toArraySimilarityMatrix() {
 		//FIXME remove
-		System.err.println("to be deleted");
+		System.err.println("toArraySimilarityMatrix: to be deleted");
 		return null;
 	}
+	
 	@Override
 	public List<Mapping> toMappingArray() {
 		ArrayList<Mapping> mappings=new ArrayList<Mapping>();
 		RowCell<Mapping> currentCol, currentRow;
 		currentRow=head.nextr;//get the first row
 		while(currentRow!=null){
-			mappings.add(currentRow.ob);
+			mappings.add(currentRow.object);
     		currentCol=currentRow.nextc;
     		while(currentCol!=null){
-    			mappings.add(currentCol.ob);
+    			mappings.add(currentCol.object);
     			currentCol=currentCol.nextc;
     		}
     		currentRow=currentRow.nextr;
     	}
 		return mappings;
 	}
+	
 	@Override
 	public List<Mapping> toMappingArray(FileWriter fw, int round) {
 		ArrayList<Mapping> mappingArray = new ArrayList<Mapping>();
 		RowCell<Mapping> currentCol, currentRow;
 		currentRow=head.nextr;//get the first row
 		while(currentRow!=null){
-			mappingArray.add(currentRow.ob);
+			mappingArray.add(currentRow.object);
 			if(round == 1)
 			try {
-				fw.append(currentRow.ob.toString() + "\n");
+				fw.append(currentRow.object.toString() + "\n");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
     		currentCol=currentRow.nextc;
     		while(currentCol!=null){
-    			mappingArray.add(currentCol.ob);
+    			mappingArray.add(currentCol.object);
     			if(round == 1)
     			try {
-    				fw.append(currentCol.ob.toString() + "\n");
+    				fw.append(currentCol.object.toString() + "\n");
     			} catch (IOException e) {
     				e.printStackTrace();
     			}
@@ -530,6 +560,7 @@ public class SparseMatrix extends SimilarityMatrix
 		}
 		return mappingArray;
 	}
+	
 	@Override
 	public List<Double> toSimilarityArray(List<Mapping> mapsArray) {
 		ArrayList<Double> similarities=new ArrayList<Double>();
@@ -538,45 +569,47 @@ public class SparseMatrix extends SimilarityMatrix
 		return similarities;
 	}
 
-	
-	
-	public class RowCell <E>
+	/** This class is used in the implementation of the SparseMatrix. */
+	protected class RowCell <E>
 	{
 		public int row, col;
-		public E ob;
+		public E object;
 		public RowCell<E> nextr=null, nextc=null, prevr=null, prevc=null;
 		public RowCell(int r, int c, E o)
 		{
 			row=r;
 			col=c;
-			ob=o;
+			object=o;
 		}
 	}
+
 	
 	//junit tests
-	/*
+	
 	@Test public void replaceTest(){
-		SparseMatrix m=new SparseMatrix();
-		m.set(0, 0, new Mapping(.0));
+		SparseMatrix m=new SparseMatrix(10,10);
+		m.set(0, 0, new Mapping(0.0d));
 		m.set(0, 0, null);
-		m.set(0, 1, new Mapping(.2));
-		//System.out.println(m.get(0, 1));
-		assertTrue(m.get(0, 1).getSimilarity()==.2);
+		m.set(0, 1, new Mapping(0.2d));
+		m.set(0, 1, new Mapping(0.3d));
+
+		assertTrue( m.get(0, 0) == null );
+		assertTrue( m.get(0, 1).getSimilarity() == 0.3d );
 	}
-	/*
+	
 	@Test public void insertAndGet16000000() {
-		long start=System.currentTimeMillis();
-		for(int j=0;j<500;j++){
-			Random r=new Random();
-			ArrayList<Integer> xVals=new ArrayList<Integer>();
-			ArrayList<Integer> yVals=new ArrayList<Integer>();
+		long start = System.currentTimeMillis();
+		for(int j = 0; j < 500; j++){
+			Random r = new Random();
+			ArrayList<Integer> xVals = new ArrayList<Integer>();
+			ArrayList<Integer> yVals = new ArrayList<Integer>();
 			
-			for(int i=0;i<4000;i++){
+			for(int i = 0; i < 4000; i++){
 				xVals.add(new Integer(i));
 				yVals.add(new Integer(i));
 			}
 			
-			SparseMatrix m=new SparseMatrix();
+			SparseMatrix m=new SparseMatrix(16000000,16000000);
 			int[] x=new int[16000000];
 			int[] y=new int[16000000];
 			double[] z=new double[16000000];
@@ -595,7 +628,7 @@ public class SparseMatrix extends SimilarityMatrix
 				xVals.remove(x1);
 				yVals.remove(y1);
 			}
-			/*
+			
 			//check the entries
 			for(int i=0;i<4000;i++){
 				//System.out.println("getting i="+i+" : ("+x[i]+","+y[i]+")");
@@ -610,5 +643,5 @@ public class SparseMatrix extends SimilarityMatrix
 		long total=end-start;
 		System.out.println("total time (in seconds): "+(total/100)/500);
 	}
-	*/
+
 }
