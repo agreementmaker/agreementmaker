@@ -12,5 +12,7 @@ public class NYTConstants {
 	public static String NYT_LOCATIONS = "OAEI2011/NYTDatasets/locations.rdf";
 	public static String NYT_ORGANIZATIONS = "OAEI2011/NYTDatasets/organizations.rdf";
 	
+	public static String DBPEDIA = "DBPedia";
+	public static String FREEBASE = "Freebase";
 
 }

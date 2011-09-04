@@ -6,9 +6,9 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 import am.GlobalStaticVariables;
+import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 
-import com.hp.hpl.jena.ontology.Ontology;
 
 public class Utilities {
 
@@ -19,7 +19,7 @@ public class Utilities {
 			GlobalStaticVariables.LANG_OWL, 
 			GlobalStaticVariables.SYNTAX_RDFXML, false, true);
 			treeBuilder.build();
-			ontology = (Ontology) treeBuilder.getOntology();
+			ontology = treeBuilder.getOntology();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
