@@ -45,4 +45,12 @@ public class Utilities {
 
 	    return page;
 	}
+	
+	public static String processLabel(String label){
+		if(label.contains(",")){
+			String[] splitted = label.split(",");
+			return splitted[1].trim() + " " + splitted[0].trim();
+		}
+		return label; 
+	}
 }

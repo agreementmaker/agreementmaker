@@ -19,7 +19,10 @@ public class NYTConstants {
 	public static String FREEBASE = "Freebase";
 
 	//KB files
-	public static String DBP_PERSONDATA = "people.xml";
+	public static String DBP_PERSON_XML = "people.xml";
+	
+	//Ids
+	public static String DBP_PERSON = "dbp_persondata";
 	
 	
 }
