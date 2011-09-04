@@ -8,7 +8,7 @@
 	<!-- Geolabels may be added later.
 		<Dataset id="dbp_geolabels" ontid="dbpedia" directory="datasets/dbp_geolabels" /> -->
 	
-	<Dataset id="dbp_persondata" ontid="dbpedia" directory="datasets/dbp_persondata"
+	<Dataset id="dbp_persondata" ontid="" directory="datasets/dbp_persondata"
 		archive="archive/persondata_en.nt.bz2" />
 
 </KnowledgeBase>
