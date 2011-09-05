@@ -1,12 +1,14 @@
 package matching;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import parallel.SearchThread;
 
@@ -31,12 +33,16 @@ import edu.uic.advis.im.knowledgebase.ontology.OntologyKBFactory;
 import misc.NYTConstants;
 import misc.Queries;
 import misc.Utilities;
+import am.app.mappingEngine.StringUtil.StringMetrics;
+import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.Ontology;
+import am.output.AlignmentOutput;
 
 
 public class NYTInstanceMatcher{
 	Ontology sourceOntology;
-	double luceneScoreThreshold = 0.7;
+	public double luceneScoreThreshold = 0.7;
+	public double AMSubstringThreshold = 0.8;
 	
 	private OntologyBackedKnowledgeBase kb;
 	
@@ -44,7 +50,9 @@ public class NYTInstanceMatcher{
 	
 	private String endpoint;
 	
-	private Vector<InstanceMapping> mappings;
+	private Vector<MatchingPair> mappings;
+	
+	boolean online = true;
 	
 	ExecutorService e =  Executors.newFixedThreadPool(8);
 	
@@ -57,7 +65,7 @@ public class NYTInstanceMatcher{
 	public NYTInstanceMatcher(String source, String targetId){
 		this.targetId = targetId;
 		
-		mappings = new Vector<InstanceMapping>();
+		mappings = new Vector<MatchingPair>();
 		
 		System.out.println("Opening source ontology...");
 		sourceOntology = Utilities.openOntology(source);
@@ -85,38 +93,55 @@ public class NYTInstanceMatcher{
 		System.out.println(targetId);
 		OntModel targetModel = kb.getOntModelByID(targetId);
 		
-		int online = 0;
 		
 		String instanceURI;
 		Statement stmt;
 		for(int i = 0; i < indStatements.size(); i++ ){
+			if(i % 100 == 0) System.out.println(i);
+			
 			stmt = indStatements.get(i);
 			instanceURI = stmt.getSubject().getURI();
 			
-			String label = Queries.getPropertyValue(sourceModel, instanceURI, NYTConstants.SKOS_PREFLABEL);
+			String sourceLabel = Queries.getPropertyValue(sourceModel, instanceURI, NYTConstants.SKOS_PREFLABEL);
 			
 			//System.out.println();
 			
-			label = Utilities.processLabel(label);
+			sourceLabel = Utilities.processLabel(sourceLabel);
 			
-			List<Individual> candidates = freeTextQuery(targetModel, label, NYTConstants.FOAF_NAME);
+			List<Individual> candidates = freeTextQuery(targetModel, sourceLabel, NYTConstants.FOAF_NAME);
 			
 			Individual matched = null;
 			
 			if(candidates.size() == 1){
 				matched = candidates.get(0);
-				addMapping(instanceURI, matched.getURI());
+				
+				String targetLabel = Queries.getPropertyValue(targetModel, matched.getURI(), NYTConstants.FOAF_NAME);
+				
+				double sim = StringMetrics.AMsubstringScore(sourceLabel, targetLabel);
+				
+				if(sim > AMSubstringThreshold)
+					addMapping(instanceURI, matched.getURI());
 			}
 			else if(candidates.size() == 0){
-				online++;
-				e.execute(new SearchThread(this, instanceURI, label, endpoint));
+				if(online){
+					e.execute(new SearchThread(this, i, instanceURI, sourceLabel, endpoint));
+				}
 			}
-			
 
 		}
+		//System.out.println(online);
 		
-		System.out.println(online);
+		if(online){
+			e.awaitTermination(5, TimeUnit.MINUTES);
+			e.shutdown();			
+		}
+			
 		
+		System.out.println("Writing on file...");
+		String output = alignmentsToOutput(mappings);
+		FileOutputStream fos = new FileOutputStream("alignment.rdf");
+		fos.write(output.getBytes());
+		System.out.println("Done");
 	}
 	
 	
@@ -186,19 +211,31 @@ public class NYTInstanceMatcher{
 		
 		String result = Queries.executeQuery(endpoint, queryString);
 		
-		ResultSet set = ResultSetFactory.fromXML(result);
-		
-		while(set.hasNext()){
-			System.out.println(set.next());
-		}
-		
+		ResultSet set = ResultSetFactory.fromXML(result);		
 		//ArrayList<Individual> candidates = new ArrayList<Individual>();
 	    	    
 		return set;
 	}
 	
 	public void addMapping(String source, String target){
-		mappings.add(new InstanceMapping(source, target));
+		mappings.add(new MatchingPair(source, target));
+	}
+	
+	public String alignmentsToOutput(Vector<MatchingPair> mappings){
+		AlignmentOutput ao = new AlignmentOutput(null);
+		ao.stringNS();
+        ao.stringStart("yes", "0", "11", "onto1", "onto2", "uri1", "uri2");
+        
+        for (int i = 0, n = mappings.size(); i < n; i++) {
+            MatchingPair mapping = mappings.get(i);
+            String e1 = mapping.sourceURI;
+            String e2 = mapping.targetURI;
+            String measure = Double.toString(1.0);
+            ao.stringElement(e1, e2, measure);
+        }
+        
+        ao.stringEnd();
+        return ao.getString();
 	}
 	
 }

@@ -3,6 +3,10 @@ package parallel;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.junit.experimental.theories.internal.AllMembersSupplier;
+
+import am.app.mappingEngine.StringUtil.StringMetrics;
+
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -14,11 +18,14 @@ public class SearchThread implements Runnable{
 	String endpoint;
 	String search;
 	String sourceURI;
+	int n;
 	
-	public SearchThread(NYTInstanceMatcher matcher, String sourceURI, String search, String endpoint){
+	public SearchThread(NYTInstanceMatcher matcher, int n, String sourceURI, String search, String endpoint){
 		this.matcher = matcher;
 		this.endpoint = endpoint;
 		this.search = search;
+		this.sourceURI = sourceURI;
+		this.n = n;
 	}
 	
 	@Override
@@ -43,9 +50,19 @@ public class SearchThread implements Runnable{
 		if(results.size() == 1){
 			QuerySolution solution = results.get(0);
 			RDFNode node = solution.get("p");
-			matcher.addMapping(sourceURI, node.asResource().getURI());
+			System.out.println(node);
+			RDFNode label = solution.get("name");
+			System.out.println(label);
+			
+			double sim = StringMetrics.AMsubstringScore(label.asLiteral().getString(), search);
+			
+			if(sim > matcher.AMSubstringThreshold){
+				System.out.println("Creating mapping: " + sourceURI + " " + node.asResource().getURI());
+				matcher.addMapping(sourceURI, node.asResource().getURI());
+			}
 		}
 		//System.out.println("online candidates: " + candidates);
+		System.out.println("Thread " + n + " ending");
 	}
 
 }
