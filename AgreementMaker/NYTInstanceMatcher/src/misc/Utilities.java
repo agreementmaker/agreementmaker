@@ -27,7 +27,7 @@ public class Utilities {
 		return ontology;
 	}
 	
-	public String getPage(String pageURL) throws IOException{
+	public static String getPage(String pageURL) throws IOException{
 		URL myUrl;
 		myUrl = new URL(pageURL);
 	    

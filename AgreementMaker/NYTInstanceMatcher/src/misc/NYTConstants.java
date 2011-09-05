@@ -18,6 +18,9 @@ public class NYTConstants {
 	public static String DBPEDIA = "DBPedia";
 	public static String FREEBASE = "Freebase";
 
+	public static String DBP_ENDPOINT = "http://dbpedia.org/sparql";
+	
+	
 	//KB files
 	public static String DBP_PERSON_XML = "people.xml";
 	
