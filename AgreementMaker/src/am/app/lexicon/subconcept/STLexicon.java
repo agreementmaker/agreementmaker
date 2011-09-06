@@ -83,15 +83,15 @@ public class STLexicon extends GeneralLexicon implements SynonymTermLexicon {
 						String newSynonym = existingSynonym.replace(" " + subconceptSynonym + " ", " " + subconceptPairWord + " ");
 						newSynonymList.add(newSynonym);
 					}
-
-				} else if( existingSynonym.contains( " " + subconceptSynonym ) ) {
+//Catia: edited to account for cases where the subconceptSynonym is a very short string: eg "c" is a synonym for "parafollicular", so epigastric was being extended to epigastriparafollicular.
+				} else if( existingSynonym.contains( " " + subconceptSynonym ) && subconceptSynonym.length()>2 ) {
 					// the current synonym contains the sub concept synonym.
 					List<String> subconceptEntries = getSynonymTerms(subconceptSynonym);
 					for( String subconceptPairWord : subconceptEntries ) {
 						String newSynonym = existingSynonym.replace(" " + subconceptSynonym, " " + subconceptPairWord);
 						newSynonymList.add(newSynonym);
 					}
-				} else if( existingSynonym.contains( subconceptSynonym + " ") ) {
+				} else if( existingSynonym.contains( subconceptSynonym + " ")  && subconceptSynonym.length()>2) {
 					// the current synonym contains the sub concept synonym.
 					List<String> subconceptEntries = getSynonymTerms(subconceptSynonym);
 					for( String subconceptPairWord : subconceptEntries ) {
