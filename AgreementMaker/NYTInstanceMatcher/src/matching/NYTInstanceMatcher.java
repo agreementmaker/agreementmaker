@@ -6,11 +6,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import parallel.SearchThread;
+import parallel.SPARQLSearchThread;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -38,7 +40,6 @@ import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.Ontology;
 import am.output.AlignmentOutput;
 
-
 public class NYTInstanceMatcher{
 	Ontology sourceOntology;
 	public double luceneScoreThreshold = 0.7;
@@ -47,7 +48,6 @@ public class NYTInstanceMatcher{
 	private OntologyBackedKnowledgeBase kb;
 	
 	private String targetId;
-	
 	private String endpoint;
 	
 	private Vector<MatchingPair> mappings;
@@ -56,6 +56,13 @@ public class NYTInstanceMatcher{
 	
 	ExecutorService e =  Executors.newFixedThreadPool(8);
 	
+	ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 30, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(5000));
+	
+	int ambiguous = 0;
+	int noResults = 0;
+	int singleResult = 0;
+	
+	Vector<Integer> runningThreads = new Vector<Integer>();
 	
 	/**
 	 * 
@@ -89,13 +96,20 @@ public class NYTInstanceMatcher{
 		OntModel sourceModel = sourceOntology.getModel();
 		List<Statement> indStatements = Queries.getIndividualsStatements(sourceModel, NYTConstants.SKOS_CONCEPT);
 		
-		
 		System.out.println(targetId);
-		OntModel targetModel = kb.getOntModelByID(targetId);
 		
+		OntModel targetModel = null;
+		
+		if(kb != null)
+			targetModel = kb.getOntModelByID(targetId);
+		
+		if(targetModel == null){
+			System.out.println("We have no model, we have to go online");
+		}
 		
 		String instanceURI;
 		Statement stmt;
+		
 		for(int i = 0; i < indStatements.size(); i++ ){
 			if(i % 100 == 0) System.out.println(i);
 			
@@ -103,16 +117,20 @@ public class NYTInstanceMatcher{
 			instanceURI = stmt.getSubject().getURI();
 			
 			String sourceLabel = Queries.getPropertyValue(sourceModel, instanceURI, NYTConstants.SKOS_PREFLABEL);
-			
-			//System.out.println();
-			
 			sourceLabel = Utilities.processLabel(sourceLabel);
 			
-			List<Individual> candidates = freeTextQuery(targetModel, sourceLabel, NYTConstants.FOAF_NAME);
+			List<Individual> candidates;
+			
+			if(targetModel != null){
+				candidates = freeTextQuery(targetModel, sourceLabel, NYTConstants.FOAF_NAME);
+			}
+			else candidates = new ArrayList<Individual>();
 			
 			Individual matched = null;
 			
 			if(candidates.size() == 1){
+				addSingleResult();
+				
 				matched = candidates.get(0);
 				
 				String targetLabel = Queries.getPropertyValue(targetModel, matched.getURI(), NYTConstants.FOAF_NAME);
@@ -124,18 +142,50 @@ public class NYTInstanceMatcher{
 			}
 			else if(candidates.size() == 0){
 				if(online){
-					e.execute(new SearchThread(this, i, instanceURI, sourceLabel, endpoint));
+					runningThreads.add(i);
+					
+					if(targetId.equals(NYTConstants.DBP_PERSON)){
+						executor.execute(new SPARQLSearchThread(this, i, instanceURI, sourceLabel, endpoint));
+					}
+					else if(targetId.equals(NYTConstants.FRB_PERSON)){
+						
+					}
 				}
+				else {
+					System.out.println("Without going online there's nothing we can do");
+				}
+			}
+			else {
+				addAmbiguous();
 			}
 
 		}
 		//System.out.println(online);
 		
 		if(online){
-			e.awaitTermination(5, TimeUnit.MINUTES);
-			e.shutdown();			
+			//executor.awaitTermination(5, TimeUnit.MINUTES);
+			executor.shutdown();
+			
+			int remaining = executor.getActiveCount() + executor.getQueue().size();
+			
+			while(remaining > 0){
+				Thread.sleep(3000);
+				System.out.println(runningThreads);
+				System.out.println(remaining);
+				
+				remaining = executor.getActiveCount() + executor.getQueue().size();
+				
+			}
+			
+			if(runningThreads.size() > 0){
+				//TODO redo the queries which didn't work
+			}
 		}
 			
+		System.out.println("Ambiguous: " + ambiguous);
+		System.out.println("No Results: " + noResults);
+		System.out.println("Single result: " + singleResult);
+		System.out.println("Total: " + (ambiguous + noResults + singleResult));
 		
 		System.out.println("Writing on file...");
 		String output = alignmentsToOutput(mappings);
@@ -194,7 +244,7 @@ public class NYTInstanceMatcher{
 		return candidates;
 	}
 	
-	public static ResultSet freeTextQueryOnline(String endpoint, String search) throws IOException{
+	public static ResultSet freeTextQueryOnline(String endpoint, String search, int n) throws IOException{
 		System.out.println("ONLINE!");
 		search = search.replaceAll("'", "\\\\'");
 		
@@ -209,7 +259,12 @@ public class NYTInstanceMatcher{
 		
 		//System.out.println(queryString);
 		
+		System.out.println(n + " exe query");
 		String result = Queries.executeQuery(endpoint, queryString);
+				
+		System.out.println(n + " " + result);
+		
+		if(!result.startsWith("<sparql")) return null;
 		
 		ResultSet set = ResultSetFactory.fromXML(result);		
 		//ArrayList<Individual> candidates = new ArrayList<Individual>();
@@ -236,6 +291,22 @@ public class NYTInstanceMatcher{
         
         ao.stringEnd();
         return ao.getString();
+	}
+	
+	public synchronized void addAmbiguous(){
+		ambiguous++;
+	}
+	
+	public synchronized void addSingleResult(){
+		singleResult++;
+	}
+	
+	public synchronized void addNoResults(){
+		noResults++;
+	}
+	
+	public void deleteRunningThread(Integer id){
+		runningThreads.remove((Object) id );
 	}
 	
 }

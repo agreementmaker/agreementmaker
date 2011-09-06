@@ -13,14 +13,14 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 
 import matching.NYTInstanceMatcher;
 
-public class SearchThread implements Runnable{
+public class SPARQLSearchThread implements Runnable{
 	NYTInstanceMatcher matcher;
 	String endpoint;
 	String search;
 	String sourceURI;
 	int n;
 	
-	public SearchThread(NYTInstanceMatcher matcher, int n, String sourceURI, String search, String endpoint){
+	public SPARQLSearchThread(NYTInstanceMatcher matcher, int n, String sourceURI, String search, String endpoint){
 		this.matcher = matcher;
 		this.endpoint = endpoint;
 		this.search = search;
@@ -34,9 +34,14 @@ public class SearchThread implements Runnable{
 		ResultSet set;
 		
 		try {
-			set = NYTInstanceMatcher.freeTextQueryOnline(endpoint, search);
+			set = NYTInstanceMatcher.freeTextQueryOnline(endpoint, search, n);
 		} catch (IOException e1) {
 			e1.printStackTrace();
+			return;
+		}
+		
+		if(set == null){
+			matcher.deleteRunningThread(n);
 			return;
 		}
 		
@@ -48,11 +53,12 @@ public class SearchThread implements Runnable{
 		
 				
 		if(results.size() == 1){
+			matcher.addSingleResult();
 			QuerySolution solution = results.get(0);
 			RDFNode node = solution.get("p");
-			System.out.println(node);
+			//System.out.println(node);
 			RDFNode label = solution.get("name");
-			System.out.println(label);
+			//System.out.println(label);
 			
 			double sim = StringMetrics.AMsubstringScore(label.asLiteral().getString(), search);
 			
@@ -61,8 +67,19 @@ public class SearchThread implements Runnable{
 				matcher.addMapping(sourceURI, node.asResource().getURI());
 			}
 		}
+		else if(results.size() > 1){
+			matcher.addAmbiguous();
+		}
+		else{
+			matcher.addNoResults();
+		}
 		//System.out.println("online candidates: " + candidates);
 		System.out.println("Thread " + n + " ending");
+		matcher.deleteRunningThread(n);
+	}
+
+	public Integer getN() {
+		return n;
 	}
 
 }

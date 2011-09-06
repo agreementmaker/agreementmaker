@@ -26,6 +26,7 @@ public class NYTConstants {
 	
 	//Ids
 	public static String DBP_PERSON = "dbp_persondata";
+	public static String FRB_PERSON = "freebase_person";
 	
 	
 }
