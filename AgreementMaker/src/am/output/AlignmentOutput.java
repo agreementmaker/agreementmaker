@@ -60,7 +60,7 @@ public class AlignmentOutput
         return buffer.toString();
     }
     
-    private void stringNS()
+    public void stringNS()
     {
         String temp = "<?xml version='1.0' encoding='utf-8'?>\n" 
                 + "<rdf:RDF xmlns='http://knowledgeweb.semanticweb.org/heterogeneity/alignment' \n" 
@@ -69,7 +69,7 @@ public class AlignmentOutput
         buffer.append(temp);
     }
     
-    private void stringStart(String xml, String level, String type, String onto1,
+    public void stringStart(String xml, String level, String type, String onto1,
             String onto2, String uri1, String uri2)
     {
     	//Below two if statement is only for OAEI 09 test case 303 
@@ -99,7 +99,7 @@ public class AlignmentOutput
         buffer.append(temp);
     }
     
-    private void stringElement(String res1, String res2, String measure)
+    public void stringElement(String res1, String res2, String measure)
     {
         String temp = "    <map>\n" 
                 + "      <Cell>\n" 
@@ -293,4 +293,8 @@ public class AlignmentOutput
             e.printStackTrace();
         }
     }
+
+	public String getString() {
+		return buffer.toString();
+	}
 }
