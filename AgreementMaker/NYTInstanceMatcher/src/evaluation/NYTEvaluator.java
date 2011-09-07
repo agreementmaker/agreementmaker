@@ -1,10 +1,8 @@
 package evaluation;
 
-import gov.nih.nlm.nls.lvg.Flows.ToExpansions;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.ArrayList;
+
+import misc.NYTConstants;
 
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -12,7 +10,7 @@ import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 
 public class NYTEvaluator {
 	static String toEvaluate = "alignment.rdf";
-	static String reference = "OAEI2011/NYTReference/nyt-dbpedia-people-mappings.rdf";
+	static String reference = NYTConstants.REF_FREEBASE_ORGANIZATION;
 	
 	
 	public static void evaluate(String file, String reference) throws Exception{
@@ -25,13 +23,6 @@ public class NYTEvaluator {
 		
 		param.fileName = reference;
 		ArrayList<MatchingPair> refPairs = matcher.parseStandardOAEI();
-		
-		
-		//System.out.println("FP:" + filePairs.size());
-		//System.out.println("RP:" + refPairs.size());
-		
-		//System.out.println("FP:" + filePairs.size());
-		//System.out.println("RP:" + refPairs.size());
 		
 		compare(filePairs, refPairs);	
 		
@@ -63,5 +54,4 @@ public class NYTEvaluator {
 	public static void main(String[] args) throws Exception {
 		evaluate(toEvaluate, reference);
 	}
-
 }

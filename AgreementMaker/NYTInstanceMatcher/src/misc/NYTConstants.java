@@ -27,6 +27,16 @@ public class NYTConstants {
 	//Ids
 	public static String DBP_PERSON = "dbp_persondata";
 	public static String FRB_PERSON = "freebase_person";
+	public static String DBP_ORGANIZATION = "dbp_org";
+	public static String FRB_ORGANIZATION = "freebase_org";
+	public static String DBP_LOCATION = "dbp_loc";
+	public static String FRB_LOCATION = "freebase_loc";
+	
+	//References
+	public static String REF_DBP_PEOPLE = "OAEI2011/NYTReference/nyt-dbpedia-people-mappings.rdf";
+	public static String REF_FREEBASE_PEOPLE = "OAEI2011/NYTReference/nyt-freebase-people-mappings.rdf";
+	public static String REF_FREEBASE_LOCATION = "OAEI2011/NYTReference/nyt-freebase-locations-mappings.rdf";
+	public static String REF_FREEBASE_ORGANIZATION = "OAEI2011/NYTReference/nyt-freebase-organizations-mappings.rdf";
 	
 	
 }

@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import parallel.MQLSearchThread;
 import parallel.SPARQLSearchThread;
 
 import com.hp.hpl.jena.ontology.Individual;
@@ -87,10 +88,7 @@ public class NYTInstanceMatcher{
 	
 	public void initialize(){
 		
-		
 	}
-	
-	
 	
 	public void match() throws Exception {
 		OntModel sourceModel = sourceOntology.getModel();
@@ -118,6 +116,12 @@ public class NYTInstanceMatcher{
 			
 			String sourceLabel = Queries.getPropertyValue(sourceModel, instanceURI, NYTConstants.SKOS_PREFLABEL);
 			sourceLabel = Utilities.processLabel(sourceLabel);
+			
+			System.out.println(sourceLabel);
+			
+			String topicPage = Queries.getPropertyValue(sourceModel, instanceURI, NYTConstants.NYT_TOPICPAGE);
+			
+			System.out.println(topicPage);
 			
 			List<Individual> candidates;
 			
@@ -148,6 +152,21 @@ public class NYTInstanceMatcher{
 						executor.execute(new SPARQLSearchThread(this, i, instanceURI, sourceLabel, endpoint));
 					}
 					else if(targetId.equals(NYTConstants.FRB_PERSON)){
+						executor.execute(new MQLSearchThread(this, i, instanceURI, "/people/person", sourceLabel));
+					}
+					else if(targetId.equals(NYTConstants.FRB_ORGANIZATION)){
+						int index = sourceLabel.indexOf("(");
+						if(index != -1)
+							sourceLabel = sourceLabel.substring(0, index).trim();
+						executor.execute(new MQLSearchThread(this, i, instanceURI, "/organization/organization", sourceLabel));
+					}
+					else if(targetId.equals(NYTConstants.FRB_LOCATION)){
+						int index = sourceLabel.indexOf("(");
+						if(index != -1)
+							sourceLabel = sourceLabel.substring(0, index).trim();
+						executor.execute(new MQLSearchThread(this, i, instanceURI, "/location/location", sourceLabel));
+					}
+					else{
 						
 					}
 				}
@@ -158,7 +177,6 @@ public class NYTInstanceMatcher{
 			else {
 				addAmbiguous();
 			}
-
 		}
 		//System.out.println(online);
 		
@@ -186,6 +204,11 @@ public class NYTInstanceMatcher{
 		System.out.println("No Results: " + noResults);
 		System.out.println("Single result: " + singleResult);
 		System.out.println("Total: " + (ambiguous + noResults + singleResult));
+		
+		if(mappings.size() == 0 ){
+			System.out.println("Nosthing to output");
+			return;
+		}
 		
 		System.out.println("Writing on file...");
 		String output = alignmentsToOutput(mappings);
