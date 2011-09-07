@@ -10,8 +10,11 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 
 import am.GlobalStaticVariables;
 import am.app.ontology.Ontology;
@@ -38,17 +41,26 @@ public class Utilities {
 	}
 	
 	public static String getPage(String pageURL) throws IOException{
+				
+		HttpContext context = new BasicHttpContext();
+		context.setAttribute(CoreProtocolPNames.USER_AGENT, "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.13) Gecko/20101206 Ubuntu/10.10 (maverick) Firefox/3.6.13");
+	    		
 		DefaultHttpClient httpClient = new DefaultHttpClient();
 	    HttpParams params = httpClient.getParams();
 	    HttpConnectionParams.setConnectionTimeout(params, connTimeoutMillis);
 	    HttpConnectionParams.setSoTimeout(params, socketTimeoutMillis);
 	    
+	    
 	    HttpGet httpget = new HttpGet(pageURL);
-	   
-	    HttpResponse response = httpClient.execute(httpget);
+	    httpget.setHeader("Referer", "http://www.google.com");
+
+	    HttpResponse response = httpClient.execute(httpget, context);
+	    
+	    System.out.println(response);
 	    
 	    HttpEntity entity = response.getEntity();
 	   
+	    
 	    InputStream is = entity.getContent();
 	 
 	    

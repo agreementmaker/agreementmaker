@@ -1,13 +1,8 @@
 package crawling;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import javax.swing.text.BadLocationException;
@@ -20,7 +15,6 @@ import javax.swing.text.html.parser.ParserDelegator;
 
 import misc.Utilities;
 
-import am.tools.finder.utilities.SparqlEndpoint;
 
 public class NYTTopicPageCrawler {
 	String urlString;  
@@ -61,6 +55,8 @@ public class NYTTopicPageCrawler {
 	public static void main(String[] args) {
 		//NYTTopicPageCrawler crawler = new NYTTopicPageCrawler("http://topics.nytimes.com/top/reference/timestopics/people/s/olympia_j_snowe/index.html");
 		NYTTopicPageCrawler crawler = new NYTTopicPageCrawler("http://topics.nytimes.com/top/reference/timestopics/people/s/olympia_j_snowe/index.html");
+		//NYTTopicPageCrawler crawler = new NYTTopicPageCrawler("http://www.google.it");
+		
 		//"http://www.google.it"
 		crawler.crawl();
 	}
@@ -80,7 +76,6 @@ class CallBack extends HTMLEditorKit.ParserCallback {
 	boolean blockName = false;
 	
 	ArrayList<String> articles = new ArrayList<String>();
-	SparqlEndpoint endpoint;
 	
 	public void flush() throws BadLocationException{}
 	
