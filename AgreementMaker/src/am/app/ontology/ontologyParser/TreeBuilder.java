@@ -15,6 +15,8 @@ import am.app.ontology.instance.endpoint.EndpointRegistry;
 import am.app.ontology.instance.endpoint.FreebaseEndpoint;
 import am.userInterface.OntologyLoadingProgressDialog;
 
+import com.hp.hpl.jena.ontology.OntModel;
+
 public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 
 	// instance variables 
@@ -139,7 +141,12 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		if( !ontDefinition.loadInstances ) return;
 		
 		if( ontDefinition.instanceSource == DatasetType.ONTOLOGY ) {
-			instances = new InstanceDataset(ontology.getModel());
+			//instances = new InstanceDataset(ontology.getModel());
+		}
+		else if ( ontDefinition.instanceSource == DatasetType.DATASET ) {
+			Ontology ont = Ontology.openOntology(ontDefinition.instanceSourceFile);
+			OntModel m = ont.getModel();
+			instances = new InstanceDataset(m);
 		}
 		else if ( ontDefinition.instanceSource == DatasetType.ENDPOINT &&
 				  ontDefinition.instanceEndpointType.equals( EndpointRegistry.FREEBASE ) ) {

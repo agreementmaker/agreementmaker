@@ -595,8 +595,8 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		private static final String ENDPOINT_FREEBASE = "FreeBase";
 		private final String[] endpointStrings = { ENDPOINT_SPARQL, ENDPOINT_FREEBASE };
 		
-		private static final String DATASET_N3 = "N3";
-		private final String[] datasetStrings = { DATASET_N3 };
+		private static final String DATASET_RDF = "RDF";
+		private final String[] datasetStrings = { DATASET_RDF };
 		
 		private static final String MAPPING_OAEI = "OAEI Alignment";
 		private final String[] alignmentStrings = { MAPPING_OAEI };
@@ -1071,6 +1071,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 				
 				if( def.instanceSource == DatasetType.DATASET ) {
 					def.instanceSourceFormat = comboboxes[2].getSelectedIndex();
+					def.instanceSourceFile = textfields[2].getText();
 				}
 				else if( def.instanceSource == DatasetType.ENDPOINT ) {
 					if( comboboxes[4].getSelectedIndex() == 0 ) def.instanceEndpointType = EndpointRegistry.SPARQL;

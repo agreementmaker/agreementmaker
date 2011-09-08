@@ -7,6 +7,7 @@ import java.util.Set;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Alignment;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.utility.RunTimer;
@@ -121,6 +122,13 @@ public class OntoTreeBuilder extends TreeBuilder{
 	 */
 	@Deprecated
 	protected void buildTree() {
+		
+		if( ontDefinition.ontologyURI.isEmpty() ) {
+			ontology.setClassesList( new ArrayList<Node>() );
+			ontology.setPropertiesList( new ArrayList<Node>() );
+			return;
+		}
+		
 		if( noReasoner ) {
 			buildTree( OntoTreeBuilder.Profile.noReasoner );
 		} else {

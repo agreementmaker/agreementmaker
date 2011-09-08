@@ -23,7 +23,8 @@ public class OntologyDefinition {
 	public boolean loadInstances = false;
 	public DatasetType instanceSource;
 	
-	public int instanceSourceFormat;  // 0 = N3
+	public String instanceSourceFile;
+	public int instanceSourceFormat;  // 0 = RDF
 	public EndpointRegistry instanceEndpointType;
 	
 	public boolean loadSchemaAlignment = false;
