@@ -1,8 +1,11 @@
 package am.userInterface;
 
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.prefs.Preferences;
 
@@ -22,12 +25,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JRootPane;
+import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import com.hp.hpl.jena.tdb.index.Index;
 
 import am.GlobalStaticVariables;
 import am.app.Core;
@@ -51,6 +54,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 	private JRadioButton[] inMem;
 	private JRadioButton[] onDisk;
 	private JCheckBox[] skip;
+	private JCheckBox fileBrowseSourceInstances, fileBrowseTargetInstances;
 
 	private JButton btnOnDiskSettings, cancel, btnProceed;	
 	private UI ui;
@@ -163,6 +167,10 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		fileBrowseLabel = new JLabel[2];
 		fileBrowseLabel[0]= new JLabel("Source File:");
 		fileBrowseLabel[1]= new JLabel("Target File:");
+		
+		fileBrowseSourceInstances = new JCheckBox("Source Instances:");
+		fileBrowseTargetInstances = new JCheckBox("Target Instances:");
+		
 
 		filePaths=new JTextField[2];
 		filePaths[0]=new JTextField(0);
@@ -370,7 +378,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 
 		filePanelLayout.setHorizontalGroup(
 				filePanelLayout.createParallelGroup()
-				.addGroup(filePanelLayout.createSequentialGroup()
+				.addGroup( filePanelLayout.createSequentialGroup()
 						.addComponent(fileBrowseLabel[0])
 						.addComponent(filePaths[0], GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
 						.addComponent(browseButtons[0])
@@ -607,4 +615,392 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 	//{
 	//	OpenOntologyFileDialogCombined n=new OpenOntologyFileDialogCombined(new UI());
 	//}
+	
+	private static class OntologyDefinitionPanel implements ActionListener {
+			
+		private JLabel[] labels; 
+		private JComboBox[] comboboxes;
+		private JCheckBox[] checkboxes;
+		private JRadioButton[] radiobuttons;
+		private JTextField[] textfields;
+		private JButton[] buttons;
+		private JSeparator[] separators;
+		
+		// Endpoint strings.		
+		private static final String ENDPOINT_SPARQL = "SPARQL";
+		private static final String ENDPOINT_FREEBASE = "FreeBase";
+		private final String[] endpointStrings = { ENDPOINT_SPARQL, ENDPOINT_FREEBASE };
+		
+		private static final String DATASET_N3 = "N3";
+		private final String[] datasetStrings = { DATASET_N3 };
+		
+		public OntologyDefinitionPanel() {
+			
+			// Intialize the separators.
+			
+			separators = new JSeparator[2]; 
+			
+			separators[0] = new JSeparator(SwingConstants.HORIZONTAL);
+			separators[1] = new JSeparator(SwingConstants.HORIZONTAL);
+			
+			// Initialize the labels.
+			
+			labels = new JLabel[9];
+			
+			labels[0] = new JLabel("Ontology File/URL:");
+			labels[1] = new JLabel("Language:");
+			labels[2] = new JLabel("Syntax:");
+			labels[3] = new JLabel("Storage:");
+			labels[4] = new JLabel("On Disk Directory:");
+			labels[5] = new JLabel("Instances source:");
+			labels[6] = new JLabel("File/URL:");
+			labels[7] = new JLabel("File format:");
+			labels[8] = new JLabel("Endpoint Type:");
+			
+			// Initialize the combo boxes.
+			
+			comboboxes = new JComboBox[4];
+			
+			comboboxes[0] = new JComboBox(GlobalStaticVariables.languageStrings);
+			comboboxes[1] = new JComboBox(GlobalStaticVariables.syntaxStrings);
+			comboboxes[2] = new JComboBox(datasetStrings);
+			comboboxes[3] = new JComboBox(endpointStrings);
+			
+			// Initialize the checkboxes
+			
+			checkboxes = new JCheckBox[2];
+			
+			checkboxes[0] = new JCheckBox("Persistent");
+			checkboxes[1] = new JCheckBox("Load Instances");
+			
+			// Initialize the radio buttons.
+			
+			radiobuttons = new JRadioButton[5];
+			
+			radiobuttons[0] = new JRadioButton("In Memory");
+			radiobuttons[1] = new JRadioButton("On Disk");
+			radiobuttons[2] = new JRadioButton("Ontology");
+			radiobuttons[3] = new JRadioButton("Separate File");
+			radiobuttons[4] = new JRadioButton("Semantic Web Endpoint");
+			
+			// Initialize the text fields.
+			
+			textfields = new JTextField[3];
+			
+			textfields[0] = new JTextField(); // Ontology File/URL
+			textfields[1] = new JTextField(); // On Disk Directory
+			textfields[2] = new JTextField(); // File/URL (for instances)
+			
+			// Initialize buttons.
+			
+			buttons = new JButton[3];
+			
+			buttons[0] = new JButton("..."); // Ontology File/URL
+			buttons[1] = new JButton("..."); // On Disk Directory
+			buttons[2] = new JButton("..."); // File/URL (for instances)
+			
+			// *************************************************************
+			
+			// Setup listeners/groups/etc...
+			
+			ButtonGroup group1 = new ButtonGroup();
+			group1.add(radiobuttons[0]);
+			group1.add(radiobuttons[1]);
+			radiobuttons[0].setSelected(true);
+			
+			ButtonGroup group2 = new ButtonGroup();
+			group2.add(radiobuttons[2]);
+			group2.add(radiobuttons[3]);
+			group2.add(radiobuttons[4]);
+			radiobuttons[2].setSelected(true);
+			
+			
+			// Action Listeners
+			
+			radiobuttons[0].addActionListener(this);
+			radiobuttons[1].addActionListener(this);
+			radiobuttons[2].addActionListener(this);
+			radiobuttons[3].addActionListener(this);
+			radiobuttons[4].addActionListener(this);
+			
+			buttons[0].addActionListener(this);
+			buttons[1].addActionListener(this);
+			buttons[2].addActionListener(this);
+			
+			checkboxes[1].addActionListener(this);
+			
+			// Initial state
+			
+			checkboxes[0].setEnabled(false); // [] Persistent
+			labels[4].setEnabled(false); // On Disk Directory:
+			textfields[1].setEnabled(false); // [______]
+			buttons[1].setEnabled(false); // [...]
+			
+			labels[5].setEnabled(false); // Instance source:
+			radiobuttons[2].setEnabled(false); // Ontology
+			radiobuttons[3].setEnabled(false); // Separate File
+			radiobuttons[4].setEnabled(false); // Semantic Web Endpoint
+			labels[6].setEnabled(false); // File/URL:
+			textfields[2].setEnabled(false); // [___________]
+			buttons[2].setEnabled(false); // [...]
+			labels[7].setEnabled(false); // File format:
+			comboboxes[2].setEnabled(false); // [_____\/]
+			labels[8].setEnabled(false); // Endpoint Type:
+			comboboxes[3].setEnabled(false); // [_____\/]
+			
+		}
+		
+		public GroupLayout createLayout( Container panel ) {
+			GroupLayout lay = new GroupLayout(panel);
+			
+			lay.setAutoCreateGaps(true);
+			lay.setAutoCreateContainerGaps(true);
+			
+			/* ******************* HORIZONTAL LAYOUT ********************* */
+			
+			lay.setHorizontalGroup( lay.createParallelGroup()
+				
+				// Ontology File/URL: [___________________________] [...]
+				.addGroup( lay.createSequentialGroup()
+						.addComponent(labels[0])
+						.addComponent(textfields[0])
+						.addComponent(buttons[0])
+				)
+				
+				// Language: [__________\/]  Syntax: [_________\/]
+				.addGroup( lay.createSequentialGroup()
+						.addComponent(labels[1])
+						.addComponent(comboboxes[0])
+						.addComponent(labels[2])
+						.addComponent(comboboxes[1])
+				)
+				
+				// ---------------------------------------------------
+				.addComponent( separators[0] )
+					
+				// Storage: () In Memory  () On Disk  [] Persistent
+				.addGroup( lay.createSequentialGroup()
+						.addComponent(labels[3])
+						.addComponent(radiobuttons[0])
+						.addComponent(radiobuttons[1])
+						.addComponent(checkboxes[0])
+				)
+				
+				// On Disk Directory: [___________________________] [...]
+				.addGroup( lay.createSequentialGroup()
+						.addComponent(labels[4])
+						.addComponent(textfields[1])
+						.addComponent(buttons[1])
+				)
+				
+				//-----------------------------------------------------
+				.addComponent( separators[1] )
+				
+				// [] Load Instances
+				.addGroup( lay.createSequentialGroup()
+						.addComponent(checkboxes[1])
+				)
+				
+				// Instance source: () Ontology  () Separate File  () Semantic Web Endpoint
+				.addGroup( lay.createSequentialGroup()
+						.addComponent(labels[5])
+						.addComponent(radiobuttons[2])
+						.addComponent(radiobuttons[3])
+						.addComponent(radiobuttons[4])
+				)
+				
+				// File/URL: [____________________________________] [...]
+				.addGroup( lay.createSequentialGroup()
+						.addComponent(labels[6])
+						.addComponent(textfields[2])
+						.addComponent(buttons[2])
+				)
+				
+				// File Format: [_______\/]  Endpoint Type: [_________\/]
+				.addGroup( lay.createSequentialGroup()
+						.addComponent(labels[7])
+						.addComponent(comboboxes[2])
+						.addComponent(labels[8])
+						.addComponent(comboboxes[3])
+				)
+				
+			);
+			
+			
+			/* ******************* VERTICAL LAYOUT ********************* */
+			
+			lay.setVerticalGroup( lay.createSequentialGroup()
+				
+				// Ontology File/URL: [___________________________] [...]
+				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false)
+						.addComponent(labels[0])
+						.addComponent(textfields[0])
+						.addComponent(buttons[0])
+				)
+				
+				// Language: [__________\/]  Syntax: [_________\/]
+				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false)
+						.addComponent(labels[1])
+						.addComponent(comboboxes[0])
+						.addComponent(labels[2])
+						.addComponent(comboboxes[1])
+				)
+				
+				// ---------------------------------------------------
+				.addGap(15)
+				.addComponent( separators[0] )
+				.addGap(10)
+				
+				// Storage: () In Memory  () On Disk  [] Persistent
+				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false)
+						.addComponent(labels[3])
+						.addComponent(radiobuttons[0])
+						.addComponent(radiobuttons[1])
+						.addComponent(checkboxes[0])
+				)
+				
+				// On Disk Directory: [___________________________] [...]
+				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false)
+						.addComponent(labels[4])
+						.addComponent(textfields[1])
+						.addComponent(buttons[1])
+				)
+				
+				//-----------------------------------------------------
+				.addGap(15)
+				.addComponent( separators[1] )
+				.addGap(10)
+				
+				// [] Load Instances
+				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false)
+						.addComponent(checkboxes[1])
+				)
+				
+				// Instance source: () Ontology  () Separate File  () Semantic Web Endpoint
+				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false)
+						.addComponent(labels[5])
+						.addComponent(radiobuttons[2])
+						.addComponent(radiobuttons[3])
+						.addComponent(radiobuttons[4])
+				)
+				
+				// File/URL: [____________________________________] [...]
+				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false)
+						.addComponent(labels[6])
+						.addComponent(textfields[2])
+						.addComponent(buttons[2])
+				)
+				
+				// File Format: [_______\/]  Endpoint Type: [_________\/]
+				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false)
+						.addComponent(labels[7])
+						.addComponent(comboboxes[2])
+						.addComponent(labels[8])
+						.addComponent(comboboxes[3])
+				)
+				
+			);
+			
+			
+			return lay;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if( e.getSource() == radiobuttons[0] ||
+				e.getSource() == radiobuttons[1] ) {
+				
+				boolean toggle;
+				if( radiobuttons[0].isSelected() ) { toggle = false; } 
+				else { toggle = true; }
+				
+				checkboxes[0].setEnabled(toggle); // [] Persistent
+				labels[4].setEnabled(toggle); // On Disk Directory:
+				textfields[1].setEnabled(toggle); // [______]
+				buttons[1].setEnabled(toggle); // [...]
+			}
+			
+			if( e.getSource() == checkboxes[1] ) {
+				
+				if( checkboxes[1].isSelected() ) {					
+					labels[5].setEnabled(true); // Instance source:
+					radiobuttons[2].setEnabled(true); // Ontology
+					radiobuttons[3].setEnabled(true); // Separate File
+					radiobuttons[4].setEnabled(true); // Semantic Web Endpoint
+				}
+				else {
+					radiobuttons[2].setSelected(true);
+					labels[5].setEnabled(false); // Instance source:
+					radiobuttons[2].setEnabled(false); // Ontology
+					radiobuttons[3].setEnabled(false); // Separate File
+					radiobuttons[4].setEnabled(false); // Semantic Web Endpoint
+					labels[6].setEnabled(false); // File/URL:
+					textfields[2].setEnabled(false); // [___________]
+					buttons[2].setEnabled(false); // [...]
+					labels[7].setEnabled(false); // File format:
+					comboboxes[2].setEnabled(false); // [_____\/]
+					labels[8].setEnabled(false); // Endpoint Type:
+					comboboxes[3].setEnabled(false); // [_____\/]
+				}
+				
+				
+			}
+			
+			if( checkboxes[1].isSelected() ) { 
+				if( e.getSource() == radiobuttons[2] ) { // Instance source: Ontology
+					labels[6].setEnabled(false); // File/URL:
+					textfields[2].setEnabled(false); // [___________]
+					buttons[2].setEnabled(false); // [...]
+					labels[7].setEnabled(false); // File format:
+					comboboxes[2].setEnabled(false); // [_____\/]
+					labels[8].setEnabled(false); // Endpoint Type:
+					comboboxes[3].setEnabled(false); // [_____\/]
+				}
+				else if( e.getSource() == radiobuttons[3] ) {
+					labels[6].setEnabled(true); // File/URL:
+					textfields[2].setEnabled(true); // [___________]
+					buttons[2].setEnabled(true); // [...]
+					labels[7].setEnabled(true); // File format:
+					comboboxes[2].setEnabled(true); // [_____\/]
+					labels[8].setEnabled(false); // Endpoint Type:
+					comboboxes[3].setEnabled(false); // [_____\/]
+				}
+				else if( e.getSource() == radiobuttons[4] ) {
+					labels[6].setEnabled(true); // File/URL:
+					textfields[2].setEnabled(true); // [___________]
+					buttons[2].setEnabled(false); // [...]
+					labels[7].setEnabled(false); // File format:
+					comboboxes[2].setEnabled(false); // [_____\/]
+					labels[8].setEnabled(true); // Endpoint Type:
+					comboboxes[3].setEnabled(true); // [_____\/]
+				}
+			}
+			
+		}
+		
+	}
+	
+	// This main just tests out how the OntologyDefinitionPanel looks.
+	public static void main(String[] args) {
+		OntologyDefinitionPanel odp = new OntologyDefinitionPanel();
+		
+		JDialog jd = new JDialog();
+		
+		GroupLayout l = odp.createLayout(jd.getContentPane());
+		jd.getContentPane().setLayout(l);
+		
+		jd.addWindowListener(new WindowListener() {
+			@Override public void windowOpened(WindowEvent e) {}
+			@Override public void windowIconified(WindowEvent e) {}
+			@Override public void windowDeiconified(WindowEvent e) {}
+			@Override public void windowDeactivated(WindowEvent e) {}
+			@Override public void windowClosing(WindowEvent e) {}
+			@Override public void windowClosed(WindowEvent e) { System.exit(0); } // <--- exit on close
+			@Override public void windowActivated(WindowEvent e) {}
+		});
+		
+		jd.pack();
+		jd.setLocationRelativeTo(null);
+		jd.setVisible(true);
+	}
 }
