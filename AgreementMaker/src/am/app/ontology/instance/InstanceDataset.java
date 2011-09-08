@@ -3,6 +3,7 @@ package am.app.ontology.instance;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -14,6 +15,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 import am.AMException;
 import am.app.ontology.Ontology;
+import am.app.ontology.instance.endpoint.FreebaseEndpoint;
 import am.app.ontology.instance.endpoint.SemanticWebEndpoint;
 import am.utility.URIConstants;
 
@@ -33,11 +35,17 @@ public class InstanceDataset {
 		datasetType = DatasetType.ENDPOINT;
 	}
 	
+	public InstanceDataset(OntModel dataset){
+		instanceSource = dataset;
+		datasetType = DatasetType.DATASET;
+	}
+	
 	public List<Instance> getInstances( String type, int limit ) {
 		List<Instance> instanceList = new ArrayList<Instance>();
 		
 		try {
 			switch( datasetType ) {
+			
 			case ENDPOINT: {
 				SemanticWebEndpoint endpoint = (SemanticWebEndpoint) instanceSource;
 				instanceList = endpoint.listInstances( type, limit );
@@ -73,7 +81,6 @@ public class InstanceDataset {
 					}
 					
 					instanceList.add(instance);
-
 				}
 			}
 			
@@ -85,7 +92,7 @@ public class InstanceDataset {
 				
 				String uri;
 				String label;
-				RDFNode node;
+				String comment;
 				Instance instance;
 				for(Statement statement: statements){
 					uri = statement.getSubject().getURI();
@@ -93,8 +100,13 @@ public class InstanceDataset {
 					label = getPropertyValue(model, uri, RDFS.label.getURI());
 					if(label.isEmpty()) label = getPropertyValue(model, uri, URIConstants.SKOS_PREFLABEL);
 					
+					comment = getPropertyValue(model, uri, RDFS.comment.getURI());
+					if(label.isEmpty()) comment = getPropertyValue(model, uri, URIConstants.SKOS_DEFINITION);
+					
 					instance = new Instance(uri, type);	
 					instanceList.add(instance);
+					if(!label.isEmpty()) instance.setProperty("label", label);
+					if(!comment.isEmpty()) instance.setProperty("comment", comment);
 				}
 			}
 				
@@ -170,7 +182,6 @@ public class InstanceDataset {
 					//using individual.getPropertyValue();
 					
 					instanceList.add(instance);
-
 				}	
 			}
 			
@@ -193,8 +204,10 @@ public class InstanceDataset {
 					
 					instance = new Instance(uri, type);	
 					
-					instanceList.add(instance);
+					if(!label.isEmpty()) instance.setProperty("label", label);
+					if(!type.isEmpty()) instance.setProperty("type", type);
 					
+					instanceList.add(instance);
 				}
 				
 			}	
@@ -241,5 +254,37 @@ public class InstanceDataset {
 			else if(object.isResource()) return object.asResource().getURI();	
 		}	
 		return "";
+	}
+	
+	public static void main(String[] args) {
+		System.out.println("Opening source ontology...");
+		Ontology sourceOntology = Ontology.openOntology("C:/Users/federico/Desktop/people.rdf");
+		System.out.println("Done");
+		
+		InstanceDataset sourceDataset = new InstanceDataset(sourceOntology.getModel());
+		
+		List<Instance> sourceInstances = sourceDataset.getInstances();
+		System.out.println(sourceInstances);
+		
+		FreebaseEndpoint freebase = new FreebaseEndpoint();
+		
+		InstanceDataset targetDataset = new InstanceDataset(freebase);
+		
+		int noResults = 0;
+		int singleResult = 0;
+		int ambiguous = 0;		
+		int size;
+		for(Instance instance: sourceInstances){
+			List<Instance> candidates = targetDataset.getCandidateInstances(instance.getSingleValuedProperty("label"), "/people/person");
+			System.out.println(candidates);
+			
+			if(candidates == null) continue;
+			
+			size = candidates.size();
+			if(size == 1) singleResult++;
+			else if(size == 0) noResults++;
+			else ambiguous++;
+		}
+		System.out.println("0:" + noResults + " 1:" + singleResult + " >1:" + ambiguous);
 	}
 }

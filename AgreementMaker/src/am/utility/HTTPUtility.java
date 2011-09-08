@@ -36,7 +36,7 @@ public class HTTPUtility {
 
 	    HttpResponse response = httpClient.execute(httpget, context);
 	    
-	    System.out.println(response);
+	    //System.out.println(response);
 	    
 	    HttpEntity entity = response.getEntity();
 	   

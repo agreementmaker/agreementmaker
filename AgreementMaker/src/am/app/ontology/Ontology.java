@@ -6,6 +6,7 @@ import java.util.HashMap;
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.qualityEvaluation.metrics.joslyn.JoslynStructuralQuality;
+import am.app.ontology.ontologyParser.OntoTreeBuilder;
 
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.ObjectProperty;
@@ -288,5 +289,20 @@ public class Ontology {
 	
 	public void setDescription(String desc) { this.description = desc; }
 	public String getDescription() { return description; }
+	
+	public static Ontology openOntology(String ontoName){
+		Ontology ontology;
+		try {
+			OntoTreeBuilder treeBuilder = new OntoTreeBuilder(ontoName, GlobalStaticVariables.SOURCENODE,
+			GlobalStaticVariables.LANG_OWL, 
+			GlobalStaticVariables.SYNTAX_RDFXML, false, true);
+			treeBuilder.build();
+			ontology = treeBuilder.getOntology();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return ontology;
+	}
 	
 }

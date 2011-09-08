@@ -17,21 +17,23 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 
 	public static String endpoint = "http://www.freebase.com/api/service/search";
 	public static String FREEBASE_URI = "http://rdf.freebase.com/ns/";
-	public static int threshold = 10;
+	public static int threshold = 30;
 	
 	public static List<Instance> query(String query) throws JSONException{
 		String url = endpoint + query;
 		
-		System.out.println(url);
+		ArrayList<Instance> instances = new ArrayList<Instance>();
+		
+		//System.out.println(url);
 		
 		String page;
 		try {	page = HTTPUtility.getPage(url);	} 
-		catch (IOException e) {	return null;	}
+		catch (IOException e) {	return instances;	}
 		
 		JSONObject object = new JSONObject(page);
 		JSONArray results = object.getJSONArray("result");
 		
-		ArrayList<Instance> instances = new ArrayList<Instance>();
+		
 		
 		JSONObject result;
 		String uri;
@@ -46,9 +48,13 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 			List<String> valueList = new ArrayList<String>();
 			valueList.add(result.get("name").toString());
 			instance.setProperty("label",valueList);
+			
+			JSONArray types = result.getJSONArray("types");
+			//if(types)
+			
 			instances.add(instance);
 			
-			System.out.print( uri + " " + result.get("name") + " " + result.get("relevance:score") + "\n");
+			//System.out.print( uri + " " + result.get("name") + " " + result.get("relevance:score") + "\n");
 		}
 		return instances;
 	}
