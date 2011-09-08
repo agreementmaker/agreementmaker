@@ -20,11 +20,14 @@ import am.app.mappingEngine.MatcherChangeEvent.EventType;
 import am.app.mappingEngine.oneToOneSelection.MappingMWBM;
 import am.app.mappingEngine.oneToOneSelection.MaxWeightBipartiteMatching;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
+import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.app.ontology.instance.Instance;
+import am.app.ontology.instance.InstanceDataset;
 import am.userInterface.MatchingProgressDisplay;
 
 /**
@@ -69,6 +72,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/**Contain alignments, NULL if alignment has not been calculated*/
 	protected Alignment<Mapping> propertiesAlignmentSet;
 	protected Alignment<Mapping> classesAlignmentSet;
+	protected List<MatchingPair> instanceAlignmentSet;
 	
 	/**Structure containing similarity values between classes nodes, matrix[source][target]
 	 * should not be accessible outside of this class, the system should only be able to access alignments sets
@@ -81,11 +85,16 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected transient Ontology sourceOntology;
 	protected transient Ontology targetOntology;
 	
+	protected InstanceDataset sourceInstanceDataset;
+	protected InstanceDataset targetInstanceDataset;
+	
 	
 	/**If the algo calculates prop alignments*/
 	protected boolean alignProp;
 	/**If the algo calculates prop alignments*/
 	protected boolean alignClass;
+	/** True if the matcher will match instances, false otherwise. */
+	protected boolean alignInstances;
 	/***Some algorithms may need other algorithms as input*/
 	protected ArrayList<AbstractMatcher> inputMatchers;
 	/**Minum and maximum number of input matchers
@@ -410,10 +419,45 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			ArrayList<Node> targetPropList = targetOntology.getPropertiesList();
 			propertiesMatrix = alignProperties(sourcePropList, targetPropList );					
 		}
+		
+		if(alignInstances && !this.isCancelled() ) {
+			// compile a list of source instances
+			if( !sourceInstanceDataset.isIterable() && !targetInstanceDataset.isIterable() ) {
+				throw new AMException("Neither the source or the target instance datasets are iterable.  We cannot instance match.");
+			}
+			
+			if( !sourceInstanceDataset.isIterable() ) {
+				throw new AMException("The source MUST be an iterable instance dataset.");
+			}
+			
+			List<Instance> sourceInstances = sourceInstanceDataset.getInstances();
+			
+			// for every individual in the source list, look for candidate individuals in the target
+			instanceAlignmentSet = alignInstances(sourceInstances);
+		}
 
 	}
 
-    protected SimilarityMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) throws Exception {
+    protected List<MatchingPair> alignInstances(List<Instance> sourceInstances) {
+    	List<MatchingPair> mappings = new ArrayList<MatchingPair>();
+    	for (Instance sourceInstance: sourceInstances){
+    		List<String> labelList = sourceInstance.getProperty("label");
+    		String label = labelList.get(0);
+			List<Instance> targetCandidates = targetInstanceDataset.getCandidateInstances(label, sourceInstance.getType());
+			MatchingPair mapping = alignInstanceCandidates(sourceInstance, targetCandidates);
+			
+			if(mapping != null) mappings.add(mapping);
+			
+		}
+		return mappings;
+	}
+    
+	protected MatchingPair alignInstanceCandidates(Instance sourceInstance,
+			List<Instance> targetCandidates) {
+		//TO BE IMPLEMENTED BY THE ALGORITHM, THIS IS JUST A FAKE ABSTRACT METHOD
+		return null;
+	}
+	protected SimilarityMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) throws Exception {
     		return alignNodesOneByOne(sourcePropList, targetPropList, alignType.aligningProperties);
 	}
 
