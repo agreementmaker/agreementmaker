@@ -461,20 +461,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			String targetFilename = targetDefinition.ontologyURI;
 
 			try{
-				if(sourceFilename.equals(""))
-					JOptionPane.showMessageDialog(this, "No source ontology will be loaded.", "Source Filename is empty"
-							, JOptionPane.ERROR_MESSAGE);
-				else if(!Core.getInstance().sourceIsLoaded()){
-					
-					
-					
-					boolean loadSuccess = ui.openFile(sourceDefinition);
-					
-					if( loadSuccess ) {
-						// once we are done, let's save the syntax and language selection that was made by the user
-						// and save the file used to the recent file list, and also what syntax and language it is
-					}
-				}
+				boolean loadSuccess = ui.openFile(sourceDefinition);
 			}catch(Exception ex){
 				JOptionPane.showConfirmDialog(this,"Can not parse the file '" + sourceFilename + "'. Please check the policy.\n\n"+ex.getMessage(),"Parser Error",JOptionPane.ERROR_MESSAGE);
 				ex.printStackTrace();
@@ -483,14 +470,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			//frame.dispose();
 
 			try{
-				if(targetFilename.equals(""))
-					JOptionPane.showMessageDialog(this, "No target ontology will be loaded.", "Target Filename is empty"
-							, JOptionPane.ERROR_MESSAGE);
-				else if(!Core.getInstance().targetIsLoaded()){
-					
-					
-					boolean loadSuccess = ui.openFile(targetDefinition);
-				}
+				boolean loadSuccess = ui.openFile(targetDefinition);
 			}catch(Exception ex){
 				JOptionPane.showConfirmDialog(this,"Can not parse the file '" + targetFilename + "'. Please check the policy.\n\n"+ex.getMessage(),"Parser Error",JOptionPane.ERROR_MESSAGE);
 				ex.printStackTrace();
