@@ -95,12 +95,16 @@ public class OntoTreeBuilder extends TreeBuilder{
 		treeCount = 0;
 	}
 	
+	public OntoTreeBuilder( OntologyDefinition def ) {
+		super(def);
+	}
+	
 	
 	public void build( OntoTreeBuilder.Profile prof ) {
 		buildTree( prof );//Instantiated in the subclasses
 		report = "Ontology loaded succesfully\n\n";
-        report += "Total number of classes: "+ontology.getClassesList().size()+"\n";
-        report += "Total number of properties: "+ontology.getPropertiesList().size()+"\n\n";
+        report += "Total number of classes: " + ontology.getClassesList().size() + "\n";
+        report += "Total number of properties: " + ontology.getPropertiesList().size() + "\n\n";
         //report += "Select the 'Ontology Details' function in the 'Ontology' menu\nfor additional informations.\n";
         //report += "The 'Hierarchy Visualization' can be disabled from the 'View' menu\nto improve system performances.";
 	}

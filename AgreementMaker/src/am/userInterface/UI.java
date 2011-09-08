@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.ontology.Ontology;
+import am.app.ontology.ontologyParser.OntologyDefinition;
 import am.app.ontology.ontologyParser.TreeBuilder;
 import am.userInterface.classic.AgreementMakerClassic;
 import am.userInterface.sidebar.vertex.VertexDescriptionPane;
@@ -161,6 +162,64 @@ public class UI {
 	@Deprecated
 	public void setDescriptionPanel(JPanel jPanel){ this.panelDesc = jPanel; }
 
+	public boolean openFile( OntologyDefinition odef ) {
+		try{
+			JPanel jPanel = null;
+			
+			Logger log = Logger.getLogger(UI.class);
+			
+			if( log.isInfoEnabled() ) log.info("Opening file: " + odef.ontologyURI );
+			
+			if(odef.ontologyLanguage == GlobalStaticVariables.RDFSFILE)//RDFS
+				jPanel = new VertexDescriptionPane(GlobalStaticVariables.RDFSFILE);//takes care of fields for XML files as well
+			else if(odef.ontologyLanguage == GlobalStaticVariables.OWLFILE)//OWL
+				jPanel = new VertexDescriptionPane(GlobalStaticVariables.OWLFILE);//takes care of fields for XML files as well
+			else if(odef.ontologyLanguage == GlobalStaticVariables.XMLFILE)//XML
+				jPanel = new VertexDescriptionPane(GlobalStaticVariables.XMLFILE);//takes care of fields for XML files as well
+			else if(odef.ontologyLanguage == GlobalStaticVariables.TABBEDTEXT)
+				jPanel = new VertexDescriptionPane(GlobalStaticVariables.XMLFILE); // TODO: Figure out if we need to pass in the correct language type to VertexDescriptionPane constructor.
+		    jPanel.setMinimumSize(new Dimension(200,200));
+			getUISplitPane().setRightComponent(jPanel);
+			setDescriptionPanel(jPanel);
+			//System.out.println("Before treebuilder.buildTreeBuilder in am.userinterface.ui.openFile()...");
+			//This function manage the whole process of loading, parsing the ontology and building data structures: Ontology to be set in the Core and Tree and to be set in the canvas
+			TreeBuilder t = TreeBuilder.buildTreeBuilder(odef);
+			//System.out.println("after treebuilder.buildTreeBuilder before progress dialog treebuilder.buildTreeBuilder in am.userinterface.ui.openFile()...");
+			//the treebuilder is initialized now we have to execute it in a separate thread.
+			// The dialog will start the treebuilder in a background thread, 
+			new OntologyLoadingProgressDialog(t);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
+			if(!t.isCancelled()) {
+				//System.out.println("after t.isCancelled before Core.getInstancein am.userinterface.ui.openFile()...");
+				
+				//Set ontology in the Core
+				Ontology ont = t.getOntology();
+				if(odef.sourceOrTarget == GlobalStaticVariables.SOURCENODE) {
+					Core.getInstance().setSourceOntology(ont);
+				}
+				else Core.getInstance().setTargetOntology(ont);
+				//System.out.println("after after Core.getInstancein am.userinterface.ui.openFile()...");
+				//Set the tree in the canvas
+				if( Core.DEBUG ) System.out.println("Displaying the hierarchies in the canvas");
+				ont.setDeepRoot(t.getTreeRoot());
+				ont.setTreeCount(t.getTreeCount());
+				getCanvas().setTree(t);  // legacy calls?
+				if(Core.getInstance().ontologiesLoaded()) {
+					//Ogni volta che ho caricato un ontologia e le ho entrambe, devo resettare o settare se � la prima volta, tutto lo schema dei matchings
+					if( Core.DEBUG ) System.out.println("Init matchings table");
+					classicAM.getMatchersControlPanel().resetMatchings();
+					
+				}
+				if( Core.DEBUG ) System.out.println("Ontologies loaded succesfully");
+				return true;
+			}
+			return false;
+		}catch(Exception ex){
+			JOptionPane.showConfirmDialog(getUIFrame(),"Can not parse the file '" + odef.ontologyURI + "'. Please check the policy.","Parser Error\n\n" + ex.getMessage(),JOptionPane.ERROR_MESSAGE);
+			ex.printStackTrace();
+			return false;
+		}
+	}
+	
 	/** 
 	 * This function will open an ontology given a file.
 	 * Attention syntax and language are placed differently from other functions.

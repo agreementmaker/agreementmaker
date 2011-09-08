@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.Writer;
 import java.util.ArrayList;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -168,6 +169,9 @@ public class AlignmentOutput
         }
     }
     
+    public AlignmentOutput(Alignment<Mapping> alignment, Writer writer ) {
+    	
+    }
     
     public void write(String onto1, String onto2, String uri1, String uri2, String matcherName)
     {

@@ -9,6 +9,10 @@ import am.Utility;
 import am.app.Core;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.app.ontology.instance.InstanceDataset;
+import am.app.ontology.instance.InstanceDataset.DatasetType;
+import am.app.ontology.instance.endpoint.EndpointRegistry;
+import am.app.ontology.instance.endpoint.FreebaseEndpoint;
 import am.userInterface.OntologyLoadingProgressDialog;
 
 public abstract class TreeBuilder extends SwingWorker<Void, Void> {
@@ -25,6 +29,9 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 	protected int stepsDone;  // Used by the ProgressDialog.  This is how many of the total steps we have completed.
 	protected String report = "";
 	
+	protected OntologyDefinition ontDefinition; // All the information needed to load the ontology.
+	
+	protected InstanceDataset instances;
 	
 	public TreeBuilder(String filename,  int sourceOrTarget, String language, String format) {
 		// TODO: Streamline this.
@@ -37,7 +44,19 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		ontology.setFormat(format);
         File f = new File(filename);
         ontology.setTitle(f.getName()); 
-        if( Core.DEBUG ) System.out.println(filename);
+	}
+	
+	public TreeBuilder( OntologyDefinition def ) {
+		this.ontDefinition = def;
+		ontology = new Ontology();
+		ontology.setIndex( Core.getInstance().numOntologies() );
+		ontology.setID( Core.getInstance().getNextOntologyID() );  // get an unique ID for this ontology
+		ontology.setFilename(def.ontologyURI);
+		ontology.setSourceOrTarget(def.sourceOrTarget);
+		ontology.setLanguage(Ontology.languageStrings[def.ontologyLanguage]);
+		ontology.setFormat(Ontology.syntaxStrings[def.ontologySyntax]);
+        File f = new File(def.ontologyURI);
+        ontology.setTitle(f.getName()); 
 	}
 	
 	public static TreeBuilder buildTreeBuilder(String fileName, int ontoType, int langIndex, int syntaxIndex, boolean skip, boolean noReasoner, boolean onDisk, String onDiskDirectory, boolean persistent){
@@ -68,8 +87,40 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		return treeBuilder;
 	}
 	
+	public static TreeBuilder buildTreeBuilder( OntologyDefinition odef ) {
+		// TODO: Not sure if this method is supposed to take implementation specific variables (ex. DB).
+		
+		
+				String languageS = GlobalStaticVariables.getLanguageString(odef.ontologyLanguage);
+				String syntaxS = GlobalStaticVariables.getSyntaxString(odef.ontologySyntax);
+				TreeBuilder treeBuilder = null;
+				
+				if(odef.ontologyLanguage == GlobalStaticVariables.XMLFILE){
+					treeBuilder = new XmlTreeBuilder(odef.ontologyURI, odef.sourceOrTarget, languageS, syntaxS);
+				}
+				else if(odef.ontologyLanguage == GlobalStaticVariables.RDFSFILE) {
+					if( odef.onDiskStorage )
+						treeBuilder = new TDBOntoTreeBuilder(odef.ontologyURI, odef.sourceOrTarget, languageS, syntaxS, false, true, odef.onDiskStorage, odef.onDiskDirectory, odef.onDiskPersistent);
+					else
+						treeBuilder = new RdfsTreeBuilder(odef.ontologyURI, odef.sourceOrTarget, languageS, syntaxS, false);
+				}
+				else if(odef.ontologyLanguage == GlobalStaticVariables.TABBEDTEXT)
+					treeBuilder = new TabbedTextBuilder(odef.ontologyURI, odef.sourceOrTarget, languageS, syntaxS);
+				else if(odef.ontologyLanguage == GlobalStaticVariables.OWLFILE ) {
+					if( odef.onDiskStorage ) 
+						treeBuilder= new TDBOntoTreeBuilder(odef.ontologyURI, odef.sourceOrTarget, languageS, syntaxS, false, true, odef.onDiskStorage, odef.onDiskDirectory, odef.onDiskPersistent);
+					else 
+						treeBuilder = new OntoTreeBuilder(odef);
+				}
+				
+				return treeBuilder;
+	}
+	
 	public void build() throws Exception{
 		buildTree();//Instantiated in the subclasses
+		
+		loadInstances();
+		
 		report = "Ontology loaded succesfully\n\n";
         report += "Total number of classes: "+ontology.getClassesList().size()+"\n";
         report += "Total number of properties: "+ontology.getPropertiesList().size()+"\n\n";
@@ -81,6 +132,24 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		throw new RuntimeException("This method has to be implemented in the subclass");
 	}
 
+	protected void loadInstances() {
+		
+		if( ontDefinition == null ) return;
+		
+		if( !ontDefinition.loadInstances ) return;
+		
+		if( ontDefinition.instanceSource == DatasetType.ONTOLOGY ) {
+			instances = new InstanceDataset(ontology.getModel());
+		}
+		else if ( ontDefinition.instanceSource == DatasetType.ENDPOINT &&
+				  ontDefinition.instanceEndpointType.equals( EndpointRegistry.FREEBASE ) ) {
+			
+			FreebaseEndpoint freebase = new FreebaseEndpoint();
+			instances = new InstanceDataset(freebase);
+		}
+		
+	}
+	
 	/**
 	 * This function returns the number of nodes created by the tree
 	 * @return int the number of nodes created by the tree
