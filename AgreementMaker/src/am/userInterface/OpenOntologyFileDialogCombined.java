@@ -455,7 +455,9 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			
 			
 			OntologyDefinition sourceDefinition = sourceODP.getDefinition();
+			sourceDefinition.sourceOrTarget = GlobalStaticVariables.SOURCENODE;
 			OntologyDefinition targetDefinition = targetODP.getDefinition();
+			targetDefinition.sourceOrTarget = GlobalStaticVariables.TARGETNODE;
 			
 			String sourceFilename = sourceDefinition.ontologyURI;
 			String targetFilename = targetDefinition.ontologyURI;
@@ -710,6 +712,8 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			labels[10].setEnabled(false); // Format:
 			comboboxes[4].setEnabled(false); // OAEI Alignment
 
+			comboboxes[0].setSelectedIndex(1);
+			
 		}
 		
 		public GroupLayout createLayout( Container panel ) {

@@ -123,7 +123,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 	@Deprecated
 	protected void buildTree() {
 		
-		if( ontDefinition.ontologyURI == null || ontDefinition.ontologyURI.isEmpty() ) {
+		if( ontDefinition == null || ontDefinition.ontologyURI == null || ontDefinition.ontologyURI.isEmpty() ) {
 			ontology.setClassesList( new ArrayList<Node>() );
 			ontology.setPropertiesList( new ArrayList<Node>() );
 			return;

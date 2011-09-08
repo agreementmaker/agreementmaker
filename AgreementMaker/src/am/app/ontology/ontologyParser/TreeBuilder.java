@@ -123,7 +123,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 	public void build() throws Exception{
 		buildTree();//Instantiated in the subclasses
 		
-		loadInstances();
+		if( ontDefinition != null ) loadInstances();
 		
 		report = "Ontology loaded succesfully\n\n";
         report += "Total number of classes: "+ontology.getClassesList().size()+"\n";
