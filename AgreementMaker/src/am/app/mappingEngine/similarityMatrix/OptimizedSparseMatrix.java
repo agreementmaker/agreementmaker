@@ -10,20 +10,21 @@ import java.util.Random;
 
 import org.junit.Test;
 
-
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.similarityMatrix.SparseMatrix.RowCell;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
-import am.app.ontology.Ontology;
 
 
-// TODO: Keep track of matrix bounds.
-
-public class SparseMatrix extends SimilarityMatrix
+public class OptimizedSparseMatrix extends SimilarityMatrix
 {
 	private RowCell<Mapping> head;// LinkedList<LinkedList<RowCell>> rows;
+	private RowCell<Mapping> lastGetRow=null;//this is the last row that was used in the get function
+	private RowCell<Mapping> lastSetRow=null;//this is the last row that was used in the set function
+	private RowCell<Mapping> lastGetCol=null;
+	private RowCell<Mapping> lastSetCol=null;
 	/** The number of rows in this matrix. */
 	private final int numRows; 
 	
@@ -35,12 +36,8 @@ public class SparseMatrix extends SimilarityMatrix
 	 * @param numRows The number of rows in the matrix.
 	 * @param numCols The number of columns in the matrix.
 	 */
-	public SparseMatrix(){
-		numRows=4000;
-		numCols=4000;
-		head = new RowCell<Mapping>(-1,-1,null);
-	}
-	public SparseMatrix(int numRows, int numCols)
+
+	public OptimizedSparseMatrix(int numRows, int numCols)
 	{
 		// save the dimensions
 		this.numRows = numRows;
@@ -51,17 +48,17 @@ public class SparseMatrix extends SimilarityMatrix
 	}
 	
 	/** A method to clone the similarity matrix. */
-	public SparseMatrix(SparseMatrix cloneme){
-		this(cloneme.getRows(), cloneme.getColumns());
-		relation = cloneme.getRelation();
-    	typeOfMatrix = cloneme.getAlignType();
+	public OptimizedSparseMatrix(OptimizedSparseMatrix optimizedSparseMatrix){
+		this(optimizedSparseMatrix.getRows(), optimizedSparseMatrix.getColumns());
+		relation = optimizedSparseMatrix.getRelation();
+    	typeOfMatrix = optimizedSparseMatrix.getAlignType();
     	
-    	sourceOntologyID = cloneme.getSourceOntologyID();
-    	targetOntologyID = cloneme.getTargetOntologyID();
+    	sourceOntologyID = optimizedSparseMatrix.getSourceOntologyID();
+    	targetOntologyID = optimizedSparseMatrix.getTargetOntologyID();
     	
     	RowCell<Mapping> currentCol, currentRow;//these RowCells are the originals
     	
-    	currentRow=cloneme.getHead().nextr;//get the first row
+    	currentRow=optimizedSparseMatrix.getHead().nextr;//get the first row
     	
     	while(currentRow!=null){
     		//clone stuff here
@@ -77,17 +74,17 @@ public class SparseMatrix extends SimilarityMatrix
     	}
 	}
 	
-	public SparseMatrix(Ontology s, Ontology t, alignType type) {
+	/*public SparseMatrix(Ontology s, Ontology t, alignType type) {
 		this();
     	relation = MappingRelation.EQUIVALENCE;
     	typeOfMatrix = type;
     	
     	sourceOntologyID=s.getID();
     	targetOntologyID=t.getID();    	
-	}
+	}*/
 	
 	/** A constructor used in AbstractMatcher. */
-	public SparseMatrix(int numRows, int numCols, alignType type, MappingRelation rel){
+	public OptimizedSparseMatrix(int numRows, int numCols, alignType type, MappingRelation rel){
 		this(numRows, numCols);
     	relation = rel;
     	typeOfMatrix = type;
@@ -105,13 +102,35 @@ public class SparseMatrix extends SimilarityMatrix
 		}
 		else//if there are rows in the matrix then we need to check the row value and insert the new RowCell object
 		{
-			RowCell<Mapping> currentCell = head.nextr;//create an object that will be used to iterate through the LL starting with head
+			RowCell<Mapping> currentCell;
+			if(lastSetRow==null)
+				currentCell = head.nextr;//create an object that will be used to iterate through the LL starting with head
+			else{
+				if(lastSetCol!=null && row==lastSetCol.row)
+					currentCell=lastSetCol;
+				else
+					currentCell=lastSetRow;
+			}
+			
 			RowCell<Mapping> newCell = new RowCell<Mapping>(row,column,obj);//create a new RowCell object
 			boolean notDone=true;
 			while(currentCell!=null && notDone)
 			{
-				if( row < currentCell.row) //insert the new rowcell here if i<the current row
+				if( row < currentCell.row) 
 				{
+					if(currentCell.prevr!=null)//if its null we are at the head, or something went really wrong
+						currentCell=currentCell.prevr;
+					else{
+						newCell.nextr=currentCell.nextr;
+						newCell.prevr=currentCell;
+						
+						currentCell.nextr.prevr=newCell;
+						currentCell.nextr=newCell;
+						
+						lastSetRow=newCell;
+						break;
+					}
+					/*
 					newCell.nextr=currentCell;
 					newCell.prevr=currentCell.prevr;
 					if(newCell.prevr!=null)
@@ -122,9 +141,11 @@ public class SparseMatrix extends SimilarityMatrix
 					//notDone=false;
 					//numRows++;
 					break;
+					*/
 				}
 				else if(row == currentCell.row)//if the rows are equal then we need to start looking at col to insert
 				{
+					lastSetRow=currentCell;
 					//add to collums here
 					while(currentCell != null)
 					{
@@ -150,7 +171,7 @@ public class SparseMatrix extends SimilarityMatrix
 							//currentCell.nextc=null;
 							
 							
-							
+							lastSetCol=newCell;
 							notDone=false;
 							break;
 						}
@@ -160,11 +181,13 @@ public class SparseMatrix extends SimilarityMatrix
 									if(currentCell.nextc==null){//end of the row
 										currentCell.prevc.nextc=null;
 										notDone=false;
+										lastSetCol=newCell;
 										break;
 									}else{//time to start linking...
 										currentCell.nextc.prevc=currentCell.prevc;
 										currentCell.prevc.nextc=currentCell.nextc;
 										notDone=false;
+										lastSetCol=newCell;
 										break;
 									}
 								}else{//we are a header more linking..
@@ -177,6 +200,7 @@ public class SparseMatrix extends SimilarityMatrix
 											currentCell.prevr.nextr=currentCell.nextr;	
 										}
 										notDone=false;
+										lastSetCol=newCell;
 										break;
 									}else{//need to link the row headers to a new row header
 										currentCell.nextr.prevr=currentCell.nextc;
@@ -187,6 +211,7 @@ public class SparseMatrix extends SimilarityMatrix
 										currentCell.nextc.prevc=null;
 										
 										notDone=false;
+										lastSetCol=newCell;
 										break;
 									}
 								}
@@ -194,6 +219,7 @@ public class SparseMatrix extends SimilarityMatrix
 								//replace whats in the current rowCell
 								currentCell.object = obj;
 								notDone=false;
+								lastSetCol=newCell;
 								break;
 							}
 						}
@@ -203,6 +229,7 @@ public class SparseMatrix extends SimilarityMatrix
 							currentCell.nextc=newCell;
 							newCell.prevc=currentCell;
 							notDone=false;
+							lastSetCol=newCell;
 							break;
 						}
 						currentCell=currentCell.nextc;
@@ -210,53 +237,73 @@ public class SparseMatrix extends SimilarityMatrix
 					
 					//break;
 				}
-				else if(currentCell.nextr==null && notDone)//if i is the biggest number stick it on the end
+				else if(row>currentCell.row)//if i is the biggest number stick it on the end
 				{
-					currentCell.nextr=newCell;
-					newCell.prevr=currentCell;
-					//notDone=false;
-					//numRows++;
-					break;
+					if(currentCell.nextr==null){
+						currentCell.nextr=newCell;
+						newCell.prevr=currentCell;
+						//notDone=false;
+						//numRows++;
+						lastSetRow=newCell;
+						break;
+					}
+					else if(row<currentCell.nextr.row){
+						newCell.nextr=currentCell.nextr;
+						newCell.prevr=currentCell;
+						
+						currentCell.nextr.prevr=newCell;
+						currentCell.nextr=newCell;
+						
+						lastSetRow=newCell;
+					}
+					else
+						currentCell=currentCell.nextr;//grab the next row in case it needs to
 				}
-				currentCell=currentCell.nextr;//grab the next row in case it needs to
 			}
 		}
 	}
 	
-	
 	public Mapping get(int i, int j)
 	{
 		boolean done=false;
-		RowCell<Mapping> currentCell=head.nextr;
-		while(!done)
-		{
-			if(currentCell==null)
-				done=true;
+		RowCell<Mapping> currentCell;
+		if(lastGetRow==null)
+			currentCell=head.nextr;
+		else{
+			if(lastGetCol!=null && i==lastGetCol.row)
+				currentCell=lastGetCol;
 			else
-			{
-				if(currentCell.row==i)
+				currentCell=lastGetRow;
+		}
+		
+		
+		while(!done && currentCell!=null){
+			if(currentCell.row<i){
+				currentCell=currentCell.nextr;
+			}
+			else if(currentCell.row>i){
+				currentCell=currentCell.prevr;
+			}
+			else if(currentCell.row==i){
+				lastGetRow=currentCell.clone();
+				while(!done)
 				{
-					while(!done)
-					{
-						if(currentCell.col==j)
-							return currentCell.object;
-						else if(currentCell.nextc!=null)
-							currentCell=currentCell.nextc;
-						else
-							done=true;
+					if(currentCell.col==j){
+						lastGetCol=currentCell;
+						return currentCell.object;
 					}
+					else if(currentCell.nextc!=null)
+						currentCell=currentCell.nextc;
+					else
+						done=true;
 				}
-				else if(currentCell.nextr!=null)
-					currentCell=currentCell.nextr;
-				else
-					done=true;
 			}
 		}
 		return null;
 	}
 	
-	/** TODO: Does this method really have to be public? */
-	public RowCell<Mapping> getHead() { return head; }
+	/** TODO: Does protected work? */
+	protected RowCell<Mapping> getHead() { return head; }
 	
 	@Override
 	public String toString() {
@@ -304,7 +351,7 @@ public class SparseMatrix extends SimilarityMatrix
 	
 	@Override
 	public SimilarityMatrix clone() {
-		return new SparseMatrix(this);
+		return new OptimizedSparseMatrix(this);
 	}
 	
 	@Override
@@ -588,5 +635,13 @@ public class SparseMatrix extends SimilarityMatrix
 			col=c;
 			object=o;
 		}
-	}
+		public RowCell<E> clone(){
+			RowCell<E> clone=new RowCell<E>(row,col,object);
+			clone.nextc=nextc;
+			clone.nextr=nextr;
+			clone.prevc=prevc;
+			clone.prevr=prevr;
+			return clone;
+		}
+	}	
 }
