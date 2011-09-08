@@ -32,9 +32,7 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 		
 		JSONObject object = new JSONObject(page);
 		JSONArray results = object.getJSONArray("result");
-		
-		
-		
+				
 		JSONObject result;
 		String uri;
 		Instance instance;
@@ -49,8 +47,20 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 			valueList.add(result.get("name").toString());
 			instance.setProperty("label",valueList);
 			
-			JSONArray types = result.getJSONArray("types");
-			//if(types)
+			JSONArray types = result.getJSONArray("type");
+			
+			//System.out.println(types);
+			if(types != null){
+				String typeName;
+				JSONObject type;
+				for (int j = 0; j < types.length(); j++) {
+					type = types.getJSONObject(j);
+					//		getJSONObject("name").toString();
+					typeName = type.getString("name");
+					//System.out.println(typeName);
+					instance.setProperty("type", typeName);
+				}
+			}
 			
 			instances.add(instance);
 			

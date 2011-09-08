@@ -55,7 +55,8 @@ public class Instance {
 				properties.put(key,list);
 			}
 			else {
-				values.add(value);
+				if(!values.contains(value))
+					values.add(value);
 			}
 		}
 	}

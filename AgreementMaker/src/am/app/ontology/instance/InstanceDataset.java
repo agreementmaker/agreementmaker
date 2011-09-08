@@ -264,7 +264,7 @@ public class InstanceDataset {
 		InstanceDataset sourceDataset = new InstanceDataset(sourceOntology.getModel());
 		
 		List<Instance> sourceInstances = sourceDataset.getInstances();
-		System.out.println(sourceInstances);
+		//System.out.println(sourceInstances);
 		
 		FreebaseEndpoint freebase = new FreebaseEndpoint();
 		
@@ -275,6 +275,7 @@ public class InstanceDataset {
 		int ambiguous = 0;		
 		int size;
 		for(Instance instance: sourceInstances){
+			System.out.println(instance);
 			List<Instance> candidates = targetDataset.getCandidateInstances(instance.getSingleValuedProperty("label"), "/people/person");
 			System.out.println(candidates);
 			
