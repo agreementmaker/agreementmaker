@@ -10,8 +10,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.sun.istack.internal.logging.Logger;
-
 import am.AMException;
 import am.app.ontology.instance.Instance;
 import am.utility.HTTPUtility;
