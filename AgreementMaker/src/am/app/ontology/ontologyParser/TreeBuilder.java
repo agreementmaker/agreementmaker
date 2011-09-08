@@ -157,7 +157,10 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 			instances = new InstanceDataset(freebase);
 		}
 		
+		ontology.setInstances(instances);
 	}
+	
+	public InstanceDataset getInstances() { return instances; }
 	
 	/**
 	 * This function returns the number of nodes created by the tree

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.qualityEvaluation.metrics.joslyn.JoslynStructuralQuality;
+import am.app.ontology.instance.InstanceDataset;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 
 import com.hp.hpl.jena.ontology.DatatypeProperty;
@@ -61,6 +62,15 @@ public class Ontology {
 	public static final int TARGET = GlobalStaticVariables.TARGETNODE;
 	
 	
+	private InstanceDataset instances;
+	
+	public InstanceDataset getInstances() {
+		return instances;
+	}
+	public void setInstances(InstanceDataset instances) {
+		this.instances = instances;
+	}
+
 	/** 
 	 * <p>It may be SOURCE or TARGET.  Use the final static int values in GSV to set this. (GlobalStaticVariables.SOURCENODE or GlobalStaticVariables.TARGETNODE)</p>
 	 * <p>TODO: Change this to an enum.</p> 

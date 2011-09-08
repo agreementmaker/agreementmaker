@@ -421,6 +421,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		}
 		
 		if(alignInstances && !this.isCancelled() ) {
+			
+			sourceInstanceDataset = sourceOntology.getInstances();
+			targetInstanceDataset = targetOntology.getInstances();
+			
 			// compile a list of source instances
 			if( !sourceInstanceDataset.isIterable() && !targetInstanceDataset.isIterable() ) {
 				throw new AMException("Neither the source or the target instance datasets are iterable.  We cannot instance match.");
@@ -439,6 +443,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 
     protected List<MatchingPair> alignInstances(List<Instance> sourceInstances) {
+    	
     	List<MatchingPair> mappings = new ArrayList<MatchingPair>();
     	for (Instance sourceInstance: sourceInstances){
     		List<String> labelList = sourceInstance.getProperty("label");
