@@ -76,6 +76,7 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 
 	@Override
 	public List<Instance> freeTextQuery(String searchTerm, String type) throws Exception {
+		if( type == null ) throw new AMException("You may not query using a null type.");
 		searchTerm = URLEncoder.encode(searchTerm, "UTF-8");
 		type = URLEncoder.encode(type, "UTF-8"); 
 		String query = "?query=" + searchTerm + "&type=" + type + "&threshold=" + threshold;
