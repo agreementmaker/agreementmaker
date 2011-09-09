@@ -12,6 +12,7 @@ import am.app.ontology.instance.endpoint.EndpointRegistry;
  */
 public class OntologyDefinition {
 	
+	public boolean loadOntology = true;
 	public String ontologyURI;
 	public int ontologyLanguage;
 	public int ontologySyntax;
