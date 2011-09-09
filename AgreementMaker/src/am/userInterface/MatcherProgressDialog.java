@@ -218,7 +218,7 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 			progressBar.setValue(100);
 		}
 		
-		matcherReport.setText( matcher.getReport() );
+		matcherReport.append( matcher.getReport() );
 		cancelButton.setEnabled(false);
 		okButton.setEnabled(true);
 		

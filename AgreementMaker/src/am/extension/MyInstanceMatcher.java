@@ -14,8 +14,14 @@ public class MyInstanceMatcher extends AbstractMatcher {
 	private static final long serialVersionUID = -8278698313888419789L;
 
 	@Override
+	protected void beforeAlignOperations() throws Exception {
+		// TODO Auto-generated method stub
+		super.beforeAlignOperations();
+	}
+	
+	@Override
 	protected MatchingPair alignInstanceCandidates(Instance sourceInstance,
-			List<Instance> targetCandidates) {
+			List<Instance> targetCandidates) throws Exception {
 		
 		System.out.println("Source instance: " + sourceInstance );
 		System.out.println("Target instance list: " + targetCandidates );

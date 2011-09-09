@@ -2,10 +2,12 @@ package am.app.ontology;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.qualityEvaluation.metrics.joslyn.JoslynStructuralQuality;
+import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.InstanceDataset;
 import am.app.ontology.instance.InstanceDataset.DatasetType;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
@@ -256,6 +258,7 @@ public class Ontology {
 	private HashMap<OntResource, Node> mapOntResource2Node_Properties = null;
 
 	private String description;
+	private HashMap<String, List<MatchingPair>> instanceTypeMappings;
 	
 	public void setOntResource2NodeMap(HashMap<OntResource, Node> processedSubs, alignType atype) {
 		if( atype == alignType.aligningClasses ) {
@@ -322,5 +325,10 @@ public class Ontology {
 		}
 		return ontology;
 	}
+	public void setInstanceTypeMappings(HashMap<String, List<MatchingPair>> map) {
+		this.instanceTypeMappings = map; 
+	}
+	
+	public HashMap<String, List<MatchingPair>> getInstanceTypeMapping() { return instanceTypeMappings; }
 	
 }

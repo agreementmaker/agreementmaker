@@ -1,18 +1,23 @@
 package am.app.ontology.ontologyParser;
 
 import java.io.File;
+import java.io.FileReader;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.SwingWorker;
 
 import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
+import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.instance.InstanceDataset;
 import am.app.ontology.instance.InstanceDataset.DatasetType;
 import am.app.ontology.instance.endpoint.EndpointRegistry;
 import am.app.ontology.instance.endpoint.FreebaseEndpoint;
+import am.output.alignment.oaei.OAEIAlignmentFormat;
 import am.userInterface.OntologyLoadingProgressDialog;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -196,7 +201,28 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 			instances = new InstanceDataset(freebase);
 		}
 		
-		ontology.setInstances(instances); // save the instances with this ontology 
+		ontology.setInstances(instances); // save the instances with this ontology
+		
+		// load the mapping file
+		
+		if( ontDefinition.loadSchemaAlignment ) {
+			if( ontDefinition.schemaAlignmentFormat == 0 ) { // RDF
+				try {
+					File file = new File( ontDefinition.schemaAlignmentURI );
+					
+					FileReader fr = new FileReader(file);
+					
+					OAEIAlignmentFormat oaeiFormat = new OAEIAlignmentFormat();
+					
+					HashMap<String,List<MatchingPair>> map = oaeiFormat.readAlignment(fr);
+					
+					ontology.setInstanceTypeMappings(map);
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	public InstanceDataset getInstances() { return instances; }

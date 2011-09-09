@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -397,6 +398,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	    setSuccesfullReport();	
 		if( isProgressDisplayed() ) {
 			allStepsDone();
+			progressDisplay.clearReport();
 			progressDisplay.matchingComplete();
 		}
     	
@@ -451,14 +453,35 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 	}
 
-    protected List<MatchingPair> alignInstances(List<Instance> sourceInstances) {
+    protected List<MatchingPair> alignInstances(List<Instance> sourceInstances) throws Exception {
     	
     	List<MatchingPair> mappings = new ArrayList<MatchingPair>();
     	for (Instance sourceInstance: sourceInstances){
     		List<String> labelList = sourceInstance.getProperty("label");
     		String label = labelList.get(0);
-			List<Instance> targetCandidates = targetInstanceDataset.getCandidateInstances(label, sourceInstance.getType());
-			MatchingPair mapping = alignInstanceCandidates(sourceInstance, targetCandidates);
+    		
+    		String sourceType = sourceInstance.getType();
+    		List<MatchingPair> targetTypes = null;
+    		
+    		if( sourceType != null ) {
+    			HashMap<String, List<MatchingPair>> typeMapping = sourceOntology.getInstanceTypeMapping();
+    			if( typeMapping.containsKey(sourceType) ) {
+    				targetTypes = typeMapping.get(sourceType);
+    			} else {
+    				targetTypes = new ArrayList<MatchingPair>();
+    				targetTypes.add( new MatchingPair(sourceType, sourceType)); // same type in the target
+    			}
+    		}
+    		
+    		List<Instance> allCandidates = new ArrayList<Instance>();
+    		
+    		if( targetTypes != null )
+    		for( MatchingPair mp : targetTypes ) {
+    			List<Instance> targetCandidates = targetInstanceDataset.getCandidateInstances(label, mp.targetURI);
+    			allCandidates.addAll(targetCandidates);
+    		}
+    		
+    		MatchingPair mapping = alignInstanceCandidates(sourceInstance, allCandidates);
 			
 			if(mapping != null) mappings.add(mapping);
 			
@@ -467,7 +490,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
     
 	protected MatchingPair alignInstanceCandidates(Instance sourceInstance,
-			List<Instance> targetCandidates) {
+			List<Instance> targetCandidates) throws Exception {
 		//TO BE IMPLEMENTED BY THE ALGORITHM, THIS IS JUST A FAKE ABSTRACT METHOD
 		return null;
 	}
