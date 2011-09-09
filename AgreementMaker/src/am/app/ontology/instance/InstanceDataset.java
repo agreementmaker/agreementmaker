@@ -206,7 +206,7 @@ public class InstanceDataset {
 					if(label.isEmpty()) label = getPropertyValue(model, uri, URIConstants.SKOS_PREFLABEL);
 					
 					type = getPropertyValue(model, uri, RDF.type.getURI());
-					
+										
 					instance = new Instance(uri, type);	
 					
 					if(!label.isEmpty()) instance.setProperty("label", label);
@@ -264,7 +264,7 @@ public class InstanceDataset {
 	public static void main(String[] args) {
 		System.out.println("Opening source ontology...");
 		//Ontology sourceOntology = Ontology.openOntology("/home/cosmin/Workdir/OAEI2011/NYTDatasets/people.rdf");
-		Ontology sourceOntology = Ontology.openOntology("C:/Users/federico/Desktop/people.rdf");
+		Ontology sourceOntology = Ontology.openOntology("C:/Users/federico/Desktop/NYTDatasets/people.rdf");
 		System.out.println("Done");
 		
 		InstanceDataset sourceDataset = sourceOntology.getInstances();
