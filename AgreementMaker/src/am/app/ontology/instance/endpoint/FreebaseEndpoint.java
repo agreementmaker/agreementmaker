@@ -17,7 +17,7 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 
 	public static String endpoint = "http://www.freebase.com/api/service/search";
 	public static String FREEBASE_URI = "http://rdf.freebase.com/ns/";
-	public static int threshold = 30;
+	public static int threshold = 10;
 	
 	public static List<Instance> query(String query) throws JSONException{
 		String url = endpoint + query;

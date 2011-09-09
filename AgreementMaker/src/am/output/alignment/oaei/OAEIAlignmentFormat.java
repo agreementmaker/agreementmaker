@@ -137,12 +137,14 @@ public class OAEIAlignmentFormat implements AlignmentFormat {
 	            
 	            // String correctRelation = getRelationFromFileFormat(relation);
 	            
+	            System.out.println(sourceURI + " " + targetURI);
 	    		MatchingPair mp = new MatchingPair(sourceURI, targetURI, parsedSimilarity, relation, provenance);
 	    		
 	    		if( alignmentMap.containsKey(sourceURI) ) {
 	    			alignmentMap.get(sourceURI).add(mp);
 	    		} else {
 	    			List<MatchingPair> mpl = new ArrayList<MatchingPair>();
+	    			mpl.add(mp);
 	    			alignmentMap.put(sourceURI, mpl);
 	    		}
 	    		
@@ -150,6 +152,7 @@ public class OAEIAlignmentFormat implements AlignmentFormat {
 	    			alignmentMap.get(targetURI).add(mp);
 	    		} else {
 	    			List<MatchingPair> mpl = new ArrayList<MatchingPair>();
+	    			mpl.add(mp);
 	    			alignmentMap.put(targetURI, mpl);
 	    		}
 	    		

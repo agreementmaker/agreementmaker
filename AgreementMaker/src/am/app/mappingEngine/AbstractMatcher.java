@@ -456,7 +456,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     protected List<MatchingPair> alignInstances(List<Instance> sourceInstances) throws Exception {
     	
     	List<MatchingPair> mappings = new ArrayList<MatchingPair>();
-    	for (Instance sourceInstance: sourceInstances){
+    	
+    	Instance sourceInstance;
+    	for (int i = 0; i < sourceInstances.size(); i++) {
+    		if(i % 100 == 0) System.out.println(i);
+			sourceInstance = sourceInstances.get(i);
     		List<String> labelList = sourceInstance.getProperty("label");
     		String label = labelList.get(0);
     		
