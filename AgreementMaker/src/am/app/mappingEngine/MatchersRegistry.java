@@ -33,6 +33,7 @@ import am.app.mappingEngine.testMatchers.EqualsMatcher;
 import am.app.mappingEngine.testMatchers.RandomMatcher;
 import am.app.mappingEngine.wikipedia.WikiMatcher;
 //import am.app.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
+import am.extension.MyInstanceMatcher;
 import am.extension.MyTestMatcher;
 
 
@@ -56,6 +57,7 @@ public enum MatchersRegistry {
 	 */
 	//
 	MyTestMatch			( "MTM", "Synonym Term Counting Matcher", MyTestMatcher.class, MatcherCategory.USER ),
+	myinstmatcher		( "My Simple Instance Matcher", MyInstanceMatcher.class, MatcherCategory.USER ),
 	PartialGraph		( "PGM", "Partial Graph Matcher", PartialGraphMatcher.class, MatcherCategory.STRUCTURAL ),
 	SimilarityFlooding  ( "SFM", "Similarity Flooding Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.sfm.IndipendentSimilarityFlooding.class ),
 	AnchorFlood			( "AFM", "AnchorFlood Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.anchorFlood.AnchorFloodMatcher.class ),
@@ -128,7 +130,7 @@ public enum MatchersRegistry {
 	}
 	
 	MatchersRegistry( String n, Class<? extends AbstractMatcher> matcherClass, MatcherCategory c ) { 
-		shortName = ""; name = n; className = matcherClass; category = c;
+		shortName = ""; name = n; className = matcherClass; showInControlPanel = true; category = c;
 	}
 	
 	MatchersRegistry( String n, Class<? extends AbstractMatcher> matcherClass, boolean shown) { 
