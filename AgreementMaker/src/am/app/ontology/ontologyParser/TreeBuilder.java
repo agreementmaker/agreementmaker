@@ -16,6 +16,8 @@ import am.app.ontology.instance.endpoint.FreebaseEndpoint;
 import am.userInterface.OntologyLoadingProgressDialog;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 
@@ -32,7 +34,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 	protected String report = "";
 	
 	protected OntologyDefinition ontDefinition; // All the information needed to load the ontology.
-	
+
 	protected InstanceDataset instances;
 	
 	public TreeBuilder(String filename,  int sourceOrTarget, String language, String format) {
@@ -53,12 +55,30 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		ontology = new Ontology();
 		ontology.setIndex( Core.getInstance().numOntologies() );
 		ontology.setID( Core.getInstance().getNextOntologyID() );  // get an unique ID for this ontology
-		ontology.setFilename(def.ontologyURI);
+		if( def.loadOntology ) {
+			ontology.setFilename(def.ontologyURI);
+			ontology.setLanguage(Ontology.languageStrings[def.ontologyLanguage]);
+			ontology.setFormat(Ontology.syntaxStrings[def.ontologySyntax]);
+	        File f = new File(def.ontologyURI);
+	        ontology.setTitle(f.getName()); 
+		}
+		else if( def.loadInstances ) {
+			if( def.instanceSource == DatasetType.DATASET ) {
+				ontology.setFilename(def.instanceSourceFile);
+				ontology.setLanguage(Ontology.LANG_OWL);
+				ontology.setFormat(Ontology.SYNTAX_RDFXML);
+				File f = new File(def.instanceSourceFile);
+		        ontology.setTitle(f.getName()); 
+			}
+			else if( def.instanceSource == DatasetType.ENDPOINT ){
+				ontology.setFilename(def.instanceSourceFile);
+				ontology.setLanguage(Ontology.LANG_OWL);
+				ontology.setFormat(Ontology.SYNTAX_RDFXML);
+				ontology.setTitle("Semantic Web Endpoint");
+			}
+		}
 		ontology.setSourceOrTarget(def.sourceOrTarget);
-		ontology.setLanguage(Ontology.languageStrings[def.ontologyLanguage]);
-		ontology.setFormat(Ontology.syntaxStrings[def.ontologySyntax]);
-        File f = new File(def.ontologyURI);
-        ontology.setTitle(f.getName()); 
+		
 	}
 	
 	public static TreeBuilder buildTreeBuilder(String fileName, int ontoType, int langIndex, int syntaxIndex, boolean skip, boolean noReasoner, boolean onDisk, String onDiskDirectory, boolean persistent){
@@ -127,7 +147,18 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		
 		report = "Ontology loaded succesfully\n\n";
         report += "Total number of classes: "+ontology.getClassesList().size()+"\n";
-        report += "Total number of properties: "+ontology.getPropertiesList().size()+"\n\n";
+        report += "Total number of properties: "+ontology.getPropertiesList().size()+"\n";
+        report += "Instances source: ";
+        if( ontDefinition != null ) {
+        	if( !ontDefinition.loadInstances )
+        		report += "none.\n\n";
+        	else if( ontDefinition.instanceSource == DatasetType.DATASET )
+        		report += "dataset.\n\n";
+        	else if( ontDefinition.instanceSource == DatasetType.ONTOLOGY )
+        		report += "ontology.\n\n";
+        	else if( ontDefinition.instanceSource == DatasetType.ENDPOINT )
+        		report += "endpoint.\n\n";
+        }
         report += "Select the 'Ontology Details' function in the 'Ontology' menu\nfor additional informations.\n";
         report += "The 'Hierarchy Visualization' can be disabled from the 'View' menu\nto improve system performances.\n";
 	}
@@ -143,12 +174,20 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		if( !ontDefinition.loadInstances ) return;
 		
 		if( ontDefinition.instanceSource == DatasetType.ONTOLOGY ) {
-			//instances = new InstanceDataset(ontology.getModel());
+			instances = new InstanceDataset(ontology);
 		}
 		else if ( ontDefinition.instanceSource == DatasetType.DATASET ) {
-			Ontology ont = Ontology.openOntology(ontDefinition.instanceSourceFile);
-			OntModel m = ont.getModel();
-			instances = new InstanceDataset(m);
+			
+			OntModel instancesModel = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, null );
+			
+			if( !(ontDefinition.instanceSourceFile.startsWith("file:///") || 
+					ontDefinition.instanceSourceFile.startsWith("http://")) ) {
+				ontDefinition.instanceSourceFile = "file:///" + ontDefinition.instanceSourceFile;
+			}
+			
+			instancesModel.read( ontDefinition.instanceSourceFile, null, ontology.getFormat() );
+			
+			instances = new InstanceDataset(instancesModel);
 		}
 		else if ( ontDefinition.instanceSource == DatasetType.ENDPOINT &&
 				  ontDefinition.instanceEndpointType.equals( EndpointRegistry.FREEBASE ) ) {
@@ -157,7 +196,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 			instances = new InstanceDataset(freebase);
 		}
 		
-		ontology.setInstances(instances);
+		ontology.setInstances(instances); // save the instances with this ontology 
 	}
 	
 	public InstanceDataset getInstances() { return instances; }
