@@ -7,7 +7,9 @@ import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.qualityEvaluation.metrics.joslyn.JoslynStructuralQuality;
 import am.app.ontology.instance.InstanceDataset;
+import am.app.ontology.instance.InstanceDataset.DatasetType;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.app.ontology.ontologyParser.OntologyDefinition;
 
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.ObjectProperty;
@@ -300,12 +302,18 @@ public class Ontology {
 	public void setDescription(String desc) { this.description = desc; }
 	public String getDescription() { return description; }
 	
-	public static Ontology openOntology(String ontoName){
+	public static Ontology openOntology(String fileName){
 		Ontology ontology;
 		try {
-			OntoTreeBuilder treeBuilder = new OntoTreeBuilder(ontoName, GlobalStaticVariables.SOURCENODE,
-			GlobalStaticVariables.LANG_OWL, 
-			GlobalStaticVariables.SYNTAX_RDFXML, false, true);
+			OntologyDefinition odef = new OntologyDefinition();
+			odef.loadOntology = false;
+			odef.loadInstances = true;
+			odef.instanceSource = DatasetType.DATASET;
+			odef.instanceSourceFormat = 0;
+			odef.instanceSourceFile = fileName;
+			
+			OntoTreeBuilder treeBuilder = new OntoTreeBuilder(odef);
+			
 			treeBuilder.build();
 			ontology = treeBuilder.getOntology();
 		} catch (Exception e) {
