@@ -1,6 +1,7 @@
 package am.userInterface;
 
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -82,8 +83,8 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		sourcePanel = createSourcePanel();
 		targetPanel = createTargetPanel();
 		labelsPanel = createLabelsPanel(); */
-		cancel=new JButton("Cancel");
-		btnProceed=new JButton("Proceed");
+		cancel = new JButton("Cancel");
+		btnProceed = new JButton("Proceed");
 
 		btnProceed.addActionListener(this);
 		cancel.addActionListener(this);
@@ -106,6 +107,8 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		tabbedPane.addTab("Source Ontology", sourcePanel);
 		tabbedPane.addTab("Target Ontology", targetPanel);		
 					
+		tabbedPane.setPreferredSize(new Dimension(700,100));
+		
 		//add the components the the frame
 		GroupLayout layout = new GroupLayout(this.getContentPane());
 		this.getContentPane().setLayout(layout);
@@ -620,11 +623,12 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			
 			// Initialize the checkboxes
 			
-			checkboxes = new JCheckBox[3];
+			checkboxes = new JCheckBox[4];
 			
 			checkboxes[0] = new JCheckBox("Persistent");
 			checkboxes[1] = new JCheckBox("Load Instances");
-			checkboxes[2] = new JCheckBox("Load predefined types alignment (for instance sources w/o schemas)");
+			checkboxes[2] = new JCheckBox("Load predefined types alignment (for instance sources without schemas)");
+			checkboxes[3] = new JCheckBox("Load ontology");
 			
 			// Initialize the radio buttons.
 			
@@ -685,8 +689,11 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			
 			checkboxes[1].addActionListener(this);
 			checkboxes[2].addActionListener(this);
+			checkboxes[3].addActionListener(this);
 			
 			// Initial state
+			
+			checkboxes[3].setSelected(true); // Load ontology from File/URL:
 			
 			checkboxes[0].setEnabled(false); // [] Persistent
 			labels[4].setEnabled(false); // On Disk Directory:
@@ -726,7 +733,9 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			
 			lay.setHorizontalGroup( lay.createParallelGroup()
 				
-				// Ontology File/URL: [___________________________] [...]
+				.addComponent(checkboxes[3])
+					
+				// [] Ontology File/URL: [___________________________] [...]
 				.addGroup( lay.createSequentialGroup()
 						.addComponent(labels[0])
 						.addComponent(textfields[0])
@@ -813,15 +822,17 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			
 			lay.setVerticalGroup( lay.createSequentialGroup()
 				
+				.addComponent(checkboxes[3])
+					
 				// Ontology File/URL: [___________________________] [...]
-				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false)
 						.addComponent(labels[0])
 						.addComponent(textfields[0])
 						.addComponent(buttons[0])
 				)
 				
 				// Language: [__________\/]  Syntax: [_________\/]
-				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false)
 						.addComponent(labels[1])
 						.addComponent(comboboxes[0])
 						.addComponent(labels[2])
@@ -834,7 +845,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 				.addGap(10)
 				
 				// Storage: () In Memory  () On Disk  [] Persistent
-				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false)
 						.addComponent(labels[3])
 						.addComponent(radiobuttons[0])
 						.addComponent(radiobuttons[1])
@@ -842,7 +853,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 				)
 				
 				// On Disk Directory: [___________________________] [...]
-				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false)
 						.addComponent(labels[4])
 						.addComponent(textfields[1])
 						.addComponent(buttons[1])
@@ -854,12 +865,12 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 				.addGap(10)
 				
 				// [] Load Instances
-				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false)
 						.addComponent(checkboxes[1])
 				)
 				
 				// Instance source: () Ontology  () Separate File  () Semantic Web Endpoint
-				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false)
 						.addComponent(labels[5])
 						.addComponent(radiobuttons[2])
 						.addComponent(radiobuttons[3])
@@ -867,14 +878,14 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 				)
 				
 				// File/URL: [____________________________________] [...]
-				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false)
 						.addComponent(labels[6])
 						.addComponent(textfields[2])
 						.addComponent(buttons[2])
 				)
 				
 				// File Format: [_______\/]  Endpoint Type: [_________\/]
-				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false)
 						.addComponent(labels[7])
 						.addComponent(comboboxes[2])
 						.addComponent(labels[8])
@@ -887,14 +898,14 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 				.addComponent(checkboxes[2])
 				
 				// File/URL: [_________________________] [...]
-				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER) 
+				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false) 
 						.addComponent(labels[9])
 						.addComponent(textfields[3])
 						.addComponent(buttons[3])
 				)
 				
 				// Format: [________\/]
-				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER) 
+				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false) 
 						.addComponent(labels[10])
 						.addComponent(comboboxes[4])
 				)
@@ -907,11 +918,71 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			
+				
 			if( e.getSource() == buttons[0] ) { chooseFile( textfields[0] ); }
 			if( e.getSource() == buttons[1] ) { chooseFile( textfields[1] ); }
 			if( e.getSource() == buttons[2] ) { chooseFile( textfields[2] ); }
 			if( e.getSource() == buttons[3] ) {	chooseFile( textfields[3] ); }
+			
+			if( e.getSource() == checkboxes[3] ) { // load ontology
+				if( checkboxes[3].isSelected() ) {
+					labels[0].setEnabled(true); // Ontology File/URL:
+					textfields[0].setEnabled(true); // [___________________]
+					buttons[0].setEnabled(true); // [...]
+					labels[1].setEnabled(true); // Language:
+					comboboxes[0].setEnabled(true); // [_______\/]
+					labels[2].setEnabled(true); // Syntax:
+					comboboxes[1].setEnabled(true); // [________\/]
+					
+					labels[3].setEnabled(true); // Storage:
+					radiobuttons[0].setEnabled(true); // In Memory
+					radiobuttons[0].setSelected(true); // In Memory
+					radiobuttons[1].setEnabled(true); // On Disk
+					checkboxes[0].setEnabled(false); // [] Persistent
+					labels[4].setEnabled(false); // On Disk Directory:
+					textfields[1].setEnabled(false); // [______]
+					buttons[1].setEnabled(false); // [...]
+					
+					if( checkboxes[1].isSelected() && !radiobuttons[2].isEnabled() ) {
+						radiobuttons[2].setEnabled(true);
+					}
+				}
+				else {
+					labels[0].setEnabled(false); // Ontology File/URL:
+					textfields[0].setEnabled(false); // [___________________]
+					buttons[0].setEnabled(false); // [...]
+					labels[1].setEnabled(false); // Language:
+					comboboxes[0].setEnabled(false); // [_______\/]
+					labels[2].setEnabled(false); // Syntax:
+					comboboxes[1].setEnabled(false); // [________\/]
+					
+					labels[3].setEnabled(false); // Storage:
+					radiobuttons[0].setEnabled(false); // In Memory
+					radiobuttons[1].setEnabled(false); // On Disk
+					checkboxes[0].setEnabled(false); // [] Persistent
+					labels[4].setEnabled(false); // On Disk Directory:
+					textfields[1].setEnabled(false); // [______]
+					buttons[1].setEnabled(false); // [...]
+					
+					if( checkboxes[1].isSelected() && radiobuttons[2].isSelected() ) {  // () Ontology
+						radiobuttons[3].setSelected(true);  // () Separate file.
+						
+						labels[6].setEnabled(true); // File/URL:
+						textfields[2].setEnabled(true); // [___________]
+						buttons[2].setEnabled(true); // [...]
+						labels[7].setEnabled(true); // File format:
+						comboboxes[2].setEnabled(true); // [_____\/]
+						labels[8].setEnabled(false); // Endpoint Type:
+						comboboxes[3].setEnabled(false); // [_____\/]
+
+						
+						radiobuttons[2].setEnabled(false);
+					}
+					else if( checkboxes[1].isSelected() ) {
+						radiobuttons[2].setEnabled(false);
+					}
+				}
+			}
 			
 			if( e.getSource() == radiobuttons[0] ||
 				e.getSource() == radiobuttons[1] ) {
@@ -930,7 +1001,22 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 				
 				if( checkboxes[1].isSelected() ) {					
 					labels[5].setEnabled(true); // Instance source:
-					radiobuttons[2].setEnabled(true); // Ontology
+					if( !checkboxes[3].isSelected() ) { // Load ontology
+						radiobuttons[2].setEnabled(false); // Ontology
+						radiobuttons[3].setSelected(true); // Separate file
+						
+						labels[6].setEnabled(true); // File/URL:
+						textfields[2].setEnabled(true); // [___________]
+						buttons[2].setEnabled(true); // [...]
+						labels[7].setEnabled(true); // File format:
+						comboboxes[2].setEnabled(true); // [_____\/]
+						labels[8].setEnabled(false); // Endpoint Type:
+						comboboxes[3].setEnabled(false); // [_____\/]
+
+					}
+					else {
+						radiobuttons[2].setEnabled(true); // Ontology
+					}
 					radiobuttons[3].setEnabled(true); // Separate File
 					radiobuttons[4].setEnabled(true); // Semantic Web Endpoint
 					
@@ -1034,6 +1120,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			
 			OntologyDefinition def = new OntologyDefinition();
 			
+			def.loadOntology = checkboxes[3].isSelected();
 			def.ontologyURI = textfields[0].getText();
 			def.ontologyLanguage = comboboxes[0].getSelectedIndex();
 			def.ontologySyntax = comboboxes[1].getSelectedIndex();
@@ -1058,8 +1145,8 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 					def.instanceSourceFile = textfields[2].getText();
 				}
 				else if( def.instanceSource == DatasetType.ENDPOINT ) {
-					if( comboboxes[4].getSelectedIndex() == 0 ) def.instanceEndpointType = EndpointRegistry.SPARQL;
-					if( comboboxes[4].getSelectedIndex() == 1 ) def.instanceEndpointType = EndpointRegistry.FREEBASE;
+					if( comboboxes[3].getSelectedIndex() == 0 ) def.instanceEndpointType = EndpointRegistry.SPARQL;
+					if( comboboxes[3].getSelectedIndex() == 1 ) def.instanceEndpointType = EndpointRegistry.FREEBASE;
 				}
 				
 				// load predefined alignment
