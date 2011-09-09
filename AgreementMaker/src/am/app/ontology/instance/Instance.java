@@ -13,6 +13,7 @@ public class Instance {
 	
 	public Instance(String uri, String type) {
 		this.uri = uri;
+		this.type = type;
 		properties = new Hashtable<String, List<String>>();
 	}
 
