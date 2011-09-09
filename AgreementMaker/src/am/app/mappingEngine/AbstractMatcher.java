@@ -242,6 +242,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		//maxTargetAlign = 1;
 		alignClass = true;
 		alignProp = true;
+		alignInstances = true;
 		minInputMatchers = 0;
 		maxInputMatchers = 0;
 		relation = MappingRelation.EQUIVALENCE;
@@ -418,6 +419,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			ArrayList<Node> sourcePropList = sourceOntology.getPropertiesList();
 			ArrayList<Node> targetPropList = targetOntology.getPropertiesList();
 			propertiesMatrix = alignProperties(sourcePropList, targetPropList );					
+		}
+		
+		
+		if( alignInstances == true && 
+		    (sourceOntology.getInstances() == null || targetOntology.getInstances() == null) ) 
+		{
+			alignInstances = false;
+			progressDisplay.appendToReport("Instances were NOT matched since they were not loaded properly.");
 		}
 		
 		if(alignInstances && !this.isCancelled() ) {
