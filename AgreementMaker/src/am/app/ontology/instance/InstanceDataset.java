@@ -40,6 +40,11 @@ public class InstanceDataset {
 		datasetType = DatasetType.DATASET;
 	}
 	
+	public InstanceDataset(Ontology ontology ) {
+		instanceSource = ontology;
+		datasetType = DatasetType.ONTOLOGY;
+	}
+	
 	public List<Instance> getInstances( String type, int limit ) {
 		List<Instance> instanceList = new ArrayList<Instance>();
 		
@@ -258,10 +263,11 @@ public class InstanceDataset {
 	
 	public static void main(String[] args) {
 		System.out.println("Opening source ontology...");
+		//Ontology sourceOntology = Ontology.openOntology("/home/cosmin/Workdir/OAEI2011/NYTDatasets/people.rdf");
 		Ontology sourceOntology = Ontology.openOntology("C:/Users/federico/Desktop/people.rdf");
 		System.out.println("Done");
 		
-		InstanceDataset sourceDataset = new InstanceDataset(sourceOntology.getModel());
+		InstanceDataset sourceDataset = sourceOntology.getInstances();
 		
 		List<Instance> sourceInstances = sourceDataset.getInstances();
 		//System.out.println(sourceInstances);
