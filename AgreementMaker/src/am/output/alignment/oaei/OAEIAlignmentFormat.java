@@ -98,7 +98,7 @@ public class OAEIAlignmentFormat implements AlignmentFormat {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	public HashMap<String,List<MatchingPair>> readAlignment( Reader inputReader ) {
 		
 		HashMap<String,List<MatchingPair>> alignmentMap = new HashMap<String,List<MatchingPair>>();

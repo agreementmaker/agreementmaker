@@ -428,7 +428,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		    (sourceOntology.getInstances() == null || targetOntology.getInstances() == null) ) 
 		{
 			alignInstances = false;
-			progressDisplay.appendToReport("Instances were NOT matched since they were not loaded properly.");
+			if( isProgressDisplayed() ) progressDisplay.appendToReport("Instances were NOT matched since they were not loaded properly.");
 		}
 		
 		if(alignInstances && !this.isCancelled() ) {
@@ -510,10 +510,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	
     protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
     	
-    	if((sourceList.size()*targetList.size())>4000000){
+    	/*if((sourceList.size()*targetList.size())>4000000){
     		param.largeOntologyMode=true;
     		System.out.println("running in large ontology mode");
-    	}
+    	}*/
     	
     	if(param.completionMode && inputMatchers != null && inputMatchers.size() > 0){ 
     		//run in optimized mode by mapping only concepts that have not been mapped in the input matcher

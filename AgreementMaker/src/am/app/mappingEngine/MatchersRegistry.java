@@ -6,7 +6,6 @@ import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.LexicalMatcherJAWS.LexicalMatcherJAWS;
 import am.app.mappingEngine.LexicalMatcherJWNL.LexicalMatcherJWNL;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcher;
-//import am.app.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
 import am.app.mappingEngine.PRAMatcher.OldPRAMatcher;
 import am.app.mappingEngine.PRAMatcher.PRAMatcher;
 import am.app.mappingEngine.PRAMatcher.PRAMatcher2;
@@ -19,6 +18,7 @@ import am.app.mappingEngine.dsi.OldDescendantsSimilarityInheritanceMatcher;
 import am.app.mappingEngine.hierarchy.HierarchyMatcher;
 import am.app.mappingEngine.hierarchy.HierarchyMatcherModified;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
+import am.app.mappingEngine.mediatingMatcher.MediatingMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsMatcher;
 import am.app.mappingEngine.oaei2009.OAEI2009matcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
@@ -31,7 +31,6 @@ import am.app.mappingEngine.testMatchers.CopyMatcher;
 import am.app.mappingEngine.testMatchers.EqualsMatcher;
 import am.app.mappingEngine.testMatchers.RandomMatcher;
 import am.app.mappingEngine.wikipedia.WikiMatcher;
-//import am.app.mappingEngine.LexicalMatcherUMLS.LexicalMatcherUMLS;
 import am.extension.MyTestMatcher;
 
 
@@ -54,6 +53,7 @@ public enum MatchersRegistry {
 	 * And so, if your matcher is has no code errors, it will be incorporated into the AgreementMaker.  - Cosmin
 	 */
 	//
+	BridgeMatcher		( "MEDM", "Mediating Matcher", MediatingMatcher.class, MatcherCategory.HYBRID ), 
 	MyTestMatch			( "MTM", "Synonym Term Counting Matcher", MyTestMatcher.class, MatcherCategory.USER ),
 	PartialGraph		( "PGM", "Partial Graph Matcher", PartialGraphMatcher.class, MatcherCategory.STRUCTURAL ),
 	SimilarityFlooding  ( "SFM", "Similarity Flooding Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.sfm.IndipendentSimilarityFlooding.class ),
@@ -63,7 +63,7 @@ public enum MatchersRegistry {
 	IterativeMatcher	( "IISM", "Instance-based Iterator", am.app.mappingEngine.instance.IterativeMatcher.class),
 	AdvancedSimilarity  ( "ASM", "Advanced Similarity Matcher", am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher.class, MatcherCategory.SYNTACTIC),
 	GroupFinder			( "GFM", "Group Finder Matcher", am.app.mappingEngine.groupFinder.GroupFinderMatcher.class),
-	IISM					( "IISM", "Iterative Instance and Structural Matcher", am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralMatcher.class, MatcherCategory.STRUCTURAL),
+	IISM				( "IISM", "Iterative Instance and Structural Matcher", am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralMatcher.class, MatcherCategory.STRUCTURAL),
 	LSM					( "LSM", "Lexical Synonym Matcher", LexicalSynonymMatcher.class, MatcherCategory.LEXICAL ),
 	//OFFICIAL MATCHERS
 	LexicalJAWS			( "JAWS", "Lexical Matcher: JAWS", LexicalMatcherJAWS.class, MatcherCategory.LEXICAL ),

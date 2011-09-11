@@ -24,7 +24,7 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 public class BridgeToOAEI {
 
-	public static void convertBridgeToOAEI( String bridgeFileName, String oaeiOutputFile, String matcherName ) {
+	public static void convertBridgeToOAEI( String bridgeFileName, String oaeiOutputFile, String matcherName, String sourceURI, String targetURI ) {
 		
 		Ontology bridgeOntology = OntoTreeBuilder.loadOWLOntology(bridgeFileName);
 		
@@ -79,7 +79,8 @@ public class BridgeToOAEI {
 		
 		
 		try {
-			OutputController.printDocumentOAEI(new File(oaeiOutputFile), alignment, matcherName, "http://purl.obolibrary.org/obo/uberon.owl", "http://mouse.owl");
+			//OutputController.printDocumentOAEI(new File(oaeiOutputFile), alignment, matcherName, "http://purl.obolibrary.org/obo/uberon.owl", "http://mouse.owl");
+			OutputController.printDocumentOAEI(new File(oaeiOutputFile), alignment, matcherName, sourceURI, targetURI);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -89,10 +90,12 @@ public class BridgeToOAEI {
 	
 	public static void main(String[] args) {
 		
-		convertBridgeToOAEI("/home/cosmin/Desktop/Ontologies/uberon-bridge-to-ma.owl", 
-							"/home/cosmin/Desktop/Ontologies/uberon-ma-reference.rdf",
-							"UBERON Bridge to MA");
-		
+		convertBridgeToOAEI("/home/cosmin/Desktop/Ontologies/Uberon with Bridges/uberon-bridge-to-ma.owl", 
+							"/home/cosmin/Desktop/Ontologies/Uberon with Bridges/uberon-ma-bridge.rdf",
+							"UBERON Bridge to MA", "http://purl.obolibrary.org/obo/uberon.owl", "http://mouse.owl");
+		convertBridgeToOAEI("/home/cosmin/Desktop/Ontologies/Uberon with Bridges/uberon-bridge-to-ncithesaurus.owl", 
+				"/home/cosmin/Desktop/Ontologies/Uberon with Bridges/uberon-ha-bridge.rdf",
+				"UBERON Bridge to NCI Anatomy",  "http://purl.obolibrary.org/obo/uberon.owl" ,"http://human.owl");
 	}
 	
 }
