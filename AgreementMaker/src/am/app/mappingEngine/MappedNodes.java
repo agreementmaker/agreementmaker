@@ -4,6 +4,11 @@ import java.util.ArrayList;
 
 import am.app.ontology.Node;
 
+/**
+ * Used in the completion mode of AbstractMatcher.
+ * 
+ * TODO: Figure out if this class is really needed. -- Cosmin.
+ */
 public class MappedNodes {
 	//true if the node is mapped at least the minimum number of times expressed in the cardinality
 	protected int[] mappedSources;
