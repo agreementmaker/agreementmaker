@@ -376,9 +376,17 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	propertiesAlignmentSet = null;
     	qualEvaluation = null;
     	refEvaluation = null;
+    	
+    	if( progressDisplay != null ) {
+    		progressDisplay.appendToReport("Performing mapping selection ...");
+    	}
     }
     //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
-    protected void afterSelectionOperations() {} 
+    protected void afterSelectionOperations() {
+    	if( progressDisplay != null ) {
+    		progressDisplay.appendToReport(" Done.\n");
+    	}
+    } 
     
     //Time calculation, if you override this method remember to call super.afterSelectionOperations()
     protected void matchStart() {
