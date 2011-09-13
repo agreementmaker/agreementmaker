@@ -13,7 +13,7 @@ import java.util.List;
 
 import am.GlobalStaticVariables;
 import am.app.ontology.Ontology;
-import am.app.ontology.instance.InstanceDataset;
+import am.app.ontology.instance.SeparateFileInstanceDataset;
 import am.app.ontology.ontologyParser.OldOntoTreeBuilder;
 import am.utility.HTTPUtility;
 
@@ -41,7 +41,7 @@ public class NYTDataRefiner {
 		
 		//System.out.println(ontology.);
 		
-		List<Statement> indStmts = InstanceDataset.getIndividualsStatements(ontology.getModel(), null);
+		List<Statement> indStmts = SeparateFileInstanceDataset.getIndividualsStatements(ontology.getModel(), null);
 		
 		System.out.println(indStmts.size());
 		
@@ -55,7 +55,7 @@ public class NYTDataRefiner {
 			}
 					
 			
-			String query = InstanceDataset.getPropertyValue(ontology.getModel(), uri, searchApi);
+			String query = SeparateFileInstanceDataset.getPropertyValue(ontology.getModel(), uri, searchApi);
 			
 			query += nytKey;
 			

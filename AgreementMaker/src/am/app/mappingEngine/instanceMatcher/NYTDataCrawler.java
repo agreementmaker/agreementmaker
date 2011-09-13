@@ -1,8 +1,5 @@
 package am.app.mappingEngine.instanceMatcher;
 
-import gov.nih.nlm.nls.lexCheck.Api.ApiOutput;
-
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,18 +8,14 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.List;
 
-import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.rdf.model.Statement;
-
 import am.GlobalStaticVariables;
-import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.Ontology;
-import am.app.ontology.instance.Instance;
 import am.app.ontology.instance.InstanceDataset;
+import am.app.ontology.instance.SeparateFileInstanceDataset;
 import am.app.ontology.ontologyParser.OldOntoTreeBuilder;
-import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.utility.HTTPUtility;
+
+import com.hp.hpl.jena.rdf.model.Statement;
 
 public class NYTDataCrawler{
 	static String sourceDataset = "C:/Users/federico/workspace/AgreementMaker/OAEI2011/NYTDatasets/people.rdf";	
@@ -41,7 +34,7 @@ public class NYTDataCrawler{
 		//System.out.println(ontology.);
 		jsonAnswers = new HashMap<String, String>();
 		
-		List<Statement> indStmts = InstanceDataset.getIndividualsStatements(ontology.getModel(), null);
+		List<Statement> indStmts = SeparateFileInstanceDataset.getIndividualsStatements(ontology.getModel(), null);
 		
 		System.out.println(indStmts.size());
 		
@@ -51,7 +44,7 @@ public class NYTDataCrawler{
 			System.out.println(uri);
 			
 			
-			String query = InstanceDataset.getPropertyValue(ontology.getModel(), uri, searchApi);
+			String query = SeparateFileInstanceDataset.getPropertyValue(ontology.getModel(), uri, searchApi);
 			
 			query += nytKey;
 			

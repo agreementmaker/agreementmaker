@@ -33,7 +33,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 
 import am.GlobalStaticVariables;
-import am.app.ontology.instance.InstanceDataset.DatasetType;
+import am.app.ontology.Ontology.DatasetType;
 import am.app.ontology.instance.endpoint.EndpointRegistry;
 import am.app.ontology.ontologyParser.OntologyDefinition;
 import am.utility.AMFileChooser;

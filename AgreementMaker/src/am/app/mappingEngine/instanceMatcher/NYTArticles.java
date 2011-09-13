@@ -13,7 +13,9 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openjena.atlas.json.JsonObject;
+
+import am.app.ontology.Ontology;
+import am.app.ontology.instance.SeparateFileInstanceDataset;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -21,9 +23,6 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
-
-import am.app.ontology.Ontology;
-import am.app.ontology.instance.InstanceDataset;
 
 
 public class NYTArticles {
@@ -70,7 +69,7 @@ public class NYTArticles {
 		
 		title = ontology.getModel().createProperty(titleURI);
 		
-		List<Statement> indStmts = InstanceDataset.getIndividualsStatements(ontology.getModel(), null);
+		List<Statement> indStmts = SeparateFileInstanceDataset.getIndividualsStatements(ontology.getModel(), null);
 		
 		System.out.println(indStmts.size());
 		

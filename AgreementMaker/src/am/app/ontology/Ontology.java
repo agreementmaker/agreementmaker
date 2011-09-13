@@ -9,7 +9,6 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.qualityEvaluation.metrics.joslyn.JoslynStructuralQuality;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.InstanceDataset;
-import am.app.ontology.instance.InstanceDataset.DatasetType;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition;
 
@@ -65,6 +64,12 @@ public class Ontology {
 	public static final int SOURCE = GlobalStaticVariables.SOURCENODE;
 	public static final int TARGET = GlobalStaticVariables.TARGETNODE;
 	
+	// TODO: Get rid of this enum? Or move it out of this class? - Cosmin, Sept 13, 2011
+	public enum DatasetType {
+		ENDPOINT,
+		ONTOLOGY,
+		DATASET;
+	}
 	
 	private InstanceDataset instances;
 	

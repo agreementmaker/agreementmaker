@@ -1,6 +1,6 @@
 package am.app.ontology.ontologyParser;
 
-import am.app.ontology.instance.InstanceDataset.DatasetType;
+import am.app.ontology.Ontology.DatasetType;
 import am.app.ontology.instance.endpoint.EndpointRegistry;
 
 /**

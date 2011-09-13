@@ -48,6 +48,7 @@ import am.tools.seals.SealsPanel;
 import am.userInterface.VisualizationChangeEvent.VisualizationEventType;
 import am.userInterface.find.FindDialog;
 import am.userInterface.find.FindInterface;
+import am.userInterface.instance.InstanceLookupPanel;
 import am.userInterface.sidebar.provenance.ProvenanceMenuItem;
 import am.userInterface.sidebar.provenance.ProvenanceSidebar;
 import am.userInterface.sidebar.vertex.VertexDescriptionPane;
@@ -91,7 +92,7 @@ public class UIMenu implements ActionListener {
 	private JMenuItem ontologyDetails, ontologyViewEntityList, ontologyProfiling, ontologyAlternateHierarchy;
 	
 	// Tools menu.
-	private JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation;
+	private JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation, instanceLookupItem;
 	
 	// Matchers menu.
 	private JMenuItem userFeedBack, newMatching, runMatching, copyMatching, deleteMatching, clearAll, 
@@ -751,6 +752,16 @@ public class UIMenu implements ActionListener {
 			} else if( obj == ontologyAlternateHierarchy ) {
 				ViewAlternateHierachyDialog dialog = new ViewAlternateHierachyDialog();
 				dialog.setVisible(true); // blocks here until the dialog is dismissed.
+			} else if (obj == instanceLookupItem ) {
+				
+				Ontology sourceOntology = Core.getInstance().getSourceOntology();
+				Ontology targetOntology = Core.getInstance().getTargetOntology();
+				
+				InstanceLookupPanel lookupPanel = new InstanceLookupPanel(sourceOntology.getInstances(), targetOntology.getInstances());
+				
+				
+				Core.getUI().addTab("Instances Lookup", null , lookupPanel , "Instances Lookup Panel");
+				
 			}
 			
 			
@@ -1252,7 +1263,11 @@ public class UIMenu implements ActionListener {
 		toolsMenu.add(sealsItem);
 		
 		
-		// Tools -> Information Matching
+		// Tools -> Instance Lookup Panel...
+		instanceLookupItem = new JMenuItem("Instance Lookup Panel...");
+		instanceLookupItem.setMnemonic(KeyEvent.VK_I);
+		instanceLookupItem.addActionListener(this);
+		toolsMenu.add(instanceLookupItem);
 		
 		// Build help menu in the menu bar.
 		helpMenu = new JMenu("Help");

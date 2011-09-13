@@ -1441,9 +1441,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	}
     	
     	if(alignInstances){
-    		InstanceDataset instances = sourceOntology.getInstances();
-    		if(instances != null && instances.isIterable())    		
-    			stepsTotal += sourceOntology.getInstances().getInstances().size();
+    		try {
+	    		InstanceDataset instances = sourceOntology.getInstances();
+	    		if(instances != null && instances.isIterable())    		
+	    			stepsTotal += sourceOntology.getInstances().getInstances().size();
+    		} catch (Exception e) {
+    			e.printStackTrace();
+			}
     	}
 
     	// we have computed stepsTotal, and initialized stepsDone to 0.
@@ -1502,6 +1506,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			if( p > 100 && p > 0 ) { p = 100; }
 			if( p < 0 ) { p = 0; }
 			setProgress(p);  // this function does the actual work ( via Swingworker, which uses the PropertyChangeListener )
+		} else if( stepsDone == stepsTotal ) {
+			// we're done here.
+			setProgress(100);
 		}
 		
 	}

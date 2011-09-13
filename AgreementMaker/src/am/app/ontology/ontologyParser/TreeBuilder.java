@@ -13,8 +13,11 @@ import am.app.Core;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.app.ontology.Ontology.DatasetType;
+import am.app.ontology.instance.FreebaseInstanceDataset;
 import am.app.ontology.instance.InstanceDataset;
-import am.app.ontology.instance.InstanceDataset.DatasetType;
+import am.app.ontology.instance.OntologyInstanceDataset;
+import am.app.ontology.instance.SeparateFileInstanceDataset;
 import am.app.ontology.instance.endpoint.EndpointRegistry;
 import am.app.ontology.instance.endpoint.FreebaseEndpoint;
 import am.output.alignment.oaei.OAEIAlignmentFormat;
@@ -179,7 +182,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		if( !ontDefinition.loadInstances ) return;
 		
 		if( ontDefinition.instanceSource == DatasetType.ONTOLOGY ) {
-			instances = new InstanceDataset(ontology);
+			instances = new OntologyInstanceDataset(ontology);
 		}
 		else if ( ontDefinition.instanceSource == DatasetType.DATASET ) {
 			
@@ -192,13 +195,13 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 			
 			instancesModel.read( ontDefinition.instanceSourceFile, null, ontology.getFormat() );
 			
-			instances = new InstanceDataset(instancesModel);
+			instances = new SeparateFileInstanceDataset(instancesModel);
 		}
 		else if ( ontDefinition.instanceSource == DatasetType.ENDPOINT &&
 				  ontDefinition.instanceEndpointType.equals( EndpointRegistry.FREEBASE ) ) {
 			
 			FreebaseEndpoint freebase = new FreebaseEndpoint();
-			instances = new InstanceDataset(freebase);
+			instances = new FreebaseInstanceDataset(freebase);
 		}
 		
 		ontology.setInstances(instances); // save the instances with this ontology
