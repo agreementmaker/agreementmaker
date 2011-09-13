@@ -450,6 +450,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		if(currentMatcher.getMinInputMatchers() > selectedMatchers ) {
 			Utility.displayErrorPane("Select at least "+currentMatcher.getMinInputMatchers()+" matchings from the table to run this matcher.", null);
 			return;
+		} else if( currentMatcher.isCompletionMode() && selectedMatchers == 0 ) {
+			Utility.displayErrorPane("To run in \"Completion Mode\" please select at least one matcher from the Matchers Control Panel table.", null);
+			return;
 		}
 		
 		// 4. Bring up MatcherProgressDialog which runs the matcher.

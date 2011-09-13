@@ -61,7 +61,7 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
 					                                        "Correct",
 					                                        "Reference",
 					                                        "Precision",
-					                                        "Recall",
+					                                        " Recall ",
 					                                        "F-Measure",
 					                                        "Class Quality",
 					                                        "Prop Quality"
@@ -84,11 +84,11 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
                 new Integer(999999), 
                 new Integer(999999), 
                 new Integer(999999), 
-                "100.0%",
-                "100.0%",
-                "100.0%",
-                "100.0%",
-                "100.0%",
+                "100.00%",
+                "100.00%",
+                "100.00%",
+                "100.00%",
+                "100.00%",
                 Color.pink
                 };
 

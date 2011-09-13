@@ -122,10 +122,9 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	}
 	
 	private void addInputMatchers(AbstractMatcher currentMatcher) {
-		Core.getInstance();
 		//Set input matchers into the abstractmatcher VERY IMPORTANT to set them before invoking the parameter panel, in fact the parameter panel may need to work on inputMatchers also.
 		int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
-		for(int i = 0; i<rowsIndex.length && i< currentMatcher.getMaxInputMatchers(); i++) {
+		for(int i = 0; i < rowsIndex.length; i++) {
 			AbstractMatcher input = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
 			currentMatcher.addInputMatcher(input);
 		}
@@ -480,7 +479,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		if(ae.getSource() == matcherCombo && !matcherDefined){
 			matcher = MatcherFactory.getMatcherInstance(
 					MatcherFactory.getMatchersRegistryEntry(matcherCombo.getSelectedItem().toString()), 0);
-			
+
 			String name = matcher.getRegistryEntry().getMatcherName();
 			setTitle(name+": additional parameters");
 			

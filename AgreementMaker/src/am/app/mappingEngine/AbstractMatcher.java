@@ -518,11 +518,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	
     protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
     	
-    	/*if((sourceList.size()*targetList.size())>4000000){
-    		param.largeOntologyMode=true;
-    		System.out.println("running in large ontology mode");
-    	}*/
-    	
     	if(param.completionMode && inputMatchers != null && inputMatchers.size() > 0){ 
     		//run in optimized mode by mapping only concepts that have not been mapped in the input matcher
     		if(typeOfNodes.equals(alignType.aligningClasses)){
@@ -582,6 +577,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	}
 	}
     
+    /**
+     * This method implements "Completion Mode", formerly called "OptimizedAbstractMatcher". 
+     */
     protected SimilarityMatrix alignUnmappedNodes(ArrayList<Node> sourceList, ArrayList<Node> targetList, SimilarityMatrix inputMatrix,
 			Alignment<Mapping> inputAlignmentSet, alignType typeOfNodes) throws Exception {
     	
@@ -590,7 +588,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		Node source;
 		Node target;
 		Mapping alignment; 
-		Mapping inputAlignment;
+		//Mapping inputAlignment;
 		for(int i = 0; i < sourceList.size(); i++) {
 			source = sourceList.get(i);
 			for(int j = 0; j < targetList.size(); j++) {
@@ -604,8 +602,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 					}
 					//else we take the alignment that was computed from the previous matcher
 					else{
-						inputAlignment = inputMatrix.get(i, j);
-						alignment = new Mapping(inputAlignment.getEntity1(), inputAlignment.getEntity2(), inputAlignment.getSimilarity(), inputAlignment.getRelation());
+						alignment = inputMatrix.get(i, j);
+						
+						//alignment = new Mapping(inputAlignment.getEntity1(), inputAlignment.getEntity2(), inputAlignment.getSimilarity(), inputAlignment.getRelation());
 					}
 					matrix.set(i,j,alignment);
 					if( isProgressDisplayed() ) stepDone(); // we have completed one step

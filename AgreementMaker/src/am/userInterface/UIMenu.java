@@ -1213,6 +1213,7 @@ public class UIMenu implements ActionListener {
 		//matchersMenu.addSeparator();
 		refEvaluateMatching = new JMenuItem("Evaluate with reference file");
 		refEvaluateMatching.addActionListener(this);
+		refEvaluateMatching.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		matchersMenu.add(refEvaluateMatching);
 		
 		thresholdAnalysis = new JMenuItem("Threshold Analysis");
