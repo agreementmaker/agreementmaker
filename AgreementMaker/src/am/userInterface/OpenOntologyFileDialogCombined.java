@@ -13,6 +13,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
+import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -30,10 +31,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionListener;
 
 import am.GlobalStaticVariables;
-import am.app.Core;
 import am.app.ontology.instance.InstanceDataset.DatasetType;
 import am.app.ontology.instance.endpoint.EndpointRegistry;
 import am.app.ontology.ontologyParser.OntologyDefinition;
@@ -47,21 +46,9 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 
 	private static final long serialVersionUID = -3570106790068421107L;
 
-	private JLabel[] fileBrowseLabel;
-	private JTextField[] filePaths;
-	private JButton[] browseButtons;
-	private JLabel[] sourceTargetLabel;
-	private JLabel[] otherLabels;
-	private JComboBox[] ontLang;
-	private JComboBox[] ontSyntax;
-	private JRadioButton[] inMem;
-	private JRadioButton[] onDisk;
-	private JCheckBox[] skip;
-	private JCheckBox fileBrowseSourceInstances, fileBrowseTargetInstances;
-
-	private JButton btnOnDiskSettings, cancel, btnProceed;	
+	private JButton cancel, btnProceed;	
 	private UI ui;
-	private JPanel sourcePanel, targetPanel, filePanel, buttonsPanel, labelsPanel;
+	private JPanel buttonsPanel;
 
 	private static final String PREF_LASTFILTER = "LAST_SELECTED_FILTER";
 	private static final String PREF_LASTFILE = "LAST_SELECTED_FILE";
@@ -180,89 +167,9 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		return rootPane;
 	}
 
-
-	/*private void initializeComponents() {
-		//init all the components.  Array index [0] refers to source while [1] refers to target.
-		fileBrowseLabel = new JLabel[2];
-		fileBrowseLabel[0]= new JLabel("Source File:");
-		fileBrowseLabel[1]= new JLabel("Target File:");
-		
-		fileBrowseSourceInstances = new JCheckBox("Source Instances:");
-		fileBrowseTargetInstances = new JCheckBox("Target Instances:");
-		
-
-		filePaths=new JTextField[2];
-		filePaths[0]=new JTextField(0);
-		filePaths[1]=new JTextField(0);
-		filePaths[0].setPreferredSize(new Dimension(300, filePaths[0].getHeight()));
-		filePaths[1].setPreferredSize(new Dimension(300, filePaths[1].getHeight()));
-
-		browseButtons=new JButton[2];
-		browseButtons[0]=new JButton("...");
-		browseButtons[1]=new JButton("...");
-
-		sourceTargetLabel=new JLabel[2];
-		sourceTargetLabel[0]=new JLabel("Source");
-		sourceTargetLabel[1]=new JLabel("Target");
-
-		otherLabels=new JLabel[3];
-		otherLabels[0]=new JLabel("Language");
-		otherLabels[1]=new JLabel("Syntax");
-		otherLabels[2]=new JLabel("Storage");
-
-		ontLang=new JComboBox[2];
-		ontLang[0]=new JComboBox(GlobalStaticVariables.languageStrings);
-		ontLang[1]=new JComboBox(GlobalStaticVariables.languageStrings);
-		ontLang[0].addComponentListener(null);
-		ontLang[1].setPreferredSize(ontLang[1].getPreferredSize());
-
-		ontSyntax=new JComboBox[2];
-		ontSyntax[0]=new JComboBox(GlobalStaticVariables.syntaxStrings);
-		ontSyntax[1]=new JComboBox(GlobalStaticVariables.syntaxStrings);
-		ontSyntax[0].setPreferredSize(ontSyntax[0].getPreferredSize());
-		ontSyntax[1].setPreferredSize(ontSyntax[1].getPreferredSize());
-
-		inMem=new JRadioButton[2];
-		inMem[0]=new JRadioButton("In Memory");
-		inMem[0].setSelected(true);
-		inMem[1]=new JRadioButton("In Memory");
-		inMem[1].setSelected(true);
-
-		onDisk=new JRadioButton[2];
-		onDisk[0]=new JRadioButton("On Disk");
-		onDisk[1]=new JRadioButton("On Disk");
-
-
-		onDisk[0].addActionListener(this);
-		onDisk[1].addActionListener(this);
-		inMem[0].addActionListener(this);
-		inMem[1].addActionListener(this);
-
-		ButtonGroup source=new ButtonGroup();
-		source.add(inMem[0]);
-		source.add(onDisk[0]);
-
-		ButtonGroup target=new ButtonGroup();
-		target.add(inMem[1]);
-		target.add(onDisk[1]);
-
-		skip=new JCheckBox[2];
-		skip[0]=new JCheckBox("<html>Skip concepts with<p>different namespace.</html>");
-		skip[1]=new JCheckBox("<html>Skip concepts with<p>different namespace.</html>");
-
-		btnOnDiskSettings=new JButton("On Disk Settings");
-		btnOnDiskSettings.setEnabled(false);
-		cancel=new JButton("Cancel");
-		btnProceed=new JButton("Proceed");
-
-
-		browseButtons[0].addActionListener(this);
-		browseButtons[1].addActionListener(this);
-		btnProceed.addActionListener(this);
-		cancel.addActionListener(this);
-		btnOnDiskSettings.addActionListener(this);
-	}*/
-
+	/** 
+	 * @return A JPanel with "Proceed" and "Cancel" buttons.
+	 */
 	private JPanel createButtonsPanel() {
 		JPanel buttonsPanel = new JPanel();
 
@@ -289,144 +196,6 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		return buttonsPanel;
 	}
 
-	/*private JPanel createLabelsPanel() {
-		JPanel labelsPanel = new JPanel();
-
-		GroupLayout labelsPanellayout = new GroupLayout(labelsPanel);
-		labelsPanel.setLayout(labelsPanellayout);
-
-		labelsPanellayout.setAutoCreateGaps(true);
-		labelsPanellayout.setAutoCreateContainerGaps(false);
-
-		labelsPanellayout.setHorizontalGroup(
-				labelsPanellayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-				.addComponent(otherLabels[0])
-				.addComponent(otherLabels[1])
-				.addComponent(otherLabels[2])
-				//.addComponent(otherLabels[3])
-				//.addComponent(otherLabels[4])
-		);
-
-		labelsPanellayout.setVerticalGroup(
-				labelsPanellayout.createSequentialGroup()
-				.addGap(35)
-				.addComponent(otherLabels[0])
-				.addGap(15)
-				.addComponent(otherLabels[1])
-				.addGap(10)
-				.addComponent(otherLabels[2])
-				//.addGap(30)
-				//.addComponent(otherLabels[3])
-				//.addComponent(otherLabels[4])
-		);
-
-		return labelsPanel;
-	}*/
-
-	/*private JPanel createTargetPanel() {
-		JPanel targetPanel = new JPanel();
-		GroupLayout targetPanellayout = new GroupLayout(targetPanel);
-		targetPanel.setLayout(targetPanellayout);
-
-		targetPanellayout.setAutoCreateGaps(true);
-		targetPanellayout.setAutoCreateContainerGaps(true);
-
-		targetPanellayout.setHorizontalGroup(
-				targetPanellayout.createParallelGroup(GroupLayout.Alignment.LEADING,false)
-				.addComponent(ontLang[1])
-				.addComponent(ontSyntax[1])
-				.addComponent(inMem[1])
-				.addComponent(onDisk[1])
-				.addComponent(skip[1])
-		);
-
-		targetPanellayout.setVerticalGroup(
-				targetPanellayout.createSequentialGroup()
-				.addComponent(ontLang[1], GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,GroupLayout.PREFERRED_SIZE)
-				.addComponent(ontSyntax[1], GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,GroupLayout.PREFERRED_SIZE)
-				.addComponent(inMem[1])
-				.addComponent(onDisk[1])
-				.addComponent(skip[1])
-		);
-
-		targetPanel.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Target"));
-
-		return targetPanel;
-	}*/
-
-	/*private JPanel createSourcePanel() {
-		JPanel sourcePanel = new JPanel();
-
-		GroupLayout sourcePanellayout = new GroupLayout(sourcePanel);
-		sourcePanel.setLayout(sourcePanellayout);
-
-		sourcePanellayout.setAutoCreateGaps(true);
-		sourcePanellayout.setAutoCreateContainerGaps(true);
-
-		sourcePanellayout.setHorizontalGroup(
-				sourcePanellayout.createParallelGroup(GroupLayout.Alignment.LEADING,false)
-				.addComponent(ontLang[0])
-				.addComponent(ontSyntax[0])
-				.addComponent(inMem[0])
-				.addComponent(onDisk[0])
-				.addComponent(skip[0])
-		);
-
-		sourcePanellayout.setVerticalGroup(
-				sourcePanellayout.createSequentialGroup()
-				.addComponent(ontLang[0], GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,GroupLayout.PREFERRED_SIZE)
-				.addComponent(ontSyntax[0], GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,GroupLayout.PREFERRED_SIZE)
-				.addComponent(inMem[0])
-				.addComponent(onDisk[0])
-				.addComponent(skip[0])
-		);
-
-		sourcePanel.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Source"));
-
-		return sourcePanel;
-	}*/
-
-	/*private JPanel createFilePanel() {
-		JPanel filePanel = new JPanel();
-
-		GroupLayout filePanelLayout=new GroupLayout(filePanel);
-		filePanel.setLayout(filePanelLayout);
-
-		filePanelLayout.setAutoCreateGaps(true);
-		filePanelLayout.setAutoCreateContainerGaps(false);
-
-		filePanelLayout.setHorizontalGroup(
-				filePanelLayout.createParallelGroup()
-				.addGroup( filePanelLayout.createSequentialGroup()
-						.addComponent(fileBrowseLabel[0])
-						.addComponent(filePaths[0], GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
-						.addComponent(browseButtons[0])
-				)
-				.addGroup(filePanelLayout.createSequentialGroup()
-						.addComponent(fileBrowseLabel[1])
-						.addComponent(filePaths[1], GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
-						.addComponent(browseButtons[1])
-				)
-		);
-
-		filePanelLayout.setVerticalGroup(
-				filePanelLayout.createSequentialGroup()
-				.addGroup(filePanelLayout.createParallelGroup(GroupLayout.Alignment.CENTER,false)
-						.addComponent(fileBrowseLabel[0], GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,GroupLayout.PREFERRED_SIZE)
-						.addComponent(filePaths[0], GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
-						.addComponent(browseButtons[0])
-				)
-				.addGroup(filePanelLayout.createParallelGroup(GroupLayout.Alignment.CENTER,false)
-						.addComponent(fileBrowseLabel[1], GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,GroupLayout.PREFERRED_SIZE)
-						.addComponent(filePaths[1], GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,GroupLayout.DEFAULT_SIZE)
-						.addComponent(browseButtons[1])
-				)
-		);
-
-
-		return filePanel;
-	}*/
-
 	@Override
 	/* (non-Javadoc)
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
@@ -437,23 +206,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		if(obj == cancel) {
 			this.dispose();
 		}
-		/*else if(obj== onDisk[0] || obj==onDisk[1] || obj== inMem[0] || obj==inMem[1]) {
-			//setting the database button
-			if(onDisk[0].isSelected() || onDisk[1].isSelected()) btnOnDiskSettings.setEnabled(true);
-			else btnOnDiskSettings.setEnabled(false);
-		} 
-		else if(obj==btnOnDiskSettings){
-			//open a new dialog that has fields for the database connection settings
-			new OnDiskLocationDialog(this,onDisk[0].isSelected(),onDisk[1].isSelected());
-
-		}*/ 
-		/*else if(obj == browseButtons[0]) { 
-			chooseFile(0); 
-		} 
-		else if(obj == browseButtons[1]) {
-			//browse for target
-			chooseFile(1);				
-		}*/
+		
 		else if(obj == btnProceed){
 			
 			
@@ -466,7 +219,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			String targetFilename = targetDefinition.ontologyURI;
 
 			try{
-				boolean loadSuccess = ui.openFile(sourceDefinition);
+				ui.openFile(sourceDefinition);
 			}catch(Exception ex){
 				JOptionPane.showConfirmDialog(this,"Can not parse the file '" + sourceFilename + "'. Please check the policy.\n\n"+ex.getMessage(),"Parser Error",JOptionPane.ERROR_MESSAGE);
 				ex.printStackTrace();
@@ -475,7 +228,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			//frame.dispose();
 
 			try{
-				boolean loadSuccess = ui.openFile(targetDefinition);
+				ui.openFile(targetDefinition);
 			}catch(Exception ex){
 				JOptionPane.showConfirmDialog(this,"Can not parse the file '" + targetFilename + "'. Please check the policy.\n\n"+ex.getMessage(),"Parser Error",JOptionPane.ERROR_MESSAGE);
 				ex.printStackTrace();
@@ -487,84 +240,11 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 	}
 
 	/**
-	 * This method gets called when a user clicks the browse button to choose a file.
-	 * @param sourceOrTarget 0 = source file, 1 = target file.
+	 * Helper class to organized the source and target ontology loading panels.
+	 * 
+	 * @author Cosmin
+	 *
 	 */
-/*	private void chooseFile(int sourceOrTarget) {
-		Preferences localPrefs = Preferences.userNodeForPackage(this.getClass());
-
-		// if the directory we received from our preferences exists, use that as the 
-		// starting directory for the chooser			 
-		File lastSelectedFile = new File( localPrefs.get(PREF_LASTFILE , "."));
-		int lastSelectedFilter = localPrefs.getInt(PREF_LASTFILTER, -1);
-		AMFileChooser fc = new AMFileChooser(lastSelectedFile, lastSelectedFilter);
-
-		int retVal = fc.showOpenDialog(this);
-
-		if( retVal == JFileChooser.APPROVE_OPTION ) {
-			File selectedFile = fc.getSelectedFile();
-
-			// ok, now that we know what file the user selected
-			// let's save it for future use (for the chooser)
-			localPrefs.put(PREF_LASTFILE, selectedFile.getAbsolutePath());
-			localPrefs.putInt(PREF_LASTFILTER, fc.getFileFilterIndex());
-			filePaths[sourceOrTarget].setText(selectedFile.getPath());
-
-			switch( fc.getFileFilterIndex() ) {
-			case AMFileChooser.OWL_FILTER:
-				for( int i = 0; i < ontLang[sourceOrTarget].getItemCount(); i++ ) {
-					if( ontLang[sourceOrTarget].getItemAt(i).equals(GlobalStaticVariables.LANG_OWL) ) {
-						ontLang[sourceOrTarget].setSelectedIndex(i);
-						break;
-					}
-				}
-				break;
-
-			case AMFileChooser.RDFS_FILTER:
-				for( int i = 0; i < ontLang[sourceOrTarget].getItemCount(); i++ ) {
-					if( ontLang[sourceOrTarget].getItemAt(i).equals(GlobalStaticVariables.LANG_RDFS) ) {
-						ontLang[sourceOrTarget].setSelectedIndex(i);
-						break;
-					}
-				}
-				break;
-
-			case AMFileChooser.XML_FILTER:
-				for( int i = 0; i < ontLang[sourceOrTarget].getItemCount(); i++ ) {
-					if( ontLang[sourceOrTarget].getItemAt(i).equals(GlobalStaticVariables.LANG_XML) ) {
-						ontLang[sourceOrTarget].setSelectedIndex(i);
-						break;
-					}
-				}
-				break;
-
-			}
-		}
-	}*/
-
-	/* (non-Javadoc)
-	 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
-	 */
-/*	public void valueChanged(ListSelectionEvent e) {
-		if(e.getSource() == ontLang[0]){
-			if(ontLang[0].getSelectedIndex() == 2)//for XML files selection
-				ontSyntax[0].setEnabled(false);
-			else
-				ontSyntax[0].setEnabled(true);
-		}
-
-		if(e.getSource() == ontLang[1]){
-			if(ontLang[1].getSelectedIndex() == 2)//for XML files selection
-				ontSyntax[1].setEnabled(false);
-			else
-				ontSyntax[1].setEnabled(true);
-		}
-	}*/
-	//public static void main(String[] args)
-	//{
-	//	OpenOntologyFileDialogCombined n=new OpenOntologyFileDialogCombined(new UI());
-	//}
-	
 	private static class OntologyDefinitionPanel implements ActionListener {
 			
 		private JLabel[] labels; 
@@ -653,10 +333,25 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			
 			buttons = new JButton[4];
 			
-			buttons[0] = new JButton("..."); // Ontology File/URL
-			buttons[1] = new JButton("..."); // On Disk Directory
-			buttons[2] = new JButton("..."); // File/URL (for instances)
-			buttons[3] = new JButton("..."); // File/URL (for alignment)
+			File folderIcon = new File( System.getProperty("user.dir") + File.separator + 
+					"images" + File.separator + "folder-14.png" );
+			if( folderIcon.exists() ) {			
+				buttons[0] = new JButton(new ImageIcon(folderIcon.getAbsolutePath())); // Ontology File/URL
+				buttons[1] = new JButton(new ImageIcon(folderIcon.getAbsolutePath())); // On Disk Directory
+				buttons[2] = new JButton(new ImageIcon(folderIcon.getAbsolutePath())); // File/URL (for instances)
+				buttons[3] = new JButton(new ImageIcon(folderIcon.getAbsolutePath())); // File/URL (for alignment)
+			} else {
+				buttons[0] = new JButton("..."); // Ontology File/URL
+				buttons[1] = new JButton("..."); // On Disk Directory
+				buttons[2] = new JButton("..."); // File/URL (for instances)
+				buttons[3] = new JButton("..."); // File/URL (for alignment)
+			}
+			
+			buttons[0].setToolTipText("Browse for file");
+			buttons[1].setToolTipText("Browse for file");
+			buttons[2].setToolTipText("Browse for file");
+			buttons[3].setToolTipText("Browse for file");
+			
 			
 			// *************************************************************
 			
@@ -1096,6 +791,10 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			
 		}
 		
+		/**
+		 * This method gets called when a user clicks the browse button to choose a file.
+		 * @param sourceOrTarget 0 = source file, 1 = target file.
+		 */
 		private void chooseFile( JTextField textField ) {
 			Preferences localPrefs = Preferences.userNodeForPackage(this.getClass());
 			
