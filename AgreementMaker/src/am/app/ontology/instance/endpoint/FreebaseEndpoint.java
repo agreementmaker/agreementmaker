@@ -17,7 +17,7 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 
 	public static String endpoint = "http://www.freebase.com/api/service/search";
 	public static String FREEBASE_URI = "http://rdf.freebase.com/ns/";
-	public static int threshold = 40;
+	public static int threshold = 50;
 	
 	public static List<Instance> query(String query) throws JSONException{
 		String url = endpoint + query;
@@ -31,6 +31,9 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 		catch (IOException e) {	return instances;	}
 		
 		JSONObject object = new JSONObject(page);
+		
+		//System.out.println(page);
+		
 		JSONArray results = object.getJSONArray("result");
 				
 		JSONObject result;
@@ -44,7 +47,14 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 			
 			instance = new Instance(uri, null);
 			List<String> valueList = new ArrayList<String>();
-			valueList.add(result.get("name").toString());
+			Object name = null;
+			try{
+				name = result.get("name");
+			}
+			catch (JSONException e) {
+				continue;
+			}
+			valueList.add(name.toString());
 			instance.setProperty("label",valueList);
 			
 			JSONArray types = result.getJSONArray("type");
