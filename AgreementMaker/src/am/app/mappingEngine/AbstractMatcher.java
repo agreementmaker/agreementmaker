@@ -470,6 +470,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     		if(i % 100 == 0) System.out.println(i);
 			sourceInstance = sourceInstances.get(i);
     		List<String> labelList = sourceInstance.getProperty("label");
+    		
+    		if(labelList == null) continue;    		
+    		
     		String label = labelList.get(0);
     		
     		String sourceType = sourceInstance.getType();
@@ -480,22 +483,24 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     			if( typeMapping.containsKey(sourceType) ) {
     				targetTypes = typeMapping.get(sourceType);
     			} else {
-    				targetTypes = new ArrayList<MatchingPair>();
-    				targetTypes.add( new MatchingPair(sourceType, sourceType)); // same type in the target
+    				targetTypes = null;
+    				//targetTypes = new ArrayList<MatchingPair>();
+    				//targetTypes.add( new MatchingPair(sourceType, sourceType)); // same type in the target
     			}
     		}
     		
     		List<Instance> allCandidates = new ArrayList<Instance>();
     		
-    		if( targetTypes != null )
-    		for( MatchingPair mp : targetTypes ) {
-    			List<Instance> targetCandidates = targetInstanceDataset.getCandidateInstances(label, mp.targetURI);
-    			allCandidates.addAll(targetCandidates);
+    		MatchingPair mapping = null;
+    		if( targetTypes != null ){
+    			for( MatchingPair mp : targetTypes ) {
+        			List<Instance> targetCandidates = targetInstanceDataset.getCandidateInstances(label, mp.targetURI);
+        			allCandidates.addAll(targetCandidates);
+        		}
+        		mapping = alignInstanceCandidates(sourceInstance, allCandidates);
     		}
     		
-    		MatchingPair mapping = alignInstanceCandidates(sourceInstance, allCandidates);
-			
-			if(mapping != null) mappings.add(mapping);
+    		if(mapping != null) mappings.add(mapping);
 			
 			stepDone();
 			updateProgress();

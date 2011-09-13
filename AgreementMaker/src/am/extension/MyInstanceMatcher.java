@@ -44,8 +44,8 @@ public class MyInstanceMatcher extends AbstractMatcher {
 		else if(size == 1) singleResult++;
 		else if(size > 1) ambiguous++;
 		
-		System.out.println("SOURCE:" + sourceInstance);
-		System.out.println(targetCandidates);
+		//System.out.println("SOURCE:" + sourceInstance);
+		//System.out.println(targetCandidates);
 		
 		
 		if(size == 1){
@@ -54,10 +54,17 @@ public class MyInstanceMatcher extends AbstractMatcher {
 			return pair;
 		}
 		else{
+			//returns a list of article URIs
+			List<String> articles = sourceInstance.getProperty("article");
+			if(articles == null) return null;
 			
-			
-			
-			
+			Instance article;
+			for (int i = 0; i < articles.size(); i++) {
+				//Get the first of the list
+				String articleURI = articles.get(i);
+				article = sourceOntology.getInstances().getInstance(articleURI);
+				System.out.println(article);
+			}
 			
 		}
 		return null;

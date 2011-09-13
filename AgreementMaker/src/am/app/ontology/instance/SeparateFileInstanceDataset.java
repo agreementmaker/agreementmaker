@@ -1,6 +1,7 @@
 package am.app.ontology.instance;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import am.AMException;
@@ -22,6 +23,16 @@ public class SeparateFileInstanceDataset implements InstanceDataset {
 
 	private OntModel instanceSource;
 	
+	private HashMap<String, Instance> instancesByURI;
+	
+	private String[][] propertiesWhiteList = { 
+									  {NYTConstants.hasArticleURI, "article", "s"},
+									  {NYTConstants.orgKeywordsURI, "organizationKeywords", "m"},
+									  {NYTConstants.peopleKeywordsURI, "peopleKeywords", "m"},
+									  {NYTConstants.desKeywordsURI, "descriptionKeywords", "m"},
+									  {NYTConstants.titleURI, "title", "s"},
+									};
+	
 	public SeparateFileInstanceDataset(OntModel model) {
 		instanceSource = model;
 	}
@@ -34,45 +45,7 @@ public class SeparateFileInstanceDataset implements InstanceDataset {
 	@Override
 	public List<Instance> getInstances(String type, int limit)
 			throws AMException {
-		List<Instance> instanceList = new ArrayList<Instance>();
-		
-		OntModel model = (OntModel) instanceSource;
-		List<Statement> statements = getIndividualsStatements(model, type);
-		
-		String uri;
-		String label;
-		String comment;
-		String article;
-		Instance instance;
-		String orgKeywords;
-		String peopleKeywords;
-		String desKeywords;
-		for(Statement statement: statements){
-			uri = statement.getSubject().getURI();
-			
-			label = getPropertyValue(model, uri, RDFS.label.getURI());
-			if(label.isEmpty()) label = getPropertyValue(model, uri, URIConstants.SKOS_PREFLABEL);
-			
-			comment = getPropertyValue(model, uri, RDFS.comment.getURI());
-			if(label.isEmpty()) comment = getPropertyValue(model, uri, URIConstants.SKOS_DEFINITION);
-			
-			article = getPropertyValue(model, uri, NYTConstants.hasArticleURI);
-			orgKeywords = getPropertyValue(model, uri, NYTConstants.orgKeywordsURI);
-			peopleKeywords = getPropertyValue(model, uri, NYTConstants.peopleKeywordsURI);
-			desKeywords = getPropertyValue(model, uri, NYTConstants.desKeywordsURI);
-								
-			instance = new Instance(uri, type);	
-			instanceList.add(instance);
-			if(!label.isEmpty()) instance.setProperty("label", label);
-			if(!comment.isEmpty()) instance.setProperty("comment", comment);
-			if(!article.isEmpty()) instance.setProperty("article", article);
-			if(!orgKeywords.isEmpty()) instance.setProperty("organizationKeywords", orgKeywords);
-			if(!peopleKeywords.isEmpty()) instance.setProperty("peopleKeywords", peopleKeywords);
-			if(!desKeywords.isEmpty()) instance.setProperty("descriptionKeywords", orgKeywords);
-			
-		}
-		
-		return instanceList;
+		throw new AMException("Not implemented");
 	}
 
 	@Override
@@ -84,45 +57,54 @@ public class SeparateFileInstanceDataset implements InstanceDataset {
 	@Override
 	public List<Instance> getInstances() throws AMException {
 		List<Instance> instanceList = new ArrayList<Instance>();
-		
+		instancesByURI = new HashMap<String, Instance>();
+	
 		OntModel model = (OntModel) instanceSource;
 		List<Statement> statements = getIndividualsStatements(model, null);
-
+		
 		String uri;
 		String label;
 		String comment;
-		List<String> article;
 		Instance instance;
-		String orgKeywords;
-		String peopleKeywords;
-		String desKeywords;
-		String type = null;
 		for(Statement statement: statements){
 			uri = statement.getSubject().getURI();
-
+			
 			label = getPropertyValue(model, uri, RDFS.label.getURI());
 			if(label.isEmpty()) label = getPropertyValue(model, uri, URIConstants.SKOS_PREFLABEL);
-
+			
 			comment = getPropertyValue(model, uri, RDFS.comment.getURI());
 			if(label.isEmpty()) comment = getPropertyValue(model, uri, URIConstants.SKOS_DEFINITION);
-
-			type = getPropertyValue(model, uri, RDF.type.getURI());
-
-			article = getPropertyMultiValue(model, uri, NYTConstants.hasArticleURI);
-			orgKeywords = getPropertyValue(model, uri, NYTConstants.orgKeywordsURI);
-			peopleKeywords = getPropertyValue(model, uri, NYTConstants.peopleKeywordsURI);
-			desKeywords = getPropertyValue(model, uri, NYTConstants.desKeywordsURI);
-
+			
+			String type = getPropertyValue(model, uri, RDF.type.getURI());
+			
 			instance = new Instance(uri, type);	
+			
 			instanceList.add(instance);
+			instancesByURI.put(instance.getUri(), instance);
+			
 			if(!label.isEmpty()) instance.setProperty("label", label);
-			if(!type.isEmpty()) instance.setProperty("label", label);
 			if(!comment.isEmpty()) instance.setProperty("comment", comment);
-			if(article.size() > 0) instance.setProperty("article", article);
-			if(!orgKeywords.isEmpty()) instance.setProperty("organizationKeywords", orgKeywords);
-			if(!peopleKeywords.isEmpty()) instance.setProperty("peopleKeywords", peopleKeywords);
-			if(!desKeywords.isEmpty()) instance.setProperty("descriptionKeywords", orgKeywords);
-
+			
+			String[] uriLabelPair;
+			String value;
+			for (int i = 0; i < propertiesWhiteList.length; i++) {
+				uriLabelPair = propertiesWhiteList[i];
+				value = getPropertyValue(model, uri, uriLabelPair[0]);
+				if(!value.isEmpty()){
+					if(uriLabelPair[2].equals("s")) instance.setProperty(uriLabelPair[1], value);
+					if(uriLabelPair[2].equals("m")){
+						String[] values = value.split("\\|");
+						
+						
+						List<String> strings = new ArrayList<String>();
+						for (int j = 0; j < values.length; j++) {
+							strings.add(values[j]);
+						}
+						
+						instance.setProperty(uriLabelPair[1], strings);
+					}
+				}
+			}
 		}
 		
 		return instanceList;
@@ -130,34 +112,8 @@ public class SeparateFileInstanceDataset implements InstanceDataset {
 	
 	@Override
 	public Instance getInstance(String uri) throws AMException {
-		
-		OntModel model = instanceSource;
-		
-		String label = getPropertyValue(model, uri, RDFS.label.getURI());
-		if(label.isEmpty()) label = getPropertyValue(model, uri, URIConstants.SKOS_PREFLABEL);
-
-		String comment = getPropertyValue(model, uri, RDFS.comment.getURI());
-		if(label.isEmpty()) comment = getPropertyValue(model, uri, URIConstants.SKOS_DEFINITION);
-
-		String type = getPropertyValue(model, uri, RDF.type.getURI());
-
-		List<String> article = getPropertyMultiValue(model, uri, NYTConstants.hasArticleURI);
-		String orgKeywords = getPropertyValue(model, uri, NYTConstants.orgKeywordsURI);
-		String peopleKeywords = getPropertyValue(model, uri, NYTConstants.peopleKeywordsURI);
-		String desKeywords = getPropertyValue(model, uri, NYTConstants.desKeywordsURI);
-
-		Instance instance = new Instance(uri, type);	
-
-		if(!label.isEmpty()) instance.setProperty("label", label);
-		if(!type.isEmpty()) instance.setProperty("label", label);
-		if(!comment.isEmpty()) instance.setProperty("comment", comment);
-		if(article.size() > 0) instance.setProperty("article", article);
-		if(!orgKeywords.isEmpty()) instance.setProperty("organizationKeywords", orgKeywords);
-		if(!peopleKeywords.isEmpty()) instance.setProperty("peopleKeywords", peopleKeywords);
-		if(!desKeywords.isEmpty()) instance.setProperty("descriptionKeywords", orgKeywords);
-		
-		return instance;
-
+		//if(instancesByURI == null) getInstances();
+		return instancesByURI.get(uri);
 	}
 	
 	/**
