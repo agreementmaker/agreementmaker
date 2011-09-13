@@ -14,6 +14,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 import am.AMException;
+import am.app.mappingEngine.instanceMatcher.NYTConstants;
 import am.app.ontology.Ontology;
 import am.app.ontology.instance.endpoint.FreebaseEndpoint;
 import am.app.ontology.instance.endpoint.SemanticWebEndpoint;
@@ -85,12 +86,13 @@ public class InstanceDataset {
 						instance.setProperty("label", list);
 					}
 					
+					
+					
 					instanceList.add(instance);
 				}
 			}
 			
 			case DATASET: {
-				// TODO: Implement the listing of individuals in a dataset.
 				
 				OntModel model = (OntModel) instanceSource;
 				List<Statement> statements = getIndividualsStatements(model, type);
@@ -98,7 +100,11 @@ public class InstanceDataset {
 				String uri;
 				String label;
 				String comment;
+				String article;
 				Instance instance;
+				String orgKeywords;
+				String peopleKeywords;
+				String desKeywords;
 				for(Statement statement: statements){
 					uri = statement.getSubject().getURI();
 					
@@ -108,10 +114,20 @@ public class InstanceDataset {
 					comment = getPropertyValue(model, uri, RDFS.comment.getURI());
 					if(label.isEmpty()) comment = getPropertyValue(model, uri, URIConstants.SKOS_DEFINITION);
 					
+					article = getPropertyValue(model, uri, NYTConstants.hasArticleURI);
+					orgKeywords = getPropertyValue(model, uri, NYTConstants.orgKeywordsURI);
+					peopleKeywords = getPropertyValue(model, uri, NYTConstants.peopleKeywordsURI);
+					desKeywords = getPropertyValue(model, uri, NYTConstants.desKeywordsURI);
+										
 					instance = new Instance(uri, type);	
 					instanceList.add(instance);
 					if(!label.isEmpty()) instance.setProperty("label", label);
 					if(!comment.isEmpty()) instance.setProperty("comment", comment);
+					if(!article.isEmpty()) instance.setProperty("article", article);
+					if(!orgKeywords.isEmpty()) instance.setProperty("organizationKeywords", orgKeywords);
+					if(!peopleKeywords.isEmpty()) instance.setProperty("peopleKeywords", peopleKeywords);
+					if(!desKeywords.isEmpty()) instance.setProperty("descriptionKeywords", orgKeywords);
+					
 				}
 			}
 				
@@ -196,23 +212,39 @@ public class InstanceDataset {
 				
 				String uri;
 				String label;
-				String type;
-				RDFNode node;
+				String comment;
+				List<String> article;
 				Instance instance;
+				String orgKeywords;
+				String peopleKeywords;
+				String desKeywords;
+				String type = null;
 				for(Statement statement: statements){
 					uri = statement.getSubject().getURI();
 					
 					label = getPropertyValue(model, uri, RDFS.label.getURI());
 					if(label.isEmpty()) label = getPropertyValue(model, uri, URIConstants.SKOS_PREFLABEL);
 					
+					comment = getPropertyValue(model, uri, RDFS.comment.getURI());
+					if(label.isEmpty()) comment = getPropertyValue(model, uri, URIConstants.SKOS_DEFINITION);
+					
 					type = getPropertyValue(model, uri, RDF.type.getURI());
 										
+					article = getPropertyMultiValue(model, uri, NYTConstants.hasArticleURI);
+					orgKeywords = getPropertyValue(model, uri, NYTConstants.orgKeywordsURI);
+					peopleKeywords = getPropertyValue(model, uri, NYTConstants.peopleKeywordsURI);
+					desKeywords = getPropertyValue(model, uri, NYTConstants.desKeywordsURI);
+										
 					instance = new Instance(uri, type);	
-					
-					if(!label.isEmpty()) instance.setProperty("label", label);
-					if(!type.isEmpty()) instance.setProperty("type", type);
-					
 					instanceList.add(instance);
+					if(!label.isEmpty()) instance.setProperty("label", label);
+					if(!type.isEmpty()) instance.setProperty("label", label);
+					if(!comment.isEmpty()) instance.setProperty("comment", comment);
+					if(article.size() > 0) instance.setProperty("article", article);
+					if(!orgKeywords.isEmpty()) instance.setProperty("organizationKeywords", orgKeywords);
+					if(!peopleKeywords.isEmpty()) instance.setProperty("peopleKeywords", peopleKeywords);
+					if(!desKeywords.isEmpty()) instance.setProperty("descriptionKeywords", orgKeywords);
+					
 				}
 				
 			}	
@@ -259,6 +291,23 @@ public class InstanceDataset {
 			else if(object.isResource()) return object.asResource().getURI();	
 		}	
 		return "";
+	}
+	
+	public static List<String> getPropertyMultiValue(OntModel model, String instanceURI, String propertyURI){
+		Property property = model.getProperty(propertyURI);
+		if(property == null) model.createProperty(propertyURI);
+		Resource instance = model.createResource(instanceURI);
+		List<Statement> list = model.listStatements(instance, property, (RDFNode)null).toList();
+		ArrayList<String> ret = new ArrayList<String>();
+		
+		if(list.size() >= 1){
+			for (int i = 0; i < list.size(); i++) {
+				RDFNode object = list.get(i).getObject();
+				if(object.isLiteral()) ret.add(object.asLiteral().getString());
+				else if(object.isResource()) ret.add(object.asResource().getURI());
+			}	
+		}	
+		return ret;
 	}
 	
 	public static void main(String[] args) {
