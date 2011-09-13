@@ -50,7 +50,14 @@ public abstract class SimilarityMatrix
 	public abstract int getRows();
 	public abstract int getColumns();
 	
+	/** 
+	 * Returns the mapping between concept i of the source ontology and concept j of the target ontology.
+	 * @param i Source index.
+	 * @param j Target index.
+	 * @return Returns null if no mapping exists.
+	 */
 	public abstract Mapping get(int i, int j);
+
 	public abstract void set(int i, int j, Mapping d);
 	
 	@Deprecated
