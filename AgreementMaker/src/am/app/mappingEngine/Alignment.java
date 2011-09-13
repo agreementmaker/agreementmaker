@@ -1,6 +1,9 @@
 package am.app.mappingEngine;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
@@ -12,7 +15,7 @@ import am.app.ontology.Ontology;
  *
  * @param <E>  This represents a Mapping object.
  */
-public class Alignment<E extends Mapping> extends ArrayList<E>
+public class Alignment<E extends Mapping> extends ArrayList<E> implements OntologyAlignment
 {
 	private static final long serialVersionUID = -8090732896473529999L;
 	
@@ -20,6 +23,9 @@ public class Alignment<E extends Mapping> extends ArrayList<E>
 	private int targetOntologyID;
 	
 	private String fileName; // where is this alignment found?
+	
+	private HashMap<String,List<E>> sourceConcepts;
+	private HashMap<String,List<E>> targetConcepts;
 	
 	/**
 	 * A set of mappings between two ontologies.  
@@ -34,8 +40,73 @@ public class Alignment<E extends Mapping> extends ArrayList<E>
 	public Alignment(int sourceOntologyID, int targetOntologyID) {
 		this.sourceOntologyID = sourceOntologyID;
 		this.targetOntologyID = targetOntologyID;
+		
+		sourceConcepts = new HashMap<String,List<E>>();
+		targetConcepts = new HashMap<String,List<E>>();
 	}
 
+	@Override
+	public boolean addAll(Collection<? extends E> c) {
+		boolean retval = super.addAll(c);
+		
+		if( retval == false ) return retval;
+		
+		for( E e : c ) {
+			String sourceURI = e.getEntity1().getUri();
+			String targetURI = e.getEntity2().getUri();
+			
+			if( sourceConcepts.containsKey(sourceURI) ) {
+				List<E> mappings = sourceConcepts.get(sourceURI);
+				mappings.add(e);
+			} else {
+				List<E> mappings = new ArrayList<E>();
+				mappings.add(e);
+				sourceConcepts.put(sourceURI, mappings);
+			}
+			
+			if( targetConcepts.containsKey(targetURI) ) {
+				List<E> mappings = targetConcepts.get(targetURI);
+				mappings.add(e);
+			} else {
+				List<E> mappings = new ArrayList<E>();
+				mappings.add(e);
+				targetConcepts.put(targetURI, mappings);
+			}
+		}
+		
+		return retval;
+	}
+	
+	@Override
+	public boolean add(E e) {
+		boolean retval = super.add(e);
+		
+		if( retval == false ) return retval;
+		
+		String sourceURI = e.getEntity1().getUri();
+		String targetURI = e.getEntity2().getUri();
+		
+		if( sourceConcepts.containsKey(sourceURI) ) {
+			List<E> mappings = sourceConcepts.get(sourceURI);
+			mappings.add(e);
+		} else {
+			List<E> mappings = new ArrayList<E>();
+			mappings.add(e);
+			sourceConcepts.put(sourceURI, mappings);
+		}
+		
+		if( targetConcepts.containsKey(targetURI) ) {
+			List<E> mappings = targetConcepts.get(targetURI);
+			mappings.add(e);
+		} else {
+			List<E> mappings = new ArrayList<E>();
+			mappings.add(e);
+			targetConcepts.put(targetURI, mappings);
+		}
+		
+		return true;
+	};
+	
     // adds all the alignments in the set a, but checking for duplicates, making sure it doesn't add duplicate alignments
     public void addAllNoDuplicate(Alignment<E> alignment)
     {
@@ -43,23 +114,40 @@ public class Alignment<E extends Mapping> extends ArrayList<E>
     	for( E mapping : alignment ) if( !contains(mapping) ) add(mapping);        
     }    
     
-    public double getSimilarity(Node left, Node right)
+    @Override
+    public double getSimilarity(Node sourceNode, Node targetNode)
     {
-        E align = contains(left, right);
+        E align = contains(sourceNode, targetNode);
         if (align == null) return 0.0d;
         return align.getSimilarity();
     }
 
-    public void setSimilarity(Node left, Node right, double sim)
+    @Override
+    public void setSimilarity(Node sourceNode, Node targetNode, double sim)
     {
-    	E mapping = contains(left, right);
+    	
+    	E mapping = contains(sourceNode, targetNode);
     	if (mapping != null) mapping.setSimilarity(sim);
+   		
     }
 
-    public E contains(Node left, Node right)
+    @Override
+    public E contains(Node sourceNode, Node targetNode)
     {
-    	for( E mapping : this ) if( mapping.getEntity1().equals(left) && mapping.getEntity2().equals(right) ) return mapping;
-    	return null;
+    	String sourceURI = sourceNode.getUri();
+    	
+    	if( !sourceConcepts.containsKey(sourceURI) ) {
+    		// this mapping doesn't exist, it must be added
+    		return null;
+    	} else {
+    		List<E> sourceMappings = sourceConcepts.get(sourceURI);
+    		for( E mapping : sourceMappings ) {
+    			if( mapping.getEntity2().equals(targetNode) ) return mapping;
+    		}
+    		// mapping does not exist
+    		return null;
+    	}
+    	
     }
     
     public E contains(Node nod, int ontType)
@@ -134,6 +222,20 @@ public class Alignment<E extends Mapping> extends ArrayList<E>
    
     public String getFileName() { return fileName; }
     public void setFileName(String fileName) { this.fileName = fileName; }
+
+	@Override
+	public boolean isMapped(Node n) {
+		String uri = n.getUri();
+		if( n.getOntologyID() == sourceOntologyID ) {
+			if( !sourceConcepts.containsKey(uri) ) return false;
+			else return true;
+		} else if( n.getOntologyID() == targetOntologyID ) {
+			if( !targetConcepts.containsKey(uri) ) return false;
+			else return true;
+		} else {
+			return false;
+		}
+	}
       
     
 /*    @SuppressWarnings("unchecked")
