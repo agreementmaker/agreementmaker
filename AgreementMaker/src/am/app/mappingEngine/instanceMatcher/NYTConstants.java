@@ -2,7 +2,7 @@ package am.app.mappingEngine.instanceMatcher;
 
 public class NYTConstants {
 	
-	//Property URIs
+		//Property URIs
 		public static String RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 		public static String NYT_TOPICPAGE = "http://data.nytimes.com/elements/topicPage";
 		public static String FOAF_NAME = "http://xmlns.com/foaf/0.1/name";
@@ -14,6 +14,7 @@ public class NYTConstants {
 		public static String peopleKeywordsURI = "http://data.nytimes.com/elements/peopleKeywords";
 		public static String desKeywordsURI = "http://data.nytimes.com/elements/descriptionKeywords";
 		public static String hasArticleURI = "http://data.nytimes.com/elements/hasArticle";
+		public static String titleURI = "http://data.nytimes.com/elements/hasArticle";
 		
 		
 		//Datasets on disk
