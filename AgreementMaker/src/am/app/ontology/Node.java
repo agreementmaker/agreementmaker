@@ -60,7 +60,7 @@ public class Node implements Serializable, Comparable<Node>{
 	/** The OWL/RDF uri identifier, that is namespace#localname.
 	 * This info is kept in the resource variable but we keep them separate to access them easily. TODO - Should we really be duplicating this information? - Cosmin.
 	 */
-	private String uri = "";
+	private String uri = ""; // GET RID OF THIS! - Cosmin.
 
 	/**
 	 * One of the string which can be used to compare two nodes
@@ -388,7 +388,11 @@ public class Node implements Serializable, Comparable<Node>{
 	}
 
 	public String getUri() {
-		return uri;
+		if( uri != null ) return uri;
+		else if( getResource() != null ) {
+			return getResource().getURI();
+		}
+		return null;
 	}
 
 	public void setUri(String uri) {
