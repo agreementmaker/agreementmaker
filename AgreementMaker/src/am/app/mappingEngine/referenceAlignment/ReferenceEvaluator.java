@@ -17,7 +17,7 @@ public class ReferenceEvaluator{
 	 * @param referenceSet The reference alignment.
 	 * @return
 	 */
-    public static ReferenceEvaluationData compare(Alignment<? extends Mapping> evaluationSet, Alignment<? extends Mapping> referenceSet)
+    public static ReferenceEvaluationData compare(Alignment<Mapping> evaluationSet, Alignment<Mapping> referenceSet)
     {
         int foundMappings = 0; 
         int referenceMappings = 0;
@@ -45,7 +45,14 @@ public class ReferenceEvaluator{
             if(evaluationMapping.getAlignmentType() == alignType.aligningClasses ) classesFound++;
             if(evaluationMapping.getAlignmentType() == alignType.aligningProperties ) propertiesFound++;
             boolean evaluationMappingIsWrong = true;
-            for (int j = 0; j < referenceMappings; j++) {
+            if( referenceSet.contains(evaluationMapping) ) {
+            	correctMappings++;
+                correctAlignments.add(evaluationMapping);
+                evaluationMappingIsWrong = false;
+                if(evaluationMapping.getAlignmentType() == alignType.aligningClasses ) classesCorrect++;
+                if(evaluationMapping.getAlignmentType() == alignType.aligningProperties ) propertiesCorrect++;
+            }
+            /*for (int j = 0; j < referenceMappings; j++) {
                 Mapping referenceMapping = referenceSet.get(j);
                 if (evaluationMapping.equals(referenceMapping)) {
                     correctMappings++;
@@ -55,7 +62,7 @@ public class ReferenceEvaluator{
                     if(evaluationMapping.getAlignmentType() == alignType.aligningProperties ) propertiesCorrect++;
                     break;
                 }
-            }
+            }*/
             if (evaluationMappingIsWrong == true) {
                 errorAlignments.add(evaluationMapping);
             }
@@ -64,13 +71,16 @@ public class ReferenceEvaluator{
         for (int i = 0; i < referenceMappings; i++) {
             Mapping referenceMapping = referenceSet.get(i);
             boolean referenceMappingNotFound = true;
-            for (int j = 0; j < foundMappings; j++) {
+            if( evaluationSet.contains(referenceMapping) ) {
+            	referenceMappingNotFound = false;
+            }
+            /*for (int j = 0; j < foundMappings; j++) {
                 Mapping evaluationMapping = evaluationSet.get(j);
                 if (referenceMapping.equals(evaluationMapping)) {
                     referenceMappingNotFound = false;
                     break;
                 }
-            }
+            }*/
             if (referenceMappingNotFound == true) {
                 lostAlignments.add(referenceMapping);
             }
