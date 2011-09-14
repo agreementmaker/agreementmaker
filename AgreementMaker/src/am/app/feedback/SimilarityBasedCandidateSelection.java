@@ -3,10 +3,11 @@ package am.app.feedback;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import am.app.Core;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
@@ -61,14 +62,14 @@ public class SimilarityBasedCandidateSelection extends CandidateSelection {
 		return topK;
 	}
 
-	private ArrayList<CandidateConcept> getNonFilteredCandidateConcepts(
-			ArrayList<Node> list, FilteredAlignmentMatrix matrix,
+	private List<CandidateConcept> getNonFilteredCandidateConcepts(
+			List<Node> list, FilteredAlignmentMatrix matrix,
 			int whichOntology, alignType whichType) {
 
 		FeedbackLoopParameters param = (FeedbackLoopParameters)fbL.getParam();
 		double lowTH = param.lowThreshold;
 		int M = param.M;
-		ArrayList<CandidateConcept> result = new ArrayList<CandidateConcept>();
+		List<CandidateConcept> result = new ArrayList<CandidateConcept>();
 		CandidateConcept c;
 		Mapping a;
 		for(int i = 0; i < list.size(); i++){

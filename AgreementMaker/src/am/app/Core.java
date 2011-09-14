@@ -2,13 +2,12 @@ package am.app;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import com.hp.hpl.jena.rdf.model.Model;
+import java.util.List;
 
 import am.AMException;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.LexiconStore;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherChangeEvent;
 import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.MatchersRegistry;
@@ -22,6 +21,8 @@ import am.userInterface.Colors;
 import am.userInterface.UI;
 import am.userInterface.VisualizationChangeEvent;
 import am.userInterface.VisualizationChangeListener;
+
+import com.hp.hpl.jena.rdf.model.Model;
 
 /**
  * SINGLETON JAVA PATTERN
@@ -270,7 +271,7 @@ public class Core {
 		if(!fromSource) {
 			o = targetOntology;
 		}
-		ArrayList<Node> list = o.getClassesList();
+		List<Node> list = o.getClassesList();
 		if(!fromClasses) {
 			list = o.getPropertiesList();
 		}

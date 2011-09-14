@@ -1,6 +1,7 @@
 package am.app.mappingEngine;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
@@ -23,7 +24,7 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
 	
 	
 	@Override
-    protected SimilarityMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) throws Exception {
+    protected SimilarityMatrix alignProperties( List<Node> sourcePropList, List<Node> targetPropList) throws Exception {
     	if(inputMatchers.size() == 0){ //run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
 			return super.alignProperties(sourcePropList, targetPropList);
 		}
@@ -33,7 +34,7 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
 	}
 
 	@Override
-	protected SimilarityMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList)  throws Exception{
+	protected SimilarityMatrix alignClasses( List<Node> sourceClassList, List<Node> targetClassList)  throws Exception{
     	if(inputMatchers.size() == 0){ //run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
 			return super.alignClasses(sourceClassList, targetClassList);
 		}
@@ -43,7 +44,7 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
 	}
 	
 	@Override
-    protected SimilarityMatrix alignUnmappedNodes(ArrayList<Node> sourceList, ArrayList<Node> targetList, SimilarityMatrix inputMatrix,
+    protected SimilarityMatrix alignUnmappedNodes( List<Node> sourceList, List<Node> targetList, SimilarityMatrix inputMatrix,
 			Alignment<Mapping> inputAlignmentSet, alignType typeOfNodes) throws Exception {
     	
     	MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, getMaxSourceAlign(), getMaxTargetAlign());

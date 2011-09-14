@@ -420,14 +420,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	if( sourceOntology == null || targetOntology == null ) return;  // cannot align just one ontology 
     	
 		if(alignClass && !this.isCancelled() ) {
-			ArrayList<Node> sourceClassList = sourceOntology.getClassesList();
-			ArrayList<Node> targetClassList = targetOntology.getClassesList();
+			List<Node> sourceClassList = sourceOntology.getClassesList();
+			List<Node> targetClassList = targetOntology.getClassesList();
 			classesMatrix = alignClasses(sourceClassList,targetClassList );	
 			//classesMatrix.show();
 		}
 		if(alignProp && !this.isCancelled() ) {
-			ArrayList<Node> sourcePropList = sourceOntology.getPropertiesList();
-			ArrayList<Node> targetPropList = targetOntology.getPropertiesList();
+			List<Node> sourcePropList = sourceOntology.getPropertiesList();
+			List<Node> targetPropList = targetOntology.getPropertiesList();
 			propertiesMatrix = alignProperties(sourcePropList, targetPropList );					
 		}
 		
@@ -513,15 +513,15 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		//TO BE IMPLEMENTED BY THE ALGORITHM, THIS IS JUST A FAKE ABSTRACT METHOD
 		return null;
 	}
-	protected SimilarityMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) throws Exception {
+	protected SimilarityMatrix alignProperties( List<Node> sourcePropList, List<Node> targetPropList) throws Exception {
     		return alignNodesOneByOne(sourcePropList, targetPropList, alignType.aligningProperties);
 	}
 
-    protected SimilarityMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList)  throws Exception{
+    protected SimilarityMatrix alignClasses( List<Node> sourceClassList, List<Node> targetClassList)  throws Exception{
 			return alignNodesOneByOne(sourceClassList, targetClassList, alignType.aligningClasses);
 	}
 	
-    protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
+    protected SimilarityMatrix alignNodesOneByOne( List<Node> sourceList, List<Node> targetList, alignType typeOfNodes) throws Exception {
     	
     	if(param.completionMode && inputMatchers != null && inputMatchers.size() > 0){ 
     		//run in optimized mode by mapping only concepts that have not been mapped in the input matcher
@@ -585,7 +585,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     /**
      * This method implements "Completion Mode", formerly called "OptimizedAbstractMatcher". 
      */
-    protected SimilarityMatrix alignUnmappedNodes(ArrayList<Node> sourceList, ArrayList<Node> targetList, SimilarityMatrix inputMatrix,
+    protected SimilarityMatrix alignUnmappedNodes( List<Node> sourceList, List<Node> targetList, SimilarityMatrix inputMatrix,
 			Alignment<Mapping> inputAlignmentSet, alignType typeOfNodes) throws Exception {
     	
     	MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, param.maxSourceAlign, param.maxTargetAlign);

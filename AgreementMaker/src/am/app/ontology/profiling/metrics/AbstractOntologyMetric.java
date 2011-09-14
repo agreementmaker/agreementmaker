@@ -2,14 +2,12 @@ package am.app.ontology.profiling.metrics;
 
 import am.app.ontology.Ontology;
 
-public abstract class ProfilingMetric {
+public abstract class AbstractOntologyMetric implements OntologyMetric {
 
 	protected Ontology ontology;
 	
-	public ProfilingMetric(Ontology o) {
+	public AbstractOntologyMetric(Ontology o) {
 		this.ontology = o;
 	}
-	
-	public abstract void runMetric();
 
 }

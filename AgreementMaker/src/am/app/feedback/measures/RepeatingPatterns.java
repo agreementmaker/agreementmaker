@@ -17,10 +17,10 @@ public class RepeatingPatterns extends RelevanceMeasure{
 	Ontology sourceOntology;
 	Ontology targetOntology;
 	
-	ArrayList<Node> sClasses;
-	ArrayList<Node> tClasses;
-	ArrayList<Node> sProps;
-	ArrayList<Node> tProps;
+	List<Node> sClasses;
+	List<Node> tClasses;
+	List<Node> sProps;
+	List<Node> tProps;
 	
 	NodeComparator nc;
 	ArrayList<Node> noParentNodes;
@@ -80,7 +80,7 @@ public class RepeatingPatterns extends RelevanceMeasure{
 		//printPatterns(finalPatterns);
 	}
 	
-	private void computeRelevances(int k, int edgeSize, ArrayList<Node> list) {
+	private void computeRelevances(int k, int edgeSize, List<Node> list) {
 		List<Node> newList = new ArrayList<Node>();
 		newList.addAll(list);
 		Collections.sort(newList, nc);

@@ -19,8 +19,6 @@
 
 package am.app.mappingEngine.qualityEvaluation.metrics.joslyn;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -156,7 +154,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 	 * @return
 	 */
 	private double orderPreservation(Alignment<Mapping> set,
-			ArrayList<Node> sourceList, ArrayList<Node> targetList,
+			List<Node> sourceList, List<Node> targetList,
 			Node sourceTree, Node targetTree) throws Exception {
 		
 		TreeToDagConverter sourceDag = new TreeToDagConverter(sourceTree);
@@ -246,7 +244,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 		return result;
 	}
 
-	private int[][] calculateOrderMatrix(ArrayList<Node> list,
+	private int[][] calculateOrderMatrix(List<Node> list,
 			TreeToDagConverter dag) {
 		
 		//for each pair of node i need to set if they are >= <= or non ordered
@@ -384,7 +382,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 	}
 	
 	/** This method is used in the getDetails() method of the Ontology class. */
-	public double getDiameter(ArrayList<Node> list, TreeToDagConverter dag) {
+	public double getDiameter(List<Node> list, TreeToDagConverter dag) {
 		//the diameter is now forced to be always N - 1 where N = nodes + top + bottom if they are not already included.
 		return calculateTopBottomDiameter(list, dag);
 	}

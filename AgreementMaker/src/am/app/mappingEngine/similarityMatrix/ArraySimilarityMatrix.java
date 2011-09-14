@@ -112,8 +112,8 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
         	Core core = Core.getInstance();
 			Ontology sourceOntology = core.getSourceOntology();
 			Ontology targetOntology = core.getTargetOntology();
-			ArrayList<Node> sourceList;
-			ArrayList<Node> targetList;
+			List<Node> sourceList;
+			List<Node> targetList;
 			if(typeOfMatrix.equals(alignType.aligningClasses)){
 				sourceList = sourceOntology.getClassesList();
 				targetList = targetOntology.getClassesList();

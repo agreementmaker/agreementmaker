@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Level;
@@ -25,7 +26,6 @@ import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
-import am.app.ontology.Ontology;
 import am.output.OutputController;
 
 public class ReferenceAlignmentMatcher extends AbstractMatcher {
@@ -116,7 +116,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	 */
 	
 	@Override
-	protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
+	protected SimilarityMatrix alignNodesOneByOne( List<Node> sourceList, List<Node> targetList, alignType typeOfNodes) throws Exception {
 		SimilarityMatrix matrix = new SparseMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation); // TODO: Sparse Matrix instead of Array Matrix!
 
 		if( referenceListOfPairs == null || referenceListOfPairs.size() == 0 ) 

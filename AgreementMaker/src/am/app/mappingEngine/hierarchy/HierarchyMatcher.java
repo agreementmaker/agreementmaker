@@ -32,16 +32,16 @@ import edu.smu.tspell.wordnet.WordNetDatabase;
  relationship by the input matchers.*/
 public class HierarchyMatcher extends AbstractMatcher
 {
-	private ArrayList<Node> ListOfClassesSource;
-	private ArrayList<Node> ListOfClassesTarget;
-	private ArrayList<Node> sourceClassList;
-	private ArrayList<Node> targetClassList;
-	private ArrayList<Node> ListOfPropSource;
-	private ArrayList<Node> ListOfPropTarget;
-	private ArrayList<Node> sourcePropList;
-	private ArrayList<Node> targetPropList;
-	private ArrayList<String> sourceSynonym;
-	private ArrayList<String> targetSynonym;
+	private List<Node> ListOfClassesSource;
+	private List<Node> ListOfClassesTarget;
+	private List<Node> sourceClassList;
+	private List<Node> targetClassList;
+	private List<Node> ListOfPropSource;
+	private List<Node> ListOfPropTarget;
+	private List<Node> sourcePropList;
+	private List<Node> targetPropList;
+	private List<String> sourceSynonym;
+	private List<String> targetSynonym;
 	private OntModel sourceModel1;
 	private WordNetDatabase WordNet;
 	private HashMap<String, List<String>> sourceWordNetMeaning;
@@ -367,7 +367,7 @@ public class HierarchyMatcher extends AbstractMatcher
 			double inputMatcherThreshold = input.getDefaultThreshold();
 		}
 	}
-	private int getIndex(ArrayList<Node> list, String uri) 
+	private int getIndex( List<Node> list, String uri) 
 
 	{
 		for (int i = 0; i < list.size(); i++)
@@ -584,7 +584,7 @@ public class HierarchyMatcher extends AbstractMatcher
 			classesMatrix.set(superClassOfSource.getIndex(),target.getIndex(),new Mapping(superClassOfSource,target,0.85d,MappingRelation.SUPERCLASS));
 		}
 	}
-	private Node getSuperClass(Node Target,ArrayList<Node> list)
+	private Node getSuperClass(Node Target, List<Node> list)
 	{
 		int indexTarget = Target.getIndex();
 		ArrayList<OntClass> targetSuperClasses = new ArrayList<OntClass>();

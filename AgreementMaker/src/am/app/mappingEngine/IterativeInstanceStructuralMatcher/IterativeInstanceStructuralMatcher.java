@@ -56,10 +56,10 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 	
 	static boolean verbose = false; 
 	
-	private ArrayList<Node> sourceClassList;
-	private ArrayList<Node> targetClassList;
-	private ArrayList<Node> sourcePropList;
-	private ArrayList<Node> targetPropList;
+	private List<Node> sourceClassList;
+	private List<Node> targetClassList;
+	private List<Node> sourcePropList;
+	private List<Node> targetPropList;
 	
 	private transient HashMap<Node, List<Restriction>> sourceRestrictions;
 	private transient HashMap<Node, List<Restriction>> targetRestrictions;
@@ -719,7 +719,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		return (2*restrSim+resSim)/3;
 	}
 
-	private List<Restriction> getRestrictionsOnProperty(ArrayList<Node> classList,
+	private List<Restriction> getRestrictionsOnProperty( List<Node> classList,
 			Node sProp) {
 		ArrayList<Restriction> restr = new ArrayList<Restriction>();
 		for(Node cl: classList){
@@ -1289,7 +1289,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		return propertiesMatrix.getSimilarity(s, t);
 	}
 		
-	private int getIndex(ArrayList<Node> list, String uri) {
+	private int getIndex( List<Node> list, String uri) {
 		for (int i = 0; i < list.size(); i++) {
 			if(list.get(i).getUri().equals(uri))
 				return i;
@@ -1494,7 +1494,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		return IndividualsMatched;
 	}
 
-	private Node get(ArrayList<Node> nodeList, String uri) {
+	private Node get( List<Node> nodeList, String uri) {
 		int ind = getIndex(nodeList, uri);
 		if(ind!=-1)
 			return nodeList.get(ind);

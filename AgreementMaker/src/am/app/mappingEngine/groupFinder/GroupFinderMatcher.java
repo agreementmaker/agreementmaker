@@ -88,8 +88,8 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
 		
 		// step 0: gathering all the data
-		ArrayList<Node> source; // list of the source ontology concepts
-		ArrayList<Node> target; // list of the target ontology concepts
+		List<Node> source; // list of the source ontology concepts
+		List<Node> target; // list of the target ontology concepts
 		SimilarityMatrix input;  // input matrix from previous matching
 		
     	if(typeOfNodes.equals(alignType.aligningClasses)){
@@ -255,7 +255,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 * @param inputOntology the ontology that has to be grouped by depth
 	 * @author michele 
 	 */
-	protected ArrayList<ArrayList<Node>> groupElementsByLevel(ArrayList<Node> inputOntology) {
+	protected ArrayList<ArrayList<Node>> groupElementsByLevel(List<Node> inputOntology) {
 		
 		// Scan once to get the maximum depth of a concept in the ontology, that will be the size of the external list
 		int maxLevel = 0;

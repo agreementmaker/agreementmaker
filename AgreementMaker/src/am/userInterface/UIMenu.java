@@ -2,14 +2,14 @@ package am.userInterface;
 
 
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
@@ -19,7 +19,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -39,6 +38,8 @@ import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.profiling.ProfilingDialog;
+import am.app.ontology.profiling.metrics.OntologyMetric;
+import am.app.ontology.profiling.metrics.OntologyMetricsRegistry;
 import am.app.userfeedbackloop.ui.UFLControlGUI;
 import am.extension.ClusteringEvaluation.ClusteringEvaluationPanel;
 import am.tools.LexiconLookup.LexiconLookupPanel;
@@ -51,7 +52,6 @@ import am.userInterface.find.FindInterface;
 import am.userInterface.instance.InstanceLookupPanel;
 import am.userInterface.sidebar.provenance.ProvenanceMenuItem;
 import am.userInterface.sidebar.provenance.ProvenanceSidebar;
-import am.userInterface.sidebar.vertex.VertexDescriptionPane;
 import am.userInterface.table.MatchersTablePanel;
 import am.visualization.MatcherAnalyticsPanel;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;
@@ -944,6 +944,46 @@ public class UIMenu implements ActionListener {
 		report+= "\n";
 		report+= "Target Classes:\t"+targetClassString;
 		report+= "Target Properties:\t"+targetPropString;
+		
+		report += "\n\nOntology Metrics:\n\n";
+		
+		for( OntologyMetricsRegistry currentOntMetric :  OntologyMetricsRegistry.values() ) {
+			Constructor<?>[] constructors = currentOntMetric.getMetricClass().getConstructors();
+			report += currentOntMetric.getMetricName() + "\n\n";
+			for( Constructor<?> constructor : constructors ) {
+				Class<?>[] parameterTypes = constructor.getParameterTypes();
+				if( parameterTypes.length == 1 && parameterTypes[0].equals(Ontology.class) ) {
+					// we found the right constructor, run this metric
+					try {
+						OntologyMetric sourceMetric = (OntologyMetric) constructor.newInstance(sourceO);
+						sourceMetric.runMetric();
+						if( sourceMetric.hasSingleValueResult() ) {
+							report += "Source Ontology: \n" + 
+									sourceMetric.getSingleValueResult().toString() + "\n";
+						}
+						
+						//report += "\n";
+						
+						OntologyMetric targetMetric = (OntologyMetric) constructor.newInstance(targetO);
+						targetMetric.runMetric();
+						if( targetMetric.hasSingleValueResult() ) {
+							report += "Target Ontology: \n" + 
+									targetMetric.getSingleValueResult().toString() + "\n";
+						}
+
+					} catch (IllegalArgumentException e) {
+						e.printStackTrace();
+					} catch (InstantiationException e) {
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					} catch (InvocationTargetException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		
 		Utility.displayTextAreaWithDim(report,"Ontology Details", 12, 60);
 	}
 

@@ -9,6 +9,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -206,8 +207,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 						
 					}
 					else {
-						ArrayList<Node> classList;
-						ArrayList<Node> propList; 
+						List<Node> classList;
+						List<Node> propList; 
 						report+= quality+"\n";
 						if(q.isSourceOntology()) {
 							report+= "This quality is local in respect to source concepts: \n\n";

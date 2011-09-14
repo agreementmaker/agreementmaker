@@ -2,6 +2,7 @@ package am.app.feedback.measures;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import am.app.Core;
 import am.app.feedback.CandidateConcept;
@@ -28,7 +29,7 @@ public class InformationGain extends RelevanceMeasure {
 	}
 
 
-	private void InfoGain_Classes(FilteredAlignmentMatrix classesMatrix, ArrayList<Node> sourceClasses, ArrayList<Node> targetClasses ) {
+	private void InfoGain_Classes(FilteredAlignmentMatrix classesMatrix, List<Node> sourceClasses, List<Node> targetClasses ) {
 		
 		ArrayList<Frequency> frequencyList = new ArrayList<Frequency>();
 		
@@ -117,7 +118,7 @@ public class InformationGain extends RelevanceMeasure {
 		
 	}
 
-	private void InfoGain_Properties(FilteredAlignmentMatrix classesMatrix, ArrayList<Node> sourceClasses, ArrayList<Node> targetClasses ) {
+	private void InfoGain_Properties(FilteredAlignmentMatrix classesMatrix, List<Node> sourceClasses, List<Node> targetClasses ) {
 		
 		ArrayList<Frequency> frequencyList = new ArrayList<Frequency>();
 		

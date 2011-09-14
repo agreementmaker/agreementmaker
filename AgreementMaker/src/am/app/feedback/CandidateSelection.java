@@ -3,15 +3,16 @@ package am.app.feedback;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import am.app.Core;
 import am.app.feedback.measures.FamilialSimilarity;
 import am.app.feedback.measures.InformationGain;
 import am.app.feedback.measures.RelevanceMeasure;
 import am.app.feedback.measures.Specificity;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
@@ -133,7 +134,7 @@ public class CandidateSelection {
 		
 		ArrayList<CandidateConcept> masterList = new ArrayList<CandidateConcept>();
 		
-		ArrayList<Node> list = s.getClassesList();
+		List<Node> list = s.getClassesList();
 		masterList.addAll( getCombinedRelevances( relevanceLists, list, Ontology.SOURCE, alignType.aligningClasses ) );
 
 		list = s.getPropertiesList();
@@ -247,7 +248,7 @@ public class CandidateSelection {
 
 	
 	
-	private ArrayList<CandidateConcept> getCombinedRelevances(ArrayList<ConceptList> relevanceLists, ArrayList<Node> list, int source, alignType type) {
+	private List<CandidateConcept> getCombinedRelevances(List<ConceptList> relevanceLists, List<Node> list, int source, alignType type) {
 	
 		ArrayList<CandidateConcept> subList = new ArrayList<CandidateConcept>();
 		Iterator<Node> nodeItr = list.iterator();

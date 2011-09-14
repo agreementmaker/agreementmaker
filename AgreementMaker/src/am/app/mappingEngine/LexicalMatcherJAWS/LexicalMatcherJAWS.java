@@ -14,18 +14,15 @@ package am.app.mappingEngine.LexicalMatcherJAWS;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
-
-import edu.smu.tspell.wordnet.NounSynset;
-import edu.smu.tspell.wordnet.Synset;
-import edu.smu.tspell.wordnet.SynsetType;
-import edu.smu.tspell.wordnet.VerbSynset;
-import edu.smu.tspell.wordnet.WordNetDatabase;
+import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.Node;
-import am.utility.DirectedGraphVertex;
+import edu.smu.tspell.wordnet.NounSynset;
+import edu.smu.tspell.wordnet.Synset;
+import edu.smu.tspell.wordnet.SynsetType;
+import edu.smu.tspell.wordnet.WordNetDatabase;
 
 public class LexicalMatcherJAWS extends AbstractMatcher {
 
@@ -82,8 +79,8 @@ public class LexicalMatcherJAWS extends AbstractMatcher {
 		super.beforeAlignOperations();
 		
 		
-		ArrayList<Node> sourceClassList = sourceOntology.getClassesList();
-		ArrayList<Node> targetClassList = targetOntology.getClassesList();
+		List<Node> sourceClassList = sourceOntology.getClassesList();
+		List<Node> targetClassList = targetOntology.getClassesList();
 		
 		
 		for( Node sourceConcept : sourceClassList ) {

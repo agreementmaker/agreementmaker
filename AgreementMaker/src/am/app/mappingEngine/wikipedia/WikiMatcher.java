@@ -1,14 +1,7 @@
 package am.app.mappingEngine.wikipedia;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.SimilarityMatrix;
@@ -32,8 +25,8 @@ public class WikiMatcher extends AbstractMatcher {
 	
 	
 	@Override
-	protected SimilarityMatrix alignClasses(ArrayList<Node> sourceClassList,
-			ArrayList<Node> targetClassList) throws Exception {
+	protected SimilarityMatrix alignClasses( List<Node> sourceClassList,
+			List<Node> targetClassList) throws Exception {
 		SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceClassList.size(), targetClassList.size(), alignType.aligningClasses);
 		
 		for (int i = 0; i < sourceClassList.size(); i++) {

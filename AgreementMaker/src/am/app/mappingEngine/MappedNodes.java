@@ -1,6 +1,6 @@
 package am.app.mappingEngine;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import am.app.ontology.Node;
 
@@ -24,7 +24,7 @@ public class MappedNodes {
 		return mappedTargets;
 	}
 	
-	public MappedNodes(ArrayList<Node> sources, ArrayList<Node> targets, Alignment<Mapping> alignment, int sourceCardinality, int targetCardinality){
+	public MappedNodes( List<Node> sources, List<Node> targets, Alignment<Mapping> alignment, int sourceCardinality, int targetCardinality){
 		//assumption is that java init an array of boolean to false
 		//if not we should set all values to false
 		mappedSources = new int[sources.size()];

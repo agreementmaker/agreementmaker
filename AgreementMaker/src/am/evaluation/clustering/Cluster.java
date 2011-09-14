@@ -3,11 +3,12 @@ package am.evaluation.clustering;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeSet;
 
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -26,8 +27,8 @@ public class Cluster<E extends Mapping> implements Iterable<E> {
 	public Cluster( TreeSet<Point> set, Ontology sourceOntology, Ontology targetOntology, VisualizationType t ) {
 		clusterSet = new ArrayList<E>();
 		
-		ArrayList<Node> sourceList = null;
-		ArrayList<Node> targetList = null;
+		List<Node> sourceList = null;
+		List<Node> targetList = null;
 		alignType aType = null;
 		
 		if( t == VisualizationType.CLASS_MATRIX ) {

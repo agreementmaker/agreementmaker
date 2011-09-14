@@ -100,9 +100,9 @@ public class Ontology {
 	private OntModel model;
 	
 	/**List of class nodes to be aligned, IN THE CASE OF AN XML OR RDF ONTOLOGY ALL NODES ARE KEPT IN THIS STRUCTURE, so there will be only classes and no properties*/
-	private ArrayList<Node> classesList = new ArrayList<Node>();
+	private List<Node> classesList = new ArrayList<Node>();
 	/**List of property nodes to be aligned, IN THE CASE OF AN XML OR RDF ONTOLOGY there are no properties*/
-	private ArrayList<Node> propertiesList = new ArrayList<Node>();
+	private List<Node> propertiesList = new ArrayList<Node>();
 	
 	/**The root of the classes hierarchy, is not the root of the whole tree but is the second node, the root vertex itself is fake doesn't refers to any node to be aligned, all sons of this node are classes to be aligned*/
 	private Node classesRoot;//in a XML or RDF ontology this will be the only tree
@@ -115,19 +115,19 @@ public class Ontology {
 	
 	private String URI;
 	
-	private ArrayList<DatatypeProperty> dataProperties;
-	public ArrayList<DatatypeProperty> getDataProperties() {
+	private List<DatatypeProperty> dataProperties;
+	public List<DatatypeProperty> getDataProperties() {
 		return dataProperties;
 	}
-	public void setDataProperties(ArrayList<DatatypeProperty> dtps) {
+	public void setDataProperties(List<DatatypeProperty> dtps) {
 		dataProperties = dtps;
 	}
 	
-	private ArrayList<ObjectProperty> objectProperties;
-	public ArrayList<ObjectProperty> getObjectProperties() {
+	private List<ObjectProperty> objectProperties;
+	public List<ObjectProperty> getObjectProperties() {
 		return objectProperties;
 	}
-	public void setObjectProperties(ArrayList<ObjectProperty> ops) {
+	public void setObjectProperties(List<ObjectProperty> ops) {
 		objectProperties = ops;
 	}	
 	
@@ -175,16 +175,16 @@ public class Ontology {
 	public void setModel(OntModel model) {
 		this.model = model;
 	}
-	public ArrayList<Node> getClassesList() {
+	public List<Node> getClassesList() {
 		return classesList;
 	}
-	public void setClassesList(ArrayList<Node> classesList) {
+	public void setClassesList(List<Node> classesList) {
 		this.classesList = classesList;
 	}
-	public ArrayList<Node> getPropertiesList() {
+	public List<Node> getPropertiesList() {
 		return propertiesList;
 	}
-	public void setPropertiesList(ArrayList<Node> propertiesList) {
+	public void setPropertiesList(List<Node> propertiesList) {
 		this.propertiesList = propertiesList;
 	}
 
@@ -223,7 +223,7 @@ public class Ontology {
 	
 	// FIXME: UNIT TEST THIS METHOD!! I have a feeling that they are INCORRECT! - Cosmin.
 	//used in getClassDetails and getPropDetails
-	private String getDetails(ArrayList<Node> list, Node tree) {
+	private String getDetails(List<Node> list, Node tree) {
 		TreeToDagConverter conv = new TreeToDagConverter(tree);
 		
 		int concepts = list.size();

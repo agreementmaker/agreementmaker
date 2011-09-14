@@ -34,8 +34,8 @@ public class MyTestMatcher extends AbstractMatcher {
 	}
 	
 	@Override
-	protected SimilarityMatrix alignClasses(ArrayList<Node> sourceClassList,
-			ArrayList<Node> targetClassList) throws Exception {
+	protected SimilarityMatrix alignClasses(List<Node> sourceClassList,
+			List<Node> targetClassList) throws Exception {
 	
 		
 		System.out.println("Source ontology:");
@@ -55,7 +55,7 @@ public class MyTestMatcher extends AbstractMatcher {
 		return null;
 	}
 
-	private void printProfile(ArrayList<Node> sourceClassList,
+	private void printProfile( List<Node> sourceClassList,
 			Lexicon sourceLexicon) {
 		
 		int totalSynonyms = 0;

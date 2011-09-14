@@ -24,20 +24,20 @@ public class LexicalMatcherJWNL extends AbstractMatcher{
 	private static final long serialVersionUID = 7662236197561302505L;
 
 	private Dictionary dictionary;
-	private ArrayList<String>  sourceClassTreatedStrings;
-	private ArrayList<String>  targetClassTreatedStrings;
-	private ArrayList<String>  sourcePropTreatedStrings;
-	private ArrayList<String>  targetPropTreatedStrings;
+	private List<String>  sourceClassTreatedStrings;
+	private List<String>  targetClassTreatedStrings;
+	private List<String>  sourcePropTreatedStrings;
+	private List<String>  targetPropTreatedStrings;
 	
-	private ArrayList<IndexWord> sourceClassNounWords;
-	private ArrayList<IndexWord> sourceClassVerbWords;
-	private ArrayList<IndexWord> sourcePropNounWords;
-	private ArrayList<IndexWord> sourcePropVerbWords;
+	private List<IndexWord> sourceClassNounWords;
+	private List<IndexWord> sourceClassVerbWords;
+	private List<IndexWord> sourcePropNounWords;
+	private List<IndexWord> sourcePropVerbWords;
 	
-	private ArrayList<IndexWord> targetClassNounWords;
-	private ArrayList<IndexWord> targetClassVerbWords;
-	private ArrayList<IndexWord> targetPropNounWords;
-	private ArrayList<IndexWord> targetPropVerbWords;
+	private List<IndexWord> targetClassNounWords;
+	private List<IndexWord> targetClassVerbWords;
+	private List<IndexWord> targetPropNounWords;
+	private List<IndexWord> targetPropVerbWords;
 	
 
 	
@@ -88,7 +88,7 @@ public class LexicalMatcherJWNL extends AbstractMatcher{
 		targetPropVerbWords = computeWords(targetPropTreatedStrings, POS.VERB);
 	}
 	
-	private ArrayList<String> computeStrings(ArrayList<Node> list) throws Exception {
+	private ArrayList<String> computeStrings( List<Node> list) throws Exception {
 		ArrayList<String> result = new ArrayList<String>();
 		Iterator<Node> it = list.iterator();
 		while(it.hasNext()){
@@ -105,7 +105,7 @@ public class LexicalMatcherJWNL extends AbstractMatcher{
 		return result;
 	}
 
-	private ArrayList<IndexWord> computeWords(ArrayList<String> list, POS pos) throws Exception {
+	private ArrayList<IndexWord> computeWords( List<String> list, POS pos) throws Exception {
 		ArrayList<IndexWord> result = new ArrayList<IndexWord>();
 		Iterator<String> it = list.iterator();
 		String processedString;

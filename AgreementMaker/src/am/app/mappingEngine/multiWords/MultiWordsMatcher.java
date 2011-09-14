@@ -38,13 +38,13 @@ public class MultiWordsMatcher extends AbstractMatcher {
 	
 
 	private transient Normalizer normalizer;
-	private ArrayList<String> sourceClassDocuments = new ArrayList<String>();
-	private ArrayList<String> targetClassDocuments = new ArrayList<String>();
-	private ArrayList<String> sourcePropDocuments = new ArrayList<String>();
-	private ArrayList<String> targetPropDocuments = new ArrayList<String>();
+	private List<String> sourceClassDocuments = new ArrayList<String>();
+	private List<String> targetClassDocuments = new ArrayList<String>();
+	private List<String> sourcePropDocuments = new ArrayList<String>();
+	private List<String> targetPropDocuments = new ArrayList<String>();
 	
-	private transient ArrayList<StringWrapper> classCorpus = new ArrayList<StringWrapper>();
-	private transient ArrayList<StringWrapper> propCorpus = new ArrayList<StringWrapper>();
+	private transient List<StringWrapper> classCorpus = new ArrayList<StringWrapper>();
+	private transient List<StringWrapper> propCorpus = new ArrayList<StringWrapper>();
 	
 	private transient StringTFIDF tfidfClasses;
 	private transient StringTFIDF tfidfProperties;
@@ -164,8 +164,8 @@ public class MultiWordsMatcher extends AbstractMatcher {
 
 	}
 	
-	private ArrayList<String> createDocumentsFromNodeList(ArrayList<Node> nodeList, alignType typeOfNodes) throws Exception {
-		ArrayList<String> documents = new ArrayList<String>();
+	private List<String> createDocumentsFromNodeList( List<Node> nodeList, alignType typeOfNodes) throws Exception {
+		List<String> documents = new ArrayList<String>();
 		
 		for( Node node : nodeList ) {
 			String document = createMultiWordsString(node,typeOfNodes) ;

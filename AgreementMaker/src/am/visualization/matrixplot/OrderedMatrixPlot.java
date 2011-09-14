@@ -5,11 +5,12 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
@@ -17,6 +18,9 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntProperty;
 
 public class OrderedMatrixPlot extends MatrixPlot {
+
+	private static final long serialVersionUID = -6639837299305451033L;
+	
 	int[] rowTransform;
 	int[] colTransform;
 	
@@ -34,7 +38,7 @@ public class OrderedMatrixPlot extends MatrixPlot {
 	
 	private void createColTransform() {
 		Ontology targetOntology = Core.getInstance().getOntologyByID(matrix.getTargetOntologyID());
-		ArrayList<Node> nodes = null;
+		List<Node> nodes = null;
 		
 		colLines = new ArrayList<Integer>();
 		
@@ -51,7 +55,7 @@ public class OrderedMatrixPlot extends MatrixPlot {
 //			System.out.println(nodes.get(i).getLocalName());
 //		}
 		
-		ArrayList<Node> ordered = (ArrayList<Node>)nodes.clone();
+		List<Node> ordered = new ArrayList<Node>(nodes);
 		Collections.sort(ordered, new NodeComparator());
 		
 //		System.out.println("POSTORDERING");
@@ -78,7 +82,7 @@ public class OrderedMatrixPlot extends MatrixPlot {
 	private void createRowTransform() {
 		int ontId = matrix.getSourceOntologyID();
 		Ontology sourceOntology = Core.getInstance().getOntologyByID(ontId);
-		ArrayList<Node> nodes = null;
+		List<Node> nodes = null;
 		
 		rowLines = new ArrayList<Integer>();
 		
@@ -89,7 +93,7 @@ public class OrderedMatrixPlot extends MatrixPlot {
 		rowTransform = new int[nodes.size()];
 		rowInverseTransform = new int[nodes.size()];
 		
-		ArrayList<Node> ordered = (ArrayList<Node>)nodes.clone();
+		List<Node> ordered = new ArrayList<Node>(nodes); // (ArrayList<Node>)nodes.clone();
 		Collections.sort(ordered, new NodeComparator());
 		
 		for (int i = 0; i < rowTransform.length; i++) {
@@ -137,7 +141,7 @@ public class OrderedMatrixPlot extends MatrixPlot {
 		return rowInverseTransform[translatedRow];
 	}
 	
-	public void createTransformAndLines(ArrayList<Integer> lines,ArrayList<Node> ordered,int[] transform){
+	public void createTransformAndLines(List<Integer> lines, List<Node> ordered,int[] transform){
 		int prevDepth = 1;
 		int currDepth;
 		for (int i = 0; i < transform.length; i++) {

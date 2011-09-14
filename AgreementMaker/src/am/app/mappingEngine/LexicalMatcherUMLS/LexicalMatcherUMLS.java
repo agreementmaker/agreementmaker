@@ -20,6 +20,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Vector;
 
@@ -93,7 +94,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 		//Get synonyms. Took ?? mins for MA ontology(2700 concepts).
 		System.out.println("Retrieving Source List synonyms for each concept...");
 		long startime = System.nanoTime()/1000000000;
-		ArrayList<Node> sourceClassList = sourceOntology.getClassesList();
+		List<Node> sourceClassList = sourceOntology.getClassesList();
 		synsListsS = new ArrayList[classListSizeS]; 
 		
 		sourceNodeName = new ArrayList<String>();
@@ -155,7 +156,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 		//Get synonyms. Took 45 mins for NCI ontology(3304 concepts).
 		System.out.println("Retrieving Target List synonyms for each concept...");
 		long startime = System.nanoTime()/1000000000;
-		ArrayList<Node> targetClassList = targetOntology.getClassesList();
+		List<Node> targetClassList = targetOntology.getClassesList();
 		synsLists = new ArrayList[classListSize]; 
 		
 		targetNodeName = new ArrayList<String>();

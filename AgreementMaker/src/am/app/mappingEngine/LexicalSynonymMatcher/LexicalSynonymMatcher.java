@@ -80,8 +80,8 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	 * Method updated with ST optimizations. - Cosmin.
 	 */
 	@Override
-	protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList,
-			ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
+	protected SimilarityMatrix alignNodesOneByOne( List<Node> sourceList,
+			List<Node> targetList, alignType typeOfNodes) throws Exception {
 
 		if(param.completionMode && inputMatchers != null && inputMatchers.size() > 0){ 
     		//run in optimized mode by mapping only concepts that have not been mapped in the input matcher

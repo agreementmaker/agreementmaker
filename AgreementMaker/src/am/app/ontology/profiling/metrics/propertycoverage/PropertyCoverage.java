@@ -2,12 +2,12 @@ package am.app.ontology.profiling.metrics.propertycoverage;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
 
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.app.ontology.profiling.metrics.ProfilingMetric;
+import am.app.ontology.profiling.metrics.AbstractOntologyMetric;
+import am.utility.numeric.AvgMinMaxNumber;
 
 import com.hp.hpl.jena.ontology.AnnotationProperty;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -16,7 +16,7 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
-public class PropertyCoverage extends ProfilingMetric {
+public class PropertyCoverage extends AbstractOntologyMetric {
 
 	Map<Property, CoverageTriple> classMetricMap;
 	Map<Property, CoverageTriple> propertyMetricMap;
@@ -117,5 +117,8 @@ public class PropertyCoverage extends ProfilingMetric {
 	
 	public Map<Property, CoverageTriple> getClassMap() { return classMetricMap; }
 	public Map<Property, CoverageTriple> getPropertyMap() { return propertyMetricMap; }
+
+	@Override public boolean hasSingleValueResult() { return false; }
+	@Override public AvgMinMaxNumber getSingleValueResult() { return null; }
 	
 }

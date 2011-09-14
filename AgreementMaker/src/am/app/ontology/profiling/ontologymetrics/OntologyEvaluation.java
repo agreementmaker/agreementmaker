@@ -1,13 +1,16 @@
 package am.app.ontology.profiling.ontologymetrics;
 
-import java.util.ArrayList;
+import java.util.List;
+
+import am.app.ontology.Node;
+import am.app.ontology.Ontology;
+
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
+
 import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.WordNetDatabase;
-import am.app.ontology.Node;
-import am.app.ontology.Ontology;
 
 public class OntologyEvaluation {
 	Ontology sourceOntology;
@@ -269,7 +272,7 @@ public class OntologyEvaluation {
 
 	public int countSubClassOf(Ontology ontology){
 		int count = 0;
-		ArrayList<Node> classes = ontology.getClassesList();
+		List<Node> classes = ontology.getClassesList();
 		OntClass ontClass;
 		
 		for (Node cl : ontology.getClassesList()){

@@ -6,6 +6,7 @@ package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.EOntNodeType.EOntologyNodeType;
@@ -63,11 +64,11 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 	
 	// GRAPH BUILDING METHODS //
 	
-	private void buildGraph(Ontology AMOntology){
+	private void buildGraph(Ontology ontology){
 		
 		// VERTICES first
-		ArrayList<Node> setC = AMOntology.getClassesList();
-		ArrayList<Node> setP = AMOntology.getPropertiesList();
+		List<Node> setC = ontology.getClassesList();
+		List<Node> setP = ontology.getPropertiesList();
 		
 		classMatSize = setC.size();
 		propertyMatSize = setP.size();
@@ -97,7 +98,7 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 		// EDGES then
 		String queryString = composeQuery(EGraphNodeType.EDGES);
 		Query query = QueryFactory.create(queryString);
-		QueryExecution qexec = QueryExecutionFactory.create(query, AMOntology.getModel());
+		QueryExecution qexec = QueryExecutionFactory.create(query, ontology.getModel());
 		ResultSet results = qexec.execSelect();
 		processResults(results, EGraphNodeType.EDGES);
 		qexec.close();
@@ -307,11 +308,11 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 	
 	// COMPUTE DIFFERENCE WG-ONTOLOGY
 	
-	public ArrayList<Node> diff(Ontology o, EOntologyNodeType tp){
-		ArrayList<Node> ontNodes = null;
-		ArrayList<Node> wgNodes = null;
+	public List<Node> diff(Ontology o, EOntologyNodeType tp){
+		List<Node> ontNodes = null;
+		List<Node> wgNodes = null;
 		
-		ArrayList<Node> diff = new ArrayList<Node>();
+		List<Node> diff = new ArrayList<Node>();
 		
 		switch(tp){
     	case CLASS:
