@@ -8,7 +8,9 @@ public class AvgMinMaxNumber {
 	public String label;
 	public double average;
 	public double min;
+	public int minCount;
 	public double max;
+	public double maxCount;
 	public double median;
 
 	
@@ -26,12 +28,25 @@ public class AvgMinMaxNumber {
 		Arrays.sort(numbersList);
 
 		long sum = 0;
-		min = 0;
+		min = numbersList[0];
+		minCount = 1;
 		max = 0;
-		for( int i : numbersList ) {
-			sum += i;
-			if( i < min ) min = i;
-			if( i > max ) max = i;
+		maxCount = 0;
+		for( int n : numbersList ) {
+			sum += n;
+			if( n < min ) {
+				min = n;
+				minCount = 1;
+			} else if ( n == min ) {
+				minCount++;
+			}
+			
+			if( n > max ) {
+				max = n;
+				maxCount = 1;
+			} else if ( n == max ) {
+				maxCount++;
+			}
 		}
 
 		average = (double) sum / (double) numbersList.length;
@@ -46,16 +61,15 @@ public class AvgMinMaxNumber {
 	@Override
 	public String toString() {
 		DecimalFormat fmt = new DecimalFormat("###.###");
+		
+		String stats = new String("Average: " + fmt.format(average) + 
+				", Min: " + fmt.format(min) + " (" + (int)minCount + " items)" +
+				", Max: " + fmt.format(max) + " (" + (int)maxCount + " items)" +
+				", Median: " + fmt.format(median));
+		
 		if( label == null )
-			return new String("Average: " + fmt.format(average) + 
-							",\tMin: " + fmt.format(min) + 
-							",\tMax: " + fmt.format(max) + 
-							",\tMedian: " + fmt.format(median));
+			return stats;
 		else
-			return new String(label + " -- " + 
-					  "Average: " + fmt.format(average) + 
-					",\tMin: " + fmt.format(min) + 
-					",\tMax: " + fmt.format(max) + 
-					",\tMedian: " + fmt.format(median));
+			return label + " -- " + stats; 
 	}
 }

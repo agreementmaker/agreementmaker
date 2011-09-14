@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -81,8 +82,14 @@ public class OntologyInstanceDataset implements InstanceDataset {
 			uri = individual.getURI();
 			
 			RDFNode node = individual.getPropertyValue(RDF.type);
-			if(node != null)
-				rdfType = node.asLiteral().getString();
+			if(node != null) {
+				if( node.canAs(Literal.class)  ) { 
+					rdfType = node.asLiteral().getString();
+				} else {
+					rdfType = node.toString(); // should check for a resource
+				}
+			}
+				
 			
 			instance = new Instance(uri, rdfType);
 			
@@ -105,8 +112,13 @@ public class OntologyInstanceDataset implements InstanceDataset {
 		RDFNode node = individual.getPropertyValue(RDF.type);
 		
 		String rdfType = null;
-		if(node != null)
-			rdfType = node.asLiteral().getString();
+		if(node != null) {
+			if( node.canAs(Literal.class)  ) { 
+				rdfType = node.asLiteral().getString();
+			} else {
+				rdfType = node.toString(); // should check for a resource
+			}
+		}
 		
 		Instance instance = new Instance(uri, rdfType);
 		

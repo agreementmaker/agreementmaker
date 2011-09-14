@@ -981,6 +981,7 @@ public class UIMenu implements ActionListener {
 						e.printStackTrace();
 					}
 				}
+				report += "\n";
 			}
 		}
 		
