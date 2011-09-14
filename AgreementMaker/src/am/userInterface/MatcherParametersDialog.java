@@ -426,7 +426,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		// add the tabs to the JTabbedPane
 		JTabbedPane dialogTabbedPane = new JTabbedPane();
 		dialogTabbedPane.addTab("Matcher", matcherPanel);
-		dialogTabbedPane.addTab("Ontology Profiling", profilingPanel);
+		dialogTabbedPane.addTab("Annotation Profiling", profilingPanel);
 		
 		// put everything together.
 				
