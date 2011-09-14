@@ -1,6 +1,21 @@
 package am.app.ontology.profiling.ontologymetrics;
 
+import java.util.ArrayList;
+
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntProperty;
+
+import edu.smu.tspell.wordnet.Synset;
+
+import am.app.ontology.Node;
+import am.app.ontology.Ontology;
 import am.app.ontology.profiling.ProfilingReport;
+import am.app.ontology.profiling.classification.OntologyClassificator;
+import am.app.ontology.profiling.ontologymetrics.OntologyEvaluation.Type;
+import antlr.collections.impl.Vector;
+import edu.smu.tspell.wordnet.Synset;
+import edu.smu.tspell.wordnet.WordNetDatabase;
 
 public class OntologyMetrics implements ProfilingReport {
 	float relationshipRichness;
@@ -15,6 +30,12 @@ public class OntologyMetrics implements ProfilingReport {
 	float nullLabelPerc;
 	float diffLabelLocPerc;
 	float avgDepth;
+	
+	
+	
+	public OntologyMetrics(){}
+	
+
 	
 	public float getAvgDepth() {
 		return avgDepth;
@@ -136,4 +157,26 @@ public class OntologyMetrics implements ProfilingReport {
 				"\tattributeRichness\tlabelWordnet\tlocalWordnet\tclassRichness\tavgPopulation\t" +
 				"nullLabelPerc\tdiffLabelLocPerc\tnullCommentPerc";
 	}
+	
+	public float[] getAllMetrics(){
+		float[] f = {relationshipRichness,
+					 attributeRichness,
+			         inheritanceRichness,
+			         labelWordnet,
+			         localWordnet,
+			         classRichness,
+			         avgPopulation,
+			         relationshipRichnessInstances,
+			         nullCommentPerc,
+			         nullLabelPerc,
+			         diffLabelLocPerc,
+			         avgDepth,		
+		        };
+		return f;
+	}
+	
+	
+	
+	
+	
 }

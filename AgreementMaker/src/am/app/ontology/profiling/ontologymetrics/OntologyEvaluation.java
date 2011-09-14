@@ -30,7 +30,13 @@ public class OntologyEvaluation {
 		initWordnet();
 	}
 	
+	public OntologyEvaluation(){}
+	
 	public OntologyMetrics evaluateOntology(Ontology ontology){
+		//System.out.println("initialize wordnet......");
+		initWordnet();
+		System.out.println("Evaluating ontology...");
+		
 		OntologyMetrics metrics = new OntologyMetrics();
 		OntModel model = ontology.getModel();
 		
@@ -197,6 +203,7 @@ public class OntologyEvaluation {
 		metrics.setLocalWordnet((float)localWordnet);
 		metrics.setAvgDepth(avgDepth);
 		
+		System.out.println("DONE");
 		return metrics;
 	}
 	
@@ -338,5 +345,9 @@ public class OntologyEvaluation {
 		evaluateOntology(sourceOntology);
 		if(debug) System.out.println("EVALUATING ONTOLOGY 2");
 		evaluateOntology(targetOntology);
+		
+		
+		
+		
 	}
 }
