@@ -194,7 +194,7 @@ public class InstanceLookupPanel extends JPanel {
 			this.dataset = dataset;
 			
 			// Initialize the UI components.
-			labels = new JLabel[1];
+			labels = new JLabel[2];
 			labels[0] = new JLabel("Search Term: ");
 			labels[1] = new JLabel("Instance Type: ");
 			
@@ -203,7 +203,7 @@ public class InstanceLookupPanel extends JPanel {
 			textfields[0] = new JTextField();
 			textfields[1] = new JTextField();
 			
-			buttons = new JButton[0];
+			buttons = new JButton[1];
 			buttons[0] = new JButton("Candidate Lookup");
 			buttons[0].addActionListener(this);
 			
