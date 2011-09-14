@@ -1,8 +1,9 @@
 package am.app.ontology.profiling.metrics;
 
+import am.app.ontology.profiling.metrics.annotation.AnnotationStringLengthMetric;
 import am.app.ontology.profiling.metrics.context.ChildrenCountMetric;
+import am.app.ontology.profiling.metrics.context.ParentsCountMetric;
 import am.app.ontology.profiling.metrics.context.SiblingCountMetric;
-import am.app.ontology.profiling.metrics.multipleinheritance.MultipleInheritanceMetric;
 
 /**
  * Keep track of ontology metrics.
@@ -12,9 +13,10 @@ import am.app.ontology.profiling.metrics.multipleinheritance.MultipleInheritance
  */
 public enum OntologyMetricsRegistry {
 
-	InheritanceCount	("Parents Count", MultipleInheritanceMetric.class ),
+	InheritanceCount	("Parents Count", ParentsCountMetric.class ),
 	SiblingCount		("Sibling Count", SiblingCountMetric.class ),
 	ChildCount			("Child Count", ChildrenCountMetric.class ),
+	StringLength		("String Length", AnnotationStringLengthMetric.class ),
 	;
 	
 	private String name;

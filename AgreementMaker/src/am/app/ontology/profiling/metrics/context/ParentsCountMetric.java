@@ -1,4 +1,4 @@
-package am.app.ontology.profiling.metrics.multipleinheritance;
+package am.app.ontology.profiling.metrics.context;
 
 import java.util.List;
 
@@ -7,9 +7,9 @@ import am.app.ontology.Ontology;
 import am.app.ontology.profiling.metrics.AbstractOntologyMetric;
 import am.utility.numeric.AvgMinMaxNumber;
 
-public class MultipleInheritanceMetric extends AbstractOntologyMetric {
+public class ParentsCountMetric extends AbstractOntologyMetric {
 
-	public MultipleInheritanceMetric(Ontology o) {
+	public ParentsCountMetric(Ontology o) {
 		super(o);
 	}
 
@@ -26,7 +26,7 @@ public class MultipleInheritanceMetric extends AbstractOntologyMetric {
 			parentsCount[i] = currentClass.getParentCount();
 		}
 		
-		classesResult = new AvgMinMaxNumber("Classes Multiple Inheritance Count", parentsCount);
+		classesResult = new AvgMinMaxNumber("Classes Parent Count", parentsCount);
 	}
 
 	@Override public boolean hasSingleValueResult() { return true; }
