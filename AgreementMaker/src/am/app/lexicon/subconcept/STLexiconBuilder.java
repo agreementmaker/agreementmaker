@@ -123,10 +123,6 @@ public class STLexiconBuilder
 			else break; // no more matches. 
 		}
 		
-		if( distanceFromEnd == 0 ) {
-			// we found no matches.
-			return;
-		}
 		
 		// refine the word range by checking for overlap at the beginning of the synonyms
 		// since we are now checking from the beginning, reverse the arrays to simplify the algorithm.  Note: After this, the arrays are back to the correct order.
