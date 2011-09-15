@@ -38,6 +38,9 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 	private ProfilerRegistry name;  // automatically set by the ProfilingDialog 
 //	private ProfilingReport manualProfilingReport;
 
+	private Ontology sourceOntology;
+	private Ontology targetOntology;
+	
 	// TODO: This is a big mess.  Fix this somehow.
 	private List<Property> sourceClassAnnotations;
 	public List<Property> getSourceClassAnnotations() { return sourceClassAnnotations; }
@@ -61,6 +64,9 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 	
 	// main constructor
 	public ManualOntologyProfiler(Ontology source, Ontology target) {  // TODO: This should be a list of ontologies.
+		
+		sourceOntology = source;
+		targetOntology = target;
 		
 		sourceClassAnnotations = new ArrayList<Property>();
 		for( Node classNode : source.getClassesList() ) createClassAnnotationsList(sourceClassAnnotations, classNode);
@@ -305,6 +311,79 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 		return l.iterator();
 	}
 
+	@Override
+	public List<String> getAnnotations(Node node) {
+		
+		List<String> annotations = new ArrayList<String>();
+		
+		if( node.getOntologyID() == sourceOntology.getID() ) {
+			if( node.isClass() ) {
+				if( matchTimeParams.matchSourceClassLocalname ) annotations.add(node.getLocalName());
+				if( matchTimeParams.sourceClassAnnotations != null ) {
+					for( Property p : matchTimeParams.sourceClassAnnotations ) {
+						OntClass c1 = node.getResource().as(OntClass.class);
+						NodeIterator nIter = c1.listPropertyValues(p);
+						while( nIter.hasNext() ) {
+							RDFNode rdfNode = nIter.next();
+							if( rdfNode.isLiteral() ) {
+								Literal lit = rdfNode.asLiteral();
+								annotations.add(lit.getString());
+							}
+						}
+					}
+				}
+			} else if ( node.isProp() ) {
+				if( matchTimeParams.matchSourcePropertyLocalname ) annotations.add(node.getLocalName());
+				if( matchTimeParams.sourcePropertyAnnotations != null ) {
+					for( Property p : matchTimeParams.sourcePropertyAnnotations ) {
+						OntProperty c1 = node.getResource().as(OntProperty.class);
+						NodeIterator nIter = c1.listPropertyValues(p);
+						while( nIter.hasNext() ) {
+							RDFNode rdfNode = nIter.next();
+							if( rdfNode.isLiteral() ) {
+								Literal lit = rdfNode.asLiteral();
+								annotations.add(lit.getString());
+							}
+						}
+					}
+				}
+			}
+		} else if( node.getOntologyID() == targetOntology.getID() ) {
+			if( node.isClass() ) {
+				if( matchTimeParams.matchTargetClassLocalname ) annotations.add(node.getLocalName());
+				if( matchTimeParams.targetClassAnnotations != null ) {
+					for( Property p : matchTimeParams.targetClassAnnotations ) {
+						OntClass c1 = node.getResource().as(OntClass.class);
+						NodeIterator nIter = c1.listPropertyValues(p);
+						while( nIter.hasNext() ) {
+							RDFNode rdfNode = nIter.next();
+							if( rdfNode.isLiteral() ) {
+								Literal lit = rdfNode.asLiteral();
+								annotations.add(lit.getString());
+							}
+						}
+					}
+				}
+			} else if ( node.isProp() ) {
+				if( matchTimeParams.matchTargetPropertyLocalname ) annotations.add(node.getLocalName());
+				if( matchTimeParams.targetPropertyAnnotations != null ) {
+					for( Property p : matchTimeParams.targetPropertyAnnotations ) {
+						OntProperty c1 = node.getResource().as(OntProperty.class);
+						NodeIterator nIter = c1.listPropertyValues(p);
+						while( nIter.hasNext() ) {
+							RDFNode rdfNode = nIter.next();
+							if( rdfNode.isLiteral() ) {
+								Literal lit = rdfNode.asLiteral();
+								annotations.add(lit.getString());
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return annotations;
+	}
 
 	@Override
 	public MatcherStack getMatcherStack() {

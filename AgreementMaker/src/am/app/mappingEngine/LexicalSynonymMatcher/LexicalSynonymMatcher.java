@@ -1,8 +1,8 @@
 package am.app.mappingEngine.LexicalSynonymMatcher;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -12,16 +12,12 @@ import am.app.lexicon.LexiconSynSet;
 import am.app.lexicon.subconcept.SynonymTermLexicon;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
-import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.MappedNodes;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
-import am.app.ontology.Ontology;
 
 import com.hp.hpl.jena.ontology.OntResource;
 
@@ -33,8 +29,8 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	private transient Lexicon targetLexicon;
 	
 	// The hashmap and the list of string are used to optimize the LSM when running with SCS enabled.
-	private HashMap<Node,List<String>> extendedSynSets;
-	private List<String> extendedSingle;
+	private HashMap<Node,Set<String>> extendedSynSets;
+	private Set<String> extendedSingle;
 	private boolean sourceIsLarger = false;  // TODO: Figure out a better way to do this.
 	
 	// use this to save time.
@@ -116,13 +112,13 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 			}
 			
 			// create the hashmap of the smaller ontology
-			extendedSynSets = new HashMap<Node,List<String>>();
+			extendedSynSets = new HashMap<Node,Set<String>>();
 			
 			for( Node currentClass : smallerList ) {
 				OntResource currentOR = currentClass.getResource().as(OntResource.class);
 				LexiconSynSet currentSet = smallerLexicon.getSynSet(currentOR);
 				if( currentSet == null ) continue;
-				List<String> currentExtension = smallerLexicon.extendSynSet(currentSet);
+				Set<String> currentExtension = smallerLexicon.extendSynSet(currentSet);
 				currentExtension.addAll(currentSet.getSynonyms());
 				extendedSynSets.put(currentClass, currentExtension);
 				if( this.isCancelled() ) return null;
@@ -233,8 +229,9 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		
 		if( sourceSet == null || targetSet == null ) return null; // one or both of the concepts do not have a synset.
 		
+		// 1. Try out
 		
-		List<String> sourceExtendedSynonyms, targetExtendedSynonyms;
+		Set<String> sourceExtendedSynonyms, targetExtendedSynonyms;
 		
 		if( sourceIsLarger ) {
 			sourceExtendedSynonyms = extendedSingle;
@@ -244,7 +241,13 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 			targetExtendedSynonyms = extendedSingle;
 		}
 		
-		ProvenanceStructure provNoTermSyn = computeLexicalSimilarity(sourceExtendedSynonyms, targetExtendedSynonyms, 1.0d);
+		double maxSim = 1.0d;
+		if( sourceLexicon instanceof SynonymTermLexicon ||
+			targetLexicon instanceof SynonymTermLexicon ) {
+			maxSim = 0.9d;
+		}
+		
+		ProvenanceStructure provNoTermSyn = computeLexicalSimilarity(sourceExtendedSynonyms, targetExtendedSynonyms, maxSim);
 		
 		if( provNoTermSyn != null && provNoTermSyn.similarity > 0.0d ) {
 			if( getParam().storeProvenance ) {
@@ -322,26 +325,21 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		if( sourceLexicon2 == null ) throw new NullPointerException("Source lexicon is null.");
 		if( targetLexicon2 == null ) throw new NullPointerException("Target lexicon is null.");
 		
-		List<String> sourceSyns = sourceLexicon2.getSynonyms();
-		List<String> targetSyns = targetLexicon2.getSynonyms();
+		Set<String> sourceSyns = sourceLexicon.extendSynSet(sourceLexicon2);
+		Set<String> targetSyns = targetLexicon.extendSynSet(targetLexicon2);
 
 		return computeLexicalSimilarity(sourceSyns, targetSyns, 1.0d);
 	}
 	
 	
-	private ProvenanceStructure computeLexicalSimilarity( List<String> sourceSyns, List<String> targetSyns, double greatest ) {
+	private ProvenanceStructure computeLexicalSimilarity( Set<String> sourceSyns, Set<String> targetSyns, double greatest ) {
 		
-		for( int i = 0; i < sourceSyns.size(); i++ ) {
-			String sourceSynonym = sourceSyns.get(i);
-
-			for( int j = 0; j < targetSyns.size(); j++ ) {
-				String targetSynonym = targetSyns.get(j);
-				
+		for( String sourceSynonym : sourceSyns ) {
+			for( String targetSynonym : targetSyns ) {				
 				if( sourceSynonym.equalsIgnoreCase(targetSynonym) ) {
 					return new ProvenanceStructure(greatest, sourceSynonym, targetSynonym);
 				}
 			}
-	
 		}
 		
 		return null;

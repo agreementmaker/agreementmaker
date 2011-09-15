@@ -20,6 +20,7 @@ import am.app.mappingEngine.hierarchy.HierarchyMatcherModified;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.mediatingMatcher.MediatingMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsMatcher;
+import am.app.mappingEngine.multiWords.newMW.NewMultiWordsMatcher;
 import am.app.mappingEngine.oaei2009.OAEI2009matcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -53,6 +54,7 @@ public enum MatchersRegistry {
 	 * And so, if your matcher is has no code errors, it will be incorporated into the AgreementMaker.  - Cosmin
 	 */
 	//
+	NewVMM				( "NVMM", "New VMM", NewMultiWordsMatcher.class, MatcherCategory.SYNTACTIC ),
 	BridgeMatcher		( "MEDM", "Mediating Matcher", MediatingMatcher.class, MatcherCategory.HYBRID ), 
 	MyTestMatch			( "MTM", "Synonym Term Counting Matcher", MyTestMatcher.class, MatcherCategory.USER ),
 	PartialGraph		( "PGM", "Partial Graph Matcher", PartialGraphMatcher.class, MatcherCategory.STRUCTURAL ),

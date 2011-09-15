@@ -58,7 +58,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	private JLabel matcherLabel, lblPresets, thresholdLabel, sourceRelLabel, targetRelLabel;
 	private JComboBox matcherCombo, cmbPresets, thresholdCombo, sourceRelCombo, targetRelCombo;
 	private JButton btnMatcherDetails, btnSavePresets, btnDeletePresets, runButton, cancelButton;
-	private JCheckBox completionBox, provenanceBox, chkCustomName;
+	private JCheckBox completionBox, provenanceBox, chkCustomName, chkThreadedMode;
 	private JPanel topPanel, generalPanel;
 	private JScrollPane settingsScroll;
 	private JTextField txtCustomName;
@@ -219,6 +219,8 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		txtCustomName = new JTextField();
 		txtCustomName.setEnabled(false);
 		
+		chkThreadedMode = new JCheckBox("Threaded mode");
+		
 		btnMatcherDetails = new JButton("Explanation");
 		btnMatcherDetails.addActionListener(this);
 		
@@ -320,6 +322,8 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 						.addComponent(completionBox)
 						.addGap(10)
 						.addComponent(provenanceBox)
+						.addGap(10)
+						.addComponent(chkThreadedMode)
 				)
 				.addGroup( generalLayout.createSequentialGroup()
 						.addComponent(chkCustomName)
@@ -343,6 +347,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 				.addGroup( generalLayout.createParallelGroup(Alignment.CENTER)
 						.addComponent(completionBox)
 						.addComponent(provenanceBox)
+						.addComponent(chkThreadedMode)
 				)
 				.addGap(5)
 				.addGroup( generalLayout.createParallelGroup(Alignment.CENTER, false)
@@ -543,7 +548,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			// fill in completion mode
 			params.completionMode = completionBox.isSelected();
 			params.storeProvenance = provenanceBox.isSelected();
-			
+			params.threadedExecution = chkThreadedMode.isSelected();
 			
 			matcher.setParam(params);
 			

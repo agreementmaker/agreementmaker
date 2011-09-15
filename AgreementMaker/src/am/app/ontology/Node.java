@@ -335,8 +335,12 @@ public class Node implements Serializable, Comparable<Node>{
 	
 	/**Owl classes or all rdf nodes or all xml nodes their are considered classes, so nodes in the first of the two trees*/
 	public boolean isClass() {
-		if( resource.canAs(OntClass.class)) return true;
-		return false;
+		if( resource == null ) {
+			System.out.println("Null resource in Node object: " + this);
+			return false;
+		}
+		return resource.canAs(OntClass.class);
+		//return false;
 	}
 	
 	public boolean isProp() {
@@ -958,5 +962,20 @@ public class Node implements Serializable, Comparable<Node>{
 	  @Override
 	  public int compareTo(Node n) {
 		  return this.getResource().getURI().compareTo(n.getResource().getURI());
+	  }
+	  
+	  
+	  public List<Node> getSiblings() {
+		  List<Node> siblingsList = new ArrayList<Node>();
+		  
+		  for( Node parentNode : getParents() ) {
+			  for( Node siblingNode : parentNode.getChildren() ) {
+				  if( !siblingNode.equals(this) ) {
+					  siblingsList.add(siblingNode);
+				  }
+			  }
+		  }
+		  
+		  return siblingsList;
 	  }
 }

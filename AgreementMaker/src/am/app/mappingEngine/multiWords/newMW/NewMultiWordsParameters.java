@@ -15,10 +15,15 @@ public class NewMultiWordsParameters extends AbstractParameters {
 	//selected measure
 	public String measure;
 	
+	public boolean includeParents;
+	public boolean includeSiblings;
+	public boolean includeChildren;
+	
+	
 	//localname, label, comment, seeAlso, isDefBy of the concept itself
-	public boolean considerConcept; 
+	//public boolean considerConcept; 
 	//localname and label of neighbors will be added to multiword string: fathers, siblings, sons
-	public boolean considerNeighbors;
+	//public boolean considerNeighbors;
 	//localname and label of individual will be added to multiword string
 	public boolean considerInstances;
 	
@@ -39,12 +44,12 @@ public class NewMultiWordsParameters extends AbstractParameters {
 	//In some ontologies localnames are just codes without meaning in those cases this parameter 
 	//must be set to false;
 	//it will affect both nodes and neighbors
-	public boolean ignoreLocalNames;
+	//public boolean ignoreLocalNames;
 	
 	// use the definitions in the lexicons
 	public boolean useLexiconDefinitions = false;
 	public boolean useLexiconSynonyms = false;
-	public boolean considerSuperClass = false;
+	//public boolean considerSuperClass = false;
 
 	
 	//I put the constructor to init default values when we run this method batch mode
@@ -54,12 +59,13 @@ public class NewMultiWordsParameters extends AbstractParameters {
 	
 	private void initVariables() {
 		measure = TFIDF;
+		includeParents = false;
+		includeSiblings = false;
+		includeChildren = false;
 		considerInstances = false;
-		considerNeighbors = false;
-		considerConcept = true;
 		considerClasses = false;
 		considerProperties = false;
-		ignoreLocalNames = true;
+		//ignoreLocalNames = true;
 		normParameter = new NormalizerParameter();
 		normParameter.normalizeBlank = true;
 		normParameter.normalizeDiacritics = true;
@@ -69,71 +75,4 @@ public class NewMultiWordsParameters extends AbstractParameters {
 		normParameter.stem = true;
 	}
 	
-	public NewMultiWordsParameters initForOAEI2009() {
-		measure = TFIDF;
-		//only on concepts right now because it should be weighted differently
-		considerInstances = false;
-		considerNeighbors = false;
-		considerConcept = true;
-		considerClasses = false;
-		considerProperties = false;
-		ignoreLocalNames = true;
-		normParameter = new NormalizerParameter();
-		normParameter.setForOAEI2009();
-		return this;
-	}
-
-
-	public NewMultiWordsParameters initForOAEI2010(OAEI_Track currentTrack) throws Exception {
-		
-		switch( currentTrack ) {
-		case Anatomy:
-			measure = TFIDF;
-			considerInstances = true;
-			considerNeighbors = false;  // figure out if this helps.
-			considerConcept = true;
-			considerClasses = false;
-			considerProperties = false;
-			ignoreLocalNames = true; 
-			
-			useLexiconSynonyms = true; // May change later.
-			considerSuperClass = true;
-			break;
-		
-		case Benchmarks:
-			measure = TFIDF;
-			//only on concepts right now because it should be weighted differently
-			considerInstances = true;
-			considerNeighbors = false;
-			considerConcept = true;
-			considerClasses = false;
-			considerProperties = false;
-			ignoreLocalNames = true; 
-			
-			useLexiconSynonyms = true; // May change later.
-			break;
-			
-		case Conference:
-			throw new Exception("VMM is not used in Conference track for OAEI2010.");
-			
-		default:
-			measure = TFIDF;
-			//only on concepts right now because it should be weighted differently
-			if( currentTrack == OAEI_Track.Benchmarks ) considerInstances = true;
-			else { considerInstances = true; }
-			considerNeighbors = false;
-			considerConcept = true;
-			considerClasses = false;
-			considerProperties = false;
-			if( currentTrack == OAEI_Track.Benchmarks ) ignoreLocalNames = false;
-			else { ignoreLocalNames = true; } 
-			
-			useLexiconSynonyms = true; // May change later.
-			break;
-		}
-				
-		normParameter = new NormalizerParameter();
-		normParameter.setForOAEI2009();
-		return this;
-	}
 }

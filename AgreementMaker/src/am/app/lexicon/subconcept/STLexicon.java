@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
@@ -64,17 +66,18 @@ public class STLexicon extends GeneralLexicon implements SynonymTermLexicon {
 	 * extend the synsets in the Lexicon with newly created synonyms.
 	 */
 	@Override
-	public List<String> extendSynSet(LexiconSynSet synset) {
+	public Set<String> extendSynSet(LexiconSynSet synset) {
 		
 		//SubconceptSynonymLexicon scsLexicon = (SubconceptSynonymLexicon) currentLexicon;
 		
 		List<String> subconceptSynonyms = getAllSynonymTerms();
-		List<String> newSynonymList = new LinkedList<String>();
+		Set<String> currentSynonyms = super.extendSynSet(synset);
 		
+		Set<String> newSynonymList = new TreeSet<String>();
+		newSynonymList.addAll(currentSynonyms);
 		
-		// Step 1. Compute the new synonyms.
-		List<String> synonyms = synset.getSynonyms();
-		for( String existingSynonym : synonyms ) {
+		// Step 1. Compute the new synonyms.		
+		for( String existingSynonym : currentSynonyms ) {
 			for( String subconceptSynonym : subconceptSynonyms ) {
 				if( existingSynonym.contains(" " + subconceptSynonym + " ") ) {
 					// the current synonym contains the sub concept synonym.
@@ -99,18 +102,6 @@ public class STLexicon extends GeneralLexicon implements SynonymTermLexicon {
 						newSynonymList.add(newSynonym);
 					}
 				}
-			}
-		}
-		
-		if( newSynonymList.isEmpty() ) 
-			return newSynonymList;
-		
-		// Step 2. Remove any duplicate synonyms.
-		List<String> synsetSynonyms = synset.getSynonyms();
-		
-		for( String currentSynsetSynonym : synsetSynonyms ) {
-			if( newSynonymList.contains(currentSynsetSynonym) ) {
-				newSynonymList.remove(currentSynsetSynonym);
 			}
 		}
 		

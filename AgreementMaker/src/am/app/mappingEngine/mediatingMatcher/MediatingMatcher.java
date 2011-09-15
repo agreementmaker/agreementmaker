@@ -83,7 +83,7 @@ public class MediatingMatcher extends AbstractMatcher {
 		for( MatchingPair sourcePair : sourceBridgeMapping ) {
 			for( MatchingPair targetPair : targetBridgeMapping ) {
 				if( sourcePair.sourceURI.equals(targetPair.sourceURI) ) {
-					return new Mapping(source, target, 0.9d);
+					return new Mapping(source, target, 0.85d);
 				}
 			}
 		}

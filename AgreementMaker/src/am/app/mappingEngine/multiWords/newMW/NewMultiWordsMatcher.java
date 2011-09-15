@@ -22,6 +22,8 @@ import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.StringUtil.AMStringWrapper;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.ontology.Node;
+import am.app.ontology.profiling.OntologyProfiler;
+import am.utility.Pair;
 
 import com.hp.hpl.jena.ontology.OntResource;
 import com.wcohen.ss.api.StringWrapper;
@@ -62,12 +64,19 @@ public class NewMultiWordsMatcher extends AbstractMatcher {
 		super();
 		needsParam = true;
 		if(param.storeProvenance){provenanceString="\t********Vector-Based MultiWords Matcher********\n";}
+		addFeature(MatcherFeature.ONTOLOGY_PROFILING);
+		addFeature(MatcherFeature.ONTOLOGY_PROFILING_CLASS_ANNOTATION_FIELDS);
+		addFeature(MatcherFeature.ONTOLOGY_PROFILING_PROPERTY_ANNOTATION_FIELDS);
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 	}
 	
 	public NewMultiWordsMatcher( NewMultiWordsParameters param_new ) {
 		super(param_new);
 		if(param.storeProvenance){provenanceString="\t********Vector-Based MultiWords Matcher********\n";}
+		// features supported
+		addFeature(MatcherFeature.ONTOLOGY_PROFILING);
+		addFeature(MatcherFeature.ONTOLOGY_PROFILING_CLASS_ANNOTATION_FIELDS);
+		addFeature(MatcherFeature.ONTOLOGY_PROFILING_PROPERTY_ANNOTATION_FIELDS);
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 	}
 	
@@ -168,64 +177,62 @@ public class NewMultiWordsMatcher extends AbstractMatcher {
 		List<String> documents = new ArrayList<String>();
 		
 		for( Node node : nodeList ) {
-			String document = createMultiWordsString(node,typeOfNodes) ;
+			String document = createVirtualDocument(node,typeOfNodes) ;
 			String normDocument = normalizer.normalize(document);
 			documents.add(normDocument);
 		}
 		return documents;
 	}
 	
-	@SuppressWarnings("unchecked")
-	private String createMultiWordsString(Node node, alignType typeOfNodes) throws Exception {
+	/**
+	 * Here we are given a concept node, and we have to create the "virtual document" or "bag of words" string
+	 * for this concept.
+	 * 
+	 * 0. Start with an empty string.
+	 * 1. Create ego-net string of current node.
+	 * 		1a. Add annotation profiling strings.
+	 * 		1b. Add lexicon synonyms.
+	 * 		1c. Add lexicon definitions.
+	 * 2. Add ego-net string of parents.
+	 * 3. Add ego-net string of siblings.
+	 * 4. Add ego-net string of children.
+	 * 5. Include instance information.
+	 * 6. If concept is a class -> add ego-net strings of properties declared by this class.
+	 * 7. If concept is a property -> add ego-net strings of classes declaring this property.
+	 */
+	private String createVirtualDocument(Node node, alignType typeOfNodes) throws Exception {
 		
 		mWS = new String();
 		String multiWordsString = "";
 
 		NewMultiWordsParameters mp = (NewMultiWordsParameters)param;
 		
-		//Add concept strings to the multiwordsstring
-		if(mp.considerConcept) {
-			multiWordsString = Utility.smartConcat(multiWordsString, getLabelAndOrNameString(node));
-			multiWordsString = Utility.smartConcat(multiWordsString, node.getComment());
-			multiWordsString = Utility.smartConcat(multiWordsString, node.getSeeAlsoLabel());
-			multiWordsString = Utility.smartConcat(multiWordsString, node.getIsDefinedByLabel());
+		multiWordsString = Utility.smartConcat(multiWordsString, createEgoNetString(node) );
+
+		
+		if( mp.includeParents ) {
+			if( param.storeProvenance ) mWS+="considering parents.\n";
 			
-			if( param.storeProvenance ) {
-				mWS+="considering Concept:\n";
-				mWS+="\tlabel and/or name: "+getLabelAndOrNameString(node)+"\n";
-				mWS+="\tcomment: "+node.getComment()+"\n";
-				mWS+="\tSee also label: "+node.getSeeAlsoLabel()+"\n";
-				mWS+="\tis defined by label: "+node.getIsDefinedByLabel()+"\n";
+			for( Node parentNode : node.getParents() ) {
+				if( !parentNode.isRoot() )
+				multiWordsString = Utility.smartConcat(multiWordsString, createEgoNetString(parentNode) );
 			}
 		}
-
-		//add neighbors strings
-		if(mp.considerNeighbors) {
-			if( param.storeProvenance ) mWS+="considering neighbors:\n";
-			
-			String neighbourString = "";
-			HashSet<Node> neighborNodes = new HashSet<Node>(); // use a hashset to avoid duplicates
-			
-			// add child strings
-			List<Node> children = node.getChildren();
-			for( Node child : children ) { neighborNodes.add(child); }
-			
 		
-			// add father nodes and the father's children (siblings)
-			List<Node> parents = node.getParents();
-			for( Node parent : parents ) {
-				for( Node sibling : parent.getChildren() ) {
-					neighborNodes.add(sibling);
-				}
+		if( mp.includeSiblings ) {
+			if( param.storeProvenance ) mWS+="considering siblings.\n";
+			
+			for( Node siblingNode : node.getSiblings() ) {
+				multiWordsString = Utility.smartConcat(multiWordsString, createEgoNetString(siblingNode));
 			}
+		}
+		
+		if( mp.includeChildren ) {
+			if( param.storeProvenance ) mWS+="considering children.\n";
 			
-			for( Node neighbor : neighborNodes ) { 
-				neighbourString = Utility.smartConcat(neighbourString, getLabelAndOrNameString(neighbor));
+			for( Node childNode : node.getChildren() ) {
+				multiWordsString = Utility.smartConcat(multiWordsString, createEgoNetString(childNode) );
 			}
-			multiWordsString = Utility.smartConcat(multiWordsString, neighbourString);
-			
-			if( param.storeProvenance ) mWS+="\tneighbour string: "+neighbourString+"\n";
-			
 		}
 		
 		//add instances strings
@@ -268,6 +275,77 @@ public class NewMultiWordsMatcher extends AbstractMatcher {
 		}
 		
 		// lexicons
+		
+		
+		
+		
+		/*if( mp.considerSuperClass ) {
+			if( param.storeProvenance ) mWS+="considering super class:\n";
+			List<Node> parent = node.getParents();
+			if( param.storeProvenance ) mWS+="\tsuper class parents: \n";
+			for( Node par : parent ) {
+				multiWordsString = Utility.smartConcat(multiWordsString, par.getLabel() );
+				if( param.storeProvenance ) mWS+="\t\t "+par.getLabel()+"\n";
+			}
+			
+		}*/
+		
+		return multiWordsString;
+		
+	}
+
+	/**
+	 * Create an ego net string.  An ego net string uses strings that 
+	 * are directly defined on the given node.
+	 */
+	private String createEgoNetString( Node node ) throws Exception {
+		
+		NewMultiWordsParameters mp = (NewMultiWordsParameters)param;
+		
+		// 1. Add annotation profiler string.
+		
+		String egoNetString = new String();
+		
+		OntologyProfiler profiler = Core.getInstance().getOntologyProfiler();
+		
+		if( profiler != null ) {
+			// we are using ontology profiling
+
+			List<String> annList = profiler.getAnnotations(node);
+			
+			for( String currentWord : annList ) {
+				egoNetString = Utility.smartConcat(egoNetString, currentWord);
+			}
+		}
+		
+		// 2. Add lexicon synonyms
+		
+		if( mp.useLexiconSynonyms ) {
+			if( param.storeProvenance ) mWS+="considering lexicon synonyms:\n";
+			String synonyms = null;
+			OntResource nodeResource = node.getResource().as(OntResource.class);
+			
+			if( node.getOntologyID() == sourceOntology.getID() ) {
+				// look up the definition in the source lexicons
+				LexiconSynSet sourceOntSS = sourceOntologyLexicon.getSynSet(nodeResource);
+				synonyms = makeSynonymsString(sourceOntSS); 
+			} 
+			else if( node.getOntologyID() == targetOntology.getID() ) {
+				// look up the definition in the target lexicons
+				LexiconSynSet targetOntSS = targetOntologyLexicon.getSynSet(nodeResource);
+				synonyms = makeSynonymsString(targetOntSS); 
+			} 
+			else {
+				throw new Exception("Cannot find which ontology the node belongs to.");
+			}
+			
+			if( !synonyms.isEmpty() ) egoNetString = Utility.smartConcat(egoNetString, synonyms);
+			if( param.storeProvenance ) mWS+="\tsynonyms: "+synonyms+"\n";
+			
+		}
+		
+		// 3. Add lexicon definitions 
+		
 		if( mp.useLexiconDefinitions ) {
 			if( param.storeProvenance ) mWS+="considering lexicon definitions:\n";
 			String definitions = new String();
@@ -289,68 +367,25 @@ public class NewMultiWordsMatcher extends AbstractMatcher {
 				throw new Exception("Cannot find which ontology the node belongs to.");
 			}
 			
-			if( !definitions.equals("") ) multiWordsString = Utility.smartConcat(multiWordsString, definitions);
+			if( !definitions.equals("") ) egoNetString = Utility.smartConcat(egoNetString, definitions);
 			if( param.storeProvenance ) mWS+="\tdefinitions: "+definitions+"\n";
 		}
 		
-		if( mp.useLexiconSynonyms ) {
-			if( param.storeProvenance ) mWS+="considering lexicon synonyms:\n";
-			String synonyms = new String();
-			OntResource nodeResource = node.getResource().as(OntResource.class);
-			
-			if( node.getOntologyID() == sourceOntology.getID() ) {
-				// look up the definition in the source lexicons
-				LexiconSynSet sourceOntSS = sourceOntologyLexicon.getSynSet(nodeResource);
-				LexiconSynSet sourceWNSS = sourceWordNetLexicon.getSynSet(nodeResource);
-				String ss = makeSynonymsString(sourceOntSS, sourceWNSS); 
-				if( !ss.isEmpty() ) synonyms = Utility.smartConcat(synonyms, ss);
-			} else if( node.getOntologyID() == targetOntology.getID() ) {
-				// look up the definition in the target lexicons
-				LexiconSynSet targetOntSS = targetOntologyLexicon.getSynSet(nodeResource);
-				LexiconSynSet targetWNSS = targetWordNetLexicon.getSynSet(nodeResource);
-				String ss = makeSynonymsString(targetOntSS, targetWNSS); 
-				if( !ss.isEmpty() ) synonyms = Utility.smartConcat(synonyms, ss);
-			} else {
-				throw new Exception("Cannot find which ontology the node belongs to.");
-			}
-			
-			if( !synonyms.isEmpty() ) multiWordsString = Utility.smartConcat(multiWordsString, synonyms);
-			if( param.storeProvenance ) mWS+="\tsynonyms: "+synonyms+"\n";
-		}
-		
-		if( mp.considerSuperClass ) {
-			if( param.storeProvenance ) mWS+="considering super class:\n";
-			List<Node> parent = node.getParents();
-			if( param.storeProvenance ) mWS+="\tsuper class parents: \n";
-			for( Node par : parent ) {
-				multiWordsString = Utility.smartConcat(multiWordsString, par.getLabel() );
-				if( param.storeProvenance ) mWS+="\t\t "+par.getLabel()+"\n";
-			}
-			
-		}
-		
-		return multiWordsString;
-		
+		return egoNetString;
 	}
-
-	private String makeSynonymsString(LexiconSynSet ontSS,
-			LexiconSynSet WNSS) {
+	
+	private String makeSynonymsString(LexiconSynSet ontSS) {
 		String synonymsString = new String();
 		
 		if( ontSS != null )
-		for( String ontSyn : ontSS.getSynonyms() ) {
+		for( String ontSyn : sourceOntologyLexicon.extendSynSet(ontSS) ) {
 			synonymsString = Utility.smartConcat(synonymsString, ontSyn);
-		}
-		
-		if( WNSS != null )
-		for( String WNSyn : WNSS.getSynonyms() ) {
-			synonymsString = Utility.smartConcat(synonymsString, WNSyn);
 		}
 		
 		return synonymsString;
 	}
 
-	private String getLabelAndOrNameString(Node node) {
+	/*private String getLabelAndOrNameString(Node node) {
 		String result = "";
 		NewMultiWordsParameters mp = (NewMultiWordsParameters)param;
 		//Add concept strings to the multiwordsstring
@@ -363,7 +398,7 @@ public class NewMultiWordsMatcher extends AbstractMatcher {
 			}
 			result = Utility.smartConcat(result, node.getLabel());
 		return result;
-	}
+	}*/
 
 
 	/* *******************************************************************************************************

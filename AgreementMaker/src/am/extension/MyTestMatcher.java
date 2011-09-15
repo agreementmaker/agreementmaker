@@ -3,10 +3,10 @@ package am.extension;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import am.Utility;
 import am.app.Core;
 import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconSynSet;
@@ -85,7 +85,7 @@ public class MyTestMatcher extends AbstractMatcher {
 			if( sourceLexicon instanceof STLexicon ) {
 				STLexicon stLexicon = (STLexicon) sourceLexicon;
 				
-				List<String> currentExtension = stLexicon.extendSynSet(currentSet);
+				Set<String> currentExtension = stLexicon.extendSynSet(currentSet);
 				//extendedSynSets.put(currentClass, currentExtension);
 				currentSynonyms += currentExtension.size();
 			}

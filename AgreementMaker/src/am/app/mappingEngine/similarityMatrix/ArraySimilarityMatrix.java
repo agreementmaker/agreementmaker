@@ -1,16 +1,11 @@
 package am.app.mappingEngine.similarityMatrix;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Vector;
-
-import org.junit.Test;
 
 import am.Utility;
 import am.app.Core;

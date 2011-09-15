@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -129,16 +130,17 @@ public class GeneralLexicon implements Lexicon {
 	@Override public LexiconLookupPanel getLookupPanel() { return lookupPanel; }
 
 	@Override
-	public List<String> extendSynSet(LexiconSynSet synset) {
-		List<String> extendedList = new ArrayList<String>();
+	public Set<String> extendSynSet(LexiconSynSet synset) {
+		Set<String> extendedSet = new TreeSet<String>();
 		
 		// add the current synonyms
-		extendedList.addAll( synset.getSynonyms() );
+		extendedSet.addAll( synset.getSynonyms() );
 		
+		// add synonyms from related sets
 		for( LexiconSynSet relatedSynSet : synset.getRelatedSynSets() ) {
-			extendedList.addAll( relatedSynSet.getSynonyms() );
+			extendedSet.addAll( relatedSynSet.getSynonyms() );
 		}
 		
-		return extendedList;
+		return extendedSet;
 	}
 }

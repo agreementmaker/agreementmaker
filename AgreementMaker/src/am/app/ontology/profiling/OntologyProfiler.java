@@ -1,6 +1,7 @@
 package am.app.ontology.profiling;
 
 import java.util.Iterator;
+import java.util.List;
 
 import am.app.ontology.Node;
 import am.utility.Pair;
@@ -45,6 +46,8 @@ public interface OntologyProfiler {
 	 * @return
 	 */
 	public Iterator<Pair<String,String>> getAnnotationIterator(Node n1, Node n2);
+	
+	public List<String> getAnnotations( Node node );
 	
 	public void setInitialParams(OntologyProfilerParameters param);
 	public void setMatchTimeParams(OntologyProfilerParameters param);

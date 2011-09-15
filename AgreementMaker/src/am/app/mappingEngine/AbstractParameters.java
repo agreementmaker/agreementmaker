@@ -8,7 +8,8 @@ public class AbstractParameters {
 	public int maxTargetAlign = 1;
 	public boolean completionMode = false;
 	public boolean storeProvenance = false; // whether the matcher stores provenance information for mappings.
-	protected boolean largeOntologyMode = false;//if true values in the sparse matrix are thrown away to save memory
+	public boolean largeOntologyMode = false;//if true values in the sparse matrix are thrown away to save memory
+	public boolean threadedExecution = false;
 	
 	
 	public AbstractParameters() { /* work is done by the field initialization; */ }

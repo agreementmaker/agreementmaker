@@ -3,6 +3,7 @@ package am.app.lexicon;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.tools.LexiconLookup.LexiconLookupPanel;
@@ -34,7 +35,7 @@ public interface Lexicon {
 	 * Return a complete list of synonyms.
 	 * 
 	 * This list includes synonyms from the related synsets.
-	 * 
+	 * Using Set as the return value because we want to avoid duplicate entries in the synonym list.
 	 */
-	public List<String> extendSynSet(LexiconSynSet synset);
+	public Set<String> extendSynSet(LexiconSynSet synset);
 }

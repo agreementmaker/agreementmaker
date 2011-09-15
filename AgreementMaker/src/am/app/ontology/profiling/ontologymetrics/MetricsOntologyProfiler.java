@@ -1,6 +1,7 @@
 package am.app.ontology.profiling.ontologymetrics;
 
 import java.util.Iterator;
+import java.util.List;
 
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -11,7 +12,10 @@ import am.app.ontology.profiling.OntologyProfilerParameters;
 import am.app.ontology.profiling.ProfilerRegistry;
 import am.utility.Pair;
 
-
+/**
+ * Work in progress.  Not done yet. -- Cosmin Sept 14, 2011.
+ *
+ */
 public class MetricsOntologyProfiler implements OntologyProfiler{
 
 	private ProfilerRegistry name;
@@ -68,6 +72,12 @@ public class MetricsOntologyProfiler implements OntologyProfiler{
 
 	@Override
 	public MatcherStack getMatcherStack() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<String> getAnnotations(Node node) {
 		// TODO Auto-generated method stub
 		return null;
 	}

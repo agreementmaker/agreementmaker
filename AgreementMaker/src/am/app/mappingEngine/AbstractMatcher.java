@@ -122,6 +122,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/** If true, the progress display may not be updated faster than once every 500ms. */
 	protected boolean useProgressDelay = true;
 	
+	/** A thread group used in threaded execution mode. */
+	private ThreadGroup threadGroup;
+	
 	public void setPerformSelection(boolean performSelection) {
 		this.performSelection = performSelection;
 	}
@@ -561,23 +564,68 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     		SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
 			Node source;
 			Node target;
-			Mapping alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
-			for(int i = 0; i < sourceList.size(); i++) {
-				source = sourceList.get(i);
-				for(int j = 0; j < targetList.size(); j++) {
-					target = targetList.get(j);
+//			Mapping alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
+			
+
+			int availableProcessors = Runtime.getRuntime().availableProcessors();
+			if( param.threadedExecution && targetList.size() > availableProcessors ) {
+				threadGroup = new ThreadGroup(getName());
+				
+				// break up the search space and spawn all the threads
+				
+				int remainder = targetList.size() % availableProcessors;
+				int chunkSize = ( targetList.size() - remainder ) / availableProcessors;
+				
+				for( int i = 0; i < availableProcessors; i++ ) {
 					
-					if( !this.isCancelled() ) { alignment = alignTwoNodes(source, target, typeOfNodes); }
-					else { return matrix; }
+					int startIndex = i*chunkSize;
+					int endIndex = startIndex + chunkSize - 1;
 					
-					matrix.set(i,j,alignment);
-					if( isProgressDisplayed() ) {
-						stepDone(); // we have completed one step
-						if( alignment != null && alignment.getSimilarity() >= param.threshold ) tentativealignments++; // keep track of possible alignments for progress display
-					}
+					if( i == availableProcessors - 1 ) endIndex += remainder;
+					
+					AbstractMatcherRunner runner = new AbstractMatcherRunner(sourceList, targetList, startIndex, endIndex, matrix, this, typeOfNodes);
+					Thread newThread = new Thread(threadGroup, runner);
+					newThread.start();
+					
 				}
-				if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
-			}
+								
+				// wait for threads to finish.
+				while( threadGroup.activeCount() > 0 ) { 
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						this.cancel(true);
+					} 
+				}
+				
+			} else {
+				// non threaded, normal execution
+				for(int i = 0; i < sourceList.size(); i++) {
+					source = sourceList.get(i);
+					for(int j = 0; j < targetList.size(); j++) {
+						target = targetList.get(j);
+						
+						if( !this.isCancelled() ) {
+							Mapping alignment = alignTwoNodes(source, target, typeOfNodes);
+							
+							matrix.set(i,j,alignment);
+							
+							if( isProgressDisplayed() ) {
+								stepDone(); // we have completed one step
+								if( alignment != null && alignment.getSimilarity() >= param.threshold ) {
+									tentativealignments++; // keep track of possible alignments for progress display
+									System.out.println(alignment);
+								}
+								updateProgress();
+							}
+						}
+						else { return matrix; }
+					}
+					if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
+				}
+			} 
+			
 			return matrix;
     	}
 	}
@@ -1710,5 +1758,77 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			  if( supportedFeatures == null ) supportedFeatures = new ArrayList<MatcherFeature>(); 
 			  supportedFeatures.add(f); 
 		  }
+	  }
+	  
+	  
+	  /***********************************************************************************************
+	   *********************************** THREADED EXECUTION ****************************************
+	   ***********************************************************************************************/
+	  
+	  public class AbstractMatcherRunner implements Runnable {
+
+		  private final AbstractMatcher matcher;
+		  private final alignType typeOfNodes;
+		  private final List<Node> sourceList;
+		  private final List<Node> targetList;
+
+		  private final int startIndex;
+		  private final int endIndex;
+		  private final SimilarityMatrix matrix;
+		  
+		  public AbstractMatcherRunner(List<Node> sourceList, List<Node> targetList, 
+				  int startIndex, int endIndex, SimilarityMatrix matrix, AbstractMatcher matcher, alignType typeOfNodes ) {
+			  
+			  System.out.println("New Matcher Runner, from " + startIndex + " to " + endIndex);
+			  
+			  this.matcher = matcher;
+			  
+			  this.typeOfNodes = typeOfNodes;
+			  this.sourceList = sourceList;
+			  this.targetList = targetList;
+			  
+			  this.startIndex = startIndex;
+			  this.endIndex = endIndex;
+			  
+			  this.matrix = matrix;
+		  }
+
+		  @Override
+		  public void run() {
+			  for( int i = 0; i < sourceList.size(); i++ ){
+				  Node source = sourceList.get(i);
+				  for( int j = startIndex; j < endIndex; j++ ) {
+					  Node target = targetList.get(j);
+
+					  if( i != source.getIndex() || j != target.getIndex() ) {
+						  System.out.println("Error, index is not matching up.");
+					  }
+					  
+					  try {
+						  Mapping mapping = matcher.alignTwoNodes(source, target, typeOfNodes);
+						  if( mapping != null ) { 
+							  matcher.saveThreadResult(i, j, mapping, matrix);
+						  }
+						  
+						  if( matcher.getProgressDisplay() != null ) {
+							  matcher.stepDone();
+							  matcher.updateProgress();
+							  if( mapping != null && mapping.getSimilarity() >= param.threshold ) { 
+								  tentativealignments++; // keep track of possible alignments for progress display
+								  System.out.println(mapping);
+							  }
+						  }
+						  
+					  } catch (Exception e) {
+						  // TODO Auto-generated catch block
+						  e.printStackTrace();
+					  }
+				  }  
+			  }
+		  }
+	  }
+	  
+	  public synchronized void saveThreadResult(int source, int target, Mapping mapping, SimilarityMatrix matrix ) {
+		  matrix.set(source, target, mapping);
 	  }
 }
