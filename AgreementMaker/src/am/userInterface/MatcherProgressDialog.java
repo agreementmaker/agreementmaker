@@ -70,7 +70,8 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 	    matcherReport = new JTextArea(8, 35);
 	    matcherReport.setEditable(false);
 	    
-		setTitle("Agreement Maker is Running ...");  // you'd better go catch it!
+		//setTitle("Agreement Maker is Running ...");  // you'd better go catch it!
+	    setTitle(m.getName());
 		matcherReport.setText("Running...");
 		//setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setResizable(false);
@@ -129,6 +130,7 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 		
 		getRootPane().setDefaultButton(okButton);
 		
+		setModal(false);
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);   
@@ -174,10 +176,9 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 			this.dispose();
 		}
 		else if(obj == cancelButton) {
-			if( matcher.getRunningTime() >= 5*60*1000 ) { // if a matcher runs for longer than 5 minutes, ask the user if they are sure when clicking the cancel button.
-				int retVal = JOptionPane.showConfirmDialog(this, "Are you sure you want to cancel this matcher?");
-				if( retVal != JOptionPane.YES_OPTION ) return;
-			}
+			int retVal = JOptionPane.showConfirmDialog(this, "Are you sure you want to cancel this matcher?", "Really cancel?", JOptionPane.YES_NO_OPTION);
+			if( retVal != JOptionPane.YES_OPTION ) return;
+			
 			matcher.cancel(true);
 			if( subMatcher != null ) subMatcher.cancel(true);
 			this.dispose();

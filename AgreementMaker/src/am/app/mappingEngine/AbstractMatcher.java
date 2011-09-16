@@ -571,32 +571,55 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			if( param.threadedExecution && targetList.size() > availableProcessors ) {
 				threadGroup = new ThreadGroup(getName());
 				
-				// break up the search space and spawn all the threads
+				// break up the search space
+				int sourceStartIndices[] = new int[availableProcessors];
+				int sourceEndIndices[]   = new int[availableProcessors];
+				int targetStartIndices[] = new int[availableProcessors];
+				int targetEndIndices[]   = new int[availableProcessors];
 				
-				int remainder = targetList.size() % availableProcessors;
-				int chunkSize = ( targetList.size() - remainder ) / availableProcessors;
+				int sourceRemainder = sourceList.size() % availableProcessors;
+				int sourceChunkSize = ( sourceList.size() - sourceRemainder ) / availableProcessors;
+				
+				int targetRemainder = targetList.size() % availableProcessors;
+				int targetChunkSize = ( targetList.size() - targetRemainder ) / availableProcessors;
 				
 				for( int i = 0; i < availableProcessors; i++ ) {
+					sourceStartIndices[i] = i*sourceChunkSize;
+					sourceEndIndices[i] = sourceStartIndices[i] + sourceChunkSize - 1;
 					
-					int startIndex = i*chunkSize;
-					int endIndex = startIndex + chunkSize - 1;
+					targetStartIndices[i] = i*targetChunkSize;
+					targetEndIndices[i] = targetStartIndices[i] + targetChunkSize - 1;
 					
-					if( i == availableProcessors - 1 ) endIndex += remainder;
-					
-					AbstractMatcherRunner runner = new AbstractMatcherRunner(sourceList, targetList, startIndex, endIndex, matrix, this, typeOfNodes);
-					Thread newThread = new Thread(threadGroup, runner);
-					newThread.start();
-					
+					if( i == availableProcessors - 1 ) { 
+						sourceEndIndices[i] += sourceRemainder;
+						targetEndIndices[i] += targetRemainder;
+					}
 				}
-								
-				// wait for threads to finish.
-				while( threadGroup.activeCount() > 0 ) { 
-					try {
-						Thread.sleep(500);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-						this.cancel(true);
-					} 
+				
+				// run the stages, spawn threads
+				for( int stage = 0; stage < availableProcessors; stage++ ) {
+					
+					for( int thread = 0; thread < availableProcessors; thread++ ) {
+						int targetIndex = (thread + stage) % availableProcessors;
+						
+						AbstractMatcherRunner runner = 
+								new AbstractMatcherRunner(sourceList, targetList, 
+										sourceStartIndices[thread], sourceEndIndices[thread], targetStartIndices[targetIndex], targetEndIndices[targetIndex], 
+										matrix, this, typeOfNodes);
+						
+						Thread newThread = new Thread(threadGroup, runner);
+						newThread.start();
+					}
+
+					// wait for the threads at this stage to end.
+					while( threadGroup.activeCount() > 0 ) { 
+						try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+							this.cancel(true);
+						} 
+					}					
 				}
 				
 			} else {
@@ -615,7 +638,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 								stepDone(); // we have completed one step
 								if( alignment != null && alignment.getSimilarity() >= param.threshold ) {
 									tentativealignments++; // keep track of possible alignments for progress display
-									System.out.println(alignment);
+									//System.out.println(alignment);
 								}
 								updateProgress();
 							}
@@ -1772,14 +1795,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		  private final List<Node> sourceList;
 		  private final List<Node> targetList;
 
-		  private final int startIndex;
-		  private final int endIndex;
+		  private final int sourceStartIndex, sourceEndIndex, targetStartIndex, targetEndIndex;
 		  private final SimilarityMatrix matrix;
 		  
 		  public AbstractMatcherRunner(List<Node> sourceList, List<Node> targetList, 
-				  int startIndex, int endIndex, SimilarityMatrix matrix, AbstractMatcher matcher, alignType typeOfNodes ) {
+				  int sourceStartIndex, int sourceEndIndex, int targetStartIndex, int targetEndIndex, 
+				  SimilarityMatrix matrix, AbstractMatcher matcher, alignType typeOfNodes ) {
 			  
-			  System.out.println("New Matcher Runner, from " + startIndex + " to " + endIndex);
+			  System.out.println("New Matcher Runner, from (" + sourceStartIndex + "-" + sourceEndIndex + ") to (" + targetStartIndex + "-" + targetEndIndex + ")");
 			  
 			  this.matcher = matcher;
 			  
@@ -1787,23 +1810,21 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			  this.sourceList = sourceList;
 			  this.targetList = targetList;
 			  
-			  this.startIndex = startIndex;
-			  this.endIndex = endIndex;
+			  this.sourceStartIndex = sourceStartIndex;
+			  this.sourceEndIndex = sourceEndIndex;
+			  this.targetStartIndex = targetStartIndex;
+			  this.targetEndIndex = targetEndIndex;
 			  
 			  this.matrix = matrix;
 		  }
 
 		  @Override
 		  public void run() {
-			  for( int i = 0; i < sourceList.size(); i++ ){
+			  for( int i = sourceStartIndex; i < sourceEndIndex; i++ ){
 				  Node source = sourceList.get(i);
-				  for( int j = startIndex; j < endIndex; j++ ) {
+				  for( int j = targetStartIndex; j < targetEndIndex; j++ ) {
 					  Node target = targetList.get(j);
 
-					  if( i != source.getIndex() || j != target.getIndex() ) {
-						  System.out.println("Error, index is not matching up.");
-					  }
-					  
 					  try {
 						  Mapping mapping = matcher.alignTwoNodes(source, target, typeOfNodes);
 						  if( mapping != null ) { 
@@ -1815,7 +1836,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 							  matcher.updateProgress();
 							  if( mapping != null && mapping.getSimilarity() >= param.threshold ) { 
 								  tentativealignments++; // keep track of possible alignments for progress display
-								  System.out.println(mapping);
+								  //System.out.println(mapping);
 							  }
 						  }
 						  
