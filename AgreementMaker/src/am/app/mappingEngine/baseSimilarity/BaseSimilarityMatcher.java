@@ -4,21 +4,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.StringTokenizer;
-import edu.smu.tspell.wordnet.Synset;
-import edu.smu.tspell.wordnet.SynsetType;
-import edu.smu.tspell.wordnet.WordNetDatabase;
+
+import am.AMException;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
-import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.StringUtil.PorterStemmer;
 import am.app.ontology.Node;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.utility.Pair;
+import edu.smu.tspell.wordnet.Synset;
+import edu.smu.tspell.wordnet.SynsetType;
+import edu.smu.tspell.wordnet.WordNetDatabase;
 
 
 public class BaseSimilarityMatcher extends AbstractMatcher {
@@ -67,13 +68,12 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		
 		
 		param2 = new NormalizerParameter();
-		param2.setAllfalse();
-		param2.stem = true;
+		param2.setAllTrue();
+		param2.normalizeDigit = false;
 		norm2 = new Normalizer(param2);
 		
 		param3 = new NormalizerParameter();
-		param3.setAllfalse();
-		param3.normalizeDigit = true;
+		param3.setAllTrue();
 		norm3 = new Normalizer(param3);
 
 		// setup the features:
@@ -187,8 +187,9 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			}
 		}
 		 else {
+			 	throw new AMException("This algorithm requires Annotation Profiling to be setup.");
 				// we are not using ontology profiling
-				return withoutProfiling(source, target, typeOfNodes);
+				//return withoutProfiling(source, target, typeOfNodes);
 		 }
 	}
 	
@@ -198,7 +199,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	 * @param target
 	 * @return
 	 */
-	private Mapping withoutProfiling(Node source, Node target, alignType typeOfNode ) {
+	/*private Mapping withoutProfiling(Node source, Node target, alignType typeOfNode ) {
 		if( param != null && ((BaseSimilarityParameters) param).useDictionary ) {  // Step 3a
 			String sourceName = source.getLabel();
 			String targetName = target.getLabel();
@@ -419,7 +420,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			//none of the above
 			return new  Mapping( source, target, 0.0d, MappingRelation.EQUIVALENCE, typeOfNode);
 		}
-	}
+	}*/
 	
 	
 	/**
@@ -430,18 +431,19 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	 */
 	private double calculateSimilarity(String sourceName, String targetName ) {
 		
-		if( param != null && ((BaseSimilarityParameters) param).useDictionary ) {  // Step 3a
+		// Step 0:		If they are exactly equal, 1.0 similarity.
+		
+		if( sourceName.equalsIgnoreCase(targetName) ) return 1.0d;
+		
+		// Step 1:		run treatString on each name to clean it up
+		//              treatString removes (and replaces them with a space): _ , .
+		sourceName = treatString(sourceName);
+		targetName = treatString(targetName);
+		
+		if( sourceName.equalsIgnoreCase(targetName) ) return 0.99d;
+
+		if( ((BaseSimilarityParameters)param).useDictionary ) {
 			
-			// Step 1:		run treatString on each name to clean it up
-			sourceName = treatString(sourceName);
-			targetName = treatString(targetName);
-			
-			
-			// Step 2:	If the labels are equal, then return a similarity of 1
-			if( sourceName.equalsIgnoreCase(targetName) ) {
-				//String relation = MappingRelation.EQUIVALENCE;
-				return 1.0d;
-			}
 			// if we haven't initialized our wordnet database, do it
 			if( wordnet == null )
 				wordnet = WordNetDatabase.getFileInstance();
@@ -468,14 +470,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	        	return verbSimilarity;
 	        }
 			
-		}
-		else {  // Step no dictionary
-			// the user does not want to use the dictionary
-			// Changed from the one of Sunna
-			
-			// equivalence return 1
-			if(sourceName.equalsIgnoreCase(targetName)) return 1d;
-			
+		} else {
 			// all normalization without stemming and digits return 0.95
 			String sProcessed = norm1.normalize(sourceName);
 			String tProcessed= norm1.normalize(targetName);
@@ -486,10 +481,10 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			tProcessed= norm2.normalize(targetName);
 			if(sProcessed.equals(tProcessed)) return 0.9d;
 
-			// all normalization return 0.8
+			// all normalization return 0.85
 			sProcessed = norm3.normalize(sourceName);
 			tProcessed = norm3.normalize(targetName);
-			if(sProcessed.equals(tProcessed)) return 0.8d;
+			if(sProcessed.equals(tProcessed)) return 0.85d;
 
 			// none of the above
 			return 0.0d;

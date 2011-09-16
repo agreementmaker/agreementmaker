@@ -29,7 +29,7 @@ public class BaseSimilarityMatcherParametersPanel extends AbstractMatcherParamet
 	
 	private JLabel useDictionaryLabel;
 	private JLabel warningLabel;
-	private JCheckBox useDictionaryCheckbox;
+	private JCheckBox useDictionaryCheckbox, useStemming, useRemoveDigits ;
 	
 	protected AppPreferences prefs;
 	
