@@ -8,13 +8,15 @@ import am.app.mappingEngine.InstanceMatcherFede;
 import am.app.mappingEngine.instanceMatcher.NYTConstants;
 import am.app.ontology.Ontology;
 import am.app.ontology.Ontology.DatasetType;
+import am.app.ontology.instance.FreebaseInstanceDataset;
 import am.app.ontology.instance.endpoint.EndpointRegistry;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition;
 
 public class IMBatch {	
-	
-	public void singleTest(String sourceFile, String alignmentFile, String referenceFile, double threshold) throws Exception{
+	String report = "";
+		
+	public void singleTest(String sourceFile, String alignmentFile, String referenceFile, double threshold, String cacheFile) throws Exception{
  		OntologyDefinition sourceDef = new OntologyDefinition();
 		sourceDef.loadOntology = false;
 		sourceDef.loadInstances = true;
@@ -43,6 +45,9 @@ public class IMBatch {
 		builder.build();
 		Ontology targetOnt = builder.getOntology();
 		
+		FreebaseInstanceDataset dataset = (FreebaseInstanceDataset) targetOnt.getInstances();
+		dataset.setCacheFile(cacheFile);
+		
 		InstanceMatcherFede matcher = new InstanceMatcherFede();
 		matcher.setSourceOntology(sourceOnt);
 		matcher.setTargetOntology(targetOnt);
@@ -50,25 +55,64 @@ public class IMBatch {
 		
 		matcher.match();
 		
-		NYTEvaluator.evaluate("alignment.rdf", referenceFile);
+		report += NYTEvaluator.evaluate("alignment.rdf", referenceFile) + "\n";
 		
+	}
+	
+	public void runFreebaseTest() throws Exception{
+		String cwd = System.getProperty("user.dir") + File.separator;
+		double threshold = 0.65;
+		
+		singleTest(cwd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, 
+				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", 
+				NYTConstants.REF_FREEBASE_ORGANIZATION, 
+				threshold, 
+				"freebaseCacheOrganizations.ser");
+		
+		singleTest(cwd + NYTConstants.NYT_PEOPLE_ARTICLES,
+				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf",
+				NYTConstants.REF_FREEBASE_PEOPLE,
+				threshold,
+				"freebaseCache.ser");
+		
+		singleTest(cwd + NYTConstants.NYT_LOCATIONS,
+				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf",
+				NYTConstants.REF_FREEBASE_LOCATION,
+				threshold,
+				"freebaseCacheLocations.ser");
 	}
 	
 	public static void main(String[] args) throws Exception {
 		String cwd = System.getProperty("user.dir") + File.separator;
-		//new IMBatch().singleTest(cwd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", NYTConstants.REF_FREEBASE_ORGANIZATION, 0.8);
+		
+//		batch.singleTest(cwd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, 
+//				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", 
+//				NYTConstants.REF_FREEBASE_ORGANIZATION, 
+//				0.65, 
+//				"freebaseCacheOrganizations.ser");
 //		new IMBatch().singleTest(cwd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", NYTConstants.REF_FREEBASE_ORGANIZATION, 1.0);
 //		new IMBatch().singleTest(cwd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", NYTConstants.REF_FREEBASE_ORGANIZATION, 1.1);
 //		new IMBatch().singleTest(cwd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", NYTConstants.REF_FREEBASE_ORGANIZATION, 1.2);
 //		
 		
-		new IMBatch().singleTest(cwd + NYTConstants.NYT_PEOPLE_ARTICLES, cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", NYTConstants.REF_FREEBASE_PEOPLE, 0.8);
-//	
+		IMBatch batch = new IMBatch();
 		
-//		double start = 0.8;
-//		double increment = 0.1;
-//		
-//		for (int i = 0; i < 7; i++) {
+		batch.singleTest(cwd + NYTConstants.NYT_LOCATIONS,
+				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf",
+				NYTConstants.REF_FREEBASE_LOCATION,
+				0.65,
+				"freebaseCacheLocations.ser");
+		
+		//batch.runFreebaseTest();
+		
+		
+		//batch.singleTest(cwd + NYTConstants.NYT_PEOPLE_ARTICLES, cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", NYTConstants.REF_FREEBASE_PEOPLE, 0.65, "freebaseCache.ser");
+		
+		System.out.println(batch.report);
+
+//		double start = 0.6;
+//		double increment = 0.05;	
+//		for (int i = 0; i < 10; i++) {
 //			new IMBatch().singleTest(cwd + NYTConstants.NYT_PEOPLE_ARTICLES, cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", NYTConstants.REF_FREEBASE_PEOPLE, start + i*increment);
 //		}
 		
