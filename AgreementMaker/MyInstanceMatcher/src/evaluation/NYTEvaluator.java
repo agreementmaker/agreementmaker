@@ -1,6 +1,7 @@
 package evaluation;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -20,7 +21,7 @@ public class NYTEvaluator {
 	
 	static boolean printWrongMappings = true;
 	
-	public static void evaluate(String file, String reference) throws Exception{
+	public static String evaluate(String file, String reference) throws Exception{
 		ReferenceAlignmentMatcher matcher = new ReferenceAlignmentMatcher();
 		
 		ReferenceAlignmentParameters param = new ReferenceAlignmentParameters();
@@ -31,12 +32,10 @@ public class NYTEvaluator {
 		param.fileName = reference;
 		ArrayList<MatchingPair> refPairs = matcher.parseStandardOAEI();
 		
-		compare(filePairs, refPairs);	
-		
-		System.out.println();
+		return compare(filePairs, refPairs);	
 	}
 	
-	public static void compare(ArrayList<MatchingPair> toEvaluate, ArrayList<MatchingPair> reference){
+	public static String compare(ArrayList<MatchingPair> toEvaluate, ArrayList<MatchingPair> reference){
 		int count = 0;
 		MatchingPair p1;
 		MatchingPair p2;
@@ -64,8 +63,9 @@ public class NYTEvaluator {
 		float precision = (float)count/toEvaluate.size();
 		float recall = (float)count/reference.size();
 		float fmeasure = 2 * precision * recall / (precision + recall);
-		System.out.println("Precision\tRecall\tFmeasure");
-		System.out.print(precision + "\t" + recall + "\t" + fmeasure);
+		
+		String retValue = "Precision\tRecall\tFmeasure\n" + precision + "\t" + recall + "\t" + fmeasure;
+		return retValue;
 	}
 	
 	public static void main(String[] args) throws Exception {
