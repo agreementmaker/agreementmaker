@@ -590,7 +590,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 					targetStartIndices[i] = i*targetChunkSize;
 					targetEndIndices[i] = targetStartIndices[i] + targetChunkSize - 1;
 					
-					if( i == availableProcessors - 1 ) { 
+					if( i == (availableProcessors - 1) ) { 
 						sourceEndIndices[i] += sourceRemainder;
 						targetEndIndices[i] += targetRemainder;
 					}
@@ -1820,9 +1820,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 		  @Override
 		  public void run() {
-			  for( int i = sourceStartIndex; i < sourceEndIndex; i++ ){
+			  for( int i = sourceStartIndex; i <= sourceEndIndex; i++ ){
 				  Node source = sourceList.get(i);
-				  for( int j = targetStartIndex; j < targetEndIndex; j++ ) {
+				  for( int j = targetStartIndex; j <= targetEndIndex; j++ ) {
 					  Node target = targetList.get(j);
 
 					  try {

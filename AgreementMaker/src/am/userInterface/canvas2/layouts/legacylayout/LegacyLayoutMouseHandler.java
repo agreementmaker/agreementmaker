@@ -125,7 +125,7 @@ public class LegacyLayoutMouseHandler {
 		ArrayList<Canvas2Vertex> visibleVertices = layout.getVizPanel().getVisibleVertices();
 
 		Logger log = Logger.getLogger(this.getClass());
-		if( Core.DEBUG ) log.setLevel(Level.DEBUG);
+		log.setLevel(Level.DEBUG);
 
 		// if we have an active popup menu, cancel it
 		if( layout.isPopupMenuActive() ) { 
@@ -531,7 +531,18 @@ public class LegacyLayoutMouseHandler {
 					log.debug("\nResource: " + hoveringOver.getObject().r + 
 							"\nHashCode: " + hoveringOver.getObject().r.hashCode());
 					log.debug("\nPosition" + e.getPoint().toString() );
-
+					
+					Ontology ont = Core.getInstance().getOntologyByID( hoveringOver.getObject().ontologyID);
+					alignType type = null;
+					if( hoveringOver.getObject().type == NodeType.CLASS_NODE ) type = alignType.aligningClasses;
+					if( hoveringOver.getObject().type == NodeType.PROPERTY_NODE ) type = alignType.aligningProperties;
+					
+					try {
+						Node n = ont.getNodefromOntResource( hoveringOver.getObject().r, type );
+						log.debug("Node: " + n);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
 				}
 				//log.debug("Single click with the MIDDLE mouse button detected.");
 			}

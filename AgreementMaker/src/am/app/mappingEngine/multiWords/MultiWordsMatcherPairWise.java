@@ -1,11 +1,12 @@
 package am.app.mappingEngine.multiWords;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import simpack.measure.weightingscheme.StringTFIDF;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.CosineSimilarity;
@@ -20,19 +21,17 @@ import am.app.lexicon.LexiconSynSet;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.MappedNodes;
-import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
+import am.app.mappingEngine.MappedNodes;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.StringUtil.AMStringWrapper;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.Resource;
 import com.wcohen.ss.api.StringWrapper;
 
 public class MultiWordsMatcherPairWise extends AbstractMatcher { 
@@ -46,8 +45,8 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 	//private static Logger log = Logger.getLogger(MultiWordsMatcher.class);
 
 	// The hashmap and the list of string are used to optimize the LSM when running with SCS enabled.
-	private HashMap<Node,List<String>> sourceExtendedSynSets;
-	private HashMap<Node,List<String>> targetExtendedSynSets;
+	private HashMap<Node,Set<String>> sourceExtendedSynSets;
+	private HashMap<Node,Set<String>> targetExtendedSynSets;
 	private List<String> extendedSingle;
 	private boolean sourceIsLarger = false;  // TODO: Figure out a better way to do this.
 
@@ -56,13 +55,13 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 
 
 	private transient Normalizer normalizer;
-	private ArrayList<String> sourceClassDocuments = new ArrayList<String>();
-	private ArrayList<String> targetClassDocuments = new ArrayList<String>();
-	private ArrayList<String> sourcePropDocuments = new ArrayList<String>();
-	private ArrayList<String> targetPropDocuments = new ArrayList<String>();
+	private List<String> sourceClassDocuments = new ArrayList<String>();
+	private List<String> targetClassDocuments = new ArrayList<String>();
+	private List<String> sourcePropDocuments = new ArrayList<String>();
+	private List<String> targetPropDocuments = new ArrayList<String>();
 
-	private transient ArrayList<StringWrapper> classCorpus = new ArrayList<StringWrapper>();
-	private transient ArrayList<StringWrapper> propCorpus = new ArrayList<StringWrapper>();
+	private transient List<StringWrapper> classCorpus = new ArrayList<StringWrapper>();
+	private transient List<StringWrapper> propCorpus = new ArrayList<StringWrapper>();
 
 	private transient StringTFIDF tfidfClasses;
 	private transient StringTFIDF tfidfProperties;
@@ -190,8 +189,8 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 
 	}
 
-	private ArrayList<String> createDocumentsFromNodeList(ArrayList<Node> nodeList, alignType typeOfNodes) throws Exception {
-		ArrayList<String> documents = new ArrayList<String>();
+	private List<String> createDocumentsFromNodeList( List<Node> nodeList, alignType typeOfNodes) throws Exception {
+		List<String> documents = new ArrayList<String>();
 
 		for( Node node : nodeList ) {
 			String document = createMultiWordsString(node,typeOfNodes) ;
@@ -412,8 +411,8 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 	 * 
 	 */
 	@Override
-	protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList,
-			ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
+	protected SimilarityMatrix alignNodesOneByOne( List<Node> sourceList,
+			List<Node> targetList, alignType typeOfNodes) throws Exception {
 		System.out.println(inputMatchers.size());
 		if(param.completionMode && inputMatchers != null && inputMatchers.size() > 0){ 
 
@@ -432,14 +431,14 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 			Node source;
 			Node target;
 			// create the hashmaps
-			sourceExtendedSynSets = new HashMap<Node,List<String>>();
-			targetExtendedSynSets = new HashMap<Node,List<String>>();
+			sourceExtendedSynSets = new HashMap<Node,Set<String>>();
+			targetExtendedSynSets = new HashMap<Node,Set<String>>();
 
 			for( Node currentClass : sourceList ) {
 				OntResource currentOR = currentClass.getResource().as(OntResource.class);
 				LexiconSynSet currentSet = sourceOntologyLexicon.getSynSet(currentOR);
 				if( currentSet == null ) continue;
-				List<String> currentExtension = sourceOntologyLexicon.extendSynSet(currentSet);
+				Set<String> currentExtension = sourceOntologyLexicon.extendSynSet(currentSet);
 				currentExtension.addAll(currentSet.getSynonyms());
 				sourceExtendedSynSets.put(currentClass, currentExtension);
 				if( this.isCancelled() ) return null;
@@ -449,7 +448,7 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 				OntResource currentOR = currentClass.getResource().as(OntResource.class);
 				LexiconSynSet currentSet = targetOntologyLexicon.getSynSet(currentOR);
 				if( currentSet == null ) continue;
-				List<String> currentExtension = targetOntologyLexicon.extendSynSet(currentSet);
+				Set<String> currentExtension = targetOntologyLexicon.extendSynSet(currentSet);
 				currentExtension.addAll(currentSet.getSynonyms());
 				targetExtendedSynSets.put(currentClass, currentExtension);
 				if( this.isCancelled() ) return null;
@@ -503,14 +502,14 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 		Mapping inputAlignment;
 
 		// create the hashmaps
-		sourceExtendedSynSets = new HashMap<Node,List<String>>();
-		targetExtendedSynSets = new HashMap<Node,List<String>>();
+		sourceExtendedSynSets = new HashMap<Node,Set<String>>();
+		targetExtendedSynSets = new HashMap<Node,Set<String>>();
 
 		for( Node currentClass : sourceList ) {
 			OntResource currentOR = currentClass.getResource().as(OntResource.class);
 			LexiconSynSet currentSet = sourceOntologyLexicon.getSynSet(currentOR);
 			if( currentSet == null ) continue;
-			List<String> currentExtension = sourceOntologyLexicon.extendSynSet(currentSet);
+			Set<String> currentExtension = sourceOntologyLexicon.extendSynSet(currentSet);
 			currentExtension.addAll(currentSet.getSynonyms());
 			sourceExtendedSynSets.put(currentClass, currentExtension);
 			if( this.isCancelled() ) return null;
@@ -520,7 +519,7 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 			OntResource currentOR = currentClass.getResource().as(OntResource.class);
 			LexiconSynSet currentSet = targetOntologyLexicon.getSynSet(currentOR);
 			if( currentSet == null ) continue;
-			List<String> currentExtension = targetOntologyLexicon.extendSynSet(currentSet);
+			Set<String> currentExtension = targetOntologyLexicon.extendSynSet(currentSet);
 			currentExtension.addAll(currentSet.getSynonyms());
 			targetExtendedSynSets.put(currentClass, currentExtension);
 			if( this.isCancelled() ) return null;
@@ -571,8 +570,8 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 		double sim = 0;
 
 
-		List<String> sourceExtendedSynonyms= new ArrayList<String>(), targetExtendedSynonyms= new ArrayList<String>();
-		List<String> sourceExtendedParents = new ArrayList<String>(), targetExtendedParents=new ArrayList<String>();
+		Set<String> sourceExtendedSynonyms= new TreeSet<String>(), targetExtendedSynonyms = new TreeSet<String>();
+		Set<String> sourceExtendedParents = new TreeSet<String>(), targetExtendedParents = new TreeSet<String>();
 
 
 		sourceExtendedSynonyms = sourceExtendedSynSets.get(source);
@@ -733,12 +732,12 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 
 			if(sourceExtendedSynonyms!=null){
 
-				for(int i=0; i<sourceExtendedSynonyms.size();i++){
-					String a=sourceExtendedSynonyms.get(i);
+				for( String a : sourceExtendedSynonyms ) {
+					//String a=sourceExtendedSynonyms.get(i);
 
 					if(mp.considerSuperClass){
-						for(int j=0; j<sourceExtendedParents.size();j++){
-							String b=sourceExtendedParents.get(j);
+						for( String b : sourceExtendedParents ){
+							//String b=sourceExtendedParents.get(j);
 							String s=a+" "+b;
 							sourceStrings.add(s);
 						}
@@ -750,11 +749,11 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 			if(targetExtendedSynonyms!=null){
 
 
-				for(int i=0; i<targetExtendedSynonyms.size();i++){
-					String a=targetExtendedSynonyms.get(i);
+				for(String a : targetExtendedSynonyms ) {
+					//String a=targetExtendedSynonyms.get(i);
 					if(mp.considerSuperClass){
-						for(int j=0; j<targetExtendedParents.size();j++){
-							String b=targetExtendedParents.get(j);
+						for(String b : targetExtendedParents ){
+							// String b=targetExtendedParents.get(j);
 							String s=a+" "+b;
 							targetStrings.add(s);
 

@@ -16,6 +16,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherChangeEvent;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.MappingData;
 import am.userInterface.canvas2.utility.Canvas2Edge;
@@ -87,6 +88,11 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 			mPropertyMappings.add(miPropertyMappingType);
 			
 			add(mPropertyMappings);
+		}
+		
+		{ // Compare similarity matrix
+			JMenu mCompareMatrix = createCompareMatrixMenu();
+			add(mCompareMatrix);
 		}
 		
 		addSeparator();
@@ -234,7 +240,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 		};
 		
 		for( AbstractMatcher a : tableModel.getData() ) {
-			JMenuItem miMatcher = new JMenuItem(a.getIndex() + " - " + a.getName());
+			JMenuItem miMatcher = new JMenuItem(a.getName());
 			miMatcher.setActionCommand(Integer.toString(a.getID()));
 			miMatcher.setAction(hidePropertyMappingsFromMatcher);
 			mPropertyMappings.add(miMatcher);
@@ -244,6 +250,70 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 	}
 	
 
+	private JMenu createCompareMatrixMenu() {
+		
+		JMenu mClassMappings = new JMenu("Compare Similarity Matrix");
+		
+		MatchersControlPanelTableModel tableModel = 
+			(MatchersControlPanelTableModel) mcp.getTablePanel().getTable().getModel();
+		
+		AbstractAction hideClassMappingsFromMatcher = new AbstractAction() {
+			
+			private static final long serialVersionUID = -1014885910948614015L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				Canvas2 canvas = (Canvas2) Core.getUI().getCanvas();
+				
+				// get the matcher by which we are filtering (was selected by the menu)
+				int id = Integer.parseInt(e.getActionCommand());
+				AbstractMatcher compareMatcher = Core.getInstance().getMatcherByID(id);
+				
+				if( compareMatcher == null ) return;
+				
+				// filter out the matchers selected in the table by the filter matcher
+				int[] selectedTableRows = mcp.getTablePanel().getTable().getSelectedRows();
+				MatchersControlPanelTableModel tableModel = 
+					(MatchersControlPanelTableModel) mcp.getTablePanel().getTable().getModel();
+				
+				if( selectedTableRows.length > 0 ) {
+					AbstractMatcher referenceMatcher = tableModel.getData().get(selectedTableRows[0]);
+					
+					SimilarityMatrix compareMatrix = compareMatcher.getClassesMatrix();
+					SimilarityMatrix referenceMatrix = referenceMatcher.getClassesMatrix();
+					
+					for( int row = 0; row < compareMatrix.getRows(); row++ ) {
+						for( int col = 0; col < compareMatrix.getColumns(); col++ ) {
+							Mapping compareMapping = compareMatrix.get(row, col);
+							Mapping refMapping = referenceMatrix.get(row, col);
+							
+							if( (compareMapping == null && refMapping != null) ||
+								(refMapping == null && compareMapping != null) ||
+								( compareMapping != null && refMapping != null && !compareMatrix.get(row, col).equals(referenceMatrix.get(row,col)) ) ) {
+								
+								System.out.println("Difference at: (" + row + ", " + col + ")" );
+								System.out.println(compareMatcher.getName() + ": " + compareMatrix.get(row, col));
+								System.out.println(referenceMatcher.getName() + ": " + referenceMatrix.get(row, col));
+							}
+						}
+					}
+					
+				}
+			}
+		};
+		
+		for( AbstractMatcher a : tableModel.getData() ) {
+			JMenuItem miMatcher = new JMenuItem(a.getName());
+			miMatcher.setAction(hideClassMappingsFromMatcher);
+			miMatcher.setActionCommand(Integer.toString(a.getID()));
+			miMatcher.setText(a.getName());
+			mClassMappings.add(miMatcher);
+		}
+		
+		return mClassMappings;
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if( e.getActionCommand().equals("FILTER_CLASS_BY_SIMRANGE")) {
