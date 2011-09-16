@@ -17,7 +17,7 @@ import am.app.ontology.instance.Instance;
 import am.output.AlignmentOutput;
 import am.utility.EnglishUtility;
 
-public class MyInstanceMatcher extends AbstractMatcher {
+public class InstanceMatcherFede extends AbstractMatcher {
 
 	int ambiguous;
 	int noResult;
@@ -28,7 +28,9 @@ public class MyInstanceMatcher extends AbstractMatcher {
 	double labelSimThreshold = 0.9;
 	double keyScoreThreshold = 1;
 	
-	boolean disambiguate = false;
+	double threshold;
+	
+	boolean disambiguate = true;
 	
 	/**
 	 * 
@@ -57,7 +59,6 @@ public class MyInstanceMatcher extends AbstractMatcher {
 		else if(size > 1) ambiguous++;
 		
 		
-		System.out.println(sourceInstance);
 		//System.out.println("SOURCE:" + sourceInstance);
 		//System.out.println(targetCandidates);
 		
@@ -67,21 +68,26 @@ public class MyInstanceMatcher extends AbstractMatcher {
 		if(size == 0) return null;
 		
 		if(size == 1){
-			
-			System.out.println( targetCandidates.get(0));
-			
 			Instance target = targetCandidates.get(0);
-			MatchingPair pair = new MatchingPair(sourceInstance.getUri(), target.getUri(), 1.0, MappingRelation.EQUIVALENCE);
+			MatchingPair pair = null;
+			if(!target.getUri().contains("wiki"))
+				pair = new MatchingPair(sourceInstance.getUri(), target.getUri(), 1.0, MappingRelation.EQUIVALENCE);
 			return pair;
 		}
+		
 		else{
 			if(disambiguate == false) return null;
 			
-			//returns a list of article URIs
 			System.out.println("Case of ambiguity:" + sourceInstance.getUri() + " " + sourceLabel + " " + targetCandidates.size());
 			
 			List<String> articles = sourceInstance.getProperty("article");
-			if(articles == null) return null;
+			
+			if(articles == null){
+//				Instance target = targetCandidates.get(0);
+//				MatchingPair pair = new MatchingPair(sourceInstance.getUri(), target.getUri(), 1.0, MappingRelation.EQUIVALENCE);
+//				return pair;
+				return null;
+			}
 			
 			Instance article;
 			List<String> allDesKeywords = new ArrayList<String>();
@@ -115,11 +121,11 @@ public class MyInstanceMatcher extends AbstractMatcher {
 			List<ScoredInstance> scoredCandidates = new ArrayList<ScoredInstance>();
 			String targetLabel;
 			for (int i = 0; i < targetCandidates.size(); i++) {
-				keyScore = 0;
+				
 				candidate = targetCandidates.get(i);
 				
 				targetLabel = candidate.getSingleValuedProperty("label");
-				labelSim = StringMetrics.substringScore(sourceLabel, targetLabel);
+				labelSim = StringMetrics.AMsubstringScore(sourceLabel, targetLabel);
 				
 				String value = candidate.getSingleValuedProperty("score");
 				if(value != null) freebaseScore = Double.valueOf(value);
@@ -132,30 +138,12 @@ public class MyInstanceMatcher extends AbstractMatcher {
 				
 				System.out.println("types: " + types);
 				
-				//Compute score
-				String type;
-				String keyword;
-				for (int j = 0; j < types.size(); j++) {
-					type = types.get(j);
-					type = type.toLowerCase();
-					for (int t = 0; t < allDesKeywords.size(); t++) {
-						keyword = allDesKeywords.get(t).toLowerCase();
-						
-						//System.out.println(type + "|" + keyword);
-						
-						if(sourceLabel.equals("Larry Robinson"))
-							System.out.println( type + "|" + keyword);
-						
-						if(type.equals(keyword)){
-							keyScore++;
-							System.out.println("matched: " + type + "|" + keyword);
-						}	
-					}
-				}
+				keyScore = keywordsSimilarity(allDesKeywords, types);
 				
-				keyScore /= Math.max(types.size(), allDesKeywords.size());
+				//Math.min(types.size(), allDesKeywords.size())
 				
-				double score = labelSim + freebaseScore + 4*keyScore;
+				
+				double score = labelSim + freebaseScore + 3*keyScore;
 				
 				scoredCandidates.add(new ScoredInstance(candidate, score));
 				
@@ -177,12 +165,39 @@ public class MyInstanceMatcher extends AbstractMatcher {
 			
 			scoredCandidates = ScoredInstance.filter(scoredCandidates, 0.02);
 			
-			if(scoredCandidates.size() == 1){
+			if(scoredCandidates.size() == 1 && scoredCandidates.get(0).getScore() > threshold){
+				//System.out.println("mapping, score:" + scoredCandidates.get(0).getScore());
 				disambiguationMappings++;
 				return new MatchingPair(sourceInstance.getUri(), scoredCandidates.get(0).getInstance().getUri());
 			}
 		}
 		return null;
+	}
+	
+	private double keywordsSimilarity(List<String> sourceList, List<String> targetList){
+		//Compute score
+		double score = 0;
+		String source;
+		String target;
+		for (int j = 0; j < sourceList.size(); j++) {
+			source = sourceList.get(j);
+			source = source.toLowerCase();
+			for (int t = 0; t < targetList.size(); t++) {
+				target = targetList.get(t).toLowerCase();
+				//System.out.println(type + "|" + keyword);
+				if(source.equals(target)){
+					score++;
+					System.out.println("matched: " + source + "|" + target);
+				}	
+			}
+		}
+		
+		double avg = (Math.min(sourceList.size(), targetList.size()) 
+				+ Math.max(sourceList.size(), targetList.size())) / 2;
+		double max = Math.max(sourceList.size(), targetList.size());
+		score /= max;
+		
+		return score;
 	}
 	
 	private List<String> processKeywords(List<String> list) {
@@ -266,6 +281,10 @@ public class MyInstanceMatcher extends AbstractMatcher {
 			return splitted[1].trim() + " " + splitted[0].trim();
 		}
 		return label; 
+	}
+	
+	public void setThreshold(double threshold){
+		this.threshold = threshold;
 	}
 	
 }

@@ -55,7 +55,7 @@ public enum MatchersRegistry {
 	 */
 	//
 	MyTestMatch			( "MTM", "Synonym Term Counting Matcher", MyTestMatcher.class, MatcherCategory.USER ),
-	MyInstMatch			( "MIM", "My Instance Matcher", MyInstanceMatcher.class, MatcherCategory.USER ),
+	MyInstMatch			( "MIM", "My Instance Matcher", InstanceMatcherFede.class, MatcherCategory.USER ),
 	PartialGraph		( "PGM", "Partial Graph Matcher", PartialGraphMatcher.class, MatcherCategory.STRUCTURAL ),
 	SimilarityFlooding  ( "SFM", "Similarity Flooding Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.sfm.IndipendentSimilarityFlooding.class ),
 	AnchorFlood			( "AFM", "AnchorFlood Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.anchorFlood.AnchorFloodMatcher.class ),

@@ -16,7 +16,7 @@ public class NYTEvaluator {
 	 * Put the path of the reference alignment file
 	 * Also paths relative to the root of the project are ok.
 	 */
-	static String reference = "OAEI2011/NYTReference/nyt-freebase-organizations-mappings.rdf";
+	static String reference = "OAEI2011/NYTReference/nyt-freebase-people-mappings.rdf";
 	
 	static boolean printWrongMappings = true;
 	
@@ -64,6 +64,7 @@ public class NYTEvaluator {
 		float precision = (float)count/toEvaluate.size();
 		float recall = (float)count/reference.size();
 		float fmeasure = 2 * precision * recall / (precision + recall);
+		System.out.println("Precision\tRecall\tFmeasure");
 		System.out.print(precision + "\t" + recall + "\t" + fmeasure);
 	}
 	
