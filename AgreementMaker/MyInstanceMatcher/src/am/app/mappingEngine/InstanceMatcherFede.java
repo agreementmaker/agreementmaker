@@ -9,10 +9,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
+import classification.Classificator;
+import classification.TestSet;
+import classification.TrainSet;
+
+import edu.smu.tspell.wordnet.WordNetDatabase;
+
+import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.ontology.instance.Instance;
 import am.output.AlignmentOutput;
 import am.utility.EnglishUtility;
@@ -32,6 +41,20 @@ public class InstanceMatcherFede extends AbstractMatcher {
 	
 	boolean disambiguate = true;
 	
+	WordNetUtils wordNetUtils;
+	
+	Porter stemmer = new Porter();
+	
+	public String referenceAlignmentFile = "C:/Users/federico/workspace/MyInstanceMatcher/OAEI2011/NYTReference/nyt-freebase-locations-mappings.rdf";
+	
+	ArrayList<MatchingPair> filePairs;
+	
+	TrainSet trainSet;
+	
+	Classificator classificator;
+	
+	boolean createTraining = false;
+		
 	/**
 	 * 
 	 */
@@ -39,8 +62,19 @@ public class InstanceMatcherFede extends AbstractMatcher {
 
 	@Override
 	protected void beforeAlignOperations() throws Exception {
-		// TODO Auto-generated method stub
 		super.beforeAlignOperations();
+		wordNetUtils = new WordNetUtils();
+		
+		ReferenceAlignmentMatcher matcher = new ReferenceAlignmentMatcher();
+		ReferenceAlignmentParameters param = new ReferenceAlignmentParameters();
+		param.fileName = referenceAlignmentFile;
+		matcher.setParam(param);
+		filePairs = matcher.parseStandardOAEI();
+		
+		trainSet = new TrainSet();
+		trainSet.addClasses("match");
+		trainSet.addClasses("noMatch");
+		classificator = new Classificator(trainSet,"peopleClassificator.model");
 	}
 	
 	@Override
@@ -52,6 +86,8 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		//System.out.println("");
 		
 		//progressDisplay.appendToReport(sourceInstance.toString() + "\n");
+		
+		
 					
 		int size = targetCandidates.size();
 		if(size == 0) noResult++;
@@ -63,15 +99,61 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		//System.out.println(targetCandidates);
 		
 		String sourceLabel = sourceInstance.getSingleValuedProperty("label");
+		
+		System.out.println(sourceLabel);
+		
 		sourceLabel = processLabel(sourceLabel);
 		
+		System.out.println(sourceLabel);
+		
 		if(size == 0) return null;
+		
+		List<String> articles = sourceInstance.getProperty("article");
+		Instance article;
+		List<String> allDesKeywords = new ArrayList<String>();
+		List<String> desKeywords;
+		List<String> orgKeywords;	
+		for (int i = 0; i < articles.size(); i++) {
+			//Get the first of the list
+			String articleURI = articles.get(i);
+			article = sourceOntology.getInstances().getInstance(articleURI);
+			//System.out.println(article);
+			
+			desKeywords = article.getProperty("descriptionKeywords");
+			orgKeywords = article.getProperty("organizationKeywords");
+			
+			String title = article.getSingleValuedProperty("title");
+			List<String> titleKeywords = new ArrayList<String>();
+			titleKeywords.add(title);
+			titleKeywords = processKeywords(titleKeywords);
+			
+			if(desKeywords == null) desKeywords = orgKeywords;
+						
+			if(desKeywords != null){
+				//desKeywords.addAll(titleKeywords);
+				if(orgKeywords != null)
+					desKeywords.addAll(orgKeywords);
+				String keyword;
+				for (int j = 0; j < desKeywords.size(); j++) {
+					keyword = desKeywords.get(j).toLowerCase();
+					if(!allDesKeywords.contains(keyword)){
+						allDesKeywords.add(keyword);
+					}
+				}
+			}
+//			System.out.println(article);
+			//System.out.println("title: " + title);
+		}
 		
 		if(size == 1){
 			Instance target = targetCandidates.get(0);
 			MatchingPair pair = null;
-			if(!target.getUri().contains("wiki"))
+			
+			double score = instanceSimilarity(sourceInstance, target, sourceLabel, allDesKeywords);
+			
+			if(!target.getUri().contains("wiki") && score > threshold)
 				pair = new MatchingPair(sourceInstance.getUri(), target.getUri(), 1.0, MappingRelation.EQUIVALENCE);
+			debugMapping(pair);
 			return pair;
 		}
 		
@@ -80,76 +162,20 @@ public class InstanceMatcherFede extends AbstractMatcher {
 			
 			System.out.println("Case of ambiguity:" + sourceInstance.getUri() + " " + sourceLabel + " " + targetCandidates.size());
 			
-			List<String> articles = sourceInstance.getProperty("article");
-			
-			if(articles == null){
-//				Instance target = targetCandidates.get(0);
-//				MatchingPair pair = new MatchingPair(sourceInstance.getUri(), target.getUri(), 1.0, MappingRelation.EQUIVALENCE);
-//				return pair;
-				return null;
-			}
-			
-			Instance article;
-			List<String> allDesKeywords = new ArrayList<String>();
-			List<String> desKeywords;
-			for (int i = 0; i < articles.size(); i++) {
-				//Get the first of the list
-				String articleURI = articles.get(i);
-				article = sourceOntology.getInstances().getInstance(articleURI);
-				System.out.println(article);
-				
-				desKeywords = article.getProperty("descriptionKeywords");
-				if(desKeywords != null){
-					String keyword;
-					for (int j = 0; j < desKeywords.size(); j++) {
-						keyword = desKeywords.get(j).toLowerCase();
-						if(!allDesKeywords.contains(keyword)){
-							allDesKeywords.add(keyword);
-						}
-					}
-				}
-			}
-			
+			System.out.println(allDesKeywords);
+			allDesKeywords = processKeywords(allDesKeywords);
 			System.out.println(allDesKeywords);
 			
-			allDesKeywords = processKeywords(allDesKeywords);
-				
-			double keyScore;
-			double labelSim;
-			double freebaseScore = 0;
 			Instance candidate;
 			List<ScoredInstance> scoredCandidates = new ArrayList<ScoredInstance>();
-			String targetLabel;
 			for (int i = 0; i < targetCandidates.size(); i++) {
 				
 				candidate = targetCandidates.get(i);
 				
-				targetLabel = candidate.getSingleValuedProperty("label");
-				labelSim = StringMetrics.AMsubstringScore(sourceLabel, targetLabel);
-				
-				String value = candidate.getSingleValuedProperty("score");
-				if(value != null) freebaseScore = Double.valueOf(value);
-				freebaseScore /= 100;
-				
-				System.out.println("candidate: " + candidate.getUri() + " " + candidate.getSingleValuedProperty("score"));
-				List<String> types = candidate.getProperty("type");
-				
-				types = processKeywords(types);
-				
-				System.out.println("types: " + types);
-				
-				keyScore = keywordsSimilarity(allDesKeywords, types);
-				
-				//Math.min(types.size(), allDesKeywords.size())
-				
-				
-				double score = labelSim + freebaseScore + 3*keyScore;
+				double score = instanceSimilarity(sourceInstance, candidate, sourceLabel, allDesKeywords);
 				
 				scoredCandidates.add(new ScoredInstance(candidate, score));
-				
-				System.out.println("lab:" + labelSim + " frb:" + freebaseScore + " key:" + keyScore);
-				System.out.println("score:" + score);
-				
+	
 //				if(labelSim >= labelSimThreshold){
 //					disambiguationMappings++;
 //					return new MatchingPair(sourceInstance.getUri(), candidate.getUri());
@@ -159,8 +185,12 @@ public class InstanceMatcherFede extends AbstractMatcher {
 			
 			Collections.sort(scoredCandidates, new ScoredInstanceComparator());	
 			
-			if(scoredCandidates.get(0).getInstance().getUri().contains("wikipedia")){
-				scoredCandidates.remove(0);
+			for (int i = 0; i < scoredCandidates.size(); i++) {
+				ScoredInstance scoredInstance = scoredCandidates.get(i);
+				if(scoredInstance.getInstance().getUri().contains("wiki")){
+					scoredCandidates.remove(scoredInstance);
+					i--;
+				}
 			}
 			
 			scoredCandidates = ScoredInstance.filter(scoredCandidates, 0.02);
@@ -168,12 +198,77 @@ public class InstanceMatcherFede extends AbstractMatcher {
 			if(scoredCandidates.size() == 1 && scoredCandidates.get(0).getScore() > threshold){
 				//System.out.println("mapping, score:" + scoredCandidates.get(0).getScore());
 				disambiguationMappings++;
-				return new MatchingPair(sourceInstance.getUri(), scoredCandidates.get(0).getInstance().getUri());
+				MatchingPair pair = new MatchingPair(sourceInstance.getUri(), scoredCandidates.get(0).getInstance().getUri());
+				debugMapping(pair);
+				return pair;
 			}
 		}
 		return null;
 	}
 	
+	
+
+	private double instanceSimilarity(Instance sourceInstance,
+			Instance candidate, String sourceLabel, List<String> sourceKeywords) {
+
+		double keyScore;
+		double labelSim;
+		double freebaseScore = 0;
+		
+		String targetLabel;
+		targetLabel = candidate.getSingleValuedProperty("label");
+		labelSim = StringMetrics.AMsubstringScore(sourceLabel, targetLabel);
+		
+		List<String> aliases = candidate.getProperty("alias");
+		if(aliases != null){
+			double max = labelSim;
+			double curr;
+			for (int i = 0; i < aliases.size(); i++) {
+				curr = StringMetrics.AMsubstringScore(sourceLabel, aliases.get(i));
+				if(curr > max){
+					//System.out.println("An alias weights more than the label");
+					max = curr;
+				}
+			}
+			if(max > labelSim) labelSim = (max + labelSim) / 2;
+		}
+		
+		String value = candidate.getSingleValuedProperty("score");
+		if(value != null) freebaseScore = Double.valueOf(value);
+		freebaseScore /= 100;
+		
+		System.out.println("candidate: " + candidate.getUri() + " " + candidate.getSingleValuedProperty("score"));
+		List<String> types = candidate.getProperty("type");
+		
+		types = processKeywords(types);
+		
+		System.out.println("types: " + types);
+		
+		keyScore = keywordsSimilarity(sourceKeywords, types);
+		
+		//Math.min(types.size(), allDesKeywords.size())
+		if(createTraining){
+			String clazz = "match";
+			if(!areMatched(sourceInstance.getUri(), candidate.getUri()))
+				clazz = "noMatch";
+			
+		}
+		
+		//trainSet.addTrain(labelSim, freebaseScore, keyScore, clazz);		
+		
+		TestSet testSet = new TestSet();
+		testSet.addTest(labelSim, freebaseScore, keyScore);
+		
+		double[][] confidence = classificator.getConfidence(testSet);
+				
+		System.out.println("lab:" + labelSim + " frb:" + freebaseScore + " key:" + keyScore);
+		double score = labelSim + freebaseScore + 2*keyScore;
+		//double score = confidence[0][0];
+		System.out.println("score:" + score);
+		
+		return score;
+	}
+
 	private double keywordsSimilarity(List<String> sourceList, List<String> targetList){
 		//Compute score
 		double score = 0;
@@ -187,8 +282,15 @@ public class InstanceMatcherFede extends AbstractMatcher {
 				//System.out.println(type + "|" + keyword);
 				if(source.equals(target)){
 					score++;
-					System.out.println("matched: " + source + "|" + target);
-				}	
+				}
+				
+				if(wordNetUtils.areSynonyms(source, target) ){
+					score += 0.5;
+					//System.out.println("matched: " + source + "|" + target);
+				}
+				else if(stemmer.stripAffixes(source).equals(stemmer.stripAffixes(target))){
+					score += 0.5;
+				}
 			}
 		}
 		
@@ -209,7 +311,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		String curr;
 		String[] splitted;
 		for (int i = 0; i < list.size(); i++) {
-			toProcess = list.get(i);
+			toProcess = list.get(i).toLowerCase();
 			
 			for (int j = 0; j < charBlackList.length; j++) {
 				toProcess = toProcess.replace(charBlackList[j], ' ');
@@ -221,7 +323,9 @@ public class InstanceMatcherFede extends AbstractMatcher {
 				curr = splitted[j];
 				if(curr.isEmpty()) continue;
 				
-				if(!retValue.contains(curr.trim()) && !EnglishUtility.isStopword(curr))
+				if(EnglishUtility.isStopword(curr)) continue;
+				
+				if(!retValue.contains(curr.trim()))
 					retValue.add(curr.trim());
 			}
 		}
@@ -255,7 +359,18 @@ public class InstanceMatcherFede extends AbstractMatcher {
 			e.printStackTrace();
 		}
 		System.out.println("Done");
-
+		
+		if(createTraining){
+			System.out.println("Storing training set");
+			try {
+				trainSet.storeFile("trainingSet.xml");
+			} catch (Exception e) {
+				e.printStackTrace();
+				return;
+			}
+			System.out.println("Stored successfully");
+		}
+		
 	}
 	
 	public String alignmentsToOutput(List<MatchingPair> mappings){
@@ -285,6 +400,31 @@ public class InstanceMatcherFede extends AbstractMatcher {
 	
 	public void setThreshold(double threshold){
 		this.threshold = threshold;
+	}
+	
+	public boolean areMatched(String sourceURI, String targetURI){
+		for (int i = 0; i < filePairs.size(); i++) {
+			if(filePairs.get(i).sourceURI.equals(sourceURI)){
+				if(filePairs.get(i).targetURI.equals(targetURI)){
+					return true;
+				}
+				else return false;
+			}
+		}
+		return false;
+	}
+	
+	public void debugMapping(MatchingPair pair){
+		if(pair == null) return;
+		String source = pair.sourceURI;
+		for (int i = 0; i < filePairs.size(); i++) {
+			if(filePairs.get(i).sourceURI.equals(source)){
+				if(filePairs.get(i).sameTarget(pair)){
+					System.out.println("RIGHT MAPPING " + filePairs.get(i));
+				}
+				else System.out.println("WRONG MAPPING right:" + filePairs.get(i));
+			}
+		}
 	}
 	
 }
