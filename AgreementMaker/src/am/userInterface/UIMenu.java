@@ -11,6 +11,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
@@ -53,6 +54,7 @@ import am.userInterface.instance.InstanceLookupPanel;
 import am.userInterface.sidebar.provenance.ProvenanceMenuItem;
 import am.userInterface.sidebar.provenance.ProvenanceSidebar;
 import am.userInterface.table.MatchersTablePanel;
+import am.utility.numeric.AvgMinMaxNumber;
 import am.visualization.MatcherAnalyticsPanel;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 import am.visualization.matrixplot.MatrixPlotPanel;
@@ -955,20 +957,24 @@ public class UIMenu implements ActionListener {
 				if( parameterTypes.length == 1 && parameterTypes[0].equals(Ontology.class) ) {
 					// we found the right constructor, run this metric
 					try {
-						OntologyMetric sourceMetric = (OntologyMetric) constructor.newInstance(sourceO);
-						sourceMetric.runMetric();
-						if( sourceMetric.hasSingleValueResult() ) {
-							report += "Source Ontology: \n" + 
-									sourceMetric.getSingleValueResult().toString() + "\n";
+						{
+							OntologyMetric sourceMetric = (OntologyMetric) constructor.newInstance(sourceO);
+							sourceMetric.runMetric();
+							List<AvgMinMaxNumber> result = sourceMetric.getResult();
+							if( result.size() != 0 ) report += "Source Ontology: \n";
+							for( AvgMinMaxNumber num : result ) {
+								report += num.toString() + "\n";
+							}
 						}
-						
 						//report += "\n";
-						
-						OntologyMetric targetMetric = (OntologyMetric) constructor.newInstance(targetO);
-						targetMetric.runMetric();
-						if( targetMetric.hasSingleValueResult() ) {
-							report += "Target Ontology: \n" + 
-									targetMetric.getSingleValueResult().toString() + "\n";
+						{
+							OntologyMetric targetMetric = (OntologyMetric) constructor.newInstance(targetO);
+							targetMetric.runMetric();
+							List<AvgMinMaxNumber> result = targetMetric.getResult();
+							if( result.size() != 0 ) report += "Target Ontology: \n";
+							for( AvgMinMaxNumber num : result ) {
+								report += num.toString() + "\n";
+							}
 						}
 
 					} catch (IllegalArgumentException e) {
@@ -978,6 +984,8 @@ public class UIMenu implements ActionListener {
 					} catch (IllegalAccessException e) {
 						e.printStackTrace();
 					} catch (InvocationTargetException e) {
+						e.printStackTrace();
+					} catch ( Exception e ) {
 						e.printStackTrace();
 					}
 				}
