@@ -185,8 +185,6 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 			}
 		}
 
-
-
 	}
 
 	private List<String> createDocumentsFromNodeList( List<Node> nodeList, alignType typeOfNodes) throws Exception {
@@ -414,93 +412,7 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 	protected SimilarityMatrix alignNodesOneByOne( List<Node> sourceList,
 			List<Node> targetList, alignType typeOfNodes) throws Exception {
 		System.out.println(inputMatchers.size());
-		if(param.completionMode && inputMatchers != null && inputMatchers.size() > 0){ 
-
-			//run in optimized mode by mapping only concepts that have not been mapped in the input matcher
-			if(typeOfNodes.equals(alignType.aligningClasses)){
-				return alignUnmappedNodes(sourceList, targetList, inputMatchers.get(0).getClassesMatrix(), inputMatchers.get(0).getClassAlignmentSet(), alignType.aligningClasses);
-			}
-			else{
-				return alignUnmappedNodes(sourceList, targetList, inputMatchers.get(0).getPropertiesMatrix(), inputMatchers.get(0).getPropertyAlignmentSet(), alignType.aligningProperties);
-			}
-		}
-
-		else{
-			//run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
-			SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
-			Node source;
-			Node target;
-			// create the hashmaps
-			sourceExtendedSynSets = new HashMap<Node,Set<String>>();
-			targetExtendedSynSets = new HashMap<Node,Set<String>>();
-
-			for( Node currentClass : sourceList ) {
-				OntResource currentOR = currentClass.getResource().as(OntResource.class);
-				LexiconSynSet currentSet = sourceOntologyLexicon.getSynSet(currentOR);
-				if( currentSet == null ) continue;
-				Set<String> currentExtension = sourceOntologyLexicon.extendSynSet(currentSet);
-				currentExtension.addAll(currentSet.getSynonyms());
-				sourceExtendedSynSets.put(currentClass, currentExtension);
-				if( this.isCancelled() ) return null;
-			}
-
-			for( Node currentClass : targetList ) {
-				OntResource currentOR = currentClass.getResource().as(OntResource.class);
-				LexiconSynSet currentSet = targetOntologyLexicon.getSynSet(currentOR);
-				if( currentSet == null ) continue;
-				Set<String> currentExtension = targetOntologyLexicon.extendSynSet(currentSet);
-				currentExtension.addAll(currentSet.getSynonyms());
-				targetExtendedSynSets.put(currentClass, currentExtension);
-				if( this.isCancelled() ) return null;
-			}
-
-
-			// iterate through the larger ontology
-			for( int i = 0; i < sourceList.size(); i++ ) {
-				source = sourceList.get(i);
-				System.out.print("\n"+i+"/"+sourceList.size()+":"+source.getLocalName()+" "+source.getLabel());
-
-
-				for( int j = 0; j < targetList.size(); j++ ) {
-					target = targetList.get(j);
-					if( !this.isCancelled() ) {
-						Mapping alignment = alignTwoNodes(source, target, typeOfNodes);
-						if(alignment.getSimilarity()>=param.threshold)
-							matrix.set(i,j,alignment);
-
-
-						if( isProgressDisplayed() ) {
-							stepDone(); // we have completed one step
-							if(alignment != null && alignment.getSimilarity() >= param.threshold ) tentativealignments++; // keep track of possible alignments for progress display
-						}
-					}
-				}
-				if( isProgressDisplayed() ) { updateProgress(); }
-			}
-
-			return matrix;
-
-		}
-
-	}
-
-
-
-	protected SimilarityMatrix alignUnmappedNodes(ArrayList<Node> sourceList,
-			ArrayList<Node> targetList, SimilarityMatrix inputMatrix,
-			Alignment<Mapping> inputAlignmentSet, alignType typeOfNodes)
-					throws Exception {
-
-		MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, param.maxSourceAlign, param.maxTargetAlign);
-		System.out.println(mappedNodes.getMappedSources().length+" sources already mapped");
-		System.out.println(mappedNodes.getMappedTargets().length+" targets already mapped");
-		SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
-		matrix=inputMatrix;
-		Node source;
-		Node target;
-
-		Mapping inputAlignment;
-
+		
 		// create the hashmaps
 		sourceExtendedSynSets = new HashMap<Node,Set<String>>();
 		targetExtendedSynSets = new HashMap<Node,Set<String>>();
@@ -524,42 +436,24 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 			targetExtendedSynSets.put(currentClass, currentExtension);
 			if( this.isCancelled() ) return null;
 		}
+		
+		// normal operation
+		return super.alignNodesOneByOne(sourceList, targetList, typeOfNodes);
+
+	}
 
 
-		// iterate through the larger ontology
-		for( int i = 0; i < sourceList.size(); i++ ) {
-			source = sourceList.get(i);
-			System.out.print("\n"+i+"/"+sourceList.size()+":"+source.getLocalName()+" "+source.getLabel());
-			if(!mappedNodes.isSourceMapped(source)){
-				
-				for( int j = 0; j < targetList.size(); j++ ) {
-					target = targetList.get(j);
-					if( !this.isCancelled() ) {
-						Mapping alignment = null;
 
+	protected SimilarityMatrix alignUnmappedNodes(ArrayList<Node> sourceList,
+			ArrayList<Node> targetList, SimilarityMatrix inputMatrix,
+			Alignment<Mapping> inputAlignmentSet, alignType typeOfNodes)
+					throws Exception {
 
-						if(!mappedNodes.isTargetMapped(target)){
-
-							alignment = alignTwoNodes(source, target, typeOfNodes);
-							if(alignment.getSimilarity()>=param.threshold)
-								matrix.set(i,j,alignment);
-						}
-
-
-						if( isProgressDisplayed() ) {
-							stepDone(); // we have completed one step
-							if(!mappedNodes.isSourceMapped(source) && !mappedNodes.isTargetMapped(target) && alignment != null && alignment.getSimilarity() >= param.threshold ) tentativealignments++; // keep track of possible alignments for progress display
-						}
-					}
-				}
-			}
-			else{
-				System.out.print(" mapped");
-			}
-			if( isProgressDisplayed() ) { updateProgress(); }
-		}
-
-		return matrix;
+		MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, param.maxSourceAlign, param.maxTargetAlign);
+		System.out.println(mappedNodes.getMappedSources().length+" sources already mapped");
+		System.out.println(mappedNodes.getMappedTargets().length+" targets already mapped");
+		
+		return super.alignUnmappedNodes(sourceList, targetList, inputMatrix, inputAlignmentSet, typeOfNodes);
 
 	}
 
@@ -798,9 +692,11 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 						}
 						else tfidf = tfidfProperties;
 
-
-						//calculate similarity
-						sim = tfidf.getSimilarity(sourceString, targetString);
+						synchronized (this) {
+							//calculate similarity
+							sim = tfidf.getSimilarity(sourceString, targetString);
+						}
+						
 
 					}
 					else if (mp.measure.equals(MultiWordsPairWiseParameters.Overlap)) {
