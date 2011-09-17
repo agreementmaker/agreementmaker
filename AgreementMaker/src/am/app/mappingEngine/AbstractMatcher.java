@@ -609,9 +609,36 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 						
 						Thread newThread = new Thread(threadGroup, runner);
 						newThread.start();
+						
+						if( param.threadedOverlap ) {
+							// before spawning another thread, make sure we have room to do it
+							while( threadGroup.activeCount() >= availableProcessors ) { 
+								try {
+									Thread.sleep(500);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+									this.cancel(true);
+								} 
+							}
+						}
 					}
-
-					// wait for the threads at this stage to end.
+			
+					// wait for the threads at this stage to end, in order to avoid overlaps
+					if( !param.threadedOverlap ) {
+						while( threadGroup.activeCount() > 0 ) { 
+							try {
+								Thread.sleep(500);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+								this.cancel(true);
+							} 
+						}
+					}
+					
+				}
+				
+				// If running in overlap mode, we have to wait for the threads to end.
+				if( param.threadedOverlap ) {
 					while( threadGroup.activeCount() > 0 ) { 
 						try {
 							Thread.sleep(500);
@@ -619,7 +646,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 							e.printStackTrace();
 							this.cancel(true);
 						} 
-					}					
+					}
 				}
 				
 			} else {

@@ -10,6 +10,7 @@ public class AbstractParameters {
 	public boolean storeProvenance = false; // whether the matcher stores provenance information for mappings.
 	public boolean largeOntologyMode = false;//if true values in the sparse matrix are thrown away to save memory
 	public boolean threadedExecution = false;
+	public boolean threadedOverlap = false;
 	
 	
 	public AbstractParameters() { /* work is done by the field initialization; */ }

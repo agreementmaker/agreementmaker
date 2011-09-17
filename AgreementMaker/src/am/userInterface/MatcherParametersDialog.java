@@ -58,7 +58,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	private JLabel matcherLabel, lblPresets, thresholdLabel, sourceRelLabel, targetRelLabel;
 	private JComboBox matcherCombo, cmbPresets, thresholdCombo, sourceRelCombo, targetRelCombo;
 	private JButton btnMatcherDetails, btnSavePresets, btnDeletePresets, runButton, cancelButton;
-	private JCheckBox completionBox, provenanceBox, chkCustomName, chkThreadedMode;
+	private JCheckBox completionBox, provenanceBox, chkCustomName, chkThreadedMode, chkThreadedOverlap;
 	private JPanel topPanel, generalPanel;
 	private JScrollPane settingsScroll;
 	private JTextField txtCustomName;
@@ -220,6 +220,9 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		txtCustomName.setEnabled(false);
 		
 		chkThreadedMode = new JCheckBox("Threaded mode");
+		chkThreadedMode.addActionListener(this);
+		chkThreadedOverlap = new JCheckBox("Threaded overlap");
+		chkThreadedOverlap.setEnabled(false);
 		
 		btnMatcherDetails = new JButton("Explanation");
 		btnMatcherDetails.addActionListener(this);
@@ -324,6 +327,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 						.addComponent(provenanceBox)
 						.addGap(10)
 						.addComponent(chkThreadedMode)
+						.addComponent(chkThreadedOverlap)
 				)
 				.addGroup( generalLayout.createSequentialGroup()
 						.addComponent(chkCustomName)
@@ -348,6 +352,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 						.addComponent(completionBox)
 						.addComponent(provenanceBox)
 						.addComponent(chkThreadedMode)
+						.addComponent(chkThreadedOverlap)
 				)
 				.addGap(5)
 				.addGroup( generalLayout.createParallelGroup(Alignment.CENTER, false)
@@ -481,6 +486,11 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	public void actionPerformed (ActionEvent ae){
 		Object obj = ae.getSource();
 		
+		if( ae.getSource() == chkThreadedMode ) {
+			chkThreadedOverlap.setEnabled( chkThreadedMode.isSelected() );
+			return;
+		}
+		
 		if(ae.getSource() == matcherCombo && !matcherDefined){
 			matcher = MatcherFactory.getMatcherInstance(
 					MatcherFactory.getMatchersRegistryEntry(matcherCombo.getSelectedItem().toString()), 0);
@@ -549,6 +559,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			params.completionMode = completionBox.isSelected();
 			params.storeProvenance = provenanceBox.isSelected();
 			params.threadedExecution = chkThreadedMode.isSelected();
+			params.threadedOverlap = params.threadedExecution && chkThreadedOverlap.isSelected();
 			
 			matcher.setParam(params);
 			
