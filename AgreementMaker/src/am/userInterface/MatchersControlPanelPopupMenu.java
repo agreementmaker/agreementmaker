@@ -97,6 +97,13 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 		
 		addSeparator();
 		
+		JMenuItem miRenameMatcher = new JMenuItem("Rename Matcher");
+		miRenameMatcher.addActionListener(this);
+		miRenameMatcher.setActionCommand("RENAME_MATCHER");
+		add(miRenameMatcher);
+		
+		addSeparator();
+		
 		JMenuItem miDeleteHiddenClassMappings = new JMenuItem("Delete Hidden Class Mappings");
 		miDeleteHiddenClassMappings.addActionListener(this);
 		miDeleteHiddenClassMappings.setActionCommand("DELETE_HIDDEN_CLASS_MAPPINGS");
@@ -532,6 +539,24 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 						MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, matcherToFilter.getID() );
 				
 				Core.getInstance().fireEvent(evt);
+				
+			}
+		}
+		
+		if( e.getActionCommand().equals("RENAME_MATCHER") ) {
+			int[] selectedTableRows = mcp.getTablePanel().getTable().getSelectedRows();
+			MatchersControlPanelTableModel tableModel = 
+				(MatchersControlPanelTableModel) mcp.getTablePanel().getTable().getModel();
+			
+			for( int currentRow : selectedTableRows ) {
+				AbstractMatcher matcherToRename = tableModel.getData().get(currentRow);
+				//JOptionPane.showInputDialog(parentComponent, message, title, messageType, icon, selectionValues, initialSelectionValue)
+				
+				//String newName = JOptionPane.showInputDialog(mcp, "Rename \"" + matcherToRename.getName() + "\" to:", "Rename Matcher", JOptionPane.OK_CANCEL_OPTION);
+				String newName = (String) JOptionPane.showInputDialog(mcp, (Object)"Rename \"" + matcherToRename.getName() + "\" to:", "Rename Matcher", JOptionPane.OK_CANCEL_OPTION, null, null, matcherToRename.getName());
+				if( newName != null ) {
+					matcherToRename.setName(newName);
+				}
 				
 			}
 		}
