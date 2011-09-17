@@ -1,5 +1,6 @@
 package am.app.ontology.profiling.metrics.context;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import am.app.ontology.Node;
@@ -29,9 +30,10 @@ public class ParentsCountMetric extends AbstractOntologyMetric {
 		classesResult = new AvgMinMaxNumber("Classes Parent Count", parentsCount);
 	}
 
-	@Override public boolean hasSingleValueResult() { return true; }
-
 	@Override
-	public AvgMinMaxNumber getSingleValueResult() { return classesResult; }
-
+	public List<AvgMinMaxNumber> getResult() {
+		ArrayList<AvgMinMaxNumber> list = new ArrayList<AvgMinMaxNumber>();
+		list.add(classesResult);
+		return list;
+	}
 }

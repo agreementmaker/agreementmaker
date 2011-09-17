@@ -1,6 +1,8 @@
 package am.app.ontology.profiling.metrics.propertycoverage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -118,7 +120,8 @@ public class PropertyCoverage extends AbstractOntologyMetric {
 	public Map<Property, CoverageTriple> getClassMap() { return classMetricMap; }
 	public Map<Property, CoverageTriple> getPropertyMap() { return propertyMetricMap; }
 
-	@Override public boolean hasSingleValueResult() { return false; }
-	@Override public AvgMinMaxNumber getSingleValueResult() { return null; }
-	
+	@Override public List<AvgMinMaxNumber> getResult() {
+		// FIXME: Implement this.
+		return null; 
+	}
 }

@@ -1,5 +1,6 @@
 package am.app.ontology.profiling.metrics.annotation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import am.app.ontology.Node;
@@ -29,8 +30,11 @@ public class AnnotationStringLengthMetric extends AbstractOntologyMetric {
 		classesLabelResult = new AvgMinMaxNumber("Classes Label Length", labelStringLength);
 	}
 
-	@Override public boolean hasSingleValueResult() { return true; }
-
-	@Override public AvgMinMaxNumber getSingleValueResult() { return classesLabelResult;	}
+	@Override
+	public List<AvgMinMaxNumber> getResult() {
+		List<AvgMinMaxNumber> list = new ArrayList<AvgMinMaxNumber>();
+		list.add(classesLabelResult);
+		return list;
+	}
 
 }
