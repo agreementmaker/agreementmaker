@@ -88,13 +88,13 @@ public class ReferenceEvaluator{
         //System.out.println("Found: " + found + ", Exist: " + exist + ", Correct: " + correct);
         double prec;
         if(foundMappings == 0.0d) {
-        	prec = 1;
+        	prec = 0.0d;
         }
         else prec = (double) correctMappings / (double) foundMappings;
         
         double rec;
         if(referenceMappings == 0.0d) {
-        	rec = 1;
+        	rec = 0.0d;
         }
         else rec = (double) correctMappings / (double) referenceMappings;
         //System.out.println("Precision: " + prec + ", Recall: " + rec);
