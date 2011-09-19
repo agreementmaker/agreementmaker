@@ -6,6 +6,7 @@ import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.LexicalMatcherJAWS.LexicalMatcherJAWS;
 import am.app.mappingEngine.LexicalMatcherJWNL.LexicalMatcherJWNL;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcher;
+import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherWeighted;
 import am.app.mappingEngine.PRAMatcher.OldPRAMatcher;
 import am.app.mappingEngine.PRAMatcher.PRAMatcher;
 import am.app.mappingEngine.PRAMatcher.PRAMatcher2;
@@ -57,6 +58,7 @@ public enum MatchersRegistry {
 	//
 	VMMPairwise			( "VMM-PW", "VMM PairWise", MultiWordsMatcherPairWise.class, MatcherCategory.SYNTACTIC ),
 	NewVMM				( "NVMM", "New VMM", NewMultiWordsMatcher.class, MatcherCategory.SYNTACTIC ),
+	LSMWeighted			( "LSMW", "LSM Weighted", LexicalSynonymMatcherWeighted.class, MatcherCategory.LEXICAL ),
 	BridgeMatcher		( "MEDM", "Mediating Matcher", MediatingMatcher.class, MatcherCategory.HYBRID ), 
 	MyTestMatch			( "MTM", "Synonym Term Counting Matcher", MyTestMatcher.class, MatcherCategory.USER ),
 	PartialGraph		( "PGM", "Partial Graph Matcher", PartialGraphMatcher.class, MatcherCategory.STRUCTURAL ),
