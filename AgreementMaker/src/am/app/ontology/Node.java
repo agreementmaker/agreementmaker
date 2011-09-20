@@ -342,6 +342,10 @@ public class Node implements Serializable, Comparable<Node>{
 	}
 	
 	public boolean isProp() {
+		if( resource == null ) {
+			System.out.println("Null resource in Node object: " + this);
+			return false;
+		}
 		if( resource.canAs(OntProperty.class) ) return true;
 		return false;
 	}
