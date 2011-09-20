@@ -15,6 +15,7 @@ import java.util.Vector;
 
 import com.hp.hpl.jena.rdf.model.impl.ResourceImpl;
 
+import am.AMException;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
@@ -596,13 +597,10 @@ public class DBGraphMatcher extends FullGraphMatcher {
 	@Override
 	protected void loadSimilarityMatrices(WrappingGraph s, WrappingGraph t){
 		// load classesMatrix
-		classesMatrix = new ArraySimilarityMatrix(sourceOntology.getClassesList().size(),
-				targetOntology.getClassesList().size(),
-				alignType.aligningClasses);
+		classesMatrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, alignType.aligningClasses);
 		// load propertiesMatrix
-		propertiesMatrix = new ArraySimilarityMatrix(sourceOntology.getPropertiesList().size(),
-				targetOntology.getPropertiesList().size(),
-				alignType.aligningProperties);
+		propertiesMatrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, alignType.aligningProperties);
+
 	}
 	
 

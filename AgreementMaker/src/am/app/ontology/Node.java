@@ -9,7 +9,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -18,7 +17,6 @@ import java.util.Set;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.ontology.NodeEnumeration.EnumerationType;
 import am.userInterface.ontology.OntologyConceptGraphics;
 
 import com.hp.hpl.jena.ontology.AnnotationProperty;
@@ -66,39 +64,39 @@ public class Node implements Serializable, Comparable<Node>{
 	 * One of the string which can be used to compare two nodes
 	 * In general the URI = namespace#localname, in the OWL ontology, often the localname is the same of label	
 	 * usually is defined with rdf: ID */
-	protected String localName = "";  // TODO - Avoid duplication of information.  The localname can be gotten from the Jena Resource. - Cosmin.
+	protected transient String localName = "";  // TODO - Avoid duplication of information.  The localname can be gotten from the Jena Resource. - Cosmin.
 	/**
 	 * Another string which can be used to compare nodes
 	 * This should be a human readable version of localname. In a RDF or XML ontologies there are no labels
 	 * In OWL ontology we can have a label, even though often is the same of name.
 	 * rdfs:label
 	 */
-	private String label = ""; // TODO - Avoid duplication of information.  The label can be gotten from the Jena Resource. - Cosmin.
+	private transient String label = ""; // TODO - Avoid duplication of information.  The label can be gotten from the Jena Resource. - Cosmin.
 	/**
 	 * Another string which can be used to compare nodes
 	 * This is a longer description (more than one word) for this resource.In a RDF or XML ontologies there are no comments
 	 * In OWL ontology we can have a comment.
 	 * rdfs:comment
 	 */
-	private String comment = "";  // TODO - Avoid duplication of information.  The comment can be gotten from the Jena Resource. - Cosmin.
+	private transient String comment = "";  // TODO - Avoid duplication of information.  The comment can be gotten from the Jena Resource. - Cosmin.
 	
 	//SOME MORE INFORMATIONS THAT MY BE USED -- // TODO - Avoid duplication of information.  All the info can be gotten from the Jena Resource. - Cosmin.
-	private String isDefinedByLabel = "";
-	private String isDefinedByURI = "";
-	private String isDefinedByComment = "";
-	private String seeAlsoLabel = "";
-	private String seeAlsoURI = "";
-	private String seeAlsoComment = "";
+	private transient String isDefinedByLabel = "";
+	private transient String isDefinedByURI = "";
+	private transient String isDefinedByComment = "";
+	private transient String seeAlsoLabel = "";
+	private transient String seeAlsoURI = "";
+	private transient String seeAlsoComment = "";
 	
 	/** If the node is a prop node then it this list contains the list of classes localnames which declare this property.
 		If the node is a class node then this list contains the list of properties declared by this class.
 	*/
-	private ArrayList<String> propOrClassNeighbours = new ArrayList<String>();
+	private transient ArrayList<String> propOrClassNeighbours = new ArrayList<String>();
 	
 	/**
 	 * A list of the individuals associated with this node.
 	 */
-	private ArrayList<String> individuals = new ArrayList<String>();
+	private transient ArrayList<String> individuals = new ArrayList<String>();
 	
 	
 	/**
@@ -110,19 +108,19 @@ public class Node implements Serializable, Comparable<Node>{
 	 */
 	//private transient ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
 	/**RDF-node, OWL-classnode, OWL-propnode, OWL-unsatconcept, XML-node*/
-	private String type;
+	private transient String type;
 	public final static String RDFNODE = "rdf-node";
 	public final static String OWLCLASS = "owl-classnode";
 	public final static String OWLPROPERTY = "owl-propertynode";
     public final static String XMLNODE = "xml-node";
 	/**UNIQUE KEY IN THE RANGE OF TYPE to be used as index to retrieve this node from the list and from the matrix*/
-	protected int index;
-	protected int ontID;  // the ID of the ONTOLOGY to which this node belongs
+	protected transient int index;
+	protected transient int ontID;  // the ID of the ONTOLOGY to which this node belongs
 
-	private int color;
-	private List<Node> parents = new ArrayList<Node>();
-	private List<Node> children = new ArrayList<Node>();
-	private int depth;
+	private transient int color;
+	private transient List<Node> parents = new ArrayList<Node>();
+	private transient List<Node> children = new ArrayList<Node>();
+	private transient int depth;
 	
 	/**
 	 * This is an arraylist all the graphical representations of this node.
@@ -878,11 +876,11 @@ public class Node implements Serializable, Comparable<Node>{
 			graphicalRepresentations.remove(ocg); 
 	}
 
-	private Node matchedTo;
+	private transient Node matchedTo;  // where is this used??? Remove it! -- Cosmin Sept 17, 2011
 	public void setMatchedTo(Node target) {	matchedTo = target; }
 	public Node getMatchedTo() { return matchedTo; }
 
-	private boolean matched;
+	private transient boolean matched; // where is this used??? Remove it! -- Cosmin Sept 17, 2011
 	public void setMatched(boolean b) { matched = b; }
 	public boolean isMatched() { return matched; }
 	
@@ -961,6 +959,12 @@ public class Node implements Serializable, Comparable<Node>{
 
 	  @Override
 	  public int compareTo(Node n) {
+		  if( this.getResource() == null ) {
+			  if( n.getResource() == null )
+				  return uri.compareTo(n.getUri());
+			  else
+				  return uri.compareTo(n.getResource().getURI());
+		  }
 		  return this.getResource().getURI().compareTo(n.getResource().getURI());
 	  }
 	  

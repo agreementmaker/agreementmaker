@@ -4,6 +4,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 
 public class SparseMatrixTest {
@@ -19,7 +20,7 @@ public class SparseMatrixTest {
 				yVals.add(new Integer(i));
 			}
 			*/
-			SparseMatrix m=new SparseMatrix(3000,3000);
+			SparseMatrix m=new SparseMatrix(null,null,alignType.aligningClasses);
 			//int[] x=new int[16000000];
 			//int[] y=new int[16000000];
 			//double[][] z=new double[400][40];

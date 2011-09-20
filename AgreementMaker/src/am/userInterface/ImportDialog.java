@@ -4,12 +4,15 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -23,11 +26,9 @@ import javax.swing.JRadioButton;
 import javax.swing.JRootPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.GroupLayout.Alignment;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -50,7 +51,7 @@ public class ImportDialog extends JDialog implements ActionListener{
 	private JPanel pnlSaveOptions;
 	//private JCheckBox boxSort, boxIsolines, boxSkipZeros;
 	
-	private JRadioButton radAlignmentOnly;//, radMatrixAsCSV, radCompleteMatcher, radClassesMatrix, radPropertiesMatrix;
+	private JRadioButton radAlignmentOnly, radCompleteMatcher;//, radMatrixAsCSV, radCompleteMatcher, radClassesMatrix, radPropertiesMatrix;
 	
 	private AbstractMatcher loadedMatcher;
 	
@@ -68,11 +69,11 @@ public class ImportDialog extends JDialog implements ActionListener{
 		radAlignmentOnly.addActionListener(this);
 		/*radMatrixAsCSV = new JRadioButton("Similarity matrix as CSV", prefs.isExportTypeSelected( FileType.MATRIX_AS_CSV ));
 		radMatrixAsCSV.setActionCommand( FileType.MATRIX_AS_CSV.getKey() );
-		radMatrixAsCSV.addActionListener(this);
+		radMatrixAsCSV.addActionListener(this); */
 		radCompleteMatcher = new JRadioButton("Complete Matcher", prefs.isExportTypeSelected( FileType.COMPLETE_MATCHER ) );
 		radCompleteMatcher.setActionCommand( FileType.COMPLETE_MATCHER.getKey() );
 		radCompleteMatcher.addActionListener(this);
-		
+		/*
 		radClassesMatrix = new JRadioButton("Classes Matrix", prefs.isExportClassesMatrix() );
 		radPropertiesMatrix = new JRadioButton("Properties Matrix", !prefs.isExportClassesMatrix() );
 		boxSort = new JCheckBox("Sort by similarity");
@@ -90,8 +91,8 @@ public class ImportDialog extends JDialog implements ActionListener{
 		// create a button group for the radio buttons
 		ButtonGroup grpType = new ButtonGroup();
 		grpType.add(radAlignmentOnly);
-/*		grpType.add(radMatrixAsCSV); 
 		grpType.add(radCompleteMatcher);
+/*		grpType.add(radMatrixAsCSV); 
 		
 		ButtonGroup grpMatrix = new ButtonGroup();
 		grpMatrix.add(radClassesMatrix);
@@ -174,7 +175,7 @@ public class ImportDialog extends JDialog implements ActionListener{
 				.addComponent(pnlAlignmentFormat)
 				//.addComponent(radMatrixAsCSV)
 				//.addComponent(pnlMatrices)
-				//.addComponent(radCompleteMatcher)
+				.addComponent(radCompleteMatcher)
 		);
 		
 		layMain.setVerticalGroup( layMain.createSequentialGroup() 
@@ -183,8 +184,8 @@ public class ImportDialog extends JDialog implements ActionListener{
 				//.addGap(10)
 				//.addComponent(radMatrixAsCSV)
 				//.addComponent(pnlMatrices)
-				//.addGap(10)
-				//.addComponent(radCompleteMatcher)				
+				.addGap(10)
+				.addComponent(radCompleteMatcher)				
 		);
 		
 		panel.setLayout(layMain);
@@ -391,7 +392,13 @@ public class ImportDialog extends JDialog implements ActionListener{
 					dispose();
 				}
 				else if ( inputType == FileType.COMPLETE_MATCHER ) {
-					// TODO: Implement this.
+					FileInputStream fis = new FileInputStream(inFileName);
+					ObjectInputStream in = new ObjectInputStream(fis);
+					AbstractMatcher m = (AbstractMatcher)in.readObject();
+					in.close();
+					
+					Core.getUI().getControlPanel().getTablePanel().addMatcher(m);
+					
 					setVisible(false);
 					dispose();
 				}

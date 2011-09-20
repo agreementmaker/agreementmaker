@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -14,10 +15,9 @@ import am.Utility;
 import am.app.Core;
 import am.app.lexicon.Lexicon;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
+import am.app.mappingEngine.Mapping;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.tools.LexiconLookup.LexiconLookupPanel;
@@ -81,7 +81,7 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 		} else {
 			
 			// build the mappings menu, grouped by matchers
-			ArrayList<AbstractMatcher> matchers = Core.getInstance().getMatcherInstances();
+			List<AbstractMatcher> matchers = Core.getInstance().getMatcherInstances();
 			Iterator<AbstractMatcher> matcherIter = matchers.iterator();
 			while( matcherIter.hasNext() ) {
 				AbstractMatcher matcher = matcherIter.next();

@@ -97,8 +97,8 @@ public class PRAMatcher2 extends AbstractMatcher
 	
 	private void removeIncorrectMappings(alignType typeOfNodes)
 	{
-		int numSources = 0;		
-		int numTargets = 0;
+		//int numSources = 0;		
+		//int numTargets = 0;
 	
 		Alignment<Mapping> resultSet = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 		SimilarityMatrix resultMatrix = null;
@@ -111,9 +111,9 @@ public class PRAMatcher2 extends AbstractMatcher
 		
 		if(typeOfNodes.equals(alignType.aligningClasses))
 		{	
-			numSources = sourceOntology.getClassesList().size();
-			numTargets = targetOntology.getClassesList().size();
-			resultMatrix = new ArraySimilarityMatrix(numSources, numTargets, alignType.aligningClasses);
+			//numSources = sourceOntology.getClassesList().size();
+			//numTargets = targetOntology.getClassesList().size();
+			resultMatrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, alignType.aligningClasses);
 
 			System.out.println("Num of entries in input class alignment set is " + inputClassesAlignmentSet.size());
 			for(int i = 0; i < inputClassesAlignmentSet.size(); i++)
@@ -161,9 +161,9 @@ public class PRAMatcher2 extends AbstractMatcher
 		}
 		else if(typeOfNodes.equals(alignType.aligningProperties))
 		{
-			numSources = sourceOntology.getPropertiesList().size();			
-			numTargets = targetOntology.getPropertiesList().size();
-			resultMatrix = new ArraySimilarityMatrix(numSources, numTargets, alignType.aligningProperties);
+			//numSources = sourceOntology.getPropertiesList().size();			
+			//numTargets = targetOntology.getPropertiesList().size();
+			resultMatrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, alignType.aligningProperties);
 		
 			//add everything in the partial reference alignment in the alignmentSet
 			for(int i = 0; i < inputPropertiesAlignmentSet.size(); i++)

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
+import am.AMException;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
@@ -282,14 +283,20 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 	@Override
 	protected void loadSimilarityMatrices(WrappingGraph s, WrappingGraph t) {
 		// load classesMatrix
-		classesMatrix = new PCGSimilarityMatrix(s, t, alignType.aligningClasses);
-		prevRoundClasses = new PCGSimilarityMatrix((PCGSimilarityMatrix) classesMatrix);
+		try {
+			classesMatrix = new PCGSimilarityMatrix(s, t, alignType.aligningClasses);
+			prevRoundClasses = new PCGSimilarityMatrix((PCGSimilarityMatrix) classesMatrix);
+		} catch( AMException e ) {
+			e.printStackTrace();
+		}
 		
 		// load propertiesMatrix
-		propertiesMatrix = new ArraySimilarityMatrix(sourceOntology.getPropertiesList().size(),
-				targetOntology.getPropertiesList().size(),
-				alignType.aligningProperties);
-		prevRoundProperties = new ArraySimilarityMatrix(propertiesMatrix);
+		try {
+			propertiesMatrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, alignType.aligningProperties);
+			prevRoundProperties = new ArraySimilarityMatrix(propertiesMatrix);
+		} catch (AMException e) {
+			e.printStackTrace();
+		}
 		
 //		try {
 //			fw.append("classM size" + classesMatrix.getRows() + "-" + classesMatrix.getColumns() + "................\n");

@@ -1,6 +1,7 @@
 package am.app.mappingEngine;
 
 import java.io.FileWriter;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,29 +24,34 @@ import am.app.ontology.Ontology;
  * 	(2) in a sparse matrix representation
  * 	(3) in a database
  */
-public abstract class SimilarityMatrix
+public abstract class SimilarityMatrix implements Serializable
 {
 
 	/* Fields */
-	
-    protected int sourceOntologyID, targetOntologyID;
+	private static final long serialVersionUID = -6257833394450852075L;
+
+	protected transient Ontology sourceOntology, targetOntology;
 	
 	//not used at the moment. At the moment indetermined similarity are set with 0.
 	//if we want to start using it is important to keep it similar to 0, to allow compatibility with non-updated methods.
-	final static double INDETERMINED = Double.MIN_NORMAL;
+	//public final static double INDETERMINED = Double.MIN_NORMAL;
 	
-	protected MappingRelation relation = MappingRelation.EQUIVALENCE; //this is a default relation used when no relation is specified for this matrix
-	protected alignType typeOfMatrix;
+	//protected MappingRelation relation = MappingRelation.EQUIVALENCE; //this is a default relation used when no relation is specified for this matrix
+	protected final alignType typeOfMatrix;
     
-	public MappingRelation getRelation() { return relation; };	// relation of the matrix? is this required?
+	//public MappingRelation getRelation() { return relation; };	// relation of the matrix? is this required? No -- Cosmin, Sept 17, 2011.
 	public abstract alignType getAlignType();
+	
+	public SimilarityMatrix(Ontology sourceOntology, Ontology targetOntology, alignType typeOfMatrix) {
+		this.sourceOntology = sourceOntology;
+		this.targetOntology = targetOntology;
+		this.typeOfMatrix = typeOfMatrix;
+	}
 	
 	/* Getters and Setters */
 	
-	public int getSourceOntologyID() { return sourceOntologyID; }
-	public void setSourceOntologyID(int sourceOntologyID) { this.sourceOntologyID = sourceOntologyID; }
-	public int getTargetOntologyID() { return targetOntologyID; }
-	public void setTargetOntologyID(int targetOntologyID) { this.targetOntologyID = targetOntologyID; }
+	public Ontology getSourceOntology() { return sourceOntology; }
+	public Ontology getTargetOntology() { return targetOntology; }
 	
 	public abstract int getRows();
 	public abstract int getColumns();
@@ -60,8 +66,8 @@ public abstract class SimilarityMatrix
 
 	public abstract void set(int i, int j, Mapping d);
 	
-	@Deprecated
-	public abstract void setSimilarity(int i, int j, double d);  // deprecated because it cannot deal with null values.
+	//@Deprecated
+	//public abstract void setSimilarity(int i, int j, double d);  // deprecated because it cannot deal with null values.
 	public abstract double getSimilarity( int i, int j);
 	
 	/* Methods that calculate */
@@ -141,9 +147,6 @@ public abstract class SimilarityMatrix
 			for( int col = 0; col < getColumns(); col++ ) {
 				Mapping m = get(row, col);
 				if( m == null ) {
-					Ontology sourceOntology = Core.getInstance().getOntologyByID(sourceOntologyID);
-					Ontology targetOntology = Core.getInstance().getOntologyByID(targetOntologyID);
-					
 					if( typeOfMatrix == alignType.aligningClasses ) {
 						Node sN = sourceOntology.getClassesList().get(row);
 						Node tN = targetOntology.getClassesList().get(col);

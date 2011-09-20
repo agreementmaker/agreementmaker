@@ -1,7 +1,11 @@
 package am.app.mappingEngine;
 
-public class AbstractParameters {
+import java.io.Serializable;
 
+public class AbstractParameters implements Serializable {
+
+	private static final long serialVersionUID = -5278587933670353897L;
+	
 	// fields are initialized to their defaults.
 	public double threshold = 0.6;
 	public int maxSourceAlign = 1;

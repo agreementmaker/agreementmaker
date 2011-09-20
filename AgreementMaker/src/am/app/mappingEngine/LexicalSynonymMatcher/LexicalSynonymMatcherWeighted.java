@@ -93,7 +93,7 @@ public class LexicalSynonymMatcherWeighted extends AbstractMatcher {
 
 		else{
 			//run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
-			SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
+			SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, typeOfNodes);
 
 			// choose the smaller ontology.
 			List<Node> smallerList = null, largerList = null;

@@ -49,15 +49,10 @@ public class Core {
 	 * Can't be null;
 	 */
 	
-	private ArrayList<AbstractMatcher> matcherInstances = new ArrayList<AbstractMatcher>();
+	private final List<AbstractMatcher> matcherInstances = new ArrayList<AbstractMatcher>();
 	
 	private int IDcounter = 0;  // used in generating IDs for the ontologies and matchers
-	public static final int ID_NONE = -1;  // the ID for when no ID has been set
-
-
-
-
-	
+	public static final int ID_NONE = -1;  // the ID for when no ID has been set	
 	
 	private Ontology sourceOntology; //Null if it's not loaded yet
 	private Ontology targetOntology; //Null if it's not loaded yet
@@ -157,7 +152,7 @@ public class Core {
 		return null;	
 	}
 	
-	public ArrayList<AbstractMatcher> getMatcherInstances() { return matcherInstances; }
+	public List<AbstractMatcher> getMatcherInstances() { return matcherInstances; }
 	
 	public AbstractMatcher getMatcherByID( int mID ) {
 		Iterator<AbstractMatcher> matchIter = matcherInstances.iterator();
@@ -179,13 +174,13 @@ public class Core {
 	
 	public void removeMatcher(AbstractMatcher a) {
 		MatcherChangeEvent evt = new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_REMOVED, a.getID());
-		int myIndex = a.getIndex();
-		matcherInstances.remove(myIndex);
+		//int myIndex = a.getIndex();
+		matcherInstances.remove(a);
 		//All indexes must be decreased by one;
 		//For this reason whenever you have to delete more then one matcher, it's good to start from the last in the order
 		// TODO: The above behavior should be fixed - cosmin
 		AbstractMatcher next;
-		for(int i = myIndex; i<matcherInstances.size(); i++) {
+		for(int i = 0; i<matcherInstances.size(); i++) {
 			next = matcherInstances.get(i);
 			next.setIndex(i);
 		}

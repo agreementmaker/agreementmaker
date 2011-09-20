@@ -1,20 +1,20 @@
 package am.userInterface;
 
 import java.awt.Dimension;
-import java.awt.GridLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -34,8 +34,8 @@ import javax.swing.filechooser.FileFilter;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.output.OutputController;
 import am.userInterface.AppPreferences.FileType;
@@ -182,7 +182,7 @@ public class ExportDialog extends JDialog implements ActionListener{
 				.addComponent(pnlAlignmentFormat)
 				.addComponent(radMatrixAsCSV)
 				.addComponent(pnlMatrices)
-				//.addComponent(radCompleteMatcher)
+				.addComponent(radCompleteMatcher)
 		);
 		
 		layMain.setVerticalGroup( layMain.createSequentialGroup() 
@@ -191,8 +191,9 @@ public class ExportDialog extends JDialog implements ActionListener{
 				.addGap(10)
 				.addComponent(radMatrixAsCSV)
 				.addComponent(pnlMatrices)
-				//.addGap(10)
-				//.addComponent(radCompleteMatcher)				
+				.addGap(10)
+				.addComponent(radCompleteMatcher)
+				.addGap(10)
 		);
 		
 		panel.setLayout(layMain);
@@ -203,15 +204,15 @@ public class ExportDialog extends JDialog implements ActionListener{
 	 * This is the dialog that is shown when the Export menu item is used.
 	 * It can save Alignments or Similarity Matrices of Matchers, or complete Matchers (for later Import).
 	 */
-	public ExportDialog() {
-		super(Core.getUI().getUIFrame(), true);
+	public ExportDialog(Frame parent) {
+		super(parent, true);
 
 		// 
 		setTitle("Export ...");
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
 		// get the currently selected matcher
-		ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
+		List<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
 		AbstractMatcher selectedMatcher;
 		int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
 		selectedMatcher = list.get(rowsIndex[0]); // we only care about the first matcher selected
@@ -397,7 +398,7 @@ public class ExportDialog extends JDialog implements ActionListener{
 				prefs.saveExportType(outputType);
 				
 				// get the currently selected matcher
-				ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
+				List<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
 				AbstractMatcher selectedMatcher;
 				int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
 				selectedMatcher = list.get(rowsIndex[0]); // we only care about the first matcher selected
@@ -420,8 +421,9 @@ public class ExportDialog extends JDialog implements ActionListener{
 						}
 						else{						
 							OutputController.printDocument(fullFileName);
-							Utility.displayMessagePane("File saved successfully.\nLocation: "+fullFileName+"\n", null);	
+							Utility.displayMessagePane("File saved successfully.\nLocation: "+fullFileName+"\n", null);
 						}
+						setVisible(false);
 						setModal(false);
 						dispose();
 					}
@@ -451,8 +453,8 @@ public class ExportDialog extends JDialog implements ActionListener{
 							if( selectedMatcher.getSourceOntology() == null || selectedMatcher.getTargetOntology() == null ) { 
 								throw new Exception("Matcher does not have Source or Target ontologies set.");
 							}
-							SimilarityMatrix m = new ArraySimilarityMatrix(selectedMatcher.getSourceOntology().getClassesList().size(), 
-																	selectedMatcher.getTargetOntology().getClassesList().size(), 
+							SimilarityMatrix m = new ArraySimilarityMatrix(selectedMatcher.getSourceOntology(), 
+																	selectedMatcher.getTargetOntology(), 
 																	alignType.aligningClasses);
 							if( selectedMatcher.getClassAlignmentSet() == null ) 
 								throw new Exception("Matcher does not have a Classes Matrix nor a Classes Alignment Set.  Cannot do anything.");
@@ -473,8 +475,8 @@ public class ExportDialog extends JDialog implements ActionListener{
 							if( selectedMatcher.getSourceOntology() == null || selectedMatcher.getTargetOntology() == null ) { 
 								throw new Exception("Matcher does not have Source or Target ontologies set.");
 							}
-							SimilarityMatrix m = new ArraySimilarityMatrix(selectedMatcher.getSourceOntology().getPropertiesList().size(), 
-																	selectedMatcher.getTargetOntology().getPropertiesList().size(), 
+							SimilarityMatrix m = new ArraySimilarityMatrix(selectedMatcher.getSourceOntology(), 
+																	selectedMatcher.getTargetOntology(), 
 																	alignType.aligningProperties);
 							if( selectedMatcher.getPropertyAlignmentSet() == null ) 
 								throw new Exception("Matcher does not have a Properties Matrix nor a Properties Alignment Set.  Cannot do anything.");
@@ -490,11 +492,17 @@ public class ExportDialog extends JDialog implements ActionListener{
 						}
 					}
 					Utility.displayMessagePane("File saved successfully.\nLocation: "+fullFileName+"\n", null);
+					setVisible(false);
 				} else if( outputType == FileType.COMPLETE_MATCHER ) {
 					//throw new Exception("Michele, implement this function.");
 					String fullFileName = outDirectory+ "/" + outFileName + ".bin";
-					selectedMatcher.writeObject(new ObjectOutputStream(new FileOutputStream(fullFileName)));
+					FileOutputStream fos = new FileOutputStream(fullFileName);
+					ObjectOutputStream oos = new ObjectOutputStream(fos);
+					selectedMatcher.writeObject(oos);
+					oos.flush();
+					oos.close();
 					Utility.displayMessagePane("File saved successfully.\nLocation: "+fullFileName+"\n", null);
+					this.setVisible(false);
 				} else {
 					throw new Exception("Could not determine the output type.\nAt least one radio button must be selected.");
 				}
@@ -544,6 +552,12 @@ public class ExportDialog extends JDialog implements ActionListener{
 			prefs.saveLastDirOutput(selectedfile); 
 			txtFileDir.setText(selectedfile.getPath());
 		}
+	}
+
+	public static void main(String[] args) {
+		
+		new ExportDialog(null);
+		
 	}
 	
 }

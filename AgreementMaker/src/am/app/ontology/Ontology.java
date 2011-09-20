@@ -131,6 +131,8 @@ public class Ontology {
 		objectProperties = ops;
 	}	
 	
+	private HashMap<String, Node> uriMap;
+	
 	//END Instance related fields and functions
 	
 	/**
@@ -307,6 +309,11 @@ public class Ontology {
 		throw new Exception("Cannot search for nodeType == " + aType.toString() );
 	}
 	
+	public Node getNodeByURI( String uri ) {
+		if( uriMap == null ) createURIMap();
+		return uriMap.get(uri);
+	}
+	
 	public void setDescription(String desc) { this.description = desc; }
 	public String getDescription() { return description; }
 	
@@ -335,5 +342,16 @@ public class Ontology {
 	}
 	
 	public HashMap<String, List<MatchingPair>> getInstanceTypeMapping() { return instanceTypeMappings; }
+	
+	/** Create the URI -> Node map. Used in getNodeByURI() method. */
+	public void createURIMap() {
+		uriMap = new HashMap<String, Node>();
+		for( Node classNode : classesList ) {
+			uriMap.put(classNode.getUri(), classNode);
+		}
+		for( Node propertyNode : propertiesList ) {
+			uriMap.put(propertyNode.getUri(), propertyNode);
+		}
+	}
 	
 }

@@ -69,7 +69,7 @@ public class PRAintegrationMatcher extends AbstractMatcher {
 			Alignment<Mapping> refAlignmentSet, SimilarityMatrix refAlignmentMatrix, alignType typeOfNodes)  throws Exception{
 		
 
-		SimilarityMatrix resultMatrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, inputMatchers.get(0).getRelation());
+		SimilarityMatrix resultMatrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, typeOfNodes);
 		Alignment<Mapping> resultSet = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 		HashSet<Mapping> mappings = new HashSet<Mapping>();
 		

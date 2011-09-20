@@ -1,25 +1,21 @@
 package am.app.mappingEngine.similarityMatrix;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-
-import org.junit.Test;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.Mapping.MappingRelation;
-import am.app.mappingEngine.similarityMatrix.SparseMatrix.RowCell;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
+import am.app.ontology.Ontology;
 
 
 public class OptimizedSparseMatrix extends SimilarityMatrix
 {
+	private static final long serialVersionUID = -4828904520708897468L;
+	
 	private RowCell<Mapping> head;// LinkedList<LinkedList<RowCell>> rows;
 	private RowCell<Mapping> lastGetRow=null;//this is the last row that was used in the get function
 	private RowCell<Mapping> lastSetRow=null;//this is the last row that was used in the set function
@@ -37,11 +33,22 @@ public class OptimizedSparseMatrix extends SimilarityMatrix
 	 * @param numCols The number of columns in the matrix.
 	 */
 
-	public OptimizedSparseMatrix(int numRows, int numCols)
+	public OptimizedSparseMatrix(Ontology sourceOntology, Ontology targetOntology, alignType typeOfMatrix)
 	{
+		super(sourceOntology, targetOntology, typeOfMatrix);
+		
 		// save the dimensions
-		this.numRows = numRows;
-		this.numCols = numCols;
+		if( typeOfMatrix == alignType.aligningClasses ) { 
+    		numRows = sourceOntology.getClassesList().size();
+    		numCols = targetOntology.getClassesList().size();
+    	} else if ( typeOfMatrix == alignType.aligningProperties ) {
+    		numRows = sourceOntology.getPropertiesList().size();
+    		numCols = targetOntology.getPropertiesList().size();
+    	} else {
+    		System.err.println("Invalid typeOfMatrix: " + typeOfMatrix + ".  Assuming aligningClasses.");
+    		numRows = sourceOntology.getClassesList().size();
+    		numCols = targetOntology.getClassesList().size();
+    	}
 		
 		//create the head of the LL
 		head = new RowCell<Mapping>(-1,-1,null);
@@ -49,12 +56,8 @@ public class OptimizedSparseMatrix extends SimilarityMatrix
 	
 	/** A method to clone the similarity matrix. */
 	public OptimizedSparseMatrix(OptimizedSparseMatrix optimizedSparseMatrix){
-		this(optimizedSparseMatrix.getRows(), optimizedSparseMatrix.getColumns());
-		relation = optimizedSparseMatrix.getRelation();
-    	typeOfMatrix = optimizedSparseMatrix.getAlignType();
-    	
-    	sourceOntologyID = optimizedSparseMatrix.getSourceOntologyID();
-    	targetOntologyID = optimizedSparseMatrix.getTargetOntologyID();
+		this(optimizedSparseMatrix.getSourceOntology(), optimizedSparseMatrix.getTargetOntology(), optimizedSparseMatrix.getAlignType());
+		//relation = optimizedSparseMatrix.getRelation();
     	
     	RowCell<Mapping> currentCol, currentRow;//these RowCells are the originals
     	
@@ -84,11 +87,10 @@ public class OptimizedSparseMatrix extends SimilarityMatrix
 	}*/
 	
 	/** A constructor used in AbstractMatcher. */
-	public OptimizedSparseMatrix(int numRows, int numCols, alignType type, MappingRelation rel){
+/*	public OptimizedSparseMatrix(int numRows, int numCols, alignType type, MappingRelation rel){
 		this(numRows, numCols);
-    	relation = rel;
     	typeOfMatrix = type;
-	}
+	}*/
 	
 	@Override
 	public void set(int row, int column, Mapping obj)
@@ -544,14 +546,14 @@ public class OptimizedSparseMatrix extends SimilarityMatrix
 		
 	}
 	
-	@Override
+	/*@Override
 	public void setSimilarity(int i, int j, double d) {
 		// sets the similarity of a specified entry in the matrix
 		Mapping temp=get(i,j);
 		if(temp!=null)
 			temp.setSimilarity(d);
 		
-	}
+	}*/
 	
 	@Override
 	public SimilarityMatrix toArraySimilarityMatrix() {

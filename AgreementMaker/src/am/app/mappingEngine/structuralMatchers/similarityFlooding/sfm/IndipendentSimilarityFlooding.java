@@ -43,13 +43,9 @@ public class IndipendentSimilarityFlooding extends FullGraphMatcher {
 	@Override
 	protected void loadSimilarityMatrices(WrappingGraph s, WrappingGraph t){
 		// load classesMatrix
-		classesMatrix = new ArraySimilarityMatrix(sourceOntology.getClassesList().size(),
-				targetOntology.getClassesList().size(),
-				alignType.aligningClasses);
+		classesMatrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, alignType.aligningClasses);
 		// load propertiesMatrix
-		propertiesMatrix = new ArraySimilarityMatrix(sourceOntology.getPropertiesList().size(),
-				targetOntology.getPropertiesList().size(),
-				alignType.aligningProperties);
+		propertiesMatrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, alignType.aligningProperties);
 	}
 
 }

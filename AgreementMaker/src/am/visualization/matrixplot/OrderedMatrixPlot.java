@@ -37,7 +37,7 @@ public class OrderedMatrixPlot extends MatrixPlot {
 	}
 	
 	private void createColTransform() {
-		Ontology targetOntology = Core.getInstance().getOntologyByID(matrix.getTargetOntologyID());
+		Ontology targetOntology = matrix.getTargetOntology();
 		List<Node> nodes = null;
 		
 		colLines = new ArrayList<Integer>();
@@ -80,8 +80,8 @@ public class OrderedMatrixPlot extends MatrixPlot {
 	}
 
 	private void createRowTransform() {
-		int ontId = matrix.getSourceOntologyID();
-		Ontology sourceOntology = Core.getInstance().getOntologyByID(ontId);
+
+		Ontology sourceOntology = matrix.getSourceOntology();
 		List<Node> nodes = null;
 		
 		rowLines = new ArrayList<Integer>();

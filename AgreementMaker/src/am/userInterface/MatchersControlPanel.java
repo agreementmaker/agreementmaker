@@ -313,7 +313,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		if(rowsIndex.length == 0) {
 			Utility.displayErrorPane("No matchers selected", null);
 		}
-		else 	new ExportDialog(); //demand control to the savefile dialog which since is modal will take care of everything
+		else 	new ExportDialog(Core.getUI().getUIFrame()); //demand control to the savefile dialog which since is modal will take care of everything
 	}
 	
 	public void importa() throws Exception {
@@ -683,7 +683,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 	public void resetMatchings() {
 		try {
 			Core core = Core.getInstance();
-			ArrayList<AbstractMatcher> matchers = core.getMatcherInstances();
+			List<AbstractMatcher> matchers = core.getMatcherInstances();
 			Iterator<AbstractMatcher> it = matchers.iterator();
 			//Take the UserManualMatcher and run it for the first time to create empty matrix and alignmentSet
 			UserManualMatcher userMatcher =(UserManualMatcher) it.next();

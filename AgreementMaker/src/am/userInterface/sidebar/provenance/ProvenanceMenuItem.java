@@ -1,10 +1,9 @@
 package am.userInterface.sidebar.provenance;
 
 import java.awt.Component;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
@@ -24,7 +23,7 @@ public class ProvenanceMenuItem extends JMenuItem implements MatcherChangeListen
 	@Override
 	public void matcherChanged(MatcherChangeEvent e) {
 		//check here to grey out the menu item
-		ArrayList<AbstractMatcher> c=Core.getInstance().getMatcherInstances();
+		List<AbstractMatcher> c = Core.getInstance().getMatcherInstances();
 		for(int i=0;i<c.size();i++){
 			if(c.get(i).supportsFeature(MatcherFeature.MAPPING_PROVENANCE) && c.get(i).getParam().storeProvenance){
 				this.setEnabled(true);

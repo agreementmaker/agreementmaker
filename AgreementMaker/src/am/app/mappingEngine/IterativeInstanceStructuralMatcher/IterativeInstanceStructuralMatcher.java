@@ -5,6 +5,23 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import am.AMException;
+import am.Utility;
+import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
+import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
+import am.app.ontology.Node;
+import am.app.ontology.Ontology;
+import am.userInterface.MatcherParametersDialog;
+
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
 import com.hp.hpl.jena.ontology.CardinalityRestriction;
@@ -23,26 +40,6 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-
-import am.Utility;
-import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
-import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcherParametersPanel;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
-import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
-import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
-import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
-import am.app.ontology.Node;
-import am.app.ontology.Ontology;
-import am.userInterface.MatcherParametersDialog;
-import am.userInterface.MatchingProgressDisplay;
 
 public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 	private static final long serialVersionUID = 3612931342445940115L;
@@ -241,14 +238,22 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		if(inputMatchers.size()>0){
 			AbstractMatcher input = inputMatchers.get(0);
 			//classesMatrix = input.getClassesMatrix();
-			classesMatrix = new ArraySimilarityMatrix(input.getClassesMatrix());
+			try {
+				classesMatrix = new ArraySimilarityMatrix(input.getClassesMatrix());
+			} catch( AMException e ) {
+				e.printStackTrace();
+			}
 			//propertiesMatrix = input.getPropertiesMatrix();
-			propertiesMatrix = new ArraySimilarityMatrix(input.getPropertiesMatrix());
+			try {
+				propertiesMatrix = new ArraySimilarityMatrix(input.getPropertiesMatrix());
+			} catch( AMException e ) {
+				e.printStackTrace();
+			}
 			//System.out.println();
 		}
 		else{
-			classesMatrix = new ArraySimilarityMatrix(sourceClassList.size(),targetClassList.size(),alignType.aligningClasses);
-			propertiesMatrix = new ArraySimilarityMatrix(sourcePropList.size(),targetPropList.size(),alignType.aligningProperties);
+			classesMatrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, alignType.aligningClasses);
+			propertiesMatrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, alignType.aligningProperties);
 		}
 		
 	}

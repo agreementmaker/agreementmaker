@@ -117,7 +117,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	
 	@Override
 	protected SimilarityMatrix alignNodesOneByOne( List<Node> sourceList, List<Node> targetList, alignType typeOfNodes) throws Exception {
-		SimilarityMatrix matrix = new SparseMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation); // TODO: Sparse Matrix instead of Array Matrix!
+		SimilarityMatrix matrix = new SparseMatrix(sourceOntology, targetOntology, typeOfNodes); // Sparse Matrix instead of Array Matrix.
 
 		if( referenceListOfPairs == null || referenceListOfPairs.size() == 0 ) 
 			return matrix; // nothing to do		

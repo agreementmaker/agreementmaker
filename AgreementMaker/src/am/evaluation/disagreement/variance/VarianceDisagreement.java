@@ -37,7 +37,8 @@ public class VarianceDisagreement extends DisagreementCalculationMethod {
 			int rows = matchersToConsider.get(0).getClassesMatrix().getRows();
 			int cols = matchersToConsider.get(0).getClassesMatrix().getColumns();
 			
-			SimilarityMatrix disagreementMatrix = new ArraySimilarityMatrix(rows, cols, alignType.aligningClasses );
+			SimilarityMatrix disagreementMatrix = new ArraySimilarityMatrix(matchersToConsider.get(0).getSourceOntology(), 
+					matchersToConsider.get(0).getTargetOntology(), alignType.aligningClasses );
 			
 			for( int i = 0; i < rows; i++ ) {
 				for( int j = 0; j < cols; j++ ) {
@@ -60,7 +61,8 @@ public class VarianceDisagreement extends DisagreementCalculationMethod {
 			int rows = matchersToConsider.get(0).getPropertiesMatrix().getRows();
 			int cols = matchersToConsider.get(0).getPropertiesMatrix().getColumns();
 			
-			SimilarityMatrix disagreementMatrix = new ArraySimilarityMatrix(rows, cols, alignType.aligningProperties );
+			SimilarityMatrix disagreementMatrix = new ArraySimilarityMatrix(matchersToConsider.get(0).getSourceOntology(),
+					matchersToConsider.get(0).getTargetOntology(), alignType.aligningProperties );
 			
 			for( int i = 0; i < rows; i++ ) {
 				for( int j = 0; j < cols; j++ ) {

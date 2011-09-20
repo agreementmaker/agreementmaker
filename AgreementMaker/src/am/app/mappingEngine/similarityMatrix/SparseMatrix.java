@@ -1,19 +1,13 @@
 package am.app.mappingEngine.similarityMatrix;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-
-import org.junit.Test;
-
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -23,6 +17,8 @@ import am.app.ontology.Ontology;
 
 public class SparseMatrix extends SimilarityMatrix
 {
+	private static final long serialVersionUID = 8533925694431657569L;
+	
 	private RowCell<Mapping> head;// LinkedList<LinkedList<RowCell>> rows;
 	/** The number of rows in this matrix. */
 	private final int numRows; 
@@ -35,29 +31,29 @@ public class SparseMatrix extends SimilarityMatrix
 	 * @param numRows The number of rows in the matrix.
 	 * @param numCols The number of columns in the matrix.
 	 */
-	public SparseMatrix(){
+/*	public SparseMatrix(){
 		numRows=4000;
 		numCols=4000;
 		head = new RowCell<Mapping>(-1,-1,null);
-	}
-	public SparseMatrix(int numRows, int numCols)
+	}*/
+	
+/*	public SparseMatrix(Ontology sourceOntology, Ontology targetOntology, alignType typeOfMatrix)
 	{
+		this.typeOfMatrix = typeOfMatrix;
+		this.sourceOntology = sourceOntology;
+		this.targetOntology = targetOntology;
+		
 		// save the dimensions
 		this.numRows = numRows;
 		this.numCols = numCols;
 		
 		//create the head of the LL
 		head = new RowCell<Mapping>(-1,-1,null);
-	}
+	}*/
 	
 	/** A method to clone the similarity matrix. */
 	public SparseMatrix(SparseMatrix cloneme){
-		this(cloneme.getRows(), cloneme.getColumns());
-		relation = cloneme.getRelation();
-    	typeOfMatrix = cloneme.getAlignType();
-    	
-    	sourceOntologyID = cloneme.getSourceOntologyID();
-    	targetOntologyID = cloneme.getTargetOntologyID();
+		this(cloneme.getSourceOntology(), cloneme.getTargetOntology(), cloneme.getAlignType());
     	
     	RowCell<Mapping> currentCol, currentRow;//these RowCells are the originals
     	
@@ -77,21 +73,32 @@ public class SparseMatrix extends SimilarityMatrix
     	}
 	}
 	
-	public SparseMatrix(Ontology s, Ontology t, alignType type) {
-		this();
-    	relation = MappingRelation.EQUIVALENCE;
-    	typeOfMatrix = type;
+	public SparseMatrix(Ontology sourceOntology, Ontology targetOntology, alignType typeOfMatrix) {
+		super(sourceOntology, targetOntology, typeOfMatrix);
     	
-    	sourceOntologyID=s.getID();
-    	targetOntologyID=t.getID();    	
+    	if( typeOfMatrix == alignType.aligningClasses ) { 
+    		numRows = sourceOntology.getClassesList().size();
+    		numCols = targetOntology.getClassesList().size();
+    	} else if ( typeOfMatrix == alignType.aligningProperties ) {
+    		numRows = sourceOntology.getPropertiesList().size();
+    		numCols = targetOntology.getPropertiesList().size();
+    	} else {
+    		System.err.println("Invalid typeOfMatrix: " + typeOfMatrix + ".  Assuming aligningClasses.");
+    		numRows = sourceOntology.getClassesList().size();
+    		numCols = targetOntology.getClassesList().size();
+    	}
+    	
+    	//create the head of the LL
+    	head = new RowCell<Mapping>(-1,-1,null);
+    	
 	}
 	
-	/** A constructor used in AbstractMatcher. */
+	/** A constructor used in AbstractMatcher. *//*
 	public SparseMatrix(int numRows, int numCols, alignType type, MappingRelation rel){
 		this(numRows, numCols);
     	relation = rel;
     	typeOfMatrix = type;
-	}
+	}*/
 	
 	@Override
 	public void set(int row, int column, Mapping obj)
@@ -227,7 +234,7 @@ public class SparseMatrix extends SimilarityMatrix
 	public Mapping get(int i, int j)
 	{
 		boolean done=false;
-		RowCell<Mapping> currentCell=head.nextr;
+		RowCell<Mapping> currentCell = head.nextr;
 		while(!done)
 		{
 			if(currentCell==null)
@@ -497,14 +504,14 @@ public class SparseMatrix extends SimilarityMatrix
 		
 	}
 	
-	@Override
+	/*@Override
 	public void setSimilarity(int i, int j, double d) {
 		// sets the similarity of a specified entry in the matrix
 		Mapping temp=get(i,j);
 		if(temp!=null)
 			temp.setSimilarity(d);
 		
-	}
+	}*/
 	
 	@Override
 	public SimilarityMatrix toArraySimilarityMatrix() {
@@ -577,8 +584,10 @@ public class SparseMatrix extends SimilarityMatrix
 	}
 
 	/** This class is used in the implementation of the SparseMatrix. */
-	protected class RowCell <E>
+	protected class RowCell <E> implements Serializable
 	{
+		private static final long serialVersionUID = 631655703709902789L;
+		
 		public int row, col;
 		public E object;
 		public RowCell<E> nextr=null, nextc=null, prevr=null, prevc=null;

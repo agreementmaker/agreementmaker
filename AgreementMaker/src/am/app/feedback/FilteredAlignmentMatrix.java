@@ -1,10 +1,10 @@
 package am.app.feedback;
 
+import am.AMException;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Ontology;
 
@@ -29,7 +29,7 @@ public class FilteredAlignmentMatrix extends ArraySimilarityMatrix {
 	public int[] numCellsFilteredPerColumn;
 	private boolean[][] isFiltered;
 	
-	public FilteredAlignmentMatrix( SimilarityMatrix am_new ) {
+	public FilteredAlignmentMatrix( SimilarityMatrix am_new ) throws AMException {
 		super( am_new );
 
 
@@ -51,7 +51,7 @@ public class FilteredAlignmentMatrix extends ArraySimilarityMatrix {
 	}
 	
 	//Cloning constructur
-	public FilteredAlignmentMatrix( FilteredAlignmentMatrix am_new ) {
+	public FilteredAlignmentMatrix( FilteredAlignmentMatrix am_new ) throws AMException {
 		super( am_new );
 
 		int numRows = am_new.getRows();
@@ -73,20 +73,20 @@ public class FilteredAlignmentMatrix extends ArraySimilarityMatrix {
 	}
 	
 	
-	public FilteredAlignmentMatrix(int numRows, int numCols, alignType typeOfNodes, MappingRelation relation) {
-		super( numRows, numCols, typeOfNodes, relation);
+	public FilteredAlignmentMatrix(Ontology sourceOntology, Ontology targetOntology, alignType typeOfNodes) {
+		super(sourceOntology, targetOntology, typeOfNodes);
 		
 		// initialize list of filtered rows and columns
-		numCellsFilteredPerRow = new int[numRows];//all 0 initially
-		numCellsFilteredPerColumn = new int[numCols];//all 0 initially
+		numCellsFilteredPerRow = new int[rows];//all 0 initially
+		numCellsFilteredPerColumn = new int[columns];//all 0 initially
 		
 		
 		// matrix of filtered cells
-		isFiltered = new boolean[numRows][numCols];
+		isFiltered = new boolean[rows][columns];
 		
 		// initialize the isFiltered matrix to false (at the beginning, nothing is filtered)
-		for( int i = 0; i < numRows; i++ ) {
-			for( int j = 0; j < numCols; j++ ) {
+		for( int i = 0; i < rows; i++ ) {
+			for( int j = 0; j < columns; j++ ) {
 				isFiltered[i][j] = false;
 			}
 		}
@@ -144,7 +144,7 @@ public class FilteredAlignmentMatrix extends ArraySimilarityMatrix {
 			
 			// set the alignment similarity to 1
 			//and validate the cell
-			setSimilarity(row, col, 1.00d);
+			data[row][col].similarity = 1.00d;
 			isFiltered[row][col] = true;
 			numCellsFilteredPerColumn[col]++;
 			numCellsFilteredPerRow[row]++;
@@ -238,9 +238,13 @@ public class FilteredAlignmentMatrix extends ArraySimilarityMatrix {
 	// return a copy of the matrix
 	@Override
 	public SimilarityMatrix clone(){
-		
-		FilteredAlignmentMatrix matrix = new FilteredAlignmentMatrix(this);
-		return matrix;
+		try {
+			FilteredAlignmentMatrix matrix = new FilteredAlignmentMatrix(this);
+			return matrix;
+		} catch( AMException e ) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 
@@ -269,7 +273,7 @@ public class FilteredAlignmentMatrix extends ArraySimilarityMatrix {
 			numCellsFilteredPerColumn[col]++;
 			numCellsFilteredPerRow[row]++;
 			if( data[row][col] != null ) {
-				data[row][col].setSimilarity(0.0d);
+				data[row][col].similarity = 0.0d;
 			}
 		}
 	}

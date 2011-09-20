@@ -18,14 +18,8 @@ public class VoidMatchingMethod implements MatchingMethod {
 		Ontology source = inputOntologies.getLeft();
 		Ontology target = inputOntologies.getRight();
 		
-		SimilarityMatrix classes = new ArraySimilarityMatrix(
-				source.getClassesList().size(),
-				target.getClassesList().size(),
-				alignType.aligningClasses);
-		SimilarityMatrix properties = new ArraySimilarityMatrix(
-				source.getPropertiesList().size(),
-				target.getPropertiesList().size(),
-				alignType.aligningProperties);
+		SimilarityMatrix classes = new ArraySimilarityMatrix( source, target, alignType.aligningClasses);
+		SimilarityMatrix properties = new ArraySimilarityMatrix( source, target, alignType.aligningProperties);
 		
 		return new Pair<SimilarityMatrix, SimilarityMatrix>(classes, properties);
 	}

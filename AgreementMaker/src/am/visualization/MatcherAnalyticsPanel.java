@@ -439,16 +439,16 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		
 		switch( type ) {
 		case CLASS_MATRIX: {
-			SimilarityMatrix matrix = new ArraySimilarityMatrix(Core.getInstance().getSourceOntology().getClassesList().size(), 
-																Core.getInstance().getTargetOntology().getClassesList().size(),
+			SimilarityMatrix matrix = new ArraySimilarityMatrix(Core.getInstance().getSourceOntology(), 
+																Core.getInstance().getTargetOntology(),
 																alignType.aligningClasses);	
 			MatrixPlotPanel newPanel = addPlot("Cluster View", matrix, new Gradient(Color.WHITE, Color.WHITE));
 			newPanel.setCluster(c);
 			break;
 		}
 		case PROPERTIES_MATRIX: {
-			SimilarityMatrix matrix = new ArraySimilarityMatrix(Core.getInstance().getSourceOntology().getPropertiesList().size(), 
-					Core.getInstance().getTargetOntology().getPropertiesList().size(),
+			SimilarityMatrix matrix = new ArraySimilarityMatrix(Core.getInstance().getSourceOntology(), 
+					Core.getInstance().getTargetOntology(),
 					alignType.aligningProperties);	
 			MatrixPlotPanel newPanel = addPlot("Cluster View", matrix, new Gradient(Color.WHITE, Color.WHITE));
 			newPanel.setCluster(c);

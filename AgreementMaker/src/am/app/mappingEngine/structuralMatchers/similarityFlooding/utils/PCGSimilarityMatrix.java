@@ -3,9 +3,8 @@
  */
 package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
 
-import am.app.mappingEngine.Mapping;
+import am.AMException;
 import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 
 /**
@@ -39,7 +38,7 @@ public class PCGSimilarityMatrix extends ArraySimilarityMatrix {
 //	private WrappingGraph sourceNodes;
 //	private WrappingGraph targetNodes;
 	
-	public PCGSimilarityMatrix( PCGSimilarityMatrix cloneme ) {
+	public PCGSimilarityMatrix( PCGSimilarityMatrix cloneme ) throws AMException {
     	super(cloneme);
     	sourceOrigSize = cloneme.sourceOrigSize;
     	targetOrigSize = cloneme.targetOrigSize;
@@ -48,11 +47,9 @@ public class PCGSimilarityMatrix extends ArraySimilarityMatrix {
 //    	targetNodes = cloneme.targetNodes;
 	}
 	
-	public PCGSimilarityMatrix(WrappingGraph s, WrappingGraph t, alignType aType) {
-		super(0, 0, aType);
+	public PCGSimilarityMatrix(WrappingGraph s, WrappingGraph t, alignType aType) throws AMException {
+		super(null, null, aType);
 		
-		relation = MappingRelation.EQUIVALENCE;
-    	typeOfMatrix = aType;
     	int M = 0;
     	int N = 0;
     	if(aType == alignType.aligningClasses){
@@ -80,7 +77,7 @@ public class PCGSimilarityMatrix extends ArraySimilarityMatrix {
     	
         this.rows = M;
         this.columns = N;
-        data = new Mapping[M][N];
+        data = new SimRel[M][N];
        
 //        sourceNodes = s; targetNodes = t;
 		
@@ -132,8 +129,7 @@ public class PCGSimilarityMatrix extends ArraySimilarityMatrix {
 	 * @return corresponding ASMatrix
 	 */
 	public ArraySimilarityMatrix toArraySimilarityMatrix(){
-		
-		ArraySimilarityMatrix asmNew = new ArraySimilarityMatrix(getSourceOrigSize(), getTargetOrigSize(), getAlignType());
+		ArraySimilarityMatrix asmNew = new ArraySimilarityMatrix(getSourceOntology(), getTargetOntology(), getAlignType());
 		for(int i = 0; i < getSourceOrigSize(); i++){
 			for(int j = 0; j < getTargetOrigSize(); j++){
 				asmNew.set(i, j, this.get(i, j));

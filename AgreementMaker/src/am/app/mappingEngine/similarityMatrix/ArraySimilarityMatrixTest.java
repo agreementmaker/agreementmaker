@@ -4,22 +4,23 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import am.app.mappingEngine.Mapping;
+import am.AMException;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping;
 
 public class ArraySimilarityMatrixTest {
-	@Test public void insertAndGet16000000() {
+	/*@Test public void insertAndGet16000000() throws AMException {
 		for(int j = 0; j < 1; j++){
 			System.out.println("staring run: "+j);
 			Random r = new Random();
 			//ArrayList<Integer> xVals = new ArrayList<Integer>();
 			//ArrayList<Integer> yVals = new ArrayList<Integer>();
-			/*
+			
 			for(int i = 0; i < 4000; i++){
 				xVals.add(new Integer(i));
 				yVals.add(new Integer(i));
 			}
-			*/
+			
 			 ArraySimilarityMatrix m=new  ArraySimilarityMatrix(3000,3000,alignType.aligningClasses);
 			//int[] x=new int[16000000];
 			//int[] y=new int[16000000];
@@ -38,7 +39,7 @@ public class ArraySimilarityMatrixTest {
 			}
 			long endInsert=System.currentTimeMillis();
 			
-			/*
+			
 			
 			//insert  entries in the matrix
 			for(int i=0;i<4000;i++){
@@ -55,7 +56,7 @@ public class ArraySimilarityMatrixTest {
 				xVals.remove(x1);
 				yVals.remove(y1);
 			}
-			*/
+			
 			System.out.println();
 			System.out.print("getting:");
 			long startGet = System.currentTimeMillis();
@@ -72,7 +73,7 @@ public class ArraySimilarityMatrixTest {
 				if(i%400==0)
 					System.out.print("->");
 			}
-			/*
+			
 			//check the entries
 			for(int i=0;i<4000;i++){
 				//System.out.println("getting i="+i+" : ("+x[i]+","+y[i]+")");
@@ -81,7 +82,7 @@ public class ArraySimilarityMatrixTest {
 				//System.out.println(temp);
 				assertTrue(temp.getSimilarity()==z[i]);
 			}
-			*/
+			
 			System.out.println();
 			long totalIn=endInsert-startInsert;
 			System.out.println("total time, insert (in seconds): "+((double)totalIn/1000.0));
@@ -91,5 +92,5 @@ public class ArraySimilarityMatrixTest {
 			
 			System.out.println("total time, get (in seconds): "+((double)totalGet/1000.0));
 		}
-	}
+	}*/
 }

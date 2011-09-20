@@ -67,16 +67,12 @@ public class UserManualMatcher extends AbstractMatcher {
 	/**Set all alignment sim to 0*/
 	@Override public void align() throws Exception {
 		
-		classesMatrix = new SparseMatrix(   sourceOntology.getClassesList().size(), 
-											targetOntology.getClassesList().size(),
-											alignType.aligningProperties, relation);
+		classesMatrix = new SparseMatrix( sourceOntology, targetOntology,	alignType.aligningProperties);
 		
 		//classesMatrix = new ArraySimilarityMatrix(sourceOntology.getClassesList().size(), targetOntology.getClassesList().size(), 
 		//		alignType.aligningClasses, relation);
 		
-		propertiesMatrix = new SparseMatrix( 	sourceOntology.getPropertiesList().size(), 
-												targetOntology.getPropertiesList().size(), 
-												alignType.aligningProperties, relation);
+		propertiesMatrix = new SparseMatrix( sourceOntology, targetOntology, alignType.aligningProperties);
 		//propertiesMatrix = new ArraySimilarityMatrix(sourceOntology.getPropertiesList().size(), targetOntology.getPropertiesList().size(), 
 		//		alignType.aligningProperties, relation);
 		

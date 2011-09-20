@@ -1,13 +1,14 @@
 package am.app.ontology.ontologyParser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.Alignment;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.utility.RunTimer;
@@ -163,6 +164,19 @@ public class OntoTreeBuilder extends TreeBuilder{
 			buildTreeDefault();
 			break;
 		}		
+		
+		// sorting in order to make serialization of similarity matrices work.
+		List<Node> classesList = ontology.getClassesList();
+		List<Node> propertiesList = ontology.getPropertiesList();
+		Collections.sort(ontology.getClassesList());
+		Collections.sort(ontology.getPropertiesList());
+		// fix the node indices
+		for( int i = 0; i < classesList.size(); i++ ) {
+			classesList.get(i).setIndex(i);
+		}
+		for( int i = 0; i < propertiesList.size(); i++ ) {
+			propertiesList.get(i).setIndex(i);
+		}
 		
 		timer.stop();
 		

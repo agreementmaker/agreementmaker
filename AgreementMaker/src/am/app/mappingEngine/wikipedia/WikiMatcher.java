@@ -27,7 +27,7 @@ public class WikiMatcher extends AbstractMatcher {
 	@Override
 	protected SimilarityMatrix alignClasses( List<Node> sourceClassList,
 			List<Node> targetClassList) throws Exception {
-		SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceClassList.size(), targetClassList.size(), alignType.aligningClasses);
+		SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, alignType.aligningClasses);
 		
 		for (int i = 0; i < sourceClassList.size(); i++) {
 			String name = sourceClassList.get(i).getLocalName();

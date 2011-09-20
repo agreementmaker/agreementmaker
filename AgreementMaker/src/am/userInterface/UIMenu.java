@@ -10,7 +10,6 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -58,7 +57,6 @@ import am.utility.numeric.AvgMinMaxNumber;
 import am.visualization.MatcherAnalyticsPanel;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 import am.visualization.matrixplot.MatrixPlotPanel;
-//import edu.uic.advis.im.userInterface.InformationMatchingMenu;
 
 
 public class UIMenu implements ActionListener {
@@ -671,7 +669,7 @@ public class UIMenu implements ActionListener {
 				showLexiconLookupPanel( Core.getInstance().getTargetOntology(), LexiconRegistry.WORDNET_LEXICON);
 			} else if( obj == TEMP_viewClassMatrix ) {
 				// get the currently selected matcher
-				ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
+				List<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
 				AbstractMatcher selectedMatcher;
 				int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
 				if( rowsIndex.length == 0 ) { Utility.displayErrorPane("No matcher is selected.", "Error"); return; }
@@ -687,7 +685,7 @@ public class UIMenu implements ActionListener {
 				Core.getUI().addTab("MatrixPlot Class", null , plotPanel , selectedMatcher.getRegistryEntry().getMatcherName());
 			} else if( obj == TEMP_viewPropMatrix ) {
 				// get the currently selected matcher
-				ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
+				List<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
 				AbstractMatcher selectedMatcher;
 				int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
 				if( rowsIndex.length == 0 ) { Utility.displayErrorPane("No matcher is selected.", "Error"); return; }

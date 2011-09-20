@@ -1,6 +1,6 @@
 package am.userInterface.table;
 
-import java.util.ArrayList;
+import java.awt.Color;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -10,8 +10,6 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.userInterface.UI;
-
-import java.awt.Color;
 
 public class MatchersControlPanelTableModel extends AbstractTableModel {
 		
@@ -67,7 +65,7 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
 					                                        "Prop Quality"
 					                                        };
         
-	public ArrayList<AbstractMatcher> data =  Core.getInstance().getMatcherInstances();
+	public List<AbstractMatcher> data =  Core.getInstance().getMatcherInstances();
 	
 	public final Object[] defaultValues = {
         		new Integer(99), 

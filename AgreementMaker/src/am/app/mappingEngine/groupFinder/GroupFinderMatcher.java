@@ -4,15 +4,17 @@
 package am.app.mappingEngine.groupFinder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import am.AMException;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MappingSimilarityComparator;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 
 /**
@@ -159,11 +161,11 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 * @param inputOntology the ontology that has to be grouped by depth
 	 * @author michele 
 	 */
-	protected List<Mapping> selectGroups(List<Node> sourceRoots, List<Node> targetRoots, SimilarityMatrix input, alignType typeOfNodes){
+	protected List<Mapping> selectGroups(List<Node> sourceRoots, List<Node> targetRoots, SimilarityMatrix input, alignType typeOfNodes)  throws AMException {
 		source_root_list = sourceRoots;
     	target_root_list = targetRoots;
-    	SimilarityMatrix localMatrix = new ArraySimilarityMatrix(source_root_list.size(), target_root_list.size(), typeOfNodes);
-    	localMatrix.initFromNodeList(source_root_list, target_root_list);
+    	Mapping[][] localMatrix = new Mapping[source_root_list.size()][target_root_list.size()];
+    	//localMatrix.initFromNodeList(source_root_list, target_root_list);
     	
     	// step 1: taking level 0 source concepts with their descendants and assigning groups
     	List<Mapping> localList = new ArrayList<Mapping>();
@@ -193,7 +195,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	    	double newSim = 0.0;
     		Node sourceRoot, targetRoot;
 	    	
-    		if(localList.size() > 0){
+    		if(localList.size() > 0){ // if is unnecessary -- Cosmin, Sept 17, 2011
 		    	for(int k = 0; k < localList.size(); k++){
 		    		selectedMapping = localList.get(k);
 		    		//System.out.println();
@@ -208,9 +210,10 @@ public class GroupFinderMatcher extends AbstractMatcher {
 		    		//System.out.println("sourceIndex " + sourceInd);
 		    		int targetInd = target_root_list.indexOf(targetRoot);
 		    		//System.out.println("targetIndex " + targetInd);
-		    		newSim = selectedMapping.getSimilarity() + localMatrix.getSimilarity(sourceInd, targetInd);
+		    		newSim = selectedMapping.getSimilarity() + localMatrix[sourceInd][targetInd].getSimilarity();
 		    		//System.out.println("newSim " + newSim);
-		    		localMatrix.set(sourceInd, targetInd, new Mapping( sourceRoot, targetRoot, newSim) );
+		    		//localMatrix.set(sourceInd, targetInd, new Mapping( sourceRoot, targetRoot, newSim) );
+		    		localMatrix[sourceInd][targetInd] = new Mapping( sourceRoot, targetRoot, newSim );
 		    		//System.out.println("localMatrix updated ");
 		    		localCount.set(targetInd, localCount.get(targetInd) + 1);
 		    		//System.out.println("localCount updated ");
@@ -224,7 +227,25 @@ public class GroupFinderMatcher extends AbstractMatcher {
     		}*/
     	}
     	
-		return localMatrix.chooseBestN();
+    	
+    	// choose best N
+    	List<Mapping> allMappings = new ArrayList<Mapping>();
+    	for( int i = 0; i < localMatrix.length; i++ ) {
+    		for( int j = 0; j < localMatrix[i].length; j++ ){
+    			allMappings.add(localMatrix[i][j]);
+    		}
+    	}
+    	
+    	Collections.sort(allMappings, new MappingSimilarityComparator());
+    	
+    	List<Mapping> bestMappings = new ArrayList<Mapping>();
+    	for( int i = 0; i < Math.min(source_root_list.size(),target_root_list.size()); i++ ) {
+    		Mapping maxSim = Collections.max(allMappings, new MappingSimilarityComparator());
+    		bestMappings.add(maxSim);
+    		allMappings.remove(maxSim);
+    	}
+    	
+		return bestMappings; //localMatrix.chooseBestN();
 	}
 	
 	protected void matchGroups(SimilarityMatrix input, Node sourceRoot, Node targetRoot, alignType typeOfNodes){

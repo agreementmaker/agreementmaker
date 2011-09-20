@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import am.Utility;
 import am.app.Core;
@@ -85,7 +86,7 @@ public class OutputController {
 	 * @throws Exception
 	 */
 	public static void printDocumentOAEI(String completeFileName) throws Exception{
-		ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
+		List<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
 		AbstractMatcher matcher;
 
 		//TO DO:
@@ -149,7 +150,7 @@ public class OutputController {
 	
 	public static String getAllSelectedAlignmentsStrings(int[] rowsIndex) {
 		String result = "";
-		ArrayList<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
+		List<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
 		AbstractMatcher matcher;
 		for(int i = 0; i < rowsIndex.length; i++) {
 			matcher = list.get(rowsIndex[i]);

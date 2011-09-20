@@ -77,7 +77,7 @@ public class ConceptMatcher extends AbstractMatcher {
 	
 	// this method is exactly similar to the abstract method, except we pass one extra parameters to the alignTwoNodes function
     protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) {
-		SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes, relation);
+		SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, typeOfNodes);
 		Node source;
 		Node target;
 		//first go through and extract the longest defined concept for each node

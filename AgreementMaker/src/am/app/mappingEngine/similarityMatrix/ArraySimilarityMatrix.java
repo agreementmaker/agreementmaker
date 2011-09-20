@@ -2,11 +2,13 @@ package am.app.mappingEngine.similarityMatrix;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import am.AMException;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
@@ -16,33 +18,56 @@ import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
-public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializable {
+public class ArraySimilarityMatrix extends SimilarityMatrix {
 
 	private static final long serialVersionUID = 7152244093634002737L;
 	
+	protected List<Node> rowNodes;
+	protected List<Node> colNodes;
+
+	protected class SimRel implements Serializable{
+		private static final long serialVersionUID = 3340618624390143439L;
+		
+		public double similarity;
+		public MappingRelation relation;
+		
+		SimRel(double similarity, MappingRelation relation) {
+			this.similarity = similarity;
+			this.relation = relation;
+		}
+	}
+	
     protected int rows;             // number of rows
     protected int columns;             // number of columns
-    protected Mapping[][] data;   // M-by-N array
+    protected SimRel[][] data;   // M-by-N array
 
 	// cloning constructor
-    public ArraySimilarityMatrix( SimilarityMatrix cloneme ) {
-    	
-	    	relation = cloneme.getRelation();
-	    	typeOfMatrix = cloneme.getAlignType();
-	    	
-	    	sourceOntologyID = cloneme.getSourceOntologyID();
-	    	targetOntologyID = cloneme.getTargetOntologyID();
+    public ArraySimilarityMatrix( SimilarityMatrix cloneme ) throws AMException {
+    		super(cloneme.getSourceOntology(), cloneme.getTargetOntology(), cloneme.getAlignType());
+	    	//relation = cloneme.getRelation();
 	    	
 	    	rows = cloneme.getRows();
 	    	columns = cloneme.getColumns();
+	    	    		
+	    	if( typeOfMatrix == alignType.aligningClasses ) { 
+	    		rowNodes = sourceOntology.getClassesList();
+	    		colNodes = targetOntology.getClassesList();
+	    	} else if ( typeOfMatrix == alignType.aligningProperties ) {
+	    		rowNodes = sourceOntology.getPropertiesList();
+	    		colNodes = targetOntology.getPropertiesList();
+	    	} else {
+	    		System.err.println("Invalid typeOfMatrix: " + typeOfMatrix + ".  Assuming aligningClasses.");
+	    		rowNodes = sourceOntology.getClassesList();
+	    		colNodes = targetOntology.getClassesList();
+	    	}
 	    	
-	    	data = new Mapping[rows][columns];
+	    	data = new SimRel[rows][columns];
 	    	
 	   		for(int i=0; i< cloneme.getRows(); i++) {
 	   			for(int j = 0; j < cloneme.getColumns(); j++) {
 	   				Mapping a = cloneme.get(i, j);
 	   				if( a != null ) {
-	   					data[i][j] = new Mapping(a.getEntity1(), a.getEntity2(), a.getSimilarity(), a.getRelation(), a.getAlignmentType());
+	   					data[i][j] = new SimRel(a.getSimilarity(), a.getRelation());
 	   				} else data[i][j] = null;
 	   			}
 	   		}
@@ -50,57 +75,96 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
     }
     
  // create M-by-N matrix of 0's with equivalence relation
-    public ArraySimilarityMatrix(Ontology s, Ontology t, alignType type) {
-    	relation = MappingRelation.EQUIVALENCE;
-    	typeOfMatrix = type;
-    	if(type == alignType.aligningClasses){
-            this.rows = s.getClassesList().size();
-            this.columns = t.getClassesList().size();
+    public ArraySimilarityMatrix(Ontology source, Ontology target, alignType type) {
+    	super(source,target,type);
+    	//relation = MappingRelation.EQUIVALENCE;
+   			
+    	if( typeOfMatrix == alignType.aligningClasses ) {
+    		this.rows = source.getClassesList().size();
+            this.columns = target.getClassesList().size();
+    		rowNodes = source.getClassesList();
+    		colNodes = target.getClassesList();
+    	} else if ( typeOfMatrix == alignType.aligningProperties ) {
+    		rowNodes = source.getPropertiesList();
+    		colNodes = target.getPropertiesList();
+    	} else {
+    		System.err.println("Invalid typeOfMatrix: " + typeOfMatrix + ".  Assuming aligningClasses.");
+    		rowNodes = source.getClassesList();
+    		colNodes = target.getClassesList();
     	}
-    	else{
-            this.rows = s.getPropertiesList().size();
-            this.columns = t.getPropertiesList().size();
-    	}
-        data = new Mapping[this.rows][this.columns];
+    	
+    	this.rows = rowNodes.size();
+        this.columns = colNodes.size();
+    	
+        data = new SimRel[this.rows][this.columns];
     }
     
     // create M-by-N matrix of 0's with equivalence relation
-    public ArraySimilarityMatrix(int M, int N, alignType type) {
-    	relation = MappingRelation.EQUIVALENCE;
+    /*public ArraySimilarityMatrix(int M, int N, alignType type) throws AMException {
+    	//relation = MappingRelation.EQUIVALENCE;
     	typeOfMatrix = type;
         this.rows = M;
         this.columns = N;
-        data = new Mapping[M][N];
-    }
+        
+        Ontology source = Core.getInstance().getOntologyByID(sourceOntologyID);
+		if( source == null ) throw new AMException("No ontology found with ID = " + sourceOntologyID);
+    	
+		Ontology target = Core.getInstance().getOntologyByID(targetOntologyID);
+		if( target == null ) throw new AMException("No ontology found with ID = " + targetOntologyID);
+		
+    	if( typeOfMatrix == alignType.aligningClasses ) { 
+    		rowNodes = source.getClassesList();
+    		colNodes = target.getClassesList();
+    	} else if ( typeOfMatrix == alignType.aligningProperties ) {
+    		rowNodes = source.getPropertiesList();
+    		colNodes = target.getPropertiesList();
+    	} else {
+    		System.err.println("Invalid typeOfMatrix: " + typeOfMatrix + ".  Assuming aligningClasses.");
+    		rowNodes = source.getClassesList();
+    		colNodes = target.getClassesList();
+    	}
+        
+        data = new SimRel[M][N];
+    }*/
      
     // create M-by-N matrix of 0's
-    public ArraySimilarityMatrix(int M, int N, alignType type, MappingRelation rel) {
+    /*public ArraySimilarityMatrix(int M, int N, alignType type, MappingRelation rel) {
     	relation = rel;
     	typeOfMatrix = type;
         this.rows = M;
         this.columns = N;
-        data = new Mapping[M][N];
-    }
+        
+        data = new SimRel[M][N];
+    }*/
     
     //junit constructor
    //public ArraySimilarityMatrix(){}
     //public void initData(int m, int n){data=new Mapping[m][n];}
     
-    
-    public Mapping get(int i, int j) {  return data[i][j];  }
-    
     @Override
-    public void set(int i, int j, Mapping d) { data[i][j] = d; }
-    
-    @Override
-    public double getSimilarity(int i, int j){
-    	if( data[i][j] == null ) {
-    		return 0.00d;
-    	}
-    	return data[i][j].getSimilarity();
+    public Mapping get(int i, int j) {
+    	if( data[i][j] == null ) return null;  
+    	return new Mapping( rowNodes.get(i), colNodes.get(j), data[i][j].similarity, data[i][j].relation);
     }
     
     @Override
+    public void set(int i, int j, Mapping d) { 
+    	if( d != null ) {
+	    	//if( rowNodes[i] == null ) rowNodes[i] = d.getEntity1();
+	    	//if( colNodes[j] == null ) colNodes[j] = d.getEntity2();
+	    	data[i][j] = new SimRel(d.getSimilarity(), d.getRelation()); 
+    	} else {
+    		data[i][j] = null;
+    	}
+    }
+    
+    @Override
+    public double getSimilarity(int i, int j){
+    	if( data[i][j] == null ) { return 0.00d; }
+    	return data[i][j].similarity;
+    }
+    
+    /*@Override
     public void setSimilarity(int i, int j, double d){
     	if( data[i][j] == null ) {
     		
@@ -124,7 +188,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
     	else {
     		data[i][j].setSimilarity(d);
     	}
-    }
+    }*/
     
     public int getRows() {
     	return rows;
@@ -225,9 +289,14 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 	}
 	
 	@Override
-	public SimilarityMatrix clone(){
-		SimilarityMatrix matrix = new ArraySimilarityMatrix(this);
-		return matrix;
+	public SimilarityMatrix clone() {
+		try {
+			SimilarityMatrix matrix = new ArraySimilarityMatrix(this);
+			return matrix;
+		} catch( AMException e ) {
+			e.printStackTrace();
+			return null;
+		}
 	}
     
 	@Override
@@ -276,10 +345,11 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 
     // create and return the transpose of the invoking matrix
     public SimilarityMatrix transpose() {
-        SimilarityMatrix A = new ArraySimilarityMatrix(columns, rows, typeOfMatrix, relation);
+    	
+        SimilarityMatrix A = new ArraySimilarityMatrix(targetOntology, sourceOntology, typeOfMatrix);
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++)
-                A.set(i,j, this.data[i][j]);
+                A.set(i,j, new Mapping(rowNodes.get(i),colNodes.get(j),data[i][j].similarity,data[i][j].relation));
         return A;
     }
 
@@ -287,7 +357,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
     public SimilarityMatrix plus(SimilarityMatrix B) {
         SimilarityMatrix A = this;
         if (B.getRows() != A.getRows() || B.getColumns() != A.getColumns()) throw new RuntimeException("Illegal matrix dimensions.");
-        SimilarityMatrix C = new ArraySimilarityMatrix(rows, columns, typeOfMatrix, relation);
+        SimilarityMatrix C = new ArraySimilarityMatrix(sourceOntology, targetOntology, typeOfMatrix);
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++) {
             	Mapping m1 = A.get(i,j);
@@ -308,7 +378,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
     public SimilarityMatrix minus(SimilarityMatrix B) {
         SimilarityMatrix A = this;
         if (B.getRows() != A.getRows() || B.getColumns() != A.getColumns()) throw new RuntimeException("Illegal matrix dimensions.");
-        SimilarityMatrix C = new ArraySimilarityMatrix(rows, columns, typeOfMatrix, relation);
+        SimilarityMatrix C = new ArraySimilarityMatrix(sourceOntology, targetOntology, typeOfMatrix);
         for (int i = 0; i < rows; i++)
             for (int j = 0; j < columns; j++) {
             	Mapping m1 = A.get(i,j);
@@ -338,7 +408,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
     public SimilarityMatrix times(SimilarityMatrix B) {
         SimilarityMatrix A = this;
         if (B.getRows() != A.getRows() || B.getColumns() != A.getColumns()) throw new RuntimeException("Illegal matrix dimensions.");
-        SimilarityMatrix C = new ArraySimilarityMatrix(A.getRows(), B.getColumns(), typeOfMatrix, relation);
+        SimilarityMatrix C = new ArraySimilarityMatrix(A.getSourceOntology(), B.getTargetOntology(), typeOfMatrix);
         for (int i = 0; i < C.getRows(); i++)
             for (int j = 0; j < C.getColumns(); j++)
                 for (int k = 0; k < A.getColumns(); k++) {
@@ -381,7 +451,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 				if(data[i][j] == null){
 					result[i][j] = 0;
 				}
-				else result[i][j] = data[i][j].getSimilarity();
+				else result[i][j] = data[i][j].similarity;
 			}
 		}
 		return result;
@@ -396,10 +466,13 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 	 */
 	@Override
 	public void initFromNodeList(List<Node> sourceList, List<Node> targetList) {
-		for(int i = 0; i < sourceList.size(); i++){
-			for(int j = 0; j < targetList.size(); j++){
-				data[i][j] = new Mapping(sourceList.get(i), targetList.get(j), 0.0);
-			}
+		rowNodes = new ArrayList<Node>();
+		for( int i = 0; i < sourceList.size(); i++ ) {
+			rowNodes.add(sourceList.get(i));
+		}
+		
+		for( int j = 0; j < targetList.size(); j++ ) {
+			colNodes.add(targetList.get(j));
 		}
 	}
 	
@@ -530,7 +603,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 		
 		for( int i = 0; i < data.length; i++ ) {
 			for( int j = 0; j < data[i].length; j++ ) {
-				if( data[i][j] != null && data[i][j].getSimilarity() > max ) { max = data[i][j].getSimilarity(); }
+				if( data[i][j] != null && data[i][j].similarity > max ) { max = data[i][j].similarity; }
 			}
 		}
 		
@@ -546,8 +619,8 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 		for( int i = 0; i < data.length; i++ ) {
 			for( int j = 0; j < data[i].length; j++ ) {
 				if( data[i][j] == null ) continue; 
-				if( topK[k-1] == null || topK[k-1].getSimilarity() < data[i][j].getSimilarity() ) {
-					topK[k-1] = data[i][j];
+				if( topK[k-1] == null || topK[k-1].getSimilarity() < data[i][j].similarity ) {
+					topK[k-1] = new Mapping(rowNodes.get(i), colNodes.get(j), data[i][j].similarity, data[i][j].relation);
 					// the bubble rises up the array
 					for( int l = k-1; l > 0; l-- ) {
 						if( topK[l-1] == null || topK[l-1].getSimilarity() < topK[l].getSimilarity() ) {
@@ -576,8 +649,8 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 			for( int j = 0; j < data[i].length; j++) {
 				if( filteredCells[i][j] ) continue;  // this cell is filtered, go on to the next one
 				if( data[i][j] == null ) continue; 
-				if( topK[k-1] == null || topK[k-1].getSimilarity() < data[i][j].getSimilarity() ) {
-					topK[k-1] = data[i][j];
+				if( topK[k-1] == null || topK[k-1].getSimilarity() < data[i][j].similarity ) {
+					topK[k-1] = new Mapping(rowNodes.get(i), colNodes.get(j), data[i][j].similarity, data[i][j].relation);
 					// the bubble rises up the array
 					for( int l = k-1; l > 0; l-- ) {
 						if( topK[l-1] == null || topK[l-1].getSimilarity() < topK[l].getSimilarity() ) {
@@ -664,4 +737,30 @@ public class ArraySimilarityMatrix extends SimilarityMatrix implements Serializa
 		System.out.println("total time (in seconds): "+(total/100)/500);
 	}
 	*/
+	
+	/**
+	 * This method required to restore the ArraySimilarityMatrix
+	 * @param in
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		sourceOntology = Core.getInstance().getSourceOntology();
+		targetOntology = Core.getInstance().getTargetOntology();
+		
+		if( typeOfMatrix == alignType.aligningClasses ) {
+    		this.rows = sourceOntology.getClassesList().size();
+            this.columns = targetOntology.getClassesList().size();
+    		rowNodes = sourceOntology.getClassesList();
+    		colNodes = targetOntology.getClassesList();
+    	} else if ( typeOfMatrix == alignType.aligningProperties ) {
+    		rowNodes = sourceOntology.getPropertiesList();
+    		colNodes = targetOntology.getPropertiesList();
+    	} else {
+    		System.err.println("Invalid typeOfMatrix: " + typeOfMatrix + ".  Assuming aligningClasses.");
+    		rowNodes = sourceOntology.getClassesList();
+    		colNodes = targetOntology.getClassesList();
+    	}
+		
+	}
 }

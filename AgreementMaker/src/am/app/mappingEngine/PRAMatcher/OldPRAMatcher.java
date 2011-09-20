@@ -107,7 +107,7 @@ public class OldPRAMatcher extends AbstractMatcher
 		
 		//Now we align nodes by considering only nodes in the subtrees of matched nodes
 		//Initialize matrix before aligning nodes, cos this method will access matrix
-		matrix = new ArraySimilarityMatrix(sourceList.size(), targetList.size(), typeOfNodes);
+		matrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, typeOfNodes);
 		alignNodes(typeOfNodes);
 		
 		
