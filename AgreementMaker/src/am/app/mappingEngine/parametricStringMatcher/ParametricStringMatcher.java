@@ -52,6 +52,10 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		
 		//features
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
+		
+		// all the similarity measures do not overlap with eachother, so we can invoke multiple alignTwoNode() methods.
+		addFeature(MatcherFeature.THREADED_MODE);
+		addFeature(MatcherFeature.THREADED_OVERLAP);
 	}
 	
 	public String getDescriptionString() {
