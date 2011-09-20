@@ -24,11 +24,13 @@ import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarity
 import am.app.mappingEngine.mediatingMatcher.MediatingMatcherParameters;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.oaei.OAEI_Track;
+import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters.OAEI2011Configuration;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 import am.app.ontology.Ontology;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.app.ontology.profiling.ProfilerRegistry;
+import am.app.ontology.profiling.classification.OntologyClassificator;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
 
@@ -70,7 +72,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
     	
     	OAEI2011MatcherParameters p = (OAEI2011MatcherParameters) param;
     	
-    	progressDisplay.ignoreComplete(true);
+    	progressDisplay.ignoreComplete(true); //TODO I have to remove this
     	
     	AbstractMatcher finalResult = null;
     	if( p.automaticConfiguration ) {
@@ -97,7 +99,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
     		}
     	}
 		
-    	progressDisplay.ignoreComplete(false);
+    	progressDisplay.ignoreComplete(false);// TODO I removed it!! 
     	
 		if( finalResult != null ) {
 			//finalResult.select();
@@ -114,7 +116,35 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	}
 	
 	private AbstractMatcher automaticConfiguration() throws Exception {
-		throw new Exception("Automatic configuration not implemented.");
+		AbstractMatcher finalResult = null;
+		OAEI2011Configuration conf = OntologyClassificator.classifiedOntologiesOEAI2011(sourceOntology, targetOntology);
+		
+		switch( conf ) {
+		case LARGE_LEXICAL: {
+			finalResult = runLexicalBased();
+		}
+		break;
+		case GENERAL_PURPOSE: {
+			finalResult = runGeneralPurpose();
+		}
+		break;
+		case GENERAL_MULTI: {
+			finalResult = runMultiOntologyBased();
+		}
+		break;
+		case GENERAL_PURPOSE_ADVANCED: {
+			finalResult = runGeneralPurposeAdvanced();
+		}
+		break;
+		default:{
+			finalResult = runGeneralPurpose();
+		}
+		break;
+		}
+		
+		
+		return finalResult;
+		//throw new Exception("Automatic configuration not implemented.");
 	}
 	
 	private AbstractMatcher runGeneralPurpose() throws Exception {
@@ -653,7 +683,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		runSubMatcher(gfm, "Submatcher 4/4: GFM( LWC )");
 		//return gfm;
 
-		getProgressDisplay().ignoreComplete(false);
+		getProgressDisplay().ignoreComplete(false); //TODO : i remove this
 		return gfm;
 	}
 	
