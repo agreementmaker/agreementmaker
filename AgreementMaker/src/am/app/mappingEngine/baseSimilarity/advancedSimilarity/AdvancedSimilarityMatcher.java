@@ -16,7 +16,7 @@ import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
-import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrixOld;
 import am.app.ontology.Node;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.utility.Pair;
@@ -238,7 +238,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		ParametricStringMatcher localMatcher = new ParametricStringMatcher();
 		localMatcher.setParam(localMatcherParams);
 		localMatcher.initializeNormalizer();
-		SimilarityMatrix localMatrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, typeOfNodes);
+		SimilarityMatrix localMatrix = new ArraySimilarityMatrixOld(source.size(), target.size(), typeOfNodes);
 		
 		/* ------------- BEGIN FOR #1 --------------- */
 		double tempValue = 0.0;
