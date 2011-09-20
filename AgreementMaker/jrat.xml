@@ -7,8 +7,12 @@
     <profile name="AgreementMaker">
 
         <criteria>
-            <include className="am.app.mappingEngine.LexicalSynonymMatcher" methodName="*" signature="*" />
-			<include className="LexicalSynonymMatcher" methodName="*" signature="*" />
+            <include className="am.app.mappingEngine.baseSimilarity.advancedSimilarity" methodName="*" signature="*" />
+			<include className="AdvancedSimilarityMatcher" methodName="*" signature="*" />
+			<include className="am.app.mappingEngine.similarityMatrix" methodName="*" signature="*" />
+			<include className="ArraySimilarityMatrix" methodName="*" signature="*" />
+			<include className="am.app.mappingEngine.parametricStringMatcher" methodName="*" signature="*" />
+			<include className="ParametricStringMatcher" methodName="*" signature="*" />
         </criteria>
 
         <handlers>
