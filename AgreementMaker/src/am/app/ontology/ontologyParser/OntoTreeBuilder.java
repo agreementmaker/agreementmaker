@@ -540,7 +540,7 @@ public class OntoTreeBuilder extends TreeBuilder{
     }*/
 	
     private Node createNode( OntResource entity, boolean isClass, int sourceOrTarget ) {
-    	Node node;
+    	Node node = null;
     	if( processedSubs.containsKey(entity) ) {
     		node = processedSubs.get(entity);
     	}

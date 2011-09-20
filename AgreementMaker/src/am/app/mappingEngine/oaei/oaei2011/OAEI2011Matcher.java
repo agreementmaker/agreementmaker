@@ -185,6 +185,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			}
 		}
 		
+		manualProfiler.setMatchTimeParams(profilingMatchingParams);
+		
 		// BSM
 		List<AbstractMatcher> lwcInputMatchers = new ArrayList<AbstractMatcher>();
 		
@@ -331,7 +333,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			AbstractMatcher asm = MatcherFactory.getMatcherInstance(MatchersRegistry.AdvancedSimilarity, 0);
 			
 			AdvancedSimilarityParameters asmParam = new AdvancedSimilarityParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
-			asmParam.useLabels = true;
+			asmParam.useLabels = false;
 			
 			setupSubMatcher(asm, asmParam);
 			runSubMatcher(asm, "ASM 1/6");
