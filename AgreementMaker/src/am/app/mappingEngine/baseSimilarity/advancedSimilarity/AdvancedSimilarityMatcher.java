@@ -4,7 +4,6 @@
 package am.app.mappingEngine.baseSimilarity.advancedSimilarity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,12 +11,12 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MappingSimilarityComparator;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.utility.Pair;
@@ -231,7 +230,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	private double contentWordCheck(ArrayList<String> source, ArrayList<String> target, alignType typeOfNodes) throws Exception {
 		// initializing local variables
 		int sSize = source.size(), tSize = target.size();
-		//String s = null, t = null;
+		String s = null, t = null;
 		
 		// initializing local matcher (to be abstracted) and matrix
 		ParametricStringParameters localMatcherParams = new ParametricStringParameters();
@@ -239,27 +238,24 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		ParametricStringMatcher localMatcher = new ParametricStringMatcher();
 		localMatcher.setParam(localMatcherParams);
 		localMatcher.initializeNormalizer();
-		//SimilarityMatrix localMatrix = new ArraySimilarityMatrix(source.size(), target.size(), typeOfNodes);
-		double[][] localMatrix = new double[sSize][tSize];
-		
+		SimilarityMatrix localMatrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, typeOfNodes);
 		
 		/* ------------- BEGIN FOR #1 --------------- */
 		double tempValue = 0.0;
 		// DEBUG INFO
 		// System.out.println(source.toString() + " " + target.toString());
 		for(int i = 0; i < sSize; i++){
-			String s = source.get(i).toLowerCase();
+			s = source.get(i).toLowerCase();
 					
 			/* ------------- BEGIN FOR #2 --------------- */
 			for(int j = 0; j < tSize; j++){
 				
-				String t = target.get(j).toLowerCase();
+				t = target.get(j).toLowerCase();
 				tempValue = ((ParametricStringMatcher) localMatcher).performStringSimilarity(s, t);
 				//localMatrix.setSimilarity(i, j, tempValue);
-				/*localMatrix.set(i, j, new Mapping(new Node(i, s, typeOfNodes.toString(), sourceOntology.getIndex()),
+				localMatrix.set(i, j, new Mapping(new Node(i, s, typeOfNodes.toString(), sourceOntology.getIndex()),
 								new Node(j, t, typeOfNodes.toString(), targetOntology.getIndex()),
-								tempValue));*/
-				localMatrix[i][j] = tempValue;
+								tempValue));
 				
 				// DEBUG INFO
 				// System.out.println(s + " " + t + " " + localMatrix.getSimilarity(i, j));
@@ -268,28 +264,9 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		}
 		/* ------------- END FOR #1 --------------- */
 
-
-		List<Mapping> localResult = new ArrayList<Mapping>();
+		List<Mapping> localResult = localMatrix.chooseBestN();
 		
-		//localMatrix.chooseBestN();
-		for( int i = 0; i < sSize; i++ ) {
-			for( int j = 0; j < sSize; j++ ) {
-				Node sourceNode = new Node(i, source.get(i).toLowerCase(), typeOfNodes.toString(), sourceOntology.getIndex());
-				Node targetNode = new Node(j, target.get(j).toLowerCase(), typeOfNodes.toString(), targetOntology.getIndex());
-				Mapping m = new Mapping( sourceNode, targetNode, localMatrix[i][j] );
-				localResult.add(m);
-			}
-		}
-		
-		// choose the best min(sSize,tSize) mappings
-		bestMappings = new ArrayList<Mapping>();
-		Collections.sort(localResult, new MappingSimilarityComparator());
-		int len = Math.min(sSize, tSize);
-		for( int i = 0; i < len; i++ ) {
-			Mapping maxSim = Collections.max(localResult, new MappingSimilarityComparator());
-			bestMappings.add(maxSim);
-			localResult.remove(maxSim);
-		}
+		bestMappings=localResult;
 		
 		double simValue = 0;
 		for(int i = 0; i < localResult.size(); i++){
