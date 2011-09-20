@@ -18,6 +18,8 @@ import java.util.Random;
 
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.oaei.OAEI_Track;
+import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters;
+import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters.OAEI2011Configuration;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.classification.trainingGeneration.OutputTrainingGenerator;
 import am.app.ontology.profiling.classification.trainingGeneration.Winner;
@@ -1655,11 +1657,12 @@ public String testModel(OutputTrainingGenerator o, TestSet t){
 	public static Ontology openOntology(String ontoName){
 		Ontology ontology;
 		try {
-			OntoTreeBuilder treeBuilder = new OntoTreeBuilder(ontoName, GlobalStaticVariables.SOURCENODE,
-					GlobalStaticVariables.LANG_OWL, 
-					GlobalStaticVariables.SYNTAX_RDFXML, false, true);
-			treeBuilder.build();
-			ontology = treeBuilder.getOntology();
+			ontology = OntoTreeBuilder.loadOWLOntology(ontoName);
+//			OntoTreeBuilder treeBuilder = new OntoTreeBuilder(ontoName, GlobalStaticVariables.SOURCENODE,
+//					GlobalStaticVariables.LANG_OWL, 
+//					GlobalStaticVariables.SYNTAX_RDFXML, false, true);
+//			treeBuilder.build();
+//			ontology = treeBuilder.getOntology();
 		} catch (Exception e) {
 			System.out.println("Failed To open the ontology!");
 			e.printStackTrace();
@@ -1687,6 +1690,36 @@ public String testModel(OutputTrainingGenerator o, TestSet t){
 		return result[0];
 	
 	}
+	
+public static OAEI2011Configuration classifiedOntologiesOEAI2011(Ontology sourceOntology,Ontology targetOntology) {
+		String modelFileName = "Classification/cModel.model";
+		String outputTrainingGeneratorFileName = "Classification/finalTraining.xml"; 
+		
+		String result = classifiedOntologiesST(sourceOntology, targetOntology, modelFileName, outputTrainingGeneratorFileName);
+		/*
+		
+		OutputTrainingGenerator o = new OutputTrainingGenerator(outputTrainingGeneratorFileName);
+		
+		OntologyClassificator oc = new OntologyClassificator(o,modelFileName);
+	
+		OntologyEvaluation eval1 = new OntologyEvaluation();
+		OntologyEvaluation eval2 = new OntologyEvaluation();
+		CoupleOntologyMetrics com = new CoupleOntologyMetrics(eval1.evaluateOntology(sourceOntology), eval2.evaluateOntology(targetOntology));
+		CoupleOntologyMetrics[] coupleTesting = new CoupleOntologyMetrics[1];
+		coupleTesting[0] = com;
+		
+		String [] result = oc.classifiedCoupleOntology(coupleTesting);*/
+		
+		if (result.equals("general_purpose")) return OAEI2011Configuration.GENERAL_PURPOSE; //ex benchmark
+		if (result.equals("general_purpose_advanced")) return OAEI2011Configuration.GENERAL_PURPOSE_ADVANCED;
+		if (result.equals("general_multi")) return OAEI2011Configuration.GENERAL_MULTI;
+		if (result.equals("large_lexical")) return OAEI2011Configuration.LARGE_LEXICAL;
+		
+		return OAEI2011Configuration.GENERAL_PURPOSE; 
+	
+	}
+	
+	
 	
 	
 	
