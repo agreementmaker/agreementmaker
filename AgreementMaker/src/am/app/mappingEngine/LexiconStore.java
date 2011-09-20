@@ -77,11 +77,11 @@ public class LexiconStore implements OntologyChangeListener {
 			if( Core.getInstance().getSourceOntology() == ont ) {  // source
 				OntologyLexiconBuilder sourceOLB;
 				if( params.sourceUseSCSLexicon ) {
-					sourceOLB = new STLexiconBuilder(ont, params.sourceUseLocalname,
-						params.sourceLabelProperties, params.sourceSynonyms, params.sourceDefinitions);
+					sourceOLB = new STLexiconBuilder(ont, params.sourceUseLocalname, 
+							params.sourceSynonyms, params.sourceDefinitions);
 				} else {
 					sourceOLB = new OntologyLexiconBuilder(ont, params.sourceUseLocalname,
-						params.sourceLabelProperties, params.sourceSynonyms, params.sourceDefinitions);
+							params.sourceSynonyms, params.sourceDefinitions);
 				}
 	
 				Lexicon sourceOntologyLexicon = sourceOLB.buildLexicon();
@@ -93,10 +93,10 @@ public class LexiconStore implements OntologyChangeListener {
 				OntologyLexiconBuilder targetOLB;
 				if( params.targetUseSCSLexicon ) {
 					targetOLB = new STLexiconBuilder(ont, params.targetUseLocalname,
-						params.targetLabelProperties, params.targetSynonyms, params.targetDefinitions);
+						params.targetSynonyms, params.targetDefinitions);
 				} else {
 					targetOLB = new OntologyLexiconBuilder(ont, params.targetUseLocalname,
-						params.targetLabelProperties, params.targetSynonyms, params.targetDefinitions);
+						params.targetSynonyms, params.targetDefinitions);
 				}
 				
 				Lexicon targetOntologyLexicon = targetOLB.buildLexicon();
@@ -122,15 +122,31 @@ public class LexiconStore implements OntologyChangeListener {
 		
 	}
 	public void buildAll() throws Exception {
-		if( !Core.getInstance().ontologiesLoaded() ) {
-			throw new RuntimeException("You must load the source and target ontologies before you can build lexicons.");
+		
+		if( params == null ) {
+			throw new NullPointerException("You must set parameters to the lexicon store.");
 		}
 		
-		build(LexiconRegistry.ONTOLOGY_LEXICON, Core.getInstance().getSourceOntology() );
-		build(LexiconRegistry.ONTOLOGY_LEXICON, Core.getInstance().getTargetOntology() );
+		build(LexiconRegistry.ONTOLOGY_LEXICON, params.sourceOntology );
+		build(LexiconRegistry.ONTOLOGY_LEXICON, params.targetOntology );
 		
-		build(LexiconRegistry.WORDNET_LEXICON, Core.getInstance().getSourceOntology() );
-		build(LexiconRegistry.WORDNET_LEXICON, Core.getInstance().getTargetOntology() );
+		build(LexiconRegistry.WORDNET_LEXICON, params.sourceOntology );
+		build(LexiconRegistry.WORDNET_LEXICON, params.targetOntology );
+	}
+	
+	public void buildAll( LexiconBuilderParameters params ) throws Exception{
+		
+		setParameters(params);
+		
+		if( params == null ) {
+			throw new NullPointerException("You must set parameters to the lexicon store.");
+		}
+		
+		build(LexiconRegistry.ONTOLOGY_LEXICON, params.sourceOntology );
+		build(LexiconRegistry.ONTOLOGY_LEXICON, params.targetOntology );
+		
+		build(LexiconRegistry.WORDNET_LEXICON, params.sourceOntology );
+		build(LexiconRegistry.WORDNET_LEXICON, params.targetOntology );
 	}
 		
 

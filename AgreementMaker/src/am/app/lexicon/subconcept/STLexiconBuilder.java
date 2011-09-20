@@ -28,9 +28,9 @@ public class STLexiconBuilder
 	   implements SubconceptSynonymLexiconBuilder {
 
 	public STLexiconBuilder(Ontology ont, boolean includeLN,
-			List<Property> label, List<Property> synonym,
+			List<Property> synonym,
 			List<Property> definition) {
-		super(ont, includeLN, label, synonym, definition);
+		super(ont, includeLN, synonym, definition);
 		currentLexicon = new STLexicon( LexiconRegistry.ONTOLOGY_LEXICON );
 	}
 

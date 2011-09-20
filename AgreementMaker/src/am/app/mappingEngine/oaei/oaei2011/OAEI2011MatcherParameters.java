@@ -9,6 +9,16 @@ import am.app.mappingEngine.oaei.OAEI_Track;
  */
 public class OAEI2011MatcherParameters extends AbstractParameters {
 
+	public enum OAEI2011Configuration {
+		GENERAL_PURPOSE,
+		GENERAL_PURPOSE_ADVANCED,
+		LARGE_LEXICAL,
+		GENERAL_MULTI,
+		;
+	}
+	
+	public OAEI2011Configuration selectedConfiguration;
+	
 	public OAEI2011MatcherParameters() { 
 		super(); 
 	}

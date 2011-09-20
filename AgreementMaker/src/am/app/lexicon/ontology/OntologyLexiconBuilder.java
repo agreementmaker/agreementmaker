@@ -15,7 +15,6 @@ import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
 import com.hp.hpl.jena.ontology.AnnotationProperty;
-import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -36,7 +35,7 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 public class OntologyLexiconBuilder implements LexiconBuilder {
 
 	protected List<Property> synonymProperty;
-	protected List<Property> labelProperty;
+	//protected List<Property> labelProperty;
 	protected List<Property> definitionProperty;
 
 	protected Ontology currentOntology;
@@ -45,12 +44,11 @@ public class OntologyLexiconBuilder implements LexiconBuilder {
 	
 	protected Lexicon currentLexicon;
 	
-	public OntologyLexiconBuilder( Ontology ont, boolean includeLN, List<Property> label, List<Property> synonym, List<Property> definition ) {
+	public OntologyLexiconBuilder( Ontology ont, boolean includeLN, List<Property> synonym, List<Property> definition ) {
 		currentOntology = ont;
 		currentLexicon = new GeneralLexicon( LexiconRegistry.ONTOLOGY_LEXICON );
 		
 		synonymProperty = synonym;
-		labelProperty = label;
 		definitionProperty = definition;
 		includeLocalname = includeLN;
 	}
@@ -65,7 +63,7 @@ public class OntologyLexiconBuilder implements LexiconBuilder {
 					Node currentClassNode = classesIterator.next();
 					OntClass currentClass = currentClassNode.getResource().as(OntClass.class);
 
-					ArrayList<String> synonyms = getAllSynonyms( currentClass, labelProperty, synonymProperty );
+					ArrayList<String> synonyms = getAllSynonyms( currentClass, synonymProperty );
 					if( synonyms.isEmpty() ) continue; // skip this class if it has no synonyms
 
 					// Step 1.  Check if any of these word forms are in the Lexicon already. (probably don't need to do this???)
@@ -139,7 +137,7 @@ public class OntologyLexiconBuilder implements LexiconBuilder {
 				Node currentPropertyNode = propertiesIterator.next();
 				OntProperty currentClass = currentPropertyNode.getResource().as(OntProperty.class);
 				
-				ArrayList<String> synonyms = getAllSynonyms( currentClass, labelProperty, synonymProperty );
+				ArrayList<String> synonyms = getAllSynonyms( currentClass, synonymProperty );
 				if( synonyms.isEmpty() ) continue; // skip this class if it has no synonyms
 				
 				// Step 1.  Check if any of these word forms are in the Lexicon already. (probably don't need to do this???)
@@ -217,14 +215,14 @@ public class OntologyLexiconBuilder implements LexiconBuilder {
 	 * @return
 	 * @throws Exception 
 	 */
-	private ArrayList<String> getAllSynonyms(OntClass currentClass, List<Property> labelProperty, List<Property> synProperty) throws Exception {
+	private ArrayList<String> getAllSynonyms(OntClass currentClass, List<Property> synProperty) throws Exception {
 		ArrayList<String> synList = new ArrayList<String>();
 		
 		if( includeLocalname ) {
 			synList.add( currentClass.getLocalName() );
 		}
 		
-		for( Property currentProperty : labelProperty ) {
+		/*for( Property currentProperty : labelProperty ) {
 			StmtIterator currentLabels = currentClass.listProperties(currentProperty);
 			while( currentLabels.hasNext() ) {
 				Statement currentLabel = currentLabels.nextStatement();
@@ -236,7 +234,7 @@ public class OntologyLexiconBuilder implements LexiconBuilder {
 					if( !synList.contains(labelString) ) synList.add(labelString);
 				}
 			}
-		}
+		}*/
 		
 		for( Property currentProperty : synProperty ) {
 			StmtIterator currentSynonyms = currentClass.listProperties(currentProperty);
@@ -270,14 +268,14 @@ public class OntologyLexiconBuilder implements LexiconBuilder {
 	 * @return
 	 * @throws Exception 
 	 */
-	private ArrayList<String> getAllSynonyms(OntProperty currentClass, List<Property> labelProperty, List<Property> synProperty) throws Exception {
+	private ArrayList<String> getAllSynonyms(OntProperty currentClass, List<Property> synProperty) throws Exception {
 		ArrayList<String> synList = new ArrayList<String>();
 		
 		if( includeLocalname ) {
 			synList.add( currentClass.getLocalName() );
 		}
 		
-		for( Property currentProperty : labelProperty ) {
+		/*for( Property currentProperty : labelProperty ) {
 			StmtIterator currentLabels = currentClass.listProperties(currentProperty);
 			while( currentLabels.hasNext() ) {
 				Statement currentLabel = currentLabels.nextStatement();
@@ -289,7 +287,7 @@ public class OntologyLexiconBuilder implements LexiconBuilder {
 					if( !synList.contains(labelString) ) synList.add(labelString);
 				}
 			}
-		}
+		}*/
 		
 		for( Property currentProperty : synProperty ) {
 			StmtIterator currentSynonyms = currentClass.listProperties(currentProperty);
@@ -326,7 +324,6 @@ public class OntologyLexiconBuilder implements LexiconBuilder {
 		// instantiate the source lists.
 		lexiconParams.sourceDefinitions = new ArrayList<Property>();
 		lexiconParams.sourceSynonyms = new ArrayList<Property>();
-		lexiconParams.sourceLabelProperties = new ArrayList<Property>();
 		
 		// find the synonym and definition annotations.
 		// TODO: Figure out a better way to do this other than to look for "synonym" and "definition" in the name.
@@ -342,18 +339,18 @@ public class OntologyLexiconBuilder implements LexiconBuilder {
 		}
 		
 		// find the label property.
-		ExtendedIterator<DatatypeProperty> sourceDatatypeIter = sourceModel.listDatatypeProperties();
+/*		ExtendedIterator<DatatypeProperty> sourceDatatypeIter = sourceModel.listDatatypeProperties();
 		while( sourceDatatypeIter.hasNext() ) {
 			DatatypeProperty p = sourceDatatypeIter.next();
 			if( p.getLocalName().equals("label") ) {
 				lexiconParams.sourceLabelProperties.add(p);
 			}
-		}
+		}*/
 		
 		// instantiate the target lists.
 		lexiconParams.targetDefinitions = new ArrayList<Property>();
 		lexiconParams.targetSynonyms = new ArrayList<Property>();
-		lexiconParams.targetLabelProperties = new ArrayList<Property>();
+		//lexiconParams.targetLabelProperties = new ArrayList<Property>();
 		
 		// find the synonym and definition annotations.
 		// TODO: Figure out a better way to do this other than to look for "synonym" and "definition" in the name. (same problem as above).
@@ -369,13 +366,13 @@ public class OntologyLexiconBuilder implements LexiconBuilder {
 		}
 		
 		// find the label property.
-		ExtendedIterator<DatatypeProperty> targetDatatypeIter = targetModel.listDatatypeProperties();
+		/*ExtendedIterator<DatatypeProperty> targetDatatypeIter = targetModel.listDatatypeProperties();
 		while( targetDatatypeIter.hasNext() ) {
 			DatatypeProperty p = targetDatatypeIter.next();
 			if( p.getLocalName().equals("label") ) {
 				lexiconParams.sourceLabelProperties.add(p);
 			}
-		}
+		}*/
 		
 		return lexiconParams;
 	}

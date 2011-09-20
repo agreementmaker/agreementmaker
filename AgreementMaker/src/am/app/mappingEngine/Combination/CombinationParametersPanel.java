@@ -3,18 +3,19 @@ package am.app.mappingEngine.Combination;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.ParallelGroup;
+import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JRadioButton;
-import javax.swing.GroupLayout.ParallelGroup;
-import javax.swing.GroupLayout.SequentialGroup;
+
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 
 
@@ -30,7 +31,7 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 	private static final long serialVersionUID = -3220525418599504107L;
 
 	private CombinationParameters parameters;
-	private ArrayList<AbstractMatcher> inputMatchers;
+	private List<AbstractMatcher> inputMatchers;
 	private JLabel topLabel;
 	private JLabel combinationTypeL;
 
@@ -57,7 +58,7 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 	private JComboBox qualityCombo;
 	
 	
-	public CombinationParametersPanel(ArrayList<AbstractMatcher> matchers) {
+	public CombinationParametersPanel(List<AbstractMatcher> matchers) {
 		super();
 		//init components
 		inputMatchers = matchers;

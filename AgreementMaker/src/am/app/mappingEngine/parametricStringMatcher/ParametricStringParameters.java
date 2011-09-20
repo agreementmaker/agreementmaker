@@ -33,7 +33,7 @@ public class ParametricStringParameters extends AbstractParameters {
 	public double lexWNDefinitionWeight = 0.10;
 	
 	//Normalization operations
-	NormalizerParameter normParameter = new NormalizerParameter();
+	public NormalizerParameter normParameter = new NormalizerParameter();
 	
 	public ParametricStringParameters() { super(); }
 	

@@ -380,6 +380,9 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 		if( e.getSource() == btnOk ) {
 			LexiconBuilderParameters params = new LexiconBuilderParameters();
 			
+			params.sourceOntology = Core.getInstance().getSourceOntology();
+			params.targetOntology = Core.getInstance().getTargetOntology();
+			
 			params.sourceUseLocalname = sourceUseLocalnames.isSelected();
 			params.targetUseLocalname = targetUseLocalnames.isSelected();
 			
@@ -406,7 +409,7 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 				if( targetDefinition.isSelectedIndex(i) ) params.targetDefinitions.add(targetProperties.get(i));
 			}
 			
-			Ontology sourceOntology = Core.getInstance().getSourceOntology();
+			/*Ontology sourceOntology = Core.getInstance().getSourceOntology();
 			OntModel sourceOntModel = sourceOntology.getModel();
 			params.sourceLabelProperties = new ArrayList<Property>();
 			Property sourceRDFSLabel = sourceOntModel.getProperty(Ontology.RDFS + "label"); // TODO: Make this customizable by the user.
@@ -428,7 +431,7 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 			} else {
 				// choose rdfs:label as the label property
 				params.targetLabelProperties.add( targetRDFSLabel );
-			}
+			}*/
 						
 			Core.getLexiconStore().setParameters(params);
 			

@@ -1,7 +1,7 @@
 package am.app.mappingEngine.multiWords;
 
 
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.JCheckBox;
@@ -25,7 +25,7 @@ public class MultiWordsPairWiseParametersPanel extends AbstractMatcherParameters
 
 	private MultiWordsPairWiseParameters parameters;
 	
-	private ArrayList<AbstractMatcher> inputMatchers;
+	private List<AbstractMatcher> inputMatchers;
 	
 	private JLabel titleLabel = new JLabel("Advanced parametrization is allowed. Non exepert users can keep default values.");
 	private JLabel selectMetricLabel = new JLabel("Select multi-words string similarity metric: "); 
@@ -48,7 +48,7 @@ public class MultiWordsPairWiseParametersPanel extends AbstractMatcherParameters
 	 * them to this panel.  It also creates the parameters object.
 	 * 
 	 */
-	public MultiWordsPairWiseParametersPanel(ArrayList<AbstractMatcher> matchers) {
+	public MultiWordsPairWiseParametersPanel(List<AbstractMatcher> matchers) {
 		
 		super();
 		//init components

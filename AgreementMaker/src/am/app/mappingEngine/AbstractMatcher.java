@@ -89,7 +89,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected InstanceDataset sourceInstanceDataset;
 	protected InstanceDataset targetInstanceDataset;
 	
-	
+	// TODO: Move as many field variables into AbstractParameters as we can.  -- Cosmin. 9/19/2011
 	/**If the algo calculates prop alignments*/
 	protected boolean alignProp;
 	/**If the algo calculates prop alignments*/
@@ -97,7 +97,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/** True if the matcher will match instances, false otherwise. */
 	protected boolean alignInstances;
 	/***Some algorithms may need other algorithms as input*/
-	protected ArrayList<AbstractMatcher> inputMatchers;
+	protected List<AbstractMatcher> inputMatchers;
 	/**Minum and maximum number of input matchers
 	 * a generic matcher which doesn't need any inputs should have 0, 0
 	 * */
@@ -1228,11 +1228,12 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		this.maxInputMatchers = maxInputMatchers;
 	}
 
-	public ArrayList<AbstractMatcher> getInputMatchers() {
+	public List<AbstractMatcher> getInputMatchers() {
 		return inputMatchers;
 	}
     
 	public void addInputMatcher(AbstractMatcher a) {
+		if( inputMatchers == null ) inputMatchers = new ArrayList<AbstractMatcher>();
 		inputMatchers.add(a);
 	}
 
@@ -1301,7 +1302,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		this.executionTime = executionTime;
 	}
 	
-	public void setInputMatchers(ArrayList<AbstractMatcher> inputMatchers) {
+	public void setInputMatchers(List<AbstractMatcher> inputMatchers) {
 		this.inputMatchers = inputMatchers;
 	}
 	//***********************MEthods used by the interface for some small tasks**************************

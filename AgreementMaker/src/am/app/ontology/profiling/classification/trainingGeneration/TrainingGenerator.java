@@ -1,9 +1,7 @@
 package am.app.ontology.profiling.classification.trainingGeneration;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -19,11 +17,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import weka.core.FastVector;
-
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.Property;
 
 import am.GlobalStaticVariables;
 import am.Utility;
@@ -45,9 +38,10 @@ import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.classification.ClassificatorRegistry;
 import am.app.ontology.profiling.classification.OntologyClassificator;
-import am.app.ontology.profiling.classification.TestSet;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.utility.LocalnameComparator;
+
+import com.hp.hpl.jena.rdf.model.Property;
 
 public class TrainingGenerator {
 	
@@ -452,7 +446,7 @@ public static void testClassified() {
 				Core.getInstance().setTargetOntology(targetOnto);
 				
 				//built the lexicons.. 
-				buildLex();
+				buildLex(sourceOnto, targetOnto);
 				
 				//benchmarks configuration
 				param = new OAEI2010MatcherParameters(OAEI_Track.Benchmarks);
@@ -568,7 +562,7 @@ public static void testClassified() {
 			Core.getInstance().setTargetOntology(targetOnto);
 
 			//built the lexicons.. 
-			buildLex();
+			buildLex(sourceOnto, targetOnto);
 
 			double maxFMeasure = 0.0;
 			String maxClass = classList.getFirst();
@@ -632,10 +626,13 @@ public static void testClassified() {
 		return null;
 	}
 
-	public static void buildLex(){
+	public static void buildLex(Ontology sourceOnto, Ontology targetOnto){
 		LexiconBuilderParameters params = new LexiconBuilderParameters();
 		
 		//TODO: how i have to set these parameters? 
+		params.sourceOntology = sourceOnto;
+		params.targetOntology = targetOnto;
+		
 		params.sourceUseLocalname = true;
 		params.targetUseLocalname = true;
 		
@@ -684,7 +681,7 @@ public static void testClassified() {
 		}
 		
 		
-		OntModel sourceOntModel = sourceOntology.getModel();
+		/*OntModel sourceOntModel = sourceOntology.getModel();
 		params.sourceLabelProperties = new ArrayList<Property>();
 		Property sourceRDFSLabel = sourceOntModel.getProperty(Ontology.RDFS + "label"); // TODO: Make this customizable by the user.
 		if( sourceRDFSLabel == null ) {
@@ -693,10 +690,10 @@ public static void testClassified() {
 		} else {
 			// choose rdfs:label as the label property
 			params.sourceLabelProperties.add( sourceRDFSLabel );
-		}
+		}*/
 		
 		
-		OntModel targetOntModel = targetOntology.getModel();
+		/*OntModel targetOntModel = targetOntology.getModel();
 		params.targetLabelProperties = new ArrayList<Property>();
 		Property targetRDFSLabel = targetOntModel.getProperty(Ontology.RDFS + "label"); // TODO: Make this customizable by the user.
 		if( targetRDFSLabel == null ) {
@@ -705,7 +702,7 @@ public static void testClassified() {
 		} else {
 			// choose rdfs:label as the label property
 			params.targetLabelProperties.add( targetRDFSLabel );
-		}
+		}*/
 					
 		Core.getLexiconStore().setParameters(params);
 		

@@ -5,12 +5,12 @@ import am.app.mappingEngine.oaei.OAEI_Track;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 
 public class CombinationParameters extends AbstractParameters {
-	
+
 	/**Available math operations to combine similarity values, all these operations are weighted, if user select no weights then weights will be 1 for all matchers*/
-	final static String MAXCOMB = "Max similarity";
-	final static String MINCOMB = "Min similarity";
-	final static String AVERAGECOMB = "Average of similarities";
-	final static String SIGMOIDAVERAGECOMB = "Sigmoid average";
+	public final static String MAXCOMB = "Max similarity";
+	public final static String MINCOMB = "Min similarity";
+	public final static String AVERAGECOMB = "Average of similarities";
+	public final static String SIGMOIDAVERAGECOMB = "Sigmoid average";
 	
 	public String combinationType = AVERAGECOMB; //selected math operation.
 	

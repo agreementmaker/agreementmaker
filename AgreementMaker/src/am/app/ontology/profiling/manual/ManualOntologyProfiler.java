@@ -123,7 +123,7 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 	 * any annotation properties not in the list already that are defined on this class.
 	 */
 	public static void createClassAnnotationsList(
-			List<Property> annotationList, Node classNode) {
+			List<Property> annotationList, Node classNode) {  // TODO: Change the LIST to a SET. -- Cosmin 9/19/2011
 		
 		OntClass currentClass = (OntClass) classNode.getResource().as(OntClass.class);
 		StmtIterator i = currentClass.listProperties();
