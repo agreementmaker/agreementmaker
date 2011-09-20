@@ -27,6 +27,9 @@ import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.oaei.OAEI_Track;
+import am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher;
+import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters;
+import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters.OAEI2011Configuration;
 import am.app.mappingEngine.oaei2010.OAEI2010Matcher;
 import am.app.mappingEngine.oaei2010.OAEI2010MatcherParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -38,7 +41,9 @@ import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.classification.ClassificatorRegistry;
 import am.app.ontology.profiling.classification.OntologyClassificator;
+import am.app.ontology.profiling.classification.TestSet;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
+import am.userInterface.console.ConsoleProgressDisplay;
 import am.utility.LocalnameComparator;
 
 import com.hp.hpl.jena.rdf.model.Property;
@@ -52,24 +57,36 @@ public class TrainingGenerator {
 		//test("OAEI2011/path.xml");
 		//testThreshold();
 		//testClassified();
-	/*	
+		
 		//create the object input training that contains a list of matcher, parameters and classes
 		InputTrainingGenerator i = new InputTrainingGenerator();
 		
-		OAEI2010Matcher matcher = new OAEI2010Matcher();
+		OAEI2011Matcher matcher = new OAEI2011Matcher();
+		matcher.setProgressDisplay( new ConsoleProgressDisplay() );
 		//i have to set the name otherwise it will be "undefinedMatcher"
-		matcher.setName("OEAI10"); //TODO: cosmin why if i don't set this name, the getName returns null?? 
+		matcher.setName("OEAI11"); //TODO: cosmin why if i don't set this name, the getName returns null?? 
 		
 		//set the parameters for each matcher
-		OAEI2010MatcherParameters param1 = new OAEI2010MatcherParameters(OAEI_Track.Benchmarks);
-		OAEI2010MatcherParameters param2 = new OAEI2010MatcherParameters(OAEI_Track.Anatomy);
-		OAEI2010MatcherParameters param3 = new OAEI2010MatcherParameters(OAEI_Track.Conference);
+		OAEI2011MatcherParameters param1 = new OAEI2011MatcherParameters();
+		param1.automaticConfiguration = false;
+		param1.selectedConfiguration = OAEI2011Configuration.GENERAL_PURPOSE; //ex benchmark
+		OAEI2011MatcherParameters param2 = new OAEI2011MatcherParameters();
+		param2.automaticConfiguration = false;
+		param2.selectedConfiguration = OAEI2011Configuration.GENERAL_PURPOSE_ADVANCED; // benchmark++
+		OAEI2011MatcherParameters param3 = new OAEI2011MatcherParameters();
+		param3.automaticConfiguration = false;
+		param3.selectedConfiguration = OAEI2011Configuration.GENERAL_MULTI; // ex conference
+		OAEI2011MatcherParameters param4 = new OAEI2011MatcherParameters();
+		param4.automaticConfiguration = false;
+		param4.selectedConfiguration = OAEI2011Configuration.LARGE_LEXICAL; // ex conference
+		
 		
 		//add the test to the list of matcher i want to try
 		try {
-			i.addTest(matcher, param1, "benchmark");
-			i.addTest(matcher, param2, "anatomy");
-			i.addTest(matcher, param3, "conference");
+			i.addTest(matcher, param1, "general_purpose");
+			i.addTest(matcher, param2, "general_purpose_advanced");
+			i.addTest(matcher, param3, "general_multi");
+			i.addTest(matcher, param4, "large_lexical");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -80,18 +97,18 @@ public class TrainingGenerator {
 		
 		//save the object on disk
 		try {
-			o.storeFile("Classification/prova3.xml");
+			o.storeFile("Classification/finalTraining.xml");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		*/
+		
 		//load the object from file
-		OutputTrainingGenerator o2 = new OutputTrainingGenerator("Classification/prova3.xml");
-		//o2.storeTableVisual("Classification/visualTableConfiguration.txt");
+		//OutputTrainingGenerator o2 = new OutputTrainingGenerator("Classification/finalTraining.xml");
+		o.storeTableVisual("Classification/visualTableFinalTraining.txt");
 	
 		
-			
+	/*		
 		//create the model with the output training
 		//OntologyClassificator oc = new OntologyClassificator(o2,ClassificatorRegistry.C_NaiveBayes);
 		OntologyClassificator oc = new OntologyClassificator(o2);
@@ -105,11 +122,11 @@ public class TrainingGenerator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+			
 		//store the model
-		oc.storeModel("Classification/test4.model");
+		oc.storeModel("Classification/cModel.model");
 		System.out.println("MODEL STORED!");
-	/*	
+	
 		*/
 		
 	/*	
@@ -119,34 +136,34 @@ public class TrainingGenerator {
 		OntologyClassificator oc2 = new OntologyClassificator(o3,"Classification/test3.model");
 		
 		
-		
+			
 		//create the test set of ontology from file
 		TestSet testSet = new TestSet("Classification/testOnto.xml");
+	
 		*/
 		
-		//classified a set of ontologies
-	/*	String [] result = oc2.classifiedCoupleOntology(testSet);
-		for (int j = 0; j < result.length; j++) {
-			System.out.println(result[j]);
-		}*/
 		
 		
 		
-		
-	/*
+	/*	
+	
 		//Evaluate the model 
 		String evaluation = oc.testModel(o2, testSet);
 		System.out.println(evaluation);
 		
 		
-		*/
-		
+			//classified a set of ontologies
+		String [] result = oc.classifiedCoupleOntology(testSet);
+		for (int j = 0; j < result.length; j++) {
+			System.out.println(result[j]);
+		}
+	*/
 		
 	/*	
 		// cross Validate the model
 		oc2.crossValidation(o3, 10, 3);
 		
-		*/
+		
 		
 		//classified two ontology
 		Ontology sourceOntology = OntologyClassificator.openOntology("OAEI2011/anatomy/human.owl");
@@ -154,7 +171,7 @@ public class TrainingGenerator {
 		String cl = OntologyClassificator.classifiedOntologiesST(sourceOntology,targetOntology,"Classification/test4.model", "Classification/prova3.xml");
 		System.out.println(cl);
 		
-		
+		*/
 		
 		
 		
@@ -165,7 +182,7 @@ public class TrainingGenerator {
 	
 	
 	public static void testThreshold() {
-		
+	/*	
 		//create the object input training that contains a list of matcher, parameters and classes
 		InputTrainingGenerator i = new InputTrainingGenerator();
 		
@@ -248,12 +265,12 @@ public class TrainingGenerator {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
 	
-	/*	//load the object from file
+		//load the object from file
 		OutputTrainingGenerator o2 = new OutputTrainingGenerator("Classification/prova2.xml");
-		o2.storeTableVisual("Classification/visualTable.txt");
+		//o2.storeTableVisual("Classification/visualTable.txt");
 			
 		//create the model with the output training
 		//OntologyClassificator oc = new OntologyClassificator(o2,ClassificatorRegistry.C_NaiveBayes);
@@ -268,7 +285,7 @@ public class TrainingGenerator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+	/*	
 		//store the model
 		oc.storeModel("Classification/test3.model");
 		System.out.println("MODEL STORED!");
@@ -282,27 +299,29 @@ public class TrainingGenerator {
 		OntologyClassificator oc2 = new OntologyClassificator(o3,"Classification/test3.model");
 		
 		
-		
-		//create the test set of ontology from file
-		TestSet testSet = new TestSet("Classification/testsOntology.xml");
 		*/
-		
-		//classified a set of ontologies
-	/*	String [] result = oc2.classifiedCoupleOntology(testSet);
-		for (int j = 0; j < result.length; j++) {
-			System.out.println(result[j]);
-		}*/
+		//create the test set of ontology from file
+		TestSet testSet = new TestSet("Classification/testOntoThreshold.xml");
 		
 		
 		
 		
-	/*
+		/**/
+		
+		
+		/*
+		*/
+	
 		//Evaluate the model 
-		String evaluation = oc2.testModel(o3, testSet);
+		String evaluation = oc.testModel(o2, testSet);
 		System.out.println(evaluation);
 		
-		*/
 		
+		//classified a set of ontologies
+		String [] result = oc.classifiedCoupleOntology(testSet);
+		for (int j = 0; j < result.length; j++) {
+			System.out.println(result[j]);
+		}
 		
 		
 	/*	
@@ -717,7 +736,7 @@ public static void testClassified() {
 	}
 	
 	
-	public static Ontology loadOntology(String fileName){
+/*	public static Ontology loadOntology(String fileName){
 		System.out.println("Loading ontology " +  fileName);
 		// load source ontology
 		Ontology sourceOntology = null;
@@ -734,8 +753,24 @@ public static void testClassified() {
 			e.printStackTrace();
 			return null;
 		}
-	}
+	}*/
 	
+	public static Ontology loadOntology(String ontoName){
+		Ontology ontology;
+		try {
+			ontology = OntoTreeBuilder.loadOWLOntology(ontoName);
+//			OntoTreeBuilder treeBuilder = new OntoTreeBuilder(ontoName, GlobalStaticVariables.SOURCENODE,
+//					GlobalStaticVariables.LANG_OWL, 
+//					GlobalStaticVariables.SYNTAX_RDFXML, false, true);
+//			treeBuilder.build();
+//			ontology = treeBuilder.getOntology();
+		} catch (Exception e) {
+			System.out.println("Failed To open the ontology!");
+			e.printStackTrace();
+			return null;
+		}
+		return ontology;
+	}
 	
 	
 	
@@ -824,7 +859,7 @@ public static void testClassified() {
 		//		writerRecall.write(currentThreshold + "," + Utility.roundDouble( currentEvaluation.getRecall(), 2) + "\n");
 		//		writerFMeasure.write(currentThreshold + "," + Utility.roundDouble( currentEvaluation.getFmeasure(), 2) + "\n");
 				
-				System.out.println("O1: "+sourceOntologyName + "O2: "+ targetOntologyName);
+				System.out.println("O1: "+sourceOntologyName + " O2: "+ targetOntologyName);
 				
 				
 				result[0] = Utility.roundDouble( currentEvaluation.getPrecision() * 100.0d, 2);
