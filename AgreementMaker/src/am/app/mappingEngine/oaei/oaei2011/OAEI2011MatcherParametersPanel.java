@@ -31,6 +31,7 @@ public class OAEI2011MatcherParametersPanel extends AbstractMatcherParametersPan
 		
 		radAutomatic = new JRadioButton("Automatic configuration.");
 		radAutomatic.addActionListener(this);
+		radAutomatic.setSelected(true);
 		radManual = new JRadioButton("Manual override.");
 		radManual.addActionListener(this);
 		ButtonGroup btnGroup = new ButtonGroup();
@@ -41,6 +42,7 @@ public class OAEI2011MatcherParametersPanel extends AbstractMatcherParametersPan
 		for( OAEI2011Configuration config : OAEI2011Configuration.values() ) {
 			cmbConfiguration.addItem(config);
 		}
+		cmbConfiguration.setEnabled(false);
 		
 		// layout
 		
