@@ -23,7 +23,9 @@ import am.app.mappingEngine.mediatingMatcher.MediatingMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsMatcherPairWise;
 import am.app.mappingEngine.multiWords.newMW.NewMultiWordsMatcher;
+import am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher;
 import am.app.mappingEngine.oaei2009.OAEI2009matcher;
+import am.app.mappingEngine.oaei2010.OAEI2010Matcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.ssc.SiblingsSimilarityContributionMatcher;
@@ -64,8 +66,9 @@ public enum MatchersRegistry {
 	PartialGraph		( "PGM", "Partial Graph Matcher", PartialGraphMatcher.class, MatcherCategory.STRUCTURAL ),
 	SimilarityFlooding  ( "SFM", "Similarity Flooding Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.sfm.IndipendentSimilarityFlooding.class ),
 	AnchorFlood			( "AFM", "AnchorFlood Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.anchorFlood.AnchorFloodMatcher.class ),
-	OAEI2010			( "OAEI-10", "OAEI 2010 Matcher", am.app.mappingEngine.oaei2010.OAEI2010Matcher.class, MatcherCategory.HYBRID),
-	OAEI2011			( "OAEI-11", "OAEI 2011 Matcher", am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher.class, MatcherCategory.HYBRID),
+	OAEI2009   			( "OAEI-09", "OAEI2009 Matcher", OAEI2009matcher.class, MatcherCategory.HYBRID),
+	OAEI2010			( "OAEI-10", "OAEI 2010 Matcher", OAEI2010Matcher.class, MatcherCategory.HYBRID),
+	OAEI2011			( "OAEI-11", "OAEI 2011 Matcher", OAEI2011Matcher.class, MatcherCategory.HYBRID),
 	IterativeMatcher	( "IISM", "Instance-based Iterator", am.app.mappingEngine.instance.IterativeMatcher.class),
 	AdvancedSimilarity  ( "ASM", "Advanced Similarity Matcher", am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher.class, MatcherCategory.SYNTACTIC),
 	GroupFinder			( "GFM", "Group Finder Matcher", am.app.mappingEngine.groupFinder.GroupFinderMatcher.class),
@@ -82,7 +85,6 @@ public enum MatchersRegistry {
 	SSC					( "SSC", "Sibling's Similarity Contribution", SiblingsSimilarityContributionMatcher.class, MatcherCategory.STRUCTURAL ),
 	Combination			( "LWC", "Linear Weighted Combination", CombinationMatcher.class, MatcherCategory.COMBINATION ),
 	ConceptSimilarity   ( "Concept Similarity", ConceptMatcher.class, false),
-	OAEI2009   			( "OAEI-09", "OAEI2009 Matcher", OAEI2009matcher.class, MatcherCategory.HYBRID),
 	//UMLSKSLexical		("Lexical Matcher: UMLSKS", LexicalMatcherUMLS.class, false), //it requires internet connection and the IP to be registered
 	
 	//Auxiliary matchers created for specific purposes

@@ -8,16 +8,16 @@ import am.app.ontology.profiling.OntologyProfilerParameters;
 
 public class ManualProfilerMatchingParameters extends OntologyProfilerParameters {
 
-	boolean matchSourceClassLocalname = true;
-	boolean matchTargetClassLocalname = true;
+	public boolean matchSourceClassLocalname = true;
+	public boolean matchTargetClassLocalname = true;
 	
-	boolean matchSourcePropertyLocalname = true;
-	boolean matchTargetPropertyLocalname = true;
+	public boolean matchSourcePropertyLocalname = true;
+	public boolean matchTargetPropertyLocalname = true;
 	
-	List<Property> sourceClassAnnotations;
-	List<Property> targetClassAnnotations;
+	public List<Property> sourceClassAnnotations;
+	public List<Property> targetClassAnnotations;
 	
-	List<Property> sourcePropertyAnnotations;
-	List<Property> targetPropertyAnnotations;
+	public List<Property> sourcePropertyAnnotations;
+	public List<Property> targetPropertyAnnotations;
 	
 }

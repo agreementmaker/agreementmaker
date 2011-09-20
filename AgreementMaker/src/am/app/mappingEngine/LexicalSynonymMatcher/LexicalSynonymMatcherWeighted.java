@@ -256,14 +256,15 @@ public class LexicalSynonymMatcherWeighted extends AbstractMatcher {
 				prov=provLabel;
 			else{
 				double sim=provNoTermSyn.similarity;
-				System.out.println(sim);
+				/*System.out.println(sim);*/
 				provNoTermSyn.similarity=sim*0.99;
 				prov=provNoTermSyn;
 			}
 		}
 		if( prov != null && prov.similarity > 0.0d ) {
-			if(prov.similarity>=param.threshold)
+			/*if(prov.similarity>=param.threshold)
 				System.out.println(source.getLabel()+" "+ target.getLabel()+" "+ prov.similarity);
+				*/
 			if( getParam().storeProvenance ) {
 				Mapping m = new Mapping(source, target, prov.similarity);
 				m.setProvenance(prov.getProvenanceString());

@@ -4,6 +4,13 @@ import am.app.mappingEngine.AbstractParameters;
 
 public class MediatingMatcherParameters extends AbstractParameters {
 
+	private static final long serialVersionUID = 3481333025573474720L;
+	
+	public MediatingMatcherParameters() { super(); }
+	public MediatingMatcherParameters( double threshold, int sourceMaxAlign, int targetMaxAlign ) {
+		super(threshold, sourceMaxAlign, targetMaxAlign);
+	}
+
 	public String mediatingOntology;
 	
 	public boolean loadSourceBridge = false;

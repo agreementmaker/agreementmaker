@@ -5,6 +5,8 @@ import am.app.mappingEngine.oaei.OAEI_Track;
 
 public class OAEI2010MatcherParameters extends AbstractParameters {
 
+	private static final long serialVersionUID = -4160664150250650231L;
+	
 	// values for running different combination
 	public boolean usingASM;
 	public boolean usingPSM;
