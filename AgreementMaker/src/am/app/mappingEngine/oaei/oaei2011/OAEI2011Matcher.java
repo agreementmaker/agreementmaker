@@ -70,6 +70,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
     	
     	OAEI2011MatcherParameters p = (OAEI2011MatcherParameters) param;
     	
+    	progressDisplay.ignoreComplete(true);
+    	
     	AbstractMatcher finalResult = null;
     	if( p.automaticConfiguration ) {
     		finalResult = automaticConfiguration();
@@ -95,8 +97,10 @@ public class OAEI2011Matcher extends AbstractMatcher {
     		}
     	}
 		
+    	progressDisplay.ignoreComplete(false);
+    	
 		if( finalResult != null ) {
-			finalResult.select();
+			//finalResult.select();
 			classesMatrix = finalResult.getClassesMatrix();
 			propertiesMatrix = finalResult.getPropertiesMatrix();
 			classesAlignmentSet = finalResult.getClassAlignmentSet();
@@ -461,6 +465,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		List<AbstractMatcher> lwc1InputMatchers = new ArrayList<AbstractMatcher>();
 		List<AbstractMatcher> lwc2InputMatchers = new ArrayList<AbstractMatcher>();
+		
+		//ThreadGroup threadGroup = new ThreadGroup("LEXMATCH");
 		
 		// LSM
 		if( !isCancelled() ) {
