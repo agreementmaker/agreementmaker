@@ -11,6 +11,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -30,6 +34,7 @@ import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.ontology.instance.Instance;
 import am.output.AlignmentOutput;
 import am.utility.EnglishUtility;
+import am.utility.HTTPUtility;
 
 public class InstanceMatcherFede extends AbstractMatcher {
 
@@ -59,7 +64,11 @@ public class InstanceMatcherFede extends AbstractMatcher {
 	Classificator classificator;
 	
 	boolean createTraining = false;
-		
+	
+	boolean matchingDBPedia = true;
+	
+	boolean verbose = false;
+	
 	/**
 	 * 
 	 */
@@ -105,13 +114,13 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		
 		String sourceLabel = sourceInstance.getSingleValuedProperty("label");
 		
-		System.out.println(sourceLabel);
+		if(verbose) System.out.println(sourceLabel);
 		
 		List<String> sourceKeywords = new ArrayList<String>();
 		
 		sourceLabel = processLabel(sourceLabel, sourceKeywords);
 		
-		System.out.println(sourceLabel);
+		if(verbose) System.out.println(sourceLabel);
 		
 		if(size == 0) return null;
 		
@@ -172,11 +181,11 @@ public class InstanceMatcherFede extends AbstractMatcher {
 //			return new MatchingPair(sourceInstance.getUri(), target.getUri(), 1.0, MappingRelation.EQUIVALENCE);
 //			
 			
-			System.out.println("Case of ambiguity:" + sourceInstance.getUri() + " " + sourceLabel + " " + targetCandidates.size());
+			if(verbose) System.out.println("Case of ambiguity:" + sourceInstance.getUri() + " " + sourceLabel + " " + targetCandidates.size());
 			
-			System.out.println(sourceKeywords);
+			if(verbose) System.out.println(sourceKeywords);
 			sourceKeywords = processKeywords(sourceKeywords);
-			System.out.println(sourceKeywords);
+			if(verbose) System.out.println(sourceKeywords);
 			
 			Instance candidate;
 			double score;
@@ -205,7 +214,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 				MatchingPair pair = new MatchingPair(sourceInstance.getUri(), scoredCandidates.get(0).getInstance().getUri(), scoredCandidates.get(0).getScore(), MappingRelation.EQUIVALENCE);
 				debugMapping(pair);
 				
-				System.out.println("Generated mapping: " + pair.similarity);
+				if(verbose) System.out.println("Generated mapping: " + pair.similarity);
 				
 				return pair;
 			}
@@ -244,14 +253,14 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		if(value != null) freebaseScore = Double.valueOf(value);
 		freebaseScore /= 100;
 		
-		System.out.println("candidate: " + candidate.getUri() + " " + candidate.getSingleValuedProperty("label"));
+		if(verbose) System.out.println("candidate: " + candidate.getUri() + " " + candidate.getSingleValuedProperty("label"));
 		List<String> types = candidate.getProperty("type");
 		
 		//Specific for freebase
 		if(types != null){
 			types = processKeywords(types);
 			//keyScore = keywordsSimilarity(sourceKeywords, types);
-			System.out.println("types: " + types);
+			if(verbose) System.out.println("types: " + types);
 		}
 		
 		List<Statement> stmts = candidate.getStatements();
@@ -260,14 +269,14 @@ public class InstanceMatcherFede extends AbstractMatcher {
 			if(stmts.get(i).getPredicate().equals(RDFS.comment)){
 				String comment = stmts.get(i).getObject().asLiteral().getString();
 				candidateKeywords.add(comment);
-				System.out.println("Comment:" + comment);
+				if(verbose) System.out.println("Comment:" + comment);
 			}
 		}
 		candidateKeywords = processKeywords(candidateKeywords);
-		System.out.println(sourceKeywords);
+		if(verbose) System.out.println(sourceKeywords);
 		System.out.println(candidateKeywords);
 		keyScore = keywordsSimilarity(sourceKeywords, candidateKeywords);
-		System.out.println(keyScore);
+		if(verbose) System.out.println(keyScore);
 		
 		//Math.min(types.size(), allDesKeywords.size())
 		if(createTraining){
@@ -286,10 +295,12 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		double stmtSim = matchStatements(sourceInstance, candidate);
 		
 				
-		System.out.println("lab:" + labelSim + " frb:" + freebaseScore + " key:" + keyScore + "stmtSim:" + stmtSim);
-		double score = labelSim + freebaseScore + 2*keyScore + stmtSim;
+		if(verbose) System.out.println("lab:" + labelSim + " frb:" + freebaseScore + " key:" + keyScore + " stmtSim:" + stmtSim);
+		
+		//stmtSim
+		double score = labelSim + freebaseScore + 2*keyScore;
 		//double score = confidence[0][0];
-		System.out.println("score:" + score);
+		if(verbose) System.out.println("score:" + score);
 		
 		return score;
 	}
@@ -313,14 +324,14 @@ public class InstanceMatcherFede extends AbstractMatcher {
 							!sourceStmt.getPredicate().getURI().contains("label")){
 						if(sourceStmt.getObject().isLiteral() && targetStmt.getObject().isLiteral()){
 							count++;
-							System.out.println(sourceStmt + "\n" + targetStmt);
+							if(verbose) System.out.println(sourceStmt + "\n" + targetStmt);
 							
 							double sim = 0.0;
 							
 							String s1 = sourceStmt.getObject().asLiteral().getString();
 							String s2 = targetStmt.getObject().asLiteral().getString();
 							
-							System.out.println(s1 + " " + s2);
+							if(verbose) System.out.println(s1 + " " + s2);
 							
 							try{
 								double d1 = Double.parseDouble(s1);
@@ -337,7 +348,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 								sim = StringMetrics.AMsubstringScore(sourceStmt.getObject().asLiteral().getString(),
 										targetStmt.getObject().asLiteral().getString());
 							}
-							System.out.println(sim);
+							if(verbose) System.out.println(sim);
 							totalSim += sim;
 						}
 					}
@@ -386,6 +397,9 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		double avg = (Math.min(sourceList.size(), targetList.size()) 
 				+ Math.max(sourceList.size(), targetList.size())) / 2;
 		double max = Math.max(sourceList.size(), targetList.size());
+		
+		if(max == 0) return 0;
+		
 		score /= max;
 		
 		return score;
@@ -433,6 +447,10 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		
 		//checkDoubleMappings();
 		
+		if(matchingDBPedia){
+			//cleanDBPediaMappings();
+		}
+		
 		System.out.println("Writing on file...");
 		String output = alignmentsToOutput(instanceAlignmentSet);
 		FileOutputStream fos;
@@ -442,10 +460,8 @@ public class InstanceMatcherFede extends AbstractMatcher {
 			fos.write(output.getBytes());
 			fos.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println("Done");
@@ -554,6 +570,26 @@ public class InstanceMatcherFede extends AbstractMatcher {
 					System.out.println("RIGHT MAPPING " + filePairs.get(i));
 				}
 				else System.out.println("WRONG MAPPING right:" + filePairs.get(i));
+			}
+		}
+	}
+	
+	public void cleanDBPediaMappings() throws IOException{
+		String dbpedia = "http://dbpedia.org/sparql";
+		MatchingPair pair;
+		String uri;
+		for (int i = 0; i < instanceAlignmentSet.size(); i++) {
+			pair = instanceAlignmentSet.get(i);
+			uri = pair.targetURI;
+			String query = "select ?r WHERE {" +
+					"\n<http://dbpedia.org/resource/3D_Systems_Corporation>" +
+					"\n dbpedia-owl:wikiPageRedirects  ?r <" + uri + ">" +
+					"\n} LIMIT 10";
+			QueryExecution qe = QueryExecutionFactory.sparqlService(dbpedia, query);
+			ResultSet res = qe.execSelect();
+			if(res.hasNext()){
+				QuerySolution result = res.next();
+				System.out.println(result.get("r"));	
 			}
 		}
 	}
