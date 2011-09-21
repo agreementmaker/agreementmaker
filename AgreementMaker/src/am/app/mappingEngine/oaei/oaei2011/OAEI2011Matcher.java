@@ -96,6 +96,10 @@ public class OAEI2011Matcher extends AbstractMatcher {
     			finalResult = runGeneralPurposeAdvanced();
     		}
     		break;
+    		case LARGE_LEXICAL_WITH_LOCALNAMES: {
+    			finalResult = runLexicalBasedWithLocalnames();
+    		}
+    		break;
     		}
     	}
 		
@@ -134,6 +138,9 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		break;
 		case GENERAL_PURPOSE_ADVANCED: {
 			finalResult = runGeneralPurposeAdvanced();
+		}
+		case LARGE_LEXICAL_WITH_LOCALNAMES: {
+			finalResult = runLexicalBasedWithLocalnames();
 		}
 		break;
 		default:{
@@ -635,6 +642,162 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		return lwc3;
 	}
 	
+	private AbstractMatcher runLexicalBasedWithLocalnames() throws Exception {
+		
+		// Build the lexicons.
+		LexiconBuilderParameters lexParam = new LexiconBuilderParameters();
+		lexParam.sourceOntology = sourceOntology;
+		lexParam.targetOntology = targetOntology;
+		
+		lexParam.sourceUseLocalname = true;
+		lexParam.targetUseLocalname = true;
+		lexParam.sourceUseSCSLexicon = false;
+		lexParam.targetUseSCSLexicon = false;
+		
+		lexParam.detectStandardProperties(sourceOntology);
+		lexParam.detectStandardProperties(targetOntology);
+		
+		Core.getLexiconStore().buildAll(lexParam);
+		
+		List<AbstractMatcher> lwc1InputMatchers = new ArrayList<AbstractMatcher>();
+		List<AbstractMatcher> lwc2InputMatchers = new ArrayList<AbstractMatcher>();
+		
+		//ThreadGroup threadGroup = new ThreadGroup("LEXMATCH");
+		
+		// LSM
+		if( !isCancelled() ) {
+			AbstractMatcher lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSMWeighted, 0);
+			
+			LexicalSynonymMatcherParameters lsmParam = new LexicalSynonymMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			lsmParam.useSynonymTerms = false;
+			
+			setupSubMatcher(lsm, lsmParam);
+			runSubMatcher(lsm, "LSM Weighted 1/7");
+			
+			lwc1InputMatchers.add(lsm);
+		}
+		
+		/*// MM
+		if( !isCancelled() ) {
+			AbstractMatcher mm = MatcherFactory.getMatcherInstance(MatchersRegistry.BridgeMatcher, 0);
+			
+			MediatingMatcherParameters mmParam = new MediatingMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			
+			mmParam.mediatingOntology = "lexicon/uberon/uberon.owl";
+			mmParam.loadSourceBridge = true;
+			mmParam.sourceBridge = "lexicon/uberon/uberon-mouse-alignment.rdf"; // FIXME: THIS ASSUMES MOUSE IS THE SOURCE ONTOLOGY!
+			mmParam.loadTargetBridge = true;
+			mmParam.targetBridge = "lexicon/uberon/uberon-human-alignment.rdf"; // FIXME: THIS ASSUMES HUMAN IS THE TARGET ONTOLOGY!
+			
+			setupSubMatcher(mm, mmParam);
+			runSubMatcher(mm, "MM 2/7");
+			
+			lwc1InputMatchers.add(mm);
+		}*/
+		
+		// PSM
+		if( !isCancelled() ) {
+			AbstractMatcher psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 0);
+			
+			ParametricStringParameters psmParam = new ParametricStringParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			
+			psmParam.useLexicons = true;
+			psmParam.useBestLexSimilarity = true;
+			psmParam.measure = ParametricStringParameters.AMSUB_AND_EDIT;
+			psmParam.normParameter = new NormalizerParameter();
+			psmParam.normParameter.setForOAEI2009();
+			psmParam.redistributeWeights = true;
+			
+			psmParam.threadedExecution = true;
+			psmParam.threadedOverlap = true;
+			
+			setupSubMatcher(psm, psmParam);
+			runSubMatcher(psm, "PSM 3/7");
+			
+			lwc2InputMatchers.add(psm);			
+		}
+		
+		// VMM
+		if( !isCancelled() ) {
+			AbstractMatcher vmm = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 0);
+			
+			MultiWordsParameters vmmParam = new MultiWordsParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			
+			vmmParam.measure = MultiWordsParameters.TFIDF;
+			vmmParam.considerInstances = true;
+			vmmParam.considerNeighbors = false;  // figure out if this helps.
+			vmmParam.considerConcept = true;
+			vmmParam.considerClasses = false;
+			vmmParam.considerProperties = false;
+			vmmParam.ignoreLocalNames = false; 
+			
+			vmmParam.useLexiconSynonyms = true; // May change later.
+			vmmParam.considerSuperClass = true;
+			
+			setupSubMatcher(vmm, vmmParam);
+			runSubMatcher(vmm, "VMM 4/7");
+			
+			lwc2InputMatchers.add(vmm);
+		}
+		
+		// LWC1 (LSM, MM)
+		AbstractMatcher lwc1 = null;
+		if( !isCancelled() ) {
+			lwc1 = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 0);
+			
+			lwc1.setInputMatchers(lwc1InputMatchers);
+			
+			CombinationParameters lwcParam = new CombinationParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			lwcParam.combinationType = CombinationParameters.AVERAGECOMB;
+			lwcParam.qualityEvaluation = true;
+			lwcParam.manualWeighted = false;
+			lwcParam.quality = QualityMetricRegistry.LOCAL_CONFIDENCE;
+			
+			setupSubMatcher(lwc1, lwcParam);
+			runSubMatcher(lwc1, "LWC (LSM, MM) 5/7");
+			
+		}
+		
+		// LWC2 (PSM, VMM)
+		AbstractMatcher lwc2 = null;
+		if( !isCancelled() ) {
+			lwc2 = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 0);
+			
+			lwc2.setInputMatchers(lwc2InputMatchers);
+			
+			CombinationParameters lwcParam = new CombinationParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			lwcParam.combinationType = CombinationParameters.AVERAGECOMB;
+			lwcParam.qualityEvaluation = true;
+			lwcParam.manualWeighted = false;
+			lwcParam.quality = QualityMetricRegistry.LOCAL_CONFIDENCE;
+			
+			setupSubMatcher(lwc2, lwcParam);
+			runSubMatcher(lwc2, "LWC (PSM, VMM) 6/7");
+			
+		}
+		
+		// LWC3 (Final)
+		AbstractMatcher lwc3 = null;
+		if( !isCancelled() ) {
+			lwc3 = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 0);
+			
+			lwc3.addInputMatcher(lwc1);
+			lwc3.addInputMatcher(lwc2);
+			
+			CombinationParameters lwcParam = new CombinationParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			lwcParam.combinationType = CombinationParameters.AVERAGECOMB;
+			lwcParam.qualityEvaluation = true;
+			lwcParam.manualWeighted = false;
+			lwcParam.quality = QualityMetricRegistry.LOCAL_CONFIDENCE;
+			
+			setupSubMatcher(lwc3, lwcParam);
+			runSubMatcher(lwc3, "LWC (PSM, VMM) 7/7");
+			
+		}
+		
+				
+		return lwc3;
+	}
 
 	private AbstractMatcher runMultiOntologyBased() throws Exception {
 		//FIRST LAYER: ASM and PSM

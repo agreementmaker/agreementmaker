@@ -19,6 +19,7 @@ public class OAEI2011MatcherParameters extends AbstractParameters {
 		GENERAL_PURPOSE_ADVANCED,
 		LARGE_LEXICAL,
 		GENERAL_MULTI,
+		LARGE_LEXICAL_WITH_LOCALNAMES,
 		;
 	}
 		
