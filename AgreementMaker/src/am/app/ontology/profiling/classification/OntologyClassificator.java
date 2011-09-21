@@ -1714,6 +1714,7 @@ public static OAEI2011Configuration classifiedOntologiesOEAI2011(Ontology source
 		if (result.equals("general_purpose_advanced")) return OAEI2011Configuration.GENERAL_PURPOSE_ADVANCED;
 		if (result.equals("general_multi")) return OAEI2011Configuration.GENERAL_MULTI;
 		if (result.equals("large_lexical")) return OAEI2011Configuration.LARGE_LEXICAL;
+		if (result.equals("large_lexical_with_localnames")) return OAEI2011Configuration.LARGE_LEXICAL_WITH_LOCALNAMES;
 		
 		return OAEI2011Configuration.GENERAL_PURPOSE; 
 	
