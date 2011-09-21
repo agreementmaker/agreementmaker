@@ -18,6 +18,7 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
+import am.app.mappingEngine.instanceMatcher.NYTConstants;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
@@ -27,7 +28,7 @@ public class NYTEvaluator {
 	 * Put the path of the alignment file you want to evaluate
 	 * (the one you generated)
 	 */
-	static String toEvaluate = "alignment.rdf";
+	static String toEvaluate = "C:/Users/federico/workspace/MyInstanceMatcher/alignment.rdf";
 	/*
 	 * Put the path of the reference alignment file
 	 * Also paths relative to the root of the project are ok.
@@ -70,20 +71,19 @@ public class NYTEvaluator {
 			found = false;
 			p1 = toEvaluate.get(i);
 			
-			//System.out.println("Presented: "+ p1.sourceURI + " " + p1.targetURI);
+			//System.out.println("Presented: "+ p1.sourceURI + " " + p1.targetURI + " " + p1.similarity);
 			
 			for (int j = 0; j < reference.size(); j++) {
 				p2 = reference.get(j);
 				
-//				if(matchingDBPedia)
-//					p1.targetURI = p1.targetURI.replaceAll("Category:", "");
-//				
-//				//System.out.println(p2.getTabString());
-//				if(p1.sourceURI.equals(p2.sourceURI)){
-//					right = p2;
-//				}
+				//p1.targetURI = p1.targetURI.replaceAll("Category:", "");
 				
-				if(p1.sourceURI.toLowerCase().equals(p2.sourceURI.toLowerCase()) && p1.targetURI.toLowerCase().equals(p2.targetURI.toLowerCase())
+				//System.out.println(p2.getTabString());
+				if(p1.sourceURI.equals(p2.sourceURI)){
+					right = p2;
+				}
+				
+				if(p1.sourceURI.equals(p2.sourceURI) && p1.targetURI.equals(p2.targetURI)
 						&& p1.relation.equals(p2.relation) && p1.similarity >= threshold){
 					count++;
 					found = true;
@@ -93,7 +93,7 @@ public class NYTEvaluator {
 			if(found == false && printWrongMappings){
 				if(right != null)
 					System.out.println("Right:" + right.sourceURI + " " + right.targetURI);
-					System.out.println("Wrong: " + p1.sourceURI + " " + p1.targetURI);
+				System.out.println("Wrong: " + p1.sourceURI + " " + p1.targetURI);
 			}
 		}	
 		//System.out.println("right mappings: "+count);
@@ -177,6 +177,14 @@ public class NYTEvaluator {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		System.out.println(evaluate(toEvaluate, reference, 0.65));
+		//System.out.println(evaluate(toEvaluate, reference, 0.9));
+		String report = "";
+		
+		double start = 0.0;
+		double increment = 0.05;
+		for (int i = 0; i < 20; i++) {
+			report += NYTEvaluator.evaluate("alignment.rdf", NYTConstants.REF_FREEBASE_ORGANIZATION, start + (i*increment)) + "\n";
+		}
+		System.out.println(report);
 	}
 }
