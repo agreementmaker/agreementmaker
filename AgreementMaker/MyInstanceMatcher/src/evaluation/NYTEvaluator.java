@@ -27,18 +27,18 @@ public class NYTEvaluator {
 	 * Put the path of the alignment file you want to evaluate
 	 * (the one you generated)
 	 */
-	static String toEvaluate = "C:/Users/federico/workspace/MyInstanceMatcher/alignment.rdf";
+	static String toEvaluate = "alignment.rdf";
 	/*
 	 * Put the path of the reference alignment file
 	 * Also paths relative to the root of the project are ok.
 	 */
-	static String reference = "OAEI2011/NYTReference/nyt-dbpedia-organizations-mappings.rdf";
+	static String reference = "OAEI2011/NYTReference/nyt-freebase-people-mappings.rdf";
 	
 	static String redirectsFile = "dbpediaRedirects.ser";
 	
-	static boolean printWrongMappings = true;
+	static boolean printWrongMappings = false;
 	
-	static boolean matchingDBPedia = true;
+	static boolean matchingDBPedia = false;
 	
 	
 	public static String evaluate(String file, String reference, double threshold) throws Exception{
@@ -75,12 +75,13 @@ public class NYTEvaluator {
 			for (int j = 0; j < reference.size(); j++) {
 				p2 = reference.get(j);
 				
-				p1.targetURI = p1.targetURI.replaceAll("Category:", "");
-				
-				//System.out.println(p2.getTabString());
-				if(p1.sourceURI.equals(p2.sourceURI)){
-					right = p2;
-				}
+//				if(matchingDBPedia)
+//					p1.targetURI = p1.targetURI.replaceAll("Category:", "");
+//				
+//				//System.out.println(p2.getTabString());
+//				if(p1.sourceURI.equals(p2.sourceURI)){
+//					right = p2;
+//				}
 				
 				if(p1.sourceURI.toLowerCase().equals(p2.sourceURI.toLowerCase()) && p1.targetURI.toLowerCase().equals(p2.targetURI.toLowerCase())
 						&& p1.relation.equals(p2.relation) && p1.similarity >= threshold){
@@ -92,7 +93,7 @@ public class NYTEvaluator {
 			if(found == false && printWrongMappings){
 				if(right != null)
 					System.out.println("Right:" + right.sourceURI + " " + right.targetURI);
-				System.out.println("Wrong: " + p1.sourceURI + " " + p1.targetURI);
+					System.out.println("Wrong: " + p1.sourceURI + " " + p1.targetURI);
 			}
 		}	
 		//System.out.println("right mappings: "+count);
@@ -176,6 +177,6 @@ public class NYTEvaluator {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		System.out.println(evaluate(toEvaluate, reference, 0.0));
+		System.out.println(evaluate(toEvaluate, reference, 0.65));
 	}
 }

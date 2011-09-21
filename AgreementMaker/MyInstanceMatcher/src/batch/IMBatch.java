@@ -18,7 +18,7 @@ import am.app.ontology.ontologyParser.OntologyDefinition;
 public class IMBatch {	
 	String report = "";
 		
-	public void singleFreebaseTest(String sourceFile, String alignmentFile, String referenceFile, double threshold, String cacheFile) throws Exception{
+	public String singleFreebaseTest(String sourceFile, String alignmentFile, String referenceFile, double threshold, String cacheFile) throws Exception{
  		OntologyDefinition sourceDef = new OntologyDefinition();
 		sourceDef.loadOntology = false;
 		sourceDef.loadInstances = true;
@@ -57,8 +57,13 @@ public class IMBatch {
 		
 		matcher.match();
 		
-		report += NYTEvaluator.evaluate("alignment.rdf", referenceFile, threshold) + "\n";
+		double start = 0.2;
+		double increment = 0.05;
+		for (int i = 0; i < 30; i++) {
+			report += NYTEvaluator.evaluate("alignment.rdf", referenceFile, start + (i*increment)) + "\n";
+		}
 		
+		return report;
 	}
 	
 	public void runGeoNamesTest(String sourceFile, String referenceFile, double threshold, String cacheFile) throws Exception{
@@ -106,23 +111,27 @@ public class IMBatch {
 		String cwd = System.getProperty("user.dir") + File.separator;
 		double threshold = 0.65;
 		
-		singleFreebaseTest(cwd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, 
+		String report = "";
+		
+		/*report += singleFreebaseTest(cwd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, 
 				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", 
 				NYTConstants.REF_FREEBASE_ORGANIZATION, 
 				threshold, 
-				"freebaseCacheOrganizations.ser");
+				"freebaseCacheOrganizations.ser");*/
 		
-		singleFreebaseTest(cwd + NYTConstants.NYT_PEOPLE_ARTICLES,
+		report += singleFreebaseTest(cwd + NYTConstants.NYT_PEOPLE_ARTICLES,
 				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf",
 				NYTConstants.REF_FREEBASE_PEOPLE,
 				threshold,
-				"freebaseCache.ser");
+				"newFreebaseCachePeople.ser");
 		
-		singleFreebaseTest(cwd + NYTConstants.NYT_LOCATIONS,
+		/*report += singleFreebaseTest(cwd + NYTConstants.NYT_LOCATIONS,
 				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf",
 				NYTConstants.REF_DBP_PEOPLE,
 				threshold,
-				"dbpediaLocationsRDFCache.ser");
+				"freebaseCacheLocations.ser");*/
+		
+		System.out.println(report);
 	}
 	
 	
@@ -192,23 +201,25 @@ public class IMBatch {
 //				threshold,
 //				"freebaseCache.ser");
 		
-		singleFreebaseTest(cwd + NYTConstants.NYT_LOCATIONS,
-				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
-				NYTConstants.REF_FREEBASE_LOCATION,
-				threshold,
-				"freebaseCacheLocations.ser");
+//		singleFreebaseTest(cwd + NYTConstants.NYT_LOCATIONS,
+//				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
+//				NYTConstants.REF_FREEBASE_LOCATION,
+//				threshold,
+//				"freebaseCacheLocations.ser");
 	}
 	
 	public static void main(String[] args) throws Exception {
 		String cwd = System.getProperty("user.dir") + File.separator;
 		
 		IMBatch batch = new IMBatch();
+		
+		batch.runFreebaseTest();
 
-		batch.singleDBPediaTest(cwd + NYTConstants.NYT_LOCATIONS, 
-				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
-				NYTConstants.REF_DBP_LOCATIONS,
-				0.8,
-				"dbpediaLocationsRDFCache.ser");	
+//		batch.singleDBPediaTest(cwd + NYTConstants.NYT_LOCATIONS, 
+//				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
+//				NYTConstants.REF_DBP_LOCATIONS,
+//				0.8,
+//				"dbpediaLocationsRDFCache.ser");	
 //		
 //		batch.singleDBPediaTest(cwd + NYTConstants.NYT_PEOPLE_ARTICLES, 
 //				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
@@ -235,11 +246,11 @@ public class IMBatch {
 //		
 //		String cwd = System.getProperty("user.dir") + File.separator;
 //		
-		double start = 0.2;
-		double increment = 0.05;
-		for (int i = 0; i < 30; i++) {
-			report += NYTEvaluator.evaluate("alignment.rdf", NYTConstants.REF_DBP_LOCATIONS, start + (i*increment)) + "\n";
-		}
+//		double start = 0.2;
+//		double increment = 0.05;
+//		for (int i = 0; i < 30; i++) {
+//			report += NYTEvaluator.evaluate("alignment.rdf", NYTConstants.REF_DBP_LOCATIONS, start + (i*increment)) + "\n";
+//		}
 		System.out.println(report);
 	}
 

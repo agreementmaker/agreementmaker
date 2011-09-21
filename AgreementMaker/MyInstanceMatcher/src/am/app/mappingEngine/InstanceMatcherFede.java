@@ -55,7 +55,9 @@ public class InstanceMatcherFede extends AbstractMatcher {
 	
 	Porter stemmer = new Porter();
 	
-	public String referenceAlignmentFile = "C:/Users/federico/workspace/MyInstanceMatcher/OAEI2011/NYTReference/nyt-dbpedia-locations-mappings.rdf";
+	//boolean useReferenceAlignment = false;
+	
+	public String referenceAlignmentFile = "OAEI2011/NYTReference/nyt-dbpedia-locations-mappings.rdf";
 	
 	ArrayList<MatchingPair> filePairs;
 	
@@ -259,7 +261,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		//Specific for freebase
 		if(types != null){
 			types = processKeywords(types);
-			//keyScore = keywordsSimilarity(sourceKeywords, types);
+			keyScore = keywordsSimilarity(sourceKeywords, types);
 			if(verbose) System.out.println("types: " + types);
 		}
 		
@@ -274,8 +276,8 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		}
 		candidateKeywords = processKeywords(candidateKeywords);
 		if(verbose) System.out.println(sourceKeywords);
-		System.out.println(candidateKeywords);
-		keyScore = keywordsSimilarity(sourceKeywords, candidateKeywords);
+		//if(verbose) System.out.println(candidateKeywords);
+		//keyScore = keywordsSimilarity(sourceKeywords, candidateKeywords);
 		if(verbose) System.out.println(keyScore);
 		
 		//Math.min(types.size(), allDesKeywords.size())
@@ -298,7 +300,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		if(verbose) System.out.println("lab:" + labelSim + " frb:" + freebaseScore + " key:" + keyScore + " stmtSim:" + stmtSim);
 		
 		//stmtSim
-		double score = labelSim + freebaseScore + 2*keyScore;
+		double score = labelSim + freebaseScore + 3*keyScore;
 		//double score = confidence[0][0];
 		if(verbose) System.out.println("score:" + score);
 		
