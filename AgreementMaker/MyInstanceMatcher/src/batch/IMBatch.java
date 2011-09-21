@@ -62,7 +62,22 @@ public class IMBatch {
 		return report;
 	}
 	
-	public void runGeoNamesTest(String sourceFile, String referenceFile, double threshold, String cacheFile) throws Exception{
+	
+	public void runGeoNamesTest() throws Exception{
+		String cwd = System.getProperty("user.dir") + File.separator;
+		double threshold = 0.7;
+		
+		String report = ""; 
+		
+		report += singleGeoNamesTest(cwd + NYTConstants.NYT_LOCATIONS,
+				NYTConstants.REF_GEONAMES_LOCATION,
+				threshold,
+				"geonamesRDFCacheProcessed.ser");
+			
+		System.out.println(report);
+	}
+	
+	public String singleGeoNamesTest(String sourceFile, String referenceFile, double threshold, String cacheFile) throws Exception{
  		OntologyDefinition sourceDef = new OntologyDefinition();
 		sourceDef.loadOntology = false;
 		sourceDef.loadInstances = true;
@@ -100,12 +115,14 @@ public class IMBatch {
 		
 		report += NYTEvaluator.evaluate("alignment.rdf", referenceFile, threshold) + "\n";
 		
+		return report;
+		
 	}
 	
 	
 	public void runFreebaseTest() throws Exception{
 		String cwd = System.getProperty("user.dir") + File.separator;
-		double threshold = 0.50;
+		double threshold = 0.55;
 		
 		String report = ""; 
 		
@@ -133,7 +150,7 @@ public class IMBatch {
 	}
 	
 	
-	public void singleDBPediaTest(String sourceFile, String alignmentFile, String referenceFile, double threshold, String cacheFile) throws Exception{
+	public String singleDBPediaTest(String sourceFile, String alignmentFile, String referenceFile, double threshold, String cacheFile) throws Exception{
 		OntologyDefinition sourceDef = new OntologyDefinition();
 		sourceDef.loadOntology = false;
 		sourceDef.loadInstances = true;
@@ -144,7 +161,6 @@ public class IMBatch {
 		sourceDef.schemaAlignmentURI = alignmentFile;
 		sourceDef.schemaAlignmentFormat = 0;
 		sourceDef.sourceOrTarget = Ontology.SOURCE;
-		
 		OntologyDefinition targetDef = new OntologyDefinition();
 		targetDef.loadOntology = false;
 		targetDef.loadInstances = true;
@@ -175,35 +191,42 @@ public class IMBatch {
 		
 		report += "Threshold\tPrecision\tRecall\tFmeasure\n";
 		
-		double start = 0.5;
-		double increment = 0.05;
-		for (int i = 0; i < 20; i++) {
-			report += NYTEvaluator.evaluate("alignment.rdf", referenceFile, start + (i*increment)) + "\n";
-		}
+		report += NYTEvaluator.evaluate("alignment.rdf", referenceFile, threshold) + "\n";
 		
+		return report;
 	}
 	
 	public void runDBPediaTest() throws Exception{
 		String cwd = System.getProperty("user.dir") + File.separator;
-		double threshold = 0.65;
+		double threshold = 0.8;
 		
-//		singleTest(cwd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, 
-//				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", 
-//				NYTConstants.REF_FREEBASE_ORGANIZATION, 
-//				threshold, 
-//				"freebaseCacheOrganizations.ser");
+		String report = "";
 		
-//		singleTest(cwd + NYTConstants.NYT_PEOPLE_ARTICLES,
-//				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf",
-//				NYTConstants.REF_FREEBASE_PEOPLE,
+//		report += singleDBPediaTest(cwd + NYTConstants.NYT_LOCATIONS, 
+//				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
+//				NYTConstants.REF_DBP_LOCATIONS,
 //				threshold,
-//				"freebaseCache.ser");
+//				"dbpediaLocationsRDFCache10000.ser");	
 		
-		singleFreebaseTest(cwd + NYTConstants.NYT_LOCATIONS,
+//		report += singleDBPediaTest(cwd + NYTConstants.NYT_PEOPLE_ARTICLES, 
+//				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
+//				NYTConstants.REF_DBP_PEOPLE,
+//				threshold,
+//				"dbpediaPeopleRDFCache.ser");	
+
+		report += singleDBPediaTest(cwd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, 
 				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
-				NYTConstants.REF_FREEBASE_LOCATION,
+				NYTConstants.REF_DBP_ORGANIZATIONS,
 				threshold,
-				"freebaseCacheLocations.ser");
+				"dbpediaOrganizationsRDFCache.ser");	
+		
+//		singleDBPediaTest(cwd + NYTConstants.NYT_LOCATIONS, 
+//				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
+//				NYTConstants.REF_DBP_LOCATIONS,
+//				threshold,
+//				"dbpediaLocationsRDFCache10000.ser");	
+				
+		System.out.println(report);
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -211,52 +234,14 @@ public class IMBatch {
 		
 		IMBatch batch = new IMBatch();
 
-//		batch.singleFreebaseTest(cwd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, 
-//				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", 
-//				NYTConstants.REF_FREEBASE_ORGANIZATION, 
-//				0.7, 
-//				"freebaseCacheOrganizations.ser");
+//		batch.runFreebaseTest();
 		
-		batch.runFreebaseTest();
-		
-//		batch.singleFreebaseTest(cwd + NYTConstants.NYT_PEOPLE_ARTICLES, 
-//				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", 
-//				NYTConstants.REF_FREEBASE_PEOPLE, 
-//				0.0, 
-//				"freebaseCache.ser");
-		
-//		batch.singleDBPediaTest(cwd + NYTConstants.NYT_LOCATIONS, 
-//				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
-//				NYTConstants.REF_DBP_LOCATIONS,
-//				0.8,
-//				"dbpediaLocationsRDFCache10000.ser");	
-//		
-//		batch.singleDBPediaTest(cwd + NYTConstants.NYT_PEOPLE_ARTICLES, 
-//				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
-//				NYTConstants.REF_DBP_PEOPLE,
-//				0.65,
-//				"dbpediaPeopleRDFCache.ser");
-//		
-//		//batch.runFreebaseTest();
-//		
-//		
-//		//batch.singleTest(cwd + NYTConstants.NYT_PEOPLE_ARTICLES, cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", NYTConstants.REF_FREEBASE_PEOPLE, 0.65, "freebaseCache.ser");
-//		
-//		System.out.println(batch.report);
-
-//		double start = 0.6;
-//		double increment = 0.05;	
-//		for (int i = 0; i < 10; i++) {
-//			new IMBatch().singleTest(cwd + NYTConstants.NYT_PEOPLE_ARTICLES, cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", NYTConstants.REF_FREEBASE_PEOPLE, start + i*increment);
-//		}
-		
-		//new IMBatch().singleTest(cwd + NYTConstants.NYT_ORGANIZATIONS, cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", NYTConstants.REF_FREEBASE_ORGANIZATION, 2);	
+//		batch.runGeoNamesTest();
 	
-		String report = "Threshold\tPrecision\tRecall\tFmeasure\n";
+		batch.runDBPediaTest();
 		
-		System.out.println(report);
-//		
-//		String cwd = System.getProperty("user.dir") + File.separator;
+		
+		
 	}
 
 }
