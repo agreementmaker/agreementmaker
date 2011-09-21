@@ -28,7 +28,7 @@ public class NYTEvaluator {
 	 * Put the path of the alignment file you want to evaluate
 	 * (the one you generated)
 	 */
-	static String toEvaluate = "C:/Users/federico/workspace/MyInstanceMatcher/alignment.rdf";
+	static String toEvaluate = "alignment.rdf";
 	/*
 	 * Put the path of the reference alignment file
 	 * Also paths relative to the root of the project are ok.
