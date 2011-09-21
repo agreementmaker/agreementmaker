@@ -47,7 +47,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 	double labelSimThreshold = 0.9;
 	double keyScoreThreshold = 1;
 	
-	double threshold;
+	double threshold = 0.8;
 	
 	boolean disambiguate = true;
 	
@@ -55,20 +55,14 @@ public class InstanceMatcherFede extends AbstractMatcher {
 	
 	Porter stemmer = new Porter();
 	
-	//boolean useReferenceAlignment = false;
-	
-	public String referenceAlignmentFile = "OAEI2011/NYTReference/nyt-dbpedia-locations-mappings.rdf";
+	public String referenceAlignmentFile = "OAEI2011/NYTReference/nyt-freebase-organizations-mappings.rdf";
 	
 	ArrayList<MatchingPair> filePairs;
-	
 	TrainSet trainSet;
-	
 	Classificator classificator;
 	
 	boolean createTraining = false;
-	
 	boolean matchingDBPedia = true;
-	
 	boolean verbose = false;
 	
 	/**
@@ -115,13 +109,9 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		//System.out.println(targetCandidates);
 		
 		String sourceLabel = sourceInstance.getSingleValuedProperty("label");
-		
 		if(verbose) System.out.println(sourceLabel);
-		
 		List<String> sourceKeywords = new ArrayList<String>();
-		
 		sourceLabel = processLabel(sourceLabel, sourceKeywords);
-		
 		if(verbose) System.out.println(sourceLabel);
 		
 		if(size == 0) return null;
@@ -135,7 +125,6 @@ public class InstanceMatcherFede extends AbstractMatcher {
 			String articleURI = articles.get(i);
 			article = sourceOntology.getInstances().getInstance(articleURI);
 			//System.out.println(article);
-			
 			desKeywords = article.getProperty("descriptionKeywords");
 			orgKeywords = article.getProperty("organizationKeywords");
 			
@@ -148,8 +137,9 @@ public class InstanceMatcherFede extends AbstractMatcher {
 						
 			if(desKeywords != null){
 				//desKeywords.addAll(titleKeywords);
-				if(orgKeywords != null)
+				if(orgKeywords != null){
 					desKeywords.addAll(orgKeywords);
+				}
 				String keyword;
 				for (int j = 0; j < desKeywords.size(); j++) {
 					keyword = desKeywords.get(j).toLowerCase();
@@ -168,8 +158,9 @@ public class InstanceMatcherFede extends AbstractMatcher {
 			
 			double score = instanceSimilarity(sourceInstance, target, sourceLabel, sourceKeywords);
 			
+			// && score >= threshold
 			if(!target.getUri().contains("wiki"))
-				pair = new MatchingPair(sourceInstance.getUri(), target.getUri(), score, MappingRelation.EQUIVALENCE);
+				pair = new MatchingPair(sourceInstance.getUri(), target.getUri(), 1.0, MappingRelation.EQUIVALENCE);
 			debugMapping(pair);
 			
 			return pair;
@@ -208,15 +199,17 @@ public class InstanceMatcherFede extends AbstractMatcher {
 				}
 			}
 			
-			scoredCandidates = ScoredInstance.filter(scoredCandidates, 0.02);
+			scoredCandidates = ScoredInstance.filter(scoredCandidates, 0.01);
 			
 			if(scoredCandidates.size() == 1){
 				//System.out.println("mapping, score:" + scoredCandidates.get(0).getScore());
 				disambiguationMappings++;
-				MatchingPair pair = new MatchingPair(sourceInstance.getUri(), scoredCandidates.get(0).getInstance().getUri(), scoredCandidates.get(0).getScore(), MappingRelation.EQUIVALENCE);
+				MatchingPair pair = new MatchingPair(sourceInstance.getUri(), scoredCandidates.get(0).getInstance().getUri(), 1.0, MappingRelation.EQUIVALENCE);
 				debugMapping(pair);
 				
 				if(verbose) System.out.println("Generated mapping: " + pair.similarity);
+				
+				if (scoredCandidates.get(0).getScore() < threshold) return null;
 				
 				return pair;
 			}
@@ -276,11 +269,10 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		}
 		candidateKeywords = processKeywords(candidateKeywords);
 		if(verbose) System.out.println(sourceKeywords);
-		//if(verbose) System.out.println(candidateKeywords);
+		//System.out.println(candidateKeywords);
 		//keyScore = keywordsSimilarity(sourceKeywords, candidateKeywords);
 		if(verbose) System.out.println(keyScore);
 		
-		//Math.min(types.size(), allDesKeywords.size())
 		if(createTraining){
 			String clazz = "match";
 			if(!areMatched(sourceInstance.getUri(), candidate.getUri()))
@@ -300,7 +292,8 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		if(verbose) System.out.println("lab:" + labelSim + " frb:" + freebaseScore + " key:" + keyScore + " stmtSim:" + stmtSim);
 		
 		//stmtSim
-		double score = labelSim + freebaseScore + 3*keyScore;
+		//freebaseScore/2
+		double score = labelSim/2 + freebaseScore/2 + 1*keyScore + stmtSim/2;
 		//double score = confidence[0][0];
 		if(verbose) System.out.println("score:" + score);
 		
@@ -380,7 +373,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 				
 				if(wordNetUtils.areSynonyms(source, target) ){
 					score += 0.5;
-					//System.out.println("matched: " + source + "|" + target);
+					//System.out.println("matched syn: " + source + "|" + target);
 				}
 				else{
 					boolean condition = false;
