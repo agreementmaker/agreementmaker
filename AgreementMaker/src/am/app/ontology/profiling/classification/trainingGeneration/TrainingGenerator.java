@@ -57,7 +57,7 @@ public class TrainingGenerator {
 		//test("OAEI2011/path.xml");
 		//testThreshold();
 		//testClassified();
-		
+	/*	
 		//create the object input training that contains a list of matcher, parameters and classes
 		InputTrainingGenerator i = new InputTrainingGenerator();
 		
@@ -79,7 +79,9 @@ public class TrainingGenerator {
 		OAEI2011MatcherParameters param4 = new OAEI2011MatcherParameters();
 		param4.automaticConfiguration = false;
 		param4.selectedConfiguration = OAEI2011Configuration.LARGE_LEXICAL; // ex conference
-		
+		OAEI2011MatcherParameters param5 = new OAEI2011MatcherParameters();
+		param5.automaticConfiguration = false;
+		param5.selectedConfiguration = OAEI2011Configuration.LARGE_LEXICAL_WITH_LOCALNAMES;
 		
 		//add the test to the list of matcher i want to try
 		try {
@@ -87,6 +89,7 @@ public class TrainingGenerator {
 			i.addTest(matcher, param2, "general_purpose_advanced");
 			i.addTest(matcher, param3, "general_multi");
 			i.addTest(matcher, param4, "large_lexical");
+			i.addTest(matcher, param5, "large_lexical_with_localnames");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -101,14 +104,14 @@ public class TrainingGenerator {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
 		//load the object from file
-		//OutputTrainingGenerator o2 = new OutputTrainingGenerator("Classification/finalTraining.xml");
-		o.storeTableVisual("Classification/visualTableFinalTraining.txt");
+		OutputTrainingGenerator o2 = new OutputTrainingGenerator("Classification/finalTraining.xml");
+		//o.storeTableVisual("Classification/visualTableFinalTraining.txt");
 	
 		
-	/*		
+			
 		//create the model with the output training
 		//OntologyClassificator oc = new OntologyClassificator(o2,ClassificatorRegistry.C_NaiveBayes);
 		OntologyClassificator oc = new OntologyClassificator(o2);
@@ -127,7 +130,7 @@ public class TrainingGenerator {
 		oc.storeModel("Classification/cModel.model");
 		System.out.println("MODEL STORED!");
 	
-		*/
+		/**/
 		
 	/*	
 		
@@ -135,17 +138,17 @@ public class TrainingGenerator {
 		OutputTrainingGenerator o3 = new OutputTrainingGenerator("Classification/prova2.xml");
 		OntologyClassificator oc2 = new OntologyClassificator(o3,"Classification/test3.model");
 		
-		
+		*/
 			
 		//create the test set of ontology from file
-		TestSet testSet = new TestSet("Classification/testOnto.xml");
+		TestSet testSet = new TestSet("Classification/finalTesting.xml");
 	
-		*/
 		
 		
 		
 		
-	/*	
+		
+	
 	
 		//Evaluate the model 
 		String evaluation = oc.testModel(o2, testSet);
@@ -157,6 +160,9 @@ public class TrainingGenerator {
 		for (int j = 0; j < result.length; j++) {
 			System.out.println(result[j]);
 		}
+		System.out.println(evaluation);
+	/*		
+		
 	*/
 		
 	/*	
