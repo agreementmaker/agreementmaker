@@ -455,11 +455,11 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			Utility.displayErrorPane("To run in \"Completion Mode\" please select at least one matcher from the Matchers Control Panel table.", null);
 			return;
 		}
-		
-		for( int row : rowsIndex ) {
+
+		/*for( int row : rowsIndex ) {
 			AbstractMatcher m = Core.getInstance().getMatcherInstances().get(row);
 			currentMatcher.addInputMatcher(m);
-		}
+		}*/
 		
 		// 4. Bring up MatcherProgressDialog which runs the matcher.
 		// The dialog will start the matcher in a background thread, show progress as the matcher is running, and show the report at the end.
