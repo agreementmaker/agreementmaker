@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -43,28 +44,28 @@ public class AlternateHierarchy implements NodeHierarchy {
 	
 	Node anonymousNode;
 	
-	protected HashMap<Node,List<Node>> childrenMap = new HashMap<Node,List<Node>>();  // maps nodes to their children
-	protected HashMap<Node,List<Node>> parentsMap = new HashMap<Node,List<Node>>();  // maps nodes to their parents
+	protected HashMap<Node,Set<Node>> childrenMap = new HashMap<Node,Set<Node>>();  // maps nodes to their children
+	protected HashMap<Node,Set<Node>> parentsMap = new HashMap<Node,Set<Node>>();  // maps nodes to their parents
 	
 	public AlternateHierarchy(Ontology ont, OntProperty partOfProperty) {
 		this.ontology = ont;
 		this.property = partOfProperty;
 		
-		anonymousNode = new Node(-1, "Anonymous Node", Node.OWLCLASS, ont.getID());
+		anonymousNode = new Node(-1, "Anonymous Node", Node.OWLCLASS, ontology.getID());
 		
-		getAlternateClassHierarchyRoots(ontology.getModel(), property);
+		HashMap<OntResource, Node> hashMap = new HashMap<OntResource, Node>();
+		
+		buildClassGraph(ontology.getModel(), ontology, hashMap);
 	}
 	
 	@Override
 	public Set<Node> getChildren(Node n) {
-		// TODO Auto-generated method stub
-		return null;
+		return childrenMap.get(n);
 	}
 
 	@Override
 	public Set<Node> getParents(Node n) {
-		// TODO Auto-generated method stub
-		return null;
+		return parentsMap.get(n);
 	}
 
 	@Override
@@ -176,17 +177,17 @@ public class AlternateHierarchy implements NodeHierarchy {
 				}
 				
 				// update the childrenMap
-				List<Node> childrenNodeList = childrenMap.get(parentNode);
+				Set<Node> childrenNodeList = childrenMap.get(parentNode);
 				if( childrenNodeList == null ) {
-					childrenNodeList = new ArrayList<Node>();
+					childrenNodeList = new TreeSet<Node>();
 					childrenMap.put(parentNode, childrenNodeList);
 				}
 				childrenNodeList.add(amnode);
 				
 				// update the parentMap
-				List<Node> parentNodeList = parentsMap.get(amnode);
+				Set<Node> parentNodeList = parentsMap.get(amnode);
 				if( parentNodeList == null ) {
-					parentNodeList = new ArrayList<Node>();
+					parentNodeList = new TreeSet<Node>();
 					parentsMap.put(amnode, parentNodeList);
 				}
 				parentNodeList.add(parentNode);

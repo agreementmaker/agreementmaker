@@ -456,6 +456,11 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			return;
 		}
 		
+		for( int row : rowsIndex ) {
+			AbstractMatcher m = Core.getInstance().getMatcherInstances().get(row);
+			currentMatcher.addInputMatcher(m);
+		}
+		
 		// 4. Bring up MatcherProgressDialog which runs the matcher.
 		// The dialog will start the matcher in a background thread, show progress as the matcher is running, and show the report at the end.
 		new MatcherProgressDialog(currentMatcher);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
