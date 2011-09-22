@@ -4,27 +4,19 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import com.ibm.icu.text.DecimalFormat;
 
 import classification.Classificator;
 import classification.TestSet;
 import classification.TrainSet;
 
-import edu.smu.tspell.wordnet.WordNetDatabase;
 
-import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.StringUtil.StringMetrics;
@@ -32,9 +24,6 @@ import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.ontology.instance.Instance;
-import am.output.AlignmentOutput;
-import am.utility.EnglishUtility;
-import am.utility.HTTPUtility;
 
 public class InstanceMatcherFede extends AbstractMatcher {
 
@@ -55,15 +44,16 @@ public class InstanceMatcherFede extends AbstractMatcher {
 	
 	Porter stemmer = new Porter();
 	
-	public String referenceAlignmentFile = "OAEI2011/NYTReference/nyt-freebase-organizations-mappings.rdf";
+	public String referenceAlignmentFile = "OAEI2011/NYTReference/nyt-dbpedia-locations-mappings.rdf";
 	
 	ArrayList<MatchingPair> filePairs;
 	TrainSet trainSet;
 	Classificator classificator;
 	
 	boolean createTraining = false;
-	boolean matchingDBPedia = true;
+	boolean matchingDBPedia = false;
 	boolean verbose = false;
+	private String outputFilename = "alignments.rdf";
 	
 	/**
 	 * 
@@ -93,7 +83,8 @@ public class InstanceMatcherFede extends AbstractMatcher {
 	protected MatchingPair alignInstanceCandidates(Instance sourceInstance,
 			List<Instance> targetCandidates) throws Exception {
 		
-		//System.out.println("Source instance: " + sourceInstance );
+		//System.out.println("Source instance: " + sourceInstance );5	0.9772115	0.8012859	0.8805476
+
 		//System.out.println("Target instance list: " + targetCandidates );
 		//System.out.println("");
 		
@@ -131,12 +122,13 @@ public class InstanceMatcherFede extends AbstractMatcher {
 			String title = article.getSingleValuedProperty("title");
 			List<String> titleKeywords = new ArrayList<String>();
 			titleKeywords.add(title);
-			titleKeywords = processKeywords(titleKeywords);
+			titleKeywords = KeywordsUtils.processKeywords(titleKeywords);
 			
 			if(desKeywords == null) desKeywords = orgKeywords;
 						
 			if(desKeywords != null){
-				//desKeywords.addAll(titleKeywords);
+				//desKeywords.addAll(titleKeywords);5	0.9772115	0.8012859	0.8805476
+
 				if(orgKeywords != null){
 					desKeywords.addAll(orgKeywords);
 				}
@@ -169,17 +161,13 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		else{
 			if(disambiguate == false) return null;
 			
-//			Instance target = targetCandidates.get(0);
-//			if(true)
-//			return new MatchingPair(sourceInstance.getUri(), target.getUri(), 1.0, MappingRelation.EQUIVALENCE);
-//			
-			
 			if(verbose) System.out.println("Case of ambiguity:" + sourceInstance.getUri() + " " + sourceLabel + " " + targetCandidates.size());
 			
 			if(verbose) System.out.println(sourceKeywords);
-			sourceKeywords = processKeywords(sourceKeywords);
+			sourceKeywords = KeywordsUtils.processKeywords(sourceKeywords);
 			if(verbose) System.out.println(sourceKeywords);
 			
+
 			Instance candidate;
 			double score;
 			List<ScoredInstance> scoredCandidates = new ArrayList<ScoredInstance>();
@@ -204,13 +192,12 @@ public class InstanceMatcherFede extends AbstractMatcher {
 			if(scoredCandidates.size() == 1){
 				//System.out.println("mapping, score:" + scoredCandidates.get(0).getScore());
 				disambiguationMappings++;
+				double candidateScore = scoredCandidates.get(0).getScore();
 				MatchingPair pair = new MatchingPair(sourceInstance.getUri(), scoredCandidates.get(0).getInstance().getUri(), 1.0, MappingRelation.EQUIVALENCE);
 				debugMapping(pair);
-				
-				if(verbose) System.out.println("Generated mapping: " + pair.similarity);
-				
-				if (scoredCandidates.get(0).getScore() < threshold) return null;
-				
+				if(verbose) System.out.println("Generated mapping: " + pair.sourceURI + " " + pair.targetURI);
+				//System.out.println("About to match: " + candidateScore);
+				if (candidateScore < threshold) return null;
 				return pair;
 			}
 		}
@@ -246,14 +233,15 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		
 		String value = candidate.getSingleValuedProperty("score");
 		if(value != null) freebaseScore = Double.valueOf(value);
-		freebaseScore /= 100;
+		else freebaseScore = -1;
+		if(freebaseScore != -1)freebaseScore /= 100;
 		
 		if(verbose) System.out.println("candidate: " + candidate.getUri() + " " + candidate.getSingleValuedProperty("label"));
 		List<String> types = candidate.getProperty("type");
 		
 		//Specific for freebase
 		if(types != null){
-			types = processKeywords(types);
+			types = KeywordsUtils.processKeywords(types);
 			keyScore = keywordsSimilarity(sourceKeywords, types);
 			if(verbose) System.out.println("types: " + types);
 		}
@@ -267,10 +255,16 @@ public class InstanceMatcherFede extends AbstractMatcher {
 				if(verbose) System.out.println("Comment:" + comment);
 			}
 		}
-		candidateKeywords = processKeywords(candidateKeywords);
+		candidateKeywords = KeywordsUtils.processKeywords(candidateKeywords);
 		if(verbose) System.out.println(sourceKeywords);
 		//System.out.println(candidateKeywords);
-		//keyScore = keywordsSimilarity(sourceKeywords, candidateKeywords);
+		
+//		if(types != null)
+//			candidateKeywords.addAll(types);	
+		
+		keyScore = keywordsSimilarity(sourceKeywords, candidateKeywords);
+		
+		
 		if(verbose) System.out.println(keyScore);
 		
 		if(createTraining){
@@ -291,11 +285,13 @@ public class InstanceMatcherFede extends AbstractMatcher {
 				
 		if(verbose) System.out.println("lab:" + labelSim + " frb:" + freebaseScore + " key:" + keyScore + " stmtSim:" + stmtSim);
 		
-		//stmtSim
-		//freebaseScore/2
-		double score = labelSim/2 + freebaseScore/2 + 1*keyScore + stmtSim/2;
-		//double score = confidence[0][0];
+		if(freebaseScore == -1) freebaseScore = 0;
+		if(stmtSim == -1) stmtSim = 0;
+		
+		double score = labelSim/2 + stmtSim/2 + 1*keyScore + freebaseScore/2;
+		
 		if(verbose) System.out.println("score:" + score);
+		
 		
 		return score;
 	}
@@ -333,7 +329,13 @@ public class InstanceMatcherFede extends AbstractMatcher {
 								double d2 = Double.parseDouble(s2);
 								if(d1 == d2) sim = 1;
 								else {
-									sim = StringMetrics.AMsubstringScore(sourceStmt.getObject().asLiteral().getString(),targetStmt.getObject().asLiteral().getString());
+									
+									DecimalFormat df = new DecimalFormat("#.##");
+									
+//									System.out.println(d1);
+//									System.out.println(df.format(d1));
+//									
+									sim = StringMetrics.AMsubstringScore(df.format(d1),df.format(d2));
 									//sim = 1 - Math.abs(d1-d2)/50;
 									if(sim < 0) sim = 0;
 								}
@@ -350,7 +352,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 				}
 			}
 		}
-		if(count == 0) return 0.0;
+		if(count == 0) return -1;
 		return totalSim / count;
 	}
 
@@ -400,35 +402,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		return score;
 	}
 	
-	private List<String> processKeywords(List<String> list) {
-		List<String> retValue = new ArrayList<String>();
-		
-		char[] charBlackList = { ',', '(' , ')', '{', '}', '.'};
-		
-		String toProcess;
-		String curr;
-		String[] splitted;
-		for (int i = 0; i < list.size(); i++) {
-			toProcess = list.get(i).toLowerCase();
-			
-			for (int j = 0; j < charBlackList.length; j++) {
-				toProcess = toProcess.replace(charBlackList[j], ' ');
-			}
-			
-			splitted = toProcess.split(" ");
-			
-			for (int j = 0; j < splitted.length; j++) {
-				curr = splitted[j];
-				if(curr.isEmpty()) continue;
-				
-				if(EnglishUtility.isStopword(curr)) continue;
-				
-				if(!retValue.contains(curr.trim()))
-					retValue.add(curr.trim());
-			}
-		}
-		return retValue;
-	}
+	
 
 	@Override
 	protected void afterAlignOperations() {
@@ -447,7 +421,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		}
 		
 		System.out.println("Writing on file...");
-		String output = alignmentsToOutput(instanceAlignmentSet);
+		String output = MappingsOutput.alignmentsToOutput(instanceAlignmentSet);
 		FileOutputStream fos;
 		
 		try {
@@ -472,7 +446,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 			System.out.println("Stored successfully");
 		}
 		
-		
+		MappingsOutput.writeMappingsOnDisk(outputFilename, instanceAlignmentSet);
 		
 	}
 	
@@ -505,25 +479,9 @@ public class InstanceMatcherFede extends AbstractMatcher {
 				}
 			}
 		}
-		
 	}
 
-	public String alignmentsToOutput(List<MatchingPair> mappings){
-		AlignmentOutput ao = new AlignmentOutput(null);
-		ao.stringNS();
-        ao.stringStart("yes", "0", "11", "onto1", "onto2", "uri1", "uri2");
-        
-        for (int i = 0, n = mappings.size(); i < n; i++) {
-            MatchingPair mapping = mappings.get(i);
-            String e1 = mapping.sourceURI;
-            String e2 = mapping.targetURI;
-            String measure = Double.toString(mapping.similarity);
-            ao.stringElement(e1, e2, measure);
-        }
-        
-        ao.stringEnd();
-        return ao.getString();
-	}
+	
 	
 	public static String processLabel(String label, List<String> keywords){
 		if(label.contains("(")){
@@ -562,29 +520,11 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		for (int i = 0; i < filePairs.size(); i++) {
 			if(filePairs.get(i).sourceURI.equals(source)){
 				if(filePairs.get(i).sameTarget(pair)){
-					System.out.println("RIGHT MAPPING " + filePairs.get(i));
+					if(verbose) System.out.println("RIGHT MAPPING " + filePairs.get(i));
 				}
-				else System.out.println("WRONG MAPPING right:" + filePairs.get(i));
-			}
-		}
-	}
-	
-	public void cleanDBPediaMappings() throws IOException{
-		String dbpedia = "http://dbpedia.org/sparql";
-		MatchingPair pair;
-		String uri;
-		for (int i = 0; i < instanceAlignmentSet.size(); i++) {
-			pair = instanceAlignmentSet.get(i);
-			uri = pair.targetURI;
-			String query = "select ?r WHERE {" +
-					"\n<http://dbpedia.org/resource/3D_Systems_Corporation>" +
-					"\n dbpedia-owl:wikiPageRedirects  ?r <" + uri + ">" +
-					"\n} LIMIT 10";
-			QueryExecution qe = QueryExecutionFactory.sparqlService(dbpedia, query);
-			ResultSet res = qe.execSelect();
-			if(res.hasNext()){
-				QuerySolution result = res.next();
-				System.out.println(result.get("r"));	
+				else{
+					if(verbose) System.out.println("WRONG MAPPING right:" + filePairs.get(i));
+				}
 			}
 		}
 	}

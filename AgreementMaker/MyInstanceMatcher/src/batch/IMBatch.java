@@ -65,11 +65,11 @@ public class IMBatch {
 	
 	public void runGeoNamesTest() throws Exception{
 		String cwd = System.getProperty("user.dir") + File.separator;
-		double threshold = 0.7;
+		double threshold = 0.55;
 		
 		String report = ""; 
 		
-		report += singleGeoNamesTest(cwd + NYTConstants.NYT_LOCATIONS,
+		report += singleGeoNamesTest(cwd + NYTConstants.NYT_LOCATIONS_ARTICLES,
 				NYTConstants.REF_GEONAMES_LOCATION,
 				threshold,
 				"geonamesRDFCacheProcessed.ser");
@@ -198,15 +198,15 @@ public class IMBatch {
 	
 	public void runDBPediaTest() throws Exception{
 		String cwd = System.getProperty("user.dir") + File.separator;
-		double threshold = 0.8;
+		double threshold = 0.5;
 		
 		String report = "";
 		
-//		report += singleDBPediaTest(cwd + NYTConstants.NYT_LOCATIONS, 
-//				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
-//				NYTConstants.REF_DBP_LOCATIONS,
-//				threshold,
-//				"dbpediaLocationsRDFCache10000.ser");	
+		report += singleDBPediaTest(cwd + NYTConstants.NYT_LOCATIONS_ARTICLES, 
+				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
+				NYTConstants.REF_DBP_LOCATIONS,
+				threshold,
+				"dbpediaLocationsRDFCache10000.ser");	
 		
 //		report += singleDBPediaTest(cwd + NYTConstants.NYT_PEOPLE_ARTICLES, 
 //				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
@@ -214,11 +214,11 @@ public class IMBatch {
 //				threshold,
 //				"dbpediaPeopleRDFCache.ser");	
 
-		report += singleDBPediaTest(cwd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, 
-				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
-				NYTConstants.REF_DBP_ORGANIZATIONS,
-				threshold,
-				"dbpediaOrganizationsRDFCache.ser");	
+//		report += singleDBPediaTest(cwd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, 
+//				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
+//				NYTConstants.REF_DBP_ORGANIZATIONS,
+//				threshold,
+//				"dbpediaOrganizationsRDFCache.ser");	
 		
 //		singleDBPediaTest(cwd + NYTConstants.NYT_LOCATIONS, 
 //				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",

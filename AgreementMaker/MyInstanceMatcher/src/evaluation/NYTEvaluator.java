@@ -18,6 +18,7 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
+import am.app.mappingEngine.MappingsOutput;
 import am.app.mappingEngine.instanceMatcher.NYTConstants;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -33,13 +34,14 @@ public class NYTEvaluator {
 	 * Put the path of the reference alignment file
 	 * Also paths relative to the root of the project are ok.
 	 */
-	static String reference = "OAEI2011/NYTReference/nyt-freebase-people-mappings.rdf";
+	static String reference = "OAEI2011/NYTReference/nyt-dbpedia-people-mappings.rdf";
 	
 	static String redirectsFile = "dbpediaRedirects.ser";
 	
-	static boolean printWrongMappings = false;
+	static boolean printWrongMappings = true;
 	
 	static boolean matchingDBPedia = false;
+	private static String outputFilename = "alignmentsModified.rdf";
 	
 	
 	public static String evaluate(String file, String reference, double threshold) throws Exception{
@@ -63,8 +65,13 @@ public class NYTEvaluator {
 		
 		MatchingPair right = null;
 		
-		if(matchingDBPedia)
+		if(matchingDBPedia){
 			cleanDBPediaMappings(toEvaluate);
+			MappingsOutput.writeMappingsOnDisk(outputFilename , toEvaluate);
+		}
+			
+		
+		MappingsOutput.alignmentsToOutput(toEvaluate);
 		
 		boolean found;
 		for (int i = 0; i < toEvaluate.size(); i++) {
@@ -134,6 +141,13 @@ public class NYTEvaluator {
 			pair = pairs.get(i);
 			pair.targetURI = pair.targetURI.replaceAll("Category:", "");
 			
+			if(pair.targetURI.contains("yago")){
+				System.err.println("Removing mapping");
+				pairs.remove(pair);
+				i--;
+				continue;
+			}
+			
 			uri = pair.targetURI;
 			
 			System.out.println(uri);
@@ -145,7 +159,18 @@ public class NYTEvaluator {
 			
 			if(newUri == null){
 				QueryExecution qe = QueryExecutionFactory.sparqlService(dbpedia, query);
-				ResultSet res = qe.execSelect();
+				
+				ResultSet res = null;
+				
+				try{
+					res = qe.execSelect();
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					continue;
+				}
+				
+				if(res == null) continue;
 				
 				if(res.hasNext()){
 					QuerySolution result = res.next();
@@ -156,9 +181,13 @@ public class NYTEvaluator {
 				else answers.put(query, "");
 			}
 			
-			if(!newUri.isEmpty())
+			if(newUri == null) continue;
+			
+			if(!newUri.isEmpty()){
 				pair.targetURI = newUri;			
+				System.out.println("substituting with " + newUri);
 			}
+		}
 			
 			
 		
@@ -174,17 +203,17 @@ public class NYTEvaluator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		for (int i = 0; i < pairs.size(); i++) {
+			System.out.println(pairs.get(i).targetURI);
+		}
+		
 	}
 	
 	public static void main(String[] args) throws Exception {
 		//System.out.println(evaluate(toEvaluate, reference, 0.9));
 		String report = "";
-		
-		double start = 0.0;
-		double increment = 0.05;
-		for (int i = 0; i < 20; i++) {
-			report += NYTEvaluator.evaluate("alignment.rdf", NYTConstants.REF_FREEBASE_ORGANIZATION, start + (i*increment)) + "\n";
-		}
+		report += NYTEvaluator.evaluate("alignment.rdf", NYTConstants.REF_DBP_LOCATIONS, 0.0) + "\n";
 		System.out.println(report);
 	}
 }
