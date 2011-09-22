@@ -13,6 +13,8 @@
 			<include className="ArraySimilarityMatrix" methodName="*" signature="*" />
 			<include className="am.app.mappingEngine.parametricStringMatcher" methodName="*" signature="*" />
 			<include className="ParametricStringMatcher" methodName="*" signature="*" />
+			<include className="am.app.ontology.ontologyParser" methodName="*" signature="*" />
+			<include className="OntoTreeBuilder" methodName="*" signature="*" />
         </criteria>
 
         <handlers>
