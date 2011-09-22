@@ -192,11 +192,11 @@ public class Ontology {
 
 	
 	public boolean isSource() {
-		return sourceOrTarget == GlobalStaticVariables.SOURCENODE;
+		return sourceOrTarget == Ontology.SOURCE;
 	}
 	
 	public boolean isTarget() {
-		return sourceOrTarget == GlobalStaticVariables.TARGETNODE;
+		return sourceOrTarget == Ontology.TARGET;
 	}
 	
 	public void setSourceOrTarget(int s) {

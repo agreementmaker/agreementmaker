@@ -164,4 +164,36 @@ public class OAEIAlignmentFormat implements AlignmentFormat {
 		return alignmentMap;
 	}
 	
+	// TODO: This map needs to be integrated in the Alignment class.
+	public static HashMap<String,List<MatchingPair>> convertAlignment( Alignment<Mapping> alignment ) {
+		
+		HashMap<String,List<MatchingPair>> alignmentMap = new HashMap<String,List<MatchingPair>>();
+		
+		for( Mapping mapping : alignment ) {
+
+			String sourceURI = mapping.getEntity1().getUri();
+			String targetURI = mapping.getEntity2().getUri();
+			
+			MatchingPair mp = new MatchingPair(sourceURI, targetURI, mapping.getSimilarity(), mapping.getRelation(), mapping.getProvenance());
+			
+			if( alignmentMap.containsKey(sourceURI) ) {
+				alignmentMap.get(sourceURI).add(mp);
+			} else {
+				List<MatchingPair> mpl = new ArrayList<MatchingPair>();
+				mpl.add(mp);
+				alignmentMap.put(sourceURI, mpl);
+			}
+			
+			if( alignmentMap.containsKey(targetURI) ) {
+				alignmentMap.get(targetURI).add(mp);
+			} else {
+				List<MatchingPair> mpl = new ArrayList<MatchingPair>();
+				mpl.add(mp);
+				alignmentMap.put(targetURI, mpl);
+			}			
+		}
+	
+		return alignmentMap;
+	}
+	
 }

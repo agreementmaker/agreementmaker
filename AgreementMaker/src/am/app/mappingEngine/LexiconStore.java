@@ -74,7 +74,7 @@ public class LexiconStore implements OntologyChangeListener {
 		switch( whichOne ) {
 		case ONTOLOGY_LEXICON:
 		{
-			if( Core.getInstance().getSourceOntology() == ont ) {  // source
+			if( ont.isSource() ) {  // source
 				OntologyLexiconBuilder sourceOLB;
 				if( params.sourceUseSCSLexicon ) {
 					sourceOLB = new STLexiconBuilder(ont, params.sourceUseLocalname, 
@@ -87,7 +87,6 @@ public class LexiconStore implements OntologyChangeListener {
 				Lexicon sourceOntologyLexicon = sourceOLB.buildLexicon();
 				sourceOntologyLexicon.setOntologyID(ont.getID());
 	
-				Core.getLexiconStore().registerLexicon(sourceOntologyLexicon); // register for reuse by other matchers
 				return sourceOntologyLexicon;
 			} else {  // target
 				OntologyLexiconBuilder targetOLB;
@@ -101,8 +100,7 @@ public class LexiconStore implements OntologyChangeListener {
 				
 				Lexicon targetOntologyLexicon = targetOLB.buildLexicon();
 				targetOntologyLexicon.setOntologyID(ont.getID());
-	
-				Core.getLexiconStore().registerLexicon(targetOntologyLexicon); // register for reuse by other matchers
+
 				return targetOntologyLexicon;
 			}
 		}	
@@ -112,8 +110,7 @@ public class LexiconStore implements OntologyChangeListener {
 
 			Lexicon sourceWordNetLexicon = sourceOLB.buildLexicon();
 			sourceWordNetLexicon.setOntologyID(ont.getID());
-
-			Core.getLexiconStore().registerLexicon(sourceWordNetLexicon);
+			
 			return sourceWordNetLexicon;
 		}
 		default:
@@ -127,29 +124,27 @@ public class LexiconStore implements OntologyChangeListener {
 			throw new NullPointerException("You must set parameters to the lexicon store.");
 		}
 		
-		build(LexiconRegistry.ONTOLOGY_LEXICON, params.sourceOntology );
-		build(LexiconRegistry.ONTOLOGY_LEXICON, params.targetOntology );
+		Lexicon lexSourceOnt = build(LexiconRegistry.ONTOLOGY_LEXICON, params.sourceOntology );
+		registerLexicon(lexSourceOnt); // register for reuse by other matchers
 		
-		build(LexiconRegistry.WORDNET_LEXICON, params.sourceOntology );
-		build(LexiconRegistry.WORDNET_LEXICON, params.targetOntology );
+		Lexicon lexTargetOnt = build(LexiconRegistry.ONTOLOGY_LEXICON, params.targetOntology );
+		registerLexicon(lexTargetOnt); // register for reuse by other matchers
+		
+		Lexicon lexSourceWN = build(LexiconRegistry.WORDNET_LEXICON, params.sourceOntology );
+		registerLexicon(lexSourceWN); // register for reuse by other matchers
+		
+		Lexicon lexTargetWN = build(LexiconRegistry.WORDNET_LEXICON, params.targetOntology );
+		registerLexicon(lexTargetWN); // register for reuse by other matchers
+		
 	}
 	
 	public void buildAll( LexiconBuilderParameters params ) throws Exception{
-		
 		setParameters(params);
-		
-		if( params == null ) {
-			throw new NullPointerException("You must set parameters to the lexicon store.");
-		}
-		
-		build(LexiconRegistry.ONTOLOGY_LEXICON, params.sourceOntology );
-		build(LexiconRegistry.ONTOLOGY_LEXICON, params.targetOntology );
-		
-		build(LexiconRegistry.WORDNET_LEXICON, params.sourceOntology );
-		build(LexiconRegistry.WORDNET_LEXICON, params.targetOntology );
+		buildAll();
 	}
 		
 
+	// FIXME: This method should return null, not try to automatically build the lexicon.
 	public Lexicon getLexicon( int ontologyID, LexiconRegistry type ) throws Exception {
 		for( Lexicon lex : lexList ) {
 			if( lex.getOntologyID() == ontologyID && lex.getType() == type ) return lex;
@@ -182,6 +177,16 @@ public class LexiconStore implements OntologyChangeListener {
 		
 	}
 
+	public void unregisterLexicon(Lexicon lexicon) {
+		for( Lexicon l : lexList ) {
+			if( l.getOntologyID() == lexicon.getOntologyID() && 
+					l.getType() == lexicon.getType() ) {
+				lexList.remove(l);
+				break;
+			}
+		}
+	}
+	
 	@Override
 	public void ontologyChanged(OntologyChangeEvent e) {
 		if( e.getEvent() == EventType.ONTOLOGY_REMOVED ) {
@@ -196,7 +201,6 @@ public class LexiconStore implements OntologyChangeListener {
 		}
 	}
 
-	public void setParameters(LexiconBuilderParameters params) {
-		this.params = params;	
-	}
+	public void setParameters(LexiconBuilderParameters params) { this.params = params; }
+	public LexiconBuilderParameters getParameters() { return this.params; }
 }

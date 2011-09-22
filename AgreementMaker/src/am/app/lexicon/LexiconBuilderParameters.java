@@ -25,13 +25,26 @@ public class LexiconBuilderParameters {
 	public List<Property> targetSynonyms;
 	public List<Property> targetDefinitions;
 	
+	public void detectStandardProperties( Ontology ont ) {
+		List<String> synonymProperties = new ArrayList<String>();
+		synonymProperties.add("label");
+		synonymProperties.add("synonym");
+		
+		List<String> definitionProperties = new ArrayList<String>();
+		definitionProperties.add("defini");
+		//definitionProperties.add("defined");
+		//definitionProperties.add("comment");
+		
+		detectStandardProperties( ont, synonymProperties, definitionProperties);
+	}
+	
 	/**
 	 * Automatically try to detect standard synonym and definition annotations, given an ontology. 
 	 * 
 	 * Right now, this is a simple string checking.  In the future, try to figure out
 	 * a better way.
 	 */
-	public void detectStandardProperties( Ontology ont ) {
+	public void detectStandardProperties( Ontology ont, List<String> synonymProperties, List<String> definitionProperties ) {
 
 		// look for a label property (we consider this a synonym)
 		
@@ -41,26 +54,30 @@ public class LexiconBuilderParameters {
 		
 		List<Property> synonymAnnotations = new ArrayList<Property>();
 		for( Property property : annotationList ) {
-			if( property.getLocalName().equalsIgnoreCase("label") || 
-				property.getLocalName().toLowerCase().contains("synonym") ) {
-				if( !synonymAnnotations.contains(property) ) synonymAnnotations.add(property);
+			for( String synonym : synonymProperties ) {
+				if( property.getLocalName().equalsIgnoreCase(synonym) || 
+					property.getLocalName().toLowerCase().contains(synonym) ) {
+					if( !synonymAnnotations.contains(property) ) synonymAnnotations.add(property);
+				}
 			}
 		}
 		
 		List<Property> definitionAnnotations = new ArrayList<Property>();
 		for( Property property : annotationList ) {
-			if( property.getLocalName().toLowerCase().contains("defini") ) {
-				if( !definitionAnnotations.contains(property) ) definitionAnnotations.add(property);
+			for( String definition : definitionProperties ) {
+				if( property.getLocalName().toLowerCase().contains(definition) ) {
+					if( !definitionAnnotations.contains(property) ) definitionAnnotations.add(property);
+				}
 			}
 		}
-		if( definitionAnnotations.isEmpty() ) {
+		/*if( definitionAnnotations.isEmpty() ) {
 			// assume comment is a definition
 			for( Property property : annotationList ) {
 				if( property.getLocalName().equalsIgnoreCase("comment") ) {
 					if( !definitionAnnotations.contains(property) ) definitionAnnotations.add(property);
 				}
 			}
-		}
+		}*/
 		
 		if( ont.isSource() ) {
 			sourceSynonyms = synonymAnnotations;

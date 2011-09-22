@@ -25,9 +25,6 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 
 	private static final long serialVersionUID = -7674172048857214961L;
 	
-	private transient Lexicon sourceLexicon;
-	private transient Lexicon targetLexicon;
-	
 	// The hashmap and the list of string are used to optimize the LSM when running with SCS enabled.
 	private HashMap<Node,Set<String>> extendedSynSets;
 	private Set<String> extendedSingle;
@@ -65,8 +62,13 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	protected void beforeAlignOperations() throws Exception {
 		super.beforeAlignOperations();
 		
-		sourceLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);			
-		targetLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);			
+		LexicalSynonymMatcherParameters lsmParam = (LexicalSynonymMatcherParameters) param;
+		
+		if( lsmParam.sourceLexicon == null )
+			lsmParam.sourceLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
+		
+		if( lsmParam.targetLexicon == null ) 
+			lsmParam.targetLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);			
 		//Lexicon sourceWordNetLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
 		//Lexicon targetWordNetLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
 		
@@ -79,6 +81,8 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	protected SimilarityMatrix alignNodesOneByOne( List<Node> sourceList,
 			List<Node> targetList, alignType typeOfNodes) throws Exception {
 
+		LexicalSynonymMatcherParameters lsmParam = (LexicalSynonymMatcherParameters) param;
+		
 		if(param.completionMode && inputMatchers != null && inputMatchers.size() > 0){ 
     		//run in optimized mode by mapping only concepts that have not been mapped in the input matcher
     		if(typeOfNodes.equals(alignType.aligningClasses)){
@@ -99,15 +103,15 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 			
 			if( sourceList.size() > targetList.size() ) {
 				smallerList = targetList;
-				smallerLexicon = targetLexicon;
+				smallerLexicon = lsmParam.targetLexicon;
 				largerList = sourceList;
-				largerLexicon = sourceLexicon;
+				largerLexicon = lsmParam.sourceLexicon;
 				sourceIsLarger = true;
 			} else {
 				smallerList = sourceList;
-				smallerLexicon = sourceLexicon;
+				smallerLexicon = lsmParam.sourceLexicon;
 				largerList = targetList;
-				largerLexicon = targetLexicon;
+				largerLexicon = lsmParam.targetLexicon;
 				sourceIsLarger = false;
 			}
 			
@@ -222,10 +226,10 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	protected Mapping alignTwoNodes(Node source, Node target,
 			alignType typeOfNodes) throws Exception {
 
-		
+		LexicalSynonymMatcherParameters lsmParam = (LexicalSynonymMatcherParameters) param;
 		
 		OntResource targetOR = target.getResource().as(OntResource.class);
-		LexiconSynSet targetSet = targetLexicon.getSynSet(targetOR);
+		LexiconSynSet targetSet = lsmParam.targetLexicon.getSynSet(targetOR);
 		
 		if( sourceSet == null || targetSet == null ) return null; // one or both of the concepts do not have a synset.
 		
@@ -242,8 +246,8 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		}
 		
 		double maxSim = 1.0d;
-		if( sourceLexicon instanceof SynonymTermLexicon ||
-			targetLexicon instanceof SynonymTermLexicon ) {
+		if( lsmParam.sourceLexicon instanceof SynonymTermLexicon ||
+			lsmParam.targetLexicon instanceof SynonymTermLexicon ) {
 			maxSim = 0.9d;
 		}
 		
@@ -321,12 +325,13 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	private ProvenanceStructure computeLexicalSimilarity(LexiconSynSet sourceLexicon2,
 			LexiconSynSet targetLexicon2) throws NullPointerException {
 
+		LexicalSynonymMatcherParameters lsmParam = (LexicalSynonymMatcherParameters) param;
 
 		if( sourceLexicon2 == null ) throw new NullPointerException("Source lexicon is null.");
 		if( targetLexicon2 == null ) throw new NullPointerException("Target lexicon is null.");
 		
-		Set<String> sourceSyns = sourceLexicon.extendSynSet(sourceLexicon2);
-		Set<String> targetSyns = targetLexicon.extendSynSet(targetLexicon2);
+		Set<String> sourceSyns = lsmParam.sourceLexicon.extendSynSet(sourceLexicon2);
+		Set<String> targetSyns = lsmParam.targetLexicon.extendSynSet(targetLexicon2);
 
 		return computeLexicalSimilarity(sourceSyns, targetSyns, 1.0d);
 	}

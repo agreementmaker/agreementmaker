@@ -525,5 +525,10 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 	@Override
 	public void setProgressLabel(String label) { barProgress.setString(label); }
 
+	@Override
+	public void setIndeterminate(boolean indeterminate) {
+		barProgress.setIndeterminate(indeterminate);
+	}
+
 	
 }

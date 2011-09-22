@@ -276,5 +276,11 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 	
 	@Override
 	public void ignoreComplete(boolean ignore) { ignoreComplete = ignore; }
+
+
+	@Override
+	public void setIndeterminate(boolean indeterminate) {
+		progressBar.setIndeterminate(indeterminate);
+	}
 	
 }

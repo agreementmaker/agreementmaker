@@ -16,6 +16,7 @@ public interface MatchingProgressDisplay extends PropertyChangeListener {
 	public void matchingStarted(AbstractMatcher m); // used to let the MatchingProgressDisplay know that the matcher has started working.
 	public void matchingComplete(); // used to tell the MatchingProgressDisplay when the matching is complete, and it's safe to close the progress display.
 	public void setProgressLabel( String label );  // set the label of the progress
+	public void setIndeterminate(boolean indeterminate); // set the progress display in an indeterminate state. 
 	public void ignoreComplete(boolean ignore); // ignore the matchingComplete() call.  Used for submatchers.
 	
 	@Override

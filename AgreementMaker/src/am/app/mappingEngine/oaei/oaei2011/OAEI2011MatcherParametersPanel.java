@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
 
@@ -18,6 +19,8 @@ public class OAEI2011MatcherParametersPanel extends AbstractMatcherParametersPan
 
 	private JRadioButton radAutomatic, radManual;
 	private JComboBox cmbConfiguration;
+	private JCheckBox chkShowAll;
+	private JCheckBox chkParallelExecution;
 	
 	/*
 	 * The constructor creates the GUI elements and adds 
@@ -44,6 +47,9 @@ public class OAEI2011MatcherParametersPanel extends AbstractMatcherParametersPan
 		}
 		cmbConfiguration.setEnabled(false);
 		
+		chkShowAll = new JCheckBox("Show intermediate matchers.");
+		chkParallelExecution = new JCheckBox("Parallel Execution.");
+		
 		// layout
 		
 		GroupLayout lay = new GroupLayout(this);
@@ -55,6 +61,8 @@ public class OAEI2011MatcherParametersPanel extends AbstractMatcherParametersPan
 				.addComponent(radAutomatic)
 				.addComponent(radManual)
 				.addComponent(cmbConfiguration)
+				.addComponent(chkShowAll)
+				.addComponent(chkParallelExecution)
 		);
 		
 		lay.setVerticalGroup( lay.createSequentialGroup()
@@ -62,6 +70,9 @@ public class OAEI2011MatcherParametersPanel extends AbstractMatcherParametersPan
 				.addGap(5)
 				.addComponent(radManual)
 				.addComponent(cmbConfiguration)
+				.addGap(10)
+				.addComponent(chkShowAll)
+				.addComponent(chkParallelExecution)
 		);
 		
 		setLayout(lay);
@@ -76,6 +87,9 @@ public class OAEI2011MatcherParametersPanel extends AbstractMatcherParametersPan
 		if( !parameters.automaticConfiguration ) {
 			parameters.selectedConfiguration = (OAEI2011Configuration) cmbConfiguration.getSelectedItem();
 		}
+		
+		parameters.showIntermediateMatchers = chkShowAll.isSelected();
+		parameters.parallelExecution = chkParallelExecution.isSelected();
 		
 		return parameters;
 	}

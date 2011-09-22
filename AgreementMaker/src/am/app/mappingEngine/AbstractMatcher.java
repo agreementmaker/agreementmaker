@@ -558,11 +558,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 //			Mapping alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
 			
 
-			int availableProcessors = Runtime.getRuntime().availableProcessors();
+			int availableProcessors = Runtime.getRuntime().availableProcessors() - param.threadedReservedProcessors;
+			if( availableProcessors < 1 ) // this should not happen 
+				availableProcessors = 1;  // but in case it does, we fix it.
+			
 			if( param.threadedExecution && targetList.size() > availableProcessors ) {
 				threadGroup = new ThreadGroup(getName());
 				
-				// break up the search space
+				// partition the search space into smaller pieces, then assign each partition to a thread
 				int sourceStartIndices[] = new int[availableProcessors];
 				int sourceEndIndices[]   = new int[availableProcessors];
 				int targetStartIndices[] = new int[availableProcessors];
@@ -586,6 +589,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 						targetEndIndices[i] += targetRemainder;
 					}
 				}
+				
+				//updateProgress();
 				
 				// run the stages, spawn threads
 				for( int stage = 0; stage < availableProcessors; stage++ ) {
@@ -730,6 +735,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return new Mapping(source, target, sim, rel);
 	}
 	
+    /**
+     * A parallel version of alignTwoNodes().
+     */
+    protected Mapping alignTwoNodesParallel(Node source, Node target, alignType typeOfNodes) throws Exception {
+    	// just return the serial implementation.  This method must be implemented by the programmer.
+    	return alignTwoNodes(source, target, typeOfNodes);
+    }
+    
 	//***************SELECTION PHASE*****************//
     
     protected void selectAndSetAlignments() {
@@ -1845,7 +1858,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 					  Node target = targetList.get(j);
 
 					  try {
-						  Mapping mapping = matcher.alignTwoNodes(source, target, typeOfNodes);
+						  Mapping mapping = matcher.alignTwoNodesParallel(source, target, typeOfNodes);
 						  if( mapping != null ) { 
 							  matcher.saveThreadResult(i, j, mapping, matrix);
 						  }

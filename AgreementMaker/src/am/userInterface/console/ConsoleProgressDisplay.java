@@ -54,4 +54,7 @@ public class ConsoleProgressDisplay implements MatchingProgressDisplay {
         }
 	}
 
+	@Override
+	public void setIndeterminate(boolean indeterminate) { }
+
 }

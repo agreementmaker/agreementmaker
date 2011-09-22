@@ -14,6 +14,9 @@ public class OAEI2011MatcherParameters extends AbstractParameters {
 	public boolean automaticConfiguration = true;
 	public OAEI2011Configuration selectedConfiguration = OAEI2011Configuration.GENERAL_PURPOSE;
 	
+	public boolean showIntermediateMatchers = false;
+	public boolean parallelExecution = false;
+	
 	public enum OAEI2011Configuration {
 		GENERAL_PURPOSE,
 		GENERAL_PURPOSE_ADVANCED,

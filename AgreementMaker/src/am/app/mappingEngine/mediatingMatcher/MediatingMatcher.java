@@ -2,15 +2,24 @@ package am.app.mappingEngine.mediatingMatcher;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import am.app.Core;
+import am.app.lexicon.Lexicon;
+import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
+import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.output.alignment.oaei.OAEIAlignmentFormat;
 
 public class MediatingMatcher extends AbstractMatcher {
@@ -18,8 +27,8 @@ public class MediatingMatcher extends AbstractMatcher {
 	private static final long serialVersionUID = -4021061879846521596L;
 
 	private Ontology mediatingOntology;
-	private HashMap<String,List<MatchingPair>> sourceBridge;
-	private HashMap<String,List<MatchingPair>> targetBridge;
+	private HashMap<String,List<MatchingPair>> sourceBridge;  // map a source URI to a list of matching pairs
+	private HashMap<String,List<MatchingPair>> targetBridge;  // map a target URI to a list of matching pairs
 	
 	public MediatingMatcher() {
 		super();
@@ -37,20 +46,87 @@ public class MediatingMatcher extends AbstractMatcher {
 		super.beforeAlignOperations();
 		
 		MediatingMatcherParameters p = (MediatingMatcherParameters) param;
-		
-		progressDisplay.appendToReport("Loading mediating ontology ...");
-		//mediatingOntology = OntoTreeBuilder.loadOWLOntology( p.mediatingOntology );
-		progressDisplay.appendToReport(" Done.\n");
+
+		if( !(p.loadSourceBridge && p.loadTargetBridge) ) { // we need to compute one of the bridges, so load the mediating ontology 
+			if( isProgressDisplayed() ) progressDisplay.appendToReport("Loading mediating ontology ...");
+			mediatingOntology = OntoTreeBuilder.loadOWLOntology( p.mediatingOntology );
+			if( isProgressDisplayed() ) progressDisplay.appendToReport(" Done.\n");
+		}
 		
 		if( p.loadSourceBridge ) {
 			try {
-				progressDisplay.appendToReport("Loading source bridge ...");
+				if( isProgressDisplayed() ) progressDisplay.appendToReport("Loading source bridge ...");
 				OAEIAlignmentFormat format = new OAEIAlignmentFormat();
 				sourceBridge = format.readAlignment( new FileReader(new File(p.sourceBridge)) );
-				progressDisplay.appendToReport(" Done.\n");
+				if( isProgressDisplayed() ) progressDisplay.appendToReport(" Done.\n");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		} else {
+			// the source bridge does not exist, we must create it.
+			if( isProgressDisplayed() ) progressDisplay.appendToReport("Matching bridge ontology to source ontology ...");
+			
+			// build the lexicons for the bridge to source
+			LexiconBuilderParameters lexParam = new LexiconBuilderParameters();
+			lexParam.sourceOntology = mediatingOntology;
+			lexParam.targetOntology = sourceOntology;
+			
+			// FIXME: This is a HACK! Fix it!
+			lexParam.sourceOntology.setSourceOrTarget(Ontology.SOURCE);
+			lexParam.targetOntology.setSourceOrTarget(Ontology.TARGET);
+			
+			lexParam.sourceUseLocalname = false;
+			lexParam.targetUseLocalname = false;
+			lexParam.sourceUseSCSLexicon = false;
+			lexParam.targetUseSCSLexicon = false;
+			
+			List<String> synonymProperties = new ArrayList<String>();
+			synonymProperties.add("label");
+			synonymProperties.add("hasExactSynonym");
+			//synonymProperties.add("hasRelatedSynonym");
+			
+			List<String> definitionProperties = new ArrayList<String>();
+			
+			lexParam.detectStandardProperties(lexParam.sourceOntology, synonymProperties, definitionProperties);
+			
+			synonymProperties = new ArrayList<String>();
+			synonymProperties.add("label");
+			//synonymProperties.add("hasExactSynonym");
+			synonymProperties.add("synonym");
+			
+			lexParam.detectStandardProperties(lexParam.targetOntology, synonymProperties, definitionProperties);
+			
+			LexiconBuilderParameters oldParam = Core.getLexiconStore().getParameters();
+			Core.getLexiconStore().setParameters(lexParam);
+
+			Lexicon sourceOntLexicon = Core.getLexiconStore().build( LexiconRegistry.ONTOLOGY_LEXICON, lexParam.sourceOntology);
+			Core.getLexiconStore().registerLexicon(sourceOntLexicon);
+			Core.getLexiconStore().build(LexiconRegistry.WORDNET_LEXICON, lexParam.sourceOntology);  // don't need to save it since it augments the ontology lexicon
+			//Core.getLexiconStore().unregisterLexicon(sourceOntLexicon);
+			
+			
+			Lexicon targetOntLexicon = Core.getLexiconStore().build( LexiconRegistry.ONTOLOGY_LEXICON, lexParam.targetOntology);
+			Core.getLexiconStore().registerLexicon(targetOntLexicon);
+			Core.getLexiconStore().build(LexiconRegistry.WORDNET_LEXICON, lexParam.targetOntology);  // don't need to save it since it augments the ontology lexicon
+			//Core.getLexiconStore().unregisterLexicon(targetOntLexicon);
+			
+			AbstractMatcher lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSM, 0); 
+			
+			LexicalSynonymMatcherParameters lsmParam = new LexicalSynonymMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			lsmParam.sourceLexicon = sourceOntLexicon;
+			lsmParam.targetLexicon = targetOntLexicon;
+			lsmParam.useSynonymTerms = false;
+			
+			lsm.setParam(lsmParam);
+			lsm.setSourceOntology(lexParam.sourceOntology);
+			lsm.setTargetOntology(lexParam.targetOntology);
+			lsm.match();
+			
+			sourceBridge = OAEIAlignmentFormat.convertAlignment(lsm.getAlignment());
+			
+			Core.getLexiconStore().setParameters(oldParam); // restore the old parameters
+			
+			if( isProgressDisplayed() ) progressDisplay.appendToReport(" Done.\n");
 		}
 		
 		if( p.loadTargetBridge ) {
@@ -58,7 +134,77 @@ public class MediatingMatcher extends AbstractMatcher {
 			OAEIAlignmentFormat format = new OAEIAlignmentFormat();
 			targetBridge = format.readAlignment( new FileReader(new File(p.targetBridge)) );
 			progressDisplay.appendToReport(" Done.\n");
+		} else {
+			// the target bridge does not exist, we must create it.
+			if( isProgressDisplayed() ) progressDisplay.appendToReport("Matching bridge ontology to target ontology ...");
+			
+			// build the lexicons for the bridge to source
+			LexiconBuilderParameters lexParam = new LexiconBuilderParameters();
+			lexParam.sourceOntology = mediatingOntology;
+			lexParam.targetOntology = targetOntology;
+			
+			// FIXME: This is a HACK! Fix it!
+			lexParam.sourceOntology.setSourceOrTarget(Ontology.SOURCE);
+			lexParam.targetOntology.setSourceOrTarget(Ontology.TARGET);
+			
+			lexParam.sourceUseLocalname = false;
+			lexParam.targetUseLocalname = false;
+			lexParam.sourceUseSCSLexicon = false;
+			lexParam.targetUseSCSLexicon = false;
+			
+			List<String> synonymProperties = new ArrayList<String>();
+			synonymProperties.add("label");
+			synonymProperties.add("hasExactSynonym");
+			//synonymProperties.add("hasRelatedSynonym");
+			
+			List<String> definitionProperties = new ArrayList<String>();
+			
+			lexParam.detectStandardProperties(lexParam.sourceOntology, synonymProperties, definitionProperties);
+			
+			synonymProperties = new ArrayList<String>();
+			synonymProperties.add("label");
+			//synonymProperties.add("hasExactSynonym");
+			synonymProperties.add("synonym");
+			
+			lexParam.detectStandardProperties(lexParam.targetOntology, synonymProperties, definitionProperties);
+			
+			LexiconBuilderParameters oldParam = Core.getLexiconStore().getParameters();
+			Core.getLexiconStore().setParameters(lexParam);
+
+			Lexicon sourceOntLexicon = Core.getLexiconStore().build( LexiconRegistry.ONTOLOGY_LEXICON, lexParam.sourceOntology);
+			Core.getLexiconStore().registerLexicon(sourceOntLexicon);
+			Core.getLexiconStore().build(LexiconRegistry.WORDNET_LEXICON, lexParam.sourceOntology);  // don't need to save it since it augments the ontology lexicon
+			//Core.getLexiconStore().unregisterLexicon(sourceOntLexicon);
+			
+			Lexicon targetOntLexicon = Core.getLexiconStore().build( LexiconRegistry.ONTOLOGY_LEXICON, lexParam.targetOntology);
+			Core.getLexiconStore().registerLexicon(targetOntLexicon);
+			Core.getLexiconStore().build(LexiconRegistry.WORDNET_LEXICON, lexParam.targetOntology);  // don't need to save it since it augments the ontology lexicon
+			//Core.getLexiconStore().unregisterLexicon(targetOntLexicon);
+			
+			
+			AbstractMatcher lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSM, 0);
+					
+			LexicalSynonymMatcherParameters lsmParam = new LexicalSynonymMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			lsmParam.sourceLexicon = sourceOntLexicon;
+			lsmParam.targetLexicon = targetOntLexicon;
+			lsmParam.useSynonymTerms = false;
+			
+			lsm.setParam(lsmParam);
+			lsm.setSourceOntology(lexParam.sourceOntology);
+			lsm.setTargetOntology(lexParam.targetOntology);
+			lsm.match();
+			
+			targetBridge = OAEIAlignmentFormat.convertAlignment(lsm.getAlignment());
+			
+			Core.getLexiconStore().setParameters(oldParam);  // restore the old parameters
+			
+			if( isProgressDisplayed() ) progressDisplay.appendToReport(" Done.\n");
 		}
+		
+		
+		// FIXME: This is a HACK! Fix it!
+		sourceOntology.setSourceOrTarget(Ontology.SOURCE);
+		targetOntology.setSourceOrTarget(Ontology.TARGET);
 		
 	};
 	

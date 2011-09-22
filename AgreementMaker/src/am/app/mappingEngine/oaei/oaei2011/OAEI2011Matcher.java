@@ -48,7 +48,6 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	private static final long serialVersionUID = -2258529392257305604L;
 	
 	//This should be false in batch mode & using learning matcher / true for alignment evaluation
-	boolean showAllMatchers = true;
 
 	public OAEI2011Matcher(){
 		super();
@@ -502,41 +501,10 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		Core.getLexiconStore().buildAll(lexParam);
 		
-		List<AbstractMatcher> lwc1InputMatchers = new ArrayList<AbstractMatcher>();
-		List<AbstractMatcher> lwc2InputMatchers = new ArrayList<AbstractMatcher>();
+		final List<AbstractMatcher> lwc1InputMatchers = new ArrayList<AbstractMatcher>();
+		final List<AbstractMatcher> lwc2InputMatchers = new ArrayList<AbstractMatcher>();
 		
-		//ThreadGroup threadGroup = new ThreadGroup("LEXMATCH");
-		
-		// LSM
-		if( !isCancelled() ) {
-			AbstractMatcher lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSMWeighted, 0);
-			
-			LexicalSynonymMatcherParameters lsmParam = new LexicalSynonymMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
-			lsmParam.useSynonymTerms = true;
-			
-			setupSubMatcher(lsm, lsmParam);
-			runSubMatcher(lsm, "LSM Weighted 1/7");
-			
-			lwc1InputMatchers.add(lsm);
-		}
-		
-		// MM
-		if( !isCancelled() ) {
-			AbstractMatcher mm = MatcherFactory.getMatcherInstance(MatchersRegistry.BridgeMatcher, 0);
-			
-			MediatingMatcherParameters mmParam = new MediatingMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
-			
-			mmParam.mediatingOntology = "lexicon/uberon/uberon.owl";
-			mmParam.loadSourceBridge = true;
-			mmParam.sourceBridge = "lexicon/uberon/uberon-mouse-alignment.rdf"; // FIXME: THIS ASSUMES MOUSE IS THE SOURCE ONTOLOGY!
-			mmParam.loadTargetBridge = true;
-			mmParam.targetBridge = "lexicon/uberon/uberon-human-alignment.rdf"; // FIXME: THIS ASSUMES HUMAN IS THE TARGET ONTOLOGY!
-			
-			setupSubMatcher(mm, mmParam);
-			runSubMatcher(mm, "MM 2/7");
-			
-			lwc1InputMatchers.add(mm);
-		}
+		//ThreadGroup threadGroup = new ThreadGroup("OAEI2011");
 		
 		// PSM
 		if( !isCancelled() ) {
@@ -551,37 +519,117 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			psmParam.normParameter.setForOAEI2009();
 			psmParam.redistributeWeights = true;
 			
+			// threaded execution
 			psmParam.threadedExecution = true;
 			psmParam.threadedOverlap = true;
+			psmParam.threadedReservedProcessors = param.threadedReservedProcessors;
 			
 			setupSubMatcher(psm, psmParam);
-			runSubMatcher(psm, "PSM 3/7");
+			runSubMatcher(psm, "PSM 1/7");
 			
 			lwc2InputMatchers.add(psm);			
 		}
 		
-		// VMM
-		if( !isCancelled() ) {
-			AbstractMatcher vmm = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 0);
+		
+		if( ((OAEI2011MatcherParameters)param).parallelExecution ) {
+			if( isProgressDisplayed() ) {
+				getProgressDisplay().setIndeterminate(true);
+			}
 			
-			MultiWordsParameters vmmParam = new MultiWordsParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			int availableProcessors = Runtime.getRuntime().availableProcessors() - param.threadedReservedProcessors;
+			if( availableProcessors < 1 ) // this should not happen 
+				availableProcessors = 1;  // but in case it does, we fix it.
 			
-			vmmParam.measure = MultiWordsParameters.TFIDF;
-			vmmParam.considerInstances = true;
-			vmmParam.considerNeighbors = false;  // figure out if this helps.
-			vmmParam.considerConcept = true;
-			vmmParam.considerClasses = false;
-			vmmParam.considerProperties = false;
-			vmmParam.ignoreLocalNames = true; 
+			int totalSteps = 3;
+			int currentStep = 0;
 			
-			vmmParam.useLexiconSynonyms = true; // May change later.
-			vmmParam.considerSuperClass = true;
+			ThreadGroup oaeiThreadGroup = new ThreadGroup("OAEI2011");
 			
-			setupSubMatcher(vmm, vmmParam);
-			runSubMatcher(vmm, "VMM 4/7");
+			int stages = totalSteps / availableProcessors;
+			if( stages <= 0 ) stages = 1;
+						
+			for( int i = 0; i < stages; i++ ) {
+				for( int j = 0; j < availableProcessors; j++ ) {
+					final OAEI2011Matcher oaei = this;
+					if( currentStep == 0 ) {
+						// spawn VMM
+						Thread vmmThread = new Thread(oaeiThreadGroup, new Runnable() {
+							
+							@Override
+							public void run() {
+								try {
+									oaei.runVMM(lwc2InputMatchers);
+								} catch (Exception e) {
+									e.printStackTrace();
+									oaei.cancel(true);
+								}
+							}
+						});
+						
+						if( isProgressDisplayed() ) progressDisplay.appendToReport("Running VMM ...\n");
+						vmmThread.start();
+						currentStep++;
+					} 
+					else if( currentStep == 1 ) {
+						// spawn LSM
+						Thread lsmThread = new Thread(oaeiThreadGroup, new Runnable() {
+							
+							@Override
+							public void run() {
+								try {
+									oaei.runLSM(lwc1InputMatchers);
+								} catch (Exception e) {
+									e.printStackTrace();
+									oaei.cancel(true);
+								}
+							}
+						});
+						
+						if( isProgressDisplayed() ) progressDisplay.appendToReport("Running LSM Weighted ...\n");
+						lsmThread.start();
+						currentStep++;
+					} 
+					else if( currentStep == 2 ) {
+						// spawn MM
+						Thread mmThread = new Thread(oaeiThreadGroup, new Runnable() {
+							
+							@Override
+							public void run() {
+								try {
+									oaei.runMM(lwc1InputMatchers);
+								} catch (Exception e) {
+									e.printStackTrace();
+									oaei.cancel(true);
+								}
+							}
+						});
+						
+						if( isProgressDisplayed() ) progressDisplay.appendToReport("Running MM ...\n");
+						mmThread.start();
+						currentStep++;
+					}
+				}
+				
+				// wait for the stage to end.
+				while( oaeiThreadGroup.activeCount() > 0 ) {
+					Thread.sleep(500);
+				}
+			}
 			
-			lwc2InputMatchers.add(vmm);
+			if( isProgressDisplayed() ) {
+				if( isProgressDisplayed() ) progressDisplay.appendToReport("Finished running threads...\n");
+				getProgressDisplay().setIndeterminate(false);
+			}
 		}
+		else { 
+			// we are not running in threaded mode
+			// sequentially run everything
+			runVMM(lwc2InputMatchers);
+			runLSM(lwc1InputMatchers);
+			runMM(lwc1InputMatchers);
+		}
+		
+		
 		
 		// LWC1 (LSM, MM)
 		AbstractMatcher lwc1 = null;
@@ -640,6 +688,66 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 				
 		return lwc3;
+	}
+	
+	// private method, used in large lexical
+	private void runVMM(List<AbstractMatcher> lwc2InputMatchers) throws Exception {
+		// VMM
+		if( !isCancelled() ) {
+			AbstractMatcher vmm = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 0);
+			
+			MultiWordsParameters vmmParam = new MultiWordsParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			
+			vmmParam.measure = MultiWordsParameters.TFIDF;
+			vmmParam.considerInstances = true;
+			vmmParam.considerNeighbors = false;  // figure out if this helps.
+			vmmParam.considerConcept = true;
+			vmmParam.considerClasses = false;
+			vmmParam.considerProperties = false;
+			vmmParam.ignoreLocalNames = true; 
+			
+			vmmParam.useLexiconSynonyms = true; // May change later.
+			vmmParam.considerSuperClass = true;
+			
+			setupSubMatcher(vmm, vmmParam);
+			//if( param.threadedExecution ) vmm.setProgressDisplay(null); // don't spam the progress display if we're in threaded mode.
+			runSubMatcher(vmm, "VMM 2/7");
+			
+			lwc2InputMatchers.add(vmm);
+		}
+	}
+	
+	private void runLSM(List<AbstractMatcher> lwc1InputMatchers) throws Exception {
+		// LSM
+		if( !isCancelled() ) {
+			AbstractMatcher lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSMWeighted, 0);
+			
+			LexicalSynonymMatcherParameters lsmParam = new LexicalSynonymMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			lsmParam.useSynonymTerms = true;
+			
+			setupSubMatcher(lsm, lsmParam);
+			//if( param.threadedExecution ) lsm.setProgressDisplay(null); // don't spam the progress display if we're in threaded mode.
+			runSubMatcher(lsm, "LSM Weighted 3/7");
+			
+			lwc1InputMatchers.add(lsm);
+		}
+	}
+	
+	private void runMM(List<AbstractMatcher> lwc1InputMatchers) throws Exception {
+		// MM
+		if( !isCancelled() ) {
+			AbstractMatcher mm = MatcherFactory.getMatcherInstance(MatchersRegistry.BridgeMatcher, 0);
+			
+			MediatingMatcherParameters mmParam = new MediatingMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			
+			mmParam.mediatingOntology = "lexicon/uberon/uberon.owl";
+			
+			setupSubMatcher(mm, mmParam);
+			//if( ((OAEI2011MatcherParameters)param).parallelExecution ) mm.setProgressDisplay(null); // don't spam the progress display if we're in threaded mode.
+			runSubMatcher(mm, "MM 4/7");
+			
+			lwc1InputMatchers.add(mm);
+		}
 	}
 	
 	private AbstractMatcher runLexicalBasedWithLocalnames() throws Exception {
@@ -867,20 +975,22 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		long startime = 0, endtime = 0, time = 0;
 		long measure = 1000000;
 		
+		OAEI2011MatcherParameters p = (OAEI2011MatcherParameters) param;
+		
 		if( Core.DEBUG ) System.out.println("Running " + m.getRegistryEntry().getMatcherShortName() );
 		startime = System.nanoTime()/measure;
 		
-		if(getProgressDisplay()!=null) getProgressDisplay().setProgressLabel(label);
-		m.setProgressDisplay(getProgressDisplay());
+		if( isProgressDisplayed() ) getProgressDisplay().setProgressLabel(label);
+		//m.setProgressDisplay(getProgressDisplay());
 		m.match();
-		m.setProgressDisplay(null);
+		//m.setProgressDisplay(null);
 		if( m.isCancelled() ) { cancel(true); } // the user canceled the matching process  
 		
 		endtime = System.nanoTime()/measure;
 	    time = (endtime-startime);
 		if( Core.DEBUG ) System.out.println(m.getRegistryEntry().getMatcherShortName() + " completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		
-		//if(showAllMatchers && !m.isCancelled()) Core.getUI().getControlPanel().getTablePanel().addMatcher(m);
+		if(p.showIntermediateMatchers && !m.isCancelled()) Core.getUI().getControlPanel().getTablePanel().addMatcher(m);
 	}
 	
 	

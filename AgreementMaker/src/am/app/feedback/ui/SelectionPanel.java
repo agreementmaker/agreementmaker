@@ -764,5 +764,10 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 
 	@Override
 	public void setProgressLabel(String label) { progressBar.setString(label); }
+
+	@Override
+	public void setIndeterminate(boolean indeterminate) {
+		progressBar.setIgnoreRepaint(indeterminate);
+	}
 	
 }
