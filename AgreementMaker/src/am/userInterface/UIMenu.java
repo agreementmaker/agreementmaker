@@ -750,7 +750,7 @@ public class UIMenu implements ActionListener {
 					System.out.println(currentProp.toString());
 				}
 			} else if( obj == ontologyAlternateHierarchy ) {
-				ViewAlternateHierachyDialog dialog = new ViewAlternateHierachyDialog();
+				AlternateHierachyDialog dialog = new AlternateHierachyDialog();
 				dialog.setVisible(true); // blocks here until the dialog is dismissed.
 			} else if (obj == instanceLookupItem ) {
 				

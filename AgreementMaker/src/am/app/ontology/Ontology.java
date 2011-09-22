@@ -141,6 +141,8 @@ public class Ontology {
 	private int Index = 0;  // TODO: Maybe get rid of index, and work only with ID?
 	private int ontID = 0;  // Index is used in the conference track, ID is used system wide.
 	private int treeCount;
+
+	private HashMap<Class<? extends NodeHierarchy>, NodeHierarchy> nodeHierachies = new HashMap<Class<? extends NodeHierarchy>, NodeHierarchy>();
 	
 	public int  getIndex()          { return Index;  }
 	public void setIndex(int index) { Index = index; }
@@ -352,6 +354,15 @@ public class Ontology {
 		for( Node propertyNode : propertiesList ) {
 			uriMap.put(propertyNode.getUri(), propertyNode);
 		}
+	}
+	
+	
+	public void addHierarchy( NodeHierarchy hierarchy ) {
+		nodeHierachies.put( hierarchy.getClass(), hierarchy);
+	}
+	
+	public NodeHierarchy getHierarchy( Class<? extends NodeHierarchy> heirarchyType ) {
+		return nodeHierachies.get(heirarchyType);
 	}
 	
 }

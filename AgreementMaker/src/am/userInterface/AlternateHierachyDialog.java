@@ -33,7 +33,7 @@ import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
-public class ViewAlternateHierachyDialog extends JDialog implements ActionListener {
+public class AlternateHierachyDialog extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = 995776906361225272L;
 
@@ -41,7 +41,7 @@ public class ViewAlternateHierachyDialog extends JDialog implements ActionListen
 	private JComboBox cmbSourceProperties, cmbTargetProperties;
 	private JButton btnOk, btnCancel;
 	
-	public ViewAlternateHierachyDialog() {
+	public AlternateHierachyDialog() {
 		super(Core.getUI().getUIFrame(), true);
 		
 		
@@ -196,7 +196,7 @@ public class ViewAlternateHierachyDialog extends JDialog implements ActionListen
 
 	public static void main(String[] args) {
 		
-		Preferences prefs = Preferences.userNodeForPackage(ViewAlternateHierachyDialog.class);
+		Preferences prefs = Preferences.userNodeForPackage(AlternateHierachyDialog.class);
 		
 		String lastSelected = prefs.get("LAST_FILE", "");
 		

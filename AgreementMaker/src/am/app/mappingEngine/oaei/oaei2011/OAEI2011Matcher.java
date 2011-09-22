@@ -506,29 +506,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		//ThreadGroup threadGroup = new ThreadGroup("OAEI2011");
 		
-		// PSM
-		if( !isCancelled() ) {
-			AbstractMatcher psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 0);
-			
-			ParametricStringParameters psmParam = new ParametricStringParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
-			
-			psmParam.useLexicons = true;
-			psmParam.useBestLexSimilarity = true;
-			psmParam.measure = ParametricStringParameters.AMSUB_AND_EDIT;
-			psmParam.normParameter = new NormalizerParameter();
-			psmParam.normParameter.setForOAEI2009();
-			psmParam.redistributeWeights = true;
-			
-			// threaded execution
-			psmParam.threadedExecution = true;
-			psmParam.threadedOverlap = true;
-			psmParam.threadedReservedProcessors = param.threadedReservedProcessors;
-			
-			setupSubMatcher(psm, psmParam);
-			runSubMatcher(psm, "PSM 1/7");
-			
-			lwc2InputMatchers.add(psm);			
-		}
+		
 		
 		
 		if( ((OAEI2011MatcherParameters)param).parallelExecution ) {
@@ -540,7 +518,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			if( availableProcessors < 1 ) // this should not happen 
 				availableProcessors = 1;  // but in case it does, we fix it.
 			
-			int totalSteps = 3;
+			int totalSteps = 4;
 			int currentStep = 0;
 			
 			ThreadGroup oaeiThreadGroup = new ThreadGroup("OAEI2011");
@@ -552,6 +530,25 @@ public class OAEI2011Matcher extends AbstractMatcher {
 				for( int j = 0; j < availableProcessors; j++ ) {
 					final OAEI2011Matcher oaei = this;
 					if( currentStep == 0 ) {
+						// spawn PSM
+						Thread psmThread = new Thread(oaeiThreadGroup, new Runnable() {
+							
+							@Override
+							public void run() {
+								try {
+									oaei.runPSM(lwc2InputMatchers);
+								} catch (Exception e) {
+									e.printStackTrace();
+									oaei.cancel(true);
+								}
+							}
+						});
+						
+						if( isProgressDisplayed() ) progressDisplay.appendToReport("Running PSM ...\n");
+						psmThread.start();
+						currentStep++;
+					} 
+					else if( currentStep == 1 ) {
 						// spawn VMM
 						Thread vmmThread = new Thread(oaeiThreadGroup, new Runnable() {
 							
@@ -569,8 +566,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 						if( isProgressDisplayed() ) progressDisplay.appendToReport("Running VMM ...\n");
 						vmmThread.start();
 						currentStep++;
-					} 
-					else if( currentStep == 1 ) {
+					}
+					else if( currentStep == 2 ) {
 						// spawn LSM
 						Thread lsmThread = new Thread(oaeiThreadGroup, new Runnable() {
 							
@@ -589,7 +586,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 						lsmThread.start();
 						currentStep++;
 					} 
-					else if( currentStep == 2 ) {
+					else if( currentStep == 3 ) {
 						// spawn MM
 						Thread mmThread = new Thread(oaeiThreadGroup, new Runnable() {
 							
@@ -688,6 +685,32 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 				
 		return lwc3;
+	}
+	
+	private void runPSM(List<AbstractMatcher> lwc2InputMatchers) throws Exception {
+		// PSM
+		if( !isCancelled() ) {
+			AbstractMatcher psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 0);
+			
+			ParametricStringParameters psmParam = new ParametricStringParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			
+			psmParam.useLexicons = true;
+			psmParam.useBestLexSimilarity = true;
+			psmParam.measure = ParametricStringParameters.AMSUB_AND_EDIT;
+			psmParam.normParameter = new NormalizerParameter();
+			psmParam.normParameter.setForOAEI2009();
+			psmParam.redistributeWeights = true;
+			
+			// threaded execution
+			psmParam.threadedExecution = true;
+			psmParam.threadedOverlap = true;
+			psmParam.threadedReservedProcessors = 2;
+			
+			setupSubMatcher(psm, psmParam);
+			runSubMatcher(psm, "PSM 1/7");
+			
+			lwc2InputMatchers.add(psm);			
+		}
 	}
 	
 	// private method, used in large lexical

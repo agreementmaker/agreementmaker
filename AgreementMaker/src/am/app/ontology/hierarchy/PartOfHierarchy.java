@@ -1,9 +1,10 @@
-package am.userInterface.canvas2.layouts;
+package am.app.ontology.hierarchy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -12,10 +13,9 @@ import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
+import am.app.ontology.NodeHierarchy;
 import am.app.ontology.Ontology;
-import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.GraphicalData;
-import am.userInterface.canvas2.graphical.TextElement;
 import am.userInterface.canvas2.nodes.LegacyEdge;
 import am.userInterface.canvas2.nodes.LegacyNode;
 import am.userInterface.canvas2.utility.CanvasGraph;
@@ -30,11 +30,12 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 
-public class AlternateHierarchyLayout extends LegacyLayout {
+public class PartOfHierarchy implements NodeHierarchy {
 
 	/** This is the parents map, used to be able to tell which are the parents of a node. */
 	protected HashMap<OntClass,List<OntClass>> parentsToChildrenMap = new HashMap<OntClass,List<OntClass>>();
@@ -42,108 +43,29 @@ public class AlternateHierarchyLayout extends LegacyLayout {
 	/** This is the children map, used to be able to tell which are the children of a node. */
 	protected HashMap<OntClass,List<OntClass>> childrenToParentsMap = new HashMap<OntClass,List<OntClass>>();
 	
-	protected OntProperty sourceProperty, targetProperty; 
-	
-	public AlternateHierarchyLayout( OntProperty sourceProperty, OntProperty targetProperty) {
-		super();
-		this.sourceProperty = sourceProperty;
-		this.targetProperty = targetProperty;
-	}
-	
-	public AlternateHierarchyLayout(Canvas2 vp, OntProperty sourceProperty, OntProperty targetProperty) {
-		super(vp);
-		this.sourceProperty = sourceProperty;
-		this.targetProperty = targetProperty;
-	}
-
-	@Override
-	protected LegacyNode buildClassGraph(OntModel m, CanvasGraph graph,
-			Ontology ont, HashMap<OntResource, LegacyNode> hashMap) {
-		
-
-		OntProperty hierarchyProperty = null;
-		if( ont.isSource() ) {
-			hierarchyProperty = sourceProperty;
-		} else {
-			hierarchyProperty = targetProperty;
-		}
-		
-		Logger log = null;
-		if( Core.DEBUG ) {
-			log = Logger.getLogger(this.getClass());
-			log.setLevel(Level.DEBUG);
-		}
-		
-		int depth = 0;
-		
-		// create the root node;
-		TextElement gr = new TextElement(depth*depthIndent + subgraphXoffset, 
-										 graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
-										 0, nodeHeight, this, graph.getID() );
-		gr.setText("OWL Classes Hierarchy");
-		LegacyNode root = new LegacyNode( gr );
-		
-		graph.insertVertex(root);
-		
-		//List<OntClass> classesList = OntTools.namedHierarchyRoots(m);
-		List<OntClass> classesList = getAlternateClassHierarchyRoots(m, hierarchyProperty);
-		
-		depth++;
-		Iterator<OntClass> clsIter = classesList.iterator();
-		while( clsIter.hasNext() ) {
-			OntClass cls = clsIter.next();  // get the current child
-			
-			if( cls.isAnon() ) {  // if it is anonymous, don't add it, but we still need to recurse on its children
-				hashMap.put(cls, anonymousNode);  // avoid cycles between anonymous nodes
-				if( Core.DEBUG ) log.debug(">> Inserted " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
-				recursiveBuildClassGraph(root, cls, depth, graph, ont, hashMap);
-				continue; 
-			} else if( cls.equals(OWL.Nothing) )   // if it's OWL.Nothing (i.e. we recursed to the bottom of the hierarchy) skip it.
-				continue;
-			
-			// cycle check at the root
-			if( hashMap.containsKey(cls) ) { // we have seen this node before, do NOT recurse again
-				if( Core.DEBUG ) log.debug("Cycle detected.  OntClass:" + cls );
-				continue;
-			}
-			
-			// the child class is not anonymous or OWL.Nothing, add it to the graph, with the correct relationships
-			GraphicalData gr1 = new GraphicalData( depth*depthIndent + subgraphXoffset, 
-										           graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
-										           100, nodeHeight, cls, GraphicalData.NodeType.CLASS_NODE, this, graph.getID() );
-			LegacyNode node = new LegacyNode( gr1);
-			
-			try {
-				// Try to connect this graphical represenation of an Ontology Class to the Node object that represents that class.
-				Node amnode = ont.getNodefromOntResource(cls, alignType.aligningClasses);
-				amnode.addGraphicalRepresentation(node);
-			} catch (Exception e) {
-				// An exception has been thrown by getNodefromOntResource().
-				// This means that the OntClass was not found, therefore we cannot connect this LegacyNode to a Node object.
-				if( Core.DEBUG ) {
-					System.err.println(e.getMessage());
-					e.printStackTrace();
-				}
-			}
-			
-			graph.insertVertex( node );
-			LegacyEdge edge = new LegacyEdge( root, node, null, this );
-			graph.insertEdge( edge );
-			
-			hashMap.put( cls, node);
-			if( Core.DEBUG ) log.debug(">> Inserted " + cls + " into hashmap. HASHCODE: " + cls.hashCode());
-			recursiveBuildClassGraph( node, cls, depth+1, graph, ont, hashMap );
-			
-		}
-	
-		
-		
-		return root;
+	public PartOfHierarchy(Ontology ont, Property partOfProperty) {
 		
 	}
 	
 	@Override
-	protected void recursiveBuildClassGraph(LegacyNode parentNode, 
+	public Set<Node> getChildren(Node n) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<Node> getParents(Node n) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<Node> getSiblings(Node n) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/*protected void recursiveBuildClassGraph(LegacyNode parentNode, 
 			OntClass parentClass, int depth, CanvasGraph graph, Ontology ont, 
 			HashMap<OntResource,LegacyNode> hashMap) {
 		
@@ -175,10 +97,6 @@ public class AlternateHierarchyLayout extends LegacyLayout {
 					continue;
 				}
 				
-				GraphicalData gr = new GraphicalData( depth*depthIndent + subgraphXoffset, 
-													   graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
-													   100 , nodeHeight, cls, GraphicalData.NodeType.CLASS_NODE, this, graph.getID() ); 
-				LegacyNode node = new LegacyNode( gr);
 				
 				try {
 					// Try to connect this graphical represenation of an Ontology Class to the Node object that represents that class.
@@ -208,9 +126,9 @@ public class AlternateHierarchyLayout extends LegacyLayout {
 		} catch( Exception e ) {
 			e.printStackTrace();
 		}
-	};
+	};*/
 	
-
+	
 	/**
 	 * Get the hierarchy roots of the hierarchy implied by the hierarchyProperty. 
 	 */
@@ -220,10 +138,7 @@ public class AlternateHierarchyLayout extends LegacyLayout {
 		if( Core.DEBUG ) log = Logger.getLogger(this.getClass());
 		
 		ArrayList<OntClass> hierarchyRoots = new ArrayList<OntClass>();
-		
-		if( hierarchyProperty == null ) return super.getClassHierarchyRoots(m);
-		
-		
+				
 		// query the model for all the property relations
 		String queryString  = "PREFIX owl: <http://www.w3.org/2002/07/owl#> \n";
 	       queryString += "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
@@ -308,5 +223,5 @@ public class AlternateHierarchyLayout extends LegacyLayout {
 		
 		return hierarchyRoots;
 	}
-
+	
 }
