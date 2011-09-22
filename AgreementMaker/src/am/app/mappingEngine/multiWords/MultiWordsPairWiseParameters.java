@@ -4,8 +4,12 @@ import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.oaei.OAEI_Track;
 
+import com.hp.hpl.jena.ontology.OntProperty;
+
 public class MultiWordsPairWiseParameters extends AbstractParameters {
 
+	private static final long serialVersionUID = -1659320129668085048L;
+	
 	public final static String DICE  = "Dice�s Coefficient";
 	public final static String JACCARD  = "Jaccard Similarity";
 	public final static String EUCLIDEAN  = "Euclidean distance";
@@ -50,6 +54,8 @@ public class MultiWordsPairWiseParameters extends AbstractParameters {
 	public boolean extendSynonyms=false;
 	
 	
+	public OntProperty sourceAlternateHierarchy = null;
+	public OntProperty targetAlternateHierarchy = null;
 
 	
 	//I put the constructor to init default values when we run this method batch mode

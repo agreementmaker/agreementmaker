@@ -2,15 +2,19 @@ package am.app.mappingEngine.multiWords;
 
 
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.GroupLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
+import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.AbstractParameters;
+
+import com.hp.hpl.jena.ontology.OntProperty;
 
 
 public class MultiWordsPairWiseParametersPanel extends AbstractMatcherParametersPanel {
@@ -43,6 +47,11 @@ public class MultiWordsPairWiseParametersPanel extends AbstractMatcherParameters
 	private JCheckBox chkConsiderSuperClass = new JCheckBox("Consider super class labels.");
 	private JCheckBox chkExtendSynonyms = new JCheckBox("Extend synonyms.");
 	
+	private JCheckBox chkSourceHierarchies = new JCheckBox("Source alternate hierarchy parents:"); 
+	private JCheckBox chkTargetHierarchies = new JCheckBox("Target alternate hierarchy parents:");
+	private JComboBox cmbSourceHierarchies = new JComboBox();
+	private JComboBox cmbTargetHierarchies = new JComboBox();
+	
 	/*
 	 * The constructor creates the GUI elements and adds 
 	 * them to this panel.  It also creates the parameters object.
@@ -68,6 +77,24 @@ public class MultiWordsPairWiseParametersPanel extends AbstractMatcherParameters
 		lexSynonymsCheck.setSelected(false);
 		chkExtendSynonyms.setSelected(false);
 
+		Set<OntProperty> sourceHierarchyProperties = Core.getInstance().getSourceOntology().getHierarchyProperties();
+		for( OntProperty prop : sourceHierarchyProperties ) {
+			cmbSourceHierarchies.addItem(prop);
+		}
+		if( sourceHierarchyProperties.isEmpty() ) {
+			chkSourceHierarchies.setEnabled(false);
+			cmbSourceHierarchies.setEnabled(false);
+		}
+		
+		Set<OntProperty> targetHierarchyProperties = Core.getInstance().getTargetOntology().getHierarchyProperties();
+		for( OntProperty prop : targetHierarchyProperties ) {
+			cmbTargetHierarchies.addItem(prop);
+		}
+		if( targetHierarchyProperties.isEmpty() ) {
+			chkTargetHierarchies.setEnabled(false);
+			cmbTargetHierarchies.setEnabled(false);
+		}
+		
 		//LAYOUT: grouplayout is already complicated but very flexible, plus in this case the matchers list is dynamic so it's even more complicated
 		GroupLayout layout = new GroupLayout(this);
 		this.setLayout(layout);
@@ -98,6 +125,10 @@ public class MultiWordsPairWiseParametersPanel extends AbstractMatcherParameters
 						.addComponent(localCheck) 
 						.addComponent(chkConsiderSuperClass)
 						.addComponent(chkExtendSynonyms)
+						.addComponent(chkSourceHierarchies)
+						.addComponent(cmbSourceHierarchies)
+						.addComponent(chkTargetHierarchies)
+						.addComponent(cmbTargetHierarchies)
 					)
 /*					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 						.addComponent(lexLabel)
@@ -133,8 +164,11 @@ public class MultiWordsPairWiseParametersPanel extends AbstractMatcherParameters
 				.addComponent(localCheck)
 				.addComponent(chkConsiderSuperClass)
 				.addComponent(chkExtendSynonyms)
-						
 				.addGap(30)
+				.addComponent(chkSourceHierarchies)
+				.addComponent(cmbSourceHierarchies)
+				.addComponent(chkTargetHierarchies)
+				.addComponent(cmbTargetHierarchies)
 			);
 	}
 	
@@ -156,6 +190,15 @@ public class MultiWordsPairWiseParametersPanel extends AbstractMatcherParameters
 		parameters.considerSuperClass = chkConsiderSuperClass.isSelected();
 		
 		parameters.extendSynonyms=chkExtendSynonyms.isSelected();
+		
+		if( chkSourceHierarchies.isSelected() && cmbSourceHierarchies.isEnabled() ) {
+			parameters.sourceAlternateHierarchy = (OntProperty) cmbSourceHierarchies.getSelectedItem();
+		}
+		
+		if( chkTargetHierarchies.isSelected() && cmbTargetHierarchies.isEnabled() ) {
+			parameters.targetAlternateHierarchy = (OntProperty) cmbTargetHierarchies.getSelectedItem();
+		}
+		
 		//normalization parameters are set in the MultiWordsParameters() because are not user input;
 		return parameters;
 		

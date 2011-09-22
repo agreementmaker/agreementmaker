@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import simpack.measure.weightingscheme.StringTFIDF;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.CosineSimilarity;
@@ -22,6 +23,7 @@ import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.StringUtil.AMStringWrapper;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.ontology.Node;
+import am.app.ontology.NodeHierarchy;
 
 import com.hp.hpl.jena.ontology.OntResource;
 import com.wcohen.ss.api.StringWrapper;
@@ -327,6 +329,26 @@ public class MultiWordsMatcher extends AbstractMatcher {
 				if( param.storeProvenance ) mWS+="\t\t "+par.getLabel()+"\n";
 			}
 			
+		}
+		
+		if( node.getOntologyID() == sourceOntology.getID() && mp.sourceAlternateHierarchy != null ) {
+			NodeHierarchy hierarchy = sourceOntology.getHierarchy(mp.sourceAlternateHierarchy);
+			Set<Node> hierarchyParents = hierarchy.getParents(node);
+			if( hierarchyParents != null )
+			for( Node parent : hierarchyParents ) {
+				String parentLabel = parent.getLabel();
+				multiWordsString = Utility.smartConcat(multiWordsString, parentLabel );
+			}
+		}
+		
+		if( node.getOntologyID() == targetOntology.getID() && mp.targetAlternateHierarchy != null ) {
+			NodeHierarchy hierarchy = targetOntology.getHierarchy(mp.targetAlternateHierarchy);
+			Set<Node> hierarchyParents = hierarchy.getParents(node);
+			if( hierarchyParents != null )
+			for( Node parent : hierarchyParents ) {
+				String parentLabel = parent.getLabel();
+				multiWordsString = Utility.smartConcat(multiWordsString, parentLabel );
+			}
 		}
 		
 		return multiWordsString;

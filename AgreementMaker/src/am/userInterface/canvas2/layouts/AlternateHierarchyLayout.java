@@ -13,6 +13,7 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.app.ontology.hierarchy.AlternateHierarchy;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.GraphicalData;
 import am.userInterface.canvas2.graphical.TextElement;
@@ -60,13 +61,16 @@ public class AlternateHierarchyLayout extends LegacyLayout {
 	protected LegacyNode buildClassGraph(OntModel m, CanvasGraph graph,
 			Ontology ont, HashMap<OntResource, LegacyNode> hashMap) {
 		
-
+		
 		OntProperty hierarchyProperty = null;
 		if( ont.isSource() ) {
 			hierarchyProperty = sourceProperty;
 		} else {
 			hierarchyProperty = targetProperty;
 		}
+
+		AlternateHierarchy altHierarchy = new AlternateHierarchy(ont, hierarchyProperty);
+		ont.addHierarchy(hierarchyProperty, altHierarchy);
 		
 		Logger log = null;
 		if( Core.DEBUG ) {

@@ -3,6 +3,7 @@ package am.app.ontology;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher.alignType;
@@ -15,6 +16,7 @@ import am.app.ontology.ontologyParser.OntologyDefinition;
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 
 /**
@@ -142,7 +144,7 @@ public class Ontology {
 	private int ontID = 0;  // Index is used in the conference track, ID is used system wide.
 	private int treeCount;
 
-	private HashMap<Class<? extends NodeHierarchy>, NodeHierarchy> nodeHierachies = new HashMap<Class<? extends NodeHierarchy>, NodeHierarchy>();
+	private HashMap<OntProperty, NodeHierarchy> nodeHierachies = new HashMap<OntProperty, NodeHierarchy>();
 	
 	public int  getIndex()          { return Index;  }
 	public void setIndex(int index) { Index = index; }
@@ -357,12 +359,16 @@ public class Ontology {
 	}
 	
 	
-	public void addHierarchy( NodeHierarchy hierarchy ) {
-		nodeHierachies.put( hierarchy.getClass(), hierarchy);
+	public void addHierarchy( OntProperty property, NodeHierarchy hierarchy ) {
+		nodeHierachies.put( property, hierarchy);
 	}
 	
-	public NodeHierarchy getHierarchy( Class<? extends NodeHierarchy> heirarchyType ) {
-		return nodeHierachies.get(heirarchyType);
+	public NodeHierarchy getHierarchy( OntProperty property ) {
+		return nodeHierachies.get(property);
+	}
+	
+	public Set<OntProperty> getHierarchyProperties() {
+		return nodeHierachies.keySet();
 	}
 	
 }
