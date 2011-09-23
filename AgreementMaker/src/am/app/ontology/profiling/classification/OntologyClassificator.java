@@ -1172,7 +1172,7 @@ public Instances createTestInstanceFromMetrics(OntologyMetrics ontoMetrics){
 			//System.out.println(isTestingSet.instance(0).toString());
 			}
 		} catch (Exception e1) {
-			System.out.println("Failed To classified the ontology!");
+			System.out.println("Failed to classify the ontologies!");
 			e1.printStackTrace();
 		}
 		
@@ -1691,7 +1691,7 @@ public String testModel(OutputTrainingGenerator o, TestSet t){
 	
 	}
 	
-public static OAEI2011Configuration classifiedOntologiesOEAI2011(Ontology sourceOntology,Ontology targetOntology) {
+public static OAEI2011Configuration classifiedOntologiesOAEI2011(Ontology sourceOntology,Ontology targetOntology) {
 		String modelFileName = "Classification/cModel.model";
 		String outputTrainingGeneratorFileName = "Classification/finalTraining.xml"; 
 		
