@@ -124,7 +124,12 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	private void addInputMatchers(AbstractMatcher currentMatcher) {
 		//Set input matchers into the abstractmatcher VERY IMPORTANT to set them before invoking the parameter panel, in fact the parameter panel may need to work on inputMatchers also.
 		int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
-		for(int i = 0; i < rowsIndex.length; i++) {
+		if( rowsIndex.length > currentMatcher.getMaxInputMatchers() ) {
+			System.err.println("You have selected more than " + 
+					currentMatcher.getMaxInputMatchers() + " input matcher(s).  Using the top " + 
+					currentMatcher.getMaxInputMatchers() + " matcher(s).");
+		}
+		for(int i = 0; i < rowsIndex.length || i < currentMatcher.getMaxInputMatchers(); i++) {
 			AbstractMatcher input = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
 			currentMatcher.addInputMatcher(input);
 		}
