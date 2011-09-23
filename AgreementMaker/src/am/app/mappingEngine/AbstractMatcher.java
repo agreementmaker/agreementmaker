@@ -248,7 +248,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		alignProp = true;
 		alignInstances = true;
 		minInputMatchers = 0;
-		maxInputMatchers = 0;
+		maxInputMatchers = Integer.MAX_VALUE;
 		relation = MappingRelation.EQUIVALENCE;
 		//optimized = false;
 		//ALIGNMENTS LIST MUST BE NULL UNTIL THEY ARE CALCULATED
