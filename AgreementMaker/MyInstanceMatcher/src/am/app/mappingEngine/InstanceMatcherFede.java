@@ -11,6 +11,7 @@ import java.util.List;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.ibm.icu.text.DecimalFormat;
+import com.ibm.xml.parser.Match;
 
 import classification.Classificator;
 import classification.TestSet;
@@ -30,6 +31,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 	int ambiguous;
 	int noResult;
 	int singleResult;
+	int solvable;
 	
 	int disambiguationMappings = 0;
 	
@@ -94,6 +96,9 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		if(size == 0) noResult++;
 		else if(size == 1) singleResult++;
 		else if(size > 1) ambiguous++;
+		
+		if(candidatesContainSolution(sourceInstance.getUri(), targetCandidates))
+			solvable++;
 		
 		
 		//System.out.println("SOURCE:" + sourceInstance);
@@ -206,6 +211,22 @@ public class InstanceMatcherFede extends AbstractMatcher {
 	
 	
 
+	private boolean candidatesContainSolution(String uri, List<Instance> candidates) {
+		MatchingPair pair;
+		for (int i = 0; i < filePairs.size(); i++) {
+			pair = filePairs.get(i);
+			if(pair.sourceURI.equals(uri)){
+				
+				for (int j = 0; j < candidates.size(); j++) {
+					if(candidates.get(j).getUri().equals(pair.targetURI))
+						return true;					
+				}
+			}
+		}
+		
+		return false;
+	}
+
 	private double instanceSimilarity(Instance sourceInstance,
 			Instance candidate, String sourceLabel, List<String> sourceKeywords) {
 
@@ -306,6 +327,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		Statement targetStmt;
 		int count = 0;
 		double totalSim = 0;
+		DecimalFormat df = new DecimalFormat("#.##");
 		for (int i = 0; i < sourceStmts.size(); i++) {
 			for (int j = 0; j < targetStmts.size(); j++) {
 				sourceStmt = sourceStmts.get(i);
@@ -329,10 +351,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 								double d2 = Double.parseDouble(s2);
 								if(d1 == d2) sim = 1;
 								else {
-									
-									DecimalFormat df = new DecimalFormat("#.##");
-									
-//									System.out.println(d1);
+									//System.out.println(d1);
 //									System.out.println(df.format(d1));
 //									
 									sim = StringMetrics.AMsubstringScore(df.format(d1),df.format(d2));
@@ -411,6 +430,8 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		System.out.println("No Results: " + noResult);
 		System.out.println("Single result: " + singleResult);
 		System.out.println("Total: " + (ambiguous + noResult + singleResult));
+		
+		System.out.println("Solvable: " + solvable);
 		
 		System.out.println("Disambiguated: " + disambiguationMappings);
 		

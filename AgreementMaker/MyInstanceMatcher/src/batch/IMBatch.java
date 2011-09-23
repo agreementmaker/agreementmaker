@@ -119,6 +119,44 @@ public class IMBatch {
 		
 	}
 	
+	public String dbpediaLocationsTest() throws Exception{
+ 		double threshold = 0.5;
+ 		
+ 		String cwd = System.getProperty("user.dir") + File.separator;
+				
+		OntologyDefinition sourceDef = new OntologyDefinition();
+		sourceDef.loadOntology = false;
+		sourceDef.loadInstances = true;
+		sourceDef.instanceSourceFile = cwd + NYTConstants.NYT_LOCATIONS;
+		sourceDef.instanceSource = DatasetType.DATASET;
+		sourceDef.instanceSourceFormat = 0;
+		sourceDef.sourceOrTarget = Ontology.SOURCE;
+		
+		System.out.println("Building source ontology...");
+		OntoTreeBuilder builder = new OntoTreeBuilder(sourceDef);
+		builder.build();
+		System.out.println("Done");
+		Ontology sourceOnt = builder.getOntology();
+		
+		Ontology targetOnt = new Ontology();
+	
+		KnowledgeBaseInstanceDataset instances = new KnowledgeBaseInstanceDataset("locations.xml", "dbp_geocoordinates");
+		
+		targetOnt.setInstances(instances);
+		
+		InstanceMatcherFede matcher = new InstanceMatcherFede();
+		matcher.setSourceOntology(sourceOnt);
+		matcher.setTargetOntology(targetOnt);
+		matcher.setThreshold(threshold);
+		
+		matcher.match();
+		
+		//report += NYTEvaluator.evaluate("alignment.rdf", referenceFile, threshold) + "\n";
+		
+		return report;
+		
+	}
+	
 	
 	public void runFreebaseTest() throws Exception{
 		String cwd = System.getProperty("user.dir") + File.separator;
@@ -240,7 +278,7 @@ public class IMBatch {
 	
 		batch.runDBPediaTest();
 		
-		
+//		batch.dbpediaLocationsTest();
 		
 	}
 
