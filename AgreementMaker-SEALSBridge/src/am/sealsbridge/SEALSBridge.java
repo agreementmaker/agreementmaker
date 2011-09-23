@@ -1,12 +1,16 @@
 package am.sealsbridge;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 import am.app.Core;
-import am.app.lexicon.LexiconBuilderParameters;
-import am.app.lexicon.ontology.OntologyLexiconBuilder;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
@@ -32,17 +36,17 @@ public class SEALSBridge extends AbstractPlugin implements IOntologyMatchingTool
 		
 		try {
 			
+			//BasicConfigurator.configure();
+			
+			Logger log = Logger.getLogger(this.getClass());
+			log.setLevel(Level.INFO);
+			
 			// load the ontologies
 			Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(source.toString());
 			Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(target.toString());
 			
 			Core.getInstance().setSourceOntology(sourceOntology);
 			Core.getInstance().setTargetOntology(targetOntology);
-			
-			// create the lexicons.
-			LexiconBuilderParameters lexiconParameters = OntologyLexiconBuilder.getDefaultParameters(sourceOntology, targetOntology);
-			Core.getLexiconStore().setParameters(lexiconParameters);
-			Core.getLexiconStore().buildAll();
 			
 			// create the matching algorithm
 			AbstractMatcher matcher = MatcherFactory.getMatcherInstance(MatchersRegistry.OAEI2011, 0);
@@ -52,11 +56,27 @@ public class SEALSBridge extends AbstractPlugin implements IOntologyMatchingTool
 			
 			params.maxSourceAlign = 1;
 			params.maxTargetAlign = 1;
-			params.threshold = 0.73;
+			params.threshold = 0.60;
+			params.parallelExecution = true;
+			
+			try {
+				File thresholdFile = new File("threshold.txt");
+				if( thresholdFile.exists() && thresholdFile.canRead()) {
+					BufferedReader thresholdReader = new BufferedReader( new FileReader(thresholdFile) );
+					String firstLine = thresholdReader.readLine();
+					double threshold = Double.parseDouble(firstLine);
+					if( threshold > 0 && threshold <= 1.0 ) params.threshold = threshold;
+					log.info("Using threshold " + params.threshold +".");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
 			matcher.setParam(params);
-			
+			matcher.setSourceOntology(sourceOntology);
+			matcher.setTargetOntology(targetOntology);
 			matcher.setProgressDisplay( new ConsoleProgressDisplay() );  // output status information to the console.
+			matcher.setUseProgressDelay(true);
 			
 			// run the algorithm
 			matcher.match();
