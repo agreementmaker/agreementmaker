@@ -11,12 +11,14 @@ import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
+import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
@@ -26,7 +28,7 @@ public class MediatingMatcher extends AbstractMatcher {
 
 	private static final long serialVersionUID = -4021061879846521596L;
 
-	private Ontology mediatingOntology;
+	private Ontology mediatingOntology = null;
 	private HashMap<String,List<MatchingPair>> sourceBridge;  // map a source URI to a list of matching pairs
 	private HashMap<String,List<MatchingPair>> targetBridge;  // map a target URI to a list of matching pairs
 	
@@ -49,7 +51,23 @@ public class MediatingMatcher extends AbstractMatcher {
 
 		if( !(p.loadSourceBridge && p.loadTargetBridge) ) { // we need to compute one of the bridges, so load the mediating ontology 
 			if( isProgressDisplayed() ) progressDisplay.appendToReport("Loading mediating ontology ...");
-			mediatingOntology = OntoTreeBuilder.loadOWLOntology( p.mediatingOntology );
+			try {
+				mediatingOntology = OntoTreeBuilder.loadOWLOntology( p.mediatingOntology );
+			} catch( Exception e ) {
+				e.printStackTrace();
+			}
+			
+			if( mediatingOntology == null ) {
+				System.err.println("The mediating ontology (" + p.mediatingOntology + ") was not found.  Cannot match using a mediating ontology.");
+				alignClass = false;
+				alignProp = false;
+				classesAlignmentSet = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
+				classesMatrix = new SparseMatrix(sourceOntology,targetOntology, alignType.aligningClasses);
+				propertiesAlignmentSet = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
+				propertiesMatrix = new SparseMatrix(sourceOntology,targetOntology, alignType.aligningProperties);
+				return;
+			}
+			
 			if( isProgressDisplayed() ) progressDisplay.appendToReport(" Done.\n");
 		}
 		
