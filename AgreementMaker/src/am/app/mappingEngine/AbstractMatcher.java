@@ -123,7 +123,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected boolean useProgressDelay = true;
 	
 	/** A thread group used in threaded execution mode. */
-	private transient ThreadGroup threadGroup;
+	protected transient ThreadGroup threadGroup;
 	
 	public void setPerformSelection(boolean performSelection) {
 		this.performSelection = performSelection;
