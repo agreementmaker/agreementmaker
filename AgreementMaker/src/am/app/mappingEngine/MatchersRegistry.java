@@ -13,6 +13,7 @@ import am.app.mappingEngine.PRAMatcher.PRAMatcher2;
 import am.app.mappingEngine.PRAintegration.PRAintegrationMatcher;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import am.app.mappingEngine.basicStructureSelector.BasicStructuralSelectorMatcher;
+import am.app.mappingEngine.boosting.BestMatchBoosting;
 import am.app.mappingEngine.conceptMatcher.ConceptMatcher;
 import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
 import am.app.mappingEngine.dsi.OldDescendantsSimilarityInheritanceMatcher;
@@ -58,6 +59,7 @@ public enum MatchersRegistry {
 	 * And so, if your matcher is has no code errors, it will be incorporated into the AgreementMaker.  - Cosmin
 	 */
 	//
+	Boost				( "Boost", "Best Match Boosting", BestMatchBoosting.class, MatcherCategory.LEXICAL ), 
 	LSMWeighted			( "LSMW", "LSM Weighted", LexicalSynonymMatcherWeighted.class, MatcherCategory.LEXICAL),
 	VMMPairwise			( "VMM-PW", "VMM PairWise", MultiWordsMatcherPairWise.class, MatcherCategory.SYNTACTIC ),
 	NewVMM				( "NVMM", "New VMM", NewMultiWordsMatcher.class, MatcherCategory.SYNTACTIC ),
@@ -66,7 +68,7 @@ public enum MatchersRegistry {
 	PartialGraph		( "PGM", "Partial Graph Matcher", PartialGraphMatcher.class, MatcherCategory.STRUCTURAL ),
 	SimilarityFlooding  ( "SFM", "Similarity Flooding Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.sfm.IndipendentSimilarityFlooding.class ),
 	AnchorFlood			( "AFM", "AnchorFlood Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.anchorFlood.AnchorFloodMatcher.class ),
-	OAEI2009   			( "OAEI-09", "OAEI2009 Matcher", OAEI2009matcher.class, MatcherCategory.HYBRID),
+	OAEI2009   			( "OAEI-09", "OAEI 2009 Matcher", OAEI2009matcher.class, MatcherCategory.HYBRID),
 	OAEI2010			( "OAEI-10", "OAEI 2010 Matcher", OAEI2010Matcher.class, MatcherCategory.HYBRID),
 	OAEI2011			( "OAEI-11", "OAEI 2011 Matcher", OAEI2011Matcher.class, MatcherCategory.HYBRID),
 	IterativeMatcher	( "IISM", "Instance-based Iterator", am.app.mappingEngine.instance.IterativeMatcher.class),
