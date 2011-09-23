@@ -1679,8 +1679,8 @@ public String testModel(OutputTrainingGenerator o, TestSet t){
 	}
 	
 public static OAEI2011Configuration classifiedOntologiesOAEI2011(Ontology sourceOntology,Ontology targetOntology) {
-		String modelFileName = "Classification/cModel.model";
-		String outputTrainingGeneratorFileName = "Classification/finalTraining.xml"; 
+		String modelFileName = "Classification/cModel4.model";
+		String outputTrainingGeneratorFileName = "Classification/finalTraining3.xml"; 
 		
 		String result = classifiedOntologiesST(sourceOntology, targetOntology, modelFileName, outputTrainingGeneratorFileName);
 		/*
