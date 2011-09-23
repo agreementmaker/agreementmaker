@@ -15,6 +15,7 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
 import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrixOld;
 import am.app.ontology.Node;
 
 /**
@@ -78,8 +79,9 @@ public class GroupFinderMatcher extends AbstractMatcher {
 		
 		AbstractMatcher input = inputMatchers.get(0);
 		
-		inputClassesMatrix = (SimilarityMatrix) input.getClassesMatrix().clone();
-    	inputPropertiesMatrix = (SimilarityMatrix)input.getPropertiesMatrix().clone();
+		// TODO: Fix this.
+		inputClassesMatrix = (SimilarityMatrix) new ArraySimilarityMatrixOld(input.getClassesMatrix());
+    	inputPropertiesMatrix = (SimilarityMatrix) new ArraySimilarityMatrixOld(input.getPropertiesMatrix());
 	}
 	
 	/**
