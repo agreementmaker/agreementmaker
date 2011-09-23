@@ -57,7 +57,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		setThreshold(0.01d);
 	}
 	
-	
+	@Override
 	protected void beforeAlignOperations()throws Exception{
 		super.beforeAlignOperations();
 		

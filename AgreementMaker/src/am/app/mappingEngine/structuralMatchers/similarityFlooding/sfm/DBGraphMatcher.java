@@ -1,10 +1,5 @@
 package am.app.mappingEngine.structuralMatchers.similarityFlooding.sfm;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -13,24 +8,15 @@ import java.sql.Statement;
 import java.util.Iterator;
 import java.util.Vector;
 
-import com.hp.hpl.jena.rdf.model.impl.ResourceImpl;
-
-import am.AMException;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.structuralMatchers.SimilarityFloodingParameters;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.FullGraphMatcher;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.SimilarityFloodingMatcherParameters;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdge;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdgeData;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGSimilarityMatrix;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertex;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PairwiseConnectivityGraph;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphEdge;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphVertex;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
-import am.app.ontology.Node;
 
 public class DBGraphMatcher extends FullGraphMatcher {
 
@@ -78,6 +64,7 @@ public class DBGraphMatcher extends FullGraphMatcher {
 	 * @see am.app.mappingEngine.AbstractMatcher#align(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes)
 	 * NOTE: we are using graphs instead of arrayList
 	 */
+	@Override
 	 protected void align() throws Exception {
 		progressDisplay.clearReport();
 		
@@ -141,6 +128,7 @@ public class DBGraphMatcher extends FullGraphMatcher {
 		
 	 }
 	
+	@Override
 	protected void createFullPCG(WrappingGraph sourceOnt, WrappingGraph targetOnt){
 
 		 Iterator<WGraphEdge> sourceIterator = sourceOnt.edges();
@@ -308,6 +296,7 @@ public class DBGraphMatcher extends FullGraphMatcher {
 			 }
 	 }
 	
+	@Override
 	protected void createInducedPropagationGraph(){
 		
 		// PART 1: create backward edges
@@ -391,6 +380,7 @@ public class DBGraphMatcher extends FullGraphMatcher {
 		}
 	 }
 	
+	@Override
 	protected void computeFixpoint(){
 		 int round = 0;
 		 Vector<Double> oldV , newV;
@@ -477,6 +467,7 @@ public class DBGraphMatcher extends FullGraphMatcher {
 		return 0.0;
 	}
 	
+	//@Override
 	protected void normalizeSimilarities(Connection connect, double roundMax){
 		
 		try {
@@ -521,6 +512,7 @@ public class DBGraphMatcher extends FullGraphMatcher {
 		return simVector;
 	}
 	
+	//@Override
 	protected void populateSimilarityMatrices(Connection connect, SimilarityMatrix cMatrix, SimilarityMatrix pMatrix){
 		
 		try {

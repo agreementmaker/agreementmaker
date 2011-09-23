@@ -14,6 +14,7 @@ public class CopyMatcher extends AbstractMatcher {
 		minInputMatchers = 1;
 	}
 	
+	@Override
 	protected void beforeAlignOperations() throws Exception{
     	super.beforeAlignOperations();
     	AbstractMatcher a = inputMatchers.get(0);
@@ -22,6 +23,7 @@ public class CopyMatcher extends AbstractMatcher {
 		alignProp = a.isAlignProp();
 	}
 	
+	@Override
 	public void addInputMatcher(AbstractMatcher a) {
 		inputMatchers.add(a);
 
@@ -30,7 +32,7 @@ public class CopyMatcher extends AbstractMatcher {
 			param = a.getParam();
 	}
 	
-	
+	@Override
     protected void align() {
     	AbstractMatcher a = inputMatchers.get(0);
 		if(alignClass) {

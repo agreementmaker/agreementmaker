@@ -69,6 +69,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 * Before the align process, we specify the references to the classes Matrix and the properties Matrix of the input Matcher
 	 * @see am.app.mappingEngine.AbstractMatcher#beforeAlignOperations()
 	 */
+	@Override
 	protected void beforeAlignOperations() throws Exception {
 		super.beforeAlignOperations();
 		if( inputMatchers.size() != 1 ) {
@@ -87,7 +88,8 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 * @author michele
 	 * NOTE: parameters sourceList and targetList are NOT used
 	 */
-	protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
+	@Override
+	protected SimilarityMatrix alignNodesOneByOne(List<Node> sourceList, List<Node> targetList, alignType typeOfNodes) throws Exception {
 		
 		// step 0: gathering all the data
 		List<Node> source; // list of the source ontology concepts
@@ -124,6 +126,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 * @see am.app.mappingEngine.BaseSimilarityMatcher#oneToOneMatching(SimilarityMatrix matrix)
 	 * @author michele
 	 */
+	@Override
 	protected Alignment<Mapping> oneToOneMatching(SimilarityMatrix matrix){
 		List<Mapping> list = matrix.chooseBestN();
 		Alignment<Mapping> result = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
@@ -141,6 +144,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 * @see am.app.mappingEngine.BaseSimilarityMatcher#getDescriptionString()
 	 * @author michele
 	 */
+	@Override
 	public String getDescriptionString() {
 		return "The Group Finder Matcher (GFM for short) is a matching method that visits the structure of the source\n" +
 				"and the target ontologies to see whether the mappings between nodes of the two ontologies is respected.\n" +

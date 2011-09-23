@@ -6,6 +6,7 @@ import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
 
@@ -65,6 +66,7 @@ public class IterativeMatcher extends AbstractMatcher{
 		alignProp = true;		
 	}
 	
+	@Override
 	protected void beforeAlignOperations()  throws Exception{
 		super.beforeAlignOperations();
 		
@@ -152,8 +154,8 @@ public class IterativeMatcher extends AbstractMatcher{
 	}
 
 	
-	
-	protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+	@Override
+	protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix) {
 		
 		String tURI, sURI;
 		sURI = sourceOntology.getURI();
@@ -1164,7 +1166,7 @@ public class IterativeMatcher extends AbstractMatcher{
 		}
 	}
 	
-	
+	@Override
 	public String getDescriptionString() {
 		String result = "This matcher matches properties of the ontology" +
 				" using the instances in the ontology.";

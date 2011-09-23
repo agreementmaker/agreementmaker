@@ -102,6 +102,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 	}
 	
 //	@SuppressWarnings("unchecked")
+	@Override
 	protected void align() throws Exception {
 		if (sourceOntology == null || targetOntology == null)
 			return; // cannot align just one ontology
@@ -1520,6 +1521,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		individuals = useIndividuals;
 	}
 	
+	@Override
 	public AbstractMatcherParametersPanel getParametersPanel(){
 		if(parametersPanel == null){
 			parametersPanel = new IterativeInstanceStructuralParametersPanel();

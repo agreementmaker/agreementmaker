@@ -41,6 +41,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 	 * Also, get our MCP value, which is set by the user 
 	 * @see am.app.mappingEngine.AbstractMatcher#beforeAlignOperations()
 	 */
+	@Override
 	protected void beforeAlignOperations()throws Exception {
 		super.beforeAlignOperations();
     	if( inputMatchers.size() != 1 ) {
@@ -57,8 +58,8 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
     	
 	}
 
-	
-    protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
+	@Override
+    protected SimilarityMatrix alignNodesOneByOne(List<Node> sourceList, List<Node> targetList, alignType typeOfNodes) throws Exception {
     	
     	//we need to work on a DAG not on the vertex
 		TreeToDagConverter sourceDag;
@@ -76,8 +77,8 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
     		input = inputPropertiesMatrix;
     	}
     	initBooleanMatrix(input);
-    	ArrayList<Node> sourceConcepts = sourceList;
-    	ArrayList<Node> targetConcepts = targetList;
+    	List<Node> sourceConcepts = sourceList;
+    	List<Node> targetConcepts = targetList;
     	Iterator<Node> itSource = sourceConcepts.iterator();
     	Iterator<Node> itTarget;
     	Node sourceNode;
@@ -182,7 +183,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		return result;
 	}
 
-
+	@Override
 	public String getDescriptionString() {
 		String description;
 		
@@ -194,6 +195,7 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		return description;
 	}
 	
+	@Override
 	public AbstractMatcherParametersPanel getParametersPanel() {
 		if(parametersPanel == null){
 			parametersPanel = new DescendantsSimilarityInheritanceParametersPanel();

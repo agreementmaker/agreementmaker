@@ -11,6 +11,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.StringUtil.PorterStemmer;
@@ -104,7 +105,8 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	/*
 	 * This function does the main base similarity algorithm.
 	 */
-	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
+	@Override
+	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix) throws Exception {
 
 
 		

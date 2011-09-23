@@ -30,7 +30,7 @@ public class PRAintegrationMatcher extends AbstractMatcher {
 		
 	}
 	
-	
+	@Override
 	public AbstractMatcherParametersPanel getParametersPanel() {
 		if(parametersPanel == null){
 			parametersPanel = new ReferenceAlignmentParametersPanel();
@@ -38,6 +38,7 @@ public class PRAintegrationMatcher extends AbstractMatcher {
 		return parametersPanel;
 	}
 	
+	@Override
 	public void match() throws Exception {
     	matchStart();
 		super.beforeAlignOperations();
@@ -56,10 +57,12 @@ public class PRAintegrationMatcher extends AbstractMatcher {
     }
     
 
+	@Override
 	public void buildSimilarityMatrices()throws Exception{
 		//do nothing
     }
 
+	@Override
     public void select() {
     	//do nothing
     }

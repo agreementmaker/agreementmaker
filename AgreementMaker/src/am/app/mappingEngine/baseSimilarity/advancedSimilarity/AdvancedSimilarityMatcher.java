@@ -76,7 +76,8 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 * @see am.app.mappingEngine.BaseSimilarityMatcher#alignTwoNodes(Node source, Node target, alignType typeOfNodes)
 	 * @author michele
 	 */
-	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
+	@Override
+	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix) throws Exception {
 		// TODO: works no more while returning null... no sparse matrix now.... creating 0.0 alignment
 		
 		// Step 0: tokenize source and target nodes (if possible) and separate by relevance
@@ -348,6 +349,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 * @see am.app.mappingEngine.BaseSimilarityMatcher#oneToOneMatching(SimilarityMatrix matrix)
 	 * @author michele
 	 */
+	@Override
 	protected Alignment<Mapping> oneToOneMatching(SimilarityMatrix matrix){
 		List<Mapping> list = matrix.chooseBestN(true, getThreshold());
 		Alignment<Mapping> result = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
@@ -366,6 +368,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 * @see am.app.mappingEngine.BaseSimilarityMatcher#getDescriptionString()
 	 * @author michele
 	 */
+	@Override
 	public String getDescriptionString() {
 		return "The Advanced Similarity Matcher (ASM for short) is a matching method that compares the source and the target concepts\n" +
 				"by looking at the words that compose them and use a string-matching technique to provide the overall result.\n" +
@@ -452,6 +455,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 * @see am.app.mappingEngine.BaseSimilarityMatcher#initializeVariables()
 	 * @author michele
 	 */
+	@Override
 	protected void initializeVariables() {
 		super.initializeVariables();
 		//sourceWords = new ArrayList<String>();
@@ -488,6 +492,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 * @see am.app.mappingEngine.BaseSimilarityMatcher#alignNodesOneByOnegetParametersPanel()
 	 * @author michele
 	 */
+	@Override
 	public AbstractMatcherParametersPanel getParametersPanel(){
 		if(parametersPanel == null){
 			parametersPanel = new AdvancedSimilarityMatcherParametersPanel();

@@ -26,6 +26,7 @@ import java.util.Vector;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
 
@@ -282,6 +283,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 	//WARNING: if you load other ontologies and try to match with this matcher, code needs to be changed.
 	//Coming...
 	
+	@Override
 	public void beforeAlignOperations()  throws Exception{
 		super.beforeAlignOperations();
 		if(firstExec){
@@ -298,7 +300,8 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 	
 	
 	//Function aligns 2 nodes using UMLS.
-	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
+	@Override
+	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix) throws Exception {
 		
 		//Get labels		
 		String sourceName= source.getLabel();
@@ -509,6 +512,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 		
 
 	//Description of Algorithm
+	@Override
 	public String getDescriptionString() {
 		//TODO: Explain more
 		return "A lexical matcher using UMLS.\n"; 

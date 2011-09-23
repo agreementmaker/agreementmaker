@@ -12,6 +12,7 @@ public class ExtrapolatingDSI extends DescendantsSimilarityInheritanceMatcher {
      * Everything is the same of the DSI, except that if a cell has been filtered out, it is set as TRUE in the boolean matrix 
        so that it won't be modified.
      */
+	@Override
 	protected void initBooleanMatrix(SimilarityMatrix input) {
 		super.initBooleanMatrix(input);
 		if(input instanceof FilteredAlignmentMatrix) {

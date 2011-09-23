@@ -15,6 +15,7 @@ import net.didion.jwnl.data.list.PointerTargetNodeList;
 import net.didion.jwnl.dictionary.Dictionary;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
 
@@ -41,6 +42,7 @@ public class LexicalMatcherJWNLOLD extends AbstractMatcher{
 	}
 	
 	//Description of Algorithm
+	@Override
 	public String getDescriptionString() {
 		return "A lexical matcher using WordNet.\n"; 
 	}
@@ -51,7 +53,8 @@ public class LexicalMatcherJWNLOLD extends AbstractMatcher{
 	/**
 	 * Function aligns 2 nodes using WordNet:
 	 */
-	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+	@Override
+	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix) {
 		
 		//Get local name		
 		String sourceName= source.getLocalName();

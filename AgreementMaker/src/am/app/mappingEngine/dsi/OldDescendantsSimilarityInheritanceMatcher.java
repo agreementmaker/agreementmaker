@@ -36,6 +36,7 @@ public class OldDescendantsSimilarityInheritanceMatcher extends AbstractMatcher 
 	 * Also, get our MCP value, which is set by the user 
 	 * @see am.app.mappingEngine.AbstractMatcher#beforeAlignOperations()
 	 */
+	@Override
 	protected void beforeAlignOperations()throws Exception {
 		super.beforeAlignOperations();
     	if( inputMatchers.size() != 1 ) {
@@ -189,7 +190,7 @@ public class OldDescendantsSimilarityInheritanceMatcher extends AbstractMatcher 
 		
 	}
 */
-	
+	@Override
 	public String getDescriptionString() {
 		String description;
 		
@@ -201,6 +202,7 @@ public class OldDescendantsSimilarityInheritanceMatcher extends AbstractMatcher 
 		return description;
 	}
 	
+	@Override
 	public AbstractMatcherParametersPanel getParametersPanel() {
 		if(parametersPanel == null){
 			parametersPanel = new DescendantsSimilarityInheritanceParametersPanel();

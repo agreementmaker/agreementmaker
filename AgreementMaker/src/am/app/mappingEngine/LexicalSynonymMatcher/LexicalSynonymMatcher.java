@@ -150,7 +150,7 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 					if( !this.isCancelled() ) {
 						Mapping alignment = null;
 						if( sourceIsLarger ) {
-							alignment = alignTwoNodes(larger, smaller, typeOfNodes);
+							alignment = alignTwoNodes(larger, smaller, typeOfNodes, matrix);
 							matrix.set(i,j,alignment);
 						}
 						else {
@@ -158,7 +158,7 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 							OntResource smallerOR = smaller.getResource().as(OntResource.class);
 							sourceSet = smallerLexicon.getSynSet(smallerOR);
 							
-							alignment = alignTwoNodes(smaller, larger, typeOfNodes);
+							alignment = alignTwoNodes(smaller, larger, typeOfNodes, matrix);
 							matrix.set(j,i,alignment);
 						}
 						
@@ -224,7 +224,7 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	
 	@Override
 	protected Mapping alignTwoNodes(Node source, Node target,
-			alignType typeOfNodes) throws Exception {
+			alignType typeOfNodes, SimilarityMatrix matrix) throws Exception {
 
 		LexicalSynonymMatcherParameters lsmParam = (LexicalSynonymMatcherParameters) param;
 		

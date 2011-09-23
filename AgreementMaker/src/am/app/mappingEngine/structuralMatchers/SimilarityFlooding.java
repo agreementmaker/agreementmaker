@@ -104,6 +104,7 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 	 * @see am.app.mappingEngine.AbstractMatcher#align(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes)
 	 * NOTE: we are using graphs instead of arrayList
 	 */
+	@Override
 	 protected abstract void align() throws Exception;
 	 
 	 /* *********************************************************************************** */

@@ -61,6 +61,7 @@ public class BasicStructuralSelectorMatcher extends AbstractMatcher {
 	 * Before the align process, we specify the references to the classes Matrix and the properties Matrix of the input Matcher
 	 * @see am.app.mappingEngine.AbstractMatcher#beforeAlignOperations()
 	 */
+	@Override
 	protected void beforeAlignOperations() throws Exception {
 		super.beforeAlignOperations();
 		/*if( inputMatchers.size() != 1 ) {
@@ -79,7 +80,8 @@ public class BasicStructuralSelectorMatcher extends AbstractMatcher {
 	 * @author michele
 	 * NOTE: parameters sourceList and targetList are NOT used
 	 */
-	protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception {
+	@Override
+	protected SimilarityMatrix alignNodesOneByOne(List<Node> sourceList, List<Node> targetList, alignType typeOfNodes) throws Exception {
 		
 		// step 0: gathering all the data
 		List<Node> source; // list of the source ontology concepts

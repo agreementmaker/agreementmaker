@@ -48,6 +48,7 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 	 * @see am.app.mappingEngine.AbstractMatcher#align(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes)
 	 * NOTE: we are using graphs instead of arrayList
 	 */
+	 @Override
 	 protected void align() throws Exception {
 		progressDisplay.clearReport();
 		

@@ -40,7 +40,7 @@ public class MyMatcher_LayerII extends AbstractMatcher {
 	}
 	
 	@Override
-	public Mapping alignTwoNodes( Node source, Node target, alignType typeOfNodes ) {
+	public Mapping alignTwoNodes( Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix ) {
 	
 		SimilarityMatrix currentInputMatrix;
 		

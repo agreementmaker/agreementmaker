@@ -35,7 +35,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 		param = new OAEI2009parameters();
 	}
 	
-	
+	@Override
 	public String getDescriptionString() {
 		return "The method adopted in the OAEI2009 competition." +
 				"For more details, please read OAEI2009 results for the AgreementMaker available at www.cs.uic.edu/Cruz/Publications#2009. "+
@@ -49,7 +49,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 	 * *******************************************************************************************************
 	 */
 	
-	
+	@Override
 	public void beforeAlignOperations()  throws Exception{
 		super.beforeAlignOperations();
 		//OAEI2009parameters parameters =(OAEI2009parameters)param;
@@ -59,7 +59,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 	 ************************ Algorithm functions beyond this point*************************************
 	 * *******************************************************************************************************
 	 */
-
+	@Override
     public void match() throws Exception {
     	matchStart();
     	long measure = 1000000;
@@ -338,6 +338,7 @@ public class OAEI2009matcher extends AbstractMatcher {
     	//System.out.println("Properties alignments found: "+propertiesAlignmentSet.size());
     }
     
+    @Override
 	public AbstractMatcherParametersPanel getParametersPanel() {
 		if(parametersPanel == null){
 			parametersPanel = new OAEI2009parametersPanel();

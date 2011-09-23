@@ -1,7 +1,6 @@
 package am.app.mappingEngine.multiWords.newMW;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,11 +18,11 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.StringUtil.AMStringWrapper;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.ontology.Node;
 import am.app.ontology.profiling.OntologyProfiler;
-import am.utility.Pair;
 
 import com.hp.hpl.jena.ontology.OntResource;
 import com.wcohen.ss.api.StringWrapper;
@@ -80,7 +79,7 @@ public class NewMultiWordsMatcher extends AbstractMatcher {
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 	}
 	
-	
+	@Override
 	public String getDescriptionString() {
 		return "Performs a local matching using a Multi words String Based technique.\n" +
 				"Different concept and neighbouring strings are considered in the process.\n" +
@@ -97,7 +96,7 @@ public class NewMultiWordsMatcher extends AbstractMatcher {
 	 * *******************************************************************************************************
 	 */
 	
-	
+	@Override
 	public void beforeAlignOperations()  throws Exception{
 		super.beforeAlignOperations();
 		NewMultiWordsParameters parameters =(NewMultiWordsParameters)param;
@@ -405,8 +404,8 @@ public class NewMultiWordsMatcher extends AbstractMatcher {
 	 ************************ Algorithm functions beyond this point*************************************
 	 * *******************************************************************************************************
 	 */
-
-	public Mapping alignTwoNodes(Node source, Node target,alignType typeOfNodes) {
+	@Override
+	public Mapping alignTwoNodes(Node source, Node target,alignType typeOfNodes, SimilarityMatrix matrix) {
 		NewMultiWordsParameters mp = (NewMultiWordsParameters)param;
 		double sim = 0;
 		
@@ -464,6 +463,7 @@ public class NewMultiWordsMatcher extends AbstractMatcher {
 		
 	}
 	
+	@Override
 	public AbstractMatcherParametersPanel getParametersPanel() {
 		if(parametersPanel == null){
 			parametersPanel = new NewMultiWordsParametersPanel();

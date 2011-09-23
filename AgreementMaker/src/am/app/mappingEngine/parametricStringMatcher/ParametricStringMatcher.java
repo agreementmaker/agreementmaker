@@ -13,6 +13,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.StringUtil.ISub;
 import am.app.mappingEngine.StringUtil.Normalizer;
@@ -58,6 +59,7 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		addFeature(MatcherFeature.THREADED_OVERLAP);
 	}
 	
+	@Override
 	public String getDescriptionString() {
 		return "Performs a local matching using a String Based technique.\n" +
 				"Different concept strings are considered in the process.\n" +
@@ -103,7 +105,7 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	 */
 	
 	@Override
-	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix) {
 		
 		ParametricStringParameters parameters  = (ParametricStringParameters)param;
 		double sim = 0.0d; // this must be set
@@ -509,6 +511,7 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		return sim;
 	}
 	
+	@Override
 	public AbstractMatcherParametersPanel getParametersPanel() {
 		if(parametersPanel == null){
 			parametersPanel = new ParametricStringParametersPanel();

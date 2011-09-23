@@ -434,8 +434,9 @@ public class MultiWordsMatcher extends AbstractMatcher {
 	 ************************ Algorithm functions beyond this point*************************************
 	 * *******************************************************************************************************
 	 */
-
-	public Mapping alignTwoNodes(Node source, Node target,alignType typeOfNodes) {
+	
+	@Override
+	public Mapping alignTwoNodes(Node source, Node target,alignType typeOfNodes, SimilarityMatrix matrix) {
 		MultiWordsParameters mp = (MultiWordsParameters)param;
 		double sim = 0;
 		

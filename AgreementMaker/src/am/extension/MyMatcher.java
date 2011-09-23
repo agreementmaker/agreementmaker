@@ -14,6 +14,7 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 
 public class MyMatcher extends AbstractMatcher {
@@ -76,7 +77,7 @@ public class MyMatcher extends AbstractMatcher {
 	
 	
 	@Override
-	public Mapping alignTwoNodes( Node source, Node target, alignType typeOfNodes ) {
+	public Mapping alignTwoNodes( Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix ) {
 		
 	
 		if( seen.contains(target) ) return null;

@@ -28,7 +28,6 @@ import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.StringUtil.AMStringWrapper;
 import am.app.mappingEngine.StringUtil.Normalizer;
-import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 
 import com.hp.hpl.jena.ontology.OntResource;
@@ -88,7 +87,7 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 	}
 
-
+	@Override
 	public String getDescriptionString() {
 		return "Performs a local matching using a Multi words String Based technique.\n" +
 				"Different concept and neighbouring strings are considered in the process.\n" +
@@ -105,7 +104,7 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 	 * *******************************************************************************************************
 	 */
 
-
+	@Override
 	public void beforeAlignOperations()  throws Exception{
 		super.beforeAlignOperations();
 		MultiWordsPairWiseParameters parameters =(MultiWordsPairWiseParameters)param;
@@ -442,10 +441,9 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 
 	}
 
-
-
-	protected SimilarityMatrix alignUnmappedNodes(ArrayList<Node> sourceList,
-			ArrayList<Node> targetList, SimilarityMatrix inputMatrix,
+	@Override
+	protected SimilarityMatrix alignUnmappedNodes(List<Node> sourceList,
+			List<Node> targetList, SimilarityMatrix inputMatrix,
 			Alignment<Mapping> inputAlignmentSet, alignType typeOfNodes)
 					throws Exception {
 
@@ -458,8 +456,8 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 	}
 
 
-
-	public Mapping alignTwoNodes(Node source, Node target,alignType typeOfNodes) {
+	@Override
+	public Mapping alignTwoNodes(Node source, Node target,alignType typeOfNodes, SimilarityMatrix matrix) {
 		MultiWordsPairWiseParameters mp = (MultiWordsPairWiseParameters)param;
 		double sim = 0;
 
@@ -727,6 +725,7 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 
 	}
 
+	@Override
 	public AbstractMatcherParametersPanel getParametersPanel() {
 		if(parametersPanel == null){
 			parametersPanel = new MultiWordsPairWiseParametersPanel(inputMatchers);

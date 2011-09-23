@@ -538,7 +538,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 				for(int j = 0; j < targetList.size(); j++) {
 					target = targetList.get(j);
 					
-					if( !this.isCancelled() ) { alignment = alignTwoNodes(source, target, typeOfNodes); }
+					if( !this.isCancelled() ) { alignment = alignTwoNodes(source, target, typeOfNodes, matrix); }
 					else { return matrix; }
 					if(alignment != null && alignment.getSimilarity() >= param.threshold)
 						matrix.set(i,j,alignment);
@@ -653,7 +653,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 						target = targetList.get(j);
 						
 						if( !this.isCancelled() ) {
-							Mapping alignment = alignTwoNodes(source, target, typeOfNodes);
+							Mapping alignment = alignTwoNodes(source, target, typeOfNodes, matrix);
 							
 							matrix.set(i,j,alignment);
 							
@@ -697,7 +697,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 					//if both nodes have not been mapped yet enough times
 					//we map them regularly
 					if(!mappedNodes.isSourceMapped(source) && !mappedNodes.isTargetMapped(target)){
-						alignment = alignTwoNodes(source, target, typeOfNodes); 
+						alignment = alignTwoNodes(source, target, typeOfNodes, matrix); 
 					}
 					//else we take the alignment that was computed from the previous matcher
 					else{
@@ -722,7 +722,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
      * @return the alignment between the two nodes (a, b, sim, relation)
      * @throws Exception are managed in the doInBackground() method, to interrupt the process to send a message to the user thow new AMException(MESSAGE)
      */
-    protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
+    protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix ) throws Exception {
 		//TO BE IMPLEMENTED BY THE ALGORITHM, THIS IS JUST A FAKE ABSTRACT METHOD
 		double sim;
 		MappingRelation rel = MappingRelation.EQUIVALENCE;
@@ -738,9 +738,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     /**
      * A parallel version of alignTwoNodes().
      */
-    protected Mapping alignTwoNodesParallel(Node source, Node target, alignType typeOfNodes) throws Exception {
+    protected Mapping alignTwoNodesParallel(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix ) throws Exception {
     	// just return the serial implementation.  This method must be implemented by the programmer.
-    	return alignTwoNodes(source, target, typeOfNodes);
+    	return alignTwoNodes(source, target, typeOfNodes, matrix);
     }
     
 	//***************SELECTION PHASE*****************//
@@ -1858,7 +1858,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 					  Node target = targetList.get(j);
 
 					  try {
-						  Mapping mapping = matcher.alignTwoNodesParallel(source, target, typeOfNodes);
+						  Mapping mapping = matcher.alignTwoNodesParallel(source, target, typeOfNodes, matrix);
 						  if( mapping != null ) { 
 							  matcher.saveThreadResult(i, j, mapping, matrix);
 						  }

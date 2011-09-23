@@ -15,6 +15,7 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
@@ -228,7 +229,7 @@ public class MediatingMatcher extends AbstractMatcher {
 	
 	@Override
 	protected Mapping alignTwoNodes(Node source, Node target,
-			alignType typeOfNodes) throws Exception {
+			alignType typeOfNodes, SimilarityMatrix matrix) throws Exception {
 		
 		
 		List<MatchingPair> sourceBridgeMapping = sourceBridge.get(source.getUri());

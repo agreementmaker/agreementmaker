@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import sun.security.provider.certpath.Vertex;
 import am.app.feedback.FilteredAlignmentMatrix;
 import am.app.feedback.InitialMatchers;
 import am.app.feedback.measures.FamilialSimilarity;
@@ -31,7 +30,7 @@ public class ExtrapolatingFS extends AbstractMatcher {
 	protected FilteredAlignmentMatrix matrix;
 	
 	
-	
+	@Override
 	protected void beforeAlignOperations()throws Exception {
 		matchStart();
 		super.beforeAlignOperations();
@@ -47,7 +46,6 @@ public class ExtrapolatingFS extends AbstractMatcher {
     	matchEnd();
     	
 	}
-	
 	
 	public void match( Alignment<Mapping> userMappings ) throws Exception {
 	
@@ -153,7 +151,7 @@ public class ExtrapolatingFS extends AbstractMatcher {
 		return false;
 	}
 	
-	
+	@Override
    public void select() {
     	//this method is also invoked everytime the user change threshold or num relation in the table
     	beforeSelectionOperations();//Template method to allow next developer to add code after selection
@@ -161,7 +159,7 @@ public class ExtrapolatingFS extends AbstractMatcher {
     	afterSelectionOperations();//Template method to allow next developer to add code after selection
     }
 
-   
+   @Override
    protected void selectAndSetAlignments() {
    	if(alignClass) {
    		classesAlignmentSet = scanMatrix(classesMatrix);

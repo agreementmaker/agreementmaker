@@ -84,6 +84,8 @@ public class HierarchyMatcher extends AbstractMatcher
 			Utility.displayErrorPane(e.getMessage(), "Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
 		}
 	}
+	
+	@Override
 	protected void align() throws Exception
 	{
 		/*miscellaneous variables used in  the method*/

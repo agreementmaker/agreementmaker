@@ -18,6 +18,7 @@ import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 import edu.smu.tspell.wordnet.NounSynset;
 import edu.smu.tspell.wordnet.Synset;
@@ -103,7 +104,7 @@ public class LexicalMatcherJAWS extends AbstractMatcher {
 	};
 	
 	@Override
-	public Mapping alignTwoNodes( Node source, Node target, alignType typeOfNodes ) {
+	public Mapping alignTwoNodes( Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix ) {
 		
 		
 		LogicalDescription sourceBreakdown = new LogicalDescription( source );

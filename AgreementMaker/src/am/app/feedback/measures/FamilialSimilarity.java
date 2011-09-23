@@ -134,7 +134,7 @@ public class FamilialSimilarity extends RelevanceMeasure {
 			C1 = childrenList.get(indexofC1);
 			C2 = childrenList.get(j);
 			
-			Mapping ali = im.alignTwoNodes(C1, C2, whichType );
+			Mapping ali = im.alignTwoNodes(C1, C2, whichType, null );
 			if ( ali.getSimilarity() >= threshold ) {
 				simAbove++;
 			}
@@ -155,7 +155,7 @@ public class FamilialSimilarity extends RelevanceMeasure {
 
 			C2 = childrenList.get(j);
 			
-			Mapping ali = im.alignTwoNodes(C1, C2, whichType );
+			Mapping ali = im.alignTwoNodes(C1, C2, whichType, null);
 			if ( ali.getSimilarity() >= threshold ) {
 				vl.put(C2, ali.getSimilarity());
 			}

@@ -41,6 +41,7 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 	 * Also, get our MCP value, which is set by the user 
 	 * @see am.app.mappingEngine.AbstractMatcher#beforeAlignOperations()
 	 */
+	@Override
 	protected void beforeAlignOperations() throws Exception{
 		super.beforeAlignOperations();
     	
@@ -60,17 +61,20 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 	
 	
 	// overriding the abstract method in order to keep track of what kind of nodes we are aligning
-    protected SimilarityMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) {
+	@Override
+    protected SimilarityMatrix alignProperties(List<Node> sourcePropList, List<Node> targetPropList) {
 		return alignNodesOneByOne(sourcePropList, targetPropList, alignType.aligningProperties );
 	}
 
 	// overriding the abstract method in order to keep track of what kind of nodes we are aligning
-    protected SimilarityMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList) {
+	@Override
+    protected SimilarityMatrix alignClasses(List<Node> sourceClassList, List<Node> targetClassList) {
 		return alignNodesOneByOne(sourceClassList, targetClassList, alignType.aligningClasses);
 	}
 	
 	// this method is exactly similar to the abstract method, except we pass one extra parameters to the alignTwoNodes function
-    protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) {
+	@Override
+    protected SimilarityMatrix alignNodesOneByOne(List<Node> sourceList, List<Node> targetList, alignType typeOfNodes) {
 		SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, typeOfNodes);
 		Node source;
 		Node target;
@@ -80,7 +84,7 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 			for(int j = 0; j < targetList.size(); j++) {
 				target = targetList.get(j);
 				
-				if( !this.isCancelled() ) { alignment = alignTwoNodes(source, target, typeOfNodes); }
+				if( !this.isCancelled() ) { alignment = alignTwoNodes(source, target, typeOfNodes, matrix); }
 				else { return matrix; }
 				
 				matrix.set(i,j,alignment);
@@ -98,7 +102,8 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 	 * Align Two nodes using SSC algorithm.
 	 * @see am.app.mappingEngine.AbstractMatcher#alignTwoNodes(am.app.ontology.Node, am.app.ontology.Node)
 	 */
-	protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+	@Override
+	protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix) {
 
 		
 		/**
@@ -234,7 +239,7 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 		
 	}
 	
-	
+	@Override
 	public String getDescriptionString() {
 		String description;
 		
@@ -247,6 +252,7 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 		return description;
 	}
 	
+	@Override
 	public AbstractMatcherParametersPanel getParametersPanel() {
 		if(parametersPanel == null){
 			parametersPanel = new SiblingsSimilarityContributionParametersPanel();

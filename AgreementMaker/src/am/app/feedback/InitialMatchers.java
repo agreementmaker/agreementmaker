@@ -2,6 +2,7 @@ package am.app.feedback;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.Combination.CombinationParameters;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
@@ -36,6 +37,7 @@ public class InitialMatchers extends AbstractMatcher {
 		initializeVariables();
 	}
 	
+	@Override
 	protected void initializeVariables() {
 	
 		// Initialize the parameters for all the matchers that will be used
@@ -71,10 +73,12 @@ public class InitialMatchers extends AbstractMatcher {
 		//m_lwc.setIndex(lastIIndex);
 	}
 	
+	@Override
 	public String getDescriptionString() {
 		return "This is the Initial Matchers block for the User Feedback Loop."; 
 	}
 	
+	@Override
 	public void match() throws Exception {
 		matchStart();
 		
@@ -103,7 +107,7 @@ public class InitialMatchers extends AbstractMatcher {
 		matchEnd();
 	}
 
-	
+	@Override
 	protected void matchStart() {
 		double threshold = getThreshold();
 		int maxSourceAlign = getMaxSourceAlign();
@@ -126,15 +130,15 @@ public class InitialMatchers extends AbstractMatcher {
 	}
 	
 	// doInBackground is inherited
-	
-    public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
+	@Override
+    public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix) throws Exception {
     	
     	matchStart();
     	
     	m_psm.beforeAlignOperations();
     	m_vmm.beforeAlignOperations();
     	
-    	Mapping bsm = m_bsm.alignTwoNodes(source, target, typeOfNodes);
+    	Mapping bsm = m_bsm.alignTwoNodes(source, target, typeOfNodes, matrix);
     	//Alignment psm = m_psm.alignTwoNodes(source, target, typeOfNodes);
     	//Alignment vmm = m_vmm.alignTwoNodes(source, target, typeOfNodes);
     	

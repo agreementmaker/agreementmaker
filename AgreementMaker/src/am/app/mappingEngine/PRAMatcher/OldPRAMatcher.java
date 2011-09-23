@@ -38,7 +38,7 @@ public class OldPRAMatcher extends AbstractMatcher
 	}
 	
 	
-	
+	@Override
 	protected void beforeAlignOperations()throws Exception 
 	{
 		super.beforeAlignOperations();
@@ -53,12 +53,12 @@ public class OldPRAMatcher extends AbstractMatcher
     	inputPropertiesMatrix = input.getPropertiesMatrix();  	   	
 	}	
 	
-	
-	protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception 
+	@Override
+	protected SimilarityMatrix alignNodesOneByOne(List<Node> sourceList, List<Node> targetList, alignType typeOfNodes) throws Exception 
     {
 		nodeToOldTreeNode = new HashMap<Node, OldTreeNode>();
-		ArrayList<OldTreeNode> srcOldTreeNodes = createOldTreeNode(sourceList);
-		ArrayList<OldTreeNode> targetOldTreeNodes = createOldTreeNode(targetList);
+		List<OldTreeNode> srcOldTreeNodes = createOldTreeNode(sourceList);
+		List<OldTreeNode> targetOldTreeNodes = createOldTreeNode(targetList);
 		Node src = null, target = null;
 		/*First set matched nodes as matched, to help identifying them as roots when traversing the ontology tree
 		 * Also, set the nodes to which they are matched in the other ontology. This is for easy access to such nodes
@@ -130,7 +130,8 @@ public class OldPRAMatcher extends AbstractMatcher
 	
 	
 	/**Set all alignment sim to a random value between 0 and 1*/
-	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) 
+	@Override
+	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix) 
 	{
 		NormalizerParameter param = null;
 		Normalizer norm = null;
@@ -179,9 +180,9 @@ public class OldPRAMatcher extends AbstractMatcher
 	}
 
 	
-	private ArrayList<OldTreeNode> createOldTreeNode(ArrayList<Node> listOfNodes) 
+	private List<OldTreeNode> createOldTreeNode(List<Node> listOfNodes) 
 	{
-		ArrayList<OldTreeNode> OldTreeNodes = new ArrayList<OldTreeNode>();
+		List<OldTreeNode> OldTreeNodes = new ArrayList<OldTreeNode>();
 		OldTreeNode aOldTreeNode = null, oldTreeNodeInMap = null;
 		Node aNode = null;
 	
@@ -197,7 +198,7 @@ public class OldPRAMatcher extends AbstractMatcher
 		return OldTreeNodes;
 	}
 	
-	private void setMatchingPairs(SimilarityMatrix inputMatrix, ArrayList<OldTreeNode> sourceList, ArrayList<OldTreeNode> targetList) throws Exception
+	private void setMatchingPairs(SimilarityMatrix inputMatrix, List<OldTreeNode> sourceList, List<OldTreeNode> targetList) throws Exception
 	{
 		Mapping alignment = null;
 		int numRows = sourceList.size();
@@ -245,7 +246,7 @@ public class OldPRAMatcher extends AbstractMatcher
 	}
 	*/
 	
-	private void printAdjacency(ArrayList<OldTreeNode> OldTreeNodes)
+	private void printAdjacency(List<OldTreeNode> OldTreeNodes)
 	{
 		OldTreeNode aNode, nNode;
 		ArrayList<OldTreeNode> neighbours;
@@ -268,11 +269,11 @@ public class OldPRAMatcher extends AbstractMatcher
 		}
 	}
 	
-	private void createPRATrees(ArrayList<OldTreeNode> srcOldTreeNodes, ArrayList<OldTreeNode> targetOldTreeNodes, alignType typeOfNodes) throws Exception
+	private void createPRATrees(List<OldTreeNode> srcOldTreeNodes, List<OldTreeNode> targetOldTreeNodes, alignType typeOfNodes) throws Exception
 	{
 		//Need to access the inputMatrices to find which nodes are matched
 		//Start with inputClassesMatrix
-		ArrayList<OldTreeNode> srcRootNodes = getRootNodes(srcOldTreeNodes);
+		List<OldTreeNode> srcRootNodes = getRootNodes(srcOldTreeNodes);
 		//System.out.println("The size of the srcRootNodes is "+srcRootNodes.size());
 		
 		//ArrayList<OldTreeNode> targetRootNodes = getRootNodes(targetOldTreeNodes);
@@ -287,7 +288,7 @@ public class OldPRAMatcher extends AbstractMatcher
 	}
 	
 	
-	private void createPRATrees(ArrayList<OldTreeNode> rootNodes, alignType typeOfNodes)
+	private void createPRATrees(List<OldTreeNode> rootNodes, alignType typeOfNodes)
 	{
 		OldTreeNode aRootNode = null;
 		
@@ -469,7 +470,7 @@ public class OldPRAMatcher extends AbstractMatcher
 		
 		targetNode.setColor(2);
 		//Now align the source and targetNodes
-		alignment = alignTwoNodes(srcNode.getNode(), targetNode.getNode(), typeOfNodes);
+		alignment = alignTwoNodes(srcNode.getNode(), targetNode.getNode(), typeOfNodes, matrix);
 		matrix.set(srcNode.getNode().getIndex(), targetNode.getNode().getIndex(), alignment);
 	}
 	
@@ -534,9 +535,9 @@ public class OldPRAMatcher extends AbstractMatcher
 		}
 	}
 	
-	private ArrayList<OldTreeNode> getRootNodes(ArrayList<OldTreeNode> aList)
+	private List<OldTreeNode> getRootNodes(List<OldTreeNode> aList)
 	{
-		ArrayList<OldTreeNode> rootNodes = new ArrayList<OldTreeNode>();
+		List<OldTreeNode> rootNodes = new ArrayList<OldTreeNode>();
 		OldTreeNode aNode = null;
 		
 		for(int i = 0; i < aList.size(); i++)

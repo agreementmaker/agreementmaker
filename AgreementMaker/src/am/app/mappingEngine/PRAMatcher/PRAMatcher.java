@@ -48,7 +48,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	}
 	
 
-	
+	@Override
 	protected void beforeAlignOperations()throws Exception 
 	{
 		super.beforeAlignOperations();
@@ -66,11 +66,11 @@ public class PRAMatcher extends BaseSimilarityMatcher
     	nodeToTreeNode = new HashMap<Node, TreeNode>();
 	}	
 	
-	
-	protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) throws Exception 
+	@Override
+	protected SimilarityMatrix alignNodesOneByOne(List<Node> sourceList, List<Node> targetList, alignType typeOfNodes) throws Exception 
     {
-		ArrayList<TreeNode> srcTreeNodes = createTreeNode(sourceList);
-		ArrayList<TreeNode> targetTreeNodes = createTreeNode(targetList);
+		List<TreeNode> srcTreeNodes = createTreeNode(sourceList);
+		List<TreeNode> targetTreeNodes = createTreeNode(targetList);
 		Node src = null, target = null;
 		//First set matched nodes as matched, to help identifying them as roots when traversing the ontology tree
 		//Also, set the nodes to which they are matched in the other ontology. This is for easy access to such nodes
@@ -226,9 +226,9 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	*/
 	
 	
-	private ArrayList<TreeNode> createTreeNode(ArrayList<Node> listOfNodes) 
+	private List<TreeNode> createTreeNode(List<Node> listOfNodes) 
 	{
-		ArrayList<TreeNode> treeNodes = new ArrayList<TreeNode>();
+		List<TreeNode> treeNodes = new ArrayList<TreeNode>();
 		TreeNode aTreeNode = null;
 		Node aNode = null;
 	
@@ -242,7 +242,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 		return treeNodes;
 	}
 	
-	private void setMatchingPairs(SimilarityMatrix inputMatrix, ArrayList<TreeNode> sourceList, ArrayList<TreeNode> targetList) throws Exception
+	private void setMatchingPairs(SimilarityMatrix inputMatrix, List<TreeNode> sourceList, List<TreeNode> targetList) throws Exception
 	{
 		Mapping alignment = null;
 		int numRows = sourceList.size();
@@ -302,14 +302,14 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	}*/
 	
 	
-	private void createPRATrees(ArrayList<TreeNode> sourceList, ArrayList<TreeNode> targetList, alignType typeOfNodes) throws Exception
+	private void createPRATrees(List<TreeNode> sourceList, List<TreeNode> targetList, alignType typeOfNodes) throws Exception
 	{
 		//Need to access the inputMatrices to find which nodes are matched
 		//Start with inputClassesMatrix
-		ArrayList<TreeNode> srcRootNodes = getRootNodes(sourceList);
+		List<TreeNode> srcRootNodes = getRootNodes(sourceList);
 		//System.out.println("The size of the srcRootNodes is "+srcRootNodes.size());
 		
-		ArrayList<TreeNode> targetRootNodes = getRootNodes(targetList);
+		List<TreeNode> targetRootNodes = getRootNodes(targetList);
 		//System.out.println("The size of the targetRootNodes is "+targetRootNodes.size());
 		
 		//initialize class and property root nodes
@@ -327,7 +327,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	}
 	
 	
-	private void createPRATrees(ArrayList<TreeNode> rootNodes, alignType typeOfNodes, boolean source)
+	private void createPRATrees(List<TreeNode> rootNodes, alignType typeOfNodes, boolean source)
 	{
 		TreeNode aRootNode = null;
 		int treeDepth = 0;
@@ -603,7 +603,7 @@ public class PRAMatcher extends BaseSimilarityMatcher
 		targetNode.setColor(2);
 		//Now align the source and targetNodes
 		try {
-			alignment = alignTwoNodes(srcNode.getNode(), targetNode.getNode(), typeOfNodes);
+			alignment = alignTwoNodes(srcNode.getNode(), targetNode.getNode(), typeOfNodes, matrix);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -647,9 +647,9 @@ public class PRAMatcher extends BaseSimilarityMatcher
 	}
 	
 	
-	private ArrayList<TreeNode> getRootNodes(ArrayList<TreeNode> targetList)
+	private List<TreeNode> getRootNodes(List<TreeNode> targetList)
 	{
-		ArrayList<TreeNode> rootNodes = new ArrayList<TreeNode>();
+		List<TreeNode> rootNodes = new ArrayList<TreeNode>();
 		TreeNode aNode = null;
 		
 		for(int i = 0; i < targetList.size(); i++)

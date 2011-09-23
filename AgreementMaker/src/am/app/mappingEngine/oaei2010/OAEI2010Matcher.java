@@ -46,6 +46,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		param = new OAEI2010MatcherParameters(OAEI_Track.AllMatchers); // should this be here?? Probably not.
 	}
 	
+	@Override
 	public String getDescriptionString() {
 		return "The method adopted in the OAEI2010 competition ";
 	}
@@ -55,6 +56,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 	 * *******************************************************************************************************
 	 */
 	
+	@Override
 	public void match() throws Exception {
     	matchStart();
     	OAEI2010MatcherParameters parameters = (OAEI2010MatcherParameters)param;
@@ -281,7 +283,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		if(showAllMatchers && !m.isCancelled()) Core.getUI().getControlPanel().getTablePanel().addMatcher(m);
 	}
 	
-	
+	@Override
 	public AbstractMatcherParametersPanel getParametersPanel() {
 		if(parametersPanel == null){
 			parametersPanel = new OAEI2010MatcherParametersPanel();

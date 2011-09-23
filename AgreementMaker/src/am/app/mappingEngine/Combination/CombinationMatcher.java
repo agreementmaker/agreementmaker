@@ -4,6 +4,7 @@ import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
@@ -27,13 +28,14 @@ public class CombinationMatcher extends AbstractMatcher {
 		super(param_new);
 	}
 	
+	@Override
 	protected void initializeVariables() {
 		super.initializeVariables();
 		minInputMatchers = 2;
 		maxInputMatchers = ANY_INT;
 	}
 
-	
+	@Override
 	protected void beforeAlignOperations() throws Exception{
 		super.beforeAlignOperations();
 		
@@ -73,8 +75,8 @@ public class CombinationMatcher extends AbstractMatcher {
 	}
 
     
-
-	protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+	@Override
+	protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix) {
 		
 		CombinationParameters parameters = (CombinationParameters)param;
 		int sourceindex = source.getIndex();
@@ -154,13 +156,14 @@ public class CombinationMatcher extends AbstractMatcher {
 		return new Mapping(source, target, sim, MappingRelation.EQUIVALENCE);
 	}
 
+	@Override
 	public AbstractMatcherParametersPanel getParametersPanel() {
 		if(parametersPanel == null){
 			parametersPanel = new CombinationParametersPanel(inputMatchers);
 		}
 		return parametersPanel;
 	}
-	
+	@Override
 	public String getDescriptionString() {
 		String result = "Allows user to combine different matchings through different operations to be selected as parameters.\n";
 		result += "For each pair (sourcenode, targetnode) a new similarity value is calculated with selected operation.\n";

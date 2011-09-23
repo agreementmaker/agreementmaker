@@ -62,6 +62,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		needsParam = true;
 	}
 	
+	@Override
 	public String getDescriptionString() {
 		return "The method adopted in the OAEI 2011 competition.  This algorithm chooses a matcher configuration automatically.";
 	}
@@ -70,7 +71,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	 ************************ Init structures*************************************
 	 * *******************************************************************************************************
 	 */
-	
+	@Override
 	public void match() throws Exception {
     	matchStart();
 
@@ -1099,7 +1100,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		if(p.showIntermediateMatchers && !m.isCancelled()) Core.getUI().getControlPanel().getTablePanel().addMatcher(m);
 	}
 	
-	
+	@Override
 	public AbstractMatcherParametersPanel getParametersPanel() {
 		if(parametersPanel == null){
 			parametersPanel = new OAEI2011MatcherParametersPanel();

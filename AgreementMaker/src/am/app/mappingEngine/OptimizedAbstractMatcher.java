@@ -62,7 +62,7 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
 					//if both nodes have not been mapped yet enough time
 					//we map them regularly
 					if(!mappedNodes.isSourceMapped(source) && !mappedNodes.isTargetMapped(target)){
-						alignment = alignTwoNodes(source, target, typeOfNodes); 
+						alignment = alignTwoNodes(source, target, typeOfNodes, matrix); 
 					}
 					//else we take the alignment that was computed from the previous matcher
 					else if (mappedNodes.isSourceMapped(source) && mappedNodes.isTargetMapped(target)){
@@ -88,7 +88,7 @@ public class OptimizedAbstractMatcher extends AbstractMatcher {
 	}
     
 	@Override
-    protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) throws Exception {
+    protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix) throws Exception {
 		//TO BE IMPLEMENTED BY THE ALGORITHM, THIS IS JUST A FAKE ABSTRACT METHOD
 		double sim;
 		MappingRelation rel = MappingRelation.EQUIVALENCE;

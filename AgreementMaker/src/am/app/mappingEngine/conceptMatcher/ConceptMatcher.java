@@ -41,6 +41,7 @@ public class ConceptMatcher extends AbstractMatcher {
 		needsParam = true;
 	}
 	
+	@Override
 	public String getDescriptionString() {
 		return "Extracts the longest-defined concept from each node and compares the Jaccard scores of concept sets.\n" +
 				"Only Nodes' local-names (XML id) are considered in the process.\n" +
@@ -58,6 +59,7 @@ public class ConceptMatcher extends AbstractMatcher {
 	 * Set up the parser once before aligning
 	 * @see am.app.mappingEngine.AbstractMatcher#beforeAlignOperations()
 	 */
+	@Override
 	protected void beforeAlignOperations() throws Exception{
 		super.beforeAlignOperations();
 		
@@ -66,17 +68,20 @@ public class ConceptMatcher extends AbstractMatcher {
 	
 	
 	// overriding the abstract method in order to keep track of what kind of nodes we are aligning
-    protected SimilarityMatrix alignProperties(ArrayList<Node> sourcePropList, ArrayList<Node> targetPropList) {
+	@Override
+    protected SimilarityMatrix alignProperties(List<Node> sourcePropList, List<Node> targetPropList) throws Exception {
 		return alignNodesOneByOne(sourcePropList, targetPropList, alignType.aligningProperties );
 	}
 
 	// overriding the abstract method in order to keep track of what kind of nodes we are aligning
-    protected SimilarityMatrix alignClasses(ArrayList<Node> sourceClassList, ArrayList<Node> targetClassList) {
+	@Override
+    protected SimilarityMatrix alignClasses(List<Node> sourceClassList, List<Node> targetClassList) throws Exception {
 		return alignNodesOneByOne(sourceClassList, targetClassList, alignType.aligningClasses);
 	}
 	
 	// this method is exactly similar to the abstract method, except we pass one extra parameters to the alignTwoNodes function
-    protected SimilarityMatrix alignNodesOneByOne(ArrayList<Node> sourceList, ArrayList<Node> targetList, alignType typeOfNodes) {
+	@Override
+    protected SimilarityMatrix alignNodesOneByOne(List<Node> sourceList, List<Node> targetList, alignType typeOfNodes) {
 		SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, typeOfNodes);
 		Node source;
 		Node target;
@@ -102,7 +107,7 @@ public class ConceptMatcher extends AbstractMatcher {
 			source = sourceList.get(i);
 			for(int j = 0; j < targetList.size(); j++) {
 				target = targetList.get(j);
-				alignment = alignTwoNodes(source, target, typeOfNodes);
+				alignment = alignTwoNodes(source, target, typeOfNodes, matrix);
 				matrix.set(i,j,alignment);
 				if( GlobalStaticVariables.USE_PROGRESS_BAR ) stepDone(); // progress dialog
 			}
@@ -260,7 +265,8 @@ public class ConceptMatcher extends AbstractMatcher {
 	 * Align Two nodes using concept set similarity.
 	 * @see am.app.mappingEngine.AbstractMatcher#alignTwoNodes(am.app.ontology.Node, am.app.ontology.Node)
 	 */
-	protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes) {
+	@Override
+	protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix) {
 
 		
 		/**
