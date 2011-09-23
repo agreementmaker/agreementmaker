@@ -146,6 +146,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		case GENERAL_PURPOSE_ADVANCED: {
 			finalResult = runGeneralPurposeAdvanced();
 		}
+		break;
 		case LARGE_LEXICAL_WITH_LOCALNAMES: {
 			finalResult = runLexicalBasedWithLocalnames();
 		}
