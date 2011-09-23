@@ -46,6 +46,29 @@ public class ArraySimilarityMatrixOld extends SimilarityMatrix implements Serial
         this.columns = N;
         data = new Mapping[M][N];
     }
+    
+    // cloning constructor
+    public ArraySimilarityMatrixOld( SimilarityMatrix clone ) {
+    	super(clone.getSourceOntology(), clone.getTargetOntology(), clone.getAlignType());
+    	
+    	if(typeOfMatrix == alignType.aligningClasses){
+            this.rows = sourceOntology.getClassesList().size();
+            this.columns = targetOntology.getClassesList().size();
+    	}
+    	else{
+            this.rows = sourceOntology.getPropertiesList().size();
+            this.columns = targetOntology.getPropertiesList().size();
+    	}
+        
+    	data = new Mapping[this.rows][this.columns];
+
+    	// deep copy
+		for( int i = 0; i < rows; i++ ) {
+			for( int j = 0; j < columns; j++ ) {
+				data[i][j] = clone.get(i, j);
+			}
+		}
+    }
          
     //junit constructor
    //public ArraySimilarityMatrix(){}
@@ -539,7 +562,27 @@ public class ArraySimilarityMatrixOld extends SimilarityMatrix implements Serial
 
 	@Override
 	public SimilarityMatrix clone() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		ArraySimilarityMatrixOld clonedMatrix = new ArraySimilarityMatrixOld(sourceOntology, targetOntology, typeOfMatrix);
+		
+		if(typeOfMatrix == alignType.aligningClasses){
+            clonedMatrix.rows = sourceOntology.getClassesList().size();
+            clonedMatrix.columns = targetOntology.getClassesList().size();
+    	}
+    	else{
+            clonedMatrix.rows = sourceOntology.getPropertiesList().size();
+            clonedMatrix.columns = targetOntology.getPropertiesList().size();
+    	}
+		
+		clonedMatrix.data = new Mapping[clonedMatrix.rows][clonedMatrix.columns];
+		
+		// deep copy
+		for( int i = 0; i < rows; i++ ) {
+			for( int j = 0; j < columns; j++ ) {
+				clonedMatrix.data[i][j] = data[i][j];
+			}
+		}
+		
+		return clonedMatrix;
 	}
 }
