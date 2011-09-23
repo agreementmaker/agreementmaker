@@ -21,19 +21,24 @@ import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameter
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
 import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
+import am.app.mappingEngine.boosting.BestMatchBoostingParameters;
 import am.app.mappingEngine.mediatingMatcher.MediatingMatcherParameters;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.oaei.OAEI_Track;
 import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters.OAEI2011Configuration;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
+import am.app.ontology.Node;
+import am.app.ontology.NodeHierarchy;
 import am.app.ontology.Ontology;
+import am.app.ontology.hierarchy.AlternateHierarchy;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.app.ontology.profiling.ProfilerRegistry;
 import am.app.ontology.profiling.classification.OntologyClassificator;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
 
+import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.Property;
 
 /**
@@ -120,7 +125,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	
 	private AbstractMatcher automaticConfiguration() throws Exception {
 		AbstractMatcher finalResult = null;
-		OAEI2011Configuration conf = OntologyClassificator.classifiedOntologiesOEAI2011(sourceOntology, targetOntology);
+		OAEI2011Configuration conf = OntologyClassificator.classifiedOntologiesOAEI2011(sourceOntology, targetOntology);
 		
 		switch( conf ) {
 		case LARGE_LEXICAL: {
@@ -621,6 +626,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		else { 
 			// we are not running in threaded mode
 			// sequentially run everything
+			runPSM(lwc2InputMatchers);
 			runVMM(lwc2InputMatchers);
 			runLSM(lwc1InputMatchers);
 			runMM(lwc1InputMatchers);
@@ -689,34 +695,78 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	
 	private void runPSM(List<AbstractMatcher> lwc2InputMatchers) throws Exception {
 		// PSM
-		if( !isCancelled() ) {
-			AbstractMatcher psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 0);
-			
-			ParametricStringParameters psmParam = new ParametricStringParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
-			
-			psmParam.useLexicons = true;
-			psmParam.useBestLexSimilarity = true;
-			psmParam.measure = ParametricStringParameters.AMSUB_AND_EDIT;
-			psmParam.normParameter = new NormalizerParameter();
-			psmParam.normParameter.setForOAEI2009();
-			psmParam.redistributeWeights = true;
-			
-			// threaded execution
-			psmParam.threadedExecution = true;
-			psmParam.threadedOverlap = true;
-			psmParam.threadedReservedProcessors = 2;
-			
-			setupSubMatcher(psm, psmParam);
-			runSubMatcher(psm, "PSM 1/7");
-			
-			lwc2InputMatchers.add(psm);			
-		}
+		if( isCancelled() ) return;
+		
+		AbstractMatcher psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 0);
+		
+		ParametricStringParameters psmParam = new ParametricStringParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+		
+		psmParam.useLexicons = true;
+		psmParam.useBestLexSimilarity = true;
+		psmParam.measure = ParametricStringParameters.AMSUB_AND_EDIT;
+		psmParam.normParameter = new NormalizerParameter();
+		psmParam.normParameter.setForOAEI2009();
+		psmParam.redistributeWeights = true;
+		
+		// threaded execution
+		psmParam.threadedExecution = true;
+		psmParam.threadedOverlap = true;
+		psmParam.threadedReservedProcessors = 2;
+		
+		setupSubMatcher(psm, psmParam);
+		psm.setPerformSelection(false);
+		runSubMatcher(psm, "PSM 1/7");
+		
+		if( isCancelled() ) return;
+		
+		AbstractMatcher boost = MatcherFactory.getMatcherInstance(MatchersRegistry.Boost, 0);
+		
+		BestMatchBoostingParameters boostParam = new BestMatchBoostingParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+		boostParam.deepCopy = false;
+		boostParam.boostPercent = 1.1;
+		
+		setupSubMatcher(boost, boostParam);
+		
+		boost.addInputMatcher(psm);
+		boost.setPerformSelection(false);
+		
+		runSubMatcher(boost, "BOOST PSM 1/7");
+		
+		// now do the selection.
+		psm.select();
+		
+		lwc2InputMatchers.add(psm);			
+		
 	}
 	
 	// private method, used in large lexical
 	private void runVMM(List<AbstractMatcher> lwc2InputMatchers) throws Exception {
 		// VMM
 		if( !isCancelled() ) {
+
+			// find part of properties
+			OntProperty sourcePartOf = null;
+			OntProperty targetPartOf = null;
+			
+			for( Node property : sourceOntology.getPropertiesList() ) {
+				if( property.getLocalName().toLowerCase().contains("partof") || 
+					property.getLocalName().toLowerCase().contains("part_of") ) {
+					
+					sourcePartOf = property.getResource().as(OntProperty.class);
+					break;
+				}
+			}
+			
+			for( Node property : targetOntology.getPropertiesList() ) {
+				if( property.getLocalName().toLowerCase().contains("partof") || 
+					property.getLocalName().toLowerCase().contains("part_of") ) {
+					
+					targetPartOf = property.getResource().as(OntProperty.class);
+					break;
+				}
+			}
+
+			
 			AbstractMatcher vmm = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 0);
 			
 			MultiWordsParameters vmmParam = new MultiWordsParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
@@ -731,6 +781,18 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			
 			vmmParam.useLexiconSynonyms = true; // May change later.
 			vmmParam.considerSuperClass = true;
+			
+			// decide if we're using part of properties
+			if( sourcePartOf != null ) {
+				NodeHierarchy sourcePartOfHier = new AlternateHierarchy(sourceOntology, sourcePartOf);
+				sourceOntology.addHierarchy(sourcePartOf, sourcePartOfHier);
+				vmmParam.sourceAlternateHierarchy = sourcePartOf;
+			}
+			if( targetPartOf != null ) {
+				NodeHierarchy targetPartOfHier = new AlternateHierarchy(targetOntology, targetPartOf);
+				targetOntology.addHierarchy(targetPartOf, targetPartOfHier);
+				vmmParam.targetAlternateHierarchy = targetPartOf;
+			}
 			
 			setupSubMatcher(vmm, vmmParam);
 			//if( param.threadedExecution ) vmm.setProgressDisplay(null); // don't spam the progress display if we're in threaded mode.
