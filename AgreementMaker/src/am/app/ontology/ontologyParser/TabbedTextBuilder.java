@@ -131,7 +131,8 @@ public class TabbedTextBuilder extends TreeBuilder {
 				parentNode.addChild(currentNode); // adds a child.
 				
 				OntClass parentClass = (OntClass) parentNode.getResource();
-				parentClass.addSubClass(currentClass);
+				if( parentClass != null ) parentClass.addSubClass(currentClass);
+				
 				
 				// recursively create the whole tree
 				createTree(currentNode, currentTNode);

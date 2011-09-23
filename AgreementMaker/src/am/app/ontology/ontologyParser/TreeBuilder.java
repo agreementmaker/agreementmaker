@@ -125,7 +125,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 				String syntaxS = GlobalStaticVariables.getSyntaxString(odef.ontologySyntax);
 				TreeBuilder treeBuilder = null;
 				
-				/*if(odef.ontologyLanguage == GlobalStaticVariables.XMLFILE){
+				if(odef.ontologyLanguage == GlobalStaticVariables.XMLFILE){
 					treeBuilder = new XmlTreeBuilder(odef.ontologyURI, odef.sourceOrTarget, languageS, syntaxS);
 				}
 				else if(odef.ontologyLanguage == GlobalStaticVariables.RDFSFILE) {
@@ -141,9 +141,9 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 						treeBuilder= new TDBOntoTreeBuilder(odef.ontologyURI, odef.sourceOrTarget, languageS, syntaxS, false, true, odef.onDiskStorage, odef.onDiskDirectory, odef.onDiskPersistent);
 					else 
 						treeBuilder = new OntoTreeBuilder(odef);
-				}*/
+				}
 				
-				treeBuilder = new OntoTreeBuilder(odef);
+				//treeBuilder = new OntoTreeBuilder(odef);
 				
 				return treeBuilder;
 	}
