@@ -41,6 +41,7 @@ import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.classification.ClassificatorRegistry;
 import am.app.ontology.profiling.classification.OntologyClassificator;
+import am.app.ontology.profiling.classification.Test;
 import am.app.ontology.profiling.classification.TestSet;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.userInterface.console.ConsoleProgressDisplay;
@@ -57,7 +58,7 @@ public class TrainingGenerator {
 		//test("OAEI2011/path.xml");
 		//testThreshold();
 		//testClassified();
-	/*	
+		/*
 		//create the object input training that contains a list of matcher, parameters and classes
 		InputTrainingGenerator i = new InputTrainingGenerator();
 		
@@ -96,52 +97,52 @@ public class TrainingGenerator {
 		}
 		
 		// create the training set object from the file of ontologies and reference allignment and the list of matcher
-		OutputTrainingGenerator o = createTrainingSet("OAEI2011/path.xml", i);
+		OutputTrainingGenerator o = createTrainingSet("OAEI2011/finalPath.xml", i);
 		
 		//save the object on disk
 		try {
-			o.storeFile("Classification/finalTraining.xml");
+			o.storeFile("Classification/finalTraining4.xml");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
-		
-		//load the object from file
-		OutputTrainingGenerator o2 = new OutputTrainingGenerator("Classification/finalTraining.xml");
-		//o.storeTableVisual("Classification/visualTableFinalTraining.txt");
+		}
 	
-		
+		//load the object from file
+		OutputTrainingGenerator o = new OutputTrainingGenerator("Classification/finalTraining3.xml");
+		//o.storeTableVisual("Classification/tableFinalTraining4.txt");
+	
+			
 			
 		//create the model with the output training
 		//OntologyClassificator oc = new OntologyClassificator(o2,ClassificatorRegistry.C_NaiveBayes);
-		OntologyClassificator oc = new OntologyClassificator(o2);
+		OntologyClassificator oc = new OntologyClassificator(o);
 		
 
 		
 		//train the model with the 
 		try {
-			oc.trainCoupleOntology(o2);
+			oc.trainCoupleOntology(o);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 			
 		//store the model
-		oc.storeModel("Classification/cModel.model");
+		oc.storeModel("Classification/cModel4.model");
 		System.out.println("MODEL STORED!");
 	
-		/**/
+		*/
 		
-	/*	
+		
 		
 		//load a model // ATTENTION! YOU HAVE ALWAYS TO SPECIFY THE OutputTG! 
-		OutputTrainingGenerator o3 = new OutputTrainingGenerator("Classification/prova2.xml");
-		OntologyClassificator oc2 = new OntologyClassificator(o3,"Classification/test3.model");
+		//OutputTrainingGenerator o3 = new OutputTrainingGenerator("Classification/prova2.xml");
+		/*OntologyClassificator*/// oc = new OntologyClassificator(o,"Classification/cModel4.model");
 		
-		*/
-			
+		
+	/*		
 		//create the test set of ontology from file
-		TestSet testSet = new TestSet("Classification/finalTesting.xml");
+		TestSet testSet = new TestSet("Classification/finalTesting3.xml");
 	
 		
 		
@@ -149,9 +150,9 @@ public class TrainingGenerator {
 		
 		
 	
-	
+		
 		//Evaluate the model 
-		String evaluation = oc.testModel(o2, testSet);
+		String evaluation = oc.testModel(o, testSet);
 		System.out.println(evaluation);
 		
 		
@@ -160,9 +161,9 @@ public class TrainingGenerator {
 		for (int j = 0; j < result.length; j++) {
 			System.out.println(result[j]);
 		}
-		System.out.println(evaluation);
-	/*		
-		
+		System.out.println(evaluation);*/
+		/**/
+	/*	
 	*/
 		
 	/*	
@@ -180,6 +181,53 @@ public class TrainingGenerator {
 		*/
 		
 		
+	/*	
+		//test the method classifiedOntologiesOEAI2011
+		LinkedList<String> list = new LinkedList<String>();
+		LinkedList<Test> test = testSet.getTestList();
+		System.out.println(test.size());
+		for (Iterator<Test> it = test.iterator(); it.hasNext();) {
+			Test test2 = (Test) it.next();
+			Ontology sourceOntology = OntologyClassificator.openOntology(test2.getSourceOntology());
+			Ontology targetOntology = OntologyClassificator.openOntology(test2.getTargetOntology());
+			OAEI2011Configuration conf = OntologyClassificator.classifiedOntologiesOEAI2011(sourceOntology, targetOntology);
+		
+			
+			switch( conf ) {
+			case LARGE_LEXICAL: {
+				list.add("large_lexical");
+			}
+			break;
+			case GENERAL_PURPOSE: {
+				list.add("general purpose");
+			}
+			break;
+			case GENERAL_MULTI: {
+				list.add("general multi");
+			}
+			break;
+			case GENERAL_PURPOSE_ADVANCED: {
+				list.add("general purpose advance");
+			}
+			break;
+			case LARGE_LEXICAL_WITH_LOCALNAMES: {
+				list.add("large_lexical_with localname");
+			}
+			break;
+			default:{
+				list.add("default");
+			}
+			break;
+			}
+		
+		
+		
+		}
+		for (Iterator it = list.iterator(); it.hasNext();) {
+			String string = (String) it.next();
+			System.out.println(string);
+		}
+		*/
 		
 		
 		
@@ -621,7 +669,70 @@ public static void testClassified() {
 
 			out.addWinner(maxClass, sourceOntologyFile, targetOntologyFile);
 
+			
+		// if we want to consider also the opposite 
+			//open the source ontology
+	/*	
+			targetOnto = loadOntology(sourceOntologyFile);
+			//open the target ontology
+			sourceOnto = loadOntology(targetOntologyFile);
+			String x = sourceOntologyFile.toString();
+			sourceOntologyFile = targetOntologyFile.toString();
+			targetOntologyFile = x.toString();
+			
+			String y = sourceOntologyName.toString();
+			sourceOntologyName = targetOntologyName.toString();
+			targetOntologyName = y.toString();
+			Core.getInstance().setTargetOntology(targetOnto);
+			Core.getInstance().setSourceOntology(sourceOnto);
+				
+			//built the lexicons.. 
+				buildLex(sourceOnto, targetOnto);
 
+			maxFMeasure = 0.0;
+			maxClass = classList.getFirst();
+			for (Iterator<InputTest> it = inputList.iterator(); it.hasNext();) {
+				InputTest inputTest = (InputTest) it.next();
+				AbstractMatcher matcher = inputTest.getMatcher();
+				AbstractParameters param = inputTest.getParam();
+				String inputClass = inputTest.getClassName();
+				//System.out.println("THRESHOLD BEFORE SETPARAM"+matcher.getThreshold());
+				matcher.setParam(param); //TODO : it is necessary here?
+				//System.out.println("THRESHOLD AFTER SETPARAM"+matcher.getThreshold());
+
+				double [] d = runAnalysis(sourceOntologyFile, sourceOntologyName, targetOntologyFile, targetOntologyName, referenceAlignmentFile, matcher, param );
+				//output.print(d[0] + "\t" + d[1] + "\t" + d[2] + "\t");
+
+				String matcherName = "undefinedMatcherName";
+				try {
+					matcherName = matcher.getName();
+				} catch (Exception e) {
+					matcherName = "undefinedMatcherName";
+				}
+				
+				out.addResult(inputClass, matcherName, param.toString(), sourceOntologyFile, targetOntologyFile,sourceOntologyName, targetOntologyName, d[0], d[1], d[2]);
+
+				if (d[2]>maxFMeasure){
+					maxFMeasure= d[2];
+					maxClass = inputClass;
+				}
+
+			}
+
+			out.addWinner(maxClass, sourceOntologyFile, targetOntologyFile);
+			
+			*/
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 
 			//print on a file the two ontology and the better class
 			//trainOntologies.println(sourceOntologyFile);
