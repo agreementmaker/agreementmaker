@@ -20,6 +20,8 @@
 
 package am;
 
+import org.apache.log4j.BasicConfigurator;
+
 import am.app.Core;
 import am.batchMode.TrackDispatcher;
 import am.userInterface.UI;
@@ -42,6 +44,8 @@ public class Main
 	 */
 	public static void main(String args[])
 	{
+		
+		BasicConfigurator.configure();
 		
 		if(args.length == 0 ){
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
