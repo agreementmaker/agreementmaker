@@ -45,7 +45,7 @@ public class Main
 	public static void main(String args[])
 	{
 		
-		BasicConfigurator.configure();
+		//BasicConfigurator.configure();
 		
 		if(args.length == 0 ){
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
