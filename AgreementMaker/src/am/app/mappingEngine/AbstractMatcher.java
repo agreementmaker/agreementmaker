@@ -1834,7 +1834,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 				  int sourceStartIndex, int sourceEndIndex, int targetStartIndex, int targetEndIndex, 
 				  SimilarityMatrix matrix, AbstractMatcher matcher, alignType typeOfNodes ) {
 			  
-			  System.out.println("New Matcher Runner, from (" + sourceStartIndex + "-" + sourceEndIndex + ") to (" + targetStartIndex + "-" + targetEndIndex + ")");
+			  //System.out.println("New Matcher Runner, from (" + sourceStartIndex + "-" + sourceEndIndex + ") to (" + targetStartIndex + "-" + targetEndIndex + ")");
 			  
 			  this.matcher = matcher;
 			  
