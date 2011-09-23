@@ -1,11 +1,9 @@
 package am.app.ontology.profiling.classification.trainingGeneration;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -23,11 +21,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractParameters;
-import am.app.ontology.Ontology;
 
 
 
@@ -51,7 +44,7 @@ public class OutputTrainingGenerator {
 		this.winnerList = new LinkedList<Winner>();
 		
 		// open and parse the benchmark XML file
-		System.out.println("Reading batch file.");
+		//System.out.println("Reading batch file.");
 		File batchFile = new File( fileName );
 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -74,7 +67,7 @@ public class OutputTrainingGenerator {
 			e.printStackTrace();
 		}
 		doc.getDocumentElement().normalize();
-		System.out.println("Root element " + doc.getDocumentElement().getNodeName());
+		//System.out.println("Root element " + doc.getDocumentElement().getNodeName());
 
 		
 
@@ -337,7 +330,7 @@ public class OutputTrainingGenerator {
 		LinkedList<String> classList= new LinkedList<String>();
 		
 		// open and parse the benchmark XML file
-		System.out.println("Reading batch file.");
+		//System.out.println("Reading batch file.");
 		File batchFile = new File( fileName );
 
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -360,7 +353,7 @@ public class OutputTrainingGenerator {
 			e.printStackTrace();
 		}
 		doc.getDocumentElement().normalize();
-		System.out.println("Root element " + doc.getDocumentElement().getNodeName());
+		//System.out.println("Root element " + doc.getDocumentElement().getNodeName());
 
 		
 
@@ -404,7 +397,6 @@ public class OutputTrainingGenerator {
 		
 		o.setClassList(classList);
 		return o;
-		
 	}
 	
 	
