@@ -52,7 +52,7 @@ public class SEALSBridge extends AbstractPlugin implements IOntologyMatchingTool
 			
 			params.maxSourceAlign = 1;
 			params.maxTargetAlign = 1;
-			params.threshold = 0.6;
+			params.threshold = 0.73;
 
 			matcher.setParam(params);
 			
