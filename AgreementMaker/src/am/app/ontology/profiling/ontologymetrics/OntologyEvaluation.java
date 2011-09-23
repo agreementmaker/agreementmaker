@@ -20,7 +20,7 @@ public class OntologyEvaluation {
 	
 	private WordNetDatabase WordNet;
 	
-	boolean debug = false;
+	private static final boolean debug = false;
 	
 	enum Type {LOCALNAMES, LABELS, COMMENTS};
 	
@@ -35,7 +35,7 @@ public class OntologyEvaluation {
 	public OntologyMetrics evaluateOntology(Ontology ontology){
 		//System.out.println("initialize wordnet......");
 		initWordnet();
-		System.out.println("Evaluating ontology...");
+		//System.out.println("Evaluating ontology...");
 		
 		OntologyMetrics metrics = new OntologyMetrics();
 		OntModel model = ontology.getModel();
@@ -203,7 +203,7 @@ public class OntologyEvaluation {
 		metrics.setLocalWordnet((float)localWordnet);
 		metrics.setAvgDepth(avgDepth);
 		
-		System.out.println("DONE");
+		if(debug) System.out.println("DONE");
 		return metrics;
 	}
 	
