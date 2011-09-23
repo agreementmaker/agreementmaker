@@ -34,6 +34,7 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 	private JLabel whichTermsLabel = new JLabel("For each concept a multi-words string is built considering several terms related to it.");
 	private JCheckBox chkConceptTerms = new JCheckBox("Consider concept's terms (localname, label, comment, seeAlso, isDefBy).");
 	private JCheckBox  neighbourCheck = new JCheckBox("Consider neighbours terms (parents, siblings, descendants).");
+	private JCheckBox  subclassesCheck = new JCheckBox("Consider subclasses terms.");
 	private JCheckBox indCheck = new JCheckBox("Consider individuals.");
 	private JCheckBox propCheck = new JCheckBox("If the concept is a class -> consider localnames of properties declared by this class");
 	private JCheckBox classCheck = new JCheckBox("If the concept is a property -> consider localnames of classes declaring this property");
@@ -45,6 +46,8 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 	
 	private JCheckBox chkSourceHierarchies = new JCheckBox("Source alternate hierarchy parents:"); 
 	private JCheckBox chkTargetHierarchies = new JCheckBox("Target alternate hierarchy parents:");
+	private JCheckBox chkSourceChildrenHierarchies = new JCheckBox("Source alternate hierarchy children:"); 
+	private JCheckBox chkTargetChildrenHierarchies = new JCheckBox("Target alternate hierarchy children:");
 	private JComboBox cmbSourceHierarchies = new JComboBox();
 	private JComboBox cmbTargetHierarchies = new JComboBox();
 	
@@ -64,6 +67,7 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 
 		chkConceptTerms.setSelected(true);
 		neighbourCheck.setSelected(false);
+		subclassesCheck.setSelected(false);
 		indCheck.setSelected(false);
 		propCheck.setSelected(false);
 		classCheck.setSelected(false);
@@ -77,6 +81,7 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 		}
 		if( sourceHierarchyProperties.isEmpty() ) {
 			chkSourceHierarchies.setEnabled(false);
+			chkSourceChildrenHierarchies.setEnabled(false);
 			cmbSourceHierarchies.setEnabled(false);
 		}
 		
@@ -86,6 +91,7 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 		}
 		if( targetHierarchyProperties.isEmpty() ) {
 			chkTargetHierarchies.setEnabled(false);
+			chkTargetChildrenHierarchies.setEnabled(false);
 			cmbTargetHierarchies.setEnabled(false);
 		}
 		
@@ -113,14 +119,17 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 						.addComponent(lexSynonymsCheck)
 						.addComponent(chkConceptTerms)
 						.addComponent(neighbourCheck) 
+						.addComponent(subclassesCheck) 
 						.addComponent(indCheck) 		
 						.addComponent(propCheck) 
 						.addComponent(classCheck) 
 						.addComponent(localCheck) 
 						.addComponent(chkConsiderSuperClass)
 						.addComponent(chkSourceHierarchies)
+						.addComponent(chkSourceChildrenHierarchies)
 						.addComponent(cmbSourceHierarchies)
 						.addComponent(chkTargetHierarchies)
+						.addComponent(chkTargetChildrenHierarchies)
 						.addComponent(cmbTargetHierarchies)
 					)
 /*					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -151,6 +160,7 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 				.addComponent(lexSynonymsCheck)
 				.addComponent(chkConceptTerms) 
 				.addComponent(neighbourCheck) 
+				.addComponent(subclassesCheck) 
 				.addComponent(indCheck)
 				.addComponent(propCheck)
 				.addComponent(classCheck)
@@ -158,8 +168,10 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 				.addComponent(chkConsiderSuperClass)
 				.addGap(30)
 				.addComponent(chkSourceHierarchies)
+				.addComponent(chkSourceChildrenHierarchies)
 				.addComponent(cmbSourceHierarchies)
 				.addComponent(chkTargetHierarchies)
+				.addComponent(chkTargetChildrenHierarchies)
 				.addComponent(cmbTargetHierarchies)
 			);
 	}
@@ -172,6 +184,7 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 		parameters.considerInstances = indCheck.isSelected();
 		parameters.ignoreLocalNames = localCheck.isSelected();
 		parameters.considerNeighbors  = neighbourCheck.isSelected();
+		parameters.considerSubclasses = subclassesCheck.isSelected();
 		parameters.considerProperties     = propCheck.isSelected();
 		parameters.considerClasses   = classCheck.isSelected();
 		parameters.considerConcept = chkConceptTerms.isSelected();
@@ -185,8 +198,16 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 			parameters.sourceAlternateHierarchy = (OntProperty) cmbSourceHierarchies.getSelectedItem();
 		}
 		
+		if( chkSourceChildrenHierarchies.isSelected() && cmbSourceHierarchies.isEnabled() ) {
+			parameters.sourceAlternateChildren = true;
+		}
+		
 		if( chkTargetHierarchies.isSelected() && cmbTargetHierarchies.isEnabled() ) {
 			parameters.targetAlternateHierarchy = (OntProperty) cmbTargetHierarchies.getSelectedItem();
+		}
+		
+		if( chkTargetChildrenHierarchies.isSelected() && cmbTargetHierarchies.isEnabled() ) {
+			parameters.targetAlternateChildren = true;
 		}
 		
 		//normalization parameters are set in the MultiWordsParameters() because are not user input;

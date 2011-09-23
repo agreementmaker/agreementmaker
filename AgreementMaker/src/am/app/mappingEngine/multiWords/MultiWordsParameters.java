@@ -23,6 +23,8 @@ public class MultiWordsParameters extends AbstractParameters {
 	public boolean considerConcept; 
 	//localname and label of neighbors will be added to multiword string: fathers, siblings, sons
 	public boolean considerNeighbors;
+	//localname and label of subclasses will be added to multiword string: fathers, siblings, sons
+	public boolean considerSubclasses;
 	//localname and label of individual will be added to multiword string
 	public boolean considerInstances;
 	
@@ -52,6 +54,10 @@ public class MultiWordsParameters extends AbstractParameters {
 
 	public OntProperty sourceAlternateHierarchy = null;
 	public OntProperty targetAlternateHierarchy = null;
+	
+	//to use if considering alternate hierarchy children
+	public boolean sourceAlternateChildren;
+	public boolean targetAlternateChildren;
 	
 	//I put the constructor to init default values when we run this method batch mode
 	//and because it has some parameters that are not in input by user.

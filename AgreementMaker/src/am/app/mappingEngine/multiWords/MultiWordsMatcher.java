@@ -17,6 +17,8 @@ import am.app.lexicon.Lexicon;
 import am.app.lexicon.LexiconSynSet;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
@@ -229,6 +231,25 @@ public class MultiWordsMatcher extends AbstractMatcher {
 			if( param.storeProvenance ) mWS+="\tneighbour string: "+neighbourString+"\n";
 			
 		}
+		//Catia: added just for children
+		if(mp.considerSubclasses) {
+			if( param.storeProvenance ) mWS+="considering subclasses:\n";
+			
+			String neighbourString = "";
+			HashSet<Node> neighborNodes = new HashSet<Node>(); // use a hashset to avoid duplicates
+			
+			// add child strings
+			List<Node> children = node.getChildren();
+			for( Node child : children ) { neighborNodes.add(child); }
+			
+			for( Node neighbor : neighborNodes ) { 
+				neighbourString = Utility.smartConcat(neighbourString, getLabelAndOrNameString(neighbor));
+			}
+			multiWordsString = Utility.smartConcat(multiWordsString, neighbourString);
+			
+			if( param.storeProvenance ) mWS+="\tsubclasses string: "+neighbourString+"\n";
+			
+		}
 		
 		//add instances strings
 		if(mp.considerInstances && typeOfNodes == alignType.aligningClasses) {
@@ -351,6 +372,27 @@ public class MultiWordsMatcher extends AbstractMatcher {
 			}
 		}
 		
+		//Catia: for alternate hierarchy children
+		if( node.getOntologyID() == sourceOntology.getID() && mp.sourceAlternateHierarchy != null && mp.sourceAlternateChildren) {
+			NodeHierarchy hierarchy = sourceOntology.getHierarchy(mp.sourceAlternateHierarchy);
+			Set<Node> hierarchyChildren = hierarchy.getChildren(node);
+			if( hierarchyChildren != null )
+			for( Node child : hierarchyChildren ) {
+				String childLabel = child.getLabel();
+				multiWordsString = Utility.smartConcat(multiWordsString, childLabel );
+			}
+		}
+		
+		if( node.getOntologyID() == targetOntology.getID() && mp.targetAlternateHierarchy != null && mp.targetAlternateChildren) {
+			NodeHierarchy hierarchy = targetOntology.getHierarchy(mp.targetAlternateHierarchy);
+			Set<Node> hierarchyChildren = hierarchy.getChildren(node);
+			if( hierarchyChildren != null )
+			for( Node child : hierarchyChildren ) {
+				String childLabel = child.getLabel();
+				multiWordsString = Utility.smartConcat(multiWordsString, childLabel );
+			}
+		}
+		
 		return multiWordsString;
 		
 	}
@@ -440,6 +482,7 @@ public class MultiWordsMatcher extends AbstractMatcher {
 			
 		}
 		
+		
 		Mapping pmapping=new Mapping(source, target, sim);
 		if(param.storeProvenance && sim > param.threshold){
 			provenanceString+="sim(\""+source+"\",\""+target+"\") = "+sim+"\n";
@@ -459,9 +502,51 @@ public class MultiWordsMatcher extends AbstractMatcher {
 	}
 	
 	
-	
-	
-	
+//	///Catia TEST
+
+	///Catia TEST
+		@Override
+		protected Alignment<Mapping> oneToOneMatching(SimilarityMatrix matrix) {
+			Alignment<Mapping> aset = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
+
+			//double[][] similarityMatrix = matrix.getCopiedSimilarityMatrix(); //hungarian alg needs a double matrix
+
+			int rows = matrix.getRows();
+			int cols = matrix.getColumns();
+			ArrayList<Mapping> bestmatchesRows = new ArrayList<Mapping>();
+			ArrayList<Mapping> bestmatchesCols = new ArrayList<Mapping>();
+
+			for(int i=0;i<rows;i++){
+				Mapping m=matrix.getRowMaxValues(i, 1)[0];
+				bestmatchesRows.add(m);
+			}
+			for(int j=0;j<cols;j++){
+				Mapping m=matrix.getColMaxValues(j, 1)[0];
+				bestmatchesCols.add(m);
+			}
+
+			for(int i=0; i<bestmatchesRows.size();i++){
+				for(int j=0; j<bestmatchesCols.size();j++){
+					if(	bestmatchesRows.get(i).getEntity1()!=null && bestmatchesRows.get(i).getEntity2()!=null && bestmatchesCols.get(j).getEntity2()!=null && bestmatchesCols.get(j).getEntity1()!=null ){
+						if(bestmatchesRows.get(i).equals(bestmatchesCols.get(j))){
+
+							
+							Mapping newMap = matrix.get(i, j);
+							double newSim=newMap.getSimilarity()*1.2;
+							if(newSim>1.0)
+								newSim=1.0;
+							newMap.setSimilarity(newSim);
+							matrix.set(i, j, newMap);
+						}
+
+					}
+				}
+			}
+
+			aset=super.oneToOneMatching(matrix);
+
+			return aset;
+		}
 
 
 
