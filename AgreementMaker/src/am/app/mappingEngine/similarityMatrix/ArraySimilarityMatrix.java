@@ -490,6 +490,9 @@ public class ArraySimilarityMatrix extends SimilarityMatrix {
 	@Override
 	public List<Mapping> chooseBestN(List<Integer> rowsIncludedList, List<Integer> colsIncludedList, boolean considerThreshold, double threshold) {
 
+		// FIXME: Fix this method.
+		System.err.println("Do not use chooseBestN from ArraySimilarityMatrix, it must be unit tested.");
+		
 		// Creation of the output ArrayList and a copy of the matrix
 		int arraySize = Math.min(rowsIncludedList.size(), colsIncludedList.size());
 		ArrayList<Mapping> chosenMappings = new ArrayList<Mapping>(arraySize);
