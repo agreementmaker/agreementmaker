@@ -2,6 +2,7 @@ package am.userInterface.console;
 
 import java.beans.PropertyChangeEvent;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.AbstractMatcher;
@@ -17,6 +18,7 @@ public class ConsoleProgressDisplay implements MatchingProgressDisplay {
 	
 	public ConsoleProgressDisplay() {
 		log = Logger.getLogger(getClass());
+		log.setLevel(Level.INFO);
 	}
 	
 	@Override
