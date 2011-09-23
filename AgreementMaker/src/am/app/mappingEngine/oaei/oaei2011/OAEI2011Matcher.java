@@ -3,6 +3,9 @@
  */
 package am.app.mappingEngine.oaei.oaei2011;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
@@ -493,6 +496,20 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		// this threshold works best.
 		setThreshold(0.73d);
+		
+		// allow for overrides
+		// FIXME: Remove this.
+		try {
+			File thresholdFile = new File("threshold.txt");
+			if( thresholdFile.exists() && thresholdFile.canRead()) {
+				BufferedReader thresholdReader = new BufferedReader( new FileReader(thresholdFile) );
+				String firstLine = thresholdReader.readLine();
+				double threshold = Double.parseDouble(firstLine);
+				if( threshold > 0 && threshold <= 1.0 ) setThreshold(threshold);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		// Build the lexicons.
 		LexiconBuilderParameters lexParam = new LexiconBuilderParameters();
