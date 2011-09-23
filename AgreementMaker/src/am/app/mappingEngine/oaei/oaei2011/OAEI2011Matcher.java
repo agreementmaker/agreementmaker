@@ -491,6 +491,9 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	
 	private AbstractMatcher runLexicalBased() throws Exception {
 		
+		// this threshold works best.
+		setThreshold(0.73d);
+		
 		// Build the lexicons.
 		LexiconBuilderParameters lexParam = new LexiconBuilderParameters();
 		lexParam.sourceOntology = sourceOntology;
