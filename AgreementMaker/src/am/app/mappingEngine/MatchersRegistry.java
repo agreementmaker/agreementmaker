@@ -19,6 +19,7 @@ import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
 import am.app.mappingEngine.dsi.OldDescendantsSimilarityInheritanceMatcher;
 import am.app.mappingEngine.hierarchy.HierarchyMatcher;
 import am.app.mappingEngine.hierarchy.HierarchyMatcherModified;
+import am.app.mappingEngine.hierarchy.HierarchyStructureMatcher;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.mediatingMatcher.MediatingMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsMatcher;
@@ -59,6 +60,7 @@ public enum MatchersRegistry {
 	 * And so, if your matcher is has no code errors, it will be incorporated into the AgreementMaker.  - Cosmin
 	 */
 	//
+	HierStructSim		( "HSSM",  "Hierarchy Structure Similarity Matcher", HierarchyStructureMatcher.class, MatcherCategory.STRUCTURAL),
 	Boost				( "Boost", "Best Match Boosting", BestMatchBoosting.class, MatcherCategory.LEXICAL ), 
 	LSMWeighted			( "LSMW", "LSM Weighted", LexicalSynonymMatcherWeighted.class, MatcherCategory.LEXICAL),
 	VMMPairwise			( "VMM-PW", "VMM PairWise", MultiWordsMatcherPairWise.class, MatcherCategory.SYNTACTIC ),
