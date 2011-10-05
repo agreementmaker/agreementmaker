@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher;
 import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
 import am.app.mappingEngine.hierarchy.HierarchyMatcherModified;
+import am.app.mappingEngine.hierarchy.HierarchyMatcherModifiedParameters;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 
@@ -26,32 +27,41 @@ public class LODBatch {
 	public LODBatch(){
 		log = Logger.getLogger(LODBatch.class);
 		Logger.getRootLogger().setLevel(Level.DEBUG);	
+		
+		initMapper();		
 	}
 	
+	private void initMapper() {
+		mapper = new LocationMapper();
+		mapper.addAltEntry("http://data.semanticweb.org/ns/swc/swrc", new File("LOD/LocationMappings/ns.swc.swrc.rdf").getAbsolutePath());
+		mapper.addAltEntry("http://purl.org/NET/c4dm/timeline.owl", new File("LOD/LocationMappings/timeline.n3").getAbsolutePath());
+		mapper.addAltEntry("http://data.semanticweb.org/ns/swc/swrc-topics", new File("LOD/LocationMappings/swrc-topics.owl").getAbsolutePath());
+	}
+
 	public void run(){
-		//singleRun(LODOntologies.MUSIC_ONTOLOGY, LODOntologies.BBC_PROGRAM, "music-bbc");
+		singleRun(LODOntology.MUSIC_ONTOLOGY, LODOntology.BBC_PROGRAM, "music-bbc");
 		//singleRun(LODOntologies.MUSIC_ONTOLOGY, LODOntologies.DBPEDIA, "music-dbpedia");
 		//singleRun(LODOntologies.FOAF, LODOntologies.DBPEDIA, "foaf-dbpedia");
 		//singleRun(LODOntologies.GEONAMES, LODOntologies.DBPEDIA, "geonames-dbpedia");
-		singleRun(LODOntologies.SIOC, LODOntologies.FOAF, "sioc-foaf");
+		//singleRun(LODOntologies.SIOC, LODOntologies.FOAF, "sioc-foaf");
 		//singleRun(LODOntologies.SW_CONFERENCE, LODOntologies.AKT_PORTAL, "swc-akt");
 		//singleRun(LODOntologies.SW_CONFERENCE, LODOntologies.DBPEDIA, "swc-dbpedia");
 		log.info(report);
 	}
 	
-	public void singleRun(String sourceName, String targetName, String testName){
+	public void singleRun(LODOntology source, LODOntology target, String testName){
 		long start = System.nanoTime();
 		Ontology sourceOntology = null;
 		Ontology targetOntology = null;
 		OntoTreeBuilder treeBuilder;
 				
 		log.info("Opening sourceOntology...");
-		sourceOntology = OntoTreeBuilder.loadOWLOntology(new File(sourceName).getPath());
+		sourceOntology = OntoTreeBuilder.loadOntology(new File(source.getFilename()).getPath(), source.getLang(), source.getSyntax(), mapper);
 		//sourceOntology = LODUtils.openOntology(new File(sourceName).getAbsolutePath());	
 		log.info("Done");	
 				
 		log.info("Opening targetOntology...");
-		targetOntology = OntoTreeBuilder.loadOWLOntology(new File(targetName).getPath());
+		targetOntology = OntoTreeBuilder.loadOntology(new File(target.getFilename()).getPath(), target.getLang(), target.getSyntax(), mapper);
 		//targetOntology = LODUtils.openOntology(new File(targetName).getAbsolutePath());
 		log.info("Done");
 		
@@ -75,6 +85,10 @@ public class LODBatch {
 		hmm.setTargetOntology(targetOntology);
 		hmm.addInputMatcher(asm);
 		
+		HierarchyMatcherModifiedParameters param = new HierarchyMatcherModifiedParameters();
+		param.mapper = mapper;
+		hmm.setParam(param);
+		
 		log.info("HMM matching");
 		
 		try {
@@ -84,7 +98,7 @@ public class LODBatch {
 		}
 		
 		try {
-			printDocument(testName, hmm.getAlignmentsStrings(true, false), sourceName, targetName);
+			printDocument(testName, hmm.getAlignmentsStrings(true, false), source.getUri(), target.getUri());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
