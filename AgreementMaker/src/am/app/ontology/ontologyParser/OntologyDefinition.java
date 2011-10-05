@@ -1,5 +1,7 @@
 package am.app.ontology.ontologyParser;
 
+import com.hp.hpl.jena.util.LocationMapper;
+
 import am.app.ontology.Ontology.DatasetType;
 import am.app.ontology.instance.endpoint.EndpointRegistry;
 
@@ -31,6 +33,8 @@ public class OntologyDefinition {
 	public boolean loadSchemaAlignment = false;
 	public String  schemaAlignmentURI;
 	public int  schemaAlignmentFormat;
+	
+	public LocationMapper locationMapper;
 	
 	// TODO: Get rid of this variable, it does not make sense in a multi-ontology framework.
 	public int sourceOrTarget; // GlobalStaticVariables.SOURCENODE or GlobalStaticVariables.TARGETNODE
