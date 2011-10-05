@@ -48,8 +48,10 @@ public class Mapping implements Serializable
     	public String getVisualRepresentation() { return visualRepresentation; }
     	
 		public static MappingRelation parseRelation(String relation) {
-			for( MappingRelation rel : MappingRelation.values() )
-				if( relation.equals(rel.toString()) ) return rel;
+			for( MappingRelation rel : MappingRelation.values() ){
+				if( relation.equals(rel.getVisualRepresentation()) || 
+						relation.equals(rel.getVisualRepresentation())) return rel;
+			}
 			if(relation.equals(">")) return MappingRelation.SUPERCLASS;
 			if(relation.equals("<")) return MappingRelation.SUBCLASS;
 			return UNKNOWN;
