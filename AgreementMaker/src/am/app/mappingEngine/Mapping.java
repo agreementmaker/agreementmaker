@@ -49,7 +49,7 @@ public class Mapping implements Serializable
     	
 		public static MappingRelation parseRelation(String relation) {
 			for( MappingRelation rel : MappingRelation.values() ){
-				if( relation.equals(rel.getVisualRepresentation()) || 
+				if( relation.equals(rel.toString()) || 
 						relation.equals(rel.getVisualRepresentation())) return rel;
 			}
 			if(relation.equals(">")) return MappingRelation.SUPERCLASS;
