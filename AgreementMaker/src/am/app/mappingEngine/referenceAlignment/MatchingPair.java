@@ -63,7 +63,9 @@ public class MatchingPair {
 	}
 	
 	public String getTabString() {
-		return getNameTabName()+"\t"+getSimTabRel();
+		String ret = getNameTabName()+"\t"+getSimTabRel();
+		if(provenance == null) return ret;
+		return ret + "\t" + provenance;
 	}
 	
 	public boolean equals(Object o) { 
@@ -73,5 +75,10 @@ public class MatchingPair {
 				return true;
 		}
 		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return getTabString();
 	}
 }
