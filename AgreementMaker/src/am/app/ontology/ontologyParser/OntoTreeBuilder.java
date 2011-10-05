@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
@@ -24,6 +25,7 @@ import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.util.FileManager;
+import com.hp.hpl.jena.util.LocationMapper;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
 /**
@@ -59,7 +61,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 	final static String CLASSROOTNAME = "OWL Classes Hierararchy";
 	final static String PROPERTYROOTNAME = "OWL Properties Hierararchy";
 
-	
+
 	/*This variable has been introduced to solve a problem occurred loading OAEI test case ontology in RDF/XML format
 	 * These ontologies contains some referenced classes and properties of other namespaces
 	 * These classes shouldn't be considered in the matching and we don't want to load them. 
@@ -82,6 +84,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 	 * @param skip Skip other namespaces, usually set to true.
 	 * @param reas Set to true in order to use a reasoner when loading the ontology, false to load without using a reasoner.
 	 */
+	@Deprecated
 	public OntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip, boolean reas) {
 		super(fileName, sourceOrTarget, language, format); 
 		skipOtherNamespaces = skip;
@@ -90,6 +93,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 	}
 	
 	// this function is here for legacy purposes, needs to be removed
+	@Deprecated
 	public OntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip ) {
 		super(fileName, sourceOrTarget, language, format); 
 		skipOtherNamespaces = skip;
@@ -248,8 +252,12 @@ public class OntoTreeBuilder extends TreeBuilder{
 		}
 		
 		if( progressDialog != null ) progressDialog.append("Creating Jena Model ... ");
-		FileManager.get().resetCache();
-		Model basemodel = FileManager.get().loadModel(ontology.getFilename(), ontology.getFormat());
+		FileManager fileManager = FileManager.get();
+		fileManager.resetCache();
+		if(ontDefinition.locationMapper != null)
+			fileManager.setLocationMapper(ontDefinition.locationMapper);
+		
+		Model basemodel = fileManager.loadModel(ontology.getFilename(), ontology.getFormat());
 		if( progressDialog != null ) progressDialog.appendLine("done.");
 		
 		if( progressDialog != null ) progressDialog.append("Creating Jena OntModel ...");
@@ -703,10 +711,41 @@ public class OntoTreeBuilder extends TreeBuilder{
     
     /** Loads an OWL ontology in RDF/XML syntax. */
     public static Ontology loadOWLOntology( String ontURI ) {
-    	OntoTreeBuilder ontoBuilder = new OntoTreeBuilder(
-				ontURI, Ontology.SOURCE, Ontology.LANG_OWL,
-				Ontology.SYNTAX_RDFXML, false, false);
+    	return loadOWLOntology(ontURI, null);
+    	
+    }
+    
+    public static Ontology loadOWLOntology( String ontURI, LocationMapper mapper ) {
+    	OntologyDefinition definition = new OntologyDefinition();
+    	definition.loadOntology = true;
+    	definition.ontologyLanguage = GlobalStaticVariables.OWLFILE;
+    	definition.ontologySyntax = GlobalStaticVariables.RDFXML;
+    	definition.ontologyURI = ontURI;
+    	definition.locationMapper = mapper;
+    	
+    	OntoTreeBuilder ontoBuilder = new OntoTreeBuilder(definition);
+    	
+		ontoBuilder.build(OntoTreeBuilder.Profile.noReasoner);
+		//ontoBuilder.build(OntoTreeBuilder.Profile.noFileManager);
 
+		return ontoBuilder.getOntology();
+    }
+    
+    public static Ontology loadOntology( String ontURI, OntologyLanguage lang, OntologySyntax syntax ) {
+    	return loadOntology(ontURI, lang, syntax, null);
+    }
+    
+    public static Ontology loadOntology( String ontURI, OntologyLanguage lang, OntologySyntax syntax, LocationMapper mapper ) {
+    	
+    	OntologyDefinition definition = new OntologyDefinition();
+    	definition.loadOntology = true;
+    	definition.ontologyLanguage = lang.getID();
+    	definition.ontologySyntax = syntax.getID();
+    	definition.ontologyURI = ontURI;
+    	definition.locationMapper = mapper;
+    	
+    	OntoTreeBuilder ontoBuilder = new OntoTreeBuilder(definition);
+    	
 		ontoBuilder.build(OntoTreeBuilder.Profile.noReasoner);
 		//ontoBuilder.build(OntoTreeBuilder.Profile.noFileManager);
 
