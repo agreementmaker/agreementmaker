@@ -1421,6 +1421,22 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return result;
 	}
 	
+	public String getAlignmentsStrings(boolean classes, boolean properties) {
+		//The small arrow must be different from the bigger used in the alignments or the parseReference will identify these lines as alignments
+		String result = "";
+		if(classes){
+			result+= "Class Alignments: "+classesAlignmentSet.size()+"\n";
+			result += "Source Concept\t ->\tTarget Concept\tSimilarity\tRelation\n\n";
+			result += classesAlignmentSet.getStringList();
+		}
+		if(properties){
+			result+= "Property Alignments: "+propertiesAlignmentSet.size()+"\n";
+			result += "Source Concept\t->\tTarget Concept\tSimilarity\tRelation\n\n";
+			result += propertiesAlignmentSet.getStringList();
+		}
+		return result;
+	}
+	
 	public AbstractMatcher copy() throws Exception {
 		AbstractMatcher cloned = MatcherFactory.getMatcherInstance(getRegistryEntry(), Core.getInstance().getMatcherInstances().size());
 		cloned.setInputMatchers(getInputMatchers());
