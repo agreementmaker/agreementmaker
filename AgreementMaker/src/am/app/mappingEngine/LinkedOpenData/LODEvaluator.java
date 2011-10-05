@@ -17,6 +17,8 @@ public class LODEvaluator {
 	//Contains methods for parsing
 	ReferenceAlignmentMatcher matcher;
 	
+	boolean printWrongMappings = true;
+	
 	public LODEvaluator(){
 		matcher = new ReferenceAlignmentMatcher();
 	}
@@ -150,25 +152,41 @@ public class LODEvaluator {
 		int count = 0;
 		MatchingPair p1;
 		MatchingPair p2;
-		
+		MatchingPair right = null;
+		boolean found;
 		for (int i = 0; i < toEvaluate.size(); i++) {
+			found = false;
 			p1 = toEvaluate.get(i);
+			//System.out.println("Presented: "+ p1.sourceURI + " " + p1.targetURI + " " + p1.similarity);
 			for (int j = 0; j < reference.size(); j++) {
 				p2 = reference.get(j);
 				//System.out.println(p2.getTabString());
+				if(p1.sourceURI.equals(p2.sourceURI)){
+					right = p2;
+				}
 				if(p1.sourceURI.equals(p2.sourceURI) && p1.targetURI.equals(p2.targetURI)
 						&& p1.relation.equals(p2.relation)){
 					count++;
+					found = true;
 					break;
 				}
 			}
+			if(found == false && printWrongMappings){
+				if(right != null){
+					//System.out.println("Right:" + right.getTabString());
+				}
+				System.out.println("Wrong: " + p1.getTabString());
+			}
 		}	
+		
 		//System.out.println("right mappings: "+count);
 		//System.out.println("prec:"+ (float)count/toEvaluate.size() + " rec: " +  (float)count/reference.size());
 		System.out.print((float)count/toEvaluate.size() + "\t" +  (float)count/reference.size() + "\t");
 	}
 	
 	public void removeDuplicates(ArrayList<MatchingPair> pairs){
+		System.out.println(pairs.toString().replaceAll(",", "'\n"));
+		
 		MatchingPair p1;
 		MatchingPair p2;
 		for (int i = 0; i < pairs.size(); i++) {
@@ -184,6 +202,9 @@ public class LODEvaluator {
 					
 			}
 		}
+		
+		System.out.println(pairs.toString().replaceAll(",", "'\n"));
+		
 	}
 	
 	public boolean equals(MatchingPair mp1, MatchingPair mp2){
@@ -192,62 +213,74 @@ public class LODEvaluator {
 		return false;
 	}
 	
+	public void evaluateAllTests() throws Exception{
+		System.out.println("OLD RESULTS\n");
+		
+		System.out.println("FOAF_DBPEDIA");
+		evaluate("LOD/AMOldAlignments/FOAFANDDBPEDIA.txt", LODReferences.FOAF_DBPEDIA);
+		System.out.println("MUSIC_BBC");
+		evaluate("LOD/AMOldAlignments/BBCProgramsandMusicOntology.txt", LODReferences.MUSIC_BBC);
+		System.out.println("GEONAMES_DBPEDIA");
+		evaluate("LOD/AMOldAlignments/GeoNames and DBPedia.txt", LODReferences.GEONAMES_DBPEDIA);
+		System.out.println("MUSIC_DBPEDIA");
+		evaluate("LOD/AMOldAlignments/MUSICANDDBPedia.txt", LODReferences.MUSIC_DBPEDIA);
+		System.out.println("SWC_DBPEDIA");
+		evaluate("LOD/AMOldAlignments/SematicWebConferenceANDDBpedia.txt", LODReferences.SWC_DBPEDIA);
+		System.out.println("SIOC_FOAF");
+		evaluate("LOD/AMOldAlignments/SIOCandFOAF.txt", LODReferences.SIOC_FOAF);
+		System.out.println("SWC_AKT");
+		evaluate("LOD/AMOldAlignments/SWCANDAKT.txt", LODReferences.SWC_AKT);
+		System.out.println("SIOC_FOAF");
+		evaluate("LOD/results/sioc-foaf.txt", LODReferences.SIOC_FOAF);
+		
+		//ArrayList<MatchingPair> pairs = parseBLOOMSReference("LOD/BLOOMS/AKT-DBPEDIA/SubClass.txt", "http://www.aktors.org/ontology/portal#", "http://dbpedia.org/ontology/");
+		ArrayList<MatchingPair> pairs = parseBLOOMSReference("LOD/BLOOMS/AKT-SWC/SubClass.txt", "http://swrc.ontoware.org/ontology#", "http://www.aktors.org/ontology/");
+		evaluate(pairs, LODReferences.SWC_AKT);
+		//ArrayList<MatchingPair> pairs = parseBLOOMSReference("LOD/BLOOMS/AKT-SWC/SubClass.txt", "http://swrc.ontoware.org/ontology#", "http://www.aktors.org/ontology/");
+		//evaluate(pairs, LODReferences.SWC_AKT);
+		
+		System.out.println("\nNEW RESULTS\n");
+
+		System.out.println("SWC_DBPEDIA");
+		evaluate("LOD/lastResults/swc-dbpedia.txt", LODReferences.SWC_DBPEDIA);
+		
+		System.out.println("SWC_AKT");
+		evaluate("LOD/lastResults/swc-akt.txt", LODReferences.SWC_AKT);
+		
+		System.out.println("SIOC_FOAF");
+		evaluate("LOD/lastResults/sioc-foaf.txt", LODReferences.SIOC_FOAF);
+			
+		System.out.println("GEONAMES_DBPEDIA");
+		evaluate("LOD/lastResults/geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA);
+		
+		System.out.println("FOAF_DBPEDIA");
+		evaluate("LOD/lastResults/foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
+		
+		System.out.println("MUSIC_DBPEDIA");
+		evaluate("LOD/lastResults/music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA);
+		
+		System.out.println("MUSIC_BBC");
+		evaluate("LOD/lastResults/music-bbc.txt", LODReferences.MUSIC_BBC);
+		
+		System.out.println("FOAF_DBPEDIA");
+		evaluate("LOD/batch/foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
+	}
+	
 	public static void main(String[] args) throws Exception {
 //		fromSubClassof(new File("LOD/BLOOMS/Music-DBpedia/SubClass.txt"), 
 //				LODOntologies.DBPEDIA_URI, LODOntologies.MUSIC_ONTOLOGY_URI);
 		LODEvaluator eval = new LODEvaluator();
 		
-		System.out.println("OLD RESULTS\n");
+		//eval.evaluateAllTests();
+		//eval.evaluate("LOD/lastResults/music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA);
+		//eval.evaluate("LOD/lastResults/foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
+		//eval.evaluate("LOD/lastResults/geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA);
+		//eval.evaluate("LOD/lastResults/sioc-foaf.txt", LODReferences.SIOC_FOAF);
 		
-		System.out.println("FOAF_DBPEDIA");
-		eval.evaluate("LOD/AMOldAlignments/FOAFANDDBPEDIA.txt", LODReferences.FOAF_DBPEDIA);
-		System.out.println("MUSIC_BBC");
-		eval.evaluate("LOD/AMOldAlignments/BBCProgramsandMusicOntology.txt", LODReferences.MUSIC_BBC);
-		System.out.println("GEONAMES_DBPEDIA");
-		eval.evaluate("LOD/AMOldAlignments/GeoNames and DBPedia.txt", LODReferences.GEONAMES_DBPEDIA);
-		System.out.println("MUSIC_DBPEDIA");
-		eval.evaluate("LOD/AMOldAlignments/MUSICANDDBPedia.txt", LODReferences.MUSIC_DBPEDIA);
-		System.out.println("SWC_DBPEDIA");
-		eval.evaluate("LOD/AMOldAlignments/SematicWebConferenceANDDBpedia.txt", LODReferences.SWC_DBPEDIA);
-		System.out.println("SIOC_FOAF");
-		eval.evaluate("LOD/AMOldAlignments/SIOCandFOAF.txt", LODReferences.SIOC_FOAF);
-		System.out.println("SWC_AKT");
-		eval.evaluate("LOD/AMOldAlignments/SWCANDAKT.txt", LODReferences.SWC_AKT);
-		System.out.println("SIOC_FOAF");
-		eval.evaluate("LOD/results/sioc-foaf.txt", LODReferences.SIOC_FOAF);
-		
-		//ArrayList<MatchingPair> pairs = parseBLOOMSReference("LOD/BLOOMS/AKT-DBPEDIA/SubClass.txt", "http://www.aktors.org/ontology/portal#", "http://dbpedia.org/ontology/");
-		ArrayList<MatchingPair> pairs = parseBLOOMSReference("LOD/BLOOMS/AKT-SWC/SubClass.txt", "http://swrc.ontoware.org/ontology#", "http://www.aktors.org/ontology/");
-		eval.evaluate(pairs, LODReferences.SWC_AKT);
-		//ArrayList<MatchingPair> pairs = parseBLOOMSReference("LOD/BLOOMS/AKT-SWC/SubClass.txt", "http://swrc.ontoware.org/ontology#", "http://www.aktors.org/ontology/");
-		//eval.evaluate(pairs, LODReferences.SWC_AKT);
-		
-		System.out.println("\nNEW RESULTS\n");
-		
-
-		System.out.println("SWC_DBPEDIA");
-		eval.evaluate("LOD/lastResults/swc-dbpedia.txt", LODReferences.SWC_DBPEDIA);
-		
-		System.out.println("SWC_AKT");
-		eval.evaluate("LOD/lastResults/swc-akt.txt", LODReferences.SWC_AKT);
-		
-		System.out.println("SIOC_FOAF");
-		eval.evaluate("LOD/lastResults/sioc-foaf.txt", LODReferences.SIOC_FOAF);
-			
-		System.out.println("GEONAMES_DBPEDIA");
-		eval.evaluate("LOD/lastResults/geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA);
-		
-		System.out.println("FOAF_DBPEDIA");
-		eval.evaluate("LOD/lastResults/foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
-		
-		System.out.println("MUSIC_DBPEDIA");
-		eval.evaluate("LOD/lastResults/music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA);
-		
-		System.out.println("MUSIC_BBC");
-		eval.evaluate("LOD/lastResults/music-bbc.txt", LODReferences.MUSIC_BBC);
-		
-		System.out.println("FOAF_DBPEDIA");
-		eval.evaluate("LOD/batch/foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
+		//eval.evaluate("LOD/batch/music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA);
+		//eval.evaluate("LOD/batch/foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
+		//eval.evaluate("LOD/batch/geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA);
+		eval.evaluate("LOD/batch/sioc-foaf.txt", LODReferences.SIOC_FOAF);
 		
 		
 	}

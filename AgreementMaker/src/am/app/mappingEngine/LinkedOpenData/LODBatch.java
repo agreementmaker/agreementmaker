@@ -1,38 +1,42 @@
 package am.app.mappingEngine.LinkedOpenData;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.Date;
 
-import am.GlobalStaticVariables;
-import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractParameters;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher;
 import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
 import am.app.mappingEngine.hierarchy.HierarchyMatcherModified;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 
-import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.util.LocationMapper;
 
 public class LODBatch {
 	String report = "";
 	
+	Logger log;
+	
+	LocationMapper mapper;
+	
 	public LODBatch(){
-		
+		log = Logger.getLogger(LODBatch.class);
+		Logger.getRootLogger().setLevel(Level.DEBUG);	
 	}
 	
 	public void run(){
 		//singleRun(LODOntologies.MUSIC_ONTOLOGY, LODOntologies.BBC_PROGRAM, "music-bbc");
-		singleRun(LODOntologies.MUSIC_ONTOLOGY, LODOntologies.DBPEDIA, "music-dbpedia");
-		singleRun(LODOntologies.FOAF, LODOntologies.DBPEDIA, "foaf-dbpedia");
-		singleRun(LODOntologies.GEONAMES, LODOntologies.DBPEDIA, "geonames-dbpedia");
+		//singleRun(LODOntologies.MUSIC_ONTOLOGY, LODOntologies.DBPEDIA, "music-dbpedia");
+		//singleRun(LODOntologies.FOAF, LODOntologies.DBPEDIA, "foaf-dbpedia");
+		//singleRun(LODOntologies.GEONAMES, LODOntologies.DBPEDIA, "geonames-dbpedia");
 		singleRun(LODOntologies.SIOC, LODOntologies.FOAF, "sioc-foaf");
-		singleRun(LODOntologies.SW_CONFERENCE, LODOntologies.AKT_PORTAL, "swc-akt");
-		singleRun(LODOntologies.SW_CONFERENCE, LODOntologies.DBPEDIA, "swc-dbpedia");
-		System.out.println(report);
+		//singleRun(LODOntologies.SW_CONFERENCE, LODOntologies.AKT_PORTAL, "swc-akt");
+		//singleRun(LODOntologies.SW_CONFERENCE, LODOntologies.DBPEDIA, "swc-dbpedia");
+		log.info(report);
 	}
 	
 	public void singleRun(String sourceName, String targetName, String testName){
@@ -40,30 +44,16 @@ public class LODBatch {
 		Ontology sourceOntology = null;
 		Ontology targetOntology = null;
 		OntoTreeBuilder treeBuilder;
-		
-		System.out.println("Opening sourceOntology");
-		try {
-			treeBuilder = new OntoTreeBuilder(sourceName, GlobalStaticVariables.SOURCENODE,
-				GlobalStaticVariables.LANG_OWL, 
-				GlobalStaticVariables.SYNTAX_RDFXML, false, true);
 				
-			treeBuilder.build();
-			sourceOntology = treeBuilder.getOntology();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		log.info("Opening sourceOntology...");
+		sourceOntology = OntoTreeBuilder.loadOWLOntology(new File(sourceName).getPath());
+		//sourceOntology = LODUtils.openOntology(new File(sourceName).getAbsolutePath());	
+		log.info("Done");	
 				
-		System.out.println("Opening targetOntology");
-		try {	
-			treeBuilder = new OntoTreeBuilder(targetName, GlobalStaticVariables.SOURCENODE,
-				GlobalStaticVariables.LANG_OWL, 
-				GlobalStaticVariables.SYNTAX_RDFXML, false, true);
-				
-			treeBuilder.build();
-			targetOntology = treeBuilder.getOntology();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		log.info("Opening targetOntology...");
+		targetOntology = OntoTreeBuilder.loadOWLOntology(new File(targetName).getPath());
+		//targetOntology = LODUtils.openOntology(new File(targetName).getAbsolutePath());
+		log.info("Done");
 		
 		AdvancedSimilarityMatcher asm = new AdvancedSimilarityMatcher();
 		asm.setSourceOntology(sourceOntology);
@@ -73,7 +63,7 @@ public class LODBatch {
 		asmParam.useDictionary = true;
 		asm.setParam(asmParam);
 		
-		System.out.println("ASM matching");				
+		log.info("ASM matching");				
 		try {
 			asm.match();
 		} catch (Exception e) {
@@ -81,12 +71,11 @@ public class LODBatch {
 		}
 		
 		HierarchyMatcherModified hmm = new HierarchyMatcherModified();
-		AbstractParameters hmmParam = new AbstractParameters();
 		hmm.setSourceOntology(sourceOntology);
 		hmm.setTargetOntology(targetOntology);
 		hmm.addInputMatcher(asm);
 		
-		System.out.println("HMM matching");
+		log.info("HMM matching");
 		
 		try {
 			hmm.match();
@@ -95,18 +84,16 @@ public class LODBatch {
 		}
 		
 		try {
-			printDocument(testName, hmm.getAlignmentsStrings(), sourceName, targetName);
+			printDocument(testName, hmm.getAlignmentsStrings(true, false), sourceName, targetName);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
 		
 		long end = System.nanoTime();
-		
 		long executionTime = (end-start)/1000000;
-		
 		report += "Execution times:\t" + asm.getExecutionTime() + "\t" + hmm.getExecutionTime() + "\t" + executionTime + "\n";
-		System.out.println("Total time: " + executionTime);
+		log.info("Total time: " + executionTime);
 		
 	}
 	
@@ -127,12 +114,9 @@ public class LODBatch {
 	    out.close();
 	}
 	
-	
-
 	public static void main(String[] args) {
 		LODBatch batch = new LODBatch();
 		batch.run();
-		
 	}
 }
 	
