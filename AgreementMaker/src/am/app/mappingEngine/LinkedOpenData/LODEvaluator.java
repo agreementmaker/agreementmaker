@@ -4,7 +4,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Scanner;
 
 import am.app.mappingEngine.Alignment;
@@ -184,9 +188,7 @@ public class LODEvaluator {
 		System.out.print((float)count/toEvaluate.size() + "\t" +  (float)count/reference.size() + "\t");
 	}
 	
-	public void removeDuplicates(ArrayList<MatchingPair> pairs){
-		System.out.println(pairs.toString().replaceAll(",", "'\n"));
-		
+	public void removeDuplicates(List<MatchingPair> pairs){
 		MatchingPair p1;
 		MatchingPair p2;
 		for (int i = 0; i < pairs.size(); i++) {
@@ -202,9 +204,6 @@ public class LODEvaluator {
 					
 			}
 		}
-		
-		System.out.println(pairs.toString().replaceAll(",", "'\n"));
-		
 	}
 	
 	public boolean equals(MatchingPair mp1, MatchingPair mp2){
@@ -266,6 +265,49 @@ public class LODEvaluator {
 		evaluate("LOD/batch/foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
 	}
 	
+	public String diff(List<MatchingPair> sourceList, List<MatchingPair> targetList){
+		String report = "";
+		MatchingPair source;
+		MatchingPair target;
+		
+		removeDuplicates(sourceList);
+		removeDuplicates(targetList);
+		
+		boolean found = false;
+		
+		HashSet<MatchingPair> foundTargets = new HashSet<MatchingPair>();
+		
+		for (int i = 0; i < sourceList.size(); i++) {
+			source = sourceList.get(i);
+			found = false;
+			for (int j = 0; j < targetList.size(); j++) {
+				target = targetList.get(j);
+				
+				if(source.sameSource(target) && source.sameTarget(target)){
+					foundTargets.add(target);
+					if(source.relation.equals(target.relation)){
+						found = true;
+						break;
+					}
+					else{
+						report += "Different relation: " + source.sourceURI + " " + source.targetURI + " " +
+								source.relation + " " + target.relation + "\n";
+					}
+				}
+			}
+			if(found == false){
+				report += "Not present in target: " + source + "\n";
+			}
+		}
+		
+		for (int i = 0; i < targetList.size(); i++) {
+			if(!foundTargets.contains(targetList.get(i))){
+				report += "Not present in source: " + targetList.get(i) + "\n";
+			}
+		}
+		return report;
+	}
+	
 	public static void main(String[] args) throws Exception {
 //		fromSubClassof(new File("LOD/BLOOMS/Music-DBpedia/SubClass.txt"), 
 //				LODOntologies.DBPEDIA_URI, LODOntologies.MUSIC_ONTOLOGY_URI);
@@ -280,9 +322,27 @@ public class LODEvaluator {
 		//eval.evaluate("LOD/batch/music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA);
 		//eval.evaluate("LOD/batch/foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
 		//eval.evaluate("LOD/batch/geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA);
-		eval.evaluate("LOD/batch/sioc-foaf.txt", LODReferences.SIOC_FOAF);
+		//eval.evaluate("LOD/lastResults/sioc-foaf.txt", LODReferences.SIOC_FOAF_FIXED);
+		//eval.testDiff("LOD/batch/sioc-foaf.txt", "LOD/lastResults/sioc-foaf.txt", false);
+		//eval.testDiff("LOD/batch/sioc-foaf.txt", LODReferences.SIOC_FOAF, true);
+		System.out.println("MUSIC_BBC");
+		//eval.testDiff("LOD/batch/music-bbc.txt", LODReferences.MUSIC_BBC, true);
+		//eval.testDiff("LOD/batch/music-bbc.txt", "LOD/lastResults/music-bbc.txt", false);
+		eval.evaluate("LOD/batch/music-bbc.txt", LODReferences.MUSIC_BBC);
 		
+	}
+
+
+	private void testDiff(String file1, String file2, boolean reference) throws IOException {
+		BufferedReader fileBR = new BufferedReader(new FileReader(file1));
+		ArrayList<MatchingPair> file1Pairs = matcher.parseRefFormat4(fileBR);
+		fileBR = new BufferedReader(new FileReader(file2));
+		ArrayList<MatchingPair> file2Pairs;
+		if(reference)
+			file2Pairs = matcher.parseRefFormat2(fileBR);
+		else file2Pairs = matcher.parseRefFormat4(fileBR);
 		
+		System.out.println(diff(file1Pairs, file2Pairs));
 	}
 }
 

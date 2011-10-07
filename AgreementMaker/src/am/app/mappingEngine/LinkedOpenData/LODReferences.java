@@ -8,4 +8,7 @@ public class LODReferences {
 	public static final String SWC_AKT = "LOD/LOD-Reference-Alignment/swc_akt.txt";
 	public static final String SWC_DBPEDIA = "LOD/LOD-Reference-Alignment/swc_dbpedia.txt";
 	public static final String FOAF_DBPEDIA = "LOD/LOD-Reference-Alignment/foaf_dbpedia.txt";
+	
+	public static final String SIOC_FOAF_FIXED = "LOD/ReferenceAlignmentFixed/sioc_foaf.txt";
+	
 }

@@ -36,6 +36,12 @@ public class LODBatch {
 		mapper.addAltEntry("http://data.semanticweb.org/ns/swc/swrc", new File("LOD/LocationMappings/ns.swc.swrc.rdf").getAbsolutePath());
 		mapper.addAltEntry("http://purl.org/NET/c4dm/timeline.owl", new File("LOD/LocationMappings/timeline.n3").getAbsolutePath());
 		mapper.addAltEntry("http://data.semanticweb.org/ns/swc/swrc-topics", new File("LOD/LocationMappings/swrc-topics.owl").getAbsolutePath());
+		mapper.addAltEntry("http://purl.org/vocab/bio/0.1/", new File("LOD/LocationMappings/vocab.org.bio.rdf").getAbsolutePath());
+		mapper.addAltEntry("http://purl.org/vocab/frbr/core", new File("LOD/LocationMappings/frbr.core.rdf").getAbsolutePath());
+		mapper.addAltEntry("http://purl.org/dc/terms/", new File("LOD/LocationMappings/dcterms.rdf").getAbsolutePath());
+		mapper.addAltEntry("http://purl.org/ontology/similarity/", new File("LOD/LocationMappings/musim.owl").getAbsolutePath());
+		mapper.addAltEntry("http://purl.org/NET/c4dm/keys.owl", new File("LOD/LocationMappings/keys.owl").getAbsolutePath());
+
 	}
 
 	public void run(){
@@ -43,7 +49,7 @@ public class LODBatch {
 		//singleRun(LODOntologies.MUSIC_ONTOLOGY, LODOntologies.DBPEDIA, "music-dbpedia");
 		//singleRun(LODOntologies.FOAF, LODOntologies.DBPEDIA, "foaf-dbpedia");
 		//singleRun(LODOntologies.GEONAMES, LODOntologies.DBPEDIA, "geonames-dbpedia");
-		//singleRun(LODOntologies.SIOC, LODOntologies.FOAF, "sioc-foaf");
+		//singleRun(LODOntology.SIOC, LODOntology.FOAF, "sioc-foaf");
 		//singleRun(LODOntologies.SW_CONFERENCE, LODOntologies.AKT_PORTAL, "swc-akt");
 		//singleRun(LODOntologies.SW_CONFERENCE, LODOntologies.DBPEDIA, "swc-dbpedia");
 		log.info(report);
@@ -98,7 +104,7 @@ public class LODBatch {
 		}
 		
 		try {
-			printDocument(testName, hmm.getAlignmentsStrings(true, false), source.getUri(), target.getUri());
+			printDocument(testName, hmm.getAlignmentsStrings(true, false, false), source.getUri(), target.getUri());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
