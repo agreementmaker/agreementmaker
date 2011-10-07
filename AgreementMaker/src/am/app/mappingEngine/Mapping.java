@@ -11,6 +11,7 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.output.OutputController;
+import am.utility.BitVector;
 
 /**
  * This class represents a mapping between two concepts from separate ontologies.
@@ -27,6 +28,7 @@ public class Mapping implements Serializable
     private double similarity = 0;
     private MappingRelation relation = null;
     private String provenance;
+    private BitVector featuresBitVector; // This integer represents a bit vector of the matcher features used to calculate the similarity
 
 	private alignType typeOfConcepts = null;
     
@@ -338,4 +340,8 @@ public class Mapping implements Serializable
 			System.out.println(a.similarity);
 	  }
 	  */
+	
+	public BitVector getFeaturesBitVector() { return featuresBitVector; }
+	public void setFeaturesBitVector( BitVector bitVector ) { featuresBitVector = bitVector; }
+	
 }
