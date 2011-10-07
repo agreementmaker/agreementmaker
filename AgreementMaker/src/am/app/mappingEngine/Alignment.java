@@ -205,17 +205,23 @@ public class Alignment<E extends Mapping> extends ArrayList<E> implements Ontolo
         return count;
     }
 
-    public String getStringList() {
+    public String getStringList(boolean URI) {
 		String result = "";
 		E a;
 		for(int i = 0; i < size(); i++) {
 			a = get(i);
-			result += a.getString();
+			if(URI)
+				result += a.getString(true);
+			else result += a.getString(false);
 			if(i == size()-1)
 				result+= "\n";
 		}
 		return result;
 	}
+    
+    public String getStringList() {
+    	return getStringList(false);
+    }
     
     public int getSourceOntologyID() { return sourceOntologyID; }
     public int getTargetOntologyID() { return targetOntologyID; }
