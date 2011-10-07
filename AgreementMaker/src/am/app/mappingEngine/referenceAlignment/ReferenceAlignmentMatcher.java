@@ -413,7 +413,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	    double similarity;
 	    while((line = br.readLine()) !=null){
 	    	String[] split = line.split("\t");
-	    	if(split.length == 5 && split[1].equals(OutputController.arrow)) {
+	    	if(split.length == 5 || split.length == 6 && split[1].equals(OutputController.arrow)) {
 	        	source = split[0];
 	        	target = split[2];
 	        	try {
@@ -426,9 +426,12 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 	        	if(relationString == null || relationString.equals("")) {
 	        		relation = MappingRelation.EQUIVALENCE;
 	        	}
-	            MatchingPair r = new MatchingPair(source,target);
+	        	MatchingPair r = new MatchingPair(source,target);
 	            r.similarity = similarity;
 	            r.relation = MappingRelation.parseRelation(relationString);
+	            if(split.length == 6){
+	            	r.provenance = split[5];    
+	            }
 	            result.add(r);
 	    	}
 	    }
