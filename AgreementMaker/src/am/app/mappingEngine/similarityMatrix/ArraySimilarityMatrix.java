@@ -30,10 +30,17 @@ public class ArraySimilarityMatrix extends SimilarityMatrix {
 		
 		public double similarity;
 		public MappingRelation relation;
+		public String provenance;
 		
 		SimRel(double similarity, MappingRelation relation) {
 			this.similarity = similarity;
 			this.relation = relation;
+		}
+		
+		SimRel(double similarity, MappingRelation relation, String provenance) {
+			this.similarity = similarity;
+			this.relation = relation;
+			this.provenance = provenance;
 		}
 	}
 	
@@ -144,7 +151,8 @@ public class ArraySimilarityMatrix extends SimilarityMatrix {
     @Override
     public Mapping get(int i, int j) {
     	if( data[i][j] == null ) return null;  
-    	return new Mapping( rowNodes.get(i), colNodes.get(j), data[i][j].similarity, data[i][j].relation);
+    	return new Mapping( rowNodes.get(i), colNodes.get(j), data[i][j].similarity, data[i][j].relation, data[i][j].provenance );
+    	//return data[i][j];
     }
     
     @Override
@@ -152,7 +160,7 @@ public class ArraySimilarityMatrix extends SimilarityMatrix {
     	if( d != null ) {
 	    	//if( rowNodes[i] == null ) rowNodes[i] = d.getEntity1();
 	    	//if( colNodes[j] == null ) colNodes[j] = d.getEntity2();
-	    	data[i][j] = new SimRel(d.getSimilarity(), d.getRelation()); 
+	    	data[i][j] = new SimRel(d.getSimilarity(), d.getRelation(), d.getProvenance()); 
     	} else {
     		data[i][j] = null;
     	}
