@@ -344,6 +344,8 @@ public class LegacyLayoutMouseHandler {
 									}
 								}
 
+								annotationProperties += "URI: " + currentClass.getURI() + "\n\n";
+								
 								
 								String propString = new String();
 								// get a list of the properties.  TODO: Make this easier to work with.
