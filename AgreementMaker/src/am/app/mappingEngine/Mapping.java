@@ -99,6 +99,20 @@ public class Mapping implements Serializable
         	typeOfConcepts = alignType.aligningProperties;
         }
     }
+    
+    public Mapping(Node e1, Node e2, double sim, MappingRelation r, String p)
+    {
+        entity1 = e1;
+        entity2 = e2;
+        similarity = sim;
+        relation = r;
+        provenance = p;
+        if( entity1.getType().equals( Node.OWLCLASS ) || entity1.getType().equals( Node.RDFNODE ) || entity1.getType().equals( Node.XMLNODE )  ) {
+        	typeOfConcepts = alignType.aligningClasses;
+        } else {
+        	typeOfConcepts = alignType.aligningProperties;
+        }
+    }
 
     public Mapping(Node e1, Node e2, double sim)
     {
@@ -160,8 +174,26 @@ public class Mapping implements Serializable
 
 	public String toString() { return "("+entity1.toString()+" -> "+entity2.toString()+
 		": "+similarity+" "+relation.getVisualRepresentation()+" )"; }
-	public String getString() { return entity1.getLocalName()+"\t"+OutputController.arrow+"\t"+
-		entity2.getLocalName()+"\t"+getSimilarity()+"\t"+getRelation().getVisualRepresentation()+"\n"; }
+	
+	public String getString(boolean URI) { 
+		String retValue = "";
+		if(URI == true) retValue = entity1.getUri();
+		else retValue = entity1.getLocalName();
+		retValue += "\t"+OutputController.arrow+"\t";
+		if(URI == true) retValue += entity2.getUri();
+		else retValue += entity2.getLocalName();		
+		retValue += "\t"+getSimilarity()+"\t"+getRelation().getVisualRepresentation();
+		if(provenance != null){
+			System.out.println("Provenance: " + provenance);
+			retValue += "\t" + provenance;
+		}
+		retValue += "\n"; 
+		return retValue;
+	}
+	
+	public String getString() { 
+		return getString(false);
+	}
 	
 	public int getSourceKey(){
 		//used in the Conflict resulotion method of the conference track
