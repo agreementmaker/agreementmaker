@@ -370,5 +370,12 @@ public class Ontology {
 	public Set<OntProperty> getHierarchyProperties() {
 		return nodeHierachies.keySet();
 	}
+	public boolean containsClassLocalName(String name) {
+		for (int i = 0; i < classesList.size(); i++) {
+			if(classesList.get(i).getLocalName().equals(name))
+				return true;
+		}
+		return false;
+	}
 	
 }
