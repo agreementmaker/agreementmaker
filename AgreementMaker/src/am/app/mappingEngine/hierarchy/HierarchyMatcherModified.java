@@ -53,6 +53,9 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	
 	Logger log;
 	private boolean disambiguate = true;
+	private int hypernymThreshold = 2;
+	
+	boolean useProvenanceToDebug = true;
 	
 	public HierarchyMatcherModified()
 	{
@@ -144,7 +147,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		filterEqualityMappings();
 		
 		log.info("Filtering external mappings...");
-		filterExternalMappings();
+		//filterExternalMappings();
 		
 		
 		//printMatrix(classesMatrix);
@@ -175,7 +178,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		for (int i = 0; i < sourceClasses.size(); i++) {
 			for (int j = 0; j < targetClasses.size(); j++) {
 				if(classesMatrix.get(i, j) == null) continue;
-				if(!sourceClasses.get(i).getUri().startsWith(sourceURI)	&& 
+				if(!sourceClasses.get(i).getUri().startsWith(sourceURI)	&&
 						!targetClasses.get(j).getUri().startsWith(targetOntology.getURI())){
 					System.out.println("Removing mapping: " + classesMatrix.get(i,j));
 					classesMatrix.set(i, j, null);
@@ -226,25 +229,21 @@ public class HierarchyMatcherModified extends AbstractMatcher
 				
 				ArrayList<ArrayList<NounSynset>> targetHypernymList = buildHypernymList(targetNode, null, wordnetHypernymsLimit);
 						
-				if( synsetIsContainedBy( sourceSynsetList, targetHypernymList ) ) {
+				if( synsetIsContainedBy( sourceSynsetList, targetHypernymList ) >= hypernymThreshold  ) {
 					// source > target
 					/*The similarity is set to be less than 0.80d as I do not want to
 					 * overwrite alread established relationships*/
 					if( classesMatrix.get( sourceNode.getIndex(), targetNode.getIndex()) == null || 
 						classesMatrix.getSimilarity( sourceNode.getIndex(), targetNode.getIndex()) < 0.80d ) {
 						log.debug("mapping >: "+sourceNode.getLocalName() + " " + targetNode.getLocalName() + sourceSynsetList);
-						m = new Mapping(sourceNode, targetNode, 0.89d, MappingRelation.SUPERCLASS);
-						m.setProvenance("Wordnet mediator");
-						classesMatrix.set(sourceNode.getIndex(), targetNode.getIndex(), m);
+						newMapping(sourceNode, targetNode, 0.89d, MappingRelation.SUPERCLASS, "Wordnet mediator");
 					}
-				} else if ( synsetIsContainedBy(targetSynsetList, sourceHypernymList) ) {
+				} else if ( synsetIsContainedBy(targetSynsetList, sourceHypernymList)  >= hypernymThreshold ) {
 					//source < target
 					if( classesMatrix.get( sourceNode.getIndex(), targetNode.getIndex()) == null || 
 							classesMatrix.getSimilarity( sourceNode.getIndex(), targetNode.getIndex()) < 0.80d ) {
 							log.debug("mapping <: "+sourceNode.getLocalName() + " " + targetNode.getLocalName() + targetSynsetList);
-							m = new Mapping(sourceNode, targetNode, 0.89d, MappingRelation.SUBCLASS);
-							m.setProvenance("Wordnet mediator");
-							classesMatrix.set(sourceNode.getIndex(), targetNode.getIndex(), m);
+							newMapping(sourceNode, targetNode, 0.89d, MappingRelation.SUBCLASS, "Wordnet mediator");
 					}
 				}
 			}
@@ -255,19 +254,20 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		Node source=null;
 		Node target=null;
 		double similarityValue;
+		Mapping m;
 		for (int i = 0; i < sourceClasses.size(); i++){
 			for(int j =0 ; j < targetClasses.size(); j++){
+				m = classesMatrix.get(i, j);
+				if(m == null) continue;
 				similarityValue = classesMatrix.getSimilarity(i, j);
 				/*Right now the similarity value is kept one as a pessimist approach
 				 * that anything less than one will yield wrong results. It has been verified by
 				 * runs of AM*/
-				if(similarityValue >= inputMatcherThreshold)
+				if(m.getRelation().equals(MappingRelation.EQUIVALENCE) && similarityValue >= inputMatcherThreshold)
 				{
 					System.out.println(classesMatrix.get(i,j));
-					Mapping m = classesMatrix.get(i, j);
 					m.setProvenance("Input matcher");
 					classesMatrix.set(i, j, m);
-					System.out.println("PROV:" + classesMatrix.get(i, j).getProvenance());
 					source = sourceClasses.get(i);
 					target = targetClasses.get(j);
 					System.out.println(source.getLocalName() + " " + similarityValue + " " +inputMatcherThreshold);	
@@ -293,9 +293,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 			for (int j = 0; j < targetClasses.size(); j++) {
 				tNode = targetClasses.get(j);
 				if(sourceSplitted[1].equals(tNode.getLocalName())){
-					Mapping m = new Mapping(sNode, tNode, 1.0d, MappingRelation.SUBCLASS);
-					m.setProvenance("Compound word analysis");
-					classesMatrix.set(i, j, m);
+					newMapping(sNode, tNode, 1.0d, MappingRelation.SUBCLASS, "Compound word analysis");
 				}
 			}
 		}
@@ -311,9 +309,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 			for (int j = 0; j < sourceClasses.size(); j++) {
 				sNode = sourceClasses.get(j);
 				if(targetSplitted[1].equals(sNode.getLocalName())){
-					Mapping m = new Mapping(sNode, tNode, 1.0d, MappingRelation.SUPERCLASS);
-					m.setProvenance("Compound word analysis");
-					classesMatrix.set(j, i, m);
+					newMapping(sNode, tNode, 1.0d, MappingRelation.SUPERCLASS, "Compound word analysis");
 				}
 			}
 		}
@@ -325,7 +321,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		otherOntologies = new ArrayList<OntModel>();
 		
 		LocationMapper mapper = null;
-		if(param != null){
+		if(param != null && param instanceof HierarchyMatcherModifiedParameters){
 			mapper = ((HierarchyMatcherModifiedParameters)param).mapper;
 		}
 		
@@ -372,21 +368,21 @@ public class HierarchyMatcherModified extends AbstractMatcher
 						for(OntClass subclass : cl.listSubClasses().toList()){
 							
 							
+							
 							for(int t = 0; t < targetClasses.size(); t++){
 								target = targetClasses.get(t);
-								if(target.getLocalName().equals(subclass.getLocalName())){
+								
+								if(target.getLocalName().toLowerCase().equals(subclass.getLocalName().toLowerCase())){
 									//create superclass mapping source -> target
 									log.info("CREATING MAPPING "+source.getLocalName() + " " + target.getLocalName());
-									Mapping m = new Mapping(source, target, 1.0, MappingRelation.SUPERCLASS);
-									m.setProvenance("External ontologies analysis");
-									classesMatrix.set(i, t, m);
+									Mapping m;
+									if(!invert) newMapping(source, target, 1.0, MappingRelation.SUPERCLASS, "External ontologies analysis");
+									else newMapping(target, source, 1.0, MappingRelation.SUPERCLASS, "External ontologies analysis");
 									
 									//also subclasses of target are subclasses of source:
 									for(OntClass child: listAllSubclasses(target.getResource().as(OntClass.class), null)){
 										int index = getIndex(targetClasses, child.getURI());
-										m = new Mapping(source, targetClasses.get(index), 1.0, MappingRelation.SUPERCLASS);
-										m.setProvenance("External ontologies analysis");
-										classesMatrix.set(i, index, m);
+										newMapping(source, targetClasses.get(index), 1.0, MappingRelation.SUPERCLASS, "External ontologies analysis");
 									}
 								}
 							}
@@ -403,6 +399,11 @@ public class HierarchyMatcherModified extends AbstractMatcher
 			for (int j = 0; j < classesMatrix.getColumns(); j++) {
 				if(classesMatrix.get(i, j) != null){
 					m = classesMatrix.get(i, j);
+					
+					if(m.getEntity1().getLocalName().equals(m.getEntity2().getLocalName()) && m.getRelation() != MappingRelation.EQUIVALENCE)
+						m.setRelation(MappingRelation.EQUIVALENCE);
+						classesMatrix.set(i, j, m);
+					
 					if(m.getRelation() == MappingRelation.EQUIVALENCE && m.getSimilarity() < inputMatcherThreshold )
 						classesMatrix.set(i, j, null);
 				}
@@ -446,19 +447,21 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	}
 	
 
-	private boolean synsetIsContainedBy(ArrayList<NounSynset> sourceSynsetList,
+	private int synsetIsContainedBy(ArrayList<NounSynset> sourceSynsetList,
 			ArrayList<ArrayList<NounSynset>> hypernymList) {
+		
+		int count = 0;
 		
 		for( ArrayList<NounSynset> currentHypernymList : hypernymList ) {
 			for( NounSynset currentHypernym : currentHypernymList ) {
 				if( sourceSynsetList.contains(currentHypernym) ){
 					log.debug("HYP:" + currentHypernym);
-					return true;
+					count++;
 				}
 			}
 		}
 		
-		return false;
+		return count;
 	}
 	
 	
@@ -548,8 +551,10 @@ public class HierarchyMatcherModified extends AbstractMatcher
 /*This function maps many Target Concepts to a source concept*/	
 	private void matchManyTargetSource(Node source,Node target)
 	{
+		System.err.println("SD " + source.getUri() + " " + target.getUri());
+		
 		Node superClassOfTarget;
-		Node superClassOfSOurce;
+		Node superClassOfSource;
 		
 		/*GET THE INDEX OF THE INPUT PARAMETERS OF THE METHOD*/
 		int indexSource = source.getIndex();
@@ -566,7 +571,9 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		ArrayList<OntClass> targetSubClassesLevel2 = new ArrayList<OntClass>();
 		
 		superClassOfTarget = getSuperClass(target, targetClasses);
-		superClassOfSOurce = getSuperClass(source, sourceClasses);
+		superClassOfSource = getSuperClass(source, sourceClasses);
+		
+		System.err.println("SUPERCLASSES " + superClassOfSource + " " + superClassOfTarget);
 		
 		/*CONVERTING THE TARGET NODE INTO OntClass*/
 		ontClasstarget = (OntClass)targetClasses.get(indexTarget).getResource().as(OntClass.class);
@@ -575,23 +582,21 @@ public class HierarchyMatcherModified extends AbstractMatcher
 			targetSubClasses.add((OntClass)targetIterator.next());
 		}
 		
+		System.out.println(ontClasstarget.getURI());
+		System.err.println("SUBCLASSES T " + targetSubClasses);
+		
+		
 		/*MATCHING THE FIRST LEVEL OF SUB-CLASSES*/
 		for (int k = 0; k < targetSubClasses.size(); k++) 
 		{
 			int row = getIndex(targetClasses,targetSubClasses.get(k).getURI());
 			Node targetTemp = (Node)targetClasses.get(row);
-			if(row != -1)
-			{
-				Mapping m = new Mapping(source,targetTemp,0.85d,MappingRelation.SUPERCLASS);
-				m.setProvenance("From equality mapping");
-				classesMatrix.set(indexSource, targetTemp.getIndex(), m);
+			if(row != -1){
+				newMapping(source,targetTemp,0.85d,MappingRelation.SUPERCLASS, "From equality mapping 1TS A");
 			}
 			/*IF THE SOURCE HAS A SUPER CLASS IT WILL HAVE THE SAME subClassOf RELATIONSHIP WITH THE TARGET CONCEPT*/
-			if(superClassOfSOurce != null)
-			{
-				Mapping m = new Mapping(superClassOfSOurce,targetTemp,0.85d,MappingRelation.SUPERCLASS);
-				m.setProvenance("From equality mapping");
-				classesMatrix.set(superClassOfSOurce.getIndex(),targetTemp.getIndex(), m);
+			if(superClassOfSource != null){
+				newMapping(superClassOfSource, targetTemp, 0.85d, MappingRelation.SUPERCLASS, "From equality mapping 1TS B");
 			}
 		}
 		
@@ -603,25 +608,17 @@ public class HierarchyMatcherModified extends AbstractMatcher
 					subClass = targetSubClasses.get(i);
 					targetSubClassIterator = subClass.listSubClasses();
 					
-						while(targetSubClassIterator.hasNext())
-						{
-							
-							OntClass temp = (OntClass)targetSubClassIterator.next();
-							targetSubClassesLevel2.add(temp);
-							int index1 = getIndex(targetClasses,temp.getURI());
-							Node temp1 = targetClasses.get(index1);
-							/*HERE THE SECOND LEVEL OF SUBCLASSES ARE BEING MATCHED*/
-							Mapping m = new Mapping(source,temp1,0.85d,MappingRelation.SUPERCLASS);
-							m.setProvenance("From equality mapping");
-							classesMatrix.set(indexSource,temp1.getIndex(), m);
-							if(superClassOfSOurce != null)
-							{
-								m = new Mapping(superClassOfSOurce,temp1,0.85d,MappingRelation.SUPERCLASS);
-								m.setProvenance("From equality mapping");
-								classesMatrix.set(superClassOfSOurce.getIndex(),temp1.getIndex(), m);
-							}
+					while(targetSubClassIterator.hasNext()){						
+						OntClass temp = (OntClass)targetSubClassIterator.next();
+						targetSubClassesLevel2.add(temp);
+						int index1 = getIndex(targetClasses,temp.getURI());
+						Node temp1 = targetClasses.get(index1);
+						/*HERE THE SECOND LEVEL OF SUBCLASSES ARE BEING MATCHED*/
+						newMapping(source,temp1,0.85d,MappingRelation.SUPERCLASS, "From equality mapping 2TS");
+						if(superClassOfSource != null){
+							newMapping(superClassOfSource,temp1,0.85d,MappingRelation.SUPERCLASS, "From equality mapping 2TS");
 						}
-					
+					}
 				}
 		}
 		/*IF THE THIRD  LEVEL GOES TO THE FOURTH  LEVEL AS IN D subClassOf C subClassOf B subClassOf A so I attempt to match D to A*/
@@ -637,14 +634,10 @@ public class HierarchyMatcherModified extends AbstractMatcher
 						OntClass temp = (OntClass)targetSubClassIterator.next();
 						int index1 = getIndex(targetClasses,temp.getURI());
 						Node temp1 = targetClasses.get(index1);
-						Mapping m = new Mapping(source,temp1,0.85d,MappingRelation.SUPERCLASS);
-						m.setProvenance("From equality mapping");
-						classesMatrix.set(indexSource,temp1.getIndex(), m);
-						if(superClassOfSOurce != null)
+						newMapping(source,temp1,0.85d,MappingRelation.SUPERCLASS, "From equality mapping 3TS");
+						if(superClassOfSource != null)
 						{
-							m = new Mapping(superClassOfSOurce,temp1,0.85d,MappingRelation.SUPERCLASS);
-							m.setProvenance("From equality mapping");
-							classesMatrix.set(superClassOfSOurce.getIndex(), temp1.getIndex(), m);
+							newMapping(superClassOfSource,temp1,0.85d,MappingRelation.SUPERCLASS, "From equality mapping 3TS");
 						}
 					}
 					
@@ -654,10 +647,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		/*FINALLY MATCHING THE SUPER CLASS TO THE TARGET CONCEPT WITH subClassOf relationship*/
 		if(superClassOfTarget != null)
 		{
-			//log.debug("I have matcher "+source.getLocalName() +" TO "+superClassOfTarget.getLocalName());
-			Mapping m = new Mapping(source,superClassOfTarget,0.85d,MappingRelation.SUPERCLASS);
-			m.setProvenance("From equality mapping");
-			classesMatrix.set(source.getIndex(),superClassOfTarget.getIndex(), m);
+			//newMapping(source,superClassOfTarget,0.85d,MappingRelation.SUPERCLASS, "From equality mapping F");
 		}
 		
 	}
@@ -681,7 +671,6 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		superClassOfSource = getSuperClass(source,sourceClasses);
 		superClassOfTarget = getSuperClass(target,targetClasses);
 		
-		
 		OntClasssource = (OntClass)sourceClasses.get(indexSource).getResource().as(OntClass.class);
 		sourceSubClasses = OntClasssource.listSubClasses().toList();
 		
@@ -691,14 +680,9 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		{
 			int row = getIndex(sourceClasses,sourceSubClasses.get(k).getURI());
 			Node sourceTemp = (Node)sourceClasses.get(row);
-			Mapping m = new Mapping(sourceTemp,target,0.85d,MappingRelation.SUBCLASS);
-			m.setProvenance("From equality mapping");
-			classesMatrix.set(sourceTemp.getIndex(), indexTarget, m);
-			if(superClassOfTarget != null)
-			{
-				m = new Mapping(sourceTemp, superClassOfTarget, 1.0, MappingRelation.SUBCLASS);
-				m.setProvenance("From equality mapping");
-				classesMatrix.set(sourceTemp.getIndex(),superClassOfTarget.getIndex(), m);
+			newMapping(sourceTemp,target,0.85d,MappingRelation.SUBCLASS, "From equality mapping 1ST");
+			if(superClassOfTarget != null){
+				newMapping(sourceTemp, superClassOfTarget, 1.0, MappingRelation.SUBCLASS, "From equality mapping 1ST");
 			}
 		}
 		
@@ -717,15 +701,10 @@ public class HierarchyMatcherModified extends AbstractMatcher
 					int index1 = getIndex(sourceClasses,temp.getURI());
 					Node temp1 = sourceClasses.get(index1);
 					
-					Mapping m = new Mapping(temp1, target, 1.0, MappingRelation.SUBCLASS);
-					m.setProvenance("From equality mapping");
-					classesMatrix.set(temp1.getIndex(),indexTarget, m);
+					newMapping(temp1, target, 1.0, MappingRelation.SUBCLASS, "From equality mapping 2ST");
 					
-					if (superClassOfTarget != null)
-					{
-						m = new Mapping(temp1, superClassOfTarget, 1.0, MappingRelation.SUBCLASS);
-						m.setProvenance("From equality mapping");
-						classesMatrix.set(temp1.getIndex(), superClassOfTarget.getIndex(), m);
+					if (superClassOfTarget != null){
+						newMapping(temp1, superClassOfTarget, 1.0, MappingRelation.SUBCLASS, "From equality mapping 2ST");
 					}
 				}
 			}
@@ -745,14 +724,9 @@ public class HierarchyMatcherModified extends AbstractMatcher
 					temp = (OntClass)sourceSubClassIterator.next();
 					int index1 = getIndex(sourceClasses,temp.getURI());
 					Node temp1 = sourceClasses.get(index1);
-					Mapping m = new Mapping(temp1, target, 1.0, MappingRelation.SUBCLASS);
-					m.setProvenance("From equality mapping");
-					classesMatrix.set(temp1.getIndex(), indexTarget, m);
-					if (superClassOfTarget != null)
-					{
-						m = new Mapping(temp1, superClassOfTarget, 1.0, MappingRelation.SUBCLASS);
-						m.setProvenance("From equality mapping");
-						classesMatrix.set(temp1.getIndex(),superClassOfTarget.getIndex(), m);
+					//newMapping(temp1, target, 1.0, MappingRelation.SUBCLASS, "From equality mapping 3ST");
+					if (superClassOfTarget != null){
+						//newMapping(temp1, superClassOfTarget, 1.0, MappingRelation.SUBCLASS, "From equality mapping 3ST");
 					}
 				}
 			}
@@ -845,5 +819,20 @@ public class HierarchyMatcherModified extends AbstractMatcher
 			}
 			System.out.println();
 		}
+	}
+	
+	public void newMapping(Node sourceNode, Node targetNode, double sim, MappingRelation rel, String provenance){
+		Mapping m = new Mapping(sourceNode, targetNode, sim, rel);
+		
+		if(useProvenanceToDebug){
+			provenance += "|" + sourceNode.getComment() + "|" + targetNode.getComment();
+		}
+		m.setProvenance(provenance);
+		classesMatrix.set(sourceNode.getIndex(), targetNode.getIndex(), m);
+	}
+	
+	public String currentMatchInfo(Node source, Node target){
+		String retValue = "";
+		return retValue;
 	}
 }
