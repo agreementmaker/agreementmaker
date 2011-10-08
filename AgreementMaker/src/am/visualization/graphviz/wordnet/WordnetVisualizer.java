@@ -104,7 +104,7 @@ public class WordnetVisualizer {
 	    //gv.addln("A -> B;");
 	    //gv.addln("A -> C;");
 	    gv.addln(gv.end_graph());
-	    System.out.println(gv.getDotSource());
+	    //System.out.println(gv.getDotSource());
 		
 	    return gv.getGraph( gv.getDotSource(), "gif" );
 	}
