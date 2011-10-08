@@ -3,6 +3,7 @@ package am.app.mappingEngine.LinkedOpenData;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,12 +17,14 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.ontology.Ontology;
+import am.app.ontology.ontologyParser.OntoTreeBuilder;
 
 public class LODEvaluator {
 	//Contains methods for parsing
 	ReferenceAlignmentMatcher matcher;
 	
-	boolean printWrongMappings = true;
+	boolean printWrongMappings = false;
 	
 	public LODEvaluator(){
 		matcher = new ReferenceAlignmentMatcher();
@@ -118,7 +121,7 @@ public class LODEvaluator {
 		//System.out.println("FP:" + filePairs.size());
 		//System.out.println("RP:" + refPairs.size());
 		
-		compare(filePairs, refPairs);
+		//compare(filePairs, refPairs);
 		
 		removeDuplicates(filePairs);
 		removeDuplicates(refPairs);
@@ -214,62 +217,57 @@ public class LODEvaluator {
 	
 	public void evaluateAllTests() throws Exception{
 		System.out.println("OLD RESULTS\n");
-		
-		System.out.println("FOAF_DBPEDIA");
-		evaluate("LOD/AMOldAlignments/FOAFANDDBPEDIA.txt", LODReferences.FOAF_DBPEDIA);
-		System.out.println("MUSIC_BBC");
-		evaluate("LOD/AMOldAlignments/BBCProgramsandMusicOntology.txt", LODReferences.MUSIC_BBC);
-		System.out.println("GEONAMES_DBPEDIA");
-		evaluate("LOD/AMOldAlignments/GeoNames and DBPedia.txt", LODReferences.GEONAMES_DBPEDIA);
-		System.out.println("MUSIC_DBPEDIA");
-		evaluate("LOD/AMOldAlignments/MUSICANDDBPedia.txt", LODReferences.MUSIC_DBPEDIA);
-		System.out.println("SWC_DBPEDIA");
-		evaluate("LOD/AMOldAlignments/SematicWebConferenceANDDBpedia.txt", LODReferences.SWC_DBPEDIA);
-		System.out.println("SIOC_FOAF");
-		evaluate("LOD/AMOldAlignments/SIOCandFOAF.txt", LODReferences.SIOC_FOAF);
-		System.out.println("SWC_AKT");
-		evaluate("LOD/AMOldAlignments/SWCANDAKT.txt", LODReferences.SWC_AKT);
-		System.out.println("SIOC_FOAF");
-		evaluate("LOD/results/sioc-foaf.txt", LODReferences.SIOC_FOAF);
-		
+//		
+//		System.out.println("FOAF_DBPEDIA");
+//		evaluate("LOD/AMOldAlignments/FOAFANDDBPEDIA.txt", LODReferences.FOAF_DBPEDIA);
+//		System.out.println("MUSIC_BBC");
+//		evaluate("LOD/AMOldAlignments/BBCProgramsandMusicOntology.txt", LODReferences.MUSIC_BBC);
+//		System.out.println("GEONAMES_DBPEDIA");
+//		evaluate("LOD/AMOldAlignments/GeoNames and DBPedia.txt", LODReferences.GEONAMES_DBPEDIA);
+//		System.out.println("MUSIC_DBPEDIA");
+//		evaluate("LOD/AMOldAlignments/MUSICANDDBPedia.txt", LODReferences.MUSIC_DBPEDIA);
+//		System.out.println("SWC_DBPEDIA");
+//		evaluate("LOD/AMOldAlignments/SematicWebConferenceANDDBpedia.txt", LODReferences.SWC_DBPEDIA);
+//		System.out.println("SIOC_FOAF");
+//		evaluate("LOD/AMOldAlignments/SIOCandFOAF.txt", LODReferences.SIOC_FOAF);
+//		System.out.println("SWC_AKT");
+//		evaluate("LOD/AMOldAlignments/SWCANDAKT.txt", LODReferences.SWC_AKT);
+//		System.out.println("SIOC_FOAF");
+//		evaluate("LOD/results/sioc-foaf.txt", LODReferences.SIOC_FOAF);
+//		
 		//ArrayList<MatchingPair> pairs = parseBLOOMSReference("LOD/BLOOMS/AKT-DBPEDIA/SubClass.txt", "http://www.aktors.org/ontology/portal#", "http://dbpedia.org/ontology/");
-		ArrayList<MatchingPair> pairs = parseBLOOMSReference("LOD/BLOOMS/AKT-SWC/SubClass.txt", "http://swrc.ontoware.org/ontology#", "http://www.aktors.org/ontology/");
-		evaluate(pairs, LODReferences.SWC_AKT);
+//		ArrayList<MatchingPair> pairs = parseBLOOMSReference("LOD/BLOOMS/AKT-SWC/SubClass.txt", "http://swrc.ontoware.org/ontology#", "http://www.aktors.org/ontology/");
+//		evaluate(pairs, LODReferences.SWC_AKT);
 		//ArrayList<MatchingPair> pairs = parseBLOOMSReference("LOD/BLOOMS/AKT-SWC/SubClass.txt", "http://swrc.ontoware.org/ontology#", "http://www.aktors.org/ontology/");
 		//evaluate(pairs, LODReferences.SWC_AKT);
 		
 		System.out.println("\nNEW RESULTS\n");
 
-		System.out.println("SWC_DBPEDIA");
-		evaluate("LOD/lastResults/swc-dbpedia.txt", LODReferences.SWC_DBPEDIA);
+		String folder = "LOD/batch/";
 		
-		System.out.println("SWC_AKT");
-		evaluate("LOD/lastResults/swc-akt.txt", LODReferences.SWC_AKT);
+		evaluate(folder + "foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
+		evaluate(folder + "geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA);
+		evaluate(folder + "music-bbc.txt", LODReferences.MUSIC_BBC);
+		evaluate(folder + "music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA);
+		evaluate(folder + "swc-akt.txt", LODReferences.SWC_AKT);
+		evaluate(folder + "swc-dbpedia.txt", LODReferences.SWC_DBPEDIA);
+		evaluate(folder + "sioc-foaf.txt", LODReferences.SIOC_FOAF);
 		
-		System.out.println("SIOC_FOAF");
-		evaluate("LOD/lastResults/sioc-foaf.txt", LODReferences.SIOC_FOAF);
-			
-		System.out.println("GEONAMES_DBPEDIA");
-		evaluate("LOD/lastResults/geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA);
-		
-		System.out.println("FOAF_DBPEDIA");
-		evaluate("LOD/lastResults/foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
-		
-		System.out.println("MUSIC_DBPEDIA");
-		evaluate("LOD/lastResults/music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA);
-		
-		System.out.println("MUSIC_BBC");
-		evaluate("LOD/lastResults/music-bbc.txt", LODReferences.MUSIC_BBC);
-		
-		System.out.println("FOAF_DBPEDIA");
-		evaluate("LOD/batch/foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
 	}
 	
-	public String diff(List<MatchingPair> sourceList, List<MatchingPair> targetList){
+	public String diff(List<MatchingPair> sourceList, List<MatchingPair> targetList, LODOntology sourceOntology, LODOntology targetOntology){
 		String report = "";
 		MatchingPair source;
 		MatchingPair target;
 		
+		Ontology sOnt = null;
+		Ontology tOnt = null;
+		
+		if(sourceOntology != null && targetOntology != null){
+			sOnt = OntoTreeBuilder.loadOntology(new File(sourceOntology.getFilename()).getAbsolutePath(), sourceOntology.getLang(), sourceOntology.getSyntax());			
+			tOnt = OntoTreeBuilder.loadOntology(new File(targetOntology.getFilename()).getAbsolutePath(), targetOntology.getLang(), targetOntology.getSyntax());			
+		}
+				
 		removeDuplicates(sourceList);
 		removeDuplicates(targetList);
 		
@@ -290,50 +288,96 @@ public class LODEvaluator {
 						break;
 					}
 					else{
-						report += "Different relation: " + source.sourceURI + " " + source.targetURI + " " +
-								source.relation + " " + target.relation + "\n";
+						report += "Wrong, right relation " + target.relation + "\t" + source + "\n";
 					}
 				}
 			}
 			if(found == false){
-				report += "Not present in target: " + source + "\n";
+				report += "Wrong\t" + source + "\n";
 			}
 		}
 		
 		for (int i = 0; i < targetList.size(); i++) {
 			if(!foundTargets.contains(targetList.get(i))){
-				report += "Not present in source: " + targetList.get(i) + "\n";
+				report += "Missed\t" + targetList.get(i);
+				
+				if(sOnt == null && tOnt == null) report += "\n";
+
+				if(sOnt.containsClassLocalName(targetList.get(i).sourceURI)){
+					report += "\tContained";
+				}
+				else report += "\tNot Contained";
+				
+				if(tOnt.containsClassLocalName(targetList.get(i).targetURI)){
+					report += "\tContained\n";
+				}
+				else report += "\tNot Contained\n";
 			}
 		}
+		report = report.replaceAll("\\|", "\t");		
+		
+		try {
+			FileOutputStream fos = new FileOutputStream("C:/Users/federico/Desktop/results.tsv");
+			fos.write(report.getBytes());
+			fos.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		return report;
 	}
+	
+	
 	
 	public static void main(String[] args) throws Exception {
 //		fromSubClassof(new File("LOD/BLOOMS/Music-DBpedia/SubClass.txt"), 
 //				LODOntologies.DBPEDIA_URI, LODOntologies.MUSIC_ONTOLOGY_URI);
 		LODEvaluator eval = new LODEvaluator();
 		
-		//eval.evaluateAllTests();
+		eval.evaluateAllTests();
 		//eval.evaluate("LOD/lastResults/music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA);
 		//eval.evaluate("LOD/lastResults/foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
 		//eval.evaluate("LOD/lastResults/geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA);
 		//eval.evaluate("LOD/lastResults/sioc-foaf.txt", LODReferences.SIOC_FOAF);
 		
 		//eval.evaluate("LOD/batch/music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA);
+		//eval.testDiff("LOD/batch/music-dbpedia.txt", "LOD/lastResults/music-dbpedia.txt", false);
+		//eval.testDiff("LOD/batch/music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA, true);
+		
+		
 		//eval.evaluate("LOD/batch/foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
-		//eval.evaluate("LOD/batch/geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA);
-		//eval.evaluate("LOD/lastResults/sioc-foaf.txt", LODReferences.SIOC_FOAF_FIXED);
+		//eval.evaluate("LOD/lastResults/geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA);
+		//eval.evaluate("LOD/batch/sioc-foaf.txt", LODReferences.SIOC_FOAF_FIXED);
 		//eval.testDiff("LOD/batch/sioc-foaf.txt", "LOD/lastResults/sioc-foaf.txt", false);
 		//eval.testDiff("LOD/batch/sioc-foaf.txt", LODReferences.SIOC_FOAF, true);
-		System.out.println("MUSIC_BBC");
+		//System.out.println("MUSIC_BBC");
 		//eval.testDiff("LOD/batch/music-bbc.txt", LODReferences.MUSIC_BBC, true);
 		//eval.testDiff("LOD/batch/music-bbc.txt", "LOD/lastResults/music-bbc.txt", false);
-		eval.evaluate("LOD/batch/music-bbc.txt", LODReferences.MUSIC_BBC);
+		//eval.evaluate("LOD/batch/music-bbc.txt", LODReferences.MUSIC_BBC);
+		
+		//eval.testDiff("LOD/batch/music-bbc.txt", LODReferences.MUSIC_BBC, true);
+		//eval.testDiff("LOD/batch/swc-dbpedia.txt", "LOD/batchOld/swc-dbpedia.txt", false);
+		
+		eval.testDiff("LOD/batch/music-bbc.txt", LODReferences.MUSIC_BBC, LODOntology.MUSIC_ONTOLOGY, LODOntology.BBC_PROGRAM, true);
+		
+		//eval.testDiff("LOD/batch/music-bbc.txt", "LOD/batchOld/music-bbc.txt", false);
+		
+		
+		//System.out.println("SWC_DBPEDIA");
+		//eval.evaluate("LOD/batch/swc-dbpedia.txt", LODReferences.SWC_DBPEDIA);
+		
+		//System.out.println("SWC_AKT");
+		//eval.evaluate("LOD/batch/swc-akt.txt", LODReferences.SWC_AKT);
 		
 	}
 
 
-	private void testDiff(String file1, String file2, boolean reference) throws IOException {
+	private void testDiff(String file1, String file2, LODOntology source, LODOntology target, boolean reference) throws IOException {
 		BufferedReader fileBR = new BufferedReader(new FileReader(file1));
 		ArrayList<MatchingPair> file1Pairs = matcher.parseRefFormat4(fileBR);
 		fileBR = new BufferedReader(new FileReader(file2));
@@ -342,7 +386,7 @@ public class LODEvaluator {
 			file2Pairs = matcher.parseRefFormat2(fileBR);
 		else file2Pairs = matcher.parseRefFormat4(fileBR);
 		
-		System.out.println(diff(file1Pairs, file2Pairs));
+		System.out.println(diff(file1Pairs, file2Pairs, source, target));
 	}
 }
 

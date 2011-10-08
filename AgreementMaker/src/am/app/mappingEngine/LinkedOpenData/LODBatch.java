@@ -41,20 +41,13 @@ public class LODBatch {
 		mapper.addAltEntry("http://purl.org/dc/terms/", new File("LOD/LocationMappings/dcterms.rdf").getAbsolutePath());
 		mapper.addAltEntry("http://purl.org/ontology/similarity/", new File("LOD/LocationMappings/musim.owl").getAbsolutePath());
 		mapper.addAltEntry("http://purl.org/NET/c4dm/keys.owl", new File("LOD/LocationMappings/keys.owl").getAbsolutePath());
-
+		mapper.addAltEntry("http://purl.org/dc/elements/1.1/", new File("LOD/LocationMappings/dcelements.rdf").getAbsolutePath());
+		mapper.addAltEntry("http://xmlns.com/foaf/0.1/", new File("LOD/LocationMappings/foaf.rdf").getAbsolutePath());
+		
+		//http://xmlns.com/foaf/0.1/
+		
 	}
 
-	public void run(){
-		singleRun(LODOntology.MUSIC_ONTOLOGY, LODOntology.BBC_PROGRAM, "music-bbc");
-		//singleRun(LODOntologies.MUSIC_ONTOLOGY, LODOntologies.DBPEDIA, "music-dbpedia");
-		//singleRun(LODOntologies.FOAF, LODOntologies.DBPEDIA, "foaf-dbpedia");
-		//singleRun(LODOntologies.GEONAMES, LODOntologies.DBPEDIA, "geonames-dbpedia");
-		//singleRun(LODOntology.SIOC, LODOntology.FOAF, "sioc-foaf");
-		//singleRun(LODOntologies.SW_CONFERENCE, LODOntologies.AKT_PORTAL, "swc-akt");
-		//singleRun(LODOntologies.SW_CONFERENCE, LODOntologies.DBPEDIA, "swc-dbpedia");
-		log.info(report);
-	}
-	
 	public void singleRun(LODOntology source, LODOntology target, String testName){
 		long start = System.nanoTime();
 		Ontology sourceOntology = null;
@@ -137,6 +130,17 @@ public class LODBatch {
 	public static void main(String[] args) {
 		LODBatch batch = new LODBatch();
 		batch.run();
+	}
+	
+	public void run(){
+		singleRun(LODOntology.MUSIC_ONTOLOGY, LODOntology.BBC_PROGRAM, "music-bbc");
+//		singleRun(LODOntology.MUSIC_ONTOLOGY, LODOntology.DBPEDIA, "music-dbpedia");
+//		singleRun(LODOntology.FOAF, LODOntology.DBPEDIA, "foaf-dbpedia");
+//		singleRun(LODOntology.GEONAMES, LODOntology.DBPEDIA, "geonames-dbpedia");
+//		singleRun(LODOntology.SIOC, LODOntology.FOAF, "sioc-foaf");
+//		singleRun(LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL, "swc-akt");
+//		singleRun(LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA, "swc-dbpedia");
+		log.info(report);
 	}
 }
 	
