@@ -23,32 +23,38 @@
 
 package am.tools.WordNetLookup;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.BufferedReader;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Document;
-import javax.swing.text.StyledDocument;
+import javax.swing.SwingUtilities;
 import javax.swing.text.html.HTMLDocument;
 
 import am.Utility;
 import am.app.mappingEngine.StringUtil.PorterStemmer;
+import am.visualization.graphviz.GraphViz;
+import am.visualization.graphviz.wordnet.NavigableImagePanel;
+import am.visualization.graphviz.wordnet.WordnetVisualizer;
 
 import edu.smu.tspell.wordnet.NounSynset;
 import edu.smu.tspell.wordnet.Synset;
@@ -61,6 +67,7 @@ public class WordNetLookupPanel extends JPanel implements ActionListener, KeyLis
 	private JLabel lblTerm;
 	private JTextField txtTerm;
 	private JButton btnLookup;
+	private JButton btnGraphViz;
 	private JScrollPane sclResult;
 	
 	private JTextPane txtResult;
@@ -78,6 +85,9 @@ public class WordNetLookupPanel extends JPanel implements ActionListener, KeyLis
 		
 		btnLookup = new JButton("Lookup");
 		btnLookup.addActionListener(this);
+		
+		btnGraphViz = new JButton("Graph");
+		btnGraphViz.addActionListener(this);
 		
 		txtResult = new JTextPane();
 		txtResult.setContentType("text/html");
@@ -104,6 +114,7 @@ public class WordNetLookupPanel extends JPanel implements ActionListener, KeyLis
 						.addComponent(lblTerm)
 						.addComponent(txtTerm)
 						.addComponent(btnLookup)
+						.addComponent(btnGraphViz)
 						)
 				.addComponent(sclResult)
 				);
@@ -113,6 +124,7 @@ public class WordNetLookupPanel extends JPanel implements ActionListener, KeyLis
 						.addComponent(lblTerm)
 						.addComponent(txtTerm, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnLookup)
+						.addComponent(btnGraphViz)
 						)
 				.addComponent(sclResult)
 				);
@@ -124,7 +136,6 @@ public class WordNetLookupPanel extends JPanel implements ActionListener, KeyLis
 		// Initialize the WordNet interface.
 		String cwd = System.getProperty("user.dir");
 		String wordnetdir = cwd + "/wordnet-3.0";
-
 		System.setProperty("wordnet.database.dir", wordnetdir);
 		
 		
@@ -147,12 +158,53 @@ public class WordNetLookupPanel extends JPanel implements ActionListener, KeyLis
 			// The Lookup button was clicked. 
 			doLookup();
 		}
+		
+		if (currentEvent.getSource() == btnGraphViz) {
+			String searchTerm = txtTerm.getText();
+			
+			WordnetVisualizer viz = new WordnetVisualizer();
+			Synset[] synsets = viz.getSynsets(searchTerm);
+			byte[] graph = viz.synsetsToGraph(synsets);
+			
+			File out = new File("out.gif");
+		    System.out.println("Writing graph to file...");
+		    
+		    GraphViz gv = new GraphViz();
+		    gv.writeGraphToFile( graph , out );
+			
+			
+			
+			final String cwd = System.getProperty("user.dir");
+						
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {		
+					final JFrame frame = new JFrame("Navigable Image Panel");
+					NavigableImagePanel panel = new NavigableImagePanel();
+					try {
+						final BufferedImage image = ImageIO.read(new File(cwd + "/out.gif"));
+						panel.setImage(image);								
+					} catch (IOException e) {
+						JOptionPane.showMessageDialog(null, e.getMessage(), "", 
+							JOptionPane.ERROR_MESSAGE);
+						System.exit(1);
+					}
+					
+					frame.getContentPane().add(panel, BorderLayout.CENTER);
+					
+					GraphicsEnvironment ge = 
+						GraphicsEnvironment.getLocalGraphicsEnvironment();
+					Rectangle bounds = ge.getMaximumWindowBounds();
+					frame.setSize(new Dimension(bounds.width, bounds.height));
+					frame.setVisible(true);				
+				}
+			});
+			
+		}
 
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		
 		
 	}
 
@@ -169,9 +221,6 @@ public class WordNetLookupPanel extends JPanel implements ActionListener, KeyLis
 
 		String searchTerm = txtTerm.getText();
 
-		
-		
-		
 		String newResult = new String();
 		HTMLDocument resultDocument = new HTMLDocument();
 
@@ -194,15 +243,15 @@ public class WordNetLookupPanel extends JPanel implements ActionListener, KeyLis
 			Synset[] synsets = WordNet.getSynsets(searchTerm, t);
 			if( synsets.length > 0 ) {
 				if (t == SynsetType.NOUN) {
-					newResult += "<h2><font color=\"blue\">Noun</font></h2><br>";
+					newResult += "<h2><font color=\"red\">Noun</font></h2><br>";
 				} else if (t == SynsetType.VERB) {
-					newResult += "<h2><font color=\"blue\">Verb</font></h2><br>";
+					newResult += "<h2><font color=\"yellow\">Verb</font></h2><br>";
 				} else if (t == SynsetType.ADJECTIVE) {
 					newResult += "<h2><font color=\"blue\">Adjective</font></h2><br>";
 				} else if (t == SynsetType.ADJECTIVE_SATELLITE) {
 					newResult += "<h2><font color=\"blue\">Adjective Satelite</font></h2><br>";
 				} else if (t == SynsetType.ADVERB) {
-					newResult += "<h2><font color=\"blue\">Adverb</font></h2><br>";
+					newResult += "<h2><font color=\"green\">Adverb</font></h2><br>";
 				}
 			}
 			
