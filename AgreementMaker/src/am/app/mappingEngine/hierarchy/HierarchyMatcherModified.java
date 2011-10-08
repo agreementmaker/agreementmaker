@@ -45,15 +45,15 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	double SUBCLASS_THRESHOLD_VALUE;
 	double SUPERCLASS_THRESHOLD_VALUE;
 	
-	int wordnetSynstesLimit = 3;
-	int wordnetHypernymsLimit = 5;
+	int wordnetSynsetsLimit = 3;
+	//int wordnetHypernymsLimit = 5;
 	
 	boolean useOtherOntologies = true;
 	ArrayList<OntModel> otherOntologies;
 	
 	Logger log;
 	private boolean disambiguate = true;
-	private int hypernymThreshold = 2;
+	private int hypernymThreshold = 1;
 	
 	boolean useProvenanceToDebug = true;
 	
@@ -208,11 +208,11 @@ public class HierarchyMatcherModified extends AbstractMatcher
 				sourceSynsetList = dis;
 			}
 						
-			ArrayList<ArrayList<NounSynset>> sourceHypernymList = buildHypernymList(sourceNode, sourceSynsetList, wordnetHypernymsLimit);
+			ArrayList<NounSynset> sourceHypernymList = buildHypernymList(sourceSynsetList);
 			
 			log.debug("Source synsets: " + sourceSynsetList);
 			log.debug("Source disambiguated: " + dis);
-			log.debug("Source hypernyms: " + sourceHypernymList);
+			log.debug("Source hypernyms: " + sourceHypernymList.toString().replaceAll(",", "\n"));
 			
 			for(int j =0 ; j<targetClasses.size();j++){
 				Node targetNode = targetClasses.get(j);
@@ -221,14 +221,16 @@ public class HierarchyMatcherModified extends AbstractMatcher
 				ArrayList<NounSynset> targetSynsetList = doLookUp(targetNode);
 				ArrayList<NounSynset> targetDis = disambiguate(targetNode, targetSynsetList);
 				
-				if(targetDis.size()>0){
+				if(disambiguate && targetDis.size()>0){
 					log.debug("Disambiguated!");
 					log.debug(targetDis);
 					targetSynsetList = targetDis;
 				}
 				
-				ArrayList<ArrayList<NounSynset>> targetHypernymList = buildHypernymList(targetNode, null, wordnetHypernymsLimit);
-						
+				ArrayList<NounSynset> targetHypernymList = buildHypernymList(targetSynsetList);
+				
+				log.debug("target hypernyms: " + targetHypernymList.toString().replaceAll(",", "\n"));
+				
 				if( synsetIsContainedBy( sourceSynsetList, targetHypernymList ) >= hypernymThreshold  ) {
 					// source > target
 					/*The similarity is set to be less than 0.80d as I do not want to
@@ -416,17 +418,16 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		Set<Node> descendantsSet = sourceNode.getDescendants();
 		List<Node> descendants = new ArrayList<Node>(descendantsSet);
 		
-		ArrayList<ArrayList<NounSynset>> hypernymList;
+		ArrayList<NounSynset> hypernymList;
 		ArrayList<NounSynset> contained = new ArrayList<NounSynset>();
 		for (int i = 0; i < descendants.size(); i++) {
-			hypernymList = buildHypernymList(descendants.get(i), null, 5);
+			ArrayList<NounSynset> descendantSynsets = doLookUp(descendants.get(i));
+			hypernymList = buildHypernymList(descendantSynsets);
 			for (int j = 0; j < hypernymList.size(); j++) {
-				for (int k = 0; k < hypernymList.get(j).size(); k++) {
-					if(sourceSynsetList.contains(hypernymList.get(j).get(k)) && !contained.contains(hypernymList.get(j).get(k)))
-						contained.add(hypernymList.get(j).get(k));
-				}
-			}			
-		}
+				if(sourceSynsetList.contains(hypernymList.get(j)) && !contained.contains(hypernymList.get(j)))
+					contained.add(hypernymList.get(j));
+			}
+		}			
 		return contained;
 	}
 
@@ -448,42 +449,37 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	
 
 	private int synsetIsContainedBy(ArrayList<NounSynset> sourceSynsetList,
-			ArrayList<ArrayList<NounSynset>> hypernymList) {
+			ArrayList<NounSynset> hypernymList) {
 		
 		int count = 0;
 		
-		for( ArrayList<NounSynset> currentHypernymList : hypernymList ) {
-			for( NounSynset currentHypernym : currentHypernymList ) {
-				if( sourceSynsetList.contains(currentHypernym) ){
-					log.debug("HYP:" + currentHypernym);
+		for( NounSynset currentHypernym : hypernymList ) {
+			if( sourceSynsetList.contains(currentHypernym) ){
+					log.debug("HYP:" + currentHypernym.toString().replaceAll(",", "\n"));
 					count++;
-				}
 			}
 		}
-		
+//		for( ArrayList<NounSynset> currentHypernymList : hypernymList ) {
+//			for( NounSynset currentHypernym : currentHypernymList ) {
+//				if( sourceSynsetList.contains(currentHypernym) ){
+//					log.debug("HYP:" + currentHypernym.toString().replaceAll(",", "\n"));
+//					count++;
+//				}
+//			}
+//		}
 		return count;
 	}
 	
 	
-	private ArrayList<ArrayList<NounSynset>> buildHypernymList(Node source, ArrayList<NounSynset> nodeLookupList, int limit) {
-		ArrayList<ArrayList<NounSynset>> retVal = new ArrayList<ArrayList<NounSynset>>();
-			
-		if(nodeLookupList == null)
-			nodeLookupList = doLookUp(source);
-			
-		/*while( true ) {
-			hypernymLookupList = doHypernymLookup(hypernymLookupList);
-			//if( !hypernymLookupList.isEmpty() ) retVal.add(hypernymLookupList);
-			//else break;
-			
-		}*/
+	private ArrayList<NounSynset> buildHypernymList(ArrayList<NounSynset> nodeLookupList) {
+		ArrayList<NounSynset> retVal = new ArrayList<NounSynset>();
+		ArrayList<NounSynset> hypernyms;	
 		
-		for(int i=0; i<limit && !nodeLookupList.isEmpty(); i++)
-		{
-			nodeLookupList = doHypernymLookup(nodeLookupList);
-			retVal.add(nodeLookupList);
-			
+		for(int i=0; i < nodeLookupList.size() ; i++){
+			hypernyms = doHypernymLookup(nodeLookupList.get(i));
+			retVal.addAll(hypernyms);
 		}
+		
 		return retVal;
 	}
 	
@@ -492,19 +488,13 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	 * @param hypernymLookupList
 	 * @return
 	 */
-	private ArrayList<NounSynset> doHypernymLookup(
-			ArrayList<NounSynset> hypernymLookupList) {
+	private ArrayList<NounSynset> doHypernymLookup(NounSynset node) {
 
 		ArrayList<NounSynset> hypernymSet = new ArrayList<NounSynset>();
-	
 		// lookup
-		for (Synset t : hypernymLookupList)
-		{
-			NounSynset[] hypernyms = ((NounSynset)t).getHypernyms();
-			for (int i = 0; i < hypernyms.length; i++)
-			{
-				hypernymSet.add( hypernyms[i] );
-			}
+		NounSynset[] hypernyms = node.getHypernyms();
+		for (int i = 0; i < hypernyms.length; i++){
+			hypernymSet.add( hypernyms[i] );
 		}
 		return hypernymSet;
 	}
@@ -519,7 +509,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		ArrayList<NounSynset> synonymSet = new ArrayList<NounSynset>();
 		String localName = conceptNode.getLocalName();
 		Synset[] synsets = WordNet.getSynsets(localName, SynsetType.NOUN);
-		for (int i = 0; i < Math.min(synsets.length, wordnetSynstesLimit); i++){
+		for (int i = 0; i < Math.min(synsets.length, wordnetSynsetsLimit); i++){
 			Synset currentSynset = synsets[i];
 			synonymSet.add( (NounSynset) currentSynset);
 		}
@@ -821,18 +811,39 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		}
 	}
 	
+	public String superclassesString(Node node){
+		String retValue = "[";
+		OntClass ontClass = null;
+		if(node.getResource().canAs(OntClass.class))
+			ontClass = node.getResource().as(OntClass.class);
+		else{
+			System.err.println("Error: node cannot be converted to ontClass");
+			return "";
+		}
+		List<OntClass> superClasses = ontClass.listSuperClasses().toList();
+		int size = superClasses.size();
+		OntClass superClass;
+		String localName;
+		for (int i = 0; i < size; i++) {
+			superClass = superClasses.get(i);
+			localName = superClass.getLocalName();
+			if(localName != null){
+				retValue += localName;
+				if(i != size - 1) retValue += ",";
+			}
+		}
+		retValue += "]";
+		return retValue;
+	}
+	
 	public void newMapping(Node sourceNode, Node targetNode, double sim, MappingRelation rel, String provenance){
 		Mapping m = new Mapping(sourceNode, targetNode, sim, rel);
 		
 		if(useProvenanceToDebug){
-			provenance += "|" + sourceNode.getComment() + "|" + targetNode.getComment();
+			provenance += "|" + sourceNode.getComment() + "|" + targetNode.getComment() 
+					+ "|" + superclassesString(sourceNode) + "|" + superclassesString(targetNode);
 		}
 		m.setProvenance(provenance);
 		classesMatrix.set(sourceNode.getIndex(), targetNode.getIndex(), m);
-	}
-	
-	public String currentMatchInfo(Node source, Node target){
-		String retValue = "";
-		return retValue;
 	}
 }
