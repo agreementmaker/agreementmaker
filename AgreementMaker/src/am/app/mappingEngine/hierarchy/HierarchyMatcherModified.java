@@ -15,9 +15,11 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.LinkedOpenData.LODOntology;
+import am.app.mappingEngine.LinkedOpenData.LODUtils;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.visualization.graphviz.wordnet.WordnetVisualizer;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -45,7 +47,6 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	double SUBCLASS_THRESHOLD_VALUE;
 	double SUPERCLASS_THRESHOLD_VALUE;
 	
-	int wordnetSynsetsLimit = 3;
 	//int wordnetHypernymsLimit = 5;
 	
 	boolean useOtherOntologies = true;
@@ -53,9 +54,16 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	
 	Logger log;
 	private boolean disambiguate = true;
-	private int hypernymThreshold = 1;
 	
 	boolean useProvenanceToDebug = true;
+	
+	int wordnetSynsetsLimit = 6;
+	private int hypernymThreshold = 1;
+	int hypernymsDepthLimit = 100;
+	
+	boolean writeWordnetFiles = false;
+	
+	WordnetVisualizer viz;
 	
 	public HierarchyMatcherModified()
 	{
@@ -70,6 +78,11 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		 one concept in source can be aligned to more than one concept in target*/
 		
 		log = Logger.getLogger(HierarchyMatcherModified.class);
+		
+		log.setLevel(Level.ERROR);
+		
+		if(writeWordnetFiles)
+			viz = new WordnetVisualizer();
 		
 		initWordnet();	
 	}
@@ -103,7 +116,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		/*miscellaneous variables used in  the method*/
 		log.info("align " + sourceOntology + " " + targetOntology);
 		
-		log.setLevel(Level.DEBUG);
+		//log.setLevel(Level.DEBUG);
 		
 		if( sourceOntology == null || targetOntology == null )
 			return;  // cannot align just one ontology 
@@ -123,11 +136,10 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		/*First Iteration that uses the similarity values received in the input matchers
 		 * It calculates all the subClassOf and superClassOf relationship based on the equivalence 
 		 * relationship received form the first Matcher*/
-		
 		log.info("Using input matrix...");
 		useInputMatrix();
 		
-		log.info("Using input matrix...");
+		log.info("Compound words analysis...");
 		compoundWordsAnalysis();
 		
 		log.info("Using input matrix...");
@@ -146,48 +158,24 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		log.info("Filtering equality mappings...");
 		filterEqualityMappings();
 		
-		log.info("Filtering external mappings...");
+		//log.info("Filtering external mappings...");
 		//filterExternalMappings();
 		
 		
+		if(writeWordnetFiles){
+			for (int i = 0; i < sourceClasses.size(); i++) {
+				viz.saveGraphOnFile(sourceClasses.get(i).getLocalName());
+			}
+			for (int i = 0; i < targetClasses.size(); i++) {
+				viz.saveGraphOnFile(targetClasses.get(i).getLocalName());
+			}
+		}
+			
 		//printMatrix(classesMatrix);
 		
 	}
 	
-	private void filterExternalMappings() {
-		
-		String sourceURI = sourceOntology.getURI();
-		String targetURI = targetOntology.getURI();		
-		
-		if(sourceURI == null || sourceURI.isEmpty())
-			sourceURI = "http://purl.org/ontology/mo/";
-		
-		System.out.println("SourceOntology: " + sourceURI);
-		System.out.println("TargetOntology: " + targetURI);
-		
-		
-		System.out.println("SOURCE");
-		for (int i = 0; i < sourceClasses.size(); i++) {
-			System.out.println(sourceClasses.get(i).getUri());			
-		}
-		System.out.println("TARGET");
-		for (int j = 0; j < targetClasses.size(); j++) {
-			System.out.println(targetClasses.get(j).getUri());		
-		}
-		
-		for (int i = 0; i < sourceClasses.size(); i++) {
-			for (int j = 0; j < targetClasses.size(); j++) {
-				if(classesMatrix.get(i, j) == null) continue;
-				if(!sourceClasses.get(i).getUri().startsWith(sourceURI)	&&
-						!targetClasses.get(j).getUri().startsWith(targetOntology.getURI())){
-					System.out.println("Removing mapping: " + classesMatrix.get(i,j));
-					classesMatrix.set(i, j, null);
-				}
-					
-			}
-		}
-		
-	}
+	
 
 	private void wordnedMediatorStep() {
 		/*This is the second level of relationship mappings being done
@@ -216,7 +204,10 @@ public class HierarchyMatcherModified extends AbstractMatcher
 			
 			for(int j =0 ; j<targetClasses.size();j++){
 				Node targetNode = targetClasses.get(j);
+				
 				log.debug("target: " + targetNode.getUri());
+				
+				if(targetNode.getLocalName().equals("Event")) continue;
 				
 				ArrayList<NounSynset> targetSynsetList = doLookUp(targetNode);
 				ArrayList<NounSynset> targetDis = disambiguate(targetNode, targetSynsetList);
@@ -231,25 +222,46 @@ public class HierarchyMatcherModified extends AbstractMatcher
 				
 				log.debug("target hypernyms: " + targetHypernymList.toString().replaceAll(",", "\n"));
 				
-				if( synsetIsContainedBy( sourceSynsetList, targetHypernymList ) >= hypernymThreshold  ) {
+				int matchingSynsets = synsetIsContainedBy( sourceSynsetList, targetHypernymList );				
+				
+				double sim = wordnetHypernymSimilarity(matchingSynsets, sourceSynsetList.size(), targetHypernymList.size());
+				
+				double threshold = 2.0;
+				
+				if( sim >= threshold ) {
 					// source > target
 					/*The similarity is set to be less than 0.80d as I do not want to
 					 * overwrite alread established relationships*/
 					if( classesMatrix.get( sourceNode.getIndex(), targetNode.getIndex()) == null || 
 						classesMatrix.getSimilarity( sourceNode.getIndex(), targetNode.getIndex()) < 0.80d ) {
 						log.debug("mapping >: "+sourceNode.getLocalName() + " " + targetNode.getLocalName() + sourceSynsetList);
-						newMapping(sourceNode, targetNode, 0.89d, MappingRelation.SUPERCLASS, "Wordnet mediator");
+						newMapping(sourceNode, targetNode, 0.89d, MappingRelation.SUPERCLASS, "Wordnet mediator ST " + 
+								matchingSynsets + " " + sourceSynsetList.size() + " " + sourceHypernymList.size());
 					}
-				} else if ( synsetIsContainedBy(targetSynsetList, sourceHypernymList)  >= hypernymThreshold ) {
-					//source < target
-					if( classesMatrix.get( sourceNode.getIndex(), targetNode.getIndex()) == null || 
-							classesMatrix.getSimilarity( sourceNode.getIndex(), targetNode.getIndex()) < 0.80d ) {
-							log.debug("mapping <: "+sourceNode.getLocalName() + " " + targetNode.getLocalName() + targetSynsetList);
-							newMapping(sourceNode, targetNode, 0.89d, MappingRelation.SUBCLASS, "Wordnet mediator");
+				} else{
+					matchingSynsets = synsetIsContainedBy(targetSynsetList, sourceHypernymList);
+					
+					sim = wordnetHypernymSimilarity(matchingSynsets, targetSynsetList.size(), sourceHypernymList.size());
+					
+					if ( matchingSynsets >= threshold ) {
+						//source < target
+						if( classesMatrix.get( sourceNode.getIndex(), targetNode.getIndex()) == null || 
+								classesMatrix.getSimilarity( sourceNode.getIndex(), targetNode.getIndex()) < 0.80d ) {
+								log.debug("mapping <: "+sourceNode.getLocalName() + " " + targetNode.getLocalName() + targetSynsetList);
+								newMapping(sourceNode, targetNode, 0.89d, MappingRelation.SUBCLASS, "Wordnet mediator TS " + 
+										matchingSynsets + " " + targetSynsetList.size() + " " + sourceHypernymList.size());
+						}
 					}
+					
 				}
 			}
 		}	
+	}
+
+	private double wordnetHypernymSimilarity(int matchingSynsets,
+			int synsetSize, int hypernymsSize) {
+		//return matchingSynsets / Math.log(hypernymsSize);
+		return matchingSynsets;
 	}
 
 	private void useInputMatrix() {
@@ -476,7 +488,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		ArrayList<NounSynset> hypernyms;	
 		
 		for(int i=0; i < nodeLookupList.size() ; i++){
-			hypernyms = doHypernymLookup(nodeLookupList.get(i));
+			hypernyms = doHypernymLookup(nodeLookupList.get(i), 1);
 			retVal.addAll(hypernyms);
 		}
 		
@@ -488,13 +500,14 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	 * @param hypernymLookupList
 	 * @return
 	 */
-	private ArrayList<NounSynset> doHypernymLookup(NounSynset node) {
-
+	private ArrayList<NounSynset> doHypernymLookup(NounSynset node, int depth) {
 		ArrayList<NounSynset> hypernymSet = new ArrayList<NounSynset>();
 		// lookup
 		NounSynset[] hypernyms = node.getHypernyms();
 		for (int i = 0; i < hypernyms.length; i++){
 			hypernymSet.add( hypernyms[i] );
+			if(depth < hypernymsDepthLimit)
+				hypernymSet.addAll(doHypernymLookup(hypernyms[i], depth + 1));			
 		}
 		return hypernymSet;
 	}
@@ -811,39 +824,49 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		}
 	}
 	
-	public String superclassesString(Node node){
-		String retValue = "[";
-		OntClass ontClass = null;
-		if(node.getResource().canAs(OntClass.class))
-			ontClass = node.getResource().as(OntClass.class);
-		else{
-			System.err.println("Error: node cannot be converted to ontClass");
-			return "";
-		}
-		List<OntClass> superClasses = ontClass.listSuperClasses().toList();
-		int size = superClasses.size();
-		OntClass superClass;
-		String localName;
-		for (int i = 0; i < size; i++) {
-			superClass = superClasses.get(i);
-			localName = superClass.getLocalName();
-			if(localName != null){
-				retValue += localName;
-				if(i != size - 1) retValue += ",";
-			}
-		}
-		retValue += "]";
-		return retValue;
-	}
-	
 	public void newMapping(Node sourceNode, Node targetNode, double sim, MappingRelation rel, String provenance){
 		Mapping m = new Mapping(sourceNode, targetNode, sim, rel);
 		
 		if(useProvenanceToDebug){
 			provenance += "|" + sourceNode.getComment() + "|" + targetNode.getComment() 
-					+ "|" + superclassesString(sourceNode) + "|" + superclassesString(targetNode);
+					+ "|" + LODUtils.superclassesString(sourceNode) + "|" + LODUtils.superclassesString(targetNode);
 		}
 		m.setProvenance(provenance);
 		classesMatrix.set(sourceNode.getIndex(), targetNode.getIndex(), m);
+	}
+	
+	private void filterExternalMappings() {
+		
+		String sourceURI = sourceOntology.getURI();
+		String targetURI = targetOntology.getURI();		
+		
+		if(sourceURI == null || sourceURI.isEmpty())
+			sourceURI = "http://purl.org/ontology/mo/";
+		
+		System.out.println("SourceOntology: " + sourceURI);
+		System.out.println("TargetOntology: " + targetURI);
+		
+		
+		System.out.println("SOURCE");
+		for (int i = 0; i < sourceClasses.size(); i++) {
+			System.out.println(sourceClasses.get(i).getUri());			
+		}
+		System.out.println("TARGET");
+		for (int j = 0; j < targetClasses.size(); j++) {
+			System.out.println(targetClasses.get(j).getUri());		
+		}
+		
+		for (int i = 0; i < sourceClasses.size(); i++) {
+			for (int j = 0; j < targetClasses.size(); j++) {
+				if(classesMatrix.get(i, j) == null) continue;
+				if(!sourceClasses.get(i).getUri().startsWith(sourceURI)	&&
+						!targetClasses.get(j).getUri().startsWith(targetOntology.getURI())){
+					System.out.println("Removing mapping: " + classesMatrix.get(i,j));
+					classesMatrix.set(i, j, null);
+				}
+					
+			}
+		}
+		
 	}
 }
