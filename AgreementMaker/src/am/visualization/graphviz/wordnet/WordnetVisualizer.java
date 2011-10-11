@@ -62,6 +62,10 @@ public class WordnetVisualizer {
 	}
 	
 	public byte[] synsetsToGraph(Synset[] synsets){
+		return synsetsToGraph(synsets, "gif");
+	}
+	
+	public byte[] synsetsToGraph(Synset[] synsets, String type){
 		nodes = new HashMap<Synset, String>();
 		
 		GraphViz gv = new GraphViz();
@@ -106,7 +110,7 @@ public class WordnetVisualizer {
 	    gv.addln(gv.end_graph());
 	    //System.out.println(gv.getDotSource());
 		
-	    return gv.getGraph( gv.getDotSource(), "gif" );
+	    return gv.getGraph( gv.getDotSource(), type );
 	}
 	
 	
@@ -166,17 +170,31 @@ public class WordnetVisualizer {
 		
 		return line;
 	}
+	
+	public void saveGraphOnFile(String searchTerm){
+		Synset[] synsets = getSynsets(searchTerm);
+		
+		if(synsets.length == 0) return;
+		
+		byte[] graph = synsetsToGraph(synsets, "pdf");
+		
+		File out = new File("wordnetViz/" + searchTerm + ".pdf");
+	    System.out.println("Writing graph to file [" + searchTerm + "]...");
+	    
+	    GraphViz gv = new GraphViz();
+	    gv.writeGraphToFile( graph , out );
+	}
+	
 
 	public static void main(String[] args) {
 		WordnetVisualizer viz = new WordnetVisualizer();
-		Synset[] synsets = viz.getSynsets("sheep");
-		byte[] graph = viz.synsetsToGraph(synsets);
+		Synset[] synsets = viz.getSynsets("medium");
+		byte[] graph = viz.synsetsToGraph(synsets, "pdf");
 		
-		File out = new File("out.gif");
+		File out = new File("out.pdf");
 	    System.out.println("Writing graph to file...");
 	    
 	    GraphViz gv = new GraphViz();
 	    gv.writeGraphToFile( graph , out );
-	    
 	}
 }
