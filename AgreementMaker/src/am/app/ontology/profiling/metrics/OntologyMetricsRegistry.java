@@ -5,6 +5,8 @@ import am.app.ontology.profiling.metrics.context.ChildrenCountMetric;
 import am.app.ontology.profiling.metrics.context.ParentsCountMetric;
 import am.app.ontology.profiling.metrics.context.SiblingCountMetric;
 import am.app.ontology.profiling.metrics.lexicon.LexiconStringSizeMetric;
+import am.app.ontology.profiling.metrics.structure.DepthCount;
+import am.app.ontology.profiling.metrics.structure.LeafCount;
 
 /**
  * Keep track of ontology metrics.
@@ -17,6 +19,8 @@ public enum OntologyMetricsRegistry {
 	InheritanceCount	("Parents Count", ParentsCountMetric.class ),
 	SiblingCount		("Sibling Count", SiblingCountMetric.class ),
 	ChildCount			("Child Count", ChildrenCountMetric.class ),
+	DepthCount			("Depth Count", DepthCount.class ),
+	Leaf_Count			("Leaf Count", LeafCount.class ),
 	StringLength		("String Length", AnnotationStringLengthMetric.class ),
 	LexSynononyms		("Lexicon Synonyms", LexiconStringSizeMetric.class ),
 	;

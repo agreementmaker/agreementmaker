@@ -805,11 +805,20 @@ public class Node implements Serializable, Comparable<Node>{
 		this.depth = depth;
 	}
 
-	/**
-	 * @return the depth
-	 */
 	public int getDepth() {
-		return depth;
+		return getMaxDepth();
+	}
+	
+	/**
+	 * @return the maximum depth
+	 */
+	public int getMaxDepth() {
+		int maxDepth = 0;
+		for( Node parent : getParents() ) {
+			int depth = parent.getMaxDepth() + 1;
+			if( maxDepth < depth ) maxDepth = depth;
+		}
+		return maxDepth;
 	}
 	
 	/**
