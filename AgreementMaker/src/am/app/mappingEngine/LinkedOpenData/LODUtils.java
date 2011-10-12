@@ -1,11 +1,14 @@
 package am.app.mappingEngine.LinkedOpenData;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
+import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -54,6 +57,31 @@ public class LODUtils {
 		}
 				
 		return ontology;
+	}
+	
+	public static String superclassesString(Node node){
+		String retValue = "[";
+		OntClass ontClass = null;
+		if(node.getResource().canAs(OntClass.class))
+			ontClass = node.getResource().as(OntClass.class);
+		else{
+			System.err.println("Error: node cannot be converted to ontClass");
+			return "";
+		}
+		List<OntClass> superClasses = ontClass.listSuperClasses().toList();
+		int size = superClasses.size();
+		OntClass superClass;
+		String localName;
+		for (int i = 0; i < size; i++) {
+			superClass = superClasses.get(i);
+			localName = superClass.getLocalName();
+			if(localName != null){
+				retValue += localName;
+				if(i != size - 1) retValue += ",";
+			}
+		}
+		retValue += "]";
+		return retValue;
 	}
 
 }
