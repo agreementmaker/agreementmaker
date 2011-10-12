@@ -36,12 +36,6 @@ public class HierarchyMatcher extends AbstractMatcher
 	private List<Node> ListOfClassesTarget;
 	private List<Node> sourceClassList;
 	private List<Node> targetClassList;
-	private List<Node> ListOfPropSource;
-	private List<Node> ListOfPropTarget;
-	private List<Node> sourcePropList;
-	private List<Node> targetPropList;
-	private List<String> sourceSynonym;
-	private List<String> targetSynonym;
 	private OntModel sourceModel1;
 	private WordNetDatabase WordNet;
 	private HashMap<String, List<String>> sourceWordNetMeaning;
@@ -110,12 +104,8 @@ public class HierarchyMatcher extends AbstractMatcher
 		/*maintains a list of nodes in the ontology*/
 		sourceClassList = sourceOntology.getClassesList();
 		targetClassList = targetOntology.getClassesList();
-		sourcePropList = sourceOntology.getPropertiesList();
-		targetPropList = targetOntology.getPropertiesList();
 		ListOfClassesSource = sourceOntology.getClassesList();
 		ListOfClassesTarget = targetOntology.getClassesList();
-		ListOfPropSource = sourceOntology.getPropertiesList();
-		ListOfPropTarget = sourceOntology.getPropertiesList();
 		
 		/*used for getting the individuals in the ontology*/
 		sourceModel1 = sourceOntology.getModel();
