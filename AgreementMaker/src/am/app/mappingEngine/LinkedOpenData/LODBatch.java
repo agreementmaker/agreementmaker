@@ -134,12 +134,12 @@ public class LODBatch {
 	
 	public void run(){
 		singleRun(LODOntology.MUSIC_ONTOLOGY, LODOntology.BBC_PROGRAM, "music-bbc");
-//		singleRun(LODOntology.MUSIC_ONTOLOGY, LODOntology.DBPEDIA, "music-dbpedia");
-//		singleRun(LODOntology.FOAF, LODOntology.DBPEDIA, "foaf-dbpedia");
-//		singleRun(LODOntology.GEONAMES, LODOntology.DBPEDIA, "geonames-dbpedia");
-//		singleRun(LODOntology.SIOC, LODOntology.FOAF, "sioc-foaf");
-//		singleRun(LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL, "swc-akt");
-//		singleRun(LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA, "swc-dbpedia");
+		singleRun(LODOntology.MUSIC_ONTOLOGY, LODOntology.DBPEDIA, "music-dbpedia");
+		singleRun(LODOntology.FOAF, LODOntology.DBPEDIA, "foaf-dbpedia");
+		singleRun(LODOntology.GEONAMES, LODOntology.DBPEDIA, "geonames-dbpedia");
+		singleRun(LODOntology.SIOC, LODOntology.FOAF, "sioc-foaf");
+		singleRun(LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL, "swc-akt");
+		singleRun(LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA, "swc-dbpedia");
 		log.info(report);
 	}
 }
