@@ -30,7 +30,7 @@ public class LODEvaluator {
 	public LODEvaluator(){
 		matcher = new ReferenceAlignmentMatcher();
 		
-		//printEverything();
+		printEverything();
 		
 	}
 	
@@ -165,41 +165,7 @@ public class LODEvaluator {
 		System.out.println();
 	}
 	
-	public void compare(ArrayList<MatchingPair> toEvaluate, ArrayList<MatchingPair> reference){
-		int count = 0;
-		MatchingPair p1;
-		MatchingPair p2;
-		MatchingPair right = null;
-		boolean found;
-		for (int i = 0; i < toEvaluate.size(); i++) {
-			found = false;
-			p1 = toEvaluate.get(i);
-			//System.out.println("Presented: "+ p1.sourceURI + " " + p1.targetURI + " " + p1.similarity);
-			for (int j = 0; j < reference.size(); j++) {
-				p2 = reference.get(j);
-				//System.out.println(p2.getTabString());
-				if(p1.sourceURI.equals(p2.sourceURI)){
-					right = p2;
-				}
-				if(p1.sourceURI.equals(p2.sourceURI) && p1.targetURI.equals(p2.targetURI)
-						&& p1.relation.equals(p2.relation)){
-					count++;
-					found = true;
-					break;
-				}
-			}
-			if(found == false && printWrongMappings){
-				if(right != null){
-					//System.out.println("Right:" + right.getTabString());
-				}
-				System.out.println("Wrong: " + p1.getTabString());
-			}
-		}	
-		
-		//System.out.println("right mappings: "+count);
-		//System.out.println("prec:"+ (float)count/toEvaluate.size() + " rec: " +  (float)count/reference.size());
-		System.out.print((float)count/toEvaluate.size() + "\t" +  (float)count/reference.size() + "\t");
-	}
+	
 	
 	public void removeDuplicates(List<MatchingPair> pairs){
 		MatchingPair p1;
@@ -226,8 +192,6 @@ public class LODEvaluator {
 	}
 	
 	public void evaluateAllTests() throws Exception{
-		System.out.println("OLD RESULTS\n");
-//		
 //		System.out.println("FOAF_DBPEDIA");
 //		evaluate("LOD/AMOldAlignments/FOAFANDDBPEDIA.txt", LODReferences.FOAF_DBPEDIA);
 //		System.out.println("MUSIC_BBC");
@@ -251,18 +215,72 @@ public class LODEvaluator {
 		//ArrayList<MatchingPair> pairs = parseBLOOMSReference("LOD/BLOOMS/AKT-SWC/SubClass.txt", "http://swrc.ontoware.org/ontology#", "http://www.aktors.org/ontology/");
 		//evaluate(pairs, LODReferences.SWC_AKT);
 		
-		System.out.println("\nNEW RESULTS\n");
+		boolean printHeader = true;
 
 		String folder = "LOD/batch/";
 		
+		if(printHeader) System.out.println("FOAF - DBPEDIA");
 		evaluate(folder + "foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
+		if(printHeader) System.out.println("GEONAMES - DBPEDIA");
 		evaluate(folder + "geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA);
+		if(printHeader) System.out.println("MUSIC - BBC");
 		evaluate(folder + "music-bbc.txt", LODReferences.MUSIC_BBC);
+		if(printHeader) System.out.println("MUSIC - DBPEDIA");
 		evaluate(folder + "music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA);
+		if(printHeader) System.out.println("SWC - AKT");
 		evaluate(folder + "swc-akt.txt", LODReferences.SWC_AKT);
+		if(printHeader) System.out.println("SWC - DBPEDIA");
 		evaluate(folder + "swc-dbpedia.txt", LODReferences.SWC_DBPEDIA);
+		if(printHeader) System.out.println("SIOC - FOAF");
 		evaluate(folder + "sioc-foaf.txt", LODReferences.SIOC_FOAF);
 		
+	}
+	
+	public void compare(ArrayList<MatchingPair> toEvaluate, ArrayList<MatchingPair> reference){
+		int count = 0;
+		MatchingPair p1;
+		MatchingPair p2;
+		MatchingPair right = null;
+		boolean found;
+		
+		HashSet<MatchingPair> foundTargets = new HashSet<MatchingPair>();
+		for (int i = 0; i < toEvaluate.size(); i++) {
+			found = false;
+			p1 = toEvaluate.get(i);
+			//System.out.println("Presented: "+ p1.sourceURI + " " + p1.targetURI + " " + p1.similarity);
+			for (int j = 0; j < reference.size(); j++) {
+				p2 = reference.get(j);
+				//System.out.println(p2.getTabString());
+				if(p1.sourceURI.equals(p2.sourceURI)){
+					right = p2;
+				}
+				if(p1.sourceURI.equals(p2.sourceURI) && p1.targetURI.equals(p2.targetURI)
+						&& p1.relation.equals(p2.relation)){
+					//System.out.println("Right\t" + p1.getTabString().replaceAll("\\|","\t"));
+					count++;
+					found = true;
+					foundTargets.add(p2);
+					break;
+				}
+			}
+			if(found == false && printWrongMappings){
+				if(right != null){
+					//System.out.println("Right:" + right.getTabString());
+				}
+				System.out.println("Wrong\t" + p1.getTabString().replaceAll("\\|","\t"));
+			}
+		}	
+		if(printMissedMappings){
+			for (int i = 0; i < reference.size(); i++) {
+				p2 = reference.get(i);
+				if(!foundTargets.contains(p2)){
+					System.out.println("Missed\t" + p2.getTabString().replaceAll("\\|","\t"));
+				}		
+			}
+		}
+		//System.out.println("right mappings: "+count);
+		//System.out.println("prec:"+ (float)count/toEvaluate.size() + " rec: " +  (float)count/reference.size());
+		System.out.print((float)count/toEvaluate.size() + "\t" +  (float)count/reference.size() + "\t");
 	}
 	
 	public String diff(List<MatchingPair> sourceList, List<MatchingPair> targetList, LODOntology sourceOntology, LODOntology targetOntology){
@@ -380,6 +398,53 @@ public class LODEvaluator {
 	
 	
 	
+	
+
+	public void cleanReference() throws IOException{
+		BufferedReader fileBR = new BufferedReader(new FileReader(LODReferences.MUSIC_BBC));
+		ArrayList<MatchingPair> refPairs = matcher.parseRefFormat2(fileBR);
+		//diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.MUSIC_ONTOLOGY, LODOntology.BBC_PROGRAM);
+		
+		fileBR = new BufferedReader(new FileReader(LODReferences.SWC_DBPEDIA));
+		refPairs = matcher.parseRefFormat2(fileBR);
+		//diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA);
+		
+		fileBR = new BufferedReader(new FileReader(LODReferences.SWC_AKT));
+		refPairs = matcher.parseRefFormat2(fileBR);
+		//diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL);
+		
+		fileBR = new BufferedReader(new FileReader(LODReferences.SIOC_FOAF));
+		refPairs = matcher.parseRefFormat2(fileBR);
+		//diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.SIOC, LODOntology.FOAF);
+		
+		fileBR = new BufferedReader(new FileReader(LODReferences.MUSIC_DBPEDIA));
+		refPairs = matcher.parseRefFormat2(fileBR);
+		//diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.MUSIC_ONTOLOGY, LODOntology.DBPEDIA);
+		
+		fileBR = new BufferedReader(new FileReader(LODReferences.GEONAMES_DBPEDIA));
+		refPairs = matcher.parseRefFormat2(fileBR);
+		//diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.GEONAMES, LODOntology.DBPEDIA);
+		
+		fileBR = new BufferedReader(new FileReader(LODReferences.FOAF_DBPEDIA));
+		refPairs = matcher.parseRefFormat2(fileBR);
+		diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.FOAF, LODOntology.DBPEDIA);
+		
+		
+		
+	}
+	
+	public String testDiff(String file1, String file2, LODOntology source, LODOntology target, boolean reference) throws IOException {
+		BufferedReader fileBR = new BufferedReader(new FileReader(file1));
+		ArrayList<MatchingPair> file1Pairs = matcher.parseRefFormat4(fileBR);
+		fileBR = new BufferedReader(new FileReader(file2));
+		ArrayList<MatchingPair> file2Pairs;
+		if(reference)
+			file2Pairs = matcher.parseRefFormat2(fileBR);
+		else file2Pairs = matcher.parseRefFormat4(fileBR);
+		
+		return diff(file1Pairs, file2Pairs, source, target);
+	}
+	
 	public static void main(String[] args) throws Exception {
 //		fromSubClassof(new File("LOD/BLOOMS/Music-DBpedia/SubClass.txt"), 
 //				LODOntologies.DBPEDIA_URI, LODOntologies.MUSIC_ONTOLOGY_URI);
@@ -434,51 +499,6 @@ public class LODEvaluator {
 		//System.out.println("SWC_AKT");
 		//eval.evaluate("LOD/batch/swc-akt.txt", LODReferences.SWC_AKT);
 		
-	}
-
-	public void cleanReference() throws IOException{
-		BufferedReader fileBR = new BufferedReader(new FileReader(LODReferences.MUSIC_BBC));
-		ArrayList<MatchingPair> refPairs = matcher.parseRefFormat2(fileBR);
-		//diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.MUSIC_ONTOLOGY, LODOntology.BBC_PROGRAM);
-		
-		fileBR = new BufferedReader(new FileReader(LODReferences.SWC_DBPEDIA));
-		refPairs = matcher.parseRefFormat2(fileBR);
-		//diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA);
-		
-		fileBR = new BufferedReader(new FileReader(LODReferences.SWC_AKT));
-		refPairs = matcher.parseRefFormat2(fileBR);
-		//diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL);
-		
-		fileBR = new BufferedReader(new FileReader(LODReferences.SIOC_FOAF));
-		refPairs = matcher.parseRefFormat2(fileBR);
-		//diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.SIOC, LODOntology.FOAF);
-		
-		fileBR = new BufferedReader(new FileReader(LODReferences.MUSIC_DBPEDIA));
-		refPairs = matcher.parseRefFormat2(fileBR);
-		//diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.MUSIC_ONTOLOGY, LODOntology.DBPEDIA);
-		
-		fileBR = new BufferedReader(new FileReader(LODReferences.GEONAMES_DBPEDIA));
-		refPairs = matcher.parseRefFormat2(fileBR);
-		//diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.GEONAMES, LODOntology.DBPEDIA);
-		
-		fileBR = new BufferedReader(new FileReader(LODReferences.FOAF_DBPEDIA));
-		refPairs = matcher.parseRefFormat2(fileBR);
-		diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.FOAF, LODOntology.DBPEDIA);
-		
-		
-		
-	}
-	
-	public String testDiff(String file1, String file2, LODOntology source, LODOntology target, boolean reference) throws IOException {
-		BufferedReader fileBR = new BufferedReader(new FileReader(file1));
-		ArrayList<MatchingPair> file1Pairs = matcher.parseRefFormat4(fileBR);
-		fileBR = new BufferedReader(new FileReader(file2));
-		ArrayList<MatchingPair> file2Pairs;
-		if(reference)
-			file2Pairs = matcher.parseRefFormat2(fileBR);
-		else file2Pairs = matcher.parseRefFormat4(fileBR);
-		
-		return diff(file1Pairs, file2Pairs, source, target);
 	}
 }
 

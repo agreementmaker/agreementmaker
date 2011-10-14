@@ -2,6 +2,7 @@ package am.app.mappingEngine.hierarchy;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -83,9 +84,12 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	
 	HashMap<Synset, String> synsetDefinitions = new HashMap<Synset, String>();
 	
-	HashMap<Node, List<ScoredNounSynset>> sourceScoredSynsets = new HashMap<Node, List<ScoredNounSynset>>();
-	HashMap<Node, List<ScoredNounSynset>> targetScoredSynsets = new HashMap<Node, List<ScoredNounSynset>>();
+	HashMap<Node, List<ScoredSynset>> sourceScoredSynsets = new HashMap<Node, List<ScoredSynset>>();
+	HashMap<Node, List<ScoredSynset>> targetScoredSynsets = new HashMap<Node, List<ScoredSynset>>();
 	
+	DecimalFormat format = new DecimalFormat("0.000");
+	
+	double hypernymsThreshold = 0.4;
 	
 	public HierarchyMatcherModified()
 	{
@@ -117,7 +121,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	}
 	
 	private void buildCommentVectors() {
-		System.out.println("Building comments vectors");
+		log.info("Building comments vectors");
 		
 		NormalizerParameter param = new NormalizerParameter();
 		param.normalizeBlank = true;
@@ -130,10 +134,12 @@ public class HierarchyMatcherModified extends AbstractMatcher
 				
 		Normalizer normalizer = new Normalizer(param);
 		
+		//Create and normalize documents from the list of nodes
 		sourceClassDocuments = createNormalizedDocuments(sourceClasses, normalizer);
 		targetClassDocuments = createNormalizedDocuments(targetClasses, normalizer);
+		//Create and normalize documents from the synsets definitions
 		sourceSynsetsDocuments = buildSynsetCorpus(sourceClasses, normalizer);		
-		targetSynsetsDocuments = buildSynsetCorpus(sourceClasses, normalizer);		
+		targetSynsetsDocuments = buildSynsetCorpus(targetClasses, normalizer);		
 		
 		List<StringWrapper> classCorpus = new ArrayList<StringWrapper>();
 		classCorpus.addAll(sourceClassDocuments);
@@ -145,37 +151,74 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		//each node consist of one document
 		tfidfClasses = new StringTFIDF(classCorpus);
 		
-		buildScoredSynsets(sourceClasses, sourceClassDocuments);
-		
-		
+		buildScoredSynsets(sourceClasses, sourceClassDocuments, sourceScoredSynsets);
+		buildScoredSynsets(targetClasses, targetClassDocuments, targetScoredSynsets);
+				
 		
 	}
 	
-	private void buildScoredSynsets(List<Node> nodeList, List<AMStringWrapper> documents) {
+	private void buildScoredSynsets(List<Node> nodeList, List<AMStringWrapper> documents, 
+			HashMap<Node, List<ScoredSynset>> scoredSynsets) {
 		Node node;
 		String comment;
 		for (int i = 0; i < nodeList.size(); i++) {
 			node = nodeList.get(i);
-			System.out.println(node);
 			
 			comment = documents.get(i).unwrap();
-						
 			
 			List<NounSynset> sourceSynsetList = doLookUp(node);
-			List<ScoredNounSynset> scoredSynsets = new ArrayList<ScoredNounSynset>();
+			List<ScoredSynset> scoredList = new ArrayList<ScoredSynset>();
 			
 			//double score = 
 			
 			for (NounSynset synset : sourceSynsetList) {
 				String definition = synsetDefinitions.get(synset);
 				
-				Double sim = tfidfClasses.getSimilarity(comment, definition);
+				Double sim = new Double(0);
+				if(comment != null && definition != null){
+					sim = tfidfClasses.getSimilarity(comment, definition);
+									
+				}
+				else{
+					System.err.println("Problems with comments or definition");
+					System.err.println(comment);
+					System.err.println(definition);
+				}
 				
-				System.out.println("comment:" + comment);
-				System.out.println("definition: " + definition);
-				System.out.println(sim);
+//				System.out.println("comment:" + comment);
+//				System.out.println("definition: " + definition);
+//				System.out.println(sim);
 				
+				//TODO figure out how to use the similarity
+				//System.out.println("sim:" + sim);
+				scoredList.add(new ScoredSynset(synset, sim));
 			}
+			
+			double sum = 0;
+			int size = scoredList.size();
+			for (int j = 0; j < scoredList.size(); j++) {
+				sum += scoredList.get(j).getScore();
+			}
+			//
+			
+			//System.out.println("sum:" + sum);
+			
+			//if(sum != 0) System.out.println("sum != 0");
+			
+			for (int j = 0; j < scoredList.size(); j++) {
+				//if(sum == 0) 
+					scoredList.get(j).setScore(1/size);
+				//else {
+					//scoredList.get(j).setScore(scoredList.get(j).getScore()/sum);
+					//System.out.println(scoredList.get(j));
+					
+				//}
+				//scoredList.get(j).setScore(1/size);
+			}
+			
+				
+				
+			scoredSynsets.put(node, scoredList);
 		}		
 	}
 
@@ -186,10 +229,8 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		for (int i = 0; i < nodeList.size(); i++) {
 			source = nodeList.get(i);
 			comment = source.getComment();
-			System.out.println(comment);
 			comment = normalizer.normalize(comment);
 			normalizedDocuments.add(new AMStringWrapper(comment));
-			System.out.println(comment);
 		}
 		return normalizedDocuments;
 	}
@@ -206,7 +247,11 @@ public class HierarchyMatcherModified extends AbstractMatcher
 			for (NounSynset synset : synsets) {
 				if(!synsetDefinitions.containsKey(synset)){
 					definition = synset.getDefinition();
+					if(definition == null)
+						log.error("null synset definition");
 					definition = normalizer.normalize(definition);
+					if(definition == null)
+						log.error("null definition after normalization");
 					normalizedDocuments.add(new AMStringWrapper(definition));
 					synsetDefinitions.put(synset, definition);			
 				}			
@@ -265,8 +310,8 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		log.info("Compound words analysis...");
 		compoundWordsAnalysis();
 		
-		log.info("Using input matrix...");
-		wordnedMediatorStep();
+		log.info("Wordned Mediator Step...");
+		wordnedMediatorStepNew();
 		
 		//computeTransitiveClosure();
 
@@ -298,6 +343,140 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		
 	}
 	
+	private void addHypernymsToScoredSynsets(){
+		
+		for (List<ScoredSynset> scoredSynsets: sourceScoredSynsets.values()) {
+			for (ScoredSynset scoredSynset: scoredSynsets) {
+				log.debug(scoredSynset.getSynset());
+				List<List<NounSynset>> sourceHypernyms = hypernymsLookup(scoredSynset.getSynset());
+				log.debug(sourceHypernyms);
+				scoredSynset.setHypernymsByLevel(sourceHypernyms);			
+			}
+		}
+		
+		for (List<ScoredSynset> scoredSynsets: targetScoredSynsets.values()) {
+			for (ScoredSynset scoredSynset: scoredSynsets) {
+				List<List<NounSynset>> targetHypernyms = hypernymsLookup(scoredSynset.getSynset());
+				scoredSynset.setHypernymsByLevel(targetHypernyms);			
+			}
+		}
+	}
+	
+	private void wordnedMediatorStepNew(){
+		log.info("wordnedMediatorStepNew...");
+		
+		addHypernymsToScoredSynsets();
+			
+		Node sourceNode;
+		Node targetNode;
+		List<ScoredSynset> sourceScored;
+		List<ScoredSynset> targetScored;
+		double match;
+		for (int i = 0; i < sourceClasses.size(); i++){
+			sourceNode = sourceClasses.get(i);
+			log.debug("Source: " + sourceNode.getUri());
+			sourceScored = sourceScoredSynsets.get(sourceNode);
+			
+//			for (int j = 0; j < sourceScored.size(); j++) {
+//				log.debug(sourceScored.get(j).getSynset());
+//				log.debug(sourceScored.get(j).getHypernymsByLevel().toString().replaceAll(",", ",\n"));
+//			}
+			
+			for (int j = 0; j < targetClasses.size(); j++) {
+				targetNode = targetClasses.get(j);
+				targetScored = targetScoredSynsets.get(targetNode);
+					
+				log.debug("Matching " + sourceNode.getLocalName() + " " + targetNode.getLocalName());
+				//log.debug("sourceComment: " + sourceNode.getComment());
+				log.debug(sourceScored);
+				//log.debug("targetComment: " + targetNode.getComment());
+				log.debug(targetScored);
+				
+				match = synsetsInHypernymsSimilarity(sourceScored, targetScored);	
+				
+				log.debug("HypScore ST: " + match);
+				
+				if(match > hypernymsThreshold)
+					newMapping(sourceNode, targetNode, 0.89d, MappingRelation.SUPERCLASS, "Wordnet mediator ST ");
+				
+				match = synsetsInHypernymsSimilarity(targetScored, sourceScored);	
+				
+				if(match > hypernymsThreshold)
+					newMapping(sourceNode, targetNode, 0.89d, MappingRelation.SUBCLASS, "Wordnet mediator TS ");
+				
+				log.debug("HypScore TS: " + match);
+				
+				
+				
+			}
+		}
+	}
+	
+	private double synsetsInHypernymsSimilarity(List<ScoredSynset> sourceList, List<ScoredSynset> targetList) {
+		double sim;
+		ScoredSynset source;
+		ScoredSynset target;
+		List<List<NounSynset>> hypernymsByLevel;		
+		List<NounSynset> hypernyms;
+		double match = 0.0;
+		
+		for (int i = 0; i < sourceList.size(); i++) {
+			source = sourceList.get(i);
+			for (int j = 0; j < targetList.size(); j++) {
+				target = targetList.get(j);
+				
+				hypernymsByLevel = target.getHypernymsByLevel();
+				
+				sim = 1;
+				
+				for (int k = 0; k < hypernymsByLevel.size(); k++) {
+					hypernyms = hypernymsByLevel.get(k);
+					sim = sim * 0.9;
+					if(hypernyms.contains(source.getSynset())){
+						log.debug("Match!!! " + source.getSynset() + "sim:" + format.format(sim) + " sourceScore:" + source.getScore());
+						match += sim * source.getScore();
+					}					
+				}
+			}
+		}
+		if(sourceList.size() == 0)
+			return 0.0;
+		return match / sourceList.size();
+	}
+
+	private List<List<NounSynset>> hypernymsLookup(NounSynset synset){
+		List<List<NounSynset>> hypernymsByLevel = new ArrayList<List<NounSynset>>();
+		
+		List<NounSynset> synsets = new ArrayList<NounSynset>();
+		synsets.add(synset);
+		List<NounSynset> hypernyms = null;
+				
+		do{
+			//System.out.println(synsets);
+			//System.out.println("HYP:" + hypernyms);
+			hypernyms = getHypernyms(synsets);
+			if(hypernyms.size() > 0)
+				hypernymsByLevel.add(hypernyms);
+			synsets = hypernyms;
+		}
+		while(hypernyms.size() > 0);
+		
+		return hypernymsByLevel;
+	}
+	
+	private List<NounSynset> getHypernyms(List<NounSynset> synsets){
+		List<NounSynset> hypernyms = new ArrayList<NounSynset>();
+		NounSynset synset;
+		NounSynset[] hypernymsVector;
+		for (int i = 0; i < synsets.size(); i++) {
+			synset = synsets.get(i);
+			hypernymsVector = synset.getHypernyms();
+			for (int j = 0; j < hypernymsVector.length; j++) {
+				hypernyms.add(hypernymsVector[j]);
+			}
+		}
+		return hypernyms;
+	}
 	
 
 	private void wordnedMediatorStep() {
@@ -409,12 +588,12 @@ public class HierarchyMatcherModified extends AbstractMatcher
 				 * runs of AM*/
 				if(m.getRelation().equals(MappingRelation.EQUIVALENCE) && similarityValue >= inputMatcherThreshold)
 				{
-					System.out.println(classesMatrix.get(i,j));
+					log.debug(classesMatrix.get(i,j));
 					m.setProvenance("Input matcher");
 					classesMatrix.set(i, j, m);
 					source = sourceClasses.get(i);
 					target = targetClasses.get(j);
-					System.out.println(source.getLocalName() + " " + similarityValue + " " +inputMatcherThreshold);	
+					log.debug(source.getLocalName() + " " + similarityValue + " " +inputMatcherThreshold);	
 					matchManySourceTarget(source,target);
 					matchManyTargetSource(source,target);
 				}
@@ -684,7 +863,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 /*This function maps many Target Concepts to a source concept*/	
 	private void matchManyTargetSource(Node source,Node target)
 	{
-		System.err.println("SD " + source.getUri() + " " + target.getUri());
+		log.debug("SD " + source.getUri() + " " + target.getUri());
 		
 		Node superClassOfTarget;
 		Node superClassOfSource;
@@ -706,7 +885,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		superClassOfTarget = getSuperClass(target, targetClasses);
 		superClassOfSource = getSuperClass(source, sourceClasses);
 		
-		System.err.println("SUPERCLASSES " + superClassOfSource + " " + superClassOfTarget);
+		log.debug("SUPERCLASSES " + superClassOfSource + " " + superClassOfTarget);
 		
 		/*CONVERTING THE TARGET NODE INTO OntClass*/
 		ontClasstarget = (OntClass)targetClasses.get(indexTarget).getResource().as(OntClass.class);
@@ -714,10 +893,6 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		while(targetIterator.hasNext()){
 			targetSubClasses.add((OntClass)targetIterator.next());
 		}
-		
-		System.out.println(ontClasstarget.getURI());
-		System.err.println("SUBCLASSES T " + targetSubClasses);
-		
 		
 		/*MATCHING THE FIRST LEVEL OF SUB-CLASSES*/
 		for (int k = 0; k < targetSubClasses.size(); k++) 
@@ -945,12 +1120,11 @@ public class HierarchyMatcherModified extends AbstractMatcher
 				if(m == null) sim = 0.0;
 				else {
 					sim = m.getSimilarity();
-					System.out.println(m.getProvenance());
+					log.debug(m.getProvenance());
 				}
 				//System.out.print(df.format(sim) + " ");
 				
 			}
-			System.out.println();
 		}
 	}
 	
@@ -973,17 +1147,17 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		if(sourceURI == null || sourceURI.isEmpty())
 			sourceURI = "http://purl.org/ontology/mo/";
 		
-		System.out.println("SourceOntology: " + sourceURI);
-		System.out.println("TargetOntology: " + targetURI);
+		log.debug("SourceOntology: " + sourceURI);
+		log.debug("TargetOntology: " + targetURI);
 		
 		
 		System.out.println("SOURCE");
 		for (int i = 0; i < sourceClasses.size(); i++) {
-			System.out.println(sourceClasses.get(i).getUri());			
+			log.debug(sourceClasses.get(i).getUri());			
 		}
 		System.out.println("TARGET");
 		for (int j = 0; j < targetClasses.size(); j++) {
-			System.out.println(targetClasses.get(j).getUri());		
+			log.debug(targetClasses.get(j).getUri());		
 		}
 		
 		for (int i = 0; i < sourceClasses.size(); i++) {
@@ -991,7 +1165,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 				if(classesMatrix.get(i, j) == null) continue;
 				if(!sourceClasses.get(i).getUri().startsWith(sourceURI)	&&
 						!targetClasses.get(j).getUri().startsWith(targetOntology.getURI())){
-					System.out.println("Removing mapping: " + classesMatrix.get(i,j));
+					log.debug("Removing mapping: " + classesMatrix.get(i,j));
 					classesMatrix.set(i, j, null);
 				}
 					
