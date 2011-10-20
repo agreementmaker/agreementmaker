@@ -18,10 +18,12 @@
         		minOccurs="1">
         	</element>
         	<element name="shortName" maxOccurs="1" minOccurs="0">
-                <annotation>
-                	<documentation>Usually shortname is in all caps.</documentation>
-                </annotation>
-                <simpleType>
+        		<annotation>
+        			<documentation>
+        				Usually shortname is in all caps.
+        			</documentation>
+        		</annotation>
+        		<simpleType>
         			<restriction base="string">
         				<maxLength value="5"></maxLength>
         				<minLength value="1"></minLength>
@@ -30,9 +32,11 @@
         	</element>
         	<element name="description" type="string" maxOccurs="1"
         		minOccurs="0">
-                <annotation>
-                	<documentation>The description should be written in HTML.</documentation>
-                </annotation>
+        		<annotation>
+        			<documentation>
+        				The description should be written in HTML.
+        			</documentation>
+        		</annotation>
         	</element>
         	<element name="features" type="tns:featuresType"
         		minOccurs="1" maxOccurs="1">
@@ -40,6 +44,7 @@
         	<element name="parameters" type="tns:parametersType"
         		maxOccurs="1" minOccurs="1">
         	</element>
+        	<element name="className" type="string" maxOccurs="1" minOccurs="1"></element>
         </all>
 
     </complexType>
