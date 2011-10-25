@@ -1,0 +1,254 @@
+                            AgreementMaker Reminder
+
+An informal reminder of features to be added or corrected in the AM.
+Fell free to take care of any of these problems or to add anything new to these document.
+
+This is the structure, feel free to add infos to it:
+
+***Problem to fix
+Delete individual mappings
+Selected matchings only and higlighting of selected mappings
+other functionalities in the view menu
+manual mapping only works when loading ontologies with no reasoner.
+
+****TO PREPARE THE JAR REMOVED KSS UMLS LIBRARY
+in order to compute the JAR the library KSS was removed from the referenced ones.
+It is not compatible for some reasons with the others, so the ontologies are not displayed when running a jar that way.
+To restore the UMLS algorithm rename the Java class from .txt to .java and add the library to the buildpath. The library 
+is still contained in the libraries directory.
+
+****OAEI 2009
+some benchmarks testcases don't work because the AM is not able to load the ontologies
+The DSI method should be changed to work on non-tree structure (mcp sim + (1 -MCP) (sum(maxdsi(eachparent)/numparents)
+The VMM should consider vectors differently
+Find a way to merge diff results in Conference track
+Make the distrib directory and the Jar available online
+Find a way to make use of the partial reference alignment to have a better result in Anatomy 4.
+In psm and VMM seeAlso and isDefined by are not set with a reference to the concept 
+We could make that only the last layer of methods perform the selection of mappings all others just work on the matrices
+
+
+****TODO
+
+--Matchings
+
+----First layer
+----Second layer
+----Third layer and other
+
+--UserInterface
+seeAlso and isdefBy URI, label, e comment shoud be shown in the right panel on only the label
+****BUGS
+
+****REFERENCES
+
+**************************************TODO******************************************
+
+-----Matchings
+
+__________FIRST LAYER
+
+    To have more ideas for this remember to look at [1] that has many starting point and references.
+    Is also important to look at Ontology Matching workshop 2008, which has many papers.
+    and OAEI 2008 which contains result and references of other tools
+    we should look at RIMOM and DSSIM
+    
+    EXTENSIONAL INSTANCE BASED [1] 3.4  OR [2]
+    this work only on classes. if you implement this leave alignProp to true and set the matrix to all 0.
+    compare the set of instances of the two classes, i would consider only the direct instances that are contained in an ArrayList in each node
+	you can use a symmetric distance. I don't know if jaccard similarity can be applied.
+	Before using symmetric distance since it only considers equivalence between names is important to preprocess strings, like in the param string matcher
+	
+	You can also use a similarity measure like the one used for SSC.
+	So basically given two sets of instances you build the matrix of sim between these two sets, using for example edit distance between each string.
+ 	And then the final sim is:  avg(max value for each source instance with all target instances)
+ 	
+ 	if the instances names are long, another way could be:
+ 	build a big string composed by concatenating all instances names.
+ 	Then preprocess that string. Then tokenize. Then comparing the two vector of strings obtained with TF/IDF technique. [1] [2]
+	
+	ALL INFORMATION AT THE SAME TIME [3] 
+	concatenate with a space between them all the strings: localname, label, comment, isdefby, seealso, all label of properties (for prop all label of classes),
+	all instances, father label, siblings labels, sons labels.
+	
+	Preprocess this big string with the same preprocessing of the parametric string matcher (with everything true in the param)
+	Tokenize this string when finding a space. 
+	So now you have a big vector of strings to be compared with TF/IDF technique to the big vector of the string of the target
+	
+
+__________SECOND LAYER
+
+	DSI
+	Correct the DSI to be working on multiple ancestors hierarchy.
+	The formula should be MCP*inputSim + AVGofAllPossiblePath((1-mcp)*SUMMARY)
+	We also have to check that if one of the two nodes has no fathers this method should return MCP*inputSim.
+	However the DSI formula gives very similar result then using this recursive formula
+	that would be much faster: 
+	if(nodes have no fathers) return inputSim;
+	else return mcp*inputSim + (1 -MCP)* DSI of fathers
+	this is something that Isabel maybe should know.
+	
+	DESCENDANTS METHOD
+	we are already looking at fathers and siblings but we don't have one that look at descendants.
+	So we should have a method similar to SSC that look at them. The formula could be:
+	ALG(a,b) = MCP*inputSim + (1-MCP) avg(for each son of A consider the max of similarities with with son of B)
+	If a and/or B have no sons the algorithm must return MCP*inputSim.
+	
+	PROPERTY AND CLASS REDISTRIBUTION
+	This algorithm should process classes and properties differently.
+	Basically classes sim will be increased if the properties of that class are similar and
+	properties sim will be increased if the classes of that property are similar.
+	so formula could be similar to SSC again:
+	
+	sim(A,B):
+		CLASSES
+		if(A and/or B has no prop then return inputSim)
+		else for each prop of A{ //there is a list of properties localnames in each class node
+				search for that prop in the property node list //localname is unique so it can be done
+				consider the max sim of this prop with target's properties //there is a method in the alignmentMatrix class to find a max of a row
+			return MCP * inputSIM +	(1-MCP) avg(of the values found in the previous for)
+		
+			
+		PROPERTIES is the same but directed to classes
+		for each property scan classes to find classes which contains this property //again uses the property list of each class node
+		 	for each class found find the max //use the method in matrix to find the max
+		again return MCP * inpuSim + (1 -MCP) avg(of the values found in the previous for)
+		
+	
+	However all these methods are structural and other similar to these are described in the
+	[1] section 3.3.2
+				
+__________THIRD LAYER AND OTHER
+
+
+	
+	Matching combination
+	I'm trying to work on it... I'm looking at a Weighted Average of mappings found, where weights are assigned via quality evaluation
+	The hard part is to find a quality evaluation: 	[4][5]
+	Another way to assign weights could be looking at the ontologies  [6][7][8]
+	
+	1-1 mapping
+	right now the stable marriage algorithm is implemented to solve 1-1 and N-M pairing but is not
+	the optimal algo for the 1-1.
+	The Optimization problem is called Assignment Problem, it can be reduced to find the 
+	Maximum Matching on a Bipartite Weighted Graph. Info on this can be found on wikipedia, which has reference to a book.
+	This problem can be solved with the Shortest Augmenting Path algorithm. 
+	We should find a Java Graph Library which has this alg implemented.
+	LEDA is a C++ lib which has the Maximum Weighted Bipartite Matching, and as far as i understood it
+	is possible to access LEDA functions also by java because it uses the "extern" mode, but it maybe risky.
+	The book: "A Java library for Graph algorithm", has a chapter on the "assignment problem" and i think
+	they implemented a java library too. So if we access this book we may find a solution.
+	If we find a good description of the algorithm we can also implement it by ourself just using one of the
+	java library for graph like JGraphT which has a shortest path algorithm implemented.
+	If you find anything let me know. In all cases the stable marriage we have now is more than ok for now.	
+	
+	Matcher based on a small reference.
+	could be an improvement matcher.
+	For example we may use it to define the value of threshold to be used at the end.
+	This matcher runs the matcher in input with serveral threshold values. Evaluate the results with 
+	the small reference and undestand the best threshold to be used.
+	could be a comb matcher.
+	it evaluate all the input matchers with small ref and combine them using as weight the F-Measure.
+	
+
+---UserInterface
+
+	The displayed string
+	We are always displaying localnames in the vertex. 
+	But localnames are ID and they may be just codes sometimes.
+	While the label is the human readable version of localnames.
+	In most of the cases those are the same. Sometimes label is missing.
+	But sometimes (like anatomy track ontos) localnames are just codes.
+	So we should be able to display inside each vertex:
+	1)localname 2) label 3) localname - label
+	We should add 2 checkbox in the view menu to let the user set which one to view.
+	We should have a method in Vertex class: getDisplayedName which looks at that option
+	and return getNode().getLocalName() or getNode().getLabel or the concatenation of both.
+	So the canvas should always access this method of vertex to display names.
+	
+	Visualization Panel.
+	We should add a visualization panel (similar to matcher selection panel) on top of canvas or
+	on top of control panel.
+	The main functionality should be the search. A textarea and a button search. This feature should
+	search for the first node that has that string contained in the localname or label or comment.
+	Select it and scroll to it. If the user continue to search this function should continue serching for the next node.
+	So basically it should first look over all source nodes after the selected one and then after all target nodes.
+	There should also be an advanced seach button, which open a dialog which let you insert input for 
+	advanced search like: search exact or partial, class or prop tree, into label comment or individuals and so on.
+	In the vis panel we could also add the check box for SMO mode, and displayed string mode.
+	
+	Changing the reference alignment matcher into import file functionatlity.
+	Basically the "reference alignment" matcher shouldn't be in the selection.
+	There should be an import button which let you open a file showing alignments (using the ref alignment matcher).
+	there should be an export button which let you save the file in the txt: \tsource-->\ttarget format
+	so that we can then re-display later any of the calculated matchings.
+	Unfortunatly a full export import of all matchings and their status is quite complicated and would require a lot of more work from
+	developers because the would have to implement serialize() and deserialize() in the paramater class. I think we have other
+	priorities even though it would be usefull to make test and reuse experiments.
+	
+	Same color for matched nodes mode.
+	Will underwood suggested to have this mode to highlight mapped nodes.
+	Basically when this mode is active, each matched node as a random color but nodes that are matched between each other have the same.
+	Oviusly when this mode is on, the color of matchers becomes irrelevant.
+	
+	We may also need the align only selected nodes mode.
+	Basically when activated any matcher will be working on selected nodes.
+	To make adding less changes as possible, we just have to change the abstract matcher constructor.
+	If the mode is activated instead of setting source and target ontology. It create a new source and target ont only with selected nodes.
+	However this may need a lot of test to integrate with all the other features.
+	
+	We may need a view/edit matrix feature which show the class or prop sim matrix of a matcher in a table.
+	This is good for developers to test algorithms, but users can directly modify similarity from there too.
+	
+	We may also need a view alignment list dialog, which show the alignment of a matcher into a table.
+	
+	Canvas should be divided in 2 scrollpanes. (later)
+	
+	
+	
+	
+***************************BUGS**********************************
+1) the matcher selection panel and bottom panel in the control one have a problem in the layout.
+If the window is small and buttons doesn't fit in it they just disappear, while they should be moved down in that case.
+
+2) sometime the exec time is not correct. Probably on very slow matchers like base_withdict.
+
+4)The xls file saved with the save funct on a computer in the lab couldn't get opened. maybe is just an old excel. 
+
+***************************REFERENCES**************************
+
+[1] State of the art on ontology
+alignment Euzenat and many others
+
+FROM http://om2008.ontologymatching.org/
+[2] Ontology Mapping via Structural and
+Instance-Based Similarity Measures
+Konstantin Todorov1 and Peter Geibel
+
+From FALCON-AO
+[3] Constructing Virtual Documents for Ontology Matching
+Yuzhong Qu Wei Hu Gong Cheng
+
+[4] Incoherence as a Basis for Measuring the
+Quality of Ontology Mappings
+Christian Meilicke and Heiner Stuckenschmidt
+
+[5]Evaluating the Structural Quality of
+Semantic Hierarchy Alignments
+Cliff Joslyn Alex Donaldson Patrick Paulson
+
+[6] Tan, H., Lambrix, P.: A method for recommending ontology alignment strategies.
+In: 6th Intl. Semantic Web Conference (ISWC 2007), Busan, Korea (2007)
+
+[7] Ehrig, M., Staab, S., Sure, Y.: Bootstrapping ontology alignment methods with
+apfel. In: 4th Intl. Semantic Web Conference (ISWC 2005), Galway, Ireland (2005)
+
+[8] Mochol, M., Jentzsch, A., Euzenat, J.: Applying an analytic method for matching
+approach selection. In: Ontology Matching Workshop, ISWC 2006. (2006)
+
+Is also important to look at Ontology Matching workshop 2008 http://om2008.ontologymatching.org/,
+which has many papers.
+and OAEI 2008 which contains result and references of other tools
+we should look at RIMOM and DSSIM
+
+
