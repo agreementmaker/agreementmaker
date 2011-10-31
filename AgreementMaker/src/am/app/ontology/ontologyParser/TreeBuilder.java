@@ -15,11 +15,15 @@ import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.Ontology.DatasetType;
 import am.app.ontology.instance.FreebaseInstanceDataset;
+import am.app.ontology.instance.GeoNamesInstanceDataset;
 import am.app.ontology.instance.InstanceDataset;
 import am.app.ontology.instance.OntologyInstanceDataset;
 import am.app.ontology.instance.SeparateFileInstanceDataset;
+import am.app.ontology.instance.SparqlInstanceDataset;
 import am.app.ontology.instance.endpoint.EndpointRegistry;
 import am.app.ontology.instance.endpoint.FreebaseEndpoint;
+import am.app.ontology.instance.endpoint.GeoNamesEndpoint;
+import am.app.ontology.instance.endpoint.SparqlEndpoint;
 import am.output.alignment.oaei.OAEIAlignmentFormat;
 import am.userInterface.OntologyLoadingProgressDialog;
 
@@ -216,6 +220,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 						treeBuilder = new OntoTreeBuilder(odef);
 				}
 				
+				
 				//treeBuilder = new OntoTreeBuilder(odef);
 				
 				return treeBuilder;
@@ -276,6 +281,19 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 			FreebaseEndpoint freebase = new FreebaseEndpoint();
 			instances = new FreebaseInstanceDataset(freebase);
 		}
+		else if ( ontDefinition.instanceSource == DatasetType.ENDPOINT &&
+				  ontDefinition.instanceEndpointType.equals( EndpointRegistry.GEONAMES ) ) {
+			
+			GeoNamesEndpoint geoNames = new GeoNamesEndpoint();
+			instances = new GeoNamesInstanceDataset(geoNames);
+		}
+		else if ( ontDefinition.instanceSource == DatasetType.ENDPOINT &&
+				  ontDefinition.instanceEndpointType.equals( EndpointRegistry.SPARQL ) ) {
+			
+			SparqlEndpoint endpoint = new SparqlEndpoint(ontDefinition.instanceSourceFile);
+			instances = new SparqlInstanceDataset(endpoint);
+		}
+
 		
 		ontology.setInstances(instances); // save the instances with this ontology
 		

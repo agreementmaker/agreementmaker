@@ -91,6 +91,16 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 		this.onDiskPersistent = persistent;
 	}
 	
+	public TDBOntoTreeBuilder( OntologyDefinition odef ) {
+		super(odef);
+		
+		skipOtherNamespaces = false;
+		noReasoner = true;
+		treeCount = 0;
+		this.onDisk = odef.onDiskStorage;
+		this.onDiskDirectory = odef.onDiskDirectory;
+		this.onDiskPersistent = odef.onDiskPersistent;
+	}
 	
 	/**
 	 * Create a root node for the given concepts and add child nodes for

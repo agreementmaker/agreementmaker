@@ -469,18 +469,23 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     		
     		String label = labelList.get(0);
     		
+    		label = processLabelBeforeCandidatesGeneration(label);
+    		
     		String sourceType = sourceInstance.getType();
     		List<MatchingPair> targetTypes = null;
     		
     		if( sourceType != null ) {
-    			HashMap<String, List<MatchingPair>> typeMapping = sourceOntology.getInstanceTypeMapping();
-    			if( typeMapping.containsKey(sourceType) ) {
-    				targetTypes = typeMapping.get(sourceType);
-    			} else {
-    				targetTypes = null;
-    				//targetTypes = new ArrayList<MatchingPair>();
-    				//targetTypes.add( new MatchingPair(sourceType, sourceType)); // same type in the target
+    			if(sourceOntology.getInstanceTypeMapping() != null){
+    				HashMap<String, List<MatchingPair>> typeMapping = sourceOntology.getInstanceTypeMapping();
+        			if( typeMapping.containsKey(sourceType) ) {
+        				targetTypes = typeMapping.get(sourceType);
+        			} else {
+        				targetTypes = null;
+        				//targetTypes = new ArrayList<MatchingPair>();
+        				//targetTypes.add( new MatchingPair(sourceType, sourceType)); // same type in the target
+        			}
     			}
+    			
     		}
     		
     		List<Instance> allCandidates = new ArrayList<Instance>();
@@ -493,14 +498,44 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
         		}
         		mapping = alignInstanceCandidates(sourceInstance, allCandidates);
     		}
+    		else{
+    			List<Instance> targetCandidates = targetInstanceDataset.getCandidateInstances(label, null);
+    			allCandidates.addAll(targetCandidates);
+    			mapping = alignInstanceCandidates(sourceInstance, allCandidates);
+    		}
     		
     		if(mapping != null) mappings.add(mapping);
 			
-			stepDone();
-			updateProgress();
+//			stepDone();
+//			updateProgress();
 		}
 		return mappings;
 	}
+    
+	public static String processLabelBeforeCandidatesGeneration(String label) {
+		if(label.contains("(")){
+			int beg = label.indexOf('(');
+			int end = label.indexOf(')');
+			label = label.substring(0,beg) + label.substring(end + 1);
+			label = label.trim();
+		}
+		
+		if(label.contains(",")){
+			String[] splitted = label.split(",");
+			label = splitted[1].trim() + " " + splitted[0].trim();
+		}
+			
+		String[] splitted = label.split(" ");
+		
+		label = "";
+		for (int i = 0; i < splitted.length; i++) {
+			if(splitted[i].length() == 1) continue;
+			label += splitted[i] + " ";
+		}
+		label = label.trim();
+		return label; 
+	}
+
     
 	protected MatchingPair alignInstanceCandidates(Instance sourceInstance,
 			List<Instance> targetCandidates) throws Exception {
