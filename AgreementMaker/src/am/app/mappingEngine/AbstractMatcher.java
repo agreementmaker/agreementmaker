@@ -125,6 +125,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/** A thread group used in threaded execution mode. */
 	protected transient ThreadGroup threadGroup;
 	
+	/** Sometimes it can be useful to access the reference alignment directly from the matcher for debugging */
+	protected List<MatchingPair> referenceAlignment;
+	
+	
 	public void setPerformSelection(boolean performSelection) {
 		this.performSelection = performSelection;
 	}
@@ -488,6 +492,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     			
     		}
     		
+    		//targetTypes = null;
+    		
+    		
     		List<Instance> allCandidates = new ArrayList<Instance>();
     		
     		MatchingPair mapping = null;
@@ -512,7 +519,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return mappings;
 	}
     
-	public static String processLabelBeforeCandidatesGeneration(String label) {
+	public String processLabelBeforeCandidatesGeneration(String label) {
 		if(label.contains("(")){
 			int beg = label.indexOf('(');
 			int end = label.indexOf(')');
@@ -1932,6 +1939,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 				  }  
 			  }
 		  }
+	  }
+	  
+	  public void setReferenceAlignment(List<MatchingPair> referenceAlignment){
+		  this.referenceAlignment = referenceAlignment;
 	  }
 	  
 	  public synchronized void saveThreadResult(int source, int target, Mapping mapping, SimilarityMatrix matrix ) {
