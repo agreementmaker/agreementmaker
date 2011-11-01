@@ -10,23 +10,23 @@ import java.util.HashMap;
 public class NYTArticlesViewer {
 	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
 		
-		ObjectInput in = new ObjectInputStream(new FileInputStream("dbpediaLocationsRDFCache.ser"));
+		ObjectInput in = new ObjectInputStream(new FileInputStream("newFreebaseCacheOrganizationsNoType.ser"));
 	    Object input = in.readObject();
 		HashMap<String, String> jsonAnswers = (HashMap<String, String>) input;
 		
 		System.out.println(jsonAnswers.size());
 		
-		/*for(String key: jsonAnswers.keySet()){
+		for(String key: jsonAnswers.keySet()){
 			System.out.println("key:" + key);
 			System.out.println(jsonAnswers.get(key));
-		*/
-		
-		for(String key: jsonAnswers.keySet()){
-			if(key.contains("Rome")){
-				System.out.println("key:" + key);
-				System.out.println(jsonAnswers.get(key));
-			}	
 		}
+		
+//		for(String key: jsonAnswers.keySet()){
+//			if(key.contains("Rome")){
+//				System.out.println("key:" + key);
+//				System.out.println(jsonAnswers.get(key));
+//			}	
+//		}
 		
 		//System.out.println(jsonAnswers.get("http://data.nytimes.com/N15749223239255170333"));
 		
