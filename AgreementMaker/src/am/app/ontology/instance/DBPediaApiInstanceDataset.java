@@ -55,7 +55,6 @@ public class DBPediaApiInstanceDataset implements InstanceDataset{
 
 	@Override
 	public boolean isIterable() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -83,7 +82,10 @@ public class DBPediaApiInstanceDataset implements InstanceDataset{
 			return instances;
 		}
 		
-		String url = endpoint + "?QueryClass=" + type + "&QueryString=" + searchTerm;
+		String url = endpoint + "?QueryString=" + searchTerm;
+		
+		if(type != null) 
+			url += "&QueryClass=" + type;
 		
 		String xml = null;
 		
@@ -165,10 +167,10 @@ public class DBPediaApiInstanceDataset implements InstanceDataset{
 		
 		//System.out.println(results);
 		
-		for (int i = 0; i < instances.size(); i++) {
-			List<Statement> stmts = sparqlEndpoint.singleEntityQuery(instances.get(i).getUri());
-			instances.get(i).setStatements(stmts);
-		}
+//		for (int i = 0; i < instances.size(); i++) {
+//			List<Statement> stmts = sparqlEndpoint.singleEntityQuery(instances.get(i).getUri());
+//			instances.get(i).setStatements(stmts);
+//		}
 		
 		
 		return instances;
@@ -204,7 +206,6 @@ public class DBPediaApiInstanceDataset implements InstanceDataset{
 		 out.writeObject(cache);
 		 out.close();
 		 System.out.println("Done");
-		    
 		 sparqlEndpoint.persistCache();
 	}
 
