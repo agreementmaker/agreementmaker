@@ -57,9 +57,6 @@ public class InstanceMatcherFede extends AbstractMatcher {
 	boolean verbose = false;
 	private String outputFilename = "alignments.rdf";
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -8278698313888419789L;
 
 	@Override
@@ -75,18 +72,17 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		matcher.setParam(param);
 		filePairs = matcher.parseStandardOAEI();
 		
-		trainSet = new TrainSet();
-		trainSet.addClasses("match");
-		trainSet.addClasses("noMatch");
-		classificator = new Classificator(trainSet,"peopleClassificator.model");
+		//trainSet = new TrainSet();
+		//trainSet.addClasses("match");
+		//trainSet.addClasses("noMatch");
+		//classificator = new Classificator(trainSet,"peopleClassificator.model");
 	}
 	
 	@Override
 	protected MatchingPair alignInstanceCandidates(Instance sourceInstance,
 			List<Instance> targetCandidates) throws Exception {
 		
-		//System.out.println("Source instance: " + sourceInstance );5	0.9772115	0.8012859	0.8805476
-
+		//System.out.println("Source instance: " + sourceInstance );
 		//System.out.println("Target instance list: " + targetCandidates );
 		//System.out.println("");
 		
@@ -97,7 +93,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		else if(size == 1) singleResult++;
 		else if(size > 1) ambiguous++;
 		
-		if(candidatesContainSolution(sourceInstance.getUri(), targetCandidates))
+		if(ReferenceAlignmentUtilities.candidatesContainSolution(filePairs, sourceInstance.getUri(), targetCandidates) != null)
 			solvable++;
 		
 		
@@ -132,7 +128,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 			if(desKeywords == null) desKeywords = orgKeywords;
 						
 			if(desKeywords != null){
-				//desKeywords.addAll(titleKeywords);5	0.9772115	0.8012859	0.8805476
+				//desKeywords.addAll(titleKeywords);
 
 				if(orgKeywords != null){
 					desKeywords.addAll(orgKeywords);
@@ -211,21 +207,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 	
 	
 
-	private boolean candidatesContainSolution(String uri, List<Instance> candidates) {
-		MatchingPair pair;
-		for (int i = 0; i < filePairs.size(); i++) {
-			pair = filePairs.get(i);
-			if(pair.sourceURI.equals(uri)){
-				
-				for (int j = 0; j < candidates.size(); j++) {
-					if(candidates.get(j).getUri().equals(pair.targetURI))
-						return true;					
-				}
-			}
-		}
-		
-		return false;
-	}
+	
 
 	private double instanceSimilarity(Instance sourceInstance,
 			Instance candidate, String sourceLabel, List<String> sourceKeywords) {
@@ -501,8 +483,6 @@ public class InstanceMatcherFede extends AbstractMatcher {
 			}
 		}
 	}
-
-	
 	
 	public static String processLabel(String label, List<String> keywords){
 		if(label.contains("(")){
