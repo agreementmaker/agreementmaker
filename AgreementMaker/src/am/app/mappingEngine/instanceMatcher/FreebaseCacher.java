@@ -27,9 +27,9 @@ import com.hp.hpl.jena.rdf.model.Statement;
 
 public class FreebaseCacher {
 	
-	static String sourceDataset = "OAEI2011/NYTDatasets/people.rdf";	
+	static String sourceDataset = "OAEI2011/NYTDatasets/organizations.rdf";	
 	static String type = "/people/person";
-	static String cacheFilename = "newFreebaseCacheOrganizations.ser";
+	static String cacheFilename = "newFreebaseCacheOrganizationsNoType.ser";
 	static String rdfCacheFilename = "freebaseRDFCache.ser";
 	public static String FREEBASE_URI = "http://rdf.freebase.com/rdf/";
 	
@@ -67,14 +67,14 @@ public class FreebaseCacher {
 						
 			String label = SeparateFileInstanceDataset.getPropertyValue(ontology.getModel(), uri, NYTConstants.SKOS_PREFLABEL);
 			
-			label = AbstractMatcher.processLabelBeforeCandidatesGeneration(label);
+			label = LabelUtils.processLabel(label);
 			
 			String json = null;
 						
 			String query;
 			
 			try {
-				query = freebase.freeTextQueryString(label, type);
+				query = freebase.freeTextQueryString(label, null);
 			} catch (Exception e) {
 				e.printStackTrace();
 				continue;
@@ -151,13 +151,13 @@ public class FreebaseCacher {
 		}	
 		
 		ObjectOutput out = new ObjectOutputStream(new FileOutputStream(cacheFilename));
-	    //out.writeObject(jsonAnswers);
+	    out.writeObject(jsonAnswers);
 	    out.close();
 	    
-	    System.out.println("Writing to file...");
-	    out = new ObjectOutputStream(new FileOutputStream(rdfCacheFilename));
-	    out.writeObject(rdfAnswers);
-	    out.close();
+//	    System.out.println("Writing to file...");
+//	    out = new ObjectOutputStream(new FileOutputStream(rdfCacheFilename));
+//	    out.writeObject(rdfAnswers);
+//	    out.close();
 	    System.out.println("Done");
 		
 	}
