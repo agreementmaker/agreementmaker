@@ -1,16 +1,13 @@
 package am.utility;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
@@ -40,7 +37,6 @@ public class HTTPUtility {
 
 	    HttpResponse response = httpClient.execute(httpget, context);
 	    
-	    //System.out.println(response);
 	    
 	    HttpEntity entity = response.getEntity();
 	   
@@ -49,7 +45,37 @@ public class HTTPUtility {
 	 
 	    Header[] lengthHeaders = response.getHeaders("Content-Length");
 	    
-	    if(lengthHeaders.length <= 0) return null;
+	    if(lengthHeaders.length <= 0){
+	    	System.err.println("No Content-Length");
+	    	
+	    	String page = "";
+	    	
+	    	//System.out.println(is.available());
+	    	
+	    	byte[] buffer = new byte[4096];
+	    	
+	    	//int off = 0;
+	    	    
+	    	int read;
+	    	
+	    	do{
+	    		buffer = new byte[buffer.length];
+	    		read = is.read(buffer, 0, buffer.length);
+	    		
+	    		if(read != -1){
+	    			byte[] temp = new byte[read];
+		    		
+		    		for (int i = 0; i < temp.length; i++) {
+						temp[i] = buffer[i];
+					}
+		    		page += new String(temp);
+		    		
+	    		}
+	    	}
+	    	while (read != -1);
+	    		    		    	
+	    	return page;
+	    }
 	    
 	    //System.out.println("number of headers: " + lengthHeaders.length);
 	    
