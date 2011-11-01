@@ -57,7 +57,7 @@ public class DBPediaCacher {
 			
 			//System.out.println(label);
 			
-			label = AbstractMatcher.processLabelBeforeCandidatesGeneration(label);
+			label = LabelUtils.processLabel(label);
 			
 			System.out.println(label);
 			
