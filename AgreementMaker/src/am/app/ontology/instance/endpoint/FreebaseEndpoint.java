@@ -61,6 +61,7 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 				foundInCache = true;
 		}
 		if(!foundInCache){
+			System.out.println(url);
 			try {	json = HTTPUtility.getPage(url);	} 
 			catch (IOException e) {	
 				System.err.println("Connection problem"); 
@@ -83,8 +84,8 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 			if(json != null)
 				foundInCache = true;
 		}
-		//System.out.println(url);
 		if(!foundInCache){
+			System.out.println(url);
 			try {	json = HTTPUtility.getPage(url);	} 
 			catch (IOException e) {	return instances;	}
 		}
@@ -157,18 +158,22 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 
 	@Override
 	public List<Instance> freeTextQuery(String searchTerm, String type) throws Exception {
-		if( type == null ) throw new AMException("You may not query using a null type.");
 		searchTerm = URLEncoder.encode(searchTerm, "UTF-8");
-		type = URLEncoder.encode(type, "UTF-8"); 
-		String query = "?query=" + searchTerm + "&type=" + type + "&threshold=" + threshold;
+		if(type != null)
+			type = URLEncoder.encode(type, "UTF-8"); 
+		String query = "?query=" + searchTerm;
+		if(type != null) query += "&type=" + type;
+		query += "&threshold=" + threshold;
 		return query(query);
 	}
 	
 	public String freeTextQueryString(String searchTerm, String type) throws Exception {
-		if( type == null ) throw new AMException("You may not query using a null type.");
 		searchTerm = URLEncoder.encode(searchTerm, "UTF-8");
-		type = URLEncoder.encode(type, "UTF-8"); 
-		String query = "?query=" + searchTerm + "&type=" + type + "&threshold=" + threshold;
+		if(type != null)
+			type = URLEncoder.encode(type, "UTF-8"); 
+		String query = "?query=" + searchTerm;
+		if(type != null) query += "&type=" + type;
+		query += "&threshold=" + threshold;
 		return endpoint + query;
 	}
 
@@ -189,20 +194,31 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 	}
 
 	private void loadCache() {
-		ObjectInput in;
+		FileInputStream fis = null;
+		ObjectInputStream in;
+		Object input = null;
+		
+		try {	fis = new FileInputStream(cacheFile); }
+		catch (FileNotFoundException e1) {
+			System.err.println("The cache file doesn't exist");
+			cache = new HashMap<String, String>();
+			return;
+		}
+		
 		try {
-			in = new ObjectInputStream(new FileInputStream(cacheFile));
-			Object input = in.readObject();
-			cache = (HashMap<String, String>) input;	
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			in = new ObjectInputStream(fis);
+			input  = in.readObject();
+			cache = (HashMap<String, String>) input;
+			
+		} catch (IOException e1) {
+			System.err.println("The cache will be empty");
+			cache = new HashMap<String, String>();
+			return;
+			
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("The cache will be empty");
+			cache = new HashMap<String, String>();
+			return;
 		}
 	}
 	
