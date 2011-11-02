@@ -38,7 +38,7 @@ public class NYTEvaluator {
 	
 	static String redirectsFile = "dbpediaRedirects.ser";
 	
-	static boolean printWrongMappings = true;
+	static boolean printWrongMappings = false;
 	
 	static boolean matchingDBPedia = false;
 	private static String outputFilename = "alignmentsModified.rdf";
