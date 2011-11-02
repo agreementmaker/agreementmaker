@@ -2,13 +2,14 @@ package batch;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import evaluation.NYTEvaluator;
 
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.BaseInstanceMatcher;
 import am.app.mappingEngine.InstanceMatcherFede;
+import am.app.mappingEngine.ReferenceAlignmentUtilities;
 import am.app.mappingEngine.instanceMatcher.NYTConstants;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -26,8 +27,8 @@ import am.app.ontology.ontologyParser.OntologyDefinition;
 public class IMBatch {	
 	String report = "";
 		
-	//AbstractMatcher matcher = new BaseInstanceMatcher();
-	AbstractMatcher matcher = new InstanceMatcherFede();
+	AbstractMatcher matcher = new BaseInstanceMatcher();
+	//AbstractMatcher matcher = new InstanceMatcherFede();
 	
 	
 	public String singleFreebaseTest(String sourceFile, String alignmentFile, String referenceFile, double threshold, String cacheFile) throws Exception{
@@ -66,11 +67,7 @@ public class IMBatch {
 		matcher.setTargetOntology(targetOnt);
 		matcher.setThreshold(threshold);
 		
-		ReferenceAlignmentMatcher refMatcher = new ReferenceAlignmentMatcher();
-		ReferenceAlignmentParameters parameters = new ReferenceAlignmentParameters();
-		parameters.fileName = referenceFile;
-		refMatcher.setParam(parameters);
-		ArrayList<MatchingPair> refPairs = refMatcher.parseStandardOAEI();
+		List<MatchingPair> refPairs = ReferenceAlignmentUtilities.getMatchingPairs(referenceFile);
 		
 		matcher.setReferenceAlignment(refPairs);
 				
@@ -270,7 +267,7 @@ public class IMBatch {
 //				threshold,
 //				"dbpediaPeopleRDFCache.ser");	
 
-//		report += singleDBPediaTest(cwd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, 
+//		report += singleDBPediaTest(cMaxHitswd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, 
 //				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
 //				NYTConstants.REF_DBP_ORGANIZATIONS,
 //				threshold,
@@ -327,18 +324,18 @@ public class IMBatch {
 		
 		String cwd = System.getProperty("user.dir") + File.separator;
  		
-		String alignmentFile = "OAEI2011/NYTMappings/nyt - dbpediaapi - schema mappings.rdf";
-		String referenceFile = cwd + NYTConstants.REF_DBP_LOCATIONS;
+		//String alignmentFile = "OAEI2011/NYTMappings/nyt - dbpediaapi - schema mappings.rdf";
+		String referenceFile = cwd + NYTConstants.REF_DBP_ORGANIZATIONS;
 		
 				
 		OntologyDefinition sourceDef = new OntologyDefinition();
 		sourceDef.loadOntology = false;
 		sourceDef.loadInstances = true;
-		sourceDef.instanceSourceFile = cwd + NYTConstants.NYT_LOCATIONS_ARTICLES;
+		sourceDef.instanceSourceFile = cwd + NYTConstants.NYT_ORGANIZATIONS;
 		sourceDef.instanceSource = DatasetType.DATASET;
 		sourceDef.instanceSourceFormat = 0;
 		sourceDef.loadSchemaAlignment = true;
-		sourceDef.schemaAlignmentURI = alignmentFile;
+		//sourceDef.schemaAlignmentURI = alignmentFile;
 		sourceDef.schemaAlignmentFormat = 0;
 		sourceDef.sourceOrTarget = Ontology.SOURCE;
 		
@@ -354,10 +351,13 @@ public class IMBatch {
 		
 		targetOnt.setInstances(instances);
 		
-		InstanceMatcherFede matcher = new InstanceMatcherFede();
 		matcher.setSourceOntology(sourceOnt);
 		matcher.setTargetOntology(targetOnt);
 		matcher.setThreshold(threshold);
+		
+		List<MatchingPair> refPairs = ReferenceAlignmentUtilities.getMatchingPairs(referenceFile);
+				
+		matcher.setReferenceAlignment(refPairs);
 		
 		matcher.match();
 		
@@ -374,7 +374,7 @@ public class IMBatch {
 		
 		IMBatch batch = new IMBatch();
 
-		batch.runFreebaseOrganizationsTest();
+//		batch.runFreebaseOrganizationsTest();
 		
 //		batch.runFreebaseTest();
 		
@@ -384,6 +384,7 @@ public class IMBatch {
 		
 //		batch.dbpediaLocationsTest();
 		
+		batch.runDBPediaApiTest();
 	}
 
 }
