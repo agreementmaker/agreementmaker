@@ -90,26 +90,7 @@ public class HTTPUtility {
 	    	read += is.read(buffer, read, len);
 	    }
 	    
-	    //System.out.println("I have read: " + read);
-	    
 	    String page = new String(buffer);
-	    
-	    //System.out.println(page);
-	    
-	    /*
-	    BufferedReader in = new BufferedReader(
-                new InputStreamReader(
-                is));
-
-	    
-		String page = "";
-		String line;
-		
-		while ((line = in.readLine()) != null)
-		page += line;
-		in.close();
-*/		
-		
 
 	    return page;
 	}
