@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.ibm.icu.text.DecimalFormat;
@@ -21,6 +23,7 @@ import classification.TrainSet;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.StringUtil.StringMetrics;
+import am.app.mappingEngine.instanceMatcher.LabelUtils;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
@@ -46,9 +49,6 @@ public class InstanceMatcherFede extends AbstractMatcher {
 	
 	Porter stemmer = new Porter();
 	
-	public String referenceAlignmentFile = "OAEI2011/NYTReference/nyt-dbpedia-locations-mappings.rdf";
-	
-	ArrayList<MatchingPair> filePairs;
 	TrainSet trainSet;
 	Classificator classificator;
 	
@@ -58,19 +58,18 @@ public class InstanceMatcherFede extends AbstractMatcher {
 	private String outputFilename = "alignments.rdf";
 	
 	private static final long serialVersionUID = -8278698313888419789L;
+	
+	Logger log;
 
 	@Override
 	protected void beforeAlignOperations() throws Exception {
 		super.beforeAlignOperations();
+		
+		log = Logger.getLogger(InstanceMatcherFede.class);
+		
 		wordNetUtils = new WordNetUtils();
 		
 		performSelection = false;
-		
-		ReferenceAlignmentMatcher matcher = new ReferenceAlignmentMatcher();
-		ReferenceAlignmentParameters param = new ReferenceAlignmentParameters();
-		param.fileName = referenceAlignmentFile;
-		matcher.setParam(param);
-		filePairs = matcher.parseStandardOAEI();
 		
 		//trainSet = new TrainSet();
 		//trainSet.addClasses("match");
@@ -93,7 +92,8 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		else if(size == 1) singleResult++;
 		else if(size > 1) ambiguous++;
 		
-		if(ReferenceAlignmentUtilities.candidatesContainSolution(filePairs, sourceInstance.getUri(), targetCandidates) != null)
+		
+		if(referenceAlignment != null && ReferenceAlignmentUtilities.candidatesContainSolution(referenceAlignment, sourceInstance.getUri(), targetCandidates) != null)
 			solvable++;
 		
 		
@@ -412,6 +412,8 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		System.out.println("No Results: " + noResult);
 		System.out.println("Single result: " + singleResult);
 		System.out.println("Total: " + (ambiguous + noResult + singleResult));
+		if(referenceAlignment != null)
+			System.out.println("InReference: " + referenceAlignment.size());
 		
 		System.out.println("Solvable: " + solvable);
 		
@@ -504,9 +506,9 @@ public class InstanceMatcherFede extends AbstractMatcher {
 	}
 	
 	public boolean areMatched(String sourceURI, String targetURI){
-		for (int i = 0; i < filePairs.size(); i++) {
-			if(filePairs.get(i).sourceURI.equals(sourceURI)){
-				if(filePairs.get(i).targetURI.equals(targetURI)){
+		for (int i = 0; i < referenceAlignment.size(); i++) {
+			if(referenceAlignment.get(i).sourceURI.equals(sourceURI)){
+				if(referenceAlignment.get(i).targetURI.equals(targetURI)){
 					return true;
 				}
 				else return false;
@@ -518,15 +520,27 @@ public class InstanceMatcherFede extends AbstractMatcher {
 	public void debugMapping(MatchingPair pair){
 		if(pair == null) return;
 		String source = pair.sourceURI;
-		for (int i = 0; i < filePairs.size(); i++) {
-			if(filePairs.get(i).sourceURI.equals(source)){
-				if(filePairs.get(i).sameTarget(pair)){
-					if(verbose) System.out.println("RIGHT MAPPING " + filePairs.get(i));
+		for (int i = 0; i < referenceAlignment.size(); i++) {
+			if(referenceAlignment.get(i).sourceURI.equals(source)){
+				if(referenceAlignment.get(i).sameTarget(pair)){
+					if(verbose) System.out.println("RIGHT MAPPING " + referenceAlignment.get(i));
 				}
 				else{
-					if(verbose) System.out.println("WRONG MAPPING right:" + filePairs.get(i));
+					if(verbose) System.out.println("WRONG MAPPING right:" + referenceAlignment.get(i));
 				}
 			}
 		}
+	}
+	
+	@Override
+	public String processLabelBeforeCandidatesGeneration(String label, String type) {
+		log.debug(label + "\t" + type);
+		
+		if(type == null) return super.processLabelBeforeCandidatesGeneration(label, type);
+		
+		if(type.toLowerCase().endsWith("organization"))
+			return LabelUtils.processOrganizationLabel(label);
+		
+		return super.processLabelBeforeCandidatesGeneration(label, type);
 	}
 }

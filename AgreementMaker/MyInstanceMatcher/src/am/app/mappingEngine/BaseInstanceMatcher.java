@@ -2,6 +2,10 @@ package am.app.mappingEngine;
 
 import java.util.List;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+import am.app.mappingEngine.instanceMatcher.LabelUtils;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.Instance;
 
@@ -10,19 +14,22 @@ public class BaseInstanceMatcher extends AbstractMatcher{
 
 	private static final long serialVersionUID = 4301685403439511365L;
 	
+	Logger log;
+	
 	@Override
 	protected void beforeAlignOperations() throws Exception {
 		super.beforeAlignOperations();
+		log = Logger.getLogger(BaseInstanceMatcher.class);
+		log.setLevel(Level.INFO);
 	}
 	
 	@Override
 	protected MatchingPair alignInstanceCandidates(Instance sourceInstance,
 			List<Instance> targetCandidates) throws Exception {
+		log.debug("SOURCE");
+		log.debug(sourceInstance.getSingleValuedProperty("label") + "\t" + sourceInstance.getUri());
 		
-		System.out.println("SOURCE");
-		System.out.println(sourceInstance.getSingleValuedProperty("label") + "\t" + sourceInstance.getUri());
-		
-		System.out.println("CANDIDATES (" + targetCandidates.size() + ")");
+		log.debug("CANDIDATES (" + targetCandidates.size() + ")");
 		
 		String solutionURI = null;
 		
@@ -37,15 +44,14 @@ public class BaseInstanceMatcher extends AbstractMatcher{
 			candidate = targetCandidates.get(i);
 			
 			if(solutionURI != null && solutionURI.equals(candidate.getUri())){
-				System.out.print("X ");
+				log.debug("X " + candidate.getSingleValuedProperty("label") + "\t" + candidate.getUri());
 				foundSolution = true;
 			}
-				
-			System.out.println(candidate.getSingleValuedProperty("label") + "\t" + candidate.getUri());
+			else log.debug(candidate.getSingleValuedProperty("label") + "\t" + candidate.getUri());
 		}
 				
-		if(!foundSolution) System.out.println("NON SOLVABLE:\t" + sourceInstance.getSingleValuedProperty("label") + 
-				"\t" + sourceInstance.getUri());
+		if(!foundSolution) log.debug("NON SOLVABLE:\t" + sourceInstance.getSingleValuedProperty("label") + 
+				"\t" + processLabelBeforeCandidatesGeneration(sourceInstance.getSingleValuedProperty("label"), sourceInstance.getType()) + "\t" + sourceInstance.getUri());
 		
 		return null;
 	}
@@ -56,7 +62,14 @@ public class BaseInstanceMatcher extends AbstractMatcher{
 	}
 	
 	@Override
-	public String processLabelBeforeCandidatesGeneration(String label) {
-		return super.processLabelBeforeCandidatesGeneration(label);
+	public String processLabelBeforeCandidatesGeneration(String label, String type) {
+		log.debug(label + "\t" + type);
+		
+		if(type == null) return super.processLabelBeforeCandidatesGeneration(label, type);
+		
+		if(type.toLowerCase().endsWith("organization"))
+			return LabelUtils.processOrganizationLabel(label);
+		
+		return super.processLabelBeforeCandidatesGeneration(label, type);
 	}
 }
