@@ -235,10 +235,13 @@ public class IMBatch {
 		SparqlInstanceDataset dataset = (SparqlInstanceDataset) targetOnt.getInstances();
 		dataset.setCacheFile(cacheFile);
 		
-		InstanceMatcherFede matcher = new InstanceMatcherFede();
 		matcher.setSourceOntology(sourceOnt);
 		matcher.setTargetOntology(targetOnt);
 		matcher.setThreshold(threshold);
+		
+		List<MatchingPair> refPairs = ReferenceAlignmentUtilities.getMatchingPairs(referenceFile);
+		
+		matcher.setReferenceAlignment(refPairs);
 		
 		matcher.match();
 		
@@ -279,6 +282,21 @@ public class IMBatch {
 //				threshold,
 //				"dbpediaLocationsRDFCache10000.ser");	
 				
+		System.out.println(report);
+	}
+	
+	public void runDBPediaOrganizationsTest() throws Exception{
+		String cwd = System.getProperty("user.dir") + File.separator;
+		double threshold = 0.5;
+		
+		String report = "";
+		
+		report += singleDBPediaTest(cwd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, 
+				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
+				NYTConstants.REF_DBP_ORGANIZATIONS,
+				threshold,
+				"dbpediaLocationsProcessed2.ser");	
+		
 		System.out.println(report);
 	}
 	
@@ -383,8 +401,10 @@ public class IMBatch {
 //		batch.runDBPediaTest();
 		
 //		batch.dbpediaLocationsTest();
+	
+		batch.runDBPediaOrganizationsTest();
 		
-		batch.runDBPediaApiTest();
+		//System.out.println(batch.runDBPediaApiTest());
 	}
 
 }

@@ -40,10 +40,6 @@ public class KnowledgeBaseInstanceDataset implements InstanceDataset{
 		this.datasetId = datasetId;
 		
 		OntModel model = kb.getOntModelByID(datasetId);
-		
-		
-		
-		
 	}
 
 	@Override
@@ -155,7 +151,4 @@ public class KnowledgeBaseInstanceDataset implements InstanceDataset{
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
-	
-
 }
