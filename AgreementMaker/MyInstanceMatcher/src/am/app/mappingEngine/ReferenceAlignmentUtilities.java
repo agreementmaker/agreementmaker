@@ -1,8 +1,14 @@
 package am.app.mappingEngine;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.dom4j.DocumentException;
+
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.ontology.instance.Instance;
 
 public class ReferenceAlignmentUtilities {
@@ -21,4 +27,24 @@ public class ReferenceAlignmentUtilities {
 		}
 		return null;
 	}
+	
+	public static List<MatchingPair> getMatchingPairs(String filename){
+		ReferenceAlignmentMatcher refMatcher = new ReferenceAlignmentMatcher();
+		ReferenceAlignmentParameters parameters = new ReferenceAlignmentParameters();
+		parameters.fileName = filename;
+		refMatcher.setParam(parameters);
+		ArrayList<MatchingPair> refPairs;
+		try {
+			refPairs = refMatcher.parseStandardOAEI();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		} catch (DocumentException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return refPairs;
+	}
+	
+	
 }
