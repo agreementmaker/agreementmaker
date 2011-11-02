@@ -46,10 +46,7 @@ public class DBPediaApiInstanceDataset implements InstanceDataset{
 	
 	public DBPediaApiInstanceDataset(){
 		loadCache();
-		
 		sparqlEndpoint = new SparqlEndpoint("http://dbpedia.org/sparql", "dbpediaSingleLocationsCache");
-		
-		
 	}
 	
 
@@ -82,7 +79,7 @@ public class DBPediaApiInstanceDataset implements InstanceDataset{
 			return instances;
 		}
 		
-		String url = endpoint + "?QueryString=" + searchTerm;
+		String url = endpoint + "?QueryString=" + searchTerm + "&MaxHits=20";
 		
 		if(type != null) 
 			url += "&QueryClass=" + type;
@@ -93,6 +90,7 @@ public class DBPediaApiInstanceDataset implements InstanceDataset{
 		
 		xml = cache.get(url);
 		if(xml == null){
+			System.out.println(url);
 			try {
 				xml = HTTPUtility.getPage(url);
 			} catch (IOException e) {
@@ -101,9 +99,11 @@ public class DBPediaApiInstanceDataset implements InstanceDataset{
 			}
 		}
 		
+		//System.out.println("xml:" + xml);
+		
 		cache.put(url, xml);
 		
-		//System.out.println("xml:" + xml);
+		
 		
 		DocumentBuilderFactory dbf =
 	            DocumentBuilderFactory.newInstance();
@@ -149,16 +149,15 @@ public class DBPediaApiInstanceDataset implements InstanceDataset{
 				}
 				else if(name.equals("Description")){
 					el = (Element)child;
-					//instance.setProperty("comment", el.getTextContent());
+					instance.setProperty("comment", el.getTextContent());
 				}
-				else if(name.equals("Classes")){
-					NodeList classes = child.getChildNodes();
-					
-					for (int k = 0; k < classes.getLength(); k++) {
-						//classes.
-					}
-					
-				}
+//				else if(name.equals("Classes")){
+//					NodeList classes = child.getChildNodes();
+//					
+//					for (int k = 0; k < classes.getLength(); k++) {
+//						//classes.
+//					}	
+//				}
 			}
 			
 			instances.add(instance);
@@ -188,18 +187,6 @@ public class DBPediaApiInstanceDataset implements InstanceDataset{
 		return null;
 	}
 	
-	private void loadCache() {
-		ObjectInput in;
-		try {
-			in = new ObjectInputStream(new FileInputStream(xmlCacheFilename));
-			Object input = in.readObject();
-			cache = (HashMap<String, String>) input;	
-		} catch (Exception e) {
-			e.printStackTrace();
-			cache = new HashMap<String, String>();
-		}
-	}
-	
 	public void persistCache() throws FileNotFoundException, IOException{
 		 System.out.println("Writing to file...");
 		 ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(xmlCacheFilename));
@@ -207,6 +194,35 @@ public class DBPediaApiInstanceDataset implements InstanceDataset{
 		 out.close();
 		 System.out.println("Done");
 		 sparqlEndpoint.persistCache();
+	}
+	
+	private void loadCache() {
+		FileInputStream fis = null;
+		ObjectInputStream in;
+		Object input = null;
+		
+		try {	fis = new FileInputStream(xmlCacheFilename); }
+		catch (FileNotFoundException e1) {
+			System.err.println("The cache file doesn't exist");
+			cache = new HashMap<String, String>();
+			return;
+		}
+		
+		try {
+			in = new ObjectInputStream(fis);
+			input  = in.readObject();
+			cache = (HashMap<String, String>) input;
+			
+		} catch (IOException e1) {
+			System.err.println("The cache will be empty");
+			cache = new HashMap<String, String>();
+			return;
+			
+		} catch (ClassNotFoundException e) {
+			System.err.println("The cache will be empty");
+			cache = new HashMap<String, String>();
+			return;
+		}
 	}
 
 }
