@@ -36,7 +36,7 @@ public class KnowledgeBaseInstanceDataset implements InstanceDataset{
 	private double luceneScoreThreshold = 0.5;
 	
 	public KnowledgeBaseInstanceDataset(String xmlFile, String datasetId){
-		kb = OntologyKBFactory.createKBFromXML(new File(System.getProperty("user.dir") + File.separator + xmlFile));		
+		kb = OntologyKBFactory.createKBFromXML(new File(xmlFile));		
 		this.datasetId = datasetId;
 		
 		OntModel model = kb.getOntModelByID(datasetId);
@@ -150,5 +150,20 @@ public class KnowledgeBaseInstanceDataset implements InstanceDataset{
 	public boolean isIterable() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	public static void main(String[] args) throws AMException {
+				
+		System.out.println(System.getProperty("user.dir"));
+		
+		String xmlFile = new File(System.getProperty("user.dir")).getParent() + "/Datasets/dbpedia.xml";
+		String datasetId = "dbp_labels";
+		
+		
+		KnowledgeBaseInstanceDataset KBdataset = new KnowledgeBaseInstanceDataset(xmlFile, datasetId);
+		
+		
+		System.out.println(KBdataset.getCandidateInstances("Berlusconi", null));
+		
 	}
 }
