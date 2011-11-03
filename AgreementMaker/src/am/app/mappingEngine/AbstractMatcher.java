@@ -473,7 +473,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     		
     		String label = labelList.get(0);
     		
-    		label = processLabelBeforeCandidatesGeneration(label);
+    		label = processLabelBeforeCandidatesGeneration(label, sourceInstance.getType());
     		
     		String sourceType = sourceInstance.getType();
     		List<MatchingPair> targetTypes = null;
@@ -519,7 +519,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return mappings;
 	}
     
-	public String processLabelBeforeCandidatesGeneration(String label) {
+    /**
+     * Basic implementation of the label processing before candidates retrieval. The type is not actually used
+     * but may be used by overriding matchers 
+     */
+	public String processLabelBeforeCandidatesGeneration(String label, String type) {
 		if(label.contains("(")){
 			int beg = label.indexOf('(');
 			int end = label.indexOf(')');
