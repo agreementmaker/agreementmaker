@@ -27,8 +27,8 @@ import am.app.ontology.ontologyParser.OntologyDefinition;
 public class IMBatch {	
 	String report = "";
 		
-	AbstractMatcher matcher = new BaseInstanceMatcher();
-	//AbstractMatcher matcher = new InstanceMatcherFede();
+	//AbstractMatcher matcher = new BaseInstanceMatcher();
+	AbstractMatcher matcher = new InstanceMatcherFede();
 	
 	
 	public String singleFreebaseTest(String sourceFile, String alignmentFile, String referenceFile, double threshold, String cacheFile) throws Exception{
@@ -387,6 +387,59 @@ public class IMBatch {
 		
 	}
 	
+	private String runDBPediaOnDiskTest() throws Exception {
+		double threshold = 0.5;
+		
+		String cwd = System.getProperty("user.dir") + File.separator;
+ 		
+		//String alignmentFile = "OAEI2011/NYTMappings/nyt - dbpediaapi - schema mappings.rdf";
+		String referenceFile = cwd + NYTConstants.REF_DBP_PEOPLE;
+		
+				
+		OntologyDefinition sourceDef = new OntologyDefinition();
+		sourceDef.loadOntology = false;
+		sourceDef.loadInstances = true;
+		sourceDef.instanceSourceFile = cwd + NYTConstants.NYT_PEOPLE;
+		sourceDef.instanceSource = DatasetType.DATASET;
+		sourceDef.instanceSourceFormat = 0;
+		sourceDef.loadSchemaAlignment = true;
+		//sourceDef.schemaAlignmentURI = alignmentFile;
+		sourceDef.schemaAlignmentFormat = 0;
+		sourceDef.sourceOrTarget = Ontology.SOURCE;
+		
+		System.out.println("Building source ontology...");
+		OntoTreeBuilder builder = new OntoTreeBuilder(sourceDef);
+		builder.build();
+		System.out.println("Done");
+		Ontology sourceOnt = builder.getOntology();
+		
+		Ontology targetOnt = new Ontology();
+	
+		String xmlFile = new File(System.getProperty("user.dir")).getParent() + "/Datasets/dbpedia.xml";
+		String datasetId = "dbp_labels";
+		
+		KnowledgeBaseInstanceDataset instances = new KnowledgeBaseInstanceDataset(xmlFile, datasetId);
+		
+		targetOnt.setInstances(instances);
+		
+		matcher.setSourceOntology(sourceOnt);
+		matcher.setTargetOntology(targetOnt);
+		matcher.setThreshold(threshold);
+		
+		List<MatchingPair> refPairs = ReferenceAlignmentUtilities.getMatchingPairs(referenceFile);
+				
+		matcher.setReferenceAlignment(refPairs);
+		
+		matcher.match();
+		
+		//instances.persistCache();
+		
+		report += NYTEvaluator.evaluate("alignment.rdf", referenceFile, threshold) + "\n";
+		
+		return report;
+		
+	}
+	
 	public static void main(String[] args) throws Exception {
 		String cwd = System.getProperty("user.dir") + File.separator;
 		
@@ -402,7 +455,9 @@ public class IMBatch {
 		
 //		batch.dbpediaLocationsTest();
 	
-		batch.runDBPediaOrganizationsTest();
+//		batch.runDBPediaOrganizationsTest();
+	
+		System.out.println(batch.runDBPediaOnDiskTest());
 		
 		//System.out.println(batch.runDBPediaApiTest());
 	}

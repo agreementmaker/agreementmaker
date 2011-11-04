@@ -33,7 +33,7 @@ public class KnowledgeBaseInstanceDataset implements InstanceDataset{
 	OntologyBackedKnowledgeBase kb;
 	String datasetId;
 	
-	private double luceneScoreThreshold = 0.5;
+	private double luceneScoreThreshold = 0.2;
 	
 	public KnowledgeBaseInstanceDataset(String xmlFile, String datasetId){
 		kb = OntologyKBFactory.createKBFromXML(new File(xmlFile));		
@@ -70,7 +70,7 @@ public class KnowledgeBaseInstanceDataset implements InstanceDataset{
 		"\n      (?lit ?score) pf:textMatch '\"" + searchTerm + "\"' ." +
 		"\n	?s ?property ?lit." +
 		"\n  FILTER (?score > " + luceneScoreThreshold +")" +
-		"\n}";
+		"\n } ORDER BY DESC(?score) LIMIT 1000";
 		
 		
 		//System.out.println(queryString);
@@ -102,18 +102,12 @@ public class KnowledgeBaseInstanceDataset implements InstanceDataset{
 				
 				if(individual != null){
 					//TODO parametrize the type
-					Instance instance = new Instance(individual.getURI(), "location");
-					
+					Instance instance = new Instance(individual.getURI(), null);
 					Resource ind = model.getResource(individual.getURI());
-					
 					List<Statement> stmts = model.listStatements(ind, (Property) null, (RDFNode) null).toList();
-					
 					String label = individual.getLabel("");
-					
 					instance.setProperty("label", label);
-					
 					instance.setStatements(stmts);
-					
 					instances.add(instance);
 				}
 					
@@ -121,9 +115,7 @@ public class KnowledgeBaseInstanceDataset implements InstanceDataset{
 	    } finally {
 	    	model.leaveCriticalSection();
 	    }
-	    
-	    System.out.println(candidates);
-		
+	      
 		return instances;
 	}
 
@@ -159,11 +151,9 @@ public class KnowledgeBaseInstanceDataset implements InstanceDataset{
 		String xmlFile = new File(System.getProperty("user.dir")).getParent() + "/Datasets/dbpedia.xml";
 		String datasetId = "dbp_labels";
 		
-		
 		KnowledgeBaseInstanceDataset KBdataset = new KnowledgeBaseInstanceDataset(xmlFile, datasetId);
-		
-		
-		System.out.println(KBdataset.getCandidateInstances("Berlusconi", null));
+				
+		System.out.println(KBdataset.getCandidateInstances("U2", null).toString().replaceAll(", ", "\n"));
 		
 	}
 }

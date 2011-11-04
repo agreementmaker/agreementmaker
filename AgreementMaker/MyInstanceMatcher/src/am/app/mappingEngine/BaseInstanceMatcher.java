@@ -50,7 +50,7 @@ public class BaseInstanceMatcher extends AbstractMatcher{
 			else log.debug(candidate.getSingleValuedProperty("label") + "\t" + candidate.getUri());
 		}
 				
-		if(!foundSolution) log.debug("NON SOLVABLE:\t" + sourceInstance.getSingleValuedProperty("label") + 
+		if(!foundSolution) log.info("NON SOLVABLE:\t" + sourceInstance.getSingleValuedProperty("label") + 
 				"\t" + processLabelBeforeCandidatesGeneration(sourceInstance.getSingleValuedProperty("label"), sourceInstance.getType()) + "\t" + sourceInstance.getUri());
 		
 		return null;

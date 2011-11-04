@@ -38,9 +38,9 @@ public class NYTEvaluator {
 	
 	static String redirectsFile = "dbpediaRedirects.ser";
 	
-	static boolean printWrongMappings = false;
+	static boolean printWrongMappings = true;
 	
-	static boolean matchingDBPedia = false;
+	static boolean matchingDBPedia = true;
 	private static String outputFilename = "alignmentsModified.rdf";
 	
 	
@@ -213,7 +213,7 @@ public class NYTEvaluator {
 	public static void main(String[] args) throws Exception {
 		//System.out.println(evaluate(toEvaluate, reference, 0.9));
 		String report = "";
-		report += NYTEvaluator.evaluate("alignment.rdf", NYTConstants.REF_DBP_LOCATIONS, 0.0) + "\n";
+		report += NYTEvaluator.evaluate("alignment.rdf", NYTConstants.REF_DBP_ORGANIZATIONS, 0.0) + "\n";
 		System.out.println(report);
 	}
 }
