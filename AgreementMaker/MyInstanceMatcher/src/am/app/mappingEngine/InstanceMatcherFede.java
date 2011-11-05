@@ -541,6 +541,9 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		if(type.toLowerCase().endsWith("organization"))
 			return LabelUtils.processOrganizationLabel(label);
 		
+		if(type.toLowerCase().endsWith("person"))
+			return LabelUtils.processPersonLabel(label);
+		
 		return super.processLabelBeforeCandidatesGeneration(label, type);
 	}
 }

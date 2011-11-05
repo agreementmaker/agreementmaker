@@ -393,13 +393,13 @@ public class IMBatch {
 		String cwd = System.getProperty("user.dir") + File.separator;
  		
 		//String alignmentFile = "OAEI2011/NYTMappings/nyt - dbpediaapi - schema mappings.rdf";
-		String referenceFile = cwd + NYTConstants.REF_DBP_PEOPLE;
+		String referenceFile = cwd + NYTConstants.REF_DBP_LOCATIONS;
 		
 				
 		OntologyDefinition sourceDef = new OntologyDefinition();
 		sourceDef.loadOntology = false;
 		sourceDef.loadInstances = true;
-		sourceDef.instanceSourceFile = cwd + NYTConstants.NYT_PEOPLE;
+		sourceDef.instanceSourceFile = cwd + NYTConstants.NYT_LOCATIONS;
 		sourceDef.instanceSource = DatasetType.DATASET;
 		sourceDef.instanceSourceFormat = 0;
 		sourceDef.loadSchemaAlignment = true;
@@ -418,7 +418,7 @@ public class IMBatch {
 		String xmlFile = new File(System.getProperty("user.dir")).getParent() + "/Datasets/dbpedia.xml";
 		String datasetId = "dbp_labels";
 		
-		KnowledgeBaseInstanceDataset instances = new KnowledgeBaseInstanceDataset(xmlFile, datasetId);
+		DBPediaKBInstanceDataset instances = new DBPediaKBInstanceDataset(xmlFile, datasetId);
 		
 		targetOnt.setInstances(instances);
 		

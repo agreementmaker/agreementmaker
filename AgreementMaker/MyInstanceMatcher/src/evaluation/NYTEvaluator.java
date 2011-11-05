@@ -69,7 +69,6 @@ public class NYTEvaluator {
 			cleanDBPediaMappings(toEvaluate);
 			MappingsOutput.writeMappingsOnDisk(outputFilename , toEvaluate);
 		}
-			
 		
 		MappingsOutput.alignmentsToOutput(toEvaluate);
 		
@@ -123,15 +122,9 @@ public class NYTEvaluator {
 			in = new ObjectInputStream(new FileInputStream(redirectsFile));
 			Object input = in.readObject();
 			answers = (HashMap<String, String>) input;	
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			System.err.println("Problems opening the DBPedia redirects cache file. The cache will be empty");
+			answers = new HashMap<String, String>();
 		}
 		
 		String dbpedia = "http://dbpedia.org/sparql";
@@ -213,7 +206,7 @@ public class NYTEvaluator {
 	public static void main(String[] args) throws Exception {
 		//System.out.println(evaluate(toEvaluate, reference, 0.9));
 		String report = "";
-		report += NYTEvaluator.evaluate("alignment.rdf", NYTConstants.REF_DBP_ORGANIZATIONS, 0.0) + "\n";
+		report += NYTEvaluator.evaluate("alignment.rdf", NYTConstants.REF_DBP_PEOPLE, 0.0) + "\n";
 		System.out.println(report);
 	}
 }
