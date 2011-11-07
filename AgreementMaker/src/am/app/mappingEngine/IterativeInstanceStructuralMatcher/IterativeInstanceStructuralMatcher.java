@@ -519,10 +519,15 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 			domainSim = 0.8;
 		}
 		else{
-			domainSim = domainSimilarity(sProp.getDomain(),tProp.getDomain());
-			if(sProp.getDomain().asClass().isUnionClass() &&
-					tProp.getDomain().asClass().isUnionClass())
-				unions = true;
+			try {
+				domainSim = domainSimilarity(sProp.getDomain(),tProp.getDomain());
+				if(sProp.getDomain().asClass().isUnionClass() &&
+						tProp.getDomain().asClass().isUnionClass())
+					unions = true;
+			} catch( Exception e ) {
+				e.printStackTrace();
+				domainSim = 0.8;
+			}
 			
 		}
 			
@@ -720,9 +725,14 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 	}
 
 	private double restrictionUsageSimilarity(Restriction r1, Restriction r2) {
-		double restrSim = restrictionSimilarity(r1, r2, false);
-		double resSim = compareResources(restrictions.get(r1).getResource(), restrictions.get(r1).getResource());
-		return (2*restrSim+resSim)/3;
+		try {
+			double restrSim = restrictionSimilarity(r1, r2, false);
+			double resSim = compareResources(restrictions.get(r1).getResource(), restrictions.get(r1).getResource());
+			return (2*restrSim+resSim)/3;
+		} catch( Exception e ) {
+			e.printStackTrace();
+			return 0d;
+		}
 	}
 
 	private List<Restriction> getRestrictionsOnProperty( List<Node> classList,
@@ -730,14 +740,18 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		ArrayList<Restriction> restr = new ArrayList<Restriction>();
 		for(Node cl: classList){
 			OntClass ontClass = (OntClass)cl.getResource().as(OntClass.class);
-			for(Object o: ontClass.listSuperClasses().toList()){
-				OntClass supClass  = (OntClass) o;
-				if(supClass.isRestriction()){
-					Restriction r = supClass.asRestriction();
-					restrictions.put(r, cl);
-					if(r.getOnProperty().equals((OntProperty)sProp.getResource().as(OntProperty.class)))
-						restr.add(r);
+			try {
+				for(Object o: ontClass.listSuperClasses().toList()){
+					OntClass supClass  = (OntClass) o;
+					if(supClass.isRestriction()){
+						Restriction r = supClass.asRestriction();
+						restrictions.put(r, cl);
+						if(r.getOnProperty().equals((OntProperty)sProp.getResource().as(OntProperty.class)))
+							restr.add(r);
+					}
 				}
+			} catch( Exception e ) {
+				e.printStackTrace();
 			}
 		}
 		return restr;
@@ -766,7 +780,11 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		//System.out.println();
 		for(int k = 0; k < unionClassesS.size(); k++){
 			for(int m = 0; m < unionClassesT.size(); m++){
-				matchUnionClassMember(unionClassesS.get(k), unionClassesT.get(m));
+				try {
+					matchUnionClassMember(unionClassesS.get(k), unionClassesT.get(m));
+				} catch( Exception e ) {
+					e.printStackTrace();
+				}
 			}
 		}
 		
@@ -1106,8 +1124,13 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		//System.out.println(c1+" "+c2);
 		if(c1.isRestriction() && c2.isRestriction()){
 			//System.out.println("RESTR");
-			return restrictionSimilarity((Restriction)c1.as(Restriction.class),
-					(Restriction)c2.as(Restriction.class),true);
+			try {
+				return restrictionSimilarity((Restriction)c1.as(Restriction.class),
+						(Restriction)c2.as(Restriction.class),true);
+			} catch( Exception e ) {
+				e.printStackTrace();
+				return 0d;
+			}
 		}
 		if(c1.getURI()!=null && c2.getURI()!=null){
 			//System.out.println("ALIGN");
@@ -1116,12 +1139,17 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		return 0.0;
 	}
 	
-	private double restrictionSimilarity(Restriction r1, Restriction r2,boolean classes){
+	private double restrictionSimilarity(Restriction r1, Restriction r2,boolean classes) throws Exception {
 		double sim = 0;
 		double onProp = 0;
 		
-		if(classes)
-		onProp = alignedProp(r1.getOnProperty().getURI(), r2.getOnProperty().getURI());
+		
+		try {
+			if(classes)
+			onProp = alignedProp(r1.getOnProperty().getURI(), r2.getOnProperty().getURI());
+		} catch( Exception e ) {
+			e.printStackTrace();
+		}
 		
 		if(r1.isMaxCardinalityRestriction() && r2.isMaxCardinalityRestriction()){
 			MaxCardinalityRestriction m1 = r1.asMaxCardinalityRestriction();
@@ -1136,10 +1164,14 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 				sim++;
 		}
 		else if(r1.isCardinalityRestriction() && r2.isCardinalityRestriction()){
-			CardinalityRestriction c1 = r1.asCardinalityRestriction();
-			CardinalityRestriction c2 = r2.asCardinalityRestriction();
-			if(c1.getCardinality()==c2.getCardinality())
-				sim++;
+			try {
+				CardinalityRestriction c1 = r1.asCardinalityRestriction();
+				CardinalityRestriction c2 = r2.asCardinalityRestriction();
+				if(c1.getCardinality()==c2.getCardinality())
+					sim++;
+			} catch( Exception e ) {
+				e.printStackTrace();
+			}
 		}
 		else if(r1.isAllValuesFromRestriction() && r2.isAllValuesFromRestriction()){
 			AllValuesFromRestriction a1 = r1.asAllValuesFromRestriction();

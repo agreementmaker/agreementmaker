@@ -19,7 +19,7 @@
     	<sequence>
     		<element name="sourceOntology" type="string"></element>
     		<element name="targetOntology" type="string"></element>
-    		<element name="matcherRegistryEntry" type="string"></element>
+    		<element name="matcherRegistryEntry" type="string" maxOccurs="1" minOccurs="0"></element>
     		<element name="outputAlignmentFile" type="string"></element>
     	</sequence>
     </complexType>
