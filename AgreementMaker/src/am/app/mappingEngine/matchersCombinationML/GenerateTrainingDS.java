@@ -31,12 +31,12 @@ public class GenerateTrainingDS {
 		 
 				// root element
 				Document doc = docBuilder.newDocument();
-				Element rootElement = doc.createElement("trainingsets");
+				Element rootElement = doc.createElement("testsets");
 				doc.appendChild(rootElement);
 		        for(TrainingLayout tl : trainFileSet)
 		        {
 		        
-				Element trainingset = doc.createElement("trainingset");
+				Element trainingset = doc.createElement("testset");
 				rootElement.appendChild(trainingset);
 				trainingset.setAttribute("id", Integer.toString(i));
 		 
