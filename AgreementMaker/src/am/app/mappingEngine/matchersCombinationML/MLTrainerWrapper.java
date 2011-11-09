@@ -1,6 +1,5 @@
 package am.app.mappingEngine.matchersCombinationML;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.dom4j.DocumentException;
@@ -11,7 +10,8 @@ import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
+import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.ontology.Ontology;
@@ -21,40 +21,6 @@ public class MLTrainerWrapper {
 	
 	ArrayList<AbstractMatcher> listOfMatchers=new ArrayList<AbstractMatcher>();
 	ArrayList<OntologyTriple> listOfTriples=new ArrayList<OntologyTriple>();
-	
-	
-	void loadMatchers()
-	{
-		//TODO : look at oaei2011 and look how to get matchers and add to list below 
-	//	listOfMatchers.add();
-		
-		
-		
-	}
-	
-	void loadOntologyTriples()
-	{
-		//TODO: load the list of training ontologies with reference alignments
-		OntologyTriple triple=new OntologyTriple();
-		String sourceFileName="";//sourcefilename
-		String targetFileName="";//targetfilename
-		Ontology sourceOntology=openOntology(sourceFileName);
-		Ontology targetOntology=openOntology(targetFileName);
-		ReferenceAlignmentMatcher matcher = new ReferenceAlignmentMatcher();
-		ReferenceAlignmentParameters param = new ReferenceAlignmentParameters();
-		param.fileName="";//set the reference alignment file name
-		matcher.setParam(param);
-		try {
-			Alignment<Mapping> referenceAlignment=matcher.parseStandardOAEI();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
 	
 	public static Ontology openOntology(String ontoName){
 		Ontology ontology;
@@ -71,20 +37,60 @@ public class MLTrainerWrapper {
 		return ontology;
 	}
 	
+	void loadMatchers()
+	{
+		//TODO : look at oaei2011 and look how to get matchers and add to list below 
+	//	listOfMatchers.add();
+	}
+	
+	void loadOntologyTriples(String filename,String elementname)
+	{
+		//TODO: load the list of training ontologies with reference alignments
+		XmlParser xp=new XmlParser();
+		ArrayList<TrainingLayout> tlist=xp.parseDocument(filename, elementname);
+		for(TrainingLayout tl: tlist)
+		{
+			Ontology sourceOntology=openOntology(tl.getsourceOntologyPath());
+			Ontology targetOntology=openOntology(tl.gettargetOntologyPath());
+			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+			refParam.onlyEquivalence = true;
+			refParam.fileName = tl.getrefAlignmentPath();
+			refParam.format = ReferenceAlignmentMatcher.OAEI;
+			AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher.setParam(refParam);
+			referenceAlignmentMatcher.setSourceOntology(sourceOntology);
+			referenceAlignmentMatcher.setTargetOntology(targetOntology);
+       		Alignment<Mapping> refmap=referenceAlignmentMatcher.getAlignment();
+			OntologyTriple ot=new OntologyTriple(sourceOntology,targetOntology,refmap);
+			listOfTriples.add(ot);
+		}
+	}
+	
 	void callProcess()
 	{
+		String filename="bench/training.xml";
+		String elementname="trainingset";
 		loadMatchers();
-		loadOntologyTriples();
+		loadOntologyTriples(filename,elementname);
 		
 		for(int t=0;t<listOfTriples.size();t++)
 		{
 			OntologyTriple currentTriple=listOfTriples.get(t);
-			for(int m=0;m<listOfMatchers.size();m++)
-			{
-				AbstractMatcher currentMatcher=listOfMatchers.get(m);
+			System.out.println(currentTriple.getOntology1().getFilename());
+			System.out.println(currentTriple.getOntology2().getInstances());
+			
+			//for(int m=0;m<listOfMatchers.size();m++)
+			//{
+				//AbstractMatcher currentMatcher=listOfMatchers.get(m);
 				
-			}
+			//}
 		}
+	}
+	
+	public static void main(String args[])
+	{
+		MLTrainerWrapper ml=new MLTrainerWrapper();
+		ml.callProcess();
 	}
 
 }
