@@ -25,7 +25,7 @@ public class GenerateTrainingDS {
 	{
 		 try {
 			 int i=1;
-			 String outputfilename="bench/training.xml";
+			 String outputfilename="bench/test.xml";
 				DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 		 
@@ -86,7 +86,7 @@ public class GenerateTrainingDS {
 	
 	{
 		ArrayList<TrainingLayout> trainingfs=new ArrayList<TrainingLayout>();
-		String path="bench/training/";
+		String path="bench/test/";
 		File directory=new File(path);
 		String[] files=directory.list();
 		if(files==null)
