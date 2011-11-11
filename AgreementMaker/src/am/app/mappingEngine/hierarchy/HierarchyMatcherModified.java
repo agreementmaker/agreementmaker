@@ -59,8 +59,17 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	
 	//int wordnetHypernymsLimit = 5;
 	
-	boolean useOtherOntologies = true;
 	ArrayList<OntModel> otherOntologies;
+	
+//	boolean useWordnet = true;
+//	boolean useInput = true;
+//	boolean useOtherOntologies = true;
+//	boolean useCompoundWords = true;
+	
+	boolean useWordnet = true;
+	boolean useInput = false;
+	boolean useOtherOntologies = false;
+	boolean useCompoundWords = false;
 	
 	Logger log;
 	private boolean disambiguate = true;
@@ -68,7 +77,6 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	boolean useProvenanceToDebug = true;
 	
 	int wordnetSynsetsLimit = 4;
-	private int hypernymThreshold = 1;
 	int hypernymsDepthLimit = 4;
 	
 	boolean writeWordnetFiles = false;
@@ -89,7 +97,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	
 	DecimalFormat format = new DecimalFormat("0.000");
 	
-	double hypernymsThreshold = 0.4;
+	double hypernymsThreshold = 0.01;
 	
 	public HierarchyMatcherModified()
 	{
@@ -105,7 +113,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		
 		log = Logger.getLogger(HierarchyMatcherModified.class);
 		
-		log.setLevel(Level.ERROR);
+		//log.setLevel(Level.ERROR);
 		
 		if(writeWordnetFiles)
 			viz = new WordnetVisualizer();
@@ -120,6 +128,80 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		param.maxTargetAlign = ANY_INT;
 	}
 	
+	@Override
+	protected void align() throws Exception{
+		/*miscellaneous variables used in  the method*/
+		log.info("align " + sourceOntology + " " + targetOntology);
+		
+		//log.setLevel(Level.DEBUG);
+		
+		if( sourceOntology == null || targetOntology == null )
+			return;  // cannot align just one ontology 
+		
+		/*it gets the inputMatches being used for this Algo and initializes the variables
+		 * classesMatrix , propertiesMatrix */
+		getInputMatcher();
+		
+		//System.out.println("INSTANCE: " + classesMatrix.getClass());
+		
+		//printMatrix(classesMatrix);
+		
+		/*maintains a list of nodes in the ontology*/
+		sourceClasses = sourceOntology.getClassesList();
+		targetClasses = targetOntology.getClassesList();
+		
+		/*First Iteration that uses the similarity values received in the input matchers
+		 * It calculates all the subClassOf and superClassOf relationship based on the equivalence 
+		 * relationship received form the first Matcher*/
+		if(useInput){
+			log.info("Using input matrix...");
+			useInputMatrix();
+		}
+		
+		buildCommentVectors();		
+		
+		if(useCompoundWords){
+			log.info("Compound words analysis...");
+			compoundWordsAnalysis();
+		}
+		
+		log.setLevel(Level.DEBUG);
+		if(useWordnet){
+			log.info("Wordned Mediator Step...");
+			wordnedMediatorStepNew();
+		}
+		log.setLevel(Level.INFO);
+			
+		//computeTransitiveClosure();
+
+		if(useOtherOntologies){
+			log.info("Initializing other ontologies...");
+			initOtherOntologies();
+			log.info("Using other ontologies...");
+			useOtherOntologies(sourceClasses, targetClasses, false);
+			//useOtherOntologies(targetClasses, sourceClasses, true);
+		}
+		
+		log.info("Filtering equality mappings...");
+		filterEqualityMappings();
+		
+		//log.info("Filtering external mappings...");
+		//filterExternalMappings();
+		
+		
+		if(writeWordnetFiles){
+			for (int i = 0; i < sourceClasses.size(); i++) {
+				viz.saveGraphOnFile(sourceClasses.get(i).getLocalName());
+			}
+			for (int i = 0; i < targetClasses.size(); i++) {
+				viz.saveGraphOnFile(targetClasses.get(i).getLocalName());
+			}
+		}
+			
+		//printMatrix(classesMatrix);
+		
+	}
+	
 	private void buildCommentVectors() {
 		log.info("Building comments vectors");
 		
@@ -129,6 +211,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		param.normalizePunctuation = true;
 		param.normalizeDigit = true;
 		param.normalizeSlashes = true;
+		param.removeAllStopWords = true;
 		param.removeStopWords = true;
 		param.stem = true;
 				
@@ -153,8 +236,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		
 		buildScoredSynsets(sourceClasses, sourceClassDocuments, sourceScoredSynsets);
 		buildScoredSynsets(targetClasses, targetClassDocuments, targetScoredSynsets);
-				
-		
+
 	}
 	
 	private void buildScoredSynsets(List<Node> nodeList, List<AMStringWrapper> documents, 
@@ -166,6 +248,10 @@ public class HierarchyMatcherModified extends AbstractMatcher
 			
 			comment = documents.get(i).unwrap();
 			
+			log.debug("Computing synset scores for: " + node.getLocalName());
+			log.debug("comment:" + node.getComment());
+			log.debug("comment:" + comment);
+						
 			List<NounSynset> sourceSynsetList = doLookUp(node);
 			List<ScoredSynset> scoredList = new ArrayList<ScoredSynset>();
 			
@@ -185,9 +271,9 @@ public class HierarchyMatcherModified extends AbstractMatcher
 					System.err.println(definition);
 				}
 				
-//				System.out.println("comment:" + comment);
-//				System.out.println("definition: " + definition);
-//				System.out.println(sim);
+				log.debug("definition: " + synset.getDefinition());
+				log.debug("definition: " + definition);
+				log.debug(sim);
 				
 				//TODO figure out how to use the similarity
 				//System.out.println("sim:" + sim);
@@ -201,23 +287,26 @@ public class HierarchyMatcherModified extends AbstractMatcher
 			}
 			//
 			
-			//System.out.println("sum:" + sum);
+			System.out.println("sum:" + sum);
 			
 			//if(sum != 0) System.out.println("sum != 0");
 			
 			for (int j = 0; j < scoredList.size(); j++) {
-				//if(sum == 0) 
-					scoredList.get(j).setScore(1/size);
-				//else {
-					//scoredList.get(j).setScore(scoredList.get(j).getScore()/sum);
-					//System.out.println(scoredList.get(j));
-					
-				//}
-				//scoredList.get(j).setScore(1/size);
+				if(sum == 0) 
+					scoredList.get(j).setScore((double)1/size);
+				else {
+					scoredList.get(j).setScore(scoredList.get(j).getScore()/sum);
+					System.out.println(scoredList.get(j));
+				}
 			}
 			
-				
-				
+			System.out.print("[");
+			for (int j = 0; j < scoredList.size(); j++) {
+				System.out.print(format.format(scoredList.get(j).getScore()));
+				if(j < scoredList.size() - 1) System.out.print(",");
+			}
+			System.out.println("]");	
+			
 			scoredSynsets.put(node, scoredList);
 		}		
 	}
@@ -229,7 +318,9 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		for (int i = 0; i < nodeList.size(); i++) {
 			source = nodeList.get(i);
 			comment = source.getComment();
+			//log.debug("comment: " + comment);
 			comment = normalizer.normalize(comment);
+			//log.debug("normComment: " + comment);
 			normalizedDocuments.add(new AMStringWrapper(comment));
 		}
 		return normalizedDocuments;
@@ -277,79 +368,15 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	}
 	
 	
-	@Override
-	protected void align() throws Exception{
-		/*miscellaneous variables used in  the method*/
-		log.info("align " + sourceOntology + " " + targetOntology);
-		
-		//log.setLevel(Level.DEBUG);
-		
-		if( sourceOntology == null || targetOntology == null )
-			return;  // cannot align just one ontology 
-		
-		/*it gets the inputMatches being used for this Algo and initializes the variables
-		 * classesMatrix , propertiesMatrix */
-		getInputMatcher();
-		
-		//System.out.println("INSTANCE: " + classesMatrix.getClass());
-		
-		//printMatrix(classesMatrix);
-		
-		/*maintains a list of nodes in the ontology*/
-		sourceClasses = sourceOntology.getClassesList();
-		targetClasses = targetOntology.getClassesList();
-		
-		/*First Iteration that uses the similarity values received in the input matchers
-		 * It calculates all the subClassOf and superClassOf relationship based on the equivalence 
-		 * relationship received form the first Matcher*/
-		log.info("Using input matrix...");
-		useInputMatrix();
-		
-		buildCommentVectors();		
-		
-		log.info("Compound words analysis...");
-		compoundWordsAnalysis();
-		
-		log.info("Wordned Mediator Step...");
-		wordnedMediatorStepNew();
-		
-		//computeTransitiveClosure();
-
-		if(useOtherOntologies == true){
-			log.info("Initializing other ontologies...");
-			initOtherOntologies();
-			log.info("Using other ontologies...");
-			useOtherOntologies(sourceClasses, targetClasses, false);
-			//useOtherOntologies(targetClasses, sourceClasses, true);
-		}
-		
-		log.info("Filtering equality mappings...");
-		filterEqualityMappings();
-		
-		//log.info("Filtering external mappings...");
-		//filterExternalMappings();
-		
-		
-		if(writeWordnetFiles){
-			for (int i = 0; i < sourceClasses.size(); i++) {
-				viz.saveGraphOnFile(sourceClasses.get(i).getLocalName());
-			}
-			for (int i = 0; i < targetClasses.size(); i++) {
-				viz.saveGraphOnFile(targetClasses.get(i).getLocalName());
-			}
-		}
-			
-		//printMatrix(classesMatrix);
-		
-	}
+	
 	
 	private void addHypernymsToScoredSynsets(){
 		
 		for (List<ScoredSynset> scoredSynsets: sourceScoredSynsets.values()) {
 			for (ScoredSynset scoredSynset: scoredSynsets) {
-				log.debug(scoredSynset.getSynset());
+				//log.debug(scoredSynset.getSynset());
 				List<List<NounSynset>> sourceHypernyms = hypernymsLookup(scoredSynset.getSynset());
-				log.debug(sourceHypernyms);
+				//log.debug(sourceHypernyms);
 				scoredSynset.setHypernymsByLevel(sourceHypernyms);			
 			}
 		}
