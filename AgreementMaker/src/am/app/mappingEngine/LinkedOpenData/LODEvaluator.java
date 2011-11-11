@@ -11,6 +11,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -26,11 +29,10 @@ public class LODEvaluator {
 	boolean printRightMappings;
 	boolean printMissedMappings;
 	
-	
 	public LODEvaluator(){
 		matcher = new ReferenceAlignmentMatcher();
 		
-		printEverything();
+		//printEverything();
 		
 	}
 	
@@ -121,6 +123,29 @@ public class LODEvaluator {
 	 * @param reference has to be source(tab)relationship(tab)target
 	 * @throws Exception 
 	 */
+	public void evaluate(String file, String reference, LODOntology sourceOntology, LODOntology targetOntology) throws Exception{
+		BufferedReader fileBR = new BufferedReader(new FileReader(file));
+		ArrayList<MatchingPair> filePairs = matcher.parseRefFormat4(fileBR);
+		BufferedReader refBR = new BufferedReader(new FileReader(reference));
+		ArrayList<MatchingPair> refPairs = matcher.parseRefFormat2(refBR);
+		
+		
+		//System.out.println("FP:" + filePairs.size());
+		//System.out.println("RP:" + refPairs.size());
+		
+		//compare(filePairs, refPairs);
+		
+		removeDuplicates(filePairs);
+		removeDuplicates(refPairs);
+		
+		//System.out.println("FP:" + filePairs.size());
+		//System.out.println("RP:" + refPairs.size());
+		
+		compare(filePairs, refPairs, sourceOntology, targetOntology);	
+		
+		System.out.println();
+	}
+	
 	public void evaluate(String file, String reference) throws Exception{
 		BufferedReader fileBR = new BufferedReader(new FileReader(file));
 		ArrayList<MatchingPair> filePairs = matcher.parseRefFormat4(fileBR);
@@ -191,6 +216,19 @@ public class LODEvaluator {
 		return false;
 	}
 	
+	public void evaluateAllTestsOld() throws Exception{
+		String folder = "LOD/batch/";
+		
+		evaluate(folder + "foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
+		evaluate(folder + "geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA);
+		evaluate(folder + "music-bbc.txt", LODReferences.MUSIC_BBC);
+		evaluate(folder + "music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA);
+		evaluate(folder + "swc-akt.txt", LODReferences.SWC_AKT);
+		evaluate(folder + "swc-dbpedia.txt", LODReferences.SWC_DBPEDIA);
+		evaluate(folder + "sioc-foaf.txt", LODReferences.SIOC_FOAF);
+		
+	}
+	
 	public void evaluateAllTests() throws Exception{
 //		System.out.println("FOAF_DBPEDIA");
 //		evaluate("LOD/AMOldAlignments/FOAFANDDBPEDIA.txt", LODReferences.FOAF_DBPEDIA);
@@ -220,28 +258,40 @@ public class LODEvaluator {
 		String folder = "LOD/batch/";
 		
 		if(printHeader) System.out.println("FOAF - DBPEDIA");
-		evaluate(folder + "foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
+		evaluate(folder + "foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA, LODOntology.FOAF, LODOntology.DBPEDIA);
 		if(printHeader) System.out.println("GEONAMES - DBPEDIA");
-		evaluate(folder + "geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA);
+		evaluate(folder + "geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA, LODOntology.GEONAMES, LODOntology.DBPEDIA);
 		if(printHeader) System.out.println("MUSIC - BBC");
-		evaluate(folder + "music-bbc.txt", LODReferences.MUSIC_BBC);
+		evaluate(folder + "music-bbc.txt", LODReferences.MUSIC_BBC, LODOntology.MUSIC_ONTOLOGY, LODOntology.BBC_PROGRAM);
 		if(printHeader) System.out.println("MUSIC - DBPEDIA");
-		evaluate(folder + "music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA);
+		evaluate(folder + "music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA, LODOntology.MUSIC_ONTOLOGY, LODOntology.DBPEDIA);
 		if(printHeader) System.out.println("SWC - AKT");
-		evaluate(folder + "swc-akt.txt", LODReferences.SWC_AKT);
+		evaluate(folder + "swc-akt.txt", LODReferences.SWC_AKT, LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL);
 		if(printHeader) System.out.println("SWC - DBPEDIA");
-		evaluate(folder + "swc-dbpedia.txt", LODReferences.SWC_DBPEDIA);
+		evaluate(folder + "swc-dbpedia.txt", LODReferences.SWC_DBPEDIA, LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA);
 		if(printHeader) System.out.println("SIOC - FOAF");
-		evaluate(folder + "sioc-foaf.txt", LODReferences.SIOC_FOAF);
+		evaluate(folder + "sioc-foaf.txt", LODReferences.SIOC_FOAF, LODOntology.SIOC, LODOntology.FOAF);
 		
 	}
 	
 	public void compare(ArrayList<MatchingPair> toEvaluate, ArrayList<MatchingPair> reference){
+		compare(toEvaluate, reference, null, null);
+	}
+	
+	public void compare(ArrayList<MatchingPair> toEvaluate, ArrayList<MatchingPair> reference, LODOntology sourceOntology, LODOntology targetOntology){
 		int count = 0;
 		MatchingPair p1;
 		MatchingPair p2;
 		MatchingPair right = null;
 		boolean found;
+		
+		Ontology sOnt = null;
+		Ontology tOnt = null;
+		
+		if(sourceOntology != null && targetOntology != null){
+			sOnt = OntoTreeBuilder.loadOntology(new File(sourceOntology.getFilename()).getAbsolutePath(), sourceOntology.getLang(), sourceOntology.getSyntax());			
+			tOnt = OntoTreeBuilder.loadOntology(new File(targetOntology.getFilename()).getAbsolutePath(), targetOntology.getLang(), targetOntology.getSyntax());			
+		}
 		
 		HashSet<MatchingPair> foundTargets = new HashSet<MatchingPair>();
 		for (int i = 0; i < toEvaluate.size(); i++) {
@@ -271,10 +321,39 @@ public class LODEvaluator {
 			}
 		}	
 		if(printMissedMappings){
+			
+			
+			
 			for (int i = 0; i < reference.size(); i++) {
 				p2 = reference.get(i);
 				if(!foundTargets.contains(p2)){
-					System.out.println("Missed\t" + p2.getTabString().replaceAll("\\|","\t"));
+					if(sOnt != null && tOnt!= null){
+						String superclasses1 = "Not contained";
+						String superclasses2 = "Not contained";
+						String comment1 = "Not contained";
+						String comment2 = "Not contained";
+						Node node = sOnt.containsClassLocalName(p2.sourceURI);
+						if(node != null){
+							superclasses1 = LODUtils.superclassesString(node);
+							comment1 = node.getComment().replaceAll("\n", " ");														
+						
+						node = tOnt.containsClassLocalName(p2.targetURI);
+						if(node != null){
+							superclasses2 = LODUtils.superclassesString(node);
+							comment2 = node.getComment().replaceAll("\n", " ");
+						}
+						
+						System.out.println("Missed\t" + p2.getTabString() + "\t" + comment1 + "\t" + comment2 + "\t" +
+								superclasses1 + "\t" + superclasses2);	
+						}
+					}
+					else{
+						System.out.println("Missed\t" + p2.getTabString());
+					}
+					
+				
+				
+					
 				}		
 			}
 		}
@@ -427,10 +506,7 @@ public class LODEvaluator {
 		
 		fileBR = new BufferedReader(new FileReader(LODReferences.FOAF_DBPEDIA));
 		refPairs = matcher.parseRefFormat2(fileBR);
-		diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.FOAF, LODOntology.DBPEDIA);
-		
-		
-		
+		diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.FOAF, LODOntology.DBPEDIA);	
 	}
 	
 	public String testDiff(String file1, String file2, LODOntology source, LODOntology target, boolean reference) throws IOException {
@@ -450,9 +526,32 @@ public class LODEvaluator {
 //				LODOntologies.DBPEDIA_URI, LODOntologies.MUSIC_ONTOLOGY_URI);
 		LODEvaluator eval = new LODEvaluator();
 		
+		Logger.getRootLogger().setLevel(Level.ERROR);
+		
 		String report = "";
 		
-		eval.evaluateAllTests();
+		//eval.evaluateAllTests();
+		eval.evaluateAllTestsOld();
+//		
+//		Ontology sOnt = null;
+//		Ontology tOnt = null;
+//		
+//		LODOntology sourceOntology = LODOntology.MUSIC_ONTOLOGY;
+//		LODOntology targetOntology = LODOntology.BBC_PROGRAM;
+//		
+//		
+//		if(sourceOntology != null && targetOntology != null){
+//			sOnt = OntoTreeBuilder.loadOntology(new File(sourceOntology.getFilename()).getAbsolutePath(), sourceOntology.getLang(), sourceOntology.getSyntax());			
+//			tOnt = OntoTreeBuilder.loadOntology(new File(targetOntology.getFilename()).getAbsolutePath(), targetOntology.getLang(), targetOntology.getSyntax());			
+//			
+//		
+//			for (int i = 0; i < sOnt.getClassesList().size(); i++) {
+//				System.out.println(sOnt.getClassesList().get(i).getUri());
+//			}
+//			
+//		}
+//		
+		
 		
 		//eval.cleanReference();
 		
@@ -498,7 +597,9 @@ public class LODEvaluator {
 		
 		//System.out.println("SWC_AKT");
 		//eval.evaluate("LOD/batch/swc-akt.txt", LODReferences.SWC_AKT);
-		
 	}
+	
+	
+	
 }
 

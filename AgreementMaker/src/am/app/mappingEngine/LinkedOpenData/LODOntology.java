@@ -12,7 +12,12 @@ public enum LODOntology {
 	GEONAMES("http://www.geonames.org/ontology", "LOD/geonames_v2.2.1.rdf", OntologyLanguage.OWL, OntologySyntax.RDFXML),
 	FOAF("http://xmlns.com/foaf/0.1/", "LOD/foaf.rdf", OntologyLanguage.OWL, OntologySyntax.RDFXML),
 	SIOC("http://rdfs.org/sioc/ns#", "LOD/ns_noDeprecated.rdf", OntologyLanguage.OWL, OntologySyntax.RDFXML),
-	AKT_PORTAL("http://www.aktors.org/ontology/portal", "LOD/portal.rdf", OntologyLanguage.OWL, OntologySyntax.RDFXML)
+	AKT_PORTAL("http://www.aktors.org/ontology/portal", "LOD/portal.rdf", OntologyLanguage.OWL, OntologySyntax.RDFXML),
+	BBC_PROGRAM_OLD("http://purl.org/ontology/po/", "LOD/OldOntologies/BBCProgram.rdf", OntologyLanguage.OWL, OntologySyntax.RDFXML),
+	DBPEDIA_OLD("http://dbpedia.org/ontology/", "LOD/OldOntologies/dbpedia.owl", OntologyLanguage.OWL, OntologySyntax.RDFXML),
+	MUSIC_ONTOLOGY_OLD("http://purl.org/ontology/mo/", "LOD/OldOntologies/musicontology.rdfs", OntologyLanguage.OWL, OntologySyntax.RDFXML),
+	GEONAMES_OLD("http://www.geonames.org/ontology", "LOD/OldOntologies/ontology_v2.0_Lite.rdf", OntologyLanguage.OWL, OntologySyntax.RDFXML),
+	
 	;
 	
 	private String uri;

@@ -1,11 +1,15 @@
 package am.app.ontology.ontologyParser;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import am.GlobalStaticVariables;
 import am.app.Core;
@@ -246,6 +250,28 @@ public class OntoTreeBuilder extends TreeBuilder{
 	 * This method pulls in referenced ontologies by dereferencing their URIs.
 	 */
 	protected void buildTreeNoReasoner() {
+		
+		/* TODO Fix this. Code for the location mapper. It should become one of the properties in AM. 
+		 * It allows to resolve imports on disk, since sometimes the online lookup freezes with no reason.
+		 It is extremely important in LOD! */
+		
+		/*
+		LocationMapper mapper = new LocationMapper();
+		mapper.addAltEntry("http://data.semanticweb.org/ns/swc/swrc", new File("LOD/LocationMappings/ns.swc.swrc.rdf").getAbsolutePath());
+		mapper.addAltEntry("http://purl.org/NET/c4dm/timeline.owl", new File("LOD/LocationMappings/timeline.n3").getAbsolutePath());
+		mapper.addAltEntry("http://data.semanticweb.org/ns/swc/swrc-topics", new File("LOD/LocationMappings/swrc-topics.owl").getAbsolutePath());
+		mapper.addAltEntry("http://purl.org/vocab/bio/0.1/", new File("LOD/LocationMappings/vocab.org.bio.rdf").getAbsolutePath());
+		mapper.addAltEntry("http://purl.org/vocab/frbr/core", new File("LOD/LocationMappings/frbr.core.rdf").getAbsolutePath());
+		mapper.addAltEntry("http://purl.org/dc/terms/", new File("LOD/LocationMappings/dcterms.rdf").getAbsolutePath());
+		mapper.addAltEntry("http://purl.org/ontology/similarity/", new File("LOD/LocationMappings/musim.owl").getAbsolutePath());
+		mapper.addAltEntry("http://purl.org/NET/c4dm/keys.owl", new File("LOD/LocationMappings/keys.owl").getAbsolutePath());
+		mapper.addAltEntry("http://purl.org/dc/elements/1.1/", new File("LOD/LocationMappings/dcelements.rdf").getAbsolutePath());
+		mapper.addAltEntry("http://xmlns.com/foaf/0.1/", new File("LOD/LocationMappings/foaf.rdf").getAbsolutePath());
+		
+		Logger.getRootLogger().setLevel(Level.DEBUG);
+		
+		ontDefinition.locationMapper = mapper;
+		*/
 	
 		if( ontURI == null ) {
 			ontURI = "file:"+ontology.getFilename();

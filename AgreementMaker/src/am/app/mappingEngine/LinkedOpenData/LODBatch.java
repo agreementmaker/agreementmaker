@@ -127,10 +127,7 @@ public class LODBatch {
 	    out.close();
 	}
 	
-	public static void main(String[] args) {
-		LODBatch batch = new LODBatch();
-		batch.run();
-	}
+	
 	
 	public void run(){
 		singleRun(LODOntology.MUSIC_ONTOLOGY, LODOntology.BBC_PROGRAM, "music-bbc");
@@ -141,6 +138,22 @@ public class LODBatch {
 		singleRun(LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL, "swc-akt");
 		singleRun(LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA, "swc-dbpedia");
 		log.info(report);
+	}
+	
+	public void runOldVersion(){
+		singleRun(LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.BBC_PROGRAM_OLD, "music-bbc");
+		singleRun(LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.DBPEDIA_OLD, "music-dbpedia");
+		singleRun(LODOntology.FOAF, LODOntology.DBPEDIA_OLD, "foaf-dbpedia");
+		singleRun(LODOntology.GEONAMES_OLD, LODOntology.DBPEDIA_OLD, "geonames-dbpedia");
+		singleRun(LODOntology.SIOC, LODOntology.FOAF, "sioc-foaf");
+		singleRun(LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL, "swc-akt");
+		singleRun(LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA_OLD, "swc-dbpedia");
+		log.info(report);
+	}
+	
+	public static void main(String[] args) {
+		LODBatch batch = new LODBatch();
+		batch.runOldVersion();
 	}
 }
 	
