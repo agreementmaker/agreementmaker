@@ -11,6 +11,7 @@ public class NormalizerParameter {
 	public boolean normalizeDiacritics = true; // �,�...--> a, o
 	public boolean normalizePunctuation = true; //. , ! ? ' " becomes blank
 	public boolean normalizeSlashes = false;
+	public boolean removeAllStopWords = false;
 	//lowercase is always done
 	
 	public void setAllTrue(){

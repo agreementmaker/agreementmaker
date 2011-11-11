@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import am.app.Core;
+import am.utility.EnglishUtility;
 
 public class Normalizer {
 	
@@ -204,5 +205,14 @@ public class Normalizer {
 			stopWords.add("www");
 			*/
 		}
+		
+		if(((NormalizerParameter)param).removeAllStopWords) {
+			stopWords = new HashSet<String>();			
+			System.out.println("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
+			for (int i = 0; i < EnglishUtility.stopwords.length; i++) {
+				stopWords.add(EnglishUtility.stopwords[i]);
+			} 
+		}
+		
 	}
 }
