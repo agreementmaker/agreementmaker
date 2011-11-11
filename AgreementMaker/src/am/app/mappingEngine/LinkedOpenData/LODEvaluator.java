@@ -20,6 +20,8 @@ import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.utility.referenceAlignment.AlignmentsComparison;
+import am.utility.referenceAlignment.ReferenceAlignmentUtilities;
 
 public class LODEvaluator {
 	//Contains methods for parsing
@@ -68,17 +70,17 @@ public class LODEvaluator {
 			line = scanner.nextLine();
 			//System.out.println(line);
 			
-			String[] splitted = line.split(" ");
+			String[] split = line.split(" ");
 			
-			if(splitted.length!=3){
+			if(split.length!=3){
 				System.out.println("File format error");
 				return null;
 			}
 			
 			
-			if(splitted[0].startsWith(sourceURI) || splitted[2].startsWith(targetURI)){
-				source = splitted[0];
-				target = splitted[2];
+			if(split[0].startsWith(sourceURI) || split[2].startsWith(targetURI)){
+				source = split[0];
+				target = split[2];
 				if(source.contains("#"))
 					source = afterSharp(source);
 				else source = source.substring(sourceURI.length());
@@ -90,9 +92,9 @@ public class LODEvaluator {
 				ret.add(mp);
 				//System.out.println(mp.getTabString());
 			}
-			else if(splitted[0].startsWith(targetURI) || splitted[2].startsWith(sourceURI)){
-				source = splitted[2];
-				target = splitted[0];
+			else if(split[0].startsWith(targetURI) || split[2].startsWith(sourceURI)){
+				source = split[2];
+				target = split[0];
 				if(source.contains("#"))
 					source = afterSharp(source);
 				else source = source.substring(sourceURI.length());
@@ -408,8 +410,6 @@ public class LODEvaluator {
 			}
 		}
 		
-		
-		
 		int count = 0;
 		
 		String superclasses;
@@ -521,6 +521,21 @@ public class LODEvaluator {
 		return diff(file1Pairs, file2Pairs, source, target);
 	}
 	
+	public void testRefUtilsDiff(String file1, String file2, boolean reference) throws IOException{
+		BufferedReader fileBR = new BufferedReader(new FileReader(file1));
+		ArrayList<MatchingPair> sourcePairs = matcher.parseRefFormat4(fileBR);
+		fileBR = new BufferedReader(new FileReader(file2));
+		ArrayList<MatchingPair> targetPairs;
+		if(reference)
+			targetPairs = matcher.parseRefFormat2(fileBR);
+		else targetPairs = matcher.parseRefFormat4(fileBR);
+		
+		AlignmentsComparison comparison = ReferenceAlignmentUtilities.diff(sourcePairs, targetPairs);
+		
+		System.out.println(comparison);
+						
+	}
+	
 	public static void main(String[] args) throws Exception {
 //		fromSubClassof(new File("LOD/BLOOMS/Music-DBpedia/SubClass.txt"), 
 //				LODOntologies.DBPEDIA_URI, LODOntologies.MUSIC_ONTOLOGY_URI);
@@ -532,6 +547,11 @@ public class LODEvaluator {
 		
 		//eval.evaluateAllTests();
 		eval.evaluateAllTestsOld();
+		
+		
+		//eval.testRefUtilsDiff("LOD/batch/music-bbc.txt", LODReferences.MUSIC_BBC, true);
+
+		
 //		
 //		Ontology sOnt = null;
 //		Ontology tOnt = null;
@@ -598,8 +618,5 @@ public class LODEvaluator {
 		//System.out.println("SWC_AKT");
 		//eval.evaluate("LOD/batch/swc-akt.txt", LODReferences.SWC_AKT);
 	}
-	
-	
-	
 }
 
