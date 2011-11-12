@@ -65,6 +65,7 @@ public class MLTrainerWrapper {
 			referenceAlignmentMatcher.setTargetOntology(targetOntology);
        		Alignment<Mapping> refmap=referenceAlignmentMatcher.getAlignment();
 			OntologyTriple ot=new OntologyTriple(sourceOntology,targetOntology,refmap);
+			ot.setListOfMatchers(listOfMatchers);
 			listOfTriples.add(ot);
 		}
 	}
