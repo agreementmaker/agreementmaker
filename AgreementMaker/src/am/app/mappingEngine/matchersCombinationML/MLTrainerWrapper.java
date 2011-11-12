@@ -22,20 +22,23 @@ public class MLTrainerWrapper {
 	ArrayList<AbstractMatcher> listOfMatchers=new ArrayList<AbstractMatcher>();
 	ArrayList<OntologyTriple> listOfTriples=new ArrayList<OntologyTriple>();
 	
-	public static Ontology openOntology(String ontoName){
+	public static Ontology loadOntology(String ontoName){
 		Ontology ontology;
 		try {
-			OntoTreeBuilder treeBuilder = new OntoTreeBuilder(ontoName, GlobalStaticVariables.SOURCENODE,
-					GlobalStaticVariables.LANG_OWL, 
-					GlobalStaticVariables.SYNTAX_RDFXML, false, true);
-			treeBuilder.build();
-			ontology = treeBuilder.getOntology();
+			ontology = OntoTreeBuilder.loadOWLOntology(ontoName);
+//			OntoTreeBuilder treeBuilder = new OntoTreeBuilder(ontoName, GlobalStaticVariables.SOURCENODE,
+//					GlobalStaticVariables.LANG_OWL, 
+//					GlobalStaticVariables.SYNTAX_RDFXML, false, true);
+//			treeBuilder.build();
+//			ontology = treeBuilder.getOntology();
 		} catch (Exception e) {
+			System.out.println("Failed To open the ontology!");
 			e.printStackTrace();
 			return null;
 		}
 		return ontology;
 	}
+	
 	
 	void loadMatchers()
 	{
@@ -50,8 +53,8 @@ public class MLTrainerWrapper {
 		ArrayList<TrainingLayout> tlist=xp.parseDocument(filename, elementname);
 		for(TrainingLayout tl: tlist)
 		{
-			Ontology sourceOntology=openOntology(tl.getsourceOntologyPath());
-			Ontology targetOntology=openOntology(tl.gettargetOntologyPath());
+			Ontology sourceOntology=loadOntology(tl.getsourceOntologyPath());
+			Ontology targetOntology=loadOntology(tl.gettargetOntologyPath());
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.onlyEquivalence = true;
 			refParam.fileName = tl.getrefAlignmentPath();
@@ -77,7 +80,11 @@ public class MLTrainerWrapper {
 		{
 			OntologyTriple currentTriple=listOfTriples.get(t);
 			System.out.println(currentTriple.getOntology1().getFilename());
-			System.out.println(currentTriple.getOntology2().getInstances());
+			System.out.println(currentTriple.getOntology1().getDescription());
+			System.out.println(currentTriple.getOntology1().getClassesList().size());
+			System.out.println(currentTriple.getOntology2().getFilename());
+			System.out.println(currentTriple.getOntology2().getDescription());
+			System.out.println(currentTriple.getOntology2().getClassesList().size());
 			
 			//for(int m=0;m<listOfMatchers.size();m++)
 			//{
@@ -91,6 +98,10 @@ public class MLTrainerWrapper {
 	{
 		MLTrainerWrapper ml=new MLTrainerWrapper();
 		ml.callProcess();
+		
+		
+		
+		
 	}
 
 }
