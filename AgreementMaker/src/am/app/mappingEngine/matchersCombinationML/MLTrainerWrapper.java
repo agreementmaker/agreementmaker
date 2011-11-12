@@ -45,6 +45,9 @@ public class MLTrainerWrapper {
 	{
 		//TODO : look at oaei2011 and look how to get matchers and add to list below 
 	//	listOfMatchers.add();
+		
+		AbstractMatcher bsm=MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity, 0);
+		listOfMatchers.add(bsm);
 	}
 	
 	void loadOntologyTriples(String filename,String elementname)
