@@ -125,32 +125,35 @@ public class MLTrainerWrapper {
 				for(int m=0;m<matchers.size();m++)
 				{
 					AbstractMatcher currentMatcher=matchers.get(m);
-					Alignment<Mapping> currentMapping=currentTriple.getAlignmentObtained(currentMatcher);
-					if(currentMapping!=null)
+					if(currentTriple.containsMatcher(currentMatcher))
 					{
-						Ontology sourceOntology=currentTriple.getOntology1();
-						Ontology targetOntology=currentTriple.getOntology2();
-						List<Node> sourceClasses=sourceOntology.getClassesList();
-						List<Node> targetClasses=targetOntology.getClassesList();
-						for(int source=0;source<sourceClasses.size();source++)
+						Alignment<Mapping> currentMapping=currentTriple.getAlignmentObtained(currentMatcher);
+						if(currentMapping!=null)
 						{
-							Node sourceNode=sourceClasses.get(source);
-							for(int target=0;target<targetClasses.size();target++)
+							Ontology sourceOntology=currentTriple.getOntology1();
+							Ontology targetOntology=currentTriple.getOntology2();
+							List<Node> sourceClasses=sourceOntology.getClassesList();
+							List<Node> targetClasses=targetOntology.getClassesList();
+							for(int source=0;source<sourceClasses.size();source++)
 							{
-								Node targetNode=targetClasses.get(target);
-								if(currentMapping.isMapped(sourceNode) && currentMapping.isMapped(targetNode))
+								Node sourceNode=sourceClasses.get(source);
+								for(int target=0;target<targetClasses.size();target++)
 								{
-									if(!mappedSourceTarget.contains(sourceNode.getUri()+"\t"+targetNode.getUri()))
+									Node targetNode=targetClasses.get(target);
+									if(currentMapping.isMapped(sourceNode) && currentMapping.isMapped(targetNode))
 									{
-										double similarityValue=currentMapping.getSimilarity(sourceNode, targetNode);
-										double referenceValue=referenceAlignment.getSimilarity(sourceNode, targetNode);
-										outputWriter.write(sourceNode.getUri()+"\t"+targetNode.getUri()+"\t"+similarityValue+"\t"+referenceValue+"\n");
-										mappedSourceTarget.add(sourceNode.getUri()+"\t"+targetNode.getUri());
-									}																
-								}								
-							}							
-						}
-					}
+										if(!mappedSourceTarget.contains(sourceNode.getUri()+"\t"+targetNode.getUri()))
+										{
+											double similarityValue=currentMapping.getSimilarity(sourceNode, targetNode);
+											double referenceValue=referenceAlignment.getSimilarity(sourceNode, targetNode);
+											outputWriter.write(sourceNode.getUri()+"\t"+targetNode.getUri()+"\t"+similarityValue+"\t"+referenceValue+"\n");
+											mappedSourceTarget.add(sourceNode.getUri()+"\t"+targetNode.getUri());
+										}																
+									}								
+								}							
+							}
+						}	
+					}					
 				}	
 			}			
 		}		

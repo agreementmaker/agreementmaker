@@ -20,7 +20,10 @@ public class OntologyTriple {
 	//TODO check if we need to store Alignment<Mapping> or the whole result class???
 	
 	
-	
+	public boolean containsMatcher(AbstractMatcher currentMatcher)
+	{
+		return alignmentObtained.containsKey(currentMatcher);
+	}
 	public Alignment<Mapping> getAlignmentObtained(AbstractMatcher currentMatcher)
 	{
 	
