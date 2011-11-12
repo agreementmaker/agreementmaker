@@ -19,7 +19,7 @@ public class GlobalStaticVariables
 	 * This option has been added because using the progress bar adds a little overhead (stepDone() and setProgress() is called from inside the algorithm).
 	 * So in order to allow for the developer users to achieve the best running time, the progress bar can be toggled on and off.   
 	 */
-	public static final boolean USE_PROGRESS_BAR = true;
+	public static final boolean USE_PROGRESS_BAR = false;
 	
 	// ALL DEPRECATED FIELDS MOVED TO Ontology class
 	// local title

@@ -5,13 +5,16 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.conceptMatcher.ConceptMatcherParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.ontology.Node;
@@ -46,7 +49,7 @@ public class MLTrainerWrapper {
 		//TODO : look at oaei2011 and look how to get matchers and add to list below 
 	//	listOfMatchers.add();
 		
-		AbstractMatcher bsm=MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity, 0);
+		AbstractMatcher bsm=MatcherFactory.getMatcherInstance(MatchersRegistry.ConceptSimilarity, 0);
 		listOfMatchers.add(bsm);
 	}
 	
@@ -76,6 +79,7 @@ public class MLTrainerWrapper {
 	
 	void generateMappings()
 	{
+
 		for(int t=0;t<listOfTriples.size();t++)
 		{
 			OntologyTriple currentTriple=listOfTriples.get(t);
@@ -86,6 +90,7 @@ public class MLTrainerWrapper {
 				try {
 						AbstractMatcher currentMatcher=matchers.get(m);
 						currentMatcher.setOntologies(currentTriple.getOntology1(), currentTriple.getOntology2());
+						currentMatcher.setParam(new ConceptMatcherParameters());
 						currentMatcher.match();
 						Alignment<Mapping> resultAlignment=currentMatcher.getAlignment();
 						if(resultAlignment!=null)
@@ -94,7 +99,7 @@ public class MLTrainerWrapper {
 						}
 						else
 						{
-							currentTriple.setAlignmentObtained(currentMatcher, null);
+							//currentTriple.setAlignmentObtained(currentMatcher, null);
 						}
 					
 					

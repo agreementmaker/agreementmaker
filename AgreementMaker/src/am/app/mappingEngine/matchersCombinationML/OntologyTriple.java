@@ -20,8 +20,10 @@ public class OntologyTriple {
 	//TODO check if we need to store Alignment<Mapping> or the whole result class???
 	
 	
+	
 	public Alignment<Mapping> getAlignmentObtained(AbstractMatcher currentMatcher)
 	{
+	
 		return alignmentObtained.get(currentMatcher);
 	}
 	
@@ -39,6 +41,9 @@ public class OntologyTriple {
 		this.listOfMatchers = listOfMatchers;
 	}
 	
+	
+	
+	
 	public OntologyTriple(Ontology ontology1, Ontology ontology2,
 			Alignment referenceAlignment) {
 		super();
@@ -49,7 +54,7 @@ public class OntologyTriple {
 
 
 	public OntologyTriple() {
-		// TODO Auto-generated constructor stub
+		this.alignmentObtained =new HashMap<AbstractMatcher, Alignment<Mapping>>();
 	}
 
 
