@@ -86,6 +86,8 @@ public class MLTrainerWrapper {
 			System.out.println(currentTriple.getOntology2().getDescription());
 			System.out.println(currentTriple.getOntology2().getClassesList().size());
 			
+			
+			
 			//for(int m=0;m<listOfMatchers.size();m++)
 			//{
 				//AbstractMatcher currentMatcher=listOfMatchers.get(m);

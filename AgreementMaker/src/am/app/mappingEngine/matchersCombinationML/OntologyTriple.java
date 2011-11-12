@@ -1,10 +1,13 @@
 package am.app.mappingEngine.matchersCombinationML;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import sun.security.x509.AlgIdDSA;
+
+import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.Ontology;
 
 public class OntologyTriple {
@@ -12,7 +15,29 @@ public class OntologyTriple {
 	private Ontology ontology1;
 	private Ontology ontology2;
 	private Alignment<Mapping> referenceAlignment;
+	private ArrayList<AbstractMatcher> listOfMatchers;
+	private HashMap<AbstractMatcher, Alignment<Mapping>> alignmentObtained;
+	//TODO check if we need to store Alignment<Mapping> or the whole result class???
 	
+	
+	public Alignment<Mapping> getAlignmentObtained(AbstractMatcher currentMatcher)
+	{
+		return alignmentObtained.get(currentMatcher);
+	}
+	
+	public void setAlignmentObtained(AbstractMatcher currentMatcher, Alignment<Mapping> resultObtained)
+	{
+		alignmentObtained.put(currentMatcher, resultObtained);
+	}
+	
+	public ArrayList<AbstractMatcher> getListOfMatchers() {
+		return listOfMatchers;
+	}
+
+
+	public void setListOfMatchers(ArrayList<AbstractMatcher> listOfMatchers) {
+		this.listOfMatchers = listOfMatchers;
+	}
 	
 	public OntologyTriple(Ontology ontology1, Ontology ontology2,
 			Alignment referenceAlignment) {
