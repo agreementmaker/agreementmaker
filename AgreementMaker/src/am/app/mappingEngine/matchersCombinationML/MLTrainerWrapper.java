@@ -1,12 +1,12 @@
 package am.app.mappingEngine.matchersCombinationML;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
-import org.dom4j.DocumentException;
-
-import weka.core.ListOptions;
-
-import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
@@ -14,6 +14,7 @@ import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
+import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 
@@ -102,11 +103,14 @@ public class MLTrainerWrapper {
 		}
 	}
 	
-	void generateTrainingFile()
+	void generateTrainingFile() throws Exception
 	{
+		ArrayList<String> mappedSourceTarget=new ArrayList<String>();
+		BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("bench/training/trainingFile")));
 		for(int t=0;t<listOfTriples.size();t++)
 		{
 			OntologyTriple currentTriple=listOfTriples.get(t);
+			Alignment<Mapping> referenceAlignment=currentTriple.getReferenceAlignment();
 			ArrayList<AbstractMatcher> matchers=currentTriple.getListOfMatchers();
 			if(matchers!=null)
 			{
@@ -116,13 +120,33 @@ public class MLTrainerWrapper {
 					Alignment<Mapping> currentMapping=currentTriple.getAlignmentObtained(currentMatcher);
 					if(currentMapping!=null)
 					{
-						
+						Ontology sourceOntology=currentTriple.getOntology1();
+						Ontology targetOntology=currentTriple.getOntology2();
+						List<Node> sourceClasses=sourceOntology.getClassesList();
+						List<Node> targetClasses=targetOntology.getClassesList();
+						for(int source=0;source<sourceClasses.size();source++)
+						{
+							Node sourceNode=sourceClasses.get(source);
+							for(int target=0;target<targetClasses.size();target++)
+							{
+								Node targetNode=targetClasses.get(target);
+								if(currentMapping.isMapped(sourceNode) && currentMapping.isMapped(targetNode))
+								{
+									if(!mappedSourceTarget.contains(sourceNode.getUri()+"\t"+targetNode.getUri()))
+									{
+										double similarityValue=currentMapping.getSimilarity(sourceNode, targetNode);
+										double referenceValue=referenceAlignment.getSimilarity(sourceNode, targetNode);
+										outputWriter.write(sourceNode.getUri()+"\t"+targetNode.getUri()+"\t"+similarityValue+"\t"+referenceValue+"\n");
+										mappedSourceTarget.add(sourceNode.getUri()+"\t"+targetNode.getUri());
+									}																
+								}								
+							}							
+						}
 					}
 				}	
-			}
-			
-			
-		}
+			}			
+		}		
+		outputWriter.close();
 		
 	}
 	
@@ -131,7 +155,7 @@ public class MLTrainerWrapper {
 		
 	}
 	
-	void callProcess()
+	void callProcess() throws Exception
 	{
 		String trainingFileName="bench/training.xml";
 		String elementName="trainingset";
@@ -145,7 +169,7 @@ public class MLTrainerWrapper {
 //		loadOntologyTriples(testFileName,elementName);
 	}
 	
-	public static void main(String args[])
+	public static void main(String args[])throws Exception
 	{
 		MLTrainerWrapper ml=new MLTrainerWrapper();
 		ml.callProcess();
