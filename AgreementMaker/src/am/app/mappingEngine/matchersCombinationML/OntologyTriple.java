@@ -53,6 +53,7 @@ public class OntologyTriple {
 		this.ontology1 = ontology1;
 		this.ontology2 = ontology2;
 		this.referenceAlignment = referenceAlignment;
+		this.alignmentObtained =new HashMap<AbstractMatcher, Alignment<Mapping>>();
 	}
 
 

@@ -55,13 +55,15 @@ public class MLTrainerWrapper {
 	
 	void loadOntologyTriples(String filename,String elementname)
 	{
+		//in linux RDF is rdf so had to put toLowerCase()
 		//TODO: load the list of training ontologies with reference alignments
+		
 		XmlParser xp=new XmlParser();
 		ArrayList<TrainingLayout> tlist=xp.parseDocument(filename, elementname);
 		for(TrainingLayout tl: tlist)
 		{
-			Ontology sourceOntology=loadOntology(tl.getsourceOntologyPath());
-			Ontology targetOntology=loadOntology(tl.gettargetOntologyPath());
+			Ontology sourceOntology=loadOntology(tl.getsourceOntologyPath().toLowerCase());
+			Ontology targetOntology=loadOntology(tl.gettargetOntologyPath().toLowerCase());
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.onlyEquivalence = true;
 			refParam.fileName = tl.getrefAlignmentPath();
@@ -93,9 +95,13 @@ public class MLTrainerWrapper {
 						currentMatcher.setParam(new ConceptMatcherParameters());
 						currentMatcher.match();
 						Alignment<Mapping> resultAlignment=currentMatcher.getAlignment();
-						if(resultAlignment!=null)
+						if(resultAlignment!=null && currentMatcher!=null)
 						{
-							currentTriple.setAlignmentObtained(currentMatcher, resultAlignment);	
+							if(!currentTriple.containsMatcher(currentMatcher))
+							{
+								currentTriple.setAlignmentObtained(currentMatcher, resultAlignment);	
+							}
+								
 						}
 						else
 						{
@@ -146,6 +152,7 @@ public class MLTrainerWrapper {
 										{
 											double similarityValue=currentMapping.getSimilarity(sourceNode, targetNode);
 											double referenceValue=referenceAlignment.getSimilarity(sourceNode, targetNode);
+											System.out.println(sourceNode.getUri()+"\t"+targetNode.getUri()+"\t"+similarityValue+"\t"+referenceValue+"\n");
 											outputWriter.write(sourceNode.getUri()+"\t"+targetNode.getUri()+"\t"+similarityValue+"\t"+referenceValue+"\n");
 											mappedSourceTarget.add(sourceNode.getUri()+"\t"+targetNode.getUri());
 										}																
