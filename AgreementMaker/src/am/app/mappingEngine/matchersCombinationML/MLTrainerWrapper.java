@@ -10,6 +10,7 @@ import java.util.List;
 
 import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
@@ -48,12 +49,13 @@ public class MLTrainerWrapper {
 	{
 		//TODO : look at oaei2011 and look how to get matchers and add to list below 
 	//	listOfMatchers.add();
-		
-		AbstractMatcher bsm=MatcherFactory.getMatcherInstance(MatchersRegistry.ConceptSimilarity, 0);
+		//try with these matchers da
+		AbstractMatcher bsm=MatcherFactory.getMatcherInstance(MatchersRegistry.AllOne, 0);
+		//AbstractMatcher bsm=MatcherFactory.getMatcherInstance(MatchersRegistry.Equals, 0);
 		listOfMatchers.add(bsm);
 	}
 	
-	void loadOntologyTriples(String filename,String elementname)
+	void loadOntologyTriples(String filename,String elementname) throws Exception
 	{
 		//in linux RDF is rdf so had to put toLowerCase()
 		//TODO: load the list of training ontologies with reference alignments
@@ -72,6 +74,7 @@ public class MLTrainerWrapper {
 			referenceAlignmentMatcher.setParam(refParam);
 			referenceAlignmentMatcher.setSourceOntology(sourceOntology);
 			referenceAlignmentMatcher.setTargetOntology(targetOntology);
+			referenceAlignmentMatcher.match();
        		Alignment<Mapping> refmap=referenceAlignmentMatcher.getAlignment();
 			OntologyTriple ot=new OntologyTriple(sourceOntology,targetOntology,refmap);
 			ot.setListOfMatchers(listOfMatchers);
@@ -92,7 +95,8 @@ public class MLTrainerWrapper {
 				try {
 						AbstractMatcher currentMatcher=matchers.get(m);
 						currentMatcher.setOntologies(currentTriple.getOntology1(), currentTriple.getOntology2());
-						currentMatcher.setParam(new ConceptMatcherParameters());
+						currentMatcher.setParam(new AbstractParameters());
+						currentMatcher.setPerformSelection(true);
 						currentMatcher.match();
 						Alignment<Mapping> resultAlignment=currentMatcher.getAlignment();
 						if(resultAlignment!=null && currentMatcher!=null)
@@ -152,7 +156,7 @@ public class MLTrainerWrapper {
 										{
 											double similarityValue=currentMapping.getSimilarity(sourceNode, targetNode);
 											double referenceValue=referenceAlignment.getSimilarity(sourceNode, targetNode);
-											System.out.println(sourceNode.getUri()+"\t"+targetNode.getUri()+"\t"+similarityValue+"\t"+referenceValue+"\n");
+											//System.out.println(sourceNode.getUri()+"\t"+targetNode.getUri()+"\t"+similarityValue+"\t"+referenceValue+"\n");
 											outputWriter.write(sourceNode.getUri()+"\t"+targetNode.getUri()+"\t"+similarityValue+"\t"+referenceValue+"\n");
 											mappedSourceTarget.add(sourceNode.getUri()+"\t"+targetNode.getUri());
 										}																
