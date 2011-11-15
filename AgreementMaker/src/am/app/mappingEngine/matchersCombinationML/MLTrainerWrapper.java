@@ -106,14 +106,16 @@ public class MLTrainerWrapper {
 		//TODO: load the list of training ontologies with reference alignments
 		
 		XmlParser xp=new XmlParser();
+		//String basePath="/home/vivek/projects/workspace/AgreementMakerSVN/";
+		String basePath="";
 		ArrayList<TrainingLayout> tlist=xp.parseDocument(filename, elementname);
 		for(TrainingLayout tl: tlist)
 		{
-			Ontology sourceOntology=loadOntology(tl.getsourceOntologyPath().toLowerCase());
-			Ontology targetOntology=loadOntology(tl.gettargetOntologyPath().toLowerCase());
+			Ontology sourceOntology=loadOntology(basePath+tl.getsourceOntologyPath().toLowerCase());
+			Ontology targetOntology=loadOntology(basePath+tl.gettargetOntologyPath().toLowerCase());
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.onlyEquivalence = true;
-			refParam.fileName = tl.getrefAlignmentPath();
+			refParam.fileName = basePath+tl.getrefAlignmentPath().toLowerCase();
 			refParam.format = ReferenceAlignmentMatcher.OAEI;
 			AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 			referenceAlignmentMatcher.setParam(refParam);
@@ -251,11 +253,11 @@ public class MLTrainerWrapper {
 	void generateTrainingFile() throws Exception
 	{
 		//ArrayList<String> mappedSourceTarget=new ArrayList<String>();
-		String[] trainingFiles={"bench/psm","bench/bsm","bench/vmm"};
+		String[] trainingFiles={"psm","bsm","vmm"};
 		for(int m=0;m<listOfMatchers.size();m++)
 		
 		{
-			BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File(trainingFiles[m])));
+			BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("bench/matchers/"+trainingFiles[m])));
 			AbstractMatcher currentMatcher=listOfMatchers.get(m);
 			if(currentMatcher!=null)
 			{
@@ -285,6 +287,7 @@ public class MLTrainerWrapper {
 									{
 										//if(!mappedSourceTarget.contains(sourceNode.getUri()+"\t"+targetNode.getUri()))
 										//{
+											
 											double similarityValue=currentMapping.getSimilarity(sourceNode, targetNode);
 											double referenceValue=referenceAlignment.getSimilarity(sourceNode, targetNode);
 											//System.out.println(sourceNode.getUri()+"\t"+targetNode.getUri()+"\t"+similarityValue+"\t"+referenceValue+"\n");
@@ -306,6 +309,7 @@ public class MLTrainerWrapper {
 							boolean mapped=false;
 							for(int i=0;i<currentMapping.size();i++)
 							{
+								double similarity=currentMapping.getSimilarity(currentMapping.get(i).getEntity1(), currentMapping.get(i).getEntity2());
 								mapped=false;
 								for(int j=0;j<referenceAlignment.size();j++)
 								{
@@ -313,14 +317,16 @@ public class MLTrainerWrapper {
 									if(currentMapping.get(i).getString(true).equals(referenceAlignment.get(j).getString(true)))
 									{
 										//System.out.println("mapped");
-										outputWriter.write(currentMapping.get(i).getEntity1().getUri()+"\t"+currentMapping.get(i).getEntity2().getUri()+"\t1.0\t1.0\n");
+	
+										//outputWriter.write(currentMapping.get(i).getEntity1().getUri()+"\t"+currentMapping.get(i).getEntity2().getUri()+"\t1.0\t1.0\n");
+										outputWriter.write(currentMapping.get(i).getEntity1().getUri()+"\t"+currentMapping.get(i).getEntity2().getUri()+"\t"+similarity+"\t1.0\n");
 										mapped=true;
 									}
 								 }
 								if(!mapped)
 								{
 									//System.out.println("matcher mapping wrong");
-									outputWriter.write(currentMapping.get(i).getEntity1().getUri()+"\t"+currentMapping.get(i).getEntity2().getUri()+"\t1.0\t0.0\n");
+									outputWriter.write(currentMapping.get(i).getEntity1().getUri()+"\t"+currentMapping.get(i).getEntity2().getUri()+"\t"+similarity+"\t0.0\n");
 								}
 							  }
 							
@@ -330,9 +336,36 @@ public class MLTrainerWrapper {
 			}			
 			outputWriter.close();
 		}		
-			
+		mergeIndividualFiles();	
 		
+	}
+	
+	void mergeIndividualFiles()
+	{
+		ArrayList<String> matcherFiles=new ArrayList<String>();
+		getFilesFromFolder(matcherFiles,"bench/matchers");
+		
+		
+		
+	}
+	
+	void getFilesFromFolder(ArrayList<String> files, String folder)
+	{
+		File file=new File(folder);
+		
+		if(file.isDirectory())
+		{
+			File[] filesInDir=file.listFiles();
+			for(int i=0;i<filesInDir.length;i++)
+			{
+				getFilesFromFolder(files, filesInDir[i].getAbsolutePath());
+			}
 		}
+		else
+		{
+			files.add(file.getAbsolutePath());
+		}
+	}
 		
 	
 	
