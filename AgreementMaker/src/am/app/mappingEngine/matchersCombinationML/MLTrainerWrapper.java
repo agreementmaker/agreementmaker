@@ -4,23 +4,36 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.hp.hpl.jena.rdf.model.Property;
+
 import am.GlobalStaticVariables;
+import am.app.Core;
+import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.StringUtil.NormalizerParameter;
+import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
 import am.app.mappingEngine.conceptMatcher.ConceptMatcherParameters;
+import am.app.mappingEngine.multiWords.MultiWordsParameters;
+import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.app.ontology.profiling.OntologyProfiler;
+import am.app.ontology.profiling.ProfilerRegistry;
+import am.app.ontology.profiling.manual.ManualOntologyProfiler;
+import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
 
 public class MLTrainerWrapper {
 	
@@ -50,9 +63,41 @@ public class MLTrainerWrapper {
 		//TODO : look at oaei2011 and look how to get matchers and add to list below 
 	//	listOfMatchers.add();
 		//try with these matchers da
-		AbstractMatcher bsm=MatcherFactory.getMatcherInstance(MatchersRegistry.AllOne, 0);
+		AbstractMatcher am=null;
+		am=MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 0);
+		ParametricStringParameters psmParam = new ParametricStringParameters(0.6, 1, 1);
+		psmParam.useLexicons = true;
+		psmParam.useBestLexSimilarity = true;
+		psmParam.measure = ParametricStringParameters.AMSUB_AND_EDIT;
+		psmParam.normParameter = new NormalizerParameter();
+		psmParam.normParameter.setForOAEI2009();
+		psmParam.redistributeWeights = true;
+		psmParam.threadedExecution = true;
+		psmParam.threadedOverlap = true;
+		am.setParam(psmParam);
+		listOfMatchers.add(am);
+		am=MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity, 0);
+		BaseSimilarityParameters bsmParam = new BaseSimilarityParameters(0.6, 1, 1);
+		bsmParam.useDictionary = false;
+		am.setParam(bsmParam);
+		listOfMatchers.add(am);
+		am=MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 0);
+		MultiWordsParameters vmmParam = new MultiWordsParameters(0.6,1,1);
+		
+		vmmParam.measure = MultiWordsParameters.TFIDF;
+		//only on concepts right now because it should be weighted differently
+		vmmParam.considerInstances = true;
+		vmmParam.considerNeighbors = false;
+		vmmParam.considerConcept = true;
+		vmmParam.considerClasses = false;
+		vmmParam.considerProperties = false;
+		vmmParam.ignoreLocalNames = true; 
+		vmmParam.useLexiconSynonyms = true; // May change later.
+		am.setParam(vmmParam);
+		listOfMatchers.add(am);
+		
 		//AbstractMatcher bsm=MatcherFactory.getMatcherInstance(MatchersRegistry.Equals, 0);
-		listOfMatchers.add(bsm);
+		
 	}
 	
 	void loadOntologyTriples(String filename,String elementname) throws Exception
@@ -93,9 +138,91 @@ public class MLTrainerWrapper {
 			{
 				
 				try {
+					// Build the lexicons.
+					LexiconBuilderParameters lexParam = new LexiconBuilderParameters();
+					lexParam.sourceOntology = currentTriple.getOntology1();
+					lexParam.targetOntology = currentTriple.getOntology2();
+					
+					lexParam.sourceUseLocalname = true;
+					lexParam.targetUseLocalname = false;
+					lexParam.sourceUseSCSLexicon = false;
+					lexParam.targetUseSCSLexicon = false;
+					
+					lexParam.detectStandardProperties(currentTriple.getOntology1());
+					lexParam.detectStandardProperties(currentTriple.getOntology2());
+					
+					Core.getLexiconStore().buildAll(lexParam);
+					
+					// Ontology profiling
+					ProfilerRegistry entry = ProfilerRegistry.ManualProfiler;
+					OntologyProfiler profiler = null;
+					Constructor<? extends OntologyProfiler> constructor = null;
+						
+					constructor = entry.getProfilerClass().getConstructor(Ontology.class, Ontology.class);
+					profiler = constructor.newInstance(currentTriple.getOntology1(),currentTriple.getOntology2());
+					
+					if(profiler!=null) {
+						profiler.setName(entry);
+						Core.getInstance().setOntologyProfiler(profiler);
+					}
+					
+					ManualOntologyProfiler manualProfiler = (ManualOntologyProfiler) profiler;
+					
+					ManualProfilerMatchingParameters profilingMatchingParams = new ManualProfilerMatchingParameters();
+					
+					profilingMatchingParams.matchSourceClassLocalname = true;
+					profilingMatchingParams.matchSourcePropertyLocalname = true;
+					
+					profilingMatchingParams.matchTargetClassLocalname = true;
+					profilingMatchingParams.matchTargetPropertyLocalname = true;
+					
+					profilingMatchingParams.sourceClassAnnotations = new ArrayList<Property>();
+					for( Property currentProperty : manualProfiler.getSourceClassAnnotations() ) {
+						if( currentProperty.getLocalName().toLowerCase().contains("label") ) {
+							profilingMatchingParams.sourceClassAnnotations.add(currentProperty);
+						}
+					}
+					
+					profilingMatchingParams.sourcePropertyAnnotations = new ArrayList<Property>();
+					for( Property currentProperty : manualProfiler.getSourcePropertyAnnotations() ) {
+						if( currentProperty.getLocalName().toLowerCase().contains("label") ) {
+							profilingMatchingParams.sourcePropertyAnnotations.add(currentProperty);
+						}
+					}
+					
+					profilingMatchingParams.targetClassAnnotations = new ArrayList<Property>();
+					for( Property currentProperty : manualProfiler.getTargetClassAnnotations() ) {
+						if( currentProperty.getLocalName().toLowerCase().contains("label") ) {
+							profilingMatchingParams.targetClassAnnotations.add(currentProperty);
+						}
+					}
+					
+					profilingMatchingParams.targetPropertyAnnotations = new ArrayList<Property>();
+					for( Property currentProperty : manualProfiler.getTargetPropertyAnnotations() ) {
+						if( currentProperty.getLocalName().toLowerCase().contains("label") ) {
+							profilingMatchingParams.targetPropertyAnnotations.add(currentProperty);
+						}
+					}
+					
+					manualProfiler.setMatchTimeParams(profilingMatchingParams);
+					
+					/*ParametricStringParameters psmParam = new ParametricStringParameters(0.6, 1, 1);
+					psmParam.useLexicons = true;
+					psmParam.useBestLexSimilarity = true;
+					psmParam.measure = ParametricStringParameters.AMSUB_AND_EDIT;
+					psmParam.normParameter = new NormalizerParameter();
+					psmParam.normParameter.setForOAEI2009();
+					psmParam.redistributeWeights = true;
+					psmParam.threadedExecution = true;
+					psmParam.threadedOverlap = true;
+					currentMatcher.setParam(psmParam);*/
+				//	BaseSimilarityParameters bsmParam = new BaseSimilarityParameters(0.6, 1, 1);
+					//bsmParam.useDictionary = false;
+					//currentMatcher.setParam(bsmParam);
+	//				currentMatcher.setParam(vmmParam);
+		
 						AbstractMatcher currentMatcher=matchers.get(m);
 						currentMatcher.setOntologies(currentTriple.getOntology1(), currentTriple.getOntology2());
-						currentMatcher.setParam(new AbstractParameters());
 						currentMatcher.setPerformSelection(true);
 						currentMatcher.match();
 						Alignment<Mapping> resultAlignment=currentMatcher.getAlignment();
@@ -123,24 +250,28 @@ public class MLTrainerWrapper {
 	
 	void generateTrainingFile() throws Exception
 	{
-		ArrayList<String> mappedSourceTarget=new ArrayList<String>();
-		BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("bench/training/trainingFile")));
-		for(int t=0;t<listOfTriples.size();t++)
+		//ArrayList<String> mappedSourceTarget=new ArrayList<String>();
+		String[] trainingFiles={"bench/psm","bench/bsm","bench/vmm"};
+		for(int m=0;m<listOfMatchers.size();m++)
+		
 		{
-			OntologyTriple currentTriple=listOfTriples.get(t);
-			Alignment<Mapping> referenceAlignment=currentTriple.getReferenceAlignment();
-			ArrayList<AbstractMatcher> matchers=currentTriple.getListOfMatchers();
-			if(matchers!=null)
+			BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File(trainingFiles[m])));
+			AbstractMatcher currentMatcher=listOfMatchers.get(m);
+			if(currentMatcher!=null)
 			{
-				for(int m=0;m<matchers.size();m++)
+				for(int t=0;t<listOfTriples.size();t++)
 				{
-					AbstractMatcher currentMatcher=matchers.get(m);
+					
+					OntologyTriple currentTriple=listOfTriples.get(t);
+					Alignment<Mapping> referenceAlignment=currentTriple.getReferenceAlignment();
+					
+					
 					if(currentTriple.containsMatcher(currentMatcher))
 					{
 						Alignment<Mapping> currentMapping=currentTriple.getAlignmentObtained(currentMatcher);
 						if(currentMapping!=null)
 						{
-							Ontology sourceOntology=currentTriple.getOntology1();
+							/*Ontology sourceOntology=currentTriple.getOntology1();
 							Ontology targetOntology=currentTriple.getOntology2();
 							List<Node> sourceClasses=sourceOntology.getClassesList();
 							List<Node> targetClasses=targetOntology.getClassesList();
@@ -152,25 +283,58 @@ public class MLTrainerWrapper {
 									Node targetNode=targetClasses.get(target);
 									if(currentMapping.isMapped(sourceNode) && currentMapping.isMapped(targetNode))
 									{
-										if(!mappedSourceTarget.contains(sourceNode.getUri()+"\t"+targetNode.getUri()))
-										{
+										//if(!mappedSourceTarget.contains(sourceNode.getUri()+"\t"+targetNode.getUri()))
+										//{
 											double similarityValue=currentMapping.getSimilarity(sourceNode, targetNode);
 											double referenceValue=referenceAlignment.getSimilarity(sourceNode, targetNode);
 											//System.out.println(sourceNode.getUri()+"\t"+targetNode.getUri()+"\t"+similarityValue+"\t"+referenceValue+"\n");
 											outputWriter.write(sourceNode.getUri()+"\t"+targetNode.getUri()+"\t"+similarityValue+"\t"+referenceValue+"\n");
 											mappedSourceTarget.add(sourceNode.getUri()+"\t"+targetNode.getUri());
-										}																
+										//}																
 									}								
 								}							
+							}*/
+							/*System.out.println("-------------------------------------");
+							System.out.println(currentMapping.size());
+							for(int i=0;i<currentMapping.size();i++)
+							{
+								System.out.println(currentMapping.get(i).getString(true));
+								
 							}
+							System.out.println("-----------------------------");
+							System.out.println(referenceAlignment.size());*/
+							boolean mapped=false;
+							for(int i=0;i<currentMapping.size();i++)
+							{
+								mapped=false;
+								for(int j=0;j<referenceAlignment.size();j++)
+								{
+									
+									if(currentMapping.get(i).getString(true).equals(referenceAlignment.get(j).getString(true)))
+									{
+										//System.out.println("mapped");
+										outputWriter.write(currentMapping.get(i).getEntity1().getUri()+"\t"+currentMapping.get(i).getEntity2().getUri()+"\t1.0\t1.0\n");
+										mapped=true;
+									}
+								 }
+								if(!mapped)
+								{
+									//System.out.println("matcher mapping wrong");
+									outputWriter.write(currentMapping.get(i).getEntity1().getUri()+"\t"+currentMapping.get(i).getEntity2().getUri()+"\t1.0\t0.0\n");
+								}
+							  }
+							
 						}	
 					}					
 				}	
 			}			
+			outputWriter.close();
 		}		
-		outputWriter.close();
+			
 		
-	}
+		}
+		
+	
 	
 	void generateModel()
 	{
