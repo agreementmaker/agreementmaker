@@ -50,11 +50,11 @@ public class XmlParser {
 		NodeList n1=e.getElementsByTagName("sourceontology");
 		NodeList n2=e.getElementsByTagName("targetontology");
 		NodeList n3=e.getElementsByTagName("refalignment");
-		//System.out.println("----------------------------------------");
-		//System.out.println(n1.item(0).getAttributes().item(1).getNodeValue());
-		//System.out.println(n2.item(0).getAttributes().item(1).getNodeValue());
-		//System.out.println(n3.item(0).getAttributes().item(1).getNodeValue());
-		//System.out.println("---------------------------------------\n");
+		/*System.out.println("----------------------------------------");
+		System.out.println(n1.item(0).getAttributes().item(1).getNodeValue());
+		System.out.println(n2.item(0).getAttributes().item(1).getNodeValue());
+		System.out.println(n3.item(0).getAttributes().item(1).getNodeValue());
+		System.out.println("---------------------------------------\n");*/
 		tl.setsourceOntologyPath(n1.item(0).getAttributes().item(1).getNodeValue());
 		tl.settargetOntologyPath(n2.item(0).getAttributes().item(1).getNodeValue());
 		tl.setrefalignmentPath(n3.item(0).getAttributes().item(1).getNodeValue());

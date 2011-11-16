@@ -427,9 +427,12 @@ public class MLTrainerWrapper {
 		if(file.isDirectory())
 		{
 			File[] filesInDir=file.listFiles();
-			for(int i=0;i<filesInDir.length;i++)
+			if(!file.getName().contains("svn"))
 			{
-				getFilesFromFolder(files, filesInDir[i].getAbsolutePath());
+				for(int i=0;i<filesInDir.length;i++)
+				{
+					getFilesFromFolder(files, filesInDir[i].getAbsolutePath());
+				}
 			}
 		}
 		else
