@@ -1,39 +1,38 @@
 package am.app.mappingEngine.matchersCombinationML;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
+import java.util.Set;
 
-import com.hp.hpl.jena.rdf.model.Property;
-
-import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
-import am.app.mappingEngine.conceptMatcher.ConceptMatcherParameters;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
-import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.app.ontology.profiling.ProfilerRegistry;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
+
+import com.hp.hpl.jena.rdf.model.Property;
 
 public class MLTrainerWrapper {
 	
@@ -230,16 +229,16 @@ public class MLTrainerWrapper {
 						Alignment<Mapping> resultAlignment=currentMatcher.getAlignment();
 						if(resultAlignment!=null && currentMatcher!=null)
 						{
-							if(!currentTriple.containsMatcher(currentMatcher))
+							if(!currentTriple.containsMatcher(currentMatcher.getName()))
 							{
-								currentTriple.setAlignmentObtained(currentMatcher, resultAlignment);	
+								currentTriple.setAlignmentObtained(currentMatcher.getName(), resultAlignment);	
 							}
 								
 						}
-						else
-						{
-							//currentTriple.setAlignmentObtained(currentMatcher, null);
-						}
+//						else
+//						{
+//							//currentTriple.setAlignmentObtained(currentMatcher, null);
+//						}
 					
 					
 					} catch (Exception e) {
@@ -253,12 +252,12 @@ public class MLTrainerWrapper {
 	void generateTrainingFile() throws Exception
 	{
 		//ArrayList<String> mappedSourceTarget=new ArrayList<String>();
-		String[] trainingFiles={"psm","bsm","vmm"};
+	//	String[] trainingFiles={"psm","bsm","vmm"};
 		for(int m=0;m<listOfMatchers.size();m++)
-		
 		{
-			BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("bench/matchers/"+trainingFiles[m])));
+			
 			AbstractMatcher currentMatcher=listOfMatchers.get(m);
+			BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("bench/matchers/"+currentMatcher.getName())));
 			if(currentMatcher!=null)
 			{
 				for(int t=0;t<listOfTriples.size();t++)
@@ -268,9 +267,9 @@ public class MLTrainerWrapper {
 					Alignment<Mapping> referenceAlignment=currentTriple.getReferenceAlignment();
 					
 					
-					if(currentTriple.containsMatcher(currentMatcher))
+					if(currentTriple.containsMatcher(currentMatcher.getName()))
 					{
-						Alignment<Mapping> currentMapping=currentTriple.getAlignmentObtained(currentMatcher);
+						Alignment<Mapping> currentMapping=currentTriple.getAlignmentObtained(currentMatcher.getName());
 						if(currentMapping!=null)
 						{
 							/*Ontology sourceOntology=currentTriple.getOntology1();
@@ -340,11 +339,83 @@ public class MLTrainerWrapper {
 		
 	}
 	
-	void mergeIndividualFiles()
+	void mergeIndividualFiles() throws IOException
 	{
 		ArrayList<String> matcherFiles=new ArrayList<String>();
 		getFilesFromFolder(matcherFiles,"bench/matchers");
 		
+		HashMap<String,HashMap> uniqueConcepts=new HashMap<String,HashMap>();
+		
+		for(int i=0;i<matcherFiles.size();i++)
+		{
+			File currentFile=new File(matcherFiles.get(i));
+			String matcherName=currentFile.getName();
+			BufferedReader inputReader=new BufferedReader(new FileReader(currentFile));
+			while(inputReader.ready())
+			{
+				String inputLine=inputReader.readLine();
+				String[] inputLineParts=inputLine.split("\t");
+				if(inputLineParts.length==4)
+				{
+					
+					String mapKey=inputLineParts[0]+"\t"+inputLineParts[1];
+					HashMap<String,String> matcherMap;
+					if(uniqueConcepts.containsKey(mapKey))
+					{
+						matcherMap=uniqueConcepts.get(mapKey);
+						matcherMap.put(matcherName, inputLine);
+					}
+					else
+					{
+						matcherMap=new HashMap<String,String>();
+						matcherMap.put(matcherName, inputLine);
+					}
+					uniqueConcepts.put(mapKey, matcherMap);
+				}				
+			}
+			
+		}
+		
+		//writing the results into a file in the format we want
+		
+		Set<String> mapKeys=uniqueConcepts.keySet();
+		Iterator<String> mapKeyIterator=mapKeys.iterator();
+		
+		BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("bench/combinedmatchers/trainingFilecombined")));
+		
+		while(mapKeyIterator.hasNext())
+		{
+			String currentKey=mapKeyIterator.next();
+			
+			HashMap<String,String> matcherMap=uniqueConcepts.get(currentKey);
+			String outputStr="";
+			String referenceSim="0.0";
+			String[] matcherSim=new String[3];
+			for(int i=0;i<matcherFiles.size();i++)
+			{
+				File currentFile=new File(matcherFiles.get(i));
+				String matcherName=currentFile.getName();
+				
+				if(matcherMap.containsKey(matcherName))
+				{
+				//System.out.println(i);
+					matcherSim[i]=matcherMap.get(matcherName).split("\t")[2];
+					referenceSim=matcherMap.get(matcherName).split("\t")[3];
+					
+				}
+				else
+				{
+					matcherSim[i]="0.0";
+				}
+				outputStr+=matcherSim[i]+"\t";
+			}
+			outputStr+=referenceSim;
+			
+			outputWriter.write(outputStr+"\n");
+			
+		}
+		
+		outputWriter.close();
 		
 		
 	}
@@ -363,7 +434,11 @@ public class MLTrainerWrapper {
 		}
 		else
 		{
-			files.add(file.getAbsolutePath());
+			if(!file.getName().equals("entries"))
+			{
+				files.add(file.getAbsolutePath());	
+			}
+			
 		}
 	}
 		

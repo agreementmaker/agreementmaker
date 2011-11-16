@@ -16,21 +16,22 @@ public class OntologyTriple {
 	private Ontology ontology2;
 	private Alignment<Mapping> referenceAlignment;
 	private ArrayList<AbstractMatcher> listOfMatchers;
-	private HashMap<AbstractMatcher, Alignment<Mapping>> alignmentObtained;
+	//private HashMap<AbstractMatcher, Alignment<Mapping>> alignmentObtained;
+	private HashMap<String, Alignment<Mapping>> alignmentObtained;
 	//TODO check if we need to store Alignment<Mapping> or the whole result class???
 	
 	
-	public boolean containsMatcher(AbstractMatcher currentMatcher)
+	public boolean containsMatcher(String currentMatcher)
 	{
 		return alignmentObtained.containsKey(currentMatcher);
 	}
-	public Alignment<Mapping> getAlignmentObtained(AbstractMatcher currentMatcher)
+	public Alignment<Mapping> getAlignmentObtained(String currentMatcher)
 	{
 	
 		return alignmentObtained.get(currentMatcher);
 	}
 	
-	public void setAlignmentObtained(AbstractMatcher currentMatcher, Alignment<Mapping> resultObtained)
+	public void setAlignmentObtained(String currentMatcher, Alignment<Mapping> resultObtained)
 	{
 		alignmentObtained.put(currentMatcher, resultObtained);
 	}
@@ -53,12 +54,12 @@ public class OntologyTriple {
 		this.ontology1 = ontology1;
 		this.ontology2 = ontology2;
 		this.referenceAlignment = referenceAlignment;
-		this.alignmentObtained =new HashMap<AbstractMatcher, Alignment<Mapping>>();
+		this.alignmentObtained =new HashMap<String, Alignment<Mapping>>();
 	}
 
 
 	public OntologyTriple() {
-		this.alignmentObtained =new HashMap<AbstractMatcher, Alignment<Mapping>>();
+		this.alignmentObtained =new HashMap<String, Alignment<Mapping>>();
 	}
 
 
