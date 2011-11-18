@@ -186,7 +186,6 @@ public class Mapping implements Serializable
 		else retValue += entity2.getLocalName();		
 		retValue += "\t"+getSimilarity()+"\t"+getRelation().getVisualRepresentation();
 		if(provenance != null){
-			System.out.println("Provenance: " + provenance);
 			retValue += "\t" + provenance;
 		}
 		retValue += "\n"; 
