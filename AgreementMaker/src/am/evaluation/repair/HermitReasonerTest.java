@@ -4,27 +4,24 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.semanticweb.HermiT.Configuration;
 import org.semanticweb.HermiT.Reasoner;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.reasoner.InferenceType;
+import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.util.InferredAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredClassAssertionAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentClassAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredEquivalentObjectPropertyAxiomGenerator;
-import org.semanticweb.owlapi.util.InferredIndividualAxiomGenerator;
 import org.semanticweb.owlapi.util.InferredOntologyGenerator;
-import org.semanticweb.owlapi.util.InferredSubClassAxiomGenerator;
 import org.semanticweb.owlapi.util.OWLOntologyMerger;
 
 /*
@@ -36,7 +33,8 @@ public class HermitReasonerTest {
 	private OWLOntologyManager owlontologymanager = OWLManager.createOWLOntologyManager();
 	
 	public static void main(String[] args) throws OWLOntologyCreationException {
-		DOMConfigurator.configure("log4j.xml");
+		//DOMConfigurator.configure("log4j.xml");
+		log.setLevel(Level.DEBUG);
 		
 		try {
 			new HermitReasonerTest().mergeAndReason();
@@ -51,40 +49,48 @@ public class HermitReasonerTest {
 	public void mergeAndReason() throws OWLOntologyCreationException, OWLOntologyStorageException{
 		Configuration configuration = new Configuration();
         configuration.tableauMonitorType = org.semanticweb.HermiT.Configuration.TableauMonitorType.TIMING;
-        Reasoner hReasoner;
+        Reasoner sourceReasoner, targetReasoner;
+        OWLOntology sourceOntology, targetOntology;
         
-        org.semanticweb.owlapi.model.OWLOntology ontology = owlontologymanager.loadOntologyFromOntologyDocument(
+        sourceOntology = owlontologymanager.loadOntologyFromOntologyDocument(
 //        		new File("C:\\Users\\Renu\\Desktop\\human.owl"));
-        		new File("H:\\Work\\Eclipse Workspace\\Ontologies\\OAEI\\2011\\anatomy\\human.owl"));
+        		new File("../Ontologies/OAEI/2011/anatomy/human.owl"));
         
-        hReasoner = new Reasoner(configuration, ontology);
-        log.debug("What are the unsatisfiable classes in Human.owl? " + hReasoner.getUnsatisfiableClasses() + "\n");
-        
-        ontology = owlontologymanager.loadOntologyFromOntologyDocument(
+        targetOntology = owlontologymanager.loadOntologyFromOntologyDocument(
 //        		new File("C:\\Users\\Renu\\Desktop\\mouse.owl"));
-        		new File("H:\\Work\\Eclipse Workspace\\Ontologies\\OAEI\\2011\\anatomy\\mouse.owl"));
+        		new File("../Ontologies/OAEI/2011/anatomy/mouse.owl"));
         
-        hReasoner = new Reasoner(configuration, ontology);
-        log.debug("What are the unsatisfiable classes in Mouse.owl? " + hReasoner.getUnsatisfiableClasses() + "\n");
+        sourceReasoner = new Reasoner(configuration, sourceOntology);
+        targetReasoner = new Reasoner(configuration, targetOntology);
+        
+        Node<OWLClass> sourceUnsatClass = sourceReasoner.getUnsatisfiableClasses();
+        Node<OWLClass> targetUnsatClass = targetReasoner.getUnsatisfiableClasses();
+        
+        log.debug("What are the unsatisfiable classes in Human.owl? " + sourceUnsatClass + "\n");
+        
+        
+        log.debug("What are the unsatisfiable classes in Mouse.owl? " + targetUnsatClass + "\n");
+        
+        
         
         
         
         //Run the reasoner on the merged ontology
-        hReasoner = new Reasoner(configuration, mergeOntology());
-        hReasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
+        sourceReasoner = new Reasoner(configuration, mergeOntology());
+        sourceReasoner.precomputeInferences(InferenceType.CLASS_HIERARCHY);
 //        hReasoner.getUnsatisfiableClasses();
         
         //Generate inferences
         List<InferredAxiomGenerator<? extends OWLAxiom>> gens = new ArrayList<InferredAxiomGenerator<? extends OWLAxiom>>();
         gens.add(new InferredClassAssertionAxiomGenerator());
-        InferredOntologyGenerator iog = new InferredOntologyGenerator(hReasoner, gens);
+        InferredOntologyGenerator iog = new InferredOntologyGenerator(sourceReasoner, gens);
         
         //Save inferred ontology in a new OWL file
         OWLOntology inferredOntology = owlontologymanager.createOntology();
         iog.fillOntology(owlontologymanager, inferredOntology);
-        owlontologymanager.saveOntology(inferredOntology, new RDFXMLOntologyFormat(), IRI.create("file:/inferredoutput.owl"));
+        owlontologymanager.saveOntology(inferredOntology, new RDFXMLOntologyFormat(), IRI.create("file:///home/cosmin/inferredoutput.owl"));
         
-        hReasoner = new Reasoner(configuration, inferredOntology);
+        sourceReasoner = new Reasoner(configuration, inferredOntology);
         
 //        inferredOntology.getClassAssertionAxioms(0);
 //        hReasoner.getEquivalentClasses(classExpression);
@@ -104,7 +110,7 @@ public class HermitReasonerTest {
         		log.debug(axiom);
         	}
         	// Save the merged ontology to OWL file
-        	owlontologymanager.saveOntology(mergedOntology, new RDFXMLOntologyFormat(), IRI.create("file:/output.owl"));
+        	owlontologymanager.saveOntology(mergedOntology, new RDFXMLOntologyFormat(), IRI.create("file:///home/cosmin/output.owl"));
 
         } catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
