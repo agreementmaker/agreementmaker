@@ -1467,6 +1467,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return result;
 	}
 	
+	/**
+	 * More configurable getALignmentsString: you can select whether or not to print classes and properties,
+	 * and whether to print localNames or URIs
+	 */
 	public String getAlignmentsStrings(boolean classes, boolean properties, boolean URIs) {
 		//The small arrow must be different from the bigger used in the alignments or the parseReference will identify these lines as alignments
 		String result = "";
