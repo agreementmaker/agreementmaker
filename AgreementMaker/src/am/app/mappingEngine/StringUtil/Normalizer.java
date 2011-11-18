@@ -3,6 +3,8 @@ package am.app.mappingEngine.StringUtil;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.apache.log4j.Logger;
+
 import am.app.Core;
 import am.utility.EnglishUtility;
 
@@ -63,7 +65,7 @@ public class Normalizer {
 			
 			if(endOfWord) {
 				if(currentWord.length()>0 && !currentWord.equals(" ")) {
-					if(!parameters.removeStopWords || !stopWords.contains(currentWord)) { // if we pass this test it means that the word has to be added to the final processed string
+					if((!parameters.removeStopWords && !parameters.removeAllStopWords) || !stopWords.contains(currentWord)) { // if we pass this test it means that the word has to be added to the final processed string
 						if(parameters.stem) {
 							try {
 								String beforeStem = null;
@@ -208,11 +210,26 @@ public class Normalizer {
 		
 		if(((NormalizerParameter)param).removeAllStopWords) {
 			stopWords = new HashSet<String>();			
-			System.out.println("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
 			for (int i = 0; i < EnglishUtility.stopwords.length; i++) {
 				stopWords.add(EnglishUtility.stopwords[i]);
 			} 
 		}
 		
+	}
+
+
+
+
+	public void addStopword(String word) {
+		if(stopWords == null) Logger.getLogger(Normalizer.class).error("Error: Impossible to add stopword. The stopwords map is null.");
+		stopWords.add(word);
+	}
+
+
+
+
+	public void removeStopword(String word) {
+		if(stopWords == null) Logger.getLogger(Normalizer.class).error("Error: Impossible to remove stopword. The stopwords map is null.");
+		stopWords.remove(word);
 	}
 }
