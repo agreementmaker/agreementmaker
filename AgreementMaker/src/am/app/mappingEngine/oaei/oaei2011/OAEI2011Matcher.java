@@ -171,7 +171,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		lexParam.targetOntology = targetOntology;
 		
 		lexParam.sourceUseLocalname = true;
-		lexParam.targetUseLocalname = false;
+		lexParam.targetUseLocalname = true;
 		lexParam.sourceUseSCSLexicon = false;
 		lexParam.targetUseSCSLexicon = false;
 		
@@ -365,7 +365,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		lexParam.targetOntology = targetOntology;
 		
 		lexParam.sourceUseLocalname = true;
-		lexParam.targetUseLocalname = false;
+		lexParam.targetUseLocalname = true;
 		lexParam.sourceUseSCSLexicon = false;
 		lexParam.targetUseSCSLexicon = false;
 		
@@ -876,14 +876,15 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		Core.getLexiconStore().buildAll(lexParam);
 		
-		List<AbstractMatcher> lwc1InputMatchers = new ArrayList<AbstractMatcher>();
+		//List<AbstractMatcher> lwc1InputMatchers = new ArrayList<AbstractMatcher>();
 		List<AbstractMatcher> lwc2InputMatchers = new ArrayList<AbstractMatcher>();
 		
 		//ThreadGroup threadGroup = new ThreadGroup("LEXMATCH");
 		
 		// LSM
+		AbstractMatcher lsm = null;
 		if( !isCancelled() ) {
-			AbstractMatcher lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSMWeighted, 0);
+			lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSMWeighted, 0);
 			
 			LexicalSynonymMatcherParameters lsmParam = new LexicalSynonymMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
 			lsmParam.useSynonymTerms = false;
@@ -891,7 +892,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			setupSubMatcher(lsm, lsmParam);
 			runSubMatcher(lsm, "LSM Weighted 1/7");
 			
-			lwc1InputMatchers.add(lsm);
+			//lwc1InputMatchers.add(lsm);
 		}
 		
 		/*// MM
@@ -957,7 +958,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			lwc2InputMatchers.add(vmm);
 		}
 		
-		// LWC1 (LSM, MM)
+		/*// LWC1 (LSM, MM)
 		AbstractMatcher lwc1 = null;
 		if( !isCancelled() ) {
 			lwc1 = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 0);
@@ -973,7 +974,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			setupSubMatcher(lwc1, lwcParam);
 			runSubMatcher(lwc1, "LWC (LSM, MM) 5/7");
 			
-		}
+		}*/
 		
 		// LWC2 (PSM, VMM)
 		AbstractMatcher lwc2 = null;
@@ -998,7 +999,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		if( !isCancelled() ) {
 			lwc3 = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 0);
 			
-			lwc3.addInputMatcher(lwc1);
+			lwc3.addInputMatcher(lsm);
 			lwc3.addInputMatcher(lwc2);
 			
 			CombinationParameters lwcParam = new CombinationParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
