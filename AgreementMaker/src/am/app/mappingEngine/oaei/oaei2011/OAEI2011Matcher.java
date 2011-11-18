@@ -80,7 +80,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
     	
     	OAEI2011MatcherParameters p = (OAEI2011MatcherParameters) param;
     	
-    	progressDisplay.ignoreComplete(true); //TODO I have to remove this
+    	//progressDisplay.ignoreComplete(true); //TODO I have to remove this
     	
     	AbstractMatcher finalResult = null;
     	if( p.automaticConfiguration ) {
@@ -111,7 +111,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
     		}
     	}
 		
-    	progressDisplay.ignoreComplete(false);// TODO I removed it!! 
+    	//progressDisplay.ignoreComplete(false);// TODO I removed it!! 
     	
 		if( finalResult != null ) {
 			//finalResult.select();
@@ -186,7 +186,9 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		Constructor<? extends OntologyProfiler> constructor = null;
 			
 		constructor = entry.getProfilerClass().getConstructor(Ontology.class, Ontology.class);
-		profiler = constructor.newInstance(Core.getInstance().getSourceOntology(), Core.getInstance().getTargetOntology());
+		//profiler = constructor.newInstance(Core.getInstance().getSourceOntology(), Core.getInstance().getTargetOntology());
+		profiler = constructor.newInstance(sourceOntology, targetOntology);
+		
 		
 		if(profiler!=null) {
 			profiler.setName(entry);
@@ -1061,7 +1063,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		runSubMatcher(gfm, "Submatcher 4/4: GFM( LWC )");
 		//return gfm;
 
-		getProgressDisplay().ignoreComplete(false); //TODO : i remove this
+		//getProgressDisplay().ignoreComplete(false); //TODO : i remove this
 		return gfm;
 	}
 	
