@@ -1374,16 +1374,16 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		Iterator<OntProperty> it = sourcePropValues.keySet().iterator();
 		while(it.hasNext()){
 			OntProperty prop = it.next();
-			System.out.println(prop);
-			System.out.println(sourcePropValues.get(prop));
+			//System.out.println(prop);
+			//System.out.println(sourcePropValues.get(prop));
 		}
 		//System.out.println("TARGET");
 		//System.out.println(targetPropValues);
 		Iterator<OntProperty> it2 = targetPropValues.keySet().iterator();
 		while(it2.hasNext()){
 			OntProperty prop = it2.next();
-			System.out.println(prop);
-			System.out.println(targetPropValues.get(prop));
+			//System.out.println(prop);
+			//System.out.println(targetPropValues.get(prop));
 		}	
 	}
 	
