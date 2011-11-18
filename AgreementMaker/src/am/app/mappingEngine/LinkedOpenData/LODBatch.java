@@ -4,16 +4,33 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import am.app.Core;
+import am.app.lexicon.LexiconBuilderParameters;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.LexiconStore;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcher;
+import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
 import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher;
 import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
 import am.app.mappingEngine.hierarchy.HierarchyMatcherModified;
 import am.app.mappingEngine.hierarchy.HierarchyMatcherModifiedParameters;
+import am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher;
+import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters;
+import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters.OAEI2011Configuration;
+import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.userInterface.MatchersControlPanel;
+import am.utility.referenceAlignment.AlignmentUtilities;
 
 import com.hp.hpl.jena.util.LocationMapper;
 
@@ -26,7 +43,9 @@ public class LODBatch {
 	
 	public LODBatch(){
 		log = Logger.getLogger(LODBatch.class);
-		Logger.getRootLogger().setLevel(Level.DEBUG);	
+		//Logger.getRootLogger().setLevel(Level.DEBUG);	
+		
+		log.setLevel(Level.INFO);
 		
 		initMapper();		
 	}
@@ -48,7 +67,91 @@ public class LODBatch {
 		
 	}
 
-	public void singleRun(LODOntology source, LODOntology target, String testName){
+	public void singleRun(LODOntology source, LODOntology target, String testName, String refAlign){
+		long start = System.nanoTime();
+		Ontology sourceOntology = null;
+		Ontology targetOntology = null;
+		OntoTreeBuilder treeBuilder;
+		
+						
+		log.info("Opening sourceOntology...");
+		sourceOntology = OntoTreeBuilder.loadOntology(new File(source.getFilename()).getPath(), source.getLang(), source.getSyntax(), mapper);
+		//sourceOntology = LODUtils.openOntology(new File(sourceName).getAbsolutePath());	
+		log.info("Done");	
+				
+		log.info("Opening targetOntology...");
+		targetOntology = OntoTreeBuilder.loadOntology(new File(target.getFilename()).getPath(), target.getLang(), target.getSyntax(), mapper);
+		//targetOntology = LODUtils.openOntology(new File(targetName).getAbsolutePath());
+		log.info("Done");
+		
+		AdvancedSimilarityMatcher matcher = new AdvancedSimilarityMatcher();
+		
+		
+		AdvancedSimilarityParameters asmParam = new AdvancedSimilarityParameters();
+		asmParam.useDictionary = true;
+		matcher.setParam(asmParam);
+		
+//		OAEI2011Matcher matcher = new OAEI2011Matcher();
+//		OAEI2011MatcherParameters OAEIparam = new OAEI2011MatcherParameters();
+//		//matcher.
+//		OAEIparam.threshold = 0.9;
+//		OAEIparam.automaticConfiguration = false;
+//		OAEIparam.selectedConfiguration = OAEI2011Configuration.GENERAL_MULTI;
+//		matcher.setAlignProp(false);
+//		matcher.setPerformSelection(true);
+//		matcher.setParam(OAEIparam);
+		
+		
+		
+		matcher.setSourceOntology(sourceOntology);
+		matcher.setTargetOntology(targetOntology);
+		
+		log.info("Matching");				
+		try {
+			matcher.match();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		AbstractMatcher hmm = MatcherFactory.getMatcherInstance(MatchersRegistry.HierarchyMatcherModified, 0);
+		hmm.setSourceOntology(sourceOntology);
+		hmm.setTargetOntology(targetOntology);
+		hmm.addInputMatcher(matcher);
+		
+		List<MatchingPair> reference = AlignmentUtilities.getMatchingPairsTAB(refAlign);
+		hmm.setReferenceAlignment(reference);
+		
+		HierarchyMatcherModifiedParameters param = new HierarchyMatcherModifiedParameters();
+		param.mapper = mapper;
+		hmm.setParam(param);
+		
+		log.info("HMM matching");
+		
+		try {
+			hmm.match();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		log.info("Printing alignments...");
+		try {
+			printDocument(testName, hmm.getAlignmentsStrings(true, false, false), source.getUri(), target.getUri());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		log.info("Done");
+		
+		
+		System.out.println(AlignmentUtilities.thresholdAnalysis(hmm, reference));
+			
+		long end = System.nanoTime();
+		long executionTime = (end-start)/1000000;
+		report += "Execution times:\t" + matcher.getExecutionTime() + "\t" + hmm.getExecutionTime() + "\t" + executionTime + "\n";
+		log.info("Total time: " + executionTime);
+		
+	}
+	
+	public void singleRunEq(AbstractMatcher matcher, LODOntology source, LODOntology target, String testName, String outputFolder){
 		long start = System.nanoTime();
 		Ontology sourceOntology = null;
 		Ontology targetOntology = null;
@@ -64,40 +167,37 @@ public class LODBatch {
 		//targetOntology = LODUtils.openOntology(new File(targetName).getAbsolutePath());
 		log.info("Done");
 		
-		AdvancedSimilarityMatcher asm = new AdvancedSimilarityMatcher();
-		asm.setSourceOntology(sourceOntology);
-		asm.setTargetOntology(targetOntology);
+		matcher.setSourceOntology(sourceOntology);
+		matcher.setTargetOntology(targetOntology);
 		
-		AdvancedSimilarityParameters asmParam = new AdvancedSimilarityParameters();
-		asmParam.useDictionary = true;
-		asm.setParam(asmParam);
+		LexiconBuilderParameters lexParam = new LexiconBuilderParameters();
+		lexParam.sourceOntology = sourceOntology;
+		lexParam.targetOntology = targetOntology;
 		
-		log.info("ASM matching");				
+		lexParam.sourceUseLocalname = false;
+		lexParam.targetUseLocalname = false;
+		lexParam.sourceUseSCSLexicon = true;
+		lexParam.targetUseSCSLexicon = true;
+		
+		lexParam.detectStandardProperties(sourceOntology);
+		lexParam.detectStandardProperties(targetOntology);
+		
+//		try {
+//			Core.getInstance().getLexiconStore().buildAll(lexParam);
+//		} catch (Exception e1) {
+//			e1.printStackTrace();
+//		}
+		
+		
+		log.info("Matching");				
 		try {
-			asm.match();
+			matcher.match();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		HierarchyMatcherModified hmm = new HierarchyMatcherModified();
-		hmm.setSourceOntology(sourceOntology);
-		hmm.setTargetOntology(targetOntology);
-		hmm.addInputMatcher(asm);
-		
-		HierarchyMatcherModifiedParameters param = new HierarchyMatcherModifiedParameters();
-		param.mapper = mapper;
-		hmm.setParam(param);
-		
-		log.info("HMM matching");
-		
 		try {
-			hmm.match();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		try {
-			printDocument(testName, hmm.getAlignmentsStrings(true, false, false), source.getUri(), target.getUri());
+			printDocument(testName, matcher.getAlignmentsStrings(true, false, false), source.getUri(), target.getUri(), outputFolder);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -105,12 +205,20 @@ public class LODBatch {
 		
 		long end = System.nanoTime();
 		long executionTime = (end-start)/1000000;
-		report += "Execution times:\t" + asm.getExecutionTime() + "\t" + hmm.getExecutionTime() + "\t" + executionTime + "\n";
+		report += "Execution times:\t" + matcher.getExecutionTime() + "\t" + matcher.getExecutionTime() + "\t" + executionTime + "\n";
 		log.info("Total time: " + executionTime);
 		
 	}
 	
 	public void printDocument(String name, String alignmentStrings, String source, String target) throws Exception{
+		printDocument(name, alignmentStrings, source, target, null);
+	}
+	
+	/**
+	 * @param outputFolder Remember the slash at the end!!!
+	 * @throws Exception
+	 */
+	public void printDocument(String name, String alignmentStrings, String source, String target, String outputFolder) throws Exception{
 		Date d = new Date();
 		String toBePrinted = "AGREEMENT DOCUMENT\n\n";
 		toBePrinted += "Date: "+d+"\n";
@@ -118,8 +226,16 @@ public class LODBatch {
 		toBePrinted += "Target Ontology: "+target+"\n\n";
 		toBePrinted += alignmentStrings;
 		
-		FileOutputStream out = new FileOutputStream("LOD/batch/" + name + ".txt");
-	    PrintStream p = new PrintStream( out );
+		File file;
+		if(outputFolder == null)
+			file = new File("LOD/batch/" + name + ".txt");
+		else file = new File(outputFolder + name + ".txt");
+		
+		FileOutputStream out = new FileOutputStream(file); 
+		
+		log.info("Printing on file " + file);
+		
+		PrintStream p = new PrintStream( out );
 	    String[] lines = toBePrinted.split("\n");
 	    for(int i = 0; i < lines.length; i++)
 	    	p.println(lines[i]);
@@ -128,32 +244,81 @@ public class LODBatch {
 	}
 	
 	
+		
 	
 	public void run(){
-		singleRun(LODOntology.MUSIC_ONTOLOGY, LODOntology.BBC_PROGRAM, "music-bbc");
-		singleRun(LODOntology.MUSIC_ONTOLOGY, LODOntology.DBPEDIA, "music-dbpedia");
-		singleRun(LODOntology.FOAF, LODOntology.DBPEDIA, "foaf-dbpedia");
-		singleRun(LODOntology.GEONAMES, LODOntology.DBPEDIA, "geonames-dbpedia");
-		singleRun(LODOntology.SIOC, LODOntology.FOAF, "sioc-foaf");
-		singleRun(LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL, "swc-akt");
-		singleRun(LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA, "swc-dbpedia");
+		singleRun(LODOntology.MUSIC_ONTOLOGY, LODOntology.BBC_PROGRAM, "music-bbc", LODReferences.MUSIC_BBC);
+		singleRun(LODOntology.MUSIC_ONTOLOGY, LODOntology.DBPEDIA, "music-dbpedia", LODReferences.MUSIC_DBPEDIA);
+		singleRun(LODOntology.FOAF, LODOntology.DBPEDIA, "foaf-dbpedia", LODReferences.FOAF_DBPEDIA);
+		singleRun(LODOntology.GEONAMES, LODOntology.DBPEDIA, "geonames-dbpedia", LODReferences.GEONAMES_DBPEDIA);
+		singleRun(LODOntology.SIOC, LODOntology.FOAF, "sioc-foaf", LODReferences.SIOC_FOAF);
+		singleRun(LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL, "swc-akt", LODReferences.SWC_AKT);
+		singleRun(LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA, "swc-dbpedia", LODReferences.SWC_DBPEDIA);
 		log.info(report);
 	}
 	
 	public void runOldVersion(){
-		singleRun(LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.BBC_PROGRAM_OLD, "music-bbc");
-		singleRun(LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.DBPEDIA_OLD, "music-dbpedia");
-		singleRun(LODOntology.FOAF, LODOntology.DBPEDIA_OLD, "foaf-dbpedia");
-		singleRun(LODOntology.GEONAMES_OLD, LODOntology.DBPEDIA_OLD, "geonames-dbpedia");
-		singleRun(LODOntology.SIOC, LODOntology.FOAF, "sioc-foaf");
-		singleRun(LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL, "swc-akt");
-		singleRun(LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA_OLD, "swc-dbpedia");
+		singleRun(LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.BBC_PROGRAM_OLD, "music-bbc", LODReferences.MUSIC_BBC);
+		singleRun(LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.DBPEDIA_OLD, "music-dbpedia", LODReferences.MUSIC_DBPEDIA);
+		singleRun(LODOntology.FOAF, LODOntology.DBPEDIA_OLD, "foaf-dbpedia", LODReferences.FOAF_DBPEDIA);
+		singleRun(LODOntology.GEONAMES_OLD, LODOntology.DBPEDIA_OLD, "geonames-dbpedia", LODReferences.GEONAMES_DBPEDIA);
+		singleRun(LODOntology.SIOC, LODOntology.FOAF, "sioc-foaf", LODReferences.SIOC_FOAF);
+		singleRun(LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL, "swc-akt", LODReferences.SWC_AKT);
+		singleRun(LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA_OLD, "swc-dbpedia", LODReferences.SWC_DBPEDIA);
 		log.info(report);
+	}
+	
+	public void runOldEquality(){
+		AbstractMatcher matcher = initMatcher();
+		String outputFolder = "LOD/batchEq/PURPOSE/";
+		singleRunEq(matcher, LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.BBC_PROGRAM_OLD, "music-bbc", outputFolder);
+		singleRunEq(matcher, LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.DBPEDIA_OLD, "music-dbpedia", outputFolder);
+		singleRunEq(matcher, LODOntology.FOAF, LODOntology.DBPEDIA_OLD, "foaf-dbpedia", outputFolder);
+		singleRunEq(matcher, LODOntology.GEONAMES_OLD, LODOntology.DBPEDIA_OLD, "geonames-dbpedia", outputFolder);
+		singleRunEq(matcher, LODOntology.SIOC, LODOntology.FOAF, "sioc-foaf", outputFolder);
+		singleRunEq(matcher, LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL, "swc-akt", outputFolder);
+		singleRunEq(matcher, LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA_OLD, "swc-dbpedia", outputFolder);
+		//log.info(report);
+		
+		try {
+			new LODEvaluator().evaluateAllTestsEq();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private static AbstractMatcher initMatcher() {
+//		AdvancedSimilarityMatcher matcher = new AdvancedSimilarityMatcher();
+//		AdvancedSimilarityParameters asmParam = new AdvancedSimilarityParameters();
+//		asmParam.useDictionary = true;
+//		asmParam.threshold = 0.8;
+//		matcher.setParam(asmParam);
+		
+		OAEI2011Matcher matcher = new OAEI2011Matcher();
+		OAEI2011MatcherParameters param = new OAEI2011MatcherParameters();
+		//matcher.
+		param.threshold = 0.9;
+		param.automaticConfiguration = false;
+		param.selectedConfiguration = OAEI2011Configuration.GENERAL_PURPOSE;
+		matcher.setAlignProp(false);
+		matcher.setPerformSelection(true);
+		matcher.setParam(param);
+		
+				
+//		LexicalSynonymMatcher matcher = new LexicalSynonymMatcher();
+//		LexicalSynonymMatcherParameters param = new LexicalSynonymMatcherParameters();
+//		param.threshold = 0.6;
+//		matcher.setParam(param);
+		
+		return matcher;
 	}
 	
 	public static void main(String[] args) {
 		LODBatch batch = new LODBatch();
 		batch.runOldVersion();
+		//batch.runOldEquality();
 	}
 }
 	

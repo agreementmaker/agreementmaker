@@ -17,11 +17,12 @@ import org.apache.log4j.Logger;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.utility.referenceAlignment.AlignmentsComparison;
-import am.utility.referenceAlignment.ReferenceAlignmentUtilities;
+import am.utility.referenceAlignment.AlignmentUtilities;
 
 public class LODEvaluator {
 	//Contains methods for parsing
@@ -33,7 +34,6 @@ public class LODEvaluator {
 	
 	public LODEvaluator(){
 		matcher = new ReferenceAlignmentMatcher();
-		
 		//printEverything();
 		
 	}
@@ -143,7 +143,7 @@ public class LODEvaluator {
 		//System.out.println("FP:" + filePairs.size());
 		//System.out.println("RP:" + refPairs.size());
 		
-		compare(filePairs, refPairs, sourceOntology, targetOntology);	
+		compare(filePairs, refPairs);	
 		
 		System.out.println();
 	}
@@ -212,12 +212,19 @@ public class LODEvaluator {
 		}
 	}
 	
-	public boolean equals(MatchingPair mp1, MatchingPair mp2){
-		if(mp1.getTabString().equals(mp2.getTabString()))
-			return true;
-		return false;
+	public void evaluateAllTestsEq() throws Exception {
+			String folder = "LOD/batchEq/ASM/";
+			
+			evaluate(folder + "foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA_EQ);
+			evaluate(folder + "geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA_EQ);
+			evaluate(folder + "music-bbc.txt", LODReferences.MUSIC_BBC_EQ);
+			evaluate(folder + "music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA_EQ);
+			evaluate(folder + "swc-akt.txt", LODReferences.SWC_AKT_EQ);
+			evaluate(folder + "swc-dbpedia.txt", LODReferences.SWC_DBPEDIA_EQ);
+			evaluate(folder + "sioc-foaf.txt", LODReferences.SIOC_FOAF_EQ);
+			
 	}
-	
+
 	public void evaluateAllTestsOld() throws Exception{
 		String folder = "LOD/batch/";
 		
@@ -280,7 +287,8 @@ public class LODEvaluator {
 		compare(toEvaluate, reference, null, null);
 	}
 	
-	public void compare(ArrayList<MatchingPair> toEvaluate, ArrayList<MatchingPair> reference, LODOntology sourceOntology, LODOntology targetOntology){
+	public ReferenceEvaluationData compare(ArrayList<MatchingPair> toEvaluate, ArrayList<MatchingPair> reference, List<String> inSource, List<String> inTarget){
+		ReferenceEvaluationData rd = new ReferenceEvaluationData();
 		int count = 0;
 		MatchingPair p1;
 		MatchingPair p2;
@@ -290,10 +298,6 @@ public class LODEvaluator {
 		Ontology sOnt = null;
 		Ontology tOnt = null;
 		
-		if(sourceOntology != null && targetOntology != null){
-			sOnt = OntoTreeBuilder.loadOntology(new File(sourceOntology.getFilename()).getAbsolutePath(), sourceOntology.getLang(), sourceOntology.getSyntax());			
-			tOnt = OntoTreeBuilder.loadOntology(new File(targetOntology.getFilename()).getAbsolutePath(), targetOntology.getLang(), targetOntology.getSyntax());			
-		}
 		
 		HashSet<MatchingPair> foundTargets = new HashSet<MatchingPair>();
 		for (int i = 0; i < toEvaluate.size(); i++) {
@@ -323,9 +327,6 @@ public class LODEvaluator {
 			}
 		}	
 		if(printMissedMappings){
-			
-			
-			
 			for (int i = 0; i < reference.size(); i++) {
 				p2 = reference.get(i);
 				if(!foundTargets.contains(p2)){
@@ -361,7 +362,34 @@ public class LODEvaluator {
 		}
 		//System.out.println("right mappings: "+count);
 		//System.out.println("prec:"+ (float)count/toEvaluate.size() + " rec: " +  (float)count/reference.size());
-		System.out.print((float)count/toEvaluate.size() + "\t" +  (float)count/reference.size() + "\t");
+		
+		double prec;
+        if(count == 0.0d) {
+        	prec = 0.0d;
+        }
+        else prec = (double) count / (double) toEvaluate.size();
+        
+        double rec;
+        if(reference.size() == 0.0d) {
+        	rec = 0.0d;
+        }
+        else rec = (double) count / (double) reference.size();
+        //System.out.println("Precision: " + prec + ", Recall: " + rec);
+        // F-measure
+        double fm;
+        if(prec + rec == 0.0d) {
+        	fm = 0.0d;
+        }
+        //else  fm = (1 + ALPHA) * (prec * rec) / (ALPHA * prec + rec);
+        else fm = 2 * (prec * rec) / (prec + rec);  // from Ontology Matching book
+        
+        System.out.print((float)count/toEvaluate.size() + "\t" +  (float)count/reference.size() + "\t");
+		
+        rd.setPrecision(prec);
+        rd.setRecall(rec);
+        rd.setFmeasure(fm);
+		
+		return rd;
 	}
 	
 	public String diff(List<MatchingPair> sourceList, List<MatchingPair> targetList, LODOntology sourceOntology, LODOntology targetOntology){
@@ -530,12 +558,18 @@ public class LODEvaluator {
 			targetPairs = matcher.parseRefFormat2(fileBR);
 		else targetPairs = matcher.parseRefFormat4(fileBR);
 		
-		AlignmentsComparison comparison = ReferenceAlignmentUtilities.diff(sourcePairs, targetPairs);
+		AlignmentsComparison comparison = AlignmentUtilities.diff(sourcePairs, targetPairs);
 		
 		System.out.println(comparison);
 						
 	}
 	
+	public boolean equals(MatchingPair mp1, MatchingPair mp2){
+		if(mp1.getTabString().equals(mp2.getTabString()))
+			return true;
+		return false;
+	}
+
 	public static void main(String[] args) throws Exception {
 //		fromSubClassof(new File("LOD/BLOOMS/Music-DBpedia/SubClass.txt"), 
 //				LODOntologies.DBPEDIA_URI, LODOntologies.MUSIC_ONTOLOGY_URI);
@@ -548,7 +582,7 @@ public class LODEvaluator {
 		//eval.evaluateAllTests();
 		eval.evaluateAllTestsOld();
 		
-		
+		//eval.evaluateAllTestsEq();
 		//eval.testRefUtilsDiff("LOD/batch/music-bbc.txt", LODReferences.MUSIC_BBC, true);
 
 		
