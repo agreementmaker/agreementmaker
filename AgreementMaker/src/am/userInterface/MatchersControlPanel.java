@@ -33,6 +33,7 @@ import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
+import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
@@ -40,6 +41,7 @@ import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.table.MatchersTablePanel;
+import am.utility.referenceAlignment.AlignmentUtilities;
 
 public class MatchersControlPanel extends JPanel implements ActionListener, MouseListener {
 
@@ -493,72 +495,17 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 				refMatcher.setMaxSourceAlign(refMatcher.getDefaultMaxSourceRelations());
 				refMatcher.setMaxTargetAlign(refMatcher.getDefaultMaxTargetRelations());
 				refMatcher.match();
-				Alignment<Mapping>referenceSet = refMatcher.getAlignment(); //class + properties
+				Alignment<Mapping> referenceSet = refMatcher.getAlignment(); //class + properties
 				AbstractMatcher toBeEvaluated;
-				Alignment<Mapping> evaluateSet;
-				ReferenceEvaluationData rd;
 				
-				double step = 0.05;
 				String report="Tuning Complete\n\n";
 				report +="Measure are displayed in this order:\nThreshold: value - Measures: precision, recall, Fmeasure\n\n";
 				
 				//You have to use this array instead 
 				//double[] thresholds = Utility.STEPFIVE;  // TODO: Make it so the user can select this from the UI.
-				double[] thresholds = Utility.getDoubleArray(0.0d, 0.01d, 101);
 				for(int i = 0; i < rowsIndex.length; i++) {
-					
-					ReferenceEvaluationData maxrd = null;
-					double maxTh = step;
-					double sumPrecision = 0;
-					double sumRecall = 0;
-					double sumFmeasure = 0;
-					int sumFound = 0;
-					int sumCorrect = 0;
 					toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
-					report+=i+" "+toBeEvaluated.getRegistryEntry().getMatcherName()+"\n\n";
-					double th;
-					report+="Threshold:\tFound\tCorrect\tReference\tPrecision\tRecall\tF-Measure\n";
-					
-					// output the info to the console for easy copy/pasting
-					System.out.println("Threshold, " +
-							   "Precision, " +
-							   "Recall, " +
-							   "F-Measure" );
-					for(int t = 0; t < thresholds.length; t++) {
-						th = thresholds[t];
-						toBeEvaluated.setThreshold(th);
-						toBeEvaluated.select();
-						evaluateSet = toBeEvaluated.getAlignment();
-						rd = ReferenceEvaluator.compare(evaluateSet, referenceSet);
-						report += Utility.getNoDecimalPercentFromDouble(th)+"\t"+rd.getMeasuresLine();
-						sumPrecision += rd.getPrecision();
-						sumRecall += rd.getRecall();
-						sumFmeasure += rd.getFmeasure();
-						sumFound += rd.getFound();
-						sumCorrect += rd.getCorrect();
-						
-						// output this information to the console for easy copy/pasting  // TODO: make a button to be able to copy/paste this info
-						System.out.println(Double.toString(th) + ", " +
-								   Double.toString(rd.getPrecision()) + ", " +
-								   Double.toString(rd.getRecall()) + ", " +
-								   Double.toString(rd.getFmeasure()) );
-						
-						if(maxrd == null || maxrd.getFmeasure() < rd.getFmeasure()) {
-							maxrd = rd;
-							maxTh = th;
-						}
-					}
-					toBeEvaluated.setThreshold(maxTh);
-					toBeEvaluated.select();
-					toBeEvaluated.setRefEvaluation(maxrd);
-					report += "Best Run:\n";
-					report += Utility.getNoDecimalPercentFromDouble(maxTh)+"\t"+maxrd.getMeasuresLine();
-					sumPrecision /= thresholds.length;
-					sumRecall /= thresholds.length;
-					sumFmeasure /= thresholds.length;
-					sumFound /= thresholds.length;
-					sumCorrect /= thresholds.length;
-					report += "Average:\t"+sumFound+"\t"+sumCorrect+"\t"+maxrd.getExist()+"\t"+Utility.getOneDecimalPercentFromDouble(sumPrecision)+"\t"+Utility.getOneDecimalPercentFromDouble(sumRecall)+"\t"+Utility.getOneDecimalPercentFromDouble(sumFmeasure)+"\n\n";
+					report += AlignmentUtilities.thresholdAnalysis(toBeEvaluated, referenceSet);
 					AbstractTableModel model = (AbstractTableModel)matchersTablePanel.getTable().getModel();
 					model.fireTableRowsUpdated(toBeEvaluated.getIndex(), toBeEvaluated.getIndex());
 				}
@@ -617,8 +564,12 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		return mean;
 	}*/
 	
+		
+	
 	/////////////////////////////////////////////////PANEL METHODS
 	
+	
+
 	// TODO: Need to implement methods so we don't have to expose the matchers table panel if we need to get which matchers are selected
 	public MatchersTablePanel getTablePanel() {
 		return matchersTablePanel;
