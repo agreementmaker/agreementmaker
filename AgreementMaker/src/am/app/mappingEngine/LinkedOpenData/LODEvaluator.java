@@ -14,6 +14,8 @@ import java.util.Scanner;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import sun.org.mozilla.javascript.internal.ast.ForInLoop;
+
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -31,6 +33,8 @@ public class LODEvaluator {
 	boolean printWrongMappings;
 	boolean printRightMappings;
 	boolean printMissedMappings;
+	
+	double threshold = -1;
 	
 	public LODEvaluator(){
 		matcher = new ReferenceAlignmentMatcher();
@@ -307,11 +311,12 @@ public class LODEvaluator {
 			for (int j = 0; j < reference.size(); j++) {
 				p2 = reference.get(j);
 				//System.out.println(p2.getTabString());
+				
 				if(p1.sourceURI.equals(p2.sourceURI)){
 					right = p2;
 				}
 				if(p1.sourceURI.equals(p2.sourceURI) && p1.targetURI.equals(p2.targetURI)
-						&& p1.relation.equals(p2.relation)){
+						&& p1.relation.equals(p2.relation) && (p1.similarity > threshold)){
 					//System.out.println("Right\t" + p1.getTabString().replaceAll("\\|","\t"));
 					count++;
 					found = true;
@@ -569,18 +574,33 @@ public class LODEvaluator {
 			return true;
 		return false;
 	}
+	
+	public void setThreshold(double threshold) {
+		this.threshold = threshold;
+	}
 
 	public static void main(String[] args) throws Exception {
 //		fromSubClassof(new File("LOD/BLOOMS/Music-DBpedia/SubClass.txt"), 
 //				LODOntologies.DBPEDIA_URI, LODOntologies.MUSIC_ONTOLOGY_URI);
 		LODEvaluator eval = new LODEvaluator();
 		
+//		for (int i = 0; i < 10; i++) {
+//			double th = 0.1 * (i+1);
+//			System.out.println(th);
+//			eval.setThreshold(th);
+//			eval.evaluateAllTestsOld();
+//			System.out.println("\n");
+//		}
+		
+		eval.setThreshold(0.66);
+		eval.evaluateAllTestsOld();
+		
 		Logger.getRootLogger().setLevel(Level.ERROR);
 		
 		String report = "";
 		
 		//eval.evaluateAllTests();
-		eval.evaluateAllTestsOld();
+		
 		
 		//eval.evaluateAllTestsEq();
 		//eval.testRefUtilsDiff("LOD/batch/music-bbc.txt", LODReferences.MUSIC_BBC, true);

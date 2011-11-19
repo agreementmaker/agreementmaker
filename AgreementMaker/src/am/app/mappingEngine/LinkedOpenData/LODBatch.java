@@ -3,12 +3,14 @@ package am.app.mappingEngine.LinkedOpenData;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import am.Utility;
 import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
@@ -27,6 +29,7 @@ import am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher;
 import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters;
 import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters.OAEI2011Configuration;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
+import am.app.mappingEngine.referenceAlignment.ThresholdAnalysisData;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.userInterface.MatchersControlPanel;
@@ -67,7 +70,7 @@ public class LODBatch {
 		
 	}
 
-	public void singleRun(LODOntology source, LODOntology target, String testName, String refAlign){
+	public ThresholdAnalysisData singleRun(LODOntology source, LODOntology target, String testName, String refAlign){
 		long start = System.nanoTime();
 		Ontology sourceOntology = null;
 		Ontology targetOntology = null;
@@ -101,8 +104,6 @@ public class LODBatch {
 //		matcher.setPerformSelection(true);
 //		matcher.setParam(OAEIparam);
 		
-		
-		
 		matcher.setSourceOntology(sourceOntology);
 		matcher.setTargetOntology(targetOntology);
 		
@@ -123,6 +124,7 @@ public class LODBatch {
 		
 		HierarchyMatcherModifiedParameters param = new HierarchyMatcherModifiedParameters();
 		param.mapper = mapper;
+		param.threshold = 0.000001;
 		hmm.setParam(param);
 		
 		log.info("HMM matching");
@@ -141,14 +143,16 @@ public class LODBatch {
 		}
 		log.info("Done");
 		
-		
-		System.out.println(AlignmentUtilities.thresholdAnalysis(hmm, reference));
 			
 		long end = System.nanoTime();
 		long executionTime = (end-start)/1000000;
 		report += "Execution times:\t" + matcher.getExecutionTime() + "\t" + hmm.getExecutionTime() + "\t" + executionTime + "\n";
 		log.info("Total time: " + executionTime);
 		
+		
+		double[] thresholds = Utility.getDoubleArray(0.0d, 0.01d, 1000);
+		ThresholdAnalysisData data = AlignmentUtilities.thresholdAnalysis(hmm, reference, thresholds);
+		return data;
 	}
 	
 	public void singleRunEq(AbstractMatcher matcher, LODOntology source, LODOntology target, String testName, String outputFolder){
@@ -258,14 +262,33 @@ public class LODBatch {
 	}
 	
 	public void runOldVersion(){
-		singleRun(LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.BBC_PROGRAM_OLD, "music-bbc", LODReferences.MUSIC_BBC);
-		singleRun(LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.DBPEDIA_OLD, "music-dbpedia", LODReferences.MUSIC_DBPEDIA);
-		singleRun(LODOntology.FOAF, LODOntology.DBPEDIA_OLD, "foaf-dbpedia", LODReferences.FOAF_DBPEDIA);
-		singleRun(LODOntology.GEONAMES_OLD, LODOntology.DBPEDIA_OLD, "geonames-dbpedia", LODReferences.GEONAMES_DBPEDIA);
-		singleRun(LODOntology.SIOC, LODOntology.FOAF, "sioc-foaf", LODReferences.SIOC_FOAF);
-		singleRun(LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL, "swc-akt", LODReferences.SWC_AKT);
-		singleRun(LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA_OLD, "swc-dbpedia", LODReferences.SWC_DBPEDIA);
+		
+		List<ThresholdAnalysisData> data = new ArrayList<ThresholdAnalysisData>();
+		
+		data.add(singleRun(LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.BBC_PROGRAM_OLD, "music-bbc", LODReferences.MUSIC_BBC));
+		data.add(singleRun(LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.DBPEDIA_OLD, "music-dbpedia", LODReferences.MUSIC_DBPEDIA));
+		data.add(singleRun(LODOntology.FOAF, LODOntology.DBPEDIA_OLD, "foaf-dbpedia", LODReferences.FOAF_DBPEDIA));
+		data.add(singleRun(LODOntology.GEONAMES_OLD, LODOntology.DBPEDIA_OLD, "geonames-dbpedia", LODReferences.GEONAMES_DBPEDIA));
+		data.add(singleRun(LODOntology.SIOC, LODOntology.FOAF, "sioc-foaf", LODReferences.SIOC_FOAF));
+		data.add(singleRun(LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL, "swc-akt", LODReferences.SWC_AKT));
+		data.add(singleRun(LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA_OLD, "swc-dbpedia", LODReferences.SWC_DBPEDIA));
+		
+		double bestTh = ThresholdAnalysisData.getBestOverallRun(data);
+		
 		log.info(report);
+		
+		System.out.println("bestTh: " + bestTh);
+		
+		LODEvaluator evaluator = new LODEvaluator();
+		evaluator.setThreshold(bestTh);
+		
+		
+		
+		try {
+			evaluator.evaluateAllTestsOld();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
 	}
 	
 	public void runOldEquality(){

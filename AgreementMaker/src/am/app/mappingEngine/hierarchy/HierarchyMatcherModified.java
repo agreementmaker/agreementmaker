@@ -104,7 +104,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	
 	DecimalFormat format = new DecimalFormat("0.000");
 	
-	double hypernymsThreshold = 0.01;
+	double hypernymsThreshold = 0.000001;
 	private boolean useRightWord = true;
 	
 	public HierarchyMatcherModified()
@@ -591,7 +591,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		
 		if(sourceList.size() == 0)
 			return 0.0;
-		return match;
+		return matchST;
 	}
 
 	private List<List<NounSynset>> hypernymsLookup(NounSynset synset){

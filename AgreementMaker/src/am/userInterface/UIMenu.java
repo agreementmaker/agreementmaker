@@ -757,9 +757,12 @@ public class UIMenu implements ActionListener {
 				Ontology sourceOntology = Core.getInstance().getSourceOntology();
 				Ontology targetOntology = Core.getInstance().getTargetOntology();
 				
+				if(sourceOntology == null || targetOntology == null ){
+					JOptionPane.showMessageDialog(null, "You have to first load ontologies");
+					return;
+				}
+				
 				InstanceLookupPanel lookupPanel = new InstanceLookupPanel(sourceOntology.getInstances(), targetOntology.getInstances());
-				
-				
 				Core.getUI().addTab("Instances Lookup", null , lookupPanel , "Instances Lookup Panel");
 				
 			}
