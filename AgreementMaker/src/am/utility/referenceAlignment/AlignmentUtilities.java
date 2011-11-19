@@ -21,6 +21,7 @@ import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
+import am.app.mappingEngine.referenceAlignment.ThresholdAnalysisData;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.instance.Instance;
@@ -266,22 +267,27 @@ public class AlignmentUtilities {
 		return rd;
 	}
 	
+	public static ThresholdAnalysisData thresholdAnalysis(AbstractMatcher toBeEvaluated, Object reference) {
+		return thresholdAnalysis(toBeEvaluated, reference, null);
+	}
+	
 	/**
 	 * 
 	 * @param reference it can be either an Alignment<Mapping> or a List<MatchingPair>
 	 * @return
 	 */
-	public static String thresholdAnalysis(AbstractMatcher toBeEvaluated, Object reference) {
+	public static ThresholdAnalysisData thresholdAnalysis(AbstractMatcher toBeEvaluated, Object reference, double[] thresholds) {
 		Alignment<Mapping> referenceSet = null;
 		List<MatchingPair> referencePairs = null;
 		if(reference instanceof Alignment)
 			referenceSet = (Alignment<Mapping>) reference;
 		else if(reference instanceof List)
 			referencePairs = (List<MatchingPair>) reference;
-		else return "";
+		else return null;
 			
 		double step = 0.05;
-		double[] thresholds = Utility.getDoubleArray(0.0d, 0.01d, 101);
+		if(thresholds == null)
+			thresholds = Utility.getDoubleArray(0.0d, 0.01d, 101);
 		
 		ReferenceEvaluationData maxrd = null;
 		ReferenceEvaluationData rd;
@@ -293,7 +299,12 @@ public class AlignmentUtilities {
 		double sumFmeasure = 0;
 		int sumFound = 0;
 		int sumCorrect = 0;
-		String report = toBeEvaluated.getRegistryEntry().getMatcherName()+ "\n\n";
+		
+		String matcherName = toBeEvaluated.getRegistryEntry().getMatcherName();
+		ThresholdAnalysisData tad = new ThresholdAnalysisData(thresholds);
+		tad.setMatcherName(matcherName);
+				
+		String report = matcherName + "\n\n";
 		double th;
 		report+="Threshold:\tFound\tCorrect\tReference\tPrecision\tRecall\tF-Measure\n";
 		
@@ -310,12 +321,10 @@ public class AlignmentUtilities {
 			if(referenceSet != null)
 				rd = ReferenceEvaluator.compare(evaluateSet, referenceSet);
 			else{
-				
-								
 				Alignment<Mapping> alignment = toBeEvaluated.getAlignment();
 				List<MatchingPair> pairs = AlignmentUtilities.alignmentToMatchingPairs(alignment);
-				
 				rd = AlignmentUtilities.compare(pairs, referencePairs);
+				tad.addEvaluationData(rd);
 			}
 			
 			report += Utility.getNoDecimalPercentFromDouble(th)+"\t"+rd.getMeasuresLine();
@@ -347,6 +356,7 @@ public class AlignmentUtilities {
 		sumFound /= thresholds.length;
 		sumCorrect /= thresholds.length;
 		report += "Average:\t"+sumFound+"\t"+sumCorrect+"\t"+maxrd.getExist()+"\t"+Utility.getOneDecimalPercentFromDouble(sumPrecision)+"\t"+Utility.getOneDecimalPercentFromDouble(sumRecall)+"\t"+Utility.getOneDecimalPercentFromDouble(sumFmeasure)+"\n\n";
-		return report;
+		tad.setReport(report);
+		return tad;
 	}
 }

@@ -38,6 +38,7 @@ import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
+import am.app.mappingEngine.referenceAlignment.ThresholdAnalysisData;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.table.MatchersTablePanel;
@@ -505,7 +506,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 				//double[] thresholds = Utility.STEPFIVE;  // TODO: Make it so the user can select this from the UI.
 				for(int i = 0; i < rowsIndex.length; i++) {
 					toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
-					report += AlignmentUtilities.thresholdAnalysis(toBeEvaluated, referenceSet);
+					ThresholdAnalysisData data = AlignmentUtilities.thresholdAnalysis(toBeEvaluated, referenceSet);
+					report += data.getReport();
 					AbstractTableModel model = (AbstractTableModel)matchersTablePanel.getTable().getModel();
 					model.fireTableRowsUpdated(toBeEvaluated.getIndex(), toBeEvaluated.getIndex());
 				}
