@@ -14,30 +14,45 @@ public class ArffConvertor {
 	String type;
 	ArrayList<String> listOfMatchers=new ArrayList<String>();
 	
-	ArffConvertor(String fileName,String type)
+	ArffConvertor(String fileName,String type,ArrayList<String> matcherList)
 	{
 		this.fileName=fileName;
 		this.type=type;
+		this.listOfMatchers=matcherList;
 	}
 	
-	void generateArffFile(String fileName,String type) throws IOException
+	void generateArffFile() throws IOException
 	{
 		File file=new File(fileName);
 		BufferedReader inputReader=new BufferedReader(new FileReader(file));
-		BufferedWriter outputWriter=new BufferedWriter(new FileWriter("/bench/arff/"+file.getName()+".arff"));		
+		BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("bench/arff/"+file.getName()+".arff")));
+		if(type.equals("training"))
+		{
 		outputWriter.write("% Title: Training set\n\n");
 		outputWriter.write("@RELATION training_set\n\n");
-			
+		}
+		if(type.equals("test"))
+		{
+			outputWriter.write("% Title: Test set\n\n");
+			outputWriter.write("@RELATION test_set\n\n");
+		}
 		for(int i=0;i<listOfMatchers.size();i++)
 		{
 			String currentMatcher=listOfMatchers.get(i);
 			outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"\tNUMERIC\n");
 		}
+	
 		outputWriter.write("@ATTRIBUTE\ttarget\t{0.0,1.0}\n");
-		outputWriter.write("\n@DATA\n");		
+		
+	
+		outputWriter.write("\n@DATA\n");
 		while(inputReader.ready())
 		{
 			String inputLine=inputReader.readLine().replaceAll("\t", ",");
+			if(type.equals("test"))
+			{
+				inputLine+="?";
+			}
 			outputWriter.write(inputLine+"\n");
 		}
 		outputWriter.close();

@@ -3,14 +3,24 @@ package am.app.mappingEngine.matchersCombinationML;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+
+import weka.classifiers.Classifier;
+import weka.classifiers.Evaluation;
+import weka.classifiers.bayes.BayesNet;
+import weka.classifiers.functions.LibSVM;
+import weka.classifiers.trees.DecisionStump;
+import weka.core.Instances;
 
 import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
@@ -38,7 +48,7 @@ public class MLTrainerWrapper {
 	
 	ArrayList<AbstractMatcher> listOfMatchers=new ArrayList<AbstractMatcher>();
 	ArrayList<OntologyTriple> listOfTriples=new ArrayList<OntologyTriple>();
-	
+	ArrayList<String> matcherNames=new ArrayList<String>();
 	public static Ontology loadOntology(String ontoName){
 		Ontology ontology;
 		try {
@@ -257,7 +267,7 @@ public class MLTrainerWrapper {
 		{
 			
 			AbstractMatcher currentMatcher=listOfMatchers.get(m);
-			BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("bench/matchers/"+currentMatcher.getName())));
+			BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("bench/matchers/training/"+currentMatcher.getName())));
 			if(currentMatcher!=null)
 			{
 				for(int t=0;t<listOfTriples.size();t++)
@@ -269,6 +279,7 @@ public class MLTrainerWrapper {
 					
 					if(currentTriple.containsMatcher(currentMatcher.getName()))
 					{
+					
 						Alignment<Mapping> currentMapping=currentTriple.getAlignmentObtained(currentMatcher.getName());
 						if(currentMapping!=null)
 						{
@@ -342,7 +353,7 @@ public class MLTrainerWrapper {
 	void mergeIndividualFiles() throws IOException
 	{
 		ArrayList<String> matcherFiles=new ArrayList<String>();
-		getFilesFromFolder(matcherFiles,"bench/matchers");
+		getFilesFromFolder(matcherFiles,"bench/matchers/training/");
 		
 		HashMap<String,HashMap> uniqueConcepts=new HashMap<String,HashMap>();
 		
@@ -350,6 +361,9 @@ public class MLTrainerWrapper {
 		{
 			File currentFile=new File(matcherFiles.get(i));
 			String matcherName=currentFile.getName();
+			//adding matcher name we need to generate ARFF file 
+			matcherNames.add(matcherName);
+			
 			BufferedReader inputReader=new BufferedReader(new FileReader(currentFile));
 			while(inputReader.ready())
 			{
@@ -446,12 +460,70 @@ public class MLTrainerWrapper {
 	}
 		
 	
-	
-	void generateModel()
+	void generateTrainingARFF() throws IOException
+	{
+		/*ArrayList<String> mn=new ArrayList<String>();
+		mn.add("m1");
+		mn.add("m2");
+		mn.add("m3");*/
+		ArffConvertor arff=new ArffConvertor("bench/combinedmatchers/trainingFilecombined", "training",matcherNames);
+		arff.generateArffFile();
+		arff=new ArffConvertor("bench/combinedmatchers/testFilecombined", "test",matcherNames);
+		arff.generateArffFile();
+		System.out.println("Training and test file generated");
+	}
+	void generateModel() throws Exception
+	{
+		 BufferedReader trainingset = new BufferedReader(new FileReader("bench/arff/trainingFilecombined.arff"));
+		 BufferedReader  testset = new BufferedReader(new FileReader("bench/arff/testFilecombined.arff"));
+		 Instances train=new Instances(trainingset);
+		 Instances test=new Instances(testset);
+		 train.setClassIndex(train.numAttributes() - 1);
+		 test.setClassIndex(test.numAttributes()-1);
+		 //Classifier cls= (Classifier) new DecisionStump();
+		 //Classifier cls= (Classifier) new BayesNet();
+		 Classifier cls= (Classifier) new LibSVM();
+		 cls.buildClassifier(train);
+		 
+		 //save the model for future use
+		 // serialize model
+		 ObjectOutputStream oos = new ObjectOutputStream(
+		                            new FileOutputStream("bench/arff/model/svm.model"));
+		 oos.writeObject(cls);
+		 oos.flush();
+		 oos.close();
+		/* Evaluation eval = new Evaluation(train);
+		 cls.
+		 
+		 System.out.println(eval.toSummaryString("\nResults\n======\n", false));
+		 trainingset.close();
+		 testset.close();*/
+		 
+		 //predict the class for testset
+		 for (int i = 0; i < test.numInstances(); i++) {
+			   double clsLabel = cls.classifyInstance(test.instance(i));
+			   test.instance(i).setClassValue(clsLabel);
+			 }
+			 // save labeled data
+			 BufferedWriter writer = new BufferedWriter(
+			                           new FileWriter("bench/arff/output/predicted.arff"));
+			 writer.write(test.toString());
+			 writer.newLine();
+			 writer.flush();
+			 writer.close();
+
+
+
+
+	}
+	void matchReference()
 	{
 		
 	}
-	
+	void calculateMeasure()
+	{
+		
+	}
 	void callProcess() throws Exception
 	{
 		String trainingFileName="bench/training.xml";
@@ -460,7 +532,10 @@ public class MLTrainerWrapper {
 		loadOntologyTriples(trainingFileName,elementName);
 		generateMappings();
 		generateTrainingFile();
+		generateTrainingARFF();
 		generateModel();
+		matchReference();
+		calculateMeasure();
 //		String testFileName="";
 //		elementName="testset";
 //		loadOntologyTriples(testFileName,elementName);

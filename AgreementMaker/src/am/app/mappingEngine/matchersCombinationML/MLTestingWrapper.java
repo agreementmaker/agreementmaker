@@ -257,7 +257,7 @@ public class MLTestingWrapper {
 		{
 			
 			AbstractMatcher currentMatcher=listOfMatchers.get(m);
-			BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("bench/matchers/"+currentMatcher.getName())));
+			BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("bench/matchers/test/"+currentMatcher.getName())));
 			if(currentMatcher!=null)
 			{
 				for(int t=0;t<listOfTriples.size();t++)
@@ -342,7 +342,7 @@ public class MLTestingWrapper {
 	void mergeIndividualFiles() throws IOException
 	{
 		ArrayList<String> matcherFiles=new ArrayList<String>();
-		getFilesFromFolder(matcherFiles,"bench/matchers");
+		getFilesFromFolder(matcherFiles,"bench/matchers/test/");
 		
 		HashMap<String,HashMap> uniqueConcepts=new HashMap<String,HashMap>();
 		
@@ -381,20 +381,22 @@ public class MLTestingWrapper {
 		Set<String> mapKeys=uniqueConcepts.keySet();
 		Iterator<String> mapKeyIterator=mapKeys.iterator();
 		
-		BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("bench/combinedmatchers/trainingFilecombined")));
-		
+		BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("bench/combinedmatchers/testFilecombined")));
+		BufferedWriter outputref=new BufferedWriter(new FileWriter(new File("bench/combinedmatchers/testrefFilecombined")));
 		while(mapKeyIterator.hasNext())
 		{
 			String currentKey=mapKeyIterator.next();
 			
 			HashMap<String,String> matcherMap=uniqueConcepts.get(currentKey);
 			String outputStr="";
+			String outputStr1="";
+			outputStr1=currentKey;
 			String referenceSim="0.0";
 			String[] matcherSim=new String[3];
 			for(int i=0;i<matcherFiles.size();i++)
 			{
 				File currentFile=new File(matcherFiles.get(i));
-				System.out.println(matcherFiles.get(i));
+				//System.out.println(matcherFiles.get(i));
 				String matcherName=currentFile.getName();
 				
 				if(matcherMap.containsKey(matcherName))
@@ -411,13 +413,14 @@ public class MLTestingWrapper {
 				outputStr+=matcherSim[i]+"\t";
 			}
 			//outputStr+=referenceSim;
-			
+			outputStr1+="\t"+referenceSim;
 			outputWriter.write(outputStr+"\n");
+			outputref.write(outputStr1+"\n");
 			
 		}
 		
 		outputWriter.close();
-		
+		outputref.close();
 		
 	}
 	
