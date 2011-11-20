@@ -516,9 +516,18 @@ public class MLTrainerWrapper {
 
 
 	}
-	void matchReference()
+	//main modukle to predict results for test set
+	//given two ontology
+	void predictresult(String modelname)
 	{
-		
+
+		 /*ObjectInputStream ois = new ObjectInputStream(
+                new FileInputStream("/some/where/j48.model"));
+		 Classifier cls = (Classifier) ois.readObject();
+		 ois.close();*/
+	}
+	void matchReference()
+	{	
 	}
 	void calculateMeasure()
 	{
