@@ -39,6 +39,7 @@ import weka.classifiers.bayes.BayesNet;
 import weka.classifiers.functions.LibSVM;
 import weka.classifiers.trees.DecisionStump;
 import weka.core.Instances;
+import weka.core.matrix.DoubleVector;
 
 import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
@@ -546,10 +547,10 @@ public class MLTrainerWrapper {
 	}
 	//main module to predict results for test set
 	//given two ontology
-	void predictresult(String modelname,String srcOntology,String tarOntology,String refalign, String predicted) throws Exception
+	void predictresult(String modelname,String srcOntology,String tarOntology,String refalign, String predicted,String combinedconceptfile,String finalfile) throws Exception
 	{
 		String outputfilename="bench/files/test.xml";
-		
+		ArrayList<Double> predictedList=new ArrayList<Double>();
 		 try {
 			 int i=1;
 			 	
@@ -625,6 +626,8 @@ public class MLTrainerWrapper {
 			  for (int i = 0; i < test.numInstances(); i++) {
 				   double clsLabel = cls.classifyInstance(test.instance(i));
 				   test.instance(i).setClassValue(clsLabel);
+				   predictedList.add(clsLabel);
+				   
 				 }
 				 // save labeled data
 				 BufferedWriter writer = new BufferedWriter(
@@ -634,13 +637,98 @@ public class MLTrainerWrapper {
 				 writer.flush();
 				 writer.close();
 			  ois.close();
+			  
+			  //Now we have the predicted value
+			  //generate a single file which predicted value
+			  //run it against the reference alignment
+			  //to compute the precision,recall and f-measure
+			  matchReference(predictedList,combinedconceptfile,finalfile);
+			  Alignment<Mapping> refmap=getreference(srcOntology, tarOntology, refalign);
+			  calculateMeasure(finalfile,refmap);
+			  
+			  
 	}
-	void matchReference()
+	void matchReference(ArrayList<Double> predictedList,String combinedconceptfile,String finalfile) throws IOException
 	{	
+		
+		BufferedReader  conceptfile = new BufferedReader(new FileReader(combinedconceptfile));
+		BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File(finalfile)));
+		int index=0;
+		while(conceptfile.ready())
+		{
+			
+			String inputLine=conceptfile.readLine();
+			String[] inputLineParts=inputLine.split("\t");
+			if(inputLineParts.length==3)
+			{
+				
+				String concepts=inputLineParts[0]+"\t"+inputLineParts[1];
+				outputWriter.write(concepts+"\t"+predictedList.get(index)+"\n");
+				index++;
+			}				
+		}
+		System.out.println("final file generated:" + finalfile);
+		outputWriter.close();
+	
 	}
-	void calculateMeasure()
+	void generateMapping(String finalfile)
+	{
+	
+	}
+	void calculateMeasure(String finalfile,Alignment<Mapping> refmap) throws IOException
 	{
 		
+		BufferedReader  alignmentfile = new BufferedReader(new FileReader(finalfile));
+		int mapped=0,count=0;
+		System.out.println("-----------------------------------");
+		System.out.println("reference size"+refmap.size());
+		while(alignmentfile.ready())
+		{
+			
+			
+			String inputLine=alignmentfile.readLine();
+			String[] inputLineParts=inputLine.split("\t");
+			if(inputLineParts[2].equals("1.0"))
+			{
+				count++;
+			}
+			for(int i=0;i<refmap.size();i++)
+			{
+				Mapping currentMapping=refmap.get(i);
+				if(currentMapping.getEntity1().getUri().equals(inputLineParts[0]) && currentMapping.getEntity2().getUri().equals(inputLineParts[1]) && currentMapping.getSimilarity()==Double.parseDouble(inputLineParts[2])) 
+					
+				{
+					//System.out.println("match found in ref alignment");
+					mapped++;
+				}
+			}
+		}
+		System.out.println("-----------------------------------------------");
+		System.out.println(mapped);
+		System.out.println(count);
+		float precision = (float)mapped/count;
+		float recall = (float)mapped/refmap.size();
+		float fmeasure = 2 * precision * recall / (precision + recall);
+		System.out.print(precision + "\t" + recall + "\t" + fmeasure);
+		System.out.println("-----------------------------------------------------");
+
+	}
+	
+	Alignment<Mapping> getreference(String srcOnto,String tarOnto,String reffile) throws Exception
+	{
+		Ontology sourceOntology=loadOntology(srcOnto);
+		Ontology targetOntology=loadOntology(tarOnto);
+		ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+		refParam.onlyEquivalence = true;
+		refParam.fileName = reffile;
+		refParam.format = ReferenceAlignmentMatcher.OAEI;
+		AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+		referenceAlignmentMatcher.setParam(refParam);
+		referenceAlignmentMatcher.setSourceOntology(sourceOntology);
+		referenceAlignmentMatcher.setTargetOntology(targetOntology);
+		referenceAlignmentMatcher.match();
+   		Alignment<Mapping> refmap=referenceAlignmentMatcher.getAlignment();
+		return refmap;
 	}
 	void callProcess() throws Exception
 	{
@@ -655,9 +743,9 @@ public class MLTrainerWrapper {
 		matchReference();
 		calculateMeasure();*/
 		
-		predictresult("bench/arff/model/decisiontree.model","bench/training/101/onto.RDF","bench/test/258-2/onto.RDF","bench/test/258-2/refalign.RDF","bench/arff/output/predictedDT.arff");
-		predictresult("bench/arff/model/naivebayes.model","bench/training/101/onto.RDF","bench/test/258-2/onto.RDF","bench/test/258-2/refalign.RDF","bench/arff/output/predictedNB.arff");
-		predictresult("bench/arff/model/svm.model","bench/training/101/onto.RDF","bench/test/258-2/onto.RDF","bench/test/258-2/refalign.RDF","bench/arff/output/predictedSVM.arff");
+		predictresult("bench/arff/model/decisiontree.model","bench/training/101/onto.RDF","bench/test/258-2/onto.RDF","bench/test/258-2/refalign.RDF","bench/arff/output/predictedDT.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputDT");
+		predictresult("bench/arff/model/naivebayes.model","bench/training/101/onto.RDF","bench/test/258-2/onto.RDF","bench/test/258-2/refalign.RDF","bench/arff/output/predictedNB.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputNB");
+		predictresult("bench/arff/model/svm.model","bench/training/101/onto.RDF","bench/test/258-2/onto.RDF","bench/test/258-2/refalign.RDF","bench/arff/output/predictedSVM.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputSVM");
 		
 //		String testFileName="";
 //		elementName="testset";
