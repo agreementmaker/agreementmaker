@@ -25,7 +25,7 @@ public class XmlParser {
 
 	}
 	
-	public ArrayList<TrainingLayout> parseDocument(String xmlfilename,String elementname)
+	public ArrayList<TrainingLayout> parseDocument(String xmlfilename,String elementname,String type)
 	{
 		tlList=new ArrayList<TrainingLayout>();
 		parseXMLFile(xmlfilename);
@@ -35,8 +35,17 @@ public class XmlParser {
 		if(nl != null && nl.getLength() > 0) {
 			for(int i = 0 ; i < nl.getLength();i++) {
 				Element e = (Element)nl.item(i);
+				if(type.equals("training"))
+				{
                     TrainingLayout ot=getTrainingLayout(e);
-                     tlList.add(ot);
+                    tlList.add(ot);
+				}
+				else
+				{
+					TrainingLayout ot=getTestingLayout(e);
+                    tlList.add(ot);
+				}
+
 					}
 		}
 
@@ -58,6 +67,24 @@ public class XmlParser {
 		tl.setsourceOntologyPath(n1.item(0).getAttributes().item(1).getNodeValue());
 		tl.settargetOntologyPath(n2.item(0).getAttributes().item(1).getNodeValue());
 		tl.setrefalignmentPath(n3.item(0).getAttributes().item(1).getNodeValue());
+		return tl;
+	}
+	
+	public TrainingLayout getTestingLayout(Element e)
+	{
+		
+		TrainingLayout tl=new TrainingLayout();
+		NodeList n1=e.getElementsByTagName("sourceontology");
+		NodeList n2=e.getElementsByTagName("targetontology");
+		NodeList n3=e.getElementsByTagName("refalignment");
+		/*System.out.println("----------------------------------------");
+		System.out.println(n1.item(0).getAttributes().item(1).getNodeValue());
+		System.out.println(n2.item(0).getAttributes().item(1).getNodeValue());
+		System.out.println(n3.item(0).getAttributes().item(1).getNodeValue());
+		System.out.println("---------------------------------------\n");*/
+		tl.setsourceOntologyPath(n1.item(0).getAttributes().item(0).getNodeValue());
+		tl.settargetOntologyPath(n2.item(0).getAttributes().item(0).getNodeValue());
+		tl.setrefalignmentPath(n3.item(0).getAttributes().item(0).getNodeValue());
 		return tl;
 	}
 }

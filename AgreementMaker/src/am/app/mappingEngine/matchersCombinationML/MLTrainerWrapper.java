@@ -3,17 +3,35 @@ package am.app.mappingEngine.matchersCombinationML;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import org.w3c.dom.Attr;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
@@ -117,7 +135,7 @@ public class MLTrainerWrapper {
 		XmlParser xp=new XmlParser();
 		//String basePath="/home/vivek/projects/workspace/AgreementMakerSVN/";
 		String basePath="";
-		ArrayList<TrainingLayout> tlist=xp.parseDocument(filename, elementname);
+		ArrayList<TrainingLayout> tlist=xp.parseDocument(filename, elementname,"training");
 		for(TrainingLayout tl: tlist)
 		{
 			Ontology sourceOntology=loadOntology(basePath+tl.getsourceOntologyPath().toLowerCase());
@@ -475,23 +493,33 @@ public class MLTrainerWrapper {
 	void generateModel() throws Exception
 	{
 		 BufferedReader trainingset = new BufferedReader(new FileReader("bench/arff/trainingFilecombined.arff"));
-		 BufferedReader  testset = new BufferedReader(new FileReader("bench/arff/testFilecombined.arff"));
+		 //BufferedReader  testset = new BufferedReader(new FileReader("bench/arff/testFilecombined.arff"));
 		 Instances train=new Instances(trainingset);
-		 Instances test=new Instances(testset);
+		 //Instances test=new Instances(testset);
 		 train.setClassIndex(train.numAttributes() - 1);
-		 test.setClassIndex(test.numAttributes()-1);
-		 //Classifier cls= (Classifier) new DecisionStump();
-		 //Classifier cls= (Classifier) new BayesNet();
-		 Classifier cls= (Classifier) new LibSVM();
-		 cls.buildClassifier(train);
+		 //test.setClassIndex(test.numAttributes()-1);
+		 Classifier cls1= (Classifier) new DecisionStump();
+		 Classifier cls2= (Classifier) new BayesNet();
+		 Classifier cls3= (Classifier) new LibSVM();
+		 cls1.buildClassifier(train);
+		 cls2.buildClassifier(train);
+		 cls3.buildClassifier(train);
 		 
 		 //save the model for future use
 		 // serialize model
 		 ObjectOutputStream oos = new ObjectOutputStream(
-		                            new FileOutputStream("bench/arff/model/svm.model"));
-		 oos.writeObject(cls);
+		                            new FileOutputStream("bench/arff/model/decisiontree.model"));
+		 oos.writeObject(cls1);
 		 oos.flush();
+		 oos=new ObjectOutputStream(
+                 new FileOutputStream("bench/arff/model/naivebayes.model"));
+		 oos.writeObject(cls2);
+		 oos=new ObjectOutputStream(
+                 new FileOutputStream("bench/arff/model/svm.model"));
+		 oos.writeObject(cls3);
+		
 		 oos.close();
+		 trainingset.close();
 		/* Evaluation eval = new Evaluation(train);
 		 cls.
 		 
@@ -500,7 +528,7 @@ public class MLTrainerWrapper {
 		 testset.close();*/
 		 
 		 //predict the class for testset
-		 for (int i = 0; i < test.numInstances(); i++) {
+		/* for (int i = 0; i < test.numInstances(); i++) {
 			   double clsLabel = cls.classifyInstance(test.instance(i));
 			   test.instance(i).setClassValue(clsLabel);
 			 }
@@ -510,21 +538,102 @@ public class MLTrainerWrapper {
 			 writer.write(test.toString());
 			 writer.newLine();
 			 writer.flush();
-			 writer.close();
-
+			 writer.close();*/
+           System.out.println("Three models generated");
 
 
 
 	}
-	//main modukle to predict results for test set
+	//main module to predict results for test set
 	//given two ontology
-	void predictresult(String modelname)
+	void predictresult(String modelname,String srcOntology,String tarOntology,String refalign, String predicted) throws Exception
 	{
-
-		 /*ObjectInputStream ois = new ObjectInputStream(
-                new FileInputStream("/some/where/j48.model"));
-		 Classifier cls = (Classifier) ois.readObject();
-		 ois.close();*/
+		String outputfilename="bench/files/test.xml";
+		
+		 try {
+			 int i=1;
+			 	
+				DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+		 
+				// root element
+				Document doc = docBuilder.newDocument();
+				Element rootElement = doc.createElement("testsets");
+				doc.appendChild(rootElement);
+		        
+				Element trainingset = doc.createElement("testset");
+				rootElement.appendChild(trainingset);
+				trainingset.setAttribute("id", Integer.toString(i));
+		 
+				// source ontology
+				Element sourceontology = doc.createElement("sourceontology");
+				sourceontology.setAttribute("path", srcOntology);
+				trainingset.appendChild(sourceontology);
+		 
+				// target ontology
+				Element targetontology = doc.createElement("targetontology");
+				targetontology.setAttribute("path", tarOntology);
+				trainingset.appendChild(targetontology);
+		 
+				// reference alignment
+				Element refalignment = doc.createElement("refalignment");
+				refalignment.setAttribute("path", refalign);
+				trainingset.appendChild(refalignment);
+				
+		       
+					 
+				// write the content into xml file
+				TransformerFactory transformerFactory = TransformerFactory.newInstance();
+				Transformer transformer = transformerFactory.newTransformer();
+				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+				DOMSource source = new DOMSource(doc);
+				Result result = new StreamResult( new FileOutputStream(outputfilename));
+				// Output to console for testing
+				// StreamResult result = new StreamResult(System.out);
+		 
+				transformer.transform(source, result);
+		 
+				System.out.println("XML File saved! " + outputfilename);
+		       
+			  } catch (ParserConfigurationException pce) {
+				pce.printStackTrace();
+			  } catch (TransformerException tfe) {
+				tfe.printStackTrace();
+			  }
+			  catch (FileNotFoundException fnf) {
+					fnf.printStackTrace();
+				  }
+			  
+			  //running the matchers on testset
+			  MLTestingWrapper tWrapper=new MLTestingWrapper();
+			  tWrapper.callProcess(outputfilename, "testset");
+			  
+			  //deserialising the model we have built
+			  ObjectInputStream ois = new ObjectInputStream(
+                new FileInputStream(modelname));
+			  Classifier cls = (Classifier) ois.readObject();
+			  
+			  //setting testset class
+			  ArffConvertor arff=new ArffConvertor("bench/combinedmatchers/testFilecombined", "test",tWrapper.matcherNames);
+			  arff.generateArffFile();
+			  BufferedReader  testset = new BufferedReader(new FileReader("bench/arff/testFilecombined.arff"));
+			  Instances test=new Instances(testset);
+			  test.setClassIndex(test.numAttributes()-1);
+				
+			  //predict the result using given model
+			  
+			  for (int i = 0; i < test.numInstances(); i++) {
+				   double clsLabel = cls.classifyInstance(test.instance(i));
+				   test.instance(i).setClassValue(clsLabel);
+				 }
+				 // save labeled data
+				 BufferedWriter writer = new BufferedWriter(
+				                           new FileWriter(predicted));
+				 writer.write(test.toString());
+				 writer.newLine();
+				 writer.flush();
+				 writer.close();
+			  ois.close();
 	}
 	void matchReference()
 	{	
@@ -535,7 +644,7 @@ public class MLTrainerWrapper {
 	}
 	void callProcess() throws Exception
 	{
-		String trainingFileName="bench/training.xml";
+		/*String trainingFileName="bench/training.xml";
 		String elementName="trainingset";
 		loadMatchers();
 		loadOntologyTriples(trainingFileName,elementName);
@@ -544,7 +653,12 @@ public class MLTrainerWrapper {
 		generateTrainingARFF();
 		generateModel();
 		matchReference();
-		calculateMeasure();
+		calculateMeasure();*/
+		
+		predictresult("bench/arff/model/decisiontree.model","bench/training/101/onto.RDF","bench/test/258-2/onto.RDF","bench/test/258-2/refalign.RDF","bench/arff/output/predictedDT.arff");
+		predictresult("bench/arff/model/naivebayes.model","bench/training/101/onto.RDF","bench/test/258-2/onto.RDF","bench/test/258-2/refalign.RDF","bench/arff/output/predictedNB.arff");
+		predictresult("bench/arff/model/svm.model","bench/training/101/onto.RDF","bench/test/258-2/onto.RDF","bench/test/258-2/refalign.RDF","bench/arff/output/predictedSVM.arff");
+		
 //		String testFileName="";
 //		elementName="testset";
 //		loadOntologyTriples(testFileName,elementName);

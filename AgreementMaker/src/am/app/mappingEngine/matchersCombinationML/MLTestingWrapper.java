@@ -38,7 +38,7 @@ public class MLTestingWrapper {
 	
 	ArrayList<AbstractMatcher> listOfMatchers=new ArrayList<AbstractMatcher>();
 	ArrayList<OntologyTriple> listOfTriples=new ArrayList<OntologyTriple>();
-	
+	ArrayList<String> matcherNames=new ArrayList<String>();
 	public static Ontology loadOntology(String ontoName){
 		Ontology ontology;
 		try {
@@ -107,7 +107,7 @@ public class MLTestingWrapper {
 		XmlParser xp=new XmlParser();
 		//String basePath="/home/vivek/projects/workspace/AgreementMakerSVN/";
 		String basePath="";
-		ArrayList<TrainingLayout> tlist=xp.parseDocument(filename, elementname);
+		ArrayList<TrainingLayout> tlist=xp.parseDocument(filename, elementname,"testing");
 		for(TrainingLayout tl: tlist)
 		{
 			Ontology sourceOntology=loadOntology(basePath+tl.getsourceOntologyPath().toLowerCase());
@@ -350,6 +350,10 @@ public class MLTestingWrapper {
 		{
 			File currentFile=new File(matcherFiles.get(i));
 			String matcherName=currentFile.getName();
+			
+			//adding matcher name we need to generate ARFF file 
+			matcherNames.add(matcherName);
+			
 			BufferedReader inputReader=new BufferedReader(new FileReader(currentFile));
 			while(inputReader.ready())
 			{
@@ -456,15 +460,15 @@ public class MLTestingWrapper {
 		
 	}
 	
-	void callProcess() throws Exception
+	void callProcess(String trainingFileName,String elementName) throws Exception
 	{
-		String trainingFileName="bench/test.xml";
-		String elementName="testset";
+		//String trainingFileName="bench/test.xml";
+		//String elementName="testset";
 		loadMatchers();
 		loadOntologyTriples(trainingFileName,elementName);
 		generateMappings();
 		generateTrainingFile();
-		generateModel();
+		//generateModel();
 //		String testFileName="";
 //		elementName="testset";
 //		loadOntologyTriples(testFileName,elementName);
@@ -473,7 +477,7 @@ public class MLTestingWrapper {
 	public static void main(String args[])throws Exception
 	{
 		MLTestingWrapper ml=new MLTestingWrapper();
-		ml.callProcess();
+		ml.callProcess("bench/test.xml","testset");
 				
 	}
 
