@@ -25,6 +25,7 @@ import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarity
 import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
 import am.app.mappingEngine.hierarchy.HierarchyMatcherModified;
 import am.app.mappingEngine.hierarchy.HierarchyMatcherModifiedParameters;
+import am.app.mappingEngine.hierarchy.WordnetSubclassMatcher;
 import am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher;
 import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters;
 import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters.OAEI2011Configuration;
@@ -35,6 +36,12 @@ import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.userInterface.MatchersControlPanel;
 import am.utility.referenceAlignment.AlignmentUtilities;
 
+import com.hp.hpl.jena.ontology.OntDocumentManager;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
 
 public class LODBatch {
@@ -46,9 +53,9 @@ public class LODBatch {
 	
 	public LODBatch(){
 		log = Logger.getLogger(LODBatch.class);
-		//Logger.getRootLogger().setLevel(Level.DEBUG);	
+		Logger.getRootLogger().setLevel(Level.DEBUG);	
 		
-		log.setLevel(Level.INFO);
+		//log.setLevel(Level.INFO);
 		
 		initMapper();		
 	}
@@ -69,26 +76,24 @@ public class LODBatch {
 		//http://xmlns.com/foaf/0.1/
 		
 	}
-
+	
 	public ThresholdAnalysisData singleRun(LODOntology source, LODOntology target, String testName, String refAlign){
 		long start = System.nanoTime();
 		Ontology sourceOntology = null;
 		Ontology targetOntology = null;
 		OntoTreeBuilder treeBuilder;
-		
-						
+				
 		log.info("Opening sourceOntology...");
 		sourceOntology = OntoTreeBuilder.loadOntology(new File(source.getFilename()).getPath(), source.getLang(), source.getSyntax(), mapper);
 		//sourceOntology = LODUtils.openOntology(new File(sourceName).getAbsolutePath());	
 		log.info("Done");	
-				
+		
 		log.info("Opening targetOntology...");
 		targetOntology = OntoTreeBuilder.loadOntology(new File(target.getFilename()).getPath(), target.getLang(), target.getSyntax(), mapper);
 		//targetOntology = LODUtils.openOntology(new File(targetName).getAbsolutePath());
 		log.info("Done");
-		
+				
 		AdvancedSimilarityMatcher matcher = new AdvancedSimilarityMatcher();
-		
 		
 		AdvancedSimilarityParameters asmParam = new AdvancedSimilarityParameters();
 		asmParam.useDictionary = true;
@@ -124,11 +129,18 @@ public class LODBatch {
 		
 		HierarchyMatcherModifiedParameters param = new HierarchyMatcherModifiedParameters();
 		param.mapper = mapper;
-		param.threshold = 0.000001;
+		param.threshold = 0.1;
 		hmm.setParam(param);
 		
-		log.info("HMM matching");
+//		hmm = MatcherFactory.getMatcherInstance(MatchersRegistry.WSM, 0);
+//		hmm.setSourceOntology(sourceOntology);
+//		hmm.setTargetOntology(targetOntology);
+//		reference = AlignmentUtilities.getMatchingPairsTAB(refAlign);
+//		hmm.setReferenceAlignment(reference);
+//		hmm.setParam(param);
+//		
 		
+		log.info("HMM matching");
 		try {
 			hmm.match();
 		} catch (Exception e) {
@@ -143,15 +155,13 @@ public class LODBatch {
 		}
 		log.info("Done");
 		
-			
 		long end = System.nanoTime();
 		long executionTime = (end-start)/1000000;
 		report += "Execution times:\t" + matcher.getExecutionTime() + "\t" + hmm.getExecutionTime() + "\t" + executionTime + "\n";
 		log.info("Total time: " + executionTime);
 		
-		
-		double[] thresholds = Utility.getDoubleArray(0.0d, 0.01d, 1000);
-		ThresholdAnalysisData data = AlignmentUtilities.thresholdAnalysis(hmm, reference, thresholds);
+		double[] thresholds = Utility.getDoubleArray(0.0d, 0.01d, 100);
+		ThresholdAnalysisData data = AlignmentUtilities.thresholdAnalysis(hmm, reference, thresholds, true);
 		return data;
 	}
 	
@@ -282,8 +292,6 @@ public class LODBatch {
 		LODEvaluator evaluator = new LODEvaluator();
 		evaluator.setThreshold(bestTh);
 		
-		
-		
 		try {
 			evaluator.evaluateAllTestsOld();
 		} catch (Exception e) {
@@ -340,6 +348,10 @@ public class LODBatch {
 	
 	public static void main(String[] args) {
 		LODBatch batch = new LODBatch();
+		
+		//Logger.getRootLogger().setLevel(Level.DEBUG);
+		
+		
 		batch.runOldVersion();
 		//batch.runOldEquality();
 	}

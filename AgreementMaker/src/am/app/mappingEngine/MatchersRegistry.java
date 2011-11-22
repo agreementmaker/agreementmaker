@@ -20,6 +20,7 @@ import am.app.mappingEngine.dsi.OldDescendantsSimilarityInheritanceMatcher;
 import am.app.mappingEngine.hierarchy.HierarchyMatcher;
 import am.app.mappingEngine.hierarchy.HierarchyMatcherModified;
 import am.app.mappingEngine.hierarchy.HierarchyStructureMatcher;
+import am.app.mappingEngine.hierarchy.WordnetSubclassMatcher;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.mediatingMatcher.MediatingMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsMatcher;
@@ -78,6 +79,7 @@ public enum MatchersRegistry {
 	GroupFinder			( "GFM", "Group Finder Matcher", am.app.mappingEngine.groupFinder.GroupFinderMatcher.class),
 	IISM				( "IISM", "Iterative Instance and Structural Matcher", am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralMatcher.class, MatcherCategory.STRUCTURAL),
 	LSM					( "LSM", "Lexical Synonym Matcher", LexicalSynonymMatcher.class, MatcherCategory.LEXICAL ),
+	WSM			( "WSC", "Wordnet Subclass Matcher", WordnetSubclassMatcher.class, MatcherCategory.LEXICAL),
 	//OFFICIAL MATCHERS
 	LexicalJAWS			( "JAWS", "Lexical Matcher: JAWS", LexicalMatcherJAWS.class, MatcherCategory.LEXICAL ),
 	BaseSimilarity		( "BSM", "Base Similarity Matcher", BaseSimilarityMatcher.class, MatcherCategory.SYNTACTIC ),

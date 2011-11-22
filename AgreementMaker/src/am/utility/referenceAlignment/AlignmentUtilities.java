@@ -195,9 +195,12 @@ public class AlignmentUtilities {
 	public static List<MatchingPair> alignmentToMatchingPairs(
 			Alignment<Mapping> alignment) {
 		
+		//System.out.println("Creating matching pairs from an alignment " + alignment.size());
+		
 		List<MatchingPair> pairs = new ArrayList<MatchingPair>();
 		
 		for (Mapping mapping : alignment) {
+			//System.out.println(mapping);
 			pairs.add(new MatchingPair(mapping.getEntity1().getLocalName(), mapping.getEntity2().getLocalName(), 
 					mapping.getSimilarity(), mapping.getRelation()));
 		}
@@ -268,7 +271,7 @@ public class AlignmentUtilities {
 	}
 	
 	public static ThresholdAnalysisData thresholdAnalysis(AbstractMatcher toBeEvaluated, Object reference) {
-		return thresholdAnalysis(toBeEvaluated, reference, null);
+		return thresholdAnalysis(toBeEvaluated, reference, null, false);
 	}
 	
 	/**
@@ -276,7 +279,7 @@ public class AlignmentUtilities {
 	 * @param reference it can be either an Alignment<Mapping> or a List<MatchingPair>
 	 * @return
 	 */
-	public static ThresholdAnalysisData thresholdAnalysis(AbstractMatcher toBeEvaluated, Object reference, double[] thresholds) {
+	public static ThresholdAnalysisData thresholdAnalysis(AbstractMatcher toBeEvaluated, Object reference, double[] thresholds, boolean removeDuplicates) {
 		Alignment<Mapping> referenceSet = null;
 		List<MatchingPair> referencePairs = null;
 		if(reference instanceof Alignment)
@@ -323,6 +326,11 @@ public class AlignmentUtilities {
 			else{
 				Alignment<Mapping> alignment = toBeEvaluated.getAlignment();
 				List<MatchingPair> pairs = AlignmentUtilities.alignmentToMatchingPairs(alignment);
+				
+				//removeDuplicates(referencePairs);
+				
+				//removeDuplicates(pairs);
+				
 				rd = AlignmentUtilities.compare(pairs, referencePairs);
 				tad.addEvaluationData(rd);
 			}
@@ -358,5 +366,23 @@ public class AlignmentUtilities {
 		report += "Average:\t"+sumFound+"\t"+sumCorrect+"\t"+maxrd.getExist()+"\t"+Utility.getOneDecimalPercentFromDouble(sumPrecision)+"\t"+Utility.getOneDecimalPercentFromDouble(sumRecall)+"\t"+Utility.getOneDecimalPercentFromDouble(sumFmeasure)+"\n\n";
 		tad.setReport(report);
 		return tad;
+	}
+	
+	public static void removeDuplicates(List<MatchingPair> pairs){
+		MatchingPair p1;
+		MatchingPair p2;
+		for (int i = 0; i < pairs.size(); i++) {
+			for (int j = i+1; j < pairs.size(); j++) {
+				p1 = pairs.get(i);
+				p2 = pairs.get(j);
+				if(p1.sourceURI.equals(p2.sourceURI) && p1.targetURI.equals(p2.targetURI)
+						&& p1.relation.equals(p2.relation)){
+					pairs.remove(j);
+					//System.out.println(p2.getTabString());
+					j--;
+				}
+					
+			}
+		}
 	}
 }

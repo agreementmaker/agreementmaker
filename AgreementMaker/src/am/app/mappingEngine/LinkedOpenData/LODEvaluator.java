@@ -141,8 +141,8 @@ public class LODEvaluator {
 		
 		//compare(filePairs, refPairs);
 		
-		removeDuplicates(filePairs);
-		removeDuplicates(refPairs);
+		AlignmentUtilities.removeDuplicates(filePairs);
+		AlignmentUtilities.removeDuplicates(refPairs);
 		
 		//System.out.println("FP:" + filePairs.size());
 		//System.out.println("RP:" + refPairs.size());
@@ -164,8 +164,8 @@ public class LODEvaluator {
 		
 		//compare(filePairs, refPairs);
 		
-		removeDuplicates(filePairs);
-		removeDuplicates(refPairs);
+		AlignmentUtilities.removeDuplicates(filePairs);
+		AlignmentUtilities.removeDuplicates(refPairs);
 		
 		//System.out.println("FP:" + filePairs.size());
 		//System.out.println("RP:" + refPairs.size());
@@ -185,8 +185,8 @@ public class LODEvaluator {
 		
 		compare(filePairs, refPairs);
 		
-		removeDuplicates(filePairs);
-		removeDuplicates(refPairs);
+		AlignmentUtilities.removeDuplicates(filePairs);
+		AlignmentUtilities.removeDuplicates(refPairs);
 		
 		//System.out.println("FP:" + filePairs.size());
 		//System.out.println("RP:" + refPairs.size());
@@ -194,26 +194,6 @@ public class LODEvaluator {
 		compare(filePairs, refPairs);	
 		
 		System.out.println();
-	}
-	
-	
-	
-	public void removeDuplicates(List<MatchingPair> pairs){
-		MatchingPair p1;
-		MatchingPair p2;
-		for (int i = 0; i < pairs.size(); i++) {
-			for (int j = i+1; j < pairs.size(); j++) {
-				p1 = pairs.get(i);
-				p2 = pairs.get(j);
-				if(p1.sourceURI.equals(p2.sourceURI) && p1.targetURI.equals(p2.targetURI)
-						&& p1.relation.equals(p2.relation)){
-					pairs.remove(j);
-					//System.out.println(p2.getTabString());
-					j--;
-				}
-					
-			}
-		}
 	}
 	
 	public void evaluateAllTestsEq() throws Exception {
@@ -410,8 +390,8 @@ public class LODEvaluator {
 			tOnt = OntoTreeBuilder.loadOntology(new File(targetOntology.getFilename()).getAbsolutePath(), targetOntology.getLang(), targetOntology.getSyntax());			
 		}
 				
-		removeDuplicates(sourceList);
-		removeDuplicates(targetList);
+		AlignmentUtilities.removeDuplicates(sourceList);
+		AlignmentUtilities.removeDuplicates(targetList);
 		
 		boolean found = false;
 		
