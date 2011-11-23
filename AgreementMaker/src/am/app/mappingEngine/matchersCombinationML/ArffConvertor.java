@@ -1,4 +1,10 @@
 package am.app.mappingEngine.matchersCombinationML;
+/**
+ * 
+ * This class is used to convert the training and test files into weka supported
+ * Arff format
+ */
+
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,7 +26,12 @@ public class ArffConvertor {
 		this.type=type;
 		this.listOfMatchers=matcherList;
 	}
-	
+
+	/**
+	 * generates Arff file based on the type
+	 * type can be training and test
+	 * @throws IOException
+	 */
 	void generateArffFile() throws IOException
 	{
 		File file=new File(fileName);

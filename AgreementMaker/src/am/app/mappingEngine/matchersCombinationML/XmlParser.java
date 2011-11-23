@@ -1,5 +1,8 @@
 package am.app.mappingEngine.matchersCombinationML;
 
+/**
+ * Parser that reads the training and test data, called from wrappers.
+ */
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;

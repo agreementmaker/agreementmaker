@@ -1,5 +1,12 @@
 package am.app.mappingEngine.matchersCombinationML;
 
+/**
+ * This class is used generate the XML training and test files given
+
+ *currently we have to manually makes changes specific to 
+ *test and training files but will be made generic in future 
+ *  TODO: generalize approach to both test and training set
+ */
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

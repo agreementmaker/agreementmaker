@@ -1,5 +1,8 @@
 package am.app.mappingEngine.matchersCombinationML;
 
+/**
+ * Data structure to store the source, target and reference Alignment as a triple
+ */
 import java.util.ArrayList;
 import java.util.HashMap;
 

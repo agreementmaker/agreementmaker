@@ -9,6 +9,7 @@ import am.app.ontology.Ontology;
  * @author vivek
  *
  */
+@Deprecated
 public class CorrespondencesGenerator {
 	
 	Ontology sourceOntology;
