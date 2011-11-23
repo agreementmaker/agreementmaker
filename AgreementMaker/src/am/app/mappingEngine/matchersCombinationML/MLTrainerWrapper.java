@@ -80,7 +80,7 @@ public class MLTrainerWrapper {
 	public MLTrainerWrapper(){
 		log = Logger.getLogger(MLTrainerWrapper.class);
 		
-		//log.setLevel(Level.INFO);
+		log.setLevel(Level.DEBUG);
 	}
 	
 	//load the ontology given the location of ontology
@@ -553,7 +553,9 @@ public class MLTrainerWrapper {
 		arff.generateArffFile();
 	//	arff=new ArffConvertor("bench/combinedmatchers/testFilecombined", "test",matcherNames);
 	//	arff.generateArffFile();
-		System.out.println("Training ARFF file generated");
+		//System.out.println("Training ARFF file generated");
+		log.info("Training ARFF file generated");
+		
 	}
 	
 	/*
@@ -610,7 +612,8 @@ public class MLTrainerWrapper {
 			 writer.newLine();
 			 writer.flush();
 			 writer.close();*/
-           System.out.println("Three models generated");
+         //  System.out.println("Three models generated");
+		 log.info("Three models generated");
 
 
 
@@ -669,7 +672,8 @@ public class MLTrainerWrapper {
 		 
 				transformer.transform(source, result);
 		 
-				System.out.println("XML File saved! " + outputfilename);
+				//System.out.println("XML File saved! " + outputfilename);
+				log.info("XML File saved! " + outputfilename);
 		       
 			  } catch (ParserConfigurationException pce) {
 				pce.printStackTrace();
@@ -750,7 +754,8 @@ public class MLTrainerWrapper {
 				index++;
 			}				
 		}
-		System.out.println("final file generated:" + finalfile);
+		//System.out.println("final file generated:" + finalfile);
+		log.info("final file generated:" + finalfile);
 		outputWriter.close();
 	
 	}
@@ -765,8 +770,9 @@ public class MLTrainerWrapper {
 		
 		BufferedReader  alignmentfile = new BufferedReader(new FileReader(finalfile));
 		int mapped=0,count=0;
-		System.out.println("-----------------------------------");
-		System.out.println("reference size"+refmap.size());
+		//System.out.println("-----------------------------------");
+		//System.out.println("reference size"+refmap.size());
+		log.info("reference size"+refmap.size());
 		while(alignmentfile.ready())
 		{
 			
@@ -788,14 +794,19 @@ public class MLTrainerWrapper {
 				}
 			}
 		}
-		System.out.println("-----------------------------------------------");
-		System.out.println("total correct" + mapped);
-		System.out.println("total mapping" +count);
+		//System.out.println("-----------------------------------------------");
+		log.info("-------------------------------------------------------------");
+		//System.out.println("total correct" + mapped);
+		//System.out.println("total mapping" +count);
+		log.info("total correct" + mapped);
+		log.info("total mapping" +count);
 		float precision = (float)mapped/count;
 		float recall = (float)mapped/refmap.size();
 		float fmeasure = 2 * precision * recall / (precision + recall);
-		System.out.print(precision + "\t" + recall + "\t" + fmeasure);
-		System.out.println("-----------------------------------------------------");
+		//System.out.print(precision + "\t" + recall + "\t" + fmeasure);
+		log.info(precision + "\t" + recall + "\t" + fmeasure);
+		//System.out.println("-----------------------------------------------------");
+		log.info("-------------------------------------------------------------");
 
 	}
 	
