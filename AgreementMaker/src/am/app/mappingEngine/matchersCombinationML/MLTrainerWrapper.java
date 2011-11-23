@@ -826,9 +826,7 @@ public class MLTrainerWrapper {
 		generateMappings();
 		generateTrainingFile();
 		generateTrainingARFF();
-		generateModel();
-		matchReference();
-		calculateMeasure();*/
+		generateModel();*/
 		
 		//predicting the result for the testset using decisiontree classifier
 		predictresult("bench/arff/model/decisiontree.model","bench/training/101/onto.RDF","bench/test/258-2/onto.RDF","bench/test/258-2/refalign.RDF","bench/arff/output/predictedDT.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputDT");
