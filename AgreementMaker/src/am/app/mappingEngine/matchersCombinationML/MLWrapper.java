@@ -12,7 +12,7 @@ public class MLWrapper {
 		MLTrainerWrapper trainer=new MLTrainerWrapper();
 		MLTestingWrapper tester=new MLTestingWrapper();
 		try {
-			trainer.callProcess();
+			//trainer.callProcess();
 			tester.callProcess();
 		} catch (Exception e) {
 

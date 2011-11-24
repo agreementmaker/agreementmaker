@@ -165,7 +165,7 @@ public class MLTrainerWrapper {
 		XmlParser xp=new XmlParser();
 		//String basePath="/home/vivek/projects/workspace/AgreementMakerSVN/";
 		String basePath="";
-		ArrayList<TrainingLayout> tlist=xp.parseDocument(filename, elementname,"training");
+		ArrayList<TrainingLayout> tlist=xp.parseDocument(filename.toLowerCase(), elementname,"training");
 		for(TrainingLayout tl: tlist)
 		{
 			Ontology sourceOntology=loadOntology(basePath+tl.getsourceOntologyPath().toLowerCase());
@@ -624,14 +624,14 @@ public class MLTrainerWrapper {
 	{
 		//uncomment the below lines, if you want to generate a new model 
 		
-		/*String trainingFileName="bench/training.xml";
+		String trainingFileName="bench/training.xml";
 		String elementName="trainingset";
 		loadMatchers();
 		loadOntologyTriples(trainingFileName,elementName);
 		generateMappings();
 		generateTrainingFile();
 		generateTrainingARFF();
-		generateModel();*/
+		generateModel();
 		
 		
 		

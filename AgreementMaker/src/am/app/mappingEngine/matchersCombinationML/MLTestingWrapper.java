@@ -425,8 +425,9 @@ public class MLTestingWrapper {
 			File currentFile=new File(matcherFiles.get(i));
 			String matcherName=currentFile.getName();
 			
-			//adding matcher name we need to generate ARFF file 
-			matcherNames.add(matcherName);
+			//adding matcher name we need to generate ARFF file
+			if(!matcherNames.contains(matcherName))
+				matcherNames.add(matcherName);
 			
 			BufferedReader inputReader=new BufferedReader(new FileReader(currentFile));
 			while(inputReader.ready())
@@ -544,7 +545,9 @@ public class MLTestingWrapper {
 		String outputFilename="bench/files/test.xml";
 		ArrayList<Double> predictedList=new ArrayList<Double>();
 		 try {
-			 int i=1;
+			 
+			 //TODO: merge this with file that generates the xml doc
+			 	int i=1;
 			 	
 				DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -668,7 +671,6 @@ public class MLTestingWrapper {
 			{
 				Mapping currentMapping=refMap.get(i);
 				if(currentMapping.getEntity1().getUri().equals(inputLineParts[0]) && currentMapping.getEntity2().getUri().equals(inputLineParts[1]) && currentMapping.getSimilarity()==Double.parseDouble(inputLineParts[2])) 
-					
 				{
 					//System.out.println("match found in ref alignment");
 					mapped++;
@@ -765,13 +767,13 @@ public class MLTestingWrapper {
 	{
 		try {
 			//predicting the result for the testset using decisiontree classifier
-			predictresult("bench/arff/model/decisiontree.model","bench/training/101/onto.RDF","bench/test/258-2/onto.RDF","bench/test/258-2/refalign.RDF","bench/arff/output/predictedDT.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputDT");
+			predictresult("bench/arff/model/decisiontree.model","bench/training/101/onto.rdf","bench/test/303/onto.rdf","bench/test/303/refalign.rdf","bench/arff/output/predictedDT.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputDT");
 			
 			//predicting the result for the testset using Naive Bayes classifier
-			predictresult("bench/arff/model/naivebayes.model","bench/training/101/onto.RDF","bench/test/258-2/onto.RDF","bench/test/258-2/refalign.RDF","bench/arff/output/predictedNB.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputNB");
+		    predictresult("bench/arff/model/naivebayes.model","bench/training/101/onto.rdf","bench/test/302/onto.rdf","bench/test/302/refalign.rdf","bench/arff/output/predictedNB.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputNB");
 			
 			//predicting the result for the testset using SVM classifier
-			predictresult("bench/arff/model/svm.model","bench/training/101/onto.RDF","bench/test/258-2/onto.RDF","bench/test/258-2/refalign.RDF","bench/arff/output/predictedSVM.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputSVM");
+			predictresult("bench/arff/model/svm.model","bench/training/101/onto.rdf","bench/test/301/onto.rdf","bench/test/301/refalign.rdf","bench/arff/output/predictedSVM.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputSVM");
 
 		} catch (Exception e) {
 
