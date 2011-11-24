@@ -75,7 +75,7 @@ public class MLTestingWrapper {
 		log.setLevel(Level.DEBUG);
 	}
 	//load the ontology given the location of ontology
-	public static Ontology loadOntology(String ontoName){
+	Ontology loadOntology(String ontoName){
 		Ontology ontology;
 		try {
 			ontology = OntoTreeBuilder.loadOWLOntology(ontoName);
@@ -288,11 +288,7 @@ public class MLTestingWrapper {
 							}
 								
 						}
-//						else
-//						{
-//							//currentTriple.setAlignmentObtained(currentMatcher, null);
-//						}
-					
+	
 					
 					} catch (Exception e) {
 			
@@ -471,28 +467,36 @@ public class MLTestingWrapper {
 			String outputStr1="";
 			outputStr1=currentKey;
 			String referenceSim="0.0";
+			int numFound=0;
+			int totalMatchers=matcherFiles.size();
 			String[] matcherSim=new String[3];
 			for(int i=0;i<matcherFiles.size();i++)
 			{
 				File currentFile=new File(matcherFiles.get(i));
 				//System.out.println(matcherFiles.get(i));
 				String matcherName=currentFile.getName();
-				
+				float matcherFound=0;
 				if(matcherMap.containsKey(matcherName))
 				{
-				
+					numFound++;
+					matcherFound=1;
 					matcherSim[i]=matcherMap.get(matcherName).split("\t")[2];
 					referenceSim=matcherMap.get(matcherName).split("\t")[3];
 					
 				}
 				else
 				{
+					matcherFound=0;
 					matcherSim[i]="0.0";
 				}
-				outputStr+=matcherSim[i]+"\t";
+				outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";
 			}
+			
+			float matcherVote=numFound/totalMatchers;
 			//outputStr+=referenceSim;
-			outputStr1+="\t"+referenceSim;
+			//TODO: need to check if matcher Vote has to be added somewhere else
+			outputStr1+=matcherVote+"\t"+referenceSim;
+			outputStr+=matcherVote;// guessing that matcher vote should be added to this TODO: need to check
 			outputWriter.write(outputStr+"\n");
 			outputRef.write(outputStr1+"\n");
 			

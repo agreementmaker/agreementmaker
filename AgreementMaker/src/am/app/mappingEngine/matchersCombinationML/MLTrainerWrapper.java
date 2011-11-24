@@ -84,7 +84,7 @@ public class MLTrainerWrapper {
 	}
 	
 	//load the ontology given the location of ontology
-	public static Ontology loadOntology(String ontoName){
+	 static Ontology loadOntology(String ontoName){
 		Ontology ontology;
 		
 		try {
@@ -298,11 +298,6 @@ public class MLTrainerWrapper {
 							}
 								
 						}
-//						else
-//						{
-//							//currentTriple.setAlignmentObtained(currentMatcher, null);
-//						}
-					
 					
 					} catch (Exception e) {
 			
@@ -475,25 +470,31 @@ public class MLTrainerWrapper {
 			String outputStr="";
 			String referenceSim="0.0";
 			String[] matcherSim=new String[matcherNames.size()];
+			int numFound=0;
+			int totalMatchers=matcherFiles.size();
 			for(int i=0;i<matcherFiles.size();i++)
 			{
 				File currentFile=new File(matcherFiles.get(i));
 				String matcherName=currentFile.getName();
+				float matcherFound=(float) 0;
 				
 				if(matcherMap.containsKey(matcherName))
 				{
+					numFound++;
 				//System.out.println(i);
 					matcherSim[i]=matcherMap.get(matcherName).split("\t")[2];
 					referenceSim=matcherMap.get(matcherName).split("\t")[3];
-					
+					matcherFound=(float) 1;
 				}
 				else
 				{
+					matcherFound=0;
 					matcherSim[i]="0.0";
 				}
-				outputStr+=matcherSim[i]+"\t";
+				outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
 			}
-			outputStr+=referenceSim;
+			float matcherVote=numFound/totalMatchers;
+			outputStr+=matcherVote+"\t"+referenceSim;//adds the matcher vote value and the reference similarity
 			
 			outputWriter.write(outputStr+"\n");
 			
@@ -639,7 +640,7 @@ public class MLTrainerWrapper {
 //		elementName="testset";
 //		loadOntologyTriples(testFileName,elementName);
 	}
-	
+	//TODO: remove
 	public static void main(String args[])throws Exception
 	{
 		MLTrainerWrapper ml=new MLTrainerWrapper();
