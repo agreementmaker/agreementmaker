@@ -51,8 +51,9 @@ public class ArffConvertor {
 		{
 			String currentMatcher=listOfMatchers.get(i);
 			outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"\tNUMERIC\n");
+			outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"found"+"\tNUMERIC\n");
 		}
-	
+		outputWriter.write("@ATTRIBUTE\t"+"Matcher_Vote"+"\tNUMERIC\n");
 		outputWriter.write("@ATTRIBUTE\ttarget\t{0.0,1.0}\n");
 		
 	
@@ -62,7 +63,7 @@ public class ArffConvertor {
 			String inputLine=inputReader.readLine().replaceAll("\t", ",");
 			if(type.equals("test"))
 			{
-				inputLine+="?";
+				inputLine+=",?";
 			}
 			outputWriter.write(inputLine+"\n");
 		}

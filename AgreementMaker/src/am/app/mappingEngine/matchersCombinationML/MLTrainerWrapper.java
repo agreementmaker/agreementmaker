@@ -493,7 +493,7 @@ public class MLTrainerWrapper {
 				}
 				outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
 			}
-			float matcherVote=numFound/totalMatchers;
+			float matcherVote=(float)numFound/totalMatchers;
 			outputStr+=matcherVote+"\t"+referenceSim;//adds the matcher vote value and the reference similarity
 			
 			outputWriter.write(outputStr+"\n");

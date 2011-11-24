@@ -465,7 +465,7 @@ public class MLTestingWrapper {
 			HashMap<String,String> matcherMap=uniqueConcepts.get(currentKey);
 			String outputStr="";
 			String outputStr1="";
-			outputStr1=currentKey;
+			outputStr1=currentKey+"\t";
 			String referenceSim="0.0";
 			int numFound=0;
 			int totalMatchers=matcherFiles.size();
@@ -492,10 +492,11 @@ public class MLTestingWrapper {
 				outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";
 			}
 			
-			float matcherVote=numFound/totalMatchers;
+			float matcherVote=(float)numFound/totalMatchers;
+			
 			//outputStr+=referenceSim;
 			//TODO: need to check if matcher Vote has to be added somewhere else
-			outputStr1+=matcherVote+"\t"+referenceSim;
+			outputStr1+=referenceSim;
 			outputStr+=matcherVote;// guessing that matcher vote should be added to this TODO: need to check
 			outputWriter.write(outputStr+"\n");
 			outputRef.write(outputStr1+"\n");
@@ -771,13 +772,13 @@ public class MLTestingWrapper {
 	{
 		try {
 			//predicting the result for the testset using decisiontree classifier
-			predictresult("bench/arff/model/decisiontree.model","bench/training/101/onto.rdf","bench/test/303/onto.rdf","bench/test/303/refalign.rdf","bench/arff/output/predictedDT.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputDT");
+		//	predictresult("bench/arff/model/decisiontree.model","bench/training/101/onto.rdf","bench/test/303/onto.rdf","bench/test/303/refalign.rdf","bench/arff/output/predictedDT.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputDT");
 			
 			//predicting the result for the testset using Naive Bayes classifier
-		    predictresult("bench/arff/model/naivebayes.model","bench/training/101/onto.rdf","bench/test/302/onto.rdf","bench/test/302/refalign.rdf","bench/arff/output/predictedNB.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputNB");
+		//    predictresult("bench/arff/model/naivebayes.model","bench/training/101/onto.rdf","bench/test/302/onto.rdf","bench/test/302/refalign.rdf","bench/arff/output/predictedNB.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputNB");
 			
 			//predicting the result for the testset using SVM classifier
-			predictresult("bench/arff/model/svm.model","bench/training/101/onto.rdf","bench/test/301/onto.rdf","bench/test/301/refalign.rdf","bench/arff/output/predictedSVM.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputSVM");
+			predictresult("bench/arff/model/svm.model","bench/training/101/onto.rdf","bench/test/258-2/onto.rdf","bench/test/258-2/refalign.rdf","bench/arff/output/predictedSVM.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputSVM");
 
 		} catch (Exception e) {
 
