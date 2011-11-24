@@ -469,7 +469,7 @@ public class MLTestingWrapper {
 			String referenceSim="0.0";
 			int numFound=0;
 			int totalMatchers=matcherFiles.size();
-			String[] matcherSim=new String[3];
+			String[] matcherSim=new String [matcherNames.size()];
 			for(int i=0;i<matcherFiles.size();i++)
 			{
 				File currentFile=new File(matcherFiles.get(i));
@@ -489,13 +489,13 @@ public class MLTestingWrapper {
 					matcherFound=0;
 					matcherSim[i]="0.0";
 				}
-				outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";
+				//outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";
+				outputStr+=matcherSim[i]+"\t"; //printing out only matcher similarity
 			}
 			
 			float matcherVote=(float)numFound/totalMatchers;
 			
 			//outputStr+=referenceSim;
-			//TODO: need to check if matcher Vote has to be added somewhere else
 			outputStr1+=referenceSim;
 			outputStr+=matcherVote;// guessing that matcher vote should be added to this TODO: need to check
 			outputWriter.write(outputStr+"\n");

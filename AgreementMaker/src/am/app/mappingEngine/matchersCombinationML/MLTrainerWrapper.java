@@ -491,7 +491,8 @@ public class MLTrainerWrapper {
 					matcherFound=0;
 					matcherSim[i]="0.0";
 				}
-				outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
+				//outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
+				outputStr+=matcherSim[i]+"\t"; //printing out only matcher similarity
 			}
 			float matcherVote=(float)numFound/totalMatchers;
 			outputStr+=matcherVote+"\t"+referenceSim;//adds the matcher vote value and the reference similarity
