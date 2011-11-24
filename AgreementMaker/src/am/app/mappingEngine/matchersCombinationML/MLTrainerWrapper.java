@@ -474,7 +474,7 @@ public class MLTrainerWrapper {
 			HashMap<String,String> matcherMap=uniqueConcepts.get(currentKey);
 			String outputStr="";
 			String referenceSim="0.0";
-			String[] matcherSim=new String[3];
+			String[] matcherSim=new String[matcherNames.size()];
 			for(int i=0;i<matcherFiles.size();i++)
 			{
 				File currentFile=new File(matcherFiles.get(i));
