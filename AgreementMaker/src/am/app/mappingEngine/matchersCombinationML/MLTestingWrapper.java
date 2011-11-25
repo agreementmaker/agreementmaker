@@ -38,6 +38,7 @@ import org.w3c.dom.Element;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 
+import am.Utility;
 import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
@@ -51,6 +52,8 @@ import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
+import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
+import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.OntologyProfiler;
@@ -133,7 +136,10 @@ public class MLTestingWrapper {
 		vmmParam.useLexiconSynonyms = true; // May change later.
 		am.setParam(vmmParam);
 		listOfMatchers.add(am);
-		
+		am=MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 0);
+
+		listOfMatchers.add(am);
+
 		//AbstractMatcher bsm=MatcherFactory.getMatcherInstance(MatchersRegistry.Equals, 0);
 		
 	}
@@ -274,11 +280,25 @@ public class MLTestingWrapper {
 					//currentMatcher.setParam(bsmParam);
 	//				currentMatcher.setParam(vmmParam);
 		
-						AbstractMatcher currentMatcher=matchers.get(m);
-						currentMatcher.setOntologies(currentTriple.getOntology1(), currentTriple.getOntology2());
-						currentMatcher.setPerformSelection(true);
-						currentMatcher.setUseProgressDelay(false);
-						currentMatcher.match();
+					AbstractMatcher currentMatcher=matchers.get(m);
+					//log.info(currentMatcher.getName());
+					if(currentMatcher.getName().toLowerCase().contains("linear"))
+					{
+						LWCRunner runner=new LWCRunner();
+						
+						runner.setSourceOntology(currentTriple.getOntology1());
+						runner.setTargetOntology(currentTriple.getOntology2());
+						currentMatcher=runner.initializeLWC();
+						
+					}
+					else
+					{
+					currentMatcher.setOntologies(currentTriple.getOntology1(), currentTriple.getOntology2());
+					currentMatcher.setPerformSelection(true);
+					currentMatcher.setUseProgressDelay(false);
+					}
+					currentMatcher.match();
+
 						Alignment<Mapping> resultAlignment=currentMatcher.getAlignment();
 						if(resultAlignment!=null && currentMatcher!=null)
 						{
@@ -469,7 +489,7 @@ public class MLTestingWrapper {
 			String referenceSim="0.0";
 			int numFound=0;
 			int totalMatchers=matcherFiles.size();
-			String[] matcherSim=new String [matcherNames.size()];
+			String[] matcherSim=new String[matcherFiles.size()];
 			for(int i=0;i<matcherFiles.size();i++)
 			{
 				File currentFile=new File(matcherFiles.get(i));
@@ -489,13 +509,13 @@ public class MLTestingWrapper {
 					matcherFound=0;
 					matcherSim[i]="0.0";
 				}
-				//outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";
-				outputStr+=matcherSim[i]+"\t"; //printing out only matcher similarity
+				outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";
 			}
 			
 			float matcherVote=(float)numFound/totalMatchers;
 			
 			//outputStr+=referenceSim;
+			//TODO: need to check if matcher Vote has to be added somewhere else
 			outputStr1+=referenceSim;
 			outputStr+=matcherVote;// guessing that matcher vote should be added to this TODO: need to check
 			outputWriter.write(outputStr+"\n");
@@ -544,7 +564,7 @@ public class MLTestingWrapper {
 	 *main module to predict results for test set
 	 *given two ontologies,reference alignment and a ML model 
 	 */
-	void predictresult(String modelName,String srcOntology,String tarOntology,String refAlign, String predicted,String combinedConceptFile,String finalFile) throws Exception
+	Alignment<Mapping> predictresult(String modelName,String srcOntology,String tarOntology,String refAlign, String predicted,String combinedConceptFile,String finalFile) throws Exception
 	{
 		//generating the test.xml file needed by MLTestingWrapper
 		String outputFilename="bench/files/test.xml";
@@ -645,7 +665,8 @@ public class MLTestingWrapper {
 			  //to compute the precision,recall and f-measure
 			  matchReference(predictedList,combinedConceptFile,finalFile);
 			  Alignment<Mapping> refMap=getReference(srcOntology, tarOntology, refAlign);
-			  calculateMeasure(finalFile,refMap);			  
+			  calculateMeasure(finalFile,refMap);
+			  return refMap;
 	}
 	
 	/**
@@ -770,20 +791,94 @@ public class MLTestingWrapper {
 	
 	void callProcess()
 	{
+		LWCRunner runner=new LWCRunner();
 		try {
 			//predicting the result for the testset using decisiontree classifier
-		//	predictresult("bench/arff/model/decisiontree.model","bench/training/101/onto.rdf","bench/test/303/onto.rdf","bench/test/303/refalign.rdf","bench/arff/output/predictedDT.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputDT");
+			System.out.println("101-303");
+			Alignment<Mapping> results=predictresult("bench/arff/model/decisiontree.model","bench/training/101/onto.rdf","bench/test/303/onto.rdf","bench/test/303/refalign.rdf","bench/arff/output/predictedDT.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputDT");
 			
+			runner.setSourceOntology(loadOntology("bench/training/101/onto.rdf"));
+			runner.setTargetOntology(loadOntology("bench/test/303/onto.rdf"));
+			AbstractMatcher lwc=runner.initializeLWC();
+			lwc.match();
+			Alignment<Mapping> referenceAlignment=getReference("bench/training/101/onto.rdf", "bench/test/303/onto.rdf", "bench/test/303/refalign.rdf");
+			//System.out.println("combination");
+			//displayResults(results, referenceAlignment);
+			System.out.println("lwc");
+			displayResults(lwc.getAlignment(),referenceAlignment);
 			//predicting the result for the testset using Naive Bayes classifier
-		//    predictresult("bench/arff/model/naivebayes.model","bench/training/101/onto.rdf","bench/test/302/onto.rdf","bench/test/302/refalign.rdf","bench/arff/output/predictedNB.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputNB");
-			
+			System.out.println("101-302");
+			predictresult("bench/arff/model/naivebayes.model","bench/training/101/onto.rdf","bench/test/302/onto.rdf","bench/test/302/refalign.rdf","bench/arff/output/predictedNB.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputNB");
+		    runner.setSourceOntology(loadOntology("bench/training/101/onto.rdf"));
+			runner.setTargetOntology(loadOntology("bench/test/302/onto.rdf"));
+			lwc=runner.initializeLWC();
+			lwc.match();
+			referenceAlignment=getReference("bench/training/101/onto.rdf", "bench/test/302/onto.rdf", "bench/test/302/refalign.rdf");
+			//System.out.println("combination");
+			//displayResults(results, referenceAlignment);
+			System.out.println("lwc");
+			displayResults(lwc.getAlignment(),referenceAlignment);
+			System.out.println("101-301");
 			//predicting the result for the testset using SVM classifier
-			predictresult("bench/arff/model/svm.model","bench/training/101/onto.rdf","bench/test/258-2/onto.rdf","bench/test/258-2/refalign.rdf","bench/arff/output/predictedSVM.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputSVM");
-
+			predictresult("bench/arff/model/svm.model","bench/training/101/onto.rdf","bench/test/301/onto.rdf","bench/test/301/refalign.rdf","bench/arff/output/predictedSVM.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputSVM");
+			runner.setSourceOntology(loadOntology("bench/training/101/onto.rdf"));
+			runner.setTargetOntology(loadOntology("bench/test/301/onto.rdf"));
+			lwc=runner.initializeLWC();
+			lwc.match();
+			referenceAlignment=getReference("bench/training/101/onto.rdf", "bench/test/301/onto.rdf", "bench/test/301/refalign.rdf");
+			//System.out.println("combination");
+			//displayResults(results, referenceAlignment);
+			System.out.println("lwc");
+			displayResults(lwc.getAlignment(),referenceAlignment);
+			
 		} catch (Exception e) {
 
 			e.printStackTrace();
 		}
+	}
+	
+	void displayResults(Alignment<Mapping> predictedMapping,Alignment<Mapping> referenceAlignment)
+	{
+//		ReferenceEvaluationData currentEvaluation = ReferenceEvaluator.compare(predictedMapping, referenceAlignment);
+//
+//		
+//		System.out.println(referenceAlignment.size());
+//		System.out.println(currentEvaluation.getReport());
+//		double precision = Utility.roundDouble( currentEvaluation.getPrecision() * 100.0d, 2);
+//		double recall = Utility.roundDouble( currentEvaluation.getRecall() * 100.0d, 2);
+//		double fmeasure = Utility.roundDouble( currentEvaluation.getFmeasure()* 100.0d, 2);
+//		
+//		System.out.println("LWC\n----------------------------------------------------------------------\nPrecision"+precision+"\nRecall"+recall+"\nFmeasure"+fmeasure);
+		log.info("LWC");
+		int count=0,mapped=0;
+		for(int i=0;i<predictedMapping.size();i++)
+		{
+			Mapping predictedMap=predictedMapping.get(i);
+			count++;
+			for(int j=0;j<referenceAlignment.size();j++)
+			{
+				Mapping currentMapping=referenceAlignment.get(j);
+				if(currentMapping.getEntity1().getUri().equals(predictedMap.getEntity1().getUri()) && currentMapping.getEntity2().getUri().equals(predictedMap.getEntity2().getUri()) && currentMapping.getRelation().equals(predictedMap.getRelation())) 
+				{
+					//System.out.println("match found in ref alignment");
+					mapped++;
+				}
+			}
+		}
+		//System.out.println("-----------------------------------------------");
+				log.info("-------------------------------------------------------------");
+				//System.out.println("total correct" + mapped);
+				//System.out.println("total mapping" +count);
+				log.info("total correct" + mapped);
+				log.info("total mapping" +count);
+				float precision = (float)mapped/count;
+				float recall = (float)mapped/referenceAlignment.size();
+				float fmeasure = 2 * precision * recall / (precision + recall);
+				//System.out.print(precision + "\t" + recall + "\t" + fmeasure);
+				log.info(precision + "\t" + recall + "\t" + fmeasure);
+				//System.out.println("-----------------------------------------------------");
+				log.info("-------------------------------------------------------------");
+
 	}
 		
 }
