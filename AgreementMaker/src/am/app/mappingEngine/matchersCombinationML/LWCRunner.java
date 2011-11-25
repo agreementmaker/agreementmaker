@@ -31,10 +31,10 @@ public class LWCRunner {
 
 	Ontology sourceOntology;
 	Ontology targetOntology;
-	double threshold; // this is the threshold value that is set in the ui
+	double threshold=0.6; // this is the threshold value that is set in the ui
 	
-	int maxSourceAlign;// have to figure out what this is
-	int maxTargetAlign;// have to figure out what this is
+	int maxSourceAlign=1;// have to figure out what this is
+	int maxTargetAlign=1;// have to figure out what this is
 
 	public int getMaxSourceAlign() {
 		return maxSourceAlign;
@@ -58,6 +58,7 @@ public class LWCRunner {
 
 	public void setSourceOntology(Ontology sourceOntology) {
 		this.sourceOntology = sourceOntology;
+		
 	}
 
 	public Ontology getTargetOntology() {
@@ -98,6 +99,11 @@ public class LWCRunner {
 
 		Core.getLexiconStore().buildAll(lexParam);
 
+		//initializing the core source and target ontology
+		
+		
+		
+		
 		// Ontology profiling
 		ProfilerRegistry entry = ProfilerRegistry.ManualProfiler;
 		OntologyProfiler profiler = null;
@@ -105,8 +111,7 @@ public class LWCRunner {
 
 		constructor = entry.getProfilerClass().getConstructor(Ontology.class,
 				Ontology.class);
-		profiler = constructor.newInstance(Core.getInstance()
-				.getSourceOntology(), Core.getInstance().getTargetOntology());
+		profiler = constructor.newInstance(getSourceOntology(), getTargetOntology());
 
 		if (profiler != null) {
 			profiler.setName(entry);
