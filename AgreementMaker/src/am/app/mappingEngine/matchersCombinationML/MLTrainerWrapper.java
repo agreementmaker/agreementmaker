@@ -54,6 +54,7 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
@@ -105,7 +106,7 @@ public class MLTrainerWrapper {
 	//load the matchers(PSM,BSM,VMM) into ArrayList listOfMatchers for later use
 	//set the parameters specific to the matchers
 	
-	void loadMatchers()
+	void loadMatchers() throws Exception
 	{
 		//TODO : look at oaei2011 and look how to get matchers and add to list below 
 	//	listOfMatchers.add();
@@ -143,6 +144,10 @@ public class MLTrainerWrapper {
 		vmmParam.ignoreLocalNames = true; 
 		vmmParam.useLexiconSynonyms = true; // May change later.
 		am.setParam(vmmParam);
+		listOfMatchers.add(am);
+		
+		am=MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 0);
+
 		listOfMatchers.add(am);
 		
 		//AbstractMatcher bsm=MatcherFactory.getMatcherInstance(MatchersRegistry.Equals, 0);
@@ -285,9 +290,22 @@ public class MLTrainerWrapper {
 	//				currentMatcher.setParam(vmmParam);
 		
 						AbstractMatcher currentMatcher=matchers.get(m);
+						//log.info(currentMatcher.getName());
+						if(currentMatcher.getName().toLowerCase().contains("linear"))
+						{
+							LWCRunner runner=new LWCRunner();
+							
+							runner.setSourceOntology(currentTriple.getOntology1());
+							runner.setTargetOntology(currentTriple.getOntology2());
+							currentMatcher=runner.initializeLWC();
+							
+						}
+						else
+						{
 						currentMatcher.setOntologies(currentTriple.getOntology1(), currentTriple.getOntology2());
 						currentMatcher.setPerformSelection(true);
 						currentMatcher.setUseProgressDelay(false);
+						}
 						currentMatcher.match();
 						Alignment<Mapping> resultAlignment=currentMatcher.getAlignment();
 						if(resultAlignment!=null && currentMatcher!=null)
@@ -491,8 +509,7 @@ public class MLTrainerWrapper {
 					matcherFound=0;
 					matcherSim[i]="0.0";
 				}
-				//outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
-				outputStr+=matcherSim[i]+"\t"; //printing out only matcher similarity
+				outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
 			}
 			float matcherVote=(float)numFound/totalMatchers;
 			outputStr+=matcherVote+"\t"+referenceSim;//adds the matcher vote value and the reference similarity
