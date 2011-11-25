@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
@@ -141,12 +142,12 @@ public class MLWrapper {
 		am.setParam(vmmParam);
 		listOfMatchers.add(am);
 		log.info(mode);
-		if(mode==Modes.BASE_MODE_LWC)
-		{
-			log.info("mode" + mode);
-			am=MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 0);
-			listOfMatchers.add(am);
-		}
+			if(mode==Modes.BASE_MODE_LWC)
+			{
+				log.info("mode" + mode);
+				am=MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 0);
+				listOfMatchers.add(am);
+			}
 				
 		//AbstractMatcher bsm=MatcherFactory.getMatcherInstance(MatchersRegistry.Equals, 0);
 				
@@ -296,7 +297,7 @@ public class MLWrapper {
 							LWCRunner runner=new LWCRunner();
 							
 							runner.setSourceOntology(currentTriple.getOntology1());
-							runner.setTargetOntology(currentTriple.getOntology2());
+						 	runner.setTargetOntology(currentTriple.getOntology2());
 							currentMatcher=runner.initializeLWC();
 							
 						}
@@ -333,7 +334,7 @@ public class MLWrapper {
 	 * each individual matcher 
 	 * @throws Exception
 	 */
-	void generateTrainingFile(Modes mode) throws Exception
+	void generateTrainingFile(Modes mode,String path) throws Exception
 	{
 		//ArrayList<String> mappedSourceTarget=new ArrayList<String>();
 	//	String[] trainingFiles={"psm","bsm","vmm"};
@@ -341,7 +342,7 @@ public class MLWrapper {
 		{
 			
 			AbstractMatcher currentMatcher=listOfMatchers.get(m);
-			BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("bench/matchers/training/"+currentMatcher.getName())));
+			BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File(path+"matchers/training/"+currentMatcher.getName())));
 			if(currentMatcher!=null)
 			{
 				for(int t=0;t<listOfTriples.size();t++)
@@ -357,39 +358,7 @@ public class MLWrapper {
 						Alignment<Mapping> currentMapping=currentTriple.getAlignmentObtained(currentMatcher.getName());
 						if(currentMapping!=null)
 						{
-							/*Ontology sourceOntology=currentTriple.getOntology1();
-							Ontology targetOntology=currentTriple.getOntology2();
-							List<Node> sourceClasses=sourceOntology.getClassesList();
-							List<Node> targetClasses=targetOntology.getClassesList();
-							for(int source=0;source<sourceClasses.size();source++)
-							{
-								Node sourceNode=sourceClasses.get(source);
-								for(int target=0;target<targetClasses.size();target++)
-								{
-									Node targetNode=targetClasses.get(target);
-									if(currentMapping.isMapped(sourceNode) && currentMapping.isMapped(targetNode))
-									{
-										//if(!mappedSourceTarget.contains(sourceNode.getUri()+"\t"+targetNode.getUri()))
-										//{
-											
-											double similarityValue=currentMapping.getSimilarity(sourceNode, targetNode);
-											double referenceValue=referenceAlignment.getSimilarity(sourceNode, targetNode);
-											//System.out.println(sourceNode.getUri()+"\t"+targetNode.getUri()+"\t"+similarityValue+"\t"+referenceValue+"\n");
-											outputWriter.write(sourceNode.getUri()+"\t"+targetNode.getUri()+"\t"+similarityValue+"\t"+referenceValue+"\n");
-											mappedSourceTarget.add(sourceNode.getUri()+"\t"+targetNode.getUri());
-										//}																
-									}								
-								}							
-							}*/
-							/*System.out.println("-------------------------------------");
-							System.out.println(currentMapping.size());
-							for(int i=0;i<currentMapping.size();i++)
-							{
-								System.out.println(currentMapping.get(i).getString(true));
-								
-							}
-							System.out.println("-----------------------------");
-							System.out.println(referenceAlignment.size());*/
+							
 							boolean mapped=false;
 							for(int i=0;i<currentMapping.size();i++)
 							{
@@ -420,7 +389,7 @@ public class MLWrapper {
 			}			
 			outputWriter.close();
 		}		
-		mergeIndividualTrainingFiles(mode);	
+		mergeIndividualTrainingFiles(mode,path);	
 		
 	}
 	
@@ -435,10 +404,10 @@ public class MLWrapper {
 	 * @throws IOException
 	 */
 	
-	void mergeIndividualTrainingFiles(Modes mode) throws IOException
+	void mergeIndividualTrainingFiles(Modes mode,String path) throws IOException
 	{
 		ArrayList<String> matcherFiles=new ArrayList<String>();
-		getFilesFromFolder(matcherFiles,"bench/matchers/training/");
+		getFilesFromFolder(matcherFiles, path + "matchers/training/");
 		
 		HashMap<String,HashMap> uniqueConcepts=new HashMap<String,HashMap>();
 		
@@ -480,7 +449,7 @@ public class MLWrapper {
 		Set<String> mapKeys=uniqueConcepts.keySet();
 		Iterator<String> mapKeyIterator=mapKeys.iterator();
 		
-		BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("bench/combinedmatchers/trainingFilecombined")));
+		BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File(path+"combinedmatchers/trainingFilecombined")));
 		
 		while(mapKeyIterator.hasNext())
 		{
@@ -597,7 +566,7 @@ public class MLWrapper {
 	void mergeIndividualTestFiles(Modes mode) throws IOException
 	{
 		ArrayList<String> matcherFiles=new ArrayList<String>();
-		getFilesFromFolder(matcherFiles,"bench/matchers/test/");
+		getFilesFromFolder(matcherFiles,"mlroot/test/matchers/");
 		
 		HashMap<String,HashMap> uniqueConcepts=new HashMap<String,HashMap>();
 		
@@ -641,8 +610,8 @@ public class MLWrapper {
 		Set<String> mapKeys=uniqueConcepts.keySet();
 		Iterator<String> mapKeyIterator=mapKeys.iterator();
 		
-		BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("bench/combinedmatchers/testFilecombined")));
-		BufferedWriter outputRef=new BufferedWriter(new FileWriter(new File("bench/combinedmatchers/testrefFilecombined")));
+		BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("mlroot/test/testFilecombined")));
+		BufferedWriter outputRef=new BufferedWriter(new FileWriter(new File("mlroot/test/testrefFilecombined")));
 		while(mapKeyIterator.hasNext())
 		{
 			String currentKey=mapKeyIterator.next();
@@ -720,8 +689,8 @@ public class MLWrapper {
 			}
 					
 			outputStr1+=referenceSim;
-			outputWriter.write(outputStr.trim()+"\n");
-			outputRef.write(outputStr1.trim()+"\n");
+			outputWriter.write(outputStr+"\n");
+			outputRef.write(outputStr1+"\n");
 			
 		}
 		
@@ -769,75 +738,14 @@ public class MLWrapper {
 	 */
 	Alignment<Mapping> predictresult(String modelName,String srcOntology,String tarOntology,String refAlign, String predicted,String combinedConceptFile,String finalFile,Modes mode) throws Exception
 	{
-		//generating the test.xml file needed by MLTestingWrapper
-		String outputFilename="bench/files/test.xml";
-		ArrayList<Double> predictedList=new ArrayList<Double>();
-		 try {
-			 
-			 //TODO: merge this with file that generates the xml doc
-			 	int i=1;
-			 	
-				DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-		 
-				// root element
-				Document doc = docBuilder.newDocument();
-				Element rootElement = doc.createElement("testsets");
-				doc.appendChild(rootElement);
-		        
-				Element trainingSet = doc.createElement("testset");
-				rootElement.appendChild(trainingSet);
-				trainingSet.setAttribute("id", Integer.toString(i));
-		 
-				// source ontology
-		
-				Element sourceOntology = doc.createElement("sourceontology");
-				sourceOntology.setAttribute("name", "srcOntology");
-				sourceOntology.setAttribute("path", srcOntology);
-				trainingSet.appendChild(sourceOntology);
-				
-				
-				
-				// target ontology
-				Element targetOntology = doc.createElement("targetontology");
-				targetOntology.setAttribute("name", "targetntology");
-				targetOntology.setAttribute("path", tarOntology);
-				trainingSet.appendChild(targetOntology);
-		 
-				// reference alignment
-				Element refAlignment = doc.createElement("refalignment");
-				refAlignment.setAttribute("name", "refalignment");
-				refAlignment.setAttribute("path", refAlign);
-				trainingSet.appendChild(refAlignment);
-				
-		       
-					 
-				// write the content into xml file
-				TransformerFactory transformerFactory = TransformerFactory.newInstance();
-				Transformer transformer = transformerFactory.newTransformer();
-				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-				DOMSource source = new DOMSource(doc);
-				Result result = new StreamResult( new FileOutputStream(outputFilename));
-				// Output to console for testing
-				// StreamResult result = new StreamResult(System.out);
-		 
-				transformer.transform(source, result);
-		 
-				//System.out.println("XML File saved! " + outputfilename);
-				log.info("XML File saved! " + outputFilename);
-		       
-			  } catch (ParserConfigurationException pce) {
-				pce.printStackTrace();
-			  } catch (TransformerException tfe) {
-				tfe.printStackTrace();
-			  }
-			  catch (FileNotFoundException fnf) {
-					fnf.printStackTrace();
-				  }
+			//generating the test.xml file needed by MLTestingWrapper
+			 String outputFileName="mlroot/output/test.xml";
+			 ArrayList<Double> predictedList=new ArrayList<Double>();
+			 GenerateTrainingDS.generateXML(srcOntology, tarOntology, refAlign, outputFileName);
 			  
 			  //running the matchers on testset
 			  
-			  callProcess(outputFilename, "testset",mode);
+			  callProcess(outputFileName, "dataset",mode);
 			  
 			  //deserialising the model we have built
 			  ObjectInputStream ois = new ObjectInputStream(
@@ -845,9 +753,10 @@ public class MLWrapper {
 			  Classifier cls = (Classifier) ois.readObject();
 			  
 			  //generating arff file and setting testset class
-			  ArffConvertor arff=new ArffConvertor("bench/combinedmatchers/testFilecombined", "test",matcherNames,mode);
-			  arff.generateArffFile();
-			  BufferedReader  testset = new BufferedReader(new FileReader("bench/arff/testFilecombined.arff"));
+			  ArffConvertor arff=new ArffConvertor("mlroot/test/testFilecombined", "test",matcherNames,mode);
+			  
+			  arff.generateArffFile("mlroot/test/arff/testFilecombined.arff");
+			  BufferedReader  testset = new BufferedReader(new FileReader("mlroot/test/arff/testFilecombined.arff"));
 			  Instances test=new Instances(testset);
 			  test.setClassIndex(test.numAttributes()-1);
 				
@@ -992,10 +901,12 @@ public class MLWrapper {
 	{
 		//String trainingFileName="bench/test.xml";
 		//String elementName="testset";
+		
 		loadMatchers(mode);
 		loadOntologyTriples(trainingFileName,elementName);
 		generateMappings();
 		generateTestFile(mode);
+		
 		//generateModel();
 //		String testFileName="";
 //		elementName="testset";
@@ -1012,9 +923,11 @@ public class MLWrapper {
 		try {
 			//predicting the result for the testset using decisiontree classifier
 			System.out.println("101-303");
-			Alignment<Mapping> results=predictresult("bench/arff/model/decisiontree.model","bench/training/101/onto.rdf","bench/test/303/onto.rdf","bench/test/303/refalign.rdf","bench/arff/output/predictedDT.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputDT",mode);
-			
-			runner.setSourceOntology(loadOntology("bench/training/101/onto.rdf"));
+			Alignment<Mapping> results=predictresult("mlroot/model/decisiontree.model","mlroot/mltraining/bench/103/onto1.rdf","mlroot/mltesting/bench/303/onto.rdf","mlroot/mltesting/bench/303/refalign.rdf","mlroot/test/predictedDT.arff","mlroot/test/testrefFilecombined","mlroot/test/finaloutputDT",mode);
+			listOfMatchers.clear();
+			listOfTriples.clear();
+			matcherNames.clear();
+			/*runner.setSourceOntology(loadOntology("bench/training/101/onto.rdf"));
 			runner.setTargetOntology(loadOntology("bench/test/303/onto.rdf"));
 			AbstractMatcher lwc=runner.initializeLWC();
 			lwc.match();
@@ -1022,11 +935,11 @@ public class MLWrapper {
 			//System.out.println("combination");
 			//displayResults(results, referenceAlignment);
 			System.out.println("lwc");
-			displayResults(lwc.getAlignment(),referenceAlignment);
+			displayResults(lwc.getAlignment(),referenceAlignment);*/
 			//predicting the result for the testset using Naive Bayes classifier
 			System.out.println("101-302");
-			predictresult("bench/arff/model/naivebayes.model","bench/training/101/onto.rdf","bench/test/302/onto.rdf","bench/test/302/refalign.rdf","bench/arff/output/predictedNB.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputNB",mode);
-		    runner.setSourceOntology(loadOntology("bench/training/101/onto.rdf"));
+			predictresult("mlroot/model/naivebayes.model","mlroot/mltraining/bench/103/onto1.rdf","mlroot/mltesting/bench/302/onto.rdf","mlroot/mltesting/bench/302/refalign.rdf","mlroot/test/predictedNB.arff","mlroot/test/testrefFilecombined","mlroot/test/finaloutputNB",mode);
+		    /*runner.setSourceOntology(loadOntology("bench/training/101/onto.rdf"));
 			runner.setTargetOntology(loadOntology("bench/test/302/onto.rdf"));
 			lwc=runner.initializeLWC();
 			lwc.match();
@@ -1034,11 +947,11 @@ public class MLWrapper {
 			//System.out.println("combination");
 			//displayResults(results, referenceAlignment);
 			System.out.println("lwc");
-			displayResults(lwc.getAlignment(),referenceAlignment);
+			displayResults(lwc.getAlignment(),referenceAlignment);*/
 			System.out.println("101-301");
 			//predicting the result for the testset using SVM classifier
-			predictresult("bench/arff/model/svm.model","bench/training/101/onto.rdf","bench/test/301/onto.rdf","bench/test/301/refalign.rdf","bench/arff/output/predictedSVM.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputSVM",mode);
-			runner.setSourceOntology(loadOntology("bench/training/101/onto.rdf"));
+			predictresult("mlroot/model/svm.model","mlroot/mltraining/bench/103/onto1.rdf","mlroot/mltesting/bench/301/onto.rdf","mlroot/mltesting/bench/301/refalign.rdf","mlroot/test/predictedSVM.arff","mlroot/test/testrefFilecombined","mlroot/test/finaloutputSVM",mode);
+			/*runner.setSourceOntology(loadOntology("bench/training/101/onto.rdf"));
 			runner.setTargetOntology(loadOntology("bench/test/301/onto.rdf"));
 			lwc=runner.initializeLWC();
 			lwc.match();
@@ -1046,7 +959,7 @@ public class MLWrapper {
 			//System.out.println("combination");
 			//displayResults(results, referenceAlignment);
 			System.out.println("lwc");
-			displayResults(lwc.getAlignment(),referenceAlignment);
+			displayResults(lwc.getAlignment(),referenceAlignment);*/
 			
 		} catch (Exception e) {
 
@@ -1108,15 +1021,9 @@ public class MLWrapper {
 	 */
 	void generateTrainingARFF(Modes mode) throws IOException
 	{
-		/*ArrayList<String> mn=new ArrayList<String>();
-		mn.add("m1");
-		mn.add("m2");
-		mn.add("m3");*/
-		ArffConvertor arff=new ArffConvertor("bench/combinedmatchers/trainingFilecombined", "training",matcherNames,mode);
-		arff.generateArffFile();
-	//	arff=new ArffConvertor("bench/combinedmatchers/testFilecombined", "test",matcherNames);
-	//	arff.generateArffFile();
-		//System.out.println("Training ARFF file generated");
+		
+		ArffConvertor arff=new ArffConvertor("mlroot/percent/percentfile", "training",matcherNames,mode);
+		arff.generateArffFile("mlroot/percent/percentfile.arff");
 		log.info("Training ARFF file generated");
 		
 	}
@@ -1128,7 +1035,7 @@ public class MLWrapper {
 	 */
 	void generateModel() throws Exception
 	{
-		 BufferedReader trainingset = new BufferedReader(new FileReader("bench/arff/trainingFilecombined.arff"));
+		 BufferedReader trainingset = new BufferedReader(new FileReader("mlroot/percent/percentfile.arff"));
 		 //BufferedReader  testset = new BufferedReader(new FileReader("bench/arff/testFilecombined.arff"));
 		 Instances train=new Instances(trainingset);
 		 //Instances test=new Instances(testset);
@@ -1144,54 +1051,50 @@ public class MLWrapper {
 		 //save the model for future use
 		 // serialize model
 		 ObjectOutputStream oos = new ObjectOutputStream(
-		                            new FileOutputStream("bench/arff/model/decisiontree.model"));
+		                            new FileOutputStream("mlroot/model/decisiontree.model"));
 		 oos.writeObject(cls1);
 		 oos.flush();
 		 oos=new ObjectOutputStream(
-                 new FileOutputStream("bench/arff/model/naivebayes.model"));
+                 new FileOutputStream("mlroot/model/naivebayes.model"));
 		 oos.writeObject(cls2);
 		 oos=new ObjectOutputStream(
-                 new FileOutputStream("bench/arff/model/svm.model"));
+                 new FileOutputStream("mlroot/model/svm.model"));
 		 oos.writeObject(cls3);
 		
 		 oos.close();
 		 trainingset.close();
-		/* Evaluation eval = new Evaluation(train);
-		 cls.
-		 
-		 System.out.println(eval.toSummaryString("\nResults\n======\n", false));
-		 trainingset.close();
-		 testset.close();*/
-		 
-		 //predict the class for testset
-		/* for (int i = 0; i < test.numInstances(); i++) {
-			   double clsLabel = cls.classifyInstance(test.instance(i));
-			   test.instance(i).setClassValue(clsLabel);
-			 }
-			 // save labeled data
-			 BufferedWriter writer = new BufferedWriter(
-			                           new FileWriter("bench/arff/output/predicted.arff"));
-			 writer.write(test.toString());
-			 writer.newLine();
-			 writer.flush();
-			 writer.close();*/
-         //  System.out.println("Three models generated");
+		
 		 log.info("Three models generated");
 
 
 
 	}
 	
-	void callTrainingProcess(Modes mode) throws Exception
+	void callTrainingProcess(Modes mode,double trainingpercent) throws Exception
 	{
 		//uncomment the below lines, if you want to generate a new model 
-		
-		String trainingFileName="bench/training.xml";
-		String elementName="trainingset";
+		//ArrayList<TrainingLayout> trainingfs=new ArrayList<TrainingLayout>();
+		String path[]={"mlroot/mltraining/bench","mlroot/mltraining/conference"};
+		String outputbase[]={"mlroot/output/bench/","mlroot/output/conference/"};
+		String trainingFileName="mlroot/output/training.xml";
+		for(int i=0;i< outputbase.length;i++)
+		{
+		ArrayList<String> files=new ArrayList<String>();
+		GenerateTrainingDS.getFilesFromFolder(files, path[i]);
+		GenerateTrainingDS.generateXML(files,trainingFileName);
+		//String trainingFileName="bench/training.xml";
+		String elementName="dataset";
+		listOfMatchers.clear();
+		listOfTriples.clear();
+		matcherNames.clear();
 		loadMatchers(mode);
 		loadOntologyTriples(trainingFileName,elementName);
 		generateMappings();
-		generateTrainingFile(mode);
+		generateTrainingFile(mode,outputbase[i]);
+		
+		
+		}
+		generatePercentTraining(trainingpercent,outputbase);
 		generateTrainingARFF(mode);
 		generateModel();
 			
@@ -1200,6 +1103,47 @@ public class MLWrapper {
 //		loadOntologyTriples(testFileName,elementName);
 	}
 	
+	//invoke this module if you generated the overall trainingset for bench,conference,anatomy
+	void percentTraining(Modes mode,Double trainingpercent) throws Exception
+	{
+		String outputbase[]={"mlroot/output/bench/","mlroot/output/conference/"};
+		generatePercentTraining(trainingpercent,outputbase);
+		generateTrainingARFF(mode);
+		generateModel();
+	}
+	
+	//use of percent of training to generate model
+	void generatePercentTraining(double percent,String[] outputbase) throws IOException
+	{
+    	BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("mlroot/percent/percentfile")));
+
+		int count[]=new int[outputbase.length];
+		for(int i=0;i< outputbase.length;i++)
+		{
+			LineNumberReader  lnr = new LineNumberReader(new FileReader(new File(outputbase[i] + "combinedmatchers/trainingFilecombined")));
+			lnr.skip(Long.MAX_VALUE);
+			System.out.println(lnr.getLineNumber());
+			count[i]= (int) (lnr.getLineNumber()* percent);
+		
+		}
+		for(int i=0;i< outputbase.length;i++)
+		{
+			BufferedReader inputReader=new BufferedReader(new FileReader(outputbase[i] + "combinedmatchers/trainingFilecombined"));
+			log.info("count of rows" + count[i]);
+			int linenum=0;
+			while(inputReader.ready())
+			{
+				String inputLine=inputReader.readLine();
+				outputWriter.write(inputLine+"\n");
+				if(linenum==count[i])
+					break;
+				linenum++;
+			}	
+			inputReader.close();
+		}
+		outputWriter.close();
+		
+	}
 	
 	/**
 	 * By now,We have the individual alignments from each matcher
@@ -1216,7 +1160,7 @@ public class MLWrapper {
 		{
 			
 			AbstractMatcher currentMatcher=listOfMatchers.get(m);
-			BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("bench/matchers/test/"+currentMatcher.getName())));
+			BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("mlroot/test/matchers/"+currentMatcher.getName())));
 			if(currentMatcher!=null)
 			{
 				for(int t=0;t<listOfTriples.size();t++)
@@ -1231,39 +1175,7 @@ public class MLWrapper {
 						Alignment<Mapping> currentMapping=currentTriple.getAlignmentObtained(currentMatcher.getName());
 						if(currentMapping!=null)
 						{
-							/*Ontology sourceOntology=currentTriple.getOntology1();
-							Ontology targetOntology=currentTriple.getOntology2();
-							List<Node> sourceClasses=sourceOntology.getClassesList();
-							List<Node> targetClasses=targetOntology.getClassesList();
-							for(int source=0;source<sourceClasses.size();source++)
-							{
-								Node sourceNode=sourceClasses.get(source);
-								for(int target=0;target<targetClasses.size();target++)
-								{
-									Node targetNode=targetClasses.get(target);
-									if(currentMapping.isMapped(sourceNode) && currentMapping.isMapped(targetNode))
-									{
-										//if(!mappedSourceTarget.contains(sourceNode.getUri()+"\t"+targetNode.getUri()))
-										//{
-											
-											double similarityValue=currentMapping.getSimilarity(sourceNode, targetNode);
-											double referenceValue=referenceAlignment.getSimilarity(sourceNode, targetNode);
-											//System.out.println(sourceNode.getUri()+"\t"+targetNode.getUri()+"\t"+similarityValue+"\t"+referenceValue+"\n");
-											outputWriter.write(sourceNode.getUri()+"\t"+targetNode.getUri()+"\t"+similarityValue+"\t"+referenceValue+"\n");
-											mappedSourceTarget.add(sourceNode.getUri()+"\t"+targetNode.getUri());
-										//}																
-									}								
-								}							
-							}*/
-							/*System.out.println("-------------------------------------");
-							System.out.println(currentMapping.size());
-							for(int i=0;i<currentMapping.size();i++)
-							{
-								System.out.println(currentMapping.get(i).getString(true));
-								
-							}
-							System.out.println("-----------------------------");
-							System.out.println(referenceAlignment.size());*/
+						
 							boolean mapped=false;
 							for(int i=0;i<currentMapping.size();i++)
 							{
@@ -1303,6 +1215,20 @@ public class MLWrapper {
 		log = Logger.getLogger(MLWrapper.class);
 		
 		log.setLevel(Level.DEBUG);
+		
+	}
+	
+	public void cleanup(String folder)
+	{
+	 ArrayList<String> files=new ArrayList<String>();
+	 
+	 getFilesFromFolder(files, folder);
+	 for(String str:files)
+	 {
+		 File filename=new File(str);
+		 filename.delete();
+	 }
+
 	}
 	
 	
@@ -1313,10 +1239,15 @@ public class MLWrapper {
 		MLWrapper Trainingwrapper=new MLWrapper();
 		MLWrapper Testwrapper=new MLWrapper();
 		Modes mode=Modes.BASE_MODE;
-		
-		try {
-			Trainingwrapper.callTrainingProcess(mode);
+		String trainfolder="mlroot/output";
+		String testfolder="mlroot/test/matcher";
+ 		try {
+			
+			Trainingwrapper.cleanup(trainfolder);
+			Trainingwrapper.callTrainingProcess(mode,0.5);
+			Testwrapper.cleanup(testfolder);
 			Testwrapper.callTestProcess(mode);
+			
 
 		} catch (Exception e) {
 

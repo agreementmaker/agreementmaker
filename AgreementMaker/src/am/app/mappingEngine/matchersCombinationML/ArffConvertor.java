@@ -34,11 +34,11 @@ public class ArffConvertor {
 	 * type can be training and test
 	 * @throws IOException
 	 */
-	void generateArffFile() throws IOException
+	void generateArffFile(String arffFileName) throws IOException
 	{
 		File file=new File(fileName);
 		BufferedReader inputReader=new BufferedReader(new FileReader(file));
-		BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("bench/arff/"+file.getName()+".arff")));
+		BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File(arffFileName)));
 		if(type.equals("training"))
 		{
 		outputWriter.write("% Title: Training set\n\n");
