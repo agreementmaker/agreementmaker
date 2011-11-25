@@ -11,8 +11,8 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.ontology.Ontology;
-import am.app.userfeedbackloop.UFLExperiment;
-import am.app.userfeedbackloop.UserFeedback.Validation;
+import am.app.userfeedback.UFLExperiment;
+import am.app.userfeedback.UserFeedback.Validation;
 
 /**
  * This is a manual experiment setup.

@@ -1,42 +1,26 @@
-package am.app.userfeedbackloop;
+package am.app.userfeedback;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.SwingUtilities;
 import javax.swing.event.EventListenerList;
 
-import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.Mapping;
 import am.app.userfeedbackloop.ui.UFLControlGUI;
 
-/**
- * This class instantiates automatically instantiates a matcher configuration using
- * the ontology profiling methods.
- *  
- * @author cosmin
- *
- */
-public abstract class ExecutionSemantics {
-
+public abstract class FeedbackPropagation {
 	EventListenerList listeners;  // list of listeners for this class
 	
-	public ExecutionSemantics() {
+	public FeedbackPropagation() {
 		listeners = new EventListenerList();
 	}
 	
-	public abstract void run(UFLExperiment exp);
-	public abstract List<AbstractMatcher> getComponentMatchers();
-	public abstract Alignment<Mapping> getAlignment();
-	public abstract Alignment<Mapping> getClassAlignment();
-	public abstract Alignment<Mapping> getPropertyAlignment();
-	public abstract AbstractMatcher getFinalMatcher(); // the matcher from which the final alignment is derived, and to which propagation should be done.
+	public abstract void propagate( UFLExperiment exp );
 	
 	public void addActionListener( ActionListener l ) {
 		listeners.add(ActionListener.class, l);
 	}
+	
 	/**
 	 * This method fires an action event.
 	 * @param e Represents the action that was performed.
@@ -57,7 +41,7 @@ public abstract class ExecutionSemantics {
 	}
 	
 	protected void done() {
-		ActionEvent e = new ActionEvent(this, 0, UFLControlGUI.ActionCommands.EXECUTION_SEMANTICS_DONE.name() );
+		ActionEvent e = new ActionEvent(this, 0, UFLControlGUI.ActionCommands.PROPAGATION_DONE.name() );
 		fireEvent(e);
 	}
 	

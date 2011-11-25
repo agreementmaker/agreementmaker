@@ -23,8 +23,8 @@ import am.app.mappingEngine.oaei.OAEI_Track;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.ontology.Ontology;
-import am.app.userfeedbackloop.ExecutionSemantics;
-import am.app.userfeedbackloop.UFLExperiment;
+import am.app.userfeedback.ExecutionSemantics;
+import am.app.userfeedback.UFLExperiment;
 import am.userInterface.MatchingProgressDisplay;
 
 /**

@@ -1,4 +1,4 @@
-package am.app.userfeedbackloop;
+package am.app.userfeedback;
 
 /**
  * This class is just a wrapper class for several registry enums.

@@ -4,8 +4,8 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import am.app.userfeedbackloop.PropagationEvaluation;
-import am.app.userfeedbackloop.UFLExperiment;
+import am.app.userfeedback.PropagationEvaluation;
+import am.app.userfeedback.UFLExperiment;
 import am.evaluation.alignment.AlignmentMetrics;
 import am.evaluation.alignment.DeltaFromReference;
 

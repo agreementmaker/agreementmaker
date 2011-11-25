@@ -7,14 +7,14 @@ import java.awt.event.ActionListener;
 import javax.swing.JPanel;
 
 import am.Utility;
-import am.app.userfeedbackloop.UFLExperiment;
-import am.app.userfeedbackloop.UFLRegistry.CSEvaluationRegistry;
-import am.app.userfeedbackloop.UFLRegistry.CandidateSelectionRegistry;
-import am.app.userfeedbackloop.UFLRegistry.ExperimentRegistry;
-import am.app.userfeedbackloop.UFLRegistry.FeedbackPropagationRegistry;
-import am.app.userfeedbackloop.UFLRegistry.InitialMatcherRegistry;
-import am.app.userfeedbackloop.UFLRegistry.PropagationEvaluationRegistry;
-import am.app.userfeedbackloop.UFLRegistry.UserValidationRegistry;
+import am.app.userfeedback.UFLExperiment;
+import am.app.userfeedback.UFLRegistry.CSEvaluationRegistry;
+import am.app.userfeedback.UFLRegistry.CandidateSelectionRegistry;
+import am.app.userfeedback.UFLRegistry.ExperimentRegistry;
+import am.app.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
+import am.app.userfeedback.UFLRegistry.InitialMatcherRegistry;
+import am.app.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
+import am.app.userfeedback.UFLRegistry.UserValidationRegistry;
 import am.userInterface.UI;
 
 public class UFLControlGUI extends JPanel implements ActionListener {

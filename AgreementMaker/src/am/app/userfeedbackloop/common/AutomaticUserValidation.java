@@ -3,8 +3,8 @@ package am.app.userfeedbackloop.common;
 import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.Mapping;
-import am.app.userfeedbackloop.UFLExperiment;
-import am.app.userfeedbackloop.UserFeedback;
+import am.app.userfeedback.UFLExperiment;
+import am.app.userfeedback.UserFeedback;
 
 public class AutomaticUserValidation extends UserFeedback {
 

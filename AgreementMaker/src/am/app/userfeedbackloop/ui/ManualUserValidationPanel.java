@@ -9,8 +9,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import am.app.mappingEngine.Mapping;
-import am.app.userfeedbackloop.UFLExperiment;
-import am.app.userfeedbackloop.UserFeedback.Validation;
+import am.app.userfeedback.UFLExperiment;
+import am.app.userfeedback.UserFeedback.Validation;
 
 public class ManualUserValidationPanel extends JPanel implements ActionListener {
 

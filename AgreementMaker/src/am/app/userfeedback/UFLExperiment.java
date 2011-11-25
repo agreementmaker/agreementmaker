@@ -1,9 +1,9 @@
-package am.app.userfeedbackloop;
+package am.app.userfeedback;
 
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.Ontology;
-import am.app.userfeedbackloop.UserFeedback.Validation;
+import am.app.userfeedback.UserFeedback.Validation;
 import am.app.userfeedbackloop.common.ValidatedMapping;
 import am.app.userfeedbackloop.ui.UFLControlGUI;
 

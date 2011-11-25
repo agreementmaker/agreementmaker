@@ -14,14 +14,14 @@ import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.EventListenerList;
 
-import am.app.userfeedbackloop.UFLRegistry;
-import am.app.userfeedbackloop.UFLRegistry.CSEvaluationRegistry;
-import am.app.userfeedbackloop.UFLRegistry.CandidateSelectionRegistry;
-import am.app.userfeedbackloop.UFLRegistry.ExperimentRegistry;
-import am.app.userfeedbackloop.UFLRegistry.FeedbackPropagationRegistry;
-import am.app.userfeedbackloop.UFLRegistry.InitialMatcherRegistry;
-import am.app.userfeedbackloop.UFLRegistry.PropagationEvaluationRegistry;
-import am.app.userfeedbackloop.UFLRegistry.UserValidationRegistry;
+import am.app.userfeedback.UFLRegistry;
+import am.app.userfeedback.UFLRegistry.CSEvaluationRegistry;
+import am.app.userfeedback.UFLRegistry.CandidateSelectionRegistry;
+import am.app.userfeedback.UFLRegistry.ExperimentRegistry;
+import am.app.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
+import am.app.userfeedback.UFLRegistry.InitialMatcherRegistry;
+import am.app.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
+import am.app.userfeedback.UFLRegistry.UserValidationRegistry;
 
 public class UFLControlGUI_InitialSettingsPanel extends JPanel implements ActionListener {
 	

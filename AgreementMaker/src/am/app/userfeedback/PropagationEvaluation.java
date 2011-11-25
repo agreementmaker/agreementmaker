@@ -1,31 +1,20 @@
-package am.app.userfeedbackloop;
+package am.app.userfeedback;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.SwingUtilities;
 import javax.swing.event.EventListenerList;
 
-import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.userfeedbackloop.ui.UFLControlGUI;
 
-public abstract class CandidateSelection {
+public abstract class PropagationEvaluation {
 
 	EventListenerList listeners;  // list of listeners for this class
 	
-	public CandidateSelection() {
+	public PropagationEvaluation() {
 		listeners = new EventListenerList();
 	}
-	
-	public abstract void rank( UFLExperiment exp );
-	
-	public abstract List<Mapping> getRankedMappings(alignType typeOfRanking);
-	public abstract List<Mapping> getRankedMappings();
-	
-	public abstract Mapping getCandidateMapping();
-	
 	
 	public void addActionListener( ActionListener l ) {
 		listeners.add(ActionListener.class, l);
@@ -51,8 +40,11 @@ public abstract class CandidateSelection {
 	}
 	
 	protected void done() {
-		ActionEvent e = new ActionEvent(this, 0, UFLControlGUI.ActionCommands.CANDIDATE_SELECTION_DONE.name() );
+		ActionEvent e = new ActionEvent(this, 0, UFLControlGUI.ActionCommands.PROPAGATION_EVALUATION_DONE.name() );
 		fireEvent(e);
 	}
-
+	
+	public abstract void evaluate( UFLExperiment exp );
+	
 }
+	

@@ -9,8 +9,8 @@ import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
-import am.app.userfeedbackloop.PropagationEvaluation;
-import am.app.userfeedbackloop.UFLExperiment;
+import am.app.userfeedback.PropagationEvaluation;
+import am.app.userfeedback.UFLExperiment;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdMethod;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdParameters;
