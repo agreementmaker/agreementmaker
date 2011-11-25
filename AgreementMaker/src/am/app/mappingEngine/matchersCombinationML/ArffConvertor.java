@@ -19,12 +19,14 @@ public class ArffConvertor {
 	String fileName;
 	String type;
 	ArrayList<String> listOfMatchers=new ArrayList<String>();
+	Modes mode;
 	
-	ArffConvertor(String fileName,String type,ArrayList<String> matcherList)
+	ArffConvertor(String fileName,String type,ArrayList<String> matcherList,Modes mode)
 	{
 		this.fileName=fileName;
 		this.type=type;
 		this.listOfMatchers=matcherList;
+		this.mode=mode;
 	}
 
 	/**
@@ -50,17 +52,58 @@ public class ArffConvertor {
 		for(int i=0;i<listOfMatchers.size();i++)
 		{
 			String currentMatcher=listOfMatchers.get(i);
-			outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"\tNUMERIC\n");
-			outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"found"+"\tNUMERIC\n");
+			
+			if(mode == Modes.BASE_MODE)
+			{
+				outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"\tNUMERIC\n");
+					
+			}
+			else if(mode == Modes.BASE_MODE_LWC)
+			{
+				outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"\tNUMERIC\n");
+				
+			}
+			else if(mode == Modes.BASE_MODE_MATCHER_FOUND)
+			{
+				outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"\tNUMERIC\n");
+				outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"found"+"\t{0.0,1.0}\n");
+			}
+			else if(mode == Modes.BASE_MODE_MATCHER_VOTE)
+			{
+				outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"\tNUMERIC\n");
+				
+			}
+			else if( mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND)
+			{
+				outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"\tNUMERIC\n");
+				outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"found"+"\t{0.0,1.0}\n");
+			}
+			else if(mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC)
+			{
+				outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"\tNUMERIC\n");
+				outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"found"+"\t{0.0,1.0}\n");
+			}
+			
 		}
-		outputWriter.write("@ATTRIBUTE\t"+"Matcher_Vote"+"\tNUMERIC\n");
+		
+		if(mode == Modes.BASE_MODE_MATCHER_VOTE)
+		{
+			outputWriter.write("@ATTRIBUTE\t"+"Matcher_Vote"+"\tNUMERIC\n");
+		}
+		else if(mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND)
+		{
+			outputWriter.write("@ATTRIBUTE\t"+"Matcher_Vote"+"\tNUMERIC\n");
+		}
+		else if(mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC)
+		{
+			outputWriter.write("@ATTRIBUTE\t"+"Matcher_Vote"+"\tNUMERIC\n");	
+		}
 		outputWriter.write("@ATTRIBUTE\ttarget\t{0.0,1.0}\n");
 		
-	
 		outputWriter.write("\n@DATA\n");
 		while(inputReader.ready())
 		{
-			String inputLine=inputReader.readLine().replaceAll("\t", ",");
+			String inputLine=inputReader.readLine().replaceAll("\t", ",").trim();
 			if(type.equals("test"))
 			{
 				inputLine+=",?";

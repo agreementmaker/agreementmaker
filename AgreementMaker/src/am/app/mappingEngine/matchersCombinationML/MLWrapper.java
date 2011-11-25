@@ -329,7 +329,7 @@ public class MLWrapper {
 	 * each individual matcher 
 	 * @throws Exception
 	 */
-	void generateTrainingFile() throws Exception
+	void generateTrainingFile(Modes mode) throws Exception
 	{
 		//ArrayList<String> mappedSourceTarget=new ArrayList<String>();
 	//	String[] trainingFiles={"psm","bsm","vmm"};
@@ -416,7 +416,7 @@ public class MLWrapper {
 			}			
 			outputWriter.close();
 		}		
-		mergeIndividualTrainingFiles();	
+		mergeIndividualTrainingFiles(mode);	
 		
 	}
 	
@@ -431,7 +431,7 @@ public class MLWrapper {
 	 * @throws IOException
 	 */
 	
-	void mergeIndividualTrainingFiles() throws IOException
+	void mergeIndividualTrainingFiles(Modes mode) throws IOException
 	{
 		ArrayList<String> matcherFiles=new ArrayList<String>();
 		getFilesFromFolder(matcherFiles,"bench/matchers/training/");
@@ -507,11 +507,65 @@ public class MLWrapper {
 					matcherFound=0;
 					matcherSim[i]="0.0";
 				}
-				outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
+				if(mode == Modes.BASE_MODE)
+				{
+					outputStr+=matcherSim[i]+"\t";//prints out matcher similarity value	
+				}
+				else if(mode ==Modes.BASE_MODE_LWC)
+				{
+					outputStr+=matcherSim[i]+"\t";//prints out matcher similarity value
+				}
+				else if(mode == Modes.BASE_MODE_MATCHER_FOUND)
+				{
+					outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
+				}
+				else if(mode == Modes.BASE_MODE_MATCHER_VOTE)
+				{
+					outputStr+=matcherSim[i]+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
+				}
+				else if(mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND)
+				{
+					outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
+				}
+				else if(mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC)
+				{
+					outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
+				}
+				
 			}
-			float matcherVote=(float)numFound/totalMatchers;
-			outputStr+=matcherVote+"\t"+referenceSim;//adds the matcher vote value and the reference similarity
 			
+			
+			if(mode == Modes.BASE_MODE)
+			{
+				
+				outputStr+=referenceSim;//adds the matcher vote value and the reference similarity	
+			}
+			else if(mode ==Modes.BASE_MODE_LWC)
+			{
+				
+				outputStr+=referenceSim;//adds the matcher vote value and the reference similarity
+			}
+			else if(mode== Modes.BASE_MODE_MATCHER_FOUND)
+			{
+				
+				outputStr+=referenceSim;//adds the matcher vote value and the reference similarity
+			}
+			else if(mode == Modes.BASE_MODE_MATCHER_VOTE)
+			{
+				float matcherVote=(float)numFound/totalMatchers;
+				outputStr+=matcherVote+"\t"+referenceSim;//adds the matcher vote value and the reference similarity
+			}
+			else if(mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND)
+			{
+				float matcherVote=(float)numFound/totalMatchers;
+				outputStr+=matcherVote+"\t"+referenceSim;//adds the matcher vote value and the reference similarity
+			}
+			else if(mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC)
+			{
+				float matcherVote=(float)numFound/totalMatchers;
+				outputStr+=matcherVote+"\t"+referenceSim;//adds the matcher vote value and the reference similarity
+			}
+					
 			outputWriter.write(outputStr+"\n");
 			
 		}
@@ -536,7 +590,7 @@ public class MLWrapper {
 	 * by the classifier later on.
 	 * @throws IOException
 	 */
-	void mergeIndividualTestFiles() throws IOException
+	void mergeIndividualTestFiles(Modes mode) throws IOException
 	{
 		ArrayList<String> matcherFiles=new ArrayList<String>();
 		getFilesFromFolder(matcherFiles,"bench/matchers/test/");
@@ -616,15 +670,52 @@ public class MLWrapper {
 					matcherFound=0;
 					matcherSim[i]="0.0";
 				}
-				outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";
+				
+				if(mode == Modes.BASE_MODE)
+				{
+					outputStr+=matcherSim[i]+"\t";//prints out matcher similarity value	
+				}
+				else if(mode ==Modes.BASE_MODE_LWC)
+				{
+					outputStr+=matcherSim[i]+"\t";//prints out matcher similarity value
+				}
+				else if(mode == Modes.BASE_MODE_MATCHER_FOUND)
+				{
+					outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
+				}
+				else if(mode == Modes.BASE_MODE_MATCHER_VOTE)
+				{
+					outputStr+=matcherSim[i]+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
+				}
+				else if(mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND)
+				{
+					outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
+				}
+				else if(mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC)
+				{
+					outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
+				}
+							
 			}
 			
-			float matcherVote=(float)numFound/totalMatchers;
 			
-			//outputStr+=referenceSim;
-			//TODO: need to check if matcher Vote has to be added somewhere else
+			if(mode == Modes.BASE_MODE_MATCHER_VOTE)
+			{
+				float matcherVote=(float)numFound/totalMatchers;
+				outputStr+=matcherVote+"\t"+referenceSim;//adds the matcher vote value and the reference similarity
+			}
+			else if(mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND)
+			{
+				float matcherVote=(float)numFound/totalMatchers;
+				outputStr+=matcherVote+"\t"+referenceSim;//adds the matcher vote value and the reference similarity
+			}
+			else if(mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC)
+			{
+				float matcherVote=(float)numFound/totalMatchers;
+				outputStr+=matcherVote+"\t"+referenceSim;//adds the matcher vote value and the reference similarity
+			}
+					
 			outputStr1+=referenceSim;
-			outputStr+=matcherVote;// guessing that matcher vote should be added to this TODO: need to check
 			outputWriter.write(outputStr+"\n");
 			outputRef.write(outputStr1+"\n");
 			
@@ -643,7 +734,6 @@ public class MLWrapper {
 	 * @param files
 	 * @param folder
 	 */
-	
 	void getFilesFromFolder(ArrayList<String> files, String folder)
 	{
 		File file=new File(folder);
@@ -673,7 +763,7 @@ public class MLWrapper {
 	 *main module to predict results for test set
 	 *given two ontologies,reference alignment and a ML model 
 	 */
-	Alignment<Mapping> predictresult(String modelName,String srcOntology,String tarOntology,String refAlign, String predicted,String combinedConceptFile,String finalFile) throws Exception
+	Alignment<Mapping> predictresult(String modelName,String srcOntology,String tarOntology,String refAlign, String predicted,String combinedConceptFile,String finalFile,Modes mode) throws Exception
 	{
 		//generating the test.xml file needed by MLTestingWrapper
 		String outputFilename="bench/files/test.xml";
@@ -737,7 +827,7 @@ public class MLWrapper {
 			  
 			  //running the matchers on testset
 			  
-			  callProcess(outputFilename, "testset");
+			  callProcess(outputFilename, "testset",mode);
 			  
 			  //deserialising the model we have built
 			  ObjectInputStream ois = new ObjectInputStream(
@@ -745,7 +835,7 @@ public class MLWrapper {
 			  Classifier cls = (Classifier) ois.readObject();
 			  
 			  //generating arff file and setting testset class
-			  ArffConvertor arff=new ArffConvertor("bench/combinedmatchers/testFilecombined", "test",matcherNames);
+			  ArffConvertor arff=new ArffConvertor("bench/combinedmatchers/testFilecombined", "test",matcherNames,mode);
 			  arff.generateArffFile();
 			  BufferedReader  testset = new BufferedReader(new FileReader("bench/arff/testFilecombined.arff"));
 			  Instances test=new Instances(testset);
@@ -888,14 +978,14 @@ public class MLWrapper {
 	
 	}
 	
-	void callProcess(String trainingFileName,String elementName) throws Exception
+	void callProcess(String trainingFileName,String elementName,Modes mode) throws Exception
 	{
 		//String trainingFileName="bench/test.xml";
 		//String elementName="testset";
 		loadMatchers();
 		loadOntologyTriples(trainingFileName,elementName);
 		generateMappings();
-		generateTestFile();
+		generateTestFile(mode);
 		//generateModel();
 //		String testFileName="";
 //		elementName="testset";
@@ -906,13 +996,13 @@ public class MLWrapper {
 	}
 	
 	
-	void callTestProcess()
+	void callTestProcess(Modes mode)
 	{
 		LWCRunner runner=new LWCRunner();
 		try {
 			//predicting the result for the testset using decisiontree classifier
 			System.out.println("101-303");
-			Alignment<Mapping> results=predictresult("bench/arff/model/decisiontree.model","bench/training/101/onto.rdf","bench/test/303/onto.rdf","bench/test/303/refalign.rdf","bench/arff/output/predictedDT.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputDT");
+			Alignment<Mapping> results=predictresult("bench/arff/model/decisiontree.model","bench/training/101/onto.rdf","bench/test/303/onto.rdf","bench/test/303/refalign.rdf","bench/arff/output/predictedDT.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputDT",mode);
 			
 			runner.setSourceOntology(loadOntology("bench/training/101/onto.rdf"));
 			runner.setTargetOntology(loadOntology("bench/test/303/onto.rdf"));
@@ -925,7 +1015,7 @@ public class MLWrapper {
 			displayResults(lwc.getAlignment(),referenceAlignment);
 			//predicting the result for the testset using Naive Bayes classifier
 			System.out.println("101-302");
-			predictresult("bench/arff/model/naivebayes.model","bench/training/101/onto.rdf","bench/test/302/onto.rdf","bench/test/302/refalign.rdf","bench/arff/output/predictedNB.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputNB");
+			predictresult("bench/arff/model/naivebayes.model","bench/training/101/onto.rdf","bench/test/302/onto.rdf","bench/test/302/refalign.rdf","bench/arff/output/predictedNB.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputNB",mode);
 		    runner.setSourceOntology(loadOntology("bench/training/101/onto.rdf"));
 			runner.setTargetOntology(loadOntology("bench/test/302/onto.rdf"));
 			lwc=runner.initializeLWC();
@@ -937,7 +1027,7 @@ public class MLWrapper {
 			displayResults(lwc.getAlignment(),referenceAlignment);
 			System.out.println("101-301");
 			//predicting the result for the testset using SVM classifier
-			predictresult("bench/arff/model/svm.model","bench/training/101/onto.rdf","bench/test/301/onto.rdf","bench/test/301/refalign.rdf","bench/arff/output/predictedSVM.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputSVM");
+			predictresult("bench/arff/model/svm.model","bench/training/101/onto.rdf","bench/test/301/onto.rdf","bench/test/301/refalign.rdf","bench/arff/output/predictedSVM.arff","bench/combinedmatchers/testrefFilecombined","bench/files/finaloutputSVM",mode);
 			runner.setSourceOntology(loadOntology("bench/training/101/onto.rdf"));
 			runner.setTargetOntology(loadOntology("bench/test/301/onto.rdf"));
 			lwc=runner.initializeLWC();
@@ -1006,13 +1096,13 @@ public class MLWrapper {
 	 * format needed by ML.
 	 * @throws IOException
 	 */
-	void generateTrainingARFF() throws IOException
+	void generateTrainingARFF(Modes mode) throws IOException
 	{
 		/*ArrayList<String> mn=new ArrayList<String>();
 		mn.add("m1");
 		mn.add("m2");
 		mn.add("m3");*/
-		ArffConvertor arff=new ArffConvertor("bench/combinedmatchers/trainingFilecombined", "training",matcherNames);
+		ArffConvertor arff=new ArffConvertor("bench/combinedmatchers/trainingFilecombined", "training",matcherNames,mode);
 		arff.generateArffFile();
 	//	arff=new ArffConvertor("bench/combinedmatchers/testFilecombined", "test",matcherNames);
 	//	arff.generateArffFile();
@@ -1082,7 +1172,7 @@ public class MLWrapper {
 
 	}
 	
-	void callTrainingProcess() throws Exception
+	void callTrainingProcess(Modes mode) throws Exception
 	{
 		//uncomment the below lines, if you want to generate a new model 
 		
@@ -1091,8 +1181,8 @@ public class MLWrapper {
 		loadMatchers();
 		loadOntologyTriples(trainingFileName,elementName);
 		generateMappings();
-		generateTrainingFile();
-		generateTrainingARFF();
+		generateTrainingFile(mode);
+		generateTrainingARFF(mode);
 		generateModel();
 			
 //		String testFileName="";
@@ -1108,7 +1198,7 @@ public class MLWrapper {
 	 * each individual matcher 
 	 * @throws Exception
 	 */
-	void generateTestFile() throws Exception
+	void generateTestFile(Modes mode) throws Exception
 	{
 		//ArrayList<String> mappedSourceTarget=new ArrayList<String>();
 	//	String[] trainingFiles={"psm","bsm","vmm"};
@@ -1193,7 +1283,7 @@ public class MLWrapper {
 			}			
 			outputWriter.close();
 		}		
-		mergeIndividualTrainingFiles();	
+		mergeIndividualTrainingFiles(mode);	
 		
 	}
 	
@@ -1211,10 +1301,11 @@ public class MLWrapper {
 		
 		
 		MLWrapper wrapper=new MLWrapper();
+		Modes mode=Modes.BASE_MODE;
 		
 		try {
-			wrapper.callTrainingProcess();
-			wrapper.callTestProcess();
+			wrapper.callTrainingProcess(mode);
+			wrapper.callTestProcess(mode);
 
 		} catch (Exception e) {
 
