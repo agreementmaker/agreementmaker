@@ -103,7 +103,7 @@ public class MLWrapper {
 	 * set the parameters specific to the matchers
 	 * @throws Exception
 	 */
-	void loadMatchers() throws Exception
+	void loadMatchers(Modes mode) throws Exception
 	{
 		//TODO : look at oaei2011 and look how to get matchers and add to list below 
 		//	listOfMatchers.add();
@@ -140,10 +140,13 @@ public class MLWrapper {
 		vmmParam.useLexiconSynonyms = true; // May change later.
 		am.setParam(vmmParam);
 		listOfMatchers.add(am);
-				
-		am=MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 0);
-
-		listOfMatchers.add(am);
+		log.info(mode);
+			if(mode==Modes.BASE_MODE_LWC)
+			{
+				log.info("mode" + mode);
+				am=MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 0);
+				listOfMatchers.add(am);
+			}
 				
 		//AbstractMatcher bsm=MatcherFactory.getMatcherInstance(MatchersRegistry.Equals, 0);
 				
@@ -289,6 +292,7 @@ public class MLWrapper {
 						//log.info(currentMatcher.getName());
 						if(currentMatcher.getName().toLowerCase().contains("linear"))
 						{
+							log.info("lwc included");
 							LWCRunner runner=new LWCRunner();
 							
 							runner.setSourceOntology(currentTriple.getOntology1());
@@ -786,17 +790,23 @@ public class MLWrapper {
 				trainingSet.setAttribute("id", Integer.toString(i));
 		 
 				// source ontology
+		
 				Element sourceOntology = doc.createElement("sourceontology");
+				sourceOntology.setAttribute("name", "srcOntology");
 				sourceOntology.setAttribute("path", srcOntology);
 				trainingSet.appendChild(sourceOntology);
-		 
+				
+				
+				
 				// target ontology
 				Element targetOntology = doc.createElement("targetontology");
+				targetOntology.setAttribute("name", "targetntology");
 				targetOntology.setAttribute("path", tarOntology);
 				trainingSet.appendChild(targetOntology);
 		 
 				// reference alignment
 				Element refAlignment = doc.createElement("refalignment");
+				refAlignment.setAttribute("name", "refalignment");
 				refAlignment.setAttribute("path", refAlign);
 				trainingSet.appendChild(refAlignment);
 				
@@ -982,7 +992,7 @@ public class MLWrapper {
 	{
 		//String trainingFileName="bench/test.xml";
 		//String elementName="testset";
-		loadMatchers();
+		loadMatchers(mode);
 		loadOntologyTriples(trainingFileName,elementName);
 		generateMappings();
 		generateTestFile(mode);
@@ -1178,7 +1188,7 @@ public class MLWrapper {
 		
 		String trainingFileName="bench/training.xml";
 		String elementName="trainingset";
-		loadMatchers();
+		loadMatchers(mode);
 		loadOntologyTriples(trainingFileName,elementName);
 		generateMappings();
 		generateTrainingFile(mode);
@@ -1283,7 +1293,7 @@ public class MLWrapper {
 			}			
 			outputWriter.close();
 		}		
-		mergeIndividualTrainingFiles(mode);	
+		mergeIndividualTestFiles(mode);	
 		
 	}
 	
@@ -1300,12 +1310,13 @@ public class MLWrapper {
 	{
 		
 		
-		MLWrapper wrapper=new MLWrapper();
+		MLWrapper Trainingwrapper=new MLWrapper();
+		MLWrapper Testwrapper=new MLWrapper();
 		Modes mode=Modes.BASE_MODE;
 		
 		try {
-			wrapper.callTrainingProcess(mode);
-			wrapper.callTestProcess(mode);
+			Trainingwrapper.callTrainingProcess(mode);
+			Testwrapper.callTestProcess(mode);
 
 		} catch (Exception e) {
 

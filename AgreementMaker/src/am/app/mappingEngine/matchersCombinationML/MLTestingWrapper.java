@@ -637,8 +637,8 @@ public class MLTestingWrapper {
 			  Classifier cls = (Classifier) ois.readObject();
 			  
 			  //generating arff file and setting testset class
-			  ArffConvertor arff=new ArffConvertor("bench/combinedmatchers/testFilecombined", "test",matcherNames);
-			  arff.generateArffFile();
+		//	  ArffConvertor arff=new ArffConvertor("bench/combinedmatchers/testFilecombined", "test",matcherNames);
+			//  arff.generateArffFile();
 			  BufferedReader  testset = new BufferedReader(new FileReader("bench/arff/testFilecombined.arff"));
 			  Instances test=new Instances(testset);
 			  test.setClassIndex(test.numAttributes()-1);

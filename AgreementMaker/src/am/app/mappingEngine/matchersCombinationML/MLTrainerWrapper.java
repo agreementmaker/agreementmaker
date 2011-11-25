@@ -570,8 +570,8 @@ public class MLTrainerWrapper {
 		mn.add("m1");
 		mn.add("m2");
 		mn.add("m3");*/
-		ArffConvertor arff=new ArffConvertor("bench/combinedmatchers/trainingFilecombined", "training",matcherNames);
-		arff.generateArffFile();
+		//ArffConvertor arff=new ArffConvertor("bench/combinedmatchers/trainingFilecombined", "training",matcherNames);
+		//arff.generateArffFile();
 	//	arff=new ArffConvertor("bench/combinedmatchers/testFilecombined", "test",matcherNames);
 	//	arff.generateArffFile();
 		//System.out.println("Training ARFF file generated");
