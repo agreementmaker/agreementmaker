@@ -141,12 +141,12 @@ public class MLWrapper {
 		am.setParam(vmmParam);
 		listOfMatchers.add(am);
 		log.info(mode);
-			if(mode==Modes.BASE_MODE_LWC)
-			{
-				log.info("mode" + mode);
-				am=MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 0);
-				listOfMatchers.add(am);
-			}
+		if(mode==Modes.BASE_MODE_LWC)
+		{
+			log.info("mode" + mode);
+			am=MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 0);
+			listOfMatchers.add(am);
+		}
 				
 		//AbstractMatcher bsm=MatcherFactory.getMatcherInstance(MatchersRegistry.Equals, 0);
 				
@@ -720,8 +720,8 @@ public class MLWrapper {
 			}
 					
 			outputStr1+=referenceSim;
-			outputWriter.write(outputStr+"\n");
-			outputRef.write(outputStr1+"\n");
+			outputWriter.write(outputStr.trim()+"\n");
+			outputRef.write(outputStr1.trim()+"\n");
 			
 		}
 		
