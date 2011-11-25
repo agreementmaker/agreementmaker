@@ -14,8 +14,6 @@ import java.util.Scanner;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import sun.org.mozilla.javascript.internal.ast.ForInLoop;
-
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
