@@ -71,7 +71,7 @@ import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
 import com.hp.hpl.jena.rdf.model.Property;
 
 public class MLTrainerWrapper {
-	
+		
 	ArrayList<AbstractMatcher> listOfMatchers=new ArrayList<AbstractMatcher>();
 	ArrayList<OntologyTriple> listOfTriples=new ArrayList<OntologyTriple>();
 	ArrayList<String> matcherNames=new ArrayList<String>();
@@ -153,6 +153,7 @@ public class MLTrainerWrapper {
 		//AbstractMatcher bsm=MatcherFactory.getMatcherInstance(MatchersRegistry.Equals, 0);
 		
 	}
+	
 	/**
 	 * Load the training.xml file
 	 * which contains information about the 
@@ -658,12 +659,5 @@ public class MLTrainerWrapper {
 //		elementName="testset";
 //		loadOntologyTriples(testFileName,elementName);
 	}
-	//TODO: remove
-	public static void main(String args[])throws Exception
-	{
-		MLTrainerWrapper ml=new MLTrainerWrapper();
-		ml.callProcess();
-				
-	}
-
+		
 }
