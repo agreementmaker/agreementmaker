@@ -3,6 +3,7 @@ package am.app.mappingEngine.matchersCombinationML;
 /**
  * Wrapper class that calls the entire Machine learning process of matching
  */
+import org.apache.commons.io.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,7 +17,9 @@ import java.io.LineNumberReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
+import java.security.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -142,12 +145,13 @@ public class MLWrapper {
 		am.setParam(vmmParam);
 		listOfMatchers.add(am);
 		log.info(mode);
-			if(mode==Modes.BASE_MODE_LWC)
+			if(mode==Modes.BASE_MODE_LWC || mode == Modes.BASE_MODE_MATCHER_FOUND_LWC || mode == Modes.BASE_MODE_MATCHER_VOTE_LWC || mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC)
 			{
 				log.info("mode" + mode);
 				am=MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 0);
 				listOfMatchers.add(am);
 			}
+			
 				
 		//AbstractMatcher bsm=MatcherFactory.getMatcherInstance(MatchersRegistry.Equals, 0);
 				
@@ -157,27 +161,37 @@ public class MLWrapper {
 	 * Load the training.xml file
 	 * which contains information about the 
 	 * source ontology path,target ontology path,reference alignment
-	 * @param filename
+	 * @param fileName
 	 * @param elementname
 	 * @throws Exception
 	 */
 	
-	void loadOntologyTriples(String filename,String elementname) throws Exception
+	void loadOntologyTriples(String fileName,String elementname) throws Exception
 	{
 		//in linux RDF is rdf so had to put toLowerCase()
 		//TODO: load the list of training ontologies with reference alignments
 		
 		XmlParser xp=new XmlParser();
-		//String basePath="/home/vivek/projects/workspace/AgreementMakerSVN/";
 		String basePath="";
-		ArrayList<TrainingLayout> tlist=xp.parseDocument(filename.toLowerCase(), elementname,"training");
+		String actualFilePath="";
+		if(!fileName.matches(".home.*"))
+		{
+			basePath="/home/vivek/projects/workspace/AgreementMakerSVN/";
+			actualFilePath=basePath;
+		}
+		
+		//String basePath="";
+		System.out.println(fileName);
+		
+	//	actualFilePath+=fileName;
+		ArrayList<TrainingLayout> tlist=xp.parseDocument(fileName, elementname,"training");
 		for(TrainingLayout tl: tlist)
 		{
-			Ontology sourceOntology=loadOntology(basePath+tl.getsourceOntologyPath().toLowerCase());
-			Ontology targetOntology=loadOntology(basePath+tl.gettargetOntologyPath().toLowerCase());
+			Ontology sourceOntology=loadOntology(tl.getsourceOntologyPath());
+			Ontology targetOntology=loadOntology(tl.gettargetOntologyPath());
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.onlyEquivalence = true;
-			refParam.fileName = basePath+tl.getrefAlignmentPath().toLowerCase();
+			refParam.fileName = tl.getrefAlignmentPath();
 			refParam.format = ReferenceAlignmentMatcher.OAEI;
 			AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
 			referenceAlignmentMatcher.setParam(refParam);
@@ -291,6 +305,7 @@ public class MLWrapper {
 		
 						AbstractMatcher currentMatcher=matchers.get(m);
 						//log.info(currentMatcher.getName());
+						Alignment<Mapping> resultAlignment;
 						if(currentMatcher.getName().toLowerCase().contains("linear"))
 						{
 							log.info("lwc included");
@@ -299,16 +314,19 @@ public class MLWrapper {
 							runner.setSourceOntology(currentTriple.getOntology1());
 						 	runner.setTargetOntology(currentTriple.getOntology2());
 							currentMatcher=runner.initializeLWC();
+							currentMatcher.match();
+							resultAlignment=currentMatcher.getAlignment();
 							
 						}
 						else
 						{
-						currentMatcher.setOntologies(currentTriple.getOntology1(), currentTriple.getOntology2());
-						currentMatcher.setPerformSelection(true);
-						currentMatcher.setUseProgressDelay(false);
+							currentMatcher.setOntologies(currentTriple.getOntology1(), currentTriple.getOntology2());
+							currentMatcher.setPerformSelection(true);
+							currentMatcher.setUseProgressDelay(false);
+							currentMatcher.match();
+							resultAlignment=currentMatcher.getAlignment();
 						}
-						currentMatcher.match();
-						Alignment<Mapping> resultAlignment=currentMatcher.getAlignment();
+						
 						if(resultAlignment!=null && currentMatcher!=null)
 						{
 							if(!currentTriple.containsMatcher(currentMatcher.getName()))
@@ -367,13 +385,19 @@ public class MLWrapper {
 								for(int j=0;j<referenceAlignment.size();j++)
 								{
 									
-									if(currentMapping.get(i).getString(true).equals(referenceAlignment.get(j).getString(true)))
+									//if(currentMapping.get(i).getString(true).equals(referenceAlignment.get(j).getString(true)))
+									if( (currentMapping.get(i).getEntity1().getUri().equals(referenceAlignment.get(j).getEntity1().getUri()) && currentMapping.get(i).getEntity2().getUri().equals(referenceAlignment.get(j).getEntity2().getUri()))
+											||
+											(currentMapping.get(i).getEntity1().getUri().equals(referenceAlignment.get(j).getEntity2().getUri()) && currentMapping.get(i).getEntity2().getUri().equals(referenceAlignment.get(j).getEntity1().getUri())))
 									{
+										log.info(similarity+"\t1.0");
 										//System.out.println("mapped");
 	
 										//outputWriter.write(currentMapping.get(i).getEntity1().getUri()+"\t"+currentMapping.get(i).getEntity2().getUri()+"\t1.0\t1.0\n");
 										outputWriter.write(currentMapping.get(i).getEntity1().getUri()+"\t"+currentMapping.get(i).getEntity2().getUri()+"\t"+similarity+"\t1.0\n");
 										mapped=true;
+										break;
+										
 									}
 								 }
 								if(!mapped)
@@ -381,7 +405,7 @@ public class MLWrapper {
 									//System.out.println("matcher mapping wrong");
 									outputWriter.write(currentMapping.get(i).getEntity1().getUri()+"\t"+currentMapping.get(i).getEntity2().getUri()+"\t"+similarity+"\t0.0\n");
 								}
-							  }
+							}
 							
 						}	
 					}					
@@ -492,7 +516,15 @@ public class MLWrapper {
 				{
 					outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
 				}
+				else if(mode == Modes.BASE_MODE_MATCHER_FOUND_LWC)
+				{
+					outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
+				}
 				else if(mode == Modes.BASE_MODE_MATCHER_VOTE)
+				{
+					outputStr+=matcherSim[i]+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
+				}
+				else if(mode == Modes.BASE_MODE_MATCHER_VOTE_LWC)
 				{
 					outputStr+=matcherSim[i]+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
 				}
@@ -523,7 +555,16 @@ public class MLWrapper {
 				
 				outputStr+=referenceSim;//adds the matcher vote value and the reference similarity
 			}
+			else if(mode == Modes.BASE_MODE_MATCHER_FOUND_LWC)
+			{
+				outputStr+=referenceSim;//adds the matcher vote value and the reference similarity
+			}
 			else if(mode == Modes.BASE_MODE_MATCHER_VOTE)
+			{
+				float matcherVote=(float)numFound/totalMatchers;
+				outputStr+=matcherVote+"\t"+referenceSim;//adds the matcher vote value and the reference similarity
+			}
+			else if(mode == Modes.BASE_MODE_MATCHER_VOTE_LWC)
 			{
 				float matcherVote=(float)numFound/totalMatchers;
 				outputStr+=matcherVote+"\t"+referenceSim;//adds the matcher vote value and the reference similarity
@@ -656,7 +697,15 @@ public class MLWrapper {
 				{
 					outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
 				}
+				else if(mode == Modes.BASE_MODE_MATCHER_FOUND_LWC)
+				{
+					outputStr+=matcherSim[i]+"\t"+matcherFound+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
+				}
 				else if(mode == Modes.BASE_MODE_MATCHER_VOTE)
+				{
+					outputStr+=matcherSim[i]+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
+				}
+				else if(mode == Modes.BASE_MODE_MATCHER_VOTE_LWC)
 				{
 					outputStr+=matcherSim[i]+"\t";//prints out matcher similarity value \t matcher found or not (0/1)
 				}
@@ -673,6 +722,11 @@ public class MLWrapper {
 			
 			
 			if(mode == Modes.BASE_MODE_MATCHER_VOTE)
+			{
+				float matcherVote=(float)numFound/totalMatchers;
+				outputStr+=matcherVote+"\t"+referenceSim;//adds the matcher vote value and the reference similarity
+			}
+			else if(mode == Modes.BASE_MODE_MATCHER_VOTE_LWC)
 			{
 				float matcherVote=(float)numFound/totalMatchers;
 				outputStr+=matcherVote+"\t"+referenceSim;//adds the matcher vote value and the reference similarity
@@ -814,7 +868,9 @@ public class MLWrapper {
 			for(int i=0;i<refMap.size();i++)
 			{
 				Mapping currentMapping=refMap.get(i);
-				if(currentMapping.getEntity1().getUri().equals(inputLineParts[0]) && currentMapping.getEntity2().getUri().equals(inputLineParts[1]) && currentMapping.getSimilarity()==Double.parseDouble(inputLineParts[2])) 
+				if((currentMapping.getEntity1().getUri().equals(inputLineParts[0]) && currentMapping.getEntity2().getUri().equals(inputLineParts[1]) && currentMapping.getSimilarity()==Double.parseDouble(inputLineParts[2]))
+						||
+						(currentMapping.getEntity2().getUri().equals(inputLineParts[0]) && currentMapping.getEntity1().getUri().equals(inputLineParts[1]) && currentMapping.getSimilarity()==Double.parseDouble(inputLineParts[2]))) 
 				{
 					//System.out.println("match found in ref alignment");
 					mapped++;
@@ -922,8 +978,18 @@ public class MLWrapper {
 		LWCRunner runner=new LWCRunner();
 		try {
 			//predicting the result for the testset using decisiontree classifier
-			System.out.println("101-303");
+			System.out.println("101-303\tdecisiontree");
 			Alignment<Mapping> results=predictresult("mlroot/model/decisiontree.model","mlroot/mltraining/bench/103/onto1.rdf","mlroot/mltesting/bench/303/onto.rdf","mlroot/mltesting/bench/303/refalign.rdf","mlroot/test/predictedDT.arff","mlroot/test/testrefFilecombined","mlroot/test/finaloutputDT",mode);
+			listOfMatchers.clear();
+			listOfTriples.clear();
+			matcherNames.clear();
+			System.out.println("101-303\tnaivebayes");
+			predictresult("mlroot/model/naivebayes.model","mlroot/mltraining/bench/103/onto1.rdf","mlroot/mltesting/bench/303/onto.rdf","mlroot/mltesting/bench/303/refalign.rdf","mlroot/test/predictedDT.arff","mlroot/test/testrefFilecombined","mlroot/test/finaloutputDT",mode);
+			listOfMatchers.clear();
+			listOfTriples.clear();
+			matcherNames.clear();
+			System.out.println("101-303\tsvm");
+			predictresult("mlroot/model/svm.model","mlroot/mltraining/bench/103/onto1.rdf","mlroot/mltesting/bench/303/onto.rdf","mlroot/mltesting/bench/303/refalign.rdf","mlroot/test/predictedDT.arff","mlroot/test/testrefFilecombined","mlroot/test/finaloutputDT",mode);
 			listOfMatchers.clear();
 			listOfTriples.clear();
 			matcherNames.clear();
@@ -937,8 +1003,22 @@ public class MLWrapper {
 			System.out.println("lwc");
 			displayResults(lwc.getAlignment(),referenceAlignment);*/
 			//predicting the result for the testset using Naive Bayes classifier
-			System.out.println("101-302");
+			System.out.println("101-302\tdecisiontree");
+			predictresult("mlroot/model/decisiontree.model","mlroot/mltraining/bench/103/onto1.rdf","mlroot/mltesting/bench/302/onto.rdf","mlroot/mltesting/bench/302/refalign.rdf","mlroot/test/predictedNB.arff","mlroot/test/testrefFilecombined","mlroot/test/finaloutputNB",mode);
+			listOfMatchers.clear();
+			listOfTriples.clear();
+			matcherNames.clear();
+			System.out.println("101-302\tnaivebayes");
 			predictresult("mlroot/model/naivebayes.model","mlroot/mltraining/bench/103/onto1.rdf","mlroot/mltesting/bench/302/onto.rdf","mlroot/mltesting/bench/302/refalign.rdf","mlroot/test/predictedNB.arff","mlroot/test/testrefFilecombined","mlroot/test/finaloutputNB",mode);
+			listOfMatchers.clear();
+			listOfTriples.clear();
+			matcherNames.clear();
+			System.out.println("101-302\tsvm");
+			predictresult("mlroot/model/svm.model","mlroot/mltraining/bench/103/onto1.rdf","mlroot/mltesting/bench/302/onto.rdf","mlroot/mltesting/bench/302/refalign.rdf","mlroot/test/predictedNB.arff","mlroot/test/testrefFilecombined","mlroot/test/finaloutputNB",mode);
+			listOfMatchers.clear();
+			listOfTriples.clear();
+			matcherNames.clear();
+			
 		    /*runner.setSourceOntology(loadOntology("bench/training/101/onto.rdf"));
 			runner.setTargetOntology(loadOntology("bench/test/302/onto.rdf"));
 			lwc=runner.initializeLWC();
@@ -948,9 +1028,25 @@ public class MLWrapper {
 			//displayResults(results, referenceAlignment);
 			System.out.println("lwc");
 			displayResults(lwc.getAlignment(),referenceAlignment);*/
-			System.out.println("101-301");
+			System.out.println("101-301\tdecision tree");
+			predictresult("mlroot/model/decisiontree.model","mlroot/mltraining/bench/103/onto1.rdf","mlroot/mltesting/bench/301/onto.rdf","mlroot/mltesting/bench/301/refalign.rdf","mlroot/test/predictedNB.arff","mlroot/test/testrefFilecombined","mlroot/test/finaloutputNB",mode);
+			listOfMatchers.clear();
+			listOfTriples.clear();
+			matcherNames.clear();
+			System.out.println("101-301\tnaivebayes");
+			predictresult("mlroot/model/naivebayes.model","mlroot/mltraining/bench/103/onto1.rdf","mlroot/mltesting/bench/301/onto.rdf","mlroot/mltesting/bench/301/refalign.rdf","mlroot/test/predictedNB.arff","mlroot/test/testrefFilecombined","mlroot/test/finaloutputNB",mode);
+			listOfMatchers.clear();
+			listOfTriples.clear();
+			matcherNames.clear();
 			//predicting the result for the testset using SVM classifier
+			System.out.println("101-301\tsvm");
 			predictresult("mlroot/model/svm.model","mlroot/mltraining/bench/103/onto1.rdf","mlroot/mltesting/bench/301/onto.rdf","mlroot/mltesting/bench/301/refalign.rdf","mlroot/test/predictedSVM.arff","mlroot/test/testrefFilecombined","mlroot/test/finaloutputSVM",mode);
+			listOfMatchers.clear();
+			listOfTriples.clear();
+			matcherNames.clear();
+			
+			
+			
 			/*runner.setSourceOntology(loadOntology("bench/training/101/onto.rdf"));
 			runner.setTargetOntology(loadOntology("bench/test/301/onto.rdf"));
 			lwc=runner.initializeLWC();
@@ -1184,13 +1280,22 @@ public class MLWrapper {
 								for(int j=0;j<referenceAlignment.size();j++)
 								{
 									
-									if(currentMapping.get(i).getString(true).equals(referenceAlignment.get(j).getString(true)))
+									//checking for URIs of concepts appearing in any order in the ref alignment
+									//if(currentMapping.get(i).equals(referenceAlignment.get(j).getString(true)))
+									if((currentMapping.get(i).getEntity1().getUri().equals(referenceAlignment.get(j).getEntity1().getUri())
+											&& currentMapping.get(i).getEntity2().equals(referenceAlignment.get(j).getEntity2().getUri()))
+											||
+											(currentMapping.get(i).getEntity1().getUri().equals(referenceAlignment.get(j).getEntity2().getUri())
+													&& currentMapping.get(i).getEntity2().equals(referenceAlignment.get(j).getEntity1().getUri()))
+											)
+										
 									{
 										//System.out.println("mapped");
 	
 										//outputWriter.write(currentMapping.get(i).getEntity1().getUri()+"\t"+currentMapping.get(i).getEntity2().getUri()+"\t1.0\t1.0\n");
 										outputWriter.write(currentMapping.get(i).getEntity1().getUri()+"\t"+currentMapping.get(i).getEntity2().getUri()+"\t"+similarity+"\t1.0\n");
 										mapped=true;
+										break;
 									}
 								 }
 								if(!mapped)
@@ -1238,15 +1343,55 @@ public class MLWrapper {
 		
 		MLWrapper Trainingwrapper=new MLWrapper();
 		MLWrapper Testwrapper=new MLWrapper();
-		Modes mode=Modes.BASE_MODE;
+		Modes mode=Modes.BASE_MODE_MATCHER_VOTE_LWC;
 		String trainfolder="mlroot/output";
-		String testfolder="mlroot/test/matcher";
+		String testfolder="mlroot/test/matchers";
  		try {
 			
 			Trainingwrapper.cleanup(trainfolder);
 			Trainingwrapper.callTrainingProcess(mode,0.5);
 			Testwrapper.cleanup(testfolder);
 			Testwrapper.callTestProcess(mode);
+			String copyDirName="";
+			if(mode ==Modes.BASE_MODE)
+			{
+				copyDirName="base_mode";
+			}
+			else if(mode == Modes.BASE_MODE_LWC)
+			{
+				copyDirName="base_mode_lwc";
+			}
+			else if(mode == Modes.BASE_MODE_MATCHER_FOUND)
+			{
+				copyDirName="base_mode_matcher_found";
+			}
+			else if(mode == Modes.BASE_MODE_MATCHER_FOUND_LWC)
+			{
+				copyDirName="base_mode_matcher_found_lwc";
+			}
+			else if(mode == Modes.BASE_MODE_MATCHER_VOTE)
+			{
+				copyDirName="base_mode_matcher_vote";
+			}
+			else if(mode == Modes.BASE_MODE_MATCHER_VOTE_LWC)
+			{
+				copyDirName="base_mode_matcher_vote_lwc";
+			}
+			else if(mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND)
+			{
+				copyDirName="base_mode_matcher_vote_matcher_found";
+			}
+			else if(mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC)
+			{
+				copyDirName="base_mode_matcher_vote_matcher_found_lwc";
+			}
+			Date now=new Date();
+			
+			
+			File sourceDir=new File("/home/vivek/projects/workspace/AgreementMakerSVN/mlroot");
+			File targetDir=new File("/home/vivek/projects/workspace/AgreementMakerSVN/log/"+now.getDate()+"."+(now.getMonth()+1)+"."+now.getHours()+"."+now.getMinutes()+"."+copyDirName);
+				
+			FileUtils.copyDirectoryToDirectory(sourceDir,targetDir);
 			
 
 		} catch (Exception e) {

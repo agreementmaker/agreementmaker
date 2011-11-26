@@ -41,8 +41,8 @@ public class ArffConvertor {
 		BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File(arffFileName)));
 		if(type.equals("training"))
 		{
-		outputWriter.write("% Title: Training set\n\n");
-		outputWriter.write("@RELATION training_set\n\n");
+			outputWriter.write("% Title: Training set\n\n");
+			outputWriter.write("@RELATION training_set\n\n");
 		}
 		if(type.equals("test"))
 		{
@@ -68,10 +68,19 @@ public class ArffConvertor {
 				outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"\tNUMERIC\n");
 				outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"found"+"\t{0.0,1.0}\n");
 			}
+			else if(mode == Modes.BASE_MODE_MATCHER_FOUND_LWC)
+			{
+				outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"\tNUMERIC\n");
+				outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"found"+"\t{0.0,1.0}\n");
+			}
 			else if(mode == Modes.BASE_MODE_MATCHER_VOTE)
 			{
 				outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"\tNUMERIC\n");
 				
+			}
+			else if(mode == Modes.BASE_MODE_MATCHER_VOTE_LWC)
+			{
+				outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"\tNUMERIC\n");
 			}
 			else if( mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND)
 			{
@@ -87,6 +96,10 @@ public class ArffConvertor {
 		}
 		
 		if(mode == Modes.BASE_MODE_MATCHER_VOTE)
+		{
+			outputWriter.write("@ATTRIBUTE\t"+"Matcher_Vote"+"\tNUMERIC\n");
+		}
+		else if(mode == Modes.BASE_MODE_MATCHER_VOTE_LWC)
 		{
 			outputWriter.write("@ATTRIBUTE\t"+"Matcher_Vote"+"\tNUMERIC\n");
 		}
