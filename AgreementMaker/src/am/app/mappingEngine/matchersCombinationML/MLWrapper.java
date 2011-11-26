@@ -689,8 +689,8 @@ public class MLWrapper {
 			}
 					
 			outputStr1+=referenceSim;
-			outputWriter.write(outputStr+"\n");
-			outputRef.write(outputStr1+"\n");
+			outputWriter.write(outputStr.trim()+"\n");
+			outputRef.write(outputStr1.trim()+"\n");
 			
 		}
 		
