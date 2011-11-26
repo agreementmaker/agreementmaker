@@ -1,5 +1,6 @@
 package am.app.ontology.profiling.classification;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -20,6 +21,9 @@ import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Utils;
+import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters.OAEI2011Configuration;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
@@ -1709,7 +1713,36 @@ public static OAEI2011Configuration classifiedOntologiesOAEI2011(Ontology source
 	
 	
 	
+public static Classifier getClassifierInstance(ClassificatorRegistry name) {
 	
+	Class<?> classifierClass = null;
+	try {
+		classifierClass = Class.forName( name.getClassifier().getName());
+	} catch (ClassNotFoundException e) {
+		System.out.println("DEVELOPER: You have entered a wrong class name in the MatcherRegistry");
+		e.printStackTrace();
+		return null;
+	}
+	
+	Classifier a = null;
+	try {
+		a = (Classifier) classifierClass.newInstance();
+	} catch (InstantiationException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		return null;
+	} catch (IllegalAccessException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		return null;
+	}
+	
+	
+	// Set the Index in the Control Panel
+	
+	return a;
+}
+
 	
 	
 	

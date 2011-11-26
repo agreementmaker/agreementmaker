@@ -44,7 +44,7 @@ public enum ClassificatorRegistry {
 //    C_LBR											( LBR.class ), 
 //    C_LeastMedSq									( LeastMedSq.class ), 
 //    C_LibLINEAR										( LibLINEAR.class ), 
-//    C_LibSVM										( LibSVM.class ), 
+     C_LibSVM										( LibSVM.class ), 
 //    C_LinearRegression								( LinearRegression.class ), 
     C_LMT											( LMT.class ), 
 //    C_Logistic										( Logistic.class ), 
