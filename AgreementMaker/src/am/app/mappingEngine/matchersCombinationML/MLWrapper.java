@@ -74,12 +74,6 @@ public class MLWrapper {
 
 		try {
 			ontology = OntoTreeBuilder.loadOWLOntology(ontoName);
-			// OntoTreeBuilder treeBuilder = new OntoTreeBuilder(ontoName,
-			// GlobalStaticVariables.SOURCENODE,
-			// GlobalStaticVariables.LANG_OWL,
-			// GlobalStaticVariables.SYNTAX_RDFXML, false, true);
-			// treeBuilder.build();
-			// ontology = treeBuilder.getOntology();
 		} catch (Exception e) {
 			System.out.println("Failed To open the ontology!");
 			e.printStackTrace();
@@ -299,25 +293,7 @@ public class MLWrapper {
 
 					manualProfiler.setMatchTimeParams(profilingMatchingParams);
 
-					/*
-					 * ParametricStringParameters psmParam = new
-					 * ParametricStringParameters(0.6, 1, 1);
-					 * psmParam.useLexicons = true;
-					 * psmParam.useBestLexSimilarity = true; psmParam.measure =
-					 * ParametricStringParameters.AMSUB_AND_EDIT;
-					 * psmParam.normParameter = new NormalizerParameter();
-					 * psmParam.normParameter.setForOAEI2009();
-					 * psmParam.redistributeWeights = true;
-					 * psmParam.threadedExecution = true;
-					 * psmParam.threadedOverlap = true;
-					 * currentMatcher.setParam(psmParam);
-					 */
-					// BaseSimilarityParameters bsmParam = new
-					// BaseSimilarityParameters(0.6, 1, 1);
-					// bsmParam.useDictionary = false;
-					// currentMatcher.setParam(bsmParam);
-					// currentMatcher.setParam(vmmParam);
-
+		
 					AbstractMatcher currentMatcher = matchers.get(m);
 					// log.info(currentMatcher.getName());
 					Alignment<Mapping> resultAlignment;
@@ -1165,148 +1141,7 @@ public class MLWrapper {
 				listOfTriples.clear();
 				matcherNames.clear();
 		 }
-		/*	log.info("101-303\tdecisiontree");
-		 
-			Alignment<Mapping> results = predictresult(
-					"mlroot/model/decisiontree.model",
-					"mlroot/mltraining/bench/103/onto1.rdf",
-					"mlroot/mltesting/bench/303/onto.rdf",
-					"mlroot/mltesting/bench/303/refalign.rdf",
-					"mlroot/test/predictedDT.arff",
-					"mlroot/test/testrefFilecombined",
-					"mlroot/test/finaloutputDT", mode);
-			listOfMatchers.clear();
-			listOfTriples.clear();
-			matcherNames.clear();
-			log.info("101-303\tnaivebayes");
-			predictresult("mlroot/model/naivebayes.model",
-					"mlroot/mltraining/bench/103/onto1.rdf",
-					"mlroot/mltesting/bench/303/onto.rdf",
-					"mlroot/mltesting/bench/303/refalign.rdf",
-					"mlroot/test/predictedNB.arff",
-					"mlroot/test/testrefFilecombined",
-					"mlroot/test/finaloutputNB", mode);
-			listOfMatchers.clear();
-			listOfTriples.clear();
-			matcherNames.clear();
-			System.out.println("101-303\tsvm");
-			predictresult("mlroot/model/svm.model",
-					"mlroot/mltraining/bench/103/onto1.rdf",
-					"mlroot/mltesting/bench/303/onto.rdf",
-					"mlroot/mltesting/bench/303/refalign.rdf",
-					"mlroot/test/predictedSVM.arff",
-					"mlroot/test/testrefFilecombined",
-					"mlroot/test/finaloutputSVM", mode);
-			listOfMatchers.clear();
-			listOfTriples.clear();
-			matcherNames.clear();
-			
-			 * runner.setSourceOntology(loadOntology("bench/training/101/onto.rdf"
-			 * ));
-			 * runner.setTargetOntology(loadOntology("bench/test/303/onto.rdf"
-			 * )); AbstractMatcher lwc=runner.initializeLWC(); lwc.match();
-			 * Alignment<Mapping>
-			 * referenceAlignment=getReference("bench/training/101/onto.rdf",
-			 * "bench/test/303/onto.rdf", "bench/test/303/refalign.rdf");
-			 * //System.out.println("combination"); //displayResults(results,
-			 * referenceAlignment); System.out.println("lwc");
-			 * displayResults(lwc.getAlignment(),referenceAlignment);
-			 
-			// predicting the result for the testset using Naive Bayes
-			// classifier
-			log.info("101-302\tdecisiontree");
-			predictresult("mlroot/model/decisiontree.model",
-					"mlroot/mltraining/bench/103/onto1.rdf",
-					"mlroot/mltesting/bench/302/onto.rdf",
-					"mlroot/mltesting/bench/302/refalign.rdf",
-					"mlroot/test/predictedDT.arff",
-					"mlroot/test/testrefFilecombined",
-					"mlroot/test/finaloutputDT", mode);
-			listOfMatchers.clear();
-			listOfTriples.clear();
-			matcherNames.clear();
-			log.info("101-302\tnaivebayes");
-			predictresult("mlroot/model/naivebayes.model",
-					"mlroot/mltraining/bench/103/onto1.rdf",
-					"mlroot/mltesting/bench/302/onto.rdf",
-					"mlroot/mltesting/bench/302/refalign.rdf",
-					"mlroot/test/predictedNB.arff",
-					"mlroot/test/testrefFilecombined",
-					"mlroot/test/finaloutputNB", mode);
-			listOfMatchers.clear();
-			listOfTriples.clear();
-			matcherNames.clear();
-			log.info("101-302\tsvm");
-			predictresult("mlroot/model/svm.model",
-					"mlroot/mltraining/bench/103/onto1.rdf",
-					"mlroot/mltesting/bench/302/onto.rdf",
-					"mlroot/mltesting/bench/302/refalign.rdf",
-					"mlroot/test/predictedSVM.arff",
-					"mlroot/test/testrefFilecombined",
-					"mlroot/test/finaloutputSVM", mode);
-			listOfMatchers.clear();
-			listOfTriples.clear();
-			matcherNames.clear();
-
-			
-			 * runner.setSourceOntology(loadOntology("bench/training/101/onto.rdf"
-			 * ));
-			 * runner.setTargetOntology(loadOntology("bench/test/302/onto.rdf"
-			 * )); lwc=runner.initializeLWC(); lwc.match();
-			 * referenceAlignment=getReference("bench/training/101/onto.rdf",
-			 * "bench/test/302/onto.rdf", "bench/test/302/refalign.rdf");
-			 * //System.out.println("combination"); //displayResults(results,
-			 * referenceAlignment); System.out.println("lwc");
-			 * displayResults(lwc.getAlignment(),referenceAlignment);
-			 
-			log.info("101-301\tdecision tree");
-			predictresult("mlroot/model/decisiontree.model",
-					"mlroot/mltraining/bench/103/onto1.rdf",
-					"mlroot/mltesting/bench/301/onto.rdf",
-					"mlroot/mltesting/bench/301/refalign.rdf",
-					"mlroot/test/predictedDT.arff",
-					"mlroot/test/testrefFilecombined",
-					"mlroot/test/finaloutputDT", mode);
-			listOfMatchers.clear();
-			listOfTriples.clear();
-			matcherNames.clear();
-			log.info("101-301\tnaivebayes");
-			predictresult("mlroot/model/naivebayes.model",
-					"mlroot/mltraining/bench/103/onto1.rdf",
-					"mlroot/mltesting/bench/301/onto.rdf",
-					"mlroot/mltesting/bench/301/refalign.rdf",
-					"mlroot/test/predictedNB.arff",
-					"mlroot/test/testrefFilecombined",
-					"mlroot/test/finaloutputNB", mode);
-			listOfMatchers.clear();
-			listOfTriples.clear();
-			matcherNames.clear();
-			// predicting the result for the testset using SVM classifier
-			log.info("101-301\tsvm");
-			predictresult("mlroot/model/svm.model",
-					"mlroot/mltraining/bench/103/onto1.rdf",
-					"mlroot/mltesting/bench/301/onto.rdf",
-					"mlroot/mltesting/bench/301/refalign.rdf",
-					"mlroot/test/predictedSVM.arff",
-					"mlroot/test/testrefFilecombined",
-					"mlroot/test/finaloutputSVM", mode);
-			listOfMatchers.clear();
-			listOfTriples.clear();
-			matcherNames.clear();
-
-			
-			 * runner.setSourceOntology(loadOntology("bench/training/101/onto.rdf"
-			 * ));
-			 * runner.setTargetOntology(loadOntology("bench/test/301/onto.rdf"
-			 * )); lwc=runner.initializeLWC(); lwc.match();
-			 * referenceAlignment=getReference("bench/training/101/onto.rdf",
-			 * "bench/test/301/onto.rdf", "bench/test/301/refalign.rdf");
-			 * //System.out.println("combination"); //displayResults(results,
-			 * referenceAlignment); System.out.println("lwc");
-			 * displayResults(lwc.getAlignment(),referenceAlignment);
-			 
-*/
-		} catch (Exception e) {
+				} catch (Exception e) {
 
 			e.printStackTrace();
 		}
@@ -1341,18 +1176,14 @@ public class MLWrapper {
 				}
 			}
 		}
-		// System.out.println("-----------------------------------------------");
+		
 		log.info("-------------------------------------------------------------");
-		// System.out.println("total correct" + mapped);
-		// System.out.println("total mapping" +count);
 		log.info("total correct" + mapped);
 		log.info("total mapping" + count);
 		float precision = (float) mapped / count;
 		float recall = (float) mapped / referenceAlignment.size();
 		float fmeasure = 2 * precision * recall / (precision + recall);
-		// System.out.print(precision + "\t" + recall + "\t" + fmeasure);
 		log.info(precision + "\t" + recall + "\t" + fmeasure);
-		// System.out.println("-----------------------------------------------------");
 		log.info("-------------------------------------------------------------");
 
 	}
@@ -1380,38 +1211,17 @@ public class MLWrapper {
 	void generateModel() throws Exception {
 		BufferedReader trainingset = new BufferedReader(new FileReader(
 				"mlroot/percent/percentfile.arff"));
-		// BufferedReader testset = new BufferedReader(new
-		// FileReader("bench/arff/testFilecombined.arff"));
+			
 		Instances train = new Instances(trainingset);
-		// Instances test=new Instances(testset);
+		
 		train.setClassIndex(train.numAttributes() - 1);
 		// test.setClassIndex(test.numAttributes()-1);
-		//Classifier cls1 = (Classifier) new DecisionStump();
-		//Classifier cls2 = (Classifier) new BayesNet();
-		//Classifier cls3 = (Classifier) new LibSVM();
 		for (ClassificatorRegistry classifier : ClassificatorRegistry.values()) {
 			Classifier cls=OntologyClassificator.getClassifierInstance(classifier);
 			cls.buildClassifier(train);
 			weka.core.SerializationHelper.write("mlroot/model/"+ classifier,cls);
 		}
-/*		cls2.buildClassifier(train);
-		cls3.buildClassifier(train);
-*/
-		// save the model for future use
-		// serialize model
-		/*ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(
-				"mlroot/model/decisiontree.model"));
-		oos.writeObject(cls1);
-		oos.flush();
-		oos = new ObjectOutputStream(new FileOutputStream(
-				"mlroot/model/naivebayes.model"));
-		oos.writeObject(cls2);
-		oos = new ObjectOutputStream(new FileOutputStream(
-				"mlroot/model/svm.model"));
-		oos.writeObject(cls3);
-
-		oos.close();
-*/		trainingset.close();
+		trainingset.close();
 
 		log.info("All models generated");
 
@@ -1454,9 +1264,6 @@ public class MLWrapper {
 		generateTrainingARFF(mode);
 		generateModel();
 
-		// String testFileName="";
-		// elementName="testset";
-		// loadOntologyTriples(testFileName,elementName);
 	}
 
 	// invoke this module if you generated the overall trainingset for
@@ -1515,8 +1322,6 @@ public class MLWrapper {
 	 * @throws Exception
 	 */
 	void generateTestFile(Modes mode) throws Exception {
-		// ArrayList<String> mappedSourceTarget=new ArrayList<String>();
-		// String[] trainingFiles={"psm","bsm","vmm"};
 		for (int m = 0; m < listOfMatchers.size(); m++) {
 
 			AbstractMatcher currentMatcher = listOfMatchers.get(m);
