@@ -941,6 +941,14 @@ public class MLWrapper {
 				refAlign);
 		calculateMeasure(finalFile, refMap);
 		
+		//LWC measure
+		log.info("LWC version");
+		LWCRunner runner=new LWCRunner();
+		runner.setSourceOntology(loadOntology(srcOntology));
+		runner.setTargetOntology(loadOntology(tarOntology));
+		AbstractMatcher lwcMatcher=runner.initializeLWC();
+		displayResults(lwcMatcher.getAlignment(), refMap);
+		
 	}
 
 	/**
@@ -1090,16 +1098,69 @@ public class MLWrapper {
 		 getFilesFromFolder(modelFiles, "mlroot/model");
 		 for(String modelname:modelFiles)
 		 {
+			 log.info("mode used "+mode);
 			 log.info("using model"+modelname);
 			 System.out.println(modelname);
 			 File currentModel = new File(modelname);
 				String model = currentModel.getName();
+			log.info("101-301");
 			 predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
 					"mlroot/mltesting/bench/301/onto.rdf",
 					"mlroot/mltesting/bench/301/refalign.rdf",
 					"mlroot/test/predicted"+ model + ".arff",
 					"mlroot/test/testrefFilecombined",
 					"mlroot/test/finaloutput" + model, mode);
+			 			 
+			 listOfMatchers.clear();
+				listOfTriples.clear();
+				matcherNames.clear();
+			 log.info("101-302");
+			 predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
+						"mlroot/mltesting/bench/302/onto.rdf",
+						"mlroot/mltesting/bench/302/refalign.rdf",
+						"mlroot/test/predicted"+ model + ".arff",
+						"mlroot/test/testrefFilecombined",
+						"mlroot/test/finaloutput" + model, mode);
+			 listOfMatchers.clear();
+				listOfTriples.clear();
+				matcherNames.clear();
+			 log.info("101-303");
+			 predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
+						"mlroot/mltesting/bench/303/onto.rdf",
+						"mlroot/mltesting/bench/303/refalign.rdf",
+						"mlroot/test/predicted"+ model + ".arff",
+						"mlroot/test/testrefFilecombined",
+						"mlroot/test/finaloutput" + model, mode);
+			 listOfMatchers.clear();
+				listOfTriples.clear();
+				matcherNames.clear();
+			 log.info("edas-iasted");
+			 predictresult(modelname,"mlroot/mltesting/conference/edas-iasted/edas.owl",
+						"mlroot/mltesting/conference/edas-iasted/iasted.owl",
+						"mlroot/mltesting/conference/edas-iasted/refalign.rdf",
+						"mlroot/test/predicted"+ model + ".arff",
+						"mlroot/test/testrefFilecombined",
+						"mlroot/test/finaloutput" + model, mode);
+			 listOfMatchers.clear();
+				listOfTriples.clear();
+				matcherNames.clear();
+			 log.info("iasted-sigkdd");
+			 predictresult(modelname,"mlroot/mltesting/conference/iasted-sigkdd/iasted.owl",
+						"mlroot/mltesting/conference/iasted-sigkdd/sigkdd.owl",
+						"mlroot/mltesting/conference/iasted-sigkdd/refalign.rdf",
+						"mlroot/test/predicted"+ model + ".arff",
+						"mlroot/test/testrefFilecombined",
+						"mlroot/test/finaloutput" + model, mode);
+			 listOfMatchers.clear();
+				listOfTriples.clear();
+				matcherNames.clear();
+			 log.info("confOf-sigkdd");
+			 predictresult(modelname,"mlroot/mltesting/conference/confOf-sigkdd/confOf.owl",
+						"mlroot/mltesting/conference/confOf-sigkdd/sigkdd.owl",
+						"mlroot/mltesting/conference/confOf-sigkdd/refalign.rdf",
+						"mlroot/test/predicted"+ model + ".arff",
+						"mlroot/test/testrefFilecombined",
+						"mlroot/test/finaloutput" + model, mode);
 				listOfMatchers.clear();
 				listOfTriples.clear();
 				matcherNames.clear();
@@ -1253,20 +1314,7 @@ public class MLWrapper {
 
 	void displayResults(Alignment<Mapping> predictedMapping,
 			Alignment<Mapping> referenceAlignment) {
-		// ReferenceEvaluationData currentEvaluation =
-		// ReferenceEvaluator.compare(predictedMapping, referenceAlignment);
-		//
-		//
-		// System.out.println(referenceAlignment.size());
-		// System.out.println(currentEvaluation.getReport());
-		// double precision = Utility.roundDouble(
-		// currentEvaluation.getPrecision() * 100.0d, 2);
-		// double recall = Utility.roundDouble( currentEvaluation.getRecall() *
-		// 100.0d, 2);
-		// double fmeasure = Utility.roundDouble(
-		// currentEvaluation.getFmeasure()* 100.0d, 2);
-		//
-		// System.out.println("LWC\n----------------------------------------------------------------------\nPrecision"+precision+"\nRecall"+recall+"\nFmeasure"+fmeasure);
+		
 		log.info("LWC");
 		int count = 0, mapped = 0;
 		for (int i = 0; i < predictedMapping.size(); i++) {
@@ -1274,11 +1322,19 @@ public class MLWrapper {
 			count++;
 			for (int j = 0; j < referenceAlignment.size(); j++) {
 				Mapping currentMapping = referenceAlignment.get(j);
-				if (currentMapping.getEntity1().getUri()
+				
+						
+				
+				if (((currentMapping.getEntity1().getUri()
 						.equals(predictedMap.getEntity1().getUri())
 						&& currentMapping.getEntity2().getUri()
+								.equals(predictedMap.getEntity2().getUri()))
+					||
+						(currentMapping.getEntity1().getUri()
 								.equals(predictedMap.getEntity2().getUri())
-						&& currentMapping.getRelation().equals(
+							&& currentMapping.getEntity2().getUri()
+									.equals(predictedMap.getEntity1().getUri())))
+					&& currentMapping.getRelation().equals(
 								predictedMap.getRelation())) {
 					// System.out.println("match found in ref alignment");
 					mapped++;
@@ -1361,17 +1417,26 @@ public class MLWrapper {
 
 	}
 
-	void callTrainingProcess(Modes mode, double trainingpercent)
+	/**
+	 * 
+	 * @param mode
+	 * @param trainingPercent
+	 * @param inputPath
+	 * @param outputPath
+	 * @throws Exception
+	 */
+	void callTrainingProcess(Modes mode, double trainingPercent)
 			throws Exception {
 		// uncomment the below lines, if you want to generate a new model
 		// ArrayList<TrainingLayout> trainingfs=new ArrayList<TrainingLayout>();
-		log.info("training" + trainingpercent);
+		log.info("training" + trainingPercent);
 		String path[] = { "mlroot/mltraining/bench",
 				"mlroot/mltraining/conference" };
-		String outputbase[] = { "mlroot/output/bench/",
+				
+		String outputBase[] = { "mlroot/output/bench/",
 				"mlroot/output/conference/" };
 		String trainingFileName = "mlroot/output/training.xml";
-		for (int i = 0; i < outputbase.length; i++) {
+		for (int i = 0; i < outputBase.length; i++) {
 			ArrayList<String> files = new ArrayList<String>();
 			GenerateTrainingDS.getFilesFromFolder(files, path[i]);
 			GenerateTrainingDS.generateXML(files, trainingFileName);
@@ -1383,10 +1448,9 @@ public class MLWrapper {
 			loadMatchers(mode);
 			loadOntologyTriples(trainingFileName, elementName);
 			generateMappings();
-			generateTrainingFile(mode, outputbase[i]);
-
+			generateTrainingFile(mode, outputBase[i]);
 		}
-		generatePercentTraining(trainingpercent, outputbase);
+		generatePercentTraining(trainingPercent, outputBase);
 		generateTrainingARFF(mode);
 		generateModel();
 
@@ -1406,24 +1470,28 @@ public class MLWrapper {
 	}
 
 	// use of percent of training to generate model
-	void generatePercentTraining(double percent, String[] outputbase)
+	void generatePercentTraining(double percent, String[] outputBase)
 			throws IOException {
 		BufferedWriter outputWriter = new BufferedWriter(new FileWriter(
 				new File("mlroot/percent/percentfile")));
 
-		int count[] = new int[outputbase.length];
-		for (int i = 0; i < outputbase.length; i++) {
+		int count[] = new int[outputBase.length];
+		
+		//counts the number of lines in the file based on the %
+		for (int i = 0; i < outputBase.length; i++) {
 			LineNumberReader lnr = new LineNumberReader(new FileReader(
-					new File(outputbase[i]
+					new File(outputBase[i]
 							+ "combinedmatchers/trainingFilecombined")));
 			lnr.skip(Long.MAX_VALUE);
 			System.out.println(lnr.getLineNumber());
 			count[i] = (int) (lnr.getLineNumber() * percent);
 
 		}
-		for (int i = 0; i < outputbase.length; i++) {
+		
+		//writes the % of lines into the percent file
+		for (int i = 0; i < outputBase.length; i++) {
 			BufferedReader inputReader = new BufferedReader(new FileReader(
-					outputbase[i] + "combinedmatchers/trainingFilecombined"));
+					outputBase[i] + "combinedmatchers/trainingFilecombined"));
 			log.info("count of rows" + count[i]);
 			int linenum = 0;
 			while (inputReader.ready()) {
@@ -1564,21 +1632,21 @@ public class MLWrapper {
 
 		MLWrapper Trainingwrapper = new MLWrapper();
 		MLWrapper Testwrapper = new MLWrapper();
-		Modes mode = Modes.BASE_MODE_MATCHER_VOTE_LWC;
+		Modes mode = Modes.BASE_MODE;
 		String trainfolder = "mlroot/output";
 		String testfolder = "mlroot/test/matchers";
 		try {
 
-			//Trainingwrapper.cleanup(trainfolder);
-			//Trainingwrapper.callTrainingProcess(mode, 0.7);
+			Trainingwrapper.cleanup(trainfolder);
+			Trainingwrapper.callTrainingProcess(mode, 0.5);
 			Testwrapper.cleanup(testfolder);
 			Testwrapper.callTestProcess(mode);
 
 			Date now = new Date();
 
 			File sourceDir = new File(
-					"C:\\Documents and Settings\\as961967\\workspace\\SvnAgreementMaker\\mlroot");
-			File targetDir = new File("C:\\log\\" + now.getDate() + "."
+					"mlroot");
+			File targetDir = new File("log/" + now.getDate() + "."
 					+ (now.getMonth() + 1) + "." + now.getHours() + "."
 					+ now.getMinutes() + "." + mode.name());
 
