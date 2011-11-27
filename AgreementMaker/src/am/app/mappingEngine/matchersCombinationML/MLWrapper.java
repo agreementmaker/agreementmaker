@@ -862,9 +862,9 @@ public class MLWrapper {
 	 * main module to predict results for test setgiven two ontologies,reference
 	 * alignment and a ML model
 	 */
-	void predictresult(String modelName, String srcOntology,
+	boolean predictresult(String modelName, String srcOntology,
 			String tarOntology, String refAlign, String predicted,
-			String combinedConceptFile, String finalFile, Modes mode)
+			String combinedConceptFile, String finalFile, Modes mode,boolean isFirstTime)
 			throws Exception {
 		// generating the test.xml file needed by MLTestingWrapper
 		String outputFileName = "mlroot/output/test.xml";
@@ -917,13 +917,19 @@ public class MLWrapper {
 				refAlign);
 		calculateMeasure(finalFile, refMap);
 		
-		//LWC measure
-		log.info("LWC version");
-		LWCRunner runner=new LWCRunner();
-		runner.setSourceOntology(loadOntology(srcOntology));
-		runner.setTargetOntology(loadOntology(tarOntology));
-		AbstractMatcher lwcMatcher=runner.initializeLWC();
-		displayResults(lwcMatcher.getAlignment(), refMap);
+		if(isFirstTime)
+		{
+			//LWC measure
+			log.info("LWC version");
+			LWCRunner runner=new LWCRunner();
+			runner.setSourceOntology(loadOntology(srcOntology));
+			runner.setTargetOntology(loadOntology(tarOntology));
+			AbstractMatcher lwcMatcher=runner.initializeLWC();
+			displayResults(lwcMatcher.getAlignment(), refMap);
+			isFirstTime=false;
+		}
+		return isFirstTime;
+		
 		
 	}
 
@@ -1072,6 +1078,7 @@ public class MLWrapper {
 			// classifier
 		 ArrayList<String> modelFiles=new ArrayList<String>();
 		 getFilesFromFolder(modelFiles, "mlroot/model");
+		 boolean isFirstTime=true;
 		 for(String modelname:modelFiles)
 		 {
 			 log.info("mode used "+mode);
@@ -1080,63 +1087,63 @@ public class MLWrapper {
 			 File currentModel = new File(modelname);
 				String model = currentModel.getName();
 			log.info("101-301");
-			 predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
+			isFirstTime= predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
 					"mlroot/mltesting/bench/301/onto.rdf",
 					"mlroot/mltesting/bench/301/refalign.rdf",
 					"mlroot/test/predicted"+ model + ".arff",
 					"mlroot/test/testrefFilecombined",
-					"mlroot/test/finaloutput" + model, mode);
+					"mlroot/test/finaloutput" + model, mode,isFirstTime);
 			 			 
 			 listOfMatchers.clear();
 				listOfTriples.clear();
 				matcherNames.clear();
 			 log.info("101-302");
-			 predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
+			 isFirstTime= predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
 						"mlroot/mltesting/bench/302/onto.rdf",
 						"mlroot/mltesting/bench/302/refalign.rdf",
 						"mlroot/test/predicted"+ model + ".arff",
 						"mlroot/test/testrefFilecombined",
-						"mlroot/test/finaloutput" + model, mode);
+						"mlroot/test/finaloutput" + model, mode,isFirstTime);
 			 listOfMatchers.clear();
 				listOfTriples.clear();
 				matcherNames.clear();
 			 log.info("101-303");
-			 predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
+			 isFirstTime=predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
 						"mlroot/mltesting/bench/303/onto.rdf",
 						"mlroot/mltesting/bench/303/refalign.rdf",
 						"mlroot/test/predicted"+ model + ".arff",
 						"mlroot/test/testrefFilecombined",
-						"mlroot/test/finaloutput" + model, mode);
+						"mlroot/test/finaloutput" + model, mode,isFirstTime);
 			 listOfMatchers.clear();
 				listOfTriples.clear();
 				matcherNames.clear();
 			 log.info("edas-iasted");
-			 predictresult(modelname,"mlroot/mltesting/conference/edas-iasted/edas.owl",
+			 isFirstTime= predictresult(modelname,"mlroot/mltesting/conference/edas-iasted/edas.owl",
 						"mlroot/mltesting/conference/edas-iasted/iasted.owl",
 						"mlroot/mltesting/conference/edas-iasted/refalign.rdf",
 						"mlroot/test/predicted"+ model + ".arff",
 						"mlroot/test/testrefFilecombined",
-						"mlroot/test/finaloutput" + model, mode);
+						"mlroot/test/finaloutput" + model, mode,isFirstTime);
 			 listOfMatchers.clear();
 				listOfTriples.clear();
 				matcherNames.clear();
 			 log.info("iasted-sigkdd");
-			 predictresult(modelname,"mlroot/mltesting/conference/iasted-sigkdd/iasted.owl",
+			 isFirstTime=predictresult(modelname,"mlroot/mltesting/conference/iasted-sigkdd/iasted.owl",
 						"mlroot/mltesting/conference/iasted-sigkdd/sigkdd.owl",
 						"mlroot/mltesting/conference/iasted-sigkdd/refalign.rdf",
 						"mlroot/test/predicted"+ model + ".arff",
 						"mlroot/test/testrefFilecombined",
-						"mlroot/test/finaloutput" + model, mode);
+						"mlroot/test/finaloutput" + model, mode,isFirstTime);
 			 listOfMatchers.clear();
 				listOfTriples.clear();
 				matcherNames.clear();
 			 log.info("confOf-sigkdd");
-			 predictresult(modelname,"mlroot/mltesting/conference/confOf-sigkdd/confOf.owl",
+			 isFirstTime= predictresult(modelname,"mlroot/mltesting/conference/confOf-sigkdd/confOf.owl",
 						"mlroot/mltesting/conference/confOf-sigkdd/sigkdd.owl",
 						"mlroot/mltesting/conference/confOf-sigkdd/refalign.rdf",
 						"mlroot/test/predicted"+ model + ".arff",
 						"mlroot/test/testrefFilecombined",
-						"mlroot/test/finaloutput" + model, mode);
+						"mlroot/test/finaloutput" + model, mode,isFirstTime);
 				listOfMatchers.clear();
 				listOfTriples.clear();
 				matcherNames.clear();
