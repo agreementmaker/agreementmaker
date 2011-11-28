@@ -2,6 +2,8 @@ package am.app.mappingEngine.hierarchy;
 
 public class Utilities {
 	public static String separateWords(String string){
+		if(string == null) return "";
+		
 		string = string.replaceAll("-", " ");
 		string = string.replaceAll("_", " ");
 		string = string.replaceAll("/", " ");

@@ -2,9 +2,9 @@ package am.app.mappingEngine.hierarchy;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.AbstractMatcher;
@@ -20,7 +20,6 @@ import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
-import am.visualization.graphviz.wordnet.WordnetVisualizer;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -39,7 +38,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	
 	/*VARIABLES TO SET THE THRESHOLD*/
 	double inputMatcherThreshold = 1.0;
-	double EQUALITY_THRESHOLD_VALUE;
+	double EQUALITY_THRESHOLD_VALUE = 1.0;
 	double SUBCLASS_THRESHOLD_VALUE;
 	double SUPERCLASS_THRESHOLD_VALUE;
 	
@@ -47,17 +46,17 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	
 	ArrayList<OntModel> otherOntologies;
 	
-//	boolean useWordnet = true;
-//	boolean useInput = true;
-//	boolean useOtherOntologies = true;
-//	boolean useCompoundWords = true;
-//	boolean useSpellingsMatcher = true;
-	
-	boolean useWordnet = false;
-	boolean useInput = false;
-	boolean useOtherOntologies = false;
+	boolean useWordnet = true;
+	boolean useInput = true;
+	boolean useOtherOntologies = true;
 	boolean useCompoundWords = true;
-	boolean useSpellingsMatcher = false;
+	boolean useSpellingsMatcher = true;
+	
+//	boolean useWordnet = true;
+//	boolean useInput = false;
+//	boolean useOtherOntologies = false;
+//	boolean useCompoundWords = false;
+//	boolean useSpellingsMatcher = false;
 	
 	Logger log;
 	
@@ -66,9 +65,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	int wordnetSynsetsLimit = 100;
 	int hypernymsDepthLimit = 100;
 	
-	boolean writeWordnetFiles = false;
-	
-	WordnetVisualizer viz;
+	DecimalFormat format;
 		
 	public HierarchyMatcherModified()
 	{
@@ -86,8 +83,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		
 		//log.setLevel(Level.DEBUG);
 		
-		if(writeWordnetFiles)
-			viz = new WordnetVisualizer();
+		format = new DecimalFormat("0.000");
 	}
 	
 	@Override
@@ -194,11 +190,6 @@ public class HierarchyMatcherModified extends AbstractMatcher
 					
 					Mapping m2 = wsmMatrix.get(i, j);
 					
-					System.out.println("wsm: " + m2);
-					
-					if(m2 != null)
-						System.out.println("WSMSIM: " + m2.getSimilarity());
-					
 					if(m != null && m2 != null && m.getRelation() == m2.getRelation()){
 						double sim = m.getSimilarity(); 
 						double wsmSim = wsmMatrix.getSimilarity(i, j);
@@ -219,19 +210,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 				}
 			}
 		}
-		
-		
-		if(writeWordnetFiles){
-			for (int i = 0; i < sourceClasses.size(); i++) {
-				viz.saveGraphOnFile(sourceClasses.get(i).getLocalName());
-			}
-			for (int i = 0; i < targetClasses.size(); i++) {
-				viz.saveGraphOnFile(targetClasses.get(i).getLocalName());
-			}
-		}
-			
 		//printMatrix(classesMatrix);
-		
 	}
 	
 	private void matchDifferentSpellings() {
@@ -239,10 +218,10 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		String[] targetWords;
 		for (int i = 0; i < sourceClasses.size(); i++) {
 			sourceWords = Utilities.separateWords(sourceClasses.get(i).getLocalName()).split("\\s");
-			System.out.println("sourceWords: " + Arrays.toString(sourceWords));
+			//System.out.println("sourceWords: " + Arrays.toString(sourceWords));
 			for (int j = 0; j < targetClasses.size(); j++) {
 				targetWords = Utilities.separateWords(targetClasses.get(j).getLocalName()).split("\\s");
-				System.out.println("targetWords: " + Arrays.toString(targetWords));
+				//System.out.println("targetWords: " + Arrays.toString(targetWords));
 				
 				if(sourceWords.length == 1 && targetWords.length == 1)
 					if(compareSpellings(sourceWords[0], targetWords[0])){
@@ -252,7 +231,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 						else mapping = new Mapping(sourceClasses.get(i), targetClasses.get(j), 1.0);
 						classesMatrix.set(i, j, mapping);
 						
-						System.out.println("SpellingMapping: " + sourceClasses.get(i).getLocalName() +
+						log.debug("SpellingMapping: " + sourceClasses.get(i).getLocalName() +
 								targetClasses.get(j).getLocalName());
 						
 					}
@@ -833,10 +812,28 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	public void newMapping(Node sourceNode, Node targetNode, double sim, MappingRelation rel, String provenance){
 		Mapping m = new Mapping(sourceNode, targetNode, sim, rel);
 		
+		Mapping old = classesMatrix.get(sourceNode.getIndex(), targetNode.getIndex());
+		
+		if(old != null){
+			
+			if(old.getRelation() == MappingRelation.EQUIVALENCE){
+				if(old.getSimilarity() >= EQUALITY_THRESHOLD_VALUE && m.getRelation() != MappingRelation.EQUIVALENCE)
+					log.debug("contraddiction1: " + sourceNode.getLocalName() + " " + targetNode.getLocalName() + " " + old.getSimilarity() + old.getRelation() +
+							m.getSimilarity() + m.getRelation());
+			}
+			//Here we now the stored is not of equivalence type
+			else if(old.getRelation() != m.getRelation()){
+				log.debug("contraddiction2: " + sourceNode.getLocalName() + " " + targetNode.getLocalName() + " " + old.getSimilarity() + old.getRelation() +
+						" " + m.getSimilarity() + " " + m.getRelation());
+			}
+			
+		}
+				
 		if(useProvenanceToDebug){
 			provenance += "|" + sourceNode.getComment() + "|" + targetNode.getComment() 
 					+ "|" + LODUtils.superclassesString(sourceNode) + "|" + LODUtils.superclassesString(targetNode);
 		}
+				
 		m.setProvenance(provenance);
 		classesMatrix.set(sourceNode.getIndex(), targetNode.getIndex(), m);
 	}

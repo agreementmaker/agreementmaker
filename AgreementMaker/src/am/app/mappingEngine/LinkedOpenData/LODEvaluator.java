@@ -283,19 +283,31 @@ public class LODEvaluator {
 		
 		HashSet<MatchingPair> foundTargets = new HashSet<MatchingPair>();
 		for (int i = 0; i < toEvaluate.size(); i++) {
+			
 			found = false;
 			p1 = toEvaluate.get(i);
+			
+			if(p1.similarity < threshold){
+				toEvaluate.remove(p1);
+				i--;
+				continue;
+			}
+				
+			
 			//System.out.println("Presented: "+ p1.sourceURI + " " + p1.targetURI + " " + p1.similarity);
 			for (int j = 0; j < reference.size(); j++) {
 				p2 = reference.get(j);
 				//System.out.println(p2.getTabString());
+							
 				
 				if(p1.sourceURI.equals(p2.sourceURI)){
 					right = p2;
 				}
 				if(p1.sourceURI.equals(p2.sourceURI) && p1.targetURI.equals(p2.targetURI)
-						&& p1.relation.equals(p2.relation) && (p1.similarity > threshold)){
-					//System.out.println("Right\t" + p1.getTabString().replaceAll("\\|","\t"));
+						&& p1.relation.equals(p2.relation) && (p1.similarity >= threshold)){
+					
+					if(printRightMappings)
+						System.out.println("Right\t" + p1.getTabString().replaceAll("\\|","\t"));
 					count++;
 					found = true;
 					foundTargets.add(p2);
@@ -366,7 +378,7 @@ public class LODEvaluator {
         //else  fm = (1 + ALPHA) * (prec * rec) / (ALPHA * prec + rec);
         else fm = 2 * (prec * rec) / (prec + rec);  // from Ontology Matching book
         
-        System.out.print((float)count/toEvaluate.size() + "\t" +  (float)count/reference.size() + "\t");
+        System.out.print(prec + "\t" +  rec + "\t");
 		
         rd.setPrecision(prec);
         rd.setRecall(rec);
@@ -562,6 +574,8 @@ public class LODEvaluator {
 //				LODOntologies.DBPEDIA_URI, LODOntologies.MUSIC_ONTOLOGY_URI);
 		LODEvaluator eval = new LODEvaluator();
 		
+		eval.printEverything();
+		
 //		for (int i = 0; i < 10; i++) {
 //			double th = 0.1 * (i+1);
 //			System.out.println(th);
@@ -570,7 +584,9 @@ public class LODEvaluator {
 //			System.out.println("\n");
 //		}
 		
-		eval.setThreshold(0.66);
+		
+		
+		eval.setThreshold(0.1);
 		eval.evaluateAllTestsOld();
 		
 		Logger.getRootLogger().setLevel(Level.ERROR);
@@ -578,77 +594,7 @@ public class LODEvaluator {
 		String report = "";
 		
 		//eval.evaluateAllTests();
-		
-		
 		//eval.evaluateAllTestsEq();
-		//eval.testRefUtilsDiff("LOD/batch/music-bbc.txt", LODReferences.MUSIC_BBC, true);
-
-		
-//		
-//		Ontology sOnt = null;
-//		Ontology tOnt = null;
-//		
-//		LODOntology sourceOntology = LODOntology.MUSIC_ONTOLOGY;
-//		LODOntology targetOntology = LODOntology.BBC_PROGRAM;
-//		
-//		
-//		if(sourceOntology != null && targetOntology != null){
-//			sOnt = OntoTreeBuilder.loadOntology(new File(sourceOntology.getFilename()).getAbsolutePath(), sourceOntology.getLang(), sourceOntology.getSyntax());			
-//			tOnt = OntoTreeBuilder.loadOntology(new File(targetOntology.getFilename()).getAbsolutePath(), targetOntology.getLang(), targetOntology.getSyntax());			
-//			
-//		
-//			for (int i = 0; i < sOnt.getClassesList().size(); i++) {
-//				System.out.println(sOnt.getClassesList().get(i).getUri());
-//			}
-//			
-//		}
-//		
-		
-		
-		//eval.cleanReference();
-		
-		//eval.testDiff("LOD/batchNoLimit/music-bbc.txt", "LOD/batch/music-bbc.txt", null, null, false);
-//		report += eval.testDiff("LOD/batch/music-bbc.txt", LODReferences.MUSIC_BBC, null, null, true);
-//		System.out.println(report);
-		
-		
-		//report = eval.testDiff("LOD/batch/sioc-foaf.txt", "LOD/batchNoLimit/sioc-foaf.txt", null, null, false);
-		//report = eval.testDiff("LOD/batch/sioc-foaf.txt", LODReferences.SIOC_FOAF_FIXED, null, null, true);		
-		
-		//System.out.println(report);
-		//eval.evaluate("LOD/lastResults/music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA);
-		//eval.evaluate("LOD/lastResults/foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
-		//eval.evaluate("LOD/lastResults/geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA);
-		//eval.evaluate("LOD/lastResults/sioc-foaf.txt", LODReferences.SIOC_FOAF);
-		
-		//eval.evaluate("LOD/batch/music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA);
-		//eval.testDiff("LOD/batch/music-dbpedia.txt", "LOD/lastResults/music-dbpedia.txt", false);
-		//eval.testDiff("LOD/batch/music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA, true);
-		
-		
-		//eval.evaluate("LOD/batch/foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
-		//eval.evaluate("LOD/lastResults/geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA);
-		//eval.evaluate("LOD/batch/sioc-foaf.txt", LODReferences.SIOC_FOAF_FIXED);
-		//eval.testDiff("LOD/batch/sioc-foaf.txt", "LOD/lastResults/sioc-foaf.txt", false);
-		//eval.testDiff("LOD/batch/sioc-foaf.txt", LODReferences.SIOC_FOAF, true);
-		//System.out.println("MUSIC_BBC");
-		//eval.testDiff("LOD/batch/music-bbc.txt", LODReferences.MUSIC_BBC, true);
-		//eval.testDiff("LOD/batch/music-bbc.txt", "LOD/lastResults/music-bbc.txt", false);
-		//eval.evaluate("LOD/batch/music-bbc.txt", LODReferences.MUSIC_BBC);
-		
-		//eval.testDiff("LOD/batch/music-bbc.txt", LODReferences.MUSIC_BBC, true);
-		//eval.testDiff("LOD/batch/swc-dbpedia.txt", "LOD/batchOld/swc-dbpedia.txt", false);
-		
-		//eval.testDiff("LOD/batch/music-bbc.txt", LODReferences.MUSIC_BBC, LODOntology.MUSIC_ONTOLOGY, LODOntology.BBC_PROGRAM, true);
-		
-		//eval.testDiff("LOD/batch/music-bbc.txt", "LOD/batchOld/music-bbc.txt", false);
-		
-		
-		//System.out.println("SWC_DBPEDIA");
-		//eval.evaluate("LOD/batch/swc-dbpedia.txt", LODReferences.SWC_DBPEDIA);
-		
-		//System.out.println("SWC_AKT");
-		//eval.evaluate("LOD/batch/swc-akt.txt", LODReferences.SWC_AKT);
 	}
 }
 

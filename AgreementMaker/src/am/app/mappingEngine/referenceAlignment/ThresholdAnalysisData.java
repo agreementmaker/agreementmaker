@@ -3,12 +3,18 @@ package am.app.mappingEngine.referenceAlignment;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openjena.atlas.logging.Log;
+
+import com.ibm.icu.text.DecimalFormat;
+
 public class ThresholdAnalysisData {
 	private double[] thresholds;
 	private List<ReferenceEvaluationData> evaluationData;
 	double bestRun;
 	String matcherName; 
 	String report;
+	
+	DecimalFormat format = new DecimalFormat("0.000");
 	
 	public enum Combination { AVG };
 	
@@ -65,17 +71,27 @@ public class ThresholdAnalysisData {
 	 * @return
 	 */
 	public static double getBestOverallRun(List<ThresholdAnalysisData> data, Combination combination){
+		
 		if(data.size() < 1) return -1;		
 		
 		double[] thresholds = data.get(0).getThresholds();
 		double[] fMeasures = new double[thresholds.length];
 		
+		double[] precisions = new double[thresholds.length];
+		double[] recalls = new double[thresholds.length];
+			
 		for (int i = 0; i < thresholds.length; i++) {
 			for (int j = 0; j < data.size(); j++) {
-				fMeasures[i] += data.get(j).getEvaluationData(i).getFmeasure();
+				precisions[i] += data.get(j).getEvaluationData(i).getPrecision() / data.size();
+				recalls[i] += data.get(j).getEvaluationData(i).getRecall() / data.size();
+				//fMeasures[i] += data.get(j).getEvaluationData(i).getFmeasure();
 			}	
 		}
-			
+				
+		for (int i = 0; i < thresholds.length; i++) {
+			fMeasures[i] = 2 * precisions[i] * recalls[i] / (precisions[i] + recalls[i]);
+		}
+		
 		double max = 0;
 		double th = 0;
 		for (int i = 0; i < fMeasures.length; i++) {

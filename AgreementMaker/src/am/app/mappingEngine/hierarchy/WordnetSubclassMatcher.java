@@ -3,6 +3,7 @@ package am.app.mappingEngine.hierarchy;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -11,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import simpack.measure.weightingscheme.StringTFIDF;
 
+import com.hp.hpl.jena.ontology.OntClass;
 import com.wcohen.ss.api.StringWrapper;
 
 import edu.smu.tspell.wordnet.NounSynset;
@@ -31,6 +33,7 @@ import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.utility.referenceAlignment.AlignmentUtilities;
+import am.visualization.graphviz.wordnet.WordnetVisualizer;
 
 public class WordnetSubclassMatcher extends AbstractMatcher{
 
@@ -53,7 +56,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 	
 	private WordNetDatabase WordNet;
 	
-	double addidtionalConstant = 0.0255943;
+	//double addidtionalConstant = 0.0;
 	
 	DecimalFormat format = new DecimalFormat("0.000");
 		
@@ -65,14 +68,32 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 	
 	double hypernymsThreshold = 0.0;
 	
-	public enum SubclassSimilarityFunction { COUNT, DISTANCE, DISTANCE_SOURCE, DISTANCE_SOURCE_TARGET };
-	
+	public enum SubclassSimilarityFunction { COUNT, DISTANCE, DISTANCE_SOURCE, DISTANCE_SOURCE_TARGET, COUNT_SOURCE_TARGET };
 	private SubclassSimilarityFunction subclassFunction = SubclassSimilarityFunction.DISTANCE;
+	
+	public enum NormalizationFunction { HYPERNYMS_COUNT, HYPERNYMS_LOG, NONE };
+	private NormalizationFunction normalizationFunction = NormalizationFunction.HYPERNYMS_LOG;
+	
+	boolean writeWordnetFiles = false;
+	
+	boolean useSuperclasses = true;
+	
+	WordnetVisualizer viz;
+	
+	boolean useAdditionalConstant = false;
+	double additionalConstant = 0.0255943;
+	double nonZeroThreshold = 0.45;
+	boolean useNonZero = true;
 	
 	public WordnetSubclassMatcher(){
 		initWordnet();
 		log = Logger.getLogger(WordnetSubclassMatcher.class);
 		//log.setLevel(Level.DEBUG);
+		
+		if(writeWordnetFiles){
+			viz = new WordnetVisualizer();
+		}
+			
 	}
 	
 	@Override
@@ -83,7 +104,10 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 		sourceClasses = sourceOntology.getClassesList();
 		targetClasses = targetOntology.getClassesList();
 		classesMatrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, alignType.aligningClasses);
-		buildCommentVectors();
+		
+		log.setLevel(Level.DEBUG);
+		buildVirtualDocuments();
+		log.setLevel(Level.INFO);
 	}
 	
 	
@@ -97,7 +121,8 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 		Node targetNode;
 		List<ScoredSynset> sourceScored;
 		List<ScoredSynset> targetScored;
-		double match;
+		double matchSub;
+		double matchSuper;
 		for (int i = 0; i < sourceClasses.size(); i++){
 			sourceNode = sourceClasses.get(i);
 			log.debug("Source: " + sourceNode.getUri());
@@ -110,6 +135,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 			
 			for (int j = 0; j < targetClasses.size(); j++) {
 				targetNode = targetClasses.get(j);
+							
 				targetScored = targetScoredSynsets.get(targetNode);
 					
 				log.debug("Matching " + sourceNode.getLocalName() + " " + targetNode.getLocalName());
@@ -118,28 +144,84 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 				//log.debug("targetComment: " + targetNode.getComment());
 				log.debug(targetScored);
 				
-				match = synsetsInHypernymsSimilarity(sourceScored, targetScored, sourceNode, targetNode, true);	
+				matchSub = synsetsInHypernymsSimilarity(sourceScored, targetScored, sourceNode, targetNode, true);	
 				
-				System.out.println("match: " + match);
+				log.debug("HypScore ST: " + matchSub);
 				
-				log.debug("HypScore ST: " + match);
+				if(matchSub > hypernymsThreshold)
+					newMapping(sourceNode, targetNode, matchSub, MappingRelation.SUPERCLASS, "Wordnet mediator ST ");
 				
-				if(match > hypernymsThreshold)
-					newMapping(sourceNode, targetNode, match, MappingRelation.SUPERCLASS, "Wordnet mediator ST ");
+				matchSuper = synsetsInHypernymsSimilarity(targetScored, sourceScored, targetNode, sourceNode, false);	
 				
-				match = synsetsInHypernymsSimilarity(targetScored, sourceScored, targetNode, sourceNode, false);	
+				if(matchSuper > hypernymsThreshold)
+					newMapping(sourceNode, targetNode, matchSuper, MappingRelation.SUBCLASS, "Wordnet mediator TS ");
 				
-				if(match > hypernymsThreshold)
-					newMapping(sourceNode, targetNode, match, MappingRelation.SUBCLASS, "Wordnet mediator TS ");
+				log.debug("HypScore TS: " + matchSuper);	
 				
-				log.debug("HypScore TS: " + match);	
+				if(matchSub > 0 && matchSuper > 0){
+					System.out.println("Weird: " + matchSub + " " + matchSuper + " " + sourceNode + " " + targetNode);					
+				}
+							
 			}
 		}
 		
-		normalizeMatrix();
+		if(writeWordnetFiles){
+			log.info("Writing wordnet files...");
+			writeWordnetFiles();
+			log.info("Done");
+			
+		}
+		
+		//normalizeMatrix();
 		
 	}
 	
+	private void writeWordnetFiles(){
+		Node source;
+		Node target;
+		List<ScoredSynset> sourceScored;
+		List<ScoredSynset> targetScored;
+		HashMap<Synset, ScoredSynset> sourceScoredBySynset;
+		HashMap<Synset, ScoredSynset> targetScoredBySynset;
+		boolean invert;
+		for (int i = 0; i < sourceClasses.size(); i++) {
+			source = sourceClasses.get(i);
+			sourceScored = sourceScoredSynsets.get(source);
+			
+			sourceScoredBySynset = new HashMap<Synset, ScoredSynset>();
+			for (int k = 0; k < sourceScored.size(); k++) {
+				sourceScoredBySynset.put(sourceScored.get(k).getSynset(), sourceScored.get(k));
+			}
+			
+			for (int j = 0; j < targetClasses.size(); j++) {
+				
+				Mapping m = classesMatrix.get(i, j);
+				if(m == null || m.getSimilarity() < 0.01) continue;
+				
+				if(m.getRelation() == MappingRelation.SUPERCLASS)
+					invert = true;
+				else invert = false;
+				
+				System.out.println(m.getSimilarity());
+				
+				target = targetClasses.get(j);
+				
+				targetScored = targetScoredSynsets.get(target);
+				targetScoredBySynset = new HashMap<Synset, ScoredSynset>();
+				for (int t = 0; t < targetScored.size(); t++) {
+					targetScoredBySynset.put(targetScored.get(t).getSynset(), targetScored.get(t));
+				}
+				
+				if(!invert)
+					viz.saveGraphOnFile(source.getLocalName() + " - " + target.getLocalName() + " " + format.format(m.getSimilarity()),
+							sourceScoredBySynset, targetScoredBySynset);
+				else viz.saveGraphOnFile(target.getLocalName() + " - " + source.getLocalName() + " " + format.format(m.getSimilarity()),
+						targetScoredBySynset, sourceScoredBySynset);
+			}
+			
+		}
+		
+	}
 	
 	private void normalizeMatrix() {
 		double max = classesMatrix.getMaxValue();
@@ -172,7 +254,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 		}
 	}
 		
-	private void buildCommentVectors() {
+	private void buildVirtualDocuments() {
 		log.info("Building comments vectors");
 		
 		NormalizerParameter param = new NormalizerParameter();
@@ -252,6 +334,8 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 			
 			//double score = 
 			
+			boolean atLeastOneHighSimilarity = false;
+			
 			for (NounSynset synset : sourceSynsetList) {
 				String definition = synsetDefinitions.get(synset);
 				
@@ -260,16 +344,23 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 					sim = tfidfClasses.getSimilarity(comment, definition);	
 				}
 				else{
-					System.err.println("Problems with comments or definition");
-					System.err.println(comment);
-					System.err.println(definition);
+					log.error("Problems with comments or definition");
+					log.error(comment);
+					log.error(definition);
 				}
 				
 				log.debug("definition: " + synset.getDefinition());
 				log.debug("definition: " + definition);
 				log.debug("vectorSim:\t" + sim + "\t" + node.getLocalName());
 				
-				sim += addidtionalConstant;
+				if(useNonZero){
+					if(sim >= nonZeroThreshold){
+						atLeastOneHighSimilarity = true;
+					}
+				}
+				
+				if(useAdditionalConstant)
+					sim += additionalConstant;
 				
 				//TODO figure out how to use the similarity
 				//System.out.println("sim:" + sim);
@@ -285,25 +376,41 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 			
 			log.debug("sum:" + sum);
 			
-			//if(sum != 0) System.out.println("sum != 0");
-			
-			for (int j = 0; j < scoredList.size(); j++) {
-				if(sum == 0) 
-					scoredList.get(j).setScore((double)1/size);
-				else {
-					scoredList.get(j).setScore(scoredList.get(j).getScore()/sum);
-					log.debug(scoredList.get(j));
+			if(useNonZero){
+				if(atLeastOneHighSimilarity){
+					for (int j = 0; j < scoredList.size(); j++) {
+						if(scoredList.get(j).getScore() < nonZeroThreshold){
+							scoredList.remove(scoredList.get(j));
+							j--;
+						}
+					}
 				}
 			}
 			
-			String weights = "";
-			weights += "[";
+			
+			//if(sum != 0) System.out.println("sum != 0");
+			String weights = "[";
+			for (int j = 0; j < scoredList.size(); j++) {
+				double score = scoredList.get(j).getScore();
+				weights += format.format(scoredList.get(j).getScore());
+				if(j < scoredList.size() - 1) weights += ",";
+				if(sum == 0) 
+					scoredList.get(j).setScore((double)1 / size);
+				else {
+					scoredList.get(j).setScore(score / sum);
+					log.debug(scoredList.get(j));
+				}
+			}
+			weights += "]";	
+			log.debug("weights: " + weights);
+			
+			weights = "[";
 			for (int j = 0; j < scoredList.size(); j++) {
 				weights += format.format(scoredList.get(j).getScore());
 				if(j < scoredList.size() - 1) weights += ",";
 			}
 			weights += "]";	
-			log.debug(weights);
+			log.debug("weightsMod: " + weights);
 			
 			scoredSynsets.put(node, scoredList);
 		}		
@@ -334,18 +441,37 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 	public List<AMStringWrapper> createNormalizedDocuments(List<Node> nodeList, Normalizer normalizer){
 		Node source;
 		String comment;
+		OntClass ontClass;
+		List<OntClass> superClasses;
 		List<AMStringWrapper> normalizedDocuments = new ArrayList<AMStringWrapper>();
 		for (int i = 0; i < nodeList.size(); i++) {
 			source = nodeList.get(i);
 			comment = source.getComment();
-			//log.debug("comment: " + comment);
 			
+			log.debug("Building virtual document for " + source.getLocalName());
+			
+			log.debug("comment: " + comment);
+						
+			ontClass = source.getResource().as(OntClass.class);
+			superClasses = ontClass.listSuperClasses().toList();
+			
+			String supString = "";
+			
+			for (int j = 0; j < superClasses.size(); j++) {
+				supString += Utilities.separateWords(superClasses.get(j).getLocalName()) + " ";
+			}
+			
+			log.debug("superclasses: " + supString);
+			
+			if(useSuperclasses)
+				comment += " " + supString;
+						
 			normalizer.addStopword(source.getLocalName());
 			comment = normalizer.normalize(comment);
 			normalizer.removeStopword(source.getLocalName());
+						
+			log.debug("normComment: " + comment);
 			
-			
-			//log.debug("normComment: " + comment);
 			normalizedDocuments.add(new AMStringWrapper(comment));
 		}
 		return normalizedDocuments;
@@ -422,17 +548,24 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 		double matchS = 0.0;
 		double matchST = 0.0;
 		double count = 0;
+		double countST = 0;
 		
 		MatchingPair solution = null;
 		
-		if(sourceList.size() > 0 && targetList.size() > 0 && referenceAlignment != null)
+		if(sourceList.size() == 0 || targetList.size() == 0)
+			return 0.0;
+		
+		if(referenceAlignment != null)
 			solution = AlignmentUtilities.candidatesContainSolution(referenceAlignment, 
 				sourceList.get(0).getName(), targetList.get(0).getName());
 				
 		boolean oneMatch = false;
 		
+		HashSet<Synset> hypernymsSet = new HashSet<Synset>();
+		
 		for (int i = 0; i < sourceList.size(); i++) {
 			source = sourceList.get(i);
+			
 			for (int j = 0; j < targetList.size(); j++) {
 				
 				target = targetList.get(j);
@@ -444,6 +577,11 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 				for (int k = 0; k < hypernymsByLevel.size(); k++) {
 					hypernyms = hypernymsByLevel.get(k);
 					sim = sim * 0.9;
+					
+					for (int t = 0; t < hypernyms.size(); t++) {
+						hypernymsSet.add(hypernyms.get(t));
+					}
+					
 					if(hypernyms.contains(source.getSynset())){
 						oneMatch = true;
 						
@@ -457,13 +595,14 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 						match += sim;
 						matchS += sim * source.getScore();
 						matchST += sim * source.getScore() * target.getScore();
+						countST += source.getScore() * target.getScore();
 						
 						if(referenceAlignment != null){
 							if(solution == null) 
 								report += "\tNo"; 
 							else report += "\tYes\t" + solution.relation;
-							
 						}
+						
 						log.debug(report);
 					}					
 				}
@@ -484,20 +623,31 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 		if(sourceList.size() == 0)
 			return 0.0;
 		
-		if(subclassFunction == SubclassSimilarityFunction.COUNT)
-			return count;
-		else if(subclassFunction == SubclassSimilarityFunction.DISTANCE)
-			return match;
-		else if(subclassFunction == SubclassSimilarityFunction.DISTANCE_SOURCE)
-			return matchS;
-		else if(subclassFunction == SubclassSimilarityFunction.DISTANCE_SOURCE_TARGET)
-			return matchST;
+		double retValue = 0.0;
 		
-		return match;
+		if(subclassFunction == SubclassSimilarityFunction.COUNT)
+			retValue = count / 3;
+		else if(subclassFunction == SubclassSimilarityFunction.DISTANCE)
+			//retValue = match / 2;
+			retValue = match;
+		else if(subclassFunction == SubclassSimilarityFunction.DISTANCE_SOURCE)
+			retValue = matchS * 3;
+		else if(subclassFunction == SubclassSimilarityFunction.DISTANCE_SOURCE_TARGET)
+			retValue = matchST * 5;
+		else if(subclassFunction == SubclassSimilarityFunction.COUNT_SOURCE_TARGET)
+			retValue = countST * 5;
+		
+		double hypernymsCount = hypernymsSet.size();
+		
+		if(normalizationFunction == NormalizationFunction.HYPERNYMS_COUNT)
+			retValue /= hypernymsCount;
+		else if(normalizationFunction == NormalizationFunction.HYPERNYMS_LOG)
+			retValue /= Math.log(hypernymsCount);
+		
+		return retValue;
 	}
 	
 	public void newMapping(Node sourceNode, Node targetNode, double sim, MappingRelation rel, String provenance){
-		System.out.println("NEW MAPPING!");
 		Mapping m = new Mapping(sourceNode, targetNode, sim, rel);
 		m.setProvenance(provenance);
 		classesMatrix.set(sourceNode.getIndex(), targetNode.getIndex(), m);

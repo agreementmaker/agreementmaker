@@ -15,6 +15,7 @@ import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.LinkedOpenData.LODUtils;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -261,7 +262,7 @@ public class AlignmentUtilities {
         //else  fm = (1 + ALPHA) * (prec * rec) / (ALPHA * prec + rec);
         else fm = 2 * (prec * rec) / (prec + rec);  // from Ontology Matching book
         
-        System.out.print((float)count/toEvaluate.size() + "\t" +  (float)count/reference.size() + "\t");
+        System.out.print(prec + "\t" +  rec + "\t");
 		
         rd.setPrecision(prec);
         rd.setRecall(rec);
@@ -312,10 +313,10 @@ public class AlignmentUtilities {
 		report+="Threshold:\tFound\tCorrect\tReference\tPrecision\tRecall\tF-Measure\n";
 		
 		// output the info to the console for easy copy/pasting
-		System.out.println("Threshold, " +
-				   "Precision, " +
-				   "Recall, " +
-				   "F-Measure" );
+//		System.out.println("Threshold, " +
+//				   "Precision, " +
+//				   "Recall, " +
+//				   "F-Measure" );
 		for(int t = 0; t < thresholds.length; t++) {
 			th = thresholds[t];
 			toBeEvaluated.setThreshold(th);
@@ -324,12 +325,12 @@ public class AlignmentUtilities {
 			if(referenceSet != null)
 				rd = ReferenceEvaluator.compare(evaluateSet, referenceSet);
 			else{
+				
 				Alignment<Mapping> alignment = toBeEvaluated.getAlignment();
 				List<MatchingPair> pairs = AlignmentUtilities.alignmentToMatchingPairs(alignment);
-				
-				//removeDuplicates(referencePairs);
-				
-				//removeDuplicates(pairs);
+										
+				removeDuplicates(referencePairs);
+				removeDuplicates(pairs);
 				
 				rd = AlignmentUtilities.compare(pairs, referencePairs);
 				tad.addEvaluationData(rd);
@@ -343,10 +344,10 @@ public class AlignmentUtilities {
 			sumCorrect += rd.getCorrect();
 			
 			// output this information to the console for easy copy/pasting  // TODO: make a button to be able to copy/paste this info
-			System.out.println(Double.toString(th) + ", " +
-					   Double.toString(rd.getPrecision()) + ", " +
-					   Double.toString(rd.getRecall()) + ", " +
-					   Double.toString(rd.getFmeasure()) );
+//			System.out.println(Double.toString(th) + ", " +
+//					   Double.toString(rd.getPrecision()) + ", " +
+//					   Double.toString(rd.getRecall()) + ", " +
+//					   Double.toString(rd.getFmeasure()) );
 			
 			if(maxrd == null || maxrd.getFmeasure() < rd.getFmeasure()) {
 				maxrd = rd;

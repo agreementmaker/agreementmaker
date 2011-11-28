@@ -1,9 +1,17 @@
 package am.visualization.graphviz.wordnet;
 
 import java.io.File;
+import java.text.DecimalFormat;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.log4j.Logger;
 
 import am.Utility;
+import am.app.mappingEngine.hierarchy.ScoredSynset;
 import am.visualization.graphviz.GraphViz;
 import edu.smu.tspell.wordnet.NounSynset;
 import edu.smu.tspell.wordnet.Synset;
@@ -14,8 +22,16 @@ public class WordnetVisualizer {
 	private WordNetDatabase WordNet;
 	HashMap<Synset, String> nodes;
 	
+	HashMap<Synset, ScoredSynset> sourceScoredBySynset;
+	HashMap<Synset, ScoredSynset> targetScoredBySynset;
+	
 	boolean replicate;
 	
+	HashMap<Synset, String> definitions;
+	
+	Logger log;
+	
+	DecimalFormat format = new DecimalFormat("0.000");
 	
 	public WordnetVisualizer(){
 		// Initialize the WordNet Interface (JAWS)
@@ -24,6 +40,8 @@ public class WordnetVisualizer {
 		String cwd = System.getProperty("user.dir");
 		String wordnetdir = cwd + "/wordnet-3.0";
 		System.setProperty("wordnet.database.dir", wordnetdir);
+		
+		log = Logger.getLogger(WordnetVisualizer.class);
 		
 		// Instantiate 
 		try 
@@ -42,21 +60,21 @@ public class WordnetVisualizer {
 		
 		//System.out.println(synsets);
 		
-		System.out.print("[");
+		log.debug("[");
 		for(Synset syn: synsets){
-			System.out.print("[");
+			log.debug("[");
 			//System.out.println(syn);
 			//syn.
 			int l = syn.getWordForms().length;
 			for(int i = 0; i < l; i++){
 				String str = syn.getWordForms()[i];
 				if(i != l-1)
-					System.out.print(str + ", ");
-				else System.out.print(str);
+					log.debug(str + ", ");
+				else log.debug(str);
 			}
-			System.out.print("]");
+			log.debug("]");
 		}
-		System.out.println("]");
+		log.debug("]");
 	
 		return synsets;
 	}
@@ -73,34 +91,53 @@ public class WordnetVisualizer {
 	    
 	    gv.addln("edge [dir=\"back\"];");
 	    
-	    char ch = 'a';
-	    ch--;
-	    String id;
+	    String options;
 	    String line;
-	    for(Synset syn: synsets){
-	    	ch++;
-	    	id = ch + "";
-	    	nodes.put(syn, id);
-	    	String options = "color = red" + ", taillabel = \"bla bla\"";
-			line = synsetToLine(syn, id, options);
-	    	
-			line += "\n" + getHypernymSource(syn, id, 2, 10, true);
-			gv.addln(line);
-			
-			String def = "bla bla bla <br/>bla bla bla";
-			def = syn.getDefinition();
-			
-			int every = 6;
-			int count = 0;
-			for (int i = 0; i < def.length(); i++) {
-				if(def.charAt(i)==' ') count++;
-				if(count==every){
-					def = def.substring(0,i) + "<br/>" + def.substring(i+1);
-					count = 0;
+	    String id;
+	        
+	    
+	    if(targetScoredBySynset != null){
+			for(ScoredSynset scored: targetScoredBySynset.values()){
+				if(scored != null){
+					String targetId = scored.hashCode() + "";  
+					nodes.put(scored.getSynset(), targetId);
+					String targetDef = scored.getSynset().getDefinition();
+					targetDef = format.format(scored.getScore()) + " " + targetDef;
+					targetDef = stringToHtml(targetDef);
+					options = "color = blue";
+					line = synsetToLine(scored.getSynset(), targetId, options)  + "\n";
+					gv.addln(line);
+					line = targetId + " -> " + targetId + " [ label=<" + targetDef + ">, color=transparent]";
+					gv.addln(line);
 				}
 			}
+		}
+	    	    
+	    //char ch = 'a';
+	    //ch--;
+	    for(Synset syn: synsets){
+	    	//ch++;
+	    	//id = ch + "";
+	    	//System.out.println(syn);
+	    	id = syn.hashCode() + "";
+	    	nodes.put(syn, id);
+	    	options = "color = red" + ", taillabel = \"bla bla\"";
+			line = synsetToLine(syn, id, options);
+	    	
+			line += "\n" + getHypSource(syn, id, 2, 10, true);
+			gv.addln(line);
 			
+			String def = syn.getDefinition();
 			
+			if(sourceScoredBySynset != null){
+				ScoredSynset scored = sourceScoredBySynset.get(syn);
+				if(scored != null){
+					def = format.format(scored.getScore()) + " " + def;
+				}
+			}
+						
+			def = stringToHtml(def);
+					
 			line = id + " -> " + id + " [ label=<" + def + ">, color=transparent]";
 			gv.addln(line);
 	    }
@@ -114,25 +151,52 @@ public class WordnetVisualizer {
 	}
 	
 	
+	private String stringToHtml(String def) {
+		int every = 6;
+		int count = 0;
+		for (int i = 0; i < def.length(); i++) {
+			if(def.charAt(i)==' ') count++;
+			if(count==every){
+				def = def.substring(0,i) + "<br/>" + def.substring(i+1);
+				count = 0;
+			}
+		}
+		return def;
+	}
+
 	//
-	public String getHypernymSource(Synset syn, String id, int depth, int limit, boolean hypernyms){
+	public String getHypSource(Synset syn, String id, int depth, int limit, boolean hypernyms){
 		NounSynset[] parents;
 		if(hypernyms)
 			parents = ((NounSynset)syn).getHypernyms();
 		else parents = ((NounSynset)syn).getHyponyms();
 		String ret = "";
 		
-		char base = 'a';
-		char ch = (char)(base - 1);
+		//char base = 'a';
+		//char ch = (char)(base - 1);
 		for (int i = 0; i < parents.length; i++) {
-			ch = (char) (base + (i % 25));
-			String id2 = id + "" + ch;
+			//ch = (char) (base + (i % 25));
+			//String id2 = id + "" + ch;
+			
+			String id2 = parents[i].hashCode() + ""; 
 			
 			//System.out.println(hypernyms[i].toString());
 			
 			if(!nodes.containsKey(parents[i])){
 				nodes.put(parents[i], id2);
-				ret += synsetToLine(parents[i], id2, null)  + "\n";
+				
+				String options = null;
+				
+//				if(targetScoredBySynset != null){
+//					ScoredSynset scored = targetScoredBySynset.get(parents[i]);
+//					if(scored != null){
+//						String def = format.format(scored.getScore()) + " " + parents[i].getDefinition();
+//						options = "color = blue";
+//						ret = id2 + " -> " + id2 + " [ label=<" + stringToHtml(def) + ">, color=transparent]";
+//					}
+//				}
+				
+				ret += synsetToLine(parents[i], id2, options)  + "\n";
 			}
 			else{
 				id2 = nodes.get(parents[i]);
@@ -144,7 +208,7 @@ public class WordnetVisualizer {
 			
 			
 			if(depth < limit)
-				ret += getHypernymSource(parents[i], id2, depth+1, limit, hypernyms);
+				ret += getHypSource(parents[i], id2, depth+1, limit, hypernyms);
 				
 			if(i != parents.length-1 && depth==limit)
 				 ret += "\n";
@@ -153,6 +217,8 @@ public class WordnetVisualizer {
 	}
 	
 	public String synsetToLine(Synset syn, String id, String options){
+		//" [ label=<" + def + ">, color=transparent]"
+		
 		String line = id + " [label = \"";	
     	int l = syn.getWordForms().length;
 		for(int i = 0; i < l; i++){
@@ -170,6 +236,42 @@ public class WordnetVisualizer {
 		
 		return line;
 	}
+
+	public void saveGraphOnFile(String filename, HashMap<Synset, ScoredSynset> sourceScoredBySynset,
+	HashMap<Synset, ScoredSynset> targetScoredBySynset){
+		this.sourceScoredBySynset = sourceScoredBySynset;
+		this.targetScoredBySynset = targetScoredBySynset;
+		
+		Collection<ScoredSynset> sourceSynsets = sourceScoredBySynset.values();
+		Synset[] synsets = new Synset[sourceSynsets.size()];
+		
+		int i = 0;
+		for (ScoredSynset synset : sourceSynsets) {
+			synsets[i] = synset.getSynset();
+			i++;
+		}
+				
+		if(synsets.length == 0) return;
+		
+		byte[] graph = synsetsToGraph(synsets, "pdf");
+				
+		String dir = "wordnetVizMatch";
+		
+		new File(dir).mkdir();
+		
+		File out = new File(dir + File.separator + filename + ".pdf");
+	    
+		//System.out.println(out.getAbsolutePath());
+				
+		System.out.println("WVZ: Writing graph to file [" + filename + "]...");
+	    
+	    GraphViz gv = new GraphViz();
+	    gv.writeGraphToFile( graph , out );
+		
+	    this.sourceScoredBySynset = null;
+		this.targetScoredBySynset = null;
+	}
+		
 	
 	public void saveGraphOnFile(String searchTerm){
 		Synset[] synsets = getSynsets(searchTerm);
@@ -178,8 +280,12 @@ public class WordnetVisualizer {
 		
 		byte[] graph = synsetsToGraph(synsets, "pdf");
 		
+		
 		File out = new File("wordnetViz/" + searchTerm + ".pdf");
-	    System.out.println("Writing graph to file [" + searchTerm + "]...");
+	    
+		//System.out.println(out.getAbsolutePath());
+				
+		System.out.println("WVZ: Writing graph to file [" + searchTerm + "]...");
 	    
 	    GraphViz gv = new GraphViz();
 	    gv.writeGraphToFile( graph , out );
@@ -191,10 +297,26 @@ public class WordnetVisualizer {
 		Synset[] synsets = viz.getSynsets("medium");
 		byte[] graph = viz.synsetsToGraph(synsets, "pdf");
 		
+		
 		File out = new File("out.pdf");
 	    System.out.println("Writing graph to file...");
 	    
 	    GraphViz gv = new GraphViz();
 	    gv.writeGraphToFile( graph , out );
+	    System.out.println("Done");
+	}
+	
+	public void setDefinitions(HashMap<Synset, String> definitions) {
+		this.definitions = definitions;
+	}
+	
+	public void setSourceScoredBySynset(
+			HashMap<Synset, ScoredSynset> sourceScoredBySynset) {
+		this.sourceScoredBySynset = sourceScoredBySynset;
+	}
+	
+	public void setTargetScoredBySynset(
+			HashMap<Synset, ScoredSynset> targetScoredBySynset) {
+		this.targetScoredBySynset = targetScoredBySynset;
 	}
 }

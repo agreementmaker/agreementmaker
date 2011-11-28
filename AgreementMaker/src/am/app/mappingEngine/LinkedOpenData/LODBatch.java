@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class LODBatch {
 	
 	public LODBatch(){
 		log = Logger.getLogger(LODBatch.class);
-		Logger.getRootLogger().setLevel(Level.DEBUG);	
+		//Logger.getRootLogger().setLevel(Level.DEBUG);	
 		
 		//log.setLevel(Level.INFO);
 		
@@ -82,17 +83,23 @@ public class LODBatch {
 		Ontology sourceOntology = null;
 		Ontology targetOntology = null;
 		OntoTreeBuilder treeBuilder;
-				
+		
+		//OntDocumentManager.getInstance().setProcessImports(false);
+		
 		log.info("Opening sourceOntology...");
 		sourceOntology = OntoTreeBuilder.loadOntology(new File(source.getFilename()).getPath(), source.getLang(), source.getSyntax(), mapper);
 		//sourceOntology = LODUtils.openOntology(new File(sourceName).getAbsolutePath());	
 		log.info("Done");	
 		
+		log.debug("OntData:\t" + source.getUri() + "\t" + sourceOntology.getClassesList().size());
+				
 		log.info("Opening targetOntology...");
 		targetOntology = OntoTreeBuilder.loadOntology(new File(target.getFilename()).getPath(), target.getLang(), target.getSyntax(), mapper);
 		//targetOntology = LODUtils.openOntology(new File(targetName).getAbsolutePath());
 		log.info("Done");
-				
+		
+		log.debug("OntData:\t" + target.getUri() + "\t" + targetOntology.getClassesList().size());
+		
 		AdvancedSimilarityMatcher matcher = new AdvancedSimilarityMatcher();
 		
 		AdvancedSimilarityParameters asmParam = new AdvancedSimilarityParameters();
@@ -129,16 +136,16 @@ public class LODBatch {
 		
 		HierarchyMatcherModifiedParameters param = new HierarchyMatcherModifiedParameters();
 		param.mapper = mapper;
-		param.threshold = 0.1;
+		param.threshold = 0.0;
 		hmm.setParam(param);
 		
-//		hmm = MatcherFactory.getMatcherInstance(MatchersRegistry.WSM, 0);
-//		hmm.setSourceOntology(sourceOntology);
-//		hmm.setTargetOntology(targetOntology);
-//		reference = AlignmentUtilities.getMatchingPairsTAB(refAlign);
-//		hmm.setReferenceAlignment(reference);
-//		hmm.setParam(param);
-//		
+		hmm = MatcherFactory.getMatcherInstance(MatchersRegistry.WSM, 0);
+		hmm.setSourceOntology(sourceOntology);
+		hmm.setTargetOntology(targetOntology);
+		reference = AlignmentUtilities.getMatchingPairsTAB(refAlign);
+		hmm.setReferenceAlignment(reference);
+		hmm.setParam(param);
+		
 		
 		log.info("HMM matching");
 		try {
@@ -160,8 +167,27 @@ public class LODBatch {
 		report += "Execution times:\t" + matcher.getExecutionTime() + "\t" + hmm.getExecutionTime() + "\t" + executionTime + "\n";
 		log.info("Total time: " + executionTime);
 		
-		double[] thresholds = Utility.getDoubleArray(0.0d, 0.01d, 100);
+		boolean smallValues = false;
+		
+		double[] thresholds = Utility.getDoubleArray(0.0d, 0.01d, 200);
+		if(smallValues){
+			thresholds = Utility.getDoubleArray(0.0d, 0.01d, 100);
+		}
+		
+		
+		log.info("Threshold analysis...");
 		ThresholdAnalysisData data = AlignmentUtilities.thresholdAnalysis(hmm, reference, thresholds, true);
+		log.info("Done");
+		
+		System.out.println(Arrays.toString(thresholds));
+		
+		
+		for (int i = 0; i < data.getThresholds().length; i++) {
+			System.out.println(data.getThresholds()[i] + " " + data.getEvaluationData(i).getPrecision() 
+					+ " " + data.getEvaluationData(i).getRecall());
+		}
+		
+		
 		return data;
 	}
 	
@@ -275,15 +301,18 @@ public class LODBatch {
 		
 		List<ThresholdAnalysisData> data = new ArrayList<ThresholdAnalysisData>();
 		
-		data.add(singleRun(LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.BBC_PROGRAM_OLD, "music-bbc", LODReferences.MUSIC_BBC));
-		data.add(singleRun(LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.DBPEDIA_OLD, "music-dbpedia", LODReferences.MUSIC_DBPEDIA));
 		data.add(singleRun(LODOntology.FOAF, LODOntology.DBPEDIA_OLD, "foaf-dbpedia", LODReferences.FOAF_DBPEDIA));
 		data.add(singleRun(LODOntology.GEONAMES_OLD, LODOntology.DBPEDIA_OLD, "geonames-dbpedia", LODReferences.GEONAMES_DBPEDIA));
-		data.add(singleRun(LODOntology.SIOC, LODOntology.FOAF, "sioc-foaf", LODReferences.SIOC_FOAF));
+		data.add(singleRun(LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.BBC_PROGRAM_OLD, "music-bbc", LODReferences.MUSIC_BBC));
+		data.add(singleRun(LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.DBPEDIA_OLD, "music-dbpedia", LODReferences.MUSIC_DBPEDIA));
 		data.add(singleRun(LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL, "swc-akt", LODReferences.SWC_AKT));
 		data.add(singleRun(LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA_OLD, "swc-dbpedia", LODReferences.SWC_DBPEDIA));
+		data.add(singleRun(LODOntology.SIOC, LODOntology.FOAF, "sioc-foaf", LODReferences.SIOC_FOAF));
 		
+		log.info("Computing best run...");
 		double bestTh = ThresholdAnalysisData.getBestOverallRun(data);
+		log.info("Done");
+		
 		
 		log.info(report);
 		
@@ -302,13 +331,13 @@ public class LODBatch {
 	public void runOldEquality(){
 		AbstractMatcher matcher = initMatcher();
 		String outputFolder = "LOD/batchEq/PURPOSE/";
-		singleRunEq(matcher, LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.BBC_PROGRAM_OLD, "music-bbc", outputFolder);
-		singleRunEq(matcher, LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.DBPEDIA_OLD, "music-dbpedia", outputFolder);
 		singleRunEq(matcher, LODOntology.FOAF, LODOntology.DBPEDIA_OLD, "foaf-dbpedia", outputFolder);
 		singleRunEq(matcher, LODOntology.GEONAMES_OLD, LODOntology.DBPEDIA_OLD, "geonames-dbpedia", outputFolder);
-		singleRunEq(matcher, LODOntology.SIOC, LODOntology.FOAF, "sioc-foaf", outputFolder);
+		singleRunEq(matcher, LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.BBC_PROGRAM_OLD, "music-bbc", outputFolder);
+		singleRunEq(matcher, LODOntology.MUSIC_ONTOLOGY_OLD, LODOntology.DBPEDIA_OLD, "music-dbpedia", outputFolder);
 		singleRunEq(matcher, LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL, "swc-akt", outputFolder);
 		singleRunEq(matcher, LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA_OLD, "swc-dbpedia", outputFolder);
+		singleRunEq(matcher, LODOntology.SIOC, LODOntology.FOAF, "sioc-foaf", outputFolder);
 		//log.info(report);
 		
 		try {
