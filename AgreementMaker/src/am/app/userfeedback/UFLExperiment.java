@@ -4,8 +4,8 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.Ontology;
 import am.app.userfeedback.UserFeedback.Validation;
-import am.app.userfeedbackloop.common.ValidatedMapping;
-import am.app.userfeedbackloop.ui.UFLControlGUI;
+import am.app.userfeedback.common.ValidatedMapping;
+import am.app.userfeedback.ui.UFLControlGUI;
 
 public abstract class UFLExperiment {
 

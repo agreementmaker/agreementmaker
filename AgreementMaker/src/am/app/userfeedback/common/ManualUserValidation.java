@@ -1,9 +1,9 @@
-package am.app.userfeedbackloop.common;
+package am.app.userfeedback.common;
 
 import am.app.mappingEngine.Mapping;
 import am.app.userfeedback.UFLExperiment;
 import am.app.userfeedback.UserFeedback;
-import am.app.userfeedbackloop.ui.ManualUserValidationPanel;
+import am.app.userfeedback.ui.ManualUserValidationPanel;
 
 public class ManualUserValidation extends UserFeedback {
 	

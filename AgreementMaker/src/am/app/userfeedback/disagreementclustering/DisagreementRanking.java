@@ -1,4 +1,4 @@
-package am.app.userfeedbackloop.disagreementclustering;
+package am.app.userfeedback.disagreementclustering;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +13,7 @@ import am.app.ontology.Ontology;
 import am.app.userfeedback.CandidateSelection;
 import am.app.userfeedback.UFLExperiment;
 import am.app.userfeedback.UserFeedback.Validation;
-import am.app.userfeedbackloop.common.ValidatedMapping;
+import am.app.userfeedback.common.ValidatedMapping;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;

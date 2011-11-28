@@ -1,4 +1,4 @@
-package am.app.userfeedbackloop.ui;
+package am.app.userfeedback.ui;
 
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;

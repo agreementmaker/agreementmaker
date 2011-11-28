@@ -1,4 +1,4 @@
-package am.app.userfeedbackloop.common;
+package am.app.userfeedback.common;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

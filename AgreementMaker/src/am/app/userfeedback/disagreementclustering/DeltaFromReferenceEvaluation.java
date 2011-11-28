@@ -1,4 +1,4 @@
-package am.app.userfeedbackloop.disagreementclustering;
+package am.app.userfeedback.disagreementclustering;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

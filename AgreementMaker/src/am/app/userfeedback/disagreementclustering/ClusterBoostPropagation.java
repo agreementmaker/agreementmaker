@@ -1,4 +1,4 @@
-package am.app.userfeedbackloop.disagreementclustering;
+package am.app.userfeedback.disagreementclustering;
 
 import java.text.NumberFormat;
 import java.util.List;

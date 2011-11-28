@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.SwingUtilities;
 import javax.swing.event.EventListenerList;
 
-import am.app.userfeedbackloop.ui.UFLControlGUI;
+import am.app.userfeedback.ui.UFLControlGUI;
 
 /**
  * This class is meant to be extended by an implementation of an

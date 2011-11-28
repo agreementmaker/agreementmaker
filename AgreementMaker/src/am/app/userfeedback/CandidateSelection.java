@@ -9,7 +9,7 @@ import javax.swing.event.EventListenerList;
 
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.userfeedbackloop.ui.UFLControlGUI;
+import am.app.userfeedback.ui.UFLControlGUI;
 
 public abstract class CandidateSelection {
 

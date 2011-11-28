@@ -10,7 +10,7 @@ import javax.swing.event.EventListenerList;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.userfeedbackloop.ui.UFLControlGUI;
+import am.app.userfeedback.ui.UFLControlGUI;
 
 /**
  * This class instantiates automatically instantiates a matcher configuration using

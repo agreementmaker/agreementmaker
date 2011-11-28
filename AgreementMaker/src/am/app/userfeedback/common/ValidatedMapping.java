@@ -1,4 +1,4 @@
-package am.app.userfeedbackloop.common;
+package am.app.userfeedback.common;
 
 import am.app.mappingEngine.Mapping;
 import am.app.userfeedback.UserFeedback.Validation;

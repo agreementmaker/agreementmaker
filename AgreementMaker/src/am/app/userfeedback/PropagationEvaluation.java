@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.SwingUtilities;
 import javax.swing.event.EventListenerList;
 
-import am.app.userfeedbackloop.ui.UFLControlGUI;
+import am.app.userfeedback.ui.UFLControlGUI;
 
 public abstract class PropagationEvaluation {
 

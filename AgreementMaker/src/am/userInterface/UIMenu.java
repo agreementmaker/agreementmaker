@@ -40,7 +40,7 @@ import am.app.ontology.Ontology;
 import am.app.ontology.profiling.ProfilingDialog;
 import am.app.ontology.profiling.metrics.OntologyMetric;
 import am.app.ontology.profiling.metrics.OntologyMetricsRegistry;
-import am.app.userfeedbackloop.ui.UFLControlGUI;
+import am.app.userfeedback.ui.UFLControlGUI;
 import am.extension.ClusteringEvaluation.ClusteringEvaluationPanel;
 import am.tools.LexiconLookup.LexiconLookupPanel;
 import am.tools.ThresholdAnalysis.ThresholdAnalysis;
