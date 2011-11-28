@@ -1,4 +1,4 @@
-package am.app.userfeedback.disagreementclustering;
+package am.app.userfeedback.clustering.disagreement;
 
 import java.util.ArrayList;
 import java.util.List;

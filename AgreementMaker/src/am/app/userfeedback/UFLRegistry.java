@@ -20,7 +20,7 @@ public class UFLRegistry {
 	}
 	
 	public enum InitialMatcherRegistry {
-		OrthoCombination ( am.app.userfeedback.disagreementclustering.OrthoCombinationMatcher.class );
+		OrthoCombination ( am.app.userfeedback.clustering.disagreement.OrthoCombinationMatcher.class );
 			
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends ExecutionSemantics> clazz;
@@ -31,7 +31,7 @@ public class UFLRegistry {
 	
 	public enum CandidateSelectionRegistry {
 		
-		DisagreementRank ( am.app.userfeedback.disagreementclustering.DisagreementRanking.class );
+		DisagreementRank ( am.app.userfeedback.clustering.disagreement.DisagreementRanking.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends CandidateSelection> clazz;
@@ -62,7 +62,7 @@ public class UFLRegistry {
 	}
 	
 	public enum FeedbackPropagationRegistry {
-		ClusterBoost ( am.app.userfeedback.disagreementclustering.ClusterBoostPropagation.class );
+		ClusterBoost ( am.app.userfeedback.clustering.disagreement.ClusterBoostPropagation.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends FeedbackPropagation> clazz;
@@ -72,8 +72,8 @@ public class UFLRegistry {
 	}
 	
 	public enum PropagationEvaluationRegistry {
-		DeltaFromRef ( am.app.userfeedback.disagreementclustering.DeltaFromReferenceEvaluation.class ),
-		ClusterBoost ( am.app.userfeedback.disagreementclustering.ClusterBoostEvaluation.class );
+		DeltaFromRef ( am.app.userfeedback.clustering.disagreement.DeltaFromReferenceEvaluation.class ),
+		ClusterBoost ( am.app.userfeedback.clustering.disagreement.ClusterBoostEvaluation.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends PropagationEvaluation> clazz;
