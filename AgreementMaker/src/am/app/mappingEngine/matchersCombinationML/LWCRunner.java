@@ -15,6 +15,7 @@ import am.app.mappingEngine.Combination.CombinationParameters;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
+import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
@@ -165,9 +166,9 @@ public class LWCRunner {
 		}
 
 		manualProfiler.setMatchTimeParams(profilingMatchingParams);
-
-		// BSM
 		List<AbstractMatcher> lwcInputMatchers = new ArrayList<AbstractMatcher>();
+		// BSM
+		
 
 		AbstractMatcher bsm = MatcherFactory.getMatcherInstance(
 				MatchersRegistry.BaseSimilarity, 0);
@@ -209,7 +210,7 @@ public class LWCRunner {
 
 		// VMM
 
-		AbstractMatcher vmm = MatcherFactory.getMatcherInstance(
+		/*AbstractMatcher vmm = MatcherFactory.getMatcherInstance(
 				MatchersRegistry.MultiWords, 0);
 
 		MultiWordsParameters vmmParam = new MultiWordsParameters(
@@ -230,8 +231,16 @@ public class LWCRunner {
 		runSubMatcher(vmm, "VMM 3/6");
 
 		lwcInputMatchers.add(vmm);
-
-		// LSM
+		
+		//ASM
+		AbstractMatcher asm = MatcherFactory.getMatcherInstance(MatchersRegistry.AdvancedSimilarity, 0);
+		AdvancedSimilarityParameters asmParam = new AdvancedSimilarityParameters(0.6, 1,1);
+		asmParam.useLabels = false;
+		setupSubMatcher(asm, asmParam);
+		runSubMatcher(asm, "asm 3/6");
+		lwcInputMatchers.add(asm);
+*/		
+/*		// LSM
 
 		AbstractMatcher lsm = MatcherFactory.getMatcherInstance(
 				MatchersRegistry.LSM, 0);
@@ -244,7 +253,7 @@ public class LWCRunner {
 		runSubMatcher(lsm, "LSM 4/6");
 
 		lwcInputMatchers.add(lsm);
-
+*/
 		// LWC
 		AbstractMatcher lwc = null;
 

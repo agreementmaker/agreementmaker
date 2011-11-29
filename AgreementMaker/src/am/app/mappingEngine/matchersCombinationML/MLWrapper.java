@@ -7,14 +7,11 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,9 +24,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import weka.classifiers.Classifier;
-import weka.classifiers.bayes.BayesNet;
-import weka.classifiers.functions.LibSVM;
-import weka.classifiers.trees.DecisionStump;
 import weka.core.Instances;
 import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
@@ -40,6 +34,7 @@ import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
+import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -62,6 +57,7 @@ public class MLWrapper extends AbstractMatcher{
 	ArrayList<String> matcherNames = new ArrayList<String>();
 	Alignment<Mapping> testMapping;
 	Alignment<Mapping> finalMapping;
+	Alignment<Mapping> combinedMapping;
 	Logger log;
 
 	/**
@@ -205,6 +201,7 @@ public class MLWrapper extends AbstractMatcher{
 				listOfTriples.add(ot);
 				testMapping=new Alignment<Mapping>(sourceOntology.getID(),targetOntology.getID());
 				finalMapping=new Alignment<Mapping>(sourceOntology.getID(),targetOntology.getID());
+				combinedMapping=new Alignment<Mapping>(sourceOntology.getID(),targetOntology.getID());
 			}
 			
 			
@@ -672,11 +669,10 @@ public class MLWrapper extends AbstractMatcher{
 		getFilesFromFolder(matcherFiles, "mlroot/test/matchers/");
 
 		HashMap<String, HashMap> uniqueConcepts = new HashMap<String, HashMap>();
-
 		for (int i = 0; i < matcherFiles.size(); i++) {
 			File currentFile = new File(matcherFiles.get(i));
 			String matcherName = currentFile.getName();
-
+			System.out.println(matcherName);
 			// adding matcher name we need to generate ARFF file
 			if (!matcherNames.contains(matcherName))
 				matcherNames.add(matcherName);
@@ -885,6 +881,7 @@ public class MLWrapper extends AbstractMatcher{
 		// generating the test.xml file needed by MLTestingWrapper
 		String outputFileName = "mlroot/output/test.xml";
 		ArrayList<Double> predictedList = new ArrayList<Double>();
+		ArrayList<Double> confidenceList = new ArrayList<Double>();
 		GenerateTrainingDS.generateXML(srcOntology, tarOntology, refAlign,
 				outputFileName);
 
@@ -911,8 +908,16 @@ public class MLWrapper extends AbstractMatcher{
 
 		for (int i = 0; i < test.numInstances(); i++) {
 			double clsLabel = cls.classifyInstance(test.instance(i));
+			double[] prob=cls.distributionForInstance(test.instance(i));
+			
 			test.instance(i).setClassValue(clsLabel);
+			//getting weka confidence for target class 1 
+			//with confidence value 80%
+			if(prob[1] > 0.80)
+			{
+			confidenceList.add(prob[1]);
 			predictedList.add(clsLabel);
+			}
 
 		}
 		// save the predicted data
@@ -928,13 +933,6 @@ public class MLWrapper extends AbstractMatcher{
 		// value
 		// run it against the reference alignment
 		// to compute the precision,recall and f-measure
-		matchReference(predictedList, combinedConceptFile, finalFile);
-		Alignment<Mapping> refMap = getReference(srcOntology, tarOntology,
-				refAlign);
-	//	calculateMeasure(finalFile, refMap);
-		generateAlignment(finalFile);
-		System.out.println("test Alignment size" + finalMapping.size());
-		displayResults(finalMapping, refMap);
 		
 			
 		
@@ -947,10 +945,56 @@ public class MLWrapper extends AbstractMatcher{
 			// value
 			// run it against the reference alignment
 			// to compute the precision,recall and f-measure
-			matchReference(predictedList, combinedConceptFile, finalFile);
+			/*/matchReference(predictedList, combinedConceptFile, finalFile);
 			refMap = getReference(srcOntology, tarOntology,
 					refAlign);
 			calculateMeasure(finalFile, refMap);
+			*/
+
+			LWCRunner runner=new LWCRunner();
+			runner.setSourceOntology(loadOntology(srcOntology));
+			runner.setTargetOntology(loadOntology(tarOntology));
+			AbstractMatcher lwcMatcher=runner.initializeLWC();
+			matchReference(predictedList, confidenceList,combinedConceptFile, finalFile);
+			Alignment<Mapping> refMap = getReference(srcOntology, tarOntology,
+					refAlign);
+			generateAlignment(finalFile);
+			log.info("mlm measure");
+			displayResults(finalMapping, refMap);
+			log.info("lwc measure");
+			displayResults(lwcMatcher.getAlignment(), refMap);
+			//combining lwc and mlm mapping
+			combinedMapping=lwcMatcher.getAlignment();
+			for(Mapping mlmMapping : finalMapping)
+			{
+				boolean isexists=false;
+				//log.info("------------mlm--");
+				//log.info(mlmMapping.getEntity1().getUri() + "\t"+ mlmMapping.getEntity2().getUri());
+				//log.info("---------------lwc-------------------------------------------");
+				for(Mapping lwcMapping:lwcMatcher.getAlignment())
+				{
+				//	log.info(lwcMapping.getEntity1().getUri() + "\t" + lwcMapping.getEntity2().getUri());
+					if((mlmMapping.getEntity1().getUri().equals(lwcMapping.getEntity1().getUri()) 
+							&& mlmMapping.getEntity2().getUri().equals(lwcMapping.getEntity2().getUri())) 
+							|| (mlmMapping.getEntity1().getUri().equals(lwcMapping.getEntity2().getUri()) 
+							&& mlmMapping.getEntity2().getUri().equals(lwcMapping.getEntity1().getUri())))
+							
+							{
+							   
+							   isexists=true;
+						//	   log.info("from lwc");
+							   
+							}
+				}
+				//log.info("------------lwc ends------------------");
+				if(!isexists)
+				{
+				//	log.info("from mlm");
+					combinedMapping.add(mlmMapping);
+				}
+			}
+			log.info("lwc+mlm" +combinedMapping.size());
+			displayResults(combinedMapping, refMap);
 			
 		}
 		else
@@ -958,19 +1002,13 @@ public class MLWrapper extends AbstractMatcher{
 			calculateGeneralMeasure(predictedList);
 		}
 		
-		if(isFirstTime && isSpecific)
-		{
-			//LWC measure
-			log.info("LWC version");
-			LWCRunner runner=new LWCRunner();
-			runner.setSourceOntology(loadOntology(srcOntology));
-			runner.setTargetOntology(loadOntology(tarOntology));
-			AbstractMatcher lwcMatcher=runner.initializeLWC();
-			displayResults(lwcMatcher.getAlignment(), refMap);
-			
-		}
-		
-		
+	
+		listOfTriples.clear();
+		//	matcherNames.clear();
+			testMapping.clear();
+			finalMapping.clear();
+			combinedMapping.clear();
+
 		
 	}
 	
@@ -1101,6 +1139,8 @@ public class MLWrapper extends AbstractMatcher{
 								&& currentMapping.getEntity1().getUri()
 										.equals(inputLineParts[1]) ))
 				{
+					
+					System.out.println("confidence" + inputLineParts[3]);
 					currentMapping.setSimilarity(1.0);
 					currentMapping.setRelation(relation.EQUIVALENCE);
 					finalMapping.add(currentMapping);
@@ -1153,7 +1193,7 @@ public class MLWrapper extends AbstractMatcher{
 	 * @param finalFile
 	 * @throws IOException
 	 */
-	void matchReference(ArrayList<Double> predictedList,
+	void matchReference(ArrayList<Double> predictedList,ArrayList<Double> confidenceList,
 			String combinedConceptFile, String finalFile) throws IOException {
 
 		BufferedReader conceptFile = new BufferedReader(new FileReader(
@@ -1170,7 +1210,7 @@ public class MLWrapper extends AbstractMatcher{
 			if (inputLineParts.length == 3) {
 
 				String concepts = inputLineParts[0] + "\t" + inputLineParts[1];
-				outputWriter.write(concepts + "\t" + predictedList.get(index)
+				outputWriter.write(concepts + "\t" + predictedList.get(index) + "\t" + confidenceList.get(index)
 						+ "\n");
 				
 				
@@ -1263,73 +1303,41 @@ public class MLWrapper extends AbstractMatcher{
 					"mlroot/test/predicted"+ model + ".arff",
 					"mlroot/test/testrefFilecombined",
 					"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
-			 			 
-			// listOfMatchers.clear();
-				listOfTriples.clear();
-			//	matcherNames.clear();
-				testMapping.clear();
-				finalMapping.clear();
-//			 log.info("101-302");
-//			 predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
-//						"mlroot/mltesting/bench/302/onto.rdf",
-//						"mlroot/mltesting/bench/302/refalign.rdf",
-//						"mlroot/test/predicted"+ model + ".arff",
-//						"mlroot/test/testrefFilecombined",
-//						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
-//			// listOfMatchers.clear();
-//				listOfTriples.clear();
-//				//matcherNames.clear();
-//				testMapping.clear();
-//				finalMapping.clear();
-//			 log.info("101-303");
-//			 predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
-//						"mlroot/mltesting/bench/303/onto.rdf",
-//						"mlroot/mltesting/bench/303/refalign.rdf",
-//						"mlroot/test/predicted"+ model + ".arff",
-//						"mlroot/test/testrefFilecombined",
-//						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
-//			// listOfMatchers.clear();
-//				listOfTriples.clear();
-//				//matcherNames.clear();
-//				testMapping.clear();
-//				finalMapping.clear();
-//			 log.info("edas-iasted");
-//			  predictresult(modelname,"mlroot/mltesting/conference/edas-iasted/edas.owl",
-//						"mlroot/mltesting/conference/edas-iasted/iasted.owl",
-//						"mlroot/mltesting/conference/edas-iasted/refalign.rdf",
-//						"mlroot/test/predicted"+ model + ".arff",
-//						"mlroot/test/testrefFilecombined",
-//						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
-//			// listOfMatchers.clear();
-//				listOfTriples.clear();
-//			//	matcherNames.clear();
-//				testMapping.clear();
-//				finalMapping.clear();
-//			 log.info("iasted-sigkdd");
-//			 predictresult(modelname,"mlroot/mltesting/conference/iasted-sigkdd/iasted.owl",
-//						"mlroot/mltesting/conference/iasted-sigkdd/sigkdd.owl",
-//						"mlroot/mltesting/conference/iasted-sigkdd/refalign.rdf",
-//						"mlroot/test/predicted"+ model + ".arff",
-//						"mlroot/test/testrefFilecombined",
-//						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
-//			// listOfMatchers.clear();
-//				listOfTriples.clear();
-//			//	matcherNames.clear();
-//				testMapping.clear();
-//				finalMapping.clear();
-//			 log.info("confOf-sigkdd");
-//			 predictresult(modelname,"mlroot/mltesting/conference/confOf-sigkdd/confOf.owl",
-//						"mlroot/mltesting/conference/confOf-sigkdd/sigkdd.owl",
-//						"mlroot/mltesting/conference/confOf-sigkdd/refalign.rdf",
-//						"mlroot/test/predicted"+ model + ".arff",
-//						"mlroot/test/testrefFilecombined",
-//						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
-//			//	listOfMatchers.clear();
-//				listOfTriples.clear();
-//			//	matcherNames.clear();
-//				isFirstTime=false;
-//				testMapping.clear();
-//				finalMapping.clear();
+			 log.info("101-302");
+			 predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
+						"mlroot/mltesting/bench/302/onto.rdf",
+						"mlroot/mltesting/bench/302/refalign.rdf",
+						"mlroot/test/predicted"+ model + ".arff",
+						"mlroot/test/testrefFilecombined",
+						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
+			 log.info("101-303");
+			 predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
+						"mlroot/mltesting/bench/303/onto.rdf",
+						"mlroot/mltesting/bench/303/refalign.rdf",
+						"mlroot/test/predicted"+ model + ".arff",
+						"mlroot/test/testrefFilecombined",
+						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
+			 log.info("edas-iasted");
+			  predictresult(modelname,"mlroot/mltesting/conference/edas-iasted/edas.owl",
+						"mlroot/mltesting/conference/edas-iasted/iasted.owl",
+						"mlroot/mltesting/conference/edas-iasted/refalign.rdf",
+						"mlroot/test/predicted"+ model + ".arff",
+						"mlroot/test/testrefFilecombined",
+						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
+			 log.info("iasted-sigkdd");
+			 predictresult(modelname,"mlroot/mltesting/conference/iasted-sigkdd/iasted.owl",
+						"mlroot/mltesting/conference/iasted-sigkdd/sigkdd.owl",
+						"mlroot/mltesting/conference/iasted-sigkdd/refalign.rdf",
+						"mlroot/test/predicted"+ model + ".arff",
+						"mlroot/test/testrefFilecombined",
+						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
+			 log.info("confOf-sigkdd");
+			 predictresult(modelname,"mlroot/mltesting/conference/confOf-sigkdd/confOf.owl",
+						"mlroot/mltesting/conference/confOf-sigkdd/sigkdd.owl",
+						"mlroot/mltesting/conference/confOf-sigkdd/refalign.rdf",
+						"mlroot/test/predicted"+ model + ".arff",
+						"mlroot/test/testrefFilecombined",
+						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
 		 }
 				} catch (Exception e) {
 
@@ -1368,6 +1376,7 @@ public class MLWrapper extends AbstractMatcher{
 		}
 		
 		log.info("-------------------------------------------------------------");
+		log.info("reference alignment size" + referenceAlignment.size());
 		log.info("total correct" + mapped);
 		log.info("total mapping" + count);
 		float precision = (float) mapped / count;
@@ -1430,6 +1439,7 @@ public class MLWrapper extends AbstractMatcher{
 		// uncomment the below lines, if you want to generate a new model
 		// ArrayList<TrainingLayout> trainingfs=new ArrayList<TrainingLayout>();
 		log.info("training" + trainingPercent);
+		log.info("mlm(psm+bsm)+lwc(asm,vmm)");
 		String path[] = { "mlroot/mltraining/bench",
 				"mlroot/mltraining/conference" };
 				
@@ -1563,9 +1573,9 @@ public class MLWrapper extends AbstractMatcher{
 			outputWriter.close();
 		}
 		}
-		mergeIndividualTestFiles(mode);
-		}
 
+		}
+		mergeIndividualTestFiles(mode);
 	}
 
 	public MLWrapper() {
@@ -1588,65 +1598,74 @@ public class MLWrapper extends AbstractMatcher{
 	
 	void initializeMatchers(Modes mode) throws Exception
 	{
-//		AbstractMatcher am = null;
-//		am = MatcherFactory.getMatcherInstance(
-//				MatchersRegistry.ParametricString, 0);
-//		ParametricStringParameters psmParam = new ParametricStringParameters(
-//				0.6, 1, 1);
-//		psmParam.useLexicons = true;
-//		psmParam.useBestLexSimilarity = true;
-//		psmParam.measure = ParametricStringParameters.AMSUB_AND_EDIT;
-//		psmParam.normParameter = new NormalizerParameter();
-//		psmParam.normParameter.setForOAEI2009();
-//		psmParam.redistributeWeights = true;
-//		psmParam.threadedExecution = true;
-//		psmParam.threadedOverlap = true;
-//		am.setParam(psmParam);
-//		
-//		listOfMatchers.add(am);
-//		am = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity,
-//				0);
-//		BaseSimilarityParameters bsmParam = new BaseSimilarityParameters(0.6,
-//				1, 1);
-//		bsmParam.useDictionary = false;
-//		am.setParam(bsmParam);
-//		
-//		listOfMatchers.add(am);
-//		am = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 0);
-//		MultiWordsParameters vmmParam = new MultiWordsParameters(0.6, 1, 1);
-//
-//		vmmParam.measure = MultiWordsParameters.TFIDF;
-//		// only on concepts right now because it should be weighted differently
-//		vmmParam.considerInstances = true;
-//		vmmParam.considerNeighbors = false;
-//		vmmParam.considerConcept = true;
-//		vmmParam.considerClasses = false;
-//		vmmParam.considerProperties = false;
-//		vmmParam.ignoreLocalNames = true;
-//		vmmParam.useLexiconSynonyms = true; // May change later.
-//		am.setParam(vmmParam);
-//		
-//		listOfMatchers.add(am);
-//		log.info(mode);
+		//psm
+		AbstractMatcher am = null;
+		am = MatcherFactory.getMatcherInstance(
+				MatchersRegistry.ParametricString, 0);
+		ParametricStringParameters psmParam = new ParametricStringParameters(
+				0.6, 1, 1);
+		psmParam.useLexicons = true;
+		psmParam.useBestLexSimilarity = true;
+		psmParam.measure = ParametricStringParameters.AMSUB_AND_EDIT;
+		psmParam.normParameter = new NormalizerParameter();
+		psmParam.normParameter.setForOAEI2009();
+		psmParam.redistributeWeights = true;
+		psmParam.threadedExecution = true;
+		psmParam.threadedOverlap = true;
+		am.setParam(psmParam);
+		listOfMatchers.add(am);
 		
+		//bsm
+		am = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity,
+				0);
+		BaseSimilarityParameters bsmParam = new BaseSimilarityParameters(0.6,
+				1, 1);
+		bsmParam.useDictionary = false;
+		am.setParam(bsmParam);
+		listOfMatchers.add(am);
+		
+/*		//vmm
+		am = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 0);
+		MultiWordsParameters vmmParam = new MultiWordsParameters(0.6, 1, 1);
+
+		vmmParam.measure = MultiWordsParameters.TFIDF;
+		// only on concepts right now because it should be weighted differently
+		vmmParam.considerInstances = true;
+		vmmParam.considerNeighbors = false;
+		vmmParam.considerConcept = true;
+		vmmParam.considerClasses = false;
+		vmmParam.considerProperties = false;
+		vmmParam.ignoreLocalNames = true;
+		vmmParam.useLexiconSynonyms = true; // May change later.
+		am.setParam(vmmParam);		
+		listOfMatchers.add(am);
+		
+		//asm
+		am = MatcherFactory.getMatcherInstance(MatchersRegistry.AdvancedSimilarity, 0);
+		AdvancedSimilarityParameters asmParam = new AdvancedSimilarityParameters(0.6, 1,1);
+		asmParam.useLabels = false;
+		am.setParam(asmParam);
+		listOfMatchers.add(am);
+		
+*/		log.info(mode);
 		//Initialize the LWC used when combining with MLM
 		
-//		if (mode == Modes.BASE_MODE_LWC
-//				|| mode == Modes.BASE_MODE_MATCHER_FOUND_LWC
-//				|| mode == Modes.BASE_MODE_MATCHER_VOTE_LWC
-//				|| mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC) 
-//		{
-//			log.info("mode" + mode);
-//			am = MatcherFactory.getMatcherInstance(
-//					MatchersRegistry.Combination, 0);
-//			am.match();
-//			listOfMatchers.add(am);
-//		}
-		
-		AbstractMatcher am = MatcherFactory.getMatcherInstance(
+	/*	if (mode == Modes.BASE_MODE_LWC
+				|| mode == Modes.BASE_MODE_MATCHER_FOUND_LWC
+				|| mode == Modes.BASE_MODE_MATCHER_VOTE_LWC
+				|| mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC) 
+		{
+			log.info("mode" + mode);
+			am = MatcherFactory.getMatcherInstance(
+					MatchersRegistry.Combination, 0);
+			am.match();
+			listOfMatchers.add(am);
+		}
+	*/	
+		/*am = MatcherFactory.getMatcherInstance(
 		MatchersRegistry.Combination, 0);
 		listOfMatchers.add(am);
-		initializeMatcherNames();
+		initializeMatcherNames();*/
 	}
 	
 	void initializeMatcherNames()
@@ -1666,7 +1685,7 @@ public class MLWrapper extends AbstractMatcher{
 
 		MLWrapper trainingWrapper = new MLWrapper();
 		MLWrapper testWrapper = new MLWrapper();
-		Modes mode = Modes.BASE_MODE_LWC;
+		Modes mode = Modes.BASE_MODE;
 		String trainFolder = "mlroot/output";
 		String testFolder = "mlroot/test/matchers";
 		try {
@@ -1676,7 +1695,7 @@ public class MLWrapper extends AbstractMatcher{
 			 * then add to listOfMatchers
 			 */
 			
-			trainingWrapper.initializeMatchers(mode);
+		    trainingWrapper.initializeMatchers(mode);
 			testWrapper.initializeMatchers(mode);
 			
 
