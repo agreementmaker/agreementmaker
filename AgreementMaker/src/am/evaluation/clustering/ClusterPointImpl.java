@@ -49,4 +49,14 @@ public class ClusterPointImpl implements ClusterPoint {
 		}
 		return 0;
 	}
+	
+	@Override
+	public String toString() {
+		String s = new String();
+		for( int i = 0; i < dataPoints.length; i++ ) {
+			s += String.valueOf(dataPoints[i]);
+			if( i != dataPoints.length - 1 ) s += ",";
+		}
+		return s;
+	}
 }

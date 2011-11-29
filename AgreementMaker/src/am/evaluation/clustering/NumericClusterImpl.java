@@ -1,10 +1,14 @@
 package am.evaluation.clustering;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -14,22 +18,24 @@ import org.apache.log4j.Logger;
 
 public class NumericClusterImpl implements NumericCluster {
 	
-	private ClusterPoint[] points;
+	private ClusterPoint[] points;	
+	private int clusterRank;
 	
-	
-	public NumericClusterImpl(int dim) {
+	public NumericClusterImpl(int rank, int dim) {
+		clusterRank = rank;
 		points = new ClusterPoint[dim];
 	}
 	
 	@Override
-	public void merge( NumericCluster inCluster ) {
+	public void absorb( NumericCluster inCluster ) {
 		
 		ClusterPoint[] inPoints = inCluster.points();
 		int newDim = points.length + inPoints.length;
 		
 		ClusterPoint[] newPoints = Arrays.copyOf(points, newDim);
-		for(int i = points.length; i < newDim; i++ ) 
+		for(int i = points.length; i < newDim; i++ ) { 
 			newPoints[i] = inPoints[i-points.length];
+		}
 		
 		points = newPoints;
 	}
@@ -40,13 +46,15 @@ public class NumericClusterImpl implements NumericCluster {
 		ClusterPoint[] compPoints = compCluster.points();
 		
 		// shortcut for removing duplicates
-		if( dist == 0.0d && compPoints[0].equals(points[0])) {
+		if( dist == 0.0d && compPoints[0] == (points[0])) {
 			return true;
 		}
 		
-		for( ClusterPoint p : points ) {
-			for( ClusterPoint q : compPoints ) {
-				if( p.getDistance(q) > dist ) return false;
+		for( int i = 0; i < points.length; i++ ) {
+			for( int j = 0; j < compPoints.length; j++ ) {
+				ClusterPoint p1 = points[i];
+				ClusterPoint p2 = compPoints[j];
+				if( p1.getDistance(p2) > dist ) return false;
 			}
 		}
 		
@@ -55,6 +63,7 @@ public class NumericClusterImpl implements NumericCluster {
 	
 	@Override public ClusterPoint[] points() { return points; }
 	@Override public int size() { return points.length; }
+	@Override public int rank() { return clusterRank; }
 	
 	@Override
 	public int compareTo(NumericCluster o) {
@@ -76,11 +85,9 @@ public class NumericClusterImpl implements NumericCluster {
 		while( (bf.readLine()) != null ) { lines++; }
 		bf.close();
 
-		
-		
-		
 		log.debug("Datafile contains " + lines + " lines.  Reading in points.");
 		
+		// read in datapoints
 		Queue<ClusterPoint> points = new PriorityQueue<ClusterPoint>(lines);
 		
 		bf = new BufferedReader(new FileReader(new File("/home/cosmin/Desktop/clustering/merged.csv")));
@@ -104,74 +111,81 @@ public class NumericClusterImpl implements NumericCluster {
 	
 		startTime = System.currentTimeMillis();
 		
-		Queue<NumericCluster> clusters = new PriorityQueue<NumericCluster>(lines);
+		List<ClusterPoint> pointList = new ArrayList<ClusterPoint>();
+		List<NumericCluster> clusterList = new ArrayList<NumericCluster>();
 		
-		// create the clusters
+		// remove duplicate points
 		while( points.size() > 0 ) {
 			ClusterPoint p = points.poll();
-			NumericCluster cl = new NumericClusterImpl(1);
+			pointList.add(p);
+			
+			NumericCluster cl = new NumericClusterImpl(clusterList.size(), 1);
 			cl.points()[0] = p;
-			clusters.add(cl);
+			clusterList.add(cl);
+			
 			while( points.peek() != null && points.peek().equals(p) ) points.poll();  // ignore all the duplicate points.
 		}
 		
+		points = null;
 		
 		endTime = System.currentTimeMillis();
 		
-		log.debug("Created " + clusters.size() + " unique clusters, " + (endTime-startTime)/1000d + " sec.");
+		log.debug("Read " + pointList.size() + " unique points, " + (endTime-startTime)/1000d + " sec.");
 		
+		
+		
+		// start clustering
 		double dist = 0.0d;
-		
-		List<NumericCluster> tempiClusters = new ArrayList<NumericCluster>();
-		List<NumericCluster> tempjClusters = new ArrayList<NumericCluster>();
-		
-		while( clusters.size() > 1 ) {
-			boolean mergeHappened = false;
+		while( clusterList.size() > 1 ) {
 			
-			while( clusters.size() > 0 ) {
-				// pop the smallest cluster and try to merge it with every other cluster
-				NumericCluster iCluster = clusters.poll();
-				
-				while( clusters.size() > 0 ) {
-					NumericCluster jCluster = clusters.poll();
-					if( iCluster.clusterWithinDistance(jCluster, dist) ) {
-						log.debug("iClusters: " + tempiClusters.size() + ", Clusters: " + clusters.size() + ". Merging " + iCluster.size() + " with " + jCluster.size() + ".");
-						iCluster.merge(jCluster);
-						//tempiClusters.add(iCluster);
-						//clusters.addAll(tempjClusters);
-						//tempjClusters.clear();
-						//iCluster = clusters.poll();
-						mergeHappened = true;
-					} else {
-						// jCluster was not merged, save it.
-						tempjClusters.add(jCluster);
+			Comparator<NumericCluster> cmp = new Comparator<NumericCluster>() {
+				@Override
+				public int compare(NumericCluster o1, NumericCluster o2) {
+					
+					ClusterPoint[] p1 = o1.points();
+					ClusterPoint[] p2 = o2.points();
+					
+					
+					
+					return 0;
+				}
+			};
+			Queue<NumericCluster> clusters = new PriorityQueue<NumericCluster>(clusterList.size(), cmp);
+			
+			boolean absorbHappened = false;
+			for( int i = 0; i < clusterList.size(); i++ ) {
+				NumericCluster icl = clusterList.get(i);
+				for( int j = i+1; j < clusterList.size(); j++ ) {
+					NumericCluster jcl = clusterList.get(j);
+					
+					if( icl.clusterWithinDistance(jcl, dist) ) {
+						icl.absorb(jcl);
+						clusterList.remove(j);
+						j--;
+						absorbHappened = true;
 					}
 				}
-
-				int num = 0, clnum = 0;
-				for( NumericCluster cl : tempjClusters ) { num += cl.size(); }
-				for( NumericCluster cl : tempiClusters ) { num += cl.size(); }
-				num += iCluster.size();
-				clnum = tempjClusters.size() + tempiClusters.size() + 1;
-				log.debug("Total clusters: " + clnum + ".");
-				log.debug("Total points in the clusters: " + num + ".");
-				clusters.addAll(tempjClusters);
-				tempjClusters.clear();
-				tempiClusters.add(iCluster);
-				
+				log.debug("i = " + i);
 			}
-
-			clusters.addAll(tempiClusters);
-			tempiClusters.clear();
 			
-			if( !mergeHappened ) {
-				// no merge happened, so we need to add back the iClusters.				
-				log.debug("Distance " + dist + ", " + clusters.size() + " clusters.");
-				dist += 0.01;
+			if( !absorbHappened ) {
+				log.debug("Distance " + dist + ": " + clusterList.size() + " clusters.");
+				dist += 0.01d;
 			}
+			
 		}
 		
 		
 		
+		
+		//writeOut( clusters, "/home/cosmin/Desktop/clustering/merged-woDup.csv");
+		
+		
 	}
+	
+	/* TODO: Implement this */
+	public void saveClusters( Collection<NumericCluster> clusters, String filename ) {
+		
+	}
+
 }
