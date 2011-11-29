@@ -1,16 +1,20 @@
 package am.evaluation.repair;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.semanticweb.HermiT.Reasoner;
+import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.AxiomType;
@@ -25,7 +29,6 @@ import org.semanticweb.owlapi.model.OWLEquivalentDataPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLEquivalentObjectPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -33,12 +36,15 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.reasoner.Node;
 
-import uk.ac.manchester.cs.owl.owlapi.OWLClassImpl;
-
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.utility.referenceAlignment.AlignmentUtilities;
 import am.utility.referenceAlignment.MappingsOutput;
+import arq.cmdline.Usage;
+
+import com.clarkparsia.owlapi.explanation.BlackBoxExplanation;
+import com.clarkparsia.owlapi.explanation.HSTExplanationGenerator;
+import com.clarkparsia.owlapi.explanation.SingleExplanationGenerator;
 
 /**
  * @author Renu Srinivasan, Ramya Kannan
@@ -77,6 +83,7 @@ public class HermitReasonerTest {
 		//Load the Reference Alignment.
 //		File alignmentFile = new File("C:/Users/Renu/Desktop/alignment.rdf");
 		File repairedAlignmentFile = new File("../Ontologies/OAEI/2011/test/repairedalignment.rdf");
+		
 
 		File alignmentFile = new File("../Ontologies/OAEI/2011/anatomy/alignments/am_oaei_2011.rdf");
 
@@ -90,11 +97,21 @@ public class HermitReasonerTest {
 		OWLOntology translatedOntology = null;
 		Reasoner transOntReasoner = null;
 
+		
+		
+		HashMap<OWLClass,Set<OWLAxiom>> conflictingAxiomsMap = new HashMap<OWLClass,Set<OWLAxiom>>();
+		
+		
 		try {
+			if( !repairedAlignmentFile.exists() ) repairedAlignmentFile.createNewFile();
 			translatedOntology = loadOntologies(alignment, util);
 			transOntReasoner = util.getReasoner(translatedOntology);
 			unsatClasses = transOntReasoner.getUnsatisfiableClasses();
 			log.debug(unsatClasses.getSize());
+			
+			ReasonerFactory reasonerFactory = new ReasonerFactory();
+			
+			
 			
 			//Repair the alignment (only saving the erroneous matching pairs)
 			for(OWLClass unsatClass: unsatClasses){
@@ -106,10 +123,85 @@ public class HermitReasonerTest {
 							//Save the unsatisfiable alignment pairs.
 							unsatAlignments.add(pair);
 							mpIter.remove();
+							
+							
+							
+							// *** Get an explanation for each of the unsatisfiable classes.
+							// *** Save all the conflicting EquivalentClass axioms
+							
+							BlackBoxExplanation exp = new BlackBoxExplanation(translatedOntology, reasonerFactory, transOntReasoner);
+							Set<OWLAxiom> expSet = exp.getExplanation(unsatClass);
+							Set<OWLAxiom> conflictingAxioms = new HashSet<OWLAxiom>();
+							
+							System.out.println("Unsat Class: " + unsatClass);
+							for( OWLAxiom causingAxiom : expSet ) {
+								if( causingAxiom.getAxiomType() == AxiomType.EQUIVALENT_CLASSES ) {
+									Set<OWLClass> classes = causingAxiom.getClassesInSignature();
+									List<OWLClass> clsList = new ArrayList<OWLClass>(classes);
+									
+									String[] sourceURI = clsList.get(0).getIRI().toString().split("#");
+									String[] targetURI = clsList.get(1).getIRI().toString().split("#");
+									
+									if( !sourceURI.equals(targetURI) ) {
+										conflictingAxioms.add(causingAxiom);
+									}
+								}
+//								System.out.println("Causing axiom: " + causingAxiom);
+							}
+							
+							for( OWLAxiom confAx : conflictingAxioms ) {
+								System.out.println("Conflicting axiom: " + confAx);
+							}
+							
+							conflictingAxiomsMap.put(unsatClass, conflictingAxioms);
+
+							System.out.println("--------------------------------------------------------");
+							
 						}
 					}
 				}
 			}
+			System.out.println("Size of the unsat alignments (Before): " + unsatAlignments.size());
+			
+			/*System.out.println("Alignment so far:");
+			for(MatchingPair mpair : alignment) {
+				System.out.println(mpair);
+			}*/
+			
+			for( Set<OWLAxiom> conflictingAxioms : conflictingAxiomsMap.values() ) {
+				System.out.println("------------- New conflicting set: ------------- ");
+				for( OWLAxiom conflictingAxiom : conflictingAxioms ) {
+					Iterator<MatchingPair> mpIter = alignment.iterator();
+					
+					System.out.println("Searching for mappings of " + conflictingAxiom);
+					
+					while(mpIter.hasNext()){
+						
+						MatchingPair mpair = mpIter.next();
+						
+						Set<OWLClass> classes = conflictingAxiom.getClassesInSignature();
+						List<OWLClass> clsList = new ArrayList<OWLClass>(classes);
+						OWLClass source = clsList.get(0);
+						OWLClass target = clsList.get(1);
+						
+						if((mpair.sourceURI.equalsIgnoreCase(source.getIRI().toString()) &&
+								mpair.targetURI.equalsIgnoreCase(target.getIRI().toString())) ||
+								(mpair.sourceURI.equalsIgnoreCase(target.getIRI().toString()) &&
+								mpair.targetURI.equalsIgnoreCase(source.getIRI().toString()))){
+							
+							System.out.println("Removing extra mappings.. " + mpair.toString());
+							unsatAlignments.add(mpair);
+							mpIter.remove();
+							
+						}
+					}
+				}
+			}
+			
+			System.out.println("Size of the unsat alignments (After): " + unsatAlignments.size());
+			//System.exit(1);
+			
+			
 			//Load&merge the source and target ontologies again. And run reasoner on this repaired alignment.
 			OWLOntology mergedOntology = loadOntologies(alignment, util);
 //			Node<OWLClass> unsatClassesFromRepaired = util.reason(mergedOntology);
@@ -118,33 +210,38 @@ public class HermitReasonerTest {
 			List<MatchingPair> inconsistentPair = new ArrayList<MatchingPair>();
 			Reasoner r = null;
 			
-			
+			int iteration = 0;
 			for(MatchingPair unsatPair : unsatAlignments){
-				List<MatchingPair> repairedAlignment = AlignmentUtilities.getMatchingPairsOAEI(alignmentFile.getAbsolutePath());
-				repairedAlignment.add(unsatPair);
+				System.out.println("Iteration " + iteration);
+				//List<MatchingPair> repairedAlignment = AlignmentUtilities.getMatchingPairsOAEI(alignmentFile.getAbsolutePath());
+				alignment.add(unsatPair);
 				
 				System.out.println("Adding back axiom: " + unsatPair.toString());
 				
-				mergedOntology = loadOntologies(repairedAlignment, util);
+				mergedOntology = loadOntologies(alignment, util);
 				r = util.getReasoner(mergedOntology);
 				Node<OWLClass> unsatClassesFromRepaired = r.getUnsatisfiableClasses();
 				
 				if(unsatClassesFromRepaired.getSize() > 1){
-					repairedAlignment.remove(unsatPair);
+					alignment.remove(unsatPair);
 					inconsistentPair.add(unsatPair);
 					System.out.println("Removing axiom: " + unsatPair.toString());
+					
+					
 					
 				}
 				
 //				System.out.println("");
 				MappingsOutput.writeMappingsOnDisk(repairedAlignmentFile.toString(), alignment);
 				util.computeMeasures(repairedAlignmentFile.toString(), referenceFile.toString());
+				iteration++;
 			}
 			
 			System.out.println("Finished Repair. Saving alignment..");
 			MappingsOutput.writeMappingsOnDisk(repairedAlignmentFile.toString(), alignment);
 			util.computeMeasures(repairedAlignmentFile.toString(), referenceFile.toString());
 			
+			System.out.println("Inconsistent pairs: " + inconsistentPair.size());
 			
 			//Save this repaired alignment to a new file
 //			MappingsOutput.writeMappingsOnDisk(repairedAlignmentFile.toString(), alignment);
@@ -204,6 +301,9 @@ public class HermitReasonerTest {
 			}
 			
 		catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -296,7 +396,7 @@ public class HermitReasonerTest {
 
 		}
 		try {
-			owlontologymanager.saveOntology(mergedOntology, new RDFXMLOntologyFormat(), IRI.create("file:/output.owl"));
+			owlontologymanager.saveOntology(mergedOntology, new RDFXMLOntologyFormat(), IRI.create("file:/home/cosmin/output.owl"));
 			
 		} catch (OWLOntologyStorageException e) {
 			e.printStackTrace();
