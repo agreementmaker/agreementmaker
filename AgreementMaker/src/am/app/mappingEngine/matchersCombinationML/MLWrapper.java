@@ -880,7 +880,7 @@ public class MLWrapper extends AbstractMatcher{
 	 */
 	void predictresult(String modelName, String srcOntology,
 			String tarOntology, String refAlign, String predicted,
-			String combinedConceptFile, String finalFile, Modes mode,boolean isFirstTime)
+			String combinedConceptFile, String finalFile, Modes mode,boolean isFirstTime,boolean isSpecific)
 			throws Exception {
 		// generating the test.xml file needed by MLTestingWrapper
 		String outputFileName = "mlroot/output/test.xml";
@@ -890,7 +890,7 @@ public class MLWrapper extends AbstractMatcher{
 
 		// running the matchers on testset
 
-		callProcess(outputFileName, "dataset", mode);
+		callProcess(outputFileName, "dataset", mode,isSpecific);
 
 		// deserialising the model we have built
 		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
@@ -936,48 +936,85 @@ public class MLWrapper extends AbstractMatcher{
 		System.out.println("test Alignment size" + finalMapping.size());
 		displayResults(finalMapping, refMap);
 		
-	
+			
+		
+		
+		
+		if(isSpecific)
+		{
+			// Now we have the predicted value
+			// generate a single file which has the correspondences and predicted
+			// value
+			// run it against the reference alignment
+			// to compute the precision,recall and f-measure
+			matchReference(predictedList, combinedConceptFile, finalFile);
+			refMap = getReference(srcOntology, tarOntology,
+					refAlign);
+			calculateMeasure(finalFile, refMap);
+			
+		}
+		else
+		{
+			calculateGeneralMeasure(predictedList);
+		}
+		
+		if(isFirstTime && isSpecific)
+		{
+			//LWC measure
+			log.info("LWC version");
+			LWCRunner runner=new LWCRunner();
+			runner.setSourceOntology(loadOntology(srcOntology));
+			runner.setTargetOntology(loadOntology(tarOntology));
+			AbstractMatcher lwcMatcher=runner.initializeLWC();
+			displayResults(lwcMatcher.getAlignment(), refMap);
+			
+		}
+		
 		
 		
 	}
-	void generateAlignment(String finalFile) throws IOException
+	
+	void calculateGeneralMeasure(ArrayList<Double> predictedList) throws NumberFormatException, IOException
 	{
-
-		BufferedReader mappingFile = new BufferedReader(new FileReader(
-				finalFile));
-		while (mappingFile.ready()) {
-			String inputLine = mappingFile.readLine();
-			String[] inputLineParts = inputLine.split("\t");
-			
-		
-			
-			for(Mapping currentMapping:testMapping)
+		BufferedReader inputReader=new BufferedReader(new FileReader(new File("mlroot/test/testFilecombined")));
+		int index=0;
+		int count=0;
+		int mapped=0;
+		int sizeOfRef=0;
+		while(inputReader.ready())
+		{
+			Double referenceValue=Double.parseDouble(inputReader.readLine().trim());
+			Double predictedValue=predictedList.get(index);
+			if(referenceValue==1.0)
 			{
-		
-				if ((currentMapping.getEntity1().getUri()
-						.equals(inputLineParts[0])
-						&& currentMapping.getEntity2().getUri()
-								.equals(inputLineParts[1]))
-						|| (currentMapping.getEntity2().getUri()
-								.equals(inputLineParts[0])
-								&& currentMapping.getEntity1().getUri()
-										.equals(inputLineParts[1]) ))
-				{
-					currentMapping.setSimilarity(1.0);
-					currentMapping.setRelation(relation.EQUIVALENCE);
-					finalMapping.add(currentMapping);
-					break;
-					
-				}
-				
+				count++;
 			}
-			
-		  }
+			if(referenceValue == predictedValue && referenceValue==1.0)
+			{
+				mapped++;
+			}
+			if(referenceValue==1.0)
+			{
+				sizeOfRef++;
+			}
+			index++;
+		}
 		
-		mappingFile.close();
-		
+		log.info("-------------------------------------------------------------");
+		// System.out.println("total correct" + mapped);
+		// System.out.println("total mapping" +count);
+		log.info("total correct" + mapped);
+		log.info("total mapping" + count);
+		float precision = (float) mapped / count;
+		float recall = (float) mapped / sizeOfRef;
+		float fmeasure = 2 * precision * recall / (precision + recall);
+		// System.out.print(precision + "\t" + recall + "\t" + fmeasure);
+		log.info(precision + "\t" + recall + "\t" + fmeasure);
+		// System.out.println("-----------------------------------------------------");
+		log.info("-------------------------------------------------------------");
+
 	}
-	
+
 	/**
 	 * computing the f-measure for the testset
 	 * 
@@ -1036,6 +1073,45 @@ public class MLWrapper extends AbstractMatcher{
 
 	}
 
+	
+	void generateAlignment(String finalFile) throws IOException
+	{
+
+		BufferedReader mappingFile = new BufferedReader(new FileReader(
+				finalFile));
+		while (mappingFile.ready()) {
+			String inputLine = mappingFile.readLine();
+			String[] inputLineParts = inputLine.split("\t");
+			
+		
+			
+			for(Mapping currentMapping:testMapping)
+			{
+		
+				if ((currentMapping.getEntity1().getUri()
+						.equals(inputLineParts[0])
+						&& currentMapping.getEntity2().getUri()
+								.equals(inputLineParts[1]))
+						|| (currentMapping.getEntity2().getUri()
+								.equals(inputLineParts[0])
+								&& currentMapping.getEntity1().getUri()
+										.equals(inputLineParts[1]) ))
+				{
+					currentMapping.setSimilarity(1.0);
+					currentMapping.setRelation(relation.EQUIVALENCE);
+					finalMapping.add(currentMapping);
+					break;
+					
+				}
+				
+			}
+			
+		  }
+		
+		mappingFile.close();
+		
+	}
+	
 	/**
 	 * TODO : description
 	 * 
@@ -1110,15 +1186,51 @@ public class MLWrapper extends AbstractMatcher{
 
 	}
 
-	void callProcess(String trainingFileName, String elementName, Modes mode)
+	void callProcess(String trainingFileName, String elementName, Modes mode,boolean isSpecific)
 			throws Exception {
 	
 		loadMatchers(mode);
 		loadOntologyTriples(trainingFileName, elementName,false);
 		generateMappings();
-		generateTestFile(mode);
+		
+		if(isSpecific)
+		{
+			
+			generateTestFile(mode);	
+		}
+		else
+		{
+			generateGeneralTestFile();
+		}
+		
 
 	
+	}
+	
+	void generateGeneralTestFile() throws IOException
+	{
+		BufferedReader inputReader=new BufferedReader(new FileReader(new File("mlroot/percent/percentfiletest")));
+		BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("mlroot/test/testFilecombined")));
+		BufferedWriter outputReferenceWriter=new BufferedWriter(new FileWriter(new File("mlroot/test/testrefFilecombined")));
+		
+		while(inputReader.ready())
+		{
+			String inputLine=inputReader.readLine().trim();
+			if(!inputLine.equals(""))
+			{
+				String inputLineParts[]=inputLine.split("\t");
+				String referenceValue=inputLineParts[inputLineParts.length];
+				String outputTestString="";
+				for(int i=0;i<inputLineParts.length-1;i++)
+				{
+					outputTestString+=inputLineParts[i];
+				}
+				outputWriter.write(outputTestString.trim()+"\n");
+				outputReferenceWriter.write(referenceValue.trim()+"\n");
+			}
+		}
+		outputWriter.close();
+		outputReferenceWriter.close();
 	}
 
 	void callTestProcess(Modes mode) {
@@ -1129,6 +1241,7 @@ public class MLWrapper extends AbstractMatcher{
 		 ArrayList<String> modelFiles=new ArrayList<String>();
 		 getFilesFromFolder(modelFiles, "mlroot/model");
 		 boolean isFirstTime=false;
+		 boolean isSpecific=true;
 		 for(String modelname:modelFiles)
 		 {
 			 log.info("mode used "+mode);
@@ -1142,7 +1255,7 @@ public class MLWrapper extends AbstractMatcher{
 					"mlroot/mltesting/bench/301/refalign.rdf",
 					"mlroot/test/predicted"+ model + ".arff",
 					"mlroot/test/testrefFilecombined",
-					"mlroot/test/finaloutput" + model, mode,isFirstTime);
+					"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
 			 			 
 			 listOfMatchers.clear();
 				listOfTriples.clear();
@@ -1155,7 +1268,7 @@ public class MLWrapper extends AbstractMatcher{
 						"mlroot/mltesting/bench/302/refalign.rdf",
 						"mlroot/test/predicted"+ model + ".arff",
 						"mlroot/test/testrefFilecombined",
-						"mlroot/test/finaloutput" + model, mode,isFirstTime);
+						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
 			 listOfMatchers.clear();
 				listOfTriples.clear();
 				matcherNames.clear();
@@ -1167,7 +1280,7 @@ public class MLWrapper extends AbstractMatcher{
 						"mlroot/mltesting/bench/303/refalign.rdf",
 						"mlroot/test/predicted"+ model + ".arff",
 						"mlroot/test/testrefFilecombined",
-						"mlroot/test/finaloutput" + model, mode,isFirstTime);
+						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
 			 listOfMatchers.clear();
 				listOfTriples.clear();
 				matcherNames.clear();
@@ -1179,7 +1292,7 @@ public class MLWrapper extends AbstractMatcher{
 						"mlroot/mltesting/conference/edas-iasted/refalign.rdf",
 						"mlroot/test/predicted"+ model + ".arff",
 						"mlroot/test/testrefFilecombined",
-						"mlroot/test/finaloutput" + model, mode,isFirstTime);
+						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
 			 listOfMatchers.clear();
 				listOfTriples.clear();
 				matcherNames.clear();
@@ -1191,7 +1304,7 @@ public class MLWrapper extends AbstractMatcher{
 						"mlroot/mltesting/conference/iasted-sigkdd/refalign.rdf",
 						"mlroot/test/predicted"+ model + ".arff",
 						"mlroot/test/testrefFilecombined",
-						"mlroot/test/finaloutput" + model, mode,isFirstTime);
+						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
 			 listOfMatchers.clear();
 				listOfTriples.clear();
 				matcherNames.clear();
@@ -1203,13 +1316,13 @@ public class MLWrapper extends AbstractMatcher{
 						"mlroot/mltesting/conference/confOf-sigkdd/refalign.rdf",
 						"mlroot/test/predicted"+ model + ".arff",
 						"mlroot/test/testrefFilecombined",
-						"mlroot/test/finaloutput" + model, mode,isFirstTime);
+						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
 				listOfMatchers.clear();
 				listOfTriples.clear();
 				matcherNames.clear();
+				isFirstTime=false;
 				testMapping.clear();
 				finalMapping.clear();
-				
 		 }
 				} catch (Exception e) {
 
@@ -1351,6 +1464,7 @@ public class MLWrapper extends AbstractMatcher{
 			throws IOException {
 		BufferedWriter outputWriter = new BufferedWriter(new FileWriter(
 				new File("mlroot/percent/percentfile")));
+		BufferedWriter outputWriterForTest=new BufferedWriter(new FileWriter(new File("mlroot/percent/percentfiletest")));
 
 		int count[] = new int[outputBase.length];
 		
@@ -1369,17 +1483,27 @@ public class MLWrapper extends AbstractMatcher{
 		for (int i = 0; i < outputBase.length; i++) {
 			BufferedReader inputReader = new BufferedReader(new FileReader(
 					outputBase[i] + "combinedmatchers/trainingFilecombined"));
+			
 			log.info("count of rows" + count[i]);
-			int linenum = 0;
+			int lineNum = 0;
 			while (inputReader.ready()) {
 				String inputLine = inputReader.readLine();
-				outputWriter.write(inputLine + "\n");
-				if (linenum == count[i])
-					break;
-				linenum++;
+				if(lineNum<=count[i])
+				{
+					outputWriter.write(inputLine + "\n");	
+				}
+				else
+				{
+					outputWriterForTest.write(inputLine+"\n");
+				}
+				
+//				if (linenum == count[i])
+//					break;
+				lineNum++;
 			}
 			inputReader.close();
 		}
+		outputWriterForTest.close();
 		outputWriter.close();
 
 	}
@@ -1392,7 +1516,6 @@ public class MLWrapper extends AbstractMatcher{
 	 * @throws Exception
 	 */
 	void generateTestFile(Modes mode) throws Exception {
-		
 		for (int m = 0; m < listOfMatchers.size(); m++) {
 			
 			AbstractMatcher currentMatcher = listOfMatchers.get(m);
@@ -1406,6 +1529,7 @@ public class MLWrapper extends AbstractMatcher{
 				//	Alignment<Mapping> referenceAlignment = currentTriple
 				//			.getReferenceAlignment();
 
+					if (currentTriple.containsMatcher(currentMatcher.getName())) {
 						Alignment<Mapping> currentMapping = currentTriple
 								.getAlignmentObtained(currentMatcher.getName());
 											for (int i = 0; i < currentMapping.size(); i++) {
@@ -1433,6 +1557,7 @@ public class MLWrapper extends AbstractMatcher{
 		}
 		}
 		mergeIndividualTestFiles(mode);
+		}
 
 	}
 
@@ -1458,10 +1583,16 @@ public class MLWrapper extends AbstractMatcher{
 
 		MLWrapper Trainingwrapper = new MLWrapper();
 		MLWrapper Testwrapper = new MLWrapper();
-		Modes mode = Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND;
+		Modes mode = Modes.BASE_MODE_MATCHER_VOTE;
 		String trainfolder = "mlroot/output";
 		String testfolder = "mlroot/test/matchers";
 		try {
+			/*
+			 * set the required matchers parameters
+			 * invoke matcher.match()
+			 * then add to listOfMatchers
+			 */
+			
 
 			Trainingwrapper.cleanup(trainfolder);
 			Trainingwrapper.callTrainingProcess(mode, 0.5);
