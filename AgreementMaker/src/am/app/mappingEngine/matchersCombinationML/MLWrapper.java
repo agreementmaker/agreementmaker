@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -54,12 +55,13 @@ import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
 
 import com.hp.hpl.jena.rdf.model.Property;
 
-public class MLWrapper {
+public class MLWrapper extends AbstractMatcher{
 
 	ArrayList<AbstractMatcher> listOfMatchers = new ArrayList<AbstractMatcher>();
 	ArrayList<OntologyTriple> listOfTriples = new ArrayList<OntologyTriple>();
 	ArrayList<String> matcherNames = new ArrayList<String>();
-
+	Alignment<Mapping> testMapping;
+	Alignment<Mapping> finalMapping;
 	Logger log;
 
 	/**
@@ -154,7 +156,7 @@ public class MLWrapper {
 	 * @throws Exception
 	 */
 
-	void loadOntologyTriples(String fileName, String elementname)
+	void loadOntologyTriples(String fileName, String elementname,boolean refalign)
 			throws Exception {
 		// in linux RDF is rdf so had to put toLowerCase()
 		// TODO: load the list of training ontologies with reference alignments
@@ -168,17 +170,19 @@ public class MLWrapper {
 		}
 
 		// String basePath="";
-		System.out.println(fileName);
-
+	
 		// actualFilePath+=fileName;
 		ArrayList<TrainingLayout> tlist = xp.parseDocument(fileName,
 				elementname, "training");
 		for (TrainingLayout tl : tlist) {
 			Ontology sourceOntology = loadOntology(tl.getsourceOntologyPath());
 			Ontology targetOntology = loadOntology(tl.gettargetOntologyPath());
+			if(refalign)
+			{
 			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
 			refParam.onlyEquivalence = true;
 			refParam.fileName = tl.getrefAlignmentPath();
+			System.out.println( tl.getrefAlignmentPath());
 			refParam.format = ReferenceAlignmentMatcher.OAEI;
 			AbstractMatcher referenceAlignmentMatcher = MatcherFactory
 					.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
@@ -192,6 +196,18 @@ public class MLWrapper {
 					targetOntology, refmap);
 			ot.setListOfMatchers(listOfMatchers);
 			listOfTriples.add(ot);
+			}
+			else
+			{
+				OntologyTriple ot = new OntologyTriple(sourceOntology,
+						targetOntology);
+				ot.setListOfMatchers(listOfMatchers);
+				listOfTriples.add(ot);
+				testMapping=new Alignment<Mapping>(sourceOntology.getID(),targetOntology.getID());
+				finalMapping=new Alignment<Mapping>(sourceOntology.getID(),targetOntology.getID());
+			}
+			
+			
 		}
 	}
 
@@ -862,7 +878,7 @@ public class MLWrapper {
 	 * main module to predict results for test setgiven two ontologies,reference
 	 * alignment and a ML model
 	 */
-	boolean predictresult(String modelName, String srcOntology,
+	void predictresult(String modelName, String srcOntology,
 			String tarOntology, String refAlign, String predicted,
 			String combinedConceptFile, String finalFile, Modes mode,boolean isFirstTime)
 			throws Exception {
@@ -915,24 +931,53 @@ public class MLWrapper {
 		matchReference(predictedList, combinedConceptFile, finalFile);
 		Alignment<Mapping> refMap = getReference(srcOntology, tarOntology,
 				refAlign);
-		calculateMeasure(finalFile, refMap);
+	//	calculateMeasure(finalFile, refMap);
+		generateAlignment(finalFile);
+		System.out.println("test Alignment size" + finalMapping.size());
+		displayResults(finalMapping, refMap);
 		
-		if(isFirstTime)
-		{
-			//LWC measure
-			log.info("LWC version");
-			LWCRunner runner=new LWCRunner();
-			runner.setSourceOntology(loadOntology(srcOntology));
-			runner.setTargetOntology(loadOntology(tarOntology));
-			AbstractMatcher lwcMatcher=runner.initializeLWC();
-			displayResults(lwcMatcher.getAlignment(), refMap);
-			isFirstTime=false;
-		}
-		return isFirstTime;
+	
 		
 		
 	}
+	void generateAlignment(String finalFile) throws IOException
+	{
 
+		BufferedReader mappingFile = new BufferedReader(new FileReader(
+				finalFile));
+		while (mappingFile.ready()) {
+			String inputLine = mappingFile.readLine();
+			String[] inputLineParts = inputLine.split("\t");
+			
+		
+			
+			for(Mapping currentMapping:testMapping)
+			{
+		
+				if ((currentMapping.getEntity1().getUri()
+						.equals(inputLineParts[0])
+						&& currentMapping.getEntity2().getUri()
+								.equals(inputLineParts[1]))
+						|| (currentMapping.getEntity2().getUri()
+								.equals(inputLineParts[0])
+								&& currentMapping.getEntity1().getUri()
+										.equals(inputLineParts[1]) ))
+				{
+					currentMapping.setSimilarity(1.0);
+					currentMapping.setRelation(relation.EQUIVALENCE);
+					finalMapping.add(currentMapping);
+					break;
+					
+				}
+				
+			}
+			
+		  }
+		
+		mappingFile.close();
+		
+	}
+	
 	/**
 	 * computing the f-measure for the testset
 	 * 
@@ -1037,16 +1082,27 @@ public class MLWrapper {
 				new File(finalFile)));
 		int index = 0;
 		while (conceptFile.ready()) {
-
 			String inputLine = conceptFile.readLine();
+			if(predictedList.get(index)==1.0)
+			{
+			
 			String[] inputLineParts = inputLine.split("\t");
 			if (inputLineParts.length == 3) {
 
 				String concepts = inputLineParts[0] + "\t" + inputLineParts[1];
 				outputWriter.write(concepts + "\t" + predictedList.get(index)
 						+ "\n");
-				index++;
+				
+				
 			}
+			}
+			
+			index++;
+			if(index==predictedList.size())
+			{
+				break;
+			}
+			
 		}
 		// System.out.println("final file generated:" + finalfile);
 		log.info("final file generated:" + finalFile);
@@ -1056,29 +1112,23 @@ public class MLWrapper {
 
 	void callProcess(String trainingFileName, String elementName, Modes mode)
 			throws Exception {
-		// String trainingFileName="bench/test.xml";
-		// String elementName="testset";
-
+	
 		loadMatchers(mode);
-		loadOntologyTriples(trainingFileName, elementName);
+		loadOntologyTriples(trainingFileName, elementName,false);
 		generateMappings();
 		generateTestFile(mode);
 
-		// generateModel();
-		// String testFileName="";
-		// elementName="testset";
-		// loadOntologyTriples(testFileName,elementName);
-
+	
 	}
 
 	void callTestProcess(Modes mode) {
-		LWCRunner runner = new LWCRunner();
+	
 		try {
 			// predicting the result for the testset using decisiontree
 			// classifier
 		 ArrayList<String> modelFiles=new ArrayList<String>();
 		 getFilesFromFolder(modelFiles, "mlroot/model");
-		 boolean isFirstTime=true;
+		 boolean isFirstTime=false;
 		 for(String modelname:modelFiles)
 		 {
 			 log.info("mode used "+mode);
@@ -1087,7 +1137,7 @@ public class MLWrapper {
 			 File currentModel = new File(modelname);
 				String model = currentModel.getName();
 			log.info("101-301");
-			isFirstTime= predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
+			predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
 					"mlroot/mltesting/bench/301/onto.rdf",
 					"mlroot/mltesting/bench/301/refalign.rdf",
 					"mlroot/test/predicted"+ model + ".arff",
@@ -1097,8 +1147,10 @@ public class MLWrapper {
 			 listOfMatchers.clear();
 				listOfTriples.clear();
 				matcherNames.clear();
+				testMapping.clear();
+				finalMapping.clear();
 			 log.info("101-302");
-			 isFirstTime= predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
+			 predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
 						"mlroot/mltesting/bench/302/onto.rdf",
 						"mlroot/mltesting/bench/302/refalign.rdf",
 						"mlroot/test/predicted"+ model + ".arff",
@@ -1107,8 +1159,10 @@ public class MLWrapper {
 			 listOfMatchers.clear();
 				listOfTriples.clear();
 				matcherNames.clear();
+				testMapping.clear();
+				finalMapping.clear();
 			 log.info("101-303");
-			 isFirstTime=predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
+			 predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
 						"mlroot/mltesting/bench/303/onto.rdf",
 						"mlroot/mltesting/bench/303/refalign.rdf",
 						"mlroot/test/predicted"+ model + ".arff",
@@ -1117,8 +1171,10 @@ public class MLWrapper {
 			 listOfMatchers.clear();
 				listOfTriples.clear();
 				matcherNames.clear();
+				testMapping.clear();
+				finalMapping.clear();
 			 log.info("edas-iasted");
-			 isFirstTime= predictresult(modelname,"mlroot/mltesting/conference/edas-iasted/edas.owl",
+			  predictresult(modelname,"mlroot/mltesting/conference/edas-iasted/edas.owl",
 						"mlroot/mltesting/conference/edas-iasted/iasted.owl",
 						"mlroot/mltesting/conference/edas-iasted/refalign.rdf",
 						"mlroot/test/predicted"+ model + ".arff",
@@ -1127,8 +1183,10 @@ public class MLWrapper {
 			 listOfMatchers.clear();
 				listOfTriples.clear();
 				matcherNames.clear();
+				testMapping.clear();
+				finalMapping.clear();
 			 log.info("iasted-sigkdd");
-			 isFirstTime=predictresult(modelname,"mlroot/mltesting/conference/iasted-sigkdd/iasted.owl",
+			 predictresult(modelname,"mlroot/mltesting/conference/iasted-sigkdd/iasted.owl",
 						"mlroot/mltesting/conference/iasted-sigkdd/sigkdd.owl",
 						"mlroot/mltesting/conference/iasted-sigkdd/refalign.rdf",
 						"mlroot/test/predicted"+ model + ".arff",
@@ -1137,8 +1195,10 @@ public class MLWrapper {
 			 listOfMatchers.clear();
 				listOfTriples.clear();
 				matcherNames.clear();
+				testMapping.clear();
+				finalMapping.clear();
 			 log.info("confOf-sigkdd");
-			 isFirstTime= predictresult(modelname,"mlroot/mltesting/conference/confOf-sigkdd/confOf.owl",
+			 predictresult(modelname,"mlroot/mltesting/conference/confOf-sigkdd/confOf.owl",
 						"mlroot/mltesting/conference/confOf-sigkdd/sigkdd.owl",
 						"mlroot/mltesting/conference/confOf-sigkdd/refalign.rdf",
 						"mlroot/test/predicted"+ model + ".arff",
@@ -1147,6 +1207,9 @@ public class MLWrapper {
 				listOfMatchers.clear();
 				listOfTriples.clear();
 				matcherNames.clear();
+				testMapping.clear();
+				finalMapping.clear();
+				
 		 }
 				} catch (Exception e) {
 
@@ -1157,7 +1220,7 @@ public class MLWrapper {
 	void displayResults(Alignment<Mapping> predictedMapping,
 			Alignment<Mapping> referenceAlignment) {
 		
-		log.info("LWC");
+		
 		int count = 0, mapped = 0;
 		for (int i = 0; i < predictedMapping.size(); i++) {
 			Mapping predictedMap = predictedMapping.get(i);
@@ -1263,7 +1326,7 @@ public class MLWrapper {
 			listOfTriples.clear();
 			matcherNames.clear();
 			loadMatchers(mode);
-			loadOntologyTriples(trainingFileName, elementName);
+			loadOntologyTriples(trainingFileName, elementName,true);
 			generateMappings();
 			generateTrainingFile(mode, outputBase[i]);
 		}
@@ -1329,8 +1392,9 @@ public class MLWrapper {
 	 * @throws Exception
 	 */
 	void generateTestFile(Modes mode) throws Exception {
+		
 		for (int m = 0; m < listOfMatchers.size(); m++) {
-
+			
 			AbstractMatcher currentMatcher = listOfMatchers.get(m);
 			BufferedWriter outputWriter = new BufferedWriter(
 					new FileWriter(new File("mlroot/test/matchers/"
@@ -1339,55 +1403,16 @@ public class MLWrapper {
 				for (int t = 0; t < listOfTriples.size(); t++) {
 
 					OntologyTriple currentTriple = listOfTriples.get(t);
-					Alignment<Mapping> referenceAlignment = currentTriple
-							.getReferenceAlignment();
+				//	Alignment<Mapping> referenceAlignment = currentTriple
+				//			.getReferenceAlignment();
 
-					if (currentTriple.containsMatcher(currentMatcher.getName())) {
 						Alignment<Mapping> currentMapping = currentTriple
 								.getAlignmentObtained(currentMatcher.getName());
-						if (currentMapping != null) {
-
-							boolean mapped = false;
-							for (int i = 0; i < currentMapping.size(); i++) {
+											for (int i = 0; i < currentMapping.size(); i++) {
 								double similarity = currentMapping
 										.getSimilarity(currentMapping.get(i)
 												.getEntity1(), currentMapping
 												.get(i).getEntity2());
-								mapped = false;
-								for (int j = 0; j < referenceAlignment.size(); j++) {
-
-									// checking for URIs of concepts appearing
-									// in any order in the ref alignment
-									// if(currentMapping.get(i).equals(referenceAlignment.get(j).getString(true)))
-									if ((currentMapping
-											.get(i)
-											.getEntity1()
-											.getUri()
-											.equals(referenceAlignment.get(j)
-													.getEntity1().getUri()) && currentMapping
-											.get(i)
-											.getEntity2()
-											.equals(referenceAlignment.get(j)
-													.getEntity2().getUri()))
-											|| (currentMapping
-													.get(i)
-													.getEntity1()
-													.getUri()
-													.equals(referenceAlignment
-															.get(j)
-															.getEntity2()
-															.getUri()) && currentMapping
-													.get(i)
-													.getEntity2()
-													.equals(referenceAlignment
-															.get(j)
-															.getEntity1()
-															.getUri())))
-
-									{
-										// System.out.println("mapped");
-
-										// outputWriter.write(currentMapping.get(i).getEntity1().getUri()+"\t"+currentMapping.get(i).getEntity2().getUri()+"\t1.0\t1.0\n");
 										outputWriter
 												.write(currentMapping.get(i)
 														.getEntity1().getUri()
@@ -1398,25 +1423,14 @@ public class MLWrapper {
 														+ "\t"
 														+ similarity
 														+ "\t1.0\n");
-										mapped = true;
-										break;
-									}
-								}
-								if (!mapped) {
-									// System.out.println("matcher mapping wrong");
-									outputWriter.write(currentMapping.get(i)
-											.getEntity1().getUri()
-											+ "\t"
-											+ currentMapping.get(i)
-													.getEntity2().getUri()
-											+ "\t" + similarity + "\t0.0\n");
-								}
-							}
-						}
-					}
+		
+												
+										
 				}
+			     testMapping.addAllNoDuplicate(currentMapping);		
 			}
 			outputWriter.close();
+		}
 		}
 		mergeIndividualTestFiles(mode);
 
@@ -1444,7 +1458,7 @@ public class MLWrapper {
 
 		MLWrapper Trainingwrapper = new MLWrapper();
 		MLWrapper Testwrapper = new MLWrapper();
-		Modes mode = Modes.BASE_MODE;
+		Modes mode = Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND;
 		String trainfolder = "mlroot/output";
 		String testfolder = "mlroot/test/matchers";
 		try {

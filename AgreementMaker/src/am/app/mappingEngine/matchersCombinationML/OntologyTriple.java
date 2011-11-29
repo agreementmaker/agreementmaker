@@ -60,6 +60,14 @@ public class OntologyTriple {
 		this.alignmentObtained =new HashMap<String, Alignment<Mapping>>();
 	}
 
+	public OntologyTriple(Ontology ontology1, Ontology ontology2
+			) {
+		super();
+		this.ontology1 = ontology1;
+		this.ontology2 = ontology2;
+		
+		this.alignmentObtained =new HashMap<String, Alignment<Mapping>>();
+	}
 
 	public OntologyTriple() {
 		this.alignmentObtained =new HashMap<String, Alignment<Mapping>>();
