@@ -24,6 +24,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import weka.classifiers.Classifier;
+import weka.core.Instance;
 import weka.core.Instances;
 import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
@@ -51,7 +52,7 @@ import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
 
 import com.hp.hpl.jena.rdf.model.Property;
 
-public class MLWrapper extends AbstractMatcher{
+public class MLWrapper extends AbstractMatcher {
 
 	ArrayList<AbstractMatcher> listOfMatchers = new ArrayList<AbstractMatcher>();
 	ArrayList<OntologyTriple> listOfTriples = new ArrayList<OntologyTriple>();
@@ -87,62 +88,62 @@ public class MLWrapper extends AbstractMatcher{
 	 * 
 	 * @throws Exception
 	 */
-//	void loadMatchers(Modes mode) throws Exception {
-//		// TODO : look at oaei2011 and look how to get matchers and add to list
-//		// below
-//		// listOfMatchers.add();
-//		// try with these matchers da
-//		AbstractMatcher am = null;
-//		am = MatcherFactory.getMatcherInstance(
-//				MatchersRegistry.ParametricString, 0);
-//		ParametricStringParameters psmParam = new ParametricStringParameters(
-//				0.6, 1, 1);
-//		psmParam.useLexicons = true;
-//		psmParam.useBestLexSimilarity = true;
-//		psmParam.measure = ParametricStringParameters.AMSUB_AND_EDIT;
-//		psmParam.normParameter = new NormalizerParameter();
-//		psmParam.normParameter.setForOAEI2009();
-//		psmParam.redistributeWeights = true;
-//		psmParam.threadedExecution = true;
-//		psmParam.threadedOverlap = true;
-//		am.setParam(psmParam);
-//		listOfMatchers.add(am);
-//		am = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity,
-//				0);
-//		BaseSimilarityParameters bsmParam = new BaseSimilarityParameters(0.6,
-//				1, 1);
-//		bsmParam.useDictionary = false;
-//		am.setParam(bsmParam);
-//		listOfMatchers.add(am);
-//		am = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 0);
-//		MultiWordsParameters vmmParam = new MultiWordsParameters(0.6, 1, 1);
-//
-//		vmmParam.measure = MultiWordsParameters.TFIDF;
-//		// only on concepts right now because it should be weighted differently
-//		vmmParam.considerInstances = true;
-//		vmmParam.considerNeighbors = false;
-//		vmmParam.considerConcept = true;
-//		vmmParam.considerClasses = false;
-//		vmmParam.considerProperties = false;
-//		vmmParam.ignoreLocalNames = true;
-//		vmmParam.useLexiconSynonyms = true; // May change later.
-//		am.setParam(vmmParam);
-//		listOfMatchers.add(am);
-//		log.info(mode);
-//		if (mode == Modes.BASE_MODE_LWC
-//				|| mode == Modes.BASE_MODE_MATCHER_FOUND_LWC
-//				|| mode == Modes.BASE_MODE_MATCHER_VOTE_LWC
-//				|| mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC) {
-//			log.info("mode" + mode);
-//			am = MatcherFactory.getMatcherInstance(
-//					MatchersRegistry.Combination, 0);
-//			listOfMatchers.add(am);
-//		}
-//
-//		// AbstractMatcher
-//		// bsm=MatcherFactory.getMatcherInstance(MatchersRegistry.Equals, 0);
-//
-//	}
+	// void loadMatchers(Modes mode) throws Exception {
+	// // TODO : look at oaei2011 and look how to get matchers and add to list
+	// // below
+	// // listOfMatchers.add();
+	// // try with these matchers da
+	// AbstractMatcher am = null;
+	// am = MatcherFactory.getMatcherInstance(
+	// MatchersRegistry.ParametricString, 0);
+	// ParametricStringParameters psmParam = new ParametricStringParameters(
+	// 0.6, 1, 1);
+	// psmParam.useLexicons = true;
+	// psmParam.useBestLexSimilarity = true;
+	// psmParam.measure = ParametricStringParameters.AMSUB_AND_EDIT;
+	// psmParam.normParameter = new NormalizerParameter();
+	// psmParam.normParameter.setForOAEI2009();
+	// psmParam.redistributeWeights = true;
+	// psmParam.threadedExecution = true;
+	// psmParam.threadedOverlap = true;
+	// am.setParam(psmParam);
+	// listOfMatchers.add(am);
+	// am = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity,
+	// 0);
+	// BaseSimilarityParameters bsmParam = new BaseSimilarityParameters(0.6,
+	// 1, 1);
+	// bsmParam.useDictionary = false;
+	// am.setParam(bsmParam);
+	// listOfMatchers.add(am);
+	// am = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 0);
+	// MultiWordsParameters vmmParam = new MultiWordsParameters(0.6, 1, 1);
+	//
+	// vmmParam.measure = MultiWordsParameters.TFIDF;
+	// // only on concepts right now because it should be weighted differently
+	// vmmParam.considerInstances = true;
+	// vmmParam.considerNeighbors = false;
+	// vmmParam.considerConcept = true;
+	// vmmParam.considerClasses = false;
+	// vmmParam.considerProperties = false;
+	// vmmParam.ignoreLocalNames = true;
+	// vmmParam.useLexiconSynonyms = true; // May change later.
+	// am.setParam(vmmParam);
+	// listOfMatchers.add(am);
+	// log.info(mode);
+	// if (mode == Modes.BASE_MODE_LWC
+	// || mode == Modes.BASE_MODE_MATCHER_FOUND_LWC
+	// || mode == Modes.BASE_MODE_MATCHER_VOTE_LWC
+	// || mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC) {
+	// log.info("mode" + mode);
+	// am = MatcherFactory.getMatcherInstance(
+	// MatchersRegistry.Combination, 0);
+	// listOfMatchers.add(am);
+	// }
+	//
+	// // AbstractMatcher
+	// // bsm=MatcherFactory.getMatcherInstance(MatchersRegistry.Equals, 0);
+	//
+	// }
 
 	/**
 	 * Load the training.xml file which contains information about the source
@@ -153,8 +154,8 @@ public class MLWrapper extends AbstractMatcher{
 	 * @throws Exception
 	 */
 
-	void loadOntologyTriples(String fileName, String elementname,boolean refalign)
-			throws Exception {
+	void loadOntologyTriples(String fileName, String elementname,
+			boolean refalign) throws Exception {
 		// in linux RDF is rdf so had to put toLowerCase()
 		// TODO: load the list of training ontologies with reference alignments
 
@@ -167,45 +168,44 @@ public class MLWrapper extends AbstractMatcher{
 		}
 
 		// String basePath="";
-	
+
 		// actualFilePath+=fileName;
 		ArrayList<TrainingLayout> tlist = xp.parseDocument(fileName,
 				elementname, "training");
 		for (TrainingLayout tl : tlist) {
 			Ontology sourceOntology = loadOntology(tl.getsourceOntologyPath());
 			Ontology targetOntology = loadOntology(tl.gettargetOntologyPath());
-			if(refalign)
-			{
-			ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
-			refParam.onlyEquivalence = true;
-			refParam.fileName = tl.getrefAlignmentPath();
-			System.out.println( tl.getrefAlignmentPath());
-			refParam.format = ReferenceAlignmentMatcher.OAEI;
-			AbstractMatcher referenceAlignmentMatcher = MatcherFactory
-					.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
-			referenceAlignmentMatcher.setParam(refParam);
-			referenceAlignmentMatcher.setSourceOntology(sourceOntology);
-			referenceAlignmentMatcher.setTargetOntology(targetOntology);
-			referenceAlignmentMatcher.match();
-			Alignment<Mapping> refmap = referenceAlignmentMatcher
-					.getAlignment();
-			OntologyTriple ot = new OntologyTriple(sourceOntology,
-					targetOntology, refmap);
-			ot.setListOfMatchers(listOfMatchers);
-			listOfTriples.add(ot);
-			}
-			else
-			{
+			if (refalign) {
+				ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+				refParam.onlyEquivalence = true;
+				refParam.fileName = tl.getrefAlignmentPath();
+				System.out.println(tl.getrefAlignmentPath());
+				refParam.format = ReferenceAlignmentMatcher.OAEI;
+				AbstractMatcher referenceAlignmentMatcher = MatcherFactory
+						.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+				referenceAlignmentMatcher.setParam(refParam);
+				referenceAlignmentMatcher.setSourceOntology(sourceOntology);
+				referenceAlignmentMatcher.setTargetOntology(targetOntology);
+				referenceAlignmentMatcher.match();
+				Alignment<Mapping> refmap = referenceAlignmentMatcher
+						.getAlignment();
+				OntologyTriple ot = new OntologyTriple(sourceOntology,
+						targetOntology, refmap);
+				ot.setListOfMatchers(listOfMatchers);
+				listOfTriples.add(ot);
+			} else {
 				OntologyTriple ot = new OntologyTriple(sourceOntology,
 						targetOntology);
 				ot.setListOfMatchers(listOfMatchers);
 				listOfTriples.add(ot);
-				testMapping=new Alignment<Mapping>(sourceOntology.getID(),targetOntology.getID());
-				finalMapping=new Alignment<Mapping>(sourceOntology.getID(),targetOntology.getID());
-				combinedMapping=new Alignment<Mapping>(sourceOntology.getID(),targetOntology.getID());
+				testMapping = new Alignment<Mapping>(sourceOntology.getID(),
+						targetOntology.getID());
+				finalMapping = new Alignment<Mapping>(sourceOntology.getID(),
+						targetOntology.getID());
+				combinedMapping = new Alignment<Mapping>(
+						sourceOntology.getID(), targetOntology.getID());
 			}
-			
-			
+
 		}
 	}
 
@@ -307,13 +307,12 @@ public class MLWrapper extends AbstractMatcher{
 
 					manualProfiler.setMatchTimeParams(profilingMatchingParams);
 
-		
 					AbstractMatcher currentMatcher = matchers.get(m);
 					// log.info(currentMatcher.getName());
 					Alignment<Mapping> resultAlignment;
 					if (currentMatcher.getName().toLowerCase()
 							.contains("linear")) {
-						//log.info("lwc included");
+						// log.info("lwc included");
 						LWCRunner runner = new LWCRunner();
 
 						runner.setSourceOntology(currentTriple.getOntology1());
@@ -414,7 +413,7 @@ public class MLWrapper extends AbstractMatcher{
 															.get(j)
 															.getEntity1()
 															.getUri()))) {
-										//log.info(similarity + "\t1.0");
+										// log.info(similarity + "\t1.0");
 										// System.out.println("mapped");
 
 										// outputWriter.write(currentMapping.get(i).getEntity1().getUri()+"\t"+currentMapping.get(i).getEntity2().getUri()+"\t1.0\t1.0\n");
@@ -507,6 +506,7 @@ public class MLWrapper extends AbstractMatcher{
 
 		BufferedWriter outputWriter = new BufferedWriter(new FileWriter(
 				new File(path + "combinedmatchers/trainingFilecombined")));
+		BufferedWriter lwcWriter=new BufferedWriter(new FileWriter(new File(path+"combinedmatchers/lwcValues")));
 
 		while (mapKeyIterator.hasNext()) {
 			String currentKey = mapKeyIterator.next();
@@ -514,6 +514,7 @@ public class MLWrapper extends AbstractMatcher{
 			HashMap<String, String> matcherMap = uniqueConcepts.get(currentKey);
 			String outputStr = "";
 			String referenceSim = "0.0";
+			String lwcSimilarity="";
 			String[] matcherSim = new String[matcherNames.size()];
 			int numFound = 0;
 			int totalMatchers = matcherFiles.size();
@@ -532,75 +533,53 @@ public class MLWrapper extends AbstractMatcher{
 					matcherFound = 0;
 					matcherSim[i] = "0.0";
 				}
-				if (mode == Modes.BASE_MODE) {
-					outputStr += matcherSim[i] + "\t";// prints out matcher
-														// similarity value
-				} else if (mode == Modes.BASE_MODE_LWC) {
-					outputStr += matcherSim[i] + "\t";// prints out matcher
-														// similarity value
-				} else if (mode == Modes.BASE_MODE_MATCHER_FOUND) {
-					outputStr += matcherSim[i] + "\t" + matcherFound + "\t";// prints
-																			// out
-																			// matcher
-																			// similarity
-																			// value
-																			// \t
-																			// matcher
-																			// found
-																			// or
-																			// not
-																			// (0/1)
-				} else if (mode == Modes.BASE_MODE_MATCHER_FOUND_LWC) {
-					outputStr += matcherSim[i] + "\t" + matcherFound + "\t";// prints
-																			// out
-																			// matcher
-																			// similarity
-																			// value
-																			// \t
-																			// matcher
-																			// found
-																			// or
-																			// not
-																			// (0/1)
-				} else if (mode == Modes.BASE_MODE_MATCHER_VOTE) {
-					outputStr += matcherSim[i] + "\t";// prints out matcher
-														// similarity value \t
-														// matcher found or not
-														// (0/1)
-				} else if (mode == Modes.BASE_MODE_MATCHER_VOTE_LWC) {
-					outputStr += matcherSim[i] + "\t";// prints out matcher
-														// similarity value \t
-														// matcher found or not
-														// (0/1)
-				} else if (mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND) {
-					outputStr += matcherSim[i] + "\t" + matcherFound + "\t";// prints
-																			// out
-																			// matcher
-																			// similarity
-																			// value
-																			// \t
-																			// matcher
-																			// found
-																			// or
-																			// not
-																			// (0/1)
-				} else if (mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC) {
-					outputStr += matcherSim[i] + "\t" + matcherFound + "\t";// prints
-																			// out
-																			// matcher
-																			// similarity
-																			// value
-																			// \t
-																			// matcher
-																			// found
-																			// or
-																			// not
-																			// (0/1)
+				if(matcherName.equals("") && (mode ==Modes.BASE_MODE_LWC || mode == Modes.BASE_MODE_MATCHER_FOUND_LWC || mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC))
+				{
+					//do nothing
+					;
 				}
-
+				else
+				{
+					if (mode == Modes.LWC) {
+						outputStr += matcherSim[i] + "\t";
+					} else if (mode == Modes.BASE_MODE) {
+						outputStr += matcherSim[i] + "\t";// prints out matcher
+															// similarity value
+					} else if (mode == Modes.BASE_MODE_LWC) {
+						outputStr += matcherSim[i] + "\t";
+						// prints out matcher similarity value
+					} else if (mode == Modes.BASE_MODE_MATCHER_FOUND) {
+						outputStr += matcherSim[i] + "\t" + matcherFound + "\t";
+						// prints out matcher similarity value \t matcher found
+						// or not (0/1)
+					} else if (mode == Modes.BASE_MODE_MATCHER_FOUND_LWC) {
+						outputStr += matcherSim[i] + "\t" + matcherFound + "\t";
+						// prints out matcher similarity value \t matcher found
+						// or not (0/1)										// (0/1)
+					} else if (mode == Modes.BASE_MODE_MATCHER_VOTE) {
+						outputStr += matcherSim[i] + "\t";
+						// prints out matcher similarity value \t matcher found
+						// or not (0/1)
+					} else if (mode == Modes.BASE_MODE_MATCHER_VOTE_LWC) {
+						outputStr += matcherSim[i] + "\t";
+						// prints out matcher similarity value \t matcher found
+						// or not (0/1)
+					} else if (mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND) {
+						outputStr += matcherSim[i] + "\t" + matcherFound + "\t";
+						// prints out matcher similarity value \t matcher found
+						// or not (0/1)
+					} else if (mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC) {
+						outputStr += matcherSim[i] + "\t" + matcherFound + "\t";
+						// prints out matcher similarity value \t matcher found
+						// or not (0/1)
+					}
+				}
 			}
 
-			if (mode == Modes.BASE_MODE) {
+			if (mode == Modes.LWC) {
+				outputStr += referenceSim;// adds the matcher vote value and the
+				// reference similarity
+			} else if (mode == Modes.BASE_MODE) {
 
 				outputStr += referenceSim;// adds the matcher vote value and the
 											// reference similarity
@@ -877,8 +856,8 @@ public class MLWrapper extends AbstractMatcher{
 	 */
 	void predictresult(String modelName, String srcOntology,
 			String tarOntology, String refAlign, String predicted,
-			String combinedConceptFile, String finalFile, Modes mode,boolean isFirstTime,boolean isSpecific)
-			throws Exception {
+			String combinedConceptFile, String finalFile, Modes mode,
+			boolean isFirstTime, boolean isSpecific) throws Exception {
 		// generating the test.xml file needed by MLTestingWrapper
 		String outputFileName = "mlroot/output/test.xml";
 		ArrayList<Double> predictedList = new ArrayList<Double>();
@@ -888,7 +867,7 @@ public class MLWrapper extends AbstractMatcher{
 
 		// running the matchers on testset
 
-		callProcess(outputFileName, "dataset", mode,isSpecific);
+		callProcess(outputFileName, "dataset", mode, isSpecific);
 
 		// deserialising the model we have built
 		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
@@ -900,43 +879,53 @@ public class MLWrapper extends AbstractMatcher{
 				"test", matcherNames, mode);
 
 		arff.generateArffFile("mlroot/test/arff/testFilecombined.arff");
-		BufferedReader testset = new BufferedReader(new FileReader(
+		BufferedReader testSet = new BufferedReader(new FileReader(
 				"mlroot/test/arff/testFilecombined.arff"));
-		Instances test = new Instances(testset);
+		Instances test = new Instances(testSet);
 		test.setClassIndex(test.numAttributes() - 1);
 
 		// predict the result using given model
 
-		for (int i = 0; i < test.numInstances(); i++) {
-			double clsLabel = cls.classifyInstance(test.instance(i));
-			double[] prob=cls.distributionForInstance(test.instance(i));
-			
-			test.instance(i).setClassValue(clsLabel);
-			//getting weka confidence for target class 1 
-			//with confidence value 80%
-			
-			//if(prob[1] > 0.80)
-			{
-				
-				predictedList.add(clsLabel);
-				if(clsLabel==0.0)
-				{
-					confidenceList.add(prob[0]);
-				}
-				else
-				{
-					confidenceList.add(prob[1]);
+		if (mode == Modes.LWC) {
+
+			for (int i = 0; i < test.numInstances(); i++) {
+				Instance currentInstance = test.instance(i);
+				String instanceStr = currentInstance.toString().trim();
+				String instanceStrParts[] = instanceStr.split(",");
+				double lwcSimilarity = Double.parseDouble(instanceStrParts[0]
+						.trim());
+				if (lwcSimilarity >= 0.8) {
+					predictedList.add(1.0);
+				} else {
+					predictedList.add(0.0);
 				}
 			}
-//			else
-//			{
-//				System.out.println("the confidence is \t1.0 "+prob[1]+"\t0.0 "+prob[0]+"predicted is "+clsLabel);
-//			}
-			
 
+		} else {
+			for (int i = 0; i < test.numInstances(); i++) {
+				double clsLabel = cls.classifyInstance(test.instance(i));
+				double[] prob = cls.distributionForInstance(test.instance(i));
+
+				test.instance(i).setClassValue(clsLabel);
+				// getting weka confidence for target class 1
+				// with confidence value 80%
+
+				// if(prob[1] > 0.80)
+				{
+
+					predictedList.add(clsLabel);
+					if (clsLabel == 0.0) {
+						confidenceList.add(prob[0]);
+					} else {
+						confidenceList.add(prob[1]);
+					}
+				}
+
+			}
 		}
-		System.out.println(confidenceList.size()+"\tconfidencelist size");
-		System.out.println(predictedList.size()+"\tpredictedlist size");
+
+		System.out.println(confidenceList.size() + "\tconfidencelist size");
+		System.out.println(predictedList.size() + "\tpredictedlist size");
 		// save the predicted data
 		BufferedWriter writer = new BufferedWriter(new FileWriter(predicted));
 		writer.write(test.toString());
@@ -950,117 +939,112 @@ public class MLWrapper extends AbstractMatcher{
 		// value
 		// run it against the reference alignment
 		// to compute the precision,recall and f-measure
-		
-			
-		
-		
-		
-		if(isSpecific)
-		{
+
+		if (isSpecific) {
 			// Now we have the predicted value
-			// generate a single file which has the correspondences and predicted
+			// generate a single file which has the correspondences and
+			// predicted
 			// value
 			// run it against the reference alignment
 			// to compute the precision,recall and f-measure
-			/*/matchReference(predictedList, combinedConceptFile, finalFile);
-			refMap = getReference(srcOntology, tarOntology,
-					refAlign);
-			calculateMeasure(finalFile, refMap);
-			*/
+			/*
+			 * /matchReference(predictedList, combinedConceptFile, finalFile);
+			 * refMap = getReference(srcOntology, tarOntology, refAlign);
+			 * calculateMeasure(finalFile, refMap);
+			 */
 
-			LWCRunner runner=new LWCRunner();
+			LWCRunner runner = new LWCRunner();
 			runner.setSourceOntology(loadOntology(srcOntology));
 			runner.setTargetOntology(loadOntology(tarOntology));
-			AbstractMatcher lwcMatcher=runner.initializeLWC();
-			matchReference(predictedList, confidenceList,combinedConceptFile, finalFile);
+			AbstractMatcher lwcMatcher = runner.initializeLWC();
+			matchReference(predictedList, confidenceList, combinedConceptFile,
+					finalFile);
 			Alignment<Mapping> refMap = getReference(srcOntology, tarOntology,
 					refAlign);
-			//combining lwc and mlm mapping
-			combinedMapping=lwcMatcher.getAlignment();
-			generateAlignment(finalFile,mode,combinedMapping);
+			// combining lwc and mlm mapping
+			combinedMapping = lwcMatcher.getAlignment();
+			generateAlignment(finalFile, mode, combinedMapping);
 			log.info("mlm measure");
 			displayResults(finalMapping, refMap);
 			log.info("lwc measure");
 			displayResults(lwcMatcher.getAlignment(), refMap);
-			
-			
-//			for(Mapping mlmMapping : finalMapping)
-//			{
-//				boolean isExists=false;
-//				//log.info("------------mlm--");
-//				//log.info(mlmMapping.getEntity1().getUri() + "\t"+ mlmMapping.getEntity2().getUri());
-//				//log.info("---------------lwc-------------------------------------------");
-//				for(Mapping lwcMapping:lwcMatcher.getAlignment())
-//				{
-//				//	log.info(lwcMapping.getEntity1().getUri() + "\t" + lwcMapping.getEntity2().getUri());
-//					if((mlmMapping.getEntity1().getUri().equals(lwcMapping.getEntity1().getUri()) 
-//							&& mlmMapping.getEntity2().getUri().equals(lwcMapping.getEntity2().getUri())) 
-//							|| (mlmMapping.getEntity1().getUri().equals(lwcMapping.getEntity2().getUri()) 
-//							&& mlmMapping.getEntity2().getUri().equals(lwcMapping.getEntity1().getUri())))
-//							
-//							{
-//							   
-//							   isExists=true;
-//						//	   log.info("from lwc");
-//							   
-//							}
-//				}
-//				//log.info("------------lwc ends------------------");
-//				if(!isExists)
-//				{
-//				//	log.info("from mlm");
-//					combinedMapping.add(mlmMapping);
-//				}
-//			}
-//			log.info("lwc+mlm" +combinedMapping.size());
-//			displayResults(combinedMapping, refMap);
-			
-		}
-		else
-		{
+
+			// for(Mapping mlmMapping : finalMapping)
+			// {
+			// boolean isExists=false;
+			// //log.info("------------mlm--");
+			// //log.info(mlmMapping.getEntity1().getUri() + "\t"+
+			// mlmMapping.getEntity2().getUri());
+			// //log.info("---------------lwc-------------------------------------------");
+			// for(Mapping lwcMapping:lwcMatcher.getAlignment())
+			// {
+			// // log.info(lwcMapping.getEntity1().getUri() + "\t" +
+			// lwcMapping.getEntity2().getUri());
+			// if((mlmMapping.getEntity1().getUri().equals(lwcMapping.getEntity1().getUri())
+			// &&
+			// mlmMapping.getEntity2().getUri().equals(lwcMapping.getEntity2().getUri()))
+			// ||
+			// (mlmMapping.getEntity1().getUri().equals(lwcMapping.getEntity2().getUri())
+			// &&
+			// mlmMapping.getEntity2().getUri().equals(lwcMapping.getEntity1().getUri())))
+			//
+			// {
+			//
+			// isExists=true;
+			// // log.info("from lwc");
+			//
+			// }
+			// }
+			// //log.info("------------lwc ends------------------");
+			// if(!isExists)
+			// {
+			// // log.info("from mlm");
+			// combinedMapping.add(mlmMapping);
+			// }
+			// }
+			// log.info("lwc+mlm" +combinedMapping.size());
+			// displayResults(combinedMapping, refMap);
+
+		} else {
 			calculateGeneralMeasure(predictedList);
 		}
-		
-	
-		listOfTriples.clear();
-		//	matcherNames.clear();
-			testMapping.clear();
-			finalMapping.clear();
-			combinedMapping.clear();
 
-		
+		listOfTriples.clear();
+		// matcherNames.clear();
+		testMapping.clear();
+		finalMapping.clear();
+		combinedMapping.clear();
+
 	}
-	
-	void calculateGeneralMeasure(ArrayList<Double> predictedList) throws NumberFormatException, IOException
-	{
-		BufferedReader inputReader=new BufferedReader(new FileReader(new File("mlroot/test/testrefFilecombined")));
-		int index=0;
-		int count=0;
-		int mapped=0;
-		int sizeOfRef=0;
-		log.info(predictedList.size()+"size of predicted");
-		while(inputReader.ready())
-		{
-			double referenceValue=Double.parseDouble(inputReader.readLine().trim());
-			double predictedValue=predictedList.get(index);
-//			log.info("predicted"+predictedValue);
-//			log.info("reference"+referenceValue+"\n");
-			
-			if(predictedValue==1.0)
-			{
+
+	void calculateGeneralMeasure(ArrayList<Double> predictedList)
+			throws NumberFormatException, IOException {
+		BufferedReader inputReader = new BufferedReader(new FileReader(
+				new File("mlroot/test/testrefFilecombined")));
+		int index = 0;
+		int count = 0;
+		int mapped = 0;
+		int sizeOfRef = 0;
+		log.info(predictedList.size() + "size of predicted");
+		while (inputReader.ready()) {
+			double referenceValue = Double.parseDouble(inputReader.readLine()
+					.trim());
+			double predictedValue = predictedList.get(index);
+			// log.info("predicted"+predictedValue);
+			// log.info("reference"+referenceValue+"\n");
+
+			if (predictedValue == 1.0) {
 				count++;
 			}
-			if(referenceValue == predictedValue && referenceValue==1.0)
-			{
+			if (referenceValue == predictedValue && referenceValue == 1.0) {
 				mapped++;
 			}
-			if(referenceValue==1.0)
-			{
+			if (referenceValue == 1.0) {
 				sizeOfRef++;
 			}
 			index++;
 		}
-		
+
 		log.info("-------------------------------------------------------------");
 		// System.out.println("total correct" + mapped);
 		// System.out.println("total mapping" +count);
@@ -1134,9 +1118,8 @@ public class MLWrapper extends AbstractMatcher{
 
 	}
 
-	
-	void generateAlignment(String finalFile,Modes mode,Alignment<Mapping> lwcAlign) throws IOException
-	{
+	void generateAlignment(String finalFile, Modes mode,
+			Alignment<Mapping> lwcAlign) throws IOException {
 
 		BufferedReader mappingFile = new BufferedReader(new FileReader(
 				finalFile));
@@ -1145,57 +1128,51 @@ public class MLWrapper extends AbstractMatcher{
 			String[] inputLineParts = inputLine.split("\t");
 			double confidence;
 			double predicted;
-			
-			for(Mapping currentMapping:testMapping)
-			{
-		
+
+			for (Mapping currentMapping : testMapping) {
+
 				if ((currentMapping.getEntity1().getUri()
-						.equals(inputLineParts[0].trim())
-						&& currentMapping.getEntity2().getUri()
-								.equals(inputLineParts[1].trim()))
+						.equals(inputLineParts[0].trim()) && currentMapping
+						.getEntity2().getUri().equals(inputLineParts[1].trim()))
 						|| (currentMapping.getEntity2().getUri()
-								.equals(inputLineParts[0])
-								&& currentMapping.getEntity1().getUri()
-										.equals(inputLineParts[1]) ))
-				{
-					
-					//System.out.println("confidence" + inputLineParts[3]);
-					confidence=Double.parseDouble(inputLineParts[3]);
-					
-					predicted=Double.parseDouble(inputLineParts[2]);
-					if(predicted==1.0)
-					{
-						if(confidence>=0.6)
-						{
+								.equals(inputLineParts[0]) && currentMapping
+								.getEntity1().getUri()
+								.equals(inputLineParts[1]))) {
+
+					// System.out.println("confidence" + inputLineParts[3]);
+					confidence = Double.parseDouble(inputLineParts[3]);
+
+					predicted = Double.parseDouble(inputLineParts[2]);
+					if (predicted == 1.0) {
+						if (confidence >= 0.6) {
 							currentMapping.setSimilarity(predicted);
 							currentMapping.setRelation(relation.EQUIVALENCE);
 							finalMapping.add(currentMapping);
-						}
-						else
-						{
-							Node sourceNode=currentMapping.getEntity1();
-							Node targetNode=currentMapping.getEntity2();
-							if(lwcAlign.isMapped(targetNode)&& lwcAlign.isMapped(sourceNode))
-							{
-								double lwcSim=lwcAlign.getSimilarity(sourceNode, targetNode);
+						} else {
+							Node sourceNode = currentMapping.getEntity1();
+							Node targetNode = currentMapping.getEntity2();
+							if (lwcAlign.isMapped(targetNode)
+									&& lwcAlign.isMapped(sourceNode)) {
+								double lwcSim = lwcAlign.getSimilarity(
+										sourceNode, targetNode);
 								currentMapping.setSimilarity(lwcSim);
-								finalMapping.add(currentMapping);	
+								finalMapping.add(currentMapping);
 							}
-						}	
+						}
 					}
-					
+
 					break;
-					
+
 				}
-				
+
 			}
-			
-		  }
-		
+
+		}
+
 		mappingFile.close();
-		
+
 	}
-	
+
 	/**
 	 * TODO : description
 	 * 
@@ -1233,8 +1210,9 @@ public class MLWrapper extends AbstractMatcher{
 	 * @param finalFile
 	 * @throws IOException
 	 */
-	void matchReference(ArrayList<Double> predictedList,ArrayList<Double> confidenceList,
-			String combinedConceptFile, String finalFile) throws IOException {
+	void matchReference(ArrayList<Double> predictedList,
+			ArrayList<Double> confidenceList, String combinedConceptFile,
+			String finalFile) throws IOException {
 
 		BufferedReader conceptFile = new BufferedReader(new FileReader(
 				combinedConceptFile));
@@ -1243,27 +1221,25 @@ public class MLWrapper extends AbstractMatcher{
 		int index = 0;
 		while (conceptFile.ready()) {
 			String inputLine = conceptFile.readLine();
-			if(predictedList.get(index)==1.0)
-			{
-			
-				String[] inputLineParts = inputLine.split("\t");
-				if (inputLineParts.length == 3) 
-				{
+			if (predictedList.get(index) == 1.0) {
 
-					String concepts = inputLineParts[0] + "\t" + inputLineParts[1];
-					outputWriter.write(concepts + "\t" + predictedList.get(index) + "\t" + confidenceList.get(index)
-						+ "\n");
-				
-				
+				String[] inputLineParts = inputLine.split("\t");
+				if (inputLineParts.length == 3) {
+
+					String concepts = inputLineParts[0] + "\t"
+							+ inputLineParts[1];
+					outputWriter.write(concepts + "\t"
+							+ predictedList.get(index) + "\t"
+							+ confidenceList.get(index) + "\n");
+
 				}
 			}
-			
+
 			index++;
-			if(index==predictedList.size())
-			{
+			if (index == predictedList.size()) {
 				break;
 			}
-			
+
 		}
 		// System.out.println("final file generated:" + finalfile);
 		log.info("final file generated:" + finalFile);
@@ -1271,50 +1247,42 @@ public class MLWrapper extends AbstractMatcher{
 
 	}
 
-	void callProcess(String trainingFileName, String elementName, Modes mode,boolean isSpecific)
-			throws Exception {
-	
-		//loadMatchers(mode);
-	
-		loadOntologyTriples(trainingFileName, elementName,false);
+	void callProcess(String trainingFileName, String elementName, Modes mode,
+			boolean isSpecific) throws Exception {
+
+		// loadMatchers(mode);
+
+		loadOntologyTriples(trainingFileName, elementName, false);
 		generateMappings();
-		
-		if(isSpecific)
-		{
-			
-			generateTestFile(mode);	
-		}
-		else
-		{
+
+		if (isSpecific) {
+
+			generateTestFile(mode);
+		} else {
 			generateGeneralTestFile();
 		}
-		
 
-	
 	}
-	
-	
-	
-	void generateGeneralTestFile() throws IOException
-	{
-		BufferedReader inputReader=new BufferedReader(new FileReader(new File("mlroot/percent/percentfiletest")));
-		BufferedWriter outputWriter=new BufferedWriter(new FileWriter(new File("mlroot/test/testFilecombined")));
-		BufferedWriter outputReferenceWriter=new BufferedWriter(new FileWriter(new File("mlroot/test/testrefFilecombined")));
-		
-		while(inputReader.ready())
-		{
-			String inputLine=inputReader.readLine().trim();
-			if(!inputLine.equals(""))
-			{
-				String inputLineParts[]=inputLine.split("\t");
-				String referenceValue=inputLineParts[inputLineParts.length-1];
-				String outputTestString="";
-				for(int i=0;i<inputLineParts.length-1;i++)
-				{
-					outputTestString+=inputLineParts[i]+"\t";
+
+	void generateGeneralTestFile() throws IOException {
+		BufferedReader inputReader = new BufferedReader(new FileReader(
+				new File("mlroot/percent/percentfiletest")));
+		BufferedWriter outputWriter = new BufferedWriter(new FileWriter(
+				new File("mlroot/test/testFilecombined")));
+		BufferedWriter outputReferenceWriter = new BufferedWriter(
+				new FileWriter(new File("mlroot/test/testrefFilecombined")));
+
+		while (inputReader.ready()) {
+			String inputLine = inputReader.readLine().trim();
+			if (!inputLine.equals("")) {
+				String inputLineParts[] = inputLine.split("\t");
+				String referenceValue = inputLineParts[inputLineParts.length - 1];
+				String outputTestString = "";
+				for (int i = 0; i < inputLineParts.length - 1; i++) {
+					outputTestString += inputLineParts[i] + "\t";
 				}
-				outputWriter.write(outputTestString.trim()+"\n");
-				outputReferenceWriter.write(referenceValue.trim()+"\n");
+				outputWriter.write(outputTestString.trim() + "\n");
+				outputReferenceWriter.write(referenceValue.trim() + "\n");
 			}
 		}
 		outputWriter.close();
@@ -1322,65 +1290,71 @@ public class MLWrapper extends AbstractMatcher{
 	}
 
 	void callTestProcess(Modes mode) {
-	
+
 		try {
 			// predicting the result for the testset using decisiontree
 			// classifier
-		 ArrayList<String> modelFiles=new ArrayList<String>();
-		 getFilesFromFolder(modelFiles, "mlroot/model");
-		 boolean isFirstTime=false;
-		 boolean isSpecific=false;
-		 for(String modelname:modelFiles)
-		 {
-			 log.info("mode used "+mode);
-			 log.info("using model"+modelname);
-			 System.out.println(modelname);
-			 File currentModel = new File(modelname);
+			ArrayList<String> modelFiles = new ArrayList<String>();
+			getFilesFromFolder(modelFiles, "mlroot/model");
+			boolean isFirstTime = false;
+			boolean isSpecific = false;
+			for (String modelname : modelFiles) {
+				log.info("mode used " + mode);
+				log.info("using model" + modelname);
+				System.out.println(modelname);
+				File currentModel = new File(modelname);
 				String model = currentModel.getName();
-			//log.info("101-301");
-			predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
-					"mlroot/mltesting/bench/301/onto.rdf",
-					"mlroot/mltesting/bench/301/refalign.rdf",
-					"mlroot/test/predicted"+ model + ".arff",
-					"mlroot/test/testrefFilecombined",
-					"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
-//			 log.info("101-302");
-//			 predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
-//						"mlroot/mltesting/bench/302/onto.rdf",
-//						"mlroot/mltesting/bench/302/refalign.rdf",
-//						"mlroot/test/predicted"+ model + ".arff",
-//						"mlroot/test/testrefFilecombined",
-//						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
-//			 log.info("101-303");
-//			 predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
-//						"mlroot/mltesting/bench/303/onto.rdf",
-//						"mlroot/mltesting/bench/303/refalign.rdf",
-//						"mlroot/test/predicted"+ model + ".arff",
-//						"mlroot/test/testrefFilecombined",
-//						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
-//			 log.info("edas-iasted");
-//			  predictresult(modelname,"mlroot/mltesting/conference/edas-iasted/edas.owl",
-//						"mlroot/mltesting/conference/edas-iasted/iasted.owl",
-//						"mlroot/mltesting/conference/edas-iasted/refalign.rdf",
-//						"mlroot/test/predicted"+ model + ".arff",
-//						"mlroot/test/testrefFilecombined",
-//						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
-//			 log.info("iasted-sigkdd");
-//			 predictresult(modelname,"mlroot/mltesting/conference/iasted-sigkdd/iasted.owl",
-//						"mlroot/mltesting/conference/iasted-sigkdd/sigkdd.owl",
-//						"mlroot/mltesting/conference/iasted-sigkdd/refalign.rdf",
-//						"mlroot/test/predicted"+ model + ".arff",
-//						"mlroot/test/testrefFilecombined",
-//						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
-//			 log.info("confOf-sigkdd");
-//			 predictresult(modelname,"mlroot/mltesting/conference/confOf-sigkdd/confOf.owl",
-//						"mlroot/mltesting/conference/confOf-sigkdd/sigkdd.owl",
-//						"mlroot/mltesting/conference/confOf-sigkdd/refalign.rdf",
-//						"mlroot/test/predicted"+ model + ".arff",
-//						"mlroot/test/testrefFilecombined",
-//						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
-		 }
-				} catch (Exception e) {
+				// log.info("101-301");
+				predictresult(modelname,
+						"mlroot/mltraining/bench/103/onto1.rdf",
+						"mlroot/mltesting/bench/301/onto.rdf",
+						"mlroot/mltesting/bench/301/refalign.rdf",
+						"mlroot/test/predicted" + model + ".arff",
+						"mlroot/test/testrefFilecombined",
+						"mlroot/test/finaloutput" + model, mode, isFirstTime,
+						isSpecific);
+				// log.info("101-302");
+				// predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
+				// "mlroot/mltesting/bench/302/onto.rdf",
+				// "mlroot/mltesting/bench/302/refalign.rdf",
+				// "mlroot/test/predicted"+ model + ".arff",
+				// "mlroot/test/testrefFilecombined",
+				// "mlroot/test/finaloutput" + model,
+				// mode,isFirstTime,isSpecific);
+				// log.info("101-303");
+				// predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
+				// "mlroot/mltesting/bench/303/onto.rdf",
+				// "mlroot/mltesting/bench/303/refalign.rdf",
+				// "mlroot/test/predicted"+ model + ".arff",
+				// "mlroot/test/testrefFilecombined",
+				// "mlroot/test/finaloutput" + model,
+				// mode,isFirstTime,isSpecific);
+				// log.info("edas-iasted");
+				// predictresult(modelname,"mlroot/mltesting/conference/edas-iasted/edas.owl",
+				// "mlroot/mltesting/conference/edas-iasted/iasted.owl",
+				// "mlroot/mltesting/conference/edas-iasted/refalign.rdf",
+				// "mlroot/test/predicted"+ model + ".arff",
+				// "mlroot/test/testrefFilecombined",
+				// "mlroot/test/finaloutput" + model,
+				// mode,isFirstTime,isSpecific);
+				// log.info("iasted-sigkdd");
+				// predictresult(modelname,"mlroot/mltesting/conference/iasted-sigkdd/iasted.owl",
+				// "mlroot/mltesting/conference/iasted-sigkdd/sigkdd.owl",
+				// "mlroot/mltesting/conference/iasted-sigkdd/refalign.rdf",
+				// "mlroot/test/predicted"+ model + ".arff",
+				// "mlroot/test/testrefFilecombined",
+				// "mlroot/test/finaloutput" + model,
+				// mode,isFirstTime,isSpecific);
+				// log.info("confOf-sigkdd");
+				// predictresult(modelname,"mlroot/mltesting/conference/confOf-sigkdd/confOf.owl",
+				// "mlroot/mltesting/conference/confOf-sigkdd/sigkdd.owl",
+				// "mlroot/mltesting/conference/confOf-sigkdd/refalign.rdf",
+				// "mlroot/test/predicted"+ model + ".arff",
+				// "mlroot/test/testrefFilecombined",
+				// "mlroot/test/finaloutput" + model,
+				// mode,isFirstTime,isSpecific);
+			}
+		} catch (Exception e) {
 
 			e.printStackTrace();
 		}
@@ -1388,25 +1362,23 @@ public class MLWrapper extends AbstractMatcher{
 
 	void displayResults(Alignment<Mapping> predictedMapping,
 			Alignment<Mapping> referenceAlignment) {
-		
-		
+
 		int count = 0, mapped = 0;
 		for (int i = 0; i < predictedMapping.size(); i++) {
 			Mapping predictedMap = predictedMapping.get(i);
 			count++;
 			for (int j = 0; j < referenceAlignment.size(); j++) {
-				Mapping currentMapping = referenceAlignment.get(j);		
-				
+				Mapping currentMapping = referenceAlignment.get(j);
+
 				if (((currentMapping.getEntity1().getUri()
-						.equals(predictedMap.getEntity1().getUri())
-						&& currentMapping.getEntity2().getUri()
-								.equals(predictedMap.getEntity2().getUri()))
-					||
-						(currentMapping.getEntity1().getUri()
-								.equals(predictedMap.getEntity2().getUri())
-							&& currentMapping.getEntity2().getUri()
-									.equals(predictedMap.getEntity1().getUri())))
-					&& currentMapping.getRelation().equals(
+						.equals(predictedMap.getEntity1().getUri()) && currentMapping
+						.getEntity2().getUri()
+						.equals(predictedMap.getEntity2().getUri())) || (currentMapping
+						.getEntity1().getUri()
+						.equals(predictedMap.getEntity2().getUri()) && currentMapping
+						.getEntity2().getUri()
+						.equals(predictedMap.getEntity1().getUri())))
+						&& currentMapping.getRelation().equals(
 								predictedMap.getRelation())) {
 					// System.out.println("match found in ref alignment");
 					mapped++;
@@ -1414,7 +1386,7 @@ public class MLWrapper extends AbstractMatcher{
 				}
 			}
 		}
-		
+
 		log.info("-------------------------------------------------------------");
 		log.info("reference alignment size" + referenceAlignment.size());
 		log.info("total correct" + mapped);
@@ -1450,15 +1422,17 @@ public class MLWrapper extends AbstractMatcher{
 	void generateModel() throws Exception {
 		BufferedReader trainingset = new BufferedReader(new FileReader(
 				"mlroot/percent/percentfile.arff"));
-			
+
 		Instances train = new Instances(trainingset);
-		
+
 		train.setClassIndex(train.numAttributes() - 1);
 		// test.setClassIndex(test.numAttributes()-1);
 		for (ClassificatorRegistry classifier : ClassificatorRegistry.values()) {
-			Classifier cls=OntologyClassificator.getClassifierInstance(classifier);
+			Classifier cls = OntologyClassificator
+					.getClassifierInstance(classifier);
 			cls.buildClassifier(train);
-			weka.core.SerializationHelper.write("mlroot/model/"+ classifier,cls);
+			weka.core.SerializationHelper.write("mlroot/model/" + classifier,
+					cls);
 		}
 		trainingset.close();
 
@@ -1482,7 +1456,7 @@ public class MLWrapper extends AbstractMatcher{
 		log.info("mlm(psm+bsm)+lwc(asm,vmm)");
 		String path[] = { "mlroot/mltraining/bench",
 				"mlroot/mltraining/conference" };
-				
+
 		String outputBase[] = { "mlroot/output/bench/",
 				"mlroot/output/conference/" };
 		String trainingFileName = "mlroot/output/training.xml";
@@ -1492,11 +1466,11 @@ public class MLWrapper extends AbstractMatcher{
 			GenerateTrainingDS.generateXML(files, trainingFileName);
 			// String trainingFileName="bench/training.xml";
 			String elementName = "dataset";
-			//listOfMatchers.clear();
+			// listOfMatchers.clear();
 			listOfTriples.clear();
 			matcherNames.clear();
-		//	loadMatchers(mode);
-			loadOntologyTriples(trainingFileName, elementName,true);
+			// loadMatchers(mode);
+			loadOntologyTriples(trainingFileName, elementName, true);
 			generateMappings();
 			generateTrainingFile(mode, outputBase[i]);
 		}
@@ -1521,11 +1495,12 @@ public class MLWrapper extends AbstractMatcher{
 			throws IOException {
 		BufferedWriter outputWriter = new BufferedWriter(new FileWriter(
 				new File("mlroot/percent/percentfile")));
-		BufferedWriter outputWriterForTest=new BufferedWriter(new FileWriter(new File("mlroot/percent/percentfiletest")));
+		BufferedWriter outputWriterForTest = new BufferedWriter(new FileWriter(
+				new File("mlroot/percent/percentfiletest")));
 
 		int count[] = new int[outputBase.length];
-		
-		//counts the number of lines in the file based on the %
+
+		// counts the number of lines in the file based on the %
 		for (int i = 0; i < outputBase.length; i++) {
 			LineNumberReader lnr = new LineNumberReader(new FileReader(
 					new File(outputBase[i]
@@ -1535,27 +1510,24 @@ public class MLWrapper extends AbstractMatcher{
 			count[i] = (int) (lnr.getLineNumber() * percent);
 
 		}
-		
-		//writes the % of lines into the percent file
+
+		// writes the % of lines into the percent file
 		for (int i = 0; i < outputBase.length; i++) {
 			BufferedReader inputReader = new BufferedReader(new FileReader(
 					outputBase[i] + "combinedmatchers/trainingFilecombined"));
-			
+
 			log.info("count of rows" + count[i]);
 			int lineNum = 0;
 			while (inputReader.ready()) {
 				String inputLine = inputReader.readLine();
-				if(lineNum<=count[i])
-				{
-					outputWriter.write(inputLine + "\n");	
+				if (lineNum <= count[i]) {
+					outputWriter.write(inputLine + "\n");
+				} else {
+					outputWriterForTest.write(inputLine + "\n");
 				}
-				else
-				{
-					outputWriterForTest.write(inputLine+"\n");
-				}
-				
-//				if (linenum == count[i])
-//					break;
+
+				// if (linenum == count[i])
+				// break;
 				lineNum++;
 			}
 			inputReader.close();
@@ -1574,7 +1546,7 @@ public class MLWrapper extends AbstractMatcher{
 	 */
 	void generateTestFile(Modes mode) throws Exception {
 		for (int m = 0; m < listOfMatchers.size(); m++) {
-			
+
 			AbstractMatcher currentMatcher = listOfMatchers.get(m);
 			BufferedWriter outputWriter = new BufferedWriter(
 					new FileWriter(new File("mlroot/test/matchers/"
@@ -1583,36 +1555,31 @@ public class MLWrapper extends AbstractMatcher{
 				for (int t = 0; t < listOfTriples.size(); t++) {
 
 					OntologyTriple currentTriple = listOfTriples.get(t);
-				//	Alignment<Mapping> referenceAlignment = currentTriple
-				//			.getReferenceAlignment();
+					// Alignment<Mapping> referenceAlignment = currentTriple
+					// .getReferenceAlignment();
 
 					if (currentTriple.containsMatcher(currentMatcher.getName())) {
 						Alignment<Mapping> currentMapping = currentTriple
 								.getAlignmentObtained(currentMatcher.getName());
-											for (int i = 0; i < currentMapping.size(); i++) {
-								double similarity = currentMapping
-										.getSimilarity(currentMapping.get(i)
-												.getEntity1(), currentMapping
-												.get(i).getEntity2());
-										outputWriter
-												.write(currentMapping.get(i)
-														.getEntity1().getUri()
-														+ "\t"
-														+ currentMapping.get(i)
-																.getEntity2()
-																.getUri()
-														+ "\t"
-														+ similarity
-														+ "\t1.0\n");
-		
-												
-										
+						for (int i = 0; i < currentMapping.size(); i++) {
+							double similarity = currentMapping.getSimilarity(
+									currentMapping.get(i).getEntity1(),
+									currentMapping.get(i).getEntity2());
+							outputWriter.write(currentMapping.get(i)
+									.getEntity1().getUri()
+									+ "\t"
+									+ currentMapping.get(i).getEntity2()
+											.getUri()
+									+ "\t"
+									+ similarity
+									+ "\t1.0\n");
+
+						}
+						testMapping.addAllNoDuplicate(currentMapping);
+					}
+					outputWriter.close();
 				}
-			     testMapping.addAllNoDuplicate(currentMapping);		
 			}
-			outputWriter.close();
-		}
-		}
 
 		}
 		mergeIndividualTestFiles(mode);
@@ -1635,87 +1602,92 @@ public class MLWrapper extends AbstractMatcher{
 		}
 
 	}
-	
-	void initializeMatchers(Modes mode) throws Exception
-	{
-		//psm
-		AbstractMatcher am = null;
-		am = MatcherFactory.getMatcherInstance(
-				MatchersRegistry.ParametricString, 0);
-		ParametricStringParameters psmParam = new ParametricStringParameters(
-				0.6, 1, 1);
-		psmParam.useLexicons = true;
-		psmParam.useBestLexSimilarity = true;
-		psmParam.measure = ParametricStringParameters.AMSUB_AND_EDIT;
-		psmParam.normParameter = new NormalizerParameter();
-		psmParam.normParameter.setForOAEI2009();
-		psmParam.redistributeWeights = true;
-		psmParam.threadedExecution = true;
-		psmParam.threadedOverlap = true;
-		am.setParam(psmParam);
-		listOfMatchers.add(am);
-		
-		//bsm
-		am = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity,
-				0);
-		BaseSimilarityParameters bsmParam = new BaseSimilarityParameters(0.6,
-				1, 1);
-		bsmParam.useDictionary = false;
-		am.setParam(bsmParam);
-		listOfMatchers.add(am);
-		
-		//vmm
-		am = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 0);
-		MultiWordsParameters vmmParam = new MultiWordsParameters(0.6, 1, 1);
 
-		vmmParam.measure = MultiWordsParameters.TFIDF;
-		// only on concepts right now because it should be weighted differently
-		vmmParam.considerInstances = true;
-		vmmParam.considerNeighbors = false;
-		vmmParam.considerConcept = true;
-		vmmParam.considerClasses = false;
-		vmmParam.considerProperties = false;
-		vmmParam.ignoreLocalNames = true;
-		vmmParam.useLexiconSynonyms = true; // May change later.
-		am.setParam(vmmParam);		
-		listOfMatchers.add(am);
-		
-		//asm
-		am = MatcherFactory.getMatcherInstance(MatchersRegistry.AdvancedSimilarity, 0);
-		AdvancedSimilarityParameters asmParam = new AdvancedSimilarityParameters(0.6, 1,1);
-		asmParam.useLabels = false;
-		am.setParam(asmParam);
-		listOfMatchers.add(am);
-		
-		log.info(mode);
-		//Initialize the LWC used when combining with MLM
-		
-	/*	if (mode == Modes.BASE_MODE_LWC
-				|| mode == Modes.BASE_MODE_MATCHER_FOUND_LWC
-				|| mode == Modes.BASE_MODE_MATCHER_VOTE_LWC
-				|| mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC) 
-		{
+	void initializeMatchers(Modes mode) throws Exception {
+		AbstractMatcher am = null;
+		if (mode == Modes.LWC) {
 			log.info("mode" + mode);
 			am = MatcherFactory.getMatcherInstance(
 					MatchersRegistry.Combination, 0);
-			am.match();
+			// am.match();
 			listOfMatchers.add(am);
+		} else {
+
+			// psm
+			am = MatcherFactory.getMatcherInstance(
+					MatchersRegistry.ParametricString, 0);
+			ParametricStringParameters psmParam = new ParametricStringParameters(
+					0.6, 1, 1);
+			psmParam.useLexicons = true;
+			psmParam.useBestLexSimilarity = true;
+			psmParam.measure = ParametricStringParameters.AMSUB_AND_EDIT;
+			psmParam.normParameter = new NormalizerParameter();
+			psmParam.normParameter.setForOAEI2009();
+			psmParam.redistributeWeights = true;
+			psmParam.threadedExecution = true;
+			psmParam.threadedOverlap = true;
+			am.setParam(psmParam);
+			listOfMatchers.add(am);
+
+			// bsm
+			am = MatcherFactory.getMatcherInstance(
+					MatchersRegistry.BaseSimilarity, 0);
+			BaseSimilarityParameters bsmParam = new BaseSimilarityParameters(
+					0.6, 1, 1);
+			bsmParam.useDictionary = false;
+			am.setParam(bsmParam);
+			listOfMatchers.add(am);
+
+			// vmm
+			am = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords,
+					0);
+			MultiWordsParameters vmmParam = new MultiWordsParameters(0.6, 1, 1);
+
+			vmmParam.measure = MultiWordsParameters.TFIDF;
+			// only on concepts right now because it should be weighted
+			// differently
+			vmmParam.considerInstances = true;
+			vmmParam.considerNeighbors = false;
+			vmmParam.considerConcept = true;
+			vmmParam.considerClasses = false;
+			vmmParam.considerProperties = false;
+			vmmParam.ignoreLocalNames = true;
+			vmmParam.useLexiconSynonyms = true; // May change later.
+			am.setParam(vmmParam);
+			listOfMatchers.add(am);
+
+			// asm
+			am = MatcherFactory.getMatcherInstance(
+					MatchersRegistry.AdvancedSimilarity, 0);
+			AdvancedSimilarityParameters asmParam = new AdvancedSimilarityParameters(
+					0.6, 1, 1);
+			asmParam.useLabels = false;
+			am.setParam(asmParam);
+			listOfMatchers.add(am);
+
+			log.info(mode);
+			// Initialize the LWC used when combining with MLM
+
+			if (mode == Modes.BASE_MODE_LWC
+					|| mode == Modes.BASE_MODE_MATCHER_FOUND_LWC
+					|| mode == Modes.BASE_MODE_MATCHER_VOTE_LWC
+					|| mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC) {
+				log.info("mode" + mode);
+				am = MatcherFactory.getMatcherInstance(
+						MatchersRegistry.Combination, 0);
+				// am.match();
+				listOfMatchers.add(am);
+			}
+
 		}
-	*/	
-		/*am = MatcherFactory.getMatcherInstance(
-		MatchersRegistry.Combination, 0);
-		listOfMatchers.add(am);*/
 		initializeMatcherNames();
 	}
-	
-	void initializeMatcherNames()
-	{
-		matcherNames=new ArrayList<String>();
-		for(int i=0;i<listOfMatchers.size();i++)
-		{
-			AbstractMatcher am=listOfMatchers.get(i);
-			if(!matcherNames.contains(am.getName()))
-			{
+
+	void initializeMatcherNames() {
+		matcherNames = new ArrayList<String>();
+		for (int i = 0; i < listOfMatchers.size(); i++) {
+			AbstractMatcher am = listOfMatchers.get(i);
+			if (!matcherNames.contains(am.getName())) {
 				matcherNames.add(am.getName());
 			}
 		}
@@ -1725,29 +1697,26 @@ public class MLWrapper extends AbstractMatcher{
 
 		MLWrapper trainingWrapper = new MLWrapper();
 		MLWrapper testWrapper = new MLWrapper();
-		Modes mode = Modes.BASE_MODE;
+		Modes mode = Modes.LWC;
 		String trainFolder = "mlroot/output";
 		String testFolder = "mlroot/test/matchers";
 		try {
 			/*
-			 * set the required matchers parameters
-			 * invoke matcher.match()
-			 * then add to listOfMatchers
+			 * set the required matchers parameters invoke matcher.match() then
+			 * add to listOfMatchers
 			 */
-			
-		    trainingWrapper.initializeMatchers(mode);
+
+			trainingWrapper.initializeMatchers(mode);
 			testWrapper.initializeMatchers(mode);
-			
 
 			trainingWrapper.cleanup(trainFolder);
-			trainingWrapper.callTrainingProcess(mode, 0.2);
+			trainingWrapper.callTrainingProcess(mode, 0.5);
 			testWrapper.cleanup(testFolder);
 			testWrapper.callTestProcess(mode);
 
 			Date now = new Date();
 
-			File sourceDir = new File(
-					"mlroot");
+			File sourceDir = new File("mlroot");
 			File targetDir = new File("log/" + now.getDate() + "."
 					+ (now.getMonth() + 1) + "." + now.getHours() + "."
 					+ now.getMinutes() + "." + mode.name());
