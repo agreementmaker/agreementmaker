@@ -52,8 +52,11 @@ public class ArffConvertor {
 		for(int i=0;i<listOfMatchers.size();i++)
 		{
 			String currentMatcher=listOfMatchers.get(i);
-			
-			if(mode == Modes.BASE_MODE)
+			if(mode == Modes.LWC)
+			{
+				outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"\tNUMERIC\n");
+			}
+			else if(mode == Modes.BASE_MODE)
 			{
 				outputWriter.write("@ATTRIBUTE\t"+currentMatcher.trim().replaceAll(" ", "_")+"\tNUMERIC\n");
 					
