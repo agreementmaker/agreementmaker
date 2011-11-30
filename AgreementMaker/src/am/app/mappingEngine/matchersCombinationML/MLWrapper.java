@@ -39,6 +39,7 @@ import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
+import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.OntologyProfiler;
@@ -913,13 +914,29 @@ public class MLWrapper extends AbstractMatcher{
 			test.instance(i).setClassValue(clsLabel);
 			//getting weka confidence for target class 1 
 			//with confidence value 80%
-			if(prob[1] > 0.80)
+			
+			//if(prob[1] > 0.80)
 			{
-			confidenceList.add(prob[1]);
-			predictedList.add(clsLabel);
+				
+				predictedList.add(clsLabel);
+				if(clsLabel==0.0)
+				{
+					confidenceList.add(prob[0]);
+				}
+				else
+				{
+					confidenceList.add(prob[1]);
+				}
 			}
+//			else
+//			{
+//				System.out.println("the confidence is \t1.0 "+prob[1]+"\t0.0 "+prob[0]+"predicted is "+clsLabel);
+//			}
+			
 
 		}
+		System.out.println(confidenceList.size()+"\tconfidencelist size");
+		System.out.println(predictedList.size()+"\tpredictedlist size");
 		// save the predicted data
 		BufferedWriter writer = new BufferedWriter(new FileWriter(predicted));
 		writer.write(test.toString());
@@ -958,43 +975,45 @@ public class MLWrapper extends AbstractMatcher{
 			matchReference(predictedList, confidenceList,combinedConceptFile, finalFile);
 			Alignment<Mapping> refMap = getReference(srcOntology, tarOntology,
 					refAlign);
-			generateAlignment(finalFile);
+			//combining lwc and mlm mapping
+			combinedMapping=lwcMatcher.getAlignment();
+			generateAlignment(finalFile,mode,combinedMapping);
 			log.info("mlm measure");
 			displayResults(finalMapping, refMap);
 			log.info("lwc measure");
 			displayResults(lwcMatcher.getAlignment(), refMap);
-			//combining lwc and mlm mapping
-			combinedMapping=lwcMatcher.getAlignment();
-			for(Mapping mlmMapping : finalMapping)
-			{
-				boolean isexists=false;
-				//log.info("------------mlm--");
-				//log.info(mlmMapping.getEntity1().getUri() + "\t"+ mlmMapping.getEntity2().getUri());
-				//log.info("---------------lwc-------------------------------------------");
-				for(Mapping lwcMapping:lwcMatcher.getAlignment())
-				{
-				//	log.info(lwcMapping.getEntity1().getUri() + "\t" + lwcMapping.getEntity2().getUri());
-					if((mlmMapping.getEntity1().getUri().equals(lwcMapping.getEntity1().getUri()) 
-							&& mlmMapping.getEntity2().getUri().equals(lwcMapping.getEntity2().getUri())) 
-							|| (mlmMapping.getEntity1().getUri().equals(lwcMapping.getEntity2().getUri()) 
-							&& mlmMapping.getEntity2().getUri().equals(lwcMapping.getEntity1().getUri())))
-							
-							{
-							   
-							   isexists=true;
-						//	   log.info("from lwc");
-							   
-							}
-				}
-				//log.info("------------lwc ends------------------");
-				if(!isexists)
-				{
-				//	log.info("from mlm");
-					combinedMapping.add(mlmMapping);
-				}
-			}
-			log.info("lwc+mlm" +combinedMapping.size());
-			displayResults(combinedMapping, refMap);
+			
+			
+//			for(Mapping mlmMapping : finalMapping)
+//			{
+//				boolean isExists=false;
+//				//log.info("------------mlm--");
+//				//log.info(mlmMapping.getEntity1().getUri() + "\t"+ mlmMapping.getEntity2().getUri());
+//				//log.info("---------------lwc-------------------------------------------");
+//				for(Mapping lwcMapping:lwcMatcher.getAlignment())
+//				{
+//				//	log.info(lwcMapping.getEntity1().getUri() + "\t" + lwcMapping.getEntity2().getUri());
+//					if((mlmMapping.getEntity1().getUri().equals(lwcMapping.getEntity1().getUri()) 
+//							&& mlmMapping.getEntity2().getUri().equals(lwcMapping.getEntity2().getUri())) 
+//							|| (mlmMapping.getEntity1().getUri().equals(lwcMapping.getEntity2().getUri()) 
+//							&& mlmMapping.getEntity2().getUri().equals(lwcMapping.getEntity1().getUri())))
+//							
+//							{
+//							   
+//							   isExists=true;
+//						//	   log.info("from lwc");
+//							   
+//							}
+//				}
+//				//log.info("------------lwc ends------------------");
+//				if(!isExists)
+//				{
+//				//	log.info("from mlm");
+//					combinedMapping.add(mlmMapping);
+//				}
+//			}
+//			log.info("lwc+mlm" +combinedMapping.size());
+//			displayResults(combinedMapping, refMap);
 			
 		}
 		else
@@ -1116,7 +1135,7 @@ public class MLWrapper extends AbstractMatcher{
 	}
 
 	
-	void generateAlignment(String finalFile) throws IOException
+	void generateAlignment(String finalFile,Modes mode,Alignment<Mapping> lwcAlign) throws IOException
 	{
 
 		BufferedReader mappingFile = new BufferedReader(new FileReader(
@@ -1124,26 +1143,47 @@ public class MLWrapper extends AbstractMatcher{
 		while (mappingFile.ready()) {
 			String inputLine = mappingFile.readLine();
 			String[] inputLineParts = inputLine.split("\t");
-			
-		
+			double confidence;
+			double predicted;
 			
 			for(Mapping currentMapping:testMapping)
 			{
 		
 				if ((currentMapping.getEntity1().getUri()
-						.equals(inputLineParts[0])
+						.equals(inputLineParts[0].trim())
 						&& currentMapping.getEntity2().getUri()
-								.equals(inputLineParts[1]))
+								.equals(inputLineParts[1].trim()))
 						|| (currentMapping.getEntity2().getUri()
 								.equals(inputLineParts[0])
 								&& currentMapping.getEntity1().getUri()
 										.equals(inputLineParts[1]) ))
 				{
 					
-					System.out.println("confidence" + inputLineParts[3]);
-					currentMapping.setSimilarity(1.0);
-					currentMapping.setRelation(relation.EQUIVALENCE);
-					finalMapping.add(currentMapping);
+					//System.out.println("confidence" + inputLineParts[3]);
+					confidence=Double.parseDouble(inputLineParts[3]);
+					
+					predicted=Double.parseDouble(inputLineParts[2]);
+					if(predicted==1.0)
+					{
+						if(confidence>=0.6)
+						{
+							currentMapping.setSimilarity(predicted);
+							currentMapping.setRelation(relation.EQUIVALENCE);
+							finalMapping.add(currentMapping);
+						}
+						else
+						{
+							Node sourceNode=currentMapping.getEntity1();
+							Node targetNode=currentMapping.getEntity2();
+							if(lwcAlign.isMapped(targetNode)&& lwcAlign.isMapped(sourceNode))
+							{
+								double lwcSim=lwcAlign.getSimilarity(sourceNode, targetNode);
+								currentMapping.setSimilarity(lwcSim);
+								finalMapping.add(currentMapping);	
+							}
+						}	
+					}
+					
 					break;
 					
 				}
@@ -1206,15 +1246,16 @@ public class MLWrapper extends AbstractMatcher{
 			if(predictedList.get(index)==1.0)
 			{
 			
-			String[] inputLineParts = inputLine.split("\t");
-			if (inputLineParts.length == 3) {
+				String[] inputLineParts = inputLine.split("\t");
+				if (inputLineParts.length == 3) 
+				{
 
-				String concepts = inputLineParts[0] + "\t" + inputLineParts[1];
-				outputWriter.write(concepts + "\t" + predictedList.get(index) + "\t" + confidenceList.get(index)
+					String concepts = inputLineParts[0] + "\t" + inputLineParts[1];
+					outputWriter.write(concepts + "\t" + predictedList.get(index) + "\t" + confidenceList.get(index)
 						+ "\n");
 				
 				
-			}
+				}
 			}
 			
 			index++;
@@ -1354,9 +1395,7 @@ public class MLWrapper extends AbstractMatcher{
 			Mapping predictedMap = predictedMapping.get(i);
 			count++;
 			for (int j = 0; j < referenceAlignment.size(); j++) {
-				Mapping currentMapping = referenceAlignment.get(j);
-				
-						
+				Mapping currentMapping = referenceAlignment.get(j);		
 				
 				if (((currentMapping.getEntity1().getUri()
 						.equals(predictedMap.getEntity1().getUri())
@@ -1371,6 +1410,7 @@ public class MLWrapper extends AbstractMatcher{
 								predictedMap.getRelation())) {
 					// System.out.println("match found in ref alignment");
 					mapped++;
+					break;
 				}
 			}
 		}
@@ -1699,8 +1739,8 @@ public class MLWrapper extends AbstractMatcher{
 			testWrapper.initializeMatchers(mode);
 			
 
-			trainingWrapper.cleanup(trainFolder);
-			trainingWrapper.callTrainingProcess(mode, 0.5);
+//			trainingWrapper.cleanup(trainFolder);
+//			trainingWrapper.callTrainingProcess(mode, 0.5);
 			testWrapper.cleanup(testFolder);
 			testWrapper.callTestProcess(mode);
 
