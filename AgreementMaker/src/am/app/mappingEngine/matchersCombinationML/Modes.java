@@ -7,6 +7,7 @@ package am.app.mappingEngine.matchersCombinationML;
  */
 public enum Modes {
 
+	LWC,
 	BASE_MODE,
 	BASE_MODE_LWC,	
 	BASE_MODE_MATCHER_VOTE,
