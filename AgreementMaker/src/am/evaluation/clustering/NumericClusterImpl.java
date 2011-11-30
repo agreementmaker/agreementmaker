@@ -78,7 +78,7 @@ public class NumericClusterImpl implements NumericCluster {
 		// read in our data file
 		long startTime = System.currentTimeMillis();
 		
-		BufferedReader bf = new BufferedReader(new FileReader(new File("/home/cosmin/Desktop/clustering/merged.csv")));
+		BufferedReader bf = new BufferedReader(new FileReader(new File("/home/cosmin/Desktop/clustering/merged_with_ref.csv")));
 		
 	
 		int lines = 0;
@@ -90,7 +90,7 @@ public class NumericClusterImpl implements NumericCluster {
 		// read in datapoints
 		Queue<ClusterPoint> points = new PriorityQueue<ClusterPoint>(lines);
 		
-		bf = new BufferedReader(new FileReader(new File("/home/cosmin/Desktop/clustering/merged.csv")));
+		bf = new BufferedReader(new FileReader(new File("/home/cosmin/Desktop/clustering/merged_with_ref.csv")));
 		String ls;
 		for( int i = 0; i < lines; i++) {
 			ls = bf.readLine();
@@ -133,6 +133,15 @@ public class NumericClusterImpl implements NumericCluster {
 		log.debug("Read " + pointList.size() + " unique points, " + (endTime-startTime)/1000d + " sec.");
 		
 		
+		
+		BufferedWriter bwr = new BufferedWriter(new FileWriter(new File("/home/cosmin/Desktop/clustering/merged_ref_wo_dup.csv")));
+		bwr.write("m1,m2,m3,m4,m5,ref\n");
+		for( ClusterPoint p : pointList ) {
+			bwr.write(p.toString() + "\n");
+		}
+		bwr.close();
+		
+		System.exit(0);
 		
 		// start clustering
 		double dist = 0.0d;

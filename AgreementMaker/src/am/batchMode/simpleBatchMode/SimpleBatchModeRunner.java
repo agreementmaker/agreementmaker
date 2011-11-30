@@ -35,40 +35,62 @@ public class SimpleBatchModeRunner {
 
 	private final File input;
 	private final File output; // TODO: Use the output directory if the user specifies it.
+	private final SimpleBatchModeType bm;
 	
 	/**
 	 * Batch mode runner with an output directory specified.
-	 * @param input
-	 * @param output
+	 * @param input The XML file that describes the batch mode.
+	 * @param output The directory where to output the final alignment.
 	 */
 	public SimpleBatchModeRunner(File input, File output) {
 		this.input = input;
 		this.output = output;
+		this.bm = null;
 	}
 
+	/**
+	 * Run a batch mode.
+	 * @param input  The XML file that describes the batch mode.
+	 */
 	public SimpleBatchModeRunner(File input) {
 		this.input = input;
 		this.output = null;
+		this.bm = null;
 	}
 	
+	/**
+	 * Pass the batch mode structure directly, without having the read it from a file.
+	 * @param bm
+	 */
+	public SimpleBatchModeRunner(SimpleBatchModeType bm) {
+		this.input = null;
+		this.output = null;
+		this.bm = bm;
+	}
 	
 	public void runBatchMode() throws Exception {
 	
+		
+		SimpleBatchModeType sbm = bm;
+		
 		Logger log = Logger.getLogger(this.getClass());
 		log.setLevel(Level.INFO);
 		
-		JAXBContext context = JAXBContext.newInstance(this.getClass().getPackage().getName()) ;
-
-		Unmarshaller unmarshaller = context.createUnmarshaller() ;
-
-		JAXBElement<SimpleBatchModeType> batchmode = (JAXBElement<SimpleBatchModeType>) unmarshaller.unmarshal(new   FileInputStream(input)) ; 
-		
+		if( sbm == null ) {
+			JAXBContext context = JAXBContext.newInstance(this.getClass().getPackage().getName()) ;
+	
+			Unmarshaller unmarshaller = context.createUnmarshaller() ;
+	
+			JAXBElement<SimpleBatchModeType> batchmode = (JAXBElement<SimpleBatchModeType>) unmarshaller.unmarshal(new FileInputStream(input)) ; 
+			
+			sbm = batchmode.getValue();
+		}
 		
 		// Instantiate the Matching Algorithm.
-		AbstractMatcher matcher = instantiateMatcher(batchmode.getValue());
+		AbstractMatcher matcher = instantiateMatcher(sbm);
 		
 		
-		for( OntologyType ontType : batchmode.getValue().ontologies.ontology) {
+		for( OntologyType ontType : sbm.ontologies.ontology) {
 			
 			File sourceOnt = new File(ontType.sourceOntology);
 			File targetOnt = new File(ontType.targetOntology);
@@ -79,8 +101,8 @@ public class SimpleBatchModeRunner {
 			Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(sourceOnt.getAbsolutePath());
 			Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(targetOnt.getAbsolutePath());
 						
-			Core.getInstance().setSourceOntology(sourceOntology);
-			Core.getInstance().setTargetOntology(targetOntology);
+			//Core.getInstance().setSourceOntology(sourceOntology);
+			//Core.getInstance().setTargetOntology(targetOntology);
 			
 
 			matcher.setSourceOntology(sourceOntology);

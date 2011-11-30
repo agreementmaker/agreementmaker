@@ -8,7 +8,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import am.Utility;
 import am.app.Core;
@@ -66,6 +68,13 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	public String getDescriptionString() {
 		return "The method adopted in the OAEI 2011 competition.  This algorithm chooses a matcher configuration automatically.";
 	}
+	
+	
+	public enum SubMatcherID {
+		BSM, PSM, VMM, LSM,	MM,	IISM, GFM, LWC1, LWC2, LWC3
+	}
+	
+	private Map<SubMatcherID, AbstractMatcher> matchersByID = new HashMap<SubMatcherID, AbstractMatcher>();
 	
 	/** *****************************************************************************************************
 	 ************************ Init structures*************************************
@@ -674,9 +683,11 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			setupSubMatcher(lwc1, lwcParam);
 			runSubMatcher(lwc1, "LWC (LSM, MM) 5/7");
 			
+			matchersByID.put(SubMatcherID.LWC1, lwc1);
+			
 		}
 		
-		// LWC1 (LSM, MM)
+		// LWC2 (LSM, MM)
 		AbstractMatcher lwc2 = null;
 		if( !isCancelled() ) {
 			lwc2 = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 0);
@@ -692,9 +703,10 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			setupSubMatcher(lwc2, lwcParam);
 			runSubMatcher(lwc2, "LWC (PSM, VMM) 6/7");
 			
+			matchersByID.put(SubMatcherID.LWC2, lwc2);
 		}
 		
-		// LWC1 (LSM, MM)
+		// LWC3 (LSM, MM)
 		AbstractMatcher lwc3 = null;
 		if( !isCancelled() ) {
 			lwc3 = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 0);
@@ -711,6 +723,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			setupSubMatcher(lwc3, lwcParam);
 			runSubMatcher(lwc3, "LWC (PSM, VMM) 7/7");
 			
+			matchersByID.put(SubMatcherID.LWC3, lwc3);
 		}
 		
 				
@@ -760,6 +773,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		psm.select();
 		
 		lwc2InputMatchers.add(psm);			
+		
+		matchersByID.put(SubMatcherID.PSM, psm);
 		
 	}
 	
@@ -823,6 +838,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			runSubMatcher(vmm, "VMM 2/7");
 			
 			lwc2InputMatchers.add(vmm);
+			
+			matchersByID.put(SubMatcherID.VMM, vmm);
 		}
 	}
 	
@@ -839,6 +856,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			runSubMatcher(lsm, "LSM Weighted 3/7");
 			
 			lwc1InputMatchers.add(lsm);
+			
+			matchersByID.put(SubMatcherID.LSM, lsm);
 		}
 	}
 	
@@ -856,6 +875,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			runSubMatcher(mm, "MM 4/7");
 			
 			lwc1InputMatchers.add(mm);
+			
+			matchersByID.put(SubMatcherID.MM, mm);
 		}
 	}
 	
@@ -1110,4 +1131,9 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		}
 		return parametersPanel;
 	}
+	
+	public AbstractMatcher getSubMatcherByID(SubMatcherID id) {
+		return matchersByID.get(id);
+	}
+	
 }
