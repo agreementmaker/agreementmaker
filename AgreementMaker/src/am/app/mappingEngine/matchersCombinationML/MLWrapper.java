@@ -1329,7 +1329,7 @@ public class MLWrapper extends AbstractMatcher{
 		 ArrayList<String> modelFiles=new ArrayList<String>();
 		 getFilesFromFolder(modelFiles, "mlroot/model");
 		 boolean isFirstTime=false;
-		 boolean isSpecific=true;
+		 boolean isSpecific=false;
 		 for(String modelname:modelFiles)
 		 {
 			 log.info("mode used "+mode);
@@ -1337,48 +1337,48 @@ public class MLWrapper extends AbstractMatcher{
 			 System.out.println(modelname);
 			 File currentModel = new File(modelname);
 				String model = currentModel.getName();
-			log.info("101-301");
+			//log.info("101-301");
 			predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
 					"mlroot/mltesting/bench/301/onto.rdf",
 					"mlroot/mltesting/bench/301/refalign.rdf",
 					"mlroot/test/predicted"+ model + ".arff",
 					"mlroot/test/testrefFilecombined",
 					"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
-			 log.info("101-302");
-			 predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
-						"mlroot/mltesting/bench/302/onto.rdf",
-						"mlroot/mltesting/bench/302/refalign.rdf",
-						"mlroot/test/predicted"+ model + ".arff",
-						"mlroot/test/testrefFilecombined",
-						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
-			 log.info("101-303");
-			 predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
-						"mlroot/mltesting/bench/303/onto.rdf",
-						"mlroot/mltesting/bench/303/refalign.rdf",
-						"mlroot/test/predicted"+ model + ".arff",
-						"mlroot/test/testrefFilecombined",
-						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
-			 log.info("edas-iasted");
-			  predictresult(modelname,"mlroot/mltesting/conference/edas-iasted/edas.owl",
-						"mlroot/mltesting/conference/edas-iasted/iasted.owl",
-						"mlroot/mltesting/conference/edas-iasted/refalign.rdf",
-						"mlroot/test/predicted"+ model + ".arff",
-						"mlroot/test/testrefFilecombined",
-						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
-			 log.info("iasted-sigkdd");
-			 predictresult(modelname,"mlroot/mltesting/conference/iasted-sigkdd/iasted.owl",
-						"mlroot/mltesting/conference/iasted-sigkdd/sigkdd.owl",
-						"mlroot/mltesting/conference/iasted-sigkdd/refalign.rdf",
-						"mlroot/test/predicted"+ model + ".arff",
-						"mlroot/test/testrefFilecombined",
-						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
-			 log.info("confOf-sigkdd");
-			 predictresult(modelname,"mlroot/mltesting/conference/confOf-sigkdd/confOf.owl",
-						"mlroot/mltesting/conference/confOf-sigkdd/sigkdd.owl",
-						"mlroot/mltesting/conference/confOf-sigkdd/refalign.rdf",
-						"mlroot/test/predicted"+ model + ".arff",
-						"mlroot/test/testrefFilecombined",
-						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
+//			 log.info("101-302");
+//			 predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
+//						"mlroot/mltesting/bench/302/onto.rdf",
+//						"mlroot/mltesting/bench/302/refalign.rdf",
+//						"mlroot/test/predicted"+ model + ".arff",
+//						"mlroot/test/testrefFilecombined",
+//						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
+//			 log.info("101-303");
+//			 predictresult(modelname,"mlroot/mltraining/bench/103/onto1.rdf",
+//						"mlroot/mltesting/bench/303/onto.rdf",
+//						"mlroot/mltesting/bench/303/refalign.rdf",
+//						"mlroot/test/predicted"+ model + ".arff",
+//						"mlroot/test/testrefFilecombined",
+//						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
+//			 log.info("edas-iasted");
+//			  predictresult(modelname,"mlroot/mltesting/conference/edas-iasted/edas.owl",
+//						"mlroot/mltesting/conference/edas-iasted/iasted.owl",
+//						"mlroot/mltesting/conference/edas-iasted/refalign.rdf",
+//						"mlroot/test/predicted"+ model + ".arff",
+//						"mlroot/test/testrefFilecombined",
+//						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
+//			 log.info("iasted-sigkdd");
+//			 predictresult(modelname,"mlroot/mltesting/conference/iasted-sigkdd/iasted.owl",
+//						"mlroot/mltesting/conference/iasted-sigkdd/sigkdd.owl",
+//						"mlroot/mltesting/conference/iasted-sigkdd/refalign.rdf",
+//						"mlroot/test/predicted"+ model + ".arff",
+//						"mlroot/test/testrefFilecombined",
+//						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
+//			 log.info("confOf-sigkdd");
+//			 predictresult(modelname,"mlroot/mltesting/conference/confOf-sigkdd/confOf.owl",
+//						"mlroot/mltesting/conference/confOf-sigkdd/sigkdd.owl",
+//						"mlroot/mltesting/conference/confOf-sigkdd/refalign.rdf",
+//						"mlroot/test/predicted"+ model + ".arff",
+//						"mlroot/test/testrefFilecombined",
+//						"mlroot/test/finaloutput" + model, mode,isFirstTime,isSpecific);
 		 }
 				} catch (Exception e) {
 
@@ -1664,7 +1664,7 @@ public class MLWrapper extends AbstractMatcher{
 		am.setParam(bsmParam);
 		listOfMatchers.add(am);
 		
-/*		//vmm
+		//vmm
 		am = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 0);
 		MultiWordsParameters vmmParam = new MultiWordsParameters(0.6, 1, 1);
 
@@ -1687,7 +1687,7 @@ public class MLWrapper extends AbstractMatcher{
 		am.setParam(asmParam);
 		listOfMatchers.add(am);
 		
-*/		log.info(mode);
+		log.info(mode);
 		//Initialize the LWC used when combining with MLM
 		
 	/*	if (mode == Modes.BASE_MODE_LWC
@@ -1704,8 +1704,8 @@ public class MLWrapper extends AbstractMatcher{
 	*/	
 		/*am = MatcherFactory.getMatcherInstance(
 		MatchersRegistry.Combination, 0);
-		listOfMatchers.add(am);
-		initializeMatcherNames();*/
+		listOfMatchers.add(am);*/
+		initializeMatcherNames();
 	}
 	
 	void initializeMatcherNames()
@@ -1739,8 +1739,8 @@ public class MLWrapper extends AbstractMatcher{
 			testWrapper.initializeMatchers(mode);
 			
 
-//			trainingWrapper.cleanup(trainFolder);
-//			trainingWrapper.callTrainingProcess(mode, 0.5);
+			trainingWrapper.cleanup(trainFolder);
+			trainingWrapper.callTrainingProcess(mode, 0.2);
 			testWrapper.cleanup(testFolder);
 			testWrapper.callTestProcess(mode);
 
