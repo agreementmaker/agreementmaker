@@ -506,7 +506,7 @@ public class MLWrapper extends AbstractMatcher {
 
 		BufferedWriter outputWriter = new BufferedWriter(new FileWriter(
 				new File(path + "combinedmatchers/trainingFilecombined")));
-		BufferedWriter lwcWriter=new BufferedWriter(new FileWriter(new File(path+"combinedmatchers/lwcValues")));
+		
 
 		while (mapKeyIterator.hasNext()) {
 			String currentKey = mapKeyIterator.next();
@@ -514,7 +514,7 @@ public class MLWrapper extends AbstractMatcher {
 			HashMap<String, String> matcherMap = uniqueConcepts.get(currentKey);
 			String outputStr = "";
 			String referenceSim = "0.0";
-			String lwcSimilarity="";
+			
 			String[] matcherSim = new String[matcherNames.size()];
 			int numFound = 0;
 			int totalMatchers = matcherFiles.size();
@@ -655,7 +655,10 @@ public class MLWrapper extends AbstractMatcher {
 			System.out.println(matcherName);
 			// adding matcher name we need to generate ARFF file
 			if (!matcherNames.contains(matcherName))
+			{
 				matcherNames.add(matcherName);
+			}
+				
 
 			BufferedReader inputReader = new BufferedReader(new FileReader(
 					currentFile));
@@ -689,6 +692,8 @@ public class MLWrapper extends AbstractMatcher {
 				new File("mlroot/test/testFilecombined")));
 		BufferedWriter outputRef = new BufferedWriter(new FileWriter(new File(
 				"mlroot/test/testrefFilecombined")));
+		BufferedWriter lwcWriter=new BufferedWriter(new FileWriter(new File("mlroot/test/lwcvalues")));
+		
 		while (mapKeyIterator.hasNext()) {
 			String currentKey = mapKeyIterator.next();
 
@@ -715,72 +720,78 @@ public class MLWrapper extends AbstractMatcher {
 					matcherFound = 0;
 					matcherSim[i] = "0.0";
 				}
-
-				if (mode == Modes.BASE_MODE) {
-					outputStr += matcherSim[i] + "\t";// prints out matcher
-														// similarity value
-				} else if (mode == Modes.BASE_MODE_LWC) {
-					outputStr += matcherSim[i] + "\t";// prints out matcher
-														// similarity value
-				} else if (mode == Modes.BASE_MODE_MATCHER_FOUND) {
-					outputStr += matcherSim[i] + "\t" + matcherFound + "\t";// prints
-																			// out
-																			// matcher
-																			// similarity
-																			// value
-																			// \t
-																			// matcher
-																			// found
-																			// or
-																			// not
-																			// (0/1)
-				} else if (mode == Modes.BASE_MODE_MATCHER_FOUND_LWC) {
-					outputStr += matcherSim[i] + "\t" + matcherFound + "\t";// prints
-																			// out
-																			// matcher
-																			// similarity
-																			// value
-																			// \t
-																			// matcher
-																			// found
-																			// or
-																			// not
-																			// (0/1)
-				} else if (mode == Modes.BASE_MODE_MATCHER_VOTE) {
-					outputStr += matcherSim[i] + "\t";// prints out matcher
-														// similarity value \t
-														// matcher found or not
-														// (0/1)
-				} else if (mode == Modes.BASE_MODE_MATCHER_VOTE_LWC) {
-					outputStr += matcherSim[i] + "\t";// prints out matcher
-														// similarity value \t
-														// matcher found or not
-														// (0/1)
-				} else if (mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND) {
-					outputStr += matcherSim[i] + "\t" + matcherFound + "\t";// prints
-																			// out
-																			// matcher
-																			// similarity
-																			// value
-																			// \t
-																			// matcher
-																			// found
-																			// or
-																			// not
-																			// (0/1)
-				} else if (mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC) {
-					outputStr += matcherSim[i] + "\t" + matcherFound + "\t";// prints
-																			// out
-																			// matcher
-																			// similarity
-																			// value
-																			// \t
-																			// matcher
-																			// found
-																			// or
-																			// not
-																			// (0/1)
+				
+				if(matcherName.equals("") && (mode ==Modes.BASE_MODE_LWC || mode == Modes.BASE_MODE_MATCHER_FOUND_LWC || mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC))
+				{
+					
 				}
+				else
+				{
+					if (mode == Modes.BASE_MODE) {
+						outputStr += matcherSim[i] + "\t";// prints out matcher
+															// similarity value
+					} else if (mode == Modes.BASE_MODE_LWC) {
+						outputStr += matcherSim[i] + "\t";// prints out matcher
+															// similarity value
+					} else if (mode == Modes.BASE_MODE_MATCHER_FOUND) {
+						outputStr += matcherSim[i] + "\t" + matcherFound + "\t";
+						// prints out matcher similarity value
+																				// \t
+																				// matcher
+																				// found
+																				// or
+																				// not
+																				// (0/1)
+					} else if (mode == Modes.BASE_MODE_MATCHER_FOUND_LWC) {
+						outputStr += matcherSim[i] + "\t" + matcherFound + "\t";// prints
+																				// out
+																				// matcher
+																				// similarity
+																				// value
+																				// \t
+																				// matcher
+																				// found
+																				// or
+																				// not
+																				// (0/1)
+					} else if (mode == Modes.BASE_MODE_MATCHER_VOTE) {
+						outputStr += matcherSim[i] + "\t";// prints out matcher
+															// similarity value \t
+															// matcher found or not
+															// (0/1)
+					} else if (mode == Modes.BASE_MODE_MATCHER_VOTE_LWC) {
+						outputStr += matcherSim[i] + "\t";// prints out matcher
+															// similarity value \t
+															// matcher found or not
+															// (0/1)
+					} else if (mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND) {
+						outputStr += matcherSim[i] + "\t" + matcherFound + "\t";// prints
+																				// out
+																				// matcher
+																				// similarity
+																				// value
+																				// \t
+																				// matcher
+																				// found
+																				// or
+																				// not
+																				// (0/1)
+					} else if (mode == Modes.BASE_MODE_MATCHER_VOTE_MATCHER_FOUND_LWC) {
+						outputStr += matcherSim[i] + "\t" + matcherFound + "\t";// prints
+																				// out
+																				// matcher
+																				// similarity
+																				// value
+																				// \t
+																				// matcher
+																				// found
+																				// or
+																				// not
+																				// (0/1)
+					}
+				}
+
+				
 
 			}
 
