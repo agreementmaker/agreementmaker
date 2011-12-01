@@ -13,8 +13,11 @@ import javax.xml.ws.Endpoint;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher;
+import am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher.SubMatcherID;
 import am.batchMode.simpleBatchMode.SimpleBatchModeRunner;
+import am.evaluation.disagreement.variance.VarianceDisagreementComparator;
 
 // If you get errors because unresolved imports go here:
 // http://tech.amikelive.com/node-269/eclipse-quick-tip-resolving-error-the-import-javaxservlet-cannot-be-resolved/
@@ -25,7 +28,7 @@ public class CollaborationServerImpl implements CollaborationServer {
 
 	List<String> users = new ArrayList<String>();
 	List<CollaborationOntologyPair> ontologyPairs = new ArrayList<CollaborationOntologyPair>();
-	List<AbstractMatcher> matchers = new ArrayList<AbstractMatcher>();
+	List<OAEI2011Matcher> matchers = new ArrayList<OAEI2011Matcher>();
 	
 	Map<String, UserFeedbackRecord> feedback = new HashMap<String, UserFeedbackRecord>();
 	
@@ -94,9 +97,31 @@ public class CollaborationServerImpl implements CollaborationServer {
 		
 	}
 	
-	public Queue<Mapping> getRankingQueue() {
+	@Override
+	public Queue<Mapping> getRankingQueue(int ontoPair) {
+		
+		OAEI2011Matcher matcher = matchers.get(ontoPair);
+		List<AbstractMatcher> matchersToConsider = new ArrayList<AbstractMatcher>();
+		
+		matchersToConsider.add(matcher.getSubMatcherByID(SubMatcherID.PSM));
+		matchersToConsider.add(matcher.getSubMatcherByID(SubMatcherID.VMM));
+		matchersToConsider.add(matcher.getSubMatcherByID(SubMatcherID.LSM));
+		matchersToConsider.add(matcher.getSubMatcherByID(SubMatcherID.MM));
+		
 		if(candidateRanking == null ) {
-			candidateRanking = new PriorityQueue<Mapping>(100000 );
+			
+			
+			SimilarityMatrix classesMatrix = matcher.getClassesMatrix();
+			
+			candidateRanking = new PriorityQueue<Mapping>( classesMatrix.getRows() * classesMatrix.getColumns(), 
+					new VarianceDisagreementComparator(matchersToConsider) );
+			
+			for(int i = 0; i < classesMatrix.getRows(); i++ ) {
+				for( int j = 0; j < classesMatrix.getColumns(); j++ ) {
+					candidateRanking.add( classesMatrix.get(i, j) );
+				}
+			}
+			
 		}
 		
 		return candidateRanking;
@@ -106,6 +131,12 @@ public class CollaborationServerImpl implements CollaborationServer {
 	public UserFeedback getCandidate( int ontoPair, int userID ) {
 		
 		return null;
+	}
+	
+	
+	@Override
+	public CollaborationOntologyPair getPair( int ontoPair ) {
+		return ontologyPairs.get(ontoPair);
 	}
 	
 	

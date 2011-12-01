@@ -3,6 +3,10 @@ package am.app.collaborationEngine;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.util.Queue;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -11,6 +15,10 @@ import javax.swing.JRootPane;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.utility.WrapLayout;
 
 public class CollaborationServerExperiment extends JFrame implements ActionListener {
@@ -65,7 +73,53 @@ public class CollaborationServerExperiment extends JFrame implements ActionListe
 		
 		if( e.getSource() == btnCandidateSelection ) {
 			
+			Logger log = Logger.getLogger(this.getClass());
+			log.setLevel(Level.DEBUG);
 			
+			ReferenceAlignmentMatcher ram = new ReferenceAlignmentMatcher();
+			
+			CollaborationOntologyPair cop = cs.getPair(ontoPair);
+			
+			ram.setSourceOntology(cop.sourceOntology);
+			ram.setTargetOntology(cop.targetOntology);
+			
+			ReferenceAlignmentParameters rap = new ReferenceAlignmentParameters();
+			rap.fileName = "/home/cosmin/Documents/eclipse/AgreementMaker_main_workspace/Ontologies/OAEI/2011/anatomy/reference_2011.rdf";
+			rap.format = ReferenceAlignmentMatcher.OAEI;
+			
+			
+			ram.setParam(rap);
+			try {
+				
+				log.debug("Loading reference alignment ...");
+				
+				ram.match();
+				
+				log.debug("Saving top 1,000,000 disagreed upon mappings ...");
+				
+				Queue<Mapping> queue = cs.getRankingQueue(ontoPair);
+				
+				int sum = 0;
+				SimilarityMatrix ref = ram.getClassesMatrix();
+				BufferedWriter bwr = new BufferedWriter(new FileWriter(new File("/home/cosmin/Desktop/clustering/top1000000.csv"))); 
+				for( int i = 0; queue.peek() != null; i++ ) {
+					Mapping m = queue.poll();
+					if( ref.getSimilarity(m.getSourceKey(), m.getTargetKey()) > 0d ) {
+						sum++;
+					}
+					
+					bwr.write(Integer.toString(i) + "," + Integer.toString(sum) + "\n");
+				}
+				
+				bwr.close();
+				
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			
+		}
+		
+		if( e.getSource() == btnRunUsersExperiment ) {
 			
 		}
 		

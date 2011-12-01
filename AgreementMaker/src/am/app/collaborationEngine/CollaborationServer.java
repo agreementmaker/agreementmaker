@@ -1,7 +1,11 @@
 package am.app.collaborationEngine;
 
+import java.util.Queue;
+
 import javax.jws.WebParam;
 import javax.jws.WebService;
+
+import am.app.mappingEngine.Mapping;
 
 
 @WebService
@@ -14,6 +18,8 @@ public interface CollaborationServer {
 	public void recordFeedback(int ontoPair, int userID, UserFeedback fb);
 	int addOntologyPair(String sourceOntology, String targetOntology);
 	UserFeedback getCandidate(int ontoPair, int userID);
+	Queue<Mapping> getRankingQueue(int ontoPair);
+	CollaborationOntologyPair getPair(int ontoPair);
 	
 	
 	
