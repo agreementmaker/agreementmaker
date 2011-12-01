@@ -2,14 +2,18 @@ package am.app.collaborationEngine;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 import javax.ws.rs.Path;
 import javax.xml.ws.Endpoint;
 
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher;
 import am.batchMode.simpleBatchMode.SimpleBatchModeRunner;
 
@@ -22,7 +26,9 @@ public class CollaborationServerImpl implements CollaborationServer {
 
 	List<String> users = new ArrayList<String>();
 	List<CollaborationOntologyPair> ontologyPairs = new ArrayList<CollaborationOntologyPair>();
-	List<AbstractMatcher> matchers = new ArrayList<AbstractMatcher>();
+	OAEI2011Matcher matcher;
+	
+	Queue<Mapping> candidateList = new PriorityQueue<Mapping>();
 	
 	Map<String, UserFeedbackRecord> feedback = new HashMap<String, UserFeedbackRecord>();
 	
@@ -61,7 +67,8 @@ public class CollaborationServerImpl implements CollaborationServer {
 			e.printStackTrace();
 		}
 		
-		matchers.add(oaei2011);
+		matcher = oaei2011;
+		
 		
 		return ontologyPairs.size() - 1;
 	}
