@@ -4,10 +4,12 @@ import am.app.mappingEngine.AbstractParameters;
 
 public class ReferenceAlignmentParameters extends AbstractParameters {
 
+	private static final long serialVersionUID = -565356899065786968L;
+	
 	public String fileName;
 	public String format;
 	public boolean onlyEquivalence = false;
-	public boolean skipClasses;
-	public boolean skipProperties;
+	public boolean skipClasses = false;
+	public boolean skipProperties = false;
 	
 }
