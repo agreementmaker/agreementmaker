@@ -2,7 +2,6 @@ package am.app.collaborationEngine;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,11 +25,11 @@ public class CollaborationServerImpl implements CollaborationServer {
 
 	List<String> users = new ArrayList<String>();
 	List<CollaborationOntologyPair> ontologyPairs = new ArrayList<CollaborationOntologyPair>();
-	OAEI2011Matcher matcher;
-	
-	Queue<Mapping> candidateList = new PriorityQueue<Mapping>();
+	List<AbstractMatcher> matchers = new ArrayList<AbstractMatcher>();
 	
 	Map<String, UserFeedbackRecord> feedback = new HashMap<String, UserFeedbackRecord>();
+	
+	Queue<Mapping> candidateRanking;
 	
 	@Override
 	public String sayHi(String text) {
@@ -67,8 +66,7 @@ public class CollaborationServerImpl implements CollaborationServer {
 			e.printStackTrace();
 		}
 		
-		matcher = oaei2011;
-		
+		matchers.add(oaei2011);
 		
 		return ontologyPairs.size() - 1;
 	}
@@ -96,9 +94,16 @@ public class CollaborationServerImpl implements CollaborationServer {
 		
 	}
 	
+	public Queue<Mapping> getRankingQueue() {
+		if(candidateRanking == null ) {
+			candidateRanking = new PriorityQueue<Mapping>(100000 );
+		}
+		
+		return candidateRanking;
+	}
+	
 	@Override
 	public UserFeedback getCandidate( int ontoPair, int userID ) {
-		
 		
 		return null;
 	}
