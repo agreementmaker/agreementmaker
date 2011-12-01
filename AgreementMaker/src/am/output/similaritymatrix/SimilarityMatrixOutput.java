@@ -182,7 +182,7 @@ public class SimilarityMatrixOutput {
 		
 		SimilarityMatrixOutput simout = new SimilarityMatrixOutput(oaei2011);
 		
-		simout.saveClassesMatrix("/home/cosmin/Documents/Eclipse/ADVIS-Main/Ontologies/OAEI/2011/anatomy/test/oaei2011-classmatrix.mtx");	
+		simout.saveClassesMatrix("/home/cosmin/Documents/Eclipse/ADVIS-Main/Ontologies/OAEI/2011/test/oaei2011-classmatrix.mtx");	
 		
 	}
 	
