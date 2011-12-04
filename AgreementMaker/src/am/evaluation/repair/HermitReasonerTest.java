@@ -28,7 +28,6 @@ import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLEquivalentDataPropertiesAxiom;
 import org.semanticweb.owlapi.model.OWLEquivalentObjectPropertiesAxiom;
-import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
@@ -38,7 +37,6 @@ import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.reasoner.Node;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Mapping.MappingRelation;
@@ -70,12 +68,11 @@ public class HermitReasonerTest {
 	File alignmentFile = new File("../Ontologies/OAEI/2011/anatomy/alignments/am_oaei_2011.rdf");
 	File repairedAlignmentFile = new File("../Ontologies/OAEI/2011/test/repairedalignment.rdf");
 	
-	private HashMap<OWLObject, OWLAxiom> transAxioms = new HashMap<OWLObject, OWLAxiom>();
 	AlignmentRepairUtilities util = new AlignmentRepairUtilities(log);
-	HashMap<OWLClass,Set<OWLAxiom>> conflictingAxiomsMap = new HashMap<OWLClass,Set<OWLAxiom>>();
+	HashMap<OWLClass,Set<OWLAxiom>> conflictingAxiomsMap = null;
 	
-//	HashMap<Double, MatchingPair> axiomsMap = new HashMap<Double, MatchingPair>();
-
+	SimilarityMatrix matrix = null;
+	
 	public static void main(String[] args) throws OWLOntologyCreationException {
 		DOMConfigurator.configure("log4j.xml");
 		log.setLevel(Level.DEBUG);
@@ -237,6 +234,7 @@ public class HermitReasonerTest {
 							System.out.println("Conflicting axiom: " + confAx);
 
 						//Save to the class-axioms map
+						conflictingAxiomsMap = new HashMap<OWLClass,Set<OWLAxiom>>();
 						conflictingAxiomsMap.put(unsatClass, conflictingAxioms);
 						System.out.println("--------------------------------------------------------");
 					}
@@ -277,7 +275,28 @@ public class HermitReasonerTest {
 		return unsatAlignments;
 	}
 	
+	public void loadMatrix(){
+		//get the similarity matrix
+		SimpleBatchModeRunner bm = new SimpleBatchModeRunner((File)null);
+		AbstractMatcher oaei2011 = bm.instantiateMatcher(null);
+		
+		log.debug("Loading source ontology...");
+		Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(sourceOwl.toString());
+		
+		log.debug("Loading target ontology...");
+		Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(targetOwl.toString());
+
+		oaei2011.setSourceOntology(sourceOntology);
+		oaei2011.setTargetOntology(targetOntology);
+		
+		SimilarityMatrixOutput matrixoutput = new SimilarityMatrixOutput(oaei2011);
+		matrix = matrixoutput.loadClassesMatrix("../Ontologies/OAEI/2011/test/oaei2011-classmatrix.mtx");
+		log.debug("Loaded similarity matrix...");
+	}
+	
+	
 	public void repairAlignment(){
+		
 		List<MatchingPair> alignment = AlignmentUtilities.getMatchingPairsOAEI(alignmentFile.getAbsolutePath());
 		log.debug("Loaded alignment. The alignment contains " + alignment.size() + " mappings.");
 
@@ -288,6 +307,8 @@ public class HermitReasonerTest {
 		OWLOntology mergedOntology = null;
 		
 		try{
+			loadMatrix();
+			
 			//Load the 2 ontologies and get back the merged + translated ontology.
 			mergedOntology = loadOntologies(alignment, util);
 			unsatAlignments = getUnsatisfiableAlignments(alignment, mergedOntology);
@@ -354,29 +375,6 @@ public class HermitReasonerTest {
 			inconsistentSources.add(inconsistentPair.sourceURI);
 			inconsistentTargets.add(inconsistentPair.targetURI);
 		}
-		
-		//get the similarity matrix
-		SimpleBatchModeRunner bm = new SimpleBatchModeRunner((File)null);
-		AbstractMatcher oaei2011 = bm.instantiateMatcher(null);
-		
-		String prefix = "H:/Work/Eclipse Workspace/Ontologies/OAEI/2011/anatomy/";
-		String sourceFile = prefix + "mouse.owl";
-		String targetFile = prefix + "human.owl";
-
-		log.debug("Loading source ontology...");
-		Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(sourceFile);
-		
-		log.debug("Loading target ontology...");
-		Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(targetFile);
-
-		oaei2011.setSourceOntology(sourceOntology);
-		oaei2011.setTargetOntology(targetOntology);
-		
-		SimilarityMatrixOutput matrixoutput = new SimilarityMatrixOutput(oaei2011);
-		SimilarityMatrix matrix = matrixoutput.loadClassesMatrix(
-							"H:/Work/Eclipse Workspace/Ontologies/OAEI/2011/test/oaei2011-classmatrix.mtx");
-		
-		
 		
 		List<am.app.ontology.Node> matrixSources = matrix.getSourceOntology().getClassesList();
 		HashMap<String, Integer> matrixSourceNames = new HashMap<String, Integer>();
@@ -456,6 +454,7 @@ public class HermitReasonerTest {
 		return candidateMap;
 	}
 	
+	
 	public OWLOntology loadOntologies(List<MatchingPair> alignment, AlignmentRepairUtilities util)
 			throws OWLOntologyCreationException{
 		
@@ -478,6 +477,7 @@ public class HermitReasonerTest {
 		return translateOntology(owlontologymanager, alignment, sourceOntology, targetOntology, 
 				mergedOntology, util);
 	}
+	
 	
 	public OWLOntology translateOntology(OWLOntologyManager owlontologymanager, List<MatchingPair> alignment,
 			OWLOntology sourceOntology, OWLOntology targetOntology, OWLOntology mergedOntology,
@@ -503,8 +503,6 @@ public class HermitReasonerTest {
 					OWLClass targetClass = (OWLClass) targetEntities.toArray()[0];
 
 					OWLEquivalentClassesAxiom equivClasses = dataFactory.getOWLEquivalentClassesAxiom(sourceClass, targetClass);
-					transAxioms.put(sourceClass, equivClasses);
-					transAxioms.put(targetClass, equivClasses);
 					
 					List<OWLOntologyChange> axiomList = owlontologymanager.addAxiom(mergedOntology, equivClasses);
 					owlontologymanager.applyChanges(axiomList);
@@ -515,9 +513,7 @@ public class HermitReasonerTest {
 					OWLDataProperty targetProperty = (OWLDataProperty) targetEntities.toArray()[0];
 
 					OWLEquivalentDataPropertiesAxiom equivProperties = dataFactory.getOWLEquivalentDataPropertiesAxiom(sourceProperty, targetProperty);
-					transAxioms.put(sourceProperty, equivProperties);
-					transAxioms.put(targetProperty, equivProperties);
-
+					
 					List<OWLOntologyChange> axiomList = owlontologymanager.addAxiom(mergedOntology, equivProperties);
 					owlontologymanager.applyChanges(axiomList);
 				}
@@ -527,9 +523,7 @@ public class HermitReasonerTest {
 					OWLObjectProperty targetProperty = (OWLObjectProperty) targetEntities.toArray()[0];
 
 					OWLEquivalentObjectPropertiesAxiom equivProperties = dataFactory.getOWLEquivalentObjectPropertiesAxiom(sourceProperty, targetProperty);
-					transAxioms.put(sourceProperty, equivProperties);
-					transAxioms.put(targetProperty, equivProperties);
-
+					
 					List<OWLOntologyChange> axiomList = owlontologymanager.addAxiom(mergedOntology, equivProperties);
 					owlontologymanager.applyChanges(axiomList);
 				}
