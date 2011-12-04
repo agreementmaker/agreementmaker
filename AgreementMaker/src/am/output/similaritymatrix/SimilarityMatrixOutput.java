@@ -118,7 +118,7 @@ public class SimilarityMatrixOutput {
 			
 			for( int i = 0; i < targetSize; i++ ) {
 				line = brd.readLine();
-				
+
 				if( !targetClassesList.get(i).getUri().equalsIgnoreCase(line) )
 					throw new Exception("The file does not match the ontologies! (target classes list)");
 			}
@@ -131,7 +131,7 @@ public class SimilarityMatrixOutput {
 			for( int i = 0; i < sourceSize; i++ ) {
 				for( int j = 0; j < targetSize; j++ ) {
 					line = brd.readLine();
-					double sim = Double.parseDouble(line);
+					double sim = Double.parseDouble(brd.readLine());
 					
 					Mapping m = new Mapping(sourceClassesList.get(i), targetClassesList.get(j), sim);
 					matrix.set(i, j, m);
@@ -157,7 +157,7 @@ public class SimilarityMatrixOutput {
 		SimpleBatchModeRunner bm = new SimpleBatchModeRunner((File)null);
 		AbstractMatcher oaei2011 = bm.instantiateMatcher(null);
 		
-		String prefix = "/home/cosmin/Documents/Eclipse/ADVIS-Main/Ontologies/OAEI/2011/anatomy/";
+		String prefix = "H:/Work/Eclipse Workspace/Ontologies/OAEI/2011/anatomy/";
 		String sourceFile = prefix + "mouse.owl";
 		String targetFile = prefix + "human.owl";
 
@@ -170,20 +170,23 @@ public class SimilarityMatrixOutput {
 		oaei2011.setSourceOntology(sourceOntology);
 		oaei2011.setTargetOntology(targetOntology);
 		
-		log.debug("Matching source and target ontologies ...");
-		try {
-			oaei2011.match();
-		} catch( Exception e ) {
-			e.printStackTrace();
-		}
+//		log.debug("Matching source and target ontologies ...");
+//		try {
+//			oaei2011.match();
+//		} catch( Exception e ) {
+//			e.printStackTrace();
+//		}
 		
 		
-		log.debug("Saving classes matrix ...");
+//		log.debug("Saving classes matrix ...");
 		
 		SimilarityMatrixOutput simout = new SimilarityMatrixOutput(oaei2011);
 		
-		simout.saveClassesMatrix("/home/cosmin/Documents/Eclipse/ADVIS-Main/Ontologies/OAEI/2011/test/oaei2011-classmatrix.mtx");	
+//		simout.saveClassesMatrix("/home/cosmin/Documents/Eclipse/ADVIS-Main/Ontologies/OAEI/2011/test/oaei2011-classmatrix.mtx");	
 		
+		System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+		
+		simout.loadClassesMatrix("H:/Work/Eclipse Workspace/Ontologies/OAEI/2011/test/oaei2011-classmatrix.mtx");
 	}
 	
 }
