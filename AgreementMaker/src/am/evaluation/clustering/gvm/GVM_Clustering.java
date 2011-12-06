@@ -3,6 +3,7 @@ package am.evaluation.clustering.gvm;
 import java.awt.Point;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import am.evaluation.clustering.ClusteringParametersPanel;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 
 import com.tomgibara.cluster.gvm.dbl.DblClusters;
+import com.tomgibara.cluster.gvm.dbl.DblListKeyer;
 import com.tomgibara.cluster.gvm.dbl.DblResult;
 
 /**
@@ -27,8 +29,8 @@ import com.tomgibara.cluster.gvm.dbl.DblResult;
  */
 public class GVM_Clustering extends ClusteringMethod {
 	
-	DblClusters<Point> clusters;
-	List<DblResult<Point>> results;
+	DblClusters<List<double[]>> clusters;
+	List<DblResult<List<double[]>>> results;
 
 	
 	public GVM_Clustering(List<AbstractMatcher> matchers) {
@@ -36,20 +38,30 @@ public class GVM_Clustering extends ClusteringMethod {
 		
 		Collections.shuffle(availableMatchers);
 		
-		clusters = new DblClusters<Point>( availableMatchers.size(), 20);
-		
-		double[] currentPoint = new double[ availableMatchers.size() ];
-		
 		int rows = availableMatchers.get(0).getClassesMatrix().getRows();
 		int cols = availableMatchers.get(0).getClassesMatrix().getColumns();
 		
-		// create the clusters
+		DblClusters<List<double[]>> clusters = new DblClusters<List<double[]>>( availableMatchers.size(), 20);
+		
+		clusters.setKeyer(new DblListKeyer<double[]>());
+		
+		
+		// create the points and add them to the cluster
 		for( int i = 0; i < rows; i++ ) {
 			for( int j = 0; j < cols; j++ ) {
+
+				double[] currentPoint = new double[ availableMatchers.size() + 2];
+				
+				// fill in the current point
 				for( int k = 0; k < availableMatchers.size(); k++ ) {
 					currentPoint[k] = availableMatchers.get(k).getClassesMatrix().getSimilarity(i, j);
 				}
-				clusters.add(1.0, currentPoint, new Point(i,j) );
+				currentPoint[availableMatchers.size()] = i;
+				currentPoint[availableMatchers.size()+1] = j;
+				
+				List<double[]> key = new ArrayList<double[]>();
+				key.add(currentPoint);
+				clusters.add(1.0, currentPoint, key);
 			}
 		}
 		
@@ -61,11 +73,14 @@ public class GVM_Clustering extends ClusteringMethod {
 		
 		try {
 			FileWriter writer = new FileWriter("clustered.txt");
-			final List<DblResult<Point>> results = clusters.results();
+			final List<DblResult<List<double[]>>> results = clusters.results();
 			for (int i = 0; i < results.size(); i++) {
-				DblResult<Point> p = results.get(i);
-
-				writer.write(String.format("%3.3f %3.3f %d%n", p.getKey().x, p.getKey().y, i+1));
+				for( double[] pt : results.get(i).getKey() ) {
+					for( int k = 0; k < availableMatchers.size(); k++ ) 
+						writer.write(String.format("%3.3f ", pt[k]));
+					writer.write(String.format("%d %d %d%n", 
+							pt[availableMatchers.size()], pt[availableMatchers.size()+1], i+1));
+				}
 			}
 
 			writer.close();
@@ -88,10 +103,7 @@ public class GVM_Clustering extends ClusteringMethod {
 	public static void main(String[] args) {
 		
 		
-		DblClusters<ClusterPoint> clusters = new DblClusters<ClusterPoint>(5, 3000);
-		
-		
-		
+				
 		
 	}
 	
