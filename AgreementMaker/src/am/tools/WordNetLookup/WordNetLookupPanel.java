@@ -164,12 +164,15 @@ public class WordNetLookupPanel extends JPanel implements ActionListener, KeyLis
 			
 			WordnetVisualizer viz = new WordnetVisualizer();
 			Synset[] synsets = viz.getSynsets(searchTerm);
-			byte[] graph = viz.synsetsToGraph(synsets);
+			
+			GraphViz gv = new GraphViz();
+		    
+			String source = viz.synsetsToGraph(synsets);
+			byte[] graph = gv.getGraph( source, "gif" );
 			
 			File out = new File("out.gif");
 		    System.out.println("Writing graph to file...");
 		    
-		    GraphViz gv = new GraphViz();
 		    gv.writeGraphToFile( graph , out );
 			
 			

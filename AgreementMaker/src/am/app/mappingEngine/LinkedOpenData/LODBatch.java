@@ -139,12 +139,12 @@ public class LODBatch {
 		param.threshold = 0.0;
 		hmm.setParam(param);
 		
-		hmm = MatcherFactory.getMatcherInstance(MatchersRegistry.WSM, 0);
-		hmm.setSourceOntology(sourceOntology);
-		hmm.setTargetOntology(targetOntology);
-		reference = AlignmentUtilities.getMatchingPairsTAB(refAlign);
-		hmm.setReferenceAlignment(reference);
-		hmm.setParam(param);
+//		hmm = MatcherFactory.getMatcherInstance(MatchersRegistry.WSM, 0);
+//		hmm.setSourceOntology(sourceOntology);
+//		hmm.setTargetOntology(targetOntology);
+//		reference = AlignmentUtilities.getMatchingPairsTAB(refAlign);
+//		hmm.setReferenceAlignment(reference);
+//		hmm.setParam(param);
 		
 		
 		log.info("HMM matching");

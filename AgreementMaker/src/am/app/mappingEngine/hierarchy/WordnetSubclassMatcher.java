@@ -34,6 +34,7 @@ import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.utility.referenceAlignment.AlignmentUtilities;
 import am.visualization.graphviz.wordnet.WordnetVisualizer;
+import arq.examples.propertyfunction.localname;
 
 public class WordnetSubclassMatcher extends AbstractMatcher{
 
@@ -56,6 +57,8 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 	
 	private WordNetDatabase WordNet;
 	
+	private HashSet<String> compoundNames = new HashSet<String>();
+	
 	//double addidtionalConstant = 0.0;
 	
 	DecimalFormat format = new DecimalFormat("0.000");
@@ -74,7 +77,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 	public enum NormalizationFunction { HYPERNYMS_COUNT, HYPERNYMS_LOG, NONE };
 	private NormalizationFunction normalizationFunction = NormalizationFunction.HYPERNYMS_LOG;
 	
-	boolean writeWordnetFiles = false;
+	boolean writeWordnetFiles = true;
 	
 	boolean useSuperclasses = true;
 	
@@ -82,7 +85,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 	
 	boolean useAdditionalConstant = false;
 	double additionalConstant = 0.0255943;
-	double nonZeroThreshold = 0.45;
+	double nonZeroThreshold = 0.3;
 	boolean useNonZero = true;
 	
 	public WordnetSubclassMatcher(){
@@ -105,9 +108,9 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 		targetClasses = targetOntology.getClassesList();
 		classesMatrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, alignType.aligningClasses);
 		
-		log.setLevel(Level.DEBUG);
+		//log.setLevel(Level.DEBUG);
 		buildVirtualDocuments();
-		log.setLevel(Level.INFO);
+		//log.setLevel(Level.INFO);
 	}
 	
 	
@@ -124,6 +127,8 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 		double matchSub;
 		double matchSuper;
 		for (int i = 0; i < sourceClasses.size(); i++){
+			matchSub = 0;
+			matchSuper = 0;
 			sourceNode = sourceClasses.get(i);
 			log.debug("Source: " + sourceNode.getUri());
 			sourceScored = sourceScoredSynsets.get(sourceNode);
@@ -144,24 +149,30 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 				//log.debug("targetComment: " + targetNode.getComment());
 				log.debug(targetScored);
 				
-				matchSub = synsetsInHypernymsSimilarity(sourceScored, targetScored, sourceNode, targetNode, true);	
+				if(!useRightWord || !compoundNames.contains(targetNode.getLocalName())){
+					matchSub = synsetsInHypernymsSimilarity(sourceScored, targetScored, sourceNode, targetNode, true);	
+					
+					log.debug("HypScore ST: " + matchSub);
+					
+					if(matchSub > hypernymsThreshold)
+						newMapping(sourceNode, targetNode, matchSub, MappingRelation.SUPERCLASS, "Wordnet mediator ST ");
+					
+				}
 				
-				log.debug("HypScore ST: " + matchSub);
-				
-				if(matchSub > hypernymsThreshold)
-					newMapping(sourceNode, targetNode, matchSub, MappingRelation.SUPERCLASS, "Wordnet mediator ST ");
-				
-				matchSuper = synsetsInHypernymsSimilarity(targetScored, sourceScored, targetNode, sourceNode, false);	
-				
-				if(matchSuper > hypernymsThreshold)
-					newMapping(sourceNode, targetNode, matchSuper, MappingRelation.SUBCLASS, "Wordnet mediator TS ");
-				
-				log.debug("HypScore TS: " + matchSuper);	
+				if(!useRightWord || !compoundNames.contains(sourceNode.getLocalName())){
+					matchSuper = synsetsInHypernymsSimilarity(targetScored, sourceScored, targetNode, sourceNode, false);	
+					
+					if(matchSuper > hypernymsThreshold)
+						newMapping(sourceNode, targetNode, matchSuper, MappingRelation.SUBCLASS, "Wordnet mediator TS ");
+					
+					log.debug("HypScore TS: " + matchSuper);	
+					
+					
+				}	
 				
 				if(matchSub > 0 && matchSuper > 0){
 					System.out.println("Weird: " + matchSub + " " + matchSuper + " " + sourceNode + " " + targetNode);					
 				}
-							
 			}
 		}
 		
@@ -291,13 +302,31 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 
 	}
 	
+	public String getHead(String localName){
+		localName = Utilities.separateWords(localName);	
+		String[] split = localName.split(" ");
+		if(split.length > 1 && split.length <= 2)
+			localName = split[split.length - 1];
+		return localName;
+	}
+	
 	public List<AMStringWrapper> buildSynsetCorpus(List<Node> nodeList, Normalizer normalizer){
 		Node node;
 		List<AMStringWrapper> normalizedDocuments = new ArrayList<AMStringWrapper>();
 		for (int i = 0; i < nodeList.size(); i++) {
 			node = nodeList.get(i);
-						
-			List<NounSynset> synsets = doLookUp(node);
+			
+			String localName = node.getLocalName();
+			
+			if(useRightWord){
+				String head = getHead(localName);
+				if(!head.equals(localName)){
+					compoundNames.add(localName);
+					localName = head;
+				}
+			}
+			
+			List<NounSynset> synsets = doLookUp(localName);
 			
 			String definition;
 			for (NounSynset synset : synsets) {
@@ -329,7 +358,14 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 			log.debug("comment:" + node.getComment());
 			log.debug("comment:" + comment);
 			
-			List<NounSynset> sourceSynsetList = doLookUp(node);
+			String localName = node.getLocalName();
+			boolean compound = false;
+			
+			if(useRightWord){
+				localName = getHead(localName);					
+			}
+			
+			List<NounSynset> sourceSynsetList = doLookUp(localName);
 			List<ScoredSynset> scoredList = new ArrayList<ScoredSynset>();
 			
 			//double score = 
@@ -479,21 +515,13 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 	
 	/**
 	 * This method returns the list of corresponding WordNet Synsets for given a Node.
-	 * @param conceptNode
+	 * @param localName
 	 * @return
 	 */
-	private List<NounSynset> doLookUp(Node conceptNode)
+	private List<NounSynset> doLookUp(String localName)
 	{	
 		ArrayList<NounSynset> synonymSet = new ArrayList<NounSynset>();
-		String localName = conceptNode.getLocalName();
-		
-		if(useRightWord){
-			localName = Utilities.separateWords(localName);	
-			String[] split = localName.split(" ");
-			if(split.length > 1)
-				localName = split[split.length - 1];
-		}
-		
+				
 		Synset[] synsets = WordNet.getSynsets(localName, SynsetType.NOUN);
 		
 		for (int i = 0; i < Math.min(synsets.length, wordnetSynsetsLimit); i++){

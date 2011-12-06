@@ -1,6 +1,9 @@
 package am.visualization.graphviz.wordnet;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.HashMap;
@@ -79,11 +82,11 @@ public class WordnetVisualizer {
 		return synsets;
 	}
 	
-	public byte[] synsetsToGraph(Synset[] synsets){
+	public String synsetsToGraph(Synset[] synsets){
 		return synsetsToGraph(synsets, "gif");
 	}
 	
-	public byte[] synsetsToGraph(Synset[] synsets, String type){
+	public String synsetsToGraph(Synset[] synsets, String type){
 		nodes = new HashMap<Synset, String>();
 		
 		GraphViz gv = new GraphViz();
@@ -147,7 +150,7 @@ public class WordnetVisualizer {
 	    gv.addln(gv.end_graph());
 	    //System.out.println(gv.getDotSource());
 		
-	    return gv.getGraph( gv.getDotSource(), type );
+	    return gv.getDotSource();
 	}
 	
 	
@@ -253,11 +256,24 @@ public class WordnetVisualizer {
 				
 		if(synsets.length == 0) return;
 		
-		byte[] graph = synsetsToGraph(synsets, "pdf");
+		GraphViz gv = new GraphViz();
+		
+		String source = synsetsToGraph(synsets, "pdf");
+		byte[] graph = gv.getGraph( source, "pdf" );
 				
 		String dir = "wordnetVizMatch";
 		
 		new File(dir).mkdir();
+		
+		try {
+			FileOutputStream fos = new FileOutputStream(dir + File.separator + filename + ".dot");
+			fos.write(source.getBytes());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 		
 		File out = new File(dir + File.separator + filename + ".pdf");
 	    
@@ -265,7 +281,6 @@ public class WordnetVisualizer {
 				
 		System.out.println("WVZ: Writing graph to file [" + filename + "]...");
 	    
-	    GraphViz gv = new GraphViz();
 	    gv.writeGraphToFile( graph , out );
 		
 	    this.sourceScoredBySynset = null;
@@ -278,8 +293,11 @@ public class WordnetVisualizer {
 		
 		if(synsets.length == 0) return;
 		
-		byte[] graph = synsetsToGraph(synsets, "pdf");
+		GraphViz gv = new GraphViz();
+	    
 		
+		String source = synsetsToGraph(synsets, "pdf");
+		byte[] graph = gv.getGraph( source, "pdf" );
 		
 		File out = new File("wordnetViz/" + searchTerm + ".pdf");
 	    
@@ -287,7 +305,6 @@ public class WordnetVisualizer {
 				
 		System.out.println("WVZ: Writing graph to file [" + searchTerm + "]...");
 	    
-	    GraphViz gv = new GraphViz();
 	    gv.writeGraphToFile( graph , out );
 	}
 	
@@ -295,13 +312,16 @@ public class WordnetVisualizer {
 	public static void main(String[] args) {
 		WordnetVisualizer viz = new WordnetVisualizer();
 		Synset[] synsets = viz.getSynsets("medium");
-		byte[] graph = viz.synsetsToGraph(synsets, "pdf");
 		
+		GraphViz gv = new GraphViz();
+	    
 		
+		String source = viz.synsetsToGraph(synsets, "pdf");
+		byte[] graph = gv.getGraph( source, "pdf" );
+			
 		File out = new File("out.pdf");
 	    System.out.println("Writing graph to file...");
 	    
-	    GraphViz gv = new GraphViz();
 	    gv.writeGraphToFile( graph , out );
 	    System.out.println("Done");
 	}

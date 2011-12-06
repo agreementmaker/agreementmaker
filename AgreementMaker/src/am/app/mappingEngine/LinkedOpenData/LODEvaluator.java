@@ -586,7 +586,7 @@ public class LODEvaluator {
 		
 		
 		
-		eval.setThreshold(0.1);
+		eval.setThreshold(0.37);
 		eval.evaluateAllTestsOld();
 		
 		Logger.getRootLogger().setLevel(Level.ERROR);

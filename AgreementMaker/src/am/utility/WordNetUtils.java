@@ -7,7 +7,7 @@ import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.WordNetDatabase;
 
 public class WordNetUtils {
-	WordNetDatabase wordNet; 
+	private WordNetDatabase wordNet; 
 	
 	HashMap<String, Boolean> isSynonym = new HashMap<String, Boolean>();
 	
@@ -51,5 +51,9 @@ public class WordNetUtils {
 		}
 		isSynonym.put(key, false);
 		return false;
+	}
+	
+	public WordNetDatabase getWordNet() {
+		return wordNet;
 	}
 }

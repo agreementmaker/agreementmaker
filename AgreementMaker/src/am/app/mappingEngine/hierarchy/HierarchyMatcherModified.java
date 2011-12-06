@@ -20,6 +20,7 @@ import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.utility.EnglishUtility;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -46,17 +47,17 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	
 	ArrayList<OntModel> otherOntologies;
 	
-	boolean useWordnet = true;
-	boolean useInput = true;
-	boolean useOtherOntologies = true;
-	boolean useCompoundWords = true;
-	boolean useSpellingsMatcher = true;
-	
 //	boolean useWordnet = true;
-//	boolean useInput = false;
-//	boolean useOtherOntologies = false;
-//	boolean useCompoundWords = false;
-//	boolean useSpellingsMatcher = false;
+//	boolean useInput = true;
+//	boolean useOtherOntologies = true;
+//	boolean useCompoundWords = true;
+//	boolean useSpellingsMatcher = true;
+	
+	boolean useWordnet = true;
+	boolean useInput = false;
+	boolean useOtherOntologies = false;
+	boolean useCompoundWords = false;
+	boolean useSpellingsMatcher = true;
 	
 	Logger log;
 	
@@ -303,7 +304,10 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		Node sNode;
 		Node tNode;
 		
-		int maxLen = 4;
+		boolean filterPrepositions = true;
+				
+		
+		int maxLen = 100;
 		
 		for (int i = 0; i < sourceClasses.size(); i++) {
 			sNode = sourceClasses.get(i);
@@ -311,6 +315,17 @@ public class HierarchyMatcherModified extends AbstractMatcher
 			sourceSplit = name.split(" ");
 			
 			if(sourceSplit.length > maxLen) continue;
+			
+			if(filterPrepositions){
+				boolean isPreposition = false;
+				for (int j = 0; j < sourceSplit.length - 1; j++) {
+					if(EnglishUtility.isPreposition(sourceSplit[j]))
+						isPreposition = true;
+				}
+				if(isPreposition) continue;
+			}
+			
+			
 			
 			int mainIndex = sourceSplit.length - 1; 
 			
