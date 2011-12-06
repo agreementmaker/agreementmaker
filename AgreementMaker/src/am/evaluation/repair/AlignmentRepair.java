@@ -67,7 +67,8 @@ public class AlignmentRepair {
 
 		Reasoner reasoner = null;
 		System.out.println(" ");
-		log.info("Size of the unsat alignments (After removal): " + (unsatAlignments.size()-1) + "\n");
+		//(After removal)
+		log.info("Number of unsatisfiable mappings: " + (unsatAlignments.size()-1) + "\n");
 		
 		MappingsOutput.writeMappingsOnDisk(repairedAlignmentFile.toString(), alignment);
 		util.computeMeasures(repairedAlignmentFile.toString(), referenceFile.toString());
@@ -198,7 +199,8 @@ public class AlignmentRepair {
 			}
 		}
 		System.out.println(" ");
-		log.info("Size of unsat alignments (Before removal): " + unsatAlignments.size() + "\n");
+		// (Before removal)
+		log.info("Number of unsatisfiable mappings: " + unsatAlignments.size() + "\n");
 		
 		//*** Remove the axioms from alignment
 		for(Set<OWLAxiom> conflictingAxioms : conflictingAxiomsMap.values()) {
