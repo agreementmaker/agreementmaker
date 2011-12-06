@@ -1,5 +1,7 @@
 package am.evaluation.clustering;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
@@ -11,24 +13,30 @@ public class ClusterFactory {
 		//GLOBAL_FIXED("GLOBAL FIXED", GlobalFixedMethod.class ),    // Global clustering with fixed thresholds.
 		LOCAL_BY_THRESHOLD("LOCAL BY THRESHOLD", LocalByThresholdMethod.class );
 		
+		
+		/******************************************************************************/
+		
 		private String name;
 		private Class<? extends ClusteringMethod> methodClass;
 		
 		ClusteringType(String n, Class<? extends ClusteringMethod> pnl) { name = n; methodClass = pnl; }
+		
 		public String getName() { return name; }
 		public Class<? extends ClusteringMethod> getMethodClass() { return methodClass; }
 	}
 	
 	
-	public static ClusteringMethod getMethodInstance( ClusteringType t, List<AbstractMatcher> matchers ) {
+	public static ClusteringMethod createClusteringMethod( ClusteringType t, List<AbstractMatcher> matchers ) {
 		ClusteringMethod method = null;
 		
 		try {
 			
-			// instantiate the new method
+			// instantiate a new clustering method
 			
-			method = t.getMethodClass().newInstance();
-			method.setAvailableMatchers(matchers);  // set the available matchers.
+			Constructor<? extends ClusteringMethod> c = 
+					t.getMethodClass().getConstructor( matchers.getClass() );
+			
+			method = c.newInstance(matchers);
 			
 			// prepare the parameters dialog
 			ClusterFactoryDialog dialog = new ClusterFactoryDialog(method);
@@ -44,12 +52,29 @@ public class ClusterFactory {
 			method.setParameters( dialog.getParameters() );
 			
 			
-		} catch (InstantiationException e) {
+		} 
+		catch(InvocationTargetException e) {
+			// The constructor threw an exception.
+			e.printStackTrace();
+			
+			Throwable target = null;
+			if( (target = e.getTargetException()) != null )
+				target.printStackTrace();
+			
+			return null;
+		} 
+		catch(NoSuchMethodException e) {
+			// The constructor does not exist.  This should not happen.
+			e.printStackTrace();
+			return null;
+		} 
+		catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 			
-		} catch (IllegalAccessException e) {
+		}
+		catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
