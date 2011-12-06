@@ -18,20 +18,20 @@ import am.evaluation.clustering.ClusterFactory.ClusteringType;
 import am.utility.PointComparator;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 
+/**
+ * This method implements the local-by-threshold clustering method.
+ * 
+ * @author Cosmin Stroe
+ */
 public class LocalByThresholdMethod extends ClusteringMethod {
 
-	private LocalByThresholdParameters 		params;
-	
-	public LocalByThresholdMethod() {
-		super();
-	}
+	protected LocalByThresholdParameters 		params;
 	
 	public LocalByThresholdMethod(List<AbstractMatcher> availableMatchers) {
 		super(availableMatchers);
 		
 	}
 	
-
 	@Override public void setParameters(ClusteringParameters params) { this.params = (LocalByThresholdParameters) params; }
 	@Override public ClusteringParameters getParameters() { return params; }
 	@Override public ClusteringParametersPanel getParametersPanel() { return new LocalByThresholdPanel(); }
