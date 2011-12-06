@@ -7,6 +7,7 @@ import am.app.mappingEngine.LexicalMatcherJAWS.LexicalMatcherJAWS;
 import am.app.mappingEngine.LexicalMatcherJWNL.LexicalMatcherJWNL;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcher;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherWeighted;
+import am.app.mappingEngine.MachineLearning.machineLearningMatcher;
 import am.app.mappingEngine.PRAMatcher.OldPRAMatcher;
 import am.app.mappingEngine.PRAMatcher.PRAMatcher;
 import am.app.mappingEngine.PRAMatcher.PRAMatcher2;
@@ -90,6 +91,7 @@ public enum MatchersRegistry {
 	BSS					( "BSS", "Basic Structure Selector Matcher", BasicStructuralSelectorMatcher.class ),
 	SSC					( "SSC", "Sibling's Similarity Contribution", SiblingsSimilarityContributionMatcher.class, MatcherCategory.STRUCTURAL ),
 	Combination			( "LWC", "Linear Weighted Combination", CombinationMatcher.class, MatcherCategory.COMBINATION ),
+	mlm					( "mlm", "Machine Learning Matcher", machineLearningMatcher.class, MatcherCategory.COMBINATION ),
 	ConceptSimilarity   ( "Concept Similarity", ConceptMatcher.class, false),
 	//UMLSKSLexical		("Lexical Matcher: UMLSKS", LexicalMatcherUMLS.class, false), //it requires internet connection and the IP to be registered
 	
