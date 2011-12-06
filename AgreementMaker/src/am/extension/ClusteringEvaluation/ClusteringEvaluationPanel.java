@@ -55,7 +55,7 @@ public class ClusteringEvaluationPanel extends JPanel implements ActionListener,
 
 	private void evaluateLocalbyThresholdClustering(AbstractMatcher reference, List<AbstractMatcher> matchers) {
 
-		LocalByThresholdMethod clm = new LocalByThresholdMethod();
+		LocalByThresholdMethod clm = new LocalByThresholdMethod(matchers);
 		LocalByThresholdParameters clmp = new LocalByThresholdParameters();
 		clmp.clusteringThreshold = 0.1;
 		clm.setParameters(clmp);
