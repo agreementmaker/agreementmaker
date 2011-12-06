@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -41,6 +42,7 @@ import am.app.ontology.profiling.ProfilingDialog;
 import am.app.ontology.profiling.metrics.OntologyMetric;
 import am.app.ontology.profiling.metrics.OntologyMetricsRegistry;
 import am.app.userfeedback.ui.UFLControlGUI;
+import am.evaluation.clustering.gvm.GVM_Clustering;
 import am.extension.ClusteringEvaluation.ClusteringEvaluationPanel;
 import am.tools.LexiconLookup.LexiconLookupPanel;
 import am.tools.ThresholdAnalysis.ThresholdAnalysis;
@@ -98,7 +100,8 @@ public class UIMenu implements ActionListener {
 	private JMenuItem userFeedBack, newMatching, runMatching, copyMatching, deleteMatching, clearAll, 
 					  doRemoveDuplicates,
 					  refEvaluateMatching,
-					  thresholdAnalysis, TEMP_viewClassMatrix, TEMP_viewPropMatrix, TEMP_matcherAnalysisClasses, TEMP_matcherAnalysisProp;
+					  thresholdAnalysis, TEMP_viewClassMatrix, TEMP_viewPropMatrix, TEMP_matcherAnalysisClasses, TEMP_matcherAnalysisProp,
+					  clusteringClasses;
 	
 	//private JMenu	menuExport;
 	//private JMenuItem exportMatrixCSV;
@@ -393,6 +396,28 @@ public class UIMenu implements ActionListener {
 			}
 			else if(obj == refEvaluateMatching) {
 				controlPanel.evaluate();
+			}
+			else if( obj == clusteringClasses ) {
+				/** Clustering with GVM for classes */
+				MatchersTablePanel m = controlPanel.getTablePanel();
+				
+				int[] selectedRows =  m.getTable().getSelectedRows();
+				
+				if(selectedRows.length < 2) {
+					Utility.displayErrorPane("You must select at least two matchers in the Matchers Control Panel.", null);
+					return;
+				}
+				
+				List<AbstractMatcher> selectedMatchers = new ArrayList<AbstractMatcher>();
+				List<AbstractMatcher> matcherInstances = Core.getInstance().getMatcherInstances();
+				
+				for( int i : selectedRows ) {
+					selectedMatchers.add(matcherInstances.get(i));
+				}
+				
+				GVM_Clustering gvm = new GVM_Clustering(selectedMatchers);
+				
+				gvm.getCluster(0, 0, VisualizationType.CLASS_MATRIX);
 			}
 			else if(obj == clearAll) {
 				controlPanel.clearAll();
@@ -1295,6 +1320,12 @@ public class UIMenu implements ActionListener {
 		userFeedBack.addActionListener(this);
 		matchersMenu.addSeparator();
 		matchersMenu.add(userFeedBack);
+		
+		matchersMenu.addSeparator();
+		
+		clusteringClasses = new JMenuItem("Show Classes Clustering");
+		clusteringClasses.addActionListener(this);
+		matchersMenu.add(clusteringClasses);
 		
 		// *************************** TOOLS MENU ****************************
 		toolsMenu = new JMenu("Tools");
