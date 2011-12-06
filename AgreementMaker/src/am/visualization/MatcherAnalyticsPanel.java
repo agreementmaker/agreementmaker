@@ -424,7 +424,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			if( l.getMatcher() != null ) matcherList.add(l.getMatcher());
 		}
 		
-		ClusteringMethod method = ClusterFactory.getMethodInstance(t, matcherList);
+		ClusteringMethod method = ClusterFactory.createClusteringMethod(t, matcherList);
 		
 		if( method == null ) return; 
 		Cluster<Mapping> c = method.getCluster(currentSelectedMapping.x, currentSelectedMapping.y, type);
@@ -507,7 +507,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 					if( l.getMatcher() != null ) matcherList.add(l.getMatcher());
 				}
 			
-				clusterMethod = ClusterFactory.getMethodInstance(ClusteringType.LOCAL_BY_THRESHOLD, matcherList);
+				clusterMethod = ClusterFactory.createClusteringMethod(ClusteringType.LOCAL_BY_THRESHOLD, matcherList);
 			}
 			
 			
