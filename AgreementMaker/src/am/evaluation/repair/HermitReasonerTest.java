@@ -141,7 +141,7 @@ public class HermitReasonerTest {
 				e.printStackTrace();
 			}
 			//Run reasoner and get unsatisfiable classes
-			reasoner = util.getReasoner(mergedOntology);
+			reasoner = util.loadReasoner(mergedOntology);
 			Node<OWLClass> unsatClassesFromRepaired = reasoner.getUnsatisfiableClasses();
 
 			//If this mapping produces unsatisfiable classes, remove it from alignment (undoing the addition step).
@@ -172,7 +172,7 @@ public class HermitReasonerTest {
 		Node<OWLClass> unsatClasses;
 		List<MatchingPair> unsatAlignments = new ArrayList<MatchingPair>();
 		
-		Reasoner reasoner = util.getReasoner(mergedOntology);
+		Reasoner reasoner = util.loadReasoner(mergedOntology);
 		
 		unsatClasses = reasoner.getUnsatisfiableClasses();
 		log.debug(unsatClasses.getSize());
@@ -465,8 +465,8 @@ public class HermitReasonerTest {
 		OWLOntology targetOntology = owlontologymanager.loadOntologyFromOntologyDocument(targetOwl);
 		
 		//Run reasoner and check if all classes are satisfiable.
-		Node<OWLClass> sourceUnsatClass = util.getReasoner(sourceOntology).getUnsatisfiableClasses();
-		Node<OWLClass> targetUnsatClass = util.getReasoner(targetOntology).getUnsatisfiableClasses();
+		Node<OWLClass> sourceUnsatClass = util.loadReasoner(sourceOntology).getUnsatisfiableClasses();
+		Node<OWLClass> targetUnsatClass = util.loadReasoner(targetOntology).getUnsatisfiableClasses();
 
 		log.debug("What are the unsatisfiable classes in Human.owl? " + sourceUnsatClass + "\n");
 		log.debug("What are the unsatisfiable classes in Mouse.owl? " + targetUnsatClass + "\n");
