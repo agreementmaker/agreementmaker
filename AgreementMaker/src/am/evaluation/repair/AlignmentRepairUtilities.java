@@ -41,7 +41,8 @@ public class AlignmentRepairUtilities {
 	private File targetOwl = new File("../Ontologies/OAEI/2011/anatomy/human.owl");
 	private File referenceFile = new File("../Ontologies/OAEI/2011/anatomy/reference_2011.rdf");
 	private File alignmentFile = new File("../Ontologies/OAEI/2011/anatomy/alignments/am_oaei_2011.rdf");
-
+	private File outputFile = null;
+	
 	public AlignmentRepairUtilities(Logger log){
 		this.log = log;
 	}
@@ -126,10 +127,14 @@ public class AlignmentRepairUtilities {
 			}
 		}
 		try {
+			if( outputFile == null ) outputFile = File.createTempFile("output", "owl");
 			owlontologymanager.saveOntology(mergedOntology, new RDFXMLOntologyFormat(), 
-					IRI.create("file:/output.owl"));
+					IRI.create("file:" + outputFile.getAbsolutePath()));
 
 		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return mergedOntology;
@@ -149,12 +154,16 @@ public class AlignmentRepairUtilities {
 				log.info(axiom);
 			}*/
 			//Save the merged ontology to OWL file
+			if( outputFile == null ) outputFile = File.createTempFile("output", "owl");
 			owlontologymanager.saveOntology(mergedOntology, new RDFXMLOntologyFormat(), 
-					IRI.create("file:/output.owl"));
+					IRI.create("file:" + outputFile.getAbsolutePath()));
 
 		} catch (OWLOntologyCreationException e) {
 			e.printStackTrace();
 		} catch (OWLOntologyStorageException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return mergedOntology;
