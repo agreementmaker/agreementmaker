@@ -54,15 +54,14 @@ public class GVM_Clustering extends ClusteringMethod {
 			for( int j = 0; j < cols; j++ ) {
 
 				double[] currentPoint = new double[ availableMatchers.size()];
-				double[] currentKey = new double[ availableMatchers.size() + 2];
+				double[] currentKey = new double[2];
 				
 				// fill in the current point
 				for( int k = 0; k < availableMatchers.size(); k++ ) {
 					currentPoint[k] = availableMatchers.get(k).getClassesMatrix().getSimilarity(i, j);
-					currentKey[k] = availableMatchers.get(k).getClassesMatrix().getSimilarity(i, j);
 				}
-				currentKey[availableMatchers.size()] = i;
-				currentKey[availableMatchers.size()+1] = j;
+				currentKey[0] = i;
+				currentKey[1] = j;
 				
 				List<double[]> key = new ArrayList<double[]>();
 				key.add(currentKey);
