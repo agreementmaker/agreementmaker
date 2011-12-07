@@ -24,6 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
@@ -83,6 +84,8 @@ public class GVM_Clustering_Panel extends JPanel implements PropertyChangeListen
 		}
 		
 		btnCluster.addActionListener(this);
+		
+		prgClustering.setDoubleBuffered(true);   
 		
 		layout.setAutoCreateContainerGaps(true);
 		layout.setAutoCreateGaps(true);
@@ -153,6 +156,7 @@ public class GVM_Clustering_Panel extends JPanel implements PropertyChangeListen
 							e.printStackTrace();
 							JOptionPane.showMessageDialog(GVM_Clustering_Panel.this, "Could not parse the number of clusters.  Defaulting to 2.");
 						}
+						long startTime = System.currentTimeMillis();
 						
 						gvmcl = new GVM_Clustering(matchers, numClusters);
 						gvmcl.addPropertyChangeListener(GVM_Clustering_Panel.this);
@@ -195,32 +199,37 @@ public class GVM_Clustering_Panel extends JPanel implements PropertyChangeListen
 						Collections.reverse(clusterData);
 						
 						txtResult.setText("Clustering results:\n\n");
-						txtResult.append("             | Cluster Size |   # correct  | % correct | Recall |\n");
+						txtResult.append("             | Cluster Size |   # correct  | correct | recall |\n");
 						
 						int selClusterSize = 0, selClusterCorrect = 0;
 						
 						for( ClusterData cd : clusterData ) {
-							double recall = (double) cd.correctMappings / (double) classesAlignment.size();
-							double correct = (double) cd.correctMappings / (double) cd.clusterSize;
+							double recall = ((double) cd.correctMappings / (double) classesAlignment.size());
+							double correct = ((double) cd.correctMappings / (double) cd.clusterSize);
 							
 							if( correct > 0.5d ) {
 								selClusterSize += cd.clusterSize;
 								selClusterCorrect += cd.correctMappings;
 							}
 							
-							txtResult.append(String.format("cluster %4d | %12d | %12d |   %2.3f   | %1.3f |\n",
+							txtResult.append(String.format("cluster %4d | %12d | %12d |  %1.3f  | %1.3f |\n",
 									cd.clusterID, cd.clusterSize, cd.correctMappings, correct, recall));
 						}
 						
+						long endTime = System.currentTimeMillis();
+						
 						txtResult.append("\n\nSelecting clusters with %correct > 0.5:\n\n");
-						txtResult.append(String.format("%% correct: %1.3f\n", (double)selClusterCorrect/(double)selClusterSize ));
+						txtResult.append(String.format("Correct: %1.3f\n", (double)selClusterCorrect/(double)selClusterSize ));
 						txtResult.append(String.format("Recall: %1.3f\n", (double)selClusterCorrect/(double)classesAlignment.size() ));
+						
+						txtResult.append("\nRun time: " + Utility.getFormattedTime(endTime-startTime) + "\n");
 						
 						prgClustering.setIndeterminate(false);
 						prgClustering.setEnabled(false);
 						txtNumClusters.setEnabled(true);
 						cmbReference.setEnabled(true);
 						btnCluster.setText("Cluster");
+						
 						
 					}
 				});
