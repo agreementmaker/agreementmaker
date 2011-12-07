@@ -21,6 +21,9 @@ import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.MatcherChangeEvent;
+import am.app.mappingEngine.MatcherChangeEvent.EventType;
+import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
@@ -31,7 +34,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 
-public class MatchersTablePanel extends JPanel {
+public class MatchersTablePanel extends JPanel implements MatcherChangeListener {
     
     
     /**
@@ -90,7 +93,7 @@ public class MatchersTablePanel extends JPanel {
         //is important to add this here so that initColumns can assign the best width to columns
         //This matcher cannot be deleted
         UserManualMatcher userMatcher = (UserManualMatcher) MatcherFactory.getMatcherInstance(MatchersRegistry.UserManual, 0);
-        addMatcher(userMatcher);
+        Core.getInstance().addMatcherInstance(userMatcher);
         
         setOpaque(true); //content panes must be opaque
         //Set up column sizes.
@@ -98,6 +101,8 @@ public class MatchersTablePanel extends JPanel {
         
         //Add the scroll pane to this panel.
         add(scrollPane);
+        
+        Core.getInstance().addMatcherChangeListener(this);
     }
 
     /*
@@ -183,7 +188,6 @@ public class MatchersTablePanel extends JPanel {
 	}
     
     public void addMatcher(AbstractMatcher a) {
-    	Core.getInstance().addMatcherInstance(a);
     	TableColumn inputColumn = table.getColumnModel().getColumn(MatchersControlPanelTableModel.INPUTMATCHERS);
     	InputMatchersEditor mc = (InputMatchersEditor)inputColumn.getCellEditor();
     	mc.addEditor(a);
@@ -207,7 +211,6 @@ public class MatchersTablePanel extends JPanel {
     }
     
     public void removeMatcher(AbstractMatcher a) {
-    	Core.getInstance().removeMatcher(a);
     	TableColumn inputColumn = table.getColumnModel().getColumn(MatchersControlPanelTableModel.INPUTMATCHERS);
     	InputMatchersEditor mc = (InputMatchersEditor)inputColumn.getCellEditor();
     	mc.removeEditor(a);
@@ -242,6 +245,17 @@ public class MatchersTablePanel extends JPanel {
             }
         });
     }
+
+	@Override
+	public void matcherChanged(MatcherChangeEvent e) {
+		if( e.getEvent() == EventType.MATCHER_ADDED ) {
+			addMatcher(e.getMatcher());
+		}
+		
+		if( e.getEvent() == EventType.MATCHER_REMOVED ) {
+			removeMatcher(e.getMatcher());
+		}
+	}
 
 
 }

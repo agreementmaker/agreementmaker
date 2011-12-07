@@ -115,7 +115,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 					ufl.setMaxSourceAlign(fblp.targetNumMappings);
 					displayProgressScreen();
 					ufl.addProgressDisplay(this);
-					ui.getControlPanel().getTablePanel().addMatcher(ufl);
+					Core.getInstance().addMatcherInstance(ufl);
 					//ui.redisplayCanvas(); nothing to display yet, because no mappings have been computed
 					ufl.execute();
 			    }

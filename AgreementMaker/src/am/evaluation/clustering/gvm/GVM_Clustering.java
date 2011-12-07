@@ -39,7 +39,7 @@ public class GVM_Clustering extends ClusteringMethod {
 		int rows = availableMatchers.get(0).getClassesMatrix().getRows();
 		int cols = availableMatchers.get(0).getClassesMatrix().getColumns();
 		
-		DblClusters<List<double[]>> clusters = new DblClusters<List<double[]>>( availableMatchers.size(), 20);
+		clusters = new DblClusters<List<double[]>>( availableMatchers.size(), 20);
 		
 		clusters.setKeyer(new DblListKeyer<double[]>());
 		
@@ -63,6 +63,7 @@ public class GVM_Clustering extends ClusteringMethod {
 				key.add(currentKey);
 				clusters.add(1.0, currentPoint, key);
 			}
+			System.out.println("i: " + i);
 		}
 		
 		results = clusters.results();
@@ -78,7 +79,7 @@ public class GVM_Clustering extends ClusteringMethod {
 				for( double[] pt : results.get(i).getKey() ) {
 					for( int k = 0; k < availableMatchers.size(); k++ ) 
 						writer.write(String.format("%3.3f ", pt[k]));
-					writer.write(String.format("%d %d %d%n", 
+					writer.write(String.format("%.0f %.0f %d%n", 
 							pt[availableMatchers.size()], pt[availableMatchers.size()+1], i+1));
 				}
 			}

@@ -392,11 +392,9 @@ public class ImportDialog extends JDialog implements ActionListener{
 						@Override public void matchingComplete() {
 							if( ignore ) return;
 							if(!referenceAlignmentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
-								Core.getUI().getControlPanel().getTablePanel().addMatcher(referenceAlignmentMatcher);
-								Core.getUI().redisplayCanvas();
+								Core.getInstance().addMatcherInstance(referenceAlignmentMatcher);
 							}	
-			
-							if( Core.DEBUG ) System.out.println("Matching Process Complete");
+							referenceAlignmentMatcher.removeProgressDisplay(this);
 						}
 						
 						@Override public void ignoreComplete(boolean ignore) {this.ignore = ignore;}
@@ -421,7 +419,7 @@ public class ImportDialog extends JDialog implements ActionListener{
 					AbstractMatcher m = (AbstractMatcher)in.readObject();
 					in.close();
 					
-					Core.getUI().getControlPanel().getTablePanel().addMatcher(m);
+					Core.getInstance().addMatcherInstance(m);
 					
 					setVisible(false);
 					dispose();

@@ -570,7 +570,8 @@ public class UIMenu implements ActionListener {
 					newMatcher.setRegistryEntry(MatchersRegistry.UniqueMatchings);
 					newMatcher.setID( Core.getInstance().getNextMatcherID());
 					
-					m.addMatcher(newMatcher);
+					//m.addMatcher(newMatcher);
+					Core.getInstance().addMatcherInstance(newMatcher);
 					
 					
 					

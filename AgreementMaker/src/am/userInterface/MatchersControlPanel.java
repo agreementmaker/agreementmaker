@@ -262,16 +262,35 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 	public void newManual() throws Exception {
 		String matcherName = JOptionPane.showInputDialog("Name for the new matcher? (Cancel for default)", MatchersRegistry.UserManual.getMatcherName());
 		int lastIndex = Core.getInstance().getMatcherInstances().size();
-		AbstractMatcher manualMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.UserManual, lastIndex);
+		final AbstractMatcher manualMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.UserManual, lastIndex);
 		if( manualMatcher.needsParam() ) {
 			MatcherParametersDialog d = new MatcherParametersDialog(manualMatcher, false, true);
 			if( d.parametersSet() ) manualMatcher.setParam(d.getParameters());
 			else return;
 		}
 		if( matcherName != null ) manualMatcher.setName(matcherName);
+		
+		// TODO: There must be a better way to do this!
+		manualMatcher.addProgressDisplay(new MatchingProgressDisplay() {
+			private boolean ignore = false;
+			@Override public void setProgressLabel(String label) {}
+			@Override public void setIndeterminate(boolean indeterminate) {}
+			@Override public void scrollToEndOfReport() {}
+			@Override public void propertyChange(PropertyChangeEvent evt) {}
+			@Override public void matchingStarted(AbstractMatcher m) {}
+			@Override public void matchingComplete() {
+				if( ignore ) return;
+				if(!manualMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
+					Core.getInstance().addMatcherInstance(manualMatcher);
+				}
+				manualMatcher.removeProgressDisplay(this);
+			}
+			@Override public void ignoreComplete(boolean ignore) {this.ignore = ignore;}
+			@Override public void clearReport() {}
+			@Override public void appendToReport(String report) {}
+		});
+		
 		new MatcherProgressDialog(manualMatcher);
-		matchersTablePanel.addMatcher(manualMatcher);
-		Core.getUI().redisplayCanvas();
 	}
 	
 	public void delete() throws Exception {
@@ -350,7 +369,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			for(int i = 0; i < rowsIndex.length; i++) {
 				toBeCopied = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
 				AbstractMatcher aCopy = toBeCopied.copy(); //it does everything also setting the last index and matching
-				matchersTablePanel.addMatcher(aCopy);
+				Core.getInstance().addMatcherInstance(aCopy);
 			}
 			Utility.displayMessagePane(rowsIndex.length+" matchers have been copied.\n",null);
 			Core.getUI().redisplayCanvas();
@@ -481,11 +500,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			@Override public void matchingComplete() {
 				if( ignore ) return;
 				if(!currentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
-					matchersTablePanel.addMatcher(currentMatcher);
-					Core.getUI().redisplayCanvas();
-				}	
-
-				if( Core.DEBUG ) System.out.println("Matching Process Complete");
+					Core.getInstance().addMatcherInstance(currentMatcher);
+				}
+				currentMatcher.removeProgressDisplay(this);
 			}
 			
 			@Override public void ignoreComplete(boolean ignore) {this.ignore = ignore;}
@@ -696,9 +713,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		}
 	}
 	
-	public void addMatcher( AbstractMatcher a ) {
+/*	public void addMatcher( AbstractMatcher a ) {
 		matchersTablePanel.addMatcher(a);
-	}
+	}*/
 	
 	//public String getComboboxSelectedItem() { return (String) matcherCombo.getSelectedItem(); }
 	

@@ -90,7 +90,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
     	
     	OAEI2011MatcherParameters p = (OAEI2011MatcherParameters) param;
     	
-    	//progressDisplay.ignoreComplete(true); //TODO I have to remove this
+    	for( MatchingProgressDisplay mpd : progressDisplays ) mpd.ignoreComplete(true);
     	
     	AbstractMatcher finalResult = null;
     	if( p.automaticConfiguration ) {
@@ -121,7 +121,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
     		}
     	}
 		
-    	//progressDisplay.ignoreComplete(false);// TODO I removed it!! 
+		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.ignoreComplete(false); 
     	
 		if( finalResult != null ) {
 			//finalResult.select();
@@ -140,7 +140,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	private AbstractMatcher automaticConfiguration() throws Exception {
 		AbstractMatcher finalResult = null;
 		OAEI2011Configuration conf = OntologyClassificator.classifiedOntologiesOAEI2011(sourceOntology, targetOntology);
-		
+			
 		switch( conf ) {
 		case LARGE_LEXICAL: {
 			finalResult = runLexicalBased();
@@ -1084,7 +1084,6 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		runSubMatcher(gfm, "Submatcher 4/4: GFM( LWC )");
 		//return gfm;
 
-		//getProgressDisplay().ignoreComplete(false); //TODO : i remove this
 		return gfm;
 	}
 	
@@ -1120,7 +1119,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	    time = (endtime-startime);
 		if( Core.DEBUG ) System.out.println(m.getRegistryEntry().getMatcherShortName() + " completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		
-		if(p.showIntermediateMatchers && !m.isCancelled()) Core.getUI().getControlPanel().getTablePanel().addMatcher(m);
+		if(p.showIntermediateMatchers && !m.isCancelled()) 
+			Core.getInstance().addMatcherInstance(m);
 	}
 	
 	@Override
