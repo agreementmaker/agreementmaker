@@ -24,6 +24,7 @@ import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.output.alignment.oaei.OAEIAlignmentFormat;
+import am.userInterface.MatchingProgressDisplay;
 
 public class MediatingMatcher extends AbstractMatcher {
 
@@ -51,7 +52,7 @@ public class MediatingMatcher extends AbstractMatcher {
 		MediatingMatcherParameters p = (MediatingMatcherParameters) param;
 
 		if( !(p.loadSourceBridge && p.loadTargetBridge) ) { // we need to compute one of the bridges, so load the mediating ontology 
-			if( isProgressDisplayed() ) progressDisplay.appendToReport("Loading mediating ontology ...");
+			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Loading mediating ontology ...");
 			try {
 				mediatingOntology = OntoTreeBuilder.loadOWLOntology( p.mediatingOntology );
 			} catch( Exception e ) {
@@ -69,21 +70,21 @@ public class MediatingMatcher extends AbstractMatcher {
 				return;
 			}
 			
-			if( isProgressDisplayed() ) progressDisplay.appendToReport(" Done.\n");
+			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
 		}
 		
 		if( p.loadSourceBridge ) {
 			try {
-				if( isProgressDisplayed() ) progressDisplay.appendToReport("Loading source bridge ...");
+				for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Loading source bridge ...");
 				OAEIAlignmentFormat format = new OAEIAlignmentFormat();
 				sourceBridge = format.readAlignment( new FileReader(new File(p.sourceBridge)) );
-				if( isProgressDisplayed() ) progressDisplay.appendToReport(" Done.\n");
+				for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		} else {
 			// the source bridge does not exist, we must create it.
-			if( isProgressDisplayed() ) progressDisplay.appendToReport("Matching bridge ontology to source ontology ...");
+			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Matching bridge ontology to source ontology ...");
 			
 			// build the lexicons for the bridge to source
 			LexiconBuilderParameters lexParam = new LexiconBuilderParameters();
@@ -145,17 +146,17 @@ public class MediatingMatcher extends AbstractMatcher {
 			
 			Core.getLexiconStore().setParameters(oldParam); // restore the old parameters
 			
-			if( isProgressDisplayed() ) progressDisplay.appendToReport(" Done.\n");
+			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
 		}
 		
 		if( p.loadTargetBridge ) {
-			progressDisplay.appendToReport("Loading target bridge ...");
+			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Loading target bridge ...");
 			OAEIAlignmentFormat format = new OAEIAlignmentFormat();
 			targetBridge = format.readAlignment( new FileReader(new File(p.targetBridge)) );
-			progressDisplay.appendToReport(" Done.\n");
+			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
 		} else {
 			// the target bridge does not exist, we must create it.
-			if( isProgressDisplayed() ) progressDisplay.appendToReport("Matching bridge ontology to target ontology ...");
+			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Matching bridge ontology to target ontology ...");
 			
 			// build the lexicons for the bridge to source
 			LexiconBuilderParameters lexParam = new LexiconBuilderParameters();
@@ -217,7 +218,7 @@ public class MediatingMatcher extends AbstractMatcher {
 			
 			Core.getLexiconStore().setParameters(oldParam);  // restore the old parameters
 			
-			if( isProgressDisplayed() ) progressDisplay.appendToReport(" Done.\n");
+			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
 		}
 		
 		

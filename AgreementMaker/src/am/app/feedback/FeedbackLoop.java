@@ -19,6 +19,7 @@ import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.userInterface.MatchingProgressDisplay;
 
 /**
  * This class is implemented to run the user feedback loop.
@@ -153,7 +154,11 @@ public class FeedbackLoop extends AbstractMatcher  {
 	public void match() throws Exception{
 		matchStart();
 		FeedbackLoopParameters param = (FeedbackLoopParameters)this.param;
-		SelectionPanel progressDisplay = (SelectionPanel)this.progressDisplay;
+		SelectionPanel progressDisplay = null;
+		for( MatchingProgressDisplay mpd : progressDisplays )
+			if( mpd instanceof SelectionPanel ) {
+				progressDisplay = (SelectionPanel)mpd;
+			}
 		//the first time we write in the report we use the DISPLAY method, the other times we use the APPEND method
 		progressDisplay.displayReportText("User Feedback Loop is started.");
 		param.print();
@@ -324,7 +329,11 @@ public class FeedbackLoop extends AbstractMatcher  {
 		FeedbackLoopParameters param = (FeedbackLoopParameters)this.param;
 		FilteredAlignmentMatrix classesMatrix = (FilteredAlignmentMatrix)this.classesMatrix;
 		FilteredAlignmentMatrix propertiesMatrix = (FilteredAlignmentMatrix)this.propertiesMatrix;
-		SelectionPanel progressDisplay = (SelectionPanel)this.progressDisplay;
+		SelectionPanel progressDisplay = null;
+		for( MatchingProgressDisplay mpd : progressDisplays )
+			if( mpd instanceof SelectionPanel ) {
+				progressDisplay = (SelectionPanel)mpd;
+			}
 		
 		if(userAction.equals(SelectionPanel.A_MAPPING_CORRECT)){		
 			setStage(executionStage.runningExtrapolatingMatchers);				
@@ -484,7 +493,13 @@ public class FeedbackLoop extends AbstractMatcher  {
 	}
 
 	private void userValidation() {
-		SelectionPanel progressDisplay = (SelectionPanel)this.progressDisplay;
+		
+		SelectionPanel progressDisplay = null;
+		for( MatchingProgressDisplay mpd : progressDisplays )
+			if( mpd instanceof SelectionPanel ) {
+				progressDisplay = (SelectionPanel)mpd;
+			}
+		
 		setStage( executionStage.runningUserInterface );
 		//MANUAL: Display the mappings in the User Interface
 		progressDisplay.displayMappings(topConceptsAndAlignments);
@@ -580,7 +595,11 @@ public class FeedbackLoop extends AbstractMatcher  {
 	}
 
 	private void candidateSelection(boolean firstPhase) {
-		SelectionPanel progressDisplay = (SelectionPanel)this.progressDisplay;
+		SelectionPanel progressDisplay = null;
+		for( MatchingProgressDisplay mpd : progressDisplays )
+			if( mpd instanceof SelectionPanel ) {
+				progressDisplay = (SelectionPanel)mpd;
+			}
 		FeedbackLoopParameters param = (FeedbackLoopParameters)this.param;
 		setStage( executionStage.runningCandidateSelection );
 		if(firstPhase){
@@ -622,7 +641,11 @@ public class FeedbackLoop extends AbstractMatcher  {
 
 	private void filtering() {
 		setStage( executionStage.runningFilter );
-		SelectionPanel progressDisplay = (SelectionPanel)this.progressDisplay;
+		SelectionPanel progressDisplay = null;
+		for( MatchingProgressDisplay mpd : progressDisplays )
+			if( mpd instanceof SelectionPanel ) {
+				progressDisplay = (SelectionPanel)mpd;
+			}
 		FilteredAlignmentMatrix classesMatrix = (FilteredAlignmentMatrix)this.classesMatrix;
 		FilteredAlignmentMatrix propertiesMatrix = (FilteredAlignmentMatrix)this.propertiesMatrix;
 		progressDisplay.appendNewLineReportText("Mappings filtering:");
@@ -679,7 +702,11 @@ public class FeedbackLoop extends AbstractMatcher  {
 
 	private void runInitialMatcher() throws Exception {
 		FeedbackLoopParameters param = (FeedbackLoopParameters)this.param;
-		SelectionPanel progressDisplay = (SelectionPanel)this.progressDisplay;
+		SelectionPanel progressDisplay = null;
+		for( MatchingProgressDisplay mpd : progressDisplays )
+			if( mpd instanceof SelectionPanel ) {
+				progressDisplay = (SelectionPanel)mpd;
+			}
 		//Initial Matcher is initialized in the SelectionPanel.getParameters()
 		//we just have to make it run here
 		setStage(executionStage.runningInitialMatchers);

@@ -124,7 +124,7 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 		    matcher.addPropertyChangeListener(this);  // we are receiving updates from the matcher.
 		}
 		
-	    matcher.setProgressDisplay(this);
+	    matcher.addProgressDisplay(this);
 		
 		matcher.execute();
 		

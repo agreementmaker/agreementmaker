@@ -3,6 +3,7 @@ package am.userInterface;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
@@ -357,7 +358,7 @@ public class ImportDialog extends JDialog implements ActionListener{
 				if( inputType == FileType.ALIGNMENT_ONLY ) {
 					// TODO: Make this work with other types of outputs.
 					int lastIndex = Core.getInstance().getMatcherInstances().size();
-					AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, lastIndex);
+					final AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, lastIndex);
 					
 					ReferenceAlignmentParameters refParams = new ReferenceAlignmentParameters();
 					
@@ -380,6 +381,29 @@ public class ImportDialog extends JDialog implements ActionListener{
 					referenceAlignmentMatcher.setThreshold(referenceAlignmentMatcher.getDefaultThreshold());
 					referenceAlignmentMatcher.setMaxSourceAlign(referenceAlignmentMatcher.getDefaultMaxSourceRelations());
 					referenceAlignmentMatcher.setMaxTargetAlign(referenceAlignmentMatcher.getDefaultMaxTargetRelations());
+					
+					referenceAlignmentMatcher.addProgressDisplay(new MatchingProgressDisplay() {
+						private boolean ignore = false;
+						@Override public void setProgressLabel(String label) {}
+						@Override public void setIndeterminate(boolean indeterminate) {}
+						@Override public void scrollToEndOfReport() {}
+						@Override public void propertyChange(PropertyChangeEvent evt) {}
+						@Override public void matchingStarted(AbstractMatcher m) {}
+						@Override public void matchingComplete() {
+							if( ignore ) return;
+							if(!referenceAlignmentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
+								Core.getUI().getControlPanel().getTablePanel().addMatcher(referenceAlignmentMatcher);
+								Core.getUI().redisplayCanvas();
+							}	
+			
+							if( Core.DEBUG ) System.out.println("Matching Process Complete");
+						}
+						
+						@Override public void ignoreComplete(boolean ignore) {this.ignore = ignore;}
+						@Override public void clearReport() {}
+						@Override public void appendToReport(String report) {}
+					});
+					
 					new MatcherProgressDialog(referenceAlignmentMatcher);
 					
 					loadedMatcher = referenceAlignmentMatcher;

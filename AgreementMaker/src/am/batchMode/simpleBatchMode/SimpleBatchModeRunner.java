@@ -2,7 +2,6 @@ package am.batchMode.simpleBatchMode;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 
@@ -13,7 +12,6 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
@@ -201,7 +199,7 @@ public class SimpleBatchModeRunner {
 			params.parallelExecution = true;
 			
 			matcher.setParam(params);
-			matcher.setProgressDisplay( new ConsoleProgressDisplay() );  // output status information to the console.
+			matcher.addProgressDisplay( new ConsoleProgressDisplay() );  // output status information to the console.
 			matcher.setUseProgressDelay(true);
 
 			return matcher;

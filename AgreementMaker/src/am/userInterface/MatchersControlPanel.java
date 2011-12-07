@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -329,13 +330,13 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		ImportDialog lfd = new ImportDialog();
 		AbstractMatcher importedMatcher = lfd.getLoadedMatcher();
 		
-		if( importedMatcher == null ) return;
+/*		if( importedMatcher == null ) return;
 		
 		importedMatcher.setSourceOntology( Core.getInstance().getSourceOntology() );
 		importedMatcher.setTargetOntology( Core.getInstance().getTargetOntology() );
 		
 		matchersTablePanel.addMatcher(importedMatcher);
-		Core.getUI().redisplayCanvas();
+		Core.getUI().redisplayCanvas();*/
 	}
 	
 	public void copy() throws Exception{
@@ -439,7 +440,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		// 2. Create the MatcherParametersDialog and get the matcher with settings.
 		MatcherParametersDialog dialog = new MatcherParametersDialog();
 		
-		AbstractMatcher currentMatcher;
+		final AbstractMatcher currentMatcher;
 		if(dialog.parametersSet()) {
 			currentMatcher = dialog.getMatcher();
 			currentMatcher.setParam(dialog.getParameters());
@@ -466,14 +467,34 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		
 		// 4. Bring up MatcherProgressDialog which runs the matcher.
 		// The dialog will start the matcher in a background thread, show progress as the matcher is running, and show the report at the end.
-		new MatcherProgressDialog(currentMatcher);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
-		if(!currentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
-			matchersTablePanel.addMatcher(currentMatcher);
-			Core.getUI().redisplayCanvas();
-		}	
+		
+		// This dialog is not modal.
+		
+		
+		currentMatcher.addProgressDisplay(new MatchingProgressDisplay() {
+			private boolean ignore = false;
+			@Override public void setProgressLabel(String label) {}
+			@Override public void setIndeterminate(boolean indeterminate) {}
+			@Override public void scrollToEndOfReport() {}
+			@Override public void propertyChange(PropertyChangeEvent evt) {}
+			@Override public void matchingStarted(AbstractMatcher m) {}
+			@Override public void matchingComplete() {
+				if( ignore ) return;
+				if(!currentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
+					matchersTablePanel.addMatcher(currentMatcher);
+					Core.getUI().redisplayCanvas();
+				}	
 
-		if( Core.DEBUG ) System.out.println("Matching Process Complete");
-
+				if( Core.DEBUG ) System.out.println("Matching Process Complete");
+			}
+			
+			@Override public void ignoreComplete(boolean ignore) {this.ignore = ignore;}
+			@Override public void clearReport() {}
+			@Override public void appendToReport(String report) {}
+		});
+		
+		MatcherProgressDialog progressDialog = new MatcherProgressDialog(currentMatcher);
+		
 	}
 
 	public void tuning() throws Exception{

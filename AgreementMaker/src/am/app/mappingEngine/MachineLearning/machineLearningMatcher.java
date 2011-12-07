@@ -29,6 +29,7 @@ import am.app.mappingEngine.Combination.CombinationParameters;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
+import am.userInterface.MatchingProgressDisplay;
 
 public class machineLearningMatcher extends AbstractMatcher {
 	
@@ -203,7 +204,7 @@ public class machineLearningMatcher extends AbstractMatcher {
     protected void matchStart() {
     	if( isProgressDisplayed() ) {
     		setupProgress();  // if we are using the progress dialog, setup the variables
-    		progressDisplay.matchingStarted(this);
+    		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.matchingStarted(this);
     	}
     	start = System.nanoTime();
     	starttime = System.currentTimeMillis();
@@ -217,8 +218,8 @@ public class machineLearningMatcher extends AbstractMatcher {
 	    setSuccesfullReport();	
 		if( isProgressDisplayed() ) {
 			allStepsDone();
-			progressDisplay.clearReport();
-			progressDisplay.matchingComplete();
+			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.clearReport();
+			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.matchingComplete();
 		}
     	
 	}
@@ -665,7 +666,7 @@ public class machineLearningMatcher extends AbstractMatcher {
 		m.setParam(p);
 		m.setSourceOntology(sourceOntology);
 		m.setTargetOntology(targetOntology);
-		m.setProgressDisplay(m.getProgressDisplay());
+		for( MatchingProgressDisplay mpd : progressDisplays ) m.addProgressDisplay(mpd);
 		m.setUseProgressDelay(progressDelay);
 		m.setPerformSelection(true);
 	}

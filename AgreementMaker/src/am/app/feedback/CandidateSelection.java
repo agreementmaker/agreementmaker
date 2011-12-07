@@ -15,6 +15,7 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.userInterface.MatchingProgressDisplay;
 
 public class CandidateSelection {
 
@@ -233,12 +234,12 @@ public class CandidateSelection {
 			
 		}
 
-		fbL.getProgressDisplay().appendToReport("\nCandidate Selection:  Top K=" + Integer.toString(k) + " CandidateConcepts:\n");
+		for( MatchingProgressDisplay mpd : fbL.getProgressDisplays() ) mpd.appendToReport("\nCandidate Selection:  Top K=" + Integer.toString(k) + " CandidateConcepts:\n");
 		System.out.println("\nCandidate Selection:  Top K=" + Integer.toString(k) + " CandidateConcepts:");
 		for( int ii = 0; ii < topK.size(); ii++ ) {
 			CandidateConcept cc = topK.get(ii);
 			boolean isinref = fbL.isInReferenceAlignment( cc );
-			fbL.getProgressDisplay().appendToReport("   " + Integer.toString(ii)+ ". " + topK.get(ii).toString() + "  inref: " + Boolean.toString(isinref)+"\n");
+			for( MatchingProgressDisplay mpd : fbL.getProgressDisplays() ) mpd.appendToReport("   " + Integer.toString(ii)+ ". " + topK.get(ii).toString() + "  inref: " + Boolean.toString(isinref)+"\n");
 			System.out.println( "   " + Integer.toString(ii)+ ". " + topK.get(ii).toString() + "  inref: " + Boolean.toString(isinref));
 		}
 

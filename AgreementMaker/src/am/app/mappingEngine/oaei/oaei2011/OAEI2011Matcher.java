@@ -42,6 +42,7 @@ import am.app.ontology.profiling.ProfilerRegistry;
 import am.app.ontology.profiling.classification.OntologyClassificator;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
+import am.userInterface.MatchingProgressDisplay;
 
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -548,9 +549,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		
 		if( ((OAEI2011MatcherParameters)param).parallelExecution ) {
-			if( isProgressDisplayed() ) {
-				getProgressDisplay().setIndeterminate(true);
-			}
+			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.setIndeterminate(true);
 			
 			int availableProcessors = Runtime.getRuntime().availableProcessors() - param.threadedReservedProcessors;
 			if( availableProcessors < 1 ) // this should not happen 
@@ -582,7 +581,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 							}
 						});
 						
-						if( isProgressDisplayed() ) progressDisplay.appendToReport("Running PSM ...\n");
+						for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Running PSM ...\n");
 						psmThread.start();
 						currentStep++;
 					} 
@@ -601,7 +600,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 							}
 						});
 						
-						if( isProgressDisplayed() ) progressDisplay.appendToReport("Running VMM ...\n");
+						for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Running VMM ...\n");
 						vmmThread.start();
 						currentStep++;
 					}
@@ -620,7 +619,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 							}
 						});
 						
-						if( isProgressDisplayed() ) progressDisplay.appendToReport("Running LSM Weighted ...\n");
+						for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Running LSM Weighted ...\n");
 						lsmThread.start();
 						currentStep++;
 					} 
@@ -639,7 +638,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 							}
 						});
 						
-						if( isProgressDisplayed() ) progressDisplay.appendToReport("Running MM ...\n");
+						for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Running MM ...\n");
 						mmThread.start();
 						currentStep++;
 					}
@@ -651,9 +650,9 @@ public class OAEI2011Matcher extends AbstractMatcher {
 				}
 			}
 			
-			if( isProgressDisplayed() ) {
-				if( isProgressDisplayed() ) progressDisplay.appendToReport("Finished running threads...\n");
-				getProgressDisplay().setIndeterminate(false);
+			for( MatchingProgressDisplay mpd : progressDisplays ) {
+				mpd.appendToReport("Finished running threads...\n");
+				mpd.setIndeterminate(false);
 			}
 		}
 		else { 
@@ -1097,7 +1096,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		m.setParam(p);
 		m.setSourceOntology(sourceOntology);
     	m.setTargetOntology(targetOntology);
-		m.setProgressDisplay(getProgressDisplay());
+		for( MatchingProgressDisplay mpd : progressDisplays ) m.addProgressDisplay(mpd);
 		m.setUseProgressDelay(progressDelay);
 		m.setPerformSelection(true);
 	}
@@ -1111,7 +1110,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		if( Core.DEBUG ) System.out.println("Running " + m.getRegistryEntry().getMatcherShortName() );
 		startime = System.nanoTime()/measure;
 		
-		if( isProgressDisplayed() ) getProgressDisplay().setProgressLabel(label);
+		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.setProgressLabel(label);
 		//m.setProgressDisplay(getProgressDisplay());
 		m.match();
 		//m.setProgressDisplay(null);

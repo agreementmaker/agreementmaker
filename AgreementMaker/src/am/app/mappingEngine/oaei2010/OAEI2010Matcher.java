@@ -18,6 +18,7 @@ import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarity
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.oaei.OAEI_Track;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
+import am.userInterface.MatchingProgressDisplay;
 
 /**
  * @author Michele Caci
@@ -122,7 +123,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		runSubMatcher(gfm, "GFM( LWC )");
 		//return gfm;
 
-		getProgressDisplay().ignoreComplete(false);
+		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.ignoreComplete(false);
 		return gfm;
 	}
 
@@ -135,7 +136,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		
 		OAEI2010MatcherParameters parameters = (OAEI2010MatcherParameters)param;
 		
-		if(getProgressDisplay()!=null) getProgressDisplay().ignoreComplete(true);
+		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.ignoreComplete(true);
 		
 		//ASM
 		AbstractMatcher asm = null;
@@ -196,7 +197,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 	    	runSubMatcher(iism, "Submatcher: IISM");
 	    }
 		
-		if(getProgressDisplay()!=null) getProgressDisplay().ignoreComplete(false);
+		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.ignoreComplete(false);
 		
 		return iism;
 	}
@@ -211,7 +212,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 	
 		OAEI2010MatcherParameters parameters = new OAEI2010MatcherParameters(OAEI_Track.Anatomy);
 
-		getProgressDisplay().ignoreComplete(true);  // do not want the sub matchers to trigger the completion of the OAEI matcher.
+		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.ignoreComplete(true);  // do not want the sub matchers to trigger the completion of the OAEI matcher.
 		
 		//LSM
 		AbstractMatcher lsm = null;
@@ -250,7 +251,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 			runSubMatcher(lwc1, "LWC (4/4)");
 		}
 		
-		if(getProgressDisplay()!=null) getProgressDisplay().ignoreComplete(false); // done with sub matchers.
+		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.ignoreComplete(false); // done with sub matchers.
 		return lwc1;
 	}
 	
@@ -270,10 +271,10 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		if( Core.DEBUG ) System.out.println("Running " + m.getRegistryEntry().getMatcherShortName() );
 		startime = System.nanoTime()/measure;
 		
-		if(getProgressDisplay()!=null) getProgressDisplay().setProgressLabel(label);
-		m.setProgressDisplay(getProgressDisplay());
+		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.setProgressLabel(label);
+		for( MatchingProgressDisplay mpd : progressDisplays ) m.addProgressDisplay(mpd);
 		m.match();
-		m.setProgressDisplay(null);
+		for( MatchingProgressDisplay mpd : progressDisplays ) m.removeProgressDisplay(mpd);
 		if( m.isCancelled() ) { cancel(true); } // the user canceled the matching process  
 		
 		endtime = System.nanoTime()/measure;

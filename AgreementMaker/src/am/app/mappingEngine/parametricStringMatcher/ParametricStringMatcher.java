@@ -20,6 +20,7 @@ import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.ontology.Node;
+import am.userInterface.MatchingProgressDisplay;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.*; //all sim metrics are in here
 
@@ -88,13 +89,13 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		if( parameters.useLexicons ) {
 			// build all the lexicons if they don't exist.
 			
-			if( progressDisplay != null ) progressDisplay.setProgressLabel("Building Ontology Lexicon (1/2)");
+			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.setProgressLabel("Building Ontology Lexicon (1/2)");
 			sourceOntologyLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
 			targetOntologyLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
-			if( progressDisplay != null ) progressDisplay.setProgressLabel("Building WordNet Lexicon (2/2)");
+			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.setProgressLabel("Building WordNet Lexicon (2/2)");
 			sourceWordNetLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
 			targetWordNetLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
-			if( progressDisplay != null ) progressDisplay.setProgressLabel(null);
+			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.setProgressLabel(null);
 		}
 		
 	}

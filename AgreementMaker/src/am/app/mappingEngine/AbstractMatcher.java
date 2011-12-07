@@ -180,7 +180,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 	}
 	
-	protected transient MatchingProgressDisplay progressDisplay = null;  // need to keep track of the dialog in order to close it when we're done.  (there could be a better way to do this, but that's for later)
+	protected transient List<MatchingProgressDisplay> progressDisplays = new ArrayList<MatchingProgressDisplay>();  // need to keep track of the dialog in order to close it when we're done.  (there could be a better way to do this, but that's for later)
 	protected long stepsTotal; // Used by the ProgressDialog.  This is a rough estimate of the number of steps to be done before we finish the matching.
 	protected long stepsDone;  // Used by the ProgressDialog.  This is how many of the total steps we have completed.
 	
@@ -375,14 +375,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	qualEvaluation = null;
     	refEvaluation = null;
     	
-    	if( progressDisplay != null ) {
-    		progressDisplay.appendToReport("Performing mapping selection ...");
+    	for( MatchingProgressDisplay mpd : progressDisplays ) {
+    		mpd.appendToReport("Performing mapping selection ...");
     	}
     }
     //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
     protected void afterSelectionOperations() {
-    	if( progressDisplay != null ) {
-    		progressDisplay.appendToReport(" Done.\n");
+    	for( MatchingProgressDisplay mpd : progressDisplays ) {
+    		mpd.appendToReport(" Done.\n");
     	}
     } 
     
@@ -390,7 +390,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     protected void matchStart() {
     	if( isProgressDisplayed() ) {
     		setupProgress();  // if we are using the progress dialog, setup the variables
-    		progressDisplay.matchingStarted(this);
+    		for( MatchingProgressDisplay mpd : progressDisplays ) {
+    			mpd.matchingStarted(this);
+    		}
     	}
     	start = System.nanoTime();
     	starttime = System.currentTimeMillis();
@@ -404,8 +406,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	    setSuccesfullReport();	
 		if( isProgressDisplayed() ) {
 			allStepsDone();
-			progressDisplay.clearReport();
-			progressDisplay.matchingComplete();
+			for( MatchingProgressDisplay mpd : progressDisplays ) {
+				mpd.clearReport();
+				mpd.matchingComplete();
+			}
 		}
     	
 	}
@@ -434,7 +438,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		    (sourceOntology.getInstances() == null || targetOntology.getInstances() == null) ) 
 		{
 			alignInstances = false;
-			if( isProgressDisplayed() ) progressDisplay.appendToReport("Instances were NOT matched since they were not loaded properly.");
+			for( MatchingProgressDisplay mpd : progressDisplays ) {
+				mpd.appendToReport("Instances were NOT matched since they were not loaded properly.");
+			}
 		}
 		
 		if(alignInstances && !this.isCancelled() ) {
@@ -1546,9 +1552,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			
 			ex2.printStackTrace();
 			this.cancel(true);
-			if( progressDisplay != null ) {
-				progressDisplay.appendToReport(report);
-				progressDisplay.matchingComplete(); 
+			for( MatchingProgressDisplay mpd : progressDisplays ) {
+				mpd.appendToReport(report);
+				mpd.matchingComplete(); 
 			}
 		}
 		catch(Exception ex) {
@@ -1560,9 +1566,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			
 			ex.printStackTrace();
 			this.cancel(true);
-			if( progressDisplay != null ) {
-				progressDisplay.appendToReport(report);
-				progressDisplay.matchingComplete(); 
+			for( MatchingProgressDisplay mpd : progressDisplays ) {
+				mpd.appendToReport(report);
+				mpd.matchingComplete(); 
 			}
 		}
 		return null;
@@ -1579,22 +1585,25 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
      * Need to keep track of the progress dialog we have because right now, there is no button to close it, so we must make it close automatically.
      * @param p
      */
-	public void setProgressDisplay( MatchingProgressDisplay p ) {
-		if( progressDisplay != null && p != progressDisplay ) {
-			removePropertyChangeListener(progressDisplay);
-		}
-		progressDisplay = p;
-		if( p != null ) addPropertyChangeListener(p);
+	public void addProgressDisplay( MatchingProgressDisplay p ) {		
+		progressDisplays.add(p);
+		addPropertyChangeListener(p);
 	}
 	
+	public void removeProgressDisplay( MatchingProgressDisplay p ) {
+		progressDisplays.remove(p);
+		removePropertyChangeListener(p);
+	}
 	
     /**
      * getProgressDisplay
      * @param p
      */
-	public MatchingProgressDisplay getProgressDisplay() {
-		return progressDisplay;
+	public MatchingProgressDisplay getProgressDisplay(int index) {
+		return progressDisplays.get(index);
 	}
+	
+	public List<MatchingProgressDisplay> getProgressDisplays() { return progressDisplays; }
 	
 	/**
 	 * This method sets up stepsDone and stepsTotal.  Override this method if you have a special way of computing the values.
@@ -1665,12 +1674,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			
 			float percent = stepsTotal == 0 ? 0f : ((float)stepsDone / (float)stepsTotal);
 			
-			progressDisplay.clearReport();
-			progressDisplay.appendToReport( "Percentage done: " + Float.toString(percent* 100.0f)+ "%\n" +
+			for( MatchingProgressDisplay mpd : progressDisplays ) {
+				mpd.clearReport();
+				mpd.appendToReport( "Percentage done: " + Float.toString(percent* 100.0f)+ "%\n" +
 											"Current duration: " + Utility.getFormattedTime(totalelapsed) + "\n" +  
 											"Time left ~: " + Utility.getFormattedTime(estimatedtimeleft) + "\n" +
 											"Total Duration ~: " + formattedTime + "\n" +
 											"Mappings >= threshold: " + tentativealignments + "\n");
+			}
 			
 			lastTime = currentTime;
 			lastStepsDone = stepsDone;
@@ -1720,7 +1731,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 * so we have to check both conditions
 	 */
 	public boolean isProgressDisplayed() {
-		return progressDisplay != null;  // don't need to check for the global static variable, since if it's false, we should never have to call this function
+		return progressDisplays.size() > 0;  // don't need to check for the global static variable, since if it's false, we should never have to call this function
 	}
 
 	public void setPropertiesAlignmentSet(Alignment<Mapping> propertiesAlignmentSet) {
@@ -1931,7 +1942,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 							  matcher.saveThreadResult(i, j, mapping, matrix);
 						  }
 						  
-						  if( matcher.getProgressDisplay() != null ) {
+						  if( matcher.isProgressDisplayed() ) {
 							  matcher.stepDone();
 							  matcher.updateProgress();
 							  if( mapping != null && mapping.getSimilarity() >= param.threshold ) { 
