@@ -49,4 +49,10 @@ public class GlobalFixedMethod extends ClusteringMethod {
 		return null;
 	}
 
+	@Override
+	public void cluster() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

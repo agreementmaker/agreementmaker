@@ -1,5 +1,7 @@
 package am.evaluation.clustering;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,16 +15,23 @@ import am.visualization.MatcherAnalyticsPanel.VisualizationType;
  * @author Cosmin Stroe
  */
 public abstract class ClusteringMethod {
+	
+	protected final PropertyChangeSupport propertyChangeSupport;
 
 	protected List<AbstractMatcher> availableMatchers = new ArrayList<AbstractMatcher>();
 	
 	public ClusteringMethod(List<AbstractMatcher> availableMatchers) {
+		
+		propertyChangeSupport = new PropertyChangeSupport(this);
+		
 		if( availableMatchers != null ) 
 			this.availableMatchers.addAll(availableMatchers);
 	}
 
 	public void setAvailableMatchers(List<AbstractMatcher> availableMatchers) {	this.availableMatchers = availableMatchers; }
 	public List<AbstractMatcher> getAvailableMatchers() { return availableMatchers; }
+	
+	public abstract void cluster();
 	
 	/**
 	 * Get the cluster of a mapping that is identified by its row and column in the matrix.
@@ -54,5 +63,11 @@ public abstract class ClusteringMethod {
 	 */
 	public abstract ClusteringParametersPanel getParametersPanel();
 
+	public void addPropertyChangeListener( PropertyChangeListener listener ) {
+		propertyChangeSupport.addPropertyChangeListener(listener);
+	}
 	
+	public void removePropertyChangeListener( PropertyChangeListener listener ) {
+		propertyChangeSupport.removePropertyChangeListener(listener);
+	}
 }

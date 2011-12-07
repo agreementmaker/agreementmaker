@@ -1,7 +1,5 @@
 package am.evaluation.clustering.gvm;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,19 +28,26 @@ public class GVM_Clustering extends ClusteringMethod {
 	DblClusters<List<double[]>> clusters;
 	List<DblResult<List<double[]>>> results;
 
+	int numClusters;
 	
-	public GVM_Clustering(List<AbstractMatcher> matchers) {
+	public GVM_Clustering(List<AbstractMatcher> matchers, int numClusters) {
 		super(matchers);
-		
+		this.numClusters = numClusters;
+	}
+
+	@Override
+	public void cluster() {
 		Collections.shuffle(availableMatchers);
 		
 		int rows = availableMatchers.get(0).getClassesMatrix().getRows();
 		int cols = availableMatchers.get(0).getClassesMatrix().getColumns();
 		
-		clusters = new DblClusters<List<double[]>>( availableMatchers.size(), 20);
+		clusters = new DblClusters<List<double[]>>( availableMatchers.size(), numClusters);
 		
 		clusters.setKeyer(new DblListKeyer<double[]>());
 		
+		int progress = 0, newProgress = 0;
+		propertyChangeSupport.firePropertyChange("progress", progress, newProgress);
 		
 		// create the points and add them to the cluster
 		for( int i = 0; i < rows; i++ ) {
@@ -63,16 +68,22 @@ public class GVM_Clustering extends ClusteringMethod {
 				key.add(currentKey);
 				clusters.add(1.0, currentPoint, key);
 			}
-			System.out.println("i: " + i);
+			
+			// Take care of the progress.
+			newProgress = (i*100)/rows;
+			propertyChangeSupport.firePropertyChange("progress", progress, newProgress);
+			progress = newProgress;
 		}
+		
+		propertyChangeSupport.firePropertyChange("progress", progress, 100);
 		
 		results = clusters.results();
 	}
-
+	
 	@Override
 	public Cluster<Mapping> getCluster(int row, int col, VisualizationType t) {
 		
-		try {
+/*		try {
 			FileWriter writer = new FileWriter("clustered.txt");
 			final List<DblResult<List<double[]>>> results = clusters.results();
 			for (int i = 0; i < results.size(); i++) {
@@ -89,7 +100,7 @@ public class GVM_Clustering extends ClusteringMethod {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 
 
 		
@@ -100,6 +111,8 @@ public class GVM_Clustering extends ClusteringMethod {
 	@Override public ClusteringParameters getParameters() { return null; }
 	@Override public ClusteringParametersPanel getParametersPanel() { return null; }
 	@Override public void setParameters(ClusteringParameters params) {}
+	
+	public List<DblResult<List<double[]>>> getClusters() { return clusters.results(); }
 	
 	public static void main(String[] args) {
 		

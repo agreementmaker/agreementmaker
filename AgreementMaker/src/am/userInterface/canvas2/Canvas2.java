@@ -372,7 +372,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			while( graphIter11c.hasNext() ) {
 				CanvasGraph gr = graphIter11c.next();
 				if( gr.getID() == matcherID11c ) {
-					AbstractMatcher a = Core.getInstance().getMatcherByID(matcherID11c);
+					AbstractMatcher a = e.getMatcher();
 					Color newColor = a.getColor();
 					
 					Iterator<Canvas2Edge> edgesIter = gr.edges();

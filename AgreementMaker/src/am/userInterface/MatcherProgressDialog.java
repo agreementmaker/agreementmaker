@@ -162,7 +162,7 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 	 */
 	public void propertyChange(PropertyChangeEvent evt) {		
 		
-        if ("progress" == evt.getPropertyName()) {
+        if ( evt.getPropertyName().equals("progress") ) {
             int progress = (Integer) evt.getNewValue();
             progressBar.setValue(progress);
         }

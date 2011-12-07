@@ -2,6 +2,7 @@ package am.userInterface;
 
 
 
+import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -42,7 +44,7 @@ import am.app.ontology.profiling.ProfilingDialog;
 import am.app.ontology.profiling.metrics.OntologyMetric;
 import am.app.ontology.profiling.metrics.OntologyMetricsRegistry;
 import am.app.userfeedback.ui.UFLControlGUI;
-import am.evaluation.clustering.gvm.GVM_Clustering;
+import am.evaluation.clustering.gvm.GVM_Clustering_Panel;
 import am.extension.ClusteringEvaluation.ClusteringEvaluationPanel;
 import am.tools.LexiconLookup.LexiconLookupPanel;
 import am.tools.ThresholdAnalysis.ThresholdAnalysis;
@@ -415,9 +417,15 @@ public class UIMenu implements ActionListener {
 					selectedMatchers.add(matcherInstances.get(i));
 				}
 				
-				GVM_Clustering gvm = new GVM_Clustering(selectedMatchers);
+				GVM_Clustering_Panel gvm = new GVM_Clustering_Panel(selectedMatchers);
 				
-				gvm.getCluster(0, 0, VisualizationType.CLASS_MATRIX);
+				JFrame frm = new JFrame();
+				frm.setLayout(new BorderLayout());
+				frm.add(gvm, BorderLayout.CENTER);
+				frm.pack();
+				frm.setLocationRelativeTo(null);
+				frm.setVisible(true);
+		
 			}
 			else if(obj == clearAll) {
 				controlPanel.clearAll();

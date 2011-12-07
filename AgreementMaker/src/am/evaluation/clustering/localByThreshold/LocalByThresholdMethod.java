@@ -32,6 +32,9 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 		
 	}
 	
+	@Override 
+	public void cluster() {}
+	
 	@Override public void setParameters(ClusteringParameters params) { this.params = (LocalByThresholdParameters) params; }
 	@Override public ClusteringParameters getParameters() { return params; }
 	@Override public ClusteringParametersPanel getParametersPanel() { return new LocalByThresholdPanel(); }
