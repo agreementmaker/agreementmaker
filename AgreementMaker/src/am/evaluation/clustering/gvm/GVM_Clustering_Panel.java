@@ -196,11 +196,25 @@ public class GVM_Clustering_Panel extends JPanel implements PropertyChangeListen
 						
 						txtResult.setText("Clustering results:\n\n");
 						txtResult.append("             | Cluster Size |   # correct  | % correct | Recall |\n");
+						
+						int selClusterSize = 0, selClusterCorrect = 0;
+						
 						for( ClusterData cd : clusterData ) {
-							txtResult.append(String.format("cluster %4d | %12d | %12d |   %2.2f   | %3.2f |\n", 
-									cd.clusterID, cd.clusterSize, cd.correctMappings, (double) cd.correctMappings / (double) cd.clusterSize,
-									(double) cd.correctMappings / (double) classesAlignment.size()) );
+							double recall = (double) cd.correctMappings / (double) classesAlignment.size();
+							double correct = (double) cd.correctMappings / (double) cd.clusterSize;
+							
+							if( correct > 0.5d ) {
+								selClusterSize += cd.clusterSize;
+								selClusterCorrect += cd.correctMappings;
+							}
+							
+							txtResult.append(String.format("cluster %4d | %12d | %12d |   %2.3f   | %1.3f |\n",
+									cd.clusterID, cd.clusterSize, cd.correctMappings, correct, recall));
 						}
+						
+						txtResult.append("\n\nSelecting clusters with %correct > 0.5:\n\n");
+						txtResult.append(String.format("%% correct: %1.3f\n", (double)selClusterCorrect/(double)selClusterSize ));
+						txtResult.append(String.format("Recall: %1.3f\n", (double)selClusterCorrect/(double)classesAlignment.size() ));
 						
 						prgClustering.setIndeterminate(false);
 						prgClustering.setEnabled(false);
