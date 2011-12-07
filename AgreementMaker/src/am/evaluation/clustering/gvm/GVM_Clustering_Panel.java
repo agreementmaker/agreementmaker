@@ -30,6 +30,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
+import am.app.ontology.Node;
 
 import com.tomgibara.cluster.gvm.dbl.DblResult;
 
@@ -166,6 +167,8 @@ public class GVM_Clustering_Panel extends JPanel implements PropertyChangeListen
 						prgClustering.setIndeterminate(true);
 						
 						AbstractMatcher referenceMatcher = Core.getInstance().getMatcherInstances().get(cmbReference.getSelectedIndex());
+						List<Node> sourceClasses = referenceMatcher.getSourceOntology().getClassesList();
+						List<Node> targetClasses = referenceMatcher.getTargetOntology().getClassesList();
 						SimilarityMatrix classesMatrix = referenceMatcher.getClassesMatrix();
 						Alignment<Mapping> classesAlignment = referenceMatcher.getClassAlignmentSet();
 						
@@ -181,9 +184,18 @@ public class GVM_Clustering_Panel extends JPanel implements PropertyChangeListen
 							cd.clusterID = i;
 							cd.clusterSize = clusterKey.size();
 							cd.correctMappings = 0;
-							for( double[] point : clusterKey ) {
-								if( classesMatrix.getSimilarity( (int)point[point.length-2], (int)point[point.length-1]) > 0.0d )
+							
+							for( int j = 0; j < clusterKey.size(); j++ ) {
+								double[] point = clusterKey.get(j);
+								
+								Node sourceNode = sourceClasses.get((int)point[point.length-2]);
+								Node targetNode = targetClasses.get((int)point[point.length-1]);
+								
+								if( classesAlignment.contains( sourceNode, targetNode) != null )  {
 									cd.correctMappings++;
+								}
+								/*if( classesMatrix.getSimilarity( (int)point[point.length-2], (int)point[point.length-1]) > 0.0d )
+									cd.correctMappings++;*/
 							}
 							
 							clusterData.add(cd);
