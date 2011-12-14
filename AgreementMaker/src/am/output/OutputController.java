@@ -1,7 +1,9 @@
 package am.output;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -206,19 +208,17 @@ public class OutputController {
 			p.close();
 			out.close();
 		} else {
-			FileOutputStream out = new FileOutputStream(fullFileName);
-			PrintStream p = new PrintStream( out );
+			BufferedWriter bfr = new BufferedWriter(new FileWriter(new File(fullFileName)));
 			
 			for( int row = 0; row < matrix.getRows(); row++ ) {
 				for( int col = 0; col < matrix.getColumns(); col++ ) {
 					if( skipZeros && matrix.getSimilarity( row , col) == 0.0d ) continue;
-					p.println( row + "," + col + "," + Utility.roundDouble( matrix.getSimilarity( row , col), 4) );
+					bfr.write(row + "," + col + "," + Utility.roundDouble( matrix.getSimilarity( row , col), 4) + "\n");
 				}
-				if( doIsolines ) p.println(""); // blank lines between scans
+				if( doIsolines ) bfr.write("\n"); // blank lines between scans
 			}
 			
-			p.close();
-			out.close();
+			bfr.close();
 		}
 		
 		/*
