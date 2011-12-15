@@ -210,10 +210,13 @@ public class OutputController {
 		} else {
 			BufferedWriter bfr = new BufferedWriter(new FileWriter(new File(fullFileName)));
 			
+			bfr.write(matrix.getRows() + "\n");
+			bfr.write(matrix.getColumns() + "\n");
+			
 			for( int row = 0; row < matrix.getRows(); row++ ) {
 				for( int col = 0; col < matrix.getColumns(); col++ ) {
-					if( skipZeros && matrix.getSimilarity( row , col) == 0.0d ) continue;
-					bfr.write(row + "," + col + "," + Utility.roundDouble( matrix.getSimilarity( row , col), 4) + "\n");
+					//if( skipZeros && matrix.getSimilarity( row , col) == 0.0d ) continue;
+					bfr.write(Utility.roundDouble( matrix.getSimilarity( row , col), 4) + "\n");
 				}
 				if( doIsolines ) bfr.write("\n"); // blank lines between scans
 			}
