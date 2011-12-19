@@ -1,21 +1,32 @@
 package am.output;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SimpleSimilarityMatrix;
 import am.utility.Capsule;
 /**
  * Q: What do the methods of this class do? - Cosmin. (Oct 13th, 2010)
@@ -232,4 +243,61 @@ public class OutputController {
 		*/
 	}
 
+	public static SimilarityMatrix readMatrixFromCSV (String filename, boolean isCompressed){
+		InputStream is = null; 
+		SimpleSimilarityMatrix matrix = null;
+		if (isCompressed == true){
+			
+			try {
+				FileInputStream file = new FileInputStream(filename);
+				BufferedInputStream myBR = new BufferedInputStream(file);
+				is = new BZip2CompressorInputStream(myBR);
+
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}else{
+			try {
+				FileInputStream file = new FileInputStream(filename);
+				is = new BufferedInputStream(file);
+
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		try {
+			InputStreamReader iSR = new InputStreamReader(is);
+			BufferedReader br = new BufferedReader(iSR);
+			int rows = Integer.parseInt(br.readLine());
+			int cols = Integer.parseInt(br.readLine());
+			
+			matrix = new SimpleSimilarityMatrix(rows, cols, alignType.aligningClasses);
+			
+			for(int i = 0; i<rows ; i++)
+			{
+				for(int j=0; j<cols; j++){
+					matrix.setSimilarity(i, j, Double.parseDouble(br.readLine()));
+				}
+			}
+			br.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return matrix;
+		
+	}
 }

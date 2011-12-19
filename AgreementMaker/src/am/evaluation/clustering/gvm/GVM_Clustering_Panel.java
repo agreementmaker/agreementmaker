@@ -172,10 +172,17 @@ public class GVM_Clustering_Panel extends JPanel implements PropertyChangeListen
 						SimilarityMatrix classesMatrix = referenceMatcher.getClassesMatrix();
 						Alignment<Mapping> classesAlignment = referenceMatcher.getClassAlignmentSet();
 						
+						
+						// list of clusters
+						
 						List<DblResult<List<double[]>>> clusters = gvmcl.getClusters();
-						
+						//
 						List<ClusterData> clusterData = new ArrayList<ClusterData>();
+						//loop thru clusters, for each cluster, there is a cluster KEY [for each key we have a 
+						// row and column of mapping. keys is a list, of all of the mappings in the cluster
+						// and the mappings are identified by row and column stored in array of doubles. 
 						
+						// every mapping gets a number inside a NEW matrix 
 						for( int i = 0; i < clusters.size(); i++ ) {
 							DblResult<List<double[]>> currentCluster = clusters.get(i);
 							List<double[]> clusterKey = currentCluster.getKey();

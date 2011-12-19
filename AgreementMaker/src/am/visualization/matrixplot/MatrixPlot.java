@@ -154,6 +154,7 @@ public class MatrixPlot extends JPanel {
 				for( Mapping map : viewCluster ) {
 					int x1 = map.getSourceKey() * squareSize;
 					int y1 = map.getTargetKey() * squareSize;
+					
 					g.fillRect(x1, y1, squareSize, squareSize);
 				}
 				
