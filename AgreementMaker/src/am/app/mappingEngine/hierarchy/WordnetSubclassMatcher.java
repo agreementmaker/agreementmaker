@@ -77,7 +77,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 	public enum NormalizationFunction { HYPERNYMS_COUNT, HYPERNYMS_LOG, NONE };
 	private NormalizationFunction normalizationFunction = NormalizationFunction.HYPERNYMS_LOG;
 	
-	boolean writeWordnetFiles = true;
+	boolean writeWordnetFiles = false;
 	
 	boolean useSuperclasses = true;
 	
@@ -91,7 +91,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 	public WordnetSubclassMatcher(){
 		initWordnet();
 		log = Logger.getLogger(WordnetSubclassMatcher.class);
-		//log.setLevel(Level.DEBUG);
+		log.setLevel(Level.DEBUG);
 		
 		if(writeWordnetFiles){
 			viz = new WordnetVisualizer();
@@ -149,8 +149,13 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 				//log.debug("targetComment: " + targetNode.getComment());
 				log.debug(targetScored);
 				
-				if(!useRightWord || !compoundNames.contains(targetNode.getLocalName())){
-					matchSub = synsetsInHypernymsSimilarity(sourceScored, targetScored, sourceNode, targetNode, true);	
+				boolean sourceCompound = compoundNames.contains(targetNode.getLocalName());				
+				boolean targetCompound = compoundNames.contains(sourceNode.getLocalName());
+				
+				if(!useRightWord || !sourceCompound){
+					matchSub = synsetsInHypernymsSimilarity(sourceScored, targetScored, sourceNode, targetNode, true);
+					
+					if(sourceCompound) matchSub /= 3;					
 					
 					log.debug("HypScore ST: " + matchSub);
 					
@@ -159,8 +164,10 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 					
 				}
 				
-				if(!useRightWord || !compoundNames.contains(sourceNode.getLocalName())){
+				if(!useRightWord || !targetCompound){
 					matchSuper = synsetsInHypernymsSimilarity(targetScored, sourceScored, targetNode, sourceNode, false);	
+					
+					if(targetCompound) matchSub /= 3;
 					
 					if(matchSuper > hypernymsThreshold)
 						newMapping(sourceNode, targetNode, matchSuper, MappingRelation.SUBCLASS, "Wordnet mediator TS ");
@@ -669,9 +676,15 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 		
 		if(normalizationFunction == NormalizationFunction.HYPERNYMS_COUNT)
 			retValue /= hypernymsCount;
-		else if(normalizationFunction == NormalizationFunction.HYPERNYMS_LOG)
-			retValue /= Math.log(hypernymsCount);
-		
+		else if(normalizationFunction == NormalizationFunction.HYPERNYMS_LOG){
+			System.out.println(hypernymsCount);
+			double log = Math.log(hypernymsCount);
+			System.out.println(hypernymsSet);
+			System.out.println("log: " + log);
+			retValue /= log;
+			System.out.println("sim: " + retValue);			
+		}
+			
 		return retValue;
 	}
 	

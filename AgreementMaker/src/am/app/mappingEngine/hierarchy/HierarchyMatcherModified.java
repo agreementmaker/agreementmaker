@@ -47,17 +47,17 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	
 	ArrayList<OntModel> otherOntologies;
 	
-//	boolean useWordnet = true;
-//	boolean useInput = true;
-//	boolean useOtherOntologies = true;
-//	boolean useCompoundWords = true;
-//	boolean useSpellingsMatcher = true;
-	
 	boolean useWordnet = true;
-	boolean useInput = false;
-	boolean useOtherOntologies = false;
-	boolean useCompoundWords = false;
+	boolean useInput = true;
+	boolean useOtherOntologies = true;
+	boolean useCompoundWords = true;
 	boolean useSpellingsMatcher = true;
+	
+//	boolean useWordnet = false;
+//	boolean useInput = false;
+//	boolean useOtherOntologies = false;
+//	boolean useCompoundWords = false;
+//	boolean useSpellingsMatcher = false;
 	
 	Logger log;
 	
