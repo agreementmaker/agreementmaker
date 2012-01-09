@@ -128,6 +128,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/** Sometimes it can be useful to access the reference alignment directly from the matcher for debugging */
 	protected List<MatchingPair> referenceAlignment;
 	
+	/**
+	 * 
+	 */
+	protected boolean useInstanceSchemaMappings;
 	
 	public void setPerformSelection(boolean performSelection) {
 		this.performSelection = performSelection;
@@ -1966,5 +1970,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	  
 	  public synchronized void saveThreadResult(int source, int target, Mapping mapping, SimilarityMatrix matrix ) {
 		  matrix.set(source, target, mapping);
+	  }
+	  
+	  public boolean isUseInstanceSchemaMappings() {
+			return useInstanceSchemaMappings;
+		}
+	 
+	  public void setUseInstanceSchemaMappings(boolean useInstanceSchemaMappings) {
+			this.useInstanceSchemaMappings = useInstanceSchemaMappings;
 	  }
 }
