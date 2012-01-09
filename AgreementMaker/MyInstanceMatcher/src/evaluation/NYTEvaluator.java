@@ -18,7 +18,7 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 
-import am.app.mappingEngine.MappingsOutput;
+import am.app.mappingEngine.AlignmentsOutput;
 import am.app.mappingEngine.instanceMatcher.NYTConstants;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -67,10 +67,10 @@ public class NYTEvaluator {
 		
 		if(matchingDBPedia){
 			cleanDBPediaMappings(toEvaluate);
-			MappingsOutput.writeMappingsOnDisk(outputFilename , toEvaluate);
+			AlignmentsOutput.writeMappingsOnDisk(outputFilename , toEvaluate);
 		}
 		
-		MappingsOutput.alignmentsToOutput(toEvaluate);
+		AlignmentsOutput.alignmentsToOutput(toEvaluate);
 		
 		boolean found;
 		for (int i = 0; i < toEvaluate.size(); i++) {

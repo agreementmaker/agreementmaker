@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import am.app.mappingEngine.instanceMatcher.LabelUtils;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.Instance;
+import am.utility.referenceAlignment.AlignmentUtilities;
 
 
 public class BaseInstanceMatcher extends AbstractMatcher{
@@ -34,7 +35,7 @@ public class BaseInstanceMatcher extends AbstractMatcher{
 		String solutionURI = null;
 		
 		if(referenceAlignment != null)
-			solutionURI = ReferenceAlignmentUtilities.candidatesContainSolution(referenceAlignment, 
+			solutionURI = AlignmentUtilities.candidatesContainSolution(referenceAlignment, 
 					sourceInstance.getUri(), targetCandidates);
 		
 		boolean foundSolution = false;

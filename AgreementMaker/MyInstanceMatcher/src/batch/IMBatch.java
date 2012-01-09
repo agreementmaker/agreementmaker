@@ -9,7 +9,6 @@ import evaluation.NYTEvaluator;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.BaseInstanceMatcher;
 import am.app.mappingEngine.InstanceMatcherFede;
-import am.app.mappingEngine.ReferenceAlignmentUtilities;
 import am.app.mappingEngine.instanceMatcher.NYTConstants;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -23,6 +22,7 @@ import am.app.ontology.instance.SparqlInstanceDataset;
 import am.app.ontology.instance.endpoint.EndpointRegistry;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition;
+import am.utility.referenceAlignment.AlignmentUtilities;
 
 public class IMBatch {	
 	String report = "";
@@ -67,7 +67,7 @@ public class IMBatch {
 		matcher.setTargetOntology(targetOnt);
 		matcher.setThreshold(threshold);
 		
-		List<MatchingPair> refPairs = ReferenceAlignmentUtilities.getMatchingPairs(referenceFile);
+		List<MatchingPair> refPairs = AlignmentUtilities.getMatchingPairsOAEI(referenceFile);
 		
 		matcher.setReferenceAlignment(refPairs);
 				
@@ -239,7 +239,7 @@ public class IMBatch {
 		matcher.setTargetOntology(targetOnt);
 		matcher.setThreshold(threshold);
 		
-		List<MatchingPair> refPairs = ReferenceAlignmentUtilities.getMatchingPairs(referenceFile);
+		List<MatchingPair> refPairs = AlignmentUtilities.getMatchingPairsOAEI(referenceFile);
 		
 		matcher.setReferenceAlignment(refPairs);
 		
@@ -373,7 +373,7 @@ public class IMBatch {
 		matcher.setTargetOntology(targetOnt);
 		matcher.setThreshold(threshold);
 		
-		List<MatchingPair> refPairs = ReferenceAlignmentUtilities.getMatchingPairs(referenceFile);
+		List<MatchingPair> refPairs = AlignmentUtilities.getMatchingPairsOAEI(referenceFile);
 				
 		matcher.setReferenceAlignment(refPairs);
 		
@@ -426,7 +426,7 @@ public class IMBatch {
 		matcher.setTargetOntology(targetOnt);
 		matcher.setThreshold(threshold);
 		
-		List<MatchingPair> refPairs = ReferenceAlignmentUtilities.getMatchingPairs(referenceFile);
+		List<MatchingPair> refPairs = AlignmentUtilities.getMatchingPairsOAEI(referenceFile);
 				
 		matcher.setReferenceAlignment(refPairs);
 		
@@ -445,7 +445,7 @@ public class IMBatch {
 		
 		IMBatch batch = new IMBatch();
 
-//		batch.runFreebaseOrganizationsTest();
+		batch.runFreebaseOrganizationsTest();
 		
 //		batch.runFreebaseTest();
 		
@@ -457,7 +457,7 @@ public class IMBatch {
 	
 //		batch.runDBPediaOrganizationsTest();
 	
-		System.out.println(batch.runDBPediaOnDiskTest());
+//		System.out.println(batch.runDBPediaOnDiskTest());
 		
 		//System.out.println(batch.runDBPediaApiTest());
 	}

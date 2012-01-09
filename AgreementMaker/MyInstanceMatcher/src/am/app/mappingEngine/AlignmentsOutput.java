@@ -10,7 +10,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.output.AlignmentOutput;
 
-public class MappingsOutput {
+public class AlignmentsOutput {
 	
 	public static String alignmentsToOutput(List<MatchingPair> mappings){
 		AlignmentOutput ao = new AlignmentOutput(null);
@@ -20,7 +20,7 @@ public class MappingsOutput {
         for (int i = 0, n = mappings.size(); i < n; i++) {
             MatchingPair mapping = mappings.get(i);
             String e1 = StringEscapeUtils.escapeXml(mapping.sourceURI);
-            String e2 = StringEscapeUtils.escapeXml(mapping.targetURI);      
+            String e2 = StringEscapeUtils.escapeXml(mapping.targetURI);
             //String e1 = mapping.sourceURI;
             //String e2 = mapping.targetURI;
             

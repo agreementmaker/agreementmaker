@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.ibm.icu.text.DecimalFormat;
-import com.ibm.xml.parser.Match;
 
 import classification.Classificator;
 import classification.TestSet;
@@ -25,9 +24,8 @@ import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.instanceMatcher.LabelUtils;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.ontology.instance.Instance;
+import am.utility.referenceAlignment.AlignmentUtilities;
 
 public class InstanceMatcherFede extends AbstractMatcher {
 
@@ -93,7 +91,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		else if(size > 1) ambiguous++;
 		
 		
-		if(referenceAlignment != null && ReferenceAlignmentUtilities.candidatesContainSolution(referenceAlignment, sourceInstance.getUri(), targetCandidates) != null)
+		if(referenceAlignment != null && AlignmentUtilities.candidatesContainSolution(referenceAlignment, sourceInstance.getUri(), targetCandidates) != null)
 			solvable++;
 		
 		
@@ -426,7 +424,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		}
 		
 		System.out.println("Writing on file...");
-		String output = MappingsOutput.alignmentsToOutput(instanceAlignmentSet);
+		String output = AlignmentsOutput.alignmentsToOutput(instanceAlignmentSet);
 		FileOutputStream fos;
 		
 		try {
@@ -451,7 +449,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 			System.out.println("Stored successfully");
 		}
 		
-		MappingsOutput.writeMappingsOnDisk(outputFilename, instanceAlignmentSet);
+		AlignmentsOutput.writeMappingsOnDisk(outputFilename, instanceAlignmentSet);
 		
 	}
 	
