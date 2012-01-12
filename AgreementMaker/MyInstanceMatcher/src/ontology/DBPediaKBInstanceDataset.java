@@ -29,10 +29,12 @@ public class DBPediaKBInstanceDataset extends KnowledgeBaseInstanceDataset{
 	
 	Logger log;
 	
+	boolean useInfoboxes = true;
+	
 	public DBPediaKBInstanceDataset(String xmlFile, String datasetId) {
 		super(xmlFile, datasetId);
 		log = Logger.getLogger(DBPediaKBInstanceDataset.class);
-		log.setLevel(Level.ERROR);
+		log.setLevel(Level.DEBUG);
 	}
 
 	@Override
@@ -100,11 +102,19 @@ public class DBPediaKBInstanceDataset extends KnowledgeBaseInstanceDataset{
 				
 				//TODO give the individual a type
 				Instance instance = new Instance(individual.getURI(), null);
-				Resource ind = labels.getResource(individual.getURI());
-				List<Statement> stmts = labels.listStatements(ind, (Property) null, (RDFNode) null).toList();
+				
+				if(useInfoboxes){
+					Resource ind = infoboxes.getResource(individual.getURI());
+					List<Statement> stmts = infoboxes.listStatements(ind, (Property) null, (RDFNode) null).toList();
+					log.debug(stmts.toString().replaceAll("],", "]\n"));
+					instance.setStatements(stmts);
+				}
+				else {
+					//TODO prepare the statements in case of no infoboxes available
+				}
+				
 				String label = individual.getLabel("");
 				instance.setProperty("label", label);
-				instance.setStatements(stmts);
 				instances.add(instance);
 			}		
 		}
@@ -168,7 +178,9 @@ public class DBPediaKBInstanceDataset extends KnowledgeBaseInstanceDataset{
 		String xmlFile = new File(System.getProperty("user.dir")).getParent() + "/Datasets/dbpedia.xml";
 		String datasetId = "dbp_labels";
 		DBPediaKBInstanceDataset KBdataset = new DBPediaKBInstanceDataset(xmlFile, datasetId);		
-		System.out.println(KBdataset.getCandidateInstances("james ivory", null).toString().replaceAll(", ", "\n"));
+		System.out.println(KBdataset.getCandidateInstances("michael schumacher", null).toString().replaceAll(", ", "\n"));
+		System.out.println(KBdataset.getCandidateInstances("monza", null).toString().replaceAll(", ", "\n"));
+		System.out.println(KBdataset.getCandidateInstances("CNBC", null).toString().replaceAll(", ", "\n"));
 	}
 	
 }
