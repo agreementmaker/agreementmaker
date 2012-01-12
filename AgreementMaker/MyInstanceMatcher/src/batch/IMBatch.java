@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import ontology.DBPediaKBInstanceDataset;
+import ontology.KnowledgeBaseInstanceDataset;
+
 import evaluation.NYTEvaluator;
 
 import am.app.mappingEngine.AbstractMatcher;
@@ -29,8 +32,7 @@ public class IMBatch {
 		
 	//AbstractMatcher matcher = new BaseInstanceMatcher();
 	AbstractMatcher matcher = new InstanceMatcherFede();
-	
-	
+		
 	public String singleFreebaseTest(String sourceFile, String alignmentFile, String referenceFile, double threshold, String cacheFile) throws Exception{
  		OntologyDefinition sourceDef = new OntologyDefinition();
 		sourceDef.loadOntology = false;
@@ -63,6 +65,8 @@ public class IMBatch {
 		FreebaseInstanceDataset dataset = (FreebaseInstanceDataset) targetOnt.getInstances();
 		dataset.setCacheFile(cacheFile);
 		
+		matcher.setUseInstanceSchemaMappings(false);
+		
 		matcher.setSourceOntology(sourceOnt);
 		matcher.setTargetOntology(targetOnt);
 		matcher.setThreshold(threshold);
@@ -72,7 +76,9 @@ public class IMBatch {
 		matcher.setReferenceAlignment(refPairs);
 				
 		matcher.match();
-						
+		
+		dataset.persistCache();
+					
 		report += NYTEvaluator.evaluate("alignment.rdf", referenceFile, threshold) + "\n";
 		return report;
 	}
@@ -121,12 +127,20 @@ public class IMBatch {
 		GeoNamesInstanceDataset dataset = (GeoNamesInstanceDataset) targetOnt.getInstances();
 		dataset.setCacheFile(cacheFile);
 		
+		matcher.setUseInstanceSchemaMappings(false);
+		
 		InstanceMatcherFede matcher = new InstanceMatcherFede();
 		matcher.setSourceOntology(sourceOnt);
 		matcher.setTargetOntology(targetOnt);
 		matcher.setThreshold(threshold);
 		
+		List<MatchingPair> refPairs = AlignmentUtilities.getMatchingPairsOAEI(referenceFile);
+		
+		matcher.setReferenceAlignment(refPairs);
+		
 		matcher.match();
+		
+		dataset.persistCache();
 		
 		report += NYTEvaluator.evaluate("alignment.rdf", referenceFile, threshold) + "\n";
 		
@@ -302,7 +316,7 @@ public class IMBatch {
 	
 	public void runFreebaseOrganizationsTest() throws Exception{
 		String cwd = System.getProperty("user.dir") + File.separator;
-		double threshold = 0.55;
+		double threshold = 0.50;
 		
 		String report = ""; 
 		
@@ -313,7 +327,7 @@ public class IMBatch {
 				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", 
 				NYTConstants.REF_FREEBASE_ORGANIZATION, 
 				threshold, 
-				"newFreebaseCacheOrganizationsNoType.ser");
+				"freebaseOrgUntypedStopPar.ser");
 		
 		
 		System.out.println(report);
@@ -332,7 +346,7 @@ public class IMBatch {
 				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf",
 				NYTConstants.REF_FREEBASE_LOCATION,
 				threshold,
-				"freebaseCacheLocations.ser");
+				"freebaseLocUntypedStopPar.ser");
 		
 		//System.out.println(report);
 	}
@@ -445,11 +459,15 @@ public class IMBatch {
 		
 		IMBatch batch = new IMBatch();
 
-		batch.runFreebaseOrganizationsTest();
+//		batch.runFreebaseOrganizationsTest();
+		
+//		batch.runFreebasePeopleTest();
+		
+//		batch.runFreebaseLocationsTest();
 		
 //		batch.runFreebaseTest();
 		
-//		batch.runGeoNamesTest();
+		batch.runGeoNamesTest();
 	
 //		batch.runDBPediaTest();
 		
@@ -460,6 +478,26 @@ public class IMBatch {
 //		System.out.println(batch.runDBPediaOnDiskTest());
 		
 		//System.out.println(batch.runDBPediaApiTest());
+	}
+
+
+	private void runFreebasePeopleTest() throws Exception {
+		String cwd = System.getProperty("user.dir") + File.separator;
+		double threshold = 0.1;
+		
+		String report = ""; 
+		
+		//newFreebaseCacheOrganizationsNoType.ser
+		//freebaseCacheOrganizations.ser
+		
+		report += singleFreebaseTest(cwd + NYTConstants.NYT_PEOPLE_ARTICLES, 
+				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", 
+				NYTConstants.REF_FREEBASE_PEOPLE, 
+				threshold, 
+				"freebasePeopleUntypedStopPar.ser");
+		
+		
+		System.out.println(report);
 	}
 
 }

@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -65,6 +66,8 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		
 		log = Logger.getLogger(InstanceMatcherFede.class);
 		
+		//log.setLevel(Level.DEBUG);
+		
 		wordNetUtils = new WordNetUtils();
 		
 		performSelection = false;
@@ -91,7 +94,8 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		else if(size > 1) ambiguous++;
 		
 		
-		if(referenceAlignment != null && AlignmentUtilities.candidatesContainSolution(referenceAlignment, sourceInstance.getUri(), targetCandidates) != null)
+		if(referenceAlignment != null && AlignmentUtilities.candidatesContainSolution(referenceAlignment, 
+				sourceInstance.getUri(), targetCandidates) != null)
 			solvable++;
 		
 		
@@ -99,13 +103,14 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		//System.out.println(targetCandidates);
 		
 		String sourceLabel = sourceInstance.getSingleValuedProperty("label");
-		if(verbose) System.out.println(sourceLabel);
+		log.debug("sourceLabel" + " " + sourceLabel);
 		List<String> sourceKeywords = new ArrayList<String>();
 		sourceLabel = processLabel(sourceLabel, sourceKeywords);
-		if(verbose) System.out.println(sourceLabel);
+		log.debug("sourceLabel" + " " + sourceLabel);
 		
 		if(size == 0) return null;
 		
+		//TODO this has to be eliminated, it's not general. This is dataset preprocessing and should be done outside
 		List<String> articles = sourceInstance.getProperty("article");
 		Instance article;
 		List<String> desKeywords;
@@ -192,7 +197,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 				//System.out.println("mapping, score:" + scoredCandidates.get(0).getScore());
 				disambiguationMappings++;
 				double candidateScore = scoredCandidates.get(0).getScore();
-				MatchingPair pair = new MatchingPair(sourceInstance.getUri(), scoredCandidates.get(0).getInstance().getUri(), 1.0, MappingRelation.EQUIVALENCE);
+				MatchingPair pair = new MatchingPair(sourceInstance.getUri(), scoredCandidates.get(0).getInstance().getUri(), candidateScore, MappingRelation.EQUIVALENCE);
 				debugMapping(pair);
 				if(verbose) System.out.println("Generated mapping: " + pair.sourceURI + " " + pair.targetURI);
 				//System.out.println("About to match: " + candidateScore);
@@ -203,10 +208,6 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		return null;
 	}
 	
-	
-
-	
-
 	private double instanceSimilarity(Instance sourceInstance,
 			Instance candidate, String sourceLabel, List<String> sourceKeywords) {
 
@@ -216,7 +217,12 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		
 		String targetLabel;
 		targetLabel = candidate.getSingleValuedProperty("label");
+		
+		log.debug("targetLabel: " + targetLabel);
+		
 		labelSim = StringMetrics.AMsubstringScore(sourceLabel, targetLabel);
+		
+		log.debug("labelSim: " + labelSim);
 		
 		List<String> aliases = candidate.getProperty("alias");
 		if(aliases != null){
@@ -235,7 +241,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		String value = candidate.getSingleValuedProperty("score");
 		if(value != null) freebaseScore = Double.valueOf(value);
 		else freebaseScore = -1;
-		if(freebaseScore != -1)freebaseScore /= 100;
+		if(freebaseScore != -1) freebaseScore /= 100;
 		
 		if(verbose) System.out.println("candidate: " + candidate.getUri() + " " + candidate.getSingleValuedProperty("label"));
 		List<String> types = candidate.getProperty("type");
@@ -290,6 +296,9 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		if(stmtSim == -1) stmtSim = 0;
 		
 		double score = labelSim/2 + stmtSim/2 + 1*keyScore + freebaseScore/2;
+		
+		//double score = labelSim;
+		
 		
 		if(verbose) System.out.println("score:" + score);
 		
@@ -539,8 +548,11 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		if(type.toLowerCase().endsWith("organization"))
 			return LabelUtils.processOrganizationLabel(label);
 		
-		if(type.toLowerCase().endsWith("person"))
+		else if(type.toLowerCase().endsWith("person"))
 			return LabelUtils.processPersonLabel(label);
+		
+		else if(type.toLowerCase().endsWith("location"))
+			return LabelUtils.processLocationLabel(label);
 		
 		return super.processLabelBeforeCandidatesGeneration(label, type);
 	}
