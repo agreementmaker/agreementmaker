@@ -28,6 +28,13 @@ public class LabelUtils {
 	}
 	
 	public static String processOrganizationLabel(String label){
+		if(label.contains("(")){
+			int beg = label.indexOf('(');
+			int end = label.indexOf(')');
+			label = label.substring(0,beg) + label.substring(end + 1);
+			label = label.trim();
+		}
+		
 		String[] blackList = { "Corporation", "Corp", "Inc", "Company", "Co", "Incorporated", "Assn", "LP", "Theater" };
 		
 		String[] split = label.split(" ");
@@ -93,6 +100,16 @@ public class LabelUtils {
 		System.out.println(LabelUtils.processOrganizationLabel("Protective Life Corporation"));
 		
 		System.out.println(LabelUtils.processPersonLabel("Federico Jr Caimi"));
+	}
+
+	public static String processLocationLabel(String label) {
+		if(label.contains("(")){
+			int beg = label.indexOf('(');
+			int end = label.indexOf(')');
+			label = label.substring(0,beg) + label.substring(end + 1);
+			label = label.trim();
+		}
+		return label;
 	}
 	
 	

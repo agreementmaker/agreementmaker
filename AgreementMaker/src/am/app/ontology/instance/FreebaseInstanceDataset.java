@@ -1,5 +1,7 @@
 package am.app.ontology.instance;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 import am.AMException;
@@ -55,4 +57,12 @@ public class FreebaseInstanceDataset implements InstanceDataset {
 		instanceSource.setCacheFile(cacheFile);
 	}
 
+	public void persistCache(){
+		try {
+			instanceSource.persistCache();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 }

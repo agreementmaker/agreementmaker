@@ -3,14 +3,18 @@ package am.app.ontology.instance.endpoint;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.Jena;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -45,7 +49,10 @@ public class GeoNamesEndpoint implements SemanticWebEndpoint{
 	
 	private String cacheFile = "geonamesRDFCache.ser";
 	
+	private Logger log;
+	
 	public GeoNamesEndpoint(){
+		log = Logger.getLogger(GeoNamesEndpoint.class);
 		cache = new HashMap<String, String>();
 		if(useCache){
 			System.out.println("GeoNames is loading cache...");
@@ -191,6 +198,14 @@ public class GeoNamesEndpoint implements SemanticWebEndpoint{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void persistCache() throws FileNotFoundException, IOException{
+		 log.info("Writing cache to file... [" + cacheFile + "]");
+		 ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(cacheFile));
+		 out.writeObject(cache);
+		 out.close();
+		 log.info("Done");		
 	}
 
 }

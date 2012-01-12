@@ -55,5 +55,13 @@ public class GeoNamesInstanceDataset implements InstanceDataset {
 		instanceSource.setCacheFile(cacheFile);
 	}
 
+	public void persistCache(){
+		try {
+			instanceSource.persistCache();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 }
 

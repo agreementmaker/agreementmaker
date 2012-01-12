@@ -2,14 +2,17 @@ package am.app.ontology.instance.endpoint;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,14 +33,17 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 	
 	private HashMap<String, String> cache;
 	
-	private String cacheFile = "freebaseCacheLocations.ser";
+	private String cacheFile = "freebaseCache.ser";
+	
+	//private String outputCacheFile = "freebaseCacheOutput.ser";
+	
+	private Logger log;
 	
 	public FreebaseEndpoint(){
+		log = Logger.getLogger(FreebaseEndpoint.class);
 		cache = new HashMap<String, String>();
 		if(useCache){
-			System.out.println("Freebase is loading cache...");
 			loadCache();
-		    System.out.println("Done");
 		}
 	}
 	
@@ -87,7 +93,12 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 		if(!foundInCache){
 			System.out.println(url);
 			try {	json = HTTPUtility.getPage(url);	} 
-			catch (IOException e) {	return instances;	}
+			catch (IOException e) {	
+				log.error("Problems in getting the page");
+				return instances;	
+			}
+			System.out.println("caching");
+			cache.put(url, json);
 		}
 		
 		JSONObject object = new JSONObject(json);
@@ -198,9 +209,11 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 		ObjectInputStream in;
 		Object input = null;
 		
+		log.info("Freebase is loading cache..." + " [" + cacheFile + "]");
+				
 		try {	fis = new FileInputStream(cacheFile); }
 		catch (FileNotFoundException e1) {
-			System.err.println("The cache file doesn't exist");
+			log.error("The cache file doesn't exist");
 			cache = new HashMap<String, String>();
 			return;
 		}
@@ -209,17 +222,21 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 			in = new ObjectInputStream(fis);
 			input  = in.readObject();
 			cache = (HashMap<String, String>) input;
-			
-		} catch (IOException e1) {
-			System.err.println("The cache will be empty");
-			cache = new HashMap<String, String>();
-			return;
-			
-		} catch (ClassNotFoundException e) {
-			System.err.println("The cache will be empty");
+		} catch (Exception e1) {
+			log.error("The cache will be empty");
 			cache = new HashMap<String, String>();
 			return;
 		}
+		
+		log.info("Done");
+	}
+	
+	public void persistCache() throws FileNotFoundException, IOException{
+		 log.info("Writing cache to file... [" + cacheFile + "]");
+		 ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(cacheFile));
+		 out.writeObject(cache);
+		 out.close();
+		 log.info("Done");		
 	}
 	
 }

@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -29,6 +30,8 @@ import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.instance.Instance;
 import am.app.ontology.instance.InstanceDataset;
+import am.app.ontology.instance.ScoredInstance;
+import am.app.ontology.instance.ScoredInstanceComparator;
 import am.userInterface.MatchingProgressDisplay;
 
 /**
@@ -128,10 +131,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/** Sometimes it can be useful to access the reference alignment directly from the matcher for debugging */
 	protected List<MatchingPair> referenceAlignment;
 	
-	/**
-	 * 
-	 */
-	protected boolean useInstanceSchemaMappings;
+	/** True if the schema mappings have to be used during instance matching */
+	protected boolean useInstanceSchemaMappings = true;
 	
 	public void setPerformSelection(boolean performSelection) {
 		this.performSelection = performSelection;
@@ -489,7 +490,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     		List<MatchingPair> targetTypes = null;
     		
     		if( sourceType != null ) {
-    			if(sourceOntology.getInstanceTypeMapping() != null){
+    			if(useInstanceSchemaMappings && sourceOntology.getInstanceTypeMapping() != null){
     				HashMap<String, List<MatchingPair>> typeMapping = sourceOntology.getInstanceTypeMapping();
         			if( typeMapping.containsKey(sourceType) ) {
         				targetTypes = typeMapping.get(sourceType);
@@ -556,11 +557,37 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		label = label.trim();
 		return label; 
 	}
-
+	
+	//TO BE IMPLEMENTED BY INSTANCE MATCHERS
+	protected double instanceSimilarity(Instance source, Instance target) throws Exception {
+		return 0;
+	}
     
+	//TO BE IMPLEMENTED BY THE ALGORITHM, THIS IS JUST A BASE VERSION
 	protected MatchingPair alignInstanceCandidates(Instance sourceInstance,
 			List<Instance> targetCandidates) throws Exception {
-		//TO BE IMPLEMENTED BY THE ALGORITHM, THIS IS JUST A FAKE ABSTRACT METHOD
+		
+		double similarity;
+		List<ScoredInstance> scoredCandidates = new ArrayList<ScoredInstance>();
+		for (Instance candidate: targetCandidates) {
+			similarity = instanceSimilarity(sourceInstance, candidate);
+			scoredCandidates.add(new ScoredInstance(candidate, similarity));
+		}
+		
+		Collections.sort(scoredCandidates, new ScoredInstanceComparator());	
+		
+		for (int i = 0; i < scoredCandidates.size(); i++) {
+			ScoredInstance scoredInstance = scoredCandidates.get(i);
+		}
+		
+		scoredCandidates = ScoredInstance.filter(scoredCandidates, 0.01);
+		
+		if(scoredCandidates.size() == 1){
+			double candidateScore = scoredCandidates.get(0).getScore();
+			MatchingPair pair = new MatchingPair(sourceInstance.getUri(), scoredCandidates.get(0).getInstance().getUri(), 1.0, MappingRelation.EQUIVALENCE);
+			if (candidateScore < param.threshold) return null;
+			return pair;
+		}			
 		return null;
 	}
 	protected SimilarityMatrix alignProperties( List<Node> sourcePropList, List<Node> targetPropList) throws Exception {

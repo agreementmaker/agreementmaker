@@ -49,7 +49,7 @@ public class NYTConstants {
 		public static String REF_DBP_PEOPLE = "OAEI2011/NYTReference/nyt-dbpedia-people-mappings.rdf";
 		public static String REF_DBP_LOCATIONS = "OAEI2011/NYTReference/nyt-dbpedia-locations-mappings.rdf";
 		public static String REF_DBP_ORGANIZATIONS = "OAEI2011/NYTReference/nyt-dbpedia-organizations-mappings.rdf";
-				public static String REF_FREEBASE_PEOPLE = "OAEI2011/NYTReference/nyt-freebase-people-mappings.rdf";
+		public static String REF_FREEBASE_PEOPLE = "OAEI2011/NYTReference/nyt-freebase-people-mappings.rdf";
 		public static String REF_FREEBASE_LOCATION = "OAEI2011/NYTReference/nyt-freebase-locations-mappings.rdf";
 		public static String REF_FREEBASE_ORGANIZATION = "OAEI2011/NYTReference/nyt-freebase-organizations-mappings.rdf";
 		public static String REF_GEONAMES_LOCATION = "OAEI2011/NYTReference/nyt-geonames-mappings.rdf";
