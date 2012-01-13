@@ -7,6 +7,14 @@ package am.app.mappingEngine.StringUtil;
  */
 public class StringMetrics {
 	
+	public final static String EDIT = "Levenshtein Edit Distance";
+	public final static String JARO = "Jaro Winkler";
+	public final static String QGRAM = "Q-Gram";
+	public final static String SUB = "Substring metric";
+	public final static String AMSUB = "AM Substring metric";
+	public final static String ISUB = "I-SUB";
+	public final static String AMSUB_AND_EDIT = "AMsubstring + editDistance"; //0.6*amsub + 0.4*editdistance
+		
 	//Derived from FALCON AO return the sum of common characters in all substrings of the two words normalized by the number of total chars
 	//So this is only the commonality part is not the whole I-Sub method
 	public static double substringScore(String s1, String s2)

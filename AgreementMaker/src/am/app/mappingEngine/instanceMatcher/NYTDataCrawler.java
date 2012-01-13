@@ -1,8 +1,11 @@
 package am.app.mappingEngine.instanceMatcher;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
@@ -18,10 +21,11 @@ import am.utility.HTTPUtility;
 
 
 public class NYTDataCrawler{
-	static String sourceDataset = "C:/Users/federico/workspace/AgreementMaker/OAEI2011/NYTDatasets/organizations.rdf";	
+	static String sourceDataset = "C:/Users/federico/workspace/AgreementMaker/OAEI2011/NYTDatasets/locations.rdf";	
 	static String searchApi = "http://data.nytimes.com/elements/search_api_query";
 	static String nytKey = "&api-key=1f39b4de086c492574d2c7456e3e3849:6:64824021";
-	static String outputFile = "jsonAnswersOrganizations.ser";
+	static String outputFile = "jsonAnswersLocations.ser";
+	static String inputFile = "imdata/jsonAnswersLocations2.ser";	
 	
 	static HashMap<String, String> jsonAnswers;	
 	
@@ -33,7 +37,17 @@ public class NYTDataCrawler{
 		Ontology ontology = openOntology(sourceDataset);
 		
 		//System.out.println(ontology.);
-		jsonAnswers = new HashMap<String, String>();
+		try {
+			File input = new File(inputFile);
+			FileInputStream fis = new FileInputStream(input);		
+			ObjectInputStream in = new ObjectInputStream(fis);
+			Object object;
+			object = in.readObject();
+			jsonAnswers = (HashMap<String, String>) object;
+		} catch (Exception e2) {
+			System.out.println("No cache file found");
+			jsonAnswers = new HashMap<String, String>();
+		}
 		
 		List<Statement> indStmts = SeparateFileInstanceDataset.getIndividualsStatements(ontology.getModel(), null);
 		
@@ -46,7 +60,7 @@ public class NYTDataCrawler{
 			if(count % 100 == 0) System.out.println(count);
 			
 			uri = stmt.getSubject().getURI();
-			//System.out.println(uri);
+			System.out.println(uri);
 			
 			String query = SeparateFileInstanceDataset.getPropertyValue(ontology.getModel(), uri, searchApi);
 			
@@ -66,28 +80,30 @@ public class NYTDataCrawler{
 			
 			String json = null;
 			
-			try {
-				Thread.sleep(200);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
+			if(!jsonAnswers.containsKey(uri)){
+				try {
+					Thread.sleep(200);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				
+				try {
+					json = HTTPUtility.getPage(query);
+				} catch (IOException e) {
+					System.err.println("Connection problem");
+					continue;
+				}
+				
+				if(!json.startsWith("{")){
+					System.err.println("Not a JSON answer");
+					continue;
+				}
+				
+				//System.out.println(json);
+				
+				jsonAnswers.put(uri, json);	
 			}
-			
-			try {
-				json = HTTPUtility.getPage(query);
-			} catch (IOException e) {
-				System.err.println("Connection problem");
-				continue;
-			}
-			
-			if(!json.startsWith("{")){
-				System.err.println("Not a JSON answer");
-				continue;
-			}
-			
-			//System.out.println(json);
-			
-			jsonAnswers.put(uri, json);
-			
+			else System.out.println("contained");
 		}	
 		
 		ObjectOutput out = new ObjectOutputStream(new FileOutputStream(outputFile));

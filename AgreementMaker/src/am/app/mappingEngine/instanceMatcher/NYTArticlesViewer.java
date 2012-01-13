@@ -1,5 +1,6 @@
 package am.app.mappingEngine.instanceMatcher;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -10,7 +11,7 @@ import java.util.HashMap;
 public class NYTArticlesViewer {
 	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
 		
-		ObjectInput in = new ObjectInputStream(new FileInputStream("newFreebaseCacheOrganizationsNoType.ser"));
+		ObjectInput in = new ObjectInputStream(new FileInputStream(new File("imdata/jsonAnswers.ser")));
 	    Object input = in.readObject();
 		HashMap<String, String> jsonAnswers = (HashMap<String, String>) input;
 		

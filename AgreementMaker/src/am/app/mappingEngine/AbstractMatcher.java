@@ -476,7 +476,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	
     	Instance sourceInstance;
     	for (int i = 0; i < sourceInstances.size(); i++) {
-    		//if(i % 100 == 0) System.out.println(i);
+    		if(i % 100 == 0) System.out.println(i);
 			sourceInstance = sourceInstances.get(i);
     		List<String> labelList = sourceInstance.getProperty("label");
     		
@@ -589,7 +589,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 
 	//TO BE IMPLEMENTED BY INSTANCE MATCHERS
-	protected double instanceSimilarity(Instance source, Instance target) throws Exception {
+	public double instanceSimilarity(Instance source, Instance target) throws Exception {
 		return 0;
 	}
 	

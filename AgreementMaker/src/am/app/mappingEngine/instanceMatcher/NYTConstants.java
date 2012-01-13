@@ -19,13 +19,22 @@ public class NYTConstants {
 		
 		
 		//Datasets on disk
-		public static String NYT_PEOPLE = "OAEI2011/NYTDatasets/people.rdf";
-		public static String NYT_LOCATIONS = "OAEI2011/NYTDatasets/locations.rdf";
-		public static String NYT_LOCATIONS_ARTICLES = "OAEI2011/NYTDatasets/locationsArticles.rdf";
-		public static String NYT_ORGANIZATIONS = "OAEI2011/NYTDatasets/organizations.rdf";
+		public static String NYT_PEOPLE = "OAEI2011/NYTDatasets/peopleKeywords.rdf";
 		public static String NYT_PEOPLE_ARTICLES = "OAEI2011/NYTDatasets/peopleArticles.rdf";
+		public static String NYT_LOCATIONS = "OAEI2011/NYTDatasets/locationsKeywords.rdf";
+		public static String NYT_LOCATIONS_ARTICLES = "OAEI2011/NYTDatasets/locationsArticles.rdf";
+		public static String NYT_ORGANIZATIONS = "OAEI2011/NYTDatasets/organizationsKeywords.rdf";
 		public static String NYT_ORGANIZATIONS_ARTICLES = "OAEI2011/NYTDatasets/organizationsArticles.rdf";
 		
+		//Output alignment files
+		public static String FREEBASE_PEOPLE_OUTPUT = "NYTbatch/FreebasePeople.rdf";
+		public static String FREEBASE_LOCATIONS_OUTPUT = "NYTbatch/FreebaseLocations.rdf";
+		public static String FREEBASE_ORGANIZATIONS_OUTPUT = "NYTbatch/FreebaseOrganizations.rdf";
+		public static String DBPEDIA_PEOPLE_OUTPUT = "NYTbatch/DBpediaPeople.rdf";
+		public static String DBPEDIA_LOCATION_OUTPUT = "NYTbatch/DBpediaLocations.rdf";
+		public static String dBPEDIA_ORGANIZATION_OUTPUT = "NYTbatch/DBpediaOrganizations.rdf";
+		public static String GEONAMES_LOCATION_OUTPUT = "NYTbatch/GeoNamesLocations.rdf";
+	
 		
 		//Target ontologies
 		public static String DBPEDIA = "DBPedia";
