@@ -15,11 +15,6 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.ibm.icu.text.DecimalFormat;
 
-import classification.Classificator;
-import classification.TestSet;
-import classification.TrainSet;
-
-
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.StringUtil.StringMetrics;
@@ -48,8 +43,6 @@ public class InstanceMatcherFede extends AbstractMatcher {
 	
 	Porter stemmer = new Porter();
 	
-	TrainSet trainSet;
-	Classificator classificator;
 	
 	boolean createTraining = false;
 	boolean matchingDBPedia = false;
@@ -231,7 +224,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 			for (int i = 0; i < aliases.size(); i++) {
 				curr = StringMetrics.AMsubstringScore(sourceLabel, aliases.get(i));
 				if(curr > max){
-					//System.out.println("An alias weights more than the label");
+					//System.out.println("An alias weighs more than the label");
 					max = curr;
 				}
 			}
@@ -282,8 +275,8 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		
 		//trainSet.addTrain(labelSim, freebaseScore, keyScore, clazz);		
 		
-		TestSet testSet = new TestSet();
-		testSet.addTest(labelSim, freebaseScore, keyScore);
+		//TestSet testSet = new TestSet();
+		//testSet.addTest(labelSim, freebaseScore, keyScore);
 		
 		//double[][] confidence = classificator.getConfidence(testSet);
 				
@@ -447,17 +440,6 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		}
 		System.out.println("Done");
 		
-		if(createTraining){
-			System.out.println("Storing training set");
-			try {
-				trainSet.storeFile("trainingSet.xml");
-			} catch (Exception e) {
-				e.printStackTrace();
-				return;
-			}
-			System.out.println("Stored successfully");
-		}
-		
 		AlignmentsOutput.writeMappingsOnDisk(outputFilename, instanceAlignmentSet);
 		
 	}
@@ -476,16 +458,16 @@ public class InstanceMatcherFede extends AbstractMatcher {
 			else{
 				List<MatchingPair> pairs = pairsByTarget.get(mp.targetURI);
 				pairs.add(mp);
-				System.out.println("Duplicated mapping: " + mp.targetURI);
+				log.info("Duplicated mapping: " + mp.targetURI);
 				count++;
 			}
 		}
-		System.out.println("We have " + count + " duplicated mappings");
+		log.info("We have " + count + " duplicated mappings");
 		
 		for(String key: pairsByTarget.keySet()){
 			List<MatchingPair> pairs = pairsByTarget.get(key);
 			if(pairs.size() > 1){
-				System.out.println(pairs);
+				log.info(pairs);
 				for (int i = 0; i < pairs.size(); i++) {
 					instanceAlignmentSet.remove(pairs.get(i));
 				}
@@ -530,10 +512,10 @@ public class InstanceMatcherFede extends AbstractMatcher {
 		for (int i = 0; i < referenceAlignment.size(); i++) {
 			if(referenceAlignment.get(i).sourceURI.equals(source)){
 				if(referenceAlignment.get(i).sameTarget(pair)){
-					if(verbose) System.out.println("RIGHT MAPPING " + referenceAlignment.get(i));
+					log.debug("RIGHT MAPPING " + referenceAlignment.get(i));
 				}
 				else{
-					if(verbose) System.out.println("WRONG MAPPING right:" + referenceAlignment.get(i));
+					log.debug("WRONG MAPPING right:" + referenceAlignment.get(i));
 				}
 			}
 		}

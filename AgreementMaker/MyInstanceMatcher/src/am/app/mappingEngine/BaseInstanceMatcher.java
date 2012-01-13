@@ -40,7 +40,7 @@ public class BaseInstanceMatcher extends AbstractMatcher{
 		
 		boolean foundSolution = false;
 		
-		Instance candidate;
+	         	Instance candidate;
 		for (int i = 0; i < targetCandidates.size(); i++) {
 			candidate = targetCandidates.get(i);
 			
@@ -53,6 +53,8 @@ public class BaseInstanceMatcher extends AbstractMatcher{
 				
 		if(!foundSolution) log.info("NON SOLVABLE:\t" + sourceInstance.getSingleValuedProperty("label") + 
 				"\t" + processLabelBeforeCandidatesGeneration(sourceInstance.getSingleValuedProperty("label"), sourceInstance.getType()) + "\t" + sourceInstance.getUri());
+		
+				
 		
 		return null;
 	}
@@ -71,8 +73,11 @@ public class BaseInstanceMatcher extends AbstractMatcher{
 		if(type.toLowerCase().endsWith("organization"))
 			return LabelUtils.processOrganizationLabel(label);
 		
-		if(type.toLowerCase().endsWith("person"))
+		else if(type.toLowerCase().endsWith("person"))
 			return LabelUtils.processPersonLabel(label);
+		
+		else if(type.toLowerCase().endsWith("location"))
+			return LabelUtils.processLocationLabel(label);
 		
 		return super.processLabelBeforeCandidatesGeneration(label, type);
 	}

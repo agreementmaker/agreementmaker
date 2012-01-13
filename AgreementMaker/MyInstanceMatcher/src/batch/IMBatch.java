@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 import ontology.DBPediaKBInstanceDataset;
 import ontology.KnowledgeBaseInstanceDataset;
 
@@ -32,6 +35,16 @@ public class IMBatch {
 		
 	//AbstractMatcher matcher = new BaseInstanceMatcher();
 	AbstractMatcher matcher = new InstanceMatcherFede();
+	
+	Logger log;
+	
+	double threshold = 0.5;
+	
+	public IMBatch() {
+		log = Logger.getLogger(this.getClass());
+		log.setLevel(Level.ERROR);
+	}
+	
 		
 	public String singleFreebaseTest(String sourceFile, String alignmentFile, String referenceFile, double threshold, String cacheFile) throws Exception{
  		OntologyDefinition sourceDef = new OntologyDefinition();
@@ -52,10 +65,10 @@ public class IMBatch {
 		targetDef.instanceEndpointType = EndpointRegistry.FREEBASE;
 		targetDef.sourceOrTarget = Ontology.TARGET;
 		
-		System.out.println("Building source ontology...");
+		log.info("Building source ontology...");
 		OntoTreeBuilder builder = new OntoTreeBuilder(sourceDef);
 		builder.build();
-		System.out.println("Done");
+		log.info("Done");
 		Ontology sourceOnt = builder.getOntology();
 		
 		builder = new OntoTreeBuilder(targetDef);
@@ -84,9 +97,8 @@ public class IMBatch {
 	}
 	
 	
-	public void runGeoNamesTest() throws Exception{
+	public String runGeoNamesTest() throws Exception{
 		String cwd = System.getProperty("user.dir") + File.separator;
-		double threshold = 0.55;
 		
 		String report = ""; 
 		
@@ -95,7 +107,7 @@ public class IMBatch {
 				threshold,
 				"geonamesRDFCacheProcessed.ser");
 			
-		System.out.println(report);
+		return report;
 	}
 	
 	public String singleGeoNamesTest(String sourceFile, String referenceFile, double threshold, String cacheFile) throws Exception{
@@ -149,8 +161,6 @@ public class IMBatch {
 	}
 	
 	public String dbpediaLocationsTest() throws Exception{
- 		double threshold = 0.5;
- 		
  		String cwd = System.getProperty("user.dir") + File.separator;
 				
 		OntologyDefinition sourceDef = new OntologyDefinition();
@@ -187,9 +197,8 @@ public class IMBatch {
 	}
 	
 	
-	public void runFreebaseTest() throws Exception{
+	public String runFreebaseTest() throws Exception{
 		String cwd = System.getProperty("user.dir") + File.separator;
-		double threshold = 0.55;
 		
 		String report = ""; 
 		
@@ -213,7 +222,7 @@ public class IMBatch {
 		
 		
 		
-		System.out.println(report);
+		return report;
 	}
 	
 	
@@ -266,9 +275,8 @@ public class IMBatch {
 		return report;
 	}
 	
-	public void runDBPediaTest() throws Exception{
+	public String runDBPediaTest() throws Exception{
 		String cwd = System.getProperty("user.dir") + File.separator;
-		double threshold = 0.5;
 		
 		String report = "";
 		
@@ -296,12 +304,11 @@ public class IMBatch {
 //				threshold,
 //				"dbpediaLocationsRDFCache10000.ser");	
 				
-		System.out.println(report);
+		return report;
 	}
 	
-	public void runDBPediaOrganizationsTest() throws Exception{
+	public String runDBPediaOrganizationsTest() throws Exception{
 		String cwd = System.getProperty("user.dir") + File.separator;
-		double threshold = 0.5;
 		
 		String report = "";
 		
@@ -311,12 +318,11 @@ public class IMBatch {
 				threshold,
 				"dbpediaLocationsProcessed2.ser");	
 		
-		System.out.println(report);
+		return report;
 	}
 	
-	public void runFreebaseOrganizationsTest() throws Exception{
+	public String runFreebaseOrganizationsTest() throws Exception{
 		String cwd = System.getProperty("user.dir") + File.separator;
-		double threshold = 0.50;
 		
 		String report = ""; 
 		
@@ -330,12 +336,11 @@ public class IMBatch {
 				"freebaseOrgUntypedStopPar.ser");
 		
 		
-		System.out.println(report);
+		return report;
 	}
 	
-	public void runFreebaseLocationsTest() throws Exception{
+	public String runFreebaseLocationsTest() throws Exception{
 		String cwd = System.getProperty("user.dir") + File.separator;
-		double threshold = 0.55;
 		
 		String report = ""; 
 		
@@ -348,12 +353,10 @@ public class IMBatch {
 				threshold,
 				"freebaseLocUntypedStopPar.ser");
 		
-		//System.out.println(report);
+		return report;
 	}
 	
 	private String runDBPediaApiTest() throws Exception {
-		double threshold = 0.5;
-		
 		String cwd = System.getProperty("user.dir") + File.separator;
  		
 		//String alignmentFile = "OAEI2011/NYTMappings/nyt - dbpediaapi - schema mappings.rdf";
@@ -402,8 +405,6 @@ public class IMBatch {
 	}
 	
 	private String runDBPediaOnDiskTest() throws Exception {
-		double threshold = 0.5;
-		
 		String cwd = System.getProperty("user.dir") + File.separator;
  		
 		//String alignmentFile = "OAEI2011/NYTMappings/nyt - dbpediaapi - schema mappings.rdf";
@@ -454,11 +455,37 @@ public class IMBatch {
 		
 	}
 	
+	public void runAllTests() throws Exception{
+		Logger.getRootLogger().setLevel(Level.OFF);
+		
+		
+		
+		String results = "";
+		
+		results += runFreebaseLocationsTest() + "\n";
+		results += runFreebaseOrganizationsTest() + "\n";
+		results += runFreebasePeopleTest() + "\n";
+		results += runGeoNamesTest() + "\n";
+		
+//		runDBPediaTest();
+	
+//		batch.runDBPediaTest();
+		
+//		batch.dbpediaLocationsTest();
+	
+//		batch.runDBPediaOrganizationsTest();
+		
+		System.out.println(report);
+		
+	}
+	
 	public static void main(String[] args) throws Exception {
 		String cwd = System.getProperty("user.dir") + File.separator;
 		
 		IMBatch batch = new IMBatch();
 
+		batch.runAllTests();
+		
 //		batch.runFreebaseOrganizationsTest();
 		
 //		batch.runFreebasePeopleTest();
@@ -467,7 +494,7 @@ public class IMBatch {
 		
 //		batch.runFreebaseTest();
 		
-		batch.runGeoNamesTest();
+//		batch.runGeoNamesTest();
 	
 //		batch.runDBPediaTest();
 		
@@ -481,10 +508,8 @@ public class IMBatch {
 	}
 
 
-	private void runFreebasePeopleTest() throws Exception {
+	private String runFreebasePeopleTest() throws Exception {
 		String cwd = System.getProperty("user.dir") + File.separator;
-		double threshold = 0.1;
-		
 		String report = ""; 
 		
 		//newFreebaseCacheOrganizationsNoType.ser
@@ -496,8 +521,7 @@ public class IMBatch {
 				threshold, 
 				"freebasePeopleUntypedStopPar.ser");
 		
-		
-		System.out.println(report);
+		return report;
 	}
 
 }
