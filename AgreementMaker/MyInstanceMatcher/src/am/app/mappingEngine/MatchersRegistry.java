@@ -18,6 +18,7 @@ import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
 import am.app.mappingEngine.dsi.OldDescendantsSimilarityInheritanceMatcher;
 import am.app.mappingEngine.hierarchy.HierarchyMatcher;
 import am.app.mappingEngine.hierarchy.HierarchyMatcherModified;
+import am.app.mappingEngine.instanceMatchers.InstanceMatcherFede;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsMatcher;
 import am.app.mappingEngine.oaei2009.OAEI2009matcher;

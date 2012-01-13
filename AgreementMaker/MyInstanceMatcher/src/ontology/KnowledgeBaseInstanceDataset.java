@@ -24,7 +24,7 @@ import edu.uic.advis.im.knowledgebase.ontology.OntologyBackedKnowledgeBase;
 import edu.uic.advis.im.knowledgebase.ontology.OntologyKBFactory;
 
 import am.AMException;
-import am.app.mappingEngine.InstanceMatcherFede;
+import am.app.mappingEngine.instanceMatchers.InstanceMatcherFede;
 import am.app.ontology.instance.Instance;
 import am.app.ontology.instance.InstanceDataset;
 

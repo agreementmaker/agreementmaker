@@ -48,7 +48,7 @@ public class NYTEvaluator {
 		ReferenceAlignmentMatcher matcher = new ReferenceAlignmentMatcher();
 		
 		ReferenceAlignmentParameters param = new ReferenceAlignmentParameters();
-		param.fileName = toEvaluate;
+		param.fileName = file;
 		matcher.setParam(param);		
 		ArrayList<MatchingPair> filePairs = matcher.parseStandardOAEI();
 		
@@ -203,10 +203,23 @@ public class NYTEvaluator {
 		
 	}
 	
+	public static String evaluateAllTests(double threshold) throws Exception{
+		String report = "";
+		
+		report += NYTEvaluator.evaluate(NYTConstants.FREEBASE_LOCATIONS_OUTPUT, NYTConstants.REF_FREEBASE_LOCATION, threshold) + "\n";
+		report += NYTEvaluator.evaluate(NYTConstants.FREEBASE_ORGANIZATIONS_OUTPUT, NYTConstants.REF_FREEBASE_ORGANIZATION, threshold) + "\n";
+		report += NYTEvaluator.evaluate(NYTConstants.FREEBASE_PEOPLE_OUTPUT, NYTConstants.REF_FREEBASE_PEOPLE, threshold) + "\n";
+		report += NYTEvaluator.evaluate(NYTConstants.GEONAMES_LOCATION_OUTPUT, NYTConstants.REF_GEONAMES_LOCATION, threshold) + "\n";
+		return report;
+	}
+	
 	public static void main(String[] args) throws Exception {
 		//System.out.println(evaluate(toEvaluate, reference, 0.9));
-		String report = "";
-		report += NYTEvaluator.evaluate("alignment.rdf", NYTConstants.REF_GEONAMES_LOCATION, 0.5) + "\n";
-		System.out.println(report);
+		
+		double threshold = 0.0;
+		
+		for (int i = 0; i < 11; i++) {
+			System.out.println(NYTEvaluator.evaluateAllTests(threshold + i * 0.1));
+		}
 	}
 }

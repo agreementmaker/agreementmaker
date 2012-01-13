@@ -22,7 +22,6 @@ import am.app.mappingEngine.ScoredInstance;
 import am.app.mappingEngine.ScoredInstanceComparator;
 import am.app.mappingEngine.WordNetUtils;
 import am.app.mappingEngine.Mapping.MappingRelation;
-import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.instanceMatcher.LabelUtils;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.Instance;
@@ -93,8 +92,6 @@ public class InstanceMatcherFede extends AbstractMatcher {
 				
 		String sourceLabel = sourceInstance.getSingleValuedProperty("label");
 		
-		sourceLabel = LabelInstanceMatcher.processLabel(sourceLabel);
-		
 		List<String> sourceKeywords = new ArrayList<String>();
 		String betweenParentheses = getBetweenParentheses(sourceLabel);
 		if(betweenParentheses != null) sourceKeywords.add(betweenParentheses);
@@ -148,7 +145,7 @@ public class InstanceMatcherFede extends AbstractMatcher {
 			
 			// && score >= threshold
 			if(!target.getUri().contains("wiki"))
-				pair = new MatchingPair(sourceInstance.getUri(), target.getUri(), score, MappingRelation.EQUIVALENCE);
+				pair = new MatchingPair(sourceInstance.getUri(), target.getUri(), 1.0, MappingRelation.EQUIVALENCE);
 			debugMapping(pair);
 			
 			return pair;

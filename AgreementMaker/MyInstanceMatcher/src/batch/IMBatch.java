@@ -13,12 +13,11 @@ import ontology.KnowledgeBaseInstanceDataset;
 import evaluation.NYTEvaluator;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.BaseInstanceMatcher;
-import am.app.mappingEngine.InstanceMatcherFede;
 import am.app.mappingEngine.instanceMatcher.NYTConstants;
+import am.app.mappingEngine.instanceMatchers.InstanceMatcherFede;
+import am.app.mappingEngine.instanceMatchers.InstanceMatcherFedeNew;
+import am.app.mappingEngine.instanceMatchers.TokenInstanceMatcher;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.ontology.Ontology;
 import am.app.ontology.Ontology.DatasetType;
 import am.app.ontology.instance.DBPediaApiInstanceDataset;
@@ -34,11 +33,11 @@ public class IMBatch {
 	String report = "";
 		
 	//AbstractMatcher matcher = new BaseInstanceMatcher();
-	AbstractMatcher matcher = new InstanceMatcherFede();
+	InstanceMatcherFedeNew matcher = new InstanceMatcherFedeNew();
 	
 	Logger log;
 	
-	double threshold = 0.5;
+	double threshold = 0.01;
 	
 	public IMBatch() {
 		log = Logger.getLogger(this.getClass());
@@ -46,7 +45,8 @@ public class IMBatch {
 	}
 	
 		
-	public String singleFreebaseTest(String sourceFile, String alignmentFile, String referenceFile, double threshold, String cacheFile) throws Exception{
+	public String singleFreebaseTest(String sourceFile, String alignmentFile, String referenceFile, double threshold, 
+			String cacheFile, String outputFile) throws Exception{
  		OntologyDefinition sourceDef = new OntologyDefinition();
 		sourceDef.loadOntology = false;
 		sourceDef.loadInstances = true;
@@ -88,11 +88,13 @@ public class IMBatch {
 		
 		matcher.setReferenceAlignment(refPairs);
 				
+		matcher.setOutputFile(outputFile);
+		
 		matcher.match();
 		
 		dataset.persistCache();
 					
-		report += NYTEvaluator.evaluate("alignment.rdf", referenceFile, threshold) + "\n";
+		report += NYTEvaluator.evaluate(outputFile, referenceFile, threshold) + "\n";
 		return report;
 	}
 	
@@ -102,15 +104,15 @@ public class IMBatch {
 		
 		String report = ""; 
 		
-		report += singleGeoNamesTest(cwd + NYTConstants.NYT_LOCATIONS_ARTICLES,
+		report += singleGeoNamesTest(cwd + NYTConstants.NYT_LOCATIONS,
 				NYTConstants.REF_GEONAMES_LOCATION,
 				threshold,
-				"geonamesRDFCacheProcessed.ser");
+				"geonamesRDFCacheProcessed.ser", NYTConstants.GEONAMES_LOCATION_OUTPUT);
 			
 		return report;
 	}
 	
-	public String singleGeoNamesTest(String sourceFile, String referenceFile, double threshold, String cacheFile) throws Exception{
+	public String singleGeoNamesTest(String sourceFile, String referenceFile, double threshold, String cacheFile, String outputFile) throws Exception{
  		OntologyDefinition sourceDef = new OntologyDefinition();
 		sourceDef.loadOntology = false;
 		sourceDef.loadInstances = true;
@@ -141,7 +143,6 @@ public class IMBatch {
 		
 		matcher.setUseInstanceSchemaMappings(false);
 		
-		InstanceMatcherFede matcher = new InstanceMatcherFede();
 		matcher.setSourceOntology(sourceOnt);
 		matcher.setTargetOntology(targetOnt);
 		matcher.setThreshold(threshold);
@@ -149,6 +150,8 @@ public class IMBatch {
 		List<MatchingPair> refPairs = AlignmentUtilities.getMatchingPairsOAEI(referenceFile);
 		
 		matcher.setReferenceAlignment(refPairs);
+		
+		matcher.setOutputFile(outputFile);
 		
 		matcher.match();
 		
@@ -183,7 +186,6 @@ public class IMBatch {
 		
 		targetOnt.setInstances(instances);
 		
-		InstanceMatcherFede matcher = new InstanceMatcherFede();
 		matcher.setSourceOntology(sourceOnt);
 		matcher.setTargetOntology(targetOnt);
 		matcher.setThreshold(threshold);
@@ -206,19 +208,19 @@ public class IMBatch {
 				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf",
 				NYTConstants.REF_FREEBASE_LOCATION,
 				threshold,
-				"freebaseCacheLocations.ser");
+				"freebaseCacheLocations.ser", NYTConstants.FREEBASE_LOCATIONS_OUTPUT);
 		
 		report += singleFreebaseTest(cwd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, 
 				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", 
 				NYTConstants.REF_FREEBASE_ORGANIZATION, 
 				threshold, 
-				"freebaseCacheOrganizations.ser");
+				"freebaseCacheOrganizations.ser", NYTConstants.FREEBASE_ORGANIZATIONS_OUTPUT);
 		
 		report += singleFreebaseTest(cwd + NYTConstants.NYT_PEOPLE_ARTICLES,
 				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf",
 				NYTConstants.REF_FREEBASE_PEOPLE,
 				threshold,
-				"freebaseCache.ser");
+				"freebaseCache.ser", NYTConstants.FREEBASE_LOCATIONS_OUTPUT);
 		
 		
 		
@@ -312,7 +314,7 @@ public class IMBatch {
 		
 		String report = "";
 		
-		report += singleDBPediaTest(cwd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, 
+		report += singleDBPediaTest(cwd + NYTConstants.NYT_ORGANIZATIONS, 
 				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
 				NYTConstants.REF_DBP_ORGANIZATIONS,
 				threshold,
@@ -329,11 +331,11 @@ public class IMBatch {
 		//newFreebaseCacheOrganizationsNoType.ser
 		//freebaseCacheOrganizations.ser
 		
-		report += singleFreebaseTest(cwd + NYTConstants.NYT_ORGANIZATIONS_ARTICLES, 
+		report += singleFreebaseTest(cwd + NYTConstants.NYT_ORGANIZATIONS, 
 				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", 
 				NYTConstants.REF_FREEBASE_ORGANIZATION, 
 				threshold, 
-				"freebaseOrgUntypedStopPar.ser");
+				"freebaseOrgUntypedStopPar.ser", NYTConstants.FREEBASE_ORGANIZATIONS_OUTPUT);
 		
 		
 		return report;
@@ -351,7 +353,7 @@ public class IMBatch {
 				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf",
 				NYTConstants.REF_FREEBASE_LOCATION,
 				threshold,
-				"freebaseLocUntypedStopPar.ser");
+				"freebaseLocUntypedStopPar.ser", NYTConstants.FREEBASE_LOCATIONS_OUTPUT);
 		
 		return report;
 	}
@@ -457,9 +459,7 @@ public class IMBatch {
 	
 	public void runAllTests() throws Exception{
 		Logger.getRootLogger().setLevel(Level.OFF);
-		
-		
-		
+				
 		String results = "";
 		
 		results += runFreebaseLocationsTest() + "\n";
@@ -484,6 +484,8 @@ public class IMBatch {
 		
 		IMBatch batch = new IMBatch();
 
+//		Logger.getLogger(TokenInstanceMatcher.class).setLevel(Level.DEBUG);		
+		
 		batch.runAllTests();
 		
 //		batch.runFreebaseOrganizationsTest();
@@ -515,11 +517,11 @@ public class IMBatch {
 		//newFreebaseCacheOrganizationsNoType.ser
 		//freebaseCacheOrganizations.ser
 		
-		report += singleFreebaseTest(cwd + NYTConstants.NYT_PEOPLE_ARTICLES, 
+		report += singleFreebaseTest(cwd + NYTConstants.NYT_PEOPLE, 
 				cwd + "OAEI2011/NYTMappings/nyt - freebase - schema mappings.rdf", 
 				NYTConstants.REF_FREEBASE_PEOPLE, 
 				threshold, 
-				"freebasePeopleUntypedStopPar.ser");
+				"freebasePeopleUntypedStopPar.ser", NYTConstants.FREEBASE_PEOPLE_OUTPUT);
 		
 		return report;
 	}
