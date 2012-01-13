@@ -137,8 +137,7 @@ public class OAEIAlignmentFormat implements AlignmentFormat {
 	            
 	            // String correctRelation = getRelationFromFileFormat(relation);
 	            
-	            System.out.println(sourceURI + " " + targetURI);
-	    		MatchingPair mp = new MatchingPair(sourceURI, targetURI, parsedSimilarity, relation, provenance);
+	            MatchingPair mp = new MatchingPair(sourceURI, targetURI, parsedSimilarity, relation, provenance);
 	    		
 	    		if( alignmentMap.containsKey(sourceURI) ) {
 	    			alignmentMap.get(sourceURI).add(mp);

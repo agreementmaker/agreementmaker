@@ -476,12 +476,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	
     	Instance sourceInstance;
     	for (int i = 0; i < sourceInstances.size(); i++) {
-    		if(i % 100 == 0) System.out.println(i);
+    		//if(i % 100 == 0) System.out.println(i);
 			sourceInstance = sourceInstances.get(i);
     		List<String> labelList = sourceInstance.getProperty("label");
     		
     		if(labelList == null) continue;    		
     		
+    		//TODO Manage multiple labels
     		String label = labelList.get(0);
     		
     		label = processLabelBeforeCandidatesGeneration(label, sourceInstance.getType());
@@ -558,12 +559,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return label; 
 	}
 	
-	//TO BE IMPLEMENTED BY INSTANCE MATCHERS
-	protected double instanceSimilarity(Instance source, Instance target) throws Exception {
-		return 0;
-	}
-    
-	//TO BE IMPLEMENTED BY THE ALGORITHM, THIS IS JUST A BASE VERSION
+
+	//IT MAY BE OVERRIDDEN BY INSTANCE MATCHERS
 	protected MatchingPair alignInstanceCandidates(Instance sourceInstance,
 			List<Instance> targetCandidates) throws Exception {
 		
@@ -576,20 +573,26 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		
 		Collections.sort(scoredCandidates, new ScoredInstanceComparator());	
 		
-		for (int i = 0; i < scoredCandidates.size(); i++) {
-			ScoredInstance scoredInstance = scoredCandidates.get(i);
-		}
+//		for (int i = 0; i < scoredCandidates.size(); i++) {
+//			ScoredInstance scoredInstance = scoredCandidates.get(i);
+//		}
 		
 		scoredCandidates = ScoredInstance.filter(scoredCandidates, 0.01);
 		
 		if(scoredCandidates.size() == 1){
 			double candidateScore = scoredCandidates.get(0).getScore();
-			MatchingPair pair = new MatchingPair(sourceInstance.getUri(), scoredCandidates.get(0).getInstance().getUri(), 1.0, MappingRelation.EQUIVALENCE);
+			MatchingPair pair = new MatchingPair(sourceInstance.getUri(), scoredCandidates.get(0).getInstance().getUri(), candidateScore, MappingRelation.EQUIVALENCE);
 			if (candidateScore < param.threshold) return null;
 			return pair;
 		}			
 		return null;
 	}
+
+	//TO BE IMPLEMENTED BY INSTANCE MATCHERS
+	protected double instanceSimilarity(Instance source, Instance target) throws Exception {
+		return 0;
+	}
+	
 	protected SimilarityMatrix alignProperties( List<Node> sourcePropList, List<Node> targetPropList) throws Exception {
     		return alignNodesOneByOne(sourcePropList, targetPropList, alignType.aligningProperties);
 	}
