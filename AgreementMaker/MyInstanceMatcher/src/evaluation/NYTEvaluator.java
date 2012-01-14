@@ -218,8 +218,9 @@ public class NYTEvaluator {
 		
 		double threshold = 0.0;
 		
-		for (int i = 0; i < 11; i++) {
-			System.out.println(NYTEvaluator.evaluateAllTests(threshold + i * 0.1));
+		for (int i = 0; i < 21; i++) {
+			//System.out.println(NYTEvaluator.evaluateAllTests(threshold + i * 0.1));
+			System.out.println(NYTEvaluator.evaluate(NYTConstants.DBPEDIA_PEOPLE_OUTPUT, NYTConstants.REF_DBP_PEOPLE, threshold + i * 0.05));
 		}
 	}
 }

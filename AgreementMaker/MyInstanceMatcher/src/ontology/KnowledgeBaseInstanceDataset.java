@@ -33,7 +33,7 @@ public class KnowledgeBaseInstanceDataset implements InstanceDataset{
 	OntologyBackedKnowledgeBase kb;
 	String datasetId;
 	
-	protected double luceneScoreThreshold = 0.2;
+	protected double luceneScoreThreshold = 0.6;
 	
 	public KnowledgeBaseInstanceDataset(String xmlFile, String datasetId){
 		kb = OntologyKBFactory.createKBFromXML(new File(xmlFile));		
@@ -154,5 +154,9 @@ public class KnowledgeBaseInstanceDataset implements InstanceDataset{
 		KnowledgeBaseInstanceDataset KBdataset = new KnowledgeBaseInstanceDataset(xmlFile, datasetId);
 				
 		System.out.println(KBdataset.getCandidateInstances("U2", null).toString().replaceAll(", ", "\n"));	
+	}
+	
+	public OntologyBackedKnowledgeBase getKb() {
+		return kb;
 	}
 }

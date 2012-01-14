@@ -41,7 +41,6 @@ public class IMBatch {
 	
 	public IMBatch() {
 		log = Logger.getLogger(this.getClass());
-		log.setLevel(Level.ERROR);
 	}
 	
 		
@@ -406,17 +405,14 @@ public class IMBatch {
 		
 	}
 	
-	private String runDBPediaOnDiskTest() throws Exception {
+	private String runDBPediaOnDiskSingleTest(String sourceFile, String alignmentFile, String referenceFile, double threshold, 
+			String cacheFile, String outputFile) throws Exception {
 		String cwd = System.getProperty("user.dir") + File.separator;
  		
-		//String alignmentFile = "OAEI2011/NYTMappings/nyt - dbpediaapi - schema mappings.rdf";
-		String referenceFile = cwd + NYTConstants.REF_DBP_LOCATIONS;
-		
-				
 		OntologyDefinition sourceDef = new OntologyDefinition();
 		sourceDef.loadOntology = false;
 		sourceDef.loadInstances = true;
-		sourceDef.instanceSourceFile = cwd + NYTConstants.NYT_LOCATIONS;
+		sourceDef.instanceSourceFile = sourceFile;
 		sourceDef.instanceSource = DatasetType.DATASET;
 		sourceDef.instanceSourceFormat = 0;
 		sourceDef.loadSchemaAlignment = true;
@@ -437,6 +433,8 @@ public class IMBatch {
 		
 		DBPediaKBInstanceDataset instances = new DBPediaKBInstanceDataset(xmlFile, datasetId);
 		
+		instances.setUriCache(cacheFile);
+		
 		targetOnt.setInstances(instances);
 		
 		matcher.setSourceOntology(sourceOnt);
@@ -447,11 +445,13 @@ public class IMBatch {
 				
 		matcher.setReferenceAlignment(refPairs);
 		
+		matcher.setOutputFile(outputFile);
+		
 		matcher.match();
 		
-		//instances.persistCache();
+		instances.persistUriCache();
 		
-		report += NYTEvaluator.evaluate("alignment.rdf", referenceFile, threshold) + "\n";
+		report += NYTEvaluator.evaluate(outputFile, referenceFile, threshold) + "\n";
 		
 		return report;
 		
@@ -482,11 +482,13 @@ public class IMBatch {
 	public static void main(String[] args) throws Exception {
 		String cwd = System.getProperty("user.dir") + File.separator;
 		
+		//Logger.getLogger(DBPediaKBInstanceDataset.class).setLevel(Level.DEBUG);
+		
 		IMBatch batch = new IMBatch();
 
 //		Logger.getLogger(TokenInstanceMatcher.class).setLevel(Level.DEBUG);		
 		
-		batch.runAllTests();
+//		batch.runAllTests();
 		
 //		batch.runFreebaseOrganizationsTest();
 		
@@ -504,9 +506,65 @@ public class IMBatch {
 	
 //		batch.runDBPediaOrganizationsTest();
 	
-//		System.out.println(batch.runDBPediaOnDiskTest());
+		batch.runDBPediaOnDiskTest();
+	
+//		batch.runDBpediaOnDiskLocationsTest();
+		
+		System.out.println();
 		
 		//System.out.println(batch.runDBPediaApiTest());
+	}
+
+
+	private String runDBpediaOnDiskLocationsTest() throws Exception{
+		String cwd = System.getProperty("user.dir") + File.separator;
+		
+		String report = ""; 
+		
+		report = runDBPediaOnDiskSingleTest(cwd + NYTConstants.NYT_LOCATIONS, 
+				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf", 
+				NYTConstants.REF_DBP_LOCATIONS, 
+				threshold, 
+				"dbpLocUriCache.ser", NYTConstants.DBP_LOCATION);
+				
+		return report;
+	}
+	
+	private void runDBPediaOnDiskTest() throws Exception {
+		String report = "";
+		report += runDBpediaOnDiskLocationsTest();
+		//report += runDBpediaOnDiskPeopleTest();
+		//report += runDBpediaOnDiskLocationsTest();
+		System.out.println(report);
+	}
+
+
+	public String runDBpediaOnDiskPeopleTest() throws Exception {
+		String cwd = System.getProperty("user.dir") + File.separator;
+		
+		String report = ""; 
+		
+		report = runDBPediaOnDiskSingleTest(cwd + NYTConstants.NYT_PEOPLE, 
+				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf", 
+				NYTConstants.REF_DBP_PEOPLE, 
+				threshold, 
+				"dbpPeoUriCache.ser", NYTConstants.DBPEDIA_PEOPLE_OUTPUT);
+				
+		return report;
+	}
+	
+	public String runDBpediaOnDiskOrganizationsTest() throws Exception {
+		String cwd = System.getProperty("user.dir") + File.separator;
+		
+		String report = ""; 
+		
+		report = runDBPediaOnDiskSingleTest(cwd + NYTConstants.NYT_ORGANIZATIONS, 
+				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf", 
+				NYTConstants.REF_DBP_ORGANIZATIONS, 
+				threshold, 
+				"dbpPeoUriCache.ser", NYTConstants.DBPEDIA_PEOPLE_OUTPUT);
+				
+		return report;
 	}
 
 
