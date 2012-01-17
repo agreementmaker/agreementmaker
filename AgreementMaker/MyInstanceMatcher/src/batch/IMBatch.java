@@ -545,7 +545,7 @@ public class IMBatch {
 				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf", 
 				NYTConstants.REF_DBP_ORGANIZATIONS, 
 				threshold, 
-				"dbpOrgUriCache.ser", "dbpPeoCache.ser", NYTConstants.DBPEDIA_ORGANIZATION_OUTPUT);
+				"dbpOrgUriCache.ser", "dbpOrgCache.ser", NYTConstants.DBPEDIA_ORGANIZATION_OUTPUT);
 				
 		return report;
 	}
