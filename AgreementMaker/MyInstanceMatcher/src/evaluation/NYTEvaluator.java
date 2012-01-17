@@ -65,6 +65,8 @@ public class NYTEvaluator {
 		
 		MatchingPair right = null;
 		
+		//System.out.println("toEval: " + toEvaluate.size() + " ref: " + reference.size());
+		
 		if(matchingDBPedia){
 			cleanDBPediaMappings(toEvaluate);
 			AlignmentsOutput.writeMappingsOnDisk(outputFilename , toEvaluate);
@@ -76,6 +78,11 @@ public class NYTEvaluator {
 		for (int i = 0; i < toEvaluate.size(); i++) {
 			found = false;
 			p1 = toEvaluate.get(i);
+			
+			if(p1.similarity < threshold){
+				toEvaluate.remove(p1);
+				i--;
+			}
 			
 			//System.out.println("Presented: "+ p1.sourceURI + " " + p1.targetURI + " " + p1.similarity);
 			
@@ -103,7 +110,8 @@ public class NYTEvaluator {
 			}
 		}	
 		//System.out.println("right mappings: "+count);
-		//System.out.println("prec:"+ (float)count/toEvaluate.size() + " rec: " +  (float)count/reference.size());
+		//System.out.println("toEval: " + toEvaluate.size() + " ref: " + reference.size());
+				
 		float precision = (float)count/toEvaluate.size();
 		float recall = (float)count/reference.size();
 		float fmeasure = 2 * precision * recall / (precision + recall);
@@ -181,8 +189,6 @@ public class NYTEvaluator {
 				System.out.println("substituting with " + newUri);
 			}
 		}
-			
-			
 		
 		ObjectOutput out;
 		try {
@@ -213,14 +219,19 @@ public class NYTEvaluator {
 		return report;
 	}
 	
+	public static void thresholdAnalysis() throws Exception{
+		double threshold = 0.0;
+		for (int i = 0; i < 21; i++) {
+			System.out.println(NYTEvaluator.evaluate(NYTConstants.DBP_LOCATION, NYTConstants.REF_DBP_LOCATIONS, threshold + i * 0.05));
+			//System.out.println(NYTEvaluator.evaluate(NYTConstants.DBPEDIA_ORGANIZATION_OUTPUT, NYTConstants.REF_DBP_ORGANIZATIONS, threshold + i * 0.05));
+			//System.out.println(NYTEvaluator.evaluate(NYTConstants.DBPEDIA_PEOPLE_OUTPUT, NYTConstants.REF_DBP_PEOPLE, threshold + i * 0.05));
+			//System.out.println(evaluateAllTests(threshold + i * 0.05));
+		}
+	}
+	
 	public static void main(String[] args) throws Exception {
 		//System.out.println(evaluate(toEvaluate, reference, 0.9));
+		thresholdAnalysis();
 		
-		double threshold = 0.0;
-		
-		for (int i = 0; i < 21; i++) {
-			//System.out.println(NYTEvaluator.evaluateAllTests(threshold + i * 0.1));
-			System.out.println(NYTEvaluator.evaluate(NYTConstants.DBPEDIA_PEOPLE_OUTPUT, NYTConstants.REF_DBP_PEOPLE, threshold + i * 0.05));
-		}
 	}
 }

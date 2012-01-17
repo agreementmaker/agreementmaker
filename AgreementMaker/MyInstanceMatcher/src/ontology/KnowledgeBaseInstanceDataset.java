@@ -24,7 +24,6 @@ import edu.uic.advis.im.knowledgebase.ontology.OntologyBackedKnowledgeBase;
 import edu.uic.advis.im.knowledgebase.ontology.OntologyKBFactory;
 
 import am.AMException;
-import am.app.mappingEngine.instanceMatchers.InstanceMatcherFede;
 import am.app.ontology.instance.Instance;
 import am.app.ontology.instance.InstanceDataset;
 
@@ -38,8 +37,11 @@ public class KnowledgeBaseInstanceDataset implements InstanceDataset{
 	public KnowledgeBaseInstanceDataset(String xmlFile, String datasetId){
 		kb = OntologyKBFactory.createKBFromXML(new File(xmlFile));		
 		this.datasetId = datasetId;
-		
 		OntModel model = kb.getOntModelByID(datasetId);
+	}
+	
+	public KnowledgeBaseInstanceDataset(){
+		
 	}
 
 	@Override
@@ -49,6 +51,7 @@ public class KnowledgeBaseInstanceDataset implements InstanceDataset{
 		List<Instance> instances = new ArrayList<Instance>();
 		
 		OntModel model = kb.getOntModelByID(datasetId);
+		
 		
 		searchTerm = searchTerm.replaceAll("'", "\\\\'");
 		
@@ -70,8 +73,8 @@ public class KnowledgeBaseInstanceDataset implements InstanceDataset{
 		"\n      (?lit ?score) pf:textMatch '\"" + searchTerm + "\"' ." +
 		"\n	?s ?property ?lit." +
 		"\n  FILTER (?score > " + luceneScoreThreshold +")" +
-		"\n } ORDER BY DESC(?score) LIMIT 1000";
-		
+		"\n }  LIMIT 100";
+	//ORDER BY DESC(?score)
 		
 		//System.out.println(queryString);
 		

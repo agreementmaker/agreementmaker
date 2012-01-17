@@ -1,4 +1,4 @@
-package am.app.mappingEngine.instanceMatchers;
+package am.app.mappingEngine.instanceMatchers.labelInstanceMatcher;
 
 import java.util.List;
 
@@ -9,7 +9,10 @@ import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.QGramsDistance;
 
 import am.app.mappingEngine.StringUtil.ISub;
+import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.StringMetrics;
+import am.app.mappingEngine.instanceMatcher.LabelUtils;
+import am.app.mappingEngine.instanceMatchers.BaseInstanceMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.ontology.instance.Instance;
 
@@ -21,7 +24,7 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 	String metric;
 	
 	public LabelInstanceMatcher(){
-		metric = StringMetrics.AMSUB;
+		metric = StringMetrics.SUB;
 		if(param != null && (param instanceof LabelInstanceMatcherParameters))
 			metric = ((LabelInstanceMatcherParameters) param).metric;
 	}
@@ -34,7 +37,7 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		String sourceLabel = source.getSingleValuedProperty("label");
 				
 		log.debug("sourceLabel: " + sourceLabel);
-		sourceLabel = processLabel(sourceLabel);
+		sourceLabel = processLabel(sourceLabel, source.getType());
 		log.debug("sourceLabel: " + sourceLabel);
 				
 		String targetLabel;
@@ -42,7 +45,8 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		
 		log.debug("targetLabel: " + targetLabel);
 		
-		sim = StringMetrics.AMsubstringScore(sourceLabel, targetLabel);
+		
+		sim = computeStringSimilarity(sourceLabel, targetLabel);
 		
 		log.debug("labelSim: " + sim);
 		
@@ -51,7 +55,7 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 			double max = sim;
 			double curr;
 			for (int i = 0; i < aliases.size(); i++) {
-				curr = StringMetrics.AMsubstringScore(sourceLabel, aliases.get(i));
+				curr = computeStringSimilarity(sourceLabel, aliases.get(i));
 				if(curr > max){
 					//System.out.println("An alias weighs more than the label");
 					max = curr;
@@ -62,21 +66,8 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		return sim;
 	}
 	
-	public static String processLabel(String label){
-		if(label.contains("(")){
-			int beg = label.indexOf('(');
-			int end = label.indexOf(')');
-			label = label.substring(0,beg) + label.substring(end + 1);
-			label = label.trim();
-		}
-		if(label.contains(",")){
-			String[] splitted = label.split(",");
-			return splitted[1].trim() + " " + splitted[0].trim();
-		}
-		return label; 
-	}
-	
-	public double performStringSimilarity(String source, String target){
+	private double computeStringSimilarity(String source,
+			String target) {
 		double sim = 0.0;
 		if(metric.equals(ParametricStringParameters.AMSUB)) {
 			sim = StringMetrics.AMsubstringScore(source,target);
@@ -107,5 +98,22 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		}
 		return sim;
 	}
-	
+
+	public static String processLabel(String label, String type){
+		if(type == null) return label;
+		
+		if(type.toLowerCase().endsWith("organization"))
+			return LabelUtils.processOrganizationLabel(label);
+		
+		else if(type.toLowerCase().endsWith("person"))
+			return LabelUtils.processPersonLabel(label);
+		
+		else if(type.toLowerCase().endsWith("location")){
+			return LabelUtils.processLocationLabel(label);
+			//System.out.println("processing location label");
+			//label = label.replace("(","");
+			//label = label.replace(")","");
+		}
+		return label;
+	}	
 }

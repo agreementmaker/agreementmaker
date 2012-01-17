@@ -23,6 +23,7 @@ import am.app.mappingEngine.ScoredInstanceComparator;
 import am.app.mappingEngine.WordNetUtils;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.instanceMatcher.LabelUtils;
+import am.app.mappingEngine.instanceMatchers.labelInstanceMatcher.LabelInstanceMatcher;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.Instance;
 import am.utility.referenceAlignment.AlignmentUtilities;
@@ -51,8 +52,8 @@ public class InstanceMatcherFedeNew extends AbstractMatcher {
 	
 	Logger log = Logger.getLogger(InstanceMatcherFedeNew.class);
 	
-	boolean useSTIM = true;	
-	boolean useLIM = true;	
+	boolean useSTIM = false;	
+	boolean useLIM = false;	
 	boolean useTIM = true;	
 		
 	StatementsInstanceMatcher stim = new StatementsInstanceMatcher();
@@ -137,7 +138,7 @@ public class InstanceMatcherFedeNew extends AbstractMatcher {
 				double candidateScore = scoredCandidates.get(0).getScore();
 				MatchingPair pair = new MatchingPair(sourceInstance.getUri(), scoredCandidates.get(0).getInstance().getUri(), candidateScore, MappingRelation.EQUIVALENCE);
 				debugMapping(pair);
-				if(verbose) System.out.println("Generated mapping: " + pair.sourceURI + " " + pair.targetURI);
+				log.debug("Generated mapping: " + pair.sourceURI + " " + pair.targetURI);
 				//System.out.println("About to match: " + candidateScore);
 				if (candidateScore < threshold) return null;
 				return pair;
@@ -158,7 +159,6 @@ public class InstanceMatcherFedeNew extends AbstractMatcher {
 			labelSim = lim.instanceSimilarity(sourceInstance, candidate);
 		
 		String value = candidate.getSingleValuedProperty("score");
-		
 		if(value != null) freebaseScore = Double.valueOf(value);
 		else freebaseScore = -1;
 		if(freebaseScore != -1) freebaseScore /= 100;
@@ -168,19 +168,26 @@ public class InstanceMatcherFedeNew extends AbstractMatcher {
 		if(useSTIM)
 			stmtSim = stim.instanceSimilarity(sourceInstance, candidate);
 		
-		log.debug("lab:" + labelSim + " frb:" + freebaseScore + " key:" + keyScore + " stmtSim:" + stmtSim);
 		
 		if(freebaseScore == -1) freebaseScore = 0;
-		if(stmtSim == -1) stmtSim = 0;
+		//if(stmtSim == -1) stmtSim = 0;
 		
 		if(useTIM)
 			keyScore = tim.instanceSimilarity(sourceInstance, candidate);
 		
+		log.debug("lab:" + labelSim + " frb:" + freebaseScore + " key:" + keyScore + " stmtSim:" + stmtSim);
+				
 		double score = labelSim/2 + stmtSim/2 + 1*keyScore + freebaseScore/2;
+		if(stmtSim == -1){
+			score = labelSim + 1*keyScore + freebaseScore/2;	
+		}
+		
+		//double score = labelSim;
+				
+		log.debug(score);
 		
 		//double score = (labelSim + stmtSim)/1.5 + 1*keyScore;
 		
-		//double score = labelSim;
 		//double score = stmtSim;
 		
 		//double score = keyScore * 3;
@@ -290,6 +297,7 @@ public class InstanceMatcherFedeNew extends AbstractMatcher {
 					log.debug("RIGHT MAPPING " + referenceAlignment.get(i));
 				}
 				else{
+					log.debug("GENERATED: " + pair);
 					log.debug("WRONG MAPPING right:" + referenceAlignment.get(i));
 				}
 			}

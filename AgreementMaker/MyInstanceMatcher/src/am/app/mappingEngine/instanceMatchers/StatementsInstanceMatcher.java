@@ -14,7 +14,7 @@ public class StatementsInstanceMatcher extends BaseInstanceMatcher{
 	
 	private static final long serialVersionUID = 6536746985095481526L;
 	
-	Logger log = Logger.getLogger(BaseInstanceMatcher.class);
+	Logger log = Logger.getLogger(StatementsInstanceMatcher.class);
 	
 	@Override
 	public double instanceSimilarity(Instance source, Instance target)
@@ -22,7 +22,7 @@ public class StatementsInstanceMatcher extends BaseInstanceMatcher{
 		List<Statement> sourceStmts = source.getStatements();
 		List<Statement> targetStmts = target.getStatements();
 		
-		if(sourceStmts.size() == 0 || targetStmts.size() == 0) return 0;
+		if(sourceStmts.size() == 0 || targetStmts.size() == 0) return -1;
 		
 		Statement sourceStmt;
 		Statement targetStmt;

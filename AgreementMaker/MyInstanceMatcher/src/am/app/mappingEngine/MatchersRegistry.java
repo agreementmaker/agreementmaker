@@ -18,7 +18,7 @@ import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
 import am.app.mappingEngine.dsi.OldDescendantsSimilarityInheritanceMatcher;
 import am.app.mappingEngine.hierarchy.HierarchyMatcher;
 import am.app.mappingEngine.hierarchy.HierarchyMatcherModified;
-import am.app.mappingEngine.instanceMatchers.InstanceMatcherFede;
+import am.app.mappingEngine.instanceMatchers.InstanceMatcherFedeNew;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsMatcher;
 import am.app.mappingEngine.oaei2009.OAEI2009matcher;
@@ -56,7 +56,7 @@ public enum MatchersRegistry {
 	 */
 	//
 	MyTestMatch			( "MTM", "Synonym Term Counting Matcher", MyTestMatcher.class, MatcherCategory.USER ),
-	MyInstMatch			( "MIM", "My Instance Matcher", InstanceMatcherFede.class, MatcherCategory.USER ),
+	MyInstMatch			( "MIM", "My Instance Matcher", InstanceMatcherFedeNew.class, MatcherCategory.USER ),
 	PartialGraph		( "PGM", "Partial Graph Matcher", PartialGraphMatcher.class, MatcherCategory.STRUCTURAL ),
 	SimilarityFlooding  ( "SFM", "Similarity Flooding Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.sfm.IndipendentSimilarityFlooding.class ),
 	AnchorFlood			( "AFM", "AnchorFlood Matcher", am.app.mappingEngine.structuralMatchers.similarityFlooding.anchorFlood.AnchorFloodMatcher.class ),

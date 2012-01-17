@@ -1,4 +1,4 @@
-package am.app.mappingEngine.instanceMatchers;
+package am.app.mappingEngine.instanceMatchers.labelInstanceMatcher;
 
 import am.app.mappingEngine.AbstractParameters;
 

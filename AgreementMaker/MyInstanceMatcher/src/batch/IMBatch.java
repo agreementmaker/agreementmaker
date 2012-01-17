@@ -12,11 +12,11 @@ import ontology.KnowledgeBaseInstanceDataset;
 
 import evaluation.NYTEvaluator;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.instanceMatcher.NYTConstants;
-import am.app.mappingEngine.instanceMatchers.InstanceMatcherFede;
 import am.app.mappingEngine.instanceMatchers.InstanceMatcherFedeNew;
+import am.app.mappingEngine.instanceMatchers.StatementsInstanceMatcher;
 import am.app.mappingEngine.instanceMatchers.TokenInstanceMatcher;
+import am.app.mappingEngine.instanceMatchers.labelInstanceMatcher.LabelInstanceMatcher;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.Ontology;
 import am.app.ontology.Ontology.DatasetType;
@@ -181,7 +181,9 @@ public class IMBatch {
 		
 		Ontology targetOnt = new Ontology();
 	
-		KnowledgeBaseInstanceDataset instances = new KnowledgeBaseInstanceDataset("locations.xml", "dbp_geocoordinates");
+		String xmlFile = new File(System.getProperty("user.dir")).getParent() + "/Locations/locations.xml";
+		
+		KnowledgeBaseInstanceDataset instances = new KnowledgeBaseInstanceDataset(xmlFile, "dbp-geo");
 		
 		targetOnt.setInstances(instances);
 		
@@ -189,9 +191,14 @@ public class IMBatch {
 		matcher.setTargetOntology(targetOnt);
 		matcher.setThreshold(threshold);
 		
+		List<MatchingPair> refPairs = AlignmentUtilities.getMatchingPairsOAEI(NYTConstants.REF_DBP_LOCATIONS);
+		matcher.setReferenceAlignment(refPairs);
+		
 		matcher.match();
 		
-		//report += NYTEvaluator.evaluate("alignment.rdf", referenceFile, threshold) + "\n";
+		report += NYTEvaluator.evaluate("alignment.rdf", NYTConstants.REF_DBP_LOCATIONS, threshold) + "\n";
+		
+		System.out.println(report);
 		
 		return report;
 		
@@ -281,7 +288,7 @@ public class IMBatch {
 		
 		String report = "";
 		
-		report += singleDBPediaTest(cwd + NYTConstants.NYT_LOCATIONS_ARTICLES, 
+		report += singleDBPediaTest(cwd + NYTConstants.NYT_LOCATIONS, 
 				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf",
 				NYTConstants.REF_DBP_LOCATIONS,
 				threshold,
@@ -406,7 +413,7 @@ public class IMBatch {
 	}
 	
 	private String runDBPediaOnDiskSingleTest(String sourceFile, String alignmentFile, String referenceFile, double threshold, 
-			String cacheFile, String outputFile) throws Exception {
+			String cacheUriFile, String cacheFile, String outputFile) throws Exception {
 		String cwd = System.getProperty("user.dir") + File.separator;
  		
 		OntologyDefinition sourceDef = new OntologyDefinition();
@@ -431,9 +438,12 @@ public class IMBatch {
 		String xmlFile = new File(System.getProperty("user.dir")).getParent() + "/Datasets/dbpedia.xml";
 		String datasetId = "dbp_labels";
 		
-		DBPediaKBInstanceDataset instances = new DBPediaKBInstanceDataset(xmlFile, datasetId);
+		//DBPediaKBInstanceDataset instances = new DBPediaKBInstanceDataset(xmlFile, datasetId);
+		DBPediaKBInstanceDataset instances = new DBPediaKBInstanceDataset(cacheFile);
 		
-		instances.setUriCache(cacheFile);
+		
+		instances.setUriCache(cacheUriFile);
+		//instances.setCache(cacheFile);
 		
 		targetOnt.setInstances(instances);
 		
@@ -450,6 +460,7 @@ public class IMBatch {
 		matcher.match();
 		
 		instances.persistUriCache();
+		instances.persistCache(cacheFile);
 		
 		report += NYTEvaluator.evaluate(outputFile, referenceFile, threshold) + "\n";
 		
@@ -462,11 +473,12 @@ public class IMBatch {
 				
 		String results = "";
 		
+
+		results += runDBPediaOnDiskTest();
 		results += runFreebaseLocationsTest() + "\n";
 		results += runFreebaseOrganizationsTest() + "\n";
 		results += runFreebasePeopleTest() + "\n";
 		results += runGeoNamesTest() + "\n";
-		
 //		runDBPediaTest();
 	
 //		batch.runDBPediaTest();
@@ -475,46 +487,11 @@ public class IMBatch {
 	
 //		batch.runDBPediaOrganizationsTest();
 		
-		System.out.println(report);
+		System.out.println(results);
 		
 	}
 	
-	public static void main(String[] args) throws Exception {
-		String cwd = System.getProperty("user.dir") + File.separator;
-		
-		//Logger.getLogger(DBPediaKBInstanceDataset.class).setLevel(Level.DEBUG);
-		
-		IMBatch batch = new IMBatch();
-
-//		Logger.getLogger(TokenInstanceMatcher.class).setLevel(Level.DEBUG);		
-		
-//		batch.runAllTests();
-		
-//		batch.runFreebaseOrganizationsTest();
-		
-//		batch.runFreebasePeopleTest();
-		
-//		batch.runFreebaseLocationsTest();
-		
-//		batch.runFreebaseTest();
-		
-//		batch.runGeoNamesTest();
 	
-//		batch.runDBPediaTest();
-		
-//		batch.dbpediaLocationsTest();
-	
-//		batch.runDBPediaOrganizationsTest();
-	
-		batch.runDBPediaOnDiskTest();
-	
-//		batch.runDBpediaOnDiskLocationsTest();
-		
-		System.out.println();
-		
-		//System.out.println(batch.runDBPediaApiTest());
-	}
-
 
 	private String runDBpediaOnDiskLocationsTest() throws Exception{
 		String cwd = System.getProperty("user.dir") + File.separator;
@@ -525,17 +502,23 @@ public class IMBatch {
 				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf", 
 				NYTConstants.REF_DBP_LOCATIONS, 
 				threshold, 
-				"dbpLocUriCache.ser", NYTConstants.DBP_LOCATION);
+				"dbpLocUriCache.ser", "dbpLocCache.ser", NYTConstants.DBP_LOCATION);
 				
 		return report;
 	}
 	
-	private void runDBPediaOnDiskTest() throws Exception {
-		String report = "";
-		report += runDBpediaOnDiskLocationsTest();
-		//report += runDBpediaOnDiskPeopleTest();
-		//report += runDBpediaOnDiskLocationsTest();
-		System.out.println(report);
+	private String runDBPediaOnDiskTest() throws Exception {
+		String results = "";
+		results += runDBpediaOnDiskLocationsTest();
+		System.out.println(results);
+		Runtime.getRuntime().gc();
+		results += runDBpediaOnDiskOrganizationsTest();
+		Runtime.getRuntime().gc();
+		System.out.println(results);		
+		results += runDBpediaOnDiskPeopleTest();
+		Runtime.getRuntime().gc();
+		System.out.println(results);		
+		return results;
 	}
 
 
@@ -548,7 +531,7 @@ public class IMBatch {
 				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf", 
 				NYTConstants.REF_DBP_PEOPLE, 
 				threshold, 
-				"dbpPeoUriCache.ser", NYTConstants.DBPEDIA_PEOPLE_OUTPUT);
+				"dbpPeoUriCache.ser", "dbpPeoCache.ser", NYTConstants.DBPEDIA_PEOPLE_OUTPUT);
 				
 		return report;
 	}
@@ -562,7 +545,7 @@ public class IMBatch {
 				cwd + "OAEI2011/NYTMappings/nyt - dbpedia - schema mappings.rdf", 
 				NYTConstants.REF_DBP_ORGANIZATIONS, 
 				threshold, 
-				"dbpPeoUriCache.ser", NYTConstants.DBPEDIA_PEOPLE_OUTPUT);
+				"dbpOrgUriCache.ser", "dbpPeoCache.ser", NYTConstants.DBPEDIA_ORGANIZATION_OUTPUT);
 				
 		return report;
 	}
@@ -584,4 +567,47 @@ public class IMBatch {
 		return report;
 	}
 
+	public static void main(String[] args) throws Exception {
+		String cwd = System.getProperty("user.dir") + File.separator;
+		
+		//Logger.getLogger(DBPediaKBInstanceDataset.class).setLevel(Level.DEBUG);
+		//Logger.getLogger(InstanceMatcherFedeNew.class).setLevel(Level.DEBUG);
+		//Logger.getLogger(StatementsInstanceMatcher.class).setLevel(Level.DEBUG);
+		//Logger.getLogger(LabelInstanceMatcher.class).setLevel(Level.DEBUG);
+		//Logger.getLogger(TokenInstanceMatcher.class).setLevel(Level.DEBUG);
+		
+		
+		IMBatch batch = new IMBatch();
+
+//		Logger.getLogger(TokenInstanceMatcher.class).setLevel(Level.DEBUG);		
+		
+//		batch.runAllTests();
+	
+//		batch.runGeoNamesTest();
+	
+		batch.runDBPediaOnDiskTest();
+	
+		
+//		batch.runFreebaseOrganizationsTest();
+		
+//		batch.runFreebasePeopleTest();
+		
+//		batch.runFreebaseLocationsTest();
+		
+//		batch.runFreebaseTest();
+		
+//		batch.runGeoNamesTest();
+	
+//		batch.runDBPediaTest();
+		
+//		batch.dbpediaLocationsTest();
+	
+//		batch.runDBPediaOrganizationsTest();
+	
+//		batch.runDBpediaOnDiskLocationsTest();
+		
+		//System.out.println(batch.runDBPediaApiTest());
+	}
+
+	
 }

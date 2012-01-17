@@ -41,29 +41,68 @@ public class DBPediaKBInstanceDataset extends KnowledgeBaseInstanceDataset{
 	Logger log = Logger.getLogger(DBPediaKBInstanceDataset.class);
 	
 	boolean useInfoboxes = true;
+	boolean useGeo = true;
+	boolean useAbstracts = true;
 	
-	HashMap<String, List<String>> uriCache;
+	boolean autoSave = false;
 	
-	String uriCacheFilename = "dbpLocUriCache.ser";
+	HashMap<String, List<String>> uriCache = new HashMap<String, List<String>>();
+	
+	HashMap<String, List<Instance>> cache = new HashMap<String, List<Instance>>();
+	
+	String uriCacheFilename = "";
+	String cacheFilename = "";
+	
+	int count = 0;
 	
 	public DBPediaKBInstanceDataset(String xmlFile, String datasetId) {
 		super(xmlFile, datasetId);
 		//log.setLevel(Level.DEBUG);
-		loadUriCache();
+		
 	}
-
-
-
+	
+	public DBPediaKBInstanceDataset(String cacheFilename){
+		this.cacheFilename = cacheFilename;
+		if(new File(cacheFilename).exists()){
+			setCache(cacheFilename);
+		}
+	}
+	
 	@Override
 	public List<Instance> getCandidateInstances(String searchTerm, String type)
 	throws AMException {
+		count++;
+		
+		if(autoSave && count % 500 == 0){
+			try {
+				persistCache(cacheFilename + ".asv");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+					
 		log.debug("Providing candidate instances for " + searchTerm + " type=" + type);
 		List<Instance> instances = new ArrayList<Instance>();
 
-		OntModel labels = kb.getOntModelByID("dbp_labels");
-		OntModel disambiguations = kb.getOntModelByID("dbp_disambiguation");
-		OntModel redirects = kb.getOntModelByID("dbp_redirects");
-		OntModel infoboxes = kb.getOntModelByID("dbp_infoboxes");
+		OntModel labels = null;
+		OntModel disambiguations = null;
+		OntModel redirects = null;
+		OntModel infoboxes = null;
+		OntModel geo = null;
+		OntModel types = null;
+		OntModel abstracts = null;
+		
+		if(kb != null){
+			labels = kb.getOntModelByID("dbp-labels");
+			disambiguations = kb.getOntModelByID("dbp-disambiguation");
+			redirects = kb.getOntModelByID("dbp-redirects");
+			infoboxes = kb.getOntModelByID("dbp-infoboxes");
+			geo = kb.getOntModelByID("dbp-geo");
+			types = kb.getOntModelByID("dbp-types");
+			abstracts = kb.getOntModelByID("dbp-abstracts");
+		}
+		
+		//System.out.println(types.listStatements().next());
 		
 		//log.info(disambiguations);
 		//log.info(redirects);
@@ -71,51 +110,82 @@ public class DBPediaKBInstanceDataset extends KnowledgeBaseInstanceDataset{
 		searchTerm = searchTerm.replaceAll("'", "\\\\'");
 
 		String queryId = searchTerm + ":" + type;
+		
+		List<Instance> candidates = cache.get(queryId);
+		if(candidates != null)
+			return candidates;
+		
 
 		List<String> instanceURIs = uriCache.get(queryId);
 
-		if(instanceURIs == null){
+		if(instanceURIs != null){
+			System.out.println("hit in cache");
+		}
+		else{
+			
+			
 			
 			instanceURIs = new ArrayList<String>();
 			
 			//WE HAVE TO CREATE AND EXECUTE THE QUERY
 			String property = "http://www.w3.org/2000/01/rdf-schema#label"; 
-
-			String queryString = "PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#>" +
-			"\nPREFIX :       <http://example/>" +
-			"\nPREFIX pf:     <http://jena.hpl.hp.com/ARQ/property#>" +
-			"\nSELECT ?s ?score{" +
-			"\n      (?lit ?score) pf:textMatch '\"" + searchTerm + "\"' ." +
-			"\n	?s ?property ?lit." +
-			"\n  FILTER (?score > " + luceneScoreThreshold +")" +
-			"\n } ORDER BY DESC(?score) LIMIT 100";
-
+			String queryString;
+			int limit = 100;
+			
+			queryString = "\nPREFIX pf:     <http://jena.hpl.hp.com/ARQ/property#>" +
+						"\nSELECT ?s ?score{" +
+						"\n (?lit ?score) pf:textMatch '\"" + searchTerm + "\"' ." +
+						"\n	?s ?property ?lit." +
+						"\n  FILTER (?score > " + luceneScoreThreshold +")" +
+						"\n } ORDER BY DESC(?score) LIMIT " + limit;
+	
 			QuerySolutionMap map = new QuerySolutionMap();
 			Property prop = labels.getProperty(property);
 			if(prop == null) labels.createProperty(property);
 			map.add("property", prop);
 
 			ResultSet results = sparqlQuery(labels, queryString, map);
-
+			
+			
 			HashSet<String> uriSet = new HashSet<String>();
 
+			if(!results.hasNext()) log.info("No results");
+			
 			while(results.hasNext()){
 				QuerySolution soln = results.next();
 				RDFNode node = soln.get("s");
 
 				if(node == null) continue;
 
+				if(type != null){
+					String typeQuery = "select ?t WHERE {" +
+							"\n    <" + node.toString() + "> ?t <"+ type +">"  +
+							"\n}";
+
+					//System.out.println(typeQuery);
+					
+					ResultSet res = sparqlQuery(types, typeQuery, null);
+
+					//No results means the instance is not of the right type
+					if(!res.hasNext()){
+						//log.info(node.toString() + " not a " + type);
+						continue;	
+					}
+				}
 				//log.debug("Working on:" + node.toString());
 
 				boolean isDisambiguationPage = isDisambiguationPage(disambiguations, node.toString()); 
 				if(isDisambiguationPage){
-					log.info("Dis: " + node.toString());				
+					log.debug("Dis: " + node.toString());				
 					continue;
 				}
 
 				String redirectsTo = redirectsTo(redirects, node.toString());				
 
 				if(redirectsTo != null){
+					if(isDisambiguationPage(disambiguations, redirectsTo)){
+						continue;
+					}
 					//log.info(node.toString() + " redirectsTo " + redirectsTo);
 					if(!uriSet.contains(redirectsTo)){
 						uriSet.add(redirectsTo);
@@ -148,8 +218,24 @@ public class DBPediaKBInstanceDataset extends KnowledgeBaseInstanceDataset{
 			if(useInfoboxes){
 				Resource ind = infoboxes.getResource(individual.getURI());
 				List<Statement> stmts = infoboxes.listStatements(ind, (Property) null, (RDFNode) null).toList();
-				log.debug(stmts.toString().replaceAll("],", "]\n"));
+				//log.debug(stmts.toString().replaceAll("],", "]\n"));
 				instance.setStatements(stmts);
+			}
+			if(useGeo){
+				Resource ind = geo.getResource(individual.getURI());
+				if(ind != null){
+					List<Statement> stmts = geo.listStatements(ind, (Property) null, (RDFNode) null).toList();
+					//log.debug(stmts.toString().replaceAll("],", "]\n"));
+					instance.addStatements(stmts);
+				}
+			}
+			if(useAbstracts){
+				Resource ind = abstracts.getResource(individual.getURI());
+				if(ind != null){
+					List<Statement> stmts = abstracts.listStatements(ind, (Property) null, (RDFNode) null).toList();
+					//log.debug(stmts.toString().replaceAll("],", "]\n"));
+					instance.addStatements(stmts);
+				}
 			}
 			else {
 				//TODO prepare the statements in case of no infoboxes available
@@ -160,6 +246,7 @@ public class DBPediaKBInstanceDataset extends KnowledgeBaseInstanceDataset{
 			instances.add(instance);
 
 		}
+		cache.put(queryId, instances);		
 		return instances;
 	}
 	
@@ -216,6 +303,7 @@ public class DBPediaKBInstanceDataset extends KnowledgeBaseInstanceDataset{
 	
 	public void setUriCache(String filename){
 		uriCacheFilename = filename;
+		loadUriCache();
 	}
 	
 	private void loadUriCache() {
@@ -223,7 +311,7 @@ public class DBPediaKBInstanceDataset extends KnowledgeBaseInstanceDataset{
 		ObjectInputStream in;
 		Object input = null;
 		
-		log.info("Freebase is loading cache..." + " [" + uriCacheFilename + "]");
+		log.info("DBpedis is loading cache..." + " [" + uriCacheFilename + "]");
 				
 		try {	fis = new FileInputStream(uriCacheFilename); }
 		catch (FileNotFoundException e1) {
@@ -244,7 +332,7 @@ public class DBPediaKBInstanceDataset extends KnowledgeBaseInstanceDataset{
 	}
 	
 	public void persistUriCache() throws FileNotFoundException, IOException{
-		 log.info("Writing cache to file... [" + uriCacheFilename + "]");
+		 log.info("Writing URI cache to file... [" + uriCacheFilename + "]");
 		 ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(uriCacheFilename));
 		 out.writeObject(uriCache);
 		 out.close();
@@ -263,7 +351,11 @@ public class DBPediaKBInstanceDataset extends KnowledgeBaseInstanceDataset{
 		String datasetId = "dbp_redirects";
 		DBPediaKBInstanceDataset KBdataset = new DBPediaKBInstanceDataset(xmlFile, datasetId);		
 		
-		OntModel redirects = KBdataset.getKb().getOntModelByID("dbp_redirects");
+		OntModel redirects = KBdataset.getKb().getOntModelByID("dbp-redirects");
+		OntModel disambiguations = KBdataset.getKb().getOntModelByID("dbp-disambiguation");
+		
+		
+		System.out.println(KBdataset.isDisambiguationPage(disambiguations, "http://dbpedia.org/resource/Hart_Island"));
 		
 //		System.out.println("Printing size");
 //		StmtIterator it = redirects.listStatements();
@@ -274,5 +366,45 @@ public class DBPediaKBInstanceDataset extends KnowledgeBaseInstanceDataset{
 		//System.out.println(KBdataset.redirectsTo(redirects, "http://dbpedia.org/resource/Gregory_B._Craig"));
 		
 	}
-	
+
+	public void setCache(String cacheFile) {
+		cacheFilename = cacheFile;
+		loadCache();
+	}
+
+	private void loadCache() {
+		FileInputStream fis = null;
+		ObjectInputStream in;
+		Object input = null;
+		
+		log.info("DBpedia is loading cache..." + " [" + cacheFilename + "]");
+				
+		try {	fis = new FileInputStream(cacheFilename); }
+		catch (FileNotFoundException e1) {
+			log.error("The cache file doesn't exist");
+			cache = new HashMap<String, List<Instance>>();
+			return;
+		}
+		try {
+			in = new ObjectInputStream(fis);
+			input  = in.readObject();
+			cache = (HashMap<String, List<Instance>>) input;
+		} catch (Exception e1) {
+			log.error("The cache will be empty");
+			cache = new HashMap<String, List<Instance>>();
+			return;
+		}
+		log.info("Done");
+		
+	}
+
+	public void persistCache(String file) throws FileNotFoundException, IOException {
+		if(file == null) file = cacheFilename;
+		log.info("Writing cache to file... [" + file + "]");
+		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
+		out.writeObject(cache);
+		out.close();
+		log.info("Done");	
+	}
+
 }
