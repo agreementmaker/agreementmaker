@@ -32,17 +32,15 @@ public class NYTConstants {
 		public static String FREEBASE_ORGANIZATIONS_OUTPUT = "NYTbatch/FreebaseOrganizations.rdf";
 		public static String DBPEDIA_PEOPLE_OUTPUT = "NYTbatch/DBpediaPeople.rdf";
 		public static String DBPEDIA_LOCATION_OUTPUT = "NYTbatch/DBpediaLocations.rdf";
-		public static String dBPEDIA_ORGANIZATION_OUTPUT = "NYTbatch/DBpediaOrganizations.rdf";
+		public static String DBPEDIA_ORGANIZATION_OUTPUT = "NYTbatch/DBpediaOrganizations.rdf";
 		public static String GEONAMES_LOCATION_OUTPUT = "NYTbatch/GeoNamesLocations.rdf";
 	
-		
 		//Target ontologies
 		public static String DBPEDIA = "DBPedia";
 		public static String FREEBASE = "Freebase";
 
 		public static String DBP_ENDPOINT = "http://dbpedia.org/sparql";
-		
-		
+				
 		//KB files
 		public static String DBP_PERSON_XML = "people.xml";
 		
