@@ -24,8 +24,10 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 	
 	Logger log = Logger.getLogger(TokenInstanceMatcher.class);
 	
-	Map<String, List<String>> sourceKeywordsCache = new HashMap<String, List<String>>();
 	
+	String lastSourceURI = "";
+	List<String> lastSourceProcessed; 
+		
 	@Override
 	public double instanceSimilarity(Instance source, Instance target)
 			throws Exception {
@@ -34,8 +36,8 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 		
 		List<String> sourceKeywords;
 		
-		if(sourceKeywordsCache.containsKey(source.getUri()))
-			sourceKeywords = sourceKeywordsCache.get(source.getUri());
+		if(lastSourceURI.equals(source.getUri()))
+			sourceKeywords = lastSourceProcessed;
 		else{
 			sourceKeywords = new ArrayList<String>();
 			List<Statement> sourceStmts = source.getStatements();
@@ -62,7 +64,9 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 			log.debug("between parentheses: " + betweenParentheses);
 			if(betweenParentheses != null) sourceKeywords.add(betweenParentheses);
 			
-			sourceKeywordsCache.put(source.getUri(), sourceKeywords);
+			//sourceKeywordsCache.put(source.getUri(), sourceKeywords);
+			lastSourceURI = source.getUri();
+			lastSourceProcessed = sourceKeywords;
 		}
 		
 		List<String> types = target.getProperty("type");
