@@ -477,7 +477,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	Instance sourceInstance;
     	for (int i = 0; i < sourceInstances.size(); i++) {
     		System.out.println(i);
-    		//if(i % 100 == 0) System.out.println(i);
 			sourceInstance = sourceInstances.get(i);
     		List<String> labelList = sourceInstance.getProperty("label");
     		
