@@ -7,11 +7,15 @@ import com.hp.hpl.jena.ontology.OntProperty;
 
 public class Utility {
 	public static int getClassDepth(OntClass cl, int i) {
-		List<OntClass> parents = cl.listSuperClasses().toList();
+		try {
+			List<OntClass> parents = cl.listSuperClasses().toList();
 		
-		for (int j = 0; j < parents.size(); j++) {
-			if(parents.get(j).isAnon()) continue;
-			return getClassDepth(parents.get(j), i+1);
+			for (int j = 0; j < parents.size(); j++) {
+				if(parents.get(j).isAnon()) continue;
+				return getClassDepth(parents.get(j), i+1);
+			}
+		} catch ( Exception e ) {
+			e.printStackTrace();
 		}
 		return i;
 	}

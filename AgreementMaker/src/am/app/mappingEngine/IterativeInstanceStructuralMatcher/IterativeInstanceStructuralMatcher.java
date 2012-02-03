@@ -1078,27 +1078,35 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 	
 	private double superclassesComparison(OntClass sClass, OntClass tClass) {
 		
-		List<OntClass> l1 = sClass.listSuperClasses().toList();
-		List<OntClass> l2 = tClass.listSuperClasses().toList();
+		double subSim = 0.0d;
 		
-		if(l1.size()!=l2.size() || l1.size()==0) return 0.0;
+		try {
 		
-		double[][] sims = new double[l1.size()][l1.size()]; 
+			List<OntClass> l1 = sClass.listSuperClasses().toList();
+			List<OntClass> l2 = tClass.listSuperClasses().toList();
+		
+			if(l1.size()!=l2.size() || l1.size()==0) return 0.0d;
+		
+			double[][] sims = new double[l1.size()][l1.size()]; 
 				
-		for(int i=0; i<l1.size(); i++){
-			OntClass c1 = (OntClass) l1.get(i);
-			for(int j=0; j<l2.size(); j++){
-				OntClass c2 = (OntClass) l2.get(j);
-				sims[i][j] = superClassSimilarity(c1,c2);
+			for(int i=0; i<l1.size(); i++){
+				OntClass c1 = (OntClass) l1.get(i);
+				for(int j=0; j<l2.size(); j++){
+					OntClass c2 = (OntClass) l2.get(j);
+					sims[i][j] = superClassSimilarity(c1,c2);
+				}
 			}
-		}
-		
-		//Obtain best matching solution
-		double subSim = Utils.optimalAlignment(sims);
-		
-		if(verbose){
-			Utils.printMatrix(sims);
-			System.out.println("subSim: "+subSim);
+			
+			//Obtain best matching solution
+			subSim = Utils.optimalAlignment(sims);
+			
+			if(verbose){
+				Utils.printMatrix(sims);
+				System.out.println("subSim: "+subSim);
+			}
+		} catch( Exception e ) {
+			e.printStackTrace();
+			return 0.0d;
 		}
 		return subSim;
 	}
