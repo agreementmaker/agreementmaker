@@ -78,8 +78,8 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 				}
 			}
 		}
-		
-		if(referenceListOfPairs == null || referenceListOfPairs.size() == 0) {
+		boolean b = ((ReferenceAlignmentParameters)param).displayPaneEmptyAlignment;
+		if((referenceListOfPairs == null || referenceListOfPairs.size() == 0)&&b) {
 			Utility.displayMessagePane("The reference file selected doen not contain any alignment.\nPlease check the format.", null);
 		}
 		else {

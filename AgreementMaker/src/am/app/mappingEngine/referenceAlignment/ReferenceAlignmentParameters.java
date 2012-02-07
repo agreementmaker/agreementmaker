@@ -11,5 +11,5 @@ public class ReferenceAlignmentParameters extends AbstractParameters {
 	public boolean onlyEquivalence = false;
 	public boolean skipClasses = false;
 	public boolean skipProperties = false;
-	
+	public boolean displayPaneEmptyAlignment = true; // if false avoid to display a message pane when the alignment is empty
 }
