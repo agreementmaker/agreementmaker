@@ -32,6 +32,12 @@ import am.AMException;
 import am.app.ontology.instance.endpoint.SparqlEndpoint;
 import am.utility.HTTPUtility;
 
+/**
+ * An instance dataset implementation based on the DBpedia API
+ * 
+ * @author federico
+ *
+ */
 public class DBPediaApiInstanceDataset implements InstanceDataset{
 
 	String endpoint = "http://lookup.dbpedia.org/api/search.asmx/KeywordSearch";

@@ -561,7 +561,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	
 
 	//IT MAY BE OVERRIDDEN BY INSTANCE MATCHERS
-	protected MatchingPair alignInstanceCandidates(Instance sourceInstance,
+	public MatchingPair alignInstanceCandidates(Instance sourceInstance,
 			List<Instance> targetCandidates) throws Exception {
 		
 		double similarity;

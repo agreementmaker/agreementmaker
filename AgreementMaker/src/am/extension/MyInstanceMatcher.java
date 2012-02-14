@@ -30,7 +30,7 @@ public class MyInstanceMatcher extends AbstractMatcher {
 	}
 	
 	@Override
-	protected MatchingPair alignInstanceCandidates(Instance sourceInstance,
+	public MatchingPair alignInstanceCandidates(Instance sourceInstance,
 			List<Instance> targetCandidates) throws Exception {
 		
 		//System.out.println("Source instance: " + sourceInstance );

@@ -22,6 +22,7 @@ import am.app.mappingEngine.hierarchy.HierarchyMatcher;
 import am.app.mappingEngine.hierarchy.HierarchyMatcherModified;
 import am.app.mappingEngine.hierarchy.HierarchyStructureMatcher;
 import am.app.mappingEngine.hierarchy.WordnetSubclassMatcher;
+import am.app.mappingEngine.instanceMatchers.InstanceMatcherFedeNew;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.mediatingMatcher.MediatingMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsMatcher;
@@ -119,7 +120,11 @@ public enum MatchersRegistry {
 	Copy				( "Copy Matcher", CopyMatcher.class, MatcherCategory.UTILITY, false ),
 	Random 				( "(Test) Random Similarities", RandomMatcher.class, MatcherCategory.UTILITY, true ),
 	DSI2				( "OLD Descendant's Similarity Inheritance (DSI)", OldDescendantsSimilarityInheritanceMatcher.class, MatcherCategory.STRUCTURAL, false ),
-	UserFeedBackLoop 	("User Feedback Loop", FeedbackLoop.class, false );
+	UserFeedBackLoop 	("User Feedback Loop", FeedbackLoop.class, false ),
+	
+	//INSTANCE MATCHERS
+	MyInstMatch			( "MIM", "My Instance Matcher", InstanceMatcherFedeNew.class, MatcherCategory.USER );
+	
 	
 	/* Don't change anything below this line .. unless you intend to. */
 	private boolean showInControlPanel;

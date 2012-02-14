@@ -171,5 +171,4 @@ public class SeparateFileInstanceDataset implements InstanceDataset {
 		}	
 		return ret;
 	}
-
 }

@@ -15,6 +15,11 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.impl.StatementImpl;
 
+/**
+ * 
+ * @author federico
+ *
+ */
 public class Instance implements Serializable{
 	private static final long serialVersionUID = 4568266674951302327L;
 	protected String uri;

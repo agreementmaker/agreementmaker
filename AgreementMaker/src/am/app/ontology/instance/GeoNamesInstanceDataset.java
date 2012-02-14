@@ -6,7 +6,7 @@ import am.AMException;
 import am.app.ontology.instance.endpoint.GeoNamesEndpoint;
 
 /**
- * An instance dataset for a Freebase endpoint.
+ * An instance dataset for a GeoNames endpoint.
  */
 public class GeoNamesInstanceDataset implements InstanceDataset {
 
