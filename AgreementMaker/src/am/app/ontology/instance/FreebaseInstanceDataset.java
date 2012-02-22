@@ -1,7 +1,5 @@
 package am.app.ontology.instance;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
 
 import am.AMException;
@@ -16,6 +14,10 @@ public class FreebaseInstanceDataset implements InstanceDataset {
 	
 	public FreebaseInstanceDataset(FreebaseEndpoint endpoint) {
 		instanceSource = endpoint;
+	}
+	
+	public FreebaseInstanceDataset() {
+		instanceSource = new FreebaseEndpoint();
 	}
 	
 	@Override

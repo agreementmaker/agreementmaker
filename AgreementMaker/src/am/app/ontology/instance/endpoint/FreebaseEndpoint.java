@@ -29,7 +29,7 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 		
 	static int count = 0;
 	
-	private boolean useCache = true;
+	private boolean useCache = false;
 	
 	private HashMap<String, String> cache;
 	

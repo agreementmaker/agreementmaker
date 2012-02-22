@@ -5,6 +5,11 @@ import java.util.List;
 
 import am.app.ontology.instance.Instance;
 
+/**
+ * 
+ * @author federico
+ *
+ */
 public class ScoredInstance {
 	Instance instance;
 	double score;

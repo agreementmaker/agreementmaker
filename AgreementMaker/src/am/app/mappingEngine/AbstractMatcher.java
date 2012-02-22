@@ -536,32 +536,32 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
      * but may be used by overriding matchers 
      */
 	public String processLabelBeforeCandidatesGeneration(String label, String type) {
+		//Remove parenthesis and text inside 
 		if(label.contains("(")){
 			int beg = label.indexOf('(');
 			int end = label.indexOf(')');
 			label = label.substring(0,beg) + label.substring(end + 1);
 			label = label.trim();
 		}
-		
+		//swaps text before and after comma. This is not safe! 
 		if(label.contains(",")){
-			String[] splitted = label.split(",");
-			label = splitted[1].trim() + " " + splitted[0].trim();
+			String[] split = label.split(",");
+			label = split[1].trim() + " " + split[0].trim();
 		}
 			
-		String[] splitted = label.split(" ");
+		String[] split = label.split(" ");
 		
 		label = "";
-		for (int i = 0; i < splitted.length; i++) {
-			if(splitted[i].length() == 1) continue;
-			label += splitted[i] + " ";
+		for (int i = 0; i < split.length; i++) {
+			if(split[i].length() == 1) continue;
+			label += split[i] + " ";
 		}
 		label = label.trim();
 		return label; 
 	}
 	
-
-	//IT MAY BE OVERRIDDEN BY INSTANCE MATCHERS
-	public MatchingPair alignInstanceCandidates(Instance sourceInstance,
+	//It may be overridden by instance matcher, but also used outside
+	public List<ScoredInstance> rankInstanceCandidates(Instance sourceInstance,
 			List<Instance> targetCandidates) throws Exception {
 		
 		double similarity;
@@ -572,12 +572,21 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		}
 		
 		Collections.sort(scoredCandidates, new ScoredInstanceComparator());	
+
+		return scoredCandidates;
+	}
+	
+	public List<ScoredInstance> filterInstanceCandidates(List<ScoredInstance> candidates){
+		return ScoredInstance.filter(candidates, 0.01);
+	}
+
+	//IIt may be overridden by instance matcher, but also used outside
+	public MatchingPair alignInstanceCandidates(Instance sourceInstance,
+			List<Instance> targetCandidates) throws Exception {
 		
-//		for (int i = 0; i < scoredCandidates.size(); i++) {
-//			ScoredInstance scoredInstance = scoredCandidates.get(i);
-//		}
+		List<ScoredInstance> scoredCandidates = rankInstanceCandidates(sourceInstance, targetCandidates);
 		
-		scoredCandidates = ScoredInstance.filter(scoredCandidates, 0.01);
+		scoredCandidates = filterInstanceCandidates(scoredCandidates);
 		
 		if(scoredCandidates.size() == 1){
 			double candidateScore = scoredCandidates.get(0).getScore();
