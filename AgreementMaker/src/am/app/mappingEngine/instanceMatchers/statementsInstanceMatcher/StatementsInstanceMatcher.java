@@ -1,4 +1,4 @@
-package am.app.mappingEngine.instanceMatchers;
+package am.app.mappingEngine.instanceMatchers.statementsInstanceMatcher;
 
 import java.util.List;
 
@@ -8,6 +8,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.ibm.icu.text.DecimalFormat;
 
 import am.app.mappingEngine.StringUtil.StringMetrics;
+import am.app.mappingEngine.instanceMatchers.BaseInstanceMatcher;
 import am.app.ontology.instance.Instance;
 
 public class StatementsInstanceMatcher extends BaseInstanceMatcher{

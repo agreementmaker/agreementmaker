@@ -31,6 +31,10 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		if(param != null && (param instanceof LabelInstanceMatcherParameters))
 			metric = ((LabelInstanceMatcherParameters) param).metric;
 	}
+	
+	public LabelInstanceMatcher(String stringMetric){
+		metric = stringMetric;
+	}
 			
 	@Override
 	public double instanceSimilarity(Instance source, Instance target)

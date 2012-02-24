@@ -2,6 +2,11 @@ package am.app.mappingEngine.instanceMatchers.combination;
 
 import java.util.List;
 
+/**
+ * 
+ * @author federico
+ *
+ */
 public abstract class CombinationFunction {
 	enum Type {LOCAL, GLOBAL};
 	Type type;

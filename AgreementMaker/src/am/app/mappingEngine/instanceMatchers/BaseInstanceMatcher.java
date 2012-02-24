@@ -11,7 +11,12 @@ import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.Instance;
 import am.utility.referenceAlignment.AlignmentUtilities;
 
-
+/**
+ * Implements some basic functions for instance matching. 
+ * 
+ * @author federico
+ *
+ */
 public class BaseInstanceMatcher extends AbstractMatcher{
 
 	private static final long serialVersionUID = 4301685403439511365L;

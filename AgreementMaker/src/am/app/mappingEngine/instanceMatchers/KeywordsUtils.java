@@ -14,7 +14,7 @@ public class KeywordsUtils {
 		
 		String toProcess;
 		String curr;
-		String[] splitted;
+		String[] split;
 		for (int i = 0; i < list.size(); i++) {
 			toProcess = list.get(i).toLowerCase();
 			
@@ -22,10 +22,10 @@ public class KeywordsUtils {
 				toProcess = toProcess.replace(charBlackList[j], ' ');
 			}
 			
-			splitted = toProcess.split(" ");
+			split = toProcess.split("\\s");
 			
-			for (int j = 0; j < splitted.length; j++) {
-				curr = splitted[j];
+			for (int j = 0; j < split.length; j++) {
+				curr = split[j];
 				if(curr.isEmpty()) continue;
 				
 				if(EnglishUtility.isStopword(curr)) continue;

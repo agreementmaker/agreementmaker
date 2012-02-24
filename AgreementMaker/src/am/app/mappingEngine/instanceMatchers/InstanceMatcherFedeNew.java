@@ -24,6 +24,8 @@ import am.app.mappingEngine.instanceMatchers.WordNetUtils;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.instanceMatcher.LabelUtils;
 import am.app.mappingEngine.instanceMatchers.labelInstanceMatcher.LabelInstanceMatcher;
+import am.app.mappingEngine.instanceMatchers.statementsInstanceMatcher.StatementsInstanceMatcher;
+import am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.Instance;
 import am.utility.referenceAlignment.AlignmentUtilities;
@@ -59,6 +61,10 @@ public class InstanceMatcherFedeNew extends AbstractMatcher {
 	StatementsInstanceMatcher stim = new StatementsInstanceMatcher();
 	LabelInstanceMatcher lim = new LabelInstanceMatcher();
 	TokenInstanceMatcher tim = new TokenInstanceMatcher();
+	
+	public InstanceMatcherFedeNew(){
+		
+	}
 	
 	@Override
 	protected void beforeAlignOperations() throws Exception {

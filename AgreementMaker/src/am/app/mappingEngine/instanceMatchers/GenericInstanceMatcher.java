@@ -1,18 +1,21 @@
 package am.app.mappingEngine.instanceMatchers;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.instanceMatchers.combination.CombinationFunction;
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.Instance;
-import am.app.ontology.instance.ScoredInstance;
-import am.app.ontology.instance.ScoredInstanceComparator;
 
+/**
+ * 
+ * @author federico
+ *
+ */
 public class GenericInstanceMatcher extends BaseInstanceMatcher{
 	
+	private static final long serialVersionUID = -5745262888574700843L;
+
 	private List<AbstractMatcher> matchers = new ArrayList<AbstractMatcher>();
 		
 	CombinationFunction combination;

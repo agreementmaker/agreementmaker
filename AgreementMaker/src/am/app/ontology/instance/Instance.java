@@ -16,6 +16,14 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.impl.StatementImpl;
 
 /**
+ * Represents an instance in AgreementMaker and InformationMatching.
+ * It is identified by a URI, and can have a type.
+ * There are two layers of property-value pairs:
+ * 	- A synctactic one which is composed by Strings.
+ *  - A semantic composed by a list of statements in an ontology.
+ *  
+ *  This allows us to model Jena instances as well as instances 
+ *  extracted from XML and JSON.
  * 
  * @author federico
  *
@@ -46,6 +54,14 @@ public class Instance implements Serializable{
 	
 	public List<String> getProperty( String key ) {
 		return properties.get(key);
+	}
+	
+	public List<String> getAllPropertyValues(){
+		List<String> values = new ArrayList<String>();
+		for (List<String> strings: properties.values()) {
+			values.addAll(strings);
+		}
+		return values;
 	}
 	
 	public String getSingleValuedProperty( String key ) {

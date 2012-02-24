@@ -8,7 +8,6 @@ import edu.smu.tspell.wordnet.WordNetDatabase;
 
 public class WordNetUtils {
 	WordNetDatabase wordNet; 
-	
 	HashMap<String, Boolean> isSynonym = new HashMap<String, Boolean>();
 	
 	public WordNetUtils(){
