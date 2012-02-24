@@ -22,8 +22,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 	
 	Logger log = Logger.getLogger(TokenInstanceMatcher.class);
 	
-	
-	String lastSourceURI = "";
+		String lastSourceURI = "";
 	List<String> lastSourceProcessed; 
 		
 	@Override
