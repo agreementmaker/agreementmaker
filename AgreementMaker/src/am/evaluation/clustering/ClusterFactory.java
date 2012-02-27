@@ -34,7 +34,7 @@ public class ClusterFactory {
 			// instantiate a new clustering method
 			
 			Constructor<? extends ClusteringMethod> c = 
-					t.getMethodClass().getConstructor( matchers.getClass() );
+					t.getMethodClass().getConstructor( List.class );
 			
 			method = c.newInstance(matchers);
 			
