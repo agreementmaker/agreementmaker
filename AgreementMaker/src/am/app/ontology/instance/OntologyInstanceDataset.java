@@ -28,6 +28,10 @@ public class OntologyInstanceDataset implements InstanceDataset {
 		return true;  // since we load the entire ontology, we can iterate through the instances. 
 	}
 
+	@Override public long size() { 
+		return instanceSource.getModel().listIndividuals().toList().size(); 
+	}
+	
 	@Override
 	public List<Instance> getInstances(String type, int limit) {
 

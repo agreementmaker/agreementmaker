@@ -44,7 +44,9 @@ public class ModelInstanceDataset implements InstanceDataset{
 	public boolean isIterable() {
 		return true; // yes, we can iterate through the instances
 	}
-
+	
+	@Override public long size() { return instanceSource.size(); }
+	
 	@Override
 	public List<Instance> getInstances(String type, int limit)
 			throws AMException {

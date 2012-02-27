@@ -26,6 +26,7 @@ public class SeparateFileInstanceDataset implements InstanceDataset {
 	
 	private HashMap<String, Instance> instancesByURI;
 	
+	/** FIXME: Remove the specific properties in this general class. */
 	private String[][] propertiesWhiteList = { 
 									  {NYTConstants.hasArticleURI, "article", "m"},
 									  {NYTConstants.orgKeywordsURI, "organizationKeywords", "sep"},
@@ -44,6 +45,8 @@ public class SeparateFileInstanceDataset implements InstanceDataset {
 		return true; // yes, we can iterate through the instances
 	}
 
+	@Override public long size() { return instanceSource.size(); }
+	
 	@Override
 	public List<Instance> getInstances(String type, int limit)
 			throws AMException {

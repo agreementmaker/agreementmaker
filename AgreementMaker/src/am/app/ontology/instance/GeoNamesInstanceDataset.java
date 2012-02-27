@@ -16,8 +16,8 @@ public class GeoNamesInstanceDataset implements InstanceDataset {
 		instanceSource = endpoint;
 	}
 	
-	@Override
-	public boolean isIterable() { return false; }
+	@Override public boolean isIterable() { return false; }
+	@Override public long size() { return -1; }
 
 	@Override
 	public List<Instance> getInstances(String type, int limit)
@@ -62,6 +62,6 @@ public class GeoNamesInstanceDataset implements InstanceDataset {
 			e.printStackTrace();
 		}
 	}
-
+	
 }
 

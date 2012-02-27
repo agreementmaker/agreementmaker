@@ -36,4 +36,9 @@ public interface InstanceDataset {
 	 */
 	public Instance getInstance(String uri) throws AMException;
 	
+	/**
+	 * Returns the number of instances in the dataset.
+	 * If the dataset is not iterable, then returns -1.
+	 */
+	public long size();
 }

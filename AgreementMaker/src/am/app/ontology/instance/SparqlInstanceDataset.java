@@ -17,6 +17,8 @@ public class SparqlInstanceDataset implements InstanceDataset {
 		return false;
 	}
 
+	@Override public long size() { return -1; }
+	
 	@Override
 	public List<Instance> getInstances(String type, int limit)
 			throws AMException {

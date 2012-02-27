@@ -9,9 +9,11 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
+import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 
 /**
  * Represents an instance in AgreementMaker and InformationMatching.
@@ -51,6 +53,24 @@ public class Instance implements Serializable {
 		statements = new ArrayList<Statement>();
 	}
 
+	/**
+	 * Create an instance given a JENA Individual.
+	 * @param i
+	 */
+	public Instance( Individual i ) {
+		this.uri = i.getURI();
+		this.type = i.getOntClass().getURI();
+		
+		properties = new Hashtable<String, List<String>>();
+		statements = new ArrayList<Statement>();
+		
+		StmtIterator iter = i.listProperties();
+		while( iter.hasNext() ) {
+			Statement s = iter.next();
+			statements.add(s);
+		}
+	}
+	
 	public String getUri() {
 		return uri;
 	}

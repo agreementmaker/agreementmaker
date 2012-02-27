@@ -68,6 +68,8 @@ public class DBPediaApiInstanceDataset implements InstanceDataset{
 		return null;
 	}
 
+	@Override public long size() { return -1; }
+	
 	@Override
 	public List<Instance> getCandidateInstances(String searchTerm, String type)
 			throws AMException {

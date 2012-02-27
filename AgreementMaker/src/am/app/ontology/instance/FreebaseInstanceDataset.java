@@ -20,8 +20,8 @@ public class FreebaseInstanceDataset implements InstanceDataset {
 		instanceSource = new FreebaseEndpoint();
 	}
 	
-	@Override
-	public boolean isIterable() { return false; }
+	@Override public boolean isIterable() { return false; }
+	@Override public long size() { return -1; }
 
 	@Override
 	public List<Instance> getInstances(String type, int limit)
@@ -66,5 +66,6 @@ public class FreebaseInstanceDataset implements InstanceDataset {
 			e.printStackTrace();
 		}
 	}
+	
 	
 }
