@@ -2,7 +2,6 @@ package am.app.ontology.instance;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -13,30 +12,38 @@ import java.util.List;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.impl.StatementImpl;
 
 /**
  * Represents an instance in AgreementMaker and InformationMatching.
  * It is identified by a URI, and can have a type.
+ * <p>
  * There are two layers of property-value pairs:
- * 	- A synctactic one which is composed by Strings.
- *  - A semantic composed by a list of statements in an ontology.
- *  
- *  This allows us to model Jena instances as well as instances 
- *  extracted from XML and JSON.
- * 
- * @author federico
+ * <ul>
+ * <li> A syntactic layer which is composed by strings (keys and values), stored in a Hashtable.
+ * <li> A semantic layer composed by a list of statements in an ontology, stored in a List.
+ * </ul>
+ * <p>
+ *  The two layers allow us to model Jena instances (semantic layer) as well as instances 
+ *  extracted from XML and JSON (syntactic layer).
+ * </p>
+ * @author Federico Caimi
  *
  */
-public class Instance implements Serializable{
+public class Instance implements Serializable {
 	private static final long serialVersionUID = 4568266674951302327L;
+
 	protected String uri;
 	protected String type;
 	
-	protected Hashtable<String,List<String>> properties;
+	protected Hashtable<String,List<String>> properties; // the syntactic properties of this instance 
 	private String serializedModel;
-	protected transient List<Statement> statements;
-		
+	protected transient List<Statement> statements; // the semantic RDF statements of this instance.
+	
+	/**
+	 * Create an instance.
+	 * @param uri The unique URI of this instance.
+	 * @param type A URI of a class in the Ontology-backed KB.
+	 */
 	public Instance(String uri, String type) {
 		this.uri = uri;
 		this.type = type;
@@ -52,6 +59,17 @@ public class Instance implements Serializable{
 		return properties.keys();
 	}
 	
+	/**
+	 * Returns the values of a syntactic property.  The may be multiple
+	 * values for a single property, so they are returned as a list.
+	 * <p>
+	 * NOTE: If you would like to get the value of a single-valued property
+	 * and avoid using a List in the return, use {@link #getSingleValuedProperty(String)}.
+	 * 
+	 * @param key The property name.
+	 * @return The list of values for this property.
+	 * @see #getSingleValuedProperty(String)
+	 */
 	public List<String> getProperty( String key ) {
 		return properties.get(key);
 	}
@@ -64,6 +82,12 @@ public class Instance implements Serializable{
 		return values;
 	}
 	
+	/**
+	 * Return the value of a <i>single valued</i> syntactic property.
+	 * @param key The string representation of the property name.
+	 * @return The value of the property, as a string.
+	 * @see #getProperty(String)
+	 */
 	public String getSingleValuedProperty( String key ) {
 		List<String> strings = properties.get(key);
 		if(strings == null) return null;
@@ -123,6 +147,8 @@ public class Instance implements Serializable{
 	public void setURI(String uri){
 		this.uri = uri;
 	}	
+	
+	/* *************************** Serialization methods. *************************** */
 	
     private void writeObject(java.io.ObjectOutputStream stream) throws IOException{
         //put the statements into a model
