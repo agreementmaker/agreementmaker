@@ -322,6 +322,11 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			if( type == VisualizationType.CLASS_MATRIX ) feedbackMatrix = ((AbstractMatcher)e.payload).getClassesMatrix();
 			if( type == VisualizationType.PROPERTIES_MATRIX ) feedbackMatrix = ((AbstractMatcher)e.payload).getPropertiesMatrix();
 			
+			if( feedbackMatrix == null ) {
+				System.err.println("Feedback matrix is null, this should not happen.");
+				feedbackMatrix = ((AbstractMatcher)e.payload).getClassesMatrix();
+			}
+			
 			return;
 		}
 		
@@ -619,7 +624,10 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		for( Mapping m : cl ) {
 			double sim = feedbackMatrix2.getSimilarity(m.getSourceKey(), m.getTargetKey());
 			double newsim = (1 - eValue) * sim;
-			feedbackMatrix2.get(m.getSourceKey(), m.getTargetKey()).setSimilarity(newsim);
+			Mapping feedbackMapping = feedbackMatrix2.get(m.getSourceKey(), m.getTargetKey()); 
+			if( feedbackMapping == null ) feedbackMatrix2.set(m.getSourceKey(), m.getTargetKey(), new Mapping(m.getEntity1(), m.getEntity2(), newsim));
+			else feedbackMapping.setSimilarity(newsim);
+			
 			System.out.println("Punishing " + m + ": " + sim + " updated to " + newsim );
 			//filteredCells[m.getSourceKey()][m.getTargetKey()] = true;
 		}
