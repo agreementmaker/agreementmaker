@@ -37,6 +37,10 @@ public class Normalizer {
 		
 		boolean endOfWord;
 		
+		
+		if(parameters.normalizePossessive)
+			s = s.replace("'s", "");
+		
 		for(int i = 0 ; i < chars.length; i++) {	
 			endOfWord = false;
 			//new word when we find an uppercase char
@@ -122,6 +126,18 @@ public class Normalizer {
 			normalizeMap.put("�", "e");
 			normalizeMap.put("�", "e");
 			normalizeMap.put("�", "i");
+			normalizeMap.put("�", "o");
+			normalizeMap.put("á", "a");
+			normalizeMap.put("à", "a");
+			normalizeMap.put("é", "e");
+			normalizeMap.put("è", "e");
+			normalizeMap.put("í", "i");
+			normalizeMap.put("ì", "i");
+			normalizeMap.put("ó", "o");
+			normalizeMap.put("ò", "o");
+			normalizeMap.put("ú", "u");
+			normalizeMap.put("ù", "u");
+			
 		}
 		
 		if(parameters.normalizePunctuation) {
@@ -133,6 +149,8 @@ public class Normalizer {
 			normalizeMap.put(";", blank);
 			normalizeMap.put("\"", blank); // "
 			normalizeMap.put(" ' ",blank); // '
+			normalizeMap.put("(",blank); // '
+			normalizeMap.put(")",blank); // '
 		}
 		
 		if(parameters.normalizeSlashes) {
