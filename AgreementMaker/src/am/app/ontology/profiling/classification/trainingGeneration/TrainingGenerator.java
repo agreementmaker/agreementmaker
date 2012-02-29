@@ -23,7 +23,7 @@ import am.Utility;
 import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.oaei.OAEI_Track;
@@ -642,7 +642,7 @@ public static void testClassified() {
 			for (Iterator<InputTest> it = inputList.iterator(); it.hasNext();) {
 				InputTest inputTest = (InputTest) it.next();
 				AbstractMatcher matcher = inputTest.getMatcher();
-				AbstractParameters param = inputTest.getParam();
+				DefaultMatcherParameters param = inputTest.getParam();
 				String inputClass = inputTest.getClassName();
 				//System.out.println("THRESHOLD BEFORE SETPARAM"+matcher.getThreshold());
 				matcher.setParam(param); //TODO : it is necessary here?
@@ -895,7 +895,7 @@ public static void testClassified() {
 	private static double[] runAnalysis(String sourceOntologyFile,
 			String sourceOntologyName, String targetOntologyFile,
 			String targetOntologyName, String referenceAlignmentFile,
-			AbstractMatcher matcherToAnalyze, AbstractParameters prefParams) {
+			AbstractMatcher matcherToAnalyze, DefaultMatcherParameters prefParams) {
 
 		Ontology sourceOntology = Core.getInstance().getSourceOntology();
 		Ontology targetOntology = Core.getInstance().getTargetOntology();

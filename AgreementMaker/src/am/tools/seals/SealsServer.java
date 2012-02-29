@@ -44,7 +44,7 @@ import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.MatcherFactory;
@@ -66,11 +66,11 @@ public class SealsServer implements AlignmentWS {
 	private MatchersRegistry matcherRegistry;
 	private MatchingProgressDisplay progressDisplay;
 	
-	private AbstractParameters parameters;
+	private DefaultMatcherParameters parameters;
 	
 	private int BUFFERSIZE = 4096;
 	
-	public SealsServer( MatchersRegistry mR, MatchingProgressDisplay pD, AbstractParameters params ) {
+	public SealsServer( MatchersRegistry mR, MatchingProgressDisplay pD, DefaultMatcherParameters params ) {
 		matcherRegistry = mR;
 		progressDisplay = pD;
 		parameters = params;

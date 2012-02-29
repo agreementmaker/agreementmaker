@@ -1,10 +1,10 @@
 package am.app.mappingEngine.parametricStringMatcher;
 
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.oaei.OAEI_Track;
 
-public class ParametricStringParameters extends AbstractParameters {
+public class ParametricStringParameters extends DefaultMatcherParameters {
 
 	public final static String EDIT = "Levenshtein Edit Distance";
 	public final static String JARO = "Jaro Winkler";
@@ -80,7 +80,7 @@ public class ParametricStringParameters extends AbstractParameters {
 		
 	}
 	
-	public AbstractParameters initForOAEI2010(OAEI_Track t) {
+	public DefaultMatcherParameters initForOAEI2010(OAEI_Track t) {
 		
 		switch( t ) {
 		case Anatomy:

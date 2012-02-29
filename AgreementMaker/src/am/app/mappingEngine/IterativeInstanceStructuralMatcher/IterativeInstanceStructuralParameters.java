@@ -1,8 +1,8 @@
 package am.app.mappingEngine.IterativeInstanceStructuralMatcher;
 
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 
-public class IterativeInstanceStructuralParameters extends AbstractParameters {
+public class IterativeInstanceStructuralParameters extends DefaultMatcherParameters {
 	boolean considerIndividuals;
 	
 	double superclassThreshold = 0.6;

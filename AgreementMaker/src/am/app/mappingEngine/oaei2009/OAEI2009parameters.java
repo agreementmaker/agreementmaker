@@ -1,12 +1,12 @@
 package am.app.mappingEngine.oaei2009;
 
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.batchMode.AnatomyTrack;
 import am.batchMode.BenchmarkTrack;
 import am.batchMode.TrackDispatcher;
 
-public class OAEI2009parameters extends AbstractParameters {
+public class OAEI2009parameters extends DefaultMatcherParameters {
 	
 	public final static String BENCHMARKS = TrackDispatcher.BENCHMARK;
 	public final static String ANATOMY = TrackDispatcher.ANATOMY;

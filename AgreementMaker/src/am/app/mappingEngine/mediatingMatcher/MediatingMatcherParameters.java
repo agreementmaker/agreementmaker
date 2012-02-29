@@ -1,8 +1,8 @@
 package am.app.mappingEngine.mediatingMatcher;
 
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 
-public class MediatingMatcherParameters extends AbstractParameters {
+public class MediatingMatcherParameters extends DefaultMatcherParameters {
 
 	private static final long serialVersionUID = 3481333025573474720L;
 	

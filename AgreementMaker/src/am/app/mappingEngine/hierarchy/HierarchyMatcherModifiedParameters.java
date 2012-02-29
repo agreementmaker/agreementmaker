@@ -2,9 +2,9 @@ package am.app.mappingEngine.hierarchy;
 
 import com.hp.hpl.jena.util.LocationMapper;
 
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 
-public class HierarchyMatcherModifiedParameters extends AbstractParameters {
+public class HierarchyMatcherModifiedParameters extends DefaultMatcherParameters {
 	
 	public LocationMapper mapper;
 	

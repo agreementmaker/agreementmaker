@@ -10,7 +10,7 @@ import java.util.List;
 
 import am.AMException;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
@@ -55,7 +55,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 * Constructor with parameters: no real need so far
 	 * @param params_new parameters to give to the CFM
 	 */
-	public GroupFinderMatcher(AbstractParameters params_new) {
+	public GroupFinderMatcher(DefaultMatcherParameters params_new) {
 		super(params_new);
 		
 		// requires one (and only one) alignment 

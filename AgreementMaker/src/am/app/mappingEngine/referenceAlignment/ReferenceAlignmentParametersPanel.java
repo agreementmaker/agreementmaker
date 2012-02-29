@@ -15,7 +15,7 @@ import javax.swing.ListSelectionModel;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.userInterface.AppPreferences;
 
 public class ReferenceAlignmentParametersPanel extends AbstractMatcherParametersPanel implements ActionListener {
@@ -169,7 +169,7 @@ public class ReferenceAlignmentParametersPanel extends AbstractMatcherParameters
 
 	
 	
-	public AbstractParameters getParameters() {
+	public DefaultMatcherParameters getParameters() {
 		
 		parameters = new ReferenceAlignmentParameters();
 		parameters.fileName = filePath.getText();

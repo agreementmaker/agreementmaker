@@ -3,7 +3,7 @@ package am.app.mappingEngine.manualMatcher;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.MatchersRegistry;
@@ -39,7 +39,7 @@ public class UserManualMatcher extends AbstractMatcher {
 		registryEntry = MatchersRegistry.UserManual;
 		color = Colors.matchersColors[0];
 		
-		param = new AbstractParameters();
+		param = new DefaultMatcherParameters();
 		param.storeProvenance = true;
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 		isAutomatic = false;

@@ -37,7 +37,7 @@ import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.MatchersRegistry;
@@ -71,7 +71,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	
 	/* Abstract Matcher variables */
 	private AbstractMatcherParametersPanel parametersPanel;
-	private AbstractParameters params;
+	private DefaultMatcherParameters params;
 	private AbstractMatcher matcher;
 	//private ArrayList<AbstractMatcher> selectedMatchers;
 	
@@ -550,7 +550,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			if( parametersPanel != null ) {
 				params = parametersPanel.getParameters();
 			} else {
-				params = new AbstractParameters();
+				params = new DefaultMatcherParameters();
 			}
 			
 			// fill in threshold
@@ -591,7 +591,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		return success;
 	}
 	
-	public AbstractParameters getParameters() {
+	public DefaultMatcherParameters getParameters() {
 		return params;
 	}
 	
@@ -690,7 +690,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			}
 		}
 		
-		AbstractParameters ap;
+		DefaultMatcherParameters ap;
 		
 		
 	}

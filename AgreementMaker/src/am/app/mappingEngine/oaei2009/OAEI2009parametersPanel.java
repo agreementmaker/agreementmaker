@@ -7,7 +7,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.userInterface.AppPreferences;
 
 public class OAEI2009parametersPanel extends AbstractMatcherParametersPanel {
@@ -62,7 +62,7 @@ public class OAEI2009parametersPanel extends AbstractMatcherParametersPanel {
 	}
 	
 	
-	public AbstractParameters getParameters() {
+	public DefaultMatcherParameters getParameters() {
 		
 		return new OAEI2009parameters((String)trackCombo.getSelectedItem());
 		

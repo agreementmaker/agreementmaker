@@ -1,12 +1,12 @@
 package am.app.mappingEngine.multiWords;
 
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.oaei.OAEI_Track;
 
 import com.hp.hpl.jena.ontology.OntProperty;
 
-public class MultiWordsParameters extends AbstractParameters {
+public class MultiWordsParameters extends DefaultMatcherParameters {
 
 	private static final long serialVersionUID = 4086215597556342441L;
 	

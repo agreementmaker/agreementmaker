@@ -17,7 +17,7 @@ public abstract class AbstractMatcherParametersPanel extends JPanel {
 	 * This method returns an object containing all the parameters that were set by the user
 	 * in this panel.
 	 */
-	public abstract AbstractParameters getParameters();
+	public abstract DefaultMatcherParameters getParameters();
 	
 	/**
 	 * This method is used to check parameters for errors.  If the users enters parameters that are 

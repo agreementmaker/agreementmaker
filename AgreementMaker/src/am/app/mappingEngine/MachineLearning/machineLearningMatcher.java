@@ -20,7 +20,7 @@ import weka.core.Instances;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
@@ -657,11 +657,11 @@ public class machineLearningMatcher extends AbstractMatcher {
 		
 	}
 
-	private void setupSubMatcher(AbstractMatcher m, AbstractParameters p) {
+	private void setupSubMatcher(AbstractMatcher m, DefaultMatcherParameters p) {
 		setupSubMatcher(m, p, true);
 	}
 
-	private void setupSubMatcher(AbstractMatcher m, AbstractParameters p,
+	private void setupSubMatcher(AbstractMatcher m, DefaultMatcherParameters p,
 			boolean progressDelay) {
 		m.setParam(p);
 		m.setSourceOntology(sourceOntology);

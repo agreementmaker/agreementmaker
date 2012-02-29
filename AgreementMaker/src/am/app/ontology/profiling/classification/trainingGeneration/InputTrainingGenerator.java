@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 
 public class InputTrainingGenerator {
 
@@ -17,7 +17,7 @@ public class InputTrainingGenerator {
 		this.classList = new LinkedList<String>();
 	}
 	
-	public void addTest(AbstractMatcher matcher,AbstractParameters param, String className ) throws Exception{
+	public void addTest(AbstractMatcher matcher,DefaultMatcherParameters param, String className ) throws Exception{
 		if (!classList.contains(className)){
 			InputTest i = new InputTest(matcher, param, className);
 			testList.add(i);

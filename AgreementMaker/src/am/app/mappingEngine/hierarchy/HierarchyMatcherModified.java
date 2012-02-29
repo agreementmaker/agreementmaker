@@ -8,7 +8,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
@@ -75,7 +75,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		minInputMatchers = 1;
 		maxInputMatchers = 1;
 		
-		param = new AbstractParameters();
+		param = new DefaultMatcherParameters();
 		
 		/* maxSourceAlign and maxTargetAlign set the cardinality of the alignments to many to many that is 
 		 one concept in source can be aligned to more than one concept in target*/
@@ -138,7 +138,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 			wsm.setSourceOntology(sourceOntology);
 			wsm.setTargetOntology(targetOntology);			
 			
-			AbstractParameters param = new AbstractParameters();
+			DefaultMatcherParameters param = new DefaultMatcherParameters();
 			param.threshold = 0.0;
 			wsm.setParam(param);
 			

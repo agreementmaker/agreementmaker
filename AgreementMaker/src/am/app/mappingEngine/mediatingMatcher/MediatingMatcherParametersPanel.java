@@ -13,7 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.utility.AMFileChooser;
 
 public class MediatingMatcherParametersPanel extends
@@ -152,7 +152,7 @@ public class MediatingMatcherParametersPanel extends
 	}
 	
 	@Override
-	public AbstractParameters getParameters() {
+	public DefaultMatcherParameters getParameters() {
 		
 		MediatingMatcherParameters param = new MediatingMatcherParameters();
 		

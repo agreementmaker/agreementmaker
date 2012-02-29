@@ -9,7 +9,7 @@ import am.app.Core;
 import am.app.lexicon.Lexicon;
 import am.app.lexicon.subconcept.SynonymTermLexicon;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.ontology.Ontology;
 
@@ -60,7 +60,7 @@ public class LexicalSynonymMatcherParametersPanel extends AbstractMatcherParamet
 	}
 
 	@Override
-	public AbstractParameters getParameters() {
+	public DefaultMatcherParameters getParameters() {
 		
 		LexicalSynonymMatcherParameters params = new LexicalSynonymMatcherParameters();
 		

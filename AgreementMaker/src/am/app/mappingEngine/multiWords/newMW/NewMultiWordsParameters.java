@@ -1,10 +1,10 @@
 package am.app.mappingEngine.multiWords.newMW;
 
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.oaei.OAEI_Track;
 
-public class NewMultiWordsParameters extends AbstractParameters {
+public class NewMultiWordsParameters extends DefaultMatcherParameters {
 
 	public final static String DICE  = "Dice�s Coefficient";
 	public final static String JACCARD  = "Jaccard Similarity";

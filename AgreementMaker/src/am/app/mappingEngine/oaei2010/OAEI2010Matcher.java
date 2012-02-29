@@ -7,7 +7,7 @@ import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.SimilarityMatrix;
@@ -119,7 +119,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		//Third layer: GFM
 		AbstractMatcher gfm = MatcherFactory.getMatcherInstance(MatchersRegistry.GroupFinder, 3);
 		gfm.getInputMatchers().add(lwc);
-		setupSubMatcher(gfm, new AbstractParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign()));
+		setupSubMatcher(gfm, new DefaultMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign()));
 		runSubMatcher(gfm, "GFM( LWC )");
 		//return gfm;
 
@@ -166,7 +166,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		AbstractMatcher lsm = null;
 		if(parameters.usingLSM && !isCancelled()){
 		   	lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSM, 2);
-		   	setupSubMatcher(lsm, new AbstractParameters(getThreshold(), 1, 1));
+		   	setupSubMatcher(lsm, new DefaultMatcherParameters(getThreshold(), 1, 1));
 		   	runSubMatcher(lsm, "Submatcher: LSM");
 		}
 			
@@ -255,9 +255,9 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		return lwc1;
 	}
 	
-	private void setupSubMatcher( AbstractMatcher m, AbstractParameters p ) { setupSubMatcher(m, p, false); }
+	private void setupSubMatcher( AbstractMatcher m, DefaultMatcherParameters p ) { setupSubMatcher(m, p, false); }
 	
-	private void setupSubMatcher( AbstractMatcher m, AbstractParameters p, boolean progressDelay ) {
+	private void setupSubMatcher( AbstractMatcher m, DefaultMatcherParameters p, boolean progressDelay ) {
 		m.setParam(p);
 		m.setUseProgressDelay(progressDelay);
 		m.setSourceOntology(sourceOntology);

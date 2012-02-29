@@ -6,7 +6,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 
 
 public class NewMultiWordsParametersPanel extends AbstractMatcherParametersPanel {
@@ -115,7 +115,7 @@ public class NewMultiWordsParametersPanel extends AbstractMatcherParametersPanel
 	}
 	
 	
-	public AbstractParameters getParameters() {
+	public DefaultMatcherParameters getParameters() {
 		parameters = new NewMultiWordsParameters();
 		
 		parameters.measure = (String)metricsCombo.getSelectedItem();

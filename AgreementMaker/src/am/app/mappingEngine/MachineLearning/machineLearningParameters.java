@@ -2,9 +2,9 @@ package am.app.mappingEngine.MachineLearning;
 
 
 
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 
-public class machineLearningParameters extends AbstractParameters {
+public class machineLearningParameters extends DefaultMatcherParameters {
 
 	
 	/**

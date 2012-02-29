@@ -1,8 +1,8 @@
 package am.app.mappingEngine.structuralMatchers.similarityFlooding;
 
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 
-public class SimilarityFloodingMatcherParameters extends AbstractParameters {
+public class SimilarityFloodingMatcherParameters extends DefaultMatcherParameters {
 
 	public boolean omitAnonymousNodes = false;
 	

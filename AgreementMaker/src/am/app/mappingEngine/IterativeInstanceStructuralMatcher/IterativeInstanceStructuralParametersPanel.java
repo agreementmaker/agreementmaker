@@ -12,7 +12,7 @@ import javax.swing.border.TitledBorder;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.userInterface.MatcherParametersDialog;
@@ -170,7 +170,7 @@ public class IterativeInstanceStructuralParametersPanel extends AbstractMatcherP
 	}
 	
 	@Override
-	public AbstractParameters getParameters() {
+	public DefaultMatcherParameters getParameters() {
 		return parameters;
 	}
 }

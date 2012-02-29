@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
@@ -49,7 +49,7 @@ public class BasicStructuralSelectorMatcher extends AbstractMatcher {
 	 * Constructor with parameters: no real need so far
 	 * @param params_new parameters to give to the BSS
 	 */
-	public BasicStructuralSelectorMatcher(AbstractParameters params_new) {
+	public BasicStructuralSelectorMatcher(DefaultMatcherParameters params_new) {
 		super(params_new);
 		
 		// requires one (and only one) alignment 

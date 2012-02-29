@@ -9,7 +9,7 @@ import javax.swing.JComboBox;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.oaei.OAEI_Track;
 import am.app.ontology.Ontology;
 import am.userInterface.AppPreferences;
@@ -79,7 +79,7 @@ public class OAEI2010MatcherParametersPanel extends AbstractMatcherParametersPan
 	}
 	
 		
-	public AbstractParameters getParameters() {
+	public DefaultMatcherParameters getParameters() {
 		
 		return new OAEI2010MatcherParameters((OAEI_Track)trackCombo.getSelectedItem());
 		

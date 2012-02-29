@@ -4,38 +4,42 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.hp.hpl.jena.rdf.model.Statement;
-
 import uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.QGramsDistance;
-
 import am.app.mappingEngine.StringUtil.ISub;
-import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.instanceMatcher.LabelUtils;
 import am.app.mappingEngine.instanceMatchers.BaseInstanceMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.Instance;
+
+import com.hp.hpl.jena.rdf.model.Statement;
 
 
 public class LabelInstanceMatcher extends BaseInstanceMatcher {
 
+	private static final long serialVersionUID = -8556251076642309404L;
 	Logger log = Logger.getLogger(LabelInstanceMatcher.class);
 	
-	String metric;
+	//String metric;
 	
 	public LabelInstanceMatcher(){
-		metric = StringMetrics.JARO;
-		if(param != null && (param instanceof LabelInstanceMatcherParameters))
-			metric = ((LabelInstanceMatcherParameters) param).metric;
+		LabelInstanceMatcherParameters param = new LabelInstanceMatcherParameters();
+		param.metric = StringMetrics.JARO;
+		this.param = param;		
+	}
+	
+	public LabelInstanceMatcher(LabelInstanceMatcherParameters param){
+		setParam(param);
 	}
 	
 	public LabelInstanceMatcher(String stringMetric){
-		metric = stringMetric;
+		LabelInstanceMatcherParameters param = new LabelInstanceMatcherParameters();
+		param.metric = stringMetric;
+		this.param = param;
 	}
-			
+	
 	@Override
 	public double instanceSimilarity(Instance source, Instance target)
 			throws Exception {
@@ -78,6 +82,8 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 	private double computeStringSimilarity(String source,
 			String target) {
 		double sim = 0.0;
+		String metric = ((LabelInstanceMatcherParameters)param).metric;
+		
 		if(metric.equals(ParametricStringParameters.AMSUB)) {
 			sim = StringMetrics.AMsubstringScore(source,target);
 		}

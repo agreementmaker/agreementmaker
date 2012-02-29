@@ -1,17 +1,17 @@
 package am.app.ontology.profiling.classification.trainingGeneration;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 
 public class InputTest {
 	
 	private AbstractMatcher matcher; 
-	private AbstractParameters param; 
+	private DefaultMatcherParameters param; 
 	private String className;
 	
 	
 	
-	public InputTest(AbstractMatcher matcher, AbstractParameters param, String className) {
+	public InputTest(AbstractMatcher matcher, DefaultMatcherParameters param, String className) {
 		this.matcher = matcher;
 		this.param = param;
 		this.className = className;
@@ -22,10 +22,10 @@ public class InputTest {
 	public void setMatcher(AbstractMatcher matcher) {
 		this.matcher = matcher;
 	}
-	public AbstractParameters getParam() {
+	public DefaultMatcherParameters getParam() {
 		return param;
 	}
-	public void setParam(AbstractParameters param) {
+	public void setParam(DefaultMatcherParameters param) {
 		this.param = param;
 	}
 	public String getClassName() {

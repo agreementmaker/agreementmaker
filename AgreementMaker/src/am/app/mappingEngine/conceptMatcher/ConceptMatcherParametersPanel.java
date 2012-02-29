@@ -11,7 +11,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherSetting;
 import am.userInterface.AppPreferences;
 
@@ -106,7 +106,7 @@ public class ConceptMatcherParametersPanel extends AbstractMatcherParametersPane
 	}
 	
 	
-	public AbstractParameters getParameters() {
+	public DefaultMatcherParameters getParameters() {
 		parameters.AncestorSetWeight = Double.parseDouble(ancField.getText());
 		parameters.DescendantSetWeight = Double.parseDouble(descField.getText());
 		parameters.TextSimilarityWeight = Double.parseDouble(textField.getText());

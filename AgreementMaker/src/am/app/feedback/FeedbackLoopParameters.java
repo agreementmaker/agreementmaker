@@ -1,9 +1,9 @@
 package am.app.feedback;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 
-public class FeedbackLoopParameters extends AbstractParameters {
+public class FeedbackLoopParameters extends DefaultMatcherParameters {
 
 	
 	

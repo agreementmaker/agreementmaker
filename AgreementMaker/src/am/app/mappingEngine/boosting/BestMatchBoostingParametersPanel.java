@@ -6,7 +6,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 
 /**
  * @author cpesquita
@@ -77,7 +77,7 @@ public class BestMatchBoostingParametersPanel extends
 	}
 	
 	@Override
-	public AbstractParameters getParameters() {
+	public DefaultMatcherParameters getParameters() {
 		BestMatchBoostingParameters parameters = new BestMatchBoostingParameters();
 		
 		parameters.boostPercent = Double.parseDouble(txtBoostFactor.getText());

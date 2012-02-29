@@ -12,7 +12,7 @@ import com.hp.hpl.jena.ontology.OntProperty;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 
 
 public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
@@ -177,7 +177,7 @@ public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {
 	}
 	
 	
-	public AbstractParameters getParameters() {
+	public DefaultMatcherParameters getParameters() {
 		parameters = new MultiWordsParameters();
 		
 		parameters.measure = (String)metricsCombo.getSelectedItem();

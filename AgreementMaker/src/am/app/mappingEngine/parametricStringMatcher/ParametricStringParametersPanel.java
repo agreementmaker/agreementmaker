@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 
 public class ParametricStringParametersPanel extends AbstractMatcherParametersPanel implements ActionListener{
@@ -266,7 +266,7 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 	}
 	
 	
-	public AbstractParameters getParameters() {
+	public DefaultMatcherParameters getParameters() {
 		parameters = new ParametricStringParameters();
 		
 		parameters.measure = (String)metricsCombo.getSelectedItem();

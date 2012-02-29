@@ -20,7 +20,7 @@ import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.multiWords.MultiWordsMatcher;
@@ -74,7 +74,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 	private String outputPrefix = ""; // the prefix for the output files
 	
 	// matcher parameters
-	private AbstractParameters prefParams = null;
+	private DefaultMatcherParameters prefParams = null;
 	private int prefSourceCardinality = 1;
 	private int prefTargetCardinality = 1;
 	private double prefStartThreshold = 0.2d;

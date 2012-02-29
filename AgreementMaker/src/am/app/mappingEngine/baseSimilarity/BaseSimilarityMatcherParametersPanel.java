@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherSetting;
 import am.userInterface.AppPreferences;
 
@@ -91,7 +91,7 @@ public class BaseSimilarityMatcherParametersPanel extends AbstractMatcherParamet
 	}
 	
 	
-	public AbstractParameters getParameters() {
+	public DefaultMatcherParameters getParameters() {
 		
 		return parameters;
 		

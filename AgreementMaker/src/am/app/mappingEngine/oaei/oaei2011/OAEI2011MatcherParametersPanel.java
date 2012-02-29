@@ -10,7 +10,7 @@ import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
 
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters.OAEI2011Configuration;
 
 public class OAEI2011MatcherParametersPanel extends AbstractMatcherParametersPanel implements ActionListener {
@@ -80,7 +80,7 @@ public class OAEI2011MatcherParametersPanel extends AbstractMatcherParametersPan
 	}
 	
 		
-	public AbstractParameters getParameters() {
+	public DefaultMatcherParameters getParameters() {
 		OAEI2011MatcherParameters parameters = new OAEI2011MatcherParameters();
 		
 		parameters.automaticConfiguration = radAutomatic.isSelected();

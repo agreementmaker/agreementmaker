@@ -12,7 +12,7 @@ import javax.swing.JLabel;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 
 import com.hp.hpl.jena.ontology.OntProperty;
 
@@ -173,7 +173,7 @@ public class MultiWordsPairWiseParametersPanel extends AbstractMatcherParameters
 	}
 	
 	
-	public AbstractParameters getParameters() {
+	public DefaultMatcherParameters getParameters() {
 		parameters = new MultiWordsPairWiseParameters();
 		
 		parameters.measure = (String)metricsCombo.getSelectedItem();

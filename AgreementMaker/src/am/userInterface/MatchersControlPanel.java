@@ -24,7 +24,7 @@ import am.AMException;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherChangeEvent;
@@ -391,7 +391,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment,0);
 			MatcherParametersDialog dialog = new MatcherParametersDialog(refMatcher, false, false);
 			if(dialog.parametersSet()) {
-				AbstractParameters param = dialog.getParameters();
+				DefaultMatcherParameters param = dialog.getParameters();
 				ReferenceAlignmentParameters params = (ReferenceAlignmentParameters)param;
 				refMatcher.setParam(param);
 				

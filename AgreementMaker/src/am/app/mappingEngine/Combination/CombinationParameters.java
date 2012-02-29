@@ -1,10 +1,10 @@
 package am.app.mappingEngine.Combination;
 
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.oaei.OAEI_Track;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 
-public class CombinationParameters extends AbstractParameters {
+public class CombinationParameters extends DefaultMatcherParameters {
 
 	/**Available math operations to combine similarity values, all these operations are weighted, if user select no weights then weights will be 1 for all matchers*/
 	public final static String MAXCOMB = "Max similarity";

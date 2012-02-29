@@ -1,9 +1,9 @@
 package am.app.mappingEngine.LexicalSynonymMatcher;
 
 import am.app.lexicon.Lexicon;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 
-public class LexicalSynonymMatcherParameters extends AbstractParameters {
+public class LexicalSynonymMatcherParameters extends DefaultMatcherParameters {
 
 	private static final long serialVersionUID = -1723312235796171432L;
 	

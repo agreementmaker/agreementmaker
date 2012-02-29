@@ -4,7 +4,7 @@ import java.awt.event.ItemEvent;
 
 import javax.swing.JCheckBox;
 
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcherParametersPanel;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
 
@@ -49,7 +49,7 @@ public class AdvancedSimilarityMatcherParametersPanel extends
 	}
 	
 	@Override
-	public AbstractParameters getParameters() {
+	public DefaultMatcherParameters getParameters() {
 		// TODO Auto-generated method stub
 		BaseSimilarityParameters bsmp = (BaseSimilarityParameters) super.getParameters();
 		

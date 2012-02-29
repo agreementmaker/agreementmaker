@@ -2,7 +2,7 @@ package am.app.mappingEngine;
 
 import java.io.Serializable;
 
-public class AbstractParameters implements Serializable {
+public class DefaultMatcherParameters implements Serializable {
 
 	private static final long serialVersionUID = -5278587933670353897L;
 	
@@ -19,9 +19,9 @@ public class AbstractParameters implements Serializable {
 	public int threadedReservedProcessors = 0; // how many processors are reserved (i.e. not used by the threaded mode)
 	
 	
-	public AbstractParameters() { /* work is done by the field initialization; */ }
+	public DefaultMatcherParameters() { /* work is done by the field initialization; */ }
 	
-	public AbstractParameters(double threshold, int maxSourceAlign,
+	public DefaultMatcherParameters(double threshold, int maxSourceAlign,
 			int maxTargetAlign) {
 		this.threshold = threshold;
 		this.maxSourceAlign = maxSourceAlign;

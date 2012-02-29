@@ -9,7 +9,7 @@ import javax.swing.JCheckBox;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.userInterface.AppPreferences;
 
 public class SimilarityFloodingParametersPanel extends AbstractMatcherParametersPanel implements ItemListener {
@@ -67,7 +67,7 @@ public class SimilarityFloodingParametersPanel extends AbstractMatcherParameters
 	}
 	
 	@Override
-	public AbstractParameters getParameters() { return parameters; }
+	public DefaultMatcherParameters getParameters() { return parameters; }
 	
 	@Override
 	public String checkParameters() {

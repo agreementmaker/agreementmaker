@@ -1,8 +1,8 @@
 package am.app.mappingEngine.referenceAlignment;
 
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 
-public class ReferenceAlignmentParameters extends AbstractParameters {
+public class ReferenceAlignmentParameters extends DefaultMatcherParameters {
 
 	private static final long serialVersionUID = -565356899065786968L;
 	

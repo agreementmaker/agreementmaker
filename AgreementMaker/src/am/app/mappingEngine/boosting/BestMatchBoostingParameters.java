@@ -1,12 +1,12 @@
 package am.app.mappingEngine.boosting;
 
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 
 /**
  * @author cpesquita
  * @date Sept 22, 2011
  */
-public class BestMatchBoostingParameters extends AbstractParameters{
+public class BestMatchBoostingParameters extends DefaultMatcherParameters{
 	
 	private static final long serialVersionUID = 194591157273240997L;
 	

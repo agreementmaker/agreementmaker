@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.instanceMatchers.BaseInstanceMatcher;
 import am.app.mappingEngine.instanceMatchers.KeywordsUtils;
 import am.app.mappingEngine.instanceMatchers.Porter;
@@ -38,7 +38,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 	}
 
 	@Override
-	public void setParam(AbstractParameters param) {
+	public void setParam(DefaultMatcherParameters param) {
 		if(param instanceof TokenInstanceMatcherParameters){
 			TokenInstanceMatcherParameters p = (TokenInstanceMatcherParameters) param;
 			modality = p.modality;

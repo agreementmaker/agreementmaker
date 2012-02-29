@@ -1,8 +1,8 @@
 package am.app.mappingEngine.baseSimilarity;
 
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 
-public class BaseSimilarityParameters extends AbstractParameters {
+public class BaseSimilarityParameters extends DefaultMatcherParameters {
 
 	public boolean useDictionary = false;
 

@@ -5,7 +5,7 @@ import java.util.List;
 
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
@@ -55,7 +55,7 @@ public class HierarchyMatcher extends AbstractMatcher
 		minInputMatchers = 1;
 		maxInputMatchers = 1;
 		
-		param = new AbstractParameters();
+		param = new DefaultMatcherParameters();
 		
 		/* maxSourceAlign and maxTargetAlign set the cardinality of the alignments to many to many that is 
 		 one concept in source can be aligned to more than one concept in target*/

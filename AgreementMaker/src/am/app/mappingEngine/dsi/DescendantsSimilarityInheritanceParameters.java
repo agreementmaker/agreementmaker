@@ -1,8 +1,8 @@
 package am.app.mappingEngine.dsi;
 
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 
-public class DescendantsSimilarityInheritanceParameters extends AbstractParameters {
+public class DescendantsSimilarityInheritanceParameters extends DefaultMatcherParameters {
 
 	public double MCP = 0.75d;
 

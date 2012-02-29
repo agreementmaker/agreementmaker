@@ -17,7 +17,7 @@ import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractParameters;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.Combination.CombinationParameters;
@@ -1080,7 +1080,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		//Third layer: GFM
 		AbstractMatcher gfm = MatcherFactory.getMatcherInstance(MatchersRegistry.GroupFinder, 0);
 		gfm.getInputMatchers().add(lwc);
-		setupSubMatcher(gfm, new AbstractParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign()));
+		setupSubMatcher(gfm, new DefaultMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign()));
 		runSubMatcher(gfm, "Submatcher 4/4: GFM( LWC )");
 		//return gfm;
 
@@ -1089,9 +1089,9 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	
 	/* ********************************* COMMON METHODS *********************************** */
 	
-	private void setupSubMatcher( AbstractMatcher m, AbstractParameters p ) { setupSubMatcher(m, p, true); }
+	private void setupSubMatcher( AbstractMatcher m, DefaultMatcherParameters p ) { setupSubMatcher(m, p, true); }
 	
-	private void setupSubMatcher( AbstractMatcher m, AbstractParameters p, boolean progressDelay ) {
+	private void setupSubMatcher( AbstractMatcher m, DefaultMatcherParameters p, boolean progressDelay ) {
 		m.setParam(p);
 		m.setSourceOntology(sourceOntology);
     	m.setTargetOntology(targetOntology);
