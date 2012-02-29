@@ -59,7 +59,12 @@ public class Instance implements Serializable {
 	 */
 	public Instance( Individual i ) {
 		this.uri = i.getURI();
-		this.type = i.getOntClass().getURI();
+		
+		/*
+		 * If no type statement is defined for the individual it returns an exception. This is right from a Semantic Web point of view 
+		 * (every instance should have a type), but we need to be a bit forgiving.
+		 */
+		try{ this.type = i.getOntClass().getURI(); } catch(Exception e){	}
 		
 		properties = new Hashtable<String, List<String>>();
 		statements = new ArrayList<Statement>();
@@ -80,7 +85,7 @@ public class Instance implements Serializable {
 	}
 	
 	/**
-	 * Returns the values of a syntactic property.  The may be multiple
+	 * Returns the values of a syntactic property.  There may be multiple
 	 * values for a single property, so they are returned as a list.
 	 * <p>
 	 * NOTE: If you would like to get the value of a single-valued property
