@@ -16,6 +16,12 @@ import am.app.mappingEngine.instanceMatchers.WordNetUtils;
 import am.app.mappingEngine.instanceMatchers.labelInstanceMatcher.LabelInstanceMatcher;
 import am.app.ontology.instance.Instance;
 
+/**
+ * Instance matcher based on bag-of-words comparison.
+ * 
+ * @author federico
+ *
+ */
 public class TokenInstanceMatcher extends BaseInstanceMatcher{
 	private static final long serialVersionUID = 7328940873670935546L;
 
@@ -27,12 +33,28 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 	private String lastSourceURI = "";
 	private List<String> lastSourceProcessed; 
 
+	LabeledKnowledgeBase sourceKB;
+	LabeledKnowledgeBase targetKB;
+		
+	
+	/**
+	 * Modality ALL means that we have to take ALL the property values
+	 * 
+	 * @author federico
+	 *
+	 */
 	public enum Modality { ALL, ALL_SYNTACTIC, ALL_SEMANTIC, SELECTIVE };
 
 	private Modality modality;
 
+	/**
+	 * List of properties of which we need to gather values
+	 */
 	public List<String> selectedProperties;
 
+	/**
+	 * Default modality is all
+	 */
 	public TokenInstanceMatcher(){
 		modality = Modality.ALL;
 	}
@@ -50,7 +72,6 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 	@Override
 	public double instanceSimilarity(Instance source, Instance target)
 			throws Exception {
-
 		double sim = 0.0;
 
 		List<String> sourceKeywords = new ArrayList<String>();
@@ -60,26 +81,33 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 			sourceKeywords = lastSourceProcessed;
 		else{
 
-			//Modality ALL means that we have to take ALL the property values
+			//In case modality is ALL or ALL_SYNTACTIC, we have to have to gather all the properties 
+			//from the properties map
 			if(modality == Modality.ALL || modality == Modality.ALL_SYNTACTIC){
 				List<String> values = source.getAllPropertyValues();
 				sourceKeywords.addAll(values);
 			}	
-				
+			
+			//In case modality is ALL or ALL_SEMANTIC, we have to have to gather all the properties 
+			//from the list of statements
 			if(modality == Modality.ALL || modality == Modality.ALL_SEMANTIC){
 				List<Statement> sourceStmts = source.getStatements();
 				for (Statement statement : sourceStmts) {
 					String literal = statement.getObject().asLiteral().getString();
+					
+					if(literal.startsWith("http://")){
+						//TODO manage URI
+					}
+					
 					String[] split = literal.split("\\s|,");
 					for (int i = 0; i < split.length; i++) {
 						split[i].trim();
 						if(split[i].length() > 0)
 							sourceKeywords.add(split[i]);
-					}
+					}		
 				}
 			}
-				
-							
+			
 //				for ( statement : sourceStmts) {
 //					String literal = statement.getObject().asLiteral().getString();
 //					String[] split = literal.split("\\s|,");
@@ -213,5 +241,13 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 			return label.substring(beg + 1, end);
 		}
 		return null; 
+	}
+	
+	public void setSourceKB(LabeledKnowledgeBase sourceKB) {
+		this.sourceKB = sourceKB;
+	}
+	
+	public void setTargetKB(LabeledKnowledgeBase targetKB) {
+		this.targetKB = targetKB;
 	}
 }
