@@ -195,5 +195,18 @@ public class Instance implements Serializable {
         model.read(new StringReader(serializedModel), "http://base", "N-TRIPLE");
         statements = model.listStatements().toList();
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+    	if(obj == null) return false;
+    	if(!(obj instanceof Instance)) return false;
+    	return uri.equals(((Instance)obj).getUri());
+    }
+    
+    @Override
+    public int hashCode() {
+    	return uri.hashCode();
+    }
+    
 }
 

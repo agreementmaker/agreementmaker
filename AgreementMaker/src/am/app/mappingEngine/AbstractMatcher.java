@@ -563,7 +563,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	//It may be overridden by instance matcher, but also used outside
 	public List<ScoredInstance> rankInstanceCandidates(Instance sourceInstance,
 			List<Instance> targetCandidates) throws Exception {
-		
 		double similarity;
 		List<ScoredInstance> scoredCandidates = new ArrayList<ScoredInstance>();
 		for (Instance candidate: targetCandidates) {
