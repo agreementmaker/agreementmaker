@@ -114,7 +114,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 			}
 		} else {
 			// we are not using ontology profiling
-			return withoutProfiling(source, target, typeOfNodes);
+			return alignWithoutProfiling(source, target, typeOfNodes);
 		}
 
 	}
@@ -163,7 +163,7 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		
 	}
 
-	private Mapping withoutProfiling(Node source, Node target, alignType typeOfNodes) throws Exception {
+	public Mapping alignWithoutProfiling(Node source, Node target, alignType typeOfNodes) throws Exception {
 		String sLN, tLN;
 		
 		AdvancedSimilarityParameters parameters = (AdvancedSimilarityParameters)param;
