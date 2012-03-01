@@ -476,7 +476,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	
     	Instance sourceInstance;
     	for (int i = 0; i < sourceInstances.size(); i++) {
-    		System.out.println(i);
+    		//System.out.println(i);
 			sourceInstance = sourceInstances.get(i);
     		List<String> labelList = sourceInstance.getProperty("label");
     		
@@ -584,7 +584,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			List<Instance> targetCandidates) throws Exception {
 		List<ScoredInstance> scoredCandidates = rankInstanceCandidates(sourceInstance, targetCandidates);
 		
-		System.out.println(scoredCandidates);
+		//System.out.println(scoredCandidates);
 		
 		ScoredInstance scoredInstance = selectInstanceFromCandidates(scoredCandidates);
 		if(scoredInstance == null) return null;

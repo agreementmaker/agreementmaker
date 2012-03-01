@@ -35,8 +35,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 
 	LabeledKnowledgeBase sourceKB;
 	LabeledKnowledgeBase targetKB;
-		
-	
+
 	/**
 	 * Modality ALL means that we have to take ALL the property values
 	 * 
@@ -71,121 +70,146 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 
 	@Override
 	public double instanceSimilarity(Instance source, Instance target)
-			throws Exception {
+	throws Exception {
 		double sim = 0.0;
 
+		log.debug("TIM matching: " + source.getUri() + " " + target);		
+		
 		List<String> sourceKeywords = new ArrayList<String>();
 
 		//Check the last element cache
+		//TODO check URIs when packing entities
 		if(lastSourceURI.equals(source.getUri()))
 			sourceKeywords = lastSourceProcessed;
 		else{
+			sourceKeywords = buildKeywordsList(source, sourceKB);
+		}
 
-			//In case modality is ALL or ALL_SYNTACTIC, we have to have to gather all the properties 
-			//from the properties map
-			if(modality == Modality.ALL || modality == Modality.ALL_SYNTACTIC){
-				List<String> values = source.getAllPropertyValues();
-				sourceKeywords.addAll(values);
-			}	
-			
-			//In case modality is ALL or ALL_SEMANTIC, we have to have to gather all the properties 
-			//from the list of statements
-			if(modality == Modality.ALL || modality == Modality.ALL_SEMANTIC){
-				List<Statement> sourceStmts = source.getStatements();
-				for (Statement statement : sourceStmts) {
-					String literal = statement.getObject().asLiteral().getString();
+		List<String> targetKeywords = buildKeywordsList(target, targetKB);
+
+		log.debug("Preprocess:" + sourceKeywords);
+		sourceKeywords = KeywordsUtils.processKeywords(sourceKeywords);
+		log.debug("Postprocess:" + sourceKeywords);
+		
+		lastSourceURI = source.getUri();
+		lastSourceProcessed = sourceKeywords;
+
+		log.debug("Preprocess:" + targetKeywords);
+		targetKeywords = KeywordsUtils.processKeywords(targetKeywords);
+		log.debug("Postprocess:" + targetKeywords);
+		
+		sim = keywordsSimilarity(sourceKeywords, targetKeywords);
+
+		log.debug(sim);
+
+		return sim;
+	}
+
+	private List<String> buildKeywordsList(Instance instance, LabeledKnowledgeBase kb) {
+		List<String> values = new ArrayList<String>();	
+		
+		//In case modality is ALL or ALL_SYNTACTIC, we have to have to gather all the properties 
+		//from the properties map
+		if(modality == Modality.ALL || modality == Modality.ALL_SYNTACTIC){
+			values.addAll(instance.getAllPropertyValues());
+		}	
+
+		//In case modality is ALL or ALL_SEMANTIC, we have to have to gather all the properties 
+		//from the list of statements
+		if(modality == Modality.ALL || modality == Modality.ALL_SEMANTIC){
+			List<Statement> stmts = instance.getStatements();
+			for (Statement statement : stmts) {
+				String literal = statement.getObject().asLiteral().getString();
+
+				if(literal.startsWith("http://")){
+					//TODO manage URI
 					
-					if(literal.startsWith("http://")){
-						//TODO manage URI
+					if(kb == null){
+						//TODO Figure out if we need to take the URI fragment when we cannot access to the label
+						continue;
 					}
 					
-					String[] split = literal.split("\\s|,");
-					for (int i = 0; i < split.length; i++) {
-						split[i].trim();
-						if(split[i].length() > 0)
-							sourceKeywords.add(split[i]);
-					}		
+				String label = kb.getLabelFromURI(literal);
+				if(label != null)
+					values.add(label);					
 				}
+				else{
+					int limit = 300;				
+					if(literal.length() < limit)					
+						values.add(literal);
+					else values.add(literal.substring(0, limit - 1));
+				}
+
+//				String[] split = literal.split("\\s|,");
+//				for (int i = 0; i < split.length; i++) {
+//					split[i].trim();
+//					if(split[i].length() > 0)
+//						sourceKeywords.add(split[i]);
+//				}		
 			}
+		}
+
+		//				for ( statement : sourceStmts) {
+		//					String literal = statement.getObject().asLiteral().getString();
+		//					String[] split = literal.split("\\s|,");
+		//					for (int i = 0; i < split.length; i++) {
+		//						split[i].trim();
+		//						if(split[i].length() > 0)
+		//							sourceKeywords.add(split[i]);
+		//					}
+		//				}				
+
+		//Modality SELECTIVE means that we have to take only some of the property values,
+		//for which the strings in selectedProperties are matching
+		//TODO implement this
+		if(modality == Modality.SELECTIVE){
+			// TODO manage selective modality						
 			
-//				for ( statement : sourceStmts) {
-//					String literal = statement.getObject().asLiteral().getString();
-//					String[] split = literal.split("\\s|,");
+//			List<Statement> sourceStmts = source.getStatements();
+//
+//			for (Statement statement : sourceStmts) {
+//				if(statement.getPredicate().getLocalName().toLowerCase().contains("keyword")){
+//					log.debug("Found keywords property: " + statement.getPredicate());
+//					String keywords = statement.getObject().asLiteral().getString();
+//					String[] split = keywords.split("\\s|,");
 //					for (int i = 0; i < split.length; i++) {
 //						split[i].trim();
 //						if(split[i].length() > 0)
 //							sourceKeywords.add(split[i]);
 //					}
-//				}				
-
-			//Modality SELECTIVE means that we have to take only some of the property values,
-			//for which the strings in selectedProperties are matching
-			//TODO implement this
-			if(modality == Modality.SELECTIVE){
-				List<Statement> sourceStmts = source.getStatements();
-
-				for (Statement statement : sourceStmts) {
-					if(statement.getPredicate().getLocalName().toLowerCase().contains("keyword")){
-						log.debug("Found keywords property: " + statement.getPredicate());
-						String keywords = statement.getObject().asLiteral().getString();
-						String[] split = keywords.split("\\s|,");
-						for (int i = 0; i < split.length; i++) {
-							split[i].trim();
-							if(split[i].length() > 0)
-								sourceKeywords.add(split[i]);
-						}
-					}
-				}
-			}
-
-
-			log.debug(sourceKeywords);
-
-			sourceKeywords = KeywordsUtils.processKeywords(sourceKeywords);
-
-			String sourceLabel = source.getSingleValuedProperty("label");
-			String betweenParentheses = getBetweenParentheses(sourceLabel);
+//				}
+//			}
+//			
+//			List<String> types = target.getProperty("type");
+//			List<String> candidateKeywords = new ArrayList<String>();
+//
+//			//Specific for freebase
+//			if(types != null){
+//				types = KeywordsUtils.processKeywords(types);
+//				//sim = keywordsSimilarity(sourceKeywords, types);
+//				log.debug("types: " + types);
+//				candidateKeywords.addAll(types);
+//			}
+//
+//			List<Statement> stmts = target.getStatements();
+//			for (int i = 0; i < stmts.size(); i++) {
+//				if(stmts.get(i).getPredicate().equals(RDFS.comment)){
+//					String comment = stmts.get(i).getObject().asLiteral().getString();
+//					candidateKeywords.add(comment);
+//					log.debug("Comment:" + comment);
+//				}
+//			}
+		}
+		
+		String label = instance.getSingleValuedProperty("label");
+		
+		if(label != null){
+			String betweenParentheses = getBetweenParentheses(label);
 			log.debug("between parentheses: " + betweenParentheses);
-			if(betweenParentheses != null) sourceKeywords.add(betweenParentheses);
-
-			//sourceKeywordsCache.put(source.getUri(), sourceKeywords);
-			lastSourceURI = source.getUri();
-			lastSourceProcessed = sourceKeywords;
+			if(betweenParentheses != null) values.add(betweenParentheses);		
 		}
-
-		List<String> types = target.getProperty("type");
-		List<String> candidateKeywords = new ArrayList<String>();
-
-		//Specific for freebase
-		if(types != null){
-			types = KeywordsUtils.processKeywords(types);
-			//sim = keywordsSimilarity(sourceKeywords, types);
-			log.debug("types: " + types);
-			candidateKeywords.addAll(types);
-		}
-
-		List<Statement> stmts = target.getStatements();
-		for (int i = 0; i < stmts.size(); i++) {
-			if(stmts.get(i).getPredicate().equals(RDFS.comment)){
-				String comment = stmts.get(i).getObject().asLiteral().getString();
-				candidateKeywords.add(comment);
-				log.debug("Comment:" + comment);
-			}
-		}
-
-		candidateKeywords = KeywordsUtils.processKeywords(candidateKeywords);
-
-		log.debug("source: " + sourceKeywords);
-		log.debug("target: " + candidateKeywords);
-
-		//if(types != null)
-		//	candidateKeywords.addAll(types);	
-
-		sim = keywordsSimilarity(sourceKeywords, candidateKeywords);
-
-		log.debug(sim);
-
-		return sim;
+		
+		return values;
 	}
 
 	private double keywordsSimilarity(List<String> sourceList, List<String> targetList){
@@ -242,11 +266,11 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 		}
 		return null; 
 	}
-	
+
 	public void setSourceKB(LabeledKnowledgeBase sourceKB) {
 		this.sourceKB = sourceKB;
 	}
-	
+
 	public void setTargetKB(LabeledKnowledgeBase targetKB) {
 		this.targetKB = targetKB;
 	}

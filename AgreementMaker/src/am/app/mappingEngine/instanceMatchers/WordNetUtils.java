@@ -1,6 +1,9 @@
 package am.app.mappingEngine.instanceMatchers;
 
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import am.Utility;
 import edu.smu.tspell.wordnet.Synset;
@@ -8,7 +11,7 @@ import edu.smu.tspell.wordnet.WordNetDatabase;
 
 public class WordNetUtils {
 	WordNetDatabase wordNet; 
-	HashMap<String, Boolean> isSynonym = new HashMap<String, Boolean>();
+	//Map<String, Boolean> isSynonym = new ConcurrentHashMap<String, Boolean>();
 	
 	public WordNetUtils(){
 		initWordnet();
@@ -30,8 +33,8 @@ public class WordNetUtils {
 
 	public boolean areSynonyms(String source, String target) {
 		String key = source + ":" + target;
-		Boolean answer = isSynonym.get(key);
-		if(answer != null) return answer;
+		//Boolean answer = isSynonym.get(key);
+		//if(answer != null) return answer;
 		
 		Synset[] sourceSynsets = wordNet.getSynsets(source);
 		Synset[] targetSynsets = wordNet.getSynsets(target);
@@ -40,12 +43,12 @@ public class WordNetUtils {
 			for (int j = 0; j < targetSynsets.length; j++) {
 				if(sourceSynsets[i] == targetSynsets[j]){
 					//System.out.println(source + " " + target + " synonyms!!");
-					isSynonym.put(key, true);
+					//isSynonym.put(key, true);
 					return true;
 				}
 			}
 		}
-		isSynonym.put(key, false);
+		//isSynonym.put(key, false);
 		return false;
 	}
 }

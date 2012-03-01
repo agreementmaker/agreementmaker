@@ -13,5 +13,5 @@ public interface LabeledKnowledgeBase {
 	 * @param URI
 	 * @return
 	 */
-	public String getlabelFromURI(String URI);	
+	public String getLabelFromURI(String URI);	
 }
