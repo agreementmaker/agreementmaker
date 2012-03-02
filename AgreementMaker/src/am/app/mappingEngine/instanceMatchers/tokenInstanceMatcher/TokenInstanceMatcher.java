@@ -218,15 +218,16 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 		double score = 0;
 		
 		List<String> sourceStemmed = stemList(sourceList);
+		List<String> targetStemmed = stemList(targetList);
 		
 		String source;
 		String target;
-		for (int j = 0; j < sourceList.size(); j++) {
-			source = sourceList.get(j);
+		for (int i = 0; i < sourceList.size(); i++) {
+			source = sourceList.get(i);
 			if(source.isEmpty()) continue;
 			source = source.toLowerCase();
-			for (int t = 0; t < targetList.size(); t++) {
-				target = targetList.get(t).toLowerCase();
+			for (int j = 0; j < targetList.size(); j++) {
+				target = targetList.get(j).toLowerCase();
 				if(target.isEmpty()) continue;
 				//System.out.println(type + "|" + keyword);
 				if(source.equals(target)){
@@ -243,14 +244,13 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 
 				boolean condition = false;
 				try{
-					condition = stemmer.stripAffixes(source).equals(stemmer.stripAffixes(target));
+					condition = sourceStemmed.get(i).equals(targetStemmed.get(j));
 					if(condition)
 						score += 0.5;
 				}
 				catch (Exception e) {
 					System.err.println("Error when stemming " + source + " with " + target);
 				}
-
 			}
 		}
 
