@@ -35,8 +35,8 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 
 	private boolean useSynonyms = false;
 
-	LabeledKnowledgeBase sourceKB;
-	LabeledKnowledgeBase targetKB;
+	LabeledDatasource sourceKB;
+	LabeledDatasource targetKB;
 
 	/**
 	 * Modality ALL means that we have to take ALL the property values
@@ -106,7 +106,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 		return sim;
 	}
 
-	private List<String> buildKeywordsList(Instance instance, LabeledKnowledgeBase kb) {
+	private List<String> buildKeywordsList(Instance instance, LabeledDatasource kb) {
 		List<String> values = new ArrayList<String>();	
 
 		//In case modality is ALL or ALL_SYNTACTIC, we have to have to gather all the properties 
@@ -282,11 +282,11 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 		return null; 
 	}
 
-	public void setSourceKB(LabeledKnowledgeBase sourceKB) {
+	public void setSourceKB(LabeledDatasource sourceKB) {
 		this.sourceKB = sourceKB;
 	}
 
-	public void setTargetKB(LabeledKnowledgeBase targetKB) {
+	public void setTargetKB(LabeledDatasource targetKB) {
 		this.targetKB = targetKB;
 	}
 }

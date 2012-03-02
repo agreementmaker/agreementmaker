@@ -1,10 +1,9 @@
 package am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher;
 
-import java.util.List;
-
-import com.hp.hpl.jena.rdf.model.Statement;
-
-public interface LabeledKnowledgeBase {
+/**
+ * FIXME: This interface should be in AgreementMaker. - Cosmin.
+ */
+public interface LabeledDatasource {
 	
 	/**
 	 * Given a URI, returns the text representation of the resource having that URI, 
