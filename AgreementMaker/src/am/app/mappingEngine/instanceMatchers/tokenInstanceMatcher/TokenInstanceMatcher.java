@@ -33,6 +33,8 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 	private String lastSourceURI = "";
 	private List<String> lastSourceProcessed; 
 
+	private boolean useSynonyms = false;
+
 	LabeledKnowledgeBase sourceKB;
 	LabeledKnowledgeBase targetKB;
 
@@ -70,11 +72,11 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 
 	@Override
 	public double instanceSimilarity(Instance source, Instance target)
-	throws Exception {
+			throws Exception {
 		double sim = 0.0;
 
 		log.debug("TIM matching: " + source.getUri() + " " + target);		
-		
+
 		List<String> sourceKeywords = new ArrayList<String>();
 
 		//Check the last element cache
@@ -83,21 +85,20 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 			sourceKeywords = lastSourceProcessed;
 		else{
 			sourceKeywords = buildKeywordsList(source, sourceKB);
+			log.debug("S Preprocess:" + sourceKeywords);
+			sourceKeywords = KeywordsUtils.processKeywords(sourceKeywords);
+			log.debug("S Postprocess:" + sourceKeywords);
 		}
 
 		List<String> targetKeywords = buildKeywordsList(target, targetKB);
 
-		log.debug("Preprocess:" + sourceKeywords);
-		sourceKeywords = KeywordsUtils.processKeywords(sourceKeywords);
-		log.debug("Postprocess:" + sourceKeywords);
-		
 		lastSourceURI = source.getUri();
 		lastSourceProcessed = sourceKeywords;
 
-		log.debug("Preprocess:" + targetKeywords);
+		log.debug("T Preprocess:" + targetKeywords);
 		targetKeywords = KeywordsUtils.processKeywords(targetKeywords);
-		log.debug("Postprocess:" + targetKeywords);
-		
+		log.debug("T Postprocess:" + targetKeywords);
+
 		sim = keywordsSimilarity(sourceKeywords, targetKeywords);
 
 		log.debug(sim);
@@ -107,7 +108,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 
 	private List<String> buildKeywordsList(Instance instance, LabeledKnowledgeBase kb) {
 		List<String> values = new ArrayList<String>();	
-		
+
 		//In case modality is ALL or ALL_SYNTACTIC, we have to have to gather all the properties 
 		//from the properties map
 		if(modality == Modality.ALL || modality == Modality.ALL_SYNTACTIC){
@@ -123,15 +124,15 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 
 				if(literal.startsWith("http://")){
 					//TODO manage URI
-					
+
 					if(kb == null){
 						//TODO Figure out if we need to take the URI fragment when we cannot access to the label
 						continue;
 					}
-					
-				String label = kb.getLabelFromURI(literal);
-				if(label != null)
-					values.add(label);					
+
+					String label = kb.getLabelFromURI(literal);
+					if(label != null)
+						values.add(label);					
 				}
 				else{
 					int limit = 300;				
@@ -140,12 +141,12 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 					else values.add(literal.substring(0, limit - 1));
 				}
 
-//				String[] split = literal.split("\\s|,");
-//				for (int i = 0; i < split.length; i++) {
-//					split[i].trim();
-//					if(split[i].length() > 0)
-//						sourceKeywords.add(split[i]);
-//				}		
+				//				String[] split = literal.split("\\s|,");
+				//				for (int i = 0; i < split.length; i++) {
+				//					split[i].trim();
+				//					if(split[i].length() > 0)
+				//						sourceKeywords.add(split[i]);
+				//				}		
 			}
 		}
 
@@ -164,57 +165,60 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 		//TODO implement this
 		if(modality == Modality.SELECTIVE){
 			// TODO manage selective modality						
-			
-//			List<Statement> sourceStmts = source.getStatements();
-//
-//			for (Statement statement : sourceStmts) {
-//				if(statement.getPredicate().getLocalName().toLowerCase().contains("keyword")){
-//					log.debug("Found keywords property: " + statement.getPredicate());
-//					String keywords = statement.getObject().asLiteral().getString();
-//					String[] split = keywords.split("\\s|,");
-//					for (int i = 0; i < split.length; i++) {
-//						split[i].trim();
-//						if(split[i].length() > 0)
-//							sourceKeywords.add(split[i]);
-//					}
-//				}
-//			}
-//			
-//			List<String> types = target.getProperty("type");
-//			List<String> candidateKeywords = new ArrayList<String>();
-//
-//			//Specific for freebase
-//			if(types != null){
-//				types = KeywordsUtils.processKeywords(types);
-//				//sim = keywordsSimilarity(sourceKeywords, types);
-//				log.debug("types: " + types);
-//				candidateKeywords.addAll(types);
-//			}
-//
-//			List<Statement> stmts = target.getStatements();
-//			for (int i = 0; i < stmts.size(); i++) {
-//				if(stmts.get(i).getPredicate().equals(RDFS.comment)){
-//					String comment = stmts.get(i).getObject().asLiteral().getString();
-//					candidateKeywords.add(comment);
-//					log.debug("Comment:" + comment);
-//				}
-//			}
+
+			//			List<Statement> sourceStmts = source.getStatements();
+			//
+			//			for (Statement statement : sourceStmts) {
+			//				if(statement.getPredicate().getLocalName().toLowerCase().contains("keyword")){
+			//					log.debug("Found keywords property: " + statement.getPredicate());
+			//					String keywords = statement.getObject().asLiteral().getString();
+			//					String[] split = keywords.split("\\s|,");
+			//					for (int i = 0; i < split.length; i++) {
+			//						split[i].trim();
+			//						if(split[i].length() > 0)
+			//							sourceKeywords.add(split[i]);
+			//					}
+			//				}
+			//			}
+			//			
+			//			List<String> types = target.getProperty("type");
+			//			List<String> candidateKeywords = new ArrayList<String>();
+			//
+			//			//Specific for freebase
+			//			if(types != null){
+			//				types = KeywordsUtils.processKeywords(types);
+			//				//sim = keywordsSimilarity(sourceKeywords, types);
+			//				log.debug("types: " + types);
+			//				candidateKeywords.addAll(types);
+			//			}
+			//
+			//			List<Statement> stmts = target.getStatements();
+			//			for (int i = 0; i < stmts.size(); i++) {
+			//				if(stmts.get(i).getPredicate().equals(RDFS.comment)){
+			//					String comment = stmts.get(i).getObject().asLiteral().getString();
+			//					candidateKeywords.add(comment);
+			//					log.debug("Comment:" + comment);
+			//				}
+			//			}
 		}
-		
+
 		String label = instance.getSingleValuedProperty("label");
-		
+
 		if(label != null){
 			String betweenParentheses = getBetweenParentheses(label);
 			log.debug("between parentheses: " + betweenParentheses);
 			if(betweenParentheses != null) values.add(betweenParentheses);		
 		}
-		
+
 		return values;
 	}
 
 	private double keywordsSimilarity(List<String> sourceList, List<String> targetList){
 		//Compute score
 		double score = 0;
+		
+		List<String> sourceStemmed = stemList(sourceList);
+		
 		String source;
 		String target;
 		for (int j = 0; j < sourceList.size(); j++) {
@@ -229,21 +233,24 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 					score++;
 				}
 
-				if(wordNetUtils.areSynonyms(source, target) ){
-					score += 0.5;
-					//System.out.println("matched syn: " + source + "|" + target);
-				}
-				else{
-					boolean condition = false;
-					try{
-						condition = stemmer.stripAffixes(source).equals(stemmer.stripAffixes(target));
-						if(condition)
-							score += 0.5;
+				if(useSynonyms){
+					if(wordNetUtils.areSynonyms(source, target) ){
+						score += 0.5;
+						//System.out.println("matched syn: " + source + "|" + target);
 					}
-					catch (Exception e) {
-						System.err.println("Error when stemming " + source + " with " + target);
-					}
+					continue;
 				}
+
+				boolean condition = false;
+				try{
+					condition = stemmer.stripAffixes(source).equals(stemmer.stripAffixes(target));
+					if(condition)
+						score += 0.5;
+				}
+				catch (Exception e) {
+					System.err.println("Error when stemming " + source + " with " + target);
+				}
+
 			}
 		}
 
@@ -256,6 +263,14 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 		score /= max;
 
 		return score;
+	}
+
+	private List<String> stemList(List<String> list) {
+		List<String> stemmed = new ArrayList<String>();
+		for (String string : list) {
+			stemmed.add(stemmer.stripAffixes(string));
+		}		
+		return stemmed;
 	}
 
 	public static String getBetweenParentheses(String label){
