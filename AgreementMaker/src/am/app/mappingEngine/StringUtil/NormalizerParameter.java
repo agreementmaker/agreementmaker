@@ -13,6 +13,7 @@ public class NormalizerParameter {
 	public boolean normalizeSlashes = false;
 	public boolean normalizePossessive = false;	
 	public boolean removeAllStopWords = false;
+	public boolean normalizeBrackets = true;
 	//lowercase is always done
 	
 	public void setAllTrue(){
@@ -22,6 +23,7 @@ public class NormalizerParameter {
 		normalizeDigit = true; //remove numbers
 		normalizeDiacritics = true; // �,�...--> a, o
 		normalizePunctuation = true;
+		normalizeBrackets = true;
 	}
 
 	public void setAllfalse() {
@@ -32,6 +34,7 @@ public class NormalizerParameter {
 		normalizeDigit = false; //remove numbers
 		normalizeDiacritics = false; // �,�...--> a, o
 		normalizePunctuation = false;
+		normalizeBrackets = false;
 	}
 	
 	public void setForOAEI2009(){

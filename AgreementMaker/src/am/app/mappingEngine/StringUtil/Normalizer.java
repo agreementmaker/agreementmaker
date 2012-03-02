@@ -29,6 +29,10 @@ public class Normalizer {
 	//Lowercasing, normalization, stemming and stopwords removing
 	public String normalize(String s) {
 		NormalizerParameter parameters = (NormalizerParameter)param;
+		
+//		if(parameters.normalizePossessive)
+//			s = s.replaceAll("'s", "");		
+		
 		char[] chars = s.toCharArray();
 		String newString = ""; //the processed string to be returned at the end
 		String currentChar = null; //the real char in the string
@@ -36,10 +40,6 @@ public class Normalizer {
 		char c;
 		
 		boolean endOfWord;
-		
-		
-		if(parameters.normalizePossessive)
-			s = s.replace("'s", "");
 		
 		for(int i = 0 ; i < chars.length; i++) {	
 			endOfWord = false;
@@ -148,7 +148,7 @@ public class Normalizer {
 			normalizeMap.put(":", blank);
 			normalizeMap.put(";", blank);
 			normalizeMap.put("\"", blank); // "
-			normalizeMap.put(" ' ",blank); // '
+			normalizeMap.put("'",blank); // '
 			normalizeMap.put("(",blank); // '
 			normalizeMap.put(")",blank); // '
 		}
@@ -167,7 +167,15 @@ public class Normalizer {
 			normalizeMap.put("6", emptyString);
 			normalizeMap.put("7", emptyString);
 			normalizeMap.put("8", emptyString);
+			normalizeMap.put("9", emptyString);
 			normalizeMap.put("0", emptyString);
+		}
+		
+		if(parameters.normalizeBrackets) {
+			normalizeMap.put("[", emptyString);
+			normalizeMap.put("]", emptyString);
+			normalizeMap.put("{", emptyString);
+			normalizeMap.put("}", emptyString);
 		}
 		
 		//i don't care about \ / | & ( )[] {}  > < = + *  #  ^ �  �  �

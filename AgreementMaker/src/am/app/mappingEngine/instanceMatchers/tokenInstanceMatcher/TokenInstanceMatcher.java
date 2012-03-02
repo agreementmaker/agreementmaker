@@ -9,6 +9,8 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
+import am.app.mappingEngine.StringUtil.Normalizer;
+import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.instanceMatchers.BaseInstanceMatcher;
 import am.app.mappingEngine.instanceMatchers.KeywordsUtils;
 import am.app.mappingEngine.instanceMatchers.Porter;
@@ -37,6 +39,8 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 
 	LabeledDatasource sourceKB;
 	LabeledDatasource targetKB;
+	
+	private Normalizer normalizer;
 
 	/**
 	 * Modality ALL means that we have to take ALL the property values
@@ -57,7 +61,18 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 	 * Default modality is all
 	 */
 	public TokenInstanceMatcher(){
+		initNormalizer();
 		modality = Modality.ALL;
+	}
+
+	private void initNormalizer() {
+		NormalizerParameter np = new NormalizerParameter();
+		np.stem = false;
+		np.normalizeDigit = true;
+		np.normalizePossessive = true;
+		np.normalizeSlashes = true;
+		np.removeAllStopWords = true;
+		normalizer = new Normalizer(np);
 	}
 
 	@Override
@@ -86,7 +101,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 		else{
 			sourceKeywords = buildKeywordsList(source, sourceKB);
 			log.debug("S Preprocess:" + sourceKeywords);
-			sourceKeywords = KeywordsUtils.processKeywords(sourceKeywords);
+			sourceKeywords = KeywordsUtils.processKeywords(sourceKeywords, normalizer);
 			log.debug("S Postprocess:" + sourceKeywords);
 		}
 
@@ -96,7 +111,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 		lastSourceProcessed = sourceKeywords;
 
 		log.debug("T Preprocess:" + targetKeywords);
-		targetKeywords = KeywordsUtils.processKeywords(targetKeywords);
+		targetKeywords = KeywordsUtils.processKeywords(targetKeywords, normalizer);
 		log.debug("T Postprocess:" + targetKeywords);
 
 		sim = keywordsSimilarity(sourceKeywords, targetKeywords);
@@ -242,10 +257,8 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 					continue;
 				}
 
-				boolean condition = false;
 				try{
-					condition = sourceStemmed.get(i).equals(targetStemmed.get(j));
-					if(condition)
+					if(sourceStemmed.get(i).equals(targetStemmed.get(j)))
 						score += 0.5;
 				}
 				catch (Exception e) {
@@ -260,7 +273,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 
 		if(max == 0) return 0;
 
-		score /= max;
+		score /= avg;
 
 		return score;
 	}
@@ -288,5 +301,20 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 
 	public void setTargetKB(LabeledDatasource targetKB) {
 		this.targetKB = targetKB;
+	}
+	
+	public Normalizer getNormalizer() {
+		return normalizer;
+	}
+	
+	public static void main(String[] args) {
+		String s = "1985 Tampa Bay Buccaneers season, UKN, Infobox NFL_season, 1985 Tampa Bay Buccaneers season\n" +
+				"The 1985 Tampa Bay Buccaneers season began with the team trying to improve on an\n" +
+				"6-10 season. It was the first season for Leeman Bennett as the team's head\n" +
+				"coach. Prior to the season they acquired the future hall of fame quarterback\n" +
+				"Steve Young. In week 1, Tampa Ba, 1985_Tampa_Bay_Buccaneers_season, 1985, Tampa Stadium, Tampa Stadium, Leeman Bennett, Leeman Bennett, Tampa Bay Buccaneers, 5th NFC Central, 2-14, Did not quailify, NFC Central";
+		
+		Normalizer n = new TokenInstanceMatcher().getNormalizer();
+		System.out.println(n.normalize(s));				
 	}
 }
