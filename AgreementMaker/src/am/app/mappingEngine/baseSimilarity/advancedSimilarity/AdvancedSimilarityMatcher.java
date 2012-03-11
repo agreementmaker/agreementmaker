@@ -254,6 +254,8 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 				t = target.get(j).toLowerCase();
 				tempValue = ((ParametricStringMatcher) localMatcher).performStringSimilarity(s, t);
 				//localMatrix.setSimilarity(i, j, tempValue);
+				// FIXME: Revert the change to the next line. -- Cosmin.
+				//        Currently it is a bug!!!
 				localMatrix.set(i, j, new Mapping(new Node(i, s, typeOfNodes.toString(), 0),
 								new Node(j, t, typeOfNodes.toString(), 0),
 								tempValue));
