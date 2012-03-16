@@ -579,7 +579,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return ScoredInstance.filter(candidates, 0.01);
 	}
 
-	//IIt may be overridden by instance matcher, but also used outside
+	//It may be overridden by instance matcher, but also used outside
 	public MatchingPair alignInstanceCandidates(Instance sourceInstance,
 			List<Instance> targetCandidates) throws Exception {
 		List<ScoredInstance> scoredCandidates = rankInstanceCandidates(sourceInstance, targetCandidates);
