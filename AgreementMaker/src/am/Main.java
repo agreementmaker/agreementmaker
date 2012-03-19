@@ -27,6 +27,7 @@ import java.util.Arrays;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import am.app.Core;
+import am.app.osgi.AMHost;
 import am.batchMode.simpleBatchMode.SimpleBatchModeRunner;
 import am.userInterface.UI;
 
@@ -40,6 +41,7 @@ import am.userInterface.UI;
  */
 public class Main
 {
+	
 	/**
 	 * This is the application entry point.
 	 * It instantiates the UI.
@@ -50,6 +52,13 @@ public class Main
 	{
 		
 		//BasicConfigurator.configure();
+		
+		
+		AMHost host = new AMHost();
+		host.startFramework();
+		
+		Core.getInstance().setFramework(host);
+		
 		
 		if(args.length == 0 ){
 			System.setProperty("apple.laf.useScreenMenuBar", "true");

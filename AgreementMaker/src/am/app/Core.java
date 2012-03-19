@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.osgi.framework.BundleContext;
+
 import am.AMException;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.LexiconStore;
@@ -16,6 +18,7 @@ import am.app.ontology.Ontology;
 import am.app.ontology.OntologyChangeEvent;
 import am.app.ontology.OntologyChangeListener;
 import am.app.ontology.profiling.OntologyProfiler;
+import am.app.osgi.AMHost;
 import am.userInterface.AppPreferences;
 import am.userInterface.Colors;
 import am.userInterface.UI;
@@ -83,7 +86,11 @@ public class Core {
 	
 	private static Core core  = new Core(); // Singleton pattern: unique instance
 
-
+	//osgi context
+	private BundleContext context;
+	private AMHost osgi;
+	
+	
 	/**
 	 * 
 	 * @return the unique instance of the core
@@ -441,5 +448,14 @@ public class Core {
 	 * @param p
 	 */
 	public void setOntologyProfiler( OntologyProfiler p ) { currentProfiler = p; }
+	public BundleContext getContext() {return context;}
+	public void setContext(BundleContext context) {this.context = context;}
+	
+	
+	public void setFramework(AMHost host) {
+		this.osgi = host;
+	}
+	
+	public AMHost getFramework() { return osgi; }
 	
 }
