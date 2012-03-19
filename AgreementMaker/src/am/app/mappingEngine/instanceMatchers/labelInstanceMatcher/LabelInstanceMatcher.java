@@ -141,4 +141,9 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		}
 		return null;
 	}
+	
+	@Override
+	public String getName() {
+		return "Label Instance Matcher";
+	}
 }

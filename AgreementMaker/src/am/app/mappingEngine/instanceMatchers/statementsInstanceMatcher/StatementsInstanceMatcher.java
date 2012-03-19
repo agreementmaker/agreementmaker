@@ -74,4 +74,8 @@ public class StatementsInstanceMatcher extends BaseInstanceMatcher{
 		return totalSim / count;
 	}
 
+	@Override
+	public String getName() {
+		return "Statements Instance Matcher";
+	}
 }

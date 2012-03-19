@@ -38,6 +38,11 @@ public class KeywordsUtils {
 		return retValue;
 	}
 	
+	/**
+	 * Given a list of strings and a normalizer, 
+	 * normalizes the strings, removes stopwords, tokenizes
+	 * and puts all the tokens in the same string  
+	 */
 	public static List<String> processKeywords(List<String> list, Normalizer normalizer) {
 		List<String> retValue = new ArrayList<String>();
 		String string;
@@ -46,7 +51,8 @@ public class KeywordsUtils {
 		for (int i = 0; i < list.size(); i++) {
 			string = list.get(i).toLowerCase();
 			
-			string = normalizer.normalize(string);		
+			if(normalizer != null)
+				string = normalizer.normalize(string);		
 			
 			split = string.split("\\s");
 			

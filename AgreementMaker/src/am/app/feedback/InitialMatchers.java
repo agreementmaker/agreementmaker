@@ -108,7 +108,7 @@ public class InitialMatchers extends AbstractMatcher {
 	}
 
 	@Override
-	protected void matchStart() {
+	public void matchStart() {
 		double threshold = getThreshold();
 		int maxSourceAlign = getMaxSourceAlign();
 		int maxTargetAlign = getMaxTargetAlign();

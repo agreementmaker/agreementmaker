@@ -1,14 +1,20 @@
 package am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import simpack.measure.weightingscheme.StringTFIDF;
+
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import com.wcohen.ss.api.StringWrapper;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
+import am.app.mappingEngine.StringUtil.AMStringWrapper;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.instanceMatchers.BaseInstanceMatcher;
@@ -27,31 +33,45 @@ import am.app.ontology.instance.Instance;
 public class TokenInstanceMatcher extends BaseInstanceMatcher{
 	private static final long serialVersionUID = 7328940873670935546L;
 
+	//Stemmer
 	private Porter stemmer = new Porter();
+	//Wordnet utilities (to compute synonyms)
 	private WordNetUtils wordNetUtils = new WordNetUtils();
 
 	private Logger log = Logger.getLogger(TokenInstanceMatcher.class);
 
+	//Caching for the source instances.
 	private String lastSourceURI = "";
 	private List<String> lastSourceProcessed; 
 
 	private boolean useSynonyms = false;
 
+	//Used for retrieving the labels when the objects are URIs
 	LabeledDatasource sourceKB;
 	LabeledDatasource targetKB;
 	
+	//Normalizes strings
 	private Normalizer normalizer;
 
 	/**
 	 * Modality ALL means that we have to take ALL the property values
-	 * 
-	 * @author federico
-	 *
 	 */
 	public enum Modality { ALL, ALL_SYNTACTIC, ALL_SEMANTIC, SELECTIVE };
 
 	private Modality modality;
-
+	
+	/**
+	 * Aggregation function
+	 */
+	public enum Aggregation { TF_IDF, DICE };
+	
+	private Aggregation aggregation;
+	
+	private StringTFIDF tfidf;
+	List<StringWrapper> corpus;
+	Map<Instance, StringWrapper> documents;
+	
+	
 	/**
 	 * List of properties of which we need to gather values
 	 */
@@ -63,11 +83,18 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 	public TokenInstanceMatcher(){
 		initNormalizer();
 		modality = Modality.ALL;
+		aggregation = Aggregation.TF_IDF;
+		initTfIdf();
+	}
+
+	private void initTfIdf() {
+		corpus = new ArrayList<StringWrapper>();
+		documents = new HashMap<Instance, StringWrapper>();
 	}
 
 	private void initNormalizer() {
 		NormalizerParameter np = new NormalizerParameter();
-		np.stem = false;
+		np.stem = true;
 		np.normalizeDigit = true;
 		np.normalizePossessive = true;
 		np.normalizeSlashes = true;
@@ -81,10 +108,24 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 			TokenInstanceMatcherParameters p = (TokenInstanceMatcherParameters) param;
 			modality = p.modality;
 			selectedProperties = p.selectedProperties;
+			aggregation = p.aggregation; 
 		}
+		
+		if(aggregation == Aggregation.TF_IDF){
+			initTfIdf();
+		}
+		
 		super.setParam(param);
 	}
 
+	
+	@Override
+	public void matchEnd() {
+		if(aggregation == Aggregation.TF_IDF && tfidf == null){
+			tfidf = new StringTFIDF(corpus);			
+		}
+	}
+	
 	@Override
 	public double instanceSimilarity(Instance source, Instance target)
 			throws Exception {
@@ -92,6 +133,13 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 
 		log.debug("TIM matching: " + source.getUri() + " " + target);		
 
+		//This is the TFIDF second pass
+		if(aggregation == Aggregation.TF_IDF && tfidf != null){
+			StringWrapper sourceDocument = documents.get(source);	
+			StringWrapper targetDocument = documents.get(target);			
+			return 5*tfidf.getSimilarity(sourceDocument.unwrap(), targetDocument.unwrap());
+		}
+				
 		List<String> sourceKeywords = new ArrayList<String>();
 
 		//Check the last element cache
@@ -102,11 +150,25 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 			sourceKeywords = buildKeywordsList(source, sourceKB);
 			log.debug("S Preprocess:" + sourceKeywords);
 			sourceKeywords = KeywordsUtils.processKeywords(sourceKeywords, normalizer);
+			
+			if(aggregation == Aggregation.TF_IDF){
+				StringBuffer buf = new StringBuffer();
+				for (String string : sourceKeywords) {
+					buf.append(string).append(" ");
+				}
+				
+				if(tfidf == null){
+					StringWrapper sw = new AMStringWrapper(buf.toString()); 
+					corpus.add(sw);
+					documents.put(source, sw);
+				}
+			}
+			
 			log.debug("S Postprocess:" + sourceKeywords);
 		}
 
 		List<String> targetKeywords = buildKeywordsList(target, targetKB);
-
+		
 		lastSourceURI = source.getUri();
 		lastSourceProcessed = sourceKeywords;
 
@@ -114,8 +176,23 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 		targetKeywords = KeywordsUtils.processKeywords(targetKeywords, normalizer);
 		log.debug("T Postprocess:" + targetKeywords);
 
-		sim = keywordsSimilarity(sourceKeywords, targetKeywords);
-
+		if(aggregation == Aggregation.TF_IDF){
+			StringBuffer buf = new StringBuffer();
+			for (String string : targetKeywords) {
+				buf.append(string).append(" ");
+			}
+			
+			if(tfidf == null){
+				StringWrapper sw = new AMStringWrapper(buf.toString()); 
+				corpus.add(sw);
+				documents.put(target, sw);
+			}
+		}
+		else{
+			//All the metrics but TFIDF
+			sim = 5*keywordsSimilarity(sourceKeywords, targetKeywords);
+		}
+			
 		log.debug(sim);
 
 		return sim;
@@ -137,14 +214,15 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 			for (Statement statement : stmts) {
 				String literal = statement.getObject().asLiteral().getString();
 
+				log.debug(literal);
+				
 				if(literal.startsWith("http://")){
-					//TODO manage URI
-
 					if(kb == null){
 						//TODO Figure out if we need to take the URI fragment when we cannot access to the label
 						continue;
 					}
 
+					log.debug("Accessing the KB");
 					String label = kb.getLabelFromURI(literal);
 					if(label != null)
 						values.add(label);					
@@ -156,24 +234,9 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 					else values.add(literal.substring(0, limit - 1));
 				}
 
-				//				String[] split = literal.split("\\s|,");
-				//				for (int i = 0; i < split.length; i++) {
-				//					split[i].trim();
-				//					if(split[i].length() > 0)
-				//						sourceKeywords.add(split[i]);
-				//				}		
 			}
 		}
-
-		//				for ( statement : sourceStmts) {
-		//					String literal = statement.getObject().asLiteral().getString();
-		//					String[] split = literal.split("\\s|,");
-		//					for (int i = 0; i < split.length; i++) {
-		//						split[i].trim();
-		//						if(split[i].length() > 0)
-		//							sourceKeywords.add(split[i]);
-		//					}
-		//				}				
+			
 
 		//Modality SELECTIVE means that we have to take only some of the property values,
 		//for which the strings in selectedProperties are matching
@@ -307,6 +370,11 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 		return normalizer;
 	}
 	
+	@Override
+	public String getName() {
+		return "Token Instance Matcher";
+	}
+		
 	public static void main(String[] args) {
 		String s = "1985 Tampa Bay Buccaneers season, UKN, Infobox NFL_season, 1985 Tampa Bay Buccaneers season\n" +
 				"The 1985 Tampa Bay Buccaneers season began with the team trying to improve on an\n" +

@@ -93,7 +93,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 	}
 	
 	@Override
-	protected void matchEnd() {
+	public void matchEnd() {
 		// TODO Auto-generated method stub
 		super.matchEnd();
 		
@@ -118,9 +118,9 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		//Initialize maps for information about restrictions
 		initHashMaps();
 		
-		receiveInputMatrixes();		
+		receiveInputMatrices();		
 		
-		initSimilarityMatrixes();
+		initSimilarityMatrices();
 		
 		if(individuals){
 			sourcePropValues = initPropValues(sourcePropList,sourceOntology);
@@ -215,7 +215,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 
 
 
-	private void initSimilarityMatrixes() {
+	private void initSimilarityMatrices() {
 		classSimilarities = new ClassSimilarity[sourceClassList.size()][targetClassList.size()];
 		propSimilarities = new PropertySimilarity[sourcePropList.size()][targetPropList.size()];
 		
@@ -235,7 +235,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		
 	}
 
-	private void receiveInputMatrixes() {
+	private void receiveInputMatrices() {
 		if(inputMatchers.size()>0){
 			AbstractMatcher input = inputMatchers.get(0);
 			//classesMatrix = input.getClassesMatrix();
@@ -1047,8 +1047,6 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 			double sim;
 			for (int j = 0; j<targetOntology.getClassesList().size(); j++) {
 				Node target = targetOntology.getClassesList().get(j);
-				
-				
 				
 				sim = superclassesComparison(source,target);
 				classSimilarities[i][j].setSuperclasses(sim);

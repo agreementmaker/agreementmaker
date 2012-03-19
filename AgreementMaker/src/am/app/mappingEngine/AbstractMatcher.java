@@ -134,6 +134,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/** True if the schema mappings have to be used during instance matching */
 	protected boolean useInstanceSchemaMappings = true;
 	
+	protected Report instanceMatchingReport;
+	
 	public void setPerformSelection(boolean performSelection) {
 		this.performSelection = performSelection;
 	}
@@ -392,7 +394,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     } 
     
     //Time calculation, if you override this method remember to call super.afterSelectionOperations()
-    protected void matchStart() {
+    public void matchStart() {
     	if( isProgressDisplayed() ) {
     		setupProgress();  // if we are using the progress dialog, setup the variables
     		for( MatchingProgressDisplay mpd : progressDisplays ) {
@@ -404,7 +406,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	
 	}
     //Time calculation, if you override this method remember to call super.afterSelectionOperations()
-	protected void matchEnd() {
+	public void matchEnd() {
 		// TODO: Need to make sure this timing is correct.  - Cosmin ( Dec 17th, 2008 )
 		end = System.nanoTime();
     	executionTime = (end-start)/1000000; // this time is in milliseconds.
@@ -567,6 +569,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		List<ScoredInstance> scoredCandidates = new ArrayList<ScoredInstance>();
 		for (Instance candidate: targetCandidates) {
 			similarity = instanceSimilarity(sourceInstance, candidate);
+			//System.out.println("sim: " + similarity);
 			scoredCandidates.add(new ScoredInstance(candidate, similarity));
 		}
 		
@@ -2026,4 +2029,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	  public void setUseInstanceSchemaMappings(boolean useInstanceSchemaMappings) {
 			this.useInstanceSchemaMappings = useInstanceSchemaMappings;
 	  }
+	  
+	  public Report getInstanceMatchingReport() {
+		return instanceMatchingReport;
+	}
 }

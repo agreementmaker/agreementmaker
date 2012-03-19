@@ -18,7 +18,7 @@ public class WikiMatcher extends AbstractMatcher {
 	}
 	
 	@Override
-	protected void matchStart() {
+	public void matchStart() {
 		super.matchStart();
 		//categories.initialize();
 	}

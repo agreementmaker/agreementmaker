@@ -201,7 +201,7 @@ public class machineLearningMatcher extends AbstractMatcher {
 	}
 
     //Time calculation, if you override this method remember to call super.afterSelectionOperations()
-    protected void matchStart() {
+    public void matchStart() {
     	if( isProgressDisplayed() ) {
     		setupProgress();  // if we are using the progress dialog, setup the variables
     		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.matchingStarted(this);
@@ -211,7 +211,7 @@ public class machineLearningMatcher extends AbstractMatcher {
     	
 	}
     //Time calculation, if you override this method remember to call super.afterSelectionOperations()
-	protected void matchEnd() {
+	public void matchEnd() {
 		// TODO: Need to make sure this timing is correct.  - Cosmin ( Dec 17th, 2008 )
 		end = System.nanoTime();
     	executionTime = (end-start)/1000000; // this time is in milliseconds.
