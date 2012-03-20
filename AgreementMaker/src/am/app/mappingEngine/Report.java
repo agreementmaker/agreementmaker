@@ -22,6 +22,7 @@ public class Report {
 	}
 	
 	public void putSim(String key, List<Double> value){
+		//System.out.println(key);
 		similarities.put(key, value);
 	}
 	

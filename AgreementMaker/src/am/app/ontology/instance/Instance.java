@@ -5,9 +5,13 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -37,9 +41,13 @@ public class Instance implements Serializable {
 	protected String uri;
 	protected String type;
 	
-	protected Hashtable<String,List<String>> properties; // the syntactic properties of this instance 
+	protected transient Hashtable<String,List<String>> properties; // the syntactic properties of this instance 
 	private String serializedModel;
 	protected transient List<Statement> statements; // the semantic RDF statements of this instance.
+	
+	protected String[] keys;
+	protected List<String>[] values;
+	
 	
 	/**
 	 * Create an instance.
@@ -121,11 +129,11 @@ public class Instance implements Serializable {
 	}
 	
 	/** Passing a null value will remove the key from the properties table. */
-	public void setProperty( String key, List<String> value ) {
-		if( value == null ) {
+	public void setProperty( String key, ArrayList<String> strings ) {
+		if( strings == null ) {
 			properties.remove(key);
 		} else {
-			properties.put(key,value);
+			properties.put(key,strings);
 		}
 	}
 	
@@ -135,7 +143,7 @@ public class Instance implements Serializable {
 		} else {
 			List<String> values = properties.get(key);
 			if(values == null){
-				List<String> list = new ArrayList<String>();
+				ArrayList<String> list = new ArrayList<String>();
 				list.add(value);
 				properties.put(key,list);
 			}
@@ -184,6 +192,20 @@ public class Instance implements Serializable {
     	model.write(baos, "N-TRIPLE");
     	//get a string of the serialization
     	serializedModel = baos.toString("UTF-8");
+    	
+    	Set<String> keySet = properties.keySet();
+    	
+    	//System.out.println(keySet);
+    	
+    	keys = new String[keySet.size()];  
+    	values = new List[keySet.size()];
+    	int i = 0;
+    	for (String string : keySet) {
+			keys[i] = string;
+			values[i] = properties.get(string);
+			i++;
+		}    	
+    	    	
     	//default write    	
         stream.defaultWriteObject();
     }
@@ -194,6 +216,16 @@ public class Instance implements Serializable {
         Model model = ModelFactory.createDefaultModel();
         model.read(new StringReader(serializedModel), "http://base", "N-TRIPLE");
         statements = model.listStatements().toList();
+        
+        properties = new Hashtable<String, List<String>>();
+        
+        //System.out.println(Arrays.toString(keys));
+        //System.out.println(Arrays.toString(values));
+        
+        for (int i = 0; i < keys.length; i++) {
+			properties.put(keys[i], values[i]);
+		}
+        
     }
     
     @Override

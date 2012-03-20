@@ -98,7 +98,7 @@ public class SeparateFileInstanceDataset implements InstanceDataset {
 				uriLabelPair = propertiesWhiteList[i];
 				
 				if(uriLabelPair[2] == "m"){
-					List<String> values = getPropertyMultiValue(model, uri, uriLabelPair[0]);
+					ArrayList<String> values = getPropertyMultiValue(model, uri, uriLabelPair[0]);
 					instance.setProperty(uriLabelPair[1], values);
 				}
 				else{
@@ -109,7 +109,7 @@ public class SeparateFileInstanceDataset implements InstanceDataset {
 							String[] values = value.split("\\|");
 							
 							
-							List<String> strings = new ArrayList<String>();
+							ArrayList<String> strings = new ArrayList<String>();
 							for (int j = 0; j < values.length; j++) {
 								strings.add(values[j]);
 							}
@@ -158,7 +158,7 @@ public class SeparateFileInstanceDataset implements InstanceDataset {
 		return "";
 	}
 	
-	public static List<String> getPropertyMultiValue(OntModel model, String instanceURI, String propertyURI){
+	public static ArrayList<String> getPropertyMultiValue(OntModel model, String instanceURI, String propertyURI){
 		Property property = model.getProperty(propertyURI);
 		if(property == null) model.createProperty(propertyURI);
 		Resource instance = model.createResource(instanceURI);

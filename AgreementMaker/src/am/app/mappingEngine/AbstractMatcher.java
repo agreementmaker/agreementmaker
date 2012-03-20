@@ -136,6 +136,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	
 	protected Report instanceMatchingReport;
 	
+	public boolean requiresTwoPasses;
+	
+	protected boolean firstPassDone;
+	
 	public void setPerformSelection(boolean performSelection) {
 		this.performSelection = performSelection;
 	}
@@ -471,6 +475,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		}
 
 	}
+    
+    public boolean requiresTwoPasses(){
+    	return requiresTwoPasses;
+    }
 
     protected List<MatchingPair> alignInstances(List<Instance> sourceInstances) throws Exception {
     	
@@ -611,6 +619,16 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	//TO BE IMPLEMENTED BY INSTANCE MATCHERS
 	public double instanceSimilarity(Instance source, Instance target) throws Exception {
 		return 0;
+	}
+	
+	//Invoked by wrapping matchers which run multiple passes on inner matchers  
+	public void passStart(){
+		
+	}
+	
+	//Invoked by wrapping matchers which run multiple passes on inner matchers  
+	public void passEnd(){
+		if(!firstPassDone) firstPassDone = true;
 	}
 	
 	protected SimilarityMatrix alignProperties( List<Node> sourcePropList, List<Node> targetPropList) throws Exception {
@@ -2032,5 +2050,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	  
 	  public Report getInstanceMatchingReport() {
 		return instanceMatchingReport;
+	}
+	  
+	@Override
+	public String toString() {
+		return getName();
 	}
 }

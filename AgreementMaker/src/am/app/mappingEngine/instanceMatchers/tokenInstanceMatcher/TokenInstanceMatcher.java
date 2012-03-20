@@ -120,7 +120,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 
 	
 	@Override
-	public void matchEnd() {
+	public void passEnd() {
 		if(aggregation == Aggregation.TF_IDF && tfidf == null){
 			tfidf = new StringTFIDF(corpus);			
 		}
@@ -137,7 +137,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 		if(aggregation == Aggregation.TF_IDF && tfidf != null){
 			StringWrapper sourceDocument = documents.get(source);	
 			StringWrapper targetDocument = documents.get(target);			
-			return 5*tfidf.getSimilarity(sourceDocument.unwrap(), targetDocument.unwrap());
+			return tfidf.getSimilarity(sourceDocument.unwrap(), targetDocument.unwrap());
 		}
 				
 		List<String> sourceKeywords = new ArrayList<String>();
@@ -159,6 +159,9 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 				
 				if(tfidf == null){
 					StringWrapper sw = new AMStringWrapper(buf.toString()); 
+					
+					System.out.println("Source: " + sw.unwrap());
+					
 					corpus.add(sw);
 					documents.put(source, sw);
 				}
@@ -186,11 +189,14 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 				StringWrapper sw = new AMStringWrapper(buf.toString()); 
 				corpus.add(sw);
 				documents.put(target, sw);
+				
+				System.out.println("Target: " + sw.unwrap());
+				
 			}
 		}
 		else{
 			//All the metrics but TFIDF
-			sim = 5*keywordsSimilarity(sourceKeywords, targetKeywords);
+			sim = keywordsSimilarity(sourceKeywords, targetKeywords);
 		}
 			
 		log.debug(sim);
@@ -344,7 +350,12 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 	private List<String> stemList(List<String> list) {
 		List<String> stemmed = new ArrayList<String>();
 		for (String string : list) {
-			stemmed.add(stemmer.stripAffixes(string));
+			try{
+				stemmed.add(stemmer.stripAffixes(string));
+			}
+			catch(Exception e){
+				e.printStackTrace();				
+			}
 		}		
 		return stemmed;
 	}
@@ -373,6 +384,14 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 	@Override
 	public String getName() {
 		return "Token Instance Matcher";
+	}
+	
+	@Override
+	public boolean requiresTwoPasses() {
+		if(aggregation == Aggregation.TF_IDF){
+			requiresTwoPasses = true;
+		}
+		return super.requiresTwoPasses();
 	}
 		
 	public static void main(String[] args) {

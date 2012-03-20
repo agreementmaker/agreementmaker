@@ -119,7 +119,7 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 			uri = FREEBASE_URI + uri.substring(1).replace('/','.');
 			
 			instance = new Instance(uri, null);
-			List<String> valueList = new ArrayList<String>();
+			ArrayList<String> valueList = new ArrayList<String>();
 			Object name = null;
 			try{
 				name = result.get("name");

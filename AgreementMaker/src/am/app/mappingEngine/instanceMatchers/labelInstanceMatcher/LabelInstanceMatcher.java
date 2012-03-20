@@ -44,9 +44,11 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 	public double instanceSimilarity(Instance source, Instance target)
 			throws Exception {
 		double sim;
-		
+						
 		String sourceLabel = source.getSingleValuedProperty("label");
 				
+		double labelSim = -1;
+		
 		log.debug("sourceLabel: " + sourceLabel);
 		sourceLabel = processLabel(sourceLabel, source.getType());
 		log.debug("sourceLabel: " + sourceLabel);
@@ -54,10 +56,13 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		String targetLabel;
 		targetLabel = target.getSingleValuedProperty("label");
 		
-		if(targetLabel == null || targetLabel.isEmpty()) targetLabel = getLabelFromStatements(target);
+		if(targetLabel == null || targetLabel.isEmpty()) {
+			targetLabel = getLabelFromStatements(target);
+		}
 		
 		log.debug("targetLabel: " + targetLabel);
 		
+		//System.out.println(source.getUri() + "||" + target.getUri() + "  " + sourceLabel + " | " + targetLabel);
 		
 		sim = computeStringSimilarity(sourceLabel, targetLabel);
 		
@@ -136,8 +141,27 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		List<Statement> stmts = instance.getStatements();
 		for(Statement s: stmts){
 			String prop = s.getPredicate().getURI();
-			if(prop.endsWith("name") || prop.endsWith("label"))
-				return s.getObject().toString();
+			
+			
+			//prop.endsWith("/name") || prop.endsWith("#name") 
+			//|| prop.endsWith("/label") || prop.endsWith("#label")
+			
+			if(prop.endsWith("name") || prop.endsWith("label")){
+				//System.out.println(prop);
+				return s.getObject().toString();	
+			}
+		}
+		return null;
+	}
+	
+	public String getAliasesFromStatements(Instance instance){
+		List<Statement> stmts = instance.getStatements();
+		for(Statement s: stmts){
+			String prop = s.getPredicate().getURI();
+			if(prop.endsWith("name") || prop.endsWith("label")){
+				//System.out.println(prop);
+				return s.getObject().toString();	
+			}
 		}
 		return null;
 	}
