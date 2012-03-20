@@ -39,7 +39,7 @@ import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
-import am.app.ontology.profiling.classification.ClassificatorRegistry;
+import am.app.ontology.profiling.classification.ClassifierRegistry;
 import am.app.ontology.profiling.classification.OntologyClassificator;
 import am.app.ontology.profiling.classification.Test;
 import am.app.ontology.profiling.classification.TestSet;
@@ -410,7 +410,7 @@ public static void testClassified() {
 		//OntologyClassificator oc = new OntologyClassificator(o2,ClassificatorRegistry.C_NaiveBayes);
 		//OntologyClassificator oc = new OntologyClassificator(o2);
 		try {
-		for (ClassificatorRegistry cl : ClassificatorRegistry.values()) {
+		for (ClassifierRegistry cl : ClassifierRegistry.values()) {
 			System.out.println("#########"+cl.name());
 			OntologyClassificator oc = new OntologyClassificator(o2,cl);
 			//train the model with the 

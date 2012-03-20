@@ -80,7 +80,7 @@ public class OntologyClassificator {
 		cModel =  loadModel(fileName);
 	}
 	
-	public OntologyClassificator(OutputTrainingGenerator o, ClassificatorRegistry classificator){
+	public OntologyClassificator(OutputTrainingGenerator o, ClassifierRegistry classificator){
 		LinkedList<String> classList = o.getClassList();
 		fvClassVal = new FastVector(classList.size());
 		
@@ -118,7 +118,7 @@ public class OntologyClassificator {
 	}
 	
 	
-	public OntologyClassificator(ClassificatorRegistry classificator){
+	public OntologyClassificator(ClassifierRegistry classificator){
 		fvClassVal = new FastVector(3);
 		fvClassVal.addElement("benchmark");
 		fvClassVal.addElement("conference");

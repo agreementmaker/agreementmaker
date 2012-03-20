@@ -14,7 +14,7 @@ import weka.classifiers.trees.*;
 import weka.classifiers.trees.lmt.LogisticBase;
 import weka.classifiers.trees.m5.*;
 
-public enum ClassificatorRegistry {
+public enum ClassifierRegistry {
     
 //	C_ADTree										( ADTree.class ), 
 //    C_AODE 											( AODE.class ), 
@@ -95,7 +95,7 @@ public enum ClassificatorRegistry {
     
 	private Class<? extends Classifier> cls;
 	
-	private ClassificatorRegistry( Class<? extends Classifier> c ) {
+	private ClassifierRegistry( Class<? extends Classifier> c ) {
 		cls = c;
 	}
     
