@@ -55,7 +55,6 @@ public class Main
 		
 		
 		AMHost host = new AMHost();
-		host.startFramework();
 		
 		Core.getInstance().setFramework(host);
 		
