@@ -29,7 +29,7 @@ import am.app.ontology.profiling.ontologymetrics.CoupleOntologyMetrics;
 import am.app.ontology.profiling.ontologymetrics.OntologyEvaluation;
 import am.app.ontology.profiling.ontologymetrics.OntologyMetrics;
 
-public class OntologyClassificator {
+public class OntologyClassifier {
 	
 	private FastVector fvClassVal;
 	private Classifier cModel;
@@ -40,7 +40,7 @@ public class OntologyClassificator {
 	 * constructor of the object ontologyclassificator
 	 * 
 	 */
-	public OntologyClassificator(OutputTrainingGenerator o){
+	public OntologyClassifier(OutputTrainingGenerator o){
 		LinkedList<String> classList = o.getClassList();
 		fvClassVal = new FastVector(classList.size());
 		
@@ -68,7 +68,7 @@ public class OntologyClassificator {
 		this.cModel = cModel;
 	}
 
-	public OntologyClassificator(OutputTrainingGenerator o, String fileName){
+	public OntologyClassifier(OutputTrainingGenerator o, String fileName){
 		LinkedList<String> classList = o.getClassList();
 		fvClassVal = new FastVector(classList.size());
 		
@@ -80,7 +80,7 @@ public class OntologyClassificator {
 		cModel =  loadModel(fileName);
 	}
 	
-	public OntologyClassificator(OutputTrainingGenerator o, ClassifierRegistry classificator){
+	public OntologyClassifier(OutputTrainingGenerator o, ClassifierRegistry classificator){
 		LinkedList<String> classList = o.getClassList();
 		fvClassVal = new FastVector(classList.size());
 		
@@ -105,7 +105,7 @@ public class OntologyClassificator {
 	
 	
 	
-	public OntologyClassificator(){
+	public OntologyClassifier(){
 		fvClassVal = new FastVector(3);
 		fvClassVal.addElement("benchmark");
 		fvClassVal.addElement("conference");
@@ -118,7 +118,7 @@ public class OntologyClassificator {
 	}
 	
 	
-	public OntologyClassificator(ClassifierRegistry classificator){
+	public OntologyClassifier(ClassifierRegistry classificator){
 		fvClassVal = new FastVector(3);
 		fvClassVal.addElement("benchmark");
 		fvClassVal.addElement("conference");
@@ -145,7 +145,7 @@ public class OntologyClassificator {
 	 * 
 	 */
 	
-	public OntologyClassificator(String fileName){
+	public OntologyClassifier(String fileName){
 		fvClassVal = new FastVector(3);
 		fvClassVal.addElement("benchmark");
 		fvClassVal.addElement("conference");
@@ -1664,7 +1664,7 @@ public String testModel(OutputTrainingGenerator o, TestSet t){
 		
 		OutputTrainingGenerator o = new OutputTrainingGenerator(outputTrainingGeneratorFileName);
 		
-		OntologyClassificator oc = new OntologyClassificator(o,modelFileName);
+		OntologyClassifier oc = new OntologyClassifier(o,modelFileName);
 	
 		OntologyEvaluation eval1 = new OntologyEvaluation();
 		OntologyEvaluation eval2 = new OntologyEvaluation();

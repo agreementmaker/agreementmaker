@@ -40,7 +40,7 @@ import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.classification.ClassifierRegistry;
-import am.app.ontology.profiling.classification.OntologyClassificator;
+import am.app.ontology.profiling.classification.OntologyClassifier;
 import am.app.ontology.profiling.classification.Test;
 import am.app.ontology.profiling.classification.TestSet;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
@@ -328,7 +328,7 @@ public class TrainingGenerator {
 			
 		//create the model with the output training
 		//OntologyClassificator oc = new OntologyClassificator(o2,ClassificatorRegistry.C_NaiveBayes);
-		OntologyClassificator oc = new OntologyClassificator(o2);
+		OntologyClassifier oc = new OntologyClassifier(o2);
 		
 
 		
@@ -412,7 +412,7 @@ public static void testClassified() {
 		try {
 		for (ClassifierRegistry cl : ClassifierRegistry.values()) {
 			System.out.println("#########"+cl.name());
-			OntologyClassificator oc = new OntologyClassificator(o2,cl);
+			OntologyClassifier oc = new OntologyClassifier(o2,cl);
 			//train the model with the 
 			oc.trainCoupleOntology(o2);
 

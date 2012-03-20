@@ -60,7 +60,7 @@ public class testMain {
 		testList.add(test1);
 		testList.add(test2);
 		
-		OntologyClassificator oc = new OntologyClassificator();
+		OntologyClassifier oc = new OntologyClassifier();
 		//OntologyClassificator oc = new OntologyClassificator("/Users/alessio/Dropbox/PROGRAMMAZIONE/test.model");
 		//Instance instance = oc.createTrainingInstanceFromMetrics(om, "anatomy");
 		
@@ -134,7 +134,7 @@ public class testMain {
 		//String fileNameClassesTest = "/Users/alessio/Dropbox/PROGRAMMAZIONE/classesTest.txt";
 		
 		
-		OntologyClassificator oc = new OntologyClassificator();
+		OntologyClassifier oc = new OntologyClassifier();
 		LinkedList<String> listaClassi =  oc.loadClassesFromFile(fileNameClasses);
 		//LinkedList<String> listaClassiTest =  oc.loadClassesFromFile(fileNameClassesTest);
 		CoupleOntologyMetrics[] coupleTraining = oc.loadCoupleOntologyMetricsFromFile(fileNameOntologiesTraining);
@@ -170,7 +170,7 @@ public class testMain {
 		//String fileNameClassesTest = "Classification/classesTest.txt";
 		
 		
-		OntologyClassificator oc = new OntologyClassificator("Classification/test.model");
+		OntologyClassifier oc = new OntologyClassifier("Classification/test.model");
 		//LinkedList<String> listaClassi =  oc.loadClassesFromFile(fileNameClasses);
 		//LinkedList<String> listaClassiTest =  oc.loadClassesFromFile(fileNameClassesTest);
 		//CoupleOntologyMetrics[] coupleTraining = oc.loadCoupleOntologyMetricsFromFile(fileNameOntologiesTraining);
@@ -198,7 +198,7 @@ private static void testEvaluation() {
 		String fileNameClassesTest = "Classification/classesTest.txt";
 		
 		
-		OntologyClassificator oc = new OntologyClassificator("Classification/test.model");
+		OntologyClassifier oc = new OntologyClassifier("Classification/test.model");
 		LinkedList<String> listaClassi =  oc.loadClassesFromFile(fileNameClasses);
 		LinkedList<String> listaClassiTest =  oc.loadClassesFromFile(fileNameClassesTest);
 		CoupleOntologyMetrics[] coupleTraining = oc.loadCoupleOntologyMetricsFromFile(fileNameOntologiesTraining);
@@ -220,7 +220,7 @@ private static void testCrossValidation() {
 	//String fileNameClassesTest = "Classification/classesTest.txt";
 	
 	
-	OntologyClassificator oc = new OntologyClassificator("Classification/test.model");
+	OntologyClassifier oc = new OntologyClassifier("Classification/test.model");
 	LinkedList<String> listaClassi =  oc.loadClassesFromFile(fileNameClasses);
 	//LinkedList<String> listaClassiTest =  oc.loadClassesFromFile(fileNameClassesTest);
 	CoupleOntologyMetrics[] coupleTraining = oc.loadCoupleOntologyMetricsFromFile(fileNameOntologiesTraining);
@@ -238,7 +238,7 @@ private static void testCrossValidation() {
 	private static OAEI_Track testOntologyST(Ontology sourceOntology,Ontology targetOntology) {
 	
 	
-		OntologyClassificator oc = new OntologyClassificator("Classification/test.model");
+		OntologyClassifier oc = new OntologyClassifier("Classification/test.model");
 	
 		OntologyEvaluation eval1 = new OntologyEvaluation();
 		OntologyEvaluation eval2 = new OntologyEvaluation();

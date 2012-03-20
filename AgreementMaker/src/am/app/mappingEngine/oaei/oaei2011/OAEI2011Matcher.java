@@ -39,7 +39,7 @@ import am.app.ontology.Ontology;
 import am.app.ontology.hierarchy.AlternateHierarchy;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.app.ontology.profiling.ProfilerRegistry;
-import am.app.ontology.profiling.classification.OntologyClassificator;
+import am.app.ontology.profiling.classification.OntologyClassifier;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
 import am.userInterface.MatchingProgressDisplay;
@@ -139,7 +139,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	
 	private AbstractMatcher automaticConfiguration() throws Exception {
 		AbstractMatcher finalResult = null;
-		OAEI2011Configuration conf = OntologyClassificator.classifiedOntologiesOAEI2011(sourceOntology, targetOntology);
+		OAEI2011Configuration conf = OntologyClassifier.classifiedOntologiesOAEI2011(sourceOntology, targetOntology);
 			
 		switch( conf ) {
 		case LARGE_LEXICAL: {

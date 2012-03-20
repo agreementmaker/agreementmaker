@@ -11,7 +11,7 @@ import edu.smu.tspell.wordnet.Synset;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.profiling.ProfilingReport;
-import am.app.ontology.profiling.classification.OntologyClassificator;
+import am.app.ontology.profiling.classification.OntologyClassifier;
 import am.app.ontology.profiling.ontologymetrics.OntologyEvaluation.Type;
 import antlr.collections.impl.Vector;
 import edu.smu.tspell.wordnet.Synset;
