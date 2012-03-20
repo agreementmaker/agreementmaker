@@ -26,6 +26,8 @@ import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import org.osgi.framework.Bundle;
+
 import am.AMException;
 import am.GlobalStaticVariables;
 import am.Utility;
@@ -110,7 +112,7 @@ public class UIMenu implements ActionListener {
 	
 	
 	// Help menu.
-	private JMenuItem howToUse, aboutItem;		
+	private JMenuItem howToUse, aboutItem, mnuListBundles;		
 	
 	
 
@@ -304,7 +306,8 @@ public class UIMenu implements ActionListener {
 					}
 				});
 				
-			}else if (obj == aboutItem){
+			}
+			else if (obj == aboutItem){
 				new AboutDialog(ui.getUIFrame());
 			}
 			else if( obj == disableVisualizationItem ) {
@@ -799,6 +802,16 @@ public class UIMenu implements ActionListener {
 				InstanceLookupPanel lookupPanel = new InstanceLookupPanel(sourceOntology.getInstances(), targetOntology.getInstances());
 				Core.getUI().addTab("Instances Lookup", null , lookupPanel , "Instances Lookup Panel");
 				
+			}
+			else if( obj == mnuListBundles ) {
+				Bundle[] bundles = Core.getInstance().getFramework().getInstalledBundles();
+				StringBuilder strBuilder = new StringBuilder("Installed bundles in the embedded framework:\n");
+				for( Bundle b : bundles ) {
+					strBuilder.append(b.toString());
+					strBuilder.append("\n");
+				}
+				
+				JOptionPane.showMessageDialog(null, strBuilder.toString());
 			}
 			
 			
@@ -1377,6 +1390,10 @@ public class UIMenu implements ActionListener {
 		//aboutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));                
 		aboutItem.addActionListener(this);
 		helpMenu.add(aboutItem);
+		
+		mnuListBundles = new JMenuItem("Show Bundles");
+		mnuListBundles.addActionListener(this);
+		helpMenu.add(mnuListBundles);
 		
 		
 		myMenuBar = new JMenuBar();
