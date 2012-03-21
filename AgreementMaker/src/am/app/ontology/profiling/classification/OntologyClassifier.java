@@ -80,7 +80,7 @@ public class OntologyClassifier {
 		cModel =  loadModel(fileName);
 	}
 	
-	public OntologyClassifier(OutputTrainingGenerator o, ClassifierRegistry classificator){
+	public OntologyClassifier(OutputTrainingGenerator o, ClassifierRegistry classifier){
 		LinkedList<String> classList = o.getClassList();
 		fvClassVal = new FastVector(classList.size());
 		
@@ -90,7 +90,7 @@ public class OntologyClassifier {
 		}
 		
 		try {
-			cModel = (Classifier) classificator.getClassifier().newInstance();
+			cModel = (Classifier) classifier.getClassifier().newInstance();
 			
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
@@ -261,14 +261,12 @@ public class OntologyClassifier {
 		for(int i = 0; i<metricsLength;i++){
 			attributes[i]= new Attribute("att"+i);
 		}
-		attributes[metricsLength]= new Attribute("theClass",fvClassVal );
+		attributes[metricsLength]= new Attribute("theClass", fvClassVal );
 		
 		//DEBUG print
 		//for(int i = 0; i<attributesLength;i++){
 		//	System.out.println("Attribute "+i+": "+ attributes[i].name());
 		//}
-		
-		
 		
 		// Declare the feature vector
 		FastVector fvWekaAttributes = new FastVector(attributesLength);
@@ -566,17 +564,7 @@ public Instances createTestInstancesFromMetrics(OntologyMetrics[] ontoMetrics ){
 		
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-public Instances createTestInstanceFromMetrics(OntologyMetrics ontoMetrics){
+	public Instances createTestInstanceFromMetrics(OntologyMetrics ontoMetrics){
 		
 		//take the metrics
 		float[] metrics = ontoMetrics.getAllMetrics();

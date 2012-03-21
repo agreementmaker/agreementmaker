@@ -1,6 +1,7 @@
 package am.app.mappingEngine;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -8,6 +9,7 @@ import java.util.Set;
 public class Report {
 	private List<AbstractMatcher> matchers;
 	private Map<String,List<Double>> similarities;
+	private Set<String> solutions;
 	
 	public Report(){
 		similarities = new HashMap<String, List<Double>>();
@@ -30,6 +32,10 @@ public class Report {
 		return similarities.get(key);
 	}
 	
+	public Set<String> keySet(){
+		return similarities.keySet();
+	}
+	
 	public String printTable(){
 		StringBuffer sb = new StringBuffer();
 		for (AbstractMatcher matcher : matchers) {
@@ -48,5 +54,13 @@ public class Report {
 		}
 		
 		return sb.toString();
+	}
+	
+	public void setSolutions(Set<String> solutions) {
+		this.solutions = solutions;
+	}
+	
+	public Set<String> getSolutions() {
+		return solutions;
 	}
 }
