@@ -12,9 +12,12 @@ import org.apache.felix.main.AutoProcessor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 
+import am.app.Core;
+
 public class AMHost {
 	private AMActivator m_activator = null;
     private Felix m_felix = null;
+    private OSGiRegistry registry;
     
     public AMHost()
     {
@@ -24,13 +27,14 @@ public class AMHost {
         m_activator = new AMActivator();
         List<BundleActivator> list = new ArrayList<BundleActivator>();
         list.add(m_activator);
+        configMap.put(FelixConstants.FRAMEWORK_STORAGE, FelixConstants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
         configMap.put(FelixConstants.SYSTEMBUNDLE_ACTIVATORS_PROP, list);
         configMap.put(FelixConstants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,
-                "am.app.mappingEngine,am.app.");
+                "am.app.mappingEngine,am.app.ontology");
 
         File bundles[] = new File("plugins/").listFiles();
 
-        configMap.put(AutoProcessor.AUTO_DEPLOY_ACTION_PROPERY, AutoProcessor.AUTO_DEPLOY_INSTALL_VALUE);
+        configMap.put(AutoProcessor.AUTO_DEPLOY_ACTION_PROPERY, AutoProcessor.AUTO_DEPLOY_INSTALL_VALUE + "," + AutoProcessor.AUTO_DEPLOY_START_VALUE);
         configMap.put(AutoProcessor.AUTO_DEPLOY_DIR_PROPERY, "plugins/");
         try
         {
@@ -39,6 +43,10 @@ public class AMHost {
             m_felix = new Felix(configMap);
             // Now start Felix instance.
             m_felix.init();
+            
+            Core.getInstance().setContext(m_felix.getBundleContext());
+            //create the registry
+            registry = new OSGiRegistry(m_felix.getBundleContext());
             
             AutoProcessor.process(configMap, m_felix.getBundleContext());
             
@@ -68,4 +76,5 @@ public class AMHost {
 		} catch (Exception e) {e.printStackTrace();}
         
     }
+    public OSGiRegistry getRegistry(){return registry;}
 }

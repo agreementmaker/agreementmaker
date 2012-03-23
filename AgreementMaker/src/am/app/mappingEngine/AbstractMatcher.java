@@ -2056,4 +2056,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	public String toString() {
 		return getName();
 	}
+	
+	@Override
+	public MatcherResult getResult() {
+		return new MatcherResultImpl(classesAlignmentSet, propertiesAlignmentSet, instanceAlignmentSet);
+	}
 }

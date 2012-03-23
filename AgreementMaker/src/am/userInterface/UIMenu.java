@@ -807,9 +807,17 @@ public class UIMenu implements ActionListener {
 				Bundle[] bundles = Core.getInstance().getFramework().getInstalledBundles();
 				StringBuilder strBuilder = new StringBuilder("Installed bundles in the embedded framework:\n");
 				for( Bundle b : bundles ) {
-					strBuilder.append(b.toString());
+					strBuilder.append(b.getSymbolicName());
 					strBuilder.append("\n");
 				}
+				strBuilder.append("\n\nMatcher names:\n");
+				List<String> matcherNames=Core.getInstance().getFramework().getRegistry().getMatcherNames();
+				for(String s:matcherNames){
+					strBuilder.append(s);
+					strBuilder.append("\n");
+				}
+				//strBuilder.append("existing services in the system\n");
+				//Core.getInstance().getContext().getServiceReference(AbstractMatcher.class);
 				
 				JOptionPane.showMessageDialog(null, strBuilder.toString());
 			}

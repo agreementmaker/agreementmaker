@@ -19,6 +19,7 @@ import am.app.ontology.OntologyChangeEvent;
 import am.app.ontology.OntologyChangeListener;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.app.osgi.AMHost;
+import am.app.osgi.OSGiRegistry;
 import am.userInterface.AppPreferences;
 import am.userInterface.Colors;
 import am.userInterface.UI;
