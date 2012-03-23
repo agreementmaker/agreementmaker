@@ -27,7 +27,7 @@ public class AMHost {
         m_activator = new AMActivator();
         List<BundleActivator> list = new ArrayList<BundleActivator>();
         list.add(m_activator);
-        configMap.put(FelixConstants.FRAMEWORK_STORAGE, FelixConstants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
+        configMap.put(FelixConstants.FRAMEWORK_STORAGE_CLEAN, FelixConstants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT );
         configMap.put(FelixConstants.SYSTEMBUNDLE_ACTIVATORS_PROP, list);
         configMap.put(FelixConstants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,
                 "am.app.mappingEngine,am.app.ontology");
