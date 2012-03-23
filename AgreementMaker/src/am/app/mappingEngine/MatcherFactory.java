@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.EnumSet;
 
 import am.app.Core;
+import am.app.osgi.MatcherNotFoundException;
 import am.userInterface.Colors;
 
 public class MatcherFactory {
@@ -54,6 +55,16 @@ public class MatcherFactory {
 		return matchersList;
 	}
 	
+	
+	public static AbstractMatcher getMatcherInstance( String matcherName ) {
+		try {
+			return Core.getInstance().getFramework().getRegistry().getMatcherByName(matcherName);
+		}
+		catch (MatcherNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
 	/**Return the real istance of the matcher given the selected nameindex
 	 * the instanceIndex is the unique identifier of this algorithm, is the unique parameter of the constructor and is the identifier of the matcher instance in the run matchers list (the table of the AM)
