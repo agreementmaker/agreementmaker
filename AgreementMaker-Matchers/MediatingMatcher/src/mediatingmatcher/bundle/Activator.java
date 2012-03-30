@@ -1,7 +1,11 @@
 package mediatingmatcher.bundle;
 
+import mediatingmatcher.internal.MediatingMatcher;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+
+import am.app.mappingEngine.AbstractMatcher;
 
 public class Activator implements BundleActivator {
 
@@ -17,6 +21,7 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
+		context.registerService(AbstractMatcher.class, new MediatingMatcher(), null);
 	}
 
 	/*
