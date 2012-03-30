@@ -1,7 +1,9 @@
 package am.app.mappingEngine.instanceMatchers.labelInstanceMatcher;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
@@ -18,9 +20,15 @@ import com.hp.hpl.jena.rdf.model.Statement;
 
 
 public class LabelInstanceMatcher extends BaseInstanceMatcher {
+	
+	String lastProcessedURI;
+	String lastProcessedLabel;
 
 	private static final long serialVersionUID = -8556251076642309404L;
 	Logger log = Logger.getLogger(LabelInstanceMatcher.class);
+	{
+		//log.setLevel(Level.DEBUG);
+	}
 	
 	//String metric;
 	
@@ -44,24 +52,42 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 	public double instanceSimilarity(Instance source, Instance target)
 			throws Exception {
 		double sim;
-						
-		String sourceLabel = source.getSingleValuedProperty("label");
-				
-		double labelSim = -1;
 		
-		log.debug("sourceLabel: " + sourceLabel);
-		sourceLabel = processLabel(sourceLabel, source.getType());
-		log.debug("sourceLabel: " + sourceLabel);
+		String sourceLabel; 
+		
+		if(source.getUri().equals(lastProcessedURI)){
+			sourceLabel = lastProcessedLabel;
+		}
+		else{
+			sourceLabel = source.getSingleValuedProperty("label");				
+			
+			log.debug("sourceLabel: " + sourceLabel);
+			sourceLabel = processLabel(sourceLabel, source.getType());
+			log.debug("sourceLabel: " + sourceLabel);
+			
+			lastProcessedURI = source.getUri();
+			lastProcessedLabel = sourceLabel;
+		}
 				
 		String targetLabel;
 		targetLabel = target.getSingleValuedProperty("label");
 		
 		if(targetLabel == null || targetLabel.isEmpty()) {
-			targetLabel = getLabelFromStatements(target);
+			targetLabel = LabelUtils.getLabelFromStatements(target);
 		}
 		
 		log.debug("targetLabel: " + targetLabel);
-		
+				
+		//targetLabel = LabelUtils.processOrganizationLabel(targetLabel);
+		targetLabel = LabelUtils.processLabel(targetLabel);
+				
+		log.debug("targetLabel: " + targetLabel);
+			
+		if(targetLabel.contains(",")){
+			String[] split = targetLabel.split(",");
+			targetLabel = split[0];
+		}
+			
 		//System.out.println(source.getUri() + "||" + target.getUri() + "  " + sourceLabel + " | " + targetLabel);
 		
 		sim = computeStringSimilarity(sourceLabel, targetLabel);
@@ -69,6 +95,11 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		log.debug("labelSim: " + sim);
 		
 		List<String> aliases = target.getProperty("alias");
+		if(aliases == null) aliases = new ArrayList<String>();
+		aliases.addAll(LabelUtils.getAliasesFromStatements(target));
+		
+		//System.out.println(aliases);
+		
 		if(aliases != null){
 			double max = sim;
 			double curr;
@@ -120,7 +151,9 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 	}
 
 	public static String processLabel(String label, String type){
-		if(type == null) return label;
+		if(type == null) 
+			return LabelUtils.processLabel(label);			
+			//return label;			
 		
 		if(type.toLowerCase().endsWith("organization"))
 			return LabelUtils.processOrganizationLabel(label);
@@ -134,37 +167,14 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 			//label = label.replace("(","");
 			//label = label.replace(")","");
 		}
+		else{
+			label = LabelUtils.processLabel(label);			
+		}
+		
 		return label;
 	}	
 	
-	public String getLabelFromStatements(Instance instance){
-		List<Statement> stmts = instance.getStatements();
-		for(Statement s: stmts){
-			String prop = s.getPredicate().getURI();
-			
-			
-			//prop.endsWith("/name") || prop.endsWith("#name") 
-			//|| prop.endsWith("/label") || prop.endsWith("#label")
-			
-			if(prop.endsWith("name") || prop.endsWith("label")){
-				//System.out.println(prop);
-				return s.getObject().toString();	
-			}
-		}
-		return null;
-	}
-	
-	public String getAliasesFromStatements(Instance instance){
-		List<Statement> stmts = instance.getStatements();
-		for(Statement s: stmts){
-			String prop = s.getPredicate().getURI();
-			if(prop.endsWith("name") || prop.endsWith("label")){
-				//System.out.println(prop);
-				return s.getObject().toString();	
-			}
-		}
-		return null;
-	}
+
 	
 	@Override
 	public String getName() {

@@ -216,31 +216,23 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher{
 		//In case modality is ALL or ALL_SEMANTIC, we have to have to gather all the properties 
 		//from the list of statements
 		if(modality == Modality.ALL || modality == Modality.ALL_SEMANTIC){
-			List<Statement> stmts = instance.getStatements();
-			for (Statement statement : stmts) {
-				String literal = statement.getObject().asLiteral().getString();
-
-				log.debug(literal);
-				
-				if(literal.startsWith("http://")){
+			List<String> stmtValues = instance.getAllValuesFromStatements();
+			
+			for (String string : stmtValues) {
+				if(string.startsWith("http://")){
 					if(kb == null){
-						//TODO Figure out if we need to take the URI fragment when we cannot access to the label
+						//TODO Figure out if we need to take the URI fragment when we cannot access the label
 						continue;
-					}
-
-					log.debug("Accessing the KB");
-					String label = kb.getLabelFromURI(literal);
+					}					
+					String label = kb.getLabelFromURI(string);
 					if(label != null)
-						values.add(label);					
+						values.add(label);		
 				}
 				else{
-					int limit = 300;				
-					if(literal.length() < limit)					
-						values.add(literal);
-					else values.add(literal.substring(0, limit - 1));
+					values.add(string);
 				}
-
 			}
+			
 		}
 			
 

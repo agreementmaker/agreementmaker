@@ -1,9 +1,18 @@
 package am.app.mappingEngine.instanceMatcher;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import am.app.ontology.instance.Instance;
+
+import com.hp.hpl.jena.rdf.model.Statement;
+
 public class LabelUtils {
 	
 	//Default method for cleaning labels
 	public static String processLabel(String label) {
+		label = label.toLowerCase();
+		
 		if(label.contains("(")){
 			int beg = label.indexOf('(');
 			int end = label.indexOf(')');
@@ -11,10 +20,10 @@ public class LabelUtils {
 			label = label.trim();
 		}
 		
-		if(label.contains(",")){
-			String[] split = label.split(",");
-			label = split[1].trim() + " " + split[0].trim();
-		}
+//		if(label.contains(",")){
+//			String[] split = label.split(",");
+//			label = split[1].trim() + " " + split[0].trim();
+//		}
 			
 		String[] split = label.split(" ");
 		
@@ -90,6 +99,36 @@ public class LabelUtils {
 		return label;
 	}
 	
+	public static String getLabelFromStatements(Instance instance){
+		List<Statement> stmts = instance.getStatements();
+		for(Statement s: stmts){
+			String prop = s.getPredicate().getURI();
+			
+			
+			//prop.endsWith("/name") || prop.endsWith("#name") 
+			//|| prop.endsWith("/label") || prop.endsWith("#label")
+			
+			if(prop.endsWith("name") || prop.endsWith("label")){
+				//System.out.println(prop);
+				return s.getObject().toString();	
+			}
+		}
+		return null;
+	}
+	
+	public static List<String> getAliasesFromStatements(Instance instance){
+		List<Statement> stmts = instance.getStatements();
+		List<String> aliases = new ArrayList<String>();
+		for(Statement s: stmts){
+			String prop = s.getPredicate().getURI();
+			if(prop.endsWith("name") || prop.endsWith("label")){
+				//System.out.println(prop);
+				aliases.add(s.getObject().toString());	
+			}
+		}
+		return aliases;
+	}
+	
 	
 	public static void main(String[] args) {
 		System.out.println(LabelUtils.processOrganizationLabel("Omnicom Group Incorporated"));
@@ -110,6 +149,16 @@ public class LabelUtils {
 			label = label.trim();
 		}
 		return label;
+	}
+	
+	public static String getBetweenParentheses(String label) {
+		if(label.contains("(")){
+			int beg = label.indexOf('(');
+			int end = label.indexOf(')');
+			if(end == -1) return null;
+			return label.substring(beg + 1, end);
+		}
+		return null;
 	}
 	
 	

@@ -114,6 +114,22 @@ public class Instance implements Serializable {
 		}
 		return values;
 	}
+		
+	public List<String> getAllValuesFromStatements(){
+		List<String> values = new ArrayList<String>();
+		
+		for (Statement statement : statements) {
+			String literal = statement.getObject().asLiteral().getString();
+			
+			//values.add(literal);
+			
+			int limit = 300;				
+			if(literal.length() < limit)					
+				values.add(literal);
+			else values.add(literal.substring(0, limit - 1));
+		}
+		return values;
+	}
 	
 	/**
 	 * Return the value of a <i>single valued</i> syntactic property.
@@ -124,7 +140,7 @@ public class Instance implements Serializable {
 	public String getSingleValuedProperty( String key ) {
 		List<String> strings = properties.get(key);
 		if(strings == null) return null;
-		if(strings.size() != 1) return null;
+		if(strings.size() < 1) return null;
 		return strings.get(0);
 	}
 	
