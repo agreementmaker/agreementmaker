@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -25,8 +23,8 @@ public class WordnetVisualizer {
 	private WordNetDatabase WordNet;
 	HashMap<Synset, String> nodes;
 	
-	HashMap<Synset, ScoredSynset> sourceScoredBySynset;
-	HashMap<Synset, ScoredSynset> targetScoredBySynset;
+	Map<Synset, ScoredSynset> sourceScoredBySynset;
+	Map<Synset, ScoredSynset> targetScoredBySynset;
 	
 	boolean replicate;
 	
@@ -240,8 +238,8 @@ public class WordnetVisualizer {
 		return line;
 	}
 
-	public void saveGraphOnFile(String filename, HashMap<Synset, ScoredSynset> sourceScoredBySynset,
-	HashMap<Synset, ScoredSynset> targetScoredBySynset){
+	public void saveGraphOnFile(String filename, Map<Synset, ScoredSynset> sourceScoredBySynset,
+								Map<Synset, ScoredSynset> targetScoredBySynset){
 		this.sourceScoredBySynset = sourceScoredBySynset;
 		this.targetScoredBySynset = targetScoredBySynset;
 		

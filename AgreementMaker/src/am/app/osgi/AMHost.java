@@ -30,7 +30,40 @@ public class AMHost {
         configMap.put(FelixConstants.FRAMEWORK_STORAGE_CLEAN, FelixConstants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT );
         configMap.put(FelixConstants.SYSTEMBUNDLE_ACTIVATORS_PROP, list);
         configMap.put(FelixConstants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,
-                "am.app.mappingEngine,am.app.ontology");
+                "am.app.mappingEngine," +
+                "am.app.ontology," +
+                "edu.smu.tspell.wordnet,"+
+                "am,"+
+                "am.app,"+
+                "am.app.mappingEngine.StringUtil,"+ 
+                "am.utility," +
+                "am.app.ontology.profiling," +
+                "am.userInterface," +
+                "org.junit," +
+                "com.hp.hpl.jena.ontology," +
+                "am.app.lexicon,"+
+                "am.app.lexicon.subconcept,"+
+                "uk.ac.shef.wit.simmetrics.similaritymetrics," +
+                "am.app.mappingEngine.oaei," +
+                "com.hp.hpl.jena.rdf.model," +
+                "org.apache.log4j, " +
+                "am.app.mappingEngine.similarityMatrix," +
+                "com.wcohen.ss.api," +
+                "simpack.measure.weightingscheme," +
+                "am.app.mappingEngine.referenceAlignment," +
+                "am.app.ontology.ontologyParser," +
+                "am.output.alignment.oaei,"+
+                "com.hp.hpl.jena.util.iterator,"+
+                "com.hp.hpl.jena.graph,"+
+                "edu.smu.tspell.wordnet,"+
+                "am.app.mappingEngine.LinkedOpenData,"+
+                "com.hp.hpl.jena.util,"+
+                "am.utility.referenceAlignment,"+
+                "am.visualization.graphviz.wordnet,"+
+                "arq.examples.propertyfunction,"+
+                "am.app.mappingEngine.hierarchy,"+
+                "am.app.mappingEngine.qualityEvaluation"); 
+        
 
         File bundles[] = new File("plugins/").listFiles();
 
