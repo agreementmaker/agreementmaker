@@ -1,4 +1,4 @@
-package lecxicalsynonymmatcher.internal;
+package lecxicalsynonymmatcher.external;
 
 import java.util.HashMap;
 import java.util.List;

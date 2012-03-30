@@ -1,4 +1,4 @@
-package lecxicalsynonymmatcher.internal;
+package lecxicalsynonymmatcher.external;
 
 import am.app.lexicon.Lexicon;
 import am.app.mappingEngine.DefaultMatcherParameters;

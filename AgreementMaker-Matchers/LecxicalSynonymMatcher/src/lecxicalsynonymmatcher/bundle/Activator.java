@@ -1,7 +1,7 @@
 package lecxicalsynonymmatcher.bundle;
 
-import lecxicalsynonymmatcher.internal.LexicalSynonymMatcher;
-import lecxicalsynonymmatcher.internal.LexicalSynonymMatcherWeighted;
+import lecxicalsynonymmatcher.external.LexicalSynonymMatcher;
+import lecxicalsynonymmatcher.external.LexicalSynonymMatcherWeighted;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
