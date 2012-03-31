@@ -148,14 +148,14 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 	        ontology.setTitle(f.getName()); 
 		}
 		else if( def.loadInstances ) {
-			if( def.instanceSource == DatasetType.DATASET ) {
+			if( def.instanceSourceType == DatasetType.DATASET ) {
 				ontology.setFilename(def.instanceSourceFile);
 				ontology.setLanguage(Ontology.LANG_OWL);
 				ontology.setFormat(Ontology.SYNTAX_RDFXML);
 				File f = new File(def.instanceSourceFile);
 		        ontology.setTitle(f.getName()); 
 			}
-			else if( def.instanceSource == DatasetType.ENDPOINT ){
+			else if( def.instanceSourceType == DatasetType.ENDPOINT ){
 				ontology.setFilename(def.instanceSourceFile);
 				ontology.setLanguage(Ontology.LANG_OWL);
 				ontology.setFormat(Ontology.SYNTAX_RDFXML);
@@ -238,11 +238,11 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
         if( ontDefinition != null ) {
         	if( !ontDefinition.loadInstances )
         		report += "none.\n\n";
-        	else if( ontDefinition.instanceSource == DatasetType.DATASET )
+        	else if( ontDefinition.instanceSourceType == DatasetType.DATASET )
         		report += "dataset.\n\n";
-        	else if( ontDefinition.instanceSource == DatasetType.ONTOLOGY )
+        	else if( ontDefinition.instanceSourceType == DatasetType.ONTOLOGY )
         		report += "ontology.\n\n";
-        	else if( ontDefinition.instanceSource == DatasetType.ENDPOINT )
+        	else if( ontDefinition.instanceSourceType == DatasetType.ENDPOINT )
         		report += "endpoint.\n\n";
         }
         report += "Select the 'Ontology Details' function in the 'Ontology' menu\nfor additional informations.\n";
@@ -259,10 +259,10 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		
 		if( !ontDefinition.loadInstances ) return;
 		
-		if( ontDefinition.instanceSource == DatasetType.ONTOLOGY ) {
+		if( ontDefinition.instanceSourceType == DatasetType.ONTOLOGY ) {
 			instances = new OntologyInstanceDataset(ontology);
 		}
-		else if ( ontDefinition.instanceSource == DatasetType.DATASET ) {
+		else if ( ontDefinition.instanceSourceType == DatasetType.DATASET ) {
 			
 			OntModel instancesModel = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, null );
 			
@@ -275,19 +275,19 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 			
 			instances = new SeparateFileInstanceDataset(instancesModel);
 		}
-		else if ( ontDefinition.instanceSource == DatasetType.ENDPOINT &&
+		else if ( ontDefinition.instanceSourceType == DatasetType.ENDPOINT &&
 				  ontDefinition.instanceEndpointType.equals( EndpointRegistry.FREEBASE ) ) {
 			
 			FreebaseEndpoint freebase = new FreebaseEndpoint();
 			instances = new FreebaseInstanceDataset(freebase);
 		}
-		else if ( ontDefinition.instanceSource == DatasetType.ENDPOINT &&
+		else if ( ontDefinition.instanceSourceType == DatasetType.ENDPOINT &&
 				  ontDefinition.instanceEndpointType.equals( EndpointRegistry.GEONAMES ) ) {
 			
 			GeoNamesEndpoint geoNames = new GeoNamesEndpoint();
 			instances = new GeoNamesInstanceDataset(geoNames);
 		}
-		else if ( ontDefinition.instanceSource == DatasetType.ENDPOINT &&
+		else if ( ontDefinition.instanceSourceType == DatasetType.ENDPOINT &&
 				  ontDefinition.instanceEndpointType.equals( EndpointRegistry.SPARQL ) ) {
 			
 			SparqlEndpoint endpoint = new SparqlEndpoint(ontDefinition.instanceSourceFile);

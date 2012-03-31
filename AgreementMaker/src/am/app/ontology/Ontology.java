@@ -327,7 +327,7 @@ public class Ontology {
 			OntologyDefinition odef = new OntologyDefinition();
 			odef.loadOntology = false;
 			odef.loadInstances = true;
-			odef.instanceSource = DatasetType.DATASET;
+			odef.instanceSourceType = DatasetType.DATASET;
 			odef.instanceSourceFormat = 0;
 			odef.instanceSourceFile = fileName;
 			

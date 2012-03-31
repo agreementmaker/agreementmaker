@@ -144,47 +144,56 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		 */
 		
 		OntologyProfiler pro = Core.getInstance().getOntologyProfiler();
-		Pair<String,String> currentPair=null;
 		if( pro != null ) {
 			// we are using ontology profiling
 			double highestSimilarity = 0.0d;
+			Pair<String,String> highestPair = null;
+			
 			Iterator<Pair<String,String>> annIter = pro.getAnnotationIterator(source, target);
 			while( annIter.hasNext() ) {
-				currentPair = annIter.next();
+				Pair<String,String> currentPair = annIter.next();
 				double currentSimilarity = calculateSimilarity(currentPair.getLeft(), currentPair.getRight());
-				if( currentSimilarity > highestSimilarity ) highestSimilarity = currentSimilarity;
+				if( currentSimilarity > highestSimilarity ) {
+					highestSimilarity = currentSimilarity;
+					highestPair = currentPair;
+				}
 			}
 			
 			if( highestSimilarity == 0.0d ) return null;
 			else
 			{
-				String provenanceString = null;
-				if( param.storeProvenance ) 
-				{//set provenance string
-					String processed1;
+				StringBuilder prov = new StringBuilder();
+				if( param.storeProvenance ) { 
+					//set provenance string
+					StringBuilder proc1 = new StringBuilder();
 					if( ((BaseSimilarityParameters) param).useDictionary)
-						processed1="dictionary";
+						proc1.append("dictionary");
 					else if( highestSimilarity==1)
-						processed1="exact mactch \"" + currentPair.getLeft();
+						proc1.append("exact match \"" + highestPair.getLeft());
 					else if(highestSimilarity == .95)
-						processed1="stem \"" + norm1.normalize(currentPair.getLeft());
+						proc1.append("stem \"" + norm1.normalize(highestPair.getLeft()));
 					else if(highestSimilarity == .90)
-						processed1="stem \"" + norm2.normalize(currentPair.getLeft());
+						proc1.append("stem \"" + norm2.normalize(highestPair.getLeft()));
 					else //has to be .8d sim here
-						processed1="stem \"" + norm3.normalize(currentPair.getLeft());
+						proc1.append("stem \"" + norm3.normalize(highestPair.getLeft()));
 					
 					//the provenance string has the left and right pair with the way it was matched
-					provenanceString="\t********BaseSimilarityMatcher********\n";
-					provenanceString += "sim(\"" 
-						+ currentPair.getLeft() + "\", \""
-						+ currentPair.getRight() 
-						+ "\") = " 
-						+ highestSimilarity
-						+ "\nmatched with "
-						+processed1+"\"";
+					prov.append("\t********BaseSimilarityMatcher********\n");
+					prov.append("sim(\""); 
+					prov.append(highestPair.getLeft());
+					prov.append("\", \"");
+					prov.append(highestPair.getRight()); 
+					prov.append("\") = "); 
+					prov.append(highestSimilarity);
+					prov.append("\nmatched with ");
+					prov.append(proc1);
+					prov.append("\"");
 				}
-				Mapping pmapping=new Mapping( source, target, highestSimilarity, relation, typeOfNodes);
-				if( param.storeProvenance && highestSimilarity >= param.threshold ) pmapping.setProvenance(provenanceString+"\n");
+				Mapping pmapping = new Mapping( source, target, highestSimilarity, relation, typeOfNodes);
+				if( param.storeProvenance && highestSimilarity >= param.threshold ) {
+					prov.append("\n");
+					pmapping.setProvenance(prov.toString());
+				}
 				return pmapping;
 			}
 		}
