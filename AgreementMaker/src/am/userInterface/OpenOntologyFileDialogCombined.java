@@ -244,7 +244,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			try {
 				if( targetPanel.isEnabled() ) {
 					ui.openFile(targetDefinition);
-					saveDefinition(sourceDefinition, false);
+					saveDefinition(targetDefinition, false);
 				}
 			}
 			catch(Exception ex) {
@@ -988,7 +988,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		GroupLayout l = odp.createLayout(jd.getContentPane());
 		jd.getContentPane().setLayout(l);
 		
-		jd.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		jd.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
 		jd.pack();
 		jd.setLocationRelativeTo(null);
