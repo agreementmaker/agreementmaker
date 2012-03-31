@@ -243,7 +243,7 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 				}
 			}
 			
-		} else if ( n2.isProp() ) {
+		} else if ( n1.isProp() ) {
 			// aligning properties (the same thing as above, except for properties)
 			
 			// source localname <-> target localname
@@ -254,8 +254,8 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 			// source localname <-> target annotations
 			if( matchTimeParams.matchSourcePropertyLocalname && matchTimeParams.targetPropertyAnnotations != null ) {
 				for( Property p : matchTimeParams.targetPropertyAnnotations ) {
-					OntProperty c1 = n1.getResource().as(OntProperty.class);
-					NodeIterator nIter = c1.listPropertyValues(p);
+					OntProperty c2 = n2.getResource().as(OntProperty.class);
+					NodeIterator nIter = c2.listPropertyValues(p);
 					while( nIter.hasNext() ) {
 						RDFNode rdfNode = nIter.next();
 						if( rdfNode.isLiteral() ) {
