@@ -5,17 +5,16 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 
@@ -32,6 +31,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
  *  The two layers allow us to model Jena instances (semantic layer) as well as instances 
  *  extracted from XML and JSON (syntactic layer).
  * </p>
+ * 
  * @author Federico Caimi
  *
  */
@@ -119,14 +119,17 @@ public class Instance implements Serializable {
 		List<String> values = new ArrayList<String>();
 		
 		for (Statement statement : statements) {
-			String literal = statement.getObject().asLiteral().getString();
-			
-			//values.add(literal);
-			
-			int limit = 300;				
-			if(literal.length() < limit)					
-				values.add(literal);
-			else values.add(literal.substring(0, limit - 1));
+			RDFNode node = statement.getObject();
+			if( node.canAs(Literal.class) ) {
+				String literal = statement.getObject().asLiteral().getString();
+				
+				//values.add(literal);
+				
+				int limit = 300;				
+				if(literal.length() < limit)					
+					values.add(literal);
+				else values.add(literal.substring(0, limit - 1));
+			}
 		}
 		return values;
 	}
