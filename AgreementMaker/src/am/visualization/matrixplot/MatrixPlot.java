@@ -28,8 +28,8 @@ public class MatrixPlot extends JPanel {
 	protected final SimilarityMatrix matrix;
 	private final VisualizationType type;
 	
-	protected int squareSize = 8;
-	private int border = 2;
+	protected int squareSize = 10;
+	private int border = 0;
 	private BufferedImage I;
 	private Point selected = null;
 	
