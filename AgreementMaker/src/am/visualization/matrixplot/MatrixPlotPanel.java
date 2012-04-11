@@ -388,6 +388,7 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 			AbstractMatcher ref = (AbstractMatcher)e.payload;
 			// we have set the reference alignment.
 			setReference(ref);
+			if( ref == matcher ) lblName.setText(lblName.getText() + " (reference)");
 		}
 		
 		if( e.type == EventType.MATRIX_UPDATED ) {
