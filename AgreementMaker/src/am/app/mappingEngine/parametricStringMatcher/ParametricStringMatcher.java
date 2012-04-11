@@ -14,13 +14,17 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.StringUtil.ISub;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.StringUtil.StringMetrics;
+import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher;
+import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
 import am.app.ontology.Node;
 import am.userInterface.MatchingProgressDisplay;
+import am.utility.WordNetUtils;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.*; //all sim metrics are in here
 
@@ -459,7 +463,8 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	
 	
 	public double performStringSimilarity(String sourceString, String targetString) {
-
+		 WordNetUtils wordnet;
+		 wordnet = new WordNetUtils();
 		double sim = 0;
 		if(sourceString == null || targetString == null )
 			return 0; //this should never happen because we set string to empty string always
@@ -489,6 +494,16 @@ public class ParametricStringMatcher extends AbstractMatcher {
 				double lsim = lv.getSimilarity(processedSource, processedTarget);
 				double AMsim = StringMetrics.AMsubstringScore(processedSource,processedTarget);
 				sim = (0.65*AMsim)+(0.35*lsim); 
+			}
+			else if(parameters.measure.equals(ParametricStringParameters.AMSUB_AND_EDIT_WITH_WORDNET)) {
+				Levenshtein lv = new Levenshtein();
+				double lsim = lv.getSimilarity(processedSource, processedTarget);
+				double AMsim = StringMetrics.AMsubstringScore(processedSource,processedTarget);
+				
+				if (wordnet.areSynonyms(processedSource,processedTarget)) 
+					sim=1;
+				else 
+					sim = (0.65*AMsim)+(0.35*lsim); 
 			}
 			else if(parameters.measure.equals(ParametricStringParameters.EDIT)) {
 				Levenshtein lv = new Levenshtein();
@@ -523,6 +538,20 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	public void initializeNormalizer() {
 		normalizer = new Normalizer( (( ParametricStringParameters)param).normParameter );
 	}
-	      
+	public static void main(String[] args) throws Exception {
+		testStrings("aim", "target");
+	}
+	public static void testStrings(String s1, String s2) throws Exception {
+		Node source = new Node(0, s1, "owl-propertynode", 0);
+		Node target = new Node(1, s2, "owl-propertynode", 0);
+
+		
+
+		ParametricStringMatcher p= new ParametricStringMatcher();
+		Mapping mapping = p.alignTwoNodes(source, target,
+				alignType.aligningProperties,null);
+		System.out.println(mapping);
+
+	}
 }
 

@@ -13,6 +13,7 @@ public class ParametricStringParameters extends DefaultMatcherParameters {
 	public final static String AMSUB = "AM Substring metric";
 	public final static String ISUB = "I-SUB";
 	public final static String AMSUB_AND_EDIT = "AMsubstring + editDistance"; //0.6*amsub + 0.4*editdistance
+	public final static String AMSUB_AND_EDIT_WITH_WORDNET = "AMsubstring + editDistance with WordNet Synonyms";
 	
 	public String measure = EDIT;
 	
