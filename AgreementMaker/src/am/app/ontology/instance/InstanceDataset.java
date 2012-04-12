@@ -22,7 +22,8 @@ public interface InstanceDataset {
 	public List<Instance> getInstances( String type, int limit ) throws AMException;
 
 	/**
-	 * Given a search term, and an instance type, get a list of candidate instances. 
+	 * Given a search term, and an instance type, get a list of candidate instances.
+	 * In case the type is null, we return instances of any type.
 	 */
 	public List<Instance> getCandidateInstances( String searchTerm, String type) throws AMException;
 	
