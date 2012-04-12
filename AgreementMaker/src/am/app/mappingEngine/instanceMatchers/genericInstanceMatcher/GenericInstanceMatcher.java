@@ -105,7 +105,7 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher{
 	
 	@Override
 	public String getName() {
-		return "Generic Instance Matcher";
+		return "Generic Instance Matcher" + matchers;
 	}
 	
 	@Override
