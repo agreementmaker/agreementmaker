@@ -1,7 +1,10 @@
 package am.app.mappingEngine.instanceMatcher;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import org.apache.log4j.Logger;
 
 import am.app.ontology.instance.Instance;
 
@@ -99,6 +102,35 @@ public class LabelUtils {
 		return label;
 	}
 	
+	public static String processTypes(String type){
+		List<String> orgList = new ArrayList<String>();
+		List<String> perList = new ArrayList<String>();
+		List<String> locList = new ArrayList<String>();
+		String standardType = new String();
+		// add to the lists if there are more representations
+		
+		String[] orgArray = { "corporation", "corp", "inc", "company", "co", "incorporated", "assn", "lp", "theater" };
+		orgList.addAll( Arrays.asList(orgArray));
+		
+		String[] perArray = { "person", "per" }; 
+		perList.addAll( Arrays.asList(perArray));
+		
+		String[] locArray = { "location", "loc" }; 
+		locList.addAll( Arrays.asList(locArray));
+		
+		//check for containment
+		if(orgList.contains(type.toLowerCase()))
+			standardType = "organization";
+		else if(perList.contains(type.toLowerCase()))
+			standardType = "person";
+		else if(locList.contains(type.toLowerCase()))
+			standardType = "location";
+		else
+			standardType = "ukn";
+		
+		return standardType; //return the standard type name
+	}
+	
 	public static String getLabelFromStatements(Instance instance){
 		List<Statement> stmts = instance.getStatements();
 		for(Statement s: stmts){
@@ -127,6 +159,56 @@ public class LabelUtils {
 			}
 		}
 		return aliases;
+	}
+	
+	public static String getTypeFromStatements(Instance instance){
+		
+		//get the type of the label from statements
+		List<Statement> listofStmt = instance.getStatements();
+		List<String> typeList = new ArrayList<String>();
+		String targetClassFacts = new String();
+				
+		for(Statement stmt: listofStmt){
+			String prop = stmt.getPredicate().toString().toLowerCase();
+			
+			//type
+			if(prop.contains("type")){
+				String type = stmt.getObject().toString();
+				System.out.println("target:" + type);
+				typeList.add(type);
+			}
+			
+			//class facts
+			if(prop.contains("classfacts")){
+				targetClassFacts = stmt.getObject().toString();
+				System.out.println("class facts:" + targetClassFacts);
+			}
+		}
+		
+		//check whether the target type has 'person', 'org' or 'location'.
+		String standardType = new String();
+		for(String type: typeList){
+			
+			//process into standard naming format
+			standardType = processTypes(type);
+			
+			if(standardType.equalsIgnoreCase("organization"))
+				standardType = "organization";
+			else if(standardType.equalsIgnoreCase("person"))
+				standardType = "person";
+			else if(standardType.equalsIgnoreCase("location"))
+				standardType = "location";
+			else { //for ukn
+				//check for class facts if 'ukn'
+				standardType = "ukn"; 	
+			}
+		}
+		
+		//check for class facts if 'ukn'
+		if(standardType.equalsIgnoreCase("ukn"))
+			standardType = processTypes(targetClassFacts);
+				
+		return standardType;
 	}
 	
 	
