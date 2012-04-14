@@ -1,6 +1,5 @@
 package am.app.ontology.ontologyParser;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,14 +7,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
 import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.utility.RunTimer;
 
 import com.hp.hpl.jena.ontology.ConversionException;
@@ -218,7 +216,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 		if( progressDialog != null ) progressDialog.append("Creating Jena Model ... ");
 		
 		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, null );
-		model.read( ontURI, null, ontology.getFormat() );
+		model.read( ontURI, null, ontology.getFormat().toString() );
 		
 		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
@@ -283,7 +281,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 		if(ontDefinition.locationMapper != null)
 			fileManager.setLocationMapper(ontDefinition.locationMapper);
 		
-		Model basemodel = fileManager.loadModel(ontology.getFilename(), ontology.getFormat());
+		Model basemodel = fileManager.loadModel(ontology.getFilename(), ontology.getFormat().toString() );
 		if( progressDialog != null ) progressDialog.appendLine("done.");
 		
 		if( progressDialog != null ) progressDialog.append("Creating Jena OntModel ...");
@@ -744,8 +742,8 @@ public class OntoTreeBuilder extends TreeBuilder{
     public static Ontology loadOWLOntology( String ontURI, LocationMapper mapper ) {
     	OntologyDefinition definition = new OntologyDefinition();
     	definition.loadOntology = true;
-    	definition.ontologyLanguage = GlobalStaticVariables.OWLFILE;
-    	definition.ontologySyntax = GlobalStaticVariables.RDFXML;
+    	definition.ontologyLanguage = OntologyLanguage.OWL;
+    	definition.ontologySyntax = OntologySyntax.RDFXML;
     	definition.ontologyURI = ontURI;
     	definition.locationMapper = mapper;
     	
@@ -765,8 +763,8 @@ public class OntoTreeBuilder extends TreeBuilder{
     	
     	OntologyDefinition definition = new OntologyDefinition();
     	definition.loadOntology = true;
-    	definition.ontologyLanguage = lang.getID();
-    	definition.ontologySyntax = syntax.getID();
+    	definition.ontologyLanguage = lang;
+    	definition.ontologySyntax = syntax;
     	definition.ontologyURI = ontURI;
     	definition.locationMapper = mapper;
     	

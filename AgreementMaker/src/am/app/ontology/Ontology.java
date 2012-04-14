@@ -12,6 +12,8 @@ import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.InstanceDataset;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.ObjectProperty;
@@ -51,18 +53,19 @@ public class Ontology {
 	public static final int N3  = 3;
 	public static final int TURTLE = 4;*/
 
-	public final static String SYNTAX_RDFXML = "RDF/XML";
-	public final static String SYNTAX_RDFXMLABBREV = "RDF/XML-ABBREV";
-	public final static String SYNTAX_NTRIPLE = "N-TRIPLE";
-	public final static String SYNTAX_N3 = "N3";
-	public final static String SYNTAX_TURTLE = "TURTLE";
-	public final static String[] syntaxStrings  = {SYNTAX_RDFXML, SYNTAX_RDFXMLABBREV, SYNTAX_NTRIPLE, SYNTAX_N3, SYNTAX_TURTLE};
+	public final static String SYN_RDFXML = "RDF/XML";
+	public final static String SYN_RDFXMLABBREV = "RDF/XML-ABBREV";
+	public final static String SYN_NTRIPLE = "N-TRIPLE";
+	public final static String SYN_N3 = "N3";
+	public final static String SYN_TURTLE = "TURTLE";
+	public final static String[] syntaxStrings  = {SYN_RDFXML, SYN_RDFXMLABBREV, SYN_NTRIPLE, SYN_N3, SYN_TURTLE};
+		
 	public final static String LANG_RDFS = "RDFS";
 	public final static String LANG_OWL = "OWL";
 	public final static String LANG_XML = "XML";
 	public final static String LANG_TABBEDTEXT = "Tabbed TEXT";
 	public static final String[] languageStrings = {LANG_RDFS, LANG_OWL, LANG_XML, LANG_TABBEDTEXT};
-	
+		
 	public static final int SOURCE = GlobalStaticVariables.SOURCENODE;
 	public static final int TARGET = GlobalStaticVariables.TARGETNODE;
 	
@@ -94,10 +97,9 @@ public class Ontology {
 	
 	private String title;//usually is the name of the file without the path and is the name of the root vertex
 	
-	/**It may be XML, OWL, RDF*/
-	private String language;
-	/**For example RDF/XML for OWL language, in XML lanaguage is null*/
-	private String format;
+	private OntologyLanguage language;
+	private OntologySyntax format;
+	
 	/**reference to the Jena model class, for an OWL ontology it may be an OntModel, right now we don't use this element,  in XML lanaguage is null*/
 	private OntModel model;
 	
@@ -163,16 +165,16 @@ public class Ontology {
 	public void setFilename(String filename) {
 		this.filename = filename;
 	}
-	public String getLanguage() {
+	public OntologyLanguage getLanguage() {
 		return language;
 	}
-	public void setLanguage(String language) {
+	public void setLanguage(OntologyLanguage language) {
 		this.language = language;
 	}
-	public String getFormat() {
+	public OntologySyntax getFormat() {
 		return format;
 	}
-	public void setFormat(String format) {
+	public void setFormat(OntologySyntax format) {
 		this.format = format;
 	}
 	public OntModel getModel() {

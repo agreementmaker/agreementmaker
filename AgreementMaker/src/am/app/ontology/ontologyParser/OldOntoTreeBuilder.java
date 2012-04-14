@@ -9,6 +9,8 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.utility.RunTimer;
 
 import com.hp.hpl.jena.ontology.ConversionException;
@@ -184,7 +186,7 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 		if( progressDialog != null ) progressDialog.append("Creating Jena Model ... ");
 		
 		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, null );
-		model.read( ontURI, null, ontology.getFormat() );
+		model.read( ontURI, null, ontology.getFormat().toString() );
 		
 		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
@@ -223,7 +225,7 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 		
 		if( progressDialog != null ) progressDialog.append("Creating Jena Model ... ");
 		FileManager.get().resetCache();
-		Model basemodel = FileManager.get().loadModel(ontology.getFilename(), ontology.getFormat());
+		Model basemodel = FileManager.get().loadModel(ontology.getFilename(), ontology.getFormat().toString() );
 		if( progressDialog != null ) progressDialog.appendLine("done.");
 		
 		if( progressDialog != null ) progressDialog.append("Creating Jena OntModel ...");
@@ -677,9 +679,13 @@ public class OldOntoTreeBuilder extends TreeBuilder{
     
     /** Loads an OWL ontology in RDF/XML syntax. */
     public static Ontology loadOWLOntology( String ontURI ) {
-    	OntoTreeBuilder ontoBuilder = new OntoTreeBuilder(
-				ontURI, Ontology.SOURCE, Ontology.LANG_OWL,
-				Ontology.SYNTAX_RDFXML, false, false);
+    	OntologyDefinition of = new OntologyDefinition();
+    	of.loadOntology = true;
+		of.ontologyURI = ontURI;
+		of.ontologyLanguage = OntologyLanguage.OWL; 
+		of.ontologySyntax = OntologySyntax.RDFXML;
+		
+    	OntoTreeBuilder ontoBuilder = new OntoTreeBuilder(of);
 
 		ontoBuilder.build(OntoTreeBuilder.Profile.noReasoner);
 		//ontoBuilder.build(OntoTreeBuilder.Profile.noFileManager);

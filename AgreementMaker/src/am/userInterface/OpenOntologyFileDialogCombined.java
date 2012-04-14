@@ -35,6 +35,8 @@ import am.app.Core;
 import am.app.ontology.Ontology.DatasetType;
 import am.app.ontology.instance.endpoint.EndpointRegistry;
 import am.app.ontology.ontologyParser.OntologyDefinition;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.utility.AMFileChooser;
 /**
  * This class represents the Open Ontologies dialog, combining the 
@@ -273,8 +275,8 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		prefs.putBoolean(PREFIX + PREF_LOAD_ONTOLOGY, def.loadOntology);
 		if( def.ontologyURI == null ) def.ontologyURI = "";
 		prefs.put(PREFIX + PREF_ONTOLOGY_URI, def.ontologyURI);
-		prefs.putInt(PREFIX + PREF_ONTOLOGY_LANGUAGE, def.ontologyLanguage);
-		prefs.putInt(PREFIX + PREF_ONTOLOGY_SYNTAX, def.ontologySyntax);
+		prefs.putInt(PREFIX + PREF_ONTOLOGY_LANGUAGE, def.ontologyLanguage.getID());
+		prefs.putInt(PREFIX + PREF_ONTOLOGY_SYNTAX, def.ontologySyntax.getID());
 		prefs.putBoolean(PREFIX + PREF_ONDISK_STORAGE, def.onDiskStorage);
 		prefs.putBoolean(PREFIX + PREF_ONDISK_PERSISTENT, def.onDiskPersistent);
 		if( def.onDiskDirectory == null ) def.onDiskDirectory = "";
@@ -311,8 +313,8 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		
 		def.loadOntology = prefs.getBoolean(PREFIX + PREF_LOAD_ONTOLOGY, false);
 		def.ontologyURI = prefs.get(PREFIX + PREF_ONTOLOGY_URI, "");
-		def.ontologyLanguage = prefs.getInt(PREFIX + PREF_ONTOLOGY_LANGUAGE, 0);
-		def.ontologySyntax = prefs.getInt(PREFIX + PREF_ONTOLOGY_SYNTAX, 0);
+		def.ontologyLanguage = OntologyLanguage.getLanguage(prefs.getInt(PREFIX + PREF_ONTOLOGY_LANGUAGE, 0));
+		def.ontologySyntax = OntologySyntax.getSyntax(prefs.getInt(PREFIX + PREF_ONTOLOGY_SYNTAX, 0));
 		def.onDiskStorage = prefs.getBoolean(PREFIX + PREF_ONDISK_STORAGE, false);
 		def.onDiskPersistent = prefs.getBoolean(PREFIX + PREF_ONDISK_PERSISTENT, false);
 		def.onDiskDirectory = prefs.get(PREFIX + PREF_ONDISK_DIRECTORY, "");
@@ -532,7 +534,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 				comboboxes[4].setEnabled(false); // OAEI Alignment
 			}
 
-			comboboxes[0].setSelectedIndex(def.ontologyLanguage);
+			comboboxes[0].setSelectedIndex(def.ontologyLanguage.getID());
 			
 		}
 		
@@ -939,8 +941,8 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			
 			def.loadOntology = checkboxes[3].isSelected();
 			def.ontologyURI = textfields[0].getText();
-			def.ontologyLanguage = comboboxes[0].getSelectedIndex();
-			def.ontologySyntax = comboboxes[1].getSelectedIndex();
+			def.ontologyLanguage = OntologyLanguage.getLanguage(comboboxes[0].getSelectedIndex()); // TODO: Use OntologyLanguage directly instead of the integer id.
+			def.ontologySyntax = OntologySyntax.getSyntax(comboboxes[1].getSelectedIndex()); // TODO: Use OntologySyntax directly instead of the integer id.
 			
 			if( radiobuttons[1].isSelected() ) {
 				// on disk

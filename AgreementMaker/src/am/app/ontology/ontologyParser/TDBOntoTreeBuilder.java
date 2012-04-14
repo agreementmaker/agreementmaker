@@ -10,6 +10,7 @@ import java.util.Set;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.utility.RunTimer;
 
 import com.hp.hpl.jena.ontology.ConversionException;
@@ -180,7 +181,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 		if( progressDialog != null ) progressDialog.appendLine("done.");
 		
 		if( progressDialog != null ) progressDialog.append("Creating Jena OntModel from TDB Model ... ");
-		if( ontology.getLanguage().equalsIgnoreCase("RDFS") )
+		if( ontology.getLanguage() == OntologyLanguage.RDFS )
 			model = ModelFactory.createOntologyModel( OntModelSpec.RDFS_MEM, basemodel );
 		else
 			model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
@@ -192,14 +193,14 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 			model.removeAll();
 			if( progressDialog != null ) progressDialog.appendLine("done.");
 			if( progressDialog != null ) progressDialog.append("Reading ontology onto disk ... ");
-			model.read( ontURI.toString(), null, ontology.getFormat() );
+			model.read( ontURI.toString(), null, ontology.getFormat().toString() );
 			model.commit();
 			if( progressDialog != null ) progressDialog.appendLine("done.");
 		} 
 		else if( model.isEmpty() ) {
 			// we're running in persistent mode, load the ontology only if the model is empty
 			if( progressDialog != null ) progressDialog.append("Disk ontology is persistent and empty.\nReading ontology into on disk store ... ");
-			model.read( ontURI.toString(), null, ontology.getFormat() );
+			model.read( ontURI.toString(), null, ontology.getFormat().toString() );
 			model.commit();
 			if( progressDialog != null ) progressDialog.appendLine("done.");
 		} else {

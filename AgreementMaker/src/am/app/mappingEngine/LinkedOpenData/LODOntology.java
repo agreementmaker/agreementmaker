@@ -1,7 +1,7 @@
 package am.app.mappingEngine.LinkedOpenData;
 
-import am.app.ontology.ontologyParser.TreeBuilder.OntologyLanguage;
-import am.app.ontology.ontologyParser.TreeBuilder.OntologySyntax;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 
 public enum LODOntology {
 	

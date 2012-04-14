@@ -6,7 +6,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Toolkit;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -25,6 +24,7 @@ import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntologyDefinition;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.TreeBuilder;
 import am.userInterface.classic.AgreementMakerClassic;
 import am.userInterface.sidebar.vertex.VertexDescriptionPane;
@@ -170,13 +170,13 @@ public class UI {
 			
 			if( log.isInfoEnabled() ) log.info("Opening file: " + odef.ontologyURI );
 			
-			if(odef.ontologyLanguage == GlobalStaticVariables.RDFSFILE)//RDFS
+			if(odef.ontologyLanguage == OntologyLanguage.RDFS)//RDFS
 				jPanel = new VertexDescriptionPane(GlobalStaticVariables.RDFSFILE);//takes care of fields for XML files as well
-			else if(odef.ontologyLanguage == GlobalStaticVariables.OWLFILE)//OWL
+			else if(odef.ontologyLanguage == OntologyLanguage.OWL)//OWL
 				jPanel = new VertexDescriptionPane(GlobalStaticVariables.OWLFILE);//takes care of fields for XML files as well
-			else if(odef.ontologyLanguage == GlobalStaticVariables.XMLFILE)//XML
+			else if(odef.ontologyLanguage == OntologyLanguage.XML)//XML
 				jPanel = new VertexDescriptionPane(GlobalStaticVariables.XMLFILE);//takes care of fields for XML files as well
-			else if(odef.ontologyLanguage == GlobalStaticVariables.TABBEDTEXT)
+			else if(odef.ontologyLanguage == OntologyLanguage.TABBEDTEXT)
 				jPanel = new VertexDescriptionPane(GlobalStaticVariables.XMLFILE); // TODO: Figure out if we need to pass in the correct language type to VertexDescriptionPane constructor.
 		    jPanel.setMinimumSize(new Dimension(200,200));
 			getUISplitPane().setRightComponent(jPanel);
@@ -193,10 +193,11 @@ public class UI {
 				
 				//Set ontology in the Core
 				Ontology ont = t.getOntology();
-				if(odef.sourceOrTarget == GlobalStaticVariables.SOURCENODE) {
+				if(odef.sourceOrTarget == OntologyDefinition.SOURCE_ONTOLOGY) {
 					Core.getInstance().setSourceOntology(ont);
 				}
-				else Core.getInstance().setTargetOntology(ont);
+				else 
+					Core.getInstance().setTargetOntology(ont);
 				//System.out.println("after after Core.getInstancein am.userinterface.ui.openFile()...");
 				//Set the tree in the canvas
 				if( Core.DEBUG ) System.out.println("Displaying the hierarchies in the canvas");
@@ -205,6 +206,7 @@ public class UI {
 				getCanvas().setTree(t);  // legacy calls?
 				if(Core.getInstance().ontologiesLoaded()) {
 					//Ogni volta che ho caricato un ontologia e le ho entrambe, devo resettare o settare se � la prima volta, tutto lo schema dei matchings
+					//Every time I loaded an ontology and I have both, I have to reset or set if it's the first time, all the matching schemas - Translation by Federico
 					if( Core.DEBUG ) System.out.println("Init matchings table");
 					classicAM.getMatchersControlPanel().resetMatchings();
 					
@@ -238,6 +240,7 @@ public class UI {
 	 * @return Return true on successful loading of the ontology, false otherwise.
 	 * 
 	 * */
+	@Deprecated
 	public boolean openFile( String filename, int ontoType, int syntax, int language, boolean skip, boolean noReasoner, boolean onDisk, String onDiskDirectory, boolean onDiskPersistent) {
 		try{
 			JPanel jPanel = null;

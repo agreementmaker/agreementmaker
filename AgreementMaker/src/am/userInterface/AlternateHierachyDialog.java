@@ -19,6 +19,8 @@ import am.app.ontology.Ontology;
 import am.app.ontology.OntologyChangeEvent;
 import am.app.ontology.OntologyChangeEvent.EventType;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.layouts.AlternateHierarchyLayout;
 import am.userInterface.classic.AgreementMakerClassic;
@@ -209,7 +211,7 @@ public class AlternateHierachyDialog extends JDialog implements ActionListener {
 		
 		prefs.put("LAST_FILE", fc.getSelectedFile().getAbsolutePath());
 		
-		OntoTreeBuilder builder = new OntoTreeBuilder(fc.getSelectedFile().getAbsolutePath(), Ontology.SOURCE, Ontology.LANG_OWL, Ontology.SYNTAX_RDFXML, true);
+		OntoTreeBuilder builder = new OntoTreeBuilder(fc.getSelectedFile().getAbsolutePath(), Ontology.SOURCE, OntologyLanguage.OWL.toString(), OntologySyntax.RDFXML.toString(), true);
 		
 		try {
 			builder.build();

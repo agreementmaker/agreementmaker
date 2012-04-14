@@ -24,6 +24,8 @@ import am.app.ontology.instance.endpoint.EndpointRegistry;
 import am.app.ontology.instance.endpoint.FreebaseEndpoint;
 import am.app.ontology.instance.endpoint.GeoNamesEndpoint;
 import am.app.ontology.instance.endpoint.SparqlEndpoint;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.output.alignment.oaei.OAEIAlignmentFormat;
 import am.userInterface.OntologyLoadingProgressDialog;
 
@@ -65,46 +67,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		@Deprecated public final static String LANG_XML = "XML";
 		@Deprecated public final static String LANG_TABBEDTEXT = "Tabbed TEXT";
 		@Deprecated public static final String[] languageStrings = {LANG_RDFS, LANG_OWL, LANG_XML, LANG_TABBEDTEXT};
-		
-		
-	public enum OntologyLanguage {
-		RDFS("RDFS", 0),
-		OWL("OWL", 1),
-		XML("XML", 2),
-		TABBEDTEXT("Tabbed Text", 3);
-		
-		String name;
-		int ID;
-		
-		private OntologyLanguage(String name, int ID) {
-			this.name = name;
-			this.ID = ID;
-		}
-		
-		public int getID() { return ID; }
-		
-		@Override public String toString() { return name; }
-	}
-	
-	public enum OntologySyntax {
-		RDFXML("RDF/XML", 0),
-		RDFXMLABBREV("RDF/XML-ABBREV", 1),
-		NTRIPLE("N-TRIPLE", 2),
-		N3("N3", 3),
-		TURTLE("TURTLE", 4);
-		
-		String name;
-		int ID;
-		
-		private OntologySyntax(String name, int ID) {
-			this.name = name;
-			this.ID = ID;
-		}
-		
-		public int getID() { return ID; }
-		
-		@Override public String toString() { return name; }
-	}
+
 	
 	// instance variables 
 	protected int treeCount;  // this variable is used in the Canvas visualization.  ( it is the total number of Vertices in the Classes and Properties trees )
@@ -129,8 +92,8 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		ontology.setID( Core.getInstance().getNextOntologyID() );  // get an unique ID for this ontology
 		ontology.setFilename(filename);
 		ontology.setSourceOrTarget(sourceOrTarget);
-		ontology.setLanguage(language);
-		ontology.setFormat(format);
+		ontology.setLanguage(OntologyLanguage.getLanguage(language));
+		ontology.setFormat(OntologySyntax.getSyntax(format));
         File f = new File(filename);
         ontology.setTitle(f.getName()); 
 	}
@@ -142,23 +105,23 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		ontology.setID( Core.getInstance().getNextOntologyID() );  // get an unique ID for this ontology
 		if( def.loadOntology ) {
 			ontology.setFilename(def.ontologyURI);
-			ontology.setLanguage(Ontology.languageStrings[def.ontologyLanguage]);
-			ontology.setFormat(Ontology.syntaxStrings[def.ontologySyntax]);
+			ontology.setLanguage(def.ontologyLanguage);
+			ontology.setFormat(def.ontologySyntax);
 	        File f = new File(def.ontologyURI);
 	        ontology.setTitle(f.getName()); 
 		}
 		else if( def.loadInstances ) {
 			if( def.instanceSourceType == DatasetType.DATASET ) {
 				ontology.setFilename(def.instanceSourceFile);
-				ontology.setLanguage(Ontology.LANG_OWL);
-				ontology.setFormat(Ontology.SYNTAX_RDFXML);
+				ontology.setLanguage(OntologyLanguage.OWL);
+				ontology.setFormat(OntologySyntax.RDFXML);
 				File f = new File(def.instanceSourceFile);
 		        ontology.setTitle(f.getName()); 
 			}
 			else if( def.instanceSourceType == DatasetType.ENDPOINT ){
 				ontology.setFilename(def.instanceSourceFile);
-				ontology.setLanguage(Ontology.LANG_OWL);
-				ontology.setFormat(Ontology.SYNTAX_RDFXML);
+				ontology.setLanguage(OntologyLanguage.OWL);
+				ontology.setFormat(OntologySyntax.RDFXML);
 				ontology.setTitle("Semantic Web Endpoint");
 			}
 		}
@@ -198,22 +161,22 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		// TODO: Not sure if this method is supposed to take implementation specific variables (ex. DB).
 		
 		
-				String languageS = GlobalStaticVariables.getLanguageString(odef.ontologyLanguage);
-				String syntaxS = GlobalStaticVariables.getSyntaxString(odef.ontologySyntax);
+				String languageS = GlobalStaticVariables.getLanguageString(odef.ontologyLanguage.getID());
+				String syntaxS = GlobalStaticVariables.getSyntaxString(odef.ontologySyntax.getID());
 				TreeBuilder treeBuilder = null;
 				
-				if(odef.ontologyLanguage == GlobalStaticVariables.XMLFILE){
+				if(odef.ontologyLanguage == OntologyLanguage.XML){
 					treeBuilder = new XmlTreeBuilder(odef.ontologyURI, odef.sourceOrTarget, languageS, syntaxS);
 				}
-				else if(odef.ontologyLanguage == GlobalStaticVariables.RDFSFILE) {
+				else if(odef.ontologyLanguage == OntologyLanguage.RDFS) {
 					if( odef.onDiskStorage )
 						treeBuilder = new TDBOntoTreeBuilder(odef.ontologyURI, odef.sourceOrTarget, languageS, syntaxS, false, true, odef.onDiskStorage, odef.onDiskDirectory, odef.onDiskPersistent);
 					else
 						treeBuilder = new RdfsTreeBuilder(odef.ontologyURI, odef.sourceOrTarget, languageS, syntaxS, false);
 				}
-				else if(odef.ontologyLanguage == GlobalStaticVariables.TABBEDTEXT)
+				else if(odef.ontologyLanguage == OntologyLanguage.TABBEDTEXT)
 					treeBuilder = new TabbedTextBuilder(odef.ontologyURI, odef.sourceOrTarget, languageS, syntaxS);
-				else if(odef.ontologyLanguage == GlobalStaticVariables.OWLFILE ) {
+				else if(odef.ontologyLanguage == OntologyLanguage.OWL ) {
 					if( odef.onDiskStorage ) 
 						treeBuilder= new TDBOntoTreeBuilder(odef.ontologyURI, odef.sourceOrTarget, languageS, syntaxS, false, true, odef.onDiskStorage, odef.onDiskDirectory, odef.onDiskPersistent);
 					else 
@@ -271,7 +234,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 				ontDefinition.instanceSourceFile = "file:///" + ontDefinition.instanceSourceFile;
 			}
 			
-			instancesModel.read( ontDefinition.instanceSourceFile, null, ontology.getFormat() );
+			instancesModel.read( ontDefinition.instanceSourceFile, null, ontology.getFormat().toString() );
 			
 			instances = new SeparateFileInstanceDataset(instancesModel);
 		}
