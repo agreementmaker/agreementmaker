@@ -21,7 +21,9 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		context.registerService(AbstractMatcher.class, new IterativeInstanceStructuralMatcher(), null);
+		IterativeInstanceStructuralMatcher matcher=new IterativeInstanceStructuralMatcher();
+		matcher.setName("Iterative Instance and Structural Matcher");
+		context.registerService(AbstractMatcher.class.getName(), matcher, null);
 	}
 
 	/*
