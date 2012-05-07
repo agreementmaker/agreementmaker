@@ -21,7 +21,9 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		context.registerService(AbstractMatcher.class, new MediatingMatcher(), null);
+		MediatingMatcher matcher=new MediatingMatcher();
+		matcher.setName("Mediating Matcher");
+		context.registerService(AbstractMatcher.class.getName(), matcher, null);
 	}
 
 	/*
