@@ -3,6 +3,9 @@ package basicstructuralselectormatcher.bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
+import am.app.mappingEngine.AbstractMatcher;
+import basicstructuralselectormatcher.internal.BasicStructuralSelectorMatcher;
+
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
@@ -17,6 +20,9 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
+		BasicStructuralSelectorMatcher matcher=new BasicStructuralSelectorMatcher();
+		matcher.setName("Basic Structure Selector Matcher");
+		context.registerService(AbstractMatcher.class.getName(), matcher, null);
 	}
 
 	/*
