@@ -21,7 +21,9 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		context.registerService(AbstractMatcher.class, new CombinationMatcher(), null);
+		CombinationMatcher matcher=new CombinationMatcher();
+		matcher.setName("Linear Weighted Combination");
+		context.registerService(AbstractMatcher.class.getName(), matcher, null);
 	}
 
 	/*
