@@ -3,6 +3,9 @@ package basesimilaritymatcher.bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
+import am.app.mappingEngine.AbstractMatcher;
+import basesimilaritymatcher.external.BaseSimilarityMatcher;
+
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
@@ -17,6 +20,9 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
+		BaseSimilarityMatcher matcher=new BaseSimilarityMatcher();
+		matcher.setName("Base Similarity Matcher");
+		context.registerService(AbstractMatcher.class.getName(), matcher, null);
 	}
 
 	/*
