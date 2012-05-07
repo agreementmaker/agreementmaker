@@ -56,10 +56,9 @@ public class OSGiRegistry {
 	}
 	
 	public AbstractMatcher getMatcherByName(String matcherName)throws MatcherNotFoundException{
-		AbstractMatcher matcher=null;
 		for(AbstractMatcher m : matcherList){
 			if(m.getName().equals(matcherName))
-				return matcher;
+				return m;
 		}
 		throw new MatcherNotFoundException(matcherName+" is not in the system.");
 	}

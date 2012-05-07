@@ -8,6 +8,8 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -15,8 +17,8 @@ import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+import am.app.Core;
 import am.app.mappingEngine.MatcherCategory;
-import am.app.mappingEngine.MatchersRegistry;
 import am.utility.CanEnable;
 
 /**
@@ -53,7 +55,7 @@ public class MatcherComboBox extends JComboBox {
 		boolean firstItemFound = false;
 		int firstItemIndex = 0;
 		
-		for( MatcherCategory currentCategory : MatcherCategory.values() ) {
+		/*for( MatcherCategory currentCategory : MatcherCategory.values() ) {
 			
 			boolean categoryComboItemAdded = false;
 			ComboItem categoryComboItem = new ComboItem( getCategoryString(currentCategory, longestCategory, fm), false);
@@ -70,7 +72,13 @@ public class MatcherComboBox extends JComboBox {
 				}
 			}
 			
-		}
+		}*/
+		
+		//load the matcher names from the osgi register
+		List<String> matcherNames=Core.getInstance().getFramework().getRegistry().getMatcherNames();
+		for(String mn:matcherNames)
+			addItem(new ComboItem(mn));
+		
 		
 		return firstItemIndex;
 	}
@@ -156,6 +164,7 @@ public class MatcherComboBox extends JComboBox {
 				setBackground(list.getBackground());
 				setForeground(list.getForeground());
 			} 
+
 			if (! ((CanEnable)value).isEnabled()) {
 				setBackground(list.getBackground());
 				setForeground(UIManager.getColor("Label.disabledForeground"));

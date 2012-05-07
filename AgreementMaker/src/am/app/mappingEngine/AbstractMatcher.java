@@ -1277,7 +1277,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		this.index = index;
 	}
 
-	public String getName() { return name != null ? name : registryEntry.getMatcherName(); }
+	public String getName() {
+		if( name !=null )
+			return name;
+		if(registryEntry!=null)
+			return registryEntry.getMatcherName();
+		return "(No Matcher Name!)";
+	}
 	public void setName(String n) { name = n; } 
 	public MatchersRegistry getRegistryEntry() { return registryEntry; }
 	public void setRegistryEntry(MatchersRegistry name) { this.registryEntry = name; }
@@ -2058,7 +2064,5 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 	
 	@Override
-	public MatcherResult getResult() {
-		return new MatcherResultImpl(classesAlignmentSet, propertiesAlignmentSet, instanceAlignmentSet);
-	}
+	public MatcherResult getResult() {return new MatcherResultImpl(this);}
 }

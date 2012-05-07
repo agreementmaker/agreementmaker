@@ -8,6 +8,7 @@ import javax.swing.table.AbstractTableModel;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.userInterface.UI;
 
@@ -65,7 +66,7 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
 					                                        "Prop Quality"
 					                                        };
         
-	public List<AbstractMatcher> data =  Core.getInstance().getMatcherInstances();
+	public List<MatcherResult> data =  Core.getInstance().getMatcherResults();
 	
 	public final Object[] defaultValues = {
         		new Integer(99), 
@@ -110,19 +111,19 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
         	if(data == null || data.size() == 0) 
         		return null;
         	try {
-        		AbstractMatcher a = data.get(row);
+        		MatcherResult a = data.get(row);
             	if(col == INDEX)
-            		return a.getIndex();
+            		return a.getID();
             	else if(col == NAME)
-            		return a.getName();
+            		return a.getMatcherName();
             	else if(col == SHOWHIDE)
             		return a.isShown();
             	else if(col == THRESHOLD) 
-            		return Utility.getNoDecimalPercentFromDouble(a.getThreshold());
+            		return Utility.getNoDecimalPercentFromDouble(a.getParameters().threshold);
             	else if(col == SRELATIONS)
-            		return Utility.getStringFromNumRelInt(a.getMaxSourceAlign());
+            		return Utility.getStringFromNumRelInt(a.getParameters().maxSourceAlign);
             	else if(col == TRELATIONS)
-            		return Utility.getStringFromNumRelInt(a.getMaxTargetAlign());
+            		return Utility.getStringFromNumRelInt(a.getParameters().maxTargetAlign);
             	else if(col == INPUTMATCHERS) {
             		if(a.getInputMatchers()!= null && a.getInputMatchers().size() >0)
             			return a.getInputMatchers().get(0).getName();
@@ -196,7 +197,7 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
         	}
         }
 
-        public List<AbstractMatcher> getData() { return data; }
+        public List<MatcherResult> getData() { return data; }
         
         /*
          * JTable uses this method to determine the default renderer/
@@ -284,7 +285,7 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
         	try {
         		Core core = Core.getInstance();
         		UI ui = core.getUI();
-        		AbstractMatcher a = data.get(row);
+        		MatcherResult a = data.get(row);
             	if(col == SHOWHIDE) {
             		a.setShown((Boolean)value);
             		ui.redisplayCanvas();
@@ -292,33 +293,33 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
             	}
 
             	else if(col == THRESHOLD) {
-            			a.setThreshold(Utility.getDoubleFromPercent((String)value));
-            			core.selectAndUpdateMatchers(a);
-            			update = ALLROWUPDATE;
-            			ui.redisplayCanvas();
+        			a.setThreshold(Utility.getDoubleFromPercent((String)value));
+        			//core.selectAndUpdateMatchers(a);
+        			update = ALLROWUPDATE;
+        			ui.redisplayCanvas();
             			
             	}
             	else if(col == SRELATIONS) {
             		a.setMaxSourceAlign(Utility.getIntFromNumRelString((String)value));
-            		core.selectAndUpdateMatchers(a);
+            		//core.selectAndUpdateMatchers(a);
             		update = ALLROWUPDATE;
             		ui.redisplayCanvas();
             	}
             	else if(col == TRELATIONS) {
             		a.setMaxTargetAlign(Utility.getIntFromNumRelString((String)value));
-            		core.selectAndUpdateMatchers(a);
+            		//core.selectAndUpdateMatchers(a);
             		update = ALLROWUPDATE;
             		ui.redisplayCanvas();
             	}
             	else if(col == ALIGNCLASSES) {
             		a.setAlignClass((Boolean)value);
-            		core.matchAndUpdateMatchers(a);
+            		//core.matchAndUpdateMatchers(a);
             		update = ALLROWUPDATE;
             		ui.redisplayCanvas();
             	}
             	else if(col == ALIGNPROPERTIES) {
             		a.setAlignProp((Boolean)value);
-            		core.matchAndUpdateMatchers(a);
+            		//core.matchAndUpdateMatchers(a);
             		update = ALLROWUPDATE;
             		ui.redisplayCanvas();
             	}

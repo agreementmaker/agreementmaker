@@ -12,6 +12,7 @@ import am.app.mappingEngine.LexiconStore;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherChangeEvent;
 import am.app.mappingEngine.MatcherChangeListener;
+import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -54,6 +55,7 @@ public class Core {
 	 */
 	
 	private final List<AbstractMatcher> matcherInstances = new ArrayList<AbstractMatcher>();
+	private final List<MatcherResult> matcherResults=new ArrayList<MatcherResult>();
 	
 	private int IDcounter = 0;  // used in generating IDs for the ontologies and matchers
 	public static final int ID_NONE = -1;  // the ID for when no ID has been set	
@@ -161,6 +163,8 @@ public class Core {
 	}
 	
 	public List<AbstractMatcher> getMatcherInstances() { return matcherInstances; }
+	public List<MatcherResult> getMatcherResults(){ return matcherResults;}
+	
 	
 	public AbstractMatcher getMatcherByID( int mID ) {
 		Iterator<AbstractMatcher> matchIter = matcherInstances.iterator();
@@ -177,6 +181,14 @@ public class Core {
 		a.setColor(Colors.matchersColors[a.getIndex()%6]);
 		a.setID(getNextMatcherID());
 		matcherInstances.add(a);
+		fireEvent( new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_ADDED, a.getID() ));
+	}
+	
+	public void addMatcherResult(AbstractMatcher a){
+		a.setIndex(matcherResults.size());
+		a.setColor(Colors.matchersColors[a.getIndex()%6]);
+		a.setID(getNextMatcherID());
+		matcherResults.add(a.getResult());
 		fireEvent( new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_ADDED, a.getID() ));
 	}
 	

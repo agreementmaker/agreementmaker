@@ -16,6 +16,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherChangeEvent;
+import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.MappingData;
@@ -149,7 +150,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 					(MatchersControlPanelTableModel) mcp.getTablePanel().getTable().getModel();
 				
 				for( int currentRow : selectedTableRows ) {
-					AbstractMatcher matcherToFilter = tableModel.getData().get(currentRow);
+					MatcherResult matcherToFilter = tableModel.getData().get(currentRow);
 					//Alignment<Mapping> classAlignment = matcherToFilter.getClassAlignmentSet();
 					
 					CanvasGraph matcherToFilterGraph = canvas.getMatcherGraph( matcherToFilter.getID() );
@@ -177,11 +178,11 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 			}
 		};
 		
-		for( AbstractMatcher a : tableModel.getData() ) {
-			JMenuItem miMatcher = new JMenuItem(a.getName());
+		for( MatcherResult a : tableModel.getData() ) {
+			JMenuItem miMatcher = new JMenuItem(a.getMatcherName());
 			miMatcher.setAction(hideClassMappingsFromMatcher);
 			miMatcher.setActionCommand(Integer.toString(a.getID()));
-			miMatcher.setText(a.getName());
+			miMatcher.setText(a.getMatcherName());
 			mClassMappings.add(miMatcher);
 		}
 		
@@ -219,7 +220,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 					(MatchersControlPanelTableModel) mcp.getTablePanel().getTable().getModel();
 				
 				for( int currentRow : selectedTableRows ) {
-					AbstractMatcher matcherToFilter = tableModel.getData().get(currentRow);
+					MatcherResult matcherToFilter = tableModel.getData().get(currentRow);
 					
 					CanvasGraph matcherToFilterGraph = canvas.getMatcherGraph( matcherToFilter.getID() );
 					
@@ -246,8 +247,8 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 			}
 		};
 		
-		for( AbstractMatcher a : tableModel.getData() ) {
-			JMenuItem miMatcher = new JMenuItem(a.getName());
+		for( MatcherResult a : tableModel.getData() ) {
+			JMenuItem miMatcher = new JMenuItem(a.getMatcherName());
 			miMatcher.setActionCommand(Integer.toString(a.getID()));
 			miMatcher.setAction(hidePropertyMappingsFromMatcher);
 			mPropertyMappings.add(miMatcher);
@@ -271,7 +272,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				Canvas2 canvas = (Canvas2) Core.getUI().getCanvas();
+				//Canvas2 canvas = (Canvas2) Core.getUI().getCanvas();
 				
 				// get the matcher by which we are filtering (was selected by the menu)
 				int id = Integer.parseInt(e.getActionCommand());
@@ -285,7 +286,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 					(MatchersControlPanelTableModel) mcp.getTablePanel().getTable().getModel();
 				
 				if( selectedTableRows.length > 0 ) {
-					AbstractMatcher referenceMatcher = tableModel.getData().get(selectedTableRows[0]);
+					MatcherResult referenceMatcher = tableModel.getData().get(selectedTableRows[0]);
 					
 					SimilarityMatrix compareMatrix = compareMatcher.getClassesMatrix();
 					SimilarityMatrix referenceMatrix = referenceMatcher.getClassesMatrix();
@@ -301,7 +302,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 								
 								System.out.println("Difference at: (" + row + ", " + col + ")" );
 								System.out.println(compareMatcher.getName() + ": " + compareMatrix.get(row, col));
-								System.out.println(referenceMatcher.getName() + ": " + referenceMatrix.get(row, col));
+								System.out.println(referenceMatcher.getMatcherName() + ": " + referenceMatrix.get(row, col));
 							}
 						}
 					}
@@ -310,11 +311,11 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 			}
 		};
 		
-		for( AbstractMatcher a : tableModel.getData() ) {
-			JMenuItem miMatcher = new JMenuItem(a.getName());
+		for( MatcherResult a : tableModel.getData() ) {
+			JMenuItem miMatcher = new JMenuItem(a.getMatcherName());
 			miMatcher.setAction(hideClassMappingsFromMatcher);
 			miMatcher.setActionCommand(Integer.toString(a.getID()));
-			miMatcher.setText(a.getName());
+			miMatcher.setText(a.getMatcherName());
 			mClassMappings.add(miMatcher);
 		}
 		
@@ -371,7 +372,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 			
 			// filter out the mappings from the selected matchers 
 			for( int currentRow : selectedTableRows ) {
-				AbstractMatcher matcherToFilter = tableModel.getData().get(currentRow);
+				MatcherResult matcherToFilter = tableModel.getData().get(currentRow);
 				
 				CanvasGraph matcherToFilterGraph = canvas.getMatcherGraph( matcherToFilter.getID() );
 				
@@ -443,7 +444,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 			
 			// filter out the mappings from the selected matchers 
 			for( int currentRow : selectedTableRows ) {
-				AbstractMatcher matcherToFilter = tableModel.getData().get(currentRow);
+				MatcherResult matcherToFilter = tableModel.getData().get(currentRow);
 				
 				CanvasGraph matcherToFilterGraph = canvas.getMatcherGraph( matcherToFilter.getID() );
 				
@@ -484,7 +485,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 			
 			// filter out the mappings from the selected matchers 
 			for( int currentRow : selectedTableRows ) {
-				AbstractMatcher matcherToFilter = tableModel.getData().get(currentRow);
+				MatcherResult matcherToFilter = tableModel.getData().get(currentRow);
 				Alignment<Mapping> classAlignment = matcherToFilter.getClassAlignmentSet();
 				
 				CanvasGraph matcherToFilterGraph = canvas.getMatcherGraph( matcherToFilter.getID() );
@@ -501,7 +502,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 					}
 				}
 
-				MatcherChangeEvent evt = new MatcherChangeEvent(matcherToFilter, 
+				MatcherChangeEvent evt = new MatcherChangeEvent(null, 
 						MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, matcherToFilter.getID() );
 				
 				Core.getInstance().fireEvent(evt);
@@ -518,7 +519,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 			
 			// filter out the mappings from the selected matchers 
 			for( int currentRow : selectedTableRows ) {
-				AbstractMatcher matcherToFilter = tableModel.getData().get(currentRow);
+				MatcherResult matcherToFilter = tableModel.getData().get(currentRow);
 				Alignment<Mapping> propAlignment = matcherToFilter.getPropertyAlignmentSet();
 				
 				CanvasGraph matcherToFilterGraph = canvas.getMatcherGraph( matcherToFilter.getID() );
@@ -535,7 +536,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 					}
 				}
 
-				MatcherChangeEvent evt = new MatcherChangeEvent(matcherToFilter, 
+				MatcherChangeEvent evt = new MatcherChangeEvent(null, 
 						MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, matcherToFilter.getID() );
 				
 				Core.getInstance().fireEvent(evt);
@@ -549,13 +550,13 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 				(MatchersControlPanelTableModel) mcp.getTablePanel().getTable().getModel();
 			
 			for( int currentRow : selectedTableRows ) {
-				AbstractMatcher matcherToRename = tableModel.getData().get(currentRow);
+				MatcherResult matcherToRename = tableModel.getData().get(currentRow);
 				//JOptionPane.showInputDialog(parentComponent, message, title, messageType, icon, selectionValues, initialSelectionValue)
 				
 				//String newName = JOptionPane.showInputDialog(mcp, "Rename \"" + matcherToRename.getName() + "\" to:", "Rename Matcher", JOptionPane.OK_CANCEL_OPTION);
-				String newName = (String) JOptionPane.showInputDialog(mcp, (Object)"Rename \"" + matcherToRename.getName() + "\" to:", "Rename Matcher", JOptionPane.OK_CANCEL_OPTION, null, null, matcherToRename.getName());
+				String newName = (String) JOptionPane.showInputDialog(mcp, (Object)"Rename \"" + matcherToRename.getMatcherName() + "\" to:", "Rename Matcher", JOptionPane.OK_CANCEL_OPTION, null, null, matcherToRename.getMatcherName());
 				if( newName != null ) {
-					matcherToRename.setName(newName);
+					matcherToRename.setMatcherName(newName);
 				}
 				
 			}

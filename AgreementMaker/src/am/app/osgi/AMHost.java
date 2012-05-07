@@ -41,6 +41,7 @@ public class AMHost {
                 "am.userInterface," +
                 "org.junit," +
                 "com.hp.hpl.jena.ontology," +
+                "com.hp.hpl.jena,"+
                 "am.app.lexicon,"+
                 "am.app.lexicon.subconcept,"+
                 "uk.ac.shef.wit.simmetrics.similaritymetrics," +

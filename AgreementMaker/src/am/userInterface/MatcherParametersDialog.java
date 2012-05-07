@@ -23,6 +23,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
@@ -43,6 +44,7 @@ import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.ontology.profiling.OntologyProfilerPanel;
 import am.app.ontology.profiling.ProfilerRegistry;
+import am.app.osgi.MatcherNotFoundException;
 import am.userInterface.table.MatchersTablePanel;
 
 
@@ -497,10 +499,18 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		}
 		
 		if(ae.getSource() == matcherCombo && !matcherDefined){
-			matcher = MatcherFactory.getMatcherInstance(
-					MatcherFactory.getMatchersRegistryEntry(matcherCombo.getSelectedItem().toString()), 0);
+			try {
+				matcher=Core.getInstance().getFramework().getRegistry().getMatcherByName(matcherCombo.getSelectedItem().toString());
+			} catch (MatcherNotFoundException e) {
+				JOptionPane.showMessageDialog(this, e.getMessage());
+				e.printStackTrace();
+				return;
+			}
+			
+			//matcher = MatcherFactory.getMatcherInstance(
+			//		MatcherFactory.getMatchersRegistryEntry(matcherCombo.getSelectedItem().toString()), 0);
 
-			String name = matcher.getRegistryEntry().getMatcherName();
+			String name = matcher.getName();//matcher.getRegistryEntry().getMatcherName();
 			setTitle(name+": additional parameters");
 			
 			addInputMatchers(matcher);
@@ -522,7 +532,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			
 			setDefaultCommonParameters(matcher);
 			
-			if( !chkCustomName.isSelected() ) txtCustomName.setText(matcher.getRegistryEntry().getMatcherShortName());
+			if( !chkCustomName.isSelected() ) txtCustomName.setText(matcher.getName());
 			
 			initLayout();
 			pack();
