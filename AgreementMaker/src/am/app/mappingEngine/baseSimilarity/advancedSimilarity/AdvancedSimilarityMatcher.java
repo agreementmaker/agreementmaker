@@ -614,9 +614,11 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		Node source = new Node(0, s1, "owl-propertynode", 0);
 		Node target = new Node(1, s2, "owl-propertynode", 0);
 
-		
+		AdvancedSimilarityParameters as= new AdvancedSimilarityParameters();
+		//checking wordnet and check synonym
+		as.useDictionary=false;
 		AdvancedSimilarityMatcher asm = new AdvancedSimilarityMatcher(
-				new AdvancedSimilarityParameters());
+				as);
 
 		Mapping mapping = asm.alignTwoNodes(source, target,
 				alignType.aligningProperties,null);
