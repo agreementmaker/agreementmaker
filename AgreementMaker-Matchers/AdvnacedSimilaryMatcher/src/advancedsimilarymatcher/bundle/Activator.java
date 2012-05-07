@@ -20,7 +20,9 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		context.registerService(AbstractMatcher.class, new AdvancedSimilarityMatcher(), null);
+		AdvancedSimilarityMatcher matcher=new AdvancedSimilarityMatcher();
+		matcher.setName("Advanced Similarity Matcher");
+		context.registerService(AbstractMatcher.class.getName(), matcher, null);
 	}
 
 	/*
