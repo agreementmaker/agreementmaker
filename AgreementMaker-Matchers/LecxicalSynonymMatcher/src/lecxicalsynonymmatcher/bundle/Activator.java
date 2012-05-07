@@ -22,8 +22,14 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		context.registerService(AbstractMatcher.class, new LexicalSynonymMatcher(), null);
-		context.registerService(AbstractMatcher.class, new LexicalSynonymMatcherWeighted(), null);
+		
+		LexicalSynonymMatcher lmMatcher=new LexicalSynonymMatcher();
+		lmMatcher.setName("Lexical Synonym Matcher");
+		context.registerService(AbstractMatcher.class.getName(), lmMatcher, null);
+		
+		LexicalSynonymMatcherWeighted lmwMatcher=new LexicalSynonymMatcherWeighted();
+		lmwMatcher.setName("LSM Weighted");
+		context.registerService(AbstractMatcher.class.getName(), lmwMatcher, null);
 	}
 
 	/*
