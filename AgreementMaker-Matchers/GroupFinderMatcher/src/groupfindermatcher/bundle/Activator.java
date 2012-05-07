@@ -21,7 +21,9 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		context.registerService(AbstractMatcher.class, new GroupFinderMatcher(), null);
+		GroupFinderMatcher matcher=new GroupFinderMatcher();
+		matcher.setName("Group Finder");
+		context.registerService(AbstractMatcher.class.getName(), matcher, null);
 	}
 
 	/*
