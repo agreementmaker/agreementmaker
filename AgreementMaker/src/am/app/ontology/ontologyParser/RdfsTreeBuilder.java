@@ -89,7 +89,7 @@ public class RdfsTreeBuilder extends TreeBuilder{
 			//Vertex classRoot = new Vertex(RDFCLASSROOTNAME,RDFCLASSROOTNAME,ontModel,  ontology.getSourceOrTarget());
 			Node classRoot = new Node( -1, RDFCLASSROOTNAME, Node.OWLCLASS, ontology.getID());
 			processedSubs = new HashMap<OntResource, Node>();
-			ExtendedIterator i = ontModel.listHierarchyRootClasses();
+			ExtendedIterator<OntClass> i = ontModel.listHierarchyRootClasses();
 			classRoot = createTree(classRoot, i);//should add all valid classes and subclasses in the iterator to the classRoot
 			ontology.setOntResource2NodeMap( processedSubs, alignType.aligningClasses );
 			treeRoot.addChild(classRoot);
@@ -128,7 +128,7 @@ public class RdfsTreeBuilder extends TreeBuilder{
 	
 	private ArrayList<OntProperty> listHierarchyRootProperties(OntModel m) {
 		ArrayList<OntProperty> roots = new ArrayList<OntProperty>();
-		ExtendedIterator itobj = m.listOntProperties();
+		ExtendedIterator<OntProperty> itobj = m.listOntProperties();
     	
     	while( itobj.hasNext() ) {  // look through all the properties
     		Property rdfproperty = (Property) itobj.next();
@@ -139,7 +139,7 @@ public class RdfsTreeBuilder extends TreeBuilder{
 	    		
 	    		boolean isRoot = true;
 	    		
-	    		ExtendedIterator superPropItr = property.listSuperProperties();
+	    		ExtendedIterator<? extends OntProperty> superPropItr = property.listSuperProperties();
 	    		while( superPropItr.hasNext() ) {
 	    			OntProperty superProperty = (OntProperty) superPropItr.next();
 	    			
@@ -162,38 +162,45 @@ public class RdfsTreeBuilder extends TreeBuilder{
     	return roots;
 	}
 	
-	protected Node createTree(Node root, ExtendedIterator i){
-		while (i.hasNext()) {
-			OntClass cls = (OntClass)i.next();
-			if(cls.isAnon()) ;//skip
-		    else if(skipOtherNamespaces && !cls.getNameSpace().toString().equals(ns)) {
-          	   //If a node has a different namespace must be jumped , so sons of that node must be added to the grandfather
-          	   ExtendedIterator moreSubs = cls.listSubClasses( true );
-          	   root = createTree(root, moreSubs);       	   
-            }
-		    else {
-				Node newNode = createNode(cls, true);
-				ExtendedIterator subs = cls.listSubClasses( true );
-				newNode = createTree(newNode, subs);
-				root.addChild(newNode);
-				treeCount++;
+	protected Node createTree(Node root, ExtendedIterator<OntClass> i){
+		try {
+			while (i.hasNext()) {
+				OntClass cls = i.next();
+				if( cls.isAnon() ) continue; //skip
+				
+			    if(skipOtherNamespaces && !cls.getNameSpace().toString().equals(ns)) {
+	          	   //If a node has a different namespace must be jumped , so sons of that node must be added to the grandfather
+	          	   ExtendedIterator<OntClass> moreSubs = cls.listSubClasses( true );
+	          	   root = createTree(root, moreSubs);       	   
+	            }
+			    else {
+					Node newNode = createNode(cls, true);
+					ExtendedIterator<OntClass> subs = cls.listSubClasses( true );
+					newNode = createTree(newNode, subs);
+					root.addChild(newNode);
+					treeCount++;
+				}
 			}
+		}
+		catch( ConversionException cexc ) {
+			// This conversion exception is thrown by 
+			cexc.printStackTrace();
 		}
 		return root;
 	}
 	
-	protected Node createPropertiesTree(Node root, List<OntProperty> subChildren ) {
+	protected Node createPropertiesTree(Node root, List<? extends OntProperty> subChildren ) {
 		
 		for( OntProperty prop : subChildren ) {
 			if( prop.isAnon() ) continue; // skip anonymous properties
 			else if( skipOtherNamespaces && !prop.getNameSpace().toString().equals(ns) ) {
 				// we jump nodes of different name spaces.
-				ExtendedIterator moreSubProperties = prop.listSubProperties(true);
+				ExtendedIterator<? extends OntProperty> moreSubProperties = prop.listSubProperties(true);
 				root = createPropertiesTree( root, moreSubProperties.toList() );
 			} 
 			else {
 				Node newNode = createNode( prop, false );
-				ExtendedIterator subProperties = prop.listSubProperties(true);
+				ExtendedIterator<? extends OntProperty> subProperties = prop.listSubProperties(true);
 				newNode = createPropertiesTree(newNode, subProperties.toList() );
 				root.addChild(newNode);
 				treeCount++;
