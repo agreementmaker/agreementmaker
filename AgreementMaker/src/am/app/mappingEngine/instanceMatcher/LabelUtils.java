@@ -2,7 +2,9 @@ package am.app.mappingEngine.instanceMatcher;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import am.app.ontology.instance.Instance;
 
@@ -124,7 +126,7 @@ public class LabelUtils {
 		else if(locList.contains(type.toLowerCase()))
 			standardType = "location";
 		else
-			standardType = "ukn";
+			standardType = type.toLowerCase(); //"ukn";
 		
 		return standardType; //return the standard type name
 	}
@@ -159,7 +161,7 @@ public class LabelUtils {
 		return aliases;
 	}
 	
-	public static String getTypeFromStatements(Instance instance){
+	public static Set<String> getTypeFromStatements(Instance instance){
 		
 		//get the type of the label from statements
 		List<Statement> listofStmt = instance.getStatements();
@@ -172,41 +174,49 @@ public class LabelUtils {
 			//type
 			if(prop.contains("type")){
 				String type = stmt.getObject().toString();
-				System.out.println("target:" + type);
 				typeList.add(type);
+				
+				//System.out.println("target:" + type);
 			}
 			
 			//class facts
 			if(prop.contains("classfacts")){
 				targetClassFacts = stmt.getObject().toString();
-				System.out.println("class facts:" + targetClassFacts);
+				typeList.add(targetClassFacts);
+				
+				//System.out.println("class facts:" + targetClassFacts);
 			}
 		}
 		
 		//check whether the target type has 'person', 'org' or 'location'.
-		String standardType = new String();
+		Set<String> standardTypeList = new HashSet<String>();
 		for(String type: typeList){
 			
 			//process into standard naming format
-			standardType = processTypes(type);
+			String standardType = processTypes(type);
+			standardTypeList.add(standardType);
 			
-			if(standardType.equalsIgnoreCase("organization"))
-				standardType = "organization";
-			else if(standardType.equalsIgnoreCase("person"))
+			/*if(standardType.equalsIgnoreCase("organization")){
+				standardTypeList.add("organization");
+			}
+			else if(standardType.equalsIgnoreCase("person")){
 				standardType = "person";
-			else if(standardType.equalsIgnoreCase("location"))
+			}
+			else if(standardType.equalsIgnoreCase("location")){
 				standardType = "location";
+				break;
+			}
 			else { //for ukn
 				//check for class facts if 'ukn'
 				standardType = "ukn"; 	
-			}
+			}*/
 		}
 		
 		//check for class facts if 'ukn'
-		if(standardType.equalsIgnoreCase("ukn"))
-			standardType = processTypes(targetClassFacts);
+		/*if(standardType.equalsIgnoreCase("ukn"))
+			standardType = processTypes(targetClassFacts);*/
 				
-		return standardType;
+		return standardTypeList;
 	}
 	
 	
