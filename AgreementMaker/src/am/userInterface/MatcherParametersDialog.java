@@ -662,7 +662,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 				// The dialog will start the matcher in a background thread, show progress as the matcher is running, and show the report at the end.
 				new MatcherProgressDialog(currentMatcher);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
 				if(!currentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
-					Core.getInstance().addMatcherInstance(currentMatcher);
+					Core.getInstance().addMatcherResult(currentMatcher);
 				}	
 
 				if( Core.DEBUG ) System.out.println("Matching Process Complete");

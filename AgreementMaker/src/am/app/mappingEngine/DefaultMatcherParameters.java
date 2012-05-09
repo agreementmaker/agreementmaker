@@ -1,7 +1,12 @@
 package am.app.mappingEngine;
 
 import java.io.Serializable;
-
+/**
+ * TODO: Add the source and target ontologies as fields HERE!
+ * 
+ * @author joe
+ *
+ */
 public class DefaultMatcherParameters implements Serializable {
 
 	private static final long serialVersionUID = -5278587933670353897L;

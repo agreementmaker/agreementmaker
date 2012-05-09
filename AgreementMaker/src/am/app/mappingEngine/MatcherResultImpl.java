@@ -4,8 +4,8 @@ import java.awt.Color;
 import java.util.List;
 
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
+import am.app.ontology.Ontology;
 
 public class MatcherResultImpl implements MatcherResult {
 
@@ -31,6 +31,8 @@ public class MatcherResultImpl implements MatcherResult {
 	private Color color;
 	private SimilarityMatrix classesMatrix;
 	private SimilarityMatrix propMatrix;
+	private Ontology sourceOntology;
+	private Ontology targetOntology;
 
 	public MatcherResultImpl(AbstractMatcher a) {
 		this.classesAlignment = a.getClassAlignmentSet();
@@ -154,6 +156,33 @@ public class MatcherResultImpl implements MatcherResult {
 
 	@Override
 	public void setMatcherName(String s) {matcherName=s;}
+
+	@Override public Ontology getSourceOntology() { return sourceOntology; }
+	@Override public Ontology getTargetOntology() { return targetOntology; }
+
+	@Override public void setClassAlignmentSet(Alignment<Mapping> set) {
+		classesAlignment = set;
+	}
+
+	@Override
+	public void setInstanceAlignmentSet(Alignment<Mapping> set) {
+		instancesAlignment = set;
+	}
+
+	@Override
+	public void setPropertyAlignmentSet(Alignment<Mapping> set) {
+		propertiesAlignment = set;
+	}
+
+	@Override
+	public void setQualEvaluation(QualityEvaluationData data) {
+		qualEvalData = data;
+	}
+
+	@Override
+	public void setRefEvaluation(ReferenceEvaluationData data) {
+		refEvalData = data;
+	}
 	
 	
 

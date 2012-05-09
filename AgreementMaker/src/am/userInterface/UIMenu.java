@@ -582,7 +582,7 @@ public class UIMenu implements ActionListener {
 					newMatcher.setID( Core.getInstance().getNextMatcherID());
 					
 					//m.addMatcher(newMatcher);
-					Core.getInstance().addMatcherInstance(newMatcher);
+					Core.getInstance().addMatcherResult(newMatcher);
 					
 					
 					

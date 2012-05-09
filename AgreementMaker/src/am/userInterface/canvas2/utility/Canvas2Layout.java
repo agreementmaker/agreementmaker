@@ -13,7 +13,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputListener;
 
-import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.MatcherResult;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.canvas2.Canvas2;
@@ -87,7 +87,7 @@ public abstract class Canvas2Layout implements MouseInputListener,
 	public abstract void removeOntology( ArrayList<CanvasGraph> graphs, int ontologyID ); /* must be implemented in the subclass */
 
 	/* buildMatcherGraph must be implemented in the subclass */
-	public CanvasGraph buildMatcherGraph(AbstractMatcher m) { return new CanvasGraph(GraphType.MATCHER_GRAPH, m.getID()); }
+	public CanvasGraph buildMatcherGraph(MatcherResult m) { return new CanvasGraph(GraphType.MATCHER_GRAPH, m.getID()); }
 
 	private CanvasGraph buildArtifactGraph() { return null; };  // builds the artifact graph and returns it to the constructor
 	public CanvasGraph getArtifactsGraph() { return layoutArtifactGraph; } // getArtifactsGraph() returns null if there is no artifact graph for this layout

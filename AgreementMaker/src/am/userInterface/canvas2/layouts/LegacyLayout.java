@@ -30,6 +30,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.ontology.Node;
@@ -1104,7 +1105,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		
 	
 	@Override
-	public CanvasGraph buildMatcherGraph(AbstractMatcher m) {
+	public CanvasGraph buildMatcherGraph( MatcherResult m ) {
 		
 		CanvasGraph matcherGraph = new CanvasGraph( GraphType.MATCHER_GRAPH, m.getID() );
 		
@@ -1465,8 +1466,8 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				MappingData d = (MappingData) currentMapping.getObject();
 				if( d.alignment != null ) {
 					String sim = Utility.getNoDecimalPercentFromDouble(d.alignment.getSimilarity());
-					AbstractMatcher m = Core.getInstance().getMatcherByID( d.matcherID );
-					String shortName = MatcherFactory.getMatchersRegistryEntry( m.getClass() ).getMatcherShortName();
+					MatcherResult m = Core.getInstance().getResultByID( d.matcherID );
+					String shortName = m.getMatcherName();
 					d.label = d.alignment.getRelation().getVisualRepresentation() + " (" + sim + ")";
 					if( shortName != null ) { d.label += " " + shortName; }
 				}

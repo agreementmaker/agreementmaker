@@ -282,7 +282,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		if( Core.DEBUG ) System.out.println(m.getRegistryEntry().getMatcherShortName() + " completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		
 		if(showAllMatchers && !m.isCancelled()) 
-			Core.getInstance().addMatcherInstance(m);
+			Core.getInstance().addMatcherResult(m);
 	}
 	
 	@Override

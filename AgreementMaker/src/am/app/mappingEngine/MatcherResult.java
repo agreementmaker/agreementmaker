@@ -5,6 +5,7 @@ import java.util.List;
 
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
+import am.app.ontology.Ontology;
 
 public interface MatcherResult {
 	
@@ -38,4 +39,14 @@ public interface MatcherResult {
     public void setAlignProp(boolean b);
     public void setColor(Color c);
     public void setMatcherName(String s);
+
+    public void setPropertyAlignmentSet(Alignment<Mapping> set);
+    public void setClassAlignmentSet(Alignment<Mapping> set);
+    public void setInstanceAlignmentSet(Alignment<Mapping> set);
+    
+    public Ontology getSourceOntology();
+    public Ontology getTargetOntology();
+	public void setQualEvaluation(QualityEvaluationData data);
+	public void setRefEvaluation(ReferenceEvaluationData data);
+    
 }

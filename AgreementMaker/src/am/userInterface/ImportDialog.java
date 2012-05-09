@@ -392,7 +392,7 @@ public class ImportDialog extends JDialog implements ActionListener{
 						@Override public void matchingComplete() {
 							if( ignore ) return;
 							if(!referenceAlignmentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
-								Core.getInstance().addMatcherInstance(referenceAlignmentMatcher);
+								Core.getInstance().addMatcherResult(referenceAlignmentMatcher);
 							}	
 							referenceAlignmentMatcher.removeProgressDisplay(this);
 						}

@@ -93,7 +93,7 @@ public class MatchersTablePanel extends JPanel implements MatcherChangeListener 
         //is important to add this here so that initColumns can assign the best width to columns
         //This matcher cannot be deleted
         UserManualMatcher userMatcher = (UserManualMatcher) MatcherFactory.getMatcherInstance(MatchersRegistry.UserManual, 0);
-        Core.getInstance().addMatcherInstance(userMatcher);
+        Core.getInstance().addMatcherResult(userMatcher);
         
         setOpaque(true); //content panes must be opaque
         //Set up column sizes.
@@ -208,6 +208,10 @@ public class MatchersTablePanel extends JPanel implements MatcherChangeListener 
     
     public void deletedRows(int firstrow, int lastrow) {
     	((AbstractTableModel)table.getModel()).fireTableRowsDeleted(firstrow, lastrow);
+    }
+    
+    public void dataChanged() {
+    	((AbstractTableModel)table.getModel()).fireTableDataChanged();
     }
     
     public void removeMatcher(AbstractMatcher a) {

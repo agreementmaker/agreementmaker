@@ -29,6 +29,7 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherChangeEvent;
 import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
@@ -281,7 +282,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			@Override public void matchingComplete() {
 				if( ignore ) return;
 				if(!manualMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
-					Core.getInstance().addMatcherInstance(manualMatcher);
+					Core.getInstance().addMatcherResult(manualMatcher);
 				}
 				manualMatcher.removeProgressDisplay(this);
 			}
@@ -369,7 +370,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			for(int i = 0; i < rowsIndex.length; i++) {
 				toBeCopied = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
 				AbstractMatcher aCopy = toBeCopied.copy(); //it does everything also setting the last index and matching
-				Core.getInstance().addMatcherInstance(aCopy);
+				Core.getInstance().addMatcherResult(aCopy);
 			}
 			Utility.displayMessagePane(rowsIndex.length+" matchers have been copied.\n",null);
 			Core.getUI().redisplayCanvas();
@@ -500,7 +501,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			@Override public void matchingComplete() {
 				if( ignore ) return;
 				if(!currentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
-					Core.getInstance().addMatcherInstance(currentMatcher);
+					Core.getInstance().addMatcherResult(currentMatcher);
 				}
 				currentMatcher.removeProgressDisplay(this);
 			}
@@ -676,15 +677,15 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		}
 	}
 	
+	/**
+	 * Reset all the matching results currently in the MatchersControlPanel.
+	 */
 	public void resetMatchings() {
 		try {
-			Core core = Core.getInstance();
-			List<AbstractMatcher> matchers = core.getMatcherInstances();
-			Iterator<AbstractMatcher> it = matchers.iterator();
 			//Take the UserManualMatcher and run it for the first time to create empty matrix and alignmentSet
-			UserManualMatcher userMatcher =(UserManualMatcher) it.next();
-			userMatcher.setSourceOntology(core.getSourceOntology());
-			userMatcher.setTargetOntology(core.getTargetOntology());
+			UserManualMatcher userMatcher=new UserManualMatcher();
+			userMatcher.setSourceOntology(Core.getInstance().getSourceOntology());
+			userMatcher.setTargetOntology(Core.getInstance().getTargetOntology());
 			try {
 				userMatcher.match();
 			}
@@ -692,16 +693,11 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 				Utility.displayMessagePane(ex.getMessage(), null);
 			}
 			
-			//Delete all other matchers if there are any
-			// I'm not using the controlPanel removeMatcher because is not needed we just remove them so we don't need to update index and we update table all together
-			int firstRow = 1;
-			int lastRow = matchers.size() -1;
-			while(it.hasNext()) {
-				it.next();
-				it.remove();
-			}
+			Core.getInstance().getMatcherResults().clear();
+			Core.getInstance().addMatcherResult(userMatcher);
+			
 			//update the table
-			matchersTablePanel.deletedRows(firstRow, lastRow);
+			matchersTablePanel.dataChanged();
 			Core.getUI().getCanvas().clearAllSelections();
 			Core.getUI().redisplayCanvas();
 			MatcherChangeEvent evt = new MatcherChangeEvent(userMatcher, MatcherChangeEvent.EventType.REMOVE_ALL, Core.ID_NONE);

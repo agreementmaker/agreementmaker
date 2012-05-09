@@ -175,6 +175,16 @@ public class Core {
 		return null;
 	}
 	
+	/**
+	 * @return Return a result from the given result ID. Returns null if no results match the id.
+	 */
+	public MatcherResult getResultByID( int id ) {
+		for( MatcherResult result : matcherResults ) 
+			if( result.getID() == id ) return result; 
+
+		return null;
+	}
+	
 	// this method adds a matcher to the end of the matchers list.
 	public void addMatcherInstance(AbstractMatcher a) {
 		a.setIndex( matcherInstances.size() );
