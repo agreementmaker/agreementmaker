@@ -1233,7 +1233,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     }
     /**AgreementMaker doesn't calculate instances matching, if you add this you should also modify getAlignmenSet*/
     public Alignment<Mapping> getInstanceAlignmentSet() {
-    	throw new RuntimeException("trying to invoking a function not implemented yet");
+    	int sourceOntologyID = -1;
+    	if( sourceOntology != null ) sourceOntologyID = sourceOntology.getID();
+    	
+    	int targetOntologyID = -1;
+    	if( targetOntology != null ) targetOntologyID = targetOntology.getID();
+    	
+    	return new Alignment<Mapping>(sourceOntologyID, targetOntologyID);
     }
     
     public boolean areClassesAligned() {
