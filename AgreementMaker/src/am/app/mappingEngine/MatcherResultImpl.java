@@ -39,8 +39,16 @@ public class MatcherResultImpl implements MatcherResult {
 		this.propertiesAlignment = a.getPropertyAlignmentSet();
 		this.instancesAlignment = a.getInstanceAlignmentSet();
 		
-		sourceOntologyID = classesAlignment.getSourceOntologyID();
-		targetOntologyID = classesAlignment.getTargetOntologyID();
+		if( classesAlignment != null ) {
+			sourceOntologyID = classesAlignment.getSourceOntologyID();
+			targetOntologyID = classesAlignment.getTargetOntologyID();
+		}
+		else {
+			sourceOntologyID = -1;
+			targetOntologyID = -1;
+		}
+		
+		
 		
 		id=a.getID();
 		matcherName=a.getName();
