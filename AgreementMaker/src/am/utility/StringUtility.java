@@ -20,4 +20,27 @@ public class StringUtility {
 		}
 		return string;
 	}
+	
+	/* this method is useful whenever we are dealing with unstructured 'dirty' text
+	 * eg. before passing the text to Reverb
+	 * Daniele
+	 */
+	public static String normalizeString(String string) {
+		//hash code of character \uC2A0, which is &nbsp;
+		final int hashCodeOfCharC2A0 = 160;
+		
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < string.length(); i++) {
+			Character c = string.charAt(i);
+			if (c.hashCode() != hashCodeOfCharC2A0) 
+				sb.append(c);
+			else
+				sb.append(" ");
+		}
+		
+		String cleanedString = sb.toString().trim().replaceAll("\\s+"," ");
+		cleanedString = cleanedString.replace("’", "'");
+		
+		return cleanedString;
+	}
 }
