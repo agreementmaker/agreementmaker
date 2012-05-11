@@ -26,7 +26,7 @@ public class SiblingsSimilarityContributionMatcher extends AbstractMatcher {
 	
 	public SiblingsSimilarityContributionMatcher() {
 		super();
-
+		setName("Sibling's Similarity Contribution");
 		needsParam = true; // we need to set the MCP before running SSC
 		
 		
