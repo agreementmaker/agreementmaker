@@ -18,7 +18,10 @@ public class BestMatchBoosting extends AbstractMatcher {
 
 	private static final long serialVersionUID = -6613515980650628944L;
 
-	public BestMatchBoosting() { super(); }
+	public BestMatchBoosting() { 
+		super(); 
+		setName("Best Match Boosting");
+	}
 
 	@Override
 	protected void initializeVariables() {

@@ -22,7 +22,6 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		BestMatchBoosting matcher=new BestMatchBoosting();
-		matcher.setName("Best Match Boosting");
 		context.registerService(AbstractMatcher.class.getName(), matcher, null);
 	}
 
