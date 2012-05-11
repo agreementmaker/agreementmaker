@@ -43,7 +43,7 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	protected void initializeVariables() {
 		super.initializeVariables();
 		needsParam = true;
-		
+		setName("Lexical Synonym Matcher");
 		// TODO: Setup Features.
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 	}

@@ -24,11 +24,9 @@ public class Activator implements BundleActivator {
 		Activator.context = bundleContext;
 		
 		LexicalSynonymMatcher lmMatcher=new LexicalSynonymMatcher();
-		lmMatcher.setName("Lexical Synonym Matcher");
 		context.registerService(AbstractMatcher.class.getName(), lmMatcher, null);
 		
 		LexicalSynonymMatcherWeighted lmwMatcher=new LexicalSynonymMatcherWeighted();
-		lmwMatcher.setName("LSM Weighted");
 		context.registerService(AbstractMatcher.class.getName(), lmwMatcher, null);
 	}
 
