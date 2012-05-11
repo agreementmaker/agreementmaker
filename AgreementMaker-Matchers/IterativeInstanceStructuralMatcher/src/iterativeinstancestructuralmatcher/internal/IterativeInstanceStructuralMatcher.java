@@ -88,7 +88,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		maxInputMatchers = 1;
 		
 		needsParam = true;
-		
+		setName("Iterative Instance and Structural Matcher");
 		//progressDisplay = new MatchingProgressDisplay();		
 	}
 	
