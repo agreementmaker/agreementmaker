@@ -21,7 +21,6 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		BaseSimilarityMatcher matcher=new BaseSimilarityMatcher();
-		matcher.setName("Base Similarity Matcher");
 		context.registerService(AbstractMatcher.class.getName(), matcher, null);
 	}
 

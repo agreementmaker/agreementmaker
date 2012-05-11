@@ -42,11 +42,13 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	public BaseSimilarityMatcher() {
 		// warning, param is not available at the time of the constructor (when creating a matcher from the User Interface)
 		super(); initializeVariables();
+		setName("Base Similarity Matcher");
 	}
 	
 	// Constructor used when the parameters are available at the time of matcher initialization
 	public BaseSimilarityMatcher( BaseSimilarityParameters param_new ) {  
 		super(param_new); initializeVariables();
+		setName("Base Similarity Matcher");
 	}
 	
 	@Override
