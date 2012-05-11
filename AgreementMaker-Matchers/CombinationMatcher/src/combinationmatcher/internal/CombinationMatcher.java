@@ -19,6 +19,7 @@ public class CombinationMatcher extends AbstractMatcher {
 
 	public CombinationMatcher() {
 		super();
+		setName("Linear Weighted Combination");
 		needsParam = true; // need the parameters
 		//I can't initialize the parametersPanel in here because i need to pass the inputmatchers as parameters 
 		// but the input matchers will be set later so I will initialize the panel in the getParametersPanel() method
@@ -26,6 +27,7 @@ public class CombinationMatcher extends AbstractMatcher {
 	
 	public CombinationMatcher( CombinationParameters param_new ) {
 		super(param_new);
+		setName("Linear Weighted Combination");
 	}
 	
 	@Override
