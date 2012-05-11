@@ -39,6 +39,7 @@ public class ConceptMatcher extends AbstractMatcher {
 		
 		super();
 		needsParam = true;
+		setName("Concept Similarity");
 	}
 	
 	@Override
