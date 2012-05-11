@@ -125,6 +125,7 @@ public class Instance implements Serializable {
 				
 				//values.add(literal);
 				
+				//TODO figure out what to do with the the limit
 				int limit = 300;				
 				if(literal.length() < limit)					
 					values.add(literal);

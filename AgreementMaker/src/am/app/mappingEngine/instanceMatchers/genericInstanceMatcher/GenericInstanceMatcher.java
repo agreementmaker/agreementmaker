@@ -1,8 +1,10 @@
 package am.app.mappingEngine.instanceMatchers.genericInstanceMatcher;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -10,17 +12,23 @@ import org.apache.log4j.Logger;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Report;
 import am.app.mappingEngine.instanceMatchers.BaseInstanceMatcher;
+import am.app.mappingEngine.instanceMatchers.UsesKB;
 import am.app.mappingEngine.instanceMatchers.combination.CombinationFunction;
+import am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher.LabeledDatasource;
 import am.app.ontology.instance.Instance;
 
 /**
  *	This matcher contains a list of matchers, which are all run and then combined 
- *	using a customizable combination function 
+ *	using a customizable combination function.
+ *	It supports: 
+ *		- multiple passes
+ *		- logging a report with the similarities by matcher 
+ *		- Passing the KBs to the matcher which need them
  * 
- * @author federico
+ * @author Federico Caimi
  *
  */
-public class GenericInstanceMatcher extends BaseInstanceMatcher{
+public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesKB{
 	private static final long serialVersionUID = -5745262888574700843L;
 	
 	private List<AbstractMatcher> matchers = new ArrayList<AbstractMatcher>();
@@ -29,7 +37,9 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher{
 	private boolean generateReport = true;
 	
 	Logger log = Logger.getLogger(GenericInstanceMatcher.class);
-		
+	
+	private String corefFolder = "CoreferenceReports";
+			
 	public GenericInstanceMatcher(){
 		instanceMatchingReport = new Report();
 		instanceMatchingReport.setMatchers(matchers);
@@ -47,15 +57,20 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher{
 		if(!firstPassDone){
 			log.info("First pass, requiresTwoPasses=" + requiresTwoPasses());
 		}
-		
 	}
 	
 	@Override
 	public void passEnd() {
 		if(generateReport){
 			String output = instanceMatchingReport.printTable();
+			
+			Date date = new Date() ;
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss") ;
+			File folder = new File(corefFolder);
+			if(!folder.exists()) folder.mkdir();
+			
 			try {
-				FileOutputStream fos = new FileOutputStream("sims.txt");
+				FileOutputStream fos = new FileOutputStream(corefFolder + File.separator + "sims-" + dateFormat.format(date) + ".tab");
 				fos.write(output.getBytes());
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -120,5 +135,33 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher{
 				requiresTwoPasses = true;
 		}
 		return requiresTwoPasses;
+	}
+
+	@Override
+	/**
+	 * Make sure this method is called after adding all the matchers!
+	 */
+	public void setSourceKB(LabeledDatasource sourceKB) {
+		for (AbstractMatcher matcher : matchers) {
+			if(matcher instanceof UsesKB){
+				if(sourceKB != null)
+					((UsesKB) matcher).setSourceKB(sourceKB);
+			}
+		}	
+	}
+
+	@Override
+	/**
+	 * Make sure this method is called after adding all the matchers!
+	 */
+	public void setTargetKB(LabeledDatasource targetKB) {
+		for (AbstractMatcher matcher : matchers) {
+			if(matcher instanceof UsesKB){
+				if(targetKB != null){
+					System.out.println("Setting target Knowledge Base " + matcher.getName());
+					((UsesKB) matcher).setTargetKB(targetKB);
+				}
+			}
+		}		
 	}
 }

@@ -2,6 +2,7 @@ package am.app.mappingEngine;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,7 +13,7 @@ public class Report {
 	private Set<String> solutions;
 	
 	public Report(){
-		similarities = new HashMap<String, List<Double>>();
+		similarities = new LinkedHashMap<String, List<Double>>();
 	}
 	
 	public List<AbstractMatcher> getMatchers() {
