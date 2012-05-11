@@ -36,7 +36,7 @@ public class MediatingMatcher extends AbstractMatcher {
 	
 	public MediatingMatcher() {
 		super();
-		
+		setName("Mediating Matcher");
 		needsParam = true;
 	}
 	
