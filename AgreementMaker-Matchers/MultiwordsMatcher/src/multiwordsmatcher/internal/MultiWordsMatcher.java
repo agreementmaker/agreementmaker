@@ -67,12 +67,14 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		needsParam = true;
 		if(param.storeProvenance){provenanceString="\t********Vector-Based MultiWords Matcher********\n";}
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
+		setName("Vector-based Multi-Words Matcher");
 	}
 	
 	public MultiWordsMatcher( MultiWordsParameters param_new ) {
 		super(param_new);
 		if(param.storeProvenance){provenanceString="\t********Vector-Based MultiWords Matcher********\n";}
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
+		setName("Vector-based Multi-Words Matcher");
 	}
 	
 	

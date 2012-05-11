@@ -79,12 +79,14 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 		needsParam = true;
 		if(param.storeProvenance){provenanceString="\t********Vector-Based MultiWords Matcher********\n";}
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
+		setName("VMM PairWise");
 	}
 
 	public MultiWordsMatcherPairWise( MultiWordsPairWiseParameters param_new ) {
 		super(param_new);
 		if(param.storeProvenance){provenanceString="\t********Vector-Based MultiWords Matcher********\n";}
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
+		setName("VMM PairWise");
 	}
 
 	@Override

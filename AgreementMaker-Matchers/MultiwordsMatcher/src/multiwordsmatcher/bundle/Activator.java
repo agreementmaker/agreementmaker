@@ -25,15 +25,12 @@ public class Activator implements BundleActivator {
 		Activator.context = bundleContext;
 		
 		MultiWordsMatcher mwMatcher= new MultiWordsMatcher();
-		mwMatcher.setName("Vector-based Multi-Words Matcher");
 		context.registerService(AbstractMatcher.class.getName(), mwMatcher, null);
 		
 		MultiWordsMatcherPairWise mwpMatcher=new MultiWordsMatcherPairWise();
-		mwpMatcher.setName("VMM PairWise");
 		context.registerService(AbstractMatcher.class.getName(), mwpMatcher, null);
 		
 		NewMultiWordsMatcher nmwMatcher=new NewMultiWordsMatcher();
-		nmwMatcher.setName("New VMM");
 		context.registerService(AbstractMatcher.class.getName(), nmwMatcher, null);
 	}
 

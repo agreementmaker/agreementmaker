@@ -67,6 +67,7 @@ public class NewMultiWordsMatcher extends AbstractMatcher {
 		addFeature(MatcherFeature.ONTOLOGY_PROFILING_CLASS_ANNOTATION_FIELDS);
 		addFeature(MatcherFeature.ONTOLOGY_PROFILING_PROPERTY_ANNOTATION_FIELDS);
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
+		setName("New VMM");
 	}
 	
 	public NewMultiWordsMatcher( NewMultiWordsParameters param_new ) {
@@ -77,6 +78,7 @@ public class NewMultiWordsMatcher extends AbstractMatcher {
 		addFeature(MatcherFeature.ONTOLOGY_PROFILING_CLASS_ANNOTATION_FIELDS);
 		addFeature(MatcherFeature.ONTOLOGY_PROFILING_PROPERTY_ANNOTATION_FIELDS);
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
+		setName("New VMM");
 	}
 	
 	@Override
