@@ -64,6 +64,7 @@ public class IterativeMatcher extends AbstractMatcher{
 		super();
 		needsParam = false;
 		alignProp = true;		
+		setName("Iterative Matcher");
 	}
 	
 	@Override
