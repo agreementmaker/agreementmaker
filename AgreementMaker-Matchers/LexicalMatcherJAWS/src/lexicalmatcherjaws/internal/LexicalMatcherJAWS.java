@@ -38,6 +38,7 @@ public class LexicalMatcherJAWS extends AbstractMatcher {
 	
 	public LexicalMatcherJAWS() {
 		super();
+		setName("Lexical Matcher: JAWS");
 		needsParam = false;  // this is a variable inherited from AbstractMatcher
 		
 		

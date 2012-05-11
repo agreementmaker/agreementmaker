@@ -22,7 +22,6 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		LexicalMatcherJAWS matcher=new LexicalMatcherJAWS();
-		matcher.setName("Lexical Matcher: JAWS");
 		context.registerService(AbstractMatcher.class.getName(), matcher, null);
 	}
 
