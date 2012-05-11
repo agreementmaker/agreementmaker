@@ -502,7 +502,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 					}
 				}
 
-				MatcherChangeEvent evt = new MatcherChangeEvent(null, 
+				MatcherChangeEvent evt = new MatcherChangeEvent((MatcherResult)null, 
 						MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, matcherToFilter.getID() );
 				
 				Core.getInstance().fireEvent(evt);
@@ -536,7 +536,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 					}
 				}
 
-				MatcherChangeEvent evt = new MatcherChangeEvent(null, 
+				MatcherChangeEvent evt = new MatcherChangeEvent((MatcherResult)null, 
 						MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, matcherToFilter.getID() );
 				
 				Core.getInstance().fireEvent(evt);

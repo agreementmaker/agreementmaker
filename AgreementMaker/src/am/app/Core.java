@@ -196,7 +196,7 @@ public class Core {
 	
 	public void addMatcherResult(AbstractMatcher a){
 		a.setIndex(matcherResults.size());
-		a.setColor(Colors.matchersColors[a.getIndex()%6]);
+		a.setColor(Colors.matchersColors[a.getID()%6]);
 		a.setID(getNextMatcherID());
 		matcherResults.add(a.getResult());
 		fireEvent( new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_ADDED, a.getID() ));

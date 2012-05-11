@@ -22,6 +22,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.MatcherChangeEvent;
 import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatcherResult;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.OntologyChangeEvent;
@@ -355,10 +356,10 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			while( graphIter11.hasNext() ) {
 				CanvasGraph gr = graphIter11.next();
 				if( gr.getID() == matcherID11 ) {
-					AbstractMatcher a = Core.getInstance().getMatcherByID(matcherID11);
-					gr.setVisible(a.getShown());
+					MatcherResult a = Core.getInstance().getResultByID( e.getMatcherID());
+					gr.setVisible(a.isShown());
 					for( Canvas2Edge edge : gr.getEdges() ) {  // added the for loop because of the filtering changes! - Cosmin.
-						edge.getObject().visible = a.getShown();
+						edge.getObject().visible = a.isShown();
 					}
 					break;
 				}
@@ -368,11 +369,12 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			
 		case MATCHER_COLOR_CHANGED:
 			int matcherID11c = e.getMatcherID();
+			System.out.println("The current index is: " + e.getMatcherID());
 			Iterator<CanvasGraph> graphIter11c = graphs.iterator();
 			while( graphIter11c.hasNext() ) {
 				CanvasGraph gr = graphIter11c.next();
 				if( gr.getID() == matcherID11c ) {
-					AbstractMatcher a = e.getMatcher();
+					MatcherResult a = Core.getInstance().getResultByID( e.getMatcherID());
 					Color newColor = a.getColor();
 					
 					Iterator<Canvas2Edge> edgesIter = gr.edges();

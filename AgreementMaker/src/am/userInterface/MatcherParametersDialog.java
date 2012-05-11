@@ -143,12 +143,17 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		
 		initComponents();
 		
-		matcher = MatcherFactory.getMatcherInstance(
-				MatcherFactory.getMatchersRegistryEntry(matcherCombo.getSelectedItem().toString()), Core.getInstance().getMatcherInstances().size());
+		try {
+			matcher = Core.getInstance().getFramework().getRegistry().getMatcherByName(matcherCombo.getSelectedItem().toString());
+		} catch (MatcherNotFoundException e) {
+			e.printStackTrace();
+			matcher = null;
+		}
+		
 		
 		addInputMatchers(matcher);
 		
-		String name = matcher.getRegistryEntry().getMatcherName();
+		String name = matcher.getName();
 		setTitle(name+": additional parameters");
 		//This is the specific panel defined by the developer to set additional parameters to the specific matcher implemented
 		if(matcher.needsParam() && matcher.getParametersPanel() != null){  

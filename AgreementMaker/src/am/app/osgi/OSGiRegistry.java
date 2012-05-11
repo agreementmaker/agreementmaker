@@ -8,6 +8,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
+import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 
 public class OSGiRegistry {
@@ -57,8 +58,19 @@ public class OSGiRegistry {
 	
 	public AbstractMatcher getMatcherByName(String matcherName)throws MatcherNotFoundException{
 		for(AbstractMatcher m : matcherList){
-			if(m.getName().equals(matcherName))
-				return m;
+			if(m.getName().equals(matcherName)){
+				try {
+					AbstractMatcher newM = m.getClass().newInstance();
+					newM.setID(Core.getInstance().getNextMatcherID());
+					return newM;
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+					return null;
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+					return null;
+				}
+			}
 		}
 		throw new MatcherNotFoundException(matcherName+" is not in the system.");
 	}

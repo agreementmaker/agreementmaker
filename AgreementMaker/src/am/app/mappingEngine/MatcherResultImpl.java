@@ -3,6 +3,7 @@ package am.app.mappingEngine;
 import java.awt.Color;
 import java.util.List;
 
+import am.app.Core;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.ontology.Ontology;
@@ -139,7 +140,11 @@ public class MatcherResultImpl implements MatcherResult {
 	public void setAlignProp(boolean b) {alignProp=b;}
 
 	@Override
-	public void setColor(Color c) {color=c;}
+	public void setColor(Color c) {
+		color=c;
+		MatcherChangeEvent mce = new MatcherChangeEvent(this, MatcherChangeEvent.EventType.MATCHER_COLOR_CHANGED);
+		Core.getInstance().fireEvent(mce);
+	}
 
 	@Override
 	public void setMaxSourceAlign(int i) {params.maxSourceAlign=i;}

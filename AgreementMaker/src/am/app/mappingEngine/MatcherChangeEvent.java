@@ -20,19 +20,40 @@ public class MatcherChangeEvent extends EventObject {
 	private EventType typeOfEvent;
 	private int matcherID = 0;
 	
+	@Deprecated
 	public MatcherChangeEvent( AbstractMatcher s ) {
 		super(s);
 		typeOfEvent = EventType.NOT_SET;
 		matcherID = s.getID();
 	}
 	
+	@Deprecated
 	public MatcherChangeEvent( AbstractMatcher s, EventType t ) {
 		super(s);
 		typeOfEvent = t;
 		matcherID = s.getID();
 	}
 	
+	@Deprecated
 	public MatcherChangeEvent( AbstractMatcher s, EventType t, int id ) {
+		super(s);
+		typeOfEvent = t;
+		matcherID = id;
+	}
+	
+	public MatcherChangeEvent( MatcherResult s ) {
+		super(s);
+		typeOfEvent = EventType.NOT_SET;
+		matcherID = s.getID();
+	}
+	
+	public MatcherChangeEvent( MatcherResult s, EventType t ) {
+		super(s);
+		typeOfEvent = t;
+		matcherID = s.getID();
+	}
+	
+	public MatcherChangeEvent( MatcherResult s, EventType t, int id ) {
 		super(s);
 		typeOfEvent = t;
 		matcherID = id;
