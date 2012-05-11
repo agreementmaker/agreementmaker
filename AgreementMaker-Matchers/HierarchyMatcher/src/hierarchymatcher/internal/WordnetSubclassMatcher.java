@@ -93,6 +93,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 		if(writeWordnetFiles){
 			viz = new WordnetVisualizer();
 		}
+		setName("Wordnet Subclass Matcher");
 			
 	}
 	

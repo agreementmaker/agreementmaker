@@ -51,6 +51,7 @@ public class HierarchyMatcher extends AbstractMatcher
 	public HierarchyMatcher()
 	{
 		super();
+		setName("Hierarchy Matcher");
 		/*minInputMatchers & maxInputMatcher insures that the user gives the input */
 		minInputMatchers = 1;
 		maxInputMatchers = 1;

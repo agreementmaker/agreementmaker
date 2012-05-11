@@ -25,15 +25,12 @@ public class Activator implements BundleActivator {
 		Activator.context = bundleContext;
 		
 		HierarchyMatcher hMatcher=new HierarchyMatcher();
-		hMatcher.setName("Hierarchy Matcher");
 		context.registerService(AbstractMatcher.class.getName(), hMatcher, null);
 		
 		HierarchyMatcherModified hmMatcher=new HierarchyMatcherModified();
-		hmMatcher.setName("Hierarchy Matcher Modified");
 		context.registerService(AbstractMatcher.class.getName(), hmMatcher, null);
 		
 		WordnetSubclassMatcher wMatcher=new WordnetSubclassMatcher();
-		wMatcher.setName("Wordnet Subclass Matcher");
 		context.registerService(AbstractMatcher.class.getName(), wMatcher, null);
 	}
 
