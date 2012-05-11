@@ -22,7 +22,6 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		ParametricStringMatcher matcher=new ParametricStringMatcher();
-		matcher.setName("Parametric String Matcher");
 		context.registerService(AbstractMatcher.class.getName(), matcher, null);
 	}
 

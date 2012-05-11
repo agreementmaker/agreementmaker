@@ -51,7 +51,7 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	protected void initializeVariables() {
 		super.initializeVariables();
 		needsParam = true;
-		
+		setName("Parametric String Matcher");
 		//features
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 		
