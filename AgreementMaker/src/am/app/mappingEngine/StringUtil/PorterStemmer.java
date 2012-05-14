@@ -362,6 +362,7 @@ public class PorterStemmer {
 
     // does string end with a double consonent?
     protected boolean endsWithDoubleConsonent(String str) {
+    	if( str.length() < 2 ) return false;
         char c = str.charAt(str.length() - 1);
         if (c == str.charAt(str.length() - 2))
             if (!containsVowel(str.substring(str.length() - 2))) {
