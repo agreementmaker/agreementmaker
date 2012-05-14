@@ -107,9 +107,11 @@ public class LabelUtils {
 		List<String> perList = new ArrayList<String>();
 		List<String> locList = new ArrayList<String>();
 		String standardType = new String();
+		type = type.toLowerCase();
+		
 		// add to the lists if there are more representations
 		
-		String[] orgArray = { "corporation", "corp", "inc", "company", "co", "incorporated", "assn", "lp", "theater" };
+		String[] orgArray = { "corporation", "corp", "org","inc", "company", "co", "incorporated", "assn", "lp", "theater" };
 		orgList.addAll( Arrays.asList(orgArray));
 		
 		String[] perArray = { "person", "per" }; 
@@ -118,15 +120,18 @@ public class LabelUtils {
 		String[] locArray = { "location", "loc" }; 
 		locList.addAll( Arrays.asList(locArray));
 		
+		//remove not required tokens like Infobox
+		type = type.replaceAll("infobox_", "");
+			
 		//check for containment
-		if(orgList.contains(type.toLowerCase()))
+		if(orgList.contains(type))
 			standardType = "organization";
-		else if(perList.contains(type.toLowerCase()))
+		else if(perList.contains(type))
 			standardType = "person";
-		else if(locList.contains(type.toLowerCase()))
+		else if(locList.contains(type))
 			standardType = "location";
 		else
-			standardType = type.toLowerCase(); //"ukn";
+			standardType = type; //"ukn";
 		
 		return standardType; //return the standard type name
 	}
