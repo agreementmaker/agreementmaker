@@ -47,7 +47,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB{
 
 	private boolean useSynonyms = false;
 
-	private boolean resolveURIs = false;
+	private boolean resolveURIs = true;
 
 	//Used for retrieving the labels when the objects are URIs
 	LabeledDatasource sourceKB;
