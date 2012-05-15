@@ -8,7 +8,6 @@ import am.app.ontology.profiling.ontologymetrics.OntologyEvaluation;
 import am.app.ontology.profiling.ontologymetrics.OntologyMetrics;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.MultilayerPerceptron;
-import weka.classifiers.lazy.KStar;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
@@ -109,7 +108,7 @@ public class ClassificationCombiner extends CombinationFunction{
 		getDataset(similarities.size());
 			
 		//System.out.println(attributes);
-		
+				
 		Instance instance = new Instance(attributes.size());
 		for (int i = 0; i< similarities.size(); i++){
 			instance.setValue(i, similarities.get(i));
@@ -126,13 +125,14 @@ public class ClassificationCombiner extends CombinationFunction{
 //			return 0;
 //		}
 		
+		//classifier.
+		
 		try {
 			double[] prediction = classifier.distributionForInstance(instance);
 			//System.out.println(Arrays.toString(prediction));
 			return prediction[0];
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		
 		return 0.0;

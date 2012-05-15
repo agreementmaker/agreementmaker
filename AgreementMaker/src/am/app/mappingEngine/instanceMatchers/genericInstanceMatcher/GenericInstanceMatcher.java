@@ -47,7 +47,10 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 	
 	private String corefFolder = "CoreferenceReports";
 	
+	boolean useAdditionalFeatures = true;
 	boolean useLWC = true;
+	boolean useCandidateSize = true;
+	boolean useAllConfidence = false;
 			
 	public GenericInstanceMatcher(){
 		instanceMatchingReport = new Report();
@@ -116,16 +119,22 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 		List<ScoredInstance> scoredCandidates = new ArrayList<ScoredInstance>();
 		if(targetCandidates.size() == 0) return scoredCandidates;
 		
-		if(!useLWC){
+		
+		if(!useAdditionalFeatures){
 			for (Instance candidate: targetCandidates) {
 				similarity = instanceSimilarity(sourceInstance, candidate);
 				//System.out.println("sim: " + similarity);
 				scoredCandidates.add(new ScoredInstance(candidate, similarity));
+				
+				
 			}
 		}
 		else{
 			List<List<Double>> similaritiesList = new ArrayList<List<Double>>();			
 			List<Double> similarities;
+			
+			int numMatchers = matchers.size();
+			
 			for (Instance candidate: targetCandidates) {
 				similarities = instanceSimilarities(sourceInstance, candidate);
 				similaritiesList.add(similarities);		
@@ -146,8 +155,20 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 					if(similarities.get(i) > max) max = similarities.get(i);
 				}
 				
-				similarities.add(max);
+				//Make sure they are in the same order below!!
+				if(useAllConfidence){
+					for (int i = 0; i < numMatchers; i++) {
+						similarities.add(similarities.get(i));
+					}
+				}
 				
+				if(useLWC)
+					similarities.add(max);
+				
+				if(useCandidateSize)
+					similarities.add(1d);
+				
+							
 				if(generateReport && instanceMatchingReport != null){
 					//System.out.println(source.getUri().startsWith("text"));
 					instanceMatchingReport.putSim(sourceInstance.getUri() + "||" + targetCandidates.get(0).getUri(), similarities);
@@ -160,21 +181,22 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 			//for every candidate
 			for (int i = 0; i < similaritiesList.size(); i++) {
 				double[] weights = new double[matchers.size()];
-				
+				similarities = similaritiesList.get(i);
 				//compute all the weights
+				
 				for (int j = 0; j < weights.length; j++) {
 					
-					//compute the average for matcher j excluding the candidate i
-					double avg = 0;
-					for (int t = 0; t < similaritiesList.size(); t++) {
-						if(t != i) avg += similaritiesList.get(t).get(j);
+					List<Double> candidatesSim = new ArrayList<Double>();
+					for (int k = 0; k < similaritiesList.size(); k++) {
+						candidatesSim.add(similaritiesList.get(k).get(j));
 					}
-					avg = avg / (similaritiesList.size() - 1);
-					weights[j] = similaritiesList.get(i).get(j) - avg; 
-					weights[j] = Utility.getSigmoidFunction(weights[j]);
+					weights[j] = computeConfidence(candidatesSim, i);
+					
+					if(useAllConfidence){
+						similarities.add(weights[j]);							
+					}
 				}
-				
-				
+								
 				log.debug(Arrays.toString(weights));
 				
 				//all the weights have been computed, we can add the LWC combination 
@@ -190,7 +212,11 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 				
 				log.debug(sim);
 				
-				similarities.add(sim);
+				if(useLWC)
+					similarities.add(sim);
+				
+				if(useCandidateSize)
+					similarities.add((double)targetCandidates.size());
 				
 				if(generateReport && instanceMatchingReport != null){
 					//System.out.println(source.getUri().startsWith("text"));
@@ -205,6 +231,26 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 		return scoredCandidates;
 	}
 	
+	/**
+	 * 
+	 * 
+	 * @param candidatesSim
+	 * @param k
+	 * @return
+	 */
+	private double computeConfidence(List<Double> candidatesSim, int k) {
+		double confidence = 0;
+		double avg = 0;
+		//compute the average excluding the candidate k
+		for (int t = 0; t < candidatesSim.size(); t++) {
+			if(t != k) avg += candidatesSim.get(t);
+		}
+		avg = avg / (candidatesSim.size() - 1);
+		confidence = candidatesSim.get(k) - avg; 
+		confidence = Utility.getSigmoidFunction(confidence);
+		return confidence;
+	}
+
 	@Override
 	public double instanceSimilarity(Instance source, Instance target)
 			throws Exception {
@@ -218,6 +264,12 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 			return 0.0;
 		}
 		List<Double> similarities = instanceSimilarities(source, target);
+		
+		if(generateReport && instanceMatchingReport != null){
+			//System.out.println(source.getUri().startsWith("text"));
+			instanceMatchingReport.putSim(source.getUri() + "||" + target.getUri(), similarities);
+		}
+				
 		return combination.combine(similarities);
 	}
 	
@@ -235,7 +287,7 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 	
 	@Override
 	public String getName() {
-		return "Generic Instance Matcher" + matchers + (useLWC ? " LWC" : "");
+		return "Generic Instance Matcher" + matchers + (useAdditionalFeatures ? " LWC" : "");
 	}
 	
 	@Override
