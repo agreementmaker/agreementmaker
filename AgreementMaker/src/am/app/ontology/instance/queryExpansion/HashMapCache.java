@@ -11,10 +11,19 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-public class HashMapCache<K,V> implements Cache<K, V>{
+public class HashMapCache<K, V> implements Cache<K, V>{
 	private HashMap<K, V> cache;
 	private Logger log = Logger.getLogger(HashMapCache.class); 
 	private String cacheFileName;
+	
+	public HashMapCache(){
+		
+	}
+	
+	public HashMapCache(String cacheFileName){
+		this.cacheFileName = cacheFileName;
+		load();
+	}
 	
 	public void load(){
 		FileInputStream fis = null;
@@ -23,18 +32,17 @@ public class HashMapCache<K,V> implements Cache<K, V>{
 						
 		try {	fis = new FileInputStream(cacheFileName); }
 		catch (FileNotFoundException e1) {
-			log.error("The cache file doesn't exist");
-			//cache = new HashMap<String, String>();
+			log.error("The cache file doesn't exist, the cache will be empty");
+			cache = new HashMap<K, V>();
 			return;
 		}
-		
 		try {
 			in = new ObjectInputStream(fis);
 			input  = in.readObject();
 			cache = (HashMap<K, V>) input;
 		} catch (Exception e1) {
 			log.error("The cache will be empty");
-			//cache = new HashMap<String, String>();
+			cache = new HashMap<K, V>();
 			return;
 		}
 		log.info("Done");
@@ -50,12 +58,10 @@ public class HashMapCache<K,V> implements Cache<K, V>{
 			e.printStackTrace();
 			return;
 		}
-		
 		try {
 			out.writeObject(cache);
 			out.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		 log.info("Done");	
@@ -70,6 +76,4 @@ public class HashMapCache<K,V> implements Cache<K, V>{
 	public V get(K key) {
 		return cache.get(key);
 	}
-	
-	
 }
