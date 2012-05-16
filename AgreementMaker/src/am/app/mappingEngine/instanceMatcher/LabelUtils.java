@@ -12,6 +12,9 @@ import com.hp.hpl.jena.rdf.model.Statement;
 
 public class LabelUtils {
 	
+	public static String[] organizationKeywords = { "Corporation", "Corp", "Organization", "Inc", "Company", "Co", "Incorporated", "Assn", "LP", "Theater",
+			"Newspaper", "Association", "Group" }; 	
+	
 	//Default method for cleaning labels
 	public static String processLabel(String label) {
 		label = label.toLowerCase();
@@ -22,11 +25,6 @@ public class LabelUtils {
 			label = label.substring(0,beg) + label.substring(end + 1);
 			label = label.trim();
 		}
-		
-//		if(label.contains(",")){
-//			String[] split = label.split(",");
-//			label = split[1].trim() + " " + split[0].trim();
-//		}
 			
 		String[] split = label.split(" ");
 		
@@ -48,7 +46,6 @@ public class LabelUtils {
 		}
 		
 		String[] blackList = { "Corporation", "Corp", "Inc", "Company", "Co", "Incorporated", "Assn", "LP", "Theater" };
-		
 		String[] split = label.split(" ");
 		
 		label = "";		
@@ -61,7 +58,6 @@ public class LabelUtils {
 					break;
 				}
 			}
-			
 			if(!toBlock) label += split[i] + " ";
 		}
 		return label;
@@ -227,18 +223,6 @@ public class LabelUtils {
 		return standardTypeList;
 	}
 	
-	
-	public static void main(String[] args) {
-		System.out.println(LabelUtils.processOrganizationLabel("Omnicom Group Incorporated"));
-		System.out.println(LabelUtils.processOrganizationLabel("Ese Corporation"));
-		System.out.println(LabelUtils.processOrganizationLabel("International Shipholding Corporation"));
-		System.out.println(LabelUtils.processOrganizationLabel("Signature Bank"));
-		System.out.println(LabelUtils.processOrganizationLabel("Roundabout Theater Co"));
-		System.out.println(LabelUtils.processOrganizationLabel("Protective Life Corporation"));
-		
-		System.out.println(LabelUtils.processPersonLabel("Federico Jr Caimi"));
-	}
-
 	public static String processLocationLabel(String label) {
 		if(label.contains("(")){
 			int beg = label.indexOf('(');
@@ -259,5 +243,21 @@ public class LabelUtils {
 		return null;
 	}
 	
+	public static boolean isAcronym(String string) {
+		if (string.length() < 5 && string.equals(string.toUpperCase()))
+			return true;
+		return false;
+	}
 	
+	public static void main(String[] args) {
+		System.out.println(LabelUtils.processOrganizationLabel("Omnicom Group Incorporated"));
+		System.out.println(LabelUtils.processOrganizationLabel("Ese Corporation"));
+		System.out.println(LabelUtils.processOrganizationLabel("International Shipholding Corporation"));
+		System.out.println(LabelUtils.processOrganizationLabel("Signature Bank"));
+		System.out.println(LabelUtils.processOrganizationLabel("Roundabout Theater Co"));
+		System.out.println(LabelUtils.processOrganizationLabel("Protective Life Corporation"));
+		System.out.println(LabelUtils.processPersonLabel("Federico Jr Caimi"));
+		String prova = "Federico_Caimi-123";
+		//System.out.println(Arrays.toString(prova.split("(\\s|_|-)")));
+	}
 }
