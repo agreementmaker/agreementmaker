@@ -4,6 +4,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
@@ -324,6 +327,8 @@ public class SparseMatrix extends SimilarityMatrix
 	@Override
 	public alignType getAlignType() { return typeOfMatrix;}
 	
+	
+	/** returns an array of mappings in decending order.  If there are not enough mappings in the specified col the array will be truncated to a new length less then numMaxValues*/
 	@Override
 	public Mapping[] getColMaxValues(int col, int numMaxValues) {
 		//i do not check for maxAlignements < numMaxValues
@@ -356,7 +361,25 @@ public class SparseMatrix extends SimilarityMatrix
 			}
 			currentRow=currentRow.nextr;
 		}
-		
+		Arrays.sort(maxAlignments, new Comparator<Mapping>(){
+
+			@Override
+			public int compare(Mapping o1, Mapping o2) {
+				if(o1.getSimilarity()>o2.getSimilarity())
+					return -1;
+				if(o1.getSimilarity()<o2.getSimilarity())
+					return 1;
+				return 0;
+			}	
+		});
+		//check for -1 and then return an array with all the values up to the index that a -1 occured
+		int end=0;
+		for(int i=0;i<maxAlignments.length;i++){
+			if(maxAlignments[i].getSimilarity()==-1){
+				maxAlignments=Arrays.copyOf(maxAlignments, i-1);
+				break;
+			}
+		}
 		return maxAlignments;
 	}
 	
@@ -417,6 +440,7 @@ public class SparseMatrix extends SimilarityMatrix
 		return max;
 	}
 	
+	/** returns an array of mappings in decending order.  If there are not enough mappings in the specified row the array will be truncated to a new length less then numMaxValues*/
 	@Override
 	public Mapping[] getRowMaxValues(int row, int numMaxValues) {
 		//i do not check for maxAlignements < numMaxValues
@@ -449,7 +473,26 @@ public class SparseMatrix extends SimilarityMatrix
 			}
 			currentRow=currentRow.nextr;
 		}
+		Arrays.sort(maxAlignments, new Comparator<Mapping>(){
+
+			@Override
+			public int compare(Mapping o1, Mapping o2) {
+				if(o1.getSimilarity()>o2.getSimilarity())
+					return -1;
+				if(o1.getSimilarity()<o2.getSimilarity())
+					return 1;
+				return 0;
+			}	
+		});
 		
+		//check for -1 and then return an array with all the values up to the index that a -1 occured
+		int end=0;
+		for(int i=0;i<maxAlignments.length;i++){
+			if(maxAlignments[i].getSimilarity()==-1){
+				maxAlignments=Arrays.copyOf(maxAlignments, i-1);
+				break;
+			}
+		}
 		return maxAlignments;
 	}
 	
