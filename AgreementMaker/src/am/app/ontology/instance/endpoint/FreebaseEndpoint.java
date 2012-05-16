@@ -217,7 +217,6 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 			cache = new HashMap<String, String>();
 			return;
 		}
-		
 		try {
 			in = new ObjectInputStream(fis);
 			input  = in.readObject();
