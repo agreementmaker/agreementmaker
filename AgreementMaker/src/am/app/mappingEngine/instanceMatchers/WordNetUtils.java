@@ -24,11 +24,11 @@ import edu.smu.tspell.wordnet.impl.file.synset.AdjectiveSatelliteReferenceSynset
 public class WordNetUtils {
 	WordNetDatabase wordNet; 
 	//Map<String, Boolean> isSynonym = new ConcurrentHashMap<String, Boolean>();
-	
+
 	public WordNetUtils(){
 		initWordnet();
 	}
-	
+
 	private void initWordnet() {
 		// Initialize the WordNet interface.
 		String cwd = System.getProperty("user.dir");
@@ -47,10 +47,10 @@ public class WordNetUtils {
 		String key = source + ":" + target;
 		//Boolean answer = isSynonym.get(key);
 		//if(answer != null) return answer;
-		
+
 		Synset[] sourceSynsets = wordNet.getSynsets(source);
 		Synset[] targetSynsets = wordNet.getSynsets(target);
-		
+
 		for (int i = 0; i < sourceSynsets.length; i++) {
 			for (int j = 0; j < targetSynsets.length; j++) {
 				if(sourceSynsets[i] == targetSynsets[j]){
@@ -63,15 +63,15 @@ public class WordNetUtils {
 		//isSynonym.put(key, false);
 		return false;
 	}
-	
+
 	public boolean areSynonyms(String source, String target, SynsetType type) {
 		String key = source + ":" + target;
 		//Boolean answer = isSynonym.get(key);
 		//if(answer != null) return answer;
-		
+
 		Synset[] sourceSynsets = wordNet.getSynsets(source, type);
 		Synset[] targetSynsets = wordNet.getSynsets(target, type);
-		
+
 		for (int i = 0; i < sourceSynsets.length; i++) {
 			for (int j = 0; j < targetSynsets.length; j++) {
 				if(sourceSynsets[i] == targetSynsets[j]){
@@ -84,7 +84,7 @@ public class WordNetUtils {
 		//isSynonym.put(key, false);
 		return false;
 	}
-	
+
 	public boolean areAntonyms(String source, String target, SynsetType type) {
 
 		Synset[] sourceSynsets = wordNet.getSynsets(source, type);
@@ -171,7 +171,7 @@ public class WordNetUtils {
 		queue.addAll(Arrays.asList(targetSynsets));
 		int nOldCount = 0;
 		int nNewCount = 0;
-		
+
 		//bfs traversal
 		if(type == SynsetType.NOUN ){
 			while(!queue.isEmpty()){
@@ -184,27 +184,27 @@ public class WordNetUtils {
 			}
 		}
 		else if(type == SynsetType.VERB){
-			
+
 			// Do not add all synsets: the verb synsets do not have a common parent 'entity'
 			// these might have inter-related and might yield to deadlock
 			HashSet<Synset> verbset = new HashSet<Synset>();
-						
+
 			while(!queue.isEmpty()){
 				hypernymVerbSynset = ((VerbSynset) queue.remove()).getHypernyms();
 
 				if( bCompareTwoSynsetArray( srcSynsets, hypernymVerbSynset) )
 					return true;
-				
+
 				//add only if not present earlier
 				nOldCount = verbset.size();
 				verbset.addAll(Arrays.asList(hypernymVerbSynset));
 				nNewCount = verbset.size();
-				
+
 				if( nOldCount != nNewCount)
 					queue.addAll(Arrays.asList(hypernymVerbSynset));
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -379,7 +379,7 @@ public class WordNetUtils {
 	}
 
 	boolean areSimilarAdj(String source, String target){
-		
+
 		AdjectiveSynset[] similarSynset;
 		Synset[] sourceSynsets = wordNet.getSynsets(source, SynsetType.ADJECTIVE);
 		Synset[] targetSynsets = wordNet.getSynsets(target, SynsetType.ADJECTIVE);
@@ -390,12 +390,12 @@ public class WordNetUtils {
 			if( bCompareTwoSynsetArray( similarSynset, targetSynsets ))
 				return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	boolean areAdjofSameSatelliteHead(String source, String target){
-	
+
 		AdjectiveSynset srcHeadSynset;
 		AdjectiveSynset tarHeadSynset;
 		Synset[] sourceSynsets = wordNet.getSynsets(source, SynsetType.ADJECTIVE_SATELLITE);
@@ -410,10 +410,10 @@ public class WordNetUtils {
 					return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	boolean areEntailments(String source, String target){
 
 		VerbSynset[] troponymVerbSynset;
@@ -429,9 +429,9 @@ public class WordNetUtils {
 
 		return false;
 	}
-	
+
 	boolean areofSameVerbGroup(String source, String target){
-		
+
 		Synset[] sourceSynsets = wordNet.getSynsets(source, SynsetType.VERB );
 		Synset[] targetSynsets = wordNet.getSynsets(target, SynsetType.VERB);
 
@@ -455,8 +455,7 @@ public class WordNetUtils {
 
 		return false;
 	}
-private 
-	boolean bCompareTwoSynsets(Synset srcSynset, Synset tarSynset){
+	private	boolean bCompareTwoSynsets(Synset srcSynset, Synset tarSynset){
 		return srcSynset == tarSynset ? true : false;
 	}
 
@@ -536,7 +535,7 @@ public class WordNetUtils {
 
 		return false;
 	}
-	
+
 	public static void main(String[] args){
 		WordNetUtils utils = new WordNetUtils();
 
@@ -575,7 +574,7 @@ public class WordNetUtils {
 
 		//System.out.print(lemmas[0]);
 
-/*		boolean bIsRelated = utils.areAncestorHypernyms("frisson", "brain", SynsetType.NOUN);
+		/*		boolean bIsRelated = utils.areAncestorHypernyms("frisson", "brain", SynsetType.NOUN);
 		System.out.println("5 )" +bIsRelated);
 
 		bIsRelated = utils.areTroponyms("verbalize", "shout");
@@ -586,19 +585,19 @@ public class WordNetUtils {
 
 		bIsRelated = utils.arePertainyms("academic", "academia", SynsetType.ADJECTIVE);
 		System.out.println("8 )" +bIsRelated);
-		
+
 		bIsRelated = utils.areofSameVerbGroup("talk", "write");
 		System.out.println("10 )" +bIsRelated);
-		
+
 		bIsRelated = utils.areinstanceHypernyms("Tunisia", "country", SynsetType.NOUN);
 		System.out.println("11 )" +bIsRelated);
-		
+
 		bIsRelated = utils.areAncestorHypernyms("verbalize", "shout", SynsetType.VERB);
 		System.out.println("12 )" +bIsRelated);*/
-		
+
 		boolean bIsRelated = utils.areAncestorHypernyms("organization", "country", SynsetType.NOUN);
 		System.out.println("12 )" + bIsRelated);
-		
+
 		bIsRelated = utils.areAncestorHypernyms("country", "organization", SynsetType.NOUN);
 		System.out.println("13 )" + bIsRelated);
 	}

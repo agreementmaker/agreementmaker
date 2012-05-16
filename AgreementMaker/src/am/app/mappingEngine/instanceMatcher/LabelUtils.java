@@ -111,7 +111,9 @@ public class LabelUtils {
 		
 		// add to the lists if there are more representations
 		
-		String[] orgArray = { "corporation", "corp", "org","inc", "company", "co", "incorporated", "assn", "lp", "theater" };
+		String[] orgArray = { "corporation", "corp", "org","inc", "company", "co", 
+							  "incorporated", "assn", "lp", "theater", "committee", "institute", "institution",
+							  "association"};
 		orgList.addAll( Arrays.asList(orgArray));
 		
 		String[] perArray = { "person", "per" }; 
@@ -122,6 +124,7 @@ public class LabelUtils {
 		
 		//remove not required tokens like Infobox
 		type = type.replaceAll("infobox_", "");
+		type = type.replaceAll("infobox", "");
 			
 		//check for containment
 		if(orgList.contains(type))
