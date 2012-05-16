@@ -151,6 +151,7 @@ public class Normalizer {
 			normalizeMap.put("'",blank); // '
 			normalizeMap.put("(",blank); // '
 			normalizeMap.put(")",blank); // '
+			normalizeMap.put("–",blank); // '		
 		}
 		
 		if(parameters.normalizeSlashes) {
