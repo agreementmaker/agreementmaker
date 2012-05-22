@@ -246,6 +246,13 @@ public class Utility {
 		return numerator / denominator;
 	}
 	
+	//return f(x) = 1 / ( 1 + exp( -5 (x - k) ) )
+	//sigmoid function used by rimom in the weighted average of similarities
+	public static double getModifiedSigmoidFunction(double d) {
+		double sigmoid = getSigmoidFunction(Math.abs(d));
+		return sigmoid;
+	}	
+	
 	public static double getSumOfArray(double[] array) {
 		double sum = 0;
 		for(int i = 0; i < array.length; i++) {
