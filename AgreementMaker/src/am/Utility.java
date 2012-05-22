@@ -56,7 +56,7 @@ public class Utility {
 	
 	
 	public static double getDoubleWithTwoDecimalDigits(double value) {
-		  DecimalFormat df = new DecimalFormat("0.0", new DecimalFormatSymbols(Locale.US));
+		  DecimalFormat df = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
 		  return Double.valueOf(df.format(value));
 		 }
 	
