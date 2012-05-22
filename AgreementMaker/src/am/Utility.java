@@ -54,6 +54,12 @@ public class Utility {
 		return s;
 	}
 	
+	
+	public static double getDoubleWithTwoDecimalDigits(double value) {
+		  DecimalFormat df = new DecimalFormat("0.0", new DecimalFormatSymbols(Locale.US));
+		  return Double.valueOf(df.format(value));
+		 }
+	
 	public static String[] getPercentDecimalsList() {
 		int min = 0;
 		int max = 100;
