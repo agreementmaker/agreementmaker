@@ -257,6 +257,7 @@ public class Utility {
 	public static double getModifiedSigmoidFunction(double d) {
 		double sigmoid = getSigmoidFunction(Math.abs(d));
 		return sigmoid;
+		//return (sigmoid - 0.5) * 2;
 	}	
 	
 	public static double getSumOfArray(double[] array) {

@@ -247,7 +247,7 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 		}
 		avg = avg / (candidatesSim.size() - 1);
 		confidence = candidatesSim.get(k) - avg; 
-		confidence = Utility.getSigmoidFunction(confidence);
+		confidence = Utility.getModifiedSigmoidFunction(confidence);
 			
 		return confidence;
 	}
