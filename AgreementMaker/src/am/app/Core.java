@@ -14,13 +14,13 @@ import am.app.mappingEngine.MatcherChangeEvent;
 import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.MatchingTask;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.OntologyChangeEvent;
 import am.app.ontology.OntologyChangeListener;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.app.osgi.AMHost;
-import am.app.osgi.OSGiRegistry;
 import am.userInterface.AppPreferences;
 import am.userInterface.Colors;
 import am.userInterface.UI;
@@ -56,6 +56,14 @@ public class Core {
 	
 	private final List<AbstractMatcher> matcherInstances = new ArrayList<AbstractMatcher>();
 	private final List<MatcherResult> matcherResults=new ArrayList<MatcherResult>();
+	
+	/**
+	 * Keep a list of completed matching tasks currently in the system.
+	 * When two ontologies are to be aligned a matching task is created and then
+	 * executed.  The completed matching task is stored in this list, to be used by 
+	 * the various components in AgreementMaker (e.g., visualization).
+	 */
+	private final List<MatchingTask> completedMatchingTasks = new ArrayList<MatchingTask>();
 	
 	private int IDcounter = 0;  // used in generating IDs for the ontologies and matchers
 	public static final int ID_NONE = -1;  // the ID for when no ID has been set	

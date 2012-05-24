@@ -2070,5 +2070,5 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 	
 	@Override
-	public MatcherResult getResult() {return new MatcherResultImpl(this);}
+	public MatcherResult getResult() {return new MatcherResult(this);}
 }
