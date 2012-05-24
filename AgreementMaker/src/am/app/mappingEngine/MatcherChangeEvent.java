@@ -41,22 +41,31 @@ public class MatcherChangeEvent extends EventObject {
 		matcherID = id;
 	}
 	
+	@Deprecated
 	public MatcherChangeEvent( MatcherResult s ) {
 		super(s);
 		typeOfEvent = EventType.NOT_SET;
 		matcherID = s.getID();
 	}
 	
+	@Deprecated
 	public MatcherChangeEvent( MatcherResult s, EventType t ) {
 		super(s);
 		typeOfEvent = t;
 		matcherID = s.getID();
 	}
 	
+	@Deprecated
 	public MatcherChangeEvent( MatcherResult s, EventType t, int id ) {
 		super(s);
 		typeOfEvent = t;
 		matcherID = id;
+	}
+	
+	public MatcherChangeEvent( MatchingTask task, EventType t ) {
+		super(task);
+		typeOfEvent = t;
+		matcherID = task.ID;
 	}
 	
 	public EventType getEvent()      { return typeOfEvent; }

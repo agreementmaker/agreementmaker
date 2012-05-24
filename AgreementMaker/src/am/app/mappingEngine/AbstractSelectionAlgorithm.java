@@ -15,6 +15,7 @@ import am.userInterface.MatchingProgressDisplay;
 public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> implements SelectionAlgorithm {
 	
 	protected MatcherResult matcherResult;
+	protected DefaultSelectionParameters params;
 	
 	protected List<MatchingProgressDisplay> progressListeners = new ArrayList<MatchingProgressDisplay>();
 	
@@ -333,22 +334,27 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
 
    
    protected Alignment<Mapping> scanForMaxValuesColumns(SimilarityMatrix matrix,int numMaxValues) {
-		Alignment<Mapping> aset = new Alignment<Mapping>(matcherResult.getSourceOntology().getID(), matcherResult.getTargetOntology().getID());
-		Mapping toBeAdded;
-		//temp structure to keep the first numMaxValues best alignments for each source
-		//when maxRelations are both ANY we could have this structure too big that's why we have checked this case in the previous method
-		Mapping[] maxAlignments;
-		for(int i = 0; i<matrix.getColumns();i++) {
-			maxAlignments = matrix.getColMaxValues(i, numMaxValues);
-			//get only the alignments over the threshold
-			for(int e = 0;e < maxAlignments.length; e++) { 
-				toBeAdded = maxAlignments[e];
-				if(toBeAdded != null && toBeAdded.getSimilarity() >= matcherResult.getParameters().threshold) {
-					aset.add(toBeAdded);
-				}
-			}
-		}
-		return aset;
-	}
+	   Alignment<Mapping> aset = new Alignment<Mapping>(matcherResult.getSourceOntology().getID(), matcherResult.getTargetOntology().getID());
+	   Mapping toBeAdded;
+	   //temp structure to keep the first numMaxValues best alignments for each source
+	   //when maxRelations are both ANY we could have this structure too big that's why we have checked this case in the previous method
+	   Mapping[] maxAlignments;
+	   for(int i = 0; i<matrix.getColumns();i++) {
+		   maxAlignments = matrix.getColMaxValues(i, numMaxValues);
+		   //get only the alignments over the threshold
+		   for(int e = 0;e < maxAlignments.length; e++) { 
+			   toBeAdded = maxAlignments[e];
+			   if(toBeAdded != null && toBeAdded.getSimilarity() >= matcherResult.getParameters().threshold) {
+				   aset.add(toBeAdded);
+			   }
+		   }
+	   }
+	   return aset;
+   }
+   
+   @Override
+   public void setParameters(DefaultSelectionParameters param) {
+		this.params = param;
+   }
    
 }

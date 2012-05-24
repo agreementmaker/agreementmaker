@@ -15,6 +15,7 @@ import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.MatcherChangeEvent.EventType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.OntologyChangeEvent;
@@ -194,6 +195,7 @@ public class Core {
 	}
 	
 	// this method adds a matcher to the end of the matchers list.
+	@Deprecated
 	public void addMatcherInstance(AbstractMatcher a) {
 		a.setIndex( matcherInstances.size() );
 		a.setColor(Colors.matchersColors[a.getIndex()%6]);
@@ -202,6 +204,7 @@ public class Core {
 		fireEvent( new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_ADDED, a.getID() ));
 	}
 	
+	@Deprecated
 	public void addMatcherResult(AbstractMatcher a){
 		a.setIndex(matcherResults.size());
 		a.setColor(Colors.matchersColors[a.getID()%6]);
@@ -210,6 +213,7 @@ public class Core {
 		fireEvent( new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_ADDED, a.getID() ));
 	}
 	
+	@Deprecated
 	public void removeMatcher(AbstractMatcher a) {
 		MatcherChangeEvent evt = new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_REMOVED, a.getID());
 		//int myIndex = a.getIndex();
@@ -224,6 +228,25 @@ public class Core {
 		}
 		fireEvent(evt);
 		
+	}
+	
+	/**
+	 * Add a newly completed matching task to the task list.
+	 * @param mt The completed matching task.
+	 */
+	public void addMatchingTask(MatchingTask mt) {
+		completedMatchingTasks.add(mt);
+		fireEvent( new MatcherChangeEvent( mt, EventType.MATCHER_ADDED) );
+	}
+	
+	/**
+	 * Remove the reference to a matching task.  This is usually done
+	 * when the matching task is removed the from matchers control panel.
+	 * @param mt The task to be removed.
+	 */
+	public void removeMatchingTask(MatchingTask mt) {
+		completedMatchingTasks.remove(mt);
+		fireEvent( new MatcherChangeEvent( mt, EventType.MATCHER_REMOVED) );
 	}
 	
 	public static UI   getUI()      { return ui;    }
