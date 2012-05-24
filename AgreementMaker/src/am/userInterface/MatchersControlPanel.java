@@ -27,7 +27,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MatcherChangeEvent;
+import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.MatchersRegistry;
@@ -700,7 +700,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			matchersTablePanel.dataChanged();
 			Core.getUI().getCanvas().clearAllSelections();
 			Core.getUI().redisplayCanvas();
-			MatcherChangeEvent evt = new MatcherChangeEvent(userMatcher, MatcherChangeEvent.EventType.REMOVE_ALL, Core.ID_NONE);
+			MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(userMatcher, MatchingTaskChangeEvent.EventType.REMOVE_ALL, Core.ID_NONE);
 			Core.getInstance().fireEvent(evt);
 		}
 		catch(Exception ex) {

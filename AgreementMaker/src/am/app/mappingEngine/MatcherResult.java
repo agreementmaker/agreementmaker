@@ -120,7 +120,7 @@ public class MatcherResult {
 
 	public void setColor(Color c) {
 		color=c;
-		MatcherChangeEvent mce = new MatcherChangeEvent(this, MatcherChangeEvent.EventType.MATCHER_COLOR_CHANGED);
+		MatchingTaskChangeEvent mce = new MatchingTaskChangeEvent(this, MatchingTaskChangeEvent.EventType.MATCHER_COLOR_CHANGED);
 		Core.getInstance().fireEvent(mce);
 	}
 

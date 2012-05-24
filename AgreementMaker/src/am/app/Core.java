@@ -10,12 +10,12 @@ import am.AMException;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.LexiconStore;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MatcherChangeEvent;
+import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
-import am.app.mappingEngine.MatcherChangeEvent.EventType;
+import am.app.mappingEngine.MatchingTaskChangeEvent.EventType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.OntologyChangeEvent;
@@ -56,7 +56,7 @@ public class Core {
 	 */
 	
 	private final List<AbstractMatcher> matcherInstances = new ArrayList<AbstractMatcher>();
-	private final List<MatcherResult> matcherResults=new ArrayList<MatcherResult>();
+	private final List<MatcherResult> matcherResults = new ArrayList<MatcherResult>();
 	
 	/**
 	 * Keep a list of completed matching tasks currently in the system.
@@ -201,7 +201,7 @@ public class Core {
 		a.setColor(Colors.matchersColors[a.getIndex()%6]);
 		a.setID(getNextMatcherID());
 		matcherInstances.add(a);
-		fireEvent( new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_ADDED, a.getID() ));
+		fireEvent( new MatchingTaskChangeEvent(a, MatchingTaskChangeEvent.EventType.MATCHER_ADDED, a.getID() ));
 	}
 	
 	@Deprecated
@@ -210,12 +210,12 @@ public class Core {
 		a.setColor(Colors.matchersColors[a.getID()%6]);
 		a.setID(getNextMatcherID());
 		matcherResults.add(a.getResult());
-		fireEvent( new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_ADDED, a.getID() ));
+		fireEvent( new MatchingTaskChangeEvent(a, MatchingTaskChangeEvent.EventType.MATCHER_ADDED, a.getID() ));
 	}
 	
 	@Deprecated
 	public void removeMatcher(AbstractMatcher a) {
-		MatcherChangeEvent evt = new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_REMOVED, a.getID());
+		MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(a, MatchingTaskChangeEvent.EventType.MATCHER_REMOVED, a.getID());
 		//int myIndex = a.getIndex();
 		matcherInstances.remove(a);
 		//All indexes must be decreased by one;
@@ -236,7 +236,7 @@ public class Core {
 	 */
 	public void addMatchingTask(MatchingTask mt) {
 		completedMatchingTasks.add(mt);
-		fireEvent( new MatcherChangeEvent( mt, EventType.MATCHER_ADDED) );
+		fireEvent( new MatchingTaskChangeEvent( mt, EventType.MATCHER_ADDED) );
 	}
 	
 	/**
@@ -246,7 +246,7 @@ public class Core {
 	 */
 	public void removeMatchingTask(MatchingTask mt) {
 		completedMatchingTasks.remove(mt);
-		fireEvent( new MatcherChangeEvent( mt, EventType.MATCHER_REMOVED) );
+		fireEvent( new MatchingTaskChangeEvent( mt, EventType.MATCHER_REMOVED) );
 	}
 	
 	public static UI   getUI()      { return ui;    }
@@ -267,7 +267,7 @@ public class Core {
 	 */
 	public void selectAndUpdateMatchers(AbstractMatcher a) throws Exception{
 		a.select();
-		MatcherChangeEvent evt = new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, a.getID() );
+		MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(a, MatchingTaskChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, a.getID() );
 		fireEvent(evt);
 		updateMatchers(a);
 
@@ -275,7 +275,7 @@ public class Core {
 	
 	public void matchAndUpdateMatchers(AbstractMatcher a) throws Exception{
 		a.match();
-		MatcherChangeEvent evt = new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, a.getID() );
+		MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(a, MatchingTaskChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, a.getID() );
 		fireEvent(evt);
 		updateMatchers(a);
 	}
@@ -295,7 +295,7 @@ public class Core {
 					modified = modifiedMatchers.get(j);
 					if(current.getInputMatchers().contains(modified)) {//if current contains any of the modified matchers as input matcher
 						current.match(); //reinvoke() current and add it to the modified list
-						MatcherChangeEvent evt = new MatcherChangeEvent(a, MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, current.getID() );
+						MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(a, MatchingTaskChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, current.getID() );
 						fireEvent(evt);
 						modifiedMatchers.add(current);
 						break;
@@ -313,7 +313,7 @@ public class Core {
 		matcher.addManualAlignments(alignments);
 		
 		// fire a matcher change event.
-		MatcherChangeEvent evt = new MatcherChangeEvent(matcher, MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, matcher.getID() );
+		MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(matcher, MatchingTaskChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, matcher.getID() );
 		fireEvent(evt);
 	}
 	
@@ -451,7 +451,7 @@ public class Core {
 	public void addMatcherChangeListener( MatcherChangeListener l )  { matcherListeners.add(l); }
 	public void removeMatcherChangeListener( MatcherChangeListener l ) { matcherListeners.remove(l); }
 	
-	public void fireEvent( final MatcherChangeEvent event ) {
+	public void fireEvent( final MatchingTaskChangeEvent event ) {
 		for( int i = matcherListeners.size()-1; i >= 0; i-- ) {  // count DOWN from max (for a very good reason, http://book.javanb.com/swing-hacks/swinghacks-chp-12-sect-8.html )
 			// execute each event in its own thread.
 			

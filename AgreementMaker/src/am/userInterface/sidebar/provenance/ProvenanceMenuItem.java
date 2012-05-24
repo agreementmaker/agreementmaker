@@ -7,7 +7,7 @@ import javax.swing.JMenuItem;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.MatcherChangeEvent;
+import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.MatcherFeature;
 
@@ -21,7 +21,7 @@ public class ProvenanceMenuItem extends JMenuItem implements MatcherChangeListen
 		super(title);
 	}
 	@Override
-	public void matcherChanged(MatcherChangeEvent e) {
+	public void matcherChanged(MatchingTaskChangeEvent e) {
 		//check here to grey out the menu item
 		List<AbstractMatcher> c = Core.getInstance().getMatcherInstances();
 		for(int i=0;i<c.size();i++){

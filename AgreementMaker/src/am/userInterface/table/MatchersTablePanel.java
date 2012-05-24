@@ -21,8 +21,8 @@ import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.MatcherChangeEvent;
-import am.app.mappingEngine.MatcherChangeEvent.EventType;
+import am.app.mappingEngine.MatchingTaskChangeEvent;
+import am.app.mappingEngine.MatchingTaskChangeEvent.EventType;
 import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
@@ -251,7 +251,7 @@ public class MatchersTablePanel extends JPanel implements MatcherChangeListener 
     }
 
 	@Override
-	public void matcherChanged(MatcherChangeEvent e) {
+	public void matcherChanged(MatchingTaskChangeEvent e) {
 		if( e.getEvent() == EventType.MATCHER_ADDED ) {
 			addMatcher(e.getMatcher());
 		}

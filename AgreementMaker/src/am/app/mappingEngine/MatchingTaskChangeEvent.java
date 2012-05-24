@@ -2,7 +2,7 @@ package am.app.mappingEngine;
 
 import java.util.EventObject;
 
-public class MatcherChangeEvent extends EventObject {
+public class MatchingTaskChangeEvent extends EventObject {
 
 	private static final long serialVersionUID = -6513370159773720996L;
 	
@@ -21,48 +21,48 @@ public class MatcherChangeEvent extends EventObject {
 	private int matcherID = 0;
 	
 	@Deprecated
-	public MatcherChangeEvent( AbstractMatcher s ) {
+	public MatchingTaskChangeEvent( AbstractMatcher s ) {
 		super(s);
 		typeOfEvent = EventType.NOT_SET;
 		matcherID = s.getID();
 	}
 	
 	@Deprecated
-	public MatcherChangeEvent( AbstractMatcher s, EventType t ) {
+	public MatchingTaskChangeEvent( AbstractMatcher s, EventType t ) {
 		super(s);
 		typeOfEvent = t;
 		matcherID = s.getID();
 	}
 	
 	@Deprecated
-	public MatcherChangeEvent( AbstractMatcher s, EventType t, int id ) {
+	public MatchingTaskChangeEvent( AbstractMatcher s, EventType t, int id ) {
 		super(s);
 		typeOfEvent = t;
 		matcherID = id;
 	}
 	
 	@Deprecated
-	public MatcherChangeEvent( MatcherResult s ) {
+	public MatchingTaskChangeEvent( MatcherResult s ) {
 		super(s);
 		typeOfEvent = EventType.NOT_SET;
 		matcherID = s.getID();
 	}
 	
 	@Deprecated
-	public MatcherChangeEvent( MatcherResult s, EventType t ) {
+	public MatchingTaskChangeEvent( MatcherResult s, EventType t ) {
 		super(s);
 		typeOfEvent = t;
 		matcherID = s.getID();
 	}
 	
 	@Deprecated
-	public MatcherChangeEvent( MatcherResult s, EventType t, int id ) {
+	public MatchingTaskChangeEvent( MatcherResult s, EventType t, int id ) {
 		super(s);
 		typeOfEvent = t;
 		matcherID = id;
 	}
 	
-	public MatcherChangeEvent( MatchingTask task, EventType t ) {
+	public MatchingTaskChangeEvent( MatchingTask task, EventType t ) {
 		super(task);
 		typeOfEvent = t;
 		matcherID = task.ID;

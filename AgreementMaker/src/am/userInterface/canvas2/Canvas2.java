@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.MatcherChangeEvent;
+import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatcherResult;
@@ -309,7 +309,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	}
 
 	
-	public synchronized void matcherChanged(MatcherChangeEvent e) {
+	public synchronized void matcherChanged(MatchingTaskChangeEvent e) {
 
 		switch( e.getEvent() ) {
 		case MATCHER_ADDED:

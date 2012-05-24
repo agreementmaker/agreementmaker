@@ -18,7 +18,7 @@ import am.AMException;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.Mapping.MappingRelation;
-import am.app.mappingEngine.MatcherChangeEvent.EventType;
+import am.app.mappingEngine.MatchingTaskChangeEvent.EventType;
 import am.app.mappingEngine.oneToOneSelection.MappingMWBM;
 import am.app.mappingEngine.oneToOneSelection.MaxWeightBipartiteMatching;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
@@ -1318,7 +1318,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		this.isShown = isShown;
 		
 		// fire an event to let all the listeners know that the visibility of this abstract matcher
-		MatcherChangeEvent evt = new MatcherChangeEvent(this, MatcherChangeEvent.EventType.MATCHER_VISIBILITY_CHANGED, getID());
+		MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(this, MatchingTaskChangeEvent.EventType.MATCHER_VISIBILITY_CHANGED, getID());
 		Core.getInstance().fireEvent(evt);
 	}
 	
@@ -1596,7 +1596,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	public Color getColor() { return color; }
 	public void setColor(Color color) { 
 		this.color = color;
-		MatcherChangeEvent mce = new MatcherChangeEvent(this, MatcherChangeEvent.EventType.MATCHER_COLOR_CHANGED);
+		MatchingTaskChangeEvent mce = new MatchingTaskChangeEvent(this, MatchingTaskChangeEvent.EventType.MATCHER_COLOR_CHANGED);
 		Core.getInstance().fireEvent(mce);
 	}
 	
@@ -1895,7 +1895,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		}*/
 		
 		// make sure we let our listeners know that we changed the alignment set
-		Core.getInstance().fireEvent( new MatcherChangeEvent(this, 
+		Core.getInstance().fireEvent( new MatchingTaskChangeEvent(this, 
 				EventType.MATCHER_ALIGNMENTSET_UPDATED, this.matcherID) );
 		
 	}

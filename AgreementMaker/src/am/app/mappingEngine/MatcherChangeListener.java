@@ -4,5 +4,5 @@ import java.util.EventListener;
 
 public interface MatcherChangeListener extends EventListener {
 	
-	public void matcherChanged( MatcherChangeEvent e );
+	public void matcherChanged( MatchingTaskChangeEvent e );
 }

@@ -15,7 +15,7 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MatcherChangeEvent;
+import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.userInterface.canvas2.Canvas2;
@@ -502,8 +502,8 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 					}
 				}
 
-				MatcherChangeEvent evt = new MatcherChangeEvent((MatcherResult)null, 
-						MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, matcherToFilter.getID() );
+				MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent((MatcherResult)null, 
+						MatchingTaskChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, matcherToFilter.getID() );
 				
 				Core.getInstance().fireEvent(evt);
 				
@@ -536,8 +536,8 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 					}
 				}
 
-				MatcherChangeEvent evt = new MatcherChangeEvent((MatcherResult)null, 
-						MatcherChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, matcherToFilter.getID() );
+				MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent((MatcherResult)null, 
+						MatchingTaskChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, matcherToFilter.getID() );
 				
 				Core.getInstance().fireEvent(evt);
 				

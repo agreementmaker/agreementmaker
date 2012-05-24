@@ -26,7 +26,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.MatcherChangeEvent;
+import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
@@ -234,7 +234,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	/****************************** CHANGE LISTENERS *********************************/
 	
 	@Override
-	public void matcherChanged(final MatcherChangeEvent e) {
+	public void matcherChanged(final MatchingTaskChangeEvent e) {
 	
 		switch( e.getEvent() ) {
 		case MATCHER_ADDED:
