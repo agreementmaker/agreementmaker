@@ -27,6 +27,7 @@ import am.app.ontology.ontologyParser.OntologyDefinition;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.TreeBuilder;
 import am.userInterface.classic.AgreementMakerClassic;
+import am.userInterface.controlpanel.MatchersControlPanel;
 import am.userInterface.sidebar.vertex.VertexDescriptionPane;
 
 

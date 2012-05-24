@@ -8,25 +8,16 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import am.Utility;
-import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.LexiconStore;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcher;
-import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
 import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher;
 import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
-import am.app.mappingEngine.hierarchy.HierarchyMatcherModified;
 import am.app.mappingEngine.hierarchy.HierarchyMatcherModifiedParameters;
-import am.app.mappingEngine.hierarchy.WordnetSubclassMatcher;
 import am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher;
 import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters;
 import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters.OAEI2011Configuration;
@@ -34,15 +25,8 @@ import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ThresholdAnalysisData;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
-import am.userInterface.MatchersControlPanel;
 import am.utility.referenceAlignment.AlignmentUtilities;
 
-import com.hp.hpl.jena.ontology.OntDocumentManager;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
 
 public class LODBatch {

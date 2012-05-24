@@ -249,6 +249,14 @@ public class Core {
 		fireEvent( new MatchingTaskChangeEvent( mt, EventType.MATCHER_REMOVED) );
 	}
 	
+	/**
+	 * Called to remove all the matching tasks in the systems.
+	 */
+	public void removeAllMatchingTasks() {
+		completedMatchingTasks.clear();
+		fireEvent( new MatchingTaskChangeEvent( EventType.REMOVE_ALL) );
+	}
+	
 	public static UI   getUI()      { return ui;    }
 	public static void setUI(UI ui) { Core.ui = ui; }
 	

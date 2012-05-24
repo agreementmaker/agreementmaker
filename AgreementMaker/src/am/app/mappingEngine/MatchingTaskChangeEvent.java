@@ -2,6 +2,8 @@ package am.app.mappingEngine;
 
 import java.util.EventObject;
 
+import am.app.Core;
+
 public class MatchingTaskChangeEvent extends EventObject {
 
 	private static final long serialVersionUID = -6513370159773720996L;
@@ -66,6 +68,12 @@ public class MatchingTaskChangeEvent extends EventObject {
 		super(task);
 		typeOfEvent = t;
 		matcherID = task.ID;
+	}
+	
+	public MatchingTaskChangeEvent( EventType t ) {
+		super(null);
+		typeOfEvent = t;
+		matcherID = Core.ID_NONE;
 	}
 	
 	public EventType getEvent()      { return typeOfEvent; }

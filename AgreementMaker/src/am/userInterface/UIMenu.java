@@ -53,6 +53,7 @@ import am.tools.ThresholdAnalysis.ThresholdAnalysis;
 import am.tools.WordNetLookup.WordNetLookupPanel;
 import am.tools.seals.SealsPanel;
 import am.userInterface.VisualizationChangeEvent.VisualizationEventType;
+import am.userInterface.controlpanel.MatchersControlPanel;
 import am.userInterface.find.FindDialog;
 import am.userInterface.find.FindInterface;
 import am.userInterface.instance.InstanceLookupPanel;

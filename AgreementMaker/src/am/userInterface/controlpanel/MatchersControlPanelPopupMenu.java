@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.userInterface.controlpanel;
 
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;

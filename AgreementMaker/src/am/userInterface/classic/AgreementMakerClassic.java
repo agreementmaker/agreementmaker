@@ -10,7 +10,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JViewport;
 
-import am.userInterface.MatchersControlPanel;
 import am.userInterface.VisualizationPanel;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.GraphicalData;
@@ -19,6 +18,7 @@ import am.userInterface.canvas2.utility.Canvas2Edge;
 import am.userInterface.canvas2.utility.Canvas2Vertex;
 import am.userInterface.canvas2.utility.CanvasGraph;
 import am.userInterface.canvas2.utility.GraphLocator;
+import am.userInterface.controlpanel.MatchersControlPanel;
 import am.userInterface.find.FindInterface;
 
 /**

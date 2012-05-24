@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.userInterface.controlpanel;
 
 
 import java.awt.FlowLayout;
@@ -8,7 +8,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,18 +23,15 @@ import am.AMException;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
@@ -43,6 +39,11 @@ import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.mappingEngine.referenceAlignment.ThresholdAnalysisData;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.userInterface.ExportDialog;
+import am.userInterface.MatcherParametersDialog;
+import am.userInterface.MatcherProgressDialog;
+import am.userInterface.MatchingProgressDisplay;
+import am.userInterface.QualityEvaluationDialog;
 import am.userInterface.table.MatchersTablePanel;
 import am.utility.referenceAlignment.AlignmentUtilities;
 
@@ -347,8 +348,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			return;
 		}
 		
-		ImportDialog lfd = new ImportDialog();
-		AbstractMatcher importedMatcher = lfd.getLoadedMatcher();
+		//ImportDialog lfd = new ImportDialog();
+		//AbstractMatcher importedMatcher = lfd.getLoadedMatcher();
 		
 /*		if( importedMatcher == null ) return;
 		
@@ -668,7 +669,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 	
 	public boolean clearAll() {
 		//don't put this code into resetMatchings because resetMatching is used by the system also in other situation when the confirmation is not required by the user.
-		boolean ok = Utility.displayConfirmPane("This operation will clear all the matchings prevously calculated.\nDo you want to continue?", null);
+		boolean ok = Utility.displayConfirmPane("This operation will remove all matching tasks.\nDo you want to continue?", null);
 		if(ok) {
 			resetMatchings();
 			return true;
@@ -697,11 +698,10 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			Core.getInstance().addMatcherResult(userMatcher);
 			
 			//update the table
+			Core.getInstance().removeAllMatchingTasks();
 			matchersTablePanel.dataChanged();
 			Core.getUI().getCanvas().clearAllSelections();
 			Core.getUI().redisplayCanvas();
-			MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(userMatcher, MatchingTaskChangeEvent.EventType.REMOVE_ALL, Core.ID_NONE);
-			Core.getInstance().fireEvent(evt);
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
