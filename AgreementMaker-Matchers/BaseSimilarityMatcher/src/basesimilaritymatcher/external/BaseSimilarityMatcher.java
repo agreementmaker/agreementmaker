@@ -41,14 +41,14 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	
 	public BaseSimilarityMatcher() {
 		// warning, param is not available at the time of the constructor (when creating a matcher from the User Interface)
-		super(); initializeVariables();
-		setName("Base Similarity Matcher");
+		super(); 
+		initializeVariables();
 	}
 	
 	// Constructor used when the parameters are available at the time of matcher initialization
 	public BaseSimilarityMatcher( BaseSimilarityParameters param_new ) {  
-		super(param_new); initializeVariables();
-		setName("Base Similarity Matcher");
+		super(param_new); 
+		initializeVariables();
 	}
 	
 	@Override
@@ -79,6 +79,9 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		param3.setAllTrue();
 		norm3 = new Normalizer(param3);
 
+		setName("Base Similarity Matcher");
+		setCategory(MatcherCategory.SYNTACTIC);
+		
 		// setup the features:
 		addFeature(MatcherFeature.ONTOLOGY_PROFILING);
 		addFeature(MatcherFeature.ONTOLOGY_PROFILING_CLASS_ANNOTATION_FIELDS);
