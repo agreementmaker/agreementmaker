@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import javax.swing.SwingWorker;
 
@@ -54,7 +55,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 * in the constructor of the non-abstract class should happen "name = FINALNAME"
 	 * */
 	protected MatchersRegistry registryEntry;
-	protected String name;
 	/**User mapping should be the only one with this variable equal to false*/
 	protected boolean isAutomatic;
 	/**True if the algorithm needs additional parameter other than threshold, in this case the developer must develop a JFrame to let the user define them*/
@@ -139,6 +139,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	public boolean requiresTwoPasses;
 	
 	protected boolean firstPassDone;
+	
+	protected Properties matcherProperties = new Properties();
 	
 	public void setPerformSelection(boolean performSelection) {
 		this.performSelection = performSelection;
@@ -273,6 +275,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		sourceOntology = Core.getInstance().getSourceOntology(); // moved initialization of sourceOntology to match().
 		targetOntology = Core.getInstance().getTargetOntology(); // moved initialization of targetOntology to match().
 		inputMatchers = new ArrayList<AbstractMatcher>();
+		
+		setName("AbstractMatcher");
+		setCategory(MatcherCategory.UNCATEGORIZED);
 	}
 	
 	
@@ -1283,15 +1288,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		this.index = index;
 	}
 
-	public String getName() {
-		if( name !=null )
-			return name;
-		if(registryEntry!=null)
-			return registryEntry.getMatcherName();
-		return "(No Matcher Name!)";
-	}
-	public void setName(String n) { name = n; } 
+	public String getName() { return getProperty( PropertyKey.NAME ); }
+	public void setName(String name) { setProperty(PropertyKey.NAME, name); }
+	
+	@Deprecated
 	public MatchersRegistry getRegistryEntry() { return registryEntry; }
+	
+	@Deprecated
 	public void setRegistryEntry(MatchersRegistry name) { this.registryEntry = name; }
 
 	public boolean isAutomatic() { return isAutomatic; }
@@ -1310,10 +1313,12 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		this.param = param;
 	}
 
+	@Deprecated
 	public boolean isShown() {
 		return isShown;
 	}
 
+	@Deprecated
 	public void setShown(boolean isShown) {
 		this.isShown = isShown;
 		
@@ -1330,7 +1335,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 
 	public void setThreshold(double threshold) {
-		if( param == null ) { param = new DefaultMatcherParameters() {}; }
+		if( param == null ) { param = new DefaultMatcherParameters(); }
 		param.threshold = threshold;
 	}
 
@@ -1593,7 +1598,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		
 	}
 	
+	@Deprecated
 	public Color getColor() { return color; }
+	
+	@Deprecated
 	public void setColor(Color color) { 
 		this.color = color;
 		MatchingTaskChangeEvent mce = new MatchingTaskChangeEvent(this, MatchingTaskChangeEvent.EventType.MATCHER_COLOR_CHANGED);
@@ -1822,6 +1830,15 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		this.propertiesAlignmentSet = propertiesAlignmentSet;
 	}
 
+	public void setCategory( MatcherCategory category ) {
+		setProperty(PropertyKey.CATEGORY, category.name());
+	}
+	
+	public MatcherCategory getCategory() {
+		String categoryString = getProperty(PropertyKey.CATEGORY);
+		return MatcherCategory.valueOf(categoryString);
+	}
+	
 	public void setClassesAlignmentSet(Alignment<Mapping> classesAlignmentSet) {
 		this.classesAlignmentSet = classesAlignmentSet;
 	}
@@ -2071,4 +2088,35 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	
 	@Override
 	public MatcherResult getResult() {return new MatcherResult(this);}
+	
+	
+	public String getProperty(PropertyKey key) {
+		return matcherProperties.getProperty(key.name());
+	}
+	
+	protected void setProperty(PropertyKey key, String value) {
+		matcherProperties.setProperty(key.name(), value);
+	}
+		
+	public static enum PropertyKey {
+		CATEGORY,
+		NAME;
+	}
+	
+	/**
+	 * This enumeration defines categories for matchers.
+	 * Used for presentation purposes.
+	 * @author Cosmin Stroe
+	 * @date Monday, December 13th, 2010.
+	 */
+	public enum MatcherCategory {
+		SYNTACTIC,		// Syntactic Matchers.
+		STRUCTURAL,		// Structural Matchers.
+		LEXICAL,		// Matchers that use a dictionary.
+		COMBINATION,    // Matchers that produce a combination of other matchers. 
+		HYBRID,			// Matchers that consider many features together.
+		UTILITY, 		// Utility matcher,
+		USER,			// User matchers
+		UNCATEGORIZED;	// Matchers that have not been categorized.
+	}
 }
