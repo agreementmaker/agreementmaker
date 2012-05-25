@@ -27,6 +27,8 @@ import edu.smu.tspell.wordnet.WordNetDatabase;
 
 public class LexicalMatcherJAWS extends AbstractMatcher {
 
+	private static final long serialVersionUID = 3153635325163868594L;
+
 	@Override 
 	public String getDescriptionString() { return "A lexical matcher using WordNet as the lexicon."; }
 	
@@ -38,7 +40,15 @@ public class LexicalMatcherJAWS extends AbstractMatcher {
 	
 	public LexicalMatcherJAWS() {
 		super();
+		initializeVariables();
+	}
+	
+	@Override
+	protected void initializeVariables() {
+		super.initializeVariables();
 		setName("Lexical Matcher: JAWS");
+		setCategory(MatcherCategory.LEXICAL);
+		
 		needsParam = false;  // this is a variable inherited from AbstractMatcher
 		
 		
