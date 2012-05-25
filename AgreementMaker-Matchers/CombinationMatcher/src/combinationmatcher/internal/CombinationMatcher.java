@@ -19,15 +19,12 @@ public class CombinationMatcher extends AbstractMatcher {
 
 	public CombinationMatcher() {
 		super();
-		setName("Linear Weighted Combination");
-		needsParam = true; // need the parameters
-		//I can't initialize the parametersPanel in here because i need to pass the inputmatchers as parameters 
-		// but the input matchers will be set later so I will initialize the panel in the getParametersPanel() method
+		initializeVariables();
 	}
 	
 	public CombinationMatcher( CombinationParameters param_new ) {
 		super(param_new);
-		setName("Linear Weighted Combination");
+		initializeVariables();
 	}
 	
 	@Override
@@ -35,6 +32,10 @@ public class CombinationMatcher extends AbstractMatcher {
 		super.initializeVariables();
 		minInputMatchers = 2;
 		maxInputMatchers = ANY_INT;
+		needsParam = true; // need the parameters
+		
+		setName("Linear Weighted Combination");
+		setCategory(MatcherCategory.COMBINATION);
 	}
 
 	@Override
