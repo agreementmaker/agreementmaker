@@ -32,6 +32,8 @@ import edu.smu.tspell.wordnet.WordNetDatabase;
  relationship by the input matchers.*/
 public class HierarchyMatcher extends AbstractMatcher
 {
+	private static final long serialVersionUID = 4062376337066658846L;
+	
 	private List<Node> ListOfClassesSource;
 	private List<Node> ListOfClassesTarget;
 	private List<Node> sourceClassList;
@@ -51,17 +53,26 @@ public class HierarchyMatcher extends AbstractMatcher
 	public HierarchyMatcher()
 	{
 		super();
+		initializeVariables();
+	}
+	
+	@Override
+	protected void initializeVariables() {
+		super.initializeVariables();
+		
 		setName("Hierarchy Matcher");
+		setCategory(MatcherCategory.STRUCTURAL);
+		
 		/*minInputMatchers & maxInputMatcher insures that the user gives the input */
 		minInputMatchers = 1;
 		maxInputMatchers = 1;
 		
-		param = new DefaultMatcherParameters();
+		//param = new DefaultMatcherParameters();
 		
 		/* maxSourceAlign and maxTargetAlign set the cardinality of the alignments to many to many that is 
 		 one concept in source can be aligned to more than one concept in target*/
-		param.maxSourceAlign = ANY_INT;
-		param.maxTargetAlign = ANY_INT;
+		//param.maxSourceAlign = ANY_INT;
+		//param.maxTargetAlign = ANY_INT;
 		
 		
 		// Initialize the WordNet Interface (JAWS)
@@ -78,6 +89,7 @@ public class HierarchyMatcher extends AbstractMatcher
 		{
 			Utility.displayErrorPane(e.getMessage(), "Cannot open WordNet files.\nWordNet should be in the following directory:\n" + wordnetdir);
 		}
+		
 	}
 	
 	@Override
