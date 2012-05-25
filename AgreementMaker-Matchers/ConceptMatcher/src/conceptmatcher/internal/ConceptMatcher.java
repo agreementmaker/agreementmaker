@@ -21,12 +21,12 @@ import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
-
+/**
+ * This matcher is currently unmaintained.  - Cosmin.
+ *
+ */
 public class ConceptMatcher extends AbstractMatcher { 
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 8164676239475978748L;
 	
 	// JAWS WordNet interface
@@ -35,11 +35,16 @@ public class ConceptMatcher extends AbstractMatcher {
 	Hashtable<String, String> htConcepts = null;
 	
 	public ConceptMatcher() {
-		// warning, param is not available at the time of the constructor
-		
 		super();
+	}
+	
+	@Override
+	protected void initializeVariables() {
+		super.initializeVariables();
+		
 		needsParam = true;
 		setName("Concept Similarity");
+		setCategory(MatcherCategory.LEXICAL);
 	}
 	
 	@Override
