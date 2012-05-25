@@ -29,15 +29,13 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 /**
  * This class matches properties of ontologies using instance information.
  * Proceeds looking at properties and iterates as it finds class and property mappings.
+ * 
  * @author Ulas
  *
  */
 
 public class IterativeMatcher extends AbstractMatcher{
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 3487688851847604469L;
 	
 	transient OntModel modelS;
@@ -62,9 +60,16 @@ public class IterativeMatcher extends AbstractMatcher{
 	
 	public IterativeMatcher() {
 		super();
+	}
+	
+	@Override
+	protected void initializeVariables() {
+		super.initializeVariables();
+		
 		needsParam = false;
 		alignProp = true;		
 		setName("Iterative Matcher");
+		setCategory(MatcherCategory.UNCATEGORIZED);
 	}
 	
 	@Override
