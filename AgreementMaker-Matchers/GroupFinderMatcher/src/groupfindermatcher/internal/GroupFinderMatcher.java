@@ -19,7 +19,7 @@ import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrixOld;
 import am.app.ontology.Node;
 
 /**
- * @author nikiforos
+ * @author Michele Caci
  *
  */
 public class GroupFinderMatcher extends AbstractMatcher {
@@ -42,6 +42,12 @@ public class GroupFinderMatcher extends AbstractMatcher {
 	 */
 	public GroupFinderMatcher() {
 		super();
+		initializeVariables();
+	}
+	
+	@Override
+	protected void initializeVariables() {
+		super.initializeVariables();
 		
 		// requires one (and only one) alignment 
 		minInputMatchers = 1;
@@ -50,6 +56,7 @@ public class GroupFinderMatcher extends AbstractMatcher {
 		source_root_list = new ArrayList<Node>();
 		target_root_list = new ArrayList<Node>();
 		setName("Group Finder");
+		setCategory(MatcherCategory.STRUCTURAL);
 	}
 	
 	/**
