@@ -53,17 +53,15 @@ public class Main
 		
 		//BasicConfigurator.configure();
 		
-		
+		// initialize the OSGi framework.
 		AMHost host = new AMHost();
-		
 		Core.getInstance().setFramework(host);
-		
 		
 		if(args.length == 0 ){
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
 			System.setProperty("apple.awt.brushMetalLook", "true");
 			
-			Thread mainUI = new Thread() {
+			Thread mainUI = new Thread("AMStart") {
 					public void run() {
 						Core.setUI( new UI() );
 					} 
