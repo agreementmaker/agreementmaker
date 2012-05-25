@@ -57,7 +57,6 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	public AdvancedSimilarityMatcher() {
 		super();
 		initializeVariables();
-		setName("Advanced Similarity Matcher");
 	}
 
 	/**
@@ -67,7 +66,6 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	public AdvancedSimilarityMatcher(AdvancedSimilarityParameters param_new) {
 		super(param_new);
 		initializeVariables();
-		setName("Advanced Similarity Matcher");
 	}
 	
 	/**
@@ -483,6 +481,9 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		prep.add("for");
 		
 		needsParam = true;
+		
+		setName("Advanced Similarity Matcher");
+		setCategory(MatcherCategory.SYNTACTIC);
 		
 		// features supported
 		addFeature(MatcherFeature.ONTOLOGY_PROFILING);
