@@ -20,7 +20,6 @@ public class BestMatchBoosting extends AbstractMatcher {
 
 	public BestMatchBoosting() { 
 		super(); 
-		setName("Best Match Boosting");
 	}
 
 	@Override
@@ -29,6 +28,8 @@ public class BestMatchBoosting extends AbstractMatcher {
 		minInputMatchers = 1;
 		maxInputMatchers = 1;
 		needsParam = true;
+		setName("Best Match Boosting");
+		setCategory(MatcherCategory.UNCATEGORIZED);
 	}
 
 	@Override
