@@ -83,13 +83,18 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 	IterativeInstanceStructuralParameters parameters;
 	
 	public IterativeInstanceStructuralMatcher(){
-		super();
+		super();		
+	}
+	
+	@Override
+	protected void initializeVariables() {
+		super.initializeVariables();
 		minInputMatchers = 0;
 		maxInputMatchers = 1;
 		
 		needsParam = true;
 		setName("Iterative Instance and Structural Matcher");
-		//progressDisplay = new MatchingProgressDisplay();		
+		setCategory(MatcherCategory.HYBRID);
 	}
 	
 	@Override
