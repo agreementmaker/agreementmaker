@@ -1,6 +1,5 @@
 package am.app.osgi;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,8 +10,7 @@ import org.apache.felix.framework.util.FelixConstants;
 import org.apache.felix.main.AutoProcessor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
-
-import am.app.Core;
+import org.osgi.framework.BundleContext;
 
 public class AMHost {
 	private AMActivator m_activator = null;
@@ -66,7 +64,7 @@ public class AMHost {
                 "am.app.mappingEngine.qualityEvaluation"); 
         
 
-        File bundles[] = new File("plugins/").listFiles();
+        //File bundles[] = new File("plugins/").listFiles();
 
         configMap.put(AutoProcessor.AUTO_DEPLOY_ACTION_PROPERY, AutoProcessor.AUTO_DEPLOY_INSTALL_VALUE + "," + AutoProcessor.AUTO_DEPLOY_START_VALUE);
         configMap.put(AutoProcessor.AUTO_DEPLOY_DIR_PROPERY, "plugins/");
@@ -78,13 +76,13 @@ public class AMHost {
             // Now start Felix instance.
             m_felix.init();
             
-            Core.getInstance().setContext(m_felix.getBundleContext());
-            //create the registry
-            registry = new OSGiRegistry(m_felix.getBundleContext());
-            
             AutoProcessor.process(configMap, m_felix.getBundleContext());
             
             m_felix.start();
+            
+            //Core.getInstance().setContext(m_felix.getBundleContext());
+            //create the registry
+            registry = new OSGiRegistry(m_felix.getBundleContext());
         }
         catch (Exception ex)
         {
@@ -110,5 +108,8 @@ public class AMHost {
 		} catch (Exception e) {e.printStackTrace();}
         
     }
-    public OSGiRegistry getRegistry(){return registry;}
+    
+    public OSGiRegistry getRegistry() { return registry; }
+    
+    public BundleContext getContext() { return m_felix.getBundleContext(); }
 }
