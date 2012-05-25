@@ -9,6 +9,7 @@ package am.app.mappingEngine;
  * @author Cosmin Stroe
  * @date Monday, December 13th, 2010.
  */
+@Deprecated
 public enum MatcherCategory {
 
 	SYNTACTIC,		// Syntactic Matchers.
