@@ -1,6 +1,5 @@
 package am.app.mappingEngine;
 
-import javax.swing.SwingWorker;
 
 /**
  * A matching task contains:
@@ -15,7 +14,7 @@ import javax.swing.SwingWorker;
  *
  * TODO: Make the property change support work. - Cosmin
  */
-public class MatchingTask extends SwingWorker<Void,Void> {
+public class MatchingTask {
 	public AbstractMatcher 				matchingAlgorithm;
 	public DefaultMatcherParameters 	matcherParameters;
 	public AbstractSelectionAlgorithm 	selectionAlgorithm;
@@ -60,12 +59,5 @@ public class MatchingTask extends SwingWorker<Void,Void> {
 		catch( Exception e ) {
 			e.printStackTrace();
 		}
-	}
-	
-	@Override
-	protected Void doInBackground() throws Exception {
-		match();
-		select();
-		return null;
 	}
 }
