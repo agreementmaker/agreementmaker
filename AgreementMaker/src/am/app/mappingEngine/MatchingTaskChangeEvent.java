@@ -71,7 +71,7 @@ public class MatchingTaskChangeEvent extends EventObject {
 	}
 	
 	public MatchingTaskChangeEvent( EventType t ) {
-		super(null);
+		super(new MatchingTask(null, null, null, null));  // source cannot be null
 		typeOfEvent = t;
 		matcherID = Core.ID_NONE;
 	}
