@@ -98,8 +98,6 @@ public class Core {
 	
 	private static Core core  = new Core(); // Singleton pattern: unique instance
 
-	//osgi context
-	private BundleContext context;
 	private AMHost osgi;
 	
 	
@@ -115,7 +113,7 @@ public class Core {
 	 */
 	private Core() {
 		//System.setProperty("log4j.debug","strue" );  // Use this to see what log4j gets configured to.
-				
+	
 		loadedOntologies = new ArrayList<Ontology>();  // initialize the arraylist of ontologies.
 		ontologyListeners    = new ArrayList<OntologyChangeListener>();  // new list of listeners
 		matcherListeners	= new ArrayList<MatcherChangeListener>(); // another list of listeners
@@ -510,8 +508,12 @@ public class Core {
 	 * @param p
 	 */
 	public void setOntologyProfiler( OntologyProfiler p ) { currentProfiler = p; }
-	public BundleContext getContext() {return context;}
-	public void setContext(BundleContext context) {this.context = context;}
+	
+	@Deprecated
+	/* Use getFramework().getContext() instead */
+	public BundleContext getContext() {
+		return getFramework().getContext();
+	}
 	
 	
 	public void setFramework(AMHost host) {
