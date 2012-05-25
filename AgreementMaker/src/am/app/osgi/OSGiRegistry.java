@@ -1,6 +1,7 @@
 package am.app.osgi;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.osgi.framework.BundleContext;
@@ -19,9 +20,9 @@ public class OSGiRegistry {
 
 	public OSGiRegistry(BundleContext bundleContext){
 		//save the context
-		context=bundleContext;
+		context = bundleContext;
 		//create the arraylist for the matchers
-		matcherList=new ArrayList<AbstractMatcher>();
+		matcherList = new ArrayList<AbstractMatcher>();
 		//start the service tracker
 		startMatcherTracker();
 	}
@@ -56,7 +57,7 @@ public class OSGiRegistry {
 		return matcherNames;
 	}
 	
-	public AbstractMatcher getMatcherByName(String matcherName)throws MatcherNotFoundException{
+	public AbstractMatcher getMatcherByName(String matcherName) throws MatcherNotFoundException {
 		for(AbstractMatcher m : matcherList){
 			if(m.getName().equals(matcherName)){
 				try {
@@ -75,5 +76,10 @@ public class OSGiRegistry {
 		throw new MatcherNotFoundException(matcherName+" is not in the system.");
 	}
 	
+	public List<AbstractMatcher> getMatchers() {
+		List<AbstractMatcher> list = new LinkedList<AbstractMatcher>();
+		list.addAll(matcherList);
+		return list;
+	}
 
 }
