@@ -1,7 +1,7 @@
 /**
  * 
  */
-package am.userInterface;
+package am.userInterface.matchingtask;
 
 import java.awt.Component;
 import java.awt.Font;
@@ -18,7 +18,9 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 import am.app.Core;
-import am.app.mappingEngine.MatcherCategory;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.MatcherCategory;
+import am.app.mappingEngine.AbstractMatcher.PropertyKey;
 import am.utility.CanEnable;
 
 /**
@@ -55,30 +57,25 @@ public class MatcherComboBox extends JComboBox {
 		boolean firstItemFound = false;
 		int firstItemIndex = 0;
 		
-		/*for( MatcherCategory currentCategory : MatcherCategory.values() ) {
+		for( MatcherCategory currentCategory : MatcherCategory.values() ) {
 			
 			boolean categoryComboItemAdded = false;
 			ComboItem categoryComboItem = new ComboItem( getCategoryString(currentCategory, longestCategory, fm), false);
-			
-			for( MatchersRegistry currentRegistryEntry : MatchersRegistry.values() ) {
-				if( currentRegistryEntry.isShown() && currentRegistryEntry.getCategory() == currentCategory ) {
+
+			List<AbstractMatcher> matchers = Core.getInstance().getFramework().getRegistry().getMatchers();
+			for( AbstractMatcher matcher : matchers ) {
+				if( matcher.isShown() && matcher.getProperty(PropertyKey.CATEGORY) == currentCategory.name()  ) {
 					if( !categoryComboItemAdded ) {
-						// only add the category string is the category isn't empty
+						// only add the category string if the category isn't empty
 						addItem(categoryComboItem);
 						categoryComboItemAdded = true;
 					}
 					if( !firstItemFound ) { firstItemIndex = getItemCount(); firstItemFound = true; }
-					addItem(new ComboItem(currentRegistryEntry.getMatcherName()));
+					addItem(new ComboItem(matcher.getProperty(PropertyKey.NAME)));
 				}
 			}
 			
-		}*/
-		
-		//load the matcher names from the osgi register
-		List<String> matcherNames=Core.getInstance().getFramework().getRegistry().getMatcherNames();
-		for(String mn:matcherNames)
-			addItem(new ComboItem(mn));
-		
+		}
 		
 		return firstItemIndex;
 	}

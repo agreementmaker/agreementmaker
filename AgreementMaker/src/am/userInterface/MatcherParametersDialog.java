@@ -16,6 +16,7 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -30,7 +31,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
@@ -39,12 +39,15 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
-import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.ontology.Ontology;
+import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.OntologyProfilerPanel;
 import am.app.ontology.profiling.ProfilerRegistry;
+import am.app.osgi.AMHost;
 import am.app.osgi.MatcherNotFoundException;
+import am.userInterface.matchingtask.MatcherComboBox;
 import am.userInterface.table.MatchersTablePanel;
 
 
@@ -97,14 +100,14 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		ComboBoxModel model = matcherCombo.getModel();
 		for (int i = 0; i < model.getSize(); i++) {
 			String curr = model.getElementAt(i).toString();
-			if(curr.equals(a.getRegistryEntry().getMatcherName()))
+			if(curr.equals(a.getName()))
 				matcherCombo.setSelectedIndex(i);
 		}
 		
 		matcherCombo.setSelectedItem(a.getName());		
 		matcherCombo.setEnabled(false);  // user cannot change the matcher in this mode
 		
-		String name = a.getRegistryEntry().getMatcherName();
+		String name = a.getName();
 		setTitle(name+": additional parameters");
 		
 		//This is the specific panel defined by the developer to set additional parameters to the specific matcher implemented
@@ -124,6 +127,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	}
 	
 	private void addInputMatchers(AbstractMatcher currentMatcher) {
+		if( currentMatcher == null ) return;
 		//Set input matchers into the abstractmatcher VERY IMPORTANT to set them before invoking the parameter panel, in fact the parameter panel may need to work on inputMatchers also.
 		int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
 		if( rowsIndex.length > currentMatcher.getMaxInputMatchers() ) {
@@ -149,16 +153,21 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			e.printStackTrace();
 			matcher = null;
 		}
+		catch( NullPointerException e ) {
+			e.printStackTrace();
+			matcher = null;
+		}
 		
 		
 		addInputMatchers(matcher);
-		
-		String name = matcher.getName();
-		setTitle(name+": additional parameters");
-		//This is the specific panel defined by the developer to set additional parameters to the specific matcher implemented
-		if(matcher.needsParam() && matcher.getParametersPanel() != null){  
-			parametersPanel = matcher.getParametersPanel(); 
-			settingsScroll = new JScrollPane(parametersPanel);
+		if( matcher != null ) {
+			String name = matcher.getName();
+			setTitle(name+": additional parameters");
+			//This is the specific panel defined by the developer to set additional parameters to the specific matcher implemented
+			if(matcher.needsParam() && matcher.getParametersPanel() != null){  
+				parametersPanel = matcher.getParametersPanel(); 
+				settingsScroll = new JScrollPane(parametersPanel);
+			}
 		}
 		else { 
 			parametersPanel = null; 
@@ -483,7 +492,9 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		if( getFont() != null && getFontMetrics(getFont()) != null ) {
 			FontMetrics fm = getFontMetrics(getFont());
 			// +100 to allow for icon and "x-out" button
-			int width = fm.stringWidth(getTitle()) + 100;
+			String title = getTitle();
+			if( title == null ) title = "title";
+			int width = fm.stringWidth(title) + 100;
 			width = Math.max(width, getPreferredSize().width);
 			if( width > maxSize.width ) width = maxSize.width;
 			if( getPreferredSize().height <= maxSize.height ) setSize(new Dimension(width, getPreferredSize().height));
@@ -617,6 +628,17 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	public static void main(String[] args) {
 		//AbstractMatcher matcher = MatcherFactory.getMatcherInstance(MatchersRegistry.IISM, 1);
 		//new MatcherParametersDialog(matcher);
+		
+		// initialize the OSGi framework.
+		AMHost host = new AMHost();
+		Core.getInstance().setFramework(host);
+		
+		Core.setUI(new UI());
+		
+		Ontology sourceOnt = OntoTreeBuilder.loadOWLOntology("ontologies/kbase.owl");
+		
+		Core.getInstance().setSourceOntology(sourceOnt);
+		Core.getInstance().setTargetOntology(sourceOnt);
 		
 		new MatcherParametersDialog();
 
