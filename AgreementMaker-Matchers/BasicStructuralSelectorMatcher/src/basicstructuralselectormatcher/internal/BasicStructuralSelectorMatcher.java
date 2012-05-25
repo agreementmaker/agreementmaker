@@ -5,16 +5,19 @@ import java.util.Iterator;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 
 /**
- * The Basic Structural Selector Matcher (BSS) looks at the structure of the source and target and the alignments given in input to see
- * which mappings respect the structure of both ontologies and returns a new alignment that increases the similarity value
- * to those mappings that respect the structure 
+ * The Basic Structural Selector Matcher (BSS) looks at the structure of the source and target 
+ * and the alignments given in input to see which mappings respect the structure of both ontologies 
+ * and returns a new alignment that increases the similarity value to those mappings that respect 
+ * the structure.
+ * 
+ * 
  * @author Michele Caci
  *
  */
@@ -39,11 +42,7 @@ public class BasicStructuralSelectorMatcher extends AbstractMatcher {
 	 */
 	public BasicStructuralSelectorMatcher() {
 		super();
-		
-		// requires one (and only one) alignment 
-		minInputMatchers = 1;
-		maxInputMatchers = 1;
-		setName("Basic Structure Selector Matcher");
+		initializeVariables();
 	}
 
 	/**
@@ -52,11 +51,19 @@ public class BasicStructuralSelectorMatcher extends AbstractMatcher {
 	 */
 	public BasicStructuralSelectorMatcher(DefaultMatcherParameters params_new) {
 		super(params_new);
+		initializeVariables();
+	}
+	
+	@Override
+	protected void initializeVariables() {
+		super.initializeVariables();
 		
 		// requires one (and only one) alignment 
 		minInputMatchers = 1;
 		maxInputMatchers = 1;
+		
 		setName("Basic Structure Selector Matcher");
+		setCategory(MatcherCategory.STRUCTURAL);
 	}
 	
 	/**
