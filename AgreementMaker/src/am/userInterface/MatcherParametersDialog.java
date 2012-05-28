@@ -158,7 +158,6 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			matcher = null;
 		}
 		
-		
 		addInputMatchers(matcher);
 		if( matcher != null ) {
 			String name = matcher.getName();
