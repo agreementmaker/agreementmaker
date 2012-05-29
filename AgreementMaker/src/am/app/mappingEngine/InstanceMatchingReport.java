@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Report {
+public class InstanceMatchingReport {
 	private List<AbstractMatcher> matchers;
 	private Map<String,List<Double>> similarities;
 	private Set<String> solutions;
 	
-	public Report(){
+	public InstanceMatchingReport(){
 		similarities = new LinkedHashMap<String, List<Double>>();
 	}
 	

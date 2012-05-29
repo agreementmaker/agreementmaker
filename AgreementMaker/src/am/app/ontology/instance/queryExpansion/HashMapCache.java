@@ -11,6 +11,12 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+/**
+ *
+ * 
+ * @author Federico Caimi
+ *
+ */
 public class HashMapCache<K, V> implements Cache<K, V>{
 	private HashMap<K, V> cache;
 	private Logger log = Logger.getLogger(HashMapCache.class); 

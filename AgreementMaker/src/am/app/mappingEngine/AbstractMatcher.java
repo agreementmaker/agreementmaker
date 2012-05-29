@@ -134,7 +134,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	/** True if the schema mappings have to be used during instance matching */
 	protected boolean useInstanceSchemaMappings = true;
 	
-	protected Report instanceMatchingReport;
+	protected InstanceMatchingReport instanceMatchingReport;
 	
 	public boolean requiresTwoPasses;
 	
@@ -2077,7 +2077,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			this.useInstanceSchemaMappings = useInstanceSchemaMappings;
 	  }
 	  
-	  public Report getInstanceMatchingReport() {
+	  public InstanceMatchingReport getInstanceMatchingReport() {
 		return instanceMatchingReport;
 	}
 	  

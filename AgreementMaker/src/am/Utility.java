@@ -28,18 +28,21 @@ import java.util.Locale;
 public class Utility {
 	public final static String UNEXPECTED_ERROR = "Unexpected System Error.\nTry to reset the system and repeat the operation.\nContact developers if the error persists.";
 	public final static String OUT_OF_MEMORY = "Operation aborted\n\n" +
-											   "The system has run out of memory.\n" +
-											   "Try to run the system with more heap space\n" +
-											   "(e.g., java -Xms64m -Xmx2048m -jar AgreementMaker.jar).";
-	
+			"The system has run out of memory.\n" +
+			"Try to run the system with more heap space\n" +
+			"(e.g., java -Xms64m -Xmx2048m -jar AgreementMaker.jar).";
+
 	//USED by the tuning alg.
 	//we can't generate this array with a for because the 0.35 + 0.05 = 0.39 in java because of double representations, exclude <10 and >90
 	public final static double[] STEPFIVE = {0.0, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.0};
 	public final static String[] STEPFIVE_INT = {"5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90" };
-	
+
+	private static DecimalFormat df5;
+
+
 	//**************************************************USER INTERFACE UTILITIES***********************************************************
-	
-	
+
+
 	//methods to convert a double into a percent string with only 1 decimanl value
 	public static String[] getPercentStringList() {
 		int min = 0;
@@ -53,13 +56,18 @@ public class Utility {
 		}
 		return s;
 	}
-	
-	
+
+
 	public static double getDoubleWithTwoDecimalDigits(double value) {
-		  DecimalFormat df = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
-		  return Double.valueOf(df.format(value));
-		 }
-	
+		DecimalFormat df = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
+		return Double.valueOf(df.format(value));
+	}
+
+	public static double getDoubleWithFiveDecimalDigits(double value) {
+		if(df5 == null) df5 = new DecimalFormat("0.00000", new DecimalFormatSymbols(Locale.US));
+		return Double.valueOf(df5.format(value));
+	}
+
 	public static String[] getPercentDecimalsList() {
 		int min = 0;
 		int max = 100;
@@ -73,33 +81,33 @@ public class Utility {
 		}
 		return s;
 	}
-	
+
 	// return a string array
 	public static String[] getPercentDecimal( double start, double eachStep, int numSteps ) {
-		
+
 		String[] s = new String[numSteps];
 		for(int i = 0; i < s.length; i++) {
 			s[i] = Double.toString(start + i*eachStep);
 		}
 		return s;
 	}
-	
+
 	// return a double array with regular entries
 	public static double[] getDoubleArray( double start, double eachStep, int numSteps ) {
-		
+
 		double[] s = new double[numSteps];
 		for(int i = 0; i < s.length; i++) {
 			s[i] = start + i*eachStep;
 		}
 		return s;
 	}
-	
+
 	public static double getDoubleFromPercent(String s) {
 		String s2 = s.substring(0,s.length()-1);//remove last char %
 		double d = Double.parseDouble(s2);
 		return d/100;
 	}
-	
+
 	/**
 	 * Return a percent value with 0 decimal value and the % at the end. used in display alignments function in the canvas
 	 * Used also to manage the threshold value
@@ -110,7 +118,7 @@ public class Utility {
 		int i = (int)(d*100);
 		return i+"%";
 	}
-	
+
 	/**
 	 * Return a percent value with 1 decimal value and the % at the end: 98.7% 
 	 * used everywhere for example to show quality and reference evaluation values in the table
@@ -129,7 +137,7 @@ public class Utility {
 		return shortString;
 
 	}
-	
+
 	public static String[] getNumRelList() {
 		int min = 1;
 		int max = 100;
@@ -142,7 +150,7 @@ public class Utility {
 		list[list.length-1] = any;
 		return list;
 	}
-	
+
 	public static int getIntFromNumRelString(String n) {
 		int i;
 		try {
@@ -154,7 +162,7 @@ public class Utility {
 		}
 		return i;
 	}
-	
+
 	public static String getStringFromNumRelInt(int n) {
 		String s;
 		if(n ==AbstractMatcher.ANY_INT)
@@ -162,15 +170,15 @@ public class Utility {
 		else s = n+"";
 		return s;
 	}
-	
+
 	public static String getYesNo(boolean b) {
 		if(b)
 			return "yes";
 		else return "no";
 	}
-	
-	
-	
+
+
+
 	/**
 	 * This function displays the JOptionPane with title and descritpion
 	 *
@@ -182,7 +190,7 @@ public class Utility {
 			title = "Message Dialog";
 		JOptionPane.showMessageDialog(null, desc, title, JOptionPane.PLAIN_MESSAGE);
 	}
-	
+
 	public static void displayTextAreaPane(String desc, String title) {
 		if(title == null)
 			title = "Message Dialog";
@@ -194,7 +202,7 @@ public class Utility {
 				columns = split[i].length();
 		}
 		columns = Math.min(80, columns/2 +5); //columns/2 because each character is longer then a column so at the end it fits doing this
-		
+
 		JTextArea ta = new JTextArea(desc,rows,columns);
 		ta.setLineWrap(true);
 		ta.setWrapStyleWord(true);
@@ -202,7 +210,7 @@ public class Utility {
 		JScrollPane sp = new JScrollPane(ta);
 		JOptionPane.showMessageDialog(null, sp, title, JOptionPane.PLAIN_MESSAGE);
 	}
-	
+
 	public static void displayTextAreaWithDim(String desc, String title, int rows, int columns ) {
 		if(title == null)
 			title = "Message Dialog";	
@@ -213,7 +221,7 @@ public class Utility {
 		JScrollPane sp = new JScrollPane(ta);
 		JOptionPane.showMessageDialog(null, sp, title, JOptionPane.PLAIN_MESSAGE);
 	}
-	
+
 	public static void displayErrorPane(String desc, String title) {
 		if(title == null)
 			title = "Error";
@@ -224,23 +232,23 @@ public class Utility {
 			log.error(desc);
 		}
 	}
-	
-	
+
+
 	public static boolean displayConfirmPane(String desc, String title) {
 		if(title == null)
 			title = "Confirmation required";
 		int res =  JOptionPane.showConfirmDialog(Core.getUI().getUIFrame(),
-			    desc,
-			    title,
-			    JOptionPane.YES_NO_OPTION);	
+				desc,
+				title,
+				JOptionPane.YES_NO_OPTION);	
 		if(res == JOptionPane.YES_OPTION)
 			return true;
 		else return false;
-		}
-	
-	
+	}
+
+
 	//********************************************MATH UTILITIES**************************************************************
-	
+
 	//return f(x) = 1 / ( 1 + exp( -5 (x - k) ) )
 	//sigmoid function used by rimom in the weighted average of similarities
 	public static double getSigmoidFunction(double d) {
@@ -251,15 +259,16 @@ public class Utility {
 		double denominator = 1 + exp;
 		return numerator / denominator;
 	}
-	
+
 	//return f(x) = 1 / ( 1 + exp( -5 (x - k) ) )
 	//sigmoid function used by rimom in the weighted average of similarities
 	public static double getModifiedSigmoidFunction(double d) {
+		//if(d <= 0) return 0;
 		double sigmoid = getSigmoidFunction(Math.abs(d));
 		return sigmoid;
 		//return (sigmoid - 0.5) * 2;
 	}	
-	
+
 	public static double getSumOfArray(double[] array) {
 		double sum = 0;
 		for(int i = 0; i < array.length; i++) {
@@ -267,7 +276,7 @@ public class Utility {
 		}
 		return sum;
 	}
-	
+
 	/**
 	 * @param array An array of doubles.
 	 * @return Average = sum of all array entries / length.
@@ -277,7 +286,7 @@ public class Utility {
 		sum = sum / (double) array.length;
 		return sum;
 	}
-	
+
 	/**
 	 * 
 	 * @param array
@@ -295,7 +304,7 @@ public class Utility {
 		sum = sum / tot;
 		return sum;
 	}
-	
+
 	public static IntDoublePair getMaxOfRow(double[][] matrix, int row) {
 		IntDoublePair max = IntDoublePair.createFakePair();
 		for(int i = 0; i < matrix[row].length; i++) {
@@ -306,7 +315,7 @@ public class Utility {
 		}
 		return max;
 	}
-	
+
 	//order the array of IntDoublePair so that the minimum is at the beginning
 	//the only element in the wrong position is the key element that has to be moved before or later or staeid there
 	public static void adjustOrderPairArray(IntDoublePair[] intDoublePairs, int k) {
@@ -320,7 +329,7 @@ public class Utility {
 			intDoublePairs[i] = nextPair;
 			intDoublePairs[i+1] = currentPair;
 		}
-		
+
 		//if is lower the the prev val i need to move the element to the left
 		for(int i = k; i > 0 && intDoublePairs[i].value < intDoublePairs[i-1].value; i--) {
 			currentPair = intDoublePairs[i];
@@ -328,9 +337,9 @@ public class Utility {
 			intDoublePairs[i] = nextPair;
 			intDoublePairs[i-1] = currentPair;
 		}
-		
+
 	}
-	
+
 	public static double getMaxOfMatrix(double[][] matrix) {
 		double max = Double.MIN_VALUE;
 		for(int i = 0; i < matrix.length; i++) {
@@ -342,7 +351,7 @@ public class Utility {
 		}
 		return max;
 	}
-	
+
 	public static double getSumOfMatrix(double[][] matrix) {
 		double sum = 0;
 		for(int i = 0; i < matrix.length; i++) {
@@ -350,7 +359,7 @@ public class Utility {
 		}
 		return sum;
 	}
-	
+
 	public static int getSumOfIntMatrix(int[][] matrix) {
 		int sum = 0;
 		for(int i = 0; i < matrix.length; i++) {
@@ -360,9 +369,9 @@ public class Utility {
 		}
 		return sum;
 	}
-	
-	
-	
+
+
+
 	//these two methods have to be used only on square matrix
 	//they return the sum of values in the first half of the array
 	public static double getSumOfHalfMatrix(double[][] matrix) {
@@ -374,7 +383,7 @@ public class Utility {
 		}
 		return sum;
 	}
-	
+
 	public static int getSumOfHalfIntMatrix(int[][] matrix) {
 		int sum = 0;
 		for(int i = 0; i < matrix.length; i++) {
@@ -384,7 +393,7 @@ public class Utility {
 		}
 		return sum;
 	}
-	
+
 	//an array avg of the two, they must have same size
 	public static double[] avgArrays(double[] array1, double[] array2) {
 		double[] result = new double[array1.length];
@@ -393,19 +402,19 @@ public class Utility {
 		}
 		return result;
 	}
-	
+
 	//divide the array with the divisor
 	public static double[] avgArrayAndDouble(double[] array,
 			double doublevalue) {
-		
+
 		double[] result = new double[array.length];
 		for(int i = 0; i < array.length; i++) {
 			result[i] =  (array[i] + doublevalue ) / 2;
 		}
-		
+
 		return result;
 	}
-	
+
 	//return a new matrix with only values higher than the threshold
 	public static double[][] cutMatrix(double[][] similarityMatrix,
 			double threshold) {
@@ -420,30 +429,30 @@ public class Utility {
 		}
 		return result;
 	}
-	
+
 	/* from: http://www.rgagnon.com/javadetails/java-0016.html */
 	public static double roundDouble(double d, int decimalPlace){
-	    // see the Javadoc about why we use a String in the constructor
-	    // http://java.sun.com/j2se/1.5.0/docs/api/java/math/BigDecimal.html#BigDecimal(double)
-	    BigDecimal bd = new BigDecimal(Double.toString(d));
-	    bd = bd.setScale(decimalPlace,BigDecimal.ROUND_HALF_UP);
-	    return bd.doubleValue();
+		// see the Javadoc about why we use a String in the constructor
+		// http://java.sun.com/j2se/1.5.0/docs/api/java/math/BigDecimal.html#BigDecimal(double)
+		BigDecimal bd = new BigDecimal(Double.toString(d));
+		bd = bd.setScale(decimalPlace,BigDecimal.ROUND_HALF_UP);
+		return bd.doubleValue();
 	}
 
 	/* from: http://www.rgagnon.com/javadetails/java-0016.html */
 	public static float roundFloat(float d, int decimalPlace){
-	    // see the Javadoc about why we use a String in the constructor
-	    // http://java.sun.com/j2se/1.5.0/docs/api/java/math/BigDecimal.html#BigDecimal(double)
-	    BigDecimal bd = new BigDecimal(Float.toString(d));
-	    bd = bd.setScale(decimalPlace,BigDecimal.ROUND_HALF_UP);
-	    return bd.floatValue();
+		// see the Javadoc about why we use a String in the constructor
+		// http://java.sun.com/j2se/1.5.0/docs/api/java/math/BigDecimal.html#BigDecimal(double)
+		BigDecimal bd = new BigDecimal(Float.toString(d));
+		bd = bd.setScale(decimalPlace,BigDecimal.ROUND_HALF_UP);
+		return bd.floatValue();
 	}
-	
+
 	//*******************************************STRING UTILITIES********************************************************
 	public static boolean isIrrelevant(String s) {
 		return s == null || s.equals("") || s.equals(" ");
 	}
-	
+
 	public static boolean startsWithSpace(String s) {
 		if(s!=null && s.length() >0) {
 			char first = s.charAt(0);
@@ -452,7 +461,7 @@ public class Utility {
 		}
 		return false;
 	}
-	
+
 	public static boolean endsWithSpace(String s) {
 		if(s!=null && s.length() >0) {
 			char last = s.charAt(s.length()-1);
@@ -461,7 +470,7 @@ public class Utility {
 		}
 		return false;
 	}
-	
+
 	//I need to add the string only if it's relevant
 	//and i need to put a space only if there is not already one
 	public static String smartConcat(String first, String second) {
@@ -478,10 +487,10 @@ public class Utility {
 	}
 	//TIME OPERATIONS**********************************************************************
 	public static String getFormattedTime(long totMS){
-		
+
 		//return the time in hh:mm:ss:msmsms starting from the total time in ms
-		
-        //msmsms
+
+		//msmsms
 		long msmsms = totMS % 1000;
 		//ss
 		long totS = totMS/1000;
@@ -492,12 +501,12 @@ public class Utility {
 		//hh
 		long totH = totM/60;
 		long hh = totH % 60;
-		
+
 
 		return hh+"h "+mm+"m "+ss+"s "+msmsms+"ms";
 	}
-	
-	
+
+
 	/**
 	 * createIntListToN: creates an ArrayList of n integers from 0 to n-1
 	 * useful to create a list for considering all the values of the rows or columns of the alignment matrix
@@ -513,55 +522,55 @@ public class Utility {
 		}
 		return list;		
 	}
-	
+
 	public static String treatString(String label){
-		 if(label==null) return null;
-		 //Remove anything from a string that isn't a Character or a space
-	     //e.g. numbers, punctuation etc.
-		 String result = "";
-		 for(int i=0; i<label.length(); i++){
-			 if( Character.isLetter(label.charAt(i)) || Character.isWhitespace( label.charAt(i) ) ){
-				 result += label.charAt(i);
-			 }
-		 }
-		 label = result;
-		    
-		 String lower = label.toLowerCase();
-		 
-		 //Remove non-content words
-		 if(lower.startsWith("has"))
-			 label = label.substring(3);
-		  else if(lower.startsWith("is"))
-			 label = label.substring(2);
-		 else if(lower.startsWith("are"))
-			 label = label.substring(3);
-		 else if(lower.startsWith("be"))
-			 label = label.substring(2);
-		 else if(lower.endsWith(" by"))
-			 label = label.substring(0, label.length()-3);
-		 else if(lower.endsWith(" in"))
-			 label = label.substring(0, label.length()-3);
-		 else if(lower.endsWith(" at"))
-			 label = label.substring(0, label.length()-3);
-		 else if(lower.endsWith(" to"))
-			 label = label.substring(0, label.length()-3);
-		 else if(lower.endsWith(" on"))
-			 label = label.substring(0, label.length()-3);
-		 else if(lower.endsWith(" for"))
-			 label = label.substring(0, label.length()-4);
-		 
-		 int len = label.length();
-		 //Separate words with spaces
-		 for(int i=0;i<len-1; i++){
-			 if( Character.isLowerCase(label.charAt(i)) &&  Character.isUpperCase(label.charAt(i+1)) ){
-		    
-				 label = label.substring(0,i+1) + " " + label.substring(i+1); len++;}
-		 }
-		 label.toLowerCase();
-		 
-		 return label.trim();
-	 }
-	
+		if(label==null) return null;
+		//Remove anything from a string that isn't a Character or a space
+		//e.g. numbers, punctuation etc.
+		String result = "";
+		for(int i=0; i<label.length(); i++){
+			if( Character.isLetter(label.charAt(i)) || Character.isWhitespace( label.charAt(i) ) ){
+				result += label.charAt(i);
+			}
+		}
+		label = result;
+
+		String lower = label.toLowerCase();
+
+		//Remove non-content words
+		if(lower.startsWith("has"))
+			label = label.substring(3);
+		else if(lower.startsWith("is"))
+			label = label.substring(2);
+		else if(lower.startsWith("are"))
+			label = label.substring(3);
+		else if(lower.startsWith("be"))
+			label = label.substring(2);
+		else if(lower.endsWith(" by"))
+			label = label.substring(0, label.length()-3);
+		else if(lower.endsWith(" in"))
+			label = label.substring(0, label.length()-3);
+		else if(lower.endsWith(" at"))
+			label = label.substring(0, label.length()-3);
+		else if(lower.endsWith(" to"))
+			label = label.substring(0, label.length()-3);
+		else if(lower.endsWith(" on"))
+			label = label.substring(0, label.length()-3);
+		else if(lower.endsWith(" for"))
+			label = label.substring(0, label.length()-4);
+
+		int len = label.length();
+		//Separate words with spaces
+		for(int i=0;i<len-1; i++){
+			if( Character.isLowerCase(label.charAt(i)) &&  Character.isUpperCase(label.charAt(i+1)) ){
+
+				label = label.substring(0,i+1) + " " + label.substring(i+1); len++;}
+		}
+		label.toLowerCase();
+
+		return label.trim();
+	}
+
 	/**
 	 * Reads a File into a String.
 	 * @param file
@@ -569,15 +578,15 @@ public class Utility {
 	 * @throws java.io.IOException
 	 */
 	public static String readFileAsString(File file) throws java.io.IOException {
-        StringBuffer fileData = new StringBuffer(1000);
-        BufferedReader reader = new BufferedReader(
-                new FileReader(file));
-        char[] buf = new char[1024];
-        int numRead=0;
-        while((numRead=reader.read(buf)) != -1){
-            fileData.append(buf, 0, numRead);
-        }
-        reader.close();
-        return fileData.toString();
-    }
+		StringBuffer fileData = new StringBuffer(1000);
+		BufferedReader reader = new BufferedReader(
+				new FileReader(file));
+		char[] buf = new char[1024];
+		int numRead=0;
+		while((numRead=reader.read(buf)) != -1){
+			fileData.append(buf, 0, numRead);
+		}
+		reader.close();
+		return fileData.toString();
+	}
 }

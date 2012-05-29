@@ -22,7 +22,7 @@ import org.xml.sax.InputSource;
 import am.utility.HTTPUtility;
 
 public class AbbreviationsService implements QueryExpansionService{
-	private HashMapCache<String, String> cache;
+	private Cache<String, String> cache;
 
 	public String serviceURL = "http://www.abbreviations.com/services/v2/abbr.php";
 	// tokenid=tk1984&sortby=p&searchtype=e&term=asap
