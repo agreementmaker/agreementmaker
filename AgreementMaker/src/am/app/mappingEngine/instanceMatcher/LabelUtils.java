@@ -19,6 +19,7 @@ public class LabelUtils {
 	public static String processLabel(String label) {
 		label = label.toLowerCase();
 		
+		//remove stuff between parentheses
 		if(label.contains("(")){
 			int beg = label.indexOf('(');
 			int end = label.indexOf(')');
