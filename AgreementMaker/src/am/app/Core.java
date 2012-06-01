@@ -2,6 +2,7 @@ package am.app;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.osgi.framework.BundleContext;
@@ -10,11 +11,11 @@ import am.AMException;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.LexiconStore;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.MatchingTaskChangeEvent.EventType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -148,6 +149,7 @@ public class Core {
 	 * This function will return the first Matcher instance of type "matcher" in the AM (ordered by its index).
 	 * @return Returns null if a matcher of the specified type does not exist in the system.
 	 */
+	@Deprecated
 	public AbstractMatcher getMatcherInstance( MatchersRegistry matcher ) {
 	
 		for( int i = 0; i < matcherInstances.size(); i++ ) {
@@ -169,10 +171,57 @@ public class Core {
 		return null;	
 	}
 	
-	public List<AbstractMatcher> getMatcherInstances() { return matcherInstances; }
+	/**
+	 * <p>Returns a list of all the matchers currently registered
+	 * in the system. </p>
+	 * 
+	 * <p>Currently this is implemented to work with the OSGi registry,
+	 * iterate through all the registered matching algorithms, and
+	 * return them as a list. </p>
+	 * 
+	 * @return An empty list if no matchers are registered in the system.
+	 * 
+	 * @see {@link #getFramework()}, {@link AMHost#getRegistry()}
+	 */
+	public List<AbstractMatcher> getMatchingAlgorithms() {
+		List<AbstractMatcher> matchers = null;
+		if( getFramework() != null 
+				&& getFramework().getRegistry() != null ) {
+			matchers = getFramework().getRegistry().getMatchers();
+		}
+		else {
+			matchers = new LinkedList<AbstractMatcher>();
+		}
+		
+		return matchers;
+	}
+	
+	/**
+	 * Returns a matching algorithm given its name.
+	 * 
+	 * @param name The name of the matching algorithm.
+	 * @return The first algorithm whose name is exactly the same as name. null if there is no match.
+	 * 
+	 * @see {@link #getMatchingAlgorithms()}
+	 */
+	public AbstractMatcher getMatchingAlgorithm(String name) {
+		List<AbstractMatcher> matchers = getMatchingAlgorithms();
+		
+		for( AbstractMatcher matcher : matchers ) {
+			if( matcher.getName().equals(name) ) return matcher;
+		}
+		
+		return null;
+	}
+	
+	/** Use {@link #getMatchingAlgorithms()} instead. -- Cosmin. */
+	@Deprecated
+	public List<AbstractMatcher> getMatcherInstances() { return getMatchingAlgorithms(); }
+	
 	public List<MatcherResult> getMatcherResults(){ return matcherResults;}
 	
-	
+	/** Matcher IDs no longer make sense. -- Cosmin. */
+	@Deprecated
 	public AbstractMatcher getMatcherByID( int mID ) {
 		Iterator<AbstractMatcher> matchIter = matcherInstances.iterator();
 		while( matchIter.hasNext() ) {
