@@ -76,6 +76,10 @@ public class OSGiRegistry {
 		throw new MatcherNotFoundException(matcherName+" is not in the system.");
 	}
 	
+	/**
+	 * Return a list of matchers currently registered as bundles in the system.
+	 * @return An empty list if no bundles are loaded into the system.
+	 */
 	public List<AbstractMatcher> getMatchers() {
 		List<AbstractMatcher> list = new LinkedList<AbstractMatcher>();
 		list.addAll(matcherList);
