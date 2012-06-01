@@ -1,6 +1,8 @@
 package am.app.mappingEngine;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 /**
  * TODO: Add the source and target ontologies as fields HERE!
  * 
@@ -23,6 +25,8 @@ public class DefaultMatcherParameters implements Serializable {
 	public boolean threadedOverlap = false;
 	public int threadedReservedProcessors = 0; // how many processors are reserved (i.e. not used by the threaded mode)
 	
+	/** the input to the matcher */
+	public List<MatcherResult> inputResults = new ArrayList<MatcherResult>();
 	
 	public DefaultMatcherParameters() { /* work is done by the field initialization; */ }
 	
