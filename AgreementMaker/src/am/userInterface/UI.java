@@ -8,6 +8,8 @@ import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -22,6 +24,7 @@ import org.apache.log4j.Logger;
 
 import am.GlobalStaticVariables;
 import am.app.Core;
+import am.app.mappingEngine.MatcherResult;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntologyDefinition;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
@@ -29,6 +32,7 @@ import am.app.ontology.ontologyParser.TreeBuilder;
 import am.userInterface.classic.AgreementMakerClassic;
 import am.userInterface.controlpanel.MatchersControlPanel;
 import am.userInterface.sidebar.vertex.VertexDescriptionPane;
+import am.userInterface.table.MatchersControlPanelTableModel;
 
 
 /**
@@ -172,13 +176,13 @@ public class UI {
 			if( log.isInfoEnabled() ) log.info("Opening file: " + odef.ontologyURI );
 			
 			if(odef.ontologyLanguage == OntologyLanguage.RDFS)//RDFS
-				jPanel = new VertexDescriptionPane(GlobalStaticVariables.RDFSFILE);//takes care of fields for XML files as well
+				jPanel = new VertexDescriptionPane(Ontology.RDFSFILE);//takes care of fields for XML files as well
 			else if(odef.ontologyLanguage == OntologyLanguage.OWL)//OWL
-				jPanel = new VertexDescriptionPane(GlobalStaticVariables.OWLFILE);//takes care of fields for XML files as well
+				jPanel = new VertexDescriptionPane(Ontology.OWLFILE);//takes care of fields for XML files as well
 			else if(odef.ontologyLanguage == OntologyLanguage.XML)//XML
-				jPanel = new VertexDescriptionPane(GlobalStaticVariables.XMLFILE);//takes care of fields for XML files as well
+				jPanel = new VertexDescriptionPane(Ontology.XMLFILE);//takes care of fields for XML files as well
 			else if(odef.ontologyLanguage == OntologyLanguage.TABBEDTEXT)
-				jPanel = new VertexDescriptionPane(GlobalStaticVariables.XMLFILE); // TODO: Figure out if we need to pass in the correct language type to VertexDescriptionPane constructor.
+				jPanel = new VertexDescriptionPane(Ontology.XMLFILE); // TODO: Figure out if we need to pass in the correct language type to VertexDescriptionPane constructor.
 		    jPanel.setMinimumSize(new Dimension(200,200));
 			getUISplitPane().setRightComponent(jPanel);
 			setDescriptionPanel(jPanel);
@@ -339,4 +343,20 @@ public class UI {
 
 	public MatchersControlPanel getControlPanel() {	return classicAM.getMatchersControlPanel();	}
 	
+	/**
+	 * @return A list of MatcherResults which are currently selected in the user interface.
+	 */
+	public List<MatcherResult> getSelectedResults() {
+		List<MatcherResult> selectedResults = new LinkedList<MatcherResult>();
+		
+		int[] rowsIndex = getControlPanel().getTablePanel().getTable().getSelectedRows();
+		List<MatcherResult> allResults = 
+				((MatchersControlPanelTableModel)getControlPanel().getTablePanel().getTable().getModel()).getData();
+		
+		for( int index : rowsIndex ) {
+			selectedResults.add(allResults.get(index));
+		}
+		
+		return selectedResults;
+	}
 }
