@@ -2097,7 +2097,12 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected void setProperty(PropertyKey key, String value) {
 		matcherProperties.setProperty(key.name(), value);
 	}
-		
+	
+	/**
+	 * Keys used for matcher properties.
+	 * 
+	 * @see {@link #getProperty}, {@link #setProperty}
+	 */
 	public static enum PropertyKey {
 		CATEGORY,
 		NAME;
