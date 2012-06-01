@@ -1,12 +1,14 @@
 package am.userInterface.matchingtask;
 
 import java.awt.BorderLayout;
-import java.beans.PropertyChangeSupport;
 
 import javax.swing.JDialog;
 import javax.swing.JTabbedPane;
 
+import am.app.Core;
 import am.app.ontology.Ontology;
+import am.app.ontology.profiling.OntologyProfilerPanel;
+import am.utility.CenterPanel;
 
 /**
  * Given two ontologies, create a matching task object which will
@@ -25,10 +27,13 @@ public class MatchingTaskCreatorDialog extends JDialog {
 		super();
 		
 		mainPane.addTab("Matching Task Overview", 
-				new MatchingTaskOverviewPanel(sourceOntology, targetOntology));
-		mainPane.addTab("Matching Algorithm", new MatchingAlgorithmParametersPanel());
+				new CenterPanel(new MatchingTaskOverviewPanel(sourceOntology, targetOntology)));
+		mainPane.addTab("Matching Algorithm", new CenterPanel(new MatchingAlgorithmParametersPanel()));
 		mainPane.addTab("Selection Algorithm", new SelectionAlgorithmParametersPanel());
-		mainPane.addTab("Annotation Profiling", new AnnotationProfilingParametersPanel());
+		if( Core.getInstance().getOntologyProfiler() != null ) {
+			mainPane.addTab("Annotation Profiling", 
+				Core.getInstance().getOntologyProfiler().getProfilerPanel(false));
+		}
 		
 		getContentPane().add(mainPane, BorderLayout.CENTER);
 		

@@ -24,15 +24,15 @@ import am.app.mappingEngine.AbstractMatcher.PropertyKey;
 import am.utility.CanEnable;
 
 /**
- * @author cosmin
- *
+ * A combo box that displays the current list of matchers in the system.
+ * @author Cosmin Stroe
  */
 public class MatcherComboBox extends JComboBox {
 
 	private static final long serialVersionUID = 3318274165775084345L;
 	
-	private static final String padLeft = "----------------- ";
-	private static final String padRight = " -----------------";
+	protected static final String padLeft = "----------------- ";
+	protected static final String padRight = " -----------------";
 	
 	/**
 	 * 
@@ -40,38 +40,55 @@ public class MatcherComboBox extends JComboBox {
 	public MatcherComboBox() {
 		super();
 		
-		setSelectedIndex( populateComboBox() );
+		// TODO: Remember the last selected item.
+		int firstItem = populateComboBox();
+		setSelectedIndex(firstItem);
+		
 		setRenderer(new ComboRenderer());
 		addActionListener(new ComboListener(this));
-		
-		setMaximumRowCount(20);
-		
+		//setMaximumRowCount(20);
 	}
 
-	private int populateComboBox() {
+	/**
+	 * Populates the combobox with Matching Algorithms, each separated
+	 * by Matcher Category names.  The matcher categories are not enabled,
+	 * so that they cannot be selected and show up as gray.
+	 * 
+	 * @return The index of the first matcher in the list.
+	 */
+	protected int populateComboBox() {
 		
 		Font f = getFont();
 		FontMetrics fm = getFontMetrics(f);
 		
 		int longestCategory = getLongestCategory(fm);
 		boolean firstItemFound = false;
-		int firstItemIndex = 0;
+		int firstItemIndex = -1;
 		
+		// get the list of matchers currently in the system
+		List<AbstractMatcher> matchers = Core.getInstance().getMatchingAlgorithms();
+		
+		// populate the combobox by category
 		for( MatcherCategory currentCategory : MatcherCategory.values() ) {
 			
-			boolean categoryComboItemAdded = false;
 			ComboItem categoryComboItem = new ComboItem( getCategoryString(currentCategory, longestCategory, fm), false);
 
-			List<AbstractMatcher> matchers = Core.getInstance().getFramework().getRegistry().getMatchers();
+			boolean categoryComboItemAdded = false;
+			
 			for( AbstractMatcher matcher : matchers ) {
-				if( matcher.isShown() && matcher.getProperty(PropertyKey.CATEGORY) == currentCategory.name()  ) {
+				if( matcher.getCategory() == currentCategory ) {
 					if( !categoryComboItemAdded ) {
 						// only add the category string if the category isn't empty
 						addItem(categoryComboItem);
 						categoryComboItemAdded = true;
 					}
-					if( !firstItemFound ) { firstItemIndex = getItemCount(); firstItemFound = true; }
-					addItem(new ComboItem(matcher.getProperty(PropertyKey.NAME)));
+					
+					if( !firstItemFound ) { 
+						firstItemIndex = getItemCount(); 
+						firstItemFound = true; 
+					}
+					
+					addItem(new ComboItem(matcher.getName()));
 				}
 			}
 			
@@ -85,7 +102,7 @@ public class MatcherComboBox extends JComboBox {
 	 * @param fm
 	 * @return
 	 */
-	private int getLongestCategory(FontMetrics fm) {
+	protected int getLongestCategory(FontMetrics fm) {
 		int max = 0;
 		for( MatcherCategory currentCategory : MatcherCategory.values()) {
 			int currentSize = fm.stringWidth(padLeft + currentCategory.name() + padRight);
@@ -101,7 +118,7 @@ public class MatcherComboBox extends JComboBox {
 	 * @param fm
 	 * @return
 	 */
-	private String getCategoryString( MatcherCategory cat, int maxStringLength, FontMetrics fm ) {
+	protected String getCategoryString( MatcherCategory cat, int maxStringLength, FontMetrics fm ) {
 		String left = padLeft;
 		String right = padRight;
 		while( fm.stringWidth(left + cat.name() + right ) < maxStringLength ) {
@@ -111,37 +128,17 @@ public class MatcherComboBox extends JComboBox {
 		return left + cat.name() + right;
 	}
 	
-	/**
-	 * @param aModel
-	 *//*
-	public MatcherComboBox(ComboBoxModel aModel) {
-		super(aModel);
-		// TODO Auto-generated constructor stub
-	}
-
-	*//**
-	 * @param items
-	 *//*
-	public MatcherComboBox(Object[] items) {
-		super(items);
-		// TODO Auto-generated constructor stub
-	}
-
-	*//**
-	 * @param items
-	 *//*
-	public MatcherComboBox(Vector<?> items) {
-		super(items);
-		// TODO Auto-generated constructor stub
-	}*/
-
-	
-	
-	
 	// ***************************************************************8
 	// Special inner classes for the combo box.
 	
-	
+	/**
+	 * This class displays disabled list entries as greyed out items.
+	 * 
+	 * List entries must implement CanEnable to work with this renderer.
+	 * If they don't implement CanEnable, we assume they are enabled.
+	 * 
+	 * @see CanEnable
+	 */
 	class ComboRenderer extends JLabel implements ListCellRenderer {
 
 		private static final long serialVersionUID = 6823301981571072706L;
@@ -162,17 +159,24 @@ public class MatcherComboBox extends JComboBox {
 				setForeground(list.getForeground());
 			} 
 
-			if (! ((CanEnable)value).isEnabled()) {
-				setBackground(list.getBackground());
-				setForeground(UIManager.getColor("Label.disabledForeground"));
+			if( value instanceof CanEnable ) {
+				if (! ((CanEnable)value).isEnabled()) {
+					setBackground(list.getBackground());
+					setForeground(UIManager.getColor("Label.disabledForeground"));
+				}
 			}
+			
 			setFont(list.getFont());
 			setText((value == null) ? "" : value.toString());
 			return this;
 		}
 
 	}
-	  
+	
+	/**
+	 * An action listener for a JComboBox which does not 
+	 * allow disabled items to be selected in the combobox.
+	 */
 	class ComboListener implements ActionListener {
 		JComboBox combo;
 		Object currentItem;
@@ -186,33 +190,43 @@ public class MatcherComboBox extends JComboBox {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Object tempItem = combo.getSelectedItem();
-			if (! ((CanEnable)tempItem).isEnabled()) {
-				combo.setSelectedItem(currentItem);
-			} else {
+			if( tempItem instanceof CanEnable ) {
+				if (! ((CanEnable)tempItem).isEnabled()) {
+					combo.setSelectedItem(currentItem);
+				} 
+				else {
+					currentItem = tempItem;
+				}
+			}
+			else {
 				currentItem = tempItem;
 			}
 		}
 	}
-	  
+	
+	/**
+	 * Wraps an object with the capability to be enabled.
+	 * This is used as an object in the combobox.
+	 */
 	class ComboItem implements CanEnable {
 		Object  obj;
-		boolean isEnable;
+		boolean isEnabled;
 
-		ComboItem(Object obj,boolean isEnable) {
+		public ComboItem(Object obj, boolean isEnabled) {
 			this.obj      = obj;
-			this.isEnable = isEnable;
+			this.isEnabled = isEnabled;
 		}
 
-		ComboItem(Object obj) {
+		public ComboItem(Object obj) {
 			this(obj, true);
 		}
 
 		public boolean isEnabled() {
-			return isEnable;
+			return isEnabled;
 		}
 
 		public void setEnabled(boolean isEnable) {
-			this.isEnable = isEnable;
+			this.isEnabled = isEnable;
 		}
 
 		public String toString() {
