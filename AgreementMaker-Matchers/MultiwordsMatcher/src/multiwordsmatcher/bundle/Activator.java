@@ -24,13 +24,13 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		
-		MultiWordsMatcher mwMatcher= new MultiWordsMatcher();
+		MultiWordsMatcher mwMatcher = new MultiWordsMatcher();
 		context.registerService(AbstractMatcher.class.getName(), mwMatcher, null);
 		
-		MultiWordsMatcherPairWise mwpMatcher=new MultiWordsMatcherPairWise();
+		MultiWordsMatcherPairWise mwpMatcher = new MultiWordsMatcherPairWise();
 		context.registerService(AbstractMatcher.class.getName(), mwpMatcher, null);
 		
-		NewMultiWordsMatcher nmwMatcher=new NewMultiWordsMatcher();
+		NewMultiWordsMatcher nmwMatcher = new NewMultiWordsMatcher();
 		context.registerService(AbstractMatcher.class.getName(), nmwMatcher, null);
 	}
 

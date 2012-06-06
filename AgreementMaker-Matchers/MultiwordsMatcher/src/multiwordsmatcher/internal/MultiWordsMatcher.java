@@ -62,21 +62,27 @@ public class MultiWordsMatcher extends AbstractMatcher {
 	String mWS;//multiword string that will be added to the provenance string
 	
 	public MultiWordsMatcher() {
-		// warning, param is not available at the time of the constructor
 		super();
-		needsParam = true;
-		if(param.storeProvenance){provenanceString="\t********Vector-Based MultiWords Matcher********\n";}
-		addFeature(MatcherFeature.MAPPING_PROVENANCE);
-		setName("Vector-based Multi-Words Matcher");
+		initializeVariables();
 	}
 	
 	public MultiWordsMatcher( MultiWordsParameters param_new ) {
 		super(param_new);
-		if(param.storeProvenance){provenanceString="\t********Vector-Based MultiWords Matcher********\n";}
-		addFeature(MatcherFeature.MAPPING_PROVENANCE);
-		setName("Vector-based Multi-Words Matcher");
+		initializeVariables();
 	}
 	
+	@Override
+	protected void initializeVariables() {
+		super.initializeVariables();
+		
+		if(param.storeProvenance){
+			provenanceString="\t********Vector-Based MultiWords Matcher********\n";}
+		
+		needsParam = true;
+		addFeature(MatcherFeature.MAPPING_PROVENANCE);
+		setName("Vector-based Multi-Words Matcher");
+		setCategory(MatcherCategory.SYNTACTIC);
+	}
 	
 	public String getDescriptionString() {
 		return "Performs a local matching using a Multi words String Based technique.\n" +
@@ -181,7 +187,6 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		return documents;
 	}
 	
-	@SuppressWarnings("unchecked")
 	private String createMultiWordsString(Node node, alignType typeOfNodes) throws Exception {
 		
 		mWS = new String();

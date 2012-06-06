@@ -61,6 +61,18 @@ public class NewMultiWordsMatcher extends AbstractMatcher {
 	public NewMultiWordsMatcher() {
 		// warning, param is not available at the time of the constructor
 		super();
+		initializeVariables();
+	}
+	
+	public NewMultiWordsMatcher( NewMultiWordsParameters param_new ) {
+		super(param_new);
+		initializeVariables();
+	}
+	
+	@Override
+	protected void initializeVariables() {
+		super.initializeVariables();
+		
 		needsParam = true;
 		if(param.storeProvenance){provenanceString="\t********Vector-Based MultiWords Matcher********\n";}
 		addFeature(MatcherFeature.ONTOLOGY_PROFILING);
@@ -68,17 +80,7 @@ public class NewMultiWordsMatcher extends AbstractMatcher {
 		addFeature(MatcherFeature.ONTOLOGY_PROFILING_PROPERTY_ANNOTATION_FIELDS);
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 		setName("New VMM");
-	}
-	
-	public NewMultiWordsMatcher( NewMultiWordsParameters param_new ) {
-		super(param_new);
-		if(param.storeProvenance){provenanceString="\t********Vector-Based MultiWords Matcher********\n";}
-		// features supported
-		addFeature(MatcherFeature.ONTOLOGY_PROFILING);
-		addFeature(MatcherFeature.ONTOLOGY_PROFILING_CLASS_ANNOTATION_FIELDS);
-		addFeature(MatcherFeature.ONTOLOGY_PROFILING_PROPERTY_ANNOTATION_FIELDS);
-		addFeature(MatcherFeature.MAPPING_PROVENANCE);
-		setName("New VMM");
+		setCategory(MatcherCategory.SYNTACTIC);
 	}
 	
 	@Override

@@ -76,17 +76,23 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 	public MultiWordsMatcherPairWise() {
 		// warning, param is not available at the time of the constructor
 		super();
-		needsParam = true;
-		if(param.storeProvenance){provenanceString="\t********Vector-Based MultiWords Matcher********\n";}
-		addFeature(MatcherFeature.MAPPING_PROVENANCE);
-		setName("VMM PairWise");
+		initializeVariables();
 	}
 
 	public MultiWordsMatcherPairWise( MultiWordsPairWiseParameters param_new ) {
 		super(param_new);
+		initializeVariables();
+	}
+
+	@Override
+	protected void initializeVariables() {
+		super.initializeVariables();
+		
+		needsParam = true;
 		if(param.storeProvenance){provenanceString="\t********Vector-Based MultiWords Matcher********\n";}
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 		setName("VMM PairWise");
+		setCategory(MatcherCategory.SYNTACTIC);
 	}
 
 	@Override
