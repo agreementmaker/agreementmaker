@@ -37,6 +37,7 @@ public class MediatingMatcher extends AbstractMatcher {
 	public MediatingMatcher() {
 		super();
 		setName("Mediating Matcher");
+		setCategory(MatcherCategory.LEXICAL);
 		needsParam = true;
 	}
 	
