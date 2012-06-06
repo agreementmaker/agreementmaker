@@ -40,7 +40,7 @@ import am.userInterface.MatchingProgressDisplay;
  * taking transient keyword out of an object means that either you make sure that or you just make it serializable
  * Michele  
  */
-public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements Matcher{
+public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements MatchingAlgorithm {
 	
 	/**
 	 * Version identifier for this serializable class
@@ -1288,6 +1288,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		this.index = index;
 	}
 
+	@Override
 	public String getName() { return getProperty( PropertyKey.NAME ); }
 	public void setName(String name) { setProperty(PropertyKey.NAME, name); }
 	
@@ -1309,6 +1310,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return param;
 	}
 
+	public void setParameters(DefaultMatcherParameters param) {
+		this.param = param;
+	}
+	
+	/**
+	 * Use {@link #setParameters(DefaultMatcherParameters) instead. -- Cosmin.
+	 */
+	@Deprecated
 	public void setParam(DefaultMatcherParameters param) {
 		this.param = param;
 	}

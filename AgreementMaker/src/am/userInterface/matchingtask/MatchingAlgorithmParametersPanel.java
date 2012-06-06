@@ -1,6 +1,5 @@
 package am.userInterface.matchingtask;
 
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -12,13 +11,10 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
 
 import am.Utility;
 import am.app.Core;
@@ -27,22 +23,30 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.MatcherResult;
-import am.app.ontology.profiling.OntologyProfilerPanel;
-import am.app.ontology.profiling.ProfilerRegistry;
-import am.app.osgi.MatcherNotFoundException;
+import am.userInterface.matchingtask.MatchingTaskCreatorDialog.Messages;
+import am.utility.messagesending.MessageDispatch;
+import am.utility.messagesending.SimpleMessage;
 
 public class MatchingAlgorithmParametersPanel extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = -1141452251567415606L;
 
 	/* UI Components */
-	private JLabel matcherLabel, lblPresets;
-	private JComboBox matcherCombo, cmbPresets;
-	private JButton btnMatcherDetails, btnSavePresets, btnDeletePresets;
-	private JCheckBox completionBox, provenanceBox, chkCustomName, chkThreadedMode, chkThreadedOverlap;
+	private JLabel matcherLabel = new JLabel("Matcher:");
+	private JLabel lblPresets = new JLabel("Presets:");
+	private MatcherComboBox matcherCombo = new MatcherComboBox();
+	private JComboBox cmbPresets = new JComboBox();
+	private JButton btnMatcherDetails = new JButton("Explanation");
+	private JButton btnSavePresets = new JButton("Save"); 
+	private JButton btnDeletePresets = new JButton("Delete");
+	private JCheckBox completionBox = new JCheckBox("Completion mode");
+	private JCheckBox provenanceBox = new JCheckBox("Save mapping provenance");;
+	private JCheckBox chkThreadedOverlap = new JCheckBox("Threaded overlap");
+	private JCheckBox chkThreadedMode = new JCheckBox("Threaded mode");
+	private JCheckBox chkCustomLabel = new JCheckBox("Custom label:");
 	private JPanel topPanel, generalPanel;
-	private JScrollPane settingsScroll;
-	private JTextField txtCustomName;
+	private JScrollPane mainScroll;
+	private JTextField txtCustomLabel = new JTextField();;
 	
 	/* State variables */
 	//private boolean showPresets = true;
@@ -54,19 +58,18 @@ public class MatchingAlgorithmParametersPanel extends JPanel implements ActionLi
 	private AbstractMatcherParametersPanel parametersPanel;
 	private DefaultMatcherParameters params;
 	private AbstractMatcher matcher;
-	//private ArrayList<AbstractMatcher> selectedMatchers;
 	
-	/* Ontology profiling panel */
-	private OntologyProfilerPanel matchTimeProfilingPanel = null;
-	
+	private MessageDispatch<Object> dispatch;
 	
 	/**
 	 * @param ontoType
 	 * @param userInterface
 	 */
-	public MatchingAlgorithmParametersPanel() {
+	public MatchingAlgorithmParametersPanel(MessageDispatch<Object> dispatch) {
 		super();
 
+		this.dispatch = dispatch;
+		
 		//this.showPresets = showPresets;
 		//this.showGeneralSettings = showGeneralSettings;
 		//this.matcherDefined  = true;
@@ -74,25 +77,39 @@ public class MatchingAlgorithmParametersPanel extends JPanel implements ActionLi
 		initComponents();  // initialize the components
 		
 		//This is the specific panel defined by the developer to set additional parameters to the specific matcher implemented
-		String matcherName = matcherCombo.getSelectedItem().toString();
-		matcher = Core.getInstance().getMatchingAlgorithm(matcherName);
+		if( matcherCombo.getSelectedItem() != null ) {
+			String matcherName = matcherCombo.getSelectedItem().toString();
+			matcher = Core.getInstance().getMatchingAlgorithm(matcherName);
+		}
 		
-		if( matcher != null ) 
-			parametersPanel = matcher.getParametersPanel();
+		if( matcher != null ) { 
+			try {
+				parametersPanel = matcher.getParametersPanel();
+			}
+			catch( RuntimeException ex ) {
+				parametersPanel = null;
+			}
+		}
 
-		settingsScroll = createMatcherSettingsScroll(parametersPanel);
-		
 		checkInputMatchers(matcher);
 		
 		initLayout();
 	}
 	
-	
+	/**
+	 * Initialize the layout of this panel.
+	 */
 	private void initLayout() {
 		
+		removeAll();
+		setLayout(null);
+		
 		// update the provenanceBox
-		if( matcher != null && matcher.supportsFeature(MatcherFeature.MAPPING_PROVENANCE)) provenanceBox.setEnabled(true);
-		else provenanceBox.setEnabled(false);
+		if( matcher != null && matcher.supportsFeature(MatcherFeature.MAPPING_PROVENANCE)) { 
+			provenanceBox.setEnabled(true);
+		} else { 
+			provenanceBox.setEnabled(false);
+		}
 		
 		// initialize the matcher panel.
 		JPanel matcherPanel = new JPanel();
@@ -102,98 +119,59 @@ public class MatchingAlgorithmParametersPanel extends JPanel implements ActionLi
 		matcherPanelLayout.setAutoCreateGaps(true);
 				
 		// horizontal setup
-		GroupLayout.ParallelGroup mainHorizontalGroup = matcherPanelLayout.createParallelGroup(Alignment.TRAILING, false);
+		GroupLayout.ParallelGroup mainHorizontalGroup = matcherPanelLayout.createParallelGroup(Alignment.CENTER, false);
 		mainHorizontalGroup.addComponent(topPanel);
 		mainHorizontalGroup.addComponent(generalPanel);
-		if( settingsScroll != null ) mainHorizontalGroup.addComponent(settingsScroll);	
+		if( parametersPanel != null ) mainHorizontalGroup.addComponent(parametersPanel);	
 		matcherPanelLayout.setHorizontalGroup( mainHorizontalGroup );
 		
 		// vertical setup
 		GroupLayout.SequentialGroup mainVerticalGroup = matcherPanelLayout.createSequentialGroup();
 		mainVerticalGroup.addComponent(topPanel);
+		mainVerticalGroup.addGap(10);
 		mainVerticalGroup.addComponent(generalPanel);
-		if( settingsScroll != null ) mainVerticalGroup.addComponent(settingsScroll);
+		mainVerticalGroup.addGap(10);
+		if( parametersPanel != null ) mainVerticalGroup.addComponent(parametersPanel);
 		matcherPanelLayout.setVerticalGroup( mainVerticalGroup ); 
 
 		matcherPanel.setLayout(matcherPanelLayout);	
-		
-		// initialize the ontology profiling panel.		
-		JPanel profilingPanel = new JPanel();
-		profilingPanel.setLayout(new BorderLayout());
-		
-		
-		if( Core.getInstance().getOntologyProfiler() == null ) {
-			// there is no ontology profiling algorithm defined.	
-			profilingPanel.add(new JLabel("No ontology profiling algorithm selected."), BorderLayout.CENTER);
-		} else if( !matcher.supportsFeature( MatcherFeature.ONTOLOGY_PROFILING ) ) {
-			profilingPanel.add(new JLabel("This matcher does not support ontology profiling."), BorderLayout.CENTER);
-		} else if( Core.getInstance().getOntologyProfiler().getProfilerPanel(false) == null ){
-			// the ontology profiler does not have a match time parameters panel
-			ProfilerRegistry name = Core.getInstance().getOntologyProfiler().getName();
-			profilingPanel.add(new JLabel( name.getProfilerName() + " has been selected." + 
-					"\nThe profiling algorithm does not need parameters at match time."), BorderLayout.CENTER);
-		} else {
-			if( matchTimeProfilingPanel == null ) {
-				matchTimeProfilingPanel = Core.getInstance().getOntologyProfiler().getProfilerPanel(false);
-			}
-			JScrollPane profilingScroll = new JScrollPane(matchTimeProfilingPanel);
-			profilingScroll.getVerticalScrollBar().setUnitIncrement(20);
-			profilingPanel.add( profilingScroll, BorderLayout.CENTER);
-		}
-		
-		// add the tabs to the JTabbedPane
-		JTabbedPane dialogTabbedPane = new JTabbedPane();
-		dialogTabbedPane.addTab("Matcher", matcherPanel);
-		dialogTabbedPane.addTab("Annotation Profiling", profilingPanel);
-		
+				
+		mainScroll = new JScrollPane();
+		mainScroll.getVerticalScrollBar().setUnitIncrement(20);
+		mainScroll.setViewportView(matcherPanel);
+	
 		// put everything together.
 				
 		GroupLayout mainPanelLayout = new GroupLayout(this);
-		mainPanelLayout.setAutoCreateContainerGaps(true);
-		mainPanelLayout.setAutoCreateGaps(true);
+		mainPanelLayout.setAutoCreateContainerGaps(false);
+		mainPanelLayout.setAutoCreateGaps(false);
 		
 		mainPanelLayout.setHorizontalGroup( mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-				.addComponent(dialogTabbedPane)
+				.addComponent(mainScroll)
 		);
 		
 		mainPanelLayout.setVerticalGroup( mainPanelLayout.createSequentialGroup()
-				.addComponent(dialogTabbedPane)
+				.addComponent(mainScroll)
 		);
 		
 		this.setLayout(mainPanelLayout);
 	}
 	
 	private void initComponents() {
-		matcherLabel = new JLabel("Matcher:");
-		//String[] matcherList = MatcherFactory.getMatcherComboList();
-		matcherCombo = new MatcherComboBox();
+		
+		// Action Listeners
 		matcherCombo.addActionListener(this);
-		
-		chkCustomName = new JCheckBox("Custom name:");
-		chkCustomName.addActionListener(this);
-		txtCustomName = new JTextField();
-		txtCustomName.setEnabled(false);
-		
-		chkThreadedMode = new JCheckBox("Threaded mode");
+		chkCustomLabel.addActionListener(this);
 		chkThreadedMode.addActionListener(this);
-		chkThreadedOverlap = new JCheckBox("Threaded overlap");
-		chkThreadedOverlap.setEnabled(false);
-		
-		btnMatcherDetails = new JButton("Explanation");
 		btnMatcherDetails.addActionListener(this);
-		
-		lblPresets = new JLabel("Presets:");
-		cmbPresets = new JComboBox();
-		btnSavePresets = new JButton("Save");
-		btnDeletePresets = new JButton("Delete");
-		
+				
+		txtCustomLabel.setEnabled(false);
+		chkThreadedOverlap.setEnabled(false);
+
 		lblPresets.setVisible(false);
 		cmbPresets.setVisible(false);
 		btnSavePresets.setVisible(false);
 		btnDeletePresets.setVisible(false);
-		
-		completionBox = new JCheckBox("Completion mode");
-		provenanceBox = new JCheckBox("Save mapping provenance");
 	
 		// top panel
 		topPanel = createTopPanel();
@@ -206,7 +184,7 @@ public class MatchingAlgorithmParametersPanel extends JPanel implements ActionLi
 		JPanel topPanel = new JPanel();
 		
 		GroupLayout topLayout = new GroupLayout(topPanel);
-		topLayout.setAutoCreateContainerGaps(true);
+		topLayout.setAutoCreateContainerGaps(false);
 		topLayout.setAutoCreateGaps(true);
 		
 		
@@ -235,14 +213,17 @@ public class MatchingAlgorithmParametersPanel extends JPanel implements ActionLi
 		return topPanel;
 	}
 	
+	/**
+	 * @return A panel that lays out all the general setting components.
+	 */
 	private JPanel createGeneralPanel() {
 		
 		JPanel generalPanel = new JPanel();
-		generalPanel.setBorder(new TitledBorder("General Settings"));
+		//generalPanel.setBorder(new TitledBorder("General Settings"));
 		
 		//set generalPanel
 		GroupLayout generalLayout = new GroupLayout(generalPanel);
-		generalLayout.setAutoCreateContainerGaps(true);
+		generalLayout.setAutoCreateContainerGaps(false);
 		generalLayout.setAutoCreateGaps(true);
 		
 		generalLayout.setHorizontalGroup( generalLayout.createParallelGroup()
@@ -255,8 +236,8 @@ public class MatchingAlgorithmParametersPanel extends JPanel implements ActionLi
 						.addComponent(chkThreadedOverlap)
 				)
 				.addGroup( generalLayout.createSequentialGroup()
-						.addComponent(chkCustomName)
-						.addComponent(txtCustomName)
+						.addComponent(chkCustomLabel)
+						.addComponent(txtCustomLabel)
 				)
 				
 				
@@ -272,8 +253,8 @@ public class MatchingAlgorithmParametersPanel extends JPanel implements ActionLi
 				)
 				.addGap(5)
 				.addGroup( generalLayout.createParallelGroup(Alignment.CENTER, false)
-						.addComponent(chkCustomName)
-						.addComponent(txtCustomName)
+						.addComponent(chkCustomLabel)
+						.addComponent(txtCustomLabel)
 				)
 				
 		);
@@ -295,11 +276,15 @@ public class MatchingAlgorithmParametersPanel extends JPanel implements ActionLi
 		if( currentMatcher == null ) return;
 		//Set input matchers into the abstractmatcher VERY IMPORTANT to set them before invoking the parameter panel, in fact the parameter panel may need to work on inputMatchers also.
 		List<MatcherResult> selectedResults = Core.getUI().getSelectedResults();
+		
+		// Check the maximum number of inputs matchers.
 		if( selectedResults.size() > currentMatcher.getMaxInputMatchers() ) {
 			System.err.println("You have selected more than " + 
 					currentMatcher.getMaxInputMatchers() + " input matcher(s).  Using the top " + 
 					currentMatcher.getMaxInputMatchers() + " matcher(s).");
 		}
+		
+		// TODO: Check the minimum number of input matchers too. -- Cosmin.
 	}
 	
 	public void actionPerformed (ActionEvent ae){
@@ -310,41 +295,35 @@ public class MatchingAlgorithmParametersPanel extends JPanel implements ActionLi
 			return;
 		}
 		
-		if(ae.getSource() == matcherCombo && matcher != null){
-			try {
-				matcher=Core.getInstance().getFramework().getRegistry().getMatcherByName(matcherCombo.getSelectedItem().toString());
-			} catch (MatcherNotFoundException e) {
-				JOptionPane.showMessageDialog(this, e.getMessage());
-				e.printStackTrace();
-				return;
-			}
-			
-			//matcher = MatcherFactory.getMatcherInstance(
-			//		MatcherFactory.getMatchersRegistryEntry(matcherCombo.getSelectedItem().toString()), 0);
+		if(ae.getSource() == matcherCombo){
+			matcher = Core.getInstance().getMatchingAlgorithm(matcherCombo.getSelectedItem().toString());
+			if( matcher == null ) return;
 			
 			checkInputMatchers(matcher);
 			
 			if(matcher.needsParam() && matcher.getParametersPanel() != null){  
 				parametersPanel = matcher.getParametersPanel(); 
-				settingsScroll = new JScrollPane(parametersPanel);
+				parametersPanel.setBorder(BorderFactory.createTitledBorder(
+						BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Matcher Specific Settings"));
 			}
 			else { 
 				parametersPanel = null; 
-				settingsScroll = new JScrollPane();
 			}
-			//settingsScroll = new JScrollPane(parametersPanel);
-			settingsScroll.setBorder(BorderFactory.createTitledBorder(
-					BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Matcher Specific Settings"));
 			
-			if( !chkCustomName.isSelected() ) txtCustomName.setText(matcher.getName());
+			if( !chkCustomLabel.isSelected() ) txtCustomLabel.setText(matcher.getName());
 			
 			initLayout();
+			
+			dispatch.publish(new SimpleMessage<Object>(
+					Messages.SELECT_MATCHING_ALGORITHM.name(), (Object)matcher));
 		}
 		else if( obj == btnMatcherDetails ) {
-			Utility.displayMessagePane(matcher.getDetails(), "Matcher details");
+			if( matcher != null ) {
+				Utility.displayMessagePane(matcher.getDetails(), "Matcher details");
+			}
 		}
-		else if( obj == chkCustomName ) {
-			txtCustomName.setEnabled(chkCustomName.isSelected());
+		else if( obj == chkCustomLabel ) {
+			txtCustomLabel.setEnabled(chkCustomLabel.isSelected());
 		}
 	}
 }

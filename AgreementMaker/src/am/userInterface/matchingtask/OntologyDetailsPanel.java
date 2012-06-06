@@ -44,7 +44,9 @@ public class OntologyDetailsPanel extends JPanel {
 			lblInstancesValue.setText("null");
 		}
 		else {
-			lblFilenameValue.setText( ont.getFilename() );
+			String s = ont.getFilename();
+			s = "..." + s.substring(s.length() - 27, s.length());
+			lblFilenameValue.setText( s );
 			lblClassesValue.setText( Integer.toString(ont.getClassesList().size()) );
 			lblPropertiesValue.setText( Integer.toString(ont.getPropertiesList().size()) );
 			

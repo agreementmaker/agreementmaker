@@ -20,11 +20,13 @@ import javax.swing.border.EmptyBorder;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.MatcherCategory;
-import am.app.mappingEngine.AbstractMatcher.PropertyKey;
 import am.utility.CanEnable;
 
 /**
  * A combo box that displays the current list of matchers in the system.
+ * It organizes the matchers by category and adds non-clickable separators
+ * for each category.
+ * 
  * @author Cosmin Stroe
  */
 public class MatcherComboBox extends JComboBox {
@@ -46,7 +48,6 @@ public class MatcherComboBox extends JComboBox {
 		
 		setRenderer(new ComboRenderer());
 		addActionListener(new ComboListener(this));
-		//setMaximumRowCount(20);
 	}
 
 	/**
@@ -76,6 +77,7 @@ public class MatcherComboBox extends JComboBox {
 			boolean categoryComboItemAdded = false;
 			
 			for( AbstractMatcher matcher : matchers ) {
+				MatcherCategory cat = matcher.getCategory();
 				if( matcher.getCategory() == currentCategory ) {
 					if( !categoryComboItemAdded ) {
 						// only add the category string if the category isn't empty
@@ -93,6 +95,8 @@ public class MatcherComboBox extends JComboBox {
 			}
 			
 		}
+		
+		setMaximumRowCount(20);
 		
 		return firstItemIndex;
 	}
@@ -183,7 +187,7 @@ public class MatcherComboBox extends JComboBox {
 
 		ComboListener(JComboBox combo) {
 			this.combo  = combo;
-			combo.setSelectedIndex(0);
+			//combo.setSelectedIndex(0);
 			currentItem = combo.getSelectedItem();
 		}
 

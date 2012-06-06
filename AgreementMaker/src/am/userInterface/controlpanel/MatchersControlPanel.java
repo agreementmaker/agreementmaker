@@ -14,6 +14,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
@@ -28,6 +29,7 @@ import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
@@ -44,6 +46,7 @@ import am.userInterface.MatcherParametersDialog;
 import am.userInterface.MatcherProgressDialog;
 import am.userInterface.MatchingProgressDisplay;
 import am.userInterface.QualityEvaluationDialog;
+import am.userInterface.matchingtask.MatchingTaskCreatorDialog;
 import am.userInterface.table.MatchersTablePanel;
 import am.utility.referenceAlignment.AlignmentUtilities;
 
@@ -52,20 +55,19 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 	private static final long serialVersionUID = -2258009700001283026L;
 
 
-	private JButton matchButton;
+	private JButton matchButton = new JButton("Match!");;
 	private MatchersTablePanel matchersTablePanel;
 
-	private JButton newMatching;
-	private JButton delete;
-	private JButton clearMatchings;
-	private JButton copyButton;
-	private JButton editMatrixButton;
-	private JButton refEvaluate;
-	private JButton qualityEvaluationButton;
-	private JButton exportAlignmentsButton;
-	private JButton importAlignmentsButton;
-	private JButton thresholdTuning;
-	//private JButton mappingAnalyzerButton;	
+	private JButton newMatching = new JButton("New");;
+	private JButton delete = new JButton("Delete");;
+	private JButton clearMatchings = new JButton("Clear All");
+	private JButton copyButton = new JButton("Copy");
+	private JButton editMatrixButton = new JButton("Edit Similarity Matrix");
+	private JButton refEvaluate = new JButton("Reference Evaluation");
+	private JButton qualityEvaluationButton = new JButton("Quality Evaluation");
+	private JButton exportAlignmentsButton = new JButton("Export");
+	private JButton importAlignmentsButton = new JButton("Import");
+	private JButton thresholdTuning = new JButton("Tuning");;
 	
 	public MatchersControlPanel() {
 		super();
@@ -73,10 +75,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 	}
 
 	void init() {
-
 		GroupLayout layout = new GroupLayout(this);
-		//layout.setAutoCreateContainerGaps(true);
-		//layout.setAutoCreateGaps(true);
 		
 		setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Matchers Control Panel"));
@@ -86,27 +85,16 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		matchersTablePanel.getTable().addMouseListener(this);
 		
 		//JPANEL EDIT MATCHINGS
-		matchButton = new JButton("Match!");
 		matchButton.addActionListener(this);
-		newMatching = new JButton("New");
 		newMatching.addActionListener(this);
-		delete = new JButton("Delete");
 		delete.addActionListener(this);
-		refEvaluate = new JButton("Reference Evaluation");
 		refEvaluate.addActionListener(this);
-		clearMatchings = new JButton("Clear All");
 		clearMatchings.addActionListener(this);
-		copyButton = new JButton("Copy");
 		copyButton.addActionListener(this);
-		editMatrixButton = new JButton("Edit Similarity Matrix");
 		editMatrixButton.addActionListener(this);
-		qualityEvaluationButton = new JButton("Quality Evaluation");
 		qualityEvaluationButton.addActionListener(this);
-		exportAlignmentsButton = new JButton("Export");
 		exportAlignmentsButton.addActionListener(this);
-		importAlignmentsButton = new JButton("Import");
 		importAlignmentsButton.addActionListener(this);
-		thresholdTuning = new JButton("Tuning");
 		thresholdTuning.addActionListener(this);
 		
 		JPanel fauxToolBar = new JPanel();  // a toolbar wannabe
@@ -449,7 +437,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		
 	}
 	
-	//WARNING THIS METHOD IS INVOKED BY matchSelected(), and by newManual(), basically this method should be invoked anytime we want to invoke a specific matcher, like if we selected it and clicked match button.
+	//WARNING THIS METHOD IS INVOKED BY matchSelected(), and by newManual(), basically this 
+	//method should be invoked anytime we want to invoke a specific matcher, 
+	// like if we selected it and clicked match button.
 	public void match() throws Exception{
 		
 		// 1. Make sure ontologies are loaded.
@@ -459,39 +449,26 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		}
 		
 		// 2. Create the MatcherParametersDialog and get the matcher with settings.
-		MatcherParametersDialog dialog = new MatcherParametersDialog();
+		//MatcherParametersDialog dialog = new MatcherParametersDialog();
+		Ontology sourceOntology = Core.getInstance().getSourceOntology();
+		Ontology targetOntology = Core.getInstance().getTargetOntology();
+		
+		MatchingTaskCreatorDialog dialog = new MatchingTaskCreatorDialog(sourceOntology, targetOntology);
+		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		dialog.setVisible(true);
 		
 		final AbstractMatcher currentMatcher;
-		if(dialog.parametersSet()) {
-			currentMatcher = dialog.getMatcher();
-			currentMatcher.setParam(dialog.getParameters());
-		} else {
-			dialog.dispose();
-			return;
-		}
+		MatchingTask matchingTask = dialog.getMatchingTask();
 		
-		// 3. Bring up dialog to set input matchers, and add them to the AbstractMatcher.
-		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows(); //indexes in the table correspond to the indexes of the matchers in the matcherInstances list in core class
-		int selectedMatchers = rowsIndex.length;
-		if(currentMatcher.getMinInputMatchers() > selectedMatchers ) {
-			Utility.displayErrorPane("Select at least "+currentMatcher.getMinInputMatchers()+" matchings from the table to run this matcher.", null);
-			return;
-		} else if( currentMatcher.isCompletionMode() && selectedMatchers == 0 ) {
-			Utility.displayErrorPane("To run in \"Completion Mode\" please select at least one matcher from the Matchers Control Panel table.", null);
-			return;
-		}
-
-		/*for( int row : rowsIndex ) {
-			AbstractMatcher m = Core.getInstance().getMatcherInstances().get(row);
-			currentMatcher.addInputMatcher(m);
-		}*/
-		
-		// 4. Bring up MatcherProgressDialog which runs the matcher.
+		if(matchingTask == null) return;
+			
+		currentMatcher = (AbstractMatcher) matchingTask.matchingAlgorithm;
+		currentMatcher.setParameters(matchingTask.matcherParameters);
+				
+		// 3. Bring up MatcherProgressDialog which runs the matcher.
 		// The dialog will start the matcher in a background thread, show progress as the matcher is running, and show the report at the end.
 		
 		// This dialog is not modal.
-		
-		
 		currentMatcher.addProgressDisplay(new MatchingProgressDisplay() {
 			private boolean ignore = false;
 			@Override public void setProgressLabel(String label) {}

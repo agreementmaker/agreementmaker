@@ -28,8 +28,7 @@ public class MessageDispatchSupport<E> implements MessageDispatch<E> {
 	
 	@Override
 	public void publish(Message<E> message) {
-		String messageKey = message.getKey();
-		
+				
 		// first send the message to the wildcard consumers
 		for( MessageConsumer<E> consumer : wildcardConsumers ) {
 			consumer.consume(message);
@@ -37,7 +36,10 @@ public class MessageDispatchSupport<E> implements MessageDispatch<E> {
 		
 		// next send the message to the key consumers, 
 		// but only if they are not already in the wildcard consumers
+		String messageKey = message.getKey();
 		Set<MessageConsumer<E>> keyConsumers = keyConsumersMap.get(messageKey);
+		
+		if( keyConsumers == null ) return; // noone is registered for this key
 		
 		for( MessageConsumer<E> consumer : keyConsumers ) {
 			if( wildcardConsumers.contains(consumer) ) continue; // don't send the message twice

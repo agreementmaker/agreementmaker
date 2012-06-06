@@ -1,12 +1,17 @@
 package am.userInterface.matchingtask;
 
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.border.TitledBorder;
 
+import am.app.mappingEngine.MatchingAlgorithm;
+import am.app.mappingEngine.SelectionAlgorithm;
 import am.app.ontology.Ontology;
+import am.userInterface.matchingtask.MatchingTaskCreatorDialog.Messages;
+import am.utility.messagesending.Message;
+import am.utility.messagesending.MessageConsumer;
 
 /**
  * A panel to display the matching task overview.
@@ -14,7 +19,7 @@ import am.app.ontology.Ontology;
  * @author Cosmin Stroe
  *
  */
-public class MatchingTaskOverviewPanel extends JPanel {
+public class MatchingTaskOverviewPanel extends JPanel implements MessageConsumer<Object> {
 
 	private static final long serialVersionUID = 4468327991195412746L;
 
@@ -74,5 +79,20 @@ public class MatchingTaskOverviewPanel extends JPanel {
 		
 		
 		setLayout(layout);
+	}
+
+	@Override
+	public void consume(Message<Object> message) {
+		if( message.getKey().equals(Messages.SELECT_MATCHING_ALGORITHM.name()) ) {
+			MatchingAlgorithm algorithm = (MatchingAlgorithm) message.getPayload();
+			lblMatchingAlgorithmValue.setText(algorithm.getName());
+			return;
+		}
+		
+		if( message.getKey().equals(Messages.SELECT_SELECTION_ALGORITHM.name()) ) {
+			SelectionAlgorithm algorithm = (SelectionAlgorithm) message.getPayload();
+			lblMatchingAlgorithmValue.setText(algorithm.getName());
+			return;
+		}
 	}
 }

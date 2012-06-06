@@ -10,8 +10,11 @@ import java.io.Serializable;
  */
 public interface MatchingAlgorithm extends Serializable {
 	
+	public void setParameters(DefaultMatcherParameters param);
+	
 	public void match() throws Exception;
 	
 	public MatcherResult getResult();
 
+	public String getName();
 }

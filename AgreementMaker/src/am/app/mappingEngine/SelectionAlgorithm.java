@@ -17,4 +17,6 @@ public interface SelectionAlgorithm {
 	public void select(MatcherResult matcherResult);
 	
 	public SelectionResult getResult();
+	
+	public String getName();
 }
