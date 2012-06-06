@@ -75,7 +75,7 @@ public class MultiWordsMatcher extends AbstractMatcher {
 	protected void initializeVariables() {
 		super.initializeVariables();
 		
-		if(param.storeProvenance){
+		if(param != null && param.storeProvenance){
 			provenanceString="\t********Vector-Based MultiWords Matcher********\n";}
 		
 		needsParam = true;
