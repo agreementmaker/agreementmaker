@@ -49,6 +49,7 @@ public class LexicalSynonymMatcherWeighted extends AbstractMatcher {
 		super.initializeVariables();
 		needsParam = true;
 		setName("LSM Weighted");
+		setCategory(MatcherCategory.LEXICAL);
 		// TODO: Setup Features.
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 	}
