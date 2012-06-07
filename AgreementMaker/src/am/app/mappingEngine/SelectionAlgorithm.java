@@ -3,18 +3,17 @@ package am.app.mappingEngine;
 /**
  * Represents a mapping selection algorithm.
  * 
- * @author joe
- *
+ * @author Cosmin Stroe
+ * @author Joe Lozar
  */
 public interface SelectionAlgorithm {
 
+	/**
+	 * The MatcherResult is part of the SelectionParameters.
+	 */
 	public void setParameters(DefaultSelectionParameters param);
 	
-	/**
-	 * @param matcherResult Results from running a matching algorithm.
-	 * @return The input matcher result with recomputed alignments.
-	 */
-	public void select(MatcherResult matcherResult);
+	public void select();
 	
 	public SelectionResult getResult();
 	

@@ -22,6 +22,7 @@ public class MatchingTask {
 	public MatcherResult				matcherResult;
 	public SelectionResult				selectionResult;
 	public int ID;
+	public String label;
 	
 	public MatchingTask(AbstractMatcher matcher, DefaultMatcherParameters matcherParams,
 						AbstractSelectionAlgorithm selectionAlgorithm, DefaultSelectionParameters selectionParams) {
@@ -38,7 +39,7 @@ public class MatchingTask {
 	 */
 	public void match() {
 		try {
-			matchingAlgorithm.setParam(matcherParameters);
+			matchingAlgorithm.setParameters(matcherParameters);
 			matchingAlgorithm.match();
 			matcherResult = matchingAlgorithm.getResult();
 		}
@@ -53,11 +54,19 @@ public class MatchingTask {
 	public void select() {
 		try {
 			selectionAlgorithm.setParameters(selectionParameters);
-			selectionAlgorithm.select(matcherResult);
+			selectionAlgorithm.select();
 			selectionResult = selectionAlgorithm.getResult();
 		}
 		catch( Exception e ) {
 			e.printStackTrace();
 		}
+	}
+	
+	public int getID() {
+		return ID;
+	}
+	
+	public void setLabel(String label) {
+		this.label = label;
 	}
 }

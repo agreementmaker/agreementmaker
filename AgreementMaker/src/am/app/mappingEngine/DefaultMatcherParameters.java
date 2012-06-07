@@ -26,7 +26,7 @@ public class DefaultMatcherParameters implements Serializable {
 	public int threadedReservedProcessors = 0; // how many processors are reserved (i.e. not used by the threaded mode)
 	
 	/** the input to the matcher */
-	public List<MatcherResult> inputResults = new ArrayList<MatcherResult>();
+	public List<MatchingTask> inputResults = new ArrayList<MatchingTask>();
 	
 	public DefaultMatcherParameters() { /* work is done by the field initialization; */ }
 	

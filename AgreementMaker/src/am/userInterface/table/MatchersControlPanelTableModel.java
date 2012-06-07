@@ -7,8 +7,7 @@ import javax.swing.table.AbstractTableModel;
 
 import am.Utility;
 import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.MatcherResult;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.userInterface.UI;
 
@@ -66,7 +65,7 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
 					                                        "Prop Quality"
 					                                        };
         
-	public List<MatcherResult> data =  Core.getInstance().getMatcherResults();
+	public List<MatchingTask> data =  Core.getInstance().getMatchingTasks();
 	
 	public final Object[] defaultValues = {
         		new Integer(99), 
@@ -111,63 +110,63 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
         	if(data == null || data.size() == 0) 
         		return null;
         	try {
-        		MatcherResult a = data.get(row);
+        		MatchingTask a = data.get(row);
             	if(col == INDEX)
             		return a.getID();
             	else if(col == NAME)
-            		return a.getMatcherName();
+            		return a.matchingAlgorithm.getName();
             	else if(col == SHOWHIDE)
-            		return a.isShown();
+            		return a.matcherResult.isShown();
             	else if(col == THRESHOLD) 
-            		return Utility.getNoDecimalPercentFromDouble(a.getParameters().threshold);
+            		return Utility.getNoDecimalPercentFromDouble(a.selectionParameters.threshold);
             	else if(col == SRELATIONS)
-            		return Utility.getStringFromNumRelInt(a.getParameters().maxSourceAlign);
+            		return Utility.getStringFromNumRelInt(a.selectionParameters.maxSourceAlign);
             	else if(col == TRELATIONS)
-            		return Utility.getStringFromNumRelInt(a.getParameters().maxTargetAlign);
+            		return Utility.getStringFromNumRelInt(a.selectionParameters.maxTargetAlign);
             	else if(col == INPUTMATCHERS) {
-            		if(a.getInputMatchers()!= null && a.getInputMatchers().size() >0)
-            			return a.getInputMatchers().get(0).getName();
+            		if(a.matcherParameters.inputResults != null && a.matcherParameters.inputResults.size() >0)
+            			return a.matcherParameters.inputResults.get(0).matchingAlgorithm.getName();
             		else return NONE;
             	}
             	else if( col == MODIFIED)
-            		return a.isModifiedByUser();
+            		return a.matcherResult.isModifiedByUser();
             	else if(col == ALIGNCLASSES)
-            		return a.isAlignClass();
+            		return a.selectionParameters.alignClasses;
             	else if (col == ALIGNPROPERTIES)
-            		return a.isAlignProp();
+            		return a.selectionParameters.alignProperties;
             	else if(col == FOUND ) {
-            		return a.getTotalNumberAlignments();
+            		return a.selectionResult.getTotalNumberAlignments();
             	}
             	else if(col == PERFORMANCE ) {
-            		if(a.getExecutionTime() == 0)
+            		if(a.matcherResult.getExecutionTime() == 0)
             			return NONE;
-            		else return a.getExecutionTime();
+            		else return a.matcherResult.getExecutionTime();
             	}
             	else if (col == CORRECT )
-            		if(!a.isRefEvaluated())
+            		if(!a.selectionResult.isRefEvaluated())
             			return NONE;
-            		else return a.getRefEvaluation().getCorrect();
+            		else return a.selectionResult.refEvalData.getCorrect();
             	else if(col == REFERENCE )
-            		if(!a.isRefEvaluated())
+            		if(!a.selectionResult.isRefEvaluated())
             			return NONE;
-            		else return a.getRefEvaluation().getExist();
+            		else return a.selectionResult.refEvalData.getExist();
             	else if(col == RECALL)
-            		if(!a.isRefEvaluated())
+            		if(!a.selectionResult.isRefEvaluated())
             			return NONE;
-            		else return  Utility.getOneDecimalPercentFromDouble(a.getRefEvaluation().getRecall());
+            		else return  Utility.getOneDecimalPercentFromDouble(a.selectionResult.refEvalData.getRecall());
             	else if(col == PRECISION )
-            		if(!a.isRefEvaluated())
+            		if(!a.selectionResult.isRefEvaluated())
             			return NONE;
-            		else return  Utility.getOneDecimalPercentFromDouble(a.getRefEvaluation().getPrecision());
+            		else return  Utility.getOneDecimalPercentFromDouble(a.selectionResult.refEvalData.getPrecision());
             	else if(col == FMEASURE )
-            		if(!a.isRefEvaluated())
+            		if(!a.selectionResult.isRefEvaluated())
             			return NONE;
-            		else return Utility.getOneDecimalPercentFromDouble(a.getRefEvaluation().getFmeasure());
+            		else return Utility.getOneDecimalPercentFromDouble(a.selectionResult.refEvalData.getFmeasure());
             	else if(col == CQUAL ) {
-            		if(!a.isQualEvaluated())
+            		if(!a.selectionResult.isQualEvaluated())
             			return NONE;
             		else {
-            			QualityEvaluationData q = a.getQualEvaluation();
+            			QualityEvaluationData q = a.selectionResult.qualEvalData;
             			if(!q.isLocal()) {
             				return Utility.getOneDecimalPercentFromDouble(q.getGlobalClassMeasure());
             			}
@@ -175,10 +174,10 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
             		}
             	}
             	else if(col == PQUAL ) {
-            		if(!a.isQualEvaluated())
+            		if(!a.selectionResult.isQualEvaluated())
             			return NONE;
             		else {
-            			QualityEvaluationData q = a.getQualEvaluation();
+            			QualityEvaluationData q = a.selectionResult.qualEvalData;
             			if(!q.isLocal()) {
             				return Utility.getOneDecimalPercentFromDouble(q.getGlobalPropMeasure());
             			}
@@ -187,7 +186,7 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
             	}
             			
             	else if(col == COLOR )
-            		return a.getColor();
+            		return a.matcherResult.getColor();
             	else return NONE;
         	}
         	catch(Exception e) {
@@ -197,7 +196,7 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
         	}
         }
 
-        public List<MatcherResult> getData() { return data; }
+        public List<MatchingTask> getData() { return data; }
         
         /*
          * JTable uses this method to determine the default renderer/
@@ -285,46 +284,46 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
         	try {
         		Core core = Core.getInstance();
         		UI ui = core.getUI();
-        		MatcherResult a = data.get(row);
+        		MatchingTask a = data.get(row);
             	if(col == SHOWHIDE) {
-            		a.setShown((Boolean)value);
+            		a.matcherResult.setShown((Boolean)value);
             		ui.redisplayCanvas();
             		update = CELLUPDATE;
             	}
 
             	else if(col == THRESHOLD) {
-        			a.setThreshold(Utility.getDoubleFromPercent((String)value));
+        			a.selectionParameters.threshold = Utility.getDoubleFromPercent((String)value);
         			//core.selectAndUpdateMatchers(a);
         			update = ALLROWUPDATE;
         			ui.redisplayCanvas();
             			
             	}
             	else if(col == SRELATIONS) {
-            		a.setMaxSourceAlign(Utility.getIntFromNumRelString((String)value));
+            		a.selectionParameters.maxSourceAlign = Utility.getIntFromNumRelString((String)value);
             		//core.selectAndUpdateMatchers(a);
             		update = ALLROWUPDATE;
             		ui.redisplayCanvas();
             	}
             	else if(col == TRELATIONS) {
-            		a.setMaxTargetAlign(Utility.getIntFromNumRelString((String)value));
+            		a.selectionParameters.maxTargetAlign = Utility.getIntFromNumRelString((String)value);
             		//core.selectAndUpdateMatchers(a);
             		update = ALLROWUPDATE;
             		ui.redisplayCanvas();
             	}
             	else if(col == ALIGNCLASSES) {
-            		a.setAlignClass((Boolean)value);
+            		a.selectionParameters.alignClasses = (Boolean)value;
             		//core.matchAndUpdateMatchers(a);
             		update = ALLROWUPDATE;
             		ui.redisplayCanvas();
             	}
             	else if(col == ALIGNPROPERTIES) {
-            		a.setAlignProp((Boolean)value);
+            		a.selectionParameters.alignProperties = (Boolean)value;
             		//core.matchAndUpdateMatchers(a);
             		update = ALLROWUPDATE;
             		ui.redisplayCanvas();
             	}
             	else if(col == COLOR) {
-            		a.setColor((Color)value);
+            		a.matcherResult.setColor((Color)value);
             		update = ROWUPDATE;
             		ui.redisplayCanvas();
             	}

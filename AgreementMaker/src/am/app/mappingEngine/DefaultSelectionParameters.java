@@ -7,4 +7,9 @@ public class DefaultSelectionParameters {
 	public int maxSourceAlign = 1;
 	public int maxTargetAlign = 1;
 	
+	public boolean alignClasses = true;
+	public boolean alignProperties = true;
+	
+	public MatcherResult inputResult;
+	
 }

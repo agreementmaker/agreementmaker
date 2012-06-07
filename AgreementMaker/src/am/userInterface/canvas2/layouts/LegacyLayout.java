@@ -30,9 +30,9 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.Mapping.MappingRelation;
-import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatcherResult;
+import am.app.mappingEngine.MatchingTask;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.canvas2.Canvas2;
@@ -1105,13 +1105,13 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		
 	
 	@Override
-	public CanvasGraph buildMatcherGraph( MatcherResult m ) {
+	public CanvasGraph buildMatcherGraph( MatchingTask m ) {
 		
 		CanvasGraph matcherGraph = new CanvasGraph( GraphType.MATCHER_GRAPH, m.getID() );
 		
 		// Get the Class alignments.
 		
-		Alignment<Mapping> classesMatchings = m.getClassAlignmentSet();
+		Alignment<Mapping> classesMatchings = m.selectionResult.getClassAlignmentSet();
 		if( classesMatchings != null ) {
 			Iterator<Mapping> alignmentIter = classesMatchings.iterator();
 			while( alignmentIter.hasNext() ) {
@@ -1134,7 +1134,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 
 		// Get the Properties alignments.
 		
-		Alignment<Mapping> propertiesMatchings = m.getPropertyAlignmentSet();
+		Alignment<Mapping> propertiesMatchings = m.selectionResult.getPropertyAlignmentSet();
 		if( propertiesMatchings != null ) {
 			Iterator<Mapping> alignmentIter = propertiesMatchings.iterator();
 			while( alignmentIter.hasNext() ) {
@@ -1467,7 +1467,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				if( d.alignment != null ) {
 					String sim = Utility.getNoDecimalPercentFromDouble(d.alignment.getSimilarity());
 					MatcherResult m = Core.getInstance().getResultByID( d.matcherID );
-					String shortName = m.getMatcherName();
+					String shortName = m.getMatchingTask().matchingAlgorithm.getName();
 					d.label = d.alignment.getRelation().getVisualRepresentation() + " (" + sim + ")";
 					if( shortName != null ) { d.label += " " + shortName; }
 				}

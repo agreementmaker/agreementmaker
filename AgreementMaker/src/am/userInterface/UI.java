@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 
 import am.GlobalStaticVariables;
 import am.app.Core;
-import am.app.mappingEngine.MatcherResult;
+import am.app.mappingEngine.MatchingTask;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntologyDefinition;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
@@ -346,11 +346,11 @@ public class UI {
 	/**
 	 * @return A list of MatcherResults which are currently selected in the user interface.
 	 */
-	public List<MatcherResult> getSelectedResults() {
-		List<MatcherResult> selectedResults = new LinkedList<MatcherResult>();
+	public List<MatchingTask> getSelectedTasks() {
+		List<MatchingTask> selectedResults = new LinkedList<MatchingTask>();
 		
 		int[] rowsIndex = getControlPanel().getTablePanel().getTable().getSelectedRows();
-		List<MatcherResult> allResults = 
+		List<MatchingTask> allResults = 
 				((MatchersControlPanelTableModel)getControlPanel().getTablePanel().getTable().getModel()).getData();
 		
 		for( int index : rowsIndex ) {

@@ -14,9 +14,10 @@ import am.userInterface.MatchingProgressDisplay;
 
 public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> implements SelectionAlgorithm {
 	
-	protected MatcherResult matcherResult;
 	protected DefaultSelectionParameters params;
+	protected SelectionResult result;
 	
+	// FIXME: Isn't this taken care of by SwingWorker? -- Cosmin.
 	protected List<MatchingProgressDisplay> progressListeners = new ArrayList<MatchingProgressDisplay>();
 	
 	/**
@@ -31,20 +32,27 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
 	 * It should not be needed often to override the select(), in all cases remember to consider all selection parameters threshold, num relations per source and target.
 	 */
 	@Override
-	public void select(MatcherResult matcherResult) {
+	public void select() {
     	//this method is also invoked everytime the user change threshold or num relation in the table
     	beforeSelectionOperations();//Template method to allow next developer to add code after selection
     	selectAndSetAlignments();	
     	afterSelectionOperations();//Template method to allow next developer to add code after selection
     }
 
+	@Override 
+	protected Void doInBackground() throws Exception {
+		select();
+		return null;
+	};
+	
     //RESET ALIGNMENT STRUCTURES,     //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
     public void beforeSelectionOperations() {
-    	matcherResult.setClassAlignmentSet(null);
-    	matcherResult.setPropertyAlignmentSet(null);
-    	matcherResult.setInstanceAlignmentSet(null);
-    	matcherResult.setQualEvaluation(null);
-    	matcherResult.setRefEvaluation(null);
+    	result = new SelectionResult();
+    	result.setClassAlignmentSet(null);
+    	result.setPropertyAlignmentSet(null);
+    	result.setInstanceAlignmentSet(null);
+    	result.setQualEvaluation(null);
+    	result.setRefEvaluation(null);
     	
     	for( MatchingProgressDisplay mpd : progressListeners ) {
     		mpd.appendToReport("Performing mapping selection ...");
@@ -59,26 +67,26 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
     } 
 	
     protected void selectAndSetAlignments() {
-    	if(matcherResult.isAlignClass()) {
-    		Alignment<Mapping> classesAlignmentSet = scanMatrix(matcherResult.getClassesMatrix());
-    		matcherResult.setClassAlignmentSet(classesAlignmentSet);
+    	if(params.alignClasses) {
+    		Alignment<Mapping> classesAlignmentSet = scanMatrix(params.inputResult.getClassesMatrix());
+    		result.setClassAlignmentSet(classesAlignmentSet);
     	}
-    	if(matcherResult.isAlignProp()) {
-    		Alignment<Mapping> propertiesAlignmentSet = scanMatrix(matcherResult.getPropertiesMatrix());
-    		matcherResult.setPropertyAlignmentSet(propertiesAlignmentSet);
+    	if(params.alignProperties) {
+    		Alignment<Mapping> propertiesAlignmentSet = scanMatrix(params.inputResult.getPropertiesMatrix());
+    		result.setPropertyAlignmentSet(propertiesAlignmentSet);
     	}
 	}
     
     protected Alignment<Mapping> scanMatrix(SimilarityMatrix matrix) {
     	if( matrix == null ) { // there is no matrix, return empty set
-    		return new Alignment<Mapping>(matcherResult.getSourceOntology().getID(), matcherResult.getTargetOntology().getID());
+    		return new Alignment<Mapping>(params.inputResult.getSourceOntology().getID(), params.inputResult.getTargetOntology().getID());
     	}
     	int columns = matrix.getColumns();
     	int rows = matrix.getRows();
     	// at most each source can be aligned with all targets (columns) it's the same of selecting ANY for source
-		int realSourceRelations = Math.min(matcherResult.getParameters().maxSourceAlign, columns);
+		int realSourceRelations = Math.min(params.maxSourceAlign, columns);
 		// at most each target can be aligned with all sources (rows) it's the same of selecting ANY for target
-		int realTargetRelations = Math.min(matcherResult.getParameters().maxTargetAlign, rows);
+		int realTargetRelations = Math.min(params.maxTargetAlign, rows);
 		
 		
 		if(realSourceRelations == columns && realTargetRelations == rows) { //ANY TO ANY
@@ -111,12 +119,12 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
      * @return Alignment set of mappings. 
      */
     protected Alignment<Mapping> getThemAll(SimilarityMatrix matrix) {
-		Alignment<Mapping> aset = new Alignment<Mapping>(matcherResult.getSourceOntology().getID(), matcherResult.getTargetOntology().getID());
+		Alignment<Mapping> aset = new Alignment<Mapping>(params.inputResult.getSourceOntology().getID(), params.inputResult.getTargetOntology().getID());
 		Mapping currentValue;
 		for(int i = 0; i<matrix.getColumns();i++) {
 			for(int j = 0; j<matrix.getRows();j++) {		
 				currentValue = matrix.get(j,i);
-				if(currentValue != null && currentValue.getSimilarity() >= matcherResult.getParameters().threshold)
+				if(currentValue != null && currentValue.getSimilarity() >= params.threshold)
 					aset.add(currentValue);
 			}
 		}
@@ -130,7 +138,7 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
     	int rows = matrix.getRows();
     	int cols = matrix.getColumns();
     	
-    	Alignment<Mapping> aset = new Alignment<Mapping>(matcherResult.getSourceOntology().getID(), matcherResult.getTargetOntology().getID());
+    	Alignment<Mapping> aset = new Alignment<Mapping>(params.inputResult.getSourceOntology().getID(), params.inputResult.getTargetOntology().getID());
 
     	//I need to build a copy of the similarity matrix to work on it, i just need the similarity values
     	//and i don't need values higher than threshold so i'll just set them as fake so they won't be selected
@@ -143,7 +151,7 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
     			} else {
     				sim = 0;
     			}
-    			if(sim >= matcherResult.getParameters().threshold)
+    			if(sim >= params.threshold)
     				workingMatrix[i][j] = sim;
     			else workingMatrix[i][j] = IntDoublePair.fake;
     		}
@@ -270,9 +278,9 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
     }
     
    protected Alignment<Mapping> oneToOneMatching(SimilarityMatrix matrix) {
-		Alignment<Mapping> aset = new Alignment<Mapping>(matcherResult.getSourceOntology().getID(), matcherResult.getTargetOntology().getID());
+		Alignment<Mapping> aset = new Alignment<Mapping>(params.inputResult.getSourceOntology().getID(), params.inputResult.getTargetOntology().getID());
 		double[][] similarityMatrix = matrix.getCopiedSimilarityMatrix();  // in order of our selection algorithm to be scalable, this has to change! we cannot allocate an NxM matrix if N and M are large! - Cosmin.
-		MaxWeightBipartiteMatching<Integer> mwbm = new MaxWeightBipartiteMatching<Integer>(similarityMatrix, matcherResult.getParameters().threshold);
+		MaxWeightBipartiteMatching<Integer> mwbm = new MaxWeightBipartiteMatching<Integer>(similarityMatrix, params.threshold);
 		Collection<MappingMWBM<Integer>> mappings = mwbm.execute();
 		Iterator<MappingMWBM<Integer>> it = mappings.iterator();
 		Mapping a;
@@ -313,7 +321,7 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
 	}
    
    protected Alignment<Mapping> scanForMaxValuesRows(SimilarityMatrix matrix, int numMaxValues) {
-		Alignment<Mapping> aset = new Alignment<Mapping>(matcherResult.getSourceOntology().getID(), matcherResult.getTargetOntology().getID());
+		Alignment<Mapping> aset = new Alignment<Mapping>(params.inputResult.getSourceOntology().getID(), params.inputResult.getTargetOntology().getID());
 		Mapping toBeAdded;
 		//temp structure to keep the first numMaxValues best alignments for each source
 		//when maxRelations are both ANY we could have this structure too big that's why we have checked this case in the previous method
@@ -323,7 +331,7 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
 			//get only the alignments over the threshold
 			for(int e = 0;e < maxAlignments.length; e++) { 
 				toBeAdded = maxAlignments[e];
-				if(toBeAdded != null && toBeAdded.getSimilarity() >= matcherResult.getParameters().threshold) {
+				if(toBeAdded != null && toBeAdded.getSimilarity() >= params.threshold) {
 					aset.add(toBeAdded);
 				}
 			}
@@ -334,7 +342,7 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
 
    
    protected Alignment<Mapping> scanForMaxValuesColumns(SimilarityMatrix matrix,int numMaxValues) {
-	   Alignment<Mapping> aset = new Alignment<Mapping>(matcherResult.getSourceOntology().getID(), matcherResult.getTargetOntology().getID());
+	   Alignment<Mapping> aset = new Alignment<Mapping>(params.inputResult.getSourceOntology().getID(), params.inputResult.getTargetOntology().getID());
 	   Mapping toBeAdded;
 	   //temp structure to keep the first numMaxValues best alignments for each source
 	   //when maxRelations are both ANY we could have this structure too big that's why we have checked this case in the previous method
@@ -344,7 +352,7 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
 		   //get only the alignments over the threshold
 		   for(int e = 0;e < maxAlignments.length; e++) { 
 			   toBeAdded = maxAlignments[e];
-			   if(toBeAdded != null && toBeAdded.getSimilarity() >= matcherResult.getParameters().threshold) {
+			   if(toBeAdded != null && toBeAdded.getSimilarity() >= params.threshold) {
 				   aset.add(toBeAdded);
 			   }
 		   }

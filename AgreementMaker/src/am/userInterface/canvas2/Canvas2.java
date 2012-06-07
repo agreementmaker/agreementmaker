@@ -313,7 +313,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 
 		switch( e.getEvent() ) {
 		case MATCHER_ADDED:
-			graphs.add(layout.buildMatcherGraph( Core.getInstance().getResultByID( e.getMatcherID() )));
+			graphs.add(layout.buildMatcherGraph( Core.getInstance().getMatchingTaskByID( e.getMatcherID() )));
 			repaint();
 			break;
 			
@@ -331,7 +331,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 				}
 			}
 			
-			graphs.add(layout.buildMatcherGraph( Core.getInstance().getResultByID( e.getMatcherID() )));
+			graphs.add(layout.buildMatcherGraph( Core.getInstance().getMatchingTaskByID( e.getMatcherID() )));
 			repaint();
 			break;
 			

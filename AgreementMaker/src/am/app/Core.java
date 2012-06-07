@@ -218,7 +218,10 @@ public class Core {
 	@Deprecated
 	public List<AbstractMatcher> getMatcherInstances() { return getMatchingAlgorithms(); }
 	
+	@Deprecated
 	public List<MatcherResult> getMatcherResults(){ return matcherResults;}
+	
+	public List<MatchingTask> getMatchingTasks() { return completedMatchingTasks; }
 	
 	/** Matcher IDs no longer make sense. -- Cosmin. */
 	@Deprecated
@@ -231,9 +234,18 @@ public class Core {
 		return null;
 	}
 	
+	public MatchingTask getMatchingTaskByID( int id ) {
+		for( MatchingTask currentTask : completedMatchingTasks ) 
+			if( currentTask.getID() == id ) 
+				return currentTask; 
+
+		return null;
+	}
+	
 	/**
 	 * @return Return a result from the given result ID. Returns null if no results match the id.
 	 */
+	@Deprecated
 	public MatcherResult getResultByID( int id ) {
 		for( MatcherResult result : matcherResults ) 
 			if( result.getID() == id ) return result; 

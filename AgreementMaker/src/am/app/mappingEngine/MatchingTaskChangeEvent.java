@@ -20,64 +20,64 @@ public class MatchingTaskChangeEvent extends EventObject {
 	
 	// The Details of this event.
 	private EventType typeOfEvent;
-	private int matcherID = 0;
+	private int taskID = 0;
 	
 	@Deprecated
 	public MatchingTaskChangeEvent( AbstractMatcher s ) {
 		super(s);
 		typeOfEvent = EventType.NOT_SET;
-		matcherID = s.getID();
+		taskID = s.getID();
 	}
 	
 	@Deprecated
 	public MatchingTaskChangeEvent( AbstractMatcher s, EventType t ) {
 		super(s);
 		typeOfEvent = t;
-		matcherID = s.getID();
+		taskID = s.getID();
 	}
 	
 	@Deprecated
 	public MatchingTaskChangeEvent( AbstractMatcher s, EventType t, int id ) {
 		super(s);
 		typeOfEvent = t;
-		matcherID = id;
+		taskID = id;
 	}
 	
 	@Deprecated
 	public MatchingTaskChangeEvent( MatcherResult s ) {
 		super(s);
 		typeOfEvent = EventType.NOT_SET;
-		matcherID = s.getID();
+		taskID = s.getMatchingTask().matchingAlgorithm.getID();
 	}
 	
 	@Deprecated
 	public MatchingTaskChangeEvent( MatcherResult s, EventType t ) {
 		super(s);
 		typeOfEvent = t;
-		matcherID = s.getID();
+		taskID = s.getMatchingTask().matchingAlgorithm.getID();
 	}
 	
 	@Deprecated
 	public MatchingTaskChangeEvent( MatcherResult s, EventType t, int id ) {
 		super(s);
 		typeOfEvent = t;
-		matcherID = id;
+		taskID = id;
 	}
 	
 	public MatchingTaskChangeEvent( MatchingTask task, EventType t ) {
 		super(task);
 		typeOfEvent = t;
-		matcherID = task.ID;
+		taskID = task.ID;
 	}
 	
 	public MatchingTaskChangeEvent( EventType t ) {
 		super(new MatchingTask(null, null, null, null));  // source cannot be null
 		typeOfEvent = t;
-		matcherID = Core.ID_NONE;
+		taskID = Core.ID_NONE;
 	}
 	
 	public EventType getEvent()      { return typeOfEvent; }
-	public int       getMatcherID() { return matcherID; }
+	public int       getMatcherID() { return taskID; }
 	public AbstractMatcher getMatcher() { return (AbstractMatcher) source; }
 	
 

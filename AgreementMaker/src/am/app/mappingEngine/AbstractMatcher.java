@@ -1229,13 +1229,17 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	return aligns;
     }
 
+	@Deprecated
     public Alignment<Mapping> getClassAlignmentSet() {
     	return classesAlignmentSet;
     }
 
+	@Deprecated
     public Alignment<Mapping> getPropertyAlignmentSet() {
     	return propertiesAlignmentSet;
     }
+	
+	@Deprecated
     /**AgreementMaker doesn't calculate instances matching, if you add this you should also modify getAlignmenSet*/
     public Alignment<Mapping> getInstanceAlignmentSet() {
     	int sourceOntologyID = -1;
@@ -1247,19 +1251,23 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
     	return new Alignment<Mapping>(sourceOntologyID, targetOntologyID);
     }
     
+    @Deprecated
     public boolean areClassesAligned() {
     	return classesAlignmentSet != null;
     }
     
    
+    @Deprecated
     public boolean arePropertiesAligned() {
     	return propertiesAlignmentSet != null;
     }
     
+    @Deprecated
     public boolean isSomethingAligned() {
     	return areClassesAligned() || arePropertiesAligned();
     }
     
+    @Deprecated
     public int getNumberClassAlignments() {
     	int numAlign = 0;
 		if(areClassesAligned()) {
@@ -1268,6 +1276,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return numAlign;
     }
     
+    @Deprecated
     public int getNumberPropAlignments() {
     	int numAlign = 0;
 		if(arePropertiesAligned()) {
@@ -1276,6 +1285,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return numAlign;
     }
     
+    @Deprecated
     public int getTotalNumberAlignments() {
     	return getNumberClassAlignments()+getNumberPropAlignments();
     }
@@ -1336,13 +1346,16 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		Core.getInstance().fireEvent(evt);
 	}
 	
+	@Deprecated
 	public boolean getShown() { return isShown; }
 	
 
+	@Deprecated
 	public double getThreshold() {
 		return param.threshold;
 	}
 
+	@Deprecated
 	public void setThreshold(double threshold) {
 		if( param == null ) { param = new DefaultMatcherParameters(); }
 		param.threshold = threshold;
