@@ -23,14 +23,14 @@ public class StringUtility {
 		return string;
 	}
 
-	/*
+	/**
 	 * this method is useful whenever we are dealing with unstructured 'dirty'
 	 * text eg. before passing the text to Reverb Daniele
 	 */
 	public static String normalizeString(String string) {
 		// hash code of character \uC2A0, which is &nbsp;
-		// hash code of character \uC2a7, which is SECTION SIGN, §;
-		// hash code of character \uC382, which is LATIN CAPITAL LETTER A WITH  CIRCUMFLEX, Â;
+		// hash code of character \uC2a7, which is SECTION SIGN, ï¿½;
+		// hash code of character \uC382, which is LATIN CAPITAL LETTER A WITH  CIRCUMFLEX, ï¿½;
 		final int hashCodeOfCharC2A0 = 160;
 		final int hashCodeOfCharC2a7 = 167;
 
@@ -50,9 +50,37 @@ public class StringUtility {
 		}
 
 		String cleanedString = sb.toString().trim().replaceAll("\\s+", " ");
-		cleanedString = cleanedString.replace("’", "'");
+		cleanedString = cleanedString.replace("ï¿½", "'");
 		
 
 		return cleanedString;
 	}
+	
+	/**
+	 * Quotations will be attached either on the preceding or on the following word,
+	 * depending on the number of preceding quotations.
+	 * e.g.
+	 * my name is " barack obama "  senior
+	 * becomes
+	 * my name is "barack obama" senior
+	 * 
+	 * @param string
+	 * @return a string with normalized quotations
+	 */
+	public static String normalizeQuotations(String string, String quotationChar) {
+		String[] tokens = string.split("\\s*" + quotationChar + "\\s*");
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < tokens.length; i++) {
+			sb.append(tokens[i]);
+			
+			if (i == tokens.length - 1) break;
+			
+			if (i % 2 == 0)
+				sb.append(" " + quotationChar);
+			else
+				sb.append(quotationChar + " ");
+		}
+		return sb.toString();
+	}
+	
 }
