@@ -25,7 +25,7 @@ public interface HasMetadata {
 	 * 
 	 * @param key
 	 *            A string representing the key.
-	 * @return The string value associated with this key.
+	 * @return The string value associated with this key. null if the key has no data associated with it.
 	 */
 	public String getMetadata(String key);
 
