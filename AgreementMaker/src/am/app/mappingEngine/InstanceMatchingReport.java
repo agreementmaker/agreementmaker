@@ -1,14 +1,14 @@
 package am.app.mappingEngine;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import am.app.mappingEngine.instance.AbstractInstanceMatcher;
+
 public class InstanceMatchingReport {
-	private List<AbstractMatcher> matchers;
+	private List<AbstractInstanceMatcher> matchers;
 	private Map<String,List<Double>> similarities;
 	private Set<String> solutions;
 	
@@ -16,11 +16,11 @@ public class InstanceMatchingReport {
 		similarities = new LinkedHashMap<String, List<Double>>();
 	}
 	
-	public List<AbstractMatcher> getMatchers() {
+	public List<AbstractInstanceMatcher> getMatchers() {
 		return matchers;
 	}
 	
-	public void setMatchers(List<AbstractMatcher> matchers) {
+	public void setMatchers(List<AbstractInstanceMatcher> matchers) {
 		this.matchers = matchers;
 	}
 	

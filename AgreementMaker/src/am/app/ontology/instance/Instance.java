@@ -7,6 +7,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -38,15 +39,46 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
 public class Instance implements Serializable {
 	private static final long serialVersionUID = 4568266674951302327L;
 
+	/**
+	 * This is a property key, used for the textual representation of the
+	 * Instance.
+	 */
+	public static final String INST_LABEL = "label";
+	
+	/**
+	 * This is a property key, used for the context of the Instance. 
+	 */
+	public static final String INST_CONTEXT = "paragraph";
+	
+	/**
+	 * This is a property key, used for aliases.
+	 */
+	public static final String INST_ALIAS = "alias";
+	
+	/**
+	 * The URI of this instance. This is a required field. 
+	 * TODO: Consider making this "final".
+	 */
 	protected String uri;
+	
+	/**
+	 * The type of this instance. Can be a URI, but it doesn't have to be. We
+	 * chose this convention to be more flexible, and not have to be tied to an
+	 * ontology.
+	 */
 	protected String type;
 	
+	// Are these transient because we don't want to serialize the Statement
+	// object? If so, the properties don't need to be transient. -- Cosmin.
 	protected transient Hashtable<String,List<String>> properties; // the syntactic properties of this instance 
-	private String serializedModel;
 	protected transient List<Statement> statements; // the semantic RDF statements of this instance.
 	
+	// this is required for correct serialization.
+	private String serializedModel;
+	
+	// used for serialization.
 	protected String[] keys;
-	protected List<String>[] values;
+	protected LinkedList<List<String>> values;
 	
 	
 	/**
@@ -88,7 +120,7 @@ public class Instance implements Serializable {
 		return uri;
 	}
 
-	public Enumeration<String>  listProperties() {
+	public Enumeration<String> listProperties() {
 		return properties.keys();
 	}
 	
@@ -149,7 +181,7 @@ public class Instance implements Serializable {
 	}
 	
 	/** Passing a null value will remove the key from the properties table. */
-	public void setProperty( String key, ArrayList<String> strings ) {
+	public void setProperty( String key, List<String> strings ) {
 		if( strings == null ) {
 			properties.remove(key);
 		} else {
@@ -157,6 +189,21 @@ public class Instance implements Serializable {
 		}
 	}
 	
+	/**
+	 * <p>
+	 * This method allows multi-valued properties (the same property key can
+	 * have multiple values). This means that when calling this method with the
+	 * same key, but different values, both values will be stored.
+	 * </p>
+	 * 
+	 * @param key
+	 *            The key of the property.
+	 * @param value
+	 *            A value to associated with the property key. Passing a null
+	 *            value will erase the key.
+	 * 
+	 * @see {@link #setProperty(String, ArrayList)}, {@link #getProperty(String)}, {@link #getSingleValuedProperty(String)}
+	 */
 	public void setProperty( String key, String value ) {
 		if( value == null ) {
 			properties.remove(key);
@@ -217,12 +264,17 @@ public class Instance implements Serializable {
     	
     	//System.out.println(keySet);
     	
+		/**
+		 * This is necessary because {@link #properties} and {@link #statements}
+		 * are transient. Why are they transient? If we don't need them to be
+		 * transient, then we don't need this extra serialization.
+		 */
     	keys = new String[keySet.size()];  
-    	values = new List[keySet.size()];
+    	values = new LinkedList<List<String>>(); // can't create arrays of generic types.
     	int i = 0;
     	for (String string : keySet) {
 			keys[i] = string;
-			values[i] = properties.get(string);
+			values.set(i, properties.get(string));
 			i++;
 		}    	
     	    	
@@ -243,7 +295,7 @@ public class Instance implements Serializable {
         //System.out.println(Arrays.toString(values));
         
         for (int i = 0; i < keys.length; i++) {
-			properties.put(keys[i], values[i]);
+			properties.put(keys[i], values.get(i));
 		}
         
     }

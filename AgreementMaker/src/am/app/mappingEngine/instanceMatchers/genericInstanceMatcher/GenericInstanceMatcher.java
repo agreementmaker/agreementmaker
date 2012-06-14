@@ -15,6 +15,7 @@ import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.InstanceMatchingReport;
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.instance.AbstractInstanceMatcher;
 import am.app.mappingEngine.instanceMatchers.BaseInstanceMatcher;
 import am.app.mappingEngine.instanceMatchers.UsesKB;
 import am.app.mappingEngine.instanceMatchers.combination.CombinationFunction;
@@ -38,7 +39,7 @@ import am.app.ontology.instance.ScoredInstanceComparator;
 public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesKB{
 	private static final long serialVersionUID = -5745262888574700843L;
 
-	private List<AbstractMatcher> matchers = new ArrayList<AbstractMatcher>();
+	private List<AbstractInstanceMatcher> matchers = new ArrayList<AbstractInstanceMatcher>();
 	CombinationFunction combination;
 
 	private boolean generateReport = true;
@@ -89,14 +90,14 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 			}
 		}
 
-		for (AbstractMatcher matcher : matchers) {
+		for (AbstractInstanceMatcher matcher : matchers) {
 			matcher.passEnd();
 		}
 
 		super.passEnd();
 	}
 
-	public void addInstanceMatcher(AbstractMatcher matcher){
+	public void addInstanceMatcher(AbstractInstanceMatcher matcher){
 		matchers.add(matcher);
 	}
 
@@ -294,7 +295,7 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 		//In this case we have to first run just the matchers requiring two passes
 		//and we do not care about the similarity
 		if(requiresTwoPasses && !firstPassDone){
-			for (AbstractMatcher matcher : matchers) {
+			for (AbstractInstanceMatcher matcher : matchers) {
 				if(matcher.requiresTwoPasses())
 					matcher.instanceSimilarity(source, target);
 			}			
@@ -312,7 +313,7 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 
 	public List<Double> instanceSimilarities(Instance source, Instance target) throws Exception{
 		List<Double> similarities = new ArrayList<Double>();
-		for (AbstractMatcher matcher : matchers) {
+		for (AbstractInstanceMatcher matcher : matchers) {
 			similarities.add(matcher.instanceSimilarity(source, target));
 		}		
 		return similarities;
@@ -334,7 +335,7 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 
 	@Override
 	public boolean requiresTwoPasses() {
-		for (AbstractMatcher matcher : matchers) {
+		for (AbstractInstanceMatcher matcher : matchers) {
 			if(matcher.requiresTwoPasses())
 				requiresTwoPasses = true;
 		}

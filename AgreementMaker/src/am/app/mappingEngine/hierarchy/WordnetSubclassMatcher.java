@@ -5,12 +5,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import simpack.measure.weightingscheme.StringTFIDF;
+import am.Utility;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.StringUtil.AMStringWrapper;
+import am.app.mappingEngine.StringUtil.Normalizer;
+import am.app.mappingEngine.StringUtil.NormalizerParameter;
+import am.app.mappingEngine.referenceAlignment.MatchingPair;
+import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
+import am.app.ontology.Node;
+import am.visualization.graphviz.wordnet.WordnetVisualizer;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.wcohen.ss.api.StringWrapper;
@@ -19,22 +29,6 @@ import edu.smu.tspell.wordnet.NounSynset;
 import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.SynsetType;
 import edu.smu.tspell.wordnet.WordNetDatabase;
-
-import am.Utility;
-import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.LinkedOpenData.LODUtils;
-import am.app.mappingEngine.Mapping.MappingRelation;
-import am.app.mappingEngine.StringUtil.AMStringWrapper;
-import am.app.mappingEngine.StringUtil.Normalizer;
-import am.app.mappingEngine.StringUtil.NormalizerParameter;
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
-import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
-import am.app.ontology.Node;
-import am.utility.referenceAlignment.AlignmentUtilities;
-import am.visualization.graphviz.wordnet.WordnetVisualizer;
-import arq.examples.propertyfunction.localname;
 
 public class WordnetSubclassMatcher extends AbstractMatcher{
 
@@ -590,9 +584,6 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 		if(sourceList.size() == 0 || targetList.size() == 0)
 			return 0.0;
 		
-		if(referenceAlignment != null)
-			solution = AlignmentUtilities.candidatesContainSolution(referenceAlignment, 
-				sourceList.get(0).getName(), targetList.get(0).getName());
 				
 		boolean oneMatch = false;
 		
@@ -631,12 +622,6 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 						matchS += sim * source.getScore();
 						matchST += sim * source.getScore() * target.getScore();
 						countST += source.getScore() * target.getScore();
-						
-						if(referenceAlignment != null){
-							if(solution == null) 
-								report += "\tNo"; 
-							else report += "\tYes\t" + solution.relation;
-						}
 						
 						log.debug(report);
 					}					

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 /**
- * TODO: Add the source and target ontologies as fields HERE!
+ * TODO: Add the source and target ontologies as fields HERE!  -- Maybe not, because they cannot be serialized. -- Cosmin.
  * 
  * @author joe
  *

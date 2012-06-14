@@ -7,8 +7,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -23,16 +21,12 @@ import am.app.mappingEngine.MatchingTaskChangeEvent.EventType;
 import am.app.mappingEngine.oneToOneSelection.MappingMWBM;
 import am.app.mappingEngine.oneToOneSelection.MaxWeightBipartiteMatching;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
+import am.app.mappingEngine.threaded.AbstractMatcherRunner;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.app.ontology.instance.Instance;
-import am.app.ontology.instance.InstanceDataset;
-import am.app.ontology.instance.ScoredInstance;
-import am.app.ontology.instance.ScoredInstanceComparator;
 import am.userInterface.MatchingProgressDisplay;
 
 /**
@@ -41,12 +35,12 @@ import am.userInterface.MatchingProgressDisplay;
  * Michele  
  */
 public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements MatchingAlgorithm {
-	
+
 	/**
 	 * Version identifier for this serializable class
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	/**Unique identifier of the algorithm used in the JTable list as index
 	 * if an algorithm gets deleted we have to decrease the index of all others by one
 	 * */
@@ -67,38 +61,35 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected boolean isShown;
 	protected boolean modifiedByUser;
 	//protected double threshold;
-	
+
 	/**ANY means any number of relations for source or target*/
 	public final static int ANY_INT = Integer.MAX_VALUE;
 	//protected int maxSourceAlign;
 	//protected int maxTargetAlign;
-	
+
 	/**Contain alignments, NULL if alignment has not been calculated*/
 	protected transient Alignment<Mapping> propertiesAlignmentSet;
 	protected transient Alignment<Mapping> classesAlignmentSet;
-	protected transient List<MatchingPair> instanceAlignmentSet;
-	
+
 	/**Structure containing similarity values between classes nodes, matrix[source][target]
 	 * should not be accessible outside of this class, the system should only be able to access alignments sets
 	 * */
 	protected SimilarityMatrix classesMatrix;
 	/**Structure containing similarity values between classes nodes, matrix[source][target]*/
 	protected SimilarityMatrix propertiesMatrix;
-	
-	/** The ontologies to be matched. */
+
+	/** The source ontology to be matched. */
 	protected transient Ontology sourceOntology;
+
+	/** The target ontology to be matched. */
 	protected transient Ontology targetOntology;
-	
-	protected transient InstanceDataset sourceInstanceDataset;
-	protected transient InstanceDataset targetInstanceDataset;
-	
+
 	// TODO: Move as many field variables into AbstractParameters as we can.  -- Cosmin. 9/19/2011
 	/**If the algo calculates prop alignments*/
 	protected boolean alignProp;
 	/**If the algo calculates prop alignments*/
 	protected boolean alignClass;
-	/** True if the matcher will match instances, false otherwise. */
-	protected boolean alignInstances;
+
 	/***Some algorithms may need other algorithms as input*/
 	protected transient List<AbstractMatcher> inputMatchers;
 	/**Minum and maximum number of input matchers
@@ -116,37 +107,28 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected transient QualityEvaluationData qualEvaluation;
 	/**Graphical color for nodes mapped by this matcher and alignments, this value is set by the MatcherFactory and modified  by the table so a developer just have to pass it as aparameter for the constructor*/
 	protected Color color; 
+
 	/**
 	 * the matchers combined for example in the LWC matcher can have this set to false, because the partial matchings are not needed. 
 	   this parameter is mainly used in batchmode. For the UI has to be set to TRUE. Therefore, the paramter can be set to false, but should always be init to true.
+	   Deprecated: With the MatchingTask changes, selection is no longer done in the MatchingAlgorithm. -- Cosmin.
 	 *  **/
+	@Deprecated
 	protected boolean performSelection;
-	
+
 	/** If true, the progress display may not be updated faster than once every 500ms. */
 	protected boolean useProgressDelay = true;
-	
+
 	/** A thread group used in threaded execution mode. */
 	protected transient ThreadGroup threadGroup;
-	
-	/** Sometimes it can be useful to access the reference alignment directly from the matcher for debugging */
-	protected List<MatchingPair> referenceAlignment;
-	
-	/** True if the schema mappings have to be used during instance matching */
-	protected boolean useInstanceSchemaMappings = true;
-	
-	protected InstanceMatchingReport instanceMatchingReport;
-	
-	public boolean requiresTwoPasses;
-	
-	protected boolean firstPassDone;
-	
+
 	protected Properties matcherProperties = new Properties();
-	
+
 	public void setPerformSelection(boolean performSelection) {
 		this.performSelection = performSelection;
 	}
 	public void setUseProgressDelay(boolean d ) { useProgressDelay = d; }
-	
+
 
 	/**This enum is for the matching functions that take nodes as an input.  Because we are comparing two kinds of nodes (classes and properties), we need to know the kind of nodes we are comparing in order to lookup up the input similarities in the corrent matrix */
 	public enum alignType implements Serializable {
@@ -182,23 +164,23 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		public static alignType getDefault() {  
 			return unknown;  
 		} 
-		
+
 		private Object readResolve () throws java.io.ObjectStreamException
-	    {
-	        if( value == aligningClasses.toValue() ) return aligningClasses;
-	        if( value == aligningProperties.toValue() ) return aligningProperties;
-	        return unknown;
-	    }
+		{
+			if( value == aligningClasses.toValue() ) return aligningClasses;
+			if( value == aligningProperties.toValue() ) return aligningProperties;
+			return unknown;
+		}
 
 
 	}
-	
+
 	protected transient List<MatchingProgressDisplay> progressDisplays = new ArrayList<MatchingProgressDisplay>();  // need to keep track of the dialog in order to close it when we're done.  (there could be a better way to do this, but that's for later)
 	protected long stepsTotal; // Used by the ProgressDialog.  This is a rough estimate of the number of steps to be done before we finish the matching.
 	protected long stepsDone;  // Used by the ProgressDialog.  This is how many of the total steps we have completed.
-	
+
 	protected String report = "";
-	
+
 	/**
 	 * Right now, matchers only produce equivalence relations
 	 * If a matcher computes another type of relation, the relation has to be added to the Alignment class as a static variable
@@ -207,8 +189,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 * in that case a matrix of relation has to be kept within the matcher and the situation has to be managed properly
 	 */
 	protected MappingRelation relation;
-	
-	
+
+
 	/**
 	 * If this value is set to true, the matcher will run in optimized mode
 	 * by matching only the concepts that have not been mapped by the matcher in input
@@ -227,7 +209,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected int tentativealignments = 0;  // incremental selection?
 	protected long timeOfLastUpdate = 0;
 
-	
+
 	/**
 	 * The constructor must be a Nullary Constructor
 	 */
@@ -238,12 +220,12 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		initializeVariables();
 		param = new DefaultMatcherParameters();
 	}
-	
+
 	public AbstractMatcher( DefaultMatcherParameters params_new ) {
 		initializeVariables();
 		param = params_new;
 	}
-	
+
 	/**
 	 * This function is very important.  It is used by all the constructors to initialize variables when the object is first created.
 	 * 
@@ -263,7 +245,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		//maxTargetAlign = 1;
 		alignClass = true;
 		alignProp = true;
-		alignInstances = true;
 		minInputMatchers = 0;
 		maxInputMatchers = Integer.MAX_VALUE;
 		relation = MappingRelation.EQUIVALENCE;
@@ -271,19 +252,19 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		//ALIGNMENTS LIST MUST BE NULL UNTIL THEY ARE CALCULATED
 		classesAlignmentSet = null;
 		propertiesAlignmentSet = null;
-		
+
 		sourceOntology = Core.getInstance().getSourceOntology(); // moved initialization of sourceOntology to match().
 		targetOntology = Core.getInstance().getTargetOntology(); // moved initialization of targetOntology to match().
 		inputMatchers = new ArrayList<AbstractMatcher>();
-		
+
 		setName("AbstractMatcher");
 		setCategory(MatcherCategory.UNCATEGORIZED);
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	//***************************ALL METHODS TO PERFORM THE ALIGNMENT**********************************
 	/**
 	 * Match(), buildSimilarityMatrix() and select() are the only 3 public methods to be accessed by the system other then get and set methods
@@ -296,40 +277,40 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 * and it has to be different
 	 * 
 	 */
-	
-    public void match() throws Exception {
-    	
-    	// setup the Ontologies
-    	if( sourceOntology == null ) {
-    		if( Core.getInstance().getSourceOntology() == null ) {
-    			// no source ontology defined or loaded
-    			throw new Exception("No source ontology is loaded!");
-    		} else {
-    			// the source Ontology is not defined, but a Source ontology is loaded in the Core. Use that.
-    			sourceOntology = Core.getInstance().getSourceOntology();
-    		}
-    	}
-    	
-    	if( targetOntology == null ) {
-    		if( Core.getInstance().getTargetOntology() == null ) {
-    			// no target ontology defined or loaded
-    			throw new Exception("No target ontology is loaded!");
-    		} else {
-    			// the target Ontology is not defined as part of this matcher, but a Target ontology is loaded in the Core.  Use that.
-    			targetOntology = Core.getInstance().getTargetOntology();
-    		}
-    	}
-    	
-    	matchStart();
-    	buildSimilarityMatrices(); // align()
-    	if(performSelection && !this.isCancelled() ){
-        	select();	
-    	}
-    	matchEnd();
-    	//System.out.println("Classes alignments found: "+classesAlignmentSet.size());
-    	//System.out.println("Properties alignments found: "+propertiesAlignmentSet.size());
-    }
-    
+
+	public void match() throws Exception {
+
+		// setup the Ontologies
+		if( sourceOntology == null ) {
+			if( Core.getInstance().getSourceOntology() == null ) {
+				// no source ontology defined or loaded
+				throw new Exception("No source ontology is loaded!");
+			} else {
+				// the source Ontology is not defined, but a Source ontology is loaded in the Core. Use that.
+				sourceOntology = Core.getInstance().getSourceOntology();
+			}
+		}
+
+		if( targetOntology == null ) {
+			if( Core.getInstance().getTargetOntology() == null ) {
+				// no target ontology defined or loaded
+				throw new Exception("No target ontology is loaded!");
+			} else {
+				// the target Ontology is not defined as part of this matcher, but a Target ontology is loaded in the Core.  Use that.
+				targetOntology = Core.getInstance().getTargetOntology();
+			}
+		}
+
+		matchStart();
+		buildSimilarityMatrices(); // align()
+		if(performSelection && !this.isCancelled() ){
+			select();	
+		}
+		matchEnd();
+		//System.out.println("Classes alignments found: "+classesAlignmentSet.size());
+		//System.out.println("Properties alignments found: "+propertiesAlignmentSet.size());
+	}
+
 	/**
 	 * Match(), buildSimilarityMatrix() and select() are the only 3 public methods to be accessed by the system other then get and set methods
 	 * All other methods must be protected so that only subclasses may access them (can't be private because subclasses wouldn't be able to use them)
@@ -344,10 +325,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 * Instead of invoking the whole match() method of each matcher, it can only invoke this one, to avoid the selection process delay.
 	 */
 	public void buildSimilarityMatrices()throws Exception{
-    	beforeAlignOperations();//Template method to allow next developer to add code before align
-    	align();
-    	afterAlignOperations();//Template method to allow next developer to add code after align
-    }
+		beforeAlignOperations();//Template method to allow next developer to add code before align
+		align();
+		afterAlignOperations();//Template method to allow next developer to add code after align
+	}
 
 
 	/**
@@ -361,65 +342,65 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 * and it has to be different
 	 * It should not be needed often to override the select(), in all cases remember to consider all selection parameters threshold, num relations per source and target.
 	 */
-    public void select() {
-    	//this method is also invoked everytime the user change threshold or num relation in the table
-    	beforeSelectionOperations();//Template method to allow next developer to add code after selection
-    	selectAndSetAlignments();	
-    	afterSelectionOperations();//Template method to allow next developer to add code after selection
-    }
-    
-    //***************EMPTY TEMPLATE METHODS TO ALLOW USER TO ADD HIS OWN CODE****************************************
+	public void select() {
+		//this method is also invoked everytime the user change threshold or num relation in the table
+		beforeSelectionOperations();//Template method to allow next developer to add code after selection
+		selectAndSetAlignments();	
+		afterSelectionOperations();//Template method to allow next developer to add code after selection
+	}
 
-    //reset structures, this is important because anytime we invoke the match() for the secondtime (when we change some values in the table for example)
-    //we have to reset all structures. It's the first method that is invoked, when overriding call super.beforeAlignOperations(),
-    //IMPORTANT it also takes care of initializing time
+	//***************EMPTY TEMPLATE METHODS TO ALLOW USER TO ADD HIS OWN CODE****************************************
+
+	//reset structures, this is important because anytime we invoke the match() for the secondtime (when we change some values in the table for example)
+	//we have to reset all structures. It's the first method that is invoked, when overriding call super.beforeAlignOperations(),
+	//IMPORTANT it also takes care of initializing time
 	protected void beforeAlignOperations()  throws Exception{
-    	classesMatrix = null;
-    	propertiesMatrix = null;
-    	modifiedByUser = false;
-    	qualEvaluation = null;
-    	refEvaluation = null;
+		classesMatrix = null;
+		propertiesMatrix = null;
+		modifiedByUser = false;
+		qualEvaluation = null;
+		refEvaluation = null;
 	}
-    //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
-    protected void afterAlignOperations()  {
-    	// Setup the ontology IDs of the SimilarityMatrices.
-    }
-    //RESET ALIGNMENT STRUCTURES,     //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
-    public void beforeSelectionOperations() {
-    	classesAlignmentSet = null;
-    	propertiesAlignmentSet = null;
-    	qualEvaluation = null;
-    	refEvaluation = null;
-    	
-    	for( MatchingProgressDisplay mpd : progressDisplays ) {
-    		mpd.appendToReport("Performing mapping selection ...");
-    	}
-    }
-    //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
-    protected void afterSelectionOperations() {
-    	for( MatchingProgressDisplay mpd : progressDisplays ) {
-    		mpd.appendToReport(" Done.\n");
-    	}
-    } 
-    
-    //Time calculation, if you override this method remember to call super.afterSelectionOperations()
-    public void matchStart() {
-    	if( isProgressDisplayed() ) {
-    		setupProgress();  // if we are using the progress dialog, setup the variables
-    		for( MatchingProgressDisplay mpd : progressDisplays ) {
-    			mpd.matchingStarted(this);
-    		}
-    	}
-    	start = System.nanoTime();
-    	starttime = System.currentTimeMillis();
-    	
+	//TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
+	protected void afterAlignOperations()  {
+		// Setup the ontology IDs of the SimilarityMatrices.
 	}
-    //Time calculation, if you override this method remember to call super.afterSelectionOperations()
+	//RESET ALIGNMENT STRUCTURES,     //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
+	public void beforeSelectionOperations() {
+		classesAlignmentSet = null;
+		propertiesAlignmentSet = null;
+		qualEvaluation = null;
+		refEvaluation = null;
+
+		for( MatchingProgressDisplay mpd : progressDisplays ) {
+			mpd.appendToReport("Performing mapping selection ...");
+		}
+	}
+	//TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
+	protected void afterSelectionOperations() {
+		for( MatchingProgressDisplay mpd : progressDisplays ) {
+			mpd.appendToReport(" Done.\n");
+		}
+	} 
+
+	//Time calculation, if you override this method remember to call super.afterSelectionOperations()
+	public void matchStart() {
+		if( isProgressDisplayed() ) {
+			setupProgress();  // if we are using the progress dialog, setup the variables
+			for( MatchingProgressDisplay mpd : progressDisplays ) {
+				mpd.matchingStarted(this);
+			}
+		}
+		start = System.nanoTime();
+		starttime = System.currentTimeMillis();
+
+	}
+	//Time calculation, if you override this method remember to call super.afterSelectionOperations()
 	public void matchEnd() {
 		// TODO: Need to make sure this timing is correct.  - Cosmin ( Dec 17th, 2008 )
 		end = System.nanoTime();
-    	executionTime = (end-start)/1000000; // this time is in milliseconds.
-	    setSuccesfullReport();	
+		executionTime = (end-start)/1000000; // this time is in milliseconds.
+		setSuccesfullReport();	
 		if( isProgressDisplayed() ) {
 			allStepsDone();
 			for( MatchingProgressDisplay mpd : progressDisplays ) {
@@ -427,16 +408,16 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 				mpd.matchingComplete();
 			}
 		}
-    	
+
 	}
-    //***************INTERNAL METHODS THAT CAN BE USED BY ANY ABSTRACTMATCHER******************************************
-	
+	//***************INTERNAL METHODS THAT CAN BE USED BY ANY ABSTRACTMATCHER******************************************
+
 	//***************ALIGNING PHASE*****************//
 
-    protected void align() throws Exception {
-    	
-    	if( sourceOntology == null || targetOntology == null ) return;  // cannot align just one ontology 
-    	
+	protected void align() throws Exception {
+
+		if( sourceOntology == null || targetOntology == null ) return;  // cannot align just one ontology 
+
 		if(alignClass && !this.isCancelled() ) {
 			List<Node> sourceClassList = sourceOntology.getClassesList();
 			List<Node> targetClassList = targetOntology.getClassesList();
@@ -448,217 +429,32 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			List<Node> targetPropList = targetOntology.getPropertiesList();
 			propertiesMatrix = alignProperties(sourcePropList, targetPropList );					
 		}
-		
-		
-		if( alignInstances == true && 
-		    (sourceOntology.getInstances() == null || targetOntology.getInstances() == null) ) 
-		{
-			alignInstances = false;
-			for( MatchingProgressDisplay mpd : progressDisplays ) {
-				mpd.appendToReport("Instances were NOT matched since they were not loaded properly.");
-			}
-		}
-		
-		if(alignInstances && !this.isCancelled() ) {
-			
-			sourceInstanceDataset = sourceOntology.getInstances();
-			targetInstanceDataset = targetOntology.getInstances();
-			
-			// compile a list of source instances
-			if( !sourceInstanceDataset.isIterable() && !targetInstanceDataset.isIterable() ) {
-				throw new AMException("Neither the source or the target instance datasets are iterable.  We cannot instance match.");
-			}
-			
-			if( !sourceInstanceDataset.isIterable() ) {
-				throw new AMException("The source MUST be an iterable instance dataset.");
-			}
-			
-			List<Instance> sourceInstances = sourceInstanceDataset.getInstances();
-			
-			// for every individual in the source list, look for candidate individuals in the target
-			instanceAlignmentSet = alignInstances(sourceInstances);
-		}
 
 	}
-    
-    public boolean requiresTwoPasses(){
-    	return requiresTwoPasses;
-    }
 
-    protected List<MatchingPair> alignInstances(List<Instance> sourceInstances) throws Exception {
-    	
-    	List<MatchingPair> mappings = new ArrayList<MatchingPair>();
-    	
-    	Instance sourceInstance;
-    	for (int i = 0; i < sourceInstances.size(); i++) {
-    		//System.out.println(i);
-			sourceInstance = sourceInstances.get(i);
-    		List<String> labelList = sourceInstance.getProperty("label");
-    		
-    		if(labelList == null) continue;    		
-    		
-    		//TODO Manage multiple labels
-    		String label = labelList.get(0);
-    		
-    		label = processLabelBeforeCandidatesGeneration(label, sourceInstance.getType());
-    		
-    		String sourceType = sourceInstance.getType();
-    		List<MatchingPair> targetTypes = null;
-    		
-    		if( sourceType != null ) {
-    			if(useInstanceSchemaMappings && sourceOntology.getInstanceTypeMapping() != null){
-    				HashMap<String, List<MatchingPair>> typeMapping = sourceOntology.getInstanceTypeMapping();
-        			if( typeMapping.containsKey(sourceType) ) {
-        				targetTypes = typeMapping.get(sourceType);
-        			} else {
-        				targetTypes = null;
-        				//targetTypes = new ArrayList<MatchingPair>();
-        				//targetTypes.add( new MatchingPair(sourceType, sourceType)); // same type in the target
-        			}
-    			}
-    			
-    		}
-    		
-    		//targetTypes = null;
-    		
-    		
-    		List<Instance> allCandidates = new ArrayList<Instance>();
-    		
-    		MatchingPair mapping = null;
-    		if( targetTypes != null ){
-    			for( MatchingPair mp : targetTypes ) {
-        			List<Instance> targetCandidates = targetInstanceDataset.getCandidateInstances(label, mp.targetURI);
-        			allCandidates.addAll(targetCandidates);
-        		}
-        		mapping = alignInstanceCandidates(sourceInstance, allCandidates);
-    		}
-    		else{
-    			List<Instance> targetCandidates = targetInstanceDataset.getCandidateInstances(label, null);
-    			allCandidates.addAll(targetCandidates);
-    			mapping = alignInstanceCandidates(sourceInstance, allCandidates);
-    		}
-    		
-    		if(mapping != null) mappings.add(mapping);
-			
-//			stepDone();
-//			updateProgress();
-		}
-		return mappings;
-	}
-    
-    /**
-     * Basic implementation of the label processing before candidates retrieval. The type is not actually used
-     * but may be used by overriding matchers 
-     */
-	public String processLabelBeforeCandidatesGeneration(String label, String type) {
-		//Remove parenthesis and text inside 
-		if(label.contains("(")){
-			int beg = label.indexOf('(');
-			int end = label.indexOf(')');
-			label = label.substring(0,beg) + label.substring(end + 1);
-			label = label.trim();
-		}
-		//swaps text before and after comma. This is not safe! 
-		if(label.contains(",")){
-			String[] split = label.split(",");
-			label = split[1].trim() + " " + split[0].trim();
-		}
-			
-		String[] split = label.split(" ");
-		
-		label = "";
-		for (int i = 0; i < split.length; i++) {
-			if(split[i].length() == 1) continue;
-			label += split[i] + " ";
-		}
-		label = label.trim();
-		return label; 
-	}
-	
-	//It may be overridden by instance matcher, but also used outside
-	public List<ScoredInstance> rankInstanceCandidates(Instance sourceInstance,
-			List<Instance> targetCandidates) throws Exception {
-		double similarity;
-		List<ScoredInstance> scoredCandidates = new ArrayList<ScoredInstance>();
-		for (Instance candidate: targetCandidates) {
-			similarity = instanceSimilarity(sourceInstance, candidate);
-			//System.out.println("sim: " + similarity);
-			scoredCandidates.add(new ScoredInstance(candidate, similarity));
-		}
-		
-		Collections.sort(scoredCandidates, new ScoredInstanceComparator());	
-
-		return scoredCandidates;
-	}
-	
-	public List<ScoredInstance> filterInstanceCandidates(List<ScoredInstance> candidates){
-		return ScoredInstance.filter(candidates, 0.01);
-	}
-
-	//It may be overridden by instance matcher, but also used outside
-	public MatchingPair alignInstanceCandidates(Instance sourceInstance,
-			List<Instance> targetCandidates) throws Exception {
-		List<ScoredInstance> scoredCandidates = rankInstanceCandidates(sourceInstance, targetCandidates);
-		
-		//System.out.println(scoredCandidates);
-		
-		ScoredInstance scoredInstance = selectInstanceFromCandidates(scoredCandidates);
-		if(scoredInstance == null) return null;
-		return new MatchingPair(sourceInstance.getUri(), scoredInstance.getInstance().getUri(), scoredInstance.getScore(), MappingRelation.EQUIVALENCE);	
-	}
-
-	public ScoredInstance selectInstanceFromCandidates(List<ScoredInstance> scoredCandidates) {
-		if(scoredCandidates.size() > 0 && scoredCandidates.get(0).getScore() > param.threshold) return scoredCandidates.get(0);
-		return null;
-		
-//		scoredCandidates = filterInstanceCandidates(scoredCandidates);
-//		
-//		if(scoredCandidates.size() == 1){
-//			double candidateScore = scoredCandidates.get(0).getScore();
-//			System.out.println(param.threshold);
-//			if (candidateScore < param.threshold) return null;
-//			return scoredCandidates.get(0);
-//		}			
-//		return null;
-	}
-	//TO BE IMPLEMENTED BY INSTANCE MATCHERS
-	public double instanceSimilarity(Instance source, Instance target) throws Exception {
-		return 0;
-	}
-	
-	//Invoked by wrapping matchers which run multiple passes on inner matchers  
-	public void passStart(){
-		
-	}
-	
-	//Invoked by wrapping matchers which run multiple passes on inner matchers  
-	public void passEnd(){
-		if(!firstPassDone) firstPassDone = true;
-	}
-	
 	protected SimilarityMatrix alignProperties( List<Node> sourcePropList, List<Node> targetPropList) throws Exception {
-    		return alignNodesOneByOne(sourcePropList, targetPropList, alignType.aligningProperties);
+		return alignNodesOneByOne(sourcePropList, targetPropList, alignType.aligningProperties);
 	}
 
-    protected SimilarityMatrix alignClasses( List<Node> sourceClassList, List<Node> targetClassList)  throws Exception{
-			return alignNodesOneByOne(sourceClassList, targetClassList, alignType.aligningClasses);
+	protected SimilarityMatrix alignClasses( List<Node> sourceClassList, List<Node> targetClassList)  throws Exception{
+		return alignNodesOneByOne(sourceClassList, targetClassList, alignType.aligningClasses);
 	}
-	
-    protected SimilarityMatrix alignNodesOneByOne( List<Node> sourceList, List<Node> targetList, alignType typeOfNodes) throws Exception {
-    	
-    	if(param.completionMode && inputMatchers != null && inputMatchers.size() > 0){ 
-    		//run in optimized mode by mapping only concepts that have not been mapped in the input matcher
-    		if(typeOfNodes.equals(alignType.aligningClasses)){
-    			return alignUnmappedNodes(sourceList, targetList, inputMatchers.get(0).getClassesMatrix(), inputMatchers.get(0).getClassAlignmentSet(), alignType.aligningClasses);
-    		}
-    		else{
-    			return alignUnmappedNodes(sourceList, targetList, inputMatchers.get(0).getPropertiesMatrix(), inputMatchers.get(0).getPropertyAlignmentSet(), alignType.aligningProperties);
-    		}
+
+	protected SimilarityMatrix alignNodesOneByOne( List<Node> sourceList, List<Node> targetList, alignType typeOfNodes) throws Exception {
+
+		if(param.completionMode && inputMatchers != null && inputMatchers.size() > 0){ 
+			//run in optimized mode by mapping only concepts that have not been mapped in the input matcher
+			if(typeOfNodes.equals(alignType.aligningClasses)){
+				return alignUnmappedNodes(sourceList, targetList, inputMatchers.get(0).getClassesMatrix(), inputMatchers.get(0).getClassAlignmentSet(), alignType.aligningClasses);
+			}
+			else{
+				return alignUnmappedNodes(sourceList, targetList, inputMatchers.get(0).getPropertiesMatrix(), inputMatchers.get(0).getPropertyAlignmentSet(), alignType.aligningProperties);
+			}
 		}
-    	
-    	else if(param.largeOntologyMode ==true){
-    		//run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
-	    	SimilarityMatrix matrix = new SparseMatrix(sourceOntology, targetOntology, typeOfNodes);
+
+		else if(param.largeOntologyMode ==true){
+			//run as a generic matcher who maps all concepts by doing a quadratic number of comparisons
+			SimilarityMatrix matrix = new SparseMatrix(sourceOntology, targetOntology, typeOfNodes);
 			Node source;
 			Node target;
 			Mapping alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
@@ -666,7 +462,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 				source = sourceList.get(i);
 				for(int j = 0; j < targetList.size(); j++) {
 					target = targetList.get(j);
-					
+
 					if( !this.isCancelled() ) { alignment = alignTwoNodes(source, target, typeOfNodes, matrix); }
 					else { return matrix; }
 					if(alignment != null && alignment.getSimilarity() >= param.threshold)
@@ -679,62 +475,62 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 				if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
 			}
 			return matrix;
-    	}
-    	else{
-    		SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, typeOfNodes);
+		}
+		else{
+			SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, typeOfNodes);
 			Node source;
 			Node target;
-//			Mapping alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
-			
+			//			Mapping alignment = null; //Temp structure to keep sim and relation between two nodes, shouldn't be used for this purpose but is ok
+
 
 			int availableProcessors = Runtime.getRuntime().availableProcessors() - param.threadedReservedProcessors;
 			if( availableProcessors < 1 ) // this should not happen 
 				availableProcessors = 1;  // but in case it does, we fix it.
-			
+
 			if( param.threadedExecution && targetList.size() > availableProcessors ) {
 				threadGroup = new ThreadGroup(getName());
-				
+
 				// partition the search space into smaller pieces, then assign each partition to a thread
 				int sourceStartIndices[] = new int[availableProcessors];
 				int sourceEndIndices[]   = new int[availableProcessors];
 				int targetStartIndices[] = new int[availableProcessors];
 				int targetEndIndices[]   = new int[availableProcessors];
-				
+
 				int sourceRemainder = sourceList.size() % availableProcessors;
 				int sourceChunkSize = ( sourceList.size() - sourceRemainder ) / availableProcessors;
-				
+
 				int targetRemainder = targetList.size() % availableProcessors;
 				int targetChunkSize = ( targetList.size() - targetRemainder ) / availableProcessors;
-				
+
 				for( int i = 0; i < availableProcessors; i++ ) {
 					sourceStartIndices[i] = i*sourceChunkSize;
 					sourceEndIndices[i] = sourceStartIndices[i] + sourceChunkSize - 1;
-					
+
 					targetStartIndices[i] = i*targetChunkSize;
 					targetEndIndices[i] = targetStartIndices[i] + targetChunkSize - 1;
-					
+
 					if( i == (availableProcessors - 1) ) { 
 						sourceEndIndices[i] += sourceRemainder;
 						targetEndIndices[i] += targetRemainder;
 					}
 				}
-				
+
 				//updateProgress();
-				
+
 				// run the stages, spawn threads
 				for( int stage = 0; stage < availableProcessors; stage++ ) {
-					
+
 					for( int thread = 0; thread < availableProcessors; thread++ ) {
 						int targetIndex = (thread + stage) % availableProcessors;
-						
+
 						AbstractMatcherRunner runner = 
 								new AbstractMatcherRunner(sourceList, targetList, 
 										sourceStartIndices[thread], sourceEndIndices[thread], targetStartIndices[targetIndex], targetEndIndices[targetIndex], 
 										matrix, this, typeOfNodes);
-						
+
 						Thread newThread = new Thread(threadGroup, runner);
 						newThread.start();
-						
+
 						if( param.threadedOverlap ) {
 							// before spawning another thread, make sure we have room to do it
 							while( threadGroup.activeCount() >= availableProcessors ) { 
@@ -747,7 +543,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 							}
 						}
 					}
-			
+
 					// wait for the threads at this stage to end, in order to avoid overlaps
 					if( !param.threadedOverlap ) {
 						while( threadGroup.activeCount() > 0 ) { 
@@ -759,9 +555,9 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 							} 
 						}
 					}
-					
+
 				}
-				
+
 				// If running in overlap mode, we have to wait for the threads to end.
 				if( param.threadedOverlap ) {
 					while( threadGroup.activeCount() > 0 ) { 
@@ -773,19 +569,19 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 						} 
 					}
 				}
-				
+
 			} else {
 				// non threaded, normal execution
 				for(int i = 0; i < sourceList.size(); i++) {
 					source = sourceList.get(i);
 					for(int j = 0; j < targetList.size(); j++) {
 						target = targetList.get(j);
-						
+
 						if( !this.isCancelled() ) {
 							Mapping alignment = alignTwoNodes(source, target, typeOfNodes, matrix);
-							
+
 							matrix.set(i,j,alignment);
-							
+
 							if( isProgressDisplayed() ) {
 								stepDone(); // we have completed one step
 								if( alignment != null && alignment.getSimilarity() >= param.threshold ) {
@@ -800,19 +596,19 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 					if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
 				}
 			} 
-			
+
 			return matrix;
-    	}
+		}
 	}
-    
-    /**
-     * This method implements "Completion Mode", formerly called "OptimizedAbstractMatcher". 
-     */
-    protected SimilarityMatrix alignUnmappedNodes( List<Node> sourceList, List<Node> targetList, SimilarityMatrix inputMatrix,
+
+	/**
+	 * This method implements "Completion Mode", formerly called "OptimizedAbstractMatcher". 
+	 */
+	protected SimilarityMatrix alignUnmappedNodes( List<Node> sourceList, List<Node> targetList, SimilarityMatrix inputMatrix,
 			Alignment<Mapping> inputAlignmentSet, alignType typeOfNodes) throws Exception {
-    	
-    	MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, param.maxSourceAlign, param.maxTargetAlign);
-    	SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, typeOfNodes);
+
+		MappedNodes mappedNodes = new MappedNodes(sourceList, targetList, inputAlignmentSet, param.maxSourceAlign, param.maxTargetAlign);
+		SimilarityMatrix matrix = new ArraySimilarityMatrix(sourceOntology, targetOntology, typeOfNodes);
 		Node source;
 		Node target;
 		Mapping alignment; 
@@ -821,7 +617,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			source = sourceList.get(i);
 			for(int j = 0; j < targetList.size(); j++) {
 				target = targetList.get(j);
-				
+
 				if( !this.isCancelled() ) {
 					//if both nodes have not been mapped yet enough times
 					//we map them regularly
@@ -831,7 +627,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 					//else we take the alignment that was computed from the previous matcher
 					else{
 						alignment = inputMatrix.get(i, j);
-						
+
 						//alignment = new Mapping(inputAlignment.getEntity1(), inputAlignment.getEntity2(), inputAlignment.getSimilarity(), inputAlignment.getRelation());
 					}
 					matrix.set(i,j,alignment);
@@ -843,15 +639,15 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		}
 		return matrix;
 	}
-    
-    /**This is the main method that will be always ovverriden by the algorithm which perform the similarity between two generic nodes
-     * @param source the source concept
-     * @param target the target concept
-     * @param typeOfNodes can be alignType.alignClasses or alignType.aligningProperties, and it tells you if you in the alignProperties or classes function
-     * @return the alignment between the two nodes (a, b, sim, relation)
-     * @throws Exception are managed in the doInBackground() method, to interrupt the process to send a message to the user thow new AMException(MESSAGE)
-     */
-    protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix ) throws Exception {
+
+	/**This is the main method that will be always ovverriden by the algorithm which perform the similarity between two generic nodes
+	 * @param source the source concept
+	 * @param target the target concept
+	 * @param typeOfNodes can be alignType.alignClasses or alignType.aligningProperties, and it tells you if you in the alignProperties or classes function
+	 * @return the alignment between the two nodes (a, b, sim, relation)
+	 * @throws Exception are managed in the doInBackground() method, to interrupt the process to send a message to the user thow new AMException(MESSAGE)
+	 */
+	protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix ) throws Exception {
 		//TO BE IMPLEMENTED BY THE ALGORITHM, THIS IS JUST A FAKE ABSTRACT METHOD
 		double sim;
 		MappingRelation rel = MappingRelation.EQUIVALENCE;
@@ -863,38 +659,38 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		}
 		return new Mapping(source, target, sim, rel);
 	}
-	
-    /**
-     * A parallel version of alignTwoNodes().
-     */
-    protected Mapping alignTwoNodesParallel(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix ) throws Exception {
-    	// just return the serial implementation.  This method must be implemented by the programmer.
-    	return alignTwoNodes(source, target, typeOfNodes, matrix);
-    }
-    
-	//***************SELECTION PHASE*****************//
-    
-    protected void selectAndSetAlignments() {
-    	if(alignClass) {
-    		classesAlignmentSet = scanMatrix(classesMatrix);
-    	}
-    	if(alignProp) {
-    		propertiesAlignmentSet = scanMatrix(propertiesMatrix);
-    	}
+
+	/**
+	 * A parallel version of alignTwoNodes().
+	 */
+	public Mapping alignTwoNodesParallel(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix ) throws Exception {
+		// just return the serial implementation.  This method must be implemented by the programmer.
+		return alignTwoNodes(source, target, typeOfNodes, matrix);
 	}
 
-    protected Alignment<Mapping> scanMatrix(SimilarityMatrix matrix) {
-    	if( matrix == null ) { // there is no matrix, return empty set
-    		return new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
-    	}
-    	int columns = matrix.getColumns();
-    	int rows = matrix.getRows();
-    	// at most each source can be aligned with all targets (columns) it's the same of selecting ANY for source
+	//***************SELECTION PHASE*****************//
+
+	protected void selectAndSetAlignments() {
+		if(alignClass) {
+			classesAlignmentSet = scanMatrix(classesMatrix);
+		}
+		if(alignProp) {
+			propertiesAlignmentSet = scanMatrix(propertiesMatrix);
+		}
+	}
+
+	protected Alignment<Mapping> scanMatrix(SimilarityMatrix matrix) {
+		if( matrix == null ) { // there is no matrix, return empty set
+			return new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
+		}
+		int columns = matrix.getColumns();
+		int rows = matrix.getRows();
+		// at most each source can be aligned with all targets (columns) it's the same of selecting ANY for source
 		int realSourceRelations = Math.min(param.maxSourceAlign, columns);
 		// at most each target can be aligned with all sources (rows) it's the same of selecting ANY for target
 		int realTargetRelations = Math.min(param.maxTargetAlign, rows);
-		
-		
+
+
 		if(realSourceRelations == columns && realTargetRelations == rows) { //ANY TO ANY
 			return getThemAll(matrix);
 		}
@@ -905,8 +701,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		else if( realSourceRelations == columns && realTargetRelations != rows) {//ANY-N that includes also ANY-1
 			//AT LEAST ONE OF THE TWO CONSTRAINTs IS ANY, SO WE JUST HAVE TO PICK ENOUGH MAX VALUES TO SATISFY OTHER CONSTRAINT 
 			return scanForMaxValuesColumns(matrix, realTargetRelations);
-    	}
-    	else {
+		}
+		else {
 			//Both constraints are different from ANY //all cases like 1-1 1-3 or 5-4 or 30-6
 			if(realSourceRelations == 1 && realTargetRelations == 1) {//1-1 mapping
 				//we can use the hungarian algorithm which provide the optimal solution in polynomial time
@@ -934,14 +730,14 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			a = matrix.get(m.getSourceNode(), m.getTargetNode());
 			if( a != null ) aset.add(a);
 		}
-		
+
 		/* CODE FOR THE HUNGARIAN
 		 * 		//we can use the hungarian algorithm which provide the optimal solution in polynomial time
 		//the hungarian can be used to compute the maxim 1-1 matching or the minimum one, and ofc we need the maximum
 		double[][] similarityMatrix = matrix.getSimilarityMatrix(); //hungarian alg needs a double matrix
 		double[][] cuttedMatrix = Utility.cutMatrix(similarityMatrix, threshold); //those similarity values lower than the threshold cannot be selected so we remove them from the matrix setting them to 0
 		int[][] assignments = HungarianAlgorithm.hgAlgorithm(cuttedMatrix, HungarianAlgorithm.MAX_SUM_TYPE);
-		
+
 		//the array keeps the assignments
 		//if the rows are <= cols assignments are [row][col] else they are [col][row]
 		for(int i = 0; i < assignments.length; i++) {
@@ -958,13 +754,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 					aset.addAlignment(a);
 			}
 		}
-		*/
-		
+		 */
+
 		return aset;
 	}
 
 
-    protected Alignment<Mapping> scanForMaxValuesRows(SimilarityMatrix matrix, int numMaxValues) {
+	protected Alignment<Mapping> scanForMaxValuesRows(SimilarityMatrix matrix, int numMaxValues) {
 		Alignment<Mapping> aset = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 		Mapping toBeAdded;
 		//temp structure to keep the first numMaxValues best alignments for each source
@@ -982,10 +778,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		}
 		return aset;
 	}
-    
 
-    
-    protected Alignment<Mapping> scanForMaxValuesColumns(SimilarityMatrix matrix,int numMaxValues) {
+
+
+	protected Alignment<Mapping> scanForMaxValuesColumns(SimilarityMatrix matrix,int numMaxValues) {
 		Alignment<Mapping> aset = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 		Mapping toBeAdded;
 		//temp structure to keep the first numMaxValues best alignments for each source
@@ -1003,13 +799,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		}
 		return aset;
 	}
-    
-    /**
-     * Returns all mappings that have a similarity value >= the matcher threshold.
-     * @param matrix Matrix to scan for mappings.
-     * @return Alignment set of mappings. 
-     */
-    protected Alignment<Mapping> getThemAll(SimilarityMatrix matrix) {
+
+	/**
+	 * Returns all mappings that have a similarity value >= the matcher threshold.
+	 * @param matrix Matrix to scan for mappings.
+	 * @return Alignment set of mappings. 
+	 */
+	protected Alignment<Mapping> getThemAll(SimilarityMatrix matrix) {
 		Alignment<Mapping> aset = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
 		Mapping currentValue;
 		for(int i = 0; i<matrix.getColumns();i++) {
@@ -1022,155 +818,155 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return aset;
 	}
 
-    protected Alignment<Mapping> scanWithBothConstraints(SimilarityMatrix matrix, int sourceConstraint,int targetConstraint) {
-    	
-    	
-    	IntDoublePair fakePair = IntDoublePair.createFakePair();
-    	int rows = matrix.getRows();
-    	int cols = matrix.getColumns();
-    	
-    	Alignment<Mapping> aset = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
+	protected Alignment<Mapping> scanWithBothConstraints(SimilarityMatrix matrix, int sourceConstraint,int targetConstraint) {
 
-    	//I need to build a copy of the similarity matrix to work on it, i just need the similarity values
-    	//and i don't need values higher than threshold so i'll just set them as fake so they won't be selected
-    	double[][] workingMatrix = new double[rows][cols];
-    	double sim;
-    	for(int i = 0; i < rows; i++) {
-    		for(int j = 0; j < cols; j++) {
-    			if( matrix.get(i,j) != null ) {
-    				sim = matrix.get(i,j).getSimilarity();
-    			} else {
-    				sim = 0;
-    			}
-    			if(sim >= param.threshold)
-    				workingMatrix[i][j] = sim;
-    			else workingMatrix[i][j] = IntDoublePair.fake;
-    		}
-    	}
-    	
-    	//for each source (row) i need to find the SourceConstraint best values
-    	//for each maxvalue i need to remember the similarity value and the index of the correspondent column
-    	//we init it all to (-1,-1)
-    	IntDoublePair[][] rowsMaxValues = new IntDoublePair[matrix.getRows()][sourceConstraint];
-    	for(int i= 0; i < rows; i++) {
-    		for(int j = 0 ; j < sourceConstraint; j++) {
-    			rowsMaxValues[i][j] = fakePair;
-    		}
-    	}
-    	
-    	//for each target (column) i need to find the targetConstraint best values
-    	//for each maxvalue i need to remember the similarity value and the index of the correspondent column
-    	//we init it all to (-1,-1)
-    	IntDoublePair[][] colsMaxValues = new IntDoublePair[matrix.getColumns()][targetConstraint];
-    	for(int i= 0; i < cols; i++) {
-    		for(int j = 0 ; j < targetConstraint; j++) {
-    			colsMaxValues[i][j] = fakePair;
-    		}
-    	}
-    	
-    	IntDoublePair maxPairOfRow = null;
-    	IntDoublePair prevMaxPairOfCol = null;
-    	IntDoublePair newMaxPairOfCol = null;
-    	
-    	//we must continue until the situation is stable
-    	//if is a 3-4 mapping it means that we can find at most three alignments for each source and 4 for each target, but not always we can find all
-    	boolean somethingChanged = true;
-    	while(somethingChanged) {
-    		somethingChanged = false;
-    		
-        	for(int i = 0; i < rows; i++) {
-        		
-        		//if I haven't found all best alignments for this row
-        		if(rowsMaxValues[i][0].isFake()) {
-        			
-        			//I need to get the max of this row, that is ok also for the column
-        			// so the max of this row must be higher the the max previously selected for that column
-        			//this do while ends if i find one or if I don't find any so all the cells are fake and the maximum selected is fake too
-        			do {
-        				//get the max value for this row and the associated column index
-                		maxPairOfRow = Utility.getMaxOfRow(workingMatrix, i);
 
-                		if(maxPairOfRow.isFake()) {
-                			break; //all the value of these lines are fake
-                		}
-                		else {
-                    		//the minimum of the best values for the column corrisponding to this max
-                    		prevMaxPairOfCol = colsMaxValues[maxPairOfRow.index][0];
-                    		
-                			//and i have to set that matrix value to fake so that that row won't select again that value
-                			workingMatrix[i][maxPairOfRow.index] = IntDoublePair.fake;
-                		}
-        			}
-                    while(maxPairOfRow.value <= prevMaxPairOfCol.value);
-        			
-        			//I don't need the workingMatrix anymore
-        			//workingMatrix = null;
-        			
-            		//if my value is higher than than the minimum of the best values for this column
-            		//this value becomes one of the best values and the minimum one is discarded
-        			//so if the previous while ended because of the while condition not the break one
-        			if(!maxPairOfRow.isFake()) {
-        			
-            			somethingChanged = true;
-            			
-            			//this value will be one of the best for this column and row, i had to them and update order.
-            			//prevMaxPairOfCol is not anymore one of the best values for this column
-            			//i'll switch it with the new one, but i also have to remove it from the best values of his row putting a fake one in it.
-            			//i also have to modify the matrix so that that row won't select that max again.
-            			newMaxPairOfCol = new IntDoublePair(i,maxPairOfRow.value);
-            			colsMaxValues[maxPairOfRow.index][0] = newMaxPairOfCol;
-            			//reorder that array of best values of this column to have minimum at the beginning
-            			//we have to move the first element to get the right position
-            			Utility.adjustOrderPairArray(colsMaxValues[maxPairOfRow.index],0);
-            			
-            			//the max of this row found must be added to the best values for this row, and then order the array,
-            			rowsMaxValues[i][0] = maxPairOfRow;
-            			//we have to move the first element to get the right position
-            			Utility.adjustOrderPairArray(rowsMaxValues[i],0);
-            			
-            			
-            			if(!prevMaxPairOfCol.isFake()) {
-                			//the prev best values has to be removed also from that row best values so i have to find it and set it to fake and reorder
-            				for(int k = 0; k < rowsMaxValues[prevMaxPairOfCol.index].length; k++) {
-            					if(rowsMaxValues[prevMaxPairOfCol.index][k].index == maxPairOfRow.index) {
-            						rowsMaxValues[prevMaxPairOfCol.index][k] = fakePair;
-                        			Utility.adjustOrderPairArray(rowsMaxValues[prevMaxPairOfCol.index], k);
-            						break;
-            					}
-            				}
-            			}
-            		}
-        		}
-        	}
-    	}
-    	
-    	/*FOR DEBUGGING
+		IntDoublePair fakePair = IntDoublePair.createFakePair();
+		int rows = matrix.getRows();
+		int cols = matrix.getColumns();
+
+		Alignment<Mapping> aset = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
+
+		//I need to build a copy of the similarity matrix to work on it, i just need the similarity values
+		//and i don't need values higher than threshold so i'll just set them as fake so they won't be selected
+		double[][] workingMatrix = new double[rows][cols];
+		double sim;
+		for(int i = 0; i < rows; i++) {
+			for(int j = 0; j < cols; j++) {
+				if( matrix.get(i,j) != null ) {
+					sim = matrix.get(i,j).getSimilarity();
+				} else {
+					sim = 0;
+				}
+				if(sim >= param.threshold)
+					workingMatrix[i][j] = sim;
+				else workingMatrix[i][j] = IntDoublePair.fake;
+			}
+		}
+
+		//for each source (row) i need to find the SourceConstraint best values
+		//for each maxvalue i need to remember the similarity value and the index of the correspondent column
+		//we init it all to (-1,-1)
+		IntDoublePair[][] rowsMaxValues = new IntDoublePair[matrix.getRows()][sourceConstraint];
+		for(int i= 0; i < rows; i++) {
+			for(int j = 0 ; j < sourceConstraint; j++) {
+				rowsMaxValues[i][j] = fakePair;
+			}
+		}
+
+		//for each target (column) i need to find the targetConstraint best values
+		//for each maxvalue i need to remember the similarity value and the index of the correspondent column
+		//we init it all to (-1,-1)
+		IntDoublePair[][] colsMaxValues = new IntDoublePair[matrix.getColumns()][targetConstraint];
+		for(int i= 0; i < cols; i++) {
+			for(int j = 0 ; j < targetConstraint; j++) {
+				colsMaxValues[i][j] = fakePair;
+			}
+		}
+
+		IntDoublePair maxPairOfRow = null;
+		IntDoublePair prevMaxPairOfCol = null;
+		IntDoublePair newMaxPairOfCol = null;
+
+		//we must continue until the situation is stable
+		//if is a 3-4 mapping it means that we can find at most three alignments for each source and 4 for each target, but not always we can find all
+		boolean somethingChanged = true;
+		while(somethingChanged) {
+			somethingChanged = false;
+
+			for(int i = 0; i < rows; i++) {
+
+				//if I haven't found all best alignments for this row
+				if(rowsMaxValues[i][0].isFake()) {
+
+					//I need to get the max of this row, that is ok also for the column
+					// so the max of this row must be higher the the max previously selected for that column
+					//this do while ends if i find one or if I don't find any so all the cells are fake and the maximum selected is fake too
+					do {
+						//get the max value for this row and the associated column index
+						maxPairOfRow = Utility.getMaxOfRow(workingMatrix, i);
+
+						if(maxPairOfRow.isFake()) {
+							break; //all the value of these lines are fake
+						}
+						else {
+							//the minimum of the best values for the column corrisponding to this max
+							prevMaxPairOfCol = colsMaxValues[maxPairOfRow.index][0];
+
+							//and i have to set that matrix value to fake so that that row won't select again that value
+							workingMatrix[i][maxPairOfRow.index] = IntDoublePair.fake;
+						}
+					}
+					while(maxPairOfRow.value <= prevMaxPairOfCol.value);
+
+					//I don't need the workingMatrix anymore
+					//workingMatrix = null;
+
+					//if my value is higher than than the minimum of the best values for this column
+					//this value becomes one of the best values and the minimum one is discarded
+					//so if the previous while ended because of the while condition not the break one
+					if(!maxPairOfRow.isFake()) {
+
+						somethingChanged = true;
+
+						//this value will be one of the best for this column and row, i had to them and update order.
+						//prevMaxPairOfCol is not anymore one of the best values for this column
+						//i'll switch it with the new one, but i also have to remove it from the best values of his row putting a fake one in it.
+						//i also have to modify the matrix so that that row won't select that max again.
+						newMaxPairOfCol = new IntDoublePair(i,maxPairOfRow.value);
+						colsMaxValues[maxPairOfRow.index][0] = newMaxPairOfCol;
+						//reorder that array of best values of this column to have minimum at the beginning
+						//we have to move the first element to get the right position
+						Utility.adjustOrderPairArray(colsMaxValues[maxPairOfRow.index],0);
+
+						//the max of this row found must be added to the best values for this row, and then order the array,
+						rowsMaxValues[i][0] = maxPairOfRow;
+						//we have to move the first element to get the right position
+						Utility.adjustOrderPairArray(rowsMaxValues[i],0);
+
+
+						if(!prevMaxPairOfCol.isFake()) {
+							//the prev best values has to be removed also from that row best values so i have to find it and set it to fake and reorder
+							for(int k = 0; k < rowsMaxValues[prevMaxPairOfCol.index].length; k++) {
+								if(rowsMaxValues[prevMaxPairOfCol.index][k].index == maxPairOfRow.index) {
+									rowsMaxValues[prevMaxPairOfCol.index][k] = fakePair;
+									Utility.adjustOrderPairArray(rowsMaxValues[prevMaxPairOfCol.index], k);
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		/*FOR DEBUGGING
     	for(int i = 0; i < rows; i++) {
     		for(int j = 0; j < cols; j++) {
     			System.out.print(workingMatrix[i][j]+" ");
     		}
     		System.out.println("");
     	}
-    	*/
-    	
-    	//now we have the alignments into rowMaxValues
-    	IntDoublePair toBeAdded;
-    	for(int i = 0; i < rows; i++) {
-    		for(int j = 0; j < sourceConstraint; j++) {
-    			toBeAdded = rowsMaxValues[i][j];
-    			if(!toBeAdded.isFake()) {
-        			aset.add(matrix.get(i,toBeAdded.index));
-    			}
-    		}
-    	}
-    	
-  
-    	return aset;
-    }
-   
+		 */
+
+		//now we have the alignments into rowMaxValues
+		IntDoublePair toBeAdded;
+		for(int i = 0; i < rows; i++) {
+			for(int j = 0; j < sourceConstraint; j++) {
+				toBeAdded = rowsMaxValues[i][j];
+				if(!toBeAdded.isFake()) {
+					aset.add(matrix.get(i,toBeAdded.index));
+				}
+			}
+		}
+
+
+		return aset;
+	}
+
 
 	//*****************USER ALIGN METHOD*****************************
-    
+
 	public void addManualAlignments(ArrayList<Mapping> alignments) throws Exception {
 		Iterator<Mapping> it = alignments.iterator();
 		Mapping al;
@@ -1191,23 +987,23 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		select();
 		modifiedByUser = true;
 	}
-		
-    public void addManualClassAlignment(Mapping a) throws Exception {
-    	if( classesMatrix == null ) throw new Exception("The classMatrix is not initialized."); 
-    	if( a == null ) throw new Exception("Cannot set a null alignment.");
-    	addManualAlignment(a, classesMatrix);
-    }
 
-    public void addManualPropAlignment(Mapping a) throws Exception {
-    	if( classesMatrix == null ) throw new Exception("The propertiesMatrix is not initialized."); 
-    	if( a == null ) throw new Exception("Cannot set a null alignment.");
-    	addManualAlignment(a, propertiesMatrix);
-    }
-    
-    public void addManualAlignment(Mapping a, SimilarityMatrix matrix) {
-    	matrix.set(a.getEntity1().getIndex(), a.getEntity2().getIndex(), a);
-    }
-    
+	public void addManualClassAlignment(Mapping a) throws Exception {
+		if( classesMatrix == null ) throw new Exception("The classMatrix is not initialized."); 
+		if( a == null ) throw new Exception("Cannot set a null alignment.");
+		addManualAlignment(a, classesMatrix);
+	}
+
+	public void addManualPropAlignment(Mapping a) throws Exception {
+		if( classesMatrix == null ) throw new Exception("The propertiesMatrix is not initialized."); 
+		if( a == null ) throw new Exception("Cannot set a null alignment.");
+		addManualAlignment(a, propertiesMatrix);
+	}
+
+	public void addManualAlignment(Mapping a, SimilarityMatrix matrix) {
+		matrix.set(a.getEntity1().getIndex(), a.getEntity2().getIndex(), a);
+	}
+
 	//*****************SET AND GET methods ******************************************
 	public AbstractMatcherParametersPanel getParametersPanel() {
 		//This method must create and return the AbstractMatcherParameter subclass so that the user can select additional parameters needed by the matcher
@@ -1217,78 +1013,78 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		//You may need to override this method to pass some more information to the panel, in that case instead of initializing the panel in the constructor 
 		//you will have to override this method this way: "return new MyParameterPanel(with some more parameters); (see manualCombinationMatcher structure
 	}
-	
+
 	public Alignment<Mapping> getAlignment() {
-    	Alignment<Mapping> aligns = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
-    	if(areClassesAligned()) {
-    		aligns.addAll(classesAlignmentSet);
-    	}
-    	if(arePropertiesAligned()) {
-    		aligns.addAll(propertiesAlignmentSet);
-    	}
-    	return aligns;
-    }
+		Alignment<Mapping> aligns = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
+		if(areClassesAligned()) {
+			aligns.addAll(classesAlignmentSet);
+		}
+		if(arePropertiesAligned()) {
+			aligns.addAll(propertiesAlignmentSet);
+		}
+		return aligns;
+	}
 
 	@Deprecated
-    public Alignment<Mapping> getClassAlignmentSet() {
-    	return classesAlignmentSet;
-    }
+	public Alignment<Mapping> getClassAlignmentSet() {
+		return classesAlignmentSet;
+	}
 
 	@Deprecated
-    public Alignment<Mapping> getPropertyAlignmentSet() {
-    	return propertiesAlignmentSet;
-    }
-	
+	public Alignment<Mapping> getPropertyAlignmentSet() {
+		return propertiesAlignmentSet;
+	}
+
 	@Deprecated
-    /**AgreementMaker doesn't calculate instances matching, if you add this you should also modify getAlignmenSet*/
-    public Alignment<Mapping> getInstanceAlignmentSet() {
-    	int sourceOntologyID = -1;
-    	if( sourceOntology != null ) sourceOntologyID = sourceOntology.getID();
-    	
-    	int targetOntologyID = -1;
-    	if( targetOntology != null ) targetOntologyID = targetOntology.getID();
-    	
-    	return new Alignment<Mapping>(sourceOntologyID, targetOntologyID);
-    }
-    
-    @Deprecated
-    public boolean areClassesAligned() {
-    	return classesAlignmentSet != null;
-    }
-    
-   
-    @Deprecated
-    public boolean arePropertiesAligned() {
-    	return propertiesAlignmentSet != null;
-    }
-    
-    @Deprecated
-    public boolean isSomethingAligned() {
-    	return areClassesAligned() || arePropertiesAligned();
-    }
-    
-    @Deprecated
-    public int getNumberClassAlignments() {
-    	int numAlign = 0;
+	/**AgreementMaker doesn't calculate instances matching, if you add this you should also modify getAlignmenSet*/
+	public Alignment<Mapping> getInstanceAlignmentSet() {
+		int sourceOntologyID = -1;
+		if( sourceOntology != null ) sourceOntologyID = sourceOntology.getID();
+
+		int targetOntologyID = -1;
+		if( targetOntology != null ) targetOntologyID = targetOntology.getID();
+
+		return new Alignment<Mapping>(sourceOntologyID, targetOntologyID);
+	}
+
+	@Deprecated
+	public boolean areClassesAligned() {
+		return classesAlignmentSet != null;
+	}
+
+
+	@Deprecated
+	public boolean arePropertiesAligned() {
+		return propertiesAlignmentSet != null;
+	}
+
+	@Deprecated
+	public boolean isSomethingAligned() {
+		return areClassesAligned() || arePropertiesAligned();
+	}
+
+	@Deprecated
+	public int getNumberClassAlignments() {
+		int numAlign = 0;
 		if(areClassesAligned()) {
 			numAlign += getClassAlignmentSet().size();
 		}
 		return numAlign;
-    }
-    
-    @Deprecated
-    public int getNumberPropAlignments() {
-    	int numAlign = 0;
+	}
+
+	@Deprecated
+	public int getNumberPropAlignments() {
+		int numAlign = 0;
 		if(arePropertiesAligned()) {
 			numAlign += getPropertyAlignmentSet().size();
 		}
 		return numAlign;
-    }
-    
-    @Deprecated
-    public int getTotalNumberAlignments() {
-    	return getNumberClassAlignments()+getNumberPropAlignments();
-    }
+	}
+
+	@Deprecated
+	public int getTotalNumberAlignments() {
+		return getNumberClassAlignments()+getNumberPropAlignments();
+	}
 
 	public int getIndex() {
 		return index;
@@ -1301,10 +1097,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	@Override
 	public String getName() { return getProperty( PropertyKey.NAME ); }
 	public void setName(String name) { setProperty(PropertyKey.NAME, name); }
-	
+
 	@Deprecated
 	public MatchersRegistry getRegistryEntry() { return registryEntry; }
-	
+
 	@Deprecated
 	public void setRegistryEntry(MatchersRegistry name) { this.registryEntry = name; }
 
@@ -1315,7 +1111,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	public void setNeedsParam(boolean needsParam) { this.needsParam = needsParam; }
 
 	public boolean isCompletionMode() { return param.completionMode; }
-	
+
 	public DefaultMatcherParameters getParam() {
 		return param;
 	}
@@ -1323,598 +1119,588 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	public void setParameters(DefaultMatcherParameters param) {
 		this.param = param;
 	}
-	
+
 	/**
 	 * Use {@link #setParameters(DefaultMatcherParameters) instead. -- Cosmin.
 	 */
-	@Deprecated
-	public void setParam(DefaultMatcherParameters param) {
-		this.param = param;
-	}
+	 @Deprecated
+	 public void setParam(DefaultMatcherParameters param) {
+		 setParameters(param);
+	 }
 
-	@Deprecated
-	public boolean isShown() {
-		return isShown;
-	}
+	 @Deprecated
+	 public boolean isShown() {
+		 return isShown;
+	 }
 
-	@Deprecated
-	public void setShown(boolean isShown) {
-		this.isShown = isShown;
-		
-		// fire an event to let all the listeners know that the visibility of this abstract matcher
-		MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(this, MatchingTaskChangeEvent.EventType.MATCHER_VISIBILITY_CHANGED, getID());
-		Core.getInstance().fireEvent(evt);
-	}
-	
-	@Deprecated
-	public boolean getShown() { return isShown; }
-	
+	 @Deprecated
+	 public void setShown(boolean isShown) {
+		 this.isShown = isShown;
 
-	@Deprecated
-	public double getThreshold() {
-		return param.threshold;
-	}
+		 // fire an event to let all the listeners know that the visibility of this abstract matcher
+		 MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(this, MatchingTaskChangeEvent.EventType.MATCHER_VISIBILITY_CHANGED, getID());
+		 Core.getInstance().fireEvent(evt);
+	 }
 
-	@Deprecated
-	public void setThreshold(double threshold) {
-		if( param == null ) { param = new DefaultMatcherParameters(); }
-		param.threshold = threshold;
-	}
+	 @Deprecated
+	 public boolean getShown() { return isShown; }
 
-	public int getMaxSourceAlign() {
-		return param.maxSourceAlign;
-	}
 
-	public void setMaxSourceAlign(int maxSourceAlign) {
-		param.maxSourceAlign = maxSourceAlign;
-	}
+	 @Deprecated
+	 public double getThreshold() {
+		 return param.threshold;
+	 }
 
-	public int getMaxTargetAlign() {
-		return param.maxTargetAlign;
-	}
+	 @Deprecated
+	 public void setThreshold(double threshold) {
+		 if( param == null ) { param = new DefaultMatcherParameters(); }
+		 param.threshold = threshold;
+	 }
 
-	public void setMaxTargetAlign(int maxTargetAlign) {
-		param.maxTargetAlign = maxTargetAlign;
-	}
+	 public int getMaxSourceAlign() {
+		 return param.maxSourceAlign;
+	 }
 
-	
-	
-	public int getMinInputMatchers() {
-		return minInputMatchers;
-	}
+	 public void setMaxSourceAlign(int maxSourceAlign) {
+		 param.maxSourceAlign = maxSourceAlign;
+	 }
 
-	public void setMinInputMatchers(int minInputMatchers) {
-		this.minInputMatchers = minInputMatchers;
-	}
+	 public int getMaxTargetAlign() {
+		 return param.maxTargetAlign;
+	 }
 
-	public int getMaxInputMatchers() {
-		return maxInputMatchers;
-	}
+	 public void setMaxTargetAlign(int maxTargetAlign) {
+		 param.maxTargetAlign = maxTargetAlign;
+	 }
 
-	public void setMaxInputMatchers(int maxInputMatchers) {
-		this.maxInputMatchers = maxInputMatchers;
-	}
 
-	public List<AbstractMatcher> getInputMatchers() {
-		return inputMatchers;
-	}
-    
-	public void addInputMatcher(AbstractMatcher a) {
-		if( inputMatchers == null ) inputMatchers = new ArrayList<AbstractMatcher>();
-		inputMatchers.add(a);
-	}
 
-	public boolean isModifiedByUser() {
-		return modifiedByUser;
-	}
+	 public int getMinInputMatchers() {
+		 return minInputMatchers;
+	 }
 
-	public void setModifiedByUser(boolean modifiedByUser) {
-		this.modifiedByUser = modifiedByUser;
-	}
+	 public void setMinInputMatchers(int minInputMatchers) {
+		 this.minInputMatchers = minInputMatchers;
+	 }
 
-	public ReferenceEvaluationData getRefEvaluation() {
-		return refEvaluation;
-	}
+	 public int getMaxInputMatchers() {
+		 return maxInputMatchers;
+	 }
 
-	public void setRefEvaluation(ReferenceEvaluationData evaluation) {
-		this.refEvaluation = evaluation;
-	}
-	
-	public boolean isRefEvaluated() {
-		return refEvaluation != null;
-	}
-	
-	public QualityEvaluationData getQualEvaluation() {
-		return qualEvaluation;
-	}
+	 public void setMaxInputMatchers(int maxInputMatchers) {
+		 this.maxInputMatchers = maxInputMatchers;
+	 }
 
-	public void setQualEvaluation(QualityEvaluationData qualEvaluation) {
-		this.qualEvaluation = qualEvaluation;
-	}
-	
-	public boolean isQualEvaluated() {
-		return qualEvaluation != null;
-	}
-	
-	
-	public boolean isAlignProp() {
-		return alignProp;
-	}
+	 public List<AbstractMatcher> getInputMatchers() {
+		 return inputMatchers;
+	 }
 
-	public boolean isAlignClass() {
-		return alignClass;
-	}
+	 public void addInputMatcher(AbstractMatcher a) {
+		 if( inputMatchers == null ) inputMatchers = new ArrayList<AbstractMatcher>();
+		 inputMatchers.add(a);
+	 }
 
-	public void setAlignProp(boolean alignProp) {
-		this.alignProp = alignProp;
-	}
+	 public boolean isModifiedByUser() {
+		 return modifiedByUser;
+	 }
 
-	public void setAlignClass(boolean alignClass) {
-		this.alignClass = alignClass;
-	}
-	
-	public SimilarityMatrix getClassesMatrix() {
-		return classesMatrix;
-	}
+	 public void setModifiedByUser(boolean modifiedByUser) {
+		 this.modifiedByUser = modifiedByUser;
+	 }
 
-	public SimilarityMatrix getPropertiesMatrix() {
-		return propertiesMatrix;
-	}
-	
-	public long getExecutionTime() {
-		return executionTime;
-	}
+	 public ReferenceEvaluationData getRefEvaluation() {
+		 return refEvaluation;
+	 }
 
-	public void setExecutionTime(long executionTime) {
-		this.executionTime = executionTime;
-	}
-	
-	public void setInputMatchers(List<AbstractMatcher> inputMatchers) {
-		this.inputMatchers = inputMatchers;
-	}
-	//***********************MEthods used by the interface for some small tasks**************************
-	
-	/**
-	 * Matcher details you can override this method to add or change you matcher details if needed, it is only invoked clicking on the button view details in the control panel
-	 * @return a string with details of the matchers
-	 */
-	public String getDetails() {
-		String s = "";
-		s+= "Matcher: "+getName()+"\n\n";
-		s+= "Brief Description:\n\n";
-		s += getDescriptionString()+"\n";
-		s += "Characteristics\n\n";
-		s += getAttributesString()+"\n";
-		s += "References\n\n";
-		s += getReferenceString()+"\n";
-		return s;
-	}
-	
-	public String getAttributesString() {
-		String s = "";
-		s+= "Additional parameters required: "+Utility.getYesNo(needsParam())+"\n";
-		s+= "Min number of matchers in input: "+Utility.getStringFromNumRelInt(getMinInputMatchers())+"\n";
-		s+= "Max number of matchers in input: "+Utility.getStringFromNumRelInt(getMaxInputMatchers())+"\n";
-		s+= "Performs Classes alignment: "+Utility.getYesNo(isAlignClass())+"\n";
-		s+= "Performs Properties alignment: "+Utility.getYesNo(isAlignProp())+"\n";
-		return s;
-	}
-	/**
-	 * All matchers should implement this method to return a description of the algorithm used, the String should finish with \n;
-	 * @return
-	 */
-	public String getDescriptionString() {
-		return "No description available for this matcher\n";
-	}
-	public String getReferenceString() {
-		return "No references available for this matcher\n";
-	}
+	 public void setRefEvaluation(ReferenceEvaluationData evaluation) {
+		 this.refEvaluation = evaluation;
+	 }
 
-	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
-	public double getDefaultThreshold() {
-		// TODO Auto-generated method stub
-		return 0.6;
-	}
-	
-	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
-	public int getDefaultMaxSourceRelations() {
-		// TODO Auto-generated method stub
-		return 1;
-	}
+	 public boolean isRefEvaluated() {
+		 return refEvaluation != null;
+	 }
 
-	/**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
-	public int getDefaultMaxTargetRelations() {
-		// TODO Auto-generated method stub
-		return 1;
-	}
-	
-	/**This method is invoked at the end of the matching process if the process successed, to give a feedback to the user. Developers can ovveride it to add additional informations.
-	 * Developers can also add a global variable like message that is set dinamically during the matching process to have different type of feedback.
-	 * **/
-	
-	public void setSuccesfullReport() {
-		report =  "Matching Process Complete Succesfully!\n\n";
-		if(areClassesAligned()) {
-			report+= "Classes alignments found: "+classesAlignmentSet.size()+"\n";
-		}
-		if(arePropertiesAligned()) {
-			report+= "Properties alignments found: "+propertiesAlignmentSet.size()+"\n";
-		}
-		if(executionTime != 0) {
-			report += "Total execution time (h:m:s:ms): "+Utility.getFormattedTime(executionTime)+"\n";
-		}
-	}
-	
-	public String getReport() {
-		return report;
-	}
+	 public QualityEvaluationData getQualEvaluation() {
+		 return qualEvaluation;
+	 }
 
-	public void setReport(String report) {
-		this.report = report;
-	}
-	
-	public MappingRelation getRelation() {
-		return relation;
-	}
+	 public void setQualEvaluation(QualityEvaluationData qualEvaluation) {
+		 this.qualEvaluation = qualEvaluation;
+	 }
 
-	public void setRelation(MappingRelation relation) {
-		this.relation = relation;
-	}     
-	
-	public boolean isOptimized() {
-		return param.completionMode;
-	}
+	 public boolean isQualEvaluated() {
+		 return qualEvaluation != null;
+	 }
 
-	public void setOptimized(boolean optimized) {
-		param.completionMode = optimized;
-		if(maxInputMatchers < 1){
-			maxInputMatchers = 1;
-		}
-	}
-	
-	public String getAlignmentsStrings() {
-		//The small arrow must be different from the bigger used in the alignments or the parseReference will identify these lines as alignments
-		String result = "";
-		result+= "Class Alignments: "+classesAlignmentSet.size()+"\n";
-		result += "Source Concept\t ->\tTarget Concept\tSimilarity\tRelation\n\n";
-		result += classesAlignmentSet.getStringList();
-		result+= "Property Alignments: "+propertiesAlignmentSet.size()+"\n";
-		result += "Source Concept\t->\tTarget Concept\tSimilarity\tRelation\n\n";
-		result += propertiesAlignmentSet.getStringList();
-		return result;
-	}
-	
-	/**
-	 * More configurable getALignmentsString: you can select whether or not to print classes and properties,
-	 * and whether to print localNames or URIs
-	 */
-	public String getAlignmentsStrings(boolean classes, boolean properties, boolean URIs) {
-		//The small arrow must be different from the bigger used in the alignments or the parseReference will identify these lines as alignments
-		String result = "";
-		if(classes){
-			result+= "Class Alignments: "+classesAlignmentSet.size()+"\n";
-			result += "Source Concept\t ->\tTarget Concept\tSimilarity\tRelation\tProvenance\n\n";
-			if(URIs == false)
-				result += classesAlignmentSet.getStringList();
-			else result += classesAlignmentSet.getStringList(true);
-		}
-		if(properties){
-			result+= "Property Alignments: "+propertiesAlignmentSet.size()+"\n";
-			result += "Source Concept\t->\tTarget Concept\tSimilarity\tRelation\tProvenance\n\n";
-			result += propertiesAlignmentSet.getStringList();
-		}
-		return result;
-	}
-	
-	public AbstractMatcher copy() throws Exception {
-		AbstractMatcher cloned = MatcherFactory.getMatcherInstance(getRegistryEntry(), Core.getInstance().getMatcherInstances().size());
-		cloned.setInputMatchers(getInputMatchers());
-		cloned.setParam(getParam());
-		cloned.setThreshold(getThreshold());
-		cloned.setMaxSourceAlign(getMaxSourceAlign());
-		cloned.setMaxTargetAlign(getMaxTargetAlign());
-		cloned.setAlignClass(isAlignClass());
-		cloned.setAlignProp(isAlignProp());
-		cloned.match();
-		return cloned;
-		
-	}
-	
-	@Deprecated
-	public Color getColor() { return color; }
-	
-	@Deprecated
-	public void setColor(Color color) { 
-		this.color = color;
-		MatchingTaskChangeEvent mce = new MatchingTaskChangeEvent(this, MatchingTaskChangeEvent.EventType.MATCHER_COLOR_CHANGED);
-		Core.getInstance().fireEvent(mce);
-	}
-	
-	//*************************UTILITY METHODS**************************************
-	public boolean equals(Object o) {
-		if(o instanceof AbstractMatcher) {
-			AbstractMatcher a = (AbstractMatcher)o;
-			return a.getIndex() == this.getIndex();
-		}
-		return false;
-	}
-	
-	public int hashCode() {
-		return index;
-	}
 
-	
-	//****************** PROGRESS DIALOG METHODS *************************8
-	
-	
-    /**
-     * This function is used by the Progress Dialog, in order to invoke the matcher.
-     * It's just a wrapper for match(). 
-     */
-	public Void doInBackground() throws Exception {
-		try {
-			//without the try catch, the exception got lost in this thread, and we can't debug
-			match();
-		}
-		catch(AMException ex2) {
-			
-			report += "\nUnexpected error.\n";
-			
-			String message = ex2.getMessage();
-			if( !(message == null || message.isEmpty()) ) report += ex2.getMessage() + "\n";
-			else report += ex2.toString();
-			
-			ex2.printStackTrace();
-			this.cancel(true);
-			for( MatchingProgressDisplay mpd : progressDisplays ) {
-				mpd.appendToReport(report);
-				mpd.matchingComplete(); 
-			}
-		}
-		catch(Exception ex) {
-			report += "\nUnexpected error.\n";
+	 public boolean isAlignProp() {
+		 return alignProp;
+	 }
 
-			String message = ex.getMessage();
-			if( !(message == null || message.isEmpty()) ) report += ex.getMessage() + "\n";
-			else report += ex.toString();
-			
-			ex.printStackTrace();
-			this.cancel(true);
-			for( MatchingProgressDisplay mpd : progressDisplays ) {
-				mpd.appendToReport(report);
-				mpd.matchingComplete(); 
-			}
-		}
-		return null;
-	}
-    
-    /**
-     * Function called by the worker thread when the matcher finishes the algorithm.
-     */
-    /*public void done() {
+	 public boolean isAlignClass() {
+		 return alignClass;
+	 }
+
+	 public void setAlignProp(boolean alignProp) {
+		 this.alignProp = alignProp;
+	 }
+
+	 public void setAlignClass(boolean alignClass) {
+		 this.alignClass = alignClass;
+	 }
+
+	 public SimilarityMatrix getClassesMatrix() {
+		 return classesMatrix;
+	 }
+
+	 public SimilarityMatrix getPropertiesMatrix() {
+		 return propertiesMatrix;
+	 }
+
+	 public long getExecutionTime() {
+		 return executionTime;
+	 }
+
+	 public void setExecutionTime(long executionTime) {
+		 this.executionTime = executionTime;
+	 }
+
+	 public void setInputMatchers(List<AbstractMatcher> inputMatchers) {
+		 this.inputMatchers = inputMatchers;
+	 }
+	 //***********************MEthods used by the interface for some small tasks**************************
+
+	 /**
+	  * Matcher details you can override this method to add or change you matcher details if needed, it is only invoked clicking on the button view details in the control panel
+	  * @return a string with details of the matchers
+	  */
+	 public String getDetails() {
+		 String s = "";
+		 s+= "Matcher: "+getName()+"\n\n";
+		 s+= "Brief Description:\n\n";
+		 s += getDescriptionString()+"\n";
+		 s += "Characteristics\n\n";
+		 s += getAttributesString()+"\n";
+		 s += "References\n\n";
+		 s += getReferenceString()+"\n";
+		 return s;
+	 }
+
+	 public String getAttributesString() {
+		 String s = "";
+		 s+= "Additional parameters required: "+Utility.getYesNo(needsParam())+"\n";
+		 s+= "Min number of matchers in input: "+Utility.getStringFromNumRelInt(getMinInputMatchers())+"\n";
+		 s+= "Max number of matchers in input: "+Utility.getStringFromNumRelInt(getMaxInputMatchers())+"\n";
+		 s+= "Performs Classes alignment: "+Utility.getYesNo(isAlignClass())+"\n";
+		 s+= "Performs Properties alignment: "+Utility.getYesNo(isAlignProp())+"\n";
+		 return s;
+	 }
+	 /**
+	  * All matchers should implement this method to return a description of the algorithm used, the String should finish with \n;
+	  * @return
+	  */
+	 public String getDescriptionString() {
+		 return "No description available for this matcher\n";
+	 }
+	 public String getReferenceString() {
+		 return "No references available for this matcher\n";
+	 }
+
+	 /**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
+	 public double getDefaultThreshold() {
+		 // TODO Auto-generated method stub
+		 return 0.6;
+	 }
+
+	 /**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
+	 public int getDefaultMaxSourceRelations() {
+		 // TODO Auto-generated method stub
+		 return 1;
+	 }
+
+	 /**These 3 methods are invoked any time the user select a matcher in the matcherscombobox. Usually developers don't have to override these methods unless their default values are different from these.*/
+	 public int getDefaultMaxTargetRelations() {
+		 // TODO Auto-generated method stub
+		 return 1;
+	 }
+
+	 /**This method is invoked at the end of the matching process if the process successed, to give a feedback to the user. Developers can ovveride it to add additional informations.
+	  * Developers can also add a global variable like message that is set dinamically during the matching process to have different type of feedback.
+	  * **/
+
+	 public void setSuccesfullReport() {
+		 report =  "Matching Process Complete Succesfully!\n\n";
+		 if(areClassesAligned()) {
+			 report+= "Classes alignments found: "+classesAlignmentSet.size()+"\n";
+		 }
+		 if(arePropertiesAligned()) {
+			 report+= "Properties alignments found: "+propertiesAlignmentSet.size()+"\n";
+		 }
+		 if(executionTime != 0) {
+			 report += "Total execution time (h:m:s:ms): "+Utility.getFormattedTime(executionTime)+"\n";
+		 }
+	 }
+
+	 public String getReport() {
+		 return report;
+	 }
+
+	 public void setReport(String report) {
+		 this.report = report;
+	 }
+
+	 public MappingRelation getRelation() {
+		 return relation;
+	 }
+
+	 public void setRelation(MappingRelation relation) {
+		 this.relation = relation;
+	 }     
+
+	 public boolean isOptimized() {
+		 return param.completionMode;
+	 }
+
+	 public void setOptimized(boolean optimized) {
+		 param.completionMode = optimized;
+		 if(maxInputMatchers < 1){
+			 maxInputMatchers = 1;
+		 }
+	 }
+
+	 public String getAlignmentsStrings() {
+		 //The small arrow must be different from the bigger used in the alignments or the parseReference will identify these lines as alignments
+		 String result = "";
+		 result+= "Class Alignments: "+classesAlignmentSet.size()+"\n";
+		 result += "Source Concept\t ->\tTarget Concept\tSimilarity\tRelation\n\n";
+		 result += classesAlignmentSet.getStringList();
+		 result+= "Property Alignments: "+propertiesAlignmentSet.size()+"\n";
+		 result += "Source Concept\t->\tTarget Concept\tSimilarity\tRelation\n\n";
+		 result += propertiesAlignmentSet.getStringList();
+		 return result;
+	 }
+
+	 /**
+	  * More configurable getALignmentsString: you can select whether or not to print classes and properties,
+	  * and whether to print localNames or URIs
+	  */
+	 public String getAlignmentsStrings(boolean classes, boolean properties, boolean URIs) {
+		 //The small arrow must be different from the bigger used in the alignments or the parseReference will identify these lines as alignments
+		 String result = "";
+		 if(classes){
+			 result+= "Class Alignments: "+classesAlignmentSet.size()+"\n";
+			 result += "Source Concept\t ->\tTarget Concept\tSimilarity\tRelation\tProvenance\n\n";
+			 if(URIs == false)
+				 result += classesAlignmentSet.getStringList();
+			 else result += classesAlignmentSet.getStringList(true);
+		 }
+		 if(properties){
+			 result+= "Property Alignments: "+propertiesAlignmentSet.size()+"\n";
+			 result += "Source Concept\t->\tTarget Concept\tSimilarity\tRelation\tProvenance\n\n";
+			 result += propertiesAlignmentSet.getStringList();
+		 }
+		 return result;
+	 }
+
+	 public AbstractMatcher copy() throws Exception {
+		 AbstractMatcher cloned = MatcherFactory.getMatcherInstance(getRegistryEntry(), Core.getInstance().getMatcherInstances().size());
+		 cloned.setInputMatchers(getInputMatchers());
+		 cloned.setParam(getParam());
+		 cloned.setThreshold(getThreshold());
+		 cloned.setMaxSourceAlign(getMaxSourceAlign());
+		 cloned.setMaxTargetAlign(getMaxTargetAlign());
+		 cloned.setAlignClass(isAlignClass());
+		 cloned.setAlignProp(isAlignProp());
+		 cloned.match();
+		 return cloned;
+
+	 }
+
+	 @Deprecated
+	 public Color getColor() { return color; }
+
+	 @Deprecated
+	 public void setColor(Color color) { 
+		 this.color = color;
+		 MatchingTaskChangeEvent mce = new MatchingTaskChangeEvent(this, MatchingTaskChangeEvent.EventType.MATCHER_COLOR_CHANGED);
+		 Core.getInstance().fireEvent(mce);
+	 }
+
+	 //*************************UTILITY METHODS**************************************
+	 public boolean equals(Object o) {
+		 if(o instanceof AbstractMatcher) {
+			 AbstractMatcher a = (AbstractMatcher)o;
+			 return a.getIndex() == this.getIndex();
+		 }
+		 return false;
+	 }
+
+	 public int hashCode() {
+		 return index;
+	 }
+
+
+	 //****************** PROGRESS DIALOG METHODS *************************8
+
+
+	 /**
+	  * This function is used by the Progress Dialog, in order to invoke the matcher.
+	  * It's just a wrapper for match(). 
+	  */
+	 public Void doInBackground() throws Exception {
+		 try {
+			 //without the try catch, the exception got lost in this thread, and we can't debug
+			 match();
+		 }
+		 catch(AMException ex2) {
+
+			 report += "\nUnexpected error.\n";
+
+			 String message = ex2.getMessage();
+			 if( !(message == null || message.isEmpty()) ) report += ex2.getMessage() + "\n";
+			 else report += ex2.toString();
+
+			 ex2.printStackTrace();
+			 this.cancel(true);
+			 for( MatchingProgressDisplay mpd : progressDisplays ) {
+				 mpd.appendToReport(report);
+				 mpd.matchingComplete(); 
+			 }
+		 }
+		 catch(Exception ex) {
+			 report += "\nUnexpected error.\n";
+
+			 String message = ex.getMessage();
+			 if( !(message == null || message.isEmpty()) ) report += ex.getMessage() + "\n";
+			 else report += ex.toString();
+
+			 ex.printStackTrace();
+			 this.cancel(true);
+			 for( MatchingProgressDisplay mpd : progressDisplays ) {
+				 mpd.appendToReport(report);
+				 mpd.matchingComplete(); 
+			 }
+		 }
+		 return null;
+	 }
+
+	 /**
+	  * Function called by the worker thread when the matcher finishes the algorithm.
+	  */
+	 /*public void done() {
     	if( isProgressDisplayed() ) progressDisplay.matchingComplete();  // when we're done, close the progress dialog
     }*/
-	
-    /**
-     * Need to keep track of the progress dialog we have because right now, there is no button to close it, so we must make it close automatically.
-     * @param p
-     */
-	public void addProgressDisplay( MatchingProgressDisplay p ) {		
-		progressDisplays.add(p);
-		addPropertyChangeListener(p);
-	}
-	
-	public void removeProgressDisplay( MatchingProgressDisplay p ) {
-		progressDisplays.remove(p);
-		removePropertyChangeListener(p);
-	}
-	
-    /**
-     * getProgressDisplay
-     * @param p
-     */
-	public MatchingProgressDisplay getProgressDisplay(int index) {
-		return progressDisplays.get(index);
-	}
-	
-	public List<MatchingProgressDisplay> getProgressDisplays() { return progressDisplays; }
-	
-	/**
-	 * This method sets up stepsDone and stepsTotal.  Override this method if you have a special way of computing the values.
-	 * ( If you override this method, it's likely that you will also need to override alignNodesOneByOne(), because it calls stepDone() and updateProgress() ).
-	 * @author Cosmin Stroe @date Dec 17, 2008
-	 */
-	protected void setupProgress() {
-    	stepsDone = 0;
-    	stepsTotal = 0;  // total number
-    	if( alignClass ) {
-    		int n = sourceOntology.getClassesList().size();
-    		int m = targetOntology.getClassesList().size();
-    		stepsTotal += n*m;  // total number of comparisons between the class nodes 
-    	}
-    	
-    	if( alignProp ) {
-    		int n = sourceOntology.getPropertiesList().size();
-    		int m = targetOntology.getPropertiesList().size();
-    		stepsTotal += n*m; // total number of comparisons between the properties nodes
-    	}
-    	
-    	if(alignInstances){
-    		try {
-	    		InstanceDataset instances = sourceOntology.getInstances();
-	    		if(instances != null && instances.isIterable())    		
-	    			stepsTotal += sourceOntology.getInstances().getInstances().size();
-    		} catch (Exception e) {
-    			e.printStackTrace();
-			}
-    	}
 
-    	// we have computed stepsTotal, and initialized stepsDone to 0.
-    	setProgress(0);
-	}
+	 /**
+	  * Need to keep track of the progress dialog we have because right now, there is no button to close it, so we must make it close automatically.
+	  * @param p
+	  */
+	 public void addProgressDisplay( MatchingProgressDisplay p ) {		
+		 progressDisplays.add(p);
+		 addPropertyChangeListener(p);
+	 }
 
-	/**
-	 * We have just completed one step of the total number of steps.
-	 * 
-	 * Remember, stepsDone is used in conjunction with stepsTotal, in order to get 
-	 * an idea of how much of the total task we have done ( % done = stepsDone / stepsTotal * 100 ).
-	 * 
-	 *  @author Cosmin Stroe @date Dec 17, 2008
-	 */
-	protected void stepDone() {
-		stepsDone++;
-	}
+	 public void removeProgressDisplay( MatchingProgressDisplay p ) {
+		 progressDisplays.remove(p);
+		 removePropertyChangeListener(p);
+	 }
+
+	 /**
+	  * getProgressDisplay
+	  * @param p
+	  */
+	 public MatchingProgressDisplay getProgressDisplay(int index) {
+		 return progressDisplays.get(index);
+	 }
+
+	 public List<MatchingProgressDisplay> getProgressDisplays() { return progressDisplays; }
+
+	 /**
+	  * This method sets up stepsDone and stepsTotal.  Override this method if you have a special way of computing the values.
+	  * ( If you override this method, it's likely that you will also need to override alignNodesOneByOne(), because it calls stepDone() and updateProgress() ).
+	  * @author Cosmin Stroe @date Dec 17, 2008
+	  */
+	 protected void setupProgress() {
+		 stepsDone = 0;
+		 stepsTotal = 0;  // total number
+		 if( alignClass ) {
+			 int n = sourceOntology.getClassesList().size();
+			 int m = targetOntology.getClassesList().size();
+			 stepsTotal += n*m;  // total number of comparisons between the class nodes 
+		 }
+
+		 if( alignProp ) {
+			 int n = sourceOntology.getPropertiesList().size();
+			 int m = targetOntology.getPropertiesList().size();
+			 stepsTotal += n*m; // total number of comparisons between the properties nodes
+		 }
+
+		 // we have computed stepsTotal, and initialized stepsDone to 0.
+		 setProgress(0);
+	 }
+
+	 /**
+	  * We have just completed one step of the total number of steps.
+	  * 
+	  * Remember, stepsDone is used in conjunction with stepsTotal, in order to get 
+	  * an idea of how much of the total task we have done ( % done = stepsDone / stepsTotal * 100 ).
+	  * 
+	  *  @author Cosmin Stroe @date Dec 17, 2008
+	  */
+	 protected void stepDone() {
+		 stepsDone++;
+	 }
 
 
-	/**
-	 * Update the Progress Dialog with the current progress.
-	 * 
-	 *  @author Cosmin Stroe @date Dec 17, 2008
-	 *  @author Cosmin Stroe @date Oct 1, 2010 @comment Updated to display estimated total time and estimated time left.  
-	 */	
-	protected void updateProgress() {
+	 /**
+	  * Update the Progress Dialog with the current progress.
+	  * 
+	  *  @author Cosmin Stroe @date Dec 17, 2008
+	  *  @author Cosmin Stroe @date Oct 1, 2010 @comment Updated to display estimated total time and estimated time left.  
+	  */	
+	 protected void updateProgress() {
 
-		long currentTime = System.currentTimeMillis();
-		if( !useProgressDelay || currentTime - timeOfLastUpdate > 500 ) {
-			timeOfLastUpdate = currentTime;
-			long elapsedTime = currentTime - lastTime;
-			long elapsedSteps = stepsDone - lastStepsDone;
-			long totalelapsed = currentTime - starttime; // elapsed time since the start of the algorithm
-			
-			long estimatedDuration = elapsedSteps == 0 ? 0 : elapsedTime * ( stepsTotal / elapsedSteps );
-			long estimatedtimeleft = stepsDone == 0 ? 0 : ((stepsTotal - stepsDone) * totalelapsed) / stepsDone;   
-			
-			String formattedTime = Utility.getFormattedTime(estimatedDuration);
-			
-			float percent = stepsTotal == 0 ? 0f : ((float)stepsDone / (float)stepsTotal);
-			
-			for( MatchingProgressDisplay mpd : progressDisplays ) {
-				mpd.clearReport();
-				mpd.appendToReport( "Percentage done: " + Float.toString(percent* 100.0f)+ "%\n" +
-											"Current duration: " + Utility.getFormattedTime(totalelapsed) + "\n" +  
-											"Time left ~: " + Utility.getFormattedTime(estimatedtimeleft) + "\n" +
-											"Total Duration ~: " + formattedTime + "\n" +
-											"Mappings >= threshold: " + tentativealignments + "\n");
-			}
-			
-			lastTime = currentTime;
-			lastStepsDone = stepsDone;
-			
-			Float p_f = new Float(percent * 100.0f);
-			int p = p_f.intValue();
-			
-			// some error checking
-			if( p > 100 && p > 0 ) { p = 100; }
-			if( p < 0 ) { p = 0; }
-			setProgress(p);  // this function does the actual work ( via Swingworker, which uses the PropertyChangeListener )
-		} else if( stepsDone == stepsTotal ) {
-			// we're done here.
-			setProgress(100);
-		}
-		
-	}
-	
-	/**
-	 * Should only be called while the matcher is still runnning.
-	 * @return The time in milliseconds that the matcher has been running.
-	 */
-	public long getRunningTime() {
-		return System.currentTimeMillis() - lastTime;
-	}
-	
-	/**
-	 * If the matcher implemented by a developer doesn't take care of the progress
-	 * for example it overrides the align method and doesn't write any code to increase steps
-	 * in that case we have to force the progress to be 100% at the end
-	 * It is used into matchEnd() method.
-	 * For the same reason setupProgress is inside matchStart();
-	 * Assuming that a developer shouldn't change match() or matchStart() or matchEnd()
-	 */
-	
-	protected void allStepsDone() {
-		if( stepsTotal <= 0 ) stepsTotal = 1; // avoid division by 0;
-		if(stepsDone != stepsTotal) {
-			stepsDone = stepsTotal;
-			updateProgress();
-		}
-	}
-	
-	/**
-	 * If a matcher invokes the match() method of another matcher internally, the internal matcher 
-	 * won't have the progressDisplay, and the globalstaticvariable may be still true
-	 * so we have to check both conditions
-	 */
-	public boolean isProgressDisplayed() {
-		return progressDisplays.size() > 0;  // don't need to check for the global static variable, since if it's false, we should never have to call this function
-	}
+		 long currentTime = System.currentTimeMillis();
+		 if( !useProgressDelay || currentTime - timeOfLastUpdate > 500 ) {
+			 timeOfLastUpdate = currentTime;
+			 long elapsedTime = currentTime - lastTime;
+			 long elapsedSteps = stepsDone - lastStepsDone;
+			 long totalelapsed = currentTime - starttime; // elapsed time since the start of the algorithm
 
-	public void setPropertiesAlignmentSet(Alignment<Mapping> propertiesAlignmentSet) {
-		this.propertiesAlignmentSet = propertiesAlignmentSet;
-	}
+			 long estimatedDuration = elapsedSteps == 0 ? 0 : elapsedTime * ( stepsTotal / elapsedSteps );
+			 long estimatedtimeleft = stepsDone == 0 ? 0 : ((stepsTotal - stepsDone) * totalelapsed) / stepsDone;   
 
-	public void setCategory( MatcherCategory category ) {
-		setProperty(PropertyKey.CATEGORY, category.name());
-	}
-	
-	public MatcherCategory getCategory() {
-		String categoryString = getProperty(PropertyKey.CATEGORY);
-		return MatcherCategory.valueOf(categoryString);
-	}
-	
-	public void setClassesAlignmentSet(Alignment<Mapping> classesAlignmentSet) {
-		this.classesAlignmentSet = classesAlignmentSet;
-	}
+			 String formattedTime = Utility.getFormattedTime(estimatedDuration);
 
-	public void setID(int nextMatcherID) { matcherID = nextMatcherID; }
-	public int  getID()                  { return matcherID; }
+			 float percent = stepsTotal == 0 ? 0f : ((float)stepsDone / (float)stepsTotal);
 
-	// 
-	/**
-	 * this method removes any mappings between these two nodes
-	 * 
-	 * @param source The source concept.
-	 * @param target The target concept.  Must be the same type of concept as the source. 
-	 */
-	public void removeMapping(Node source, Node target) {
+			 for( MatchingProgressDisplay mpd : progressDisplays ) {
+				 mpd.clearReport();
+				 mpd.appendToReport( "Percentage done: " + Float.toString(percent* 100.0f)+ "%\n" +
+						 "Current duration: " + Utility.getFormattedTime(totalelapsed) + "\n" +  
+						 "Time left ~: " + Utility.getFormattedTime(estimatedtimeleft) + "\n" +
+						 "Total Duration ~: " + formattedTime + "\n" +
+						 "Mappings >= threshold: " + tentativealignments + "\n");
+			 }
 
-		if( (source.isClass() && target.isProp()) || (source.isProp() && target.isClass()) ) {
-			// cannot have mappings between non matching types of concepts
-			return;
-		}
-		
-		alignType type = alignType.aligningClasses;
-		if( source.isProp() ) type = alignType.aligningProperties;
-		
-		
-		Alignment<Mapping> workingSet = null;
-		SimilarityMatrix workingMatrix = null;
-		if( type == alignType.aligningClasses ) {
-			workingSet = classesAlignmentSet;
-			workingMatrix = classesMatrix;
-		} else {
-			workingSet = propertiesAlignmentSet;
-			workingMatrix = propertiesMatrix;
-		}
-		
-		Mapping a = workingSet.contains(source, target);
-		if( a == null ) { return; } // this mapping does not exist.
-		
-		// delete the alignment from the matrix
-		
-		int row = source.getIndex();
-		int col = target.getIndex();
-		
-		if( row < workingMatrix.getRows() && col < workingMatrix.getColumns() ) {
-			Mapping a2 = workingMatrix.get( row, col );
-			if( a.equals(a2) ) {
-				// ding ding ding, we have a winner.
-				workingMatrix.set(row, col, null); // delete the alignment
-			}
-		}/* else {
+			 lastTime = currentTime;
+			 lastStepsDone = stepsDone;
+
+			 Float p_f = new Float(percent * 100.0f);
+			 int p = p_f.intValue();
+
+			 // some error checking
+			 if( p > 100 && p > 0 ) { p = 100; }
+			 if( p < 0 ) { p = 0; }
+			 setProgress(p);  // this function does the actual work ( via Swingworker, which uses the PropertyChangeListener )
+		 } else if( stepsDone == stepsTotal ) {
+			 // we're done here.
+			 setProgress(100);
+		 }
+
+	 }
+
+	 /**
+	  * Should only be called while the matcher is still runnning.
+	  * @return The time in milliseconds that the matcher has been running.
+	  */
+	 public long getRunningTime() {
+		 return System.currentTimeMillis() - lastTime;
+	 }
+
+	 /**
+	  * If the matcher implemented by a developer doesn't take care of the progress
+	  * for example it overrides the align method and doesn't write any code to increase steps
+	  * in that case we have to force the progress to be 100% at the end
+	  * It is used into matchEnd() method.
+	  * For the same reason setupProgress is inside matchStart();
+	  * Assuming that a developer shouldn't change match() or matchStart() or matchEnd()
+	  */
+
+	 protected void allStepsDone() {
+		 if( stepsTotal <= 0 ) stepsTotal = 1; // avoid division by 0;
+		 if(stepsDone != stepsTotal) {
+			 stepsDone = stepsTotal;
+			 updateProgress();
+		 }
+	 }
+
+	 /**
+	  * If a matcher invokes the match() method of another matcher internally, the internal matcher 
+	  * won't have the progressDisplay, and the globalstaticvariable may be still true
+	  * so we have to check both conditions
+	  */
+	 public boolean isProgressDisplayed() {
+		 return progressDisplays.size() > 0;  // don't need to check for the global static variable, since if it's false, we should never have to call this function
+	 }
+
+	 public void setPropertiesAlignmentSet(Alignment<Mapping> propertiesAlignmentSet) {
+		 this.propertiesAlignmentSet = propertiesAlignmentSet;
+	 }
+
+	 public void setCategory( MatcherCategory category ) {
+		 setProperty(PropertyKey.CATEGORY, category.name());
+	 }
+
+	 public MatcherCategory getCategory() {
+		 String categoryString = getProperty(PropertyKey.CATEGORY);
+		 return MatcherCategory.valueOf(categoryString);
+	 }
+
+	 public void setClassesAlignmentSet(Alignment<Mapping> classesAlignmentSet) {
+		 this.classesAlignmentSet = classesAlignmentSet;
+	 }
+
+	 public void setID(int nextMatcherID) { matcherID = nextMatcherID; }
+	 public int  getID()                  { return matcherID; }
+
+	 // 
+	 /**
+	  * this method removes any mappings between these two nodes
+	  * 
+	  * @param source The source concept.
+	  * @param target The target concept.  Must be the same type of concept as the source. 
+	  */
+	 public void removeMapping(Node source, Node target) {
+
+		 if( (source.isClass() && target.isProp()) || (source.isProp() && target.isClass()) ) {
+			 // cannot have mappings between non matching types of concepts
+			 return;
+		 }
+
+		 alignType type = alignType.aligningClasses;
+		 if( source.isProp() ) type = alignType.aligningProperties;
+
+
+		 Alignment<Mapping> workingSet = null;
+		 SimilarityMatrix workingMatrix = null;
+		 if( type == alignType.aligningClasses ) {
+			 workingSet = classesAlignmentSet;
+			 workingMatrix = classesMatrix;
+		 } else {
+			 workingSet = propertiesAlignmentSet;
+			 workingMatrix = propertiesMatrix;
+		 }
+
+		 Mapping a = workingSet.contains(source, target);
+		 if( a == null ) { return; } // this mapping does not exist.
+
+		 // delete the alignment from the matrix
+
+		 int row = source.getIndex();
+		 int col = target.getIndex();
+
+		 if( row < workingMatrix.getRows() && col < workingMatrix.getColumns() ) {
+			 Mapping a2 = workingMatrix.get( row, col );
+			 if( a.equals(a2) ) {
+				 // ding ding ding, we have a winner.
+				 workingMatrix.set(row, col, null); // delete the alignment
+			 }
+		 }/* else {
 			// swap the row and col values 
 			row = target.getIndex();
 			col = source.getIndex();
-			
+
 			if( row < workingMatrix.getRows() && col < workingMatrix.getColumns() ) {
 				Mapping a2 = workingMatrix.get(row, col);
 				if( a.equals(a2) ) {
@@ -1923,227 +1709,151 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 				}
 			}
 		}*/
-		
-		// delete the alignment from the alignment set
-		// don't know if the order will be correct, so try both.
-		workingSet.remove(a);
-		/*if( !workingSet.removeAlignment(source, target) ) {
+
+		 // delete the alignment from the alignment set
+		 // don't know if the order will be correct, so try both.
+		 workingSet.remove(a);
+		 /*if( !workingSet.removeAlignment(source, target) ) {
 			if( !workingSet.removeAlignment(target, source) ) {
 				// should never get here
 			}
 		}*/
-		
-		// make sure we let our listeners know that we changed the alignment set
-		Core.getInstance().fireEvent( new MatchingTaskChangeEvent(this, 
-				EventType.MATCHER_ALIGNMENTSET_UPDATED, this.matcherID) );
-		
-	}
-	
-	// 
-	/**
-	 * this method removes any mappings between these two nodes
-	 * 
-	 * @param source The source concept.
-	 * @param target The target concept.  Must be the same type of concept as the source. 
-	 */
-	public Mapping getMapping(Node source, Node target) {
 
-		if( (source.isClass() && target.isProp()) || (source.isProp() && target.isClass()) ) {
-			// cannot have mappings between non matching types of concepts
-			return null;
-		}
-		
-		if( source.isClass() )	return classesAlignmentSet.contains(source, target);
-		if( source.isProp() ) return propertiesAlignmentSet.contains(source, target);
-		return null;
-	}
-	
+		 // make sure we let our listeners know that we changed the alignment set
+		 Core.getInstance().fireEvent( new MatchingTaskChangeEvent(this, 
+				 EventType.MATCHER_ALIGNMENTSET_UPDATED, this.matcherID) );
 
-	
-	/***************** Ontology methods **************************/
-	
-	public Ontology getSourceOntology() { return sourceOntology; }
-	public Ontology getTargetOntology() { return targetOntology; }
-	
-	public void setSourceOntology( Ontology s ) { sourceOntology = s; }
-	public void setTargetOntology( Ontology t ) { targetOntology = t; }
-	public void setOntologies( Ontology source, Ontology target ) { sourceOntology = source; targetOntology = target; } // convenience function
+	 }
+
+	 // 
+	 /**
+	  * this method removes any mappings between these two nodes
+	  * 
+	  * @param source The source concept.
+	  * @param target The target concept.  Must be the same type of concept as the source. 
+	  */
+	 public Mapping getMapping(Node source, Node target) {
+
+		 if( (source.isClass() && target.isProp()) || (source.isProp() && target.isClass()) ) {
+			 // cannot have mappings between non matching types of concepts
+			 return null;
+		 }
+
+		 if( source.isClass() )	return classesAlignmentSet.contains(source, target);
+		 if( source.isProp() ) return propertiesAlignmentSet.contains(source, target);
+		 return null;
+	 }
 
 
-	/** ****************** Serialization methods *******************/
-	
-	  /**
-	   * readObject: gets the state of the object.
-	   * @author michele
-	   */
-	  public static AbstractMatcher readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
-		  AbstractMatcher thisClass = (AbstractMatcher) in.readObject();
-		  in.close();
-		  return thisClass;
-	  }
 
-	   /**
-	    * writeObject: saves the state of the object.
-	    * @author michele
-	    */
-	  public void writeObject(ObjectOutputStream out) throws IOException {
-		  out.writeObject(this);
-		  out.close();
-	  }
+	 /***************** Ontology methods **************************/
+
+	 public Ontology getSourceOntology() { return sourceOntology; }
+	 public Ontology getTargetOntology() { return targetOntology; }
+
+	 public void setSourceOntology( Ontology s ) { sourceOntology = s; }
+	 public void setTargetOntology( Ontology t ) { targetOntology = t; }
+	 public void setOntologies( Ontology source, Ontology target ) { sourceOntology = source; targetOntology = target; } // convenience function
 
 
-/***********************************************************************************************
- ************************************* MATCHER FEATURES ****************************************
- ***********************************************************************************************/
-	  
-	  // List of features supported by this matcher.
-	  protected List<MatcherFeature> supportedFeatures = null;
+	 /** ****************** Serialization methods *******************/
 
-	  /**
-	   * Determine if a feature is supported by a specific matcher.
-	   * These features must be setup in the constructor.
-	   * @param f Feature to check for.
-	   * @return true if feature is supported, false otherwise.
-	   */
-	  public boolean supportsFeature( MatcherFeature f ) { 
-		  if( supportedFeatures != null ) return supportedFeatures.contains(f); 
-		  return false;
-	  }
-	  
-	  protected void addFeature ( MatcherFeature f ) { 
-		  if( !supportsFeature(f) ) { 
-			  if( supportedFeatures == null ) supportedFeatures = new ArrayList<MatcherFeature>(); 
-			  supportedFeatures.add(f); 
-		  }
-	  }
-	  
-	  
-	  /***********************************************************************************************
-	   *********************************** THREADED EXECUTION ****************************************
-	   ***********************************************************************************************/
-	  
-	  public class AbstractMatcherRunner implements Runnable {
+	 /**
+	  * readObject: gets the state of the object.
+	  * @author michele
+	  */
+	 public static AbstractMatcher readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
+		 AbstractMatcher thisClass = (AbstractMatcher) in.readObject();
+		 in.close();
+		 return thisClass;
+	 }
 
-		  private final AbstractMatcher matcher;
-		  private final alignType typeOfNodes;
-		  private final List<Node> sourceList;
-		  private final List<Node> targetList;
+	 /**
+	  * writeObject: saves the state of the object.
+	  * @author michele
+	  */
+	 public void writeObject(ObjectOutputStream out) throws IOException {
+		 out.writeObject(this);
+		 out.close();
+	 }
 
-		  private final int sourceStartIndex, sourceEndIndex, targetStartIndex, targetEndIndex;
-		  private final SimilarityMatrix matrix;
-		  
-		  public AbstractMatcherRunner(List<Node> sourceList, List<Node> targetList, 
-				  int sourceStartIndex, int sourceEndIndex, int targetStartIndex, int targetEndIndex, 
-				  SimilarityMatrix matrix, AbstractMatcher matcher, alignType typeOfNodes ) {
-			  
-			  //System.out.println("New Matcher Runner, from (" + sourceStartIndex + "-" + sourceEndIndex + ") to (" + targetStartIndex + "-" + targetEndIndex + ")");
-			  
-			  this.matcher = matcher;
-			  
-			  this.typeOfNodes = typeOfNodes;
-			  this.sourceList = sourceList;
-			  this.targetList = targetList;
-			  
-			  this.sourceStartIndex = sourceStartIndex;
-			  this.sourceEndIndex = sourceEndIndex;
-			  this.targetStartIndex = targetStartIndex;
-			  this.targetEndIndex = targetEndIndex;
-			  
-			  this.matrix = matrix;
-		  }
 
-		  @Override
-		  public void run() {
-			  for( int i = sourceStartIndex; i <= sourceEndIndex; i++ ){
-				  Node source = sourceList.get(i);
-				  for( int j = targetStartIndex; j <= targetEndIndex; j++ ) {
-					  Node target = targetList.get(j);
+	 /***********************************************************************************************
+	  ************************************* MATCHER FEATURES ****************************************
+	  ***********************************************************************************************/
 
-					  try {
-						  Mapping mapping = matcher.alignTwoNodesParallel(source, target, typeOfNodes, matrix);
-						  if( mapping != null ) { 
-							  matcher.saveThreadResult(i, j, mapping, matrix);
-						  }
-						  
-						  if( matcher.isProgressDisplayed() ) {
-							  matcher.stepDone();
-							  matcher.updateProgress();
-							  if( mapping != null && mapping.getSimilarity() >= param.threshold ) { 
-								  tentativealignments++; // keep track of possible alignments for progress display
-								  //System.out.println(mapping);
-							  }
-						  }
-						  
-					  } catch (Exception e) {
-						  // TODO Auto-generated catch block
-						  e.printStackTrace();
-					  }
-				  }  
-			  }
-		  }
-	  }
-	  
-	  public void setReferenceAlignment(List<MatchingPair> referenceAlignment){
-		  this.referenceAlignment = referenceAlignment;
-	  }
-	  
-	  public synchronized void saveThreadResult(int source, int target, Mapping mapping, SimilarityMatrix matrix ) {
-		  matrix.set(source, target, mapping);
-	  }
-	  
-	  public boolean isUseInstanceSchemaMappings() {
-			return useInstanceSchemaMappings;
-		}
+	 // List of features supported by this matcher.
+	 protected List<MatcherFeature> supportedFeatures = null;
+
+	 /**
+	  * Determine if a feature is supported by a specific matcher.
+	  * These features must be setup in the constructor.
+	  * @param f Feature to check for.
+	  * @return true if feature is supported, false otherwise.
+	  */
+	 public boolean supportsFeature( MatcherFeature f ) { 
+		 if( supportedFeatures != null ) return supportedFeatures.contains(f); 
+		 return false;
+	 }
+
+	 protected void addFeature ( MatcherFeature f ) { 
+		 if( !supportsFeature(f) ) { 
+			 if( supportedFeatures == null ) supportedFeatures = new ArrayList<MatcherFeature>(); 
+			 supportedFeatures.add(f); 
+		 }
+	 }
 	 
-	  public void setUseInstanceSchemaMappings(boolean useInstanceSchemaMappings) {
-			this.useInstanceSchemaMappings = useInstanceSchemaMappings;
-	  }
-	  
-	  public InstanceMatchingReport getInstanceMatchingReport() {
-		return instanceMatchingReport;
-	}
-	  
-	@Override
-	public String toString() {
-		return getName();
-	}
-	
-	@Override
-	public MatcherResult getResult() {return new MatcherResult(this);}
-	
-	
-	public String getProperty(PropertyKey key) {
-		return matcherProperties.getProperty(key.name());
-	}
-	
-	protected void setProperty(PropertyKey key, String value) {
-		matcherProperties.setProperty(key.name(), value);
-	}
-	
-	/**
-	 * Keys used for matcher properties.
-	 * 
-	 * @see {@link #getProperty}, {@link #setProperty}
-	 */
-	public static enum PropertyKey {
-		CATEGORY,
-		NAME;
-	}
-	
-	/**
-	 * This enumeration defines categories for matchers.
-	 * Used for presentation purposes.
-	 * @author Cosmin Stroe
-	 * @date Monday, December 13th, 2010.
-	 */
-	public enum MatcherCategory {
-		SYNTACTIC,		// Syntactic Matchers.
-		STRUCTURAL,		// Structural Matchers.
-		LEXICAL,		// Matchers that use a dictionary.
-		COMBINATION,    // Matchers that produce a combination of other matchers. 
-		HYBRID,			// Matchers that consider many features together.
-		UTILITY, 		// Utility matcher,
-		USER,			// User matchers
-		UNCATEGORIZED;	// Matchers that have not been categorized.
-	}
+
+	 public synchronized void saveThreadResult(int source, int target, Mapping mapping, SimilarityMatrix matrix ) {
+		 matrix.set(source, target, mapping);
+	 }
+
+
+
+
+	 @Override
+	 public String toString() {
+		 return getName();
+	 }
+
+	 @Override
+	 public MatcherResult getResult() {
+		 return new MatcherResult(this);
+	 }
+
+
+	 public String getProperty(PropertyKey key) {
+		 return matcherProperties.getProperty(key.name());
+	 }
+
+	 protected void setProperty(PropertyKey key, String value) {
+		 matcherProperties.setProperty(key.name(), value);
+	 }
+
+	 /**
+	  * Keys used for matcher properties.
+	  * 
+	  * @see {@link #getProperty}, {@link #setProperty}
+	  */
+	 public static enum PropertyKey {
+		 CATEGORY,
+		 NAME;
+	 }
+
+	 /**
+	  * This enumeration defines categories for matchers.
+	  * Used for presentation purposes.
+	  * @author Cosmin Stroe
+	  * @date Monday, December 13th, 2010.
+	  */
+	 public enum MatcherCategory {
+		 SYNTACTIC,		// Syntactic Matchers.
+		 STRUCTURAL,		// Structural Matchers.
+		 LEXICAL,		// Matchers that use a dictionary.
+		 COMBINATION,    // Matchers that produce a combination of other matchers. 
+		 HYBRID,			// Matchers that consider many features together.
+		 UTILITY, 		// Utility matcher,
+		 USER,			// User matchers
+		 UNCATEGORIZED;	// Matchers that have not been categorized.
+	 }
 }

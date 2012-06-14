@@ -1,13 +1,16 @@
 package am.utility;
 
+import java.io.File;
 import java.util.HashMap;
+
+import org.apache.log4j.Logger;
 
 import am.Utility;
 import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.WordNetDatabase;
 
 public class WordNetUtils {
-	private WordNetDatabase wordNet; 
+	private static WordNetDatabase wordNet; 
 	
 	HashMap<String, Boolean> isSynonym = new HashMap<String, Boolean>();
 	
@@ -16,9 +19,32 @@ public class WordNetUtils {
 	}
 	
 	private void initWordnet() {
+		if( wordNet != null ) return; // skip the initialization, wordnet has already been initialized
+		
 		// Initialize the WordNet interface.
 		String cwd = System.getProperty("user.dir");
-		String wordnetdir = cwd + "/wordnet-3.0";
+		
+		String wordnetdir = null;
+		String wordnetdir1 = cwd + "/wordnet-3.0";
+		String wordnetdir2 = cwd + "/../AgreementMaker/wordnet-3.0";
+		String wordnetdir3 = cwd + "/../InformationMatching/wordnet-3.0";
+		String[] dirs = { wordnetdir1, wordnetdir2, wordnetdir3 };
+		
+		// search through the directories for the wordnet files
+		for( String currentDir : dirs ) {
+			File wndir = new File(currentDir);
+			if( wndir.exists() && wndir.canRead() ) {
+				wordnetdir = currentDir;
+				break;
+			}
+		}
+
+		if( wordnetdir == null ) {
+			Logger log = Logger.getLogger(WordNetUtils.class);
+			log.error("Could not find WordNet directory!");
+			return;
+		}
+		
 		System.setProperty("wordnet.database.dir", wordnetdir);
 		// Instantiate 
 		try {

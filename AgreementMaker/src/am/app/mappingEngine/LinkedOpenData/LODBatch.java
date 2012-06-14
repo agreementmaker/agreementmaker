@@ -88,7 +88,7 @@ public class LODBatch {
 		
 		AdvancedSimilarityParameters asmParam = new AdvancedSimilarityParameters();
 		asmParam.useDictionary = true;
-		matcher.setParam(asmParam);
+		matcher.setParameters(asmParam);
 		
 //		OAEI2011Matcher matcher = new OAEI2011Matcher();
 //		OAEI2011MatcherParameters OAEIparam = new OAEI2011MatcherParameters();
@@ -116,19 +116,19 @@ public class LODBatch {
 		hmm.addInputMatcher(matcher);
 		
 		List<MatchingPair> reference = AlignmentUtilities.getMatchingPairsTAB(refAlign);
-		hmm.setReferenceAlignment(reference);
+		//hmm.setReferenceAlignment(reference);
 		
 		HierarchyMatcherModifiedParameters param = new HierarchyMatcherModifiedParameters();
 		param.mapper = mapper;
 		param.threshold = 0.0;
-		hmm.setParam(param);
+		hmm.setParameters(param);
 		
 		hmm = MatcherFactory.getMatcherInstance(MatchersRegistry.WSM, 0);
 		hmm.setSourceOntology(sourceOntology);
 		hmm.setTargetOntology(targetOntology);
 		reference = AlignmentUtilities.getMatchingPairsTAB(refAlign);
-		hmm.setReferenceAlignment(reference);
-		hmm.setParam(param);
+		//hmm.setReferenceAlignment(reference);
+		hmm.setParameters(param);
 		
 		
 		log.info("HMM matching");
@@ -348,7 +348,7 @@ public class LODBatch {
 		param.selectedConfiguration = OAEI2011Configuration.GENERAL_PURPOSE;
 		matcher.setAlignProp(false);
 		matcher.setPerformSelection(true);
-		matcher.setParam(param);
+		matcher.setParameters(param);
 		
 				
 //		LexicalSynonymMatcher matcher = new LexicalSynonymMatcher();

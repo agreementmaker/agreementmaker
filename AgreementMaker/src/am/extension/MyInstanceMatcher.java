@@ -4,15 +4,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Vector;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.instance.AbstractInstanceMatcher;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.Instance;
 import am.output.AlignmentOutput;
 
-public class MyInstanceMatcher extends AbstractMatcher {
+public class MyInstanceMatcher extends AbstractInstanceMatcher {
 
 	int ambiguous;
 	int noResult;

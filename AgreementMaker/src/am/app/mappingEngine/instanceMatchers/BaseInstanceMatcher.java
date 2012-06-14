@@ -5,11 +5,10 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.instance.AbstractInstanceMatcher;
 import am.app.mappingEngine.instanceMatcher.LabelUtils;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.Instance;
-import am.utility.referenceAlignment.AlignmentUtilities;
 
 /**
  * Implements some basic functions for instance matching. 
@@ -17,7 +16,7 @@ import am.utility.referenceAlignment.AlignmentUtilities;
  * @author federico
  *
  */
-public class BaseInstanceMatcher extends AbstractMatcher{
+public class BaseInstanceMatcher extends AbstractInstanceMatcher {
 
 	private static final long serialVersionUID = 4301685403439511365L;
 	
@@ -39,10 +38,6 @@ public class BaseInstanceMatcher extends AbstractMatcher{
 		log.debug("CANDIDATES (" + targetCandidates.size() + ")");
 		
 		String solutionURI = null;
-		
-		if(referenceAlignment != null)
-			solutionURI = AlignmentUtilities.candidatesContainSolution(referenceAlignment, 
-					sourceInstance.getUri(), targetCandidates);
 		
 		boolean foundSolution = false;
 		

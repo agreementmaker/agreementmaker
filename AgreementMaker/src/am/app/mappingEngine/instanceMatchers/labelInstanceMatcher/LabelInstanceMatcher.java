@@ -60,7 +60,7 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 			sourceLabel = lastProcessedLabel;
 		}
 		else{
-			sourceLabel = source.getSingleValuedProperty("label");				
+			sourceLabel = source.getSingleValuedProperty(Instance.INST_LABEL);				
 			
 			log.debug("sourceLabel: " + sourceLabel);
 			sourceLabel = processLabel(sourceLabel, source.getType());
@@ -71,7 +71,7 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		}
 				
 		String targetLabel;
-		targetLabel = target.getSingleValuedProperty("label");
+		targetLabel = target.getSingleValuedProperty(Instance.INST_LABEL);
 		
 		if(targetLabel == null || targetLabel.isEmpty()) {
 			targetLabel = LabelUtils.getLabelFromStatements(target);
@@ -95,7 +95,7 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		
 		log.debug("labelSim: " + sim);
 		
-		List<String> aliases = target.getProperty("alias");
+		List<String> aliases = target.getProperty(Instance.INST_ALIAS);
 		if(aliases == null) aliases = new ArrayList<String>();
 		aliases.addAll(LabelUtils.getAliasesFromStatements(target));
 		

@@ -8,12 +8,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import simpack.measure.weightingscheme.StringTFIDF;
-
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.vocabulary.RDFS;
-import com.wcohen.ss.api.StringWrapper;
-
-import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.StringUtil.AMStringWrapper;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
@@ -22,8 +16,9 @@ import am.app.mappingEngine.instanceMatchers.KeywordsUtils;
 import am.app.mappingEngine.instanceMatchers.Porter;
 import am.app.mappingEngine.instanceMatchers.UsesKB;
 import am.app.mappingEngine.instanceMatchers.WordNetUtils;
-import am.app.mappingEngine.instanceMatchers.labelInstanceMatcher.LabelInstanceMatcher;
 import am.app.ontology.instance.Instance;
+
+import com.wcohen.ss.api.StringWrapper;
 
 /**
  * Instance matcher based on bag-of-words comparison.
@@ -53,43 +48,40 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB{
 	LabeledDatasource sourceKB;
 	LabeledDatasource targetKB;
 
-	//Normalizes strings
-	private Normalizer normalizer;
-
 	/**
 	 * Modality ALL means that we have to take ALL the property values
 	 */
 	public enum Modality { ALL, ALL_SYNTACTIC, ALL_SEMANTIC, SELECTIVE };
-
-	private Modality modality;
 
 	/**
 	 * Aggregation function
 	 */
 	public enum Aggregation { TF_IDF, DICE };
 
-	private Aggregation aggregation;
-
 	private StringTFIDF tfidf;
+	
 	List<StringWrapper> corpus;
+	
 	Map<Instance, StringWrapper> documents;
 
-
-	/**
-	 * List of properties of which we need to gather values
-	 */
-	public List<String> selectedProperties;
-
+	//Normalizes strings
+	private Normalizer normalizer;
+	
 	/**
 	 * Default modality is all
 	 */
 	public TokenInstanceMatcher(){
 		initNormalizer();
-		modality = Modality.ALL;
-		aggregation = Aggregation.TF_IDF;
-		initTfIdf();
 	}
 
+	@Override
+	public void matchStart() {
+		super.matchStart();
+		if( ((TokenInstanceMatcherParameters)param).aggregation == Aggregation.TF_IDF ) {
+			initTfIdf();
+		}
+	}
+	
 	private void initTfIdf() {
 		corpus = new ArrayList<StringWrapper>();
 		documents = new HashMap<Instance, StringWrapper>();
@@ -106,25 +98,10 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB{
 	}
 
 	@Override
-	public void setParam(DefaultMatcherParameters param) {
-		if(param instanceof TokenInstanceMatcherParameters){
-			TokenInstanceMatcherParameters p = (TokenInstanceMatcherParameters) param;
-			modality = p.modality;
-			selectedProperties = p.selectedProperties;
-			aggregation = p.aggregation; 
-		}
-
-		if(aggregation == Aggregation.TF_IDF){
-			initTfIdf();
-		}
-
-		super.setParam(param);
-	}
-
-
-	@Override
 	public void passEnd() {
-		if(aggregation == Aggregation.TF_IDF && tfidf == null){
+		super.passEnd();
+		TokenInstanceMatcherParameters timParam = (TokenInstanceMatcherParameters) param;
+		if(timParam.aggregation == Aggregation.TF_IDF && tfidf == null){
 			tfidf = new StringTFIDF(corpus);			
 		}
 	}
@@ -136,8 +113,10 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB{
 
 		log.debug("TIM matching: " + source.getUri() + " " + target);		
 
+		TokenInstanceMatcherParameters timParam = (TokenInstanceMatcherParameters) param;
+		
 		//This is the TFIDF second pass
-		if(aggregation == Aggregation.TF_IDF && tfidf != null){
+		if(timParam.aggregation == Aggregation.TF_IDF && tfidf != null){
 			StringWrapper sourceDocument = documents.get(source);	
 			StringWrapper targetDocument = documents.get(target);			
 			return tfidf.getSimilarity(sourceDocument.unwrap(), targetDocument.unwrap());
@@ -154,7 +133,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB{
 			log.debug("S Preprocess:" + sourceKeywords);
 			sourceKeywords = KeywordsUtils.processKeywords(sourceKeywords, normalizer);
 
-			if(aggregation == Aggregation.TF_IDF){
+			if(timParam.aggregation == Aggregation.TF_IDF){
 				StringBuffer buf = new StringBuffer();
 				for (String string : sourceKeywords) {
 					buf.append(string).append(" ");
@@ -182,7 +161,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB{
 		targetKeywords = KeywordsUtils.processKeywords(targetKeywords, normalizer);
 		log.debug("T Postprocess:" + targetKeywords);
 
-		if(aggregation == Aggregation.TF_IDF){
+		if(timParam.aggregation == Aggregation.TF_IDF){
 			StringBuffer buf = new StringBuffer();
 			for (String string : targetKeywords) {
 				buf.append(string).append(" ");
@@ -210,15 +189,17 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB{
 	private List<String> buildKeywordsList(Instance instance, LabeledDatasource kb) {
 		List<String> values = new ArrayList<String>();	
 
+		TokenInstanceMatcherParameters timParam = (TokenInstanceMatcherParameters) param;
+		
 		//In case modality is ALL or ALL_SYNTACTIC, we have to have to gather all the properties 
 		//from the properties map
-		if(modality == Modality.ALL || modality == Modality.ALL_SYNTACTIC){
+		if(timParam.modality == Modality.ALL || timParam.modality == Modality.ALL_SYNTACTIC){
 			values.addAll(instance.getAllPropertyValues());
 		}	
 
 		//In case modality is ALL or ALL_SEMANTIC, we have to have to gather all the properties 
 		//from the list of statements
-		if(modality == Modality.ALL || modality == Modality.ALL_SEMANTIC){
+		if(timParam.modality == Modality.ALL || timParam.modality == Modality.ALL_SEMANTIC){
 			List<String> stmtValues = instance.getAllValuesFromStatements();
 
 			for (String string : stmtValues) {
@@ -253,7 +234,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB{
 		//Modality SELECTIVE means that we have to take only some of the property values,
 		//for which the strings in selectedProperties are matching
 		//TODO implement this
-		if(modality == Modality.SELECTIVE){
+		if(timParam.modality == Modality.SELECTIVE){
 			// TODO manage selective modality						
 
 			//			List<Statement> sourceStmts = source.getStatements();
@@ -292,7 +273,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB{
 			//			}
 		}
 
-		String label = instance.getSingleValuedProperty("label");
+		String label = instance.getSingleValuedProperty(Instance.INST_LABEL);
 
 		if(label != null){
 			String betweenParentheses = getBetweenParentheses(label);
@@ -305,7 +286,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB{
 
 	private double keywordsSimilarity(List<String> sourceList, List<String> targetList){
 		//Compute score
-		double score = 0;
+		double score = 0d;
 
 		List<String> sourceStemmed = stemList(sourceList);
 		List<String> targetStemmed = stemList(targetList);
@@ -337,7 +318,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB{
 						score += 0.5;
 				}
 				catch (Exception e) {
-					System.err.println("Error when stemming " + source + " with " + target);
+					log.warn("Error when stemming " + source + " with " + target);
 				}
 			}
 		}
@@ -394,7 +375,9 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB{
 
 	@Override
 	public boolean requiresTwoPasses() {
-		if(aggregation == Aggregation.TF_IDF){
+		TokenInstanceMatcherParameters timParam = (TokenInstanceMatcherParameters) param;
+		
+		if(timParam.aggregation == Aggregation.TF_IDF){
 			requiresTwoPasses = true;
 		}
 		return super.requiresTwoPasses();

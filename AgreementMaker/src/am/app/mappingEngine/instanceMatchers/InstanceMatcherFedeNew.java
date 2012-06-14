@@ -8,34 +8,22 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.vocabulary.RDFS;
-
-import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.instanceMatchers.AlignmentsOutput;
-import am.app.mappingEngine.instanceMatchers.KeywordsUtils;
-import am.app.mappingEngine.instanceMatchers.Porter;
-import am.app.mappingEngine.instanceMatchers.ScoredInstance;
-import am.app.mappingEngine.instanceMatchers.ScoredInstanceComparator;
-import am.app.mappingEngine.instanceMatchers.WordNetUtils;
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.instance.AbstractInstanceMatcher;
 import am.app.mappingEngine.instanceMatcher.LabelUtils;
 import am.app.mappingEngine.instanceMatchers.labelInstanceMatcher.LabelInstanceMatcher;
 import am.app.mappingEngine.instanceMatchers.statementsInstanceMatcher.StatementsInstanceMatcher;
 import am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.Instance;
-import am.utility.referenceAlignment.AlignmentUtilities;
 
-public class InstanceMatcherFedeNew extends AbstractMatcher {
+public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 
 	int ambiguous;
 	int noResult;
 	int singleResult;
-	int solvable;
 	
 	int disambiguationMappings = 0;
 	
@@ -91,12 +79,8 @@ public class InstanceMatcherFedeNew extends AbstractMatcher {
 		}
 		else if(size == 1) singleResult++;
 		else if(size > 1) ambiguous++;
-		
-		if(referenceAlignment != null && AlignmentUtilities.candidatesContainSolution(referenceAlignment, 
-				sourceInstance.getUri(), targetCandidates) != null)
-			solvable++;
 				
-		String sourceLabel = sourceInstance.getSingleValuedProperty("label");
+		String sourceLabel = sourceInstance.getSingleValuedProperty(Instance.INST_LABEL);
 		
 		if(size == 1){
 			Instance target = targetCandidates.get(0);
@@ -107,7 +91,7 @@ public class InstanceMatcherFedeNew extends AbstractMatcher {
 			// && score >= threshold
 			if(!target.getUri().contains("wiki"))
 				pair = new MatchingPair(sourceInstance.getUri(), target.getUri(), score + 0.2, MappingRelation.EQUIVALENCE);
-			debugMapping(pair);
+			//debugMapping(pair);
 			
 			return pair;
 		}
@@ -143,7 +127,7 @@ public class InstanceMatcherFedeNew extends AbstractMatcher {
 				disambiguationMappings++;
 				double candidateScore = scoredCandidates.get(0).getScore();
 				MatchingPair pair = new MatchingPair(sourceInstance.getUri(), scoredCandidates.get(0).getInstance().getUri(), candidateScore, MappingRelation.EQUIVALENCE);
-				debugMapping(pair);
+				//debugMapping(pair);
 				log.debug("Generated mapping: " + pair.sourceURI + " " + pair.targetURI);
 				//System.out.println("About to match: " + candidateScore);
 				if (candidateScore < threshold) return null;
@@ -215,10 +199,6 @@ public class InstanceMatcherFedeNew extends AbstractMatcher {
 		System.out.println("No Results: " + noResult);
 		System.out.println("Single result: " + singleResult);
 		System.out.println("Total: " + (ambiguous + noResult + singleResult));
-		if(referenceAlignment != null)
-			System.out.println("InReference: " + referenceAlignment.size());
-		
-		System.out.println("Solvable: " + solvable);
 		
 		System.out.println("Disambiguated: " + disambiguationMappings);
 		
@@ -282,7 +262,7 @@ public class InstanceMatcherFedeNew extends AbstractMatcher {
 		this.threshold = threshold;
 	}
 	
-	public boolean areMatched(String sourceURI, String targetURI){
+/*	public boolean areMatched(String sourceURI, String targetURI){
 		for (int i = 0; i < referenceAlignment.size(); i++) {
 			if(referenceAlignment.get(i).sourceURI.equals(sourceURI)){
 				if(referenceAlignment.get(i).targetURI.equals(targetURI)){
@@ -292,9 +272,9 @@ public class InstanceMatcherFedeNew extends AbstractMatcher {
 			}
 		}
 		return false;
-	}
+	}*/
 	
-	public void debugMapping(MatchingPair pair){
+/*	public void debugMapping(MatchingPair pair){
 		if(pair == null) return;
 		String source = pair.sourceURI;
 		for (int i = 0; i < referenceAlignment.size(); i++) {
@@ -308,7 +288,7 @@ public class InstanceMatcherFedeNew extends AbstractMatcher {
 				}
 			}
 		}
-	}
+	}*/
 	
 	public void setOutputFile(String fileName){
 		outputFilename = fileName;
