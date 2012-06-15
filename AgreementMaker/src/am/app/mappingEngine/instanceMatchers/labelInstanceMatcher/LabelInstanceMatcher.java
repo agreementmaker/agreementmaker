@@ -23,22 +23,8 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 	private static final long serialVersionUID = -8556251076642309404L;
 	Logger log = Logger.getLogger(LabelInstanceMatcher.class);
 	
-	{
-		//log.setLevel(Level.DEBUG);
-	}
-	
-	//String metric;
-	
-	public LabelInstanceMatcher() {
-		super();
-		LabelInstanceMatcherParameters param = new LabelInstanceMatcherParameters();
-		param.metric = StringMetrics.JARO;
-		this.param = param;		
-	}
-	
 	public LabelInstanceMatcher(LabelInstanceMatcherParameters param) {
-		super();
-		setParameters(param);
+		super(param);
 	}
 	
 	@Override

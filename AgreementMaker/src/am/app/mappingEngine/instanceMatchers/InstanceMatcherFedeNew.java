@@ -11,15 +11,24 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.instance.AbstractInstanceMatcher;
 import am.app.mappingEngine.instanceMatcher.LabelUtils;
 import am.app.mappingEngine.instanceMatchers.labelInstanceMatcher.LabelInstanceMatcher;
+import am.app.mappingEngine.instanceMatchers.labelInstanceMatcher.LabelInstanceMatcherParameters;
 import am.app.mappingEngine.instanceMatchers.statementsInstanceMatcher.StatementsInstanceMatcher;
 import am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher;
+import am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher.Aggregation;
+import am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher.Modality;
+import am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcherParameters;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.Instance;
 
 public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
+
+	private static final long serialVersionUID = -8278698313888419789L;
+
+	private Logger log = Logger.getLogger(InstanceMatcherFedeNew.class);
 
 	int ambiguous;
 	int noResult;
@@ -27,38 +36,34 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 	
 	int disambiguationMappings = 0;
 	
-	double labelSimThreshold = 0.9;
-	double keyScoreThreshold = 1;
-	
-	double threshold = 0.8;
-	
-	boolean disambiguate = true;
-	
-	boolean matchingDBPedia = false;
-	boolean verbose = false;
-	private String outputFilename = "alignments.rdf";
-	
-	private static final long serialVersionUID = -8278698313888419789L;
-	
-	Logger log = Logger.getLogger(InstanceMatcherFedeNew.class);
-	
-	boolean useSTIM = true;	
-	boolean useLIM = true;	
-	boolean useTIM = true;	
-		
-	StatementsInstanceMatcher stim = new StatementsInstanceMatcher();
-	LabelInstanceMatcher lim = new LabelInstanceMatcher();
-	TokenInstanceMatcher tim = new TokenInstanceMatcher();
-	
-	public InstanceMatcherFedeNew(){
-		
+	protected LabelInstanceMatcher lim;
+	protected TokenInstanceMatcher tim;
+	protected StatementsInstanceMatcher stim;
+
+	// ************************ Constructor ************************
+
+	public InstanceMatcherFedeNew(InstanceMatcherFedeNewParameters param) {
+		super(param);
 	}
 	
 	@Override
 	protected void beforeAlignOperations() throws Exception {
 		super.beforeAlignOperations();
-		//log.setLevel(Level.DEBUG);
 		
+		// lim
+		LabelInstanceMatcherParameters limp = new LabelInstanceMatcherParameters();
+		limp.metric = StringMetrics.JARO;
+		lim = new LabelInstanceMatcher(limp);
+		
+		// tim
+		TokenInstanceMatcherParameters timp = new TokenInstanceMatcherParameters();
+		timp.modality = Modality.ALL_SYNTACTIC;
+		timp.aggregation = Aggregation.DICE;
+		tim = new TokenInstanceMatcher(timp);
+		
+		// stim
+		stim = new StatementsInstanceMatcher();
+
 		performSelection = false;
 	}
 	
@@ -97,7 +102,7 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 		}
 		
 		else{
-			if(disambiguate == false) return null;
+			if( !((InstanceMatcherFedeNewParameters)param).disambiguate ) return null; // don't disambiguate
 			
 			log.debug("Case of ambiguity:" + sourceInstance.getUri() + " " + sourceLabel + " " + targetCandidates.size());
 			
@@ -130,7 +135,7 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 				//debugMapping(pair);
 				log.debug("Generated mapping: " + pair.sourceURI + " " + pair.targetURI);
 				//System.out.println("About to match: " + candidateScore);
-				if (candidateScore < threshold) return null;
+				if (candidateScore < param.threshold) return null;
 				return pair;
 			}
 		}
@@ -145,7 +150,9 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 		double labelSim = 0;
 		double stmtSim = 0;
 		
-		if(useLIM)
+		InstanceMatcherFedeNewParameters p = (InstanceMatcherFedeNewParameters) param;
+		
+		if(p.useLIM)
 			labelSim = lim.instanceSimilarity(sourceInstance, candidate);
 		
 		String value = candidate.getSingleValuedProperty("score");
@@ -155,14 +162,14 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 		
 		log.debug("candidate: " + candidate.getUri() + " " + candidate.getSingleValuedProperty("label"));
 		
-		if(useSTIM)
+		if(p.useSTIM)
 			stmtSim = stim.instanceSimilarity(sourceInstance, candidate);
 		
 		
 		if(freebaseScore == -1) freebaseScore = 0;
 		//if(stmtSim == -1) stmtSim = 0;
 		
-		if(useTIM)
+		if(p.useTIM)
 			keyScore = tim.instanceSimilarity(sourceInstance, candidate);
 		
 		log.debug("lab:" + labelSim + " frb:" + freebaseScore + " key:" + keyScore + " stmtSim:" + stmtSim);
@@ -185,10 +192,6 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 		//double score = 0;
 		
 		//if(score > 0) System.err.println("SCORE: " + score);
-		
-		if(verbose) System.out.println("score:" + score);
-	
-		
 		return score;
 	}
 
@@ -203,10 +206,6 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 		System.out.println("Disambiguated: " + disambiguationMappings);
 		
 		//checkDoubleMappings();
-		
-		if(matchingDBPedia){
-			//cleanDBPediaMappings();
-		}
 		
 		System.out.println("Writing on file...");
 		String output = AlignmentsOutput.alignmentsToOutput(instanceAlignmentSet);
@@ -223,7 +222,9 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 		}
 		System.out.println("Done");
 		
-		AlignmentsOutput.writeMappingsOnDisk(outputFilename, instanceAlignmentSet);
+		AlignmentsOutput.writeMappingsOnDisk(
+				((InstanceMatcherFedeNewParameters) param).outputFilename,
+				instanceAlignmentSet);
 		
 	}
 	
@@ -257,11 +258,7 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 			}
 		}
 	}
-	
-	public void setThreshold(double threshold){
-		this.threshold = threshold;
-	}
-	
+		
 /*	public boolean areMatched(String sourceURI, String targetURI){
 		for (int i = 0; i < referenceAlignment.size(); i++) {
 			if(referenceAlignment.get(i).sourceURI.equals(sourceURI)){
@@ -289,10 +286,6 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 			}
 		}
 	}*/
-	
-	public void setOutputFile(String fileName){
-		outputFilename = fileName;
-	}
 	
 	@Override
 	public String processLabelBeforeCandidatesGeneration(String label, String type) {

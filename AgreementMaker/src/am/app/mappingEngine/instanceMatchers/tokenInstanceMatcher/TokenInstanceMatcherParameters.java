@@ -2,11 +2,11 @@ package am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher;
 
 import java.util.List;
 
-import am.app.mappingEngine.DefaultMatcherParameters;
+import am.app.mappingEngine.instance.DefaultInstanceMatcherParameters;
 import am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher.Aggregation;
 import am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher.Modality;
 
-public class TokenInstanceMatcherParameters extends DefaultMatcherParameters {
+public class TokenInstanceMatcherParameters extends DefaultInstanceMatcherParameters {
 
 	private static final long serialVersionUID = 3486782614841880143L;
 	

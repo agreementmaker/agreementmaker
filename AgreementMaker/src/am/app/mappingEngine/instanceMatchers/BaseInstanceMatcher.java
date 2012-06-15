@@ -6,6 +6,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.instance.AbstractInstanceMatcher;
+import am.app.mappingEngine.instance.DefaultInstanceMatcherParameters;
 import am.app.mappingEngine.instanceMatcher.LabelUtils;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.Instance;
@@ -21,6 +22,14 @@ public class BaseInstanceMatcher extends AbstractInstanceMatcher {
 	private static final long serialVersionUID = 4301685403439511365L;
 	
 	Logger log = Logger.getLogger(BaseInstanceMatcher.class);
+	
+	public BaseInstanceMatcher() {
+		super();
+	}
+	
+	public BaseInstanceMatcher(DefaultInstanceMatcherParameters param) {
+		super(param);
+	}
 	
 	@Override
 	protected void beforeAlignOperations() throws Exception {

@@ -26,7 +26,8 @@ import com.wcohen.ss.api.StringWrapper;
  * @author Federico Caimi
  *
  */
-public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB{
+public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB {
+	
 	private static final long serialVersionUID = 7328940873670935546L;
 
 	//Stemmer
@@ -67,13 +68,11 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB{
 	//Normalizes strings
 	private Normalizer normalizer;
 	
-	/**
-	 * Default modality is all
-	 */
-	public TokenInstanceMatcher(){
+	public TokenInstanceMatcher(TokenInstanceMatcherParameters param) {
+		super(param);
 		initNormalizer();
 	}
-
+	
 	@Override
 	public void matchStart() {
 		super.matchStart();
@@ -390,7 +389,8 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB{
 				"coach. Prior to the season they acquired the future hall of fame quarterback\n" +
 				"Steve Young. In week 1, Tampa Ba, 1985_Tampa_Bay_Buccaneers_season, 1985, Tampa Stadium, Tampa Stadium, Leeman Bennett, Leeman Bennett, Tampa Bay Buccaneers, 5th NFC Central, 2-14, Did not quailify, NFC Central";
 
-		Normalizer n = new TokenInstanceMatcher().getNormalizer();
+		TokenInstanceMatcherParameters params = new TokenInstanceMatcherParameters();
+		Normalizer n = new TokenInstanceMatcher(params).getNormalizer();
 		System.out.println(n.normalize(s));				
 	}
 }

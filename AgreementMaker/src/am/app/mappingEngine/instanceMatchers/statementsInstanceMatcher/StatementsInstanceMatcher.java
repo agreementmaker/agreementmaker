@@ -11,7 +11,7 @@ import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.instanceMatchers.BaseInstanceMatcher;
 import am.app.ontology.instance.Instance;
 
-public class StatementsInstanceMatcher extends BaseInstanceMatcher{
+public class StatementsInstanceMatcher extends BaseInstanceMatcher {
 	
 	private static final long serialVersionUID = 6536746985095481526L;
 	

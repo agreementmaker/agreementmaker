@@ -57,7 +57,14 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 
 	protected boolean firstPassDone;
 
+	public AbstractInstanceMatcher() {
+		super();
+	}
 
+	public AbstractInstanceMatcher(DefaultInstanceMatcherParameters param) {
+		super(param);
+	}
+	
 	@Override
 	protected void align() throws Exception {
 		super.align(); // do the schema matching part .. if any.
