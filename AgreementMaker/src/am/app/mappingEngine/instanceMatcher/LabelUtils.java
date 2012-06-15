@@ -29,15 +29,34 @@ public class LabelUtils {
 			
 		String[] split = label.split(" ");
 		
-		label = "";
+		StringBuilder cleanString = new StringBuilder();
 		for (int i = 0; i < split.length; i++) {
-			if(split[i].length() == 1) continue;
-			label += split[i] + " ";
+			if(split[i].length() == 1) continue; // discard any words less than 2 characters
+			cleanString.append(split[i].trim()).append(" ");
 		}
-		label = label.trim();
-		return label; 
+
+		return cleanString.toString(); 
 	}
 	
+	
+	
+	//Default method for cleaning labels
+	/**
+	 * Almost identical to {@link #processLabel(String)}, except we also ignore
+	 * everything past the first comma in the string.
+	 */
+	public static String processLabelWithComma(String label) {
+		
+		String returnString = processLabel(label);
+		
+		if(returnString.contains(",")){
+			String[] returnSplit = returnString.split(",");
+			return returnSplit[0];
+		}
+		
+		return returnString; 
+	}
+
 	public static String processOrganizationLabel(String label){
 		if(label.contains("(")){
 			int beg = label.indexOf('(');
@@ -64,7 +83,6 @@ public class LabelUtils {
 		return label;
 	}
 	
-
 	//TODO fix this method
 	public static String processPersonLabel(String label) {
 		if(label.contains("(")){
@@ -98,7 +116,7 @@ public class LabelUtils {
 		}
 		return label;
 	}
-	
+
 	public static String processTypes(String type){
 		List<String> orgList = new ArrayList<String>();
 		List<String> perList = new ArrayList<String>();
@@ -136,21 +154,24 @@ public class LabelUtils {
 		return standardType; //return the standard type name
 	}
 	
-	public static String getLabelFromStatements(Instance instance){
+	public static List<String> getLabelsFromStatements(Instance instance){
+		
 		List<Statement> stmts = instance.getStatements();
+		List<String> labels = new ArrayList<String>();
+
 		for(Statement s: stmts){
 			String prop = s.getPredicate().getURI();
+	
+			// prop.endsWith("/name") || prop.endsWith("#name")
+			// || prop.endsWith("/label") || prop.endsWith("#label")
 			
-			
-			//prop.endsWith("/name") || prop.endsWith("#name") 
-			//|| prop.endsWith("/label") || prop.endsWith("#label")
-			
-			if(prop.endsWith("name") || prop.endsWith("label")){
-				//System.out.println(prop);
-				return s.getObject().toString();	
+			if (prop.endsWith("name") || prop.endsWith("label")) {
+				// System.out.println(prop);
+				labels.add(s.getObject().toString());
 			}
 		}
-		return null;
+		
+		return labels;
 	}
 	
 	public static List<String> getAliasesFromStatements(Instance instance){

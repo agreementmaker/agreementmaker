@@ -5,71 +5,83 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
-import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
-import uk.ac.shef.wit.simmetrics.similaritymetrics.QGramsDistance;
-import am.app.mappingEngine.StringUtil.ISub;
 import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.instanceMatcher.LabelUtils;
 import am.app.mappingEngine.instanceMatchers.BaseInstanceMatcher;
 import am.app.ontology.instance.Instance;
+import am.app.similarity.StringSimilarityMeasure;
 
 
 public class LabelInstanceMatcher extends BaseInstanceMatcher {
 	
-	String lastProcessedURI;
-	String lastProcessedLabel;
-
 	private static final long serialVersionUID = -8556251076642309404L;
-	Logger log = Logger.getLogger(LabelInstanceMatcher.class);
+
+	private Logger log = Logger.getLogger(LabelInstanceMatcher.class);
+	
+	/**
+	 * Keep track of the last processed source URI, so that on the next
+	 * iteration we won't have to process those labels again.
+	 */
+	private String lastSourceURI;
+
+	/** The processed labels of the lastSourceURI. */
+	private List<String> lastProcessedSourceLabels;
+
+	private StringSimilarityMeasure ssm;
 	
 	public LabelInstanceMatcher(LabelInstanceMatcherParameters param) {
 		super(param);
 	}
-	
+		
 	@Override
 	public double instanceSimilarity(Instance source, Instance target)
 			throws Exception {
-		double sim;
 		
-		String sourceLabel; 
-		
-		if(source.getUri().equals(lastProcessedURI)){
-			sourceLabel = lastProcessedLabel;
+		// 1) initialize our string similarity measure
+		if( ssm == null ) {
+			StringMetrics metric = ((LabelInstanceMatcherParameters)param).metric;
+			ssm = metric.getMeasure();
 		}
-		else{
-			sourceLabel = source.getSingleValuedProperty(Instance.INST_LABEL);				
+		
+		List<String> processedSourceLabels;
+		
+		// 2) process the source labels
+		if( lastSourceURI == null || !lastSourceURI.equals(source.getUri()) ) {
+			List<String> sourceLabels = source.getProperty(Instance.INST_LABEL);
 			
-			log.debug("sourceLabel: " + sourceLabel);
-			sourceLabel = processLabel(sourceLabel, source.getType());
-			log.debug("sourceLabel: " + sourceLabel);
+			processedSourceLabels = new ArrayList<String>(sourceLabels.size());
 			
-			lastProcessedURI = source.getUri();
-			lastProcessedLabel = sourceLabel;
+			for(String currentLabel : sourceLabels) {
+				processedSourceLabels.add(processLabel(currentLabel, source.getType(), false));
+			}
+		
+			// save our processing work for the next invocation of the method
+			lastSourceURI = source.getUri();
+			lastProcessedSourceLabels = processedSourceLabels;
+		}
+		else {
+			// reuse our last processing of the source labels
+			processedSourceLabels = lastProcessedSourceLabels;
 		}
 				
-		String targetLabel;
-		targetLabel = target.getSingleValuedProperty(Instance.INST_LABEL);
-		
-		if(targetLabel == null || targetLabel.isEmpty()) {
-			targetLabel = LabelUtils.getLabelFromStatements(target);
+		// 3) process the target labels
+		List<String> targetLabels = target.getProperty(Instance.INST_LABEL);
+		List<String> processedTargetLabels = new ArrayList<String>(targetLabels.size());
+
+		if(targetLabels == null || targetLabels.isEmpty()) {
+			targetLabels = LabelUtils.getLabelsFromStatements(target);
 		}
 		
-		log.debug("targetLabel: " + targetLabel);
-				
 		//targetLabel = LabelUtils.processOrganizationLabel(targetLabel);
-		targetLabel = LabelUtils.processLabel(targetLabel);
-				
-		log.debug("targetLabel: " + targetLabel);
-			
-		if(targetLabel.contains(",")){
-			String[] split = targetLabel.split(",");
-			targetLabel = split[0];
+		for(String currentLabel : targetLabels) {
+			processedTargetLabels.add(processLabel(currentLabel, source.getType(), true));
 		}
-			
+		
 		//System.out.println(source.getUri() + "||" + target.getUri() + "  " + sourceLabel + " | " + targetLabel);
 		
-		sim = computeStringSimilarity(sourceLabel, targetLabel);
+		
+		// 4) compute the similarity
+		double sim = computeStringSimilarity(processedSourceLabels, processedTargetLabels);
 		
 		log.debug("labelSim: " + sim);
 		
@@ -79,78 +91,68 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		
 		//System.out.println(aliases);
 		
+		// 5) check for aliases
 		if(aliases != null){
 			double max = sim;
-			double curr;
+			double curr = 0.0d;
 			for (int i = 0; i < aliases.size(); i++) {
-				curr = computeStringSimilarity(sourceLabel, aliases.get(i));
-				if(curr > max){
-					//System.out.println("An alias weighs more than the label");
-					max = curr;
+				for( String currentLabel : processedSourceLabels ) {
+					curr = ssm.getSimilarity(currentLabel, aliases.get(i));
 				}
+
+				max = Math.max(curr, max);
+				
 			}
-			if(max > sim) sim = (max + sim) / 2;
+			if(max > sim) sim = (max + sim) / 2.0d;
 		}
 		return sim;
 	}
 	
-	private double computeStringSimilarity(String source,
-			String target) {
-		double sim = 0.0;
-		StringMetrics metric = ((LabelInstanceMatcherParameters)param).metric;
+	private double computeStringSimilarity(List<String> source,
+			List<String> target) {
+				
+		double bestStringSimilarity = 0.0d;
+		for( String sourceLabel : source ) {
+			for( String targetLabel : target ) {
+				double currentSim = ssm.getSimilarity(sourceLabel, targetLabel);
+				bestStringSimilarity = Math.max(currentSim, bestStringSimilarity);
+			}
+		}
 		
-		if(metric == StringMetrics.AMSUB) {
-			sim = StringMetrics.AMsubstringScore(source,target);
-		}
-		else if(metric == StringMetrics.AMSUB_AND_EDIT) {
-			Levenshtein lv = new Levenshtein();
-			double lsim = lv.getSimilarity(source, target);
-			double AMsim = StringMetrics.AMsubstringScore(source,target);
-			sim = (0.65*AMsim)+(0.35*lsim); 
-		}
-		else if(metric == StringMetrics.EDIT) {
-			Levenshtein lv = new Levenshtein();
-			sim = lv.getSimilarity(source, target);
-		}
-		else if(metric == StringMetrics.JARO) {
-			JaroWinkler jv = new JaroWinkler();
-			sim =jv.getSimilarity(source, target);
-		}
-		else if(metric == StringMetrics.QGRAM) {
-			QGramsDistance q = new QGramsDistance();
-			sim = q.getSimilarity(source, target);
-		}
-		else if(metric == StringMetrics.SUB) {
-			sim = StringMetrics.substringScore(source,target);
-		}
-		else if(metric == StringMetrics.ISUB) {
-			sim = ISub.getSimilarity(source,target);
-		}
-		return sim;
+		return bestStringSimilarity;
 	}
 
-	public static String processLabel(String label, String type){
+	public static String processLabel(String label, String type, boolean processComma){
+		
+		String processedLabel;
+		
 		if(type == null) 
-			return LabelUtils.processLabel(label);			
-			//return label;			
+			processedLabel = LabelUtils.processLabel(label);			
 		
 		if(type.toLowerCase().endsWith("organization"))
-			return LabelUtils.processOrganizationLabel(label);
+			processedLabel = LabelUtils.processOrganizationLabel(label);
 		
 		else if(type.toLowerCase().endsWith("person"))
-			return LabelUtils.processPersonLabel(label);
+			processedLabel = LabelUtils.processPersonLabel(label);
 		
 		else if(type.toLowerCase().endsWith("location")){
-			return LabelUtils.processLocationLabel(label);
+			processedLabel = LabelUtils.processLocationLabel(label);
 			//System.out.println("processing location label");
 			//label = label.replace("(","");
 			//label = label.replace(")","");
 		}
 		else{
-			label = LabelUtils.processLabel(label);			
+			processedLabel = LabelUtils.processLabel(label);			
 		}
 		
-		return label;
+		if(processComma) {
+			if(processedLabel.contains(",")){
+				String[] returnSplit = processedLabel.split(",");
+				return returnSplit[0];
+			}
+		}
+		
+		return processedLabel;
 	}	
 	
 

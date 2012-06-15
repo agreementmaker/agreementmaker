@@ -4,18 +4,24 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.ibm.icu.text.DecimalFormat;
-
-import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.instanceMatchers.BaseInstanceMatcher;
 import am.app.ontology.instance.Instance;
+import am.app.similarity.AMSubstringSim;
+
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.ibm.icu.text.DecimalFormat;
 
 public class StatementsInstanceMatcher extends BaseInstanceMatcher {
 	
 	private static final long serialVersionUID = 6536746985095481526L;
 	
 	Logger log = Logger.getLogger(StatementsInstanceMatcher.class);
+	
+	/**
+	 * Used for our string similarity measure. Kept in a field so that we do not
+	 * instantate a new object every time we compute the similarity.
+	 */
+	private AMSubstringSim amss = new AMSubstringSim();
 	
 	@Override
 	public double instanceSimilarity(Instance source, Instance target)
@@ -53,14 +59,14 @@ public class StatementsInstanceMatcher extends BaseInstanceMatcher {
 								double d2 = Double.parseDouble(s2);
 								if(d1 == d2) sim = 1;
 								else {
-									sim = StringMetrics.AMsubstringScore(df.format(d1),df.format(d2));
+									sim = amss.getSimilarity(df.format(d1),df.format(d2));
 									//sim = 1 - Math.abs(d1-d2)/50;
 									if(sim < 0) sim = 0;
 								}
 										
 							}
 							catch (NumberFormatException e) {
-								sim = StringMetrics.AMsubstringScore(sourceStmt.getObject().asLiteral().getString(),
+								sim = amss.getSimilarity(sourceStmt.getObject().asLiteral().getString(),
 										targetStmt.getObject().asLiteral().getString());
 							}
 							log.debug(sim);

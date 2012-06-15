@@ -3,9 +3,6 @@ package am.app.mappingEngine.parametricStringMatcher;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
-import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
-import uk.ac.shef.wit.simmetrics.similaritymetrics.QGramsDistance;
 import am.Utility;
 import am.app.Core;
 import am.app.lexicon.Lexicon;
@@ -17,13 +14,11 @@ import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.StringUtil.ISub;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
-import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.ontology.Node;
+import am.app.similarity.StringSimilarityMeasure;
 import am.userInterface.MatchingProgressDisplay;
-import am.utility.WordNetUtils;
 
 import com.hp.hpl.jena.ontology.OntResource;
 
@@ -46,6 +41,8 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	private double cw;//comment weight
 	private double saw;//see also weight
 	private double idbw;//is defined by weight
+	
+	private StringSimilarityMeasure ssm;
 	
 	public ParametricStringMatcher() { super(); }
 	public ParametricStringMatcher( ParametricStringParameters p ) { super(p); }
@@ -86,6 +83,9 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	public void beforeAlignOperations()  throws Exception{
 		super.beforeAlignOperations();
 		ParametricStringParameters parameters =(ParametricStringParameters)param;
+		
+		ssm = parameters.measure.getMeasure();
+		
 		//prepare the normalizer to preprocess strings
 		initializeNormalizer();
 		
@@ -462,68 +462,24 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	
 	
 	public double performStringSimilarity(String sourceString, String targetString) {
-		 WordNetUtils wordnet;
-		 wordnet = new WordNetUtils();
-		double sim = 0;
+		
 		if(sourceString == null || targetString == null )
 			return 0; //this should never happen because we set string to empty string always
-		
-		else { //real string comparison
-			ParametricStringParameters parameters  = (ParametricStringParameters)param;
 			
-			//PREPROCESSING
-			String processedSource = normalizer.normalize(sourceString);
-			String processedTarget = normalizer.normalize(targetString);
-			
-			//usually empty strings shouldn't be compared, but if redistrubute weights is not selected 
-			//in the redistribute weights case this can't happen because the code won't arrive till here
-			if(processedSource.equals("")) 
-				if(processedTarget.equals(""))
-					return 1;
-				else return 0;
-			else if(processedTarget.equals(""))
-				return 0;
-			
-			//this could be done with registry enumeration techinque but is not worth it
-			if(parameters.measure == StringMetrics.AMSUB) {
-				sim = StringMetrics.AMsubstringScore(processedSource,processedTarget);
-			}
-			else if(parameters.measure == StringMetrics.AMSUB_AND_EDIT) {
-				Levenshtein lv = new Levenshtein();
-				double lsim = lv.getSimilarity(processedSource, processedTarget);
-				double AMsim = StringMetrics.AMsubstringScore(processedSource,processedTarget);
-				sim = (0.65*AMsim)+(0.35*lsim); 
-			}
-			else if(parameters.measure == StringMetrics.AMSUB_AND_EDIT_WITH_WORDNET) {
-				Levenshtein lv = new Levenshtein();
-				double lsim = lv.getSimilarity(processedSource, processedTarget);
-				double AMsim = StringMetrics.AMsubstringScore(processedSource,processedTarget);
-				
-				if (wordnet.areSynonyms(processedSource,processedTarget)) 
-					sim=1;
-				else 
-					sim = (0.65*AMsim)+(0.35*lsim); 
-			}
-			else if(parameters.measure == StringMetrics.EDIT) {
-				Levenshtein lv = new Levenshtein();
-				sim = lv.getSimilarity(processedSource, processedTarget);
-			}
-			else if(parameters.measure == StringMetrics.JARO) {
-				JaroWinkler jv = new JaroWinkler();
-				sim =jv.getSimilarity(processedSource, processedTarget);
-			}
-			else if(parameters.measure == StringMetrics.QGRAM) {
-				QGramsDistance q = new QGramsDistance();
-				sim = q.getSimilarity(processedSource, processedTarget);
-			}
-			else if(parameters.measure == StringMetrics.SUB) {
-				sim = StringMetrics.substringScore(processedSource,processedTarget);
-			}
-			else if(parameters.measure == StringMetrics.ISUB) {
-				sim = ISub.getSimilarity(processedSource,processedTarget);
-			}
-		}
-		return sim;
+		//PREPROCESSING
+		String processedSource = normalizer.normalize(sourceString);
+		String processedTarget = normalizer.normalize(targetString);
+
+		//usually empty strings shouldn't be compared, but if redistrubute weights is not selected 
+		//in the redistribute weights case this can't happen because the code won't arrive till here
+		if(processedSource.equals("")) 
+			if(processedTarget.equals(""))
+				return 1;
+			else return 0;
+		else if(processedTarget.equals(""))
+			return 0;
+
+		return ssm.getSimilarity(processedSource, processedTarget);
 	}
 	
 	@Override
@@ -537,9 +493,11 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	public void initializeNormalizer() {
 		normalizer = new Normalizer( (( ParametricStringParameters)param).normParameter );
 	}
+	
 	public static void main(String[] args) throws Exception {
 		testStrings("aim", "target");
 	}
+	
 	public static void testStrings(String s1, String s2) throws Exception {
 		Node source = new Node(0, s1, "owl-propertynode", 0);
 		Node target = new Node(1, s2, "owl-propertynode", 0);
