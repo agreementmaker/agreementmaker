@@ -13,6 +13,7 @@ import am.Utility;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
+import am.app.mappingEngine.StringUtil.StringMetrics;
 
 public class ParametricStringParametersPanel extends AbstractMatcherParametersPanel implements ActionListener{
 
@@ -65,7 +66,7 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 	//private JLabel lexUseBestLabel = new JLabel("Do not use weights. Instead, use the max similarity out of all the synonyms.");
 	private JCheckBox lexiconCheck = new JCheckBox("Use Lexicons instead.");
 	private JCheckBox lexUseBestCheck = new JCheckBox("Do not use weights. Instead, use the max similarity out of all the synonyms.");
-	private JCheckBox lexUseSubconceptSynonyms = new JCheckBox("Use subconcept synonyms.");
+	//private JCheckBox lexUseSubconceptSynonyms = new JCheckBox("Use subconcept synonyms.");
 	
 	/*
 	 * The constructor creates the GUI elements and adds 
@@ -76,7 +77,10 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 		
 		super();
 		//init components
-		String[] metricsList = { ParametricStringParameters.AMSUB_AND_EDIT, ParametricStringParameters.EDIT, ParametricStringParameters.AMSUB, ParametricStringParameters.AMSUB_AND_EDIT, ParametricStringParameters.SUB, ParametricStringParameters.JARO, ParametricStringParameters.QGRAM, ParametricStringParameters.ISUB};
+		StringMetrics[] metricsList = { StringMetrics.AMSUB_AND_EDIT,
+				StringMetrics.EDIT, StringMetrics.AMSUB,
+				StringMetrics.AMSUB_AND_EDIT, StringMetrics.SUB,
+				StringMetrics.JARO, StringMetrics.QGRAM, StringMetrics.ISUB };
 		metricsCombo = new JComboBox(metricsList);
 		
 		String[] percents = Utility.getPercentStringList();
@@ -269,7 +273,7 @@ public class ParametricStringParametersPanel extends AbstractMatcherParametersPa
 	public DefaultMatcherParameters getParameters() {
 		parameters = new ParametricStringParameters();
 		
-		parameters.measure = (String)metricsCombo.getSelectedItem();
+		parameters.measure = (StringMetrics)metricsCombo.getSelectedItem();
 		parameters.redistributeWeights = redistributeCheck.isSelected();
 		
 		parameters.localWeight = Utility.getDoubleFromPercent((String)localnameCombo.getSelectedItem());

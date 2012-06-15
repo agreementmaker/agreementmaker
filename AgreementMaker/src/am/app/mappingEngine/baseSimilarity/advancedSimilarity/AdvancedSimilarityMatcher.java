@@ -13,7 +13,7 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.StringUtil.PorterStemmer;
+import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
@@ -21,7 +21,6 @@ import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrixOld;
 import am.app.ontology.Node;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.utility.Pair;
-import am.utility.WordNetUtils;
 
 /**
  * @author Michele Caci
@@ -297,10 +296,10 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		
 		// if we are using the WordNet dictionary, update the measure in PSM
 		if( ((AdvancedSimilarityParameters)getParam()).useDictionary ) 
-			localMatcherParams.measure = ParametricStringParameters.AMSUB_AND_EDIT_WITH_WORDNET;
+			localMatcherParams.measure = StringMetrics.AMSUB_AND_EDIT_WITH_WORDNET;
 		
 		ParametricStringMatcher localMatcher = new ParametricStringMatcher();
-		localMatcher.setParam(localMatcherParams);
+		localMatcher.setParameters(localMatcherParams);
 		localMatcher.initializeNormalizer();
 		SimilarityMatrix localMatrix = new ArraySimilarityMatrixOld(
 				source.size(), target.size(), typeOfNodes);
@@ -433,11 +432,11 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	 */
 	@Override
 	protected Alignment<Mapping> oneToOneMatching(SimilarityMatrix matrix) {
-		List<Mapping> list = matrix.chooseBestN(true, getThreshold());
+		List<Mapping> list = matrix.chooseBestN(true, param.threshold);
 		Alignment<Mapping> result = new Alignment<Mapping>(
 				sourceOntology.getID(), targetOntology.getID());
 		for (int i = 0; i < list.size(); i++) {
-			if (list.get(i).getSimilarity() < getThreshold()) {
+			if (list.get(i).getSimilarity() < param.threshold) {
 				break;
 			}
 			result.add(list.get(i));

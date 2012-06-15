@@ -24,6 +24,7 @@ import am.app.mappingEngine.Combination.CombinationParameters;
 import am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralParameters;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
+import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
 import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
 import am.app.mappingEngine.boosting.BestMatchBoostingParameters;
@@ -274,7 +275,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			
 			psmParam.useLexicons = false;
 			psmParam.useBestLexSimilarity = false;
-			psmParam.measure = ParametricStringParameters.AMSUB_AND_EDIT;
+			psmParam.measure = StringMetrics.AMSUB_AND_EDIT;
 			psmParam.normParameter = new NormalizerParameter();
 			psmParam.normParameter.setForOAEI2009();
 			psmParam.redistributeWeights = true;
@@ -413,7 +414,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			
 			psmParam.useLexicons = false;
 			psmParam.useBestLexSimilarity = false;
-			psmParam.measure = ParametricStringParameters.AMSUB_AND_EDIT;
+			psmParam.measure = StringMetrics.AMSUB_AND_EDIT;
 			psmParam.normParameter = new NormalizerParameter();
 			psmParam.normParameter.setForOAEI2009();
 			psmParam.redistributeWeights = true;
@@ -739,7 +740,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		psmParam.useLexicons = true;
 		psmParam.useBestLexSimilarity = true;
-		psmParam.measure = ParametricStringParameters.AMSUB_AND_EDIT;
+		psmParam.measure = StringMetrics.AMSUB_AND_EDIT;
 		psmParam.normParameter = new NormalizerParameter();
 		psmParam.normParameter.setForOAEI2009();
 		psmParam.redistributeWeights = true;
@@ -941,7 +942,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			
 			psmParam.useLexicons = true;
 			psmParam.useBestLexSimilarity = true;
-			psmParam.measure = ParametricStringParameters.AMSUB_AND_EDIT;
+			psmParam.measure = StringMetrics.AMSUB_AND_EDIT;
 			psmParam.normParameter = new NormalizerParameter();
 			psmParam.normParameter.setForOAEI2009();
 			psmParam.redistributeWeights = true;
@@ -1059,7 +1060,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			psmParam.useLexicons = false;
 			psmParam.useBestLexSimilarity = false;
 			
-			psmParam.measure = ParametricStringParameters.AMSUB_AND_EDIT;
+			psmParam.measure = StringMetrics.AMSUB_AND_EDIT;
 			psmParam.normParameter = new NormalizerParameter();
 			psmParam.normParameter.setForOAEI2009();
 			psmParam.redistributeWeights = true;

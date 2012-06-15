@@ -5,16 +5,32 @@ package am.app.mappingEngine.StringUtil;
  * @author marco
  *
  */
-public class StringMetrics {
+public enum StringMetrics {
 	
-	public final static String EDIT = "Levenshtein Edit Distance";
-	public final static String JARO = "Jaro Winkler";
-	public final static String QGRAM = "Q-Gram";
-	public final static String SUB = "Substring metric";
-	public final static String AMSUB = "AM Substring metric";
-	public final static String ISUB = "I-SUB";
-	public final static String AMSUB_AND_EDIT = "AMsubstring + editDistance"; //0.6*amsub + 0.4*editdistance
-		
+	EDIT("Levenshtein Edit Distance"),
+	JARO("Jaro Winkler"),
+	QGRAM("Q-Gram"),
+	SUB("Substring metric"),
+	AMSUB("AM Substring metric"),
+	ISUB("I-SUB"),
+	AMSUB_AND_EDIT("AMsubstring + editDistance"), //0.6*amsub + 0.4*editdistance
+	AMSUB_AND_EDIT_WITH_WORDNET("AMsubstring + editDistance with WordNet Synonyms"); 
+	
+	private String name;
+	
+	private StringMetrics(String name) {
+		this.name = name;
+	}
+	
+	public String getLongName() {
+		return name;
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
+	
 	//Derived from FALCON AO return the sum of common characters in all substrings of the two words normalized by the number of total chars
 	//So this is only the commonality part is not the whole I-Sub method
 	public static double substringScore(String s1, String s2)

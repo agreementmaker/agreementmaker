@@ -2,20 +2,14 @@ package am.app.mappingEngine.parametricStringMatcher;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
+import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.oaei.OAEI_Track;
 
 public class ParametricStringParameters extends DefaultMatcherParameters {
 
-	public final static String EDIT = "Levenshtein Edit Distance";
-	public final static String JARO = "Jaro Winkler";
-	public final static String QGRAM = "Q-Gram";
-	public final static String SUB = "Substring metric";
-	public final static String AMSUB = "AM Substring metric";
-	public final static String ISUB = "I-SUB";
-	public final static String AMSUB_AND_EDIT = "AMsubstring + editDistance"; //0.6*amsub + 0.4*editdistance
-	public final static String AMSUB_AND_EDIT_WITH_WORDNET = "AMsubstring + editDistance with WordNet Synonyms";
-	
-	public String measure = EDIT;
+	private static final long serialVersionUID = 5473149719338457692L;
+		
+	public StringMetrics measure = StringMetrics.EDIT;
 	
 	public double localWeight = 0;
 	public double labelWeight = 0.7;
@@ -70,7 +64,7 @@ public class ParametricStringParameters extends DefaultMatcherParameters {
 	}
 
 	public void initForOAEI2009() {
-		measure = AMSUB_AND_EDIT;
+		measure = StringMetrics.AMSUB_AND_EDIT;
 		normParameter = new NormalizerParameter();
 		normParameter.setForOAEI2009();
 		
@@ -93,7 +87,7 @@ public class ParametricStringParameters extends DefaultMatcherParameters {
 			
 			useLexicons = true;
 			useBestLexSimilarity = true;
-			measure = AMSUB_AND_EDIT;
+			measure = StringMetrics.AMSUB_AND_EDIT;
 			normParameter = new NormalizerParameter();
 			normParameter.setForOAEI2009();
 			redistributeWeights = true;
@@ -107,7 +101,7 @@ public class ParametricStringParameters extends DefaultMatcherParameters {
 			
 			useLexicons = false;
 			useBestLexSimilarity = false;
-			measure = AMSUB_AND_EDIT;
+			measure = StringMetrics.AMSUB_AND_EDIT;
 			normParameter = new NormalizerParameter();
 			normParameter.setForOAEI2009();
 			redistributeWeights = true;
@@ -122,7 +116,7 @@ public class ParametricStringParameters extends DefaultMatcherParameters {
 			useLexicons = false;
 			useBestLexSimilarity = false;
 			
-			measure = AMSUB_AND_EDIT;
+			measure = StringMetrics.AMSUB_AND_EDIT;
 			normParameter = new NormalizerParameter();
 			normParameter.setForOAEI2009();
 			redistributeWeights = true;
@@ -136,7 +130,7 @@ public class ParametricStringParameters extends DefaultMatcherParameters {
 			
 			useLexicons = true;
 			useBestLexSimilarity = true;
-			measure = AMSUB_AND_EDIT;
+			measure = StringMetrics.AMSUB_AND_EDIT;
 			normParameter = new NormalizerParameter();
 			normParameter.setForOAEI2009();
 			redistributeWeights = true;

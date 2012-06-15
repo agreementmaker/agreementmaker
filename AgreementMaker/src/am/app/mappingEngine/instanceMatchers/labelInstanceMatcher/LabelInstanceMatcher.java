@@ -3,7 +3,6 @@ package am.app.mappingEngine.instanceMatchers.labelInstanceMatcher;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.JaroWinkler;
@@ -13,10 +12,7 @@ import am.app.mappingEngine.StringUtil.ISub;
 import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.instanceMatcher.LabelUtils;
 import am.app.mappingEngine.instanceMatchers.BaseInstanceMatcher;
-import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.ontology.instance.Instance;
-
-import com.hp.hpl.jena.rdf.model.Statement;
 
 
 public class LabelInstanceMatcher extends BaseInstanceMatcher {
@@ -33,20 +29,16 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 	
 	//String metric;
 	
-	public LabelInstanceMatcher(){
+	public LabelInstanceMatcher() {
+		super();
 		LabelInstanceMatcherParameters param = new LabelInstanceMatcherParameters();
 		param.metric = StringMetrics.JARO;
 		this.param = param;		
 	}
 	
-	public LabelInstanceMatcher(LabelInstanceMatcherParameters param){
-		setParam(param);
-	}
-	
-	public LabelInstanceMatcher(String stringMetric){
-		LabelInstanceMatcherParameters param = new LabelInstanceMatcherParameters();
-		param.metric = stringMetric;
-		this.param = param;
+	public LabelInstanceMatcher(LabelInstanceMatcherParameters param) {
+		super();
+		setParameters(param);
 	}
 	
 	@Override
@@ -119,33 +111,33 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 	private double computeStringSimilarity(String source,
 			String target) {
 		double sim = 0.0;
-		String metric = ((LabelInstanceMatcherParameters)param).metric;
+		StringMetrics metric = ((LabelInstanceMatcherParameters)param).metric;
 		
-		if(metric.equals(ParametricStringParameters.AMSUB)) {
+		if(metric == StringMetrics.AMSUB) {
 			sim = StringMetrics.AMsubstringScore(source,target);
 		}
-		else if(metric.equals(ParametricStringParameters.AMSUB_AND_EDIT)) {
+		else if(metric == StringMetrics.AMSUB_AND_EDIT) {
 			Levenshtein lv = new Levenshtein();
 			double lsim = lv.getSimilarity(source, target);
 			double AMsim = StringMetrics.AMsubstringScore(source,target);
 			sim = (0.65*AMsim)+(0.35*lsim); 
 		}
-		else if(metric.equals(ParametricStringParameters.EDIT)) {
+		else if(metric == StringMetrics.EDIT) {
 			Levenshtein lv = new Levenshtein();
 			sim = lv.getSimilarity(source, target);
 		}
-		else if(metric.equals(ParametricStringParameters.JARO)) {
+		else if(metric == StringMetrics.JARO) {
 			JaroWinkler jv = new JaroWinkler();
 			sim =jv.getSimilarity(source, target);
 		}
-		else if(metric.equals(ParametricStringParameters.QGRAM)) {
+		else if(metric == StringMetrics.QGRAM) {
 			QGramsDistance q = new QGramsDistance();
 			sim = q.getSimilarity(source, target);
 		}
-		else if(metric.equals(ParametricStringParameters.SUB)) {
+		else if(metric == StringMetrics.SUB) {
 			sim = StringMetrics.substringScore(source,target);
 		}
-		else if(metric.equals(ParametricStringParameters.ISUB)) {
+		else if(metric == StringMetrics.ISUB) {
 			sim = ISub.getSimilarity(source,target);
 		}
 		return sim;
