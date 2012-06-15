@@ -174,6 +174,25 @@ public class LabelUtils {
 		return labels;
 	}
 	
+	public static String getLabelFromStatements(Instance instance){
+
+		List<Statement> stmts = instance.getStatements();
+
+		for(Statement s: stmts){
+			String prop = s.getPredicate().getURI();
+
+			// prop.endsWith("/name") || prop.endsWith("#name")
+			// || prop.endsWith("/label") || prop.endsWith("#label")
+
+			if (prop.endsWith("name") || prop.endsWith("label")) {
+				// System.out.println(prop);
+				return s.getObject().toString();
+			}
+		}
+
+		return null;
+	}
+	
 	public static List<String> getAliasesFromStatements(Instance instance){
 		List<Statement> stmts = instance.getStatements();
 		List<String> aliases = new ArrayList<String>();
