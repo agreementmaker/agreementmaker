@@ -126,15 +126,15 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		
 		String processedLabel;
 		
-		if(type == null) 
-			processedLabel = LabelUtils.processLabel(label);			
-		
-		if(type.toLowerCase().endsWith("organization"))
+		if(type == null) {
+			processedLabel = LabelUtils.processLabel(label);
+		}
+		else if(type.toLowerCase().endsWith("organization")) {
 			processedLabel = LabelUtils.processOrganizationLabel(label);
-		
-		else if(type.toLowerCase().endsWith("person"))
+		}
+		else if(type.toLowerCase().endsWith("person")) {
 			processedLabel = LabelUtils.processPersonLabel(label);
-		
+		}
 		else if(type.toLowerCase().endsWith("location")){
 			processedLabel = LabelUtils.processLocationLabel(label);
 			//System.out.println("processing location label");
