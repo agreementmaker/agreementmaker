@@ -265,8 +265,13 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 		return ScoredInstance.filter(candidates, 0.01);
 	}
 
+	/**
+	 * Currently returns the top instance from the scored candidates.
+	 */
 	public ScoredInstance selectInstanceFromCandidates(List<ScoredInstance> scoredCandidates) {
-		if(scoredCandidates.size() > 0 && scoredCandidates.get(0).getScore() > param.threshold) return scoredCandidates.get(0);
+		if (scoredCandidates.size() > 0
+				&& scoredCandidates.get(0).getScore() > param.threshold)
+			return scoredCandidates.get(0);
 		return null;
 
 		//		scoredCandidates = filterInstanceCandidates(scoredCandidates);
