@@ -3,6 +3,7 @@ package am.app.mappingEngine.instance;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import am.AMException;
@@ -90,7 +91,7 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 				throw new AMException("The source MUST be an iterable instance dataset.");
 			}
 
-			List<Instance> sourceInstances = sourceInstanceDataset.getInstances();
+			Iterator<Instance> sourceInstances = sourceInstanceDataset.getInstances();
 
 			// for every individual in the source list, look for candidate individuals in the target
 			instanceAlignmentSet = alignInstances(sourceInstances);
@@ -105,7 +106,7 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 			try {
 				InstanceDataset instances = sourceOntology.getInstances();
 				if(instances != null && instances.isIterable())    		
-					stepsTotal += sourceOntology.getInstances().getInstances().size();
+					stepsTotal += sourceOntology.getInstances().size();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -144,12 +145,12 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 	 * @return
 	 * @throws Exception
 	 */
-	protected List<MatchingPair> alignInstances(List<Instance> sourceInstances) throws Exception {
+	protected List<MatchingPair> alignInstances(Iterator<Instance> sourceInstances) throws Exception {
 
 		List<MatchingPair> mappings = new ArrayList<MatchingPair>();
 
-		for (int i = 0; i < sourceInstances.size(); i++) {
-			Instance currentInstance = sourceInstances.get(i);
+		while (sourceInstances.hasNext()) {
+			Instance currentInstance = sourceInstances.next();
 			List<String> labelList = currentInstance.getProperty(Instance.INST_LABEL);
 
 			if(labelList == null) continue;    		

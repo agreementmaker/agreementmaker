@@ -3,9 +3,8 @@ package am.userInterface.instance;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.GroupLayout;
@@ -18,12 +17,9 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import com.hp.hpl.jena.graph.query.Expression.Util;
-
 import am.AMException;
 import am.app.ontology.instance.Instance;
 import am.app.ontology.instance.InstanceDataset;
-import am.app.ontology.profiling.ontologymetrics.Utility;
 
 public class InstanceLookupPanel extends JPanel {
 
@@ -120,18 +116,10 @@ public class InstanceLookupPanel extends JPanel {
 			setLayout(lay);
 			
 			try {
-				List<Instance> instanceList = dataset.getInstances();
+				Iterator<Instance> instanceList = dataset.getInstances();
 				
-				// sort by uri
-				Collections.sort(instanceList, new Comparator<Instance>() {
-					@Override
-					public int compare(Instance o1, Instance o2) {
-						return o1.getUri().compareTo(o2.getUri());
-					}
-				});
-				
-				for( Instance currentInstance : instanceList ) {
-					comboboxes[0].addItem( currentInstance.getUri() );
+				while( instanceList.hasNext() ) {
+					comboboxes[0].addItem( instanceList.next().getUri() );
 				}
 				
 				

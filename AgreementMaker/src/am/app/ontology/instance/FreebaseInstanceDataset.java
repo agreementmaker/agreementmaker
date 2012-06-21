@@ -1,5 +1,6 @@
 package am.app.ontology.instance;
 
+import java.util.Iterator;
 import java.util.List;
 
 import am.AMException;
@@ -19,9 +20,6 @@ public class FreebaseInstanceDataset implements InstanceDataset {
 	public FreebaseInstanceDataset() {
 		instanceSource = new FreebaseEndpoint();
 	}
-	
-	@Override public boolean isIterable() { return false; }
-	@Override public long size() { return -1; }
 
 	@Override
 	public List<Instance> getInstances(String type, int limit)
@@ -45,8 +43,11 @@ public class FreebaseInstanceDataset implements InstanceDataset {
 		}
 	}
 
+	@Override public boolean isIterable() { return false; }
+	@Override public long size() { return -1; }
+	
 	@Override
-	public List<Instance> getInstances() throws AMException {
+	public Iterator<Instance> getInstances() throws AMException {
 		throw new AMException("This functionality is not available for an endpoint.");
 	}
 

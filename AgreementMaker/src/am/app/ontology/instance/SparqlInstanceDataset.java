@@ -1,24 +1,18 @@
 package am.app.ontology.instance;
 
+import java.util.Iterator;
 import java.util.List;
 
 import am.AMException;
 import am.app.ontology.instance.endpoint.SparqlEndpoint;
 
 public class SparqlInstanceDataset implements InstanceDataset {
-	SparqlEndpoint endpoint;
+	private SparqlEndpoint endpoint;
 	
 	public SparqlInstanceDataset(SparqlEndpoint endpoint){
 		this.endpoint = endpoint;
 	}
-	
-	@Override
-	public boolean isIterable() {
-		return false;
-	}
-
-	@Override public long size() { return -1; }
-	
+		
 	@Override
 	public List<Instance> getInstances(String type, int limit)
 			throws AMException {
@@ -36,8 +30,11 @@ public class SparqlInstanceDataset implements InstanceDataset {
 		}
 	}
 
+	@Override public boolean isIterable() { return false; }
+	@Override public long size() { return -1; }
+	
 	@Override
-	public List<Instance> getInstances() throws AMException {
+	public Iterator<Instance> getInstances() throws AMException {
 		throw new AMException("Not implemented in a Sparql dataset");
 	}
 

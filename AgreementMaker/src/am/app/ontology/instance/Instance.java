@@ -18,6 +18,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * Represents an instance in AgreementMaker and InformationMatching.
@@ -101,8 +102,9 @@ public class Instance implements Serializable {
 		this.uri = i.getURI();
 		
 		/*
-		 * If no type statement is defined for the individual it returns an exception. This is right from a Semantic Web point of view 
-		 * (every instance should have a type), but we need to be a bit forgiving.
+		 * If no type statement is defined for the individual it returns an
+		 * exception. This is correct from a Semantic Web point of view (every
+		 * instance should have a type), but we need to be a bit forgiving.
 		 */
 		try{ this.type = i.getOntClass().getURI(); } catch(Exception e){	}
 		
@@ -113,6 +115,17 @@ public class Instance implements Serializable {
 		while( iter.hasNext() ) {
 			Statement s = iter.next();
 			statements.add(s);
+		}
+		
+		// collect the labels
+		RDFNode node = i.getPropertyValue(RDFS.label);
+		String label = null;
+		if(node != null) label = node.asLiteral().toString(); 
+		
+		if(label != null && !label.isEmpty()){
+			ArrayList<String> list = new ArrayList<String>();
+			list.add(label);
+			setProperty(Instance.INST_LABEL, list);
 		}
 	}
 	

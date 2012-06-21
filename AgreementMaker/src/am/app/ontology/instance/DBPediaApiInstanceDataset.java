@@ -1,12 +1,9 @@
 package am.app.ontology.instance;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StringReader;
@@ -14,19 +11,17 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.hsqldb.lib.InOutUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
-import com.hp.hpl.jena.rdf.model.Statement;
 
 import am.AMException;
 import am.app.ontology.instance.endpoint.SparqlEndpoint;
@@ -53,19 +48,6 @@ public class DBPediaApiInstanceDataset implements InstanceDataset{
 	public DBPediaApiInstanceDataset(){
 		loadCache();
 		sparqlEndpoint = new SparqlEndpoint("http://dbpedia.org/sparql", "dbpediaSingleLocationsCache");
-	}
-	
-
-	@Override
-	public boolean isIterable() {
-		return false;
-	}
-
-	@Override
-	public List<Instance> getInstances(String type, int limit)
-			throws AMException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override public long size() { return -1; }
@@ -184,13 +166,29 @@ public class DBPediaApiInstanceDataset implements InstanceDataset{
 	}
 
 	@Override
-	public List<Instance> getInstances() throws AMException {
-		// TODO Auto-generated method stub
+	public boolean isIterable() {
+		return false;
+	}
+
+	/**
+	 * @return Will always return null since this dataset is not iterable.
+	 * 
+	 * @see {@link #isIterable()}
+	 */
+	@Override
+	public Iterator<Instance> getInstances() throws AMException {
 		return null;
 	}
 
 	@Override
 	public Instance getInstance(String uri) throws AMException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public List<Instance> getInstances(String type, int limit)
+			throws AMException {
 		// TODO Auto-generated method stub
 		return null;
 	}
