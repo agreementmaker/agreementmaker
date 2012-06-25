@@ -158,9 +158,9 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 			// FIXME: Manage multiple labels.
 			String label = labelList.get(0);
 
-			label = processLabelBeforeCandidatesGeneration(label, currentInstance.getType());
+			label = processLabelBeforeCandidatesGeneration(label, currentInstance.getTypeValue());
 
-			String sourceType = currentInstance.getType();
+			String sourceType = currentInstance.getTypeValue();
 			List<MatchingPair> targetTypes = null;
 
 			if( sourceType != null ) {

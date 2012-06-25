@@ -16,24 +16,20 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.hp.hpl.jena.Jena;
-import com.hp.hpl.jena.ontology.OntModel;
+import am.AMException;
+import am.app.ontology.instance.Instance;
+import am.app.ontology.instance.SeparateFileInstanceDataset;
+import am.utility.HTTPUtility;
+
 import com.hp.hpl.jena.rdf.arp.JenaReader;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.RDFReader;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.shared.JenaException;
 import com.hp.hpl.jena.vocabulary.RDF;
-
-import am.AMException;
-import am.app.ontology.instance.Instance;
-import am.app.ontology.instance.SeparateFileInstanceDataset;
-import am.utility.HTTPUtility;
 
 public class GeoNamesEndpoint implements SemanticWebEndpoint{
 
@@ -182,6 +178,7 @@ public class GeoNamesEndpoint implements SemanticWebEndpoint{
 		loadCache();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void loadCache() {
 		ObjectInput in;
 		try {

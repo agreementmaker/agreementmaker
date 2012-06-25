@@ -62,7 +62,7 @@ public class BaseInstanceMatcher extends AbstractInstanceMatcher {
 		}
 				
 		if(!foundSolution) log.info("NON SOLVABLE:\t" + sourceInstance.getSingleValuedProperty("label") + 
-				"\t" + processLabelBeforeCandidatesGeneration(sourceInstance.getSingleValuedProperty("label"), sourceInstance.getType()) + "\t" + sourceInstance.getUri());
+				"\t" + processLabelBeforeCandidatesGeneration(sourceInstance.getSingleValuedProperty("label"), sourceInstance.getTypeValue()) + "\t" + sourceInstance.getUri());
 		
 		return null;
 	}

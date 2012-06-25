@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import am.AMException;
+import am.app.mappingEngine.instance.EntityTypeMapper;
 import am.app.mappingEngine.instanceMatcher.NYTConstants;
 import am.utility.URIConstants;
 
@@ -88,7 +89,7 @@ public class SeparateFileInstanceDataset implements InstanceDataset {
 			
 			String type = getPropertyValue(model, uri, RDF.type.getURI());
 			
-			instance = new Instance(uri, type);	
+			instance = new Instance(uri, EntityTypeMapper.getEnumEntityType(type));	
 			
 			instance.setStatements(model.listStatements(model.getResource(uri), (Property) null, (RDFNode) null).toList());
 						

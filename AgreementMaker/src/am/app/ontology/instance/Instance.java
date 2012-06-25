@@ -11,6 +11,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import am.app.mappingEngine.instance.EntityTypeMapper;
+import am.app.mappingEngine.instance.EntityTypeMapper.EntityType;
+
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -63,11 +66,20 @@ public class Instance implements Serializable {
 	protected String uri;
 	
 	/**
-	 * The type of this instance. Can be a URI, but it doesn't have to be. We
-	 * chose this convention to be more flexible, and not have to be tied to an
-	 * ontology.
+	 * The type of this instance. These are not Semantic Web URIs but very
+	 * generic types that can be used across systems. Use
+	 * {@link EntityTypeMapper#getEnumEntityType(String)} to map a known URI
+	 * into one of our internal types.
+	 * 
+	 * @see #typeValue
 	 */
-	protected String type;
+	protected EntityType type;
+	
+	/**
+	 * Can be a URI, but it doesn't have to be. We chose this convention to be
+	 * more flexible, and not have to be tied to an ontology.
+	 */
+	protected String typeValue;
 	
 	// Are these transient because we don't want to serialize the Statement
 	// object? If so, the properties don't need to be transient. -- Cosmin.
@@ -87,7 +99,7 @@ public class Instance implements Serializable {
 	 * @param uri The unique URI of this instance.
 	 * @param type A URI of a class in the Ontology-backed KB.
 	 */
-	public Instance(String uri, String type) {
+	public Instance(String uri, EntityType type) {
 		this.uri = uri;
 		this.type = type;
 		properties = new Hashtable<String, List<String>>();
@@ -106,7 +118,11 @@ public class Instance implements Serializable {
 		 * exception. This is correct from a Semantic Web point of view (every
 		 * instance should have a type), but we need to be a bit forgiving.
 		 */
-		try{ this.type = i.getOntClass().getURI(); } catch(Exception e){	}
+		try{ 
+			String uri = i.getOntClass().getURI();
+			this.type = EntityTypeMapper.getEnumEntityType(uri);
+			this.typeValue = uri; 
+		} catch(Exception e){	}
 		
 		properties = new Hashtable<String, List<String>>();
 		statements = new ArrayList<Statement>();
@@ -235,8 +251,14 @@ public class Instance implements Serializable {
 		}
 	}
 
-	public String getType() {
+	public EntityType getType() {
 		return type;
+	}
+	
+	public String getTypeValue() {
+		if( typeValue == null && type != null ) 
+			return type.name();
+		return typeValue;
 	}
 	
 	@Override

@@ -52,7 +52,7 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 			processedSourceLabels = new ArrayList<String>(sourceLabels.size());
 			
 			for(String currentLabel : sourceLabels) {
-				processedSourceLabels.add(processLabel(currentLabel, source.getType(), false));
+				processedSourceLabels.add(processLabel(currentLabel, source.getTypeValue(), false));
 			}
 		
 			// save our processing work for the next invocation of the method
@@ -74,7 +74,7 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		
 		//targetLabel = LabelUtils.processOrganizationLabel(targetLabel);
 		for(String currentLabel : targetLabels) {
-			processedTargetLabels.add(processLabel(currentLabel, source.getType(), true));
+			processedTargetLabels.add(processLabel(currentLabel, source.getTypeValue(), true));
 		}
 		
 		//System.out.println(source.getUri() + "||" + target.getUri() + "  " + sourceLabel + " | " + targetLabel);
