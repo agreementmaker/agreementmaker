@@ -119,14 +119,15 @@ public class Instance implements Serializable {
 		
 		// collect the labels
 		RDFNode node = i.getPropertyValue(RDFS.label);
-		String label = null;
-		if(node != null) label = node.asLiteral().toString(); 
-		
-		if(label != null && !label.isEmpty()){
-			ArrayList<String> list = new ArrayList<String>();
-			list.add(label);
-			setProperty(Instance.INST_LABEL, list);
+	
+		if(node != null) {
+			String label = node.asLiteral().toString();
+			
+			if(label != null && !label.isEmpty()){
+				setProperty(Instance.INST_LABEL, label);
+			}
 		}
+		
 	}
 	
 	public String getUri() {
