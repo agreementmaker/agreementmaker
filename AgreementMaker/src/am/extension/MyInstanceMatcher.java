@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.instance.AbstractInstanceMatcher;
@@ -54,14 +55,12 @@ public class MyInstanceMatcher extends AbstractInstanceMatcher {
 		}
 		else{
 			//returns a list of article URIs
-			List<String> articles = sourceInstance.getProperty("article");
+			Set<String> articles = sourceInstance.getProperty("article");
 			if(articles == null) return null;
 			
-			Instance article;
-			for (int i = 0; i < articles.size(); i++) {
+			for (String currentArticleURI : articles) {
 				//Get the first of the list
-				String articleURI = articles.get(i);
-				article = sourceOntology.getInstances().getInstance(articleURI);
+				Instance article = sourceOntology.getInstances().getInstance(currentArticleURI);
 				System.out.println(article);
 			}
 			

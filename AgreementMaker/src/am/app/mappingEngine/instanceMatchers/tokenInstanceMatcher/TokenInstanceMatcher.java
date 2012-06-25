@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -199,7 +200,7 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB 
 		//In case modality is ALL or ALL_SEMANTIC, we have to have to gather all the properties 
 		//from the list of statements
 		if(timParam.modality == Modality.ALL || timParam.modality == Modality.ALL_SEMANTIC){
-			List<String> stmtValues = instance.getAllValuesFromStatements();
+			Set<String> stmtValues = instance.getAllValuesFromStatements();
 
 			for (String string : stmtValues) {
 				log.debug("value: " + string);

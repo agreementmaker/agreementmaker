@@ -2,8 +2,10 @@ package am.app.ontology.instance;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import am.AMException;
 import am.app.mappingEngine.instance.EntityTypeMapper;
@@ -105,7 +107,7 @@ public class SeparateFileInstanceDataset implements InstanceDataset {
 				uriLabelPair = propertiesWhiteList[i];
 				
 				if(uriLabelPair[2] == "m"){
-					ArrayList<String> values = getPropertyMultiValue(model, uri, uriLabelPair[0]);
+					Set<String> values = getPropertyMultiValue(model, uri, uriLabelPair[0]);
 					instance.setProperty(uriLabelPair[1], values);
 				}
 				else{
@@ -116,7 +118,7 @@ public class SeparateFileInstanceDataset implements InstanceDataset {
 							String[] values = value.split("\\|");
 							
 							
-							ArrayList<String> strings = new ArrayList<String>();
+							Set<String> strings = new HashSet<String>();
 							for (int j = 0; j < values.length; j++) {
 								strings.add(values[j]);
 							}
@@ -165,12 +167,12 @@ public class SeparateFileInstanceDataset implements InstanceDataset {
 		return "";
 	}
 	
-	public static ArrayList<String> getPropertyMultiValue(OntModel model, String instanceURI, String propertyURI){
+	public static Set<String> getPropertyMultiValue(OntModel model, String instanceURI, String propertyURI){
 		Property property = model.getProperty(propertyURI);
 		if(property == null) model.createProperty(propertyURI);
 		Resource instance = model.createResource(instanceURI);
 		List<Statement> list = model.listStatements(instance, property, (RDFNode)null).toList();
-		ArrayList<String> ret = new ArrayList<String>();
+		Set<String> ret = new HashSet<String>();
 		
 		if(list.size() >= 1){
 			for (int i = 0; i < list.size(); i++) {

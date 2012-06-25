@@ -4,13 +4,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -119,7 +120,7 @@ public class FreebaseEndpoint implements SemanticWebEndpoint {
 			uri = FREEBASE_URI + uri.substring(1).replace('/','.');
 			
 			instance = new Instance(uri, null);
-			ArrayList<String> valueList = new ArrayList<String>();
+			Set<String> valueList = new HashSet<String>();
 			Object name = null;
 			try{
 				name = result.get("name");

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import am.AMException;
 import am.app.mappingEngine.AbstractMatcher;
@@ -151,12 +152,12 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 
 		while (sourceInstances.hasNext()) {
 			Instance currentInstance = sourceInstances.next();
-			List<String> labelList = currentInstance.getProperty(Instance.INST_LABEL);
+			Set<String> labelList = currentInstance.getProperty(Instance.INST_LABEL);
 
 			if(labelList == null) continue;    		
 
 			// FIXME: Manage multiple labels.
-			String label = labelList.get(0);
+			String label = labelList.iterator().next();
 
 			label = processLabelBeforeCandidatesGeneration(label, currentInstance.getTypeValue());
 

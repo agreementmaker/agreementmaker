@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
@@ -83,7 +84,7 @@ public class Instance implements Serializable {
 	
 	// Are these transient because we don't want to serialize the Statement
 	// object? If so, the properties don't need to be transient. -- Cosmin.
-	protected transient Hashtable<String,List<String>> properties; // the syntactic properties of this instance 
+	protected transient Hashtable<String,Set<String>> properties; // the syntactic properties of this instance 
 	protected transient List<Statement> statements; // the semantic RDF statements of this instance.
 	
 	// this is required for correct serialization.
@@ -91,7 +92,7 @@ public class Instance implements Serializable {
 	
 	// used for serialization.
 	protected String[] keys;
-	protected LinkedList<List<String>> values;
+	protected LinkedList<Set<String>> values;
 	
 	
 	/**
@@ -102,7 +103,7 @@ public class Instance implements Serializable {
 	public Instance(String uri, EntityType type) {
 		this.uri = uri;
 		this.type = type;
-		properties = new Hashtable<String, List<String>>();
+		properties = new Hashtable<String, Set<String>>();
 		statements = new ArrayList<Statement>();
 	}
 
@@ -124,7 +125,7 @@ public class Instance implements Serializable {
 			this.typeValue = uri; 
 		} catch(Exception e){	}
 		
-		properties = new Hashtable<String, List<String>>();
+		properties = new Hashtable<String, Set<String>>();
 		statements = new ArrayList<Statement>();
 		
 		StmtIterator iter = i.listProperties();
@@ -165,20 +166,20 @@ public class Instance implements Serializable {
 	 * @return The list of values for this property.
 	 * @see #getSingleValuedProperty(String)
 	 */
-	public List<String> getProperty( String key ) {
+	public Set<String> getProperty( String key ) {
 		return properties.get(key);
 	}
 	
-	public List<String> getAllPropertyValues(){
-		List<String> values = new ArrayList<String>();
-		for (List<String> strings: properties.values()) {
+	public Set<String> getAllPropertyValues(){
+		Set<String> values = new HashSet<String>();
+		for (Set<String> strings: properties.values()) {
 			values.addAll(strings);
 		}
 		return values;
 	}
 		
-	public List<String> getAllValuesFromStatements(){
-		List<String> values = new ArrayList<String>();
+	public Set<String> getAllValuesFromStatements(){
+		Set<String> values = new HashSet<String>();
 		
 		for (Statement statement : statements) {
 			RDFNode node = statement.getObject();
@@ -204,14 +205,14 @@ public class Instance implements Serializable {
 	 * @see #getProperty(String)
 	 */
 	public String getSingleValuedProperty( String key ) {
-		List<String> strings = properties.get(key);
+		Set<String> strings = properties.get(key);
 		if(strings == null) return null;
 		if(strings.size() < 1) return null;
-		return strings.get(0);
+		return strings.iterator().next();
 	}
 	
 	/** Passing a null value will remove the key from the properties table. */
-	public void setProperty( String key, List<String> strings ) {
+	public void setProperty( String key, Set<String> strings ) {
 		if( strings == null ) {
 			properties.remove(key);
 		} else {
@@ -238,9 +239,9 @@ public class Instance implements Serializable {
 		if( value == null ) {
 			properties.remove(key);
 		} else {
-			List<String> values = properties.get(key);
+			Set<String> values = properties.get(key);
 			if(values == null){
-				ArrayList<String> list = new ArrayList<String>();
+				Set<String> list = new HashSet<String>();
 				list.add(value);
 				properties.put(key,list);
 			}
@@ -306,7 +307,7 @@ public class Instance implements Serializable {
 		 * transient, then we don't need this extra serialization.
 		 */
     	keys = new String[keySet.size()];  
-    	values = new LinkedList<List<String>>(); // can't create arrays of generic types.
+    	values = new LinkedList<Set<String>>(); // can't create arrays of generic types.
     	int i = 0;
     	for (String string : keySet) {
 			keys[i] = string;
@@ -325,7 +326,7 @@ public class Instance implements Serializable {
         model.read(new StringReader(serializedModel), "http://base", "N-TRIPLE");
         statements = model.listStatements().toList();
         
-        properties = new Hashtable<String, List<String>>();
+        properties = new Hashtable<String, Set<String>>();
         
         //System.out.println(Arrays.toString(keys));
         //System.out.println(Arrays.toString(values));

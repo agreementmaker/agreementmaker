@@ -154,10 +154,10 @@ public class LabelUtils {
 		return standardType; //return the standard type name
 	}
 	
-	public static List<String> getLabelsFromStatements(Instance instance){
+	public static Set<String> getLabelsFromStatements(Instance instance){
 		
 		List<Statement> stmts = instance.getStatements();
-		List<String> labels = new ArrayList<String>();
+		Set<String> labels = new HashSet<String>();
 
 		for(Statement s: stmts){
 			String prop = s.getPredicate().getURI();

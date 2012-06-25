@@ -1,7 +1,9 @@
 package am.app.mappingEngine.instanceMatchers.labelInstanceMatcher;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -47,7 +49,7 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		
 		// 2) process the source labels
 		if( lastSourceURI == null || !lastSourceURI.equals(source.getUri()) ) {
-			List<String> sourceLabels = source.getProperty(Instance.INST_LABEL);
+			Set<String> sourceLabels = source.getProperty(Instance.INST_LABEL);
 			
 			processedSourceLabels = new ArrayList<String>(sourceLabels.size());
 			
@@ -65,7 +67,7 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		}
 				
 		// 3) process the target labels
-		List<String> targetLabels = target.getProperty(Instance.INST_LABEL);
+		Set<String> targetLabels = target.getProperty(Instance.INST_LABEL);
 		List<String> processedTargetLabels = new ArrayList<String>(targetLabels.size());
 
 		if(targetLabels == null || targetLabels.isEmpty()) {
@@ -85,8 +87,8 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		
 		log.debug("labelSim: " + sim);
 		
-		List<String> aliases = target.getProperty(Instance.INST_ALIAS);
-		if(aliases == null) aliases = new ArrayList<String>();
+		Set<String> aliases = target.getProperty(Instance.INST_ALIAS);
+		if(aliases == null) aliases = new HashSet<String>();
 		aliases.addAll(LabelUtils.getAliasesFromStatements(target));
 		
 		//System.out.println(aliases);
@@ -95,9 +97,9 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		if(aliases != null){
 			double max = sim;
 			double curr = 0.0d;
-			for (int i = 0; i < aliases.size(); i++) {
+			for (String currentAlias : aliases) {
 				for( String currentLabel : processedSourceLabels ) {
-					curr = ssm.getSimilarity(currentLabel, aliases.get(i));
+					curr = ssm.getSimilarity(currentLabel, currentAlias);
 				}
 
 				max = Math.max(curr, max);
