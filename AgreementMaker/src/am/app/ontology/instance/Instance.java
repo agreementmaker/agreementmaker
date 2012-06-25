@@ -16,9 +16,11 @@ import am.app.mappingEngine.instance.EntityTypeMapper;
 import am.app.mappingEngine.instance.EntityTypeMapper.EntityType;
 
 import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -114,16 +116,37 @@ public class Instance implements Serializable {
 	public Instance( Individual i ) {
 		this.uri = i.getURI();
 		
-		/*
-		 * If no type statement is defined for the individual it returns an
-		 * exception. This is correct from a Semantic Web point of view (every
-		 * instance should have a type), but we need to be a bit forgiving.
-		 */
-		try{ 
-			String uri = i.getOntClass().getURI();
+		// first check for rdf:type
+		OntClass rdfType = null;
+		try {
+			rdfType = i.getOntClass();
+		}
+		catch( Exception ex1 ) { }
+		
+		if( rdfType == null ) {
+			// this dataset does not have rdf:type defined for its individuals? try to work around it.
+			/**
+			 * NIST KB Workaround.  This is because the {@link NistKbToRDF} converter does not properly populate
+			 * rdf:type.  Instead it uses "http://www.kb.com#type".
+			 */
+			
+			Model m = i.getModel();
+			Property p = m.getProperty("http://www.kb.com#type");
+			
+			if( p != null ) {
+				RDFNode node = i.getPropertyValue(p);
+				if( node.isLiteral() ) {
+					String type = node.as(Literal.class).getString();
+					this.type = EntityTypeMapper.getEnumEntityType(type);
+					this.typeValue = type;
+				}
+			}
+		}
+		else {
+			String uri = rdfType.getURI();
 			this.type = EntityTypeMapper.getEnumEntityType(uri);
-			this.typeValue = uri; 
-		} catch(Exception e){	}
+			this.typeValue = uri; 				
+		}
 		
 		properties = new Hashtable<String, Set<String>>();
 		statements = new ArrayList<Statement>();

@@ -5,8 +5,6 @@ import org.apache.log4j.Logger;
 
 /**
  * 
- * This
- * 
  * @author Iman Mirrezaei
  * @author Daniele Alfarone
  *
@@ -21,28 +19,31 @@ public class EntityTypeMapper {
 
 	public static EntityType getEnumEntityType(String typeString) {
 		for (EntityType entityType : EntityType.values()) {
-			if (findMatchingType(typeString, entityType.toString())) return entityType;
+			if (isMatch(typeString, entityType)) return entityType;
 		}
 
-		log.warn("The entity type: '"+typeString +"' could not be mapped. UNKNOWN type assigned.");
+		log.warn("The entity type: '" + typeString + "' could not be mapped. UNKNOWN type assigned.");
 		
 		return EntityType.UNKNOWN;
 	}
 
-	private static boolean findMatchingType(String typeString, String typeEnum){
+	private static boolean isMatch(String typeString, EntityType typeEnum){
 
 		//GATE Type
-		if (typeString.equalsIgnoreCase(typeEnum)) return true;
+		if (typeString.equalsIgnoreCase(typeEnum.name())) return true;
 
 		//NIST Ontology Type
 		if (typeString.indexOf("#")>0) {
 			String typeSubstring = StringUtils.substringAfter(typeString, "#");
-			if (typeSubstring.toString().equalsIgnoreCase(typeEnum))
+			if (typeSubstring.toString().equalsIgnoreCase(typeEnum.name()))
 				return true;
 		}
 
 		//wiki Nist type
-		if (typeEnum.substring(0,3).equalsIgnoreCase(typeString)) return true;
+		if (typeEnum.name().substring(0,3).equalsIgnoreCase(typeString)) return true;
+		if( typeString.equals("UKN") && typeEnum == EntityType.UNKNOWN ) return true;
+		if( typeString.equals("GPE") && typeEnum == EntityType.LOCATION ) return true;
+		
 
 		return false;
 	}
