@@ -33,7 +33,7 @@ import edu.smu.tspell.wordnet.SynsetType;
 import edu.smu.tspell.wordnet.WordNetDatabase;
 
 
-public class WordnetSubclassMatcher extends AbstractMatcher{
+public class WordnetSubclassMatcher extends AbstractMatcher {
 
 	private static final long serialVersionUID = -8046957574666609849L;
 
@@ -588,9 +588,9 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 		if(sourceList.size() == 0 || targetList.size() == 0)
 			return 0.0;
 		
-		if(referenceAlignment != null)
+		/*if(referenceAlignment != null)
 			solution = AlignmentUtilities.candidatesContainSolution(referenceAlignment, 
-				sourceList.get(0).getName(), targetList.get(0).getName());
+				sourceList.get(0).getName(), targetList.get(0).getName());*/
 				
 		boolean oneMatch = false;
 		
@@ -630,11 +630,11 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 						matchST += sim * source.getScore() * target.getScore();
 						countST += source.getScore() * target.getScore();
 						
-						if(referenceAlignment != null){
+						/*if(referenceAlignment != null){
 							if(solution == null) 
 								report += "\tNo"; 
 							else report += "\tYes\t" + solution.relation;
-						}
+						}*/
 						
 						log.debug(report);
 					}					
