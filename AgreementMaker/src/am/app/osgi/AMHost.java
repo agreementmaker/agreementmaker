@@ -61,6 +61,8 @@ public class AMHost {
                 "am.visualization.graphviz.wordnet,"+
                 "arq.examples.propertyfunction,"+
                 "am.app.mappingEngine.hierarchy,"+
+                "am.app.similarity,"+
+                "am.app.mappingEngine.threaded,"+
                 "am.app.mappingEngine.qualityEvaluation"); 
         
 
