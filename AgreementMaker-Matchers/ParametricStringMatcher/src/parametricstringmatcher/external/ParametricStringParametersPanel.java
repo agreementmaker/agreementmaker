@@ -13,15 +13,15 @@ import am.Utility;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
-
+/**
+ * 
+ * FIXME: Update this class to work with {@link StringSimilarityMeasure}.
+ * 
+ * @author Cosmin Stroe
+ *
+ */
 public class ParametricStringParametersPanel extends AbstractMatcherParametersPanel implements ActionListener{
 
-	/**
-	 * Base Similarity Matcher - The Parameters Panel
-	 * @author Cosmin Stroe
-	 * @date Nov 22, 2008
-	 * ADVIS @ UIC
-	 */
 	private static final long serialVersionUID = -7652636660460034435L;
 
 	private ParametricStringParameters parameters;

@@ -3,9 +3,12 @@ package parametricstringmatcher.external;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.oaei.OAEI_Track;
+import am.app.similarity.StringSimilarityMeasure;
 
 public class ParametricStringParameters extends DefaultMatcherParameters {
 
+	private static final long serialVersionUID = -6297024292915109198L;
+	
 	public final static String EDIT = "Levenshtein Edit Distance";
 	public final static String JARO = "Jaro Winkler";
 	public final static String QGRAM = "Q-Gram";
@@ -15,6 +18,7 @@ public class ParametricStringParameters extends DefaultMatcherParameters {
 	public final static String AMSUB_AND_EDIT = "AMsubstring + editDistance"; //0.6*amsub + 0.4*editdistance
 	
 	public String measure = EDIT;
+	public StringSimilarityMeasure stringSimilarityMeasure;
 	
 	public double localWeight = 0;
 	public double labelWeight = 0.7;

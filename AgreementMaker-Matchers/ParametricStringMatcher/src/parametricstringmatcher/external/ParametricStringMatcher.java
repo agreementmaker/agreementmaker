@@ -3,7 +3,6 @@ package parametricstringmatcher.external;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hp.hpl.jena.ontology.OntResource;
 import am.Utility;
 import am.app.Core;
 import am.app.lexicon.Lexicon;
@@ -11,18 +10,16 @@ import am.app.lexicon.LexiconSynSet;
 import am.app.lexicon.subconcept.SynonymTermLexicon;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.LexiconStore.LexiconRegistry;
-import am.app.mappingEngine.StringUtil.ISub;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
-import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.ontology.Node;
 import am.userInterface.MatchingProgressDisplay;
 
-import uk.ac.shef.wit.simmetrics.similaritymetrics.*; //all sim metrics are in here
+import com.hp.hpl.jena.ontology.OntResource;
 
 public class ParametricStringMatcher extends AbstractMatcher { 
 
@@ -481,34 +478,7 @@ public class ParametricStringMatcher extends AbstractMatcher {
 			else if(processedTarget.equals(""))
 				return 0;
 			
-			//this could be done with registry enumeration techinque but is not worth it
-			if(parameters.measure.equals(ParametricStringParameters.AMSUB)) {
-				sim = StringMetrics.AMsubstringScore(processedSource,processedTarget);
-			}
-			else if(parameters.measure.equals(ParametricStringParameters.AMSUB_AND_EDIT)) {
-				Levenshtein lv = new Levenshtein();
-				double lsim = lv.getSimilarity(processedSource, processedTarget);
-				double AMsim = StringMetrics.AMsubstringScore(processedSource,processedTarget);
-				sim = (0.65*AMsim)+(0.35*lsim); 
-			}
-			else if(parameters.measure.equals(ParametricStringParameters.EDIT)) {
-				Levenshtein lv = new Levenshtein();
-				sim = lv.getSimilarity(processedSource, processedTarget);
-			}
-			else if(parameters.measure.equals(ParametricStringParameters.JARO)) {
-				JaroWinkler jv = new JaroWinkler();
-				sim =jv.getSimilarity(processedSource, processedTarget);
-			}
-			else if(parameters.measure.equals(ParametricStringParameters.QGRAM)) {
-				QGramsDistance q = new QGramsDistance();
-				sim = q.getSimilarity(processedSource, processedTarget);
-			}
-			else if(parameters.measure.equals(ParametricStringParameters.SUB)) {
-				sim = StringMetrics.substringScore(processedSource,processedTarget);
-			}
-			else if(parameters.measure.equals(ParametricStringParameters.ISUB)) {
-				sim = ISub.getSimilarity(processedSource,processedTarget);
-			}
+			sim = parameters.stringSimilarityMeasure.getSimilarity(processedSource,processedTarget);
 		}
 		return sim;
 	}
