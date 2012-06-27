@@ -6,8 +6,6 @@ package am.app.mappingEngine.MachineLearning;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import sun.security.x509.AlgIdDSA;
-
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;

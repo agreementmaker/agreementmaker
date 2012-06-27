@@ -30,7 +30,6 @@ import javax.swing.JRootPane;
 import javax.swing.KeyStroke;
 
 import am.GlobalStaticVariables;
-import am.app.Core;
 
 public class AboutDialog extends JDialog implements ActionListener {
 		

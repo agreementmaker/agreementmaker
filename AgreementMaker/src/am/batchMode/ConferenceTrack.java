@@ -1,5 +1,9 @@
 package am.batchMode;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
+
 import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
@@ -8,8 +12,6 @@ import am.app.mappingEngine.oaei2009.OAEI2009parameters;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.output.AlignmentOutput;
-import java.io.*;
-import java.util.ArrayList;
 
 public class ConferenceTrack extends Track {
 

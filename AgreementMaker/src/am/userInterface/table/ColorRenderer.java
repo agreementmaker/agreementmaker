@@ -36,13 +36,14 @@ package am.userInterface.table;
  * TableDialogEditDemo.java.
  */
 
+import java.awt.Color;
+import java.awt.Component;
+
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.border.Border;
 import javax.swing.table.TableCellRenderer;
-import java.awt.Color;
-import java.awt.Component;
 
 public class ColorRenderer extends JLabel
                            implements TableCellRenderer {

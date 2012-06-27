@@ -6,10 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import edu.smu.tspell.wordnet.Synset;
-
 import am.app.mappingEngine.hierarchy.Utilities;
 import am.utility.WordNetUtils;
+import edu.smu.tspell.wordnet.Synset;
 
 public class LODStatistics {
 	

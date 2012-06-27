@@ -1,12 +1,5 @@
 package am.app.mappingEngine.similarityMatrix;
 
-import static org.junit.Assert.*;
-
-import java.util.Random;
-
-import org.junit.Test;
-
-import am.app.mappingEngine.Mapping;
 
 public class OptmizedSparseMatrixTest {
 	/*@Test public void insertAndGet16000000() {

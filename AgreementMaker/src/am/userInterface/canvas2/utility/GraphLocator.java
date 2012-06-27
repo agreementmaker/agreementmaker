@@ -3,8 +3,6 @@ package am.userInterface.canvas2.utility;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import am.userInterface.canvas2.Canvas2;
-
 public class GraphLocator {
 	
 	public static enum GraphType {

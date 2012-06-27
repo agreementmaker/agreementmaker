@@ -10,8 +10,8 @@ import java.util.List;
 
 import am.AMException;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
 import am.app.mappingEngine.SimilarityMatrix;

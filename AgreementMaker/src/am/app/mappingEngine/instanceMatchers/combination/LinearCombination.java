@@ -2,8 +2,6 @@ package am.app.mappingEngine.instanceMatchers.combination;
 
 import java.util.List;
 
-import am.AMException;
-
 public class LinearCombination extends CombinationFunction{
 	List<Double> weights;	
 	

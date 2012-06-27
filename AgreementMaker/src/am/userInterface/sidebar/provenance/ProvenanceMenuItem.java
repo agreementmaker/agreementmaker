@@ -7,9 +7,9 @@ import javax.swing.JMenuItem;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.MatcherFeature;
+import am.app.mappingEngine.MatchingTaskChangeEvent;
 
 public class ProvenanceMenuItem extends JMenuItem implements MatcherChangeListener{
 	

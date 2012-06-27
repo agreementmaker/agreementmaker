@@ -1,7 +1,6 @@
 package am.app.mappingEngine.oaei.oaei2011;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
-import am.app.mappingEngine.oaei.OAEI_Track;
 
 /**
  * This year's matching algorithm uses a completely automatic configuration. 

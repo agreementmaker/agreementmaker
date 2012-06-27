@@ -1,15 +1,11 @@
 package am.userInterface.canvas2.nodes;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.geom.RoundRectangle2D;
 import java.util.Iterator;
 
 import am.app.Core;
-import am.app.ontology.Ontology;
 import am.userInterface.Colors;
 import am.userInterface.canvas2.graphical.GraphicalData;
 import am.userInterface.canvas2.graphical.MappingData;

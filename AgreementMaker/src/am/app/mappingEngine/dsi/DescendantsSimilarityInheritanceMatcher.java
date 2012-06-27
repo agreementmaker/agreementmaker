@@ -1,6 +1,5 @@
 package am.app.mappingEngine.dsi;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 

@@ -1,10 +1,9 @@
 package am.app.ontology.ontologyParser;
 
-import com.hp.hpl.jena.util.LocationMapper;
-
-import am.app.ontology.Ontology;
 import am.app.ontology.Ontology.DatasetType;
 import am.app.ontology.instance.endpoint.EndpointRegistry;
+
+import com.hp.hpl.jena.util.LocationMapper;
 
 /**
  * This data structure holds all the information required

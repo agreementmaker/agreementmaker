@@ -12,7 +12,6 @@ import java.util.Iterator;
 import javax.swing.JFileChooser;
 
 import am.tools.SGMLParser.GigaWordParser.GigaWordParser;
-import am.tools.SGMLParser.GigaWordParser.GigaWordParserConstants;
 import am.tools.SGMLParser.GigaWordParser.ParseException;
 
 /**

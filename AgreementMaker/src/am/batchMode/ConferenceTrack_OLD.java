@@ -1,5 +1,8 @@
 package am.batchMode;
 
+import java.io.File;
+import java.io.FilenameFilter;
+
 import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
@@ -8,7 +11,6 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.oaei2009.OAEI2009parameters;
 import am.output.AlignmentOutput;
-import java.io.*;
 
 public class ConferenceTrack_OLD extends Track {
 

@@ -4,35 +4,30 @@ package am.userInterface.table;
 
 
 
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ChangeEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.MatchingTaskChangeEvent;
-import am.app.mappingEngine.MatchingTaskChangeEvent.EventType;
 import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.MatchingTaskChangeEvent;
+import am.app.mappingEngine.MatchingTaskChangeEvent.EventType;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
-import am.userInterface.Colors;
-import am.userInterface.UI;
-
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridLayout;
 
 public class MatchersTablePanel extends JPanel implements MatcherChangeListener {
     

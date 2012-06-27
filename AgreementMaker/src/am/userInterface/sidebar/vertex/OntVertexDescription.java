@@ -5,6 +5,7 @@ package am.userInterface.sidebar.vertex;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;

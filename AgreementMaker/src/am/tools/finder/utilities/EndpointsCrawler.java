@@ -11,8 +11,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTML.Attribute;
-import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.HTML.Tag;
+import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
 
 public class EndpointsCrawler {

@@ -14,6 +14,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import am.AMException;
+import am.app.ontology.instance.Instance;
+import am.app.ontology.instance.SeparateFileInstanceDataset;
+import am.utility.HTTPUtility;
+
 import com.hp.hpl.jena.rdf.arp.JenaReader;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -22,14 +27,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
-
-import am.AMException;
-import am.app.ontology.instance.Instance;
-import am.app.ontology.instance.SeparateFileInstanceDataset;
-import am.utility.HTTPUtility;
 
 /**
  * SPARQL Endpoint wrapper.

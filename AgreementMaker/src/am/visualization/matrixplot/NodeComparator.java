@@ -1,15 +1,12 @@
 package am.visualization.matrixplot;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import am.app.ontology.Node;
+
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-
-import am.Utility;
-import am.app.ontology.Node;
 
 public class NodeComparator implements Comparator<Node> {
 

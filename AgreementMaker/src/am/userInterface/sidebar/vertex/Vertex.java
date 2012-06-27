@@ -2,11 +2,6 @@ package am.userInterface.sidebar.vertex;
 
 
 
-import java.io.Serializable;
-import javax.swing.tree.DefaultMutableTreeNode;
-import am.GlobalStaticVariables;
-import am.app.ontology.Node;
-import com.hp.hpl.jena.ontology.OntModel;
 
 /**
  * Vertex class contains all the information about the node or vertex of the XML tree.

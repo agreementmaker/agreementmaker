@@ -1,12 +1,5 @@
 package am.app.mappingEngine.similarityMatrix;
 
-import java.util.Random;
-
-import org.junit.Test;
-
-import am.AMException;
-import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.Mapping;
 
 public class ArraySimilarityMatrixTest {
 	/*@Test public void insertAndGet16000000() throws AMException {

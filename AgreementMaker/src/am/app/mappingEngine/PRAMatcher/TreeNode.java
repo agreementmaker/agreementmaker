@@ -5,7 +5,6 @@ package am.app.mappingEngine.PRAMatcher;
 
 //import java.util.ArrayList;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import am.app.ontology.Node;

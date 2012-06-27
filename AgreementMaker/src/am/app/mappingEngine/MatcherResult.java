@@ -1,7 +1,6 @@
 package am.app.mappingEngine;
 
 import java.awt.Color;
-import java.util.List;
 
 import am.app.Core;
 import am.app.ontology.Ontology;

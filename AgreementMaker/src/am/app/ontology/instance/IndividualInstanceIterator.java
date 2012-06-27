@@ -2,8 +2,6 @@ package am.app.ontology.instance;
 
 import java.util.Iterator;
 
-import am.app.ontology.instance.Instance;
-
 import com.hp.hpl.jena.ontology.Individual;
 
 /**

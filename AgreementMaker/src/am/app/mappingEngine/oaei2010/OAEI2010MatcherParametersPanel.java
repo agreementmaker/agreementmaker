@@ -4,14 +4,11 @@ import java.awt.Dimension;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.oaei.OAEI_Track;
-import am.app.ontology.Ontology;
 import am.userInterface.AppPreferences;
 
 /**

@@ -4,15 +4,10 @@ package am.app.mappingEngine.manualMatcher;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.DefaultMatcherParameters;
-import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.Mapping.MappingRelation;
-import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
-import am.app.ontology.Node;
-import am.app.ontology.Ontology;
 import am.userInterface.Colors;
 
 /**This class is used to represent the user manual matching

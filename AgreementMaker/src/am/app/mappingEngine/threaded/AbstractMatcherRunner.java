@@ -3,9 +3,9 @@ package am.app.mappingEngine.threaded;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 
 /**

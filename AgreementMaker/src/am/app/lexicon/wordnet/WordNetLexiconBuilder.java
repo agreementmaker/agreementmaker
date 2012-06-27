@@ -4,11 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import com.hp.hpl.jena.ontology.OntResource;
-import edu.smu.tspell.wordnet.Synset;
-import edu.smu.tspell.wordnet.SynsetType;
-import edu.smu.tspell.wordnet.WordNetDatabase;
-
 import am.Utility;
 import am.app.lexicon.GeneralLexicon;
 import am.app.lexicon.GeneralLexiconSynSet;
@@ -17,6 +12,12 @@ import am.app.lexicon.LexiconBuilder;
 import am.app.lexicon.LexiconSynSet;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.ontology.Ontology;
+
+import com.hp.hpl.jena.ontology.OntResource;
+
+import edu.smu.tspell.wordnet.Synset;
+import edu.smu.tspell.wordnet.SynsetType;
+import edu.smu.tspell.wordnet.WordNetDatabase;
 
 public class WordNetLexiconBuilder implements LexiconBuilder {
 

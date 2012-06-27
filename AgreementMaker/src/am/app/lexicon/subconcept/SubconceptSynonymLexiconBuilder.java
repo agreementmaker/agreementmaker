@@ -1,7 +1,5 @@
 package am.app.lexicon.subconcept;
 
-import java.util.List;
-
 import am.app.lexicon.LexiconBuilder;
 import am.app.lexicon.LexiconSynSet;
 

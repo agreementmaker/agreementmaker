@@ -1,14 +1,9 @@
 package am.evaluation.alignment;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.ontology.Node;
 
 /**
  * Given an alignment, calculate the delta from the reference alignment.

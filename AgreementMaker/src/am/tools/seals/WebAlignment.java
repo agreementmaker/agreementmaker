@@ -24,6 +24,7 @@
 package am.tools.seals;
 
 import java.net.URI;
+
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;

@@ -3,7 +3,9 @@
  */
 package am.app.mappingEngine;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,9 +13,6 @@ import java.io.FileReader;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Vector;
-
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import org.junit.After;
 import org.junit.AfterClass;

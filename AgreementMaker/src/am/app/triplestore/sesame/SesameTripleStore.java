@@ -3,7 +3,6 @@ package am.app.triplestore.sesame;
 import java.io.File;
 import java.io.IOException;
 
-import org.openrdf.query.QueryResult;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;

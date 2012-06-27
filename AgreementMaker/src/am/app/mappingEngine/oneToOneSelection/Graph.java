@@ -1,6 +1,6 @@
 package am.app.mappingEngine.oneToOneSelection;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * Il tipo di dato Grafo, descritto dall'interfaccia <code>Grafo</code>, 

@@ -1,18 +1,29 @@
 package am.app.ontology.profiling.classification;
 
-import weka.classifiers.*;
-import weka.classifiers.bayes.*;
-import weka.classifiers.functions.*;
-
-import weka.classifiers.lazy.*;
-import weka.classifiers.meta.*;
-import weka.classifiers.mi.*;
-import weka.classifiers.misc.*;
-import weka.classifiers.pmml.consumer.*;
-import weka.classifiers.rules.*;
-import weka.classifiers.trees.*;
-import weka.classifiers.trees.lmt.LogisticBase;
-import weka.classifiers.trees.m5.*;
+import weka.classifiers.Classifier;
+import weka.classifiers.bayes.BayesNet;
+import weka.classifiers.bayes.ComplementNaiveBayes;
+import weka.classifiers.bayes.DMNBtext;
+import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.bayes.NaiveBayesMultinomial;
+import weka.classifiers.bayes.NaiveBayesSimple;
+import weka.classifiers.functions.RBFNetwork;
+import weka.classifiers.lazy.IB1;
+import weka.classifiers.lazy.IBk;
+import weka.classifiers.lazy.KStar;
+import weka.classifiers.meta.ClassificationViaClustering;
+import weka.classifiers.misc.HyperPipes;
+import weka.classifiers.rules.ConjunctiveRule;
+import weka.classifiers.rules.DecisionTable;
+import weka.classifiers.rules.JRip;
+import weka.classifiers.rules.Ridor;
+import weka.classifiers.trees.DecisionStump;
+import weka.classifiers.trees.FT;
+import weka.classifiers.trees.J48;
+import weka.classifiers.trees.J48graft;
+import weka.classifiers.trees.LADTree;
+import weka.classifiers.trees.LMT;
+import weka.classifiers.trees.REPTree;
 
 public enum ClassifierRegistry {
     

@@ -7,8 +7,6 @@ import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.utility.DirectedGraphVertex;
 import am.utility.Pair;
-
-import com.hp.hpl.jena.rdf.model.RDFNode;
 /**
  * Pairwise Connectivity Graph Vertex.
  * @author cosmin

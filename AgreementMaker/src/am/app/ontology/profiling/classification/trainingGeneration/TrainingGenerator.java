@@ -18,7 +18,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
@@ -27,9 +26,6 @@ import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.oaei.OAEI_Track;
-import am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher;
-import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters;
-import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters.OAEI2011Configuration;
 import am.app.mappingEngine.oaei2010.OAEI2010Matcher;
 import am.app.mappingEngine.oaei2010.OAEI2010MatcherParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -41,10 +37,8 @@ import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.classification.ClassifierRegistry;
 import am.app.ontology.profiling.classification.OntologyClassifier;
-import am.app.ontology.profiling.classification.Test;
 import am.app.ontology.profiling.classification.TestSet;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
-import am.userInterface.console.ConsoleProgressDisplay;
 import am.utility.LocalnameComparator;
 
 import com.hp.hpl.jena.rdf.model.Property;

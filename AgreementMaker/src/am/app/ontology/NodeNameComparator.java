@@ -2,8 +2,6 @@ package am.app.ontology;
 
 import java.util.Comparator;
 
-import com.hp.hpl.jena.rdf.model.Resource;
-
 
 public class NodeNameComparator implements Comparator<Node> {
 

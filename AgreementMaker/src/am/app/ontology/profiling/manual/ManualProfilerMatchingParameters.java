@@ -2,9 +2,9 @@ package am.app.ontology.profiling.manual;
 
 import java.util.List;
 
-import com.hp.hpl.jena.rdf.model.Property;
-
 import am.app.ontology.profiling.OntologyProfilerParameters;
+
+import com.hp.hpl.jena.rdf.model.Property;
 
 public class ManualProfilerMatchingParameters extends OntologyProfilerParameters {
 

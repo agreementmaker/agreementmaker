@@ -6,8 +6,6 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.hp.hpl.jena.rdf.model.Resource;
-
 import am.userInterface.Colors;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.GraphicalData;
@@ -16,6 +14,8 @@ import am.userInterface.canvas2.nodes.LegacyMapping;
 import am.userInterface.ontology.OntologyConceptGraphics;
 import am.utility.DirectedGraphEdge;
 import am.utility.DirectedGraphVertex;
+
+import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * A Canvas2Node holds graphical information about an ontology Resource.

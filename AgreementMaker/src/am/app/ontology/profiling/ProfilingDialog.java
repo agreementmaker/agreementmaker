@@ -17,7 +17,6 @@ import javax.swing.KeyStroke;
 
 import am.app.Core;
 import am.app.ontology.Ontology;
-import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 
 /**
  * The ontology profiling dialog.  Is is meant to be accessed from the

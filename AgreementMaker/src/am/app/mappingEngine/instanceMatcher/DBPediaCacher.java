@@ -10,10 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import am.GlobalStaticVariables;
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.ontology.Ontology;
 import am.app.ontology.instance.SeparateFileInstanceDataset;
-import am.app.ontology.instance.endpoint.GeoNamesEndpoint;
 import am.app.ontology.instance.endpoint.SparqlEndpoint;
 import am.app.ontology.ontologyParser.OldOntoTreeBuilder;
 

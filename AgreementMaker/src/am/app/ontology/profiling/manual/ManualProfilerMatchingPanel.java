@@ -3,18 +3,18 @@ package am.app.ontology.profiling.manual;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.GroupLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import com.hp.hpl.jena.rdf.model.Property;
 
 import am.Utility;
 import am.app.ontology.profiling.OntologyProfilerPanel;
 import am.app.ontology.profiling.OntologyProfilerParameters;
 import am.app.ontology.profiling.metrics.propertycoverage.CoverageTriple;
+
+import com.hp.hpl.jena.rdf.model.Property;
 
 /**
  * This class represents the matching panel for the manual ontology profiling algorithm.

@@ -16,7 +16,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import am.Utility;
-import am.app.triplestore.jenatdb.JenaTDBTripleStore;
 
 public class CreateDatabase extends JDialog implements ActionListener{
 	

@@ -5,13 +5,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.hp.hpl.jena.ontology.OntResource;
-
 import am.app.Core;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
+
+import com.hp.hpl.jena.ontology.OntResource;
 
 public class GeneralLexiconSynSet implements LexiconSynSet {
 

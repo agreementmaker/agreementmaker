@@ -3,7 +3,6 @@ package am.userInterface;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
-import javax.swing.Scrollable;
 
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.TreeBuilder;

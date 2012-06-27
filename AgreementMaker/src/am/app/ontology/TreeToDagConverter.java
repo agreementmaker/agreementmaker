@@ -1,9 +1,5 @@
 package am.app.ontology;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 

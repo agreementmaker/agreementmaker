@@ -1,6 +1,6 @@
 package am.app.mappingEngine.similarityMatrix;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

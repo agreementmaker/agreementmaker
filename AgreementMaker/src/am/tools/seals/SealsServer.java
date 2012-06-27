@@ -32,26 +32,22 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.jws.WebService;
-import javax.swing.SwingWorker.StateValue;
-
-import eu.sealsproject.omt.ws.matcher.AlignmentWS;
 
 import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.output.AlignmentOutput;
 import am.userInterface.MatchingProgressDisplay;
+import eu.sealsproject.omt.ws.matcher.AlignmentWS;
 
 /**
  * This class handles the align requests from the published Endpoint.

@@ -4,9 +4,9 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import am.app.feedback.CandidateConcept;
+import am.app.feedback.CandidateSelection.MeasuresRegistry;
 import am.app.feedback.ConceptList;
 import am.app.feedback.FeedbackLoop;
-import am.app.feedback.CandidateSelection.MeasuresRegistry;
 
 public class RelevanceMeasure {
 

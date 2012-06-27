@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,9 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import am.AMException;
 import am.GlobalStaticVariables;
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.ontology.Ontology;
 import am.app.ontology.instance.Instance;
 import am.app.ontology.instance.SeparateFileInstanceDataset;

@@ -5,15 +5,13 @@ import java.util.Collections;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Ontology;
 import am.app.userfeedback.CandidateSelection;
 import am.app.userfeedback.UFLExperiment;
-import am.app.userfeedback.UserFeedback.Validation;
-import am.app.userfeedback.common.ValidatedMapping;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;

@@ -1,9 +1,9 @@
 package am.evaluation.alignment;
 
-import com.ibm.icu.text.NumberFormat;
-
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+
+import com.ibm.icu.text.NumberFormat;
 
 /**
  * This class implements the following metrics:

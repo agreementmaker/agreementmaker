@@ -1,10 +1,7 @@
 package am.app.ontology.profiling.classification;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -21,9 +18,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import am.app.ontology.profiling.classification.trainingGeneration.Result;
-import am.app.ontology.profiling.classification.trainingGeneration.Winner;
 
 public class TestSet {
 	private LinkedList<Test> testList;

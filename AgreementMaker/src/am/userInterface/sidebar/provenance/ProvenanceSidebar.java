@@ -1,9 +1,7 @@
 package am.userInterface.sidebar.provenance;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.LayoutManager;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;

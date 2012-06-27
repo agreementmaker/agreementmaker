@@ -7,8 +7,8 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.event.EventListenerList;
 
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping;
 import am.app.userfeedback.ui.UFLControlGUI;
 
 public abstract class CandidateSelection {

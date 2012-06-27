@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
-import sun.security.provider.certpath.Vertex;
 import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;

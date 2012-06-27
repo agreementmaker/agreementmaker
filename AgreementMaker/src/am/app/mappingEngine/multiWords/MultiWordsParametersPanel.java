@@ -8,11 +8,11 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
-import com.hp.hpl.jena.ontology.OntProperty;
-
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
+
+import com.hp.hpl.jena.ontology.OntProperty;
 
 
 public class MultiWordsParametersPanel extends AbstractMatcherParametersPanel {

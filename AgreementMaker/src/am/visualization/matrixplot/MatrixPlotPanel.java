@@ -23,9 +23,9 @@ import am.evaluation.clustering.ClusterFactory;
 import am.evaluation.clustering.ClusterFactory.ClusteringType;
 import am.visualization.Gradient;
 import am.visualization.MatcherAnalyticsEvent;
+import am.visualization.MatcherAnalyticsEvent.EventType;
 import am.visualization.MatcherAnalyticsEventDispatch;
 import am.visualization.MatcherAnalyticsEventListener;
-import am.visualization.MatcherAnalyticsEvent.EventType;
 
 public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAnalyticsEventListener, ActionListener {
 

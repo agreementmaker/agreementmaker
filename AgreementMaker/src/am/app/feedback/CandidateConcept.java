@@ -2,8 +2,8 @@ package am.app.feedback;
 
 import java.util.ArrayList;
 
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping;
 import am.app.ontology.Node;
 
 /**

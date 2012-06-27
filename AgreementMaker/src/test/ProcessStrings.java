@@ -6,7 +6,6 @@ import javax.swing.JOptionPane;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
-import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 
 public class ProcessStrings {
 

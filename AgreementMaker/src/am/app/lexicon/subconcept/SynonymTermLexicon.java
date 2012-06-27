@@ -3,7 +3,6 @@ package am.app.lexicon.subconcept;
 import java.util.List;
 
 import am.app.lexicon.Lexicon;
-import am.app.lexicon.LexiconSynSet;
 
 public interface SynonymTermLexicon extends Lexicon {
 

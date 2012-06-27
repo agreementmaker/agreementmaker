@@ -2,7 +2,6 @@ package am.app.mappingEngine.multiWords.newMW;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
-import am.app.mappingEngine.oaei.OAEI_Track;
 
 public class NewMultiWordsParameters extends DefaultMatcherParameters {
 

@@ -11,13 +11,13 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.List;
 
-import com.hp.hpl.jena.rdf.model.Statement;
-
 import am.GlobalStaticVariables;
 import am.app.ontology.Ontology;
 import am.app.ontology.instance.SeparateFileInstanceDataset;
 import am.app.ontology.ontologyParser.OldOntoTreeBuilder;
 import am.utility.HTTPUtility;
+
+import com.hp.hpl.jena.rdf.model.Statement;
 
 
 public class NYTDataCrawler{

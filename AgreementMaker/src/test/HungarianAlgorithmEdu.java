@@ -37,8 +37,11 @@ package test;
  * 
  */
 
-import static java.lang.Math.*;
-import java.util.*;
+import static java.lang.Math.floor;
+import static java.lang.Math.round;
+
+import java.util.Random;
+import java.util.Scanner;
 
 public class HungarianAlgorithmEdu {
 

@@ -17,7 +17,6 @@ import org.json.JSONObject;
 import am.app.ontology.Ontology;
 import am.app.ontology.instance.SeparateFileInstanceDataset;
 
-import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Property;

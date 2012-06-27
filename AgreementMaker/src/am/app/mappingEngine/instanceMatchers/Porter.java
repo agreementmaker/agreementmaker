@@ -10,7 +10,6 @@ comments: Compile it, import the Porter class into you program and create an ins
 
  */ 
 
-import java.io.*;
 
 class NewString {
 	public String str;

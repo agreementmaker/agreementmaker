@@ -21,8 +21,8 @@ import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
-import am.utility.referenceAlignment.AlignmentsComparison;
 import am.utility.referenceAlignment.AlignmentUtilities;
+import am.utility.referenceAlignment.AlignmentsComparison;
 
 public class LODEvaluator {
 	//Contains methods for parsing

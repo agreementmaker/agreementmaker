@@ -1,7 +1,5 @@
 package am.app.userfeedback.common;
 
-import org.apache.log4j.Logger;
-
 import am.app.mappingEngine.Mapping;
 import am.app.userfeedback.UFLExperiment;
 import am.app.userfeedback.UserFeedback;

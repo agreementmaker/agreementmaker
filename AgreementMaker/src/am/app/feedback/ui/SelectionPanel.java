@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
+
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
@@ -23,20 +24,18 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 import javax.swing.text.Document;
 
-//import org.mindswap.pellet.utils.intset.IntIterator;
-
 import am.Utility;
 import am.app.Core;
 import am.app.feedback.CandidateConcept;
 import am.app.feedback.CandidateSelection;
+import am.app.feedback.CandidateSelection.MeasuresRegistry;
 import am.app.feedback.FeedbackLoop;
 import am.app.feedback.FeedbackLoopParameters;
-import am.app.feedback.CandidateSelection.MeasuresRegistry;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.userInterface.MatcherParametersDialog;
 import am.userInterface.MatchingProgressDisplay;

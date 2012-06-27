@@ -3,8 +3,8 @@ package am.app.feedback.ui;
 import javax.swing.JRadioButton;
 
 import am.app.feedback.CandidateConcept;
-import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping;
 
 public class CandidatesTableRow {
 	

@@ -1,18 +1,5 @@
 package am;
 
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
-import org.apache.log4j.Logger;
-
-import com.hp.hpl.jena.ontology.OntClass;
-
-import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.IntDoublePair;
-import am.userInterface.table.MatchersControlPanelTableModel;
-
 import java.awt.HeadlessException;
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,6 +9,17 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Locale;
+
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import org.apache.log4j.Logger;
+
+import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.IntDoublePair;
+import am.userInterface.table.MatchersControlPanelTableModel;
 
 
 

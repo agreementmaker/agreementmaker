@@ -3,8 +3,6 @@ package am.app.ontology.instance;
 import java.util.ArrayList;
 import java.util.List;
 
-import am.app.ontology.instance.Instance;
-
 /**
  * 
  * @author federico

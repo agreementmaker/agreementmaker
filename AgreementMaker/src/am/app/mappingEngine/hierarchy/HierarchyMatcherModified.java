@@ -4,16 +4,15 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.LinkedOpenData.LODOntology;
 import am.app.mappingEngine.LinkedOpenData.LODUtils;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;

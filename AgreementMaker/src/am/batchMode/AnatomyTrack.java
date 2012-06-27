@@ -1,6 +1,7 @@
 package am.batchMode;
 
 import java.io.File;
+
 import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.mappingEngine.Alignment;

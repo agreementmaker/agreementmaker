@@ -1,6 +1,5 @@
 package am.app.mappingEngine;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import am.app.mappingEngine.Mapping.MappingRelation;

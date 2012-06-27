@@ -1,7 +1,6 @@
 package am.evaluation.clustering.globalfixed;
 
 import java.util.List;
-import java.util.Set;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
@@ -9,7 +8,6 @@ import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.ClusteringMethod;
 import am.evaluation.clustering.ClusteringParameters;
 import am.evaluation.clustering.ClusteringParametersPanel;
-import am.evaluation.clustering.ClusterFactory.ClusteringType;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 
 public class GlobalFixedMethod extends ClusteringMethod {

@@ -2,7 +2,6 @@ package am.utility.bridge;
 
 import java.io.File;
 
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;

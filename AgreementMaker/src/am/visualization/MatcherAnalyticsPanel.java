@@ -6,7 +6,6 @@ import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,19 +22,19 @@ import javax.swing.SwingUtilities;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.MatcherChangeListener;
-import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.MatchingTaskChangeEvent;
+import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.ClusterFactory;
-import am.evaluation.clustering.ClusteringMethod;
 import am.evaluation.clustering.ClusterFactory.ClusteringType;
+import am.evaluation.clustering.ClusteringMethod;
 import am.evaluation.disagreement.DisagreementCalculationDialog;
 import am.evaluation.disagreement.DisagreementCalculationMethod;
 import am.evaluation.disagreement.variance.VarianceDisagreement;

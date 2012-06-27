@@ -1,6 +1,7 @@
 package am.tools.finder;
 
 import java.awt.BorderLayout;
+
 import javax.swing.JFrame;
 
 public class FinderFrame extends JFrame {

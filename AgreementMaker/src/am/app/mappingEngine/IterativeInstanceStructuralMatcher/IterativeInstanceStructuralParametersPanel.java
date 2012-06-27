@@ -1,21 +1,16 @@
 package am.app.mappingEngine.IterativeInstanceStructuralMatcher;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.border.TitledBorder;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
-import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
-import am.userInterface.MatcherParametersDialog;
 
 public class IterativeInstanceStructuralParametersPanel extends AbstractMatcherParametersPanel{
 

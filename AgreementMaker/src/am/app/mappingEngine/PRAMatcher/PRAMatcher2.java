@@ -2,11 +2,11 @@ package am.app.mappingEngine.PRAMatcher;
 
 import java.util.HashMap;
 import java.util.HashSet;
+
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.PRAMatcher.PRAMatcher;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 

@@ -1,17 +1,16 @@
 package am.app.mappingEngine.instanceMatchers.combination;
 
-import java.util.Arrays;
 import java.util.List;
 
-import am.app.ontology.Ontology;
-import am.app.ontology.profiling.ontologymetrics.OntologyEvaluation;
-import am.app.ontology.profiling.ontologymetrics.OntologyMetrics;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
+import am.app.ontology.Ontology;
+import am.app.ontology.profiling.ontologymetrics.OntologyEvaluation;
+import am.app.ontology.profiling.ontologymetrics.OntologyMetrics;
 
 public class ClassificationCombiner extends CombinationFunction{
 	Classifier classifier;

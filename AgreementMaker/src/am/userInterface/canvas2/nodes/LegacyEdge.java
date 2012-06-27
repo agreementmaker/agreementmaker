@@ -1,12 +1,12 @@
 package am.userInterface.canvas2.nodes;
 
+import java.awt.Graphics;
+import java.awt.Rectangle;
+
 import am.userInterface.Colors;
 import am.userInterface.canvas2.graphical.GraphicalData;
 import am.userInterface.canvas2.layouts.LegacyLayout;
 import am.userInterface.canvas2.utility.Canvas2Edge;
-
-import java.awt.Graphics;
-import java.awt.Rectangle;
 
 /**
  * This is a legacy edge.  It forms the link between two Legacy Nodes.

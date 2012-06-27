@@ -1,21 +1,6 @@
 package am.app.ontology.profiling.ontologymetrics;
 
-import java.util.ArrayList;
-
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntProperty;
-
-import edu.smu.tspell.wordnet.Synset;
-
-import am.app.ontology.Node;
-import am.app.ontology.Ontology;
 import am.app.ontology.profiling.ProfilingReport;
-import am.app.ontology.profiling.classification.OntologyClassifier;
-import am.app.ontology.profiling.ontologymetrics.OntologyEvaluation.Type;
-import antlr.collections.impl.Vector;
-import edu.smu.tspell.wordnet.Synset;
-import edu.smu.tspell.wordnet.WordNetDatabase;
 
 public class OntologyMetrics implements ProfilingReport {
 	float relationshipRichness;

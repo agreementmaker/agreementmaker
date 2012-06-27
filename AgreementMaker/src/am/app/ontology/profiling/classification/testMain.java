@@ -1,19 +1,13 @@
 package am.app.ontology.profiling.classification;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import am.GlobalStaticVariables;
-import am.app.Core;
 import am.app.mappingEngine.oaei.OAEI_Track;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.ontologymetrics.CoupleOntologyMetrics;
 import am.app.ontology.profiling.ontologymetrics.OntologyEvaluation;
-import am.app.ontology.profiling.ontologymetrics.OntologyMetrics;
-import weka.classifiers.lazy.KStar;
-import weka.core.Instance;
-import weka.core.Instances;
 
 public class testMain {
 

@@ -3,12 +3,12 @@ package am.batchMode.conflictResolution;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Stack;
+
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-
-import java.util.Stack;
 
 public class ConflictsResolution {
 	

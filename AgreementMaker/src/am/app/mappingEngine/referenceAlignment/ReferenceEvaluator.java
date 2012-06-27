@@ -1,8 +1,8 @@
 package am.app.mappingEngine.referenceAlignment;
 
-import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.Mapping;
 import am.app.ontology.Ontology;
 
 public class ReferenceEvaluator{
