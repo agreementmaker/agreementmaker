@@ -351,6 +351,8 @@ public class TokenInstanceMatcher extends BaseInstanceMatcher implements UsesKB 
 		if(label.contains("(")){
 			int beg = label.indexOf('(');
 			int end = label.indexOf(')');
+			if( end < beg ) 
+				end = label.length();
 			return label.substring(beg + 1, end);
 		}
 		return null; 
