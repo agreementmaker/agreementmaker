@@ -21,7 +21,7 @@ public class EntityTypeMapper {
 	});
 
 	public enum EntityType {
-		UNKNOWN, PERSON, ORGANIZATION, LOCATION, DATE, CITY, JOBTITLE, TITLE, MONEY, ADDRESS;	
+		UNKNOWN, PERSON, ORGANIZATION, LOCATION, COUNTRY, STATE_OR_PROVINCE, DATE, CITY, JOBTITLE, TITLE, MONEY, ADDRESS, NUMBER;
 	};
 
 	public static EntityType getEnumEntityType(String typeString) {
