@@ -1,6 +1,30 @@
 package am.utility;
 
+import java.text.Normalizer;
+import java.util.regex.Pattern;
+
+/**
+ * This class holds various string cleaning or transformation utilities. All of
+ * these should be self-contained so they are declared static.
+ * 
+ * @author Cosmin Stroe
+ * 
+ */
 public class StringUtility {
+
+	public static final Pattern DIACRITICS_AND_FRIENDS = 
+			Pattern.compile("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");
+	
+	/**
+	 * Removes all diacritics from a string. It first does a normalization, to
+	 * try to perserve as much of the similarity as possible.
+	 */
+	public static String stripDiacritics(String str) {
+	    str = Normalizer.normalize(str, Normalizer.Form.NFD);
+	    str = DIACRITICS_AND_FRIENDS.matcher(str).replaceAll("");
+	    return str;
+	}
+	
 	public static String separateWords(String string) {
 		if (string == null)
 			return "";
