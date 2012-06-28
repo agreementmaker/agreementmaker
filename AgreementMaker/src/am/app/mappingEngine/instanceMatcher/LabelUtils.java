@@ -97,7 +97,7 @@ public class LabelUtils {
 			String[] split = label.split(",");
 			StringBuilder temp = new StringBuilder();
 			for( String s : split ) {
-				temp.append(s.trim());
+				temp.append(s.trim()).append(" ");
 			}
 			label = temp.toString();
 		}
