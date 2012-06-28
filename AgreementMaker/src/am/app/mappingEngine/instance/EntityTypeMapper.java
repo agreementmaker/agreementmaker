@@ -27,7 +27,6 @@ public class EntityTypeMapper {
 	public static EntityType getEnumEntityType(String typeString) {
 		if (ignoreGateTypes.contains(typeString))
 			return EntityType.UNKNOWN;
-
 		for (EntityType entityType : EntityType.values()) {
 			if (matches(typeString, entityType)) return entityType;
 		}
@@ -48,6 +47,8 @@ public class EntityTypeMapper {
 			if (typeSubstring.toString().equalsIgnoreCase(typeEnum.name()))
 				return true;
 		}
+		if (typeString.contains("#Literal") && typeEnum == EntityType.UNKNOWN) return true;
+		if (typeString.contains("#integer") && typeEnum == EntityType.NUMBER) return true;
 
 		//wiki Nist type
 		if (typeEnum.name().substring(0,3).equalsIgnoreCase(typeString)) return true;
