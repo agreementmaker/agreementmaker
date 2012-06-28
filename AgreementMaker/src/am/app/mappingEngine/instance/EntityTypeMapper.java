@@ -47,8 +47,6 @@ public class EntityTypeMapper {
 			if (typeSubstring.toString().equalsIgnoreCase(typeEnum.name()))
 				return true;
 		}
-		
-		
 		if (typeString.contains("#Literal") && typeEnum == EntityType.UNKNOWN) return true;
 		if (typeString.contains("#integer") && typeEnum == EntityType.NUMBER) return true;
 
