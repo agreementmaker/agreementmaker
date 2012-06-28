@@ -16,16 +16,16 @@ public class EntityTypeMapper {
 
 	private static Logger log = Logger.getLogger(EntityTypeMapper.class);
 
-	private static List<String> uselessGateTypes = Arrays.asList(new String[]{
+	private static List<String> ignoreGateTypes = Arrays.asList(new String[]{
 			"Token", "SpaceToken", "Split", "Sentence", "Lookup", "FirstPerson", "Identifier", "Temp", "QuotedText", "PleonasticIt"
 	});
 
 	public enum EntityType {
-		UNKNOWN, PERSON, ORGANIZATION, LOCATION, DATE, CITY, JOBTITLE, TITLE;	
+		UNKNOWN, PERSON, ORGANIZATION, LOCATION, DATE, CITY, JOBTITLE, TITLE, MONEY, ADDRESS;	
 	};
 
 	public static EntityType getEnumEntityType(String typeString) {
-		if (uselessGateTypes.contains(typeString))
+		if (ignoreGateTypes.contains(typeString))
 			return EntityType.UNKNOWN;
 
 		for (EntityType entityType : EntityType.values()) {
