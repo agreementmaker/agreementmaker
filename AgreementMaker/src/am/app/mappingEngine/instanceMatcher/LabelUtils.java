@@ -84,6 +84,7 @@ public class LabelUtils {
 	}
 	
 	//TODO fix this method
+	// Fix what exactly? -- Cosmin, Jun 28, 2012.
 	public static String processPersonLabel(String label) {
 		if(label.contains("(")){
 			int beg = label.indexOf('(');
@@ -94,7 +95,11 @@ public class LabelUtils {
 		
 		if(label.contains(",")){
 			String[] split = label.split(",");
-			label = split[1].trim() + " " + split[0].trim();
+			StringBuilder temp = new StringBuilder();
+			for( String s : split ) {
+				temp.append(s.trim());
+			}
+			label = temp.toString();
 		}
 				
 		String[] blackList = { "Jr" };
