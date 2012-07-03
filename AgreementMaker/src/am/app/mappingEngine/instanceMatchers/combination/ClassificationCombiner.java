@@ -12,10 +12,18 @@ import am.app.ontology.Ontology;
 import am.app.ontology.profiling.ontologymetrics.OntologyEvaluation;
 import am.app.ontology.profiling.ontologymetrics.OntologyMetrics;
 
-public class ClassificationCombiner extends CombinationFunction{
+/**
+ * Implements a combination function that loads a Multilayer Perceptron model
+ * which was previously trained. The model then returns the combined weight
+ * given the input weights.
+ * 
+ * @author Federico Caimi
+ * 
+ */
+public class ClassificationCombiner extends CombinationFunction {
 	Classifier classifier;
 	Instances trainingSet;
-	FastVector attributes;
+	FastVector attributes; // save the attributes between calls of combine()
 	String fileName; 
 	Instances dataset;
 	
@@ -31,6 +39,42 @@ public class ClassificationCombiner extends CombinationFunction{
 		this.trainingSet = trainingSet;
 	}
 	
+	
+	@Override
+	public double combine(List<Double> similarities) {
+		getAttributes(similarities.size());
+		getDataset(similarities.size());
+			
+		//System.out.println(attributes);
+				
+		Instance instance = new Instance(attributes.size());
+		for (int i = 0; i< similarities.size(); i++){
+			instance.setValue(i, similarities.get(i));
+		}
+		//dataset.add(instance);	
+		instance.setDataset(dataset);
+		
+//		try {
+//			double predictedClass = classifier.classifyInstance(instance);
+//			//System.out.println("Model predicts: " + predictedClass);
+//			return 1 - predictedClass;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return 0;
+//		}
+		
+		//classifier.
+		
+		try {
+			double[] prediction = classifier.distributionForInstance(instance);
+			//System.out.println(Arrays.toString(prediction));
+			return prediction[0];
+		} catch (Exception e) {
+			//e.printStackTrace();
+		}
+		
+		return 0.0;
+	}
 	public void buildClassifier() throws Exception{
 		classifier.buildClassifier(trainingSet);
 	}
@@ -99,42 +143,6 @@ public class ClassificationCombiner extends CombinationFunction{
 			attributes.addElement(new Attribute("match", fv));	
 		}
 		return attributes;
-	}
-	
-	@Override
-	public double combine(List<Double> similarities) {
-		getAttributes(similarities.size());
-		getDataset(similarities.size());
-			
-		//System.out.println(attributes);
-				
-		Instance instance = new Instance(attributes.size());
-		for (int i = 0; i< similarities.size(); i++){
-			instance.setValue(i, similarities.get(i));
-		}
-		//dataset.add(instance);	
-		instance.setDataset(dataset);
-		
-//		try {
-//			double predictedClass = classifier.classifyInstance(instance);
-//			//System.out.println("Model predicts: " + predictedClass);
-//			return 1 - predictedClass;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return 0;
-//		}
-		
-		//classifier.
-		
-		try {
-			double[] prediction = classifier.distributionForInstance(instance);
-			//System.out.println(Arrays.toString(prediction));
-			return prediction[0];
-		} catch (Exception e) {
-			//e.printStackTrace();
-		}
-		
-		return 0.0;
 	}
 
 	private Instances getDataset(int matchersNum) {
