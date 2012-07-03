@@ -1853,6 +1853,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		 COMBINATION,    // Matchers that produce a combination of other matchers. 
 		 HYBRID,			// Matchers that consider many features together.
 		 UTILITY, 		// Utility matcher,
+		 INSTANCE,		// Instance matcher
 		 USER,			// User matchers
 		 UNCATEGORIZED;	// Matchers that have not been categorized.
 	 }
