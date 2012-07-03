@@ -8,12 +8,23 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.StringUtil.StringMetrics;
+import am.app.mappingEngine.instance.EntityTypeMapper.EntityType;
 import am.app.mappingEngine.instanceMatcher.LabelUtils;
 import am.app.mappingEngine.instanceMatchers.BaseInstanceMatcher;
 import am.app.ontology.instance.Instance;
 import am.app.similarity.StringSimilarityMeasure;
+import am.utility.StringUtility;
 
-
+/**
+ * An instance matching algorithm that looks only at the labels associated with
+ * instances.
+ * 
+ * @author Federico Caimi
+ * 			Initial implementation.
+ * @author Cosmin Stroe
+ * 			
+ * 
+ */
 public class LabelInstanceMatcher extends BaseInstanceMatcher {
 	
 	private static final long serialVersionUID = -8556251076642309404L;
@@ -29,7 +40,15 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 	/** The processed labels of the lastSourceURI. */
 	private List<String> lastProcessedSourceLabels;
 
+	/** Instantiated from {@link LabelInstanceMatcherParameters#metric} */
 	private StringSimilarityMeasure ssm;
+	
+	// instance initializer to set the name and category of this matcher.
+	// see http://stackoverflow.com/questions/1355810/how-is-an-instance-initializer-different-from-a-constructor
+	{
+		setProperty(PropertyKey.NAME, "Label Instance Matcher");
+		setCategory(MatcherCategory.INSTANCE);
+	}
 	
 	public LabelInstanceMatcher(LabelInstanceMatcherParameters param) {
 		super(param);
@@ -39,22 +58,16 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 	public double instanceSimilarity(Instance source, Instance target)
 			throws Exception {
 		
-		// 1) initialize our string similarity measure
-		if( ssm == null ) {
-			StringMetrics metric = ((LabelInstanceMatcherParameters)param).metric;
-			ssm = metric.getMeasure();
-		}
-		
 		List<String> processedSourceLabels;
 		
-		// 2) process the source labels
+		// 1) process the source labels
 		if( lastSourceURI == null || !lastSourceURI.equals(source.getUri()) ) {
 			Set<String> sourceLabels = source.getProperty(Instance.INST_LABEL);
 			
 			processedSourceLabels = new ArrayList<String>(sourceLabels.size());
 			
 			for(String currentLabel : sourceLabels) {
-				processedSourceLabels.add(processLabel(currentLabel, source.getTypeValue(), false));
+				processedSourceLabels.add(processLabel(currentLabel, source.getType(), false));
 			}
 		
 			// save our processing work for the next invocation of the method
@@ -66,7 +79,7 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 			processedSourceLabels = lastProcessedSourceLabels;
 		}
 				
-		// 3) process the target labels
+		// 2) process the target labels
 		Set<String> targetLabels = target.getProperty(Instance.INST_LABEL);
 		List<String> processedTargetLabels = new ArrayList<String>(targetLabels.size());
 
@@ -74,26 +87,30 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 			targetLabels = LabelUtils.getLabelsFromStatements(target);
 		}
 		
-		//targetLabel = LabelUtils.processOrganizationLabel(targetLabel);
 		for(String currentLabel : targetLabels) {
-			processedTargetLabels.add(processLabel(currentLabel, source.getTypeValue(), true));
+			processedTargetLabels.add(processLabel(currentLabel, target.getType(), true));
 		}
 		
-		//System.out.println(source.getUri() + "||" + target.getUri() + "  " + sourceLabel + " | " + targetLabel);
+		// 3) compute the similarity
+		LabelInstanceMatcherParameters p = (LabelInstanceMatcherParameters) param;
 		
-		
-		// 4) compute the similarity
-		double sim = computeStringSimilarity(processedSourceLabels, processedTargetLabels);
-		
+		double sim = 0.0d;
+		if( p.computeTypedSimilarity && source.getType() == target.getType()) {
+			sim = computeTypedSimilarity(processedSourceLabels, processedTargetLabels, source.getType());			
+		}
+		else {
+			sim = StringUtility.getMaxStringSimilarity(processedSourceLabels, processedTargetLabels, ssm);
+		}
 		log.debug("labelSim: " + sim);
 		
+		//System.out.println(aliases);
+		
+		// 4) check for aliases
+		// TODO: include the aliases in the original labels.
 		Set<String> aliases = target.getProperty(Instance.INST_ALIAS);
 		if(aliases == null) aliases = new HashSet<String>();
 		aliases.addAll(LabelUtils.getAliasesFromStatements(target));
 		
-		//System.out.println(aliases);
-		
-		// 5) check for aliases
 		if(aliases != null){
 			double max = sim;
 			double curr = 0.0d;
@@ -109,35 +126,53 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		}
 		return sim;
 	}
-	
-	private double computeStringSimilarity(List<String> source,
-			List<String> target) {
+
+	/**
+	 * This method implements type specific similarity computation for labels.
+	 * If there isn't a type-specific way of computing similarity, it resorts to
+	 * the generic way of computing the label similarity.
+	 */
+	private double computeTypedSimilarity(
+			List<String> processedSourceLabels,
+			List<String> processedTargetLabels,
+			EntityType type) {
+
+		if( type == EntityType.PERSON ) {
+			// a custom string similarity measure for person names
+			StringSimilarityMeasure custom_ssm = new StringSimilarityMeasure() {
 				
-		double bestStringSimilarity = 0.0d;
-		for( String sourceLabel : source ) {
-			for( String targetLabel : target ) {
-				double currentSim = ssm.getSimilarity(sourceLabel, targetLabel);
-				bestStringSimilarity = Math.max(currentSim, bestStringSimilarity);
-			}
+				@Override
+				public double getSimilarity(String s1, String s2) {
+					String[] s1Tokens = s1.split("\\s+"); // tokenize
+					String[] s2Tokens = s2.split("\\s+"); // tokenize
+					return LabelUtils.computeWesternPersonNameSimilarity(s1Tokens, s2Tokens, LabelInstanceMatcher.this.ssm);
+				}
+			};
+			
+			// get the best match between the names.
+			return StringUtility.getMaxStringSimilarity(processedSourceLabels, processedTargetLabels, custom_ssm);
 		}
-		
-		return bestStringSimilarity;
+		else {
+			// don't know what to do for this type of entities.
+			return StringUtility.getMaxStringSimilarity(processedSourceLabels, processedTargetLabels, ssm);
+		}
+
 	}
 
-	public static String processLabel(String label, String type, boolean processComma){
+	public static String processLabel(String label, EntityType type, boolean processComma){
 		
 		String processedLabel;
 		
 		if(type == null) {
 			processedLabel = LabelUtils.processLabel(label);
 		}
-		else if(type.toLowerCase().endsWith("organization")) {
+		else if(type == EntityType.ORGANIZATION) {
 			processedLabel = LabelUtils.processOrganizationLabel(label);
 		}
-		else if(type.toLowerCase().endsWith("person")) {
+		else if(type == EntityType.PERSON) {
 			processedLabel = LabelUtils.processPersonLabel(label);
 		}
-		else if(type.toLowerCase().endsWith("location")){
+		else if(type == EntityType.LOCATION){
 			processedLabel = LabelUtils.processLocationLabel(label);
 			//System.out.println("processing location label");
 			//label = label.replace("(","");
@@ -155,12 +190,12 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		}
 		
 		return processedLabel;
-	}	
-	
-
+	}
 	
 	@Override
-	public String getName() {
-		return "Label Instance Matcher";
+	protected void beforeAlignOperations() throws Exception {
+		super.beforeAlignOperations();
+		StringMetrics metric = ((LabelInstanceMatcherParameters)param).metric;
+		ssm = metric.getMeasure();
 	}
 }

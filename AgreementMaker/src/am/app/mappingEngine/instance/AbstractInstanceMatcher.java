@@ -11,6 +11,7 @@ import am.AMException;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.InstanceMatchingReport;
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.instance.EntityTypeMapper.EntityType;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.Instance;
 import am.app.ontology.instance.InstanceDataset;
@@ -25,7 +26,7 @@ import am.userInterface.MatchingProgressDisplay;
  * </p>
  * 
  * <p>
- * Note that if you want to match only instances and not do any schema matching,
+ * NOTE: If you want to match only instances and not do any schema matching,
  * you can set {@link AbstractMatcher#alignProp} and
  * {@link AbstractMatcher#alignClass} to false.
  * </p>
@@ -55,7 +56,7 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 
 	protected InstanceMatchingReport instanceMatchingReport;
 
-	public boolean requiresTwoPasses;
+	protected boolean requiresTwoPasses;
 
 	protected boolean firstPassDone;
 
@@ -124,7 +125,7 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 		((DefaultInstanceMatcherParameters)param).useInstanceSchemaMappings = useInstanceSchemaMappings;
 	}
 
-	public boolean requiresTwoPasses(){
+	public boolean requiresTwoPasses() {
 		return requiresTwoPasses;
 	}
 
@@ -132,7 +133,7 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 	public void passStart() {}
 
 	//Invoked by wrapping matchers which run multiple passes on inner matchers  
-	public void passEnd(){
+	public void passEnd() {
 		if(!firstPassDone) firstPassDone = true;
 	}
 
@@ -159,7 +160,7 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 			// FIXME: Manage multiple labels.
 			String label = labelList.iterator().next();
 
-			label = processLabelBeforeCandidatesGeneration(label, currentInstance.getTypeValue());
+			label = processLabelBeforeCandidatesGeneration(label, currentInstance.getType());
 
 			String sourceType = currentInstance.getTypeValue();
 			List<MatchingPair> targetTypes = null;
@@ -222,7 +223,7 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 	 * Basic implementation of the label processing before candidates retrieval. The type is not actually used
 	 * but may be used by overriding matchers 
 	 */
-	public String processLabelBeforeCandidatesGeneration(String label, String type) {
+	public String processLabelBeforeCandidatesGeneration(String label, EntityType type) {
 		//Remove parenthesis and text inside 
 		if(label.contains("(")){
 			int beg = label.indexOf('(');
@@ -287,8 +288,10 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 		//		return null;
 	}
 
-	//TO BE IMPLEMENTED BY INSTANCE MATCHERS
-	public double instanceSimilarity(Instance source, Instance target) throws Exception {
-		return 0d;
-	}
+	/**
+	 * Compute the similarity between to instances.
+	 * @return A value between 0.0 (not matching) and 1.0 (exact match).
+	 * @throws Exception
+	 */
+	public abstract double instanceSimilarity(Instance source, Instance target) throws Exception;
 }

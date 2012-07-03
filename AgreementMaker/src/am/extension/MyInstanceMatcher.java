@@ -111,5 +111,12 @@ public class MyInstanceMatcher extends AbstractInstanceMatcher {
         ao.stringEnd();
         return ao.getString();
 	}
+
+	@Override
+	public double instanceSimilarity(Instance source, Instance target)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
 }

@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.instance.AbstractInstanceMatcher;
+import am.app.mappingEngine.instance.EntityTypeMapper.EntityType;
 import am.app.mappingEngine.instanceMatcher.LabelUtils;
 import am.app.mappingEngine.instanceMatchers.labelInstanceMatcher.LabelInstanceMatcher;
 import am.app.mappingEngine.instanceMatchers.labelInstanceMatcher.LabelInstanceMatcherParameters;
@@ -288,18 +289,18 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 	}*/
 	
 	@Override
-	public String processLabelBeforeCandidatesGeneration(String label, String type) {
+	public String processLabelBeforeCandidatesGeneration(String label, EntityType type) {
 		log.debug(label + "\t" + type);
 		
 		if(type == null) return super.processLabelBeforeCandidatesGeneration(label, type);
 		
-		if(type.toLowerCase().endsWith("organization"))
+		if(type == EntityType.ORGANIZATION)
 			return LabelUtils.processOrganizationLabel(label);
 		
-		else if(type.toLowerCase().endsWith("person"))
+		else if(type == EntityType.PERSON)
 			return LabelUtils.processPersonLabel(label);
 		
-		else if(type.toLowerCase().endsWith("location"))
+		else if(type == EntityType.LOCATION)
 			return LabelUtils.processLocationLabel(label);
 		
 		return super.processLabelBeforeCandidatesGeneration(label, type);
