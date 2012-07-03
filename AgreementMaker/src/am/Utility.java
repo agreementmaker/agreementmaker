@@ -22,7 +22,11 @@ import am.app.mappingEngine.IntDoublePair;
 import am.userInterface.table.MatchersControlPanelTableModel;
 
 
-
+/**
+ * This Utility class has grown over the years to be a little big, and with very
+ * little documentation. It should probably be split up into smaller classes. --
+ * Cosmin.
+ */
 public class Utility {
 	public final static String UNEXPECTED_ERROR = "Unexpected System Error.\nTry to reset the system and repeat the operation.\nContact developers if the error persists.";
 	public final static String OUT_OF_MEMORY = "Operation aborted\n\n" +
