@@ -10,9 +10,12 @@ import am.app.similarity.StringSimilarityMeasure;
 import am.app.similarity.SubstringSim;
 
 /**
- * This class contains some of the string metrics used by the AM not found in library
- * @author marco
- *
+ * This enumeration contains a list of all the string similarity metrics defined
+ * on the AgreementMaker system. Some of them are simply wrapping other library
+ * calls.
+ * 
+ * @author Cosmin Stroe
+ * @see {@link StringSimilarityMeasure}
  */
 public enum StringMetrics {
 

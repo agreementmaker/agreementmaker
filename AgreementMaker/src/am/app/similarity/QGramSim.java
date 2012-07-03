@@ -2,6 +2,9 @@ package am.app.similarity;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.QGramsDistance;
 
+/**
+ * This class wraps the SimMetrics QGram impelementation.
+ */
 public class QGramSim implements StringSimilarityMeasure {
 
 	@Override
