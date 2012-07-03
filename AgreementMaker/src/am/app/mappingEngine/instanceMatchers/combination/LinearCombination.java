@@ -2,6 +2,13 @@ package am.app.mappingEngine.instanceMatchers.combination;
 
 import java.util.List;
 
+/**
+ * A linear weighted combination combination function. If no weights are passed
+ * to the constructor, the combination function becomes the average.
+ * 
+ * @author Federico Caimi
+ * 
+ */
 public class LinearCombination extends CombinationFunction{
 	List<Double> weights;	
 	
