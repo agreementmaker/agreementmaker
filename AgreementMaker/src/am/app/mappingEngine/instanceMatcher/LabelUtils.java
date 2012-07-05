@@ -106,7 +106,7 @@ public class LabelUtils {
 			}
 			else {
 				// multiple commas, not sure how to handle this.
-				log.warn("Unexpected input: multiple commas in person name.");
+				log.warn("Unexpected input: multiple commas in person name '" + label + "'.");
 				StringBuilder temp = new StringBuilder();
 				for( String s : split ) {
 					temp.append(s.trim()).append(" ");
