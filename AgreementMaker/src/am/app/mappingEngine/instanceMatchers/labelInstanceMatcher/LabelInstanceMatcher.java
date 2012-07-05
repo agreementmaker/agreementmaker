@@ -52,6 +52,8 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 	
 	public LabelInstanceMatcher(LabelInstanceMatcherParameters param) {
 		super(param);
+		StringMetrics metric = ((LabelInstanceMatcherParameters)param).metric;
+		ssm = metric.getMeasure();
 	}
 		
 	@Override
