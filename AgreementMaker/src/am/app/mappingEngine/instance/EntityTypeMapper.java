@@ -21,7 +21,7 @@ public class EntityTypeMapper {
 	});
 
 	public enum EntityType {
-		UNKNOWN, PERSON, ORGANIZATION, LOCATION, COUNTRY, STATE_OR_PROVINCE, DATE, CITY, JOBTITLE, TITLE, MONEY, ADDRESS, NUMBER, SCHOOL;
+		UNKNOWN, PERSON, ORGANIZATION, LOCATION, COUNTRY, STATE_OR_PROVINCE, DATE, CITY, TITLE, MONEY, ADDRESS, NUMBER, SCHOOL;
 	};
 
 	public static EntityType getEnumEntityType(String typeString) {
@@ -56,6 +56,7 @@ public class EntityTypeMapper {
 		//hardcoded exceptions
 		if (typeString.equals("UKN") && typeEnum == EntityType.UNKNOWN) return true;
 		if (typeString.equals("GPE") && typeEnum == EntityType.LOCATION) return true;
+		if (typeString.equals("JobTitle") && typeEnum == EntityType.TITLE) return true;
 
 		return false;
 	}
