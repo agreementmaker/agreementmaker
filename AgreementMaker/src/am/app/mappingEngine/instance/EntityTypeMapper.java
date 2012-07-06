@@ -17,7 +17,7 @@ public class EntityTypeMapper {
 	private static Logger log = Logger.getLogger(EntityTypeMapper.class);
 
 	private static List<String> ignoreGateTypes = Arrays.asList(new String[]{
-			"Token", "SpaceToken", "Split", "Sentence", "Lookup", "FirstPerson", "Identifier", "Temp", "QuotedText", "PleonasticIt"
+			"Token", "SpaceToken", "Split", "Sentence", "Lookup", "FirstPerson", "Identifier", "Temp", "QuotedText", "PleonasticIt", "UrlPre", "Percent"
 	});
 
 	public enum EntityType {
