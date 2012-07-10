@@ -97,7 +97,8 @@ public class LabelUtils {
 			label = label.trim();
 		}
 		
-		if(label.contains(",")){
+		label = label.replaceAll(",$", "");
+		if(label.contains(",")) {
 			String[] split = label.split(",");
 			if( split.length == 2 ) {
 				// the standard [last name], [first name] form
@@ -447,17 +448,5 @@ public class LabelUtils {
 		}
 		
 		return separatedName;
-	}
-	
-	public static void main(String[] args) {
-		System.out.println(LabelUtils.processOrganizationLabel("Omnicom Group Incorporated"));
-		System.out.println(LabelUtils.processOrganizationLabel("Ese Corporation"));
-		System.out.println(LabelUtils.processOrganizationLabel("International Shipholding Corporation"));
-		System.out.println(LabelUtils.processOrganizationLabel("Signature Bank"));
-		System.out.println(LabelUtils.processOrganizationLabel("Roundabout Theater Co"));
-		System.out.println(LabelUtils.processOrganizationLabel("Protective Life Corporation"));
-		System.out.println(LabelUtils.processPersonLabel("Federico Jr Caimi"));
-		String prova = "Federico_Caimi-123";
-		//System.out.println(Arrays.toString(prova.split("(\\s|_|-)")));
 	}
 }
