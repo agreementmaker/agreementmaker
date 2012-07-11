@@ -107,7 +107,8 @@ public class StringUtility {
 			else
 				sb.append(quotationChar + " ");
 		}
-		return sb.toString();
+		
+		return sb.toString().trim();
 	}
 	
 	/**
