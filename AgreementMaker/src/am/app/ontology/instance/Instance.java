@@ -44,7 +44,8 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  *
  */
 public class Instance implements Serializable {
-	private static final long serialVersionUID = 4568266674951302327L;
+
+	private static final long serialVersionUID = -2774522573905235740L;
 
 	/**
 	 * This is a property key, used for the textual representation of the
