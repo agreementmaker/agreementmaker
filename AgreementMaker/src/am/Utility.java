@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -523,6 +524,12 @@ public class Utility {
 			list.add(i);
 		}
 		return list;		
+	}
+	
+	public static String formatNumberWithThousandSeparator(long number) {
+		BigDecimal bd = new BigDecimal(number);
+		NumberFormat formatter = NumberFormat.getInstance(Locale.US);
+		return formatter.format(bd.longValue());
 	}
 
 	public static String treatString(String label){
