@@ -113,6 +113,25 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 		return new MatchingPair(sourceInstance.getUri(), scoredInstance.getInstance().getUri(), scoredInstance.getScore(), MappingRelation.EQUIVALENCE);	
 	}
 
+	/**
+	 * <p>
+	 * This method generates a similarity vector for each pair of instances. The
+	 * source instance of the pair will always be {@link sourceInstance} but the
+	 * target instance of the pair will be one of the instances in
+	 * {@link targetCandidates}.
+	 * </p>
+	 * <p>
+	 * The values in the similarity vector can be the following:
+	 * <ul>
+	 * <li>The similarity score for the source and target instance, computed by
+	 * {@link #instanceSimilarities(Instance, Instance)}.</li>
+	 * <li>... (to be continued) ...</li>
+	 * </ul>
+	 * </p>
+	 * 
+	 * @return A list containing each candidate, but with an attached score. The
+	 *         ranking is done according to the score.
+	 */
 	@Override
 	public List<ScoredInstance> rankInstanceCandidates(Instance sourceInstance,
 			List<Instance> targetCandidates) throws Exception {
@@ -129,14 +148,14 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 			}
 		}
 		else{
-			List<List<Double>> similaritiesList = new ArrayList<List<Double>>();			
+			List<List<Double>> similaritiesVectors = new ArrayList<List<Double>>();			
 			List<Double> similarities;
 
 			int numMatchers = matchers.size();
 
 			for (Instance candidate: targetCandidates) {
 				similarities = instanceSimilarities(sourceInstance, candidate);
-				similaritiesList.add(similarities);		
+				similaritiesVectors.add(similarities);		
 
 				if(generateReport && instanceMatchingReport != null){
 					//System.out.println(source.getUri().startsWith("text"));
@@ -147,11 +166,11 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 				//scoredCandidates.add(new ScoredInstance(candidate, similarity));
 			}	
 			
-			similaritiesList = normalizeSimilaritiesList(similaritiesList);
+			similaritiesVectors = normalizeSimilaritiesList(similaritiesVectors);
 
 			if(targetCandidates.size() == 1){
 				double max = 0;
-				similarities = similaritiesList.get(0);
+				similarities = similaritiesVectors.get(0);
 				for (int i = 0; i < similarities.size(); i++) {
 					if(similarities.get(i) > max) max = similarities.get(i);
 				}
@@ -180,11 +199,11 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 
 
 			//for every candidate
-			for (int i = 0; i < similaritiesList.size(); i++) {
-				similarities = similaritiesList.get(i);
+			for (int i = 0; i < similaritiesVectors.size(); i++) {
+				similarities = similaritiesVectors.get(i);
 				//compute all the weights
 
-				double[] weights = computeLwcWeights(similaritiesList, i, matchers.size());
+				double[] weights = computeLwcWeights(similaritiesVectors, i, matchers.size());
 
 				if(useAllConfidence){
 					for (int j = 0; j < weights.length; j++) {
@@ -197,7 +216,7 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 
 				//all the weights have been computed, we can add the LWC combination 
 				//to the similarities list for matcher i
-				similarities = similaritiesList.get(i);				
+				similarities = similaritiesVectors.get(i);				
 
 				double sim = computeLinearWeightedCombination(similarities, weights);
 

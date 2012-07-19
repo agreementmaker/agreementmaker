@@ -8,8 +8,10 @@ public class SubstringSim implements StringSimilarityMeasure {
 		return substringScore(s1,s2);
 	}
 
-	//Derived from FALCON AO return the sum of common characters in all substrings of the two words normalized by the number of total chars
-	//So this is only the commonality part is not the whole I-Sub method
+	// Derived from FALCON AO 
+	// return the sum of common characters in all
+	// substrings of the two words normalized by the number of total chars
+	// So this is only the commonality part is not the whole I-Sub method
 	public static double substringScore(String s1, String s2)
 	{
 

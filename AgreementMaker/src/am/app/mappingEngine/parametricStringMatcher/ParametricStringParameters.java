@@ -9,7 +9,7 @@ public class ParametricStringParameters extends DefaultMatcherParameters {
 
 	private static final long serialVersionUID = 5473149719338457692L;
 		
-	public StringMetrics measure = StringMetrics.EDIT;
+	public StringMetrics measure = StringMetrics.LEVENSHTEIN;
 	
 	public double localWeight = 0;
 	public double labelWeight = 0.7;

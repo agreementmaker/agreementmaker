@@ -2,8 +2,9 @@ package am.app.similarity;
 
 
 /**
- * This method implements the Jaro Winkler metric (named after Matt Jaro and Bill
- * Winkler of the U.S. Census Bureau), taken from <a href="http://code.google.com/p/duke/">duke, a fast deduplication engine</a>.
+ * This method implements the Jaro Winkler metric (named after Matt Jaro and
+ * Bill Winkler of the U.S. Census Bureau), taken from 
+ * <a href="http://code.google.com/p/duke/">duke, a fast deduplication engine</a>.
  * 
  * @author Lars Marius Garshol (larsga [a] garshol.priv.no)
  * 

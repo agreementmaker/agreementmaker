@@ -62,8 +62,10 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 		
 		List<String> processedSourceLabels;
 		
-		// 1) process the source labels
+		// 1) process the source labels (optimized for processing the 
+		//    same source instance multiple times)
 		if( lastSourceURI == null || !lastSourceURI.equals(source.getUri()) ) {
+			// the last source instance is different from this source instance 
 			Set<String> sourceLabels = source.getProperty(Instance.INST_LABEL);
 			
 			processedSourceLabels = new ArrayList<String>(sourceLabels.size());

@@ -53,7 +53,7 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 		
 		// lim
 		LabelInstanceMatcherParameters limp = new LabelInstanceMatcherParameters();
-		limp.metric = StringMetrics.JARO;
+		limp.metric = StringMetrics.JAROWINKER;
 		lim = new LabelInstanceMatcher(limp);
 		
 		// tim

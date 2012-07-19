@@ -19,8 +19,8 @@ import am.app.similarity.SubstringSim;
  */
 public enum StringMetrics {
 
-	EDIT("Levenshtein Edit Distance", LevenshteinEditDistance.class),
-	JARO("Jaro Winkler", JaroWinklerSim.class),
+	LEVENSHTEIN("Levenshtein Edit Distance", LevenshteinEditDistance.class),
+	JAROWINKER("Jaro Winkler", JaroWinklerSim.class),
 	QGRAM("Q-Gram", QGramSim.class),
 	SUB("Substring metric", SubstringSim.class),
 	AMSUB("AM Substring metric", AMSubstringSim.class),
