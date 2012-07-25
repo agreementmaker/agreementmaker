@@ -496,13 +496,13 @@ public class Utility {
 		//msmsms
 		long msmsms = totMS % 1000;
 		//ss
-		long totS = totMS/1000;
-		long ss = totS % 60;
+		long totS = totMS / 1000l;
+		long ss = totS % 60l;
 		//mm
-		long totM = totS/60;
+		long totM = totS / 60l;
 		long mm = totM % 60;
 		//hh
-		long totH = totM/60;
+		long totH = totM / 60l;
 		long hh = totH % 60;
 
 

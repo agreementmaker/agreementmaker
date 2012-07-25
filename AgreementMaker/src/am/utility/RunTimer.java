@@ -7,35 +7,51 @@ import am.Utility;
  */
 public class RunTimer {
 
-	long startTime;
-	long endTime; 
-	long totTime;
+	private long startTime;
+	private long endTime; 
+	private long totTime;
+	private boolean stopped = false;
+	
+	private static final long MILLI = 1000000l;
 	
 	public RunTimer() { totTime = 0; }
 	
-	public void start() { 
-		startTime = System.nanoTime()/1000000;
+	public RunTimer start() { 
+		startTime = System.nanoTime() / MILLI;
+		stopped = false;
+		return this;
 	}
-	public void stop() {
-		endTime = System.nanoTime()/1000000;
-		totTime += endTime - startTime;
+	public RunTimer stop() {
+		getRunTime();
+		stopped = true;
+		return this;
 	}
-	public void reset() {
-		totTime = 0;
+	public RunTimer reset() {
+		endTime = startTime = totTime = 0;
+		stopped = true;
+		return this;
 	}
-	public void resetAndStart() {
+	public RunTimer resetAndStart() {
 		reset();
 		start();
+		return this;
 	}
 	
-	
+	/**
+	 * @return The elapsed time since the timer was started, in milliseconds.
+	 */
 	public long getRunTime() {
+		if( !stopped ) {
+			endTime = System.nanoTime() / MILLI;
+			totTime = endTime - startTime;
+		}
 		return totTime;
 	}
 
+	
+	
 	public String getFormattedRunTime() {
-		long time = (System.nanoTime()/1000000) - startTime; 
-		return Utility.getFormattedTime(time);
+		return Utility.getFormattedTime(getRunTime());
 	}
 	
 }
