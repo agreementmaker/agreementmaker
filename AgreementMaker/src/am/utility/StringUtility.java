@@ -28,6 +28,11 @@ public class StringUtility {
 	    return str;
 	}
 	
+	public static boolean containsUppercaseLetter(String string) {
+		// the flag (?s) allows for multi-line reg exps
+		return string.matches("(?s).*[A-Z].*");	
+	}
+	
 	public static String separateWords(String string) {
 		if (string == null)
 			return "";
