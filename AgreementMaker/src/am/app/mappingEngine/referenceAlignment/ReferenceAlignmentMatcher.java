@@ -26,7 +26,7 @@ import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Node;
-import am.output.OutputController;
+import am.parsing.OutputController;
 
 public class ReferenceAlignmentMatcher extends AbstractMatcher {
 

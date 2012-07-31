@@ -10,7 +10,7 @@ import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.instance.AbstractInstanceMatcher;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.Instance;
-import am.output.AlignmentOutput;
+import am.parsing.AlignmentOutput;
 
 public class MyInstanceMatcher extends AbstractInstanceMatcher {
 

@@ -37,7 +37,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
-import am.output.OutputController;
+import am.parsing.OutputController;
 import am.userInterface.AppPreferences.FileType;
 
 

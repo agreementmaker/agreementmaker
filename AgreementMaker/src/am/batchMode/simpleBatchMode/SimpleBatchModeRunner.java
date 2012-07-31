@@ -18,7 +18,7 @@ import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
-import am.output.OutputController;
+import am.parsing.OutputController;
 import am.userInterface.console.ConsoleProgressDisplay;
 
 /**

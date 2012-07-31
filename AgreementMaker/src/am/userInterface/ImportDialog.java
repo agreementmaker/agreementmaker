@@ -34,8 +34,8 @@ import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
-import am.output.OutputController;
-import am.output.OutputController.ImportAlignmentFormats;
+import am.parsing.OutputController;
+import am.parsing.OutputController.ImportAlignmentFormats;
 import am.userInterface.AppPreferences.FileType;
 
 

@@ -10,7 +10,7 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.output.OutputController;
+import am.parsing.OutputController;
 import am.utility.BitVector;
 
 /**

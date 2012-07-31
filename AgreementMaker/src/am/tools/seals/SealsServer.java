@@ -45,7 +45,7 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
-import am.output.AlignmentOutput;
+import am.parsing.AlignmentOutput;
 import am.userInterface.MatchingProgressDisplay;
 import eu.sealsproject.omt.ws.matcher.AlignmentWS;
 

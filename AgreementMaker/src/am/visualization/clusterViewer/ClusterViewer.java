@@ -33,7 +33,7 @@ import javax.swing.border.LineBorder;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.evaluation.clustering.gvm.GVM_Clustering;
 import am.evaluation.clustering.gvm.GVM_Clustering_Panel;
-import am.output.OutputController;
+import am.parsing.OutputController;
 
 import com.tomgibara.cluster.gvm.dbl.DblResult;
 

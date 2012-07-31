@@ -10,7 +10,7 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.oaei2009.OAEI2009parameters;
-import am.output.AlignmentOutput;
+import am.parsing.AlignmentOutput;
 
 public class ConferenceTrack_OLD extends Track {
 

@@ -1,4 +1,4 @@
-package am.output;
+package am.parsing;
 
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
-import am.output.AlignmentOutput;
+import am.parsing.AlignmentOutput;
 
 public class AlignmentsOutput {
 	

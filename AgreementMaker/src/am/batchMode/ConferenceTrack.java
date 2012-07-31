@@ -11,7 +11,7 @@ import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.oaei2009.OAEI2009parameters;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
-import am.output.AlignmentOutput;
+import am.parsing.AlignmentOutput;
 
 public class ConferenceTrack extends Track {
 
