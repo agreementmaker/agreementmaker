@@ -295,8 +295,8 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment,0);
 		MatcherParametersDialog dialog = new MatcherParametersDialog(refMatcher,false,false);
 		if(dialog.parametersSet()) {
-			refMatcher.setParam(dialog.getParameters());
-			refMatcher.setThreshold(refMatcher.getDefaultThreshold());
+			refMatcher.setParameters(dialog.getParameters());
+			refMatcher.getParam().threshold = refMatcher.getDefaultThreshold();
 			refMatcher.setMaxSourceAlign(refMatcher.getDefaultMaxSourceRelations());
 			refMatcher.setMaxTargetAlign(refMatcher.getDefaultMaxTargetRelations());
 			try {

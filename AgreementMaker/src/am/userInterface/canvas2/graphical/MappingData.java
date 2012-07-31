@@ -3,8 +3,8 @@ package am.userInterface.canvas2.graphical;
 import java.awt.Color;
 
 import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.userInterface.Colors;
 import am.userInterface.canvas2.utility.Canvas2Layout;
 
@@ -22,6 +22,8 @@ public class MappingData extends GraphicalData {
 	
 	@Deprecated public OntResource r2; // deprecated because we don't need the second resource, but we need the Mapping
 	public int ontologyID2;
+	
+	// TODO: Rename to taskID
 	public int matcherID;
 	public Color color = Colors.mapped;
 	public MappingType mappingType;
@@ -36,9 +38,9 @@ public class MappingData extends GraphicalData {
 		ontologyID2 = OntID2;
 		matcherID = mID;
 		
-		AbstractMatcher m = Core.getInstance().getMatcherByID(matcherID);
+		MatchingTask m = Core.getInstance().getMatchingTaskByID(matcherID);
 		if( m != null ) {
-			color = m.getColor();
+			color = m.visData.color;
 		}
 		
 		mappingType = t;
@@ -67,17 +69,12 @@ public class MappingData extends GraphicalData {
 		ontologyID2 = OntID2;
 		matcherID = mID;
 
-		AbstractMatcher m = Core.getInstance().getMatcherByID(matcherID);
+		MatchingTask m = Core.getInstance().getMatchingTaskByID(matcherID);
 		if( m != null ) {
-			color = m.getColor();
+			color = m.visData.color;
 		}
 
 		mappingType = t;
 
 	}
-	
-	
-	
-	//public void setLabel(String lbl) { label = lbl; }
-	
 }

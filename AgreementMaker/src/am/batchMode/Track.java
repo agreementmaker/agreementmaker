@@ -98,10 +98,11 @@ public abstract class Track {
 		//Invoke the matcher, any index is fine
 		System.out.println("Running the matching method: "+matcher.getMatcherName());
 		AbstractMatcher currentMatcher = MatcherFactory.getMatcherInstance(matcher, 0);
-		currentMatcher.setThreshold(threshold);
-		currentMatcher.setMaxSourceAlign(sourceRel);
-		currentMatcher.setMaxTargetAlign(targetRel);
-		currentMatcher.setParam(parameters);
+		currentMatcher.setParameters(parameters);
+		final DefaultMatcherParameters p = currentMatcher.getParam();
+		p.threshold = threshold;
+		p.maxSourceAlign = sourceRel;
+		p.maxTargetAlign = targetRel;
 		currentMatcher.match();
 		System.out.println("Matching method completed in "+currentMatcher.getExecutionTime());
 		

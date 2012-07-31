@@ -24,7 +24,6 @@ import am.app.ontology.OntologyChangeListener;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.app.osgi.AMHost;
 import am.userInterface.AppPreferences;
-import am.userInterface.Colors;
 import am.userInterface.UI;
 import am.userInterface.VisualizationChangeEvent;
 import am.userInterface.VisualizationChangeListener;
@@ -257,7 +256,7 @@ public class Core {
 	@Deprecated
 	public void addMatcherInstance(AbstractMatcher a) {
 		a.setIndex( matcherInstances.size() );
-		a.setColor(Colors.matchersColors[a.getIndex()%6]);
+		//a.setColor(Colors.matchersColors[a.getIndex()%6]);
 		a.setID(getNextMatcherID());
 		matcherInstances.add(a);
 		fireEvent( new MatchingTaskChangeEvent(a, MatchingTaskChangeEvent.EventType.MATCHER_ADDED, a.getID() ));
@@ -266,7 +265,7 @@ public class Core {
 	@Deprecated
 	public void addMatcherResult(AbstractMatcher a){
 		a.setIndex(matcherResults.size());
-		a.setColor(Colors.matchersColors[a.getID()%6]);
+		//a.setColor(Colors.matchersColors[a.getID()%6]);
 		a.setID(getNextMatcherID());
 		matcherResults.add(a.getResult());
 		fireEvent( new MatchingTaskChangeEvent(a, MatchingTaskChangeEvent.EventType.MATCHER_ADDED, a.getID() ));

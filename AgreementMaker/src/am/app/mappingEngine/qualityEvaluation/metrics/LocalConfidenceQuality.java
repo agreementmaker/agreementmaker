@@ -45,7 +45,7 @@ public class LocalConfidenceQuality extends AbstractQualityMetric {
 		
 		double threshold = 0.01; //could be 0 and should be the same
 		if( params.containsKey(PARAM_CONSIDER_THRESHOLD) && params.getBit(PARAM_CONSIDER_THRESHOLD) ) {
-			threshold = matcher.getThreshold();
+			threshold = matcher.getParam().threshold;
 		}
 		if(matcher.areClassesAligned()) {
 			double[] measures = evaluateMatrix(matcher.getClassesMatrix(), q.isSourceOntology(),numOfRelations, threshold );

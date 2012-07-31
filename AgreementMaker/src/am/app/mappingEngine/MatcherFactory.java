@@ -5,6 +5,7 @@ import java.util.EnumSet;
 
 import am.app.Core;
 import am.app.osgi.MatcherNotFoundException;
+import am.app.osgi.OSGiRegistry;
 import am.userInterface.Colors;
 
 public class MatcherFactory {
@@ -66,9 +67,12 @@ public class MatcherFactory {
 		}
 	}
 	
-	/**Return the real istance of the matcher given the selected nameindex
+	/**
+	 * Return the real istance of the matcher given the selected nameindex
 	 * the instanceIndex is the unique identifier of this algorithm, is the unique parameter of the constructor and is the identifier of the matcher instance in the run matchers list (the table of the AM)
-	 * */
+	 *
+	 * @deprecated Moving to OSGi. Use {@link OSGiRegistry#getMatcherByName(String)}
+	 */
 	public static AbstractMatcher getMatcherInstance(MatchersRegistry name, int instanceIndex) {
 		
 		Class<?> matcherClass = null;
@@ -100,8 +104,8 @@ public class MatcherFactory {
 		a.setRegistryEntry(name);
 		
 		// Set the color of the matcher
-		Color color = getColorFromIndex(instanceIndex);
-		a.setColor(color);
+		//Color color = getColorFromIndex(instanceIndex);
+		//a.setColor(color);
 		
 		return a;
 	}

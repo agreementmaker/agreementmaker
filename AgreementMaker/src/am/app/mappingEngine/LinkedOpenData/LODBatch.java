@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -160,6 +159,8 @@ public class LODBatch {
 		
 		
 		log.info("Threshold analysis...");
+		/*
+		// FIXME: Move this to the ThresholdAnalysis.java.
 		ThresholdAnalysisData data = AlignmentUtilities.thresholdAnalysis(hmm, reference, thresholds, true);
 		log.info("Done");
 		
@@ -169,10 +170,10 @@ public class LODBatch {
 		for (int i = 0; i < data.getThresholds().length; i++) {
 			System.out.println(data.getThresholds()[i] + " " + data.getEvaluationData(i).getPrecision() 
 					+ " " + data.getEvaluationData(i).getRecall());
-		}
+		}*/
 		
 		
-		return data;
+		return null;
 	}
 	
 	public void singleRunEq(AbstractMatcher matcher, LODOntology source, LODOntology target, String testName, String outputFolder){

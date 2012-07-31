@@ -1,5 +1,7 @@
 package am.app.mappingEngine;
 
+import am.userInterface.matchingtask.MatchingTaskVisData;
+
 
 /**
  * A matching task contains:
@@ -21,8 +23,18 @@ public class MatchingTask {
 	public DefaultSelectionParameters 	selectionParameters;
 	public MatcherResult				matcherResult;
 	public SelectionResult				selectionResult;
+	public MatchingTaskVisData			visData;
 	public int ID;
-	public String label;
+	
+	/**
+	 * A short label for this MatchingTask.
+	 */
+	public String shortLabel;
+	
+	/**
+	 * A longer description for this matching task.
+	 */
+	public String description;
 	
 	public MatchingTask(AbstractMatcher matcher, DefaultMatcherParameters matcherParams,
 						AbstractSelectionAlgorithm selectionAlgorithm, DefaultSelectionParameters selectionParams) {
@@ -32,6 +44,7 @@ public class MatchingTask {
 		this.matcherParameters = matcherParams;
 		this.selectionAlgorithm = selectionAlgorithm;
 		this.selectionParameters = selectionParams;
+		this.visData = new MatchingTaskVisData(); // default visualization
 	}
 
 	/**
@@ -67,6 +80,6 @@ public class MatchingTask {
 	}
 	
 	public void setLabel(String label) {
-		this.label = label;
+		this.shortLabel = label;
 	}
 }

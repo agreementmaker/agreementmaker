@@ -4,6 +4,7 @@ import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.Combination.CombinationParameters;
@@ -98,12 +99,10 @@ public class OAEI2009matcher extends AbstractMatcher {
 	    	//AbstractMatcher pra = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity, 0);
 	    	pra = MatcherFactory.getMatcherInstance(MatchersRegistry.PRAMatcher, 0);
 	    	pra.getInputMatchers().add(myMatcher);
-	    	pra.setThreshold(getThreshold());
-	    	pra.setMaxSourceAlign(getMaxSourceAlign());
-	    	pra.setMaxTargetAlign(getMaxTargetAlign());
+	    	pra.setParameters(new DefaultMatcherParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign));
 	    	BaseSimilarityParameters bsmp = new BaseSimilarityParameters();
 	    	bsmp.initForOAEI2009();
-	    	pra.setParam(bsmp);
+	    	pra.setParameters(bsmp);
 	    	pra.setSourceOntology(sourceOntology);
 	    	pra.setTargetOntology(targetOntology);
 	    	//bsm.setPerformSelection(false);
@@ -119,12 +118,10 @@ public class OAEI2009matcher extends AbstractMatcher {
 			System.out.println("Running BSM");
 	    	startime = System.nanoTime()/measure;
 	    	pra = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity, 0);
-	    	pra.setThreshold(getThreshold());
-	    	pra.setMaxSourceAlign(getMaxSourceAlign());
-	    	pra.setMaxTargetAlign(getMaxTargetAlign());
+	    	pra.setParameters(new DefaultMatcherParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign));
 	    	BaseSimilarityParameters bsmp = new BaseSimilarityParameters();
 	    	bsmp.initForOAEI2009();
-	    	pra.setParam(bsmp);
+	    	pra.setParameters(bsmp);
 	    	pra.setSourceOntology(sourceOntology);
 	    	pra.setTargetOntology(targetOntology);
 	    	//bsm.setPerformSelection(false);
@@ -140,12 +137,10 @@ public class OAEI2009matcher extends AbstractMatcher {
     	System.out.println("Running PSM");
     	startime = System.nanoTime()/measure;
     	AbstractMatcher psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 1);
-    	psm.setThreshold(getThreshold());
-    	psm.setMaxSourceAlign(getMaxSourceAlign());
-    	psm.setMaxTargetAlign(getMaxTargetAlign());
-    	ParametricStringParameters psmp = new ParametricStringParameters();
+    	ParametricStringParameters psmp = 
+    			new ParametricStringParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
     	psmp.initForOAEI2009();
-    	psm.setParam(psmp);
+    	psm.setParameters(psmp);
     	psm.setSourceOntology(sourceOntology);
     	psm.setTargetOntology(targetOntology);
     	//psm.setPerformSelection(false);
@@ -158,12 +153,10 @@ public class OAEI2009matcher extends AbstractMatcher {
     	System.out.println("Running VMM");
     	startime = System.nanoTime()/measure;
     	AbstractMatcher vmm = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 2);
-    	vmm.setThreshold(getThreshold());
-    	vmm.setMaxSourceAlign(getMaxSourceAlign());
-    	vmm.setMaxTargetAlign(getMaxTargetAlign());
-    	MultiWordsParameters vmmp = new MultiWordsParameters();
+    	
+    	MultiWordsParameters vmmp = new MultiWordsParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
     	vmmp.initForOAEI2009();
-    	vmm.setParam(vmmp);
+    	vmm.setParameters(vmmp);
     	vmm.setSourceOntology(sourceOntology);
     	vmm.setTargetOntology(targetOntology);
     	//vmm.setPerformSelection(false);
@@ -183,7 +176,7 @@ public class OAEI2009matcher extends AbstractMatcher {
     	lwc.getInputMatchers().add(psm);
     	lwc.getInputMatchers().add(vmm);
     	lwc.getInputMatchers().add(pra);
-    	lwc.setThreshold(getThreshold());
+    	lwc.getParam().threshold = param.threshold;
     	lwc.setMaxSourceAlign(getMaxSourceAlign());
     	lwc.setMaxTargetAlign(getMaxTargetAlign());
         CombinationParameters   lwcp = new CombinationParameters();
@@ -205,12 +198,12 @@ public class OAEI2009matcher extends AbstractMatcher {
     	startime = System.nanoTime()/measure;
     	AbstractMatcher dsi = MatcherFactory.getMatcherInstance(MatchersRegistry.DSI, 0);
     	dsi.getInputMatchers().add(lastLayer);
-    	dsi.setThreshold(getThreshold());
+    	dsi.getParam().threshold = param.threshold;
     	dsi.setMaxSourceAlign(getMaxSourceAlign());
     	dsi.setMaxTargetAlign(getMaxTargetAlign());
     	DescendantsSimilarityInheritanceParameters dsip = new DescendantsSimilarityInheritanceParameters();
     	dsip.initForOAEI2009();
-    	dsi.setParam(dsip);
+    	dsi.setParameters(dsip);
     	dsi.setSourceOntology(sourceOntology);
     	dsi.setTargetOntology(targetOntology);
     	//dsi.setPerformSelection(true);
@@ -251,7 +244,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 	    	AbstractMatcher wnl = MatcherFactory.getMatcherInstance(MatchersRegistry.WordNetLexical, 2);
 	    	wnl.setOptimized(true);
 	    	wnl.addInputMatcher(lastLayer);
-	    	wnl.setThreshold(getThreshold());
+	    	wnl.getParam().threshold = param.threshold;
 	    	wnl.setMaxSourceAlign(getMaxSourceAlign());
 	    	wnl.setMaxTargetAlign(getMaxTargetAlign());
 	    	wnl.setSourceOntology(sourceOntology);
@@ -295,7 +288,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 	    	startime = System.nanoTime()/measure;
 	    	AbstractMatcher praIntegration = MatcherFactory.getMatcherInstance(MatchersRegistry.PRAintegration, 0);
 	    	praIntegration.getInputMatchers().add(lastLayer);
-	    	praIntegration.setThreshold(getThreshold());
+	    	praIntegration.getParam().threshold = param.threshold;
 	    	praIntegration.setMaxSourceAlign(getMaxSourceAlign());
 	    	praIntegration.setMaxTargetAlign(getMaxTargetAlign());
 	    	//praIntegration uses the same parameters of ReferenceAlignmentMatcher
@@ -316,7 +309,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 			pra2.addInputMatcher(lastLayer);
 			pra2.addInputMatcher(pra);
 			
-			pra2.setThreshold(getThreshold());
+			pra2.getParam().threshold = param.threshold;
 			pra2.setMaxSourceAlign(getMaxSourceAlign());
 			pra2.setMaxTargetAlign(getMaxTargetAlign());
 			pra2.setSourceOntology(sourceOntology);

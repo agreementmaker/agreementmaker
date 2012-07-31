@@ -13,6 +13,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -45,6 +46,7 @@ import com.hp.hpl.jena.rdf.model.Property;
 
 public class TrainingGenerator {
 	
+	private static Logger sLog = Logger.getLogger(TrainingGenerator.class);
 	
 	//in this main you can see how to use all the classification framework
 	
@@ -906,11 +908,11 @@ public static void testClassified() {
 		matcherToAnalyze.setSourceOntology(sourceOntology);
 		matcherToAnalyze.setTargetOntology(targetOntology);
 		matcherToAnalyze.setPerformSelection(false);
-		if( matcherToAnalyze.needsParam() ) matcherToAnalyze.setParam(prefParams);
+		if( matcherToAnalyze.needsParam() ) matcherToAnalyze.setParameters(prefParams);
 		matcherToAnalyze.setMaxSourceAlign(prefSourceCardinality);
 		matcherToAnalyze.setMaxTargetAlign(prefTargetCardinality);
 		
-		System.out.println("THRESHOLD BEFORE MATCH"+matcherToAnalyze.getThreshold());
+		System.out.println("THRESHOLD BEFORE MATCH"+matcherToAnalyze.getParam().threshold);
 			
 		try {
 			matcherToAnalyze.match();

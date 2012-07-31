@@ -555,7 +555,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 				//JOptionPane.showInputDialog(parentComponent, message, title, messageType, icon, selectionValues, initialSelectionValue)
 				
 				//String newName = JOptionPane.showInputDialog(mcp, "Rename \"" + matcherToRename.getName() + "\" to:", "Rename Matcher", JOptionPane.OK_CANCEL_OPTION);
-				String newName = (String) JOptionPane.showInputDialog(mcp, (Object)"Rename \"" + matcherToRename.label + "\" to:", "Rename Matcher", JOptionPane.OK_CANCEL_OPTION, null, null, matcherToRename.label);
+				String newName = (String) JOptionPane.showInputDialog(mcp, (Object)"Rename \"" + matcherToRename.shortLabel + "\" to:", "Rename Matcher", JOptionPane.OK_CANCEL_OPTION, null, null, matcherToRename.shortLabel);
 				if( newName != null ) {
 					matcherToRename.setLabel(newName);
 				}

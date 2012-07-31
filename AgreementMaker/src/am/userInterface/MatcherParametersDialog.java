@@ -667,21 +667,23 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 				everythingOk = false;
 				MatcherParametersDialog dialog = new MatcherParametersDialog(currentMatcher, true, true);
 				if(dialog.parametersSet()) {
-					currentMatcher.setParam(dialog.getParameters());
+					currentMatcher.setParameters(dialog.getParameters());
 					everythingOk = true;
 				}
 				dialog.dispose();
 			}
 			if(everythingOk) {
+				final DefaultMatcherParameters param = currentMatcher.getParam();
+
 				if(defaultParam) {
-					currentMatcher.setThreshold(currentMatcher.getDefaultThreshold());
-					currentMatcher.setMaxSourceAlign(currentMatcher.getDefaultMaxSourceRelations());
-					currentMatcher.setMaxTargetAlign(currentMatcher.getDefaultMaxTargetRelations());
+					param.threshold = currentMatcher.getDefaultThreshold();
+					param.maxSourceAlign = currentMatcher.getDefaultMaxSourceRelations();
+					param.maxTargetAlign = currentMatcher.getDefaultMaxTargetRelations();
 				}
 				else {
-					currentMatcher.setThreshold(Utility.getDoubleFromPercent((String)thresholdCombo.getSelectedItem()));
-					currentMatcher.setMaxSourceAlign(Utility.getIntFromNumRelString((String)sourceRelCombo.getSelectedItem()));
-					currentMatcher.setMaxTargetAlign(Utility.getIntFromNumRelString((String)targetRelCombo.getSelectedItem()));
+					param.threshold = Utility.getDoubleFromPercent((String)thresholdCombo.getSelectedItem());
+					param.maxSourceAlign = Utility.getIntFromNumRelString((String)sourceRelCombo.getSelectedItem());
+					param.maxTargetAlign = Utility.getIntFromNumRelString((String)targetRelCombo.getSelectedItem());
 				}
 				
 				

@@ -54,7 +54,7 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		performSelection = false; // we don't need to do this, we will build the alignment by hand.
 		setMaxSourceAlign(ANY_INT);
 		setMaxTargetAlign(ANY_INT);
-		setThreshold(0.01d);
+		param.threshold = 0.01d;
 	}
 	
 	@Override

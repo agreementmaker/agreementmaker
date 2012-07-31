@@ -191,6 +191,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		Core.getLexiconStore().buildAll(lexParam);
 		
+		final DefaultMatcherParameters param = getParam();
+		
 		// Ontology profiling
 		ProfilerRegistry entry = ProfilerRegistry.ManualProfiler;
 		OntologyProfiler profiler = null;
@@ -252,7 +254,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		if( !isCancelled() ) {
 			AbstractMatcher bsm = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity, 0);
 			
-			BaseSimilarityParameters bsmParam = new BaseSimilarityParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			BaseSimilarityParameters bsmParam = 
+					new BaseSimilarityParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			bsmParam.useDictionary = false;
 			
 			setupSubMatcher(bsm, bsmParam);
@@ -265,7 +268,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		if( !isCancelled() ) {
 			AbstractMatcher psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 0);
 			
-			ParametricStringParameters psmParam = new ParametricStringParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			ParametricStringParameters psmParam = 
+					new ParametricStringParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			
 			psmParam.localWeight = 0.33;
 			psmParam.labelWeight = 0.34d;
@@ -290,7 +294,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		if( !isCancelled() ) {
 			AbstractMatcher vmm = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 0);
 			
-			MultiWordsParameters vmmParam = new MultiWordsParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			MultiWordsParameters vmmParam = 
+					new MultiWordsParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			
 			vmmParam.measure = MultiWordsParameters.TFIDF;
 			//only on concepts right now because it should be weighted differently
@@ -313,7 +318,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		if( !isCancelled() ) {
 			AbstractMatcher lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSM, 0);
 			
-			LexicalSynonymMatcherParameters lsmParam = new LexicalSynonymMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			LexicalSynonymMatcherParameters lsmParam = 
+					new LexicalSynonymMatcherParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			lsmParam.useSynonymTerms = false;
 			
 			setupSubMatcher(lsm, lsmParam);
@@ -329,7 +335,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			
 			lwc.setInputMatchers(lwcInputMatchers);
 			
-			CombinationParameters lwcParam = new CombinationParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			CombinationParameters lwcParam = 
+					new CombinationParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			lwcParam.combinationType = CombinationParameters.AVERAGECOMB;
 			lwcParam.qualityEvaluation = true;
 			lwcParam.manualWeighted = false;
@@ -346,7 +353,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			iism.addInputMatcher(lwc);
 			
 			IterativeInstanceStructuralParameters iismParam = 
-					new IterativeInstanceStructuralParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+					new IterativeInstanceStructuralParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			
 			iismParam.allBoost();
 			iismParam.setConsiderIndividuals(true);
@@ -385,13 +392,16 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		Core.getLexiconStore().buildAll(lexParam);
 		
+		final DefaultMatcherParameters param = getParam();
+		
 		// ASM
 		List<AbstractMatcher> lwcInputMatchers = new ArrayList<AbstractMatcher>();
 		
 		if( !isCancelled() ) {
 			AbstractMatcher asm = MatcherFactory.getMatcherInstance(MatchersRegistry.AdvancedSimilarity, 0);
 			
-			AdvancedSimilarityParameters asmParam = new AdvancedSimilarityParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			AdvancedSimilarityParameters asmParam = 
+					new AdvancedSimilarityParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			asmParam.useLabels = false;
 			
 			setupSubMatcher(asm, asmParam);
@@ -404,7 +414,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		if( !isCancelled() ) {
 			AbstractMatcher psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 0);
 			
-			ParametricStringParameters psmParam = new ParametricStringParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			ParametricStringParameters psmParam = 
+					new ParametricStringParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			
 			psmParam.localWeight = 0.33;
 			psmParam.labelWeight = 0.34d;
@@ -429,7 +440,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		if( !isCancelled() ) {
 			AbstractMatcher vmm = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 0);
 			
-			MultiWordsParameters vmmParam = new MultiWordsParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			MultiWordsParameters vmmParam = 
+					new MultiWordsParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			
 			vmmParam.measure = MultiWordsParameters.TFIDF;
 			//only on concepts right now because it should be weighted differently
@@ -452,7 +464,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		if( !isCancelled() ) {
 			AbstractMatcher lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSM, 0);
 			
-			LexicalSynonymMatcherParameters lsmParam = new LexicalSynonymMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			LexicalSynonymMatcherParameters lsmParam = 
+					new LexicalSynonymMatcherParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			lsmParam.useSynonymTerms = false;
 			
 			setupSubMatcher(lsm, lsmParam);
@@ -468,7 +481,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			
 			lwc.setInputMatchers(lwcInputMatchers);
 			
-			CombinationParameters lwcParam = new CombinationParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			CombinationParameters lwcParam = 
+					new CombinationParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			lwcParam.combinationType = CombinationParameters.AVERAGECOMB;
 			lwcParam.qualityEvaluation = true;
 			lwcParam.manualWeighted = false;
@@ -485,7 +499,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			iism.addInputMatcher(lwc);
 			
 			IterativeInstanceStructuralParameters iismParam = 
-					new IterativeInstanceStructuralParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+					new IterativeInstanceStructuralParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			
 			iismParam.allBoost();
 			iismParam.setConsiderIndividuals(true);
@@ -509,8 +523,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	
 	private AbstractMatcher runLexicalBased() throws Exception {
 		
-		// this threshold works best.
-		setThreshold(0.73d);
+		// FIXME: this threshold works best, but it should NOT be hardcoded.
+		getParam().threshold = 0.73d;
 		
 		// allow for overrides
 		// FIXME: Remove this.
@@ -520,7 +534,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 				BufferedReader thresholdReader = new BufferedReader( new FileReader(thresholdFile) );
 				String firstLine = thresholdReader.readLine();
 				double threshold = Double.parseDouble(firstLine);
-				if( threshold > 0 && threshold <= 1.0 ) setThreshold(threshold);
+				if( threshold > 0 && threshold <= 1.0 ) getParam().threshold = threshold;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -540,6 +554,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		lexParam.detectStandardProperties(targetOntology);
 		
 		Core.getLexiconStore().buildAll(lexParam);
+		
+		final DefaultMatcherParameters param = getParam();
 		
 		final List<AbstractMatcher> lwc1InputMatchers = new ArrayList<AbstractMatcher>();
 		final List<AbstractMatcher> lwc2InputMatchers = new ArrayList<AbstractMatcher>();
@@ -674,7 +690,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			
 			lwc1.setInputMatchers(lwc1InputMatchers);
 			
-			CombinationParameters lwcParam = new CombinationParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			CombinationParameters lwcParam = 
+					new CombinationParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			lwcParam.combinationType = CombinationParameters.AVERAGECOMB;
 			lwcParam.qualityEvaluation = true;
 			lwcParam.manualWeighted = false;
@@ -694,7 +711,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			
 			lwc2.setInputMatchers(lwc2InputMatchers);
 			
-			CombinationParameters lwcParam = new CombinationParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			CombinationParameters lwcParam = 
+					new CombinationParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			lwcParam.combinationType = CombinationParameters.AVERAGECOMB;
 			lwcParam.qualityEvaluation = true;
 			lwcParam.manualWeighted = false;
@@ -714,7 +732,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			lwc3.addInputMatcher(lwc1);
 			lwc3.addInputMatcher(lwc2);
 			
-			CombinationParameters lwcParam = new CombinationParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			CombinationParameters lwcParam = 
+					new CombinationParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			lwcParam.combinationType = CombinationParameters.AVERAGECOMB;
 			lwcParam.qualityEvaluation = true;
 			lwcParam.manualWeighted = false;
@@ -736,7 +755,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		AbstractMatcher psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 0);
 		
-		ParametricStringParameters psmParam = new ParametricStringParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+		ParametricStringParameters psmParam = 
+				new ParametricStringParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 		
 		psmParam.useLexicons = true;
 		psmParam.useBestLexSimilarity = true;
@@ -758,7 +778,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		AbstractMatcher boost = MatcherFactory.getMatcherInstance(MatchersRegistry.Boost, 0);
 		
-		BestMatchBoostingParameters boostParam = new BestMatchBoostingParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+		BestMatchBoostingParameters boostParam = 
+				new BestMatchBoostingParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 		boostParam.deepCopy = false;
 		boostParam.boostPercent = 1.1;
 		
@@ -808,7 +829,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			
 			AbstractMatcher vmm = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 0);
 			
-			MultiWordsParameters vmmParam = new MultiWordsParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			MultiWordsParameters vmmParam = 
+					new MultiWordsParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			
 			vmmParam.measure = MultiWordsParameters.TFIDF;
 			vmmParam.considerInstances = true;
@@ -848,7 +870,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		if( !isCancelled() ) {
 			AbstractMatcher lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSMWeighted, 0);
 			
-			LexicalSynonymMatcherParameters lsmParam = new LexicalSynonymMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			LexicalSynonymMatcherParameters lsmParam = 
+					new LexicalSynonymMatcherParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			lsmParam.useSynonymTerms = true;
 			
 			setupSubMatcher(lsm, lsmParam);
@@ -866,7 +889,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		if( !isCancelled() ) {
 			AbstractMatcher mm = MatcherFactory.getMatcherInstance(MatchersRegistry.BridgeMatcher, 0);
 			
-			MediatingMatcherParameters mmParam = new MediatingMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			MediatingMatcherParameters mmParam = 
+					new MediatingMatcherParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			
 			mmParam.mediatingOntology = "lexicon/uberon/uberon.owl";
 			
@@ -907,7 +931,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		if( !isCancelled() ) {
 			lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSMWeighted, 0);
 			
-			LexicalSynonymMatcherParameters lsmParam = new LexicalSynonymMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			LexicalSynonymMatcherParameters lsmParam = 
+					new LexicalSynonymMatcherParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			lsmParam.useSynonymTerms = false;
 			
 			setupSubMatcher(lsm, lsmParam);
@@ -938,7 +963,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		if( !isCancelled() ) {
 			AbstractMatcher psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 0);
 			
-			ParametricStringParameters psmParam = new ParametricStringParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			ParametricStringParameters psmParam = 
+					new ParametricStringParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			
 			psmParam.useLexicons = true;
 			psmParam.useBestLexSimilarity = true;
@@ -960,7 +986,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		if( !isCancelled() ) {
 			AbstractMatcher vmm = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 0);
 			
-			MultiWordsParameters vmmParam = new MultiWordsParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			MultiWordsParameters vmmParam = 
+					new MultiWordsParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			
 			vmmParam.measure = MultiWordsParameters.TFIDF;
 			vmmParam.considerInstances = true;
@@ -1004,7 +1031,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			
 			lwc2.setInputMatchers(lwc2InputMatchers);
 			
-			CombinationParameters lwcParam = new CombinationParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			CombinationParameters lwcParam = 
+					new CombinationParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			lwcParam.combinationType = CombinationParameters.AVERAGECOMB;
 			lwcParam.qualityEvaluation = true;
 			lwcParam.manualWeighted = false;
@@ -1023,7 +1051,8 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			lwc3.addInputMatcher(lsm);
 			lwc3.addInputMatcher(lwc2);
 			
-			CombinationParameters lwcParam = new CombinationParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			CombinationParameters lwcParam = 
+					new CombinationParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			lwcParam.combinationType = CombinationParameters.AVERAGECOMB;
 			lwcParam.qualityEvaluation = true;
 			lwcParam.manualWeighted = false;
@@ -1043,14 +1072,15 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		//ASM
 
 		AbstractMatcher asm = MatcherFactory.getMatcherInstance(MatchersRegistry.AdvancedSimilarity, 0);
-		setupSubMatcher(asm, new AdvancedSimilarityParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign()));
+		setupSubMatcher(asm, new AdvancedSimilarityParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign));
 		runSubMatcher(asm, "Submatcher 1/4: ASM");
 		
 		AbstractMatcher psm = null; 
 		if( !isCancelled() ) {
 			psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 0);
 		
-			ParametricStringParameters psmParam = new ParametricStringParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			ParametricStringParameters psmParam = 
+					new ParametricStringParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			psmParam.localWeight = 0.5d;
 			psmParam.labelWeight = 0.5d;
 			psmParam.commentWeight = 0.5d;
@@ -1075,13 +1105,13 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		AbstractMatcher lwc = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 0);
 		lwc.getInputMatchers().add(asm);
 		lwc.getInputMatchers().add(psm);
-		setupSubMatcher(lwc, new CombinationParameters(getThreshold(),getMaxSourceAlign(), getMaxTargetAlign()).initForOAEI2010(OAEI_Track.Conference, true));
+		setupSubMatcher(lwc, new CombinationParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign).initForOAEI2010(OAEI_Track.Conference, true));
 		runSubMatcher(lwc, "Submatcher 3/4: LWC( ASM, PSM)");
 
 		//Third layer: GFM
 		AbstractMatcher gfm = MatcherFactory.getMatcherInstance(MatchersRegistry.GroupFinder, 0);
 		gfm.getInputMatchers().add(lwc);
-		setupSubMatcher(gfm, new DefaultMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign()));
+		setupSubMatcher(gfm, new DefaultMatcherParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign));
 		runSubMatcher(gfm, "Submatcher 4/4: GFM( LWC )");
 		//return gfm;
 
@@ -1093,7 +1123,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	private void setupSubMatcher( AbstractMatcher m, DefaultMatcherParameters p ) { setupSubMatcher(m, p, true); }
 	
 	private void setupSubMatcher( AbstractMatcher m, DefaultMatcherParameters p, boolean progressDelay ) {
-		m.setParam(p);
+		m.setParameters(p);
 		m.setSourceOntology(sourceOntology);
     	m.setTargetOntology(targetOntology);
 		for( MatchingProgressDisplay mpd : progressDisplays ) m.addProgressDisplay(mpd);

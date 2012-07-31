@@ -132,7 +132,7 @@ public class MediatingMatcher extends AbstractMatcher {
 			
 			AbstractMatcher lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSM, 0); 
 			
-			LexicalSynonymMatcherParameters lsmParam = new LexicalSynonymMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			LexicalSynonymMatcherParameters lsmParam = new LexicalSynonymMatcherParameters(getParam().threshold, getMaxSourceAlign(), getMaxTargetAlign());
 			lsmParam.sourceLexicon = sourceOntLexicon;
 			lsmParam.targetLexicon = targetOntLexicon;
 			lsmParam.useSynonymTerms = false;
@@ -204,7 +204,7 @@ public class MediatingMatcher extends AbstractMatcher {
 			
 			AbstractMatcher lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSM, 0);
 					
-			LexicalSynonymMatcherParameters lsmParam = new LexicalSynonymMatcherParameters(getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+			LexicalSynonymMatcherParameters lsmParam = new LexicalSynonymMatcherParameters(getParam().threshold, getMaxSourceAlign(), getMaxTargetAlign());
 			lsmParam.sourceLexicon = sourceOntLexicon;
 			lsmParam.targetLexicon = targetOntLexicon;
 			lsmParam.useSynonymTerms = false;

@@ -625,7 +625,7 @@ public class machineLearningMatcher extends AbstractMatcher {
 			lwc.setInputMatchers(listOfMatchers);
 
 			CombinationParameters lwcParam = new CombinationParameters(
-					getThreshold(), getMaxSourceAlign(), getMaxTargetAlign());
+					param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			lwcParam.combinationType = CombinationParameters.AVERAGECOMB;
 			lwcParam.qualityEvaluation = true;
 			lwcParam.manualWeighted = false;

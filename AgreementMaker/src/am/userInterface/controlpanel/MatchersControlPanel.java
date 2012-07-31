@@ -38,7 +38,6 @@ import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
-import am.app.mappingEngine.referenceAlignment.ThresholdAnalysisData;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.ExportDialog;
@@ -48,7 +47,6 @@ import am.userInterface.MatchingProgressDisplay;
 import am.userInterface.QualityEvaluationDialog;
 import am.userInterface.matchingtask.MatchingTaskCreatorDialog;
 import am.userInterface.table.MatchersTablePanel;
-import am.utility.referenceAlignment.AlignmentUtilities;
 
 public class MatchersControlPanel extends JPanel implements ActionListener, MouseListener {
 
@@ -508,11 +506,15 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment,0);
 			MatcherParametersDialog dialog = new MatcherParametersDialog(refMatcher, false, false);
 			if(dialog.parametersSet()) {
-				refMatcher.setParam(dialog.getParameters());
-				refMatcher.setThreshold(refMatcher.getDefaultThreshold());
-				refMatcher.setMaxSourceAlign(refMatcher.getDefaultMaxSourceRelations());
-				refMatcher.setMaxTargetAlign(refMatcher.getDefaultMaxTargetRelations());
+				final DefaultMatcherParameters param = dialog.getParameters();
+				
+				param.threshold = refMatcher.getDefaultThreshold();
+				param.maxSourceAlign = refMatcher.getDefaultMaxSourceRelations();
+				param.maxTargetAlign = refMatcher.getDefaultMaxTargetRelations();
+				
+				refMatcher.setParameters(param);
 				refMatcher.match();
+
 				Alignment<Mapping> referenceSet = refMatcher.getAlignment(); //class + properties
 				AbstractMatcher toBeEvaluated;
 				
@@ -523,8 +525,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 				//double[] thresholds = Utility.STEPFIVE;  // TODO: Make it so the user can select this from the UI.
 				for(int i = 0; i < rowsIndex.length; i++) {
 					toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
-					ThresholdAnalysisData data = AlignmentUtilities.thresholdAnalysis(toBeEvaluated, referenceSet);
-					report += data.getReport();
+					// FIXME: Migrate to ThresholdAnalysis.java
+					//ThresholdAnalysisData data = AlignmentUtilities.thresholdAnalysis(toBeEvaluated, referenceSet);
+					//report += data.getReport();
 					AbstractTableModel model = (AbstractTableModel)matchersTablePanel.getTable().getModel();
 					model.fireTableRowsUpdated(toBeEvaluated.getIndex(), toBeEvaluated.getIndex());
 				}

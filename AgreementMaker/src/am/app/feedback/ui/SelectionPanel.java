@@ -33,6 +33,7 @@ import am.app.feedback.FeedbackLoop;
 import am.app.feedback.FeedbackLoopParameters;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
@@ -109,9 +110,11 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 			    if(control.equals("")){
 					ufl = (FeedbackLoop)MatcherFactory.getMatcherInstance( MatchersRegistry.UserFeedBackLoop , Core.getInstance().getMatcherInstances().size() );  // initialize the user feedback loop interface (i.e. add a new tab)
 					ufl.setParam( fblp );
-					ufl.setThreshold(fblp.highThreshold);
-					ufl.setMaxSourceAlign(fblp.sourceNumMappings);
-					ufl.setMaxSourceAlign(fblp.targetNumMappings);
+					
+					final DefaultMatcherParameters p = ufl.getParam();
+					p.threshold = fblp.highThreshold;
+					p.maxSourceAlign = fblp.sourceNumMappings;
+					p.maxTargetAlign = fblp.targetNumMappings;
 					displayProgressScreen();
 					ufl.addProgressDisplay(this);
 					Core.getInstance().addMatcherResult(ufl);
@@ -347,10 +350,12 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		//get the automatic inital matcher
 		String matcherName = cmbMatcher.getSelectedItem().toString();
 		fblp.initialMatcher = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), 0); //index is not needed because this matcher is not set into the table
-		fblp.initialMatcher.setThreshold(fblp.highThreshold );
-		fblp.initialMatcher.setMaxSourceAlign(fblp.sourceNumMappings);
-		fblp.initialMatcher.setMaxTargetAlign(fblp.targetNumMappings);
-			
+		final DefaultMatcherParameters p = fblp.initialMatcher.getParam();
+		
+		p.threshold = fblp.highThreshold;
+		p.maxSourceAlign = fblp.sourceNumMappings;
+		p.maxTargetAlign = fblp.targetNumMappings;
+		
 		return fblp;
 	}
 	

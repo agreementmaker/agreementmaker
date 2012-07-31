@@ -78,6 +78,8 @@ import com.hp.hpl.jena.vocabulary.OWL;
 
 public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	
+	private static final Logger sLog = Logger.getLogger(LegacyLayout.class);
+	
 	public static final int VIEW_NORMAL = 0;
 	public static final int VIEW_SINGLE_MAPPING = 1;
 	
@@ -1106,6 +1108,11 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	
 	@Override
 	public CanvasGraph buildMatcherGraph( MatchingTask m ) {
+		
+		if( m == null ) {
+			sLog.warn("Cannot build matcher graph for null task.");
+			return null;
+		}
 		
 		CanvasGraph matcherGraph = new CanvasGraph( GraphType.MATCHER_GRAPH, m.getID() );
 		

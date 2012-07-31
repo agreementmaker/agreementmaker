@@ -54,7 +54,7 @@ public class ExtrapolatingFS extends AbstractMatcher {
 		classesMatrix = new FilteredAlignmentMatrix(inputClassesMatrix);
 		propertiesMatrix = new FilteredAlignmentMatrix(inputPropertiesMatrix);
 		
-		FamilialSimilarity fs_measure = new FamilialSimilarity( getThreshold() );
+		FamilialSimilarity fs_measure = new FamilialSimilarity( getParam().threshold );
 		Alignment<Mapping> newMappings = new Alignment<Mapping>( sourceOntology.getID(), targetOntology.getID());
 		
 		

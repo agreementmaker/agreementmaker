@@ -18,10 +18,8 @@ import org.apache.log4j.Logger;
 
 import am.Utility;
 import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.MatcherChangeListener;
-import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatcherResult;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -66,6 +64,8 @@ import am.userInterface.canvas2.utility.GraphLocator.GraphType;
 
 public class Canvas2 extends VisualizationPanel implements OntologyChangeListener, MatcherChangeListener, VisualizationChangeListener {
 
+	private static final Logger sLog = Logger.getLogger(Canvas2.class);
+	
 	private static final long serialVersionUID = 1544849142971067136L;
 
 
@@ -296,31 +296,34 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		}
 		
 		painting = false;
-		return;
 		
-		
-		/*Logger log = Logger.getLogger(this.getClass());
-		log.setLevel(Level.DEBUG);
-		log.debug("paint(): viewport( "+currentView +") - " + Integer.toString(nodeNum) + " nodes and " +
+		sLog.debug("paint(): viewport( "+currentView +") - " + Integer.toString(nodeNum) + " nodes and " +
 				  Integer.toString(edgeNum) +" edges visible. (" + Integer.toString(nodeNotVis) +
 									" nodes not visible, " + Integer.toString(edgeNotVis) +" edges not visible, " + Integer.toString(graphsnotVis) + " graphs not visible.)");
-		*/
 		
+		return;
 	}
 
 	
 	public synchronized void matcherChanged(MatchingTaskChangeEvent e) {
 
+		final MatchingTask task = Core.getInstance().getMatchingTaskByID( e.getTaskID() );
+		
+		if( task == null ) {
+			sLog.warn("Matcher Change Event fired with invalid task id: " + e.getTaskID() + ". Ignoring." );
+			return;
+		}
+		
 		switch( e.getEvent() ) {
 		case MATCHER_ADDED:
-			graphs.add(layout.buildMatcherGraph( Core.getInstance().getMatchingTaskByID( e.getMatcherID() )));
+			graphs.add( layout.buildMatcherGraph(task) );
 			repaint();
 			break;
 			
 		case MATCHER_ALIGNMENTSET_UPDATED:
 			
 			// first, remove the matcher graph from the list of graphs.
-			int matcherID = e.getMatcherID();
+			int matcherID = e.getTaskID();
 			Iterator<CanvasGraph> graphIter = graphs.iterator();
 			while( graphIter.hasNext() ) {
 				CanvasGraph gr = graphIter.next();
@@ -331,13 +334,13 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 				}
 			}
 			
-			graphs.add(layout.buildMatcherGraph( Core.getInstance().getMatchingTaskByID( e.getMatcherID() )));
+			graphs.add( layout.buildMatcherGraph(task) );
 			repaint();
 			break;
 			
 		case MATCHER_REMOVED:
 			// first, remove the matcher graph from the list of graphs.
-			int matcherID1 = e.getMatcherID();
+			int matcherID1 = e.getTaskID();
 			Iterator<CanvasGraph> graphIter1 = graphs.iterator();
 			while( graphIter1.hasNext() ) {
 				CanvasGraph gr = graphIter1.next();
@@ -351,15 +354,15 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			break;
 			
 		case MATCHER_VISIBILITY_CHANGED:
-			int matcherID11 = e.getMatcherID();
+			int matcherID11 = e.getTaskID();
 			Iterator<CanvasGraph> graphIter11 = graphs.iterator();
+			final boolean visible = task.visData.isShown;
 			while( graphIter11.hasNext() ) {
 				CanvasGraph gr = graphIter11.next();
 				if( gr.getID() == matcherID11 ) {
-					MatcherResult a = Core.getInstance().getResultByID( e.getMatcherID());
-					gr.setVisible(a.isShown());
+					gr.setVisible(visible);
 					for( Canvas2Edge edge : gr.getEdges() ) {  // added the for loop because of the filtering changes! - Cosmin.
-						edge.getObject().visible = a.isShown();
+						edge.getObject().visible = visible;
 					}
 					break;
 				}
@@ -368,21 +371,21 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			break;
 			
 		case MATCHER_COLOR_CHANGED:
-			int matcherID11c = e.getMatcherID();
-			System.out.println("The current index is: " + e.getMatcherID());
+			int matcherID11c = e.getTaskID();
+			sLog.debug("Color change event from task ID: " + e.getTaskID());
 			Iterator<CanvasGraph> graphIter11c = graphs.iterator();
+			
+			final Color taskColor = task.visData.color;
+			
 			while( graphIter11c.hasNext() ) {
 				CanvasGraph gr = graphIter11c.next();
 				if( gr.getID() == matcherID11c ) {
-					MatcherResult a = Core.getInstance().getResultByID( e.getMatcherID());
-					Color newColor = a.getColor();
-					
 					Iterator<Canvas2Edge> edgesIter = gr.edges();
 					while( edgesIter.hasNext() ) {
 						Canvas2Edge edge = edgesIter.next();
 						if( edge instanceof LegacyMapping ) {
 							MappingData mapdata = (MappingData)edge.getObject();
-							mapdata.color = newColor;
+							mapdata.color = taskColor;
 						}
 					}
 					
@@ -461,9 +464,10 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 						// we only care about mappings.
 						MappingData mdata = (MappingData) edge.getObject();
 						if( mdata.alignment != null ) {
-							AbstractMatcher m = Core.getInstance().getMatcherByID( mdata.matcherID );
-							String shortName = MatcherFactory.getMatchersRegistryEntry( m.getClass() ).getMatcherShortName();
-
+							MatchingTask m = Core.getInstance().getMatchingTaskByID( mdata.matcherID );
+							
+							final String shortName = m.shortLabel;
+							
 							String sim = Utility.getNoDecimalPercentFromDouble(mdata.alignment.getSimilarity());
 							
 							if( showMapName && shortName != null) {

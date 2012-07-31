@@ -116,7 +116,7 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
             	else if(col == NAME)
             		return a.matchingAlgorithm.getName();
             	else if(col == SHOWHIDE)
-            		return a.matcherResult.isShown();
+            		return a.visData.isShown;
             	else if(col == THRESHOLD) 
             		return Utility.getNoDecimalPercentFromDouble(a.selectionParameters.threshold);
             	else if(col == SRELATIONS)
@@ -186,7 +186,7 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
             	}
             			
             	else if(col == COLOR )
-            		return a.matcherResult.getColor();
+            		return a.visData.color;
             	else return NONE;
         	}
         	catch(Exception e) {
@@ -282,11 +282,10 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
         public int setValueOnMatcher(Object value, int row, int col) {
         	int update = CELLUPDATE;
         	try {
-        		Core core = Core.getInstance();
-        		UI ui = core.getUI();
+        		UI ui = Core.getUI();
         		MatchingTask a = data.get(row);
             	if(col == SHOWHIDE) {
-            		a.matcherResult.setShown((Boolean)value);
+            		a.visData.isShown = ((Boolean)value).booleanValue();
             		ui.redisplayCanvas();
             		update = CELLUPDATE;
             	}
@@ -323,7 +322,7 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
             		ui.redisplayCanvas();
             	}
             	else if(col == COLOR) {
-            		a.matcherResult.setColor((Color)value);
+            		a.visData.color = (Color)value;
             		update = ROWUPDATE;
             		ui.redisplayCanvas();
             	}

@@ -109,14 +109,14 @@ public class InitialMatchers extends AbstractMatcher {
 
 	@Override
 	public void matchStart() {
-		double threshold = getThreshold();
+		final double threshold = getParam().threshold;
 		int maxSourceAlign = getMaxSourceAlign();
 		int maxTargetAlign = getMaxTargetAlign();
 		
-		m_bsm.setThreshold(threshold);
-		m_psm.setThreshold(threshold);
-		m_vmm.setThreshold(threshold);
-		m_lwc.setThreshold(threshold);
+		m_bsm.getParam().threshold = threshold;
+		m_psm.getParam().threshold = threshold;
+		m_vmm.getParam().threshold = threshold;
+		m_lwc.getParam().threshold = threshold;
 		
 		m_bsm.setMaxSourceAlign(maxSourceAlign);
 		m_psm.setMaxSourceAlign(maxSourceAlign);

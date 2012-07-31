@@ -332,16 +332,28 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 
 	/**
-	 * Match(), buildSimilarityMatrix() and select() are the only 3 public methods to be accessed by the system other then get and set methods
-	 * All other methods must be protected so that only subclasses may access them (can't be private because subclasses wouldn't be able to use them)
-	 * match method is the one which perform the alignment. It also invokes the select() to scan and select matchings
-	 * the system sometimes may need to invoke only the select method for example when the user changes threshold of an algorithm, it's not needed to invoke the whole matching process but only select
-	 * so at least those two methods must be implemented and public
-	 * both methods contains some empty methods to allow developers to add other code if needed
-	 * In all cases a developer can override the whole match method or use this one and override the methods inside, or use all methods except for alignTwoNodes() which is the one which perform the real aligment evaluation
-	 * and it has to be different
-	 * It should not be needed often to override the select(), in all cases remember to consider all selection parameters threshold, num relations per source and target.
+	 * Match(), buildSimilarityMatrix() and select() are the only 3 public
+	 * methods to be accessed by the system other then get and set methods All
+	 * other methods must be protected so that only subclasses may access them
+	 * (can't be private because subclasses wouldn't be able to use them) match
+	 * method is the one which perform the alignment. It also invokes the
+	 * select() to scan and select matchings the system sometimes may need to
+	 * invoke only the select method for example when the user changes threshold
+	 * of an algorithm, it's not needed to invoke the whole matching process but
+	 * only select so at least those two methods must be implemented and public
+	 * both methods contains some empty methods to allow developers to add other
+	 * code if needed In all cases a developer can override the whole match
+	 * method or use this one and override the methods inside, or use all
+	 * methods except for alignTwoNodes() which is the one which perform the
+	 * real aligment evaluation and it has to be different It should not be
+	 * needed often to override the select(), in all cases remember to consider
+	 * all selection parameters threshold, num relations per source and target.
+	 * 
+	 * @deprecated A matching algorithm is not able to do mapping selection
+	 *             anymore. That functionality has been moved to
+	 *             {@link SelectionAlgorithm}.
 	 */
+	@Deprecated
 	public void select() {
 		//this method is also invoked everytime the user change threshold or num relation in the table
 		beforeSelectionOperations();//Template method to allow next developer to add code after selection
@@ -1129,32 +1141,12 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 }
 
 	 @Deprecated
-	 public boolean isShown() {
-		 return isShown;
-	 }
-
-	 @Deprecated
 	 public void setShown(boolean isShown) {
 		 this.isShown = isShown;
 
 		 // fire an event to let all the listeners know that the visibility of this abstract matcher
 		 MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(this, MatchingTaskChangeEvent.EventType.MATCHER_VISIBILITY_CHANGED, getID());
 		 Core.getInstance().fireEvent(evt);
-	 }
-
-	 @Deprecated
-	 public boolean getShown() { return isShown; }
-
-
-	 @Deprecated
-	 public double getThreshold() {
-		 return param.threshold;
-	 }
-
-	 @Deprecated
-	 public void setThreshold(double threshold) {
-		 if( param == null ) { param = new DefaultMatcherParameters(); }
-		 param.threshold = threshold;
 	 }
 
 	 public int getMaxSourceAlign() {
@@ -1172,8 +1164,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 public void setMaxTargetAlign(int maxTargetAlign) {
 		 param.maxTargetAlign = maxTargetAlign;
 	 }
-
-
 
 	 public int getMinInputMatchers() {
 		 return minInputMatchers;
@@ -1402,28 +1392,16 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		 return result;
 	 }
 
+	 /**
+	  * TODO: Move this to MatcherResult.  We don't copy AbstractMatchers, but their result. 
+	  */
 	 public AbstractMatcher copy() throws Exception {
 		 AbstractMatcher cloned = MatcherFactory.getMatcherInstance(getRegistryEntry(), Core.getInstance().getMatcherInstances().size());
 		 cloned.setInputMatchers(getInputMatchers());
 		 cloned.setParam(getParam());
-		 cloned.setThreshold(getThreshold());
-		 cloned.setMaxSourceAlign(getMaxSourceAlign());
-		 cloned.setMaxTargetAlign(getMaxTargetAlign());
-		 cloned.setAlignClass(isAlignClass());
-		 cloned.setAlignProp(isAlignProp());
 		 cloned.match();
 		 return cloned;
 
-	 }
-
-	 @Deprecated
-	 public Color getColor() { return color; }
-
-	 @Deprecated
-	 public void setColor(Color color) { 
-		 this.color = color;
-		 MatchingTaskChangeEvent mce = new MatchingTaskChangeEvent(this, MatchingTaskChangeEvent.EventType.MATCHER_COLOR_CHANGED);
-		 Core.getInstance().fireEvent(mce);
 	 }
 
 	 //*************************UTILITY METHODS**************************************
@@ -1660,7 +1638,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	  * 
 	  * @param source The source concept.
 	  * @param target The target concept.  Must be the same type of concept as the source. 
+	  * 
+	  * @deprecated Belongs in {@link MatcherResult}.
 	  */
+	 @Deprecated
 	 public void removeMapping(Node source, Node target) {
 
 		 if( (source.isClass() && target.isProp()) || (source.isProp() && target.isClass()) ) {
@@ -1725,13 +1706,15 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 	 }
 
-	 // 
 	 /**
 	  * this method removes any mappings between these two nodes
 	  * 
 	  * @param source The source concept.
-	  * @param target The target concept.  Must be the same type of concept as the source. 
+	  * @param target The target concept.  Must be the same type of concept as the source.
+	  * 
+	  * @deprecated Belongs in {@link MatcherResult}.
 	  */
+	 @Deprecated
 	 public Mapping getMapping(Node source, Node target) {
 
 		 if( (source.isClass() && target.isProp()) || (source.isProp() && target.isClass()) ) {

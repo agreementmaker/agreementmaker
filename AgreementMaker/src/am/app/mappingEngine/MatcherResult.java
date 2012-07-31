@@ -1,16 +1,11 @@
 package am.app.mappingEngine;
 
-import java.awt.Color;
-
-import am.app.Core;
 import am.app.ontology.Ontology;
 
 public class MatcherResult {
 	
-	private boolean visible;
 	private boolean modifiedbyUser;
 	private long executionTime;
-	private Color color;
 	private SimilarityMatrix classesMatrix;
 	private SimilarityMatrix propMatrix;
 	private Ontology sourceOntology;
@@ -24,12 +19,13 @@ public class MatcherResult {
 		this.task = task;
 	}
 	
+	/**
+	 * @deprecated Use {@link #MatcherResult(MatchingTask)} instead.
+	 */
 	@Deprecated
 	public MatcherResult(AbstractMatcher a) {	
-		visible=a.isShown();
 		modifiedbyUser=a.isModifiedByUser();
 		executionTime=a.getExecutionTime();
-		color=a.getColor();
 		classesMatrix=a.getClassesMatrix();
 		propMatrix=a.getPropertiesMatrix();
 	}
@@ -40,22 +36,6 @@ public class MatcherResult {
 
 
 	public long getExecutionTime() {return executionTime;}
-
-	@Deprecated
-	public Color getColor() {return color;}
-
-	@Deprecated
-	public void setColor(Color c) {
-		color=c;
-		MatchingTaskChangeEvent mce = new MatchingTaskChangeEvent(this, MatchingTaskChangeEvent.EventType.MATCHER_COLOR_CHANGED);
-		Core.getInstance().fireEvent(mce);
-	}
-
-	@Deprecated
-	public boolean isShown() {return visible;}
-	
-	@Deprecated
-	public void setShown(boolean b) {visible=b;}
 
 	public SimilarityMatrix getClassesMatrix() {return classesMatrix;}
 
@@ -71,5 +51,5 @@ public class MatcherResult {
 	public int getID() {
 		return id;
 	}
-    
+	
 }

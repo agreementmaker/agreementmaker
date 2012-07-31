@@ -374,11 +374,11 @@ public class ImportDialog extends JDialog implements ActionListener{
 						refParams.format = ReferenceAlignmentMatcher.REF2a;
 						break;
 					}
-					referenceAlignmentMatcher.setParam(refParams);
+					referenceAlignmentMatcher.setParameters(refParams);
 					referenceAlignmentMatcher.setSourceOntology(Core.getInstance().getSourceOntology()); // set the source ontology
 					referenceAlignmentMatcher.setTargetOntology(Core.getInstance().getTargetOntology()); // set the target ontology
 					
-					referenceAlignmentMatcher.setThreshold(referenceAlignmentMatcher.getDefaultThreshold());
+					referenceAlignmentMatcher.getParam().threshold = referenceAlignmentMatcher.getDefaultThreshold();
 					referenceAlignmentMatcher.setMaxSourceAlign(referenceAlignmentMatcher.getDefaultMaxSourceRelations());
 					referenceAlignmentMatcher.setMaxTargetAlign(referenceAlignmentMatcher.getDefaultMaxTargetRelations());
 					

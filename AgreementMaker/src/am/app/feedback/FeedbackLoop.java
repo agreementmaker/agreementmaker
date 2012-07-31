@@ -352,7 +352,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			}
 			progressDisplay.appendNewLineReportText("Running extrapolation matchers: ");
 			ExtrapolatingFS eFS = new ExtrapolatingFS();
-			eFS.setThreshold( param.highThreshold );
+			eFS.getParam().threshold = param.highThreshold;
 			eFS.setMaxSourceAlign( param.sourceNumMappings );
 			eFS.setMaxTargetAlign( param.targetNumMappings );
 			eFS.addInputMatcher(this);
@@ -452,8 +452,8 @@ public class FeedbackLoop extends AbstractMatcher  {
 		ExtrapolatingDSI eDSI = new ExtrapolatingDSI();
 		DescendantsSimilarityInheritanceParameters params = new DescendantsSimilarityInheritanceParameters();
 		params.MCP = 0.75;
-		eDSI.setParam(params);
-		eDSI.setThreshold(getThreshold());
+		eDSI.setParameters(params);
+		eDSI.getParam().threshold = getParam().threshold;
 		eDSI.setMaxSourceAlign(getMaxSourceAlign());
 		eDSI.setMaxTargetAlign(getMaxTargetAlign());
 		eDSI.addInputMatcher(this);
@@ -711,7 +711,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		//we just have to make it run here
 		setStage(executionStage.runningInitialMatchers);
 		AbstractMatcher im = param.initialMatcher;
-		im.setThreshold( param.initialMatchersThreshold );
+		im.getParam().threshold = ( param.initialMatchersThreshold );
 		progressDisplay.appendNewLineReportText("Running the initial automatic matcher: "+im.getName());
 		//parameters are set in the SelectionPanel.getParameters()
 		//im.setProgressDisplay(progressDisplay);
@@ -740,7 +740,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.fileName = "./OAEI09/benchmarks/301/refalign.rdf";
 			refParam.format = ReferenceAlignmentMatcher.OAEI;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
-			referenceAlignmentMatcher.setParam(refParam);
+			referenceAlignmentMatcher.setParameters(refParam);
 			referenceAlignmentMatcher.match();
 			
 			
@@ -752,7 +752,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.fileName = "./OAEI09/benchmarks/302/refalign.rdf";
 			refParam.format = ReferenceAlignmentMatcher.OAEI;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
-			referenceAlignmentMatcher.setParam(refParam);			
+			referenceAlignmentMatcher.setParameters(refParam);			
 				referenceAlignmentMatcher.match();
 		}
 		else if(conf.equals(AUTO_101_303)){
@@ -762,7 +762,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.fileName = "./OAEI09/benchmarks/303/refalign.rdf";
 			refParam.format = ReferenceAlignmentMatcher.OAEI;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
-			referenceAlignmentMatcher.setParam(refParam);
+			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();
 
 		}
@@ -773,7 +773,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.fileName = "./OAEI09/benchmarks/304/refalign.rdf";
 			refParam.format = ReferenceAlignmentMatcher.OAEI;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
-			referenceAlignmentMatcher.setParam(refParam);
+			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();	
 		}
 		else if(conf.equals(AUTO_animals)){
@@ -783,7 +783,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.fileName = "./I3CON2004/animals/animalsAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.OLD_OAEI;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
-			referenceAlignmentMatcher.setParam(refParam);
+			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();
 		}
 		else if(conf.equals(AUTO_basketball_soccer)){
@@ -793,7 +793,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.fileName = "./I3CON2004/basketball_soccer/basketball_soccer.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.OLD_OAEI;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
-			referenceAlignmentMatcher.setParam(refParam);
+			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();
 		}
 		else if(conf.equals(AUTO_comsci)){
@@ -803,7 +803,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.fileName = "./I3CON2004/comsci/csAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.OLD_OAEI;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
-			referenceAlignmentMatcher.setParam(refParam);
+			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();
 		}
 		else if(conf.equals(AUTO_hotel)){
@@ -813,7 +813,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.fileName = "./I3CON2004/hotel/hotelAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.OLD_OAEI;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
-			referenceAlignmentMatcher.setParam(refParam);
+			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();
 		}
 		else if(conf.equals(AUTO_network)){
@@ -823,7 +823,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.fileName = "./I3CON2004/network/networkAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.OLD_OAEI;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
-			referenceAlignmentMatcher.setParam(refParam);
+			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();
 		}
 		else if(conf.equals(AUTO_people_pets)){
@@ -833,7 +833,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.fileName = "./I3CON2004/people+pets/people+petsAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.OLD_OAEI;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
-			referenceAlignmentMatcher.setParam(refParam);
+			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();
 		}
 		else if(conf.equals(AUTO_russia)){
@@ -843,7 +843,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.fileName = "./I3CON2004/russia/russiaAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.OLD_OAEI;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
-			referenceAlignmentMatcher.setParam(refParam);
+			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();
 		}
 		else if(conf.equals(AUTO_weapons)){
@@ -853,7 +853,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.fileName = "./I3CON2004/Weapons/WeaponsAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.OLD_OAEI;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
-			referenceAlignmentMatcher.setParam(refParam);
+			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();
 		}
 		else if(conf.equals(AUTO_wine)){
@@ -863,7 +863,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.fileName = "./I3CON2004/Wine/WineAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.OLD_OAEI;
 			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
-			referenceAlignmentMatcher.setParam(refParam);
+			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();	
 		}
 		else{//MANUAL

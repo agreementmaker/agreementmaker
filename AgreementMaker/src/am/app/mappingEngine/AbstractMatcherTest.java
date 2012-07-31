@@ -257,14 +257,6 @@ public abstract class AbstractMatcherTest {
 	}
 
 	/**
-	 * Test method for {@link am.app.mappingEngine.AbstractMatcher#getThreshold()}.
-	 */
-	@Test
-	public final void testGetThreshold() {
-		assertTrue("Threshold has to be in the [0.0, 1.0] range", (testMatcher.getThreshold() >= 0) && (testMatcher.getThreshold() <= 1));
-	}
-
-	/**
 	 * Test method for {@link am.app.mappingEngine.AbstractMatcher#getMaxSourceAlign()}.
 	 */
 	@Test
@@ -507,7 +499,6 @@ public abstract class AbstractMatcherTest {
 	}
 	
 	private void loadThresholdAndCardinalities(){
-		testMatcher.setThreshold(inputThreshold);
 		testMatcher.setMaxSourceAlign(inputSourceCardAlign);
 		testMatcher.setMaxTargetAlign(inputTargetCardAlign);
 	}

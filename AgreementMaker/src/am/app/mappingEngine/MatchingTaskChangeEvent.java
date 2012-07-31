@@ -77,7 +77,7 @@ public class MatchingTaskChangeEvent extends EventObject {
 	}
 	
 	public EventType getEvent()      { return typeOfEvent; }
-	public int       getMatcherID() { return taskID; }
+	public int       getTaskID() { return taskID; }
 	public AbstractMatcher getMatcher() { return (AbstractMatcher) source; }
 	
 
