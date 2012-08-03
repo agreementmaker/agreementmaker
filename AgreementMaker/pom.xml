@@ -24,7 +24,7 @@
 				<directory>resources</directory>
 			</resource>
 		</resources>
-		<directory>classes</directory>
+		<directory>target</directory>
 	</build>
 
 	<dependencies>
