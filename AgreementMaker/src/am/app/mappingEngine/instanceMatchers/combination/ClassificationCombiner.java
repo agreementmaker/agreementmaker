@@ -2,6 +2,8 @@ package am.app.mappingEngine.instanceMatchers.combination;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.Attribute;
@@ -21,6 +23,9 @@ import am.app.ontology.profiling.ontologymetrics.OntologyMetrics;
  * 
  */
 public class ClassificationCombiner extends CombinationFunction {
+	
+	private static final Logger sLog = Logger.getLogger(ClassificationCombiner.class);
+	
 	Classifier classifier;
 	Instances trainingSet;
 	FastVector attributes; // save the attributes between calls of combine()
@@ -59,7 +64,7 @@ public class ClassificationCombiner extends CombinationFunction {
 //			//System.out.println("Model predicts: " + predictedClass);
 //			return 1 - predictedClass;
 //		} catch (Exception e) {
-//			e.printStackTrace();
+//			sLog.error("", e);
 //			return 0;
 //		}
 		
@@ -70,7 +75,7 @@ public class ClassificationCombiner extends CombinationFunction {
 			//System.out.println(Arrays.toString(prediction));
 			return prediction[0];
 		} catch (Exception e) {
-			//e.printStackTrace();
+			sLog.error("", e);;
 		}
 		
 		return 0.0;
@@ -87,8 +92,7 @@ public class ClassificationCombiner extends CombinationFunction {
 			Classifier cls = (Classifier) weka.core.SerializationHelper.read(fileName);
 			return cls;
 		} catch (Exception e) {
-			System.out.println("Failed To load the classifier!");
-			e.printStackTrace();
+			sLog.error("Failed To load the classifier!", e);
 			return null;
 		}
 	}
@@ -101,8 +105,7 @@ public class ClassificationCombiner extends CombinationFunction {
 		try {
 			weka.core.SerializationHelper.write(fileName, classifier);
 		} catch (Exception e) {
-			System.out.println("Failed To store the classifier!");
-			e.printStackTrace();
+			sLog.error("Failed To store the classifier!", e);
 		}
 		
 	}
@@ -123,8 +126,7 @@ public class ClassificationCombiner extends CombinationFunction {
 			//System.out.println(isTestingSet.instance(0).toString());
 			
 		} catch (Exception e1) {
-			System.out.println("Failed To classified the ontology!");
-			e1.printStackTrace();
+			sLog.error("Failed to classify the ontology!", e1);
 		}
 		
 		return isTestingSet.firstInstance().stringValue(isTestingSet.classIndex());

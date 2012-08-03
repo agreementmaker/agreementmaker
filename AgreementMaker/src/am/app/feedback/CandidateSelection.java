@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import am.app.Core;
 import am.app.feedback.measures.FamilialSimilarity;
 import am.app.feedback.measures.InformationGain;
@@ -19,6 +21,7 @@ import am.userInterface.MatchingProgressDisplay;
 
 public class CandidateSelection {
 
+	private static final Logger sLog = Logger.getLogger(CandidateSelection.class);
 	
 	// relevance measures
 	public final static String ALLMEASURES = "All measures";
@@ -286,8 +289,7 @@ public class CandidateSelection {
 		try {
 			measureClass = Class.forName( name.getMeasureClass() );
 		} catch (ClassNotFoundException e) {
-			System.out.println("DEVELOPER: You have entered a wrong class name in the MeasuresRegistry");
-			e.printStackTrace();
+			sLog.error("DEVELOPER: You have entered a wrong class name in the MeasuresRegistry", e);
 			return null;
 		}
 		
@@ -295,12 +297,10 @@ public class CandidateSelection {
 		try {
 			a = (RelevanceMeasure) measureClass.newInstance();
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			sLog.error(e, e);
 			return null;
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			sLog.error(e, e);
 			return null;
 		}
 		

@@ -12,6 +12,8 @@ import java.sql.SQLException;
 
 import javax.swing.JFileChooser;
 
+import org.apache.log4j.Logger;
+
 import am.app.geo.oneStepLoadProcess.OneStepConverter;
 
 /**
@@ -20,6 +22,8 @@ import am.app.geo.oneStepLoadProcess.OneStepConverter;
  */
 public class OneStepBufferedConverter extends OneStepConverter {
 
+	public static final Logger sLog = Logger.getLogger(OneStepBufferedConverter.class);
+	
 	public static void main(String args[])
 	{
 		converter = new OneStepBufferedConverter();
@@ -56,10 +60,9 @@ public class OneStepBufferedConverter extends OneStepConverter {
 		    //closing the buffered reader (same reason for scanner)
 		    bufReader.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			sLog.error("", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			sLog.error("", e);
 		}
 	}
 
@@ -95,7 +98,7 @@ public class OneStepBufferedConverter extends OneStepConverter {
 			statement = connect.createStatement();
 			statement.executeUpdate(sqlInsertScript);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			sLog.error("", e);
 		}
 	}
 

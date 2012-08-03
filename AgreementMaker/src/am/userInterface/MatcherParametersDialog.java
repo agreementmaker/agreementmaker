@@ -628,10 +628,6 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		//AbstractMatcher matcher = MatcherFactory.getMatcherInstance(MatchersRegistry.IISM, 1);
 		//new MatcherParametersDialog(matcher);
 		
-		// initialize the OSGi framework.
-		AMHost host = new AMHost();
-		Core.getInstance().setFramework(host);
-		
 		Core.setUI(new UI());
 		
 		Ontology sourceOnt = OntoTreeBuilder.loadOWLOntology("ontologies/kbase.owl");

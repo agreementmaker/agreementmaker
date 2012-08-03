@@ -1,5 +1,6 @@
 package am.app.osgi;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,16 +9,19 @@ import java.util.Map;
 import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.util.FelixConstants;
 import org.apache.felix.main.AutoProcessor;
+import org.apache.log4j.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 public class AMHost {
+	private static Logger sLog = Logger.getLogger(AMHost.class);
+	
 	private AMActivator m_activator = null;
     private Felix m_felix = null;
     private OSGiRegistry registry;
     
-    public AMHost()
+    public AMHost(File directory)
     {
         // Create a configuration property map.
         Map<String, Object> configMap = new HashMap<String, Object>();
@@ -69,7 +73,14 @@ public class AMHost {
         //File bundles[] = new File("plugins/").listFiles();
 
         configMap.put(AutoProcessor.AUTO_DEPLOY_ACTION_PROPERY, AutoProcessor.AUTO_DEPLOY_INSTALL_VALUE + "," + AutoProcessor.AUTO_DEPLOY_START_VALUE);
-        configMap.put(AutoProcessor.AUTO_DEPLOY_DIR_PROPERY, "plugins/");
+        
+        if( directory != null ) {
+        	configMap.put(AutoProcessor.AUTO_DEPLOY_DIR_PROPERY, directory.getAbsolutePath() + File.separator + "plugins/");
+        }
+        else {
+        	configMap.put(AutoProcessor.AUTO_DEPLOY_DIR_PROPERY, "plugins/");
+        }
+        
         try
         {
             // Now create an instance of the framework with
@@ -88,8 +99,7 @@ public class AMHost {
         }
         catch (Exception ex)
         {
-            System.err.println("Could not create framework: " + ex);
-            ex.printStackTrace();
+            sLog.error("Could not create OSGi framework.", ex);
         }
     }
 
@@ -107,7 +117,9 @@ public class AMHost {
         try {
 			m_felix.stop();
 			m_felix.waitForStop(0);
-		} catch (Exception e) {e.printStackTrace();}
+		} catch (Exception e) {
+			sLog.error("Failure when shutting down OSGi.", e);
+		}
         
     }
     

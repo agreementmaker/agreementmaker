@@ -9,6 +9,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.apache.log4j.Logger;
+
 import am.app.geo.IFileToDatabaseConverter;
 
 /**
@@ -17,6 +19,8 @@ import am.app.geo.IFileToDatabaseConverter;
  */
 public abstract class OneStepConverter implements IFileToDatabaseConverter {
 
+	private static final Logger sLog = Logger.getLogger(OneStepConverter.class);
+	
 	// information needed by the database
 	protected Connection connect = null;
 	protected Statement statement = null;
@@ -66,11 +70,9 @@ public abstract class OneStepConverter implements IFileToDatabaseConverter {
 			//schema creation: TODO
 			//table creation: TODO
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			sLog.error("", e);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			sLog.error("", e);
 		}
 	}
 

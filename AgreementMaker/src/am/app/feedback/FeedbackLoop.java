@@ -3,6 +3,8 @@ package am.app.feedback;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 import am.Utility;
 import am.app.feedback.matchers.ExtrapolatingDSI;
 import am.app.feedback.matchers.ExtrapolatingFS;
@@ -59,6 +61,8 @@ import am.userInterface.MatchingProgressDisplay;
 public class FeedbackLoop extends AbstractMatcher  {
 	
 	private static final long serialVersionUID = -5492225632641036980L;
+	
+	private static final Logger sLog = Logger.getLogger(FeedbackLoop.class);
 	
 	//FeedBackLoop private variables used in the iterations
 	private CandidateSelection candidateSelection;
@@ -510,7 +514,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 				Thread.sleep(500);  // sleep for .5 seconds at a time 
 			} catch (InterruptedException e) {
 				// our sleep was interrupted, so just continue
-				//e.printStackTrace();
+				//sLog.error(e, e);
 				break;
 			} 
 		}

@@ -11,6 +11,8 @@ import java.util.Queue;
 import javax.ws.rs.Path;
 import javax.xml.ws.Endpoint;
 
+import org.apache.log4j.Logger;
+
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
@@ -25,6 +27,8 @@ import am.evaluation.disagreement.variance.VarianceDisagreementComparator;
 
 @Path("/collaborationServer")
 public class CollaborationServerImpl implements CollaborationServer {
+	
+	private static final Logger sLog = Logger.getLogger(CollaborationServerImpl.class);
 
 	List<String> users = new ArrayList<String>();
 	List<CollaborationOntologyPair> ontologyPairs = new ArrayList<CollaborationOntologyPair>();
@@ -66,7 +70,7 @@ public class CollaborationServerImpl implements CollaborationServer {
 		try {
 			oaei2011.match();
 		} catch( Exception e ) {
-			e.printStackTrace();
+			sLog.error(e, e);
 		}
 		
 		matchers.add(oaei2011);

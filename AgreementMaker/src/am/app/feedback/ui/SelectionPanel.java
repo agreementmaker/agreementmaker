@@ -24,6 +24,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 import javax.swing.text.Document;
 
+import org.apache.log4j.Logger;
+
 import am.Utility;
 import am.app.Core;
 import am.app.feedback.CandidateConcept;
@@ -44,10 +46,10 @@ import am.userInterface.UI;
 
 public class SelectionPanel extends JPanel implements MatchingProgressDisplay, ActionListener {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -967696425990716259L;
+	
+	private static final Logger sLog = Logger.getLogger(SelectionPanel.class);
+	
 	private FeedbackLoop ufl = null; // pointer to the user feedback loop
 	
 	final static String UNLIMITED = "Unlimited";
@@ -202,7 +204,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 			 }
 		}
 		catch(Exception ex) {
-			ex.printStackTrace();
+			sLog.error("", ex);
 			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR, null);
 		}
 	}

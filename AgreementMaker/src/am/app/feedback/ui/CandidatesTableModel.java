@@ -5,12 +5,16 @@ import java.util.ArrayList;
 import javax.swing.JRadioButton;
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.log4j.Logger;
+
 import am.Utility;
 
 public class CandidatesTableModel extends AbstractTableModel {
 		
 
 	private static final long serialVersionUID = 1L;
+	
+	private static final Logger sLog = Logger.getLogger(CandidatesTableModel.class);
 	
 	public final static int C1_RADIO = 0;
 	public final static int C2_SOURCE = C1_RADIO+1;
@@ -83,8 +87,7 @@ public class CandidatesTableModel extends AbstractTableModel {
                 	else return null;
             	}
             	catch(Exception e) {
-            		e.printStackTrace();
-            		System.out.println("There is a development error in the table data management, the Exception get catched to keep the system running, check the error");
+            		sLog.error("There is a development error in the table data management, the Exception was caught to keep the system running, check the error", e);
             		return null;
             	}
         	}

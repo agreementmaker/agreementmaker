@@ -29,7 +29,7 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 
 	private static final long serialVersionUID = -8278698313888419789L;
 
-	private Logger log = Logger.getLogger(InstanceMatcherFedeNew.class);
+	private static final Logger sLog = Logger.getLogger(InstanceMatcherFedeNew.class);
 
 	int ambiguous;
 	int noResult;
@@ -105,7 +105,7 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 		else{
 			if( !((InstanceMatcherFedeNewParameters)param).disambiguate ) return null; // don't disambiguate
 			
-			log.debug("Case of ambiguity:" + sourceInstance.getUri() + " " + sourceLabel + " " + targetCandidates.size());
+			sLog.debug("Case of ambiguity:" + sourceInstance.getUri() + " " + sourceLabel + " " + targetCandidates.size());
 			
 			Instance candidate;
 			double score;
@@ -134,7 +134,7 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 				double candidateScore = scoredCandidates.get(0).getScore();
 				MatchingPair pair = new MatchingPair(sourceInstance.getUri(), scoredCandidates.get(0).getInstance().getUri(), candidateScore, MappingRelation.EQUIVALENCE);
 				//debugMapping(pair);
-				log.debug("Generated mapping: " + pair.sourceURI + " " + pair.targetURI);
+				sLog.debug("Generated mapping: " + pair.sourceURI + " " + pair.targetURI);
 				//System.out.println("About to match: " + candidateScore);
 				if (candidateScore < param.threshold) return null;
 				return pair;
@@ -161,7 +161,7 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 		else freebaseScore = -1;
 		if(freebaseScore != -1) freebaseScore /= 100;
 		
-		log.debug("candidate: " + candidate.getUri() + " " + candidate.getSingleValuedProperty("label"));
+		sLog.debug("candidate: " + candidate.getUri() + " " + candidate.getSingleValuedProperty("label"));
 		
 		if(p.useSTIM)
 			stmtSim = stim.instanceSimilarity(sourceInstance, candidate);
@@ -173,7 +173,7 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 		if(p.useTIM)
 			keyScore = tim.instanceSimilarity(sourceInstance, candidate);
 		
-		log.debug("lab:" + labelSim + " frb:" + freebaseScore + " key:" + keyScore + " stmtSim:" + stmtSim);
+		sLog.debug("lab:" + labelSim + " frb:" + freebaseScore + " key:" + keyScore + " stmtSim:" + stmtSim);
 				
 		double score = labelSim/2 + stmtSim/2 + 1*keyScore + freebaseScore/2;
 		if(stmtSim == -1){
@@ -182,7 +182,7 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 		
 		//double score = labelSim;
 				
-		log.debug(score);
+		sLog.debug(score);
 		
 		//double score = (labelSim + stmtSim)/1.5 + 1*keyScore;
 		
@@ -217,9 +217,9 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 			fos.write(output.getBytes());
 			fos.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			sLog.error("", e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			sLog.error("", e);
 		}
 		System.out.println("Done");
 		
@@ -243,16 +243,16 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 			else{
 				List<MatchingPair> pairs = pairsByTarget.get(mp.targetURI);
 				pairs.add(mp);
-				log.info("Duplicated mapping: " + mp.targetURI);
+				sLog.info("Duplicated mapping: " + mp.targetURI);
 				count++;
 			}
 		}
-		log.info("We have " + count + " duplicated mappings");
+		sLog.info("We have " + count + " duplicated mappings");
 		
 		for(String key: pairsByTarget.keySet()){
 			List<MatchingPair> pairs = pairsByTarget.get(key);
 			if(pairs.size() > 1){
-				log.info(pairs);
+				sLog.info(pairs);
 				for (int i = 0; i < pairs.size(); i++) {
 					instanceAlignmentSet.remove(pairs.get(i));
 				}
@@ -290,7 +290,7 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 	
 	@Override
 	public String processLabelBeforeCandidatesGeneration(String label, EntityType type) {
-		log.debug(label + "\t" + type);
+		sLog.debug(label + "\t" + type);
 		
 		if(type == null) return super.processLabelBeforeCandidatesGeneration(label, type);
 		

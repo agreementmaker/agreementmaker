@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import am.AMException;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.InstanceMatchingReport;
@@ -45,6 +47,8 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 
 	private static final long serialVersionUID = -9168709062686600220L;
 
+	private static final Logger sLog = Logger.getLogger(AbstractInstanceMatcher.class);
+	
 	/** True if the matcher will match instances, false otherwise. */
 	protected boolean alignInstances;
 
@@ -110,7 +114,7 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 				if(instances != null && instances.isIterable())    		
 					stepsTotal += sourceOntology.getInstances().size();
 			} catch (Exception e) {
-				e.printStackTrace();
+				sLog.error("", e);
 			}
 		}
 	}

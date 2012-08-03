@@ -1,10 +1,12 @@
 package am.app;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.osgi.framework.BundleContext;
 
 import am.AMException;
@@ -41,14 +43,21 @@ import com.hp.hpl.jena.rdf.model.Model;
  */
 public class Core {
 	
-	// Program wide DEBUG flag.
-	public static final boolean DEBUG = false;
-	public static final boolean DEBUG_STACK_TRACE_MSG = false;
-	public static final boolean DEBUG_NORMALIZER = false;  // debug flag for the am.app.mappingEngine.StringUtil.Normalizer class
-	public static final boolean DEBUG_ONTOLOGYLEXICONSYNSET = false;
-	public static boolean DEBUG_PSM = true;
-	public static boolean DEBUG_VMM = false;
-	public static final boolean DEBUG_FCM = false;
+	private static final Logger sLog = Logger.getLogger(Core.class);
+	
+	// Program wide DEBUG flag. -- Deprecated, these flags will be removed and replaced with log4j!!! -- Cosmin Aug. 3, 2012.
+	@Deprecated public static final boolean DEBUG = false;
+	@Deprecated public static final boolean DEBUG_STACK_TRACE_MSG = false;
+	@Deprecated public static final boolean DEBUG_NORMALIZER = false;  // debug flag for the am.app.mappingEngine.StringUtil.Normalizer class
+	@Deprecated public static final boolean DEBUG_ONTOLOGYLEXICONSYNSET = false;
+	@Deprecated public static boolean DEBUG_PSM = true;
+	@Deprecated public static boolean DEBUG_VMM = false;
+	@Deprecated public static final boolean DEBUG_FCM = false;
+	
+	/**
+	 * The root directory for all of our runtime data files.
+	 */
+	private String amRoot;
 	
 	/**List of matchers instances run by the user
 	 * Data of the tableModel of the matcherTable is taken from this structure
@@ -112,6 +121,16 @@ public class Core {
 	 * It's private because it's not possible to create new instances of this class
 	 */
 	private Core() {
+		
+		amRoot = System.getenv("AM_ROOT");
+		if( amRoot == null ) {
+			sLog.warn("The environment variable AM_ROOT is not set.  Using working directory as our root.");
+			amRoot = System.getProperty("user.dir", (new File(".")).getAbsolutePath());
+		}
+		else {
+			sLog.info("AgreementMaker root directory: " + amRoot);
+		}
+		
 		//System.setProperty("log4j.debug","strue" );  // Use this to see what log4j gets configured to.
 	
 		loadedOntologies = new ArrayList<Ontology>();  // initialize the arraylist of ontologies.
@@ -123,7 +142,17 @@ public class Core {
 		addOntologyChangeListener(lexstore);
 		
 		prefs = new AppPreferences();
+
+		AMHost host = new AMHost(new File(amRoot));
+		setFramework(host);
 	}
+	
+	/**
+	 * @return The root directory for AgreementMaker data files. All code should
+	 *         reference this root when accessing configuration files, training
+	 *         models, etc...
+	 */
+	public String getRoot() { return amRoot; }
 	
 	// deprecated by multiple-ontology interface (TODO: Finish implementing multiple-ontology interface. - Cosmin 10/17/2010)
 	public Ontology getSourceOntology() {  return sourceOntology; }

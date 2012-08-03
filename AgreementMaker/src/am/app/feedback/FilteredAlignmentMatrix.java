@@ -1,5 +1,7 @@
 package am.app.feedback;
 
+import org.apache.log4j.Logger;
+
 import am.AMException;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
@@ -11,10 +13,11 @@ import am.app.ontology.Ontology;
 
 // TODO: This FilteredAlignmentMatrix only works for 1-1 alignments.  To extend this, there requires some work.
 public class FilteredAlignmentMatrix extends ArraySimilarityMatrix {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = -301537917820651062L;
+	
+	private static final Logger sLog = Logger.getLogger(FilteredAlignmentMatrix.class);
+	
 	// TODO: Add intializeVariables() method for the constructors to use (added to AlignmentMatrix)
 	
 
@@ -242,7 +245,7 @@ public class FilteredAlignmentMatrix extends ArraySimilarityMatrix {
 			FilteredAlignmentMatrix matrix = new FilteredAlignmentMatrix(this);
 			return matrix;
 		} catch( AMException e ) {
-			e.printStackTrace();
+			sLog.error("", e);
 			return null;
 		}
 	}

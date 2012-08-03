@@ -26,6 +26,9 @@ import java.util.Arrays;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+
+import org.apache.log4j.Logger;
+
 import am.app.Core;
 import am.app.osgi.AMHost;
 import am.batchMode.simpleBatchMode.SimpleBatchModeRunner;
@@ -42,6 +45,8 @@ import am.userInterface.UI;
 public class Main
 {
 	
+	private static final Logger sLog = Logger.getLogger(Main.class);
+	
 	/**
 	 * This is the application entry point.
 	 * It instantiates the UI.
@@ -50,12 +55,6 @@ public class Main
 	 */
 	public static void main(String args[])
 	{
-		
-		//BasicConfigurator.configure();
-		
-		// initialize the OSGi framework.
-		AMHost host = new AMHost();
-		Core.getInstance().setFramework(host);
 		
 		if(args.length == 0 ){
 			System.setProperty("apple.laf.useScreenMenuBar", "true");

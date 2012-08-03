@@ -44,7 +44,7 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 
 	private boolean generateReport = true;
 
-	Logger log = Logger.getLogger(GenericInstanceMatcher.class);
+	private static final Logger sLog = Logger.getLogger(GenericInstanceMatcher.class);
 
 	private String corefFolder = "CoreferenceReports";
 
@@ -68,7 +68,7 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 		}
 
 		if(!firstPassDone){
-			log.info("First pass, requiresTwoPasses=" + requiresTwoPasses());
+			sLog.info("First pass, requiresTwoPasses=" + requiresTwoPasses());
 		}
 	}
 
@@ -86,7 +86,7 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 				FileOutputStream fos = new FileOutputStream(corefFolder + File.separator + "sims-" + dateFormat.format(date) + ".tab");
 				fos.write(output.getBytes());
 			} catch (Exception e) {
-				e.printStackTrace();
+				sLog.error("", e);
 			}
 		}
 
@@ -211,7 +211,7 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 					}
 				}
 
-				log.debug(Arrays.toString(weights));
+				sLog.debug(Arrays.toString(weights));
 
 
 				//all the weights have been computed, we can add the LWC combination 
@@ -220,7 +220,7 @@ public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesK
 
 				double sim = computeLinearWeightedCombination(similarities, weights);
 
-				log.debug(sim);
+				sLog.debug(sim);
 
 				if(useLWC)
 					similarities.add(sim);

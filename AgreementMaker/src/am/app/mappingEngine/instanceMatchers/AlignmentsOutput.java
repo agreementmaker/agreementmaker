@@ -6,11 +6,14 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.parsing.AlignmentOutput;
 
 public class AlignmentsOutput {
+	
+	private static final Logger sLog = Logger.getLogger(AlignmentsOutput.class);
 	
 	public static String alignmentsToOutput(List<MatchingPair> mappings){
 		AlignmentOutput ao = new AlignmentOutput(null);
@@ -33,7 +36,7 @@ public class AlignmentsOutput {
 	}
 	
 	public static void writeMappingsOnDisk(String file, List<MatchingPair> pairs){
-		System.out.println("Writing on file...");
+		sLog.info("Writing to file: " + file);
 		String output = alignmentsToOutput(pairs);
 		FileOutputStream fos;
 		
@@ -42,11 +45,11 @@ public class AlignmentsOutput {
 			fos.write(output.getBytes());
 			fos.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			sLog.error("", e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			sLog.error("", e);
 		}
-		System.out.println("Done");
+		sLog.info("Done");
 	}
 
 }

@@ -1,5 +1,7 @@
 package am.app.mappingEngine.StringUtil;
 
+import org.apache.log4j.Logger;
+
 import am.app.similarity.AMSubEditSim;
 import am.app.similarity.AMSubstringSim;
 import am.app.similarity.ISubSim;
@@ -28,6 +30,8 @@ public enum StringMetrics {
 	AMSUB_AND_EDIT("AMsubstring + editDistance", AMSubEditSim.class), //0.6*amsub + 0.4*editdistance
 	AMSUB_AND_EDIT_WITH_WORDNET("AMsubstring + editDistance with WordNet Synonyms", AMSubEditSim.class); 
 
+	private static final Logger sLog = Logger.getLogger(StringMetrics.class);
+	
 	private String name;
 	private Class<? extends StringSimilarityMeasure> clazz;
 
@@ -44,9 +48,9 @@ public enum StringMetrics {
 		try {
 			return clazz.newInstance();
 		} catch (InstantiationException e) {
-			e.printStackTrace();
+			sLog.error("", e);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			sLog.error("", e);
 		}
 		return null;
 	}

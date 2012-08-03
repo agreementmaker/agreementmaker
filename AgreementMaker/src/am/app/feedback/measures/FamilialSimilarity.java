@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import am.app.Core;
 import am.app.feedback.CandidateConcept;
 import am.app.feedback.FilteredAlignmentMatrix;
@@ -16,7 +18,7 @@ import am.app.ontology.Ontology;
 
 public class FamilialSimilarity extends RelevanceMeasure {
 
-	
+	private static final Logger sLog = Logger.getLogger(FamilialSimilarity.class);
 	
 	int whichOntology;
 	alignType whichType;
@@ -46,7 +48,7 @@ public class FamilialSimilarity extends RelevanceMeasure {
 		try {
 			visitNode( sourceOntology.getClassesRoot() , fbl.getClassesMatrix(), true);
 		} catch (Exception e) {
-			e.printStackTrace();
+			sLog.error(e, e);
 		}
 		
 		// source properties
@@ -54,7 +56,7 @@ public class FamilialSimilarity extends RelevanceMeasure {
 		try {
 			visitNode( sourceOntology.getPropertiesRoot() , fbl.getPropertiesMatrix(), true);
 		} catch (Exception e) {
-			e.printStackTrace();
+			sLog.error(e, e);
 		}
 		
 		Ontology targetOntology = Core.getInstance().getTargetOntology();
@@ -65,7 +67,7 @@ public class FamilialSimilarity extends RelevanceMeasure {
 		try {
 			visitNode( targetOntology.getClassesRoot(),fbl.getClassesMatrix(), false );
 		} catch (Exception e) {
-			e.printStackTrace();
+			sLog.error(e, e);
 		}
 		
 		// target properties
@@ -73,7 +75,7 @@ public class FamilialSimilarity extends RelevanceMeasure {
 		try {
 			visitNode( targetOntology.getPropertiesRoot(), fbl.getPropertiesMatrix(), false );
 		} catch (Exception e) {
-			e.printStackTrace();
+			sLog.error(e, e);
 		}
 		
 	}

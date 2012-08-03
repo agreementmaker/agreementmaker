@@ -11,6 +11,8 @@ import java.util.Scanner;
 
 import javax.swing.JFileChooser;
 
+import org.apache.log4j.Logger;
+
 import am.app.geo.oneStepLoadProcess.OneStepConverter;
 
 /**
@@ -19,6 +21,7 @@ import am.app.geo.oneStepLoadProcess.OneStepConverter;
  */
 public class OneStepScannerConverter extends OneStepConverter {
 
+	private static final Logger sLog = Logger.getLogger(OneStepScannerConverter.class);
 	
 	public static void main(String args[])
 	{
@@ -56,7 +59,7 @@ public class OneStepScannerConverter extends OneStepConverter {
 		    //passed to the Scanner constructor implements Closeable (which it does in this case).
 		    scanner.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			sLog.error("", e);
 		}
 	}
 
@@ -99,7 +102,7 @@ public class OneStepScannerConverter extends OneStepConverter {
 			  statement = connect.createStatement();
 			  statement.executeUpdate(sqlInsertScript);
 		  } catch (SQLException e) {
-			  e.printStackTrace();
+			  sLog.error("", e);
 		  }
 
 		  //no need to call scanner.close(), since the source is a String

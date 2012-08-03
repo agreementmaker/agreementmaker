@@ -25,6 +25,7 @@ public class CollaborationServerExperiment extends JFrame implements ActionListe
 
 	private static final long serialVersionUID = 7271738846789890792L;
 
+	private static final Logger sLog = Logger.getLogger(CollaborationServerExperiment.class);
 
 	private JButton btnCreateServer, btnCandidateSelection, btnRunUsersExperiment;
 	private CollaborationServer cs;
@@ -114,7 +115,7 @@ public class CollaborationServerExperiment extends JFrame implements ActionListe
 				bwr.close();
 				
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				sLog.error("", ex);
 			}
 			
 		}
@@ -131,10 +132,5 @@ public class CollaborationServerExperiment extends JFrame implements ActionListe
 		exp.setVisible(true);
 	}
 
-
-
-
-	
-	
 	
 }
