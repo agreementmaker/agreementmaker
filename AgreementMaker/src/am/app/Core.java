@@ -122,15 +122,6 @@ public class Core {
 	 */
 	private Core() {
 		
-		amRoot = System.getenv("AM_ROOT");
-		if( amRoot == null ) {
-			sLog.warn("The environment variable AM_ROOT is not set.  Using working directory as our root.");
-			amRoot = System.getProperty("user.dir", (new File(".")).getAbsolutePath());
-		}
-		else {
-			sLog.info("AgreementMaker root directory: " + amRoot);
-		}
-		
 		//System.setProperty("log4j.debug","strue" );  // Use this to see what log4j gets configured to.
 	
 		loadedOntologies = new ArrayList<Ontology>();  // initialize the arraylist of ontologies.
@@ -143,8 +134,6 @@ public class Core {
 		
 		prefs = new AppPreferences();
 
-		AMHost host = new AMHost(new File(amRoot));
-		setFramework(host);
 	}
 	
 	/**

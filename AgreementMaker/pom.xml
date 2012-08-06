@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.uic.advis.am</groupId>
 	<artifactId>AgreementMaker</artifactId>
-	<version>0.2.4</version>
+	<version>0.2.5-SNAPSHOT</version>
 
 	<repositories>
 		<repository>
@@ -25,6 +25,22 @@
 			</resource>
 		</resources>
 		<directory>target</directory>
+
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Export-Package>am.app.mappingEngine</Export-Package>
+						<Private-Package>am.*</Private-Package>
+						<Bundle-Activator>am.app.osgi.AMActivator</Bundle-Activator>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 
 	<dependencies>

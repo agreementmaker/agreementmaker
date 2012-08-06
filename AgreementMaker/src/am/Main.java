@@ -45,7 +45,7 @@ import am.userInterface.UI;
 public class Main
 {
 	
-	private static final Logger sLog = Logger.getLogger(Main.class);
+	private final Logger log = Logger.getLogger(Main.class);
 	
 	/**
 	 * This is the application entry point.
@@ -55,19 +55,36 @@ public class Main
 	 */
 	public static void main(String args[])
 	{
+
+		final Logger log = Logger.getLogger(Main.class);
 		
-		if(args.length == 0 ){
-			System.setProperty("apple.laf.useScreenMenuBar", "true");
-			System.setProperty("apple.awt.brushMetalLook", "true");
-			
-			Thread mainUI = new Thread("AMStart") {
-					public void run() {
-						Core.setUI( new UI() );
-					} 
-			};
-			
-			mainUI.start();
+		String amRoot = System.getenv("AM_ROOT");
+
+		if( amRoot == null ) {
+			log.warn("The environment variable AM_ROOT is not set.  Using working directory as our root.");
+			amRoot = System.getProperty("user.dir", (new File(".")).getAbsolutePath());
 		}
+		else {
+			log.info("AgreementMaker root directory: " + amRoot);
+		}
+
+		
+		System.setProperty("apple.laf.useScreenMenuBar", "true");
+		System.setProperty("apple.awt.brushMetalLook", "true");
+		
+		Thread mainUI = new Thread("AMStart") {
+				public void run() {
+					Core.setUI( new UI() );
+					
+					// OSGi
+					AMHost host = new AMHost(new File(Core.getInstance().getRoot()));
+					Core.getInstance().setFramework(host);
+				} 
+		};
+		
+		mainUI.start();
+		
+/*	}
 		else{
 			
 			// batch mode here, let's parse the command line arguments
@@ -116,7 +133,7 @@ public class Main
 			}
 			
 			
-			
+*/			
 			// TODO: Reuse the old code for batch mode? -- Cosmin.
 /*			String track = args[0];
 			String subTrack = "";
@@ -124,7 +141,7 @@ public class Main
 				subTrack = args[1];
 			}
 			TrackDispatcher.dispatchTrack(track, subTrack);*/
-		}
+		
 	}
 	
 	/**
