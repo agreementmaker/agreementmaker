@@ -235,11 +235,12 @@
 			<version>1.0.0-build001</version>
 		</dependency>
 
-		<dependency>
+		<!-- WARNING!!!! The UMLS dependency BREAKS Gate!!!!! -->
+<!--		<dependency>
 			<groupId>umls-kss-api</groupId>
 			<artifactId>umls-kss-api</artifactId>
 			<version>5.0</version>
-		</dependency>
+		</dependency-->
 
 		<dependency>
 			<groupId>javaplot</groupId>

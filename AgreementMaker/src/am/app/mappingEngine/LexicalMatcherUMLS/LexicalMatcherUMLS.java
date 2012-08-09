@@ -1,39 +1,17 @@
 package am.app.mappingEngine.LexicalMatcherUMLS;
 
-import gov.nih.nlm.kss.api.KSSRetriever;
-import gov.nih.nlm.kss.api.KSSRetrieverV5_0;
-import gov.nih.nlm.kss.models.meta.concept.ConceptId;
-import gov.nih.nlm.kss.models.meta.concept.ConceptIdVector;
-import gov.nih.nlm.kss.models.meta.concept.ConceptVector;
-import gov.nih.nlm.kss.util.DatabaseException;
-import gov.nih.nlm.kss.util.XMLException;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Vector;
-
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.Mapping.MappingRelation;
-import am.app.mappingEngine.SimilarityMatrix;
-import am.app.ontology.Node;
 
+/**
+ * FIXME: The UMLS Library breaks GATE.  This must be fixed before we uncomment this class.
+ * 
+ * @author cosmin
+ *
+ */
 
 public class LexicalMatcherUMLS extends AbstractMatcher{
 
-	private static final long serialVersionUID = -592216894091578508L;
+/*	private static final long serialVersionUID = -592216894091578508L;
 	
 	private KSSRetrieverV5_0 retriever = null;
     private static String hostName = "//umlsks.nlm.nih.gov/KSSRetriever";
@@ -354,7 +332,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 							return new Mapping( source, target, 0.99d, MappingRelation.EQUIVALENCE);
 						}
 						
-						/*
+						
 						BaseSimilarityMatcher bsm = new BaseSimilarityMatcher();
 						bsm.setThreshold(threshold);
 				    	bsm.setMaxSourceAlign(maxSourceAlign);
@@ -368,7 +346,7 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 						
 						if(alnmt.getSimilarity() >= 0.8)
 							return alnmt;
-						*/
+						
 					}
 				}
 				
@@ -523,19 +501,19 @@ public class LexicalMatcherUMLS extends AbstractMatcher{
 	// -- Removes identifier prefix
 	private String treatString(String label) {
 		//Remove identifier 
-		/*
+		
 		if(label.contains("NCI_"))
 			label = label.replaceFirst("NCI_", "");
 		else if(label.contains("MA_"))
 			label = label.replaceFirst("MA_", "");
-		*/
+		
 		label = label.replace("_", " ");
 		if(label.contains(" s "))
 			label = label.replace(" s ", "'s ");
 		return label;
 	}
 	
-	/*
+	
 	//
 	private void writeConceptToFile(){
 		try {

@@ -11,7 +11,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -200,7 +199,8 @@ public class XmlTreeBuilder extends TreeBuilder
 	{
 		try
 		{
-			NodeList nodeList = XPathAPI.selectNodeList(node, "*");
+			// FIXME: XPathAPI came from the UMLS Library, but that conflicted with GATE.
+			NodeList nodeList = null; //XPathAPI.selectNodeList(node, "*");
 			if(nodeList != null)
 			{
 				return nodeList;
