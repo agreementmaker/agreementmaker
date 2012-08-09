@@ -45,8 +45,6 @@ import am.userInterface.UI;
 public class Main
 {
 	
-	private final Logger log = Logger.getLogger(Main.class);
-	
 	/**
 	 * This is the application entry point.
 	 * It instantiates the UI.
