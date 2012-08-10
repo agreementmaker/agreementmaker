@@ -127,8 +127,23 @@ public class Core {
 		amRoot = System.getenv("AM_ROOT");
 
 		if( amRoot == null ) {
-			log.warn("The environment variable AM_ROOT is not set.  Using working directory as our root.");
-			amRoot = System.getProperty("user.dir", (new File(".")).getAbsolutePath());
+			// Check if AM_ROOT is a sibling project in the Eclipse Workspace, which is a typical setup
+			final File defaultPath = new File("../AM_ROOT"); 
+			if( defaultPath.exists() ) {
+				if( !defaultPath.isDirectory() ) {
+					log.warn("Cannot use Default directory for AM_ROOT because it is a file: " + defaultPath.getAbsolutePath());
+				}
+				else if( !defaultPath.canRead() ) {
+					log.warn("Cannot use default directory for AM_ROOT because it does not have read permissions: " + defaultPath.getAbsolutePath());
+				}
+				else {
+					amRoot = defaultPath.getAbsolutePath();
+				}
+			}
+			else {
+				log.warn("The environment variable AM_ROOT is not set.  Using working directory as our root.");
+				amRoot = System.getProperty("user.dir", (new File(".")).getAbsolutePath());
+			}
 		}
 		
 		log.info("AgreementMaker root directory: " + amRoot);
