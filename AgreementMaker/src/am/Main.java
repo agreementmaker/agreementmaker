@@ -52,21 +52,7 @@ public class Main
 	 * @param args Command line arguments, used for operating AgreementMaker in automatic mode, without a UI.
 	 */
 	public static void main(String args[])
-	{
-
-		final Logger log = Logger.getLogger(Main.class);
-		
-		String amRoot = System.getenv("AM_ROOT");
-
-		if( amRoot == null ) {
-			log.warn("The environment variable AM_ROOT is not set.  Using working directory as our root.");
-			amRoot = System.getProperty("user.dir", (new File(".")).getAbsolutePath());
-		}
-		else {
-			log.info("AgreementMaker root directory: " + amRoot);
-		}
-
-		
+	{	
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		System.setProperty("apple.awt.brushMetalLook", "true");
 		

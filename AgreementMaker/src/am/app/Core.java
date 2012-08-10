@@ -43,7 +43,7 @@ import com.hp.hpl.jena.rdf.model.Model;
  */
 public class Core {
 	
-	private static final Logger sLog = Logger.getLogger(Core.class);
+	private final Logger log = Logger.getLogger(Core.class);
 	
 	// Program wide DEBUG flag. -- Deprecated, these flags will be removed and replaced with log4j!!! -- Cosmin Aug. 3, 2012.
 	@Deprecated public static final boolean DEBUG = false;
@@ -124,6 +124,16 @@ public class Core {
 		
 		//System.setProperty("log4j.debug","strue" );  // Use this to see what log4j gets configured to.
 	
+		String amRoot = System.getenv("AM_ROOT");
+
+		if( amRoot == null ) {
+			log.warn("The environment variable AM_ROOT is not set.  Using working directory as our root.");
+			amRoot = System.getProperty("user.dir", (new File(".")).getAbsolutePath());
+		}
+		else {
+			log.info("AgreementMaker root directory: " + amRoot);
+		}
+		
 		loadedOntologies = new ArrayList<Ontology>();  // initialize the arraylist of ontologies.
 		ontologyListeners    = new ArrayList<OntologyChangeListener>();  // new list of listeners
 		matcherListeners	= new ArrayList<MatcherChangeListener>(); // another list of listeners

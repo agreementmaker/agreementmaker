@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Queue;
 
 import am.Utility;
+import am.app.Core;
 import edu.smu.tspell.wordnet.AdjectiveSynset;
 import edu.smu.tspell.wordnet.AdverbSynset;
 import edu.smu.tspell.wordnet.NounSynset;
@@ -26,9 +27,9 @@ public class WordNetUtils {
 	}
 
 	private void initWordnet() {
-		// Initialize the WordNet interface.
-		String cwd = System.getProperty("user.dir");
-		String wordnetdir = cwd + "/wordnet-3.0";
+		// Initialize the WordNet interface.		
+		final String root = Core.getInstance().getRoot(); 
+		String wordnetdir = root + "/wordnet-3.0";
 		System.setProperty("wordnet.database.dir", wordnetdir);
 		// Instantiate 
 		try {
