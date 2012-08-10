@@ -124,15 +124,15 @@ public class Core {
 		
 		//System.setProperty("log4j.debug","strue" );  // Use this to see what log4j gets configured to.
 	
-		String amRoot = System.getenv("AM_ROOT");
+		amRoot = System.getenv("AM_ROOT");
 
 		if( amRoot == null ) {
 			log.warn("The environment variable AM_ROOT is not set.  Using working directory as our root.");
 			amRoot = System.getProperty("user.dir", (new File(".")).getAbsolutePath());
 		}
-		else {
-			log.info("AgreementMaker root directory: " + amRoot);
-		}
+		
+		log.info("AgreementMaker root directory: " + amRoot);
+		
 		
 		loadedOntologies = new ArrayList<Ontology>();  // initialize the arraylist of ontologies.
 		ontologyListeners    = new ArrayList<OntologyChangeListener>();  // new list of listeners
