@@ -11,6 +11,7 @@ import am.app.similarity.StringSimilarityMeasure;
  * these should be self-contained so they are declared static.
  * 
  * @author Cosmin Stroe
+ * @author Daniele Alfarone
  * 
  */
 public class StringUtility {
@@ -86,6 +87,25 @@ public class StringUtility {
 		
 
 		return cleanedString;
+	}
+	
+	/**
+	 * Extracts the last N words from a string.
+	 * In case the string contains less than N words, the whole string is returned.
+	 * 
+	 * @return last N words of the string.
+	 */
+	public static String extractLastNWords(String string, int n) {
+		String[] words = string.split("\\s+");
+		if (words.length <= n) return string;
+		
+		StringBuilder sb = new StringBuilder();
+		for (int i = n; i > 0; i--) {
+			sb.append(words[words.length - i]);
+			sb.append(" ");
+		}
+		
+		return sb.toString().trim();
 	}
 	
 	/**
