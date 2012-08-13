@@ -45,7 +45,6 @@ import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.OntologyProfilerPanel;
 import am.app.ontology.profiling.ProfilerRegistry;
-import am.app.osgi.AMHost;
 import am.app.osgi.MatcherNotFoundException;
 import am.userInterface.matchingtask.MatcherComboBox;
 import am.userInterface.table.MatchersTablePanel;

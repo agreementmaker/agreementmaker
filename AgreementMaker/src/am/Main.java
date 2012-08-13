@@ -21,17 +21,10 @@
 package am;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
 
-import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-
-import org.apache.log4j.Logger;
-
 import am.app.Core;
 import am.app.osgi.AMHost;
-import am.batchMode.simpleBatchMode.SimpleBatchModeRunner;
 import am.userInterface.UI;
 
 /**
