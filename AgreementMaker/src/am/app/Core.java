@@ -127,6 +127,10 @@ public class Core {
 		amRoot = System.getenv("AM_ROOT");
 
 		if( amRoot == null ) {
+			amRoot = System.getProperty("AM_ROOT");
+		}
+		
+		if( amRoot == null ) {
 			// Check if AM_ROOT is a sibling project in the Eclipse Workspace, which is a typical setup
 			final File defaultPath = new File("../AM_ROOT"); 
 			if( defaultPath.exists() ) {

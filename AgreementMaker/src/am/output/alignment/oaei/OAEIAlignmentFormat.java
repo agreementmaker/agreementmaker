@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -26,6 +27,8 @@ import am.output.alignment.AlignmentFormat;
  * TODO: We should really reuse the Alignment API method for this.
  */
 public class OAEIAlignmentFormat implements AlignmentFormat {
+	
+	private static final Logger log = Logger.getLogger(OAEIAlignmentFormat.class.getClass());
 	
 	@Override public String getFormatName() { return "Alignment API Format"; }
 	@Override public String getFormatFileExtension() { return ".rdf"; }
@@ -50,7 +53,8 @@ public class OAEIAlignmentFormat implements AlignmentFormat {
 
 		try {
 	        SAXReader reader = new SAXReader();
-	        Document doc = reader.read(inputReader);   // TODO: FIX PARSE ERROR if using UTF-8 Characters!!!!!!
+	        reader.setEncoding("UTF-8");
+	        Document doc = reader.read(inputReader);
 	        Element root = doc.getRootElement();
 	        
 	        String matcherName = root.attributeValue("matcherName");
@@ -99,13 +103,19 @@ public class OAEIAlignmentFormat implements AlignmentFormat {
 		return null;
 	}
 	
-	public HashMap<String,List<MatchingPair>> readAlignment( Reader inputReader ) {
+	/**
+	 * Read an OAEI alignment file from a reader.
+	 * 
+	 * @return A Map of source and target URIs to their corresponding mapping.
+	 */
+	public static HashMap<String,List<MatchingPair>> readAlignment( Reader inputReader ) {
 		
 		HashMap<String,List<MatchingPair>> alignmentMap = new HashMap<String,List<MatchingPair>>();
 
 		try {
 	        SAXReader reader = new SAXReader();
-	        Document doc = reader.read(inputReader);   // TODO: FIX PARSE ERROR if using UTF-8 Characters!!!!!!
+	        reader.setEncoding("UTF-8");
+	        Document doc = reader.read(inputReader);
 	        Element root = doc.getRootElement();
 	        
 	        //if( matcherName != null && !matcherName.isEmpty() ) setName(StringEscapeUtils.unescapeHtml(matcherName));
@@ -115,7 +125,6 @@ public class OAEIAlignmentFormat implements AlignmentFormat {
 	        while (map.hasNext()) {
 	            Element e = ((Element)map.next()).element("Cell");
 	            if (e == null) {
-	            	
 	                continue;
 	            }
 	            String sourceURI = e.element("entity1").attributeValue("resource");
