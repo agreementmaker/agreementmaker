@@ -5,6 +5,10 @@
 	<artifactId>AgreementMaker</artifactId>
 	<version>0.2.5-SNAPSHOT</version>
 
+	<properties>
+    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+  
 	<repositories>
 		<repository>
 			<id>agreementmaker</id>
