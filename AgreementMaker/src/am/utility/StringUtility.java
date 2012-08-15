@@ -34,6 +34,10 @@ public class StringUtility {
 		return string.matches("(?s).*[A-Z].*");	
 	}
 	
+	public static int countWords(String string) {
+		return string.trim().split("\\s+").length;
+	}
+	
 	public static String separateWords(String string) {
 		if (string == null)
 			return "";
