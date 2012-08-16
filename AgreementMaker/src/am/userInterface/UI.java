@@ -45,38 +45,38 @@ import am.userInterface.table.MatchersControlPanelTableModel;
  * @version 12/5/2004
  */
 public class UI {
-	
+
 	static final long serialVersionUID = 1;
-	
+
 	// this is the current UI Panel
 	private AgreementMakerClassic classicAM;
-	
+
 	private JFrame frame;
-	
+
 	private JPanel panelDesc;  // This variable is initialized by UI.openFile().  It instantiates a VertexDescriptionPane
 
 	//private JScrollPane scrollPane;
-	
+
 	private UIMenu uiMenu;
-	
+
 	private JTabbedPane tabbedPane;
-	
+
 	/** Application Wide preferences, that are saved to a configuration file, and can be restored at any time. */
 	//private AppPreferences prefs;
-	
+
 	/**	 * Default constructor for UI class
 	 */
 	public UI()
 	{
 		init();
-		
+
 	}
 
-	 
-	
+
+
 	/** Return the AppPreferences instance */
 	//public AppPreferences getAppPreferences() { return prefs; }
-	
+
 	/**
 	 * @return canvas
 	 */
@@ -86,11 +86,11 @@ public class UI {
 
 	public UIMenu getUIMenu(){ return this.uiMenu; }
 	public JFrame getUIFrame(){ return this.frame; }
-	
+
 	// TODO: getUISplitPane shouldn't be part of the UI
 	//@Deprecated
 	public JSplitPane getUISplitPane(){ return classicAM.getSplitPane(); }
-	
+
 	/**     
 	 * Init method
 	 * This function creates menu, canvas, and checkboxes to be displayed on the screen
@@ -100,28 +100,28 @@ public class UI {
 		//Setting the Look and Feel of the application to that of Windows
 		//try { UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"); }
 		//catch (Exception e) { System.out.println(e); }
-			
+
 		//	Setting the Look and Feel of the application to that of Windows
 		//try { javax.swing.UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); }
 		//catch (Exception e) { System.out.println(e); }
-		
+
 		// Create a swing frame
 		frame = new JFrame("AgreementMaker");
 		frame.getContentPane().setLayout(new BorderLayout());
-		
+
 		// created the tabbed pane.
 		tabbedPane = new JTabbedPane();
-		
-		
+
+
 		// Create the Menu Bar and Menu Items
 		uiMenu = new UIMenu(this);	
-		
+
 		// The first view is the Classic AgreementMaker
 		classicAM = new AgreementMakerClassic();
-		
+
 		tabbedPane.addTab("AgreementMaker", null, classicAM, "AgreementMaker");
 		frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
-		
+
 		// confirmExit if the user is trying to close the window.
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(new WindowListener() {
@@ -130,25 +130,25 @@ public class UI {
 			@Override public void windowDeiconified(WindowEvent e) {}
 			@Override public void windowDeactivated(WindowEvent e) {}
 			@Override public void windowClosing(WindowEvent e) {
-				uiMenu.confirmExit();
+				UI.this.confirmExit();
 			}
 			@Override public void windowClosed(WindowEvent e) {}
 			@Override public void windowActivated(WindowEvent e) {}
 		});
-		
+
 		// set frame size (width = 1000 height = 700)
 		//frame.setSize(900,600);
 		frame.pack();
 		frame.setExtendedState(Frame.MAXIMIZED_BOTH); // maximize the window
 
-		
-		
+
+
 		//Dimension size = frame.getSize();
 		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
 		int percent = (7 * size.height) / 20 ;
 		int location = size.height - percent;
 		classicAM.getOuterSplitPane().setDividerLocation(location);
-		
+
 		// make sure the frame is visible
 		frame.setVisible(true); 
 	}
@@ -159,7 +159,7 @@ public class UI {
 	 */
 	@Deprecated
 	public JPanel getDescriptionPanel(){ return this.panelDesc; }
-	
+
 	/**
 	 * Used in UI.openFile()
 	 * @param jPanel
@@ -170,11 +170,11 @@ public class UI {
 	public boolean openFile( OntologyDefinition odef ) {
 		try{
 			JPanel jPanel = null;
-			
+
 			Logger log = Logger.getLogger(UI.class);
-			
+
 			if( log.isInfoEnabled() ) log.info("Opening file: " + odef.ontologyURI );
-			
+
 			if(odef.ontologyLanguage == OntologyLanguage.RDFS)//RDFS
 				jPanel = new VertexDescriptionPane(Ontology.RDFSFILE);//takes care of fields for XML files as well
 			else if(odef.ontologyLanguage == OntologyLanguage.OWL)//OWL
@@ -183,7 +183,7 @@ public class UI {
 				jPanel = new VertexDescriptionPane(Ontology.XMLFILE);//takes care of fields for XML files as well
 			else if(odef.ontologyLanguage == OntologyLanguage.TABBEDTEXT)
 				jPanel = new VertexDescriptionPane(Ontology.XMLFILE); // TODO: Figure out if we need to pass in the correct language type to VertexDescriptionPane constructor.
-		    jPanel.setMinimumSize(new Dimension(200,200));
+			jPanel.setMinimumSize(new Dimension(200,200));
 			getUISplitPane().setRightComponent(jPanel);
 			setDescriptionPanel(jPanel);
 			//System.out.println("Before treebuilder.buildTreeBuilder in am.userinterface.ui.openFile()...");
@@ -195,7 +195,7 @@ public class UI {
 			new OntologyLoadingProgressDialog(t);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
 			if(!t.isCancelled()) {
 				//System.out.println("after t.isCancelled before Core.getInstancein am.userinterface.ui.openFile()...");
-				
+
 				//Set ontology in the Core
 				Ontology ont = t.getOntology();
 				if(odef.sourceOrTarget == OntologyDefinition.SOURCE_ONTOLOGY) {
@@ -214,7 +214,7 @@ public class UI {
 					//Every time I loaded an ontology and I have both, I have to reset or set if it's the first time, all the matching schemas - Translation by Federico
 					if( Core.DEBUG ) System.out.println("Init matchings table");
 					classicAM.getMatchersControlPanel().resetMatchings();
-					
+
 				}
 				if( Core.DEBUG ) System.out.println("Ontologies loaded succesfully");
 				return true;
@@ -226,7 +226,7 @@ public class UI {
 			return false;
 		}
 	}
-	
+
 	/** 
 	 * This function will open an ontology given a file.
 	 * Attention syntax and language are placed differently from other functions.
@@ -249,11 +249,11 @@ public class UI {
 	public boolean openFile( String filename, int ontoType, int syntax, int language, boolean skip, boolean noReasoner, boolean onDisk, String onDiskDirectory, boolean onDiskPersistent) {
 		try{
 			JPanel jPanel = null;
-			
+
 			Logger log = Logger.getLogger(UI.class);
-			
+
 			if( log.isInfoEnabled() ) log.info("Opening file: " + filename );
-			
+
 			if(language == GlobalStaticVariables.RDFSFILE)//RDFS
 				jPanel = new VertexDescriptionPane(GlobalStaticVariables.RDFSFILE);//takes care of fields for XML files as well
 			else if(language == GlobalStaticVariables.OWLFILE)//OWL
@@ -262,7 +262,7 @@ public class UI {
 				jPanel = new VertexDescriptionPane(GlobalStaticVariables.XMLFILE);//takes care of fields for XML files as well
 			else if(language == GlobalStaticVariables.TABBEDTEXT)
 				jPanel = new VertexDescriptionPane(GlobalStaticVariables.XMLFILE); // TODO: Figure out if we need to pass in the correct language type to VertexDescriptionPane constructor.
-		    jPanel.setMinimumSize(new Dimension(200,200));
+			jPanel.setMinimumSize(new Dimension(200,200));
 			getUISplitPane().setRightComponent(jPanel);
 			setDescriptionPanel(jPanel);
 			//System.out.println("Before treebuilder.buildTreeBuilder in am.userinterface.ui.openFile()...");
@@ -274,7 +274,7 @@ public class UI {
 			new OntologyLoadingProgressDialog(t);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
 			if(!t.isCancelled()) {
 				//System.out.println("after t.isCancelled before Core.getInstancein am.userinterface.ui.openFile()...");
-				
+
 				//Set ontology in the Core
 				Ontology ont = t.getOntology();
 				if(ontoType == GlobalStaticVariables.SOURCENODE) {
@@ -291,7 +291,7 @@ public class UI {
 					//Ogni volta che ho caricato un ontologia e le ho entrambe, devo resettare o settare se � la prima volta, tutto lo schema dei matchings
 					if( Core.DEBUG ) System.out.println("Init matchings table");
 					classicAM.getMatchersControlPanel().resetMatchings();
-					
+
 				}
 				if( Core.DEBUG ) System.out.println("Ontologies loaded succesfully");
 				return true;
@@ -303,9 +303,9 @@ public class UI {
 			return false;
 		}
 	}
-	
+
 	public void redisplayCanvas() {	classicAM.getVisualizationPanel().repaint(); }    
-	
+
 	/**
 	 * Adds a tab to the main AgreementMaker window and selects it.
 	 * @param tabName The displayed name of the tab.
@@ -318,45 +318,56 @@ public class UI {
 		tabbedPane.setTabComponentAt(tabbedPane.getTabCount() - 1 , new ButtonTabComponent(tabbedPane));
 		tabbedPane.setSelectedIndex( tabbedPane.getTabCount() - 1 );
 	}
-	
+
 	public void addTab( String tabName, ImageIcon icon, JComponent panel, String toolTip, Runnable callOnClose ) {
 		tabbedPane.addTab( tabName, icon, panel, toolTip);
 		tabbedPane.setTabComponentAt(tabbedPane.getTabCount() - 1 , new ButtonTabComponent(tabbedPane, callOnClose));
 		tabbedPane.setSelectedIndex( tabbedPane.getTabCount() - 1 );
 	}
-	
+
 	/** 
 	 * Returns the currently selected tab from the main AgreementMaker window.
 	 * @return Currently selected tab.
 	 */
 	public Component getCurrentTab() { return tabbedPane.getSelectedComponent(); }
-	
+
 	/**
 	 * @return The main tabbed pane of the UI.
 	 */
 	public JTabbedPane getTabbedPane() { return tabbedPane; }
-	
+
 	@Deprecated
 	public JViewport getViewport() { // don't need this, it should be passed on the constructor of the VisualzationPanel
 		return classicAM.getScrollPane().getViewport();
 	}
 
 	public MatchersControlPanel getControlPanel() {	return classicAM.getMatchersControlPanel();	}
-	
+
 	/**
 	 * @return A list of MatcherResults which are currently selected in the user interface.
 	 */
 	public List<MatchingTask> getSelectedTasks() {
 		List<MatchingTask> selectedResults = new LinkedList<MatchingTask>();
-		
+
 		int[] rowsIndex = getControlPanel().getTablePanel().getTable().getSelectedRows();
 		List<MatchingTask> allResults = 
 				((MatchersControlPanelTableModel)getControlPanel().getTablePanel().getTable().getModel()).getData();
-		
+
 		for( int index : rowsIndex ) {
 			selectedResults.add(allResults.get(index));
 		}
-		
+
 		return selectedResults;
+	}
+
+	/**
+	 * Function that is called when to user wants to close the program. 
+	 */
+	public void confirmExit() {
+		int n = JOptionPane.showConfirmDialog(Core.getUI().getUIFrame(),"Are you sure you want to exit ?\n\nYou will lose any unsaved alignments!\n","Exit AgreementMaker",JOptionPane.YES_NO_OPTION);
+		if (n == JOptionPane.YES_OPTION)
+		{
+			System.exit(0);   
+		}
 	}
 }
