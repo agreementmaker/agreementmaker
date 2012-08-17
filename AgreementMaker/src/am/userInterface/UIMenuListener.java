@@ -24,11 +24,16 @@ import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.SelectionAlgorithm;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
+import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.profiling.ProfilingDialog;
@@ -78,9 +83,11 @@ public class UIMenuListener implements ActionListener {
 					FindDialog fd = new FindDialog( (FindInterface) visibleTab);
 					fd.setVisible(true);
 				}
-			}else if (obj == menu.colorsItem){
+			}
+			else if (obj == menu.colorsItem) {
 				new Legend();	
-			}else if(obj == menu.provenanceItem){//TODO: when all he matchers are gone need to switch back to the other pane
+			}
+			else if(obj == menu.provenanceItem) {//TODO: when all he matchers are gone need to switch back to the other pane
 				JSplitPane uiPane=Core.getUI().getUISplitPane();
 				if(uiPane.getRightComponent() instanceof ProvenanceSidebar)
 				{
@@ -96,19 +103,35 @@ public class UIMenuListener implements ActionListener {
 					Core.getUI().getUISplitPane().setRightComponent(p);
 					menu.provenanceItem.setText("Hide Provenance");
 				}
-			}else if (obj == menu.howToUse){
+			}
+			else if (obj == menu.howToUse) {
 				Utility.displayTextAreaPane(Help.getHelpMenuString(), "Help");
-			}else if (obj == menu.openFiles){
+			}
+			else if (obj == menu.openFiles) {
 				new OpenOntologyFileDialogCombined(menu.ui);
+				if( Core.getInstance().ontologiesLoaded() ) {
+					// create the User Manual Matcher
+					DefaultMatcherParameters matcherParams = new DefaultMatcherParameters();
+					AbstractMatcher matcher = new UserManualMatcher();
+					DefaultSelectionParameters selectionParams = new DefaultSelectionParameters();
+					SelectionAlgorithm selectionAlgorithm = new MwbmSelection();
+					
+					MatchingTask task = new MatchingTask(matcher, matcherParams, selectionAlgorithm, selectionParams);
+					
+					Core.getInstance().addMatchingTask(task);
+				}
+				
 				if( Core.getInstance().sourceIsLoaded() ) {
 					menu.menuRecentSource.setEnabled(false);
 					menu.closeSource.setEnabled(true);
 				}
+				
 				if( Core.getInstance().targetIsLoaded() ) {
 					menu.menuRecentTarget.setEnabled(false);
 					menu.closeTarget.setEnabled(true);
 				}
-			}else if (obj == menu.openMostRecentPair){
+			}
+			else if (obj == menu.openMostRecentPair) {
 				int position = 0;
 				boolean loadedSecond = false;
 				//TODO:make a prefs for loading in db and use the prefs instead of hardcoding a value

@@ -46,6 +46,8 @@ import am.userInterface.table.MatchersControlPanelTableModel;
  */
 public class UI {
 
+	private final Logger log = Logger.getLogger(UI.class);
+	
 	static final long serialVersionUID = 1;
 
 	// this is the current UI Panel
@@ -69,7 +71,6 @@ public class UI {
 	public UI()
 	{
 		init();
-
 	}
 
 
@@ -171,9 +172,7 @@ public class UI {
 		try{
 			JPanel jPanel = null;
 
-			Logger log = Logger.getLogger(UI.class);
-
-			if( log.isInfoEnabled() ) log.info("Opening file: " + odef.ontologyURI );
+			log.info("Opening file: " + odef.ontologyURI );
 
 			if(odef.ontologyLanguage == OntologyLanguage.RDFS)//RDFS
 				jPanel = new VertexDescriptionPane(Ontology.RDFSFILE);//takes care of fields for XML files as well
@@ -205,18 +204,18 @@ public class UI {
 					Core.getInstance().setTargetOntology(ont);
 				//System.out.println("after after Core.getInstancein am.userinterface.ui.openFile()...");
 				//Set the tree in the canvas
-				if( Core.DEBUG ) System.out.println("Displaying the hierarchies in the canvas");
+				log.debug("Displaying the hierarchies in the canvas.");
 				ont.setDeepRoot(t.getTreeRoot());
 				ont.setTreeCount(t.getTreeCount());
 				getCanvas().setTree(t);  // legacy calls?
 				if(Core.getInstance().ontologiesLoaded()) {
 					//Ogni volta che ho caricato un ontologia e le ho entrambe, devo resettare o settare se � la prima volta, tutto lo schema dei matchings
 					//Every time I loaded an ontology and I have both, I have to reset or set if it's the first time, all the matching schemas - Translation by Federico
-					if( Core.DEBUG ) System.out.println("Init matchings table");
+					log.debug("Init matchings table");
 					classicAM.getMatchersControlPanel().resetMatchings();
 
 				}
-				if( Core.DEBUG ) System.out.println("Ontologies loaded succesfully");
+				log.debug("Ontologies loaded succesfully.");
 				return true;
 			}
 			return false;

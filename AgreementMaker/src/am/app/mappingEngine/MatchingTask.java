@@ -19,7 +19,7 @@ import am.userInterface.matchingtask.MatchingTaskVisData;
 public class MatchingTask {
 	public AbstractMatcher 				matchingAlgorithm;
 	public DefaultMatcherParameters 	matcherParameters;
-	public AbstractSelectionAlgorithm 	selectionAlgorithm;
+	public SelectionAlgorithm 			selectionAlgorithm;
 	public DefaultSelectionParameters 	selectionParameters;
 	public MatcherResult				matcherResult;
 	public SelectionResult				selectionResult;
@@ -37,7 +37,7 @@ public class MatchingTask {
 	public String description;
 	
 	public MatchingTask(AbstractMatcher matcher, DefaultMatcherParameters matcherParams,
-						AbstractSelectionAlgorithm selectionAlgorithm, DefaultSelectionParameters selectionParams) {
+						 SelectionAlgorithm selectionAlgorithm, DefaultSelectionParameters selectionParams) {
 		super();
 		
 		this.matchingAlgorithm = matcher;

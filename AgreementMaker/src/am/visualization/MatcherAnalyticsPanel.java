@@ -238,7 +238,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		switch( e.getEvent() ) {
 		case MATCHER_ADDED:
 			// when a matcher is added to the main
-			AbstractMatcher a = e.getMatcher();
+			AbstractMatcher a = e.getTask().matchingAlgorithm;
 			switch( type ) {
 			case CLASS_MATRIX:
 				if( a.getClassesMatrix() != null ) {
@@ -258,7 +258,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			final Object sourceObject = this;
 			Runnable fire = new Runnable() {
 				public void run() {
-					broadcastEvent( new MatcherAnalyticsEvent( sourceObject,  EventType.MATRIX_UPDATED,  e.getMatcher() ));
+					broadcastEvent( new MatcherAnalyticsEvent( sourceObject,  EventType.MATRIX_UPDATED,  e.getTask().matchingAlgorithm ));
 				}
 			};
 			

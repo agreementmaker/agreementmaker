@@ -287,25 +287,27 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			Utility.displayErrorPane("No matchers selected", null);
 		}
 		else if(Utility.displayConfirmPane(rowsIndex.length+" matchers will be deleted.\n Do you want to continue?", null)) {
-			AbstractMatcher toBeDeleted;
 			Core core = Core.getInstance();
-			LinkedList<AbstractMatcher> deleteList = new LinkedList<AbstractMatcher>();
+			LinkedList<MatchingTask> deleteList = new LinkedList<MatchingTask>();
 			for(int i = 0; i < rowsIndex.length; i++) {// I need to build a list because indexes will be modified so i can't access them using the rowsindex structures
-				deleteList.add(core.getMatcherInstances().get(rowsIndex[i]));
+				final int deleteIndex = rowsIndex[i];
+				deleteList.add(core.getMatchingTasks().get(deleteIndex));
 			}
 			for(int i = 0; i< deleteList.size(); i++) {
-				toBeDeleted = deleteList.get(i);
-				if(i == 0 && MatcherFactory.isTheUserMatcher(toBeDeleted)) {
+				final MatchingTask toBeDeleted = deleteList.get(i);
+				if(i == 0 && toBeDeleted.matchingAlgorithm.getName().equals("User Manual Matching")) {
 					//YOU CAN'T DELETE THE FIRST USER MATCHING just clear the matchings previusly created
 					Utility.displayMessagePane("The default "+MatchersRegistry.UserManual + " can't be deleted.\nOnly alignments will be cleared.", null);
 					try {
 						toBeDeleted.match();//reinitialize the user matching as an empty one
 						matchersTablePanel.updatedRows(0, 0);
 					}
-					catch(AMException ex) {Utility.displayErrorPane(ex.getMessage(), null);}
+					catch(Exception ex) {
+						Utility.displayErrorPane(ex.getMessage(), null);
+					}
 				}
 				else {
-					matchersTablePanel.removeMatcher(toBeDeleted);
+					matchersTablePanel.removeTask(toBeDeleted);
 				}
 				matchersTablePanel.deletedRows(rowsIndex[0], rowsIndex[rowsIndex.length-1]);
 				Core.getUI().redisplayCanvas();

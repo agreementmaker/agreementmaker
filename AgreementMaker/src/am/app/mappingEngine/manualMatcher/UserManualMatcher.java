@@ -85,5 +85,10 @@ public class UserManualMatcher extends AbstractMatcher {
 		result += "Select the matching in the control panel table \nbefore adding manual mappings to it.\n";
 		return result;
 	}
+	
+	@Override
+	public String getName() {
+		return "User Manual Matching";
+	}
 }
 

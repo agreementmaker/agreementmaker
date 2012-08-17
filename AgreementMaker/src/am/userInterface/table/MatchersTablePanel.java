@@ -25,6 +25,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.MatchingTaskChangeEvent.EventType;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
@@ -182,6 +183,13 @@ public class MatchersTablePanel extends JPanel implements MatcherChangeListener 
 		return table;
 	}
     
+	public void addTask(MatchingTask task) {
+		TableColumn inputColumn = table.getColumnModel().getColumn(MatchersControlPanelTableModel.INPUTMATCHERS);
+    	InputMatchersEditor mc = (InputMatchersEditor)inputColumn.getCellEditor();
+    	mc.addEditor(task.matchingAlgorithm);
+    	insertedRows(task.matchingAlgorithm.getIndex(), task.matchingAlgorithm.getIndex());
+	}
+	
     public void addMatcher(AbstractMatcher a) {
     	TableColumn inputColumn = table.getColumnModel().getColumn(MatchersControlPanelTableModel.INPUTMATCHERS);
     	InputMatchersEditor mc = (InputMatchersEditor)inputColumn.getCellEditor();
@@ -209,11 +217,11 @@ public class MatchersTablePanel extends JPanel implements MatcherChangeListener 
     	((AbstractTableModel)table.getModel()).fireTableDataChanged();
     }
     
-    public void removeMatcher(AbstractMatcher a) {
+    public void removeTask(MatchingTask task) {
     	TableColumn inputColumn = table.getColumnModel().getColumn(MatchersControlPanelTableModel.INPUTMATCHERS);
     	InputMatchersEditor mc = (InputMatchersEditor)inputColumn.getCellEditor();
-    	mc.removeEditor(a);
-    	deletedRows(a.getIndex(), a.getIndex());
+    	mc.removeEditor(task.matchingAlgorithm);
+    	deletedRows(task.matchingAlgorithm.getIndex(), task.matchingAlgorithm.getIndex());
     }
  
     /**
@@ -248,11 +256,11 @@ public class MatchersTablePanel extends JPanel implements MatcherChangeListener 
 	@Override
 	public void matcherChanged(MatchingTaskChangeEvent e) {
 		if( e.getEvent() == EventType.MATCHER_ADDED ) {
-			addMatcher(e.getMatcher());
+			addTask(e.getTask());
 		}
 		
 		if( e.getEvent() == EventType.MATCHER_REMOVED ) {
-			removeMatcher(e.getMatcher());
+			removeTask(e.getTask());
 		}
 	}
 

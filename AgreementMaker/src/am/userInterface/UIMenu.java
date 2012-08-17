@@ -4,13 +4,13 @@ import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import am.Utility;
@@ -99,8 +99,8 @@ public class UIMenu {
 		fileMenu = new JMenu("File");
 		fileMenu.setMnemonic(KeyEvent.VK_F);	
 
-		//add openGFile menu item to file menu
-		openFiles = new JMenuItem("Open Ontologies ...",new ImageIcon("images"+File.separator+"fileImage.png"));
+		//add openFile menu item to file menu
+		openFiles = createMenuItemWithIcon("Open Ontologies ...", "image/fileImage.png");
 		openFiles.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 		//openSource.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));                		
 		//openSource.setMnemonic(KeyEvent.VK_O);
@@ -418,14 +418,14 @@ public class UIMenu {
 
 
 		// add menu item to help menu
-		howToUse = new JMenuItem("Help", new ImageIcon("images"+File.pathSeparator+"helpImage.gif"));
+		howToUse = createMenuItemWithIcon("Help", "image/helpImage.gif");
 		howToUse.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));                	
 		howToUse.setMnemonic(KeyEvent.VK_H);
 		howToUse.addActionListener(listener);
 		helpMenu.add(howToUse);
 
 		// add about item to help menu
-		aboutItem = new JMenuItem("About AgreementMaker", new ImageIcon("images/aboutImage.gif"));
+		aboutItem = createMenuItemWithIcon("About AgreementMaker", "image/aboutImage.gif");
 		aboutItem.setMnemonic(KeyEvent.VK_A);
 		//aboutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));                
 		aboutItem.addActionListener(listener);
@@ -450,6 +450,22 @@ public class UIMenu {
 		ui.getUIFrame().setJMenuBar(myMenuBar);
 	}
 
+	/**
+	 * Create a menu item that has an icon.  The icon should be on the class path.
+	 * @param label The label for this menu item.
+	 * @param iconPath The path on the classpath of the icon.
+	 */
+	public JMenuItem createMenuItemWithIcon(String label, String iconPath) {
+		final URL iconURL = ClassLoader.getSystemClassLoader().getResource(iconPath);
+		
+		
+		if( iconURL == null ) { // icon was not found on the classpath
+			return new JMenuItem(label);
+		}
+		else {
+			return new JMenuItem(label, new ImageIcon(iconURL));
+		}
+	}
 
 	public JMenu getMenu(String name) {
 		if( name.equals("Tools") ) {

@@ -260,7 +260,7 @@ public class Core {
 		return null;
 	}
 	
-	/** Use {@link #getMatchingAlgorithms()} instead. -- Cosmin. */
+	/** @deprecated Use {@link #getMatchingAlgorithms()} instead. -- Cosmin. */
 	@Deprecated
 	public List<AbstractMatcher> getMatcherInstances() { return getMatchingAlgorithms(); }
 	
