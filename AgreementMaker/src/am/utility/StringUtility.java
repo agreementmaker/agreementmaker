@@ -1,6 +1,8 @@
 package am.utility;
 
 import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -159,5 +161,13 @@ public class StringUtility {
 		}
 		
 		return maxStringSimilarity;
+	}
+
+	public static int countCommonTokens(String string1, String string2) {
+		List<String> string1Tokens = new ArrayList<String>(Arrays.asList(string1.split("\\s+")));
+		List<String> string2Tokens = new ArrayList<String>(Arrays.asList(string2.split("\\s+")));
+		
+		string1Tokens.retainAll(string2Tokens);
+		return string1Tokens.size();
 	}
 }
