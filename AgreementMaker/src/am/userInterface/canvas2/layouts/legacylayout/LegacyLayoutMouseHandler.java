@@ -78,6 +78,8 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
  */
 public class LegacyLayoutMouseHandler {
 	
+	private final Logger log = Logger.getLogger(LegacyLayoutMouseHandler.class);
+	
 	LegacyLayout layout;
 	
 	public LegacyLayoutMouseHandler(LegacyLayout lay) {	layout = lay; }
@@ -612,6 +614,11 @@ public class LegacyLayoutMouseHandler {
 		Graphics g = layout.getVizPanel().getGraphics();
 		
 		boolean hoveringOverEmptySpace = true;
+		if( layout.getVizPanel().getVisibleVertices() == null ) {
+			log.warn("Visible vertices of the VizPanel is null.  Ignorning.");
+			return false;
+		}
+		
 		for( Canvas2Vertex vertex : layout.getVizPanel().getVisibleVertices() ) {
 			if( vertex instanceof LegacyNode )    // we only care about legacy nodes (for now)
 			if( vertex.contains(mousePosition) ) {

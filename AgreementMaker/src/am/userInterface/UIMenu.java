@@ -44,7 +44,8 @@ public class UIMenu {
 	showLocalNameItem, 
 	showMappingsShortname,
 	synchronizedViews,
-	disableVisualizationItem;
+	disableVisualizationItem,
+	duplicateView;
 	JMenu menuViews;  // Views submenu.  TODO: Rename this to something more descriptive.
 	JMenu menuLexicons; // the Lexicons sub menu;
 	JMenuItem menuLexiconsViewOntSource, menuLexiconsViewOntTarget, menuLexiconsViewWNSource, menuLexiconsViewWNTarget, 
@@ -234,6 +235,13 @@ public class UIMenu {
 		synchronizedViews.setSelected(prefs.getSynchronizedViews());
 		viewMenu.add(synchronizedViews);
 
+		
+		duplicateView = new JCheckBoxMenuItem("Duplicate View");
+		duplicateView.addActionListener(listener);
+		//duplicateView.setSelected(prefs.getSynchronizedViews());
+		viewMenu.add(duplicateView);
+		
+		
 		menuViews = new JMenu("New view");
 		//menuViews.add(itemViewsCanvas2);
 		//viewMenu.add(menuViews);

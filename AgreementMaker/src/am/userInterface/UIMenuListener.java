@@ -1,6 +1,8 @@
 package am.userInterface;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Constructor;
@@ -8,13 +10,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.border.LineBorder;
 
 import org.osgi.framework.Bundle;
 
@@ -46,11 +52,14 @@ import am.tools.ThresholdAnalysis.ThresholdAnalysis;
 import am.tools.WordNetLookup.WordNetLookupPanel;
 import am.tools.seals.SealsPanel;
 import am.userInterface.VisualizationChangeEvent.VisualizationEventType;
+import am.userInterface.canvas2.Canvas2;
 import am.userInterface.controlpanel.MatchersControlPanel;
 import am.userInterface.find.FindDialog;
 import am.userInterface.find.FindInterface;
 import am.userInterface.instance.InstanceLookupPanel;
 import am.userInterface.sidebar.provenance.ProvenanceSidebar;
+import am.userInterface.sidebar.duplicatepane.DuplicateSidebar;
+import am.userInterface.sidebar.duplicatepane.duplicateMenuItem;
 import am.userInterface.table.MatchersTablePanel;
 import am.utility.numeric.AvgMinMaxNumber;
 import am.visualization.MatcherAnalyticsPanel;
@@ -239,7 +248,53 @@ public class UIMenuListener implements ActionListener {
 
 				// save the setting in preferences
 				prefs.saveShowMappingsShortname(menu.showMappingsShortname.isSelected());
-			} else if( obj == menu.synchronizedViews ) {
+			} else if(obj == menu.duplicateView){
+				//Canvas2 wholeCanvas = new Canvas2();
+		
+				
+				JSplitPane uiPane=Core.getUI().getUISplitPane();
+				if(uiPane.getRightComponent() instanceof DuplicateSidebar)
+				{
+					//view is open, close it now.
+					DuplicateSidebar dupSidebar=(DuplicateSidebar)uiPane.getRightComponent();
+					
+					
+					uiPane.setRightComponent( dupSidebar.getOldComponent());
+					menu.duplicateView.setSelected(false);
+					//provenanceItem.set
+				}
+				else{
+					DuplicateSidebar dupSide = new DuplicateSidebar();
+					//JDialog dialog = new JDialog();
+				final	JScrollPane scroll = (JScrollPane)Core.getUI().getUISplitPane().getLeftComponent();
+				
+					Canvas2 oldCanvas =  (Canvas2) scroll.getViewport().getView();
+					Canvas2	newCanvas = new Canvas2(dupSide, oldCanvas.getGraphs());
+					//JScrollPane newPane = new JScrollPane(newCanvas);
+					
+					//dupSide.setViewport(Core.getUI().getViewport());
+					
+				dupSide.setOldComponent(Core.getUI().getUISplitPane().getRightComponent());
+					
+					Rectangle viewRec = Core.getUI().getViewport().getBounds();
+					int newWidth = (viewRec.width)/2;
+					viewRec.x += newWidth;
+					viewRec.width = newWidth;
+					
+					dupSide.getViewport().setView(newCanvas);
+					
+					dupSide.getViewport().setBounds(viewRec);
+					//dialog.getContentPane().setLayout(new BorderLayout());
+					dupSide.setBorder(new LineBorder(Color.red));
+					//dialog.getContentPane().add(dupSide, BorderLayout.CENTER);
+					
+					
+					//dialog.setVisible(true);
+					Core.getUI().getUISplitPane().setRightComponent(dupSide);
+					menu.duplicateView.setSelected(true);
+				}
+				
+			}else if( obj == menu.synchronizedViews ) {
 				// thread safe event firing
 				Runnable fireNewEvent = new Runnable() {
 					public void run() {

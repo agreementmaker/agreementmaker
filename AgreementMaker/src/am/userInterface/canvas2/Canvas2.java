@@ -64,7 +64,7 @@ import am.userInterface.canvas2.utility.GraphLocator.GraphType;
 
 public class Canvas2 extends VisualizationPanel implements OntologyChangeListener, MatcherChangeListener, VisualizationChangeListener {
 
-	private static final Logger sLog = Logger.getLogger(Canvas2.class);
+	private final Logger log = Logger.getLogger(Canvas2.class);
 	
 	private static final long serialVersionUID = 1544849142971067136L;
 
@@ -94,6 +94,12 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	public Canvas2(Canvas2Layout layout) { super(); initialize(null, layout); } // allows the use of a custom layout
 	public Canvas2(JScrollPane s, Canvas2Layout layout) { super(s); initialize(s, layout); } // allows the use of a custom layout
 	
+	public Canvas2(JScrollPane s, ArrayList<CanvasGraph> sGraph) {
+		this(s);
+		this.graphs = sGraph;
+		this.updateSize();
+	}
+
 	/** Shared method called from the constructors. */
 	private void initialize(JScrollPane scrollPane, Canvas2Layout layout) {
 		
@@ -186,17 +192,14 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	 * Update the size of the Canvas after graphs were changed.
 	 */
 	private void updateSize() {
-		Logger log = null;  // used to display debugging messages
+		
 		
 		
 		Iterator<CanvasGraph> graphsIter = graphs.iterator();
 		int width = 0;
 		int height = 0;
 		
-		if( Core.DEBUG ) {
-			log = Logger.getLogger(this.getClass());
-			log.setLevel(Level.DEBUG);
-		}
+		
 		
 		while( graphsIter.hasNext() ) {
 			CanvasGraph gr = graphsIter.next();
@@ -230,7 +233,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		
 		/* Get ready for a paint() */
 		layout.getReadyForRepaint(currentView);
-		
+		log.info("The current view is: "+ currentView);
 		/* The background color */
 		g.setColor( Colors.background );
 		g.fillRect(currentView.x, currentView.y, currentView.width, currentView.height);
@@ -297,7 +300,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		
 		painting = false;
 		
-		sLog.debug("paint(): viewport( "+currentView +") - " + Integer.toString(nodeNum) + " nodes and " +
+		log.debug("paint(): viewport( "+currentView +") - " + Integer.toString(nodeNum) + " nodes and " +
 				  Integer.toString(edgeNum) +" edges visible. (" + Integer.toString(nodeNotVis) +
 									" nodes not visible, " + Integer.toString(edgeNotVis) +" edges not visible, " + Integer.toString(graphsnotVis) + " graphs not visible.)");
 		
@@ -310,7 +313,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		final MatchingTask task = Core.getInstance().getMatchingTaskByID( e.getTaskID() );
 		
 		if( task == null ) {
-			sLog.warn("Matcher Change Event fired with invalid task id: " + e.getTaskID() + ". Ignoring." );
+			log.warn("Matcher Change Event fired with invalid task id: " + e.getTaskID() + ". Ignoring." );
 			return;
 		}
 		
@@ -372,7 +375,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			
 		case MATCHER_COLOR_CHANGED:
 			int matcherID11c = e.getTaskID();
-			sLog.debug("Color change event from task ID: " + e.getTaskID());
+			log.debug("Color change event from task ID: " + e.getTaskID());
 			Iterator<CanvasGraph> graphIter11c = graphs.iterator();
 			
 			final Color taskColor = task.visData.color;
