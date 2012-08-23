@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.swing.SwingWorker;
 
+import org.apache.log4j.Logger;
+
 import am.Utility;
 import am.app.mappingEngine.oneToOneSelection.MappingMWBM;
 import am.app.mappingEngine.oneToOneSelection.MaxWeightBipartiteMatching;
@@ -17,6 +19,7 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
 	protected DefaultSelectionParameters params;
 	protected SelectionResult result;
 	
+	private Logger log = Logger.getLogger(AbstractSelectionAlgorithm.class);
 	// FIXME: Isn't this taken care of by SwingWorker? -- Cosmin.
 	protected List<MatchingProgressDisplay> progressListeners = new ArrayList<MatchingProgressDisplay>();
 	
@@ -68,6 +71,10 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
 	
     protected void selectAndSetAlignments() {
     	if(params.alignClasses) {
+    		if (params.inputResult == null){
+    			log.error("Input result is NULL! D: Cannot select!");
+    			return;
+    		}
     		Alignment<Mapping> classesAlignmentSet = scanMatrix(params.inputResult.getClassesMatrix());
     		result.setClassAlignmentSet(classesAlignmentSet);
     	}

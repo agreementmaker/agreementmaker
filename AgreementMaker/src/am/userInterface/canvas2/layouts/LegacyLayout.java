@@ -23,6 +23,7 @@ import javax.swing.event.PopupMenuListener;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.openjena.atlas.logging.Log;
 
 import am.Utility;
 import am.app.Core;
@@ -78,7 +79,7 @@ import com.hp.hpl.jena.vocabulary.OWL;
 
 public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	
-	private static final Logger sLog = Logger.getLogger(LegacyLayout.class);
+	private final Logger log = Logger.getLogger(LegacyLayout.class);
 	
 	public static final int VIEW_NORMAL = 0;
 	public static final int VIEW_SINGLE_MAPPING = 1;
@@ -190,7 +191,13 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	}
 	public boolean isPixelColumnDrawn(int canvasColNum) {  // LegacyEdge needs to know if a column has been drawn already.
 		int viewportColNum = canvasColNum - pixelColumnViewport.x - 1;
+		
+		if (viewportColNum < 0 || pixelColumnDrawn.length <= viewportColNum){
+			log.warn("Pixel column drawn array index is invalid.");
+			return true;
+		}
 		return pixelColumnDrawn[viewportColNum];
+		
 	}
 	public Rectangle getPixelColumnViewport() { return pixelColumnViewport; } // edge needs to know the viewport
 	
@@ -1110,7 +1117,12 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	public CanvasGraph buildMatcherGraph( MatchingTask m ) {
 		
 		if( m == null ) {
-			sLog.warn("Cannot build matcher graph for null task.");
+			log.warn("Cannot build matcher graph for null task.");
+			return null;
+		}
+		
+		if( m.selectionResult == null ) {
+			log.warn("Cannot build matcher graph for null selection result.");
 			return null;
 		}
 		

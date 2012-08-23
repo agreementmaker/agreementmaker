@@ -1,5 +1,7 @@
 package am.app.mappingEngine;
 
+import java.util.ArrayList;
+
 import am.userInterface.matchingtask.MatchingTaskVisData;
 
 
@@ -46,7 +48,7 @@ public class MatchingTask {
 		this.selectionParameters = selectionParams;
 		this.visData = new MatchingTaskVisData(); // default visualization
 	}
-
+	
 	/**
 	 * Run the matching algorithm.
 	 */
@@ -81,5 +83,9 @@ public class MatchingTask {
 	
 	public void setLabel(String label) {
 		this.shortLabel = label;
+	}
+	
+	public void addManualAlignments(ArrayList<Mapping> alignments) throws Exception {
+		throw new RuntimeException ("FIX ME!!!!! (Implement me)");
 	}
 }

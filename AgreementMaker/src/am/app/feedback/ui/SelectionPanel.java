@@ -35,10 +35,13 @@ import am.app.feedback.FeedbackLoop;
 import am.app.feedback.FeedbackLoopParameters;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.DefaultMatcherParameters;
+import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.MatchingTask;
 import am.app.ontology.Node;
 import am.userInterface.MatcherParametersDialog;
 import am.userInterface.MatchingProgressDisplay;
@@ -119,7 +122,10 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 					p.maxTargetAlign = fblp.targetNumMappings;
 					displayProgressScreen();
 					ufl.addProgressDisplay(this);
-					Core.getInstance().addMatcherResult(ufl);
+					
+					MatchingTask t = new MatchingTask(ufl, ufl.getParam(), 
+							new MwbmSelection(), new DefaultSelectionParameters());
+					Core.getInstance().addMatchingTask(t);
 					//ui.redisplayCanvas(); nothing to display yet, because no mappings have been computed
 					ufl.execute();
 			    }

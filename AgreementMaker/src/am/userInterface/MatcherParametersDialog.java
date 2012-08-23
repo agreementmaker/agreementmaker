@@ -39,8 +39,11 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
+import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.OntologyProfilerPanel;
@@ -685,7 +688,9 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 				// The dialog will start the matcher in a background thread, show progress as the matcher is running, and show the report at the end.
 				new MatcherProgressDialog(currentMatcher);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
 				if(!currentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
-					Core.getInstance().addMatcherResult(currentMatcher);
+					MatchingTask t = new MatchingTask(currentMatcher, currentMatcher.getParam(), 
+							new MwbmSelection(), new DefaultSelectionParameters());
+					Core.getInstance().addMatchingTask(t);
 				}	
 
 				if( Core.DEBUG ) System.out.println("Matching Process Complete");

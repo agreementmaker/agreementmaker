@@ -30,8 +30,11 @@ import javax.swing.KeyStroke;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.parsing.OutputController;
@@ -392,7 +395,10 @@ public class ImportDialog extends JDialog implements ActionListener{
 						@Override public void matchingComplete() {
 							if( ignore ) return;
 							if(!referenceAlignmentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
-								Core.getInstance().addMatcherResult(referenceAlignmentMatcher);
+								MatchingTask t = new MatchingTask(referenceAlignmentMatcher, referenceAlignmentMatcher.getParam(), 
+										new MwbmSelection(), new DefaultSelectionParameters());
+								
+								Core.getInstance().addMatchingTask(t);
 							}	
 							referenceAlignmentMatcher.removeProgressDisplay(this);
 						}
@@ -419,7 +425,8 @@ public class ImportDialog extends JDialog implements ActionListener{
 					AbstractMatcher m = (AbstractMatcher)in.readObject();
 					in.close();
 					
-					Core.getInstance().addMatcherInstance(m);
+					//TODO: Fix serialization of matching tasks
+					//Core.getInstance().addMatcherInstance(m);
 					
 					setVisible(false);
 					dispose();

@@ -18,6 +18,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.tools.LexiconLookup.LexiconLookupPanel;
@@ -206,7 +207,7 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 		LegacyMapping mapping = mappings.get(index);
 		MappingData data = (MappingData) mapping.getObject();
 		
-		AbstractMatcher matcher = Core.getInstance().getMatcherByID( data.matcherID );
+		MatchingTask task = Core.getInstance().getMatchingTaskByID( data.matcherID );
 		
 		
 		alignType mappingType = null;
@@ -234,7 +235,7 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 		else return;
 		
 		// remove the mapping from the matcher.
-		matcher.removeMapping( n1, n2 );
+		task.matcherResult.removeMapping(n1, n2);
 		
 		// ok, now that we removed the mapping from the matcher,
 		// remove the LegacyMapping from the CanvasGraph 

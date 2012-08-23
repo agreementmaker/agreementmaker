@@ -18,8 +18,10 @@ import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
+import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.Combination.CombinationParameters;
 import am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralParameters;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
@@ -32,6 +34,7 @@ import am.app.mappingEngine.mediatingMatcher.MediatingMatcherParameters;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.oaei.OAEI_Track;
 import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters.OAEI2011Configuration;
+import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 import am.app.ontology.Node;
@@ -1150,8 +1153,12 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	    time = (endtime-startime);
 		if( Core.DEBUG ) System.out.println(m.getRegistryEntry().getMatcherShortName() + " completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		
-		if(p.showIntermediateMatchers && !m.isCancelled()) 
-			Core.getInstance().addMatcherInstance(m);
+		if(p.showIntermediateMatchers && !m.isCancelled()) {
+			MatchingTask mt = new MatchingTask(m, m.getParam(), 
+					new MwbmSelection(), new DefaultSelectionParameters());
+			
+			Core.getInstance().addMatchingTask(mt);
+		}
 	}
 	
 	@Override

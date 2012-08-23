@@ -26,11 +26,13 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.DefaultMatcherParameters;
+import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
+import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
@@ -269,7 +271,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			@Override public void matchingComplete() {
 				if( ignore ) return;
 				if(!manualMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
-					Core.getInstance().addMatcherResult(manualMatcher);
+					MatchingTask t = new MatchingTask(manualMatcher, manualMatcher.getParam(), 
+							new MwbmSelection(), new DefaultSelectionParameters());
+					Core.getInstance().addMatchingTask(t);
 				}
 				manualMatcher.removeProgressDisplay(this);
 			}
@@ -359,7 +363,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			for(int i = 0; i < rowsIndex.length; i++) {
 				toBeCopied = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
 				AbstractMatcher aCopy = toBeCopied.copy(); //it does everything also setting the last index and matching
-				Core.getInstance().addMatcherResult(aCopy);
+				MatchingTask t = new MatchingTask(aCopy, aCopy.getParam(), 
+						new MwbmSelection(), new DefaultSelectionParameters());
+				Core.getInstance().addMatchingTask(t);
 			}
 			Utility.displayMessagePane(rowsIndex.length+" matchers have been copied.\n",null);
 			Core.getUI().redisplayCanvas();
@@ -479,7 +485,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			@Override public void matchingComplete() {
 				if( ignore ) return;
 				if(!currentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
-					Core.getInstance().addMatcherResult(currentMatcher);
+					MatchingTask t = new MatchingTask(currentMatcher, currentMatcher.getParam(), 
+							new MwbmSelection(), new DefaultSelectionParameters());
+					Core.getInstance().addMatchingTask(t);
 				}
 				currentMatcher.removeProgressDisplay(this);
 			}
@@ -677,7 +685,10 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			}
 			
 			Core.getInstance().getMatcherResults().clear();
-			Core.getInstance().addMatcherResult(userMatcher);
+			
+			MatchingTask t = new MatchingTask(userMatcher, userMatcher.getParam(), 
+					new MwbmSelection(), new DefaultSelectionParameters());
+			Core.getInstance().addMatchingTask(t);
 			
 			//update the table
 			Core.getInstance().removeAllMatchingTasks();

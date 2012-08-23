@@ -122,11 +122,13 @@ public class UIMenuListener implements ActionListener {
 					// create the User Manual Matcher
 					DefaultMatcherParameters matcherParams = new DefaultMatcherParameters();
 					AbstractMatcher matcher = new UserManualMatcher();
+					
 					DefaultSelectionParameters selectionParams = new DefaultSelectionParameters();
 					SelectionAlgorithm selectionAlgorithm = new MwbmSelection();
 					
 					MatchingTask task = new MatchingTask(matcher, matcherParams, selectionAlgorithm, selectionParams);
-					
+					task.match();
+					task.select();
 					Core.getInstance().addMatchingTask(task);
 				}
 				
@@ -248,48 +250,54 @@ public class UIMenuListener implements ActionListener {
 
 				// save the setting in preferences
 				prefs.saveShowMappingsShortname(menu.showMappingsShortname.isSelected());
-			} else if(obj == menu.duplicateView){
-				//Canvas2 wholeCanvas = new Canvas2();
-		
-				
-				JSplitPane uiPane=Core.getUI().getUISplitPane();
-				if(uiPane.getRightComponent() instanceof DuplicateSidebar)
-				{
-					//view is open, close it now.
-					DuplicateSidebar dupSidebar=(DuplicateSidebar)uiPane.getRightComponent();
-					
-					
-					uiPane.setRightComponent( dupSidebar.getOldComponent());
+			} else if (obj == menu.duplicateView) {
+				// Canvas2 wholeCanvas = new Canvas2();
+
+				JSplitPane uiPane = Core.getUI().getUISplitPane();
+				if (uiPane.getRightComponent() instanceof DuplicateSidebar) {
+					// view is open, close it now.
+					DuplicateSidebar dupSidebar = (DuplicateSidebar) uiPane
+							.getRightComponent();
+
+					uiPane.setRightComponent(dupSidebar.getOldComponent());
 					menu.duplicateView.setSelected(false);
-					//provenanceItem.set
-				}
-				else{
-					DuplicateSidebar dupSide = new DuplicateSidebar();
-					//JDialog dialog = new JDialog();
-				final	JScrollPane scroll = (JScrollPane)Core.getUI().getUISplitPane().getLeftComponent();
-				
-					Canvas2 oldCanvas =  (Canvas2) scroll.getViewport().getView();
-					Canvas2	newCanvas = new Canvas2(dupSide, oldCanvas.getGraphs());
-					//JScrollPane newPane = new JScrollPane(newCanvas);
-					
-					//dupSide.setViewport(Core.getUI().getViewport());
-					
-				dupSide.setOldComponent(Core.getUI().getUISplitPane().getRightComponent());
-					
+					// provenanceItem.set
+				} else {
+
+					final DuplicateSidebar dupSide = new DuplicateSidebar();
+					// JDialog dialog = new JDialog();
+					final JScrollPane scroll = (JScrollPane) Core.getUI().getUISplitPane().getLeftComponent();
+					int newWidth = uiPane.getWidth() / 2;
+					uiPane.setDividerLocation(newWidth);
+
+					Canvas2 oldCanvas = (Canvas2) scroll.getViewport().getView();
+					Canvas2 newCanvas = new Canvas2(dupSide,oldCanvas.getGraphs());
+
+					dupSide.setOldComponent(Core.getUI().getUISplitPane().getRightComponent());
 					Rectangle viewRec = Core.getUI().getViewport().getBounds();
-					int newWidth = (viewRec.width)/2;
-					viewRec.x += newWidth;
-					viewRec.width = newWidth;
 					
+					
+
 					dupSide.getViewport().setView(newCanvas);
-					
+					/*viewRec.width = newWidth;
+					viewRec.x += newWidth;*/
 					dupSide.getViewport().setBounds(viewRec);
-					//dialog.getContentPane().setLayout(new BorderLayout());
+					
+					final int Pos = newWidth -147;
+					
+					SwingUtilities.invokeLater(new Runnable (){
+
+						@Override
+						public void run() {
+							dupSide.getHorizontalScrollBar().setValue(Pos);
+						}
+					});
+					
 					dupSide.setBorder(new LineBorder(Color.red));
-					//dialog.getContentPane().add(dupSide, BorderLayout.CENTER);
-					
-					
-					//dialog.setVisible(true);
+					// dialog.getContentPane().add(dupSide,
+					// BorderLayout.CENTER);
+
+					// dialog.setVisible(true);
 					Core.getUI().getUISplitPane().setRightComponent(dupSide);
 					menu.duplicateView.setSelected(true);
 				}
@@ -519,7 +527,6 @@ public class UIMenuListener implements ActionListener {
 
 					}
 
-
 					AbstractMatcher newMatcher = new UserManualMatcher();
 
 					newMatcher.setClassesAlignmentSet(combinedClassSet);
@@ -528,9 +535,10 @@ public class UIMenuListener implements ActionListener {
 					newMatcher.setID( Core.getInstance().getNextMatcherID());
 
 					//m.addMatcher(newMatcher);
-					Core.getInstance().addMatcherResult(newMatcher);
-
-
+					
+					MatchingTask t = new MatchingTask(newMatcher, newMatcher.getParam(), 
+							new MwbmSelection(), new DefaultSelectionParameters());
+					Core.getInstance().addMatchingTask(t);
 
 				}
 

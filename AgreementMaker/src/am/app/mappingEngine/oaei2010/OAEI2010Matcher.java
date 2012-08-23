@@ -8,8 +8,10 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
+import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Combination.CombinationParameters;
 import am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralParameters;
@@ -17,6 +19,7 @@ import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameter
 import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.oaei.OAEI_Track;
+import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.userInterface.MatchingProgressDisplay;
 
@@ -281,8 +284,11 @@ public class OAEI2010Matcher extends AbstractMatcher{
 	    time = (endtime-startime);
 		if( Core.DEBUG ) System.out.println(m.getRegistryEntry().getMatcherShortName() + " completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
 		
-		if(showAllMatchers && !m.isCancelled()) 
-			Core.getInstance().addMatcherResult(m);
+		if(showAllMatchers && !m.isCancelled()) {
+			MatchingTask t = new MatchingTask(m, m.getParam(), 
+					new MwbmSelection(), new DefaultSelectionParameters());
+			Core.getInstance().addMatchingTask(t);
+		}
 	}
 	
 	@Override

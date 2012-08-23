@@ -318,8 +318,10 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		}
 		
 		switch( e.getEvent() ) {
-		case MATCHER_ADDED:
-			graphs.add( layout.buildMatcherGraph(task) );
+		case MATCHER_ADDED: 
+			final CanvasGraph matcherGraph = layout.buildMatcherGraph(task);
+			if (matcherGraph != null)
+				graphs.add(matcherGraph);
 			repaint();
 			break;
 			

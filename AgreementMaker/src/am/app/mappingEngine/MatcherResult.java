@@ -1,5 +1,6 @@
 package am.app.mappingEngine;
 
+import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
 public class MatcherResult {
@@ -52,4 +53,8 @@ public class MatcherResult {
 		return id;
 	}
 	
+	public void removeMapping(Node source, Node target) {
+		// original function is in AbstractMatcher
+		throw new RuntimeException ("Not implemented yet!");
+	}
 }

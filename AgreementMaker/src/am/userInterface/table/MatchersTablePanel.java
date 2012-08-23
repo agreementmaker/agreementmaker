@@ -22,6 +22,7 @@ import javax.swing.table.TableColumn;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
@@ -29,6 +30,7 @@ import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.MatchingTaskChangeEvent.EventType;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
+import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 
 public class MatchersTablePanel extends JPanel implements MatcherChangeListener {
     
@@ -89,7 +91,9 @@ public class MatchersTablePanel extends JPanel implements MatcherChangeListener 
         //is important to add this here so that initColumns can assign the best width to columns
         //This matcher cannot be deleted
         UserManualMatcher userMatcher = (UserManualMatcher) MatcherFactory.getMatcherInstance(MatchersRegistry.UserManual, 0);
-        Core.getInstance().addMatcherResult(userMatcher);
+        MatchingTask t = new MatchingTask(userMatcher, userMatcher.getParam(), 
+				new MwbmSelection(), new DefaultSelectionParameters());
+        Core.getInstance().addMatchingTask(t);
         
         setOpaque(true); //content panes must be opaque
         //Set up column sizes.
@@ -259,10 +263,13 @@ public class MatchersTablePanel extends JPanel implements MatcherChangeListener 
 			addTask(e.getTask());
 		}
 		
+		for( int i =0; i < 10; i++) {
+			
+		}
+		
 		if( e.getEvent() == EventType.MATCHER_REMOVED ) {
 			removeTask(e.getTask());
 		}
 	}
-
 
 }

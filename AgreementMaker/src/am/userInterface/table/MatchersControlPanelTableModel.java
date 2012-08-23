@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.log4j.Logger;
+
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.MatchingTask;
@@ -13,7 +15,7 @@ import am.userInterface.UI;
 
 public class MatchersControlPanelTableModel extends AbstractTableModel {
 		
-
+	private final Logger log = Logger.getLogger(MatchersControlPanelTableModel.class);
 	private static final long serialVersionUID = 1L;
 	public final static String NONE = "N/A";
 	public final static String ANY = "ANY";
@@ -128,42 +130,54 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
             			return a.matcherParameters.inputResults.get(0).matchingAlgorithm.getName();
             		else return NONE;
             	}
-            	else if( col == MODIFIED)
+            	else if( col == MODIFIED){
+            		if ((a == null) || (a.matcherResult == null) ){
+            			log.warn("Matcher result is equal to null, or the matching task is equal to null");
+            			return false;
+            		}
             		return a.matcherResult.isModifiedByUser();
-            	else if(col == ALIGNCLASSES)
+            	}else if(col == ALIGNCLASSES)
             		return a.selectionParameters.alignClasses;
             	else if (col == ALIGNPROPERTIES)
             		return a.selectionParameters.alignProperties;
             	else if(col == FOUND ) {
+            		if ( a.selectionResult == null ) {
+            			log.warn("Selection Result is null! OH NOES!!!!");
+            			return 0;
+            		}
             		return a.selectionResult.getTotalNumberAlignments();
             	}
             	else if(col == PERFORMANCE ) {
-            		if(a.matcherResult.getExecutionTime() == 0)
+            		if(a.matcherResult == null || a.matcherResult.getExecutionTime() == 0)
             			return NONE;
             		else return a.matcherResult.getExecutionTime();
             	}
-            	else if (col == CORRECT )
+            	else if (col == CORRECT ){
+            		if ( a.selectionResult == null ) {
+            			log.warn("Selection Result is null! OH NOES!!!!");
+            			return 0;
+            		}
             		if(!a.selectionResult.isRefEvaluated())
             			return NONE;
             		else return a.selectionResult.refEvalData.getCorrect();
-            	else if(col == REFERENCE )
-            		if(!a.selectionResult.isRefEvaluated())
+            	}else if(col == REFERENCE ){
+            		if(a.selectionResult == null || !a.selectionResult.isRefEvaluated())
             			return NONE;
             		else return a.selectionResult.refEvalData.getExist();
-            	else if(col == RECALL)
-            		if(!a.selectionResult.isRefEvaluated())
+            	}else if(col == RECALL)
+            		if(a.selectionResult == null || !a.selectionResult.isRefEvaluated())
             			return NONE;
             		else return  Utility.getOneDecimalPercentFromDouble(a.selectionResult.refEvalData.getRecall());
             	else if(col == PRECISION )
-            		if(!a.selectionResult.isRefEvaluated())
+            		if(a.selectionResult == null || !a.selectionResult.isRefEvaluated())
             			return NONE;
             		else return  Utility.getOneDecimalPercentFromDouble(a.selectionResult.refEvalData.getPrecision());
             	else if(col == FMEASURE )
-            		if(!a.selectionResult.isRefEvaluated())
+            		if(a.selectionResult == null || !a.selectionResult.isRefEvaluated())
             			return NONE;
             		else return Utility.getOneDecimalPercentFromDouble(a.selectionResult.refEvalData.getFmeasure());
             	else if(col == CQUAL ) {
-            		if(!a.selectionResult.isQualEvaluated())
+            		if(a.selectionResult == null || !a.selectionResult.isQualEvaluated())
             			return NONE;
             		else {
             			QualityEvaluationData q = a.selectionResult.qualEvalData;
@@ -174,7 +188,7 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
             		}
             	}
             	else if(col == PQUAL ) {
-            		if(!a.selectionResult.isQualEvaluated())
+            		if(a.selectionResult == null || !a.selectionResult.isQualEvaluated())
             			return NONE;
             		else {
             			QualityEvaluationData q = a.selectionResult.qualEvalData;

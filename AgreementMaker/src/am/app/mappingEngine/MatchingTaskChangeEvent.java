@@ -23,27 +23,6 @@ public class MatchingTaskChangeEvent extends EventObject {
 	private int taskID = 0;
 	
 	@Deprecated
-	public MatchingTaskChangeEvent( AbstractMatcher s ) {
-		super(s);
-		typeOfEvent = EventType.NOT_SET;
-		taskID = s.getID();
-	}
-	
-	@Deprecated
-	public MatchingTaskChangeEvent( AbstractMatcher s, EventType t ) {
-		super(s);
-		typeOfEvent = t;
-		taskID = s.getID();
-	}
-	
-	@Deprecated
-	public MatchingTaskChangeEvent( AbstractMatcher s, EventType t, int id ) {
-		super(s);
-		typeOfEvent = t;
-		taskID = id;
-	}
-	
-	@Deprecated
 	public MatchingTaskChangeEvent( MatcherResult s ) {
 		super(s);
 		typeOfEvent = EventType.NOT_SET;

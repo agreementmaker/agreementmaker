@@ -299,42 +299,6 @@ public class Core {
 		return null;
 	}
 	
-	// this method adds a matcher to the end of the matchers list.
-	@Deprecated
-	public void addMatcherInstance(AbstractMatcher a) {
-		a.setIndex( matcherInstances.size() );
-		//a.setColor(Colors.matchersColors[a.getIndex()%6]);
-		a.setID(getNextMatcherID());
-		matcherInstances.add(a);
-		fireEvent( new MatchingTaskChangeEvent(a, MatchingTaskChangeEvent.EventType.MATCHER_ADDED, a.getID() ));
-	}
-	
-	@Deprecated
-	public void addMatcherResult(AbstractMatcher a){
-		a.setIndex(matcherResults.size());
-		//a.setColor(Colors.matchersColors[a.getID()%6]);
-		a.setID(getNextMatcherID());
-		matcherResults.add(a.getResult());
-		fireEvent( new MatchingTaskChangeEvent(a, MatchingTaskChangeEvent.EventType.MATCHER_ADDED, a.getID() ));
-	}
-	
-	@Deprecated
-	public void removeMatcher(AbstractMatcher a) {
-		MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(a, MatchingTaskChangeEvent.EventType.MATCHER_REMOVED, a.getID());
-		//int myIndex = a.getIndex();
-		matcherInstances.remove(a);
-		//All indexes must be decreased by one;
-		//For this reason whenever you have to delete more then one matcher, it's good to start from the last in the order
-		// TODO: The above behavior should be fixed - cosmin
-		AbstractMatcher next;
-		for(int i = 0; i<matcherInstances.size(); i++) {
-			next = matcherInstances.get(i);
-			next.setIndex(i);
-		}
-		fireEvent(evt);
-		
-	}
-	
 	/**
 	 * Add a newly completed matching task to the task list.
 	 * @param mt The completed matching task.
@@ -378,61 +342,37 @@ public class Core {
 	 * @param a the matcher that has been modified and generates a chain reaction on other matchings
 	 * @throws AMException 
 	 */
-	public void selectAndUpdateMatchers(AbstractMatcher a) throws Exception{
-		a.select();
-		MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(a, MatchingTaskChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, a.getID() );
+	public void selectAndUpdateMatchers(MatchingTask t) throws Exception{
+		t.select();
+		MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(t, MatchingTaskChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED );
 		fireEvent(evt);
-		updateMatchers(a);
-
+		updateMatchers(t);
 	}
 	
-	public void matchAndUpdateMatchers(AbstractMatcher a) throws Exception{
-		a.match();
-		MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(a, MatchingTaskChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, a.getID() );
+	public void matchAndUpdateMatchers(MatchingTask t) throws Exception{
+		t.match();
+		t.select();
+		MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(t, MatchingTaskChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED);
 		fireEvent(evt);
-		updateMatchers(a);
+		updateMatchers(t);
 	}
 	
-	private void updateMatchers(AbstractMatcher a) throws Exception {
+	private void updateMatchers(MatchingTask t) throws Exception {
 		//Chain update of all matchers after a
-		int startingIndex =  a.getIndex()+1;
-		ArrayList<AbstractMatcher> modifiedMatchers = new ArrayList<AbstractMatcher>();
-		modifiedMatchers.add(a);
-		AbstractMatcher current;
-		AbstractMatcher modified;
-		for(int i = startingIndex; i < matcherInstances.size(); i++) {
-			//for each matcher after a: current, we have to check if it contains any modified matchers as input
-			current = matcherInstances.get(i);
-			if(current.getMaxInputMatchers() > 0) {
-				for(int j = 0; j < modifiedMatchers.size(); j++) { //scan modified matchers at the beginning is only a
-					modified = modifiedMatchers.get(j);
-					if(current.getInputMatchers().contains(modified)) {//if current contains any of the modified matchers as input matcher
-						current.match(); //reinvoke() current and add it to the modified list
-						MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(a, MatchingTaskChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, current.getID() );
-						fireEvent(evt);
-						modifiedMatchers.add(current);
-						break;
-					}
-				}
-			}
-		}
+		throw new RuntimeException ("Implement me :D!!!!!!");
 	}
 	/**
 	 * add or update the alignments selected by the user in all the matchers selected in the table
 	 * @param alignments selected by the user
 	 */
 	public void performUserMatching(int index, ArrayList<Mapping> alignments) throws Exception {
-		AbstractMatcher matcher = matcherInstances.get(index);
-		matcher.addManualAlignments(alignments);
+		MatchingTask task = completedMatchingTasks.get(index);
+		task.addManualAlignments(alignments);
 		
 		// fire a matcher change event.
-		MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(matcher, MatchingTaskChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED, matcher.getID() );
+		MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(task, MatchingTaskChangeEvent.EventType.MATCHER_ALIGNMENTSET_UPDATED );
 		fireEvent(evt);
 	}
-	
-	
-	
-	
 	
 	public Node getNode(String localname, boolean fromSource, boolean fromClasses) {
 		Ontology o = sourceOntology;

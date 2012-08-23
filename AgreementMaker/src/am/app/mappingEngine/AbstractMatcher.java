@@ -17,7 +17,6 @@ import am.AMException;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.Mapping.MappingRelation;
-import am.app.mappingEngine.MatchingTaskChangeEvent.EventType;
 import am.app.mappingEngine.oneToOneSelection.MappingMWBM;
 import am.app.mappingEngine.oneToOneSelection.MaxWeightBipartiteMatching;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
@@ -1140,15 +1139,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		 setParameters(param);
 	 }
 
-	 @Deprecated
-	 public void setShown(boolean isShown) {
-		 this.isShown = isShown;
-
-		 // fire an event to let all the listeners know that the visibility of this abstract matcher
-		 MatchingTaskChangeEvent evt = new MatchingTaskChangeEvent(this, MatchingTaskChangeEvent.EventType.MATCHER_VISIBILITY_CHANGED, getID());
-		 Core.getInstance().fireEvent(evt);
-	 }
-
 	 public int getMaxSourceAlign() {
 		 return param.maxSourceAlign;
 	 }
@@ -1631,80 +1621,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 	 public void setID(int nextMatcherID) { matcherID = nextMatcherID; }
 	 public int  getID()                  { return matcherID; }
-
-	 // 
-	 /**
-	  * this method removes any mappings between these two nodes
-	  * 
-	  * @param source The source concept.
-	  * @param target The target concept.  Must be the same type of concept as the source. 
-	  * 
-	  * @deprecated Belongs in {@link MatcherResult}.
-	  */
-	 @Deprecated
-	 public void removeMapping(Node source, Node target) {
-
-		 if( (source.isClass() && target.isProp()) || (source.isProp() && target.isClass()) ) {
-			 // cannot have mappings between non matching types of concepts
-			 return;
-		 }
-
-		 alignType type = alignType.aligningClasses;
-		 if( source.isProp() ) type = alignType.aligningProperties;
-
-
-		 Alignment<Mapping> workingSet = null;
-		 SimilarityMatrix workingMatrix = null;
-		 if( type == alignType.aligningClasses ) {
-			 workingSet = classesAlignmentSet;
-			 workingMatrix = classesMatrix;
-		 } else {
-			 workingSet = propertiesAlignmentSet;
-			 workingMatrix = propertiesMatrix;
-		 }
-
-		 Mapping a = workingSet.contains(source, target);
-		 if( a == null ) { return; } // this mapping does not exist.
-
-		 // delete the alignment from the matrix
-
-		 int row = source.getIndex();
-		 int col = target.getIndex();
-
-		 if( row < workingMatrix.getRows() && col < workingMatrix.getColumns() ) {
-			 Mapping a2 = workingMatrix.get( row, col );
-			 if( a.equals(a2) ) {
-				 // ding ding ding, we have a winner.
-				 workingMatrix.set(row, col, null); // delete the alignment
-			 }
-		 }/* else {
-			// swap the row and col values 
-			row = target.getIndex();
-			col = source.getIndex();
-
-			if( row < workingMatrix.getRows() && col < workingMatrix.getColumns() ) {
-				Mapping a2 = workingMatrix.get(row, col);
-				if( a.equals(a2) ) {
-					// ding ding ding, we have a winner.
-					workingMatrix.set(row,col, null); // delete the alignment
-				}
-			}
-		}*/
-
-		 // delete the alignment from the alignment set
-		 // don't know if the order will be correct, so try both.
-		 workingSet.remove(a);
-		 /*if( !workingSet.removeAlignment(source, target) ) {
-			if( !workingSet.removeAlignment(target, source) ) {
-				// should never get here
-			}
-		}*/
-
-		 // make sure we let our listeners know that we changed the alignment set
-		 Core.getInstance().fireEvent( new MatchingTaskChangeEvent(this, 
-				 EventType.MATCHER_ALIGNMENTSET_UPDATED, this.matcherID) );
-
-	 }
 
 	 /**
 	  * this method removes any mappings between these two nodes
