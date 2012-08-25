@@ -19,7 +19,7 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 public class LoadLargeOntologiesTest {
 
-	private Logger log = Logger.getLogger(LoadLargeOntologiesTest.class.getClass());
+	private Logger log = Logger.getLogger(LoadLargeOntologiesTest.class);
 	
 	@Test
 	public void loadLargeOntologyWithJena() {

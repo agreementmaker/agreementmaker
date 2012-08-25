@@ -28,7 +28,7 @@ import am.output.alignment.AlignmentFormat;
  */
 public class OAEIAlignmentFormat implements AlignmentFormat {
 	
-	private static final Logger log = Logger.getLogger(OAEIAlignmentFormat.class.getClass());
+	private static final Logger log = Logger.getLogger(OAEIAlignmentFormat.class);
 	
 	@Override public String getFormatName() { return "Alignment API Format"; }
 	@Override public String getFormatFileExtension() { return ".rdf"; }
