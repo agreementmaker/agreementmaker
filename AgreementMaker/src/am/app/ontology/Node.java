@@ -15,6 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.userInterface.ontology.OntologyConceptGraphics;
@@ -33,19 +35,19 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.RDFS;
 /**
  * This class represents an element of the ontology to be aligned.
  * we could use the Resource class of Jena directly, but accessing information would be slower
  * so we use our own structure, even though we keep the reference to the Jena structure
  *
  */
-public class Node implements Serializable, Comparable<Node>{
+public class Node implements Serializable, Comparable<Node> {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -7629984078559964658L;
 
+	private Logger log = Logger.getLogger(Node.class);
+	
 	/** This is the reference of the Resource in the ontology, this is a Jena class.
 	 *  When parsing an XML ontology, there will be a Jena OntModel built in order to provide this resource.	
 	 *  The Node object is built taking information from this Jena Resource.
@@ -64,29 +66,29 @@ public class Node implements Serializable, Comparable<Node>{
 	 * One of the string which can be used to compare two nodes
 	 * In general the URI = namespace#localname, in the OWL ontology, often the localname is the same of label	
 	 * usually is defined with rdf: ID */
-	protected transient String localName = "";  // TODO - Avoid duplication of information.  The localname can be gotten from the Jena Resource. - Cosmin.
+	protected transient String localName = null;
 	/**
 	 * Another string which can be used to compare nodes
 	 * This should be a human readable version of localname. In a RDF or XML ontologies there are no labels
 	 * In OWL ontology we can have a label, even though often is the same of name.
 	 * rdfs:label
 	 */
-	private transient String label = ""; // TODO - Avoid duplication of information.  The label can be gotten from the Jena Resource. - Cosmin.
+	private transient String label = null;
 	/**
 	 * Another string which can be used to compare nodes
 	 * This is a longer description (more than one word) for this resource.In a RDF or XML ontologies there are no comments
 	 * In OWL ontology we can have a comment.
 	 * rdfs:comment
 	 */
-	private transient String comment = "";  // TODO - Avoid duplication of information.  The comment can be gotten from the Jena Resource. - Cosmin.
+	private transient String comment = null;
 	
 	//SOME MORE INFORMATIONS THAT MY BE USED -- // TODO - Avoid duplication of information.  All the info can be gotten from the Jena Resource. - Cosmin.
-	private transient String isDefinedByLabel = "";
-	private transient String isDefinedByURI = "";
-	private transient String isDefinedByComment = "";
-	private transient String seeAlsoLabel = "";
-	private transient String seeAlsoURI = "";
-	private transient String seeAlsoComment = "";
+	private transient String isDefinedByLabel = null;
+	private transient String isDefinedByURI = null;
+	private transient String isDefinedByComment = null;
+	private transient String seeAlsoLabel = null;
+	private transient String seeAlsoURI = null;
+	private transient String seeAlsoComment = null;
 	
 	/** If the node is a prop node then it this list contains the list of classes localnames which declare this property.
 		If the node is a class node then this list contains the list of properties declared by this class.
@@ -120,7 +122,6 @@ public class Node implements Serializable, Comparable<Node>{
 	private transient int color;
 	private transient List<Node> parents = new ArrayList<Node>();
 	private transient List<Node> children = new ArrayList<Node>();
-	private transient int depth;
 	
 	/**
 	 * This is an arraylist all the graphical representations of this node.
@@ -150,7 +151,7 @@ public class Node implements Serializable, Comparable<Node>{
 		localName = a.localName;
 		type = a.type;
 		index = a.index;
-		String language = "EN";
+		//String language = "EN";
 		resource = a.resource;
 		uri = a.getUri();
 		localName = a.getLocalName();
@@ -160,7 +161,7 @@ public class Node implements Serializable, Comparable<Node>{
 	
 	/**RDF OWL Constructor*/
 	public Node(int key, Resource r, String type, int ontID ) {
-		String language = "EN";
+		final String language = "EN";
 		resource = r;
 		uri = r.getURI();
 		localName = r.getLocalName();
@@ -176,27 +177,21 @@ public class Node implements Serializable, Comparable<Node>{
 			if(label == null)
 				label = "";
 
-			//COmments
-			comment = "";
-			Literal l = null;
-			ExtendedIterator it = or.listComments(language);
-			if(!it.hasNext())
-				it = or.listComments(null);
-			while(it.hasNext()) {
-				l = (Literal)it.next();
-				if(l!=null) comment+= l+" ";
+			ExtendedIterator<RDFNode> commentsIter = or.listComments(language);
+			if(!commentsIter.hasNext() ) commentsIter = or.listComments(null);
+			
+			while( commentsIter.hasNext() ) {
+				final Literal l = (Literal) commentsIter.next();
+				if( l != null ) comment += l + " ";
 			}
 
 			//ANNOTATIONS: isDefBy and seeAlso I'm not considering "sameAs" "differentFrom" "disjointWith"
-			it = or.listIsDefinedBy();
-			isDefinedByLabel = "";
-			isDefinedByURI = "";
-			isDefinedByComment = "";
-			l = null;
+			ExtendedIterator<RDFNode> definedByIter = or.listIsDefinedBy();
+			
 			OntResource or2;
-			if(it.hasNext()) {
+			if(definedByIter.hasNext()) {
 				
-				RDFNode ol = (RDFNode) it.next();
+				RDFNode ol = (RDFNode) definedByIter.next();
 				
 				//OntResourceImpl ol = (OntResourceImpl)it.next();
 				
@@ -219,14 +214,11 @@ public class Node implements Serializable, Comparable<Node>{
 				}
 			}
 
-			it = or.listSeeAlso();
-			seeAlsoLabel = "";
-			seeAlsoComment = "";
-			seeAlsoURI = "";
-			l = null;
-			if(it.hasNext()) {
+			ExtendedIterator<RDFNode> seeAlsoIter = or.listSeeAlso();
+
+			if(seeAlsoIter.hasNext()) {
 				
-				RDFNode ol = (RDFNode)it.next();
+				RDFNode ol = (RDFNode)seeAlsoIter.next();
 				if(ol!= null && ol.canAs(OntResource.class)){
 					or2 = (OntResource)ol.as(OntResource.class);
 					seeAlsoLabel = or2.getLabel(language);
@@ -249,44 +241,41 @@ public class Node implements Serializable, Comparable<Node>{
 			if(!or.canAs(OntProperty.class)) {//remember is important to check on prop instead of class to avoid a jena bug that a prop canAs ontClass
 				try {
 					OntClass cls = (OntClass)or.as(OntClass.class);
-					it = cls.listDeclaredProperties(true);
-					String localname;
-					while(it.hasNext()) {
-						OntProperty op = (OntProperty)it.next();
+					ExtendedIterator<OntProperty> propIter = cls.listDeclaredProperties(true);
+
+					while(propIter.hasNext()) {
+						OntProperty op = (OntProperty)propIter.next();
 						if(!op.isAnon()) {
-							localname = op.getLocalName();
+							final String localname = op.getLocalName();
 							propOrClassNeighbours.add(localname);
 						}
 	
 					}
-					it = cls.listInstances(true);
-					while(it.hasNext()) {
-						Individual ind = (Individual)it.next();
-						localname = ind.getLabel(null);
+					ExtendedIterator<? extends OntResource> instanceIter = cls.listInstances(true);
+					while(instanceIter.hasNext()) {
+						Individual ind = (Individual)instanceIter.next();
+						final String localname = ind.getLabel(null);
 						if(localname != null && !localname.equals(""))
 							individuals.add(localname);
 					}
 				}
 				catch ( Exception e ) {
-					if( Core.DEBUG_STACK_TRACE_MSG ) System.out.println(e.getMessage());
-					if( Core.DEBUG ) e.printStackTrace();
+					log.error("Cannot determine neighbors/individuals of the OntClass.", e);
 				}
 			}
 			else {
 				try{ 
 					OntProperty prop = (OntProperty)or.as(OntProperty.class);
-					it = prop.listDeclaringClasses(true);
-					String localname;
-					while(it.hasNext()) {
-						OntClass op = (OntClass)it.next();
+					ExtendedIterator<? extends OntResource> classesIter = prop.listDeclaringClasses(true);
+					while(classesIter.hasNext()) {
+						OntClass op = (OntClass)classesIter.next();
 						if(!op.isAnon()) {
-							localname = op.getLocalName();
+							final String localname = op.getLocalName();
 							propOrClassNeighbours.add(localname);
 						}
 					}
 				} catch ( Exception e ) {
-					if( Core.DEBUG_STACK_TRACE_MSG ) System.out.println(e.getMessage());
-					if( Core.DEBUG ) e.printStackTrace();
+					log.error("Cannot determine neighbor nodes of the OntProperty.", e);
 				}
 			}
 		}
@@ -296,15 +285,58 @@ public class Node implements Serializable, Comparable<Node>{
 	public Resource getResource() { return resource; }
 	public void setResource(Resource resource) { this.resource = resource; }
 	
-	public String getLocalName() { return localName; }
+	public String getLocalName() { 
+		if( localName != null ) return localName;
+		if( resource == null ) return null; // cannot use Jena API.
+		return resource.getLocalName();
+	}
+	
 	public void setLocalName(String localName) { this.localName = localName; }
 	
-	public String getLabel() { return label; }
+	/**
+	 * @return The label of this node.  null if a label is not defined.
+	 */
+	public String getLabel() { 
+		if( label != null ) return label;
+		
+		// if a label has not been already set, use the Jena API.
+		return getPropertyLiteral(RDFS.label);
+	}
+	
+	/**
+	 * Set the label of this node. This method is used for compatability with
+	 * ontology formats not recognized by Jena.
+	 * 
+	 * @param label
+	 */
 	public void setLabel(String label) { this.label = label; }
 	
-	public String getComment() { return comment; }
+	public String getComment() {
+		if( comment != null ) return comment;
+		
+		// if a comment has not been set already, use the jena API.
+		return getPropertyLiteral(RDFS.comment);
+	}
+	
 	public void setComment(String comment) { this.comment = comment; }
 		
+	/**
+	 * @param property
+	 *            A Jena datatype property. If this is not a datatype property,
+	 *            behavior is undefined.
+	 * @return The string value of the literal defined by the datatype property.
+	 */
+	public String getPropertyLiteral( Property property ) {
+		if( resource == null ) return null; // no resource, cannot use Jena API.
+		
+		Statement st = resource.getProperty(property);
+		if( st == null ) {
+			return null;
+		}
+		
+		return st.getObject().asLiteral().getString();
+	}
+	
 	/*@Deprecated
 	public boolean hasDuplicates() {
 		return vertexList.size() > 1;
@@ -416,11 +448,14 @@ public class Node implements Serializable, Comparable<Node>{
 	public String getSeeAlsoLabel() {
 		return seeAlsoLabel;
 	}
-
+	
 	public void setSeeAlsoLabel(String seeAlso) {
 		this.seeAlsoLabel = seeAlso;
 	}
 
+	public String getSeeAlsoURI() {
+		return seeAlsoURI;
+	}
 	
 	/**
 	 * Return the domain of a property as an OntResource. As per the Jena specifications, if there are more than one domains, return an arbitrary domain out of them.
@@ -793,16 +828,6 @@ public class Node implements Serializable, Comparable<Node>{
 	 */
 	public int getColor() {
 		return color;
-	}
-
-	/**
-	 * @param parent the parent to set
-	 */
-	/**
-	 * @param depth the depth to set
-	 */
-	public void setDepth(int depth) {
-		this.depth = depth;
 	}
 
 	public int getDepth() {
