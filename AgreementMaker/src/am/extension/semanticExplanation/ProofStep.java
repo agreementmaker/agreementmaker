@@ -12,6 +12,7 @@ import java.util.ArrayList;
  * @author jjosep37
  *
  */
+
 public class ProofStep {
 	List<AxiomRelation> inferenceSteps;
 	List<AxiomRelation> assumptionsDischarged;
@@ -60,9 +61,6 @@ public class ProofStep {
 		this.conclusion = new AxiomRelation();
 		this.type = ProofType.NOTDEFINED;
 	}
-	
-	
-	
 	
 }
 
