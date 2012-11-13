@@ -15,6 +15,7 @@ import simpack.measure.external.alignapi.JaroWinkler;
 import simpack.measure.external.alignapi.Levenshtein;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
@@ -399,13 +400,12 @@ public class MyMatcher extends AbstractMatcher {
         mm.setSourceOntology(source);
         mm.setTargetOntology(target);
 
-        AbstractParameters param = new AbstractParameters();
+        DefaultMatcherParameters param = new DefaultMatcherParameters();
         param.threshold = 0.6;
         param.maxSourceAlign = 1;
         param.maxTargetAlign = 1;
 
-        mm.setParam(param);
-
+        mm.setParameters(param);
         try {
             mm.match();
             mm.referenceEvaluation(reference); 
