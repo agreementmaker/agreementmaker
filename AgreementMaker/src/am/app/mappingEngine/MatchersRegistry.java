@@ -63,6 +63,7 @@ public enum MatchersRegistry {
 	 * And so, if your matcher is has no code errors, it will be incorporated into the AgreementMaker.  - Cosmin
 	 */
 	//
+	MyMatcher			( "CS586", "CS 586 Matcher", MyMatcher.class, MatcherCategory.USER),
 	HierStructSim		( "HSSM",  "Hierarchy Structure Similarity Matcher", HierarchyStructureMatcher.class, MatcherCategory.STRUCTURAL),
 	Boost				( "Boost", "Best Match Boosting", BestMatchBoosting.class, MatcherCategory.LEXICAL ), 
 	LSMWeighted			( "LSMW", "LSM Weighted", LexicalSynonymMatcherWeighted.class, MatcherCategory.LEXICAL),
