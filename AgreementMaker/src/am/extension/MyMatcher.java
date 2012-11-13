@@ -14,7 +14,6 @@ import simpack.measure.external.alignapi.Hamming;
 import simpack.measure.external.alignapi.JaroWinkler;
 import simpack.measure.external.alignapi.Levenshtein;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractParameters;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
