@@ -78,7 +78,7 @@ public class SemanticExpln {
 			System.out.println("Local Name");
 			System.out.println("-----------");
 			System.out.println(m.getEntity1().getLocalName()+" ---> "+m.getEntity2().getLocalName());
-			System.out.println("Comment");
+			System.out.println("Comment");			
 			System.out.println("-------");
 			System.out.println(m.getEntity1().getComment()+" ---> "+m.getEntity2().getComment());
 			System.out.println("Their Similarity Value="+m.getSimilarity());
