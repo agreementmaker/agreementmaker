@@ -45,6 +45,8 @@ public class MyMatcher extends AbstractMatcher {
     ExplanationNode absoluteSimilarityExplanation = new ExplanationNode();
     ExplanationNode resultExplanation = new ExplanationNode();
     
+    //the 2 dimensional structure which stores the explanation node between a source and target
+    ExplanationNode[][] explanationMatrix;
     
     public MyMatcher() {
         super();
@@ -121,10 +123,12 @@ public class MyMatcher extends AbstractMatcher {
         resultExplanation.setVal(finalSimilarity);
         resultExplanation.setCriteria(CombinationCriteria.VOTING);
         
-        resultExplanation.describeExplanation();
-        System.exit(0);
+       resultExplanation.describeExplanation();
+       //storing into the appropriate location inside the explanation matrix
+       
+       explanationMatrix[source.getIndex()][target.getIndex()] = resultExplanation;
+
         return new Mapping(source, target, finalSimilarity);
-        
     }
     
     /**
