@@ -121,7 +121,10 @@ public class MyMatcher extends AbstractMatcher {
         resultExplanation.setVal(finalSimilarity);
         resultExplanation.setCriteria(CombinationCriteria.VOTING);
         
+        resultExplanation.describeExplanation();
+        System.exit(0);
         return new Mapping(source, target, finalSimilarity);
+        
     }
     
     /**

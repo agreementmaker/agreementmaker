@@ -8,6 +8,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import am.Utility;
+import am.app.Core;
 
 import edu.smu.tspell.wordnet.NounSynset;
 import edu.smu.tspell.wordnet.Synset;
@@ -113,6 +114,8 @@ public class FromWordNetUtils {
 			return; // skip the initialization, wordnet has already been
 					// initialized
 
+		final String root = Core.getInstance().getRoot(); 
+		String wordnetdir4 = root + "/wordnet-3.0";
 		// Initialize the WordNet interface.
 		String cwd = System.getProperty("user.dir");
 
@@ -120,7 +123,7 @@ public class FromWordNetUtils {
 		String wordnetdir1 = cwd + "/wordnet-3.0";
 		String wordnetdir2 = cwd + "/../AgreementMaker/wordnet-3.0";
 		String wordnetdir3 = cwd + "/../InformationMatching/wordnet-3.0";
-		String[] dirs = { wordnetdir1, wordnetdir2, wordnetdir3 };
+		String[] dirs = { wordnetdir1, wordnetdir2, wordnetdir3, wordnetdir4 };
 
 		// search through the directories for the wordnet files
 		for (String currentDir : dirs) {
