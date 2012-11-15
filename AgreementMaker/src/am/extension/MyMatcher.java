@@ -1,11 +1,7 @@
 package am.extension;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -27,6 +23,8 @@ import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.extension.semanticExplanation.CombinationCriteria;
+import am.extension.semanticExplanation.ExplanationNode;
 import am.utility.FromWordNetUtils;
 
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -41,6 +39,13 @@ public class MyMatcher extends AbstractMatcher {
 
     private static Logger log = Logger.getLogger(MyMatcher.class);
 
+    ExplanationNode stringSimilarityExplanation = new ExplanationNode();
+    ExplanationNode wordNetSimilarityExplanation = new ExplanationNode();
+    ExplanationNode wordNetStringCombinationExplanation = new ExplanationNode();
+    ExplanationNode absoluteSimilarityExplanation = new ExplanationNode();
+    ExplanationNode resultExplanation = new ExplanationNode();
+    
+    
     public MyMatcher() {
         super();
         setName("My Matcher"); // change this to something else if you want
@@ -53,22 +58,24 @@ public class MyMatcher extends AbstractMatcher {
 
         Map<String, String> sourceMap = getInputs(source);
         Map<String, String> targetMap = getInputs(target);
-
+        
+        
         double stringSimilarity = findStringSimilarity(sourceMap, targetMap);
-
+        
         double finalSimilarity = 0;
-
 
 //        double dividedSynonymSimilarity = findDividedSynonymSimilarity(source, target);
 
         /*
          * Checking if values already map exactly
          */
+        
         if (    (sourceMap.containsKey("name") && targetMap.containsKey("name") && sourceMap.get("name").equals(targetMap.get("name"))) || 
                 (sourceMap.containsKey("name") && targetMap.containsKey("label") && sourceMap.get("name").equals(targetMap.get("label"))) ||
                 (sourceMap.containsKey("name") && targetMap.containsKey("comment") && sourceMap.get("name").equals(targetMap.get("comment"))  ) ){
             finalSimilarity = 1.0;
-            
+            absoluteSimilarityExplanation.setDescription("Absolute Similarity");
+            absoluteSimilarityExplanation.setVal(finalSimilarity);
         }
 
         else if((sourceMap.containsKey("label") && targetMap.containsKey("label") && sourceMap.get("label").equals(targetMap.get("label"))) ||
@@ -79,6 +86,9 @@ public class MyMatcher extends AbstractMatcher {
                 (sourceMap.containsKey("comment") && targetMap.containsKey("name") && sourceMap.get("comment").equals(targetMap.get("name")))  ||
                 (sourceMap.containsKey("comment") &&targetMap.containsKey("comment") && sourceMap.get("comment").equals(targetMap.get("comment")))) {
                 finalSimilarity = 0.9;
+                
+                absoluteSimilarityExplanation.setDescription("Absolute Similarity");
+                absoluteSimilarityExplanation.setVal(finalSimilarity);
         } else
             /*
              * Computing Synonym Similarity using Wordnet
@@ -93,10 +103,24 @@ public class MyMatcher extends AbstractMatcher {
                 wordNetUtils.areSynonyms(source.getLocalName(), target.getLabel())|| 
                 wordNetUtils.areSynonyms(source.getLocalName(), target.getComment())) {
             finalSimilarity = (.70);
+            wordNetSimilarityExplanation.setDescription("WordNet Similarity");
+            wordNetSimilarityExplanation.setVal(finalSimilarity);
+            
+            wordNetStringCombinationExplanation.addChild(wordNetSimilarityExplanation);
+            wordNetStringCombinationExplanation.setVal(finalSimilarity);
+            wordNetStringCombinationExplanation.setCriteria(CombinationCriteria.VOTING);
         } else {
             finalSimilarity = stringSimilarity;
+            wordNetStringCombinationExplanation.addChild(stringSimilarityExplanation);
+            wordNetStringCombinationExplanation.setVal(finalSimilarity);
+            wordNetStringCombinationExplanation.setCriteria(CombinationCriteria.VOTING);
         }
 
+        resultExplanation.addChild(wordNetStringCombinationExplanation);
+        resultExplanation.addChild(absoluteSimilarityExplanation);
+        resultExplanation.setVal(finalSimilarity);
+        resultExplanation.setCriteria(CombinationCriteria.VOTING);
+        
         return new Mapping(source, target, finalSimilarity);
     }
     
@@ -165,7 +189,10 @@ public class MyMatcher extends AbstractMatcher {
         }
 
         hammingSimilarity = hammingSimilarity / divisor;
-
+        ExplanationNode hammingExplanation = new ExplanationNode();
+        hammingExplanation.setVal(hammingSimilarity);
+        hammingExplanation.setDescription("Hamming Distance");
+        
         divisor = 0;
         if (sourceMap.containsKey("name") && targetMap.containsKey("name")) {
             levenshteinSimilarity += 2 * levenshteinStringSimilarity(sourceMap.get("name"), targetMap.get("name"));
@@ -209,6 +236,11 @@ public class MyMatcher extends AbstractMatcher {
 
         levenshteinSimilarity = levenshteinSimilarity / divisor;
 
+        ExplanationNode levenshteinExplanation = new ExplanationNode();
+        levenshteinExplanation.setVal(hammingSimilarity);
+        levenshteinExplanation.setDescription("Levenshtein Distance");
+        
+        
         divisor = 0;
         if (sourceMap.containsKey("name") && targetMap.containsKey("name")) {
             jarowinglerSimilarity += 2 * jarowinklerStringSimilarity(sourceMap.get("name"), targetMap.get("name"));
@@ -251,7 +283,10 @@ public class MyMatcher extends AbstractMatcher {
         }
 
         jarowinglerSimilarity = jarowinglerSimilarity / divisor;
-
+        
+        ExplanationNode jarowinglerExplanation = new ExplanationNode();
+        jarowinglerExplanation.setVal(hammingSimilarity);
+        jarowinglerExplanation.setDescription("JaroWingler Similarity Metric");
         /*
          * Weighted average of String Similarity
          * 
@@ -260,6 +295,15 @@ public class MyMatcher extends AbstractMatcher {
          * corresponding weightage was given while calculating the mean.
          */
         double finalsimilarity = (2 * hammingSimilarity + 3 * levenshteinSimilarity + jarowinglerSimilarity) / 6;
+        
+        stringSimilarityExplanation.addChild(jarowinglerExplanation);
+        stringSimilarityExplanation.addChild(levenshteinExplanation);
+        stringSimilarityExplanation.addChild(levenshteinExplanation);
+        
+        stringSimilarityExplanation.setVal(finalsimilarity);
+        stringSimilarityExplanation.setDescription("Final String Similarity Value");
+        stringSimilarityExplanation.setCriteria(CombinationCriteria.LWC);
+        
         return finalsimilarity;
     }
 
