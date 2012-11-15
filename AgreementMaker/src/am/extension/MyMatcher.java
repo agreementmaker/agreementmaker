@@ -7,8 +7,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import simpack.measure.external.alignapi.Hamming;
-import simpack.measure.external.alignapi.JaroWinkler;
-import simpack.measure.external.alignapi.Levenshtein;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.DefaultMatcherParameters;
@@ -23,6 +21,10 @@ import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
+import am.app.similarity.JaroWinklerSim;
+import am.app.similarity.LevenshteinEditDistance;
 import am.extension.semanticExplanation.CombinationCriteria;
 import am.extension.semanticExplanation.ExplanationNode;
 import am.utility.FromWordNetUtils;
@@ -46,8 +48,9 @@ public class MyMatcher extends AbstractMatcher {
     ExplanationNode resultExplanation = new ExplanationNode();
     
     //the 2 dimensional structure which stores the explanation node between a source and target
-    ExplanationNode[][] explanationMatrix;
-    
+    protected int rows;             // number of rows
+    protected int columns;             // number of columns
+    protected static ExplanationNode[][] explanationMatrix;
     public MyMatcher() {
         super();
         setName("My Matcher"); // change this to something else if you want
@@ -56,6 +59,9 @@ public class MyMatcher extends AbstractMatcher {
     @Override
     protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix) throws Exception {
 
+    	rows = matrix.getRows();
+    	columns = matrix.getColumns();
+    	
         FromWordNetUtils wordNetUtils = new FromWordNetUtils();
 
         Map<String, String> sourceMap = getInputs(source);
@@ -127,7 +133,7 @@ public class MyMatcher extends AbstractMatcher {
        //storing into the appropriate location inside the explanation matrix
        
        explanationMatrix[source.getIndex()][target.getIndex()] = resultExplanation;
-
+       System.exit(0);
         return new Mapping(source, target, finalSimilarity);
     }
     
@@ -155,7 +161,7 @@ public class MyMatcher extends AbstractMatcher {
          * label=label is given more weightage.
          */
 
-        if (sourceMap.containsKey("name") && targetMap.containsKey("name")) {
+/*        if (sourceMap.containsKey("name") && targetMap.containsKey("name")) {
             hammingSimilarity += (2 * hammingStringSimilarity(sourceMap.get("name"), targetMap.get("name")));
             divisor += 2;
         }
@@ -195,10 +201,10 @@ public class MyMatcher extends AbstractMatcher {
             divisor++;
         }
 
-        hammingSimilarity = hammingSimilarity / divisor;
+      hammingSimilarity = hammingSimilarity / divisor;
         ExplanationNode hammingExplanation = new ExplanationNode();
         hammingExplanation.setVal(hammingSimilarity);
-        hammingExplanation.setDescription("Hamming Distance");
+        hammingExplanation.setDescription("Hamming Distance");*/
         
         divisor = 0;
         if (sourceMap.containsKey("name") && targetMap.containsKey("name")) {
@@ -244,7 +250,7 @@ public class MyMatcher extends AbstractMatcher {
         levenshteinSimilarity = levenshteinSimilarity / divisor;
 
         ExplanationNode levenshteinExplanation = new ExplanationNode();
-        levenshteinExplanation.setVal(hammingSimilarity);
+        levenshteinExplanation.setVal(levenshteinSimilarity);
         levenshteinExplanation.setDescription("Levenshtein Distance");
         
         
@@ -292,7 +298,7 @@ public class MyMatcher extends AbstractMatcher {
         jarowinglerSimilarity = jarowinglerSimilarity / divisor;
         
         ExplanationNode jarowinglerExplanation = new ExplanationNode();
-        jarowinglerExplanation.setVal(hammingSimilarity);
+        jarowinglerExplanation.setVal(jarowinglerSimilarity);
         jarowinglerExplanation.setDescription("JaroWingler Similarity Metric");
         /*
          * Weighted average of String Similarity
@@ -301,10 +307,9 @@ public class MyMatcher extends AbstractMatcher {
          * in the ratio of Levenshtein > Hamming > Jaro-Wingler So, the
          * corresponding weightage was given while calculating the mean.
          */
-        double finalsimilarity = (2 * hammingSimilarity + 3 * levenshteinSimilarity + jarowinglerSimilarity) / 6;
+        double finalsimilarity = (3 * levenshteinSimilarity + jarowinglerSimilarity) / 4;
         
         stringSimilarityExplanation.addChild(jarowinglerExplanation);
-        stringSimilarityExplanation.addChild(levenshteinExplanation);
         stringSimilarityExplanation.addChild(levenshteinExplanation);
         
         stringSimilarityExplanation.setVal(finalsimilarity);
@@ -319,11 +324,11 @@ public class MyMatcher extends AbstractMatcher {
      */
     private Map<String, String> getInputs(Node node) {
         Map<String, String> stringMap = new HashMap<String, String>();
-        if (!node.getLabel().isEmpty())
+        if (node.getLabel() != null && !node.getLabel().isEmpty())
             stringMap.put("label", node.getLabel().toLowerCase().replaceAll("\\s", ""));
-        if (!node.getLocalName().isEmpty())
+        if (node.getLocalName() != null && !node.getLocalName().isEmpty())
             stringMap.put("name", node.getLocalName().toLowerCase().replaceAll("\\s", ""));
-        if (!node.getComment().isEmpty())
+        if (node.getComment() != null && !node.getComment().isEmpty())
             stringMap.put("comment", node.getComment().toLowerCase().replaceAll("\\s", ""));
 
         return stringMap;
@@ -341,21 +346,16 @@ public class MyMatcher extends AbstractMatcher {
      */
     public static void main(String[] args) throws Exception {
 
-        Ontology source = OntoTreeBuilder
-                .loadOWLOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/101/onto.rdf"); 
-        Ontology target1 = OntoTreeBuilder
-                .loadOWLOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/203/onto.rdf"); 
-        Ontology target2 = OntoTreeBuilder
-                .loadOWLOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/223/onto.rdf"); 
-        Ontology target3 = OntoTreeBuilder
-                .loadOWLOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/205/onto.rdf"); 
-        Ontology target4 = OntoTreeBuilder
-                .loadOWLOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/206/onto.rdf"); 
+        Ontology source = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/101/onto.rdf"); 
+        Ontology target1 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/203/onto.rdf"); 
+        Ontology target2 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/223/onto.rdf"); 
+        Ontology target3 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/205/onto.rdf"); 
+        Ontology target4 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/206/onto.rdf"); 
         
-        String reference1 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/203/refalign.rdf";
-        String reference2 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/223/refalign.rdf";
-        String reference3 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/205/refalign.rdf";
-        String reference4 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/206/refalign.rdf";
+        String reference1 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/203/refalign.rdf";
+        String reference2 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/223/refalign.rdf";
+        String reference3 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/205/refalign.rdf";
+        String reference4 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/206/refalign.rdf";
         
         
         try{
@@ -378,7 +378,7 @@ public class MyMatcher extends AbstractMatcher {
 
         mm.setSourceOntology(source);
         mm.setTargetOntology(target);
-
+        explanationMatrix = new ExplanationNode[source.getTreeCount()][target.getTreeCount()];
         DefaultMatcherParameters param = new DefaultMatcherParameters();
         param.threshold = 0.6;
         param.maxSourceAlign = 1;
@@ -399,9 +399,9 @@ public class MyMatcher extends AbstractMatcher {
      */
     private static double levenshteinStringSimilarity(String sourceString, String targetString) {
 
-        Levenshtein levenshtein = new Levenshtein(sourceString, targetString);
-        levenshtein.calculate();
-        return levenshtein.getSimilarity().doubleValue();
+        LevenshteinEditDistance levenshtein = new LevenshteinEditDistance();
+      //  levenshtein.calculate();
+        return levenshtein.getSimilarity(sourceString, targetString);
     }
 
     /**
@@ -418,9 +418,9 @@ public class MyMatcher extends AbstractMatcher {
      * Jaro-Winkler String Similarity.
      */
     private static double jarowinklerStringSimilarity(String sourceString, String targetString) {
-        JaroWinkler jaro = new JaroWinkler(sourceString, targetString);
-        jaro.calculate();
-        return jaro.getSimilarity().doubleValue();
+    	JaroWinklerSim jaro = new JaroWinklerSim();
+   //     jaro.calculate();
+        return jaro.getSimilarity(sourceString, targetString);
     }
 
     /**
@@ -528,5 +528,23 @@ public class MyMatcher extends AbstractMatcher {
         // get the string value of the literal
         return label.getString();
     }
+    
+	/**
+	 * Method to read in an OWL ontology.
+	 * @param sourceOntFile Path of the OWL ontology file.
+	 * @return Ontology data structure.
+	 */
+	private static Ontology readOntology(String ontoURI) {
+		
+		Ontology onto = OntoTreeBuilder.loadOntology(ontoURI, OntologyLanguage.RDFS, OntologySyntax.RDFXML);
+//		OntoTreeBuilder ontoBuilder = new OntoTreeBuilder( sourceOntFile,
+//				Ontology.SOURCE, GlobalStaticVariables.LANG_OWL, 
+//				GlobalStaticVariables.SYNTAX_RDFXML, 
+//				false, false);
+//		
+//		ontoBuilder.build(OntoTreeBuilder.Profile.noReasoner);  // read in the ontology file, create the Ontology object.
+		
+		return onto;
+	}
 
 }

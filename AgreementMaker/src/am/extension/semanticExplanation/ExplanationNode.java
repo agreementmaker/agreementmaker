@@ -80,8 +80,8 @@ public class ExplanationNode {
 		}
 		for(ExplanationNode node: this.children){
 			node.describeExplanation();
+			this.describeNode();
 		}
-		this.describeNode();
 	}
 	
 }
