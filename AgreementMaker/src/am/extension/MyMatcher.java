@@ -41,18 +41,20 @@ public class MyMatcher extends AbstractMatcher {
 
     private static Logger log = Logger.getLogger(MyMatcher.class);
 
-    ExplanationNode stringSimilarityExplanation = new ExplanationNode();
-    ExplanationNode wordNetSimilarityExplanation = new ExplanationNode();
-    ExplanationNode wordNetStringCombinationExplanation = new ExplanationNode();
-    ExplanationNode absoluteSimilarityExplanation = new ExplanationNode();
-    ExplanationNode resultExplanation = new ExplanationNode();
+    ExplanationNode stringSimilarityExplanation = new ExplanationNode("String Similarity");
+    ExplanationNode wordNetSimilarityExplanation = new ExplanationNode("WordNet Similarity");
+    ExplanationNode wordNetStringCombinationExplanation = new ExplanationNode("WordNet- String Combination");
+    ExplanationNode absoluteSimilarityExplanation = new ExplanationNode("Absolute Similarity");
+    ExplanationNode resultExplanation = new ExplanationNode("Final Explanation");
+    ExplanationNode levenshteinExplanation = new ExplanationNode("Levenshtein Distance");
+    ExplanationNode jarowinglerExplanation = new ExplanationNode("Jaro-Wingler metric");
+    
     
     //the 2 dimensional structure which stores the explanation node between a source and target
     protected int rows;             // number of rows
     protected int columns;             // number of columns
     protected static ExplanationNode[][] explanationMatrix;
     public MyMatcher() {
-        super();
         setName("My Matcher"); // change this to something else if you want
     }
 
@@ -83,7 +85,7 @@ public class MyMatcher extends AbstractMatcher {
                 (sourceMap.containsKey("name") && targetMap.containsKey("comment") && sourceMap.get("name").equals(targetMap.get("comment"))  ) ){
             finalSimilarity = 1.0;
             absoluteSimilarityExplanation.setDescription("Absolute Similarity");
-            absoluteSimilarityExplanation.setVal(finalSimilarity);
+            absoluteSimilarityExplanation.setVal(1.0);
         }
 
         else if((sourceMap.containsKey("label") && targetMap.containsKey("label") && sourceMap.get("label").equals(targetMap.get("label"))) ||
@@ -93,15 +95,16 @@ public class MyMatcher extends AbstractMatcher {
                 (sourceMap.containsKey("comment") && targetMap.containsKey("label") && sourceMap.get("comment").equals(targetMap.get("label"))) ||
                 (sourceMap.containsKey("comment") && targetMap.containsKey("name") && sourceMap.get("comment").equals(targetMap.get("name")))  ||
                 (sourceMap.containsKey("comment") &&targetMap.containsKey("comment") && sourceMap.get("comment").equals(targetMap.get("comment")))) {
-                finalSimilarity = 0.9;
+                if(finalSimilarity ==0)
+                	finalSimilarity = 0.9;
                 
-                absoluteSimilarityExplanation.setDescription("Absolute Similarity");
-                absoluteSimilarityExplanation.setVal(finalSimilarity);
-        } else
-            /*
-             * Computing Synonym Similarity using Wordnet
-             */
-            if (wordNetUtils.areSynonyms(source.getLabel(), target.getLabel()) || 
+                absoluteSimilarityExplanation.setDescription("Absolute Similarity- Inter values");
+                absoluteSimilarityExplanation.setVal(0.9);
+        }
+        /*
+         * Computing Synonym Similarity using Wordnet
+         */
+        if (wordNetUtils.areSynonyms(source.getLabel(), target.getLabel()) || 
                 wordNetUtils.areSynonyms(source.getLocalName(), target.getLocalName()) || 
                 wordNetUtils.areSynonyms(source.getComment(), target.getComment()) ||
                 wordNetUtils.areSynonyms(source.getLabel(), target.getLocalName()) || 
@@ -110,30 +113,38 @@ public class MyMatcher extends AbstractMatcher {
                 wordNetUtils.areSynonyms(source.getComment(), target.getLabel()) ||
                 wordNetUtils.areSynonyms(source.getLocalName(), target.getLabel())|| 
                 wordNetUtils.areSynonyms(source.getLocalName(), target.getComment())) {
-            finalSimilarity = (.70);
+            if(finalSimilarity == 0)
+            	finalSimilarity = (.80);
             wordNetSimilarityExplanation.setDescription("WordNet Similarity");
-            wordNetSimilarityExplanation.setVal(finalSimilarity);
+            wordNetSimilarityExplanation.setVal(.8);
             
-            wordNetStringCombinationExplanation.addChild(wordNetSimilarityExplanation);
-            wordNetStringCombinationExplanation.setVal(finalSimilarity);
+            wordNetStringCombinationExplanation.setVal(.8);
             wordNetStringCombinationExplanation.setCriteria(CombinationCriteria.VOTING);
-        } else {
+        } 
+        if(finalSimilarity <stringSimilarity){
             finalSimilarity = stringSimilarity;
-            wordNetStringCombinationExplanation.addChild(stringSimilarityExplanation);
-            wordNetStringCombinationExplanation.setVal(finalSimilarity);
+            
+            wordNetStringCombinationExplanation.setVal(stringSimilarity);
             wordNetStringCombinationExplanation.setCriteria(CombinationCriteria.VOTING);
         }
-
+        wordNetStringCombinationExplanation.addChild(wordNetSimilarityExplanation);
+        wordNetStringCombinationExplanation.addChild(stringSimilarityExplanation);
+        
         resultExplanation.addChild(wordNetStringCombinationExplanation);
         resultExplanation.addChild(absoluteSimilarityExplanation);
+        
         resultExplanation.setVal(finalSimilarity);
         resultExplanation.setCriteria(CombinationCriteria.VOTING);
+       
         
-       resultExplanation.describeExplanation();
+//        System.out.println("Label: " +source.getLabel() + " Name: " +source.getLocalName()+ " Comment: " +source.getComment());
+//        System.out.println("Label: " +target.getLabel() + " Name: " +target.getLocalName()+ " Comment: " +target.getComment());
+        
+//        System.out.println("Num of children for result = " + resultExplanation.getChildren().size() );
+//        resultExplanation.describeExplanation();
        //storing into the appropriate location inside the explanation matrix
        
-       explanationMatrix[source.getIndex()][target.getIndex()] = resultExplanation;
-       System.exit(0);
+        explanationMatrix[source.getIndex()][target.getIndex()] = resultExplanation;
         return new Mapping(source, target, finalSimilarity);
     }
     
@@ -249,10 +260,9 @@ public class MyMatcher extends AbstractMatcher {
 
         levenshteinSimilarity = levenshteinSimilarity / divisor;
 
-        ExplanationNode levenshteinExplanation = new ExplanationNode();
+        
         levenshteinExplanation.setVal(levenshteinSimilarity);
         levenshteinExplanation.setDescription("Levenshtein Distance");
-        
         
         divisor = 0;
         if (sourceMap.containsKey("name") && targetMap.containsKey("name")) {
@@ -297,7 +307,7 @@ public class MyMatcher extends AbstractMatcher {
 
         jarowinglerSimilarity = jarowinglerSimilarity / divisor;
         
-        ExplanationNode jarowinglerExplanation = new ExplanationNode();
+        
         jarowinglerExplanation.setVal(jarowinglerSimilarity);
         jarowinglerExplanation.setDescription("JaroWingler Similarity Metric");
         /*
@@ -313,9 +323,10 @@ public class MyMatcher extends AbstractMatcher {
         stringSimilarityExplanation.addChild(levenshteinExplanation);
         
         stringSimilarityExplanation.setVal(finalsimilarity);
-        stringSimilarityExplanation.setDescription("Final String Similarity Value");
+        stringSimilarityExplanation.setDescription("Combined String Similarity");
         stringSimilarityExplanation.setCriteria(CombinationCriteria.LWC);
-        
+//        System.out.println("totalString- children:"+stringSimilarityExplanation.getChildren().size());
+//        stringSimilarityExplanation.describeExplanation();
         return finalsimilarity;
     }
 
@@ -346,16 +357,28 @@ public class MyMatcher extends AbstractMatcher {
      */
     public static void main(String[] args) throws Exception {
 
-        Ontology source = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/101/onto.rdf"); 
-        Ontology target1 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/203/onto.rdf"); 
-        Ontology target2 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/223/onto.rdf"); 
-        Ontology target3 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/205/onto.rdf"); 
-        Ontology target4 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/206/onto.rdf"); 
+//    	Ontology source = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/101/onto.rdf"); 
+//    	Ontology target1 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/203/onto.rdf"); 
+//    	Ontology target2 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/223/onto.rdf"); 
+//    	Ontology target3 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/205/onto.rdf"); 
+//    	Ontology target4 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/206/onto.rdf"); 
+//    	
+//    	String reference1 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/203/refalign.rdf";
+//    	String reference2 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/223/refalign.rdf";
+//    	String reference3 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/205/refalign.rdf";
+//    	String reference4 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/206/refalign.rdf";
+
+    	
+    	Ontology source =  readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/101/onto.rdf"); 
+        Ontology target1 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/203/onto.rdf"); 
+        Ontology target2 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/223/onto.rdf"); 
+        Ontology target3 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/205/onto.rdf"); 
+        Ontology target4 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/206/onto.rdf"); 
         
-        String reference1 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/203/refalign.rdf";
-        String reference2 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/223/refalign.rdf";
-        String reference3 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/205/refalign.rdf";
-        String reference4 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/206/refalign.rdf";
+        String reference1 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/203/refalign.rdf";
+        String reference2 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/223/refalign.rdf";
+        String reference3 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/205/refalign.rdf";
+        String reference4 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/206/refalign.rdf";
         
         
         try{
