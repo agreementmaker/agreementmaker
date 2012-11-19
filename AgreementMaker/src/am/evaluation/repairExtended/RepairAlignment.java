@@ -3,6 +3,7 @@ package am.evaluation.repairExtended;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -43,7 +44,7 @@ public class RepairAlignment {
 	private AlignmentRepairUtilities util = new AlignmentRepairUtilities(log);
 	
 	private List<MatchingPair> alignment;
-	private int axiomCount = 0;
+	//private int axiomCount = 0;
 	
 	public static void main(String[] args) throws OWLOntologyCreationException {
 		
@@ -54,7 +55,10 @@ public class RepairAlignment {
 	public void repair(){
 		
 		OWLOntology mergedOntology;
-		List<OWLAxiom> inconsistentAxioms;
+		//List<OWLAxiom> inconsistentAxioms;
+		//HashMap<OWLClass,ArrayList<OWLAxiom>> axiomMap;
+		ConflictSetList inconsistentSets;
+		//Integer axiomCount = 0;
 		
 		try {
 						
@@ -63,14 +67,29 @@ public class RepairAlignment {
 			log.info("Merging ontolgoies...");
 			mergedOntology = mergeOntologies();
 			log.info("Ontologies merged successfully");
+			
+			System.out.println(" ");
+			
+			log.info("Identifying inconsistent classes and respective equivalence axioms...");
+			//inconsistentAxioms = getInconsistentAxioms(alignment, mergedOntology);
+			inconsistentSets = getInconsistentSets(alignment, mergedOntology);
+			log.info(inconsistentSets.getClassCount() + " inconsistent classes identified");
 						
-			log.info("Identifying inconsistent equivalence axioms...");
-			inconsistentAxioms = getInconsistentAxioms(alignment, mergedOntology);
-			log.info(axiomCount + " Inconsistent equivalence axioms identified");
 			
-			AxiomRank ax = new AxiomRank();
-			ArrayList<OWLAxiom> ax1 = (ArrayList<OWLAxiom>)ax.rankByAxiomFrequency((ArrayList<OWLAxiom>)inconsistentAxioms);
+			log.info(inconsistentSets.getAxiomCount() + " inconsistent axioms identified");
 			
+			System.out.println(" ");
+			
+			log.info("Ranking axioms...");
+			inconsistentSets.rankAxioms();
+			log.info("Axiom ranking complete");
+			//ArrayList<OWLAxiom> axiomRank = (ArrayList<OWLAxiom>)axiomRank.rankByAxiomFrequency((ArrayList<OWLAxiom>)inconsistentAxioms);
+			
+			System.out.println(" ");
+			
+			log.info("Compute hitting set...");
+			inconsistentSets.computeHittingSet();
+			log.info("Hitting set identified");
 			
 		} catch (OWLOntologyCreationException e) {
 			log.error("OWL ontology merge failed");
@@ -89,17 +108,17 @@ public class RepairAlignment {
 		return util.loadOntologies(alignment);
 	}
 	
-	public List<OWLAxiom> getInconsistentAxioms(List<MatchingPair> alignment,OWLOntology mergedOntology){
+	/*public List<OWLAxiom> getInconsistentAxioms(List<MatchingPair> alignment,OWLOntology mergedOntology){
 		
-		Node<OWLClass> unsatisfiledClasses;
+		Node<OWLClass> unsatisfiedClasses;
 		List<OWLAxiom> inconsistentAxioms = new ArrayList<OWLAxiom>();
 		
 		ReasonerFactory reasonerFactory = new ReasonerFactory();
 		Reasoner reasoner = util.loadReasoner(mergedOntology);		
 				
-		unsatisfiledClasses = reasoner.getUnsatisfiableClasses();
+		unsatisfiedClasses = reasoner.getUnsatisfiableClasses();
 		
-		for(OWLClass cls : unsatisfiledClasses){		
+		for(OWLClass cls : unsatisfiedClasses){		
 
 		if(! cls.isBottomEntity()){
 			Iterator<MatchingPair> mpIter = alignment.iterator();
@@ -107,31 +126,63 @@ public class RepairAlignment {
 			while(mpIter.hasNext()){
 				MatchingPair pair = mpIter.next();
 				if(pair.sourceURI.equals(cls.getIRI().toString()) || pair.targetURI.equals(cls.getIRI().toString())){
-					//unsatAlignments.add(pair);
 					mpIter.remove();
-
-					//Set<OWLAxiom> conflictingAxioms = getConflictingAxioms(mergedOntology, reasonerFactory, reasoner, unsatClass);
-					//conflictingAxiomsMap.put(unsatClass, conflictingAxioms);
 					
 					log.info("The conflicting class: " + cls);
-					inconsistentAxioms.addAll((ArrayList<OWLAxiom>)getConflictingAxioms(mergedOntology, reasonerFactory, reasoner, cls));
-						
+					inconsistentAxioms.addAll((ArrayList<OWLAxiom>)getConflictingAxioms(mergedOntology, reasonerFactory, reasoner, cls));		
 					}
 				}
 			}
 		}
 		
+		log.info(unsatisfiedClasses.getSize() + " Inconsistent classes identified");
+		
 		return inconsistentAxioms;		
+	}*/
+	
+	public ConflictSetList getInconsistentSets(List<MatchingPair> alignment,OWLOntology mergedOntology){
+		
+		Node<OWLClass> unsatisfiedClasses;
+		//HashMap<OWLClass,ArrayList<OWLAxiom>> axiomHashMap = new HashMap<OWLClass,ArrayList<OWLAxiom>>();
+		ConflictSetList inconsistentSets = new ConflictSetList();
+	
+		ReasonerFactory reasonerFactory = new ReasonerFactory();
+		Reasoner reasoner = util.loadReasoner(mergedOntology);		
+				
+		unsatisfiedClasses = reasoner.getUnsatisfiableClasses();
+		
+		for(OWLClass cls : unsatisfiedClasses){		
+
+			if(! cls.isBottomEntity()){
+				Iterator<MatchingPair> mpIter = alignment.iterator();
+					
+				while(mpIter.hasNext()){
+					MatchingPair pair = mpIter.next();
+					if(pair.sourceURI.equals(cls.getIRI().toString()) || pair.targetURI.equals(cls.getIRI().toString())){
+						mpIter.remove();
+
+						log.info("The conflicting class: " + cls);
+						//axiomHashMap.put(cls, (ArrayList<OWLAxiom>)getConflictingAxioms(mergedOntology, reasonerFactory, reasoner, cls));
+						inconsistentSets.addDistinct(new ConflictSet(cls,getConflictingAxioms(mergedOntology, reasonerFactory, reasoner, cls)));
+					
+					}
+				}
+			}
+		}		
+		//log.info(unsatisfiedClasses.getSize() + " Inconsistent classes identified");
+		
+		return inconsistentSets;		
 	}
 	
-	private List<OWLAxiom> getConflictingAxioms(OWLOntology mergedOntology,
+	private ArrayList<AxiomRank> getConflictingAxioms(OWLOntology mergedOntology,
 			ReasonerFactory reasonerFactory, Reasoner reasoner,
 			OWLClass unsatClass) {
 		//*** Get an explanation for each of the unsatisfiable classes.
 		//*** Save all the conflicting EquivalentClass axioms.
 		BlackBoxExplanation exp = new BlackBoxExplanation(mergedOntology, reasonerFactory, reasoner);
 		Set<OWLAxiom> expSet = exp.getExplanation(unsatClass);
-		List<OWLAxiom> conflictingAxioms = new ArrayList<OWLAxiom>();
+		//List<OWLAxiom> conflictingAxioms = new ArrayList<OWLAxiom>();
+		ArrayList<AxiomRank> conflictingAxioms = new ArrayList<AxiomRank>();
 
 		//System.out.println("\n------------------------------ Unsatisfiable Class ------------------------------");
 		//log.info("The Unsatisfiable class is: " + unsatClass);
@@ -146,7 +197,8 @@ public class RepairAlignment {
 
 				//Save the conflicting axiom (if its not a mapping between classes in same ontology).
 				if(!sourceURI.equals(targetURI))
-					conflictingAxioms.add(causingAxiom);
+					conflictingAxioms.add(new AxiomRank(causingAxiom,0));
+					//conflictingAxioms.add(causingAxiom);
 			}
 			else if(causingAxiom.getAxiomType() == AxiomType.EQUIVALENT_DATA_PROPERTIES) {
 				//Get the Source and Target classes in the axiom signature.
@@ -156,7 +208,8 @@ public class RepairAlignment {
 
 				//Save the conflicting axiom (if its not a mapping between classes in same ontology).
 				if(!sourceURI.equals(targetURI))
-					conflictingAxioms.add(causingAxiom);
+					conflictingAxioms.add(new AxiomRank(causingAxiom,0));
+					//conflictingAxioms.add(causingAxiom);
 			}
 			else if(causingAxiom.getAxiomType() == AxiomType.EQUIVALENT_OBJECT_PROPERTIES) {
 				//Get the Source and Target classes in the axiom signature.
@@ -166,18 +219,19 @@ public class RepairAlignment {
 
 				//Save the conflicting axiom (if its not a mapping between classes in same ontology).
 				if(!sourceURI.equals(targetURI))
-					conflictingAxioms.add(causingAxiom);
+					conflictingAxioms.add(new AxiomRank(causingAxiom,0));
+					//conflictingAxioms.add(causingAxiom);
 			}
 		}
 				
-		for(OWLAxiom confAx : conflictingAxioms){
-			log.info("The conflicting axiom: " + confAx);
-			axiomCount++;
+		for(AxiomRank confAx : conflictingAxioms){
+			log.info("The conflicting axiom: " + confAx.getAxiom());
+			//axiomCount++;
 		}
 						
 		return conflictingAxioms;
-	}
-	
+	}	
+
 	public Double computeMeasures(String toEvaluate, String reference){
 		
 		int count = 0;
