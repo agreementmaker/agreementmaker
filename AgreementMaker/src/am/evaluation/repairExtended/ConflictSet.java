@@ -6,10 +6,13 @@ import org.semanticweb.owlapi.model.OWLClass;
 
 public class ConflictSet {
 
+	private Integer ClassId = 0;
 	private OWLClass InconsistentClass;
 	private ArrayList<AxiomRank> AxiomList;
 	
-	public ConflictSet(OWLClass inconsistentClass, ArrayList<AxiomRank> axiomList){		
+	public ConflictSet(OWLClass inconsistentClass, ArrayList<AxiomRank> axiomList, Integer classId){	
+		
+		ClassId = classId;
 		InconsistentClass = inconsistentClass;
 		AxiomList = removeDuplicates(axiomList);
 	}
@@ -28,6 +31,15 @@ public class ConflictSet {
 	}
 	
 	//get set
+	public void setClassId (Integer classId)
+    {
+		ClassId = classId;           
+    }
+    public Integer getClassId()
+    {
+        return ClassId;
+    }
+	
 	public void setInconsistentClass (OWLClass inconsistentClass)
     {
 		InconsistentClass = inconsistentClass;           

@@ -83,6 +83,8 @@ public class RepairAlignment {
 			log.info("Ranking axioms...");
 			inconsistentSets.rankAxioms();
 			log.info("Axiom ranking complete");
+			
+			inconsistentSets.printConflictSetList();
 			//ArrayList<OWLAxiom> axiomRank = (ArrayList<OWLAxiom>)axiomRank.rankByAxiomFrequency((ArrayList<OWLAxiom>)inconsistentAxioms);
 			
 			System.out.println(" ");
@@ -161,9 +163,9 @@ public class RepairAlignment {
 					if(pair.sourceURI.equals(cls.getIRI().toString()) || pair.targetURI.equals(cls.getIRI().toString())){
 						mpIter.remove();
 
-						log.info("The conflicting class: " + cls);
+						//log.info("The conflicting class: " + cls);
 						//axiomHashMap.put(cls, (ArrayList<OWLAxiom>)getConflictingAxioms(mergedOntology, reasonerFactory, reasoner, cls));
-						inconsistentSets.addDistinct(new ConflictSet(cls,getConflictingAxioms(mergedOntology, reasonerFactory, reasoner, cls)));
+						inconsistentSets.addDistinct(new ConflictSet(cls,getConflictingAxioms(mergedOntology, reasonerFactory, reasoner, cls),inconsistentSets.getClassCount() + 1));
 					
 					}
 				}
@@ -198,6 +200,7 @@ public class RepairAlignment {
 				//Save the conflicting axiom (if its not a mapping between classes in same ontology).
 				if(!sourceURI.equals(targetURI))
 					conflictingAxioms.add(new AxiomRank(causingAxiom,0));
+					//conflictingAxioms.add(new AxiomRank(causingAxiom,0,conflictingAxioms.size() + 1));
 					//conflictingAxioms.add(causingAxiom);
 			}
 			else if(causingAxiom.getAxiomType() == AxiomType.EQUIVALENT_DATA_PROPERTIES) {
@@ -209,6 +212,7 @@ public class RepairAlignment {
 				//Save the conflicting axiom (if its not a mapping between classes in same ontology).
 				if(!sourceURI.equals(targetURI))
 					conflictingAxioms.add(new AxiomRank(causingAxiom,0));
+					//conflictingAxioms.add(new AxiomRank(causingAxiom,0,conflictingAxioms.size() + 1));
 					//conflictingAxioms.add(causingAxiom);
 			}
 			else if(causingAxiom.getAxiomType() == AxiomType.EQUIVALENT_OBJECT_PROPERTIES) {
@@ -220,14 +224,15 @@ public class RepairAlignment {
 				//Save the conflicting axiom (if its not a mapping between classes in same ontology).
 				if(!sourceURI.equals(targetURI))
 					conflictingAxioms.add(new AxiomRank(causingAxiom,0));
+					//conflictingAxioms.add(new AxiomRank(causingAxiom,0,conflictingAxioms.size() + 1));
 					//conflictingAxioms.add(causingAxiom);
 			}
 		}
 				
-		for(AxiomRank confAx : conflictingAxioms){
+		/*for(AxiomRank confAx : conflictingAxioms){
 			log.info("The conflicting axiom: " + confAx.getAxiom());
 			//axiomCount++;
-		}
+		}*/
 						
 		return conflictingAxioms;
 	}	
