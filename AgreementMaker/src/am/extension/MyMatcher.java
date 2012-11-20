@@ -136,12 +136,6 @@ public class MyMatcher extends AbstractMatcher {
         resultExplanation.setVal(finalSimilarity);
         resultExplanation.setCriteria(CombinationCriteria.VOTING);
        
-        
-//        System.out.println("Label: " +source.getLabel() + " Name: " +source.getLocalName()+ " Comment: " +source.getComment());
-//        System.out.println("Label: " +target.getLabel() + " Name: " +target.getLocalName()+ " Comment: " +target.getComment());
-        
-//        System.out.println("Num of children for result = " + resultExplanation.getChildren().size() );
-//        resultExplanation.describeExplanation();
        //storing into the appropriate location inside the explanation matrix
        
         explanationMatrix[source.getIndex()][target.getIndex()] = resultExplanation;
@@ -150,74 +144,18 @@ public class MyMatcher extends AbstractMatcher {
     
     /**
      * Essential combination algorithm to compute the basic string similarity between the source and target. 
-     * Three Algorithms are combined- Hamming, Levenshtein and Jaro-Winkler.
+     * Three Algorithms are combined- Levenshtein and Jaro-Winkler.
      * @param sourceMap
      * @param targetMap
      * @return
      */
 
     private double findStringSimilarity(Map<String, String> sourceMap, Map<String, String> targetMap) {
-        double hammingSimilarity = 0;
         double levenshteinSimilarity = 0;
         double jarowinglerSimilarity = 0;
         int divisor = 0;
 
-        /*
-         * Checking simple string similarity
-         * 
-         * Hamming, Levenshtein and Jaro-Winkler are 3 of the very widely used
-         * algorithms for string comparison. Here, all possible combinations
-         * between label, comment and localName are found for every algorithm,
-         * and then the weighted average is found. localName=localName and
-         * label=label is given more weightage.
-         */
-
-/*        if (sourceMap.containsKey("name") && targetMap.containsKey("name")) {
-            hammingSimilarity += (2 * hammingStringSimilarity(sourceMap.get("name"), targetMap.get("name")));
-            divisor += 2;
-        }
-        if (sourceMap.containsKey("label") && targetMap.containsKey("label")) {
-            hammingSimilarity += (2 * hammingStringSimilarity(sourceMap.get("label"), targetMap.get("label")));
-            divisor += 2;
-        }
-        if (sourceMap.containsKey("comment") && targetMap.containsKey("comment")) {
-            hammingSimilarity += (2 * hammingStringSimilarity(sourceMap.get("comment"), targetMap.get("comment")));
-            divisor += 2;
-        }
-
-        if (sourceMap.containsKey("name") && targetMap.containsKey("label")) {
-            hammingSimilarity += hammingStringSimilarity(sourceMap.get("name"), targetMap.get("label"));
-            divisor++;
-        }
-        if (sourceMap.containsKey("name") && targetMap.containsKey("comment")) {
-            hammingSimilarity += hammingStringSimilarity(sourceMap.get("name"), targetMap.get("comment"));
-            divisor++;
-        }
-
-        if (sourceMap.containsKey("label") && targetMap.containsKey("comment")) {
-            hammingSimilarity += hammingStringSimilarity(sourceMap.get("label"), targetMap.get("comment"));
-            divisor++;
-        }
-        if (sourceMap.containsKey("label") && targetMap.containsKey("name")) {
-            hammingSimilarity += hammingStringSimilarity(sourceMap.get("label"), targetMap.get("name"));
-            divisor++;
-        }
-
-        if (sourceMap.containsKey("comment") && targetMap.containsKey("name")) {
-            hammingSimilarity += hammingStringSimilarity(sourceMap.get("comment"), targetMap.get("name"));
-            divisor++;
-        }
-        if (sourceMap.containsKey("comment") && targetMap.containsKey("label")) {
-            hammingSimilarity += hammingStringSimilarity(sourceMap.get("comment"), targetMap.get("label"));
-            divisor++;
-        }
-
-      hammingSimilarity = hammingSimilarity / divisor;
-        ExplanationNode hammingExplanation = new ExplanationNode();
-        hammingExplanation.setVal(hammingSimilarity);
-        hammingExplanation.setDescription("Hamming Distance");*/
         
-        divisor = 0;
         if (sourceMap.containsKey("name") && targetMap.containsKey("name")) {
             levenshteinSimilarity += 2 * levenshteinStringSimilarity(sourceMap.get("name"), targetMap.get("name"));
             divisor += 2;
@@ -314,8 +252,8 @@ public class MyMatcher extends AbstractMatcher {
          * Weighted average of String Similarity
          * 
          * Through iterations, I came to a conclusion that the results are given
-         * in the ratio of Levenshtein > Hamming > Jaro-Wingler So, the
-         * corresponding weightage was given while calculating the mean.
+         * in the ratio of Levenshtein > Jaro-Wingler So, the
+         * corresponding weight-age was given while calculating the mean.
          */
         double finalsimilarity = (3 * levenshteinSimilarity + jarowinglerSimilarity) / 4;
         
@@ -325,8 +263,6 @@ public class MyMatcher extends AbstractMatcher {
         stringSimilarityExplanation.setVal(finalsimilarity);
         stringSimilarityExplanation.setDescription("Combined String Similarity");
         stringSimilarityExplanation.setCriteria(CombinationCriteria.LWC);
-//        System.out.println("totalString- children:"+stringSimilarityExplanation.getChildren().size());
-//        stringSimilarityExplanation.describeExplanation();
         return finalsimilarity;
     }
 
@@ -414,6 +350,8 @@ public class MyMatcher extends AbstractMatcher {
         } catch (Exception e) {
             log.error("Caught exception when running MyMatcher.", e);
         }
+        
+        
         
     }
 
