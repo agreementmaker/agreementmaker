@@ -32,7 +32,8 @@ public class FromWordNetUtils {
 	public Set<String> findSynonyms(String wordForm) {
 		
 		Set<String> synonymSet = new HashSet<String>();
-		if(wordForm.isEmpty()){
+
+		if(wordForm == null || wordForm.isEmpty()){
 			return synonymSet;
 		}
 		NounSynset nounSynset;

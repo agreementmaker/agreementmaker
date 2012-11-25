@@ -138,7 +138,9 @@ public class MyMatcher extends AbstractMatcher {
        
        //storing into the appropriate location inside the explanation matrix
        
+        resultExplanation.describeExplanation();
         explanationMatrix[source.getIndex()][target.getIndex()] = resultExplanation;
+        System.exit(0);
         return new Mapping(source, target, finalSimilarity);
     }
     
@@ -256,7 +258,8 @@ public class MyMatcher extends AbstractMatcher {
          * corresponding weight-age was given while calculating the mean.
          */
         double finalsimilarity = (3 * levenshteinSimilarity + jarowinglerSimilarity) / 4;
-        
+    	finalsimilarity = (double)Math.round(finalsimilarity * 100) / 100;
+    	
         stringSimilarityExplanation.addChild(jarowinglerExplanation);
         stringSimilarityExplanation.addChild(levenshteinExplanation);
         
@@ -307,21 +310,21 @@ public class MyMatcher extends AbstractMatcher {
     	
     	Ontology source =  readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/101/onto.rdf"); 
         Ontology target1 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/203/onto.rdf"); 
-        Ontology target2 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/223/onto.rdf"); 
-        Ontology target3 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/205/onto.rdf"); 
-        Ontology target4 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/206/onto.rdf"); 
+//        Ontology target2 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/223/onto.rdf"); 
+//        Ontology target3 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/205/onto.rdf"); 
+//        Ontology target4 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/206/onto.rdf"); 
         
         String reference1 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/203/refalign.rdf";
-        String reference2 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/223/refalign.rdf";
-        String reference3 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/205/refalign.rdf";
-        String reference4 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/206/refalign.rdf";
+//        String reference2 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/223/refalign.rdf";
+//        String reference3 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/205/refalign.rdf";
+//        String reference4 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/206/refalign.rdf";
         
         
         try{
             ontologyMatcher(source, target1, reference1);
-            ontologyMatcher(source, target2, reference2);
-            ontologyMatcher(source, target3, reference3);
-            ontologyMatcher(source, target4, reference4);
+//            ontologyMatcher(source, target2, reference2);
+//            ontologyMatcher(source, target3, reference3);
+//            ontologyMatcher(source, target4, reference4);
         }catch (Exception e) {
             log.error("Caught exception when running MyMatcher.", e);
         }
@@ -346,7 +349,7 @@ public class MyMatcher extends AbstractMatcher {
         mm.setParameters(param);
         try {
             mm.match();
-            mm.referenceEvaluation(reference); 
+//            mm.referenceEvaluation(reference); 
         } catch (Exception e) {
             log.error("Caught exception when running MyMatcher.", e);
         }
@@ -366,22 +369,14 @@ public class MyMatcher extends AbstractMatcher {
     }
 
     /**
-     * Hamming String Similarity.
-     */
-    private static double hammingStringSimilarity(String sourceString, String targetString) {
-
-        Hamming hammingSim = new Hamming(sourceString, targetString);
-        hammingSim.calculate();
-        return hammingSim.getSimilarity().doubleValue();
-    }
-
-    /**
      * Jaro-Winkler String Similarity.
      */
     private static double jarowinklerStringSimilarity(String sourceString, String targetString) {
     	JaroWinklerSim jaro = new JaroWinklerSim();
    //     jaro.calculate();
-        return jaro.getSimilarity(sourceString, targetString);
+    	double jaroValue = jaro.getSimilarity(sourceString, targetString);
+    	jaroValue = (double)Math.round(jaroValue * 100) / 100;
+    	return jaroValue;
     }
 
     /**
