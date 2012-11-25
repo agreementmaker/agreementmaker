@@ -1,8 +1,11 @@
 package am.extension;
 
 
+import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.swing.JFrame;
 
 import org.apache.log4j.Logger;
 
@@ -35,6 +38,9 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
+import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.visualization.BasicVisualizationServer;
+
 public class MyMatcher extends AbstractMatcher {
 
     private static final long serialVersionUID = -3772449944360959530L;
@@ -60,7 +66,14 @@ public class MyMatcher extends AbstractMatcher {
 
     @Override
     protected Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix) throws Exception {
-
+    	resultExplanation = new ExplanationNode("Final Explanation");
+    	levenshteinExplanation = new ExplanationNode("Levenshtein Distance");
+    	jarowinglerExplanation = new ExplanationNode("Jaro-Wingler metric");
+    	absoluteSimilarityExplanation = new ExplanationNode("Absolute Similarity");
+    	wordNetStringCombinationExplanation = new ExplanationNode("WordNet- String Combination");
+    	wordNetSimilarityExplanation = new ExplanationNode("WordNet Similarity");
+    	stringSimilarityExplanation = new ExplanationNode("String Similarity");
+    	
     	rows = matrix.getRows();
     	columns = matrix.getColumns();
     	
@@ -137,10 +150,7 @@ public class MyMatcher extends AbstractMatcher {
         resultExplanation.setCriteria(CombinationCriteria.VOTING);
        
        //storing into the appropriate location inside the explanation matrix
-       
-        resultExplanation.describeExplanation();
         explanationMatrix[source.getIndex()][target.getIndex()] = resultExplanation;
-        System.exit(0);
         return new Mapping(source, target, finalSimilarity);
     }
     
@@ -258,8 +268,7 @@ public class MyMatcher extends AbstractMatcher {
          * corresponding weight-age was given while calculating the mean.
          */
         double finalsimilarity = (3 * levenshteinSimilarity + jarowinglerSimilarity) / 4;
-    	finalsimilarity = (double)Math.round(finalsimilarity * 100) / 100;
-    	
+        
         stringSimilarityExplanation.addChild(jarowinglerExplanation);
         stringSimilarityExplanation.addChild(levenshteinExplanation);
         
@@ -296,35 +305,35 @@ public class MyMatcher extends AbstractMatcher {
      */
     public static void main(String[] args) throws Exception {
 
-//    	Ontology source = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/101/onto.rdf"); 
-//    	Ontology target1 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/203/onto.rdf"); 
-//    	Ontology target2 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/223/onto.rdf"); 
-//    	Ontology target3 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/205/onto.rdf"); 
-//    	Ontology target4 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/206/onto.rdf"); 
-//    	
-//    	String reference1 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/203/refalign.rdf";
-//    	String reference2 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/223/refalign.rdf";
-//    	String reference3 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/205/refalign.rdf";
-//    	String reference4 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/206/refalign.rdf";
+    	Ontology source = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/101/onto.rdf"); 
+    	Ontology target1 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/203/onto.rdf"); 
+    	Ontology target2 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/223/onto.rdf"); 
+    	Ontology target3 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/205/onto.rdf"); 
+    	Ontology target4 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/206/onto.rdf"); 
+    	
+    	String reference1 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/203/refalign.rdf";
+    	String reference2 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/223/refalign.rdf";
+    	String reference3 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/205/refalign.rdf";
+    	String reference4 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/206/refalign.rdf";
 
     	
-    	Ontology source =  readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/101/onto.rdf"); 
+/*    	Ontology source =  readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/101/onto.rdf"); 
         Ontology target1 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/203/onto.rdf"); 
-//        Ontology target2 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/223/onto.rdf"); 
-//        Ontology target3 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/205/onto.rdf"); 
-//        Ontology target4 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/206/onto.rdf"); 
+        Ontology target2 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/223/onto.rdf"); 
+        Ontology target3 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/205/onto.rdf"); 
+        Ontology target4 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/206/onto.rdf"); 
         
         String reference1 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/203/refalign.rdf";
-//        String reference2 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/223/refalign.rdf";
-//        String reference3 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/205/refalign.rdf";
-//        String reference4 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/206/refalign.rdf";
+        String reference2 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/223/refalign.rdf";
+        String reference3 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/205/refalign.rdf";
+        String reference4 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/206/refalign.rdf";*/
         
         
         try{
             ontologyMatcher(source, target1, reference1);
-//            ontologyMatcher(source, target2, reference2);
-//            ontologyMatcher(source, target3, reference3);
-//            ontologyMatcher(source, target4, reference4);
+/*            ontologyMatcher(source, target2, reference2);
+            ontologyMatcher(source, target3, reference3);
+            ontologyMatcher(source, target4, reference4);*/
         }catch (Exception e) {
             log.error("Caught exception when running MyMatcher.", e);
         }
@@ -349,11 +358,45 @@ public class MyMatcher extends AbstractMatcher {
         mm.setParameters(param);
         try {
             mm.match();
-//            mm.referenceEvaluation(reference); 
+            mm.referenceEvaluation(reference); 
         } catch (Exception e) {
             log.error("Caught exception when running MyMatcher.", e);
         }
-        
+		Alignment<Mapping> alignmentMappings = mm.getAlignment();
+		
+		for(Mapping m:alignmentMappings) {
+			System.out.println("Source Node ---> Target Node");
+			System.out.println("-----------------------------");
+			System.out.println(m.getString());
+			System.out.println("Label");
+			System.out.println("-----");
+			System.out.println(m.getEntity1().getLabel()+" ---> "+m.getEntity2().getLabel());
+			System.out.println("Local Name");
+			System.out.println("-----------");
+			System.out.println(m.getEntity1().getLocalName()+" ---> "+m.getEntity2().getLocalName());
+			System.out.println("Comment");			
+			System.out.println("-------");
+			System.out.println(m.getEntity1().getComment()+" ---> "+m.getEntity2().getComment());
+			explanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()].describeTopDown();
+			Layout<String, String> layout = new SubTreeLayout(explanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()].tree);
+			layout.setSize(new Dimension(300,300)); // sets the initial size of the space
+			// The BasicVisualizationServer<V,E> is parameterized by the edge types
+			BasicVisualizationServer<String,String> vv =
+			new BasicVisualizationServer<String,String>(layout);
+			vv.setPreferredSize(new Dimension(350,350)); //Sets the viewing area size
+			JFrame frame = new JFrame("Simple Graph View");
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			frame.getContentPane().add(vv);
+			frame.pack();
+			frame.setVisible(true);
+			break;
+		}
+
+		// Let's see what we have. Note the nice output from the
+		// SparseMultigraph<V,E> toString() method
+		// Note that we can use the same nodes and edges in two
+		// The Layout<V, E> is parameterized by the vertex and edge types
+
         
         
     }
@@ -369,14 +412,22 @@ public class MyMatcher extends AbstractMatcher {
     }
 
     /**
+     * Hamming String Similarity.
+     */
+    private static double hammingStringSimilarity(String sourceString, String targetString) {
+
+        Hamming hammingSim = new Hamming(sourceString, targetString);
+        hammingSim.calculate();
+        return hammingSim.getSimilarity().doubleValue();
+    }
+
+    /**
      * Jaro-Winkler String Similarity.
      */
     private static double jarowinklerStringSimilarity(String sourceString, String targetString) {
     	JaroWinklerSim jaro = new JaroWinklerSim();
    //     jaro.calculate();
-    	double jaroValue = jaro.getSimilarity(sourceString, targetString);
-    	jaroValue = (double)Math.round(jaroValue * 100) / 100;
-    	return jaroValue;
+        return jaro.getSimilarity(sourceString, targetString);
     }
 
     /**
