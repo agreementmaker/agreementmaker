@@ -50,8 +50,9 @@ public class ConflictSetList {
 	
 	private ArrayList<OWLAxiom> sortedAxioms = new ArrayList<OWLAxiom>();	
 	private Tree<OWLClass> classTree;
-	private Tree<AxiomRank> axiomTree = new Tree<AxiomRank>();
+	//private Tree<AxiomRank> axiomTree = new Tree<AxiomRank>();
 	private ArrayList<ArrayList<AxiomRank>> axiomLists;
+	private ArrayList<OWLAxiom> minimalHittingSet;
 		
 	public Integer getClassCount(){
 		return ConflictSets.size();
@@ -192,52 +193,76 @@ public class ConflictSetList {
 	public ArrayList<OWLAxiom> computeHittingSet(ConflictSetList mups){
 		
 		axiomLists = new ArrayList<ArrayList<AxiomRank>>();
+		minimalHittingSet = new ArrayList<OWLAxiom>(); 
 		
 		for(ConflictSet set : mups.getConflictSets()){
 			axiomLists.add(set.getAxiomList());			
 		}
 		
 		Integer outerIndex = 0;
-		Integer index = 0;
+		//Integer index = 0;
 		
-		while((axiomLists.get(outerIndex).size() - 1) > index){
+		//while((axiomLists.get(outerIndex).size() - 1) > index){
 			
-			System.out.println(index + "/" + outerIndex);
+		//System.out.println(index + "/" + outerIndex);
 			
-			AxiomRank ar = axiomLists.get(outerIndex).get(index);
+		//AxiomRank ar = axiomLists.get(outerIndex).get(index);
 			
-			axiomTree.addChild(ar,null); //adding under root
+		//axiomTree.addChild(ar,null); //adding under root
+		minimalHittingSet.add(minimumAxiomRank(axiomLists.get(outerIndex)));
 
-			if(((axiomLists.size() - 1) > outerIndex))
-				getAxiomNextLayer((outerIndex + 1),ar);
+		if(((axiomLists.size() - 1) > outerIndex))
+			getAxiomNextLayer((outerIndex + 1));
 			
-			index++;
-		}
+			//index++;
+		//}
 		
-		axiomTree.print();
+		//removing duplicates
+		HashSet<OWLAxiom> hs = new HashSet<OWLAxiom>();
+		hs.addAll(minimalHittingSet);
+		minimalHittingSet.clear();
+		minimalHittingSet.addAll(hs);
 		
-		return new ArrayList<OWLAxiom>();
+		//axiomTree.print();
+		//System.out.println(minimalHittingSet.size());
+		//System.out.println(minimalHittingSet);
+		
+		return minimalHittingSet;
 	}
 	
-	private void getAxiomNextLayer(int outerIndex,AxiomRank parent){
+	private void getAxiomNextLayer(int outerIndex){
 		
-		Integer index = 0;
+		//Integer index = 0;
 		
-		while((axiomLists.get(outerIndex).size() - 1) > index){
-			
-			//System.out.println(index + "/" + outerIndex);
-			
-			AxiomRank ar = axiomLists.get(outerIndex).get(index);
-			
-			axiomTree.addChild(ar, parent); //adding under root
+		//while((axiomLists.get(outerIndex).size() - 1) > index){
+					
+		//System.out.println(index + "/" + outerIndex);
+					
+		//AxiomRank ar = axiomLists.get(outerIndex).get(index);
+					
+		//axiomTree.addChild(ar,parent); //adding under root
+		minimalHittingSet.add(minimumAxiomRank(axiomLists.get(outerIndex)));
 
-			if(((axiomLists.size() - 1) > outerIndex))
-				getAxiomNextLayer((outerIndex + 1),ar);
+		if(((axiomLists.size() - 1) > outerIndex))
+			getAxiomNextLayer((outerIndex + 1));
 			
-			index++;
-		}
+		//index++;
+		//}
 	}
 	
+	private OWLAxiom minimumAxiomRank(ArrayList<AxiomRank> axiomList){
+		
+		AxiomRank axiomRank = new AxiomRank(null,Integer.MAX_VALUE);
+		Integer minrank = axiomRank.getRank();
+		
+		for(AxiomRank ar : axiomList){
+			if(ar.getRank() < minrank){
+				axiomRank = ar;
+			}				
+		}
+		
+		return axiomRank.getAxiom();
+	}
 
 	public void FixMappings(ArrayList<OWLAxiom> axioms) {
 			

@@ -82,22 +82,23 @@ public class RepairAlignment {
 			
 			System.out.println(" ");
 			
-			/*log.info("Ranking inconsistent axioms by frequency...");
-			inconsistentSets.rankAxioms();
-			log.info("Axiom ranking complete");*/
-			
-			System.out.println(" ");
-			
 			log.info("Computing Minimal unsatisfiable Preserving Sub-tboxes (MUPS)");
+			//inconsistentSets = inconsistentSets.computeMUPS();
 			ConflictSetList mups = inconsistentSets.computeMUPS();
 			//mups.printConflictSetList();
 			log.info("MUPS computation complete");
-								
+			
+			System.out.println(" ");		
+			
 			log.info("Ranking inconsistent axioms by frequency...");
+			//inconsistentSets.rankAxioms();
 			mups.rankAxioms();
 			log.info("Axiom ranking complete");
 			
+			System.out.println(" ");
+			
 			log.info("Compute hitting set...");
+			//minHittingSet = inconsistentSets.computeHittingSet(inconsistentSets);
 			minHittingSet = inconsistentSets.computeHittingSet(mups);
 			log.info("Hitting set identified");
 			
