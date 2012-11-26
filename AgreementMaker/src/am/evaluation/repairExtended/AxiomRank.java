@@ -7,6 +7,7 @@ public class AxiomRank {
 	//private Integer AxiomId;
 	private OWLAxiom Axiom;
 	private Integer Rank;
+	private Double Confidence;
 	
 	//public AxiomRank(OWLAxiom axiom, Integer rank, Integer axiomId){
 	public AxiomRank(OWLAxiom axiom, Integer rank){
@@ -14,6 +15,7 @@ public class AxiomRank {
 		//AxiomId = axiomId;
 		Axiom = axiom;
 		Rank = rank;
+		//Confidence = confidence;
 	}
 	
 	//get set	
@@ -42,5 +44,14 @@ public class AxiomRank {
     public Integer getRank()
     {
         return Rank;
+    }
+    
+    public void setConfidence (Double confidence)
+    {
+    	Confidence = confidence;           
+    }
+    public Double getConfidence()
+    {
+        return Confidence;
     }
 }
