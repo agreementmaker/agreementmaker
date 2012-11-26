@@ -1,12 +1,21 @@
 package am.extension;
 
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Paint;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.Box;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
+import org.apache.commons.collections15.Transformer;
 import org.apache.log4j.Logger;
 
 import simpack.measure.external.alignapi.Hamming;
@@ -30,6 +39,7 @@ import am.app.similarity.JaroWinklerSim;
 import am.app.similarity.LevenshteinEditDistance;
 import am.extension.semanticExplanation.CombinationCriteria;
 import am.extension.semanticExplanation.ExplanationNode;
+import am.extension.semanticExplanation.SubTreeLayout;
 import am.utility.FromWordNetUtils;
 
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -39,7 +49,12 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.visualization.BasicVisualizationServer;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.GraphMouseListener;
+import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.MouseListenerTranslator;
+import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 
 public class MyMatcher extends AbstractMatcher {
 
@@ -60,6 +75,8 @@ public class MyMatcher extends AbstractMatcher {
     protected int rows;             // number of rows
     protected int columns;             // number of columns
     protected static ExplanationNode[][] explanationMatrix;
+    private static  JLabel nodeDescriptionValue;
+    private static JLabel criteriaLabel;
     public MyMatcher() {
         setName("My Matcher"); // change this to something else if you want
     }
@@ -209,7 +226,8 @@ public class MyMatcher extends AbstractMatcher {
         }
 
         levenshteinSimilarity = levenshteinSimilarity / divisor;
-
+        
+        levenshteinSimilarity = pruneValues(levenshteinSimilarity);
         
         levenshteinExplanation.setVal(levenshteinSimilarity);
         levenshteinExplanation.setDescription("Levenshtein Distance");
@@ -256,7 +274,7 @@ public class MyMatcher extends AbstractMatcher {
         }
 
         jarowinglerSimilarity = jarowinglerSimilarity / divisor;
-        
+        jarowinglerSimilarity = pruneValues(jarowinglerSimilarity);
         
         jarowinglerExplanation.setVal(jarowinglerSimilarity);
         jarowinglerExplanation.setDescription("JaroWingler Similarity Metric");
@@ -267,7 +285,7 @@ public class MyMatcher extends AbstractMatcher {
          * in the ratio of Levenshtein > Jaro-Wingler So, the
          * corresponding weight-age was given while calculating the mean.
          */
-        double finalsimilarity = (3 * levenshteinSimilarity + jarowinglerSimilarity) / 4;
+        double finalsimilarity = pruneValues((3 * levenshteinSimilarity + jarowinglerSimilarity) / 4);
         
         stringSimilarityExplanation.addChild(jarowinglerExplanation);
         stringSimilarityExplanation.addChild(levenshteinExplanation);
@@ -278,6 +296,11 @@ public class MyMatcher extends AbstractMatcher {
         return finalsimilarity;
     }
 
+    private static double pruneValues(double distance) {
+    	distance = (double)Math.round(distance * 100) / 100;
+    	return distance;
+    }
+    
     /**
      * Takes in a node, and returns a Map<String,String> of label, localName and Comment
      */
@@ -378,17 +401,104 @@ public class MyMatcher extends AbstractMatcher {
 			System.out.println("-------");
 			System.out.println(m.getEntity1().getComment()+" ---> "+m.getEntity2().getComment());
 			explanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()].describeTopDown();
-			Layout<String, String> layout = new SubTreeLayout(explanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()].tree);
-			layout.setSize(new Dimension(300,300)); // sets the initial size of the space
+			Layout<ExplanationNode, String> layout = new SubTreeLayout(explanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()].tree);
+			layout.setSize(new Dimension(800,800)); // sets the initial size of the space
 			// The BasicVisualizationServer<V,E> is parameterized by the edge types
-			BasicVisualizationServer<String,String> vv =
-			new BasicVisualizationServer<String,String>(layout);
-			vv.setPreferredSize(new Dimension(350,350)); //Sets the viewing area size
-			JFrame frame = new JFrame("Simple Graph View");
-			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			frame.getContentPane().add(vv);
+			//BasicVisualizationServer<ExplanationNode,String> vv =
+			//new BasicVisualizationServer<ExplanationNode,String>(layout);
+			VisualizationViewer<ExplanationNode, String> vv = 
+			    		new VisualizationViewer<ExplanationNode, String>(layout);
+			final JFrame frame = new JFrame("Simple Graph View");
+			final JPanel newPanel = new JPanel();
+			final Container box = Box.createHorizontalBox();
+			vv.setPreferredSize(new Dimension(800,800)); //Sets the viewing area size
+
+			Transformer<ExplanationNode, String> labelTransformer = new Transformer<ExplanationNode,String>() {
+
+				@Override
+				public String transform(ExplanationNode node) {
+					return String.valueOf(node.getVal());
+				}
+				
+			};
+			Transformer<ExplanationNode,Paint> vertexPaint = new Transformer<ExplanationNode,Paint>() {
+				public Paint transform(ExplanationNode i) {
+				return Color.GREEN;
+				}
+			};
+			
+			vv.getRenderContext().setVertexLabelTransformer(labelTransformer);
+			vv.getRenderContext().setVertexFillPaintTransformer(vertexPaint);
+			vv.getRenderer().getVertexLabelRenderer().setPosition(Position.CNTR);
+			Transformer<ExplanationNode, String> toolTipTransformer = new Transformer<ExplanationNode, String>() {
+
+				@Override
+				public String transform(ExplanationNode node) {
+					String nodeDesc = node.getDescription()+": "+node.getVal();
+					if(!node.getCriteria().toString().equals(CombinationCriteria.NOTDEFINED.toString())) {
+						nodeDesc+="\nChlidren joined by: "+node.getCriteria();
+					}
+					return nodeDesc;
+				}
+				
+			};
+			vv.setVertexToolTipTransformer(toolTipTransformer );
+			
+			final DefaultModalGraphMouse<ExplanationNode, String> graphMouse = new DefaultModalGraphMouse<ExplanationNode, String>();
+		
+			graphMouse.setMode(ModalGraphMouse.Mode.TRANSFORMING);
+			GraphMouseListener<ExplanationNode> mygel = new GraphMouseListener<ExplanationNode>() {
+
+				@Override
+				public void graphClicked(ExplanationNode node, MouseEvent me) {
+					if(me.getButton() == MouseEvent.BUTTON1) {
+						System.out.println("left click");
+						System.out.println("Clicked " + node.getDescription());		
+						nodeDescriptionValue = new JLabel(node.getDescription()+": "+node.getVal());
+						nodeDescriptionValue.setText(node.getDescription()+": "+node.getVal());
+						nodeDescriptionValue.setPreferredSize(new Dimension(20,20));
+						//newPanel.add(nodeDescriptionValue);
+						//frame.getContentPane().add(nodeDescriptionValue);
+						box.add(nodeDescriptionValue);
+						if(!node.getCriteria().toString().equals(CombinationCriteria.NOTDEFINED.toString())) {
+							criteriaLabel = new JLabel();
+							criteriaLabel.setText(node.getCriteria().toString());
+							frame.getContentPane().add(criteriaLabel);
+							criteriaLabel.setVisible(true);
+						}
+
+					} else if(me.getButton() == MouseEvent.BUTTON3) {
+						System.out.println("right click");
+						System.out.println("Clicked " + node.getDescription());								
+					}
+				}
+
+				@Override
+				public void graphPressed(ExplanationNode arg0, MouseEvent arg1) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void graphReleased(ExplanationNode arg0, MouseEvent arg1) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				
+				
+			};
+		   // graphMouse.add(popup);
+			vv.setGraphMouse(graphMouse);
+			vv.addKeyListener(graphMouse.getModeKeyListener());
+			vv.addMouseListener(new MouseListenerTranslator<ExplanationNode, String>(mygel, vv));
+			Container content = frame.getContentPane();
+			content.add(box, BorderLayout.NORTH);
+			content.add(vv);
 			frame.pack();
 			frame.setVisible(true);
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 			break;
 		}
 
