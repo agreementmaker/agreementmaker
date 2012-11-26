@@ -12,7 +12,7 @@ public class ExplanationNode {
 	List<ExplanationNode> children;
 	CombinationCriteria criteria;
 	String description;
-	public DelegateTree<String,String> tree= new DelegateTree<String, String>();
+	public DelegateTree<ExplanationNode,String> tree= new DelegateTree<ExplanationNode, String>();
 	static int edge=1;
 
 	
@@ -22,7 +22,7 @@ public class ExplanationNode {
 		this.children = children;
 		this.criteria = criteria;
 		this.description = description;
-		tree = new DelegateTree<String, String>();
+		tree = new DelegateTree<ExplanationNode, String>();
 	}
 
 
@@ -31,7 +31,7 @@ public class ExplanationNode {
 		this.children = new ArrayList<ExplanationNode>();
 		this.criteria = CombinationCriteria.NOTDEFINED;
 		this.description = "";
-		tree = new DelegateTree<String, String>();
+		tree = new DelegateTree<ExplanationNode, String>();
 	}
 	
 	public ExplanationNode(String description) {
@@ -39,7 +39,7 @@ public class ExplanationNode {
 		this.children = new ArrayList<ExplanationNode>();
 		this.criteria = CombinationCriteria.NOTDEFINED;
 		this.description = description;
-		tree = new DelegateTree<String, String>();
+		tree = new DelegateTree<ExplanationNode, String>();
 	}
 
 	public void addChild(ExplanationNode node){
@@ -105,9 +105,9 @@ public class ExplanationNode {
 	public void describeTopDown() {
 		Queue<ExplanationNode> explnQ = new LinkedList<ExplanationNode>();
 		explnQ.add(this);
-		tree.addVertex(this.description+":"+this.val);
-		addChildren(this, tree);
-/*		while(explnQ.size()>0) {
+		tree.setRoot(this);
+//		addChildren(this, tree);
+		while(explnQ.size()>0) {
 			ExplanationNode node = explnQ.remove();
 			node.describeNode();
 			// Graph<V, E> where V is the type of the vertices
@@ -115,22 +115,22 @@ public class ExplanationNode {
 			// Add some vertices. From above we defined these to be type Integer.
 			// Add some edges. From above we defined these to be of type String
 			// Note that the default is for undirected edges.
-			tree.addVertex(node.description+":"+node.val);
 			if(node.children.size()>0) {
 				for(ExplanationNode child: node.children) {
-					tree.addChild("edge "+edge, node.description+":"+node.val, child.description+":"+node.val);
+					//tree.addEdge("edge "+edge, new String(String.valueOf(node.val)), new String(String.valueOf(child.val))+"");
+					tree.addChild("edge "+edge, node, child);
 					explnQ.add(child);
 					edge++;
 				}
 			}
 
-		}*/
+		}
 		System.out.println("The graph g = " + tree.toString());
 	}
 	
 	private static void addChildren(ExplanationNode node, DelegateTree<String, String> tree) {
 	    for (int i = 0; i < node.getChildren().size(); i++) {
-	        tree.addChild("edge "+edge, node.description+":"+node.val, node.getChildren().get(i).description+":"+node.getChildren().get(i).val);
+	        tree.addChild("edge "+edge,new String(String.valueOf(node.val)), new String(String.valueOf(node.getChildren().get(i).val)));
 	        edge++;
 	        addChildren(node.getChildren().get(i), tree);
 	    }
