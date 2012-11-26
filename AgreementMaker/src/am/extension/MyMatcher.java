@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.Paint;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
@@ -77,6 +78,7 @@ public class MyMatcher extends AbstractMatcher {
     protected static ExplanationNode[][] explanationMatrix;
     private static  JLabel nodeDescriptionValue;
     private static JLabel criteriaLabel;
+    private static JPanel panel = new JPanel(new GridLayout());
     public MyMatcher() {
         setName("My Matcher"); // change this to something else if you want
     }
@@ -402,16 +404,14 @@ public class MyMatcher extends AbstractMatcher {
 			System.out.println(m.getEntity1().getComment()+" ---> "+m.getEntity2().getComment());
 			explanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()].describeTopDown();
 			Layout<ExplanationNode, String> layout = new SubTreeLayout(explanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()].tree);
-			layout.setSize(new Dimension(800,800)); // sets the initial size of the space
+			layout.setSize(new Dimension(350,300)); // sets the initial size of the space
 			// The BasicVisualizationServer<V,E> is parameterized by the edge types
 			//BasicVisualizationServer<ExplanationNode,String> vv =
 			//new BasicVisualizationServer<ExplanationNode,String>(layout);
 			VisualizationViewer<ExplanationNode, String> vv = 
 			    		new VisualizationViewer<ExplanationNode, String>(layout);
 			final JFrame frame = new JFrame("Simple Graph View");
-			final JPanel newPanel = new JPanel();
-			final Container box = Box.createHorizontalBox();
-			vv.setPreferredSize(new Dimension(800,800)); //Sets the viewing area size
+			vv.setPreferredSize(new Dimension(300,400)); //Sets the viewing area size
 
 			Transformer<ExplanationNode, String> labelTransformer = new Transformer<ExplanationNode,String>() {
 
@@ -453,20 +453,30 @@ public class MyMatcher extends AbstractMatcher {
 				public void graphClicked(ExplanationNode node, MouseEvent me) {
 					if(me.getButton() == MouseEvent.BUTTON1) {
 						System.out.println("left click");
-						System.out.println("Clicked " + node.getDescription());		
+						System.out.println("Clicked " + node.getDescription());	
+						if(nodeDescriptionValue != null) {
+							panel.remove(nodeDescriptionValue);
+						}
 						nodeDescriptionValue = new JLabel(node.getDescription()+": "+node.getVal());
-						nodeDescriptionValue.setText(node.getDescription()+": "+node.getVal());
-						nodeDescriptionValue.setPreferredSize(new Dimension(20,20));
-						//newPanel.add(nodeDescriptionValue);
-						//frame.getContentPane().add(nodeDescriptionValue);
-						box.add(nodeDescriptionValue);
+						//nodeDescriptionValue.setText(node.getDescription()+": "+node.getVal());
+						nodeDescriptionValue.setBackground(Color.GREEN);
+						nodeDescriptionValue.setPreferredSize(new Dimension(5,5));
+						nodeDescriptionValue.setLocation(10, 10);
+						nodeDescriptionValue.setBounds(20, 20, 10, 5);
+						//nodeDescriptionValue.setPreferredSize(new Dimension(20,20));
+						panel.add(nodeDescriptionValue);
 						if(!node.getCriteria().toString().equals(CombinationCriteria.NOTDEFINED.toString())) {
 							criteriaLabel = new JLabel();
 							criteriaLabel.setText(node.getCriteria().toString());
-							frame.getContentPane().add(criteriaLabel);
-							criteriaLabel.setVisible(true);
+							//criteriaLabel.setPreferredSize(new Dimension(20,20));
+							panel.add(criteriaLabel);
+						} else {
+							if(criteriaLabel != null) {
+								panel.remove(criteriaLabel);
+							}
 						}
-
+						frame.pack();
+						frame.setVisible(true);
 					} else if(me.getButton() == MouseEvent.BUTTON3) {
 						System.out.println("right click");
 						System.out.println("Clicked " + node.getDescription());								
@@ -493,8 +503,9 @@ public class MyMatcher extends AbstractMatcher {
 			vv.addKeyListener(graphMouse.getModeKeyListener());
 			vv.addMouseListener(new MouseListenerTranslator<ExplanationNode, String>(mygel, vv));
 			Container content = frame.getContentPane();
-			content.add(box, BorderLayout.NORTH);
-			content.add(vv);
+
+			panel.add(vv);
+			content.add(panel);
 			frame.pack();
 			frame.setVisible(true);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
