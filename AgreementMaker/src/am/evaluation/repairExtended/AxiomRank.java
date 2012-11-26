@@ -1,6 +1,9 @@
 package am.evaluation.repairExtended;
 
+import java.util.ArrayList;
+
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
 
 public class AxiomRank {
 
@@ -27,6 +30,13 @@ public class AxiomRank {
     {
         return AxiomId;
     }*/
+	
+	public ArrayList<OWLClass> getAxiomClasses()
+	{
+		ArrayList<OWLClass> axiomClasses = new ArrayList<OWLClass>();
+		axiomClasses.addAll(Axiom.getClassesInSignature());
+		return axiomClasses;
+	}
     
 	public void setAxiom (OWLAxiom axiom)
     {

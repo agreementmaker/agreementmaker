@@ -47,14 +47,27 @@ public class ConflictSetList {
 	private OWLOntology MergedOntology;
 	
 	private ArrayList<ConflictSet> ConflictSets = new ArrayList<ConflictSet>();
-	private ArrayList<OWLAxiom> sortedAxioms = new ArrayList<OWLAxiom>();
 	
+	private ArrayList<OWLAxiom> sortedAxioms = new ArrayList<OWLAxiom>();	
 	private Tree<OWLClass> classTree;
-	Tree<AxiomRank> axiomTree = new Tree<AxiomRank>();
+	private Tree<AxiomRank> axiomTree = new Tree<AxiomRank>();
+	private ArrayList<ArrayList<AxiomRank>> axiomLists;
 		
 	public Integer getClassCount(){
 		return ConflictSets.size();
 	}	
+	
+	public ConflictSet getSet(OWLClass cls){
+		
+		ConflictSet reqdSet = null;
+		
+		for(ConflictSet cset : ConflictSets){
+			if(cset.getInconsistentClass() == cls)
+				reqdSet = cset;
+		}
+		
+		return reqdSet;
+	}
 	
 	public Integer getAxiomCount(){
 		
@@ -151,8 +164,7 @@ public class ConflictSetList {
 	}
 	
 	static <K,V extends Comparable<? super V>> 
-    //List<Entry<K, V>> entriesSortedByValues(Map<K,V> map) {
-	List<K> entriesSortedByValues(Map<K,V> map) {
+		List<K> entriesSortedByValues(Map<K,V> map) {
 
 		List<Entry<K,V>> sortedEntries = new ArrayList<Entry<K,V>>(map.entrySet());
 	
@@ -176,112 +188,54 @@ public class ConflictSetList {
 		return sortedKeys;
 	}
 	
-	public ArrayList<OWLAxiom> computeHittingSet(){
+	//TODO Very slow, have to improve performance of finding hitting sets
+	public ArrayList<OWLAxiom> computeHittingSet(ConflictSetList mups){
 		
-		ArrayList<OWLAxiom> minimalHittingSet = new ArrayList<OWLAxiom>();
+		axiomLists = new ArrayList<ArrayList<AxiomRank>>();
 		
-		/*List<ArrayList<OWLAxiom>> hittingSets = new ArrayList<ArrayList<OWLAxiom>>();
-		
-		Integer minimumPathRank = 0;
-		Integer classCount = 0;
-		
-		for(ConflictSet set : ConflictSets){						
-			for(AxiomRank ar : set.getAxiomList()){		
-				
-				if(classCount == 0){
-					ArrayList<OWLAxiom> axiomlist = new ArrayList<OWLAxiom>();
-					axiomlist.add(ar.getAxiom());
-					hittingSets.add(axiomlist);
-					continue;
-				}
-				
-				for(ArrayList<OWLAxiom> hittingSet : hittingSets){
-					
-					if(!hittingSet.contains(ar.getAxiom())){				
-						hittingSet.add(ar.getAxiom());
-					}
-				}				
-			}
-			
-			classCount++;
-		}	*/
-		//return minimalHittingSet;
-		
-		 
-		ArrayList<ArrayList<AxiomRank>> axiomLists = new ArrayList<ArrayList<AxiomRank>>();
-		
-		ArrayList<ArrayList<AxiomRank>> hittingSets;
-		//Tree<AxiomRank> axiomTree = new Tree<AxiomRank>();
-		
-		for(ConflictSet set : ConflictSets){
+		for(ConflictSet set : mups.getConflictSets()){
 			axiomLists.add(set.getAxiomList());			
 		}
 		
 		Integer outerIndex = 0;
+		Integer index = 0;
 		
-		//for(AxiomRank ar : axiomLists.get(index)){			
-		for(int index = 0; index < axiomLists.get(outerIndex).size(); index++)	{
+		while((axiomLists.get(outerIndex).size() - 1) > index){
 			
-			outerIndex = 0;
-			System.out.println((index + 1) + "-------------------------------------------------");
-			System.out.println("level " + outerIndex + " - " + (index+1) + "/" +axiomLists.get(outerIndex).size());
-			AxiomRank ar = axiomLists.get(0).get(index);
+			System.out.println(index + "/" + outerIndex);
+			
+			AxiomRank ar = axiomLists.get(outerIndex).get(index);
 			
 			axiomTree.addChild(ar,null); //adding under root
-			//System.out.println(ar.getAxiom() + "-" + index);
-			//System.out.println("parameters " + outerIndex+1 + "," + ar.getAxiom());
-			getAxiomNextLayer(axiomLists,outerIndex + 1,ar);
-		}
-				
-		
-		//System.out.println(ar + "--");
 
-		//classTree.print();
-		
-		hittingSets = axiomTree.getAllBranches();
-		
-		for(ArrayList<AxiomRank> br : hittingSets){
-			System.out.println("hitting set - " + br);
+			if(((axiomLists.size() - 1) > outerIndex))
+				getAxiomNextLayer((outerIndex + 1),ar);
+			
+			index++;
 		}
 		
-		return sortedAxioms;
+		axiomTree.print();
+		
+		return new ArrayList<OWLAxiom>();
 	}
 	
-	private void getAxiomNextLayer(ArrayList<ArrayList<AxiomRank>> list, int outerIndex,AxiomRank parent){
-			
-		/*String space = "";
-		for(int i=0;i<outerIndex;i++){
-			space = space + "-";
-		}*/
+	private void getAxiomNextLayer(int outerIndex,AxiomRank parent){
 		
-		try{
-		//System.out.println((1) + "/" + list.get(outerIndex).size());
+		Integer index = 0;
 		
-			//for (AxiomRank ar : list.get(outerIndex)){
+		while((axiomLists.get(outerIndex).size() - 1) > index){
 			
-				for(int index = 0; index < list.get(outerIndex).size(); index++)	{
-					//System.out.println(space + (index+1) + "/" + list.get(outerIndex).size());
-					
-					AxiomRank ar = list.get(outerIndex).get(index);
-					
-					//System.out.println(ar.getAxiom());
-					axiomTree.addChild(ar, parent);		
-						
-					//if(index < list.get(outerIndex).size())	{
-					if(outerIndex + 1 < list.size()){
-					    //System.out.println("parameters " + outerIndex+1 + "," + ar.getAxiom());
-						//System.out.println("dive " + outerIndex);
-						//TODO - fix bug
-						//getAxiomNextLayer(list,outerIndex+1,ar);
-					}
-				}
-			//}
+			//System.out.println(index + "/" + outerIndex);
+			
+			AxiomRank ar = axiomLists.get(outerIndex).get(index);
+			
+			axiomTree.addChild(ar, parent); //adding under root
+
+			if(((axiomLists.size() - 1) > outerIndex))
+				getAxiomNextLayer((outerIndex + 1),ar);
+			
+			index++;
 		}
-		catch(Exception ex){
-			System.out.println(ex);
-		}		
-		//System.out.println("float " + outerIndex);
-		
 	}
 	
 
@@ -289,11 +243,10 @@ public class ConflictSetList {
 			
 	}
 	
-	public void computeMUPS() {
-				 
-		ArrayList<AxiomRank> eq_axioms = new ArrayList<AxiomRank>();
+	public ConflictSetList computeMUPS() {
 		
 		ArrayList<ArrayList<OWLClass>> branches;
+		ConflictSetList mups = new ConflictSetList();
 		classTree = new Tree<OWLClass>();
 		
 		for(ConflictSet set : ConflictSets){
@@ -301,24 +254,25 @@ public class ConflictSetList {
 			classTree.addChild(set.getInconsistentClass(),null); //adding under root
 				
 			classTree = getSubClasses(set.getInconsistentClass());
-			System.out.println(set.getInconsistentClass() + "--");
-			//eq_axioms = set.getAxiomList();
-			
-			//for(AxiomRank axiom : eq_axioms){
-				
-				
-				
-			//}
-			
+			//System.out.println(set.getInconsistentClass() + "--");
 		}
 		
 		//classTree.print();
 		
-		branches = classTree.getAllBranches();
+		branches = classTree.getAllBranches(getEqAxiomClasses());
+		//System.out.println("branch size - " + branches.size());
 		
 		for(ArrayList<OWLClass> br : branches){
-			//System.out.println("Branch - " + br);
+			for(OWLClass cls : br ){
+				//System.out.println("Branch : Class - " + cls);	
+				ConflictSet cset = getSet(cls);
+				
+				if(cset != null)
+					mups.addDistinct(cset);
+			}
 		}
+		
+		return mups;
 	}
 	
 	
@@ -329,17 +283,38 @@ public class ConflictSetList {
 			if(subClassAxiom.getAxiomType() == AxiomType.SUBCLASS_OF){
 				
 				OWLClass subClass = (OWLClass)subClassAxiom.getClassesInSignature().toArray()[1];
-				
-				if(subClass != cls){
+
+				if(subClass == cls)
+					continue;
+				else
+				{
 					//System.out.println(cls + " subclass axiom" + subClassAxiom);
 					classTree.addChild(subClass, cls);				
 					classTree = getSubClasses(subClass);
 				}
-
 			}
 		}
 		
 		return classTree;
+	}
+	
+	public ArrayList<OWLClass> getEqAxiomClasses(){
+		
+		ArrayList<OWLClass> eqClasses = new ArrayList<OWLClass>();
+		
+		for(ConflictSet cset : ConflictSets){
+			for(AxiomRank ar : cset.getAxiomList()){
+				eqClasses.addAll(ar.getAxiomClasses());
+			}
+		}
+		
+		//removing duplicates
+		HashSet<OWLClass> hs = new HashSet<OWLClass>();
+		hs.addAll(eqClasses);
+		eqClasses.clear();
+		eqClasses.addAll(hs);
+		
+		return eqClasses;
 	}
 	
 	public void printConflictSetList(){

@@ -14,6 +14,14 @@ public class Bimap<K,V> {
 			Bimap.add(pair);
 	}
 	
+	/*public void add(K key, V value, Integer flag){
+		
+		KeyValue<K,V> pair = new KeyValue<K, V>(key,value,flag);
+		
+		if(!Bimap.contains(pair))
+			Bimap.add(pair);
+	}*/
+	
 	public ArrayList<V> getValuesByKey(K key){
 		
 		ArrayList<V> values = new ArrayList<V>();
@@ -61,18 +69,20 @@ public class Bimap<K,V> {
 		}
 		
 	}
-	
-	public ArrayList<K> getBottomKeys(){
 		
-		ArrayList<K> bottomKeys = new ArrayList<K>();
+	//TODO : very specific for this implementation(assumes type K == V). Should fix it to be more generic.
+	@SuppressWarnings("unchecked")
+	public ArrayList<V> getBottomKeys(){
 		
-		for(KeyValue<K,V> pair : Bimap){
-			if(pair.getValue() == null)
-				bottomKeys.add(pair.getKey());
+		ArrayList<V> bottomKeys = new ArrayList<V>();
+		
+		for(V value : getValueArrayList()){
+						
+			if(!getKeyArrayList().contains((K)value))			
+				bottomKeys.add(value);
 		}
 		
 		return bottomKeys;
-		
 	}
 
 	//get set
@@ -83,9 +93,27 @@ public class Bimap<K,V> {
 		Bimap = bimap;
 	}
 	
+	public ArrayList<K> getKeyArrayList(){
+		
+		ArrayList<K> keys = new ArrayList<K>();
+		
+		for(KeyValue<K,V> pair : Bimap){
+			keys.add(pair.getKey());
+		}
+		
+		return keys;		
+	}
 	
-	
-	
+	public ArrayList<V> getValueArrayList(){
+		
+		ArrayList<V> values = new ArrayList<V>();
+		
+		for(KeyValue<K,V> pair : Bimap){
+			values.add(pair.getValue());
+		}
+		
+		return values;		
+	}
 
 }
 

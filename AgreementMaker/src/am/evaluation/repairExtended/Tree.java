@@ -1,6 +1,7 @@
 package am.evaluation.repairExtended;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Tree<T> {
 
@@ -34,27 +35,16 @@ public class Tree<T> {
 		}
     }
 	
-	/*public ArrayList<T> getChildren(T node)
+	/*public void addChild(T child, T parent, Integer flag)
     {
-		ArrayList<T> childNodes = new ArrayList<T>();
-       	return getChildrenRecursive(node, this,childNodes);
-    }
-	
-	public ArrayList<T> getChildrenRecursive(T node, Tree<T> childTree,ArrayList<T> childNodes){
-					
-		if(childTree.Node == node){
-			for(Tree<T> c : childTree.Children){						
-				childNodes.add(c.Node);
-			}
+		try{
+			relationalTable.add(parent, child, flag);
+			relationalTable.remove(parent,null);
+        }
+		catch(Exception ex){
+			
 		}
-		else{
-			for(Tree<T> c : childTree.Children){
-				getChildrenRecursive(node,c,childNodes);
-			}
-		}
-		
-		return childNodes;
-	}*/
+    }*/
 	
 	public ArrayList<T> getChildren(T node){
 		
@@ -71,16 +61,33 @@ public class Tree<T> {
 		return relationalTable.getBottomKeys();
 	}
 	
-	public ArrayList<ArrayList<T>> getAllBranches(){
+	public ArrayList<ArrayList<T>> getAllBranches(ArrayList<T> reqdList){
 		
 		ArrayList<ArrayList<T>> branches = new ArrayList<ArrayList<T>>();
 		
 		ArrayList<T> leafNodes = getLeafNodes();
+		ArrayList<T> branch = new ArrayList<T>();
+		ArrayList<T> tempBranch;
 		
 		for(T leaf : leafNodes){
 			
-			branches.add(getBranch(leaf));
+			tempBranch = new ArrayList<T>();
+			branch = getBranch(leaf);
+			
+			for(T node : branch){
+				if(reqdList.contains(node))
+					tempBranch.add(node);
+			}
+			
+			if(tempBranch.size() > 0)
+				branches.add(tempBranch);
 		}
+		
+		//removing duplicates
+		HashSet<ArrayList<T>> hs = new HashSet<ArrayList<T>>();
+		hs.addAll(branches);
+		branches.clear();
+		branches.addAll(hs);
 		
 		return branches;
 	}
