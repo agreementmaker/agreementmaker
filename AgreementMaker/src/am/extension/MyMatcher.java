@@ -1,7 +1,6 @@
 package am.extension;
 
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -11,10 +10,11 @@ import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.Box;
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
 
 import org.apache.commons.collections15.Transformer;
 import org.apache.log4j.Logger;
@@ -78,7 +78,7 @@ public class MyMatcher extends AbstractMatcher {
     protected static ExplanationNode[][] explanationMatrix;
     private static  JLabel nodeDescriptionValue;
     private static JLabel criteriaLabel;
-    private static JPanel panel = new JPanel(new GridLayout());
+    private static JPanel panel = new JPanel(new GridLayout(1,1));
     public MyMatcher() {
         setName("My Matcher"); // change this to something else if you want
     }
@@ -388,7 +388,8 @@ public class MyMatcher extends AbstractMatcher {
             log.error("Caught exception when running MyMatcher.", e);
         }
 		Alignment<Mapping> alignmentMappings = mm.getAlignment();
-		
+		final Border blackline;
+		blackline = BorderFactory.createLineBorder(Color.BLACK);
 		for(Mapping m:alignmentMappings) {
 			System.out.println("Source Node ---> Target Node");
 			System.out.println("-----------------------------");
@@ -412,7 +413,6 @@ public class MyMatcher extends AbstractMatcher {
 			    		new VisualizationViewer<ExplanationNode, String>(layout);
 			final JFrame frame = new JFrame("Simple Graph View");
 			vv.setPreferredSize(new Dimension(300,400)); //Sets the viewing area size
-
 			Transformer<ExplanationNode, String> labelTransformer = new Transformer<ExplanationNode,String>() {
 
 				@Override
@@ -459,15 +459,23 @@ public class MyMatcher extends AbstractMatcher {
 						}
 						nodeDescriptionValue = new JLabel(node.getDescription()+": "+node.getVal());
 						//nodeDescriptionValue.setText(node.getDescription()+": "+node.getVal());
-						nodeDescriptionValue.setBackground(Color.GREEN);
-						nodeDescriptionValue.setPreferredSize(new Dimension(5,5));
-						nodeDescriptionValue.setLocation(10, 10);
-						nodeDescriptionValue.setBounds(20, 20, 10, 5);
+						nodeDescriptionValue.setOpaque(true);
+						nodeDescriptionValue.setBackground(Color.YELLOW);
+					//	nodeDescriptionValue.setPreferredSize(new Dimension(1,1));
+						nodeDescriptionValue.setLocation(3, 1);
+					//	nodeDescriptionValue.setSize(10, 5);
+					//	nodeDescriptionValue.setBounds(3, 1, 10, 5);
+						nodeDescriptionValue.setBorder(blackline);
+						
 						//nodeDescriptionValue.setPreferredSize(new Dimension(20,20));
 						panel.add(nodeDescriptionValue);
+						if(criteriaLabel != null) {
+							panel.remove(criteriaLabel);
+						}
 						if(!node.getCriteria().toString().equals(CombinationCriteria.NOTDEFINED.toString())) {
 							criteriaLabel = new JLabel();
 							criteriaLabel.setText(node.getCriteria().toString());
+							criteriaLabel.setOpaque(true);
 							//criteriaLabel.setPreferredSize(new Dimension(20,20));
 							panel.add(criteriaLabel);
 						} else {
