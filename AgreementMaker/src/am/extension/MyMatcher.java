@@ -330,19 +330,19 @@ public class MyMatcher extends AbstractMatcher {
      */
     public static void main(String[] args) throws Exception {
 
-    	Ontology source = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/101/onto.rdf"); 
-    	Ontology target1 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/203/onto.rdf"); 
-    	Ontology target2 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/223/onto.rdf"); 
-    	Ontology target3 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/205/onto.rdf"); 
-    	Ontology target4 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/206/onto.rdf"); 
-    	
-    	String reference1 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/203/refalign.rdf";
-    	String reference2 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/223/refalign.rdf";
-    	String reference3 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/205/refalign.rdf";
-    	String reference4 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/206/refalign.rdf";
+//    	Ontology source = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/101/onto.rdf"); 
+//    	Ontology target1 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/203/onto.rdf"); 
+//    	Ontology target2 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/223/onto.rdf"); 
+//    	Ontology target3 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/205/onto.rdf"); 
+//    	Ontology target4 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/206/onto.rdf"); 
+//    	
+//    	String reference1 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/203/refalign.rdf";
+//    	String reference2 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/223/refalign.rdf";
+//    	String reference3 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/205/refalign.rdf";
+//    	String reference4 = "/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/206/refalign.rdf";
 
     	
-/*    	Ontology source =  readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/101/onto.rdf"); 
+    	Ontology source =  readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/101/onto.rdf"); 
         Ontology target1 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/203/onto.rdf"); 
         Ontology target2 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/223/onto.rdf"); 
         Ontology target3 = readOntology("/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/205/onto.rdf"); 
@@ -351,7 +351,7 @@ public class MyMatcher extends AbstractMatcher {
         String reference1 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/203/refalign.rdf";
         String reference2 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/223/refalign.rdf";
         String reference3 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/205/refalign.rdf";
-        String reference4 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/206/refalign.rdf";*/
+        String reference4 = "/home/jeevs/Dropbox/CS586/ExtractedFiles/AgreementMaker/ontologies/OAEI2010_OWL_RDF/BenchmarkTrack/206/refalign.rdf";
         
         
         try{
