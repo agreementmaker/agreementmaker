@@ -81,7 +81,7 @@ public class MyMatcher extends AbstractMatcher {
     private static JLabel criteriaLabel;
     private static JLabel valueLabel;
     private static JPanel panel = new JPanel(new BorderLayout());
-    private static JPanel labelPanel = new JPanel(new GridLayout(3,1));
+    private static JPanel labelPanel = new JPanel(new GridLayout(5,1));
     public MyMatcher() {
         setName("My Matcher"); // change this to something else if you want
     }
@@ -393,6 +393,7 @@ public class MyMatcher extends AbstractMatcher {
 		Alignment<Mapping> alignmentMappings = mm.getAlignment();
 		final Border blackline;
 		blackline = BorderFactory.createLineBorder(Color.BLACK);
+		labelPanel.add(new JPanel());
 		for(Mapping m:alignmentMappings) {
 			System.out.println("Source Node ---> Target Node");
 			System.out.println("-----------------------------");
@@ -408,7 +409,7 @@ public class MyMatcher extends AbstractMatcher {
 			System.out.println(m.getEntity1().getComment()+" ---> "+m.getEntity2().getComment());
 			explanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()].describeTopDown();
 			Layout<ExplanationNode, String> layout = new SubTreeLayout(explanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()].tree);
-			layout.setSize(new Dimension(300,350)); // sets the initial size of the space
+			layout.setSize(new Dimension(200,350)); // sets the initial size of the space
 			// The BasicVisualizationServer<V,E> is parameterized by the edge types
 			//BasicVisualizationServer<ExplanationNode,String> vv =
 			//new BasicVisualizationServer<ExplanationNode,String>(layout);
@@ -470,7 +471,11 @@ public class MyMatcher extends AbstractMatcher {
 							criteriaLabel = new JLabel("Method: "+node.getCriteria().toString());
 							criteriaLabel.setOpaque(true);
 							labelPanel.add(criteriaLabel);
-						} 
+						} else {
+							criteriaLabel = new JLabel("Reached End node!");
+							criteriaLabel.setOpaque(true);
+							labelPanel.add(criteriaLabel);							
+						}
 						if(valueLabel != null) {
 							labelPanel.remove(valueLabel);
 						}
