@@ -56,9 +56,34 @@ import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.GraphMouseListener;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.MouseListenerTranslator;
+import edu.uci.ics.jung.visualization.picking.PickedInfo;
 import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 
 public class MyMatcher extends AbstractMatcher {
+	
+	   private static class VertexPaintTransformer implements Transformer<ExplanationNode,Paint> {
+
+	        private final PickedInfo<ExplanationNode> pi;
+
+	        VertexPaintTransformer ( PickedInfo<ExplanationNode> pi ) { 
+	            super();
+	            if (pi == null)
+	                throw new IllegalArgumentException("PickedInfo instance must be non-null");
+	            this.pi = pi;
+	        }
+
+	        @Override
+	        public Paint transform(ExplanationNode i) {
+	            Color p = null;
+	            //Edit here to set the colours as reqired by your solution
+	                p = Color.GREEN;
+	            //Remove if a selected colour is not required
+	            if ( pi.isPicked(i)){
+	                p = Color.yellow;
+	            }
+	            return p;
+	        }
+	    }
 
     private static final long serialVersionUID = -3772449944360959530L;
 
@@ -413,7 +438,7 @@ public class MyMatcher extends AbstractMatcher {
 			// The BasicVisualizationServer<V,E> is parameterized by the edge types
 			//BasicVisualizationServer<ExplanationNode,String> vv =
 			//new BasicVisualizationServer<ExplanationNode,String>(layout);
-			VisualizationViewer<ExplanationNode, String> vv = 
+			final VisualizationViewer<ExplanationNode, String> vv = 
 			    		new VisualizationViewer<ExplanationNode, String>(layout);
 			final JFrame frame = new JFrame("Simple Graph View");
 			vv.setPreferredSize(new Dimension(300,400)); //Sets the viewing area size
@@ -425,14 +450,14 @@ public class MyMatcher extends AbstractMatcher {
 				}
 				
 			};
-			Transformer<ExplanationNode,Paint> vertexPaint = new Transformer<ExplanationNode,Paint>() {
+			final Transformer<ExplanationNode,Paint> vertexPaint = new Transformer<ExplanationNode,Paint>() {
 				public Paint transform(ExplanationNode i) {
 				return Color.GREEN;
 				}
 			};
 			
 			vv.getRenderContext().setVertexLabelTransformer(labelTransformer);
-			vv.getRenderContext().setVertexFillPaintTransformer(vertexPaint);
+			 vv.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vv.getPickedVertexState()));
 			vv.getRenderer().getVertexLabelRenderer().setPosition(Position.CNTR);
 			Transformer<ExplanationNode, String> toolTipTransformer = new Transformer<ExplanationNode, String>() {
 
@@ -453,9 +478,19 @@ public class MyMatcher extends AbstractMatcher {
 			graphMouse.setMode(ModalGraphMouse.Mode.TRANSFORMING);
 			GraphMouseListener<ExplanationNode> mygel = new GraphMouseListener<ExplanationNode>() {
 
+				private ExplanationNode previousNode;
+
 				@Override
-				public void graphClicked(ExplanationNode node, MouseEvent me) {
+				public void graphClicked(final ExplanationNode node, MouseEvent me) {
+					vv.getRenderContext().setVertexFillPaintTransformer(vertexPaint);
+
 					if(me.getButton() == MouseEvent.BUTTON1) {
+						if(previousNode != null) {
+							vv.getPickedVertexState().pick(previousNode, false);
+						}
+						vv.getPickedVertexState().pick(node, true);
+						 vv.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vv.getPickedVertexState()));
+
 						System.out.println("left click");
 						System.out.println("Clicked " + node.getDescription());	
 						if(nodeDescriptionValue != null) {
@@ -490,6 +525,7 @@ public class MyMatcher extends AbstractMatcher {
 						System.out.println("right click");
 						System.out.println("Clicked " + node.getDescription());								
 					}
+					previousNode = node;
 				}
 
 				@Override
