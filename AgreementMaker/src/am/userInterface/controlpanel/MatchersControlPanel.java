@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.AbstractTableModel;
 
@@ -48,6 +49,7 @@ import am.userInterface.MatcherProgressDialog;
 import am.userInterface.MatchingProgressDisplay;
 import am.userInterface.QualityEvaluationDialog;
 import am.userInterface.matchingtask.MatchingTaskCreatorDialog;
+import am.userInterface.sidebar.provenance.ProvenanceSidebar;
 import am.userInterface.table.MatchersTablePanel;
 
 public class MatchersControlPanel extends JPanel implements ActionListener, MouseListener {
@@ -67,7 +69,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 	private JButton qualityEvaluationButton = new JButton("Quality Evaluation");
 	private JButton exportAlignmentsButton = new JButton("Export");
 	private JButton importAlignmentsButton = new JButton("Import");
-	private JButton thresholdTuning = new JButton("Tuning");;
+	private JButton thresholdTuning = new JButton("Tuning");
+	
+	private JButton showExplanation = new JButton("Explanation");
 	
 	public MatchersControlPanel() {
 		super();
@@ -96,6 +100,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		exportAlignmentsButton.addActionListener(this);
 		importAlignmentsButton.addActionListener(this);
 		thresholdTuning.addActionListener(this);
+		showExplanation.addActionListener(this);
 		
 		JPanel fauxToolBar = new JPanel();  // a toolbar wannabe
 		fauxToolBar.setLayout(new FlowLayout(FlowLayout.LEADING));
@@ -110,6 +115,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		fauxToolBar.add(exportAlignmentsButton);
 		fauxToolBar.add(importAlignmentsButton);
 		fauxToolBar.add(thresholdTuning);
+		fauxToolBar.add(showExplanation);
 		
 		// Layout
 		layout.setHorizontalGroup( layout.createParallelGroup() 
@@ -158,6 +164,27 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			}
 			else if(obj == thresholdTuning) {
 				tuning();
+			}
+			else if( obj == showExplanation ) {
+				// FIXME: Needs to be changed to use the Explanation Panel.
+				
+				// get the split pane (top part of the UI)
+				JSplitPane uiPane=Core.getUI().getUISplitPane();
+				
+				
+				if(uiPane.getRightComponent() instanceof ProvenanceSidebar)
+				{
+					ProvenanceSidebar p=(ProvenanceSidebar)uiPane.getRightComponent();
+					uiPane.setRightComponent(p.getOldComponent());
+				}
+				else{
+					ProvenanceSidebar p= new ProvenanceSidebar();
+
+					p.setOldComponent(Core.getUI().getUISplitPane().getRightComponent());
+					Core.getUI().getUISplitPane().setRightComponent(p);
+				}
+				
+				
 			}
 		}
 
