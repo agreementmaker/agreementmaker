@@ -22,6 +22,7 @@ import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.AbstractMatcher.MatcherCategory;
 import am.app.mappingEngine.Combination.CombinationParameters;
 import am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralParameters;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
@@ -67,6 +68,9 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	public OAEI2011Matcher(){
 		super();
 		needsParam = true;
+		
+		setName("OAEI 2011 Matcher");
+		setCategory(MatcherCategory.HYBRID);
 	}
 	
 	@Override
