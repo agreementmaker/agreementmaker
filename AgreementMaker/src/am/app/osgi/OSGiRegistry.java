@@ -11,6 +11,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher;
 
 public class OSGiRegistry {
 	
@@ -83,6 +84,12 @@ public class OSGiRegistry {
 	public List<AbstractMatcher> getMatchers() {
 		List<AbstractMatcher> list = new LinkedList<AbstractMatcher>();
 		list.addAll(matcherList);
+		
+		// HACK to add the OAEI 2011 Matcher.
+		
+		AbstractMatcher oaei2011 = new OAEI2011Matcher();
+		list.add(oaei2011);
+		
 		return list;
 	}
 
