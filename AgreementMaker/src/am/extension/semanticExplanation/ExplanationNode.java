@@ -128,6 +128,11 @@ public class ExplanationNode {
 		System.out.println("The graph g = " + tree.toString());
 	}
 	
+	/**
+	 * @param ExplanationNode node
+	 * Finds the most significant path in an aligned mapping
+	 * @return List of nodes
+	 */
 	public static List<ExplanationNode> findMostSignificantPath(ExplanationNode node) {
 		List<ExplanationNode> mspList = new ArrayList<ExplanationNode>();
 		Queue<ExplanationNode> explnQ = new LinkedList<ExplanationNode>();
@@ -151,6 +156,11 @@ public class ExplanationNode {
 		
 	}
 	
+	/**
+	 * @param ExplanationNode node
+	 * Finds the least significant path in an aligned mapping
+	 * @return List of nodes
+	 */
 	public static List<ExplanationNode> findLeastSignificantPath(ExplanationNode node) {
 		List<ExplanationNode> mspList = new ArrayList<ExplanationNode>();
 		Queue<ExplanationNode> explnQ = new LinkedList<ExplanationNode>();
