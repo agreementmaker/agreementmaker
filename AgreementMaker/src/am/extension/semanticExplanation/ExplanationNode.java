@@ -128,6 +128,52 @@ public class ExplanationNode {
 		System.out.println("The graph g = " + tree.toString());
 	}
 	
+	public static List<ExplanationNode> findMostSignificantPath(ExplanationNode node) {
+		List<ExplanationNode> mspList = new ArrayList<ExplanationNode>();
+		Queue<ExplanationNode> explnQ = new LinkedList<ExplanationNode>();
+		explnQ.add(node);
+		mspList.add(node);
+		while(explnQ.size()>0) {
+			ExplanationNode currentNode = explnQ.remove();
+			ExplanationNode largerChild = new ExplanationNode();
+			largerChild.setVal(0);
+			if(currentNode.children.size()>0) {
+				for(ExplanationNode child: currentNode.children) {
+					if(child.getVal() > largerChild.getVal()) {
+						largerChild = child;
+					}
+				}
+				explnQ.add(largerChild);
+				mspList.add(largerChild);
+			}
+		}
+		return mspList;
+		
+	}
+	
+	public static List<ExplanationNode> findLeastSignificantPath(ExplanationNode node) {
+		List<ExplanationNode> mspList = new ArrayList<ExplanationNode>();
+		Queue<ExplanationNode> explnQ = new LinkedList<ExplanationNode>();
+		explnQ.add(node);
+		mspList.add(node);
+		while(explnQ.size()>0) {
+			ExplanationNode currentNode = explnQ.remove();
+			ExplanationNode largerChild = new ExplanationNode();
+			largerChild.setVal(1.0);
+			if(currentNode.children.size()>0) {
+				for(ExplanationNode child: currentNode.children) {
+					if(child.getVal() < largerChild.getVal()) {
+						largerChild = child;
+					}
+				}
+				explnQ.add(largerChild);
+				mspList.add(largerChild);
+			}
+		}
+		return mspList;
+		
+	}
+	
 	private static void addChildren(ExplanationNode node, DelegateTree<String, String> tree) {
 	    for (int i = 0; i < node.getChildren().size(); i++) {
 	        tree.addChild("edge "+edge,new String(String.valueOf(node.val)), new String(String.valueOf(node.getChildren().get(i).val)));
@@ -135,6 +181,34 @@ public class ExplanationNode {
 	        addChildren(node.getChildren().get(i), tree);
 	    }
 	    edge++;
+	}
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((description == null) ? 0 : description.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ExplanationNode other = (ExplanationNode) obj;
+		if (description == null) {
+			if (other.description != null)
+				return false;
+		} else if (!description.equals(other.description))
+			return false;
+		return true;
 	}
 	
 }
