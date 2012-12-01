@@ -9,6 +9,7 @@
 
 package am.extension.semanticExplanation.mouseWorks;
 
+import am.extension.semanticExplanation.ExplanationNode;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 /**
@@ -17,6 +18,6 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
  * has full access to the graph and layout.
  * @author Dr. Greg M. Bernstein
  */
-public interface VertexMenuListener<V> {
-    void setVertexAndView(V v, VisualizationViewer visView);    
+public interface VertexMenuListener<ExplanationNode> {
+    void setVertexAndView(ExplanationNode v, VisualizationViewer<ExplanationNode, String> visView);    
 }
