@@ -528,7 +528,7 @@ public class MyMatcher extends AbstractMatcher {
 						System.out.println("right click");
 						System.out.println("Clicked " + node.getDescription());		
 						
-						PopupVertexEdgeMenuMousePlugin myPlugin = new PopupVertexEdgeMenuMousePlugin();
+						PopupVertexEdgeMenuMousePlugin<ExplanationNode, String> myPlugin = new PopupVertexEdgeMenuMousePlugin<ExplanationNode,String>();
 						JPopupMenu vertexMenu = new MyMouseMenus.VertexMenu();
 						myPlugin.setVertexPopup(vertexMenu);
 						graphMouse.add(myPlugin);
