@@ -64,7 +64,7 @@ import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 
 public class MyMatcher extends AbstractMatcher {
 	
-	   private static class VertexPaintTransformer implements Transformer<ExplanationNode,Paint> {
+	   public static class VertexPaintTransformer implements Transformer<ExplanationNode,Paint> {
 
 	        private final PickedInfo<ExplanationNode> pi;
 
