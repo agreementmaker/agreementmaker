@@ -43,13 +43,13 @@ import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.extension.semanticExplanation.userInterface.ExplanationSidebar;
 import am.userInterface.ExportDialog;
 import am.userInterface.MatcherParametersDialog;
 import am.userInterface.MatcherProgressDialog;
 import am.userInterface.MatchingProgressDisplay;
 import am.userInterface.QualityEvaluationDialog;
 import am.userInterface.matchingtask.MatchingTaskCreatorDialog;
-import am.userInterface.sidebar.provenance.ProvenanceSidebar;
 import am.userInterface.table.MatchersTablePanel;
 
 public class MatchersControlPanel extends JPanel implements ActionListener, MouseListener {
@@ -172,13 +172,13 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 				JSplitPane uiPane=Core.getUI().getUISplitPane();
 				
 				
-				if(uiPane.getRightComponent() instanceof ProvenanceSidebar)
+				if(uiPane.getRightComponent() instanceof ExplanationSidebar)
 				{
-					ProvenanceSidebar p=(ProvenanceSidebar)uiPane.getRightComponent();
+					ExplanationSidebar p=(ExplanationSidebar)uiPane.getRightComponent();
 					uiPane.setRightComponent(p.getOldComponent());
 				}
 				else{
-					ProvenanceSidebar p= new ProvenanceSidebar();
+					ExplanationSidebar p= new ExplanationSidebar();
 
 					p.setOldComponent(Core.getUI().getUISplitPane().getRightComponent());
 					Core.getUI().getUISplitPane().setRightComponent(p);
