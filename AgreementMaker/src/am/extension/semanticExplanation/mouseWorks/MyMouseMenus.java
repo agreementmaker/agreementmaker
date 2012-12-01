@@ -22,7 +22,7 @@ public class MyMouseMenus {
     public static class VertexMenu extends JPopupMenu {
         public VertexMenu() {
             super("Vertex Menu");
-            this.add("Most Significant Path");
+            this.add("Most Significant path");
             this.addSeparator();
             this.add("Least Significant Path");
         }
