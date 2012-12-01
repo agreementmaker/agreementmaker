@@ -12,6 +12,8 @@ package am.extension.semanticExplanation.mouseWorks;
 
 import javax.swing.JPopupMenu;
 
+import am.extension.semanticExplanation.ExplanationNode;
+
 /**
  * A collection of classes used to assemble popup mouse menus for the custom
  * edges and vertices developed in this example.
@@ -20,11 +22,16 @@ import javax.swing.JPopupMenu;
 public class MyMouseMenus {
     
     public static class VertexMenu extends JPopupMenu {
-        public VertexMenu() {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public VertexMenu() {
             super("Vertex Menu");
-            this.add("Most Significant path");
+            this.add(new MostSignificantPathMenuItem<ExplanationNode>());
             this.addSeparator();
-            this.add("Least Significant Path");
+            this.add(new LeastSignificantPathMenuItem<ExplanationNode>());
         }
     }
     
