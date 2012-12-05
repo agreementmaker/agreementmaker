@@ -229,7 +229,7 @@ public class Utility {
 		if(title == null)
 			title = "Error";
 		try {
-			JOptionPane.showMessageDialog(null, desc,title, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(Core.getUI().getUIFrame(), desc,title, JOptionPane.ERROR_MESSAGE);
 		} catch( HeadlessException ex ) {
 			Logger log = Logger.getLogger(Utility.class);
 			log.error(desc);

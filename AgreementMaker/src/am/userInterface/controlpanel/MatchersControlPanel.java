@@ -260,6 +260,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		}
 		if( matcherName != null ) manualMatcher.setName(matcherName);
 		
+		final MatchingTask t = new MatchingTask(manualMatcher, manualMatcher.getParam(), 
+				new MwbmSelection(), new DefaultSelectionParameters());
+		
 		// TODO: There must be a better way to do this!
 		manualMatcher.addProgressDisplay(new MatchingProgressDisplay() {
 			private boolean ignore = false;
@@ -271,8 +274,6 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			@Override public void matchingComplete() {
 				if( ignore ) return;
 				if(!manualMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
-					MatchingTask t = new MatchingTask(manualMatcher, manualMatcher.getParam(), 
-							new MwbmSelection(), new DefaultSelectionParameters());
 					Core.getInstance().addMatchingTask(t);
 				}
 				manualMatcher.removeProgressDisplay(this);
@@ -282,7 +283,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			@Override public void appendToReport(String report) {}
 		});
 		
-		new MatcherProgressDialog(manualMatcher);
+		new MatcherProgressDialog(t);
 	}
 	
 	public void delete() throws Exception {
@@ -411,29 +412,29 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 					// empty set?
 					referenceSet = new Alignment<Mapping>(Ontology.ID_NONE, Ontology.ID_NONE);
 				}
-				AbstractMatcher toBeEvaluated;
+				MatchingTask toBeEvaluated;
 				Alignment<Mapping> evaluateSet;
 				ReferenceEvaluationData rd;
 				String report="Reference Evaluation Complete\n\n";
 				for(int i = 0; i < rowsIndex.length; i++) {
-					toBeEvaluated = Core.getInstance().getMatcherInstances().get(rowsIndex[i]);
+					toBeEvaluated = Core.getInstance().getMatchingTasks().get(rowsIndex[i]);
 					//evaluateSet = null;
 					if( refMatcher.areClassesAligned() && refMatcher.arePropertiesAligned() ) {
-						evaluateSet = toBeEvaluated.getAlignment();
+						evaluateSet = toBeEvaluated.selectionResult.getAlignment();
 					} else if( refMatcher.areClassesAligned() ) {
-						evaluateSet = toBeEvaluated.getClassAlignmentSet();
+						evaluateSet = toBeEvaluated.selectionResult.getClassAlignmentSet();
 					} else if( refMatcher.arePropertiesAligned() ) {
-						evaluateSet = toBeEvaluated.getPropertyAlignmentSet();
+						evaluateSet = toBeEvaluated.selectionResult.getPropertyAlignmentSet();
 					} else {
 						evaluateSet = new Alignment<Mapping>(Ontology.ID_NONE,Ontology.ID_NONE); // empty
 					}
 					
 					rd = ReferenceEvaluator.compare(evaluateSet, referenceSet);
-					toBeEvaluated.setRefEvaluation(rd);
-					report+=i+" "+toBeEvaluated.getName()+"\n\n";
+					toBeEvaluated.matchingAlgorithm.setRefEvaluation(rd);
+					report+=i+" "+toBeEvaluated.matchingAlgorithm.getName()+"\n\n";
 					report +=rd.getReport()+"\n";
 					AbstractTableModel model = (AbstractTableModel)matchersTablePanel.getTable().getModel();
-					model.fireTableRowsUpdated(toBeEvaluated.getIndex(), toBeEvaluated.getIndex());
+					model.fireTableRowsUpdated(rowsIndex[i], rowsIndex[i]);
 				}
 				Utility.displayTextAreaPane(report,"Reference Evaluation Report");
 			}
@@ -461,10 +462,11 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		
 		MatchingTaskCreatorDialog dialog = new MatchingTaskCreatorDialog(sourceOntology, targetOntology);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		dialog.setModal(true);
 		dialog.setVisible(true);
 		
 		final AbstractMatcher currentMatcher;
-		MatchingTask matchingTask = dialog.getMatchingTask();
+		final MatchingTask matchingTask = dialog.getMatchingTask();
 		
 		if(matchingTask == null) return;
 			
@@ -475,29 +477,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		// The dialog will start the matcher in a background thread, show progress as the matcher is running, and show the report at the end.
 		
 		// This dialog is not modal.
-		currentMatcher.addProgressDisplay(new MatchingProgressDisplay() {
-			private boolean ignore = false;
-			@Override public void setProgressLabel(String label) {}
-			@Override public void setIndeterminate(boolean indeterminate) {}
-			@Override public void scrollToEndOfReport() {}
-			@Override public void propertyChange(PropertyChangeEvent evt) {}
-			@Override public void matchingStarted(AbstractMatcher m) {}
-			@Override public void matchingComplete() {
-				if( ignore ) return;
-				if(!currentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
-					MatchingTask t = new MatchingTask(currentMatcher, currentMatcher.getParam(), 
-							new MwbmSelection(), new DefaultSelectionParameters());
-					Core.getInstance().addMatchingTask(t);
-				}
-				currentMatcher.removeProgressDisplay(this);
-			}
-			
-			@Override public void ignoreComplete(boolean ignore) {this.ignore = ignore;}
-			@Override public void clearReport() {}
-			@Override public void appendToReport(String report) {}
-		});
-		
-		MatcherProgressDialog progressDialog = new MatcherProgressDialog(currentMatcher);
+		new MatcherProgressDialog(matchingTask);
 		
 	}
 

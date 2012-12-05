@@ -29,6 +29,8 @@ public class MatcherResult {
 		executionTime=a.getExecutionTime();
 		classesMatrix=a.getClassesMatrix();
 		propMatrix=a.getPropertiesMatrix();
+		sourceOntology = a.getSourceOntology();
+		targetOntology = a.getTargetOntology();
 	}
 
 	public MatchingTask getMatchingTask() { return task; }

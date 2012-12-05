@@ -685,11 +685,11 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 				}
 				
 				
+				MatchingTask t = new MatchingTask(currentMatcher, currentMatcher.getParam(), 
+						new MwbmSelection(), new DefaultSelectionParameters());
 				// The dialog will start the matcher in a background thread, show progress as the matcher is running, and show the report at the end.
-				new MatcherProgressDialog(currentMatcher);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
+				new MatcherProgressDialog(t);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
 				if(!currentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
-					MatchingTask t = new MatchingTask(currentMatcher, currentMatcher.getParam(), 
-							new MwbmSelection(), new DefaultSelectionParameters());
 					Core.getInstance().addMatchingTask(t);
 				}	
 

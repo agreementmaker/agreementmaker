@@ -304,6 +304,8 @@ public class Core {
 	 * @param mt The completed matching task.
 	 */
 	public void addMatchingTask(MatchingTask mt) {
+		// update the ID
+		mt.ID = getNextMatcherID();
 		completedMatchingTasks.add(mt);
 		fireEvent( new MatchingTaskChangeEvent( mt, EventType.MATCHER_ADDED) );
 	}

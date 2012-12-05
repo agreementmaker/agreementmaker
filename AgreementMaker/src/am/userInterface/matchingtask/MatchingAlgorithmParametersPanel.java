@@ -23,7 +23,7 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.MatchingTask;
-import am.userInterface.matchingtask.MatchingTaskCreatorDialog.Messages;
+import am.userInterface.matchingtask.MatchingTaskCreatorDialog.MatchingTaskCreatorDialogMessages;
 import am.utility.messagesending.MessageDispatch;
 import am.utility.messagesending.SimpleMessage;
 
@@ -80,6 +80,9 @@ public class MatchingAlgorithmParametersPanel extends JPanel implements ActionLi
 		if( matcherCombo.getSelectedItem() != null ) {
 			String matcherName = matcherCombo.getSelectedItem().toString();
 			matcher = Core.getInstance().getMatchingAlgorithm(matcherName);
+			
+			dispatch.publish(new SimpleMessage<Object>(
+					MatchingTaskCreatorDialogMessages.SELECT_MATCHING_ALGORITHM.name(), (Object)matcher));
 		}
 		
 		if( matcher != null ) { 
@@ -315,7 +318,7 @@ public class MatchingAlgorithmParametersPanel extends JPanel implements ActionLi
 			initLayout();
 			
 			dispatch.publish(new SimpleMessage<Object>(
-					Messages.SELECT_MATCHING_ALGORITHM.name(), (Object)matcher));
+					MatchingTaskCreatorDialogMessages.SELECT_MATCHING_ALGORITHM.name(), (Object)matcher));
 		}
 		else if( obj == btnMatcherDetails ) {
 			if( matcher != null ) {
@@ -324,6 +327,19 @@ public class MatchingAlgorithmParametersPanel extends JPanel implements ActionLi
 		}
 		else if( obj == chkCustomLabel ) {
 			txtCustomLabel.setEnabled(chkCustomLabel.isSelected());
+		}
+	}
+	
+	public AbstractMatcher getMatcher() {
+		return matcher;
+	}
+	
+	public DefaultMatcherParameters getMatcherParameters() {
+		if( parametersPanel == null ) {
+			return new DefaultMatcherParameters();
+		}
+		else {
+			return parametersPanel.getParameters();
 		}
 	}
 }

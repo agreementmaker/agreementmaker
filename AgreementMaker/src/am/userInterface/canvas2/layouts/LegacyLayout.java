@@ -23,7 +23,6 @@ import javax.swing.event.PopupMenuListener;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.openjena.atlas.logging.Log;
 
 import am.Utility;
 import am.app.Core;
@@ -32,7 +31,6 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
-import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.MatchingTask;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -73,7 +71,7 @@ import com.hp.hpl.jena.vocabulary.OWL;
  * This layout is resposible for placement of nodes and edges.
  * The layout algorithm is the same one as the original Canvas class.
  * 
- * @author cosmin
+ * @author Cosmin Stroe <cstroe@gmail.com>
  *
  */
 
@@ -1485,8 +1483,8 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				MappingData d = (MappingData) currentMapping.getObject();
 				if( d.alignment != null ) {
 					String sim = Utility.getNoDecimalPercentFromDouble(d.alignment.getSimilarity());
-					MatcherResult m = Core.getInstance().getResultByID( d.matcherID );
-					String shortName = m.getMatchingTask().matchingAlgorithm.getName();
+					MatchingTask m = Core.getInstance().getMatchingTaskByID( d.matcherID );
+					String shortName = m.getShortLabel();
 					d.label = d.alignment.getRelation().getVisualRepresentation() + " (" + sim + ")";
 					if( shortName != null ) { d.label += " " + shortName; }
 				}

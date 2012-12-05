@@ -81,6 +81,12 @@ public class MatchingTask {
 		return ID;
 	}
 	
+	public String getShortLabel() {
+		if( shortLabel != null ) return shortLabel;
+		
+		return "Task " + Integer.toString(ID);
+	}
+	
 	public void setLabel(String label) {
 		this.shortLabel = label;
 	}
