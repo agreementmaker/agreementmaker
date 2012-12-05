@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * All operations are thread safe because we just maintain
  * everything in ConcurrentHashMap data structures.
  * 
- * @author Cosmin Stroe
+ * @author Cosmin Stroe <cstroe@gmail.com>
  *
  * @param <E> The type of objects the Messages will contain.
  */

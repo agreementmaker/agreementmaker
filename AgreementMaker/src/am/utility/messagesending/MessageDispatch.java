@@ -1,5 +1,12 @@
 package am.utility.messagesending;
 
+/**
+ * 
+ * @author Cosmin Stroe <cstroe@gmail.com>
+ * 
+ * @param <E>
+ *            The type of messages that will be sent through this dispatch.
+ */
 public interface MessageDispatch<E> {
 
 	/**

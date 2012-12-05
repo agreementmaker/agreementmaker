@@ -15,5 +15,7 @@
  * <li> Use {@link am.utility.messagesending.MessageDispatchSupport} 
  *      for an implementation of a {@link am.utility.messagesending.MessageDispatch}</li>
  * </ul>
+ * 
+ * @author Cosmin Stroe <cstroe@gmail.com>
  */
 package am.utility.messagesending;
