@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import am.Utility;
+import am.app.Core;
 import am.app.lexicon.GeneralLexicon;
 import am.app.lexicon.GeneralLexiconSynSet;
 import am.app.lexicon.Lexicon;
@@ -19,6 +20,12 @@ import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.SynsetType;
 import edu.smu.tspell.wordnet.WordNetDatabase;
 
+/**
+ * Enriches an ontology lexicon with synonyms from WordNet.
+ * 
+ * @author Cosmin Stroe <cstroe@gmail.com>
+ *
+ */
 public class WordNetLexiconBuilder implements LexiconBuilder {
 
 	Lexicon wordnetLexicon;
@@ -39,9 +46,7 @@ public class WordNetLexiconBuilder implements LexiconBuilder {
 		ontologyLexicon = ontLexicon;
 		
 		// Initialize the WordNet interface.
-		String cwd = System.getProperty("user.dir");
-		String wordnetdir = cwd + "/wordnet-3.0";
-
+		String wordnetdir = Core.getInstance().getRoot() + "/wordnet-3.0";
 		System.setProperty("wordnet.database.dir", wordnetdir);
 		
 		

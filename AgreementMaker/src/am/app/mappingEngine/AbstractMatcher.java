@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -123,6 +124,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 	protected Properties matcherProperties = new Properties();
 
+	/**
+	 * @deprecated Anything to do with selection of mappings has been moved to
+	 *             {@link SelectionAlgorithm}.
+	 */
+	@Deprecated
 	public void setPerformSelection(boolean performSelection) {
 		this.performSelection = performSelection;
 	}
@@ -414,7 +420,10 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		setSuccesfullReport();	
 		if( isProgressDisplayed() ) {
 			allStepsDone();
-			for( MatchingProgressDisplay mpd : progressDisplays ) {
+			// the progressDisplays list may be modified upon matchingComplete() calls, so 
+			// make a copy of it for iteration purposes.
+			List<MatchingProgressDisplay> displays = new LinkedList<MatchingProgressDisplay>(progressDisplays);
+			for( MatchingProgressDisplay mpd : displays ) {
 				mpd.clearReport();
 				mpd.matchingComplete();
 			}

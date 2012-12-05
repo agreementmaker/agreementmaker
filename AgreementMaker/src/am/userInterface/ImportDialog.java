@@ -385,6 +385,10 @@ public class ImportDialog extends JDialog implements ActionListener{
 					referenceAlignmentMatcher.setMaxSourceAlign(referenceAlignmentMatcher.getDefaultMaxSourceRelations());
 					referenceAlignmentMatcher.setMaxTargetAlign(referenceAlignmentMatcher.getDefaultMaxTargetRelations());
 					
+					final MatchingTask t = new MatchingTask(referenceAlignmentMatcher, referenceAlignmentMatcher.getParam(), 
+							new MwbmSelection(), new DefaultSelectionParameters());
+
+					
 					referenceAlignmentMatcher.addProgressDisplay(new MatchingProgressDisplay() {
 						private boolean ignore = false;
 						@Override public void setProgressLabel(String label) {}
@@ -395,9 +399,7 @@ public class ImportDialog extends JDialog implements ActionListener{
 						@Override public void matchingComplete() {
 							if( ignore ) return;
 							if(!referenceAlignmentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
-								MatchingTask t = new MatchingTask(referenceAlignmentMatcher, referenceAlignmentMatcher.getParam(), 
-										new MwbmSelection(), new DefaultSelectionParameters());
-								
+																
 								Core.getInstance().addMatchingTask(t);
 							}	
 							referenceAlignmentMatcher.removeProgressDisplay(this);
@@ -408,7 +410,7 @@ public class ImportDialog extends JDialog implements ActionListener{
 						@Override public void appendToReport(String report) {}
 					});
 					
-					new MatcherProgressDialog(referenceAlignmentMatcher);
+					new MatcherProgressDialog(t);
 					
 					loadedMatcher = referenceAlignmentMatcher;
 					setVisible(false);

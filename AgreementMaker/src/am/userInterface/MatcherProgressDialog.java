@@ -29,12 +29,13 @@ import javax.swing.text.Document;
 import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.MatchingTask;
 
 public class MatcherProgressDialog extends JDialog implements MatchingProgressDisplay, ActionListener {
 
     /**
 	 * This is the Progress Dialog class.
-	 * @author Cosmin Stroe @date Dec 17, 2008  
+	 * @author Cosmin Stroe <cstroe@gmail.com> @date Dec 17, 2008  
 	 */
 	private static final long serialVersionUID = 2113641985534214381L;
 	
@@ -42,7 +43,7 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 	private JPanel textPanel;
 	
 	private JProgressBar progressBar;
-    private AbstractMatcher matcher; // the matcher that is associated with this dialog, needed in order for cancel() to work.
+    private MatchingTask task; // the matcher that is associated with this dialog, needed in order for cancel() to work.
     private AbstractMatcher subMatcher = null; // if this matcher runs another matcher 
     
     private JButton okButton = new JButton("Ok");
@@ -62,8 +63,8 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 	 * Constructor. 
 	 * @param m
 	 */
-	public MatcherProgressDialog (AbstractMatcher m) {
-	    super(Core.getUI().getUIFrame(), true);
+	public MatcherProgressDialog (MatchingTask mtask) {
+	    super(Core.getUI().getUIFrame());
 	
 	    prefs = Core.getAppPreferences();
 	    
@@ -71,7 +72,7 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 	    matcherReport.setEditable(false);
 	    
 		//setTitle("Agreement Maker is Running ...");  // you'd better go catch it!
-	    setTitle(m.getName());
+	    setTitle(mtask.matchingAlgorithm.getName());
 		matcherReport.setText("Running...");
 		//setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setResizable(false);
@@ -114,19 +115,19 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 	    
 	    this.add(progressPanel);
 	    
-	    matcher = m;
+	    task = mtask;
 	    
 		//setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 		if( !GlobalStaticVariables.USE_PROGRESS_BAR )
 			progressBar.setIndeterminate(true); // we are not updating the progress bar.
 		else {
-		    matcher.addPropertyChangeListener(this);  // we are receiving updates from the matcher.
+		    task.matchingAlgorithm.addPropertyChangeListener(this);  // we are receiving updates from the matcher.
 		}
 		
-	    matcher.addProgressDisplay(this);
+	    task.matchingAlgorithm.addProgressDisplay(this);
 		
-		matcher.execute();
+		task.matchingAlgorithm.execute();
 		
 		getRootPane().setDefaultButton(okButton);
 		
@@ -134,7 +135,6 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);   
-	    
 	}
 	
 	
@@ -179,7 +179,7 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 			int retVal = JOptionPane.showConfirmDialog(this, "Are you sure you want to cancel this matcher?", "Really cancel?", JOptionPane.YES_NO_OPTION);
 			if( retVal != JOptionPane.YES_OPTION ) return;
 			
-			matcher.cancel(true);
+			task.matchingAlgorithm.cancel(true);
 			if( subMatcher != null ) subMatcher.cancel(true);
 			this.dispose();
 		} else if( obj == radioBeep ) {
@@ -203,7 +203,7 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 	
 	@Override
 	public void matchingStarted(AbstractMatcher m) {
-		if( m != matcher ) {
+		if( m != task.matchingAlgorithm ) {
 			subMatcher = m;
 		}
 		progressBar.setEnabled(true); 
@@ -219,11 +219,24 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 			progressBar.setValue(100);
 		}
 		
-		matcherReport.append( matcher.getReport() );
+		if( !task.matchingAlgorithm.isCancelled() ) {
+			// do the selection
+			// FIXME: This is a hack.  The progress should be properly displayed.
+			task.matcherResult = task.matchingAlgorithm.getResult();
+			task.selectionParameters.inputResult = task.matchingAlgorithm.getResult();
+			task.selectionAlgorithm.setParameters(task.selectionParameters);
+			task.selectionAlgorithm.select();
+			task.selectionResult = task.selectionAlgorithm.getResult();
+			
+			Core.getInstance().addMatchingTask(task);
+		}
+		
+		matcherReport.append( task.matchingAlgorithm.getReport() );
 		cancelButton.setEnabled(false);
 		okButton.setEnabled(true);
 		
-		if( !matcher.isCancelled() ) {
+		if( !task.matchingAlgorithm.isCancelled() ) {
+			
 			if( radioAlarm.isSelected() ) {
 				finishLabel.setText("> > > > > > > >");
 				radioBeep.setVisible(false);

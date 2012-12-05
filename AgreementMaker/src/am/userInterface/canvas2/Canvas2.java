@@ -13,7 +13,6 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import am.Utility;
@@ -57,7 +56,7 @@ import am.userInterface.canvas2.utility.GraphLocator.GraphType;
  * 		- Order the Vertices so that mapping lines are shortest!
  * 		- Different ordering of vertices (alphabetical (asc/desc), by number of children, by "weight")
  * 
- * @author Cosmin Stroe
+ * @author Cosmin Stroe <cstroe@gmail.com>
  * @datestarted 11/3/2009
  *
  */
@@ -310,10 +309,11 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	
 	public synchronized void matcherChanged(MatchingTaskChangeEvent e) {
 
-		final MatchingTask task = Core.getInstance().getMatchingTaskByID( e.getTaskID() );
+		final int taskID = e.getTaskID();
+		final MatchingTask task = Core.getInstance().getMatchingTaskByID( taskID );
 		
 		if( task == null ) {
-			log.warn("Matcher Change Event fired with invalid task id: " + e.getTaskID() + ". Ignoring." );
+			log.warn("Matcher Change Event fired with invalid task id: " + taskID + ". Ignoring." );
 			return;
 		}
 		
@@ -328,7 +328,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		case MATCHER_ALIGNMENTSET_UPDATED:
 			
 			// first, remove the matcher graph from the list of graphs.
-			int matcherID = e.getTaskID();
+			int matcherID = taskID;
 			Iterator<CanvasGraph> graphIter = graphs.iterator();
 			while( graphIter.hasNext() ) {
 				CanvasGraph gr = graphIter.next();
@@ -345,7 +345,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			
 		case MATCHER_REMOVED:
 			// first, remove the matcher graph from the list of graphs.
-			int matcherID1 = e.getTaskID();
+			int matcherID1 = taskID;
 			Iterator<CanvasGraph> graphIter1 = graphs.iterator();
 			while( graphIter1.hasNext() ) {
 				CanvasGraph gr = graphIter1.next();
@@ -359,7 +359,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			break;
 			
 		case MATCHER_VISIBILITY_CHANGED:
-			int matcherID11 = e.getTaskID();
+			int matcherID11 = taskID;
 			Iterator<CanvasGraph> graphIter11 = graphs.iterator();
 			final boolean visible = task.visData.isShown;
 			while( graphIter11.hasNext() ) {
@@ -376,7 +376,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			break;
 			
 		case MATCHER_COLOR_CHANGED:
-			int matcherID11c = e.getTaskID();
+			int matcherID11c = taskID;
 			log.debug("Color change event from task ID: " + e.getTaskID());
 			Iterator<CanvasGraph> graphIter11c = graphs.iterator();
 			

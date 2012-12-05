@@ -5,7 +5,7 @@ package am.utility.messagesending;
  * A message has a key and a payload.  MessageConsumers can
  * listen for all messages or messages with a certain key.
  * 
- * @author Cosmin Stroe
+ * @author Cosmin Stroe <cstroe@gmail.com>
  *
  * @param <E> The payload object type.
  */

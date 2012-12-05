@@ -9,14 +9,14 @@ import javax.swing.border.TitledBorder;
 import am.app.mappingEngine.MatchingAlgorithm;
 import am.app.mappingEngine.SelectionAlgorithm;
 import am.app.ontology.Ontology;
-import am.userInterface.matchingtask.MatchingTaskCreatorDialog.Messages;
+import am.userInterface.matchingtask.MatchingTaskCreatorDialog.MatchingTaskCreatorDialogMessages;
 import am.utility.messagesending.Message;
 import am.utility.messagesending.MessageConsumer;
 
 /**
  * A panel to display the matching task overview.
  * 
- * @author Cosmin Stroe
+ * @author Cosmin Stroe <cstroe@gmail.com>
  *
  */
 public class MatchingTaskOverviewPanel extends JPanel implements MessageConsumer<Object> {
@@ -40,7 +40,6 @@ public class MatchingTaskOverviewPanel extends JPanel implements MessageConsumer
 		sourceOntDetails.setBorder(new TitledBorder("Source Ontology:"));
 		targetOntDetails.setBorder(new TitledBorder("Target Ontology:"));
 		
-		
 		GroupLayout layout = new GroupLayout(this);
 		
 		layout.setAutoCreateContainerGaps(true);
@@ -48,10 +47,8 @@ public class MatchingTaskOverviewPanel extends JPanel implements MessageConsumer
 		
 		
 		layout.setHorizontalGroup( layout.createParallelGroup()
-			.addGroup( Alignment.CENTER, layout.createSequentialGroup()
-				.addComponent(sourceOntDetails)
-				.addComponent(targetOntDetails)
-			)
+			.addComponent(sourceOntDetails)
+			.addComponent(targetOntDetails)
 			.addGroup( Alignment.CENTER, layout.createSequentialGroup()
 				.addComponent(lblMatchingAlgorithm)
 				.addComponent(lblMatchingAlgorithmValue)
@@ -63,10 +60,8 @@ public class MatchingTaskOverviewPanel extends JPanel implements MessageConsumer
 		);
 			
 		layout.setVerticalGroup( layout.createSequentialGroup()
-			.addGroup( layout.createParallelGroup()
-				.addComponent(sourceOntDetails)
-				.addComponent(targetOntDetails)
-			)
+			.addComponent(sourceOntDetails)
+			.addComponent(targetOntDetails)
 			.addGroup( layout.createParallelGroup()
 				.addComponent(lblMatchingAlgorithm)
 				.addComponent(lblMatchingAlgorithmValue)
@@ -83,13 +78,13 @@ public class MatchingTaskOverviewPanel extends JPanel implements MessageConsumer
 
 	@Override
 	public void consume(Message<Object> message) {
-		if( message.getKey().equals(Messages.SELECT_MATCHING_ALGORITHM.name()) ) {
+		if( message.getKey().equals(MatchingTaskCreatorDialogMessages.SELECT_MATCHING_ALGORITHM.name()) ) {
 			MatchingAlgorithm algorithm = (MatchingAlgorithm) message.getPayload();
 			lblMatchingAlgorithmValue.setText(algorithm.getName());
 			return;
 		}
 		
-		if( message.getKey().equals(Messages.SELECT_SELECTION_ALGORITHM.name()) ) {
+		if( message.getKey().equals(MatchingTaskCreatorDialogMessages.SELECT_SELECTION_ALGORITHM.name()) ) {
 			SelectionAlgorithm algorithm = (SelectionAlgorithm) message.getPayload();
 			lblMatchingAlgorithmValue.setText(algorithm.getName());
 			return;
