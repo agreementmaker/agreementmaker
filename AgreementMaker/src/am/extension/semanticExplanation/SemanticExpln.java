@@ -34,6 +34,7 @@ public class SemanticExpln {
 				returnStructure.addCountIntelligently(node);
 			}
 		}
+		
 //		returnStructure.describeExplanation();
 		return returnStructure;
 	}
