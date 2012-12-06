@@ -9,14 +9,19 @@ public class SemanticExpln {
 	
 
 	private ExplanationNode[][] explanationMatrix;
+	private static SemanticExpln instance = null;
 
 	
-	public SemanticExpln(int row, int col) {
-		super();
-		this.explanationMatrix = new ExplanationNode[row][col];
+	private void SemanticExpln(){
+
 	}
-
-
+	 
+	  public static SemanticExpln getInstance(){
+		    if(instance==null){
+		       instance = new SemanticExpln();
+		      }
+		      return instance;
+	  }
 	/**
 	 *  Finds the Most significant path for the whole ontology. 
 	 * @param nodeMatrix
@@ -41,12 +46,12 @@ public class SemanticExpln {
 
 
 	public ExplanationNode[][] getExplanationMatrix() {
-		return explanationMatrix;
+		return this.explanationMatrix;
 	}
 
 
-	public void setExplanationMatrix(ExplanationNode[][] explanationMatrix) {
-		this.explanationMatrix = explanationMatrix;
+	public void setExplanationMatrix(int row, int col) {
+		this.explanationMatrix = new ExplanationNode[row][col];
 	}
 	
 }
