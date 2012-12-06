@@ -1,8 +1,6 @@
 package am.extension.semanticExplanation;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
@@ -11,8 +9,7 @@ public class SemanticExpln {
 	
 
 	private ExplanationNode[][] explanationMatrix;
-	
-	
+
 	
 	public SemanticExpln(int row, int col) {
 		super();
@@ -26,29 +23,20 @@ public class SemanticExpln {
 	 * @param alignmentMappings
 	 * @return
 	 */
-	public static List<ExplanationNode> findUniversalMostSignificantPath(ExplanationNode[][] nodeMatrix, Alignment<Mapping> alignmentMappings){
-		Map<ExplanationNode,Integer> trafficMap = new HashMap<ExplanationNode, Integer>();
+	public static ExplanationNode findUniversalMostSignificantPath(ExplanationNode[][] nodeMatrix, Alignment<Mapping> alignmentMappings){
+		ExplanationNode returnStructure = nodeMatrix[1][1].deepCopyStructure();
+//		returnStructure
 		for(Mapping m:alignmentMappings){
 			ExplanationNode explanationNode = nodeMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
 			List<ExplanationNode> significantPathForNode = ExplanationNode.findMostSignificantPath(explanationNode);
+
 			for(ExplanationNode node:significantPathForNode){
-				if(!trafficMap.containsKey(node)){
-					trafficMap.put(node, 1);
-				}
-				else{
-					int newValue = trafficMap.get(node) + 1;
-					trafficMap.put(node,newValue);
-				}
+				returnStructure.addCountIntelligently(node);
 			}
 		}
-		System.out.println("The final significantPathValues are:");
-		for(ExplanationNode key: trafficMap.keySet()){
-			System.out.println("Key= "+key.description+" value="+trafficMap.get(key));
-		}
-		return null;
+//		returnStructure.describeExplanation();
+		return returnStructure;
 	}
-
-
 
 
 	public ExplanationNode[][] getExplanationMatrix() {
