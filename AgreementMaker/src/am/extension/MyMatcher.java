@@ -104,10 +104,7 @@ public class MyMatcher extends AbstractMatcher {
     
     
     //the 2 dimensional structure which stores the explanation node between a source and target
-    public int rows;             // number of rows
-    public int columns;             // number of columns
-    public static ExplanationNode[][] explanationMatrix;
-    
+
     private static  JLabel nodeDescriptionValue;
     private static JLabel criteriaLabel;
     private static JLabel valueLabel;
@@ -127,9 +124,12 @@ public class MyMatcher extends AbstractMatcher {
     	wordNetSimilarityExplanation = new ExplanationNode("WordNet Similarity");
     	stringSimilarityExplanation = new ExplanationNode("String Similarity");
     	
-    	rows = matrix.getRows();
-    	columns = matrix.getColumns();
-    	
+    	if(source.getLocalName() != null) {
+    		resultExplanation.setSource(source.getLocalName());
+    	}
+    	if(target.getLocalName() != null) {
+    		resultExplanation.setTarget(target.getLocalName());
+    	}
         FromWordNetUtils wordNetUtils = new FromWordNetUtils();
 
         Map<String, String> sourceMap = getInputs(source);
@@ -203,7 +203,7 @@ public class MyMatcher extends AbstractMatcher {
         resultExplanation.setCriteria(CombinationCriteria.VOTING);
        
        //storing into the appropriate location inside the explanation matrix
-        explanationMatrix[source.getIndex()][target.getIndex()] = resultExplanation;
+        SemanticExpln.getInstance().getExplanationMatrix()[source.getIndex()][target.getIndex()] = resultExplanation;
         return new Mapping(source, target, finalSimilarity);
     }
     
@@ -365,7 +365,7 @@ public class MyMatcher extends AbstractMatcher {
     public static void main(String[] args) throws Exception {
 
     	Ontology source = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/101/onto.rdf"); 
-    	Ontology target1 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/203/onto.rdf"); 
+    	Ontology target1 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/205/onto.rdf"); 
        	Ontology target2 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/223/onto.rdf"); 
     	Ontology target3 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/205/onto.rdf"); 
     	Ontology target4 = readOntology("/Users/meriyathomas/Documents/fall2012/DWSemantics/benchmark/206/onto.rdf"); 
@@ -403,17 +403,16 @@ public class MyMatcher extends AbstractMatcher {
     	super.beforeAlignOperations();
     	Ontology source = getSourceOntology();
     	Ontology target = getTargetOntology();
-    	explanationMatrix = new ExplanationNode[source.getTreeCount()][target.getTreeCount()];
-    	
+    	SemanticExpln.getInstance().setExplanationMatrix(source.getTreeCount(), target.getTreeCount());    	
     }
+
     @Override
     protected void afterSelectionOperations() {
     	// TODO Auto-generated method stub
-    	super.afterSelectionOperations();
+       	super.afterSelectionOperations();
     	Alignment<Mapping> alignmentMappings =  getAlignment();
-    	SemanticExpln.findUniversalMostSignificantPath(explanationMatrix, alignmentMappings);
+    	SemanticExpln.findUniversalMostSignificantPath(SemanticExpln.getInstance().getExplanationMatrix(), alignmentMappings);
     }
-    
     
     /**
      * 
@@ -425,7 +424,6 @@ public class MyMatcher extends AbstractMatcher {
 
         mm.setSourceOntology(source);
         mm.setTargetOntology(target);
-        explanationMatrix = new ExplanationNode[source.getTreeCount()][target.getTreeCount()];
         DefaultMatcherParameters param = new DefaultMatcherParameters();
         param.threshold = 0.6;
         param.maxSourceAlign = 1;
@@ -443,6 +441,7 @@ public class MyMatcher extends AbstractMatcher {
 		blackline = BorderFactory.createLineBorder(Color.BLACK);
 		labelPanel.add(new JPanel());
 		for(Mapping m:alignmentMappings) {
+			if(m.getEntity1().getLocalName().equals("Date") && m.getEntity2().getLocalName().equals("Date")) {
 			System.out.println("Source Node ---> Target Node");
 			System.out.println("-----------------------------");
 			System.out.println(m.getString());
@@ -455,8 +454,8 @@ public class MyMatcher extends AbstractMatcher {
 			System.out.println("Comment");			
 			System.out.println("-------");
 			System.out.println(m.getEntity1().getComment()+" ---> "+m.getEntity2().getComment());
-			explanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()].describeTopDown();
-			Layout<ExplanationNode, String> layout = new SubTreeLayout(explanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()].tree);
+			SemanticExpln.getInstance().getExplanationMatrix()[m.getEntity1().getIndex()][m.getEntity2().getIndex()].describeTopDown();
+			Layout<ExplanationNode, String> layout = new SubTreeLayout(SemanticExpln.getInstance().getExplanationMatrix()[m.getEntity1().getIndex()][m.getEntity2().getIndex()].tree);
 			layout.setSize(new Dimension(200,350)); // sets the initial size of the space
 			// The BasicVisualizationServer<V,E> is parameterized by the edge types
 			//BasicVisualizationServer<ExplanationNode,String> vv =
@@ -582,10 +581,9 @@ public class MyMatcher extends AbstractMatcher {
 			frame.pack();
 			frame.setVisible(true);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
 			break;
 		}
-
+		}
 		// Let's see what we have. Note the nice output from the
 		// SparseMultigraph<V,E> toString() method
 		// Note that we can use the same nodes and edges in two
