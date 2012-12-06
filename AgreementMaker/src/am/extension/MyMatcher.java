@@ -45,6 +45,7 @@ import am.extension.semanticExplanation.ExplanationNode;
 import am.extension.semanticExplanation.SubTreeLayout;
 import am.extension.semanticExplanation.mouseWorks.MyMouseMenus;
 import am.extension.semanticExplanation.mouseWorks.PopupVertexEdgeMenuMousePlugin;
+import am.extension.semanticExplanation.userInterface.ExplanationSidebar;
 import am.utility.FromWordNetUtils;
 
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -102,9 +103,10 @@ public class MyMatcher extends AbstractMatcher {
     
     
     //the 2 dimensional structure which stores the explanation node between a source and target
-    protected int rows;             // number of rows
-    protected int columns;             // number of columns
-    protected static ExplanationNode[][] explanationMatrix;
+    public int rows;             // number of rows
+    public int columns;             // number of columns
+    public static ExplanationNode[][] explanationMatrix;
+    
     private static  JLabel nodeDescriptionValue;
     private static JLabel criteriaLabel;
     private static JLabel valueLabel;
@@ -395,6 +397,28 @@ public class MyMatcher extends AbstractMatcher {
         }
     }
 
+    @Override
+    protected void beforeAlignOperations() throws Exception {
+    	// TODO Auto-generated method stub
+    	super.beforeAlignOperations();
+    	Ontology source = getSourceOntology();
+    	Ontology target = getTargetOntology();
+    	explanationMatrix = new ExplanationNode[source.getTreeCount()][target.getTreeCount()];
+    	
+    }
+    @Override
+    protected void afterAlignOperations() {
+    	// TODO Auto-generated method stub
+    	super.afterAlignOperations();
+    	Alignment<Mapping> alignmentMappings = getAlignment();
+    	for(Mapping m:alignmentMappings) {
+			explanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()].describeTopDown();
+    		ExplanationSidebar.tree = explanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()].tree;
+    		
+    	}
+    }
+    
+    
     /**
      * 
      * All the ontologyMatching consolidated together under a single function to improve code reuse. 
