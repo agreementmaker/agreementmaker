@@ -21,6 +21,8 @@ public class ExplanationNode {
 	public DelegateTree<ExplanationNode,String> tree= new DelegateTree<ExplanationNode, String>();
 	static int edge=1;
 	private int repetitionCount;
+	String source;
+	String target;
 	
 	public ExplanationNode(double val, List<ExplanationNode> children,
 			CombinationCriteria criteria, String description) {
@@ -51,6 +53,23 @@ public class ExplanationNode {
 		tree = new DelegateTree<ExplanationNode, String>();
 	}
 
+	public void setSource(String s) {
+		this.source = s;
+	}
+	
+	public String getSource() {
+		return this.source;
+	}
+	
+	public void setTarget(String t) {
+		this.target = t;
+	}
+	
+	public String getTarget() {
+		return this.target;
+	}
+	
+	
 	public void addChild(ExplanationNode node){
 		this.children.add(node);
 	}
