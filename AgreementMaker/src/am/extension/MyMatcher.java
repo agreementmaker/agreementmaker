@@ -42,6 +42,7 @@ import am.app.similarity.JaroWinklerSim;
 import am.app.similarity.LevenshteinEditDistance;
 import am.extension.semanticExplanation.CombinationCriteria;
 import am.extension.semanticExplanation.ExplanationNode;
+import am.extension.semanticExplanation.SemanticExpln;
 import am.extension.semanticExplanation.SubTreeLayout;
 import am.extension.semanticExplanation.mouseWorks.MyMouseMenus;
 import am.extension.semanticExplanation.mouseWorks.PopupVertexEdgeMenuMousePlugin;
@@ -163,7 +164,7 @@ public class MyMatcher extends AbstractMatcher {
                 if(finalSimilarity ==0)
                 	finalSimilarity = 0.9;
                 
-                absoluteSimilarityExplanation.setDescription("Absolute Similarity- Inter values");
+                absoluteSimilarityExplanation.setDescription("Absolute Similarity");
                 absoluteSimilarityExplanation.setVal(0.9);
         }
         /*
@@ -399,7 +400,6 @@ public class MyMatcher extends AbstractMatcher {
 
     @Override
     protected void beforeAlignOperations() throws Exception {
-    	// TODO Auto-generated method stub
     	super.beforeAlignOperations();
     	Ontology source = getSourceOntology();
     	Ontology target = getTargetOntology();
@@ -407,15 +407,11 @@ public class MyMatcher extends AbstractMatcher {
     	
     }
     @Override
-    protected void afterAlignOperations() {
+    protected void afterSelectionOperations() {
     	// TODO Auto-generated method stub
-    	super.afterAlignOperations();
-    	Alignment<Mapping> alignmentMappings = getAlignment();
-    	for(Mapping m:alignmentMappings) {
-			explanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()].describeTopDown();
-    		ExplanationSidebar.tree = explanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()].tree;
-    		
-    	}
+    	super.afterSelectionOperations();
+    	Alignment<Mapping> alignmentMappings =  getAlignment();
+    	SemanticExpln.findUniversalMostSignificantPath(explanationMatrix, alignmentMappings);
     }
     
     
