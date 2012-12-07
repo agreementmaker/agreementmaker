@@ -332,9 +332,10 @@ public class MyMatcher extends AbstractMatcher {
      */
     @Override
     protected void afterSelectionOperations() {
+    	//TODO
        	super.afterSelectionOperations();
     	Alignment<Mapping> alignmentMappings =  getAlignment();
-    	SemanticExpln.findUniversalMostSignificantPath(alignmentMappings);
+    	SemanticExpln.findUniversalPaths(alignmentMappings);
     	for(Mapping m:alignmentMappings) {
     		if(m.getEntity1().isClass() && m.getEntity2().isClass()) {
     			SemanticExpln.getInstance().getClassExplanationMatrix()[m.getEntity1().getIndex()][m.getEntity2().getIndex()].describeTopDown();

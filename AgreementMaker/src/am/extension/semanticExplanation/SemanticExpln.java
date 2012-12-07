@@ -32,7 +32,7 @@ public class SemanticExpln {
 	 * @param alignmentMappings
 	 * @return
 	 */
-	public static ExplanationNode findUniversalLeastSignificantPath( Alignment<Mapping> alignmentMappings){
+	public static ExplanationNode findUniversalPaths( Alignment<Mapping> alignmentMappings){
 		ExplanationNode[][] nodeMatrix = null;
 
 		ExplanationNode returnStructure = SemanticExpln.getInstance().getClassExplanationMatrix()[1][1].deepCopyStructure();
@@ -47,10 +47,15 @@ public class SemanticExpln {
     		}
 			
 			ExplanationNode explanationNode = nodeMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
-			List<ExplanationNode> significantPathForNode = ExplanationNode.findLeastSignificantPath(explanationNode);
-
-			for(ExplanationNode node:significantPathForNode){
+			
+			List<ExplanationNode> leastSP = ExplanationNode.findLeastSignificantPath(explanationNode);
+			for(ExplanationNode node:leastSP){
 				returnStructure.addCountIntelligently(node, true);
+			}
+			
+			List<ExplanationNode> mostSP = ExplanationNode.findMostSignificantPath(explanationNode);
+			for(ExplanationNode node:mostSP){
+				returnStructure.addCountIntelligently(node, false);
 			}
 		}
 		
