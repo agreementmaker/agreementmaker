@@ -74,7 +74,7 @@ public class MyMatcher extends AbstractMatcher {
         /*
          * Checking if values already map exactly, then we set absolute similarity
          */
-        
+        absoluteSimilarityExplanation.setVal(.01);
         if (    (sourceMap.containsKey("name") && targetMap.containsKey("name") && sourceMap.get("name").equals(targetMap.get("name"))) || 
                 (sourceMap.containsKey("name") && targetMap.containsKey("label") && sourceMap.get("name").equals(targetMap.get("label"))) ||
                 (sourceMap.containsKey("name") && targetMap.containsKey("comment") && sourceMap.get("name").equals(targetMap.get("comment"))  ) ){
@@ -99,6 +99,7 @@ public class MyMatcher extends AbstractMatcher {
         /*
          * Computing Synonym Similarity using Wordnet
          */
+        wordNetSimilarityExplanation.setVal(.01);
         if (wordNetUtils.areSynonyms(source.getLabel(), target.getLabel()) || 
                 wordNetUtils.areSynonyms(source.getLocalName(), target.getLocalName()) || 
                 wordNetUtils.areSynonyms(source.getComment(), target.getComment()) ||
@@ -116,7 +117,7 @@ public class MyMatcher extends AbstractMatcher {
             wordNetStringCombinationExplanation.setVal(.8);
             wordNetStringCombinationExplanation.setCriteria(CombinationCriteria.VOTING);
         } 
-        if(finalSimilarity <stringSimilarity){
+        if(wordNetSimilarityExplanation.getVal() <stringSimilarity){
             finalSimilarity = stringSimilarity;
             
             wordNetStringCombinationExplanation.setVal(stringSimilarity);

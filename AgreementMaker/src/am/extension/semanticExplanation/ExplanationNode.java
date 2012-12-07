@@ -151,7 +151,7 @@ public class ExplanationNode {
 		while(explnQ.size()>0) {
 			ExplanationNode currentNode = explnQ.remove();
 			ExplanationNode largerChild = new ExplanationNode();
-			largerChild.setMaxSigPathCount(0);
+			largerChild.setMaxSigPathCount(1);
 			if(currentNode.children.size()>0) {
 				for(ExplanationNode child: currentNode.children) {
 					if(child.getMaxSigPathCount() > largerChild.getMaxSigPathCount()) {
