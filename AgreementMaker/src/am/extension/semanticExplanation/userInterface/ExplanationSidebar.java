@@ -8,13 +8,12 @@ import java.awt.GridLayout;
 import java.awt.Paint;
 import java.awt.event.MouseEvent;
 
-import javax.swing.BorderFactory;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 
 import org.apache.commons.collections15.Transformer;
 
@@ -40,43 +39,46 @@ public class ExplanationSidebar extends JPanel {
 	 */
 	private static final long serialVersionUID = 4516195051938561775L;
 
-    private static  JLabel nodeDescriptionValue;
-    private static JLabel criteriaLabel;
-    private static JLabel valueLabel;
-    private static JPanel panel = new JPanel(new BorderLayout());
-    private static JPanel labelPanel = new JPanel(new GridLayout(5,1));
-	Border blackline;
+    private JLabel nodeDescriptionValue;
+    private JLabel criteriaLabel;
+    private JLabel valueLabel;
+    
+    private JPanel panel = new JPanel(new BorderLayout());
+    
+    private JPanel labelPanel = new JPanel(new GridLayout(3,1));
+    
+	//Border blackline;
 	Layout<ExplanationNode, String> layout;
 	VisualizationViewer<ExplanationNode, String> vv;
-	JTabbedPane explanationPane;
+	//JTabbedPane explanationPane;
 	JScrollPane scrollPane;
 	
 	private Component oldComponent;
-	public static DelegateTree<ExplanationNode,String> tree;
+	public DelegateTree<ExplanationNode,String> tree;
 	
-	   private static class VertexPaintTransformer implements Transformer<ExplanationNode,Paint> {
+	private static class VertexPaintTransformer implements Transformer<ExplanationNode,Paint> {
 
-	        private final PickedInfo<ExplanationNode> pi;
+		private final PickedInfo<ExplanationNode> pi;
 
-	        VertexPaintTransformer ( PickedInfo<ExplanationNode> pi ) { 
-	            super();
-	            if (pi == null)
-	                throw new IllegalArgumentException("PickedInfo instance must be non-null");
-	            this.pi = pi;
-	        }
+		VertexPaintTransformer ( PickedInfo<ExplanationNode> pi ) { 
+			super();
+			if (pi == null)
+				throw new IllegalArgumentException("PickedInfo instance must be non-null");
+			this.pi = pi;
+		}
 
-	        @Override
-	        public Paint transform(ExplanationNode i) {
-	            Color p = null;
-	            //Edit here to set the colours as reqired by your solution
-	                p = Color.GREEN;
-	            //Remove if a selected colour is not required
-	            if ( pi.isPicked(i)){
-	                p = Color.yellow;
-	            }
-	            return p;
-	        }
-	    }
+		@Override
+		public Paint transform(ExplanationNode i) {
+			Color p = null;
+			//Edit here to set the colours as reqired by your solution
+			p = Color.GREEN;
+			//Remove if a selected colour is not required
+			if ( pi.isPicked(i)){
+				p = Color.yellow;
+			}
+			return p;
+		}
+	}
 
 	   
 	public ExplanationSidebar() {
@@ -84,14 +86,13 @@ public class ExplanationSidebar extends JPanel {
 	}
 
 	public void init() {
-		setLayout(new GridLayout(1,1));
+		setLayout(new BorderLayout());
 
-		explanationPane=new JTabbedPane();
-		add(explanationPane);
+		//explanationPane=new JTabbedPane();
+		//add(explanationPane);
 
-		blackline = BorderFactory.createLineBorder(Color.BLACK);
-		labelPanel.add(new JPanel());
-		labelPanel.add(new JPanel());
+		//blackline = BorderFactory.createLineBorder(Color.BLACK);
+
 		//tree field must be set from the Matcher method!!!
 		if(tree != null) {
 			layout = new SubTreeLayout(tree);
@@ -102,6 +103,7 @@ public class ExplanationSidebar extends JPanel {
 	
 				@Override
 				public String transform(ExplanationNode node) {
+	
 					return String.valueOf(node.getVal());
 				}
 				
@@ -148,33 +150,56 @@ public class ExplanationSidebar extends JPanel {
 						 vv.getRenderContext().setVertexFillPaintTransformer(new VertexPaintTransformer(vv.getPickedVertexState()));
 	
 						System.out.println("left click");
-						System.out.println("Clicked " + node.getDescription());	
-						if(nodeDescriptionValue != null) {
-							labelPanel.remove(nodeDescriptionValue);
+						System.out.println("Clicked " + node.getDescription());
+						if( nodeDescriptionValue == null ) {
+							nodeDescriptionValue = new JLabel();
+							labelPanel.add(nodeDescriptionValue);
 						}
-						nodeDescriptionValue = new JLabel("Description: "+node.getDescription());
-						nodeDescriptionValue.setOpaque(true);
-						labelPanel.add(nodeDescriptionValue);
-						if(criteriaLabel != null) {
-							labelPanel.remove(criteriaLabel);
-						}
-						if(!node.getCriteria().toString().equals(CombinationCriteria.NOTDEFINED.toString())) {
-							criteriaLabel = new JLabel("Method: "+node.getCriteria().toString());
-							criteriaLabel.setOpaque(true);
+						
+						if( criteriaLabel == null ) {
+							criteriaLabel = new JLabel();
 							labelPanel.add(criteriaLabel);
+						}
+						
+						if( valueLabel == null ) {
+							valueLabel = new JLabel();
+							labelPanel.add(valueLabel);
+						}
+						
+						//if(nodeDescriptionValue != null) {
+						//	labelPanel.remove(nodeDescriptionValue);
+						//}
+						//nodeDescriptionValue = new JLabel("Description: "+node.getDescription());
+						//nodeDescriptionValue.setOpaque(true);
+						//labelPanel.add(nodeDescriptionValue);
+						//if(criteriaLabel != null) {
+						//	labelPanel.remove(criteriaLabel);
+						//}
+						//if(!node.getCriteria().toString().equals(CombinationCriteria.NOTDEFINED.toString())) {
+						//	criteriaLabel = new JLabel("Method: "+node.getCriteria().toString());
+						//	criteriaLabel.setOpaque(true);
+						//	labelPanel.add(criteriaLabel);
+						//} else {
+						//	criteriaLabel = new JLabel("Reached End node!");
+						//	criteriaLabel.setOpaque(true);
+						//	labelPanel.add(criteriaLabel);							
+						//}
+						//if(valueLabel != null) {
+						//	labelPanel.remove(valueLabel);
+						//}
+						//valueLabel = new JLabel("Value: "+node.getVal());
+						//valueLabel.setOpaque(true);
+						//labelPanel.add(valueLabel);
+						//labelPanel.setBorder(new LineBorder(Color.BLACK));
+						
+						nodeDescriptionValue.setText("Description: "+node.getDescription());
+						if(!node.getCriteria().toString().equals(CombinationCriteria.NOTDEFINED.toString())) {
+							criteriaLabel.setText("Method: "+node.getCriteria().toString());
 						} else {
-							criteriaLabel = new JLabel("Reached End node!");
-							criteriaLabel.setOpaque(true);
-							labelPanel.add(criteriaLabel);							
+							criteriaLabel.setText("Reached End node!");							
 						}
-						if(valueLabel != null) {
-							labelPanel.remove(valueLabel);
-						}
-						valueLabel = new JLabel("Value: "+node.getVal());
-						valueLabel.setOpaque(true);
-						labelPanel.add(valueLabel);
-						labelPanel.setBorder(blackline);
-						panel.add(labelPanel,BorderLayout.NORTH);
+						valueLabel.setText("Value: "+node.getVal());
+						//panel.add(labelPanel,BorderLayout.NORTH);
 	/*					frame.pack();
 						frame.setVisible(true);*/
 					} else if(me.getButton() == MouseEvent.BUTTON3) {
@@ -207,11 +232,13 @@ public class ExplanationSidebar extends JPanel {
 			vv.setGraphMouse(graphMouse);
 			vv.addKeyListener(graphMouse.getModeKeyListener());
 			vv.addMouseListener(new MouseListenerTranslator<ExplanationNode, String>(mygel, vv));
-			panel.add(vv,BorderLayout.CENTER);
-			scrollPane=new JScrollPane(panel);
+			//panel.add(vv,BorderLayout.CENTER);
+			scrollPane = new JScrollPane(vv);
 			scrollPane.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Explanation"));
-			explanationPane.add(scrollPane);
-			explanationPane.addTab("Semantic Explanation Information",null,scrollPane,"Explanation of the selected mapping");
+			//explanationPane.add(scrollPane);
+			//explanationPane.addTab("Semantic Explanation Information",null,scrollPane,"Explanation of the selected mapping");
+			add(labelPanel, BorderLayout.NORTH);
+			add(scrollPane, BorderLayout.CENTER);
 		}
 	}
 	
@@ -221,5 +248,6 @@ public class ExplanationSidebar extends JPanel {
 	public void setOldComponent(Component oldComponent) {
 		this.oldComponent = oldComponent;
 	}
+	
 	
 }

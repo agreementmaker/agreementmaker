@@ -139,7 +139,9 @@ public class MyMatcher extends AbstractMatcher {
         double stringSimilarity = findStringSimilarity(sourceMap, targetMap);
         
         double finalSimilarity = 0;
-
+        if(source.getLocalName().equals("chapters") && target.getLocalName().equals("annotation")) {
+        	System.out.println("Testing here");
+        }
 //        double dividedSynonymSimilarity = findDividedSynonymSimilarity(source, target);
 
         /*
@@ -203,11 +205,29 @@ public class MyMatcher extends AbstractMatcher {
         resultExplanation.setCriteria(CombinationCriteria.VOTING);
        
        //storing into the appropriate location inside the explanation matrix
-        SemanticExpln.getInstance().getExplanationMatrix()[source.getIndex()][target.getIndex()] = resultExplanation;
+        if(!sourceMap.isEmpty() && !targetMap.isEmpty()) {
+        	setExplanationMatrix(source,target,resultExplanation);
+        }
         return new Mapping(source, target, finalSimilarity);
     }
     
-    /**
+    private void setExplanationMatrix(Node source, Node target,
+			ExplanationNode resultExplanation2) {
+    	Integer sourceIndex = null;
+    	Integer targetIndex = null;
+    	if(getSourceOntology().getClassesList().contains(source) && getTargetOntology().getClassesList().contains(target)) {
+    		sourceIndex = getSourceOntology().getClassesList().indexOf(source);
+    		targetIndex = getTargetOntology().getClassesList().indexOf(target);
+    	} else if(getSourceOntology().getPropertiesList().contains(source) && getTargetOntology().getPropertiesList().contains(target)) {
+    		sourceIndex = getSourceOntology().getPropertiesList().indexOf(source);
+    		targetIndex = getTargetOntology().getPropertiesList().indexOf(target);
+    	}
+    	if(sourceIndex != null && targetIndex != null) {
+        	SemanticExpln.getInstance().getExplanationMatrix()[sourceIndex][targetIndex] = resultExplanation;
+    	}
+	}
+
+	/**
      * Essential combination algorithm to compute the basic string similarity between the source and target. 
      * Three Algorithms are combined- Levenshtein and Jaro-Winkler.
      * @param sourceMap
@@ -220,7 +240,7 @@ public class MyMatcher extends AbstractMatcher {
         double jarowinglerSimilarity = 0;
         int divisor = 0;
 
-        
+       
         if (sourceMap.containsKey("name") && targetMap.containsKey("name")) {
             levenshteinSimilarity += 2 * levenshteinStringSimilarity(sourceMap.get("name"), targetMap.get("name"));
             divisor += 2;
@@ -412,6 +432,9 @@ public class MyMatcher extends AbstractMatcher {
        	super.afterSelectionOperations();
     	Alignment<Mapping> alignmentMappings =  getAlignment();
     	SemanticExpln.findUniversalMostSignificantPath(SemanticExpln.getInstance().getExplanationMatrix(), alignmentMappings);
+    	for(Mapping m:alignmentMappings) {
+			SemanticExpln.getInstance().getExplanationMatrix()[m.getEntity1().getIndex()][m.getEntity2().getIndex()].describeTopDown();
+    	}
     }
     
     /**

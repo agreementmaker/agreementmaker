@@ -31,6 +31,8 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.extension.semanticExplanation.SemanticExpln;
+import am.extension.semanticExplanation.userInterface.ExplanationSidebar;
 import am.userInterface.VisualizationChangeEvent;
 import am.userInterface.VisualizationChangeEvent.VisualizationEventType;
 import am.userInterface.canvas2.Canvas2;
@@ -304,6 +306,39 @@ public class LegacyLayoutMouseHandler {
 								}
 								ProvenanceSidebar psb=(ProvenanceSidebar) Core.getUI().getUISplitPane().getRightComponent();
 								psb.setProvenance(provenance);
+							}
+						}
+						
+						//set the explanation data
+
+						if(Core.getUI().getUISplitPane().getRightComponent() instanceof ExplanationSidebar){
+							ExplanationSidebar esbOpen = (ExplanationSidebar) Core.getUI().getUISplitPane().getRightComponent();
+							if(selectedNodes.size()>0) {
+								LegacyNode selected=selectedNodes.get(0);
+								ArrayList<LegacyMapping> mappingList=selected.getMappings();
+								for (LegacyMapping l : mappingList ){
+									MappingData md=(MappingData)l.getObject();
+									esbOpen.tree = SemanticExpln.getInstance().getExplanationMatrix()[md.alignment.getEntity1().getIndex()][md.alignment.getEntity2().getIndex()].tree;
+								}
+								esbOpen.init();
+								Core.getUI().getUISplitPane().remove(esbOpen.getOldComponent());
+								Core.getUI().getUISplitPane().setRightComponent(esbOpen);
+							//	esbOpen.setOldComponent(Core.getUI().getUISplitPane().getRightComponent());
+							//	Core.getUI().getUISplitPane().setRightComponent(esbOpen);
+							}
+						} else {
+						ExplanationSidebar esb = new ExplanationSidebar();
+							if(selectedNodes.size()>0) {
+								LegacyNode selected=selectedNodes.get(0);
+								ArrayList<LegacyMapping> mappingList=selected.getMappings();
+								for (LegacyMapping l : mappingList ){
+									MappingData md=(MappingData)l.getObject();
+						    		esb.tree = SemanticExpln.getInstance().getExplanationMatrix()[md.alignment.getEntity1().getIndex()][md.alignment.getEntity2().getIndex()].tree;
+								}
+								esb.init();
+								esb.setOldComponent(Core.getUI().getUISplitPane().getRightComponent());
+								Core.getUI().getUISplitPane().remove(esb.getOldComponent());
+								Core.getUI().getUISplitPane().setRightComponent(esb);
 							}
 						}
 						

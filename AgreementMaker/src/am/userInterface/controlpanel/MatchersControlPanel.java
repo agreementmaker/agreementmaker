@@ -43,6 +43,8 @@ import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.extension.semanticExplanation.ExplanationNode;
+import am.extension.semanticExplanation.SemanticExpln;
 import am.extension.semanticExplanation.userInterface.ExplanationSidebar;
 import am.userInterface.ExportDialog;
 import am.userInterface.MatcherParametersDialog;
@@ -169,17 +171,40 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 				// FIXME: Needs to be changed to use the Explanation Panel.
 				
 				// get the split pane (top part of the UI)
+
+				MatchingTask toBeEvaluated;
+				Alignment<Mapping> alignedMappings = null;
 				JSplitPane uiPane=Core.getUI().getUISplitPane();
-				
-				
+				int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
+				if(rowsIndex.length == 0) {
+					Utility.displayErrorPane("No matchers selected from the control panel table.", null);
+				} else {
+					toBeEvaluated = Core.getInstance().getMatchingTasks().get(rowsIndex[0]);
+					alignedMappings = toBeEvaluated.selectionResult.getAlignment();
+				}
+				ExplanationNode overallStructure = null;
+				if(alignedMappings != null) {
+					overallStructure = SemanticExpln.findUniversalMostSignificantPath(
+									SemanticExpln.getInstance().getExplanationMatrix(), alignedMappings);
+				}
+				if(overallStructure != null) {
+					overallStructure.describeTopDown();
+				}
 				if(uiPane.getRightComponent() instanceof ExplanationSidebar)
 				{
 					ExplanationSidebar p=(ExplanationSidebar)uiPane.getRightComponent();
-					uiPane.setRightComponent(p.getOldComponent());
+					if(overallStructure != null) {
+						p.tree = overallStructure.tree;
+						p.init();
+					}
+					uiPane.setRightComponent(p);
 				}
-				else{
+				else {
 					ExplanationSidebar p= new ExplanationSidebar();
-
+					if(overallStructure != null) {
+						p.tree = overallStructure.tree;
+						p.init();
+					}
 					p.setOldComponent(Core.getUI().getUISplitPane().getRightComponent());
 					Core.getUI().getUISplitPane().setRightComponent(p);
 				}

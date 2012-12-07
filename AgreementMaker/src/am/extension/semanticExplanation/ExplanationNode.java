@@ -78,26 +78,31 @@ public class ExplanationNode {
 	public void describeTopDown() {
 		Queue<ExplanationNode> explnQ = new LinkedList<ExplanationNode>();
 		explnQ.add(this);
-		tree.setRoot(this);
-//		addChildren(this, tree);
-		while(explnQ.size()>0) {
-			ExplanationNode node = explnQ.remove();
-			node.describeNode();
-			// Graph<V, E> where V is the type of the vertices
-			// and E is the type of the edges
-			// Add some vertices. From above we defined these to be type Integer.
-			// Add some edges. From above we defined these to be of type String
-			// Note that the default is for undirected edges.
-			if(node.children.size()>0) {
-				for(ExplanationNode child: node.children) {
-					//tree.addEdge("edge "+edge, new String(String.valueOf(node.val)), new String(String.valueOf(child.val))+"");
-					tree.addChild("edge "+edge, node, child);
-					explnQ.add(child);
-					edge++;
+		try {
+			tree.setRoot(this);
+			while(explnQ.size()>0) {
+				ExplanationNode node = explnQ.remove();
+				node.describeNode();
+				// Graph<V, E> where V is the type of the vertices
+				// and E is the type of the edges
+				// Add some vertices. From above we defined these to be type Integer.
+				// Add some edges. From above we defined these to be of type String
+				// Note that the default is for undirected edges.
+				if(node.children.size()>0) {
+					for(ExplanationNode child: node.children) {
+						//tree.addEdge("edge "+edge, new String(String.valueOf(node.val)), new String(String.valueOf(child.val))+"");
+						tree.addChild("edge "+edge, node, child);
+						explnQ.add(child);
+						edge++;
+					}
 				}
-			}
 
+			}
+		} catch(UnsupportedOperationException e) {
+			System.out.println("The graph g = " + tree.toString());
 		}
+//		addChildren(this, tree);
+
 		System.out.println("The graph g = " + tree.toString());
 	}
 	
@@ -221,7 +226,7 @@ public class ExplanationNode {
 		if(this == null)
 			return;
 		if(this.getDescription().equals(node.getDescription())){
-			setRepetitionCount(getRepetitionCount() + 1);
+			setVal(getVal() + 1);
 			return;
 		}
 		for(ExplanationNode child: this.getChildren()){
