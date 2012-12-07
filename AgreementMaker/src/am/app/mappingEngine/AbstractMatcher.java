@@ -1045,18 +1045,29 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return aligns;
 	}
 
+	/**
+	 * @deprecated Use {@link AbstractMatcher#getResult()}.
+	 */
 	@Deprecated
 	public Alignment<Mapping> getClassAlignmentSet() {
 		return classesAlignmentSet;
 	}
 
+	/**
+	 * @deprecated Use {@link AbstractMatcher#getResult()}.
+	 */
 	@Deprecated
 	public Alignment<Mapping> getPropertyAlignmentSet() {
 		return propertiesAlignmentSet;
 	}
 
+	/**
+	 * AgreementMaker doesn't calculate instances matching, if you add this you
+	 * should also modify getAlignmenSet.
+	 * 
+	 * @deprecated Use {@link AbstractMatcher#getResult()}.
+	 */
 	@Deprecated
-	/**AgreementMaker doesn't calculate instances matching, if you add this you should also modify getAlignmenSet*/
 	public Alignment<Mapping> getInstanceAlignmentSet() {
 		int sourceOntologyID = -1;
 		if( sourceOntology != null ) sourceOntologyID = sourceOntology.getID();
@@ -1726,6 +1737,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 	 @Override
 	 public MatcherResult getResult() {
+		 // TODO: Fix this to use the correct constructor from MatcherResult.
 		 return new MatcherResult(this);
 	 }
 
