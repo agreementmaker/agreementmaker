@@ -28,8 +28,16 @@ public class MostSignificantPathMenuItem<V> extends JMenuItem implements VertexM
     		public void actionPerformed(ActionEvent e) {
 
     			visComp.getPickedVertexState().pick((ExplanationNode) vertex,true);
-    			final List<ExplanationNode> mspList = ExplanationNode.findMostSignificantPath((ExplanationNode) vertex);
-    		
+    			final List<ExplanationNode> mspList;
+    			ExplanationNode node = (ExplanationNode) vertex;
+    			
+    			if(node.isUniversalUse()){
+    				mspList = ExplanationNode.findMostSPGeneral(node);
+    			}
+    			else{
+    				mspList = ExplanationNode.findMostSignificantPath(node);
+    			}
+    			
     			final Transformer<ExplanationNode,Paint> mspTransformer = new Transformer<ExplanationNode,Paint>() {
     				public Paint transform(ExplanationNode i) {
     					if(mspList.contains(i)) {
@@ -39,18 +47,7 @@ public class MostSignificantPathMenuItem<V> extends JMenuItem implements VertexM
     					}
     				}
     			};
-/*    			Transformer<ExplanationNode, String> labelTransformer = new Transformer<ExplanationNode,String>() {
-    				
-    				@Override
-    				public String transform(ExplanationNode node) {
-    	
-    					return String.valueOf(node.getVal());
-    				}
-    				
-    			};
-
-    			visComp.getRenderContext().setVertexLabelTransformer(labelTransformer);
-    			visComp.getRenderer().getVertexLabelRenderer().setPosition(Position.E);*/
+    			
     			visComp.getRenderContext().setVertexFillPaintTransformer(mspTransformer);
     			visComp.repaint();
     		}
