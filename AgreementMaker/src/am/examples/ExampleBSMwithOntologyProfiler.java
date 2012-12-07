@@ -23,6 +23,18 @@ import am.utility.RunTimer;
 
 import com.hp.hpl.jena.rdf.model.Property;
 
+/**
+ * An example of running the Base Similarity Matcher on two ontologies.
+ * 
+ * The steps of running are:
+ * <ol>
+ * <li>Load the ontologies.</li>
+ * <li>Setup the ontology profiler.</li>
+ * <li>Instantiate and run BSM.</li>
+ * </ol>
+ * 
+ * @author Cosmin Stroe <cstroe@gmail.com>
+ */
 public class ExampleBSMwithOntologyProfiler {
 
 	private static final String SOURCE_KEY = "SOURCE_ONTOLOGY";
