@@ -3,7 +3,11 @@ package am.evaluation.repairExtended;
 import java.util.ArrayList;
 
 import org.semanticweb.owlapi.model.OWLClass;
-
+/**
+ * @author Pavan
+ *
+ *	ConflictSset class is used to hold a OWLClass and the corresponding OWLAxioms
+ */
 public class ConflictSet {
 
 	private Integer ClassId = 0;
@@ -26,11 +30,11 @@ public class ConflictSet {
 	}
 	
 	private ArrayList<AxiomRank> removeDuplicates(ArrayList<AxiomRank> axiomList){
-		//TODO - remove duplicates
+		//TODO - Refactoring - remove duplicates
 		return axiomList;
 	}
 	
-	//get set
+	//getter setter
 	public void setClassId (Integer classId)
     {
 		ClassId = classId;           

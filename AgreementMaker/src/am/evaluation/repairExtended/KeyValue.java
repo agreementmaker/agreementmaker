@@ -1,5 +1,9 @@
 package am.evaluation.repairExtended;
-
+/**
+ * @author Pavan
+ *
+ *	Generic KeyValue pair
+ */
 public class KeyValue<K,V> {
 
 	private K Key;

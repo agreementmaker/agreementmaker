@@ -1,10 +1,15 @@
 package am.evaluation.repairExtended;
 
 import java.util.ArrayList;
-
+/**
+ * @author Pavan
+ *
+ *	Bimap class is a generic key-value map, similar to bimap in guava lib but of course with a few additional specific functionalities.
+ */
 public class Bimap<K,V> {
 	
 	private ArrayList<KeyValue<K,V>> Bimap = new ArrayList<KeyValue<K,V>>();
+	//private Integer Flag;
 	
 	public void add(K key, V value){
 	
@@ -70,7 +75,8 @@ public class Bimap<K,V> {
 		
 	}
 		
-	//TODO : very specific for this implementation(assumes type K == V). Should fix it to be more generic.
+	//TODO : very specific for this implementation(assumes type K == V). 
+	//Turns out I will be using this only when K == V, should fix it to be more generic if I have time
 	@SuppressWarnings("unchecked")
 	public ArrayList<V> getBottomKeys(){
 		
@@ -85,7 +91,7 @@ public class Bimap<K,V> {
 		return bottomKeys;
 	}
 
-	//get set
+	//getter setter
 	public ArrayList<KeyValue<K,V>> getBimap(){
 		return Bimap;
 	}

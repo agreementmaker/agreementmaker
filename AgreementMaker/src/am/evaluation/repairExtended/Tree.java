@@ -2,7 +2,11 @@ package am.evaluation.repairExtended;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-
+/**
+ * @author Pavan
+ *
+ *	Generic tree structure, path traversal
+ */
 public class Tree<T> {
 
 	//private T Node;
@@ -114,6 +118,7 @@ public class Tree<T> {
 		return branch;		
 	}
 	
+	//DEBUG - print tree
 	public void print(){
 		
 		System.out.println("table--");

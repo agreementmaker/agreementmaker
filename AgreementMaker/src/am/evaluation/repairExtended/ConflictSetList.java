@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -28,17 +29,59 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.RemoveAxiom;
-import org.semanticweb.owlapi.reasoner.Node;
 
 import weka.core.RelationalLocator;
 import weka.filters.unsupervised.attribute.RELAGGS;
 
+import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.MatcherSetting;
+import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.abstractMatcherNew.AbstractMatchingParameters;
+import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
+import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
+import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher;
+import am.app.mappingEngine.basicStructureSelector.BasicStructuralSelectorMatcher;
+import am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher;
+import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
+import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
+import am.app.mappingEngine.referenceAlignment.MatchingPair;
+import am.app.mappingEngine.structuralMatchers.SimilarityFlooding;
+import am.app.ontology.Node;
+import am.app.ontology.Ontology;
+import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.app.ontology.profiling.OntologyProfiler;
+import am.app.ontology.profiling.OntologyProfilerPanel;
+import am.app.ontology.profiling.OntologyProfilerParameters;
+import am.app.ontology.profiling.manual.ManualOntologyProfiler;
+import am.app.ontology.profiling.manual.ManualProfilerMatchingPanel;
+import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
 import am.batchMode.simpleBatchMode.OntologiesType;
+import am.batchMode.simpleBatchMode.SimpleBatchModeRunner;
 import am.evaluation.repair.AlignmentRepairUtilities;
+import am.output.similaritymatrix.SimilarityMatrixOutput;
+import am.userInterface.AppPreferences;
+import am.userInterface.MatchersChooser;
 
 import com.clarkparsia.owlapi.explanation.util.OntologyUtils;
+import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.rdf.model.AnonId;
+import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.RDFVisitor;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.pfunction.library.concat;
-
+/**
+ * @author Pavan
+ *
+ *	ConflictSset class is used to hold the complete list of inconsistent OWLClass (s) and each class's corresponding OWLAxioms
+ */
 public class ConflictSetList {
 	
 	private static Logger log = Logger.getLogger(ConflictSetList.class);
@@ -188,8 +231,7 @@ public class ConflictSetList {
 	    		
 		return sortedKeys;
 	}
-	
-	//TODO Very slow, have to improve performance of finding hitting sets
+		
 	public ArrayList<OWLAxiom> computeHittingSet(ConflictSetList mups){
 		
 		axiomLists = new ArrayList<ArrayList<AxiomRank>>();
@@ -264,8 +306,108 @@ public class ConflictSetList {
 		return axiomRank.getAxiom();
 	}
 
-	public void FixMappings(ArrayList<OWLAxiom> axioms) {
+	public HashMap<Boolean, MatchingPair> FixMappings(ArrayList<OWLAxiom> axioms, String source, String target) {
+
+		Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(source); 
+		Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(target); 
+		OWLClass sourceClass;
+		OWLClass targetClass;
+		HashMap<Boolean,MatchingPair> repairedMappings = new HashMap<Boolean,MatchingPair>();
+		SimilarityMatrix matrix = null;
+		
+		SimpleBatchModeRunner bm = new SimpleBatchModeRunner((File)null);
+		AbstractMatcher oaei2011 = bm.instantiateMatcher(null);
+		SimilarityMatrixOutput matrixoutput = new SimilarityMatrixOutput(oaei2011);
+		//matrix = matrixoutput.loadClassesMatrix("/home/pavan/MS/WebSemantics/Ontologies/Anatomy/AnatomyAlignmentclassMatrix.rdf");
+
+		Mapping newMapping;
+		
+		AppPreferences prefs = Core.getAppPreferences();
+		
+		//AbstractMatcher matcher = new OAEI2011Matcher();
+		//AbstractMatcher matcher = new BaseSimilarityMatcher();
+		AbstractMatcher matcher = new BasicStructuralSelectorMatcher();
+		//AbstractMatcher matcher = new AdvancedSimilarityMatcher();
+		
+		/*BaseSimilarityParameters params = new BaseSimilarityParameters();
+		
+		sourceOntology.getModel().getProperty("label");
+		//rdfs:label
+		
+		
+		ManualOntologyProfiler x = new ManualOntologyProfiler(sourceOntology, targetOntology);
+		ManualProfilerMatchingPanel z = new ManualProfilerMatchingPanel(x);		
+		ManualProfilerMatchingParameters y = new ManualProfilerMatchingParameters();
+		
+		ArrayList<Property> prop1 = new ArrayList<Property>();
+		ArrayList<Property> prop2 = new ArrayList<Property>();
+		prop1.add(sourceOntology.getModel().getProperty("rdfs:label"));
+		prop2.add(targetOntology.getModel().getProperty("rdfs:label"));
+		
+		//Property prop = sourceOntology.getModel().getProperty("label");
+		//y.sourceClassAnnotations.
+		//y.sourceClassAnnotations.s 
+		//y.matchTargetClassLocalname = true;
+		//y.
+		
+		y.matchSourceClassLocalname = false;
+		y.matchSourcePropertyLocalname = false;
+		y.matchTargetClassLocalname = false;
+		y.matchTargetPropertyLocalname = false;
+		
+		y.sourceClassAnnotations = prop1;
+		y.targetClassAnnotations = prop2;
+		
+		x.setMatchTimeParams(y);
+		Core.getInstance().setOntologyProfiler(x);
+		//params.useDictionary = prefs.getPanelBool( MatcherSetting.BSIM_USEDICT );
+		params.threshold = 0.6;		
+		
+		matcher.setParameters(params);*/
+		
+		for(OWLAxiom axm : axioms){
 			
+			sourceClass = new ArrayList<OWLClass>(axm.getClassesInSignature()).get(0);
+			targetClass = new ArrayList<OWLClass>(axm.getClassesInSignature()).get(1);
+			
+			//srepairedMappings.put(false, axm);
+						
+			for(Node sourceNode : sourceOntology.getClassesList()){
+				
+				if(sourceClass.getIRI().toURI().toString().equals(sourceNode.getUri())){
+					
+					for(Node targetNode : targetOntology.getClassesList()){
+
+						//if(targetClass.getIRI().toURI().toString().equals(targetNode.getUri())){
+						
+							//log.info(sourceNode);
+							//log.info(targetNode);
+							
+							try {
+								
+								newMapping = matcher.alignTwoNodesParallel(sourceNode, targetNode, alignType.aligningClasses, matrix);
+							
+								if(newMapping != null){
+									log.info("old " + axm);
+									log.info("new " + newMapping);
+									repairedMappings.put(true, new MatchingPair(sourceNode.getUri(),
+											targetNode.getUri(),newMapping.getSimilarity(),newMapping.getRelation()));
+								}
+								//else{
+								//	log.info("fail :" + newMapping);
+								//}
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						//}
+					}
+				}
+					
+			}
+		}
+		
+		return repairedMappings;
 	}
 	
 	public ConflictSetList computeMUPS() {
@@ -342,6 +484,7 @@ public class ConflictSetList {
 		return eqClasses;
 	}
 	
+	//prints the complete list of conflict sets - DEBUG
 	public void printConflictSetList(){
 		
 		for(ConflictSet set : ConflictSets){
@@ -355,7 +498,7 @@ public class ConflictSetList {
 		
 	}
 	
-	//get set
+	//getter setter
 	public void setConflictSets (ArrayList<ConflictSet> conflictSets)
     {
 		ConflictSets = conflictSets;           

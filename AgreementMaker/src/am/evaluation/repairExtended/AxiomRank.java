@@ -5,23 +5,29 @@ import java.util.ArrayList;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 
+/**
+ * @author Pavan
+ *
+ *	AxiomRank class is used to hold the axiom and its corresponding rank, confidence level.
+ */
 public class AxiomRank {
 
 	//private Integer AxiomId;
 	private OWLAxiom Axiom;
 	private Integer Rank;
-	private Double Confidence;
+	//private Double Confidence;
 	
-	//public AxiomRank(OWLAxiom axiom, Integer rank, Integer axiomId){
 	public AxiomRank(OWLAxiom axiom, Integer rank){
-		
-		//AxiomId = axiomId;
 		Axiom = axiom;
-		Rank = rank;
-		//Confidence = confidence;
+		Rank = rank;		
 	}
 	
-	//get set	
+	/*public AxiomRank(OWLAxiom axiom, Integer rank, Integer axiomId){
+		AxiomId = axiomId;
+		Confidence = confidence;
+	}*/	
+	
+	//Getters, setters	
 	/*public void setAxiomId (Integer axiomId)
     {
     	AxiomId = axiomId;           
@@ -56,12 +62,12 @@ public class AxiomRank {
         return Rank;
     }
     
-    public void setConfidence (Double confidence)
+    /*public void setConfidence (Double confidence)
     {
     	Confidence = confidence;           
     }
     public Double getConfidence()
     {
         return Confidence;
-    }
+    }*/
 }
