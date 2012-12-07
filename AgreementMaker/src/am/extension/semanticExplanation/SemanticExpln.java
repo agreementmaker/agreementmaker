@@ -74,7 +74,6 @@ public class SemanticExpln {
 	}
 
 
-<<<<<<< .mine
 	public ExplanationNode[][] getClassExplanationMatrix() {
 		return this.classExplanationMatrix;
 	}
@@ -82,22 +81,7 @@ public class SemanticExpln {
 
 	public void setClassExplanationMatrix(int row, int col) {
 		this.classExplanationMatrix = new ExplanationNode[row][col];
-=======
-	public ExplanationNode[][] getClassExplanationMatrix() {
-		return this.classExplanationMatrix;
->>>>>>> .r2621
-	}
 
-	public ExplanationNode[][] getPropertiesExplanationMatrix() {
-		return propertiesExplanationMatrix;
-	}
-
-<<<<<<< .mine
-	public void setPropertiesExplanationMatrix(int row, int col) {
-		this.propertiesExplanationMatrix = new ExplanationNode[row][col];
-=======
-	public void setClassExplanationMatrix(int row, int col) {
-		this.classExplanationMatrix = new ExplanationNode[row][col];
 	}
 
 	public ExplanationNode[][] getPropertiesExplanationMatrix() {
@@ -106,7 +90,7 @@ public class SemanticExpln {
 
 	public void setPropertiesExplanationMatrix(int row, int col) {
 		this.propertiesExplanationMatrix = new ExplanationNode[row][col];
->>>>>>> .r2621
 	}
+
 	
 }
