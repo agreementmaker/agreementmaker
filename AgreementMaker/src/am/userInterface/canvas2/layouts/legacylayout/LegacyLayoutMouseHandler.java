@@ -318,7 +318,11 @@ public class LegacyLayoutMouseHandler {
 								ArrayList<LegacyMapping> mappingList=selected.getMappings();
 								for (LegacyMapping l : mappingList ){
 									MappingData md=(MappingData)l.getObject();
-									esbOpen.tree = SemanticExpln.getInstance().getExplanationMatrix()[md.alignment.getEntity1().getIndex()][md.alignment.getEntity2().getIndex()].tree;
+									if(md.alignment.getEntity1().isClass() && md.alignment.getEntity2().isClass()) {
+										esbOpen.tree = SemanticExpln.getInstance().getClassExplanationMatrix()[md.alignment.getEntity1().getIndex()][md.alignment.getEntity2().getIndex()].tree;
+									} else if(md.alignment.getEntity1().isProp() && md.alignment.getEntity2().isProp()) {
+										esbOpen.tree = SemanticExpln.getInstance().getPropertiesExplanationMatrix()[md.alignment.getEntity1().getIndex()][md.alignment.getEntity2().getIndex()].tree;										
+									}
 								}
 								esbOpen.init();
 								Core.getUI().getUISplitPane().remove(esbOpen.getOldComponent());
@@ -333,7 +337,11 @@ public class LegacyLayoutMouseHandler {
 								ArrayList<LegacyMapping> mappingList=selected.getMappings();
 								for (LegacyMapping l : mappingList ){
 									MappingData md=(MappingData)l.getObject();
-						    		esb.tree = SemanticExpln.getInstance().getExplanationMatrix()[md.alignment.getEntity1().getIndex()][md.alignment.getEntity2().getIndex()].tree;
+									if(md.alignment.getEntity1().isClass() && md.alignment.getEntity2().isClass()) {
+										esb.tree = SemanticExpln.getInstance().getClassExplanationMatrix()[md.alignment.getEntity1().getIndex()][md.alignment.getEntity2().getIndex()].tree;
+									} else if(md.alignment.getEntity1().isProp() && md.alignment.getEntity2().isProp()) {
+										esb.tree = SemanticExpln.getInstance().getPropertiesExplanationMatrix()[md.alignment.getEntity1().getIndex()][md.alignment.getEntity2().getIndex()].tree;										
+									}
 								}
 								esb.init();
 								esb.setOldComponent(Core.getUI().getUISplitPane().getRightComponent());

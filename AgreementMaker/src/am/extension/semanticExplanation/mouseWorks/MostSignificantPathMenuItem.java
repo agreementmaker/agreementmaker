@@ -12,6 +12,7 @@ import org.apache.commons.collections15.Transformer;
 
 import am.extension.semanticExplanation.ExplanationNode;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 
 public class MostSignificantPathMenuItem<V> extends JMenuItem implements VertexMenuListener<V> {
     /**
@@ -38,7 +39,18 @@ public class MostSignificantPathMenuItem<V> extends JMenuItem implements VertexM
     					}
     				}
     			};
-    			
+/*    			Transformer<ExplanationNode, String> labelTransformer = new Transformer<ExplanationNode,String>() {
+    				
+    				@Override
+    				public String transform(ExplanationNode node) {
+    	
+    					return String.valueOf(node.getVal());
+    				}
+    				
+    			};
+
+    			visComp.getRenderContext().setVertexLabelTransformer(labelTransformer);
+    			visComp.getRenderer().getVertexLabelRenderer().setPosition(Position.E);*/
     			visComp.getRenderContext().setVertexFillPaintTransformer(mspTransformer);
     			visComp.repaint();
     		}

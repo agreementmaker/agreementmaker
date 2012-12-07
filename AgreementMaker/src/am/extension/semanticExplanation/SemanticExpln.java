@@ -8,7 +8,9 @@ import am.app.mappingEngine.Mapping;
 public class SemanticExpln {
 	
 
-	private ExplanationNode[][] explanationMatrix;
+	private ExplanationNode[][] classExplanationMatrix;
+	private ExplanationNode[][] propertiesExplanationMatrix;
+
 	private static SemanticExpln instance = null;
 
 	
@@ -45,13 +47,21 @@ public class SemanticExpln {
 	}
 
 
-	public ExplanationNode[][] getExplanationMatrix() {
-		return this.explanationMatrix;
+	public ExplanationNode[][] getClassExplanationMatrix() {
+		return this.classExplanationMatrix;
 	}
 
 
-	public void setExplanationMatrix(int row, int col) {
-		this.explanationMatrix = new ExplanationNode[row][col];
+	public void setClassExplanationMatrix(int row, int col) {
+		this.classExplanationMatrix = new ExplanationNode[row][col];
+	}
+
+	public ExplanationNode[][] getPropertiesExplanationMatrix() {
+		return propertiesExplanationMatrix;
+	}
+
+	public void setPropertiesExplanationMatrix(int row, int col) {
+		this.propertiesExplanationMatrix = new ExplanationNode[row][col];
 	}
 	
 }
