@@ -12,31 +12,15 @@ import org.semanticweb.owlapi.model.OWLClass;
  */
 public class AxiomRank {
 
-	//private Integer AxiomId;
 	private OWLAxiom Axiom;
 	private Integer Rank;
-	//private Double Confidence;
 	
 	public AxiomRank(OWLAxiom axiom, Integer rank){
 		Axiom = axiom;
 		Rank = rank;		
 	}
 	
-	/*public AxiomRank(OWLAxiom axiom, Integer rank, Integer axiomId){
-		AxiomId = axiomId;
-		Confidence = confidence;
-	}*/	
-	
-	//Getters, setters	
-	/*public void setAxiomId (Integer axiomId)
-    {
-    	AxiomId = axiomId;           
-    }
-    public Integer getAxiomId()
-    {
-        return AxiomId;
-    }*/
-	
+	//Get ArrayList of all OWLClass(s) in axiom signature
 	public ArrayList<OWLClass> getAxiomClasses()
 	{
 		ArrayList<OWLClass> axiomClasses = new ArrayList<OWLClass>();
@@ -60,14 +44,5 @@ public class AxiomRank {
     public Integer getRank()
     {
         return Rank;
-    }
-    
-    /*public void setConfidence (Double confidence)
-    {
-    	Confidence = confidence;           
-    }
-    public Double getConfidence()
-    {
-        return Confidence;
-    }*/
+    }    
 }
