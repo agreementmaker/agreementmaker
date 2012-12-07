@@ -9,7 +9,6 @@ import java.util.ArrayList;
 public class Bimap<K,V> {
 	
 	private ArrayList<KeyValue<K,V>> Bimap = new ArrayList<KeyValue<K,V>>();
-	//private Integer Flag;
 	
 	public void add(K key, V value){
 	
@@ -18,15 +17,7 @@ public class Bimap<K,V> {
 		if(!Bimap.contains(pair))
 			Bimap.add(pair);
 	}
-	
-	/*public void add(K key, V value, Integer flag){
 		
-		KeyValue<K,V> pair = new KeyValue<K, V>(key,value,flag);
-		
-		if(!Bimap.contains(pair))
-			Bimap.add(pair);
-	}*/
-	
 	public ArrayList<V> getValuesByKey(K key){
 		
 		ArrayList<V> values = new ArrayList<V>();
