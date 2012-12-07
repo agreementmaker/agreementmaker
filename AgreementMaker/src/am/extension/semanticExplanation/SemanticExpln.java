@@ -32,11 +32,20 @@ public class SemanticExpln {
 	 * @param alignmentMappings
 	 * @return
 	 */
-	public static ExplanationNode findUniversalLeastSignificantPath(ExplanationNode[][] nodeMatrix, Alignment<Mapping> alignmentMappings){
-		ExplanationNode returnStructure = nodeMatrix[1][1].deepCopyStructure();
+	public static ExplanationNode findUniversalLeastSignificantPath( Alignment<Mapping> alignmentMappings){
+		ExplanationNode[][] nodeMatrix = null;
+
+		ExplanationNode returnStructure = SemanticExpln.getInstance().getClassExplanationMatrix()[1][1].deepCopyStructure();
 		returnStructure.setUniversalUse(true);
 		
 		for(Mapping m:alignmentMappings){
+
+			if(m.getEntity1().isClass() && m.getEntity2().isClass()) {
+    			nodeMatrix =  SemanticExpln.getInstance().getClassExplanationMatrix();
+    		} else if(m.getEntity1().isProp() && m.getEntity2().isProp()) {
+    			nodeMatrix =  SemanticExpln.getInstance().getPropertiesExplanationMatrix();
+    		}
+			
 			ExplanationNode explanationNode = nodeMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
 			List<ExplanationNode> significantPathForNode = ExplanationNode.findLeastSignificantPath(explanationNode);
 
@@ -48,7 +57,6 @@ public class SemanticExpln {
 //			returnStructure.describeExplanation();
 		return returnStructure;
 	}
-
 		
 	/**
 	 *  Finds the Most significant path for the whole ontology. 
@@ -56,11 +64,19 @@ public class SemanticExpln {
 	 * @param alignmentMappings
 	 * @return
 	 */
-	public static ExplanationNode findUniversalMostSignificantPath(ExplanationNode[][] nodeMatrix, Alignment<Mapping> alignmentMappings){
-		ExplanationNode returnStructure = nodeMatrix[1][1].deepCopyStructure();
+	public static ExplanationNode findUniversalMostSignificantPath(Alignment<Mapping> alignmentMappings){
+		ExplanationNode[][] nodeMatrix = null;
+
+		ExplanationNode returnStructure = SemanticExpln.getInstance().getClassExplanationMatrix()[1][1].deepCopyStructure();
 		returnStructure.setUniversalUse(true);
 
 		for(Mapping m:alignmentMappings){
+			if(m.getEntity1().isClass() && m.getEntity2().isClass()) {
+    			nodeMatrix =  SemanticExpln.getInstance().getClassExplanationMatrix();
+    		} else if(m.getEntity1().isProp() && m.getEntity2().isProp()) {
+    			nodeMatrix =  SemanticExpln.getInstance().getPropertiesExplanationMatrix();
+    		}
+			
 			ExplanationNode explanationNode = nodeMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
 			List<ExplanationNode> significantPathForNode = ExplanationNode.findMostSignificantPath(explanationNode);
 
