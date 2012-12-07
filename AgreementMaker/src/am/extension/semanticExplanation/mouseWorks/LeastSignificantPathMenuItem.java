@@ -27,7 +27,15 @@ public class LeastSignificantPathMenuItem<V> extends JMenuItem implements Vertex
     		public void actionPerformed(ActionEvent e) {
 
     			visComp.getPickedVertexState().pick((ExplanationNode) vertex,true);
-    			final List<ExplanationNode> lspList = ExplanationNode.findLeastSignificantPath((ExplanationNode) vertex);
+    			final List<ExplanationNode> lspList ;
+    			ExplanationNode node = (ExplanationNode) vertex;
+    			
+    			if(node.isUniversalUse()){
+    				lspList = ExplanationNode.findMinSPGeneral(node);
+    			}
+    			else{
+        			lspList = ExplanationNode.findLeastSignificantPath(node);
+    			}
     		
     			final Transformer<ExplanationNode,Paint> mspTransformer = new Transformer<ExplanationNode,Paint>() {
     				public Paint transform(ExplanationNode i) {
