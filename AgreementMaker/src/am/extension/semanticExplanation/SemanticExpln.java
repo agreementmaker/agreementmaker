@@ -73,7 +73,6 @@ public class SemanticExpln {
 		ExplanationNode[][] nodeMatrix = null;
 
 		ExplanationNode returnStructure = SemanticExpln.getInstance().getClassExplanationMatrix()[1][1].deepCopyStructure();
-		returnStructure.setUniversalUse(true);
 
 		for(Mapping m:alignmentMappings){
 			if(m.getEntity1().isClass() && m.getEntity2().isClass()) {

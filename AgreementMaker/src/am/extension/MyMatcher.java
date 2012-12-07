@@ -71,74 +71,110 @@ public class MyMatcher extends AbstractMatcher {
         	System.out.println("Testing here");
         }
 
-        /*
-         * Checking if values already map exactly, then we set absolute similarity
-         */
-        absoluteSimilarityExplanation.setVal(.01);
-        if (    (sourceMap.containsKey("name") && targetMap.containsKey("name") && sourceMap.get("name").equals(targetMap.get("name"))) || 
-                (sourceMap.containsKey("name") && targetMap.containsKey("label") && sourceMap.get("name").equals(targetMap.get("label"))) ||
-                (sourceMap.containsKey("name") && targetMap.containsKey("comment") && sourceMap.get("name").equals(targetMap.get("comment"))  ) ){
-            finalSimilarity = 1.0;
-            absoluteSimilarityExplanation.setDescription("Absolute Similarity");
-            absoluteSimilarityExplanation.setVal(1.0);
-        }
+        
+        
+		/*
+		 * Computing Synonym Similarity using Wordnet
+		 */
+		wordNetSimilarityExplanation.setVal(.01);
+		if (wordNetUtils.areSynonyms(source.getLabel(), target.getLabel())
+				|| wordNetUtils.areSynonyms(source.getLocalName(),
+						target.getLocalName())
+				|| wordNetUtils.areSynonyms(source.getComment(),
+						target.getComment())
+				|| wordNetUtils.areSynonyms(source.getLabel(),
+						target.getLocalName())
+				|| wordNetUtils.areSynonyms(source.getLabel(),
+						target.getComment())
+				|| wordNetUtils.areSynonyms(source.getComment(),
+						target.getLocalName())
+				|| wordNetUtils.areSynonyms(source.getComment(),
+						target.getLabel())
+				|| wordNetUtils.areSynonyms(source.getLocalName(),
+						target.getLabel())
+				|| wordNetUtils.areSynonyms(source.getLocalName(),
+						target.getComment())) {
+			if (finalSimilarity == 0)
+				finalSimilarity = (.80);
+			wordNetSimilarityExplanation.setDescription("WordNet Similarity");
+			wordNetSimilarityExplanation.setVal(.8);
 
-        else if((sourceMap.containsKey("label") && targetMap.containsKey("label") && sourceMap.get("label").equals(targetMap.get("label"))) ||
-                (sourceMap.containsKey("label") && targetMap.containsKey("comment") && sourceMap.get("label").equals(targetMap.get("comment"))) ||
-                (sourceMap.containsKey("label") && targetMap.containsKey("name") && sourceMap.get("label").equals(targetMap.get("name"))) ||
-                
-                (sourceMap.containsKey("comment") && targetMap.containsKey("label") && sourceMap.get("comment").equals(targetMap.get("label"))) ||
-                (sourceMap.containsKey("comment") && targetMap.containsKey("name") && sourceMap.get("comment").equals(targetMap.get("name")))  ||
-                (sourceMap.containsKey("comment") &&targetMap.containsKey("comment") && sourceMap.get("comment").equals(targetMap.get("comment")))) {
-                if(finalSimilarity ==0)
-                	finalSimilarity = 0.9;
-                
-                absoluteSimilarityExplanation.setDescription("Absolute Similarity");
-                absoluteSimilarityExplanation.setVal(0.9);
-        }
-        /*
-         * Computing Synonym Similarity using Wordnet
-         */
-        wordNetSimilarityExplanation.setVal(.01);
-        if (wordNetUtils.areSynonyms(source.getLabel(), target.getLabel()) || 
-                wordNetUtils.areSynonyms(source.getLocalName(), target.getLocalName()) || 
-                wordNetUtils.areSynonyms(source.getComment(), target.getComment()) ||
-                wordNetUtils.areSynonyms(source.getLabel(), target.getLocalName()) || 
-                wordNetUtils.areSynonyms(source.getLabel(), target.getComment()) ||
-                wordNetUtils.areSynonyms(source.getComment(), target.getLocalName()) || 
-                wordNetUtils.areSynonyms(source.getComment(), target.getLabel()) ||
-                wordNetUtils.areSynonyms(source.getLocalName(), target.getLabel())|| 
-                wordNetUtils.areSynonyms(source.getLocalName(), target.getComment())) {
-            if(finalSimilarity == 0)
-            	finalSimilarity = (.80);
-            wordNetSimilarityExplanation.setDescription("WordNet Similarity");
-            wordNetSimilarityExplanation.setVal(.8);
-            
-            wordNetStringCombinationExplanation.setVal(.8);
-            wordNetStringCombinationExplanation.setCriteria(CombinationCriteria.VOTING);
-        } 
-        if(wordNetSimilarityExplanation.getVal() <stringSimilarity){
-            finalSimilarity = stringSimilarity;
-            
-            wordNetStringCombinationExplanation.setVal(stringSimilarity);
-            wordNetStringCombinationExplanation.setCriteria(CombinationCriteria.VOTING);
-        }
-        wordNetStringCombinationExplanation.addChild(wordNetSimilarityExplanation);
-        wordNetStringCombinationExplanation.addChild(stringSimilarityExplanation);
-        
-        resultExplanation.addChild(wordNetStringCombinationExplanation);
-        resultExplanation.addChild(absoluteSimilarityExplanation);
-        
-        resultExplanation.setVal(finalSimilarity);
-        resultExplanation.setCriteria(CombinationCriteria.VOTING);
-       
-       //storing into the appropriate location inside the explanation matrix
-        if(!sourceMap.isEmpty() && !targetMap.isEmpty()) {
-        	setExplanationMatrix(source,target);
-        }
-        return new Mapping(source, target, finalSimilarity);
-    }
+			wordNetStringCombinationExplanation.setVal(.8);
+			wordNetStringCombinationExplanation
+					.setCriteria(CombinationCriteria.VOTING);
+		}
+
+		if (finalSimilarity < stringSimilarity) {
+			finalSimilarity = stringSimilarity;
+
+			wordNetStringCombinationExplanation.setVal(stringSimilarity);
+			wordNetStringCombinationExplanation
+					.setCriteria(CombinationCriteria.VOTING);
+		}
+
+		wordNetStringCombinationExplanation
+				.addChild(wordNetSimilarityExplanation);
+		wordNetStringCombinationExplanation
+				.addChild(stringSimilarityExplanation);
+
+		/*
+		 * Checking if values already map exactly, then we set absolute
+		 * similarity
+		 */
+		absoluteSimilarityExplanation.setVal(.01);
+		if ((sourceMap.containsKey("name") && targetMap.containsKey("name") && sourceMap
+				.get("name").equals(targetMap.get("name")))
+				|| (sourceMap.containsKey("name")
+						&& targetMap.containsKey("label") && sourceMap.get(
+						"name").equals(targetMap.get("label")))
+				|| (sourceMap.containsKey("name")
+						&& targetMap.containsKey("comment") && sourceMap.get(
+						"name").equals(targetMap.get("comment")))) {
+			finalSimilarity = 1.0;
+			absoluteSimilarityExplanation.setDescription("Absolute Similarity");
+			absoluteSimilarityExplanation.setVal(1.0);
+		}
+
+		else if ((sourceMap.containsKey("label")
+				&& targetMap.containsKey("label") && sourceMap.get("label")
+				.equals(targetMap.get("label")))
+				|| (sourceMap.containsKey("label")
+						&& targetMap.containsKey("comment") && sourceMap.get(
+						"label").equals(targetMap.get("comment")))
+				|| (sourceMap.containsKey("label")
+						&& targetMap.containsKey("name") && sourceMap.get(
+						"label").equals(targetMap.get("name")))
+				||
+
+				(sourceMap.containsKey("comment")
+						&& targetMap.containsKey("label") && sourceMap.get(
+						"comment").equals(targetMap.get("label")))
+				|| (sourceMap.containsKey("comment")
+						&& targetMap.containsKey("name") && sourceMap.get(
+						"comment").equals(targetMap.get("name")))
+				|| (sourceMap.containsKey("comment")
+						&& targetMap.containsKey("comment") && sourceMap.get(
+						"comment").equals(targetMap.get("comment")))) {
+			if (finalSimilarity == 0)
+				finalSimilarity = 0.9;
+
+			absoluteSimilarityExplanation.setDescription("Absolute Similarity");
+			absoluteSimilarityExplanation.setVal(0.9);
+		}
+
+		resultExplanation.addChild(wordNetStringCombinationExplanation);
+		resultExplanation.addChild(absoluteSimilarityExplanation);
+
+		resultExplanation.setVal(finalSimilarity);
+		resultExplanation.setCriteria(CombinationCriteria.VOTING);
+
+		// storing into the appropriate location inside the explanation matrix
+		if (!sourceMap.isEmpty() && !targetMap.isEmpty()) {
+			setExplanationMatrix(source, target);
+		}
+		return new Mapping(source, target, finalSimilarity);
     
+}
     /**
      * @param source
      * @param target
@@ -220,8 +256,10 @@ public class MyMatcher extends AbstractMatcher {
         levenshteinSimilarity = levenshteinSimilarity / divisor;
         
         levenshteinSimilarity = pruneValues(levenshteinSimilarity);
-        
+        if(levenshteinSimilarity == 0.0)
+        	levenshteinSimilarity =.01;
         levenshteinExplanation.setVal(levenshteinSimilarity);
+        
         levenshteinExplanation.setDescription("Levenshtein Distance");
         
         divisor = 0;
@@ -267,7 +305,8 @@ public class MyMatcher extends AbstractMatcher {
 
         jarowinglerSimilarity = jarowinglerSimilarity / divisor;
         jarowinglerSimilarity = pruneValues(jarowinglerSimilarity);
-        
+        if(jarowinglerSimilarity == 0.0)
+        	jarowinglerSimilarity =.012;
         jarowinglerExplanation.setVal(jarowinglerSimilarity);
         jarowinglerExplanation.setDescription("JaroWingler Similarity Metric");
         /*

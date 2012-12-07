@@ -151,7 +151,7 @@ public class ExplanationNode {
 		while(explnQ.size()>0) {
 			ExplanationNode currentNode = explnQ.remove();
 			ExplanationNode largerChild = new ExplanationNode();
-			largerChild.setMaxSigPathCount(1);
+			largerChild.setMaxSigPathCount(0);
 			if(currentNode.children.size()>0) {
 				for(ExplanationNode child: currentNode.children) {
 					if(child.getMaxSigPathCount() > largerChild.getMaxSigPathCount()) {
@@ -270,6 +270,7 @@ public class ExplanationNode {
 	public ExplanationNode deepCopyStructure(){
 		ExplanationNode returnNode = new ExplanationNode(this.getDescription());
 		returnNode.setCriteria(this.getCriteria());
+		returnNode.setUniversalUse(true);
 		for(ExplanationNode childNode: this.getChildren()){
 			if(childNode == null)
 				return null;
