@@ -183,9 +183,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 					alignedMappings = toBeEvaluated.selectionResult.getAlignment();
 				}
 				ExplanationNode overallStructure = null;
-				if(alignedMappings != null) {/*
-					overallStructure = SemanticExpln.findUniversalMostSignificantPath(
-									SemanticExpln.getInstance().getExplanationMatrix(), alignedMappings);*/
+				if(alignedMappings != null) {
+					overallStructure = SemanticExpln.findUniversalPaths(alignedMappings);
 				}
 				if(overallStructure != null) {
 					overallStructure.describeTopDown();
