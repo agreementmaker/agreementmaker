@@ -103,7 +103,9 @@ public class ExplanationSidebar extends JPanel {
 	
 				@Override
 				public String transform(ExplanationNode node) {
-	
+					if(node.getVal() == 0.0) {
+						return node.getDescription();
+					}
 					return String.valueOf(node.getVal());
 				}
 				
@@ -165,33 +167,7 @@ public class ExplanationSidebar extends JPanel {
 							valueLabel = new JLabel();
 							labelPanel.add(valueLabel);
 						}
-						
-						//if(nodeDescriptionValue != null) {
-						//	labelPanel.remove(nodeDescriptionValue);
-						//}
-						//nodeDescriptionValue = new JLabel("Description: "+node.getDescription());
-						//nodeDescriptionValue.setOpaque(true);
-						//labelPanel.add(nodeDescriptionValue);
-						//if(criteriaLabel != null) {
-						//	labelPanel.remove(criteriaLabel);
-						//}
-						//if(!node.getCriteria().toString().equals(CombinationCriteria.NOTDEFINED.toString())) {
-						//	criteriaLabel = new JLabel("Method: "+node.getCriteria().toString());
-						//	criteriaLabel.setOpaque(true);
-						//	labelPanel.add(criteriaLabel);
-						//} else {
-						//	criteriaLabel = new JLabel("Reached End node!");
-						//	criteriaLabel.setOpaque(true);
-						//	labelPanel.add(criteriaLabel);							
-						//}
-						//if(valueLabel != null) {
-						//	labelPanel.remove(valueLabel);
-						//}
-						//valueLabel = new JLabel("Value: "+node.getVal());
-						//valueLabel.setOpaque(true);
-						//labelPanel.add(valueLabel);
-						//labelPanel.setBorder(new LineBorder(Color.BLACK));
-						
+												
 						nodeDescriptionValue.setText("Description: "+node.getDescription());
 						if(!node.getCriteria().toString().equals(CombinationCriteria.NOTDEFINED.toString())) {
 							criteriaLabel.setText("Method: "+node.getCriteria().toString());
@@ -199,9 +175,6 @@ public class ExplanationSidebar extends JPanel {
 							criteriaLabel.setText("Reached End node!");							
 						}
 						valueLabel.setText("Value: "+node.getVal());
-						//panel.add(labelPanel,BorderLayout.NORTH);
-	/*					frame.pack();
-						frame.setVisible(true);*/
 					} else if(me.getButton() == MouseEvent.BUTTON3) {
 						System.out.println("right click");
 						System.out.println("Clicked " + node.getDescription());		
@@ -232,11 +205,8 @@ public class ExplanationSidebar extends JPanel {
 			vv.setGraphMouse(graphMouse);
 			vv.addKeyListener(graphMouse.getModeKeyListener());
 			vv.addMouseListener(new MouseListenerTranslator<ExplanationNode, String>(mygel, vv));
-			//panel.add(vv,BorderLayout.CENTER);
 			scrollPane = new JScrollPane(vv);
 			scrollPane.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Explanation"));
-			//explanationPane.add(scrollPane);
-			//explanationPane.addTab("Semantic Explanation Information",null,scrollPane,"Explanation of the selected mapping");
 			add(labelPanel, BorderLayout.NORTH);
 			add(scrollPane, BorderLayout.CENTER);
 		}
