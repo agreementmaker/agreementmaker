@@ -27,14 +27,10 @@ public class Report {
 	private static Logger log = Logger.getLogger(RepairAlignment.class);
 	private static String initialMeasures = "Initial F-Measure";
 	private static String finalMeasures = "Final F-Measure";
-	private static String mappingPrecision = "Precision of mappings identified by merged ontology ";
-	private static String hittingSetPrecision = "Precision of mappings in the minimum hitting set ";
+	private static String mappingPrecision = " mappings identified by merged ontology are inconsistent";
+	private static String hittingSetPrecision = " mappings identified in the minimum hitting set are inconsistent ";
 	
 	private ArrayList<MatchingPair> incorrectMappings = new ArrayList<MatchingPair>();
-	
-	public Report(){		
-		log.setLevel(Level.INFO);
-	}
 	
 	public Double initialMeasure(String toEvaluate, String reference){
 		
@@ -51,14 +47,14 @@ public class Report {
 	public void mergePrecision(ArrayList<OWLAxiom> axioms){
 		
 		ArrayList<MatchingPair> pairs =  getMatchingPairs(axioms);
-		log.info(mappingPrecision + getMatchingPairPrecision(pairs));
+		log.info(getMatchingPairPrecision(pairs)  + mappingPrecision);
 		System.out.println(" ");
 	}
 	
 	public void hittingSetPrecison(ArrayList<OWLAxiom> axioms){
 		
 		ArrayList<MatchingPair> pairs =  getMatchingPairs(axioms);
-		log.info(hittingSetPrecision + getMatchingPairPrecision(pairs));	
+		log.info(getMatchingPairPrecision(pairs) + hittingSetPrecision);	
 		System.out.println(" ");
 	}
 
