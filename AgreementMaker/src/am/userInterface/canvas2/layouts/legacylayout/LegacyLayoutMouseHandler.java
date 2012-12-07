@@ -312,7 +312,7 @@ public class LegacyLayoutMouseHandler {
 						//set the explanation data
 
 						if(Core.getUI().getUISplitPane().getRightComponent() instanceof ExplanationSidebar){
-							ExplanationSidebar esbOpen = (ExplanationSidebar) Core.getUI().getUISplitPane().getRightComponent();
+							ExplanationSidebar esbOpen = new ExplanationSidebar();
 							if(selectedNodes.size()>0) {
 								LegacyNode selected=selectedNodes.get(0);
 								ArrayList<LegacyMapping> mappingList=selected.getMappings();
@@ -325,7 +325,7 @@ public class LegacyLayoutMouseHandler {
 									}
 								}
 								esbOpen.init();
-								Core.getUI().getUISplitPane().remove(esbOpen.getOldComponent());
+								Core.getUI().getUISplitPane().remove(Core.getUI().getUISplitPane().getRightComponent());
 								Core.getUI().getUISplitPane().setRightComponent(esbOpen);
 							//	esbOpen.setOldComponent(Core.getUI().getUISplitPane().getRightComponent());
 							//	Core.getUI().getUISplitPane().setRightComponent(esbOpen);

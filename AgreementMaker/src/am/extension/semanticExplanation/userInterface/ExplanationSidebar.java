@@ -205,6 +205,7 @@ public class ExplanationSidebar extends JPanel {
 			vv.setGraphMouse(graphMouse);
 			vv.addKeyListener(graphMouse.getModeKeyListener());
 			vv.addMouseListener(new MouseListenerTranslator<ExplanationNode, String>(mygel, vv));
+			vv.repaint();
 			scrollPane = new JScrollPane(vv);
 			scrollPane.setBorder(new javax.swing.border.TitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0)), "Explanation"));
 			add(labelPanel, BorderLayout.NORTH);

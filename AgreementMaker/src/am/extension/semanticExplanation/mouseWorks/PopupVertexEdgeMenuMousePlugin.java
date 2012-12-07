@@ -10,6 +10,8 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import javax.swing.JPopupMenu;
 
+import am.extension.semanticExplanation.ExplanationNode;
+
 
 /**
  * A GraphMousePlugin that brings up distinct popup menus when an edge or vertex is
@@ -41,14 +43,15 @@ public class PopupVertexEdgeMenuMousePlugin<V, E> extends AbstractPopupGraphMous
      * work gets done. You shouldn't have to modify unless you really want to...
      * @param e 
      */
-    protected void handlePopup(MouseEvent e) {
-        final VisualizationViewer<V,E> vv =
-                (VisualizationViewer<V,E>)e.getSource();
+    @SuppressWarnings("unchecked")
+	protected void handlePopup(MouseEvent e) {
+        final VisualizationViewer<ExplanationNode,String> vv =
+                (VisualizationViewer<ExplanationNode,String>)e.getSource();
         Point2D p = e.getPoint();
         
-        GraphElementAccessor<V,E> pickSupport = vv.getPickSupport();
+        GraphElementAccessor<ExplanationNode,String> pickSupport = vv.getPickSupport();
         if(pickSupport != null) {
-            final V v = pickSupport.getVertex(vv.getGraphLayout(), p.getX(), p.getY());
+            final ExplanationNode v = pickSupport.getVertex(vv.getGraphLayout(), p.getX(), p.getY());
             if(v != null) {
                 // System.out.println("Vertex " + v + " was right clicked");
                 updateVertexMenu(v, vv, p);
@@ -57,12 +60,13 @@ public class PopupVertexEdgeMenuMousePlugin<V, E> extends AbstractPopupGraphMous
         }
     }
     
-    private void updateVertexMenu(V v, VisualizationViewer vv, Point2D point) {
+    @SuppressWarnings("unchecked")
+	private void updateVertexMenu(ExplanationNode v, VisualizationViewer<ExplanationNode, String> vv, Point2D point) {
         if (vertexPopup == null) return;
         Component[] menuComps = vertexPopup.getComponents();
         for (Component comp: menuComps) {
             if (comp instanceof VertexMenuListener) {
-                ((VertexMenuListener)comp).setVertexAndView(v, vv);
+                ((VertexMenuListener<ExplanationNode>)comp).setVertexAndView(v, vv);
             }
             if (comp instanceof MenuPointListener) {
                 ((MenuPointListener)comp).setPoint(point);
