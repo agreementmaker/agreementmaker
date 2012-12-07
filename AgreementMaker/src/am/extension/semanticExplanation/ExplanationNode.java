@@ -1,16 +1,10 @@
 package am.extension.semanticExplanation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 
-import org.apache.commons.collections.map.HashedMap;
-
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.Mapping;
 import edu.uci.ics.jung.graph.DelegateTree;
 
 public class ExplanationNode {
@@ -20,7 +14,9 @@ public class ExplanationNode {
 	String description;
 	public DelegateTree<ExplanationNode,String> tree= new DelegateTree<ExplanationNode, String>();
 	static int edge=1;
-	private int repetitionCount;
+	private int maxSigPathCount;
+	private int minSigPathCount;
+	private boolean universalUse;
 	String source;
 	String target;
 	
@@ -30,18 +26,21 @@ public class ExplanationNode {
 		this.children = children;
 		this.criteria = criteria;
 		this.description = description;
-		setRepetitionCount(0);
+		setMaxSigPathCount(0);
+		setMinSigPathCount(0);
 		tree = new DelegateTree<ExplanationNode, String>();
+		setUniversalUse(false);
 	}
-
 
 	public ExplanationNode() {
 		this.val = 0;
 		this.children = new ArrayList<ExplanationNode>();
 		this.criteria = CombinationCriteria.NOTDEFINED;
 		this.description = "";
-		setRepetitionCount(0);
+		setMaxSigPathCount(0);
+		setMinSigPathCount(0);
 		tree = new DelegateTree<ExplanationNode, String>();
+		setUniversalUse(false);
 	}
 	
 	public ExplanationNode(String description) {
@@ -49,8 +48,10 @@ public class ExplanationNode {
 		this.children = new ArrayList<ExplanationNode>();
 		this.criteria = CombinationCriteria.NOTDEFINED;
 		this.description = description;
-		setRepetitionCount(0);
+		setMaxSigPathCount(0);
+		setMinSigPathCount(0);
 		tree = new DelegateTree<ExplanationNode, String>();
+		setUniversalUse(false);
 	}
 
 	public void setSource(String s) {
@@ -134,6 +135,38 @@ public class ExplanationNode {
 		
 	}
 
+	
+	/**
+	 * When findUniversalMostSignificantPath is called from rightClick menu, the path should be plotted 
+	 * according to maxSigPathCount, not on value.
+	 * 
+	 * @param ExplanationNode node
+	 * @return List of nodes
+	 */
+	public static List<ExplanationNode> findMostSPGeneral(ExplanationNode node) {
+		List<ExplanationNode> mspList = new ArrayList<ExplanationNode>();
+		Queue<ExplanationNode> explnQ = new LinkedList<ExplanationNode>();
+		explnQ.add(node);
+		mspList.add(node);
+		while(explnQ.size()>0) {
+			ExplanationNode currentNode = explnQ.remove();
+			ExplanationNode largerChild = new ExplanationNode();
+			largerChild.setMaxSigPathCount(0);
+			if(currentNode.children.size()>0) {
+				for(ExplanationNode child: currentNode.children) {
+					if(child.getMaxSigPathCount() > largerChild.getMaxSigPathCount()) {
+						largerChild = child;
+					}
+				}
+				explnQ.add(largerChild);
+				mspList.add(largerChild);
+			}
+		}
+		return mspList;
+		
+	}
+	
+
 	/**
 	 * @param ExplanationNode node
 	 * Finds the least significant path in an aligned mapping
@@ -159,10 +192,39 @@ public class ExplanationNode {
 			}
 		}
 		return mspList;
-		
 	}
 	
 	
+	/**
+	 * When findUniversalLeastSignificantPath is called from rightClick menu, the path should be plotted 
+	 * according to minSigPathCount, not on value.
+	 * @param ExplanationNode node
+	 * @return List of nodes
+	 */
+	public static List<ExplanationNode> findMinSPGeneral(ExplanationNode node) {
+		List<ExplanationNode> mspList = new ArrayList<ExplanationNode>();
+		Queue<ExplanationNode> explnQ = new LinkedList<ExplanationNode>();
+		explnQ.add(node);
+		mspList.add(node);
+		while(explnQ.size()>0) {
+			ExplanationNode currentNode = explnQ.remove();
+			ExplanationNode largerChild = new ExplanationNode();
+			largerChild.setMinSigPathCount(1);
+			if(currentNode.children.size()>0) {
+				for(ExplanationNode child: currentNode.children) {
+					if(child.getMinSigPathCount() < largerChild.getMinSigPathCount()) {
+						largerChild = child;
+					}
+				}
+				explnQ.add(largerChild);
+				mspList.add(largerChild);
+			}
+		}
+		return mspList;
+	}
+	
+	
+	@SuppressWarnings("unused")
 	private static void addChildren(ExplanationNode node, DelegateTree<String, String> tree) {
 	    for (int i = 0; i < node.getChildren().size(); i++) {
 	        tree.addChild("edge "+edge,new String(String.valueOf(node.val)), new String(String.valueOf(node.getChildren().get(i).val)));
@@ -217,20 +279,26 @@ public class ExplanationNode {
 
 
 	/**
-	 * Will parse the graph to find where the passed Node is present, and count the repetitionCount 
+	 * Will parse the graph to find where the passed Node is present, and count the maxSigPathCount 
 	 * at the corresponding node. 
 	 * 
 	 * @param node
+	 * @param isLeastSigPath 
 	 */
-	public void addCountIntelligently(ExplanationNode node) {
+	public void addCountIntelligently(ExplanationNode node, boolean isLeastSigPath) {
 		if(this == null)
 			return;
 		if(this.getDescription().equals(node.getDescription())){
-			setVal(getVal() + 1);
+			if(isLeastSigPath){
+				setMinSigPathCount(getMinSigPathCount() + 1);
+			}
+			else{
+				setMaxSigPathCount(getMaxSigPathCount() + 1);
+			}
 			return;
 		}
 		for(ExplanationNode child: this.getChildren()){
-			child.addCountIntelligently(node);
+			child.addCountIntelligently(node,isLeastSigPath);
 		}
 		return;
 	}
@@ -242,7 +310,7 @@ public class ExplanationNode {
 	
 	
 	public void describeNode(){
-		System.out.println("A similarity value of "+this.val+" was generated by Algorithm: "+this.description +" and repetition: "+repetitionCount);
+		System.out.println("A similarity value of "+this.val+" was generated by Algorithm: "+this.description +" and repetition: "+maxSigPathCount);
 	}
 
 	public void describeExplanation(){
@@ -256,6 +324,7 @@ public class ExplanationNode {
 		}
 		this.describeNode();
 	}
+	
 	
 	/*
 	 * 
@@ -302,13 +371,31 @@ public class ExplanationNode {
 		this.description = description;
 	}
 	
-	public int getRepetitionCount() {
-		return repetitionCount;
+	public int getMaxSigPathCount() {
+		return maxSigPathCount;
 	}
 
 
-	public void setRepetitionCount(int repetitionCount) {
-		this.repetitionCount = repetitionCount;
+	public void setMaxSigPathCount(int repetitionCount) {
+		this.maxSigPathCount = repetitionCount;
+	}
+
+
+	public int getMinSigPathCount() {
+		return minSigPathCount;
+	}
+
+
+	public void setMinSigPathCount(int minSigPathCount) {
+		this.minSigPathCount = minSigPathCount;
+	}
+
+	public boolean isUniversalUse() {
+		return universalUse;
+	}
+
+	public void setUniversalUse(boolean universalUse) {
+		this.universalUse = universalUse;
 	}
 
 
