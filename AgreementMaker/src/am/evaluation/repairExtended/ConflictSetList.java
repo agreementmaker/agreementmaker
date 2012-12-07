@@ -124,6 +124,19 @@ public class ConflictSetList {
 		return axiomCount;
 	}
 	
+	public Integer getDistinctAxiomCount(){
+		
+		ArrayList<OWLAxiom> axioms = new ArrayList<OWLAxiom>();
+		
+		for(ConflictSet cset : ConflictSets){
+			for(AxiomRank axiom : cset.getAxiomList()){
+				axioms.add(axiom.getAxiom());
+			}
+		}
+		
+		return removeDuplicates(axioms).size();
+	}
+	
 	public ArrayList<OWLClass> getClassList(){
 		
 		ArrayList<OWLClass> classes = new ArrayList<OWLClass>();
@@ -144,6 +157,19 @@ public class ConflictSetList {
 		}
 		
 		return axiomRanks;
+	}
+	
+	public ArrayList<OWLAxiom> getAllAxioms(){
+		
+		ArrayList<OWLAxiom> axioms = new ArrayList<OWLAxiom>();
+		
+		for(ConflictSet cset : ConflictSets){
+			for(AxiomRank axiom : cset.getAxiomList()){
+				axioms.add(axiom.getAxiom());
+			}
+		}
+		
+		return axioms;
 	}
 
 	public void addDistinct(ConflictSet conflictSet) {
@@ -241,6 +267,8 @@ public class ConflictSetList {
 			axiomLists.add(set.getAxiomList());			
 		}
 		
+		//log.info(axiomLists.size());
+		
 		Integer outerIndex = 0;
 		//Integer index = 0;
 		
@@ -260,10 +288,12 @@ public class ConflictSetList {
 		//}
 		
 		//removing duplicates
-		HashSet<OWLAxiom> hs = new HashSet<OWLAxiom>();
+		/*HashSet<OWLAxiom> hs = new HashSet<OWLAxiom>();
 		hs.addAll(minimalHittingSet);
 		minimalHittingSet.clear();
-		minimalHittingSet.addAll(hs);
+		minimalHittingSet.addAll(hs);*/
+		
+		minimalHittingSet = removeDuplicates(minimalHittingSet);
 		
 		//axiomTree.print();
 		//System.out.println(minimalHittingSet.size());
@@ -300,6 +330,7 @@ public class ConflictSetList {
 		for(AxiomRank ar : axiomList){
 			if(ar.getRank() < minrank){
 				axiomRank = ar;
+				minrank = ar.getRank();
 			}				
 		}
 		
@@ -310,8 +341,8 @@ public class ConflictSetList {
 
 		Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(source); 
 		Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(target); 
-		OWLClass sourceClass;
-		OWLClass targetClass;
+		OWLClass sourceClass = null;
+		OWLClass targetClass = null;
 		HashMap<Boolean,MatchingPair> repairedMappings = new HashMap<Boolean,MatchingPair>();
 		SimilarityMatrix matrix = null;
 		
@@ -367,14 +398,21 @@ public class ConflictSetList {
 		
 		for(OWLAxiom axm : axioms){
 			
-			sourceClass = new ArrayList<OWLClass>(axm.getClassesInSignature()).get(0);
-			targetClass = new ArrayList<OWLClass>(axm.getClassesInSignature()).get(1);
+			sourceClass = new ArrayList<OWLClass>(axm.getClassesInSignature()).get(1);
+			targetClass = new ArrayList<OWLClass>(axm.getClassesInSignature()).get(0);
+			
+			//log.info(sourceClass);
+			//log.info(targetClass);
+			//log.info(sourceClass.getIRI().toURI().toString());
+			
 			
 			//srepairedMappings.put(false, axm);
 						
 			for(Node sourceNode : sourceOntology.getClassesList()){
-				
+				//log.info(sourceNode.getUri());
 				if(sourceClass.getIRI().toURI().toString().equals(sourceNode.getUri())){
+					
+					//log.info("in");
 					
 					for(Node targetNode : targetOntology.getClassesList()){
 
@@ -392,20 +430,27 @@ public class ConflictSetList {
 									log.info("new " + newMapping);
 									repairedMappings.put(true, new MatchingPair(sourceNode.getUri(),
 											targetNode.getUri(),newMapping.getSimilarity(),newMapping.getRelation()));
+									repairedMappings.put(false, new MatchingPair(sourceClass.getIRI().toURI().toString(),
+											targetClass.getIRI().toURI().toString(),0.0,null));
 								}
-								//else{
-								//	log.info("fail :" + newMapping);
-								//}
+								else{
+									//log.info("fail :" + newMapping);
+									repairedMappings.put(false, new MatchingPair(sourceNode.getUri(),
+											targetNode.getUri(),0.0,null));
+								}
 							} catch (Exception e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						//}
 					}
-				}
-					
+				}					
 			}
 		}
+				
+		/*repairedMappings = new HashMap<Boolean, MatchingPair>();
+		repairedMappings.put(false, new MatchingPair(sourceClass.getIRI().toURI().toString(),
+				targetClass.getIRI().toURI().toString(),0.0,null));*/
 		
 		return repairedMappings;
 	}
@@ -484,18 +529,16 @@ public class ConflictSetList {
 		return eqClasses;
 	}
 	
-	//prints the complete list of conflict sets - DEBUG
-	public void printConflictSetList(){
+	private <T> ArrayList<T> removeDuplicates(ArrayList<T> list){
 		
-		for(ConflictSet set : ConflictSets){
-			
-			log.info("--class - " + set.getInconsistentClass());
-			
-			for(AxiomRank ar : set.getAxiomList()){
-				log.info("-----axiom - " + ar.getAxiom() + " (rank - " + ar.getRank() + " )");
-			}
+		ArrayList<T> distinctList = new ArrayList<T>();
+		
+		for(T p : list){
+			if(!distinctList.contains(p))
+				distinctList.add(p);
 		}
 		
+		return distinctList;
 	}
 	
 	//getter setter

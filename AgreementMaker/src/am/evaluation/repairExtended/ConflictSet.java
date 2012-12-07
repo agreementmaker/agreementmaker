@@ -26,11 +26,20 @@ public class ConflictSet {
 	}
 	
 	public void AddAxioms(ArrayList<AxiomRank> axiomList){		
-		AxiomList.addAll(removeDuplicates(axiomList));		
+		AxiomList.addAll(axiomList);
+		
+		AxiomList = removeDuplicates(AxiomList);
 	}
 	
 	private ArrayList<AxiomRank> removeDuplicates(ArrayList<AxiomRank> axiomList){
-		//TODO - Refactoring - remove duplicates
+		
+		ArrayList<AxiomRank> distinctList = new ArrayList<AxiomRank>();
+		
+		for(AxiomRank p : axiomList){
+			if(!distinctList.contains(p))
+				distinctList.add(p);
+		}
+		
 		return axiomList;
 	}
 	

@@ -3,7 +3,9 @@ package am.evaluation.repairExtended;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -153,6 +155,7 @@ public class Report {
 										
 				if(incorrectPair.equals(match)){
 					count++;
+					//log.info(match);
 				}				
 			}
 		}
@@ -160,15 +163,48 @@ public class Report {
 		return count + "/" + pairs.size();
 	}
 	
-	private ArrayList<MatchingPair> removeDuplicates(ArrayList<MatchingPair> list){
+	public <T> void printMUPS(ArrayList<T> list){
 		
-		ArrayList<MatchingPair> distinctList = new ArrayList<MatchingPair>();
+		ArrayList<T> distinctList = new ArrayList<T>();
 		
-		for(MatchingPair p : list){
+		for(T p : list){
+			log.info(p);
+		}	
+	}
+	
+	private <T> ArrayList<T> removeDuplicates(ArrayList<T> list){
+		
+		ArrayList<T> distinctList = new ArrayList<T>();
+		
+		for(T p : list){
 			if(!distinctList.contains(p))
 				distinctList.add(p);
 		}
 		
 		return distinctList;
+	}
+	
+	//prints the complete list of conflict sets - DEBUG
+	public void printConflictSetList(ConflictSetList conflictSetList){
+			
+		for(ConflictSet set : conflictSetList.getConflictSets()){
+				
+			log.info("--class - " + set.getInconsistentClass());
+				
+			for(AxiomRank ar : set.getAxiomList()){
+				log.info("-----axiom - " + ar.getAxiom() + " (rank - " + ar.getRank() + " )");
+			}
+		}			
+	}
+	
+	//prints the complete list of axioms and respective ranks - DEBUG
+	//TODO - Should make the list distinct
+	public void printAxiomRanks(ConflictSetList conflictSetList){
+
+		ArrayList<AxiomRank> ranks = removeDuplicates(conflictSetList.getAxiomRankList());
+		
+		for(AxiomRank ar : ranks){
+			log.info(ar.getAxiom() + " -- " + ar.getRank());
+		}		
 	}
 }

@@ -66,7 +66,6 @@ public class RepairAlignment {
 	private List<MatchingPair> alignment;
 	private List<MatchingPair> refAlignment;
 	private List<MatchingPair> repariedAlignment;
-	//private int axiomCount = 0;
 	
 	public static void main(String[] args) throws OWLOntologyCreationException {
 		
@@ -76,39 +75,34 @@ public class RepairAlignment {
 	
 	public void repair(){
 		
+		Report report = new Report();
 		OWLOntology mergedOntology;
-		//List<OWLAxiom> inconsistentAxioms;
-		//HashMap<OWLClass,ArrayList<OWLAxiom>> axiomMap;
 		ConflictSetList inconsistentSets;
 		ArrayList<OWLAxiom> minHittingSet = new ArrayList<OWLAxiom>();
-		//Integer axiomCount = 0;
 		
-		try {
-						
-			computeMeasures(alignmentFile.toString(), referenceFile.toString());
-						
-			log.info("Merging ontolgoies...");
+		try {			
+			
 			mergedOntology = mergeOntologies();
+			log.info("Merging ontolgoies...");
 			
 			log.info("Identifying inconsistent classes and respective equivalence axioms...");
-			//inconsistentAxioms = getInconsistentAxioms(alignment, mergedOntology);
 			inconsistentSets = getInconsistentSets(alignment, mergedOntology);
+			
 			inconsistentSets.setMergedOntology(mergedOntology);
 			
 			log.info(inconsistentSets.getAxiomCount() + " inconsistent axioms identified");
 			
 			log.info("Computing Minimal unsatisfiable Preserving Sub-tboxes (MUPS)...");
-			//inconsistentSets = inconsistentSets.computeMUPS();
-			//ConflictSetList mups = inconsistentSets.computeMUPS();
-			//mups.printConflictSetList();
+			ConflictSetList mups = inconsistentSets.computeMUPS();
+			//report.printConflictSetList(mups);
 			
 			log.info("Ranking inconsistent axioms by frequency...");
-			inconsistentSets.rankAxioms();
-			//mups.rankAxioms();
+			mups.rankAxioms();
+			//report.printAxiomRanks(mups);
 
 			log.info("Compute hitting set...");
-			minHittingSet = inconsistentSets.computeHittingSet(inconsistentSets);
-			//minHittingSet = inconsistentSets.computeHittingSet(mups);
+			minHittingSet = inconsistentSets.computeHittingSet(mups);
+			//report.printMUPS(minHittingSet);
 			
 			log.info("IN_PROGRESS: Repairing inconsistent mappings...");
 			HashMap<Boolean,MatchingPair> maps = inconsistentSets.FixMappings(minHittingSet,sourceOwl.toString(),targetOwl.toString());
@@ -116,19 +110,15 @@ public class RepairAlignment {
 			log.info("TODO: Generating repaired alignment file...");
 			createRepairedAlignment(maps);
 			
-			log.info("TODO : ******************Evaluation Report*****************");
+			log.info("******************Evaluation Report*****************");
 			
-			log.info("Initial alignment");			
-			util.computeMeasures(alignmentFile.toString(), referenceFile.toString());
+			report.getIncorrectMappings(alignmentFile, referenceFile);
 			
-			log.info("Repaired alignment");
-			util.computeMeasures(repairedAlignmentFile.toString(), referenceFile.toString());
+			report.mergePrecision(inconsistentSets.getAllAxioms());
+			report.hittingSetPrecison(minHittingSet);
 			
-			//getReqdMappings(minHittingSet);
-			
-			//computeMeasures(newAlignmentFile.toString(), referenceFile.toString());
-			
-			//inconsistentSets.printConflictSetList();
+			report.initialMeasure(alignmentFile.toString(), referenceFile.toString());
+			report.finalMeasure(repairedAlignmentFile.toString(),referenceFile.toString());
 			
 		} catch (OWLOntologyCreationException e) {
 			log.error("OWL ontology merge failed");
@@ -147,6 +137,8 @@ public class RepairAlignment {
 		 
 		repariedAlignment = alignment;
 		
+		//log.info(maps.size());
+		
 		Iterator it = maps.entrySet().iterator();
 	    while (it.hasNext()) {
 	        Map.Entry pairs = (Map.Entry)it.next();
@@ -156,8 +148,8 @@ public class RepairAlignment {
 	        	repariedAlignment.add((MatchingPair) pairs.getValue());
 	        }
 	        else{
-	        	log.info("removing - " + pairs.getValue());
-	        	repariedAlignment.remove((MatchingPair) pairs.getValue());
+	        	log.info("removing - " + getMatchingPair((MatchingPair)pairs.getValue()));
+	        	repariedAlignment.remove(getMatchingPair((MatchingPair)pairs.getValue()));
 	        }
 	    }
 	    
@@ -165,56 +157,18 @@ public class RepairAlignment {
 	    MappingsOutput.writeMappingsOnDisk(repairedAlignmentFile.toString(), repariedAlignment);		
 	}
 
-	private void getReqdMappings(ArrayList<OWLAxiom> minHittingSet) {
+	private MatchingPair getMatchingPair(MatchingPair p) {
 		
-		List<MatchingPair> alignment1 = AlignmentUtilities.getMatchingPairsOAEI(alignmentFile.getAbsolutePath());
-		refAlignment = AlignmentUtilities.getMatchingPairsOAEI(referenceFile.getAbsolutePath());
-		ArrayList<MatchingPair> hitPairs = new ArrayList<MatchingPair>();
-		
-		for(MatchingPair p : alignment1){
-			p.similarity = 0.0;
-			p.relation = null;
-		}
-		
-		for(MatchingPair p : refAlignment){
-			p.similarity = 0.0;
-			p.relation = null;
-		}
-		
-		for(OWLAxiom hs : minHittingSet){
-			
-			String source = new ArrayList<OWLClass>(hs.getClassesInSignature()).get(0).toString();
-			String target = new ArrayList<OWLClass>(hs.getClassesInSignature()).get(1).toString();
-			
-			hitPairs.add(new MatchingPair(source.replace("<", "").replace(">", ""),target.replace("<", "").replace(">", "")));
-		}
-		
-		ArrayList<MatchingPair> reqdMappings = new ArrayList<MatchingPair>(refAlignment);
-		
-		//reqdMappings.removeAll(alignment);
-		
-		System.out.println(alignment1.size());
-		//System.out.println(alignment1);
-		
-		System.out.println(hitPairs.size());
-		//System.out.println(hitPairs);
-		
-		System.out.println(reqdMappings.size());
-		//System.out.println(reqdMappings);
-		
-		reqdMappings.retainAll(hitPairs);		
-		//System.out.println(reqdMappings);
+		MatchingPair pair = null;
 				
-		reqdMappings = new ArrayList<MatchingPair>(alignment);
-		//reqdMappings.removeAll(refAlignment);
-		
-		System.out.println(reqdMappings.size());
-		//System.out.println(reqdMappings);
-		
-		reqdMappings.retainAll(hitPairs);		
-		System.out.println(reqdMappings);
-		
-		
+		for(MatchingPair mp : alignment){
+			
+			log.info(mp);
+			if(mp.sameSource(p) && mp.sameTarget(p))
+				pair = mp;
+		}
+		log.info(p);
+		return pair;
 	}
 
 	public OWLOntology mergeOntologies()
@@ -355,50 +309,5 @@ public class RepairAlignment {
 		return conflictingAxioms;
 	}	
 
-	public Double computeMeasures(String toEvaluate, String reference){
-		
-		int count = 0;
-		ArrayList<MatchingPair> filePairs = null;
-		ArrayList<MatchingPair> refPairs = null;
-		
-		ReferenceAlignmentMatcher matcher = new ReferenceAlignmentMatcher();
-		ReferenceAlignmentParameters param = new ReferenceAlignmentParameters();
-		//matcher.setParam(param);
-		matcher.setParameters(param);
-		
-		try {
-			param.fileName = toEvaluate;
-			filePairs = matcher.parseStandardOAEI();
-			
-			param.fileName = reference.toString();
-			refPairs = matcher.parseStandardOAEI();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-
-		int totalcount = 0;
-		
-		for (MatchingPair p1 : filePairs) {
-			for (MatchingPair p2 : refPairs) {
-				totalcount++;
-				if(p1.sourceURI.equals(p2.sourceURI) && p1.targetURI.equals(p2.targetURI)
-						&& p1.relation.equals(p2.relation)){
-					count++;
-					break;
-				}				
-			}
-		}
-		double precision = (double)count/filePairs.size();
-		double recall = (float)count/refPairs.size();
-		double fmeasure = 2 * precision * recall / (precision + recall);
-		
-		log.info("Initial measures...");
-		log.info("Precision: " + precision + " Recall: " + recall + " FMeasure: " + fmeasure);
-		System.out.println(" ");
-
-		return precision;
-	}
+	
 }
