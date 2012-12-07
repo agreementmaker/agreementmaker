@@ -24,6 +24,32 @@ public class SemanticExpln {
 		      }
 		      return instance;
 	  }
+	  
+  
+	/**
+	 *  Finds the least significant path for the whole ontology. 
+	 * @param nodeMatrix
+	 * @param alignmentMappings
+	 * @return
+	 */
+	public static ExplanationNode findUniversalLeastSignificantPath(ExplanationNode[][] nodeMatrix, Alignment<Mapping> alignmentMappings){
+		ExplanationNode returnStructure = nodeMatrix[1][1].deepCopyStructure();
+		returnStructure.setUniversalUse(true);
+		
+		for(Mapping m:alignmentMappings){
+			ExplanationNode explanationNode = nodeMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
+			List<ExplanationNode> significantPathForNode = ExplanationNode.findLeastSignificantPath(explanationNode);
+
+			for(ExplanationNode node:significantPathForNode){
+				returnStructure.addCountIntelligently(node, true);
+			}
+		}
+		
+//			returnStructure.describeExplanation();
+		return returnStructure;
+	}
+
+		
 	/**
 	 *  Finds the Most significant path for the whole ontology. 
 	 * @param nodeMatrix
@@ -32,13 +58,14 @@ public class SemanticExpln {
 	 */
 	public static ExplanationNode findUniversalMostSignificantPath(ExplanationNode[][] nodeMatrix, Alignment<Mapping> alignmentMappings){
 		ExplanationNode returnStructure = nodeMatrix[1][1].deepCopyStructure();
-//		returnStructure
+		returnStructure.setUniversalUse(true);
+
 		for(Mapping m:alignmentMappings){
 			ExplanationNode explanationNode = nodeMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
 			List<ExplanationNode> significantPathForNode = ExplanationNode.findMostSignificantPath(explanationNode);
 
 			for(ExplanationNode node:significantPathForNode){
-				returnStructure.addCountIntelligently(node);
+				returnStructure.addCountIntelligently(node, false);
 			}
 		}
 		
@@ -47,11 +74,28 @@ public class SemanticExpln {
 	}
 
 
+<<<<<<< .mine
 	public ExplanationNode[][] getClassExplanationMatrix() {
 		return this.classExplanationMatrix;
 	}
 
 
+	public void setClassExplanationMatrix(int row, int col) {
+		this.classExplanationMatrix = new ExplanationNode[row][col];
+=======
+	public ExplanationNode[][] getClassExplanationMatrix() {
+		return this.classExplanationMatrix;
+>>>>>>> .r2621
+	}
+
+	public ExplanationNode[][] getPropertiesExplanationMatrix() {
+		return propertiesExplanationMatrix;
+	}
+
+<<<<<<< .mine
+	public void setPropertiesExplanationMatrix(int row, int col) {
+		this.propertiesExplanationMatrix = new ExplanationNode[row][col];
+=======
 	public void setClassExplanationMatrix(int row, int col) {
 		this.classExplanationMatrix = new ExplanationNode[row][col];
 	}
@@ -62,6 +106,7 @@ public class SemanticExpln {
 
 	public void setPropertiesExplanationMatrix(int row, int col) {
 		this.propertiesExplanationMatrix = new ExplanationNode[row][col];
+>>>>>>> .r2621
 	}
 	
 }
