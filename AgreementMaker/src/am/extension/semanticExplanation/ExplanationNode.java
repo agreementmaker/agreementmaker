@@ -212,7 +212,7 @@ public class ExplanationNode {
 			largerChild.setMinSigPathCount(1);
 			if(currentNode.children.size()>0) {
 				for(ExplanationNode child: currentNode.children) {
-					if(child.getMinSigPathCount() < largerChild.getMinSigPathCount()) {
+					if(child.getMinSigPathCount() > largerChild.getMinSigPathCount()) {
 						largerChild = child;
 					}
 				}
@@ -269,6 +269,7 @@ public class ExplanationNode {
 	 */
 	public ExplanationNode deepCopyStructure(){
 		ExplanationNode returnNode = new ExplanationNode(this.getDescription());
+		returnNode.setCriteria(this.getCriteria());
 		for(ExplanationNode childNode: this.getChildren()){
 			if(childNode == null)
 				return null;
