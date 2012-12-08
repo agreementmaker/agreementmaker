@@ -641,7 +641,7 @@ public class OntoProcessing {
 
 
 
-	private static void mergeSimilarity(SimilarityMatrix finalMatrix,
+	public static void mergeSimilarity(SimilarityMatrix finalMatrix,
 			SimilarityMatrix m1) {
 		Mapping map =null;
 		int sourceIndex;
@@ -682,7 +682,7 @@ public class OntoProcessing {
 		
 	}
 
-	private static double caluculateProiximity(ArrayList<CustomNode> arrayList,
+	public static double caluculateProiximity(ArrayList<CustomNode> arrayList,
 			ArrayList<CustomNode> arrayList2,
 			ArrayList<ArrayList<CustomNode>> sourceBlocks,
 			ArrayList<ArrayList<CustomNode>> targetBlocks, SimilarityMatrix m) {

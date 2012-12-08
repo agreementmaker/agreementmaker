@@ -11,6 +11,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.extension.partition.PartitionMatcher;
 
 public class OSGiRegistry {
 	
@@ -83,6 +84,11 @@ public class OSGiRegistry {
 	public List<AbstractMatcher> getMatchers() {
 		List<AbstractMatcher> list = new LinkedList<AbstractMatcher>();
 		list.addAll(matcherList);
+		
+		// HACK to show matcher
+		AbstractMatcher partitionMatcher = new PartitionMatcher();
+		list.add(partitionMatcher);
+		
 		return list;
 	}
 
