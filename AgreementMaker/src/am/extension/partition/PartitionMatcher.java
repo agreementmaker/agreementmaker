@@ -24,7 +24,6 @@ public class PartitionMatcher extends AbstractMatcher {
 	@Override
 	public void match() throws Exception {
 
-
 		// setup the Ontologies
 		if( sourceOntology == null ) {
 			if( Core.getInstance().getSourceOntology() == null ) {
@@ -61,14 +60,11 @@ public class PartitionMatcher extends AbstractMatcher {
 		//DisplayOntMappings.openOntology("C:\\Academic\\Ist Semester\\Data and Web Semantics\\BigOntolgies\\oaei2012_FMA_whole_ontology.owl");
 		//DisplayOntMappings.openOntology("C:\\Academic\\Ist Semester\\Data and Web Semantics\\BigOntolgies\\oaei2012_NCI_whole_ontology.owl");
 
-		//OntoProcessing.traverseOntology(ontology1);
-
 		//For Testing purpose
 		ArrayList<CustomNode> sourceList = OntoProcessing.testOntoScalability(source.getFilename());
 
 		OntoProcessing testObj = new OntoProcessing();
 		ArrayList<ArrayList<CustomNode>> sourceBlocks = testObj.createBlocks(sourceList);
-
 
 		ArrayList<CustomNode> targetList = OntoProcessing.testOntoScalability(target.getFilename());
 
@@ -90,8 +86,8 @@ public class PartitionMatcher extends AbstractMatcher {
 		for(int i=0;i<sourceBlocks.size();i++)
 			for(int j=0;j<targetBlocks.size();j++)
 			{	
-				proximity = OntoProcessing.caluculateProiximity(sourceBlocks.get(i),targetBlocks.get(j),sourceBlocks,targetBlocks,m);
-				System.out.println(processingObj.caluculateAnchors(sourceBlocks.get(i),targetBlocks.get(j),m)+" Proximity "+proximity);
+				proximity = OntoProcessing.calculateProximity(sourceBlocks.get(i),targetBlocks.get(j),sourceBlocks,targetBlocks,m);
+				System.out.println(processingObj.calculateAnchors(sourceBlocks.get(i),targetBlocks.get(j),m)+" Proximity "+proximity);
 				if(proximity > OntoProcessing.proximityThreshold)
 				{
 					SimilarityMatrix m1 = OntoProcessing.alignBlocks(sourceBlocks.get(i),targetBlocks.get(j));
@@ -100,13 +96,10 @@ public class PartitionMatcher extends AbstractMatcher {
 
 			}
 
-
 		Alignment<Mapping> al = s.scanMatrix(finalMatrix);
 		s.matchStart();
 		s.setClassesAlignmentSet(al);
 		s.matchEnd();
-
-
 		
 		// set the classes matrix.
 		classesMatrix = finalMatrix;
