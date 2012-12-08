@@ -35,6 +35,7 @@ import weka.filters.unsupervised.attribute.RELAGGS;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.MatcherSetting;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.AbstractMatcher.alignType;
@@ -96,6 +97,10 @@ public class ConflictSetList {
 	//private Tree<AxiomRank> axiomTree = new Tree<AxiomRank>();
 	private ArrayList<ArrayList<AxiomRank>> axiomLists;
 	private ArrayList<OWLAxiom> minimalHittingSet;
+	
+	//private HashMap<Boolean, MatchingPair> RepairedMappings = new HashMap<Boolean, MatchingPair>();
+	ArrayList<MatchingPair> RemoveMappings = new ArrayList<MatchingPair>();
+	ArrayList<MatchingPair> AddMappings = new ArrayList<MatchingPair>();
 		
 	public Integer getClassCount(){
 		return ConflictSets.size();
@@ -336,124 +341,226 @@ public class ConflictSetList {
 		
 		return axiomRank.getAxiom();
 	}
-
-	public HashMap<Boolean, MatchingPair> FixMappings(ArrayList<OWLAxiom> axioms, String source, String target) {
-
-		Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(source); 
-		Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(target); 
+	
+	public void repairMappings(ArrayList<OWLAxiom> axioms, String source, String target){
+		
 		OWLClass sourceClass = null;
 		OWLClass targetClass = null;
 		HashMap<Boolean,MatchingPair> repairedMappings = new HashMap<Boolean,MatchingPair>();
-		SimilarityMatrix matrix = null;
-		
-		SimpleBatchModeRunner bm = new SimpleBatchModeRunner((File)null);
-		AbstractMatcher oaei2011 = bm.instantiateMatcher(null);
-		SimilarityMatrixOutput matrixoutput = new SimilarityMatrixOutput(oaei2011);
-		//matrix = matrixoutput.loadClassesMatrix("/home/pavan/MS/WebSemantics/Ontologies/Anatomy/AnatomyAlignmentclassMatrix.rdf");
-
-		Mapping newMapping;
-		
-		AppPreferences prefs = Core.getAppPreferences();
-		
-		//AbstractMatcher matcher = new OAEI2011Matcher();
-		//AbstractMatcher matcher = new BaseSimilarityMatcher();
-		AbstractMatcher matcher = new BasicStructuralSelectorMatcher();
-		//AbstractMatcher matcher = new AdvancedSimilarityMatcher();
-		
-		/*BaseSimilarityParameters params = new BaseSimilarityParameters();
-		
-		sourceOntology.getModel().getProperty("label");
-		//rdfs:label
-		
-		
-		ManualOntologyProfiler x = new ManualOntologyProfiler(sourceOntology, targetOntology);
-		ManualProfilerMatchingPanel z = new ManualProfilerMatchingPanel(x);		
-		ManualProfilerMatchingParameters y = new ManualProfilerMatchingParameters();
-		
-		ArrayList<Property> prop1 = new ArrayList<Property>();
-		ArrayList<Property> prop2 = new ArrayList<Property>();
-		prop1.add(sourceOntology.getModel().getProperty("rdfs:label"));
-		prop2.add(targetOntology.getModel().getProperty("rdfs:label"));
-		
-		//Property prop = sourceOntology.getModel().getProperty("label");
-		//y.sourceClassAnnotations.
-		//y.sourceClassAnnotations.s 
-		//y.matchTargetClassLocalname = true;
-		//y.
-		
-		y.matchSourceClassLocalname = false;
-		y.matchSourcePropertyLocalname = false;
-		y.matchTargetClassLocalname = false;
-		y.matchTargetPropertyLocalname = false;
-		
-		y.sourceClassAnnotations = prop1;
-		y.targetClassAnnotations = prop2;
-		
-		x.setMatchTimeParams(y);
-		Core.getInstance().setOntologyProfiler(x);
-		//params.useDictionary = prefs.getPanelBool( MatcherSetting.BSIM_USEDICT );
-		params.threshold = 0.6;		
-		
-		matcher.setParameters(params);*/
+		Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(source); 
+		Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(target); 
+		MatchingPair tempPair = new MatchingPair();
+		Node originalSourceNode = null;
+		Node originalTargetNode = null;
+		MatchingPair newMapping = null;
+		MatchingPair originalMapping = null;
+		MatchingPair tempMapping = null;
+		Double maxSimilarity = 0.0;
 		
 		for(OWLAxiom axm : axioms){
 			
-			sourceClass = new ArrayList<OWLClass>(axm.getClassesInSignature()).get(1);
-			targetClass = new ArrayList<OWLClass>(axm.getClassesInSignature()).get(0);
+			log.info("ax" + axm);
+			log.info(axm.getClassesInSignature().toArray()[1]);
+			log.info(axm.getClassesInSignature().toArray()[0]);
 			
-			//log.info(sourceClass);
-			//log.info(targetClass);
-			//log.info(sourceClass.getIRI().toURI().toString());
+			sourceClass = (OWLClass) axm.getClassesInSignature().toArray()[1];
+			targetClass = (OWLClass) axm.getClassesInSignature().toArray()[0];
 			
+			log.info(sourceClass);
 			
-			//srepairedMappings.put(false, axm);
+			for(Node sourceNode : sourceOntology.getClassesList()){			
+				if(sourceClass.getIRI().toURI().toString().equals(sourceNode.getUri())){				
+					originalSourceNode = sourceNode;
+					log.info(sourceNode);
+				}
+			}		
+			
+			for(Node targetNode : targetOntology.getClassesList()){			
+				if(targetClass.getIRI().toURI().toString().equals(targetNode.getUri())){				
+					originalTargetNode = targetNode;
+				}
+			}
+			
+			originalMapping = new MatchingPair(originalSourceNode.getUri(),
+					originalTargetNode.getUri(),0.0,null);
+			log.info("-" + originalMapping);
+			newMapping = null; 
 						
-			for(Node sourceNode : sourceOntology.getClassesList()){
-				//log.info(sourceNode.getUri());
-				if(sourceClass.getIRI().toURI().toString().equals(sourceNode.getUri())){
-					
-					//log.info("in");
-					
-					for(Node targetNode : targetOntology.getClassesList()){
-
-						//if(targetClass.getIRI().toURI().toString().equals(targetNode.getUri())){
+			for(Node targetNode : targetOntology.getClassesList()){				
 						
-							//log.info(sourceNode);
-							//log.info(targetNode);
-							
-							try {
-								
-								newMapping = matcher.alignTwoNodesParallel(sourceNode, targetNode, alignType.aligningClasses, matrix);
-							
-								if(newMapping != null){
-									log.info("old " + axm);
-									log.info("new " + newMapping);
-									repairedMappings.put(true, new MatchingPair(sourceNode.getUri(),
-											targetNode.getUri(),newMapping.getSimilarity(),newMapping.getRelation()));
-									repairedMappings.put(false, new MatchingPair(sourceClass.getIRI().toURI().toString(),
-											targetClass.getIRI().toURI().toString(),0.0,null));
-								}
-								else{
-									//log.info("fail :" + newMapping);
-									repairedMappings.put(false, new MatchingPair(sourceNode.getUri(),
-											targetNode.getUri(),0.0,null));
-								}
-							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						//}
+				tempMapping = rematch(originalSourceNode, targetNode);
+				
+				if(tempMapping != null){
+				
+					if(tempMapping.similarity > maxSimilarity){
+						newMapping = tempMapping;
+						maxSimilarity = tempMapping.similarity;
 					}
-				}					
+				}
+			}
+			log.info("--" + originalMapping);
+			RemoveMappings.add(originalMapping);
+			
+			if(newMapping != null)
+				AddMappings.add(newMapping);
+		}		
+		
+	}
+	
+	private MatchingPair rematch(Node sourceNode, Node targetNode){
+		
+		AbstractMatcher matcher;
+		AbstractMatchingParameters params;
+		SimilarityMatrix matrix = null;
+		MatchingPair newMapping = null;
+		Mapping tempMapping;
+		//Double maxSimilarity = 0.0;
+		//Boolean replaceMapping = false;
+		
+		//
+		matcher = new ParametricStringMatcher();
+		try {
+			tempMapping = matcher.alignTwoNodesParallel(sourceNode, targetNode, alignType.aligningClasses, matrix);
+								
+			//if(tempMapping.getSimilarity() > maxSimilarity){
+				newMapping =  new MatchingPair(sourceNode.getUri(),
+						targetNode.getUri(),tempMapping.getSimilarity(),tempMapping.getRelation());
+				//replaceMapping = true;
+			//}			
+			
+		} catch (Exception e) {			
+			//log.error("rematch : Parametric String Matcher failed" + e);
+//			newMapping = new MatchingPair(sourceNode.getUri(),
+//					originalTargetNode.getUri(),0.0,null);
+//			replaceMapping = false;
+		}
+		finally{
+			if(newMapping != null){
+				newMapping = new MatchingPair();
 			}
 		}
-				
-		/*repairedMappings = new HashMap<Boolean, MatchingPair>();
-		repairedMappings.put(false, new MatchingPair(sourceClass.getIRI().toURI().toString(),
-				targetClass.getIRI().toURI().toString(),0.0,null));*/
 		
-		return repairedMappings;
+		return newMapping;
 	}
+
+//	public HashMap<Boolean, MatchingPair> FixMappings(ArrayList<OWLAxiom> axioms, String source, String target) {
+//
+//		OWLClass sourceClass = null;
+//		OWLClass targetClass = null;
+//		Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(source); 
+//		Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(target); 
+//
+//		HashMap<Boolean,MatchingPair> repairedMappings = new HashMap<Boolean,MatchingPair>();
+//		SimilarityMatrix matrix = null;
+//		
+//		SimpleBatchModeRunner bm = new SimpleBatchModeRunner((File)null);
+//		AbstractMatcher oaei2011 = bm.instantiateMatcher(null);
+//		SimilarityMatrixOutput matrixoutput = new SimilarityMatrixOutput(oaei2011);
+//		//matrix = matrixoutput.loadClassesMatrix("/home/pavan/MS/WebSemantics/Ontologies/Anatomy/AnatomyAlignmentclassMatrix.rdf");
+//
+//		Mapping newMapping;
+//		
+//		AppPreferences prefs = Core.getAppPreferences();
+//		
+//		//AbstractMatcher matcher = new OAEI2011Matcher();
+//		//AbstractMatcher matcher = new BaseSimilarityMatcher();
+//		AbstractMatcher matcher = new BasicStructuralSelectorMatcher();
+//		//AbstractMatcher matcher = new AdvancedSimilarityMatcher();
+//		
+//		/*BaseSimilarityParameters params = new BaseSimilarityParameters();
+//		
+//		sourceOntology.getModel().getProperty("label");
+//		//rdfs:label
+//		
+//		
+//		ManualOntologyProfiler x = new ManualOntologyProfiler(sourceOntology, targetOntology);
+//		ManualProfilerMatchingPanel z = new ManualProfilerMatchingPanel(x);		
+//		ManualProfilerMatchingParameters y = new ManualProfilerMatchingParameters();
+//		
+//		ArrayList<Property> prop1 = new ArrayList<Property>();
+//		ArrayList<Property> prop2 = new ArrayList<Property>();
+//		prop1.add(sourceOntology.getModel().getProperty("rdfs:label"));
+//		prop2.add(targetOntology.getModel().getProperty("rdfs:label"));
+//		
+//		//Property prop = sourceOntology.getModel().getProperty("label");
+//		//y.sourceClassAnnotations.
+//		//y.sourceClassAnnotations.s 
+//		//y.matchTargetClassLocalname = true;
+//		//y.
+//		
+//		y.matchSourceClassLocalname = false;
+//		y.matchSourcePropertyLocalname = false;
+//		y.matchTargetClassLocalname = false;
+//		y.matchTargetPropertyLocalname = false;
+//		
+//		y.sourceClassAnnotations = prop1;
+//		y.targetClassAnnotations = prop2;
+//		
+//		x.setMatchTimeParams(y);
+//		Core.getInstance().setOntologyProfiler(x);
+//		//params.useDictionary = prefs.getPanelBool( MatcherSetting.BSIM_USEDICT );
+//		params.threshold = 0.6;		
+//		
+//		matcher.setParameters(params);*/
+//		
+//		for(OWLAxiom axm : axioms){
+//			
+//			sourceClass = new ArrayList<OWLClass>(axm.getClassesInSignature()).get(1);
+//			targetClass = new ArrayList<OWLClass>(axm.getClassesInSignature()).get(0);
+//			
+//			//log.info(sourceClass);
+//			//log.info(targetClass);
+//			//log.info(sourceClass.getIRI().toURI().toString());
+//			
+//			
+//			//srepairedMappings.put(false, axm);
+//						
+//			for(Node sourceNode : sourceOntology.getClassesList()){
+//				//log.info(sourceNode.getUri());
+//				if(sourceClass.getIRI().toURI().toString().equals(sourceNode.getUri())){
+//					
+//					//log.info("in");
+//					
+//					for(Node targetNode : targetOntology.getClassesList()){
+//
+//						//if(targetClass.getIRI().toURI().toString().equals(targetNode.getUri())){
+//						
+//							//log.info(sourceNode);
+//							//log.info(targetNode);
+//							
+//							try {
+//								
+//								newMapping = matcher.alignTwoNodesParallel(sourceNode, targetNode, alignType.aligningClasses, matrix);
+//							
+//								if(newMapping != null){
+//									log.info("old " + axm);
+//									log.info("new " + newMapping);
+//									repairedMappings.put(true, new MatchingPair(sourceNode.getUri(),
+//											targetNode.getUri(),newMapping.getSimilarity(),newMapping.getRelation()));
+//									repairedMappings.put(false, new MatchingPair(sourceClass.getIRI().toURI().toString(),
+//											targetClass.getIRI().toURI().toString(),0.0,null));
+//								}
+//								else{
+//									//log.info("fail :" + newMapping);
+//									repairedMappings.put(false, new MatchingPair(sourceNode.getUri(),
+//											targetNode.getUri(),0.0,null));
+//								}
+//							} catch (Exception e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							}
+//						//}
+//					}
+//				}					
+//			}
+//		}
+//				
+//		/*repairedMappings = new HashMap<Boolean, MatchingPair>();
+//		repairedMappings.put(false, new MatchingPair(sourceClass.getIRI().toURI().toString(),
+//				targetClass.getIRI().toURI().toString(),0.0,null));*/
+//		
+//		return repairedMappings;
+//	}
 	
 	public ConflictSetList computeMUPS() {
 		
@@ -558,5 +665,15 @@ public class ConflictSetList {
     public OWLOntology getMergedOntology()
     {
         return MergedOntology;
+    }
+      
+    public ArrayList<MatchingPair> getRemoveMappings()
+    {
+        return RemoveMappings;
+    }
+    
+    public ArrayList<MatchingPair> getAddMappings()
+    {
+        return AddMappings;
     }
 }

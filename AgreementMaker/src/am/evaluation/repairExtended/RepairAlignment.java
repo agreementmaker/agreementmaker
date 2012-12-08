@@ -58,7 +58,7 @@ public class RepairAlignment {
 	private File referenceFile = new File("/home/pavan/MS/WebSemantics/Ontologies/Anatomy/reference.rdf");
 	private File sourceOwl = new File("/home/pavan/MS/WebSemantics/Ontologies/Anatomy/mouse.owl");
 	private File targetOwl = new File("/home/pavan/MS/WebSemantics/Ontologies/Anatomy/human.owl");
-	private File alignmentFile = new File("/home/pavan/MS/WebSemantics/Ontologies/Anatomy/Alignment.rdf");
+	private File alignmentFile = new File("/home/pavan/MS/WebSemantics/Ontologies/Anatomy/human-mouse-best.rdf");
 	private File repairedAlignmentFile = new File("/home/pavan/MS/WebSemantics/Ontologies/Anatomy/repairedAlignment.rdf");
 	
 	private AlignmentRepairUtilities util = new AlignmentRepairUtilities(log);
@@ -82,15 +82,15 @@ public class RepairAlignment {
 		
 		try {			
 			
-			mergedOntology = mergeOntologies();
 			log.info("Merging ontolgoies...");
-			
-			log.info("Identifying inconsistent classes and respective equivalence axioms...");
+			mergedOntology = mergeOntologies();
+						
+			log.info("Identifying inconsistent classes and corresponding equivalence axioms...");
 			inconsistentSets = getInconsistentSets(alignment, mergedOntology);
 			
 			inconsistentSets.setMergedOntology(mergedOntology);
 			
-			log.info(inconsistentSets.getAxiomCount() + " inconsistent axioms identified");
+			log.info(inconsistentSets.getAxiomCount() + " inconsistent axioms identified (" + inconsistentSets.getDistinctAxiomCount() + " unique axioms)");
 			
 			log.info("Computing Minimal unsatisfiable Preserving Sub-tboxes (MUPS)...");
 			ConflictSetList mups = inconsistentSets.computeMUPS();
@@ -104,11 +104,12 @@ public class RepairAlignment {
 			minHittingSet = inconsistentSets.computeHittingSet(mups);
 			//report.printMUPS(minHittingSet);
 			
-			log.info("IN_PROGRESS: Repairing inconsistent mappings...");
-			HashMap<Boolean,MatchingPair> maps = inconsistentSets.FixMappings(minHittingSet,sourceOwl.toString(),targetOwl.toString());
+			log.info("Repairing inconsistent mappings...");
+			log.info(minHittingSet);
+			inconsistentSets.repairMappings(minHittingSet,sourceOwl.toString(),targetOwl.toString());
 			
-			log.info("TODO: Generating repaired alignment file...");
-			createRepairedAlignment(maps);
+			log.info("Generating repaired alignment file...");
+			createRepairedAlignment(inconsistentSets.getAddMappings(),inconsistentSets.getRemoveMappings());
 			
 			log.info("******************Evaluation Report*****************");
 			
@@ -133,25 +134,22 @@ public class RepairAlignment {
 		}		
 	}
 	
-	private void createRepairedAlignment(HashMap<Boolean, MatchingPair> maps) {
+	private void createRepairedAlignment(ArrayList<MatchingPair> addMappings, ArrayList<MatchingPair> removeMappings) {
 		 
 		repariedAlignment = alignment;
 		
-		//log.info(maps.size());
+		log.info(alignment.size());
+		log.info(removeMappings.size());
+		log.info(removeMappings);
+		log.info(addMappings.size());				
 		
-		Iterator it = maps.entrySet().iterator();
-	    while (it.hasNext()) {
-	        Map.Entry pairs = (Map.Entry)it.next();
-	        
-	        if((Boolean) pairs.getKey()){
-	        	log.info("adding - " + pairs.getValue());
-	        	repariedAlignment.add((MatchingPair) pairs.getValue());
-	        }
-	        else{
-	        	log.info("removing - " + getMatchingPair((MatchingPair)pairs.getValue()));
-	        	repariedAlignment.remove(getMatchingPair((MatchingPair)pairs.getValue()));
-	        }
-	    }
+		for(MatchingPair p : removeMappings){
+			repariedAlignment.remove(getMatchingPair(p));
+		}		
+		
+		repariedAlignment.addAll(addMappings);
+		
+		log.info(repariedAlignment.size());
 	    
 	    log.info("Repaired alignment. The repaired alignment contains " + repariedAlignment.size() + " mappings");
 	    MappingsOutput.writeMappingsOnDisk(repairedAlignmentFile.toString(), repariedAlignment);		
@@ -163,11 +161,11 @@ public class RepairAlignment {
 				
 		for(MatchingPair mp : alignment){
 			
-			log.info(mp);
+			//log.info(mp);
 			if(mp.sameSource(p) && mp.sameTarget(p))
 				pair = mp;
 		}
-		log.info(p);
+		//log.info(p);
 		return pair;
 	}
 
