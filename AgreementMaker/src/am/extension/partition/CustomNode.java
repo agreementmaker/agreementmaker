@@ -14,6 +14,9 @@ public class CustomNode{
 	ArrayList<Node> ancestorList;
 	HashMap<CustomNode, Float> similarNodeWeights;
 	double cohesion;
+	public int indexOfNode;
+	public int indexOfBlock;
+	
 	
 	public CustomNode(Node node,ArrayList<Node> parents, String localName, int depth)
 	{
