@@ -18,6 +18,7 @@ import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
+import am.extension.semanticExplanation.ExplanationNode;
 
 import com.hp.hpl.jena.ontology.OntResource;
 
@@ -32,6 +33,36 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 	
 	// use this to save time.
 	private LexiconSynSet sourceSet;  // using this field variable gives a 3% speed boost to LSM without SCS.
+	
+	private ExplanationNode lexicalSimilarityExplanation = new ExplanationNode("LSM");
+	private ExplanationNode[][] lsmClassExplanationMatrix;
+	private ExplanationNode[][] lsmPropertiesExplanationMatrix;
+	
+	@Override
+	public ExplanationNode getExplanationNode() {
+		return lexicalSimilarityExplanation;
+	}
+	
+	@Override
+	public void setClassExplanationMatrix(int row, int col) {
+		lsmClassExplanationMatrix = new ExplanationNode[row][col];
+	}
+	
+	@Override
+	public void setPropertiesExplanationMatrix(int row, int col) {
+		lsmPropertiesExplanationMatrix = new ExplanationNode[row][col];
+	}
+	
+	@Override
+	public ExplanationNode[][] getClassExplanationMatrix() {
+		return lsmClassExplanationMatrix;
+	}
+	
+	@Override
+	public ExplanationNode[][] getPropertiesExplanationMatrix() {
+		return lsmPropertiesExplanationMatrix;
+	}
+
 	
 	// Default constructor.
 	public LexicalSynonymMatcher() { super(); initializeVariables(); }
@@ -254,6 +285,10 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		ProvenanceStructure provNoTermSyn = computeLexicalSimilarity(sourceExtendedSynonyms, targetExtendedSynonyms, maxSim);
 		
 		if( provNoTermSyn != null && provNoTermSyn.similarity > 0.0d ) {
+			lexicalSimilarityExplanation = new ExplanationNode();
+			lexicalSimilarityExplanation.setVal(provNoTermSyn.similarity);
+			lexicalSimilarityExplanation.setDescription("LSM");
+			setExplanationMatrix(source, target);
 			if( getParam().storeProvenance ) {
 				Mapping m = new Mapping(source, target, provNoTermSyn.similarity);
 				m.setProvenance(provNoTermSyn.getProvenanceString());
@@ -267,7 +302,29 @@ public class LexicalSynonymMatcher extends AbstractMatcher {
 		return null;
 	}
 
-	
+    /**
+     * @param source
+     * @param target
+     * Method to insert the ExplanationNode into the Class or Property Explanation Matrix at the appropriate location
+     */
+    private void setExplanationMatrix(Node source, Node target) {
+    	Integer sourceIndex = null;
+    	Integer targetIndex = null;
+    	if(getSourceOntology().getClassesList().contains(source) && getTargetOntology().getClassesList().contains(target)) {
+    		sourceIndex = getSourceOntology().getClassesList().indexOf(source);
+    		targetIndex = getTargetOntology().getClassesList().indexOf(target);
+    	} else if(getSourceOntology().getPropertiesList().contains(source) && getTargetOntology().getPropertiesList().contains(target)) {
+    		sourceIndex = getSourceOntology().getPropertiesList().indexOf(source);
+    		targetIndex = getTargetOntology().getPropertiesList().indexOf(target);
+    	}
+    	if(sourceIndex != null && targetIndex != null) {
+    		if(source.isClass() && target.isClass()) {
+            	lsmClassExplanationMatrix[sourceIndex][targetIndex] = lexicalSimilarityExplanation;
+    		} else if(source.isProp() && target.isProp()) {
+            	lsmPropertiesExplanationMatrix[sourceIndex][targetIndex] = lexicalSimilarityExplanation;
+    		}
+    	}
+	}	
 
 	/**
 	 * Given the synsets associated with two concepts, calculate the "synonym similarity" between the concepts.

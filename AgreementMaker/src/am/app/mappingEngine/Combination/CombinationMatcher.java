@@ -9,6 +9,7 @@ import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
 import am.app.ontology.Node;
+import am.extension.semanticExplanation.ExplanationNode;
 
 public class CombinationMatcher extends AbstractMatcher {
 	
@@ -16,6 +17,35 @@ public class CombinationMatcher extends AbstractMatcher {
 	 * 
 	 */
 	private static final long serialVersionUID = 6298803128635729082L;
+
+	private ExplanationNode lwcSimilarityExplanation = new ExplanationNode("BSM Explanation");
+	private ExplanationNode[][] lwcClassExplanationMatrix;
+	private ExplanationNode[][] lwcPropertiesExplanationMatrix;
+	
+	@Override
+	public ExplanationNode getExplanationNode() {
+		return lwcSimilarityExplanation;
+	}
+	
+	@Override
+	public void setClassExplanationMatrix(int row, int col) {
+		lwcClassExplanationMatrix = new ExplanationNode[row][col];
+	}
+	
+	@Override
+	public void setPropertiesExplanationMatrix(int row, int col) {
+		lwcPropertiesExplanationMatrix = new ExplanationNode[row][col];
+	}
+	
+	@Override
+	public ExplanationNode[][] getClassExplanationMatrix() {
+		return lwcClassExplanationMatrix;
+	}
+	
+	@Override
+	public ExplanationNode[][] getPropertiesExplanationMatrix() {
+		return lwcPropertiesExplanationMatrix;
+	}
 
 	public CombinationMatcher() {
 		super();
@@ -153,9 +183,39 @@ public class CombinationMatcher extends AbstractMatcher {
 			else sim = 0;
 		}
 		else throw new RuntimeException("DEVELOPMENT ERROR: combination type selected is not implemented");
+		
+		lwcSimilarityExplanation = new ExplanationNode();
+		lwcSimilarityExplanation.setVal(sim);
+		lwcSimilarityExplanation.setDescription("LWC");
+		setExplanationMatrix(source, target);
+		
 		return new Mapping(source, target, sim, MappingRelation.EQUIVALENCE);
 	}
 
+    /**
+     * @param source
+     * @param target
+     * Method to insert the ExplanationNode into the Class or Property Explanation Matrix at the appropriate location
+     */
+    private void setExplanationMatrix(Node source, Node target) {
+    	Integer sourceIndex = null;
+    	Integer targetIndex = null;
+    	if(getSourceOntology().getClassesList().contains(source) && getTargetOntology().getClassesList().contains(target)) {
+    		sourceIndex = getSourceOntology().getClassesList().indexOf(source);
+    		targetIndex = getTargetOntology().getClassesList().indexOf(target);
+    	} else if(getSourceOntology().getPropertiesList().contains(source) && getTargetOntology().getPropertiesList().contains(target)) {
+    		sourceIndex = getSourceOntology().getPropertiesList().indexOf(source);
+    		targetIndex = getTargetOntology().getPropertiesList().indexOf(target);
+    	}
+    	if(sourceIndex != null && targetIndex != null) {
+    		if(source.isClass() && target.isClass()) {
+            	lwcClassExplanationMatrix[sourceIndex][targetIndex] = lwcSimilarityExplanation;
+    		} else if(source.isProp() && target.isProp()) {
+            	lwcPropertiesExplanationMatrix[sourceIndex][targetIndex] = lwcSimilarityExplanation;
+    		}
+    	}
+	}
+    
 	@Override
 	public AbstractMatcherParametersPanel getParametersPanel() {
 		if(parametersPanel == null){

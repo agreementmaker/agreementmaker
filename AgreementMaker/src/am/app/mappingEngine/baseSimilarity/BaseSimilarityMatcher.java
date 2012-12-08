@@ -17,6 +17,7 @@ import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.StringUtil.PorterStemmer;
 import am.app.ontology.Node;
 import am.app.ontology.profiling.OntologyProfiler;
+import am.extension.semanticExplanation.ExplanationNode;
 import am.utility.Pair;
 import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.SynsetType;
@@ -39,6 +40,35 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	private transient Normalizer norm2;
 	private transient Normalizer norm3;
 	
+	private ExplanationNode baseSimilarityExplanation = new ExplanationNode("BSM");
+	private ExplanationNode[][] bsmClassExplanationMatrix;
+	private ExplanationNode[][] bsmPropertiesExplanationMatrix;
+	
+	@Override
+	public ExplanationNode getExplanationNode() {
+		return baseSimilarityExplanation;
+	}
+	
+	@Override
+	public void setClassExplanationMatrix(int row, int col) {
+		bsmClassExplanationMatrix = new ExplanationNode[row][col];
+	}
+	
+	@Override
+	public void setPropertiesExplanationMatrix(int row, int col) {
+		bsmPropertiesExplanationMatrix = new ExplanationNode[row][col];
+	}
+	
+	@Override
+	public ExplanationNode[][] getClassExplanationMatrix() {
+		return bsmClassExplanationMatrix;
+	}
+	
+	@Override
+	public ExplanationNode[][] getPropertiesExplanationMatrix() {
+		return bsmPropertiesExplanationMatrix;
+	}
+
 	public BaseSimilarityMatcher() {
 		// warning, param is not available at the time of the constructor (when creating a matcher from the User Interface)
 		super(); initializeVariables();
@@ -194,6 +224,12 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 					prov.append("\n");
 					pmapping.setProvenance(prov.toString());
 				}
+				baseSimilarityExplanation = new ExplanationNode();
+				baseSimilarityExplanation.setVal(highestSimilarity);
+				baseSimilarityExplanation.setDescription("BSM");
+				baseSimilarityExplanation.setSource(source.getLocalName());
+				baseSimilarityExplanation.setTarget(target.getLocalName());
+				setExplanationMatrix(source, target);
 				return pmapping;
 			}
 		}
@@ -204,6 +240,30 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		 }
 	}
 	
+    /**
+     * @param source
+     * @param target
+     * Method to insert the ExplanationNode into the Class or Property Explanation Matrix at the appropriate location
+     */
+    private void setExplanationMatrix(Node source, Node target) {
+    	Integer sourceIndex = null;
+    	Integer targetIndex = null;
+    	if(getSourceOntology().getClassesList().contains(source) && getTargetOntology().getClassesList().contains(target)) {
+    		sourceIndex = getSourceOntology().getClassesList().indexOf(source);
+    		targetIndex = getTargetOntology().getClassesList().indexOf(target);
+    	} else if(getSourceOntology().getPropertiesList().contains(source) && getTargetOntology().getPropertiesList().contains(target)) {
+    		sourceIndex = getSourceOntology().getPropertiesList().indexOf(source);
+    		targetIndex = getTargetOntology().getPropertiesList().indexOf(target);
+    	}
+    	if(sourceIndex != null && targetIndex != null) {
+    		if(source.isClass() && target.isClass()) {
+            	bsmClassExplanationMatrix[sourceIndex][targetIndex] = baseSimilarityExplanation;
+    		} else if(source.isProp() && target.isProp()) {
+            	bsmPropertiesExplanationMatrix[sourceIndex][targetIndex] = baseSimilarityExplanation;
+    		}
+    	}
+	}
+    
 	/**
 	 * This is exactly the algorithm before ontology profiling.
 	 * @param source

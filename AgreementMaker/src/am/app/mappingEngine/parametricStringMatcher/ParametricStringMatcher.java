@@ -18,6 +18,7 @@ import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.ontology.Node;
 import am.app.similarity.StringSimilarityMeasure;
+import am.extension.semanticExplanation.ExplanationNode;
 import am.userInterface.MatchingProgressDisplay;
 
 import com.hp.hpl.jena.ontology.OntResource;
@@ -46,6 +47,35 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	
 	public ParametricStringMatcher() { super(); }
 	public ParametricStringMatcher( ParametricStringParameters p ) { super(p); }
+	
+	private ExplanationNode parametricSimilarityExplanation = new ExplanationNode("PSM");
+	private ExplanationNode[][] psmClassExplanationMatrix;
+	private ExplanationNode[][] psmPropertiesExplanationMatrix;
+	
+	@Override
+	public ExplanationNode getExplanationNode() {
+		return this.parametricSimilarityExplanation;
+	}
+	
+	@Override
+	public void setClassExplanationMatrix(int row, int col) {
+		this.psmClassExplanationMatrix = new ExplanationNode[row][col];
+	}
+	
+	@Override
+	public void setPropertiesExplanationMatrix(int row, int col) {
+		this.psmPropertiesExplanationMatrix = new ExplanationNode[row][col];
+	}
+	
+	@Override
+	public ExplanationNode[][] getClassExplanationMatrix() {
+		return this.psmClassExplanationMatrix;
+	}
+	
+	@Override
+	public ExplanationNode[][] getPropertiesExplanationMatrix() {
+		return this.psmPropertiesExplanationMatrix;
+	}
 	
 	@Override
 	protected void initializeVariables() {
@@ -451,7 +481,12 @@ public class ParametricStringMatcher extends AbstractMatcher {
 				if(first)	
 					provenanceString+="without preprocessing";
 			}
-			
+			parametricSimilarityExplanation = new ExplanationNode();
+			parametricSimilarityExplanation.setSource(source.getLocalName());
+			parametricSimilarityExplanation.setTarget(target.getLocalName());
+			parametricSimilarityExplanation.setVal(sim);
+			parametricSimilarityExplanation.setDescription("PSM");
+			setExplanationMatrix(source, target);
 			Mapping pmapping=new Mapping(source, target, sim);
 			if( param.storeProvenance && sim > param.threshold ) pmapping.setProvenance(provenanceString+"\n");
 			return pmapping;
@@ -460,7 +495,30 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		return null; // no similarity was found
 	}
 	
-	
+    /**
+     * @param source
+     * @param target
+     * Method to insert the ExplanationNode into the Class or Property Explanation Matrix at the appropriate location
+     */
+    private void setExplanationMatrix(Node source, Node target) {
+    	Integer sourceIndex = null;
+    	Integer targetIndex = null;
+    	if(getSourceOntology().getClassesList().contains(source) && getTargetOntology().getClassesList().contains(target)) {
+    		sourceIndex = getSourceOntology().getClassesList().indexOf(source);
+    		targetIndex = getTargetOntology().getClassesList().indexOf(target);
+    	} else if(getSourceOntology().getPropertiesList().contains(source) && getTargetOntology().getPropertiesList().contains(target)) {
+    		sourceIndex = getSourceOntology().getPropertiesList().indexOf(source);
+    		targetIndex = getTargetOntology().getPropertiesList().indexOf(target);
+    	}
+    	if(sourceIndex != null && targetIndex != null) {
+    		if(source.isClass() && target.isClass()) {
+            	this.psmClassExplanationMatrix[sourceIndex][targetIndex] = parametricSimilarityExplanation;
+    		} else if(source.isProp() && target.isProp()) {
+            	this.psmPropertiesExplanationMatrix[sourceIndex][targetIndex] = parametricSimilarityExplanation;
+    		}
+    	}
+	}
+    
 	public double performStringSimilarity(String sourceString, String targetString) {
 		
 		if(sourceString == null || targetString == null )

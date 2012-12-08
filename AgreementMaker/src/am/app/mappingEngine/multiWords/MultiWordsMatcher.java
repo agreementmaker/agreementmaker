@@ -26,6 +26,7 @@ import am.app.mappingEngine.StringUtil.AMStringWrapper;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.ontology.Node;
 import am.app.ontology.NodeHierarchy;
+import am.extension.semanticExplanation.ExplanationNode;
 
 import com.hp.hpl.jena.ontology.OntResource;
 import com.wcohen.ss.api.StringWrapper;
@@ -60,6 +61,35 @@ public class MultiWordsMatcher extends AbstractMatcher {
 	//provenance string vars here
 	String provenanceString;
 	String mWS;//multiword string that will be added to the provenance string
+	
+	private ExplanationNode vmmSimilarityExplanation = new ExplanationNode("VMM Explanation");
+	private ExplanationNode[][] vmmClassExplanationMatrix;
+	private ExplanationNode[][] vmmPropertiesExplanationMatrix;
+	
+	@Override
+	public ExplanationNode getExplanationNode() {
+		return vmmSimilarityExplanation;
+	}
+	
+	@Override
+	public void setClassExplanationMatrix(int row, int col) {
+		vmmClassExplanationMatrix = new ExplanationNode[row][col];
+	}
+	
+	@Override
+	public void setPropertiesExplanationMatrix(int row, int col) {
+		vmmPropertiesExplanationMatrix = new ExplanationNode[row][col];
+	}
+	
+	@Override
+	public ExplanationNode[][] getClassExplanationMatrix() {
+		return vmmClassExplanationMatrix;
+	}
+	
+	@Override
+	public ExplanationNode[][] getPropertiesExplanationMatrix() {
+		return vmmPropertiesExplanationMatrix;
+	}
 	
 	public MultiWordsMatcher() {
 		// warning, param is not available at the time of the constructor
@@ -482,8 +512,12 @@ public class MultiWordsMatcher extends AbstractMatcher {
 			 sim = tfidf.getSimilarity(sourceString, targetString);
 			
 		}
-		
-		
+		vmmSimilarityExplanation = new ExplanationNode();
+		vmmSimilarityExplanation.setSource(source.getLocalName());
+		vmmSimilarityExplanation.setTarget(target.getLocalName());
+		vmmSimilarityExplanation.setVal(sim);
+		vmmSimilarityExplanation.setDescription("VMM");
+		setExplanationMatrix(source, target);
 		Mapping pmapping=new Mapping(source, target, sim);
 		if(param.storeProvenance && sim > param.threshold){
 			provenanceString+="sim(\""+source+"\",\""+target+"\") = "+sim+"\n";
@@ -494,7 +528,30 @@ public class MultiWordsMatcher extends AbstractMatcher {
 		return pmapping;
 		
 	}
-	
+    /**
+     * @param source
+     * @param target
+     * Method to insert the ExplanationNode into the Class or Property Explanation Matrix at the appropriate location
+     */
+    private void setExplanationMatrix(Node source, Node target) {
+    	Integer sourceIndex = null;
+    	Integer targetIndex = null;
+    	if(getSourceOntology().getClassesList().contains(source) && getTargetOntology().getClassesList().contains(target)) {
+    		sourceIndex = getSourceOntology().getClassesList().indexOf(source);
+    		targetIndex = getTargetOntology().getClassesList().indexOf(target);
+    	} else if(getSourceOntology().getPropertiesList().contains(source) && getTargetOntology().getPropertiesList().contains(target)) {
+    		sourceIndex = getSourceOntology().getPropertiesList().indexOf(source);
+    		targetIndex = getTargetOntology().getPropertiesList().indexOf(target);
+    	}
+    	if(sourceIndex != null && targetIndex != null) {
+    		if(source.isClass() && target.isClass()) {
+            	vmmClassExplanationMatrix[sourceIndex][targetIndex] = vmmSimilarityExplanation;
+    		} else if(source.isProp() && target.isProp()) {
+            	vmmPropertiesExplanationMatrix[sourceIndex][targetIndex] = vmmSimilarityExplanation;
+    		}
+    	}
+	}
+    
 	public AbstractMatcherParametersPanel getParametersPanel() {
 		if(parametersPanel == null){
 			parametersPanel = new MultiWordsParametersPanel();

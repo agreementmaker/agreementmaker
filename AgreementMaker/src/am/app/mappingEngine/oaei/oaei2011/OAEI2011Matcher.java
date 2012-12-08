@@ -17,12 +17,13 @@ import am.app.Core;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.DefaultSelectionParameters;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
-import am.app.mappingEngine.AbstractMatcher.MatcherCategory;
 import am.app.mappingEngine.Combination.CombinationParameters;
 import am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralParameters;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
@@ -47,6 +48,8 @@ import am.app.ontology.profiling.ProfilerRegistry;
 import am.app.ontology.profiling.classification.OntologyClassifier;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
+import am.extension.semanticExplanation.ExplanationNode;
+import am.extension.semanticExplanation.SemanticExpln;
 import am.userInterface.MatchingProgressDisplay;
 
 import com.hp.hpl.jena.ontology.OntProperty;
@@ -85,6 +88,28 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	
 	private Map<SubMatcherID, AbstractMatcher> matchersByID = new HashMap<SubMatcherID, AbstractMatcher>();
 	
+
+	private ExplanationNode[][] bsmClassExplanationMatrix;
+	private ExplanationNode[][] bsmPropertiesExplanationMatrix;
+	private ExplanationNode[][] psmClassExplanationMatrix;
+	private ExplanationNode[][] psmPropertiesExplanationMatrix;
+	private ExplanationNode[][] vmmClassExplanationMatrix;
+	private ExplanationNode[][] vmmPropertiesExplanationMatrix;
+	private ExplanationNode[][] lsmClassExplanationMatrix;
+	private ExplanationNode[][] lsmPropertiesExplanationMatrix;
+	private ExplanationNode[][] lwcClassExplanationMatrix;
+	private ExplanationNode[][] lwcPropertiesExplanationMatrix;
+	private ExplanationNode[][] iismClassExplanationMatrix;
+	private ExplanationNode[][] iismPropertiesExplanationMatrix;
+	
+	private ExplanationNode bsmExplanationNode = new ExplanationNode("BSM");
+	private ExplanationNode psmExplanationNode = new ExplanationNode("PSM");
+	private ExplanationNode vmmExplanationNode = new ExplanationNode("VMM");
+	private ExplanationNode lsmExplanationNode = new ExplanationNode("LSM");
+	private ExplanationNode lwcExplanationNode;
+	private ExplanationNode iismExplanationNode;
+
+
 	/** *****************************************************************************************************
 	 ************************ Init structures*************************************
 	 * *******************************************************************************************************
@@ -181,8 +206,108 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		//throw new Exception("Automatic configuration not implemented.");
 	}
 	
+	private void workAfterSelection(Alignment<Mapping> alignmentMappings) {
+
+    	for(Mapping m: alignmentMappings) {
+    		if(m.getEntity1().isClass() && m.getEntity2().isClass()) {
+    			if(bsmClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
+    				bsmExplanationNode = bsmClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
+    			} else {
+    				bsmExplanationNode.setVal(0.0);
+    			}
+    			if(psmClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
+    				psmExplanationNode = psmClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
+    			} else {
+    				psmExplanationNode.setVal(0.0);
+    			}
+    			if(vmmClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
+        			vmmExplanationNode = vmmClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
+    			} else {
+    				vmmExplanationNode.setVal(0.0);
+    			}
+    			if(lsmClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
+    				lsmExplanationNode = lsmClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
+    			} else {
+    				lsmExplanationNode.setVal(0.0);
+    			}
+    			lwcExplanationNode = new ExplanationNode("LWC");
+    			iismExplanationNode = new ExplanationNode("IISM");
+    			if(lwcClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
+    				
+    				lwcExplanationNode = lwcClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
+    			} else {
+    				lwcExplanationNode.setVal(0.0);
+    			}
+    			if(iismClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
+    				iismExplanationNode = iismClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
+    			} else {
+    				iismExplanationNode.setVal(1.0);
+    			}
+    			lwcExplanationNode.setChildren(new ArrayList<ExplanationNode>());
+    			lwcExplanationNode.addChild(bsmExplanationNode);
+    			lwcExplanationNode.addChild(lsmExplanationNode);
+    			lwcExplanationNode.addChild(psmExplanationNode);
+    			lwcExplanationNode.addChild(vmmExplanationNode);
+    			iismExplanationNode.setChildren(new ArrayList<ExplanationNode>());
+
+    			iismExplanationNode.addChild(lwcExplanationNode);
+    			SemanticExpln.getInstance().getClassExplanationMatrix()[m.getEntity1().getIndex()][m.getEntity2().getIndex()] = lwcExplanationNode;
+    			SemanticExpln.getInstance().getClassExplanationMatrix()[m.getEntity1().getIndex()][m.getEntity2().getIndex()].describeTopDown();
+    		} else if(m.getEntity1().isProp() && m.getEntity2().isProp()) {
+    			if(bsmPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
+    				bsmExplanationNode = bsmPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
+    			} else {
+    				bsmExplanationNode.setVal(0.0);
+    			}
+    			if(psmPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
+    				psmExplanationNode = psmPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
+    			} else {
+    				psmExplanationNode.setVal(0.0);
+    			}
+    			if(vmmPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
+        			vmmExplanationNode = vmmPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
+    			} else {
+    				vmmExplanationNode.setVal(0.0);
+    			}
+    			if(lsmPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
+    				lsmExplanationNode = lsmPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
+    			} else {
+    				lsmExplanationNode.setVal(0.0);
+    			}
+    			lwcExplanationNode = new ExplanationNode("LWC");
+    			iismExplanationNode = new ExplanationNode("IISM");
+    			if(lwcPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
+    				lwcExplanationNode = lwcPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
+    			} else {
+    				lsmExplanationNode.setVal(0.0);
+    			}
+    			if(iismPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
+    				iismExplanationNode = iismPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
+    			} else {
+    				iismExplanationNode.setVal(1.0);
+    			}
+    			lwcExplanationNode.setChildren(new ArrayList<ExplanationNode>());
+    			lwcExplanationNode.addChild(bsmExplanationNode);
+    			lwcExplanationNode.addChild(lsmExplanationNode);
+    			lwcExplanationNode.addChild(psmExplanationNode);
+    			lwcExplanationNode.addChild(vmmExplanationNode);
+    			
+    			iismExplanationNode.setChildren(new ArrayList<ExplanationNode>());
+    			iismExplanationNode.addChild(lwcExplanationNode);
+    			SemanticExpln.getInstance().getPropertiesExplanationMatrix()[m.getEntity1().getIndex()][m.getEntity2().getIndex()] = lwcExplanationNode;
+   
+    			SemanticExpln.getInstance().getPropertiesExplanationMatrix()[m.getEntity1().getIndex()][m.getEntity2().getIndex()].describeTopDown();
+    			
+    		}
+    	}
+	}
 	private AbstractMatcher runGeneralPurpose() throws Exception {
 		
+    	Ontology source = getSourceOntology();
+    	Ontology target = getTargetOntology();
+    	SemanticExpln.getInstance().setClassExplanationMatrix(source.getTreeCount(), target.getTreeCount());  
+    	SemanticExpln.getInstance().setPropertiesExplanationMatrix(source.getTreeCount(), target.getTreeCount());    	
+    	
 		// Build the lexicons.
 		LexiconBuilderParameters lexParam = new LexiconBuilderParameters();
 		lexParam.sourceOntology = sourceOntology;
@@ -264,10 +389,12 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			BaseSimilarityParameters bsmParam = 
 					new BaseSimilarityParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 			bsmParam.useDictionary = false;
-			
+			bsm.setClassExplanationMatrix(sourceOntology.getTreeCount(), targetOntology.getTreeCount());
+			bsm.setPropertiesExplanationMatrix(sourceOntology.getTreeCount(), targetOntology.getTreeCount());
 			setupSubMatcher(bsm, bsmParam);
 			runSubMatcher(bsm, "BSM 1/6");
-			
+			bsmClassExplanationMatrix = bsm.getClassExplanationMatrix();
+			bsmPropertiesExplanationMatrix = bsm.getPropertiesExplanationMatrix();
 			lwcInputMatchers.add(bsm);			
 		}
 		
@@ -292,8 +419,11 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			psmParam.redistributeWeights = true;
 			
 			setupSubMatcher(psm, psmParam);
+			psm.setClassExplanationMatrix(sourceOntology.getTreeCount(), targetOntology.getTreeCount());
+			psm.setPropertiesExplanationMatrix(sourceOntology.getTreeCount(), targetOntology.getTreeCount());
 			runSubMatcher(psm, "PSM 2/6");
-			
+			psmClassExplanationMatrix = psm.getClassExplanationMatrix();
+			psmPropertiesExplanationMatrix = psm.getPropertiesExplanationMatrix();
 			lwcInputMatchers.add(psm);			
 		}
 		
@@ -316,8 +446,11 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			vmmParam.useLexiconSynonyms = true; // May change later.
 			
 			setupSubMatcher(vmm, vmmParam);
+			vmm.setClassExplanationMatrix(sourceOntology.getTreeCount(), targetOntology.getTreeCount());
+			vmm.setPropertiesExplanationMatrix(sourceOntology.getTreeCount(), targetOntology.getTreeCount());
 			runSubMatcher(vmm, "VMM 3/6");
-			
+			vmmClassExplanationMatrix = vmm.getClassExplanationMatrix();
+			vmmPropertiesExplanationMatrix = vmm.getPropertiesExplanationMatrix();
 			lwcInputMatchers.add(vmm);
 		}
 		
@@ -330,8 +463,11 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			lsmParam.useSynonymTerms = false;
 			
 			setupSubMatcher(lsm, lsmParam);
+			lsm.setClassExplanationMatrix(sourceOntology.getTreeCount(), targetOntology.getTreeCount());
+			lsm.setPropertiesExplanationMatrix(sourceOntology.getTreeCount(), targetOntology.getTreeCount());
 			runSubMatcher(lsm, "LSM 4/6");
-			
+			lsmClassExplanationMatrix = lsm.getClassExplanationMatrix();
+			lsmPropertiesExplanationMatrix = lsm.getPropertiesExplanationMatrix();
 			lwcInputMatchers.add(lsm);
 		}
 		
@@ -350,8 +486,11 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			lwcParam.quality = QualityMetricRegistry.LOCAL_CONFIDENCE;
 			
 			setupSubMatcher(lwc, lwcParam);
+			lwc.setClassExplanationMatrix(sourceOntology.getTreeCount(), targetOntology.getTreeCount());
+			lwc.setPropertiesExplanationMatrix(sourceOntology.getTreeCount(), targetOntology.getTreeCount());
 			runSubMatcher(lwc, "LWC 5/6");
-			
+			lwcClassExplanationMatrix = lwc.getClassExplanationMatrix();
+			lwcPropertiesExplanationMatrix = lwc.getPropertiesExplanationMatrix();
 		}
 		
 		if( !isCancelled() ) {
@@ -374,8 +513,12 @@ public class OAEI2011Matcher extends AbstractMatcher {
 			iismParam.setUseSuperclasses(true);
 			
 			setupSubMatcher(iism, iismParam);
+			iism.setClassExplanationMatrix(sourceOntology.getTreeCount(), targetOntology.getTreeCount());
+			iism.setPropertiesExplanationMatrix(sourceOntology.getTreeCount(), targetOntology.getTreeCount());
 			runSubMatcher(iism, "IISM 6/6");
-			
+			iismClassExplanationMatrix = iism.getClassExplanationMatrix();
+			iismPropertiesExplanationMatrix = iism.getPropertiesExplanationMatrix();
+			workAfterSelection(iism.getAlignment());
 			return iism;
 		}
 		

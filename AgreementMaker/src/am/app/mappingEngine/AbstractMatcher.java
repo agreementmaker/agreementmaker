@@ -27,6 +27,7 @@ import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.mappingEngine.threaded.AbstractMatcherRunner;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.extension.semanticExplanation.ExplanationNode;
 import am.userInterface.MatchingProgressDisplay;
 
 /**
@@ -231,6 +232,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		param = params_new;
 	}
 
+	
 	/**
 	 * This function is very important.  It is used by all the constructors to initialize variables when the object is first created.
 	 * 
@@ -367,7 +369,27 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 
 	//***************EMPTY TEMPLATE METHODS TO ALLOW USER TO ADD HIS OWN CODE****************************************
+	
+	public ExplanationNode getExplanationNode() {
+		return null;
+	}
+	
+	public ExplanationNode[][] getClassExplanationMatrix() {
+		return null;
+	}
 
+	public void setClassExplanationMatrix(int row,int col) {
+		
+	}
+
+	public ExplanationNode[][] getPropertiesExplanationMatrix() {
+		return null;
+	}
+
+	public void setPropertiesExplanationMatrix(int row,int col) {
+		
+	}
+	
 	//reset structures, this is important because anytime we invoke the match() for the secondtime (when we change some values in the table for example)
 	//we have to reset all structures. It's the first method that is invoked, when overriding call super.beforeAlignOperations(),
 	//IMPORTANT it also takes care of initializing time
