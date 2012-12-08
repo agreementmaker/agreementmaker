@@ -5,15 +5,13 @@ import java.util.HashMap;
 
 import am.app.ontology.Node;
 
-
-
 public class CustomNode{
 	Node n;
 	String localName;
 	int depth;
 	ArrayList<Node> ancestorList;
 	HashMap<CustomNode, Float> similarNodeWeights;
-	double cohesion;
+	double cohesionofBlock;														//Represents the value of cohesion for the block of which this CustomNode is the first element
 	public int indexOfNode;
 	public int indexOfBlock;
 	
