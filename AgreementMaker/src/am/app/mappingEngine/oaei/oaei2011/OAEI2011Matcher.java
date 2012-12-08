@@ -225,30 +225,33 @@ public class OAEI2011Matcher extends AbstractMatcher {
     				bsmExplanationNode = bsmClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
     				bsmExplanationNode.setVal(pruneValues(bsmExplanationNode.getVal()));
     			} else {
+    				bsmExplanationNode = new ExplanationNode("BSM");
     				bsmExplanationNode.setVal(0.0);
     			}
     			if(psmClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
     				psmExplanationNode = psmClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
     				psmExplanationNode.setVal(pruneValues(psmExplanationNode.getVal()));
     			} else {
+    				psmExplanationNode = new ExplanationNode("PSM");
     				psmExplanationNode.setVal(0.0);
     			}
     			if(vmmClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
         			vmmExplanationNode = vmmClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
     				vmmExplanationNode.setVal(pruneValues(vmmExplanationNode.getVal()));
     			} else {
+    				vmmExplanationNode = new ExplanationNode("VMM");
     				vmmExplanationNode.setVal(0.0);
     			}
     			if(lsmClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
     				lsmExplanationNode = lsmClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
     				lsmExplanationNode.setVal(pruneValues(lsmExplanationNode.getVal()));
     			} else {
+    				lsmExplanationNode = new ExplanationNode("LSM");
     				lsmExplanationNode.setVal(0.0);
     			}
     			lwcExplanationNode = new ExplanationNode("LWC");
     			iismExplanationNode = new ExplanationNode("IISM");
-    			if(lwcClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
-    				
+    			if(lwcClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {		
     				lwcExplanationNode = lwcClassExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
     				lwcExplanationNode.setVal(pruneValues(lwcExplanationNode.getVal()));
     			} else {
@@ -276,24 +279,28 @@ public class OAEI2011Matcher extends AbstractMatcher {
     				bsmExplanationNode = bsmPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
     				bsmExplanationNode.setVal(pruneValues(bsmExplanationNode.getVal()));
     			} else {
+    				bsmExplanationNode = new ExplanationNode("BSM");
     				bsmExplanationNode.setVal(0.0);
     			}
     			if(psmPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
     				psmExplanationNode = psmPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
     				psmExplanationNode.setVal(pruneValues(psmExplanationNode.getVal()));
     			} else {
+    				psmExplanationNode = new ExplanationNode("PSM");
     				psmExplanationNode.setVal(0.0);
     			}
     			if(vmmPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
         			vmmExplanationNode = vmmPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
     				vmmExplanationNode.setVal(pruneValues(vmmExplanationNode.getVal()));
     			} else {
+    				vmmExplanationNode = new ExplanationNode("VMM");
     				vmmExplanationNode.setVal(0.0);
     			}
     			if(lsmPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()] != null) {
     				lsmExplanationNode = lsmPropertiesExplanationMatrix[m.getEntity1().getIndex()][m.getEntity2().getIndex()];
     				lsmExplanationNode.setVal(pruneValues(lsmExplanationNode.getVal()));
     			} else {
+    				lsmExplanationNode = new ExplanationNode("LSM");
     				lsmExplanationNode.setVal(0.0);
     			}
     			lwcExplanationNode = new ExplanationNode("LWC");

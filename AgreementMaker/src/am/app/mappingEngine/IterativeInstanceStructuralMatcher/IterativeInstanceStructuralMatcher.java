@@ -226,6 +226,10 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 			for (int j = 0; j < classSimilarities[0].length; j++) {
 				sim = classSimilarities[i][j].getSimilarity();
 				if(sim > classesMatrix.getSimilarity(i, j)){
+					iismSimilarityExplanation = new ExplanationNode();
+					iismSimilarityExplanation.setVal(sim);
+					iismSimilarityExplanation.setDescription("IISM");
+	            	iismClassExplanationMatrix[i][j] = iismSimilarityExplanation;
 					Mapping m = new Mapping( sourceClassList.get(i), targetClassList.get(j), sim );
 					m.setProvenance(COMBINATION);
 					classesMatrix.set(i, j, m);
@@ -237,6 +241,10 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 				//System.out.print(sourcePropList.get(i)+" "+targetPropList.get(j));
 				sim = propSimilarities[i][j].getSimilarity();
 				if(sim > propertiesMatrix.getSimilarity(i, j)){
+					iismSimilarityExplanation = new ExplanationNode();
+					iismSimilarityExplanation.setVal(sim);
+					iismSimilarityExplanation.setDescription("IISM");
+	            	iismPropertiesExplanationMatrix[i][j] = iismSimilarityExplanation;
 					Mapping m = new Mapping( sourcePropList.get(i), targetPropList.get(j), sim );
 					m.setProvenance(COMBINATION);
 					propertiesMatrix.set(i, j, m);
@@ -917,6 +925,10 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 								int c1 = findSourceIndex(aList.get(1));
 								int c2 = findTargetIndex(bList.get(1));
 								if(i1==-1 || i2==-1) continue;
+								iismSimilarityExplanation = new ExplanationNode();
+								iismSimilarityExplanation.setVal(1.0d);
+								iismSimilarityExplanation.setDescription("IISM");
+				            	iismClassExplanationMatrix[c1][c2] = iismSimilarityExplanation;
 								Mapping m = new Mapping(sourceClassList.get(c1), targetClassList.get(c2), 1.0d);
 								m.setProvenance(UNION_CLASSES);
 								classesMatrix.set(c1, c2, m);
@@ -934,6 +946,10 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 								if(sim1 < 0.6 && sim2 < 0.6d){
 									int c1 = findSourceIndex(aList.get(1));
 									int c2 = findTargetIndex(bList.get(0));
+									iismSimilarityExplanation = new ExplanationNode();
+									iismSimilarityExplanation.setVal(1.0d);
+									iismSimilarityExplanation.setDescription("IISM");
+					            	iismClassExplanationMatrix[c1][c2] = iismSimilarityExplanation;
 									Mapping m = new Mapping(sourceClassList.get(c1), targetClassList.get(c2), 1.0d);
 									m.setProvenance(UNION_CLASSES);
 									classesMatrix.set(c1, c2, m);
@@ -956,6 +972,10 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 							if(sim1 < 0.6d && sim2 < 0.6d){
 								int c1 = findSourceIndex(aList.get(0));
 								int c2 = findTargetIndex(bList.get(1));
+								iismSimilarityExplanation = new ExplanationNode();
+								iismSimilarityExplanation.setVal(1.0d);
+								iismSimilarityExplanation.setDescription("IISM");
+				            	iismClassExplanationMatrix[c1][c2] = iismSimilarityExplanation;
 								Mapping m = new Mapping(sourceClassList.get(c1), targetClassList.get(c2), 1.0d);
 								m.setProvenance(UNION_CLASSES);
 								classesMatrix.set(c1, c2, m);
@@ -974,6 +994,10 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 								if(sim1 < 0.6d && sim2 < 0.6d){
 									int c1 = findSourceIndex(aList.get(0));
 									int c2 = findTargetIndex(bList.get(0));
+									iismSimilarityExplanation = new ExplanationNode();
+									iismSimilarityExplanation.setVal(1.0d);
+									iismSimilarityExplanation.setDescription("IISM");
+					            	iismClassExplanationMatrix[c1][c2] = iismSimilarityExplanation;
 									Mapping m = new Mapping(sourceClassList.get(c1), targetClassList.get(c2), 1.0d);
 									m.setProvenance(UNION_CLASSES);
 									classesMatrix.set(c1, c2, m);
@@ -1584,6 +1608,10 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 						Node target = get(targetPropList, uri2);
 						//System.out.println(target);
 						if (source != null && target != null) {
+							iismSimilarityExplanation = new ExplanationNode();
+							iismSimilarityExplanation.setVal(1.0d);
+							iismSimilarityExplanation.setDescription("IISM");
+			            	iismClassExplanationMatrix[sourcePropList.indexOf(source)][targetPropList.indexOf(target)] = iismSimilarityExplanation;
 							Mapping m = new Mapping(source, target, 1.0d);
 							m.setProvenance(RECURSIVE_INDIVIDUALS);
 							propertiesMatrix.set(sourcePropList.indexOf(source),  targetPropList.indexOf(target), m);
