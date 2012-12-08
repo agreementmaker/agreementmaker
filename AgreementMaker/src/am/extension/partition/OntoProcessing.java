@@ -38,10 +38,14 @@ import am.extension.partition.CustomNode;
 
 public class OntoProcessing {
 	
-	public static double percentage = 0.2;
+	public static double percentage = 0.1;
 	
 	public static final double threshold = 0.8;
 	public static final double proximityThreshold = 0.6;
+	public double globalHighestCohesion = 0.0;
+	public int globalHighestCohesionIndex = 0;
+	public int iterationOfBlockCreation = 0;
+	
 
 	/**
 	 * @param args
@@ -208,7 +212,7 @@ public class OntoProcessing {
           double linkWeight = 0;
           CustomNode first;
           CustomNode second;
-
+ 
           for (int i=0;i<cn.size();i++)																	//For number of blocks created from original ontology
           {	  
         	  for(int j=0;j<cn.size();j++)																//For each element within that block
@@ -279,9 +283,26 @@ public class OntoProcessing {
 	{
 		ArrayList<ArrayList<CustomNode>> a = new ArrayList<ArrayList<CustomNode>>(cns.size());
 		ArrayList<CustomNode> cn ;
+		ArrayList<CustomNode> temp = new ArrayList<CustomNode>();
+		double tempCoh = 0.0;
+        globalHighestCohesion = 0.0;
+		globalHighestCohesionIndex=0;
+		iterationOfBlockCreation = 0;
 		for(int i=0;i<cns.size();i++)
 		{
 			cn = new ArrayList<CustomNode>();
+			temp.add(cns.get(i));
+			 tempCoh = calculateCohesivenesswithnBlock(temp);
+			 cns.get(i).cohesion  = tempCoh;
+			 
+			 
+			 if(tempCoh>=globalHighestCohesion)
+				{	
+					globalHighestCohesion = tempCoh;
+					globalHighestCohesionIndex=i;				    
+				}	
+				else 
+					;//Do nothing
 			cn.add(cns.get(i));
 			a.add(cn);		
 		}
@@ -292,7 +313,7 @@ public class OntoProcessing {
 	
 	public void mergeBlocks(ArrayList<ArrayList<CustomNode>> a)
 	{
-		double coh = 0, temp = 0, coupling = 0;
+		double coh = 0, tempCoh = 0, coupling = 0, temp;
 		int index = 0, indexofcoup = 0;
 		int size = a.size();
 		int block_size = 1;
@@ -306,22 +327,9 @@ public class OntoProcessing {
 				break;
 			System.out.println(a.size());
 			temp_blocksize = a.size();
-			
-			for(int i=0;i<a.size();i++)
-			{
-				temp = calculateCohesivenesswithnBlock(a.get(i));
-				System.out.println("Cohesive value returned from calCohesive fn :"+temp);
-				//coh = temp>coh?temp:coh;
-				System.out.println("Value of coh :"+coh);
-				if(temp>=coh)
-				{	
-					coh = temp;
-					index=i;				    
-				}	
-				else 
-					index=index;
-				  
-			}
+			 
+			iterationOfBlockCreation++;
+			index = globalHighestCohesionIndex;
 			
 			System.out.println(coh+"Value of index after calculating Cohesiveness of all the blocks="+index);
 			int run = 0;
@@ -364,6 +372,11 @@ public class OntoProcessing {
 			
 			a = merge(a,index,indexofcoup);
 			a.remove(indexofcoup);
+			//Reusing tempCoh
+			tempCoh = 0;
+			for(int l=0;l<a.size();l++)
+				if(a.get(l).get(0).cohesion > tempCoh)
+				        globalHighestCohesionIndex = l;		
 			
 			for(int x=0; x<a.size(); x++)
 			{	
@@ -384,13 +397,18 @@ public class OntoProcessing {
 	public ArrayList<ArrayList<CustomNode>> merge(ArrayList<ArrayList<CustomNode>> a,int i, int j)
 	{
 		System.out.println(i+"a"+j);
+		double tempCoh = 0.0;
 		for(int k=0;k<a.get(j).size();k++)
 		{	
 			//System.out.println(a.get(i));
 			System.out.println(a.get(j).get(k));
 			a.get(i).add(a.get(j).get(k));
 		}
+		tempCoh =  calculateCohesivenesswithnBlock(a.get(i));
+		a.get(i).get(0).cohesion = tempCoh;
 		
+			    
+
 		return a;
 	}
 	
@@ -584,8 +602,8 @@ public class OntoProcessing {
 		Ontology target = OntoTreeBuilder.loadOWLOntology("C:\\Users\\KRISHNA DAS\\Desktop\\AgreementMaker\\ontologies\\OAEI2010_OWL_RDF\\Benchmark Track\\205\\onto.rdf"); // update the path to your own
 
 		
-		DisplayOntMappings.openOntology("C:\\Academic\\Ist Semester\\Data and Web Semantics\\BigOntolgies\\oaei2012_FMA_whole_ontology.owl");
-		DisplayOntMappings.openOntology("C:\\Academic\\Ist Semester\\Data and Web Semantics\\BigOntolgies\\oaei2012_NCI_whole_ontology.owl");
+	//	DisplayOntMappings.openOntology("C:\\Academic\\Ist Semester\\Data and Web Semantics\\BigOntolgies\\oaei2012_FMA_whole_ontology.owl");
+	//	DisplayOntMappings.openOntology("C:\\Academic\\Ist Semester\\Data and Web Semantics\\BigOntolgies\\oaei2012_NCI_whole_ontology.owl");
 		
 		//OntoProcessing.traverseOntology(ontology1);
 		
