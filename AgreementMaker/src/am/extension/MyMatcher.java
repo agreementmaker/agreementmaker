@@ -124,16 +124,8 @@ public class MyMatcher extends AbstractMatcher {
 
 		else if ((sourceMap.containsKey("label")&& targetMap.containsKey("label") && 
 					sourceMap.get("label").equals(targetMap.get("label")))
-				|| (sourceMap.containsKey("label")&& targetMap.containsKey("comment") && 
-						sourceMap.get("label").equals(targetMap.get("comment")))
 				|| (sourceMap.containsKey("label")&& targetMap.containsKey("name") && 
-						sourceMap.get("label").equals(targetMap.get("name")))
-				|| (sourceMap.containsKey("comment") && targetMap.containsKey("label") && 
-						sourceMap.get("comment").equals(targetMap.get("label")))
-				|| (sourceMap.containsKey("comment") && targetMap.containsKey("name") && 
-						sourceMap.get("comment").equals(targetMap.get("name")))
-				|| (sourceMap.containsKey("comment") && targetMap.containsKey("comment") && 
-						sourceMap.get("comment").equals(targetMap.get("comment")))) {
+						sourceMap.get("label").equals(targetMap.get("name"))) ){
 			if (finalSimilarity < .9)
 				finalSimilarity = 0.9;
 
@@ -189,16 +181,80 @@ public class MyMatcher extends AbstractMatcher {
     private double findStringSimilarity(Map<String, String> sourceMap, Map<String, String> targetMap) {
         double levenshteinSimilarity = 0;
         double jarowinglerSimilarity = 0;
+        double tempVal = 0;
         int divisor = 0;
 
        
+       /* Phase 2.  
+        
         if (sourceMap.containsKey("name") && targetMap.containsKey("name")) {
-            levenshteinSimilarity += 2 * levenshteinStringSimilarity(sourceMap.get("name"), targetMap.get("name"));
-            divisor += 2;
+            tempVal= levenshteinStringSimilarity(sourceMap.get("name"), targetMap.get("name"));
+            if(levenshteinSimilarity < tempVal)
+            	levenshteinSimilarity = tempVal;
         }
         if (sourceMap.containsKey("label") && targetMap.containsKey("label")) {
-            levenshteinSimilarity += 2 * levenshteinStringSimilarity(sourceMap.get("label"), targetMap.get("label"));
-            divisor += 2;
+            tempVal = levenshteinStringSimilarity(sourceMap.get("label"), targetMap.get("label"));
+            if(levenshteinSimilarity < tempVal)
+            	levenshteinSimilarity = tempVal;
+        }
+
+        if (sourceMap.containsKey("name") && targetMap.containsKey("label")) {
+            tempVal = levenshteinStringSimilarity(sourceMap.get("name"), targetMap.get("label"));
+            if(levenshteinSimilarity < tempVal)
+            	levenshteinSimilarity = tempVal;
+        }
+
+        if (sourceMap.containsKey("label") && targetMap.containsKey("name")) {
+            tempVal = levenshteinStringSimilarity(sourceMap.get("label"), targetMap.get("name"));
+            if(levenshteinSimilarity < tempVal)
+            	levenshteinSimilarity = tempVal;
+        }
+        
+        
+//		Phase 3
+        
+
+//      if (sourceMap.containsKey("comment") && targetMap.containsKey("comment")) {
+//      tempVal = levenshteinStringSimilarity(sourceMap.get("comment"), targetMap.get("comment"));
+//      if(levenshteinSimilarity < tempVal)
+//      	levenshteinSimilarity = tempVal;
+//  	}       
+//        if (sourceMap.containsKey("name") && targetMap.containsKey("comment")) {
+//            tempVal = levenshteinStringSimilarity(sourceMap.get("name"), targetMap.get("comment"));
+//            if(levenshteinSimilarity < tempVal)
+//            	levenshteinSimilarity = tempVal;
+//        }
+//
+//        if (sourceMap.containsKey("label") && targetMap.containsKey("comment")) {
+//            tempVal = levenshteinStringSimilarity(sourceMap.get("label"), targetMap.get("comment"));
+//            if(levenshteinSimilarity < tempVal)
+//            	levenshteinSimilarity = tempVal;
+//        }
+//
+//        if (sourceMap.containsKey("comment") && targetMap.containsKey("name")) {
+//            tempVal = levenshteinStringSimilarity(sourceMap.get("comment"), targetMap.get("name"));
+//            if(levenshteinSimilarity < tempVal)
+//            	levenshteinSimilarity = tempVal;
+//        }
+//        if (sourceMap.containsKey("comment") && targetMap.containsKey("label")) {
+//            tempVal = levenshteinStringSimilarity(sourceMap.get("comment"), targetMap.get("label"));
+//            if(levenshteinSimilarity < tempVal)
+//            	levenshteinSimilarity = tempVal;
+//        }
+
+        /* */
+        
+        
+        
+        /** backing up code- Phase 1
+         */
+            if (sourceMap.containsKey("name") && targetMap.containsKey("name")) {
+            levenshteinSimilarity +=levenshteinStringSimilarity(sourceMap.get("name"), targetMap.get("name"));
+            divisor ++;
+        }
+        if (sourceMap.containsKey("label") && targetMap.containsKey("label")) {
+            levenshteinSimilarity +=  levenshteinStringSimilarity(sourceMap.get("label"), targetMap.get("label"));
+            divisor ++;
         }
         if (sourceMap.containsKey("comment") && targetMap.containsKey("comment")) {
             levenshteinSimilarity += 2 * levenshteinStringSimilarity(sourceMap.get("comment"), targetMap.get("comment"));
@@ -231,8 +287,12 @@ public class MyMatcher extends AbstractMatcher {
             levenshteinSimilarity += levenshteinStringSimilarity(sourceMap.get("comment"), targetMap.get("label"));
             divisor++;
         }
-
+		
         levenshteinSimilarity = levenshteinSimilarity / divisor;
+	
+        /* */
+        
+        
         
         levenshteinSimilarity = pruneValues(levenshteinSimilarity);
         if(levenshteinSimilarity == 0.0)
@@ -240,6 +300,15 @@ public class MyMatcher extends AbstractMatcher {
         levenshteinExplanation.setVal(levenshteinSimilarity);
         
         levenshteinExplanation.setDescription("Levenshtein Distance");
+        
+        
+        
+        
+        /*
+         * Jaro Winkler
+         */
+        
+        
         
         divisor = 0;
         if (sourceMap.containsKey("name") && targetMap.containsKey("name")) {
@@ -283,6 +352,10 @@ public class MyMatcher extends AbstractMatcher {
         }
 
         jarowinglerSimilarity = jarowinglerSimilarity / divisor;
+        
+        
+        
+        
         jarowinglerSimilarity = pruneValues(jarowinglerSimilarity);
         if(jarowinglerSimilarity == 0.0)
         	jarowinglerSimilarity =.012;
@@ -295,7 +368,7 @@ public class MyMatcher extends AbstractMatcher {
          * in the ratio of Levenshtein > Jaro-Wingler So, the
          * corresponding weight-age was given while calculating the mean.
          */
-        double finalsimilarity = pruneValues((3 * levenshteinSimilarity + jarowinglerSimilarity) / 4);
+        double finalsimilarity = pruneValues((2 * levenshteinSimilarity + jarowinglerSimilarity) / 3);
         
         stringSimilarityExplanation.addChild(jarowinglerExplanation);
         stringSimilarityExplanation.addChild(levenshteinExplanation);
