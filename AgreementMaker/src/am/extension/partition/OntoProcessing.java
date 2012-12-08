@@ -45,7 +45,8 @@ public class OntoProcessing {
 	public double globalHighestCohesion = 0.0;
 	public int globalHighestCohesionIndex = 0;
 	public int iterationOfBlockCreation = 0;
-	
+	public CouplingTracker[][] couplingTracker= null;
+	public static AncestorTracker[][] ancestorTracker = null;
 
 	/**
 	 * @param args
@@ -223,7 +224,7 @@ public class OntoProcessing {
 	                  second = cn.get(j);
 	                  
 	                  //System.out.println("Calculating link weight for "+first.localName +" and "+second.localName);
-	                  linkWeight += 2*(getCommonAncestor(first,second).getDepth()+1)/(double)(first.n.getDepth()+1+second.n.getDepth()+1);
+	                  linkWeight += (2*ancestorTracker[first.indexOfNode][second.indexOfNode].commonAncestor.getDepth()+1)/(double)(first.n.getDepth()+1+second.n.getDepth()+1);
 	                  //System.out.println("Linkweight after iteration #"+(j+1)+" is "+linkWeight );
         		  }
 
@@ -235,7 +236,7 @@ public class OntoProcessing {
     }
 
 
-	public double calculateCoupling(ArrayList<CustomNode> cns1,ArrayList<CustomNode> cns2)
+	public static double calculateCoupling(ArrayList<CustomNode> cns1,ArrayList<CustomNode> cns2)
 	{
 	      double cohesive_val;
           double linkWeight = 0;
@@ -254,7 +255,7 @@ public class OntoProcessing {
 		              
 		              //System.out.println("Nr :"+2*(getCommonAncestor(first,second).getDepth()));
 		              //System.out.println("Dr :"+(first.n.getDepth())+(second.n.getDepth()));
-		              double linkW = 2*(getCommonAncestor(first,second).getDepth()+1)/(double)(first.n.getDepth()+1+second.n.getDepth()+1);
+		              double linkW = 2*(ancestorTracker[first.indexOfNode][second.indexOfNode].commonAncestor.getDepth()+1)/(double)(first.n.getDepth()+1+second.n.getDepth()+1)/(double)(first.n.getDepth()+1+second.n.getDepth()+1);
 		              //linkWeight += (2*(getCommonAncestor(first,second).getDepth()))/((first.n.getDepth())+(second.n.getDepth()));
 		              linkWeight+=linkW;
         		  }
@@ -284,6 +285,7 @@ public class OntoProcessing {
 		ArrayList<ArrayList<CustomNode>> a = new ArrayList<ArrayList<CustomNode>>(cns.size());
 		ArrayList<CustomNode> cn ;
 		ArrayList<CustomNode> temp = new ArrayList<CustomNode>();
+		ancestorTracker = constructAncestorMatrix(cns);
 		double tempCoh = 0.0;
         globalHighestCohesion = 0.0;
 		globalHighestCohesionIndex=0;
@@ -294,7 +296,7 @@ public class OntoProcessing {
 			temp.add(cns.get(i));
 			 tempCoh = calculateCohesivenesswithnBlock(temp);
 			 cns.get(i).cohesion  = tempCoh;
-			 
+			 cns.get(i).indexOfBlock = i;
 			 
 			 if(tempCoh>=globalHighestCohesion)
 				{	
@@ -320,7 +322,7 @@ public class OntoProcessing {
 		int temp_blocksize = a.size();
 		int count = 0;
 		
-		
+		couplingTracker = constructCouplingTracker(a);
 		while(a.size() > percentage*size)																//Restricting the no of elements to be added within a block
 		{	
 			if(temp_blocksize == a.size() && count!=0)
@@ -331,20 +333,21 @@ public class OntoProcessing {
 			iterationOfBlockCreation++;
 			index = globalHighestCohesionIndex;
 			
-			System.out.println(coh+"Value of index after calculating Cohesiveness of all the blocks="+index);
+			System.out.println(coh+"Value of index after calculating Cohesiveness of all the blocks="+index+" "+a.size());
 			int run = 0;
 			
 			if(index==a.size()-1 &&a.size()>1)
 				run = a.size()-2;
 			else 
 				run = a.size()-1;
-				
+		    
 			//for(int i=index;i<a.size();i++)	
 				for(int j=0;j<=run;j++)
 				{	
-					    
+					    System.out.println(j);
 					    if(j==index) continue;
 						temp = calculateCoupling(a.get(index), a.get(j));
+
 						System.out.println("Temp coupling value returned from calCoupling fn :"+temp);
 						//coupling = temp>coupling?temp:coupling;
 						System.out.println("Value of coupling :"+coupling);
@@ -372,6 +375,7 @@ public class OntoProcessing {
 			
 			a = merge(a,index,indexofcoup);
 			a.remove(indexofcoup);
+		//	couplingTracker = updateCouplingTracker(a, couplingTracker, index, indexofcoup);
 			//Reusing tempCoh
 			tempCoh = 0;
 			for(int l=0;l<a.size();l++)
@@ -406,6 +410,18 @@ public class OntoProcessing {
 		}
 		tempCoh =  calculateCohesivenesswithnBlock(a.get(i));
 		a.get(i).get(0).cohesion = tempCoh;
+		if(i<j)
+		for(int l=i+1;l<a.size();l++)
+		{
+			a.get(l).get(0).indexOfBlock = l-1;
+		}
+		
+		else
+			for(int l=j+1;l<a.size();l++)
+			{
+				a.get(l).get(0).indexOfBlock = l-1;
+			}
+			
 		
 			    
 
@@ -446,7 +462,7 @@ public class OntoProcessing {
 		Node classRoot = onto.getClassesRoot();
 		
 		List<Node> list = classRoot.getChildren();										//Returns the list of nodes having depth 1
-		
+		int indexCount=0;
 		for(Node n : list)
 		{
 			//System.out.println("Level 1 nodes returned :"+n.getLocalName() +"with Depth : "+n.getDepth());
@@ -455,6 +471,7 @@ public class OntoProcessing {
 			parents = addParentstoList(n, parents);
 			
 			CustomNode cn = new CustomNode(n,parents,localName,n.getDepth());
+			cn.indexOfNode  = indexCount++;
 			listofNodes.add(cn);
 			
 			addChildrenToList(n,listofNodes);
@@ -590,6 +607,148 @@ public class OntoProcessing {
 		
 		
 	}
+	
+	public AncestorTracker[][] constructAncestorMatrix(ArrayList<CustomNode> conceptList)
+    {        
+            AncestorTracker[][] ancestorMatrix = new AncestorTracker[conceptList.size()][conceptList.size()];
+            
+            for(int i=0; i<conceptList.size(); i++)
+                    for(int j=0; j<conceptList.size(); j++)
+                    {
+                            ancestorMatrix[i][j] = new AncestorTracker(conceptList.get(i), conceptList.get(j));
+                            
+                    }
+            
+            return ancestorMatrix;
+    }
+	
+	public CouplingTracker[][] constructCouplingTracker(ArrayList<ArrayList<CustomNode>> blockList)
+    {        
+            CouplingTracker[][] couplingMatrix = new CouplingTracker[blockList.size()][blockList.size()];
+            
+            for(int i=0; i<blockList.size(); i++)
+                    for(int j=0; j<blockList.size(); j++)
+                    {
+                            couplingMatrix[i][j] = new CouplingTracker(blockList.get(i), blockList.get(j));
+                            
+                    }
+            
+            return couplingMatrix;
+    }
+	
+	CouplingTracker[][] updateCouplingTracker(ArrayList<ArrayList<CustomNode>> blockList,CouplingTracker[][] oldTracker,int index, int indexOfCoup)
+    {        
+            CouplingTracker[][] tempCouplingMatrix = new CouplingTracker[blockList.size()-1][blockList.size()-1];
+            if(index<indexOfCoup)
+            for(int i=0; i<blockList.size()-1; i++)
+                    for(int j=0; j<blockList.size()-1; j++)
+                    {
+                    	   if(i<indexOfCoup&&j<indexOfCoup)
+                                tempCouplingMatrix[i][j] = oldTracker[i][j];
+                    	   
+                    	  if(i<indexOfCoup&&j>indexOfCoup)
+                               tempCouplingMatrix[i][j-1] = oldTracker[i][j];
+                    	  
+                    	  if(i>indexOfCoup&&j>indexOfCoup)
+                              tempCouplingMatrix[i-1][j-1] = oldTracker[i][j];
+                    	  
+                    	  if(i>indexOfCoup&&j<indexOfCoup)
+                              tempCouplingMatrix[i-1][j] = oldTracker[i][j];
+                             
+                    }
+            
+            else
+            	
+            	for(int i=0; i<blockList.size()-1; i++)
+                    for(int j=0; j<blockList.size()-1; j++)
+                    {
+                    	   if(i<index&&j<index)
+                                tempCouplingMatrix[i][j] = oldTracker[i][j];
+                    	   
+                    	  if(i<index&&j>index)
+                               tempCouplingMatrix[i][j-1] = oldTracker[i][j];
+                    	  
+                    	  if(i>index&&j>index)
+                              tempCouplingMatrix[i-1][j-1] = oldTracker[i][j];
+                    	  
+                    	  if(i>index&&j<index)
+                              tempCouplingMatrix[i-1][j] = oldTracker[i][j];
+                             
+                    }
+            
+            if(index<indexOfCoup)
+            {
+                for(int j=0; j<blockList.size()-1; j++)
+                {
+                	
+                	tempCouplingMatrix[index][j] = new CouplingTracker(blockList.get(index), blockList.get(j));
+                }
+            
+            for(int i=0; i<blockList.size()-1; i++)
+                
+                {
+                	
+            	tempCouplingMatrix[i][index] = new CouplingTracker(blockList.get(i), blockList.get(index));
+                }
+            	
+            }
+            else
+            {
+                for(int j=0; j<blockList.size()-1; j++)
+                {
+                	
+                	tempCouplingMatrix[indexOfCoup][j] = new CouplingTracker(blockList.get(indexOfCoup), blockList.get(j));
+                }
+            
+            for(int i=0; i<blockList.size()-1; i++)
+                
+                {
+                	
+            	tempCouplingMatrix[i][indexOfCoup] = new CouplingTracker(blockList.get(i), blockList.get(indexOfCoup));
+                }
+            	
+            }
+            
+            
+            
+            if(index<indexOfCoup)
+            {
+                for(int j=0; j<blockList.size()-1; j++)
+                {
+                	
+                	tempCouplingMatrix[indexOfCoup][j] = new CouplingTracker(blockList.get(indexOfCoup), blockList.get(j));
+                }
+            
+            for(int i=0; i<blockList.size()-1; i++)
+                
+                {
+                	
+            	tempCouplingMatrix[i][indexOfCoup] = new CouplingTracker(blockList.get(i), blockList.get(indexOfCoup));
+                }
+            	
+            }
+            else
+            {
+                for(int j=0; j<blockList.size()-1; j++)
+                {
+                	
+                	tempCouplingMatrix[index][j] = new CouplingTracker(blockList.get(index), blockList.get(j));
+                }
+            
+            for(int i=0; i<blockList.size()-1; i++)
+                
+                {
+                	
+            	tempCouplingMatrix[i][index] = new CouplingTracker(blockList.get(i), blockList.get(index));
+                }
+            	
+            }
+            return tempCouplingMatrix;
+    }
+	
+	
+	
+	
 	
 	@SuppressWarnings("null")
 	public static void main(String[] args) throws Exception {
