@@ -42,10 +42,11 @@ public class ExplanationSidebar extends JPanel {
     private JLabel nodeDescriptionValue;
     private JLabel criteriaLabel;
     private JLabel valueLabel;
-    
+    private JLabel maxSigPathCountLabel;
+	private JLabel minSigPathCountLabel;
     private JPanel panel = new JPanel(new BorderLayout());
     
-    private JPanel labelPanel = new JPanel(new GridLayout(3,1));
+    private JPanel labelPanel = new JPanel(new GridLayout(5,1));
     
 	//Border blackline;
 	Layout<ExplanationNode, String> layout;
@@ -167,7 +168,17 @@ public class ExplanationSidebar extends JPanel {
 							valueLabel = new JLabel();
 							labelPanel.add(valueLabel);
 						}
-												
+						
+						if( maxSigPathCountLabel == null){
+							maxSigPathCountLabel = new JLabel();
+							labelPanel.add(maxSigPathCountLabel);
+						}
+						
+						if( minSigPathCountLabel == null){
+							minSigPathCountLabel = new JLabel();
+							labelPanel.add(minSigPathCountLabel);
+						}
+						
 						nodeDescriptionValue.setText("Description: "+node.getDescription());
 						if(!node.getCriteria().toString().equals(CombinationCriteria.NOTDEFINED.toString())) {
 							criteriaLabel.setText("Method: "+node.getCriteria().toString());
@@ -175,6 +186,12 @@ public class ExplanationSidebar extends JPanel {
 							criteriaLabel.setText("Reached End node!");							
 						}
 						valueLabel.setText("Value: "+node.getVal());
+						
+						if(node.isUniversalUse()){
+							maxSigPathCountLabel.setText("Most Significant Path Count: "+node.getMaxSigPathCount());
+							minSigPathCountLabel.setText("Least Significant Path Count: "+ node.getMinSigPathCount());
+						}
+						
 					} else if(me.getButton() == MouseEvent.BUTTON3) {
 						System.out.println("right click");
 						System.out.println("Clicked " + node.getDescription());		
