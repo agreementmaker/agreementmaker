@@ -13,6 +13,7 @@ public class CustomNode{
 	int depth;
 	ArrayList<Node> ancestorList;
 	HashMap<CustomNode, Float> similarNodeWeights;
+	double cohesion;
 	
 	public CustomNode(Node node,ArrayList<Node> parents, String localName, int depth)
 	{
