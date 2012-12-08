@@ -1,83 +1,42 @@
 package am.evaluation.repairExtended;
 
 import java.io.File;
-import java.io.IOException;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-
 import org.apache.log4j.Logger;
-import org.semanticweb.HermiT.Reasoner;
-import org.semanticweb.HermiT.Reasoner.ReasonerFactory;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-import org.semanticweb.owlapi.model.RemoveAxiom;
 
-import weka.core.RelationalLocator;
-import weka.filters.unsupervised.attribute.RELAGGS;
+import com.hp.hpl.jena.rdf.model.Property;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.MatcherSetting;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.LexicalMatcherJAWS.LexicalMatcherJAWS;
 import am.app.mappingEngine.abstractMatcherNew.AbstractMatchingParameters;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
-import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher;
-import am.app.mappingEngine.basicStructureSelector.BasicStructuralSelectorMatcher;
-import am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
-import am.app.mappingEngine.structuralMatchers.SimilarityFlooding;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
-import am.app.ontology.profiling.OntologyProfiler;
-import am.app.ontology.profiling.OntologyProfilerPanel;
-import am.app.ontology.profiling.OntologyProfilerParameters;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
-import am.app.ontology.profiling.manual.ManualProfilerMatchingPanel;
 import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
-import am.batchMode.simpleBatchMode.OntologiesType;
-import am.batchMode.simpleBatchMode.SimpleBatchModeRunner;
 import am.evaluation.repair.AlignmentRepairUtilities;
-import am.output.similaritymatrix.SimilarityMatrixOutput;
-import am.userInterface.AppPreferences;
 import am.userInterface.MatchersChooser;
-
-import com.clarkparsia.owlapi.explanation.util.OntologyUtils;
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.rdf.model.AnonId;
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.RDFVisitor;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.sparql.pfunction.library.concat;
 /**
  * @author Pavan
  *
@@ -87,6 +46,8 @@ public class ConflictSetList {
 	
 	private static Logger log = Logger.getLogger(ConflictSetList.class);
 	private AlignmentRepairUtilities util = new AlignmentRepairUtilities(log);
+	private File sourceOwl;
+	private File targetOwl;
 	
 	private OWLOntology MergedOntology;
 	
@@ -392,7 +353,7 @@ public class ConflictSetList {
 				}
 	
 				originalMapping = new MatchingPair(originalSourceUri,originalTargetUri,0.0,null);
-				log.info("-" + originalMapping);
+				//log.info("-" + originalMapping);
 				newMapping = null; 
 							
 				for(Node targetNode : targetOntology.getClassesList()){				
@@ -405,6 +366,7 @@ public class ConflictSetList {
 							if(tempMapping.similarity > maxSimilarity){
 								newMapping = tempMapping;
 								maxSimilarity = tempMapping.similarity;
+								break;
 							}
 						}
 					}
@@ -421,21 +383,79 @@ public class ConflictSetList {
 	
 	private MatchingPair rematch(Node sourceNode, Node targetNode){
 		
-		AbstractMatcher matcher;
-		AbstractMatchingParameters params;
+		//AbstractMatcher matcher;	
+		//AbstractMatchingParameters param;
 		SimilarityMatrix matrix = null;
 		MatchingPair newMapping = null;
 		Mapping tempMapping;
-
-		matcher = new ParametricStringMatcher();
-		try {
-			tempMapping = matcher.alignTwoNodesParallel(sourceNode, targetNode, alignType.aligningClasses, matrix);					
+		Double maxSimilarity = 0.0;
+		
+		try {	
+			//BSM
+			/*Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(sourceOwl.getAbsolutePath());
+			Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(targetOwl.getAbsolutePath());
 			
-			newMapping =  new MatchingPair(sourceNode.getUri(),
-						targetNode.getUri(),tempMapping.getSimilarity(),tempMapping.getRelation());	
+			ManualOntologyProfiler profiler = new ManualOntologyProfiler(sourceOntology, targetOntology);			
+			ManualProfilerMatchingParameters param = new ManualProfilerMatchingParameters();
+
+			// do not use the localnames for matching
+			param.matchSourceClassLocalname = false;
+			param.matchTargetClassLocalname = false;
+			param.matchSourcePropertyLocalname = false;
+			param.matchTargetPropertyLocalname = false;
+			
+			// select the rdfs label as the only thing that will match against
+			param.sourceClassAnnotations = createAnnotationList("label", profiler.getSourceClassAnnotations());
+			param.targetClassAnnotations = createAnnotationList("label", profiler.getTargetClassAnnotations());
+			param.sourcePropertyAnnotations = createAnnotationList("label", profiler.getSourcePropertyAnnotations());
+			param.targetPropertyAnnotations = createAnnotationList("label", profiler.getTargetPropertyAnnotations());
+			
+			profiler.setMatchTimeParams(param);
+			Core.getInstance().setOntologyProfiler(profiler);
+			
+			BaseSimilarityParameters bsmParam = new BaseSimilarityParameters();			
+			BaseSimilarityMatcher bsm = new BaseSimilarityMatcher(bsmParam);
+			//log.info("berfore match" + sourceNode + " - " + targetNode);
+			tempMapping = bsm.alignTwoNodesParallel(sourceNode, targetNode, alignType.aligningClasses, matrix);					
+			//log.info(("here " + tempMapping));
+			if(tempMapping != null){
+				if(tempMapping.getSimilarity() > maxSimilarity){
+					newMapping =  new MatchingPair(sourceNode.getUri(),
+								targetNode.getUri(),tempMapping.getSimilarity(),tempMapping.getRelation());	
+					maxSimilarity = newMapping.similarity;
+				}
+			}*/
+			
+			//Parameteric string matcher
+			ParametricStringParameters psparam = new ParametricStringParameters();	
+			psparam.labelWeight = 1.0;
+			psparam.useBestLexSimilarity = true;
+			ParametricStringMatcher psm = new ParametricStringMatcher(psparam);
+			
+			tempMapping = psm.alignTwoNodesParallel(sourceNode, targetNode, alignType.aligningClasses, matrix);					
+			
+			if(tempMapping != null){
+				if(tempMapping.getSimilarity() > maxSimilarity){
+					newMapping =  new MatchingPair(sourceNode.getUri(),
+								targetNode.getUri(),tempMapping.getSimilarity(),tempMapping.getRelation());	
+					maxSimilarity = newMapping.similarity;
+				}
+			}
+			
+			//LexJAWS
+			LexicalMatcherJAWS lmm = new LexicalMatcherJAWS();
+			tempMapping = lmm.alignTwoNodesParallel(sourceNode, targetNode, alignType.aligningClasses, matrix);					
+			
+			if(tempMapping != null){
+				if(tempMapping.getSimilarity() > maxSimilarity){
+					newMapping =  new MatchingPair(sourceNode.getUri(),
+								targetNode.getUri(),tempMapping.getSimilarity(),tempMapping.getRelation());	
+					maxSimilarity = newMapping.similarity;
+				}
+			}
 			
 		} catch (Exception e) {			
-			//log.error("rematch : Parametric String Matcher failed" + e);
+			// TODO Auto-generated catch block
 		}
 		finally{
 			if(newMapping != null){
@@ -651,6 +671,17 @@ public class ConflictSetList {
 		return distinctList;
 	}
 	
+	// filter the annotationProperties list by matching name
+	private static List<Property> createAnnotationList(String name, List<Property> annotationProperties) {
+		List<Property> list = new LinkedList<Property>();
+		for( Property p : annotationProperties ) {
+			if( p.getLocalName().equals(name) ) {
+				list.add(p);
+			}
+		}
+		return list;
+	}
+	
 	//getter setter
 	public void setConflictSets (ArrayList<ConflictSet> conflictSets)
     {
@@ -678,5 +709,15 @@ public class ConflictSetList {
     public ArrayList<MatchingPair> getAddMappings()
     {
         return AddMappings;
+    }
+    
+    public void setSourceOntology (File sourceOntology)
+    {
+    	sourceOwl = sourceOntology;           
+    }
+    
+    public void setTargetOntology (File targetOntology)
+    {
+    	targetOwl = targetOntology;           
     }
 }

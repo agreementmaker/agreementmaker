@@ -32,20 +32,10 @@ import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.evaluation.repair.AlignmentRepairUtilities;
+import am.utility.RunTimer;
 import am.utility.referenceAlignment.AlignmentUtilities;
 import am.utility.referenceAlignment.MappingsOutput;
 
-//TODO
-//1. Rank interface
-//2. Rank by frequency
-//3. Rank by frequency and similarity value
-//4. Rank by frequency, similarity and hierarchy level
-//5. try out - get missing mappings
-//6. Repair - Use matcher again to identify alternate mappings
-//7. Evaluate - Fmeasure and % of correct eq axioms identified
-//oeai 2011 - large lexical matching
-//pick example
-//example
 /**
  * @author Pavan
  *
@@ -61,7 +51,7 @@ public class RepairAlignment {
 	private File targetOwl = new File("/home/pavan/MS/WebSemantics/Ontologies/Anatomy/human.owl");
 	private File alignmentFile = new File("/home/pavan/MS/WebSemantics/Ontologies/Anatomy/human-mouse-best.rdf");
 	private File repairedAlignmentFile = new File("/home/pavan/MS/WebSemantics/Ontologies/Anatomy/repairedAlignment.rdf");
-	private Boolean verbose = true;
+	private Boolean verbose = false;
 	//INPUT END
 	
 	private AlignmentRepairUtilities util = new AlignmentRepairUtilities(log);
@@ -87,6 +77,9 @@ public class RepairAlignment {
 			
 			log.info("Merging ontolgoies...");
 			mergedOntology = mergeOntologies();
+			
+			RunTimer timer = new RunTimer();
+			timer.start();
 						
 			log.info("Identifying inconsistent classes and corresponding equivalence axioms...");
 			inconsistentSets = getInconsistentSets(alignment, mergedOntology);
@@ -110,6 +103,9 @@ public class RepairAlignment {
 			if(verbose)
 				report.printMUPS(minHittingSet);
 			
+			inconsistentSets.setSourceOntology(sourceOwl);
+			inconsistentSets.setTargetOntology(targetOwl);
+			
 			log.info("Repairing inconsistent mappings...");
 			inconsistentSets.repairMappings(minHittingSet,sourceOwl.toString(),targetOwl.toString());
 			
@@ -119,13 +115,14 @@ public class RepairAlignment {
 			log.info("******************Evaluation Report*****************");
 			
 			if(verbose){			
-				report.getIncorrectMappings(alignmentFile, referenceFile);			
-				report.mergePrecision(inconsistentSets.getAllAxioms());
-				report.hittingSetPrecison(minHittingSet);
+				//report.getIncorrectMappings(alignmentFile, referenceFile);			
+				//report.mergePrecision(inconsistentSets.getAllAxioms());
+				//report.hittingSetPrecison(minHittingSet);
 			}
 			
 			report.initialMeasure(alignmentFile.toString(), referenceFile.toString());
 			report.finalMeasure(repairedAlignmentFile.toString(),referenceFile.toString());
+			log.info( "Total run time: " + timer.stop().getFormattedRunTime() );
 			
 		} catch (OWLOntologyCreationException e) {
 			log.error("OWL ontology merge failed");
@@ -153,10 +150,8 @@ public class RepairAlignment {
 		}		
 		
 		repariedAlignment.addAll(addMappings);
-		
-		log.info(repariedAlignment.size());
 	    
-	    log.info("Repaired alignment. The repaired alignment contains " + repariedAlignment.size() + " mappings");
+	    log.info("Repaired alignment");
 	    MappingsOutput.writeMappingsOnDisk(repairedAlignmentFile.toString(), repariedAlignment);		
 	}
 

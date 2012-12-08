@@ -3,14 +3,9 @@ package am.evaluation.repairExtended;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dom4j.DocumentException;
-import org.openjena.atlas.logging.Log;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 
@@ -165,7 +160,7 @@ public class Report {
 	
 	public <T> void printMUPS(ArrayList<T> list){
 		
-		ArrayList<T> distinctList = new ArrayList<T>();
+		//ArrayList<T> distinctList = new ArrayList<T>();
 		
 		for(T p : list){
 			log.info(p);
