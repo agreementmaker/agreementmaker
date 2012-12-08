@@ -86,7 +86,7 @@ public class RepairAlignment {
 			
 			inconsistentSets.setMergedOntology(mergedOntology);
 			
-			log.info(inconsistentSets.getAxiomCount() + " inconsistent axioms identified (" + inconsistentSets.getDistinctAxiomCount() + ") unique axioms");
+			log.info(inconsistentSets.getAxiomCount() + " inconsistent axioms identified (" + inconsistentSets.getDistinctAxiomCount() + " unique axioms)");
 			
 			log.info("Computing Minimal unsatisfiable Preserving Sub-tboxes (MUPS)...");
 			ConflictSetList mups = inconsistentSets.computeMUPS();

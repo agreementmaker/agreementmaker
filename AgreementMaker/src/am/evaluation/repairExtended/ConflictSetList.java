@@ -30,6 +30,10 @@ import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
+import am.app.mappingEngine.structuralMatchers.SimilarityFlooding;
+import am.app.mappingEngine.structuralMatchers.SimilarityFloodingParameters;
+import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
+import am.app.mappingEngine.wikipedia.WikiMatcher;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
@@ -442,7 +446,6 @@ public class ConflictSetList {
 				}
 			}
 			
-			//LexJAWS
 			LexicalMatcherJAWS lmm = new LexicalMatcherJAWS();
 			tempMapping = lmm.alignTwoNodesParallel(sourceNode, targetNode, alignType.aligningClasses, matrix);					
 			
@@ -453,6 +456,41 @@ public class ConflictSetList {
 					maxSimilarity = newMapping.similarity;
 				}
 			}
+			
+			/*SimilarityFloodingParameters smparam = new SimilarityFloodingParameters();
+			//smparam.
+			SimilarityFlooding sfm = new SimilarityFlooding() {				
+				@Override
+				protected void loadSimilarityMatrices(WrappingGraph s, WrappingGraph t) {
+					// TODO Auto-generated method stub					
+				}
+				
+				@Override
+				protected void align() throws Exception {
+					// TODO Auto-generated method stub					
+				}
+			};
+			tempMapping = sfm.alignTwoNodesParallel(sourceNode, targetNode, alignType.aligningClasses, matrix);					
+			
+			if(tempMapping != null){
+				if(tempMapping.getSimilarity() > maxSimilarity){
+					newMapping =  new MatchingPair(sourceNode.getUri(),
+								targetNode.getUri(),tempMapping.getSimilarity(),tempMapping.getRelation());	
+					maxSimilarity = newMapping.similarity;
+				}
+			}*/
+			
+			/*WikiMatcher wm = new WikiMatcher();
+			tempMapping = wm.alignTwoNodesParallel(sourceNode, targetNode, alignType.aligningClasses, matrix);					
+			
+			if(tempMapping != null){
+				if(tempMapping.getSimilarity() > maxSimilarity){
+					newMapping =  new MatchingPair(sourceNode.getUri(),
+								targetNode.getUri(),tempMapping.getSimilarity(),tempMapping.getRelation());	
+					maxSimilarity = newMapping.similarity;
+				}
+			}*/
+			
 			
 		} catch (Exception e) {			
 			// TODO Auto-generated catch block
