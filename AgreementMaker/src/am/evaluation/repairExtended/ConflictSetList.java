@@ -331,8 +331,17 @@ public class ConflictSetList {
 		
 		AxiomRank axiomRank = new AxiomRank(null,Integer.MAX_VALUE);
 		Integer minrank = axiomRank.getRank();
+		ArrayList<AxiomRank> uniqueAxms = new ArrayList<AxiomRank>();
+		
+		/*for(AxiomRank ar : axiomList){
+			if(!minimalHittingSet.contains(ar.getAxiom())){
+				//log.info(ar.getAxiom());
+				uniqueAxms.add(ar);
+			}
+		}*/
 		
 		for(AxiomRank ar : axiomList){
+		
 			if(ar.getRank() < minrank){
 				axiomRank = ar;
 				minrank = ar.getRank();
@@ -350,59 +359,62 @@ public class ConflictSetList {
 		Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(source); 
 		Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(target); 
 		MatchingPair tempPair = new MatchingPair();
-		Node originalSourceNode = null;
-		Node originalTargetNode = null;
-		MatchingPair newMapping = null;
-		MatchingPair originalMapping = null;
+		MatchingPair newMapping = null;		
 		MatchingPair tempMapping = null;
 		Double maxSimilarity = 0.0;
 		
 		for(OWLAxiom axm : axioms){
 			
-			log.info("ax" + axm);
-			log.info(axm.getClassesInSignature().toArray()[1]);
-			log.info(axm.getClassesInSignature().toArray()[0]);
+			if(axm != null){
 			
-			sourceClass = (OWLClass) axm.getClassesInSignature().toArray()[1];
-			targetClass = (OWLClass) axm.getClassesInSignature().toArray()[0];
-			
-			log.info(sourceClass);
-			
-			for(Node sourceNode : sourceOntology.getClassesList()){			
-				if(sourceClass.getIRI().toURI().toString().equals(sourceNode.getUri())){				
-					originalSourceNode = sourceNode;
-					log.info(sourceNode);
-				}
-			}		
-			
-			for(Node targetNode : targetOntology.getClassesList()){			
-				if(targetClass.getIRI().toURI().toString().equals(targetNode.getUri())){				
-					originalTargetNode = targetNode;
-				}
-			}
-			
-			originalMapping = new MatchingPair(originalSourceNode.getUri(),
-					originalTargetNode.getUri(),0.0,null);
-			log.info("-" + originalMapping);
-			newMapping = null; 
-						
-			for(Node targetNode : targetOntology.getClassesList()){				
-						
-				tempMapping = rematch(originalSourceNode, targetNode);
+				String originalSourceUri = "";
+				String originalTargetUri = "";
+				MatchingPair originalMapping = null;
+				Node originalSourceNode = null;
 				
-				if(tempMapping != null){
+				sourceClass = new ArrayList<OWLClass>(axm.getClassesInSignature()).get(1);
+				targetClass = new ArrayList<OWLClass>(axm.getClassesInSignature()).get(0);
 				
-					if(tempMapping.similarity > maxSimilarity){
-						newMapping = tempMapping;
-						maxSimilarity = tempMapping.similarity;
+				for(Node sourceNode : sourceOntology.getClassesList()){		
+					
+					if(sourceClass.getIRI().toURI().toString().equals(sourceNode.getUri()) || targetClass.getIRI().toURI().toString().equals(sourceNode.getUri())){
+						originalSourceUri = sourceNode.getUri();
+						originalSourceNode = new Node(sourceNode);
+						break;
+					}
+				}		
+				
+				for(Node targetNode : targetOntology.getClassesList()){			
+					if(targetClass.getIRI().toURI().toString().equals(targetNode.getUri()) || sourceClass.getIRI().toURI().toString().equals(targetNode.getUri())){				
+						originalTargetUri = targetNode.getUri();
+						break;
 					}
 				}
+	
+				originalMapping = new MatchingPair(originalSourceUri,originalTargetUri,0.0,null);
+				log.info("-" + originalMapping);
+				newMapping = null; 
+							
+				for(Node targetNode : targetOntology.getClassesList()){				
+						
+					if(originalSourceNode != null){
+						tempMapping = rematch(originalSourceNode, targetNode);
+					
+						if(tempMapping != null){
+						
+							if(tempMapping.similarity > maxSimilarity){
+								newMapping = tempMapping;
+								maxSimilarity = tempMapping.similarity;
+							}
+						}
+					}
+				}
+	
+				RemoveMappings.add(originalMapping);
+				
+				if(newMapping != null)
+					AddMappings.add(newMapping);
 			}
-			log.info("--" + originalMapping);
-			RemoveMappings.add(originalMapping);
-			
-			if(newMapping != null)
-				AddMappings.add(newMapping);
 		}		
 		
 	}
@@ -414,25 +426,16 @@ public class ConflictSetList {
 		SimilarityMatrix matrix = null;
 		MatchingPair newMapping = null;
 		Mapping tempMapping;
-		//Double maxSimilarity = 0.0;
-		//Boolean replaceMapping = false;
-		
-		//
+
 		matcher = new ParametricStringMatcher();
 		try {
-			tempMapping = matcher.alignTwoNodesParallel(sourceNode, targetNode, alignType.aligningClasses, matrix);
-								
-			//if(tempMapping.getSimilarity() > maxSimilarity){
-				newMapping =  new MatchingPair(sourceNode.getUri(),
-						targetNode.getUri(),tempMapping.getSimilarity(),tempMapping.getRelation());
-				//replaceMapping = true;
-			//}			
+			tempMapping = matcher.alignTwoNodesParallel(sourceNode, targetNode, alignType.aligningClasses, matrix);					
+			
+			newMapping =  new MatchingPair(sourceNode.getUri(),
+						targetNode.getUri(),tempMapping.getSimilarity(),tempMapping.getRelation());	
 			
 		} catch (Exception e) {			
 			//log.error("rematch : Parametric String Matcher failed" + e);
-//			newMapping = new MatchingPair(sourceNode.getUri(),
-//					originalTargetNode.getUri(),0.0,null);
-//			replaceMapping = false;
 		}
 		finally{
 			if(newMapping != null){

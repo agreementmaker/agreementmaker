@@ -54,12 +54,15 @@ import am.utility.referenceAlignment.MappingsOutput;
 public class RepairAlignment {
 
 	private static Logger log = Logger.getLogger(RepairAlignment.class);
-		
+
+	//INPUT
 	private File referenceFile = new File("/home/pavan/MS/WebSemantics/Ontologies/Anatomy/reference.rdf");
 	private File sourceOwl = new File("/home/pavan/MS/WebSemantics/Ontologies/Anatomy/mouse.owl");
 	private File targetOwl = new File("/home/pavan/MS/WebSemantics/Ontologies/Anatomy/human.owl");
 	private File alignmentFile = new File("/home/pavan/MS/WebSemantics/Ontologies/Anatomy/human-mouse-best.rdf");
 	private File repairedAlignmentFile = new File("/home/pavan/MS/WebSemantics/Ontologies/Anatomy/repairedAlignment.rdf");
+	private Boolean verbose = true;
+	//INPUT END
 	
 	private AlignmentRepairUtilities util = new AlignmentRepairUtilities(log);
 	
@@ -90,22 +93,24 @@ public class RepairAlignment {
 			
 			inconsistentSets.setMergedOntology(mergedOntology);
 			
-			log.info(inconsistentSets.getAxiomCount() + " inconsistent axioms identified (" + inconsistentSets.getDistinctAxiomCount() + " unique axioms)");
+			log.info(inconsistentSets.getAxiomCount() + " inconsistent axioms identified (" + inconsistentSets.getDistinctAxiomCount() + ") unique axioms");
 			
 			log.info("Computing Minimal unsatisfiable Preserving Sub-tboxes (MUPS)...");
 			ConflictSetList mups = inconsistentSets.computeMUPS();
-			//report.printConflictSetList(mups);
+			if(verbose)
+				report.printConflictSetList(mups);
 			
 			log.info("Ranking inconsistent axioms by frequency...");
 			mups.rankAxioms();
-			//report.printAxiomRanks(mups);
+			if(verbose)
+				report.printAxiomRanks(mups);
 
 			log.info("Compute hitting set...");
 			minHittingSet = inconsistentSets.computeHittingSet(mups);
-			//report.printMUPS(minHittingSet);
+			if(verbose)
+				report.printMUPS(minHittingSet);
 			
 			log.info("Repairing inconsistent mappings...");
-			log.info(minHittingSet);
 			inconsistentSets.repairMappings(minHittingSet,sourceOwl.toString(),targetOwl.toString());
 			
 			log.info("Generating repaired alignment file...");
@@ -113,10 +118,11 @@ public class RepairAlignment {
 			
 			log.info("******************Evaluation Report*****************");
 			
-			report.getIncorrectMappings(alignmentFile, referenceFile);
-			
-			report.mergePrecision(inconsistentSets.getAllAxioms());
-			report.hittingSetPrecison(minHittingSet);
+			if(verbose){			
+				report.getIncorrectMappings(alignmentFile, referenceFile);			
+				report.mergePrecision(inconsistentSets.getAllAxioms());
+				report.hittingSetPrecison(minHittingSet);
+			}
 			
 			report.initialMeasure(alignmentFile.toString(), referenceFile.toString());
 			report.finalMeasure(repairedAlignmentFile.toString(),referenceFile.toString());
@@ -138,10 +144,9 @@ public class RepairAlignment {
 		 
 		repariedAlignment = alignment;
 		
-		log.info(alignment.size());
-		log.info(removeMappings.size());
-		log.info(removeMappings);
-		log.info(addMappings.size());				
+		//log.info(alignment.size());
+		//log.info(removeMappings.size());
+		//log.info(addMappings.size());				
 		
 		for(MatchingPair p : removeMappings){
 			repariedAlignment.remove(getMatchingPair(p));
