@@ -17,7 +17,6 @@
  *  
  */
 
-
 package am.extension.partition;
 
 import java.io.File;
@@ -49,8 +48,6 @@ import am.userInterface.UI;
 public class DisplayOntMappings
 {
 	
-	
-	
 	public static Ontology openOntology(String fileName){
 		Ontology ontology = null;
 		try {
@@ -80,11 +77,6 @@ public class DisplayOntMappings
 	public static void main(String args[])
 	{	
 		
-		
-		
-		
-		
-		
 		Thread mainUI = new Thread("AMStart") {
 				public void run() {
 					Core.setUI( new UI() );
@@ -98,7 +90,7 @@ public class DisplayOntMappings
 		
 		mainUI.start();
 		
-
-
-	}}
+	}
+	
+}
 
