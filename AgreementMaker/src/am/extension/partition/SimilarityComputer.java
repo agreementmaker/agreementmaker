@@ -51,40 +51,6 @@ public class SimilarityComputer extends AbstractMatcher {
 	protected Mapping alignTwoNodes(Node source, Node target,
 			alignType typeOfNodes, SimilarityMatrix matrix) throws Exception {
 
-		
-		
-		/*
-		 * int sourceIndex = source.getIndex()
-		int targetIndex = target.getIndex();
-		
-		
-		
-		Mapping mapping = matrix.get(sourceIndex, targetIndex);*/
-		/*double sim;
-	    if(ontology203 == 0) sim = matchSimilarity(getLocalName(source), getLocalName(target) );
-	    else 
-	     sim = matchSimilarity(getLocalName(source), getLocalName(target) );
-	    
-	    BaseSimilarityMatcher  b = new BaseSimilarityMatcher();
-	    */
-	    
-		/*Uncomment for synonymns lookup - 205*/
-		/*Hyponymns h = new Hyponymns();
-		String[] s = h.syn(source.getLocalName());
-		double similarity,sim;
-		
-		for (int i = 0; i < s.length; i++)
-		{similarity = matchSimilarity1(source.getLocalName(), target.getLocalName() );
-		if(similarity>sim){
-			sim = similarity;
-		
-		}*/
-		/*Uncomment for synonymns lookup*/
-		/*Till Here*/
-		//log.info("Matching " + source.getLocalName() + " with " + target.getLocalName());
-	    System.out.println(source.getIndex()+" "+target.getIndex()+" "+matrix.getRows()+" "+matrix.getColumns());
-      /*  if(source.getIndex()==matrix.getRows()-1 &&target.getIndex()==matrix.getColumns()-1)
-        	simMatrix  = matrix;*/
 	    Levenshtein l;
 		//return new Mapping(source, target, sim);
 	    if(source.getLocalName().length()>target.getLocalName().length())
@@ -116,23 +82,12 @@ public class SimilarityComputer extends AbstractMatcher {
 		mm.setSourceOntology(source);
 		mm.setTargetOntology(target);
 
-		/*AbstractParameters param = new AbstractParameters();
-		param.threshold = .75;
-		param.maxSourceAlign = 1;
-		param.maxTargetAlign = 1;
-        */
-		//mm.setParam(param);
-
 		try {
 			mm.match();
 		} catch (Exception e) {
 			log.error("Caught exception when running MyMatcher.", e);
 		}
         System.out.println("For 205\n====\n\n");
-		// run the reference alignment evaluation and output it to the log4j logger
-		//mm.referenceEvaluation("C:\\Users\\KRISHNA DAS\\Desktop\\AgreementMaker\\ontologies\\OAEI2010_OWL_RDF\\Benchmark Track\\205\\refalign.rdf"); // update the path to your own
-
-		
 
 		Ontology source1= OntoTreeBuilder.loadOWLOntology("C:\\Users\\KRISHNA DAS\\Desktop\\AgreementMaker\\ontologies\\OAEI2010_OWL_RDF\\Benchmark Track\\101\\onto.rdf"); // update the path to your own
 		Ontology target1= OntoTreeBuilder.loadOWLOntology("C:\\Users\\KRISHNA DAS\\Desktop\\AgreementMaker\\ontologies\\OAEI2010_OWL_RDF\\Benchmark Track\\203\\onto.rdf"); // update the path to your own
@@ -154,24 +109,12 @@ public class SimilarityComputer extends AbstractMatcher {
 		//mm.referenceEvaluation("C:\\Users\\KRISHNA DAS\\Desktop\\AgreementMaker\\ontologies\\OAEI2010_OWL_RDF\\Benchmark Track\\203\\refalign.rdf"); // update the path to your own
 
         ontology203 = 0;
-		
-		
-		
-		
+
 		source = OntoTreeBuilder.loadOWLOntology("C:\\Users\\KRISHNA DAS\\Desktop\\AgreementMaker\\ontologies\\OAEI2010_OWL_RDF\\Benchmark Track\\101\\onto.rdf"); // update the path to your own
 		target = OntoTreeBuilder.loadOWLOntology("C:\\Users\\KRISHNA DAS\\Desktop\\AgreementMaker\\ontologies\\OAEI2010_OWL_RDF\\Benchmark Track\\223\\onto.rdf"); // update the path to your own
 
-		
-
 		mm.setSourceOntology(source);
 		mm.setTargetOntology(target);
-
-		
-		/*param.threshold = .8;
-		param.maxSourceAlign = 1;
-		param.maxTargetAlign = 1;*/
-
-		//mm.setParam(param);
 
 		try {
 			mm.match();
@@ -182,8 +125,6 @@ public class SimilarityComputer extends AbstractMatcher {
 		// run the reference alignment evaluation and output it to the log4j logger
 		mm.referenceEvaluation("C:\\Users\\KRISHNA DAS\\Desktop\\AgreementMaker\\ontologies\\OAEI2010_OWL_RDF\\Benchmark Track\\223\\refalign.rdf"); // update the path to your own
 
-		
-	
 	}
 
 	
@@ -197,8 +138,6 @@ public class SimilarityComputer extends AbstractMatcher {
 
 		mm.setSourceOntology(source);
 		mm.setTargetOntology(target);
-
-		
 
 		try {
 			mm.match();
@@ -214,54 +153,22 @@ public class SimilarityComputer extends AbstractMatcher {
 	
 	public void match() throws Exception {
 
-		/*// setup the Ontologies
-		if( sourceOntology == null ) {
-			if( Core.getInstance().getSourceOntology() == null ) {
-				// no source ontology defined or loaded
-				throw new Exception("No source ontology is loaded!");
-			} else {
-				// the source Ontology is not defined, but a Source ontology is loaded in the Core. Use that.
-				sourceOntology = Core.getInstance().getSourceOntology();
-			}
-		}
-
-		if( targetOntology == null ) {
-			if( Core.getInstance().getTargetOntology() == null ) {
-				// no target ontology defined or loaded
-				throw new Exception("No target ontology is loaded!");
-			} else {
-				// the target Ontology is not defined as part of this matcher, but a Target ontology is loaded in the Core.  Use that.
-				targetOntology = Core.getInstance().getTargetOntology();
-			}
-		}
-        */
 		matchStart();
 		//buildSimilarityMatrices(); // align()
 		if(performSelection && !this.isCancelled() ){
 			select();	
 		}
         
-	
-		
 		matchEnd();
-		//System.out.println("Classes alignments found: "+classesAlignmentSet.size());
-		//System.out.println("Properties alignments found: "+propertiesAlignmentSet.size());
+		
 	}
 	
-	
+
 	/**
 	 * Sample String Similarity.
 	 */
 	private static double matchSimilarity(String sourceString, String targetString ) {
 		
-		/*Hamming hammingSim = new Hamming(sourceString, targetString);
-		hammingSim.calculate();
-		double h =  hammingSim.getSimilarity().doubleValue();*/
-		
-		/*Levenshtein lSim = new Levenshtein(sourceString, targetString);
-		lSim.calculate();
-		double l =  lSim.getSimilarity().doubleValue();
-        */
 		Jaro jaroSim = new Jaro(sourceString, targetString);
 		jaroSim.calculate();
 		//double j =  hammingSim.getSimilarity().doubleValue();
@@ -282,20 +189,6 @@ public class SimilarityComputer extends AbstractMatcher {
 	    
 	    return ((n+nm)/2.0);
 		
-		/*
-		JaroWinkler jaroWSim = new JaroWinkler(sourceString, targetString);
-		jaroWSim.calculate();
-		double jw =  jaroWSim.getSimilarity().doubleValue();
-		
-		
-		
-		simpack.measure.external.alignapi.JaroWinkler
-		simpack.measure.external.alignapi.Levenshtein
-		simpack.measure.external.alignapi.NeedlemanWunch
-		simpack.measure.external.alignapi.NGram
-		simpack.measure.external.alignapi.SMOA
-		simpack.measure.external.alignapi.SubStringSimilarity
-		*/
 	}
 	
 	
@@ -305,23 +198,7 @@ private static double matchSimilarity1(String sourceString, String targetString 
 		hammingSim.calculate();
 		double h =  hammingSim.getSimilarity().doubleValue();
 		
-	    
 	    return h;
-		
-		/*
-		JaroWinkler jaroWSim = new JaroWinkler(sourceString, targetString);
-		jaroWSim.calculate();
-		double jw =  jaroWSim.getSimilarity().doubleValue();
-		
-		
-		
-		simpack.measure.external.alignapi.JaroWinkler
-		simpack.measure.external.alignapi.Levenshtein
-		simpack.measure.external.alignapi.NeedlemanWunch
-		simpack.measure.external.alignapi.NGram
-		simpack.measure.external.alignapi.SMOA
-		simpack.measure.external.alignapi.SubStringSimilarity
-		*/
 	}
 	
 
