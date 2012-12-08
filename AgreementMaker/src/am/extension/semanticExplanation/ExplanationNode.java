@@ -101,6 +101,8 @@ public class ExplanationNode {
 			}
 		} catch(UnsupportedOperationException e) {
 			System.out.println("The graph g = " + tree.toString());
+		} catch(IllegalArgumentException e) {
+			System.out.println("The graph g = " + tree.toString());
 		}
 //		addChildren(this, tree);
 

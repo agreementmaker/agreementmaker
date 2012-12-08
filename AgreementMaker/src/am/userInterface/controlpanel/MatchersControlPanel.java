@@ -191,11 +191,13 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 				}
 				if(uiPane.getRightComponent() instanceof ExplanationSidebar)
 				{
-					ExplanationSidebar p=(ExplanationSidebar)uiPane.getRightComponent();
+					ExplanationSidebar p=new ExplanationSidebar();
 					if(overallStructure != null) {
 						p.tree = overallStructure.tree;
 						p.init();
 					}
+
+					uiPane.remove(Core.getUI().getUISplitPane().getRightComponent());
 					uiPane.setRightComponent(p);
 				}
 				else {

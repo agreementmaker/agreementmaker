@@ -8,6 +8,8 @@ import am.app.mappingEngine.Mapping;
 public class SemanticExpln {
 	
 
+	static int rowSize;
+	static int colSize;
 	private ExplanationNode[][] classExplanationMatrix;
 	private ExplanationNode[][] propertiesExplanationMatrix;
 
@@ -34,8 +36,15 @@ public class SemanticExpln {
 	 */
 	public static ExplanationNode findUniversalPaths( Alignment<Mapping> alignmentMappings){
 		ExplanationNode[][] nodeMatrix = null;
-
-		ExplanationNode returnStructure = SemanticExpln.getInstance().getClassExplanationMatrix()[1][1].deepCopyStructure();
+		ExplanationNode returnStructure = null;
+		for(int i =0;i<rowSize;i++){
+			for(int j=0;j<colSize;j++) {
+				if(SemanticExpln.getInstance().getClassExplanationMatrix()[i][j] != null) {
+					returnStructure = SemanticExpln.getInstance().getClassExplanationMatrix()[i][j].deepCopyStructure();
+					break;
+				}
+			}
+		}
 		returnStructure.setUniversalUse(true);
 		
 		for(Mapping m:alignmentMappings){
@@ -101,7 +110,8 @@ public class SemanticExpln {
 
 	public void setClassExplanationMatrix(int row, int col) {
 		this.classExplanationMatrix = new ExplanationNode[row][col];
-
+		this.rowSize = row;
+		this.colSize = col;
 	}
 
 	public ExplanationNode[][] getPropertiesExplanationMatrix() {
@@ -110,6 +120,8 @@ public class SemanticExpln {
 
 	public void setPropertiesExplanationMatrix(int row, int col) {
 		this.propertiesExplanationMatrix = new ExplanationNode[row][col];
+		this.rowSize = row;
+		this.colSize = col;
 	}
 
 	
