@@ -38,15 +38,15 @@ import am.extension.partition.CustomNode;
 
 public class OntoProcessing {
 	
-	public static double percentage = 0.1;
+	public static double percentage = 0.5;
 	
 	public static final double threshold = 0.8;
-	public static final double proximityThreshold = 0.6;
+	public static final double proximityThreshold = 0.1;
 	public double globalHighestCohesion = 0.0;
 	public int globalHighestCohesionIndex = 0;
-	public int iterationOfBlockCreation = 0;
-	public CouplingTracker[][] couplingTracker= null;
-	public static AncestorTracker[][] ancestorTracker = null;
+    int iterationOfBlockCreation = 0;
+	int[][] ancestors = null;
+	
 
 	/**
 	 * @param args
@@ -87,6 +87,7 @@ public class OntoProcessing {
 			parents = addParentstoList(firstClassElem, parents);
 				
 			CustomNode cn = new CustomNode(firstClassElem,parents,localName,firstClassElem.getDepth());
+			
 			listofNodes.add(cn);
 			indexCount++;
 		}
@@ -151,7 +152,7 @@ public class OntoProcessing {
 	public static Node getCommonAncestor(CustomNode node1, CustomNode node2)
 	{
 		ArrayList<Node> parents1 = node1.ancestorList;
-		ArrayList<Node> parents2 = node2.ancestorList;
+		
 		Node sca = null;
 		
 		boolean chkFlag = false;
@@ -159,11 +160,11 @@ public class OntoProcessing {
 		//System.out.println("Node1 ancestor list size ="+parents1.size());
 		//System.out.println("Node2 ancestor list size ="+parents2.size());
 		
-		for(int i=0; i<parents1.size(); i++)
+		for(int i=0; i<node1.ancestors.length; i++)
 		{
-			for(int j=0; j<parents2.size(); j++)
+			for(int j=0; j<node2.ancestors.length; j++)
 			{
-				if(parents1.get(i).equals(parents2.get(j)))
+				if(node1.ancestors[i]==node2.ancestors[j])
 				{
 					sca = ((List<Node>)parents1).get(i);
 					chkFlag = true;
@@ -207,24 +208,66 @@ public class OntoProcessing {
 		return cohesive_val;
 	}*/
 	
+	public static Node getCommonAncestor1(CustomNode node1, CustomNode node2)
+	{
+		ArrayList<Node> parents1 = node1.ancestorList;
+		
+		Node sca = null;
+		
+		boolean chkFlag = false;
+		//System.out.println("Common ancestor computation for "+node1.localName +" and "+node2.localName);
+		//System.out.println("Node1 ancestor list size ="+parents1.size());
+		//System.out.println("Node2 ancestor list size ="+parents2.size());
+		
+		for(int i=0; i<node1.ancestors.length; i++)
+		{
+			for(int j=0; j<node2.ancestors.length; j++)
+			{
+				if(node1.ancestors[i]==node2.ancestors[j])
+				{
+					sca = ((List<Node>)parents1).get(i);
+					chkFlag = true;
+					break;
+				}	
+			}
+			if(chkFlag == true)
+				break;
+		}
+		
+		return sca;
+	}
+
 	public double calculateCohesivenesswithnBlock(ArrayList<CustomNode> cn)								//cn defines a block of concepts
     {
+		
+		  if(cn.size()==1) return 100000;
           double cohesive_val;
           double linkWeight = 0;
           CustomNode first;
           CustomNode second;
- 
+          Node ancestor = null;
+          int firstDepth,secondDepth,aDepth;;
           for (int i=0;i<cn.size();i++)																	//For number of blocks created from original ontology
           {	  
         	  for(int j=0;j<cn.size();j++)																//For each element within that block
               {	
-        		  if(Math.abs(cn.get(i).n.getDepth() - cn.get(j).n.getDepth()) <= 1)
+        		  
+        		  first = cn.get(i);
+                  second = cn.get(j);
+                  firstDepth = first.n.getDepth();
+                  secondDepth = second.n.getDepth();
+        		  if(Math.abs(firstDepth - secondDepth) <= 1)
         		  {
-	        		  first = cn.get(i);
-	                  second = cn.get(j);
+	        		  
+	                  
+	                  if(first.equals(null)||second.equals(null)) continue;
+	                 
+	                	 
+	                     
+	                	 aDepth = getCommonAncestor(first,second).getDepth();
 	                  
 	                  //System.out.println("Calculating link weight for "+first.localName +" and "+second.localName);
-	                  linkWeight += (2*ancestorTracker[first.indexOfNode][second.indexOfNode].commonAncestor.getDepth()+1)/(double)(first.n.getDepth()+1+second.n.getDepth()+1);
+	                  linkWeight += (2*aDepth+1)/(double)(firstDepth+1+secondDepth+1);
 	                  //System.out.println("Linkweight after iteration #"+(j+1)+" is "+linkWeight );
         		  }
 
@@ -238,27 +281,37 @@ public class OntoProcessing {
 
 	public static double calculateCoupling(ArrayList<CustomNode> cns1,ArrayList<CustomNode> cns2)
 	{
+		if(cns1.size()==1 && cns2.size()==1) return 100000;
 	      double cohesive_val;
           double linkWeight = 0;
 	      CustomNode first;
 	      CustomNode second;
-
+          
+          int firstDepth,secondDepth,aDepth;;
 	      for (int i=0;i<cns1.size();i++)
 	    	  for(int j=0;j<cns2.size();j++)
 	          {
-	    		  if(Math.abs(cns1.get(i).n.getDepth()-cns2.get(j).n.getDepth()) <= 1)
+	    		  first = cns1.get(i);
+	              second = cns2.get(j);
+	    		  if(Math.abs(first.n.getDepth()-second.n.getDepth()) <= 1)
         		  {
-		              first = cns1.get(i);
-		              second = cns2.get(j);
 		              
-		              //System.out.println("Calculating link weight for "+first.localName +" and "+second.localName);
-		              
+		              firstDepth = first.n.getDepth();
+		              secondDepth = second.n.getDepth();
+		              Node ancestor = null;
+		              if(first.equals(null)||second.equals(null)) continue;
+	                  
+	                         aDepth = getCommonAncestor(first,second).getDepth();
+		                  
+	                  
+	                  
 		              //System.out.println("Nr :"+2*(getCommonAncestor(first,second).getDepth()));
 		              //System.out.println("Dr :"+(first.n.getDepth())+(second.n.getDepth()));
-		              double linkW = 2*(ancestorTracker[first.indexOfNode][second.indexOfNode].commonAncestor.getDepth()+1)/(double)(first.n.getDepth()+1+second.n.getDepth()+1)/(double)(first.n.getDepth()+1+second.n.getDepth()+1);
+		              double linkW = 2*(aDepth)/(double)(firstDepth+1+secondDepth+1)/(double)(firstDepth+1+secondDepth+1);
 		              //linkWeight += (2*(getCommonAncestor(first,second).getDepth()))/((first.n.getDepth())+(second.n.getDepth()));
 		              linkWeight+=linkW;
         		  }
+	    		  
 	          }
 	                
 	      cohesive_val = linkWeight/(cns1.size()*cns2.size());
@@ -285,7 +338,7 @@ public class OntoProcessing {
 		ArrayList<ArrayList<CustomNode>> a = new ArrayList<ArrayList<CustomNode>>(cns.size());
 		ArrayList<CustomNode> cn ;
 		ArrayList<CustomNode> temp = new ArrayList<CustomNode>();
-		ancestorTracker = constructAncestorMatrix(cns);
+		
 		double tempCoh = 0.0;
         globalHighestCohesion = 0.0;
 		globalHighestCohesionIndex=0;
@@ -295,6 +348,7 @@ public class OntoProcessing {
 			cn = new ArrayList<CustomNode>();
 			temp.add(cns.get(i));
 			 tempCoh = calculateCohesivenesswithnBlock(temp);
+			 temp.remove(0);
 			 cns.get(i).cohesion  = tempCoh;
 			 cns.get(i).indexOfBlock = i;
 			 
@@ -322,9 +376,11 @@ public class OntoProcessing {
 		int temp_blocksize = a.size();
 		int count = 0;
 		
-		couplingTracker = constructCouplingTracker(a);
+		//couplingTracker = constructCouplingTracker(a);
+		
 		while(a.size() > percentage*size)																//Restricting the no of elements to be added within a block
 		{	
+			
 			if(temp_blocksize == a.size() && count!=0)
 				break;
 			System.out.println(a.size());
@@ -340,14 +396,15 @@ public class OntoProcessing {
 				run = a.size()-2;
 			else 
 				run = a.size()-1;
-		    
+		    coupling = 0;
 			//for(int i=index;i<a.size();i++)	
 				for(int j=0;j<=run;j++)
 				{	
 					    System.out.println(j);
 					    if(j==index) continue;
+					    
 						temp = calculateCoupling(a.get(index), a.get(j));
-
+                        if(j==0) coupling=temp;
 						System.out.println("Temp coupling value returned from calCoupling fn :"+temp);
 						//coupling = temp>coupling?temp:coupling;
 						System.out.println("Value of coupling :"+coupling);
@@ -377,6 +434,7 @@ public class OntoProcessing {
 			a.remove(indexofcoup);
 		//	couplingTracker = updateCouplingTracker(a, couplingTracker, index, indexofcoup);
 			//Reusing tempCoh
+			
 			tempCoh = 0;
 			for(int l=0;l<a.size();l++)
 				if(a.get(l).get(0).cohesion > tempCoh)
@@ -410,7 +468,7 @@ public class OntoProcessing {
 		}
 		tempCoh =  calculateCohesivenesswithnBlock(a.get(i));
 		a.get(i).get(0).cohesion = tempCoh;
-		if(i<j)
+		/*if(i<j)
 		for(int l=i+1;l<a.size();l++)
 		{
 			a.get(l).get(0).indexOfBlock = l-1;
@@ -422,7 +480,7 @@ public class OntoProcessing {
 				a.get(l).get(0).indexOfBlock = l-1;
 			}
 			
-		
+		*/
 			    
 
 		return a;
@@ -453,9 +511,9 @@ public class OntoProcessing {
         }
     }
 	
-	public static ArrayList<CustomNode> testOntoScalability(String sourceOntFile)
+	public static ArrayList<CustomNode> testOntoScalability(Ontology onto)
 	{
-		Ontology onto = OntoTreeBuilder.loadOWLOntology(sourceOntFile);
+		
 		ArrayList<CustomNode> listofNodes = new ArrayList<CustomNode>();
 		ArrayList<Node> parents = null;
 		
@@ -480,7 +538,7 @@ public class OntoProcessing {
 		int classCount = 1;
 		for(CustomNode customNode : listofNodes)
 		{	
-			System.out.println("Element#"+classCount+" --> "+customNode.localName+ " with depth="+customNode.depth);
+			System.out.println("Element#"+classCount+" --> "+customNode.localName+ " with depth="+customNode.depth+"with Index "+customNode.n.getIndex());
 			System.out.println("\t With ancestors");
 			
 			for(int i=0; i<customNode.ancestorList.size(); i++)
@@ -750,15 +808,15 @@ public class OntoProcessing {
 	
 	
 	
-	@SuppressWarnings("null")
+	@SuppressWarnings({ "null", "unused" })
 	public static void main(String[] args) throws Exception {
-		// TODO Auto-generated method stub
-		
+		long seconds = System.nanoTime();
+		@SuppressWarnings("unused")
 		String ontology = "C:\\Users\\KRISHNA DAS\\Desktop\\AgreementMaker\\ontologies\\OAEI2010_OWL_RDF\\Anatomy Track\\mouse_anatomy_2010.owl";
-		String ontology1 = "C:\\Users\\KRISHNA DAS\\Desktop\\AgreementMaker\\ontologies\\OAEI2010_OWL_RDF\\Benchmark Track\\205\\onto.rdf";
+		String ontology1 = "C:\\Users\\KRISHNA DAS\\Desktop\\AgreementMaker\\ontologies\\OAEI2010_OWL_RDF\\Anatomy Track\\nci_anatomy_2010.owl";
 		
-		Ontology source = OntoTreeBuilder.loadOWLOntology("C:\\Users\\KRISHNA DAS\\Desktop\\AgreementMaker\\ontologies\\OAEI2010_OWL_RDF\\Benchmark Track\\101\\onto.rdf"); // update the path to your own
-		Ontology target = OntoTreeBuilder.loadOWLOntology("C:\\Users\\KRISHNA DAS\\Desktop\\AgreementMaker\\ontologies\\OAEI2010_OWL_RDF\\Benchmark Track\\205\\onto.rdf"); // update the path to your own
+	Ontology source = OntoTreeBuilder.loadOWLOntology(ontology); // update the path to your own
+	Ontology target = OntoTreeBuilder.loadOWLOntology(ontology1); // update the path to your own
 
 		
 	//	DisplayOntMappings.openOntology("C:\\Academic\\Ist Semester\\Data and Web Semantics\\BigOntolgies\\oaei2012_FMA_whole_ontology.owl");
@@ -767,13 +825,13 @@ public class OntoProcessing {
 		//OntoProcessing.traverseOntology(ontology1);
 		
 		//For Testing purpose
-		ArrayList<CustomNode> testList = testOntoScalability("C:\\Users\\KRISHNA DAS\\Desktop\\AgreementMaker\\ontologies\\OAEI2010_OWL_RDF\\Benchmark Track\\101\\onto.rdf");
+		ArrayList<CustomNode> testList = testOntoScalability(source);
 		
 		OntoProcessing testObj = new OntoProcessing();
 		ArrayList<ArrayList<CustomNode>> sourceBlocks = testObj.createBlocks(testList);
 		
 		
-        ArrayList<CustomNode> testList2 = testOntoScalability("C:\\Users\\KRISHNA DAS\\Desktop\\AgreementMaker\\ontologies\\OAEI2010_OWL_RDF\\Benchmark Track\\205\\onto.rdf");
+        ArrayList<CustomNode> testList2 = testOntoScalability(target);
 		
 		OntoProcessing testObj2 = new OntoProcessing();
 		ArrayList<ArrayList<CustomNode>> targetBlocks = testObj.createBlocks(testList2);
@@ -802,18 +860,40 @@ public class OntoProcessing {
 	            }
 	            	
 			}
-		    
+		for(int k=0;k<finalMatrix.getRows();k++)
+		{    
+			
+		    double max=0;
+		    double index=0;
+		    double sim = 0;
+			for(int l=0;l<finalMatrix.getColumns();l++)
+			{
+			
+				{  sim = finalMatrix.get(k, l).getSimilarity();
+				if(sim>max)
+				{max = sim; index = l;
+				}
+			}
+					 
+					     
+		    }
+				
+				
 		
 		Alignment<Mapping> al = s.scanMatrix(finalMatrix);
 		s.matchStart();
 		s.setClassesAlignmentSet(al);
 		s.matchEnd();
 	
+		seconds = System.nanoTime() - seconds;
+		
+		System.out.println(seconds);
+		
 		
 				
 			
 		
-		
+		}		
 	}
 
 
