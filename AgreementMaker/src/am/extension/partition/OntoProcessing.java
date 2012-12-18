@@ -46,6 +46,7 @@ public class OntoProcessing {
 	public int globalHighestCohesionIndex = 0;
     int iterationOfBlockCreation = 0;
 	int[][] ancestors = null;
+	double[][] coupling = null;
 	
 
 	/**
@@ -208,7 +209,7 @@ public class OntoProcessing {
 		return cohesive_val;
 	}*/
 	
-	public static Node getCommonAncestor1(CustomNode node1, CustomNode node2)
+	public static int getCommonAncestor1(CustomNode node1, CustomNode node2)
 	{
 		ArrayList<Node> parents1 = node1.ancestorList;
 		
@@ -234,7 +235,7 @@ public class OntoProcessing {
 				break;
 		}
 		
-		return sca;
+		return sca.getIndex();
 	}
 
 	public double calculateCohesivenesswithnBlock(ArrayList<CustomNode> cn)								//cn defines a block of concepts
@@ -549,7 +550,7 @@ public class OntoProcessing {
 			System.out.println("\n");
 		}
 		
-		
+		Collections.sort(listofNodes, new CustomNodeComparator());
 		
 		/*List<Node> sourceClassList = onto.getClassesList();
 		Node firstClassElem = null;
@@ -833,6 +834,21 @@ public class OntoProcessing {
 		
         ArrayList<CustomNode> testList2 = testOntoScalability(target);
 		
+        int size1 = testList.size();
+        int size2 = testList2.size();
+        CustomNode c1 = null;
+        CustomNode c2 = null;
+        Node n;
+        for(int i=0;i<size1;i++)
+			for(int j=0;j<size2;j++)
+			{
+				c1 = testList.get(i);
+				c2 = testList.get(j);
+				if(Math.abs(c1.depth-c2.depth)<=1)
+					n = getCommonAncestor(c1,c2);
+				
+			}
+				
 		OntoProcessing testObj2 = new OntoProcessing();
 		ArrayList<ArrayList<CustomNode>> targetBlocks = testObj.createBlocks(testList2);
 		SimilarityComputer s = new SimilarityComputer();
