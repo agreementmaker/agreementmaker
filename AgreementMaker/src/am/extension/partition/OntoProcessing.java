@@ -42,7 +42,7 @@ public class OntoProcessing {
 	
 	public static final double threshold = 0.8;
 	public static final double proximityThreshold = 0.1;
-	public double globalHighestCohesion = 0.0;
+	public double globalHighestCohesion = 100000;
 	public int globalHighestCohesionIndex = 0;
     int iterationOfBlockCreation = 0;
 	int[][] ancestors = null;
@@ -439,7 +439,12 @@ public class OntoProcessing {
 			tempCoh = 0;
 			for(int l=0;l<a.size();l++)
 				if(a.get(l).get(0).cohesion > tempCoh)
-				        globalHighestCohesionIndex = l;		
+				{
+				        globalHighestCohesionIndex = l;  
+				        tempCoh = a.get(l).get(0).cohesion;
+				}
+				        
+				        
 			
 			for(int x=0; x<a.size(); x++)
 			{	
@@ -469,6 +474,26 @@ public class OntoProcessing {
 		}
 		tempCoh =  calculateCohesivenesswithnBlock(a.get(i));
 		a.get(i).get(0).cohesion = tempCoh;
+		if(tempCoh > globalHighestCohesion)
+		{
+			globalHighestCohesion = tempCoh;
+			globalHighestCohesionIndex = i;
+		}
+		else
+		{
+			double m=0;
+			m= a.get(0).get(0).cohesion;
+			globalHighestCohesionIndex = 0;
+		   for(int n=1;n<a.size();n++)
+			   if(a.get(n).get(0).cohesion > m )
+			   {
+				   globalHighestCohesionIndex = n;
+				   globalHighestCohesion = a.get(n).get(0).cohesion;
+				   m = a.get(n).get(0).cohesion;
+			   }
+			
+			   
+		}
 		/*if(i<j)
 		for(int l=i+1;l<a.size();l++)
 		{
@@ -839,7 +864,7 @@ public class OntoProcessing {
         CustomNode c1 = null;
         CustomNode c2 = null;
         Node n;
-        for(int i=0;i<size1;i++)
+       /* for(int i=0;i<size1;i++)
 			for(int j=0;j<size2;j++)
 			{
 				c1 = testList.get(i);
@@ -848,7 +873,7 @@ public class OntoProcessing {
 					n = getCommonAncestor(c1,c2);
 				
 			}
-				
+		*/		
 		OntoProcessing testObj2 = new OntoProcessing();
 		ArrayList<ArrayList<CustomNode>> targetBlocks = testObj.createBlocks(testList2);
 		SimilarityComputer s = new SimilarityComputer();
