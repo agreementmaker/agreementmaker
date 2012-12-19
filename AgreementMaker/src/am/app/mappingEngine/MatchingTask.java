@@ -3,6 +3,7 @@ package am.app.mappingEngine;
 import java.util.ArrayList;
 import java.util.List;
 
+import am.Utility;
 import am.userInterface.matchingtask.MatchingTaskVisData;
 
 
@@ -96,5 +97,14 @@ public class MatchingTask {
 	
 	public void addManualAlignments(ArrayList<Mapping> alignments) throws Exception {
 		throw new RuntimeException ("FIX ME!!!!! (Implement me)");
+	}
+
+	public String getMatchingReport() {
+		StringBuilder report = new StringBuilder();
+		report.append("Matching Process Complete Succesfully!\n\n");
+		report.append("Classes alignments found: ").append(selectionResult.classesAlignment.size()).append("\n");
+		report.append("Properties alignments found: ").append(selectionResult.propertiesAlignment.size()).append("\n");
+		
+		return report.toString();
 	}
 }

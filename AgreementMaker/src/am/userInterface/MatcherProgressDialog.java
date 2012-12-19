@@ -235,7 +235,7 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 			Core.getInstance().addMatchingTask(task);
 		}
 		
-		matcherReport.append( task.matchingAlgorithm.getReport() );
+		matcherReport.append( task.getMatchingReport() );
 		cancelButton.setEnabled(false);
 		okButton.setEnabled(true);
 		
