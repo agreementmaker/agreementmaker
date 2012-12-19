@@ -10,6 +10,7 @@ public class DefaultSelectionParameters {
 	public boolean alignClasses = true;
 	public boolean alignProperties = true;
 	
-	public MatcherResult inputResult;
+	public MatchingTask matchingTask;
 	
+	public MatcherResult inputResult;
 }

@@ -35,6 +35,7 @@ import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.parsing.OutputController;
@@ -212,13 +213,13 @@ public class ExportDialog extends JDialog implements ActionListener{
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
 		// get the currently selected matcher
-		List<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
-		AbstractMatcher selectedMatcher;
+		List<MatchingTask> list = Core.getInstance().getMatchingTasks();
+		MatchingTask selectedTask;
 		int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
-		selectedMatcher = list.get(rowsIndex[0]); // we only care about the first matcher selected
+		selectedTask = list.get(rowsIndex[0]); // we only care about the first matcher selected
 		
 		// elements of the dialog (in order from left to right, top to bottom)
-		lblMatcher = new JLabel("Exporting \"" + selectedMatcher.getRegistryEntry().getMatcherName() + "\"");
+		lblMatcher = new JLabel("Exporting \"" + selectedTask.matchingAlgorithm.getName() + "\"");
 		
 		lblFilename = new JLabel("Filename: ");
 		txtFilename = new JTextField();

@@ -10,6 +10,7 @@ import am.app.lexicon.LexiconSynSet;
 import am.app.lexicon.subconcept.SynonymTermLexicon;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.AbstractMatcher.MatcherCategory;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
@@ -51,6 +52,9 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	protected void initializeVariables() {
 		super.initializeVariables();
 		needsParam = true;
+		
+		setName("Parametric String Matcher");
+		setCategory(MatcherCategory.SYNTACTIC);
 		
 		//features
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);

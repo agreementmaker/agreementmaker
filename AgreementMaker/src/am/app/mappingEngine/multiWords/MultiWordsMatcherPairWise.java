@@ -21,6 +21,7 @@ import am.app.lexicon.LexiconSynSet;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.AbstractMatcher.MatcherCategory;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.MappedNodes;
 import am.app.mappingEngine.Mapping;
@@ -78,12 +79,19 @@ public class MultiWordsMatcherPairWise extends AbstractMatcher {
 		super();
 		needsParam = true;
 		if(param.storeProvenance){provenanceString="\t********Vector-Based MultiWords Matcher********\n";}
+		
+		setName("Vector-based Multi-words Matcher PairWise");
+		setCategory(MatcherCategory.SYNTACTIC);
+		
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 	}
 
 	public MultiWordsMatcherPairWise( MultiWordsPairWiseParameters param_new ) {
 		super(param_new);
 		if(param.storeProvenance){provenanceString="\t********Vector-Based MultiWords Matcher********\n";}
+		
+		setName("Vector-based Multi-words Matcher PairWise");
+		setCategory(MatcherCategory.SYNTACTIC);
 		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 	}
 

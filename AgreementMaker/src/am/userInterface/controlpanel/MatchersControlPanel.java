@@ -31,6 +31,7 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.SelectionResult;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
@@ -43,11 +44,13 @@ import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.ExportDialog;
+import am.userInterface.ImportDialog;
 import am.userInterface.MatcherParametersDialog;
 import am.userInterface.MatcherProgressDialog;
 import am.userInterface.MatchingProgressDisplay;
 import am.userInterface.QualityEvaluationDialog;
 import am.userInterface.matchingtask.MatchingTaskCreatorDialog;
+import am.userInterface.table.MatchersControlPanelTableModel;
 import am.userInterface.table.MatchersTablePanel;
 
 public class MatchersControlPanel extends JPanel implements ActionListener, MouseListener {
@@ -55,19 +58,19 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 	private static final long serialVersionUID = -2258009700001283026L;
 
 
-	private JButton matchButton = new JButton("Match!");;
+	private JButton btnMatch = new JButton("Match!");;
 	private MatchersTablePanel matchersTablePanel;
 
-	private JButton newMatching = new JButton("New");;
-	private JButton delete = new JButton("Delete");;
-	private JButton clearMatchings = new JButton("Clear All");
-	private JButton copyButton = new JButton("Copy");
-	private JButton editMatrixButton = new JButton("Edit Similarity Matrix");
-	private JButton refEvaluate = new JButton("Reference Evaluation");
-	private JButton qualityEvaluationButton = new JButton("Quality Evaluation");
-	private JButton exportAlignmentsButton = new JButton("Export");
-	private JButton importAlignmentsButton = new JButton("Import");
-	private JButton thresholdTuning = new JButton("Tuning");;
+	private JButton btnNewMatching = new JButton("New");;
+	private JButton btnDelete = new JButton("Delete");;
+	private JButton btnClearAllMatchings = new JButton("Clear All");
+	private JButton btnCopy = new JButton("Copy");
+	private JButton btnEditMatrix = new JButton("Edit Similarity Matrix");
+	private JButton btnRefEvaluate = new JButton("Reference Evaluation");
+	private JButton btnQualityEvaluation = new JButton("Quality Evaluation");
+	private JButton btnExportAlignments = new JButton("Export");
+	private JButton btnImportAlignments = new JButton("Import");
+	private JButton btnThresholdTuning = new JButton("Tuning");;
 	
 	public MatchersControlPanel() {
 		super();
@@ -85,31 +88,31 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		matchersTablePanel.getTable().addMouseListener(this);
 		
 		//JPANEL EDIT MATCHINGS
-		matchButton.addActionListener(this);
-		newMatching.addActionListener(this);
-		delete.addActionListener(this);
-		refEvaluate.addActionListener(this);
-		clearMatchings.addActionListener(this);
-		copyButton.addActionListener(this);
-		editMatrixButton.addActionListener(this);
-		qualityEvaluationButton.addActionListener(this);
-		exportAlignmentsButton.addActionListener(this);
-		importAlignmentsButton.addActionListener(this);
-		thresholdTuning.addActionListener(this);
+		btnMatch.addActionListener(this);
+		btnNewMatching.addActionListener(this);
+		btnDelete.addActionListener(this);
+		btnRefEvaluate.addActionListener(this);
+		btnClearAllMatchings.addActionListener(this);
+		btnCopy.addActionListener(this);
+		btnEditMatrix.addActionListener(this);
+		btnQualityEvaluation.addActionListener(this);
+		btnExportAlignments.addActionListener(this);
+		btnImportAlignments.addActionListener(this);
+		btnThresholdTuning.addActionListener(this);
 		
 		JPanel fauxToolBar = new JPanel();  // a toolbar wannabe
 		fauxToolBar.setLayout(new FlowLayout(FlowLayout.LEADING));
-		fauxToolBar.add(matchButton);
-		fauxToolBar.add(newMatching);
-		fauxToolBar.add(copyButton);
-		fauxToolBar.add(delete);
-		fauxToolBar.add(clearMatchings);
-		fauxToolBar.add(exportAlignmentsButton);
-		fauxToolBar.add(refEvaluate);
-		fauxToolBar.add(qualityEvaluationButton);
-		fauxToolBar.add(exportAlignmentsButton);
-		fauxToolBar.add(importAlignmentsButton);
-		fauxToolBar.add(thresholdTuning);
+		fauxToolBar.add(btnMatch);
+		fauxToolBar.add(btnNewMatching);
+		fauxToolBar.add(btnCopy);
+		fauxToolBar.add(btnDelete);
+		fauxToolBar.add(btnClearAllMatchings);
+		fauxToolBar.add(btnExportAlignments);
+		fauxToolBar.add(btnRefEvaluate);
+		fauxToolBar.add(btnQualityEvaluation);
+		fauxToolBar.add(btnExportAlignments);
+		fauxToolBar.add(btnImportAlignments);
+		fauxToolBar.add(btnThresholdTuning);
 		
 		// Layout
 		layout.setHorizontalGroup( layout.createParallelGroup() 
@@ -129,34 +132,34 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		try {
 			Object obj = e.getSource();
 
-			if(obj == matchButton) {
-				match();
+			if(obj == btnMatch) {
+				btnMatchClick();
 			}
-			else if(obj == delete) {
-				delete();
+			else if(obj == btnDelete) {
+				btnDeleteClick();
 			}
-			else if(obj == refEvaluate) {
-				evaluate();
+			else if(obj == btnRefEvaluate) {
+				btnEvaluateClick();
 			}
-			else if(obj == clearMatchings) {
+			else if(obj == btnClearAllMatchings) {
 				clearAll();
 			}
-			else if (obj == copyButton) {
+			else if (obj == btnCopy) {
 				copy();
 			}
-			else if(obj == exportAlignmentsButton) {
+			else if(obj == btnExportAlignments) {
 				export();
 			}
-			else if(obj == importAlignmentsButton) {
-				importa();
+			else if(obj == btnImportAlignments) {
+				btnImportClick();
 			}
-			else if(obj == newMatching) {
+			else if(obj == btnNewMatching) {
 				newManual();
 			}
-			else if(obj == qualityEvaluationButton) {
+			else if(obj == btnQualityEvaluation) {
 				qualityEvaluation();
 			}
-			else if(obj == thresholdTuning) {
+			else if(obj == btnThresholdTuning) {
 				tuning();
 			}
 		}
@@ -286,7 +289,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		new MatcherProgressDialog(t);
 	}
 	
-	public void delete() throws Exception {
+	public void btnDeleteClick() throws Exception {
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
 		if(rowsIndex.length == 0) {
 			Utility.displayErrorPane("No matchers selected", null);
@@ -334,23 +337,14 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		else 	new ExportDialog(Core.getUI().getUIFrame()); //demand control to the savefile dialog which since is modal will take care of everything
 	}
 	
-	public void importa() throws Exception {
+	public void btnImportClick() throws Exception {
 		
 		if(!Core.getInstance().ontologiesLoaded() ) {
 			Utility.displayErrorPane("You have to load Source and Target ontologies before importing alignments.\nClick on File Menu and select Open Ontology functions ", null);
 			return;
 		}
 		
-		//ImportDialog lfd = new ImportDialog();
-		//AbstractMatcher importedMatcher = lfd.getLoadedMatcher();
-		
-/*		if( importedMatcher == null ) return;
-		
-		importedMatcher.setSourceOntology( Core.getInstance().getSourceOntology() );
-		importedMatcher.setTargetOntology( Core.getInstance().getTargetOntology() );
-		
-		matchersTablePanel.addMatcher(importedMatcher);
-		Core.getUI().redisplayCanvas();*/
+		new ImportDialog();
 	}
 	
 	public void copy() throws Exception{
@@ -373,7 +367,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		}
 	}
 	
-	public void evaluate() throws Exception{
+	public void btnEvaluateClick() throws Exception{
 		if(!Core.getInstance().ontologiesLoaded() ) {
 			Utility.displayErrorPane("You have to load Source and Target ontologies before reference evaluation.\nClick on File Menu and select Open Ontology functions ", null);
 			return;
@@ -447,7 +441,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 	//WARNING THIS METHOD IS INVOKED BY matchSelected(), and by newManual(), basically this 
 	//method should be invoked anytime we want to invoke a specific matcher, 
 	// like if we selected it and clicked match button.
-	public void match() throws Exception{
+	public void btnMatchClick() throws Exception{
 		
 		// 1. Make sure ontologies are loaded.
 		if(!Core.getInstance().ontologiesLoaded() ) {
@@ -467,6 +461,16 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		
 		final AbstractMatcher currentMatcher;
 		final MatchingTask matchingTask = dialog.getMatchingTask();
+		
+		// Fill inputTasks
+		int[] selectedTasks = getTablePanel().getTable().getSelectedRows();
+		MatchersControlPanelTableModel model = (MatchersControlPanelTableModel)getTablePanel().getTable().getModel();
+		for( int i : selectedTasks ) {
+			if( matchingTask.inputMatchingTasks == null ) {
+				matchingTask.inputMatchingTasks = new LinkedList<MatchingTask>();
+			}
+			matchingTask.inputMatchingTasks.add(model.data.get(i));
+		}
 		
 		if(matchingTask == null) return;
 			
@@ -665,6 +669,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			}
 			
 			Core.getInstance().getMatcherResults().clear();
+			Core.getInstance().getMatchingTasks().clear();
 			
 			MatchingTask t = new MatchingTask(userMatcher, userMatcher.getParam(), 
 					new MwbmSelection(), new DefaultSelectionParameters());

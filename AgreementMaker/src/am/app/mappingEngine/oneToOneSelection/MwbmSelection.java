@@ -21,6 +21,11 @@ public class MwbmSelection extends AbstractSelectionAlgorithm {
 		return "Maximum Weighted Bi-partite Matching Selection";
 	}
 	
+	@Override
+	public String toString() {
+		return getName();
+	}
+	
 	protected Alignment<Mapping> oneToOneMatching(SimilarityMatrix matrix) {
 		Alignment<Mapping> aset = new Alignment<Mapping>(params.inputResult.getSourceOntology().getID(), params.inputResult.getTargetOntology().getID());
 		double[][] similarityMatrix = matrix.getCopiedSimilarityMatrix();  // in order of our selection algorithm to be scalable, this has to change! we cannot allocate an NxM matrix if N and M are large! - Cosmin.

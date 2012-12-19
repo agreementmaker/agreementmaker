@@ -191,7 +191,8 @@ public class MatchersTablePanel extends JPanel implements MatcherChangeListener 
 		TableColumn inputColumn = table.getColumnModel().getColumn(MatchersControlPanelTableModel.INPUTMATCHERS);
     	InputMatchersEditor mc = (InputMatchersEditor)inputColumn.getCellEditor();
     	mc.addEditor(task.matchingAlgorithm);
-    	insertedRows(task.matchingAlgorithm.getIndex(), task.matchingAlgorithm.getIndex());
+    	final int tableSize = ((MatchersControlPanelTableModel)table.getModel()).data.size();
+    	insertedRows(0, tableSize);
 	}
 	
     public void addMatcher(AbstractMatcher a) {
@@ -261,14 +262,12 @@ public class MatchersTablePanel extends JPanel implements MatcherChangeListener 
 	public void matcherChanged(MatchingTaskChangeEvent e) {
 		if( e.getEvent() == EventType.MATCHER_ADDED ) {
 			addTask(e.getTask());
-		}
-		
-		for( int i =0; i < 10; i++) {
-			
+			repaint();
 		}
 		
 		if( e.getEvent() == EventType.MATCHER_REMOVED ) {
 			removeTask(e.getTask());
+			repaint();
 		}
 	}
 

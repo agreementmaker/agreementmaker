@@ -49,6 +49,9 @@ public class GroupFinderMatcher extends AbstractMatcher {
 		
 		source_root_list = new ArrayList<Node>();
 		target_root_list = new ArrayList<Node>();
+		
+		setName("Group Finder Matcher");
+		setCategory(MatcherCategory.STRUCTURAL);
 	}
 	
 	/**

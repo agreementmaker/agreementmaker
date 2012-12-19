@@ -13,6 +13,7 @@ import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.AbstractMatcher.MatcherCategory;
 import am.app.mappingEngine.Combination.CombinationParameters;
 import am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralParameters;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
@@ -48,6 +49,9 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		super();
 		needsParam = true;
 		param = new OAEI2010MatcherParameters(OAEI_Track.AllMatchers); // should this be here?? Probably not.
+		
+		setName("OAEI 2010");
+		setCategory(MatcherCategory.HYBRID);
 	}
 	
 	@Override

@@ -1,6 +1,7 @@
 package am.app.mappingEngine;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import am.userInterface.matchingtask.MatchingTaskVisData;
 
@@ -27,6 +28,8 @@ public class MatchingTask {
 	public SelectionResult				selectionResult;
 	public MatchingTaskVisData			visData;
 	public int ID;
+	
+	public List<MatchingTask>			inputMatchingTasks;
 	
 	/**
 	 * A short label for this MatchingTask.

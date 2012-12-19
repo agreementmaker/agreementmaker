@@ -43,6 +43,9 @@ public class BasicStructuralSelectorMatcher extends AbstractMatcher {
 		// requires one (and only one) alignment 
 		minInputMatchers = 1;
 		maxInputMatchers = 1;
+		
+		setName("Basic Structural Selector Matcher");
+		setCategory(MatcherCategory.STRUCTURAL);
 	}
 
 	/**

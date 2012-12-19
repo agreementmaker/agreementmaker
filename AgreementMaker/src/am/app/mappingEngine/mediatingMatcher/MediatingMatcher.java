@@ -38,6 +38,9 @@ public class MediatingMatcher extends AbstractMatcher {
 		super();
 		
 		needsParam = true;
+		
+		setName("Mediating Matcher");
+		setCategory(MatcherCategory.LEXICAL);
 	}
 	
 	@Override

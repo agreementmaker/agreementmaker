@@ -90,6 +90,9 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		needsParam = true;
 		
 		//progressDisplay = new MatchingProgressDisplay();		
+		
+		setName("Iterative Instance Structural Matcher");
+		setCategory(MatcherCategory.HYBRID);
 	}
 	
 	@Override

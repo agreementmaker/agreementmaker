@@ -25,6 +25,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SimpleSimilarityMatrix;
 import am.utility.Capsule;
@@ -99,17 +100,16 @@ public class OutputController {
 	 * @throws Exception
 	 */
 	public static void printDocumentOAEI(String completeFileName) throws Exception{
-		List<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
-		AbstractMatcher matcher;
+		List<MatchingTask> list = Core.getInstance().getMatchingTasks();
 
 		//TO DO:
 		//May be multiple matchers.
 		int [] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
-		matcher = list.get(rowsIndex[0]);
-		AlignmentOutput output = new AlignmentOutput(matcher.getAlignment(), completeFileName);
+		MatchingTask matchingTask = list.get(rowsIndex[0]);
+		AlignmentOutput output = new AlignmentOutput(matchingTask.selectionResult.getAlignment(), completeFileName);
 		String sourceUri = Core.getInstance().getSourceOntology().getURI();
 		String targetUri = Core.getInstance().getTargetOntology().getURI();
-		output.write(sourceUri, targetUri, sourceUri, targetUri, matcher.getName());
+		output.write(sourceUri, targetUri, sourceUri, targetUri, matchingTask.matchingAlgorithm.getName());
 	}
 	
 	/**

@@ -33,6 +33,9 @@ public class CombinationMatcher extends AbstractMatcher {
 		super.initializeVariables();
 		minInputMatchers = 2;
 		maxInputMatchers = ANY_INT;
+		
+		setName("Linear Weighted Combination");
+		setCategory(MatcherCategory.COMBINATION);
 	}
 
 	@Override

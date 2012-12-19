@@ -94,7 +94,16 @@ public class MatchingTaskCreatorDialog extends JDialog implements MessageDispatc
 		
 		if( canceled ) return null; // no matching task if the user cancels
 		
-		AbstractMatcher matchingAlgorithm = pnlMatchingAlgorithm.getMatcher();
+		AbstractMatcher matchingAlgorithm = null;
+		try {
+			matchingAlgorithm = pnlMatchingAlgorithm.getMatcher().getClass().newInstance();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		DefaultMatcherParameters matcherParameters = pnlMatchingAlgorithm.getMatcherParameters();
 		
 		SelectionAlgorithm selectionAlgorithm = pnlSelectionAlgorithm.getSelectionAlgorithm();

@@ -34,9 +34,11 @@ import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.SelectionResult;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
+import am.app.mappingEngine.utility.CopySelection;
 import am.parsing.OutputController;
 import am.parsing.OutputController.ImportAlignmentFormats;
 import am.userInterface.AppPreferences.FileType;
@@ -386,29 +388,32 @@ public class ImportDialog extends JDialog implements ActionListener{
 					referenceAlignmentMatcher.setMaxTargetAlign(referenceAlignmentMatcher.getDefaultMaxTargetRelations());
 					
 					final MatchingTask t = new MatchingTask(referenceAlignmentMatcher, referenceAlignmentMatcher.getParam(), 
-							new MwbmSelection(), new DefaultSelectionParameters());
+							new CopySelection(), new DefaultSelectionParameters());
 
 					
-					referenceAlignmentMatcher.addProgressDisplay(new MatchingProgressDisplay() {
+					/*referenceAlignmentMatcher.addProgressDisplay(new MatchingProgressDisplay() {
 						private boolean ignore = false;
 						@Override public void setProgressLabel(String label) {}
 						@Override public void setIndeterminate(boolean indeterminate) {}
 						@Override public void scrollToEndOfReport() {}
 						@Override public void propertyChange(PropertyChangeEvent evt) {}
 						@Override public void matchingStarted(AbstractMatcher m) {}
-						@Override public void matchingComplete() {
+						@Override synchronized public void matchingComplete() {
 							if( ignore ) return;
+							this.ignore = true;
 							if(!referenceAlignmentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
-																
+								SelectionResult selR = new SelectionResult();
+								selR.classesAlignment = referenceAlignmentMatcher.getClassAlignmentSet();
+								selR.propertiesAlignment = referenceAlignmentMatcher.getPropertyAlignmentSet();
+								t.selectionResult = selR;
 								Core.getInstance().addMatchingTask(t);
-							}	
-							referenceAlignmentMatcher.removeProgressDisplay(this);
+							}
 						}
 						
 						@Override public void ignoreComplete(boolean ignore) {this.ignore = ignore;}
 						@Override public void clearReport() {}
 						@Override public void appendToReport(String report) {}
-					});
+					});*/
 					
 					new MatcherProgressDialog(t);
 					

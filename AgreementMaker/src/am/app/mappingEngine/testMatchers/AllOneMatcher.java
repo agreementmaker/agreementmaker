@@ -10,6 +10,13 @@ public class AllOneMatcher extends AbstractMatcher {
 	
 	private static final long serialVersionUID = 2854018267136437040L;
 
+	public AllOneMatcher() {
+		super();
+		
+		setName("AllOne Matcher");
+		setCategory(MatcherCategory.UTILITY);
+	}
+	
 	/**Set all alignment sim to 1*/
 	@Override
 	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix) {

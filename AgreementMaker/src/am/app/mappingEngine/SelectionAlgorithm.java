@@ -18,4 +18,7 @@ public interface SelectionAlgorithm {
 	public SelectionResult getResult();
 	
 	public String getName();
+	
+	@Override
+	public String toString();
 }

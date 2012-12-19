@@ -7,6 +7,7 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.AbstractMatcher.MatcherCategory;
 import am.app.mappingEngine.Combination.CombinationParameters;
 import am.app.mappingEngine.PRAMatcher.PRAMatcher2;
 import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
@@ -34,6 +35,9 @@ public class OAEI2009matcher extends AbstractMatcher {
 		super();
 		needsParam = true;
 		param = new OAEI2009parameters();
+		
+		setName("OAEI 2009");
+		setCategory(MatcherCategory.HYBRID);
 	}
 	
 	@Override

@@ -33,6 +33,9 @@ public class DescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 		// requires base similarity result (but can work on any alignment result) 
 		minInputMatchers = 1;
 		maxInputMatchers = 1;
+		
+		setName("Descendants Similarity Inheritance Matcher");
+		setCategory(MatcherCategory.STRUCTURAL);
 	}
 	
 	/**

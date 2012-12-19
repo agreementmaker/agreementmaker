@@ -339,22 +339,22 @@ public class UIMenuListener implements ActionListener {
 				controlPanel.newManual();
 			}
 			else if(obj == menu.runMatching) {
-				controlPanel.match();
+				controlPanel.btnMatchClick();
 			}
 			else if(obj == menu.copyMatching) {
 				controlPanel.copy();
 			}
 			else if(obj == menu.deleteMatching) {
-				controlPanel.delete();
+				controlPanel.btnDeleteClick();
 			}
 			else if( obj == menu.saveAlignment) {
 				controlPanel.export();
 			}
 			else if( obj == menu.loadAlignment ) {
-				controlPanel.importa();
+				controlPanel.btnImportClick();
 			}
 			else if(obj == menu.refEvaluateMatching) {
-				controlPanel.evaluate();
+				controlPanel.btnEvaluateClick();
 			}
 			else if( obj == menu.clusteringClasses ) {
 				/** Clustering with GVM for classes */

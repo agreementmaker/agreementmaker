@@ -127,6 +127,9 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 		
 	    task.matchingAlgorithm.addProgressDisplay(this);
 		
+	    if( task.matchingAlgorithm.isDone() ) {
+	    	throw new RuntimeException("The matching algorithm has already finished!");
+	    }
 		task.matchingAlgorithm.execute();
 		
 		getRootPane().setDefaultButton(okButton);
@@ -223,6 +226,7 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 			// do the selection
 			// FIXME: This is a hack.  The progress should be properly displayed.
 			task.matcherResult = task.matchingAlgorithm.getResult();
+			task.selectionParameters.matchingTask = task;
 			task.selectionParameters.inputResult = task.matchingAlgorithm.getResult();
 			task.selectionAlgorithm.setParameters(task.selectionParameters);
 			task.selectionAlgorithm.select();

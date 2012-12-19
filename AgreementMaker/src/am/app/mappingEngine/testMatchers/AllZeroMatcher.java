@@ -1,20 +1,28 @@
 package am.app.mappingEngine.testMatchers;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.Mapping.MappingRelation;
-import am.app.mappingEngine.SimilarityMatrix;
-import am.app.ontology.Node;
+import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 
 public class AllZeroMatcher extends AbstractMatcher {
 	
 	private static final long serialVersionUID = -1456140335684209855L;
 
-	/**Set all alignment sim to 1*/
+	public AllZeroMatcher() {
+		super();
+		
+		setName("AllZero Matcher");
+		setCategory(MatcherCategory.UTILITY);
+	}
+	
 	@Override
-	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix) {
-		double sim = 0;
-		MappingRelation rel = MappingRelation.EQUIVALENCE;
-		return new Mapping(source, target, sim, rel);
+	protected void align() throws Exception {
+		if( sourceOntology == null || targetOntology == null ) return;  // cannot align just one ontology 
+
+		if(alignClass && !this.isCancelled() ) {
+			classesMatrix = new SparseMatrix( sourceOntology, targetOntology, alignType.aligningClasses);	
+		}
+		if(alignProp && !this.isCancelled() ) {
+			propertiesMatrix = new SparseMatrix( sourceOntology, targetOntology, alignType.aligningProperties);					
+		}
 	}
 }

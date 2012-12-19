@@ -68,6 +68,9 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	public AdvancedSimilarityMatcher() {
 		super();
 		initializeVariables();
+		
+		setName("Advanced Similarity Matcher");
+		setCategory(MatcherCategory.SYNTACTIC);
 	}
 
 	/**

@@ -10,8 +10,13 @@ public class CopyMatcher extends AbstractMatcher {
 
 
 	public CopyMatcher() {
+		super();
+		
 		maxInputMatchers = 1;
 		minInputMatchers = 1;
+		
+		setName("Copy Matcher");
+		setCategory(MatcherCategory.UTILITY);
 	}
 	
 	@Override

@@ -19,6 +19,7 @@ import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.MatchingTaskChangeEvent.EventType;
+import am.app.mappingEngine.SelectionAlgorithm;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.OntologyChangeEvent;
@@ -258,6 +259,24 @@ public class Core {
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * @return A list of all the selection algorithms currently registered with
+	 *         the system. If there is an error with the framework or registry,
+	 *         an empty list is returned.
+	 */
+	public List<SelectionAlgorithm> getSelectionAlgorithms() {
+		List<SelectionAlgorithm> selectors = null;
+		if( getFramework() != null
+				&& getFramework().getRegistry() != null ) {
+			selectors = getFramework().getRegistry().getSelectors();
+		}
+		else {
+			selectors = new LinkedList<SelectionAlgorithm>();
+		}
+		
+		return selectors;
 	}
 	
 	/** @deprecated Use {@link #getMatchingAlgorithms()} instead. -- Cosmin. */
