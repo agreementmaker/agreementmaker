@@ -8,7 +8,7 @@
 	<version>0.3.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	
-	<name>AgreementMaker System</name>
+	<name>AgreementMaker Parent Project</name>
 	<description>AgreementMaker System Parent Project</description>
 
 	<properties>
@@ -38,4 +38,5 @@
 	    <!-- This is the legacy AgreementMaker -->
 		<module>../AgreementMaker</module>
 	</modules>
+
 </project>
