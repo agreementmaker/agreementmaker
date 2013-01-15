@@ -150,7 +150,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		initComponents();
 		
 		try {
-			matcher = Core.getInstance().getFramework().getRegistry().getMatcherByName(matcherCombo.getSelectedItem().toString());
+			matcher = Core.getInstance().getRegistry().getMatcherByName(matcherCombo.getSelectedItem().toString());
 		} catch (MatcherNotFoundException e) {
 			e.printStackTrace();
 			matcher = null;
@@ -517,7 +517,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		
 		if(ae.getSource() == matcherCombo && !matcherDefined){
 			try {
-				matcher=Core.getInstance().getFramework().getRegistry().getMatcherByName(matcherCombo.getSelectedItem().toString());
+				matcher=Core.getInstance().getRegistry().getMatcherByName(matcherCombo.getSelectedItem().toString());
 			} catch (MatcherNotFoundException e) {
 				JOptionPane.showMessageDialog(this, e.getMessage());
 				e.printStackTrace();

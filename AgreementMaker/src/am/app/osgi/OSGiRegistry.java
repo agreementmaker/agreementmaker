@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -41,7 +42,7 @@ public class OSGiRegistry {
 	
 	private List<AbstractMatcher> matcherList;
 	private ServiceTracker<AbstractMatcher, AbstractMatcher> matcherTracker;
-	private BundleContext context;
+	private final BundleContext context;
 
 	private List<SelectionAlgorithm> selectionList;
 	
@@ -145,5 +146,9 @@ public class OSGiRegistry {
 		List<SelectionAlgorithm> list = new LinkedList<SelectionAlgorithm>();
 		list.addAll(selectionList);
 		return list;
+	}
+	
+	public Bundle[] getInstalledBundles() {
+		return context.getBundles();
 	}
 }

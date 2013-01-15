@@ -10,7 +10,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -18,7 +17,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 
@@ -30,9 +28,9 @@ import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
+import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
-import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
@@ -57,9 +55,8 @@ import am.userInterface.controlpanel.MatchersControlPanel;
 import am.userInterface.find.FindDialog;
 import am.userInterface.find.FindInterface;
 import am.userInterface.instance.InstanceLookupPanel;
-import am.userInterface.sidebar.provenance.ProvenanceSidebar;
 import am.userInterface.sidebar.duplicatepane.DuplicateSidebar;
-import am.userInterface.sidebar.duplicatepane.duplicateMenuItem;
+import am.userInterface.sidebar.provenance.ProvenanceSidebar;
 import am.userInterface.table.MatchersTablePanel;
 import am.utility.numeric.AvgMinMaxNumber;
 import am.visualization.MatcherAnalyticsPanel;
@@ -758,14 +755,14 @@ public class UIMenuListener implements ActionListener {
 
 			}
 			else if( obj == menu.mnuListBundles ) {
-				Bundle[] bundles = Core.getInstance().getFramework().getInstalledBundles();
+				Bundle[] bundles = Core.getInstance().getRegistry().getInstalledBundles();
 				StringBuilder strBuilder = new StringBuilder("Installed bundles in the embedded framework:\n");
 				for( Bundle b : bundles ) {
 					strBuilder.append(b.getSymbolicName());
 					strBuilder.append("\n");
 				}
 				strBuilder.append("\n\nMatcher names:\n");
-				List<String> matcherNames=Core.getInstance().getFramework().getRegistry().getMatcherNames();
+				List<String> matcherNames=Core.getInstance().getRegistry().getMatcherNames();
 				for(String s:matcherNames){
 					strBuilder.append(s);
 					strBuilder.append("\n");

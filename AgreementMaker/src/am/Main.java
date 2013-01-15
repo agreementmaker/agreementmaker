@@ -52,10 +52,6 @@ public class Main
 		Thread mainUI = new Thread("AMStart") {
 				public void run() {
 					Core.setUI( new UI() );
-					
-					// OSGi
-					AMHost host = new AMHost(new File(Core.getInstance().getRoot()));
-					Core.getInstance().setFramework(host);
 				} 
 		};
 		

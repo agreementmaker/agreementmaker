@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.management.InstanceAlreadyExistsException;
+
 import org.apache.log4j.Logger;
 import org.osgi.framework.BundleContext;
 
@@ -26,6 +28,7 @@ import am.app.ontology.OntologyChangeEvent;
 import am.app.ontology.OntologyChangeListener;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.app.osgi.AMHost;
+import am.app.osgi.OSGiRegistry;
 import am.userInterface.AppPreferences;
 import am.userInterface.UI;
 import am.userInterface.VisualizationChangeEvent;
@@ -108,7 +111,7 @@ public class Core {
 	
 	private static Core core  = new Core(); // Singleton pattern: unique instance
 
-	private AMHost osgi;
+	private OSGiRegistry registry;
 	
 	
 	/**
@@ -228,13 +231,12 @@ public class Core {
 	 * 
 	 * @return An empty list if no matchers are registered in the system.
 	 * 
-	 * @see {@link #getFramework()}, {@link AMHost#getRegistry()}
+	 * @see {@link AMHost#getRegistry()}
 	 */
 	public List<AbstractMatcher> getMatchingAlgorithms() {
 		List<AbstractMatcher> matchers = null;
-		if( getFramework() != null 
-				&& getFramework().getRegistry() != null ) {
-			matchers = getFramework().getRegistry().getMatchers();
+		if( getRegistry() != null ) {
+			matchers = getRegistry().getMatchers();
 		}
 		else {
 			matchers = new LinkedList<AbstractMatcher>();
@@ -268,9 +270,8 @@ public class Core {
 	 */
 	public List<SelectionAlgorithm> getSelectionAlgorithms() {
 		List<SelectionAlgorithm> selectors = null;
-		if( getFramework() != null
-				&& getFramework().getRegistry() != null ) {
-			selectors = getFramework().getRegistry().getSelectors();
+		if( getRegistry() != null ) {
+			selectors = getRegistry().getSelectors();
 		}
 		else {
 			selectors = new LinkedList<SelectionAlgorithm>();
@@ -576,18 +577,16 @@ public class Core {
 	 * @param p
 	 */
 	public void setOntologyProfiler( OntologyProfiler p ) { currentProfiler = p; }
-	
-	@Deprecated
-	/* Use getFramework().getContext() instead */
-	public BundleContext getContext() {
-		return getFramework().getContext();
+
+	public void initializeOSGiRegistry(BundleContext context) throws InstanceAlreadyExistsException {
+		if( registry != null )
+			throw new InstanceAlreadyExistsException("You've already instantiated an OSGiRegistry object.");
+		
+		registry = new OSGiRegistry(context);
 	}
 	
-	
-	public void setFramework(AMHost host) {
-		this.osgi = host;
+	public OSGiRegistry getRegistry() {
+		return registry;
 	}
-	
-	public AMHost getFramework() { return osgi; }
 	
 }
