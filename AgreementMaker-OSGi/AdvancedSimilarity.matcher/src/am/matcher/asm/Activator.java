@@ -7,7 +7,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.matcher.bsm.BaseSimilarityMatcher;
 
 public class Activator implements BundleActivator {
 
