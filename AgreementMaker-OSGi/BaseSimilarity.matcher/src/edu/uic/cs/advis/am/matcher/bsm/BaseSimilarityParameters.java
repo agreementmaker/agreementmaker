@@ -1,4 +1,4 @@
-package edu.uic.cs.advis.am.matcher;
+package edu.uic.cs.advis.am.matcher.bsm;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 

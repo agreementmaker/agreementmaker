@@ -1,4 +1,4 @@
-package edu.uic.cs.advis.am.matcher;
+package edu.uic.cs.advis.am.matcher.bsm;
 
 import java.awt.Dimension;
 import java.awt.event.ItemEvent;
