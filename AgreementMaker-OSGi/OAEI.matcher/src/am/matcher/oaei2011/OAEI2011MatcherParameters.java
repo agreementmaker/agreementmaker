@@ -1,6 +1,7 @@
-package am.app.mappingEngine.oaei.oaei2011;
+package am.matcher.oaei2011;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
+import am.app.ontology.profiling.classification.OntologyClassifier.OAEI2011Configuration;
 
 /**
  * This year's matching algorithm uses a completely automatic configuration. 
@@ -15,15 +16,6 @@ public class OAEI2011MatcherParameters extends DefaultMatcherParameters {
 	
 	public boolean showIntermediateMatchers = false;
 	public boolean parallelExecution = false;
-	
-	public enum OAEI2011Configuration {
-		GENERAL_PURPOSE,
-		GENERAL_PURPOSE_ADVANCED,
-		LARGE_LEXICAL,
-		GENERAL_MULTI,
-		LARGE_LEXICAL_WITH_LOCALNAMES,
-		;
-	}
 		
 	public OAEI2011MatcherParameters() { 
 		super(); 

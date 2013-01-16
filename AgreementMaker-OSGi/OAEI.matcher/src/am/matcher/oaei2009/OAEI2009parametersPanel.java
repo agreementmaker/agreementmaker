@@ -1,4 +1,4 @@
-package am.app.mappingEngine.oaei2009;
+package am.matcher.oaei2009;
 
 import java.awt.Dimension;
 
@@ -23,7 +23,7 @@ public class OAEI2009parametersPanel extends AbstractMatcherParametersPanel {
 	@SuppressWarnings("unused")
 	private OAEI2009parameters parameters;
 	
-	private JComboBox trackCombo;
+	private JComboBox<String> trackCombo;
 	
 	@SuppressWarnings("unused")
 	private AppPreferences prefs;
@@ -40,7 +40,7 @@ public class OAEI2009parametersPanel extends AbstractMatcherParametersPanel {
 		this.setPreferredSize(new Dimension(350, 175) );
 		
 		String[] tracks = {OAEI2009parameters.BENCHMARKS, OAEI2009parameters.ANATOMY, OAEI2009parameters.ANATOMY_PRA, OAEI2009parameters.ANATOMY_PRI, OAEI2009parameters.CONFERENCE, OAEI2009parameters.WordnetNoUMLS, OAEI2009parameters.BENCHMARKS_303_PRA};
-		trackCombo = new JComboBox(tracks);		
+		trackCombo = new JComboBox<String>(tracks);		
 		trackCombo.setAlignmentX((float) 0.5);
 		
 		BoxLayout panelLayout = new BoxLayout(this, BoxLayout.Y_AXIS);

@@ -1,4 +1,4 @@
-package am.app.mappingEngine.oaei.oaei2011;
+package am.matcher.oaei2011;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,14 +11,14 @@ import javax.swing.JRadioButton;
 
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
-import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters.OAEI2011Configuration;
+import am.app.ontology.profiling.classification.OntologyClassifier.OAEI2011Configuration;
 
 public class OAEI2011MatcherParametersPanel extends AbstractMatcherParametersPanel implements ActionListener {
 
 	private static final long serialVersionUID = -7652636660460034435L;
 
 	private JRadioButton radAutomatic, radManual;
-	private JComboBox cmbConfiguration;
+	private JComboBox<OAEI2011Configuration> cmbConfiguration;
 	private JCheckBox chkShowAll;
 	private JCheckBox chkParallelExecution;
 	
@@ -41,7 +41,7 @@ public class OAEI2011MatcherParametersPanel extends AbstractMatcherParametersPan
 		btnGroup.add(radAutomatic);
 		btnGroup.add(radManual);
 		
-		cmbConfiguration = new JComboBox();
+		cmbConfiguration = new JComboBox<OAEI2011Configuration>();
 		for( OAEI2011Configuration config : OAEI2011Configuration.values() ) {
 			cmbConfiguration.addItem(config);
 		}

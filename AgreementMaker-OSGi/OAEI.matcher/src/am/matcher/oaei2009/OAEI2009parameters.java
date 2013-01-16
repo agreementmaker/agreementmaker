@@ -1,4 +1,4 @@
-package am.app.mappingEngine.oaei2009;
+package am.matcher.oaei2009;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -7,6 +7,8 @@ import am.batchMode.BenchmarkTrack;
 import am.batchMode.TrackDispatcher;
 
 public class OAEI2009parameters extends DefaultMatcherParameters {
+	
+	private static final long serialVersionUID = -8100658976837894464L;
 	
 	public final static String BENCHMARKS = TrackDispatcher.BENCHMARK;
 	public final static String ANATOMY = TrackDispatcher.ANATOMY;

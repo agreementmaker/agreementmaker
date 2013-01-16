@@ -1,7 +1,7 @@
 /**
  * 
  */
-package am.app.mappingEngine.oaei2010;
+package am.matcher.oaei2010;
 
 import am.Utility;
 import am.app.Core;
@@ -13,15 +13,14 @@ import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.AbstractMatcher.MatcherCategory;
 import am.app.mappingEngine.Combination.CombinationParameters;
 import am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralParameters;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
-import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
-import am.app.mappingEngine.oaei.OAEI_Track;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
+import am.app.mappingEngine.utility.OAEI_Track;
+import am.matcher.asm.AdvancedSimilarityParameters;
 import am.userInterface.MatchingProgressDisplay;
 
 /**

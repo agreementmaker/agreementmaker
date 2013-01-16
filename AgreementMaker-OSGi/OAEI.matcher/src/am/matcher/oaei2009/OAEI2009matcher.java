@@ -1,4 +1,4 @@
-package am.app.mappingEngine.oaei2009;
+package am.matcher.oaei2009;
 
 import am.Utility;
 import am.app.Core;
@@ -7,15 +7,14 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.AbstractMatcher.MatcherCategory;
 import am.app.mappingEngine.Combination.CombinationParameters;
 import am.app.mappingEngine.PRAMatcher.PRAMatcher2;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
 import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceParameters;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
+import am.matcher.bsm.BaseSimilarityParameters;
 
 
 //import uk.ac.shef.wit.simmetrics.similaritymetrics.*; //all sim metrics are in here

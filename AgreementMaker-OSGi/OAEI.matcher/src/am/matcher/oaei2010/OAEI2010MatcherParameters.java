@@ -1,7 +1,7 @@
-package am.app.mappingEngine.oaei2010;
+package am.matcher.oaei2010;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
-import am.app.mappingEngine.oaei.OAEI_Track;
+import am.app.mappingEngine.utility.OAEI_Track;
 
 public class OAEI2010MatcherParameters extends DefaultMatcherParameters {
 

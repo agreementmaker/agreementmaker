@@ -1,7 +1,7 @@
 /**
  * 
  */
-package am.app.mappingEngine.oaei.oaei2011;
+package am.matcher.oaei2011;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,22 +22,18 @@ import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
-import am.app.mappingEngine.AbstractMatcher.MatcherCategory;
 import am.app.mappingEngine.Combination.CombinationParameters;
 import am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralParameters;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.StringUtil.StringMetrics;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
-import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
 import am.app.mappingEngine.boosting.BestMatchBoostingParameters;
 import am.app.mappingEngine.mediatingMatcher.MediatingMatcherParameters;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
-import am.app.mappingEngine.oaei.OAEI_Track;
-import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters.OAEI2011Configuration;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
+import am.app.mappingEngine.utility.OAEI_Track;
 import am.app.ontology.Node;
 import am.app.ontology.NodeHierarchy;
 import am.app.ontology.Ontology;
@@ -45,8 +41,11 @@ import am.app.ontology.hierarchy.AlternateHierarchy;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.app.ontology.profiling.ProfilerRegistry;
 import am.app.ontology.profiling.classification.OntologyClassifier;
+import am.app.ontology.profiling.classification.OntologyClassifier.OAEI2011Configuration;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
+import am.matcher.asm.AdvancedSimilarityParameters;
+import am.matcher.bsm.BaseSimilarityParameters;
 import am.userInterface.MatchingProgressDisplay;
 
 import com.hp.hpl.jena.ontology.OntProperty;

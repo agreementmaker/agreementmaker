@@ -1,4 +1,4 @@
-package am.app.mappingEngine.oaei2010;
+package am.matcher.oaei2010;
 
 import java.awt.Dimension;
 
@@ -8,7 +8,7 @@ import javax.swing.JComboBox;
 
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
-import am.app.mappingEngine.oaei.OAEI_Track;
+import am.app.mappingEngine.utility.OAEI_Track;
 import am.userInterface.AppPreferences;
 
 /**
@@ -25,7 +25,7 @@ public class OAEI2010MatcherParametersPanel extends AbstractMatcherParametersPan
 	@SuppressWarnings("unused")
 	private OAEI2010MatcherParameters parameters;
 	
-	private JComboBox trackCombo;
+	private JComboBox<OAEI_Track> trackCombo;
 	//private JCheckBox chkUseExtractedTermSynonyms = new JCheckBox("Use extracted term synonyms.");
 	
 	@SuppressWarnings("unused")
@@ -54,7 +54,7 @@ public class OAEI2010MatcherParametersPanel extends AbstractMatcherParametersPan
 							OAEI_Track.Benchmarks, 
 							OAEI_Track.Conference,
 							OAEI_Track.AllMatchers };
-		trackCombo = new JComboBox(tracks);		
+		trackCombo = new JComboBox<OAEI_Track>(tracks);		
 		trackCombo.setAlignmentX((float) 0.5);
 		
 		BoxLayout panelLayout = new BoxLayout(this, BoxLayout.Y_AXIS);
