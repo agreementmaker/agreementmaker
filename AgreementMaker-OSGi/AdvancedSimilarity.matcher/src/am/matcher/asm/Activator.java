@@ -1,4 +1,4 @@
-package edu.uic.cs.advis.am.matcher.asm;
+package am.matcher.asm;
 
 import java.util.Hashtable;
 
