@@ -5,8 +5,8 @@ import java.awt.event.ItemEvent;
 import javax.swing.JCheckBox;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
-import edu.uic.cs.advis.am.matcher.bsm.BaseSimilarityMatcherParametersPanel;
-import edu.uic.cs.advis.am.matcher.bsm.BaseSimilarityParameters;
+import am.matcher.bsm.BaseSimilarityMatcherParametersPanel;
+import am.matcher.bsm.BaseSimilarityParameters;
 
 public class AdvancedSimilarityMatcherParametersPanel extends
 		BaseSimilarityMatcherParametersPanel {

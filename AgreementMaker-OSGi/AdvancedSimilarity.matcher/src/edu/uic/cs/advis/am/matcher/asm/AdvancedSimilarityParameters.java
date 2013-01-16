@@ -1,6 +1,6 @@
 package edu.uic.cs.advis.am.matcher.asm;
 
-import edu.uic.cs.advis.am.matcher.bsm.BaseSimilarityParameters;
+import am.matcher.bsm.BaseSimilarityParameters;
 
 /**
  * Parameters for the ASM.

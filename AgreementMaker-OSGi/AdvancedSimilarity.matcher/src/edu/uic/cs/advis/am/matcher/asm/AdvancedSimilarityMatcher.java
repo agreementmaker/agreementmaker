@@ -19,8 +19,8 @@ import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrixOld;
 import am.app.ontology.Node;
 import am.app.ontology.profiling.OntologyProfiler;
+import am.matcher.bsm.BaseSimilarityMatcher;
 import am.utility.Pair;
-import edu.uic.cs.advis.am.matcher.bsm.BaseSimilarityMatcher;
 
 /**
  * @author Michele Caci
