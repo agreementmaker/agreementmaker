@@ -531,17 +531,6 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	    
 	    return s2;
 	 }
-	 
-	 public static String removeLines( String s ) {
-		 String s2 = s.replace("_"," ");
-		 s2 = s2.replace("-"," ");
-		 s2 = s2.replace("."," ");	
-		 return s2;
-	 }
-	
-
-  
-
 	
 	      
 	/*
