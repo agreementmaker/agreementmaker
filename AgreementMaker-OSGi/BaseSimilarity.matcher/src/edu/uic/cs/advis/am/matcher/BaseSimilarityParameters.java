@@ -1,9 +1,11 @@
-package am.app.mappingEngine.baseSimilarity;
+package edu.uic.cs.advis.am.matcher;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 
 public class BaseSimilarityParameters extends DefaultMatcherParameters {
 
+	private static final long serialVersionUID = -885334914920647752L;
+	
 	public boolean useDictionary = false;
 
 	public BaseSimilarityParameters() { super(); }

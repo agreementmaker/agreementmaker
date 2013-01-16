@@ -1,4 +1,4 @@
-package am.app.mappingEngine.baseSimilarity;
+package edu.uic.cs.advis.am.matcher;
 
 import java.util.ArrayList;
 import java.util.Arrays;

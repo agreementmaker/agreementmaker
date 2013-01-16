@@ -1,4 +1,4 @@
-package am.app.mappingEngine.baseSimilarity;
+package edu.uic.cs.advis.am.matcher;
 
 import java.awt.Dimension;
 import java.awt.event.ItemEvent;
