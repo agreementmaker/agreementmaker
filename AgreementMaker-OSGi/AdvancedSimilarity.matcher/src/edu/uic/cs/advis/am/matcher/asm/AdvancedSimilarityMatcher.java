@@ -1,7 +1,7 @@
 /**
  * 
  */
-package am.app.mappingEngine.baseSimilarity.advancedSimilarity;
+package edu.uic.cs.advis.am.matcher.asm;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,13 +14,13 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.StringUtil.StringMetrics;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrixOld;
 import am.app.ontology.Node;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.utility.Pair;
+import edu.uic.cs.advis.am.matcher.BaseSimilarityMatcher;
 
 /**
  * @author Michele Caci

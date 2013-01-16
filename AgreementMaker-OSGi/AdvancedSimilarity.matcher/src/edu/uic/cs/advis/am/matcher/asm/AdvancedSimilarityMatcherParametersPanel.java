@@ -1,12 +1,12 @@
-package am.app.mappingEngine.baseSimilarity.advancedSimilarity;
+package edu.uic.cs.advis.am.matcher.asm;
 
 import java.awt.event.ItemEvent;
 
 import javax.swing.JCheckBox;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcherParametersPanel;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
+import edu.uic.cs.advis.am.matcher.BaseSimilarityMatcherParametersPanel;
+import edu.uic.cs.advis.am.matcher.BaseSimilarityParameters;
 
 public class AdvancedSimilarityMatcherParametersPanel extends
 		BaseSimilarityMatcherParametersPanel {

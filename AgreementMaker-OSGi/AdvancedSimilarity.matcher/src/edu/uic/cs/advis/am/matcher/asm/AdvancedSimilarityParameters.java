@@ -1,6 +1,6 @@
-package am.app.mappingEngine.baseSimilarity.advancedSimilarity;
+package edu.uic.cs.advis.am.matcher.asm;
 
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
+import edu.uic.cs.advis.am.matcher.BaseSimilarityParameters;
 
 /**
  * Parameters for the ASM.
