@@ -1,4 +1,4 @@
-package edu.uic.cs.advis.am.matcher.bsm;
+package am.matcher.bsm;
 
 import java.util.Hashtable;
 
