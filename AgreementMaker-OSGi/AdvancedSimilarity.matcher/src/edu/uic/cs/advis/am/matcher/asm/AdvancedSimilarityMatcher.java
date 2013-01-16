@@ -20,7 +20,7 @@ import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrixOld;
 import am.app.ontology.Node;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.utility.Pair;
-import edu.uic.cs.advis.am.matcher.BaseSimilarityMatcher;
+import edu.uic.cs.advis.am.matcher.bsm.BaseSimilarityMatcher;
 
 /**
  * @author Michele Caci
