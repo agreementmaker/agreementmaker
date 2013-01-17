@@ -106,11 +106,11 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		//FIRST LAYER: ASM and PSM
 		//ASM
 
-		AbstractMatcher asm = MatcherFactory.getMatcherInstance(MatchersRegistry.AdvancedSimilarity, 0);
+		AbstractMatcher asm = MatcherFactory.getMatcherInstance("Advanced Similarity Matcher");
 		setupSubMatcher(asm, new AdvancedSimilarityParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign));
 		runSubMatcher(asm, "Submatcher: ASM");
 		
-		AbstractMatcher psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 1);
+		AbstractMatcher psm = MatcherFactory.getMatcherInstance("Parametric String Matcher");
 		setupSubMatcher(psm, new ParametricStringParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign).initForOAEI2010(OAEI_Track.Conference));
 		runSubMatcher(psm, "Submatcher: PSM");
 		
@@ -147,7 +147,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		//ASM
 		AbstractMatcher asm = null;
 		if(parameters.usingASM && !isCancelled()){
-		   	asm = MatcherFactory.getMatcherInstance(MatchersRegistry.AdvancedSimilarity, 0);
+		   	asm = MatcherFactory.getMatcherInstance("Advanced Similarity Matcher");
 		   	setupSubMatcher(asm, new AdvancedSimilarityParameters(param.threshold,1,1));
 		   	runSubMatcher(asm, "Submatcher: ASM");
 		}

@@ -8,13 +8,14 @@ import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.Combination.CombinationParameters;
-import am.app.mappingEngine.PRAMatcher.PRAMatcher2;
 import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceParameters;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.matcher.bsm.BaseSimilarityParameters;
+import am.matcher.pra.PRAMatcher.PRAMatcher2;
+import am.matcher.pra.PRAintegration.PRAintegrationMatcher;
 
 
 //import uk.ac.shef.wit.simmetrics.similaritymetrics.*; //all sim metrics are in here
@@ -100,7 +101,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 	    	System.out.println("Running PRA.");
 	    	startime = System.nanoTime()/measure;
 	    	//AbstractMatcher pra = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity, 0);
-	    	pra = MatcherFactory.getMatcherInstance(MatchersRegistry.PRAMatcher, 0);
+	    	pra = MatcherFactory.getMatcherInstance("PRA Matcher");
 	    	pra.getInputMatchers().add(myMatcher);
 	    	pra.setParameters(new DefaultMatcherParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign));
 	    	BaseSimilarityParameters bsmp = new BaseSimilarityParameters();
@@ -120,7 +121,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 	
 			System.out.println("Running BSM");
 	    	startime = System.nanoTime()/measure;
-	    	pra = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity, 0);
+	    	pra = MatcherFactory.getMatcherInstance("Base Similarity Matcher");
 	    	pra.setParameters(new DefaultMatcherParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign));
 	    	BaseSimilarityParameters bsmp = new BaseSimilarityParameters();
 	    	bsmp.initForOAEI2009();
@@ -289,7 +290,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 		System.out.println("format: "+parameters.format);
 		if( parameters.trackName == OAEI2009parameters.ANATOMY_PRI ){
 	    	startime = System.nanoTime()/measure;
-	    	AbstractMatcher praIntegration = MatcherFactory.getMatcherInstance(MatchersRegistry.PRAintegration, 0);
+	    	AbstractMatcher praIntegration = MatcherFactory.getMatcherInstance(PRAintegrationMatcher.class);
 	    	praIntegration.getInputMatchers().add(lastLayer);
 	    	praIntegration.getParam().threshold = param.threshold;
 	    	praIntegration.setMaxSourceAlign(getMaxSourceAlign());
@@ -308,7 +309,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 			lastLayer = praIntegration;
 		}
 		else if( parameters.trackName == OAEI2009parameters.ANATOMY_PRA ) {
-			PRAMatcher2 pra2 = (PRAMatcher2) MatcherFactory.getMatcherInstance(MatchersRegistry.PRAMatcher2, 0);
+			AbstractMatcher pra2 = MatcherFactory.getMatcherInstance(PRAMatcher2.class);
 			pra2.addInputMatcher(lastLayer);
 			pra2.addInputMatcher(pra);
 			

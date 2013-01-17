@@ -44,7 +44,9 @@ import am.app.ontology.profiling.classification.OntologyClassifier;
 import am.app.ontology.profiling.classification.OntologyClassifier.OAEI2011Configuration;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
+import am.matcher.asm.AdvancedSimilarityMatcher;
 import am.matcher.asm.AdvancedSimilarityParameters;
+import am.matcher.bsm.BaseSimilarityMatcher;
 import am.matcher.bsm.BaseSimilarityParameters;
 import am.userInterface.MatchingProgressDisplay;
 
@@ -258,7 +260,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		List<AbstractMatcher> lwcInputMatchers = new ArrayList<AbstractMatcher>();
 		
 		if( !isCancelled() ) {
-			AbstractMatcher bsm = MatcherFactory.getMatcherInstance(MatchersRegistry.BaseSimilarity, 0);
+			AbstractMatcher bsm = MatcherFactory.getMatcherInstance(BaseSimilarityMatcher.class);
 			
 			BaseSimilarityParameters bsmParam = 
 					new BaseSimilarityParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
@@ -404,7 +406,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		List<AbstractMatcher> lwcInputMatchers = new ArrayList<AbstractMatcher>();
 		
 		if( !isCancelled() ) {
-			AbstractMatcher asm = MatcherFactory.getMatcherInstance(MatchersRegistry.AdvancedSimilarity, 0);
+			AbstractMatcher asm = MatcherFactory.getMatcherInstance(AdvancedSimilarityMatcher.class);
 			
 			AdvancedSimilarityParameters asmParam = 
 					new AdvancedSimilarityParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
@@ -1077,7 +1079,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		//FIRST LAYER: ASM and PSM
 		//ASM
 
-		AbstractMatcher asm = MatcherFactory.getMatcherInstance(MatchersRegistry.AdvancedSimilarity, 0);
+		AbstractMatcher asm = MatcherFactory.getMatcherInstance(AdvancedSimilarityMatcher.class);
 		setupSubMatcher(asm, new AdvancedSimilarityParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign));
 		runSubMatcher(asm, "Submatcher 1/4: ASM");
 		
