@@ -1,10 +1,11 @@
-package am.app.mappingEngine.hierarchy;
+package am.matcher.hierarchy;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -20,6 +21,7 @@ import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
+import am.visualization.graphviz.wordnet.ScoredSynset;
 import am.visualization.graphviz.wordnet.WordnetVisualizer;
 
 import com.hp.hpl.jena.ontology.OntClass;
@@ -193,8 +195,8 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 		Node target;
 		List<ScoredSynset> sourceScored;
 		List<ScoredSynset> targetScored;
-		HashMap<Synset, ScoredSynset> sourceScoredBySynset;
-		HashMap<Synset, ScoredSynset> targetScoredBySynset;
+		Map<Synset, ScoredSynset> sourceScoredBySynset;
+		Map<Synset, ScoredSynset> targetScoredBySynset;
 		boolean invert;
 		for (int i = 0; i < sourceClasses.size(); i++) {
 			source = sourceClasses.get(i);

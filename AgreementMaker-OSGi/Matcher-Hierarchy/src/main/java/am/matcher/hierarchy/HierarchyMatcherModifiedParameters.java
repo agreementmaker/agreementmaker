@@ -1,10 +1,12 @@
-package am.app.mappingEngine.hierarchy;
+package am.matcher.hierarchy;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 
 import com.hp.hpl.jena.util.LocationMapper;
 
 public class HierarchyMatcherModifiedParameters extends DefaultMatcherParameters {
+
+	private static final long serialVersionUID = 6922539671804270468L;
 	
 	public LocationMapper mapper;
 	

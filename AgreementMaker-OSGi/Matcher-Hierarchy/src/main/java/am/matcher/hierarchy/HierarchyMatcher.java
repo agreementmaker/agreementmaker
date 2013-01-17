@@ -1,4 +1,5 @@
-package am.app.mappingEngine.hierarchy;
+package am.matcher.hierarchy;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,8 @@ import edu.smu.tspell.wordnet.WordNetDatabase;
  relationship by the input matchers.*/
 public class HierarchyMatcher extends AbstractMatcher
 {
+	private static final long serialVersionUID = -4604443382266064387L;
+	
 	private List<Node> ListOfClassesSource;
 	private List<Node> ListOfClassesTarget;
 	private List<Node> sourceClassList;

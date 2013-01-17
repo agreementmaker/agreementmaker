@@ -1,4 +1,5 @@
-package am.app.mappingEngine.hierarchy;
+package am.matcher.hierarchy;
+
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -13,12 +14,12 @@ import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.LinkedOpenData.LODOntology;
-import am.app.mappingEngine.LinkedOpenData.LODUtils;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.matcher.lod.LinkedOpenData.LODOntology;
+import am.matcher.lod.LinkedOpenData.LODUtils;
 import am.utility.EnglishUtility;
 
 import com.hp.hpl.jena.ontology.OntClass;
