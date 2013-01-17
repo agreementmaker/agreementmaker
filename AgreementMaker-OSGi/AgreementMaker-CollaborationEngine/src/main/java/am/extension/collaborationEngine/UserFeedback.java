@@ -1,4 +1,4 @@
-package am.app.collaborationEngine;
+package am.extension.collaborationEngine;
 
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 

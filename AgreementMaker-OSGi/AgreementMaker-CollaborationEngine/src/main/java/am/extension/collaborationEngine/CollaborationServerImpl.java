@@ -1,4 +1,4 @@
-package am.app.collaborationEngine;
+package am.extension.collaborationEngine;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -16,10 +16,10 @@ import org.apache.log4j.Logger;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher;
-import am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher.SubMatcherID;
-import am.batchMode.simpleBatchMode.SimpleBatchModeRunner;
 import am.evaluation.disagreement.variance.VarianceDisagreementComparator;
+import am.extension.batchmode.simpleBatchMode.SimpleBatchModeRunner;
+import am.matcher.oaei2011.OAEI2011Matcher;
+import am.matcher.oaei2011.OAEI2011Matcher.SubMatcherID;
 
 // If you get errors because unresolved imports go here:
 // http://tech.amikelive.com/node-269/eclipse-quick-tip-resolving-error-the-import-javaxservlet-cannot-be-resolved/

@@ -1,4 +1,4 @@
-package am.app.collaborationEngine;
+package am.extension.collaborationEngine;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
