@@ -1,4 +1,4 @@
-package am.app.mappingEngine.PRAMatcher;
+package am.matcher.pra.PRAMatcher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +35,8 @@ public class OldPRAMatcher extends AbstractMatcher
 		super();
 		minInputMatchers = 1;
 		maxInputMatchers = 1;
+		
+		setName("Old PRA Matcher");
 	}
 	
 	

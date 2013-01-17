@@ -1,4 +1,4 @@
-package am.app.mappingEngine.PRAintegration;
+package am.matcher.pra.PRAintegration;
 
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +28,7 @@ public class PRAintegrationMatcher extends AbstractMatcher {
 		minInputMatchers = 1;
 		needsParam = true;
 		
+		setName("PRA Integration Matcher");
 	}
 	
 	@Override

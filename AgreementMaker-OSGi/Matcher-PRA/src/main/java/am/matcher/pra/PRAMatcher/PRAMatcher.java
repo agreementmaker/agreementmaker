@@ -1,4 +1,4 @@
-package am.app.mappingEngine.PRAMatcher;
+package am.matcher.pra.PRAMatcher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,11 +9,10 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 
-public class PRAMatcher extends BaseSimilarityMatcher 
+public class PRAMatcher extends am.matcher.bsm.BaseSimilarityMatcher 
 {
 	private static final long serialVersionUID = 8241040990308110584L;
 
@@ -45,6 +44,8 @@ public class PRAMatcher extends BaseSimilarityMatcher
 		super();
 		minInputMatchers = 1;
 		maxInputMatchers = 1;
+		
+		setName("PRA Matcher");
 	}
 	
 
