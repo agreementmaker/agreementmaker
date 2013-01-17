@@ -1,4 +1,4 @@
-package am.batchMode;
+package am.extension.batchmode;
 
 import java.io.File;
 
@@ -6,11 +6,10 @@ import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.oaei2009.OAEI2009parameters;
+import am.matcher.oaei2009.OAEI2009parameters;
 import am.parsing.AlignmentOutput;
 
-public class AnatomyTrack extends Track{
+public class AnatomyTrack extends Track {
 	
 	//DIRECTORIES
 	public final static String AM_NAME = "amaker";
@@ -46,7 +45,7 @@ public class AnatomyTrack extends Track{
 	protected void execute() throws Exception{
 		//TRACK PARAMETERS
 		//TH and cardinality have to  be set later for each track
-		MatchersRegistry matcher = MatchersRegistry.OAEI2009;
+		String matcher = "OAEI 2009";
 		//the parameters are only used in the forth subtrck to keep the name of the partial reference file
 		OAEI2009parameters param;
 		
@@ -72,7 +71,7 @@ public class AnatomyTrack extends Track{
 			(new File(outputFileDir)).mkdirs();//create directories
 			TrackDispatcher.printExecutionTime(totTime, outputFileDir+"/"+"ExecutionTime.txt");
 			AlignmentOutput ao = new AlignmentOutput(as, outputFileDir+"/"+AM_NAME+".rdf");
-			ao.write(sourceUri, targetUri, sourceUri, targetUri, matcher.getMatcherName());
+			ao.write(sourceUri, targetUri, sourceUri, targetUri, matcher);
 		}
 		if(doAll||subTrack.equals(TRACK_2)){
 			//subtrack 2 improve Precision
@@ -91,7 +90,7 @@ public class AnatomyTrack extends Track{
 			(new File(outputFileDir)).mkdirs();//create directories
 			TrackDispatcher.printExecutionTime(totTime, outputFileDir+"/"+"ExecutionTime.txt");
 			AlignmentOutput ao = new AlignmentOutput(as, outputFileDir+"/"+AM_NAME+".rdf");
-			ao.write(sourceUri, targetUri, sourceUri, targetUri, matcher.getMatcherName());
+			ao.write(sourceUri, targetUri, sourceUri, targetUri, matcher);
 		}
 		if(doAll||subTrack.equals(TRACK_3)){
 			//subtrack 3 improve Recall
@@ -110,7 +109,7 @@ public class AnatomyTrack extends Track{
 			(new File(outputFileDir)).mkdirs();//create directories
 			TrackDispatcher.printExecutionTime(totTime, outputFileDir+"/"+"ExecutionTime.txt");
 			AlignmentOutput ao = new AlignmentOutput(as, outputFileDir+"/"+AM_NAME+".rdf");
-			ao.write(sourceUri, targetUri, sourceUri, targetUri, matcher.getMatcherName());
+			ao.write(sourceUri, targetUri, sourceUri, targetUri, matcher);
 		}
 		if(doAll||subTrack.equals(TRACK_4)){
 			//subtrack 1 using partial reference
@@ -130,7 +129,7 @@ public class AnatomyTrack extends Track{
 			(new File(outputFileDir)).mkdirs();//create directories
 			TrackDispatcher.printExecutionTime(totTime, outputFileDir+"/"+"ExecutionTime.txt");
 			AlignmentOutput ao = new AlignmentOutput(as, outputFileDir+"/"+AM_NAME+".rdf");
-			ao.write(sourceUri, targetUri, sourceUri, targetUri, matcher.getMatcherName());
+			ao.write(sourceUri, targetUri, sourceUri, targetUri, matcher);
 		}
 	}
 }

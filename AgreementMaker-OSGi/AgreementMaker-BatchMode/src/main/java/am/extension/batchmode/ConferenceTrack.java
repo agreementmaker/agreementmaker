@@ -1,4 +1,4 @@
-package am.batchMode;
+package am.extension.batchmode;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -7,10 +7,9 @@ import java.util.ArrayList;
 import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.oaei2009.OAEI2009parameters;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.matcher.oaei2009.OAEI2009parameters;
 import am.parsing.AlignmentOutput;
 
 public class ConferenceTrack extends Track {
@@ -46,7 +45,7 @@ public class ConferenceTrack extends Track {
 			System.exit(1); 
 		}
 		
-		MatchersRegistry matcher = MatchersRegistry.OAEI2009;
+		String matcher = "OAEI 2009";
 		OAEI2009parameters param = new OAEI2009parameters(OAEI2009parameters.CONFERENCE);
 		
 		double threshold = 0.6;
@@ -82,7 +81,7 @@ public class ConferenceTrack extends Track {
 			sourceUri = sourceOntology.getURI();
 			targetUri = targetOntology.getURI();	
 			ao = new AlignmentOutput(theMatcher.getAlignment(), outputFileDir+"/" + removeFileExtension(ontologyFiles[sourceOntology.getIndex()].getName()) + "-"+ removeFileExtension(ontologyFiles[targetOntology.getIndex()].getName()) +".rdf");
-			ao.write(sourceUri, targetUri, sourceUri, targetUri, matcher.getMatcherName());
+			ao.write(sourceUri, targetUri, sourceUri, targetUri, matcher);
 		}
 		
 		System.out.println("All alignment files have been saved correctly.");

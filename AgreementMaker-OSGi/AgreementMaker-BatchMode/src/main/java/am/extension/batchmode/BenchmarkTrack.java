@@ -1,4 +1,4 @@
-package am.batchMode;
+package am.extension.batchmode;
 
 import java.io.File;
 
@@ -7,8 +7,7 @@ import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.oaei2009.OAEI2009parameters;
+import am.matcher.oaei2009.OAEI2009parameters;
 import am.parsing.AlignmentOutput;
 
 public class BenchmarkTrack extends Track{
@@ -164,7 +163,7 @@ public class BenchmarkTrack extends Track{
 	protected void execute() throws Exception{
 		//TRACK PARAMETERS
 		//TH and cardinality have to  be set later for each track
-		MatchersRegistry matcher = MatchersRegistry.OAEI2009;
+		String matcher = "OAEI 2009";
 		//the parameters are only used in the forth subtrck of the anatomy to keep the name of the partial reference file
 		OAEI2009parameters param = new OAEI2009parameters(OAEI2009parameters.BENCHMARKS);
 		
@@ -205,7 +204,7 @@ public class BenchmarkTrack extends Track{
 			outputFileDir = TRACK_OUTPUT_DIR+currentTarget;//the last / is not needed for mkdirs but is needed later
 			(new File(outputFileDir)).mkdirs();//create directories
 			ao = new AlignmentOutput(as, outputFileDir+"/"+AM_NAME+".rdf");
-			ao.write(sourceUri, targetUri, sourceUri, targetUri, matcher.getMatcherName());
+			ao.write(sourceUri, targetUri, sourceUri, targetUri, matcher);
 		}
 		long endTime = System.nanoTime()/1000000;
 		long totTime = endTime - startTime;

@@ -1,4 +1,4 @@
-package am.batchMode.conflictResolution;
+package am.extension.batchmode.conflictResolution;
 
 import java.util.ArrayList;
 import java.util.Collection;

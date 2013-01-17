@@ -6,7 +6,7 @@
 //
 
 
-package am.batchMode.simpleBatchMode;
+package am.extension.batchmode.simpleBatchMode;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;

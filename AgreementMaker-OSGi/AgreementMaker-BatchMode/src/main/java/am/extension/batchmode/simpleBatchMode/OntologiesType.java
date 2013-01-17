@@ -6,7 +6,7 @@
 //
 
 
-package am.batchMode.simpleBatchMode;
+package am.extension.batchmode.simpleBatchMode;
 
 import java.util.ArrayList;
 import java.util.List;

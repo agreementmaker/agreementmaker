@@ -1,4 +1,4 @@
-package am.batchMode.simpleBatchMode;
+package am.extension.batchmode.simpleBatchMode;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,11 +13,10 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.matcher.oaei2011.OAEI2011Matcher;
+import am.matcher.oaei2011.OAEI2011MatcherParameters;
 import am.parsing.OutputController;
 import am.userInterface.console.ConsoleProgressDisplay;
 
@@ -188,7 +187,7 @@ public class SimpleBatchModeRunner {
 			log.setLevel(Level.INFO);
 
 			// create the matching algorithm
-			AbstractMatcher matcher = MatcherFactory.getMatcherInstance(MatchersRegistry.OAEI2011, 0);
+			AbstractMatcher matcher = new OAEI2011Matcher();
 			
 			// create the matching algorithm parameters
 			OAEI2011MatcherParameters params = new OAEI2011MatcherParameters();

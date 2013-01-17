@@ -1,4 +1,4 @@
-package am.batchMode;
+package am.extension.batchmode;
 
 import java.io.File;
 import java.io.PrintWriter;
