@@ -11,8 +11,6 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
-import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
@@ -133,7 +131,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		SimilarityMatrix wsmMatrix = null;
 		
 		if(useWordnet){
-			AbstractMatcher wsm = MatcherFactory.getMatcherInstance(MatchersRegistry.WSM, 1); 
+			AbstractMatcher wsm = new WordnetSubclassMatcher();
 				
 			wsm.setSourceOntology(sourceOntology);
 			wsm.setTargetOntology(targetOntology);			

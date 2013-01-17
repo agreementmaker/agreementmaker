@@ -1,14 +1,17 @@
-package am.app.mappingEngine.wikipedia;
+package am.matcher.wikipedia;
 
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.SimilarityMatrix;
-import am.app.mappingEngine.hierarchy.Utilities;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
+import am.matcher.hierarchy.Utilities;
 
 public class WikiMatcher extends AbstractMatcher {
+
+	private static final long serialVersionUID = -522989313702239347L;
+	
 	WikiEngine engine;	
 	double threshold = 0.85d;
 	

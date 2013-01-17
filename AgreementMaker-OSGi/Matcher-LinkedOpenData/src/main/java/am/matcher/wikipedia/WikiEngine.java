@@ -1,4 +1,4 @@
-package am.app.mappingEngine.wikipedia;
+package am.matcher.wikipedia;
 
 import java.io.BufferedReader;
 import java.io.IOException;

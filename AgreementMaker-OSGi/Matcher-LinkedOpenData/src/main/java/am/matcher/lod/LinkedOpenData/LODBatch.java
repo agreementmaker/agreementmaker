@@ -12,8 +12,6 @@ import org.apache.log4j.Logger;
 import am.Utility;
 import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ThresholdAnalysisData;
 import am.app.ontology.Ontology;
@@ -21,7 +19,9 @@ import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.classification.OntologyClassifier.OAEI2011Configuration;
 import am.matcher.asm.AdvancedSimilarityMatcher;
 import am.matcher.asm.AdvancedSimilarityParameters;
+import am.matcher.hierarchy.HierarchyMatcherModified;
 import am.matcher.hierarchy.HierarchyMatcherModifiedParameters;
+import am.matcher.hierarchy.WordnetSubclassMatcher;
 import am.matcher.oaei2011.OAEI2011Matcher;
 import am.matcher.oaei2011.OAEI2011MatcherParameters;
 import am.utility.referenceAlignment.AlignmentUtilities;
@@ -109,7 +109,7 @@ public class LODBatch {
 			e.printStackTrace();
 		}
 		
-		AbstractMatcher hmm = MatcherFactory.getMatcherInstance(MatchersRegistry.HierarchyMatcherModified, 0);
+		AbstractMatcher hmm = new HierarchyMatcherModified();
 		hmm.setSourceOntology(sourceOntology);
 		hmm.setTargetOntology(targetOntology);
 		hmm.addInputMatcher(matcher);
@@ -122,7 +122,7 @@ public class LODBatch {
 		param.threshold = 0.0;
 		hmm.setParameters(param);
 		
-		hmm = MatcherFactory.getMatcherInstance(MatchersRegistry.WSM, 0);
+		hmm = new WordnetSubclassMatcher();
 		hmm.setSourceOntology(sourceOntology);
 		hmm.setTargetOntology(targetOntology);
 		reference = AlignmentUtilities.getMatchingPairsTAB(refAlign);
