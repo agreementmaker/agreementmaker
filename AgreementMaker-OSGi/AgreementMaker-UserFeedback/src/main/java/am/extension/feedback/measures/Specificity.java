@@ -1,13 +1,13 @@
-package am.app.feedback.measures;
+package am.extension.feedback.measures;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import am.app.Core;
-import am.app.feedback.CandidateConcept;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.extension.feedback.CandidateConcept;
 
 public class Specificity extends RelevanceMeasure {
 

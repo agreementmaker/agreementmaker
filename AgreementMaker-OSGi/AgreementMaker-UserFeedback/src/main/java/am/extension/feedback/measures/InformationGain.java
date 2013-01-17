@@ -1,15 +1,15 @@
-package am.app.feedback.measures;
+package am.extension.feedback.measures;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import am.app.Core;
-import am.app.feedback.CandidateConcept;
-import am.app.feedback.FilteredAlignmentMatrix;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.extension.feedback.CandidateConcept;
+import am.extension.feedback.FilteredAlignmentMatrix;
 
 public class InformationGain extends RelevanceMeasure {
 

@@ -1,4 +1,4 @@
-package am.app.feedback;
+package am.extension.feedback;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -6,9 +6,6 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 
 import am.Utility;
-import am.app.feedback.matchers.ExtrapolatingDSI;
-import am.app.feedback.matchers.ExtrapolatingFS;
-import am.app.feedback.ui.SelectionPanel;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
@@ -21,6 +18,9 @@ import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.extension.feedback.matchers.ExtrapolatingDSI;
+import am.extension.feedback.matchers.ExtrapolatingFS;
+import am.extension.feedback.ui.SelectionPanel;
 import am.userInterface.MatchingProgressDisplay;
 
 /**

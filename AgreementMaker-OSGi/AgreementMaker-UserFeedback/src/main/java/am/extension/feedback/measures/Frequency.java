@@ -1,4 +1,4 @@
-package am.app.feedback.measures;
+package am.extension.feedback.measures;
 
 public class Frequency implements Comparable<Frequency> {
 

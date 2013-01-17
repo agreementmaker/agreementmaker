@@ -1,4 +1,4 @@
-package am.app.userfeedback.clustering.disagreement;
+package am.extension.userfeedback.clustering.disagreement;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,11 +9,11 @@ import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
-import am.app.userfeedback.PropagationEvaluation;
-import am.app.userfeedback.UFLExperiment;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdMethod;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdParameters;
+import am.extension.userfeedback.PropagationEvaluation;
+import am.extension.userfeedback.UFLExperiment;
 
 public class ClusterBoostEvaluation extends PropagationEvaluation {
 

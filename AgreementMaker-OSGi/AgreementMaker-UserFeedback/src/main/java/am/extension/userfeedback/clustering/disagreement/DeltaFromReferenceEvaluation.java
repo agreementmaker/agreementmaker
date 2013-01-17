@@ -1,13 +1,13 @@
-package am.app.userfeedback.clustering.disagreement;
+package am.extension.userfeedback.clustering.disagreement;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import am.app.userfeedback.PropagationEvaluation;
-import am.app.userfeedback.UFLExperiment;
 import am.evaluation.alignment.AlignmentMetrics;
 import am.evaluation.alignment.DeltaFromReference;
+import am.extension.userfeedback.PropagationEvaluation;
+import am.extension.userfeedback.UFLExperiment;
 
 public class DeltaFromReferenceEvaluation extends PropagationEvaluation {
 	

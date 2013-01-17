@@ -1,9 +1,10 @@
-package am.app.userfeedback.common;
+package am.extension.userfeedback.common;
 
 import am.app.mappingEngine.Mapping;
-import am.app.userfeedback.UFLExperiment;
-import am.app.userfeedback.UserFeedback;
-import am.app.userfeedback.ui.ManualUserValidationPanel;
+import am.extension.userfeedback.UFLExperiment;
+import am.extension.userfeedback.UserFeedback;
+import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.ui.ManualUserValidationPanel;
 
 public class ManualUserValidation extends UserFeedback {
 	

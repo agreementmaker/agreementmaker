@@ -1,4 +1,4 @@
-package am.app.userfeedback.common;
+package am.extension.userfeedback.common;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -11,8 +11,8 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.ontology.Ontology;
-import am.app.userfeedback.UFLExperiment;
-import am.app.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.UFLExperiment;
+import am.extension.userfeedback.UserFeedback.Validation;
 
 /**
  * This is a manual experiment setup.

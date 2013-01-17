@@ -1,4 +1,4 @@
-package am.app.feedback;
+package am.extension.feedback;
 
 import java.util.ArrayList;
 import java.util.Collections;

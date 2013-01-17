@@ -1,7 +1,7 @@
-package am.app.userfeedback.common;
+package am.extension.userfeedback.common;
 
 import am.app.mappingEngine.Mapping;
-import am.app.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.UserFeedback.Validation;
 
 public class ValidatedMapping extends Mapping {
 

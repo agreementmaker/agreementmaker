@@ -1,4 +1,4 @@
-package am.app.feedback;
+package am.extension.feedback;
 
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.Node;

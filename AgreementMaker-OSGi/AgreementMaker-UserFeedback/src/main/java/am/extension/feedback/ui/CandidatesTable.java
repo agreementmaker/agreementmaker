@@ -1,4 +1,4 @@
-package am.app.feedback.ui;
+package am.extension.feedback.ui;
 
 import java.awt.Color;
 import java.awt.Component;

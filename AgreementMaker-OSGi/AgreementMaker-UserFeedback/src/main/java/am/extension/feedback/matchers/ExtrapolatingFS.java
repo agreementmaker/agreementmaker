@@ -1,4 +1,4 @@
-package am.app.feedback.matchers;
+package am.extension.feedback.matchers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,14 +6,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import am.app.feedback.FilteredAlignmentMatrix;
-import am.app.feedback.InitialMatchers;
-import am.app.feedback.measures.FamilialSimilarity;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
+import am.extension.feedback.FilteredAlignmentMatrix;
+import am.extension.feedback.InitialMatchers;
+import am.extension.feedback.measures.FamilialSimilarity;
 
 public class ExtrapolatingFS extends AbstractMatcher {
 	

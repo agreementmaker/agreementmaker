@@ -1,4 +1,4 @@
-package am.app.feedback;
+package am.extension.feedback;
 
 import org.apache.log4j.Logger;
 

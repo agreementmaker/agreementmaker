@@ -1,4 +1,4 @@
-package am.app.userfeedback;
+package am.extension.userfeedback;
 
 /**
  * This class is just a wrapper class for several registry enums.
@@ -10,7 +10,7 @@ public class UFLRegistry {
 
 	/* Different experimental setups (Ontologies + Reference alignment) */
 	public enum ExperimentRegistry {
-		Manual ( am.app.userfeedback.common.ManualExperimentSetup.class );
+		Manual ( am.extension.userfeedback.common.ManualExperimentSetup.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends UFLExperiment> clazz;
@@ -20,7 +20,7 @@ public class UFLRegistry {
 	}
 	
 	public enum InitialMatcherRegistry {
-		OrthoCombination ( am.app.userfeedback.clustering.disagreement.OrthoCombinationMatcher.class );
+		OrthoCombination ( am.extension.userfeedback.clustering.disagreement.OrthoCombinationMatcher.class );
 			
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends ExecutionSemantics> clazz;
@@ -31,7 +31,7 @@ public class UFLRegistry {
 	
 	public enum CandidateSelectionRegistry {
 		
-		DisagreementRank ( am.app.userfeedback.clustering.disagreement.DisagreementRanking.class );
+		DisagreementRank ( am.extension.userfeedback.clustering.disagreement.DisagreementRanking.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends CandidateSelection> clazz;
@@ -41,7 +41,7 @@ public class UFLRegistry {
 	}
 	
 	public enum CSEvaluationRegistry {
-		PrecisionRecallEval ( am.app.userfeedback.common.PrecisionRecallPlot.class );
+		PrecisionRecallEval ( am.extension.userfeedback.common.PrecisionRecallPlot.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends CandidateSelectionEvaluation> clazz;
@@ -51,8 +51,8 @@ public class UFLRegistry {
 	}
 	
 	public enum UserValidationRegistry {
-		AutomaticReference ( am.app.userfeedback.common.AutomaticUserValidation.class ),
-		Manual ( am.app.userfeedback.common.ManualUserValidation.class );
+		AutomaticReference ( am.extension.userfeedback.common.AutomaticUserValidation.class ),
+		Manual ( am.extension.userfeedback.common.ManualUserValidation.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends UserFeedback> clazz;
@@ -62,7 +62,7 @@ public class UFLRegistry {
 	}
 	
 	public enum FeedbackPropagationRegistry {
-		ClusterBoost ( am.app.userfeedback.clustering.disagreement.ClusterBoostPropagation.class );
+		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostPropagation.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends FeedbackPropagation> clazz;
@@ -72,8 +72,8 @@ public class UFLRegistry {
 	}
 	
 	public enum PropagationEvaluationRegistry {
-		DeltaFromRef ( am.app.userfeedback.clustering.disagreement.DeltaFromReferenceEvaluation.class ),
-		ClusterBoost ( am.app.userfeedback.clustering.disagreement.ClusterBoostEvaluation.class );
+		DeltaFromRef ( am.extension.userfeedback.clustering.disagreement.DeltaFromReferenceEvaluation.class ),
+		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostEvaluation.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends PropagationEvaluation> clazz;

@@ -1,4 +1,4 @@
-package am.app.userfeedback.ui;
+package am.extension.userfeedback.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,15 +9,17 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import am.app.mappingEngine.Mapping;
-import am.app.userfeedback.UFLExperiment;
-import am.app.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.UFLExperiment;
+import am.extension.userfeedback.UserFeedback.Validation;
 
 public class ManualUserValidationPanel extends JPanel implements ActionListener {
 
+	private static final long serialVersionUID = -8988272138943928646L;
+	
 	private JLabel lblMapping;
 	private JLabel lblInRef;
 	private JButton btnCorrect, btnIncorrect, btnEndExperiment;
-	
+
 	private Mapping candidateMapping;
 	private UFLExperiment experiment;
 	

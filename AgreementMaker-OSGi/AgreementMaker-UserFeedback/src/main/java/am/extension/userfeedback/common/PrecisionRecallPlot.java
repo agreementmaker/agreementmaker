@@ -1,4 +1,4 @@
-package am.app.userfeedback.common;
+package am.extension.userfeedback.common;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,8 +11,8 @@ import java.util.List;
 
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.userfeedback.CandidateSelectionEvaluation;
-import am.app.userfeedback.UFLExperiment;
+import am.extension.userfeedback.CandidateSelectionEvaluation;
+import am.extension.userfeedback.UFLExperiment;
 
 import com.panayotis.gnuplot.JavaPlot;
 

@@ -1,10 +1,10 @@
-package am.app.feedback.ui;
+package am.extension.feedback.ui;
 
 import javax.swing.JRadioButton;
 
-import am.app.feedback.CandidateConcept;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.extension.feedback.CandidateConcept;
 
 public class CandidatesTableRow {
 	

@@ -1,8 +1,8 @@
-package am.app.feedback.matchers;
+package am.extension.feedback.matchers;
 
-import am.app.feedback.FilteredAlignmentMatrix;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
+import am.extension.feedback.FilteredAlignmentMatrix;
 
 public class ExtrapolatingDSI extends DescendantsSimilarityInheritanceMatcher {
 	

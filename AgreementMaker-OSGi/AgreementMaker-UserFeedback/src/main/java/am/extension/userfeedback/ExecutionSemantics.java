@@ -1,4 +1,4 @@
-package am.app.userfeedback;
+package am.extension.userfeedback;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,7 +10,7 @@ import javax.swing.event.EventListenerList;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.userfeedback.ui.UFLControlGUI;
+import am.extension.userfeedback.ui.UFLControlGUI;
 
 /**
  * This class instantiates automatically instantiates a matcher configuration using

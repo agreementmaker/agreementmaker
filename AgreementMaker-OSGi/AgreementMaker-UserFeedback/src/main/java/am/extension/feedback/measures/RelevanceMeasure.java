@@ -1,12 +1,12 @@
-package am.app.feedback.measures;
+package am.extension.feedback.measures;
 
 import java.util.Collections;
 import java.util.Iterator;
 
-import am.app.feedback.CandidateConcept;
-import am.app.feedback.CandidateSelection.MeasuresRegistry;
-import am.app.feedback.ConceptList;
-import am.app.feedback.FeedbackLoop;
+import am.extension.feedback.CandidateConcept;
+import am.extension.feedback.CandidateSelection.MeasuresRegistry;
+import am.extension.feedback.ConceptList;
+import am.extension.feedback.FeedbackLoop;
 
 public class RelevanceMeasure {
 

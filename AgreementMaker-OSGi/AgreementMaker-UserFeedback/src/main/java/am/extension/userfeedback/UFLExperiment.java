@@ -1,10 +1,10 @@
-package am.app.userfeedback;
+package am.extension.userfeedback;
 
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.Ontology;
-import am.app.userfeedback.UserFeedback.Validation;
-import am.app.userfeedback.ui.UFLControlGUI;
+import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.ui.UFLControlGUI;
 
 public abstract class UFLExperiment {
 

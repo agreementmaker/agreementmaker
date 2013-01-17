@@ -1,4 +1,4 @@
-package am.app.userfeedback.clustering.disagreement;
+package am.extension.userfeedback.clustering.disagreement;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,10 +10,10 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MappingSimilarityComparator;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Ontology;
-import am.app.userfeedback.CandidateSelection;
-import am.app.userfeedback.UFLExperiment;
 import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
+import am.extension.userfeedback.CandidateSelection;
+import am.extension.userfeedback.UFLExperiment;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 
 public class DisagreementRanking extends CandidateSelection {

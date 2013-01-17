@@ -1,11 +1,11 @@
-package am.app.feedback;
+package am.extension.feedback;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.DefaultMatcherParameters;
 
 public class FeedbackLoopParameters extends DefaultMatcherParameters {
 
-	
+	private static final long serialVersionUID = 973468483878253969L;
 	
 	public int K = 4;
 	public int M = 2;

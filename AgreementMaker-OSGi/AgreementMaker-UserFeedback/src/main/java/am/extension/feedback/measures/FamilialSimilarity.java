@@ -1,4 +1,4 @@
-package am.app.feedback.measures;
+package am.extension.feedback.measures;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,13 +7,13 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import am.app.Core;
-import am.app.feedback.CandidateConcept;
-import am.app.feedback.FilteredAlignmentMatrix;
-import am.app.feedback.InitialMatchers;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.extension.feedback.CandidateConcept;
+import am.extension.feedback.FilteredAlignmentMatrix;
+import am.extension.feedback.InitialMatchers;
 
 
 public class FamilialSimilarity extends RelevanceMeasure {

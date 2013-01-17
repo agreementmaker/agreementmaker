@@ -1,4 +1,4 @@
-package am.app.userfeedback.ui;
+package am.extension.userfeedback.ui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -15,14 +15,14 @@ import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.EventListenerList;
 
-import am.app.userfeedback.UFLRegistry;
-import am.app.userfeedback.UFLRegistry.CSEvaluationRegistry;
-import am.app.userfeedback.UFLRegistry.CandidateSelectionRegistry;
-import am.app.userfeedback.UFLRegistry.ExperimentRegistry;
-import am.app.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
-import am.app.userfeedback.UFLRegistry.InitialMatcherRegistry;
-import am.app.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
-import am.app.userfeedback.UFLRegistry.UserValidationRegistry;
+import am.extension.userfeedback.UFLRegistry;
+import am.extension.userfeedback.UFLRegistry.CSEvaluationRegistry;
+import am.extension.userfeedback.UFLRegistry.CandidateSelectionRegistry;
+import am.extension.userfeedback.UFLRegistry.ExperimentRegistry;
+import am.extension.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
+import am.extension.userfeedback.UFLRegistry.InitialMatcherRegistry;
+import am.extension.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
+import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
 
 public class UFLControlGUI_InitialSettingsPanel extends JPanel implements ActionListener {
 	
@@ -30,13 +30,13 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 
 	// Start Screen
 	public JButton btn_start;
-	public JComboBox cmbExperiment;
-	public JComboBox cmbMatcher;
-	public JComboBox cmbCandidate;
-	public JComboBox cmbCSEvaluation;
-	public JComboBox cmbPropagation;
-	public JComboBox cmbPropagationEvaluation;
-	public JComboBox cmbUserFeedback;
+	public JComboBox<ExperimentRegistry> cmbExperiment;
+	public JComboBox<InitialMatcherRegistry> cmbMatcher;
+	public JComboBox<CandidateSelectionRegistry> cmbCandidate;
+	public JComboBox<CSEvaluationRegistry> cmbCSEvaluation;
+	public JComboBox<FeedbackPropagationRegistry> cmbPropagation;
+	public JComboBox<PropagationEvaluationRegistry> cmbPropagationEvaluation;
+	public JComboBox<UserValidationRegistry> cmbUserFeedback;
 
 	EventListenerList listeners;  // list of listeners for this class
 	
@@ -53,31 +53,31 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 		PropagationEvaluationRegistry[] PropagationEvaluationEntries 	= UFLRegistry.PropagationEvaluationRegistry.values();
 		
 		//populate the combo boxes here
-		cmbExperiment = new JComboBox(experimentEntries);
+		cmbExperiment = new JComboBox<ExperimentRegistry>(experimentEntries);
 		cmbExperiment.setActionCommand( UFLControlGUI.ActionCommands.INITSCREEN_cmbExperiment.name() );
 		cmbExperiment.addActionListener(this);
 		
-		cmbMatcher = new JComboBox(InitialMatchersEntries);
+		cmbMatcher = new JComboBox<InitialMatcherRegistry>(InitialMatchersEntries);
 		cmbMatcher.setActionCommand( UFLControlGUI.ActionCommands.INITSCREEN_cmbMatcher.name() );
 		cmbMatcher.addActionListener(this);
 		
-		cmbCandidate = new JComboBox(CandidateSelectionEntries);
+		cmbCandidate = new JComboBox<CandidateSelectionRegistry>(CandidateSelectionEntries);
 		cmbCandidate.setActionCommand( UFLControlGUI.ActionCommands.INITSCREEN_cmbCandidate.name() );
 		cmbCandidate.addActionListener(this);
 		
-		cmbCSEvaluation = new JComboBox(CSEvaluationEntries);
+		cmbCSEvaluation = new JComboBox<CSEvaluationRegistry>(CSEvaluationEntries);
 		cmbCSEvaluation.setActionCommand( UFLControlGUI.ActionCommands.INITSCREEN_cmbCSEvaluation.name() );
 		cmbCSEvaluation.addActionListener(this);
 
-		cmbUserFeedback = new JComboBox(UserValidationEntries);
+		cmbUserFeedback = new JComboBox<UserValidationRegistry>(UserValidationEntries);
 		cmbUserFeedback.setActionCommand( UFLControlGUI.ActionCommands.INITSCREEN_cmbUserFeedback.name() );
 		cmbUserFeedback.addActionListener(this);
 		
-		cmbPropagation = new JComboBox(FeedbackPropagationEntries);
+		cmbPropagation = new JComboBox<FeedbackPropagationRegistry>(FeedbackPropagationEntries);
 		cmbPropagation.setActionCommand( UFLControlGUI.ActionCommands.INITSCREEN_cmbPropagation.name() );
 		cmbPropagation.addActionListener(this);
 		
-		cmbPropagationEvaluation = new JComboBox(PropagationEvaluationEntries);
+		cmbPropagationEvaluation = new JComboBox<PropagationEvaluationRegistry>(PropagationEvaluationEntries);
 		cmbPropagationEvaluation.setActionCommand( UFLControlGUI.ActionCommands.INITSCREEN_cmbPropagationEvaluation.name() );
 		cmbPropagationEvaluation.addActionListener(this);
 		

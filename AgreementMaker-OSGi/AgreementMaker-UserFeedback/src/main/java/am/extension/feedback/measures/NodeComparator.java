@@ -1,4 +1,4 @@
-package am.app.feedback.measures;
+package am.extension.feedback.measures;
 
 import java.util.Comparator;
 

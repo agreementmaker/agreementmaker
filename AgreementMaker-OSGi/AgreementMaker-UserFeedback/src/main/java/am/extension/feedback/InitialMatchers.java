@@ -1,17 +1,17 @@
-package am.app.feedback;
+package am.extension.feedback;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.Combination.CombinationParameters;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
 import am.app.mappingEngine.multiWords.MultiWordsMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.ontology.Node;
+import am.matcher.bsm.BaseSimilarityMatcher;
+import am.matcher.bsm.BaseSimilarityParameters;
 
 public class InitialMatchers extends AbstractMatcher {
 

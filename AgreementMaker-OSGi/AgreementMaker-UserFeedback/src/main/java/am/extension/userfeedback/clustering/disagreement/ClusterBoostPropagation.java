@@ -1,4 +1,4 @@
-package am.app.userfeedback.clustering.disagreement;
+package am.extension.userfeedback.clustering.disagreement;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -9,12 +9,12 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Ontology;
-import am.app.userfeedback.FeedbackPropagation;
-import am.app.userfeedback.UFLExperiment;
-import am.app.userfeedback.UserFeedback.Validation;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdMethod;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdParameters;
+import am.extension.userfeedback.FeedbackPropagation;
+import am.extension.userfeedback.UFLExperiment;
+import am.extension.userfeedback.UserFeedback.Validation;
 
 public class ClusterBoostPropagation extends FeedbackPropagation {
 

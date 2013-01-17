@@ -1,4 +1,4 @@
-package am.app.userfeedback.clustering.disagreement;
+package am.extension.userfeedback.clustering.disagreement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,18 +13,18 @@ import am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstance
 import am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralParameters;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcher;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
-import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher;
-import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
 import am.app.mappingEngine.multiWords.MultiWordsMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsParameters;
-import am.app.mappingEngine.oaei.OAEI_Track;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
+import am.app.mappingEngine.utility.OAEI_Track;
 import am.app.ontology.Ontology;
-import am.app.userfeedback.ExecutionSemantics;
-import am.app.userfeedback.UFLExperiment;
+import am.extension.userfeedback.ExecutionSemantics;
+import am.extension.userfeedback.UFLExperiment;
+import am.matcher.asm.AdvancedSimilarityMatcher;
+import am.matcher.asm.AdvancedSimilarityParameters;
+import am.matcher.bsm.BaseSimilarityMatcher;
+import am.matcher.bsm.BaseSimilarityParameters;
 import am.userInterface.MatchingProgressDisplay;
 
 /**
@@ -35,8 +35,6 @@ import am.userInterface.MatchingProgressDisplay;
  *
  */
 public class OrthoCombinationMatcher extends ExecutionSemantics {
-
-	private static final long serialVersionUID = -9089694302091522666L;
 
 	public OrthoCombinationMatcher() { super(); } // super() calls initializeVariables();
 	

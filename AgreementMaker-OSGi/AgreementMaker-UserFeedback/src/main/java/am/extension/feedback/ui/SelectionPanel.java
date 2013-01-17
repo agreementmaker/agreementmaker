@@ -1,4 +1,4 @@
-package am.app.feedback.ui;
+package am.extension.feedback.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -28,21 +28,20 @@ import org.apache.log4j.Logger;
 
 import am.Utility;
 import am.app.Core;
-import am.app.feedback.CandidateConcept;
-import am.app.feedback.CandidateSelection;
-import am.app.feedback.CandidateSelection.MeasuresRegistry;
-import am.app.feedback.FeedbackLoop;
-import am.app.feedback.FeedbackLoopParameters;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.ontology.Node;
+import am.extension.feedback.CandidateConcept;
+import am.extension.feedback.CandidateSelection;
+import am.extension.feedback.CandidateSelection.MeasuresRegistry;
+import am.extension.feedback.FeedbackLoop;
+import am.extension.feedback.FeedbackLoopParameters;
 import am.userInterface.MatcherParametersDialog;
 import am.userInterface.MatchingProgressDisplay;
 import am.userInterface.UI;
@@ -113,7 +112,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 				FeedbackLoopParameters fblp = getParameters();
 				String control = checkParameters(fblp);
 			    if(control.equals("")){
-					ufl = (FeedbackLoop)MatcherFactory.getMatcherInstance( MatchersRegistry.UserFeedBackLoop , Core.getInstance().getMatcherInstances().size() );  // initialize the user feedback loop interface (i.e. add a new tab)
+					ufl = (FeedbackLoop)MatcherFactory.getMatcherInstance( FeedbackLoop.class );  // initialize the user feedback loop interface (i.e. add a new tab)
 					ufl.setParam( fblp );
 					
 					final DefaultMatcherParameters p = ufl.getParam();
@@ -379,7 +378,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		//matcher combo list
 		String[] matcherList = MatcherFactory.getMatcherComboList();
 		cmbMatcher = new JComboBox(matcherList);
-		cmbMatcher.setSelectedItem(MatchersRegistry.InitialMatcher.getMatcherName());
+		//cmbMatcher.setSelectedItem(MatchersRegistry.InitialMatcher.getMatcherName());
 		
 		cmbIterations = new JComboBox( Utility.STEPFIVE_INT );
 		cmbIterations.addItem(UNLIMITED);

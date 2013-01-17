@@ -1,4 +1,4 @@
-package am.app.userfeedback.ui;
+package am.extension.userfeedback.ui;
 
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -7,14 +7,14 @@ import java.awt.event.ActionListener;
 import javax.swing.JPanel;
 
 import am.Utility;
-import am.app.userfeedback.UFLExperiment;
-import am.app.userfeedback.UFLRegistry.CSEvaluationRegistry;
-import am.app.userfeedback.UFLRegistry.CandidateSelectionRegistry;
-import am.app.userfeedback.UFLRegistry.ExperimentRegistry;
-import am.app.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
-import am.app.userfeedback.UFLRegistry.InitialMatcherRegistry;
-import am.app.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
-import am.app.userfeedback.UFLRegistry.UserValidationRegistry;
+import am.extension.userfeedback.UFLExperiment;
+import am.extension.userfeedback.UFLRegistry.CSEvaluationRegistry;
+import am.extension.userfeedback.UFLRegistry.CandidateSelectionRegistry;
+import am.extension.userfeedback.UFLRegistry.ExperimentRegistry;
+import am.extension.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
+import am.extension.userfeedback.UFLRegistry.InitialMatcherRegistry;
+import am.extension.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
+import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
 import am.userInterface.UI;
 
 public class UFLControlGUI extends JPanel implements ActionListener {
