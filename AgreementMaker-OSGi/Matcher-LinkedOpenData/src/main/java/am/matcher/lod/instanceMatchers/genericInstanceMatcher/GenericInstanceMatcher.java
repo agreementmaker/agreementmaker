@@ -1,4 +1,4 @@
-package am.app.mappingEngine.instanceMatchers.genericInstanceMatcher;
+package am.matcher.lod.instanceMatchers.genericInstanceMatcher;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,14 +16,14 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.InstanceMatchingReport;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.instance.AbstractInstanceMatcher;
-import am.app.mappingEngine.instanceMatchers.BaseInstanceMatcher;
-import am.app.mappingEngine.instanceMatchers.UsesKB;
-import am.app.mappingEngine.instanceMatchers.combination.CombinationFunction;
-import am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher.LabeledDatasource;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.Instance;
 import am.app.ontology.instance.ScoredInstance;
 import am.app.ontology.instance.ScoredInstanceComparator;
+import am.matcher.lod.instanceMatchers.BaseInstanceMatcher;
+import am.matcher.lod.instanceMatchers.UsesKB;
+import am.matcher.lod.instanceMatchers.combination.CombinationFunction;
+import am.matcher.lod.instanceMatchers.tokenInstanceMatcher.LabeledDatasource;
 
 /**
  *	This matcher contains a list of matchers, which are all run and then combined 
@@ -36,7 +36,7 @@ import am.app.ontology.instance.ScoredInstanceComparator;
  * @author Federico Caimi
  *
  */
-public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesKB{
+public class GenericInstanceMatcher extends BaseInstanceMatcher implements UsesKB {
 	private static final long serialVersionUID = -5745262888574700843L;
 
 	private List<AbstractInstanceMatcher> matchers = new ArrayList<AbstractInstanceMatcher>();

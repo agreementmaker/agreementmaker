@@ -1,4 +1,4 @@
-package am.app.mappingEngine.instanceMatcher;
+package am.matcher.lod.instanceMatcher;
 
 import am.GlobalStaticVariables;
 import am.app.ontology.Ontology;

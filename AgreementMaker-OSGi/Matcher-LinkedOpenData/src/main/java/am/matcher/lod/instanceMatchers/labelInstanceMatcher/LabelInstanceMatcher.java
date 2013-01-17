@@ -1,4 +1,4 @@
-package am.app.mappingEngine.instanceMatchers.labelInstanceMatcher;
+package am.matcher.lod.instanceMatchers.labelInstanceMatcher;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,10 +9,10 @@ import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.instance.EntityTypeMapper.EntityType;
-import am.app.mappingEngine.instanceMatcher.LabelUtils;
-import am.app.mappingEngine.instanceMatchers.BaseInstanceMatcher;
 import am.app.ontology.instance.Instance;
 import am.app.similarity.StringSimilarityMeasure;
+import am.matcher.lod.instanceMatcher.LabelUtils;
+import am.matcher.lod.instanceMatchers.BaseInstanceMatcher;
 import am.utility.StringUtility;
 
 /**

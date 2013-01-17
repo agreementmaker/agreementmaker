@@ -1,4 +1,4 @@
-package am.app.mappingEngine.instanceMatchers;
+package am.matcher.lod.instanceMatchers;
 
 /* author:   Fotis Lazarinis (actually I translated from C to Java)
 date:     June 1997

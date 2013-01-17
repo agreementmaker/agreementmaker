@@ -1,4 +1,4 @@
-package am.app.mappingEngine.LinkedOpenData;
+package am.matcher.lod.LinkedOpenData;
 
 import java.io.IOException;
 import java.util.ArrayList;

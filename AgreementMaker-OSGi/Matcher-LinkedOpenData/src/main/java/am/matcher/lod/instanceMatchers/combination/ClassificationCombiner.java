@@ -1,4 +1,4 @@
-package am.app.mappingEngine.instanceMatchers.combination;
+package am.matcher.lod.instanceMatchers.combination;
 
 import java.util.List;
 

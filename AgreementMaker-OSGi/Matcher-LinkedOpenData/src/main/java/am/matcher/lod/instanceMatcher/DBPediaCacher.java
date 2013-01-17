@@ -1,4 +1,4 @@
-package am.app.mappingEngine.instanceMatcher;
+package am.matcher.lod.instanceMatcher;
 
 
 import java.io.ByteArrayInputStream;

@@ -1,4 +1,4 @@
-package am.app.mappingEngine.instanceMatcher;
+package am.matcher.lod.instanceMatcher;
 
 public class NYTConstants {
 	

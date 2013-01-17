@@ -1,4 +1,4 @@
-package am.app.mappingEngine.instanceMatchers;
+package am.matcher.lod.instanceMatchers;
 
 import java.util.List;
 
@@ -7,9 +7,9 @@ import org.apache.log4j.Logger;
 import am.app.mappingEngine.instance.AbstractInstanceMatcher;
 import am.app.mappingEngine.instance.DefaultInstanceMatcherParameters;
 import am.app.mappingEngine.instance.EntityTypeMapper.EntityType;
-import am.app.mappingEngine.instanceMatcher.LabelUtils;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.Instance;
+import am.matcher.lod.instanceMatcher.LabelUtils;
 
 /**
  * Implements some basic functions for instance matching.

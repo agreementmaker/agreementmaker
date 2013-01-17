@@ -1,4 +1,4 @@
-package am.app.mappingEngine.LinkedOpenData;
+package am.matcher.lod.LinkedOpenData;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,16 +14,16 @@ import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher;
-import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityParameters;
 import am.app.mappingEngine.hierarchy.HierarchyMatcherModifiedParameters;
-import am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher;
-import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters;
-import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters.OAEI2011Configuration;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.referenceAlignment.ThresholdAnalysisData;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.app.ontology.profiling.classification.OntologyClassifier.OAEI2011Configuration;
+import am.matcher.asm.AdvancedSimilarityMatcher;
+import am.matcher.asm.AdvancedSimilarityParameters;
+import am.matcher.oaei2011.OAEI2011Matcher;
+import am.matcher.oaei2011.OAEI2011MatcherParameters;
 import am.utility.referenceAlignment.AlignmentUtilities;
 
 import com.hp.hpl.jena.util.LocationMapper;

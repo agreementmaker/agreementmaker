@@ -1,4 +1,4 @@
-package am.app.mappingEngine.LinkedOpenData;
+package am.matcher.lod.LinkedOpenData;
 
 public class LODReferences {
 	public static final String MUSIC_BBC = "LOD/LOD-Reference-Alignment/music_bbcprogram.txt";

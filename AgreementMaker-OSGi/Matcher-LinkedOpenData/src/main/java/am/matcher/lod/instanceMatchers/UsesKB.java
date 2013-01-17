@@ -1,6 +1,6 @@
-package am.app.mappingEngine.instanceMatchers;
+package am.matcher.lod.instanceMatchers;
 
-import am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher.LabeledDatasource;
+import am.matcher.lod.instanceMatchers.tokenInstanceMatcher.LabeledDatasource;
 
 /**
  * This interface is implemented by matchers which use the knowledge base in the

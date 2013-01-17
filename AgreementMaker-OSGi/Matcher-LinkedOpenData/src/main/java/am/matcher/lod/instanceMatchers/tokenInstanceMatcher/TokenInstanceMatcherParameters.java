@@ -1,10 +1,10 @@
-package am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher;
+package am.matcher.lod.instanceMatchers.tokenInstanceMatcher;
 
 import java.util.List;
 
 import am.app.mappingEngine.instance.DefaultInstanceMatcherParameters;
-import am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher.Aggregation;
-import am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher.Modality;
+import am.matcher.lod.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher.Aggregation;
+import am.matcher.lod.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher.Modality;
 
 public class TokenInstanceMatcherParameters extends DefaultInstanceMatcherParameters {
 

@@ -1,4 +1,4 @@
-package am.app.mappingEngine.LinkedOpenData;
+package am.matcher.lod.LinkedOpenData;
 
 import java.io.BufferedReader;
 import java.io.File;

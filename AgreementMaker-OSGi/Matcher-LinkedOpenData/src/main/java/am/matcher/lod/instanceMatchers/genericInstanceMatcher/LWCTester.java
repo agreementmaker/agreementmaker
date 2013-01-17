@@ -1,4 +1,4 @@
-package am.app.mappingEngine.instanceMatchers.genericInstanceMatcher;
+package am.matcher.lod.instanceMatchers.genericInstanceMatcher;
 
 import java.util.ArrayList;
 import java.util.Arrays;

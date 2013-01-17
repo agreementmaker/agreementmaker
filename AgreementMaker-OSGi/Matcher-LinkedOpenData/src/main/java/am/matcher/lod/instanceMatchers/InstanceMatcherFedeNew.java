@@ -1,4 +1,4 @@
-package am.app.mappingEngine.instanceMatchers;
+package am.matcher.lod.instanceMatchers;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -14,16 +14,16 @@ import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.instance.AbstractInstanceMatcher;
 import am.app.mappingEngine.instance.EntityTypeMapper.EntityType;
-import am.app.mappingEngine.instanceMatcher.LabelUtils;
-import am.app.mappingEngine.instanceMatchers.labelInstanceMatcher.LabelInstanceMatcher;
-import am.app.mappingEngine.instanceMatchers.labelInstanceMatcher.LabelInstanceMatcherParameters;
-import am.app.mappingEngine.instanceMatchers.statementsInstanceMatcher.StatementsInstanceMatcher;
-import am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher;
-import am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher.Aggregation;
-import am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher.Modality;
-import am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcherParameters;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.instance.Instance;
+import am.matcher.lod.instanceMatcher.LabelUtils;
+import am.matcher.lod.instanceMatchers.labelInstanceMatcher.LabelInstanceMatcher;
+import am.matcher.lod.instanceMatchers.labelInstanceMatcher.LabelInstanceMatcherParameters;
+import am.matcher.lod.instanceMatchers.statementsInstanceMatcher.StatementsInstanceMatcher;
+import am.matcher.lod.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher;
+import am.matcher.lod.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher.Aggregation;
+import am.matcher.lod.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcher.Modality;
+import am.matcher.lod.instanceMatchers.tokenInstanceMatcher.TokenInstanceMatcherParameters;
 
 public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 

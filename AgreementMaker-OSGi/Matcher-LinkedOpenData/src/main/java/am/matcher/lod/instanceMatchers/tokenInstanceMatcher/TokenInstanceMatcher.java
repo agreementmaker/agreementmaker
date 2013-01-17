@@ -1,4 +1,4 @@
-package am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher;
+package am.matcher.lod.instanceMatchers.tokenInstanceMatcher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,12 +12,12 @@ import simpack.measure.weightingscheme.StringTFIDF;
 import am.app.mappingEngine.StringUtil.AMStringWrapper;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
-import am.app.mappingEngine.instanceMatchers.BaseInstanceMatcher;
-import am.app.mappingEngine.instanceMatchers.KeywordsUtils;
-import am.app.mappingEngine.instanceMatchers.Porter;
-import am.app.mappingEngine.instanceMatchers.UsesKB;
-import am.app.mappingEngine.instanceMatchers.WordNetUtils;
 import am.app.ontology.instance.Instance;
+import am.matcher.lod.instanceMatchers.BaseInstanceMatcher;
+import am.matcher.lod.instanceMatchers.KeywordsUtils;
+import am.matcher.lod.instanceMatchers.Porter;
+import am.matcher.lod.instanceMatchers.UsesKB;
+import am.matcher.lod.instanceMatchers.WordNetUtils;
 
 import com.wcohen.ss.api.StringWrapper;
 

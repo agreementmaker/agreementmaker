@@ -1,4 +1,4 @@
-package am.app.mappingEngine.instanceMatchers.tokenInstanceMatcher;
+package am.matcher.lod.instanceMatchers.tokenInstanceMatcher;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package am.app.mappingEngine.LinkedOpenData;
+package am.matcher.lod.LinkedOpenData;
 
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
