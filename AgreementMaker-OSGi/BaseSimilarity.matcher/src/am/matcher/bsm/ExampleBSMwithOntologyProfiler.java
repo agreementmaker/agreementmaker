@@ -1,4 +1,4 @@
-package am.examples;
+package am.matcher.bsm;
 
 import java.beans.PropertyChangeEvent;
 import java.io.File;
@@ -9,11 +9,8 @@ import java.util.prefs.Preferences;
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
 
-import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityParameters;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
