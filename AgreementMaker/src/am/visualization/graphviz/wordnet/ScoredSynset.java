@@ -1,4 +1,4 @@
-package am.app.mappingEngine.hierarchy;
+package am.visualization.graphviz.wordnet;
 
 import java.util.List;
 

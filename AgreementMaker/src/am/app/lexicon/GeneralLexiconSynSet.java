@@ -9,7 +9,7 @@ import am.app.Core;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
+import am.utility.StringUtility;
 
 import com.hp.hpl.jena.ontology.OntResource;
 
@@ -39,7 +39,7 @@ public class GeneralLexiconSynSet implements LexiconSynSet {
 
 	@Override 
 	public void setGloss(String def) {
-		gloss = BaseSimilarityMatcher.removeLines(def); 
+		gloss = StringUtility.removeLines(def); 
 	}
 	@Override public String getGloss() { return gloss; }
 

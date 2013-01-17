@@ -2,7 +2,7 @@ package am.app.mappingEngine.multiWords;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
-import am.app.mappingEngine.oaei.OAEI_Track;
+import am.app.mappingEngine.utility.OAEI_Track;
 
 import com.hp.hpl.jena.ontology.OntProperty;
 

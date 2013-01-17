@@ -1,6 +1,6 @@
 package am.app.mappingEngine.StringUtil;
 
-import am.app.mappingEngine.oaei.OAEI_Track;
+import am.app.mappingEngine.utility.OAEI_Track;
 
 public class NormalizerParameter {
 	//Normalization operations

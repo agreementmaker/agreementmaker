@@ -43,7 +43,6 @@ import am.app.ontology.Ontology;
 import am.app.ontology.profiling.ProfilingDialog;
 import am.app.ontology.profiling.metrics.OntologyMetric;
 import am.app.ontology.profiling.metrics.OntologyMetricsRegistry;
-import am.app.userfeedback.ui.UFLControlGUI;
 import am.evaluation.clustering.gvm.GVM_Clustering_Panel;
 import am.extension.ClusteringEvaluation.ClusteringEvaluationPanel;
 import am.tools.ThresholdAnalysis.ThresholdAnalysis;
@@ -325,9 +324,10 @@ public class UIMenuListener implements ActionListener {
 				menu.ui.addTab("WordNet", null, wnlp, "Query the WordNet dictionary.");
 			}
 			else if( obj == menu.userFeedBack ) {
-				UFLControlGUI ufl_control = new UFLControlGUI(menu.ui);
-				ufl_control.displayInitialScreen();
-				menu.ui.addTab("User Feedback Loop", null, ufl_control, "User Feedback Loop");	
+				throw new RuntimeException("Fix the UI code to interact with OSGi bundles.");
+				//UFLControlGUI ufl_control = new UFLControlGUI(menu.ui);
+				//ufl_control.displayInitialScreen();
+				//menu.ui.addTab("User Feedback Loop", null, ufl_control, "User Feedback Loop");	
 			}
 			else if( obj == menu.clusteringEvaluation ) {
 				menu.ui.addTab("Clustering Evaluation",null, new ClusteringEvaluationPanel(), "Clustering Evaluation");

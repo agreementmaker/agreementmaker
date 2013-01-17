@@ -12,7 +12,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import am.Utility;
-import am.app.mappingEngine.hierarchy.ScoredSynset;
 import am.visualization.graphviz.GraphViz;
 import edu.smu.tspell.wordnet.NounSynset;
 import edu.smu.tspell.wordnet.Synset;

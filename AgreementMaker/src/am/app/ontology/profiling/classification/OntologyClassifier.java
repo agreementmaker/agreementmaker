@@ -20,7 +20,6 @@ import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Utils;
-import am.app.mappingEngine.oaei.oaei2011.OAEI2011MatcherParameters.OAEI2011Configuration;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.classification.trainingGeneration.OutputTrainingGenerator;
@@ -34,7 +33,14 @@ public class OntologyClassifier {
 	private FastVector fvClassVal;
 	private Classifier cModel;
 	
-	
+	public enum OAEI2011Configuration {
+		GENERAL_PURPOSE,
+		GENERAL_PURPOSE_ADVANCED,
+		LARGE_LEXICAL,
+		GENERAL_MULTI,
+		LARGE_LEXICAL_WITH_LOCALNAMES,
+		;
+	}
 	
 	/*
 	 * constructor of the object ontologyclassificator
@@ -44,7 +50,7 @@ public class OntologyClassifier {
 		LinkedList<String> classList = o.getClassList();
 		fvClassVal = new FastVector(classList.size());
 		
-		for (Iterator it = classList.iterator(); it.hasNext();) {
+		for (Iterator<String> it = classList.iterator(); it.hasNext();) {
 			String string = (String) it.next();
 			fvClassVal.addElement(string);
 		}
@@ -72,7 +78,7 @@ public class OntologyClassifier {
 		LinkedList<String> classList = o.getClassList();
 		fvClassVal = new FastVector(classList.size());
 		
-		for (Iterator it = classList.iterator(); it.hasNext();) {
+		for (Iterator<String> it = classList.iterator(); it.hasNext();) {
 			String string = (String) it.next();
 			fvClassVal.addElement(string);
 		}
@@ -84,7 +90,7 @@ public class OntologyClassifier {
 		LinkedList<String> classList = o.getClassList();
 		fvClassVal = new FastVector(classList.size());
 		
-		for (Iterator it = classList.iterator(); it.hasNext();) {
+		for (Iterator<String> it = classList.iterator(); it.hasNext();) {
 			String string = (String) it.next();
 			fvClassVal.addElement(string);
 		}
@@ -1436,7 +1442,7 @@ public String testModel(OutputTrainingGenerator o, TestSet t){
 
 			LineNumberReader  lnr = new LineNumberReader(new FileReader(new File(fileName)));
 			lnr.skip(Long.MAX_VALUE);
-			int numLines = lnr.getLineNumber()+1;
+			//int numLines = lnr.getLineNumber()+1;
 			System.out.println(lnr.getLineNumber()+1);		
 			
 			FileInputStream fstream = new FileInputStream(fileName);

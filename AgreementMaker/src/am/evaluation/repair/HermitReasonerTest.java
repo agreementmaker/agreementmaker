@@ -36,14 +36,12 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.reasoner.Node;
 
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
-import am.batchMode.simpleBatchMode.SimpleBatchModeRunner;
 import am.output.similaritymatrix.SimilarityMatrixOutput;
 import am.utility.referenceAlignment.AlignmentUtilities;
 import am.utility.referenceAlignment.MappingsOutput;
@@ -277,19 +275,13 @@ public class HermitReasonerTest {
 	
 	public void loadMatrix(){
 		//get the similarity matrix
-		SimpleBatchModeRunner bm = new SimpleBatchModeRunner((File)null);
-		AbstractMatcher oaei2011 = bm.instantiateMatcher(null);
-		
 		log.debug("Loading source ontology...");
 		Ontology sourceOntology = OntoTreeBuilder.loadOWLOntology(sourceOwl.toString());
 		
 		log.debug("Loading target ontology...");
 		Ontology targetOntology = OntoTreeBuilder.loadOWLOntology(targetOwl.toString());
 
-		oaei2011.setSourceOntology(sourceOntology);
-		oaei2011.setTargetOntology(targetOntology);
-		
-		SimilarityMatrixOutput matrixoutput = new SimilarityMatrixOutput(oaei2011);
+		SimilarityMatrixOutput matrixoutput = new SimilarityMatrixOutput(sourceOntology, targetOntology);
 		matrix = matrixoutput.loadClassesMatrix("../Ontologies/OAEI/2011/test/oaei2011-classmatrix.mtx");
 		log.debug("Loaded similarity matrix...");
 	}

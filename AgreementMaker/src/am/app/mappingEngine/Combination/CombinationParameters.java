@@ -1,8 +1,8 @@
 package am.app.mappingEngine.Combination;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
-import am.app.mappingEngine.oaei.OAEI_Track;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
+import am.app.mappingEngine.utility.OAEI_Track;
 
 public class CombinationParameters extends DefaultMatcherParameters {
 

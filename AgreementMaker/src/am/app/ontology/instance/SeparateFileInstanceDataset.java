@@ -9,7 +9,6 @@ import java.util.Set;
 
 import am.AMException;
 import am.app.mappingEngine.instance.EntityTypeMapper;
-import am.app.mappingEngine.instanceMatcher.NYTConstants;
 import am.utility.URIConstants;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -30,14 +29,25 @@ public class SeparateFileInstanceDataset implements InstanceDataset {
 	
 	private HashMap<String, Instance> instancesByURI;
 	
+	/**
+	 * FIXME: These string values are duplicated from the NYTConstants class in
+	 * the LinkedOpenData bundle. They should be removed from here.
+	 */
+	private static final String hasArticleURI = "http://data.nytimes.com/elements/hasArticle";
+	private static final String orgKeywordsURI = "http://data.nytimes.com/elements/organizationKeywords";
+	private static final String peopleKeywordsURI = "http://data.nytimes.com/elements/peopleKeywords";
+	private static final String desKeywordsURI = "http://data.nytimes.com/elements/descriptionKeywords";
+	private static final String variantsNumberURI = "http://data.nytimes.com/elements/number_of_variants";
+	private static final String titleURI = "http://data.nytimes.com/elements/title";
+	
 	/** FIXME: Remove the specific properties in this general class. */
 	private String[][] propertiesWhiteList = { 
-									  {NYTConstants.hasArticleURI, "article", "m"},
-									  {NYTConstants.orgKeywordsURI, "organizationKeywords", "sep"},
-									  {NYTConstants.peopleKeywordsURI, "peopleKeywords", "sep"},
-									  {NYTConstants.desKeywordsURI, "descriptionKeywords", "sep"},
-									  {NYTConstants.variantsNumberURI, "variantsNumber", "s"},
-									  {NYTConstants.titleURI, "title", "s"},
+									  {hasArticleURI, "article", "m"},
+									  {orgKeywordsURI, "organizationKeywords", "sep"},
+									  {peopleKeywordsURI, "peopleKeywords", "sep"},
+									  {desKeywordsURI, "descriptionKeywords", "sep"},
+									  {variantsNumberURI, "variantsNumber", "s"},
+									  {titleURI, "title", "s"},
 									};
 	
 	public SeparateFileInstanceDataset(OntModel model) {

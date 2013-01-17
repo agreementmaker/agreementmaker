@@ -22,8 +22,6 @@ import org.junit.Test;
 
 import am.app.Core;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcher;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
-import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.ontology.Ontology;
@@ -446,10 +444,10 @@ public abstract class AbstractMatcherTest {
 		for(int i = 0; i < maxInputs; i++){
 			newInMatcher = (int)(Math.random() * input.get(4).size());
 			if(input.get(4).get(newInMatcher).equals("BSM")){
-				inputInMatchers.add(new BaseSimilarityMatcher());
+				//inputInMatchers.add(new BaseSimilarityMatcher());
 			}
 			else if(input.get(4).get(newInMatcher).equals("ASM")){
-				inputInMatchers.add(new AdvancedSimilarityMatcher());
+				//inputInMatchers.add(new AdvancedSimilarityMatcher());
 			}
 			else if(input.get(4).get(newInMatcher).equals("PSM")){
 				inputInMatchers.add(new ParametricStringMatcher());

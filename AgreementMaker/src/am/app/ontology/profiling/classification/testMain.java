@@ -3,7 +3,7 @@ package am.app.ontology.profiling.classification;
 import java.util.LinkedList;
 
 import am.GlobalStaticVariables;
-import am.app.mappingEngine.oaei.OAEI_Track;
+import am.app.mappingEngine.utility.OAEI_Track;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.ontologymetrics.CoupleOntologyMetrics;

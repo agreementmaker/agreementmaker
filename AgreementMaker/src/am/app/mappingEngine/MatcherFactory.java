@@ -131,6 +131,16 @@ public class MatcherFactory {
 		
 	}
 	
+	public static AbstractMatcher getMatcherInstance(Class<? extends AbstractMatcher> clazz) {
+		try {
+			return Core.getInstance().getRegistry().getMatcherByClass(clazz);
+		}
+		catch (MatcherNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	/**
 	 * Returns the MatchersRegistry entry of the matcher with the given class.
 	 * @param name The Class object representing the Class of the matcher.

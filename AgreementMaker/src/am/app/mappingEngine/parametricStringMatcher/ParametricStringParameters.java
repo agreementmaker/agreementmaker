@@ -3,7 +3,7 @@ package am.app.mappingEngine.parametricStringMatcher;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.StringUtil.StringMetrics;
-import am.app.mappingEngine.oaei.OAEI_Track;
+import am.app.mappingEngine.utility.OAEI_Track;
 
 public class ParametricStringParameters extends DefaultMatcherParameters {
 

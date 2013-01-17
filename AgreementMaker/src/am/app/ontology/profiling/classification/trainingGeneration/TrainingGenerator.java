@@ -26,9 +26,6 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.oaei.OAEI_Track;
-import am.app.mappingEngine.oaei2010.OAEI2010Matcher;
-import am.app.mappingEngine.oaei2010.OAEI2010MatcherParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
@@ -500,9 +497,9 @@ public static void testClassified() {
 				
 				
 				//MatchersRegistry matcher=MatchersRegistry.OAEI2010; //TODO mettere 2011!!!
-				OAEI2010MatcherParameters param = null;
 				
-				OAEI2010Matcher matcher = new OAEI2010Matcher();
+				AbstractMatcher matcher = MatcherFactory.getMatcherInstance("OAEI 2010");
+				DefaultMatcherParameters param = matcher.getParam();
 				
 				output.print(sourceOntologyName + "\t" + targetOntologyName + "\t");
 				
@@ -518,19 +515,22 @@ public static void testClassified() {
 				buildLex(sourceOnto, targetOnto);
 				
 				//benchmarks configuration
-				param = new OAEI2010MatcherParameters(OAEI_Track.Benchmarks);
+				//param = new OAEI2010MatcherParameters(OAEI_Track.Benchmarks);
+				// TODO: Initialize for Benchmarks Track
 				matcher.setParam(param);
 				double [] d1 = runAnalysis(sourceOntologyFile, sourceOntologyName, targetOntologyFile, targetOntologyName, referenceAlignmentFile, matcher, param );
 				output.print(d1[0] + "\t" + d1[1] + "\t" + d1[2] + "\t");
 				
 				//anatomy
-				param = new OAEI2010MatcherParameters(OAEI_Track.Anatomy);
+				//param = new OAEI2010MatcherParameters(OAEI_Track.Anatomy);
+				// TODO: Initialize for Anatomy Track
 				matcher.setParam(param);
 				double[] d2 = runAnalysis( sourceOntologyFile, sourceOntologyName, targetOntologyFile, targetOntologyName, referenceAlignmentFile, matcher, param );
 				output.print(d2[0] + "\t" + d2[1] + "\t" + d2[2] + "\t");
 				
 				//conference
-				param = new OAEI2010MatcherParameters(OAEI_Track.Conference);
+				//param = new OAEI2010MatcherParameters(OAEI_Track.Conference);
+				// TODO: Initialize for Conference Track
 				matcher.setParam(param);
 				double[] d3 = runAnalysis( sourceOntologyFile, sourceOntologyName, targetOntologyFile, targetOntologyName, referenceAlignmentFile, matcher, param );
 				output.println(d3[0] + "\t" + d3[1] + "\t" + d3[2]);

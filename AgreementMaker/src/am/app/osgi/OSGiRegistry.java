@@ -16,19 +16,13 @@ import am.app.mappingEngine.SelectionAlgorithm;
 import am.app.mappingEngine.Combination.CombinationMatcher;
 import am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralMatcher;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcher;
-import am.app.mappingEngine.baseSimilarity.BaseSimilarityMatcher;
-import am.app.mappingEngine.baseSimilarity.advancedSimilarity.AdvancedSimilarityMatcher;
 import am.app.mappingEngine.basicStructureSelector.BasicStructuralSelectorMatcher;
 import am.app.mappingEngine.conceptMatcher.ConceptMatcher;
 import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
 import am.app.mappingEngine.groupFinder.GroupFinderMatcher;
-import am.app.mappingEngine.hierarchy.HierarchyMatcher;
 import am.app.mappingEngine.mediatingMatcher.MediatingMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsMatcherPairWise;
-import am.app.mappingEngine.oaei.oaei2011.OAEI2011Matcher;
-import am.app.mappingEngine.oaei2009.OAEI2009matcher;
-import am.app.mappingEngine.oaei2010.OAEI2010Matcher;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.ssc.SiblingsSimilarityContributionMatcher;
@@ -54,8 +48,6 @@ public class OSGiRegistry {
 		
 		matcherList.add(new AllOneMatcher());
 		matcherList.add(new AllZeroMatcher());
-		matcherList.add(new BaseSimilarityMatcher());
-		matcherList.add(new AdvancedSimilarityMatcher());
 		matcherList.add(new BasicStructuralSelectorMatcher());
 		matcherList.add(new CombinationMatcher());
 		matcherList.add(new ConceptMatcher());
@@ -63,15 +55,11 @@ public class OSGiRegistry {
 		matcherList.add(new DescendantsSimilarityInheritanceMatcher());
 		matcherList.add(new EqualsMatcher());
 		matcherList.add(new GroupFinderMatcher());
-		matcherList.add(new HierarchyMatcher());
 		matcherList.add(new IterativeInstanceStructuralMatcher());
 		matcherList.add(new LexicalSynonymMatcher());
 		matcherList.add(new MediatingMatcher());
 		matcherList.add(new MultiWordsMatcher());
 		matcherList.add(new MultiWordsMatcherPairWise());
-		matcherList.add(new OAEI2009matcher());
-		matcherList.add(new OAEI2010Matcher());
-		matcherList.add(new OAEI2011Matcher());
 		matcherList.add(new ParametricStringMatcher());
 		matcherList.add(new SiblingsSimilarityContributionMatcher());
 		
@@ -130,6 +118,25 @@ public class OSGiRegistry {
 			}
 		}
 		throw new MatcherNotFoundException(matcherName+" is not in the system.");
+	}
+	
+	public AbstractMatcher getMatcherByClass(Class<? extends AbstractMatcher> clazz) throws MatcherNotFoundException {
+		for(AbstractMatcher m : matcherList){
+			if(m.getClass().getName().equals(clazz.getName())){
+				try {
+					AbstractMatcher newM = m.getClass().newInstance();
+					newM.setID(Core.getInstance().getNextMatcherID());
+					return newM;
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+					return null;
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+					return null;
+				}
+			}
+		}
+		throw new MatcherNotFoundException(clazz.getName()+" is not in the system.");
 	}
 	
 	/**
