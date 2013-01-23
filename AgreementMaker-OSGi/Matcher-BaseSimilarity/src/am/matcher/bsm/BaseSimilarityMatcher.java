@@ -11,10 +11,10 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.StringUtil.PorterStemmer;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.utility.Pair;
@@ -41,11 +41,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 	
 	public BaseSimilarityMatcher() {
 		// warning, param is not available at the time of the constructor (when creating a matcher from the User Interface)
-		super(); 
-		initializeVariables();
-		
-		setName("Base Similarity Matcher");
-		setCategory(MatcherCategory.SYNTACTIC);
+		super(); initializeVariables();
 	}
 	
 	// Constructor used when the parameters are available at the time of matcher initialization
@@ -81,6 +77,10 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 		param3.setAllTrue();
 		norm3 = new Normalizer(param3);
 
+		// name and category of the matcher
+		setName("Base Similarity Matcher");
+		setCategory(MatcherCategory.SYNTACTIC);
+		
 		// setup the features:
 		addFeature(MatcherFeature.ONTOLOGY_PROFILING);
 		addFeature(MatcherFeature.ONTOLOGY_PROFILING_CLASS_ANNOTATION_FIELDS);
@@ -202,7 +202,7 @@ public class BaseSimilarityMatcher extends AbstractMatcher {
 			}
 		}
 		 else {
-			 	throw new AMException("This algorithm requires Annotation Profiling to be setup.");
+			 	throw new AMException("Base Similarity Matcher requires Annotation Profiling to be setup.");
 				// we are not using ontology profiling
 				//return withoutProfiling(source, target, typeOfNodes);
 		 }
