@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 
 public abstract class RefiningMatcher extends AbstractMatcherNew {
 	

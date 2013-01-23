@@ -24,7 +24,6 @@ import java.io.File;
 
 import joptsimple.OptionSet;
 import am.app.Core;
-import am.app.osgi.AMHost;
 import am.userInterface.UI;
 
 /**

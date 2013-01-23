@@ -7,8 +7,8 @@ import java.util.Vector;
 import am.AMException;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.structuralMatchers.SimilarityFlooding;
 import am.app.mappingEngine.structuralMatchers.SimilarityFloodingParameters;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdge;
@@ -18,6 +18,7 @@ import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.Pairwise
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphVertex;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
 import am.app.ontology.Node;
+import am.app.ontology.NodeUtility;
 import am.userInterface.MatchingProgressDisplay;
 
 import com.hp.hpl.jena.ontology.OntResource;
@@ -115,7 +116,7 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("done.\n");
 			
 			// phase 9: get back the classesMatrix
-			classesMatrix = new ArraySimilarityMatrix(classesMatrix.toArraySimilarityMatrix());
+			classesMatrix = new ArraySimilarityMatrix(classesMatrix);
 			
 			// phase 10: compute relative similarities (at the very end)
 			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Computing Relative Similarities...");
@@ -216,17 +217,17 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 			RDFNode t = vert.getObject().getStCouple().getRight().getObject();
 			 
 			// take both source and target ontResources (values can be null, means not possible to take resources
-			 OntResource sourceRes = Node.getOntResourceFromRDFNode(s);
-			 OntResource targetRes = Node.getOntResourceFromRDFNode(t);
+			 OntResource sourceRes = NodeUtility.getOntResourceFromRDFNode(s);
+			 OntResource targetRes = NodeUtility.getOntResourceFromRDFNode(t);
 			 if(sourceRes != null && targetRes != null){
 				
 				 // try to get the Node and check they belong to the same alignType
-				 Node sourceClass = Node.getNodefromOntResource(sourceOntology, sourceRes, alignType.aligningClasses);
-				 Node targetClass = Node.getNodefromOntResource(targetOntology, targetRes, alignType.aligningClasses);
+				 Node sourceClass = NodeUtility.getNodefromOntResource(sourceOntology, sourceRes, alignType.aligningClasses);
+				 Node targetClass = NodeUtility.getNodefromOntResource(targetOntology, targetRes, alignType.aligningClasses);
 				 // test if both nodes are classes
 				 if(sourceClass == null || targetClass == null){
-					 Node sourceProperty = Node.getNodefromOntResource(sourceOntology, sourceRes, alignType.aligningProperties);
-					 Node targetProperty = Node.getNodefromOntResource(targetOntology, targetRes, alignType.aligningProperties);
+					 Node sourceProperty = NodeUtility.getNodefromOntResource(sourceOntology, sourceRes, alignType.aligningProperties);
+					 Node targetProperty = NodeUtility.getNodefromOntResource(targetOntology, targetRes, alignType.aligningProperties);
 					 // test if both nodes are properties
 					 if(sourceProperty == null || targetProperty == null){
 						 continue;

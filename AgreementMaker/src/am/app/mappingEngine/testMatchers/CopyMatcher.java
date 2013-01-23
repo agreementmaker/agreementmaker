@@ -2,7 +2,7 @@ package am.app.mappingEngine.testMatchers;
 
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 
 public class CopyMatcher extends AbstractMatcher {
 	

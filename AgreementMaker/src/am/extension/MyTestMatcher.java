@@ -13,7 +13,7 @@ import am.app.lexicon.LexiconSynSet;
 import am.app.lexicon.subconcept.STLexicon;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
-import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 
 import com.hp.hpl.jena.ontology.OntResource;

@@ -18,7 +18,7 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.MatchingTaskChangeEvent;
-import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.userInterface.canvas2.Canvas2;
 import am.userInterface.canvas2.graphical.MappingData;
 import am.userInterface.canvas2.utility.Canvas2Edge;

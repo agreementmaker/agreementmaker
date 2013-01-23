@@ -7,7 +7,7 @@ import am.app.mappingEngine.AbstractSelectionAlgorithm;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.SelectionResult;
-import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 
 public class MwbmSelection extends AbstractSelectionAlgorithm {
 

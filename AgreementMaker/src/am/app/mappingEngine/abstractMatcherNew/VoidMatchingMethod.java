@@ -1,8 +1,8 @@
 package am.app.mappingEngine.abstractMatcherNew;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Ontology;
 import am.utility.Pair;
 

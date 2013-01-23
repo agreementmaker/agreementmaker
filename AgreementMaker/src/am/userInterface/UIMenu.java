@@ -3,7 +3,6 @@ package am.userInterface;
 import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.net.URL;
 
 import javax.swing.ImageIcon;

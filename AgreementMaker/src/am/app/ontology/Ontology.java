@@ -20,6 +20,7 @@ import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 /**
  * This class contains all information about one of the two ontologies to be compared
@@ -379,5 +380,4 @@ public class Ontology {
 		}
 		return null;
 	}
-	
 }

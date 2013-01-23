@@ -30,7 +30,7 @@ import javax.swing.JTextField;
 import javax.swing.Scrollable;
 import javax.swing.border.LineBorder;
 
-import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.evaluation.clustering.gvm.GVM_Clustering;
 import am.evaluation.clustering.gvm.GVM_Clustering_Panel;
 import am.parsing.OutputController;

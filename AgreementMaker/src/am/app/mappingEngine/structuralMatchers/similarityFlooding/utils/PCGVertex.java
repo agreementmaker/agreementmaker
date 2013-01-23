@@ -4,6 +4,7 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.EOntNodeType.EOntologyNodeType;
 import am.app.ontology.Node;
+import am.app.ontology.NodeUtility;
 import am.app.ontology.Ontology;
 import am.utility.DirectedGraphVertex;
 import am.utility.Pair;
@@ -39,12 +40,12 @@ public class PCGVertex extends DirectedGraphVertex<PCGVertexData, PCGEdgeData>{
 		// take both source and target ontResources (values can be null, means not possible to take resources
 		Node sourceNode = null, targetNode = null;
 		if(this.representsClass()){
-			sourceNode = Node.getNodefromRDFNode(sourceOnt, s.getObject(), alignType.aligningClasses);
-			targetNode = Node.getNodefromRDFNode(targetOnt, t.getObject(), alignType.aligningClasses);
+			sourceNode = NodeUtility.getNodefromRDFNode(sourceOnt, s.getObject(), alignType.aligningClasses);
+			targetNode = NodeUtility.getNodefromRDFNode(targetOnt, t.getObject(), alignType.aligningClasses);
 		}
 		else if(this.representsProperty()){
-			sourceNode = Node.getNodefromRDFNode(sourceOnt, s.getObject(), alignType.aligningProperties);
-			targetNode = Node.getNodefromRDFNode(targetOnt, t.getObject(), alignType.aligningProperties);
+			sourceNode = NodeUtility.getNodefromRDFNode(sourceOnt, s.getObject(), alignType.aligningProperties);
+			targetNode = NodeUtility.getNodefromRDFNode(targetOnt, t.getObject(), alignType.aligningProperties);
 		}
 		else{
 			// TODO: manage type error

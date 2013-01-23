@@ -6,7 +6,7 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.SelectionResult;
-import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 
 public class AlignmentMergerSelection extends AbstractSelectionAlgorithm {
 

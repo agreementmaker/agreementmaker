@@ -31,6 +31,7 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.qualityEvaluation.AbstractQualityMetric;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.ontology.Node;
+import am.app.ontology.NodeUtility;
 import am.app.ontology.Ontology;
 import am.app.ontology.TreeToDagConverter;
 import am.utility.parameters.AMParameter;
@@ -467,7 +468,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 				int descendantsA = descendants[i];
 				int descendantsB = descendants[j];
 				int maxCommonDescendants = 0;
-				List<Node> commonDescendants = Node.getCommonDescendants(nodesList.get(i), nodesList.get(j));
+				List<Node> commonDescendants = NodeUtility.getCommonDescendants(nodesList.get(i), nodesList.get(j));
 				if(commonDescendants.size() > 0) {
 					//I need to find which is the common descendant with highest num of descendants
 					//so it can only be one of the common descendants in the highest level
@@ -527,7 +528,7 @@ public class JoslynStructuralQuality extends AbstractQualityMetric {
 				int ancestorsA = ancestors[i];
 				int ancestorsB = ancestors[j];
 				int maxCommonAncestors = 0;
-				List<Node> commonAncestors = Node.getCommonAncestors(nodesList.get(i), nodesList.get(j));
+				List<Node> commonAncestors = NodeUtility.getCommonAncestors(nodesList.get(i), nodesList.get(j));
 				if(commonAncestors.size() > 0) {
 					//I need to find which is the common with highest num of anc
 					//so it can only be one of the common anc in the lowest level

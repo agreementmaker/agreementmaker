@@ -18,6 +18,7 @@ import org.xml.sax.SAXException;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 
 import com.hp.hpl.jena.ontology.OntClass;
@@ -79,11 +80,11 @@ public class XmlTreeBuilder extends TreeBuilder
 		
 		// create a new tree root
 		//treeRoot = new Vertex(ontology.getTitle(), ontology.getSourceOrTarget());
-		treeRoot = new Node( -1, ontology.getTitle(), Node.XMLNODE, ontology.getID() );
-		Node ClassRoot = new Node(-1 , XMLHIERARCHY, Node.XMLNODE, ontology.getID() );
+		treeRoot = new AMNode( -1, ontology.getTitle(), AMNode.XMLNODE, ontology.getID() );
+		Node ClassRoot = new AMNode(-1 , XMLHIERARCHY, AMNode.XMLNODE, ontology.getID() );
 		//ClassRoot.setOntModel(m);
 		
-		Node rootNode = new Node(uniqueKey,"OWL:Thing", Node.XMLNODE, ontology.getID());
+		Node rootNode = new AMNode(uniqueKey,"OWL:Thing", AMNode.XMLNODE, ontology.getID());
 		uniqueKey++;
 		rootNode.setResource(owlThing);
 		rootNode.setLabel("OWL:Thing");
@@ -160,7 +161,7 @@ public class XmlTreeBuilder extends TreeBuilder
 					//System.out.println("Localname: " +currentClass.getLocalName());
 					currentClass.setComment(label, null);
 					
-					currentNode = new Node(uniqueKey,name, Node.XMLNODE, ontology.getID());
+					currentNode = new AMNode(uniqueKey,name, AMNode.XMLNODE, ontology.getID());
 					
 					currentNode.setResource(currentClass);
 					processedSubs.put( ((OntResource)currentClass) ,currentNode);

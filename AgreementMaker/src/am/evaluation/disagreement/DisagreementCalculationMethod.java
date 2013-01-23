@@ -3,7 +3,7 @@ package am.evaluation.disagreement;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 
 public abstract class DisagreementCalculationMethod {

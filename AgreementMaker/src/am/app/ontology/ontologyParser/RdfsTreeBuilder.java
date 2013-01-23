@@ -9,6 +9,7 @@ import java.util.List;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 
 import com.hp.hpl.jena.ontology.ConversionException;
@@ -85,9 +86,9 @@ public class RdfsTreeBuilder extends TreeBuilder{
 			ontology.setSkipOtherNamespaces(skipOtherNamespaces);
 			ontology.setModel(ontModel);
 			//treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(),ontModel,  ontology.getSourceOrTarget());//Creates the root of type Vertex for the tree, is a fake vertex with no corresponding node
-			treeRoot = new Node(-1, ontology.getTitle(), Node.RDFNODE, ontology.getID());
+			treeRoot = new AMNode(-1, ontology.getTitle(), AMNode.RDFNODE, ontology.getID());
 			//Vertex classRoot = new Vertex(RDFCLASSROOTNAME,RDFCLASSROOTNAME,ontModel,  ontology.getSourceOrTarget());
-			Node classRoot = new Node( -1, RDFCLASSROOTNAME, Node.OWLCLASS, ontology.getID());
+			Node classRoot = new AMNode( -1, RDFCLASSROOTNAME, AMNode.OWLCLASS, ontology.getID());
 			processedSubs = new HashMap<OntResource, Node>();
 			ExtendedIterator<OntClass> i = ontModel.listHierarchyRootClasses();
 			classRoot = createTree(classRoot, i);//should add all valid classes and subclasses in the iterator to the classRoot
@@ -103,7 +104,7 @@ public class RdfsTreeBuilder extends TreeBuilder{
 	        processedSubs = new HashMap<OntResource, Node>();
 	        
 			//Vertex propertiesRoot = new Vertex(RDFPROPERTIESROOTNAME, RDFPROPERTIESROOTNAME, ontModel, ontology.getSourceOrTarget());
-	        Node propertiesRoot = new Node( -1, RDFPROPERTIESROOTNAME, Node.OWLPROPERTY, ontology.getID() );
+	        Node propertiesRoot = new AMNode( -1, RDFPROPERTIESROOTNAME, AMNode.OWLPROPERTY, ontology.getID() );
 			propertiesRoot = createPropertiesTree( propertiesRoot, listHierarchyRootProperties(ontModel) );
 			ontology.setOntResource2NodeMap( processedSubs, alignType.aligningClasses );
 			
@@ -218,11 +219,11 @@ public class RdfsTreeBuilder extends TreeBuilder{
 		}
 		else { 
 			if(isClass) {
-				node = new Node(uniqueKey,entity, Node.OWLCLASS, ontology.getID()); //new node with a new key, with the link to the graphical Vertex representation
+				node = new AMNode(uniqueKey,entity, AMNode.OWLCLASS, ontology.getID()); //new node with a new key, with the link to the graphical Vertex representation
 				ontology.getClassesList().add(node);
 			}
 			else {//it has to be a prop
-				node = new Node(uniqueKey,entity, Node.OWLPROPERTY, ontology.getID()); //new node with a new key, with the link to the graphical Vertex representation
+				node = new AMNode(uniqueKey,entity, AMNode.OWLPROPERTY, ontology.getID()); //new node with a new key, with the link to the graphical Vertex representation
 				ontology.getPropertiesList().add(node);
 			}
 			processedSubs.put(entity, node);

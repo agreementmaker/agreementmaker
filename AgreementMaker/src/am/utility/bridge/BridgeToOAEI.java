@@ -6,6 +6,7 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
@@ -57,7 +58,7 @@ public class BridgeToOAEI {
 								System.out.println(currentClass + " - " + ec);
 								try {
 									Node sc = bridgeOntology.getNodefromOntResource(currentClass.as(OntResource.class), alignType.aligningClasses);
-									Node tc = new Node(sc.getIndex(), ec.as(Resource.class), Node.OWLCLASS, bridgeOntology.getID());
+									Node tc = new AMNode(sc.getIndex(), ec.as(Resource.class), AMNode.OWLCLASS, bridgeOntology.getID());
 									alignment.add( new Mapping(tc, sc, 1.0, MappingRelation.EQUIVALENCE));
 									System.out.println(tc + " - " + sc);
 									System.out.println("");

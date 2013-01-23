@@ -10,13 +10,13 @@ import am.app.lexicon.LexiconSynSet;
 import am.app.lexicon.subconcept.SynonymTermLexicon;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.AbstractMatcher.MatcherCategory;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
+import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 import am.app.similarity.StringSimilarityMeasure;
 import am.userInterface.MatchingProgressDisplay;
@@ -503,8 +503,8 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	}
 	
 	public static void testStrings(String s1, String s2) throws Exception {
-		Node source = new Node(0, s1, "owl-propertynode", 0);
-		Node target = new Node(1, s2, "owl-propertynode", 0);
+		Node source = new AMNode(0, s1, "owl-propertynode", 0);
+		Node target = new AMNode(1, s2, "owl-propertynode", 0);
 
 		
 

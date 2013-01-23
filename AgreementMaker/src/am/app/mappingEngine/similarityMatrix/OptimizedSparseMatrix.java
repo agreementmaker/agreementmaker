@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.AbstractSimilarityMatrix;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
 
-public class OptimizedSparseMatrix extends SimilarityMatrix
+public class OptimizedSparseMatrix extends AbstractSimilarityMatrix
 {
 	private static final long serialVersionUID = -4828904520708897468L;
 	
@@ -554,13 +554,6 @@ public class OptimizedSparseMatrix extends SimilarityMatrix
 			temp.setSimilarity(d);
 		
 	}*/
-	
-	@Override
-	public SimilarityMatrix toArraySimilarityMatrix() {
-		//FIXME remove
-		System.err.println("toArraySimilarityMatrix: to be deleted");
-		return null;
-	}
 	
 	@Override
 	public List<Mapping> toMappingArray() {

@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
+import am.app.ontology.NodeUtility;
 import am.app.ontology.Ontology;
 import am.userInterface.VisualizationChangeEvent;
 import am.userInterface.VisualizationChangeEvent.VisualizationEventType;
@@ -278,7 +279,7 @@ public class LegacyLayoutMouseHandler {
 							if( data.type == NodeType.PROPERTY_NODE ) t = alignType.aligningProperties;
 							if( data.type == NodeType.CLASS_NODE ) t = alignType.aligningClasses;
 							
-							final Node n = Node.getNodefromOntResource(ont, data.r, t);
+							final Node n = NodeUtility.getNodefromOntResource(ont, data.r, t);
 					    	Runnable fireNewEvent = new Runnable() {
 					    	    public void run() {
 									VisualizationChangeEvent vce = new VisualizationChangeEvent(layout, 

@@ -1,16 +1,12 @@
 package am.userInterface.sidebar.duplicatepane;
 
 import java.awt.Component;
-import java.util.List;
 
 import javax.swing.JMenuItem;
 
 import am.app.Core;
-import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.MatcherChangeListener;
-import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.MatchingTaskChangeEvent;
-import am.userInterface.sidebar.provenance.ProvenanceSidebar;
 
 
 	public class duplicateMenuItem extends JMenuItem implements MatcherChangeListener{

@@ -18,10 +18,11 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.StringUtil.AMStringWrapper;
 import am.app.mappingEngine.StringUtil.Normalizer;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
+import am.app.ontology.NodeUtility;
 import am.app.ontology.profiling.OntologyProfiler;
 
 import com.hp.hpl.jena.ontology.OntResource;
@@ -221,7 +222,7 @@ public class NewMultiWordsMatcher extends AbstractMatcher {
 		if( mp.includeSiblings ) {
 			if( param.storeProvenance ) mWS+="considering siblings.\n";
 			
-			for( Node siblingNode : node.getSiblings() ) {
+			for( Node siblingNode : NodeUtility.getSiblings(node) ) {
 				multiWordsString = Utility.smartConcat(multiWordsString, createEgoNetString(siblingNode));
 			}
 		}

@@ -24,6 +24,7 @@ import am.app.Core;
 import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcher;
 import am.app.mappingEngine.multiWords.MultiWordsMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.TreeBuilder;
 

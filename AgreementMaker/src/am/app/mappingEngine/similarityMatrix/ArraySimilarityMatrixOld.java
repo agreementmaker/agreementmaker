@@ -9,12 +9,12 @@ import java.util.Vector;
 
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.AbstractSimilarityMatrix;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
-public class ArraySimilarityMatrixOld extends SimilarityMatrix implements Serializable {
+public class ArraySimilarityMatrixOld extends AbstractSimilarityMatrix implements Serializable {
 
 	private static final long serialVersionUID = 7152244093634002737L;
 	
@@ -504,11 +504,6 @@ public class ArraySimilarityMatrixOld extends SimilarityMatrix implements Serial
 		return count;
 	}
 	*/
-	@Override
-	public SimilarityMatrix toArraySimilarityMatrix() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	/*
 	//junit test
 	@Test public void insertAndGet16000000() {

@@ -9,6 +9,7 @@ import java.util.Set;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.utility.RunTimer;
@@ -247,7 +248,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
         
         //The root of the tree is a fake vertex node, just containing the name of the ontology,
         //treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(), model, ontology.getSourceOrTarget() );
-        treeRoot = new Node( -1, ontology.getTitle(), Node.XMLNODE, ontology.getID() );
+        treeRoot = new AMNode( -1, ontology.getTitle(), AMNode.XMLNODE, ontology.getID() );
         treeCount++;
 
         treeRoot.addChild(classRoot);
@@ -286,7 +287,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 		
 		// this is the root node of the class tree (think of it like owl:Thing)
 		//Vertex root = new Vertex(CLASSROOTNAME, CLASSROOTNAME, model, ontology.getSourceOrTarget());
-		Node root = new Node( -1, CLASSROOTNAME, Node.XMLNODE, ontology.getID() );
+		Node root = new AMNode( -1, CLASSROOTNAME, AMNode.XMLNODE, ontology.getID() );
 		treeCount++;  // we created a new vertex, increment treeCount
 
 		// we may have classes that still don't have a parent. these orphans will be adopted by root.
@@ -501,11 +502,11 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
          }
          else {
          	if(isClass) {
-                node = new Node(uniqueKey,entity, Node.OWLCLASS, ontology.getID()); //new node with a new key, with the link to the graphical Vertex representation
+                node = new AMNode(uniqueKey,entity, AMNode.OWLCLASS, ontology.getID()); //new node with a new key, with the link to the graphical Vertex representation
                 ontology.getClassesList().add(node);
          	}
          	else {//it has to be a prop
-         		node = new Node(uniqueKey,entity, Node.OWLPROPERTY, ontology.getID()); //new node with a new key, with the link to the graphical Vertex representation
+         		node = new AMNode(uniqueKey,entity, AMNode.OWLPROPERTY, ontology.getID()); //new node with a new key, with the link to the graphical Vertex representation
                 ontology.getPropertiesList().add(node);
          	}
             processedSubs.put(entity, node);
@@ -557,7 +558,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
     public Node createPropertyTree() {
     	
     	//Vertex root = new Vertex(PROPERTYROOTNAME, PROPERTYROOTNAME, model, ontology.getSourceOrTarget());
-    	Node root = new Node( -1, PROPERTYROOTNAME, Node.XMLNODE, ontology.getID() );
+    	Node root = new AMNode( -1, PROPERTYROOTNAME, AMNode.XMLNODE, ontology.getID() );
     	treeCount++;
         uniqueKey = 0; //restart the key because properties are kept in a differnt structure with different index
         processedSubs = new HashMap<OntResource, Node>();

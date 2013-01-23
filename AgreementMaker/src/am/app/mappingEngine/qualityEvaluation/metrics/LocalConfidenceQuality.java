@@ -21,9 +21,9 @@ package am.app.mappingEngine.qualityEvaluation.metrics;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.qualityEvaluation.AbstractQualityMetric;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 
 public class LocalConfidenceQuality extends AbstractQualityMetric {
 	
@@ -106,7 +106,7 @@ public class LocalConfidenceQuality extends AbstractQualityMetric {
 			}
 			else {
 				maxValues = matrix.getColMaxValues(i, numRelations);
-				totalSum = matrix.getColSum(i);
+				totalSum = matrix.getRowSum(i);
 				totalSelectable = matrix.getRows(); 
 			}
 			

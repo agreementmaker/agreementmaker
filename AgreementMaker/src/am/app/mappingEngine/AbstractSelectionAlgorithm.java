@@ -8,6 +8,7 @@ import javax.swing.SwingWorker;
 import org.apache.log4j.Logger;
 
 import am.Utility;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.userInterface.MatchingProgressDisplay;
 
 public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> implements SelectionAlgorithm {

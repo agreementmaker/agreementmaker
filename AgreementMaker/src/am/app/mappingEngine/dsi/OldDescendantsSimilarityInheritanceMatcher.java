@@ -2,7 +2,7 @@ package am.app.mappingEngine.dsi;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 
 public class OldDescendantsSimilarityInheritanceMatcher extends AbstractMatcher {
 

@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 import am.app.ontology.NodeHierarchy;
 import am.app.ontology.Ontology;
@@ -50,7 +51,7 @@ public class AlternateHierarchy implements NodeHierarchy {
 		this.ontology = ont;
 		this.property = partOfProperty;
 		
-		anonymousNode = new Node(-1, "Anonymous Node", Node.OWLCLASS, ont.getID());
+		anonymousNode = new AMNode(-1, "Anonymous Node", AMNode.OWLCLASS, ont.getID());
 		
 		getAlternateClassHierarchyRoots(ontology.getModel(), property);
 	}

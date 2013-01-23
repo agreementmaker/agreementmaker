@@ -8,8 +8,6 @@ import java.io.ObjectOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import am.app.mappingEngine.SimilarityMatrix;
-
 public class SimilarityMatrixUtility {
 
 	public boolean saveMatrix(File outputFile, SimilarityMatrix matrix) {

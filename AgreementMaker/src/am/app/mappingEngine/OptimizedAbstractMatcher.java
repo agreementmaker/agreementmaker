@@ -4,6 +4,7 @@ import java.util.List;
 
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 
 //If a matcher is provided as input to this type of matcher

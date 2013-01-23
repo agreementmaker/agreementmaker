@@ -9,15 +9,15 @@ import java.util.Comparator;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.AbstractSimilarityMatrix;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
 
 // TODO: Keep track of matrix bounds.
 
-public class SparseMatrix extends SimilarityMatrix
+public class SparseMatrix extends AbstractSimilarityMatrix
 {
 	private static final long serialVersionUID = 8533925694431657569L;
 	
@@ -554,13 +554,6 @@ public class SparseMatrix extends SimilarityMatrix
 			temp.setSimilarity(d);
 		
 	}*/
-	
-	@Override
-	public SimilarityMatrix toArraySimilarityMatrix() {
-		//FIXME remove
-		System.err.println("toArraySimilarityMatrix: to be deleted");
-		return null;
-	}
 	
 	@Override
 	public List<Mapping> toMappingArray() {

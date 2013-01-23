@@ -48,10 +48,12 @@ public class RunTimer {
 		return totTime;
 	}
 
-	
-	
 	public String getFormattedRunTime() {
 		return Utility.getFormattedTime(getRunTime());
 	}
 	
+	@Override
+	public String toString() {
+		return getFormattedRunTime();
+	}
 }

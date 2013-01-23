@@ -1,5 +1,6 @@
 package am.app.mappingEngine;
 
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 

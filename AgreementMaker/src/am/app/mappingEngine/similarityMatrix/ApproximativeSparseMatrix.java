@@ -15,7 +15,7 @@ import am.utility.Pair;
  *
  */
 
-public class ApproximativeSparseMatrix extends SparseMatrix{
+public class ApproximativeSparseMatrix extends SparseMatrix {
 	
 	/** Holds sum and count of the mappings that are lower then the threshold
 	Each row and col will have its own index in the arraylist */ 

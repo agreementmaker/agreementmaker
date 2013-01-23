@@ -10,7 +10,7 @@ import java.util.Vector;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.SimilarityFloodingMatcherParameters;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdge;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdgeData;
@@ -21,6 +21,7 @@ import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.Pairwise
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphEdge;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphVertex;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
+import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 import am.utility.DirectedGraphEdge;
 
@@ -650,8 +651,8 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 							 && col.getMatrixIndex() < ((PCGSimilarityMatrix)cMatrix).getColumns()){
 						 cMatrix.set(row.getMatrixIndex(),
 								 		col.getMatrixIndex(),
-								 		new Mapping(new Node(row.getMatrixIndex(), row.getObject().toString(), Node.OWLCLASS, sourceOntology.getID()),
-								 					new Node(col.getMatrixIndex(), col.getObject().toString(), Node.OWLCLASS, targetOntology.getID()),
+								 		new Mapping(new AMNode(row.getMatrixIndex(), row.getObject().toString(), AMNode.OWLCLASS, sourceOntology.getID()),
+								 					new AMNode(col.getMatrixIndex(), col.getObject().toString(), AMNode.OWLCLASS, targetOntology.getID()),
 								 					currentVert.getObject().getNewSimilarityValue()));
 					 }
 				 }

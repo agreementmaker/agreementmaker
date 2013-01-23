@@ -47,7 +47,7 @@ public class TreeToDagConverter {
 	
 	/** Recursive method to return the leaves of the hierarchy under a node */
 	public List<Node> getLeaves(Node root) {
-		return Node.getLeaves(root);
+		return NodeUtility.getLeaves(root);
 	}
 
 	//********************************************STATIC METHOD
@@ -57,14 +57,14 @@ public class TreeToDagConverter {
 	 * */
 	
 	public static List<Node> getOrderedCommonDescendants(Node first, Node second){
-		return Node.getCommonDescendants(first, second);
+		return NodeUtility.getCommonDescendants(first, second);
 	}
 	
 	/**return the list of ancestors of both this two node. Could be optimezed i guess but i don't have time.
 	 * it's from the lowest to the highest, but there could be more then one at the same level.
 	 * */
 	public static List<Node> getOrderedCommonAncestors(Node first, Node second){
-		return Node.getCommonAncestors(first, second);
+		return NodeUtility.getCommonAncestors(first, second);
 	}
 
 }

@@ -7,6 +7,7 @@ import java.util.Set;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
@@ -277,7 +278,7 @@ public class OldOntoTreeBuilder extends TreeBuilder{
         
         //The root of the tree is a fake vertex node, just containing the name of the ontology,
         //treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(), model, ontology.getSourceOrTarget() );
-        treeRoot = new Node(-1, ontology.getTitle(), Node.RDFNODE, ontology.getID() );
+        treeRoot = new AMNode(-1, ontology.getTitle(), AMNode.RDFNODE, ontology.getID() );
         treeCount++;
 
         treeRoot.addChild(classRoot);
@@ -314,7 +315,7 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 		
 		// this is the root node of the class tree (think of it like owl:Thing)
 		//Vertex root = new Vertex(CLASSROOTNAME, CLASSROOTNAME, model, ontology.getSourceOrTarget());
-		Node root = new Node(-1, CLASSROOTNAME, Node.OWLCLASS, ontology.getID());
+		Node root = new AMNode(-1, CLASSROOTNAME, AMNode.OWLCLASS, ontology.getID());
 		treeCount++;  // we created a new vertex, increment treeCount
 
 		// we may have classes that still don't have a parent. these orphans will be adopted by root.
@@ -522,10 +523,10 @@ public class OldOntoTreeBuilder extends TreeBuilder{
     	}
     	else {
     		if( isClass ) {
-    			node = new Node(uniqueKey, entity, Node.OWLCLASS, ontology.getID() );
+    			node = new AMNode(uniqueKey, entity, AMNode.OWLCLASS, ontology.getID() );
     			ontology.getClassesList().add(node);
     		} else { // it has to be a property
-    			node = new Node(uniqueKey, entity, Node.OWLPROPERTY, ontology.getID() );
+    			node = new AMNode(uniqueKey, entity, AMNode.OWLPROPERTY, ontology.getID() );
     			ontology.getPropertiesList().add(node);
     		}
     		processedSubs.put(entity, node);
@@ -575,7 +576,7 @@ public class OldOntoTreeBuilder extends TreeBuilder{
     private Node createPropertyTree() {
     	
     	//Vertex root = new Vertex(PROPERTYROOTNAME, PROPERTYROOTNAME, model, ontology.getSourceOrTarget());
-    	Node root = new Node( -1, PROPERTYROOTNAME, Node.OWLPROPERTY, ontology.getID() );
+    	Node root = new AMNode( -1, PROPERTYROOTNAME, AMNode.OWLPROPERTY, ontology.getID() );
     	treeCount++;
         uniqueKey = 0; //restart the key because properties are kept in a differnt structure with different index
         processedSubs = new HashMap<OntResource, Node>();

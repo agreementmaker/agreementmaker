@@ -4,8 +4,8 @@ import java.io.FileWriter;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.mappingEngine.AbstractSimilarityMatrix;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.ontology.Node;
 
 /**
@@ -15,7 +15,7 @@ import am.app.ontology.Node;
  * TODO: Implement all methods.
  *
  */
-public class SimpleSimilarityMatrix extends SimilarityMatrix {
+public class SimpleSimilarityMatrix extends AbstractSimilarityMatrix {
 
 	private static final long serialVersionUID = 4761466118469007566L;
 	
@@ -131,12 +131,6 @@ public class SimpleSimilarityMatrix extends SimilarityMatrix {
 
 	@Override
 	public List<Double> toSimilarityArray(List<Mapping> mapsArray) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public SimilarityMatrix toArraySimilarityMatrix() {
 		// TODO Auto-generated method stub
 		return null;
 	}

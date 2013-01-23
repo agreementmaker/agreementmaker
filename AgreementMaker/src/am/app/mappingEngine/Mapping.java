@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
+import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.parsing.OutputController;
@@ -95,7 +96,7 @@ public class Mapping implements Serializable
         entity2 = e2;
         similarity = sim;
         relation = r;
-        if( entity1.getType().equals( Node.OWLCLASS ) || entity1.getType().equals( Node.RDFNODE ) || entity1.getType().equals( Node.XMLNODE )  ) {
+        if( entity1.getType().equals( AMNode.OWLCLASS ) || entity1.getType().equals( AMNode.RDFNODE ) || entity1.getType().equals( AMNode.XMLNODE )  ) {
         	typeOfConcepts = alignType.aligningClasses;
         } else {
         	typeOfConcepts = alignType.aligningProperties;
@@ -109,7 +110,7 @@ public class Mapping implements Serializable
         similarity = sim;
         relation = r;
         provenance = p;
-        if( entity1.getType().equals( Node.OWLCLASS ) || entity1.getType().equals( Node.RDFNODE ) || entity1.getType().equals( Node.XMLNODE )  ) {
+        if( entity1.getType().equals( AMNode.OWLCLASS ) || entity1.getType().equals( AMNode.RDFNODE ) || entity1.getType().equals( AMNode.XMLNODE )  ) {
         	typeOfConcepts = alignType.aligningClasses;
         } else {
         	typeOfConcepts = alignType.aligningProperties;
@@ -122,7 +123,7 @@ public class Mapping implements Serializable
         entity2 = e2;
         similarity = sim;
         relation = MappingRelation.EQUIVALENCE;
-        if( entity1.getType().equals( Node.OWLCLASS ) || entity1.getType().equals( Node.RDFNODE ) || entity1.getType().equals( Node.XMLNODE )  ) {
+        if( entity1.getType().equals( AMNode.OWLCLASS ) || entity1.getType().equals( AMNode.RDFNODE ) || entity1.getType().equals( AMNode.XMLNODE )  ) {
         	typeOfConcepts = alignType.aligningClasses;
         } else {
         	typeOfConcepts = alignType.aligningProperties;
@@ -135,7 +136,7 @@ public class Mapping implements Serializable
         entity2 = e2;
         similarity = 1.0;
         relation = MappingRelation.EQUIVALENCE;
-        if( entity1.getType().equals( Node.OWLCLASS ) || entity1.getType().equals( Node.RDFNODE ) || entity1.getType().equals( Node.XMLNODE )  ) {
+        if( entity1.getType().equals( AMNode.OWLCLASS ) || entity1.getType().equals( AMNode.RDFNODE ) || entity1.getType().equals( AMNode.XMLNODE )  ) {
         	typeOfConcepts = alignType.aligningClasses;
         } else {
         	typeOfConcepts = alignType.aligningProperties;

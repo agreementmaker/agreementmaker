@@ -10,7 +10,9 @@ import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.EOntNodeType.EOntologyNodeType;
+import am.app.ontology.AMNode;
 import am.app.ontology.Node;
+import am.app.ontology.NodeUtility;
 import am.app.ontology.Ontology;
 import am.utility.DirectedGraph;
 
@@ -372,9 +374,9 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 				switch(tp){
 		    	case CLASS:
 		    		if(wgVertices.get(i).getNodeType().equals(EOntologyNodeType.CLASS)){
-		    			n = Node.getNodefromRDFNode(ont, wgVertices.get(i).getObject(), alignType.aligningClasses);
+		    			n = NodeUtility.getNodefromRDFNode(ont, wgVertices.get(i).getObject(), alignType.aligningClasses);
 						if(n == null){
-							n = new Node(key, wgVertices.get(i).getObject().toString(), Node.OWLCLASS, ont.getIndex());
+							n = new AMNode(key, wgVertices.get(i).getObject().toString(), AMNode.OWLCLASS, ont.getIndex());
 							wgVertices.get(i).setMatrixIndex(key);
 							key++;
 						}
@@ -385,9 +387,9 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 		    		break;
 		    	case PROPERTY:
 		    		if(wgVertices.get(i).getNodeType().equals(EOntologyNodeType.PROPERTY)){
-			    		n = Node.getNodefromRDFNode(ont, wgVertices.get(i).getObject(), alignType.aligningProperties);
+			    		n = NodeUtility.getNodefromRDFNode(ont, wgVertices.get(i).getObject(), alignType.aligningProperties);
 						if(n == null){
-							n = new Node(key, wgVertices.get(i).getObject().toString(), Node.OWLPROPERTY, ont.getIndex());
+							n = new AMNode(key, wgVertices.get(i).getObject().toString(), AMNode.OWLPROPERTY, ont.getIndex());
 							wgVertices.get(i).setMatrixIndex(key);
 							key++;
 			    		}
