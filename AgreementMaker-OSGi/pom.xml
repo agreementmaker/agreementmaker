@@ -36,15 +36,15 @@
 	
 	<modules>
 	    <!-- This is the legacy AgreementMaker -->
-		<module>../AgreementMaker</module>
-		<module>../AgreementMaker-BatchMode</module>
-		<module>../AgreementMaker-CollaborationEngine</module>
-		<module>../AgreementMaker-UserFeedback</module>
-		<module>../Matcher-AdvancedSimilarity</module>
-		<module>../Matcher-BaseSimilarity</module>
-		<module>../Matcher-LinkedOpenData</module>
-		<module>../Matcher-OAEI</module>
-		<module>../Matcher-PRA</module>
+		<module>AgreementMaker</module>
+		<module>AgreementMaker-BatchMode</module>
+		<module>AgreementMaker-CollaborationEngine</module>
+		<module>AgreementMaker-UserFeedback</module>
+		<module>Matcher-AdvancedSimilarity</module>
+		<module>Matcher-BaseSimilarity</module>
+		<module>Matcher-LinkedOpenData</module>
+		<module>Matcher-OAEI</module>
+		<module>Matcher-PRA</module>
 	</modules>
 
 </project>
