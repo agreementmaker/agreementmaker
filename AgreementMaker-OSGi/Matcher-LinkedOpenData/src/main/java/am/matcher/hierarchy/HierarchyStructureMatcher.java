@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrixOld;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.mappingEngine.threaded.AbstractMatcherRunner;
 import am.app.ontology.Node;

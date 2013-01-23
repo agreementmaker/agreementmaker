@@ -3,8 +3,8 @@ package am.matcher.wikipedia;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.matcher.hierarchy.Utilities;
 
