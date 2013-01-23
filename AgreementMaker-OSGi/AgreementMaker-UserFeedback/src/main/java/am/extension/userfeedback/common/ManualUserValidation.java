@@ -3,7 +3,6 @@ package am.extension.userfeedback.common;
 import am.app.mappingEngine.Mapping;
 import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UserFeedback;
-import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.ui.ManualUserValidationPanel;
 
 public class ManualUserValidation extends UserFeedback {

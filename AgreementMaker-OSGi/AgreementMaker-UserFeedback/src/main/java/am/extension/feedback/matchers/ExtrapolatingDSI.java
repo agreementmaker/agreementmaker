@@ -1,7 +1,7 @@
 package am.extension.feedback.matchers;
 
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.extension.feedback.FilteredAlignmentMatrix;
 
 public class ExtrapolatingDSI extends DescendantsSimilarityInheritanceMatcher {

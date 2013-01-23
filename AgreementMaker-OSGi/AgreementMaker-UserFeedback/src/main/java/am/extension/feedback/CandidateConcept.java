@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 
 /**
@@ -13,7 +14,7 @@ import am.app.ontology.Node;
  *
  */
 
-public class CandidateConcept extends Node /*implements Comparable<CandidateConcept>*/{
+public class CandidateConcept extends AMNode /*implements Comparable<CandidateConcept>*/{
 
 	private static final long serialVersionUID = 5565715572303899116L;
 	
