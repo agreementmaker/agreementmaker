@@ -4,12 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>edu.uic.cs.advis.am</groupId>
-	<artifactId>AgreementMaker-ParentProject</artifactId>
+	<artifactId>AgreementMaker-OSGi</artifactId>
 	<version>0.3.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	
-	<name>AgreementMaker Parent Project</name>
-	<description>AgreementMaker System Parent Project</description>
+	<name>AgreementMaker OSGi</name>
+	<description>OSGi version of AgreementMaker</description>
 
 	<properties>
 		<tycho-version>0.16.0</tycho-version>
