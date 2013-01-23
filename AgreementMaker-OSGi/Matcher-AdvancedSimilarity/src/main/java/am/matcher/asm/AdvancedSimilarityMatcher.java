@@ -12,11 +12,12 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrixOld;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
+import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.matcher.bsm.BaseSimilarityMatcher;
@@ -324,8 +325,8 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 				// FIXME: Revert the change to the next line. -- Cosmin.
 				// Currently it is a bug!!!
 				localMatrix.set(i, j,
-						new Mapping(new Node(i, s, typeOfNodes.toString(), 0),
-								new Node(j, t, typeOfNodes.toString(), 0),
+						new Mapping(new AMNode(i, s, typeOfNodes.toString(), 0),
+								new AMNode(j, t, typeOfNodes.toString(), 0),
 								tempValue));
 
 				// DEBUG INFO
@@ -613,8 +614,8 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	}
 
 	public static void testStrings(String s1, String s2) throws Exception {
-		Node source = new Node(0, s1, "owl-propertynode", 0);
-		Node target = new Node(1, s2, "owl-propertynode", 0);
+		Node source = new AMNode(0, s1, "owl-propertynode", 0);
+		Node target = new AMNode(1, s2, "owl-propertynode", 0);
 
 		AdvancedSimilarityParameters as= new AdvancedSimilarityParameters();
 		//checking wordnet and check synonym
