@@ -35,7 +35,7 @@ import am.app.mappingEngine.utility.AlignmentMergerSelection;
 public class OSGiRegistry {
 	
 	private List<AbstractMatcher> matcherList;
-	private ServiceTracker<AbstractMatcher, AbstractMatcher> matcherTracker;
+	private ServiceTracker matcherTracker;
 	private final BundleContext context;
 
 	private List<SelectionAlgorithm> selectionList;
@@ -72,25 +72,26 @@ public class OSGiRegistry {
 	}
 
 	private void startMatcherTracker(){
-		ServiceTrackerCustomizer<AbstractMatcher, AbstractMatcher> customizer = new ServiceTrackerCustomizer<AbstractMatcher,AbstractMatcher>() {
+		ServiceTrackerCustomizer customizer = new ServiceTrackerCustomizer() {
 			
 			@Override
-			public AbstractMatcher addingService(ServiceReference<AbstractMatcher> reference) {
-				AbstractMatcher matcher=context.getService(reference);
+			public AbstractMatcher addingService(ServiceReference reference) {
+				AbstractMatcher matcher = (AbstractMatcher) context.getService(reference);
 				matcherList.add(matcher);
 				return matcher;
 			}
 			@Override
-			public void modifiedService(ServiceReference<AbstractMatcher> reference,AbstractMatcher service) {
+			public void modifiedService(ServiceReference reference, Object service) {
 				matcherList.remove(service);
-				matcherList.add(context.getService(reference));
+				matcherList.add((AbstractMatcher) context.getService(reference));
 			}
 			@Override
-			public void removedService(ServiceReference<AbstractMatcher> reference,AbstractMatcher service) {
+			public void removedService(ServiceReference reference, Object service) {
 				matcherList.remove(service);
 			}
+
 		};
-		matcherTracker = new ServiceTracker<AbstractMatcher,AbstractMatcher>(context, AbstractMatcher.class, customizer);
+		matcherTracker = new ServiceTracker(context, AbstractMatcher.class, customizer);
 		matcherTracker.open();
 	}
 	

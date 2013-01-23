@@ -16,7 +16,7 @@ public class Activator implements BundleActivator {
 		return context;
 	}
 
-	private ServiceRegistration<AbstractMatcher> reg;
+	private ServiceRegistration reg;
 
 	/*
 	 * (non-Javadoc)
