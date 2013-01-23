@@ -10,9 +10,9 @@ import am.app.mappingEngine.MappedNodes;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParametersPanel;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 
 public class PRAintegrationMatcher extends AbstractMatcher {
