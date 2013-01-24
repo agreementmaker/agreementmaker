@@ -9,7 +9,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>AgreementMaker</module>
+		<module>AgreementMaker-Core</module>
 		<module>Matcher-BaseSimilarity</module>
 		<module>Matcher-AdvancedSimilarity</module>
 		<module>Matcher-OAEI</module>
