@@ -9,7 +9,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>AgreementMaker</artifactId>
+	<artifactId>AgreementMaker-Core</artifactId>
 	<packaging>eclipse-plugin</packaging>
 
 	<properties>
