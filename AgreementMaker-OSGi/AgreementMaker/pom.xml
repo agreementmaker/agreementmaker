@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>AgreementMaker</artifactId>
-	<packaging>bundle</packaging>
+	<packaging>eclipse-plugin</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -44,29 +44,53 @@
 		<directory>target</directory>
 
 		<plugins>
+			<!-- <plugin> <groupId>org.apache.felix</groupId> <artifactId>maven-bundle-plugin</artifactId> 
+				<version>2.3.7</version> <extensions>true</extensions> <configuration> <instructions> 
+				<Bundle-ClassPath>{maven-dependencies}</Bundle-ClassPath> </instructions> 
+				</configuration> </plugin> -->
+
 			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<version>2.3.7</version>
-				<extensions>true</extensions>
-				<configuration>
-					<instructions>
-						<Bundle-ClassPath>{maven-dependencies}</Bundle-ClassPath>
-					</instructions>
-				</configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<overWriteIfNewer>true</overWriteIfNewer>
+							<outputDirectory>${project.basedir}/lib</outputDirectory>
+							<markersDirectory>${project.basedir}/lib</markersDirectory>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
-
-
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-dependency-plugin</artifactId> 
-				<executions> <execution> <id>copy-dependencies</id> <phase>initialize</phase> 
-				<goals> <goal>copy-dependencies</goal> </goals> <configuration> <overWriteIfNewer>true</overWriteIfNewer> 
-				<outputDirectory>${project.basedir}/lib</outputDirectory> <markersDirectory>${project.basedir}/lib</markersDirectory> 
-				</configuration> </execution> </executions> </plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> 
-				<artifactId>maven-clean-plugin</artifactId> <version>2.5</version> <executions> 
-				<execution> <id>clean-dependencies</id> <phase>clean</phase> <goals> <goal>clean</goal> 
-				</goals> <configuration> <filesets> <fileset> <directory>lib</directory> 
-				<includes> <include>**/*</include> </includes> </fileset> </filesets> </configuration> 
-				</execution> </executions> </plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>2.5</version>
+				<executions>
+					<execution>
+						<id>clean-dependencies</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+						<configuration>
+							<filesets>
+								<fileset>
+									<directory>lib</directory>
+									<includes>
+										<include>**/*</include>
+									</includes>
+								</fileset>
+							</filesets>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<!-- IMPORTANT: Specify that we need Java 1.6 -->
 			<!-- Maven Compiler plugin -->
 			<plugin>
@@ -83,13 +107,30 @@
 		<pluginManagement>
 
 			<plugins>
-				<!-- <plugin> <groupId>org.eclipse.m2e</groupId> <artifactId>lifecycle-mapping</artifactId> 
-					<version>1.0.0</version> <configuration> <lifecycleMappingMetadata> <pluginExecutions> 
-					<pluginExecution> <pluginExecutionFilter> <groupId>org.apache.maven.plugins</groupId> 
-					<artifactId>maven-dependency-plugin</artifactId> <versionRange>[2.0,)</versionRange> 
-					<goals> <goal>copy-dependencies</goal> </goals> </pluginExecutionFilter> 
-					<action> <execute /> </action> </pluginExecution> </pluginExecutions> </lifecycleMappingMetadata> 
-					</configuration> </plugin> -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[2.0,)</versionRange>
+										<goals>
+											<goal>copy-dependencies</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 
