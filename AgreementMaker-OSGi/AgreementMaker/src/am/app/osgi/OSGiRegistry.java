@@ -38,7 +38,7 @@ public class OSGiRegistry {
 	
 	private List<AbstractMatcher> matcherList;
 	private ServiceTracker<AbstractMatcher, AbstractMatcher> matcherTracker;
-	private final BundleContext context;
+	private BundleContext context;
 
 	private List<SelectionAlgorithm> selectionList;
 	
@@ -164,11 +164,19 @@ public class OSGiRegistry {
 	
 	public void initializeShutdown() {
 		try {
-			context.getBundle(0).stop();
+			//context.getBundle(0).stop();
 			EclipseStarter.shutdown();
+			
+			while( context.getBundles() != null ) {
+				Thread.sleep(100);
+			}
+			
+			
 		} catch (BundleException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (NullPointerException e) {
+			System.exit(0);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
