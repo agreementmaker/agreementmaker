@@ -16,9 +16,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.utility.WrapLayout;
 
 public class CollaborationServerExperiment extends JFrame implements ActionListener {

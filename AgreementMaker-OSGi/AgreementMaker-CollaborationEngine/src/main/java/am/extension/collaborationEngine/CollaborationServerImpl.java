@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.evaluation.disagreement.variance.VarianceDisagreementComparator;
 import am.extension.batchmode.simpleBatchMode.SimpleBatchModeRunner;
 import am.matcher.oaei2011.OAEI2011Matcher;
