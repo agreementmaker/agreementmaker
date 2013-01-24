@@ -366,7 +366,13 @@ public class UI {
 		int n = JOptionPane.showConfirmDialog(Core.getUI().getUIFrame(),"Are you sure you want to exit ?\n\nYou will lose any unsaved alignments!\n","Exit AgreementMaker",JOptionPane.YES_NO_OPTION);
 		if (n == JOptionPane.YES_OPTION)
 		{
-			System.exit(0);   
+			Core.getInstance().getRegistry().initializeShutdown();
+			Core.getInstance();
+			Core.getUI().getUIFrame().setVisible(false);
+			Core.getInstance();
+			Core.getUI().getUIFrame().dispose();
+			Core.getInstance();
+			Core.setUI(null);
 		}
 	}
 }

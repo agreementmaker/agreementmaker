@@ -1,21 +1,8 @@
 package am.app.osgi;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.felix.framework.Felix;
-import org.apache.felix.framework.util.FelixConstants;
-import org.apache.felix.main.AutoProcessor;
-import org.apache.log4j.Logger;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
 
 public class AMHost {
-	private static Logger sLog = Logger.getLogger(AMHost.class);
+/*	private static Logger sLog = Logger.getLogger(AMHost.class);
 	
 	private AMActivator m_activator = null;
     private Felix m_felix = null;
@@ -126,4 +113,5 @@ public class AMHost {
     public OSGiRegistry getRegistry() { return registry; }
     
     public BundleContext getContext() { return m_felix.getBundleContext(); }
+    */
 }

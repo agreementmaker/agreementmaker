@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.core.runtime.adaptor.EclipseStarter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -35,7 +37,7 @@ import am.app.mappingEngine.utility.AlignmentMergerSelection;
 public class OSGiRegistry {
 	
 	private List<AbstractMatcher> matcherList;
-	private ServiceTracker matcherTracker;
+	private ServiceTracker<AbstractMatcher, AbstractMatcher> matcherTracker;
 	private final BundleContext context;
 
 	private List<SelectionAlgorithm> selectionList;
@@ -158,5 +160,18 @@ public class OSGiRegistry {
 	
 	public Bundle[] getInstalledBundles() {
 		return context.getBundles();
+	}
+	
+	public void initializeShutdown() {
+		try {
+			context.getBundle(0).stop();
+			EclipseStarter.shutdown();
+		} catch (BundleException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

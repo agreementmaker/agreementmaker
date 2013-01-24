@@ -21,13 +21,9 @@ public class AMActivator implements BundleActivator {
 		
 		Core.getInstance().initializeOSGiRegistry(context);
 		
-		Thread mainUI = new Thread("UI") {
-				public void run() {
-					Core.setUI( new UI() );
-				} 
-		};
+		Core.setUI( new UI() );
 		
-		mainUI.start();
+		System.out.println("AgreementMaker Constructur done...");
 		
 	}
 
