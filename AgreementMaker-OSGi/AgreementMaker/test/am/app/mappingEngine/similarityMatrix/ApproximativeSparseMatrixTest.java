@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
@@ -28,7 +29,7 @@ public class ApproximativeSparseMatrixTest {
 			public List<Node> getClassesList() {
 				List<Node> classesList = new ArrayList<Node>();
 				for( int i = 0; i < 20; i++ ) {
-					classesList.add(new Node(i, "Item " + i, Ontology.LANG_OWL, 0));
+					classesList.add(new AMNode(i, "Item " + i, Ontology.LANG_OWL, 0));
 				}
 				return classesList;
 			}
@@ -47,8 +48,8 @@ public class ApproximativeSparseMatrixTest {
 				int trunk=(int)(100000.0D*d);
 				d=((double)trunk)/100000.0D;
 				//System.out.println(d);
-				sMatrix.set(i, j, new Mapping(new Node(i, "Item ", Ontology.LANG_OWL, 0),new Node(i, "Item " + i, Ontology.LANG_OWL, 0),d));
-				aMatrix.set(i, j, new Mapping(new Node(i, "Item " + i, Ontology.LANG_OWL, 0),new Node(i, "Item " + i, Ontology.LANG_OWL, 0),d));
+				sMatrix.set(i, j, new Mapping(new AMNode(i, "Item ", Ontology.LANG_OWL, 0),new AMNode(i, "Item " + i, Ontology.LANG_OWL, 0),d));
+				aMatrix.set(i, j, new Mapping(new AMNode(i, "Item " + i, Ontology.LANG_OWL, 0),new AMNode(i, "Item " + i, Ontology.LANG_OWL, 0),d));
 			}
 		}
 	}
