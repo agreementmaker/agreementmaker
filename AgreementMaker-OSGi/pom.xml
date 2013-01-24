@@ -13,11 +13,11 @@
 		<module>Matcher-BaseSimilarity</module>
 		<module>Matcher-AdvancedSimilarity</module>
 		<module>Matcher-OAEI</module>
-	<!--	<module>AgreementMaker-BatchMode</module>
+		<module>AgreementMaker-BatchMode</module>
 		<module>AgreementMaker-CollaborationEngine</module>
 		<module>AgreementMaker-UserFeedback</module>
 		<module>Matcher-LinkedOpenData</module>
-		<module>Matcher-PRA</module> -->
+		<module>Matcher-PRA</module>
 	</modules>
 	
 	<name>AgreementMaker OSGi</name>
