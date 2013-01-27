@@ -1,6 +1,6 @@
 package am.extension.feedback;
 
-import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
+import am.app.mappingEngine.ReferenceEvaluationData;
 
 public class FeedbackIteration{
 

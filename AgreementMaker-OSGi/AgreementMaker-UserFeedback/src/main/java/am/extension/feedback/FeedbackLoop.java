@@ -10,17 +10,16 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceParameters;
+import am.app.mappingEngine.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
-import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.extension.feedback.matchers.ExtrapolatingDSI;
 import am.extension.feedback.matchers.ExtrapolatingFS;
 import am.extension.feedback.ui.SelectionPanel;
+import am.matcher.dsi.DescendantsSimilarityInheritanceParameters;
 import am.userInterface.MatchingProgressDisplay;
 
 /**
@@ -743,7 +742,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.onlyEquivalence = true;
 			refParam.fileName = "./OAEI09/benchmarks/301/refalign.rdf";
 			refParam.format = ReferenceAlignmentMatcher.OAEI;
-			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
 			referenceAlignmentMatcher.setParameters(refParam);
 			referenceAlignmentMatcher.match();
 			
@@ -755,7 +754,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.onlyEquivalence = true;
 			refParam.fileName = "./OAEI09/benchmarks/302/refalign.rdf";
 			refParam.format = ReferenceAlignmentMatcher.OAEI;
-			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
 			referenceAlignmentMatcher.setParameters(refParam);			
 				referenceAlignmentMatcher.match();
 		}
@@ -765,7 +764,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.onlyEquivalence = true;
 			refParam.fileName = "./OAEI09/benchmarks/303/refalign.rdf";
 			refParam.format = ReferenceAlignmentMatcher.OAEI;
-			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
 			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();
 
@@ -776,7 +775,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.onlyEquivalence = true;
 			refParam.fileName = "./OAEI09/benchmarks/304/refalign.rdf";
 			refParam.format = ReferenceAlignmentMatcher.OAEI;
-			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
 			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();	
 		}
@@ -786,7 +785,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.onlyEquivalence = true;
 			refParam.fileName = "./I3CON2004/animals/animalsAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.OLD_OAEI;
-			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
 			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();
 		}
@@ -796,7 +795,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.onlyEquivalence = true;
 			refParam.fileName = "./I3CON2004/basketball_soccer/basketball_soccer.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.OLD_OAEI;
-			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
 			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();
 		}
@@ -806,7 +805,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.onlyEquivalence = true;
 			refParam.fileName = "./I3CON2004/comsci/csAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.OLD_OAEI;
-			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
 			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();
 		}
@@ -816,7 +815,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.onlyEquivalence = true;
 			refParam.fileName = "./I3CON2004/hotel/hotelAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.OLD_OAEI;
-			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
 			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();
 		}
@@ -826,7 +825,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.onlyEquivalence = true;
 			refParam.fileName = "./I3CON2004/network/networkAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.OLD_OAEI;
-			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
 			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();
 		}
@@ -836,7 +835,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.onlyEquivalence = true;
 			refParam.fileName = "./I3CON2004/people+pets/people+petsAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.OLD_OAEI;
-			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
 			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();
 		}
@@ -846,7 +845,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.onlyEquivalence = true;
 			refParam.fileName = "./I3CON2004/russia/russiaAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.OLD_OAEI;
-			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
 			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();
 		}
@@ -856,7 +855,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.onlyEquivalence = true;
 			refParam.fileName = "./I3CON2004/Weapons/WeaponsAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.OLD_OAEI;
-			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
 			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();
 		}
@@ -866,7 +865,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 			refParam.onlyEquivalence = true;
 			refParam.fileName = "./I3CON2004/Wine/WineAB.n3.txt";
 			refParam.format = ReferenceAlignmentMatcher.OLD_OAEI;
-			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
 			referenceAlignmentMatcher.setParameters(refParam);
 				referenceAlignmentMatcher.match();	
 		}

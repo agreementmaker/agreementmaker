@@ -2,16 +2,16 @@ package am.extension.feedback;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.Combination.CombinationMatcher;
-import am.app.mappingEngine.Combination.CombinationParameters;
-import am.app.mappingEngine.multiWords.MultiWordsMatcher;
-import am.app.mappingEngine.multiWords.MultiWordsParameters;
-import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
-import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
+import am.matcher.Combination.CombinationMatcher;
+import am.matcher.Combination.CombinationParameters;
 import am.matcher.bsm.BaseSimilarityMatcher;
 import am.matcher.bsm.BaseSimilarityParameters;
+import am.matcher.multiWords.MultiWordsMatcher;
+import am.matcher.multiWords.MultiWordsParameters;
+import am.matcher.parametricStringMatcher.ParametricStringMatcher;
+import am.matcher.parametricStringMatcher.ParametricStringParameters;
 
 public class InitialMatchers extends AbstractMatcher {
 
