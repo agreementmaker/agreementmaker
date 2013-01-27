@@ -19,6 +19,7 @@
 		<module>Matcher-LinkedOpenData</module>
 		<module>Matcher-PRA</module>
 		<module>AgreementMaker-Matchers</module>
+		<module>AM_ROOT</module>
 	</modules>
 	
 	<name>AgreementMaker OSGi</name>
