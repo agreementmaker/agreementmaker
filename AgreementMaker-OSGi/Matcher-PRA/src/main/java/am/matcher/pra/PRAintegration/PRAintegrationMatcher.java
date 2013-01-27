@@ -9,7 +9,7 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.MappedNodes;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParametersPanel;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
@@ -44,7 +44,7 @@ public class PRAintegrationMatcher extends AbstractMatcher {
     	matchStart();
 		super.beforeAlignOperations();
 		relation = inputMatchers.get(0).getRelation();
-		referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+		referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
 		referenceAlignmentMatcher.setInputMatchers(inputMatchers);
 		referenceAlignmentMatcher.setParam(param);
 		referenceAlignmentMatcher.match();

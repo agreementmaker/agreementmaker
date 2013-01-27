@@ -13,14 +13,14 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.StringUtil.StringMetrics;
-import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
-import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrixOld;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.matcher.bsm.BaseSimilarityMatcher;
+import am.matcher.parametricStringMatcher.ParametricStringMatcher;
+import am.matcher.parametricStringMatcher.ParametricStringParameters;
 import am.utility.Pair;
 
 /**

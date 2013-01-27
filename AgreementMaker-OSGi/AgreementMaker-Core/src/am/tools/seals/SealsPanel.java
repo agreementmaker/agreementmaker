@@ -50,10 +50,9 @@ import javax.swing.text.Document;
 import javax.xml.ws.Endpoint;
 
 import am.Utility;
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
+import am.app.osgi.MatcherNotFoundException;
 import am.userInterface.MatcherParametersDialog;
 import am.userInterface.MatchingProgressDisplay;
 import am.utility.LinuxInetAddress;
@@ -70,7 +69,7 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 	private JButton btnPublish, btnDefaultName;
 	private JTextField txtHost, txtPort, txtEndpoint;
 	private JTextArea txtReport;
-	private JComboBox cmbMatcherList;//, cmbThreshold, cmbSource, cmbTarget;
+	private JComboBox<AbstractMatcher> cmbMatcherList;//, cmbThreshold, cmbSource, cmbTarget;
 	private JProgressBar barProgress;
 	private JScrollPane sclReport;
 	
@@ -118,8 +117,8 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 		JLabel lblMatcher = new JLabel("Matcher:");
 		//lblMatcher.setToolTipText("Matcher run to handle the align() requests.");
 		
-		String[] matcherList = MatcherFactory.getMatcherComboList();
-		cmbMatcherList = new JComboBox(matcherList);
+		AbstractMatcher[] matcherList = MatcherFactory.getMatcherComboList();
+		cmbMatcherList = new JComboBox<AbstractMatcher>(matcherList);
 		cmbMatcherList.setToolTipText("Matcher run to handle the align() requests.");
 		
 		
@@ -304,7 +303,7 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 	public void actionPerformed(ActionEvent actionEvent) {
 		
 		if( actionEvent.getSource() == btnDefaultName ) {
-			String className = MatcherFactory.getMatchersRegistryEntry( cmbMatcherList.getSelectedItem().toString() ).getMatcherClass();
+			String className = cmbMatcherList.getSelectedItem().toString();
 			
 			Pattern searchPattern = Pattern.compile( "\\w+$" );
 			Matcher matcher = searchPattern.matcher(className); // get only the class name of the class definition
@@ -318,8 +317,12 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 				// We are going to publish a new matcher.
 				
 				// 1. Get the matcher instance.
-				MatchersRegistry mR = MatcherFactory.getMatchersRegistryEntry( cmbMatcherList.getSelectedItem().toString() );
-				matcherToPublish = MatcherFactory.getMatcherInstance(mR, Core.getInstance().getMatcherInstances().size());
+				try {
+					matcherToPublish = MatcherFactory.getMatcherInstance(((AbstractMatcher)cmbMatcherList.getSelectedItem()).getClass());
+				} catch (MatcherNotFoundException e1) {
+					e1.printStackTrace();
+					return;
+				}
 				
 				// 2. Make sure we are using a Layer I matcher.
 				if( matcherToPublish.getMinInputMatchers() > 0 ) {
@@ -356,7 +359,7 @@ public class SealsPanel extends JPanel implements MatchingProgressDisplay, Actio
 				
 				
 				
-				SealsServer sealsServer = new SealsServer(mR, this, matcherToPublish.getParam());
+				SealsServer sealsServer = new SealsServer(matcherToPublish, this, matcherToPublish.getParam());
 				
 				matcherToPublish = null; // don't need this object anymore.
 				

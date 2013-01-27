@@ -37,6 +37,7 @@ import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.ontology.Node;
+import am.app.osgi.MatcherNotFoundException;
 import am.extension.feedback.CandidateConcept;
 import am.extension.feedback.CandidateSelection;
 import am.extension.feedback.CandidateSelection.MeasuresRegistry;
@@ -59,20 +60,20 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 	public final static String A_ALL_MAPPING_WRONG = "Unvalidate all candidate mappings";
 	public final static String A_CONCEPT_WRONG = "Unvalidate selected candidate concept";
 	public final static String A_ALL_CONCEPT_WRONG = "Unvalidate all candidate concepts";
-	JComboBox cmbActions;
+	JComboBox<String> cmbActions;
 	
 	// Start Screen
 	JButton btn_start;
-	JComboBox cmbIterations;
-	JComboBox cmbInitialMatcherThreshold;
-	JComboBox cmbHighThreshold;
-	JComboBox cmbLowThreshold;
-	JComboBox cmbCardinality;
-	JComboBox cmbConfigurations;
-	JComboBox cmbK;
-	JComboBox cmbM;
-	JComboBox cmbMatcher;
-	JComboBox cmbMeasure;
+	JComboBox<String> cmbIterations;
+	JComboBox<String> cmbInitialMatcherThreshold;
+	JComboBox<String> cmbHighThreshold;
+	JComboBox<String> cmbLowThreshold;
+	JComboBox<String> cmbCardinality;
+	JComboBox<String> cmbConfigurations;
+	JComboBox<String> cmbK;
+	JComboBox<String> cmbM;
+	JComboBox<AbstractMatcher> cmbMatcher;
+	JComboBox<String> cmbMeasure;
 	
 	
 	// Automatic Progress screen.
@@ -355,13 +356,18 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 
 		
 		//get the automatic inital matcher
-		String matcherName = cmbMatcher.getSelectedItem().toString();
-		fblp.initialMatcher = MatcherFactory.getMatcherInstance(MatcherFactory.getMatchersRegistryEntry(matcherName), 0); //index is not needed because this matcher is not set into the table
-		final DefaultMatcherParameters p = fblp.initialMatcher.getParam();
-		
-		p.threshold = fblp.highThreshold;
-		p.maxSourceAlign = fblp.sourceNumMappings;
-		p.maxTargetAlign = fblp.targetNumMappings;
+		AbstractMatcher matcherName = cmbMatcher.getItemAt(cmbMatcher.getSelectedIndex());
+		try {
+			fblp.initialMatcher = MatcherFactory.getMatcherInstance(matcherName.getClass());
+			final DefaultMatcherParameters p = fblp.initialMatcher.getParam();
+			
+			p.threshold = fblp.highThreshold;
+			p.maxSourceAlign = fblp.sourceNumMappings;
+			p.maxTargetAlign = fblp.targetNumMappings;
+		} catch (MatcherNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return fblp;
 	}
@@ -376,30 +382,30 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		btn_start.setActionCommand("btn_start");
 		
 		//matcher combo list
-		String[] matcherList = MatcherFactory.getMatcherComboList();
-		cmbMatcher = new JComboBox(matcherList);
+		AbstractMatcher[] matcherList = MatcherFactory.getMatcherComboList();
+		cmbMatcher = new JComboBox<AbstractMatcher>(matcherList);
 		//cmbMatcher.setSelectedItem(MatchersRegistry.InitialMatcher.getMatcherName());
 		
-		cmbIterations = new JComboBox( Utility.STEPFIVE_INT );
+		cmbIterations = new JComboBox<String>( Utility.STEPFIVE_INT );
 		cmbIterations.addItem(UNLIMITED);
 		cmbIterations.setSelectedItem(UNLIMITED);
-		cmbInitialMatcherThreshold = new JComboBox( Utility.getPercentDecimalsList() );
+		cmbInitialMatcherThreshold = new JComboBox<String>( Utility.getPercentDecimalsList() );
 		cmbInitialMatcherThreshold.setSelectedItem("0.6");
-		cmbHighThreshold = new JComboBox( Utility.getPercentDecimalsList() );
+		cmbHighThreshold = new JComboBox<String>( Utility.getPercentDecimalsList() );
 		cmbHighThreshold.setSelectedItem("0.8");
-		cmbLowThreshold = new JComboBox( Utility.getPercentDecimalsList() );
+		cmbLowThreshold = new JComboBox<String>( Utility.getPercentDecimalsList() );
 		cmbLowThreshold.setSelectedItem("0.6");
 		
 		String[] integers = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
-		cmbK = new JComboBox( integers );
+		cmbK = new JComboBox<String>( integers );
 		cmbK.setSelectedItem("4");
-		cmbM = new JComboBox( integers );
+		cmbM = new JComboBox<String>( integers );
 		cmbM.setSelectedItem("6");
 		
-		cmbCardinality = new JComboBox();
+		cmbCardinality = new JComboBox<String>();
 		cmbCardinality.addItem("1-1");
 		
-		cmbConfigurations = new JComboBox();
+		cmbConfigurations = new JComboBox<String>();
 		cmbConfigurations.addItem(FeedbackLoop.MANUAL);
 		cmbConfigurations.addItem(FeedbackLoop.AUTO_101_301);
 		cmbConfigurations.addItem(FeedbackLoop.AUTO_101_302);
@@ -415,7 +421,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		cmbConfigurations.addItem(FeedbackLoop.AUTO_weapons);
 		cmbConfigurations.addItem(FeedbackLoop.AUTO_wine);
 		
-		cmbMeasure = new JComboBox();
+		cmbMeasure = new JComboBox<String>();
 		cmbMeasure.addItem(CandidateSelection.ALLMEASURES);
 		MeasuresRegistry[] mrs = MeasuresRegistry.values();
 		for(int i = 0; i < mrs.length; i++){
@@ -590,7 +596,7 @@ public class SelectionPanel extends JPanel implements MatchingProgressDisplay, A
 		selectedConcept = null;
 		candidateMappings = topConceptsAndAlignments;
 		
-		cmbActions = new JComboBox(new String[]{A_MAPPING_CORRECT,A_ALL_MAPPING_WRONG, A_CONCEPT_WRONG, A_ALL_CONCEPT_WRONG});
+		cmbActions = new JComboBox<String>(new String[]{A_MAPPING_CORRECT,A_ALL_MAPPING_WRONG, A_CONCEPT_WRONG, A_ALL_CONCEPT_WRONG});
 		
 		JButton btn_continue = new JButton("Continue");
 		btn_continue.setActionCommand("btn_continue");

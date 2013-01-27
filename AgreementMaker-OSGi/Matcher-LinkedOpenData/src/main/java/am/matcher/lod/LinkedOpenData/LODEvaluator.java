@@ -15,9 +15,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.Mapping.MappingRelation;
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
+import am.app.mappingEngine.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
-import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
+import am.app.mappingEngine.utility.MatchingPair;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;

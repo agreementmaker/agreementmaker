@@ -37,14 +37,13 @@ import java.util.Arrays;
 import javax.jws.WebService;
 
 import am.GlobalStaticVariables;
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.app.osgi.MatcherNotFoundException;
 import am.parsing.AlignmentOutput;
 import am.userInterface.MatchingProgressDisplay;
 import eu.sealsproject.omt.ws.matcher.AlignmentWS;
@@ -59,17 +58,17 @@ public class SealsServer implements AlignmentWS {
 
 //	private AbstractMatcher matcher;
 	
-	private MatchersRegistry matcherRegistry;
+	private AbstractMatcher matcher;
 	private MatchingProgressDisplay progressDisplay;
 	
 	private DefaultMatcherParameters parameters;
 	
 	private int BUFFERSIZE = 4096;
 	
-	public SealsServer( MatchersRegistry mR, MatchingProgressDisplay pD, DefaultMatcherParameters params ) {
-		matcherRegistry = mR;
-		progressDisplay = pD;
-		parameters = params;
+	public SealsServer( AbstractMatcher matcher, MatchingProgressDisplay pD, DefaultMatcherParameters params ) {
+		this.matcher = matcher;
+		this.progressDisplay = pD;
+		this.parameters = params;
 	}
 	
 	
@@ -78,7 +77,13 @@ public class SealsServer implements AlignmentWS {
 
 		// 0. Instantiate the matcher.
 		
-		AbstractMatcher m = MatcherFactory.getMatcherInstance(matcherRegistry, Core.getInstance().getMatcherInstances().size());
+		AbstractMatcher m;
+		try {
+			m = MatcherFactory.getMatcherInstance(matcher.getClass());
+		} catch (MatcherNotFoundException e1) {
+			e1.printStackTrace();
+			return e1.getMessage();
+		}
 		//m.setProgressDisplay(progressDisplay);
 		m.setParam(parameters);
 		

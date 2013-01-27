@@ -20,7 +20,6 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
@@ -90,11 +89,12 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 	/**
 	 * This is the batchMode constructor
 	 * @param matcher
+	 * @throws MatcherNotFoundException 
 	 */
-	public ThresholdAnalysis( MatchersRegistry matcher ) {
+	public ThresholdAnalysis( AbstractMatcher matcher, boolean batchMode) throws MatcherNotFoundException {
 		super();
-		matcherToAnalyze = MatcherFactory.getMatcherInstance(matcher, 0);;
-		prefBatchMode = true;
+		matcherToAnalyze = MatcherFactory.getMatcherInstance(matcher.getClass());;
+		prefBatchMode = batchMode;
 	}
 	
 	/**

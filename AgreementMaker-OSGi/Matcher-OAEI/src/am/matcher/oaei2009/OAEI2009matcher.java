@@ -6,14 +6,18 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.Combination.CombinationParameters;
-import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceParameters;
-import am.app.mappingEngine.multiWords.MultiWordsParameters;
-import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
+import am.matcher.Combination.CombinationMatcher;
+import am.matcher.Combination.CombinationParameters;
+import am.matcher.LexicalMatcherJWNL.LexicalMatcherJWNL;
 import am.matcher.bsm.BaseSimilarityParameters;
+import am.matcher.dsi.DescendantsSimilarityInheritanceMatcher;
+import am.matcher.dsi.DescendantsSimilarityInheritanceParameters;
+import am.matcher.multiWords.MultiWordsMatcher;
+import am.matcher.multiWords.MultiWordsParameters;
+import am.matcher.parametricStringMatcher.ParametricStringMatcher;
+import am.matcher.parametricStringMatcher.ParametricStringParameters;
 import am.matcher.pra.PRAMatcher.PRAMatcher2;
 import am.matcher.pra.PRAintegration.PRAintegrationMatcher;
 
@@ -81,8 +85,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 		if( parameters.trackName == OAEI2009parameters.ANATOMY_PRA ) {
 			// We are running anatomy with PRA.  Run PRA instead of BSM.
 			//AbstractMatcher refAlign = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
-			Core core = Core.getInstance();
-			ReferenceAlignmentMatcher myMatcher = (ReferenceAlignmentMatcher)core.getMatcherInstance( MatchersRegistry.ImportAlignment );
+			ReferenceAlignmentMatcher myMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance( ReferenceAlignmentMatcher.class );
 			if( myMatcher == null ) {
 				// we are running from the command line, we have to load the partial reference file.
 				
@@ -91,7 +94,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 		    	par.format = parameters.format;
 		    	
 		    	
-				ReferenceAlignmentMatcher refAlign = (ReferenceAlignmentMatcher) MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+				ReferenceAlignmentMatcher refAlign = (ReferenceAlignmentMatcher) MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
 				refAlign.setParam(par);
 				refAlign.match();
 				
@@ -140,7 +143,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 		//PSM
     	System.out.println("Running PSM");
     	startime = System.nanoTime()/measure;
-    	AbstractMatcher psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 1);
+    	AbstractMatcher psm = MatcherFactory.getMatcherInstance(ParametricStringMatcher.class);
     	ParametricStringParameters psmp = 
     			new ParametricStringParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
     	psmp.initForOAEI2009();
@@ -156,7 +159,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 		//vmm
     	System.out.println("Running VMM");
     	startime = System.nanoTime()/measure;
-    	AbstractMatcher vmm = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 2);
+    	AbstractMatcher vmm = MatcherFactory.getMatcherInstance(MultiWordsMatcher.class);
     	
     	MultiWordsParameters vmmp = new MultiWordsParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
     	vmmp.initForOAEI2009();
@@ -176,7 +179,7 @@ public class OAEI2009matcher extends AbstractMatcher {
     	System.out.println("Running LWC");
     	startime = System.nanoTime()/measure;
     	int nextID = Core.getInstance().getMatcherInstances().size();
-    	AbstractMatcher lwc = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, nextID);
+    	AbstractMatcher lwc = MatcherFactory.getMatcherInstance(CombinationMatcher.class);
     	lwc.getInputMatchers().add(psm);
     	lwc.getInputMatchers().add(vmm);
     	lwc.getInputMatchers().add(pra);
@@ -200,7 +203,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 		//DSI
     	System.out.println("Running DSI");
     	startime = System.nanoTime()/measure;
-    	AbstractMatcher dsi = MatcherFactory.getMatcherInstance(MatchersRegistry.DSI, 0);
+    	AbstractMatcher dsi = MatcherFactory.getMatcherInstance(DescendantsSimilarityInheritanceMatcher.class);
     	dsi.getInputMatchers().add(lastLayer);
     	dsi.getParam().threshold = param.threshold;
     	dsi.setMaxSourceAlign(getMaxSourceAlign());
@@ -245,7 +248,7 @@ public class OAEI2009matcher extends AbstractMatcher {
 			//third layer wnl on input LWC (optimized mode)
 	    	System.out.println("Running LexicalWordnet");
 	    	startime = System.nanoTime()/measure;
-	    	AbstractMatcher wnl = MatcherFactory.getMatcherInstance(MatchersRegistry.WordNetLexical, 2);
+	    	AbstractMatcher wnl = MatcherFactory.getMatcherInstance(LexicalMatcherJWNL.class);
 	    	wnl.setOptimized(true);
 	    	wnl.addInputMatcher(lastLayer);
 	    	wnl.getParam().threshold = param.threshold;

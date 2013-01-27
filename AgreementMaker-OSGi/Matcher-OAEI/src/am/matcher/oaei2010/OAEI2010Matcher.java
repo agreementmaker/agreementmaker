@@ -10,17 +10,22 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
-import am.app.mappingEngine.Combination.CombinationParameters;
-import am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralParameters;
-import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
-import am.app.mappingEngine.multiWords.MultiWordsParameters;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
-import am.app.mappingEngine.parametricStringMatcher.ParametricStringParameters;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.utility.OAEI_Track;
+import am.matcher.Combination.CombinationMatcher;
+import am.matcher.Combination.CombinationParameters;
+import am.matcher.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralMatcher;
+import am.matcher.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralParameters;
+import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcher;
+import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
 import am.matcher.asm.AdvancedSimilarityParameters;
+import am.matcher.groupFinder.GroupFinderMatcher;
+import am.matcher.multiWords.MultiWordsMatcher;
+import am.matcher.multiWords.MultiWordsParameters;
+import am.matcher.parametricStringMatcher.ParametricStringMatcher;
+import am.matcher.parametricStringMatcher.ParametricStringParameters;
 import am.userInterface.MatchingProgressDisplay;
 
 /**
@@ -116,14 +121,14 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		
 		//Second layer: LWC(ASM, PSM)
 		//LWC matcher
-		AbstractMatcher lwc = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 2);
+		AbstractMatcher lwc = MatcherFactory.getMatcherInstance(CombinationMatcher.class);
 		lwc.getInputMatchers().add(asm);
 		lwc.getInputMatchers().add(psm);
 		setupSubMatcher(lwc, new CombinationParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign).initForOAEI2010(OAEI_Track.Conference, true));
 		runSubMatcher(lwc, "LWC( ASM, PSM)");
 
 		//Third layer: GFM
-		AbstractMatcher gfm = MatcherFactory.getMatcherInstance(MatchersRegistry.GroupFinder, 3);
+		AbstractMatcher gfm = MatcherFactory.getMatcherInstance(GroupFinderMatcher.class);
 		gfm.getInputMatchers().add(lwc);
 		setupSubMatcher(gfm, new DefaultMatcherParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign));
 		runSubMatcher(gfm, "GFM( LWC )");
@@ -155,7 +160,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		//PSM
 		AbstractMatcher psm = null;
 		if(parameters.usingPSM && !isCancelled()){
-		   	psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString,1);
+		   	psm = MatcherFactory.getMatcherInstance(ParametricStringMatcher.class);
 		   	setupSubMatcher(psm, new ParametricStringParameters(param.threshold, 1, 1).initForOAEI2010(parameters.currentTrack));
 		   	runSubMatcher(psm, "Submatcher: PSM");
 		}
@@ -163,7 +168,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		//VMM
 		AbstractMatcher vmm = null;
 		if(parameters.usingVMM && !isCancelled()){
-			vmm = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 2);
+			vmm = MatcherFactory.getMatcherInstance(MultiWordsMatcher.class);
 		   	setupSubMatcher(vmm, new MultiWordsParameters(param.threshold, 1, 1).initForOAEI2010(parameters.currentTrack));
 		   	runSubMatcher(vmm, "Submatcher: VMM");
 		}
@@ -171,7 +176,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		//LSM .. maybe take out of Benchmarks track.
 		AbstractMatcher lsm = null;
 		if(parameters.usingLSM && !isCancelled()){
-		   	lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSM, 2);
+		   	lsm = MatcherFactory.getMatcherInstance(LexicalSynonymMatcher.class);
 		   	setupSubMatcher(lsm, new DefaultMatcherParameters(param.threshold, 1, 1));
 		   	runSubMatcher(lsm, "Submatcher: LSM");
 		}
@@ -181,7 +186,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		//LWC matcher
 		AbstractMatcher lwc1 = null;
 		if(parameters.usingLWC1 && !isCancelled()){
-		   	lwc1 = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 3);
+		   	lwc1 = MatcherFactory.getMatcherInstance(CombinationMatcher.class);
 		   	lwc1.getInputMatchers().add(asm);
 		   	lwc1.getInputMatchers().add(psm);
 		   	lwc1.getInputMatchers().add(vmm);
@@ -197,7 +202,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		//FCM
 		AbstractMatcher iism = null;
 		if(parameters.usingIISM && !isCancelled()){
-	    	iism = MatcherFactory.getMatcherInstance(MatchersRegistry.IISM, 5);
+	    	iism = MatcherFactory.getMatcherInstance(IterativeInstanceStructuralMatcher.class);
 	    	if(lwc1!=null) iism.getInputMatchers().add(lwc1);
 	    	setupSubMatcher(iism, new IterativeInstanceStructuralParameters(param.threshold,1,1).setForOAEI2010());
 	    	runSubMatcher(iism, "Submatcher: IISM");
@@ -223,7 +228,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		//LSM
 		AbstractMatcher lsm = null;
 		if(parameters.usingLSM && !isCancelled() ){
-	    	lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSM, 0);    	
+	    	lsm = MatcherFactory.getMatcherInstance(LexicalSynonymMatcher.class);    	
 	    	setupSubMatcher(lsm, new LexicalSynonymMatcherParameters( param.threshold, param.maxSourceAlign, param.maxTargetAlign ), true );
 	    	runSubMatcher(lsm, "LSM (1/4)");
 		}
@@ -231,7 +236,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		//PSM
 		AbstractMatcher psm = null;
 		if(parameters.usingPSM && !isCancelled()){
-	    	psm = MatcherFactory.getMatcherInstance(MatchersRegistry.ParametricString, 1);   	
+	    	psm = MatcherFactory.getMatcherInstance(ParametricStringMatcher.class);   	
 	    	setupSubMatcher(psm, new ParametricStringParameters( param.threshold, param.maxSourceAlign, param.maxTargetAlign ).initForOAEI2010(parameters.currentTrack), true );
 	    	runSubMatcher(psm, "PSM (2/4)");
 		}
@@ -239,7 +244,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		//VMM
 		AbstractMatcher vmm = null;
 		if(parameters.usingVMM && !isCancelled()){
-	    	vmm = MatcherFactory.getMatcherInstance(MatchersRegistry.MultiWords, 2);
+	    	vmm = MatcherFactory.getMatcherInstance(MultiWordsMatcher.class);
 			setupSubMatcher(vmm, new MultiWordsParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign).initForOAEI2010(parameters.currentTrack), true);
 			runSubMatcher(vmm, "VMM (3/4)");
 		}
@@ -249,7 +254,7 @@ public class OAEI2010Matcher extends AbstractMatcher{
 		//LWC matcher
 		AbstractMatcher lwc1 = null;
 		if(parameters.usingLWC1 && !isCancelled()){
-	    	lwc1 = MatcherFactory.getMatcherInstance(MatchersRegistry.Combination, 3);
+	    	lwc1 = MatcherFactory.getMatcherInstance(CombinationMatcher.class);
 	    	lwc1.getInputMatchers().add(psm);
 	    	lwc1.getInputMatchers().add(vmm);
 	    	lwc1.getInputMatchers().add(lsm);

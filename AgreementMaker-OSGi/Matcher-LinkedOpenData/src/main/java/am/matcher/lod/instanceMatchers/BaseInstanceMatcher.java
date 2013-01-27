@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import am.app.mappingEngine.instance.AbstractInstanceMatcher;
 import am.app.mappingEngine.instance.DefaultInstanceMatcherParameters;
 import am.app.mappingEngine.instance.EntityTypeMapper.EntityType;
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
+import am.app.mappingEngine.utility.MatchingPair;
 import am.app.ontology.instance.Instance;
 import am.matcher.lod.instanceMatcher.LabelUtils;
 

@@ -1406,7 +1406,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	  * TODO: Move this to MatcherResult.  We don't copy AbstractMatchers, but their result. 
 	  */
 	 public AbstractMatcher copy() throws Exception {
-		 AbstractMatcher cloned = MatcherFactory.getMatcherInstance(getRegistryEntry(), Core.getInstance().getMatcherInstances().size());
+		 AbstractMatcher cloned = this.getClass().newInstance();
 		 cloned.setInputMatchers(getInputMatchers());
 		 cloned.setParam(getParam());
 		 cloned.match();

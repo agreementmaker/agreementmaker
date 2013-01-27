@@ -1,8 +1,4 @@
-
-
 package am.userInterface.table;
-
-
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -25,19 +21,15 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.MatchingTaskChangeEvent.EventType;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
+import am.app.osgi.MatcherNotFoundException;
 
 public class MatchersTablePanel extends JPanel implements MatcherChangeListener {
-    
-    
-    /**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -5579979645883093290L;
 	
 	private MatchersTable table;
@@ -62,13 +54,13 @@ public class MatchersTablePanel extends JPanel implements MatcherChangeListener 
         renderer.setToolTipText("Click to modify values");
         
         //Fiddle with the column's cell editors/renderers: THRESHOLD
-        JComboBox comboTh = new JComboBox(Utility.getPercentStringList());
+        JComboBox<String> comboTh = new JComboBox<String>(Utility.getPercentStringList());
         TableColumn thColumn = table.getColumnModel().getColumn(MatchersControlPanelTableModel.THRESHOLD);
         thColumn.setCellEditor(new DefaultCellEditor(comboTh));
         thColumn.setCellRenderer(renderer);
         
         //Fiddle with the column's cell editors/renderers: NUM RELATIONS FOR SOURCE AND TARGET
-        JComboBox comboNumRelations = new JComboBox(Utility.getNumRelList());
+        JComboBox<String> comboNumRelations = new JComboBox<String>(Utility.getNumRelList());
         TableColumn SRelColumn = table.getColumnModel().getColumn(MatchersControlPanelTableModel.SRELATIONS);
         SRelColumn.setCellEditor(new DefaultCellEditor(comboNumRelations));
         SRelColumn.setCellRenderer(renderer);
@@ -86,15 +78,7 @@ public class MatchersTablePanel extends JPanel implements MatcherChangeListener 
         TableColumn colorColumn = table.getColumnModel().getColumn(MatchersControlPanelTableModel.COLOR);
         colorColumn.setCellEditor(ce);
         colorColumn.setCellRenderer(cr);
-        
-        //STATICALLY ADD THE FIRST MATCHER THAT IS THE USER MANUAL MATCHER
-        //is important to add this here so that initColumns can assign the best width to columns
-        //This matcher cannot be deleted
-        UserManualMatcher userMatcher = (UserManualMatcher) MatcherFactory.getMatcherInstance(MatchersRegistry.UserManual, 0);
-        MatchingTask t = new MatchingTask(userMatcher, userMatcher.getParam(), 
-				new MwbmSelection(), new DefaultSelectionParameters());
-        Core.getInstance().addMatchingTask(t);
-        
+                
         setOpaque(true); //content panes must be opaque
         //Set up column sizes.
         initColumnSizes(table);
@@ -103,6 +87,19 @@ public class MatchersTablePanel extends JPanel implements MatcherChangeListener 
         add(scrollPane);
         
         Core.getInstance().addMatcherChangeListener(this);
+        
+      //STATICALLY ADD THE FIRST MATCHER THAT IS THE USER MANUAL MATCHER
+        //is important to add this here so that initColumns can assign the best width to columns
+        //This matcher cannot be deleted
+        
+		try {
+			UserManualMatcher userMatcher = (UserManualMatcher) MatcherFactory.getMatcherInstance(UserManualMatcher.class);
+	        MatchingTask t = new MatchingTask(userMatcher, userMatcher.getParam(), 
+					new MwbmSelection(), new DefaultSelectionParameters());
+	        Core.getInstance().addMatchingTask(t);
+		} catch (MatcherNotFoundException e) {
+			e.printStackTrace();
+		}
     }
 
     /*

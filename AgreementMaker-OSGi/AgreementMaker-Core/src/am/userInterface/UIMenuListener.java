@@ -32,8 +32,6 @@ import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.SelectionAlgorithm;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
@@ -620,10 +618,9 @@ public class UIMenuListener implements ActionListener {
 				if( Utility.displayConfirmPane("Are you running a batch mode?", "Batch mode?") ) {
 					String batchFile = JOptionPane.showInputDialog(null, "Batch File?");
 					String outputDirectory = JOptionPane.showInputDialog(null, "Output Directory?");
-					String matcherName = (new MatcherParametersDialog()).getMatcher().getRegistryEntry().getMatcherName();
-					MatchersRegistry matcher = MatcherFactory.getMatchersRegistryEntry(matcherName);
-					if( Utility.displayConfirmPane("Using matcher: " + matcherName, "Ok?") ) {
-						ThresholdAnalysis than = new ThresholdAnalysis(matcher);
+					AbstractMatcher matcher = (new MatcherParametersDialog()).getMatcher();
+					if( Utility.displayConfirmPane("Using matcher: " + matcher, "Ok?") ) {
+						ThresholdAnalysis than = new ThresholdAnalysis(matcher, true);
 						than.setBatchFile(batchFile);
 						than.setOutputDirectory(outputDirectory);
 						than.execute();

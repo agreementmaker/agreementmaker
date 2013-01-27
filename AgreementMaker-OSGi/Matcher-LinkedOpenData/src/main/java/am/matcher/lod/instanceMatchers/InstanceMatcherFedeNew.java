@@ -14,7 +14,7 @@ import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.instance.AbstractInstanceMatcher;
 import am.app.mappingEngine.instance.EntityTypeMapper.EntityType;
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
+import am.app.mappingEngine.utility.MatchingPair;
 import am.app.ontology.instance.Instance;
 import am.matcher.lod.instanceMatcher.LabelUtils;
 import am.matcher.lod.instanceMatchers.labelInstanceMatcher.LabelInstanceMatcher;

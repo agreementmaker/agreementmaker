@@ -254,7 +254,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 	public void newManual() throws Exception {
 		String matcherName = JOptionPane.showInputDialog("Name for the new matcher? (Cancel for default)", MatchersRegistry.UserManual.getMatcherName());
 		int lastIndex = Core.getInstance().getMatcherInstances().size();
-		final AbstractMatcher manualMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.UserManual, lastIndex);
+		final AbstractMatcher manualMatcher = MatcherFactory.getMatcherInstance(UserManualMatcher.class);
 		if( manualMatcher.needsParam() ) {
 			MatcherParametersDialog d = new MatcherParametersDialog(manualMatcher, false, true);
 			if( d.parametersSet() ) manualMatcher.setParam(d.getParameters());
