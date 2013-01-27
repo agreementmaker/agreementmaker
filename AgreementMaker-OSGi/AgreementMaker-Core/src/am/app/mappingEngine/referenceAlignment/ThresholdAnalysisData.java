@@ -1,4 +1,4 @@
-package am.matcher.referenceAlignment;
+package am.app.mappingEngine.referenceAlignment;
 
 import java.util.ArrayList;
 import java.util.List;

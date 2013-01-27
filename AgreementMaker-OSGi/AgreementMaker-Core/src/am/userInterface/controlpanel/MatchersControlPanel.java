@@ -37,6 +37,9 @@ import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluator;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
+import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.ExportDialog;
@@ -375,7 +378,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		}
 		else {
 			//Run the reference alignment matcher to get the list of alignments in reference file, we are not going to add it in the table list
-			ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment,0);
+			ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
 			MatcherParametersDialog dialog = new MatcherParametersDialog(refMatcher, false, false);
 			if(dialog.parametersSet()) {
 				DefaultMatcherParameters param = dialog.getParameters();
@@ -493,7 +496,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		}
 		else {
 			//Run the reference alignment matcher to get the list of alignments in reference file, we are not going to add it in the table list
-			ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment,0);
+			ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
 			MatcherParametersDialog dialog = new MatcherParametersDialog(refMatcher, false, false);
 			if(dialog.parametersSet()) {
 				final DefaultMatcherParameters param = dialog.getParameters();

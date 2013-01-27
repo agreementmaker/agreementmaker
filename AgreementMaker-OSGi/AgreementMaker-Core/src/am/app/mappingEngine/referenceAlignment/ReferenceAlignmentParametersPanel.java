@@ -1,4 +1,4 @@
-package am.matcher.referenceAlignment;
+package am.app.mappingEngine.referenceAlignment;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

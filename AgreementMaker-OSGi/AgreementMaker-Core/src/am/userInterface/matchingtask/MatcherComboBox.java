@@ -20,6 +20,7 @@ import javax.swing.border.EmptyBorder;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.MatcherCategory;
+import am.userInterface.matchingtask.MatcherComboBox.ComboItem;
 import am.utility.CanEnable;
 
 /**
@@ -29,7 +30,7 @@ import am.utility.CanEnable;
  * 
  * @author Cosmin Stroe
  */
-public class MatcherComboBox extends JComboBox {
+public class MatcherComboBox extends JComboBox<ComboItem<AbstractMatcher>> {
 
 	private static final long serialVersionUID = 3318274165775084345L;
 	
@@ -72,12 +73,18 @@ public class MatcherComboBox extends JComboBox {
 		// populate the combobox by category
 		for( MatcherCategory currentCategory : MatcherCategory.values() ) {
 			
-			ComboItem categoryComboItem = new ComboItem( getCategoryString(currentCategory, longestCategory, fm), false);
+			final String categoryString = getCategoryString(currentCategory, longestCategory, fm);
+			
+			AbstractMatcher categoryStub = new AbstractMatcher() {
+				private static final long serialVersionUID = 6056497255749446116L;
+				@Override public String getName() { return categoryString; }
+			};
+			
+			ComboItem<AbstractMatcher> categoryComboItem = new ComboItem<AbstractMatcher>( categoryStub, false);
 
 			boolean categoryComboItemAdded = false;
 			
 			for( AbstractMatcher matcher : matchers ) {
-				MatcherCategory cat = matcher.getCategory();
 				if( matcher.getCategory() == currentCategory ) {
 					if( !categoryComboItemAdded ) {
 						// only add the category string if the category isn't empty
@@ -90,7 +97,7 @@ public class MatcherComboBox extends JComboBox {
 						firstItemFound = true; 
 					}
 					
-					addItem(new ComboItem(matcher.getName()));
+					addItem(new ComboItem<AbstractMatcher>(matcher));
 				}
 			}
 			
@@ -143,7 +150,7 @@ public class MatcherComboBox extends JComboBox {
 	 * 
 	 * @see CanEnable
 	 */
-	class ComboRenderer extends JLabel implements ListCellRenderer {
+	class ComboRenderer extends JLabel implements ListCellRenderer<ComboItem<AbstractMatcher>> {
 
 		private static final long serialVersionUID = 6823301981571072706L;
 
@@ -153,8 +160,8 @@ public class MatcherComboBox extends JComboBox {
 		}
 
 		@Override
-		public Component getListCellRendererComponent( JList list, 
-				Object value, int index, boolean isSelected, boolean cellHasFocus) {
+		public Component getListCellRendererComponent( JList<? extends ComboItem<AbstractMatcher>> list, 
+				ComboItem<AbstractMatcher> value, int index, boolean isSelected, boolean cellHasFocus) {
 			if (isSelected) {
 				setBackground(list.getSelectionBackground());
 				setForeground(list.getSelectionForeground());
@@ -182,10 +189,10 @@ public class MatcherComboBox extends JComboBox {
 	 * allow disabled items to be selected in the combobox.
 	 */
 	class ComboListener implements ActionListener {
-		JComboBox combo;
+		JComboBox<ComboItem<AbstractMatcher>> combo;
 		Object currentItem;
 
-		ComboListener(JComboBox combo) {
+		ComboListener(JComboBox<ComboItem<AbstractMatcher>> combo) {
 			this.combo  = combo;
 			//combo.setSelectedIndex(0);
 			currentItem = combo.getSelectedItem();
@@ -212,16 +219,16 @@ public class MatcherComboBox extends JComboBox {
 	 * Wraps an object with the capability to be enabled.
 	 * This is used as an object in the combobox.
 	 */
-	class ComboItem implements CanEnable {
-		Object  obj;
-		boolean isEnabled;
+	public class ComboItem<T> implements CanEnable {
+		public T obj;
+		public boolean isEnabled;
 
-		public ComboItem(Object obj, boolean isEnabled) {
+		public ComboItem(T obj, boolean isEnabled) {
 			this.obj      = obj;
 			this.isEnabled = isEnabled;
 		}
 
-		public ComboItem(Object obj) {
+		public ComboItem(T obj) {
 			this(obj, true);
 		}
 

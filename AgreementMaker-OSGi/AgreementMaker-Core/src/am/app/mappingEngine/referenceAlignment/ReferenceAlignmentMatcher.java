@@ -1,4 +1,4 @@
-package am.matcher.referenceAlignment;
+package am.app.mappingEngine.referenceAlignment;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -134,14 +134,9 @@ public class MatcherFactory {
 		
 	}
 	
-	public static AbstractMatcher getMatcherInstance(Class<? extends AbstractMatcher> clazz) {
-		try {
-			return Core.getInstance().getRegistry().getMatcherByClass(clazz);
-		}
-		catch (MatcherNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}
+	public static AbstractMatcher getMatcherInstance(Class<? extends AbstractMatcher> clazz) 
+			throws MatcherNotFoundException {
+		return Core.getInstance().getRegistry().getMatcherByClass(clazz);
 	}
 	
 	/**

@@ -40,6 +40,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.DefaultSelectionParameters;
+import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
@@ -50,6 +51,7 @@ import am.app.ontology.profiling.OntologyProfilerPanel;
 import am.app.ontology.profiling.ProfilerRegistry;
 import am.app.osgi.MatcherNotFoundException;
 import am.userInterface.matchingtask.MatcherComboBox;
+import am.userInterface.matchingtask.MatcherComboBox.ComboItem;
 import am.userInterface.table.MatchersTablePanel;
 
 
@@ -63,7 +65,8 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 
 	/* UI Components */
 	private JLabel matcherLabel, lblPresets, thresholdLabel, sourceRelLabel, targetRelLabel;
-	private JComboBox matcherCombo, cmbPresets, thresholdCombo, sourceRelCombo, targetRelCombo;
+	private MatcherComboBox matcherCombo;
+	private JComboBox<String> cmbPresets, thresholdCombo, sourceRelCombo, targetRelCombo;
 	private JButton btnMatcherDetails, btnSavePresets, btnDeletePresets, runButton, cancelButton;
 	private JCheckBox completionBox, provenanceBox, chkCustomName, chkThreadedMode, chkThreadedOverlap;
 	private JPanel topPanel, generalPanel;
@@ -99,7 +102,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		initComponents();  // initialize the components
 		
 		// select the matcher in the combobox
-		ComboBoxModel model = matcherCombo.getModel();
+		ComboBoxModel<ComboItem<AbstractMatcher>> model = matcherCombo.getModel();
 		for (int i = 0; i < model.getSize(); i++) {
 			String curr = model.getElementAt(i).toString();
 			if(curr.equals(a.getName()))
@@ -144,18 +147,19 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	public MatcherParametersDialog() {
 		super(Core.getUI().getUIFrame(), true);
 		
 		initComponents();
 		
 		try {
-			matcher = Core.getInstance().getRegistry().getMatcherByName(matcherCombo.getSelectedItem().toString());
+			MatcherFactory.getMatcherInstance(
+					((ComboItem<AbstractMatcher>)matcherCombo.getSelectedItem()).obj.getClass() );
 		} catch (MatcherNotFoundException e) {
 			e.printStackTrace();
 			matcher = null;
-		}
-		catch( NullPointerException e ) {
+		} catch( NullPointerException e ) {
 			e.printStackTrace();
 			matcher = null;
 		}
@@ -250,7 +254,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		btnMatcherDetails.addActionListener(this);
 		
 		lblPresets = new JLabel("Presets:");
-		cmbPresets = new JComboBox();
+		cmbPresets = new JComboBox<String>();
 		btnSavePresets = new JButton("Save");
 		btnDeletePresets = new JButton("Delete");
 		
@@ -261,16 +265,16 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		
 		thresholdLabel = new JLabel("Threshold:");
 		String[] thresholdList = Utility.getPercentStringList();
-		thresholdCombo = new JComboBox(thresholdList);
+		thresholdCombo = new JComboBox<String>(thresholdList);
 		thresholdCombo.setSelectedItem("60%");
 		
 		sourceRelLabel = new JLabel("Source relations:");
-		Object[] numRelList = Utility.getNumRelList();
-		sourceRelCombo = new JComboBox(numRelList);
+		String[] numRelList = Utility.getNumRelList();
+		sourceRelCombo = new JComboBox<String>(numRelList);
 		sourceRelCombo.setSelectedItem(1);
 		
 		targetRelLabel = new JLabel("Target relations:");
-		targetRelCombo = new JComboBox(numRelList);
+		targetRelCombo = new JComboBox<String>(numRelList);
 		targetRelCombo.setSelectedItem(1);
 		
 		completionBox = new JCheckBox("Completion mode");
@@ -507,6 +511,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		
 	}	
 
+	@SuppressWarnings("unchecked")
 	public void actionPerformed (ActionEvent ae){
 		Object obj = ae.getSource();
 		
@@ -517,7 +522,8 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		
 		if(ae.getSource() == matcherCombo && !matcherDefined){
 			try {
-				matcher=Core.getInstance().getRegistry().getMatcherByName(matcherCombo.getSelectedItem().toString());
+				matcher = MatcherFactory.getMatcherInstance(
+						((ComboItem<AbstractMatcher>)matcherCombo.getSelectedItem()).obj.getClass());
 			} catch (MatcherNotFoundException e) {
 				JOptionPane.showMessageDialog(this, e.getMessage());
 				e.printStackTrace();
@@ -692,8 +698,6 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 				if(!currentMatcher.isCancelled()) {  // If the algorithm finished successfully, add it to the control panel.
 					Core.getInstance().addMatchingTask(t);
 				}	
-
-				if( Core.DEBUG ) System.out.println("Matching Process Complete");
 			}
 		}
 	}

@@ -13,6 +13,8 @@ import org.dom4j.DocumentException;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.ReferenceEvaluationData;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.utility.MatchingPair;
 import am.app.ontology.Ontology;
 import am.app.ontology.instance.Instance;

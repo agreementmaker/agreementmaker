@@ -23,7 +23,6 @@ public class ProcessStrings {
 		*/
 		
 		//YOU HAVE TO MAKE PUBLIC beforeAlignmentOperations() & preProcessString
-		ParametricStringMatcher p = new ParametricStringMatcher();
 		NormalizerParameter par = new NormalizerParameter();
 		par.normalizeBlank = true;
 		par.normalizeDiacritics = true;

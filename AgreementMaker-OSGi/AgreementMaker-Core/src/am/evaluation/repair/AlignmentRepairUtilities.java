@@ -30,6 +30,8 @@ import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.util.OWLOntologyMerger;
 
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.utility.MatchingPair;
 
 public class AlignmentRepairUtilities {

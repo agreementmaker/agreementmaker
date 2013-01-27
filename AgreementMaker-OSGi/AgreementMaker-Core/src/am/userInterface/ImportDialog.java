@@ -33,6 +33,8 @@ import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.utility.CopySelection;
 import am.parsing.OutputController;
 import am.parsing.OutputController.ImportAlignmentFormats;
@@ -358,7 +360,7 @@ public class ImportDialog extends JDialog implements ActionListener{
 				if( inputType == FileType.ALIGNMENT_ONLY ) {
 					// TODO: Make this work with other types of outputs.
 					int lastIndex = Core.getInstance().getMatcherInstances().size();
-					final AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, lastIndex);
+					final AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
 					
 					ReferenceAlignmentParameters refParams = new ReferenceAlignmentParameters();
 					

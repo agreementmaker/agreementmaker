@@ -22,8 +22,12 @@ import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.ReferenceEvaluationData;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
+import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.app.osgi.MatcherNotFoundException;
 import am.userInterface.MatcherParametersDialog;
 /**
  * 
@@ -56,7 +60,7 @@ import am.userInterface.MatcherParametersDialog;
 
 public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 
-	private static Logger log = Logger.getLogger(ThresholdAnalysis.class); // logger
+	private static Logger LOG = Logger.getLogger(ThresholdAnalysis.class); // logger
 	
 	
 	private boolean prefBatchMode = false; // are we running a batch mode?
@@ -149,12 +153,18 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		refParam.onlyEquivalence = true;
 		refParam.fileName = singleRunReferenceAlignment;
 		refParam.format = ReferenceAlignmentMatcher.OAEI;
-		AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+		AbstractMatcher referenceAlignmentMatcher;
+		try {
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
+		} catch (MatcherNotFoundException e1) {
+			LOG.error("Analysis aborted.", e1);
+			return;
+		}
 		referenceAlignmentMatcher.setParam(refParam);
 		try {
 			referenceAlignmentMatcher.match();
 		} catch (Exception e) {
-			log.error("Analysis aborted.",e);
+			LOG.error("Analysis aborted.",e);
 			return;
 		}
 		
@@ -192,7 +202,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 			for( double currentThreshold = prefStartThreshold; currentThreshold < prefEndThreshold; currentThreshold += prefThresholdIncrement) {
 
 				currentThreshold = Utility.roundDouble(currentThreshold, 4);
-				log.info("Selecting with threshold = " + currentThreshold );
+				LOG.info("Selecting with threshold = " + currentThreshold );
 				matcherToAnalyze.getParam().threshold = currentThreshold;
 				matcherToAnalyze.select();
 							
@@ -202,11 +212,11 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 				writerPrecision.write(th + "," + Utility.roundDouble( currentEvaluation.getPrecision() * 100.0d, 2) + "\n");
 				writerRecall.write(th + "," + Utility.roundDouble( currentEvaluation.getRecall() * 100.0d, 2) + "\n");
 				writerFMeasure.write(th + "," + Utility.roundDouble( currentEvaluation.getFmeasure()* 100.0d, 2) + "\n");
-				log.info("Results: (precision, recall, f-measure) = (" + 
+				LOG.info("Results: (precision, recall, f-measure) = (" + 
 						Utility.roundDouble( currentEvaluation.getPrecision() * 100.0d, 2) + ", " + 
 						Utility.roundDouble( currentEvaluation.getRecall() * 100.0d, 2) + ", " +
 						Utility.roundDouble( currentEvaluation.getFmeasure()* 100.0d, 2) + ")");
-				log.info("       : (found mappings, correct mappings, reference mappings) = (" + 
+				LOG.info("       : (found mappings, correct mappings, reference mappings) = (" + 
 							currentEvaluation.getFound() + ", " + currentEvaluation.getCorrect() + ", " + currentEvaluation.getExist() + ")");
 				
 				
@@ -244,14 +254,14 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		// open and parse the benchmark XML file
 		try {
 			
-			log.info("Reading batch file.");
+			LOG.info("Reading batch file.");
 			File batchFile = new File( prefBatchFile );
 			
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document doc = db.parse(batchFile);
 			doc.getDocumentElement().normalize();
-			log.debug("Root element " + doc.getDocumentElement().getNodeName());
+			LOG.debug("Root element " + doc.getDocumentElement().getNodeName());
 			
 			outputPrefix = doc.getDocumentElement().getAttribute("title");
 			
@@ -297,7 +307,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 				
 				String referenceAlignmentFile = referenceAlignment.getAttribute("filename");
 				
-				log.info("Running analysis for " + sourceOntologyName + " to " + targetOntologyName);
+				LOG.info("Running analysis for " + sourceOntologyName + " to " + targetOntologyName);
 				
 				//runAnalysis( sourceOntologyFile, sourceOntologyName, targetOntologyFile, targetOntologyName, referenceAlignmentFile );
 				runAnalysis( sourceOntologyFile, runName, targetOntologyFile, "", referenceAlignmentFile );
@@ -306,7 +316,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 			
 			
 		} catch(Exception e) {
-			log.error("Analysis aborted.",e);
+			LOG.error("Analysis aborted.",e);
 		}
 		
 		
@@ -318,7 +328,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 			String targetOntologyName, String referenceAlignmentFile) {
 
 		
-		log.info("Loading ontology " +  sourceOntologyFile);
+		LOG.info("Loading ontology " +  sourceOntologyFile);
 		// load source ontology
 		Ontology sourceOntology = null;
 		try {
@@ -333,7 +343,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 			e.printStackTrace();
 		}
 		
-		log.info("Loading ontology " +  targetOntologyFile);
+		LOG.info("Loading ontology " +  targetOntologyFile);
 		// load target ontology
 		Ontology targetOntology = null;
 		try {
@@ -361,7 +371,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		try {
 			matcherToAnalyze.match();
 		} catch (Exception e) {
-			log.error("Analysis aborted.", e);
+			LOG.error("Analysis aborted.", e);
 			return;
 		}
 		
@@ -370,7 +380,13 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		refParam.onlyEquivalence = true;
 		refParam.fileName = referenceAlignmentFile;
 		refParam.format = ReferenceAlignmentMatcher.OAEI;
-		AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+		AbstractMatcher referenceAlignmentMatcher;
+		try {
+			referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(ReferenceAlignmentMatcher.class);
+		} catch (MatcherNotFoundException e1) {
+			LOG.error("Analysis aborted.", e1);
+			return;
+		}
 		referenceAlignmentMatcher.setParam(refParam);
 		referenceAlignmentMatcher.setSourceOntology(sourceOntology);
 		referenceAlignmentMatcher.setTargetOntology(targetOntology);
@@ -378,7 +394,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		try {
 			referenceAlignmentMatcher.match();
 		} catch (Exception e) {
-			log.error("Analysis aborted.",e);
+			LOG.error("Analysis aborted.",e);
 			return;
 		}
 		
@@ -406,7 +422,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 				
 				currentThreshold = Utility.roundDouble(currentThreshold, 4);
 				
-				log.info("Selecting with threshold = " + currentThreshold );
+				LOG.info("Selecting with threshold = " + currentThreshold );
 				matcherToAnalyze.getParam().threshold = currentThreshold;
 				matcherToAnalyze.select();
 							
@@ -417,11 +433,11 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 				writerFMeasure.write(currentThreshold + "," + Utility.roundDouble( currentEvaluation.getFmeasure(), 2) + "\n");
 				
 			 
-				log.info("Results: (precision, recall, f-measure) = (" + 
+				LOG.info("Results: (precision, recall, f-measure) = (" + 
 					Utility.roundDouble( currentEvaluation.getPrecision() * 100.0d, 2) + ", " + 
 					Utility.roundDouble( currentEvaluation.getRecall() * 100.0d, 2) + ", " +
 					Utility.roundDouble( currentEvaluation.getFmeasure()* 100.0d, 2) + ")");
-				log.info("       : (found mappings, correct mappings, reference mappings) = (" + 
+				LOG.info("       : (found mappings, correct mappings, reference mappings) = (" + 
 							currentEvaluation.getFound() + ", " + currentEvaluation.getCorrect() + ", " + currentEvaluation.getExist() + ")");
 				
 				if( maxFMeasure < currentEvaluation.getFmeasure() ) {

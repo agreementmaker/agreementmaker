@@ -528,7 +528,6 @@ public class UIMenuListener implements ActionListener {
 
 					newMatcher.setClassesAlignmentSet(combinedClassSet);
 					newMatcher.setPropertiesAlignmentSet(combinedClassSet);
-					newMatcher.setRegistryEntry(MatchersRegistry.UniqueMatchings);
 					newMatcher.setID( Core.getInstance().getNextMatcherID());
 
 					//m.addMatcher(newMatcher);
