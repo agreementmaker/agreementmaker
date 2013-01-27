@@ -13,13 +13,12 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.ReferenceEvaluationData;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.matcher.referenceAlignment.ReferenceAlignmentMatcher;
-import am.matcher.referenceAlignment.ReferenceEvaluator;
 import am.userInterface.MatcherParametersDialog;
 
 import com.hp.hpl.jena.graph.Triple;
