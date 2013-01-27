@@ -1,4 +1,4 @@
-package am.app.mappingEngine.boosting;
+package am.matcher.boosting;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 

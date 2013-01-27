@@ -1,4 +1,4 @@
-package am.app.mappingEngine.LexicalMatcherJAWS;
+package am.matcher.LexicalMatcherJAWS;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package am.app.mappingEngine.ssc;
+package am.matcher.ssc;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 

@@ -1,9 +1,9 @@
 /**
  * 
  */
-package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
+package am.matcher.structuralMatchers.similarityFlooding.utils;
 
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.EOntNodeType.EOntologyNodeType;
+import am.matcher.structuralMatchers.similarityFlooding.utils.EOntNodeType.EOntologyNodeType;
 import am.utility.DirectedGraphVertex;
 
 import com.hp.hpl.jena.ontology.OntResource;

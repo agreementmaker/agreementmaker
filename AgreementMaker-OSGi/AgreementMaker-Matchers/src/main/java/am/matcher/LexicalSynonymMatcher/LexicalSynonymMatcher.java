@@ -1,4 +1,4 @@
-package am.app.mappingEngine.LexicalSynonymMatcher;
+package am.matcher.LexicalSynonymMatcher;
 
 import java.util.HashMap;
 import java.util.List;

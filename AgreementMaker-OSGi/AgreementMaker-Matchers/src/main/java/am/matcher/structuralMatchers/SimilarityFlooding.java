@@ -1,7 +1,7 @@
 /**
  * 
  */
-package am.app.mappingEngine.structuralMatchers;
+package am.matcher.structuralMatchers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,18 +11,17 @@ import java.util.Vector;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.SimilarityFloodingMatcherParameters;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdge;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdgeData;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGSimilarityMatrix;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertex;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertexData;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PairwiseConnectivityGraph;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphEdge;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphVertex;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
 import am.app.ontology.AMNode;
-import am.app.ontology.Node;
+import am.matcher.structuralMatchers.similarityFlooding.SimilarityFloodingMatcherParameters;
+import am.matcher.structuralMatchers.similarityFlooding.utils.PCGEdge;
+import am.matcher.structuralMatchers.similarityFlooding.utils.PCGEdgeData;
+import am.matcher.structuralMatchers.similarityFlooding.utils.PCGSimilarityMatrix;
+import am.matcher.structuralMatchers.similarityFlooding.utils.PCGVertex;
+import am.matcher.structuralMatchers.similarityFlooding.utils.PCGVertexData;
+import am.matcher.structuralMatchers.similarityFlooding.utils.PairwiseConnectivityGraph;
+import am.matcher.structuralMatchers.similarityFlooding.utils.WGraphEdge;
+import am.matcher.structuralMatchers.similarityFlooding.utils.WGraphVertex;
+import am.matcher.structuralMatchers.similarityFlooding.utils.WrappingGraph;
 import am.utility.DirectedGraphEdge;
 
 import com.hp.hpl.jena.rdf.model.RDFNode;

@@ -1,4 +1,4 @@
-package am.app.mappingEngine.MachineLearning;
+package am.matcher.MachineLearning;
 
 /**
  * The different modes available to use as features

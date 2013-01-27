@@ -1,7 +1,7 @@
 /**
  * 
  */
-package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
+package am.matcher.structuralMatchers.similarityFlooding.utils;
 
 import am.utility.DirectedGraphEdge;
 

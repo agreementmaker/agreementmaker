@@ -1,4 +1,4 @@
-package am.app.mappingEngine.parametricStringMatcher;
+package am.matcher.parametricStringMatcher;
 
 
 import java.awt.event.ActionEvent;

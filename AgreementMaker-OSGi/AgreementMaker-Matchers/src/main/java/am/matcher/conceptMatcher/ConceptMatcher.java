@@ -5,7 +5,7 @@
  */
 
 
-package am.app.mappingEngine.conceptMatcher;
+package am.matcher.conceptMatcher;
 
 // TODO: Remove the Stanford Parser before distribution, GPL Licensed. - cosmin
 

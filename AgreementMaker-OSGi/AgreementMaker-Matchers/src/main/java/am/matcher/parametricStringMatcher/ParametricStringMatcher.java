@@ -1,4 +1,4 @@
-package am.app.mappingEngine.parametricStringMatcher;
+package am.matcher.parametricStringMatcher;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
+package am.matcher.structuralMatchers.similarityFlooding.utils;
 
 public enum EGraphNodeType {
 	EDGES, VERTEXES

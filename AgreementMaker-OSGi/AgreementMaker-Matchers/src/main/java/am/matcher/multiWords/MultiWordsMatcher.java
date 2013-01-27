@@ -1,4 +1,4 @@
-package am.app.mappingEngine.multiWords;
+package am.matcher.multiWords;
 
 import java.util.ArrayList;
 import java.util.HashSet;

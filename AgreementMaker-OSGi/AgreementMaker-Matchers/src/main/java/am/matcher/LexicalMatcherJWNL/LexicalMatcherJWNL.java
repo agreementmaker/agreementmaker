@@ -1,4 +1,4 @@
-package am.app.mappingEngine.LexicalMatcherJWNL;
+package am.matcher.LexicalMatcherJWNL;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;

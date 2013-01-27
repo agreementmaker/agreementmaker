@@ -1,4 +1,4 @@
-package am.app.mappingEngine.structuralMatchers.similarityFlooding;
+package am.matcher.structuralMatchers.similarityFlooding;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;

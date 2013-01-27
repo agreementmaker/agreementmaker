@@ -1,4 +1,4 @@
-package am.app.mappingEngine.ssc;
+package am.matcher.ssc;
 
 import java.util.ArrayList;
 import java.util.List;

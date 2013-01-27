@@ -1,4 +1,4 @@
-package am.app.mappingEngine.IterativeInstanceStructuralMatcher;
+package am.matcher.IterativeInstanceStructuralMatcher;
 
 public class AlignIndexes {
 	int x;

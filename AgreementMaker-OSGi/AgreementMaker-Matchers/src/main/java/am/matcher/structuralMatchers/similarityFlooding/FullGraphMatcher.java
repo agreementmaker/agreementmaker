@@ -1,17 +1,17 @@
 /**
  * 
  */
-package am.app.mappingEngine.structuralMatchers.similarityFlooding;
+package am.matcher.structuralMatchers.similarityFlooding;
 
 import java.util.Iterator;
 import java.util.Vector;
 
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
-import am.app.mappingEngine.structuralMatchers.SimilarityFlooding;
-import am.app.mappingEngine.structuralMatchers.SimilarityFloodingParameters;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertex;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphVertex;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
+import am.matcher.structuralMatchers.SimilarityFlooding;
+import am.matcher.structuralMatchers.SimilarityFloodingParameters;
+import am.matcher.structuralMatchers.similarityFlooding.utils.PCGVertex;
+import am.matcher.structuralMatchers.similarityFlooding.utils.WGraphVertex;
+import am.matcher.structuralMatchers.similarityFlooding.utils.WrappingGraph;
 import am.userInterface.MatchingProgressDisplay;
 
 /**

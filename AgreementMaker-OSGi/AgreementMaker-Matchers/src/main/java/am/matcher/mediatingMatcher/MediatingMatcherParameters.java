@@ -1,4 +1,4 @@
-package am.app.mappingEngine.mediatingMatcher;
+package am.matcher.mediatingMatcher;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 

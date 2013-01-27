@@ -1,4 +1,4 @@
-package am.app.mappingEngine.IterativeInstanceStructuralMatcher;
+package am.matcher.IterativeInstanceStructuralMatcher;
 
 import java.awt.Dimension;
 

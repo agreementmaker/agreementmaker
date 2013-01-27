@@ -1,4 +1,4 @@
-package am.app.mappingEngine.ssc;
+package am.matcher.ssc;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

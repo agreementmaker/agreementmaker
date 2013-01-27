@@ -1,4 +1,4 @@
-package am.app.mappingEngine.MachineLearning;
+package am.matcher.MachineLearning;
 
 
 
@@ -25,9 +25,10 @@ import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.Combination.CombinationParameters;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 import am.app.ontology.Node;
+import am.matcher.Combination.CombinationMatcher;
+import am.matcher.Combination.CombinationParameters;
 import am.userInterface.MatchingProgressDisplay;
 
 public class machineLearningMatcher extends AbstractMatcher {
@@ -620,7 +621,7 @@ public class machineLearningMatcher extends AbstractMatcher {
 			AbstractMatcher lwc = null;
 			
 			lwc = MatcherFactory
-					.getMatcherInstance(MatchersRegistry.Combination, 0);
+					.getMatcherInstance(CombinationMatcher.class);
 
 			lwc.setInputMatchers(listOfMatchers);
 

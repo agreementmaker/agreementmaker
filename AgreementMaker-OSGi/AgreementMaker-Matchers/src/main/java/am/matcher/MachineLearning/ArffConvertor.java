@@ -1,4 +1,4 @@
-package am.app.mappingEngine.MachineLearning;
+package am.matcher.MachineLearning;
 /**
  * 
  * This class is used to convert the training and test files into weka supported

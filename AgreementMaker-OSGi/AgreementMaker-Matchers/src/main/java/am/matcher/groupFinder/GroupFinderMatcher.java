@@ -1,7 +1,7 @@
 /**
  * 
  */
-package am.app.mappingEngine.groupFinder;
+package am.matcher.groupFinder;
 
 import java.util.ArrayList;
 import java.util.Collections;

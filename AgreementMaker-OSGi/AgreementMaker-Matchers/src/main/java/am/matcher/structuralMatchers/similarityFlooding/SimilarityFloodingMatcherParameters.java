@@ -1,4 +1,4 @@
-package am.app.mappingEngine.structuralMatchers.similarityFlooding;
+package am.matcher.structuralMatchers.similarityFlooding;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 

@@ -1,4 +1,4 @@
-package am.app.mappingEngine.LexicalMatcherJAWS;
+package am.matcher.LexicalMatcherJAWS;
 
 /**
  * This interface abstracts a lexicon definition.

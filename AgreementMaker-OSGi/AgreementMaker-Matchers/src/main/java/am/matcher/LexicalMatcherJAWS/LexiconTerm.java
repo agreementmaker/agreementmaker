@@ -1,4 +1,4 @@
-package am.app.mappingEngine.LexicalMatcherJAWS;
+package am.matcher.LexicalMatcherJAWS;
 
 public interface LexiconTerm {
 

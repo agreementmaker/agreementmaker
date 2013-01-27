@@ -1,4 +1,4 @@
-package am.app.mappingEngine.referenceAlignment;
+package am.matcher.referenceAlignment;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 

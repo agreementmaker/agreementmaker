@@ -8,7 +8,7 @@
  * 
  */
 
-package am.app.mappingEngine.LexicalMatcherJAWS;
+package am.matcher.LexicalMatcherJAWS;
 
 // JAWS Classes
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package am.app.mappingEngine.structuralMatchers.similarityFlooding.sfm;
+package am.matcher.structuralMatchers.similarityFlooding.sfm;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,12 +11,12 @@ import java.util.Vector;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
-import am.app.mappingEngine.structuralMatchers.SimilarityFloodingParameters;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.FullGraphMatcher;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.SimilarityFloodingMatcherParameters;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphEdge;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphVertex;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
+import am.matcher.structuralMatchers.SimilarityFloodingParameters;
+import am.matcher.structuralMatchers.similarityFlooding.FullGraphMatcher;
+import am.matcher.structuralMatchers.similarityFlooding.SimilarityFloodingMatcherParameters;
+import am.matcher.structuralMatchers.similarityFlooding.utils.WGraphEdge;
+import am.matcher.structuralMatchers.similarityFlooding.utils.WGraphVertex;
+import am.matcher.structuralMatchers.similarityFlooding.utils.WrappingGraph;
 import am.userInterface.MatchingProgressDisplay;
 
 public class DBGraphMatcher extends FullGraphMatcher {

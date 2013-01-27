@@ -1,4 +1,4 @@
-package am.app.mappingEngine.multiWords.newMW;
+package am.matcher.multiWords.newMW;
 
 
 import javax.swing.GroupLayout;

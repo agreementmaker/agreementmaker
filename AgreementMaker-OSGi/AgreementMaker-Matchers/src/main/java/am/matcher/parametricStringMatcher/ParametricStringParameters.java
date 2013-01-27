@@ -1,4 +1,4 @@
-package am.app.mappingEngine.parametricStringMatcher;
+package am.matcher.parametricStringMatcher;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;

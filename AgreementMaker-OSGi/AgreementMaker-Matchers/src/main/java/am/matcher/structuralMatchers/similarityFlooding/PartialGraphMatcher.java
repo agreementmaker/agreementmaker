@@ -1,4 +1,4 @@
-package am.app.mappingEngine.structuralMatchers.similarityFlooding;
+package am.matcher.structuralMatchers.similarityFlooding;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,16 +9,16 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
-import am.app.mappingEngine.structuralMatchers.SimilarityFlooding;
-import am.app.mappingEngine.structuralMatchers.SimilarityFloodingParameters;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGEdge;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGSimilarityMatrix;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PCGVertex;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.PairwiseConnectivityGraph;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WGraphVertex;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
 import am.app.ontology.Node;
 import am.app.ontology.NodeUtility;
+import am.matcher.structuralMatchers.SimilarityFlooding;
+import am.matcher.structuralMatchers.SimilarityFloodingParameters;
+import am.matcher.structuralMatchers.similarityFlooding.utils.PCGEdge;
+import am.matcher.structuralMatchers.similarityFlooding.utils.PCGSimilarityMatrix;
+import am.matcher.structuralMatchers.similarityFlooding.utils.PCGVertex;
+import am.matcher.structuralMatchers.similarityFlooding.utils.PairwiseConnectivityGraph;
+import am.matcher.structuralMatchers.similarityFlooding.utils.WGraphVertex;
+import am.matcher.structuralMatchers.similarityFlooding.utils.WrappingGraph;
 import am.userInterface.MatchingProgressDisplay;
 
 import com.hp.hpl.jena.ontology.OntResource;

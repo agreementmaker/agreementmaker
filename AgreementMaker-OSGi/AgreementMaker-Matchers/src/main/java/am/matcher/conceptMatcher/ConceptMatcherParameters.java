@@ -1,4 +1,4 @@
-package am.app.mappingEngine.conceptMatcher;
+package am.matcher.conceptMatcher;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 

@@ -1,10 +1,12 @@
-package am.app.mappingEngine.multiWords.newMW;
+package am.matcher.multiWords.newMW;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 
 public class NewMultiWordsParameters extends DefaultMatcherParameters {
 
+	private static final long serialVersionUID = 8026784185739314427L;
+	
 	public final static String DICE  = "Dice�s Coefficient";
 	public final static String JACCARD  = "Jaccard Similarity";
 	public final static String EUCLIDEAN  = "Euclidean distance";

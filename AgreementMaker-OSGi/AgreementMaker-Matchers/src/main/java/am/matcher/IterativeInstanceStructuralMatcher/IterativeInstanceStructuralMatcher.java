@@ -1,4 +1,4 @@
-package am.app.mappingEngine.IterativeInstanceStructuralMatcher;
+package am.matcher.IterativeInstanceStructuralMatcher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,12 +14,12 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
-import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
-import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
+import am.app.mappingEngine.ReferenceEvaluationData;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.matcher.referenceAlignment.ReferenceAlignmentMatcher;
+import am.matcher.referenceAlignment.ReferenceEvaluator;
 import am.userInterface.MatcherParametersDialog;
 
 import com.hp.hpl.jena.graph.Triple;
@@ -295,7 +295,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 
 	private void evaluate() {
 		
-		ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment,0);
+		ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance("Reference Alignment Importer");
 		MatcherParametersDialog dialog = new MatcherParametersDialog(refMatcher,false,false);
 		if(dialog.parametersSet()) {
 			refMatcher.setParameters(dialog.getParameters());

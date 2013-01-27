@@ -1,7 +1,7 @@
 /**
  * 
  */
-package am.app.mappingEngine.structuralMatchers;
+package am.matcher.structuralMatchers;
 
 import am.app.mappingEngine.abstractMatcherNew.AbstractMatchingParameters;
 

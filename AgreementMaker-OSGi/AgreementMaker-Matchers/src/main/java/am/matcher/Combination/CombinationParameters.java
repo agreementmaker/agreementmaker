@@ -1,4 +1,4 @@
-package am.app.mappingEngine.Combination;
+package am.matcher.Combination;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;

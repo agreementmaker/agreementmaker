@@ -1,4 +1,4 @@
-package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
+package am.matcher.structuralMatchers.similarityFlooding.utils;
 
 import java.io.FileWriter;
 import java.io.IOException;

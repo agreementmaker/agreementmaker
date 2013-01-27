@@ -1,4 +1,4 @@
-package am.app.mappingEngine.dsi;
+package am.matcher.dsi;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 

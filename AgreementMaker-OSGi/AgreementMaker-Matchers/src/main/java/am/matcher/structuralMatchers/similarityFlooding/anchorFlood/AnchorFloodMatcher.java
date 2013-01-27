@@ -1,11 +1,11 @@
 /**
  * 
  */
-package am.app.mappingEngine.structuralMatchers.similarityFlooding.anchorFlood;
+package am.matcher.structuralMatchers.similarityFlooding.anchorFlood;
 
-import am.app.mappingEngine.structuralMatchers.SimilarityFloodingParameters;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.FullGraphMatcher;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
+import am.matcher.structuralMatchers.SimilarityFloodingParameters;
+import am.matcher.structuralMatchers.similarityFlooding.FullGraphMatcher;
+import am.matcher.structuralMatchers.similarityFlooding.utils.WrappingGraph;
 
 /**
  * @author michele

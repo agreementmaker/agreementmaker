@@ -1,4 +1,4 @@
-package am.app.mappingEngine.mediatingMatcher;
+package am.matcher.mediatingMatcher;
 
 import java.io.File;
 import java.io.FileReader;
@@ -16,13 +16,14 @@ import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
+import am.app.mappingEngine.utility.MatchingPair;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcher;
+import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
 import am.output.alignment.oaei.OAEIAlignmentFormat;
 import am.userInterface.MatchingProgressDisplay;
 
@@ -133,7 +134,7 @@ public class MediatingMatcher extends AbstractMatcher {
 			Core.getLexiconStore().build(LexiconRegistry.WORDNET_LEXICON, lexParam.targetOntology);  // don't need to save it since it augments the ontology lexicon
 			//Core.getLexiconStore().unregisterLexicon(targetOntLexicon);
 			
-			AbstractMatcher lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSM, 0); 
+			AbstractMatcher lsm = MatcherFactory.getMatcherInstance(LexicalSynonymMatcher.class); 
 			
 			LexicalSynonymMatcherParameters lsmParam = new LexicalSynonymMatcherParameters(getParam().threshold, getMaxSourceAlign(), getMaxTargetAlign());
 			lsmParam.sourceLexicon = sourceOntLexicon;
@@ -205,7 +206,7 @@ public class MediatingMatcher extends AbstractMatcher {
 			//Core.getLexiconStore().unregisterLexicon(targetOntLexicon);
 			
 			
-			AbstractMatcher lsm = MatcherFactory.getMatcherInstance(MatchersRegistry.LSM, 0);
+			AbstractMatcher lsm = MatcherFactory.getMatcherInstance(LexicalSynonymMatcher.class);
 					
 			LexicalSynonymMatcherParameters lsmParam = new LexicalSynonymMatcherParameters(getParam().threshold, getMaxSourceAlign(), getMaxTargetAlign());
 			lsmParam.sourceLexicon = sourceOntLexicon;

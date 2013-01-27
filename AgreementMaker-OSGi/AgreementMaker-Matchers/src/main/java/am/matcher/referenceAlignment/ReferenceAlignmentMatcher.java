@@ -1,4 +1,4 @@
-package am.app.mappingEngine.referenceAlignment;
+package am.matcher.referenceAlignment;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -25,6 +25,7 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
+import am.app.mappingEngine.utility.MatchingPair;
 import am.app.ontology.Node;
 import am.parsing.OutputController;
 
@@ -55,6 +56,9 @@ public class ReferenceAlignmentMatcher extends AbstractMatcher {
 		setMaxSourceAlign(ANY_INT);
 		setMaxTargetAlign(ANY_INT);
 		param.threshold = 0.01d;
+		
+		setName("Reference Alignment Importer");
+		setCategory(MatcherCategory.UTILITY);
 	}
 	
 	@Override

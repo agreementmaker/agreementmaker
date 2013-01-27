@@ -1,4 +1,4 @@
-package am.app.mappingEngine.boosting;
+package am.matcher.boosting;
 
 import java.util.ArrayList;
 import java.util.List;

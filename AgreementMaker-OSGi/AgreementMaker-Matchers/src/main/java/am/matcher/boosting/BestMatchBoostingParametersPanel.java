@@ -1,4 +1,4 @@
-package am.app.mappingEngine.boosting;
+package am.matcher.boosting;
 
 import javax.swing.GroupLayout;
 import javax.swing.JCheckBox;

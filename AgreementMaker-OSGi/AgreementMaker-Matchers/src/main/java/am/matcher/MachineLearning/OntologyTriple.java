@@ -1,4 +1,4 @@
-package am.app.mappingEngine.MachineLearning;
+package am.matcher.MachineLearning;
 
 /**
  * Data structure to store the source, target and reference Alignment as a triple

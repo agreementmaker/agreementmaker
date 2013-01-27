@@ -1,4 +1,4 @@
-package am.app.mappingEngine.LexicalMatcherUMLS;
+package am.matcher.LexicalMatcherUMLS;
 
 import am.app.mappingEngine.AbstractMatcher;
 

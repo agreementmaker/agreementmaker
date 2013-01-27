@@ -1,4 +1,4 @@
-package am.app.mappingEngine.multiWords;
+package am.matcher.multiWords;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;

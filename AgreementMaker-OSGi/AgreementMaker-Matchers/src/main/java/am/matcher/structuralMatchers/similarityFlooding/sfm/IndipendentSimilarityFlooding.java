@@ -1,12 +1,12 @@
 /**
  * 
  */
-package am.app.mappingEngine.structuralMatchers.similarityFlooding.sfm;
+package am.matcher.structuralMatchers.similarityFlooding.sfm;
 
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
-import am.app.mappingEngine.structuralMatchers.SimilarityFloodingParameters;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.FullGraphMatcher;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.WrappingGraph;
+import am.matcher.structuralMatchers.SimilarityFloodingParameters;
+import am.matcher.structuralMatchers.similarityFlooding.FullGraphMatcher;
+import am.matcher.structuralMatchers.similarityFlooding.utils.WrappingGraph;
 
 /**
  * @author michele

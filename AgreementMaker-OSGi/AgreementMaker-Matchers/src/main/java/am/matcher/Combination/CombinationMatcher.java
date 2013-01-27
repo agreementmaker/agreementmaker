@@ -1,4 +1,4 @@
-package am.app.mappingEngine.Combination;
+package am.matcher.Combination;
 
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;

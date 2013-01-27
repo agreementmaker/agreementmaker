@@ -1,11 +1,11 @@
-package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
+package am.matcher.structuralMatchers.similarityFlooding.utils;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.EOntNodeType.EOntologyNodeType;
 import am.app.ontology.Node;
 import am.app.ontology.NodeUtility;
 import am.app.ontology.Ontology;
+import am.matcher.structuralMatchers.similarityFlooding.utils.EOntNodeType.EOntologyNodeType;
 import am.utility.DirectedGraphVertex;
 import am.utility.Pair;
 /**

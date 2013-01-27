@@ -1,7 +1,7 @@
 /**
  * 
  */
-package am.app.mappingEngine.structuralMatchers.similarityFlooding.utils;
+package am.matcher.structuralMatchers.similarityFlooding.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,11 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.app.mappingEngine.structuralMatchers.similarityFlooding.utils.EOntNodeType.EOntologyNodeType;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 import am.app.ontology.NodeUtility;
 import am.app.ontology.Ontology;
+import am.matcher.structuralMatchers.similarityFlooding.utils.EOntNodeType.EOntologyNodeType;
 import am.utility.DirectedGraph;
 
 import com.hp.hpl.jena.query.Query;
