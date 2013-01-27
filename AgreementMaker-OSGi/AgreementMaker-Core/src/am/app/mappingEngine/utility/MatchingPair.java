@@ -1,4 +1,4 @@
-package am.app.mappingEngine.referenceAlignment;
+package am.app.mappingEngine.utility;
 
 import am.app.mappingEngine.Mapping.MappingRelation;
 

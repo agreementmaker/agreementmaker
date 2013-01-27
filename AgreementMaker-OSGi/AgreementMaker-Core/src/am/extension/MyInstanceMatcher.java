@@ -8,7 +8,7 @@ import java.util.Set;
 
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.instance.AbstractInstanceMatcher;
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
+import am.app.mappingEngine.utility.MatchingPair;
 import am.app.ontology.instance.Instance;
 import am.parsing.AlignmentOutput;
 

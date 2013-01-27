@@ -10,7 +10,7 @@ import javax.swing.SwingWorker;
 import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
+import am.app.mappingEngine.utility.MatchingPair;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.Ontology.DatasetType;

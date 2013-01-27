@@ -12,8 +12,7 @@ import javax.swing.JPanel;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
-import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
+import am.app.mappingEngine.ReferenceEvaluationData;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdMethod;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdParameters;

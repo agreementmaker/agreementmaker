@@ -21,9 +21,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import am.app.Core;
-import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcher;
-import am.app.mappingEngine.multiWords.MultiWordsMatcher;
-import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.TreeBuilder;
@@ -444,24 +441,7 @@ public abstract class AbstractMatcherTest {
 		//TODO: modify the test if matchers are modified
 		for(int i = 0; i < maxInputs; i++){
 			newInMatcher = (int)(Math.random() * input.get(4).size());
-			if(input.get(4).get(newInMatcher).equals("BSM")){
-				//inputInMatchers.add(new BaseSimilarityMatcher());
-			}
-			else if(input.get(4).get(newInMatcher).equals("ASM")){
-				//inputInMatchers.add(new AdvancedSimilarityMatcher());
-			}
-			else if(input.get(4).get(newInMatcher).equals("PSM")){
-				inputInMatchers.add(new ParametricStringMatcher());
-			}
-			else if(input.get(4).get(newInMatcher).equals("VMM")){
-				inputInMatchers.add(new MultiWordsMatcher());
-			}
-			else if(input.get(4).get(newInMatcher).equals("LSM")){
-				inputInMatchers.add(new LexicalSynonymMatcher());
-			}
-			else{
-				fail("no matchers selected");
-			}
+			fail("no matchers selected");
 		}
 		for(int i = 0; i < maxInputs; i++){
 			try {

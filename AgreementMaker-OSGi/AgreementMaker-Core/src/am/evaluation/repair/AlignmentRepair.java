@@ -22,8 +22,8 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.reasoner.Node;
 
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
+import am.app.mappingEngine.utility.MatchingPair;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.output.similaritymatrix.SimilarityMatrixOutput;

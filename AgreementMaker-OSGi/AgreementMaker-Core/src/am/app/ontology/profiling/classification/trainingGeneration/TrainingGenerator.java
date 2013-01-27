@@ -26,10 +26,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchersRegistry;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
-import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
-import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
+import am.app.mappingEngine.ReferenceEvaluationData;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
@@ -888,6 +885,17 @@ public static void testClassified() {
 	
 	
 
+	/**
+	 * TODO: Fix this method.
+	 * @param sourceOntologyFile
+	 * @param sourceOntologyName
+	 * @param targetOntologyFile
+	 * @param targetOntologyName
+	 * @param referenceAlignmentFile
+	 * @param matcherToAnalyze
+	 * @param prefParams
+	 * @return
+	 */
 	private static double[] runAnalysis(String sourceOntologyFile,
 			String sourceOntologyName, String targetOntologyFile,
 			String targetOntologyName, String referenceAlignmentFile,
@@ -922,21 +930,21 @@ public static void testClassified() {
 		}
 		
 		// load the reference file
-		ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
-		refParam.onlyEquivalence = true;
-		refParam.fileName = referenceAlignmentFile;
-		refParam.format = ReferenceAlignmentMatcher.OAEI;
-		AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
-		referenceAlignmentMatcher.setParam(refParam);
-		referenceAlignmentMatcher.setSourceOntology(sourceOntology);
-		referenceAlignmentMatcher.setTargetOntology(targetOntology);
+		//ReferenceAlignmentParameters refParam = new ReferenceAlignmentParameters();
+		//refParam.onlyEquivalence = true;
+		//refParam.fileName = referenceAlignmentFile;
+		//refParam.format = ReferenceAlignmentMatcher.OAEI;
+		//AbstractMatcher referenceAlignmentMatcher = MatcherFactory.getMatcherInstance(MatchersRegistry.ImportAlignment, 0);
+		//referenceAlignmentMatcher.setParam(refParam);
+		//referenceAlignmentMatcher.setSourceOntology(sourceOntology);
+		//referenceAlignmentMatcher.setTargetOntology(targetOntology);
 		
-		try {
+		/*try {
 			referenceAlignmentMatcher.match();
 		} catch (Exception e) {
 			System.out.println("Analysis aborted.1"+e);
 			return null;
-		}
+		}*/
 		
 		// open the output files
 	/*	File outputPrecision = new File( outputDirectory + "/" + outputPrefix + "-" + sourceOntologyName + "-" + targetOntologyName + "-precision.txt");
@@ -966,7 +974,7 @@ public static void testClassified() {
 				matcherToAnalyze.setThreshold(currentThreshold);
 				matcherToAnalyze.select();
 							*/
-				ReferenceEvaluationData currentEvaluation = ReferenceEvaluator.compare(matcherToAnalyze.getAlignment(), referenceAlignmentMatcher.getAlignment());
+				//ReferenceEvaluationData currentEvaluation = ReferenceEvaluator.compare(matcherToAnalyze.getAlignment(), referenceAlignmentMatcher.getAlignment());
 				
 		//		writerPrecision.write(currentThreshold + "," + Utility.roundDouble( currentEvaluation.getPrecision(), 2) + "\n");
 		//		writerRecall.write(currentThreshold + "," + Utility.roundDouble( currentEvaluation.getRecall(), 2) + "\n");
@@ -975,18 +983,18 @@ public static void testClassified() {
 				System.out.println("O1: "+sourceOntologyName + " O2: "+ targetOntologyName);
 				
 				
-				result[0] = Utility.roundDouble( currentEvaluation.getPrecision() * 100.0d, 2);
-				result[1] = Utility.roundDouble( currentEvaluation.getRecall() * 100.0d, 2);
-				result[2] = Utility.roundDouble( currentEvaluation.getFmeasure()* 100.0d, 2);
+				//result[0] = Utility.roundDouble( currentEvaluation.getPrecision() * 100.0d, 2);
+				//result[1] = Utility.roundDouble( currentEvaluation.getRecall() * 100.0d, 2);
+				//result[2] = Utility.roundDouble( currentEvaluation.getFmeasure()* 100.0d, 2);
 				
-				System.out.println("Results: (precision, recall, f-measure) = (" + 
+				/*System.out.println("Results: (precision, recall, f-measure) = (" + 
 					Utility.roundDouble( currentEvaluation.getPrecision() * 100.0d, 2) + ", " + 
 					Utility.roundDouble( currentEvaluation.getRecall() * 100.0d, 2) + ", " +
 					Utility.roundDouble( currentEvaluation.getFmeasure()* 100.0d, 2) + ")");
 				System.out.println("       : (found mappings, correct mappings, reference mappings) = (" + 
 							currentEvaluation.getFound() + ", " + currentEvaluation.getCorrect() + ", " + currentEvaluation.getExist() + ")");
 				
-				
+				*/
 				
 				
 				/*

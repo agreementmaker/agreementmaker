@@ -1,7 +1,5 @@
-package am.app.mappingEngine.referenceAlignment;
+package am.app.mappingEngine;
 import am.Utility;
-import am.app.mappingEngine.Alignment;
-import am.app.mappingEngine.Mapping;
 
 public class ReferenceEvaluationData
 {

@@ -2,7 +2,7 @@ package am.tools.StatementTranslator;
 
 import java.util.List;
 
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
+import am.app.mappingEngine.utility.MatchingPair;
 import am.utility.Triple;
 
 

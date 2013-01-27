@@ -3,7 +3,7 @@ package am.utility.referenceAlignment;
 import java.util.ArrayList;
 import java.util.List;
 
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
+import am.app.mappingEngine.utility.MatchingPair;
 
 /**
  * Class representing the differences between alignments

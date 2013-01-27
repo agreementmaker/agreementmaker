@@ -15,19 +15,8 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.SelectionAlgorithm;
-import am.app.mappingEngine.Combination.CombinationMatcher;
-import am.app.mappingEngine.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralMatcher;
-import am.app.mappingEngine.LexicalSynonymMatcher.LexicalSynonymMatcher;
 import am.app.mappingEngine.basicStructureSelector.BasicStructuralSelectorMatcher;
-import am.app.mappingEngine.conceptMatcher.ConceptMatcher;
-import am.app.mappingEngine.dsi.DescendantsSimilarityInheritanceMatcher;
-import am.app.mappingEngine.groupFinder.GroupFinderMatcher;
-import am.app.mappingEngine.mediatingMatcher.MediatingMatcher;
-import am.app.mappingEngine.multiWords.MultiWordsMatcher;
-import am.app.mappingEngine.multiWords.MultiWordsMatcherPairWise;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
-import am.app.mappingEngine.parametricStringMatcher.ParametricStringMatcher;
-import am.app.mappingEngine.ssc.SiblingsSimilarityContributionMatcher;
 import am.app.mappingEngine.testMatchers.AllOneMatcher;
 import am.app.mappingEngine.testMatchers.AllZeroMatcher;
 import am.app.mappingEngine.testMatchers.CopyMatcher;
@@ -51,19 +40,8 @@ public class OSGiRegistry {
 		matcherList.add(new AllOneMatcher());
 		matcherList.add(new AllZeroMatcher());
 		matcherList.add(new BasicStructuralSelectorMatcher());
-		matcherList.add(new CombinationMatcher());
-		matcherList.add(new ConceptMatcher());
 		matcherList.add(new CopyMatcher());
-		matcherList.add(new DescendantsSimilarityInheritanceMatcher());
 		matcherList.add(new EqualsMatcher());
-		matcherList.add(new GroupFinderMatcher());
-		matcherList.add(new IterativeInstanceStructuralMatcher());
-		matcherList.add(new LexicalSynonymMatcher());
-		matcherList.add(new MediatingMatcher());
-		matcherList.add(new MultiWordsMatcher());
-		matcherList.add(new MultiWordsMatcherPairWise());
-		matcherList.add(new ParametricStringMatcher());
-		matcherList.add(new SiblingsSimilarityContributionMatcher());
 		
 		//start the service tracker
 		startMatcherTracker();
@@ -104,28 +82,13 @@ public class OSGiRegistry {
 		return matcherNames;
 	}
 	
-	public AbstractMatcher getMatcherByName(String matcherName) throws MatcherNotFoundException {
-		for(AbstractMatcher m : matcherList){
-			if(m.getName().equals(matcherName)){
-				try {
-					AbstractMatcher newM = m.getClass().newInstance();
-					newM.setID(Core.getInstance().getNextMatcherID());
-					return newM;
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-					return null;
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-					return null;
-				}
-			}
-		}
-		throw new MatcherNotFoundException(matcherName+" is not in the system.");
-	}
-	
 	public AbstractMatcher getMatcherByClass(Class<? extends AbstractMatcher> clazz) throws MatcherNotFoundException {
+		return getMatcherByClass(clazz.getName());		
+	}
+
+	public AbstractMatcher getMatcherByClass(String clazz) throws MatcherNotFoundException {
 		for(AbstractMatcher m : matcherList){
-			if(m.getClass().getName().equals(clazz.getName())){
+			if(m.getClass().getName().equals(clazz)){
 				try {
 					AbstractMatcher newM = m.getClass().newInstance();
 					newM.setID(Core.getInstance().getNextMatcherID());
@@ -139,7 +102,7 @@ public class OSGiRegistry {
 				}
 			}
 		}
-		throw new MatcherNotFoundException(clazz.getName()+" is not in the system.");
+		throw new MatcherNotFoundException(clazz+" is not in the system.");
 	}
 	
 	/**

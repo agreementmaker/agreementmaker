@@ -1,7 +1,6 @@
 package am.app.mappingEngine;
 
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
-import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 
 /**
  * Stores the result of a selection algorithm.

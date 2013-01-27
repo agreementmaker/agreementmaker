@@ -57,9 +57,12 @@ public class MatcherFactory {
 	}
 	
 	
-	public static AbstractMatcher getMatcherInstance( String matcherName ) {
+	/**
+	 * @param matcherClass The matcher's class name.
+	 */
+	public static AbstractMatcher getMatcherInstance( String matcherClass ) {
 		try {
-			return Core.getInstance().getRegistry().getMatcherByName(matcherName);
+			return Core.getInstance().getRegistry().getMatcherByClass(matcherClass);
 		}
 		catch (MatcherNotFoundException e) {
 			e.printStackTrace();

@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
+import am.app.mappingEngine.utility.MatchingPair;
 import am.parsing.AlignmentOutput;
 
 public class MappingsOutput {

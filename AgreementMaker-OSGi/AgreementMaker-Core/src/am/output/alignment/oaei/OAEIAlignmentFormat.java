@@ -16,7 +16,7 @@ import org.dom4j.io.SAXReader;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
+import am.app.mappingEngine.utility.MatchingPair;
 import am.output.alignment.AlignmentFormat;
 
 /**

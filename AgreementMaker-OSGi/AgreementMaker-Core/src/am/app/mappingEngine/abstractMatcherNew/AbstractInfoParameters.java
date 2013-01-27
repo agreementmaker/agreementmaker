@@ -3,8 +3,8 @@ package am.app.mappingEngine.abstractMatcherNew;
 import java.awt.Color;
 
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.ReferenceEvaluationData;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
-import am.app.mappingEngine.referenceAlignment.ReferenceEvaluationData;
 import am.userInterface.MatchingProgressDisplay;
 
 /**
