@@ -292,7 +292,7 @@ public class IterativeMatcher extends AbstractMatcher{
 			UnionClass uc = unionClassesS.get(i);
 			ArrayList<OntClass> list = new ArrayList<OntClass>();
 			
-			for (ExtendedIterator e = uc.listOperands(); e.hasNext(); ) {
+			for (ExtendedIterator<? extends OntClass> e = uc.listOperands(); e.hasNext(); ) {
 				Resource r0 = (Resource) e.next();
 				OntClass unionMember = (OntClass) r0.as( OntClass.class );
 				list.add(unionMember);
@@ -303,7 +303,7 @@ public class IterativeMatcher extends AbstractMatcher{
 				UnionClass uc2 = unionClassesT.get(j);
 				ArrayList<OntClass> list2 = new ArrayList<OntClass>();
 
-				for (ExtendedIterator ei = uc2.listOperands(); ei.hasNext(); ) {
+				for (ExtendedIterator<? extends OntClass> ei = uc2.listOperands(); ei.hasNext(); ) {
 					Resource r1 = (Resource) ei.next();
 					OntClass unionMember2 = (OntClass) r1.as( OntClass.class );
 					list2.add(unionMember2);
@@ -498,7 +498,7 @@ public class IterativeMatcher extends AbstractMatcher{
 				//Put source domain classes in a list
 				if(domS != null){
 					if (domS.isClass() && domS.asClass().isUnionClass()) {
-						for (Iterator i = domS.asClass().asUnionClass().listOperands(); i.hasNext();) {
+						for (Iterator<? extends OntClass> i = domS.asClass().asUnionClass().listOperands(); i.hasNext();) {
 							OntClass c = (OntClass)i.next();
 							domainsS.add(c);
 							uniondS = true;
@@ -513,8 +513,8 @@ public class IterativeMatcher extends AbstractMatcher{
 				//Put target domain classes in a list
 				if(domT != null){
 					if (domT.isClass() && domT.asClass().isUnionClass()) {
-						for (Iterator i = domT.asClass().asUnionClass().listOperands(); i.hasNext();) {
-							OntClass c = (OntClass)i.next();
+						for (Iterator<? extends OntClass> i = domT.asClass().asUnionClass().listOperands(); i.hasNext();) {
+							OntClass c = i.next();
 							domainsT.add(c);
 							uniondT = true;
 						}
@@ -528,7 +528,7 @@ public class IterativeMatcher extends AbstractMatcher{
 				//Put source range classes in a list
 				if(rngS != null){
 					if (rngS.isClass() && rngS.asClass().isUnionClass()) {
-						for (Iterator i = rngS.asClass().asUnionClass().listOperands(); i.hasNext();) {
+						for (Iterator<? extends OntClass> i = rngS.asClass().asUnionClass().listOperands(); i.hasNext();) {
 							OntClass c = (OntClass)i.next();
 							rangesS.add(c);
 							unionrS = true;
@@ -543,8 +543,8 @@ public class IterativeMatcher extends AbstractMatcher{
 				//Put target range classes in a list
 				if(rngT != null){
 					if (rngT.isClass() && rngT.asClass().isUnionClass()) {
-						for (Iterator i = rngT.asClass().asUnionClass().listOperands(); i.hasNext();) {
-							OntClass c = (OntClass)i.next();
+						for (Iterator<? extends OntClass> i = rngT.asClass().asUnionClass().listOperands(); i.hasNext();) {
+							OntClass c = i.next();
 							rangesT.add(c);
 							unionrT = true;
 						}
@@ -558,7 +558,7 @@ public class IterativeMatcher extends AbstractMatcher{
 				
 				
 				//MATCH HERE BEGIN
-				if(domS == null){
+				/*if(domS == null){
 					if(domT == null){
 						//look at ranges, if range is null
 						if(rngS == null && rngT == null && opS.getComment(null).equals(opT.getComment(null))){
@@ -598,8 +598,8 @@ public class IterativeMatcher extends AbstractMatcher{
 							}
 						}
 					}
-				}
-				else{
+				}*/
+				if( domT != null ){
 					//if domain is single class
 					if(!uniondS && !uniondT){
 						if( matchedClassesS.contains(( domainsS.get(0) ) ) ){
@@ -993,8 +993,8 @@ public class IterativeMatcher extends AbstractMatcher{
 			}
 			else if (domS.isClass() && domS.asClass().isUnionClass()) {
 				ArrayList<OntClass> ds = new ArrayList<OntClass>();
-				for (Iterator i = domS.asClass().asUnionClass().listOperands(); i.hasNext();) {
-					OntClass c = (OntClass)i.next();
+				for (Iterator<? extends OntClass> i = domS.asClass().asUnionClass().listOperands(); i.hasNext();) {
+					OntClass c = i.next();
 					ds.add(c);
 				}
 				OntClass cs0 = ds.get(0);
@@ -1002,8 +1002,8 @@ public class IterativeMatcher extends AbstractMatcher{
 
 				if (domT.isClass() && domT.asClass().isUnionClass()) {
 					ArrayList<OntClass> dt = new ArrayList<OntClass>();
-					for (Iterator i = domT.asClass().asUnionClass().listOperands(); i.hasNext();) {
-						OntClass c = (OntClass)i.next();
+					for (Iterator<? extends OntClass> i = domT.asClass().asUnionClass().listOperands(); i.hasNext();) {
+						OntClass c = i.next();
 						dt.add(c);
 					}
 					OntClass ct0 = dt.get(0);
@@ -1053,8 +1053,8 @@ public class IterativeMatcher extends AbstractMatcher{
 			}
 			else if (domS.isClass() && domS.asClass().isUnionClass()) {
 				ArrayList<OntClass> ds = new ArrayList<OntClass>();
-				for (Iterator i = domS.asClass().asUnionClass().listOperands(); i.hasNext();) {
-					OntClass c = (OntClass)i.next();
+				for (Iterator<? extends OntClass> i = domS.asClass().asUnionClass().listOperands(); i.hasNext();) {
+					OntClass c = i.next();
 					ds.add(c);
 				}
 				OntClass cs0 = ds.get(0);
@@ -1062,7 +1062,7 @@ public class IterativeMatcher extends AbstractMatcher{
 
 				if (domT.isClass() && domT.asClass().isUnionClass()) {
 					ArrayList<OntClass> dt = new ArrayList<OntClass>();
-					for (Iterator i = domT.asClass().asUnionClass().listOperands(); i.hasNext();) {
+					for (Iterator<? extends OntClass> i = domT.asClass().asUnionClass().listOperands(); i.hasNext();) {
 						OntClass c = (OntClass)i.next();
 						dt.add(c);
 					}

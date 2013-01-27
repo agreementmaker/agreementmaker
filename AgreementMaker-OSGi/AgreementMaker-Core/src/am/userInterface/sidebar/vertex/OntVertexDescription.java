@@ -11,9 +11,9 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-import com.hp.hpl.jena.util.iterator.Filter;
 
 
 public class OntVertexDescription {
@@ -36,15 +36,15 @@ public class OntVertexDescription {
 
         m.read( source );
 
-        ExtendedIterator i =  m.listHierarchyRootClasses()
-    	//Iterator i =  m.listNamedClasses()
+        ExtendedIterator<OntClass> i =  m.listHierarchyRootClasses();
+    	/*Iterator i =  m.listNamedClasses()
                       .filterDrop( new Filter() {
                                     public boolean accept( Object o ) {
                                         return ((Resource) o).isAnon();
-                                    }} );
+                                    }} );*/
 
         while (i.hasNext()) {
-            showClass(System.out,  (OntClass) i.next(), new ArrayList<OntClass>());
+            showClass(System.out, i.next(), new ArrayList<OntClass>());
             System.out.println("===============================================");
             System.out.println("===============================================");
         }
@@ -55,8 +55,8 @@ public class OntVertexDescription {
         out.println();
 		// recurse to the next level down
         if (cls.canAs( OntClass.class )  &&  !occurs.contains( cls )) {
-            for (ExtendedIterator i = cls.listSubClasses( true );  i.hasNext(); ) {
-                OntClass sub = (OntClass) i.next();
+            for (ExtendedIterator<OntClass> i = cls.listSubClasses( true );  i.hasNext(); ) {
+                OntClass sub = i.next();
                 // we push this expression on the occurs list before we recurse
                 occurs.add( cls );
                 showClass(out, sub, occurs);
@@ -71,47 +71,47 @@ public class OntVertexDescription {
 		if(!cls.isAnon()){
 			System.out.println("\n~~~~~~~ " + cls.getLocalName().toUpperCase() + " ~~~~~~~~");
 			System.out.println("Super Classes:");//true
-			for(ExtendedIterator i = cls.listSuperClasses(); i.hasNext();){
-				sub = (OntClass)i.next();
+			for(ExtendedIterator<OntClass> i = cls.listSuperClasses(); i.hasNext();){
+				sub = i.next();
 				if(!sub.isAnon())System.out.println("\t"+sub.getLocalName());
 			}
 			System.out.println("Sub Classes:");//true
-			for(ExtendedIterator i = cls.listSubClasses(); i.hasNext();){
-				sub = (OntClass)i.next();
+			for(ExtendedIterator<OntClass> i = cls.listSubClasses(); i.hasNext();) {
+				sub = i.next();
 				if(!sub.isAnon())System.out.println("\t"+sub.getLocalName());
 			}
 			System.out.println("Disjoint With:");
-			for(ExtendedIterator i = cls.listDisjointWith(); i.hasNext();){
-				sub = (OntClass)i.next();
+			for(ExtendedIterator<OntClass> i = cls.listDisjointWith(); i.hasNext();) {
+				sub = i.next();
 				if(!sub.isAnon())System.out.println("\t"+sub.getLocalName());
 			}
 			System.out.println("Equivalent Classes:");
-			for(ExtendedIterator i = cls.listEquivalentClasses(); i.hasNext();){
-				sub = (OntClass)i.next();
+			for(ExtendedIterator<OntClass> i = cls.listEquivalentClasses(); i.hasNext();) {
+				sub = i.next();
 				if(!sub.isAnon())System.out.println("\t"+sub.getLocalName());
 			}
 			System.out.println("Declared Properties:");
-			for(ExtendedIterator i = cls.listDeclaredProperties(); i.hasNext();){//true
-				System.out.println("\t"+((OntProperty)i.next()).getLocalName());
+			for(ExtendedIterator<OntProperty> i = cls.listDeclaredProperties(); i.hasNext();) {
+				System.out.println("\t" + i.next().getLocalName());
 			}
 			System.out.println("Version Info:");
-			for(ExtendedIterator i = cls.listVersionInfo(); i.hasNext();){
+			for(ExtendedIterator<String> i = cls.listVersionInfo(); i.hasNext();){
 				System.out.println("\t"+i.next());
 			}
 			System.out.println("Labels:");
-			for(ExtendedIterator i = cls.listLabels(null); i.hasNext();){
+			for(ExtendedIterator<RDFNode> i = cls.listLabels(null); i.hasNext();){
 				System.out.println("\t"+i.next());
 			}
 			System.out.println("Comments:");
-			for(ExtendedIterator i = cls.listComments(null); i.hasNext();){
+			for(ExtendedIterator<RDFNode> i = cls.listComments(null); i.hasNext();){
 				System.out.println("\t"+i.next());
 			}
 			System.out.println("Same As:");
-			for(ExtendedIterator i = cls.listSameAs(); i.hasNext();){
+			for(ExtendedIterator<? extends Resource> i = cls.listSameAs(); i.hasNext();){
 				System.out.println("\t"+i.next());
 			}
 			System.out.println("See Also:");
-			for(ExtendedIterator i = cls.listSeeAlso(); i.hasNext();){
+			for(ExtendedIterator<RDFNode> i = cls.listSeeAlso(); i.hasNext();){
 				System.out.println("\t"+i.next());
 			}
 		}

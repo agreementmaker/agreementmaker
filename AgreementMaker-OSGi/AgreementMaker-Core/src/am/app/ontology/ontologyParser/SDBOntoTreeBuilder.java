@@ -9,16 +9,21 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
-import am.GlobalStaticVariables;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
+import am.app.ontology.Ontology;
 import am.userInterface.DatabaseSettingsDialog;
 import am.utility.RunTimer;
 
 import com.hp.hpl.jena.ontology.ConversionException;
+import com.hp.hpl.jena.ontology.DatatypeProperty;
+import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
@@ -50,18 +55,19 @@ import com.hp.hpl.jena.vocabulary.OWL;
  */
 public class SDBOntoTreeBuilder extends TreeBuilder{
 	
+	private static final Logger LOG = LogManager.getLogger(SDBOntoTreeBuilder.class);
 	
-		// Profile definitions. Used in loading ontologies in different ways
-		public enum Profile {
-			defaultProfile,  // Pellet reasoner
-			noReasoner  // no reasoner at all.
-		}
+	// Profile definitions. Used in loading ontologies in different ways
+	public enum Profile {
+		defaultProfile,  // Pellet reasoner
+		noReasoner  // no reasoner at all.
+	}
 
 	//instance variables
 	private String ontURI = null;
 	private boolean noReasoner = false;
 	private OntModel model;
-	private Set<OntResource> unsatConcepts;  
+	//private Set<OntResource> unsatConcepts;  
 	private HashMap<OntResource,Node> processedSubs;
 	OntClass owlThing;
 	
@@ -179,10 +185,8 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 	}
 	
 	protected void buildTreeNoReasoner() {
-		if( Core.DEBUG ) System.out.print("OntoTreeBuilder: Reading Model with no reasoner...");
-		
-		
-		if( Core.DEBUG ) System.out.println("Model created...but not read yet.");
+		LOG.info("OntoTreeBuilder: Reading Model with no reasoner...");
+		LOG.info("Model created...but not read yet.");
 		
 		if( ontURI == null ) {
 			ontURI = "file:"+ontology.getFilename();
@@ -202,7 +206,7 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 		boolean persistent=false;
 		
 		//get all the information for the dbsettings
-		if(super.ontology.getSourceOrTarget()==GlobalStaticVariables.SOURCENODE){
+		if(super.ontology.getSourceOrTarget() == Ontology.SOURCENODE){
 			host=p.get("hostSource", "");
 			port=p.getInt("portHost", 5432);
 			DBname=p.get("dbNameSource", "");
@@ -210,7 +214,7 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 			password=p.get("passwordSource", "");
 			persistent=p.getBoolean("persistentSource", false);
 		}
-		else if(super.ontology.getSourceOrTarget()==GlobalStaticVariables.TARGETNODE){
+		else if(super.ontology.getSourceOrTarget() == Ontology.TARGETNODE){
 			host=p.get("hostTarget", "");
 			port=p.getInt("portTarger", 5432);
 			DBname=p.get("dbNameTarget", "");
@@ -224,23 +228,23 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 			jdbcConnection= DriverManager.getConnection("jdbc:postgresql://"+host+":"+port+"/"+DBname,username,
 					password);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOG.error(e);
 			Utility.displayErrorPane("Unknown connection Error", "ERROR");
-			}
-		if(jdbcConnection!=null){
+		}
+		
+		if( jdbcConnection != null ) {
 			SDBConnection connSource = SDBFactory.createConnection(jdbcConnection);	
 			store = SDBFactory.connectStore(connSource, storeDesc);
 		}
 		try {
-			//System.out.println(StoreUtils.isFormatted(store));
 			if(!StoreUtils.isFormatted(store))
 				store.getTableFormatter().create();
 			else if(!persistent)
 				store.getTableFormatter().truncate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOG.error(e);
 			Utility.displayErrorPane("Unknown connection Error", "ERROR");
-			}
+		}
 		
 		Model basemodel=SDBFactory.connectDefaultModel(store);
 		if(!persistent)
@@ -263,7 +267,7 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
 		//model.read( ontURI, null, ontology.getFormat() );
 		
-		if( Core.DEBUG ) System.out.println(" done.");
+		LOG.info(" done.");
 		
 		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
@@ -289,7 +293,7 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
        
         // Find all unsatisfiable concepts, i.e classes equivalent
         // to owl:Nothing. we are not considering this nodes for the alignment so we are not keeping this
-        unsatConcepts = collect( owlNothing.listEquivalentClasses() );
+        collect( owlNothing.listEquivalentClasses() );
         
         // create a tree starting with owl:Thing node as the root
         //if a node has two fathers (is possible in OWL hierarchy) it would be processed twice
@@ -328,7 +332,7 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 	protected Node buildClassTree() {
 		
 		HashMap<OntClass, Node> classesMap = new HashMap<OntClass, Node>();  // this maps between ontology classes and Vertices created for the each class
-		ExtendedIterator orphansItr = model.listClasses();  // right now the classes have no parents, so they are orphans.
+		ExtendedIterator<OntClass> orphansItr = model.listClasses();  // right now the classes have no parents, so they are orphans.
 		
 		while( orphansItr.hasNext() ) { // iterate through all the classes
 			
@@ -364,7 +368,7 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 		*/
 		
 		// We will just iterate through the classes again, and find any remaining orphans
-		ExtendedIterator classesItr = model.listClasses();
+		ExtendedIterator<OntClass> classesItr = model.listClasses();
 		
 		while( classesItr.hasNext() ) {
 			OntClass currentClass = (OntClass) classesItr.next();
@@ -596,8 +600,8 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
     	treeCount++;
         uniqueKey = 0; //restart the key because properties are kept in a differnt structure with different index
         processedSubs = new HashMap<OntResource, Node>();
-    	ExtendedIterator itobj = model.listObjectProperties();
-    	ExtendedIterator itdata = model.listDatatypeProperties();
+    	ExtendedIterator<ObjectProperty> itobj = model.listObjectProperties();
+    	ExtendedIterator<DatatypeProperty> itdata = model.listDatatypeProperties();
     	while (itobj.hasNext() || itdata.hasNext() ) {//scan objprop first and then dataprop
     		OntProperty p;
     		if(itobj.hasNext()) {
@@ -619,7 +623,7 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
     		//check if there is any valid property between the superproperties, i need to check all superproperties hierarchy so i can't use listProp(true), doing this there will always be a the property itself in the list
     		try {
     			if( p instanceof OntProperty ) {
-		    		ExtendedIterator it2 = p.listSuperProperties();
+		    		ExtendedIterator<? extends OntProperty> it2 = p.listSuperProperties();
 		    		while(it2.hasNext()) {
 		    			Object prop1 = it2.next();
 		    			OntProperty superp = (OntProperty)prop1;
@@ -652,9 +656,9 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 	   // we have to skip it, but we may still have to load his sons.
 		// in that case we won't have only one iterator but more then one.
 		//in all other cases iterators list will contain only the iterator on sons of this prop
-        ArrayList<ExtendedIterator> iterators = new ArrayList<ExtendedIterator>();
+        ArrayList<ExtendedIterator<? extends OntProperty>> iterators = new ArrayList<ExtendedIterator<? extends OntProperty>>();
         // get only direct subproperties (direct = true)
-        ExtendedIterator firstSubs;
+        ExtendedIterator<? extends OntProperty> firstSubs;
         try {
         	firstSubs = p.listSubProperties( true );
         } catch ( Exception e ) {
@@ -664,16 +668,16 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
         
         iterators.add(firstSubs);
         for(int i = 0; i<iterators.size(); i++) {
-        	ExtendedIterator subs = iterators.get(i);
+        	ExtendedIterator<? extends OntProperty> subs = iterators.get(i);
             while( subs.hasNext() ) {
-                OntProperty sub = (OntProperty) subs.next();
+                OntProperty sub = subs.next();
 
                 if( sub.isAnon() )
                     continue;
                 //skip non valid classes with different namespace but consider sons
                 if(skipOtherNamespaces && !sub.getNameSpace().toString().equals(ns)) {
              	   // get only direct subclasses (true)
-             	   ExtendedIterator moreSubs = sub.listSubProperties( true );
+             	   ExtendedIterator<? extends OntProperty> moreSubs = sub.listSubProperties( true );
              	   iterators.add(moreSubs);
              	   continue;
                 }

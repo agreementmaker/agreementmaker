@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
 class AlignmentTableModel extends AbstractTableModel {
-    private String[] columnNames = {"Source",
+	private static final long serialVersionUID = -5107653080170837718L;
+
+	private String[] columnNames = {"Source",
                                     "Target",
                                     "\u03C3",
                                     "\u03F1",
@@ -35,7 +37,7 @@ class AlignmentTableModel extends AbstractTableModel {
      * then the last column would contain text ("true"/"false"),
      * rather than a check box.
      */
-    public Class getColumnClass(int c) {
+    public Class<? extends Object> getColumnClass(int c) {
         return getValueAt(0, c).getClass();
     }
 

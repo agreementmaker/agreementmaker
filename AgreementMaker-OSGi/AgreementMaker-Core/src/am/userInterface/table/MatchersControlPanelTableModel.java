@@ -218,7 +218,7 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
          * then the last column would contain text ("true"/"false"),
          * rather than a check box.
          */
-        public Class getColumnClass(int c) {
+        public Class<? extends Object> getColumnClass(int c) {
             Object o = getValueAt(0, c);
             if(o != null)
              return o.getClass();
@@ -348,7 +348,7 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
         	return update;
 		}
 
-		private void printDebugData() {
+		/*private void printDebugData() {
             int numRows = getRowCount();
             int numCols = getColumnCount();
 
@@ -360,7 +360,7 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
                 System.out.println();
             }
             System.out.println("--------------------------");
-        }
+        }*/
 		
 
     }

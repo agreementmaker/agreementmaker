@@ -62,7 +62,7 @@ public class InputTrainingGenerator {
 	@Override
 	public String toString() {
 		String s = "InputTrainingGenerator : [\n";
-		for (Iterator iterator = testList.iterator(); iterator.hasNext();) {
+		for (Iterator<InputTest> iterator = testList.iterator(); iterator.hasNext();) {
 			InputTest test = (InputTest) iterator.next();
 			s = s+ ""+test.toString()+"\n";
 			

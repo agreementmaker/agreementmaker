@@ -2,6 +2,7 @@ package am.matcher.Combination;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
@@ -34,7 +35,7 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 	private JLabel topLabel;
 	private JLabel combinationTypeL;
 
-	private JComboBox combOperationsCombo;
+	private JComboBox<String> combOperationsCombo;
 	
 	
 	private JLabel radioLabel;
@@ -50,11 +51,11 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 	
 	
 	private JLabel weightsLabel;
-	private JComboBox[] inputMatchersCombo;
+	private List<JComboBox<String>> inputMatchersCombo;
 	private JLabel[] inputMatchersLabel;
 	
 	private JLabel qualityLabel;
-	private JComboBox qualityCombo;
+	private JComboBox<QualityMetricRegistry> qualityCombo;
 	
 	
 	public CombinationParametersPanel(List<AbstractMatcher> matchers) {
@@ -64,7 +65,7 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 		topLabel = new JLabel("Select the operation that will be used to combine alignments for each pair (Source Node, Target Node).");
 		combinationTypeL = new JLabel("Combining operation: ");
 		String[] operations = {CombinationParameters.AVERAGECOMB, CombinationParameters.MAXCOMB, CombinationParameters.MINCOMB};
-		combOperationsCombo = new JComboBox(operations);
+		combOperationsCombo = new JComboBox<String>(operations);
 		
 		radioLabel = new JLabel("Operations can be weighted or not. Select weights assignment method if needed.");
 		noWeightsRadio = new JRadioButton();
@@ -91,7 +92,7 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 		//the list of input matchers is created dinamically in the group layout
 		
 		qualityLabel = new JLabel("Select the quality measure to be used as weight.");
-		qualityCombo = new JComboBox(QualityMetricRegistry.values());
+		qualityCombo = new JComboBox<QualityMetricRegistry>(QualityMetricRegistry.values());
 		qualityLabel.setEnabled(false);
 		qualityCombo.setEnabled(false);
 		
@@ -105,22 +106,22 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 		//Creation of groups for the matchers list. for each input matcher name and weight , we always need horizontal and vertical groups
 		ParallelGroup matchersHorizGroup = layout.createParallelGroup();
 		SequentialGroup matcherVertGroup = layout.createSequentialGroup();
-		inputMatchersCombo = new JComboBox[matchers.size()];
+		inputMatchersCombo = new ArrayList<JComboBox<String>>(matchers.size());
 		inputMatchersLabel = new JLabel[matchers.size()];
 		String[] percents = Utility.getPercentStringList();
 		JLabel nameLabel;
-		JComboBox weightCombo;
+		JComboBox<String> weightCombo;
 		AbstractMatcher a;
 		for(int i = 0; i< matchers.size();i++) {
 			a = matchers.get(i);
-			String name = a.getRegistryEntry().getMatcherName();
+			String name = a.getName();
 			nameLabel = new JLabel(a.getIndex()+". "+name);
 			nameLabel.setEnabled(false);
 			inputMatchersLabel[i] = nameLabel;
-			weightCombo = new JComboBox(percents);
+			weightCombo = new JComboBox<String>(percents);
 			weightCombo.setSelectedIndex(percents.length-1);
 			weightCombo.setEnabled(false);
-			inputMatchersCombo[i] = weightCombo;
+			inputMatchersCombo.set(i, weightCombo);
 			matchersHorizGroup.addGroup(layout.createSequentialGroup()
 					.addComponent(nameLabel)
 					.addComponent(weightCombo,GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,  GroupLayout.PREFERRED_SIZE)
@@ -222,7 +223,7 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 			for(int i = 0; i < size; i++) {
 				double measure = 1;
 				if(manualWeightsRadio.isSelected()) {
-					measure = Utility.getDoubleFromPercent((String)inputMatchersCombo[i].getSelectedItem());
+					measure = Utility.getDoubleFromPercent((String)inputMatchersCombo.get(i).getSelectedItem());
 				}//else No-weighted is selected so it's correct to have a weight equal to 1 for all matchers.
 				parameters.matchersWeights[i] = measure;
 			}
@@ -252,8 +253,8 @@ public class CombinationParametersPanel extends AbstractMatcherParametersPanel i
 
 	private void setEnableManual(boolean b) {
 		weightsLabel.setEnabled(b);
-		for(int i = 0; i < inputMatchersCombo.length; i++) {
-			inputMatchersCombo[i].setEnabled(b);
+		for(int i = 0; i < inputMatchersCombo.size(); i++) {
+			inputMatchersCombo.get(i).setEnabled(b);
 			inputMatchersLabel[i].setEnabled(b);
 		}
 	}

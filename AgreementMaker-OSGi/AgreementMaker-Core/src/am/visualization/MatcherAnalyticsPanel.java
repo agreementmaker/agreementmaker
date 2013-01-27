@@ -12,7 +12,6 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -76,13 +75,13 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	private AbstractMatcher feedbackMatcher = null;
 	private boolean[][] filteredCells = null;
 	
-	private JComboBox cmbTopK;
+	private JComboBox<String> cmbTopK;
 	
 	private AbstractMatcher refMatcher = null;
 	private ClusteringMethod clusterMethod = null;
 	private Mapping[] topK;
 	private JTextField txtE;
-	private Cluster<Mapping>[] topKClusters;
+	private List<Cluster<Mapping>> topKClusters;
 	
 	private WrapLayout wrap;
 	
@@ -120,7 +119,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	 */
 	private void initializeMatchers() {
 		
-		List<AbstractMatcher> matcherList = Core.getInstance().getMatcherInstances();
+		List<AbstractMatcher> matcherList = Core.getInstance().getMatchingAlgorithms();
 		for( AbstractMatcher a : matcherList ) {
 			switch( type ) {
 			case CLASS_MATRIX:
@@ -158,8 +157,8 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		
 		panel.setLayout( new WrapLayout(WrapLayout.LEADING) );
 		
-		JCheckBox chkClusters = new JCheckBox("View individual cluster:");
-		JComboBox boxClusters = new JComboBox();
+		//JCheckBox chkClusters = new JCheckBox("View individual cluster:");
+		//JComboBox<String> boxClusters = new JComboBox<String>();
 		
 		//JLabel lblClusterThreshold = new JLabel( "Clustering Threshold:");
 		//txtClusterThreshold = new JTextField();
@@ -182,7 +181,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		panel.add(Box.createHorizontalStrut(10));
 		
 		panel.add(new JLabel("Candidate Mapping:") );
-		cmbTopK = new JComboBox();
+		cmbTopK = new JComboBox<String>();
 		cmbTopK.setPrototypeDisplayValue("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 		cmbTopK.addActionListener(this);
 		panel.add(cmbTopK);
@@ -520,7 +519,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			if( filteredCells != null ) { topK = disagreementMatrix.getTopK(k, filteredCells); } 
 			else { topK = disagreementMatrix.getTopK(k); }
 			
-			topKClusters = new Cluster[k];
+			topKClusters = new ArrayList<Cluster<Mapping>>(k);
 			
 			//String[] topKDescription = new String[k];
 			Alignment<Mapping> refAlignment = null;
@@ -532,7 +531,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 				String inReference = "";
 				if( refAlignment != null && refAlignment.contains(topK[i].getSourceKey() , topK[i].getTargetKey() ) ) inReference = "*";
 				Cluster<Mapping> cl = clusterMethod.getCluster(topK[i].getSourceKey(), topK[i].getTargetKey(), type);
-				topKClusters[i] = cl;
+				topKClusters.set(i, cl);
 				String topKDescription = topK[i].getEntity1().toString() +"<->" + topK[i].getEntity2().toString() + 
 									     " Cl:(" + cl.size() + ") " + inReference;
 				cmbTopK.insertItemAt(topKDescription, i);
@@ -552,7 +551,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			// build the cluster for the mapping.
 			//Cluster<Mapping> cl = clusterMethod.getCluster(selectedMapping.getSourceKey(), selectedMapping.getTargetKey(), VisualizationType.CLASS_MATRIX);
 			
-			Cluster<Mapping> cl = topKClusters[sel];
+			Cluster<Mapping> cl = topKClusters.get(sel);
 			
 			double eValue = Double.parseDouble( txtE.getText() );
 			
@@ -576,7 +575,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			
 			Mapping selectedMapping = topK[sel];// build the cluster for the mapping.
 			//Cluster<Mapping> cl = clusterMethod.getCluster(selectedMapping.getSourceKey(), selectedMapping.getTargetKey(), VisualizationType.CLASS_MATRIX);
-			Cluster<Mapping> cl = topKClusters[sel];
+			Cluster<Mapping> cl = topKClusters.get(sel);
 			
 			double eValue = Double.parseDouble( txtE.getText() );
 			

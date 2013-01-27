@@ -26,7 +26,7 @@ public class Test4 {
 
    	  	ontModel.read( ontResourceURL);
    	  	//Iterator it = getTopLevelClasses((Model)ontModel).iterator();
-    	ExtendedIterator it = ontModel.listHierarchyRootClasses();
+    	ExtendedIterator<OntClass> it = ontModel.listHierarchyRootClasses();
    	  	//Iterator it = findHierarchyRootClasses(ontModel);
     	Iterator<OntClass>it2 = getTopLevelClasses(it);
     	System.out.println("*** Inside main ***");
@@ -48,13 +48,13 @@ public class Test4 {
     			named.add(c);
     	    }
     	    else if(c.isRestriction()){
-    	        ExtendedIterator ii = c.listSubClasses(true);
+    	        ExtendedIterator<OntClass> ii = c.listSubClasses(true);
     	        while(ii.hasNext()){
-    	        	OntClass cc = (OntClass)ii.next();
-    	        	ExtendedIterator iii = cc.listSuperClasses(true);
+    	        	OntClass cc = ii.next();
+    	        	ExtendedIterator<OntClass> iii = cc.listSuperClasses(true);
     	        	hasNamedSuperClass = false;
     	        	while(iii.hasNext()){
-    	        		if(!((OntClass)iii.next()).isAnon())
+    	        		if(!iii.next().isAnon())
     	        			hasNamedSuperClass = true;
     	        	}
     	        	if(!hasNamedSuperClass && !cc.isAnon() && cc.canAs(OntClass.class))
@@ -91,10 +91,10 @@ public class Test4 {
 			while(i1.hasNext()){
 				c = i1.next();
 				printClass(c);
-				ExtendedIterator ii = c.listSuperClasses(true);
+				ExtendedIterator<OntClass> ii = c.listSuperClasses(true);
 				hasNamedSuperClass = false;
 				while(ii.hasNext()){
-					OntClass ccc = (OntClass)ii.next();
+					OntClass ccc = ii.next();
 					printClass(ccc);
 					if(!(ccc).isAnon() && !ccc.getLocalName().equalsIgnoreCase("thing"))
 						hasNamedSuperClass = true;
@@ -114,10 +114,10 @@ public class Test4 {
 			while(i1.hasNext()){
 				c = i1.next();
 				printClass(c);
-				ExtendedIterator ii = c.listSubClasses(true);
+				ExtendedIterator<OntClass> ii = c.listSubClasses(true);
 				while(ii.hasNext())
 					//named is being reused here to avoid creating another HashSet element
-					named.add((OntClass)ii.next());	
+					named.add(ii.next());	
 			}
 			return getTopLevelClasses(named.iterator());
 		}

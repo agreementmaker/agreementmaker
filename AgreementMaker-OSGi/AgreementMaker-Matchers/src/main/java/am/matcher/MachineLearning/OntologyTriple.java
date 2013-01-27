@@ -50,7 +50,7 @@ public class OntologyTriple {
 	
 	
 	public OntologyTriple(Ontology ontology1, Ontology ontology2,
-			Alignment referenceAlignment) {
+			Alignment<Mapping> referenceAlignment) {
 		super();
 		this.ontology1 = ontology1;
 		this.ontology2 = ontology2;

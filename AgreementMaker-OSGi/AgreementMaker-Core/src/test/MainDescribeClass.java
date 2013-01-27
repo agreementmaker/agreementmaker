@@ -28,7 +28,7 @@ public class MainDescribeClass {
         DescribeClass dc = new DescribeClass();
         if(isDAML) System.out.println("??");
         
-        for (Iterator i = m.listClasses();  i.hasNext(); ) {
+        for (Iterator<OntClass> i = m.listClasses();  i.hasNext(); ) {
             // now list the classes
           	System.out.println("//");
             dc.describeClass( System.out, (OntClass) i.next() );

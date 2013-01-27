@@ -23,8 +23,8 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 import am.app.ontology.Node;
 import am.matcher.Combination.CombinationMatcher;
@@ -343,7 +343,7 @@ public class machineLearningMatcher extends AbstractMatcher {
 		ArrayList<String> matcherFiles = new ArrayList<String>();
 		getFilesFromFolder(matcherFiles, "mlroot/test/matchers/");
 
-		HashMap<String, HashMap> uniqueConcepts = new HashMap<String, HashMap>();
+		HashMap<String, HashMap<String,String>> uniqueConcepts = new HashMap<String, HashMap<String,String>>();
 		for (int i = 0; i < matcherFiles.size(); i++) {
 			File currentFile = new File(matcherFiles.get(i));
 			String matcherName = currentFile.getName();
@@ -558,7 +558,7 @@ public class machineLearningMatcher extends AbstractMatcher {
 	void predictresult(String modelName)
 			throws Exception {
 		// generating the test.xml file needed by MLTestingWrapper
-		String outputFileName = "mlroot/output/test.xml";
+		//String outputFileName = "mlroot/output/test.xml";
 		String predicted="mlroot/test/predicted";
 		String combinedConceptFile="mlroot/test/testrefFilecombined";
 		String finalFile="mlroot/test/output";
@@ -750,7 +750,7 @@ public class machineLearningMatcher extends AbstractMatcher {
 						if(confidence>=wekaConfidence)
 						{
 							currentMapping.setSimilarity(predicted);
-							currentMapping.setRelation(relation.EQUIVALENCE);
+							currentMapping.setRelation(MappingRelation.EQUIVALENCE);
 							finalMapping.add(currentMapping);
 						}
 						else
@@ -832,7 +832,7 @@ public class machineLearningMatcher extends AbstractMatcher {
 							{
 								System.out.println("new mapping added");
 								currentMapping.setSimilarity(predicted);
-								currentMapping.setRelation(relation.EQUIVALENCE);
+								currentMapping.setRelation(MappingRelation.EQUIVALENCE);
 								finalMapping.add(currentMapping);
 							}
 							

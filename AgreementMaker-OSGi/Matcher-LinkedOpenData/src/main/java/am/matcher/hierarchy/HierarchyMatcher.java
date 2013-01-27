@@ -1,7 +1,6 @@
 package am.matcher.hierarchy;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import am.Utility;
@@ -16,7 +15,6 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
@@ -41,7 +39,7 @@ public class HierarchyMatcher extends AbstractMatcher
 	private List<Node> targetClassList;
 	private OntModel sourceModel1;
 	private WordNetDatabase WordNet;
-	private HashMap<String, List<String>> sourceWordNetMeaning;
+	//private HashMap<String, List<String>> sourceWordNetMeaning;
 	double inputMatcherThreshold;
 	
 	
@@ -91,14 +89,14 @@ public class HierarchyMatcher extends AbstractMatcher
 		/*miscellaneous variables used in  the method*/
 		Node source=null;
 		Node target=null;
-		Node temp = null;
-		OntResource resSource = null;
-		OntResource resTarget = null;
+		//Node temp = null;
+		//OntResource resSource = null;
+		//OntResource resTarget = null;
 		double similarityValue;
-		ArrayList<String> sourcesyno;
-		ArrayList<String> targetsyno;
-		ArrayList<String> sourcehyper = null;
-		ArrayList<String> targethyper = null;
+		//ArrayList<String> sourcesyno;
+		//ArrayList<String> targetsyno;
+		//ArrayList<String> sourcehyper = null;
+		//ArrayList<String> targethyper = null;
 		
 		if( sourceOntology == null || targetOntology == null )
 			return;  // cannot align just one ontology 
@@ -133,8 +131,8 @@ public class HierarchyMatcher extends AbstractMatcher
 				{
 					source = ListOfClassesSource.get(i);
 					target = ListOfClassesTarget.get(j);
-					resSource = (OntResource) source.getResource();
-					resTarget = (OntResource) target.getResource();
+					//resSource = (OntResource) source.getResource();
+					//resTarget = (OntResource) target.getResource();
 					matchManySourceTarget(source,target);
 					matchManyTargetSource(source,target);
 				}
@@ -269,8 +267,8 @@ public class HierarchyMatcher extends AbstractMatcher
 }
 	public void listInstancesOfOntology()
 	{
-		//System.out.println("****************************");
-		//System.out.println("Details of Individual");
+		System.out.println("****************************");
+		System.out.println("Details of Individual");
 		//Save individuals of Source and Target
 			ArrayList<Individual> sourceIndividuals1 = new ArrayList<Individual>();
 			ExtendedIterator<Individual> sourceIndividualIterator = sourceModel1.listIndividuals();
@@ -292,17 +290,17 @@ public class HierarchyMatcher extends AbstractMatcher
 						while(anonPropertySourceItr.hasNext())
 						{
 							Statement stmtFirstAnonIndi = (Statement)anonPropertySourceItr.nextStatement();
-							Property pFirst = (Property)stmtFirstAnonIndi.getPredicate();
+							//Property pFirst = (Property)stmtFirstAnonIndi.getPredicate();
 							RDFNode rfFirst = stmtFirstAnonIndi.getObject();
-							Literal lFirst;
+							
 							if(rfFirst.isLiteral())
 							{
-								//System.out.println("****************************");
-								//System.out.println("LOCAL NAME IS "+s);
-								//System.out.println("URI IS "+sourceIndividual.getURI());
-								lFirst = (Literal)rfFirst;
-								//System.out.println("1-  " +lFirst.toString());
-								//System.out.println("****************************");
+								System.out.println("****************************");
+								System.out.println("LOCAL NAME IS "+s);
+								System.out.println("URI IS "+sourceIndividual.getURI());
+								Literal lFirst = (Literal)rfFirst;
+								System.out.println("1-  " +lFirst.toString());
+								System.out.println("****************************");
 								//String lFirstString = lFirst.toString();
 							}
 						}
@@ -323,7 +321,7 @@ public class HierarchyMatcher extends AbstractMatcher
 	
 		OntClass currentClass = (OntClass) currentNode.getResource().as(OntClass.class);
 	
-		ExtendedIterator indiIter = currentClass.listInstances(true);
+		ExtendedIterator<? extends OntResource> indiIter = currentClass.listInstances(true);
 		
 		while( indiIter.hasNext() )
 			individualsList.add( (Individual) indiIter.next());
@@ -362,7 +360,7 @@ public class HierarchyMatcher extends AbstractMatcher
 			AbstractMatcher input = inputMatchers.get(0);
 			classesMatrix = input.getClassesMatrix();
 			propertiesMatrix = input.getPropertiesMatrix();
-			double inputMatcherThreshold = input.getDefaultThreshold();
+			//double inputMatcherThreshold = input.getDefaultThreshold();
 		}
 	}
 	private int getIndex( List<Node> list, String uri) 
@@ -387,8 +385,8 @@ public class HierarchyMatcher extends AbstractMatcher
 		int indexTarget = target.getIndex();
 		
 		
-		ExtendedIterator targetIterator;
-		ExtendedIterator targetSubClassIterator;
+		ExtendedIterator<OntClass> targetIterator;
+		ExtendedIterator<OntClass> targetSubClassIterator;
 		OntClass OntClasstarget;
 		OntClass subClass;
 		
@@ -497,8 +495,8 @@ public class HierarchyMatcher extends AbstractMatcher
 		OntClass OntClasssource;
 		OntClass subClass;
 		OntClass temp;
-		ExtendedIterator sourceIterator;
-		ExtendedIterator sourceSubClassIterator;
+		ExtendedIterator<OntClass> sourceIterator;
+		ExtendedIterator<OntClass> sourceSubClassIterator;
 		
 		superClassOfSource = getSuperClass(source,sourceClassList);
 		superClassOfTarget = getSuperClass(target,targetClassList);
@@ -588,7 +586,7 @@ public class HierarchyMatcher extends AbstractMatcher
 		ArrayList<OntClass> targetSuperClasses = new ArrayList<OntClass>();
 		//targetSuperClasses = null;
 		OntClass OntClassTarget = (OntClass)list.get(indexTarget).getResource().as(OntClass.class);
-		ExtendedIterator targetIterator = OntClassTarget.listSuperClasses();
+		ExtendedIterator<OntClass> targetIterator = OntClassTarget.listSuperClasses();
 		while(targetIterator.hasNext())
 		{
 					targetSuperClasses.add((OntClass)targetIterator.next());

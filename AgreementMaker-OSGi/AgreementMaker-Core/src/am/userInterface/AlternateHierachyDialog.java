@@ -40,7 +40,7 @@ public class AlternateHierachyDialog extends JDialog implements ActionListener {
 	private static final long serialVersionUID = 995776906361225272L;
 
 	private JLabel lblSourceProperty, lblTargetProperty;
-	private JComboBox cmbSourceProperties, cmbTargetProperties;
+	private JComboBox<OntProperty> cmbSourceProperties, cmbTargetProperties;
 	private JButton btnOk, btnCancel;
 	
 	public AlternateHierachyDialog() {
@@ -50,7 +50,7 @@ public class AlternateHierachyDialog extends JDialog implements ActionListener {
 		Ontology sourceOntology = Core.getInstance().getSourceOntology();
 		Ontology targetOntology = Core.getInstance().getTargetOntology();
 		
-		cmbSourceProperties = new JComboBox();
+		cmbSourceProperties = new JComboBox<OntProperty>();
 		if( sourceOntology != null ) {
 			OntModel sourceModel = sourceOntology.getModel();
 			ExtendedIterator<OntProperty> propertyIter = sourceModel.listAllOntProperties();
@@ -60,7 +60,7 @@ public class AlternateHierachyDialog extends JDialog implements ActionListener {
 			}
 		}
 		
-		cmbTargetProperties = new JComboBox();
+		cmbTargetProperties = new JComboBox<OntProperty>();
 		if( targetOntology != null ) {
 			OntModel targetModel = targetOntology.getModel();
 			

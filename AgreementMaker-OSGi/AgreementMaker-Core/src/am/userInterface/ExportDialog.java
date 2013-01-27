@@ -63,7 +63,7 @@ public class ExportDialog extends JDialog implements ActionListener{
 	private JLabel lblMatcher, lblFilename, lblFileDir, lblFileFormat;
 	private JButton btnBrowse, btnCancel, btnSave;
 	private JTextField txtFilename, txtFileDir;
-	private JComboBox cmbAlignmentFormat;
+	private JComboBox<String> cmbAlignmentFormat;
 	private JPanel pnlSaveOptions;
 	private JCheckBox boxSort, boxIsolines, boxSkipZeros;
 	

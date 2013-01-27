@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.AbstractMatcher;
@@ -24,8 +25,6 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.util.LocationMapper;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
-
-import edu.smu.tspell.wordnet.NounSynset;
 
 /*The aim of this matcher is to find the subClassOf and superClassOf relationships between the classes that have been mapped by equivalence
  relationship by the input matchers.*/
@@ -57,7 +56,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 //	boolean useCompoundWords = false;
 //	boolean useSpellingsMatcher = false;
 	
-	Logger log;
+	private static Logger LOG = LogManager.getLogger(HierarchyMatcherModified.class);
 	
 	boolean useProvenanceToDebug = false;
 	
@@ -78,8 +77,6 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		/* maxSourceAlign and maxTargetAlign set the cardinality of the alignments to many to many that is 
 		 one concept in source can be aligned to more than one concept in target*/
 		
-		log = Logger.getLogger(HierarchyMatcherModified.class);
-		
 		//log.setLevel(Level.DEBUG);
 		
 		format = new DecimalFormat("0.000");
@@ -95,7 +92,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	@Override
 	protected void align() throws Exception{
 		/*miscellaneous variables used in  the method*/
-		log.info("align " + sourceOntology + " " + targetOntology);
+		LOG.info("align " + sourceOntology + " " + targetOntology);
 		
 		//log.setLevel(Level.DEBUG);
 		
@@ -121,9 +118,9 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		 * It calculates all the subClassOf and superClassOf relationship based on the equivalence 
 		 * relationship received form the first Matcher*/
 		if(useInput){
-			log.info("Using input matrix...");
+			LOG.info("Using input matrix...");
 			useInputMatrix();
-			log.info("Done");
+			LOG.info("Done");
 		}
 		
 		//useWordnet = false;
@@ -158,25 +155,25 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		}
 				
 		if(useCompoundWords){
-			log.info("Compound words analysis...");
+			LOG.info("Compound words analysis...");
 			compoundWordsAnalysis();
-			log.info("Done");
+			LOG.info("Done");
 		}
 			
 		//computeTransitiveClosure();
 
 		if(useOtherOntologies){
-			log.info("Initializing other ontologies...");
+			LOG.info("Initializing other ontologies...");
 			initOtherOntologies();
-			log.info("Using other ontologies...");
+			LOG.info("Using other ontologies...");
 			useOtherOntologies(sourceClasses, targetClasses, false);
 			//useOtherOntologies(targetClasses, sourceClasses, true);
-			log.info("Done");
+			LOG.info("Done");
 		}
 		
-		log.info("Filtering equality mappings...");
+		LOG.info("Filtering equality mappings...");
 		filterEqualityMappings();
-		log.info("Done");
+		LOG.info("Done");
 		
 		//log.info("Filtering external mappings...");
 		//filterExternalMappings();
@@ -230,7 +227,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 						else mapping = new Mapping(sourceClasses.get(i), targetClasses.get(j), 1.0);
 						classesMatrix.set(i, j, mapping);
 						
-						log.debug("SpellingMapping: " + sourceClasses.get(i).getLocalName() +
+						LOG.debug("SpellingMapping: " + sourceClasses.get(i).getLocalName() +
 								targetClasses.get(j).getLocalName());
 						
 					}
@@ -282,12 +279,12 @@ public class HierarchyMatcherModified extends AbstractMatcher
 				 * runs of AM*/
 				if(m.getRelation().equals(MappingRelation.EQUIVALENCE) && similarityValue >= inputMatcherThreshold)
 				{
-					log.debug(classesMatrix.get(i,j));
+					LOG.debug(classesMatrix.get(i,j));
 					m.setProvenance("Input matcher");
 					classesMatrix.set(i, j, m);
 					source = sourceClasses.get(i);
 					target = targetClasses.get(j);
-					log.debug(source.getLocalName() + " " + similarityValue + " " +inputMatcherThreshold);	
+					LOG.debug(source.getLocalName() + " " + similarityValue + " " +inputMatcherThreshold);	
 	
 					matchManySourceTarget(source,target);
 					matchManyTargetSource(source,target);
@@ -366,7 +363,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		
 		if(!sourceOntology.getURI().equals(LODOntology.FOAF.getUri()) &&
 				!targetOntology.getURI().equals(LODOntology.FOAF.getUri())){
-			log.debug("Opening FOAF");
+			LOG.debug("Opening FOAF");
 			ontology = OntoTreeBuilder.loadOWLOntology(new File(LODOntology.FOAF.getFilename()).getPath(), mapper);	
 			//ontology = LODUtils.openOntology(new File(LODOntologies.FOAF).getPath(), LODUtils.getLocationMapper());
 			otherOntologies.add(ontology.getModel());	
@@ -374,7 +371,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 			
 		if(!sourceOntology.getURI().equals(LODOntology.SW_CONFERENCE.getUri()) &&
 				!targetOntology.getURI().equals(LODOntology.SW_CONFERENCE.getUri())){
-			log.debug("Opening SWC");
+			LOG.debug("Opening SWC");
 			ontology = OntoTreeBuilder.loadOWLOntology(new File(LODOntology.SW_CONFERENCE.getFilename()).getPath(), mapper);
 			//ontology = LODUtils.openOntology(new File(LODOntologies.SW_CONFERENCE).getPath(), LODUtils.getLocationMapper());
 			otherOntologies.add(ontology.getModel());
@@ -399,9 +396,9 @@ public class HierarchyMatcherModified extends AbstractMatcher
 				for (OntClass cl: ontology.listClasses().toList()) {
 					
 					if(source.getUri().equals(cl.getURI())){
-						log.debug("WOW Let's study class " + cl.getURI());
+						LOG.debug("WOW Let's study class " + cl.getURI());
 						
-						log.debug(cl.listSuperClasses().toList());
+						LOG.debug(cl.listSuperClasses().toList());
 						
 						//Subclasses of the class can help generate superclass mappings
 						for(OntClass subclass : cl.listSubClasses().toList()){
@@ -413,8 +410,8 @@ public class HierarchyMatcherModified extends AbstractMatcher
 								
 								if(target.getLocalName().toLowerCase().equals(subclass.getLocalName().toLowerCase())){
 									//create superclass mapping source -> target
-									log.info("CREATING MAPPING "+source.getLocalName() + " " + target.getLocalName());
-									Mapping m;
+									LOG.info("CREATING MAPPING "+source.getLocalName() + " " + target.getLocalName());
+									//Mapping m;
 									if(!invert) newMapping(source, target, 1.0, MappingRelation.SUPERCLASS, "External ontologies analysis");
 									else newMapping(target, source, 1.0, MappingRelation.SUPERCLASS, "External ontologies analysis");
 									
@@ -469,14 +466,14 @@ public class HierarchyMatcherModified extends AbstractMatcher
 	}
 	
 
-	private int synsetIsContainedBy(List<NounSynset> sourceSynsetList,
+	/*private int synsetIsContainedBy(List<NounSynset> sourceSynsetList,
 			List<NounSynset> hypernymList) {
 		
 		int count = 0;
 		
 		for( NounSynset currentHypernym : hypernymList ) {
 			if( sourceSynsetList.contains(currentHypernym) ){
-					log.debug("HYP:" + currentHypernym.toString().replaceAll(",", "\n"));
+					LOG.debug("HYP:" + currentHypernym.toString().replaceAll(",", "\n"));
 					count++;
 			}
 		}
@@ -489,10 +486,10 @@ public class HierarchyMatcherModified extends AbstractMatcher
 //			}
 //		}
 		return count;
-	}
+	}*/
 	
 	
-	private List<NounSynset> buildHypernymList(List<NounSynset> nodeLookupList) {
+	/*private List<NounSynset> buildHypernymList(List<NounSynset> nodeLookupList) {
 		ArrayList<NounSynset> retVal = new ArrayList<NounSynset>();
 		ArrayList<NounSynset> hypernyms;	
 		
@@ -502,14 +499,14 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		}
 		
 		return retVal;
-	}
+	}*/
 	
 	/**
 	 * This method compiles a list of NounSynsets which are the hypernyms of all the passed in NounSynsets.
 	 * @param hypernymLookupList
 	 * @return
 	 */
-	private ArrayList<NounSynset> doHypernymLookup(NounSynset node, int depth) {
+	/*private ArrayList<NounSynset> doHypernymLookup(NounSynset node, int depth) {
 		ArrayList<NounSynset> hypernymSet = new ArrayList<NounSynset>();
 		// lookup
 		NounSynset[] hypernyms = node.getHypernyms();
@@ -519,7 +516,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 				hypernymSet.addAll(doHypernymLookup(hypernyms[i], depth + 1));			
 		}
 		return hypernymSet;
-	}
+	}*/
 	
 
 	
@@ -557,18 +554,18 @@ public class HierarchyMatcherModified extends AbstractMatcher
 /*This function maps many Target Concepts to a source concept*/	
 	private void matchManyTargetSource(Node source,Node target)
 	{
-		log.debug("SD " + source.getUri() + " " + target.getUri());
+		LOG.debug("SD " + source.getUri() + " " + target.getUri());
 		
 		Node superClassOfTarget;
 		Node superClassOfSource;
 		
 		/*GET THE INDEX OF THE INPUT PARAMETERS OF THE METHOD*/
-		int indexSource = source.getIndex();
+		//int indexSource = source.getIndex();
 		int indexTarget = target.getIndex();
 		
 		
-		ExtendedIterator targetIterator;
-		ExtendedIterator targetSubClassIterator;
+		ExtendedIterator<OntClass> targetIterator;
+		ExtendedIterator<OntClass> targetSubClassIterator;
 		OntClass ontClasstarget;
 		OntClass subClass;
 		
@@ -579,7 +576,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		superClassOfTarget = getSuperClass(target, targetClasses);
 		superClassOfSource = getSuperClass(source, sourceClasses);
 		
-		log.debug("SUPERCLASSES " + superClassOfSource + " " + superClassOfTarget);
+		LOG.debug("SUPERCLASSES " + superClassOfSource + " " + superClassOfTarget);
 		
 		/*CONVERTING THE TARGET NODE INTO OntClass*/
 		ontClasstarget = (OntClass)targetClasses.get(indexTarget).getResource().as(OntClass.class);
@@ -662,13 +659,13 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		ArrayList<OntClass> sourceSubClassesLevel2 = new ArrayList<OntClass>();
 		
 		int indexSource = source.getIndex();
-		int indexTarget = target.getIndex();
+		//int indexTarget = target.getIndex();
 		
 		OntClass OntClasssource;
 		OntClass subClass;
 		OntClass temp;
-		ExtendedIterator sourceIterator;
-		ExtendedIterator sourceSubClassIterator;
+		//ExtendedIterator<OntClass> sourceIterator;
+		ExtendedIterator<OntClass> sourceSubClassIterator;
 		
 		superClassOfSource = getSuperClass(source,sourceClasses);
 		superClassOfTarget = getSuperClass(target,targetClasses);
@@ -724,8 +721,8 @@ public class HierarchyMatcherModified extends AbstractMatcher
 				while(sourceSubClassIterator.hasNext())
 				{
 					temp = (OntClass)sourceSubClassIterator.next();
-					int index1 = getIndex(sourceClasses,temp.getURI());
-					Node temp1 = sourceClasses.get(index1);
+					//int index1 = getIndex(sourceClasses,temp.getURI());
+					//Node temp1 = sourceClasses.get(index1);
 					//newMapping(temp1, target, 1.0, MappingRelation.SUBCLASS, "From equality mapping 3ST");
 					if (superClassOfTarget != null){
 						//newMapping(temp1, superClassOfTarget, 1.0, MappingRelation.SUBCLASS, "From equality mapping 3ST");
@@ -776,7 +773,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		return -1;
 	}
 	
-	private void computeTransitiveClosure() {
+	/*private void computeTransitiveClosure() {
 		Mapping m;
 		for (int i = 0; i < classesMatrix.getRows(); i++) {
 			for (int j = 0; j < classesMatrix.getColumns(); j++) {
@@ -802,7 +799,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 				 }
 			}
 		}		
-	}
+	}*/
 	
 	public void printMatrix(SimilarityMatrix matrix){
 		Mapping m;
@@ -814,9 +811,9 @@ public class HierarchyMatcherModified extends AbstractMatcher
 				if(m == null) sim = 0.0;
 				else {
 					sim = m.getSimilarity();
-					log.debug(m.getProvenance());
+					LOG.debug(m.getProvenance());
 				}
-				//System.out.print(df.format(sim) + " ");
+				LOG.info(df.format(sim) + " ");
 				
 			}
 		}
@@ -831,12 +828,12 @@ public class HierarchyMatcherModified extends AbstractMatcher
 			
 			if(old.getRelation() == MappingRelation.EQUIVALENCE){
 				if(old.getSimilarity() >= EQUALITY_THRESHOLD_VALUE && m.getRelation() != MappingRelation.EQUIVALENCE)
-					log.debug("contraddiction1: " + sourceNode.getLocalName() + " " + targetNode.getLocalName() + " " + old.getSimilarity() + old.getRelation() +
+					LOG.debug("contraddiction1: " + sourceNode.getLocalName() + " " + targetNode.getLocalName() + " " + old.getSimilarity() + old.getRelation() +
 							m.getSimilarity() + m.getRelation());
 			}
 			//Here we now the stored is not of equivalence type
 			else if(old.getRelation() != m.getRelation()){
-				log.debug("contraddiction2: " + sourceNode.getLocalName() + " " + targetNode.getLocalName() + " " + old.getSimilarity() + old.getRelation() +
+				LOG.debug("contraddiction2: " + sourceNode.getLocalName() + " " + targetNode.getLocalName() + " " + old.getSimilarity() + old.getRelation() +
 						" " + m.getSimilarity() + " " + m.getRelation());
 			}
 			
@@ -851,7 +848,7 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		classesMatrix.set(sourceNode.getIndex(), targetNode.getIndex(), m);
 	}
 	
-	private void filterExternalMappings() {
+	/*private void filterExternalMappings() {
 		
 		String sourceURI = sourceOntology.getURI();
 		String targetURI = targetOntology.getURI();		
@@ -859,17 +856,17 @@ public class HierarchyMatcherModified extends AbstractMatcher
 		if(sourceURI == null || sourceURI.isEmpty())
 			sourceURI = "http://purl.org/ontology/mo/";
 		
-		log.debug("SourceOntology: " + sourceURI);
-		log.debug("TargetOntology: " + targetURI);
+		LOG.debug("SourceOntology: " + sourceURI);
+		LOG.debug("TargetOntology: " + targetURI);
 		
 		
 		System.out.println("SOURCE");
 		for (int i = 0; i < sourceClasses.size(); i++) {
-			log.debug(sourceClasses.get(i).getUri());			
+			LOG.debug(sourceClasses.get(i).getUri());			
 		}
 		System.out.println("TARGET");
 		for (int j = 0; j < targetClasses.size(); j++) {
-			log.debug(targetClasses.get(j).getUri());		
+			LOG.debug(targetClasses.get(j).getUri());		
 		}
 		
 		for (int i = 0; i < sourceClasses.size(); i++) {
@@ -877,11 +874,11 @@ public class HierarchyMatcherModified extends AbstractMatcher
 				if(classesMatrix.get(i, j) == null) continue;
 				if(!sourceClasses.get(i).getUri().startsWith(sourceURI)	&&
 						!targetClasses.get(j).getUri().startsWith(targetOntology.getURI())){
-					log.debug("Removing mapping: " + classesMatrix.get(i,j));
+					LOG.debug("Removing mapping: " + classesMatrix.get(i,j));
 					classesMatrix.set(i, j, null);
 				}
 					
 			}
 		}
-	}
+	}*/
 }
