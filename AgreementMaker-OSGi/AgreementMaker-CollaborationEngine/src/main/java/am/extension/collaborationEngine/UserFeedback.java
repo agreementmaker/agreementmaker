@@ -1,6 +1,6 @@
 package am.extension.collaborationEngine;
 
-import am.app.mappingEngine.referenceAlignment.MatchingPair;
+import am.app.mappingEngine.utility.MatchingPair;
 
 public class UserFeedback {
 
