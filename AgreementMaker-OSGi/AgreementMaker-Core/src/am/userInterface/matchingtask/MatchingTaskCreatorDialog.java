@@ -109,6 +109,9 @@ public class MatchingTaskCreatorDialog extends JDialog implements MessageDispatc
 		SelectionAlgorithm selectionAlgorithm = pnlSelectionAlgorithm.getSelectionAlgorithm();
 		DefaultSelectionParameters selectionParameters = pnlSelectionAlgorithm.getSelectionParameters();
 		
+		// set the annotation profiling parameters.
+		Core.getInstance().getOntologyProfiler().setMatchTimeParams(pnlAnnotationProfiling.getParameters());
+		
 		return new MatchingTask(matchingAlgorithm, matcherParameters,
 								selectionAlgorithm, selectionParameters);		
 	}

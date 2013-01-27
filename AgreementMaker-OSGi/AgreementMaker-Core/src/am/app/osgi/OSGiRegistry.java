@@ -52,26 +52,27 @@ public class OSGiRegistry {
 	}
 
 	private void startMatcherTracker(){
-		ServiceTrackerCustomizer customizer = new ServiceTrackerCustomizer() {
+		ServiceTrackerCustomizer<AbstractMatcher, AbstractMatcher> customizer = 
+				new ServiceTrackerCustomizer<AbstractMatcher, AbstractMatcher>() {
 			
 			@Override
-			public AbstractMatcher addingService(ServiceReference reference) {
+			public AbstractMatcher addingService(ServiceReference<AbstractMatcher> reference) {
 				AbstractMatcher matcher = (AbstractMatcher) context.getService(reference);
 				matcherList.add(matcher);
 				return matcher;
 			}
 			@Override
-			public void modifiedService(ServiceReference reference, Object service) {
+			public void modifiedService(ServiceReference<AbstractMatcher> reference, AbstractMatcher service) {
 				matcherList.remove(service);
 				matcherList.add((AbstractMatcher) context.getService(reference));
 			}
 			@Override
-			public void removedService(ServiceReference reference, Object service) {
+			public void removedService(ServiceReference<AbstractMatcher> reference, AbstractMatcher service) {
 				matcherList.remove(service);
 			}
 
 		};
-		matcherTracker = new ServiceTracker(context, AbstractMatcher.class, customizer);
+		matcherTracker = new ServiceTracker<AbstractMatcher, AbstractMatcher>(context, AbstractMatcher.class, customizer);
 		matcherTracker.open();
 	}
 	
