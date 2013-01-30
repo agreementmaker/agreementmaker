@@ -11,6 +11,7 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
+import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.utility.RunTimer;
 
@@ -208,6 +209,8 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 			if( progressDialog != null ) progressDialog.appendLine("Disk ontology is persistent.\nUsing existing on disk ontology.");
 		}
 		
+		ontology = new Ontology(model);
+		
 		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
 			ns = model.getNsPrefixMap().get("").toString();
@@ -224,8 +227,6 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 		
 		//Preparing model
 		model.prepare();		
-		
-		ontology.setModel(model);
 		
 		// Use OntClass for convenience
         owlThing = model.getOntClass( OWL.Thing.getURI() );

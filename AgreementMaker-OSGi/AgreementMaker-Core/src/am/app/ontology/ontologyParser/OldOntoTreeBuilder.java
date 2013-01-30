@@ -52,7 +52,6 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 	//instance variables
 	private String ontURI = null;
 	private boolean noReasoner = false;
-	private OntModel model;
 	private Set<OntClass> unsatConcepts;  
 	private HashMap<OntResource,Node> processedSubs;
 	OntClass owlThing;
@@ -186,8 +185,14 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 		
 		if( progressDialog != null ) progressDialog.append("Creating Jena Model ... ");
 		
-		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, null );
+		OntModel model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, null );
 		model.read( ontURI, null, ontology.getFormat().toString() );
+		
+		//Preparing model
+		model.prepare();
+
+		ontology = new Ontology(model);
+		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
 		
 		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
@@ -198,16 +203,9 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 			skipOtherNamespaces = false;
 			ontology.setURI("");
 		}
-		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
-
+		
 		if( progressDialog != null ) progressDialog.append("Creating AgreementMaker data structures ... ");
 
-		//Preparing model
-		model.prepare();		
-		
-		ontology.setModel(model);
-		
-		
 		createDataStructures();
 		
 		if( progressDialog != null ) progressDialog.appendLine("done.");
@@ -230,8 +228,12 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 		if( progressDialog != null ) progressDialog.appendLine("done.");
 		
 		if( progressDialog != null ) progressDialog.append("Creating Jena OntModel ...");
-		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
+		OntModel model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
 		if( progressDialog != null ) progressDialog.appendLine("done.");
+
+		//Preparing model
+		model.prepare();
+		ontology = new Ontology(model);
 		
 		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
@@ -245,11 +247,6 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
 
 		if( progressDialog != null ) progressDialog.append("Creating AgreementMaker data structures ... ");
-
-		//Preparing model
-		model.prepare();		
-		
-		ontology.setModel(model);
 		
 		createDataStructures();
         
@@ -258,8 +255,8 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 	
 	private void createDataStructures() {
 		// Use OntClass for convenience
-        owlThing = model.getOntClass( OWL.Thing.getURI() );
-        OntClass owlNothing = model.getOntClass( OWL.Nothing.getURI() );
+        owlThing = ontology.getModel().getOntClass( OWL.Thing.getURI() );
+        OntClass owlNothing = ontology.getModel().getOntClass( OWL.Nothing.getURI() );
        
         // Find all unsatisfiable concepts, i.e classes equivalent
         // to owl:Nothing. we are not considering this nodes for the alignment so we are not keeping this
@@ -302,7 +299,7 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 	protected Node buildClassTree() {
 		
 		HashMap<OntClass, Node> classesMap = new HashMap<OntClass, Node>();  // this maps between ontology classes and Vertices created for the each class
-		ExtendedIterator<OntClass> orphansItr = model.listClasses();  // right now the classes have no parents, so they are orphans.
+		ExtendedIterator<OntClass> orphansItr = ontology.getModel().listClasses();  // right now the classes have no parents, so they are orphans.
 		
 		while( orphansItr.hasNext() ) { // iterate through all the classes
 			
@@ -326,7 +323,7 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 	}
 
 	private void adoptRemaningOrphans( Node root, HashMap<OntClass, Node> classesMap) {
-		ExtendedIterator<OntClass> classesItr = model.listClasses();
+		ExtendedIterator<OntClass> classesItr = ontology.getModel().listClasses();
 		
 		while( classesItr.hasNext() ) {
 			OntClass currentClass = classesItr.next();
@@ -580,8 +577,8 @@ public class OldOntoTreeBuilder extends TreeBuilder{
     	treeCount++;
         uniqueKey = 0; //restart the key because properties are kept in a differnt structure with different index
         processedSubs = new HashMap<OntResource, Node>();
-    	ExtendedIterator<ObjectProperty> itobj = model.listObjectProperties();
-    	ExtendedIterator<DatatypeProperty> itdata = model.listDatatypeProperties();
+    	ExtendedIterator<ObjectProperty> itobj = ontology.getModel().listObjectProperties();
+    	ExtendedIterator<DatatypeProperty> itdata = ontology.getModel().listDatatypeProperties();
     	while (itobj.hasNext() || itdata.hasNext() ) {//scan objprop first and then dataprop
     		OntProperty p;
     		if(itobj.hasNext()) {

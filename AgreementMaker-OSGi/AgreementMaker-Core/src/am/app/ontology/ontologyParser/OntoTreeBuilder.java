@@ -218,6 +218,8 @@ public class OntoTreeBuilder extends TreeBuilder{
 		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, null );
 		model.read( ontURI, null, ontology.getFormat().toString() );
 		
+		ontology = new Ontology(model);
+		
 		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
 			ns = model.getNsPrefixMap().get("").toString();
@@ -232,9 +234,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 		if( progressDialog != null ) progressDialog.append("Creating AgreementMaker data structures ... ");
 
 		//Preparing model
-		model.prepare();		
-		
-		ontology.setModel(model);
+		model.prepare();
 		
 		
 		createDataStructures();
@@ -288,6 +288,8 @@ public class OntoTreeBuilder extends TreeBuilder{
 		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
 		if( progressDialog != null ) progressDialog.appendLine("done.");
 		
+		ontology = new Ontology(model);
+		
 		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
 			ns = model.getNsPrefixMap().get("").toString();
@@ -303,8 +305,6 @@ public class OntoTreeBuilder extends TreeBuilder{
 
 		//Preparing model
 		model.prepare();		
-		
-		ontology.setModel(model);
 		
 		createDataStructures();
         

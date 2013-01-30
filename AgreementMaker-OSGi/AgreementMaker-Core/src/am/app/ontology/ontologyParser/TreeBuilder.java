@@ -11,7 +11,6 @@ import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.utility.MatchingPair;
-import am.app.ontology.JenaOntology;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.Ontology.DatasetType;
@@ -88,7 +87,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 	
 	public TreeBuilder(String filename, String language, String format) {
 		// TODO: Streamline this.
-		ontology = new JenaOntology();
+		ontology = new Ontology(null);
 		ontology.setIndex( Core.getInstance().numOntologies() );
 		ontology.setID( Core.getInstance().getNextOntologyID() );  // get an unique ID for this ontology
 		ontology.setFilename(filename);
@@ -100,7 +99,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 	
 	public TreeBuilder( OntologyDefinition def ) {
 		this.ontDefinition = def;
-		ontology = new JenaOntology();
+		ontology = new Ontology(null);
 		ontology.setIndex( Core.getInstance().numOntologies() );
 		ontology.setID( Core.getInstance().getNextOntologyID() );  // get an unique ID for this ontology
 		if( def.loadOntology ) {

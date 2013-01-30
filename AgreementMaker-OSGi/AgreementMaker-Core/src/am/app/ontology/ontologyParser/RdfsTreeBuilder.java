@@ -11,6 +11,7 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
+import am.app.ontology.Ontology;
 
 import com.hp.hpl.jena.ontology.ConversionException;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -75,6 +76,8 @@ public class RdfsTreeBuilder extends TreeBuilder{
 			ontModel.read(fileInStream, null); // null == RDF/XML
 			System.out.println("done");
 			
+			ontology = new Ontology(ontModel);
+			
 			if(skipOtherNamespaces) { //we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 				try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
 					ns = ontModel.getNsPrefixMap().get("").toString();
@@ -84,7 +87,7 @@ public class RdfsTreeBuilder extends TreeBuilder{
 				}
 			}
 			ontology.setSkipOtherNamespaces(skipOtherNamespaces);
-			ontology.setModel(ontModel);
+
 			//treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(),ontModel,  ontology.getSourceOrTarget());//Creates the root of type Vertex for the tree, is a fake vertex with no corresponding node
 			treeRoot = new AMNode(-1, ontology.getTitle(), AMNode.RDFNODE, ontology.getID());
 			//Vertex classRoot = new Vertex(RDFCLASSROOTNAME,RDFCLASSROOTNAME,ontModel,  ontology.getSourceOrTarget());

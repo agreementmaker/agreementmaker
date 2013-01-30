@@ -34,7 +34,7 @@ import com.hp.hpl.jena.ontology.OntResource;
  * 
  * @author Cosmin Stroe <cstroe@gmail.com>
  */
-public abstract class Ontology {
+public class Ontology {
 	
 	public static final String RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 	public static final String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
@@ -77,6 +77,16 @@ public abstract class Ontology {
 	public static final int SOURCE = GlobalStaticVariables.SOURCENODE;
 	public static final int TARGET = GlobalStaticVariables.TARGETNODE;
 	
+	protected OntModel ontModel;
+
+	public Ontology(OntModel model) {
+		this.ontModel = model;
+	}
+	
+	public OntModel getModel() {
+		return ontModel;
+	}
+	
 	// TODO: Get rid of this enum? Or move it out of this class? - Cosmin, Sept 13, 2011
 	public enum DatasetType {
 		ENDPOINT,
@@ -84,7 +94,7 @@ public abstract class Ontology {
 		DATASET;
 	}
 	
-	private InstanceDataset instances;
+	protected InstanceDataset instances;
 	
 	public InstanceDataset getInstances() {
 		return instances;
@@ -93,16 +103,14 @@ public abstract class Ontology {
 		this.instances = instances;
 	}
 
-	private String filename;//file name with all the path
+	
+	protected String filename;//file name with all the path
 	
 	
-	private String title;//usually is the name of the file without the path and is the name of the root vertex
+	protected String title; //usually is the name of the file without the path and is the name of the root vertex
 	
-	private OntologyLanguage language;
-	private OntologySyntax format;
-	
-	/**reference to the Jena model class, for an OWL ontology it may be an OntModel, right now we don't use this element,  in XML lanaguage is null*/
-	private OntModel model;
+	protected OntologyLanguage language;
+	protected OntologySyntax format;
 	
 	/**List of class nodes to be aligned, IN THE CASE OF AN XML OR RDF ONTOLOGY ALL NODES ARE KEPT IN THIS STRUCTURE, so there will be only classes and no properties*/
 	private List<Node> classesList = new ArrayList<Node>();
@@ -178,12 +186,7 @@ public abstract class Ontology {
 	public void setFormat(OntologySyntax format) {
 		this.format = format;
 	}
-	public OntModel getModel() {
-		return model;
-	}
-	public void setModel(OntModel model) {
-		this.model = model;
-	}
+
 	public List<Node> getClassesList() {
 		return classesList;
 	}

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import am.app.ontology.JenaOntology;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
@@ -34,7 +33,7 @@ public class LODUtils {
 	
 	public static Ontology openOntology(String filename, LocationMapper mapper){
 		Logger log = Logger.getLogger(LODUtils.class);
-		Ontology ontology = new JenaOntology();
+		Ontology ontology = null;
 		FileManager manager =FileManager.get();
 		
 		if(mapper != null)
@@ -46,7 +45,7 @@ public class LODUtils {
 		log.debug("Creating ontModel...");
 		OntModel model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
 		
-		ontology.setModel(model);
+		ontology = new Ontology(model);
 		
 		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
 			String ns = model.getNsPrefixMap().get("").toString();
