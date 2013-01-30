@@ -8,28 +8,26 @@ import com.hp.hpl.jena.util.LocationMapper;
 /**
  * This data structure holds all the information required
  * for loading an ontology.
- *  
+ * 
+ * TODO: Add field for reasoner?
+ * 
  * @author Cosmin Stroe - Sep 8, 2011
  *
  */
 public class OntologyDefinition {
 	
-	public boolean loadOntology = true;
-	
-	/**
-	 * 
-	 */
-	public String ontologyURI;
+	public final boolean loadOntology;
+	public final String ontologyURI;
 	
 	/**
 	 * @see OntologyLanguage
 	 */
-	public OntologyLanguage ontologyLanguage;
+	public final OntologyLanguage ontologyLanguage;
 	
 	/**
 	 * @see OntologySyntax
 	 */
-	public OntologySyntax ontologySyntax;
+	public final OntologySyntax ontologySyntax;
 	
 	/**
 	 * Allows the ontology to be stored into a Jena TDB on disk triple store.
@@ -58,19 +56,12 @@ public class OntologyDefinition {
 	
 	public LocationMapper locationMapper;
 	
-	/**
-	 * <p>
-	 * If the ontology is the source ontology, set to {@link #SOURCE_ONTOLOGY}.
-	 * If the ontology is the target ontology, set to {@link #TARGET_ONTOLOGY}.
-	 * </p>
-	 * <p>
-	 * TODO: Get rid of this variable, it does not make sense in a multi-ontology framework.
-	 * </p>
-	 * 
-	 * @see #SOURCE_ONTOLOGY
-	 * @see #TARGET_ONTOLOGY
-	 */
-	public int sourceOrTarget;
+	public OntologyDefinition(boolean loadOntology, String ontologyURI, OntologyLanguage lang, OntologySyntax syn) {
+		this.loadOntology = loadOntology;
+		this.ontologyURI = ontologyURI;
+		this.ontologyLanguage = lang;
+		this.ontologySyntax = syn;
+	}
 	
 	@Override
 	public boolean equals(Object obj) {

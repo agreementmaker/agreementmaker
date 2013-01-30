@@ -63,7 +63,7 @@ public class AlternateHierarchyLayout extends LegacyLayout {
 		
 		
 		OntProperty hierarchyProperty = null;
-		if( ont.isSource() ) {
+		if( Core.getInstance().getSourceOntology().equals(ont) ) {
 			hierarchyProperty = sourceProperty;
 		} else {
 			hierarchyProperty = targetProperty;

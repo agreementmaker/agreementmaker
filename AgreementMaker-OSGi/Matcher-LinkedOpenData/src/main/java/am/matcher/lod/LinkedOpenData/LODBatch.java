@@ -204,8 +204,7 @@ public class LODBatch {
 		lexParam.sourceUseSCSLexicon = true;
 		lexParam.targetUseSCSLexicon = true;
 		
-		lexParam.detectStandardProperties(sourceOntology);
-		lexParam.detectStandardProperties(targetOntology);
+		lexParam.detectStandardProperties();
 		
 //		try {
 //			Core.getInstance().getLexiconStore().buildAll(lexParam);

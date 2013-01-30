@@ -17,7 +17,6 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
-import am.app.ontology.Ontology;
 import am.userInterface.DatabaseSettingsDialog;
 import am.utility.RunTimer;
 
@@ -97,16 +96,16 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 	 * @param skip Skip other namespaces, usually set to true.
 	 * @param reas Set to true in order to use a reasoner when loading the ontology, false to load without using a reasoner.
 	 */
-	public SDBOntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip, boolean reas) {
-		super(fileName, sourceOrTarget, language, format); 
+	public SDBOntoTreeBuilder(String fileName, String language, String format, boolean skip, boolean reas) {
+		super(fileName, language, format); 
 		skipOtherNamespaces = skip;
 		noReasoner = reas;
 		treeCount = 0;
 	}
 	
 	// this function is here for legacy purposes, needs to be removed
-	public SDBOntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip ) {
-		super(fileName, sourceOrTarget, language, format); 
+	public SDBOntoTreeBuilder(String fileName, String language, String format, boolean skip ) {
+		super(fileName, language, format); 
 		skipOtherNamespaces = skip;
 		noReasoner = false;
 		treeCount = 0;
@@ -206,7 +205,7 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 		boolean persistent=false;
 		
 		//get all the information for the dbsettings
-		if(super.ontology.getSourceOrTarget() == Ontology.SOURCENODE){
+		if( Core.getInstance().getSourceOntology().equals(super.ontology) ){
 			host=p.get("hostSource", "");
 			port=p.getInt("portHost", 5432);
 			DBname=p.get("dbNameSource", "");
@@ -214,7 +213,7 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 			password=p.get("passwordSource", "");
 			persistent=p.getBoolean("persistentSource", false);
 		}
-		else if(super.ontology.getSourceOrTarget() == Ontology.TARGETNODE){
+		else if( Core.getInstance().getTargetOntology().equals(super.ontology) ){
 			host=p.get("hostTarget", "");
 			port=p.getInt("portTarger", 5432);
 			DBname=p.get("dbNameTarget", "");

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import am.app.ontology.JenaOntology;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
@@ -33,7 +34,7 @@ public class LODUtils {
 	
 	public static Ontology openOntology(String filename, LocationMapper mapper){
 		Logger log = Logger.getLogger(LODUtils.class);
-		Ontology ontology = new Ontology();
+		Ontology ontology = new JenaOntology();
 		FileManager manager =FileManager.get();
 		
 		if(mapper != null)

@@ -87,8 +87,8 @@ public class OntoTreeBuilder extends TreeBuilder{
 	 * @param reas Set to true in order to use a reasoner when loading the ontology, false to load without using a reasoner.
 	 */
 	@Deprecated
-	public OntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip, boolean reas) {
-		super(fileName, sourceOrTarget, language, format); 
+	public OntoTreeBuilder(String fileName, String language, String format, boolean skip, boolean reas) {
+		super(fileName, language, format); 
 		skipOtherNamespaces = skip;
 		noReasoner = reas;
 		treeCount = 0;
@@ -96,8 +96,8 @@ public class OntoTreeBuilder extends TreeBuilder{
 	
 	// this function is here for legacy purposes, needs to be removed
 	@Deprecated
-	public OntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip ) {
-		super(fileName, sourceOrTarget, language, format); 
+	public OntoTreeBuilder(String fileName, String language, String format, boolean skip ) {
+		super(fileName, language, format); 
 		skipOtherNamespaces = skip;
 		noReasoner = false;
 		treeCount = 0;
@@ -468,7 +468,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 		if( classesMap.containsKey( currentClass ) ) {
 			currentNode = classesMap.get(currentClass);
 		} else {
-			currentNode = createNode( currentClass, true, ontology.getSourceOrTarget() );
+			currentNode = createNode(currentClass, true);
 			treeCount++;
 			classesMap.put(currentClass, currentNode);
 		}
@@ -571,7 +571,7 @@ public class OntoTreeBuilder extends TreeBuilder{
         return root;
     }*/
 	
-    private Node createNode( OntResource entity, boolean isClass, int sourceOrTarget ) {
+    private Node createNode( OntResource entity, boolean isClass) {
     	Node node = null;
     	if( processedSubs.containsKey(entity) ) {
     		node = processedSubs.get(entity);
@@ -685,7 +685,7 @@ public class OntoTreeBuilder extends TreeBuilder{
     
     private Node createPropertySubTree( OntProperty p ) {
     	//Vertex root = createNodeAndVertex(p, false, ontology.getSourceOrTarget());
-    	Node root = createNode(p, false, ontology.getSourceOrTarget());
+    	Node root = createNode(p, false);
 		treeCount++;
 		
        // If one of the sons of this prop is a prop with different namespace
@@ -740,11 +740,7 @@ public class OntoTreeBuilder extends TreeBuilder{
     }
     
     public static Ontology loadOWLOntology( String ontURI, LocationMapper mapper ) {
-    	OntologyDefinition definition = new OntologyDefinition();
-    	definition.loadOntology = true;
-    	definition.ontologyLanguage = OntologyLanguage.OWL;
-    	definition.ontologySyntax = OntologySyntax.RDFXML;
-    	definition.ontologyURI = ontURI;
+    	OntologyDefinition definition = new OntologyDefinition(true, ontURI, OntologyLanguage.OWL, OntologySyntax.RDFXML);
     	definition.locationMapper = mapper;
     	
     	OntoTreeBuilder ontoBuilder = new OntoTreeBuilder(definition);
@@ -761,11 +757,7 @@ public class OntoTreeBuilder extends TreeBuilder{
     
     public static Ontology loadOntology( String ontURI, OntologyLanguage lang, OntologySyntax syntax, LocationMapper mapper ) {
     	
-    	OntologyDefinition definition = new OntologyDefinition();
-    	definition.loadOntology = true;
-    	definition.ontologyLanguage = lang;
-    	definition.ontologySyntax = syntax;
-    	definition.ontologyURI = ontURI;
+    	OntologyDefinition definition = new OntologyDefinition(true, ontURI, lang, syntax);
     	definition.locationMapper = mapper;
     	
     	OntoTreeBuilder ontoBuilder = new OntoTreeBuilder(definition);

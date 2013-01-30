@@ -53,12 +53,12 @@ public abstract class Track {
 		//Source Ontology
 		//Ontotype = GlobalstaticVariable.SOURCENODE is irrelevant
 		System.out.println("Loading source ontology");
-		OntoTreeBuilder sourceBuilder = new OntoTreeBuilder(sourcePath, GlobalStaticVariables.SOURCENODE, languageS, syntaxS, skip);
+		OntoTreeBuilder sourceBuilder = new OntoTreeBuilder(sourcePath, languageS, syntaxS, skip);
 		sourceBuilder.build();
 		//System.out.println(sourceBuilder.getReport());
 		//Target Ontology
 		System.out.println("Loading target ontology");
-		OntoTreeBuilder targetBuilder = new OntoTreeBuilder(targetPath, GlobalStaticVariables.TARGETNODE, languageS, syntaxS, skip);
+		OntoTreeBuilder targetBuilder = new OntoTreeBuilder(targetPath, languageS, syntaxS, skip);
 		targetBuilder.build();
 		//System.out.println(sourceBuilder.getReport());
 		
@@ -125,7 +125,7 @@ public abstract class Track {
 		Ontology[] ontologies = new Ontology[numOntologies];
 		for(int i= 0; i< numOntologies; i++){
 			File f = ontologyFiles[i];
-			OntoTreeBuilder builder = new OntoTreeBuilder(f.getAbsolutePath(), GlobalStaticVariables.SOURCENODE, languageS, syntaxS, skip);
+			OntoTreeBuilder builder = new OntoTreeBuilder(f.getAbsolutePath(), languageS, syntaxS, skip);
 			builder.build( loadingProfile );
 			Ontology o = builder.getOntology();
 			o.setIndex(i);//used to identify the ontology to print the alignment file

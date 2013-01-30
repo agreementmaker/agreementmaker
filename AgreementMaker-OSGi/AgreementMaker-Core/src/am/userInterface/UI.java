@@ -22,7 +22,6 @@ import javax.swing.JViewport;
 
 import org.apache.log4j.Logger;
 
-import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.mappingEngine.MatchingTask;
 import am.app.ontology.Ontology;
@@ -168,7 +167,7 @@ public class UI {
 	@Deprecated
 	public void setDescriptionPanel(JPanel jPanel){ this.panelDesc = jPanel; }
 
-	public boolean openFile( OntologyDefinition odef ) {
+	public Ontology openFile( OntologyDefinition odef ) {
 		try{
 			JPanel jPanel = null;
 
@@ -197,17 +196,7 @@ public class UI {
 
 				//Set ontology in the Core
 				Ontology ont = t.getOntology();
-				if(odef.sourceOrTarget == OntologyDefinition.SOURCE_ONTOLOGY) {
-					Core.getInstance().setSourceOntology(ont);
-				}
-				else 
-					Core.getInstance().setTargetOntology(ont);
-				//System.out.println("after after Core.getInstancein am.userinterface.ui.openFile()...");
-				//Set the tree in the canvas
 				log.debug("Displaying the hierarchies in the canvas.");
-				ont.setDeepRoot(t.getTreeRoot());
-				ont.setTreeCount(t.getTreeCount());
-				getCanvas().setTree(t);  // legacy calls?
 				if(Core.getInstance().ontologiesLoaded()) {
 					//Ogni volta che ho caricato un ontologia e le ho entrambe, devo resettare o settare se � la prima volta, tutto lo schema dei matchings
 					//Every time I loaded an ontology and I have both, I have to reset or set if it's the first time, all the matching schemas - Translation by Federico
@@ -216,90 +205,13 @@ public class UI {
 
 				}
 				log.debug("Ontologies loaded succesfully.");
-				return true;
+				return ont;
 			}
-			return false;
+			return null;
 		}catch(Exception ex){
 			JOptionPane.showConfirmDialog(getUIFrame(),"Can not parse the file '" + odef.ontologyURI + "'. Please check the policy.","Parser Error\n\n" + ex.getMessage(),JOptionPane.ERROR_MESSAGE);
 			ex.printStackTrace();
-			return false;
-		}
-	}
-
-	/** 
-	 * This function will open an ontology given a file.
-	 * Attention syntax and language are placed differently from other functions.
-	 * 
-	 * TODO: Find a better way to pass in all the parameters.
-	 *  
-	 * @param filename The full path to the ontology file.
-	 * @param ontoType Type of ontology: GlobalStaticVariables.SOURCENODE (source) or GlobalStaticVariables.TARGETNODE (target)
-	 * @param syntax The ontology syntax: GlobalStaticVariables.{SYNTAX_RDFXML, SYNTAX_RDFXMLABBREV, SYNTAX_N3, SYNTAX_NTRIPLE, SYNTAX_TURTLE}
-	 * @param language The ontology language: GlobalStaticVariables.{LANG_OWL, LANG_RDFS, LANG_XML, LANG_TABBEDTEXT}    
-	 * @param skip Skip concepts with different namespace?
-	 * @param noReasoner Don't use a reasoner?
-	 * @param onDisk Load using Jena TDB, into a directory?
-	 * @param onDiskDirectory The directory for Jena TDB.
-	 * @param onDiskPersistent Is the Jena TDB ontology persistent?
-	 * @return Return true on successful loading of the ontology, false otherwise.
-	 * 
-	 * */
-	@Deprecated
-	public boolean openFile( String filename, int ontoType, int syntax, int language, boolean skip, boolean noReasoner, boolean onDisk, String onDiskDirectory, boolean onDiskPersistent) {
-		try{
-			JPanel jPanel = null;
-
-			Logger log = Logger.getLogger(UI.class);
-
-			if( log.isInfoEnabled() ) log.info("Opening file: " + filename );
-
-			if(language == GlobalStaticVariables.RDFSFILE)//RDFS
-				jPanel = new VertexDescriptionPane(GlobalStaticVariables.RDFSFILE);//takes care of fields for XML files as well
-			else if(language == GlobalStaticVariables.OWLFILE)//OWL
-				jPanel = new VertexDescriptionPane(GlobalStaticVariables.OWLFILE);//takes care of fields for XML files as well
-			else if(language == GlobalStaticVariables.XMLFILE)//XML
-				jPanel = new VertexDescriptionPane(GlobalStaticVariables.XMLFILE);//takes care of fields for XML files as well
-			else if(language == GlobalStaticVariables.TABBEDTEXT)
-				jPanel = new VertexDescriptionPane(GlobalStaticVariables.XMLFILE); // TODO: Figure out if we need to pass in the correct language type to VertexDescriptionPane constructor.
-			jPanel.setMinimumSize(new Dimension(200,200));
-			getUISplitPane().setRightComponent(jPanel);
-			setDescriptionPanel(jPanel);
-			//System.out.println("Before treebuilder.buildTreeBuilder in am.userinterface.ui.openFile()...");
-			//This function manage the whole process of loading, parsing the ontology and building data structures: Ontology to be set in the Core and Tree and to be set in the canvas
-			TreeBuilder t = TreeBuilder.buildTreeBuilder(filename, ontoType, language, syntax, skip, noReasoner, onDisk, onDiskDirectory, onDiskPersistent);
-			//System.out.println("after treebuilder.buildTreeBuilder before progress dialog treebuilder.buildTreeBuilder in am.userinterface.ui.openFile()...");
-			//the treebuilder is initialized now we have to execute it in a separate thread.
-			// The dialog will start the treebuilder in a background thread, 
-			new OntologyLoadingProgressDialog(t);  // Program flow will not continue until the dialog is dismissed. (User presses Ok or Cancel)
-			if(!t.isCancelled()) {
-				//System.out.println("after t.isCancelled before Core.getInstancein am.userinterface.ui.openFile()...");
-
-				//Set ontology in the Core
-				Ontology ont = t.getOntology();
-				if(ontoType == GlobalStaticVariables.SOURCENODE) {
-					Core.getInstance().setSourceOntology(ont);
-				}
-				else Core.getInstance().setTargetOntology(ont);
-				//System.out.println("after after Core.getInstancein am.userinterface.ui.openFile()...");
-				//Set the tree in the canvas
-				if( Core.DEBUG ) System.out.println("Displaying the hierarchies in the canvas");
-				ont.setDeepRoot(t.getTreeRoot());
-				ont.setTreeCount(t.getTreeCount());
-				getCanvas().setTree(t);  // legacy calls?
-				if(Core.getInstance().ontologiesLoaded()) {
-					//Ogni volta che ho caricato un ontologia e le ho entrambe, devo resettare o settare se � la prima volta, tutto lo schema dei matchings
-					if( Core.DEBUG ) System.out.println("Init matchings table");
-					classicAM.getMatchersControlPanel().resetMatchings();
-
-				}
-				if( Core.DEBUG ) System.out.println("Ontologies loaded succesfully");
-				return true;
-			}
-			return false;
-		}catch(Exception ex){
-			JOptionPane.showConfirmDialog(getUIFrame(),"Can not parse the file '" + filename + "'. Please check the policy.","Parser Error\n\n" + ex.getMessage(),JOptionPane.ERROR_MESSAGE);
-			ex.printStackTrace();
-			return false;
+			return null;
 		}
 	}
 

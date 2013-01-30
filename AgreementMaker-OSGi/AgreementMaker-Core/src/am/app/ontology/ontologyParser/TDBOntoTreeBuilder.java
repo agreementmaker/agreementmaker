@@ -83,8 +83,8 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 	 * @param skip Skip other namespaces, usually set to true.
 	 * @param reas Set to true in order to use a reasoner when loading the ontology, false to load without using a reasoner.
 	 */
-	public TDBOntoTreeBuilder(String fileName, int sourceOrTarget, String language, String format, boolean skip, boolean reas, boolean onDisk, String diskDirectory, boolean persistent) {
-		super(fileName, sourceOrTarget, language, format); 
+	public TDBOntoTreeBuilder(String fileName, String language, String format, boolean skip, boolean reas, boolean onDisk, String diskDirectory, boolean persistent) {
+		super(fileName, language, format); 
 		skipOtherNamespaces = skip;
 		noReasoner = reas;
 		treeCount = 0;

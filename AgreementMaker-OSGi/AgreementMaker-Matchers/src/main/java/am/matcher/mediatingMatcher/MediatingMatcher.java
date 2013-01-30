@@ -15,7 +15,6 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.mappingEngine.utility.MatchingPair;
@@ -80,8 +79,7 @@ public class MediatingMatcher extends AbstractMatcher {
 		if( p.loadSourceBridge ) {
 			try {
 				for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Loading source bridge ...");
-				OAEIAlignmentFormat format = new OAEIAlignmentFormat();
-				sourceBridge = format.readAlignment( new FileReader(new File(p.sourceBridge)) );
+				sourceBridge = OAEIAlignmentFormat.readAlignment( new FileReader(new File(p.sourceBridge)) );
 				for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -95,10 +93,6 @@ public class MediatingMatcher extends AbstractMatcher {
 			lexParam.sourceOntology = mediatingOntology;
 			lexParam.targetOntology = sourceOntology;
 			
-			// FIXME: This is a HACK! Fix it!
-			lexParam.sourceOntology.setSourceOrTarget(Ontology.SOURCE);
-			lexParam.targetOntology.setSourceOrTarget(Ontology.TARGET);
-			
 			lexParam.sourceUseLocalname = false;
 			lexParam.targetUseLocalname = false;
 			lexParam.sourceUseSCSLexicon = false;
@@ -111,14 +105,7 @@ public class MediatingMatcher extends AbstractMatcher {
 			
 			List<String> definitionProperties = new ArrayList<String>();
 			
-			lexParam.detectStandardProperties(lexParam.sourceOntology, synonymProperties, definitionProperties);
-			
-			synonymProperties = new ArrayList<String>();
-			synonymProperties.add("label");
-			//synonymProperties.add("hasExactSynonym");
-			synonymProperties.add("synonym");
-			
-			lexParam.detectStandardProperties(lexParam.targetOntology, synonymProperties, definitionProperties);
+			lexParam.detectStandardProperties(synonymProperties, definitionProperties);
 			
 			LexiconBuilderParameters oldParam = Core.getLexiconStore().getParameters();
 			Core.getLexiconStore().setParameters(lexParam);
@@ -156,7 +143,7 @@ public class MediatingMatcher extends AbstractMatcher {
 		if( p.loadTargetBridge ) {
 			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Loading target bridge ...");
 			OAEIAlignmentFormat format = new OAEIAlignmentFormat();
-			targetBridge = format.readAlignment( new FileReader(new File(p.targetBridge)) );
+			targetBridge = OAEIAlignmentFormat.readAlignment( new FileReader(new File(p.targetBridge)) );
 			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
 		} else {
 			// the target bridge does not exist, we must create it.
@@ -166,10 +153,6 @@ public class MediatingMatcher extends AbstractMatcher {
 			LexiconBuilderParameters lexParam = new LexiconBuilderParameters();
 			lexParam.sourceOntology = mediatingOntology;
 			lexParam.targetOntology = targetOntology;
-			
-			// FIXME: This is a HACK! Fix it!
-			lexParam.sourceOntology.setSourceOrTarget(Ontology.SOURCE);
-			lexParam.targetOntology.setSourceOrTarget(Ontology.TARGET);
 			
 			lexParam.sourceUseLocalname = false;
 			lexParam.targetUseLocalname = false;
@@ -183,15 +166,8 @@ public class MediatingMatcher extends AbstractMatcher {
 			
 			List<String> definitionProperties = new ArrayList<String>();
 			
-			lexParam.detectStandardProperties(lexParam.sourceOntology, synonymProperties, definitionProperties);
-			
-			synonymProperties = new ArrayList<String>();
-			synonymProperties.add("label");
-			//synonymProperties.add("hasExactSynonym");
-			synonymProperties.add("synonym");
-			
-			lexParam.detectStandardProperties(lexParam.targetOntology, synonymProperties, definitionProperties);
-			
+			lexParam.detectStandardProperties(synonymProperties, definitionProperties);
+						
 			LexiconBuilderParameters oldParam = Core.getLexiconStore().getParameters();
 			Core.getLexiconStore().setParameters(lexParam);
 
@@ -224,11 +200,6 @@ public class MediatingMatcher extends AbstractMatcher {
 			
 			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
 		}
-		
-		
-		// FIXME: This is a HACK! Fix it!
-		sourceOntology.setSourceOrTarget(Ontology.SOURCE);
-		targetOntology.setSourceOrTarget(Ontology.TARGET);
 		
 	};
 	

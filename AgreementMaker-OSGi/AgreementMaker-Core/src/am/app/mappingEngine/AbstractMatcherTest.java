@@ -461,13 +461,13 @@ public abstract class AbstractMatcherTest {
 	private void loadOntologies(){
 		// source ontology
 		try {
-			TreeBuilder tb = TreeBuilder.buildTreeBuilder(sourceOntologyFilename, 0, 1, 0, false, true,false, null, false);
+			TreeBuilder tb = TreeBuilder.buildTreeBuilder(sourceOntologyFilename, 1, 0, false, true,false, null, false);
 			tb.build();
 			Ontology s = tb.getOntology();
 			Core.getInstance().setSourceOntology(s);
 			
 			// target ontology
-			tb = TreeBuilder.buildTreeBuilder(targetOntologyFilename, 1, 1, 0, false, true,false, null, false);
+			tb = TreeBuilder.buildTreeBuilder(targetOntologyFilename, 1, 0, false, true,false, null, false);
 			tb.build();
 			Ontology t = tb.getOntology();
 			Core.getInstance().setTargetOntology(t);

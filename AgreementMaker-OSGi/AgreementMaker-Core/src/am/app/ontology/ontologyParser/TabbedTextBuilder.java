@@ -29,8 +29,8 @@ public class TabbedTextBuilder extends TreeBuilder {
 	OntClass owlThing;
 	private HashMap<OntResource, Node> processedSubs;
 	
-	public TabbedTextBuilder(String filename, int sourceOrTarget, String language, String format) {
-		super(filename, sourceOrTarget, language, format);
+	public TabbedTextBuilder(String filename, String language, String format) {
+		super(filename, language, format);
 	}
 
 	@Override

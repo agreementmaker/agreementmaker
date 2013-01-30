@@ -41,31 +41,17 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * so we use our own structure, even though we keep the reference to the Jena structure
  *
  */
-public class AMNode implements Node, Serializable, Comparable<Node> {
+public class AMNode extends AbstractNode implements Serializable {
 	
 	private static final long serialVersionUID = -7629984078559964658L;
 
 	private Logger log = Logger.getLogger(Node.class);
-	
-	/** This is the reference of the Resource in the ontology, this is a Jena class.
-	 *  When parsing an XML ontology, there will be a Jena OntModel built in order to provide this resource.	
-	 *  The Node object is built taking information from this Jena Resource.
-	 *  If we have loaded an OWL ontology this resource will be instance of OntResource.
-	 *  If this node is a ClassNode, the resource will be instance of OntClass.
-	 *  The Jena Resource is used to access all information in the ontology regarding this concept.
-	 */
-	private transient Resource resource;
 	
 	/** The OWL/RDF uri identifier, that is namespace#localname.
 	 * This info is kept in the resource variable but we keep them separate to access them easily. TODO - Should we really be duplicating this information? - Cosmin.
 	 */
 	private String uri = ""; // GET RID OF THIS! - Cosmin.
 
-	/**
-	 * One of the string which can be used to compare two nodes
-	 * In general the URI = namespace#localname, in the OWL ontology, often the localname is the same of label	
-	 * usually is defined with rdf: ID */
-	protected transient String localName = null;
 	/**
 	 * Another string which can be used to compare nodes
 	 * This should be a human readable version of localname. In a RDF or XML ontologies there are no labels
@@ -140,30 +126,27 @@ public class AMNode implements Node, Serializable, Comparable<Node> {
 	 * @param type
 	 */
 	public AMNode(int key, String name, String type, int ontID) {
-		localName = name;
+		super(null);
 		this.type = type;
 		index = key;
 		this.ontID = ontID;
 	}
 	
 	public AMNode(Node a){
-		localName = a.getLocalName();
+		super(a.getResource());
 		type = a.getType();
 		index = a.getIndex();
 		//String language = "EN";
-		resource = a.getResource();
 		uri = a.getUri();
-		localName = a.getLocalName();
 		//vertexList.addAll(a.getVertexList());
 		ontID = a.getOntologyID();
 	}
 	
 	/**RDF OWL Constructor*/
 	public AMNode(int key, Resource r, String type, int ontID ) {
+		super(r);
 		final String language = "EN";
-		resource = r;
 		uri = r.getURI();
-		localName = r.getLocalName();
 		this.ontID = ontID;
 		this.type = type;
 		if(r.canAs(OntResource.class)) {
@@ -283,16 +266,12 @@ public class AMNode implements Node, Serializable, Comparable<Node> {
 	
 	@Override
 	public Resource getResource() { return resource; }
-	public void setResource(Resource resource) { this.resource = resource; }
 	
 	@Override
 	public String getLocalName() { 
-		if( localName != null ) return localName;
 		if( resource == null ) return null; // cannot use Jena API.
 		return resource.getLocalName();
 	}
-	
-	public void setLocalName(String localName) { this.localName = localName; }
 	
 	/**
 	 * @return The label of this node.  null if a label is not defined.
@@ -422,7 +401,7 @@ public class AMNode implements Node, Serializable, Comparable<Node> {
 			result+= " "+label;
 		}
 		else{
-			result += " "+localName;
+			result += " "+ getLocalName();
 		}
 		return result;
 	}

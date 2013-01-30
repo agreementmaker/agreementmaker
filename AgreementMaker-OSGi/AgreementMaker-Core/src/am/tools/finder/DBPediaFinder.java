@@ -35,7 +35,7 @@ public class DBPediaFinder implements Finder{
 	
 	public void openOntology(){
 		try {
-			TreeBuilder t = new OntoTreeBuilder(filename, GlobalStaticVariables.SOURCENODE, 
+			TreeBuilder t = new OntoTreeBuilder(filename, 
 					GlobalStaticVariables.LANG_OWL,
 					GlobalStaticVariables.SYNTAX_RDFXML, true, true);
 			t.build();

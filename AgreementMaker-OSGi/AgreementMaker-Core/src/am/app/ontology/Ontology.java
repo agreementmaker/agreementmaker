@@ -22,11 +22,19 @@ import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 
 /**
- * This class contains all information about one of the two ontologies to be compared
- * You get access to it via the Core instance
- *
+ * <p>
+ * This class is an abstraction for an ontology in AgreementMaker.
+ * </p>
+ * 
+ * <p>
+ * One important feature this class provides is keeping track of several
+ * alternate hierarchies for the ontology (for example the isA hierarcy and the
+ * partOf hierarchy).
+ * </p>
+ * 
+ * @author Cosmin Stroe <cstroe@gmail.com>
  */
-public class Ontology {
+public abstract class Ontology {
 	
 	public static final String RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 	public static final String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
@@ -85,13 +93,6 @@ public class Ontology {
 		this.instances = instances;
 	}
 
-	/** 
-	 * <p>It may be SOURCE or TARGET.  Use the final static int values in GSV to set this. (GlobalStaticVariables.SOURCENODE or GlobalStaticVariables.TARGETNODE)</p>
-	 * <p>TODO: Change this to an enum.</p> 
-	 * */
-	private int sourceOrTarget;
-	
-	
 	private String filename;//file name with all the path
 	
 	
@@ -196,19 +197,6 @@ public class Ontology {
 		this.propertiesList = propertiesList;
 	}
 
-	
-	public boolean isSource() {
-		return sourceOrTarget == Ontology.SOURCE;
-	}
-	
-	public boolean isTarget() {
-		return sourceOrTarget == Ontology.TARGET;
-	}
-	
-	public void setSourceOrTarget(int s) {
-		sourceOrTarget = s;
-	}
-
 	/** @return the root of the classes hierarchy. */
 	public Node getClassesRoot()                   { return classesRoot; }
 	public void   setClassesRoot(Node classesRoot) { this.classesRoot = classesRoot; }
@@ -258,10 +246,7 @@ public class Ontology {
 	public void setSkipOtherNamespaces(boolean skipOtherNamespaces) {
 		this.skipOtherNamespaces = skipOtherNamespaces;
 	}
-	public int getSourceOrTarget() {
-		
-		return sourceOrTarget;
-	}
+
 	public void setTreeCount(int treeCount) { this.treeCount = treeCount; }
 	public int  getTreeCount()              { return treeCount; }
 	
@@ -316,6 +301,7 @@ public class Ontology {
 	}
 	
 	public Node getNodeByURI( String uri ) {
+		
 		if( uriMap == null ) createURIMap();
 		return uriMap.get(uri);
 	}
@@ -326,8 +312,7 @@ public class Ontology {
 	public static Ontology openOntology(String fileName){
 		Ontology ontology;
 		try {
-			OntologyDefinition odef = new OntologyDefinition();
-			odef.loadOntology = false;
+			OntologyDefinition odef = new OntologyDefinition(false, fileName, OntologyLanguage.OWL, OntologySyntax.RDFXML);
 			odef.loadInstances = true;
 			odef.instanceSourceType = DatasetType.DATASET;
 			odef.instanceSourceFormat = 0;
@@ -360,18 +345,34 @@ public class Ontology {
 		}
 	}
 	
-	
-	public void addHierarchy( OntProperty property, NodeHierarchy hierarchy ) {
-		nodeHierachies.put( property, hierarchy);
+	/**
+	 * @param property
+	 *            The property which connects the hierarchy (for example,
+	 *            subClassOf or partOf).
+	 * @param hierarchyRoot
+	 *            The root of the hierarchy.
+	 */
+	public void addHierarchy( OntProperty property, NodeHierarchy hierarchyRoot ) {
+		nodeHierachies.put( property, hierarchyRoot);
 	}
 	
+	/**
+	 * @param property
+	 *            The property which connects the hierarchy (for example,
+	 *            subClassOf or partOf).
+	 * @return The root of the hierarchy.
+	 */
 	public NodeHierarchy getHierarchy( OntProperty property ) {
 		return nodeHierachies.get(property);
 	}
 	
+	/**
+	 * Used to enumerate the available hierarchies by their properties.
+	 */
 	public Set<OntProperty> getHierarchyProperties() {
 		return nodeHierachies.keySet();
 	}
+	
 	public Node containsClassLocalName(String name) {
 		for (int i = 0; i < classesList.size(); i++) {
 			if(classesList.get(i).getLocalName().equals(name))

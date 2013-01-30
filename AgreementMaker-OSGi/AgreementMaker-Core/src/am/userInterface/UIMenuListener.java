@@ -38,6 +38,9 @@ import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.app.ontology.ontologyParser.OntologyDefinition;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.app.ontology.profiling.ProfilingDialog;
 import am.app.ontology.profiling.metrics.OntologyMetric;
 import am.app.ontology.profiling.metrics.OntologyMetricsRegistry;
@@ -138,43 +141,50 @@ public class UIMenuListener implements ActionListener {
 			}
 			else if (obj == menu.openMostRecentPair) {
 				int position = 0;
-				boolean loadedSecond = false;
-				//TODO:make a prefs for loading in db and use the prefs instead of hardcoding a value
-				boolean loadedFirst = false;
-				if( !Core.getInstance().sourceIsLoaded() ) { 
-					loadedFirst = menu.ui.openFile( prefs.getRecentSourceFileName(position), 
-							GlobalStaticVariables.SOURCENODE, 
-							prefs.getRecentSourceSyntax(position), 
-							prefs.getRecentSourceLanguage(position), 
-							prefs.getRecentSourceSkipNamespace(position), 
-							prefs.getRecentSourceNoReasoner(position),
-							prefs.getRecentSourceOnDisk(position),
-							prefs.getRecentSourceOnDiskDirectory(position),
-							prefs.getRecentSourceOnDiskPersistent(position));
-				} else {
-					loadedFirst = true;
+				//TODO: make a prefs for loading in db and use the prefs instead of hardcoding a value
+				boolean loadedFirst = Core.getInstance().sourceIsLoaded();
+				boolean loadedSecond = Core.getInstance().targetIsLoaded();
+				if( !loadedFirst ) {
+					OntologyDefinition odef = new OntologyDefinition(true, 
+							prefs.getRecentSourceFileName(position), 
+							OntologyLanguage.getLanguage(prefs.getRecentSourceLanguage(position)),
+							OntologySyntax.getSyntax(prefs.getRecentSourceSyntax(position)));
+					
+					odef.onDiskStorage = prefs.getRecentSourceOnDisk(position);
+					odef.onDiskDirectory = prefs.getRecentSourceOnDiskDirectory(position);
+					odef.onDiskPersistent = prefs.getRecentSourceOnDiskPersistent(position);
+					
+					Ontology ont = menu.ui.openFile(odef);
+					if( ont != null ) {
+						Core.getInstance().setSourceOntology(ont);
+						loadedFirst = true;
+					}
 				}
 
-				if( loadedFirst ) {
-					menu.closeBoth.setEnabled(true);
+				if( loadedFirst && !loadedSecond ) {
 					// load the second ontology
-					//TODO:make a prefs for loading in db and use the prefs instead of hardcoding a value
-					if( !Core.getInstance().targetIsLoaded() ) {
-						loadedSecond = menu.ui.openFile( prefs.getRecentTargetFileName(position), 
-								GlobalStaticVariables.TARGETNODE,
-								prefs.getRecentTargetSyntax(position), 
-								prefs.getRecentTargetLanguage(position), 
-								prefs.getRecentTargetSkipNamespace(position), 
-								prefs.getRecentTargetNoReasoner(position),
-								prefs.getRecentTargetOnDisk(position),
-								prefs.getRecentTargetOnDiskDirectory(position),
-								prefs.getRecentSourceOnDiskPersistent(position));
-					} else {
-						loadedSecond = true;
+					OntologyDefinition odef = new OntologyDefinition(true, 
+							prefs.getRecentTargetFileName(position), 
+							OntologyLanguage.getLanguage(prefs.getRecentTargetLanguage(position)),
+							OntologySyntax.getSyntax(prefs.getRecentTargetSyntax(position)));
+					
+					odef.onDiskStorage = prefs.getRecentTargetOnDisk(position);
+					odef.onDiskDirectory = prefs.getRecentTargetOnDiskDirectory(position);
+					odef.onDiskPersistent = prefs.getRecentTargetOnDiskPersistent(position);
+					
+					Ontology ont = menu.ui.openFile( odef );
+					
+					if( ont != null ) {
+						Core.getInstance().setTargetOntology(ont);
+						menu.closeBoth.setEnabled(true);
 					}
 
-				}
+				}				
 				else { return; }
+				
+				if( loadedSecond && loadedFirst ){
+					menu.closeBoth.setEnabled(true);
+				}
 
 				if( !loadedSecond ) {
 					// user canceled the second ontology
@@ -789,17 +799,19 @@ public class UIMenuListener implements ActionListener {
 				case 's': 
 				{
 					//TODO:make a prefs for loading in db and use the prefs instead of hardcoding a value
-					boolean loadedSuccessfully = menu.ui.openFile( 
+					
+					OntologyDefinition odef = new OntologyDefinition(true, 
 							prefs.getRecentSourceFileName(position), 
-							GlobalStaticVariables.SOURCENODE, 
-							prefs.getRecentSourceSyntax(position), 
-							prefs.getRecentSourceLanguage(position), 
-							prefs.getRecentSourceSkipNamespace(position), 
-							prefs.getRecentSourceNoReasoner(position),
-							prefs.getRecentSourceOnDisk(position),
-							prefs.getRecentSourceOnDiskDirectory(position),
-							prefs.getRecentSourceOnDiskPersistent(position));
-					if( !loadedSuccessfully ) return;
+							OntologyLanguage.getLanguage(prefs.getRecentSourceLanguage(position)),
+							OntologySyntax.getSyntax(prefs.getRecentSourceSyntax(position)));
+					
+					odef.onDiskStorage = prefs.getRecentSourceOnDisk(position);
+					odef.onDiskDirectory = prefs.getRecentSourceOnDiskDirectory(position);
+					odef.onDiskPersistent = prefs.getRecentSourceOnDiskPersistent(position);
+					
+					Ontology ont = menu.ui.openFile(odef);
+					
+					if( ont == null ) return; // ont not loaded
 					prefs.saveRecentFile(prefs.getRecentSourceFileName(position), 
 							GlobalStaticVariables.SOURCENODE, 
 							prefs.getRecentSourceSyntax(position), 
@@ -825,16 +837,19 @@ public class UIMenuListener implements ActionListener {
 				case 't':
 				{
 					//TODO:make a prefs for loading in db and use the prefs instead of hardcoding a value
-					boolean loadedSuccessfully = menu.ui.openFile(prefs.getRecentTargetFileName(position), 
-							GlobalStaticVariables.TARGETNODE, 
-							prefs.getRecentTargetSyntax(position), 
-							prefs.getRecentTargetLanguage(position), 
-							prefs.getRecentTargetSkipNamespace(position), 
-							prefs.getRecentTargetNoReasoner(position),
-							prefs.getRecentTargetOnDisk(position),
-							prefs.getRecentTargetOnDiskDirectory(position),
-							prefs.getRecentTargetOnDiskPersistent(position));
-					if( !loadedSuccessfully ) return;
+					
+					OntologyDefinition odef = new OntologyDefinition(true, 
+							prefs.getRecentTargetFileName(position), 
+							OntologyLanguage.getLanguage(prefs.getRecentTargetLanguage(position)),
+							OntologySyntax.getSyntax(prefs.getRecentTargetSyntax(position)));
+					
+					odef.onDiskStorage = prefs.getRecentTargetOnDisk(position);
+					odef.onDiskDirectory = prefs.getRecentTargetOnDiskDirectory(position);
+					odef.onDiskPersistent = prefs.getRecentTargetOnDiskPersistent(position);
+					
+					Ontology ont = menu.ui.openFile( odef );
+					
+					if( ont == null ) return;
 					prefs.saveRecentFile(prefs.getRecentTargetFileName(position), 
 							GlobalStaticVariables.TARGETNODE, 
 							prefs.getRecentTargetSyntax(position), 

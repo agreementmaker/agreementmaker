@@ -332,8 +332,7 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		// load source ontology
 		Ontology sourceOntology = null;
 		try {
-			OntoTreeBuilder sourceBuilder = new OntoTreeBuilder(sourceOntologyFile , 
-																GlobalStaticVariables.SOURCENODE, 
+			OntoTreeBuilder sourceBuilder = new OntoTreeBuilder(sourceOntologyFile ,
 																GlobalStaticVariables.LANG_OWL,
 																GlobalStaticVariables.SYNTAX_RDFXML, false);
 			sourceBuilder.build();
@@ -348,7 +347,6 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		Ontology targetOntology = null;
 		try {
 			OntoTreeBuilder targetBuilder = new OntoTreeBuilder(targetOntologyFile , 
-																GlobalStaticVariables.SOURCENODE, 
 																GlobalStaticVariables.LANG_OWL,
 																GlobalStaticVariables.SYNTAX_RDFXML, false);
 			targetBuilder.build();

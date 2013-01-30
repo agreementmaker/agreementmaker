@@ -102,9 +102,6 @@ public class OAEI2011Matcher extends AbstractMatcher {
 	public void match() throws Exception {
     	matchStart();
 
-    	sourceOntology.setSourceOrTarget( Ontology.SOURCE );
-    	targetOntology.setSourceOrTarget( Ontology.TARGET );
-    	
     	OAEI2011MatcherParameters p = (OAEI2011MatcherParameters) param;
     	
     	for( MatchingProgressDisplay mpd : progressDisplays ) mpd.ignoreComplete(true);
@@ -202,8 +199,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		lexParam.sourceUseSCSLexicon = false;
 		lexParam.targetUseSCSLexicon = false;
 		
-		lexParam.detectStandardProperties(sourceOntology);
-		lexParam.detectStandardProperties(targetOntology);
+		lexParam.detectStandardProperties();
 		
 		Core.getLexiconStore().buildAll(lexParam);
 		
@@ -403,8 +399,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		lexParam.sourceUseSCSLexicon = false;
 		lexParam.targetUseSCSLexicon = false;
 		
-		lexParam.detectStandardProperties(sourceOntology);
-		lexParam.detectStandardProperties(targetOntology);
+		lexParam.detectStandardProperties();
 		
 		Core.getLexiconStore().buildAll(lexParam);
 		
@@ -566,8 +561,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		lexParam.sourceUseSCSLexicon = true;
 		lexParam.targetUseSCSLexicon = true;
 		
-		lexParam.detectStandardProperties(sourceOntology);
-		lexParam.detectStandardProperties(targetOntology);
+		lexParam.detectStandardProperties();
 		
 		Core.getLexiconStore().buildAll(lexParam);
 		
@@ -932,8 +926,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		lexParam.sourceUseSCSLexicon = false;
 		lexParam.targetUseSCSLexicon = false;
 		
-		lexParam.detectStandardProperties(sourceOntology);
-		lexParam.detectStandardProperties(targetOntology);
+		lexParam.detectStandardProperties();
 		
 		Core.getLexiconStore().buildAll(lexParam);
 		

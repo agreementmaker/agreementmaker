@@ -74,7 +74,7 @@ public class LexiconStore implements OntologyChangeListener {
 		switch( whichOne ) {
 		case ONTOLOGY_LEXICON:
 		{
-			if( ont.isSource() ) {  // source
+			if( params.sourceOntology.equals(ont) ) {  // source
 				OntologyLexiconBuilder sourceOLB;
 				if( params.sourceUseSCSLexicon ) {
 					sourceOLB = new STLexiconBuilder(ont, params.sourceUseLocalname, 

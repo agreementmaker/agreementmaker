@@ -162,7 +162,7 @@ public class FreebaseCacher {
 	public static Ontology openOntology(String ontoName){
 		Ontology ontology;
 		try {
-			OldOntoTreeBuilder treeBuilder = new OldOntoTreeBuilder(ontoName, GlobalStaticVariables.SOURCENODE,
+			OldOntoTreeBuilder treeBuilder = new OldOntoTreeBuilder(ontoName,
 			GlobalStaticVariables.LANG_OWL, 
 			GlobalStaticVariables.SYNTAX_RDFXML, false, true);
 			treeBuilder.build();

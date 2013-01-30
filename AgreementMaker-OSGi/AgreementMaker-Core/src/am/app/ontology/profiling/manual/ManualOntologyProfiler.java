@@ -1,9 +1,12 @@
 package am.app.ontology.profiling.manual;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -69,10 +72,12 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 		targetOntology = target;
 		
 		sourceClassAnnotations = new ArrayList<Property>();
-		for( Node classNode : source.getClassesList() ) createClassAnnotationsList(sourceClassAnnotations, classNode);
+		for( Node classNode : source.getClassesList() ) 
+			sourceClassAnnotations.addAll(createClassAnnotationsList(classNode));
 				
 		targetClassAnnotations = new ArrayList<Property>();
-		for( Node classNode : target.getClassesList() ) createClassAnnotationsList(targetClassAnnotations, classNode);
+		for( Node classNode : target.getClassesList() ) 
+			targetClassAnnotations.addAll(createClassAnnotationsList(classNode));
 		
 		// annotation property coverage
 		PropertyCoverage sourceCoverage = new PropertyCoverage(source);
@@ -81,10 +86,12 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 		sourcePropertyAnnotationCoverage = sourceCoverage.getPropertyMap();
 		
 		sourcePropertyAnnotations = new ArrayList<Property>();
-		for( Node propertyNode : source.getPropertiesList() ) createPropertyAnnotationsList(sourcePropertyAnnotations, propertyNode);
+		for( Node propertyNode : source.getPropertiesList() ) 
+			sourcePropertyAnnotations.addAll(createPropertyAnnotationsList(propertyNode));
 		
 		targetPropertyAnnotations = new ArrayList<Property>();
-		for( Node propertyNode : target.getPropertiesList() ) createPropertyAnnotationsList(targetPropertyAnnotations, propertyNode);
+		for( Node propertyNode : target.getPropertiesList() ) 
+			targetPropertyAnnotations.addAll(createPropertyAnnotationsList(propertyNode));
 		
 		// annotation property coverage
 		PropertyCoverage targetCoverage = new PropertyCoverage(target);
@@ -101,8 +108,9 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 	 * Given a Node representing an ontology property, append to the propertyList
 	 * any annotation properties not in the list already that are defined on this property.
 	 */
-	public static void createPropertyAnnotationsList(
-			List<Property> propertyList, Node propertyNode) {
+	public static Collection<Property> createPropertyAnnotationsList(Node propertyNode) {
+		
+		Set<Property> annotationSet = new HashSet<Property>();
 		
 		OntProperty currentProperty = (OntProperty) propertyNode.getResource().as(OntProperty.class);
 		StmtIterator i = currentProperty.listProperties();
@@ -112,18 +120,20 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 			Property p = s.getPredicate();
 
 			if( p.canAs( AnnotationProperty.class) ) {
-				if( !propertyList.contains(p) ) propertyList.add(p);
+				annotationSet.add(p);
 			}
 		}
 		
+		return annotationSet;
 	}
 
 	/**
 	 * Given a Node representing an ontology class, append to the annotationList
 	 * any annotation properties not in the list already that are defined on this class.
 	 */
-	public static void createClassAnnotationsList(
-			List<Property> annotationList, Node classNode) {  // TODO: Change the LIST to a SET. -- Cosmin 9/19/2011
+	public static Collection<Property> createClassAnnotationsList(Node classNode) {
+		
+		Set<Property> annotationSet = new HashSet<Property>();
 		
 		OntClass currentClass = (OntClass) classNode.getResource().as(OntClass.class);
 		StmtIterator i = currentClass.listProperties();
@@ -133,9 +143,11 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 
 			if( p.canAs( AnnotationProperty.class ) ) {
 				// this is an annotation property
-				if( !annotationList.contains(p) ) annotationList.add(p);
+				annotationSet.add(p);
 			}
 		}
+		
+		return annotationSet;
 	}
 
 	@Override

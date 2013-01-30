@@ -53,9 +53,9 @@ public class XmlTreeBuilder extends TreeBuilder
 	 * @param xmlFilename filename 
 	 * @param title title of node
 	 */
-	public XmlTreeBuilder(String xmlFilename, int sourceOrTarget, String language, String format)
+	public XmlTreeBuilder(String xmlFilename, String language, String format)
 	{
-		super(xmlFilename, sourceOrTarget, language, format);
+		super(xmlFilename, language, format);
 
 		
 		// read an XML file and generate a DOM document object from it

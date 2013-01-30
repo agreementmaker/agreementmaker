@@ -56,8 +56,8 @@ public class RdfsTreeBuilder extends TreeBuilder{
 	 */
 	private String ns = null;
 	
-	public RdfsTreeBuilder(String fileName, int sourceOrTarget, String language, String format,boolean skip) {
-		super(fileName, sourceOrTarget, language, format);
+	public RdfsTreeBuilder(String fileName, String language, String format,boolean skip) {
+		super(fileName, language, format);
 		skipOtherNamespaces = skip;
 		
 	}

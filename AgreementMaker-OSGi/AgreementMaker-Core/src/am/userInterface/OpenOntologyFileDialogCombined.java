@@ -32,6 +32,7 @@ import javax.swing.SwingConstants;
 
 import am.GlobalStaticVariables;
 import am.app.Core;
+import am.app.ontology.Ontology;
 import am.app.ontology.Ontology.DatasetType;
 import am.app.ontology.instance.endpoint.EndpointRegistry;
 import am.app.ontology.ontologyParser.OntologyDefinition;
@@ -223,17 +224,18 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			
 			
 			OntologyDefinition sourceDefinition = sourceODH.getDefinition();
-			sourceDefinition.sourceOrTarget = GlobalStaticVariables.SOURCENODE;
 			OntologyDefinition targetDefinition = targetODH.getDefinition();
-			targetDefinition.sourceOrTarget = GlobalStaticVariables.TARGETNODE;
 			
 			String sourceFilename = sourceDefinition.ontologyURI;
 			String targetFilename = targetDefinition.ontologyURI;
 
 			try {
 				if( sourcePanel.isEnabled() ) {
-					ui.openFile(sourceDefinition);
-					saveDefinition(sourceDefinition, true);
+					Ontology ont = ui.openFile(sourceDefinition);
+					if( ont != null ) {
+						Core.getInstance().setSourceOntology(ont);
+						saveDefinition(sourceDefinition, true);
+					}
 				}
 			}
 			catch(Exception ex) {
@@ -245,8 +247,11 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 
 			try {
 				if( targetPanel.isEnabled() ) {
-					ui.openFile(targetDefinition);
-					saveDefinition(targetDefinition, false);
+					Ontology ont = ui.openFile(targetDefinition);
+					if ( ont != null ) {
+						Core.getInstance().setTargetOntology(ont);
+						saveDefinition(targetDefinition, false);
+					}
 				}
 			}
 			catch(Exception ex) {
@@ -273,7 +278,6 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		
 		
 		prefs.putBoolean(PREFIX + PREF_LOAD_ONTOLOGY, def.loadOntology);
-		if( def.ontologyURI == null ) def.ontologyURI = "";
 		prefs.put(PREFIX + PREF_ONTOLOGY_URI, def.ontologyURI);
 		prefs.putInt(PREFIX + PREF_ONTOLOGY_LANGUAGE, def.ontologyLanguage.getID());
 		prefs.putInt(PREFIX + PREF_ONTOLOGY_SYNTAX, def.ontologySyntax.getID());
@@ -309,12 +313,12 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			PREFIX = "TARGET_";
 		}
 		
-		OntologyDefinition def = new OntologyDefinition();
+		OntologyDefinition def = new OntologyDefinition(
+				prefs.getBoolean(PREFIX + PREF_LOAD_ONTOLOGY, false),
+				prefs.get(PREFIX + PREF_ONTOLOGY_URI, ""),
+				OntologyLanguage.getLanguage(prefs.getInt(PREFIX + PREF_ONTOLOGY_LANGUAGE, 0)),
+				OntologySyntax.getSyntax(prefs.getInt(PREFIX + PREF_ONTOLOGY_SYNTAX, 0)) );
 		
-		def.loadOntology = prefs.getBoolean(PREFIX + PREF_LOAD_ONTOLOGY, false);
-		def.ontologyURI = prefs.get(PREFIX + PREF_ONTOLOGY_URI, "");
-		def.ontologyLanguage = OntologyLanguage.getLanguage(prefs.getInt(PREFIX + PREF_ONTOLOGY_LANGUAGE, 0));
-		def.ontologySyntax = OntologySyntax.getSyntax(prefs.getInt(PREFIX + PREF_ONTOLOGY_SYNTAX, 0));
 		def.onDiskStorage = prefs.getBoolean(PREFIX + PREF_ONDISK_STORAGE, false);
 		def.onDiskPersistent = prefs.getBoolean(PREFIX + PREF_ONDISK_PERSISTENT, false);
 		def.onDiskDirectory = prefs.get(PREFIX + PREF_ONDISK_DIRECTORY, "");
@@ -937,12 +941,11 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		
 		public OntologyDefinition getDefinition() {
 			
-			OntologyDefinition def = new OntologyDefinition();
-			
-			def.loadOntology = checkboxes[3].isSelected();
-			def.ontologyURI = textfields[0].getText();
-			def.ontologyLanguage = OntologyLanguage.getLanguage(comboboxes[0].getSelectedIndex()); // TODO: Use OntologyLanguage directly instead of the integer id.
-			def.ontologySyntax = OntologySyntax.getSyntax(comboboxes[1].getSelectedIndex()); // TODO: Use OntologySyntax directly instead of the integer id.
+			OntologyDefinition def = new OntologyDefinition(
+					checkboxes[3].isSelected(), // load ontology
+					textfields[0].getText(), // uri
+					OntologyLanguage.getLanguage(comboboxes[0].getSelectedIndex()), // language
+					OntologySyntax.getSyntax(comboboxes[1].getSelectedIndex()) ); // syntax
 			
 			if( radiobuttons[1].isSelected() ) {
 				// on disk
@@ -983,7 +986,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 	
 	// This main just tests out how the OntologyDefinitionPanel looks.
 	public static void main(String[] args) {
-		OntologyDefinitionHelper odp = new OntologyDefinitionHelper(new OntologyDefinition());
+		OntologyDefinitionHelper odp = new OntologyDefinitionHelper(new OntologyDefinition(true, "", OntologyLanguage.OWL, OntologySyntax.RDFXML));
 		
 		JDialog jd = new JDialog();
 		

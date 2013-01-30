@@ -11,6 +11,7 @@ import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.utility.MatchingPair;
+import am.app.ontology.JenaOntology;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.Ontology.DatasetType;
@@ -85,13 +86,12 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 
 	protected InstanceDataset instances;
 	
-	public TreeBuilder(String filename,  int sourceOrTarget, String language, String format) {
+	public TreeBuilder(String filename, String language, String format) {
 		// TODO: Streamline this.
-		ontology = new Ontology();
+		ontology = new JenaOntology();
 		ontology.setIndex( Core.getInstance().numOntologies() );
 		ontology.setID( Core.getInstance().getNextOntologyID() );  // get an unique ID for this ontology
 		ontology.setFilename(filename);
-		ontology.setSourceOrTarget(sourceOrTarget);
 		ontology.setLanguage(OntologyLanguage.getLanguage(language));
 		ontology.setFormat(OntologySyntax.getSyntax(format));
         File f = new File(filename);
@@ -100,7 +100,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 	
 	public TreeBuilder( OntologyDefinition def ) {
 		this.ontDefinition = def;
-		ontology = new Ontology();
+		ontology = new JenaOntology();
 		ontology.setIndex( Core.getInstance().numOntologies() );
 		ontology.setID( Core.getInstance().getNextOntologyID() );  // get an unique ID for this ontology
 		if( def.loadOntology ) {
@@ -125,11 +125,9 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 				ontology.setTitle("Semantic Web Endpoint");
 			}
 		}
-		ontology.setSourceOrTarget(def.sourceOrTarget);
-		
 	}
 	
-	public static TreeBuilder buildTreeBuilder(String fileName, int ontoType, int langIndex, int syntaxIndex, boolean skip, boolean noReasoner, boolean onDisk, String onDiskDirectory, boolean persistent){
+	public static TreeBuilder buildTreeBuilder(String fileName, int langIndex, int syntaxIndex, boolean skip, boolean noReasoner, boolean onDisk, String onDiskDirectory, boolean persistent){
 		// TODO: Not sure if this method is supposed to take implementation specific variables (ex. DB).
 		
 		String languageS = GlobalStaticVariables.getLanguageString(langIndex);
@@ -137,21 +135,21 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		TreeBuilder treeBuilder = null;
 		
 		if(langIndex == GlobalStaticVariables.XMLFILE){
-			treeBuilder = new XmlTreeBuilder(fileName, ontoType, languageS, syntaxS);
+			treeBuilder = new XmlTreeBuilder(fileName, languageS, syntaxS);
 		}
 		else if(langIndex == GlobalStaticVariables.RDFSFILE) {
 			if( onDisk )
-				treeBuilder = new TDBOntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip, noReasoner, onDisk, onDiskDirectory, persistent);
+				treeBuilder = new TDBOntoTreeBuilder(fileName, languageS, syntaxS, skip, noReasoner, onDisk, onDiskDirectory, persistent);
 			else
-				treeBuilder = new RdfsTreeBuilder(fileName, ontoType, languageS, syntaxS, skip);
+				treeBuilder = new RdfsTreeBuilder(fileName, languageS, syntaxS, skip);
 		}
 		else if(langIndex == GlobalStaticVariables.TABBEDTEXT)
-			treeBuilder = new TabbedTextBuilder(fileName, ontoType, languageS, syntaxS);
+			treeBuilder = new TabbedTextBuilder(fileName, languageS, syntaxS);
 		else if(langIndex == GlobalStaticVariables.OWLFILE ) {
 			if( onDisk ) 
-				treeBuilder= new TDBOntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip, noReasoner, onDisk, onDiskDirectory, persistent);
+				treeBuilder= new TDBOntoTreeBuilder(fileName, languageS, syntaxS, skip, noReasoner, onDisk, onDiskDirectory, persistent);
 			else 
-				treeBuilder = new OntoTreeBuilder(fileName, ontoType, languageS, syntaxS, skip, noReasoner);
+				treeBuilder = new OntoTreeBuilder(fileName, languageS, syntaxS, skip, noReasoner);
 		}
 		
 		return treeBuilder;
@@ -166,19 +164,19 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 				TreeBuilder treeBuilder = null;
 				
 				if(odef.ontologyLanguage == OntologyLanguage.XML){
-					treeBuilder = new XmlTreeBuilder(odef.ontologyURI, odef.sourceOrTarget, languageS, syntaxS);
+					treeBuilder = new XmlTreeBuilder(odef.ontologyURI, languageS, syntaxS);
 				}
 				else if(odef.ontologyLanguage == OntologyLanguage.RDFS) {
 					if( odef.onDiskStorage )
-						treeBuilder = new TDBOntoTreeBuilder(odef.ontologyURI, odef.sourceOrTarget, languageS, syntaxS, false, true, odef.onDiskStorage, odef.onDiskDirectory, odef.onDiskPersistent);
+						treeBuilder = new TDBOntoTreeBuilder(odef.ontologyURI, languageS, syntaxS, false, true, odef.onDiskStorage, odef.onDiskDirectory, odef.onDiskPersistent);
 					else
-						treeBuilder = new RdfsTreeBuilder(odef.ontologyURI, odef.sourceOrTarget, languageS, syntaxS, false);
+						treeBuilder = new RdfsTreeBuilder(odef.ontologyURI, languageS, syntaxS, false);
 				}
 				else if(odef.ontologyLanguage == OntologyLanguage.TABBEDTEXT)
-					treeBuilder = new TabbedTextBuilder(odef.ontologyURI, odef.sourceOrTarget, languageS, syntaxS);
+					treeBuilder = new TabbedTextBuilder(odef.ontologyURI, languageS, syntaxS);
 				else if(odef.ontologyLanguage == OntologyLanguage.OWL ) {
 					if( odef.onDiskStorage ) 
-						treeBuilder= new TDBOntoTreeBuilder(odef.ontologyURI, odef.sourceOrTarget, languageS, syntaxS, false, true, odef.onDiskStorage, odef.onDiskDirectory, odef.onDiskPersistent);
+						treeBuilder= new TDBOntoTreeBuilder(odef.ontologyURI, languageS, syntaxS, false, true, odef.onDiskStorage, odef.onDiskDirectory, odef.onDiskPersistent);
 					else 
 						treeBuilder = new OntoTreeBuilder(odef);
 				}
@@ -193,6 +191,10 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		buildTree();//Instantiated in the subclasses
 		
 		if( ontDefinition != null ) loadInstances();
+		
+		// TODO: Remove these calls?
+		ontology.setDeepRoot(getTreeRoot());
+		ontology.setTreeCount(getTreeCount());
 		
 		report = "Ontology loaded succesfully\n\n";
         report += "Total number of classes: "+ontology.getClassesList().size()+"\n";

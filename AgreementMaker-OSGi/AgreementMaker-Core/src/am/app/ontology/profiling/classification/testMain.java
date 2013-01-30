@@ -14,7 +14,7 @@ public class testMain {
 	public static Ontology openOntology(String ontoName){
 		Ontology ontology;
 		try {
-			OntoTreeBuilder treeBuilder = new OntoTreeBuilder(ontoName, GlobalStaticVariables.SOURCENODE,
+			OntoTreeBuilder treeBuilder = new OntoTreeBuilder(ontoName,
 					GlobalStaticVariables.LANG_OWL, 
 					GlobalStaticVariables.SYNTAX_RDFXML, false, true);
 			treeBuilder.build();

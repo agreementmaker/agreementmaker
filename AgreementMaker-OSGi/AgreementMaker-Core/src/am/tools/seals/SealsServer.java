@@ -106,7 +106,7 @@ public class SealsServer implements AlignmentWS {
 		progressDisplay.appendToReport("Loading source ontology. \n\tURI: " + source + "\n\tFile: " + sourceOntologyFilename + "\n");
 		
 		
-		OntoTreeBuilder otb1 = new OntoTreeBuilder(sourceOntologyFilename, GlobalStaticVariables.SOURCENODE, GlobalStaticVariables.LANG_OWL, "RDF/XML", false, false);
+		OntoTreeBuilder otb1 = new OntoTreeBuilder(sourceOntologyFilename, GlobalStaticVariables.LANG_OWL, "RDF/XML", false, false);
 		
 		progressDisplay.appendToReport("Building source Ontology().\n");
 		otb1.build( OntoTreeBuilder.Profile.noReasoner );
@@ -118,7 +118,7 @@ public class SealsServer implements AlignmentWS {
 		
 		progressDisplay.appendToReport("Loading target ontology. URI: " + target + "\n\tFile: " + targetOntologyFilename + "\n");
 		
-		OntoTreeBuilder otb2 = new OntoTreeBuilder( targetOntologyFilename, GlobalStaticVariables.TARGETNODE, GlobalStaticVariables.LANG_OWL, "RDF/XML", true, false);
+		OntoTreeBuilder otb2 = new OntoTreeBuilder( targetOntologyFilename, GlobalStaticVariables.LANG_OWL, "RDF/XML", true, false);
 		
 		progressDisplay.appendToReport("Building target Ontology().\n");
 		otb2.build( OntoTreeBuilder.Profile.noReasoner );

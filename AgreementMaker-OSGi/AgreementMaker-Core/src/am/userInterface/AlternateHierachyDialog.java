@@ -211,7 +211,7 @@ public class AlternateHierachyDialog extends JDialog implements ActionListener {
 		
 		prefs.put("LAST_FILE", fc.getSelectedFile().getAbsolutePath());
 		
-		OntoTreeBuilder builder = new OntoTreeBuilder(fc.getSelectedFile().getAbsolutePath(), Ontology.SOURCE, OntologyLanguage.OWL.toString(), OntologySyntax.RDFXML.toString(), true);
+		OntoTreeBuilder builder = new OntoTreeBuilder(fc.getSelectedFile().getAbsolutePath(), OntologyLanguage.OWL.toString(), OntologySyntax.RDFXML.toString(), true);
 		
 		try {
 			builder.build();

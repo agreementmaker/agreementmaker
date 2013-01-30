@@ -46,7 +46,6 @@ public class VisualizationPanel extends JPanel {
 	 * TODO: Remove these methods.
 	 */
 	public void clearAllSelections() {};
-	public void setTree(TreeBuilder t) {};
 	public void setDisableVisualization(boolean disableVis) {};
 	public void setSMO(boolean smoStatus) {};
 	public void setShowLabel(boolean showLabel) {};
