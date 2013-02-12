@@ -8,7 +8,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -125,8 +124,8 @@ public class AMNode extends AbstractNode implements Serializable {
 	 * @param desc
 	 * @param type
 	 */
-	public AMNode(int key, String name, String type, int ontID) {
-		super(null);
+	public AMNode(Resource res, int key, String name, String type, int ontID) {
+		super(res);
 		this.type = type;
 		index = key;
 		this.ontID = ontID;
@@ -706,7 +705,7 @@ public class AMNode extends AbstractNode implements Serializable {
 	public void addChild(Node child) { 
 		if( !children.contains(child) ) {
 			children.add(child);
-			Collections.sort(children, new NodeNameComparator());
+			//Collections.sort(children, new NodeNameComparator());  // why is this call here?
 		}
 		
 	}

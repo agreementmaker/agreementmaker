@@ -25,6 +25,7 @@ import am.matcher.structuralMatchers.similarityFlooding.utils.WrappingGraph;
 import am.utility.DirectedGraphEdge;
 
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * Similarity Flooding algorithm implementation.
@@ -650,8 +651,8 @@ public abstract class SimilarityFlooding extends AbstractMatcher {
 							 && col.getMatrixIndex() < ((PCGSimilarityMatrix)cMatrix).getColumns()){
 						 cMatrix.set(row.getMatrixIndex(),
 								 		col.getMatrixIndex(),
-								 		new Mapping(new AMNode(row.getMatrixIndex(), row.getObject().toString(), AMNode.OWLCLASS, sourceOntology.getID()),
-								 					new AMNode(col.getMatrixIndex(), col.getObject().toString(), AMNode.OWLCLASS, targetOntology.getID()),
+								 		new Mapping(new AMNode((Resource)null, row.getMatrixIndex(), row.getObject().toString(), AMNode.OWLCLASS, sourceOntology.getID()),
+								 					new AMNode((Resource)null, col.getMatrixIndex(), col.getObject().toString(), AMNode.OWLCLASS, targetOntology.getID()),
 								 					currentVert.getObject().getNewSimilarityValue()));
 					 }
 				 }

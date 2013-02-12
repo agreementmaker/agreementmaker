@@ -85,6 +85,10 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 
 	protected InstanceDataset instances;
 	
+	/**
+	 * @deprecated Use {@link #TreeBuilder(OntologyDefinition)} instead.
+	 */
+	@Deprecated
 	public TreeBuilder(String filename, String language, String format) {
 		// TODO: Streamline this.
 		ontology = new Ontology(null);
@@ -100,6 +104,7 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 	public TreeBuilder( OntologyDefinition def ) {
 		this.ontDefinition = def;
 		ontology = new Ontology(null);
+		ontology.setDefinition(def);
 		ontology.setIndex( Core.getInstance().numOntologies() );
 		ontology.setID( Core.getInstance().getNextOntologyID() );  // get an unique ID for this ontology
 		if( def.loadOntology ) {
@@ -124,9 +129,19 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 				ontology.setTitle("Semantic Web Endpoint");
 			}
 		}
+		else {
+			throw new RuntimeException("Load ontology or Load instances must be checked.");
+		}
 	}
 	
+	/**
+	 * @deprecated Use {@link #TreeBuilder(OntologyDefinition)} instead.
+	 */
+	@Deprecated
 	public static TreeBuilder buildTreeBuilder(String fileName, int langIndex, int syntaxIndex, boolean skip, boolean noReasoner, boolean onDisk, String onDiskDirectory, boolean persistent){
+		
+		OntologyDefinition def = new OntologyDefinition(true, fileName, OntologyLanguage.OWL, OntologySyntax.RDFXML);
+		
 		// TODO: Not sure if this method is supposed to take implementation specific variables (ex. DB).
 		
 		String languageS = GlobalStaticVariables.getLanguageString(langIndex);
@@ -147,8 +162,10 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		else if(langIndex == GlobalStaticVariables.OWLFILE ) {
 			if( onDisk ) 
 				treeBuilder= new TDBOntoTreeBuilder(fileName, languageS, syntaxS, skip, noReasoner, onDisk, onDiskDirectory, persistent);
-			else 
-				treeBuilder = new OntoTreeBuilder(fileName, languageS, syntaxS, skip, noReasoner);
+			else {
+				
+				treeBuilder = new OntoTreeBuilder(def);
+			}
 		}
 		
 		return treeBuilder;

@@ -23,6 +23,7 @@ import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.OWL;
@@ -249,7 +250,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
         
         //The root of the tree is a fake vertex node, just containing the name of the ontology,
         //treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(), model, ontology.getSourceOrTarget() );
-        treeRoot = new AMNode( -1, ontology.getTitle(), AMNode.XMLNODE, ontology.getID() );
+        treeRoot = new AMNode((Resource)null, -1, ontology.getTitle(), AMNode.XMLNODE, ontology.getID() );
         treeCount++;
 
         treeRoot.addChild(classRoot);
@@ -288,7 +289,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 		
 		// this is the root node of the class tree (think of it like owl:Thing)
 		//Vertex root = new Vertex(CLASSROOTNAME, CLASSROOTNAME, model, ontology.getSourceOrTarget());
-		Node root = new AMNode( -1, CLASSROOTNAME, AMNode.XMLNODE, ontology.getID() );
+		Node root = new AMNode((Resource)null, -1, CLASSROOTNAME, AMNode.XMLNODE, ontology.getID() );
 		treeCount++;  // we created a new vertex, increment treeCount
 
 		// we may have classes that still don't have a parent. these orphans will be adopted by root.
@@ -559,7 +560,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
     public Node createPropertyTree() {
     	
     	//Vertex root = new Vertex(PROPERTYROOTNAME, PROPERTYROOTNAME, model, ontology.getSourceOrTarget());
-    	Node root = new AMNode( -1, PROPERTYROOTNAME, AMNode.XMLNODE, ontology.getID() );
+    	Node root = new AMNode((Resource)null, -1, PROPERTYROOTNAME, AMNode.XMLNODE, ontology.getID() );
     	treeCount++;
         uniqueKey = 0; //restart the key because properties are kept in a differnt structure with different index
         processedSubs = new HashMap<OntResource, Node>();

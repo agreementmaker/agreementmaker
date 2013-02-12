@@ -14,6 +14,8 @@ import am.app.ontology.Ontology;
 import am.parsing.OutputController;
 import am.utility.BitVector;
 
+import com.hp.hpl.jena.rdf.model.Resource;
+
 /**
  * This class represents a mapping between two concepts from separate ontologies.
  */
@@ -26,6 +28,7 @@ public class Mapping implements Serializable
 	
 	private Node entity1 = null;
     private Node entity2 = null;
+    
     private double similarity = 0;
     private MappingRelation relation = null;
     private String provenance;

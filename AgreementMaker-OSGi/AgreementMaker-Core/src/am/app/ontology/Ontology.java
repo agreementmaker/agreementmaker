@@ -104,7 +104,7 @@ public class Ontology {
 	}
 
 	
-	protected String filename;//file name with all the path
+	protected String filename = "(no filename)";//file name with all the path
 	
 	
 	protected String title; //usually is the name of the file without the path and is the name of the root vertex
@@ -128,21 +128,13 @@ public class Ontology {
 	
 	private String URI;
 	
-	private List<DatatypeProperty> dataProperties;
 	public List<DatatypeProperty> getDataProperties() {
-		return dataProperties;
-	}
-	public void setDataProperties(List<DatatypeProperty> dtps) {
-		dataProperties = dtps;
+		return ontModel.listDatatypeProperties().toList();
 	}
 	
-	private List<ObjectProperty> objectProperties;
 	public List<ObjectProperty> getObjectProperties() {
-		return objectProperties;
+		return ontModel.listObjectProperties().toList();
 	}
-	public void setObjectProperties(List<ObjectProperty> ops) {
-		objectProperties = ops;
-	}	
 	
 	private HashMap<String, Node> uriMap;
 	
@@ -187,7 +179,7 @@ public class Ontology {
 		this.format = format;
 	}
 
-	public List<Node> getClassesList() {
+	public List<Node> getClassesList() { 
 		return classesList;
 	}
 	public void setClassesList(List<Node> classesList) {
@@ -200,6 +192,8 @@ public class Ontology {
 		this.propertiesList = propertiesList;
 	}
 
+	
+	
 	/** @return the root of the classes hierarchy. */
 	public Node getClassesRoot()                   { return classesRoot; }
 	public void   setClassesRoot(Node classesRoot) { this.classesRoot = classesRoot; }
@@ -212,7 +206,11 @@ public class Ontology {
 	public Node getPropertiesRoot() { return propertiesRoot; }
 	public void setPropertiesRoot(Node propertiesRoot) { this.propertiesRoot = propertiesRoot; }
 	
-	public String getTitle() { return title; }
+	public String getTitle() { 
+		if( title == null ) return "(no ontology title)"; 
+		return title; 
+	}
+	
 	public void setTitle(String title) { this.title = title; }
 	
 	//used in UImenu.ontologyDetails()
@@ -260,6 +258,7 @@ public class Ontology {
 
 	private String description;
 	private HashMap<String, List<MatchingPair>> instanceTypeMappings;
+	private OntologyDefinition ontDefinition;
 	
 	public void setOntResource2NodeMap(HashMap<OntResource, Node> processedSubs, alignType atype) {
 		if( atype == alignType.aligningClasses ) {
@@ -383,4 +382,10 @@ public class Ontology {
 		}
 		return null;
 	}
+
+	public void setDefinition(OntologyDefinition def) {
+		this.ontDefinition = def;
+	}
+	
+	public OntologyDefinition getDefinition() { return ontDefinition; }
 }

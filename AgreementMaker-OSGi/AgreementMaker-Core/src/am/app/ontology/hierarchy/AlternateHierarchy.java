@@ -51,7 +51,7 @@ public class AlternateHierarchy implements NodeHierarchy {
 		this.ontology = ont;
 		this.property = partOfProperty;
 		
-		anonymousNode = new AMNode(-1, "Anonymous Node", AMNode.OWLCLASS, ont.getID());
+		anonymousNode = new AMNode((Resource)null, -1, "Anonymous Node", AMNode.OWLCLASS, ont.getID());
 		
 		getAlternateClassHierarchyRoots(ontology.getModel(), property);
 	}

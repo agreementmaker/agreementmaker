@@ -21,13 +21,18 @@ import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.oneToOneSelection.MappingMWBM;
 import am.app.mappingEngine.oneToOneSelection.MaxWeightBipartiteMatching;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
+import am.app.mappingEngine.similarityMatrix.AggregativeSparseMatrix;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.mappingEngine.threaded.AbstractMatcherRunner;
+import am.app.ontology.JenaBackedOntClassNode;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.userInterface.MatchingProgressDisplay;
+
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 /**
  * transient data are not taken into account while serializing/deserializing the matcher
@@ -439,10 +444,17 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		if( sourceOntology == null || targetOntology == null ) return;  // cannot align just one ontology 
 
 		if(alignClass && !this.isCancelled() ) {
-			List<Node> sourceClassList = sourceOntology.getClassesList();
-			List<Node> targetClassList = targetOntology.getClassesList();
-			classesMatrix = alignClasses(sourceClassList,targetClassList );	
-			//classesMatrix.show();
+			
+			if( sourceOntology.getDefinition().largeOntologyMode || 
+				targetOntology.getDefinition().largeOntologyMode ) {
+				classesMatrix = alignManyClasses();		
+			}
+			else {
+				List<Node> sourceClassList = sourceOntology.getClassesList();
+				List<Node> targetClassList = targetOntology.getClassesList();
+				classesMatrix = alignClasses(sourceClassList,targetClassList );	
+				//classesMatrix.show();
+			}
 		}
 		if(alignProp && !this.isCancelled() ) {
 			List<Node> sourcePropList = sourceOntology.getPropertiesList();
@@ -460,6 +472,39 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return alignNodesOneByOne(sourceClassList, targetClassList, alignType.aligningClasses);
 	}
 
+	protected SimilarityMatrix alignManyClasses() throws Exception {
+		AggregativeSparseMatrix matrix = new AggregativeSparseMatrix(sourceOntology, targetOntology, getParam().threshold);
+		
+		ExtendedIterator<OntClass> sourceClasses = sourceOntology.getModel().listClasses();
+		
+		int i = 0;
+		while( sourceClasses.hasNext() ) {
+			OntClass sourceClass = sourceClasses.next();
+			ExtendedIterator<OntClass> targetClasses = targetOntology.getModel().listClasses();
+			
+			int j = 0;
+			while( targetClasses.hasNext() ) {
+				OntClass targetClass = targetClasses.next();
+				Mapping alignment;
+				if( !this.isCancelled() ) { 
+					alignment = alignTwoNodes(
+						new JenaBackedOntClassNode(sourceClass), new JenaBackedOntClassNode(targetClass), alignType.aligningClasses, matrix); }
+				else { return matrix; }
+				if(alignment != null && alignment.getSimilarity() >= param.threshold)
+					matrix.set(i,j,alignment);
+				if( isProgressDisplayed() ) {
+					stepDone(); // we have completed one step
+					if( alignment != null && alignment.getSimilarity() >= param.threshold ) tentativealignments++; // keep track of possible alignments for progress display
+				}
+				j++;
+			}
+			if( isProgressDisplayed() ) updateProgress(); // update the progress dialog, to keep the user informed.
+			i++;
+		}
+		
+		return matrix;
+	}
+	
 	protected SimilarityMatrix alignNodesOneByOne( List<Node> sourceList, List<Node> targetList, alignType typeOfNodes) throws Exception {
 
 		if(param.completionMode && inputMatchers != null && inputMatchers.size() > 0){ 
@@ -1512,9 +1557,17 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		 stepsDone = 0;
 		 stepsTotal = 0;  // total number
 		 if( alignClass ) {
-			 int n = sourceOntology.getClassesList().size();
-			 int m = targetOntology.getClassesList().size();
-			 stepsTotal += n*m;  // total number of comparisons between the class nodes 
+			 if( sourceOntology.getDefinition().largeOntologyMode ||
+				 targetOntology.getDefinition().largeOntologyMode ) {
+				 int n = sourceOntology.getModel().listClasses().toList().size();
+				 int m = targetOntology.getModel().listClasses().toList().size();
+				 stepsTotal += n*m;  // total number of comparisons between the class nodes
+			 }
+			 else {
+				 int n = sourceOntology.getClassesList().size();
+				 int m = targetOntology.getClassesList().size();
+				 stepsTotal += n*m;  // total number of comparisons between the class nodes
+			 }
 		 }
 
 		 if( alignProp ) {

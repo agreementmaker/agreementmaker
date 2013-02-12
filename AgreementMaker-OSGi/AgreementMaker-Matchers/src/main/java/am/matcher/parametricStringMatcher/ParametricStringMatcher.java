@@ -22,6 +22,7 @@ import am.app.similarity.StringSimilarityMeasure;
 import am.userInterface.MatchingProgressDisplay;
 
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 public class ParametricStringMatcher extends AbstractMatcher { 
 
@@ -503,8 +504,8 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	}
 	
 	public static void testStrings(String s1, String s2) throws Exception {
-		Node source = new AMNode(0, s1, "owl-propertynode", 0);
-		Node target = new AMNode(1, s2, "owl-propertynode", 0);
+		Node source = new AMNode((Resource)null, 0, s1, "owl-propertynode", 0);
+		Node target = new AMNode((Resource)null, 1, s2, "owl-propertynode", 0);
 
 		
 

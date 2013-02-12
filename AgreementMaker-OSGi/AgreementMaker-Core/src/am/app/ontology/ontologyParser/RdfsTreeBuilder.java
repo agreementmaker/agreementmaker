@@ -21,6 +21,7 @@ import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 /**
@@ -89,9 +90,9 @@ public class RdfsTreeBuilder extends TreeBuilder{
 			ontology.setSkipOtherNamespaces(skipOtherNamespaces);
 
 			//treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(),ontModel,  ontology.getSourceOrTarget());//Creates the root of type Vertex for the tree, is a fake vertex with no corresponding node
-			treeRoot = new AMNode(-1, ontology.getTitle(), AMNode.RDFNODE, ontology.getID());
+			treeRoot = new AMNode((Resource)null, -1, ontology.getTitle(), AMNode.RDFNODE, ontology.getID());
 			//Vertex classRoot = new Vertex(RDFCLASSROOTNAME,RDFCLASSROOTNAME,ontModel,  ontology.getSourceOrTarget());
-			Node classRoot = new AMNode( -1, RDFCLASSROOTNAME, AMNode.OWLCLASS, ontology.getID());
+			Node classRoot = new AMNode((Resource)null, -1, RDFCLASSROOTNAME, AMNode.OWLCLASS, ontology.getID());
 			processedSubs = new HashMap<OntResource, Node>();
 			ExtendedIterator<OntClass> i = ontModel.listHierarchyRootClasses();
 			classRoot = createTree(classRoot, i);//should add all valid classes and subclasses in the iterator to the classRoot
@@ -107,7 +108,7 @@ public class RdfsTreeBuilder extends TreeBuilder{
 	        processedSubs = new HashMap<OntResource, Node>();
 	        
 			//Vertex propertiesRoot = new Vertex(RDFPROPERTIESROOTNAME, RDFPROPERTIESROOTNAME, ontModel, ontology.getSourceOrTarget());
-	        Node propertiesRoot = new AMNode( -1, RDFPROPERTIESROOTNAME, AMNode.OWLPROPERTY, ontology.getID() );
+	        Node propertiesRoot = new AMNode((Resource)null, -1, RDFPROPERTIESROOTNAME, AMNode.OWLPROPERTY, ontology.getID() );
 			propertiesRoot = createPropertiesTree( propertiesRoot, listHierarchyRootProperties(ontModel) );
 			ontology.setOntResource2NodeMap( processedSubs, alignType.aligningClasses );
 			

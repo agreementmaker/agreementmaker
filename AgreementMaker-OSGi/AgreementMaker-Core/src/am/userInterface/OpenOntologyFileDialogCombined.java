@@ -232,6 +232,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			try {
 				if( sourcePanel.isEnabled() ) {
 					Ontology ont = ui.openFile(sourceDefinition);
+					ont.setDefinition(sourceDefinition); // FIXME: This is a hack.  We should not set the definition here.
 					if( ont != null ) {
 						Core.getInstance().setSourceOntology(ont);
 						saveDefinition(sourceDefinition, true);
@@ -248,6 +249,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			try {
 				if( targetPanel.isEnabled() ) {
 					Ontology ont = ui.openFile(targetDefinition);
+					ont.setDefinition(targetDefinition); // FIXME: This is a hack.  We should not set the definition here.
 					if ( ont != null ) {
 						Core.getInstance().setTargetOntology(ont);
 						saveDefinition(targetDefinition, false);
@@ -404,15 +406,15 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			
 			comboboxes = new JComboBox[5];
 			
-			comboboxes[0] = new JComboBox(GlobalStaticVariables.languageStrings);
-			comboboxes[1] = new JComboBox(GlobalStaticVariables.syntaxStrings);
-			comboboxes[2] = new JComboBox(datasetStrings);
-			comboboxes[3] = new JComboBox(endpointStrings);
-			comboboxes[4] = new JComboBox(alignmentStrings);
+			comboboxes[0] = new JComboBox<String>(GlobalStaticVariables.languageStrings);
+			comboboxes[1] = new JComboBox<String>(GlobalStaticVariables.syntaxStrings);
+			comboboxes[2] = new JComboBox<String>(datasetStrings);
+			comboboxes[3] = new JComboBox<String>(endpointStrings);
+			comboboxes[4] = new JComboBox<String>(alignmentStrings);
 			
 			// Initialize the checkboxes
 			
-			checkboxes = new JCheckBox[4];
+			checkboxes = new JCheckBox[5];
 			
 			checkboxes[0] = new JCheckBox("Persistent");
 			checkboxes[0].setSelected(def.onDiskPersistent);
@@ -422,6 +424,8 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			checkboxes[2].setSelected(def.loadSchemaAlignment);
 			checkboxes[3] = new JCheckBox("Load ontology");
 			checkboxes[3].setSelected(def.loadOntology);
+			checkboxes[4] = new JCheckBox("Large Ontology Mode");
+			checkboxes[4].setSelected(def.largeOntologyMode);
 			
 			// Initialize the radio buttons.
 			
@@ -503,6 +507,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			checkboxes[1].addActionListener(this);
 			checkboxes[2].addActionListener(this);
 			checkboxes[3].addActionListener(this);
+			checkboxes[4].addActionListener(this);
 			
 			// Initial state
 			
@@ -552,7 +557,11 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			
 			lay.setHorizontalGroup( lay.createParallelGroup()
 				
-				.addComponent(checkboxes[3])
+				// [] Load Ontology [] Large Ontology Mode
+				.addGroup ( lay.createSequentialGroup()
+						.addComponent(checkboxes[3])
+						.addComponent(checkboxes[4])
+				)
 					
 				// [] Ontology File/URL: [___________________________] [...]
 				.addGroup( lay.createSequentialGroup()
@@ -641,7 +650,10 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			
 			lay.setVerticalGroup( lay.createSequentialGroup()
 				
-				.addComponent(checkboxes[3])
+				.addGroup( lay.createParallelGroup()
+						.addComponent(checkboxes[3])
+						.addComponent(checkboxes[4])
+				)
 					
 				// Ontology File/URL: [___________________________] [...]
 				.addGroup( lay.createParallelGroup(GroupLayout.Alignment.CENTER, false)
@@ -946,6 +958,8 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 					textfields[0].getText(), // uri
 					OntologyLanguage.getLanguage(comboboxes[0].getSelectedIndex()), // language
 					OntologySyntax.getSyntax(comboboxes[1].getSelectedIndex()) ); // syntax
+			
+			def.largeOntologyMode = checkboxes[4].isSelected();
 			
 			if( radiobuttons[1].isSelected() ) {
 				// on disk

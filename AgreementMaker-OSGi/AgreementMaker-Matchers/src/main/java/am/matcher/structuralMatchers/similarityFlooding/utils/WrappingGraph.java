@@ -23,6 +23,7 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -376,7 +377,8 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 		    		if(wgVertices.get(i).getNodeType().equals(EOntologyNodeType.CLASS)){
 		    			n = NodeUtility.getNodefromRDFNode(ont, wgVertices.get(i).getObject(), alignType.aligningClasses);
 						if(n == null){
-							n = new AMNode(key, wgVertices.get(i).getObject().toString(), AMNode.OWLCLASS, ont.getIndex());
+							// the resoure should be null? I don't know -- Cosmin. 
+							n = new AMNode((Resource)null, key, wgVertices.get(i).getObject().toString(), AMNode.OWLCLASS, ont.getIndex());
 							wgVertices.get(i).setMatrixIndex(key);
 							key++;
 						}
@@ -389,7 +391,8 @@ public class WrappingGraph extends DirectedGraph<WGraphEdge, WGraphVertex>{
 		    		if(wgVertices.get(i).getNodeType().equals(EOntologyNodeType.PROPERTY)){
 			    		n = NodeUtility.getNodefromRDFNode(ont, wgVertices.get(i).getObject(), alignType.aligningProperties);
 						if(n == null){
-							n = new AMNode(key, wgVertices.get(i).getObject().toString(), AMNode.OWLPROPERTY, ont.getIndex());
+							// the resoure should be null? I don't know -- Cosmin.
+							n = new AMNode((Resource)null, key, wgVertices.get(i).getObject().toString(), AMNode.OWLPROPERTY, ont.getIndex());
 							wgVertices.get(i).setMatrixIndex(key);
 							key++;
 			    		}

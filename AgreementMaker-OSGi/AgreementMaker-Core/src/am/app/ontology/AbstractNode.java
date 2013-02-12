@@ -11,7 +11,7 @@ public abstract class AbstractNode implements Node {
 	 *  If this node is a ClassNode, the resource will be instance of OntClass.
 	 *  The Jena Resource is used to access all information in the ontology regarding this concept.
 	 */
-	protected Resource resource;
+	protected final Resource resource;
 	
 	public AbstractNode(Resource resource) {
 		this.resource = resource;
@@ -20,7 +20,7 @@ public abstract class AbstractNode implements Node {
 	@Override public abstract int compareTo(Node arg0);
 
 	@Override public Resource getResource() { return resource; }
-	@Override public void setResource(Resource res) { this.resource = res; }
+	//@Override public void setResource(Resource res) { this.resource = res; }
 	
 	@Override public String getLocalName() { return resource.getLocalName(); }
 

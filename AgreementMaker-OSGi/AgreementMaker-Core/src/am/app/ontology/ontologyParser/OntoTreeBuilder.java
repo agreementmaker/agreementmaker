@@ -26,6 +26,7 @@ import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.LocationMapper;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -85,6 +86,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 	 * @param format 
 	 * @param skip Skip other namespaces, usually set to true.
 	 * @param reas Set to true in order to use a reasoner when loading the ontology, false to load without using a reasoner.
+	 * @deprecated Use {@link #OntoTreeBuilder(OntologyDefinition)} instead.
 	 */
 	@Deprecated
 	public OntoTreeBuilder(String fileName, String language, String format, boolean skip, boolean reas) {
@@ -95,6 +97,9 @@ public class OntoTreeBuilder extends TreeBuilder{
 	}
 	
 	// this function is here for legacy purposes, needs to be removed
+	/**
+	 * @deprecated Use {@link #OntoTreeBuilder(OntologyDefinition)} instead.
+	 */
 	@Deprecated
 	public OntoTreeBuilder(String fileName, String language, String format, boolean skip ) {
 		super(fileName, language, format); 
@@ -251,7 +256,10 @@ public class OntoTreeBuilder extends TreeBuilder{
 		
 		/* TODO Fix this. Code for the location mapper. It should become one of the properties in AM. 
 		 * It allows to resolve imports on disk, since sometimes the online lookup freezes with no reason.
-		 It is extremely important in LOD! */
+		 It is extremely important in LOD! 
+		 
+		 TODO: There should be an Ontologies Manager where the LocationMapper entries can be managed. -- Cosmin.
+		 */
 		
 		/*
 		LocationMapper mapper = new LocationMapper();
@@ -301,14 +309,32 @@ public class OntoTreeBuilder extends TreeBuilder{
 		}
 		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
 
-		if( progressDialog != null ) progressDialog.append("Creating AgreementMaker data structures ... ");
+		//if( progressDialog != null ) progressDialog.append("Creating AgreementMaker data structures ... ");
 
 		//Preparing model
+		if( progressDialog != null ) progressDialog.append("Preparing Jena model ... ");
 		model.prepare();		
-		
-		createDataStructures();
-        
         if( progressDialog != null ) progressDialog.appendLine("done.");
+        
+		// If we're not in the large ontology mode, do the legacy code.
+		if( !ontDefinition.largeOntologyMode ) {
+			if( progressDialog != null ) progressDialog.append("Creating AgreementMaker data structures ... ");
+			createDataStructures();
+			if( progressDialog != null ) progressDialog.appendLine("done.");
+		}
+		else {
+			// large ontology mode: don't create any extra Node classes.
+	        treeRoot = new AMNode((Resource)null, -1, ontology.getTitle(), AMNode.RDFNODE, ontology.getID() );
+	        treeCount++;
+
+	        Node classRoot = new AMNode(owlThing, -1, ontology.getTitle(), AMNode.RDFNODE, ontology.getID());
+	        treeRoot.addChild(classRoot);
+	        ontology.setClassesRoot( classRoot);
+	        
+	        Node propertyRoot = new AMNode(owlThing, -1, ontology.getTitle(), AMNode.RDFNODE, ontology.getID());
+	        treeRoot.addChild(propertyRoot);
+	        ontology.setPropertiesRoot( propertyRoot);
+		}
 	}
 	
 	private void createDataStructures() {
@@ -333,7 +359,7 @@ public class OntoTreeBuilder extends TreeBuilder{
         
         //The root of the tree is a fake vertex node, just containing the name of the ontology,
         //treeRoot = new Vertex(ontology.getTitle(),ontology.getTitle(), model, ontology.getSourceOrTarget() );
-        treeRoot = new AMNode(-1, ontology.getTitle(), AMNode.RDFNODE, ontology.getID() );
+        treeRoot = new AMNode((Resource)null, -1, ontology.getTitle(), AMNode.RDFNODE, ontology.getID() );
         treeCount++;
 
         treeRoot.addChild(classRoot);
@@ -370,7 +396,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 		
 		// this is the root node of the class tree (think of it like owl:Thing)
 		//Vertex root = new Vertex(CLASSROOTNAME, CLASSROOTNAME, model, ontology.getSourceOrTarget());
-		Node root = new AMNode(-1, CLASSROOTNAME, AMNode.OWLCLASS, ontology.getID());
+		Node root = new AMNode((Resource)null, -1, CLASSROOTNAME, AMNode.OWLCLASS, ontology.getID());
 		treeCount++;  // we created a new vertex, increment treeCount
 
 		// we may have classes that still don't have a parent. these orphans will be adopted by root.
@@ -631,7 +657,7 @@ public class OntoTreeBuilder extends TreeBuilder{
     private Node createPropertyTree() {
     	
     	//Vertex root = new Vertex(PROPERTYROOTNAME, PROPERTYROOTNAME, model, ontology.getSourceOrTarget());
-    	Node root = new AMNode( -1, PROPERTYROOTNAME, AMNode.OWLPROPERTY, ontology.getID() );
+    	Node root = new AMNode((Resource)null, -1, PROPERTYROOTNAME, AMNode.OWLPROPERTY, ontology.getID() );
     	treeCount++;
         uniqueKey = 0; //restart the key because properties are kept in a differnt structure with different index
         processedSubs = new HashMap<OntResource, Node>();

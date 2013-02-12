@@ -23,6 +23,8 @@ import am.matcher.parametricStringMatcher.ParametricStringMatcher;
 import am.matcher.parametricStringMatcher.ParametricStringParameters;
 import am.utility.Pair;
 
+import com.hp.hpl.jena.rdf.model.Resource;
+
 /**
  * @author Michele Caci
  */
@@ -325,8 +327,8 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 				// FIXME: Revert the change to the next line. -- Cosmin.
 				// Currently it is a bug!!!
 				localMatrix.set(i, j,
-						new Mapping(new AMNode(i, s, typeOfNodes.toString(), 0),
-								new AMNode(j, t, typeOfNodes.toString(), 0),
+						new Mapping(new AMNode((Resource)null, i, s, typeOfNodes.toString(), 0),
+								new AMNode((Resource)null, j, t, typeOfNodes.toString(), 0),
 								tempValue));
 
 				// DEBUG INFO
@@ -614,8 +616,8 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 	}
 
 	public static void testStrings(String s1, String s2) throws Exception {
-		Node source = new AMNode(0, s1, "owl-propertynode", 0);
-		Node target = new AMNode(1, s2, "owl-propertynode", 0);
+		Node source = new AMNode((Resource)null, 0, s1, "owl-propertynode", 0);
+		Node target = new AMNode((Resource)null, 1, s2, "owl-propertynode", 0);
 
 		AdvancedSimilarityParameters as= new AdvancedSimilarityParameters();
 		//checking wordnet and check synonym

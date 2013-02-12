@@ -19,6 +19,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.OWL;
 
 public class TabbedTextBuilder extends TreeBuilder {
@@ -45,14 +46,13 @@ public class TabbedTextBuilder extends TreeBuilder {
 		
 		// create a new tree root
 		//treeRoot = new Vertex(ontology.getTitle(), ontology.getSourceOrTarget());
-		treeRoot = new AMNode( -1, ontology.getTitle(), AMNode.RDFNODE, ontology.getID());
+		treeRoot = new AMNode((Resource)null, -1, ontology.getTitle(), AMNode.RDFNODE, ontology.getID());
 		//Vertex ClassRoot = new Vertex(XMLHIERARCHY, ontology.getSourceOrTarget());
-		Node ClassRoot = new AMNode( -1 , XMLHIERARCHY, AMNode.XMLNODE, ontology.getID() );
+		Node ClassRoot = new AMNode((Resource)null, -1 , XMLHIERARCHY, AMNode.XMLNODE, ontology.getID() );
 		//ClassRoot.setOntModel(m);
 		
-		Node rootNode = new AMNode(uniqueKey,"OWL:Thing", AMNode.XMLNODE, ontology.getID());
+		Node rootNode = new AMNode(owlThing, uniqueKey,"OWL:Thing", AMNode.XMLNODE, ontology.getID());
 		uniqueKey++;
-		rootNode.setResource(owlThing);
 		rootNode.setLabel("OWL:Thing");
 		//ClassRoot.setNode(rootNode);
 		
@@ -115,9 +115,9 @@ public class TabbedTextBuilder extends TreeBuilder {
 					
 					System.out.println("Localname: " +currentClass.getLocalName());
 					
-					currentNode = new AMNode(uniqueKey,name, AMNode.XMLNODE, ontology.getID());
 					
-					currentNode.setResource(currentClass);
+					currentNode = new AMNode(currentClass, uniqueKey,name, AMNode.XMLNODE, ontology.getID());
+					
 					processedSubs.put( ((OntResource)currentClass) ,currentNode);
 					ontology.getClassesList().add(currentNode); //THE XML FILES ONLY CONTAINS CLASSES IN OUR SEMPLIFICATION
 					uniqueKey++;

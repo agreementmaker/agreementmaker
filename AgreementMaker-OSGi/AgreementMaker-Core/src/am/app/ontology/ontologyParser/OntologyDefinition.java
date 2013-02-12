@@ -56,6 +56,12 @@ public class OntologyDefinition {
 	
 	public LocationMapper locationMapper;
 	
+	/**
+	 * This setting will be used temporarily while we scale AgreementMaker-Core
+	 * to work with large ontologies.
+	 */
+	public boolean largeOntologyMode = false;
+	
 	public OntologyDefinition(boolean loadOntology, String ontologyURI, OntologyLanguage lang, OntologySyntax syn) {
 		this.loadOntology = loadOntology;
 		this.ontologyURI = ontologyURI;

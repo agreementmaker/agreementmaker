@@ -1,6 +1,7 @@
 package am.app.ontology;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -8,7 +9,10 @@ import am.userInterface.ontology.OntologyConceptGraphics;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class JenaBackedOntClassNode implements Node {
 
@@ -25,40 +29,44 @@ public class JenaBackedOntClassNode implements Node {
 
 	@Override
 	public int compareTo(Node arg0) {
-		// TODO Auto-generated method stub
-		return 0;
+		return getLocalName().compareTo(arg0.getLocalName());
 	}
 
 	@Override
 	public Resource getResource() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setResource(Resource owlThing) {
-		// TODO Auto-generated method stub
-		
+		return jenaObject;
 	}
 
 	@Override
 	public int getParentCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return jenaObject.listSuperClasses(true).toList().size();
 	}
 
 	@Override
 	public List<Node> getParents() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Node> parentsList = new LinkedList<Node>();
+		ExtendedIterator<OntClass> parents = jenaObject.listSuperClasses(true);
+		while( parents.hasNext() ) {
+			parentsList.add(new JenaBackedOntClassNode(parents.next()));
+		}
+		return parentsList;
 	}
 
 	@Override
 	public List<Node> getChildren() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Node> childList = new LinkedList<Node>();
+		ExtendedIterator<OntClass> children = jenaObject.listSubClasses(true);
+		while( children.hasNext() ) {
+			childList.add(new JenaBackedOntClassNode(children.next()));
+		}
+		return childList;
 	}
 
+	@Override
+	public int getChildCount() {
+		return jenaObject.listSubClasses(true).toList().size();
+	}
+	
 	@Override
 	public int getLevel() {
 		// TODO Auto-generated method stub
@@ -175,38 +183,29 @@ public class JenaBackedOntClassNode implements Node {
 
 	@Override
 	public String getLabel() {
-		// TODO Auto-generated method stub
-		return null;
+		RDFNode labelValue = jenaObject.getPropertyValue(RDFS.label);
+		if( labelValue == null ) return null;
+		else return labelValue.toString();
 	}
 
 	@Override
 	public String getPropOrClassString() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getAnnotationsString() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getDescriptionsString() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getIndividualsString() {
-		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public int getChildCount() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	@Override

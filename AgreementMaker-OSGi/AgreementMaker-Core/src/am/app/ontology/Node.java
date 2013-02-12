@@ -11,7 +11,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 public interface Node extends Comparable<Node> {
 
-	void setResource(Resource res);
+	//void setResource(Resource res);
 	Resource getResource();
 
 	String getLocalName();
