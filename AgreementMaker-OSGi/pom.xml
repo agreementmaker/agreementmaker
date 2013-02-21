@@ -16,6 +16,7 @@
 		<module>AgreementMaker-BatchMode</module>
 		<module>AgreementMaker-CollaborationEngine</module>
 		<module>AgreementMaker-UserFeedback</module>
+		<module>AgreementMaker-SemanticExplanation</module>
 		<module>Matcher-LinkedOpenData</module>
 		<module>Matcher-PRA</module>
 		<module>AgreementMaker-Matchers</module>
