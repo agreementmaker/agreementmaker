@@ -25,8 +25,8 @@ public class AMActivator implements BundleActivator {
 		this.context=context;
 		System.out.println("AgreementMaker Core started...");
 		
-		System.setProperty("apple.laf.useScreenMenuBar", "true");
-		System.setProperty("apple.awt.brushMetalLook", "true");
+		//System.setProperty("apple.laf.useScreenMenuBar", "true");
+		//System.setProperty("apple.awt.brushMetalLook", "true");
 		
 		regUserManualMatcher = context.registerService(AbstractMatcher.class, new UserManualMatcher(), new Hashtable<String,String>());
 		regReferenceAlignmentMatcher = context.registerService(AbstractMatcher.class, new ReferenceAlignmentMatcher(), new Hashtable<String,String>());
