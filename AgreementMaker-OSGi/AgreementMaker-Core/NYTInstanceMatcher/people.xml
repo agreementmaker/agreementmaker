@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<KnowledgeBase scratchdir="scratch">
+	
+	<!-- Labels may be added later. (Need Lucene indexing for this to be useful.)
+		<Dataset id="dbp_labels" ontid="dbpedia" directory="datasets/dbp_labels" /> -->
+	
+	<!-- Geolabels may be added later.
+		<Dataset id="dbp_geolabels" ontid="dbpedia" directory="datasets/dbp_geolabels" /> -->
+	
+	<Dataset id="dbp_persondata" ontid="" directory="datasets/dbp_persondata"
+		archive="archive/persondata_en.nt.bz2" />
+
+</KnowledgeBase>
