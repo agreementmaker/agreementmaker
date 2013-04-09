@@ -20,6 +20,7 @@
 		<module>Matcher-LinkedOpenData</module>
 		<module>Matcher-PRA</module>
 		<module>AgreementMaker-Matchers</module>
+		<module>Matcher-CustomMatcher</module>
 		<!-- <module>AM_ROOT</module> -->
 	</modules>
 	
