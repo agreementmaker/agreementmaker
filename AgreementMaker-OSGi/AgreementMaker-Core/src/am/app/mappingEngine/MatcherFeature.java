@@ -26,5 +26,6 @@ public enum MatcherFeature {
 	THREADED_OVERLAP,										// Supports running multiple invocations of alignTwoNodes() with overlaps between the source/target pairs.  
 															// Overlapping means that if alignTwoNodes() is currently matching source1 with target1, simultaneously invoking alignTwoNodes() to match source1 with target2 will overlap with the first invocation (because they're both matching source1 with another node). 
 	
+	EXPLANATATION_ENABLED,									// Whether semantic explanation will be enabled for the matcher
 	; // THE END .. OR IS IT???
 }
