@@ -7,6 +7,7 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
@@ -29,24 +30,37 @@ public class MyMatcher_Explanation extends AbstractMatcher {
     private ExplanationNode levenshteinExplanation = new ExplanationNode("Levenshtein Distance");
     private ExplanationNode jarowinglerExplanation = new ExplanationNode("Jaro-Wingler metric");
     
-    
+    private Ontology sourceOntology;
+    private Ontology targetOntology;
+    /*
    
+	public Ontology getTargetOntology_static() {
+		return targetOntology;
+	}
+
+
+	public void setTargetOntology(Ontology targetOntology) {
+		this.targetOntology = targetOntology;
+	}
+
+
+	public Ontology getSourceOntology_static() {
+		return sourceOntology;
+	}
+
+
+	public void setSourceOntology(Ontology sourceOntology) {
+		this.sourceOntology = sourceOntology;
+	}
+
+*/
 	public MyMatcher_Explanation() {
 		super();
 		setName("My Matcher with Explanation");
-		setExplanationEnabled(true);
-		Core.getInstance().setCurrentMatcher(this);
 		setCategory(MatcherCategory.USER);
-	}
-	
-	@Override
-	public boolean isExplanationEnabled() {
-		return explanationEnabled;
-	}
-	
-	@Override
-	public void setExplanationEnabled(boolean explanationEnabled) {
-		this.explanationEnabled = explanationEnabled;
+		addFeature(MatcherFeature.EXPLANATATION_ENABLED);
+		sourceOntology = getSourceOntology();
+		targetOntology = getTargetOntology();
 	}
 	
 	
@@ -152,9 +166,15 @@ public class MyMatcher_Explanation extends AbstractMatcher {
 		resultExplanation.setVal(finalSimilarity);
 		resultExplanation.setCriteria(CombinationCriteria.VOTING);
 
+		// storing into the appropriate location inside the explanation matrix
+		if (!sourceMap.isEmpty() && !targetMap.isEmpty() && ExplanationNode.generateExplanation) {
+			setExplanationMatrix(source, target);
+		}   
+		
 		return new Mapping(source, target, finalSimilarity);
     
 }
+    /*
     @Override
     public void setExplanation(Node source, Node target) {
     	resultExplanation = new ExplanationNode("Final Explanation");
@@ -181,7 +201,7 @@ public class MyMatcher_Explanation extends AbstractMatcher {
          * Finding out the string similarity value between source node and target node
          * using Leveinshtein and Jaro Winkler string similarity metric
          */
-        
+        /*
         double stringSimilarity = findStringSimilarity(sourceMap, targetMap);
         
         double finalSimilarity = 0;
@@ -194,6 +214,7 @@ public class MyMatcher_Explanation extends AbstractMatcher {
 		/*
 		 * Computing Synonym Similarity using Wordnet
 		 */
+    /*
 		wordNetSimilarityExplanation.setVal(.01);
 		if (wordNetUtils.areSynonyms(source.getLabel(), target.getLabel())
 				|| wordNetUtils.areSynonyms(source.getLocalName(),target.getLocalName())
@@ -231,6 +252,7 @@ public class MyMatcher_Explanation extends AbstractMatcher {
 		 * Checking if values already map exactly, then we set absolute
 		 * similarity
 		 */
+    /*
 		absoluteSimilarityExplanation.setVal(.01);
 		if ((sourceMap.containsKey("name") && targetMap.containsKey("name") && sourceMap.get("name").equals(targetMap.get("name")))
 				|| (sourceMap.containsKey("name")&& targetMap.containsKey("label") && sourceMap.get("name").equals(targetMap.get("label")))
@@ -264,7 +286,7 @@ public class MyMatcher_Explanation extends AbstractMatcher {
 			setExplanationMatrix(source, target);
 		}    	
     }
-    
+    */
     /**
      * @param source
      * @param target
@@ -548,7 +570,7 @@ public class MyMatcher_Explanation extends AbstractMatcher {
 
     	SemanticExpln.getInstance().setClassExplanationMatrix(alignmentMappings.size(), alignmentMappings.size());  
     	SemanticExpln.getInstance().setPropertiesExplanationMatrix(alignmentMappings.size(), alignmentMappings.size());
-    	/*
+    	
     	for(Mapping m:alignmentMappings) {
     		try {
 	    		if(m.getEntity1().isClass() && m.getEntity2().isClass()) {
@@ -571,7 +593,7 @@ public class MyMatcher_Explanation extends AbstractMatcher {
 			}
     	}
     	SemanticExpln.findUniversalPaths(alignmentMappings);
-		*/
+		
     }
     
     @Override
