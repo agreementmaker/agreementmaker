@@ -28,6 +28,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import am.app.Core;
+import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.NodeUtility;
@@ -311,8 +313,10 @@ public class LegacyLayoutMouseHandler {
 						}
 						
 						//set the explanation data
-						if(Core.getInstance().isExplanationEnabled()) {
-							if(Core.getUI().getUISplitPane().getRightComponent() instanceof ExplanationSidebar){
+						List<AbstractMatcher> c = Core.getInstance().getMatcherInstances();
+						for(int i=0;i<c.size();i++){
+							if(c.get(i).supportsFeature(MatcherFeature.EXPLANATATION_ENABLED)){
+								if(Core.getUI().getUISplitPane().getRightComponent() instanceof ExplanationSidebar){
 								ExplanationSidebar esbOpen = new ExplanationSidebar();
 								if(selectedNodes.size()>0) {
 									LegacyNode selected=selectedNodes.get(0);
@@ -320,9 +324,16 @@ public class LegacyLayoutMouseHandler {
 									for (LegacyMapping l : mappingList ){
 										MappingData md=(MappingData)l.getObject();
 										if(md.alignment.getEntity1().isClass() && md.alignment.getEntity2().isClass()) {
+										//	c.get(i).setExplanation(md.alignment.getEntity1(), md.alignment.getEntity2());
+											SemanticExpln.getInstance().getClassExplanationMatrix()[md.alignment.getEntity1().getIndex()][md.alignment.getEntity2().getIndex()].describeTopDown();
 											esbOpen.tree = SemanticExpln.getInstance().getClassExplanationMatrix()[md.alignment.getEntity1().getIndex()][md.alignment.getEntity2().getIndex()].tree;
+											break;
 										} else if(md.alignment.getEntity1().isProp() && md.alignment.getEntity2().isProp()) {
+							    			
+										//	c.get(i).setExplanation(md.alignment.getEntity1(), md.alignment.getEntity2());
+							    			SemanticExpln.getInstance().getPropertiesExplanationMatrix()[md.alignment.getEntity1().getIndex()][md.alignment.getEntity2().getIndex()].describeTopDown();
 											esbOpen.tree = SemanticExpln.getInstance().getPropertiesExplanationMatrix()[md.alignment.getEntity1().getIndex()][md.alignment.getEntity2().getIndex()].tree;										
+											break;
 										}
 									}
 									esbOpen.init();
@@ -339,9 +350,18 @@ public class LegacyLayoutMouseHandler {
 									for (LegacyMapping l : mappingList ){
 										MappingData md=(MappingData)l.getObject();
 										if(md.alignment.getEntity1().isClass() && md.alignment.getEntity2().isClass()) {
+							    			
+										//	c.get(i).setExplanation(md.alignment.getEntity1(), md.alignment.getEntity2());						
+											SemanticExpln.getInstance().getClassExplanationMatrix()[md.alignment.getEntity1().getIndex()][md.alignment.getEntity2().getIndex()].describeTopDown();
 											esb.tree = SemanticExpln.getInstance().getClassExplanationMatrix()[md.alignment.getEntity1().getIndex()][md.alignment.getEntity2().getIndex()].tree;
+											break;
 										} else if(md.alignment.getEntity1().isProp() && md.alignment.getEntity2().isProp()) {
+							    			
+										//	c.get(i).setExplanation(md.alignment.getEntity1(), md.alignment.getEntity2());						
+											SemanticExpln.getInstance().getClassExplanationMatrix()[md.alignment.getEntity1().getIndex()][md.alignment.getEntity2().getIndex()].describeTopDown();
 											esb.tree = SemanticExpln.getInstance().getPropertiesExplanationMatrix()[md.alignment.getEntity1().getIndex()][md.alignment.getEntity2().getIndex()].tree;										
+											break;
+											
 										}
 									}
 									esb.init();
@@ -351,6 +371,7 @@ public class LegacyLayoutMouseHandler {
 								}
 							}
 						}
+					 }
 						
 						// Populate the annotation box.
 						if( hoveringOver.getGraphicalData().r != null ) {
