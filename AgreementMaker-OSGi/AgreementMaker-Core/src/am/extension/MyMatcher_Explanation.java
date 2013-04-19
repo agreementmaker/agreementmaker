@@ -416,8 +416,7 @@ public class MyMatcher_Explanation extends AbstractMatcher {
     	super.beforeAlignOperations();
     	Ontology source = getSourceOntology();
     	Ontology target = getTargetOntology();
-    	SemanticExpln.getInstance().setClassExplanationMatrix(source.getTreeCount(), target.getTreeCount());  
-    	SemanticExpln.getInstance().setPropertiesExplanationMatrix(source.getTreeCount(), target.getTreeCount());    	
+	
 
     }
 
@@ -431,6 +430,8 @@ public class MyMatcher_Explanation extends AbstractMatcher {
     	Alignment<Mapping> alignmentMappings =  getAlignment();
     	SemanticExpln.findUniversalPaths(alignmentMappings);
     	for(Mapping m:alignmentMappings) {
+        	SemanticExpln.getInstance().setClassExplanationMatrix(alignmentMappings.size(), alignmentMappings.size());  
+        	SemanticExpln.getInstance().setPropertiesExplanationMatrix(alignmentMappings.size(), alignmentMappings.size());    
     		if(m.getEntity1().isClass() && m.getEntity2().isClass()) {
     			SemanticExpln.getInstance().getClassExplanationMatrix()[m.getEntity1().getIndex()][m.getEntity2().getIndex()].describeTopDown();
     		} else if(m.getEntity1().isProp() && m.getEntity2().isProp()) {
