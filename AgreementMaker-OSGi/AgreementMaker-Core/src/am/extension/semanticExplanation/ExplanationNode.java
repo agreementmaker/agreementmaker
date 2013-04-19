@@ -19,6 +19,7 @@ public class ExplanationNode {
 	private boolean universalUse;
 	String source;
 	String target;
+	public static boolean generateExplanation = false;
 	
 	public ExplanationNode(double val, List<ExplanationNode> children,
 			CombinationCriteria criteria, String description) {
@@ -83,7 +84,7 @@ public class ExplanationNode {
 			tree.setRoot(this);
 			while(explnQ.size()>0) {
 				ExplanationNode node = explnQ.remove();
-				node.describeNode();
+				//node.describeNode();
 				// Graph<V, E> where V is the type of the vertices
 				// and E is the type of the edges
 				// Add some vertices. From above we defined these to be type Integer.
