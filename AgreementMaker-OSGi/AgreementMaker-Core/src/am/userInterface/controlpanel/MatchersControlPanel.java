@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.AbstractTableModel;
 
@@ -42,6 +43,9 @@ import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.extension.semanticExplanation.ExplanationNode;
+import am.extension.semanticExplanation.SemanticExpln;
+import am.extension.semanticExplanation.userInterface.ExplanationSidebar;
 import am.userInterface.ExportDialog;
 import am.userInterface.ImportDialog;
 import am.userInterface.MatcherParametersDialog;
@@ -69,7 +73,9 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 	private JButton btnQualityEvaluation = new JButton("Quality Evaluation");
 	private JButton btnExportAlignments = new JButton("Export");
 	private JButton btnImportAlignments = new JButton("Import");
-	private JButton btnThresholdTuning = new JButton("Tuning");;
+	private JButton btnThresholdTuning = new JButton("Tuning");
+	private JButton showExplanation = new JButton("Explanation");
+
 	
 	public MatchersControlPanel() {
 		super();
@@ -98,6 +104,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		btnExportAlignments.addActionListener(this);
 		btnImportAlignments.addActionListener(this);
 		btnThresholdTuning.addActionListener(this);
+		showExplanation.addActionListener(this);
 		
 		JPanel fauxToolBar = new JPanel();  // a toolbar wannabe
 		fauxToolBar.setLayout(new FlowLayout(FlowLayout.LEADING));
@@ -112,6 +119,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		fauxToolBar.add(btnExportAlignments);
 		fauxToolBar.add(btnImportAlignments);
 		fauxToolBar.add(btnThresholdTuning);
+		fauxToolBar.add(showExplanation);
 		
 		// Layout
 		layout.setHorizontalGroup( layout.createParallelGroup() 
@@ -160,6 +168,51 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			}
 			else if(obj == btnThresholdTuning) {
 				tuning();
+			} 
+			else if( obj == showExplanation ) {
+				// FIXME: Needs to be changed to use the Explanation Panel.
+				
+				// get the split pane (top part of the UI)
+
+				MatchingTask toBeEvaluated;
+				Alignment<Mapping> alignedMappings = null;
+				JSplitPane uiPane=Core.getUI().getUISplitPane();
+				int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows();
+				if(rowsIndex.length == 0) {
+					Utility.displayErrorPane("No matchers selected from the control panel table.", null);
+				} else {
+					toBeEvaluated = Core.getInstance().getMatchingTasks().get(rowsIndex[0]);
+					alignedMappings = toBeEvaluated.selectionResult.getAlignment();
+				}
+				ExplanationNode overallStructure = null;
+				if(alignedMappings != null) {
+					overallStructure = SemanticExpln.findUniversalPaths(alignedMappings);
+				}
+				if(overallStructure != null) {
+					overallStructure.describeTopDown();
+				}
+				if(uiPane.getRightComponent() instanceof ExplanationSidebar)
+				{
+					ExplanationSidebar p=new ExplanationSidebar();
+					if(overallStructure != null) {
+						p.tree = overallStructure.tree;
+						p.init();
+					}
+
+					uiPane.remove(Core.getUI().getUISplitPane().getRightComponent());
+					uiPane.setRightComponent(p);
+				}
+				else {
+					ExplanationSidebar p= new ExplanationSidebar();
+					if(overallStructure != null) {
+						p.tree = overallStructure.tree;
+						p.init();
+					}
+					p.setOldComponent(Core.getUI().getUISplitPane().getRightComponent());
+					Core.getUI().getUISplitPane().setRightComponent(p);
+				}
+				
+				
 			}
 		}
 
