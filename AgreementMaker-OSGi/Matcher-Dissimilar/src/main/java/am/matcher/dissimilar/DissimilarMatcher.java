@@ -57,7 +57,7 @@ import am.matcher.multiWords.MultiWordsParameters;
 import am.matcher.parametricStringMatcher.ParametricStringMatcher;
 import am.matcher.parametricStringMatcher.ParametricStringParameters;
 import am.userInterface.MatchingProgressDisplay;
-
+import am.matcher.*;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.Property;
 
@@ -76,7 +76,7 @@ public class DissimilarMatcher extends AbstractMatcher {
 
 	public DissimilarMatcher(){
 		super();
-		needsParam = true;
+		needsParam = false;
 		
 		setName("Dissimilar Matcher");
 		setCategory(MatcherCategory.HYBRID);
@@ -102,11 +102,13 @@ public class DissimilarMatcher extends AbstractMatcher {
 	public void match() throws Exception {
     	matchStart();
 
-    	DissimilarMatcherParameters p = (DissimilarMatcherParameters) param;
+    	//DissimilarMatcherParameters p = (DissimilarMatcherParameters) param;
     	
     	for( MatchingProgressDisplay mpd : progressDisplays ) mpd.ignoreComplete(true);
     	
     	AbstractMatcher finalResult = null;
+    	finalResult = runGeneralPurpose();
+    	/*
     	if( p.automaticConfiguration ) {
     		finalResult = automaticConfiguration();
     	}
@@ -134,7 +136,7 @@ public class DissimilarMatcher extends AbstractMatcher {
     		break;
     		}
     	}
-		
+		*/
 		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.ignoreComplete(false); 
     	
 		if( finalResult != null ) {
@@ -356,9 +358,10 @@ public class DissimilarMatcher extends AbstractMatcher {
 			
 			setupSubMatcher(lwc, lwcParam);
 			runSubMatcher(lwc, "LWC 5/6");
-			
+			return lwc;
 		}
-		
+		//IISM
+		/*
 		if( !isCancelled() ) {
 			AbstractMatcher iism = MatcherFactory.getMatcherInstance(IterativeInstanceStructuralMatcher.class);
 			
@@ -383,7 +386,7 @@ public class DissimilarMatcher extends AbstractMatcher {
 			
 			return iism;
 		}
-		
+		*/
 		return null;
 	}
 	
@@ -1143,7 +1146,7 @@ public class DissimilarMatcher extends AbstractMatcher {
 		long startime = 0, endtime = 0, time = 0;
 		long measure = 1000000;
 		
-		DissimilarMatcherParameters p = (DissimilarMatcherParameters) param;
+		//DissimilarMatcherParameters p = (DissimilarMatcherParameters) param;
 		
 		if( Core.DEBUG ) System.out.println("Running " + m.getRegistryEntry().getMatcherShortName() );
 		startime = System.nanoTime()/measure;
@@ -1157,13 +1160,13 @@ public class DissimilarMatcher extends AbstractMatcher {
 		endtime = System.nanoTime()/measure;
 	    time = (endtime-startime);
 		if( Core.DEBUG ) System.out.println(m.getRegistryEntry().getMatcherShortName() + " completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
-		
+		/*
 		if(p.showIntermediateMatchers && !m.isCancelled()) {
 			MatchingTask mt = new MatchingTask(m, m.getParam(), 
 					new MwbmSelection(), new DefaultSelectionParameters());
 			
 			Core.getInstance().addMatchingTask(mt);
-		}
+		}*/
 	}
 	
 	@Override

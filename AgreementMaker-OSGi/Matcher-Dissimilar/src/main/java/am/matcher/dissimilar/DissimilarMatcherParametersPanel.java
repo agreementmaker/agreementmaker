@@ -17,7 +17,7 @@ public class DissimilarMatcherParametersPanel extends AbstractMatcherParametersP
 
 	private static final long serialVersionUID = -7652636660460034435L;
 
-	private JRadioButton radAutomatic, radManual;
+	//private JRadioButton radAutomatic, radManual;
 	private JComboBox<OAEI2011Configuration> cmbConfiguration;
 	private JCheckBox chkShowAll;
 	private JCheckBox chkParallelExecution;
@@ -31,7 +31,7 @@ public class DissimilarMatcherParametersPanel extends AbstractMatcherParametersP
 		super();
 		
 		// initialize the GUI elements.
-		
+		/*
 		radAutomatic = new JRadioButton("Automatic configuration.");
 		radAutomatic.addActionListener(this);
 		radAutomatic.setSelected(true);
@@ -49,14 +49,14 @@ public class DissimilarMatcherParametersPanel extends AbstractMatcherParametersP
 		
 		chkShowAll = new JCheckBox("Show intermediate matchers.");
 		chkParallelExecution = new JCheckBox("Parallel Execution.");
-		
+		*/
 		// layout
-		
+		/*
 		GroupLayout lay = new GroupLayout(this);
 		
 		lay.setAutoCreateContainerGaps(true);
 		lay.setAutoCreateGaps(true);
-		
+		/*
 		lay.setHorizontalGroup( lay.createParallelGroup()
 				.addComponent(radAutomatic)
 				.addComponent(radManual)
@@ -76,20 +76,20 @@ public class DissimilarMatcherParametersPanel extends AbstractMatcherParametersP
 		);
 		
 		setLayout(lay);
-		
+		*/
 	}
 	
-		
+	
 	public DefaultMatcherParameters getParameters() {
 		DissimilarMatcherParameters parameters = new DissimilarMatcherParameters();
-		
+		/*
 		parameters.automaticConfiguration = radAutomatic.isSelected();
 		if( !parameters.automaticConfiguration ) {
 			parameters.selectedConfiguration = (OAEI2011Configuration) cmbConfiguration.getSelectedItem();
 		}
-		
-		parameters.showIntermediateMatchers = chkShowAll.isSelected();
-		parameters.parallelExecution = chkParallelExecution.isSelected();
+		*/
+		//parameters.showIntermediateMatchers = chkShowAll.isSelected();
+		//parameters.parallelExecution = chkParallelExecution.isSelected();
 		
 		return parameters;
 	}
@@ -98,15 +98,18 @@ public class DissimilarMatcherParametersPanel extends AbstractMatcherParametersP
 		return null;
 	}
 
-
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		cmbConfiguration.setEnabled(false);
+		/*
 		if( e.getSource() == radAutomatic ) {
 			cmbConfiguration.setEnabled(false);
 		}
 		if( e.getSource() == radManual ) {
 			cmbConfiguration.setEnabled(true);
 		}
-		
+		*/
 	}
+	
 }
