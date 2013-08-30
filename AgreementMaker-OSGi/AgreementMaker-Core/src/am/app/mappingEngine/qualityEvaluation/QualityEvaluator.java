@@ -37,9 +37,18 @@ public class QualityEvaluator {
 			return null;
 		}
 	}
-	
+
 	public static QualityEvaluationData evaluate(AbstractMatcher matcher, QualityMetric qm) throws Exception {
 		return qm.getQuality(matcher);		
+	}
+	
+	public static QualityEvaluationData evaluate(AbstractMatcher matcher, AbstractMatcher[] matcherList, QualityMetric qm) throws Exception {
+		if(qm instanceof InterMatcherQualityEvaluation)
+		{
+			return ((InterMatcherQualityEvaluation)qm).getQuality(matcher,matcherList);
+		}
+		else 
+			return qm.getQuality(matcher);
 	}
 
 	

@@ -29,10 +29,17 @@ import am.Utility;
  */
 public class QualityEvaluationData {
 	
-	/** 
-	 * If this quality evaluation data is for the source ontology = true;
-	 * if this quality evaluation data is for the target ontology = false;
+	/**
+	 * If this quality evaluation data is for the source ontology = true; if
+	 * this quality evaluation data is for the target ontology = false;
+	 * 
+	 * @deprecated FIXME: This field variable makes no sense. We are evaluating
+	 *             a matrix which is created by matching two ontologies. It
+	 *             makes no sense to designate this data for a source or target
+	 *             ontology; the data is for both ontologies. REMOVE THIS FIELD
+	 *             VARIABLE.
 	 */
+	@Deprecated
 	private boolean isSourceOntology;
     
 	/**
@@ -74,7 +81,7 @@ public class QualityEvaluationData {
 	
 
 	public boolean isLocal() { return isLocalQualityMeasure; }
-	public void setLocal(boolean local) { this.isLocalQualityMeasure = local; }
+	public void setLocal(boolean isLocal) { this.isLocalQualityMeasure = isLocal; }
 
 	public double getGlobalClassMeasure() { return globalClassMeasure; }
 	public void setGlobalClassMeasure(double globalClassMeasure) { this.globalClassMeasure = globalClassMeasure; }

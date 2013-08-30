@@ -56,7 +56,7 @@ public class CombinationMatcher extends AbstractMatcher {
 			a = inputMatchers.get(i);
 			//is important to be if if if without else
 			if(cp.qualityEvaluation) {
-				automatic = QualityEvaluator.evaluate(a, QualityEvaluator.getQM(cp.quality));
+				automatic = QualityEvaluator.evaluate(a, inputMatchers.toArray(new AbstractMatcher[0]),QualityEvaluator.getQM(cp.quality));
 				finalQuality = automatic; //if it's only manual q will be equal to it else it will be the average of manual and automatics
 			}
 			if(cp.manualWeighted) {

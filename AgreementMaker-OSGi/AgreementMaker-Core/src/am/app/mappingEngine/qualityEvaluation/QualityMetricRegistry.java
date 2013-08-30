@@ -20,6 +20,8 @@
 package am.app.mappingEngine.qualityEvaluation;
 
 import am.app.mappingEngine.qualityEvaluation.metrics.GlobalConfidenceQuality;
+import am.app.mappingEngine.qualityEvaluation.metrics.InterCouplingQualityMetric;
+import am.app.mappingEngine.qualityEvaluation.metrics.IntraCouplingQualityMetric;
 import am.app.mappingEngine.qualityEvaluation.metrics.LocalConfidenceQuality;
 import am.app.mappingEngine.qualityEvaluation.metrics.LowerDistanceDiscrepancyQM;
 import am.app.mappingEngine.qualityEvaluation.metrics.LowerDistancePreservationQM;
@@ -41,7 +43,9 @@ public enum QualityMetricRegistry {
 	ORDER_PRESERVATION 	( "Order Preservation", OrderPreservationQM.class),
 	ORDER_DISCREPANCY 	( "Order Discrepancy", OrderDiscrepancyQM.class),
 	UPPER_DISTANCE_DISCREPANCY( "Upper Distance Discrepancy", UpperDistanceDiscrepancyQM.class),
-	LOWER_DISTANCE_DISCREPANCY( "Lower Distance Discrepancy", LowerDistanceDiscrepancyQM.class);
+	LOWER_DISTANCE_DISCREPANCY( "Lower Distance Discrepancy", LowerDistanceDiscrepancyQM.class),
+	INTRA_COUPLING("Intra coupling",IntraCouplingQualityMetric.class),
+	INTER_COUPLING("Inter coupling",InterCouplingQualityMetric.class);
 
 	/* ------- Do not edit below this line -------- */
 	
