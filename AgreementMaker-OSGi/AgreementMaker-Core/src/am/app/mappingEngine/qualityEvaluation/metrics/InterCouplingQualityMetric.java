@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.qualityEvaluation.AbstractQualityMetric;
 import am.app.mappingEngine.qualityEvaluation.InterMatcherQualityEvaluation;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
@@ -13,6 +12,12 @@ import am.utility.parameters.AMParameter;
 import am.utility.parameters.AMParameterSet;
 public class InterCouplingQualityMetric implements InterMatcherQualityEvaluation 
 {
+	
+	private HashMap<Node, Integer> hm=new HashMap<>();
+	
+	public HashMap<Node, Integer> getHm() {
+		return hm;
+	}
 
 	@Override
 	public void setParameter(AMParameter param) {
@@ -37,21 +42,36 @@ public class InterCouplingQualityMetric implements InterMatcherQualityEvaluation
 	public QualityEvaluationData getQuality(AbstractMatcher matcher,
 			AbstractMatcher[] matcherList) throws Exception {
 		QualityEvaluationData q=new QualityEvaluationData();
-		int count=0;
+		Node nd;
+		int tmp;
+		Mapping maxMapping;
 		SimilarityMatrix sm=matcher.getClassesMatrix();
-		Mapping maxTmpMapping;
 		for(int i=0;i<sm.getRows();i++)
 		{
-			Mapping maxMapping = sm.getRowMaxValues(i, 1)[0];
+			
 			for(int j=0;j<matcherList.length-1;j++)
 			{
+				
 				if(matcher==matcherList[j]) continue;
-				maxTmpMapping= matcherList[j].getClassesMatrix().getRowMaxValues(i, 1)[0];
-				if(maxMapping.equals(maxTmpMapping))
-					count++;
+				
+				
+				 
+				maxMapping = matcherList[j].getClassesMatrix().getRowMaxValues(i, 1)[0];
+				nd= maxMapping.getEntity2();
+				
+				if(hm.containsKey(nd))
+				{
+					tmp=hm.get(nd).intValue();
+					hm.put(nd, new Integer(tmp++));
+				}
+				else
+				{
+					hm.put(nd, new Integer(1));
+				}
+				
 			}
 		}
-		q.setGlobalClassMeasure((double)count/(sm.getRows()*matcherList.length-1));
+		q.setGlobalClassMeasure((double)hm.size()/(sm.getRows()*matcherList.length-1));
 		return q;
 
 	}
