@@ -23,63 +23,42 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.DefaultMatcherParameters;
-import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.ReferenceEvaluationData;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.StringUtil.StringMetrics;
-import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
-import am.app.mappingEngine.utility.OAEI_Track;
-import am.app.ontology.Node;
-import am.app.ontology.NodeHierarchy;
 import am.app.ontology.Ontology;
-import am.app.ontology.hierarchy.AlternateHierarchy;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.app.ontology.profiling.ProfilerRegistry;
-import am.app.ontology.profiling.classification.OntologyClassifier;
-import am.app.ontology.profiling.classification.OntologyClassifier.OAEI2011Configuration;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
-import am.app.ontology.profiling.ontologymetrics.MetricsOntologyProfiler;
 import am.matcher.Combination.CombinationMatcher;
 import am.matcher.Combination.CombinationParameters;
 import am.matcher.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralMatcher;
 import am.matcher.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralParameters;
 import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcher;
 import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
-import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcherWeighted;
-import am.matcher.asm.AdvancedSimilarityMatcher;
-import am.matcher.asm.AdvancedSimilarityParameters;
-import am.matcher.boosting.BestMatchBoosting;
-import am.matcher.boosting.BestMatchBoostingParameters;
 import am.matcher.bsm.BaseSimilarityMatcher;
 import am.matcher.bsm.BaseSimilarityParameters;
-import am.app.mappingEngine.basicStructureSelector.BasicStructuralSelectorMatcher;
-import am.matcher.groupFinder.GroupFinderMatcher;
-import am.matcher.mediatingMatcher.MediatingMatcher;
-import am.matcher.mediatingMatcher.MediatingMatcherParameters;
 import am.matcher.multiWords.MultiWordsMatcher;
 import am.matcher.multiWords.MultiWordsParameters;
 import am.matcher.parametricStringMatcher.ParametricStringMatcher;
 import am.matcher.parametricStringMatcher.ParametricStringParameters;
 import am.userInterface.MatchingProgressDisplay;
-import am.matcher.*;
-import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.Property;
 import am.matcher.intraInterCoupling.IntraInterCouplingMatcher;
 import am.matcher.intraInterCoupling.IntraInterCouplingParameters;
 import org.apache.log4j.Logger;
-import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParametersPanel;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
-import am.app.ontology.ontologyParser.*;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
+import am.matcher.iic2.iic2;
+import am.matcher.iic2.iic2Parameters;
 /**
  * The matching algorithm for OAEI 2011.
  * 
@@ -92,6 +71,7 @@ public class DissimilarMatcher extends AbstractMatcher {
 	private static final long serialVersionUID = -2258529392257305644L;
 	
 	private static String ONTOLOGY_BASE_PATH = "ontologies/benchmarks/"; // Change ONLY IF REQUIRED
+	//private static String ONTOLOGY_BASE_PATH = "ontologies/conference/"; 
 	private static String SOURCE_ONTOLOGY = "101";  // Change this for TESTING
 	private static String TARGET_ONTOLOGY = ""; // Change this for TESTING
 	private static Logger log = Logger.getLogger(DissimilarMatcher.class);
@@ -111,18 +91,28 @@ public class DissimilarMatcher extends AbstractMatcher {
 		
 		File folder = new File("ontologies/benchmarks/");
 		File[] listOfFiles = folder.listFiles();
-
+		//File folder = new File("ontologies/conference_alignment/");
+		//File[] listOfFiles = folder.listFiles();// folder.listFiles();
 		for (File file : listOfFiles) 
 		{
-		    if (file.isDirectory()) 
+		    if (file.isDirectory()) //(file.isFile())
 		    {
+		    	//String[] tmp_str=file.getName().split("-");
+		    	//String tmp_src=tmp_str[0]+".owl";
+		    	//String tmp_trg=tmp_str[1].substring(0, tmp_str[1].lastIndexOf('.'))+".owl";
 		    	TARGET_ONTOLOGY=file.getName();
 		
-		
+		    	System.out.println(TARGET_ONTOLOGY);
 				Ontology source = OntoTreeBuilder.loadOWLOntology(ONTOLOGY_BASE_PATH
 						+ SOURCE_ONTOLOGY + "/onto.rdf");
 				Ontology target = OntoTreeBuilder.loadOWLOntology(ONTOLOGY_BASE_PATH
 						+ TARGET_ONTOLOGY + "/onto.rdf");
+//
+//				Ontology source = OntoTreeBuilder.loadOWLOntology(ONTOLOGY_BASE_PATH
+//						+ tmp_src);
+//				Ontology target = OntoTreeBuilder.loadOWLOntology(ONTOLOGY_BASE_PATH
+//						+ tmp_trg);
+//		    	
 				source.setDescription(SOURCE_ONTOLOGY);
 				OntologyDefinition def1=new OntologyDefinition(true, source.getURI(), null, null);
 				OntologyDefinition def2=new OntologyDefinition(true, target.getURI(), null, null);
@@ -153,8 +143,8 @@ public class DissimilarMatcher extends AbstractMatcher {
 				dm.getAlignment();
 				// run the reference alignment evaluation and output it to the log4j
 				// logger
-				dm.referenceEvaluation(ONTOLOGY_BASE_PATH + TARGET_ONTOLOGY
-						+ "/refalign.rdf");
+				dm.referenceEvaluation(ONTOLOGY_BASE_PATH + TARGET_ONTOLOGY + "/refalign.rdf");
+				//dm.referenceEvaluation("ontologies/conference_alignment/"+TARGET_ONTOLOGY.substring(0,TARGET_ONTOLOGY.lastIndexOf("."))+".rdf");
 				
 				
 		    }
@@ -164,7 +154,7 @@ public class DissimilarMatcher extends AbstractMatcher {
 	
 	private void save_to_file(StringBuilder content, String fileName)
 	{
-		File file_ref = new File("ontologies/refalign/lwc_bsm/"+fileName+".txt");
+		File file_ref = new File("ontologies/refalign/iic_iism/"+fileName+".txt");
 		 
 		// if file doesnt exists, then create it
 		try
@@ -177,11 +167,13 @@ public class DissimilarMatcher extends AbstractMatcher {
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write(content.toString());
 			bw.close();
+			fw.close();
 		}
 		catch(IOException e) 
 		{
 			e.printStackTrace();
 		}
+
 	}
 
 	private void referenceEvaluation(String pathToReferenceAlignment)
@@ -256,8 +248,8 @@ public class DissimilarMatcher extends AbstractMatcher {
 		//log.info(report);
 		
 		// use system out if you don't see the log4j output
-		//System.out.println(report);
-		//save_to_file(report, TARGET_ONTOLOGY);
+		System.out.println(report);
+		save_to_file(report, TARGET_ONTOLOGY);
 	}
 	@Override
 	public String getDescriptionString() {
@@ -313,6 +305,8 @@ public class DissimilarMatcher extends AbstractMatcher {
 		lexParam.detectStandardProperties();
 		
 		Core.getLexiconStore().buildAll(lexParam);
+		
+		List<AbstractMatcher> lwcInputMatchers = new ArrayList<AbstractMatcher>();
 		
 		final DefaultMatcherParameters param = getParam();
 		
@@ -370,9 +364,8 @@ public class DissimilarMatcher extends AbstractMatcher {
 		}
 		
 		manualProfiler.setMatchTimeParams(profilingMatchingParams);
-		
 		// BSM
-		List<AbstractMatcher> lwcInputMatchers = new ArrayList<AbstractMatcher>();
+		
 		
 		if( !isCancelled() ) {
 			//AbstractMatcher psm = MatcherFactory.getMatcherInstance(BaseSimilarityMatcher.class);
@@ -387,7 +380,7 @@ public class DissimilarMatcher extends AbstractMatcher {
 			
 			lwcInputMatchers.add(bsm);			
 		}
-
+		
 		
 		// PSM
 		if( !isCancelled() ) {
@@ -412,7 +405,8 @@ public class DissimilarMatcher extends AbstractMatcher {
 			setupSubMatcher(psm, psmParam);
 			runSubMatcher(psm, "PSM 2/6");
 			
-			lwcInputMatchers.add(psm);			
+			lwcInputMatchers.add(psm);
+			//psm.getClassesMatrix().get(i, j)
 		}
 		
 		// VMM
@@ -451,24 +445,31 @@ public class DissimilarMatcher extends AbstractMatcher {
 			runSubMatcher(lsm, "LSM 4/6");
 			
 			lwcInputMatchers.add(lsm);
+			
 		}
+		
+		lwcInputMatchers.get(0).getClassesMatrix();
+		//printMatrix(lwcInputMatchers,0, "first");
 		/*
-		// BSSM
+		// IIC2
 		if( !isCancelled() ) {
-			AbstractMatcher bssm = MatcherFactory.getMatcherInstance(BasicStructuralSelectorMatcher.class);
+			//AbstractMatcher lsm = MatcherFactory.getMatcherInstance(LexicalSynonymMatcher.class);
+			AbstractMatcher iic2 = new iic2();
+			iic2Parameters iicParam = 
+					new iic2Parameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
+			//iicParam.useSynonymTerms = false;
+			iic2.setInputMatchers(lwcInputMatchers);
+			setupSubMatcher(iic2, iicParam);
+			runSubMatcher(iic2, "IIC2 4/6");
 					
-			BasicStructuralSelectorMatcher bssmParam = 
-					new BasicStructuralSelectorMatcher(param);
-			//bssmParam.useSynonymTerms = false;
+			//lwcInputMatchers.add(iic2);
 					
-			setupSubMatcher(bssm,param);//, bssmParam);
-			runSubMatcher(bssm, "BSSM 5/6");
-					
-			lwcInputMatchers.add(bssm);
 		}
+		lwcInputMatchers.get(0).getClassesMatrix();
 		*/
+		//printMatrix(lwcInputMatchers,0, "second");
 		
-		
+		AbstractMatcher lastLayer=new CombinationMatcher();
 		boolean lwc_combination=false;
 		if (lwc_combination)
 		{
@@ -488,7 +489,8 @@ public class DissimilarMatcher extends AbstractMatcher {
 				
 				setupSubMatcher(lwc, lwcParam);
 				runSubMatcher(lwc, "LWC 6/6");
-				return lwc;
+				//return lwc;
+				lastLayer=lwc;
 			}
 		}
 		else
@@ -511,15 +513,18 @@ public class DissimilarMatcher extends AbstractMatcher {
 				
 				setupSubMatcher(iic, iicParam);
 				runSubMatcher(iic, "IIC 6/6");
-				return iic;
+				//return iic;
+				lastLayer=iic;
 			}
 		}
+		
+
 		//IISM
-		/*
+		
 		if( !isCancelled() ) {
-			AbstractMatcher iism = MatcherFactory.getMatcherInstance(IterativeInstanceStructuralMatcher.class);
-			
-			iism.addInputMatcher(lwc);
+			//AbstractMatcher iism = MatcherFactory.getMatcherInstance(IterativeInstanceStructuralMatcher.class);
+			AbstractMatcher iism=new IterativeInstanceStructuralMatcher();
+			iism.addInputMatcher(lastLayer);
 			
 			IterativeInstanceStructuralParameters iismParam = 
 					new IterativeInstanceStructuralParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
@@ -540,7 +545,7 @@ public class DissimilarMatcher extends AbstractMatcher {
 			
 			return iism;
 		}
-		*/
+		
 		return null;
 	}
 	
@@ -586,6 +591,8 @@ public class DissimilarMatcher extends AbstractMatcher {
 			Core.getInstance().addMatchingTask(mt);
 		}*/
 	}
+	
+
 	
 	@Override
 	public AbstractMatcherParametersPanel getParametersPanel() {
