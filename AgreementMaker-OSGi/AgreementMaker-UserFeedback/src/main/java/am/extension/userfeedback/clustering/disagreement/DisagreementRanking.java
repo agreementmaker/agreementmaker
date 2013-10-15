@@ -58,12 +58,16 @@ public class DisagreementRanking extends CandidateSelection {
 	
 	@Override
 	public void rank(UFLExperiment ex) {
-
 		this.experiment = ex;
-		
+
 		// get the matchers from the execution semantics
 		List<AbstractMatcher> matchers = ex.initialMatcher.getComponentMatchers();
 		
+		rank(matchers);
+	}
+	
+	public void rank(List<AbstractMatcher> matchers) {
+				
 		// setup the variance disagreement calculation
 		VarianceDisagreementParameters disagreementParams = new VarianceDisagreementParameters();
 		disagreementParams.setMatchers(matchers);
