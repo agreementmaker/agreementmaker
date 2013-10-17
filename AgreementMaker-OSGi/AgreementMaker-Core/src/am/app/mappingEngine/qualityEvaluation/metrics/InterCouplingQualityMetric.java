@@ -62,7 +62,7 @@ public class InterCouplingQualityMetric implements InterMatcherQualityEvaluation
 				if(hm.containsKey(nd))
 				{
 					tmp=hm.get(nd).intValue();
-					hm.put(nd, new Integer(tmp++));
+					hm.put(nd, new Integer(++tmp));
 				}
 				else
 				{

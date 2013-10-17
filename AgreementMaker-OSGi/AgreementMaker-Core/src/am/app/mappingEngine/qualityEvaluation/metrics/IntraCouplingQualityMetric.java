@@ -46,7 +46,7 @@ public class IntraCouplingQualityMetric extends AbstractQualityMetric
 			if(hm.containsKey(nd))
 			{
 				tmp=hm.get(nd).intValue();
-				hm.put(nd, new Integer(tmp++));
+				hm.put(nd, new Integer(++tmp));
 			}
 			else
 			{

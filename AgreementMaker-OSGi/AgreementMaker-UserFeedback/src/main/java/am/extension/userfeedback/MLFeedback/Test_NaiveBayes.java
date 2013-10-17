@@ -1,4 +1,4 @@
-package am.extension.userfeedback;
+package am.extension.userfeedback.MLFeedback;
 /*
  * This is a test class for the NaiveBayes class.
  * 

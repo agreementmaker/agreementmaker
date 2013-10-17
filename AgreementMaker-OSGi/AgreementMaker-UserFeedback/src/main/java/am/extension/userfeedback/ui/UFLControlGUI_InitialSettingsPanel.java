@@ -44,7 +44,7 @@ public class UFLControlGUI_InitialSettingsPanel extends JPanel implements Action
 	{
 		listeners = new EventListenerList();
 		
-		ExperimentRegistry[] 					experimentEntries 				= UFLRegistry.ExperimentRegistry.values();
+		ExperimentRegistry[] 			experimentEntries 				= UFLRegistry.ExperimentRegistry.values();
 		InitialMatcherRegistry[] 		InitialMatchersEntries 			= UFLRegistry.InitialMatcherRegistry.values();
 		CandidateSelectionRegistry[] 	CandidateSelectionEntries 		= UFLRegistry.CandidateSelectionRegistry.values();
 		CSEvaluationRegistry[] 			CSEvaluationEntries 			= UFLRegistry.CSEvaluationRegistry.values();

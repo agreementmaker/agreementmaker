@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 
 import am.Utility;
 import am.extension.userfeedback.UFLExperiment;
+import am.extension.userfeedback.UFLExperimentSetup;
 import am.extension.userfeedback.UFLRegistry.CSEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.CandidateSelectionRegistry;
 import am.extension.userfeedback.UFLRegistry.ExperimentRegistry;
@@ -15,6 +16,7 @@ import am.extension.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
 import am.extension.userfeedback.UFLRegistry.InitialMatcherRegistry;
 import am.extension.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
+import am.extension.userfeedback.experiments.UFLControlLogic;
 import am.userInterface.UI;
 
 public class UFLControlGUI extends JPanel implements ActionListener {
@@ -100,152 +102,43 @@ public class UFLControlGUI extends JPanel implements ActionListener {
 		try{
 	
 			if( e.getActionCommand() == ActionCommands.INITSCREEN_btnStart.name() ) {
+				
+				UFLExperimentSetup setup = new UFLExperimentSetup();
+				setup.im = (InitialMatcherRegistry) panel.cmbMatcher.getSelectedItem();
+				setup.cs = (CandidateSelectionRegistry) panel.cmbCandidate.getSelectedItem();
+				setup.cse = (CSEvaluationRegistry) panel.cmbCSEvaluation.getSelectedItem();
+				setup.uv = (UserValidationRegistry) panel.cmbUserFeedback.getSelectedItem();
+				setup.fp = (FeedbackPropagationRegistry) panel.cmbPropagation.getSelectedItem();
+				setup.pe = (PropagationEvaluationRegistry) panel.cmbPropagationEvaluation.getSelectedItem();
+				
 				// the experiment is starting, or we have just completed an iteration of the loop (assuming the propagation evaluation is done last)
 
 				// Step 1.  experiment is starting.  Initialize the experiment setup.
 				ExperimentRegistry experimentRegistryEntry = (ExperimentRegistry) panel.cmbExperiment.getSelectedItem();
 				experimentSetup = experimentRegistryEntry.getEntryClass().newInstance();
 				experimentSetup.gui = this;
+				experimentSetup.setup = setup;
 				
-				// Step 2.  Run the initial matchers.
+				final UFLControlLogic logic = experimentSetup.getControlLogic();
+				
+				Thread thread = new Thread(new Runnable(){
 
-				InitialMatcherRegistry initialMatcherRegistryEntry = (InitialMatcherRegistry) panel.cmbMatcher.getSelectedItem();
-				experimentSetup.initialMatcher = initialMatcherRegistryEntry.getEntryClass().newInstance();
-
-				experimentSetup.initialMatcher.addActionListener(this);
-
-				// separate thread for large work
-				Thread initialMatchersThread = new Thread() {
 					@Override
 					public void run() {
-						experimentSetup.initialMatcher.run(experimentSetup);	
+						logic.runExperiment(experimentSetup);
 					}
-				};
+					
+				});
 				
-				initialMatchersThread.start();
+				thread.start();
 				
-				return;
-			}
-			
-			if( e.getActionCommand() == ActionCommands.EXECUTION_SEMANTICS_DONE.name() ||
-					e.getActionCommand() == ActionCommands.PROPAGATION_EVALUATION_DONE.name() ) {
-				// the initial matchers have finished running or we are running another loop of the experiment.
-				if( e.getActionCommand() == ActionCommands.PROPAGATION_EVALUATION_DONE.name() ) 
-				{
-					// this is a new iteration of the user feedback loop experiment.
-					experimentSetup.newIteration();
-				}
-				
-				// now run the candidate selection.
-				CandidateSelectionRegistry candidateSelectionRegistryEntry = (CandidateSelectionRegistry) panel.cmbCandidate.getSelectedItem();
-				experimentSetup.candidateSelection = candidateSelectionRegistryEntry.getEntryClass().newInstance();
-
-				
-				experimentSetup.candidateSelection.addActionListener(this);
-				
-				// heavy work in separate thread
-				Thread candidateSelection = new Thread() {
-					@Override
-					public void run() {
-						experimentSetup.candidateSelection.rank(experimentSetup);	
-					}
-				};
-				
-				candidateSelection.start();
-				
-				return;
-			}
-			
-			if( e.getActionCommand() == ActionCommands.CANDIDATE_SELECTION_DONE.name() ) {
-				// the candidate selection is done
-				
-				// we must first evalute the candidate selection
-				CSEvaluationRegistry candidateSelectionEvaluationRegistryEntry = (CSEvaluationRegistry) panel.cmbCSEvaluation.getSelectedItem();
-				experimentSetup.csEvaluation = candidateSelectionEvaluationRegistryEntry.getEntryClass().newInstance(); 
-				
-				experimentSetup.csEvaluation.addActionListener(this);
-				
-				// separate thread
-				Thread csEvaluationThread = new Thread() {
-					@Override
-					public void run() {
-						experimentSetup.csEvaluation.evaluate(experimentSetup);
-					}
-				};
-				
-				csEvaluationThread.start();
-				
-				return;
-			}
-
-			if( e.getActionCommand() == ActionCommands.CS_EVALUATION_DONE.name() ) {
-				// the evaluation of the candidate selection is done
-				
-				// have the user validate the candidate mapping
-				UserValidationRegistry userFeedbackRegistryEntry = (UserValidationRegistry) panel.cmbUserFeedback.getSelectedItem();
-				experimentSetup.userFeedback = userFeedbackRegistryEntry.getEntryClass().newInstance();
-				
-				experimentSetup.userFeedback.addActionListener(this);
-				
-				// separate thread
-				Thread userFeedbackThread = new Thread() {
-					@Override
-					public void run() {
-						experimentSetup.userFeedback.validate(experimentSetup);
-					}
-				};
-				
-				userFeedbackThread.start();
-				
-				return;
-			}
-			
-			if( e.getActionCommand() == ActionCommands.USER_FEEDBACK_DONE.name() ) {
-				// the user has validated our candidate mapping(s)
-				
-				// propagate!
-				FeedbackPropagationRegistry userFeedbackRegistryEntry = (FeedbackPropagationRegistry) panel.cmbPropagation.getSelectedItem();
-				experimentSetup.feedbackPropagation = userFeedbackRegistryEntry.getEntryClass().newInstance();
-				
-				experimentSetup.feedbackPropagation.addActionListener(this);
-				
-				// separate thread
-				Thread fbThread = new Thread() {
-					@Override
-					public void run() {
-						experimentSetup.feedbackPropagation.propagate(experimentSetup);
-					}
-				};
-				
-				fbThread.start();
-				return;
-			}
-			
-			if( e.getActionCommand() == ActionCommands.PROPAGATION_DONE.name() ) {
-				// we have propagated the user's feedback
-				
-				// evaluate the propagation!
-				PropagationEvaluationRegistry propagationEvaluationRegistryEntry = (PropagationEvaluationRegistry) panel.cmbPropagationEvaluation.getSelectedItem();
-				experimentSetup.propagationEvaluation = propagationEvaluationRegistryEntry.getEntryClass().newInstance();
-				
-				experimentSetup.propagationEvaluation.addActionListener(this);
-				
-				// separate thread
-				Thread propEvalThread = new Thread() {
-					@Override
-					public void run() {
-						experimentSetup.propagationEvaluation.evaluate(experimentSetup);
-					}
-				};
-				
-				propEvalThread.start();
 				return;
 			}
 			
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR, null);
+			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR + "\n\n" + ex.getMessage(), Utility.UNEXPECTED_ERROR_TITLE);
 		}
 	}
 	

@@ -8,14 +8,14 @@ import javax.swing.event.EventListenerList;
 
 import am.extension.userfeedback.ui.UFLControlGUI;
 
-public abstract class FeedbackPropagation {
+public abstract class FeedbackPropagation<T extends UFLExperiment> {
 	EventListenerList listeners;  // list of listeners for this class
 	
 	public FeedbackPropagation() {
 		listeners = new EventListenerList();
 	}
 	
-	public abstract void propagate( UFLExperiment exp );
+	public abstract void propagate( T exp );
 	
 	public void addActionListener( ActionListener l ) {
 		listeners.add(ActionListener.class, l);

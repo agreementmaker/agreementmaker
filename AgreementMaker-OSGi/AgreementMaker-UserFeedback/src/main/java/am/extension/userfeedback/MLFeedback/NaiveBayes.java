@@ -1,10 +1,15 @@
-package am.extension.userfeedback;
+/*
+ * 	Francesco Loprete October 2013
+ */
+package am.extension.userfeedback.MLFeedback;
 
 import java.math.BigDecimal;
 
 import org.hamcrest.core.IsInstanceOf;
 import org.openrdf.query.algebra.IsNumeric;
 import org.semanticweb.owlapi.io.SystemOutDocumentTarget;
+
+import am.app.mappingEngine.Mapping;
 
 /*
  * Naive Bayes algorithm
@@ -36,10 +41,22 @@ public class NaiveBayes {
 	//Constructor of the class, initialize the training and data Set
 	public NaiveBayes(Object[][] trainingSet, Object[][] dataSet)
 	{
-		//updatePrecision(trainingSet);
+		updatePrecision(trainingSet);
 
 		this.trainingSet=dataOptimization(trainingSet);
 		this.dataSet=dataOptimization(dataSet);
+		this.labels=new Object[dataSet.length];
+		fs=new FeatureSet[dataSet[0].length];
+		inizialization();
+
+		
+	}
+	
+	public NaiveBayes(Object[][] trainingSet)
+	{
+		updatePrecision(trainingSet);
+
+		this.trainingSet=dataOptimization(trainingSet);
 		this.labels=new Object[dataSet.length];
 		fs=new FeatureSet[dataSet[0].length];
 		inizialization();
@@ -116,34 +133,36 @@ public class NaiveBayes {
 	    return bd.doubleValue();
 	}
 	
-	public void run()
+	public double computeElement(Object[] sv)
 	{
 		double tmp=0;
 		double prob_true=1.0;
 		double prob_false=1.0;
+		for (int i=0;i<sv.length;i++)
+		{
+			tmp=(fs[i].getHMvalue(sv[i], true)/count_true);
+			prob_true*=tmp;
+			tmp=(fs[i].getHMvalue(sv[i], false)/count_false);
+			prob_false*=tmp;
+		}
+		prob_true*=((double)count_true/(count_true+count_false));
+		prob_false*=((double)count_false/(count_true+count_false));
+		tmp=prob_true+prob_false;
+		prob_true=prob_true/tmp;
+		prob_false=prob_false/tmp;
+		if(prob_true<prob_false)
+			return 0;
+		return prob_true;
+	}
+	
+	public void run()
+	{
 		for (int i=0; i< dataSet.length;i++)
 		{
-			prob_true=1.0;
-			prob_false=1.0;
-			for(int j=0;j<dataSet[0].length;j++)
-			{
-				tmp=(fs[j].getHMvalue(dataSet[i][j], true)/count_true);
-				prob_true*=tmp;
-				tmp=(fs[j].getHMvalue(dataSet[i][j], false)/count_false);
-				prob_false*=tmp;
-			}
-			prob_true*=((double)count_true/(count_true+count_false));
-			prob_false*=((double)count_false/(count_true+count_false));
-			tmp=prob_true+prob_false;
-			prob_true=prob_true/tmp;
-			prob_false=prob_false/tmp;
-			if (Double.isNaN(prob_true))
-				labels[i]="NaN";
+			if(computeElement(dataSet[i])>0)
+				labels[i]=true;
 			else
-				if (prob_true>prob_false)
-					labels[i]=true;
-				else
-					labels[i]=false;
+				labels[i]=false;
 		}
 	}
 	
@@ -180,9 +199,11 @@ public class NaiveBayes {
 		}
 	}
 	
-	public Object getLabel(int index)
+	public Boolean getLabel(int index)
 	{
-		return labels[index];
+		Object o=true;
+		if (labels[index].equals(o)) return true;
+		return false;
 	}
 	
 	public int getPrecision()

@@ -1,4 +1,8 @@
-package am.extension.userfeedback;
+/*
+ * 	Francesco Loprete October 2013
+ */
+
+package am.extension.userfeedback.MLFeedback;
 
 import java.util.HashMap;
 

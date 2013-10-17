@@ -1,9 +1,13 @@
-package am.extension.userfeedback.common;
+/*
+ * 	Francesco Loprete October 2013
+ */
+package am.extension.userfeedback.MLFeedback;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.TreeSet;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
@@ -11,28 +15,40 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.ontology.Ontology;
-import am.extension.userfeedback.FeedbackPropagation;
 import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.IndependentSequentialLogic;
 import am.extension.userfeedback.experiments.UFLControlLogic;
 
-/**
- * This is a manual experiment setup.
- * 
- * The source and target ontologies are loaded into AgreementMaker,
- * and the reference alignment is imported.
- * 
- * @author Cosmin Stroe - Feb 1, 2011.
- *
- */
-public class ManualExperimentSetup extends UFLExperiment {
-	
-	private BufferedWriter logFile;
-	
+public class MLFExperiment extends UFLExperiment {
 
-	
-	public ManualExperimentSetup() {
+private BufferedWriter logFile;
+public TreeSet<Integer> forbidden_column=new TreeSet<Integer>();
+public TreeSet<Integer> forbidden_row=new TreeSet<Integer>();
+private Alignment<Mapping> MLAlignment;
+
+public Alignment<Mapping> getMLAlignment() {
+	return MLAlignment;
+}
+
+
+
+public void setMLAlignment(Alignment<Mapping> mLAlignment) {
+	MLAlignment = mLAlignment;
+}
+
+public Object[][] getTrainingSet() {
+	return trainingSet;
+}
+
+public void setTrainingSet(Object[][] trainingSet) {
+	this.trainingSet = trainingSet;
+}
+
+private Object[][] trainingSet;
+
+
+	public MLFExperiment() {
 		// setup the log file
 		try {
 			FileWriter fr = new FileWriter("/home/cosmin/Desktop/ufllog.txt",true);
@@ -98,4 +114,5 @@ public class ManualExperimentSetup extends UFLExperiment {
 	public UFLControlLogic getControlLogic() {
 		return new IndependentSequentialLogic();
 	}
+
 }

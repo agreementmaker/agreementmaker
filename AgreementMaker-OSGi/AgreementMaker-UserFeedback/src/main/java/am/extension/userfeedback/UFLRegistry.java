@@ -10,8 +10,8 @@ public class UFLRegistry {
 
 	/* Different experimental setups (Ontologies + Reference alignment) */
 	public enum ExperimentRegistry {
-		Manual ( am.extension.userfeedback.common.ManualExperimentSetup.class );
-		
+		Manual ( am.extension.userfeedback.common.ManualExperimentSetup.class ),
+		Ml ( am.extension.userfeedback.MLFeedback.MLFExperiment.class);
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends UFLExperiment> clazz;
 
@@ -62,7 +62,8 @@ public class UFLRegistry {
 	}
 	
 	public enum FeedbackPropagationRegistry {
-		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostPropagation.class );
+		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostPropagation.class ),
+		MLFeedbackPropagation (am.extension.userfeedback.MLFeedback.MLFeedbackPropagation.class);
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends FeedbackPropagation> clazz;

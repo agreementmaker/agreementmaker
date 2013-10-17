@@ -16,7 +16,7 @@ import am.extension.userfeedback.FeedbackPropagation;
 import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
 
-public class ClusterBoostPropagation extends FeedbackPropagation {
+public class ClusterBoostPropagation extends FeedbackPropagation<UFLExperiment> {
 
 	@Override
 	public void propagate( UFLExperiment experiment ) {

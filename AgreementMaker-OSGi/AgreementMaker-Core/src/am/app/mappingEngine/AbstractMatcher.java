@@ -1297,9 +1297,19 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	 public SimilarityMatrix getClassesMatrix() {
 		 return classesMatrix;
 	 }
+	 
+	 //TODO is a good idea?
+	 public void setClassesMatrix(SimilarityMatrix sm) {
+		 this.classesMatrix=sm;
+	 }
 
 	 public SimilarityMatrix getPropertiesMatrix() {
 		 return propertiesMatrix;
+	 }
+	 
+	//TODO is a good idea?
+	 public void setPropertiesMatrix(SimilarityMatrix sm) {
+		 this.propertiesMatrix=sm;
 	 }
 
 	 public long getExecutionTime() {

@@ -29,6 +29,7 @@ import am.userInterface.table.MatchersControlPanelTableModel;
  * Cosmin.
  */
 public class Utility {
+	public final static String UNEXPECTED_ERROR_TITLE = "Unexpected Error";
 	public final static String UNEXPECTED_ERROR = "Unexpected System Error.\nTry to reset the system and repeat the operation.\nContact developers if the error persists.";
 	public final static String OUT_OF_MEMORY = "Operation aborted\n\n" +
 			"The system has run out of memory.\n" +
