@@ -43,14 +43,13 @@ public class MatchersActivator implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
+		System.out.println(context.getBundle().getHeaders().get(Constants.BUNDLE_NAME) + " stopping...");
+		
 		MatchersActivator.context = null;
 		regCombination.unregister();
 		regParametricString.unregister();
 		regMultiWords.unregister();
 		regLexicalSynonym.unregister();
-		
-		System.out.println(context.getBundle().getHeaders().get
-				(Constants.BUNDLE_NAME) + " stopping...");
 	}
 
 }
