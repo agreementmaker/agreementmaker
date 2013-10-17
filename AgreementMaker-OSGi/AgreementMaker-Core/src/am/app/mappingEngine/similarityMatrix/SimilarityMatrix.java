@@ -18,7 +18,16 @@ public interface SimilarityMatrix {
 	
 	public Mapping get(int i, int j);
 	
+	
 	public void set(int i, int j, Mapping d);
+	
+	/**
+	 * This method sets the similarity for a cell of the similarity matrix.
+	 * @param i The row index.
+	 * @param j The column index.
+	 * @param similarity The similarity value, in the range [0,1].
+	 */
+	public void setSimilarity(int i, int j, double similarity);
 	
 	public double getSimilarity( int i, int j);
 	

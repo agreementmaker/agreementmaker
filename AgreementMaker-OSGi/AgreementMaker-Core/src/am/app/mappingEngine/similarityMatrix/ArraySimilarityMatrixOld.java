@@ -21,14 +21,11 @@ public class ArraySimilarityMatrixOld extends AbstractSimilarityMatrix implement
     protected int rows;             // number of rows
     protected int columns;             // number of columns
     protected Mapping[][] data;   // M-by-N array
-
-
     
  // create M-by-N matrix of 0's with equivalence relation
     public ArraySimilarityMatrixOld(Ontology s, Ontology t, alignType type) {
     	super(s, t, type);
-    	//typeOfMatrix = type;
-    	if(type == alignType.aligningClasses){
+     	if(type == alignType.aligningClasses){
             this.rows = s.getClassesList().size();
             this.columns = t.getClassesList().size();
     	}
@@ -69,16 +66,24 @@ public class ArraySimilarityMatrixOld extends AbstractSimilarityMatrix implement
 			}
 		}
     }
-         
-    //junit constructor
-   //public ArraySimilarityMatrix(){}
-    //public void initData(int m, int n){data=new Mapping[m][n];}
-    
     
     public Mapping get(int i, int j) {  return data[i][j];  }
     
     @Override
     public void set(int i, int j, Mapping d) { data[i][j] = d; }
+    
+    @Override
+    public void setSimilarity(int i, int j, double similarity) {
+    	try {
+	    	Node sourceNode = getSourceOntology().getNodefromIndex(i, typeOfMatrix);
+	    	Node targetNode = getTargetOntology().getNodefromIndex(j, typeOfMatrix);
+	    	data[i][j] = new Mapping(sourceNode, targetNode, similarity);
+    	}
+    	catch (Exception e) {
+    		// TODO: Use a logger here.
+    		e.printStackTrace();
+    	}
+    }
     
     @Override
     public double getSimilarity(int i, int j){

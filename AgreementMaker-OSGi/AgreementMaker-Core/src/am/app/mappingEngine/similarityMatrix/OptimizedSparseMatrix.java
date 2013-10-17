@@ -265,6 +265,23 @@ public class OptimizedSparseMatrix extends AbstractSimilarityMatrix
 		}
 	}
 	
+	/**
+	 * This method is a wrapper for {@link OptimizedSparseMatrix#set(int, int, Mapping)}.
+	 */
+	@Override
+	public void setSimilarity(int i, int j, double similarity) {
+		try {
+	    	Node sourceNode = getSourceOntology().getNodefromIndex(i, typeOfMatrix);
+	    	Node targetNode = getTargetOntology().getNodefromIndex(j, typeOfMatrix);
+	    	Mapping m = new Mapping(sourceNode, targetNode, similarity);
+	    	set(i, j, m);
+    	}
+    	catch (Exception e) {
+    		// TODO: Use a logger here.
+    		e.printStackTrace();
+    	}
+	}
+	
 	public Mapping get(int i, int j)
 	{
 		boolean done=false;

@@ -1,8 +1,6 @@
 package am.app.mappingEngine.similarityMatrix;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
@@ -65,6 +63,13 @@ public class AggregativeSparseMatrix implements SimilarityMatrix {
 	public void set(int i, int j, Mapping d) {
 		if( d.getSimilarity() >= threshold ) {
 			m.set(i, j, d);
+		}
+	}
+	
+	@Override
+	public void setSimilarity(int i, int j, double sim) {
+		if( sim >= threshold ) {
+			m.setSimilarity(i, j, sim);
 		}
 	}
 

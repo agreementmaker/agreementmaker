@@ -32,6 +32,10 @@ public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
 		public MappingRelation relation;
 		public String provenance;
 		
+		SimRel(double similarity) {
+			this.similarity = similarity;
+		}
+		
 		SimRel(double similarity, MappingRelation relation) {
 			this.similarity = similarity;
 			this.relation = relation;
@@ -165,6 +169,11 @@ public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
     		data[i][j] = null;
     	}
     }
+    
+	@Override
+	public void setSimilarity(int i, int j, double similarity) {
+		data[i][j] = new SimRel(similarity);
+	}
     
     @Override
     public double getSimilarity(int i, int j){

@@ -74,6 +74,9 @@ public abstract class AbstractSimilarityMatrix implements SimilarityMatrix, Seri
 	@Override
 	public abstract void set(int i, int j, Mapping d);
 	
+	@Override
+	public abstract void setSimilarity(int i, int j, double similarity);
+	
 	//@Deprecated
 	//public abstract void setSimilarity(int i, int j, double d);  // deprecated because it cannot deal with null values.
 	@Override
