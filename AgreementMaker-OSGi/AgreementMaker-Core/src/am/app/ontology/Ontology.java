@@ -288,6 +288,7 @@ public class Ontology {
 		throw new Exception("Cannot search for nodeType == " + nodeType.toString() );
 	}
 	
+	// TODO: Does this method really need to throw an exception? -- Cosmin, 10/17/2013
 	public Node getNodefromIndex( int index, alignType aType ) throws Exception {
 		if( aType == alignType.aligningClasses ) {
 			if( index < classesList.size() ){
