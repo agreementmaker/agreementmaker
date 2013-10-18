@@ -17,6 +17,7 @@
 		<module>AgreementMaker-CollaborationEngine</module>
 		<module>AgreementMaker-UserFeedback</module>
 		<module>AgreementMaker-SemanticExplanation</module>
+		<module>AgreementMaker-UI</module>
 		<module>Matcher-LinkedOpenData</module>
 		<module>Matcher-PRA</module>
 		<module>AgreementMaker-Matchers</module>
@@ -28,7 +29,7 @@
 	<description>OSGi version of AgreementMaker</description>
 
 	<properties>
-		<tycho-version>0.16.0</tycho-version>
+		<tycho-version>0.18.1</tycho-version>
 	</properties>
 
 	<repositories>
