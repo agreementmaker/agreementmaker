@@ -59,8 +59,6 @@ public class MatchersActivator implements BundleActivator {
 		regLexicalSynonym.unregister();
 		regDsi.unregister();
 		regIism.unregister();
-		System.out.println(context.getBundle().getHeaders().get
-				(Constants.BUNDLE_NAME) + " stopping...");
 	}
 
 }
