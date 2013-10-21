@@ -1,4 +1,4 @@
-package am.userInterface.console;
+package am.output.console;
 
 import java.beans.PropertyChangeEvent;
 
@@ -6,9 +6,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.userInterface.MatchingProgressDisplay;
+import am.app.mappingEngine.MatchingProgressListener;
 
-public class ConsoleProgressDisplay implements MatchingProgressDisplay {
+public class ConsoleProgressDisplay implements MatchingProgressListener {
 	
 	private Logger log;
 	private boolean ignoreComplete = false;
