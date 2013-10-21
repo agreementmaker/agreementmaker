@@ -8,7 +8,7 @@ import javax.swing.JComboBox;
 
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
-import am.userInterface.AppPreferences;
+import am.utility.AppPreferences;
 
 public class OAEI2009parametersPanel extends AbstractMatcherParametersPanel {
 

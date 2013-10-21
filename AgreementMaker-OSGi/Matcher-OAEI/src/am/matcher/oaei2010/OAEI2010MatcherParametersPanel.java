@@ -9,7 +9,7 @@ import javax.swing.JComboBox;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.utility.OAEI_Track;
-import am.userInterface.AppPreferences;
+import am.utility.AppPreferences;
 
 /**
  * Base Similarity Matcher - The Parameters Panel

@@ -20,6 +20,7 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.StringUtil.StringMetrics;
@@ -56,7 +57,6 @@ import am.matcher.multiWords.MultiWordsMatcher;
 import am.matcher.multiWords.MultiWordsParameters;
 import am.matcher.parametricStringMatcher.ParametricStringMatcher;
 import am.matcher.parametricStringMatcher.ParametricStringParameters;
-import am.userInterface.MatchingProgressDisplay;
 
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -104,7 +104,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 
     	OAEI2011MatcherParameters p = (OAEI2011MatcherParameters) param;
     	
-    	for( MatchingProgressDisplay mpd : progressDisplays ) mpd.ignoreComplete(true);
+    	for( MatchingProgressListener mpd : progressDisplays ) mpd.ignoreComplete(true);
     	
     	AbstractMatcher finalResult = null;
     	if( p.automaticConfiguration ) {
@@ -135,7 +135,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
     		}
     	}
 		
-		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.ignoreComplete(false); 
+		for( MatchingProgressListener mpd : progressDisplays ) mpd.ignoreComplete(false); 
     	
 		if( finalResult != null ) {
 			//finalResult.select();
@@ -576,7 +576,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		
 		if( ((OAEI2011MatcherParameters)param).parallelExecution ) {
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.setIndeterminate(true);
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.setIndeterminate(true);
 			
 			int availableProcessors = Runtime.getRuntime().availableProcessors() - param.threadedReservedProcessors;
 			if( availableProcessors < 1 ) // this should not happen 
@@ -608,7 +608,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 							}
 						});
 						
-						for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Running PSM ...\n");
+						for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Running PSM ...\n");
 						psmThread.start();
 						currentStep++;
 					} 
@@ -627,7 +627,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 							}
 						});
 						
-						for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Running VMM ...\n");
+						for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Running VMM ...\n");
 						vmmThread.start();
 						currentStep++;
 					}
@@ -646,7 +646,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 							}
 						});
 						
-						for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Running LSM Weighted ...\n");
+						for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Running LSM Weighted ...\n");
 						lsmThread.start();
 						currentStep++;
 					} 
@@ -665,7 +665,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 							}
 						});
 						
-						for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Running MM ...\n");
+						for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Running MM ...\n");
 						mmThread.start();
 						currentStep++;
 					}
@@ -677,7 +677,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 				}
 			}
 			
-			for( MatchingProgressDisplay mpd : progressDisplays ) {
+			for( MatchingProgressListener mpd : progressDisplays ) {
 				mpd.appendToReport("Finished running threads...\n");
 				mpd.setIndeterminate(false);
 			}
@@ -1134,7 +1134,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		m.setParameters(p);
 		m.setSourceOntology(sourceOntology);
     	m.setTargetOntology(targetOntology);
-		for( MatchingProgressDisplay mpd : progressDisplays ) m.addProgressDisplay(mpd);
+		for( MatchingProgressListener mpd : progressDisplays ) m.addProgressDisplay(mpd);
 		m.setUseProgressDelay(progressDelay);
 		m.setPerformSelection(true);
 	}
@@ -1148,7 +1148,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		if( Core.DEBUG ) System.out.println("Running " + m.getRegistryEntry().getMatcherShortName() );
 		startime = System.nanoTime()/measure;
 		
-		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.setProgressLabel(label);
+		for( MatchingProgressListener mpd : progressDisplays ) mpd.setProgressLabel(label);
 		//m.setProgressDisplay(getProgressDisplay());
 		m.match();
 		//m.setProgressDisplay(null);
