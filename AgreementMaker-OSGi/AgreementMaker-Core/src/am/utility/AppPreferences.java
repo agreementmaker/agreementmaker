@@ -88,7 +88,7 @@ public class AppPreferences {
 		//----------------------- Implementation Details ------------------
 		String key;
 		FileType(String k) { key = k; }
-		String getKey() { return key; }
+		public String getKey() { return key; }
 	}
 	
 	/**
