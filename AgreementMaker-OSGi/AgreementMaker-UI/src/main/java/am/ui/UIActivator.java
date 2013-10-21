@@ -17,6 +17,16 @@ public class UIActivator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		UIActivator.context = bundleContext;
+		
+		Thread ui_start = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				UICore.setUI(new UI());
+			}
+			
+		});
+		ui_start.start();
 	}
 
 	/*

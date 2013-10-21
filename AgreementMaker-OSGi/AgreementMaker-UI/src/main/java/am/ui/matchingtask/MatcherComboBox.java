@@ -1,7 +1,7 @@
 /**
  * 
  */
-package am.userInterface.matchingtask;
+package am.ui.matchingtask;
 
 import java.awt.Component;
 import java.awt.Font;
@@ -20,7 +20,7 @@ import javax.swing.border.EmptyBorder;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.MatcherCategory;
-import am.userInterface.matchingtask.MatcherComboBox.ComboItem;
+import am.ui.matchingtask.MatcherComboBox.ComboItem;
 import am.utility.CanEnable;
 
 /**

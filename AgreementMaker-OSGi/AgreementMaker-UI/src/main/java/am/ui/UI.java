@@ -275,16 +275,13 @@ public class UI {
 	 * Function that is called when to user wants to close the program. 
 	 */
 	public void confirmExit() {
-		int n = JOptionPane.showConfirmDialog(Core.getUI().getUIFrame(),"Are you sure you want to exit ?\n\nYou will lose any unsaved alignments!\n","Exit AgreementMaker",JOptionPane.YES_NO_OPTION);
+		int n = JOptionPane.showConfirmDialog(UICore.getUI().getUIFrame(),"Are you sure you want to exit ?\n\nYou will lose any unsaved alignments!\n","Exit AgreementMaker",JOptionPane.YES_NO_OPTION);
 		if (n == JOptionPane.YES_OPTION)
 		{
+			UICore.getUI().getUIFrame().setVisible(false);
+			UICore.getUI().getUIFrame().dispose();
+			UICore.setUI(null);
 			Core.getInstance().getRegistry().initializeShutdown();
-			Core.getInstance();
-			Core.getUI().getUIFrame().setVisible(false);
-			Core.getInstance();
-			Core.getUI().getUIFrame().dispose();
-			Core.getInstance();
-			Core.setUI(null);
 		}
 	}
 }

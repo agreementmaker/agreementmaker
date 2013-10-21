@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 import java.io.File;
 import java.io.IOException;

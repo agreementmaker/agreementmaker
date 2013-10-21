@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 import java.awt.Toolkit;
 import java.awt.event.InputEvent;
@@ -18,7 +18,8 @@ import am.app.lexicon.Lexicon;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.ontology.Ontology;
 import am.tools.LexiconLookup.LexiconLookupPanel;
-import am.userInterface.sidebar.provenance.ProvenanceMenuItem;
+import am.ui.sidebar.provenance.ProvenanceMenuItem;
+import am.utility.AppPreferences;
 
 
 public class UIMenu {

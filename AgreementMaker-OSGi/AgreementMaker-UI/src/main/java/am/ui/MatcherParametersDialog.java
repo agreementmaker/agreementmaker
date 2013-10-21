@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 
 
@@ -50,9 +50,9 @@ import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.OntologyProfilerPanel;
 import am.app.ontology.profiling.ProfilerRegistry;
 import am.app.osgi.MatcherNotFoundException;
-import am.userInterface.matchingtask.MatcherComboBox;
-import am.userInterface.matchingtask.MatcherComboBox.ComboItem;
-import am.userInterface.table.MatchersTablePanel;
+import am.ui.matchingtask.MatcherComboBox;
+import am.ui.matchingtask.MatcherComboBox.ComboItem;
+import am.ui.table.MatchersTablePanel;
 
 
 /**
@@ -93,7 +93,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	 * @param userInterface
 	 */
 	public MatcherParametersDialog(AbstractMatcher a, boolean showPresets, boolean showGeneralSettings) {
-		super(Core.getUI().getUIFrame(), true);
+		super(UICore.getUI().getUIFrame(), true);
 
 		this.showPresets = showPresets;
 		this.showGeneralSettings = showGeneralSettings;
@@ -134,7 +134,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	private void addInputMatchers(AbstractMatcher currentMatcher) {
 		if( currentMatcher == null ) return;
 		//Set input matchers into the abstractmatcher VERY IMPORTANT to set them before invoking the parameter panel, in fact the parameter panel may need to work on inputMatchers also.
-		int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
+		int[] rowsIndex = UICore.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
 		if( rowsIndex.length > currentMatcher.getMaxInputMatchers() ) {
 			System.err.println("You have selected more than " + 
 					currentMatcher.getMaxInputMatchers() + " input matcher(s).  Using the top " + 
@@ -149,7 +149,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 
 	@SuppressWarnings("unchecked")
 	public MatcherParametersDialog() {
-		super(Core.getUI().getUIFrame(), true);
+		super(UICore.getUI().getUIFrame(), true);
 		
 		initComponents();
 		
@@ -636,7 +636,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 		//AbstractMatcher matcher = MatcherFactory.getMatcherInstance(MatchersRegistry.IISM, 1);
 		//new MatcherParametersDialog(matcher);
 		
-		Core.setUI(new UI());
+		UICore.setUI(new UI());
 		
 		Ontology sourceOnt = OntoTreeBuilder.loadOWLOntology("ontologies/kbase.owl");
 		
@@ -649,7 +649,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 	
 	// TODO: Is this method still required?
 	public void match(AbstractMatcher currentMatcher, boolean defaultParam) throws Exception{
-		MatchersTablePanel matchersTablePanel = Core.getUI().getControlPanel().getMatchersTablePanel();
+		MatchersTablePanel matchersTablePanel = UICore.getUI().getControlPanel().getMatchersTablePanel();
 		int[] rowsIndex = matchersTablePanel.getTable().getSelectedRows(); //indexes in the table correspond to the indexes of the matchers in the matcherInstances list in core class
 		int selectedMatchers = rowsIndex.length;
 		if(!Core.getInstance().ontologiesLoaded() ) {

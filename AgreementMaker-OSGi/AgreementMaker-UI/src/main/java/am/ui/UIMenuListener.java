@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -45,23 +45,24 @@ import am.app.ontology.profiling.ProfilingDialog;
 import am.app.ontology.profiling.metrics.OntologyMetric;
 import am.app.ontology.profiling.metrics.OntologyMetricsRegistry;
 import am.evaluation.clustering.gvm.GVM_Clustering_Panel;
-import am.extension.ClusteringEvaluation.ClusteringEvaluationPanel;
 import am.tools.ThresholdAnalysis.ThresholdAnalysis;
-import am.tools.WordNetLookup.WordNetLookupPanel;
-import am.tools.seals.SealsPanel;
-import am.userInterface.VisualizationChangeEvent.VisualizationEventType;
-import am.userInterface.canvas2.Canvas2;
-import am.userInterface.controlpanel.MatchersControlPanel;
-import am.userInterface.find.FindDialog;
-import am.userInterface.find.FindInterface;
-import am.userInterface.instance.InstanceLookupPanel;
-import am.userInterface.sidebar.duplicatepane.DuplicateSidebar;
-import am.userInterface.sidebar.provenance.ProvenanceSidebar;
-import am.userInterface.table.MatchersTablePanel;
+import am.ui.VisualizationChangeEvent.VisualizationEventType;
+import am.ui.canvas2.Canvas2;
+import am.ui.controlpanel.MatchersControlPanel;
+import am.ui.find.FindDialog;
+import am.ui.find.FindInterface;
+import am.ui.instance.InstanceLookupPanel;
+import am.ui.sidebar.duplicatepane.DuplicateSidebar;
+import am.ui.sidebar.provenance.ProvenanceSidebar;
+import am.ui.table.MatchersTablePanel;
+import am.utility.AppPreferences;
 import am.utility.numeric.AvgMinMaxNumber;
 import am.visualization.MatcherAnalyticsPanel;
 import am.visualization.MatcherAnalyticsPanel.VisualizationType;
+import am.visualization.ClusteringEvaluation.ClusteringEvaluationPanel;
+import am.visualization.WordNetLookup.WordNetLookupPanel;
 import am.visualization.matrixplot.MatrixPlotPanel;
+import am.visualization.seals.SealsPanel;
 
 public class UIMenuListener implements ActionListener {
 
@@ -79,12 +80,12 @@ public class UIMenuListener implements ActionListener {
 			MatchersControlPanel controlPanel = menu.ui.getControlPanel();
 			if (obj == menu.xit){
 				// confirm exit
-				Core.getUI().confirmExit();
+				UICore.getUI().confirmExit();
 				// if it is no, then do nothing
 				return;
 			} else if ( obj == menu.itemFind ) {
 				// we are going to be searching throught the currently visible tab
-				Object visibleTab = Core.getUI().getCurrentTab();
+				Object visibleTab = UICore.getUI().getCurrentTab();
 				if( visibleTab instanceof FindInterface ) {
 					FindDialog fd = new FindDialog( (FindInterface) visibleTab);
 					fd.setVisible(true);
@@ -94,7 +95,7 @@ public class UIMenuListener implements ActionListener {
 				new Legend();	
 			}
 			else if(obj == menu.provenanceItem) {//TODO: when all he matchers are gone need to switch back to the other pane
-				JSplitPane uiPane=Core.getUI().getUISplitPane();
+				JSplitPane uiPane = UICore.getUI().getUISplitPane();
 				if(uiPane.getRightComponent() instanceof ProvenanceSidebar)
 				{
 					ProvenanceSidebar p=(ProvenanceSidebar)uiPane.getRightComponent();
@@ -105,8 +106,8 @@ public class UIMenuListener implements ActionListener {
 				else{
 					ProvenanceSidebar p= new ProvenanceSidebar();
 
-					p.setOldComponent(Core.getUI().getUISplitPane().getRightComponent());
-					Core.getUI().getUISplitPane().setRightComponent(p);
+					p.setOldComponent(UICore.getUI().getUISplitPane().getRightComponent());
+					UICore.getUI().getUISplitPane().setRightComponent(p);
 					menu.provenanceItem.setText("Hide Provenance");
 				}
 			}
@@ -208,7 +209,7 @@ public class UIMenuListener implements ActionListener {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
 					public void run() {
-						Core.getUI().getCanvas().repaint();
+						UICore.getUI().getCanvas().repaint();
 					}
 				});
 
@@ -247,7 +248,7 @@ public class UIMenuListener implements ActionListener {
 						VisualizationChangeEvent vce = new VisualizationChangeEvent(menu.showMappingsShortname, 
 								VisualizationEventType.TOGGLE_SHOWMAPPINGSSHORTNAME, null );
 
-						Core.getInstance().fireEvent(vce);
+						UICore.getInstance().fireEvent(vce);
 					}
 				};
 				SwingUtilities.invokeLater(fireNewEvent);
@@ -257,7 +258,7 @@ public class UIMenuListener implements ActionListener {
 			} else if (obj == menu.duplicateView) {
 				// Canvas2 wholeCanvas = new Canvas2();
 
-				JSplitPane uiPane = Core.getUI().getUISplitPane();
+				JSplitPane uiPane = UICore.getUI().getUISplitPane();
 				if (uiPane.getRightComponent() instanceof DuplicateSidebar) {
 					// view is open, close it now.
 					DuplicateSidebar dupSidebar = (DuplicateSidebar) uiPane
@@ -270,15 +271,15 @@ public class UIMenuListener implements ActionListener {
 
 					final DuplicateSidebar dupSide = new DuplicateSidebar();
 					// JDialog dialog = new JDialog();
-					final JScrollPane scroll = (JScrollPane) Core.getUI().getUISplitPane().getLeftComponent();
+					final JScrollPane scroll = (JScrollPane) UICore.getUI().getUISplitPane().getLeftComponent();
 					int newWidth = uiPane.getWidth() / 2;
 					uiPane.setDividerLocation(newWidth);
 
 					Canvas2 oldCanvas = (Canvas2) scroll.getViewport().getView();
 					Canvas2 newCanvas = new Canvas2(dupSide,oldCanvas.getGraphs());
 
-					dupSide.setOldComponent(Core.getUI().getUISplitPane().getRightComponent());
-					Rectangle viewRec = Core.getUI().getViewport().getBounds();
+					dupSide.setOldComponent(UICore.getUI().getUISplitPane().getRightComponent());
+					Rectangle viewRec = UICore.getUI().getViewport().getBounds();
 					
 					
 
@@ -302,7 +303,7 @@ public class UIMenuListener implements ActionListener {
 					// BorderLayout.CENTER);
 
 					// dialog.setVisible(true);
-					Core.getUI().getUISplitPane().setRightComponent(dupSide);
+					UICore.getUI().getUISplitPane().setRightComponent(dupSide);
 					menu.duplicateView.setSelected(true);
 				}
 				
@@ -313,7 +314,7 @@ public class UIMenuListener implements ActionListener {
 						VisualizationChangeEvent vce = new VisualizationChangeEvent(menu.synchronizedViews, 
 								VisualizationEventType.TOGGLE_SYNCHRONIZATION, null );
 
-						Core.getInstance().fireEvent(vce);
+						UICore.getInstance().fireEvent(vce);
 					}
 				};
 				SwingUtilities.invokeLater(fireNewEvent);
@@ -401,7 +402,7 @@ public class UIMenuListener implements ActionListener {
 				}
 
 				// show profiling dialog
-				ProfilingDialog pd = new ProfilingDialog();
+				ProfilingDialog pd = new ProfilingDialog(UICore.getUI().getUIFrame());
 			}
 			else if( obj == menu.doRemoveDuplicates ) {
 				// TODO: Get rid of this from here.
@@ -630,7 +631,9 @@ public class UIMenuListener implements ActionListener {
 					String outputDirectory = JOptionPane.showInputDialog(null, "Output Directory?");
 					AbstractMatcher matcher = (new MatcherParametersDialog()).getMatcher();
 					if( Utility.displayConfirmPane("Using matcher: " + matcher, "Ok?") ) {
-						ThresholdAnalysis than = new ThresholdAnalysis(matcher, true);
+						MatcherParametersDialog dialog = new MatcherParametersDialog(matcher, false, false);
+						if( dialog.getParameters() == null ) return;
+						ThresholdAnalysis than = new ThresholdAnalysis(matcher, true, dialog.getParameters());
 						than.setBatchFile(batchFile);
 						than.setOutputDirectory(outputDirectory);
 						than.execute();
@@ -641,7 +644,7 @@ public class UIMenuListener implements ActionListener {
 					String outputDirectory = JOptionPane.showInputDialog(null, "Output Directory?");
 					String prefix = JOptionPane.showInputDialog(null, "File name? (leave empty to use matcher name)");
 					if( prefix != null ) prefix.trim();
-					int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
+					int[] rowsIndex = UICore.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
 					if( rowsIndex.length == 0 ) { Utility.displayErrorPane("You must select a matcher from the control panel when running in single mode.", "Error"); return; }
 					AbstractMatcher matcherToBeAnalyzed = Core.getInstance().getMatcherInstances().get(rowsIndex[0]);
 					if( Utility.displayConfirmPane("Using matcher: " + matcherToBeAnalyzed.getRegistryEntry().getMatcherName(), "Ok?") ) {
@@ -665,7 +668,7 @@ public class UIMenuListener implements ActionListener {
 				// get the currently selected matcher
 				List<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
 				AbstractMatcher selectedMatcher;
-				int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
+				int[] rowsIndex = UICore.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
 				if( rowsIndex.length == 0 ) { Utility.displayErrorPane("No matcher is selected.", "Error"); return; }
 				selectedMatcher = list.get(rowsIndex[0]); // we only care about the first matcher selected
 
@@ -676,12 +679,12 @@ public class UIMenuListener implements ActionListener {
 				mp.getPlot().draw(false);
 				JPanel plotPanel = new JPanel();
 				plotPanel.add(mp);
-				Core.getUI().addTab("MatrixPlot Class", null , plotPanel , selectedMatcher.getRegistryEntry().getMatcherName());
+				UICore.getUI().addTab("MatrixPlot Class", null , plotPanel , selectedMatcher.getRegistryEntry().getMatcherName());
 			} else if( obj == menu.TEMP_viewPropMatrix ) {
 				// get the currently selected matcher
 				List<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
 				AbstractMatcher selectedMatcher;
-				int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
+				int[] rowsIndex = UICore.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
 				if( rowsIndex.length == 0 ) { Utility.displayErrorPane("No matcher is selected.", "Error"); return; }
 				selectedMatcher = list.get(rowsIndex[0]); // we only care about the first matcher selected
 
@@ -692,7 +695,7 @@ public class UIMenuListener implements ActionListener {
 				mp.getPlot().draw(false);
 				JPanel plotPanel = new JPanel();
 				plotPanel.add(mp);
-				Core.getUI().addTab("MatrixPlot Prop", null , plotPanel , selectedMatcher.getRegistryEntry().getMatcherName());
+				UICore.getUI().addTab("MatrixPlot Prop", null , plotPanel , selectedMatcher.getRegistryEntry().getMatcherName());
 			} else if( obj == menu.TEMP_matcherAnalysisClasses ) {
 				final MatcherAnalyticsPanel ma = new MatcherAnalyticsPanel( VisualizationType.CLASS_MATRIX );
 
@@ -702,7 +705,7 @@ public class UIMenuListener implements ActionListener {
 					}
 				};
 
-				Core.getUI().addTab("Matcher Analytics: Classes", null, ma, "Classes", callOnExit);
+				UICore.getUI().addTab("Matcher Analytics: Classes", null, ma, "Classes", callOnExit);
 				Core.getInstance().addMatcherChangeListener(ma);
 
 			} else if( obj == menu.TEMP_matcherAnalysisProp ) {
@@ -714,7 +717,7 @@ public class UIMenuListener implements ActionListener {
 					}
 				};
 
-				Core.getUI().addTab("Matcher Analytics: Properties", null, ma, "Properties", callOnExit);
+				UICore.getUI().addTab("Matcher Analytics: Properties", null, ma, "Properties", callOnExit);
 				Core.getInstance().addMatcherChangeListener(ma);
 			} else if ( obj == menu.menuLexiconsBuildAll ) {
 				// Lexicons -> Build all ...
@@ -757,7 +760,7 @@ public class UIMenuListener implements ActionListener {
 				}
 
 				InstanceLookupPanel lookupPanel = new InstanceLookupPanel(sourceOntology.getInstances(), targetOntology.getInstances());
-				Core.getUI().addTab("Instances Lookup", null , lookupPanel , "Instances Lookup Panel");
+				UICore.getUI().addTab("Instances Lookup", null , lookupPanel , "Instances Lookup Panel");
 
 			}
 			else if( obj == menu.mnuListBundles ) {
