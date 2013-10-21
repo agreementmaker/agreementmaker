@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -30,6 +30,7 @@ import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.MatchingTask;
+import am.utility.AppPreferences;
 
 public class MatcherProgressDialog extends JDialog implements MatchingProgressDisplay, ActionListener {
 
@@ -64,7 +65,7 @@ public class MatcherProgressDialog extends JDialog implements MatchingProgressDi
 	 * @param m
 	 */
 	public MatcherProgressDialog (MatchingTask mtask) {
-	    super(Core.getUI().getUIFrame());
+	    super(UICore.getUI().getUIFrame());
 	
 	    prefs = Core.getAppPreferences();
 	    

@@ -1,4 +1,4 @@
-package am.extension.ClusteringEvaluation;
+package am.visualization.ClusteringEvaluation;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -17,7 +17,7 @@ import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdMethod;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdParameters;
-import am.userInterface.MatchersChooser;
+import am.ui.MatchersChooser;
 
 public class ClusteringEvaluationPanel extends JPanel implements ActionListener, PropertyChangeListener {
 

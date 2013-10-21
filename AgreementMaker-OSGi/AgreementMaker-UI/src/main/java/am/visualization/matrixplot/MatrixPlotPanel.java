@@ -361,10 +361,10 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 		referenceMatcher = matcher2;
 		
 		switch( dispatch.getType() ) {
-		case CLASS_MATRIX:
+		case aligningClasses:
 			plot.setReferenceAlignment( matcher2.getClassAlignmentSet() );
 			break;
-		case PROPERTIES_MATRIX:
+		case aligningProperties:
 			plot.setReferenceAlignment( matcher2.getPropertyAlignmentSet() );
 			break;
 		}

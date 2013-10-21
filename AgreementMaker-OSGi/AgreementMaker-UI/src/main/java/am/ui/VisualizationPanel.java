@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;

@@ -1,4 +1,4 @@
-package am.userInterface.canvas2.utility;
+package am.ui.canvas2.utility;
 
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -9,8 +9,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import am.app.Core;
-import am.userInterface.canvas2.graphical.GraphicalData;
-import am.userInterface.canvas2.utility.GraphLocator.GraphType;
+import am.ui.canvas2.graphical.GraphicalData;
+import am.ui.canvas2.utility.GraphLocator.GraphType;
 import am.utility.DirectedGraph;
 
 public class CanvasGraph extends DirectedGraph<Canvas2Edge, Canvas2Vertex>  {

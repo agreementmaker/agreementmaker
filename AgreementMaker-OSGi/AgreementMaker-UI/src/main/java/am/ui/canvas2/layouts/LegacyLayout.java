@@ -34,6 +34,7 @@ import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.MatchingTask;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.ui.UICore;
 import am.ui.canvas2.Canvas2;
 import am.ui.canvas2.graphical.GraphicalData;
 import am.ui.canvas2.graphical.GraphicalData.NodeType;
@@ -664,8 +665,8 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				   100 , nodeHeight, currentResource, GraphicalData.NodeType.CLASS_NODE, this, graph.getID() ); 
 		LegacyNode currentLNode = new LegacyNode(gr);
 		
-		currentNode.addGraphicalRepresentation(currentLNode);
-	
+		UICore.getInstance().addGraphicalRepresentation(currentNode, currentLNode);
+		
 		// insert the vertex and the edge in to the graph.
 		graph.insertVertex(currentLNode);
 		
@@ -726,7 +727,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				try {
 					// Try to connect this graphical represenation of an Ontology Class to the Node object that represents that class.
 					Node amnode = ont.getNodefromOntResource(cls, alignType.aligningClasses);
-					amnode.addGraphicalRepresentation(node);
+					UICore.getInstance().addGraphicalRepresentation(amnode, node);
 				} catch (Exception e) {
 					// An exception has been thrown by getNodefromOntResource().
 					// This means that the OntClass was not found, therefore we cannot connect this LegacyNode to a Node object.
@@ -816,7 +817,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			try {
 				// Try to connect this graphical represenation of an Ontology Class to the Node object that represents that class.
 				Node amnode = ont.getNodefromOntResource(prop, alignType.aligningProperties);
-				amnode.addGraphicalRepresentation(node);
+				UICore.getInstance().addGraphicalRepresentation(amnode, node);
 			} catch (Exception e) {
 				// An exception has been thrown by getNodefromOntResource().
 				// This means that the OntClass was not found, therefore we cannot connect this LegacyNode to a Node object.
@@ -885,7 +886,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 			try {
 				// Try to connect this graphical represenation of an Ontology Class to the Node object that represents that class.
 				Node amnode = ont.getNodefromOntResource(prop, alignType.aligningProperties);
-				amnode.addGraphicalRepresentation(node);
+				UICore.getInstance().addGraphicalRepresentation(amnode, node);
 			} catch (Exception e) {
 				// An exception has been thrown by getNodefromOntResource().
 				// This means that the OntClass was not found, therefore we cannot connect this LegacyNode to a Node object.
@@ -1137,9 +1138,10 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				Node e1 = alignment.getEntity1();
 				Node e2 = alignment.getEntity2();
 				
-				Canvas2Vertex n1 = (Canvas2Vertex) e1.getGraphicalRepresentation( Canvas2.class );
-				Canvas2Vertex n2 = (Canvas2Vertex) e2.getGraphicalRepresentation( Canvas2.class );
 				
+				Canvas2Vertex n1 = (Canvas2Vertex) UICore.getInstance().getGraphicalRepresentation(e1, Canvas2.class);
+				Canvas2Vertex n2 = (Canvas2Vertex) UICore.getInstance().getGraphicalRepresentation(e2, Canvas2.class);
+
 				if( n1 == null || n2 == null ) { continue; }
 				
 				LegacyMapping edge = new LegacyMapping( n1, n2, alignment, m.getID());
@@ -1160,8 +1162,8 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				Node e1 = alignment.getEntity1();
 				Node e2 = alignment.getEntity2();
 				
-				Canvas2Vertex n1 = (Canvas2Vertex) e1.getGraphicalRepresentation( Canvas2.class );
-				Canvas2Vertex n2 = (Canvas2Vertex) e2.getGraphicalRepresentation( Canvas2.class );
+				Canvas2Vertex n1 = (Canvas2Vertex) UICore.getInstance().getGraphicalRepresentation(e1, Canvas2.class);
+				Canvas2Vertex n2 = (Canvas2Vertex) UICore.getInstance().getGraphicalRepresentation(e2, Canvas2.class);
 				
 				if( n1 == null || n2 == null ) {
 					// graphical representation not updated??

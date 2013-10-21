@@ -1,4 +1,4 @@
-package am.userInterface.matchingtask;
+package am.ui.matchingtask;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -19,6 +19,7 @@ import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.SelectionAlgorithm;
 import am.app.ontology.Ontology;
 import am.app.ontology.profiling.OntologyProfilerPanel;
+import am.ui.UICore;
 import am.utility.CenterPanel;
 import am.utility.messagesending.Message;
 import am.utility.messagesending.MessageConsumer;
@@ -50,7 +51,7 @@ public class MatchingTaskCreatorDialog extends JDialog implements MessageDispatc
 	private OntologyProfilerPanel pnlAnnotationProfiling;
 	
 	public MatchingTaskCreatorDialog(Ontology sourceOntology, Ontology targetOntology) {
-		super(Core.getUI().getUIFrame());
+		super(UICore.getUI().getUIFrame());
 		
 		MatchingTaskOverviewPanel overviewPanel = new MatchingTaskOverviewPanel(sourceOntology, targetOntology);
 		messageDispatch.addConsumer(overviewPanel);

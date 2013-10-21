@@ -1,4 +1,4 @@
-package am.userInterface.table;
+package am.ui.table;
 
 import java.awt.Dimension;
 

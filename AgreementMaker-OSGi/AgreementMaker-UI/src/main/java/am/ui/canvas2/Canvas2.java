@@ -24,8 +24,8 @@ import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.OntologyChangeEvent;
 import am.app.ontology.OntologyChangeListener;
-import am.utility.AppPreferences;
 import am.ui.Colors;
+import am.ui.UICore;
 import am.ui.VisualizationChangeEvent;
 import am.ui.VisualizationChangeListener;
 import am.ui.VisualizationPanel;
@@ -39,6 +39,7 @@ import am.ui.canvas2.utility.Canvas2Vertex;
 import am.ui.canvas2.utility.CanvasGraph;
 import am.ui.canvas2.utility.GraphLocator;
 import am.ui.canvas2.utility.GraphLocator.GraphType;
+import am.utility.AppPreferences;
 
 
 /**
@@ -113,7 +114,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		//addMouseWheelListener(layout);  // TODO: Add this later.  For now let the jscrollpane listen for mouse wheel events.
 		Core.getInstance().addOntologyChangeListener(this);
 		Core.getInstance().addMatcherChangeListener(this);
-		Core.getInstance().addVisualizationChangeListener(this);
+		UICore.getInstance().addVisualizationChangeListener(this);
 	}
 	
 	public ArrayList<Canvas2Vertex> getVisibleVertices() { return visibleVertices; }
@@ -361,7 +362,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		case MATCHER_VISIBILITY_CHANGED:
 			int matcherID11 = taskID;
 			Iterator<CanvasGraph> graphIter11 = graphs.iterator();
-			final boolean visible = task.visData.isShown;
+			final boolean visible = UICore.getInstance().getVisData(task).isShown;
 			while( graphIter11.hasNext() ) {
 				CanvasGraph gr = graphIter11.next();
 				if( gr.getID() == matcherID11 ) {
@@ -380,7 +381,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			log.debug("Color change event from task ID: " + e.getTaskID());
 			Iterator<CanvasGraph> graphIter11c = graphs.iterator();
 			
-			final Color taskColor = task.visData.color;
+			final Color taskColor = UICore.getInstance().getVisData(task).color;
 			
 			while( graphIter11c.hasNext() ) {
 				CanvasGraph gr = graphIter11c.next();

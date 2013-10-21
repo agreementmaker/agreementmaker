@@ -48,6 +48,7 @@ import am.ui.MatcherParametersDialog;
 import am.ui.MatcherProgressDialog;
 import am.ui.MatchingProgressDisplay;
 import am.ui.QualityEvaluationDialog;
+import am.ui.UICore;
 import am.ui.matchingtask.MatchingTaskCreatorDialog;
 import am.ui.table.MatchersControlPanelTableModel;
 import am.ui.table.MatchersTablePanel;
@@ -317,7 +318,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 					matchersTablePanel.removeTask(toBeDeleted);
 				}
 				matchersTablePanel.deletedRows(rowsIndex[0], rowsIndex[rowsIndex.length-1]);
-				Core.getUI().redisplayCanvas();
+				UICore.getUI().redisplayCanvas();
 				
 			}
 		}
@@ -333,7 +334,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		if(rowsIndex.length == 0) {
 			Utility.displayErrorPane("No matchers selected", null);
 		}
-		else 	new ExportDialog(Core.getUI().getUIFrame()); //demand control to the savefile dialog which since is modal will take care of everything
+		else 	new ExportDialog(UICore.getUI().getUIFrame()); //demand control to the savefile dialog which since is modal will take care of everything
 	}
 	
 	public void btnImportClick() throws Exception {
@@ -362,7 +363,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 				Core.getInstance().addMatchingTask(t);
 			}
 			Utility.displayMessagePane(rowsIndex.length+" matchers have been copied.\n",null);
-			Core.getUI().redisplayCanvas();
+			UICore.getUI().redisplayCanvas();
 		}
 	}
 	
@@ -432,7 +433,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 				Utility.displayTextAreaPane(report,"Reference Evaluation Report");
 			}
 			dialog.dispose();
-			Core.getUI().redisplayCanvas();
+			UICore.getUI().redisplayCanvas();
 		}
 		
 	}
@@ -527,7 +528,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 				Utility.displayTextAreaWithDim(report,"Reference Evaluation Report", 35, 60);
 			}
 			dialog.dispose();
-			Core.getUI().redisplayCanvas();
+			UICore.getUI().redisplayCanvas();
 		}
 		
 	}
@@ -607,7 +608,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 						}
 						matchersTablePanel.updatedRows(rows[0], rows[rows.length-1]);
 					}
-					Core.getUI().redisplayCanvas();
+					UICore.getUI().redisplayCanvas();
 					
 				}
 			}
@@ -677,8 +678,8 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 			//update the table
 			Core.getInstance().removeAllMatchingTasks();
 			matchersTablePanel.dataChanged();
-			Core.getUI().getCanvas().clearAllSelections();
-			Core.getUI().redisplayCanvas();
+			UICore.getUI().getCanvas().clearAllSelections();
+			UICore.getUI().redisplayCanvas();
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();

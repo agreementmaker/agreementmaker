@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -39,7 +39,8 @@ import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.parsing.OutputController;
-import am.userInterface.AppPreferences.FileType;
+import am.utility.AppPreferences;
+import am.utility.AppPreferences.FileType;
 
 
 /**
@@ -215,7 +216,7 @@ public class ExportDialog extends JDialog implements ActionListener{
 		// get the currently selected matcher
 		List<MatchingTask> list = Core.getInstance().getMatchingTasks();
 		MatchingTask selectedTask;
-		int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
+		int[] rowsIndex = UICore.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
 		selectedTask = list.get(rowsIndex[0]); // we only care about the first matcher selected
 		
 		// elements of the dialog (in order from left to right, top to bottom)
@@ -368,6 +369,9 @@ public class ExportDialog extends JDialog implements ActionListener{
 		boxSkipZeros.setEnabled(en);
 	}
 	
+	/**
+	 * TODO: This is a mess, we need to fix it. -- Cosmin, Oct. 21, 2013.
+	 */
 	private void save() {
 		try {
 			// what kind of export are we doing?
@@ -399,10 +403,16 @@ public class ExportDialog extends JDialog implements ActionListener{
 				prefs.saveExportType(outputType);
 				
 				// get the currently selected matcher
-				List<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
-				AbstractMatcher selectedMatcher;
-				int[] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
-				selectedMatcher = list.get(rowsIndex[0]); // we only care about the first matcher selected
+				List<MatchingTask> list = Core.getInstance().getMatchingTasks();
+				int[] rowsIndex = UICore.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
+				
+				MatchingTask[] matchingTasks = new MatchingTask[rowsIndex.length];
+
+				for( int i = 0; i < rowsIndex.length; i++ ) {
+					matchingTasks[i] = list.get(rowsIndex[i]);
+				}
+				
+				AbstractMatcher selectedMatcher = matchingTasks[0].matchingAlgorithm;
 				
 				if( outputType == FileType.ALIGNMENT_ONLY ) {
 					prefs.saveExportAlignmentFormatIndex(outFormatIndex);
@@ -416,12 +426,15 @@ public class ExportDialog extends JDialog implements ActionListener{
 						// full file name						
 						String fullFileName = outDirectory+ File.separator +outFileName;
 						
+						
+						
 						if( OutputController.getAlignmentFormatExtension(outFormatIndex) == "rdf" ){ // RDF	
-							OutputController.printDocumentOAEI(fullFileName);
+							
+							OutputController.printDocumentOAEI(fullFileName, matchingTasks[0]);
 							Utility.displayMessagePane("File saved successfully.\nLocation: "+fullFileName+"\n", null);
 						}
 						else{						
-							OutputController.printDocument(fullFileName);
+							OutputController.printDocument(fullFileName, matchingTasks);
 							Utility.displayMessagePane("File saved successfully.\nLocation: "+fullFileName+"\n", null);
 						}
 						setVisible(false);

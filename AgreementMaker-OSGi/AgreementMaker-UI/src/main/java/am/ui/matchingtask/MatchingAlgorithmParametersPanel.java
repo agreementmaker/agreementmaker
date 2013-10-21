@@ -1,4 +1,4 @@
-package am.userInterface.matchingtask;
+package am.ui.matchingtask;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,7 +23,8 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.MatchingTask;
-import am.userInterface.matchingtask.MatchingTaskCreatorDialog.MatchingTaskCreatorDialogMessages;
+import am.ui.UICore;
+import am.ui.matchingtask.MatchingTaskCreatorDialog.MatchingTaskCreatorDialogMessages;
 import am.utility.messagesending.MessageDispatch;
 import am.utility.messagesending.SimpleMessage;
 
@@ -278,7 +279,7 @@ public class MatchingAlgorithmParametersPanel extends JPanel implements ActionLi
 	private void checkInputMatchers(AbstractMatcher currentMatcher) {
 		if( currentMatcher == null ) return;
 		//Set input matchers into the abstractmatcher VERY IMPORTANT to set them before invoking the parameter panel, in fact the parameter panel may need to work on inputMatchers also.
-		List<MatchingTask> selectedResults = Core.getUI().getSelectedTasks();
+		List<MatchingTask> selectedResults = UICore.getUI().getSelectedTasks();
 		
 		// Check the maximum number of inputs matchers.
 		if( selectedResults.size() > currentMatcher.getMaxInputMatchers() ) {

@@ -2,10 +2,14 @@ package am.ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
+import am.app.mappingEngine.MatchingTask;
 import am.app.ontology.Node;
-import am.ui.canvas2.utility.Canvas2Vertex;
+import am.ui.matchingtask.MatchingTaskVisData;
+import am.ui.ontology.OntologyConceptGraphics;
 
 /**
  * This class will help in the transition of the UI code from AgreementMaker-Core to AgreementMaker-UI.
@@ -21,7 +25,9 @@ public class UICore {
 
 	private static final UICore core = new UICore();
 	
-	private HashMap<Node,Canvas2Vertex> graphicalRepresentations = new HashMap<>();
+	private HashMap<Node,List<OntologyConceptGraphics>> graphicalRepresentations = new HashMap<>();
+	
+	private HashMap<MatchingTask, MatchingTaskVisData> visualizationData = new HashMap<>();
 
 	private List<VisualizationChangeListener> visualizationListeners = new ArrayList<>();
 	
@@ -59,4 +65,68 @@ public class UICore {
 		}
 	}
 	
+	
+	public void addGraphicalRepresentation(Node node, OntologyConceptGraphics vertex) {
+		if( !graphicalRepresentations.containsKey(node) ) {
+			List<OntologyConceptGraphics> list = new LinkedList<>();
+			graphicalRepresentations.put(node, list);
+		}
+		graphicalRepresentations.get(node).add(vertex);
+	}
+	
+	public void removeGraphicalRepresentation(Node node, OntologyConceptGraphics vertex) {
+		if( graphicalRepresentations.containsKey(node) ) {
+			List<OntologyConceptGraphics> l = graphicalRepresentations.get(node);
+			l.remove(vertex);
+			if( l.isEmpty() ) {
+				graphicalRepresentations.remove(node);
+			}
+		}
+	}
+	
+	/**
+	 * Determine if a certain graphical representation has an object registered with this Node.
+	 * @param c
+	 * @return
+	 */
+	public boolean hasGraphicalRepresentation( Node node, Class<?> c ) {
+		List<OntologyConceptGraphics> list = graphicalRepresentations.get(node);
+		if( list == null ) return false;
+		Iterator<OntologyConceptGraphics> gr = list.iterator();
+		while( gr.hasNext() ) {
+			OntologyConceptGraphics g = gr.next();
+			if ( g.getImplementationClass().equals(c) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public OntologyConceptGraphics getGraphicalRepresentation(Node node, Class<?> c) {
+		List<OntologyConceptGraphics> list = graphicalRepresentations.get(node);
+		if( list == null ) return null;
+		Iterator<OntologyConceptGraphics> gr = list.iterator();
+		while( gr.hasNext() ) {
+			OntologyConceptGraphics g = gr.next();
+			if ( g.getImplementationClass().equals(c) ) {
+				return g;
+			}
+		}
+		return null;
+	}
+	
+	public void setVisData(MatchingTask task, MatchingTaskVisData data) {
+		visualizationData.put(task, data);
+	}
+	
+	public MatchingTaskVisData getVisData(MatchingTask task) {
+		if( !visualizationData.containsKey(task) ) {
+			MatchingTaskVisData data = new MatchingTaskVisData();
+			visualizationData.put(task, data);
+			return data;
+		}
+		else {
+			return visualizationData.get(task);
+		}
+	}
 }

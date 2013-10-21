@@ -1,7 +1,7 @@
 package am.visualization;
 
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.evaluation.clustering.ClusterFactory.ClusteringType;
-import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 
 /**
  * This interface is for objects that act as a dispatch for messages between MatrixPlot objects.
@@ -13,7 +13,7 @@ import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 public interface MatcherAnalyticsEventDispatch {
 	
 	public void broadcastEvent( MatcherAnalyticsEvent e );
-	public VisualizationType getType();
+	public alignType getType();
 	public void buildClusters( ClusteringType t );
 	//public void setMappingLabel(String label);
 	

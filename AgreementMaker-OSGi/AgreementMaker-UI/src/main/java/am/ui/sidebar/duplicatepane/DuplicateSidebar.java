@@ -1,4 +1,4 @@
-package am.userInterface.sidebar.duplicatepane;
+package am.ui.sidebar.duplicatepane;
 
 import java.awt.Component;
 

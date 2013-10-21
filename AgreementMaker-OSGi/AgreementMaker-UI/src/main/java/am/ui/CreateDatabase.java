@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +18,8 @@ import javax.swing.JTextField;
 import am.Utility;
 
 public class CreateDatabase extends JDialog implements ActionListener{
+	
+	private static final long serialVersionUID = -6783509852631814172L;
 	
 	private JTextField dbName,host, port, username;
 	private JPasswordField password;

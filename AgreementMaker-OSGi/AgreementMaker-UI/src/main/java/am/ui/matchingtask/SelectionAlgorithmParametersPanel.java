@@ -1,4 +1,4 @@
-package am.userInterface.matchingtask;
+package am.ui.matchingtask;
 
 import java.awt.BorderLayout;
 import java.util.Vector;
@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import am.app.Core;
 import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.SelectionAlgorithm;
-import am.userInterface.matchingtask.MatchingTaskCreatorDialog.MatchingTaskCreatorDialogMessages;
+import am.ui.matchingtask.MatchingTaskCreatorDialog.MatchingTaskCreatorDialogMessages;
 import am.utility.messagesending.MessageDispatch;
 import am.utility.messagesending.SimpleMessage;
 

@@ -21,7 +21,7 @@
  *  
  */
 
-package am.tools.WordNetLookup;
+package am.visualization.WordNetLookup;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

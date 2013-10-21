@@ -1,4 +1,4 @@
-package am.userInterface.find;
+package am.ui.find;
 
 public interface FindInterface {
 

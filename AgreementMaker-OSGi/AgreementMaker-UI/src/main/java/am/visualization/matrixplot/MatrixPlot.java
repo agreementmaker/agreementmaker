@@ -18,7 +18,6 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.evaluation.clustering.Cluster;
 import am.visualization.Gradient;
-import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 
 public class MatrixPlot extends JPanel {
 
@@ -26,7 +25,7 @@ public class MatrixPlot extends JPanel {
 
 	protected final AbstractMatcher  matcher;
 	protected final SimilarityMatrix matrix;
-	private final VisualizationType type;
+	private final alignType type;
 	
 	protected int squareSize = 10;
 	private int border = 0;
@@ -54,10 +53,7 @@ public class MatrixPlot extends JPanel {
 		I = null;
 		matrix = mtx;
 		matcher = null;
-		
-		if( mtx.getAlignType() == alignType.aligningClasses ) type = VisualizationType.CLASS_MATRIX;
-		else type = VisualizationType.PROPERTIES_MATRIX;
-		
+		type = mtx.getAlignType();		
 		createImage(false);
 	}
 	
@@ -66,10 +62,7 @@ public class MatrixPlot extends JPanel {
 		I = null;
 		matrix = mtx;
 		matcher = null;
-		
-		if( mtx.getAlignType() == alignType.aligningClasses ) type = VisualizationType.CLASS_MATRIX;
-		else type = VisualizationType.PROPERTIES_MATRIX;
-		
+		type = mtx.getAlignType();		
 		createImage(false);
 		enclosingPanel = mpnl;
 	}
@@ -80,10 +73,7 @@ public class MatrixPlot extends JPanel {
 		matrix = mtx;
 		matcher = null;
 		gradient = g;
-		
-		if( mtx.getAlignType() == alignType.aligningClasses ) type = VisualizationType.CLASS_MATRIX;
-		else type = VisualizationType.PROPERTIES_MATRIX;
-		
+		type = mtx.getAlignType();		
 		createImage(false);
 		enclosingPanel = mpnl;
 	}
@@ -93,10 +83,7 @@ public class MatrixPlot extends JPanel {
 		I = null;
 		matcher = a;
 		matrix = mtx;
-		
-		if( mtx.getAlignType() == alignType.aligningClasses ) type = VisualizationType.CLASS_MATRIX;
-		else type = VisualizationType.PROPERTIES_MATRIX;
-		
+		type = mtx.getAlignType();		
 		createImage(false);
 		enclosingPanel = mpnl;
 	}
@@ -107,10 +94,7 @@ public class MatrixPlot extends JPanel {
 		matcher = a;
 		matrix = mtx;
 		gradient = g;
-		
-		if( mtx.getAlignType() == alignType.aligningClasses ) type = VisualizationType.CLASS_MATRIX;
-		else type = VisualizationType.PROPERTIES_MATRIX;
-		
+		type = mtx.getAlignType();		
 		createImage(false);
 		enclosingPanel = mpnl;
 	}
@@ -201,8 +185,8 @@ public class MatrixPlot extends JPanel {
 					Alignment<Mapping> vizAlignment = null;
 					
 					if( matcher != null ) {
-						if( type == VisualizationType.CLASS_MATRIX ) vizAlignment = matcher.getClassAlignmentSet();
-						if( type == VisualizationType.PROPERTIES_MATRIX ) vizAlignment = matcher.getPropertyAlignmentSet();
+						if( type == alignType.aligningClasses ) vizAlignment = matcher.getClassAlignmentSet();
+						if( type == alignType.aligningProperties ) vizAlignment = matcher.getPropertyAlignmentSet();
 				
 					
 						Graphics2D g = (Graphics2D)I.getGraphics();
@@ -240,8 +224,8 @@ public class MatrixPlot extends JPanel {
 				Color mappingColor = referenceAlignmentColor;
 				Alignment<Mapping> vizAlignment = null;
 				if( matcher != null ) {
-					if( type == VisualizationType.CLASS_MATRIX ) vizAlignment = matcher.getClassAlignmentSet();
-					if( type == VisualizationType.PROPERTIES_MATRIX ) vizAlignment = matcher.getPropertyAlignmentSet();
+					if( type == alignType.aligningClasses ) vizAlignment = matcher.getClassAlignmentSet();
+					if( type == alignType.aligningProperties ) vizAlignment = matcher.getPropertyAlignmentSet();
 				}
 				
 				if( vizAlignment != null ) {

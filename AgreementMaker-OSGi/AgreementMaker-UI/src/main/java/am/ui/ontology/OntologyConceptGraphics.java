@@ -1,4 +1,4 @@
-package am.userInterface.ontology;
+package am.ui.ontology;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;

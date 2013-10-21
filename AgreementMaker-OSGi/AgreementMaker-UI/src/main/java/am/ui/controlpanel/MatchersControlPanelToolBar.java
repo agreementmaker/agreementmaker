@@ -1,4 +1,4 @@
-package am.userInterface.controlpanel;
+package am.ui.controlpanel;
 
 import javax.swing.JToolBar;
 

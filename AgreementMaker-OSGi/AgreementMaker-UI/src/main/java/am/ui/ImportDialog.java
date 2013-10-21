@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -31,14 +31,14 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.utility.CopySelection;
 import am.parsing.OutputController;
 import am.parsing.OutputController.ImportAlignmentFormats;
-import am.userInterface.AppPreferences.FileType;
+import am.utility.AppPreferences;
+import am.utility.AppPreferences.FileType;
 
 
 
@@ -200,7 +200,7 @@ public class ImportDialog extends JDialog implements ActionListener{
 	 * It can save Alignments or Similarity Matrices of Matchers, or complete Matchers (for later Import).
 	 */
 	public ImportDialog() {
-		super(Core.getUI().getUIFrame(), true);
+		super(UICore.getUI().getUIFrame(), true);
 		
 		loadedMatcher = null;
 		

@@ -1,4 +1,4 @@
-package am.userInterface.controlpanel;
+package am.ui.controlpanel;
 
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -19,11 +19,12 @@ import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.MatchingTaskChangeEvent;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
-import am.userInterface.canvas2.Canvas2;
-import am.userInterface.canvas2.graphical.MappingData;
-import am.userInterface.canvas2.utility.Canvas2Edge;
-import am.userInterface.canvas2.utility.CanvasGraph;
-import am.userInterface.table.MatchersControlPanelTableModel;
+import am.ui.UICore;
+import am.ui.canvas2.Canvas2;
+import am.ui.canvas2.graphical.MappingData;
+import am.ui.canvas2.utility.Canvas2Edge;
+import am.ui.canvas2.utility.CanvasGraph;
+import am.ui.table.MatchersControlPanelTableModel;
 
 /**
  * A popup menu for the MatchersControlPanel table.
@@ -131,7 +132,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				Canvas2 canvas = (Canvas2) Core.getUI().getCanvas();
+				Canvas2 canvas = (Canvas2) UICore.getUI().getCanvas();
 				
 				// get the matcher by which we are filtering (was selected by the menu)
 				int id = Integer.parseInt(e.getActionCommand());
@@ -204,7 +205,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				Canvas2 canvas = (Canvas2) Core.getUI().getCanvas();
+				Canvas2 canvas = (Canvas2) UICore.getUI().getCanvas();
 				
 				// get the matcher by which we are filtering (was selected by the menu)
 				int id = Integer.parseInt(e.getActionCommand());
@@ -365,7 +366,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 				return;
 			}
 			
-			Canvas2 canvas = (Canvas2) Core.getUI().getCanvas();
+			Canvas2 canvas = (Canvas2) UICore.getUI().getCanvas();
 			
 			int[] selectedTableRows = mcp.getTablePanel().getTable().getSelectedRows();
 			MatchersControlPanelTableModel tableModel = 
@@ -437,7 +438,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 				return;
 			}
 			
-			Canvas2 canvas = (Canvas2) Core.getUI().getCanvas();
+			Canvas2 canvas = (Canvas2) UICore.getUI().getCanvas();
 			
 			int[] selectedTableRows = mcp.getTablePanel().getTable().getSelectedRows();
 			MatchersControlPanelTableModel tableModel = 
@@ -478,7 +479,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 		}
 		
 		if( e.getActionCommand().equals("DELETE_HIDDEN_CLASS_MAPPINGS") ) {
-			Canvas2 canvas = (Canvas2) Core.getUI().getCanvas();
+			Canvas2 canvas = (Canvas2) UICore.getUI().getCanvas();
 			
 			int[] selectedTableRows = mcp.getTablePanel().getTable().getSelectedRows();
 			MatchersControlPanelTableModel tableModel = 
@@ -512,7 +513,7 @@ public class MatchersControlPanelPopupMenu extends JPopupMenu implements ActionL
 		}
 		
 		if( e.getActionCommand().equals("DELETE_HIDDEN_PROPERTY_MAPPINGS") ) {
-			Canvas2 canvas = (Canvas2) Core.getUI().getCanvas();
+			Canvas2 canvas = (Canvas2) UICore.getUI().getCanvas();
 			
 			int[] selectedTableRows = mcp.getTablePanel().getTable().getSelectedRows();
 			MatchersControlPanelTableModel tableModel = 

@@ -32,6 +32,7 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.NodeUtility;
 import am.app.ontology.Ontology;
+import am.ui.UICore;
 import am.ui.VisualizationChangeEvent;
 import am.ui.VisualizationChangeEvent.VisualizationEventType;
 import am.ui.canvas2.Canvas2;
@@ -285,14 +286,14 @@ public class LegacyLayoutMouseHandler {
 									VisualizationChangeEvent vce = new VisualizationChangeEvent(layout, 
 											   VisualizationEventType.CONCEPT_SELECTED, n );
 
-							    	Core.getInstance().fireEvent(vce);
+							    	UICore.getInstance().fireEvent(vce);
 					    	    }
 					    	};
 					    	SwingUtilities.invokeLater(fireNewEvent);							
 						}
 
 						//insert the provenance data if it exits
-						if(Core.getUI().getUISplitPane().getRightComponent() instanceof ProvenanceSidebar){
+						if(UICore.getUI().getUISplitPane().getRightComponent() instanceof ProvenanceSidebar){
 							if(selectedNodes.size()>0)
 							{
 								LegacyNode selected=selectedNodes.get(0);
@@ -303,7 +304,7 @@ public class LegacyLayoutMouseHandler {
 									provenance+=md.alignment.getProvenance();
 									provenance+="\n";
 								}
-								ProvenanceSidebar psb=(ProvenanceSidebar) Core.getUI().getUISplitPane().getRightComponent();
+								ProvenanceSidebar psb=(ProvenanceSidebar) UICore.getUI().getUISplitPane().getRightComponent();
 								psb.setProvenance(provenance);
 							}
 						}
@@ -377,9 +378,9 @@ public class LegacyLayoutMouseHandler {
 								
 								
 								
-								if(Core.getUI().getUISplitPane().getRightComponent() instanceof VertexDescriptionPane){
+								if(UICore.getUI().getUISplitPane().getRightComponent() instanceof VertexDescriptionPane){
 									// update the text box.
-									VertexDescriptionPane vdp = (VertexDescriptionPane) Core.getUI().getUISplitPane().getRightComponent();
+									VertexDescriptionPane vdp = (VertexDescriptionPane) UICore.getUI().getUISplitPane().getRightComponent();
 									if( hoveringOver.getGraphicalData().ontologyID == layout.getLeftOntologyID() ) {
 										vdp.setSourceAnnotations(annotationProperties);
 									} else {
@@ -506,8 +507,8 @@ public class LegacyLayoutMouseHandler {
 									annotationProperties += "Property Range: " + rangeString;
 								}
 								
-								if(Core.getUI().getUISplitPane().getRightComponent() instanceof VertexDescriptionPane){
-									VertexDescriptionPane vdp = (VertexDescriptionPane) Core.getUI().getUISplitPane().getRightComponent();
+								if(UICore.getUI().getUISplitPane().getRightComponent() instanceof VertexDescriptionPane){
+									VertexDescriptionPane vdp = (VertexDescriptionPane) UICore.getUI().getUISplitPane().getRightComponent();
 									if( hoveringOver.getGraphicalData().ontologyID == layout.getLeftOntologyID() ) {
 										vdp.setSourceAnnotations(annotationProperties);
 									} else {

@@ -1,4 +1,4 @@
-package am.userInterface.table;
+package am.ui.table;
 
 import java.awt.Color;
 import java.util.List;
@@ -11,7 +11,8 @@ import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
-import am.userInterface.UI;
+import am.ui.UI;
+import am.ui.UICore;
 
 public class MatchersControlPanelTableModel extends AbstractTableModel {
 		
@@ -118,7 +119,7 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
             	else if(col == NAME)
             		return a.matchingAlgorithm.getName();
             	else if(col == SHOWHIDE)
-            		return a.visData.isShown;
+            		return UICore.getInstance().getVisData(a).isShown;
             	else if(col == THRESHOLD) 
             		return Utility.getNoDecimalPercentFromDouble(a.selectionParameters.threshold);
             	else if(col == SRELATIONS)
@@ -200,7 +201,7 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
             	}
             			
             	else if(col == COLOR )
-            		return a.visData.color;
+            		return UICore.getInstance().getVisData(a).color;
             	else return NONE;
         	}
         	catch(Exception e) {
@@ -296,10 +297,10 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
         public int setValueOnMatcher(Object value, int row, int col) {
         	int update = CELLUPDATE;
         	try {
-        		UI ui = Core.getUI();
+        		UI ui = UICore.getUI();
         		MatchingTask a = data.get(row);
             	if(col == SHOWHIDE) {
-            		a.visData.isShown = ((Boolean)value).booleanValue();
+            		UICore.getInstance().getVisData(a).isShown = ((Boolean)value).booleanValue();
             		ui.redisplayCanvas();
             		update = CELLUPDATE;
             	}
@@ -336,7 +337,7 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
             		ui.redisplayCanvas();
             	}
             	else if(col == COLOR) {
-            		a.visData.color = (Color)value;
+            		UICore.getInstance().getVisData(a).color = (Color)value;
             		update = ROWUPDATE;
             		ui.redisplayCanvas();
             	}

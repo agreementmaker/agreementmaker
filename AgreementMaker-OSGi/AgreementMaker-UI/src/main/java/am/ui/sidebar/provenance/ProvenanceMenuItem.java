@@ -1,4 +1,4 @@
-package am.userInterface.sidebar.provenance;
+package am.ui.sidebar.provenance;
 
 import java.awt.Component;
 import java.util.List;
@@ -10,6 +10,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.MatcherChangeListener;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.MatchingTaskChangeEvent;
+import am.ui.UICore;
 
 public class ProvenanceMenuItem extends JMenuItem implements MatcherChangeListener{
 	
@@ -30,10 +31,10 @@ public class ProvenanceMenuItem extends JMenuItem implements MatcherChangeListen
 				return;
 			}
 		}
-		if(Core.getUI() !=null){
-			Component rightSide=Core.getUI().getUISplitPane().getRightComponent();
+		if(UICore.getUI() !=null){
+			Component rightSide= UICore.getUI().getUISplitPane().getRightComponent();
 			if(rightSide instanceof ProvenanceSidebar)
-				Core.getUI().getUISplitPane().setRightComponent(((ProvenanceSidebar) rightSide).getOldComponent());
+				UICore.getUI().getUISplitPane().setRightComponent(((ProvenanceSidebar) rightSide).getOldComponent());
 			this.setEnabled(false);
 		}
 	}

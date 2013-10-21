@@ -21,7 +21,7 @@
  *  
  */
 
-package am.tools.seals;
+package am.visualization.seals;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -54,6 +54,8 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchingProgressListener;
 import am.app.osgi.MatcherNotFoundException;
+import am.tools.seals.SealsServer;
+import am.ui.MatcherParametersDialog;
 import am.utility.LinuxInetAddress;
 /**
  * The SealsPanel contains all the UI components, used for changing the settings for, and publishing the SealsServer.

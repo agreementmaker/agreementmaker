@@ -14,6 +14,7 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.hierarchy.AlternateHierarchy;
+import am.ui.UICore;
 import am.ui.canvas2.Canvas2;
 import am.ui.canvas2.graphical.GraphicalData;
 import am.ui.canvas2.graphical.TextElement;
@@ -120,7 +121,7 @@ public class AlternateHierarchyLayout extends LegacyLayout {
 			try {
 				// Try to connect this graphical represenation of an Ontology Class to the Node object that represents that class.
 				Node amnode = ont.getNodefromOntResource(cls, alignType.aligningClasses);
-				amnode.addGraphicalRepresentation(node);
+				UICore.getInstance().addGraphicalRepresentation(amnode, node);
 			} catch (Exception e) {
 				// An exception has been thrown by getNodefromOntResource().
 				// This means that the OntClass was not found, therefore we cannot connect this LegacyNode to a Node object.
@@ -187,7 +188,7 @@ public class AlternateHierarchyLayout extends LegacyLayout {
 				try {
 					// Try to connect this graphical represenation of an Ontology Class to the Node object that represents that class.
 					Node amnode = ont.getNodefromOntResource(cls, alignType.aligningClasses);
-					amnode.addGraphicalRepresentation(node);
+					UICore.getInstance().addGraphicalRepresentation(amnode, node);
 				} catch (Exception e) {
 					// An exception has been thrown by getNodefromOntResource().
 					// This means that the OntClass was not found, therefore we cannot connect this LegacyNode to a Node object.

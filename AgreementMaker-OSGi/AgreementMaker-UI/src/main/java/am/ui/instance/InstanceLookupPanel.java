@@ -1,4 +1,4 @@
-package am.userInterface.instance;
+package am.ui.instance;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;

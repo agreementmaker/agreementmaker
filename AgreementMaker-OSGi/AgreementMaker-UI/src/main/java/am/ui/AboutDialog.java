@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

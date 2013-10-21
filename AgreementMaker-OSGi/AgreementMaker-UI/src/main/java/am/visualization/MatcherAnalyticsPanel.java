@@ -50,10 +50,6 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	
 	ArrayList<MatcherAnalyticsEventListener> eventListeners = new ArrayList<MatcherAnalyticsEventListener>();
 	
-	public enum VisualizationType {
-		CLASS_MATRIX, PROPERTIES_MATRIX
-	}
-	
 	private JPanel pnlToolbar;
 	private JPanel pnlInfo;
 	
@@ -66,7 +62,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	//private JTextField txtClusterThreshold;
 	//private JButton btnApplyThreshold;
 	
-	private VisualizationType type;
+	private alignType type;
 	private JLabel lblMapping;
 	private Point currentSelectedMapping;
 	
@@ -85,7 +81,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 	
 	private WrapLayout wrap;
 	
-	public MatcherAnalyticsPanel( VisualizationType t ) {
+	public MatcherAnalyticsPanel( alignType t ) {
 		super();
 
 		type = t;
@@ -122,13 +118,13 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		List<AbstractMatcher> matcherList = Core.getInstance().getMatchingAlgorithms();
 		for( AbstractMatcher a : matcherList ) {
 			switch( type ) {
-			case CLASS_MATRIX:
+			case aligningClasses:
 				if( a.getClassesMatrix() != null ) {
 					addPlot(a, a.getClassesMatrix());
 				}
 				break;
 				
-			case PROPERTIES_MATRIX:
+			case aligningProperties:
 				if( a.getPropertiesMatrix() != null ) {
 					addPlot(a, a.getPropertiesMatrix());
 				}
@@ -225,7 +221,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		return panel;
 	}
 
-	public VisualizationType getType() { return type; }
+	public alignType getType() { return type; }
 	public JPanel getPlotsPanel() { return pnlPlots; }
 	public void setMappingLabel(String label) { lblMapping.setText(label); }
 	
@@ -239,13 +235,13 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			// when a matcher is added to the main
 			AbstractMatcher a = e.getTask().matchingAlgorithm;
 			switch( type ) {
-			case CLASS_MATRIX:
+			case aligningClasses:
 				if( a.getClassesMatrix() != null ) {
 					addPlot(a, a.getClassesMatrix());
 				}
 				break;
 				
-			case PROPERTIES_MATRIX:
+			case aligningProperties:
 				if( a.getPropertiesMatrix() != null ) {
 					addPlot(a, a.getPropertiesMatrix());
 				}
@@ -317,8 +313,8 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		if( e.type == EventType.SET_FEEDBACK ) {
 			// the feedback matcher has been set
 			feedbackMatcher = ((AbstractMatcher)e.payload);
-			if( type == VisualizationType.CLASS_MATRIX ) feedbackMatrix = ((AbstractMatcher)e.payload).getClassesMatrix();
-			if( type == VisualizationType.PROPERTIES_MATRIX ) feedbackMatrix = ((AbstractMatcher)e.payload).getPropertiesMatrix();
+			if( type == alignType.aligningClasses ) feedbackMatrix = ((AbstractMatcher)e.payload).getClassesMatrix();
+			if( type == alignType.aligningProperties ) feedbackMatrix = ((AbstractMatcher)e.payload).getPropertiesMatrix();
 			
 			if( feedbackMatrix == null ) {
 				System.err.println("Feedback matrix is null, this should not happen.");
@@ -398,10 +394,10 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 					target = plotPanel.getMatcher().getTargetOntology();
 				}
 				if( source != null && target != null ) {
-					if( type == VisualizationType.CLASS_MATRIX ) {
+					if( type == alignType.aligningClasses ) {
 						sNode = source.getClassesList().get(mapRowCol.x);
 						tNode = target.getClassesList().get(mapRowCol.y);
-					} else if( type == VisualizationType.PROPERTIES_MATRIX ) {
+					} else if( type == alignType.aligningProperties ) {
 						sNode = source.getPropertiesList().get(mapRowCol.x);
 						tNode = target.getPropertiesList().get(mapRowCol.y);
 					}
@@ -441,7 +437,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 		//broadcastEvent(displayClusterEvent);
 		
 		switch( type ) {
-		case CLASS_MATRIX: {
+		case aligningClasses: {
 			SimilarityMatrix matrix = new ArraySimilarityMatrix(Core.getInstance().getSourceOntology(), 
 																Core.getInstance().getTargetOntology(),
 																alignType.aligningClasses);	
@@ -449,7 +445,7 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			newPanel.setCluster(c);
 			break;
 		}
-		case PROPERTIES_MATRIX: {
+		case aligningProperties: {
 			SimilarityMatrix matrix = new ArraySimilarityMatrix(Core.getInstance().getSourceOntology(), 
 					Core.getInstance().getTargetOntology(),
 					alignType.aligningProperties);	
@@ -523,8 +519,8 @@ public class MatcherAnalyticsPanel extends JPanel implements MatcherChangeListen
 			
 			//String[] topKDescription = new String[k];
 			Alignment<Mapping> refAlignment = null;
-			if( refMatcher != null && type == VisualizationType.CLASS_MATRIX ) refAlignment = refMatcher.getClassAlignmentSet();
-			if( refMatcher != null && type == VisualizationType.PROPERTIES_MATRIX ) refAlignment = refMatcher.getPropertyAlignmentSet();
+			if( refMatcher != null && type == alignType.aligningClasses ) refAlignment = refMatcher.getClassAlignmentSet();
+			if( refMatcher != null && type == alignType.aligningProperties ) refAlignment = refMatcher.getPropertyAlignmentSet();
 			
 			cmbTopK.removeAllItems();
 			for( int i = 0; i < k; i++ ) {

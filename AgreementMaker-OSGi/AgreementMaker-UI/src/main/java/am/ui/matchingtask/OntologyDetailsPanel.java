@@ -1,4 +1,4 @@
-package am.userInterface.matchingtask;
+package am.ui.matchingtask;
 
 import java.awt.BorderLayout;
 

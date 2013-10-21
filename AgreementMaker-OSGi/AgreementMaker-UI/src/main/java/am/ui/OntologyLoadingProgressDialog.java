@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -48,7 +48,7 @@ public class OntologyLoadingProgressDialog extends JDialog implements PropertyCh
 	 * @param m
 	 */
 	public OntologyLoadingProgressDialog (TreeBuilder t) {
-	    super(Core.getUI().getUIFrame(), true);  // to get focus back
+	    super(UICore.getUI().getUIFrame(), true);  // to get focus back
 	
 	    report = new JTextArea(10, 38);
 	    
@@ -92,7 +92,7 @@ public class OntologyLoadingProgressDialog extends JDialog implements PropertyCh
 		progressBar.setIndeterminate(true); // we are not updating the progress bar.
 	    treeBuilder.addPropertyChangeListener(this);  // we are receiving updates from the matcher.
 		
-	    treeBuilder.setProgressDialog(this);
+	    treeBuilder.addProgressListener(this);
 		
 		treeBuilder.execute();
 		

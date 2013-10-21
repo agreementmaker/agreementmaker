@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 import java.awt.Container;
 import java.awt.event.ActionEvent;
@@ -21,9 +21,9 @@ import am.app.ontology.OntologyChangeEvent.EventType;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
-import am.userInterface.canvas2.Canvas2;
-import am.userInterface.canvas2.layouts.AlternateHierarchyLayout;
-import am.userInterface.classic.AgreementMakerClassic;
+import am.ui.canvas2.Canvas2;
+import am.ui.canvas2.layouts.AlternateHierarchyLayout;
+import am.ui.classic.AgreementMakerClassic;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
@@ -44,7 +44,7 @@ public class AlternateHierachyDialog extends JDialog implements ActionListener {
 	private JButton btnOk, btnCancel;
 	
 	public AlternateHierachyDialog() {
-		super(Core.getUI().getUIFrame(), true);
+		super(UICore.getUI().getUIFrame(), true);
 		
 		
 		Ontology sourceOntology = Core.getInstance().getSourceOntology();
@@ -85,7 +85,7 @@ public class AlternateHierachyDialog extends JDialog implements ActionListener {
 		
 		this.setLayout(layout);
 		this.pack();
-		this.setLocationRelativeTo(Core.getUI().getUIFrame());
+		this.setLocationRelativeTo(UICore.getUI().getUIFrame());
 	}
 	
 	
@@ -190,7 +190,7 @@ public class AlternateHierachyDialog extends JDialog implements ActionListener {
 		
 		AgreementMakerClassic amPanel = new AgreementMakerClassic(canvas);
 				
-		Core.getUI().addTab("Alternate Hierarchy", null, amPanel, null);
+		UICore.getUI().addTab("Alternate Hierarchy", null, amPanel, null);
 		
 	}
 

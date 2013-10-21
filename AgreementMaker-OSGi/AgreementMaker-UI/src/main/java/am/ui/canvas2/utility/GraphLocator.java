@@ -1,4 +1,4 @@
-package am.userInterface.canvas2.utility;
+package am.ui.canvas2.utility;
 
 import java.util.ArrayList;
 import java.util.Iterator;

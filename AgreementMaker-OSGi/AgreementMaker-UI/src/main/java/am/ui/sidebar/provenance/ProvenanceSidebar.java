@@ -1,4 +1,4 @@
-package am.userInterface.sidebar.provenance;
+package am.ui.sidebar.provenance;
 
 import java.awt.Component;
 import java.awt.GridLayout;

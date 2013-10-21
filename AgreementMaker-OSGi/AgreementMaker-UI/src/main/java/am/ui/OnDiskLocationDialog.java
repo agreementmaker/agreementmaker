@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;

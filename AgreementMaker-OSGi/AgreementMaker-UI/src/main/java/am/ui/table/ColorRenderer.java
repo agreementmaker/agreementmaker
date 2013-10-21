@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */ 
 
-package am.userInterface.table;
+package am.ui.table;
 
 /* 
  * ColorRenderer.java (compiles with releases 1.2, 1.3, and 1.4) is used by 

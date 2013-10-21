@@ -1,4 +1,4 @@
-package am.userInterface.matchingtask;
+package am.ui.matchingtask;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -9,7 +9,7 @@ import javax.swing.border.TitledBorder;
 import am.app.mappingEngine.MatchingAlgorithm;
 import am.app.mappingEngine.SelectionAlgorithm;
 import am.app.ontology.Ontology;
-import am.userInterface.matchingtask.MatchingTaskCreatorDialog.MatchingTaskCreatorDialogMessages;
+import am.ui.matchingtask.MatchingTaskCreatorDialog.MatchingTaskCreatorDialogMessages;
 import am.utility.messagesending.Message;
 import am.utility.messagesending.MessageConsumer;
 

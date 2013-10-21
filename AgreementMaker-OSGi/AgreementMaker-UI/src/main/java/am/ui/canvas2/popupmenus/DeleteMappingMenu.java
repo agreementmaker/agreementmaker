@@ -1,4 +1,4 @@
-package am.userInterface.canvas2.popupmenus;
+package am.ui.canvas2.popupmenus;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,13 +22,14 @@ import am.app.mappingEngine.MatchingTask;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.tools.LexiconLookup.LexiconLookupPanel;
-import am.userInterface.canvas2.Canvas2;
-import am.userInterface.canvas2.graphical.MappingData;
-import am.userInterface.canvas2.graphical.MappingData.MappingType;
-import am.userInterface.canvas2.nodes.LegacyMapping;
-import am.userInterface.canvas2.utility.Canvas2Layout;
-import am.userInterface.canvas2.utility.Canvas2Vertex;
-import am.userInterface.canvas2.utility.CanvasGraph;
+import am.ui.UICore;
+import am.ui.canvas2.Canvas2;
+import am.ui.canvas2.graphical.MappingData;
+import am.ui.canvas2.graphical.MappingData.MappingType;
+import am.ui.canvas2.nodes.LegacyMapping;
+import am.ui.canvas2.utility.Canvas2Layout;
+import am.ui.canvas2.utility.Canvas2Vertex;
+import am.ui.canvas2.utility.CanvasGraph;
 
 public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 
@@ -165,10 +166,10 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 				if( lookupPanel == null ) {
 					// we have to create and display it
 					Ontology o = Core.getInstance().getOntologyByID( node.getObject().ontologyID );
-					lookupPanel = Core.getUI().getUIMenu().showLexiconLookupPanel(o, LexiconRegistry.ONTOLOGY_LEXICON);
+					lookupPanel = UICore.getUI().getUIMenu().showLexiconLookupPanel(o, LexiconRegistry.ONTOLOGY_LEXICON);
 				}
 				lookupPanel.doLookup(node.getObject().r);
-				Core.getUI().getTabbedPane().setSelectedComponent(lookupPanel);
+				UICore.getUI().getTabbedPane().setSelectedComponent(lookupPanel);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 				Utility.displayErrorPane("Could not display lexicon lookup panel.\n\n"+e1.getMessage(), "Error");
@@ -246,14 +247,14 @@ public class DeleteMappingMenu extends JPopupMenu implements ActionListener {
 		origin.removeOutEdge(mapping);
 		destination.removeInEdge(mapping);
 		
-		Canvas2 canvas = (Canvas2) Core.getUI().getCanvas();
+		Canvas2 canvas = (Canvas2) UICore.getUI().getCanvas();
 		CanvasGraph gr = canvas.getMatcherGraph( data.matcherID );
 		if( gr != null ) gr.removeEdge( mapping );
 		else throw new Exception("Cannot find mapping in the visualization graphs.");
 		
 
 		// repaint
-		Core.getUI().redisplayCanvas();
+		UICore.getUI().redisplayCanvas();
 	}
 	
 	private void setMappingProvenance( int index ) {

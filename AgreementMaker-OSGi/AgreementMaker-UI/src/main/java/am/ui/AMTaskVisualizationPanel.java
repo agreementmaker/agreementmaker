@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 /**
  * Represents a panel which visualizes a matching task.

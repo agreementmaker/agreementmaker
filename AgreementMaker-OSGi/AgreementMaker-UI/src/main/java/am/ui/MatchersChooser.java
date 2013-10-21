@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -201,12 +201,12 @@ public class MatchersChooser {
 		private JPanel checkboxPanel;
 
 		public MatchersChooserDialog() {
-			super(Core.getUI().getUIFrame(), true);
+			super(UICore.getUI().getUIFrame(), true);
 			init(new MatchersChooserCheckboxPanel());
 		}
 		
 		public MatchersChooserDialog(JPanel chooserPanel) {
-			super(Core.getUI().getUIFrame(), true);
+			super(UICore.getUI().getUIFrame(), true);
 			init(chooserPanel);
 		}
 

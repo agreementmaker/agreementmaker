@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -66,7 +66,7 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 	private static final String PREF_TARGET_USE_STLEXICON = "PREF_TARGET_USESTLEXICON";
 	
 	public LexiconBuilderDialog() throws Exception {
-		super(Core.getUI().getUIFrame(), "Lexicon Builder Settings", true);
+		super(UICore.getUI().getUIFrame(), "Lexicon Builder Settings", true);
 		
 		setMinimumSize(new Dimension(600,400));
 		

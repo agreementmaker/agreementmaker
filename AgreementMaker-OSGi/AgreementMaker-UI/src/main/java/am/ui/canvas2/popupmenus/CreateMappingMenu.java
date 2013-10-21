@@ -1,10 +1,10 @@
-package am.userInterface.canvas2.popupmenus;
+package am.ui.canvas2.popupmenus;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import am.userInterface.canvas2.utility.Canvas2Layout;
+import am.ui.canvas2.utility.Canvas2Layout;
 
 public class CreateMappingMenu extends JPopupMenu {
 

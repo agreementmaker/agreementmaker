@@ -27,6 +27,7 @@ import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.DefaultSelectionParameters;
@@ -58,7 +59,6 @@ import am.ui.table.MatchersTablePanel;
 import am.utility.AppPreferences;
 import am.utility.numeric.AvgMinMaxNumber;
 import am.visualization.MatcherAnalyticsPanel;
-import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 import am.visualization.ClusteringEvaluation.ClusteringEvaluationPanel;
 import am.visualization.WordNetLookup.WordNetLookupPanel;
 import am.visualization.matrixplot.MatrixPlotPanel;
@@ -697,7 +697,7 @@ public class UIMenuListener implements ActionListener {
 				plotPanel.add(mp);
 				UICore.getUI().addTab("MatrixPlot Prop", null , plotPanel , selectedMatcher.getRegistryEntry().getMatcherName());
 			} else if( obj == menu.TEMP_matcherAnalysisClasses ) {
-				final MatcherAnalyticsPanel ma = new MatcherAnalyticsPanel( VisualizationType.CLASS_MATRIX );
+				final MatcherAnalyticsPanel ma = new MatcherAnalyticsPanel( alignType.aligningClasses );
 
 				Runnable callOnExit = new Runnable() {
 					public void run() {
@@ -709,7 +709,7 @@ public class UIMenuListener implements ActionListener {
 				Core.getInstance().addMatcherChangeListener(ma);
 
 			} else if( obj == menu.TEMP_matcherAnalysisProp ) {
-				final MatcherAnalyticsPanel ma = new MatcherAnalyticsPanel( VisualizationType.PROPERTIES_MATRIX );
+				final MatcherAnalyticsPanel ma = new MatcherAnalyticsPanel( alignType.aligningProperties );
 
 				Runnable callOnExit = new Runnable() {
 					public void run() {

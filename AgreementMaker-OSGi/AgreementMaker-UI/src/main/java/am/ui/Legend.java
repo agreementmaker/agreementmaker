@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -47,7 +47,7 @@ public class Legend implements ActionListener, ChangeListener{
 	public Legend(){
 		
 		//ui = userInterface;
-		legendFrame = new JDialog( Core.getUI().getUIFrame(), "Color Legend");
+		legendFrame = new JDialog( UICore.getUI().getUIFrame(), "Color Legend");
 		p = new JPanel(new GridLayout(13,13));  // 13 (instead of 12) to leave a blank space at the bottom
 		
 		// initialize all the labels					
@@ -229,6 +229,6 @@ public class Legend implements ActionListener, ChangeListener{
 			Colors.hover = cc.getColor();
 			btnHoverColor.setBackground(Colors.hover);
 		}
-		Core.getUI().redisplayCanvas();
+		UICore.getUI().redisplayCanvas();
 	}
 }

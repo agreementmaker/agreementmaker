@@ -1,4 +1,4 @@
-package am.userInterface.find;
+package am.ui.find;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 
 import am.app.Core;
 import am.app.ontology.Ontology;
+import am.ui.UICore;
 
 public class FindDialog extends JDialog implements ActionListener {
 	
@@ -51,7 +52,7 @@ public class FindDialog extends JDialog implements ActionListener {
 	FindInterface haystack;  // searching for a needle in the haystack
 	
 	public FindDialog( FindInterface hs ) {
-		super(Core.getUI().getUIFrame());
+		super(UICore.getUI().getUIFrame());
 
 		haystack = hs;
 		
@@ -72,9 +73,9 @@ public class FindDialog extends JDialog implements ActionListener {
 	
 		JLabel searchThroughLabel = new JLabel("Search through:");
 		nameCheckbox = new JCheckBox("Name");
-		nameCheckbox.setSelected( Core.getUI().getCanvas().getShowLocalName() );
+		nameCheckbox.setSelected( UICore.getUI().getCanvas().getShowLocalName() );
 		labelCheckbox = new JCheckBox("Label");
-		labelCheckbox.setSelected( Core.getUI().getCanvas().getShowLabel() );
+		labelCheckbox.setSelected( UICore.getUI().getCanvas().getShowLabel() );
 		nameCheckbox.setEnabled(false);
 		labelCheckbox.setEnabled(false);
 		

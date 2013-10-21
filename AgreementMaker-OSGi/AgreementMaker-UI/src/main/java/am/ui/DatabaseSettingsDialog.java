@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,6 +17,8 @@ import am.Utility;
 import am.app.triplestore.jenatdb.JenaTDBTripleStore;
 
 public class DatabaseSettingsDialog extends JDialog implements ActionListener{
+	
+	private static final long serialVersionUID = 2522190856262898364L;
 	
 	private JTextField dbNameSource,hostSource, portSource, usernameSource;
 	private JPasswordField passwordSource;
