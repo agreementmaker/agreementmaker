@@ -1,9 +1,10 @@
-package am.userInterface.canvas2.nodes;
+package am.ui.canvas2.nodes;
 
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.Iterator;
@@ -11,13 +12,13 @@ import java.util.Iterator;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.Mapping;
-import am.userInterface.canvas2.graphical.GraphicalData;
-import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
-import am.userInterface.canvas2.graphical.MappingData;
-import am.userInterface.canvas2.graphical.MappingData.MappingType;
-import am.userInterface.canvas2.layouts.LegacyLayout;
-import am.userInterface.canvas2.utility.Canvas2Edge;
-import am.userInterface.canvas2.utility.Canvas2Vertex;
+import am.ui.canvas2.graphical.GraphicalData;
+import am.ui.canvas2.graphical.GraphicalData.NodeType;
+import am.ui.canvas2.graphical.MappingData;
+import am.ui.canvas2.graphical.MappingData.MappingType;
+import am.ui.canvas2.layouts.LegacyLayout;
+import am.ui.canvas2.utility.Canvas2Edge;
+import am.ui.canvas2.utility.Canvas2Vertex;
 import am.utility.DirectedGraphEdge;
 
 public class LegacyMapping extends Canvas2Edge {
@@ -169,10 +170,8 @@ public class LegacyMapping extends Canvas2Edge {
 			}
 		}
 		
-		
-		//Core.getInstance();
 		// ok, now draw the mapping correctly
-		FontMetrics fontMetrics = Core.getUI().getCanvas().getFontMetrics(d.font); // need this to calculate the width of the label
+		FontMetrics fontMetrics = g.getFontMetrics(d.font); // need this to calculate the width of the label
 		
 		// get the width of the label
 		int labelWidth = 0;

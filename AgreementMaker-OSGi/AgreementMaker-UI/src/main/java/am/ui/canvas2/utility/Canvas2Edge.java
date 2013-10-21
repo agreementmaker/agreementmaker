@@ -1,9 +1,9 @@
-package am.userInterface.canvas2.utility;
+package am.ui.canvas2.utility;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
-import am.userInterface.canvas2.graphical.GraphicalData;
+import am.ui.canvas2.graphical.GraphicalData;
 import am.utility.DirectedGraphEdge;
 
 public class Canvas2Edge extends DirectedGraphEdge<GraphicalData, GraphicalData> {

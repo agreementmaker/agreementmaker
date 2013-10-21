@@ -1,4 +1,4 @@
-package am.userInterface.canvas2.layouts;
+package am.ui.canvas2.layouts;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -34,25 +34,25 @@ import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.MatchingTask;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.userInterface.canvas2.Canvas2;
-import am.userInterface.canvas2.graphical.GraphicalData;
-import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
-import am.userInterface.canvas2.graphical.MappingData;
-import am.userInterface.canvas2.graphical.RectangleElement;
-import am.userInterface.canvas2.graphical.TextElement;
-import am.userInterface.canvas2.layouts.legacylayout.LegacyLayoutMouseHandler;
-import am.userInterface.canvas2.nodes.GraphicalNode;
-import am.userInterface.canvas2.nodes.LegacyEdge;
-import am.userInterface.canvas2.nodes.LegacyMapping;
-import am.userInterface.canvas2.nodes.LegacyNode;
-import am.userInterface.canvas2.popupmenus.CreateMappingMenu;
-import am.userInterface.canvas2.popupmenus.DeleteMappingMenu;
-import am.userInterface.canvas2.utility.Canvas2Edge;
-import am.userInterface.canvas2.utility.Canvas2Layout;
-import am.userInterface.canvas2.utility.Canvas2Vertex;
-import am.userInterface.canvas2.utility.CanvasGraph;
-import am.userInterface.canvas2.utility.GraphLocator;
-import am.userInterface.canvas2.utility.GraphLocator.GraphType;
+import am.ui.canvas2.Canvas2;
+import am.ui.canvas2.graphical.GraphicalData;
+import am.ui.canvas2.graphical.GraphicalData.NodeType;
+import am.ui.canvas2.graphical.MappingData;
+import am.ui.canvas2.graphical.RectangleElement;
+import am.ui.canvas2.graphical.TextElement;
+import am.ui.canvas2.layouts.legacylayout.LegacyLayoutMouseHandler;
+import am.ui.canvas2.nodes.GraphicalNode;
+import am.ui.canvas2.nodes.LegacyEdge;
+import am.ui.canvas2.nodes.LegacyMapping;
+import am.ui.canvas2.nodes.LegacyNode;
+import am.ui.canvas2.popupmenus.CreateMappingMenu;
+import am.ui.canvas2.popupmenus.DeleteMappingMenu;
+import am.ui.canvas2.utility.Canvas2Edge;
+import am.ui.canvas2.utility.Canvas2Layout;
+import am.ui.canvas2.utility.Canvas2Vertex;
+import am.ui.canvas2.utility.CanvasGraph;
+import am.ui.canvas2.utility.GraphLocator;
+import am.ui.canvas2.utility.GraphLocator.GraphType;
 import am.utility.DirectedGraphEdge;
 import am.utility.Pair;
 
@@ -662,7 +662,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		GraphicalData gr = new GraphicalData( depth*depthIndent + subgraphXoffset, 
 				   graph.numVertices() * (nodeHeight+marginBottom) + subgraphYoffset, 
 				   100 , nodeHeight, currentResource, GraphicalData.NodeType.CLASS_NODE, this, graph.getID() ); 
-		LegacyNode currentLNode = new LegacyNode( gr);
+		LegacyNode currentLNode = new LegacyNode(gr);
 		
 		currentNode.addGraphicalRepresentation(currentLNode);
 	
@@ -1663,9 +1663,10 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				userMappings.add(a);
 				
 			}
-
+ 
 			// add the mappings created to the user
-			Core.getUI().getControlPanel().userMatching(userMappings);
+			// FIXME: Replace the call to Core with something else!
+			//Core.getUI().getControlPanel().userMatching(userMappings);
 			
 			// clear the hover
 			if( hoveringOver != null ) {
@@ -1673,8 +1674,6 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				hoveringOver = null;
 			}
 			
-			// redraw the canvas, but not in this thread
-			SwingUtilities.invokeLater( new Runnable() { public void run() { Core.getUI().getCanvas().repaint(); } } );
 		}
 		
 	}

@@ -1,4 +1,4 @@
-package am.userInterface.canvas2.graphical;
+package am.ui.canvas2.graphical;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -6,7 +6,7 @@ import java.awt.Graphics;
 
 import javax.swing.JFrame;
 
-import am.userInterface.canvas2.utility.Canvas2Layout;
+import am.ui.canvas2.utility.Canvas2Layout;
 
 public class TextElement extends GraphicalElement {
 

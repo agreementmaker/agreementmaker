@@ -1,4 +1,4 @@
-package am.userInterface.canvas2;
+package am.ui.canvas2;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -24,21 +24,21 @@ import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.OntologyChangeEvent;
 import am.app.ontology.OntologyChangeListener;
-import am.userInterface.AppPreferences;
-import am.userInterface.Colors;
-import am.userInterface.VisualizationChangeEvent;
-import am.userInterface.VisualizationChangeListener;
-import am.userInterface.VisualizationPanel;
-import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
-import am.userInterface.canvas2.graphical.MappingData;
-import am.userInterface.canvas2.layouts.LegacyLayout;
-import am.userInterface.canvas2.nodes.LegacyMapping;
-import am.userInterface.canvas2.utility.Canvas2Edge;
-import am.userInterface.canvas2.utility.Canvas2Layout;
-import am.userInterface.canvas2.utility.Canvas2Vertex;
-import am.userInterface.canvas2.utility.CanvasGraph;
-import am.userInterface.canvas2.utility.GraphLocator;
-import am.userInterface.canvas2.utility.GraphLocator.GraphType;
+import am.utility.AppPreferences;
+import am.ui.Colors;
+import am.ui.VisualizationChangeEvent;
+import am.ui.VisualizationChangeListener;
+import am.ui.VisualizationPanel;
+import am.ui.canvas2.graphical.GraphicalData.NodeType;
+import am.ui.canvas2.graphical.MappingData;
+import am.ui.canvas2.layouts.LegacyLayout;
+import am.ui.canvas2.nodes.LegacyMapping;
+import am.ui.canvas2.utility.Canvas2Edge;
+import am.ui.canvas2.utility.Canvas2Layout;
+import am.ui.canvas2.utility.Canvas2Vertex;
+import am.ui.canvas2.utility.CanvasGraph;
+import am.ui.canvas2.utility.GraphLocator;
+import am.ui.canvas2.utility.GraphLocator.GraphType;
 
 
 /**

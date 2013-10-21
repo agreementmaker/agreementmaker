@@ -1,10 +1,10 @@
-package am.userInterface.canvas2.nodes;
+package am.ui.canvas2.nodes;
 
 import java.awt.Graphics;
 
-import am.userInterface.Colors;
-import am.userInterface.canvas2.graphical.GraphicalElement;
-import am.userInterface.canvas2.utility.Canvas2Vertex;
+import am.ui.Colors;
+import am.ui.canvas2.graphical.GraphicalElement;
+import am.ui.canvas2.utility.Canvas2Vertex;
 
 public class GraphicalNode extends Canvas2Vertex {
 

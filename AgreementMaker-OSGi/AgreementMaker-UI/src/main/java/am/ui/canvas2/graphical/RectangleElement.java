@@ -1,4 +1,4 @@
-package am.userInterface.canvas2.graphical;
+package am.ui.canvas2.graphical;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -8,7 +8,7 @@ import java.awt.Graphics2D;
 
 import javax.swing.JFrame;
 
-import am.userInterface.canvas2.utility.Canvas2Layout;
+import am.ui.canvas2.utility.Canvas2Layout;
 
 public class RectangleElement extends GraphicalElement {
 

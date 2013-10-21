@@ -1,4 +1,4 @@
-package am.userInterface.canvas2.utility;
+package am.ui.canvas2.utility;
 
 import java.awt.Graphics;
 import java.awt.Point;
@@ -6,12 +6,12 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import am.userInterface.Colors;
-import am.userInterface.canvas2.Canvas2;
-import am.userInterface.canvas2.graphical.GraphicalData;
-import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
-import am.userInterface.canvas2.nodes.LegacyMapping;
-import am.userInterface.ontology.OntologyConceptGraphics;
+import am.ui.Colors;
+import am.ui.canvas2.Canvas2;
+import am.ui.canvas2.graphical.GraphicalData;
+import am.ui.canvas2.graphical.GraphicalData.NodeType;
+import am.ui.canvas2.nodes.LegacyMapping;
+import am.ui.ontology.OntologyConceptGraphics;
 import am.utility.DirectedGraphEdge;
 import am.utility.DirectedGraphVertex;
 
@@ -182,4 +182,5 @@ public class Canvas2Vertex extends DirectedGraphVertex<GraphicalData, GraphicalD
 
 	@Override
 	public Class<?> getImplementationClass() { return Canvas2.class; }
+	
 }

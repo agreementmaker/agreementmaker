@@ -1,4 +1,4 @@
-package am.userInterface.controlpanel;
+package am.ui.controlpanel;
 
 
 import java.awt.FlowLayout;
@@ -42,15 +42,15 @@ import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.userInterface.ExportDialog;
-import am.userInterface.ImportDialog;
-import am.userInterface.MatcherParametersDialog;
-import am.userInterface.MatcherProgressDialog;
-import am.userInterface.MatchingProgressDisplay;
-import am.userInterface.QualityEvaluationDialog;
-import am.userInterface.matchingtask.MatchingTaskCreatorDialog;
-import am.userInterface.table.MatchersControlPanelTableModel;
-import am.userInterface.table.MatchersTablePanel;
+import am.ui.ExportDialog;
+import am.ui.ImportDialog;
+import am.ui.MatcherParametersDialog;
+import am.ui.MatcherProgressDialog;
+import am.ui.MatchingProgressDisplay;
+import am.ui.QualityEvaluationDialog;
+import am.ui.matchingtask.MatchingTaskCreatorDialog;
+import am.ui.table.MatchersControlPanelTableModel;
+import am.ui.table.MatchersTablePanel;
 
 public class MatchersControlPanel extends JPanel implements ActionListener, MouseListener {
 

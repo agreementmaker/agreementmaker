@@ -1,4 +1,4 @@
-package am.userInterface.canvas2.layouts;
+package am.ui.canvas2.layouts;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,12 +14,12 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.hierarchy.AlternateHierarchy;
-import am.userInterface.canvas2.Canvas2;
-import am.userInterface.canvas2.graphical.GraphicalData;
-import am.userInterface.canvas2.graphical.TextElement;
-import am.userInterface.canvas2.nodes.LegacyEdge;
-import am.userInterface.canvas2.nodes.LegacyNode;
-import am.userInterface.canvas2.utility.CanvasGraph;
+import am.ui.canvas2.Canvas2;
+import am.ui.canvas2.graphical.GraphicalData;
+import am.ui.canvas2.graphical.TextElement;
+import am.ui.canvas2.nodes.LegacyEdge;
+import am.ui.canvas2.nodes.LegacyNode;
+import am.ui.canvas2.utility.CanvasGraph;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;

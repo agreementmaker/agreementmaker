@@ -1,10 +1,10 @@
-package am.userInterface.canvas2.graphical;
+package am.ui.canvas2.graphical;
 
 import java.awt.Font;
 import java.awt.Rectangle;
 
 import am.app.Core;
-import am.userInterface.canvas2.utility.Canvas2Layout;
+import am.ui.canvas2.utility.Canvas2Layout;
 
 import com.hp.hpl.jena.ontology.OntResource;
 

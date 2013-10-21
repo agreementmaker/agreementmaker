@@ -1,12 +1,12 @@
-package am.userInterface.canvas2.graphical;
+package am.ui.canvas2.graphical;
 
 import java.awt.Color;
 
 import am.app.Core;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatchingTask;
-import am.userInterface.Colors;
-import am.userInterface.canvas2.utility.Canvas2Layout;
+import am.ui.Colors;
+import am.ui.canvas2.utility.Canvas2Layout;
 
 import com.hp.hpl.jena.ontology.OntResource;
 
@@ -39,9 +39,10 @@ public class MappingData extends GraphicalData {
 		matcherID = mID;
 		
 		MatchingTask m = Core.getInstance().getMatchingTaskByID(matcherID);
-		if( m != null ) {
+		/*if( m != null ) {
 			color = m.visData.color;
-		}
+		}*/
+		color = Colors.matchersColors[0];
 		
 		mappingType = t;
 		
@@ -70,9 +71,10 @@ public class MappingData extends GraphicalData {
 		matcherID = mID;
 
 		MatchingTask m = Core.getInstance().getMatchingTaskByID(matcherID);
-		if( m != null ) {
+		/*if( m != null ) {
 			color = m.visData.color;
-		}
+		}*/
+		color = Colors.matchersColors[0];
 
 		mappingType = t;
 

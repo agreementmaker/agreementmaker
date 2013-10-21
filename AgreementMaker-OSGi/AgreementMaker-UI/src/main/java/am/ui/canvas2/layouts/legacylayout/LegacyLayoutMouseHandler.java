@@ -13,7 +13,7 @@
  * 
  */
 
-package am.userInterface.canvas2.layouts.legacylayout;
+package am.ui.canvas2.layouts.legacylayout;
 
 import java.awt.Graphics;
 import java.awt.Point;
@@ -32,21 +32,21 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.Node;
 import am.app.ontology.NodeUtility;
 import am.app.ontology.Ontology;
-import am.userInterface.VisualizationChangeEvent;
-import am.userInterface.VisualizationChangeEvent.VisualizationEventType;
-import am.userInterface.canvas2.Canvas2;
-import am.userInterface.canvas2.graphical.GraphicalData;
-import am.userInterface.canvas2.graphical.GraphicalData.NodeType;
-import am.userInterface.canvas2.graphical.MappingData;
-import am.userInterface.canvas2.layouts.LegacyLayout;
-import am.userInterface.canvas2.nodes.LegacyMapping;
-import am.userInterface.canvas2.nodes.LegacyNode;
-import am.userInterface.canvas2.popupmenus.CreateMappingMenu;
-import am.userInterface.canvas2.popupmenus.DeleteMappingMenu;
-import am.userInterface.canvas2.utility.Canvas2Edge;
-import am.userInterface.canvas2.utility.Canvas2Vertex;
-import am.userInterface.sidebar.provenance.ProvenanceSidebar;
-import am.userInterface.sidebar.vertex.VertexDescriptionPane;
+import am.ui.VisualizationChangeEvent;
+import am.ui.VisualizationChangeEvent.VisualizationEventType;
+import am.ui.canvas2.Canvas2;
+import am.ui.canvas2.graphical.GraphicalData;
+import am.ui.canvas2.graphical.GraphicalData.NodeType;
+import am.ui.canvas2.graphical.MappingData;
+import am.ui.canvas2.layouts.LegacyLayout;
+import am.ui.canvas2.nodes.LegacyMapping;
+import am.ui.canvas2.nodes.LegacyNode;
+import am.ui.canvas2.popupmenus.CreateMappingMenu;
+import am.ui.canvas2.popupmenus.DeleteMappingMenu;
+import am.ui.canvas2.utility.Canvas2Edge;
+import am.ui.canvas2.utility.Canvas2Vertex;
+import am.ui.sidebar.provenance.ProvenanceSidebar;
+import am.ui.sidebar.vertex.VertexDescriptionPane;
 import am.utility.DirectedGraphEdge;
 
 import com.hp.hpl.jena.ontology.AnnotationProperty;

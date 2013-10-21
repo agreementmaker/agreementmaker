@@ -1,4 +1,4 @@
-package am.userInterface.canvas2.utility;
+package am.ui.canvas2.utility;
 
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -16,9 +16,9 @@ import javax.swing.event.MouseInputListener;
 import am.app.mappingEngine.MatchingTask;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.userInterface.canvas2.Canvas2;
-import am.userInterface.canvas2.graphical.GraphicalData;
-import am.userInterface.canvas2.utility.GraphLocator.GraphType;
+import am.ui.canvas2.Canvas2;
+import am.ui.canvas2.graphical.GraphicalData;
+import am.ui.canvas2.utility.GraphLocator.GraphType;
 
 public abstract class Canvas2Layout implements MouseInputListener, 
 									  MouseWheelListener,

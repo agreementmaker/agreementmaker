@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.ui;
 
 
 import java.awt.BorderLayout;
@@ -28,10 +28,10 @@ import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntologyDefinition;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.TreeBuilder;
-import am.userInterface.classic.AgreementMakerClassic;
-import am.userInterface.controlpanel.MatchersControlPanel;
-import am.userInterface.sidebar.vertex.VertexDescriptionPane;
-import am.userInterface.table.MatchersControlPanelTableModel;
+import am.ui.classic.AgreementMakerClassic;
+import am.ui.controlpanel.MatchersControlPanel;
+import am.ui.sidebar.vertex.VertexDescriptionPane;
+import am.ui.table.MatchersControlPanelTableModel;
 
 
 /**

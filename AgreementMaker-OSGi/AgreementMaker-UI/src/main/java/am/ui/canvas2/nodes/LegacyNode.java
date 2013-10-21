@@ -1,4 +1,4 @@
-package am.userInterface.canvas2.nodes;
+package am.ui.canvas2.nodes;
 
 import java.awt.Color;
 import java.awt.FontMetrics;
@@ -6,11 +6,11 @@ import java.awt.Graphics;
 import java.util.Iterator;
 
 import am.app.Core;
-import am.userInterface.Colors;
-import am.userInterface.canvas2.graphical.GraphicalData;
-import am.userInterface.canvas2.graphical.MappingData;
-import am.userInterface.canvas2.layouts.LegacyLayout;
-import am.userInterface.canvas2.utility.Canvas2Vertex;
+import am.ui.Colors;
+import am.ui.canvas2.graphical.GraphicalData;
+import am.ui.canvas2.graphical.MappingData;
+import am.ui.canvas2.layouts.LegacyLayout;
+import am.ui.canvas2.utility.Canvas2Vertex;
 import am.utility.DirectedGraphEdge;
 
 /**
@@ -40,13 +40,14 @@ public class LegacyNode extends Canvas2Vertex {
 	
 	public LegacyNode( GraphicalData gr) {
 		super(gr);
-		recalculateWidth(); // recalculate the width
 	}
 	
 	/**
 	 * This draws a Legacy Node.
 	 */
 	public void draw(Graphics g) {
+		
+		recalculateWidth(g); // recalculate the width
 		
 		// 3 steps to drawing a legacy node.
 		
@@ -88,12 +89,12 @@ public class LegacyNode extends Canvas2Vertex {
 		
 	}
 	
-	public void recalculateWidth() {
+	public void recalculateWidth(Graphics g) {
 		
 		String name = d.layout.getNodeLabel(d);
 		
-		Core.getInstance();
-		FontMetrics fontMetrics = Core.getUI().getCanvas().getFontMetrics(d.font);
+		
+		FontMetrics fontMetrics = g.getFontMetrics(d.font);
 	    
 		
         if( name == null || name.length() <= 0 ) { fontWidth = 0; } 
