@@ -10,6 +10,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
@@ -20,7 +21,7 @@ import am.extension.feedback.matchers.ExtrapolatingDSI;
 import am.extension.feedback.matchers.ExtrapolatingFS;
 import am.extension.feedback.ui.SelectionPanel;
 import am.matcher.dsi.DescendantsSimilarityInheritanceParameters;
-import am.userInterface.MatchingProgressDisplay;
+import am.ui.MatchingProgressDisplay;
 
 /**
  * This class is implemented to run the user feedback loop.
@@ -158,7 +159,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		matchStart();
 		FeedbackLoopParameters param = (FeedbackLoopParameters)this.param;
 		SelectionPanel progressDisplay = null;
-		for( MatchingProgressDisplay mpd : progressDisplays )
+		for( MatchingProgressListener mpd : progressDisplays )
 			if( mpd instanceof SelectionPanel ) {
 				progressDisplay = (SelectionPanel)mpd;
 			}
@@ -333,7 +334,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 		FilteredAlignmentMatrix classesMatrix = (FilteredAlignmentMatrix)this.classesMatrix;
 		FilteredAlignmentMatrix propertiesMatrix = (FilteredAlignmentMatrix)this.propertiesMatrix;
 		SelectionPanel progressDisplay = null;
-		for( MatchingProgressDisplay mpd : progressDisplays )
+		for( MatchingProgressListener mpd : progressDisplays )
 			if( mpd instanceof SelectionPanel ) {
 				progressDisplay = (SelectionPanel)mpd;
 			}
@@ -498,7 +499,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 	private void userValidation() {
 		
 		SelectionPanel progressDisplay = null;
-		for( MatchingProgressDisplay mpd : progressDisplays )
+		for( MatchingProgressListener mpd : progressDisplays )
 			if( mpd instanceof SelectionPanel ) {
 				progressDisplay = (SelectionPanel)mpd;
 			}
@@ -599,7 +600,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 
 	private void candidateSelection(boolean firstPhase) {
 		SelectionPanel progressDisplay = null;
-		for( MatchingProgressDisplay mpd : progressDisplays )
+		for( MatchingProgressListener mpd : progressDisplays )
 			if( mpd instanceof SelectionPanel ) {
 				progressDisplay = (SelectionPanel)mpd;
 			}
@@ -645,7 +646,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 	private void filtering() {
 		setStage( executionStage.runningFilter );
 		SelectionPanel progressDisplay = null;
-		for( MatchingProgressDisplay mpd : progressDisplays )
+		for( MatchingProgressListener mpd : progressDisplays )
 			if( mpd instanceof SelectionPanel ) {
 				progressDisplay = (SelectionPanel)mpd;
 			}
@@ -706,7 +707,7 @@ public class FeedbackLoop extends AbstractMatcher  {
 	private void runInitialMatcher() throws Exception {
 		FeedbackLoopParameters param = (FeedbackLoopParameters)this.param;
 		SelectionPanel progressDisplay = null;
-		for( MatchingProgressDisplay mpd : progressDisplays )
+		for( MatchingProgressListener mpd : progressDisplays )
 			if( mpd instanceof SelectionPanel ) {
 				progressDisplay = (SelectionPanel)mpd;
 			}

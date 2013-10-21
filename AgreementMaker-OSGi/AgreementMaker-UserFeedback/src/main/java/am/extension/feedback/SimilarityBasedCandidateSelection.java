@@ -8,9 +8,9 @@ import java.util.List;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingProgressListener;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.userInterface.MatchingProgressDisplay;
 
 public class SimilarityBasedCandidateSelection extends CandidateSelection {
 	
@@ -37,11 +37,11 @@ public class SimilarityBasedCandidateSelection extends CandidateSelection {
 		
 		System.out.println("");
 		System.out.println("***** The MASTER list:");
-		for( MatchingProgressDisplay mpd : fbL.getProgressDisplays() ) mpd.appendToReport("***** The MASTER list (similarity based):");
+		for( MatchingProgressListener mpd : fbL.getProgressDisplays() ) mpd.appendToReport("***** The MASTER list (similarity based):");
 		Iterator<CandidateConcept> ccitr = allNonFilteredConcepts.iterator();
 		while( ccitr.hasNext() ) {
 			CandidateConcept currentCandidate = ccitr.next();
-			for( MatchingProgressDisplay mpd : fbL.getProgressDisplays() ) mpd.appendToReport("\t* " + currentCandidate.toString());
+			for( MatchingProgressListener mpd : fbL.getProgressDisplays() ) mpd.appendToReport("\t* " + currentCandidate.toString());
 			System.out.println( "\t* " + currentCandidate.toString() );
 		}
 		
@@ -55,9 +55,9 @@ public class SimilarityBasedCandidateSelection extends CandidateSelection {
 			}
 		}
 		
-		for( MatchingProgressDisplay mpd : fbL.getProgressDisplays() ) mpd.appendToReport("***** topK (similarity based):");
+		for( MatchingProgressListener mpd : fbL.getProgressDisplays() ) mpd.appendToReport("***** topK (similarity based):");
 		for( int i = 0; i < topK.size(); i++ ) {
-			for( MatchingProgressDisplay mpd : fbL.getProgressDisplays() ) mpd.appendToReport("\t"+ i + "." + topK.get(i).toString());
+			for( MatchingProgressListener mpd : fbL.getProgressDisplays() ) mpd.appendToReport("\t"+ i + "." + topK.get(i).toString());
 		}
 		
 		return topK;

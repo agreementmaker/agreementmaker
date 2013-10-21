@@ -7,6 +7,7 @@ import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.utility.OAEI_Track;
 import am.app.ontology.Ontology;
 import am.extension.userfeedback.ExecutionSemantics;
@@ -25,7 +26,6 @@ import am.matcher.multiWords.MultiWordsMatcher;
 import am.matcher.multiWords.MultiWordsParameters;
 import am.matcher.parametricStringMatcher.ParametricStringMatcher;
 import am.matcher.parametricStringMatcher.ParametricStringParameters;
-import am.userInterface.MatchingProgressDisplay;
 
 /**
  * The orthogonal combination matcher.  Used as the first step in the new
@@ -71,7 +71,7 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 	private CombinationMatcher			m_lwc;
 	private IterativeInstanceStructuralMatcher m_iism;
 	
-	private MatchingProgressDisplay progressDisplay;
+	private MatchingProgressListener progressDisplay;
 	
 	private UFLExperiment experiment;
 	

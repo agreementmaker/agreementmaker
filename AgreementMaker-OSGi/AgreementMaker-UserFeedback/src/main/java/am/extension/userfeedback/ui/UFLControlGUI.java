@@ -17,7 +17,7 @@ import am.extension.userfeedback.UFLRegistry.InitialMatcherRegistry;
 import am.extension.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
 import am.extension.userfeedback.experiments.UFLControlLogic;
-import am.userInterface.UI;
+import am.ui.UI;
 
 public class UFLControlGUI extends JPanel implements ActionListener {
 

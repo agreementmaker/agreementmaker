@@ -34,6 +34,7 @@ import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.ontology.Node;
@@ -43,11 +44,10 @@ import am.extension.feedback.CandidateSelection;
 import am.extension.feedback.CandidateSelection.MeasuresRegistry;
 import am.extension.feedback.FeedbackLoop;
 import am.extension.feedback.FeedbackLoopParameters;
-import am.userInterface.MatcherParametersDialog;
-import am.userInterface.MatchingProgressDisplay;
-import am.userInterface.UI;
+import am.ui.MatcherParametersDialog;
+import am.ui.UI;
 
-public class SelectionPanel extends JPanel implements MatchingProgressDisplay, ActionListener {
+public class SelectionPanel extends JPanel implements MatchingProgressListener, ActionListener {
 
 	private static final long serialVersionUID = -967696425990716259L;
 	

@@ -14,7 +14,6 @@ import am.evaluation.disagreement.variance.VarianceDisagreement;
 import am.evaluation.disagreement.variance.VarianceDisagreementParameters;
 import am.extension.userfeedback.CandidateSelection;
 import am.extension.userfeedback.UFLExperiment;
-import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 
 public class DisagreementRanking extends CandidateSelection {
 
@@ -76,7 +75,7 @@ public class DisagreementRanking extends CandidateSelection {
 		disagreementMetric.setParameters(disagreementParams);
 		
 		// run the disagreement calculations
-		SimilarityMatrix classDisagreement = disagreementMetric.getDisagreementMatrix(VisualizationType.CLASS_MATRIX);
+		SimilarityMatrix classDisagreement = disagreementMetric.getDisagreementMatrix(alignType.aligningClasses);
 		//rankedClassMappings = classDisagreement.getOrderedMappingsAboveThreshold(0.0d);
 		try {
 			rankedClassMappings = classDisagreement.toList();
@@ -87,7 +86,7 @@ public class DisagreementRanking extends CandidateSelection {
 		}
 		classDisagreement = null;  // release the memory used by this
 		
-		SimilarityMatrix propertyDisagreement = disagreementMetric.getDisagreementMatrix(VisualizationType.PROPERTIES_MATRIX);
+		SimilarityMatrix propertyDisagreement = disagreementMetric.getDisagreementMatrix(alignType.aligningProperties);
 		
 		try {
 			rankedPropertyMappings = propertyDisagreement.toList();
