@@ -3,8 +3,6 @@ package am.app.mappingEngine;
 import java.util.ArrayList;
 import java.util.List;
 
-import am.userInterface.matchingtask.MatchingTaskVisData;
-
 
 /**
  * A matching task contains:
@@ -26,7 +24,6 @@ public class MatchingTask {
 	public DefaultSelectionParameters 	selectionParameters;
 	public MatcherResult				matcherResult;
 	public SelectionResult				selectionResult;
-	public MatchingTaskVisData			visData;
 	public int ID;
 	
 	public List<MatchingTask>			inputMatchingTasks;
@@ -49,7 +46,6 @@ public class MatchingTask {
 		this.matcherParameters = matcherParams;
 		this.selectionAlgorithm = selectionAlgorithm;
 		this.selectionParameters = selectionParams;
-		this.visData = new MatchingTaskVisData(); // default visualization
 	}
 	
 	/**

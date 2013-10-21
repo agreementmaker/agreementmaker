@@ -1,5 +1,7 @@
 package am.app.ontology.ontologyParser;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileReader;
 import java.util.HashMap;
@@ -27,7 +29,6 @@ import am.app.ontology.instance.endpoint.SparqlEndpoint;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.output.alignment.oaei.OAEIAlignmentFormat;
-import am.userInterface.OntologyLoadingProgressDialog;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
@@ -67,6 +68,22 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		@Deprecated public final static String LANG_XML = "XML";
 		@Deprecated public final static String LANG_TABBEDTEXT = "Tabbed TEXT";
 		@Deprecated public static final String[] languageStrings = {LANG_RDFS, LANG_OWL, LANG_XML, LANG_TABBEDTEXT};
+		
+	/**
+	 * This is the name of a progress change event. The "ONTOLOGY LOADED" event
+	 * is fired when the ontology is done loading.
+	 */
+	public final static String PROGRESS_CHANGE_ONTOLOGY_LOADED = "PROGRESS_CHANGE_ONTOLOGY_LOADED";
+	
+	/**
+	 * This is meant to tell the progress listeners to clear their log.
+	 */
+	public final static String PROGRESS_COMMAND_CLEAR_LOG = "PROGRESS_COMMAND_CLEAR_LOG";
+	
+	/**
+	 * Tell the progress listeners to add a line to their log.
+	 */
+	public final static String PROGRESS_COMMAND_APPEND_LINE = "PROGRESS_COMMAND_APPEND_LINE";
 
 	
 	// instance variables 
@@ -76,7 +93,10 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 	protected int uniqueKey = 0;
 	
 	// Progress Monitor Variables
-	protected OntologyLoadingProgressDialog progressDialog = null;  // need to keep track of the dialog in order to close it when we're done.  (there could be a better way to do this, but that's for later)
+	/**
+	 * Progress events are broadcast via this object.
+	 */
+	protected final PropertyChangeSupport listeners;
 	protected int stepsTotal; // Used by the ProgressDialog.  This is a rough estimate of the number of steps to be done before we finish the matching.
 	protected int stepsDone;  // Used by the ProgressDialog.  This is how many of the total steps we have completed.
 	protected String report = "";
@@ -98,7 +118,9 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		ontology.setLanguage(OntologyLanguage.getLanguage(language));
 		ontology.setFormat(OntologySyntax.getSyntax(format));
         File f = new File(filename);
-        ontology.setTitle(f.getName()); 
+        ontology.setTitle(f.getName());
+        
+        listeners = new PropertyChangeSupport(this);
 	}
 	
 	public TreeBuilder( OntologyDefinition def ) {
@@ -132,6 +154,8 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		else {
 			throw new RuntimeException("Load ontology or Load instances must be checked.");
 		}
+		
+		listeners = new PropertyChangeSupport(this);
 	}
 	
 	/**
@@ -360,15 +384,17 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
      * Function called by the worker thread when the matcher finishes the algorithm.
      */
     public void done() {
-    	progressDialog.loadingComplete();  // when we're done, close the progress dialog
+    	listeners.firePropertyChange(PROGRESS_CHANGE_ONTOLOGY_LOADED, null, null);
     }
-
 	
-	public void setProgressDialog(OntologyLoadingProgressDialog ontologyLoadingProgressDialog) {
-		progressDialog = ontologyLoadingProgressDialog;
-		
-	}
-
+    public void addProgressListener(PropertyChangeListener listener) {
+    	listeners.addPropertyChangeListener(listener);
+    }
+    
+    public void removeProgressListeners(PropertyChangeListener listener) {
+    	listeners.removePropertyChangeListener(listener);
+    }
+    
 	public String getReport() {
 		return report;
 	}

@@ -8,7 +8,6 @@ import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
@@ -86,12 +85,6 @@ public class TabbedTextBuilder extends TreeBuilder {
 		ontology.setClassesRoot( ClassRoot);
 		ontology.setOntResource2NodeMap(processedSubs, alignType.aligningClasses);
 		
-		// now, the visualization panel needs to build its own graph.
-		if( progressDialog != null ) {
-			progressDialog.appendLine("Building visualization graphs.");
-			Core.getUI().getCanvas().buildLayoutGraphs(ontology);
-			progressDialog.appendLine("Done.");
-		} 
 	}
 		protected void createTree(Node parentNode, TNode document){
 			

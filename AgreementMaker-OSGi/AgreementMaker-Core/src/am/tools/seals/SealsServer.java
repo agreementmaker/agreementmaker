@@ -42,10 +42,10 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatchingProgressListener;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.osgi.MatcherNotFoundException;
 import am.parsing.AlignmentOutput;
-import am.userInterface.MatchingProgressDisplay;
 import eu.sealsproject.omt.ws.matcher.AlignmentWS;
 
 /**
@@ -59,13 +59,13 @@ public class SealsServer implements AlignmentWS {
 //	private AbstractMatcher matcher;
 	
 	private AbstractMatcher matcher;
-	private MatchingProgressDisplay progressDisplay;
+	private MatchingProgressListener progressDisplay;
 	
 	private DefaultMatcherParameters parameters;
 	
 	private int BUFFERSIZE = 4096;
 	
-	public SealsServer( AbstractMatcher matcher, MatchingProgressDisplay pD, DefaultMatcherParameters params ) {
+	public SealsServer( AbstractMatcher matcher, MatchingProgressListener pD, DefaultMatcherParameters params ) {
 		this.matcher = matcher;
 		this.progressDisplay = pD;
 		this.parameters = params;

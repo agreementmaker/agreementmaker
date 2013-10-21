@@ -52,16 +52,15 @@ import javax.xml.ws.Endpoint;
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatchingProgressListener;
 import am.app.osgi.MatcherNotFoundException;
-import am.userInterface.MatcherParametersDialog;
-import am.userInterface.MatchingProgressDisplay;
 import am.utility.LinuxInetAddress;
 /**
  * The SealsPanel contains all the UI components, used for changing the settings for, and publishing the SealsServer.
  * @author cosmin
  *
  */
-public class SealsPanel extends JPanel implements MatchingProgressDisplay, ActionListener {
+public class SealsPanel extends JPanel implements MatchingProgressListener, ActionListener {
 
 	private static final long serialVersionUID = 3284754599688612733L;
 

@@ -11,7 +11,6 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.manualMatcher.UserManualMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
-import am.userInterface.UI;
 
 public class AMActivator implements BundleActivator {
 
@@ -32,8 +31,6 @@ public class AMActivator implements BundleActivator {
 		regReferenceAlignmentMatcher = context.registerService(AbstractMatcher.class, new ReferenceAlignmentMatcher(), new Hashtable<String,String>());
 		
 		Core.getInstance().initializeOSGiRegistry(context);
-		
-		Core.setUI( new UI() );
 		
 	}
 

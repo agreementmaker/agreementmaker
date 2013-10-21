@@ -13,13 +13,13 @@ import am.AMException;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.InstanceMatchingReport;
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.instance.EntityTypeMapper.EntityType;
 import am.app.mappingEngine.utility.MatchingPair;
 import am.app.ontology.instance.Instance;
 import am.app.ontology.instance.InstanceDataset;
 import am.app.ontology.instance.ScoredInstance;
 import am.app.ontology.instance.ScoredInstanceComparator;
-import am.userInterface.MatchingProgressDisplay;
 
 /**
  * <p>
@@ -80,7 +80,7 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 				&& (sourceOntology.getInstances() == null || 
 				targetOntology.getInstances() == null)) {
 			// the source ontology or target ontology have no instances
-			for (MatchingProgressDisplay mpd : progressDisplays) {
+			for (MatchingProgressListener mpd : progressDisplays) {
 				mpd.appendToReport("Instances were NOT matched since they were not loaded properly.");
 			}
 		}

@@ -5,8 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import am.userInterface.ontology.OntologyConceptGraphics;
-
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -165,18 +163,6 @@ public class JenaBackedOntClassNode implements Node {
 
 	@Override
 	public OntResource getPropertyRange() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void addGraphicalRepresentation(OntologyConceptGraphics ocg) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public OntologyConceptGraphics getGraphicalRepresentation(Class<?> c) {
 		// TODO Auto-generated method stub
 		return null;
 	}

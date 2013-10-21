@@ -23,8 +23,6 @@ package am;
 import java.io.File;
 
 import joptsimple.OptionSet;
-import am.app.Core;
-import am.userInterface.UI;
 
 /**
  * Main class -
@@ -33,6 +31,8 @@ import am.userInterface.UI;
  *
  * @author ADVIS Research Laboratory
  * @version 11/27/2004
+ * 
+ * @deprecated No longer necessary after conversion to OSGi.
  */
 public class Main
 {
@@ -48,13 +48,13 @@ public class Main
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		System.setProperty("apple.awt.brushMetalLook", "true");
 		
-		Thread mainUI = new Thread("AMStart") {
+		/*Thread mainUI = new Thread("AMStart") {
 				public void run() {
 					Core.setUI( new UI() );
 				} 
 		};
 		
-		mainUI.start();
+		mainUI.start();*/
 		
 /*	}
 		else{

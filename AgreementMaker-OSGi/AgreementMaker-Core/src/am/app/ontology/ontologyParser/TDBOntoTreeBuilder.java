@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
@@ -126,13 +125,9 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 	// this function dispatches functions depending on the ontology loading profile selected.
 	protected void buildTree( OntoTreeBuilder.Profile prof ) throws Exception {
 		
-		// TODO: Find a better way to check if we're running with a UI or not.
-		
-		if( progressDialog != null ) progressDialog.clearMessage();
-		
+		listeners.firePropertyChange(PROGRESS_COMMAND_CLEAR_LOG, null, null);
 		RunTimer timer = new RunTimer();
-		if( progressDialog != null ) progressDialog.appendLine("Reading the ontology...");
-		
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Reading the ontology...");
 		timer.start();
 		
 		switch ( prof ) {
@@ -149,17 +144,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 		}		
 		
 		timer.stop();
-		
-		if( progressDialog != null ) progressDialog.appendLine("Done. " + timer.getFormattedRunTime());
-		
-		timer.resetAndStart();
-		// now, the visualization panel needs to build its own graph.
-		if( progressDialog != null ) {
-			progressDialog.appendLine("Building visualization graphs.");
-			Core.getUI().getCanvas().buildLayoutGraphs(ontology);
-			progressDialog.appendLine("Done. " + timer.getFormattedRunTime());
-		} 
-
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Done. " + timer.getFormattedRunTime());
 	}
 	
 	
@@ -179,35 +164,35 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 		File directory = new File(onDiskDirectory);
 		if( !directory.exists() || !directory.isDirectory() ) { throw new Exception("Path must be an existing directory."); }
 		
-		if( progressDialog != null ) progressDialog.append("Creating Jena TDB Model ... ");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating Jena TDB Model ... ");
 		Model basemodel = TDBFactory.createModel( directory.getAbsolutePath() );
-		if( progressDialog != null ) progressDialog.appendLine("done.");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
 		
-		if( progressDialog != null ) progressDialog.append("Creating Jena OntModel from TDB Model ... ");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating Jena OntModel from TDB Model ... ");
 		if( ontology.getLanguage() == OntologyLanguage.RDFS )
 			model = ModelFactory.createOntologyModel( OntModelSpec.RDFS_MEM, basemodel );
 		else
 			model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
-		if( progressDialog != null ) progressDialog.appendLine("done.");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
 		
 		if( !onDiskPersistent ) {
 			// we're not running in persistent mode, remove everything and load the ontology.
-			if( progressDialog != null ) progressDialog.append("Disk ontology is not persistent.\nClearing on disk ontology ... ");
+			listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Disk ontology is not persistent.\nClearing on disk ontology ... ");
 			model.removeAll();
-			if( progressDialog != null ) progressDialog.appendLine("done.");
-			if( progressDialog != null ) progressDialog.append("Reading ontology onto disk ... ");
+			listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
+			listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Reading ontology onto disk ... ");
 			model.read( ontURI.toString(), null, ontology.getFormat().toString() );
 			model.commit();
-			if( progressDialog != null ) progressDialog.appendLine("done.");
+			listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
 		} 
 		else if( model.isEmpty() ) {
 			// we're running in persistent mode, load the ontology only if the model is empty
-			if( progressDialog != null ) progressDialog.append("Disk ontology is persistent and empty.\nReading ontology into on disk store ... ");
+			listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Disk ontology is persistent and empty.\nReading ontology into on disk store ... ");
 			model.read( ontURI.toString(), null, ontology.getFormat().toString() );
 			model.commit();
-			if( progressDialog != null ) progressDialog.appendLine("done.");
+			listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
 		} else {
-			if( progressDialog != null ) progressDialog.appendLine("Disk ontology is persistent.\nUsing existing on disk ontology.");
+			listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Disk ontology is persistent.\nUsing existing on disk ontology.");
 		}
 		
 		ontology = new Ontology(model);
@@ -223,7 +208,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 		}
 		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
 
-		if( progressDialog != null ) progressDialog.append("Creating AgreementMaker data structures ... ");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating AgreementMaker data structures ... ");
 		
 		
 		//Preparing model
@@ -261,7 +246,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
         
         ontology.setTreeCount(treeCount);   
 
-        if( progressDialog != null ) progressDialog.appendLine("done.");
+        listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
 	}
 	
 	/**

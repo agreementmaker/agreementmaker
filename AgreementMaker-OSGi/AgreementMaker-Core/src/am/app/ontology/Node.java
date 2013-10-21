@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import am.userInterface.ontology.OntologyConceptGraphics;
-
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Resource;
 
@@ -51,11 +49,6 @@ public interface Node extends Comparable<Node> {
 
 	OntResource getPropertyDomain();
 	OntResource getPropertyRange();
-
-	// TODO: This should be in a separate interface.
-	void addGraphicalRepresentation(OntologyConceptGraphics ocg);
-
-	OntologyConceptGraphics getGraphicalRepresentation(Class<?> c);
 
 	String getLabel();
 

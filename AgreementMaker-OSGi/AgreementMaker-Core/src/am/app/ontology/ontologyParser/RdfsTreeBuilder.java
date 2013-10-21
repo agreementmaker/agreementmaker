@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
@@ -116,14 +115,7 @@ public class RdfsTreeBuilder extends TreeBuilder{
 			treeCount++;
 			
 			ontology.setPropertiesRoot(propertiesRoot);
-			
-			
-			
-			if( progressDialog != null ) {
-				progressDialog.appendLine("Building visualization graphs.");
-				Core.getUI().getCanvas().buildLayoutGraphs(ontology);
-			} 
-			
+						
 		} catch (FileNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

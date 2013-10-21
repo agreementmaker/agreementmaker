@@ -1,4 +1,4 @@
-package am.userInterface;
+package am.utility;
 
 import java.io.File;
 import java.util.prefs.Preferences;

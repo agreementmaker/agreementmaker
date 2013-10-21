@@ -12,7 +12,6 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 
 public class Cluster<E extends Mapping> implements Iterable<E> {
 
@@ -24,18 +23,18 @@ public class Cluster<E extends Mapping> implements Iterable<E> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Cluster( TreeSet<Point> set, Ontology sourceOntology, Ontology targetOntology, VisualizationType t ) {
+	public Cluster( TreeSet<Point> set, Ontology sourceOntology, Ontology targetOntology, alignType t ) {
 		clusterSet = new ArrayList<E>();
 		
 		List<Node> sourceList = null;
 		List<Node> targetList = null;
 		alignType aType = null;
 		
-		if( t == VisualizationType.CLASS_MATRIX ) {
+		if( t == alignType.aligningClasses ) {
 			sourceList = sourceOntology.getClassesList();
 			targetList = targetOntology.getClassesList();
 			aType = alignType.aligningClasses;
-		} else if ( t == VisualizationType.PROPERTIES_MATRIX ) {
+		} else if ( t == alignType.aligningProperties ) {
 			sourceList = sourceOntology.getPropertiesList();
 			targetList = targetOntology.getPropertiesList();
 			aType = alignType.aligningProperties;

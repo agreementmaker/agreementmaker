@@ -111,14 +111,6 @@ public class XmlTreeBuilder extends TreeBuilder
 		treeRoot.addChild(ClassRoot);
 		ontology.setClassesRoot( ClassRoot);
 		ontology.setOntResource2NodeMap(processedSubs, alignType.aligningClasses);
-		
-		// now, the visualization panel needs to build its own graph.
-		if( progressDialog != null ) {
-			progressDialog.appendLine("Building visualization graphs.");
-			Core.getUI().getCanvas().buildLayoutGraphs(ontology);
-			progressDialog.appendLine("Done.");
-		} 
-		
 	}
 	
 	protected void createTree(Node parentNode, org.w3c.dom.Node document){

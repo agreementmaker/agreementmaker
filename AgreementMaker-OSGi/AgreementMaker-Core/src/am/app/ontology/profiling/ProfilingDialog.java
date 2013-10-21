@@ -1,5 +1,6 @@
 package am.app.ontology.profiling;
 
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Constructor;
@@ -37,8 +38,8 @@ public class ProfilingDialog extends JDialog implements ActionListener {
 	JComboBox profilingAlgorithmsBox;
 	
 	/* Default constructor. */
-	public ProfilingDialog() {
-		super(Core.getUI().getUIFrame(), true);
+	public ProfilingDialog(Frame owner) {
+		super(owner, true);
 		
 		initComponents();
 		initLayout();

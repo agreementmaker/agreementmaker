@@ -7,18 +7,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.prefs.Preferences;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import am.Utility;
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.userInterface.DatabaseSettingsDialog;
 import am.utility.RunTimer;
 
 import com.hp.hpl.jena.ontology.ConversionException;
@@ -98,21 +95,10 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 	 * @param skip Skip other namespaces, usually set to true.
 	 * @param reas Set to true in order to use a reasoner when loading the ontology, false to load without using a reasoner.
 	 */
-	public SDBOntoTreeBuilder(String fileName, String language, String format, boolean skip, boolean reas) {
-		super(fileName, language, format); 
-		skipOtherNamespaces = skip;
-		noReasoner = reas;
+	public SDBOntoTreeBuilder(OntologyDefinition def) {
+		super(def); 
 		treeCount = 0;
 	}
-	
-	// this function is here for legacy purposes, needs to be removed
-	public SDBOntoTreeBuilder(String fileName, String language, String format, boolean skip ) {
-		super(fileName, language, format); 
-		skipOtherNamespaces = skip;
-		noReasoner = false;
-		treeCount = 0;
-	}
-	
 	
 	public void build( OntoTreeBuilder.Profile prof ) {
 		buildTree( prof );//Instantiated in the subclasses
@@ -144,11 +130,10 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 	protected void buildTree( OntoTreeBuilder.Profile prof ) {
 		
 		// TODO: Find a better way to check if we're running with a UI or not.
-		
-		if( progressDialog != null ) progressDialog.appendLine("");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "");
 		
 		RunTimer timer = new RunTimer();
-		if( progressDialog != null ) progressDialog.appendLine("Reading the ontology...");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Reading the ontology...");
 		
 		timer.start();
 		
@@ -167,16 +152,7 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 		
 		timer.stop();
 		
-		if( progressDialog != null ) progressDialog.appendLine("Done. " + timer.getFormattedRunTime());
-		
-		timer.resetAndStart();
-		// now, the visualization panel needs to build its own graph.
-		if( progressDialog != null ) {
-			progressDialog.appendLine("Building visualization graphs.");
-			Core.getUI().getCanvas().buildLayoutGraphs(ontology);
-			progressDialog.appendLine("Done. " + timer.getFormattedRunTime());
-		} 
-
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Done. " + timer.getFormattedRunTime());
 	}
 	
 	
@@ -196,38 +172,14 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 		JDBC.loadDriverPGSQL();
 		StoreDesc storeDesc = new StoreDesc(LayoutType.LayoutTripleNodesIndex,DatabaseType.PostgreSQL);
 		
-		Connection jdbcConnection=null;
-		Store store=null;
-		Preferences p=Preferences.userNodeForPackage(DatabaseSettingsDialog.class);
-		String host="";
-		int port=0;
-		String DBname="";
-		String username="";
-		String password="";
-		boolean persistent=false;
-		
-		//get all the information for the dbsettings
-		if( Core.getInstance().getSourceOntology().equals(super.ontology) ){
-			host=p.get("hostSource", "");
-			port=p.getInt("portHost", 5432);
-			DBname=p.get("dbNameSource", "");
-			username=p.get("usernameSource", "");
-			password=p.get("passwordSource", "");
-			persistent=p.getBoolean("persistentSource", false);
-		}
-		else if( Core.getInstance().getTargetOntology().equals(super.ontology) ){
-			host=p.get("hostTarget", "");
-			port=p.getInt("portTarger", 5432);
-			DBname=p.get("dbNameTarget", "");
-			username=p.get("usernameTarget", "");
-			password=p.get("passwordTarget", "");
-			persistent=p.getBoolean("persistentTarget", false);
-		}
+		Connection jdbcConnection = null;
+		Store store = null;
 		
 		//try to connect to the db
 		try {
-			jdbcConnection= DriverManager.getConnection("jdbc:postgresql://"+host+":"+port+"/"+DBname,username,
-					password);
+			jdbcConnection = DriverManager.getConnection( "jdbc:postgresql://" +
+					ontDefinition.db_host + ":" + ontDefinition.db_port + "/" + ontDefinition.db_name,
+					ontDefinition.db_username, ontDefinition.db_password);
 		} catch (SQLException e) {
 			LOG.error(e);
 			Utility.displayErrorPane("Unknown connection Error", "ERROR");
@@ -240,7 +192,7 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 		try {
 			if(!StoreUtils.isFormatted(store))
 				store.getTableFormatter().create();
-			else if(!persistent)
+			else if(!ontDefinition.db_persistent)
 				store.getTableFormatter().truncate();
 		} catch (SQLException e) {
 			LOG.error(e);
@@ -248,7 +200,7 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 		}
 		
 		Model basemodel=SDBFactory.connectDefaultModel(store);
-		if(!persistent)
+		if(!ontDefinition.db_persistent)
 			basemodel.read(ontURI);
 		
 		/*

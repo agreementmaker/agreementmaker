@@ -57,6 +57,25 @@ public class OntologyDefinition {
 	public LocationMapper locationMapper;
 	
 	/**
+	 * True if the ontology is or should be loaded into a database for storage. 
+	 */
+	public boolean databaseStorage = false;
+	
+	/** The hostname of the database server. */
+	public String db_host;
+	
+	/** The port number of the database server. */
+	public int db_port;
+	
+	/** The name of the database in the database server. */
+	public String db_name;
+	public String db_username;
+	public String db_password;
+	
+	/** True if the ontology should be persistently stored in the database. */
+	public boolean db_persistent;
+	
+	/**
 	 * This setting will be used temporarily while we scale AgreementMaker-Core
 	 * to work with large ontologies.
 	 */

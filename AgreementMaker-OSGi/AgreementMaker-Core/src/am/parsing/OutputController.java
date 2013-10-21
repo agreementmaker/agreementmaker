@@ -15,7 +15,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
@@ -98,18 +97,14 @@ public class OutputController {
 	 * Save an alignment to the given file.  The alignment to be saved is taken from the first selected matcher in the Matchers Control Panel.
 	 * @param completeFileName
 	 * @throws Exception
+	 * 
+	 * TODO: Add support for multiple matching tasks? - Cosmin, Oct. 20, 2013.
 	 */
-	public static void printDocumentOAEI(String completeFileName) throws Exception{
-		List<MatchingTask> list = Core.getInstance().getMatchingTasks();
-
-		//TO DO:
-		//May be multiple matchers.
-		int [] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
-		MatchingTask matchingTask = list.get(rowsIndex[0]);
-		AlignmentOutput output = new AlignmentOutput(matchingTask.selectionResult.getAlignment(), completeFileName);
+	public static void printDocumentOAEI(String completeFileName, MatchingTask task) throws Exception{
+		AlignmentOutput output = new AlignmentOutput(task.selectionResult.getAlignment(), completeFileName);
 		String sourceUri = Core.getInstance().getSourceOntology().getURI();
 		String targetUri = Core.getInstance().getTargetOntology().getURI();
-		output.write(sourceUri, targetUri, sourceUri, targetUri, matchingTask.matchingAlgorithm.getName());
+		output.write(sourceUri, targetUri, sourceUri, targetUri, task.matchingAlgorithm.getName());
 	}
 	
 	/**
@@ -141,16 +136,14 @@ public class OutputController {
 	}
 	
 	// TODO: This function should differentiate between TXT, DOC, and XLS formats. (Or create separate print functions for each format)
-	public static void printDocument(String name) throws Exception{
-		
-		int [] rowsIndex = Core.getUI().getControlPanel().getTablePanel().getTable().getSelectedRows();
+	public static void printDocument(String name, MatchingTask[] task) throws Exception{
 		
 		Date d = new Date();
 		String toBePrinted = "AGREEMENT DOCUMENT\n\n";
 		toBePrinted += "Date: "+d+"\n";
 		toBePrinted += "Source Ontology: "+Core.getInstance().getSourceOntology().getFilename()+"\n";
 		toBePrinted += "Target Ontology: "+Core.getInstance().getTargetOntology().getFilename()+"\n\n";
-		toBePrinted += getAllSelectedAlignmentsStrings(rowsIndex);
+		toBePrinted += getAllSelectedAlignmentsStrings(task);
 		
 		FileOutputStream out = new FileOutputStream(name);
 	    PrintStream p = new PrintStream( out );
@@ -161,12 +154,10 @@ public class OutputController {
 	    out.close();
 	}
 	
-	public static String getAllSelectedAlignmentsStrings(int[] rowsIndex) {
+	public static String getAllSelectedAlignmentsStrings(MatchingTask[] task) {
 		String result = "";
-		List<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
-		AbstractMatcher matcher;
-		for(int i = 0; i < rowsIndex.length; i++) {
-			matcher = list.get(rowsIndex[i]);
+		for(int i = 0; i < task.length; i++) {
+			AbstractMatcher matcher = task[i].matchingAlgorithm;
 			result += "Matcher "+(i+1)+": "+matcher.getRegistryEntry().getMatcherName()+"\n\n";
 			result += matcher.getAlignmentsStrings();
 		}

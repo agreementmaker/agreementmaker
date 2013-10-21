@@ -5,13 +5,13 @@ import java.util.Collections;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.ClusteringMethod;
 import am.evaluation.clustering.ClusteringParameters;
 import am.evaluation.clustering.ClusteringParametersPanel;
-import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 
 import com.tomgibara.cluster.gvm.dbl.DblClusters;
 import com.tomgibara.cluster.gvm.dbl.DblListKeyer;
@@ -128,7 +128,7 @@ public class GVM_Clustering extends ClusteringMethod {
 	}
 
 	@Override
-	public Cluster<Mapping> getCluster(int row, int col, VisualizationType t) {
+	public Cluster<Mapping> getCluster(int row, int col, alignType t) {
 
 		/*		try {
 			FileWriter writer = new FileWriter("clustered.txt");

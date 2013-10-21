@@ -9,7 +9,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -17,7 +16,6 @@ import org.apache.log4j.Logger;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
-import am.userInterface.ontology.OntologyConceptGraphics;
 
 import com.hp.hpl.jena.ontology.AnnotationProperty;
 import com.hp.hpl.jena.ontology.DatatypeProperty;
@@ -106,14 +104,6 @@ public class AMNode extends AbstractNode implements Serializable {
 	private transient int color;
 	private transient List<Node> parents = new ArrayList<Node>();
 	private transient List<Node> children = new ArrayList<Node>();
-	
-	/**
-	 * This is an arraylist all the graphical representations of this node.
-	 * This must be a list, as opposed to a single variable, because AgreementMaker 
-	 * can have multiple graphical representations of the same ontology.
-	 */
-	private transient ArrayList<OntologyConceptGraphics> graphicalRepresentations = new ArrayList<OntologyConceptGraphics>();
-	
 	
 	/***************************************** METHODS *************************************************/
 	
@@ -630,7 +620,7 @@ public class AMNode extends AbstractNode implements Serializable {
 		if( !isRoot ) {
 			int deepestLevel = 0;
 			for( int i = 0; i < n.getParentCount(); i++ ) {
-				Node currentParent = n.getParents().get(i);
+				Node currentParent = (Node) n.getParents().get(i);
 				int currentLevel = currentParent.getLevel() + 1;
 				if( currentLevel > deepestLevel ) deepestLevel = currentLevel;
 			}
@@ -798,69 +788,7 @@ public class AMNode extends AbstractNode implements Serializable {
 		return result;
 	}*/
 
-	
-	/******************************* GRAPHICAL REPRESENTATION METHODS ******************************/
-	
-	/**
-	 * Determine if a certain graphical representation has an object registered with this Node.
-	 * @param c
-	 * @return
-	 */
-	public boolean hasGraphicalRepresentation( Class<?> c ) {
-		Iterator<OntologyConceptGraphics> gr = graphicalRepresentations.iterator();
-		while( gr.hasNext() ) {
-			OntologyConceptGraphics g = gr.next();
-			if ( g.getImplementationClass().equals(c) ) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * Return a graphical representation corresponding to the class that implements it.
-	 * Multiple visualizations can be active in AgreementMaker, each representing 
-	 * the same ontologies and concepts.
-	 * @param c The class that implements the visual representation of this node. 
-	 * @return
-	 */
-	@Override
-	public OntologyConceptGraphics getGraphicalRepresentation( Class<?> c ) {
-		Iterator<OntologyConceptGraphics> gr = graphicalRepresentations.iterator();
-		while( gr.hasNext() ) {
-			OntologyConceptGraphics g = gr.next();
-			if( g.getImplementationClass().equals(c) ) {
-				return g;
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * A new graphical representation of this concept has been constructed.
-	 * Add it to the list of graphical representations for this concept.
-	 * @param ocg
-	 */
-	@Override
-	public void addGraphicalRepresentation( OntologyConceptGraphics ocg ) {	graphicalRepresentations.add(ocg); }
-	
-	/**
-	 * A graphical representation is no longer displayed, remove it from this concept.
-	 * @param ocg
-	 */
-	public void removeGraphicalRepresentation( OntologyConceptGraphics ocg ) { 
-		if( graphicalRepresentations.contains(ocg) )
-			graphicalRepresentations.remove(ocg); 
-	}
 
-	private transient Node matchedTo;  // where is this used??? Remove it! -- Cosmin Sept 17, 2011
-	public void setMatchedTo(Node target) {	matchedTo = target; }
-	public Node getMatchedTo() { return matchedTo; }
-
-	private transient boolean matched; // where is this used??? Remove it! -- Cosmin Sept 17, 2011
-	public void setMatched(boolean b) { matched = b; }
-	public boolean isMatched() { return matched; }
-	
 	/** ****************** Serialization methods *******************/
 	
 	  /**

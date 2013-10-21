@@ -14,7 +14,6 @@ import am.evaluation.clustering.ClusteringMethod;
 import am.evaluation.clustering.ClusteringParameters;
 import am.evaluation.clustering.ClusteringParametersPanel;
 import am.utility.PointComparator;
-import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 
 /**
  * This method implements the local-by-threshold clustering method.
@@ -38,7 +37,7 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 	@Override public ClusteringParametersPanel getParametersPanel() { return new LocalByThresholdPanel(); }
 
 	@Override
-	public Cluster<Mapping> getCluster(int row, int col, VisualizationType t) {
+	public Cluster<Mapping> getCluster(int row, int col, alignType t) {
 
 		// build all the sets
 		ArrayList<TreeSet<Point>> setList = new ArrayList<TreeSet<Point>>();
@@ -79,28 +78,23 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 	}
 
 	@Override
-	public Cluster<Mapping> getCluster(Mapping m ) {
-		
-		VisualizationType t;
-		if( m.getAlignmentType() == alignType.aligningClasses ) t = VisualizationType.CLASS_MATRIX;
-		else { t = VisualizationType.PROPERTIES_MATRIX; }
-		
-		return getCluster(m.getSourceKey(), m.getTargetKey(), t);
+	public Cluster<Mapping> getCluster(Mapping m ) {		
+		return getCluster(m.getSourceKey(), m.getTargetKey(), m.getAlignmentType());
 	}
 	
 	
 
 
-	private TreeSet<Point> buildSet(AbstractMatcher m, VisualizationType t,
+	private TreeSet<Point> buildSet(AbstractMatcher m, alignType t,
 			int row, int col) {
 		
 		TreeSet<Point> currentSet = new TreeSet<Point>( new PointComparator() );
 		
 		SimilarityMatrix mtx = null;
 		
-		if( t == VisualizationType.CLASS_MATRIX ) {
+		if( t == alignType.aligningClasses ) {
 			mtx = m.getClassesMatrix();
-		} else if ( t == VisualizationType.PROPERTIES_MATRIX ) {
+		} else if ( t == alignType.aligningProperties ) {
 			mtx = m.getPropertiesMatrix();
 		}
 		

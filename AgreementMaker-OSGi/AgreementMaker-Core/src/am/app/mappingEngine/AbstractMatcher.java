@@ -1,6 +1,5 @@
 package am.app.mappingEngine;
 
-import java.awt.Color;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -29,7 +28,6 @@ import am.app.mappingEngine.threaded.AbstractMatcherRunner;
 import am.app.ontology.JenaBackedOntClassNode;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.userInterface.MatchingProgressDisplay;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
@@ -110,8 +108,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	protected transient ReferenceEvaluationData refEvaluation;
 	/**Keeps info about the quality eval of the matcher. null if the algo is not evaluated*/
 	protected transient QualityEvaluationData qualEvaluation;
-	/**Graphical color for nodes mapped by this matcher and alignments, this value is set by the MatcherFactory and modified  by the table so a developer just have to pass it as aparameter for the constructor*/
-	protected Color color; 
 
 	/**
 	 * the matchers combined for example in the LWC matcher can have this set to false, because the partial matchings are not needed. 
@@ -185,7 +181,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 	}
 
-	protected transient List<MatchingProgressDisplay> progressDisplays = new ArrayList<MatchingProgressDisplay>();  // need to keep track of the dialog in order to close it when we're done.  (there could be a better way to do this, but that's for later)
+	protected transient List<MatchingProgressListener> progressDisplays = new ArrayList<MatchingProgressListener>();  // need to keep track of the dialog in order to close it when we're done.  (there could be a better way to do this, but that's for later)
 	protected long stepsTotal; // Used by the ProgressDialog.  This is a rough estimate of the number of steps to be done before we finish the matching.
 	protected long stepsDone;  // Used by the ProgressDialog.  This is how many of the total steps we have completed.
 
@@ -394,13 +390,13 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		qualEvaluation = null;
 		refEvaluation = null;
 
-		for( MatchingProgressDisplay mpd : progressDisplays ) {
+		for( MatchingProgressListener mpd : progressDisplays ) {
 			mpd.appendToReport("Performing mapping selection ...");
 		}
 	}
 	//TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
 	protected void afterSelectionOperations() {
-		for( MatchingProgressDisplay mpd : progressDisplays ) {
+		for( MatchingProgressListener mpd : progressDisplays ) {
 			mpd.appendToReport(" Done.\n");
 		}
 	} 
@@ -409,7 +405,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	public void matchStart() {
 		if( isProgressDisplayed() ) {
 			setupProgress();  // if we are using the progress dialog, setup the variables
-			for( MatchingProgressDisplay mpd : progressDisplays ) {
+			for( MatchingProgressListener mpd : progressDisplays ) {
 				mpd.matchingStarted(this);
 			}
 		}
@@ -427,8 +423,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 			allStepsDone();
 			// the progressDisplays list may be modified upon matchingComplete() calls, so 
 			// make a copy of it for iteration purposes.
-			List<MatchingProgressDisplay> displays = new LinkedList<MatchingProgressDisplay>(progressDisplays);
-			for( MatchingProgressDisplay mpd : displays ) {
+			List<MatchingProgressListener> displays = new LinkedList<MatchingProgressListener>(progressDisplays);
+			for( MatchingProgressListener mpd : displays ) {
 				mpd.clearReport();
 				mpd.matchingComplete();
 			}
@@ -1505,7 +1501,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 			 ex2.printStackTrace();
 			 this.cancel(true);
-			 for( MatchingProgressDisplay mpd : progressDisplays ) {
+			 for( MatchingProgressListener mpd : progressDisplays ) {
 				 mpd.appendToReport(report);
 				 mpd.matchingComplete(); 
 			 }
@@ -1519,7 +1515,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 			 ex.printStackTrace();
 			 this.cancel(true);
-			 for( MatchingProgressDisplay mpd : progressDisplays ) {
+			 for( MatchingProgressListener mpd : progressDisplays ) {
 				 mpd.appendToReport(report);
 				 mpd.matchingComplete(); 
 			 }
@@ -1538,12 +1534,12 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	  * Need to keep track of the progress dialog we have because right now, there is no button to close it, so we must make it close automatically.
 	  * @param p
 	  */
-	 public void addProgressDisplay( MatchingProgressDisplay p ) {		
+	 public void addProgressDisplay( MatchingProgressListener p ) {		
 		 progressDisplays.add(p);
 		 addPropertyChangeListener(p);
 	 }
 
-	 public void removeProgressDisplay( MatchingProgressDisplay p ) {
+	 public void removeProgressDisplay( MatchingProgressListener p ) {
 		 progressDisplays.remove(p);
 		 removePropertyChangeListener(p);
 	 }
@@ -1552,11 +1548,11 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	  * getProgressDisplay
 	  * @param p
 	  */
-	 public MatchingProgressDisplay getProgressDisplay(int index) {
+	 public MatchingProgressListener getProgressDisplay(int index) {
 		 return progressDisplays.get(index);
 	 }
 
-	 public List<MatchingProgressDisplay> getProgressDisplays() { return progressDisplays; }
+	 public List<MatchingProgressListener> getProgressDisplays() { return progressDisplays; }
 
 	 /**
 	  * This method sets up stepsDone and stepsTotal.  Override this method if you have a special way of computing the values.
@@ -1625,7 +1621,7 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 
 			 float percent = stepsTotal == 0 ? 0f : ((float)stepsDone / (float)stepsTotal);
 
-			 for( MatchingProgressDisplay mpd : progressDisplays ) {
+			 for( MatchingProgressListener mpd : progressDisplays ) {
 				 mpd.clearReport();
 				 mpd.appendToReport( "Percentage done: " + Float.toString(percent* 100.0f)+ "%\n" +
 						 "Current duration: " + Utility.getFormattedTime(totalelapsed) + "\n" +  

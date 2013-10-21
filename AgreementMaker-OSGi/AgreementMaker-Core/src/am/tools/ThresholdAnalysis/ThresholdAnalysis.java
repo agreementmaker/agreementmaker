@@ -27,7 +27,6 @@ import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.osgi.MatcherNotFoundException;
-import am.userInterface.MatcherParametersDialog;
 /**
  * 
  * 
@@ -91,10 +90,11 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 	 * @param matcher
 	 * @throws MatcherNotFoundException 
 	 */
-	public ThresholdAnalysis( AbstractMatcher matcher, boolean batchMode) throws MatcherNotFoundException {
+	public ThresholdAnalysis( AbstractMatcher matcher, boolean batchMode, DefaultMatcherParameters params) throws MatcherNotFoundException {
 		super();
 		matcherToAnalyze = MatcherFactory.getMatcherInstance(matcher.getClass());;
 		prefBatchMode = batchMode;
+		this.prefParams = params;
 	}
 	
 	/**
@@ -118,28 +118,8 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 	
 	
 	public void runAnalysis() {
-		
-		// get the parameters for the matcher
-	
-		if( prefBatchMode ) {
-			if( matcherToAnalyze.needsParam() ) {
-				MatcherParametersDialog dialog = new MatcherParametersDialog();
-			
-				if( dialog.parametersSet() ) {
-					// user clicked run
-					prefParams = dialog.getParameters();
-				}
-				else { dialog.dispose(); return; }  // user canceled
-				dialog.dispose();
-			}
-		}
-
-		
 		if( prefBatchMode ) { runBatchAnalysis(); }
 		else { runSingleAnalysis(); }
-		
-		// don't do anything for nonbatch mode (TODO)
-		
 	}
 	
 	/**

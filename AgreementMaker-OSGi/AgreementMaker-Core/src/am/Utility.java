@@ -17,10 +17,8 @@ import javax.swing.JTextArea;
 
 import org.apache.log4j.Logger;
 
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.IntDoublePair;
-import am.userInterface.table.MatchersControlPanelTableModel;
 
 
 /**
@@ -147,7 +145,7 @@ public class Utility {
 		int max = 100;
 		int spin = 1;
 		String[] list  = new String[(max/spin)+1];
-		String any = MatchersControlPanelTableModel.ANY;
+		String any = "ANY";
 		for(int i =min, j =0; i <= max && j<list.length-1; i+=spin, j++) {
 			list[j] = i+"";
 		}
@@ -170,7 +168,7 @@ public class Utility {
 	public static String getStringFromNumRelInt(int n) {
 		String s;
 		if(n ==AbstractMatcher.ANY_INT)
-			s = MatchersControlPanelTableModel.ANY;
+			s = "ANY";
 		else s = n+"";
 		return s;
 	}
@@ -226,22 +224,29 @@ public class Utility {
 		JOptionPane.showMessageDialog(null, sp, title, JOptionPane.PLAIN_MESSAGE);
 	}
 
+	/**
+	 * @deprecated Must be moved to AgreementMaker-UI bundle.
+	 */
+	@Deprecated
 	public static void displayErrorPane(String desc, String title) {
 		if(title == null)
 			title = "Error";
 		try {
-			JOptionPane.showMessageDialog(Core.getUI().getUIFrame(), desc,title, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, desc,title, JOptionPane.ERROR_MESSAGE);
 		} catch( HeadlessException ex ) {
 			Logger log = Logger.getLogger(Utility.class);
 			log.error(desc);
 		}
 	}
 
-
+	/**
+	 * @deprecated Must be moved to AgreementMaker-UI bundle.
+	 */
+	@Deprecated
 	public static boolean displayConfirmPane(String desc, String title) {
 		if(title == null)
 			title = "Confirmation required";
-		int res =  JOptionPane.showConfirmDialog(Core.getUI().getUIFrame(),
+		int res =  JOptionPane.showConfirmDialog(null,
 				desc,
 				title,
 				JOptionPane.YES_NO_OPTION);	

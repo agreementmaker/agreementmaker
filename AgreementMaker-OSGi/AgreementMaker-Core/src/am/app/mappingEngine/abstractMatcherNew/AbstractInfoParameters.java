@@ -3,9 +3,9 @@ package am.app.mappingEngine.abstractMatcherNew;
 import java.awt.Color;
 
 import am.app.mappingEngine.MatchersRegistry;
+import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.ReferenceEvaluationData;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
-import am.userInterface.MatchingProgressDisplay;
 
 /**
  * This class is intended to keep informations that do
@@ -74,7 +74,7 @@ public class AbstractInfoParameters {
 	 * Need to keep track of the dialog in order to close it when we're done.
 	 * TODO: there could be a better way to do this, but that's for later
 	 */
-	protected transient MatchingProgressDisplay progressDisplay = null;
+	protected transient MatchingProgressListener progressDisplay = null;
 	/**
 	 * Used by the ProgressDialog.</br>
 	 * This is a rough estimate of the number of steps to be done before we finish the matching.

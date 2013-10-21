@@ -8,7 +8,6 @@ import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
-import am.userInterface.Colors;
 
 /**This class is used to represent the user manual matching
  * this matching will not be part of the matcher list in the combo box
@@ -32,7 +31,6 @@ public class UserManualMatcher extends AbstractMatcher {
 		//maybe this first 3 lines are not needed anymore after the matcherregistry change
 		index = 0;
 		registryEntry = MatchersRegistry.UserManual;
-		color = Colors.matchersColors[0];
 		
 		param = new DefaultMatcherParameters();
 		param.storeProvenance = true;

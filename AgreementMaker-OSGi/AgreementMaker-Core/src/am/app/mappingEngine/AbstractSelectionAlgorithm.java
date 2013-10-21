@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 
 import am.Utility;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
-import am.userInterface.MatchingProgressDisplay;
 
 public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> implements SelectionAlgorithm {
 	
@@ -18,7 +17,7 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
 	
 	private static Logger LOG = Logger.getLogger(AbstractSelectionAlgorithm.class);
 	// FIXME: Isn't this taken care of by SwingWorker? -- Cosmin.
-	protected List<MatchingProgressDisplay> progressListeners = new ArrayList<MatchingProgressDisplay>();
+	protected List<MatchingProgressListener> progressListeners = new ArrayList<MatchingProgressListener>();
 	
 	/**
 	 * Match(), buildSimilarityMatrix() and select() are the only 3 public methods to be accessed by the system other then get and set methods
@@ -54,14 +53,14 @@ public abstract class AbstractSelectionAlgorithm extends SwingWorker<Void,Void> 
     	result.setQualEvaluation(null);
     	result.setRefEvaluation(null);
     	
-    	for( MatchingProgressDisplay mpd : progressListeners ) {
+    	for( MatchingProgressListener mpd : progressListeners ) {
     		mpd.appendToReport("Performing mapping selection ...");
     	}
     }
 	
     //TEMPLATE METHOD TO ALLOW DEVELOPERS TO ADD CODE: call super when overriding
     protected void afterSelectionOperations() {
-    	for( MatchingProgressDisplay mpd : progressListeners ) {
+    	for( MatchingProgressListener mpd : progressListeners ) {
     		mpd.appendToReport(" Done.\n");
     	}
     } 

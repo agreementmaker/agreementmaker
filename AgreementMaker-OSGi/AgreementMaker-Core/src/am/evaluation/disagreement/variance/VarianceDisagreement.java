@@ -12,7 +12,6 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.evaluation.disagreement.DisagreementCalculationMethod;
 import am.evaluation.disagreement.DisagreementParameters;
 import am.evaluation.disagreement.DisagreementParametersPanel;
-import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 
 public class VarianceDisagreement extends DisagreementCalculationMethod {
 
@@ -27,12 +26,12 @@ public class VarianceDisagreement extends DisagreementCalculationMethod {
 	}
 	
 	@Override
-	public SimilarityMatrix getDisagreementMatrix(VisualizationType t) {
+	public SimilarityMatrix getDisagreementMatrix(alignType t) {
 		List<AbstractMatcher> matchersToConsider = params.getMatchers();
 		
 		if( matchersToConsider.size() == 0 ) return null;
 		
-		if( t == VisualizationType.CLASS_MATRIX ) {
+		if( t == alignType.aligningClasses ) {
 		
 			int rows = matchersToConsider.get(0).getClassesMatrix().getRows();
 			int cols = matchersToConsider.get(0).getClassesMatrix().getColumns();

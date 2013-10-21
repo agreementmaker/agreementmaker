@@ -29,10 +29,7 @@ import am.app.ontology.OntologyChangeListener;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.app.osgi.AMHost;
 import am.app.osgi.OSGiRegistry;
-import am.userInterface.AppPreferences;
-import am.userInterface.UI;
-import am.userInterface.VisualizationChangeEvent;
-import am.userInterface.VisualizationChangeListener;
+import am.utility.AppPreferences;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
@@ -43,6 +40,8 @@ import com.hp.hpl.jena.rdf.model.Model;
  * Core.getInstance()
  * All model information of the system will be accessible from this class:
  * ontologies, matchings and so on.
+ * 
+ * TODO: I think this class should be removed.  It's a crutch and a better design is needed. -- Cosmin, Oct. 20, 2013.
  *
  */
 public class Core {
@@ -99,14 +98,14 @@ public class Core {
 	/** Various change listeners. **/
 	private ArrayList<OntologyChangeListener>      ontologyListeners;
 	private ArrayList<MatcherChangeListener>  	   matcherListeners;
-	private ArrayList<VisualizationChangeListener> visualizationListeners;
+	//private ArrayList<VisualizationChangeListener> visualizationListeners;
 	
 	
 	private static AppPreferences prefs;
 	
 	private static LexiconStore lexstore; // The Lexicon store for these ontologies.
 	
-	private static UI ui; 	// A reference to the userinterface instance, canvas and table can be accessed anytime. 
+	//private static UI ui; 	// A reference to the userinterface instance, canvas and table can be accessed anytime. 
 							// It used often to invoke the method redisplayCanvas()
 	
 	private static Core core  = new Core(); // Singleton pattern: unique instance
@@ -160,7 +159,7 @@ public class Core {
 		loadedOntologies = new ArrayList<Ontology>();  // initialize the arraylist of ontologies.
 		ontologyListeners    = new ArrayList<OntologyChangeListener>();  // new list of listeners
 		matcherListeners	= new ArrayList<MatcherChangeListener>(); // another list of listeners
-		visualizationListeners = new ArrayList<VisualizationChangeListener>();
+		//visualizationListeners = new ArrayList<VisualizationChangeListener>();
 		
 		lexstore = new LexiconStore();
 		addOntologyChangeListener(lexstore);
@@ -348,8 +347,8 @@ public class Core {
 		fireEvent( new MatchingTaskChangeEvent( EventType.REMOVE_ALL) );
 	}
 	
-	public static UI   getUI()      { return ui;    }
-	public static void setUI(UI ui) { Core.ui = ui; }
+	//public static UI   getUI()      { return ui;    }
+	//public static void setUI(UI ui) { Core.ui = ui; }
 	
 	public static LexiconStore getLexiconStore() { return lexstore; }
 	public static AppPreferences getAppPreferences() { return prefs; }
@@ -544,10 +543,10 @@ public class Core {
 	}
 	
 	/** Same thing as ontology change events, but for Visualization components **/
-	public void addVisualizationChangeListener( VisualizationChangeListener l )  { visualizationListeners.add(l); }
-	public void removeVisualizationChangeListener( VisualizationChangeListener l ) { visualizationListeners.remove(l); }
+	//public void addVisualizationChangeListener( VisualizationChangeListener l )  { visualizationListeners.add(l); }
+	//public void removeVisualizationChangeListener( VisualizationChangeListener l ) { visualizationListeners.remove(l); }
 	
-	public void fireEvent( final VisualizationChangeEvent event ) {
+	/*public void fireEvent( final VisualizationChangeEvent event ) {
 		for( int i = visualizationListeners.size()-1; i >= 0; i-- ) {  // count DOWN from max (for a very good reason, http://book.javanb.com/swing-hacks/swinghacks-chp-12-sect-8.html )
 			// execute each event in its own thread.
 			
@@ -561,7 +560,7 @@ public class Core {
 			t.start();
 			
 		}
-	}
+	}*/
 	
 	/* ***************************** ONTOLOGY PROFILING **************************************** */
 	private OntologyProfiler currentProfiler;

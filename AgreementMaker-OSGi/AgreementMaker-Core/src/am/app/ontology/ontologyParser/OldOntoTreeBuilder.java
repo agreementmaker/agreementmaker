@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
@@ -133,10 +132,10 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 		
 		// TODO: Find a better way to check if we're running with a UI or not.
 		
-		if( progressDialog != null ) progressDialog.clearMessage();
+		listeners.firePropertyChange(PROGRESS_COMMAND_CLEAR_LOG, null, null);
 		
 		RunTimer timer = new RunTimer();
-		if( progressDialog != null ) progressDialog.appendLine("Reading the ontology...");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Reading the ontology...");
 		
 		timer.start();
 		
@@ -157,16 +156,8 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 		
 		timer.stop();
 		
-		if( progressDialog != null ) progressDialog.appendLine("Done. " + timer.getFormattedRunTime());
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Done. " + timer.getFormattedRunTime());
 		
-		timer.resetAndStart();
-		// now, the visualization panel needs to build its own graph.
-		if( progressDialog != null ) {
-			progressDialog.appendLine("Building visualization graphs.");
-			Core.getUI().getCanvas().buildLayoutGraphs(ontology);
-			progressDialog.appendLine("Done. " + timer.getFormattedRunTime());
-		} 
-
 	}
 	
 	
@@ -184,7 +175,7 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 			ontURI = "file:"+ontology.getFilename();
 		}
 		
-		if( progressDialog != null ) progressDialog.append("Creating Jena Model ... ");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating Jena Model ... ");
 		
 		OntModel model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, null );
 		model.read( ontURI, null, ontology.getFormat().toString() );
@@ -205,11 +196,11 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 			ontology.setURI("");
 		}
 		
-		if( progressDialog != null ) progressDialog.append("Creating AgreementMaker data structures ... ");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating AgreementMaker data structures ... ");
 
 		createDataStructures();
 		
-		if( progressDialog != null ) progressDialog.appendLine("done.");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
 	}
 	
 	
@@ -223,14 +214,14 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 			ontURI = "file:"+ontology.getFilename();
 		}
 		
-		if( progressDialog != null ) progressDialog.append("Creating Jena Model ... ");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating Jena Model ... ");
 		FileManager.get().resetCache();
 		Model basemodel = FileManager.get().loadModel(ontology.getFilename(), ontology.getFormat().toString() );
-		if( progressDialog != null ) progressDialog.appendLine("done.");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
 		
-		if( progressDialog != null ) progressDialog.append("Creating Jena OntModel ...");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating Jena OntModel ...");
 		OntModel model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
-		if( progressDialog != null ) progressDialog.appendLine("done.");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
 
 		//Preparing model
 		model.prepare();
@@ -247,11 +238,11 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 		}
 		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
 
-		if( progressDialog != null ) progressDialog.append("Creating AgreementMaker data structures ... ");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating AgreementMaker data structures ... ");
 		
 		createDataStructures();
         
-        if( progressDialog != null ) progressDialog.appendLine("done.");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
 	}
 	
 	private void createDataStructures() {

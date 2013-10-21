@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
@@ -57,7 +56,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 	private String ontURI = null;
 	private boolean noReasoner = false;
 	private OntModel model;
-	private Set<OntClass> unsatConcepts;  
+	//private Set<OntClass> unsatConcepts;  
 	private HashMap<OntResource,Node> processedSubs;
 	OntClass owlThing;
 	
@@ -152,13 +151,9 @@ public class OntoTreeBuilder extends TreeBuilder{
 	// this function dispatches functions depending on the ontology loading profile selected.
 	protected void buildTree( OntoTreeBuilder.Profile prof ) {
 		
-		// TODO: Find a better way to check if we're running with a UI or not.
-		
-		if( progressDialog != null ) progressDialog.clearMessage();
-		
+		listeners.firePropertyChange(PROGRESS_COMMAND_CLEAR_LOG, null, null);
 		RunTimer timer = new RunTimer();
-		if( progressDialog != null ) progressDialog.appendLine("Reading the ontology...");
-		
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Reading the ontology...");
 		timer.start();
 		
 		switch ( prof ) {
@@ -191,16 +186,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 		
 		timer.stop();
 		
-		if( progressDialog != null ) progressDialog.appendLine("Done. " + timer.getFormattedRunTime());
-		
-		timer.resetAndStart();
-		// now, the visualization panel needs to build its own graph.
-		if( progressDialog != null ) {
-			progressDialog.appendLine("Building visualization graphs.");
-			Core.getUI().getCanvas().buildLayoutGraphs(ontology);
-			progressDialog.appendLine("Done. " + timer.getFormattedRunTime());
-		} 
-
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Done. " + timer.getFormattedRunTime());
 	}
 	
 	
@@ -218,7 +204,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 			ontURI = "file:"+ontology.getFilename();
 		}
 		
-		if( progressDialog != null ) progressDialog.append("Creating Jena Model ... ");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating Jena Model ... ");
 		
 		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, null );
 		model.read( ontURI, null, ontology.getFormat().toString() );
@@ -236,7 +222,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 		}
 		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
 
-		if( progressDialog != null ) progressDialog.append("Creating AgreementMaker data structures ... ");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating AgreementMaker data structures ... ");
 
 		//Preparing model
 		model.prepare();
@@ -244,7 +230,7 @@ public class OntoTreeBuilder extends TreeBuilder{
 		
 		createDataStructures();
 		
-		if( progressDialog != null ) progressDialog.appendLine("done.");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
 	}
 	
 	
@@ -283,18 +269,18 @@ public class OntoTreeBuilder extends TreeBuilder{
 			ontURI = "file:"+ontology.getFilename();
 		}
 		
-		if( progressDialog != null ) progressDialog.append("Creating Jena Model ... ");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating Jena Model ... ");
 		FileManager fileManager = FileManager.get();
 		fileManager.resetCache();
 		if(ontDefinition.locationMapper != null)
 			fileManager.setLocationMapper(ontDefinition.locationMapper);
 		
 		Model basemodel = fileManager.loadModel(ontology.getFilename(), ontology.getFormat().toString() );
-		if( progressDialog != null ) progressDialog.appendLine("done.");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
 		
-		if( progressDialog != null ) progressDialog.append("Creating Jena OntModel ...");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating Jena OntModel ...");
 		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
-		if( progressDialog != null ) progressDialog.appendLine("done.");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
 		
 		ontology = new Ontology(model);
 		
@@ -312,15 +298,15 @@ public class OntoTreeBuilder extends TreeBuilder{
 		//if( progressDialog != null ) progressDialog.append("Creating AgreementMaker data structures ... ");
 
 		//Preparing model
-		if( progressDialog != null ) progressDialog.append("Preparing Jena model ... ");
-		model.prepare();		
-        if( progressDialog != null ) progressDialog.appendLine("done.");
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Preparing Jena model ... ");
+		model.prepare();
+		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
         
 		// If we're not in the large ontology mode, do the legacy code.
 		if( !ontDefinition.largeOntologyMode ) {
-			if( progressDialog != null ) progressDialog.append("Creating AgreementMaker data structures ... ");
+			listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating AgreementMaker data structures ... ");
 			createDataStructures();
-			if( progressDialog != null ) progressDialog.appendLine("done.");
+			listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
 		}
 		else {
 			// large ontology mode: don't create any extra Node classes.
@@ -344,7 +330,7 @@ public class OntoTreeBuilder extends TreeBuilder{
        
         // Find all unsatisfiable concepts, i.e classes equivalent
         // to owl:Nothing. we are not considering this nodes for the alignment so we are not keeping this
-        unsatConcepts = collect( owlNothing.listEquivalentClasses() );
+        //unsatConcepts = collect( owlNothing.listEquivalentClasses() );
         
         // create a tree starting with owl:Thing node as the root
         //if a node has two fathers (is possible in OWL hierarchy) it would be processed twice

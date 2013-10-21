@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
-import am.visualization.MatcherAnalyticsPanel.VisualizationType;
 
 /**
  * A clustering method is used to cluster similar mappings.
@@ -40,7 +40,7 @@ public abstract class ClusteringMethod {
 	 * @param t Either Classes or Properties Matrix.
 	 * @return The cluster of the mapping at (row,col).
 	 */
-	public abstract Cluster<Mapping> getCluster(int row, int col, VisualizationType t);
+	public abstract Cluster<Mapping> getCluster(int row, int col, alignType t);
 	
 	/**
 	 * Get the cluster of a mapping.

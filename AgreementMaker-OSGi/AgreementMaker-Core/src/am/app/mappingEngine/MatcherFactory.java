@@ -1,12 +1,10 @@
 package am.app.mappingEngine;
 
-import java.awt.Color;
 import java.util.EnumSet;
 import java.util.List;
 
 import am.app.Core;
 import am.app.osgi.MatcherNotFoundException;
-import am.userInterface.Colors;
 
 public class MatcherFactory {
 	
@@ -71,12 +69,6 @@ public class MatcherFactory {
 			}
 		}
 		return null;
-	}
-	
-	private static Color getColorFromIndex(int instanceIndex) {
-		// TODO there should be an array of predefined colors
-		int arrayIndex = (int) (instanceIndex % Colors.matchersColors.length); //this is the module operation, we need to do this because we may have more matchers then the possible colors in the array
-		return Colors.matchersColors[arrayIndex];
 	}
 
 	public static boolean isTheUserMatcher(AbstractMatcher toBeDeleted) {
