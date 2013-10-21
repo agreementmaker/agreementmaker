@@ -25,11 +25,11 @@ import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 import am.app.ontology.Node;
 import am.matcher.Combination.CombinationMatcher;
 import am.matcher.Combination.CombinationParameters;
-import am.userInterface.MatchingProgressDisplay;
 
 public class machineLearningMatcher extends AbstractMatcher {
 	
@@ -204,7 +204,7 @@ public class machineLearningMatcher extends AbstractMatcher {
     public void matchStart() {
     	if( isProgressDisplayed() ) {
     		setupProgress();  // if we are using the progress dialog, setup the variables
-    		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.matchingStarted(this);
+    		for( MatchingProgressListener mpd : progressDisplays ) mpd.matchingStarted(this);
     	}
     	start = System.nanoTime();
     	starttime = System.currentTimeMillis();
@@ -218,8 +218,8 @@ public class machineLearningMatcher extends AbstractMatcher {
 	    setSuccesfullReport();	
 		if( isProgressDisplayed() ) {
 			allStepsDone();
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.clearReport();
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.matchingComplete();
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.clearReport();
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.matchingComplete();
 		}
     	
 	}
@@ -666,7 +666,7 @@ public class machineLearningMatcher extends AbstractMatcher {
 		m.setParam(p);
 		m.setSourceOntology(sourceOntology);
 		m.setTargetOntology(targetOntology);
-		for( MatchingProgressDisplay mpd : progressDisplays ) m.addProgressDisplay(mpd);
+		for( MatchingProgressListener mpd : progressDisplays ) m.addProgressDisplay(mpd);
 		m.setUseProgressDelay(progressDelay);
 		m.setPerformSelection(true);
 	}

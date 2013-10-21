@@ -7,6 +7,7 @@ import java.util.Vector;
 import am.AMException;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
@@ -19,7 +20,6 @@ import am.matcher.structuralMatchers.similarityFlooding.utils.PCGVertex;
 import am.matcher.structuralMatchers.similarityFlooding.utils.PairwiseConnectivityGraph;
 import am.matcher.structuralMatchers.similarityFlooding.utils.WGraphVertex;
 import am.matcher.structuralMatchers.similarityFlooding.utils.WrappingGraph;
-import am.userInterface.MatchingProgressDisplay;
 
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -70,23 +70,23 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 	 protected void align() {
 
 		try {
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.clearReport();
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.clearReport();
 			
 			// cannot align just one ontology (this is here to catch improper invocations)
 			if (sourceOntology == null) throw new NullPointerException("sourceOntology == null");
 			if (targetOntology == null) throw new NullPointerException("targetOntology == null");
 			
 			// starting phase: create wrapping graphs
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Creating Wrapping Graphs...");
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Creating Wrapping Graphs...");
 			WrappingGraph sourceGraph = new WrappingGraph(sourceOntology);
 			WrappingGraph targetGraph = new WrappingGraph(targetOntology);
 			if (DEBUG_FLAG) System.out.println(sourceGraph.toString());
 			if (DEBUG_FLAG) System.out.println(targetGraph.toString());
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("done.\n");
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("done.\n");
 			
 			// load the matrices
 			loadSimilarityMatrices(sourceGraph, targetGraph);
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Start Computation...");
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Start Computation...");
 			do {
 				// new round starts
 				round++;
@@ -113,16 +113,16 @@ public class PartialGraphMatcher extends SimilarityFlooding {
 
 				// phase 8: check stop condition
 			} while (!checkStopCondition(round, cOldVect, cNewVect));
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("done.\n");
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("done.\n");
 			
 			// phase 9: get back the classesMatrix
 			classesMatrix = new ArraySimilarityMatrix(classesMatrix);
 			
 			// phase 10: compute relative similarities (at the very end)
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Computing Relative Similarities...");
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Computing Relative Similarities...");
 			computeRelativeSimilarities(classesMatrix);
 			computeRelativeSimilarities(propertiesMatrix);
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("done.\n");
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("done.\n");
 
 		} catch (Exception e) {
 			e.printStackTrace();

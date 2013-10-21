@@ -15,6 +15,7 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.mappingEngine.utility.MatchingPair;
@@ -24,7 +25,6 @@ import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcher;
 import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
 import am.output.alignment.oaei.OAEIAlignmentFormat;
-import am.userInterface.MatchingProgressDisplay;
 
 public class MediatingMatcher extends AbstractMatcher {
 
@@ -55,7 +55,7 @@ public class MediatingMatcher extends AbstractMatcher {
 		MediatingMatcherParameters p = (MediatingMatcherParameters) param;
 
 		if( !(p.loadSourceBridge && p.loadTargetBridge) ) { // we need to compute one of the bridges, so load the mediating ontology 
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Loading mediating ontology ...");
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Loading mediating ontology ...");
 			try {
 				mediatingOntology = OntoTreeBuilder.loadOWLOntology( p.mediatingOntology );
 			} catch( Exception e ) {
@@ -73,20 +73,20 @@ public class MediatingMatcher extends AbstractMatcher {
 				return;
 			}
 			
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
 		}
 		
 		if( p.loadSourceBridge ) {
 			try {
-				for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Loading source bridge ...");
+				for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Loading source bridge ...");
 				sourceBridge = OAEIAlignmentFormat.readAlignment( new FileReader(new File(p.sourceBridge)) );
-				for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
+				for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		} else {
 			// the source bridge does not exist, we must create it.
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Matching bridge ontology to source ontology ...");
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Matching bridge ontology to source ontology ...");
 			
 			// build the lexicons for the bridge to source
 			LexiconBuilderParameters lexParam = new LexiconBuilderParameters();
@@ -137,17 +137,17 @@ public class MediatingMatcher extends AbstractMatcher {
 			
 			Core.getLexiconStore().setParameters(oldParam); // restore the old parameters
 			
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
 		}
 		
 		if( p.loadTargetBridge ) {
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Loading target bridge ...");
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Loading target bridge ...");
 			OAEIAlignmentFormat format = new OAEIAlignmentFormat();
 			targetBridge = OAEIAlignmentFormat.readAlignment( new FileReader(new File(p.targetBridge)) );
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
 		} else {
 			// the target bridge does not exist, we must create it.
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Matching bridge ontology to target ontology ...");
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Matching bridge ontology to target ontology ...");
 			
 			// build the lexicons for the bridge to source
 			LexiconBuilderParameters lexParam = new LexiconBuilderParameters();
@@ -198,7 +198,7 @@ public class MediatingMatcher extends AbstractMatcher {
 			
 			Core.getLexiconStore().setParameters(oldParam);  // restore the old parameters
 			
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
 		}
 		
 	};

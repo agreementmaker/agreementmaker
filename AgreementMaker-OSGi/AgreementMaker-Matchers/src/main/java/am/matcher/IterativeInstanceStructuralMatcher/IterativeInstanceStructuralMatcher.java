@@ -19,7 +19,8 @@ import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.userInterface.MatcherParametersDialog;
+import am.ui.MatcherParametersDialog;
+import am.ui.UICore;
 
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
@@ -324,7 +325,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 			Utility.displayTextAreaPane(report,"Reference Evaluation Report");
 		}
 		dialog.dispose();
-		Core.getUI().redisplayCanvas();
+		UICore.getUI().redisplayCanvas();
 	}
 
 	private void matchPropertyValues() {

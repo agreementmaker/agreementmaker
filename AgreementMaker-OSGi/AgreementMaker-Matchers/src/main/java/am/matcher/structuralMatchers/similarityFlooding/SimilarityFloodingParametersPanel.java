@@ -10,7 +10,7 @@ import javax.swing.JCheckBox;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
-import am.userInterface.AppPreferences;
+import am.utility.AppPreferences;
 
 public class SimilarityFloodingParametersPanel extends AbstractMatcherParametersPanel implements ItemListener {
 

@@ -13,13 +13,13 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
+import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.StringUtil.Normalizer;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 import am.app.similarity.StringSimilarityMeasure;
-import am.userInterface.MatchingProgressDisplay;
 
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -97,13 +97,13 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		if( parameters.useLexicons ) {
 			// build all the lexicons if they don't exist.
 			
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.setProgressLabel("Building Ontology Lexicon (1/2)");
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.setProgressLabel("Building Ontology Lexicon (1/2)");
 			sourceOntologyLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
 			targetOntologyLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.setProgressLabel("Building WordNet Lexicon (2/2)");
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.setProgressLabel("Building WordNet Lexicon (2/2)");
 			sourceWordNetLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
 			targetWordNetLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.setProgressLabel(null);
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.setProgressLabel(null);
 		}
 		
 	}

@@ -7,12 +7,12 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
+import am.app.mappingEngine.MatchingProgressListener;
 import am.matcher.structuralMatchers.SimilarityFlooding;
 import am.matcher.structuralMatchers.SimilarityFloodingParameters;
 import am.matcher.structuralMatchers.similarityFlooding.utils.PCGVertex;
 import am.matcher.structuralMatchers.similarityFlooding.utils.WGraphVertex;
 import am.matcher.structuralMatchers.similarityFlooding.utils.WrappingGraph;
-import am.userInterface.MatchingProgressDisplay;
 
 /**
  * 
@@ -50,59 +50,59 @@ public abstract class FullGraphMatcher extends SimilarityFlooding {
 	 */
 	 @Override
 	 protected void align() throws Exception {
-		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.clearReport();
+		for( MatchingProgressListener mpd : progressDisplays ) mpd.clearReport();
 		
 		// cannot align just one ontology (this is here to catch improper invocations)
 		if( sourceOntology == null ) throw new NullPointerException("sourceOntology == null");   
 		if( targetOntology == null ) throw new NullPointerException("targetOntology == null");
 		
-		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Creating Wrapping Graphs...");
+		for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Creating Wrapping Graphs...");
 		WrappingGraph sourceGraph = new WrappingGraph(sourceOntology);
 		WrappingGraph targetGraph = new WrappingGraph(targetOntology);
 		if( DEBUG_FLAG ) System.out.println(sourceGraph.toString());
 		if( DEBUG_FLAG ) System.out.println(targetGraph.toString());
-		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("done.\n");
+		for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("done.\n");
 		
 		// loading similarity matrices (null values are permitted if WrappingGraphs are not used to build the Matrices)
 		loadSimilarityMatrices(null, null);
 		
 		// PHASE 0: sorting edges (for optimization purposes)
 		if(isSortEdges()){
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Sorting Wrapping Graphs...");
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Sorting Wrapping Graphs...");
 			sourceGraph.sortEdges();
 			targetGraph.sortEdges();
 			if( DEBUG_FLAG ) System.out.println(sourceGraph.toString());
 			if( DEBUG_FLAG ) System.out.println(targetGraph.toString());
-			for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("done.\n");
+			for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("done.\n");
 		}
 		
 		// PHASE 1: creating PCG
-		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Creating Pairwise Connectivity Graph...");
+		for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Creating Pairwise Connectivity Graph...");
 		createFullPCG(sourceGraph, targetGraph);
 		if( DEBUG_FLAG ) System.out.println(pcg.toString());
-		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("done.\n");
+		for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("done.\n");
 		
 		// PHASE 2: creating IPG
-		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Creating Induced Propagation Graph...");
+		for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Creating Induced Propagation Graph...");
 		createInducedPropagationGraph();
 		if( DEBUG_FLAG ) System.out.println(pcg.toString());
-		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("done.\n");
+		for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("done.\n");
 		
 		// PHASE 3: computing fixpoint
-		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Computing Fixpoints...");
+		for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Computing Fixpoints...");
 		computeFixpoint();
-		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("done.\n");
+		for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("done.\n");
 		
 		// PHASE 4: update values in matrix
-		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Populating Similarity Matrices...");
+		for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Populating Similarity Matrices...");
 		populateSimilarityMatrices(pcg, classesMatrix, propertiesMatrix);
-		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("done.\n");
+		for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("done.\n");
 		
 		// PHASE 5: compute relative similarities
-		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("Computing Relative Similarities...");
+		for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Computing Relative Similarities...");
 		computeRelativeSimilarities(classesMatrix);
 		computeRelativeSimilarities(propertiesMatrix);
-		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.appendToReport("done.\n");
+		for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("done.\n");
 		
 //		try {
 //			fw.close();

@@ -12,7 +12,7 @@ import javax.swing.border.EmptyBorder;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.MatcherSetting;
-import am.userInterface.AppPreferences;
+import am.utility.AppPreferences;
 
 public class SiblingsSimilarityContributionParametersPanel extends AbstractMatcherParametersPanel {
 
