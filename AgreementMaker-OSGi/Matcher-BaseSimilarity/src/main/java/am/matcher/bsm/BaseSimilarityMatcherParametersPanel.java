@@ -13,7 +13,7 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.MatcherSetting;
-import am.userInterface.AppPreferences;
+import am.utility.AppPreferences;
 
 public class BaseSimilarityMatcherParametersPanel extends AbstractMatcherParametersPanel implements ItemListener {
 

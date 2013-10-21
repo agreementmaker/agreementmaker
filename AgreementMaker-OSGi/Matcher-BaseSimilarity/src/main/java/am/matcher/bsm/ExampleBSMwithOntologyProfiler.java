@@ -11,11 +11,11 @@ import javax.swing.JFileChooser;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.MatchingProgressListener;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
-import am.userInterface.MatchingProgressDisplay;
 import am.utility.RunTimer;
 
 import com.hp.hpl.jena.rdf.model.Property;
@@ -96,7 +96,7 @@ public class ExampleBSMwithOntologyProfiler {
 		bsm.setTargetOntology(targetOntology);
 		
 		// add a progress display listener so that we can display the progress on the console
-		bsm.addProgressDisplay(new MatchingProgressDisplay() {
+		bsm.addProgressDisplay(new MatchingProgressListener() {
 			@Override public void setProgressLabel(String label) {}
 			@Override public void setIndeterminate(boolean indeterminate) {}
 			@Override public void scrollToEndOfReport() {}
