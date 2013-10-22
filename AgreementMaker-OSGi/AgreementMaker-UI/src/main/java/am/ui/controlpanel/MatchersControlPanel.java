@@ -49,9 +49,9 @@ import am.ui.MatcherProgressDialog;
 import am.ui.MatchingProgressDisplay;
 import am.ui.QualityEvaluationDialog;
 import am.ui.UICore;
+import am.ui.controlpanel.table.MatchersControlPanelTableModel;
+import am.ui.controlpanel.table.MatchersTablePanel;
 import am.ui.matchingtask.MatchingTaskCreatorDialog;
-import am.ui.table.MatchersControlPanelTableModel;
-import am.ui.table.MatchersTablePanel;
 
 public class MatchersControlPanel extends JPanel implements ActionListener, MouseListener {
 

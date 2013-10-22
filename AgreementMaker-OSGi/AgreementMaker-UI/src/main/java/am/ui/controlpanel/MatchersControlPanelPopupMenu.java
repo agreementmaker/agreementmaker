@@ -24,7 +24,7 @@ import am.ui.canvas2.Canvas2;
 import am.ui.canvas2.graphical.MappingData;
 import am.ui.canvas2.utility.Canvas2Edge;
 import am.ui.canvas2.utility.CanvasGraph;
-import am.ui.table.MatchersControlPanelTableModel;
+import am.ui.controlpanel.table.MatchersControlPanelTableModel;
 
 /**
  * A popup menu for the MatchersControlPanel table.

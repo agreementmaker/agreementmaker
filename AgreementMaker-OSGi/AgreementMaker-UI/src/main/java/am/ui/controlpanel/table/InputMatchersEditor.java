@@ -1,4 +1,4 @@
-package am.ui.table;
+package am.ui.controlpanel.table;
 
 import java.awt.Component;
 import java.util.HashMap;

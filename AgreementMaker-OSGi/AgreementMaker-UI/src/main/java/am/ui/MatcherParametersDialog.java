@@ -50,9 +50,9 @@ import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.OntologyProfilerPanel;
 import am.app.ontology.profiling.ProfilerRegistry;
 import am.app.osgi.MatcherNotFoundException;
+import am.ui.controlpanel.table.MatchersTablePanel;
 import am.ui.matchingtask.MatcherComboBox;
 import am.ui.matchingtask.MatcherComboBox.ComboItem;
-import am.ui.table.MatchersTablePanel;
 
 
 /**
