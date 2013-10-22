@@ -177,7 +177,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
 			fireEvent(ProgressEvent.APPEND_LINE, "Disk ontology is persistent.\nUsing existing on disk ontology.");
 		}
 		
-		ontology = new Ontology(model);
+		ontology.setModel(model);
 		
 		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces

@@ -1141,7 +1141,13 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 				Canvas2Vertex n1 = (Canvas2Vertex) UICore.getInstance().getGraphicalRepresentation(e1, Canvas2.class);
 				Canvas2Vertex n2 = (Canvas2Vertex) UICore.getInstance().getGraphicalRepresentation(e2, Canvas2.class);
 
-				if( n1 == null || n2 == null ) { continue; }
+				if( n1 == null ) {
+					throw new RuntimeException("The source node does not have a graphical representation.");
+				}
+				
+				if( n2 == null ) {
+					throw new RuntimeException("The target node does not have a graphical representation.");
+				}
 				
 				LegacyMapping edge = new LegacyMapping( n1, n2, alignment, m.getID());
 	

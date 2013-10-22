@@ -220,7 +220,7 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 		
 		LOG.info(" done.");
 		
-		ontology = new Ontology(model);
+		ontology.setModel(model);
 		
 		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces

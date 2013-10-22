@@ -104,7 +104,7 @@ public abstract class TreeBuilder<T extends OntologyDefinition> extends SwingWor
 	
 	public TreeBuilder( T def ) {
 		this.ontDefinition = def;
-		ontology = new Ontology(null);
+		ontology = new Ontology();
 		ontology.setDefinition(def);
 		ontology.setIndex( Core.getInstance().numOntologies() );
 		ontology.setID( Core.getInstance().getNextOntologyID() );  // get an unique ID for this ontology

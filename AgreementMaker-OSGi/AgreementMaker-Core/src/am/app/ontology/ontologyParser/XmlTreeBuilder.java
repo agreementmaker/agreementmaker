@@ -79,7 +79,7 @@ public class XmlTreeBuilder extends TreeBuilder<OntologyDefinition>
 		m = ModelFactory.createOntologyModel(OntModelSpec.OWL_LITE_MEM);
 		owlThing = m.getOntClass( OWL.Thing.getURI() );
 		
-		ontology = new Ontology(m);
+		ontology.setModel(m);
 		
 		// create a new tree root
 		//treeRoot = new Vertex(ontology.getTitle(), ontology.getSourceOrTarget());

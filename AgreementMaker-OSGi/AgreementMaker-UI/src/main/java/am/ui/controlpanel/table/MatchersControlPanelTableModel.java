@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.MatchingTaskChangeEvent;
+import am.app.mappingEngine.MatchingTaskChangeEvent.EventType;
 import am.app.mappingEngine.qualityEvaluation.QualityEvaluationData;
 import am.ui.UI;
 import am.ui.UICore;
@@ -301,8 +303,8 @@ public class MatchersControlPanelTableModel extends AbstractTableModel {
         		MatchingTask a = data.get(row);
             	if(col == SHOWHIDE) {
             		UICore.getInstance().getVisData(a).isShown = ((Boolean)value).booleanValue();
+            		Core.getInstance().fireEvent(new MatchingTaskChangeEvent(a, EventType.MATCHER_VISIBILITY_CHANGED));
             		ui.redisplayCanvas();
-            		update = CELLUPDATE;
             	}
 
             	else if(col == THRESHOLD) {

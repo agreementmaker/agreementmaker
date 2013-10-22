@@ -181,8 +181,7 @@ public class OntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
 		
 		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, null );
 		model.read( ontURI, null, ontology.getFormat().toString() );
-		
-		ontology = new Ontology(model);
+		ontology.setModel(model);
 		
 		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
@@ -254,8 +253,7 @@ public class OntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
 		fireEvent(ProgressEvent.APPEND_LINE, "Creating Jena OntModel ...");
 		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
 		fireEvent(ProgressEvent.APPEND_LINE, "done.");
-		
-		ontology = new Ontology(model);
+		ontology.setModel(model);
 		
 		//we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces

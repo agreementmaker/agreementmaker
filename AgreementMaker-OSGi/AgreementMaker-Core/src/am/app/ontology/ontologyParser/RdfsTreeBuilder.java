@@ -74,7 +74,7 @@ public class RdfsTreeBuilder extends TreeBuilder<OntologyDefinition> {
 			ontModel.read(fileInStream, null); // null == RDF/XML
 			System.out.println("done");
 			
-			ontology = new Ontology(ontModel);
+			ontology.setModel(ontModel);
 			
 			if(skipOtherNamespaces) { //we can get this information only if we are working with RDF/XML format, using this on N3 you'll get null pointer exception you need to use an input different from ""
 				try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces

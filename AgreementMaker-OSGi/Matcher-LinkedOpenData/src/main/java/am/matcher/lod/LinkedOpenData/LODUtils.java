@@ -45,7 +45,8 @@ public class LODUtils {
 		log.debug("Creating ontModel...");
 		OntModel model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
 		
-		ontology = new Ontology(model);
+		ontology = new Ontology();
+		ontology.setModel(model);
 		
 		try {//if we can't access the namespace of the ontology we can't skip nodes with others namespaces
 			String ns = model.getNsPrefixMap().get("").toString();

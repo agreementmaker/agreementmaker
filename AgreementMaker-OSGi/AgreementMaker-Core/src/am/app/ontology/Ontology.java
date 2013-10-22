@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.qualityEvaluation.metrics.joslyn.JoslynStructuralQuality;
 import am.app.mappingEngine.utility.MatchingPair;
@@ -48,42 +49,18 @@ public class Ontology {
 	public static final int SOURCENODE = 0;
 	//	OWL File type representation
 	public static final int TARGETNODE = 1;
-	public static final int XMLFILE = 2;
-	public static final int OWLFILE = 1;
-	public static final int RDFSFILE = 0;
-	public static final int TABBEDTEXT = 3;
-	//public static final int DAMLFILE = 3;
-	
-	/*public static final int RDFXML = 0;
-	public static final int RDFXMLABBREV = 1;
-	public static final int NTRIPLE = 2;
-	public static final int N3  = 3;
-	public static final int TURTLE = 4;*/
-
-	public final static String SYN_RDFXML = "RDF/XML";
-	public final static String SYN_RDFXMLABBREV = "RDF/XML-ABBREV";
-	public final static String SYN_NTRIPLE = "N-TRIPLE";
-	public final static String SYN_N3 = "N3";
-	public final static String SYN_TURTLE = "TURTLE";
-	public final static String[] syntaxStrings  = {SYN_RDFXML, SYN_RDFXMLABBREV, SYN_NTRIPLE, SYN_N3, SYN_TURTLE};
-		
-	public final static String LANG_RDFS = "RDFS";
-	public final static String LANG_OWL = "OWL";
-	public final static String LANG_XML = "XML";
-	public final static String LANG_TABBEDTEXT = "Tabbed TEXT";
-	public static final String[] languageStrings = {LANG_RDFS, LANG_OWL, LANG_XML, LANG_TABBEDTEXT};
 		
 	public static final int SOURCE = 0;
 	public static final int TARGET = 1;
 	
 	protected OntModel ontModel;
 
-	public Ontology(OntModel model) {
-		this.ontModel = model;
-	}
-	
 	public OntModel getModel() {
 		return ontModel;
+	}
+	
+	public void setModel(OntModel model) {
+		this.ontModel = model;
 	}
 	
 	// TODO: Get rid of this enum? Or move it out of this class? - Cosmin, Sept 13, 2011

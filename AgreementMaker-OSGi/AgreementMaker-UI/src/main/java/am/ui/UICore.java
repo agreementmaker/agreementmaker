@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import am.app.mappingEngine.MatchingTask;
 import am.app.ontology.Node;
@@ -25,9 +27,9 @@ public class UICore {
 
 	private static final UICore core = new UICore();
 	
-	private HashMap<Node,List<OntologyConceptGraphics>> graphicalRepresentations = new HashMap<>();
+	private Map<Node,List<OntologyConceptGraphics>> graphicalRepresentations = new HashMap<>();
 	
-	private HashMap<MatchingTask, MatchingTaskVisData> visualizationData = new HashMap<>();
+	private Map<MatchingTask, MatchingTaskVisData> visualizationData = new HashMap<>();
 
 	private List<VisualizationChangeListener> visualizationListeners = new ArrayList<>();
 	
@@ -104,7 +106,8 @@ public class UICore {
 	
 	public OntologyConceptGraphics getGraphicalRepresentation(Node node, Class<?> c) {
 		List<OntologyConceptGraphics> list = graphicalRepresentations.get(node);
-		if( list == null ) return null;
+		if( list == null ) 
+			return null;
 		Iterator<OntologyConceptGraphics> gr = list.iterator();
 		while( gr.hasNext() ) {
 			OntologyConceptGraphics g = gr.next();
