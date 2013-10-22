@@ -21,8 +21,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 
-import am.app.Core;
 import am.app.ontology.ontologyParser.TreeBuilder;
+import am.app.ontology.ontologyParser.TreeBuilder.ProgressEvent;
 
 public class OntologyLoadingProgressDialog extends JDialog implements PropertyChangeListener, ActionListener {
 
@@ -36,7 +36,7 @@ public class OntologyLoadingProgressDialog extends JDialog implements PropertyCh
 	private JPanel textPanel;
 	
 	private JProgressBar progressBar;
-    private TreeBuilder treeBuilder; // the matcher that is associated with this dialog, needed in order for cancel() to work.
+    private TreeBuilder<?> treeBuilder; // the matcher that is associated with this dialog, needed in order for cancel() to work.
     
     private JButton okButton = new JButton("Ok");
     private JButton cancelButton = new JButton("Cancel");
@@ -47,7 +47,7 @@ public class OntologyLoadingProgressDialog extends JDialog implements PropertyCh
 	 * Constructor. 
 	 * @param m
 	 */
-	public OntologyLoadingProgressDialog (TreeBuilder t) {
+	public OntologyLoadingProgressDialog (TreeBuilder<?> t) {
 	    super(UICore.getUI().getUIFrame(), true);  // to get focus back
 	
 	    report = new JTextArea(10, 38);
@@ -111,9 +111,10 @@ public class OntologyLoadingProgressDialog extends JDialog implements PropertyCh
 	    JRootPane rootPane = new JRootPane();
 	    KeyStroke stroke = KeyStroke.getKeyStroke("ESCAPE");
 	    Action actionListener = new AbstractAction() {
-	      public void actionPerformed(ActionEvent actionEvent) {
-	        cancelButton.doClick();
-	      }
+	    	private static final long serialVersionUID = -8158364198124217519L;
+			public void actionPerformed(ActionEvent actionEvent) {
+		        cancelButton.doClick();
+		      }
 	    };
 	    InputMap inputMap = rootPane
 	        .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -124,19 +125,32 @@ public class OntologyLoadingProgressDialog extends JDialog implements PropertyCh
 	  }
 	
 	/**
-	 * This function is called from the AbstractMatcher everytime setProgress() is called from inside the matcher.
-	 * @author Cosmin Stroe @date Dec 17, 2008
+	 * Callback for the TreeBuilder to send events.
 	 */
+	@Override
 	public void propertyChange(PropertyChangeEvent evt) {		
-		
-        if ("progress" == evt.getPropertyName()) {
-            int progress = (Integer) evt.getNewValue();
-            progressBar.setValue(progress);
-        }
-        
-        
-	}
 
+		ProgressEvent event = ProgressEvent.getEvent(evt.getPropertyName());
+		
+		if( event == ProgressEvent.ONTOLOGY_LOADED ) {
+			// The algorithm has been completed, update the report text area.
+			progressBar.setIndeterminate(false);
+			progressBar.setValue(100);
+			report.append(treeBuilder.getReport());
+			cancelButton.setEnabled(false);
+			okButton.setEnabled(true);
+			return;
+		}
+		else if( event == ProgressEvent.CLEAR_LOG ) {
+			report.setText("");
+			return;
+		}
+		else if( event == ProgressEvent.APPEND_LINE ) {
+			report.append((String)evt.getNewValue() + "\n");
+		}
+		
+	}
+	
 	public void actionPerformed(ActionEvent e) {
 		Object obj = e.getSource();
 		if(obj == okButton) {
@@ -147,28 +161,5 @@ public class OntologyLoadingProgressDialog extends JDialog implements PropertyCh
 			this.dispose();
 		}
 		
-	}
-
-	public void loadingComplete() {
-		//  The algorithm has been completed, update the report text area.
-	
-		progressBar.setIndeterminate(false);
-		progressBar.setValue(100);
-		report.append(treeBuilder.getReport());
-		cancelButton.setEnabled(false);
-		okButton.setEnabled(true);
-		
-	}
-	
-	public void clearMessage() { report.setText(""); }
-	
-	public void append(String message) {
-		report.append(message);
-	}
-	public void appendLine(String message) {
-		report.append(message +  "\n");
-	}
-	
-
-	
+	}	
 }
