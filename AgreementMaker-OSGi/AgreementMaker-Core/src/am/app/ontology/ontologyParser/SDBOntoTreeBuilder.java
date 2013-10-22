@@ -16,6 +16,7 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
+import am.app.ontology.ontologyParser.TreeBuilder.ProgressEvent;
 import am.utility.RunTimer;
 
 import com.hp.hpl.jena.ontology.ConversionException;
@@ -129,13 +130,10 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 	// this function dispatches functions depending on the ontology loading profile selected.
 	protected void buildTree( OntoTreeBuilder.Profile prof ) {
 		
-		// TODO: Find a better way to check if we're running with a UI or not.
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "");
+		RunTimer timer = new RunTimer().start();
 		
-		RunTimer timer = new RunTimer();
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Reading the ontology...");
-		
-		timer.start();
+		fireEvent(ProgressEvent.CLEAR_LOG);
+		fireEvent(ProgressEvent.APPEND_LINE, "Reading the ontology...");
 		
 		switch ( prof ) {
 		
@@ -152,7 +150,7 @@ public class SDBOntoTreeBuilder extends TreeBuilder{
 		
 		timer.stop();
 		
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Done. " + timer.getFormattedRunTime());
+		fireEvent(ProgressEvent.APPEND_LINE, "Done. " + timer.getFormattedRunTime());
 	}
 	
 	

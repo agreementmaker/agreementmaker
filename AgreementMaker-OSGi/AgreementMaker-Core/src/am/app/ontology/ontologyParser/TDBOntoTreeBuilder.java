@@ -106,10 +106,10 @@ public class TDBOntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
 	// this function dispatches functions depending on the ontology loading profile selected.
 	protected void buildTree( OntoTreeBuilder.Profile prof ) throws Exception {
 		
-		listeners.firePropertyChange(PROGRESS_COMMAND_CLEAR_LOG, null, null);
-		RunTimer timer = new RunTimer();
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Reading the ontology...");
-		timer.start();
+		RunTimer timer = new RunTimer().start();
+		
+		fireEvent(ProgressEvent.CLEAR_LOG);
+		fireEvent(ProgressEvent.APPEND_LINE, "Reading the ontology...");
 		
 		switch ( prof ) {
 		
@@ -125,7 +125,8 @@ public class TDBOntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
 		}		
 		
 		timer.stop();
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Done. " + timer.getFormattedRunTime());
+		fireEvent(ProgressEvent.APPEND_LINE, "Done. " + timer.getFormattedRunTime());
+		fireEvent(ProgressEvent.ONTOLOGY_LOADED);
 	}
 	
 	
@@ -145,35 +146,35 @@ public class TDBOntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
 		File directory = new File(onDiskDirectory);
 		if( !directory.exists() || !directory.isDirectory() ) { throw new Exception("Path must be an existing directory."); }
 		
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating Jena TDB Model ... ");
+		fireEvent(ProgressEvent.APPEND_LINE, "Creating Jena TDB Model ... ");
 		Model basemodel = TDBFactory.createModel( directory.getAbsolutePath() );
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
+		fireEvent(ProgressEvent.APPEND_LINE, "done.");
 		
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating Jena OntModel from TDB Model ... ");
+		fireEvent(ProgressEvent.APPEND_LINE, "Creating Jena OntModel from TDB Model ... ");
 		if( ontology.getLanguage() == OntologyLanguage.RDFS )
 			model = ModelFactory.createOntologyModel( OntModelSpec.RDFS_MEM, basemodel );
 		else
 			model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
+		fireEvent(ProgressEvent.APPEND_LINE, "done.");
 		
 		if( !onDiskPersistent ) {
 			// we're not running in persistent mode, remove everything and load the ontology.
-			listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Disk ontology is not persistent.\nClearing on disk ontology ... ");
+			fireEvent(ProgressEvent.APPEND_LINE, "Disk ontology is not persistent.\nClearing on disk ontology ... ");
 			model.removeAll();
-			listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
-			listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Reading ontology onto disk ... ");
+			fireEvent(ProgressEvent.APPEND_LINE, "done.");
+			fireEvent(ProgressEvent.APPEND_LINE, "Reading ontology onto disk ... ");
 			model.read( ontURI.toString(), null, ontology.getFormat().toString() );
 			model.commit();
-			listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
+			fireEvent(ProgressEvent.APPEND_LINE, "done.");
 		} 
 		else if( model.isEmpty() ) {
 			// we're running in persistent mode, load the ontology only if the model is empty
-			listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Disk ontology is persistent and empty.\nReading ontology into on disk store ... ");
+			fireEvent(ProgressEvent.APPEND_LINE, "Disk ontology is persistent and empty.\nReading ontology into on disk store ... ");
 			model.read( ontURI.toString(), null, ontology.getFormat().toString() );
 			model.commit();
-			listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
+			fireEvent(ProgressEvent.APPEND_LINE, "done.");
 		} else {
-			listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Disk ontology is persistent.\nUsing existing on disk ontology.");
+			fireEvent(ProgressEvent.APPEND_LINE, "Disk ontology is persistent.\nUsing existing on disk ontology.");
 		}
 		
 		ontology = new Ontology(model);
@@ -189,7 +190,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
 		}
 		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
 
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating AgreementMaker data structures ... ");
+		fireEvent(ProgressEvent.APPEND_LINE, "Creating AgreementMaker data structures ... ");
 		
 		
 		//Preparing model
@@ -227,7 +228,7 @@ public class TDBOntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
         
         ontology.setTreeCount(treeCount);   
 
-        listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
+        fireEvent(ProgressEvent.APPEND_LINE, "done.");
 	}
 	
 	/**

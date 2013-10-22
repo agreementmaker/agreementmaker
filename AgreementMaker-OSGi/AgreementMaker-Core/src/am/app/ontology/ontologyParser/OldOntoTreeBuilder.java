@@ -109,14 +109,10 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 	// this function dispatches functions depending on the ontology loading profile selected.
 	protected void buildTree( OntoTreeBuilder.Profile prof ) {
 		
-		// TODO: Find a better way to check if we're running with a UI or not.
+		RunTimer timer = new RunTimer().start(); // for timing purposes
 		
-		listeners.firePropertyChange(PROGRESS_COMMAND_CLEAR_LOG, null, null);
-		
-		RunTimer timer = new RunTimer();
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Reading the ontology...");
-		
-		timer.start();
+		fireEvent(ProgressEvent.CLEAR_LOG);
+		fireEvent(ProgressEvent.APPEND_LINE, "Reading the ontology...");		
 		
 		switch ( prof ) {
 		case noFileManager:
@@ -134,8 +130,8 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 		}		
 		
 		timer.stop();
-		
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Done. " + timer.getFormattedRunTime());
+		fireEvent(ProgressEvent.APPEND_LINE, "Done. " + timer.getFormattedRunTime());
+		fireEvent(ProgressEvent.ONTOLOGY_LOADED);
 		
 	}
 	
@@ -154,7 +150,7 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 			ontURI = "file:"+ontology.getFilename();
 		}
 		
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating Jena Model ... ");
+		fireEvent(ProgressEvent.APPEND_LINE, "Creating Jena Model ... ");
 		
 		OntModel model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, null );
 		model.read( ontURI, null, ontology.getFormat().toString() );
@@ -175,11 +171,11 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 			ontology.setURI("");
 		}
 		
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating AgreementMaker data structures ... ");
+		fireEvent(ProgressEvent.APPEND_LINE, "Creating AgreementMaker data structures ... ");
 
 		createDataStructures();
 		
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
+		fireEvent(ProgressEvent.APPEND_LINE, "done.");
 	}
 	
 	
@@ -193,14 +189,14 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 			ontURI = "file:"+ontology.getFilename();
 		}
 		
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating Jena Model ... ");
+		fireEvent(ProgressEvent.APPEND_LINE, "Creating Jena Model ... ");
 		FileManager.get().resetCache();
 		Model basemodel = FileManager.get().loadModel(ontology.getFilename(), ontology.getFormat().toString() );
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
+		fireEvent(ProgressEvent.APPEND_LINE, "done.");
 		
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating Jena OntModel ...");
+		fireEvent(ProgressEvent.APPEND_LINE, "Creating Jena OntModel ...");
 		OntModel model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
+		fireEvent(ProgressEvent.APPEND_LINE, "done.");
 
 		//Preparing model
 		model.prepare();
@@ -217,11 +213,9 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 		}
 		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
 
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating AgreementMaker data structures ... ");
-		
+		fireEvent(ProgressEvent.APPEND_LINE, "Creating AgreementMaker data structures ... ");
 		createDataStructures();
-        
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
+		fireEvent(ProgressEvent.APPEND_LINE, "done.");
 	}
 	
 	private void createDataStructures() {

@@ -36,6 +36,37 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 public abstract class TreeBuilder<T extends OntologyDefinition> extends SwingWorker<Void, Void> {
 
 	/**
+	 * These progress events represent the events that can be sent to a listener
+	 * of the TreeBuilder class.
+	 */
+	public enum ProgressEvent {
+		/** Event telling the listener that the ontology has finished loading. */
+		ONTOLOGY_LOADED,
+		
+		/** Event telling the listener to clear its log. */
+		CLEAR_LOG,
+		
+		/** Event telling the listener to append a line to its log. */
+		APPEND_LINE;
+		
+		/**
+		 * Return a ProgressEvent given its name in string form.
+		 * 
+		 * @param eventName The name of the event
+		 * @return null if eventName doesn't match any of the progress events.
+		 */
+		public static ProgressEvent getEvent(String eventName) {
+			ProgressEvent[] values = values();
+			for( int i = 0; i < values.length; i++ ) {
+				if( values[i].name().equals(eventName) ) {
+					return values[i];
+				}
+			}
+			return null;
+		}
+	}
+	
+	/**
 	 * This is the name of a progress change event. The "ONTOLOGY LOADED" event
 	 * is fired when the ontology is done loading.
 	 */
@@ -62,7 +93,7 @@ public abstract class TreeBuilder<T extends OntologyDefinition> extends SwingWor
 	/**
 	 * Progress events are broadcast via this object.
 	 */
-	protected final PropertyChangeSupport listeners;
+	private final PropertyChangeSupport listeners;
 	protected int stepsTotal; // Used by the ProgressDialog.  This is a rough estimate of the number of steps to be done before we finish the matching.
 	protected int stepsDone;  // Used by the ProgressDialog.  This is how many of the total steps we have completed.
 	protected String report = "";
@@ -288,12 +319,31 @@ public abstract class TreeBuilder<T extends OntologyDefinition> extends SwingWor
 		return null;
 	}
     
-    /**
-     * Function called by the worker thread when the matcher finishes the algorithm.
-     */
-    public void done() {
-    	listeners.firePropertyChange(PROGRESS_CHANGE_ONTOLOGY_LOADED, null, null);
-    }
+	/**
+	 * A wrapper for the {@link #fireEvent(ProgressEvent, Object)} class.
+	 * 
+	 * @param event
+	 *            The specific event that we are trying to send to the
+	 *            listeners.
+	 */
+	protected void fireEvent(ProgressEvent event) {
+		fireEvent(event, null);
+	}
+	
+	/**
+	 * This method is an easy to use wrapper for
+	 * PropertyChangeSupport.firePropertyChange().
+	 * 
+	 * @param event
+	 *            The specific event that we are trying to send to the
+	 *            listeners.
+	 * @param newValue
+	 *            If the event needs a value (such as a String) it gets accepted
+	 *            here. Should be null otherwise.
+	 */
+	protected void fireEvent( ProgressEvent event, Object newValue ) {
+		listeners.firePropertyChange(event.name(), null, newValue);
+	}
 	
     public void addProgressListener(PropertyChangeListener listener) {
     	listeners.addPropertyChangeListener(listener);

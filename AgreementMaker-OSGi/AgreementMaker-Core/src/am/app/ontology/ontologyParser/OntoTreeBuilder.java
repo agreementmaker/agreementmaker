@@ -121,9 +121,11 @@ public class OntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
 	// this function dispatches functions depending on the ontology loading profile selected.
 	protected void buildTree( OntoTreeBuilder.Profile prof ) {
 		
-		listeners.firePropertyChange(PROGRESS_COMMAND_CLEAR_LOG, null, null);
-		RunTimer timer = new RunTimer();
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Reading the ontology...");
+		RunTimer timer = new RunTimer().start(); // timing purposes
+		
+		fireEvent(ProgressEvent.CLEAR_LOG);
+		
+		fireEvent(ProgressEvent.APPEND_LINE, "Reading the ontology...");
 		timer.start();
 		
 		switch ( prof ) {
@@ -156,7 +158,8 @@ public class OntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
 		
 		timer.stop();
 		
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Done. " + timer.getFormattedRunTime());
+		fireEvent(ProgressEvent.APPEND_LINE, "Done. " + timer.getFormattedRunTime());
+		fireEvent(ProgressEvent.ONTOLOGY_LOADED);
 	}
 	
 	
@@ -174,7 +177,7 @@ public class OntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
 			ontURI = "file:"+ontology.getFilename();
 		}
 		
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating Jena Model ... ");
+		fireEvent(ProgressEvent.APPEND_LINE, "Creating Jena Model ... ");
 		
 		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, null );
 		model.read( ontURI, null, ontology.getFormat().toString() );
@@ -192,7 +195,7 @@ public class OntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
 		}
 		ontology.setSkipOtherNamespaces(skipOtherNamespaces);
 
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating AgreementMaker data structures ... ");
+		fireEvent(ProgressEvent.APPEND_LINE, "Creating AgreementMaker data structures ... ");
 
 		//Preparing model
 		model.prepare();
@@ -200,7 +203,7 @@ public class OntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
 		
 		createDataStructures();
 		
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
+		fireEvent(ProgressEvent.APPEND_LINE, "done.");
 	}
 	
 	
@@ -239,18 +242,18 @@ public class OntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
 			ontURI = "file:"+ontology.getFilename();
 		}
 		
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating Jena Model ... ");
+		fireEvent(ProgressEvent.APPEND_LINE, "Creating Jena Model ... ");
 		FileManager fileManager = FileManager.get();
 		fileManager.resetCache();
 		if(ontDefinition.locationMapper != null)
 			fileManager.setLocationMapper(ontDefinition.locationMapper);
 		
 		Model basemodel = fileManager.loadModel(ontology.getFilename(), ontology.getFormat().toString() );
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
+		fireEvent(ProgressEvent.APPEND_LINE, "done.");
 		
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating Jena OntModel ...");
+		fireEvent(ProgressEvent.APPEND_LINE, "Creating Jena OntModel ...");
 		model = ModelFactory.createOntologyModel( OntModelSpec.OWL_MEM, basemodel );
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
+		fireEvent(ProgressEvent.APPEND_LINE, "done.");
 		
 		ontology = new Ontology(model);
 		
@@ -268,15 +271,15 @@ public class OntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
 		//if( progressDialog != null ) progressDialog.append("Creating AgreementMaker data structures ... ");
 
 		//Preparing model
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Preparing Jena model ... ");
+		fireEvent(ProgressEvent.APPEND_LINE, "Preparing Jena model ... ");
 		model.prepare();
-		listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
+		fireEvent(ProgressEvent.APPEND_LINE, "done.");
         
 		// If we're not in the large ontology mode, do the legacy code.
 		if( !ontDefinition.largeOntologyMode ) {
-			listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "Creating AgreementMaker data structures ... ");
+			fireEvent(ProgressEvent.APPEND_LINE, "Creating AgreementMaker data structures ... ");
 			createDataStructures();
-			listeners.firePropertyChange(PROGRESS_COMMAND_APPEND_LINE, null, "done.");
+			fireEvent(ProgressEvent.APPEND_LINE, "done.");
 		}
 		else {
 			// large ontology mode: don't create any extra Node classes.
