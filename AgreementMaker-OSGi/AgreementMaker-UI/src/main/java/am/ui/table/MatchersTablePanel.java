@@ -92,14 +92,14 @@ public class MatchersTablePanel extends JPanel implements MatcherChangeListener 
         //is important to add this here so that initColumns can assign the best width to columns
         //This matcher cannot be deleted
         
-		try {
+		/*try {
 			UserManualMatcher userMatcher = (UserManualMatcher) MatcherFactory.getMatcherInstance(UserManualMatcher.class);
 	        MatchingTask t = new MatchingTask(userMatcher, userMatcher.getParam(), 
 					new MwbmSelection(), new DefaultSelectionParameters());
 	        Core.getInstance().addMatchingTask(t);
 		} catch (MatcherNotFoundException e) {
 			e.printStackTrace();
-		}
+		}*/
     }
 
     /*
