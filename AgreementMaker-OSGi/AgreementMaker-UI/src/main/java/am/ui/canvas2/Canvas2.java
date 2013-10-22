@@ -129,7 +129,11 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		 *  When this happens, we need to create the layout graph for the ontologies. 
 		 */
 		if( e.getEvent() == OntologyChangeEvent.EventType.ONTOLOGY_ADDED ) {
-			// an ontology was added.
+			// we have to build the layout graphs.
+			Ontology o = Core.getInstance().getOntologyByID(e.getOntologyID());
+			buildLayoutGraphs(o);
+			
+			// display the ontology graphs
 			layout.displayOntology(graphs,  e.getOntologyID() );
 			updateSize();
 			
@@ -157,10 +161,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	}
 	
 	/**
-	 * This function is called from within OntoTreeBuilder, when the OntoTreeBuilder first gets its hands on an ontology.
-	 * 
-	 * We had to do this in order to unify all the actions done when an ontology is loaded.  Otherwise, actions that get
-	 * done when an ontology is loaded are called outside of the "Loading Ontology" progress display.
+	 * Builds the entire visual graph for one ontology.
 	 */
 	@Override
 	public void buildLayoutGraphs(Ontology ontology) {
