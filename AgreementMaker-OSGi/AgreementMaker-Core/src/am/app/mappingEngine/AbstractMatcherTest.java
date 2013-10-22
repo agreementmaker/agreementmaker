@@ -23,7 +23,10 @@ import org.junit.Test;
 import am.app.Core;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Ontology;
-import am.app.ontology.ontologyParser.TreeBuilder;
+import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.app.ontology.ontologyParser.OntologyDefinition;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 
 /**
  * @author Michele Caci
@@ -459,18 +462,29 @@ public abstract class AbstractMatcherTest {
 	/* *************************************************** */
 	
 	private void loadOntologies(){
-		// source ontology
+		
 		try {
-			TreeBuilder tb = TreeBuilder.buildTreeBuilder(sourceOntologyFilename, 1, 0, false, true,false, null, false);
-			tb.build();
-			Ontology s = tb.getOntology();
-			Core.getInstance().setSourceOntology(s);
-			
-			// target ontology
-			tb = TreeBuilder.buildTreeBuilder(targetOntologyFilename, 1, 0, false, true,false, null, false);
-			tb.build();
-			Ontology t = tb.getOntology();
-			Core.getInstance().setTargetOntology(t);
+			{
+				// source ontology
+				OntologyDefinition sourceOntDef = 
+						new OntologyDefinition(true, sourceOntologyFilename, 
+								OntologyLanguage.OWL, OntologySyntax.RDFXML);
+				OntoTreeBuilder tb = new OntoTreeBuilder(sourceOntDef);
+				tb.build();
+				Ontology s = tb.getOntology();
+				Core.getInstance().setSourceOntology(s);
+			}
+			{
+				// target ontology
+				OntologyDefinition targetOntDef = 
+						new OntologyDefinition(true, targetOntologyFilename, 
+								OntologyLanguage.OWL, OntologySyntax.RDFXML);
+	
+				OntoTreeBuilder tb = new OntoTreeBuilder(targetOntDef);
+				tb.build();
+				Ontology t = tb.getOntology();
+				Core.getInstance().setTargetOntology(t);
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

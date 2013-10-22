@@ -38,7 +38,7 @@ import com.hp.hpl.jena.vocabulary.OWL;
  * @author Nalin Makar
  * @version 1.5
  */
-public class TDBOntoTreeBuilder extends TreeBuilder{
+public class TDBOntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
 	
 	
 		// Profile definitions. Used in loading ontologies in different ways
@@ -74,25 +74,6 @@ public class TDBOntoTreeBuilder extends TreeBuilder{
 	private boolean onDisk;
 	private String onDiskDirectory;
 	private boolean onDiskPersistent;
-	
-	/**
-	 * Builds an ontology with list of classes, list of properties, classes tree and properties tree, all information are kept in the ontology istance
-	 * @param fileName 
-	 * @param syntaxIndex
-	 * @param sourceOrTarget 
-	 * @param format 
-	 * @param skip Skip other namespaces, usually set to true.
-	 * @param reas Set to true in order to use a reasoner when loading the ontology, false to load without using a reasoner.
-	 */
-	public TDBOntoTreeBuilder(String fileName, String language, String format, boolean skip, boolean reas, boolean onDisk, String diskDirectory, boolean persistent) {
-		super(fileName, language, format); 
-		skipOtherNamespaces = skip;
-		noReasoner = reas;
-		treeCount = 0;
-		this.onDisk = onDisk; 
-		this.onDiskDirectory = diskDirectory;
-		this.onDiskPersistent = persistent;
-	}
 	
 	public TDBOntoTreeBuilder( OntologyDefinition odef ) {
 		super(odef);

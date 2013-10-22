@@ -2,11 +2,12 @@ package am.extension.batchmode;
 
 import java.io.File;
 
-import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.matcher.oaei2009.OAEI2009parameters;
 import am.parsing.AlignmentOutput;
 
@@ -196,7 +197,7 @@ public class BenchmarkTrack extends Track{
 			//all ontologies are RDF/XML and the TRUE value is because in the benchmark the concepts with different namespace have to be skipped
 			//matcher and threshold have to be defined yet
 			//the last object are the parameters specific for the choosen matcher, however it may not be needed. Right now as example, I put the base similarity parameters.
-			as = computeAlignment(SOURCE_ONTOLOGY, targetOntology, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, true, matcher, threshold, sourceCardinality, targetCardinality, param);
+			as = computeAlignment(SOURCE_ONTOLOGY, targetOntology, OntologyLanguage.OWL, OntologySyntax.RDFXML, true, matcher, threshold, sourceCardinality, targetCardinality, param);
 			sourceUri = Core.getInstance().getSourceOntology().getURI();
 			targetUri = Core.getInstance().getTargetOntology().getURI();
 			

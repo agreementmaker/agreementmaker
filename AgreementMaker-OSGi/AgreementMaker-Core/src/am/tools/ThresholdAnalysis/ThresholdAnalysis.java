@@ -14,7 +14,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
@@ -26,6 +25,9 @@ import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.app.ontology.ontologyParser.OntologyDefinition;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.app.osgi.MatcherNotFoundException;
 /**
  * 
@@ -312,9 +314,8 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		// load source ontology
 		Ontology sourceOntology = null;
 		try {
-			OntoTreeBuilder sourceBuilder = new OntoTreeBuilder(sourceOntologyFile ,
-																GlobalStaticVariables.LANG_OWL,
-																GlobalStaticVariables.SYNTAX_RDFXML, false);
+			OntologyDefinition sourceOntDef = new OntologyDefinition(true, sourceOntologyFile, OntologyLanguage.OWL, OntologySyntax.RDFXML);
+			OntoTreeBuilder sourceBuilder = new OntoTreeBuilder(sourceOntDef);
 			sourceBuilder.build();
 			
 			sourceOntology = sourceBuilder.getOntology();
@@ -326,9 +327,8 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 		// load target ontology
 		Ontology targetOntology = null;
 		try {
-			OntoTreeBuilder targetBuilder = new OntoTreeBuilder(targetOntologyFile , 
-																GlobalStaticVariables.LANG_OWL,
-																GlobalStaticVariables.SYNTAX_RDFXML, false);
+			OntologyDefinition targetOntDef = new OntologyDefinition(true, targetOntologyFile, OntologyLanguage.OWL, OntologySyntax.RDFXML);
+			OntoTreeBuilder targetBuilder = new OntoTreeBuilder(targetOntDef);
 			targetBuilder.build();
 			
 			targetOntology = targetBuilder.getOntology();

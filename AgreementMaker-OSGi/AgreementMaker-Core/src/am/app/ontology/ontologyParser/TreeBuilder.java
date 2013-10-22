@@ -9,7 +9,6 @@ import java.util.List;
 
 import javax.swing.SwingWorker;
 
-import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.utility.MatchingPair;
@@ -34,41 +33,8 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
-public abstract class TreeBuilder extends SwingWorker<Void, Void> {
+public abstract class TreeBuilder<T extends OntologyDefinition> extends SwingWorker<Void, Void> {
 
-	// ALL DEPRECATED FIELDS MOVED TO Ontology class
-		// local title
-		@Deprecated public static final String TARGETTITLE = "Target Ontology";
-		// ontology title
-		@Deprecated public static final String SOURCETITILE = "Source Ontology";
-		//	OWL File type representation
-		@Deprecated public static final int SOURCENODE = 0;
-		//	OWL File type representation
-		@Deprecated public static final int TARGETNODE = 1;
-		@Deprecated public static final int XMLFILE = 2;
-		@Deprecated public static final int OWLFILE = 1;
-		@Deprecated public static final int RDFSFILE = 0;
-		@Deprecated public static final int TABBEDTEXT = 3;
-		//public static final int DAMLFILE = 3;
-		
-		@Deprecated public static final int RDFXML = 0;
-		@Deprecated public static final int RDFXMLABBREV = 1;
-		@Deprecated public static final int NTRIPLE = 2;
-		@Deprecated public static final int N3  = 3;
-		@Deprecated public static final int TURTLE = 4;
-
-		@Deprecated public final static String SYNTAX_RDFXML = "RDF/XML";
-		@Deprecated public final static String SYNTAX_RDFXMLABBREV = "RDF/XML-ABBREV";
-		@Deprecated public final static String SYNTAX_NTRIPLE = "N-TRIPLE";
-		@Deprecated public final static String SYNTAX_N3 = "N3";
-		@Deprecated public final static String SYNTAX_TURTLE = "TURTLE";
-		@Deprecated public final static String[] syntaxStrings  = {SYNTAX_RDFXML, SYNTAX_RDFXMLABBREV, SYNTAX_NTRIPLE, SYNTAX_N3, SYNTAX_TURTLE};
-		@Deprecated public final static String LANG_RDFS = "RDFS";
-		@Deprecated public final static String LANG_OWL = "OWL";
-		@Deprecated public final static String LANG_XML = "XML";
-		@Deprecated public final static String LANG_TABBEDTEXT = "Tabbed TEXT";
-		@Deprecated public static final String[] languageStrings = {LANG_RDFS, LANG_OWL, LANG_XML, LANG_TABBEDTEXT};
-		
 	/**
 	 * This is the name of a progress change event. The "ONTOLOGY LOADED" event
 	 * is fired when the ontology is done loading.
@@ -101,29 +67,11 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 	protected int stepsDone;  // Used by the ProgressDialog.  This is how many of the total steps we have completed.
 	protected String report = "";
 	
-	protected OntologyDefinition ontDefinition; // All the information needed to load the ontology.
+	protected T ontDefinition; // All the information needed to load the ontology.
 
 	protected InstanceDataset instances;
 	
-	/**
-	 * @deprecated Use {@link #TreeBuilder(OntologyDefinition)} instead.
-	 */
-	@Deprecated
-	public TreeBuilder(String filename, String language, String format) {
-		// TODO: Streamline this.
-		ontology = new Ontology(null);
-		ontology.setIndex( Core.getInstance().numOntologies() );
-		ontology.setID( Core.getInstance().getNextOntologyID() );  // get an unique ID for this ontology
-		ontology.setFilename(filename);
-		ontology.setLanguage(OntologyLanguage.getLanguage(language));
-		ontology.setFormat(OntologySyntax.getSyntax(format));
-        File f = new File(filename);
-        ontology.setTitle(f.getName());
-        
-        listeners = new PropertyChangeSupport(this);
-	}
-	
-	public TreeBuilder( OntologyDefinition def ) {
+	public TreeBuilder( T def ) {
 		this.ontDefinition = def;
 		ontology = new Ontology(null);
 		ontology.setDefinition(def);
@@ -156,75 +104,41 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 		}
 		
 		listeners = new PropertyChangeSupport(this);
+		
+		treeCount = 0;
 	}
 	
 	/**
-	 * @deprecated Use {@link #TreeBuilder(OntologyDefinition)} instead.
+	 * FIXME: Remove this method? Replace with a better mechanism. -- Cosmin, Oct. 22, 2013
 	 */
-	@Deprecated
-	public static TreeBuilder buildTreeBuilder(String fileName, int langIndex, int syntaxIndex, boolean skip, boolean noReasoner, boolean onDisk, String onDiskDirectory, boolean persistent){
-		
-		OntologyDefinition def = new OntologyDefinition(true, fileName, OntologyLanguage.OWL, OntologySyntax.RDFXML);
-		
-		// TODO: Not sure if this method is supposed to take implementation specific variables (ex. DB).
-		
-		String languageS = GlobalStaticVariables.getLanguageString(langIndex);
-		String syntaxS = GlobalStaticVariables.getSyntaxString(syntaxIndex);
-		TreeBuilder treeBuilder = null;
-		
-		if(langIndex == GlobalStaticVariables.XMLFILE){
-			treeBuilder = new XmlTreeBuilder(fileName, languageS, syntaxS);
-		}
-		else if(langIndex == GlobalStaticVariables.RDFSFILE) {
-			if( onDisk )
-				treeBuilder = new TDBOntoTreeBuilder(fileName, languageS, syntaxS, skip, noReasoner, onDisk, onDiskDirectory, persistent);
+	public static TreeBuilder<OntologyDefinition> buildTreeBuilder(
+			OntologyDefinition odef) {
+		// TODO: Not sure if this method is supposed to take implementation
+		// specific variables (ex. DB).
+
+		if (odef.ontologyLanguage == OntologyLanguage.XML) {
+			return new XmlTreeBuilder(odef);
+		} 
+		else if (odef.ontologyLanguage == OntologyLanguage.RDFS) {
+			if (odef.onDiskStorage)
+				return new TDBOntoTreeBuilder(odef);
 			else
-				treeBuilder = new RdfsTreeBuilder(fileName, languageS, syntaxS, skip);
+				return new RdfsTreeBuilder(odef);
+		} 
+		else if (odef.ontologyLanguage == OntologyLanguage.TABBEDTEXT) {
+			return new TabbedTextBuilder(odef);
 		}
-		else if(langIndex == GlobalStaticVariables.TABBEDTEXT)
-			treeBuilder = new TabbedTextBuilder(fileName, languageS, syntaxS);
-		else if(langIndex == GlobalStaticVariables.OWLFILE ) {
-			if( onDisk ) 
-				treeBuilder= new TDBOntoTreeBuilder(fileName, languageS, syntaxS, skip, noReasoner, onDisk, onDiskDirectory, persistent);
+		else if (odef.ontologyLanguage == OntologyLanguage.OWL) {
+			if (odef.onDiskStorage) {
+				return new TDBOntoTreeBuilder(odef);
+			}
 			else {
-				
-				treeBuilder = new OntoTreeBuilder(def);
+				return new OntoTreeBuilder(odef);
 			}
 		}
-		
-		return treeBuilder;
-	}
-	
-	public static TreeBuilder buildTreeBuilder( OntologyDefinition odef ) {
-		// TODO: Not sure if this method is supposed to take implementation specific variables (ex. DB).
-		
-		
-				String languageS = GlobalStaticVariables.getLanguageString(odef.ontologyLanguage.getID());
-				String syntaxS = GlobalStaticVariables.getSyntaxString(odef.ontologySyntax.getID());
-				TreeBuilder treeBuilder = null;
-				
-				if(odef.ontologyLanguage == OntologyLanguage.XML){
-					treeBuilder = new XmlTreeBuilder(odef.ontologyURI, languageS, syntaxS);
-				}
-				else if(odef.ontologyLanguage == OntologyLanguage.RDFS) {
-					if( odef.onDiskStorage )
-						treeBuilder = new TDBOntoTreeBuilder(odef.ontologyURI, languageS, syntaxS, false, true, odef.onDiskStorage, odef.onDiskDirectory, odef.onDiskPersistent);
-					else
-						treeBuilder = new RdfsTreeBuilder(odef.ontologyURI, languageS, syntaxS, false);
-				}
-				else if(odef.ontologyLanguage == OntologyLanguage.TABBEDTEXT)
-					treeBuilder = new TabbedTextBuilder(odef.ontologyURI, languageS, syntaxS);
-				else if(odef.ontologyLanguage == OntologyLanguage.OWL ) {
-					if( odef.onDiskStorage ) 
-						treeBuilder= new TDBOntoTreeBuilder(odef.ontologyURI, languageS, syntaxS, false, true, odef.onDiskStorage, odef.onDiskDirectory, odef.onDiskPersistent);
-					else 
-						treeBuilder = new OntoTreeBuilder(odef);
-				}
-				
-				
-				//treeBuilder = new OntoTreeBuilder(odef);
-				
-				return treeBuilder;
+		else {
+			return null;
+		}
 	}
 	
 	public void build() throws Exception{
@@ -308,15 +222,9 @@ public abstract class TreeBuilder extends SwingWorker<Void, Void> {
 			if( ontDefinition.schemaAlignmentFormat == 0 ) { // RDF
 				try {
 					File file = new File( ontDefinition.schemaAlignmentURI );
-					
 					FileReader fr = new FileReader(file);
-					
-					OAEIAlignmentFormat oaeiFormat = new OAEIAlignmentFormat();
-					
-					HashMap<String,List<MatchingPair>> map = oaeiFormat.readAlignment(fr);
-					
+					HashMap<String,List<MatchingPair>> map = OAEIAlignmentFormat.readAlignment(fr);
 					ontology.setInstanceTypeMappings(map);
-					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

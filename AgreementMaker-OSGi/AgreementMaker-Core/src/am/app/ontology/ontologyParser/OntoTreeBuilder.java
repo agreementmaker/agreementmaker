@@ -42,7 +42,7 @@ import com.hp.hpl.jena.vocabulary.OWL;
  * @author Nalin Makar
  * @version 1.5
  */
-public class OntoTreeBuilder extends TreeBuilder{
+public class OntoTreeBuilder extends TreeBuilder<OntologyDefinition> {
 	
 	
 		// Profile definitions. Used in loading ontologies in different ways
@@ -76,36 +76,6 @@ public class OntoTreeBuilder extends TreeBuilder{
 	 * This method cannot be used with "" input for N3
 	 */
 	private String ns = null;
-	
-	/**
-	 * Builds an ontology with list of classes, list of properties, classes tree and properties tree, all information are kept in the ontology istance
-	 * @param fileName 
-	 * @param syntaxIndex
-	 * @param sourceOrTarget 
-	 * @param format 
-	 * @param skip Skip other namespaces, usually set to true.
-	 * @param reas Set to true in order to use a reasoner when loading the ontology, false to load without using a reasoner.
-	 * @deprecated Use {@link #OntoTreeBuilder(OntologyDefinition)} instead.
-	 */
-	@Deprecated
-	public OntoTreeBuilder(String fileName, String language, String format, boolean skip, boolean reas) {
-		super(fileName, language, format); 
-		skipOtherNamespaces = skip;
-		noReasoner = reas;
-		treeCount = 0;
-	}
-	
-	// this function is here for legacy purposes, needs to be removed
-	/**
-	 * @deprecated Use {@link #OntoTreeBuilder(OntologyDefinition)} instead.
-	 */
-	@Deprecated
-	public OntoTreeBuilder(String fileName, String language, String format, boolean skip ) {
-		super(fileName, language, format); 
-		skipOtherNamespaces = skip;
-		noReasoner = false;
-		treeCount = 0;
-	}
 	
 	public OntoTreeBuilder( OntologyDefinition def ) {
 		super(def);

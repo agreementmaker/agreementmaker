@@ -21,7 +21,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.OWL;
 
-public class TabbedTextBuilder extends TreeBuilder {
+public class TabbedTextBuilder extends TreeBuilder<OntologyDefinition> {
 	// instance variables
 	private HashMap<String,Node> processedNodes;
 	final static String XMLHIERARCHY = "XML Hierarchy";
@@ -30,8 +30,8 @@ public class TabbedTextBuilder extends TreeBuilder {
 	OntClass owlThing;
 	private HashMap<OntResource, Node> processedSubs;
 	
-	public TabbedTextBuilder(String filename, String language, String format) {
-		super(filename, language, format);
+	public TabbedTextBuilder(OntologyDefinition definition) {
+		super(definition);
 	}
 
 	@Override

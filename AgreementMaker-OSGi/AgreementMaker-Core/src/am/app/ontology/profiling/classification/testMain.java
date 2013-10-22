@@ -2,10 +2,12 @@ package am.app.ontology.profiling.classification;
 
 import java.util.LinkedList;
 
-import am.GlobalStaticVariables;
 import am.app.mappingEngine.utility.OAEI_Track;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.app.ontology.ontologyParser.OntologyDefinition;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.app.ontology.profiling.ontologymetrics.CoupleOntologyMetrics;
 import am.app.ontology.profiling.ontologymetrics.OntologyEvaluation;
 
@@ -14,9 +16,9 @@ public class testMain {
 	public static Ontology openOntology(String ontoName){
 		Ontology ontology;
 		try {
-			OntoTreeBuilder treeBuilder = new OntoTreeBuilder(ontoName,
-					GlobalStaticVariables.LANG_OWL, 
-					GlobalStaticVariables.SYNTAX_RDFXML, false, true);
+			OntologyDefinition def = new OntologyDefinition(true, ontoName, 
+					OntologyLanguage.OWL, OntologySyntax.RDFXML);
+			OntoTreeBuilder treeBuilder = new OntoTreeBuilder(def);
 			treeBuilder.build();
 			ontology = treeBuilder.getOntology();
 		} catch (Exception e) {

@@ -11,10 +11,11 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import am.GlobalStaticVariables;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
-import am.app.ontology.ontologyParser.TreeBuilder;
+import am.app.ontology.ontologyParser.OntologyDefinition;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -35,9 +36,8 @@ public class DBPediaFinder implements Finder{
 	
 	public void openOntology(){
 		try {
-			TreeBuilder t = new OntoTreeBuilder(filename, 
-					GlobalStaticVariables.LANG_OWL,
-					GlobalStaticVariables.SYNTAX_RDFXML, true, true);
+			OntologyDefinition def = new OntologyDefinition(true, filename, OntologyLanguage.OWL, OntologySyntax.RDFXML);
+			OntoTreeBuilder t = new OntoTreeBuilder(def);
 			t.build();
 			Ontology ontology = t.getOntology();
 			model = ontology.getModel();

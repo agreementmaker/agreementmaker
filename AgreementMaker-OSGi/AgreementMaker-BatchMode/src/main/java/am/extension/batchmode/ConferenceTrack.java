@@ -4,11 +4,12 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 
-import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.matcher.oaei2009.OAEI2009parameters;
 import am.parsing.AlignmentOutput;
 
@@ -62,7 +63,7 @@ public class ConferenceTrack extends Track {
 		if(loadRDFinstead){
 			reasoner = OntoTreeBuilder.Profile.defaultProfile;
 		}
-		matcherList = computeMultipleAlignment(solveConflicts, ontologyFiles, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param, reasoner);
+		matcherList = computeMultipleAlignment(solveConflicts, ontologyFiles, OntologyLanguage.OWL, OntologySyntax.RDFXML, false, matcher, threshold, sourceCardinality, targetCardinality, param, reasoner);
 		long endTime = System.nanoTime()/1000000;
 		long totTime = endTime - startTime;
 		System.out.println("Total execution time in h.m.s.ms: "+Utility.getFormattedTime(totTime));

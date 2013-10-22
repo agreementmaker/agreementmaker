@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.qualityEvaluation.metrics.joslyn.JoslynStructuralQuality;
 import am.app.mappingEngine.utility.MatchingPair;
@@ -74,8 +73,8 @@ public class Ontology {
 	public final static String LANG_TABBEDTEXT = "Tabbed TEXT";
 	public static final String[] languageStrings = {LANG_RDFS, LANG_OWL, LANG_XML, LANG_TABBEDTEXT};
 		
-	public static final int SOURCE = GlobalStaticVariables.SOURCENODE;
-	public static final int TARGET = GlobalStaticVariables.TARGETNODE;
+	public static final int SOURCE = 0;
+	public static final int TARGET = 1;
 	
 	protected OntModel ontModel;
 

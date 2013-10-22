@@ -30,7 +30,6 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 
-import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.ontology.Ontology;
 import am.app.ontology.Ontology.DatasetType;
@@ -406,8 +405,8 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			
 			comboboxes = new JComboBox[5];
 			
-			comboboxes[0] = new JComboBox<String>(GlobalStaticVariables.languageStrings);
-			comboboxes[1] = new JComboBox<String>(GlobalStaticVariables.syntaxStrings);
+			comboboxes[0] = new JComboBox<OntologyLanguage>(OntologyLanguage.values());
+			comboboxes[1] = new JComboBox<OntologySyntax>(OntologySyntax.values());
 			comboboxes[2] = new JComboBox<String>(datasetStrings);
 			comboboxes[3] = new JComboBox<String>(endpointStrings);
 			comboboxes[4] = new JComboBox<String>(alignmentStrings);
@@ -956,8 +955,8 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			OntologyDefinition def = new OntologyDefinition(
 					checkboxes[3].isSelected(), // load ontology
 					textfields[0].getText(), // uri
-					OntologyLanguage.getLanguage(comboboxes[0].getSelectedIndex()), // language
-					OntologySyntax.getSyntax(comboboxes[1].getSelectedIndex()) ); // syntax
+					(OntologyLanguage) comboboxes[0].getSelectedItem(), // language
+					(OntologySyntax) comboboxes[1].getSelectedItem() ); // syntax
 			
 			def.largeOntologyMode = checkboxes[4].isSelected();
 			

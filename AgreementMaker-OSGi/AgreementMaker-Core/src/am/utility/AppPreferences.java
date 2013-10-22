@@ -3,8 +3,8 @@ package am.utility;
 import java.io.File;
 import java.util.prefs.Preferences;
 
-import am.GlobalStaticVariables;
 import am.app.mappingEngine.MatcherSetting;
+import am.app.ontology.Ontology;
 
 /** 
  * @author cosmin
@@ -231,7 +231,7 @@ public class AppPreferences {
 								boolean onDisk, 
 								String tdbDir, 
 								boolean persistent ) {		
-		if(ontoType == GlobalStaticVariables.SOURCENODE) 
+		if(ontoType == Ontology.SOURCE) 
 			saveRecentFile(	PREF_RECENTSOURCE, 
 							filename, 
 							syntax, 
@@ -241,7 +241,7 @@ public class AppPreferences {
 							onDisk, 
 							tdbDir, 
 							persistent);
-		else if(ontoType == GlobalStaticVariables.TARGETNODE) 
+		else if(ontoType == Ontology.TARGET) 
 			saveRecentFile( PREF_RECENTTARGET, 
 							filename, 
 							syntax, 

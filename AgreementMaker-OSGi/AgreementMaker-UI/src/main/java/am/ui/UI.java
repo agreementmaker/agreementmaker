@@ -26,7 +26,6 @@ import am.app.Core;
 import am.app.mappingEngine.MatchingTask;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntologyDefinition;
-import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.TreeBuilder;
 import am.ui.classic.AgreementMakerClassic;
 import am.ui.controlpanel.MatchersControlPanel;
@@ -173,14 +172,7 @@ public class UI {
 
 			log.info("Opening file: " + odef.ontologyURI );
 
-			if(odef.ontologyLanguage == OntologyLanguage.RDFS)//RDFS
-				jPanel = new VertexDescriptionPane(Ontology.RDFSFILE);//takes care of fields for XML files as well
-			else if(odef.ontologyLanguage == OntologyLanguage.OWL)//OWL
-				jPanel = new VertexDescriptionPane(Ontology.OWLFILE);//takes care of fields for XML files as well
-			else if(odef.ontologyLanguage == OntologyLanguage.XML)//XML
-				jPanel = new VertexDescriptionPane(Ontology.XMLFILE);//takes care of fields for XML files as well
-			else if(odef.ontologyLanguage == OntologyLanguage.TABBEDTEXT)
-				jPanel = new VertexDescriptionPane(Ontology.XMLFILE); // TODO: Figure out if we need to pass in the correct language type to VertexDescriptionPane constructor.
+			jPanel = new VertexDescriptionPane(odef.ontologyLanguage);
 			jPanel.setMinimumSize(new Dimension(200,200));
 			getUISplitPane().setRightComponent(jPanel);
 			setDescriptionPanel(jPanel);

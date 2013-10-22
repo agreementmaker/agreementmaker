@@ -16,7 +16,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
@@ -31,15 +30,18 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.OWL;
 
 /**
- * XmlTreeBuilder Class - 
+ * XmlTreeBuilder Class -
  * 
- * This class parses the schema represented as XML file using Xalan and Xerces 
+ * This class parses the schema represented as XML file using Xalan and Xerces
  * Java API's and builds the tree structure.
- *
+ * 
+ * FIXME: This class DOES NOT WORK currently. It's in bad need of a complete
+ *        overhaul - Cosmin, Oct. 22, 2013
+ * 
  * @author ADVIS Research Laboratory
  * @version 11/13/2004
  */
-public class XmlTreeBuilder extends TreeBuilder
+public class XmlTreeBuilder extends TreeBuilder<OntologyDefinition>
 {
 	// instance variables
 	private Document documentRoot;
@@ -55,10 +57,9 @@ public class XmlTreeBuilder extends TreeBuilder
 	 * @param xmlFilename filename 
 	 * @param title title of node
 	 */
-	public XmlTreeBuilder(String xmlFilename, String language, String format)
+	public XmlTreeBuilder(OntologyDefinition definition)
 	{
-		super(xmlFilename, language, format);
-
+		super(definition);
 		
 		// read an XML file and generate a DOM document object from it
 

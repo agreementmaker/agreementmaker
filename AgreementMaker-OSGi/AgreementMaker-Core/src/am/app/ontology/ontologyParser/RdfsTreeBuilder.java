@@ -35,7 +35,7 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
  * @author Nalin Makar
  * @version 1.5
  */
-public class RdfsTreeBuilder extends TreeBuilder{
+public class RdfsTreeBuilder extends TreeBuilder<OntologyDefinition> {
 	
 	final static String RDFCLASSROOTNAME = "RDFS Classes Hierarchy";
 	final static String RDFPROPERTIESROOTNAME = "RDFS Properties Hierarchy";
@@ -57,10 +57,8 @@ public class RdfsTreeBuilder extends TreeBuilder{
 	 */
 	private String ns = null;
 	
-	public RdfsTreeBuilder(String fileName, String language, String format,boolean skip) {
-		super(fileName, language, format);
-		skipOtherNamespaces = skip;
-		
+	public RdfsTreeBuilder(OntologyDefinition definition) {
+		super(definition);
 	}
 	
 	protected void buildTree() {

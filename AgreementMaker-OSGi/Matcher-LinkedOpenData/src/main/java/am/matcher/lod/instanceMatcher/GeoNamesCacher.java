@@ -12,6 +12,9 @@ import am.app.ontology.Ontology;
 import am.app.ontology.instance.SeparateFileInstanceDataset;
 import am.app.ontology.instance.endpoint.GeoNamesEndpoint;
 import am.app.ontology.ontologyParser.OldOntoTreeBuilder;
+import am.app.ontology.ontologyParser.OntologyDefinition;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 
 import com.hp.hpl.jena.rdf.model.Statement;
 
@@ -93,9 +96,9 @@ public class GeoNamesCacher {
 	public static Ontology openOntology(String ontoName){
 		Ontology ontology;
 		try {
-			OldOntoTreeBuilder treeBuilder = new OldOntoTreeBuilder(ontoName,
-			GlobalStaticVariables.LANG_OWL, 
-			GlobalStaticVariables.SYNTAX_RDFXML, false, true);
+			OntologyDefinition def = new OntologyDefinition(true, ontoName, 
+					OntologyLanguage.OWL, OntologySyntax.RDFXML);
+			OldOntoTreeBuilder treeBuilder = new OldOntoTreeBuilder(def);
 			treeBuilder.build();
 			ontology = treeBuilder.getOntology();
 		} catch (Exception e) {

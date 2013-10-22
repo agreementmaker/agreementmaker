@@ -36,7 +36,6 @@ import java.util.Arrays;
 
 import javax.jws.WebService;
 
-import am.GlobalStaticVariables;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.DefaultMatcherParameters;
@@ -44,6 +43,9 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.MatchingProgressListener;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.app.ontology.ontologyParser.OntologyDefinition;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.app.osgi.MatcherNotFoundException;
 import am.parsing.AlignmentOutput;
 import eu.sealsproject.omt.ws.matcher.AlignmentWS;
@@ -106,7 +108,8 @@ public class SealsServer implements AlignmentWS {
 		progressDisplay.appendToReport("Loading source ontology. \n\tURI: " + source + "\n\tFile: " + sourceOntologyFilename + "\n");
 		
 		
-		OntoTreeBuilder otb1 = new OntoTreeBuilder(sourceOntologyFilename, GlobalStaticVariables.LANG_OWL, "RDF/XML", false, false);
+		OntologyDefinition sourceOntDef = new OntologyDefinition(true, sourceOntologyFilename, OntologyLanguage.OWL, OntologySyntax.RDFXML);
+		OntoTreeBuilder otb1 = new OntoTreeBuilder(sourceOntDef);
 		
 		progressDisplay.appendToReport("Building source Ontology().\n");
 		otb1.build( OntoTreeBuilder.Profile.noReasoner );
@@ -118,7 +121,8 @@ public class SealsServer implements AlignmentWS {
 		
 		progressDisplay.appendToReport("Loading target ontology. URI: " + target + "\n\tFile: " + targetOntologyFilename + "\n");
 		
-		OntoTreeBuilder otb2 = new OntoTreeBuilder( targetOntologyFilename, GlobalStaticVariables.LANG_OWL, "RDF/XML", true, false);
+		OntologyDefinition targetOntDef = new OntologyDefinition(true, targetOntologyFilename, OntologyLanguage.OWL, OntologySyntax.RDFXML);		
+		OntoTreeBuilder otb2 = new OntoTreeBuilder(targetOntDef);
 		
 		progressDisplay.appendToReport("Building target Ontology().\n");
 		otb2.build( OntoTreeBuilder.Profile.noReasoner );

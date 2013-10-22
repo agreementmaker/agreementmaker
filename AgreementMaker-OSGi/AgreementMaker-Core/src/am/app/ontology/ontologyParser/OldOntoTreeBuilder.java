@@ -73,30 +73,9 @@ public class OldOntoTreeBuilder extends TreeBuilder{
 	 */
 	private String ns = null;
 	
-	/**
-	 * Builds an ontology with list of classes, list of properties, classes tree and properties tree, all information are kept in the ontology istance
-	 * @param fileName 
-	 * @param syntaxIndex
-	 * @param sourceOrTarget 
-	 * @param format 
-	 * @param skip Skip other namespaces, usually set to true.
-	 * @param reas Set to true in order to use a reasoner when loading the ontology, false to load without using a reasoner.
-	 */
-	public OldOntoTreeBuilder(String fileName, String language, String format, boolean skip, boolean reas) {
-		super(fileName, language, format); 
-		skipOtherNamespaces = skip;
-		noReasoner = reas;
-		treeCount = 0;
+	public OldOntoTreeBuilder(OntologyDefinition definition) {
+		super(definition);
 	}
-	
-	// this function is here for legacy purposes, needs to be removed
-	public OldOntoTreeBuilder(String fileName, String language, String format, boolean skip ) {
-		super(fileName, language, format); 
-		skipOtherNamespaces = skip;
-		noReasoner = false;
-		treeCount = 0;
-	}
-	
 	
 	public void build( OntoTreeBuilder.Profile prof ) {
 		buildTree( prof );//Instantiated in the subclasses

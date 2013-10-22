@@ -3,11 +3,12 @@ package am.extension.batchmode;
 import java.io.File;
 import java.io.FilenameFilter;
 
-import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.matcher.oaei2009.OAEI2009parameters;
 import am.parsing.AlignmentOutput;
 
@@ -82,7 +83,7 @@ public class ConferenceTrack_OLD extends Track {
 		sourceOntology = ontologyFiles[sourceIndex].getAbsolutePath();
 		targetOntology = ontologyFiles[targetIndex].getAbsolutePath();
 
-		as = computeAlignment(sourceOntology, targetOntology, GlobalStaticVariables.LANG_OWL, GlobalStaticVariables.SYNTAX_RDFXML, true, matcher, threshold, sourceCardinality, targetCardinality, param);
+		as = computeAlignment(sourceOntology, targetOntology, OntologyLanguage.OWL, OntologySyntax.RDFXML, true, matcher, threshold, sourceCardinality, targetCardinality, param);
 		sourceUri = Core.getInstance().getSourceOntology().getURI();
 		targetUri = Core.getInstance().getTargetOntology().getURI();
 			

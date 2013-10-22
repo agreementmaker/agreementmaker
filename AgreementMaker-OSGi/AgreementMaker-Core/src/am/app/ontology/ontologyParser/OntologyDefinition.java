@@ -11,7 +11,8 @@ import com.hp.hpl.jena.util.LocationMapper;
  * 
  * TODO: Add field for reasoner?
  * 
- * @author Cosmin Stroe - Sep 8, 2011
+ * @author Cosmin Stroe <cstroe@gmail.com> 
+ * @version Sep 8, 2011
  *
  */
 public class OntologyDefinition {

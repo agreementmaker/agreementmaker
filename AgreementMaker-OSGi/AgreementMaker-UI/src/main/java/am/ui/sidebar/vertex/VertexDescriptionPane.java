@@ -9,9 +9,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
-import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.ontology.Node;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 
 public class VertexDescriptionPane extends JPanel{
 	
@@ -34,7 +34,7 @@ public class VertexDescriptionPane extends JPanel{
 	private JPanel pnlSourceDescription,pnlSourceAnnotations,pnlSourceProperties,pnlSourceIndividuals,sp5,pnlTargetDescription,pnlTargetAnnotations,pnlTargetProperties,pnlTargetIndividuals,lp5;
 	private JScrollPane sclSourceDescription,sclSourceAnnotations,ss3,ss4,sclMappingInformation,ls1,ls2,ls3,ls4,ls5;
 	private JTextArea txtSourceDescription,txtSourceAnnotations,txtSourceProperties,txtSourceIndividuals,txtMappingInformation,lt1,txtTargetAnnotations,lt3,txtTargetIndividuals,lt5;
-	private int typeOfFile;
+	private OntologyLanguage typeOfFile;
 
 	private String sourceAnnotations;
 	private String sourceIndividuals;
@@ -48,8 +48,8 @@ public class VertexDescriptionPane extends JPanel{
 	//private String targetPropertyOrClasses;
 	//private String targetRestrictions;
 	
-	public VertexDescriptionPane(int fileType){
-		typeOfFile = fileType;
+	public VertexDescriptionPane(OntologyLanguage language){
+		typeOfFile = language;
 		init();
 	}
 	
@@ -76,7 +76,7 @@ public class VertexDescriptionPane extends JPanel{
 		sp5.setLayout(new GridLayout(1,1));
 		lp5.setLayout(new GridLayout(1,1));
 		
-		if(typeOfFile == GlobalStaticVariables.XMLFILE){
+		if(typeOfFile == OntologyLanguage.XML){
 			//sourcePane
 			txtSourceDescription.setEditable(false);
 	        txtSourceDescription.setFont(new java.awt.Font("Lucida Sans Unicode", 0, 12));
@@ -111,7 +111,7 @@ public class VertexDescriptionPane extends JPanel{
 	        targetPane.addTab("Description", null, pnlTargetDescription, "Description of the target node");
 	        sourcePane.addTab("Mapping Information", null, pnlSourceDescription, "Description of the source node");
 	        targetPane.addTab("Mapping Information", null, pnlTargetDescription, "Description of the target node");
-		}else if(typeOfFile == GlobalStaticVariables.OWLFILE){
+		}else if(typeOfFile == OntologyLanguage.OWL){
 			txtSourceAnnotations = new JTextArea();
 			txtSourceProperties = new JTextArea();
 			txtSourceIndividuals = new JTextArea();
@@ -243,14 +243,14 @@ public class VertexDescriptionPane extends JPanel{
 	@Deprecated
 	public void fillDescription (Node node){
 		clearDescription(node);
-			if(typeOfFile == GlobalStaticVariables.XMLFILE){			
+			if(typeOfFile == OntologyLanguage.XML){			
 				if(node.getOntologyID() == Core.getInstance().getSourceOntology().getID()){
 			    	   txtSourceDescription.setText(node.getLabel());
 			    }else {
 			    	   lt1.setText(node.getLabel());
 			    }
 			}
-			else if(typeOfFile == GlobalStaticVariables.OWLFILE){
+			else if(typeOfFile == OntologyLanguage.OWL){
 		       if(node.getOntologyID() == Core.getInstance().getSourceOntology().getID()){
 		    	   txtSourceDescription.setText(node.getDescriptionsString());
 		    	   txtSourceAnnotations.setText(node.getAnnotationsString());
@@ -262,19 +262,20 @@ public class VertexDescriptionPane extends JPanel{
 		    	   lt3.setText(node.getPropOrClassString());
 		    	   txtTargetIndividuals.setText(node.getIndividualsString());
 		       }
-			}else if(typeOfFile == GlobalStaticVariables.RDFSFILE){
+			}else if(typeOfFile == OntologyLanguage.RDFS){
 				//TODO: WORK here for RDFS
+				throw new RuntimeException("VertexDescriptionPane for RDFS not implemented.");
 			}
 	}
 	
 	public void clearDescription (Node node){
-		if(typeOfFile == GlobalStaticVariables.XMLFILE){
+		if(typeOfFile == OntologyLanguage.XML){
 			if(node.getOntologyID() == Core.getInstance().getSourceOntology().getID()){
 		    	   txtSourceDescription.setText("");
 		       }else {
 		    	   lt1.setText("");
 		       }
-		}else if(typeOfFile == GlobalStaticVariables.OWLFILE){
+		}else if(typeOfFile == OntologyLanguage.OWL){
 			if(node.getOntologyID() == Core.getInstance().getSourceOntology().getID()){
 		    	   txtSourceDescription.setText("");
 		    	   txtSourceAnnotations.setText("");

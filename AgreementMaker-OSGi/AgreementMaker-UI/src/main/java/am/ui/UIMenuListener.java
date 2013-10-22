@@ -816,7 +816,7 @@ public class UIMenuListener implements ActionListener {
 					
 					if( ont == null ) return; // ont not loaded
 					prefs.saveRecentFile(prefs.getRecentSourceFileName(position), 
-							GlobalStaticVariables.SOURCENODE, 
+							Ontology.SOURCE, 
 							prefs.getRecentSourceSyntax(position), 
 							prefs.getRecentSourceLanguage(position), 
 							prefs.getRecentSourceSkipNamespace(position), 
@@ -854,7 +854,7 @@ public class UIMenuListener implements ActionListener {
 					
 					if( ont == null ) return;
 					prefs.saveRecentFile(prefs.getRecentTargetFileName(position), 
-							GlobalStaticVariables.TARGETNODE, 
+							Ontology.TARGET, 
 							prefs.getRecentTargetSyntax(position), 
 							prefs.getRecentTargetLanguage(position), 
 							prefs.getRecentTargetSkipNamespace(position), 

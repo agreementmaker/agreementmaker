@@ -3,7 +3,6 @@ package am.extension.batchmode;
 import java.io.File;
 import java.util.ArrayList;
 
-import am.GlobalStaticVariables;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
@@ -12,6 +11,9 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.app.ontology.ontologyParser.OntologyDefinition;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
+import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.extension.batchmode.conflictResolution.ConflictsResolution;
 
 
@@ -46,19 +48,21 @@ public abstract class Track {
 	}
 	
 	//compute the alignment between any two ontologies, given their filepath using the specified matcher
-	protected Alignment<Mapping> computeAlignment(String sourcePath, String targetPath, String languageS, String syntaxS, boolean skip, String matcher, double threshold, int sourceRel, int targetRel, DefaultMatcherParameters parameters) throws Exception{
+	protected Alignment<Mapping> computeAlignment(String sourcePath, String targetPath, OntologyLanguage languageS, OntologySyntax syntaxS, boolean skip, String matcher, double threshold, int sourceRel, int targetRel, DefaultMatcherParameters parameters) throws Exception{
 		System.out.println("The matching process is started between:\nSource Ontology: "+sourcePath+"\nTarget Ontology: "+targetPath);
 		
 		//LOADING ONTOLOGIES
 		//Source Ontology
 		//Ontotype = GlobalstaticVariable.SOURCENODE is irrelevant
 		System.out.println("Loading source ontology");
-		OntoTreeBuilder sourceBuilder = new OntoTreeBuilder(sourcePath, languageS, syntaxS, skip);
+		OntologyDefinition sourceOntDef = new OntologyDefinition(true, sourcePath, languageS, syntaxS);
+		OntoTreeBuilder sourceBuilder = new OntoTreeBuilder(sourceOntDef);
 		sourceBuilder.build();
 		//System.out.println(sourceBuilder.getReport());
 		//Target Ontology
 		System.out.println("Loading target ontology");
-		OntoTreeBuilder targetBuilder = new OntoTreeBuilder(targetPath, languageS, syntaxS, skip);
+		OntologyDefinition targetOntDef = new OntologyDefinition(true, targetPath, languageS, syntaxS);
+		OntoTreeBuilder targetBuilder = new OntoTreeBuilder(targetOntDef);
 		targetBuilder.build();
 		//System.out.println(sourceBuilder.getReport());
 		
@@ -110,12 +114,12 @@ public abstract class Track {
 	
 	
 	// wrapper function
-	protected ArrayList<AbstractMatcher> computeMultipleAlignment(boolean solveConflicts, File[] ontologyFiles, String languageS, String syntaxS, boolean skip, String matcher, double threshold, int sourceRel, int targetRel, DefaultMatcherParameters parameters  ) throws Exception{
+	protected ArrayList<AbstractMatcher> computeMultipleAlignment(boolean solveConflicts, File[] ontologyFiles, OntologyLanguage languageS, OntologySyntax syntaxS, boolean skip, String matcher, double threshold, int sourceRel, int targetRel, DefaultMatcherParameters parameters  ) throws Exception{
 		return computeMultipleAlignment(solveConflicts, ontologyFiles, languageS, syntaxS, skip, matcher, threshold, sourceRel, targetRel, parameters, OntoTreeBuilder.Profile.defaultProfile );  // if no profile is specified, it uses the default profile
 	}
 	
 	//compute the alignment between any two ontologies, given their filepath using the specified matcher
-	protected ArrayList<AbstractMatcher> computeMultipleAlignment(boolean solveConflicts, File[] ontologyFiles, String languageS, String syntaxS, boolean skip, String matcher, double threshold, int sourceRel, int targetRel, DefaultMatcherParameters parameters, OntoTreeBuilder.Profile loadingProfile) throws Exception{
+	protected ArrayList<AbstractMatcher> computeMultipleAlignment(boolean solveConflicts, File[] ontologyFiles, OntologyLanguage languageS, OntologySyntax syntaxS, boolean skip, String matcher, double threshold, int sourceRel, int targetRel, DefaultMatcherParameters parameters, OntoTreeBuilder.Profile loadingProfile) throws Exception{
 		int numOntologies = ontologyFiles.length;
 		int numAlignments = (numOntologies * (numOntologies - 1))/2;
 		System.out.println("The matching process is started between "+numOntologies+" ontologies.\nExpected "+numAlignments+" different sets of mappings.");
@@ -125,7 +129,8 @@ public abstract class Track {
 		Ontology[] ontologies = new Ontology[numOntologies];
 		for(int i= 0; i< numOntologies; i++){
 			File f = ontologyFiles[i];
-			OntoTreeBuilder builder = new OntoTreeBuilder(f.getAbsolutePath(), languageS, syntaxS, skip);
+			OntologyDefinition sourceOntDef = new OntologyDefinition(true, f.getAbsolutePath(), languageS, syntaxS);
+			OntoTreeBuilder builder = new OntoTreeBuilder(sourceOntDef);
 			builder.build( loadingProfile );
 			Ontology o = builder.getOntology();
 			o.setIndex(i);//used to identify the ontology to print the alignment file
