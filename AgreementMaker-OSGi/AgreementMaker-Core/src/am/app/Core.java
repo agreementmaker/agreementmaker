@@ -542,26 +542,6 @@ public class Core {
 		}
 	}
 	
-	/** Same thing as ontology change events, but for Visualization components **/
-	//public void addVisualizationChangeListener( VisualizationChangeListener l )  { visualizationListeners.add(l); }
-	//public void removeVisualizationChangeListener( VisualizationChangeListener l ) { visualizationListeners.remove(l); }
-	
-	/*public void fireEvent( final VisualizationChangeEvent event ) {
-		for( int i = visualizationListeners.size()-1; i >= 0; i-- ) {  // count DOWN from max (for a very good reason, http://book.javanb.com/swing-hacks/swinghacks-chp-12-sect-8.html )
-			// execute each event in its own thread.
-			
-			final int finalI = i; // declared final so that it may be used in the anonymous Thread class.
-			Thread t = new Thread() {
-				public void run() {
-					visualizationListeners.get(finalI).visualizationSettingChanged(event);
-				};
-			};
-			
-			t.start();
-			
-		}
-	}*/
-	
 	/* ***************************** ONTOLOGY PROFILING **************************************** */
 	private OntologyProfiler currentProfiler;
 	
