@@ -7,6 +7,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -18,16 +19,17 @@ import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdMethod;
 import am.evaluation.clustering.localByThreshold.LocalByThresholdParameters;
 import am.ui.MatchersChooser;
+import am.ui.api.AMTab;
+import am.ui.api.impl.AMTabSupportPanel;
 
-public class ClusteringEvaluationPanel extends JPanel implements ActionListener, PropertyChangeListener {
+public class ClusteringEvaluationPanel 	extends AMTabSupportPanel 
+										implements ActionListener, PropertyChangeListener {
 
 	private static final long serialVersionUID = -5491977894442159008L;
 
 	public ClusteringEvaluationPanel() {
-		super();
-		
+		super("Clustering Evaluation", "A panel to evaluate our clustering algorithms.");
 		initComponents();
-		
 	}
 	
 	private void initComponents() {
@@ -82,6 +84,4 @@ public class ClusteringEvaluationPanel extends JPanel implements ActionListener,
 		// TODO Auto-generated method stub
 		
 	}
-	
-	
 }

@@ -2,11 +2,17 @@ package am.ui;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
+
+import am.ui.api.AMVisualizationComponent;
+import am.ui.osgi.VisualizationComponentTrackerCustomizer;
 
 public class UIActivator implements BundleActivator {
 
 	private static BundleContext context;
 
+	private ServiceTracker<AMVisualizationComponent, AMVisualizationComponent> visTracker;
+	
 	static BundleContext getContext() {
 		return context;
 	}
@@ -23,6 +29,11 @@ public class UIActivator implements BundleActivator {
 			@Override
 			public void run() {
 				UICore.setUI(new UI());
+				
+				// start the visualization tracker
+				visTracker = new ServiceTracker<AMVisualizationComponent, AMVisualizationComponent>(context, 
+						AMVisualizationComponent.class, new VisualizationComponentTrackerCustomizer(context));
+				visTracker.open();
 			}
 			
 		});
@@ -34,6 +45,7 @@ public class UIActivator implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
+		visTracker.close();
 		UIActivator.context = null;
 	}
 

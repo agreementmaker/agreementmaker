@@ -1,4 +1,5 @@
-package am.ui;
+package am.ui.api;
+
 
 /**
  * Represents a panel which visualizes a matching task.
@@ -7,6 +8,6 @@ package am.ui;
  * @version Oct 18, 2013
  * 
  */
-public interface AMTaskVisualizationPanel extends AMVisualizationComponent {
+public interface AMTaskVisualization extends AMVisualizationComponent {
 
 }

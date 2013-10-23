@@ -39,6 +39,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -52,6 +53,8 @@ import javax.swing.text.html.HTMLDocument;
 
 import am.Utility;
 import am.app.mappingEngine.StringUtil.PorterStemmer;
+import am.ui.api.AMTab;
+import am.ui.api.impl.AMTabSupportPanel;
 import am.visualization.graphviz.GraphViz;
 import am.visualization.graphviz.wordnet.NavigableImagePanel;
 import am.visualization.graphviz.wordnet.WordnetVisualizer;
@@ -60,7 +63,7 @@ import edu.smu.tspell.wordnet.Synset;
 import edu.smu.tspell.wordnet.SynsetType;
 import edu.smu.tspell.wordnet.WordNetDatabase;
 
-public class WordNetLookupPanel extends JPanel implements ActionListener, KeyListener {
+public class WordNetLookupPanel extends AMTabSupportPanel implements ActionListener, KeyListener {
 
 	
 	private JLabel lblTerm;
@@ -74,7 +77,7 @@ public class WordNetLookupPanel extends JPanel implements ActionListener, KeyLis
 	private WordNetDatabase WordNet; // the WordNet Interface
 	
 	public WordNetLookupPanel() {
-		super();
+		super("WordNet", "Query the WordNet dictionary.");
 		
 		// create the UI components for the WordNet Lookup Panel.
 		
@@ -323,6 +326,4 @@ public class WordNetLookupPanel extends JPanel implements ActionListener, KeyLis
 		txtTerm.select(0, txtTerm.getText().length() );
 		
 	}
-	
-	
 }

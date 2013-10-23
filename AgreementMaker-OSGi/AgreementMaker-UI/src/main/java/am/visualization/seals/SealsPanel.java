@@ -56,13 +56,16 @@ import am.app.mappingEngine.MatchingProgressListener;
 import am.app.osgi.MatcherNotFoundException;
 import am.tools.seals.SealsServer;
 import am.ui.MatcherParametersDialog;
+import am.ui.api.AMTab;
+import am.ui.api.impl.AMTabSupportPanel;
 import am.utility.LinuxInetAddress;
 /**
  * The SealsPanel contains all the UI components, used for changing the settings for, and publishing the SealsServer.
  * @author cosmin
  *
  */
-public class SealsPanel extends JPanel implements MatchingProgressListener, ActionListener {
+public class SealsPanel extends AMTabSupportPanel 
+                        implements MatchingProgressListener, ActionListener {
 
 	private static final long serialVersionUID = 3284754599688612733L;
 
@@ -85,7 +88,7 @@ public class SealsPanel extends JPanel implements MatchingProgressListener, Acti
 	 * Create the layout of the SEALS interface panel.
 	 */
 	public SealsPanel() {
-		super();
+		super("SEALS", "SEALS Interface");
 		
 		// find out the current ip of the computer
 		String currentIP = null;
@@ -533,6 +536,4 @@ public class SealsPanel extends JPanel implements MatchingProgressListener, Acti
 	public void setIndeterminate(boolean indeterminate) {
 		barProgress.setIndeterminate(indeterminate);
 	}
-
-	
 }

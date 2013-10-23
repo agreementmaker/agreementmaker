@@ -23,7 +23,6 @@ import javax.swing.border.LineBorder;
 import org.osgi.framework.Bundle;
 
 import am.AMException;
-import am.GlobalStaticVariables;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
@@ -325,21 +324,15 @@ public class UIMenuListener implements ActionListener {
 			else if( obj == menu.sealsItem ) {
 				// open up the SEALS Interface tab
 				SealsPanel sp = new SealsPanel();
-				menu.ui.addTab("SEALS", null, sp, "SEALS Interface");
+				menu.ui.addTab(sp);
 			}
 			else if( obj == menu.wordnetLookupItem ) {
 				// open up the WordNet lookup interface
 				WordNetLookupPanel wnlp = new WordNetLookupPanel();
-				menu.ui.addTab("WordNet", null, wnlp, "Query the WordNet dictionary.");
-			}
-			else if( obj == menu.userFeedBack ) {
-				throw new RuntimeException("Fix the UI code to interact with OSGi bundles.");
-				//UFLControlGUI ufl_control = new UFLControlGUI(menu.ui);
-				//ufl_control.displayInitialScreen();
-				//menu.ui.addTab("User Feedback Loop", null, ufl_control, "User Feedback Loop");	
+				menu.ui.addTab(wnlp);
 			}
 			else if( obj == menu.clusteringEvaluation ) {
-				menu.ui.addTab("Clustering Evaluation",null, new ClusteringEvaluationPanel(), "Clustering Evaluation");
+				menu.ui.addTab(new ClusteringEvaluationPanel());
 			}
 			else if(obj == menu.newMatching) {
 				controlPanel.newManual();
@@ -675,11 +668,10 @@ public class UIMenuListener implements ActionListener {
 				if( selectedMatcher.getClassesMatrix() == null ) { Utility.displayErrorPane("The matcher has not computed a classes similarity matrix.", "Error"); return; }
 
 				MatrixPlotPanel mp = new MatrixPlotPanel( selectedMatcher, selectedMatcher.getClassesMatrix(), null);
-
 				mp.getPlot().draw(false);
-				JPanel plotPanel = new JPanel();
-				plotPanel.add(mp);
-				UICore.getUI().addTab("MatrixPlot Class", null , plotPanel , selectedMatcher.getRegistryEntry().getMatcherName());
+				mp.setLabel("MatrixPlot Classes");
+				mp.setTooltip(selectedMatcher.getName());
+				UICore.getUI().addTab(mp);
 			} else if( obj == menu.TEMP_viewPropMatrix ) {
 				// get the currently selected matcher
 				List<AbstractMatcher> list = Core.getInstance().getMatcherInstances();
@@ -693,9 +685,9 @@ public class UIMenuListener implements ActionListener {
 				MatrixPlotPanel mp = new MatrixPlotPanel( selectedMatcher, selectedMatcher.getPropertiesMatrix(), null);
 
 				mp.getPlot().draw(false);
-				JPanel plotPanel = new JPanel();
-				plotPanel.add(mp);
-				UICore.getUI().addTab("MatrixPlot Prop", null , plotPanel , selectedMatcher.getRegistryEntry().getMatcherName());
+				mp.setLabel("MatrixPlot Properties");
+				mp.setTooltip(selectedMatcher.getName());
+				UICore.getUI().addTab(mp);
 			} else if( obj == menu.TEMP_matcherAnalysisClasses ) {
 				final MatcherAnalyticsPanel ma = new MatcherAnalyticsPanel( alignType.aligningClasses );
 
@@ -760,7 +752,7 @@ public class UIMenuListener implements ActionListener {
 				}
 
 				InstanceLookupPanel lookupPanel = new InstanceLookupPanel(sourceOntology.getInstances(), targetOntology.getInstances());
-				UICore.getUI().addTab("Instances Lookup", null , lookupPanel , "Instances Lookup Panel");
+				UICore.getUI().addTab(lookupPanel);
 
 			}
 			else if( obj == menu.mnuListBundles ) {

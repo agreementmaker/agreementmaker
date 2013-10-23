@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -20,8 +21,10 @@ import javax.swing.JTextField;
 import am.AMException;
 import am.app.ontology.instance.Instance;
 import am.app.ontology.instance.InstanceDataset;
+import am.ui.api.AMTab;
+import am.ui.api.impl.AMTabSupportPanel;
 
-public class InstanceLookupPanel extends JPanel {
+public class InstanceLookupPanel extends AMTabSupportPanel {
 
 	private static final long serialVersionUID = -7574874573811232312L;
 
@@ -271,5 +274,4 @@ public class InstanceLookupPanel extends JPanel {
 		}
 		
 	}
-	
 }

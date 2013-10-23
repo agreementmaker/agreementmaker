@@ -5,12 +5,12 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Iterator;
 
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JViewport;
 
 import am.ui.VisualizationPanel;
+import am.ui.api.impl.AMTabSupportPanel;
 import am.ui.canvas2.Canvas2;
 import am.ui.canvas2.graphical.GraphicalData;
 import am.ui.canvas2.graphical.MappingData;
@@ -28,7 +28,7 @@ import am.ui.find.FindInterface;
  * matchers control panel at the bottom of the window.
  * 
  */
-public class AgreementMakerClassic extends JPanel implements FindInterface {
+public class AgreementMakerClassic extends AMTabSupportPanel implements FindInterface {
 
 	private static final long serialVersionUID = -1913594055550719146L;
 	
@@ -39,10 +39,19 @@ public class AgreementMakerClassic extends JPanel implements FindInterface {
 	private MatchersControlPanel matcherControlPanel;
 	
 	/** This constructor creates a new Canvas2 object which will be contained in this panel. */
-	public AgreementMakerClassic() { super(); canvas = new Canvas2(); initialize(); }
+	public AgreementMakerClassic() { 
+		super("AgreementMaker"); 
+		canvas = new Canvas2();
+		matcherControlPanel = new MatchersControlPanel();
+		initialize(); 
+	}
 	
-	/** This constructor allows the user to specify a custom Canvas2 */
-	public AgreementMakerClassic(Canvas2 canvas) { super(); this.canvas = canvas; initialize(); }
+	public AgreementMakerClassic(Canvas2 canvas) {
+		super("AgreementMaker");
+		this.canvas = canvas;
+		matcherControlPanel = new MatchersControlPanel();
+		initialize();
+	}
 	
 	/** This method executes the operations common to all constructors. */
 	private void initialize() {
@@ -65,16 +74,12 @@ public class AgreementMakerClassic extends JPanel implements FindInterface {
 		//splitPane.setPreferredSize(new Dimension(640,480));
 		//splitPane.getLeftComponent().setPreferredSize(new Dimension(300,300));
 
-		matcherControlPanel = new MatchersControlPanel();
-
-		outerSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, splitPane,matcherControlPanel);
+		outerSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, splitPane, matcherControlPanel);
 		outerSplitPane.setOneTouchExpandable(true);
 		outerSplitPane.setResizeWeight(1.0);
 		//outerSplitPane.setDividerLocation(0.75);
 		
 		add(outerSplitPane, BorderLayout.CENTER);
-		
-		//add(matcherControlPanel, BorderLayout.PAGE_END);
 	}
 	
  
@@ -340,8 +345,10 @@ public class AgreementMakerClassic extends JPanel implements FindInterface {
 		}
 		
 	}
-
 	
-	
-	
+	public void setCanvas(Canvas2 canvas) {
+		this.canvas = canvas;
+		removeAll();
+		initialize();
+	}
 }

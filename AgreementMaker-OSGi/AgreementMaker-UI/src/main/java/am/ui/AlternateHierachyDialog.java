@@ -190,9 +190,7 @@ public class AlternateHierachyDialog extends JDialog implements ActionListener {
 		
 		
 		AgreementMakerClassic amPanel = new AgreementMakerClassic(canvas);
-				
-		UICore.getUI().addTab("Alternate Hierarchy", null, amPanel, null);
-		
+		UICore.getUI().addTab(amPanel);
 	}
 
 

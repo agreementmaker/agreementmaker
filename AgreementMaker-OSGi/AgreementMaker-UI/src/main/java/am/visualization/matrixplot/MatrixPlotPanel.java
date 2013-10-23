@@ -9,6 +9,7 @@ import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
@@ -21,13 +22,16 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.evaluation.clustering.Cluster;
 import am.evaluation.clustering.ClusterFactory;
 import am.evaluation.clustering.ClusterFactory.ClusteringType;
+import am.ui.api.AMTab;
+import am.ui.api.impl.AMTabSupportPanel;
 import am.visualization.Gradient;
 import am.visualization.MatcherAnalyticsEvent;
 import am.visualization.MatcherAnalyticsEvent.EventType;
 import am.visualization.MatcherAnalyticsEventDispatch;
 import am.visualization.MatcherAnalyticsEventListener;
 
-public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAnalyticsEventListener, ActionListener {
+public class MatrixPlotPanel extends AMTabSupportPanel 
+                             implements MouseListener, MatcherAnalyticsEventListener, ActionListener {
 
 	private static final long serialVersionUID = -8579270363759208673L;
 
@@ -37,14 +41,20 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 	private final JLabel lblSimilaritySelected;
 	private final AbstractMatcher matcher;
 	
-	private AbstractMatcher referenceMatcher = null; 
+	private AbstractMatcher referenceMatcher = null;
+
+	private String tooltip;
+
+	private String label;
+
+	private ImageIcon icon; 
 	
 	//private boolean popupMenuActive = false;
 	
 	//private VisualizationType type;
 	
 	public MatrixPlotPanel(AbstractMatcher a, SimilarityMatrix mtx, MatcherAnalyticsEventDispatch d ) {
-		super();
+		super("MatrixPlot");
 
 		dispatch = d;
 		
@@ -66,7 +76,7 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 	}
 	
 	public MatrixPlotPanel(AbstractMatcher a, MatcherAnalyticsEventDispatch d , MatrixPlot plot) {
-		super();
+		super("MatrixPlot");
 
 		dispatch = d;
 		
@@ -88,7 +98,7 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 	}
 	
 	public MatrixPlotPanel(AbstractMatcher a, SimilarityMatrix mtx, MatcherAnalyticsEventDispatch d, Gradient g ) {
-		super();
+		super("MatrixPlot");
 
 		dispatch = d;
 		plot = new MatrixPlot(a, mtx, this, g);
@@ -107,7 +117,7 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 	}
 	
 	public MatrixPlotPanel( String name, SimilarityMatrix mtx, MatcherAnalyticsEventDispatch d, Gradient g ) {
-		super();
+		super("MatrixPlot");
 		
 		dispatch = d;
 		plot = new MatrixPlot( mtx, this, g);
@@ -414,4 +424,23 @@ public class MatrixPlotPanel extends JPanel implements MouseListener, MatcherAna
 		plot.setCluster(c); 
 	}
 	
+	@Override public void   setLabel(String label) { this.label = label; }
+	@Override public String getLabel()             { 
+		if( label == null ) return "MatrixPlot";
+		return label; 
+	}
+
+	@Override public void   setTooltip(String tooltip) { this.tooltip = tooltip; };
+	@Override public String getTooltip() { 
+		if( tooltip == null ) return "MatrixPlot";
+		return tooltip;
+	}
+
+	@Override public void      setIcon(ImageIcon icon) { this.icon = icon; }
+	@Override public ImageIcon getIcon() { return icon; }
+
+	@Override
+	public JPanel getTab() {
+		return this;
+	}
 }

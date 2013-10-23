@@ -18,12 +18,10 @@ import am.extension.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
 import am.extension.userfeedback.experiments.UFLControlLogic;
 import am.ui.UI;
+import am.ui.api.impl.AMTabSupportPanel;
 
-public class UFLControlGUI extends JPanel implements ActionListener {
+public class UFLControlGUI extends AMTabSupportPanel implements ActionListener {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -967696425990716259L;
 	
 	public final static String UNLIMITED 			= "Unlimited";
@@ -62,6 +60,7 @@ public class UFLControlGUI extends JPanel implements ActionListener {
 	
 	
 	public UFLControlGUI(UI u) {
+		super("User Feedback Loop");
 		ui = u;
 	}
 

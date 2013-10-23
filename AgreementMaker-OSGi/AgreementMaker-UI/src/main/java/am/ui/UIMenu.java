@@ -4,6 +4,8 @@ import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
@@ -18,15 +20,19 @@ import am.app.lexicon.Lexicon;
 import am.app.mappingEngine.LexiconStore.LexiconRegistry;
 import am.app.ontology.Ontology;
 import am.tools.LexiconLookup.LexiconLookupPanel;
+import am.ui.api.AMMenuItem;
 import am.ui.sidebar.provenance.ProvenanceMenuItem;
 import am.utility.AppPreferences;
 
 
 public class UIMenu {
 
+	public static final String MENU_MATCHERS = "Matchers";
+		
 	// create Top Level menus
 	JMenu fileMenu, editMenu, viewMenu, helpMenu, matchersMenu, toolsMenu, ontologyMenu;
-
+	List<JMenu> topLevelMenus = new LinkedList<JMenu>(); // find a better way to do this -- Cosmin. Oct. 23, 2013.
+	
 	// File menu.
 	JMenuItem xit, openFiles, openMostRecentPair,
 	closeSource, closeTarget, closeBoth, saveAlignment, loadAlignment;
@@ -59,7 +65,7 @@ public class UIMenu {
 	JMenuItem wordnetLookupItem, sealsItem, clusteringEvaluation, instanceLookupItem;
 
 	// Matchers menu.
-	JMenuItem userFeedBack, newMatching, runMatching, copyMatching, deleteMatching, clearAll, 
+	JMenuItem newMatching, runMatching, copyMatching, deleteMatching, clearAll, 
 	doRemoveDuplicates,
 	refEvaluateMatching,
 	thresholdAnalysis, TEMP_viewClassMatrix, TEMP_viewPropMatrix, TEMP_matcherAnalysisClasses, TEMP_matcherAnalysisProp,
@@ -98,7 +104,8 @@ public class UIMenu {
 
 		// building the file menu
 		fileMenu = new JMenu("File");
-		fileMenu.setMnemonic(KeyEvent.VK_F);	
+		fileMenu.setMnemonic(KeyEvent.VK_F);
+		topLevelMenus.add(fileMenu);
 
 		//add openFile menu item to file menu
 		openFiles = createMenuItemWithIcon("Open Ontologies ...", "image/fileImage.png");
@@ -171,6 +178,7 @@ public class UIMenu {
 		// build the Edit menu
 		editMenu = new JMenu("Edit");
 		editMenu.setMnemonic(KeyEvent.VK_E);
+		topLevelMenus.add(editMenu);
 
 		itemFind = new JMenuItem("Find", KeyEvent.VK_F);
 		itemFind.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -182,6 +190,7 @@ public class UIMenu {
 		// Build view menu in the menu bar: TODO
 		viewMenu = new JMenu("View");
 		viewMenu.setMnemonic(KeyEvent.VK_V);
+		topLevelMenus.add(viewMenu);
 
 		//All show and hide details has been removed right now
 		// add separator
@@ -310,6 +319,8 @@ public class UIMenu {
 		//ontology menu
 		ontologyMenu = new JMenu("Ontology");
 		ontologyMenu.setMnemonic('O');
+		topLevelMenus.add(ontologyMenu);
+		
 		ontologyDetails = new JMenuItem("Ontology details");
 		ontologyDetails.addActionListener(listener); 
 		ontologyMenu.add(ontologyDetails);
@@ -332,8 +343,9 @@ public class UIMenu {
 
 
 		// **************** Matchers Menu *******************
-		matchersMenu = new JMenu("Matchers");
+		matchersMenu = new JMenu(MENU_MATCHERS);
 		matchersMenu.setMnemonic('M');
+		topLevelMenus.add(matchersMenu);
 
 		runMatching = new JMenuItem("Run matcher ...");
 		runMatching.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); 
@@ -385,11 +397,6 @@ public class UIMenu {
 		matchersMenu.addSeparator();
 		matchersMenu.add(TEMP_matcherAnalysisClasses);
 		matchersMenu.add(TEMP_matcherAnalysisProp);
-
-		userFeedBack = new JMenuItem("User Feedback Loop");
-		userFeedBack.addActionListener(listener);
-		matchersMenu.addSeparator();
-		matchersMenu.add(userFeedBack);
 
 		matchersMenu.addSeparator();
 
@@ -524,5 +531,21 @@ public class UIMenu {
 			Utility.displayErrorPane("The ontology cannot be null.", "Error");
 		}	
 		return null;
+	}
+	
+	/**
+	 * TODO: Implement more sophisticated parsing of the location string.
+	 */
+	public void addMenuItem( AMMenuItem mi ) {
+		String location = mi.getMenuLocation();
+		String[] menus = location.split("/");
+		
+		for( JMenu m : topLevelMenus ) {
+			String menuName = m.getText();
+			if( menuName == null ) return;
+			if( menus[0].equals(menuName) ) {
+				m.add(mi.getMenuItem(), -1);
+			}
+		}
 	}
 }

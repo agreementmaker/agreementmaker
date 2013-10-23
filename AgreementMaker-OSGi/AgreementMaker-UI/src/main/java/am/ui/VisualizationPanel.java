@@ -5,7 +5,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 
 import am.app.ontology.Ontology;
-import am.app.ontology.ontologyParser.TreeBuilder;
 
 /**
  * 

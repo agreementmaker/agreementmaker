@@ -27,6 +27,8 @@ import am.app.mappingEngine.MatchingTask;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntologyDefinition;
 import am.app.ontology.ontologyParser.TreeBuilder;
+import am.ui.api.AMMenuItem;
+import am.ui.api.AMTab;
 import am.ui.classic.AgreementMakerClassic;
 import am.ui.controlpanel.MatchersControlPanel;
 import am.ui.controlpanel.table.MatchersControlPanelTableModel;
@@ -216,8 +218,8 @@ public class UI {
 	 * @param panel The panel that the tab will contain.
 	 * @param toolTip The tooltip text for this tab.
 	 */
-	public void addTab( String tabName, ImageIcon icon, JComponent panel, String toolTip ) {
-		tabbedPane.addTab( tabName, icon, panel, toolTip);
+	public void addTab( AMTab tab ) {
+		tabbedPane.addTab( tab.getLabel(), tab.getIcon(), tab.getTab(), tab.getTooltip());
 		tabbedPane.setTabComponentAt(tabbedPane.getTabCount() - 1 , new ButtonTabComponent(tabbedPane));
 		tabbedPane.setSelectedIndex( tabbedPane.getTabCount() - 1 );
 	}
@@ -228,6 +230,8 @@ public class UI {
 		tabbedPane.setSelectedIndex( tabbedPane.getTabCount() - 1 );
 	}
 
+	public void addMenuItem( AMMenuItem mi ) { uiMenu.addMenuItem(mi);	}
+	
 	/** 
 	 * Returns the currently selected tab from the main AgreementMaker window.
 	 * @return Currently selected tab.
