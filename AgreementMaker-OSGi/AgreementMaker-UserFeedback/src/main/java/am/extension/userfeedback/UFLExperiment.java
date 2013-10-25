@@ -15,7 +15,7 @@ public abstract class UFLExperiment {
 	public CandidateSelection 										candidateSelection;
 	public CandidateSelectionEvaluation 							csEvaluation;
 	public UserFeedback												userFeedback;
-	public FeedbackPropagation<UFLExperiment>				feedbackPropagation;
+	public FeedbackPropagation<UFLExperiment>						feedbackPropagation;
 	public PropagationEvaluation									propagationEvaluation;
 	public UFLControlGUI											gui;
 	
