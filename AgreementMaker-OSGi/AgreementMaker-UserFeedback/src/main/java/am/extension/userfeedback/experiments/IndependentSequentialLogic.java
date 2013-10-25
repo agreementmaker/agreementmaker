@@ -1,11 +1,8 @@
 package am.extension.userfeedback.experiments;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import am.Utility;
 import am.extension.userfeedback.UFLExperiment;
-import am.extension.userfeedback.UFLRegistry.ExperimentRegistry;
 import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
 
 public class IndependentSequentialLogic extends UFLControlLogic {
