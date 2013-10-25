@@ -29,20 +29,16 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener {
 	public final static String A_ALL_MAPPING_WRONG 	= "Unvalidate all candidate mappings";
 	public final static String A_CONCEPT_WRONG 		= "Unvalidate selected candidate concept";
 	public final static String A_ALL_CONCEPT_WRONG 	= "Unvalidate all candidate concepts";
-	
-
-    // the parts of the experiment
-    private UFLExperiment				experimentSetup;
-    
+	    
     public enum ActionCommands {
     	INITSCREEN_cmbExperiment,
     	INITSCREEN_cmbMatcher, 
-    	INITSCREEN_btnStart, 
     	INITSCREEN_cmbCandidate,
     	INITSCREEN_cmbCSEvaluation,
     	INITSCREEN_cmbUserFeedback,
     	INITSCREEN_cmbPropagationEvaluation,  
     	INITSCREEN_cmbPropagation,
+    	INITSCREEN_btnStart,
     	
     	EXECUTION_SEMANTICS_DONE, 
     	CANDIDATE_SELECTION_DONE, 
@@ -64,17 +60,14 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener {
 		ui = u;
 	}
 
-
-	
 	//****************UI Functions************************
 	
 	/**
 	 * This is the screen that gets displayed when the UFL GUI is first shown to the user.
 	 */
 	public void displayInitialScreen() {
-		
 		removeAll();
-		panel=new UFLControlGUI_InitialSettingsPanel();
+		panel = new UFLControlGUI_InitialSettingsPanel();
 		panel.addActionListener(this);
 		
 		this.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -94,37 +87,33 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener {
 	/* actionPerformed.  Almost all the real work is done here. */
 	public void actionPerformed(ActionEvent e) {
 		
-		System.out.println(e.getActionCommand());  // TODO: Remove this.
-		
-		if( experimentSetup != null && experimentSetup.experimentHasCompleted() ) return; // check stop condition
-		
 		try{
 	
 			if( e.getActionCommand() == ActionCommands.INITSCREEN_btnStart.name() ) {
 				
-				UFLExperimentSetup setup = new UFLExperimentSetup();
-				setup.im = (InitialMatcherRegistry) panel.cmbMatcher.getSelectedItem();
-				setup.cs = (CandidateSelectionRegistry) panel.cmbCandidate.getSelectedItem();
-				setup.cse = (CSEvaluationRegistry) panel.cmbCSEvaluation.getSelectedItem();
-				setup.uv = (UserValidationRegistry) panel.cmbUserFeedback.getSelectedItem();
-				setup.fp = (FeedbackPropagationRegistry) panel.cmbPropagation.getSelectedItem();
-				setup.pe = (PropagationEvaluationRegistry) panel.cmbPropagationEvaluation.getSelectedItem();
+				ExperimentRegistry experimentRegistryEntry = (ExperimentRegistry) panel.cmbExperiment.getSelectedItem();
+				final UFLExperiment newExperiment = experimentRegistryEntry.getEntryClass().newInstance();
+				newExperiment.gui = this;
+				
+				newExperiment.setup = new UFLExperimentSetup();
+				newExperiment.setup.im = (InitialMatcherRegistry) panel.cmbMatcher.getSelectedItem();
+				newExperiment.setup.cs = (CandidateSelectionRegistry) panel.cmbCandidate.getSelectedItem();
+				newExperiment.setup.cse = (CSEvaluationRegistry) panel.cmbCSEvaluation.getSelectedItem();
+				newExperiment.setup.uv = (UserValidationRegistry) panel.cmbUserFeedback.getSelectedItem();
+				newExperiment.setup.fp = (FeedbackPropagationRegistry) panel.cmbPropagation.getSelectedItem();
+				newExperiment.setup.pe = (PropagationEvaluationRegistry) panel.cmbPropagationEvaluation.getSelectedItem();
 				
 				// the experiment is starting, or we have just completed an iteration of the loop (assuming the propagation evaluation is done last)
 
 				// Step 1.  experiment is starting.  Initialize the experiment setup.
-				ExperimentRegistry experimentRegistryEntry = (ExperimentRegistry) panel.cmbExperiment.getSelectedItem();
-				experimentSetup = experimentRegistryEntry.getEntryClass().newInstance();
-				experimentSetup.gui = this;
-				experimentSetup.setup = setup;
 				
-				final UFLControlLogic logic = experimentSetup.getControlLogic();
+				final UFLControlLogic logic = newExperiment.getControlLogic();
 				
 				Thread thread = new Thread(new Runnable(){
 
 					@Override
 					public void run() {
-						logic.runExperiment(experimentSetup);
+						logic.runExperiment(newExperiment);
 					}
 					
 				});
@@ -140,5 +129,4 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener {
 			Utility.displayErrorPane(Utility.UNEXPECTED_ERROR + "\n\n" + ex.getMessage(), Utility.UNEXPECTED_ERROR_TITLE);
 		}
 	}
-	
 }

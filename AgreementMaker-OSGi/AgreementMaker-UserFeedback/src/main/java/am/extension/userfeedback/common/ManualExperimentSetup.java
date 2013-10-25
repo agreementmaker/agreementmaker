@@ -30,8 +30,6 @@ public class ManualExperimentSetup extends UFLExperiment {
 	
 	private BufferedWriter logFile;
 	
-
-	
 	public ManualExperimentSetup() {
 		// setup the log file
 		try {
