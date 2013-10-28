@@ -72,7 +72,6 @@ public class ParametricStringParameters extends DefaultMatcherParameters {
 		useBestLexSimilarity = true;
 		
 		redistributeWeights = true;
-		
 	}
 	
 	public DefaultMatcherParameters initForOAEI2010(OAEI_Track t) {

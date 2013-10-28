@@ -52,7 +52,7 @@ public class LexiconBuilderParameters {
 	}
 	
 	
-	public List<Property> getAnnotationList(Ontology ont) {
+	private List<Property> getAnnotationList(Ontology ont) {
 		List<Property> annotationList = new ArrayList<Property>();
 		
 		for( Node classNode : ont.getClassesList() ) 
@@ -70,7 +70,7 @@ public class LexiconBuilderParameters {
 	 * Right now, this is a simple string checking.  In the future, try to figure out
 	 * a better way.
 	 */
-	public List<Property> detectStandardSynonymProperties(List<Property> sourceAnnotationList, List<String> synonymPropertySeeds) {
+	private List<Property> detectStandardSynonymProperties(List<Property> sourceAnnotationList, List<String> synonymPropertySeeds) {
 
 		List<Property> synonymAnnotations = new ArrayList<Property>();
 		for( Property property : sourceAnnotationList ) {
@@ -91,7 +91,7 @@ public class LexiconBuilderParameters {
 	 * Right now, this is a simple string checking.  In the future, try to figure out
 	 * a better way.
 	 */
-	public List<Property> detectStandardDefinitionProperties(List<Property> sourceAnnotationList, List<String> definitionPropertySeeds) {
+	private List<Property> detectStandardDefinitionProperties(List<Property> sourceAnnotationList, List<String> definitionPropertySeeds) {
 		
 		List<Property> definitionAnnotations = new ArrayList<Property>();
 		for( Property property : sourceAnnotationList ) {

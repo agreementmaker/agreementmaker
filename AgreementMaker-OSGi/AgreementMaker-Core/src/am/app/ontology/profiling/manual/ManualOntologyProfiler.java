@@ -1,5 +1,7 @@
 package am.app.ontology.profiling.manual;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -71,13 +73,19 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 		sourceOntology = source;
 		targetOntology = target;
 		
+		Set<Property> uniqueProperties;
+		
 		sourceClassAnnotations = new ArrayList<Property>();
+		uniqueProperties = new HashSet<>();
 		for( Node classNode : source.getClassesList() ) 
-			sourceClassAnnotations.addAll(createClassAnnotationsList(classNode));
+			uniqueProperties.addAll(createClassAnnotationsList(classNode));
+		sourceClassAnnotations.addAll(uniqueProperties);
 				
 		targetClassAnnotations = new ArrayList<Property>();
+		uniqueProperties = new HashSet<>();
 		for( Node classNode : target.getClassesList() ) 
-			targetClassAnnotations.addAll(createClassAnnotationsList(classNode));
+			uniqueProperties.addAll(createClassAnnotationsList(classNode));
+		targetClassAnnotations.addAll(uniqueProperties);
 		
 		// annotation property coverage
 		PropertyCoverage sourceCoverage = new PropertyCoverage(source);
@@ -86,12 +94,16 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 		sourcePropertyAnnotationCoverage = sourceCoverage.getPropertyMap();
 		
 		sourcePropertyAnnotations = new ArrayList<Property>();
+		uniqueProperties = new HashSet<>();
 		for( Node propertyNode : source.getPropertiesList() ) 
-			sourcePropertyAnnotations.addAll(createPropertyAnnotationsList(propertyNode));
+			uniqueProperties.addAll(createPropertyAnnotationsList(propertyNode));
+		sourcePropertyAnnotations.addAll(uniqueProperties);
 		
 		targetPropertyAnnotations = new ArrayList<Property>();
+		uniqueProperties = new HashSet<>();
 		for( Node propertyNode : target.getPropertiesList() ) 
-			targetPropertyAnnotations.addAll(createPropertyAnnotationsList(propertyNode));
+			uniqueProperties.addAll(createPropertyAnnotationsList(propertyNode));
+		targetPropertyAnnotations.addAll(uniqueProperties);
 		
 		// annotation property coverage
 		PropertyCoverage targetCoverage = new PropertyCoverage(target);
@@ -100,9 +112,8 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 		targetPropertyAnnotationCoverage = targetCoverage.getPropertyMap();
 		
 		
-//		ProfilingReport manuProfilingReport = new ManualProfilingReport();
+//		ProfilingReport manuProfilingReport = newFFFFFF ManualProfilingReport();
 	}
-
 	
 	/**
 	 * Given a Node representing an ontology property, append to the propertyList
@@ -151,15 +162,28 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 	}
 
 	@Override
-	public OntologyProfilerPanel getProfilerPanel(boolean initial) {
-		if( initial ) return null;
-		return new ManualProfilerMatchingPanel(this);
+	public OntologyProfilerPanel getProfilerPanel(ParamType type) {
+		switch(type) {
+		case MATCHING_PARAMETERS:
+			return new ManualProfilerMatchingPanel(this);
+			
+		default:
+			throw new RuntimeException("This matching algorithm does not provide a panel for " + type.name());
+		}
 	}
 
 	@Override
-	public boolean needsParams(boolean initial) {
-		if( initial ) return false;	// this method does not require initial parameters (yet)
-		else return true;  			// this method DOES require matching parameters
+	public boolean needsParams(ParamType type) {		
+		switch(type) {
+		case INITIAL_PARAMETERS:
+			return false; // this profiler does not require initial parameters (yet)
+			
+		case MATCHING_PARAMETERS:
+			return true; // this profiler DOES require matching parameters
+			
+		default:
+			return false;
+		}
 	}
 
 	
@@ -168,15 +192,12 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 	@Override public ProfilerRegistry getName() { return name; }
 	@Override public void setName(ProfilerRegistry name) { this.name = name; }
 
-
-	@Override public void setInitialParams(OntologyProfilerParameters param) { }
-
-	@Override public void setMatchTimeParams(OntologyProfilerParameters param) {
+	@Override
+	public void setParams(ParamType type, OntologyProfilerParameters param) {
+		assert type == ParamType.MATCHING_PARAMETERS;
+		
 		if( param instanceof ManualProfilerMatchingParameters ) {
 			matchTimeParams = (ManualProfilerMatchingParameters) param;
-		} else {
-			// we were passed in a different kind of parameters, not much we can do.
-			matchTimeParams = null;
 		}
 	}
 
@@ -401,6 +422,73 @@ public class ManualOntologyProfiler implements OntologyProfiler {
 	public MatcherStack getMatcherStack() {
 		return null;
 	}
-
 	
+	/**
+	 * A helper method to instantiate a ManualOntologyProfiler using Java
+	 * Reflection. The ontology profiler will <i>only</i> take into account the
+	 * <b>localname</b> and <b>label</b> of the ontology concepts.
+	 */
+	public static OntologyProfiler createOntologyProfiler(Ontology sourceOntology, Ontology targetOntology) 
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+
+		ProfilerRegistry entry = ProfilerRegistry.ManualProfiler;
+		Constructor<? extends OntologyProfiler> constructor = null;
+		constructor = entry.getProfilerClass().getConstructor(Ontology.class, Ontology.class);
+		ManualOntologyProfiler manualProfiler = 
+				(ManualOntologyProfiler) constructor.newInstance(sourceOntology, targetOntology);
+				
+		manualProfiler.setName(entry);
+		
+		ManualProfilerMatchingParameters profilingMatchingParams = new ManualProfilerMatchingParameters();
+		
+		profilingMatchingParams.matchSourceClassLocalname = true;
+		profilingMatchingParams.matchSourcePropertyLocalname = true;
+		
+		profilingMatchingParams.matchTargetClassLocalname = true;
+		profilingMatchingParams.matchTargetPropertyLocalname = true;
+		
+		profilingMatchingParams.sourceClassAnnotations = new ArrayList<Property>();
+		for( Property currentProperty : manualProfiler.getSourceClassAnnotations() ) {
+			if( currentProperty.getLocalName().toLowerCase().contains("label") ) {
+				profilingMatchingParams.sourceClassAnnotations.add(currentProperty);
+			}
+		}
+		
+		profilingMatchingParams.sourcePropertyAnnotations = new ArrayList<Property>();
+		for( Property currentProperty : manualProfiler.getSourcePropertyAnnotations() ) {
+			if( currentProperty.getLocalName().toLowerCase().contains("label") ) {
+				profilingMatchingParams.sourcePropertyAnnotations.add(currentProperty);
+			}
+		}
+		
+		profilingMatchingParams.targetClassAnnotations = new ArrayList<Property>();
+		for( Property currentProperty : manualProfiler.getTargetClassAnnotations() ) {
+			if( currentProperty.getLocalName().toLowerCase().contains("label") ) {
+				profilingMatchingParams.targetClassAnnotations.add(currentProperty);
+			}
+		}
+		
+		profilingMatchingParams.targetPropertyAnnotations = new ArrayList<Property>();
+		for( Property currentProperty : manualProfiler.getTargetPropertyAnnotations() ) {
+			if( currentProperty.getLocalName().toLowerCase().contains("label") ) {
+				profilingMatchingParams.targetPropertyAnnotations.add(currentProperty);
+			}
+		}
+		
+		manualProfiler.setParams(ParamType.MATCHING_PARAMETERS, profilingMatchingParams);
+		
+		return manualProfiler;
+	}
+	
+	private class LocalnameHashedProperty {
+		public final Property p;
+		
+		public LocalnameHashedProperty(Property p) {
+			this.p = p;
+		}
+		
+		@Override public int hashCode() {
+			return p.getLocalName().hashCode();
+		}
+	}
 }

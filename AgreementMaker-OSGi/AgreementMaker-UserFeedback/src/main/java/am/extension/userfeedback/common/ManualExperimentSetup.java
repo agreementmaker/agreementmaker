@@ -9,9 +9,9 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.ontology.Ontology;
-import am.extension.userfeedback.FeedbackPropagation;
 import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.IndependentSequentialLogic;
@@ -53,11 +53,11 @@ public class ManualExperimentSetup extends UFLExperiment {
 
 	@Override
 	public Alignment<Mapping> getReferenceAlignment() {
-		List<AbstractMatcher> matchers = Core.getInstance().getMatcherInstances();
-		for( AbstractMatcher m : matchers ) {
-			if( m instanceof ReferenceAlignmentMatcher ) {
+		List<MatchingTask> tasks = Core.getInstance().getMatchingTasks();
+		for( MatchingTask m : tasks ) {
+			if( m.matchingAlgorithm instanceof ReferenceAlignmentMatcher ) {
 				// return the alignment of the first reference alignment matcher
-				return m.getAlignment();
+				return m.selectionResult.getAlignment();
 			}
 		}
 		return null;
@@ -95,5 +95,12 @@ public class ManualExperimentSetup extends UFLExperiment {
 	@Override
 	public UFLControlLogic getControlLogic() {
 		return new IndependentSequentialLogic();
+	}
+	
+	@Override
+	public String getDescription() {
+		return  "Everything for this experiment is manually chosen by the user, through the user interface.\n" +
+				"The source and target ontologies are loaded into AgreementMaker,\n" + 
+				"and the reference alignment is imported.";
 	}
 }

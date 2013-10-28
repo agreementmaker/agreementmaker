@@ -115,4 +115,8 @@ private Object[][] trainingSet;
 		return new IndependentSequentialLogic();
 	}
 
+	@Override
+	public String getDescription() {
+		return "Work in progress";
+	}	
 }

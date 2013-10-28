@@ -14,6 +14,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.MatchingProgressListener;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.app.ontology.profiling.OntologyProfiler.ParamType;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.app.ontology.profiling.manual.ManualProfilerMatchingParameters;
 import am.utility.RunTimer;
@@ -84,7 +85,7 @@ public class ExampleBSMwithOntologyProfiler {
 		param.sourcePropertyAnnotations = createAnnotationList("label", profiler.getSourcePropertyAnnotations());
 		param.targetPropertyAnnotations = createAnnotationList("label", profiler.getTargetPropertyAnnotations());
 		
-		profiler.setMatchTimeParams(param);
+		profiler.setParams(ParamType.MATCHING_PARAMETERS, param);
 		Core.getInstance().setOntologyProfiler(profiler);
 		
 		// ok, now create the matching algorithm

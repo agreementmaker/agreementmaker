@@ -1076,7 +1076,8 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	}
 
 	public Alignment<Mapping> getAlignment() {
-		Alignment<Mapping> aligns = new Alignment<Mapping>(sourceOntology.getID(), targetOntology.getID());
+		Alignment<Mapping> aligns = new Alignment<Mapping>(
+				sourceOntology.getID(), targetOntology.getID());
 		if(areClassesAligned()) {
 			aligns.addAll(classesAlignmentSet);
 		}
@@ -1534,12 +1535,18 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 	  * Need to keep track of the progress dialog we have because right now, there is no button to close it, so we must make it close automatically.
 	  * @param p
 	  */
-	 public void addProgressDisplay( MatchingProgressListener p ) {		
+	 public void addProgressDisplay( MatchingProgressListener p ) {
+		 if( p == null )
+			 throw new RuntimeException("Cannot accept a null progress listener.");
+		 
 		 progressDisplays.add(p);
 		 addPropertyChangeListener(p);
 	 }
 
 	 public void removeProgressDisplay( MatchingProgressListener p ) {
+		 if( p == null )
+			 throw new RuntimeException("Cannot remove a null progress listener.");
+		 
 		 progressDisplays.remove(p);
 		 removePropertyChangeListener(p);
 	 }

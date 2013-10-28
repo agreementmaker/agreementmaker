@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +34,7 @@ import am.app.ontology.Ontology;
 import am.app.ontology.hierarchy.AlternateHierarchy;
 import am.app.ontology.profiling.OntologyProfiler;
 import am.app.ontology.profiling.ProfilerRegistry;
+import am.app.ontology.profiling.OntologyProfiler.ParamType;
 import am.app.ontology.profiling.classification.OntologyClassifier;
 import am.app.ontology.profiling.classification.OntologyClassifier.OAEI2011Configuration;
 import am.app.ontology.profiling.manual.ManualOntologyProfiler;
@@ -205,60 +207,9 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		final DefaultMatcherParameters param = getParam();
 		
-		// Ontology profiling
-		ProfilerRegistry entry = ProfilerRegistry.ManualProfiler;
-		OntologyProfiler profiler = null;
-		Constructor<? extends OntologyProfiler> constructor = null;
-			
-		constructor = entry.getProfilerClass().getConstructor(Ontology.class, Ontology.class);
-		//profiler = constructor.newInstance(Core.getInstance().getSourceOntology(), Core.getInstance().getTargetOntology());
-		profiler = constructor.newInstance(sourceOntology, targetOntology);
-		
-		
-		if(profiler!=null) {
-			profiler.setName(entry);
-			Core.getInstance().setOntologyProfiler(profiler);
-		}
-		
-		ManualOntologyProfiler manualProfiler = (ManualOntologyProfiler) profiler;
-		
-		ManualProfilerMatchingParameters profilingMatchingParams = new ManualProfilerMatchingParameters();
-		
-		profilingMatchingParams.matchSourceClassLocalname = true;
-		profilingMatchingParams.matchSourcePropertyLocalname = true;
-		
-		profilingMatchingParams.matchTargetClassLocalname = true;
-		profilingMatchingParams.matchTargetPropertyLocalname = true;
-		
-		profilingMatchingParams.sourceClassAnnotations = new ArrayList<Property>();
-		for( Property currentProperty : manualProfiler.getSourceClassAnnotations() ) {
-			if( currentProperty.getLocalName().toLowerCase().contains("label") ) {
-				profilingMatchingParams.sourceClassAnnotations.add(currentProperty);
-			}
-		}
-		
-		profilingMatchingParams.sourcePropertyAnnotations = new ArrayList<Property>();
-		for( Property currentProperty : manualProfiler.getSourcePropertyAnnotations() ) {
-			if( currentProperty.getLocalName().toLowerCase().contains("label") ) {
-				profilingMatchingParams.sourcePropertyAnnotations.add(currentProperty);
-			}
-		}
-		
-		profilingMatchingParams.targetClassAnnotations = new ArrayList<Property>();
-		for( Property currentProperty : manualProfiler.getTargetClassAnnotations() ) {
-			if( currentProperty.getLocalName().toLowerCase().contains("label") ) {
-				profilingMatchingParams.targetClassAnnotations.add(currentProperty);
-			}
-		}
-		
-		profilingMatchingParams.targetPropertyAnnotations = new ArrayList<Property>();
-		for( Property currentProperty : manualProfiler.getTargetPropertyAnnotations() ) {
-			if( currentProperty.getLocalName().toLowerCase().contains("label") ) {
-				profilingMatchingParams.targetPropertyAnnotations.add(currentProperty);
-			}
-		}
-		
-		manualProfiler.setMatchTimeParams(profilingMatchingParams);
+		// The BSM needs an ontology profiler.
+		Core.getInstance().setOntologyProfiler(
+				ManualOntologyProfiler.createOntologyProfiler(sourceOntology, targetOntology));
 		
 		// BSM
 		List<AbstractMatcher> lwcInputMatchers = new ArrayList<AbstractMatcher>();
@@ -386,7 +337,7 @@ public class OAEI2011Matcher extends AbstractMatcher {
 		
 		return null;
 	}
-	
+
 	private AbstractMatcher runGeneralPurposeAdvanced() throws Exception {
 		
 		// Build the lexicons.

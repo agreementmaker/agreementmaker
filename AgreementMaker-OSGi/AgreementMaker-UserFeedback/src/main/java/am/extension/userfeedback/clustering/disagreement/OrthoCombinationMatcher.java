@@ -1,15 +1,19 @@
 package am.extension.userfeedback.clustering.disagreement;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 import am.Utility;
+import am.app.Core;
+import am.app.lexicon.LexiconBuilderParameters;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.utility.OAEI_Track;
 import am.app.ontology.Ontology;
+import am.app.ontology.profiling.manual.ManualOntologyProfiler;
 import am.extension.userfeedback.ExecutionSemantics;
 import am.extension.userfeedback.UFLExperiment;
 import am.matcher.Combination.CombinationMatcher;
@@ -36,7 +40,7 @@ import am.matcher.parametricStringMatcher.ParametricStringParameters;
  */
 public class OrthoCombinationMatcher extends ExecutionSemantics {
 
-	public OrthoCombinationMatcher() { super(); } // super() calls initializeVariables();
+	public OrthoCombinationMatcher() { super(); }
 	
 	@Override
 	public List<AbstractMatcher> getComponentMatchers() {
@@ -87,6 +91,7 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		
 		try {
 			
+			progressDisplay = experiment.gui;
 			initializeVariables(experiment.getSourceOntology(), experiment.getTargetOntology());
 			
 			// TODO: Run Multiple Threads.
@@ -207,10 +212,29 @@ public class OrthoCombinationMatcher extends ExecutionSemantics {
 		// IISM
 		param_iism.setForOAEI2010();
 		m_iism = new IterativeInstanceStructuralMatcher();
-		m_iism.setParam(param_iism);
+		m_iism.setParameters(param_iism);
 		m_iism.setOntologies(sourceOntology, targetOntology);
 		m_iism.addProgressDisplay(progressDisplay);
 		
+		// Initialize the OntologyProfiling algorithm because The BSM needs an ontology profiler.
+		if( Core.getInstance().getOntologyProfiler() == null ) {
+			try {
+				Core.getInstance().setOntologyProfiler(
+					ManualOntologyProfiler.createOntologyProfiler(sourceOntology, targetOntology));
+			}
+			catch(IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		// Initialize the LexiconStore because it's required by the PSM
+		if( Core.getLexiconStore().getParameters() == null ) {
+			LexiconBuilderParameters lexParam = new LexiconBuilderParameters();
+			lexParam.sourceOntology = sourceOntology;
+			lexParam.targetOntology = targetOntology;
+			lexParam.detectStandardProperties();
+			Core.getLexiconStore().setParameters(lexParam);
+		}
 	}
 
 	@Override public Alignment<Mapping> getAlignment() { 

@@ -16,7 +16,7 @@ import am.utility.Pair;
  * Work in progress.  Not done yet. -- Cosmin Sept 14, 2011.
  *
  */
-public class MetricsOntologyProfiler implements OntologyProfiler{
+public class MetricsOntologyProfiler implements OntologyProfiler {
 
 	private ProfilerRegistry name;
 	
@@ -49,22 +49,20 @@ public class MetricsOntologyProfiler implements OntologyProfiler{
 	}
 
 	@Override
-	public OntologyProfilerPanel getProfilerPanel(boolean initial) {
-		// TODO Auto-generated method stub
-		return null;
+	public OntologyProfilerPanel getProfilerPanel(ParamType type) {
+		throw new RuntimeException("This profiling algorithm does not provide a parameters panel for " + type.name());
 	}
 
 	@Override
-	public boolean needsParams(boolean initial) {
-		return false;
+	public boolean needsParams(ParamType type) {
+		return false; // needs no configuration
 	}
 
 	@Override
-	public void setInitialParams(OntologyProfilerParameters param) { }
-
-	@Override
-	public void setMatchTimeParams(OntologyProfilerParameters param) { }
-
+	public void setParams(ParamType type, OntologyProfilerParameters param) {
+		throw new AssertionError("This algorithm does not need any parameters.");
+	}
+	
 	@Override
 	public void setName(ProfilerRegistry name) {
 		this.name = name;

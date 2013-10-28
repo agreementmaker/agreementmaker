@@ -23,7 +23,6 @@ public abstract class UFLControlLogic implements ActionListener {
 		try {
 			experiment.initialMatcher = experiment.setup.im.getEntryClass().newInstance();
 			experiment.initialMatcher.addActionListener(this);
-			
 			startThread(new Runnable(){
 				@Override public void run() {
 					experiment.initialMatcher.run(experiment);	

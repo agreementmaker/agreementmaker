@@ -11,6 +11,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.ontology.profiling.OntologyProfilerPanel;
 import am.app.ontology.profiling.ProfilerRegistry;
+import am.app.ontology.profiling.OntologyProfiler.ParamType;
 
 public class AnnotationProfilingParametersPanel extends JPanel {
 
@@ -32,14 +33,14 @@ public class AnnotationProfilingParametersPanel extends JPanel {
 			profilingPanel.add(new JLabel("No ontology profiling algorithm selected."), BorderLayout.CENTER);
 		} else if( !matcher.supportsFeature( MatcherFeature.ONTOLOGY_PROFILING ) ) {
 			profilingPanel.add(new JLabel("This matcher does not support ontology profiling."), BorderLayout.CENTER);
-		} else if( Core.getInstance().getOntologyProfiler().getProfilerPanel(false) == null ){
+		} else if( !Core.getInstance().getOntologyProfiler().needsParams(ParamType.MATCHING_PARAMETERS) ){
 			// the ontology profiler does not have a match time parameters panel
 			ProfilerRegistry name = Core.getInstance().getOntologyProfiler().getName();
 			profilingPanel.add(new JLabel( name.getProfilerName() + " has been selected." + 
 					"\nThe profiling algorithm does not need parameters at match time."), BorderLayout.CENTER);
 		} else {
 			if( matchTimeProfilingPanel == null ) {
-				matchTimeProfilingPanel = Core.getInstance().getOntologyProfiler().getProfilerPanel(false);
+				matchTimeProfilingPanel = Core.getInstance().getOntologyProfiler().getProfilerPanel(ParamType.MATCHING_PARAMETERS);
 			}
 			JScrollPane profilingScroll = new JScrollPane(matchTimeProfilingPanel);
 			profilingScroll.getVerticalScrollBar().setUnitIncrement(20);

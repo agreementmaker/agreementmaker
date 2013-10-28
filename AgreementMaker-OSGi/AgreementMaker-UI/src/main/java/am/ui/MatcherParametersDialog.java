@@ -47,6 +47,7 @@ import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.oneToOneSelection.MwbmSelection;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
+import am.app.ontology.profiling.OntologyProfiler.ParamType;
 import am.app.ontology.profiling.OntologyProfilerPanel;
 import am.app.ontology.profiling.ProfilerRegistry;
 import am.app.osgi.MatcherNotFoundException;
@@ -445,14 +446,15 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			profilingPanel.add(new JLabel("No ontology profiling algorithm selected."), BorderLayout.CENTER);
 		} else if( !matcher.supportsFeature( MatcherFeature.ONTOLOGY_PROFILING ) ) {
 			profilingPanel.add(new JLabel("This matcher does not support ontology profiling."), BorderLayout.CENTER);
-		} else if( Core.getInstance().getOntologyProfiler().getProfilerPanel(false) == null ){
+		} else if( !Core.getInstance().getOntologyProfiler().needsParams(ParamType.MATCHING_PARAMETERS) ){
 			// the ontology profiler does not have a match time parameters panel
 			ProfilerRegistry name = Core.getInstance().getOntologyProfiler().getName();
 			profilingPanel.add(new JLabel( name.getProfilerName() + " has been selected." + 
 					"\nThe profiling algorithm does not need parameters at match time."), BorderLayout.CENTER);
 		} else {
 			if( matchTimeProfilingPanel == null ) {
-				matchTimeProfilingPanel = Core.getInstance().getOntologyProfiler().getProfilerPanel(false);
+				matchTimeProfilingPanel = 
+						Core.getInstance().getOntologyProfiler().getProfilerPanel(ParamType.MATCHING_PARAMETERS);
 			}
 			JScrollPane profilingScroll = new JScrollPane(matchTimeProfilingPanel);
 			profilingScroll.getVerticalScrollBar().setUnitIncrement(20);
@@ -605,7 +607,7 @@ public class MatcherParametersDialog extends JDialog implements ActionListener{
 			
 			// set the ontology profiling parameters.
 			if( matchTimeProfilingPanel != null ) {
-				Core.getInstance().getOntologyProfiler().setMatchTimeParams(matchTimeProfilingPanel.getParameters());
+				Core.getInstance().getOntologyProfiler().setParams(ParamType.MATCHING_PARAMETERS, matchTimeProfilingPanel.getParameters());
 			}
 			
 			// save selected index

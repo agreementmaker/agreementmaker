@@ -6,8 +6,10 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
@@ -135,8 +137,7 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 				btnCancel.doClick();
 			}
 		};
-		InputMap inputMap = rootPane
-		.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		InputMap inputMap = rootPane.getInputMap(JComponent.WHEN_FOCUSED);
 		inputMap.put(stroke, "ESCAPE");
 		rootPane.getActionMap().put("ESCAPE", actionListener);
 
@@ -317,11 +318,14 @@ public class LexiconBuilderDialog extends JDialog implements ListSelectionListen
 		if( annotationList == null ) {
 
 			annotationList = new ArrayList<Property>();
+			Set<Property> uniqueAnnotationProperties = new HashSet<>();
 			for( Node classNode : ont.getClassesList() ) 
-				annotationList.addAll(ManualOntologyProfiler.createClassAnnotationsList(classNode));
+				uniqueAnnotationProperties.addAll(ManualOntologyProfiler.createClassAnnotationsList(classNode));
 			
 			for( Node propertyNode : ont.getPropertiesList() ) 
-				annotationList.addAll(ManualOntologyProfiler.createPropertyAnnotationsList(propertyNode));
+				uniqueAnnotationProperties.addAll(ManualOntologyProfiler.createPropertyAnnotationsList(propertyNode));
+			
+			annotationList.addAll(uniqueAnnotationProperties);
 			
 			Collections.sort(annotationList, new LocalnameComparator());
 			

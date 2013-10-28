@@ -15,6 +15,20 @@ import am.utility.Pair;
  */
 public interface OntologyProfiler {
 
+	public enum ParamType {
+		
+		/**
+		 * These are parameters that are required to create the OntologyProfiler object.
+		 */
+		INITIAL_PARAMETERS,
+		
+		/**
+		 * These are parameters that are required after the ontologies have been profiled, but before
+		 * the ontology profiler can provide values for {@link #getAnnotationIterator(Node,Node)}.
+		 */
+		MATCHING_PARAMETERS;
+	}
+	
 	/**
 	 * Determine whether this ontology profiling method needs parameters.
 	 * There can be two kinds of parameters.  Initial parameters and matching parameters.
@@ -23,10 +37,10 @@ public interface OntologyProfiler {
 	 * 
 	 * If this method returns true, calling the getProfilerPanel(initial) method should return the panel.
 	 * 
-	 * @param initial If true, check if the algorithm needs initial parameters.  If false, check if the algorithm needs matching parameters.
+	 * @param initial If true, check if the algorithm needs <b>initial</b> parameters.  If false, check if the algorithm needs <b>matching</b> parameters.
 	 * @return
 	 */
-	public boolean needsParams(boolean initial);
+	public boolean needsParams(ParamType type);
 
 	/**
 	 * Get the ontology profiling panel.  There can be two panels.
@@ -37,7 +51,7 @@ public interface OntologyProfiler {
 	 * @param initial If true, return the initial panel.  Otherwise return the matching panel.
 	 * @return One of two panels: the initial ontology profiling panel, and the matching profiling panel.
 	 */
-	public OntologyProfilerPanel getProfilerPanel(boolean initial);
+	public OntologyProfilerPanel getProfilerPanel(ParamType type);
 
 	/**
 	 * Return an iterator over all the possible combinations of annotations for the two nodes.
@@ -49,8 +63,7 @@ public interface OntologyProfiler {
 	
 	public List<String> getAnnotations( Node node );
 	
-	public void setInitialParams(OntologyProfilerParameters param);
-	public void setMatchTimeParams(OntologyProfilerParameters param);
+	public void setParams(ParamType type, OntologyProfilerParameters param);
 	
 	public void setName( ProfilerRegistry name ); // used by the ontology profiler factory
 	public ProfilerRegistry getName();

@@ -307,6 +307,8 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		ParametricStringMatcher localMatcher = new ParametricStringMatcher();
 		localMatcher.setParameters(localMatcherParams);
 		localMatcher.initializeNormalizer();
+		localMatcher.beforeAlignOperations(); // need to do this so that the PSM is correctly initialized.
+		
 		SimilarityMatrix localMatrix = new ArraySimilarityMatrixOld(
 				source.size(), target.size(), typeOfNodes);
 

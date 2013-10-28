@@ -15,7 +15,6 @@ import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFeature;
 import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.StringUtil.Normalizer;
-import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.AMNode;
 import am.app.ontology.Node;
@@ -37,13 +36,6 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	private transient Lexicon sourceOntologyLexicon, targetOntologyLexicon;
 	private transient Lexicon sourceWordNetLexicon, targetWordNetLexicon; 
 	
-	//5 doubles needed for the provenance
-	private double lnw;//local-name weight
-	private double lw;//label weight
-	private double cw;//comment weight
-	private double saw;//see also weight
-	private double idbw;//is defined by weight
-	
 	private StringSimilarityMeasure ssm;
 	
 	public ParametricStringMatcher() { super(); }
@@ -58,7 +50,6 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		setCategory(MatcherCategory.SYNTACTIC);
 		
 		//features
-		addFeature(MatcherFeature.MAPPING_PROVENANCE);
 		
 		// all the similarity measures do not overlap with eachother, so we can invoke multiple alignTwoNode() methods.
 		addFeature(MatcherFeature.THREADED_MODE);
@@ -116,12 +107,10 @@ public class ParametricStringMatcher extends AbstractMatcher {
 	@Override
 	public Mapping alignTwoNodes(Node source, Node target, alignType typeOfNodes, SimilarityMatrix matrix) {
 		
-		ParametricStringParameters parameters  = (ParametricStringParameters)param;
-		double sim = 0.0d; // this must be set
 		
-		//used for provenanceString 
-		String TS= new String();//targetSynonym
-		String SS= new String();//sourceSynonym
+		
+		ParametricStringParameters parameters  = (ParametricStringParameters)param;
+		double sim = 0d; // this must be set
 		
 		if( parameters.useLexicons ) { // lexicon code
 		
@@ -178,8 +167,6 @@ public class ParametricStringMatcher extends AbstractMatcher {
 						double currentSynonymPairSimilarity = performStringSimilarity(sourceSynonym, targetSynonym);
 						if( currentSynonymPairSimilarity > maxSimilarity ){ 
 							maxSimilarity = currentSynonymPairSimilarity;
-							TS=targetSynonym;//get the target synonym for use with the provenanceString, if its being used
-							SS=sourceSynonym;//get the source synonym for use with the provenanceString, if its being used
 						}
 					}
 				}
@@ -218,8 +205,6 @@ public class ParametricStringMatcher extends AbstractMatcher {
 							double currentOntSynonymPairSimilarity = performStringSimilarity(sourceOntSynonym, targetOntSynonym);
 							if( currentOntSynonymPairSimilarity > maxOntSynSimilarity ) {
 								maxOntSynSimilarity = currentOntSynonymPairSimilarity;
-								SS = sourceOntSynonym;
-								TS = targetOntSynonym;
 							}
 						}
 					}
@@ -242,8 +227,6 @@ public class ParametricStringMatcher extends AbstractMatcher {
 							double currentWNSynonymPairSimilarity = performStringSimilarity(sourceWNSynonym, targetWNSynonym);
 							if( currentWNSynonymPairSimilarity > maxWNSynSimilarity ) {
 								maxWNSynSimilarity = currentWNSynonymPairSimilarity;
-								SS += ", " + sourceWNSynonym;
-								TS += ", " + targetWNSynonym;
 							}
 						}
 					}
@@ -352,117 +335,16 @@ public class ParametricStringMatcher extends AbstractMatcher {
 				//Weighted average, this normalize everything so also if the sum of  weights is not one, the value is always between 0 and 1. 
 				//this also automatically redistribute 0 weights.
 				sim /= totWeight; 
-				
-				lnw=localWeight;
-				lw=labelWeight;
-				cw=commentWeight; 
-				saw=seeAlsoWeight; 
-				idbw=isDefinedByWeight;
 			}
 				
 		}
 
-		if( sim > 0.0d ){
-			String provenanceString=null;
-			if(param.storeProvenance){
-				provenanceString="\t********ParametricStringMatcher********\n";
-				provenanceString+= "sim(\"" 
-				+ source.getLocalName() + "\", \""
-				+ target.getLocalName()
-				
-				+ "\") = "+sim+" \n";
-				provenanceString+="similarity metric used: "+parameters.measure+" \n";
-				//statments to check if lexicon was used
-				if(parameters.useLexicons)
-				{
-					provenanceString+="using lexicons ";
-					//setup the provenance string if no weights are used
-					if(parameters.useBestLexSimilarity )
-						provenanceString+="with best similarity \n";
-					else
-						provenanceString+="\nontology synonym weight: "+parameters.lexOntSynonymWeight+"\n wordnet synonym weight: "
-										  +parameters.lexWNSynonymWeight;
-					provenanceString+="\n source synonym: "+SS+"\n target synonym: "+TS;
-				}
-				else if(parameters.redistributeWeights) //list all the weights without redistubution
-					provenanceString+="Weights:\n\tlabel weight: "+lw+"\n\tlocal-name weight:"+lnw+
-					  "\n\tcomment weight: "+cw+"\n\tseeAlso weight: "+saw+
-					  "\n\tisDefinedBy weight: "+idbw;
-				else
-					provenanceString+="Weights:\n\tlabel weight: "+parameters.labelWeight+"\n\tlocal-name weight:"+parameters.localWeight+
-					  "\n\tcomment weight: "+parameters.commentWeight+"\n\tseeAlso weight: "+parameters.seeAlsoWeight+
-					  "\n\tisDefinedBy weight: "+parameters.isDefinedByWeight;
-				//time for the other parameters to be listed
-				provenanceString+=" ";//do not consider empty concept strings..??what param is that
-				
-				
-				boolean first=true;
-				//NormalizerParameter params = (NormalizerParameter)param;
-				NormalizerParameter params=(( ParametricStringParameters)param).normParameter;
-				if(params.normalizeBlank)
-				{
-					if(first)
-					{
-						first=false;
-						provenanceString+="\npreprocessing:";
-					}
-					provenanceString+="\n\tblank normalization";
-				}
-				if(params.normalizePunctuation)
-				{
-					if(first)
-					{
-						first=false;
-						provenanceString+="\npreprocessing:";
-					}
-					provenanceString+="\n\tpunctuation normalization";
-				}
-				if(params.normalizeDiacritics)
-				{
-					if(first)
-					{
-						first=false;
-						provenanceString+="\npreprocessing:";
-					}
-					provenanceString+="\n\tdiacritics normalization";
-				}
-				if(params.normalizeDigit)
-				{
-					if(first)
-					{
-						first=false;
-						provenanceString+="\npreprocessing:";
-					}
-					provenanceString+="\n\tdigit suppression";
-				}
-				if(params.removeStopWords)
-				{
-					if(first)
-					{
-						first=false;
-						provenanceString+="\npreprocessing:";
-					}
-					provenanceString+="\n\tstop word removal";
-				}
-				if(params.stem)
-				{
-					if(first)
-					{
-						first=false;
-						provenanceString+="\npreprocessing:";
-					}
-					provenanceString+="\n\tstemming";
-				}
-				if(first)	
-					provenanceString+="without preprocessing";
-			}
-			
-			Mapping pmapping=new Mapping(source, target, sim);
-			if( param.storeProvenance && sim > param.threshold ) pmapping.setProvenance(provenanceString+"\n");
-			return pmapping;
-			}
-		
-		return null; // no similarity was found
+		if( sim > 0d ) {
+			return new Mapping(source, target, sim);
+		}
+		else {
+			return null; // no similarity was found
+		}
 	}
 	
 	

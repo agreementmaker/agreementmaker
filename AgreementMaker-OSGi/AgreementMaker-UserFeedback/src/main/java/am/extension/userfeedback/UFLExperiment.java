@@ -64,4 +64,10 @@ public abstract class UFLExperiment {
 	public void setIterationNumber(int iterationNumber) {
 		this.iterationNumber = iterationNumber;
 	}
+	
+	/**
+	 * @return A human-readable description of the experiment that is displayed
+	 *         to the user.
+	 */
+	public abstract String getDescription(); 
 }
