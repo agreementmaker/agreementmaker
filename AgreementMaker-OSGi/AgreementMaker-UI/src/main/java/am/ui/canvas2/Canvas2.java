@@ -222,8 +222,11 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 
 	/**
 	 * The paint function tries to paint only those graphical elements that are in the current viewport bounds.
+	 * 
+	 * NOTE: NEVER ADD THE synchronized KEYWORD TO THIS METHOD!!!! Your error is somewhere else.
 	*/
-	public synchronized void paintComponent(Graphics g ) {
+	@Override
+	public void paintComponent(Graphics g ) {
 		if( painting ) return;  // avoid concurrent paintings
 		painting = true;
 		super.paintComponent(g);
