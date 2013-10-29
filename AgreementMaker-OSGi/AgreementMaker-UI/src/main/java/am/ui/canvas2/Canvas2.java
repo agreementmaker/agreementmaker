@@ -8,6 +8,7 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JScrollPane;
@@ -74,10 +75,10 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
  *******************************************************************************/
 	
 	// The list of the layout graphs for each of the ontologies.
-	private ArrayList<CanvasGraph> graphs;  // holds all the ACTIVE graphs, those graphs that are drawn on the canvas
+	private List<CanvasGraph> graphs;  // holds all the ACTIVE graphs, those graphs that are drawn on the canvas
 	
-	private ArrayList<Canvas2Vertex> visibleVertices;  // everytime we paint the canvas, we keep a list of the visible nodes. (used in mouse movement functions)
-	private ArrayList<Canvas2Edge>   visibleEdges;  // also keep a list of visible edges
+	private List<Canvas2Vertex> visibleVertices;  // everytime we paint the canvas, we keep a list of the visible nodes. (used in mouse movement functions)
+	private List<Canvas2Edge>   visibleEdges;  // also keep a list of visible edges
 	
 	private Canvas2Layout layout; // the Canvas2Listener is the muscle of the operation, i.e. it does everything related to layout.
 	
@@ -94,7 +95,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	public Canvas2(Canvas2Layout layout) { super(); initialize(null, layout); } // allows the use of a custom layout
 	public Canvas2(JScrollPane s, Canvas2Layout layout) { super(s); initialize(s, layout); } // allows the use of a custom layout
 	
-	public Canvas2(JScrollPane s, ArrayList<CanvasGraph> sGraph) {
+	public Canvas2(JScrollPane s, List<CanvasGraph> sGraph) {
 		this(s);
 		this.graphs = sGraph;
 		this.updateSize();
@@ -117,8 +118,8 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		UICore.getInstance().addVisualizationChangeListener(this);
 	}
 	
-	public ArrayList<Canvas2Vertex> getVisibleVertices() { return visibleVertices; }
-	public ArrayList<Canvas2Edge>   getVisibleEdges()    { return visibleEdges; }
+	public List<Canvas2Vertex> getVisibleVertices() { return visibleVertices; }
+	public List<Canvas2Edge>   getVisibleEdges()    { return visibleEdges; }
 	
 	/**
 	 * Ontology Change Listener methods 
@@ -132,7 +133,6 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 			// we have to build the layout graphs.
 			Ontology o = Core.getInstance().getOntologyByID(e.getOntologyID());
 			buildLayoutGraphs(o);
-			
 			// display the ontology graphs
 			layout.displayOntology(graphs,  e.getOntologyID() );
 			updateSize();
@@ -174,7 +174,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 	}
 	
 	
-	public ArrayList<CanvasGraph> getGraphs() { return graphs; }
+	public List<CanvasGraph> getGraphs() { return graphs; }
 	
 	// return a matcher graph with the given id (used in deleting mappings)
 	public CanvasGraph getMatcherGraph( int matcherID ) {
@@ -516,7 +516,7 @@ public class Canvas2 extends VisualizationPanel implements OntologyChangeListene
 		addMouseListener(layout);
 		
 		// when the layout changes, the old graphs are discarded.  TODO: Check for memory leaks.
-		graphs = new ArrayList<CanvasGraph>();	// this is our master list of graphs to be displayed
+		graphs = new Vector<CanvasGraph>();	// this is our master list of graphs to be displayed
 		
 		CanvasGraph artifacts = layout.getArtifactsGraph();  // The layout has its own artifacts.
 		if( artifacts != null ) {

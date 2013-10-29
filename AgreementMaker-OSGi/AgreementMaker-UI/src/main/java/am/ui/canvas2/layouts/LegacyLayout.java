@@ -245,7 +245,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	}
 	
 	@Override
-	public void displayOntology( ArrayList<CanvasGraph> graphRepository, int ontologyID) {
+	public void displayOntology( List<CanvasGraph> graphRepository, int ontologyID) {
 		//TODO: Do graph positioning here, depending on which side is loaded into the layout.
 		//      Right now we assume the user will load source then target, in that order.
 		
@@ -260,7 +260,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		}
 		
 		// show the graphs
-		ArrayList<CanvasGraph> gr = GraphLocator.getGraphsByID(graphRepository, ontologyID);
+		List<CanvasGraph> gr = GraphLocator.getGraphsByID(graphRepository, ontologyID);
 		Iterator<CanvasGraph> graphIter = gr.iterator();
 		while( graphIter.hasNext() ) {
 			graphIter.next().setVisible(true);
@@ -269,7 +269,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	}
 	
 	@Override
-	public void removeOntology(  ArrayList<CanvasGraph> graphs, int ontologyID ) {
+	public void removeOntology( List<CanvasGraph> graphs, int ontologyID ) {
 		
 		for( int i = graphs.size() - 1; i >= 0; i-- ) {
 			CanvasGraph gr = graphs.get(i);
@@ -1335,7 +1335,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		// because we have moved nodes, the bounds of the graphs have changed.
 		// Update the bounds of all the graphs.
 		// TODO: This should not update ALL the graphs, but only the ones that contain the nodes that have moved.
-		ArrayList<CanvasGraph> graphs = vizpanel.getGraphs();
+		List<CanvasGraph> graphs = vizpanel.getGraphs();
 		graphIter = graphs.iterator();
 		while( graphIter.hasNext() ) {
 			CanvasGraph g = graphIter.next();
@@ -1523,7 +1523,7 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		// because we have moved nodes, the bounds of the graphs have changed.
 		// Update the bounds of all the graphs.
 		// TODO: This should not update ALL the graphs, but only the ones that contain the nodes that have moved.
-		ArrayList<CanvasGraph> graphs = vizpanel.getGraphs();
+		List<CanvasGraph> graphs = vizpanel.getGraphs();
 		graphIter = graphs.iterator();
 		while( graphIter.hasNext() ) {
 			CanvasGraph g = graphIter.next();

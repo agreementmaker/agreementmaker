@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.event.ChangeEvent;
@@ -83,8 +82,8 @@ public abstract class Canvas2Layout implements MouseInputListener,
 
 	// TODO: Do we really need the method canDisplayMoreOntologies() ?  Everything can be taken care of by displayOntology()
 	public abstract boolean canDisplayMoreOntologies(); /* must be implemented in the subclass */
-	public abstract void displayOntology( ArrayList<CanvasGraph> graphs, int ontologyID); /* must be implemented in the subclass */
-	public abstract void removeOntology( ArrayList<CanvasGraph> graphs, int ontologyID ); /* must be implemented in the subclass */
+	public abstract void displayOntology( List<CanvasGraph> graphs, int ontologyID); /* must be implemented in the subclass */
+	public abstract void removeOntology( List<CanvasGraph> graphs, int ontologyID ); /* must be implemented in the subclass */
 
 	/* buildMatcherGraph must be implemented in the subclass */
 	public CanvasGraph buildMatcherGraph(MatchingTask m) { return new CanvasGraph(GraphType.MATCHER_GRAPH, m.getID()); }

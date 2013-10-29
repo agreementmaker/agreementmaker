@@ -2,6 +2,8 @@ package am.ui.canvas2.utility;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 public class GraphLocator {
 	
@@ -33,7 +35,7 @@ public class GraphLocator {
 	 * 
 	 * It can return null.
 	 */
-	public static CanvasGraph getGraph( ArrayList<CanvasGraph> ontologyGraphs,  GraphType grt, int ontologyID ) {
+	public static CanvasGraph getGraph( List<CanvasGraph> ontologyGraphs,  GraphType grt, int ontologyID ) {
 		
 		/* Sanity checks.  Should we remove these? I say keep them, this is function is not called often. */ 
 		if( ontologyGraphs == null ) return null;  // list was empty, return nothing
@@ -58,9 +60,9 @@ public class GraphLocator {
 	 * 
 	 * This function will not return null.  It will always return an arraylist, whether it's empty or not that depends if graphs were found.
 	 */
-	public static ArrayList<CanvasGraph> getGraphsByType( ArrayList<CanvasGraph> ontologyGraphs, GraphType grt ) {
+	public static List<CanvasGraph> getGraphsByType( List<CanvasGraph> ontologyGraphs, GraphType grt ) {
 		
-		ArrayList<CanvasGraph> graphsFound = new ArrayList<CanvasGraph>();
+		List<CanvasGraph> graphsFound = new ArrayList<CanvasGraph>();
 		
 		/* Sanity checks.  Should we remove these? I say keep them, this is function is not called often. */ 
 		if( ontologyGraphs == null ) return graphsFound;  // this should not normally happen either
@@ -84,9 +86,9 @@ public class GraphLocator {
 	 * 
 	 * This function will not return null.  It will always return an arraylist, whether it's empty or not that depends if graphs were found.
 	 */
-	public static ArrayList<CanvasGraph> getGraphsByID( ArrayList<CanvasGraph> ontologyGraphs, int ontID ) {
+	public static List<CanvasGraph> getGraphsByID( List<CanvasGraph> ontologyGraphs, int ontID ) {
 		
-		ArrayList<CanvasGraph> graphsFound = new ArrayList<CanvasGraph>();
+		List<CanvasGraph> graphsFound = new Vector<CanvasGraph>();
 		
 		/* Sanity check.  Should I remove this? I say keep it, this is function is not called often. */
 		if( ontologyGraphs == null ) return graphsFound;  // this should not normally happen

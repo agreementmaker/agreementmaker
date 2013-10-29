@@ -126,7 +126,7 @@ public class LegacyLayoutMouseHandler {
 		ArrayList<LegacyNode> selectedNodes = layout.getSelectedNodes();
 		
 		Graphics g = vizpanel.getGraphics();   // used for any redrawing of nodes
-		ArrayList<Canvas2Vertex> visibleVertices = layout.getVizPanel().getVisibleVertices();
+		List<Canvas2Vertex> visibleVertices = layout.getVizPanel().getVisibleVertices();
 
 		Logger log = Logger.getLogger(this.getClass());
 		log.setLevel(Level.DEBUG);
