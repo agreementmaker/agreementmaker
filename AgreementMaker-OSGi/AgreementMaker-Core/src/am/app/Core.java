@@ -472,7 +472,7 @@ public class Core {
 	/**
 	 * Adds an ontology to the core.
 	 */
-	public void addOntology( Ontology ont ) {
+	public synchronized void addOntology( Ontology ont ) {
 		if( !loadedOntologies.contains(ont) ) {
 				loadedOntologies.add(ont); 
 				// We must notify all the listeners that an ontology was loaded into the system.
@@ -517,6 +517,7 @@ public class Core {
 				};
 			};
 			
+			t.setName("OntologyChangeEvent " + t.getId());
 			t.start();
 		}
 	}
@@ -536,9 +537,8 @@ public class Core {
 				};
 			};
 			
+			t.setName("MatchingTaskChangeEvent " + t.getId());
 			t.start();
-			
-			
 		}
 	}
 	
