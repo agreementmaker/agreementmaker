@@ -3,11 +3,8 @@
  */
 package am.matcher.dissimilar;
 
-import java.io.BufferedReader;
-
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -15,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 import am.Utility;
 import am.app.Core;
@@ -24,12 +23,14 @@ import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MatcherFactory;
+import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.ReferenceEvaluationData;
 import am.app.mappingEngine.StringUtil.NormalizerParameter;
 import am.app.mappingEngine.StringUtil.StringMetrics;
 import am.app.mappingEngine.qualityEvaluation.QualityMetricRegistry;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
+import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition;
@@ -45,20 +46,14 @@ import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcher;
 import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcherParameters;
 import am.matcher.bsm.BaseSimilarityMatcher;
 import am.matcher.bsm.BaseSimilarityParameters;
+import am.matcher.intraInterCoupling.IntraInterCouplingMatcher;
+import am.matcher.intraInterCoupling.IntraInterCouplingParameters;
 import am.matcher.multiWords.MultiWordsMatcher;
 import am.matcher.multiWords.MultiWordsParameters;
 import am.matcher.parametricStringMatcher.ParametricStringMatcher;
 import am.matcher.parametricStringMatcher.ParametricStringParameters;
-import am.userInterface.MatchingProgressDisplay;
+
 import com.hp.hpl.jena.rdf.model.Property;
-import am.matcher.intraInterCoupling.IntraInterCouplingMatcher;
-import am.matcher.intraInterCoupling.IntraInterCouplingParameters;
-import org.apache.log4j.Logger;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
-import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
-import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
-import am.matcher.iic2.iic2;
-import am.matcher.iic2.iic2Parameters;
 /**
  * The matching algorithm for OAEI 2011.
  * 
@@ -270,11 +265,11 @@ public class DissimilarMatcher extends AbstractMatcher {
 	@Override
 	public void match() throws Exception {
     	matchStart();
-    	for( MatchingProgressDisplay mpd : progressDisplays ) mpd.ignoreComplete(true);
+    	for( MatchingProgressListener mpd : progressDisplays ) mpd.ignoreComplete(true);
     	
     	AbstractMatcher finalResult = null;
     	finalResult = runGeneralPurpose();
-		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.ignoreComplete(false); 
+		for( MatchingProgressListener mpd : progressDisplays ) mpd.ignoreComplete(false); 
     	
 		if( finalResult != null ) {
 			finalResult.select();
@@ -310,60 +305,10 @@ public class DissimilarMatcher extends AbstractMatcher {
 		
 		final DefaultMatcherParameters param = getParam();
 		
-		// Ontology profiling
-		ProfilerRegistry entry = ProfilerRegistry.ManualProfiler;
-		OntologyProfiler profiler = null;
-		Constructor<? extends OntologyProfiler> constructor = null;
-			
-		constructor = entry.getProfilerClass().getConstructor(Ontology.class, Ontology.class);
-		//profiler = constructor.newInstance(Core.getInstance().getSourceOntology(), Core.getInstance().getTargetOntology());
-		profiler = constructor.newInstance(sourceOntology, targetOntology);
-		
-		
-		if(profiler!=null) {
-			profiler.setName(entry);
-			Core.getInstance().setOntologyProfiler(profiler);
-		}
-		
-		ManualOntologyProfiler manualProfiler = (ManualOntologyProfiler) profiler;
-		//MetricsOntologyProfiler metricProfiler=(MetricsOntologyProfiler) profiler;
-		ManualProfilerMatchingParameters profilingMatchingParams = new ManualProfilerMatchingParameters();
-
-		profilingMatchingParams.matchSourceClassLocalname = true;
-		profilingMatchingParams.matchSourcePropertyLocalname = true;
-		
-		profilingMatchingParams.matchTargetClassLocalname = true;
-		profilingMatchingParams.matchTargetPropertyLocalname = true;
-		
-		profilingMatchingParams.sourceClassAnnotations = new ArrayList<Property>();
-		for( Property currentProperty : manualProfiler.getSourceClassAnnotations() ) {
-			if( currentProperty.getLocalName().toLowerCase().contains("label") ) {
-				profilingMatchingParams.sourceClassAnnotations.add(currentProperty);
-			}
-		}
-		
-		profilingMatchingParams.sourcePropertyAnnotations = new ArrayList<Property>();
-		for( Property currentProperty : manualProfiler.getSourcePropertyAnnotations() ) {
-			if( currentProperty.getLocalName().toLowerCase().contains("label") ) {
-				profilingMatchingParams.sourcePropertyAnnotations.add(currentProperty);
-			}
-		}
-		
-		profilingMatchingParams.targetClassAnnotations = new ArrayList<Property>();
-		for( Property currentProperty : manualProfiler.getTargetClassAnnotations() ) {
-			if( currentProperty.getLocalName().toLowerCase().contains("label") ) {
-				profilingMatchingParams.targetClassAnnotations.add(currentProperty);
-			}
-		}
-		
-		profilingMatchingParams.targetPropertyAnnotations = new ArrayList<Property>();
-		for( Property currentProperty : manualProfiler.getTargetPropertyAnnotations() ) {
-			if( currentProperty.getLocalName().toLowerCase().contains("label") ) {
-				profilingMatchingParams.targetPropertyAnnotations.add(currentProperty);
-			}
-		}
-		
-		manualProfiler.setMatchTimeParams(profilingMatchingParams);
+		// The BSM needs an ontology profiler.
+		Core.getInstance().setOntologyProfiler(
+				ManualOntologyProfiler.createOntologyProfiler(sourceOntology, targetOntology));
+				
 		// BSM
 		
 		
@@ -560,7 +505,7 @@ public class DissimilarMatcher extends AbstractMatcher {
 		m.setParameters(p);
 		m.setSourceOntology(sourceOntology);
     	m.setTargetOntology(targetOntology);
-		for( MatchingProgressDisplay mpd : progressDisplays ) m.addProgressDisplay(mpd);
+		for( MatchingProgressListener mpd : progressDisplays ) m.addProgressDisplay(mpd);
 		m.setUseProgressDelay(progressDelay);
 		m.setPerformSelection(true);
 	}
@@ -574,7 +519,7 @@ public class DissimilarMatcher extends AbstractMatcher {
 		if( Core.DEBUG ) System.out.println("Running " + m.getRegistryEntry().getMatcherShortName() );
 		startime = System.nanoTime()/measure;
 		
-		for( MatchingProgressDisplay mpd : progressDisplays ) mpd.setProgressLabel(label);
+		for( MatchingProgressListener mpd : progressDisplays ) mpd.setProgressLabel(label);
 		//m.setProgressDisplay(getProgressDisplay());
 		m.match();
 		//m.setProgressDisplay(null);
