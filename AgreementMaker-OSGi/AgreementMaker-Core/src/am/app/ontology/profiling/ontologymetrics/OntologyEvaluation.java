@@ -1,7 +1,9 @@
 package am.app.ontology.profiling.ontologymetrics;
 
+import java.io.File;
 import java.util.List;
 
+import am.app.Core;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
@@ -328,8 +330,7 @@ public class OntologyEvaluation {
 	
 	private void initWordnet() {
 		// Initialize the WordNet interface.
-		String cwd = System.getProperty("user.dir");
-		String wordnetdir = cwd + "/wordnet-3.0";
+		String wordnetdir = Core.getInstance().getRoot() + File.separator + "/wordnet-3.0";
 
 		System.setProperty("wordnet.database.dir", wordnetdir);
 		// Instantiate wordnet.
