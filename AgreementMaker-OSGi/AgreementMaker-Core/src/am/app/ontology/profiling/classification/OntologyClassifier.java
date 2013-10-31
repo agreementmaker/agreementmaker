@@ -20,6 +20,7 @@ import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.Utils;
+import am.app.Core;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.profiling.classification.trainingGeneration.OutputTrainingGenerator;
@@ -1673,8 +1674,8 @@ public String testModel(OutputTrainingGenerator o, TestSet t){
 	}
 	
 public static OAEI2011Configuration classifiedOntologiesOAEI2011(Ontology sourceOntology,Ontology targetOntology) {
-		String modelFileName = "Classification/cModel4.model";
-		String outputTrainingGeneratorFileName = "Classification/finalTraining3.xml"; 
+		String modelFileName = Core.getInstance().getRoot() + File.separator + "Classification/cModel4.model";
+		String outputTrainingGeneratorFileName = Core.getInstance().getRoot() + File.separator + "Classification/finalTraining3.xml"; 
 		
 		String result = classifiedOntologiesST(sourceOntology, targetOntology, modelFileName, outputTrainingGeneratorFileName);
 		/*
