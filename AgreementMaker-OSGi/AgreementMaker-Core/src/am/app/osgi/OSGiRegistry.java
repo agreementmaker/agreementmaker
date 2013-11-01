@@ -103,7 +103,7 @@ public class OSGiRegistry {
 				}
 			}
 		}
-		throw new MatcherNotFoundException(clazz+" is not in the system.");
+		throw new MatcherNotFoundException("'" + clazz + "' is not a valid class name in the system.");
 	}
 	
 	/**
