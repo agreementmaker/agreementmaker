@@ -29,7 +29,7 @@ public class ArraySimilarityMatrix extends AbstractSimilarityMatrix {
 		private static final long serialVersionUID = 3340618624390143439L;
 		
 		public double similarity;
-		public MappingRelation relation;
+		public MappingRelation relation = MappingRelation.EQUIVALENCE;
 		public String provenance;
 		
 		SimRel(double similarity) {
