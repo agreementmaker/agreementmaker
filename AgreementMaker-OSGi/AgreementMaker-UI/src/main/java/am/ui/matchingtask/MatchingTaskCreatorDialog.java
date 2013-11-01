@@ -18,6 +18,7 @@ import am.app.mappingEngine.DefaultSelectionParameters;
 import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.SelectionAlgorithm;
 import am.app.ontology.Ontology;
+import am.app.ontology.profiling.OntologyProfiler;
 import am.app.ontology.profiling.OntologyProfiler.ParamType;
 import am.app.ontology.profiling.OntologyProfilerPanel;
 import am.ui.UICore;
@@ -112,8 +113,9 @@ public class MatchingTaskCreatorDialog extends JDialog implements MessageDispatc
 		DefaultSelectionParameters selectionParameters = pnlSelectionAlgorithm.getSelectionParameters();
 		
 		// set the annotation profiling parameters.
-		Core.getInstance().getOntologyProfiler().setParams(
-				ParamType.MATCHING_PARAMETERS, pnlAnnotationProfiling.getParameters());
+		OntologyProfiler profiler = Core.getInstance().getOntologyProfiler();
+		if( pnlAnnotationProfiling != null && profiler != null ) 
+			profiler.setParams(ParamType.MATCHING_PARAMETERS, pnlAnnotationProfiling.getParameters());
 		
 		return new MatchingTask(matchingAlgorithm, matcherParameters,
 								selectionAlgorithm, selectionParameters);		
