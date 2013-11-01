@@ -11,6 +11,7 @@ import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.matcher.Combination.CombinationMatcher;
 import am.matcher.Combination.CombinationParameters;
 import am.matcher.LexicalMatcherJWNL.LexicalMatcherJWNL;
+import am.matcher.bsm.BaseSimilarityMatcher;
 import am.matcher.bsm.BaseSimilarityParameters;
 import am.matcher.dsi.DescendantsSimilarityInheritanceMatcher;
 import am.matcher.dsi.DescendantsSimilarityInheritanceParameters;
@@ -121,12 +122,11 @@ public class OAEI2009matcher extends AbstractMatcher {
 
 		} else {
 			// We are NOT running Anatomy with PRA.  Run BSM.
-	
+
 			System.out.println("Running BSM");
 	    	startime = System.nanoTime()/measure;
-	    	pra = MatcherFactory.getMatcherInstance("Base Similarity Matcher");
-	    	pra.setParameters(new DefaultMatcherParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign));
-	    	BaseSimilarityParameters bsmp = new BaseSimilarityParameters();
+	    	pra = MatcherFactory.getMatcherInstance(BaseSimilarityMatcher.class);
+	    	BaseSimilarityParameters bsmp = new BaseSimilarityParameters(param.threshold, param.maxSourceAlign, param.maxTargetAlign);
 	    	bsmp.initForOAEI2009();
 	    	pra.setParameters(bsmp);
 	    	pra.setSourceOntology(sourceOntology);
@@ -136,8 +136,6 @@ public class OAEI2009matcher extends AbstractMatcher {
 	    	endtime = System.nanoTime()/measure;
 	    	time = (endtime-startime);
 			System.out.println("BSM completed in (h.m.s.ms) "+Utility.getFormattedTime(time));
-	    	
-
 		}
 		
 		//PSM
