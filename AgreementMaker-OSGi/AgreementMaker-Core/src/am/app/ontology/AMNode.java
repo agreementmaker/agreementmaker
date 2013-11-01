@@ -702,7 +702,8 @@ public class AMNode extends AbstractNode implements Serializable {
 	public List<Node> getChildren() { return children; }
 	public int getChildCount() { if( children == null ) return 0; return children.size(); }
 	public Node getChildAt(int i) { return children.get(i); }
-	public void addParent(Node parent) { 
+	public void addParent(Node parent) {
+		if( parent.getIndex() < 0 ) return; // do not add the fake nodes.
 		if( !parents.contains(parent) ) parents.add(parent);
 	}
 	@Override
