@@ -81,7 +81,7 @@ public class MatchersControlPanel extends JPanel implements ActionListener, Mous
 		GroupLayout layout = new GroupLayout(this);
 		
 		setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Matchers Control Panel"));
+				BorderFactory.createEtchedBorder(EtchedBorder.LOWERED), "Matching Tasks Control Panel"));
 				
 		//TABLE PANEL:center panel
 		matchersTablePanel = new MatchersTablePanel();
