@@ -13,7 +13,7 @@ public class BatchModeMenuItem extends JMenuItem implements AMMenuItem {
 	private static final long serialVersionUID = -7679368085474956610L;
 	
 	public BatchModeMenuItem() {
-		super("User Feedback Loop");
+		super("Batch Mode");
 		
 		addActionListener(new ActionListener() {
 			@Override
