@@ -3,7 +3,7 @@ AgreementMaker-UIGlue
 ---------------------
 
 This bundle is meant to be a connection (or glue) between bundles 
-that should not depend on the UI bundle but need to be present in the UI.
+which should not depend on the UI bundle but need to be present in the UI.
 
 For example, the BatchMode bundle should not depend on the UI bundle,
 but we would like to be able to execute a batch mode from the AgreementMaker UI.
