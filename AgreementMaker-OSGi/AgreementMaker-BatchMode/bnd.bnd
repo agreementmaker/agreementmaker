@@ -1,0 +1,7 @@
+Private-Package: am.extension.batchmode
+Bundle-Activator: am.extension.batchmode.Activator
+Bundle-Version: 1.0.0
+Service-Component: *
+-runfw: org.eclipse.osgi;version='[3.9.0.v20130529-1710,3.9.0.v20130529-1710]'
+-runee: JavaSE-1.7
+Bundle-Name: AgreementMaker-BatchMode
