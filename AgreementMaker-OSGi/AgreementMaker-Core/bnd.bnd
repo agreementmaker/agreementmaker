@@ -1,0 +1,6 @@
+Private-Package: am.app.osgi
+Bundle-Version: 1.0.0
+Bundle-Activator: am.app.osgi.AMActivator
+Export-Package: am.app.mappingEngine
+Bundle-Name: AgreementMaker-Core
+Service-Component: *
