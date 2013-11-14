@@ -9,11 +9,12 @@ import org.osgi.framework.ServiceRegistration;
 
 import am.app.mappingEngine.AbstractMatcher;
 import am.matcher.Combination.CombinationMatcher;
-import am.matcher.parametricStringMatcher.ParametricStringMatcher;
-import am.matcher.multiWords.MultiWordsMatcher;
 import am.matcher.IterativeInstanceStructuralMatcher.IterativeInstanceStructuralMatcher;
 import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcher;
+import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcherWeighted;
 import am.matcher.dsi.DescendantsSimilarityInheritanceMatcher;
+import am.matcher.multiWords.MultiWordsMatcher;
+import am.matcher.parametricStringMatcher.ParametricStringMatcher;
 
 public class MatchersActivator implements BundleActivator {
 
@@ -26,6 +27,7 @@ public class MatchersActivator implements BundleActivator {
 	private ServiceRegistration<AbstractMatcher> regParametricString;
 	private ServiceRegistration<AbstractMatcher> regMultiWords;
 	private ServiceRegistration<AbstractMatcher> regLexicalSynonym;
+	private ServiceRegistration<AbstractMatcher> regLexicalSynonymWeighted;
 	private ServiceRegistration<AbstractMatcher> regDsi;
 	private ServiceRegistration<AbstractMatcher> regIism;
 	/*
@@ -40,6 +42,7 @@ public class MatchersActivator implements BundleActivator {
 		regParametricString = context.registerService(AbstractMatcher.class, new ParametricStringMatcher(), new Hashtable<String,String>());
 		regMultiWords = context.registerService(AbstractMatcher.class, new MultiWordsMatcher(), new Hashtable<String,String>());
 		regLexicalSynonym = context.registerService(AbstractMatcher.class, new LexicalSynonymMatcher(), new Hashtable<String,String>());
+		regLexicalSynonymWeighted = context.registerService(AbstractMatcher.class, new LexicalSynonymMatcherWeighted(), null);
 		regDsi = context.registerService(AbstractMatcher.class, new DescendantsSimilarityInheritanceMatcher(), new Hashtable<String,String>());
 		regIism = context.registerService(AbstractMatcher.class, new IterativeInstanceStructuralMatcher(), new Hashtable<String,String>());
 		

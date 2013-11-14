@@ -11,14 +11,17 @@
   	</appender>
    
     <appender name="ConsoleAppender" class="org.apache.log4j.ConsoleAppender">
-    <param name="Threshold" value="debug" />
+    <param name="Threshold" value="info" />
     <layout class="org.apache.log4j.PatternLayout">
        <param name="ConversionPattern" value=" %m%n" />
     </layout>
 	</appender>
 
 	<root>
-		<level value="debug" />
+		<level value="info" />
+		<!-- 
 		<appender-ref ref="FileAppender" />
+		 -->
+		<appender-ref ref="ConsoleAppender" />
 	</root>
 </log4j:configuration>
