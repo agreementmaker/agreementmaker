@@ -1,5 +1,6 @@
 package am.evaluation.disagreement.variance;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
@@ -58,10 +59,16 @@ public class VarianceDisagreement extends DisagreementCalculationMethod {
 					if( m == null ) {
 						disagreementMatrix.set(i, j, new Mapping(Core.getInstance().getSourceOntology().getClassesList().get(i), Core.getInstance().getTargetOntology().getClassesList().get(j), computeVariance(similarityValues)));
 					} else {
-						if (finalMappings.contains(m))
-							weight=weight_value;
-						else
-							weight=0;
+						try {
+							if (finalMappings.contains(m))
+								weight=weight_value;
+							else
+								weight=0;
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							//e.printStackTrace();
+						}
+						
 						disagreementMatrix.set(i, j, new Mapping(m.getEntity1(), m.getEntity2(), computeVariance(similarityValues)+weight));
 					}
 				}
