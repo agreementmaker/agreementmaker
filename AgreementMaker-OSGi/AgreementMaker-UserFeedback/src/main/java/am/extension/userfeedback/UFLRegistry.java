@@ -10,8 +10,8 @@ public class UFLRegistry {
 
 	/* Different experimental setups (Ontologies + Reference alignment) */
 	public enum ExperimentRegistry {
-		Manual ( am.extension.userfeedback.common.ManualExperimentSetup.class ),
-		Ml ( am.extension.userfeedback.MLFeedback.MLFExperiment.class);
+		MachineLearning ( am.extension.userfeedback.MLFeedback.MLFExperiment.class),
+		Manual ( am.extension.userfeedback.common.ManualExperimentSetup.class );
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends UFLExperiment> clazz;
 
@@ -31,8 +31,8 @@ public class UFLRegistry {
 	
 	public enum CandidateSelectionRegistry {
 		
+		MaxInformationRanking (am.extension.userfeedback.clustering.disagreement.MaxInformationRanking.class   ),
 		DisagreementRank ( am.extension.userfeedback.clustering.disagreement.DisagreementRanking.class );
-		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends CandidateSelection> clazz;
 		
@@ -62,8 +62,9 @@ public class UFLRegistry {
 	}
 	
 	public enum FeedbackPropagationRegistry {
-		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostPropagation.class ),
-		MLFeedbackPropagation (am.extension.userfeedback.MLFeedback.MLFeedbackPropagation.class);
+		
+		MLFeedbackPropagation (am.extension.userfeedback.MLFeedback.MLFeedbackPropagation.class),
+		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostPropagation.class );
 		
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
 		Class<? extends FeedbackPropagation> clazz;
@@ -73,6 +74,7 @@ public class UFLRegistry {
 	}
 	
 	public enum PropagationEvaluationRegistry {
+		SMatrixDeltaEvaluetion (am.extension.userfeedback.clustering.disagreement.SMatrixDeltaEvaluetion.class),
 		DeltaFromRef ( am.extension.userfeedback.clustering.disagreement.DeltaFromReferenceEvaluation.class ),
 		ClusterBoost ( am.extension.userfeedback.clustering.disagreement.ClusterBoostEvaluation.class );
 		

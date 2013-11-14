@@ -10,13 +10,13 @@ import am.extension.userfeedback.PropagationEvaluation;
 import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.MLFeedback.MLFExperiment;
 
-public class DeltaFromReferenceEvaluation extends PropagationEvaluation <UFLExperiment>{
+public class SMatrixDeltaEvaluetion extends PropagationEvaluation<MLFExperiment>  {
 	
 	private DeltaFromReference deltaFromReference;
 	
 	private BufferedWriter fileWriter = null;
 	
-	public DeltaFromReferenceEvaluation() {
+	public SMatrixDeltaEvaluetion() {
 		try {
 			FileWriter fstream = new FileWriter("/home/frank/Desktop/deltaPlot.dat", true);
 			BufferedWriter bfr = new BufferedWriter(fstream);
@@ -29,13 +29,13 @@ public class DeltaFromReferenceEvaluation extends PropagationEvaluation <UFLExpe
 	}
 	
 	@Override
-	public void evaluate(UFLExperiment exp) {
+	public void evaluate(MLFExperiment exp) {
 
 		deltaFromReference = new DeltaFromReference(exp.getReferenceAlignment());
 		
-		int delta = deltaFromReference.getDelta(exp.getFinalAlignment());
+		int delta = deltaFromReference.getDelta(exp.getMLAlignment());//exp.getFinalAlignment());
 		
-		AlignmentMetrics metrics = new AlignmentMetrics(exp.getReferenceAlignment(), exp.getFinalAlignment());
+		AlignmentMetrics metrics = new AlignmentMetrics(exp.getReferenceAlignment(), exp.getMLAlignment()); //exp.getFinalAlignment());
 		
 		//Logger log = Logger.getLogger(this.getClass());
 		UFLExperiment log = exp;
@@ -55,8 +55,6 @@ public class DeltaFromReferenceEvaluation extends PropagationEvaluation <UFLExpe
 		
 		done();
 	}
-	
-
 
 	@Override
 	protected void done() {

@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
@@ -16,7 +17,8 @@ import am.evaluation.disagreement.DisagreementParametersPanel;
 public class VarianceDisagreement extends DisagreementCalculationMethod {
 
 	private VarianceDisagreementParameters params;
-	
+	private Alignment<Mapping> finalMappings;
+	private final double weight_value=0.2;
 	@Override
 	public DisagreementParametersPanel getParametersPanel() { return new VarianceDisagreementPanel(); }
 
@@ -25,10 +27,15 @@ public class VarianceDisagreement extends DisagreementCalculationMethod {
 		this.params = (VarianceDisagreementParameters) params; 
 	}
 	
+	public void setParameters(DisagreementParameters params, Alignment<Mapping> finalMappings) { 
+		this.params = (VarianceDisagreementParameters) params; 
+		this.finalMappings=finalMappings;
+	}
+	
 	@Override
 	public SimilarityMatrix getDisagreementMatrix(alignType t) {
 		List<AbstractMatcher> matchersToConsider = params.getMatchers();
-		
+		double weight=0.0;
 		if( matchersToConsider.size() == 0 ) return null;
 		
 		if( t == alignType.aligningClasses ) {
@@ -41,6 +48,7 @@ public class VarianceDisagreement extends DisagreementCalculationMethod {
 			
 			for( int i = 0; i < rows; i++ ) {
 				for( int j = 0; j < cols; j++ ) {
+					
 					Vector<Double> similarityValues = new Vector<Double>();
 					for( int k = 0; k < matchersToConsider.size(); k++ ) {
 						similarityValues.add(matchersToConsider.get(k).getClassesMatrix().getSimilarity(i, j));
@@ -50,7 +58,11 @@ public class VarianceDisagreement extends DisagreementCalculationMethod {
 					if( m == null ) {
 						disagreementMatrix.set(i, j, new Mapping(Core.getInstance().getSourceOntology().getClassesList().get(i), Core.getInstance().getTargetOntology().getClassesList().get(j), computeVariance(similarityValues)));
 					} else {
-						disagreementMatrix.set(i, j, new Mapping(m.getEntity1(), m.getEntity2(), computeVariance(similarityValues)));
+						if (finalMappings.contains(m))
+							weight=weight_value;
+						else
+							weight=0;
+						disagreementMatrix.set(i, j, new Mapping(m.getEntity1(), m.getEntity2(), computeVariance(similarityValues)+weight));
 					}
 				}
 			}

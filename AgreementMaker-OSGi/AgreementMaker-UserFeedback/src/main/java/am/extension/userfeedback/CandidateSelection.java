@@ -11,7 +11,7 @@ import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Mapping;
 import am.extension.userfeedback.ui.UFLControlGUI;
 
-public abstract class CandidateSelection {
+public abstract class CandidateSelection<T extends UFLExperiment> {
 
 	EventListenerList listeners;  // list of listeners for this class
 	
@@ -19,7 +19,7 @@ public abstract class CandidateSelection {
 		listeners = new EventListenerList();
 	}
 	
-	public abstract void rank( UFLExperiment exp );
+	public abstract void rank( T exp );
 	
 	public abstract List<Mapping> getRankedMappings(alignType typeOfRanking);
 	public abstract List<Mapping> getRankedMappings();

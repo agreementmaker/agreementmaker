@@ -7,8 +7,8 @@ package am.extension.userfeedback.MLFeedback;
 import java.util.HashMap;
 
 public class FeatureSet {
-	private HashMap<Object, Integer> hm_true=new HashMap<Object,Integer>();
-	private HashMap<Object, Integer> hm_false=new HashMap<Object,Integer>();
+	private HashMap<Object, Double> hm_true=new HashMap<Object,Double>();
+	private HashMap<Object, Double> hm_false=new HashMap<Object,Double>();
 	private String feature_code;
 
 	
@@ -27,11 +27,11 @@ public class FeatureSet {
 			if(hm_true.containsKey(value))
 			{
 				tmp=hm_true.get(value).intValue();
-				hm_true.put(value, new Integer(++tmp));
+				hm_true.put(value, new Double(++tmp));
 			}
 			else
 			{
-				hm_true.put(value, new Integer(1));
+				hm_true.put(value, new Double(1));
 			}
 		}
 		else
@@ -39,11 +39,11 @@ public class FeatureSet {
 			if(hm_false.containsKey(value))
 			{
 				tmp=hm_false.get(value).intValue();
-				hm_false.put(value, new Integer(++tmp));
+				hm_false.put(value, new Double(++tmp));
 			}
 			else
 			{
-				hm_false.put(value, new Integer(1));
+				hm_false.put(value, new Double(1));
 			}
 		}
 	}
@@ -67,6 +67,29 @@ public class FeatureSet {
 		}
 		return 0.0;
 		
+	}
+	
+	public void addProbFSet(Object value, double prob)
+	{
+		if(hm_true.containsKey(value))
+		{
+			tmp=hm_true.get(value).intValue();
+			hm_true.put(value, new Double(prob+tmp));
+		}
+		else
+		{
+			hm_true.put(value, new Double(prob));
+		}
+
+		if(hm_false.containsKey(value))
+		{
+			tmp=hm_false.get(value).intValue();
+			hm_false.put(value, new Double((1-prob)+tmp));
+		}
+		else
+		{
+			hm_false.put(value, new Double(1-prob));
+		}
 	}
 	
 	public void printHM()

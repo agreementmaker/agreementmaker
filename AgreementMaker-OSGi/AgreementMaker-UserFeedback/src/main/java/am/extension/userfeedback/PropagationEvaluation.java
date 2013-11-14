@@ -8,7 +8,7 @@ import javax.swing.event.EventListenerList;
 
 import am.extension.userfeedback.ui.UFLControlGUI;
 
-public abstract class PropagationEvaluation {
+public abstract class PropagationEvaluation <T extends UFLExperiment> {
 
 	EventListenerList listeners;  // list of listeners for this class
 	
@@ -44,7 +44,7 @@ public abstract class PropagationEvaluation {
 		fireEvent(e);
 	}
 	
-	public abstract void evaluate( UFLExperiment exp );
+	public abstract void evaluate( T exp );
 	
 }
 	

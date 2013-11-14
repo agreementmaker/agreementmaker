@@ -7,19 +7,20 @@ package am.extension.userfeedback.MLFeedback;
 public class Test_NaiveBayes extends NaiveBayes{
 	
 	static Object[][] trainingTest1={{0.224535,0.124435,0.84532,1.0},{1.0,0.824435,0.44532,0},{0.224535,0.924435,0.84532,1.0}};
-	static Object[][] trainingTest2={{"rainy", "cool", "normal", "TRUE", "no"},
-		{"rainy", "mild", "high", "TRUE", "no"},{"sunny", "hot", "high", "FALSE", "no"},
-		{"sunny", "hot", "high", "TRUE", "no"},{"sunny", "mild", "high", "FALSE", "no"},
-		{"overcast", "cool", "normal", "TRUE", "yes"},{"overcast", "hot", "high", "FALSE", "yes"},
-		{"overcast", "hot", "normal", "FALSE", "yes"}, {"overcast", "mild", "high", "TRUE", "yes"},
-		{"rainy", "cool", "normal", "FALSE", "yes"},{"rainy", "mild", "high", "FALSE", "yes"},
-		{"rainy", "mild", "normal", "FALSE", "yes"},{"sunny", "cool", "normal", "FALSE", "yes"},
-		{"sunny", "mild", "normal", "TRUE", "yes"}};
+	static Object[][] trainingTest2={{"rainy", "cool", "normal", "TRUE", 0.0},
+		{"rainy", "mild", "high", "TRUE", 0.0},{"sunny", "hot", "high", "FALSE", 0.0},
+		{"sunny", "hot", "high", "TRUE", 0.0},{"sunny", "mild", "high", "FALSE", 0.0},
+		{"overcast", "cool", "normal", "TRUE", 1.0},{"overcast", "hot", "high", "FALSE", 1.0},
+		{"overcast", "hot", "normal", "FALSE", 1.0}, {"overcast", "mild", "high", "TRUE", 1.0},
+		{"rainy", "cool", "normal", "FALSE", 1.0},{"rainy", "mild", "high", "FALSE", 1.0},
+		{"rainy", "mild", "normal", "FALSE", 1.0},{"sunny", "cool", "normal", "FALSE", 1.0},
+		{"sunny", "mild", "normal", "TRUE", 1.0}};
+	static Object[][] trainingTest3={{"new","linux","fast",1.0},{"hollywood","celebrity","fast",0.0},{"fast","linux","quake",1.0},{"hollywood","occurs","quake",0.0}};
 	static Object[][] dataTest1={{0.23535,0.13644,0.82213},
 		{0.96644,0.84567,0.42222},
 		{0.21244,0.547747,0.84566}};
 	static Object[][] dataTest2={{"sunny", "cool", "high", "TRUE"}};
-
+	static Object[][] dataTest3={{"linux","on","website"},{"hollywood","fashion","website"}};
 	public Test_NaiveBayes(Object[][] trainingSet, Object[][] dataSet) {
 		super(trainingSet, dataSet);
 		// TODO Auto-generated constructor stub
@@ -29,8 +30,10 @@ public class Test_NaiveBayes extends NaiveBayes{
 	{
 	    Test_NaiveBayes tNB01=new Test_NaiveBayes(trainingTest1, dataTest1);
 	    Test_NaiveBayes tNB02=new Test_NaiveBayes(trainingTest2, dataTest2);
+	    Test_NaiveBayes tNB03=new Test_NaiveBayes(trainingTest3, dataTest3);
 	    testPrecision(tNB01,1);
 	    testPrecision(tNB02,1);
+	    System.out.println(tNB02.interfaceComputeElement(dataTest2[0]));
 	    tNB01.run();
 	    tNB02.run();
 	    testLabel(tNB01, true, 0);
@@ -44,6 +47,7 @@ public class Test_NaiveBayes extends NaiveBayes{
 	    	System.out.println("Correct label: "+tNB01.getLabel(2));
 	    }
 	    testLabel(tNB02, false, 0);
+	    testExpectationMaximization(tNB01,trainingTest1[0].length);
 	}
 	/* test the precision used for the training set. The precision range [1,infinite]
 	* The precision is the log10 of the number of elements in the trainingSet
@@ -59,6 +63,12 @@ public class Test_NaiveBayes extends NaiveBayes{
 		else
 			throw new Exception("Error "+m);
 		
+	}
+	
+	private static void testExpectationMaximization(Test_NaiveBayes tnb, int length) throws Exception 
+	{
+		System.out.println("Test Expectation Maximization");
+		tnb.nBayes_eMaximization(length);
 	}
 	
 	/*

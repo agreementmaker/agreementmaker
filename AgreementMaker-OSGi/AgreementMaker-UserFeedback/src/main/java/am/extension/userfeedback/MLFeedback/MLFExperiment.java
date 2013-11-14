@@ -13,7 +13,9 @@ import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingTask;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
+import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Ontology;
 import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
@@ -26,37 +28,119 @@ private BufferedWriter logFile;
 public TreeSet<Integer> forbidden_column=new TreeSet<Integer>();
 public TreeSet<Integer> forbidden_row=new TreeSet<Integer>();
 private Alignment<Mapping> MLAlignment;
+private Object[][] trainingSet_classes;
+private Object[][] trainingSet_property;
+private Object[][] dataSet_classes;
+private Object[][] dataSet_property;
+private SimilarityMatrix rankedClassMatrix;
+private SimilarityMatrix rankedPropertyMatrix;
+private int sourceCardinality=1;
+private int targetCardinality=1;
+
+
+public int getSourceCardinality() {
+	return sourceCardinality;
+}
+
+
+public void setSourceCardinality(int sourceCardinality) {
+	this.sourceCardinality = sourceCardinality;
+}
+
+
+public int getTargetCardinality() {
+	return targetCardinality;
+}
+
+
+public void setTargetCardinality(int targetCardinality) {
+	this.targetCardinality = targetCardinality;
+}
+
+
+public Object[][] getTrainingSet_classes() {
+	return trainingSet_classes;
+}
+
+
+public void setTrainingSet_classes(Object[][] trainingSet_classes) {
+	this.trainingSet_classes = trainingSet_classes;
+}
+
+
+public Object[][] getTrainingSet_property() {
+	return trainingSet_property;
+}
+
+
+public void setTrainingSet_property(Object[][] trainingSet_property) {
+	this.trainingSet_property = trainingSet_property;
+}
+
+
+public Object[][] getDataSet_classes() {
+	return dataSet_classes;
+}
+
+
+public void setDataSet_classes(Object[][] dataSet_classes) {
+	this.dataSet_classes = dataSet_classes;
+}
+
+
+public Object[][] getDataSet_property() {
+	return dataSet_property;
+}
+
+
+public void setDataSet_property(Object[][] dataSet_property) {
+	this.dataSet_property = dataSet_property;
+}
+
+
+
+public SimilarityMatrix getRankedClassMatrix() {
+	return rankedClassMatrix;
+}
+
+
+public void setRankedClassMatrix(SimilarityMatrix rankedClassMatrix) {
+	this.rankedClassMatrix = rankedClassMatrix;
+}
+
+
+public SimilarityMatrix getRankedPropertyMatrix() {
+	return rankedPropertyMatrix;
+}
+
+
+public void setRankedPropertyMatrix(SimilarityMatrix rankedPropertyMatrix) {
+	this.rankedPropertyMatrix = rankedPropertyMatrix;
+}
 
 public Alignment<Mapping> getMLAlignment() {
 	return MLAlignment;
 }
 
 
-
 public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 	MLAlignment = mLAlignment;
 }
 
-public Object[][] getTrainingSet() {
-	return trainingSet;
-}
 
-public void setTrainingSet(Object[][] trainingSet) {
-	this.trainingSet = trainingSet;
-}
-
-private Object[][] trainingSet;
 
 
 	public MLFExperiment() {
 		// setup the log file
 		try {
-			FileWriter fr = new FileWriter("/home/cosmin/Desktop/ufllog.txt",true);
+			FileWriter fr = new FileWriter("/home/frank/Desktop/ufllog.txt");
 			logFile = new BufferedWriter(fr);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
 	}
 	
 	@Override
@@ -71,11 +155,11 @@ private Object[][] trainingSet;
 
 	@Override
 	public Alignment<Mapping> getReferenceAlignment() {
-		List<AbstractMatcher> matchers = Core.getInstance().getMatcherInstances();
-		for( AbstractMatcher m : matchers ) {
-			if( m instanceof ReferenceAlignmentMatcher ) {
+		List<MatchingTask> tasks = Core.getInstance().getMatchingTasks();
+		for( MatchingTask m : tasks ) {
+			if( m.matchingAlgorithm instanceof ReferenceAlignmentMatcher ) {
 				// return the alignment of the first reference alignment matcher
-				return m.getAlignment();
+				return m.selectionResult.getAlignment();
 			}
 		}
 		return null;
