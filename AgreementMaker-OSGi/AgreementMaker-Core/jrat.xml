@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jrat>
+    <settings>
+        <property name="httpServerEnabled" value="true"/>
+    </settings>
+
+    <profile name="AgreementMaker">
+
+        <criteria>
+            <include className="am.app.mappingEngine.baseSimilarity.advancedSimilarity" methodName="*" signature="*" />
+			<include className="AdvancedSimilarityMatcher" methodName="*" signature="*" />
+			<include className="am.app.mappingEngine.similarityMatrix" methodName="*" signature="*" />
+			<include className="ArraySimilarityMatrix" methodName="*" signature="*" />
+			<include className="am.app.mappingEngine.parametricStringMatcher" methodName="*" signature="*" />
+			<include className="ParametricStringMatcher" methodName="*" signature="*" />
+			<include className="am.app.ontology.ontologyParser" methodName="*" signature="*" />
+			<include className="OntoTreeBuilder" methodName="*" signature="*" />
+        </criteria>
+
+        <handlers>
+
+            <handler factory="org.shiftone.jrat.provider.tree.TreeMethodHandlerFactory">
+                <property name="outputFile" value="LSM.jrat"/>
+            </handler>
+
+        </handlers>
+
+    </profile>
+</jrat> 
