@@ -5,7 +5,9 @@ package am.extension.userfeedback.MLFeedback;
 
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 
@@ -44,8 +46,8 @@ public class NaiveBayes {
 	boolean unlabeled=false;  //if you want use the EM algorithm the labels must be numeric [0,1]
 	//indicate the number of decimal places to consider in the NB algorithm
 	int precision=1;
-	final double smooth_c=2;
-	final double smooth_ce=1;
+	final double smooth_c=0.5;
+	final double smooth_ce=0.2;
 	private Object[] element;
 	private int count_true;		//number of elements added in the HM with the label "true"
 	private int count_false;	//number of elements added in the HM with the label "false"
@@ -88,8 +90,8 @@ public class NaiveBayes {
 	public NaiveBayes(Object[][] trainingSet)
 	{
 		updatePrecision(trainingSet);
-
-		this.trainingSet=dataOptimization(trainingSet);
+		
+		this.trainingSet=dataOptimization2(trainingSet);
 		//this.labels=new Object[dataSet.length];
 		fs=new FeatureSet[trainingSet[0].length-1];
 		inizialization();
@@ -160,6 +162,7 @@ public class NaiveBayes {
 	
 	private Object[][] dataOptimization(Object[][] set)
 	{
+		List<Object[]> obj=new ArrayList<Object[]>();
 		Object[][] tmp=new Object[set.length][set[0].length];
 		for (int i=0;i<set.length;i++)
 			for (int j=0;j<set[0].length;j++)
@@ -174,6 +177,53 @@ public class NaiveBayes {
 				
 			}
 		return tmp;
+	}
+	
+	private Object[][] dataOptimization2(Object[][] set)
+	{
+		List<Object[]> obj=new ArrayList<Object[]>();
+		int count=0;
+		
+		for (int i=0;i<set.length;i++)
+		{
+			Object[] tmp=new Object[set[0].length];
+			for (int j=0;j<set[0].length;j++)
+			{
+				if (set[i][j] instanceof Double) {
+					tmp[j]=(int)(round((double)set[i][j],precision)*Math.pow(10,precision));
+				}
+				else
+				{
+					tmp[i]=set[i][j];
+				}
+				
+			}
+			if (listContains(obj,tmp)<3)
+			{
+				obj.add(tmp);
+				count++;
+			}
+		}
+		Object[][] o=new Object[count][set[0].length];
+		return obj.toArray(o);
+	}
+	
+	private int listContains(List<Object[]> lst, Object[] vct)
+	{
+		int count=0;
+		int num=0;
+		for (Object[] o :lst)
+		{
+			count=0;
+			for (int i=0;i<o.length;i++)
+			{
+				if (o[i]==vct[i])
+					count++;
+			}
+			if (count==vct.length)
+				num++;
+		}
+		return num;
 	}
 	
 	public void nBayes_eMaximization(int length)

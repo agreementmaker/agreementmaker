@@ -31,7 +31,9 @@ public class DeltaFromReference {
 		//HashMap<Mapping,Boolean> mappingsDiscovered = new HashMap<Mapping,Boolean>();
 		
 		for( Mapping m : alignment ) {
-			if( referenceAlignment.contains(m.getEntity1(), m.getEntity2(), m.getRelation()) ) {
+			//we don't look for the relation type
+			if( referenceAlignment.contains(m.getEntity1(), m.getEntity2()) != null) {//, m.getRelation()) ) {
+				//System.out.println("Reference contains: "+m.getEntity1()+" "+m.getEntity2());
 				correctMappings++;
 			}
 		}

@@ -23,8 +23,8 @@ public class AutomaticUserValidation extends UserFeedback {
 			userValidation = Validation.END_EXPERIMENT;
 			return;
 		}
-		
-		if( experiment.getReferenceAlignment().contains(candidateMapping.getEntity1(),candidateMapping.getEntity2(),candidateMapping.getRelation())) {
+		//we don't look at the relations
+		if( experiment.getReferenceAlignment().contains(candidateMapping.getEntity1(),candidateMapping.getEntity2()) != null){//,candidateMapping.getRelation())) {
 			userValidation = Validation.CORRECT;
 			log.info("Automatic Evaluation: Correct mapping, " + candidateMapping.toString() );
 		}
