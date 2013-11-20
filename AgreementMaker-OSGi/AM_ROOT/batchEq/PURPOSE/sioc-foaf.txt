@@ -1,0 +1,12 @@
+AGREEMENT DOCUMENT
+
+Date: Mon Nov 14 11:35:11 CST 2011
+Source Ontology: http://rdfs.org/sioc/ns#
+Target Ontology: http://xmlns.com/foaf/0.1/
+
+Class Alignments: 3
+Source Concept	 ->	Target Concept	Similarity	Relation	Provenance
+
+Document	--->	Document	1.0	 = 
+OnlineAccount	--->	OnlineAccount	1.0	 = 
+Agent	--->	Agent	0.9350148568316607	 = 

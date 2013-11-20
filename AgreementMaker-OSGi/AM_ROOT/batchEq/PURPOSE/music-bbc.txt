@@ -1,0 +1,62 @@
+AGREEMENT DOCUMENT
+
+Date: Mon Nov 14 11:34:59 CST 2011
+Source Ontology: http://purl.org/ontology/mo/
+Target Ontology: http://purl.org/ontology/po/
+
+Class Alignments: 53
+Source Concept	 ->	Target Concept	Similarity	Relation	Provenance
+
+OriginMap	--->	OriginMap	1.0	 = 
+Interval	--->	Interval	1.0	 = 
+Person	--->	Person	1.0	 = 
+DiscreteTimeLine	--->	DiscreteTimeLine	1.0	 = 
+Person	--->	Person	1.0	 = 	Recursive Individuals
+TemporalEntity	--->	TemporalEntity	1.0	 = 
+Interval	--->	Interval	1.0	 = 	SubclassOf
+TemporalThing	--->	TemporalThing	1.0	 = 
+ContinuousTimeLine	--->	ContinuousTimeLine	1.0	 = 
+TimeLine	--->	TimeLine	1.0	 = 
+UTInstant	--->	UTInstant	1.0	 = 	SubclassOf
+UniformSamplingMap	--->	UniformSamplingMap	1.0	 = 	SubclassOf
+UTInterval	--->	UTInterval	1.0	 = 
+Product	--->	Product	1.0	 = 
+DurationDescription	--->	DurationDescription	0.9011744003642048	 = 	Combination
+InstantThingPair	--->	InstantThingPair	1.0	 = 	SubclassOf
+InstantEvent	--->	InstantEvent	1.0	 = 	SubclassOf
+InstantThing	--->	InstantThing	0.9190089246460849	 = 	Combination
+PhysicalTimeLine	--->	PhysicalTimeLine	1.0	 = 	Recursive Individuals
+RelativeInstant	--->	RelativeInstant	1.0	 = 	SubclassOf
+Year	--->	Year	1.0	 = 	SubclassOf
+RelativeInterval	--->	RelativeInterval	1.0	 = 
+RelativeTimeLine	--->	RelativeTimeLine	1.0	 = 
+AbstractTimeLine	--->	AbstractTimeLine	1.0	 = 
+TimeLineMap	--->	TimeLineMap	1.0	 = 
+Instant	--->	Instant	1.0	 = 	SubclassOf
+CalendarClockDescription	--->	CalendarClockDescription	1.0	 = 	SubclassOf
+January	--->	January	1.0	 = 
+UniformWindowingMap	--->	UniformWindowingMap	1.0	 = 	SubclassOf
+ShiftMap	--->	ShiftMap	1.0	 = 	SubclassOf
+ProperInterval	--->	ProperInterval	1.0	 = 	SubclassOf
+Document	--->	Document	1.0	 = 
+Factor	--->	Factor	1.0	 = 
+TemporalUnit	--->	TemporalUnit	1.0	 = 	Recursive Individuals
+DiscreteInterval	--->	DiscreteInterval	1.0	 = 
+AbstractInterval	--->	AbstractInterval	1.0	 = 	SubclassOf
+ProperIntervalThing	--->	ProperIntervalThing	1.0	 = 	SubclassOf
+UniformSamplingWindowingMap	--->	UniformSamplingWindowingMap	1.0	 = 	SubclassOf
+DayOfWeek	--->	DayOfWeek	1.0	 = 	Recursive Individuals
+DurationDescription	--->	DurationDescription	1.0	 = 	SubclassOf
+DiscreteInstant	--->	DiscreteInstant	1.0	 = 	SubclassOf
+Event	--->	Event	1.0	 = 	Subclasses
+IntervalThing	--->	IntervalThing	0.9309241949140965	 = 	Combination
+IntervalEvent	--->	IntervalEvent	1.0	 = 	SubclassOf
+Event	--->	Event	1.0	 = 
+DateTimeDescription	--->	DateTimeDescription	1.0	 = 	SubclassOf
+TemporalEntity	--->	TemporalEntity	1.0	 = 
+Instant	--->	Instant	1.0	 = 
+TemporalUnit	--->	TemporalUnit	1.0	 = 	Recursive Individuals
+CorporateBody	--->	Broadcaster	1.0	 = 	SubclassOf
+SpatialThing	--->	SpatialThing	1.0	 = 
+AbstractInstant	--->	AbstractInstant	1.0	 = 	SubclassOf
+CalendarClockInterval	--->	CalendarClockInterval	1.0	 = 	SubclassOf
