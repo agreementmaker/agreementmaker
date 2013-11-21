@@ -178,8 +178,8 @@ public class OntologyDefinition {
 		N3("N3", 3),
 		TURTLE("TURTLE", 4);
 		
-		String name;
-		int ID;
+		private String name;
+		private int ID;
 		
 		private OntologySyntax(String name, int ID) {
 			this.name = name;
@@ -187,6 +187,8 @@ public class OntologyDefinition {
 		}
 		
 		public int getID() { return ID; }
+		
+		public String getName() { return name; }
 		
 		@Override public String toString() { return name; }
 		

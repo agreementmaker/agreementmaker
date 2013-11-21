@@ -16,6 +16,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.test.skip>true</maven.test.skip>
 		<maven.test.failure.ignore>true</maven.test.failure.ignore>
+		<tycho-version>0.18.1</tycho-version>
 	</properties>
 
 	<repositories>
@@ -30,6 +31,11 @@
 		<repository>
 			<id>bliki</id>
 			<url>https://gwtwiki.googlecode.com/svn/maven-repository/</url>
+		</repository>
+		<repository>
+			<id>indigo</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/releases/indigo</url>
 		</repository>
 	</repositories>
 
@@ -49,6 +55,12 @@
 				<Bundle-ClassPath>{maven-dependencies}</Bundle-ClassPath> </instructions> 
 				</configuration> </plugin> -->
 
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<extensions>true</extensions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -290,11 +302,13 @@
 			<version>4.2.1</version>
 		</dependency>
 
+		<!--
 		<dependency>
 			<groupId>com.jidesoft</groupId>
 			<artifactId>jide-oss</artifactId>
 			<version>2.11.1</version>
 		</dependency>
+		-->
 
 		<dependency>
 			<groupId>nz.ac.waikato.cms.weka</groupId>
