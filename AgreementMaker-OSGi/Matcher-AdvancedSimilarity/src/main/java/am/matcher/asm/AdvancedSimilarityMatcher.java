@@ -299,12 +299,15 @@ public class AdvancedSimilarityMatcher extends BaseSimilarityMatcher {
 		// initializing local matcher (to be abstracted) and matrix
 		ParametricStringParameters localMatcherParams = new ParametricStringParameters();
 		localMatcherParams.initForOAEI2009();
+		localMatcherParams.useLexicons = false;
 		
 		// if we are using the WordNet dictionary, update the measure in PSM
 		if( ((AdvancedSimilarityParameters)getParam()).useDictionary ) 
 			localMatcherParams.measure = StringMetrics.AMSUB_AND_EDIT_WITH_WORDNET;
 		
 		ParametricStringMatcher localMatcher = new ParametricStringMatcher();
+		localMatcher.setSourceOntology(getSourceOntology());
+		localMatcher.setTargetOntology(getTargetOntology());
 		localMatcher.setParameters(localMatcherParams);
 		localMatcher.initializeNormalizer();
 		localMatcher.beforeAlignOperations(); // need to do this so that the PSM is correctly initialized.

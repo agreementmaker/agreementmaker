@@ -24,4 +24,13 @@
 		 -->
 		<appender-ref ref="ConsoleAppender" />
 	</root>
+	
+	<logger name="am.matcher.hierarchy.WordnetSubclassMatcher">
+        <level value="OFF" />
+    </logger>
+    
+    <logger name="am.app.ontology.AMNode">
+    	<level value="OFF" />
+    </logger>
+	
 </log4j:configuration>

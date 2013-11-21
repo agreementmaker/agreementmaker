@@ -1,5 +1,6 @@
 package am.matcher.hierarchy;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import simpack.measure.weightingscheme.StringTFIDF;
 import am.Utility;
+import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.Mapping.MappingRelation;
@@ -59,7 +61,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 	
 	DecimalFormat format = new DecimalFormat("0.000");
 		
-	Logger log;
+	Logger LOG;
 	
 	double wordnetSynsetsLimit = 10000;
 	
@@ -86,8 +88,8 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 	
 	public WordnetSubclassMatcher(){
 		initWordnet();
-		log = Logger.getLogger(WordnetSubclassMatcher.class);
-		log.setLevel(Level.DEBUG);
+		LOG = Logger.getLogger(WordnetSubclassMatcher.class);
+		LOG.setLevel(Level.DEBUG);
 		
 		if(writeWordnetFiles){
 			viz = new WordnetVisualizer();
@@ -112,7 +114,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 	
 	@Override
 	protected void align() throws Exception {
-		log.info("Matching started...");
+		LOG.info("Matching started...");
 		
 		addHypernymsToScoredSynsets();
 			
@@ -126,7 +128,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 			matchSub = 0;
 			matchSuper = 0;
 			sourceNode = sourceClasses.get(i);
-			log.debug("Source: " + sourceNode.getUri());
+			LOG.debug("Source: " + sourceNode.getUri());
 			sourceScored = sourceScoredSynsets.get(sourceNode);
 			
 //			for (int j = 0; j < sourceScored.size(); j++) {
@@ -139,11 +141,11 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 							
 				targetScored = targetScoredSynsets.get(targetNode);
 					
-				log.debug("Matching " + sourceNode.getLocalName() + " " + targetNode.getLocalName());
+				LOG.debug("Matching " + sourceNode.getLocalName() + " " + targetNode.getLocalName());
 				//log.debug("sourceComment: " + sourceNode.getComment());
-				log.debug(sourceScored);
+				LOG.debug(sourceScored);
 				//log.debug("targetComment: " + targetNode.getComment());
-				log.debug(targetScored);
+				LOG.debug(targetScored);
 				
 				boolean sourceCompound = compoundNames.contains(targetNode.getLocalName());				
 				boolean targetCompound = compoundNames.contains(sourceNode.getLocalName());
@@ -153,7 +155,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 					
 					if(sourceCompound) matchSub /= 3;					
 					
-					log.debug("HypScore ST: " + matchSub);
+					LOG.debug("HypScore ST: " + matchSub);
 					
 					if(matchSub > hypernymsThreshold)
 						newMapping(sourceNode, targetNode, matchSub, MappingRelation.SUPERCLASS, "Wordnet mediator ST ");
@@ -168,7 +170,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 					if(matchSuper > hypernymsThreshold)
 						newMapping(sourceNode, targetNode, matchSuper, MappingRelation.SUBCLASS, "Wordnet mediator TS ");
 					
-					log.debug("HypScore TS: " + matchSuper);	
+					LOG.debug("HypScore TS: " + matchSuper);	
 					
 					
 				}	
@@ -180,9 +182,9 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 		}
 		
 		if(writeWordnetFiles){
-			log.info("Writing wordnet files...");
+			LOG.info("Writing wordnet files...");
 			writeWordnetFiles();
-			log.info("Done");
+			LOG.info("Done");
 			
 		}
 		
@@ -256,8 +258,8 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 	 * Initialize the WordNet Interface (JAWS)
 	 */
 	private void initWordnet(){
-		String cwd = System.getProperty("user.dir");
-		String wordnetdir = cwd + "/wordnet-3.0";
+		String root = Core.getInstance().getRoot();
+		String wordnetdir = root + File.separator + "wordnet-3.0";
 		System.setProperty("wordnet.database.dir", wordnetdir);
 		// Instantiate 
 		try{
@@ -269,7 +271,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 	}
 		
 	private void buildVirtualDocuments() {
-		log.info("Building comments vectors");
+		LOG.info("Building comments vectors");
 		
 		NormalizerParameter param = new NormalizerParameter();
 		param.normalizeBlank = true;
@@ -336,10 +338,10 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 				if(!synsetDefinitions.containsKey(synset)){
 					definition = synset.getDefinition();
 					if(definition == null)
-						log.error("null synset definition");
+						LOG.error("null synset definition");
 					definition = normalizer.normalize(definition);
 					if(definition == null)
-						log.error("null definition after normalization");
+						LOG.error("null definition after normalization");
 					normalizedDocuments.add(new AMStringWrapper(definition));
 					synsetDefinitions.put(synset, definition);			
 				}			
@@ -357,9 +359,9 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 			
 			comment = documents.get(i).unwrap();
 			
-			log.debug("Computing synset scores for: " + node.getLocalName());
-			log.debug("comment:" + node.getComment());
-			log.debug("comment:" + comment);
+			LOG.debug("Computing synset scores for: " + node.getLocalName());
+			LOG.debug("comment:" + node.getComment());
+			LOG.debug("comment:" + comment);
 			
 			String localName = node.getLocalName();
 			boolean compound = false;
@@ -383,14 +385,14 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 					sim = tfidfClasses.getSimilarity(comment, definition);	
 				}
 				else{
-					log.error("Problems with comments or definition");
-					log.error(comment);
-					log.error(definition);
+					LOG.error("Problems with comments or definition");
+					LOG.error(comment);
+					LOG.error(definition);
 				}
 				
-				log.debug("definition: " + synset.getDefinition());
-				log.debug("definition: " + definition);
-				log.debug("vectorSim:\t" + sim + "\t" + node.getLocalName());
+				LOG.debug("definition: " + synset.getDefinition());
+				LOG.debug("definition: " + definition);
+				LOG.debug("vectorSim:\t" + sim + "\t" + node.getLocalName());
 				
 				if(useNonZero){
 					if(sim >= nonZeroThreshold){
@@ -413,7 +415,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 			}
 			//
 			
-			log.debug("sum:" + sum);
+			LOG.debug("sum:" + sum);
 			
 			if(useNonZero){
 				if(atLeastOneHighSimilarity){
@@ -437,11 +439,11 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 					scoredList.get(j).setScore((double)1 / size);
 				else {
 					scoredList.get(j).setScore(score / sum);
-					log.debug(scoredList.get(j));
+					LOG.debug(scoredList.get(j));
 				}
 			}
 			weights += "]";	
-			log.debug("weights: " + weights);
+			LOG.debug("weights: " + weights);
 			
 			weights = "[";
 			for (int j = 0; j < scoredList.size(); j++) {
@@ -449,7 +451,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 				if(j < scoredList.size() - 1) weights += ",";
 			}
 			weights += "]";	
-			log.debug("weightsMod: " + weights);
+			LOG.debug("weightsMod: " + weights);
 			
 			scoredSynsets.put(node, scoredList);
 		}		
@@ -487,9 +489,9 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 			source = nodeList.get(i);
 			comment = source.getComment();
 			
-			log.debug("Building virtual document for " + source.getLocalName());
+			LOG.debug("Building virtual document for " + source.getLocalName());
 			
-			log.debug("comment: " + comment);
+			LOG.debug("comment: " + comment);
 						
 			ontClass = source.getResource().as(OntClass.class);
 			superClasses = ontClass.listSuperClasses().toList();
@@ -500,7 +502,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 				supString += Utilities.separateWords(superClasses.get(j).getLocalName()) + " ";
 			}
 			
-			log.debug("superclasses: " + supString);
+			LOG.debug("superclasses: " + supString);
 			
 			if(useSuperclasses)
 				comment += " " + supString;
@@ -509,7 +511,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 			comment = normalizer.normalize(comment);
 			normalizer.removeStopword(source.getLocalName());
 						
-			log.debug("normComment: " + comment);
+			LOG.debug("normComment: " + comment);
 			
 			normalizedDocuments.add(new AMStringWrapper(comment));
 		}
@@ -625,7 +627,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 						matchST += sim * source.getScore() * target.getScore();
 						countST += source.getScore() * target.getScore();
 						
-						log.debug(report);
+						LOG.debug(report);
 					}					
 				}
 			}
@@ -639,7 +641,7 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 				report += "\tNo"; 
 			else report += "\tYes";
 			
-			log.debug(report);
+			LOG.debug(report);
 		}
 		
 		if(sourceList.size() == 0)
@@ -664,12 +666,12 @@ public class WordnetSubclassMatcher extends AbstractMatcher{
 		if(normalizationFunction == NormalizationFunction.HYPERNYMS_COUNT)
 			retValue /= hypernymsCount;
 		else if(normalizationFunction == NormalizationFunction.HYPERNYMS_LOG){
-			System.out.println(hypernymsCount);
+			LOG.trace("Hypernyms count: " + hypernymsCount);
 			double log = Math.log(hypernymsCount);
-			System.out.println(hypernymsSet);
-			System.out.println("log: " + log);
+			LOG.trace(hypernymsSet);
+			LOG.trace("log: " + log);
 			retValue /= log;
-			System.out.println("sim: " + retValue);			
+			LOG.trace("sim: " + retValue);			
 		}
 			
 		return retValue;

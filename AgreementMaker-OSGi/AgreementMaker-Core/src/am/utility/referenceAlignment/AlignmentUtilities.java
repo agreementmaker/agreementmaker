@@ -254,7 +254,7 @@ public class AlignmentUtilities {
         //else  fm = (1 + ALPHA) * (prec * rec) / (ALPHA * prec + rec);
         else fm = 2 * (prec * rec) / (prec + rec);  // from Ontology Matching book
         
-        System.out.print(prec + "\t" +  rec + "\t");
+        //System.out.print(prec + "\t" +  rec + "\t");
 		
         rd.setPrecision(prec);
         rd.setRecall(rec);

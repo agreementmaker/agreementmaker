@@ -42,7 +42,7 @@ public class AMNode extends AbstractNode implements Serializable {
 	
 	private static final long serialVersionUID = -7629984078559964658L;
 
-	private Logger log = Logger.getLogger(Node.class);
+	private static final Logger LOG = Logger.getLogger(AMNode.class);
 	
 	/** The OWL/RDF uri identifier, that is namespace#localname.
 	 * This info is kept in the resource variable but we keep them separate to access them easily. TODO - Should we really be duplicating this information? - Cosmin.
@@ -231,7 +231,7 @@ public class AMNode extends AbstractNode implements Serializable {
 					}
 				}
 				catch ( Exception e ) {
-					log.error("Cannot determine neighbors/individuals of the OntClass.", e);
+					LOG.error("Cannot determine neighbors/individuals of the OntClass.", e);
 				}
 			}
 			else {
@@ -246,7 +246,7 @@ public class AMNode extends AbstractNode implements Serializable {
 						}
 					}
 				} catch ( Exception e ) {
-					log.error("Cannot determine neighbor nodes of the OntProperty.", e);
+					LOG.error("Cannot determine neighbor nodes of the OntProperty.", e);
 				}
 			}
 		}
@@ -827,7 +827,7 @@ public class AMNode extends AbstractNode implements Serializable {
 				e.printStackTrace();
 			}
 			
-			log.info(n.getLocalName());
+			LOG.info(n.getLocalName());
 	  }
 
 	  @Override

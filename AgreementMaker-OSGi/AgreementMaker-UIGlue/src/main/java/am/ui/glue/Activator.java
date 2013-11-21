@@ -11,6 +11,7 @@ public class Activator implements BundleActivator {
 	private static BundleContext context;
 
 	private ServiceRegistration<AMVisualizationComponent> regBatchModeMenuItem;
+	private ServiceRegistration<AMVisualizationComponent> regLODMenuItem;
 	
 	static BundleContext getContext() {
 		return context;
@@ -22,10 +23,15 @@ public class Activator implements BundleActivator {
 		regBatchModeMenuItem = 
 				bundleContext.registerService(
 						AMVisualizationComponent.class, new BatchModeMenuItem(), null);
+		
+		regLODMenuItem =
+				bundleContext.registerService(
+						AMVisualizationComponent.class, new LODMenuItem(), null);
 	}
 
 	public void stop(BundleContext bundleContext) throws Exception {
 		regBatchModeMenuItem.unregister();
+		regLODMenuItem.unregister();
 		
 		Activator.context = null;
 	}
