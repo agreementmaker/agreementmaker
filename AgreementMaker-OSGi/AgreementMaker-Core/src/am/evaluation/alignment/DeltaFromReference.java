@@ -25,14 +25,27 @@ public class DeltaFromReference {
 	 * @return Number of edit operations needed to transform the alignment into the referenceAlignment.
 	 */
 	public int getDelta( Alignment<Mapping> alignment ) {
+		return getDelta(alignment, false);
+	}
+	
+	/**
+	 * Calculate the delta between the referenceAlignment and a given alignment.
+	 * 
+	 * @param matchRelationType
+	 *            If false, the algorithm ignores the relation type when
+	 *            considering if two mappings are the same.
+	 * @return Number of edit operations needed to transform the alignment into the referenceAlignment.
+	 */
+	public int getDelta( Alignment<Mapping> alignment, boolean matchRelationType) {
 		
 		int correctMappings = 0;
 		// keep track of the mappings discovered in order to avoid counting duplicates more than once
 		//HashMap<Mapping,Boolean> mappingsDiscovered = new HashMap<Mapping,Boolean>();
 		
 		for( Mapping m : alignment ) {
-			//we don't look for the relation type
-			if( referenceAlignment.contains(m.getEntity1(), m.getEntity2()) != null) {//, m.getRelation()) ) {
+			if( (   ( matchRelationType && referenceAlignment.contains(m.getEntity1(), m.getEntity2(), m.getRelation())) )
+		         || (!matchRelationType && referenceAlignment.contains(m.getEntity1(), m.getEntity2()) != null ) ) 
+			{
 				//System.out.println("Reference contains: "+m.getEntity1()+" "+m.getEntity2());
 				correctMappings++;
 			}
