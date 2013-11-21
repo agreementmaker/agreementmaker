@@ -1,5 +1,6 @@
 package am.extension.userfeedback.common;
 
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UserFeedback;
@@ -9,6 +10,12 @@ public class AutomaticUserValidation extends UserFeedback {
 	Validation userValidation;
 	Mapping candidateMapping;
 
+	/**
+	 * If false, the user validation will ignore the relation type of the mapping.
+	 * TODO: Make this be a parameter that can be changed programatically.
+	 */
+	private boolean considerRelationType = false;
+		
 	@Override public Validation getUserFeedback() { return userValidation; }
 	@Override public Mapping getCandidateMapping() { return candidateMapping; }
 
@@ -23,8 +30,11 @@ public class AutomaticUserValidation extends UserFeedback {
 			userValidation = Validation.END_EXPERIMENT;
 			return;
 		}
-		//we don't look at the relations
-		if( experiment.getReferenceAlignment().contains(candidateMapping.getEntity1(),candidateMapping.getEntity2()) != null){//,candidateMapping.getRelation())) {
+
+		final Alignment<Mapping> ref = experiment.getReferenceAlignment();
+		if( ( considerRelationType && ref.contains(candidateMapping.getEntity1(), candidateMapping.getEntity2(), candidateMapping.getRelation()) ) ||
+			(!considerRelationType && ref.contains(candidateMapping.getEntity1(), candidateMapping.getEntity2()) != null ) ) 
+		{
 			userValidation = Validation.CORRECT;
 			log.info("Automatic Evaluation: Correct mapping, " + candidateMapping.toString() );
 		}
