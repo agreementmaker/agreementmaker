@@ -60,8 +60,8 @@
 				<configuration>
 					<manifestLocation>META-INF</manifestLocation>
 					<instructions>
-						<Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-						<Bundle-Version>${pom.version}</Bundle-Version>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Version>${project.version}</Bundle-Version>
 						<!-- <Export-Package>${bundle.namespace}.*</Export-Package> -->
 						<Export-Package>*</Export-Package>
 						<Bundle-Activator>${bundle.namespace}.app.osgi.AMActivator</Bundle-Activator>
