@@ -84,4 +84,14 @@ public class UFLRegistry {
 		PropagationEvaluationRegistry( Class<? extends PropagationEvaluation> cs ) { clazz = cs; }
 		public Class<? extends PropagationEvaluation> getEntryClass() { return clazz; }
 	}
+	
+	public enum SaveFeedbackRegistry {
+		MultiUserSaveFeedback (am.extension.userfeedback.MultiUserSaveFeedback.class);
+		
+		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
+		Class<? extends SaveFeedback> clazz;
+		
+		SaveFeedbackRegistry( Class<? extends SaveFeedback> cs ) { clazz = cs; }
+		public Class<? extends SaveFeedback> getEntryClass() { return clazz; }
+	}
 }
