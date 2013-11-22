@@ -10,14 +10,17 @@
 	</parent>
 
 	<artifactId>AgreementMaker-Core</artifactId>
-	<packaging>eclipse-plugin</packaging>
+	<packaging>bundle</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.test.skip>true</maven.test.skip>
 		<maven.test.failure.ignore>true</maven.test.failure.ignore>
-		<tycho-version>0.18.1</tycho-version>
+		<bundle.symbolicName>${pom.artifactId}</bundle.symbolicName>
+		<bundle.namespace>am</bundle.namespace>
 	</properties>
+
+	<name>${bundle.symbolicName} [${bundle.namespace}]</name>
 
 	<repositories>
 		<repository>
@@ -50,60 +53,39 @@
 		<directory>target</directory>
 
 		<plugins>
-			<!-- <plugin> <groupId>org.apache.felix</groupId> <artifactId>maven-bundle-plugin</artifactId> 
-				<version>2.3.7</version> <extensions>true</extensions> <configuration> <instructions> 
-				<Bundle-ClassPath>{maven-dependencies}</Bundle-ClassPath> </instructions> 
-				</configuration> </plugin> -->
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<manifestLocation>META-INF</manifestLocation>
+					<instructions>
+						<Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+						<Bundle-Version>${pom.version}</Bundle-Version>
+						<!-- <Export-Package>${bundle.namespace}.*</Export-Package> -->
+						<Export-Package>*</Export-Package>
+						<Bundle-Activator>${bundle.namespace}.app.osgi.AMActivator</Bundle-Activator>
+						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+						<Embed-Directory>target/dependency</Embed-Directory>
+						<Embed-StripGroup>true</Embed-StripGroup>
+						<Embed-Transitive>true</Embed-Transitive>
+					</instructions>
+				</configuration>
+			</plugin>
 
 			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-maven-plugin</artifactId>
-				<version>${tycho-version}</version>
-				<extensions>true</extensions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
 						<id>copy-dependencies</id>
-						<phase>initialize</phase>
+						<phase>package</phase>
 						<goals>
 							<goal>copy-dependencies</goal>
 						</goals>
-						<configuration>
-							<overWriteIfNewer>true</overWriteIfNewer>
-							<outputDirectory>${project.basedir}/lib</outputDirectory>
-							<markersDirectory>${project.basedir}/lib</markersDirectory>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-clean-plugin</artifactId>
-				<version>2.5</version>
-				<executions>
-					<execution>
-						<id>clean-dependencies</id>
-						<phase>clean</phase>
-						<goals>
-							<goal>clean</goal>
-						</goals>
-						<configuration>
-							<filesets>
-								<fileset>
-									<directory>lib</directory>
-									<includes>
-										<include>**/*</include>
-									</includes>
-								</fileset>
-							</filesets>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- Maven Compiler plugin -->
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -115,8 +97,10 @@
 			</plugin>
 		</plugins>
 
+		<!-- See: http://stackoverflow.com/questions/8706017/maven-dependency-plugin-goals-copy-dependencies-unpack-is-not-supported-b -->
 		<pluginManagement>
 			<plugins>
+				<!-- Ignore/Execute plugin execution -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -124,17 +108,18 @@
 					<configuration>
 						<lifecycleMappingMetadata>
 							<pluginExecutions>
+								<!-- copy-dependency plugin -->
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>org.apache.maven.plugins</groupId>
 										<artifactId>maven-dependency-plugin</artifactId>
-										<versionRange>[2.0,)</versionRange>
+										<versionRange>[1.0.0,)</versionRange>
 										<goals>
 											<goal>copy-dependencies</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<execute />
+										<ignore />
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -213,13 +198,8 @@
 			<version>0.8.9</version>
 		</dependency>
 
-		<!--
-		<dependency>
-			<groupId>antlr</groupId>
-			<artifactId>antlr</artifactId> 
-			<version>2.7.5</version>
-		</dependency>
-		-->
+		<!-- <dependency> <groupId>antlr</groupId> <artifactId>antlr</artifactId> 
+			<version>2.7.5</version> </dependency> -->
 
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -233,13 +213,8 @@
 			<version>3.2.1</version>
 		</dependency>
 
-		<!-- 
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-		-->
+		<!-- <dependency> <groupId>commons-logging</groupId> <artifactId>commons-logging</artifactId> 
+			<version>1.1.1</version> </dependency> -->
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -307,7 +282,7 @@
 			<artifactId>jide-oss</artifactId>
 			<version>2.11.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>nz.ac.waikato.cms.weka</groupId>
 			<artifactId>weka-stable</artifactId>
@@ -357,13 +332,8 @@
 		</dependency>
 
 		<!-- WARNING!!!! The UMLS dependency BREAKS Gate!!!!! -->
-		<!-- 
-		<dependency> 
-			<groupId>umls-kss-api</groupId>
-			<artifactId>umls-kss-api</artifactId> 
-			<version>5.0</version>
-		</dependency 
-		-->
+		<!-- <dependency> <groupId>umls-kss-api</groupId> <artifactId>umls-kss-api</artifactId> 
+			<version>5.0</version> </dependency -->
 
 		<dependency>
 			<groupId>javaplot</groupId>
