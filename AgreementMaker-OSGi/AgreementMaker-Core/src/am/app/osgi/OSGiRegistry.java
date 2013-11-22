@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.core.runtime.adaptor.EclipseStarter;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -128,8 +127,8 @@ public class OSGiRegistry {
 	
 	public void initializeShutdown() {
 		try {
-			//context.getBundle(0).stop();
-			EclipseStarter.shutdown();
+			context.getBundle(0).stop();
+			//EclipseStarter.shutdown();
 			
 			while( context.getBundles() != null ) {
 				Thread.sleep(100);
