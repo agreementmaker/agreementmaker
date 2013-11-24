@@ -1,6 +1,7 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-<modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>edu.uic.cs.advis.am</groupId>
@@ -11,24 +12,115 @@
 
 	<artifactId>AgreementMaker-Matchers</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<packaging>eclipse-plugin</packaging>
+	<packaging>bundle</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<bundle.symbolicName>${project.artifactId}</bundle.symbolicName>
+		<bundle.namespace>am.matcher</bundle.namespace>
 	</properties>
 
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.0</version>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.4.0</version>
+				<extensions>true</extensions>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<manifestLocation>META-INF</manifestLocation>
+					<instructions>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<Export-Package>${bundle.namespace}.*</Export-Package>
+						<Bundle-Activator>${bundle.namespace}.MatchersActivator</Bundle-Activator>
+						<Import-Package>*</Import-Package>
+					</instructions>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
+
+		<!-- See: http://stackoverflow.com/questions/8706017/maven-dependency-plugin-goals-copy-dependencies-unpack-is-not-supported-b -->
+		<pluginManagement>
+			<plugins>
+				<!-- Ignore/Execute plugin execution -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<!-- copy-dependency plugin -->
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[1.0.0,)</versionRange>
+										<goals>
+											<goal>copy-dependencies</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
 	</build>
+
+
+	<profiles>
+		<profile>
+			<activation>
+				<property>
+					<name>m2e.version</name>
+				</property>
+			</activation>
+			<properties>
+				<osgi-version-qualifier>qualifier</osgi-version-qualifier>
+			</properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.felix</groupId>
+							<artifactId>maven-bundle-plugin</artifactId>
+							<configuration>
+								<!-- PDE does not honour custom manifest location -->
+								<manifestLocation>META-INF</manifestLocation>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+	</profiles>
+
+	<dependencies>
+		<dependency>
+			<groupId>${parent.groupId}</groupId>
+			<artifactId>AgreementMaker-Core</artifactId>
+			<version>${parent.version}</version>
+		</dependency>
+	</dependencies>
 
 </project>
