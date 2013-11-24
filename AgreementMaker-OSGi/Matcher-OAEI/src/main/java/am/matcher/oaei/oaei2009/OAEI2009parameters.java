@@ -1,4 +1,4 @@
-package am.matcher.oaei2009;
+package am.matcher.oaei.oaei2009;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;

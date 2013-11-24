@@ -1,4 +1,4 @@
-package am.matcher.oaei2010;
+package am.matcher.oaei.oaei2010;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.mappingEngine.utility.OAEI_Track;

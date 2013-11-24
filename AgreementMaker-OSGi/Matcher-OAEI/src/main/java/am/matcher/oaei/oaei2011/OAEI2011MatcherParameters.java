@@ -1,4 +1,4 @@
-package am.matcher.oaei2011;
+package am.matcher.oaei.oaei2011;
 
 import am.app.mappingEngine.DefaultMatcherParameters;
 import am.app.ontology.profiling.classification.OntologyClassifier.OAEI2011Configuration;

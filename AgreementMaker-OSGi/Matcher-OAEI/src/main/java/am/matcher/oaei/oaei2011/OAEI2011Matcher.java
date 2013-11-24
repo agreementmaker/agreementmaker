@@ -1,7 +1,7 @@
 /**
  * 
  */
-package am.matcher.oaei2011;
+package am.matcher.oaei.oaei2011;
 
 import java.io.BufferedReader;
 import java.io.File;

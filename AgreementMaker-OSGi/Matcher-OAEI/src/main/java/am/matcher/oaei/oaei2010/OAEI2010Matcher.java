@@ -1,7 +1,7 @@
 /**
  * 
  */
-package am.matcher.oaei2010;
+package am.matcher.oaei.oaei2010;
 
 import am.Utility;
 import am.app.Core;

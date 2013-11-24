@@ -1,4 +1,4 @@
-package am.matcher.oaei2011;
+package am.matcher.oaei.oaei2011;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

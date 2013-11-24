@@ -1,4 +1,4 @@
-package am.matcher.oaei2009;
+package am.matcher.oaei.oaei2009;
 
 import java.awt.Dimension;
 
