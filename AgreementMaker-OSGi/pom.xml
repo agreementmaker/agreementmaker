@@ -29,25 +29,33 @@
 	<name>AgreementMaker OSGi</name>
 	<description>OSGi version of AgreementMaker</description>
 
-	<properties>
-		<tycho-version>0.18.1</tycho-version>
-	</properties>
-
+	<!-- Repositories from where we get our dependencies. -->
 	<repositories>
 		<repository>
-			<id>indigo</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/indigo</url>
+			<id>AgreementMaker Maven Repo</id>
+			<url>http://agreementmaker.org/maven2</url>
+		</repository>
+		<repository>
+			<id>Aduna</id>
+			<url>http://repo.aduna-software.org/maven2/releases</url>
+		</repository>
+		<repository>
+			<id>bliki</id>
+			<url>https://gwtwiki.googlecode.com/svn/maven-repository/</url>
 		</repository>
 	</repositories>
 
+	<!-- Specify our Java version here. -->
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-maven-plugin</artifactId>
-				<version>${tycho-version}</version>
-				<extensions>true</extensions>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
