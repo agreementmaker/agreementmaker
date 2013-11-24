@@ -14,7 +14,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<bundle.namespace>am.ui</bundle.namespace>
+		<bundle.namespace>am.ui.glue</bundle.namespace>
 	</properties>
 
 	<build>
@@ -29,8 +29,8 @@
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
-						<Export-Package>${bundle.namespace}.*,am.visualization.*</Export-Package>
-						<Bundle-Activator>${bundle.namespace}.UIActivator</Bundle-Activator>
+						<Export-Package>${bundle.namespace}.*</Export-Package>
+						<Bundle-Activator>${bundle.namespace}.Activator</Bundle-Activator>
 						<Import-Package>*</Import-Package>
 					</instructions>
 				</configuration>

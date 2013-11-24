@@ -88,7 +88,7 @@ public class LODBatch {
 		AdvancedSimilarityMatcher matcher = new AdvancedSimilarityMatcher();
 		
 		AdvancedSimilarityParameters asmParam = new AdvancedSimilarityParameters();
-		asmParam.useDictionary = true;
+		//asmParam.useDictionary = true;
 		matcher.setParameters(asmParam);
 		
 //		OAEI2011Matcher matcher = new OAEI2011Matcher();
