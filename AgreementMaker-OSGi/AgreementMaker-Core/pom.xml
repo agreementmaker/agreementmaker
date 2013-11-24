@@ -22,26 +22,6 @@
 
 	<name>${bundle.symbolicName} [${bundle.namespace}]</name>
 
-	<repositories>
-		<repository>
-			<id>agreementmaker</id>
-			<url>http://agreementmaker.org/maven2</url>
-		</repository>
-		<repository>
-			<id>Aduna</id>
-			<url>http://repo.aduna-software.org/maven2/releases</url>
-		</repository>
-		<repository>
-			<id>bliki</id>
-			<url>https://gwtwiki.googlecode.com/svn/maven-repository/</url>
-		</repository>
-		<repository>
-			<id>indigo</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/indigo</url>
-		</repository>
-	</repositories>
-
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
@@ -86,16 +66,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.0</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
 			</plugin>
 		</plugins>
 
