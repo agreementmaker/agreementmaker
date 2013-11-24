@@ -1,4 +1,4 @@
-package am.matcher.wikipedia;
+package am.matcher.lod.wikipedia;
 
 import java.io.BufferedReader;
 import java.io.IOException;

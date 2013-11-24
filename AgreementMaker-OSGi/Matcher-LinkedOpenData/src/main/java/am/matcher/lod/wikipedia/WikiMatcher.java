@@ -1,4 +1,4 @@
-package am.matcher.wikipedia;
+package am.matcher.lod.wikipedia;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.ontology.Node;
-import am.matcher.hierarchy.Utilities;
+import am.matcher.lod.hierarchy.Utilities;
 
 public class WikiMatcher extends AbstractMatcher {
 

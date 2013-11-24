@@ -1,4 +1,4 @@
-package am.matcher.hierarchy;
+package am.matcher.lod.hierarchy;
 
 import java.io.File;
 import java.text.DecimalFormat;

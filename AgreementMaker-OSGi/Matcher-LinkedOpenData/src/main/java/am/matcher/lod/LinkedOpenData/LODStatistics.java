@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import am.matcher.hierarchy.Utilities;
+import am.matcher.lod.hierarchy.Utilities;
 import am.utility.WordNetUtils;
 import edu.smu.tspell.wordnet.Synset;
 

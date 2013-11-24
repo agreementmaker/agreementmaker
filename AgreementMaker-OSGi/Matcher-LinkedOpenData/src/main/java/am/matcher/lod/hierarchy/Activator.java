@@ -1,4 +1,4 @@
-package am.matcher.hierarchy;
+package am.matcher.lod.hierarchy;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

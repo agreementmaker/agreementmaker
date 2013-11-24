@@ -1,4 +1,4 @@
-package am.matcher.hierarchy;
+package am.matcher.lod.hierarchy;
 
 public class Utilities {
 	public static String separateWords(String string){
