@@ -23,6 +23,7 @@
 		<module>AgreementMaker-SemanticExplanation</module>
 		<module>AgreementMaker-UIGlue</module>
 		<module>VisualAnalytics-Graph</module>
+		<module>Matcher-Benchmarks2013</module>
 		<!-- <module>AM_ROOT</module>  -->
 	</modules>
 
