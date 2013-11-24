@@ -10,7 +10,7 @@ import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
-import am.matcher.oaei2009.OAEI2009parameters;
+import am.matcher.oaei.oaei2009.OAEI2009parameters;
 import am.parsing.AlignmentOutput;
 
 public class ConferenceTrack extends Track {
