@@ -57,7 +57,7 @@
 							<groupId>org.apache.felix</groupId>
 							<artifactId>maven-bundle-plugin</artifactId>
 							<configuration>
-								<!-- PDE does not honour custom manifest location -->
+								<!-- PDE does not honor custom manifest location -->
 								<manifestLocation>META-INF</manifestLocation>
 							</configuration>
 						</plugin>
@@ -73,6 +73,17 @@
 			<artifactId>AgreementMaker-Core</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
-	</dependencies>
-	
+		
+		<dependency>
+			<groupId>com.jidesoft</groupId>
+			<artifactId>jide-oss</artifactId>
+			<version>2.11.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.barchart.kitfox</groupId>
+			<artifactId>kitfox-svg-core</artifactId>
+			<version>1.0.0-build001</version>
+		</dependency>
+	</dependencies>	
 </project>

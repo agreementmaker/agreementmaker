@@ -170,9 +170,6 @@
 			<version>0.8.9</version>
 		</dependency>
 
-		<!-- <dependency> <groupId>antlr</groupId> <artifactId>antlr</artifactId> 
-			<version>2.7.5</version> </dependency> -->
-
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -184,9 +181,6 @@
 			<artifactId>commons-collections</artifactId>
 			<version>3.2.1</version>
 		</dependency>
-
-		<!-- <dependency> <groupId>commons-logging</groupId> <artifactId>commons-logging</artifactId> 
-			<version>1.1.1</version> </dependency> -->
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -231,28 +225,15 @@
 		</dependency>
 
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.5</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>4.1.2</version>
 		</dependency>
 
-		<!-- Apache HttpComponents -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
 			<version>4.2.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.jidesoft</groupId>
-			<artifactId>jide-oss</artifactId>
-			<version>2.11.1</version>
 		</dependency>
 
 		<dependency>
@@ -279,27 +260,9 @@
 			<version>1.4_rc3</version>
 		</dependency>
 
-		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>jsr311-api</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.barchart.kitfox</groupId>
-			<artifactId>kitfox-svg-core</artifactId>
-			<version>1.0.0-build001</version>
-		</dependency>
-
 		<!-- WARNING!!!! The UMLS dependency BREAKS Gate!!!!! -->
 		<!-- <dependency> <groupId>umls-kss-api</groupId> <artifactId>umls-kss-api</artifactId> 
 			<version>5.0</version> </dependency -->
-
-		<dependency>
-			<groupId>javaplot</groupId>
-			<artifactId>javaplot</artifactId>
-			<version>0.4.0</version>
-		</dependency>
 
 		<dependency>
 			<groupId>net.sf.jopt-simple</groupId>
@@ -353,11 +316,5 @@
 			<artifactId>sesame-sail-rdbms</artifactId>
 			<version>2.6.8</version>
 		</dependency>
-
-
-		<!-- <dependency> <groupId>commons-codec</groupId> <artifactId>commons-codec</artifactId> 
-			<version>1.4</version> </dependency> -->
-
 	</dependencies>
-
 </project>
