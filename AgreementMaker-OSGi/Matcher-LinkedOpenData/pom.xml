@@ -115,6 +115,12 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>Matcher-BaseSimilarity</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>Matcher-AdvancedSimilarity</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
