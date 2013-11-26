@@ -41,34 +41,6 @@
 		</plugins>
 	</build>
 
-
-	<profiles>
-		<profile>
-			<activation>
-				<property>
-					<name>m2e.version</name>
-				</property>
-			</activation>
-			<properties>
-				<osgi-version-qualifier>qualifier</osgi-version-qualifier>
-			</properties>
-			<build>
-				<pluginManagement>
-					<plugins>
-						<plugin>
-							<groupId>org.apache.felix</groupId>
-							<artifactId>maven-bundle-plugin</artifactId>
-							<configuration>
-								<!-- PDE does not honour custom manifest location -->
-								<manifestLocation>META-INF</manifestLocation>
-							</configuration>
-						</plugin>
-					</plugins>
-				</pluginManagement>
-			</build>
-		</profile>
-	</profiles>
-
 	<dependencies>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>

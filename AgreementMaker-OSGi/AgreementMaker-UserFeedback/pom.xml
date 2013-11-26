@@ -33,38 +33,15 @@
 						<Export-Package>${bundle.namespace}.*,am.extension.feedback.*</Export-Package>
 						<Bundle-Activator>${bundle.namespace}.Activator</Bundle-Activator>
 						<Import-Package>*</Import-Package>
+						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+						<Embed-Directory>target/dependency</Embed-Directory>
+						<Embed-StripGroup>true</Embed-StripGroup>
+						<Embed-Transitive>true</Embed-Transitive>
 					</instructions>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-
-	<profiles>
-		<profile>
-			<activation>
-				<property>
-					<name>m2e.version</name>
-				</property>
-			</activation>
-			<properties>
-				<osgi-version-qualifier>qualifier</osgi-version-qualifier>
-			</properties>
-			<build>
-				<pluginManagement>
-					<plugins>
-						<plugin>
-							<groupId>org.apache.felix</groupId>
-							<artifactId>maven-bundle-plugin</artifactId>
-							<configuration>
-								<!-- PDE does not honour custom manifest location -->
-								<manifestLocation>META-INF</manifestLocation>
-							</configuration>
-						</plugin>
-					</plugins>
-				</pluginManagement>
-			</build>
-		</profile>
-	</profiles>
 	
 	<dependencies>
 		<dependency>

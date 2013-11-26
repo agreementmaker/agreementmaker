@@ -31,41 +31,19 @@
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
-						<Export-Package>${bundle.namespace}.*,am.visualization.*</Export-Package>
+						<!-- <Export-Package>${bundle.namespace}.*,am.visualization.*</Export-Package> -->
+						<_exportcontents>${bundle.namespace}.*,am.visualization.*,*</_exportcontents>
 						<Bundle-Activator>${bundle.namespace}.UIActivator</Bundle-Activator>
-						<Import-Package>*</Import-Package>
+						<Import-Package>org.osgi.*,am.*</Import-Package>
+						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+						<Embed-Directory>target/dependency</Embed-Directory>
+						<Embed-StripGroup>true</Embed-StripGroup>
+						<Embed-Transitive>true</Embed-Transitive>
 					</instructions>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-
-	<profiles>
-		<profile>
-			<activation>
-				<property>
-					<name>m2e.version</name>
-				</property>
-			</activation>
-			<properties>
-				<osgi-version-qualifier>qualifier</osgi-version-qualifier>
-			</properties>
-			<build>
-				<pluginManagement>
-					<plugins>
-						<plugin>
-							<groupId>org.apache.felix</groupId>
-							<artifactId>maven-bundle-plugin</artifactId>
-							<configuration>
-								<!-- PDE does not honor custom manifest location -->
-								<manifestLocation>META-INF</manifestLocation>
-							</configuration>
-						</plugin>
-					</plugins>
-				</pluginManagement>
-			</build>
-		</profile>
-	</profiles>
 	
 	<dependencies>
 		<dependency>

@@ -24,18 +24,17 @@
 		<module>AgreementMaker-UIGlue</module>
 		<module>VisualAnalytics-Graph</module>
 		<module>Matcher-Benchmarks2013</module>
-		<!-- <module>AM_ROOT</module>  -->
+		<module>AgreementMaker-OSGi-Tests</module>
+		<!-- <module>AM_ROOT</module> -->
 	</modules>
 
 	<name>AgreementMaker OSGi</name>
 	<description>OSGi version of AgreementMaker</description>
-	
-    <properties>
-        <paxexamversion>2.6.0</paxexamversion>
-        <paxrunnerversion>1.7.6</paxrunnerversion>
-        <paxurlversion>1.3.3</paxurlversion>
-        <felixversion>3.2.2</felixversion>
-    </properties>
+
+	<properties>
+		<exam.version>3.0.0</exam.version>
+		<url.version>1.5.2</url.version>
+	</properties>
 
 	<!-- Repositories from where we get our dependencies. -->
 	<repositories>
@@ -53,9 +52,9 @@
 		</repository>
 	</repositories>
 
-	<!-- Specify our Java version here. -->
 	<build>
 		<plugins>
+			<!-- Specify our Java version here. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -65,12 +64,40 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-		</plugins>
+		</plugins>		
 	</build>
+	
+	<!-- Put the OSGi manifest where Eclipse Plugin Development Environment (PDE) expects it. -->
+	<profiles>
+		<profile>
+			<activation>
+				<property>
+					<name>m2e.version</name>
+				</property>
+			</activation>
+			<properties>
+				<osgi-version-qualifier>qualifier</osgi-version-qualifier>
+			</properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.felix</groupId>
+							<artifactId>maven-bundle-plugin</artifactId>
+							<configuration>
+								<!-- PDE does not honour custom manifest location -->
+								<manifestLocation>META-INF</manifestLocation>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+	</profiles>
 
 	<!-- Dependencies common to ALL modules of this project. -->
 	<dependencies>
-	
+
 		<!-- OSGi dependencies -->
 		<dependency>
 			<groupId>org.osgi</groupId>
@@ -87,59 +114,13 @@
 			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
-		
+
 		<!-- Test dependencies -->
 		<dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.1</version>
-            <scope>test</scope>
-        </dependency>
-        
-        <!-- Pax Exam Dependencies -->
-        <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-junit4</artifactId>
-            <version>3.3.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-container-paxrunner</artifactId>
-            <version>3.0.0.M3</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-link-assembly</artifactId>
-            <version>3.3.0</version>
-            <scope>test</scope>
-        </dependency>
-        
-         <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-testforge</artifactId>
-            <version>3.3.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- For sane logging -->
-<!--         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>1.6.1</version>
-            <scope>test</scope>
-        </dependency> -->
-
-        <dependency>
-                <groupId>org.ops4j.pax.runner</groupId>
-                <artifactId>pax-runner-no-jcl</artifactId>
-                <version>1.8.5</version>
-                <scope>test</scope>
-        </dependency>
-		
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
-
 </project>
