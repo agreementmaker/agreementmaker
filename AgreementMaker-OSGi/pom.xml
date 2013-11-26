@@ -24,7 +24,7 @@
 		<module>AgreementMaker-UIGlue</module>
 		<module>VisualAnalytics-Graph</module>
 		<module>Matcher-Benchmarks2013</module>
-		<module>AgreementMaker-OSGi-Tests</module>
+		<module>AgreementMaker-Tests</module>
 		<!-- <module>AM_ROOT</module> -->
 	</modules>
 
