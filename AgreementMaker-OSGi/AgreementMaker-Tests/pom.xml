@@ -9,7 +9,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>AgreementMaker-OSGi-Tests</artifactId>
+	<artifactId>AgreementMaker-Tests</artifactId>
 	<packaging>pom</packaging>
 
 	<properties>
