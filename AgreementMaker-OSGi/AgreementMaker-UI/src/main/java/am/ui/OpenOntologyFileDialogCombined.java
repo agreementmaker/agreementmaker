@@ -35,6 +35,7 @@ import am.app.ontology.Ontology;
 import am.app.ontology.Ontology.DatasetType;
 import am.app.ontology.instance.endpoint.EndpointRegistry;
 import am.app.ontology.ontologyParser.OntologyDefinition;
+import am.app.ontology.ontologyParser.OntologyDefinition.InstanceFormat;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.utility.AMFileChooser;
@@ -289,7 +290,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		prefs.putBoolean(PREFIX + PREF_LOAD_INSTANCES, def.loadInstances);
 		if( def.instanceSourceFile == null ) def.instanceSourceFile = "";
 		prefs.put(PREFIX + PREF_INSTANCE_SOURCE_FILE, def.instanceSourceFile);
-		prefs.putInt(PREFIX + PREF_INSTANCE_SOURCE_FORMAT, def.instanceSourceFormat);
+		prefs.put(PREFIX + PREF_INSTANCE_SOURCE_FORMAT, def.instanceSourceFormat.toString());
 		if( def.instanceSourceType != null ) {
 			prefs.put(PREFIX + PREF_INSTANCE_SOURCE_TYPE, def.instanceSourceType.name());	
 		}
@@ -325,7 +326,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		def.onDiskDirectory = prefs.get(PREFIX + PREF_ONDISK_DIRECTORY, "");
 		def.loadInstances = prefs.getBoolean(PREFIX + PREF_LOAD_INSTANCES, false);
 		def.instanceSourceFile = prefs.get(PREFIX + PREF_INSTANCE_SOURCE_FILE, "");
-		def.instanceSourceFormat = prefs.getInt(PREFIX + PREF_INSTANCE_SOURCE_FORMAT, 0);
+		def.instanceSourceFormat = InstanceFormat.getFormat(prefs.get(PREFIX + PREF_INSTANCE_SOURCE_FORMAT, InstanceFormat.RDFXML.toString()));
 		
 		String sourceType = prefs.get(PREFIX + PREF_INSTANCE_SOURCE_TYPE, DatasetType.ONTOLOGY.name());
 		for( DatasetType dat : DatasetType.values() ) {
@@ -370,9 +371,6 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		private static final String ENDPOINT_FREEBASE = "FreeBase";
 		private final String[] endpointStrings = { ENDPOINT_SPARQL, ENDPOINT_FREEBASE };
 		
-		private static final String DATASET_RDF = "RDF";
-		private final String[] datasetStrings = { DATASET_RDF };
-		
 		private static final String MAPPING_OAEI = "OAEI Alignment";
 		private final String[] alignmentStrings = { MAPPING_OAEI };
 		
@@ -407,7 +405,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			
 			comboboxes[0] = new JComboBox<OntologyLanguage>(OntologyLanguage.values());
 			comboboxes[1] = new JComboBox<OntologySyntax>(OntologySyntax.values());
-			comboboxes[2] = new JComboBox<String>(datasetStrings);
+			comboboxes[2] = new JComboBox<InstanceFormat>(InstanceFormat.values());
 			comboboxes[3] = new JComboBox<String>(endpointStrings);
 			comboboxes[4] = new JComboBox<String>(alignmentStrings);
 			
@@ -999,7 +997,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 				if( radiobuttons[4].isSelected() ) def.instanceSourceType = DatasetType.ENDPOINT;
 				
 				if( def.instanceSourceType == DatasetType.DATASET ) {
-					def.instanceSourceFormat = comboboxes[2].getSelectedIndex();
+					def.instanceSourceFormat = (InstanceFormat) comboboxes[2].getSelectedItem();
 					def.instanceSourceFile = textfields[2].getText();
 				}
 				else if( def.instanceSourceType == DatasetType.ENDPOINT ) {

@@ -29,6 +29,7 @@ import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.output.alignment.oaei.OAEIAlignmentFormat;
 
+import com.hp.hpl.jena.n3.turtle.TurtleParseException;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -172,8 +173,8 @@ public abstract class TreeBuilder<T extends OntologyDefinition> extends SwingWor
 		}
 	}
 	
-	public void build() throws Exception{
-		buildTree();//Instantiated in the subclasses
+	public void build() throws Exception {
+		if( ontDefinition.loadOntology ) buildTree(); //Instantiated in the subclasses
 		
 		if( ontDefinition != null ) loadInstances();
 		
@@ -197,6 +198,8 @@ public abstract class TreeBuilder<T extends OntologyDefinition> extends SwingWor
         }
         report += "Select the 'Ontology Details' function in the 'Ontology' menu\nfor additional informations.\n";
         report += "The 'Hierarchy Visualization' can be disabled from the 'View' menu\nto improve system performances.\n";
+        
+		fireEvent(ProgressEvent.ONTOLOGY_LOADED);
 	}
 	
 	protected void buildTree() throws Exception {
@@ -221,7 +224,13 @@ public abstract class TreeBuilder<T extends OntologyDefinition> extends SwingWor
 				ontDefinition.instanceSourceFile = "file:///" + ontDefinition.instanceSourceFile;
 			}
 			
-			instancesModel.read( ontDefinition.instanceSourceFile, null, ontology.getFormat().toString() );
+			try {
+				instancesModel.read( ontDefinition.instanceSourceFile, ontDefinition.instanceSourceFormat.toString() );
+			}
+			catch(TurtleParseException e) {
+				e.printStackTrace();
+				return;
+			}
 			
 			instances = new SeparateFileInstanceDataset(instancesModel);
 		}
