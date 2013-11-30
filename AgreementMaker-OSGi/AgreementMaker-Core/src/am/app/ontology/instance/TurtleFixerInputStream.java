@@ -15,6 +15,10 @@ import java.io.InputStream;
  */
 public class TurtleFixerInputStream extends InputStream {
 
+	public TurtleFixerInputStream(String instanceSourceFile) {
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
 	public int read() throws IOException {
 		// TODO Auto-generated method stub

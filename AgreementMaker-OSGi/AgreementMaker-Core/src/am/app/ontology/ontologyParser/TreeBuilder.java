@@ -21,6 +21,7 @@ import am.app.ontology.instance.InstanceDataset;
 import am.app.ontology.instance.OntologyInstanceDataset;
 import am.app.ontology.instance.SeparateFileInstanceDataset;
 import am.app.ontology.instance.SparqlInstanceDataset;
+import am.app.ontology.instance.TurtleFixerInputStream;
 import am.app.ontology.instance.endpoint.EndpointRegistry;
 import am.app.ontology.instance.endpoint.FreebaseEndpoint;
 import am.app.ontology.instance.endpoint.GeoNamesEndpoint;
@@ -226,6 +227,8 @@ public abstract class TreeBuilder<T extends OntologyDefinition> extends SwingWor
 			
 			try {
 				instancesModel.read( ontDefinition.instanceSourceFile, ontDefinition.instanceSourceFormat.toString() );
+				// If you uncomment the line below, make sure you comment out the line above.
+				//instancesModel.read( new TurtleFixerInputStream(ontDefinition.instanceSourceFile), null, ontDefinition.instanceSourceFormat.toString() );
 			}
 			catch(TurtleParseException e) {
 				e.printStackTrace();
