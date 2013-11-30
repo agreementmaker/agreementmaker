@@ -541,6 +541,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			}
 
 			comboboxes[0].setSelectedIndex(def.ontologyLanguage.getID());
+			comboboxes[2].setSelectedItem(def.instanceSourceFormat);
 			
 			handleLoadOntology();
 			handleLoadInstances();
