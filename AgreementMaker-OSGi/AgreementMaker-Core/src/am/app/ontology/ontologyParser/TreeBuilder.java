@@ -7,7 +7,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import am.Utility;
@@ -337,6 +339,19 @@ public abstract class TreeBuilder<T extends OntologyDefinition> extends SwingWor
 		return null;
 	}
     
+    protected void done() {
+        try {
+            System.out.println("Done");
+            get();
+        } catch (ExecutionException e) {
+            e.getCause().printStackTrace();
+        } catch (InterruptedException e) {
+            // Process e here
+        	e.printStackTrace();
+        }
+        fireEvent(ProgressEvent.ONTOLOGY_LOADED);
+    }
+	
 	/**
 	 * A wrapper for the {@link #fireEvent(ProgressEvent, Object)} class.
 	 * 
