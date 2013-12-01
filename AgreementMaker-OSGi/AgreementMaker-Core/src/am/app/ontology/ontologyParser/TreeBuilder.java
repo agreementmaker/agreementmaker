@@ -4,6 +4,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -26,6 +27,7 @@ import am.app.ontology.instance.endpoint.EndpointRegistry;
 import am.app.ontology.instance.endpoint.FreebaseEndpoint;
 import am.app.ontology.instance.endpoint.GeoNamesEndpoint;
 import am.app.ontology.instance.endpoint.SparqlEndpoint;
+import am.app.ontology.ontologyParser.OntologyDefinition.InstanceFormat;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.output.alignment.oaei.OAEIAlignmentFormat;
@@ -226,11 +228,15 @@ public abstract class TreeBuilder<T extends OntologyDefinition> extends SwingWor
 			}
 			
 			try {
-				instancesModel.read( ontDefinition.instanceSourceFile, ontDefinition.instanceSourceFormat.toString() );
-				// If you uncomment the line below, make sure you comment out the line above.
-				//instancesModel.read( new TurtleFixerInputStream(ontDefinition.instanceSourceFile), null, ontDefinition.instanceSourceFormat.toString() );
+				if( ontDefinition.instanceSourceFormat == InstanceFormat.TURTLE ) {
+					// The TurtleFixerInputStream is used to fix invalid OAEI2013 datasets
+					instancesModel.read( new TurtleFixerInputStream(ontDefinition.instanceSourceFile), null, ontDefinition.instanceSourceFormat.toString() );
+				}
+				else {
+					instancesModel.read( ontDefinition.instanceSourceFile, ontDefinition.instanceSourceFormat.toString() );
+				}
 			}
-			catch(TurtleParseException e) {
+			catch(TurtleParseException | IOException e) {
 				e.printStackTrace();
 				return;
 			}
