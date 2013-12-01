@@ -34,6 +34,7 @@
 	<properties>
 		<exam.version>3.0.0</exam.version>
 		<url.version>1.5.2</url.version>
+		<drombler-fx.version>0.2</drombler-fx.version>
 	</properties>
 
 	<!-- Repositories from where we get our dependencies. -->
@@ -108,6 +109,11 @@
 						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
+<!--				<plugin>
+                    <groupId>org.drombler.fx</groupId>
+                    <artifactId>drombler-fx-maven-plugin</artifactId>
+                    <version>${drombler-fx.version}</version>
+                </plugin> -->
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -168,4 +174,52 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	
+	<!-- <dependencyManagement>
+       <dependencies>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-core-action</artifactId>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-core-application</artifactId>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-core-application-locale-de</artifactId>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-core-commons</artifactId>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-core-docking</artifactId>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+			<dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-locale-all</artifactId>
+                <type>pom</type>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-locale-de</artifactId>
+                <type>pom</type>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.drombler.fx</groupId>
+                <artifactId>drombler-fx-startup-main</artifactId>
+                <version>${drombler-fx.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement> -->
+	
 </project>
