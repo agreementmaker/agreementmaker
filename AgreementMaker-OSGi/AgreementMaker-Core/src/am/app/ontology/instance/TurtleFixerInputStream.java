@@ -78,6 +78,14 @@ public class TurtleFixerInputStream extends InputStream {
 				 return (int) '\\';  // escape the new line
 			 }
 		 }
+		 
+		 if( currentCharacter == (int) '\r' ) {
+			 if( insideQuotes ) {
+				// we must translate all newlines that are inside quotes.
+				 streamQueue.offer( (int) 'r' );
+				 return (int) '\\';  // escape the new line
+			 }
+		 }
 		
 		return currentCharacter;
 	}
