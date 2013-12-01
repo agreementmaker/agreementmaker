@@ -51,6 +51,10 @@
 			<id>bliki</id>
 			<url>https://gwtwiki.googlecode.com/svn/maven-repository/</url>
 		</repository>
+		<repository>
+			<id>Apache Jena Releases</id>
+			<url>https://repository.apache.org/content/repositories/releases/</url>
+		</repository>
 	</repositories>
 
 	<build>

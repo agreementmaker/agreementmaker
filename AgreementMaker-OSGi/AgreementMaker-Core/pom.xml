@@ -95,6 +95,25 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>apache-jena-libs</artifactId>
+			<type>pom</type>
+			<version>2.11.0</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.apache.jena</groupId>
+		    <artifactId>jena-sdb</artifactId>
+		    <version>1.4.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.hp.hpl.jena</groupId>
+			<artifactId>json-jena</artifactId>
+			<version>1.0</version>
+		</dependency>
+		
+		<!-- <dependency>
 			<groupId>com.hp.hpl.jena</groupId>
 			<artifactId>jena</artifactId>
 			<version>2.6.4</version>
@@ -122,6 +141,12 @@
 			<groupId>com.hp.hpl.jena</groupId>
 			<artifactId>tdb</artifactId>
 			<version>0.8.9</version>
+		</dependency> -->
+
+		<dependency>
+		    <groupId>com.ibm.icu</groupId>
+		    <artifactId>icu4j</artifactId>
+		    <version>3.4.4</version>
 		</dependency>
 
 		<dependency>

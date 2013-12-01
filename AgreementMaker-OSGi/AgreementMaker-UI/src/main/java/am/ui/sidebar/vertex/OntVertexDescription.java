@@ -30,9 +30,10 @@ public class OntVertexDescription {
         // guess if we're using a daml source
         boolean isDAML = source.endsWith( ".daml" );
 
-        OntModel m = ModelFactory.createOntologyModel(
-                        isDAML ? OntModelSpec.DAML_MEM : OntModelSpec.OWL_MEM, null
-                     );
+        if( isDAML )
+        	throw new RuntimeException("Jena no longer supports DAML.");
+        
+        OntModel m = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, null);
 
         m.read( source );
 
