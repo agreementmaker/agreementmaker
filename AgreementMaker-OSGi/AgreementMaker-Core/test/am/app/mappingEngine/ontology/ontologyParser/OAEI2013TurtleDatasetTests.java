@@ -20,7 +20,7 @@ public class OAEI2013TurtleDatasetTests {
 	
 	private static OntologyDefinition defOriginal; // ontology definition for the 2013 original instance set
 	
-	private static OntologyDefinition defTestcase01; // ontology definition for the 2013 original instance set
+	private static OntologyDefinition[] defTestcases; // ontology definition for the 2013 original instance set
 	
 	@BeforeClass
 	public static void setupRoot() {
@@ -32,11 +32,17 @@ public class OAEI2013TurtleDatasetTests {
 		defOriginal.instanceSourceFormat = InstanceFormat.TURTLE;
 		defOriginal.instanceSourceFile = root + File.separator + "InstanceMatching/IMEI/2013/RDFT_DATASET_2013/original.rdf";
 		
-		defTestcase01 = new OntologyDefinition(false, null, null, null);
-		defTestcase01.loadInstances = true;
-		defTestcase01.instanceSourceType = DatasetType.DATASET;
-		defTestcase01.instanceSourceFormat = InstanceFormat.TURTLE;
-		defTestcase01.instanceSourceFile = root + File.separator + "InstanceMatching/IMEI/2013/RDFT_DATASET_2013/contest/testcase01/contest/contest.rdf";
+		defTestcases = new OntologyDefinition[5];
+		
+		for( int i = 0; i < defTestcases.length; i++ ) {
+			defTestcases[i] = new OntologyDefinition(false, null, null, null);
+			defTestcases[i].loadInstances = true;
+			defTestcases[i].instanceSourceType = DatasetType.DATASET;
+			defTestcases[i].instanceSourceFormat = InstanceFormat.TURTLE;
+			defTestcases[i].instanceSourceFile = 
+					root + File.separator + "InstanceMatching/IMEI/2013/RDFT_DATASET_2013/contest/testcase0" + (i+1) + "/contest/contest.rdf";
+		}
+		
 	}
 	
 	@Test
@@ -50,15 +56,17 @@ public class OAEI2013TurtleDatasetTests {
 		assertNotNull(instances);
 	}
 	
+	/**
+	 * This test makes sure we can properly load all the RDFT_DATASET_2013 contest test cases.
+	 */
 	@Test
-	public void loadTestCase01() throws Exception {
-		OntoTreeBuilder builder = new OntoTreeBuilder(defTestcase01);
-		builder.build();
-		
-		InstanceDataset instances = builder.getInstances();
-		
-		assertNotNull(instances);
-		
+	public void loadTestCases() throws Exception {
+		for( int i = 0; i < defTestcases.length; i++ ) {
+			OntoTreeBuilder builder = new OntoTreeBuilder(defTestcases[i]);
+			builder.build();
+			InstanceDataset instances = builder.getInstances();
+			assertNotNull(instances);
+		}
 	}
 
 }
