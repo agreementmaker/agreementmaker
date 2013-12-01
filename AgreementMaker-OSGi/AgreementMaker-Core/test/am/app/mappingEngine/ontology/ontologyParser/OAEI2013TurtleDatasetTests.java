@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 
+import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -21,6 +22,8 @@ public class OAEI2013TurtleDatasetTests {
 	private static OntologyDefinition defOriginal; // ontology definition for the 2013 original instance set
 	
 	private static OntologyDefinition[] defTestcases; // ontology definition for the 2013 original instance set
+	
+	private static Logger LOG = Logger.getLogger(OAEI2013TurtleDatasetTests.class);
 	
 	@BeforeClass
 	public static void setupRoot() {
@@ -62,6 +65,7 @@ public class OAEI2013TurtleDatasetTests {
 	@Test
 	public void loadTestCases() throws Exception {
 		for( int i = 0; i < defTestcases.length; i++ ) {
+			LOG.info("Loading " + defTestcases[i].instanceSourceFile);
 			OntoTreeBuilder builder = new OntoTreeBuilder(defTestcases[i]);
 			builder.build();
 			InstanceDataset instances = builder.getInstances();
