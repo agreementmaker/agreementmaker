@@ -290,7 +290,8 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		prefs.putBoolean(PREFIX + PREF_LOAD_INSTANCES, def.loadInstances);
 		if( def.instanceSourceFile == null ) def.instanceSourceFile = "";
 		prefs.put(PREFIX + PREF_INSTANCE_SOURCE_FILE, def.instanceSourceFile);
-		prefs.put(PREFIX + PREF_INSTANCE_SOURCE_FORMAT, def.instanceSourceFormat.toString());
+		if( def.instanceSourceFormat != null )
+			prefs.put(PREFIX + PREF_INSTANCE_SOURCE_FORMAT, def.instanceSourceFormat.toString());
 		if( def.instanceSourceType != null ) {
 			prefs.put(PREFIX + PREF_INSTANCE_SOURCE_TYPE, def.instanceSourceType.name());	
 		}
