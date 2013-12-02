@@ -20,6 +20,7 @@ public class IndependentSequentialLogic extends UFLControlLogic {
 		
 		if( experiment != null && experiment.experimentHasCompleted() ) { // check stop condition
 			System.out.println("Experiment has completed.  Ignoring further actions.");
+			return;
 		}
 		
 		if( e.getActionCommand() == ActionCommands.EXECUTION_SEMANTICS_DONE.name() ) {

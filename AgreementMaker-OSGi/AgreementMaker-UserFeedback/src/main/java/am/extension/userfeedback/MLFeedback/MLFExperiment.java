@@ -22,6 +22,7 @@ import am.app.ontology.Ontology;
 import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.IndependentSequentialLogic;
+import am.extension.userfeedback.experiments.IndependentSequentialLogicMultiUser;
 import am.extension.userfeedback.experiments.UFLControlLogic;
 
 public class MLFExperiment extends UFLExperiment {
@@ -39,6 +40,9 @@ private Object[][] dataSet_property;
 private SimilarityMatrix uflClassMatrix;
 private SimilarityMatrix uflPropertyMatrix;
 public List<Mapping> allRanked;
+public List<Mapping> alreadyEvaluated;
+public List<Mapping> conflictualClass;
+public List<Mapping> conflictualProp;
 //don't change the cardinality
 private int sourceCardinality=1;
 private int targetCardinality=1;
@@ -224,7 +228,8 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 
 	@Override
 	public UFLControlLogic getControlLogic() {
-		return new IndependentSequentialLogic();
+		return new IndependentSequentialLogicMultiUser();
+		//return new IndependentSequentialLogic();
 	}
 
 	@Override

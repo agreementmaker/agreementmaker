@@ -2,6 +2,9 @@ package am.extension.userfeedback;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
@@ -19,7 +22,10 @@ public abstract class SaveFeedback<T extends UFLExperiment> {
 		listeners = new EventListenerList();
 	}
 	
-	final String path="";
+	protected String path="/home/frank/Documents/UFLExperiment/FeedbackResults/frank428/";
+	protected File file = null;
+	protected FileWriter fw=null;
+	protected BufferedWriter bw=null;
 	
 	public abstract void save( T exp );
 	

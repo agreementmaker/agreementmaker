@@ -28,6 +28,7 @@ public class AutomaticUserValidation extends UserFeedback {
 		
 		if( candidateMapping == null || experiment.getIterationNumber() > 100 ) {
 			userValidation = Validation.END_EXPERIMENT;
+			done();
 			return;
 		}
 

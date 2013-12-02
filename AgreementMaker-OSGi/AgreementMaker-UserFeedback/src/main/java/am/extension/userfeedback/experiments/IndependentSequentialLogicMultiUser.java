@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.ui.UFLControlGUI.ActionCommands;
 
-public class IndipendentSequentialLogicMultiUser extends UFLControlLogic {
+public class IndependentSequentialLogicMultiUser extends UFLControlLogic {
 	
 	@Override
 	public void runExperiment(UFLExperiment exp) {
@@ -21,6 +21,7 @@ public class IndipendentSequentialLogicMultiUser extends UFLControlLogic {
 		if( experiment != null && experiment.experimentHasCompleted() ) { // check stop condition
 			runSaveFeedback();
 			System.out.println("Experiment has completed.  Ignoring further actions.");
+			return;
 		}
 		
 		if( e.getActionCommand() == ActionCommands.EXECUTION_SEMANTICS_DONE.name() ) {

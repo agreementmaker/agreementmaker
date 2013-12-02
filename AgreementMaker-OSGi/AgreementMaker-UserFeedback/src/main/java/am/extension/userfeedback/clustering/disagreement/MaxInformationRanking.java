@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
 
+import javax.naming.MalformedLinkException;
+
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.Alignment;
@@ -32,7 +34,7 @@ public class MaxInformationRanking extends CandidateSelection<MLFExperiment> {
 	//private boolean useProperty=false;
 	private UFLExperiment experiment;
 	//weight for the Uncertain Mappings discovered in the system
-	private final double weight_um=1.0;
+	private final double weight_um=0.5;
 	//weight for the suspected Missing Mapping in the system
 	private final double weight_mm=0.3;
 	
@@ -48,11 +50,13 @@ public class MaxInformationRanking extends CandidateSelection<MLFExperiment> {
 	{
 
 		for( int i = 0; i < allRanked.size(); i++ ){
-			if( experiment.correctMappings == null && experiment.incorrectMappings == null ) 
+			if( experiment.correctMappings == null && experiment.incorrectMappings == null )
 				return allRanked.get(i);
+			
 			Mapping m = allRanked.get(i);
-			if( experiment.correctMappings != null && (experiment.correctMappings.contains(m.getEntity1(),Ontology.SOURCE) != null ||
-				experiment.correctMappings.contains(m.getEntity2(),Ontology.TARGET) != null) ) {
+			if( experiment.correctMappings != null && (experiment.correctMappings.contains(m.getEntity1(),Ontology.SOURCE) != null &&
+				experiment.correctMappings.contains(m.getEntity2(),Ontology.TARGET) != null) ) 
+			{
 				// assume 1-1 mapping, skip already validated mappings.
 				continue;
 			}
@@ -80,10 +84,54 @@ public class MaxInformationRanking extends CandidateSelection<MLFExperiment> {
 		List<AbstractMatcher> matchers = ex.initialMatcher.getComponentMatchers();
 		
 
-
+		//if (ex.getIterationNumber()<=1)
+		//{
 		rank(matchers, mappings, ex);
-		
+		ex.allRanked=allRanked;
+		//}
+		//else
+		//	allRanked=ex.allRanked;
+		saveRankList(ex.getIterationNumber());
 		done();
+	}
+	
+	private void saveRankList(int iteration)
+	{
+		File file = new File("/home/frank/Documents/RankList/rankList_"+iteration+".txt");
+		// if file doesnt exists, then create it
+		if (!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		FileWriter fw=null;
+		try {
+			fw = new FileWriter(file.getAbsoluteFile());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		BufferedWriter bw = new BufferedWriter(fw);
+		
+		for(Mapping mp : allRanked)
+		{
+			try {
+				bw.write(mp.toString());
+				bw.write("\n");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		try {
+			bw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void initializeRankedMatrix(MLFExperiment ex)
@@ -101,65 +149,10 @@ public class MaxInformationRanking extends CandidateSelection<MLFExperiment> {
 	}
 	
 	
-	/*
-	private void initializeLists(List<AbstractMatcher> matchers)
-	{
-		propertyRanked=new ArrayList<RankedList>(matchers.size()+1);
-		for(int i=0; i<matchers.size()+1;i++)
-		{
-			propertyRanked.add(new RankedList());// .get(i).mList=new ArrayList<Mapping>();
-		}
-	}
-	*/
-	/*
-	public void propertyRank(List<Mapping> rankedList, List<AbstractMatcher> matchers)
-	{
-		int matchersSize=matchers.size();
-		AbstractMatcher am=null;
-		int sourceKey=0;
-		int targetKey=0;
-		int count=0;
-		int index=-1;
-		for(int i=0;i<rankedList.size();i++)
-		{
-			count=0;
-			index=-1;
-			for(int j=0;j<matchersSize;j++)
-			{
-				am=matchers.get(j);
-				sourceKey=rankedList.get(i).getSourceKey();
-				targetKey=rankedList.get(i).getTargetKey();
-				if(rankedList.get(i).getAlignmentType()==alignType.aligningClasses)
-				{
-					if(am.getClassesMatrix().getSimilarity(sourceKey, targetKey)>0.0)
-					{
-						count++;
-						index=j;
-					}
-				}
-				else
-				{
-					if(am.getPropertiesMatrix().getSimilarity(sourceKey, targetKey)>0.0)
-					{
-						count++;
-						index=j;
-					}
-				}
-			}
-			if (count==1)
-			{
-				propertyRanked.get(index).mList.add(rankedList.get(i));
-			}
-			else
-			{
-				propertyRanked.get(matchersSize).mList.add(rankedList.get(i));
-			}
-		}
-	}
-	*/
+	
 	private SimilarityMatrix addPropagationWeight(SimilarityMatrix sm, SimilarityMatrix ufl)
 	{
-		Alignment<Mapping> missedAlignment=retriveUnconfidentMapping(ufl);
+		Alignment<Mapping> unAlignment=retriveUnconfidentMapping(ufl);
 		int row=sm.getRows();
 		int col=sm.getColumns();
 		double sim=0;
@@ -167,9 +160,9 @@ public class MaxInformationRanking extends CandidateSelection<MLFExperiment> {
 		{
 			for(int j=0;j<col;j++)
 			{
-				if (missedAlignment.contains(sm.get(i, j)))
+				if (unAlignment.contains(sm.get(i, j)))
 				{
-					sim=sm.getSimilarity(i, j)+missedAlignment.getSimilarity(sm.get(i, j).getEntity1(), sm.get(i, j).getEntity2());
+					sim=sm.getSimilarity(i, j)+unAlignment.getSimilarity(sm.get(i, j).getEntity1(), sm.get(i, j).getEntity2());
 					sm.setSimilarity(i, j, sim);
 				}
 			}
@@ -178,71 +171,6 @@ public class MaxInformationRanking extends CandidateSelection<MLFExperiment> {
 	}
 	
 	
-	private SimilarityMatrix addPropagationWeight(SimilarityMatrix sm, MLFExperiment experiment, alignType type)
-	{
-		//double rand=0;
-		double zero=0;
-		double uno=0;
-		double altri=0;
-		int count_zero=0;
-		int count_uno=0;
-		int count_altri=0;
-		TreeSet<Integer> forbidden_row=new TreeSet<Integer>();
-		TreeSet<Integer> forbidden_col=new TreeSet<Integer>();
-		
-		SimilarityMatrix rankedMatrix=null;
-		if (type==alignType.aligningClasses)
-		{
-			rankedMatrix=experiment.getUflClassMatrix();
-			//forbidden_col=experiment.forbidden_column_classes;
-			//forbidden_row=experiment.forbidden_row_classes;
-		}
-		else
-		{
-			rankedMatrix=experiment.getUflPropertyMatrix();
-			//forbidden_col=experiment.forbidden_column_properties;
-			//forbidden_row=experiment.forbidden_row_properties;
-		}
-		//Alignment<Mapping> missedAlignment=missedMappingRetriver(rankedMatrix, forbidden_row, forbidden_col);
-		
-		//Alignment<Mapping> missedAlignmentProperties=retriveUnconfidentMapping(experiment.getRankedPropertyMatrix());
-		
-		for (int i=0;i<sm.getRows();i++)
-		{
-			if (forbidden_row.contains(i))
-				continue;
-			for(int j=0;j<sm.getColumns();j++)
-			{
-				if (forbidden_col.contains(j))
-					continue;
-				//rand=1;//Math.random()*100;
-				double x=rankedMatrix.getSimilarity(i, j);
-				if (rankedMatrix.getSimilarity(i, j)==0.0)
-				{
-					zero+=sm.getSimilarity(i, j);
-					count_zero++;
-					sm.setSimilarity(i, j, sm.getSimilarity(i, j)*0.8);
-				}
-				else if (rankedMatrix.getSimilarity(i, j)==1.0)
-				{
-					sm.setSimilarity(i, j, sm.getSimilarity(i, j)*0.3);
-					uno+=sm.getSimilarity(i, j);
-					count_uno++;
-				}
-				else
-				if ((rankedMatrix.getSimilarity(i, j)!=1.0) && (rankedMatrix.getSimilarity(i, j)!=0.0))
-				{
-					sm.setSimilarity(i, j, sm.getSimilarity(i, j)*1.5);
-					count_altri++;
-					altri+=sm.getSimilarity(i, j);
-				}
-			}
-		}
-		double fin_zero=zero/count_zero;
-		double fin_uno=uno/count_uno;
-		double fin=altri=altri/count_altri;
-		return sm;
-	}
 	
 	
 	private Alignment<Mapping> retriveUnconfidentMapping(SimilarityMatrix sm)
@@ -256,7 +184,7 @@ public class MaxInformationRanking extends CandidateSelection<MLFExperiment> {
 		{
 			for(int j=0;j<col;j++)
 			{
-				weight=0.5;
+				weight=0.0;
 				if (sm.getSimilarity(i, j)==0.0)
 				{
 					continue;
@@ -278,10 +206,10 @@ public class MaxInformationRanking extends CandidateSelection<MLFExperiment> {
 				}
 				else
 				{
-					if (sm.getSimilarity(i, j)==1.0)
+					if (sm.getSimilarity(i, j)!=0.0)
 						continue;
-					weight+=weight_um*(numOfMapping(sm.getColMaxValues(j, row))-1);
-					weight+=weight_um*(numOfMapping(sm.getRowMaxValues(i, col))-1);
+					weight+=weight_um*(numOfMapping(sm.getColMaxValues(j, row)))*1.5;
+					weight+=weight_um*(numOfMapping(sm.getRowMaxValues(i, col)));
 					m=sm.get(i, j);
 					m.setSimilarity(weight);
 					mpng.add(m);
@@ -292,9 +220,12 @@ public class MaxInformationRanking extends CandidateSelection<MLFExperiment> {
 		return mpng;
 	}
 	
-	private int numOfMapping(Mapping[] map)
+
+
+	
+	private double numOfMapping(Mapping[] map)
 	{
-		int count=0;
+		double count=0;
 		for(Mapping m :map)
 		{
 			if(m.getSimilarity()!=0.0)
@@ -303,33 +234,82 @@ public class MaxInformationRanking extends CandidateSelection<MLFExperiment> {
 		return count;
 	}
 	
-	private Alignment<Mapping> missedMappingRetriver(SimilarityMatrix sm, TreeSet<Integer> forbidden_row, TreeSet<Integer> forbidden_col)
+//	private Alignment<Mapping> missedMappingRetriver(SimilarityMatrix sm, TreeSet<Integer> forbidden_row, TreeSet<Integer> forbidden_col)
+//	{
+//		Alignment<Mapping> missed=new Alignment<Mapping>(0, 0);
+//		int row=sm.getRows();
+//		int col=sm.getColumns();
+//		double row_sim=0;
+//		double col_sim=0;
+//		for(int i=0;i<row;i++)
+//		{
+//			row_sim=sm.getRowMaxValues(i, 1)[0].getSimilarity();
+//			if (row_sim!=0)
+//				continue;
+//			if (forbidden_row.contains(i)) 
+//				continue;
+//			for(int j=0;j<col;j++)
+//			{
+//				if(forbidden_col.contains(j))
+//					continue;
+//				
+//				col_sim=sm.getColMaxValues(j, 1)[0].getSimilarity();
+//				if (col_sim!=0.0)
+//					continue;
+//				
+//				missed.add(sm.get(i, j));
+//			}
+//		}
+//		return missed;
+//	}
+	
+	private List<Mapping> conflitualMapping(SimilarityMatrix sm)
 	{
-		Alignment<Mapping> missed=new Alignment<Mapping>(0, 0);
+		List<Mapping> lst=new ArrayList<Mapping>();
+		Mapping m=null;
 		int row=sm.getRows();
 		int col=sm.getColumns();
-		double row_sim=0;
-		double col_sim=0;
 		for(int i=0;i<row;i++)
 		{
-			row_sim=sm.getRowMaxValues(i, 1)[0].getSimilarity();
-			if (row_sim!=0)
-				continue;
-			if (forbidden_row.contains(i)) 
-				continue;
 			for(int j=0;j<col;j++)
 			{
-				if(forbidden_col.contains(j))
-					continue;
-				
-				col_sim=sm.getColMaxValues(j, 1)[0].getSimilarity();
-				if (col_sim!=0.0)
-					continue;
-				
-				missed.add(sm.get(i, j));
+				m=sm.get(i, j);
+				if (m.getSimilarity()!=0)
+				{
+					if (checkConf(sm,m))
+					{
+						lst.add(m);
+					}
+				}
 			}
 		}
-		return missed;
+		return lst;
+	}
+	
+	private SimilarityMatrix addConflitualWeight(SimilarityMatrix sm, List<Mapping> mList)
+	{
+		Mapping m=null;
+		for(int i =0;i<sm.getRows();i++)
+		{
+			for(int j=0;j<sm.getColumns();j++)
+			{
+				m=sm.get(i, j);
+				if (mList.contains(m))
+				{
+					sm.setSimilarity(i, j, 1.0);
+				}
+			}
+		}
+		return sm;
+	}
+	
+	private boolean checkConf(SimilarityMatrix sm, Mapping m)
+	{
+		Mapping[] row=sm.getRowMaxValues(m.getSourceKey(), sm.getColumns());
+		Mapping[] col=sm.getColMaxValues(m.getTargetKey(), sm.getRows());
+		if (numOfMapping(row)>1) return true;
+		if (numOfMapping(col)>1) return true;
+		return false;
 	}
 	
 	public void rank(List<AbstractMatcher> matchers, Alignment<Mapping> mappings, MLFExperiment experiment)
@@ -349,6 +329,10 @@ public class MaxInformationRanking extends CandidateSelection<MLFExperiment> {
 		//add the weight coming from the ranking matrix produced in the UFL propagation phase
 		//classDisagreement=addPropagationWeight(classDisagreement, experiment, alignType.aligningClasses);
 		classDisagreement=addPropagationWeight(classDisagreement, experiment.getUflClassMatrix());
+		if (experiment.getIterationNumber()==1)
+			experiment.conflictualClass=conflitualMapping(experiment.getUflClassMatrix());
+		if (experiment.getIterationNumber()>=1)
+			classDisagreement=addConflitualWeight(classDisagreement, experiment.conflictualClass);
 		try {
 			rankedClassMappings = classDisagreement.toList();
 			Collections.sort(rankedClassMappings, new MappingSimilarityComparator() );
@@ -357,12 +341,17 @@ public class MaxInformationRanking extends CandidateSelection<MLFExperiment> {
 			return;
 		}
 		classDisagreement = null;  // release the memory used by this
+		//relatedMappingRetrival(classDisagreement);
 		
 		SimilarityMatrix propertyDisagreement = disagreementMetric.getDisagreementMatrix(alignType.aligningProperties);
 		
 		//add the weight coming from the ranking matrix produced in the UFL propagation phase
 		//propertyDisagreement=addPropagationWeight(propertyDisagreement, experiment, alignType.aligningProperties);
 		propertyDisagreement=addPropagationWeight(propertyDisagreement, experiment.getUflPropertyMatrix());
+		if (experiment.getIterationNumber()==1)
+			experiment.conflictualProp=conflitualMapping(experiment.getUflPropertyMatrix());
+		if (experiment.getIterationNumber()>=1)
+			propertyDisagreement=addConflitualWeight(propertyDisagreement, experiment.conflictualProp);
 		try {
 			rankedPropertyMappings = propertyDisagreement.toList();
 			Collections.sort(rankedPropertyMappings, new MappingSimilarityComparator() );
