@@ -1,8 +1,5 @@
 package am.matcher.lod.instanceMatchers;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -207,21 +204,6 @@ public class InstanceMatcherFedeNew extends AbstractInstanceMatcher {
 		System.out.println("Disambiguated: " + disambiguationMappings);
 		
 		//checkDoubleMappings();
-		
-		System.out.println("Writing on file...");
-		String output = AlignmentsOutput.alignmentsToOutput(instanceAlignmentSet);
-		FileOutputStream fos;
-		
-		try {
-			fos = new FileOutputStream("alignment.rdf");
-			fos.write(output.getBytes());
-			fos.close();
-		} catch (FileNotFoundException e) {
-			sLog.error("", e);
-		} catch (IOException e) {
-			sLog.error("", e);
-		}
-		System.out.println("Done");
 		
 		AlignmentsOutput.writeMappingsOnDisk(
 				((InstanceMatcherFedeNewParameters) param).outputFilename,
