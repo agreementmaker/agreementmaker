@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 
 import am.extension.batchmode.simpleBatchMode.SimpleBatchModeRunner;
 import am.matcher.lod.LinkedOpenData.LODBatch;
+import am.matcher.oaei.imei2013.InstanceMatching;
 import am.ui.UICore;
 import am.ui.UIMenu;
 import am.ui.api.AMMenuItem;
@@ -42,6 +43,17 @@ public class LODMenuItem extends JMenu implements AMMenuItem {
 		});
 		
 		add(runBatchLODnew);
+		
+		addSeparator();
+		
+		JMenuItem runIMEI2013_01 = new JMenuItem("IMEI 2013");
+		runIMEI2013_01.addActionListener(new ActionListener() {
+			@Override public void actionPerformed(ActionEvent e) {
+				LODMenuItem.this.runIMEI2013();
+			}
+		});
+		
+		add(runIMEI2013_01);
 	}
 	
 	private void runLODBatch() {
@@ -86,4 +98,24 @@ public class LODMenuItem extends JMenu implements AMMenuItem {
 		lodThread.start();
 	}
 	
+	private void runIMEI2013() {
+		Runnable imei2013_01 = new Runnable() {
+			@Override public void run() {
+				try {
+					InstanceMatching im = new InstanceMatching();
+					im.runTest01();
+				} catch (Exception e) {
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(
+							UICore.getUI().getUIFrame(), 
+							e.getClass() + "\n" + e.getMessage(), 
+							"ERROR", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		};
+		
+		Thread imei2013_01Thread = new Thread(imei2013_01);
+		imei2013_01Thread.setName("IMEI2013 01 " +  imei2013_01Thread.getId());
+		imei2013_01Thread.start();
+	}
 }
