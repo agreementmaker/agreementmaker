@@ -44,4 +44,8 @@ public class VAMainPanel extends Application {
     public static void startPanel(){
     	launch();
     }
+    
+    public static void main(String[] argv) {
+    	launch();
+    }
 }
