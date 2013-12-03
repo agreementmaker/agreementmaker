@@ -18,7 +18,19 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		System.out.println("Graph");
-		VAMainPanel.startPanel();
+		
+		Runnable panel = new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				VAMainPanel.startPanel();
+			}
+			
+		};
+		
+		Thread t = new Thread(panel);
+		t.start();
 	}
 
 	/*
