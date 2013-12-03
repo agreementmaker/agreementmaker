@@ -18,13 +18,14 @@ import am.app.mappingEngine.utility.MatchingPair;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.Ontology.DatasetType;
-import am.app.ontology.instance.FreebaseInstanceDataset;
-import am.app.ontology.instance.GeoNamesInstanceDataset;
 import am.app.ontology.instance.InstanceDataset;
-import am.app.ontology.instance.OntologyInstanceDataset;
-import am.app.ontology.instance.SeparateFileInstanceDataset;
-import am.app.ontology.instance.SparqlInstanceDataset;
 import am.app.ontology.instance.TurtleFixerInputStream;
+import am.app.ontology.instance.datasets.FreebaseInstanceDataset;
+import am.app.ontology.instance.datasets.GeoNamesInstanceDataset;
+import am.app.ontology.instance.datasets.OntologyInstanceDataset;
+import am.app.ontology.instance.datasets.SeparateFileInstanceDataset;
+import am.app.ontology.instance.datasets.SparqlInstanceDataset;
+import am.app.ontology.instance.datasets.TurtleFileDataset;
 import am.app.ontology.instance.endpoint.EndpointRegistry;
 import am.app.ontology.instance.endpoint.FreebaseEndpoint;
 import am.app.ontology.instance.endpoint.GeoNamesEndpoint;
@@ -233,17 +234,17 @@ public abstract class TreeBuilder<T extends OntologyDefinition> extends SwingWor
 				if( ontDefinition.instanceSourceFormat == InstanceFormat.TURTLE ) {
 					// The TurtleFixerInputStream is used to fix invalid OAEI2013 datasets
 					instancesModel.read( new TurtleFixerInputStream(ontDefinition.instanceSourceFile), null, ontDefinition.instanceSourceFormat.toString() );
+					instances = new TurtleFileDataset(instancesModel);
 				}
 				else {
 					instancesModel.read( ontDefinition.instanceSourceFile, ontDefinition.instanceSourceFormat.toString() );
+					instances = new SeparateFileInstanceDataset(instancesModel);
 				}
 			}
 			catch(TurtleParseException | IOException e) {
 				e.printStackTrace();
 				return;
 			}
-			
-			instances = new SeparateFileInstanceDataset(instancesModel);
 		}
 		else if ( ontDefinition.instanceSourceType == DatasetType.ENDPOINT &&
 				  ontDefinition.instanceEndpointType.equals( EndpointRegistry.FREEBASE ) ) {
