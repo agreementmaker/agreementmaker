@@ -1,0 +1,10 @@
+AGREEMENT DOCUMENT
+
+Date: Mon Nov 14 11:20:40 CST 2011
+Source Ontology: http://data.semanticweb.org/ns/swc/ontology#
+Target Ontology: http://www.aktors.org/ontology/portal
+
+Class Alignments: 1
+Source Concept	 ->	Target Concept	Similarity	Relation	Provenance
+
+Organization	--->	Organization	0.8708333398898443	 = 
