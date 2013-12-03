@@ -85,11 +85,12 @@ public class LabelInstanceMatcher extends BaseInstanceMatcher {
 				
 		// 2) process the target labels
 		Set<String> targetLabels = target.getProperty(Instance.INST_LABEL);
-		List<String> processedTargetLabels = new ArrayList<String>(targetLabels.size());
-
+		
 		if(targetLabels == null || targetLabels.isEmpty()) {
 			targetLabels = LabelUtils.getLabelsFromStatements(target);
 		}
+		
+		List<String> processedTargetLabels = new ArrayList<String>();
 		
 		for(String currentLabel : targetLabels) {
 			processedTargetLabels.add(processLabel(currentLabel, target.getType(), true));
