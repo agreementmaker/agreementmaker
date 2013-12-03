@@ -14,6 +14,7 @@ import am.AMException;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.InstanceMatchingReport;
 import am.app.mappingEngine.Mapping.MappingRelation;
+import am.app.mappingEngine.MatchingPairAlignment;
 import am.app.mappingEngine.MatchingProgressListener;
 import am.app.mappingEngine.instance.EntityTypeMapper.EntityType;
 import am.app.mappingEngine.utility.MatchingPair;
@@ -57,7 +58,7 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 	protected transient InstanceDataset sourceInstanceDataset;
 	protected transient InstanceDataset targetInstanceDataset;
 
-	protected transient List<MatchingPair> instanceAlignmentSet;
+	protected transient MatchingPairAlignment instanceAlignmentSet;
 
 	protected InstanceMatchingReport instanceMatchingReport;
 
@@ -150,7 +151,7 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 	 * AgreementMaker doesn't calculate instances matching, if you add this you
 	 * should also modify getAlignmenSet.
 	 */
-	public List<MatchingPair> getInstanceAlignment() {
+	public MatchingPairAlignment getInstanceAlignment() {
 		return instanceAlignmentSet;
 	}
 	
@@ -161,9 +162,9 @@ public abstract class AbstractInstanceMatcher extends AbstractMatcher {
 	 * @return
 	 * @throws Exception
 	 */
-	protected List<MatchingPair> alignInstances(Iterator<Instance> sourceInstances) throws Exception {
+	protected MatchingPairAlignment alignInstances(Iterator<Instance> sourceInstances) throws Exception {
 
-		List<MatchingPair> mappings = new ArrayList<MatchingPair>();
+		MatchingPairAlignment mappings = new MatchingPairAlignment();
 
 		while (sourceInstances.hasNext()) {
 			Instance currentInstance = sourceInstances.next();

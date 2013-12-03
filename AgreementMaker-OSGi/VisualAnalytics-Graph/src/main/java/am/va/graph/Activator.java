@@ -21,12 +21,10 @@ public class Activator implements BundleActivator {
 		
 		Runnable panel = new Runnable() {
 
-			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				VAMainPanel.startPanel();
 			}
-			
+
 		};
 		
 		Thread t = new Thread(panel);

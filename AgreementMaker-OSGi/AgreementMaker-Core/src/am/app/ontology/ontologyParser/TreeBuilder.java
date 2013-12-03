@@ -275,7 +275,7 @@ public abstract class TreeBuilder<T extends OntologyDefinition> extends SwingWor
 				try {
 					File file = new File( ontDefinition.schemaAlignmentURI );
 					FileReader fr = new FileReader(file);
-					HashMap<String,List<MatchingPair>> map = OAEIAlignmentFormat.readAlignment(fr);
+					HashMap<String,List<MatchingPair>> map = OAEIAlignmentFormat.readAlignmentToHashMap(fr);
 					ontology.setInstanceTypeMappings(map);
 				} catch (Exception e) {
 					e.printStackTrace();

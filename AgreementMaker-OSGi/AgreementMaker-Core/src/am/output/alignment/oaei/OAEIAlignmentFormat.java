@@ -15,6 +15,8 @@ import org.dom4j.io.SAXReader;
 
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
+import am.app.mappingEngine.MatchingAlgorithm;
+import am.app.mappingEngine.MatchingPairAlignment;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.utility.MatchingPair;
 import am.output.alignment.AlignmentFormat;
@@ -46,8 +48,7 @@ public class OAEIAlignmentFormat implements AlignmentFormat {
 	}
 
 	@Override
-	public Alignment<Mapping> readAlignment(Reader inputReader,
-			Alignment<Mapping> alignment) {
+	public Alignment<Mapping> readAlignment(Reader inputReader) {
 
 		ArrayList<MatchingPair> result = new ArrayList<MatchingPair>();
 
@@ -103,12 +104,28 @@ public class OAEIAlignmentFormat implements AlignmentFormat {
 		return null;
 	}
 	
+	public static MatchingPairAlignment readAlignmentToMatchingPairAlignment( Reader inputReader ) {
+		
+		MatchingPairAlignment alignment = new MatchingPairAlignment();
+		
+		HashMap<String,List<MatchingPair>> alignmentMap = readAlignmentToHashMap(inputReader);
+		for( List<MatchingPair> mpl : alignmentMap.values() ) {
+			for( MatchingPair mp : mpl ) {
+				if( !alignment.contains(mp) ) {
+					alignment.add(mp);
+				}
+			}
+		}
+		
+		return alignment;
+	}
+	
 	/**
 	 * Read an OAEI alignment file from a reader.
 	 * 
 	 * @return A Map of source and target URIs to their corresponding mapping.
 	 */
-	public static HashMap<String,List<MatchingPair>> readAlignment( Reader inputReader ) {
+	public static HashMap<String,List<MatchingPair>> readAlignmentToHashMap( Reader inputReader ) {
 		
 		HashMap<String,List<MatchingPair>> alignmentMap = new HashMap<String,List<MatchingPair>>();
 

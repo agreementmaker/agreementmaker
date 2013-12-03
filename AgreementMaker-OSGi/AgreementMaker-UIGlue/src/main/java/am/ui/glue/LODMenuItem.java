@@ -7,6 +7,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import org.openjena.atlas.logging.Log;
+
 import am.extension.batchmode.simpleBatchMode.SimpleBatchModeRunner;
 import am.matcher.lod.LinkedOpenData.LODBatch;
 import am.matcher.oaei.imei2013.InstanceMatching;
@@ -46,14 +48,61 @@ public class LODMenuItem extends JMenu implements AMMenuItem {
 		
 		addSeparator();
 		
-		JMenuItem runIMEI2013_01 = new JMenuItem("IMEI 2013");
-		runIMEI2013_01.addActionListener(new ActionListener() {
+		
+		// IMEI menu items
+		
+		JMenu runIMEI2013 = new JMenu("IMEI 2013");
+		
+		JMenuItem runIMEI2013_all = new JMenuItem("All Testcases");
+		runIMEI2013_all.addActionListener(new ActionListener() {
 			@Override public void actionPerformed(ActionEvent e) {
-				LODMenuItem.this.runIMEI2013();
+				LODMenuItem.this.runIMEI2013_All();
 			}
 		});
 		
-		add(runIMEI2013_01);
+		JMenuItem runIMEI2013_01 = new JMenuItem("Testcase 01");
+		runIMEI2013_01.addActionListener(new ActionListener() {
+			@Override public void actionPerformed(ActionEvent e) {
+				LODMenuItem.this.runIMEI2013(1);
+			}
+		});
+		
+		JMenuItem runIMEI2013_02 = new JMenuItem("Testcase 02");
+		runIMEI2013_02.addActionListener(new ActionListener() {
+			@Override public void actionPerformed(ActionEvent e) {
+				LODMenuItem.this.runIMEI2013(2);
+			}
+		});
+		
+		JMenuItem runIMEI2013_03 = new JMenuItem("Testcase 03");
+		runIMEI2013_03.addActionListener(new ActionListener() {
+			@Override public void actionPerformed(ActionEvent e) {
+				LODMenuItem.this.runIMEI2013(3);
+			}
+		});
+		
+		JMenuItem runIMEI2013_04 = new JMenuItem("Testcase 04");
+		runIMEI2013_04.addActionListener(new ActionListener() {
+			@Override public void actionPerformed(ActionEvent e) {
+				LODMenuItem.this.runIMEI2013(4);
+			}
+		});
+		
+		JMenuItem runIMEI2013_05 = new JMenuItem("Testcase 05");
+		runIMEI2013_05.addActionListener(new ActionListener() {
+			@Override public void actionPerformed(ActionEvent e) {
+				LODMenuItem.this.runIMEI2013(5);
+			}
+		});
+		
+		runIMEI2013.add(runIMEI2013_all);
+		runIMEI2013.add(runIMEI2013_01);
+		runIMEI2013.add(runIMEI2013_02);
+		runIMEI2013.add(runIMEI2013_03);
+		runIMEI2013.add(runIMEI2013_04);
+		runIMEI2013.add(runIMEI2013_05);
+		
+		add(runIMEI2013);
 	}
 	
 	private void runLODBatch() {
@@ -98,12 +147,16 @@ public class LODMenuItem extends JMenu implements AMMenuItem {
 		lodThread.start();
 	}
 	
-	private void runIMEI2013() {
-		Runnable imei2013_01 = new Runnable() {
+	private void runIMEI2013_All() {
+		Runnable runnable = new Runnable() {
 			@Override public void run() {
 				try {
 					InstanceMatching im = new InstanceMatching();
-					im.runTest01();
+					im.runTest(1);
+					im.runTest(2);
+					im.runTest(3);
+					im.runTest(4);
+					im.runTest(5);
 				} catch (Exception e) {
 					e.printStackTrace();
 					JOptionPane.showMessageDialog(
@@ -114,8 +167,29 @@ public class LODMenuItem extends JMenu implements AMMenuItem {
 			}
 		};
 		
-		Thread imei2013_01Thread = new Thread(imei2013_01);
-		imei2013_01Thread.setName("IMEI2013 01 " +  imei2013_01Thread.getId());
-		imei2013_01Thread.start();
+		Thread thread = new Thread(runnable);
+		thread.setName("IMEI2013 All " +  thread.getId());
+		thread.start();
+	}
+	
+	private void runIMEI2013(final int testNum) {
+		Runnable runnable = new Runnable() {
+			@Override public void run() {
+				try {
+					InstanceMatching im = new InstanceMatching();
+					im.runTest(testNum);
+				} catch (Exception e) {
+					e.printStackTrace();
+					JOptionPane.showMessageDialog(
+							UICore.getUI().getUIFrame(), 
+							e.getClass() + "\n" + e.getMessage(), 
+							"ERROR", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		};
+		
+		Thread thread = new Thread(runnable);
+		thread.setName("IMEI2013 0" + testNum + " " +  thread.getId());
+		thread.start();
 	}
 }
