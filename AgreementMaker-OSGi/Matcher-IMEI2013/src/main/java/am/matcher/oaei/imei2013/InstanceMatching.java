@@ -1,17 +1,20 @@
 package am.matcher.oaei.imei2013;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import am.app.Core;
+import am.app.mappingEngine.utility.MatchingPair;
+import am.app.ontology.Ontology;
 import am.app.ontology.Ontology.DatasetType;
-import am.app.ontology.instance.InstanceDataset;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition;
 import am.app.ontology.ontologyParser.OntologyDefinition.InstanceFormat;
 import am.matcher.lod.instanceMatchers.InstanceMatcherFedeNew;
 import am.matcher.lod.instanceMatchers.InstanceMatcherFedeNewParameters;
+import am.utility.RunTimer;
 
 public class InstanceMatching {
 
@@ -49,23 +52,42 @@ public class InstanceMatching {
 	
 	public void runTest01() throws Exception {
 		
+		RunTimer timer = new RunTimer().start();
 		
 		LOG.info("Loading " + defOriginal.instanceSourceFile);
-		InstanceDataset sourceInstances = loadInstances(defOriginal);
+		Ontology sourceOnt = loadOntology(defOriginal);
 		
 		LOG.info("Loading " + defTestcases[0].instanceSourceFile);
-		InstanceDataset targetInstances = loadInstances(defTestcases[0]);
+		Ontology targetOnt = loadOntology(defTestcases[0]);
 		
 		
 		InstanceMatcherFedeNewParameters params = new InstanceMatcherFedeNewParameters();
-		params.outputFilename = null;
+		params.threshold = 0.01;
+		params.outputFilename = System.getProperty("java.io.tmpdir") + File.separator + "testcase01-output.rdf";
 		
+		InstanceMatcherFedeNew im = new InstanceMatcherFedeNew(params);
+		
+		im.setSourceOntology(sourceOnt);
+		im.setTargetOntology(targetOnt);
+		
+		im.match();
+		
+		List<MatchingPair> matchingPairs = im.getInstanceAlignment();
+		timer.stop();
+		
+		LOG.info("Matching completed in: " + timer.getFormattedRunTime());
+		LOG.info("Found " + matchingPairs.size() + " instance mappings.");
+		LOG.info(matchingPairs);
+				
+		if( im.getInstanceMatchingReport() != null ) {
+			LOG.info(im.getInstanceMatchingReport().printTable());
+		}
 	}
 	
-	private InstanceDataset loadInstances(OntologyDefinition def) throws Exception {
+	private Ontology loadOntology(OntologyDefinition def) throws Exception {
 		OntoTreeBuilder builder = new OntoTreeBuilder(def);
 		builder.build();
-		return builder.getInstances();
+		return builder.getOntology();
 	}
 	
 	
