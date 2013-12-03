@@ -1,0 +1,68 @@
+package am.va.graph;
+
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.chart.PieChart;
+
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
+import am.ui.UI;
+import am.ui.UICore;
+
+public class Test {
+
+    private static void initAndShowGUI() {
+        // This method is invoked on Swing thread
+        JFrame frame = new JFrame("FX");
+        final JFXPanel fxPanel = new JFXPanel();
+        frame.add(fxPanel);
+        frame.setVisible(true);
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                initFX(fxPanel);
+            }
+        });
+    }
+
+    private static void initFX(JFXPanel fxPanel) {
+        // This method is invoked on JavaFX thread
+
+    	Group root = new Group();
+        Scene myScene = new Scene(root);
+         ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(
+             new PieChart.Data("Sun", 20),
+             new PieChart.Data("IBM", 12),
+             new PieChart.Data("HP", 25),
+             new PieChart.Data("Dell", 22),
+             new PieChart.Data("Apple", 30)
+         );
+        PieChart chart = new PieChart(pieChartData);
+        chart.setClockwise(false);
+        root.getChildren().add(chart);
+
+        //Scene scene = createScene();
+        fxPanel.setScene(myScene);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                initAndShowGUI();
+            }
+        });
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                UICore.setUI(new UI());
+            }
+        });
+    }
+}
