@@ -22,7 +22,7 @@ public class Activator implements BundleActivator {
 		Runnable panel = new Runnable() {
 
 			public void run() {
-				VAMainPanel.startPanel();
+				
 			}
 
 		};
