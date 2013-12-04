@@ -18,6 +18,8 @@ import am.ui.UICore;
 @SuppressWarnings("restriction")
 public class Test {
 
+	private static final boolean START_AGREEMENTMAKER = false;
+	
 	private static void initAndShowGUI() {
 		// This method is invoked on Swing thread
 		JFrame frame = new JFrame("FX");
@@ -68,7 +70,10 @@ public class Test {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				// UICore.setUI(new UI());
+				if(START_AGREEMENTMAKER) {
+					Core.getInstance().setRegistry(new ManualMatcherRegistry());
+					UICore.setUI(new UI());
+				}
 			}
 		});
 	}
