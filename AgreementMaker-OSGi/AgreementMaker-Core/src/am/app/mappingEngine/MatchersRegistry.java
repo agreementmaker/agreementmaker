@@ -12,7 +12,12 @@ import am.extension.MyTestMatcher;
 
 /**
  * Enum for keeping the current list of matchers in the system, and their class references
+ * 
+ * NOTE: THIS ENUM IS NO LONGER USED AND WILL BE REMOVED!
+ * 
+ * @see {@link am.app.mappingEngine.MatcherRegistry}
  */
+@Deprecated
 public enum MatchersRegistry {
 	
 	/**
