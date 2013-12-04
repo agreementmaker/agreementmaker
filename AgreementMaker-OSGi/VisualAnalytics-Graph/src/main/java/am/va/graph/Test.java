@@ -11,58 +11,65 @@ import javafx.scene.chart.PieChart;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import am.app.Core;
 import am.ui.UI;
 import am.ui.UICore;
 
+@SuppressWarnings("restriction")
 public class Test {
 
-    private static void initAndShowGUI() {
-        // This method is invoked on Swing thread
-        JFrame frame = new JFrame("FX");
-        final JFXPanel fxPanel = new JFXPanel();
-        frame.add(fxPanel);
-        frame.setVisible(true);
+	private static void initAndShowGUI() {
+		// This method is invoked on Swing thread
+		JFrame frame = new JFrame("FX");
+		frame.setSize(500, 500);
+		final JFXPanel fxPanel = new JFXPanel();
+		frame.add(fxPanel);
+		frame.setVisible(true);
 
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                initFX(fxPanel);
-            }
-        });
-    }
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				initFX(fxPanel);
+			}
+		});
+	}
 
-    private static void initFX(JFXPanel fxPanel) {
-        // This method is invoked on JavaFX thread
+	private static void initFX(JFXPanel fxPanel) {
+		// This method is invoked on JavaFX thread
 
-    	Group root = new Group();
-        Scene myScene = new Scene(root);
-         ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(
-             new PieChart.Data("Sun", 20),
-             new PieChart.Data("IBM", 12),
-             new PieChart.Data("HP", 25),
-             new PieChart.Data("Dell", 22),
-             new PieChart.Data("Apple", 30)
-         );
-        PieChart chart = new PieChart(pieChartData);
-        chart.setClockwise(false);
-        root.getChildren().add(chart);
+		Group root = new Group();
+		Scene myScene = new Scene(root);
 
-        //Scene scene = createScene();
-        fxPanel.setScene(myScene);
-    }
+		ObservableList<PieChart.Data> pieChartData = FXCollections
+				.observableArrayList(new PieChart.Data("Sun", 20),
+						new PieChart.Data("IBM", 12), new PieChart.Data("HP",
+								25), new PieChart.Data("Dell", 22),
+						new PieChart.Data("Apple", 30), new PieChart.Data(
+								"Sun", 20), new PieChart.Data("IBM", 12),
+						new PieChart.Data("HP", 25), new PieChart.Data("Dell",
+								22), new PieChart.Data("Apple", 30),
+						new PieChart.Data("Apple", 30));
+		PieChart chart = new PieChart(pieChartData);
+		chart.setClockwise(false);
+		root.getChildren().add(chart);
+		System.out.println(chart.startAngleProperty());
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                initAndShowGUI();
-            }
-        });
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                UICore.setUI(new UI());
-            }
-        });
-    }
+		// Scene scene = createScene();
+		fxPanel.setScene(myScene);
+	}
+
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				initAndShowGUI();
+			}
+		});
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				// UICore.setUI(new UI());
+			}
+		});
+	}
 }
