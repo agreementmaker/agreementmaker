@@ -71,7 +71,7 @@ public class MatchingPair {
 	public boolean equals(Object o) { 
 		if(o instanceof MatchingPair) {
 			MatchingPair mp = (MatchingPair)o;
-			if(sameSource(mp) &&sameTarget(mp))
+			if(sameSource(mp) && sameTarget(mp))
 				return true;
 		}
 		return false;

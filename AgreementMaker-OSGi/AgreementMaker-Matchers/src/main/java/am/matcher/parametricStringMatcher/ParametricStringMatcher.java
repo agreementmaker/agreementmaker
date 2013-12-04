@@ -86,14 +86,24 @@ public class ParametricStringMatcher extends AbstractMatcher {
 		initializeNormalizer();
 		
 		if( parameters.useLexicons ) {
-			// build all the lexicons if they don't exist.
-			
+			// build all the lexicons if they don't exist.			
 			for( MatchingProgressListener mpd : progressDisplays ) mpd.setProgressLabel("Building Ontology Lexicon (1/2)");
-			sourceOntologyLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
-			targetOntologyLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
+			sourceOntologyLexicon = 
+					Core.getLexiconStore().getLexicon(
+							sourceOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
+			targetOntologyLexicon = 
+					Core.getLexiconStore().getLexicon(
+							targetOntology.getID(), LexiconRegistry.ONTOLOGY_LEXICON);
+			
 			for( MatchingProgressListener mpd : progressDisplays ) mpd.setProgressLabel("Building WordNet Lexicon (2/2)");
-			sourceWordNetLexicon = Core.getLexiconStore().getLexicon(sourceOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
-			targetWordNetLexicon = Core.getLexiconStore().getLexicon(targetOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
+			
+			sourceWordNetLexicon = 
+					Core.getLexiconStore().getLexicon(
+							sourceOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
+			targetWordNetLexicon = 
+					Core.getLexiconStore().getLexicon(
+							targetOntology.getID(), LexiconRegistry.WORDNET_LEXICON);
+			
 			for( MatchingProgressListener mpd : progressDisplays ) mpd.setProgressLabel(null);
 		}
 		

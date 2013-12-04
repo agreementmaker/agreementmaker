@@ -48,7 +48,7 @@ public class OntologyDefinition {
 	public DatasetType instanceSourceType;
 	
 	public String instanceSourceFile;
-	public int instanceSourceFormat;  // 0 = RDF
+	public InstanceFormat instanceSourceFormat;  // 0 = RDF, 1 = TURTLE
 	public EndpointRegistry instanceEndpointType;
 	
 	public boolean loadSchemaAlignment = false;
@@ -178,8 +178,8 @@ public class OntologyDefinition {
 		N3("N3", 3),
 		TURTLE("TURTLE", 4);
 		
-		String name;
-		int ID;
+		private String name;
+		private int ID;
 		
 		private OntologySyntax(String name, int ID) {
 			this.name = name;
@@ -187,6 +187,8 @@ public class OntologyDefinition {
 		}
 		
 		public int getID() { return ID; }
+		
+		public String getName() { return name; }
 		
 		@Override public String toString() { return name; }
 		
@@ -202,6 +204,32 @@ public class OntologyDefinition {
 				if( syn.ID == synID ) return syn;
 			}
 			return null;
+		}
+	}
+	
+	/**
+	 * Important: The return value of toString() is passed to Jena when reading
+	 * in the model. Therefore, it <i>must</i> match up with the strings
+	 * expected by Jena.
+	 * 
+	 * @author cosmin
+	 * 
+	 * @see {@link com.hp.hpl.jena.rdf.model.Model#read(String, String)}
+	 */
+	public enum InstanceFormat {
+		RDFXML("RDF/XML"),   // instances are written in RDF/XML 
+		TURTLE;   // instances are written in TURTLE
+		
+		private final String jenaFormat;
+		
+		private InstanceFormat() { this.jenaFormat = name(); }
+		private InstanceFormat(String name) { this.jenaFormat = name; }
+		
+		@Override public String toString() { return jenaFormat;	}
+		
+		public static InstanceFormat getFormat(String formatName){
+			for(InstanceFormat i : values()) if( i.toString().equals(formatName) ) return i;
+			return RDFXML; // default format
 		}
 	}
 }

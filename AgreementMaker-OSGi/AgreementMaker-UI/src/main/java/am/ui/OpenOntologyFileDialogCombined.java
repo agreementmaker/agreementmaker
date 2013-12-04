@@ -35,6 +35,7 @@ import am.app.ontology.Ontology;
 import am.app.ontology.Ontology.DatasetType;
 import am.app.ontology.instance.endpoint.EndpointRegistry;
 import am.app.ontology.ontologyParser.OntologyDefinition;
+import am.app.ontology.ontologyParser.OntologyDefinition.InstanceFormat;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.utility.AMFileChooser;
@@ -289,7 +290,8 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		prefs.putBoolean(PREFIX + PREF_LOAD_INSTANCES, def.loadInstances);
 		if( def.instanceSourceFile == null ) def.instanceSourceFile = "";
 		prefs.put(PREFIX + PREF_INSTANCE_SOURCE_FILE, def.instanceSourceFile);
-		prefs.putInt(PREFIX + PREF_INSTANCE_SOURCE_FORMAT, def.instanceSourceFormat);
+		if( def.instanceSourceFormat != null )
+			prefs.put(PREFIX + PREF_INSTANCE_SOURCE_FORMAT, def.instanceSourceFormat.toString());
 		if( def.instanceSourceType != null ) {
 			prefs.put(PREFIX + PREF_INSTANCE_SOURCE_TYPE, def.instanceSourceType.name());	
 		}
@@ -325,7 +327,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		def.onDiskDirectory = prefs.get(PREFIX + PREF_ONDISK_DIRECTORY, "");
 		def.loadInstances = prefs.getBoolean(PREFIX + PREF_LOAD_INSTANCES, false);
 		def.instanceSourceFile = prefs.get(PREFIX + PREF_INSTANCE_SOURCE_FILE, "");
-		def.instanceSourceFormat = prefs.getInt(PREFIX + PREF_INSTANCE_SOURCE_FORMAT, 0);
+		def.instanceSourceFormat = InstanceFormat.getFormat(prefs.get(PREFIX + PREF_INSTANCE_SOURCE_FORMAT, InstanceFormat.RDFXML.toString()));
 		
 		String sourceType = prefs.get(PREFIX + PREF_INSTANCE_SOURCE_TYPE, DatasetType.ONTOLOGY.name());
 		for( DatasetType dat : DatasetType.values() ) {
@@ -370,9 +372,6 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 		private static final String ENDPOINT_FREEBASE = "FreeBase";
 		private final String[] endpointStrings = { ENDPOINT_SPARQL, ENDPOINT_FREEBASE };
 		
-		private static final String DATASET_RDF = "RDF";
-		private final String[] datasetStrings = { DATASET_RDF };
-		
 		private static final String MAPPING_OAEI = "OAEI Alignment";
 		private final String[] alignmentStrings = { MAPPING_OAEI };
 		
@@ -407,7 +406,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			
 			comboboxes[0] = new JComboBox<OntologyLanguage>(OntologyLanguage.values());
 			comboboxes[1] = new JComboBox<OntologySyntax>(OntologySyntax.values());
-			comboboxes[2] = new JComboBox<String>(datasetStrings);
+			comboboxes[2] = new JComboBox<InstanceFormat>(InstanceFormat.values());
 			comboboxes[3] = new JComboBox<String>(endpointStrings);
 			comboboxes[4] = new JComboBox<String>(alignmentStrings);
 			
@@ -543,7 +542,10 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			}
 
 			comboboxes[0].setSelectedIndex(def.ontologyLanguage.getID());
+			comboboxes[2].setSelectedItem(def.instanceSourceFormat);
 			
+			handleLoadOntology();
+			handleLoadInstances();
 		}
 		
 		public GroupLayout createLayout( Container panel ) {
@@ -755,67 +757,11 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			if( e.getSource() == buttons[3] ) {	chooseFile( textfields[3] ); }
 			
 			if( e.getSource() == checkboxes[3] ) { // load ontology
-				if( checkboxes[3].isSelected() ) {
-					labels[0].setEnabled(true); // Ontology File/URL:
-					textfields[0].setEnabled(true); // [___________________]
-					buttons[0].setEnabled(true); // [...]
-					labels[1].setEnabled(true); // Language:
-					comboboxes[0].setEnabled(true); // [_______\/]
-					labels[2].setEnabled(true); // Syntax:
-					comboboxes[1].setEnabled(true); // [________\/]
-					
-					labels[3].setEnabled(true); // Storage:
-					radiobuttons[0].setEnabled(true); // In Memory
-					radiobuttons[0].setSelected(true); // In Memory
-					radiobuttons[1].setEnabled(true); // On Disk
-					checkboxes[0].setEnabled(false); // [] Persistent
-					labels[4].setEnabled(false); // On Disk Directory:
-					textfields[1].setEnabled(false); // [______]
-					buttons[1].setEnabled(false); // [...]
-					
-					if( checkboxes[1].isSelected() && !radiobuttons[2].isEnabled() ) {
-						radiobuttons[2].setEnabled(true);
-					}
-				}
-				else {
-					labels[0].setEnabled(false); // Ontology File/URL:
-					textfields[0].setEnabled(false); // [___________________]
-					buttons[0].setEnabled(false); // [...]
-					labels[1].setEnabled(false); // Language:
-					comboboxes[0].setEnabled(false); // [_______\/]
-					labels[2].setEnabled(false); // Syntax:
-					comboboxes[1].setEnabled(false); // [________\/]
-					
-					labels[3].setEnabled(false); // Storage:
-					radiobuttons[0].setEnabled(false); // In Memory
-					radiobuttons[1].setEnabled(false); // On Disk
-					checkboxes[0].setEnabled(false); // [] Persistent
-					labels[4].setEnabled(false); // On Disk Directory:
-					textfields[1].setEnabled(false); // [______]
-					buttons[1].setEnabled(false); // [...]
-					
-					if( checkboxes[1].isSelected() && radiobuttons[2].isSelected() ) {  // () Ontology
-						radiobuttons[3].setSelected(true);  // () Separate file.
-						
-						labels[6].setEnabled(true); // File/URL:
-						textfields[2].setEnabled(true); // [___________]
-						buttons[2].setEnabled(true); // [...]
-						labels[7].setEnabled(true); // File format:
-						comboboxes[2].setEnabled(true); // [_____\/]
-						labels[8].setEnabled(false); // Endpoint Type:
-						comboboxes[3].setEnabled(false); // [_____\/]
-
-						
-						radiobuttons[2].setEnabled(false);
-					}
-					else if( checkboxes[1].isSelected() ) {
-						radiobuttons[2].setEnabled(false);
-					}
-				}
+				handleLoadOntology();
 			}
 			
-			if( e.getSource() == radiobuttons[0] ||
-				e.getSource() == radiobuttons[1] ) {
+			if( e.getSource() == radiobuttons[0] ||      // In Memory
+				e.getSource() == radiobuttons[1] ) {     // On disk
 				
 				boolean toggle;
 				if( radiobuttons[0].isSelected() ) { toggle = false; } 
@@ -828,54 +774,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 			}
 			
 			if( e.getSource() == checkboxes[1] ) { // [] Load instances
-				
-				if( checkboxes[1].isSelected() ) {					
-					labels[5].setEnabled(true); // Instance source:
-					if( !checkboxes[3].isSelected() ) { // Load ontology
-						radiobuttons[2].setEnabled(false); // Ontology
-						radiobuttons[3].setSelected(true); // Separate file
-						
-						labels[6].setEnabled(true); // File/URL:
-						textfields[2].setEnabled(true); // [___________]
-						buttons[2].setEnabled(true); // [...]
-						labels[7].setEnabled(true); // File format:
-						comboboxes[2].setEnabled(true); // [_____\/]
-						labels[8].setEnabled(false); // Endpoint Type:
-						comboboxes[3].setEnabled(false); // [_____\/]
-
-					}
-					else {
-						radiobuttons[2].setEnabled(true); // Ontology
-					}
-					radiobuttons[3].setEnabled(true); // Separate File
-					radiobuttons[4].setEnabled(true); // Semantic Web Endpoint
-					
-					checkboxes[2].setEnabled(true);  // Load predefined types alignment
-				}
-				else {
-					radiobuttons[2].setSelected(true);
-					checkboxes[2].setSelected(false);
-					labels[5].setEnabled(false); // Instance source:
-					radiobuttons[2].setEnabled(false); // Ontology
-					radiobuttons[3].setEnabled(false); // Separate File
-					radiobuttons[4].setEnabled(false); // Semantic Web Endpoint
-					labels[6].setEnabled(false); // File/URL:
-					textfields[2].setEnabled(false); // [___________]
-					buttons[2].setEnabled(false); // [...]
-					labels[7].setEnabled(false); // File format:
-					comboboxes[2].setEnabled(false); // [_____\/]
-					labels[8].setEnabled(false); // Endpoint Type:
-					comboboxes[3].setEnabled(false); // [_____\/]
-					
-					checkboxes[2].setEnabled(false);  // Load predefined types alignment
-					labels[9].setEnabled(false); // File/URL: (predefined alignment)
-					textfields[3].setEditable(false); // [_____________]
-					buttons[3].setEnabled(false); // [...]
-					labels[10].setEnabled(false); // Format:
-					comboboxes[4].setEnabled(false); // OAEI Alignment
-				}
-				
-				
+				handleLoadInstances();
 			}
 			
 			if( checkboxes[1].isSelected() ) {  // Load Instances is Selected?
@@ -924,6 +823,130 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 				}
 			}
 			
+		}
+		
+		private void handleLoadOntology() {
+			if( checkboxes[3].isSelected() ) {
+				selectedLoadOntology();
+			}
+			else {
+				deselectedLoadOntology();
+			}
+		}
+		
+		private void handleLoadInstances() {
+			if( checkboxes[1].isSelected() ) {					
+				selectedLoadInstances();
+			}
+			else {
+				deselectedLoadInstances();
+			}
+		}
+		
+		private void selectedLoadOntology() {
+			labels[0].setEnabled(true); // Ontology File/URL:
+			textfields[0].setEnabled(true); // [___________________]
+			buttons[0].setEnabled(true); // [...]
+			labels[1].setEnabled(true); // Language:
+			comboboxes[0].setEnabled(true); // [_______\/]
+			labels[2].setEnabled(true); // Syntax:
+			comboboxes[1].setEnabled(true); // [________\/]
+			
+			labels[3].setEnabled(true); // Storage:
+			radiobuttons[0].setEnabled(true); // In Memory
+			radiobuttons[0].setSelected(true); // In Memory
+			radiobuttons[1].setEnabled(true); // On Disk
+			checkboxes[0].setEnabled(false); // [] Persistent
+			labels[4].setEnabled(false); // On Disk Directory:
+			textfields[1].setEnabled(false); // [______]
+			buttons[1].setEnabled(false); // [...]
+			
+			if( checkboxes[1].isSelected() && !radiobuttons[2].isEnabled() ) {
+				radiobuttons[2].setEnabled(true);
+			}
+		}
+		
+		private void deselectedLoadOntology() {
+			labels[0].setEnabled(false); // Ontology File/URL:
+			textfields[0].setEnabled(false); // [___________________]
+			buttons[0].setEnabled(false); // [...]
+			labels[1].setEnabled(false); // Language:
+			comboboxes[0].setEnabled(false); // [_______\/]
+			labels[2].setEnabled(false); // Syntax:
+			comboboxes[1].setEnabled(false); // [________\/]
+			
+			labels[3].setEnabled(false); // Storage:
+			radiobuttons[0].setEnabled(false); // In Memory
+			radiobuttons[1].setEnabled(false); // On Disk
+			checkboxes[0].setEnabled(false); // [] Persistent
+			labels[4].setEnabled(false); // On Disk Directory:
+			textfields[1].setEnabled(false); // [______]
+			buttons[1].setEnabled(false); // [...]
+			
+			if( checkboxes[1].isSelected() && radiobuttons[2].isSelected() ) {  // () Ontology
+				radiobuttons[3].setSelected(true);  // () Separate file.
+				
+				labels[6].setEnabled(true); // File/URL:
+				textfields[2].setEnabled(true); // [___________]
+				buttons[2].setEnabled(true); // [...]
+				labels[7].setEnabled(true); // File format:
+				comboboxes[2].setEnabled(true); // [_____\/]
+				labels[8].setEnabled(false); // Endpoint Type:
+				comboboxes[3].setEnabled(false); // [_____\/]
+
+				
+				radiobuttons[2].setEnabled(false);
+			}
+			else if( checkboxes[1].isSelected() ) {
+				radiobuttons[2].setEnabled(false);
+			}
+		}
+		
+		private void selectedLoadInstances() {
+			labels[5].setEnabled(true); // Instance source:
+			if( !checkboxes[3].isSelected() ) { // Load ontology
+				radiobuttons[2].setEnabled(false); // Ontology
+				radiobuttons[3].setSelected(true); // Separate file
+				
+				labels[6].setEnabled(true); // File/URL:
+				textfields[2].setEnabled(true); // [___________]
+				buttons[2].setEnabled(true); // [...]
+				labels[7].setEnabled(true); // File format:
+				comboboxes[2].setEnabled(true); // [_____\/]
+				labels[8].setEnabled(false); // Endpoint Type:
+				comboboxes[3].setEnabled(false); // [_____\/]
+
+			}
+			else {
+				radiobuttons[2].setEnabled(true); // Ontology
+			}
+			radiobuttons[3].setEnabled(true); // Separate File
+			radiobuttons[4].setEnabled(true); // Semantic Web Endpoint
+			
+			checkboxes[2].setEnabled(true);  // Load predefined types alignment
+		}
+		
+		private void deselectedLoadInstances() {
+			radiobuttons[2].setSelected(true);
+			checkboxes[2].setSelected(false);
+			labels[5].setEnabled(false); // Instance source:
+			radiobuttons[2].setEnabled(false); // Ontology
+			radiobuttons[3].setEnabled(false); // Separate File
+			radiobuttons[4].setEnabled(false); // Semantic Web Endpoint
+			labels[6].setEnabled(false); // File/URL:
+			textfields[2].setEnabled(false); // [___________]
+			buttons[2].setEnabled(false); // [...]
+			labels[7].setEnabled(false); // File format:
+			comboboxes[2].setEnabled(false); // [_____\/]
+			labels[8].setEnabled(false); // Endpoint Type:
+			comboboxes[3].setEnabled(false); // [_____\/]
+			
+			checkboxes[2].setEnabled(false);  // Load predefined types alignment
+			labels[9].setEnabled(false); // File/URL: (predefined alignment)
+			textfields[3].setEditable(false); // [_____________]
+			buttons[3].setEnabled(false); // [...]
+			labels[10].setEnabled(false); // Format:
+			comboboxes[4].setEnabled(false); // OAEI Alignment
 		}
 		
 		/**
@@ -976,7 +999,7 @@ public class OpenOntologyFileDialogCombined extends JDialog implements ActionLis
 				if( radiobuttons[4].isSelected() ) def.instanceSourceType = DatasetType.ENDPOINT;
 				
 				if( def.instanceSourceType == DatasetType.DATASET ) {
-					def.instanceSourceFormat = comboboxes[2].getSelectedIndex();
+					def.instanceSourceFormat = (InstanceFormat) comboboxes[2].getSelectedItem();
 					def.instanceSourceFile = textfields[2].getText();
 				}
 				else if( def.instanceSourceType == DatasetType.ENDPOINT ) {
