@@ -276,7 +276,7 @@ public class UI {
 			UICore.getUI().getUIFrame().setVisible(false);
 			UICore.getUI().getUIFrame().dispose();
 			UICore.setUI(null);
-			Core.getInstance().getRegistry().initializeShutdown();
+			Core.getInstance().shutdown();
 		}
 	}
 }

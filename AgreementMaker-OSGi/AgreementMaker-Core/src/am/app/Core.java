@@ -9,13 +9,16 @@ import java.util.List;
 import javax.management.InstanceAlreadyExistsException;
 
 import org.apache.log4j.Logger;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 
 import am.AMException;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.LexiconStore;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherChangeListener;
+import am.app.mappingEngine.MatcherRegistry;
 import am.app.mappingEngine.MatcherResult;
 import am.app.mappingEngine.MatchersRegistry;
 import am.app.mappingEngine.MatchingTask;
@@ -110,7 +113,7 @@ public class Core {
 	
 	private static Core core  = new Core(); // Singleton pattern: unique instance
 
-	private OSGiRegistry registry;
+	private MatcherRegistry registry;
 	
 	
 	/**
@@ -197,6 +200,8 @@ public class Core {
 	/**
 	 * This function will return the first Matcher instance of type "matcher" in the AM (ordered by its index).
 	 * @return Returns null if a matcher of the specified type does not exist in the system.
+	 * 
+	 * @deprecated Use {@link #getMatchingAlgorithm(String)} or {@link #getMatchingAlgorithms()}
 	 */
 	@Deprecated
 	public AbstractMatcher getMatcherInstance( MatchersRegistry matcher ) {
@@ -247,16 +252,16 @@ public class Core {
 	/**
 	 * Returns a matching algorithm given its name.
 	 * 
-	 * @param name The name of the matching algorithm.
+	 * @param matcherName The (long) name of the matching algorithm.
 	 * @return The first algorithm whose name is exactly the same as name. null if there is no match.
 	 * 
 	 * @see {@link #getMatchingAlgorithms()}
 	 */
-	public AbstractMatcher getMatchingAlgorithm(String name) {
+	public AbstractMatcher getMatchingAlgorithm(String matcherName) {
 		List<AbstractMatcher> matchers = getMatchingAlgorithms();
 		
 		for( AbstractMatcher matcher : matchers ) {
-			if( matcher.getName().equals(name) ) return matcher;
+			if( matcher.getName().equals(matcherName) ) return matcher;
 		}
 		
 		return null;
@@ -544,6 +549,11 @@ public class Core {
 	
 	/* ***************************** ONTOLOGY PROFILING **************************************** */
 	private OntologyProfiler currentProfiler;
+
+	/**
+	 * If we're running an OSGi framework, keep track of the bundle context.
+	 */
+	private BundleContext bundleContext;
 	
 	/**
 	 * Ontology profiler.  Set the profiler by using the Ontology -> Profiling... menu.
@@ -558,14 +568,49 @@ public class Core {
 	public void setOntologyProfiler( OntologyProfiler p ) { currentProfiler = p; }
 
 	public void initializeOSGiRegistry(BundleContext context) throws InstanceAlreadyExistsException {
+		this.bundleContext = context;
 		if( registry != null )
 			throw new InstanceAlreadyExistsException("You've already instantiated an OSGiRegistry object.");
 		
 		registry = new OSGiRegistry(context);
 	}
 	
-	public OSGiRegistry getRegistry() {
+	public void setRegistry(MatcherRegistry reg) {
+		this.registry = reg;
+	}
+	
+	public MatcherRegistry getRegistry() {
 		return registry;
 	}
 	
+	/**
+	 * Gracefully shutdown AgreementMaker. This was introduced mainly to
+	 * handle OSGi shutdowns.
+	 */
+	public void shutdown() {
+		if( bundleContext != null ) {
+			try {
+				bundleContext.getBundle(0).stop();
+				//EclipseStarter.shutdown();
+				
+				while( bundleContext.getBundles() != null ) {
+					Thread.sleep(100);
+				}
+				
+				
+			} catch (BundleException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NullPointerException e) {
+				System.exit(0);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public BundleContext getBundleContext() {
+		return bundleContext;
+	}
 }
