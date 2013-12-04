@@ -4,9 +4,12 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import am.Utility;
@@ -15,20 +18,24 @@ import am.app.mappingEngine.utility.MatchingPair;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 import am.app.ontology.Ontology.DatasetType;
-import am.app.ontology.instance.FreebaseInstanceDataset;
-import am.app.ontology.instance.GeoNamesInstanceDataset;
 import am.app.ontology.instance.InstanceDataset;
-import am.app.ontology.instance.OntologyInstanceDataset;
-import am.app.ontology.instance.SeparateFileInstanceDataset;
-import am.app.ontology.instance.SparqlInstanceDataset;
+import am.app.ontology.instance.TurtleFixerInputStream;
+import am.app.ontology.instance.datasets.FreebaseInstanceDataset;
+import am.app.ontology.instance.datasets.GeoNamesInstanceDataset;
+import am.app.ontology.instance.datasets.OntologyInstanceDataset;
+import am.app.ontology.instance.datasets.SeparateFileInstanceDataset;
+import am.app.ontology.instance.datasets.SparqlInstanceDataset;
+import am.app.ontology.instance.datasets.TurtleFileDataset;
 import am.app.ontology.instance.endpoint.EndpointRegistry;
 import am.app.ontology.instance.endpoint.FreebaseEndpoint;
 import am.app.ontology.instance.endpoint.GeoNamesEndpoint;
 import am.app.ontology.instance.endpoint.SparqlEndpoint;
+import am.app.ontology.ontologyParser.OntologyDefinition.InstanceFormat;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.output.alignment.oaei.OAEIAlignmentFormat;
 
+import com.hp.hpl.jena.n3.turtle.TurtleParseException;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -172,8 +179,8 @@ public abstract class TreeBuilder<T extends OntologyDefinition> extends SwingWor
 		}
 	}
 	
-	public void build() throws Exception{
-		buildTree();//Instantiated in the subclasses
+	public void build() throws Exception {
+		if( ontDefinition.loadOntology ) buildTree(); //Instantiated in the subclasses
 		
 		if( ontDefinition != null ) loadInstances();
 		
@@ -197,6 +204,8 @@ public abstract class TreeBuilder<T extends OntologyDefinition> extends SwingWor
         }
         report += "Select the 'Ontology Details' function in the 'Ontology' menu\nfor additional informations.\n";
         report += "The 'Hierarchy Visualization' can be disabled from the 'View' menu\nto improve system performances.\n";
+        
+		fireEvent(ProgressEvent.ONTOLOGY_LOADED);
 	}
 	
 	protected void buildTree() throws Exception {
@@ -221,9 +230,21 @@ public abstract class TreeBuilder<T extends OntologyDefinition> extends SwingWor
 				ontDefinition.instanceSourceFile = "file:///" + ontDefinition.instanceSourceFile;
 			}
 			
-			instancesModel.read( ontDefinition.instanceSourceFile, null, ontology.getFormat().toString() );
-			
-			instances = new SeparateFileInstanceDataset(instancesModel);
+			try {
+				if( ontDefinition.instanceSourceFormat == InstanceFormat.TURTLE ) {
+					// The TurtleFixerInputStream is used to fix invalid OAEI2013 datasets
+					instancesModel.read( new TurtleFixerInputStream(ontDefinition.instanceSourceFile), null, ontDefinition.instanceSourceFormat.toString() );
+					instances = new TurtleFileDataset(instancesModel);
+				}
+				else {
+					instancesModel.read( ontDefinition.instanceSourceFile, ontDefinition.instanceSourceFormat.toString() );
+					instances = new SeparateFileInstanceDataset(instancesModel);
+				}
+			}
+			catch(TurtleParseException | IOException e) {
+				e.printStackTrace();
+				return;
+			}
 		}
 		else if ( ontDefinition.instanceSourceType == DatasetType.ENDPOINT &&
 				  ontDefinition.instanceEndpointType.equals( EndpointRegistry.FREEBASE ) ) {
@@ -254,7 +275,7 @@ public abstract class TreeBuilder<T extends OntologyDefinition> extends SwingWor
 				try {
 					File file = new File( ontDefinition.schemaAlignmentURI );
 					FileReader fr = new FileReader(file);
-					HashMap<String,List<MatchingPair>> map = OAEIAlignmentFormat.readAlignment(fr);
+					HashMap<String,List<MatchingPair>> map = OAEIAlignmentFormat.readAlignmentToHashMap(fr);
 					ontology.setInstanceTypeMappings(map);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -319,6 +340,19 @@ public abstract class TreeBuilder<T extends OntologyDefinition> extends SwingWor
 		return null;
 	}
     
+    protected void done() {
+        try {
+            System.out.println("Done");
+            get();
+        } catch (ExecutionException e) {
+            e.getCause().printStackTrace();
+        } catch (InterruptedException e) {
+            // Process e here
+        	e.printStackTrace();
+        }
+        fireEvent(ProgressEvent.ONTOLOGY_LOADED);
+    }
+	
 	/**
 	 * A wrapper for the {@link #fireEvent(ProgressEvent, Object)} class.
 	 * 

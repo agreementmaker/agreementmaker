@@ -1,0 +1,24 @@
+AGREEMENT DOCUMENT
+
+Date: Mon Nov 14 11:35:44 CST 2011
+Source Ontology: http://data.semanticweb.org/ns/swc/ontology#
+Target Ontology: http://www.aktors.org/ontology/portal
+
+Class Alignments: 15
+Source Concept	 ->	Target Concept	Similarity	Relation	Provenance
+
+Employee	--->	Employee	0.9559814015460079	 = 
+FacultyMember	--->	Project-Officer-In-Academia	1.0	 = 	SubclassOf
+Article	--->	Serial-Publication	1.0	 = 	SubclassOf
+Project	--->	Project	0.9541312228373907	 = 
+Event	--->	Event	0.9862317704396372	 = 
+ResearchTopic	--->	Research-Area	1.0	 = 	Recursive Individuals
+Conference	--->	Conference	1.0	 = 
+Organization	--->	Organization	0.9607688657138413	 = 
+Workshop	--->	Workshop	1.0	 = 
+Magazine	--->	Magazine	0.920077062016598	 = 
+Student	--->	Student	0.9260226116634643	 = 
+University	--->	University	1.0	 = 
+Journal	--->	Journal	0.9467556432237684	 = 
+Publication	--->	Publication	0.9384654947530818	 = 
+Book	--->	Book	0.9553088119512788	 = 

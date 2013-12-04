@@ -7,7 +7,7 @@ import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
-import am.matcher.oaei2009.OAEI2009parameters;
+import am.matcher.oaei.oaei2009.OAEI2009parameters;
 import am.parsing.AlignmentOutput;
 
 public class AnatomyTrack extends Track {

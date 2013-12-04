@@ -48,6 +48,7 @@ public abstract class UFLControlLogic implements ActionListener {
 		}
 	}
 	
+
 	protected void runCandidateSelectionEvaluation() {
 		try {
 			experiment.csEvaluation = experiment.setup.cse.getEntryClass().newInstance();
@@ -105,6 +106,21 @@ public abstract class UFLControlLogic implements ActionListener {
 				@Override
 				public void run() {
 					experiment.propagationEvaluation.evaluate(experiment);
+				}
+			});
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	protected void runSaveFeedback() {
+		try {
+			experiment.saveFeedback=experiment.setup.sf.getEntryClass().newInstance();
+			experiment.candidateSelection.addActionListener(this);
+			
+			startThread(new Runnable() {
+				@Override public void run() {
+					experiment.saveFeedback.save(experiment);	
 				}
 			});
 		} catch (InstantiationException | IllegalAccessException e) {

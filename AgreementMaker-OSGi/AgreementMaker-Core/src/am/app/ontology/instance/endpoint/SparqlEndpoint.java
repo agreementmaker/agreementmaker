@@ -16,7 +16,7 @@ import java.util.List;
 
 import am.AMException;
 import am.app.ontology.instance.Instance;
-import am.app.ontology.instance.SeparateFileInstanceDataset;
+import am.app.ontology.instance.datasets.SeparateFileInstanceDataset;
 import am.utility.HTTPUtility;
 
 import com.hp.hpl.jena.rdf.arp.JenaReader;

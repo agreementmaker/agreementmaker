@@ -79,7 +79,7 @@ public class MediatingMatcher extends AbstractMatcher {
 		if( p.loadSourceBridge ) {
 			try {
 				for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Loading source bridge ...");
-				sourceBridge = OAEIAlignmentFormat.readAlignment( new FileReader(new File(p.sourceBridge)) );
+				sourceBridge = OAEIAlignmentFormat.readAlignmentToHashMap( new FileReader(new File(p.sourceBridge)) );
 				for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -143,7 +143,7 @@ public class MediatingMatcher extends AbstractMatcher {
 		if( p.loadTargetBridge ) {
 			for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport("Loading target bridge ...");
 			OAEIAlignmentFormat format = new OAEIAlignmentFormat();
-			targetBridge = OAEIAlignmentFormat.readAlignment( new FileReader(new File(p.targetBridge)) );
+			targetBridge = OAEIAlignmentFormat.readAlignmentToHashMap( new FileReader(new File(p.targetBridge)) );
 			for( MatchingProgressListener mpd : progressDisplays ) mpd.appendToReport(" Done.\n");
 		} else {
 			// the target bridge does not exist, we must create it.

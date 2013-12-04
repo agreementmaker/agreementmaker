@@ -8,9 +8,9 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 
 import am.app.mappingEngine.AbstractMatcher;
-import am.matcher.oaei2009.OAEI2009matcher;
-import am.matcher.oaei2010.OAEI2010Matcher;
-import am.matcher.oaei2011.OAEI2011Matcher;
+import am.matcher.oaei.oaei2009.OAEI2009matcher;
+import am.matcher.oaei.oaei2010.OAEI2010Matcher;
+import am.matcher.oaei.oaei2011.OAEI2011Matcher;
 
 /**
  * This is the OAEI Matchers Bundle Activator. It will register the OAEI

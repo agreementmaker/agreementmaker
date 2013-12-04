@@ -73,6 +73,8 @@ public class AvgMinMaxNumber {
 	
 	// handle a list of integers
 	private void computeStatistics( int[] numbersList ) {
+		if( numbersList.length == 0) return;
+		
 		// sort in ascending numerical order
 		Arrays.sort(numbersList);
 

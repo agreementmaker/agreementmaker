@@ -1,5 +1,6 @@
 package am.app.ontology.instance;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,14 +28,14 @@ public interface InstanceDataset {
 	 *            Should be a number greater than 0. If it is <= 0, the behavior
 	 *            is unspecified.
 	 */
-	public List<Instance> getInstances( String type, int limit ) throws AMException;
+	public Collection<Instance> getInstances( String type, int limit ) throws AMException;
 
 	/**
 	 * Given a keyword and an instance type, get a list of candidate instances.
 	 * In case the type is null, we return instances of any type. The algorithms
 	 * implemented here are based on a keyword lookup.
 	 */
-	public List<Instance> getCandidateInstances( String keyword, String type) throws AMException;
+	public Collection<Instance> getCandidateInstances( String keyword, String type) throws AMException;
 	
 	/**
 	 * For instance sources that are iterable, return an iterator over the

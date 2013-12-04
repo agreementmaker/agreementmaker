@@ -13,7 +13,7 @@ import java.util.List;
 
 import am.GlobalStaticVariables;
 import am.app.ontology.Ontology;
-import am.app.ontology.instance.SeparateFileInstanceDataset;
+import am.app.ontology.instance.datasets.SeparateFileInstanceDataset;
 import am.app.ontology.ontologyParser.OldOntoTreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;

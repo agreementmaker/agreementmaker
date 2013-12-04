@@ -16,20 +16,37 @@ import am.app.ontology.AMNode;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
 
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+
 
 public class ApproximativeSparseMatrixTest {
 	SparseMatrix sMatrix;
 	ApproximativeSparseMatrix aMatrix;
 
+	private OntModel m;
+	
+	private static final int NUM_CELLS = 20;
+	
 	@Before
 	public void setUp() throws Exception {
 		
+		m = ModelFactory.createOntologyModel();
+		
+		final OntClass[] classes = new OntClass[NUM_CELLS];
+		for( int i = 0; i < NUM_CELLS; i++ ) {
+			classes[i] = m.createClass("Item " + i );
+		}
+		
 		Ontology testOntology = new Ontology() {
+			
 			@Override
 			public List<Node> getClassesList() {
+				
 				List<Node> classesList = new ArrayList<Node>();
-				for( int i = 0; i < 20; i++ ) {
-					classesList.add(new AMNode(i, "Item " + i, Ontology.LANG_OWL, 0));
+				for( int i = 0; i < NUM_CELLS; i++ ) {
+					classesList.add(new AMNode(i, classes[i], AMNode.OWLCLASS, 0));
 				}
 				return classesList;
 			}
@@ -42,14 +59,18 @@ public class ApproximativeSparseMatrixTest {
 		
 		Random rand = new Random();
 		
-		for(int i=0;i<20;i++){
-			for(int j=0;j<20;j++){
+		for(int i=0;i<NUM_CELLS;i++){
+			for(int j=0;j<NUM_CELLS;j++){
 				double d=rand.nextDouble();
 				int trunk=(int)(100000.0D*d);
 				d=((double)trunk)/100000.0D;
 				//System.out.println(d);
-				sMatrix.set(i, j, new Mapping(new AMNode(i, "Item ", Ontology.LANG_OWL, 0),new AMNode(i, "Item " + i, Ontology.LANG_OWL, 0),d));
-				aMatrix.set(i, j, new Mapping(new AMNode(i, "Item " + i, Ontology.LANG_OWL, 0),new AMNode(i, "Item " + i, Ontology.LANG_OWL, 0),d));
+				sMatrix.set(i, j, new Mapping(
+						new AMNode(i, classes[i], AMNode.OWLCLASS, 0),
+						new AMNode(j, classes[j], AMNode.OWLCLASS, 0),d));
+				aMatrix.set(i, j, new Mapping(
+						new AMNode(i, classes[i], AMNode.OWLCLASS, 0),
+						new AMNode(i, classes[j], AMNode.OWLCLASS, 0),d));
 			}
 		}
 	}

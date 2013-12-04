@@ -1103,23 +1103,6 @@ public abstract class AbstractMatcher extends SwingWorker<Void, Void> implements
 		return propertiesAlignmentSet;
 	}
 
-	/**
-	 * AgreementMaker doesn't calculate instances matching, if you add this you
-	 * should also modify getAlignmenSet.
-	 * 
-	 * @deprecated Use {@link AbstractMatcher#getResult()}.
-	 */
-	@Deprecated
-	public Alignment<Mapping> getInstanceAlignmentSet() {
-		int sourceOntologyID = -1;
-		if( sourceOntology != null ) sourceOntologyID = sourceOntology.getID();
-
-		int targetOntologyID = -1;
-		if( targetOntology != null ) targetOntologyID = targetOntology.getID();
-
-		return new Alignment<Mapping>(sourceOntologyID, targetOntologyID);
-	}
-
 	@Deprecated
 	public boolean areClassesAligned() {
 		return classesAlignmentSet != null;

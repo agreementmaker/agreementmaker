@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.SwingWorker;
 import javax.xml.parsers.DocumentBuilder;
@@ -17,18 +18,23 @@ import org.w3c.dom.NodeList;
 import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
+import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.DefaultMatcherParameters;
+import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatcherFactory;
 import am.app.mappingEngine.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentParameters;
 import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
+import am.app.mappingEngine.referenceAlignment.ThresholdAnalysisData;
+import am.app.mappingEngine.utility.MatchingPair;
 import am.app.ontology.Ontology;
 import am.app.ontology.ontologyParser.OntoTreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologyLanguage;
 import am.app.ontology.ontologyParser.OntologyDefinition.OntologySyntax;
 import am.app.osgi.MatcherNotFoundException;
+import am.utility.referenceAlignment.AlignmentUtilities;
 /**
  * 
  * 
@@ -462,6 +468,104 @@ public class ThresholdAnalysis extends SwingWorker<Void,Void> {
 	public void setOntologyNames(boolean names ) { prefFilenameOntologyNames = names;}
 	
 	
+	public static ThresholdAnalysisData thresholdAnalysis(AbstractMatcher toBeEvaluated, Object reference) {
+		return thresholdAnalysis(toBeEvaluated, reference, null, false);
+	}
 	
+	/**
+	 * TODO: Check to see if this method could be merged with the work done in
+	 * the {@link ThresholdAnalysis#runAnalysis()} method.
+	 * 
+	 * @param reference
+	 *            it can be either an Alignment<Mapping> or a List<MatchingPair>
+	 */
+	public static ThresholdAnalysisData thresholdAnalysis(AbstractMatcher toBeEvaluated, Object reference, double[] thresholds, boolean removeDuplicates) {
+		Alignment<Mapping> referenceSet = null;
+		List<MatchingPair> referencePairs = null;
+		if(reference instanceof Alignment)
+			referenceSet = (Alignment<Mapping>) reference;
+		else if(reference instanceof List)
+			referencePairs = (List<MatchingPair>) reference;
+		else return null;
+			
+		double step = 0.05;
+		if(thresholds == null)
+			thresholds = Utility.getDoubleArray(0.0d, 0.01d, 101);
+		
+		ReferenceEvaluationData maxrd = null;
+		ReferenceEvaluationData rd;
+		Alignment<Mapping> evaluateSet;
+	
+		double maxTh = step;
+		double sumPrecision = 0;
+		double sumRecall = 0;
+		double sumFmeasure = 0;
+		int sumFound = 0;
+		int sumCorrect = 0;
+		
+		String matcherName = toBeEvaluated.getName();
+		ThresholdAnalysisData tad = new ThresholdAnalysisData(thresholds);
+		tad.setMatcherName(matcherName);
+				
+		String report = matcherName + "\n\n";
+		double th;
+		report+="Threshold:\tFound\tCorrect\tReference\tPrecision\tRecall\tF-Measure\n";
+		
+		// output the info to the console for easy copy/pasting
+//		System.out.println("Threshold, " +
+//				   "Precision, " +
+//				   "Recall, " +
+//				   "F-Measure" );
+		for(int t = 0; t < thresholds.length; t++) {
+			th = thresholds[t];
+			toBeEvaluated.getParam().threshold = th;
+			toBeEvaluated.select();
+			evaluateSet = toBeEvaluated.getAlignment();
+			if(referenceSet != null)
+				rd = ReferenceEvaluator.compare(evaluateSet, referenceSet);
+			else{
+				
+				Alignment<Mapping> alignment = toBeEvaluated.getAlignment();
+				List<MatchingPair> pairs = AlignmentUtilities.alignmentToMatchingPairs(alignment);
+										
+				AlignmentUtilities.removeDuplicates(referencePairs);
+				AlignmentUtilities.removeDuplicates(pairs);
+				
+				rd = AlignmentUtilities.compare(pairs, referencePairs);
+				tad.addEvaluationData(rd);
+			}
+			
+			report += Utility.getNoDecimalPercentFromDouble(th)+"\t"+rd.getMeasuresLine();
+			sumPrecision += rd.getPrecision();
+			sumRecall += rd.getRecall();
+			sumFmeasure += rd.getFmeasure();
+			sumFound += rd.getFound();
+			sumCorrect += rd.getCorrect();
+			
+			// output this information to the console for easy copy/pasting  // TODO: make a button to be able to copy/paste this info
+//			System.out.println(Double.toString(th) + ", " +
+//					   Double.toString(rd.getPrecision()) + ", " +
+//					   Double.toString(rd.getRecall()) + ", " +
+//					   Double.toString(rd.getFmeasure()) );
+			
+			if(maxrd == null || maxrd.getFmeasure() < rd.getFmeasure()) {
+				maxrd = rd;
+				maxTh = th;
+			}
+		}
+		toBeEvaluated.getParam().threshold = maxTh;
+		toBeEvaluated.select();
+		toBeEvaluated.setRefEvaluation(maxrd);
+		report += "Best Run:\n";
+		report += Utility.getNoDecimalPercentFromDouble(maxTh)+"\t"+maxrd.getMeasuresLine();
+		sumPrecision /= thresholds.length;
+		sumRecall /= thresholds.length;
+		sumFmeasure /= thresholds.length;
+		sumFound /= thresholds.length;
+		sumCorrect /= thresholds.length;
+		report += "Average:\t"+sumFound+"\t"+sumCorrect+"\t"+maxrd.getExist()+"\t"+Utility.getOneDecimalPercentFromDouble(sumPrecision)+"\t"+Utility.getOneDecimalPercentFromDouble(sumRecall)+"\t"+Utility.getOneDecimalPercentFromDouble(sumFmeasure)+"\n\n";
+		tad.setReport(report);
+		return tad;
+	}
 	
 }

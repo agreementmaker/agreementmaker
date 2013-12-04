@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import am.app.ontology.Ontology;
-import am.app.ontology.instance.SeparateFileInstanceDataset;
+import am.app.ontology.instance.datasets.SeparateFileInstanceDataset;
 import am.app.ontology.instance.endpoint.SparqlEndpoint;
 import am.app.ontology.ontologyParser.OldOntoTreeBuilder;
 import am.app.ontology.ontologyParser.OntologyDefinition;

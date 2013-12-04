@@ -6,21 +6,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import am.AMException;
-import am.Utility;
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.AbstractMatcherParametersPanel;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
-import am.app.mappingEngine.MatcherFactory;
-import am.app.mappingEngine.ReferenceEvaluationData;
-import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
-import am.app.mappingEngine.referenceAlignment.ReferenceEvaluator;
 import am.app.mappingEngine.similarityMatrix.ArraySimilarityMatrix;
 import am.app.ontology.Node;
 import am.app.ontology.Ontology;
-import am.ui.MatcherParametersDialog;
-import am.ui.UICore;
 
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
@@ -100,8 +93,8 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		// TODO Auto-generated method stub
 		super.matchEnd();
 		
-		if(printMappingTable)
-			evaluate();
+		/*if(printMappingTable)
+			evaluate();*/
 	}
 	
 //	@SuppressWarnings("unchecked")
@@ -293,7 +286,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		}
 	}
 
-	private void evaluate() {
+/*	private void evaluate() {
 		
 		ReferenceAlignmentMatcher refMatcher = (ReferenceAlignmentMatcher)MatcherFactory.getMatcherInstance("Reference Alignment Importer");
 		MatcherParametersDialog dialog = new MatcherParametersDialog(refMatcher,false,false);
@@ -326,7 +319,7 @@ public class IterativeInstanceStructuralMatcher extends AbstractMatcher {
 		}
 		dialog.dispose();
 		UICore.getUI().redisplayCanvas();
-	}
+	}*/
 
 	private void matchPropertyValues() {
 		if( Core.DEBUG_FCM ) System.out.println("MATCH PROPERTY VALUES");

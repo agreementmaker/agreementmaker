@@ -584,6 +584,9 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 		graph.insertVertex(root);
 		
 		Node classRoot = ont.getClassesRoot();
+		
+		if( classRoot == null ) return root; // no classes were loaded
+		
 		List<Node> rootChildren = classRoot.getChildren();
 		for( int i = 0; i < rootChildren.size(); i++ ) {
 			Node currentChild = rootChildren.get(i);
@@ -991,6 +994,8 @@ public class LegacyLayout extends Canvas2Layout implements PopupMenuListener {
 	private ArrayList<OntProperty> getPropertyHierarchyRoots(OntModel m) {
 		
 		ArrayList<OntProperty> roots = new ArrayList<OntProperty>(); 
+		
+		if( m == null ) return roots;
 		
 		try {
 		

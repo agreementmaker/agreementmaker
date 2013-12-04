@@ -15,7 +15,9 @@ public class AlignmentsOutput {
 	
 	private static final Logger sLog = Logger.getLogger(AlignmentsOutput.class);
 	
-	public static String alignmentsToOutput(List<MatchingPair> mappings){
+	public static String alignmentsToOutput(List<MatchingPair> mappings) {
+		if( mappings == null ) return "";
+		
 		AlignmentOutput ao = new AlignmentOutput(null);
 		ao.stringNS();
         ao.stringStart("yes", "0", "11", "onto1", "onto2", "uri1", "uri2");

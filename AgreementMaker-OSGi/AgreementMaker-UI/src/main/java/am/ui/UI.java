@@ -170,11 +170,10 @@ public class UI {
 
 	public Ontology openFile( OntologyDefinition odef ) {
 		try{
-			JPanel jPanel = null;
 
 			log.info("Opening file: " + odef.ontologyURI );
 
-			jPanel = new VertexDescriptionPane(odef.ontologyLanguage);
+			JPanel jPanel = new VertexDescriptionPane(odef.ontologyLanguage);
 			jPanel.setMinimumSize(new Dimension(200,200));
 			getUISplitPane().setRightComponent(jPanel);
 			setDescriptionPanel(jPanel);
@@ -277,7 +276,7 @@ public class UI {
 			UICore.getUI().getUIFrame().setVisible(false);
 			UICore.getUI().getUIFrame().dispose();
 			UICore.setUI(null);
-			Core.getInstance().getRegistry().initializeShutdown();
+			Core.getInstance().shutdown();
 		}
 	}
 }

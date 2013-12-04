@@ -16,7 +16,7 @@ public class Activator implements BundleActivator {
 		return context;
 	}
 
-	private ServiceRegistration reg;
+	private ServiceRegistration<AbstractMatcher> reg;
 
 	/*
 	 * (non-Javadoc)
@@ -24,8 +24,9 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
+		reg = bundleContext.registerService(
+				AbstractMatcher.class, new BaseSimilarityMatcher(), null);
 		System.out.println("Base Similarity Bundle started...");
-		reg = bundleContext.registerService(AbstractMatcher.class, new BaseSimilarityMatcher(), new Hashtable<String,String>());
 	}
 
 	/*
@@ -33,8 +34,8 @@ public class Activator implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
-		Activator.context = null;
 		reg.unregister();
+		Activator.context = null;
 		System.out.println("Base Similarity Bundle stopped...");
 	}
 

@@ -14,6 +14,7 @@ import java.util.Scanner;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import am.app.Core;
 import am.app.mappingEngine.Mapping.MappingRelation;
 import am.app.mappingEngine.ReferenceEvaluationData;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
@@ -195,28 +196,28 @@ public class LODEvaluator {
 	}
 	
 	public void evaluateAllTestsEq() throws Exception {
-			String folder = "LOD/batchEq/ASM/";
+			String folder = Core.getInstance().getRoot() + File.separator + "LOD/batchEq/ASM/";
 			
-			evaluate(folder + "foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA_EQ);
-			evaluate(folder + "geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA_EQ);
-			evaluate(folder + "music-bbc.txt", LODReferences.MUSIC_BBC_EQ);
-			evaluate(folder + "music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA_EQ);
-			evaluate(folder + "swc-akt.txt", LODReferences.SWC_AKT_EQ);
-			evaluate(folder + "swc-dbpedia.txt", LODReferences.SWC_DBPEDIA_EQ);
-			evaluate(folder + "sioc-foaf.txt", LODReferences.SIOC_FOAF_EQ);
+			evaluate(folder + "foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA_EQ.getPath());
+			evaluate(folder + "geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA_EQ.getPath());
+			evaluate(folder + "music-bbc.txt", LODReferences.MUSIC_BBC_EQ.getPath());
+			evaluate(folder + "music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA_EQ.getPath());
+			evaluate(folder + "swc-akt.txt", LODReferences.SWC_AKT_EQ.getPath());
+			evaluate(folder + "swc-dbpedia.txt", LODReferences.SWC_DBPEDIA_EQ.getPath());
+			evaluate(folder + "sioc-foaf.txt", LODReferences.SIOC_FOAF_EQ.getPath());
 			
 	}
 
 	public void evaluateAllTestsOld() throws Exception{
-		String folder = "LOD/batch/";
+		String folder = Core.getInstance().getRoot() + File.separator + "LOD/batch/";
 		
-		evaluate(folder + "foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA);
-		evaluate(folder + "geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA);
-		evaluate(folder + "music-bbc.txt", LODReferences.MUSIC_BBC);
-		evaluate(folder + "music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA);
-		evaluate(folder + "swc-akt.txt", LODReferences.SWC_AKT);
-		evaluate(folder + "swc-dbpedia.txt", LODReferences.SWC_DBPEDIA);
-		evaluate(folder + "sioc-foaf.txt", LODReferences.SIOC_FOAF);
+		evaluate(folder + "foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA.getPath());
+		evaluate(folder + "geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA.getPath());
+		evaluate(folder + "music-bbc.txt", LODReferences.MUSIC_BBC.getPath());
+		evaluate(folder + "music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA.getPath());
+		evaluate(folder + "swc-akt.txt", LODReferences.SWC_AKT.getPath());
+		evaluate(folder + "swc-dbpedia.txt", LODReferences.SWC_DBPEDIA.getPath());
+		evaluate(folder + "sioc-foaf.txt", LODReferences.SIOC_FOAF.getPath());
 		
 	}
 	
@@ -246,22 +247,22 @@ public class LODEvaluator {
 		
 		boolean printHeader = true;
 
-		String folder = "LOD/batch/";
+		String folder = Core.getInstance().getRoot() + File.separator + "LOD/batch/";
 		
 		if(printHeader) System.out.println("FOAF - DBPEDIA");
-		evaluate(folder + "foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA, LODOntology.FOAF, LODOntology.DBPEDIA);
+		evaluate(folder + "foaf-dbpedia.txt", LODReferences.FOAF_DBPEDIA.getPath(), LODOntology.FOAF, LODOntology.DBPEDIA);
 		if(printHeader) System.out.println("GEONAMES - DBPEDIA");
-		evaluate(folder + "geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA, LODOntology.GEONAMES, LODOntology.DBPEDIA);
+		evaluate(folder + "geonames-dbpedia.txt", LODReferences.GEONAMES_DBPEDIA.getPath(), LODOntology.GEONAMES, LODOntology.DBPEDIA);
 		if(printHeader) System.out.println("MUSIC - BBC");
-		evaluate(folder + "music-bbc.txt", LODReferences.MUSIC_BBC, LODOntology.MUSIC_ONTOLOGY, LODOntology.BBC_PROGRAM);
+		evaluate(folder + "music-bbc.txt", LODReferences.MUSIC_BBC.getPath(), LODOntology.MUSIC_ONTOLOGY, LODOntology.BBC_PROGRAM);
 		if(printHeader) System.out.println("MUSIC - DBPEDIA");
-		evaluate(folder + "music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA, LODOntology.MUSIC_ONTOLOGY, LODOntology.DBPEDIA);
+		evaluate(folder + "music-dbpedia.txt", LODReferences.MUSIC_DBPEDIA.getPath(), LODOntology.MUSIC_ONTOLOGY, LODOntology.DBPEDIA);
 		if(printHeader) System.out.println("SWC - AKT");
-		evaluate(folder + "swc-akt.txt", LODReferences.SWC_AKT, LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL);
+		evaluate(folder + "swc-akt.txt", LODReferences.SWC_AKT.getPath(), LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL);
 		if(printHeader) System.out.println("SWC - DBPEDIA");
-		evaluate(folder + "swc-dbpedia.txt", LODReferences.SWC_DBPEDIA, LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA);
+		evaluate(folder + "swc-dbpedia.txt", LODReferences.SWC_DBPEDIA.getPath(), LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA);
 		if(printHeader) System.out.println("SIOC - FOAF");
-		evaluate(folder + "sioc-foaf.txt", LODReferences.SIOC_FOAF, LODOntology.SIOC, LODOntology.FOAF);
+		evaluate(folder + "sioc-foaf.txt", LODReferences.SIOC_FOAF.getPath(), LODOntology.SIOC, LODOntology.FOAF);
 		
 	}
 	
@@ -503,31 +504,31 @@ public class LODEvaluator {
 	
 
 	public void cleanReference() throws IOException{
-		BufferedReader fileBR = new BufferedReader(new FileReader(LODReferences.MUSIC_BBC));
+		BufferedReader fileBR = new BufferedReader(new FileReader(LODReferences.MUSIC_BBC.getPath()));
 		ArrayList<MatchingPair> refPairs = matcher.parseRefFormat2(fileBR);
 		//diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.MUSIC_ONTOLOGY, LODOntology.BBC_PROGRAM);
 		
-		fileBR = new BufferedReader(new FileReader(LODReferences.SWC_DBPEDIA));
+		fileBR = new BufferedReader(new FileReader(LODReferences.SWC_DBPEDIA.getPath()));
 		refPairs = matcher.parseRefFormat2(fileBR);
 		//diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.SW_CONFERENCE, LODOntology.DBPEDIA);
 		
-		fileBR = new BufferedReader(new FileReader(LODReferences.SWC_AKT));
+		fileBR = new BufferedReader(new FileReader(LODReferences.SWC_AKT.getPath()));
 		refPairs = matcher.parseRefFormat2(fileBR);
 		//diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.SW_CONFERENCE, LODOntology.AKT_PORTAL);
 		
-		fileBR = new BufferedReader(new FileReader(LODReferences.SIOC_FOAF));
+		fileBR = new BufferedReader(new FileReader(LODReferences.SIOC_FOAF.getPath()));
 		refPairs = matcher.parseRefFormat2(fileBR);
 		//diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.SIOC, LODOntology.FOAF);
 		
-		fileBR = new BufferedReader(new FileReader(LODReferences.MUSIC_DBPEDIA));
+		fileBR = new BufferedReader(new FileReader(LODReferences.MUSIC_DBPEDIA.getPath()));
 		refPairs = matcher.parseRefFormat2(fileBR);
 		//diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.MUSIC_ONTOLOGY, LODOntology.DBPEDIA);
 		
-		fileBR = new BufferedReader(new FileReader(LODReferences.GEONAMES_DBPEDIA));
+		fileBR = new BufferedReader(new FileReader(LODReferences.GEONAMES_DBPEDIA.getPath()));
 		refPairs = matcher.parseRefFormat2(fileBR);
 		//diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.GEONAMES, LODOntology.DBPEDIA);
 		
-		fileBR = new BufferedReader(new FileReader(LODReferences.FOAF_DBPEDIA));
+		fileBR = new BufferedReader(new FileReader(LODReferences.FOAF_DBPEDIA.getPath()));
 		refPairs = matcher.parseRefFormat2(fileBR);
 		diff(new ArrayList<MatchingPair>(), refPairs, LODOntology.FOAF, LODOntology.DBPEDIA);	
 	}

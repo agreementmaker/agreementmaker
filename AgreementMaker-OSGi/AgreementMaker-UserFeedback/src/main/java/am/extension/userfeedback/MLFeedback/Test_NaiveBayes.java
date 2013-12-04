@@ -36,6 +36,7 @@ public class Test_NaiveBayes extends NaiveBayes{
 	    System.out.println(tNB02.interfaceComputeElement(dataTest2[0]));
 	    tNB01.run();
 	    tNB02.run();
+	    
 	    testLabel(tNB01, true, 0);
 	    testLabel(tNB01, false, 1);
 	    try{

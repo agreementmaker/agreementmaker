@@ -14,28 +14,60 @@ import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Alignment;
 import am.app.mappingEngine.Mapping;
 import am.app.mappingEngine.MatchingTask;
+import am.app.mappingEngine.AbstractMatcher.alignType;
 import am.app.mappingEngine.referenceAlignment.ReferenceAlignmentMatcher;
 import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
+import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Ontology;
 import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.IndependentSequentialLogic;
+import am.extension.userfeedback.experiments.IndependentSequentialLogicMultiUser;
 import am.extension.userfeedback.experiments.UFLControlLogic;
 
 public class MLFExperiment extends UFLExperiment {
 
 private BufferedWriter logFile;
-public TreeSet<Integer> forbidden_column=new TreeSet<Integer>();
-public TreeSet<Integer> forbidden_row=new TreeSet<Integer>();
+//public TreeSet<Integer> forbidden_column_classes=new TreeSet<Integer>();
+//public TreeSet<Integer> forbidden_row_classes=new TreeSet<Integer>();
+//public TreeSet<Integer> forbidden_column_properties=new TreeSet<Integer>();
+//public TreeSet<Integer> forbidden_row_properties=new TreeSet<Integer>();
 private Alignment<Mapping> MLAlignment;
 private Object[][] trainingSet_classes;
 private Object[][] trainingSet_property;
 private Object[][] dataSet_classes;
 private Object[][] dataSet_property;
-private SimilarityMatrix rankedClassMatrix;
-private SimilarityMatrix rankedPropertyMatrix;
+private SimilarityMatrix uflClassMatrix;
+private SimilarityMatrix uflPropertyMatrix;
+public List<Mapping> allRanked;
+public List<Mapping> alreadyEvaluated;
+public List<Mapping> conflictualClass;
+public List<Mapping> conflictualProp;
+//don't change the cardinality
 private int sourceCardinality=1;
 private int targetCardinality=1;
+public SparseMatrix classesSparseMatrix=new SparseMatrix(Core.getInstance().getSourceOntology(),Core.getInstance().getTargetOntology(), alignType.aligningClasses);
+public SparseMatrix propertiesSparseMatrix=new SparseMatrix(Core.getInstance().getSourceOntology(),Core.getInstance().getTargetOntology(), alignType.aligningProperties);
+
+
+public SparseMatrix getClassesSparseMatrix() {
+	return classesSparseMatrix;
+}
+
+
+public void setClassesSparseMatrix(SparseMatrix classesSparseMatrix) {
+	this.classesSparseMatrix = classesSparseMatrix;
+}
+
+
+public SparseMatrix getPropertiesSparseMatrix() {
+	return propertiesSparseMatrix;
+}
+
+
+public void setPropertiesSparseMatrix(SparseMatrix propertiesSparseMatrix) {
+	this.propertiesSparseMatrix = propertiesSparseMatrix;
+}
 
 
 public int getSourceCardinality() {
@@ -99,23 +131,23 @@ public void setDataSet_property(Object[][] dataSet_property) {
 
 
 
-public SimilarityMatrix getRankedClassMatrix() {
-	return rankedClassMatrix;
+public SimilarityMatrix getUflClassMatrix() {
+	return uflClassMatrix;
 }
 
 
-public void setRankedClassMatrix(SimilarityMatrix rankedClassMatrix) {
-	this.rankedClassMatrix = rankedClassMatrix;
+public void setUflClassMatrix(SimilarityMatrix uflClassMatrix) {
+	this.uflClassMatrix = uflClassMatrix;
 }
 
 
-public SimilarityMatrix getRankedPropertyMatrix() {
-	return rankedPropertyMatrix;
+public SimilarityMatrix getUflPropertyMatrix() {
+	return uflPropertyMatrix;
 }
 
 
-public void setRankedPropertyMatrix(SimilarityMatrix rankedPropertyMatrix) {
-	this.rankedPropertyMatrix = rankedPropertyMatrix;
+public void setUflPropertyMatrix(SimilarityMatrix uflPropertyMatrix) {
+	this.uflPropertyMatrix = uflPropertyMatrix;
 }
 
 public Alignment<Mapping> getMLAlignment() {
@@ -196,7 +228,8 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 
 	@Override
 	public UFLControlLogic getControlLogic() {
-		return new IndependentSequentialLogic();
+		return new IndependentSequentialLogicMultiUser();
+		//return new IndependentSequentialLogic();
 	}
 
 	@Override
