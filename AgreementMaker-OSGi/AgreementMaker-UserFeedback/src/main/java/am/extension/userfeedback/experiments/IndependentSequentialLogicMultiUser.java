@@ -25,6 +25,10 @@ public class IndependentSequentialLogicMultiUser extends UFLControlLogic {
 		}
 		
 		if( e.getActionCommand() == ActionCommands.EXECUTION_SEMANTICS_DONE.name() ) {
+			runInizialization();
+		}
+		
+		if( e.getActionCommand() == ActionCommands.LOOP_INIZIALIZATION_DONE.name() ) {
 			runCandidateSelection();
 		}
 		

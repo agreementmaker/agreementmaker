@@ -12,6 +12,7 @@ public abstract class UFLExperiment {
 	public UFLExperimentSetup								setup;  
 	
 	public ExecutionSemantics 								initialMatcher;
+	public FeedbackLoopInizialization<UFLExperiment>        dataInizialization;
 	public CandidateSelection< UFLExperiment> 				candidateSelection;
 	public CandidateSelectionEvaluation 					csEvaluation;
 	public UserFeedback										userFeedback;
@@ -20,6 +21,7 @@ public abstract class UFLExperiment {
 	public UFLControlGUI									gui;
 	public SaveFeedback< UFLExperiment>						saveFeedback;
 	
+
 	
 	/**
 	 * These mappings were validated by the user as being CORRECT.

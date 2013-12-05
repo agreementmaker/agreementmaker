@@ -25,6 +25,7 @@ import am.app.mappingEngine.utility.OAEI_Track;
 import am.app.ontology.Node;
 import am.extension.userfeedback.FeedbackPropagation;
 import am.extension.userfeedback.UserFeedback.Validation;
+import am.extension.userfeedback.MLFeedback.MLFExperiment.alignCardinality;
 import am.matcher.Combination.CombinationMatcher;
 import am.matcher.Combination.CombinationParameters;
 
@@ -35,11 +36,7 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 	final double penalize_ratio=0.9;
 	
 	List<AbstractMatcher> inputMatchers = new ArrayList<AbstractMatcher>();
-	//Alignment<Mapping> finalMappings;
 	
-	//genero il data set nella classe principale UFLExperiment
-	//- il dataSet deve avere dei campi per il nodo source e traget così da ricostruire i mappings
-	//- salvo il training set in UFLExperiment e lo recupero ogni volta
 
 	private Object[] addToSV(Mapping mp, Boolean label)
 	{
@@ -94,8 +91,6 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 			}
 	}
 	
-
-	//TODO add cardinality...
 	private SimilarityMatrix zeroSim(SimilarityMatrix sm,int source_index,int target_index, int sourceCardinality, int targetCardinality)
 	{
 		ArrayList<Integer> sourceToKeep=new ArrayList<Integer>();
@@ -217,7 +212,8 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 			{ 
 
 				feedbackClassMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
-				//feedbackClassMatrix=(zeroSim(experiment.getUflClassMatrix(), candidateMapping.getSourceKey(), candidateMapping.getTargetKey(),experiment.getSourceCardinality(),experiment.getTargetCardinality()));
+				if (experiment.getAlignCardinalityType()==alignCardinality.c1_1)
+					feedbackClassMatrix=(zeroSim(experiment.getUflClassMatrix(), candidateMapping.getSourceKey(), candidateMapping.getTargetKey(),experiment.getSourceCardinality(),experiment.getTargetCardinality()));
 				//experiment.forbidden_row_classes.add(candidateMapping.getSourceKey());
 				//experiment.forbidden_column_classes.add(candidateMapping.getTargetKey());
 				experiment.classesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
@@ -239,7 +235,8 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 			if( userFeedback == Validation.CORRECT ) 
 			{ 
 				feedbackPropertyMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1.0);
-				//feedbackPropertyMatrix=zeroSim(experiment.getUflPropertyMatrix(), candidateMapping.getSourceKey(), candidateMapping.getTargetKey(),experiment.getSourceCardinality(),experiment.getTargetCardinality());
+				if (experiment.getAlignCardinalityType()==alignCardinality.c1_1)
+					feedbackPropertyMatrix=zeroSim(experiment.getUflPropertyMatrix(), candidateMapping.getSourceKey(), candidateMapping.getTargetKey(),experiment.getSourceCardinality(),experiment.getTargetCardinality());
 				//experiment.forbidden_row_properties.add(candidateMapping.getSourceKey());
 				//experiment.forbidden_column_properties.add(candidateMapping.getTargetKey());
 				experiment.propertiesSparseMatrix.setSimilarity(m.getSourceKey(), m.getTargetKey(), 1);
@@ -257,21 +254,19 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 			feedbackPropertyMatrix=prepareSMforNB(feedbackPropertyMatrix);
 		}
 		
-		if (iteration>-10)
-		{
-			if( candidateMapping.getAlignmentType() == alignType.aligningClasses )
-			{
-				//feedbackClassMatrix=runNBayes(experiment.classesSparseMatrix ,experiment.forbidden_row_classes, experiment.forbidden_column_classes, feedbackClassMatrix, trainingSet);
-				feedbackClassMatrix=runNBayes(experiment.classesSparseMatrix , feedbackClassMatrix, trainingSet);
-			}
-			else
-				if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
-				{
-					//feedbackPropertyMatrix=runNBayes(experiment.propertiesSparseMatrix,experiment.forbidden_row_properties, experiment.forbidden_column_properties, feedbackPropertyMatrix, trainingSet);
-					feedbackPropertyMatrix=runNBayes(experiment.propertiesSparseMatrix, feedbackPropertyMatrix, trainingSet);
-				}
-		}
 
+		if( candidateMapping.getAlignmentType() == alignType.aligningClasses )
+		{
+			feedbackClassMatrix=runNBayes(experiment.classesSparseMatrix , feedbackClassMatrix, trainingSet);
+		}
+		else
+		{
+			if( candidateMapping.getAlignmentType() == alignType.aligningProperties ) 
+			{
+				feedbackPropertyMatrix=runNBayes(experiment.propertiesSparseMatrix, feedbackPropertyMatrix, trainingSet);
+			}
+		}
+		
 		AbstractMatcher ufl=new CombinationMatcher();
 		ufl.setClassesMatrix(feedbackClassMatrix);
 		ufl.setPropertiesMatrix(feedbackPropertyMatrix);
@@ -437,60 +432,7 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 	}
 	
 	
-//	private AbstractMatcher combineResults(MLFExperiment experiment,List<AbstractMatcher> lwcInputMatchers)
-//	{
-//	
-//		CombinationParameters		param_lwc= new CombinationParameters();
-//		try {
-//			param_lwc.initForOAEI2010(OAEI_Track.Benchmarks,true); // use the OAEI 2010 settings for this also (Quality Evaluation = Local Confidence)
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} 
-//		AbstractMatcher lwc = new CombinationMatcher( param_lwc );
-//		lwc.setInputMatchers(lwcInputMatchers);
-//
-//		param_lwc.combinationType = CombinationParameters.MAXCOMB;
-//		param_lwc.qualityEvaluation = true;
-//		param_lwc.manualWeighted = false;
-//		param_lwc.quality = QualityMetricRegistry.LOCAL_CONFIDENCE;
-//			
-//		lwc.setParameters(param_lwc);
-//		
-//		lwc.setSourceOntology(experiment.getSourceOntology());
-//    	lwc.setTargetOntology(experiment.getTargetOntology());
-//
-//		try {
-//			lwc.match();
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return lwc;
-//
-//	}
-	
-//	private SimilarityMatrix filteringResults(SimilarityMatrix smUFL, SimilarityMatrix smAM)
-//	{
-//		int col=smUFL.getColumns();
-//		double sim=0;
-//		double uflSim=0;
-//		double amSim=0;
-//		int row=smUFL.getRows();
-//		for(int i=0;i<row;i++)
-//			for(int j=0;j<col;j++)
-//			{
-//				uflSim=smUFL.getSimilarity(i, j);
-//				amSim=smAM.getSimilarity(i, j);
-//				if (uflSim!=0)
-//					sim=Math.max(uflSim, amSim);
-//				else
-//					sim=0;
-//				smAM.setSimilarity(i, j, sim);
-//			}
-//		return smAM;
-//	}
-	
+
 	private SimilarityMatrix prepareSMforNB(SimilarityMatrix sm)
 	{
 		Mapping mp;
@@ -509,7 +451,6 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 		return sm;
 	}
 	
-	//private SimilarityMatrix runNBayes(SparseMatrix forbidden_pos, TreeSet<Integer> forbidden_row, TreeSet<Integer> forbidden_column, SimilarityMatrix sm,Object[][] trainingSet)
 	private SimilarityMatrix runNBayes(SparseMatrix forbidden_pos, SimilarityMatrix sm,Object[][] trainingSet)
 	{
 
@@ -518,7 +459,6 @@ public class MLFeedbackPropagation extends FeedbackPropagation<MLFExperiment> {
 		int max_col=-1;
 		double max_nBayes=treshold_up;
 		double tmp; 
-		//SimilarityMatrix sm= feedbackClassMatrix;
 		Mapping mp;
 
 		Object[] ssv;

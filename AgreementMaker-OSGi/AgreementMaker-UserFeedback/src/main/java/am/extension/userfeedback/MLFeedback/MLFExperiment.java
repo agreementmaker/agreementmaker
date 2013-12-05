@@ -6,8 +6,11 @@ package am.extension.userfeedback.MLFeedback;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import am.app.Core;
 import am.app.mappingEngine.AbstractMatcher;
@@ -39,13 +42,27 @@ private Object[][] dataSet_classes;
 private Object[][] dataSet_property;
 private SimilarityMatrix uflClassMatrix;
 private SimilarityMatrix uflPropertyMatrix;
-public List<Mapping> allRanked;
-public List<Mapping> alreadyEvaluated;
+public List<Mapping> disRanked;
+public List<Mapping> uncertainRanking;
+public List<Mapping> almostRanking;
+public Mapping selectedMapping;
+public List<Mapping> alreadyEvaluated=new ArrayList<Mapping>();
 public List<Mapping> conflictualClass;
 public List<Mapping> conflictualProp;
 //don't change the cardinality
 private int sourceCardinality=1;
 private int targetCardinality=1;
+private alignCardinality alignCardinalityType=alignCardinality.cn_m;
+public alignCardinality getAlignCardinalityType() {
+	return alignCardinalityType;
+}
+
+
+public void setAlignCardinalityType(alignCardinality alignCardinalityType) {
+	this.alignCardinalityType = alignCardinalityType;
+}
+
+
 public SparseMatrix classesSparseMatrix=new SparseMatrix(Core.getInstance().getSourceOntology(),Core.getInstance().getTargetOntology(), alignType.aligningClasses);
 public SparseMatrix propertiesSparseMatrix=new SparseMatrix(Core.getInstance().getSourceOntology(),Core.getInstance().getTargetOntology(), alignType.aligningProperties);
 
@@ -175,6 +192,8 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 		
 	}
 	
+	
+	
 	@Override
 	public Ontology getSourceOntology() {
 		return Core.getInstance().getSourceOntology();
@@ -235,5 +254,56 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 	@Override
 	public String getDescription() {
 		return "Work in progress";
-	}	
+	}
+	
+	
+	public enum alignCardinality implements Serializable {
+		c1_1("oneOne"),
+		cn_1("nOne"),
+		c1_m("OneM"),
+		cn_m("nM"),
+		unknown("UNKNOWN");
+
+		private final String value;  
+
+		alignCardinality(String value) {  
+			this.value = value;  
+		}  
+
+		public static alignCardinality fromValue(String value) {  
+			if (value != null) {  
+				for (alignCardinality en : values()) {  
+					if (en.value.equals(value)) {  
+						return en;  
+					}  
+				}  
+			}  
+
+			// you may return a default value  
+			return getDefault();  
+			// or throw an exception  
+			// throw new IllegalArgumentException("Invalid color: " + value);  
+		}  
+
+		public String toValue() {  
+			return value;  
+		}  
+
+		public static alignCardinality getDefault() {  
+			return unknown;  
+		} 
+
+		private Object readResolve () throws java.io.ObjectStreamException
+		{
+			if( value == c1_1.toValue() ) return c1_1;
+			if( value == cn_1.toValue() ) return cn_1;
+			if( value == c1_m.toValue() ) return c1_m;
+			if( value == cn_m.toValue() ) return cn_m;
+			return unknown;
+		}
+
+
+	}
 }
+
+

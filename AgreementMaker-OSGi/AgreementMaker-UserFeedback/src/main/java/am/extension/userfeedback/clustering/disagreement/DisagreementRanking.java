@@ -34,7 +34,11 @@ public class DisagreementRanking extends CandidateSelection {
 	public Mapping getCandidateMapping() {
 		
 		for( int i = 0; i < allRanked.size(); i++ ){
-			if( experiment.correctMappings == null && experiment.incorrectMappings == null ) return allRanked.get(i);
+			if( experiment.correctMappings == null && experiment.incorrectMappings == null )
+			{
+				selectedMapping=allRanked.get(i);
+				return selectedMapping;
+			}
 			Mapping m = allRanked.get(i);
 			if( experiment.correctMappings != null && (experiment.correctMappings.contains(m.getEntity1(),Ontology.SOURCE) != null ||
 				experiment.correctMappings.contains(m.getEntity2(),Ontology.TARGET) != null) ) {
@@ -44,6 +48,7 @@ public class DisagreementRanking extends CandidateSelection {
 			if( experiment.incorrectMappings != null && experiment.incorrectMappings.contains(m) ) 
 				continue; // we've validated this mapping already.
 			
+			selectedMapping=m;
 			return m;
 		}
 		
@@ -106,6 +111,12 @@ public class DisagreementRanking extends CandidateSelection {
 		
 		
 		done();
+	}
+
+	@Override
+	public Mapping getSelectedMapping() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

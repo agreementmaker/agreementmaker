@@ -27,7 +27,7 @@ public class MultiUserSaveFeedback extends SaveFeedback<MLFExperiment> {
 		// TODO Auto-generated method stub
 		saveFinalAlignment(exp.getMLAlignment());
 		saveForbiddenPos(exp.classesSparseMatrix,exp.propertiesSparseMatrix);
-		saveRankedMappings(exp.allRanked);
+		saveRankedMappings(exp.alreadyEvaluated);
 		saveCorrectMapping(exp.correctMappings);
 		saveIncorrectMapping(exp.incorrectMappings);
 	}

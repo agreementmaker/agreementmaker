@@ -29,8 +29,18 @@ public class UFLRegistry {
 		public Class<? extends ExecutionSemantics> getEntryClass() { return clazz; }
 	}
 	
-	public enum CandidateSelectionRegistry {
+	public enum LoopInizializationRegistry {
+		DataInizialization ( am.extension.userfeedback.inizialization.DataInizialization.class);
+			
+		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
+		Class<? extends FeedbackLoopInizialization> clazz;
 		
+		LoopInizializationRegistry( Class<? extends FeedbackLoopInizialization> fli ) { clazz = fli; }
+		public Class<? extends FeedbackLoopInizialization> getEntryClass() { return clazz; }
+	}
+	
+	public enum CandidateSelectionRegistry {
+		MultiStrategyRanking (am.extension.userfeedback.clustering.disagreement.MultiStrategyRanking.class),
 		MaxInformationRanking (am.extension.userfeedback.clustering.disagreement.MaxInformationRanking.class   ),
 		DisagreementRank ( am.extension.userfeedback.clustering.disagreement.DisagreementRanking.class );
 		/* *********************** DO NOT EDIT BELOW THIS LINE **************************** */
