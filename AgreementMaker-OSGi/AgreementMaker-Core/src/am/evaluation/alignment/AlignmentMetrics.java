@@ -40,7 +40,7 @@ public class AlignmentMetrics {
 		
 		int numCorrect = 0;
 		for( Mapping computedMapping : computedAlignment ) {
-			if( referenceAlignment.contains(computedMapping.getEntity1(), computedMapping.getEntity2(), computedMapping.getRelation()) ) {
+			if( referenceAlignment.contains(computedMapping.getEntity1(), computedMapping.getEntity2())!=null ) {//, computedMapping.getRelation()) ) {
 				numCorrect++;
 			}
 		}

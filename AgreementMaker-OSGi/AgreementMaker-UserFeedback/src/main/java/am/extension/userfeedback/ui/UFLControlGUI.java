@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import am.Utility;
 import am.app.mappingEngine.AbstractMatcher;
 import am.app.mappingEngine.Matcher;
+import am.extension.userfeedback.FeedbackLoopInizialization;
 import am.extension.userfeedback.UFLExperiment;
 import am.extension.userfeedback.UFLExperimentSetup;
 import am.extension.userfeedback.UFLRegistry.CSEvaluationRegistry;
@@ -17,6 +18,7 @@ import am.extension.userfeedback.UFLRegistry.CandidateSelectionRegistry;
 import am.extension.userfeedback.UFLRegistry.ExperimentRegistry;
 import am.extension.userfeedback.UFLRegistry.FeedbackPropagationRegistry;
 import am.extension.userfeedback.UFLRegistry.InitialMatcherRegistry;
+import am.extension.userfeedback.UFLRegistry.LoopInizializationRegistry;
 import am.extension.userfeedback.UFLRegistry.PropagationEvaluationRegistry;
 import am.extension.userfeedback.UFLRegistry.SaveFeedbackRegistry;
 import am.extension.userfeedback.UFLRegistry.UserValidationRegistry;
@@ -37,7 +39,8 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
 	    
     public enum ActionCommands {
     	INITSCREEN_cmbExperiment,
-    	INITSCREEN_cmbMatcher, 
+    	INITSCREEN_cmbMatcher,
+    	INITSCREEN_cmbInizialization,
     	INITSCREEN_cmbCandidate,
     	INITSCREEN_cmbCSEvaluation,
     	INITSCREEN_cmbUserFeedback,
@@ -45,6 +48,7 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
     	INITSCREEN_cmbPropagation,
     	INITSCREEN_btnStart,
     	
+    	LOOP_INIZIALIZATION_DONE,
     	EXECUTION_SEMANTICS_DONE, 
     	CANDIDATE_SELECTION_DONE, 
     	CS_EVALUATION_DONE, 
@@ -102,6 +106,7 @@ public class UFLControlGUI extends AMTabSupportPanel implements ActionListener, 
 				
 				newExperiment.setup = new UFLExperimentSetup();
 				newExperiment.setup.im = (InitialMatcherRegistry) panel.cmbMatcher.getSelectedItem();
+				newExperiment.setup.fli= (LoopInizializationRegistry) panel.cmbInizialization.getSelectedItem();
 				newExperiment.setup.cs = (CandidateSelectionRegistry) panel.cmbCandidate.getSelectedItem();
 				newExperiment.setup.cse = (CSEvaluationRegistry) panel.cmbCSEvaluation.getSelectedItem();
 				newExperiment.setup.uv = (UserValidationRegistry) panel.cmbUserFeedback.getSelectedItem();
