@@ -2,6 +2,7 @@ package am.evaluation.clustering.localByThreshold;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -49,6 +50,7 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 		
 		// find the intersection of the sets
 		TreeSet<Point> intersectionSet = null;
+		HashMap<Point, Integer> mappingTimes = null;
 		
 		if( setList.size() == 0 ) {
 			// no sets, leave intersectionSet == null
@@ -56,14 +58,21 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 		if( setList.size() == 1 ) {
 			// one set
 			intersectionSet = setList.get(0);
+			mappingTimes = new HashMap<Point, Integer>();
+			
+			for (Point p : setList.get(0)) {
+				mappingTimes.put(p, 1);
+			}
+			
 		} else {
 			// more than one set, must compute intersection.
-			intersectionSet = computeIntersection( setList.get(0), setList.get(1) ); // the first two sets
+//			intersectionSet = computeIntersection( setList.get(0), setList.get(1) ); // the first two sets
 			
 			// the rest of the sets
-			for( int i = 2; i < setList.size(); i++ ) {
-				intersectionSet = computeIntersection( intersectionSet, setList.get(i) ); 
-			}
+//			for( int i = 2; i < setList.size(); i++ ) {
+//				intersectionSet = computeIntersection( intersectionSet, setList.get(i) ); 
+//			}
+			mappingTimes = computeCooccurTimes(setList);
 			
 		}
 		
@@ -71,7 +80,8 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 		
 		if( intersectionSet != null ) {
 			// create the cluster
-			c = new Cluster<Mapping>(intersectionSet, matcherList.get(0).getSourceOntology(), matcherList.get(0).getTargetOntology(), t );
+//			c = new Cluster<Mapping>(intersectionSet, matcherList.get(0).getSourceOntology(), matcherList.get(0).getTargetOntology(), t );
+			c = new Cluster<Mapping>(mappingTimes, matcherList.get(0).getSourceOntology(), matcherList.get(0).getTargetOntology(), t );
 		}
 		
 		return c;
@@ -129,6 +139,20 @@ public class LocalByThresholdMethod extends ClusteringMethod {
 		}
 		
 		return intersection;
+	}
+	
+	private HashMap<Point, Integer> computeCooccurTimes(ArrayList<TreeSet<Point>> list) {
+		HashMap<Point, Integer> map = new HashMap<Point, Integer>();
+		for (TreeSet<Point> set : list) {
+			for (Point p : set) {
+				if (map.containsKey(p)) {
+					map.put(p, map.get(p) + 1);
+				} else {
+					map.put(p, 1);
+				}
+			}
+		}
+		return map;
 	}
 
 
