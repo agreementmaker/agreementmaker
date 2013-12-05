@@ -40,7 +40,7 @@ public class VAGroup {
 	/**
 	 * Calculate the number of 10 slots
 	 */
-	public void setSlots() {
+	private void setSlots() {
 		for (VAData data : lstVAData) {
 			double sim = data.getSimilarity();
 			for (int i = 0; i < VAVariables.slotsNum; i++) {
@@ -59,10 +59,13 @@ public class VAGroup {
 	}
 
 	/**
-	 * Set the data list of this level
+	 * Set the data list of this level then set slots for pie chart
+	 * 
+	 * @param lstVAData
 	 */
-	public void setDataList() {
-
+	public void setDataList(ArrayList<VAData> lstVAData) {
+		this.lstVAData = lstVAData;
+		setSlots();
 	}
 
 	public VAData getRootNode() {
