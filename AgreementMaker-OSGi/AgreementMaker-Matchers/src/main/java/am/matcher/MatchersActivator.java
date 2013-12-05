@@ -13,6 +13,7 @@ import am.matcher.IterativeInstanceStructuralMatcher.IterativeInstanceStructural
 import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcher;
 import am.matcher.LexicalSynonymMatcher.LexicalSynonymMatcherWeighted;
 import am.matcher.dsi.DescendantsSimilarityInheritanceMatcher;
+import am.matcher.groupFinder.GroupFinderMatcher;
 import am.matcher.multiWords.MultiWordsMatcher;
 import am.matcher.parametricStringMatcher.ParametricStringMatcher;
 
@@ -30,6 +31,7 @@ public class MatchersActivator implements BundleActivator {
 	private ServiceRegistration<AbstractMatcher> regLexicalSynonymWeighted;
 	private ServiceRegistration<AbstractMatcher> regDsi;
 	private ServiceRegistration<AbstractMatcher> regIism;
+	private ServiceRegistration<AbstractMatcher> regGFM;
 	/*
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
@@ -45,7 +47,7 @@ public class MatchersActivator implements BundleActivator {
 		regLexicalSynonymWeighted = context.registerService(AbstractMatcher.class, new LexicalSynonymMatcherWeighted(), null);
 		regDsi = context.registerService(AbstractMatcher.class, new DescendantsSimilarityInheritanceMatcher(), new Hashtable<String,String>());
 		regIism = context.registerService(AbstractMatcher.class, new IterativeInstanceStructuralMatcher(), new Hashtable<String,String>());
-		
+		regGFM = context.registerService(AbstractMatcher.class, new GroupFinderMatcher(), null);
 	}
 
 	/*
@@ -62,6 +64,7 @@ public class MatchersActivator implements BundleActivator {
 		regLexicalSynonym.unregister();
 		regDsi.unregister();
 		regIism.unregister();
+		regGFM.unregister();
 	}
 
 }
