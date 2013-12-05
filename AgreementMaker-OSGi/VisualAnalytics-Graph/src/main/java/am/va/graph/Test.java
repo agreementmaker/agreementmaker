@@ -27,7 +27,7 @@ public class Test {
 		final JFXPanel fxPanel = new JFXPanel();
 		frame.add(fxPanel);
 		frame.setVisible(true);
-
+		
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
@@ -61,6 +61,7 @@ public class Test {
 	}
 
 	public static void main(String[] args) {
+		VASyncListener vaSync = new VASyncListener();
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -70,7 +71,7 @@ public class Test {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				if (START_AGREEMENTMAKER) {
+				if (!START_AGREEMENTMAKER) {
 					Core.getInstance().setRegistry(new ManualMatcherRegistry());
 					UICore.setUI(new UI());
 				}
