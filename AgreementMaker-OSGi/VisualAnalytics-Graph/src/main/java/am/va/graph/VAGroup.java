@@ -52,6 +52,7 @@ public class VAGroup {
 					} else {
 						slots.put(key, slots.get(key) + 1);
 					}
+					break;
 				}
 			}
 		}
