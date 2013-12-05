@@ -67,6 +67,14 @@ public class VAGroup {
 		this.lstVAData = lstVAData;
 		setSlots();
 	}
+	
+	public static int getNodeCount() {
+		return nodeCount;
+	}
+
+	public int getGroupID() {
+		return groupID;
+	}
 
 	public VAData getRootNode() {
 		return rootNode;
