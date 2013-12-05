@@ -1,0 +1,21 @@
+<?xml version="1.0" standalone="no"?>
+
+<database id="USA">
+			<attrname id="Marine">
+
+				<attrname id="Subtidal">
+					<attrname id="Rock Bottom"/>
+					<attrname id="Unconsolidated Bottom"/>
+				</attrname>
+
+			</attrname>
+
+			<attrname id="Estuarine">
+
+				<attrname id="Subtidal">
+					<attrname id="Rock Bottom"/>
+				</attrname>
+
+			</attrname>
+
+</database>
