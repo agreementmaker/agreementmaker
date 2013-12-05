@@ -45,7 +45,7 @@ public class VAGroup {
 			double sim = data.getSimilarity();
 			for (int i = 0; i < VAVariables.slotsNum; i++) {
 				if (sim > VAVariables.threshold[i]
-						&& sim < VAVariables.threshold[i + 1]) {
+						&& sim <= VAVariables.threshold[i + 1]) {
 					String key = VAVariables.thresholdName[i];
 					if (!slots.containsKey(VAVariables.thresholdName[i])) {
 						slots.put(key, 0);
