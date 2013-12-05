@@ -62,12 +62,12 @@ public class Test {
 
 	public static void main(String[] args) {
 		VASyncListener vaSync = new VASyncListener();
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				initAndShowGUI();
-			}
-		});
+		// SwingUtilities.invokeLater(new Runnable() {
+		// @Override
+		// public void run() {
+		// initAndShowGUI();
+		// }
+		// });
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
