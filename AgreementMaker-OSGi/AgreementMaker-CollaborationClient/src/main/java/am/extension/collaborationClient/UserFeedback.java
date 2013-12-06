@@ -1,4 +1,4 @@
-package am.extension.collaborationEngine;
+package am.extension.collaborationClient;
 
 import am.app.mappingEngine.utility.MatchingPair;
 

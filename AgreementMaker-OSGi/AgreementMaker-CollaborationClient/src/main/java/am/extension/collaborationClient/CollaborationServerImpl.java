@@ -1,4 +1,4 @@
-package am.extension.collaborationEngine;
+package am.extension.collaborationClient;
 
 import java.io.File;
 import java.util.ArrayList;

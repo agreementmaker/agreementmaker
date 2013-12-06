@@ -10,7 +10,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>AgreementMaker-CollaborationEngine</artifactId>
+	<artifactId>AgreementMaker-CollaborationClient</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
