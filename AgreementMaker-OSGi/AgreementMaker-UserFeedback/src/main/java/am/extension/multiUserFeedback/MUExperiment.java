@@ -1,13 +1,14 @@
 /*
- * 	Francesco Loprete October 2013
+ * 	Francesco Loprete December 2013
  */
-package am.extension.userfeedback.MLFeedback;
+package am.extension.multiUserFeedback;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -21,12 +22,16 @@ import am.app.mappingEngine.similarityMatrix.SimilarityMatrix;
 import am.app.mappingEngine.similarityMatrix.SparseMatrix;
 import am.app.ontology.Ontology;
 import am.extension.userfeedback.UFLExperiment;
+
 import am.extension.userfeedback.UserFeedback.Validation;
 import am.extension.userfeedback.experiments.IndependentSequentialLogicMultiUser;
 import am.extension.userfeedback.experiments.UFLControlLogic;
 
-public class MLFExperiment extends UFLExperiment {
 
+public class MUExperiment extends UFLExperiment {
+
+public 	MUFeedbackStorage	feedbackStorage;
+	
 private BufferedWriter logFile;
 private Alignment<Mapping> MLAlignment;
 private Object[][] trainingSet_classes;
@@ -43,7 +48,13 @@ public List<Mapping> alreadyEvaluated=new ArrayList<Mapping>();
 public List<Mapping> conflictualClass;
 public List<Mapping> conflictualProp;
 
+public HashMap<String, List<Mapping>> usersMappings=new HashMap<String, List<Mapping>>();
+public HashMap<String, Integer> usersGroup=new HashMap<String, Integer>();
+public HashMap<String, SimilarityMatrix> usersClass=new HashMap<String, SimilarityMatrix>();
+public HashMap<String, SimilarityMatrix> usersProp=new HashMap<String, SimilarityMatrix>();
+
 private alignCardinality alignCardinalityType=alignCardinality.cn_m;
+
 public alignCardinality getAlignCardinalityType() {
 	return alignCardinalityType;
 }
@@ -76,7 +87,6 @@ public SparseMatrix getPropertiesSparseMatrix() {
 public void setPropertiesSparseMatrix(SparseMatrix propertiesSparseMatrix) {
 	this.propertiesSparseMatrix = propertiesSparseMatrix;
 }
-
 
 public Object[][] getTrainingSet_classes() {
 	return trainingSet_classes;
@@ -150,7 +160,7 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 
 
 
-	public MLFExperiment() {
+	public MUExperiment() {
 		// setup the log file
 		try {
 			FileWriter fr = new FileWriter("/home/frank/Desktop/ufllog.txt");
@@ -227,6 +237,7 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 		return "Work in progress";
 	}
 	
+	
 	public enum alignCardinality implements Serializable {
 		c1_1("oneOne"),
 		cn_1("nOne"),
@@ -274,7 +285,6 @@ public void setMLAlignment(Alignment<Mapping> mLAlignment) {
 
 
 	}
-	
 }
 
 
